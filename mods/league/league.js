@@ -255,7 +255,7 @@ class League extends ModTemplate {
       }
 
       if (txmsg.request === "gameover"){
-        this.receiveGameoverTransaction(app, txmsg, true);
+        this.receiveGameoverTransaction(app, txmsg);
       }
 
       if (txmsg.request === "roundover"){
@@ -448,7 +448,7 @@ class League extends ModTemplate {
   //////////////////////////
   // gameover transaction //
   //////////////////////////
-  async receiveGameoverTransaction(app, txmsg, is_gameover=false){
+  async receiveGameoverTransaction(app, txmsg, is_gameover=true){
 
     //if (app.BROWSER == 1) { return; }
 
@@ -513,6 +513,10 @@ class League extends ModTemplate {
       if (leag.ranking_algorithm === "EXP"){
         await this.updateEXPRanking(publickeys, leag, txmsg);
       }
+      if (leag.ranking_algorithm === "HSC"){
+        await this.updateHighScore(publickeys, leag, txmsg);
+      }
+
       //Main module
       this.app.connection.emit("leagues-render-request");
       //Sidebar component
@@ -690,6 +694,31 @@ class League extends ModTemplate {
   }
 
 
+  async updateHighScore(players, league, txmsg){
+    //
+    // it better be a 1P games
+    //
+    if (players.length > 1) { 
+      return; 
+    }
+
+    let playerStats = await this.getPlayersFromLeague(league.id, players);
+
+    if (playerStats.length !== players.length){
+      // skip out - not all players are league members
+      return; 
+    }
+
+    for (let player of playerStats){
+      let newScore = parseInt(txmsg.reason);
+      
+      player.score = Math.max(player.score, newScore)
+      await this.incrementPlayer(player.publickey, league.id, "games_finished");
+      await this.updatePlayerScore(player);
+    }
+
+  }
+
   async incrementPlayer(publickey, league_id, field, amount = 1){
     if (!(field === "score" || field === "games_finished" || field === "games_won" || field === "games_tied" || field === "games_started")){
       return 0;
@@ -702,8 +731,10 @@ class League extends ModTemplate {
       for (let i = 0; i < league.players.length; i++){
         if (league.players[i].publickey === publickey){
           league.players[i][field]++;
-          console.log(`Incremented ${field}:`);
-          console.log(JSON.parse(JSON.stringify(league.players[i])));
+          if (this.debug){
+            console.log(`Incremented ${field}:`);
+            console.log(JSON.parse(JSON.stringify(league.players[i])));
+          }
           success = true;
         }
       }
@@ -735,8 +766,10 @@ class League extends ModTemplate {
       for (let i = 0; i < league.players.length; i++){
         if (league.players[i].publickey === playerObj.publickey){
           league.players[i]["score"] = playerObj.score;
-          console.log("New Score: " + playerObj.score);
-          console.log(JSON.parse(JSON.stringify(league.players[i])));
+          if (this.debug){
+            console.log("New Score: " + playerObj.score);
+            console.log(JSON.parse(JSON.stringify(league.players[i])));
+          }
         }
       }
     }
