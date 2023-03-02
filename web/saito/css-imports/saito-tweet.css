@@ -276,19 +276,20 @@
   border-top: none;
   border-top-right-radius: unset;
   border-top-left-radius: unset;
+  overflow-wrap: anywhere;
 }
 
 .link-title {
-  color: var(--saito-dark-shim);
+  color: var(--saito-font-color-light);
   margin: 0.3rem 0px;
 }
 
 .link-url {
-  color: var(--saito-gray-mid);
+  color: var(--saito-font-color);
 }
 
 .link-description {
-  color: var(--saito-gray-mid);
+  color: var(--saito-font-color-light);
 }
 
 .youtube-embed-container>iframe {
@@ -299,6 +300,12 @@
 @media screen and (max-width: 1280px) {
   .tweet-picture {
     grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  }
+  .tweet-picture>img {
+    max-height: 35rem !important;
+  }
+  .preview-img {
+    max-height: 35rem !important;
   }
 }
 

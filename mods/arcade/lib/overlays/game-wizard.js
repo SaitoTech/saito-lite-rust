@@ -130,13 +130,13 @@ class GameWizard {
           }
 
           if (isPrivateGame == "private") {
-            this.app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.game);
+            this.app.browser.logMatomoEvent("GameWizard", "CreatePrivateInvite", options.game);
           } else if (isPrivateGame == "single") {
-            this.app.browser.logMatomoEvent("Arcade", "ArcadeLaunchSinglePlayerGame", options.game);
+            this.app.browser.logMatomoEvent("GameWizard", "PlaySinglePlayerGame", options.game);
           } else if (isPrivateGame == "direct") {
-            this.app.browser.logMatomoEvent("Arcade", "ArcadeCreateDirectInvite", options.game);
+            this.app.browser.logMatomoEvent("GameWizard", "CreateDirectInvite", options.game);
           } else {
-            this.app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
+            this.app.browser.logMatomoEvent("GameWizard", "CreateOpenInvite", options.game);
           }
 
           this.mod.makeGameInvite(options, isPrivateGame, this.obj);

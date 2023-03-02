@@ -1,4 +1,3 @@
-const SaitoUserTemplate = require('./../../../lib/saito/ui/templates/saito-user.template');
 const Tweet = require('./tweet');
 
 module.exports = (app, mod, tx, retweet_tx, retweet_txmsg) => {
