@@ -221,7 +221,8 @@ class Arcade extends ModTemplate {
           arcade_self.app.connection.emit("relay-send-message", {recipient: game.msg.players, request: "arcade spv update", data: newtx.transaction });
           arcade_self.app.connection.emit("relay-send-message", {recipient: "PEERS", request: "arcade spv update", data: newtx.transaction });
 
-          arcade_self.overlay.remove();
+          //Do we want to throw up an overlay between screen load and data load...
+          //arcade_self.overlay.remove();
 
         }
 
