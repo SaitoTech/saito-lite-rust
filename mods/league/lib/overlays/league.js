@@ -109,7 +109,7 @@ class LeagueOverlay {
 
       html += `
         <div class="saito-table-row league_recent_game">
-          <div class="league_recent_date">${date}</div>${players_html}<div class="league_recent_cause">${g.method}</div>
+          <div class="league_recent_date">${date}</div>${players_html}<div class="league_recent_cause">${g.method?g.method:""}</div>
         </div>
       `;
     }
