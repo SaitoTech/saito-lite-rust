@@ -44,6 +44,7 @@ class LeagueOverlay {
     this.mod.fetchLeagueGames(this.league.id, () => {
       this.renderRecentGames(this.league);
     });
+    //this.app.modules.renderInto(".league-overlay-league-body-games-list");
 
     //Add click event to create game
     this.attachEvents();
@@ -79,7 +80,7 @@ class LeagueOverlay {
     //
     if (league.games.length > 0) {
       html += `
-        <h5>Recent League Matches</h5>
+        <h5>Recent${league.admin?" League":""} Matches</h5>
         <div class="saito-table league_recent_others">
           <div class="saito-table-body">
       `;
@@ -93,19 +94,22 @@ class LeagueOverlay {
       let players_html = `<div class="league_recent_players_list">`;
 
       players.forEach( (player, key) => {
-        players_html += `<div class="league_recent_players_list_item"><div class='league_recent_player saito-address' data-id='${player}'>${player}</div>`;
+        players_html += `<div class="league_recent_player${g.winner==player?" winner":""}"><img class="saito-module-identicon saito-identicon" id-${player}" src="${this.app.keychain.returnIdenticon(player)}"></div>`;
+
+        /*players_html += `<div class="league_recent_players_list_item"><div class='league_recent_player saito-address' data-id='${player}'>${player}</div>`;
         if (g.winner == player) {
           players_html += `<div class="league_recent_player_winner">(w)</i></div>`;
         } else {
           players_html += `<div></div>`;
         }
         players_html += `</div>`;
+        */
       });
       players_html += "</div>";
 
       html += `
         <div class="saito-table-row league_recent_game">
-          <div class="league_recent_date">${date}</div>${players_html}
+          <div class="league_recent_date">${date}</div>${players_html}<div class="league_recent_cause">${g.method}</div>
         </div>
       `;
     }

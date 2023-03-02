@@ -70,7 +70,7 @@ class JoinLeague {
           let newtx = this.mod.createJoinTransaction(league_id, {"email": email});
           this.app.network.propagateTransaction(newtx);
 
-          this.mod.addLeaguePlayer(league_id, this.app.wallet.returnPublicKey(), 0, 0, 0, 0); 
+          this.mod.addLeaguePlayer({league_id, email, publickey: this.app.wallet.returnPublicKey()}); 
           this.mod.saveLeagues();
 
           //setTimeout(function(){

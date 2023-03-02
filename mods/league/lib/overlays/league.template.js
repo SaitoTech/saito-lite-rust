@@ -15,12 +15,10 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
                 </div>
             </div>
             <div class="league-overlay-body">
+                <div class="league-overlay-description">${league.description}</div>
+                <div class="league-overlay-leaderboard"></div>
                 <div class="league-overlay-league-body-games">
-                    <div class="league-overlay-description">${league.description}</div>
                     <div class="league-overlay-league-body-games-list league_recent_games"></div>
-                </div>
-                <div class="league-overlay-league-body-leaderboard">
-                    <div class="league-overlay-leaderboard"></div>
                 </div>
             </div>
             <div class="league-overlay-controls">
