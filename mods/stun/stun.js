@@ -628,7 +628,6 @@ class Stun extends ModTemplate {
                         case "failed":
                             console.log("connection state ", pc.connectionState)
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
-                            // this.createMediaChannelConnectionWithPeers([offer_creator], offer.ui_type, offer.call_type, room_code);
                             break;
                         default:
                             ""

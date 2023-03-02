@@ -393,15 +393,20 @@ class VideoChatManager {
             if (this.waitSeconds === 20) {
                 this.updateConnectionState(peer, 'twenty_seconds')
             }
-            if (this.waitSeconds === 120) {
+            if (this.waitSeconds === 90) {
                 this.updateConnectionState(peer, 'two_minutes');
             }
-            if(this.waitSeconds === 120){
+            if(this.waitSeconds === 90){
                 if(is_creator){
                 this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
                 }         
             }
-            if (this.waitSeconds === (180 * 7)) {
+            if(this.waitSeconds === 150){
+                if(is_creator){
+                this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
+                }         
+            }
+            if (this.waitSeconds === (180* 6)) {
                 this.updateConnectionState(peer, 'failed')
                 clearInterval(this.waitTimer)
             }
