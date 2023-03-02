@@ -86,7 +86,6 @@ class VideoChatManager {
     render() {
         this.app.browser.addElementToDom(ChatManagerLargeTemplate(this.call_type, this.room_code), document.getElementById('content__'));
         this.isActive = true;
-
     }
 
     attachEvents(app, mod) {
@@ -392,6 +391,9 @@ class VideoChatManager {
             }
             if (this.waitSeconds === 120) {
                 this.updateConnectionState(peer, 'two_minutes')
+            }
+            if(this.waitSeconds === 200){
+                this.mod.createMediaChannelConnectionWithPeers([peer]);
             }
             if (this.waitSeconds === (180 * 7)) {
                 this.updateConnectionState(peer, 'failed')
