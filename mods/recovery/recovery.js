@@ -93,14 +93,14 @@ class Recovery extends ModTemplate {
 
               let encrypted_wallet = txmsg.wallet;
               let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
-console.log("test a3");
 	      this.app.wallet.wallet = JSON.parse(decrypted_wallet);
-console.log("RESTORED: " + JSON.stringify(this.app.wallet.wallet));
-console.log("test a4");
 	      this.app.wallet.saveWallet();
-console.log("test a5");
 	      this.recover_overlay.remove();
-console.log("test a6");
+
+	      try {
+	        window.location.reload();
+		return;
+	      } catch (err) {}
 
               if (this.recover_overlay.success_callback) { this.recover_overlay.success_callback(true); }
 
