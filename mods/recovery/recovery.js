@@ -88,7 +88,7 @@ class Recovery extends ModTemplate {
 	      }
 
               let tx = JSON.parse(res.rows[0].tx);
-              let identifier = JSON.parse(res.rows[0].identifier);
+              let identifier = res.rows[0].identifier;
               let newtx2 = new saito.default.transaction(tx);
               let txmsg = newtx2.returnMessage();
 
