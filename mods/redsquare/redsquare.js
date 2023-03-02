@@ -549,6 +549,8 @@ class RedSquare extends ModTemplate {
 
   loadMoreTweets(post_load_tweet_callback = null) {
     this.increment_for_tweets++;
+    let pre_existing_tweets_on_page = this.tweets.length;
+    let loaded_tweets = false;
     for (let i = 0; i < this.peers_for_tweets.length; i++) {
       let peer = this.peers_for_tweets[i];
       let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT '${this.results_per_page * this.increment_for_tweets - 1}','${this.results_per_page}'`;
@@ -560,18 +562,26 @@ class RedSquare extends ModTemplate {
             this.app.connection.emit("redsquare-home-tweet-append-render-request", (tweet));
 	  }
         }
+	if (txs.length > 0) { loaded_tweets = true; }
         if (post_load_tweet_callback) {
           post_load_tweet_callback()
         }
       });
     }
+    if (this.tweets.length <= pre_existing_tweets_on_page && loaded_tweets == true) {
+      this.loadMoreTweets(post_load_tweet_callback);
+      return;
+    }
   }
 
   loadMoreNotifications() {
     this.increment_for_notifications++;
+    let pre_existing_notifications = this.notifications.length;
+    let loaded_notifications = false;
     for (let i = 0; i < this.peers_for_notifications.length; i++) {
       let peer = this.peers_for_notifications[i];
       this.loadNotificationsFromPeer(peer, this.increment_for_notifications, () => {
+        if (this.notifications.length > pre_existing_notifications) { loaded_notifications = true; }
         let hash = app.browser.returnHashAndParameters();
         if (hash) {
 	  if (hash.hash === "notifications") {
@@ -580,6 +590,10 @@ class RedSquare extends ModTemplate {
 	  }
 	}
       });
+    }
+    if (this.notifications.length <= pre_existing_tweets_on_page && loaded_notifications == false) {
+      this.loadMoreNotifications();
+      return;
     }
   }
   loadNotificationsFromPeer(peer, increment = 1, post_load_callback = null) {
