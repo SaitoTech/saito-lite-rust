@@ -274,6 +274,7 @@ class Arcade extends ModTemplate {
   //
   canRenderInto(qs) {
     if (qs === ".redsquare-sidebar") { return true; }
+    if (qs == ".league-overlay-league-body-games-list") { return true; }
     return false;
   }
 
@@ -303,6 +304,19 @@ class Arcade extends ModTemplate {
         this.attachStyleSheets();
       }
     }
+
+    if (qs == ".league-overlay-league-body-games-list") {
+      if (!this.renderIntos[qs]) {
+        this.styles = ['/arcade/css/arcade-overlays.css', '/arcade/css/arcade-invites.css'];
+        this.renderIntos[qs] = [];
+        let obj = new InviteManager(this.app, this, ".league-overlay-league-body-games-list");
+        obj.type = "long";
+        obj.lists = ["open", "active", "over"];
+        this.renderIntos[qs].push(obj);
+        this.attachStyleSheets();
+      }
+    }
+
 
     if (this.renderIntos[qs] != null && this.renderIntos[qs].length > 0) {
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
