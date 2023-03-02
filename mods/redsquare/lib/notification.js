@@ -58,7 +58,7 @@ class RedSquareNotification {
           let retweet_txmsg = retweet_tx.returnMessage();
           html = RetweetNotificationTemplate(app, mod, this.tx, retweet_tx, retweet_txmsg);
 	  this.type = 2; // retweet
-	  this.user.notice = '<i class='fa fa-repeat fa-notification'></i> <span class='notification-type'>retweeted your tweet</span>");
+	  this.user.notice = "<i class='fa fa-repeat fa-notification'></i> <span class='notification-type'>retweeted your tweet</span>";
 	  this.user.fourthelem = app.browser.returnTime(new Date().getTime());
 
           //

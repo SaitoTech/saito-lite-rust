@@ -27,11 +27,11 @@ class Post {
     this.source = 'Tweet';
 
     let userline = "create a text-tweet or drag-and-drop images...";
-    if (post.source == 'Retweet / Share') {
+    if (this.source == 'Retweet / Share') {
       userline = 'add a comment to your retweet or just click submit...';
     }
 
-    this.user = new SaitoUser(this.app, this.mod, `.tweet-overlay-header`, post.publickey, userline);
+    this.user = new SaitoUser(this.app, this.mod, `.tweet-overlay-header`, this.publickey, userline);
 
   }
 
