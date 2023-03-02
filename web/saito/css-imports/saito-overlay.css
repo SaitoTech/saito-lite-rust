@@ -87,6 +87,7 @@
 .saito-overlay-form-inputs>input[type="text"] {
     height: 6rem;
     font-size: 2.3rem;
+    margin-top: 1.25rem;
 }
 
 .saito-overlay-form>input[type="text"], .saito-overlay-form-input[type="text"] {
@@ -113,6 +114,7 @@
 .saito-overlay-subform-text {
     font-size: 2rem;
     flex-grow: 1;
+    line-height: 3rem;
 }
 
 .saito-overlay-form-alt-opt {

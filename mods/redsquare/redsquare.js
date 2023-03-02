@@ -251,7 +251,6 @@ class RedSquare extends ModTemplate {
       if (this.app.browser.returnURLParameter('user_id')) { return; }
       let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
       this.loadTweetsFromPeer(peer, sql, (txs) => {
-console.log("LOAD REDSQUARE TWEETS");
         let hash = this.app.browser.returnHashAndParameters();
         if (!hash.hash) {
           this.app.connection.emit("redsquare-home-render-request");
@@ -272,7 +271,6 @@ console.log("LOAD REDSQUARE TWEETS");
       //
       setTimeout(() => {
         this.loadNotificationsFromPeer(peer, 1, function(res) {
-console.log("LOAD REDSQUARE NOTIFICATIONS");
           let hash = app.browser.returnHashAndParameters();
           if (hash.hash === "notifications") {
             app.connection.emit("redsquare-notifications-render-request");

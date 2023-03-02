@@ -48,7 +48,7 @@ class RedSquareAppspaceNotifications {
     }
 
     this.attachEvents();    
-
+    document.querySelector('.saito-container').scrollTo({top:0, left:0, behavior:"smooth"});
   }
 
 

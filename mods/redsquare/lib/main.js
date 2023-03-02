@@ -41,7 +41,7 @@ class RedSquareMain {
     });
     this.app.connection.on("redsquare-home-thread-render-request", (tweets) => {
       this.renderAppspaceComponent("home");
-      this.components["home"].renderThread(tweets);        
+      this.components["home"].renderThread(tweets);
       this.app.browser.addIdentifiersToDom();
     });
     this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
@@ -72,8 +72,8 @@ class RedSquareMain {
         } else {
           if (tweet.tx.transaction.from[0].add === this.app.wallet.returnPublicKey()) {
             this.app.connection.emit("redsquare-home-tweet-prepend-render-request", (tweet));
-      	  }
-	}
+          }
+        }
       }
       this.app.browser.addIdentifiersToDom();
     });
@@ -85,7 +85,7 @@ class RedSquareMain {
     //});
     this.app.connection.on("redsquare-notifications-render-request", () => {
       this.renderAppspaceComponent("notifications");
-      this.components["notifications"].renderNotifications();        
+      this.components["notifications"].renderNotifications();
     });
 
     this.app.connection.on("redsquare-component-render-request", (obj) => {
@@ -118,12 +118,12 @@ class RedSquareMain {
 
 
   renderAppspaceComponent(component) {
-      document.querySelector(".saito-main").innerHTML = "";
-      this.mod.viewing = component;
-      this.render_component = component;
-      this.components[this.render_component].render();
-      document.querySelector(".saito-sidebar.right").innerHTML = "";
-      this.mod.sidebar.render();
+    document.querySelector(".saito-main").innerHTML = "";
+    this.mod.viewing = component;
+    this.render_component = component;
+    this.components[this.render_component].render();
+    document.querySelector(".saito-sidebar.right").innerHTML = "";
+    this.mod.sidebar.render();
   }
 
   render() {
@@ -153,29 +153,29 @@ class RedSquareMain {
         if (scrollTop < scrollableElement.scrollTop) {
           stop = window.innerHeight - sidebar.clientHeight + scrollableElement.scrollTop;
           if (scrollableElement.scrollTop + window.innerHeight > sidebar.clientHeight) {
-try {
-            sidebar.style.top = stop + "px";
-} catch (err) {
-  console.log("SIDEBAR ERROR 1");
-}
+            try {
+              sidebar.style.top = stop + "px";
+            } catch (err) {
+              console.log("SIDEBAR ERROR 1");
+            }
           }
         } else {
           if (stop > scrollableElement.scrollTop) {
             stop = scrollableElement.scrollTop;
-try {
-            sidebar.style.top = stop + "px";
-} catch (err) {
-  console.log("SIDEBAR ERROR 2");
-}
+            try {
+              sidebar.style.top = stop + "px";
+            } catch (err) {
+              console.log("SIDEBAR ERROR 2");
+            }
           }
         }
       } else {
         stop = scrollableElement.scrollTop;
-try {
-        sidebar.style.top = stop + "px";
-} catch (err) {
-  console.log("SIDEBAR ERROR 3");
-}
+        try {
+          sidebar.style.top = stop + "px";
+        } catch (err) {
+          console.log("SIDEBAR ERROR 3");
+        }
       }
       scrollTop = scrollableElement.scrollTop;
     });

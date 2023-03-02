@@ -146,7 +146,7 @@ class AppspaceHome {
     })
 
 
-    document.querySelectorAll(".tweet")[0].scrollIntoView({behavior: "smooth", block: "start"});
+    document.querySelector('.saito-container').scrollTo({top:0, left:0, behavior:"smooth"});
 
     this.attachEvents();
 
