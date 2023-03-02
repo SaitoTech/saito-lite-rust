@@ -120,12 +120,11 @@ try {
             const reconstruct2 = Buffer.from(this.transaction.m).toString("utf-8");
             this.msg = JSON.parse(reconstruct2);
 	  } catch (err) {
-	    console.log("minor issues reconstructing: " + err);
 	    try {
               const reconstruct3 = this.base64ToString(Buffer.from(this.transaction.m).toString());
               this.msg = JSON.parse(reconstruct3);
 	    } catch (err) {
-	      console.log("real issues reconstructing...");
+	      //console.log("real issues reconstructing...");
 	    }
 	  }
         }
@@ -280,7 +279,7 @@ try {
     } catch (err) {
       //console.log("buffer length = " + this.transaction.m.byteLength);
       //console.error("error trying to parse this.msg: ", err);
-      console.error("error trying to parse the message as JSON, tx : ", this.transaction.sig);
+      //console.error("error trying to parse the message as JSON, tx : ", this.transaction.sig);
     }
   }
 
@@ -440,9 +439,6 @@ try {
 
   returnMessage() {
 
-//console.log("TRANSACTION:");
-//console.log(JSON.stringify(this));
-
     if (this.dmsg !== "") {
       return this.dmsg;
     }
@@ -465,11 +461,11 @@ try {
         const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
         this.msg = JSON.parse(reconstruct);
       } catch (err) {
-        console.log(
-          `buffer length = ${this.transaction.m.byteLength} type = ${typeof this.transaction.m}`
-        );
+        //console.log(
+        //  `buffer length = ${this.transaction.m.byteLength} type = ${typeof this.transaction.m}`
+        //);
         console.error("error parsing return message", err);
-        console.log("here: " + JSON.stringify(this.msg));
+        //console.log("here: " + JSON.stringify(this.msg));
       }
     }
     return this.msg;
@@ -774,12 +770,14 @@ try {
     this.deserialize(app, b, 0); 
   }
   serialize_to_web(app) {
-    let m = this.transaction.m;
+    // we clone so that we don't modify the tx itself
+    let newtx = this.clone();
+    let m = newtx.transaction.m;
     let opt = JSON.stringify(this.optional);
-    this.transaction.m = Buffer.alloc(0);
+    newtx.transaction.m = Buffer.alloc(0);
     let b = Buffer.from(this.serialize(app));
     let web_obj = {
-      t : this.serialize_to_base64(app) ,
+      t : newtx.serialize_to_base64(app) ,
       m : m.toString('base64') ,
       opt : app.crypto.stringToBase64(opt)
     }

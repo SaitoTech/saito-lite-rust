@@ -16,50 +16,51 @@ class VideoChatManager {
     videoEnabled = true;
     audioEnabled = true;
     isActive = false;
-    waitSeconds=0;
-    waitTimer= null;
-
+    waitSeconds = 0;
+    waitTimer = null;
+    central;
 
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
         this.effectsMenu = new Effects(app, mod)
 
-        this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type = "Video", room_code) => {
+        this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type = "Video", room_code, central) => {
             if (ui_type !== "large") return
             this.call_type = "video"
             this.room_code = room_code
             this.ui_type = "large";
+            this.central = central
             this.show(app, mod);
         })
         this.app.connection.on('render-local-stream-request', (localStream, ui_type) => {
-            if(!this.isActive) return;
+            if (!this.isActive) return;
             if (ui_type !== "large") return
-            this.renderLocalStream(localStream)
+            this.renderLocalStream(localStream);
             // this.updateRoomLink()
         })
         this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, ui_type) => {
-            if(!this.isActive) return;
+            if (!this.isActive) return;
             if (ui_type !== "large") return
             this.addRemoteStream(peer, remoteStream, pc)
             // this.updateRoomLink()
         });
         this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type) => {
-            if(!this.isActive) return;
+            if (!this.isActive) return;
             if (ui_type !== "large") return
             this.renderRemoteStreamPlaceholder(peer);
             // this.updateRoomLink()
         });
 
         this.app.connection.on('change-connection-state-request', (peer, state, ui_type, call_type, room_code) => {
-            if(!this.isActive) return;
+            if (!this.isActive) return;
             if (ui_type !== "large" || this.room_code !== room_code) return
             this.updateConnectionState(peer, state)
             // this.updateRoomLink()
         })
 
         this.app.connection.on('stun-receive-media-offer', ({ room_code, offer_creator, offer_recipient }) => {
-            if(!this.isActive) return;
+            if (!this.isActive) return;
             console.log(room_code, offer_creator, offer_recipient, 'stun-receive-media-offer')
             if (room_code !== this.room_code) {
                 return;
@@ -67,21 +68,25 @@ class VideoChatManager {
 
             let my_public_key = this.app.wallet.returnPublicKey()
             if (my_public_key === offer_creator) {
-                this.renderRemoteStreamPlaceholder(offer_recipient, "Sending Offer tx");
+                this.renderRemoteStreamPlaceholder(offer_recipient, "Attempting to connect");
                 this.startWaitTimer(offer_recipient)
             } else {
-                this.renderRemoteStreamPlaceholder(offer_creator, "Receiving Offer tx");
+                this.renderRemoteStreamPlaceholder(offer_creator, "Attempting to connect");
                 this.startWaitTimer(offer_creator)
             }
 
+        })
+
+        this.app.connection.on('stun-disconnect', () => {
+            this.disconnect()
         })
     }
 
 
     render() {
         this.app.browser.addElementToDom(ChatManagerLargeTemplate(this.call_type, this.room_code), document.getElementById('content__'));
-        this.isActive= true;
-    
+        this.isActive = true;
+
     }
 
     attachEvents(app, mod) {
@@ -98,18 +103,13 @@ class VideoChatManager {
         let add_users = document.querySelector('.add_users')
         if (add_users) {
             add_users.addEventListener('click', (e) => {
-              let public_keys =   this.updateRoomLink();
-            //     if(public_keys.length === 1){
-            //         this.chatInvitationOverlay.render()
-            //     }else{
-            //         salert("Room filled up");
-            //     }
+                this.updateRoomLink();
 
                 this.chatInvitationOverlay.render()
-               
+
             })
 
-        
+
         }
         document.querySelector('.audio_control').addEventListener('click', (e) => {
             this.toggleAudio();
@@ -118,12 +118,12 @@ class VideoChatManager {
             this.toggleVideo();
         })
 
-        if(document.querySelector('.effects-control')){
+        if (document.querySelector('.effects-control')) {
             document.querySelector('.effects-control').addEventListener('click', (e) => {
                 this.effectsMenu.render();
             })
         }
-     
+
 
         document.querySelector('.stunx-chatbox .minimizer').addEventListener('click', (e) => {
             let chat_box = document.querySelector(".stunx-chatbox")
@@ -143,13 +143,14 @@ class VideoChatManager {
 
     updateRoomLink() {
         let public_keys = []
-        for (let i in this.video_boxes) {
-            if (i === "local") {
-                public_keys.push(this.app.wallet.returnPublicKey())
-            } else {
-                public_keys.push(i);
-            }
-        }
+        // for (let i in this.video_boxes) {
+        //     if (i === "local") {
+        //         public_keys.push(this.app.wallet.returnPublicKey())
+        //     } else {
+        //         public_keys.push(i);
+        //     }
+        // }
+        public_keys.push(this.central);
         let obj = {
             room_id: this.room_code,
             public_keys,
@@ -157,8 +158,8 @@ class VideoChatManager {
         let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
 
         let url = window.location.toString();
-        if(url.includes('?')){
-            let index =  url.indexOf('?');
+        if (url.includes('?')) {
+            let index = url.indexOf('?');
             url = url.slice(0, index);
         }
         let myurl = new URL(url);
@@ -166,7 +167,7 @@ class VideoChatManager {
         console.log(myurl, 'myurl')
         this.room_link = `${myurl}?stun_video_chat=${base64obj}`;
         this.chatInvitationOverlay = new ChatInvitationOverlay(this.app, this.mod, this.room_link)
-   
+
         if (document.querySelector('.add-users-code-container span')) {
             document.querySelector('.add-users-code-container span').textContent = this.room_link.slice(0, 30);
         }
@@ -177,7 +178,7 @@ class VideoChatManager {
     show(app, mod) {
         if (!document.querySelector('.stunx-chatbox')) {
             this.render();
-            this.attachEvents(app, mod);  
+            this.attachEvents(app, mod);
         }
         this.isActive = true
     }
@@ -191,27 +192,15 @@ class VideoChatManager {
     disconnect() {
         let stun_mod = this.app.modules.returnModule("Stun");
         console.log("peer connections ", stun_mod.peer_connections);
-        stun_mod.closeMediaConnections();
-
-        // remove pair from room
-        let sql = `SELECT * FROM rooms WHERE room_code = "${this.room_code}"`;
-        let requestCallback = async (res) => {
-            let room = res.rows[0];
-            console.log(res, 'res')
-            let peers_in_room = JSON.parse(room.peers);
-            let my_public_key = this.app.wallet.returnPublicKey()
-            peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key)
-
-            const data = {
-                peers_in_room: JSON.stringify(peers_in_room),
-                peer_count: peers_in_room.length,
-                is_max_capacity: false
+        let kind = this.mod.central ? 'all': 'one'
+        try {
+            for (let i in this.mod.peer_connections) {
+                this.mod.peer_connections[i].dc.send(JSON.stringify({ event: 'disconnect', kind }))
             }
-            stun_mod.sendUpdateRoomTransaction(this.room_code, data);
+        } catch (error) {
+
         }
-
-        stun_mod.sendPeerDatabaseRequestWithFilter('Stun', sql, requestCallback)
-
+        stun_mod.closeMediaConnections();
 
         this.localStream.getTracks().forEach(track => {
             track.stop();
@@ -220,12 +209,17 @@ class VideoChatManager {
         })
         this.video_boxes = {}
         this.hide();
+
+
     }
 
 
     addRemoteStream(peer, remoteStream, pc) {
+        this.createVideoBox(peer);
         this.video_boxes[peer].video_box.addStream(remoteStream);
         this.video_boxes[peer].peer_connection = pc;
+
+        console.log('adding remote stream to ', this.video_boxes[peer])
     }
 
     renderLocalStream(localStream) {
@@ -245,23 +239,24 @@ class VideoChatManager {
         this.video_boxes[peer].video_box.render(null, peer, 'large-wrapper', placeholder_info);
     }
 
-    createVideoBox(peer){
-        if(!this.video_boxes[peer]){
-            const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type);
+    createVideoBox(peer) {
+        if (!this.video_boxes[peer]) {
+            const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type, this.central);
             this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
         }
     }
 
 
     updateConnectionState(peer, state) {
+        // if(this.mod.peer_connections[peer].connectionState !== state)
+        // return;
         this.createVideoBox(peer)
-        this.video_boxes[peer].video_box.handleConnectionStateChange(state);
+        this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state);
         switch (state) {
             case "connecting":
                 clearInterval(this.waitTimer)
-            break;
+                break;
             case "disconnected":
-                delete this.video_boxes[peer];
                 this.stopTimer();
                 this.updateImages();
                 this.mod.closeMediaConnections(peer)
@@ -278,6 +273,7 @@ class VideoChatManager {
                 this.updateImages();
                 this.mod.closeMediaConnections(peer)
                 console.log("video boxes: after ", this.video_boxes);
+
                 break;
 
             default:
@@ -292,13 +288,17 @@ class VideoChatManager {
         console.log('toggling audio');
         if (this.audioEnabled === true) {
             this.localStream.getAudioTracks()[0].enabled = false;
+            for (let i in this.mod.peer_connections) {
+                this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "mute", kind: 'audio' }))
+            }
             this.audioEnabled = false
             document.querySelector('.audio_control').classList.remove('fa-microphone')
             document.querySelector('.audio_control').classList.add('fa-microphone-slash')
         } else {
-
             this.localStream.getAudioTracks()[0].enabled = true;
-
+            for (let i in this.mod.peer_connections) {
+                this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "unmute", kind: 'audio' }))
+            }
             this.audioEnabled = true;
             document.querySelector('.audio_control').classList.remove('fa-microphone-slash')
             document.querySelector('.audio_control').classList.add('fa-microphone')
@@ -309,13 +309,31 @@ class VideoChatManager {
     toggleVideo() {
         console.log('toggling video');
         if (this.videoEnabled === true) {
+            console.log(this.localStream.getVideoTracks()[0], 'video track');
             this.localStream.getVideoTracks()[0].enabled = false;
+            // this.mod.peer_connections[].dc.send({event:"mute", kind:'video'});
+            try {
+                for (let i in this.mod.peer_connections) {
+                    this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "mute", kind: 'video' }))
+                }
+            } catch (error) {
+
+            }
+
             this.videoEnabled = false
             document.querySelector('.video_control').classList.remove('fa-video')
             document.querySelector('.video_control').classList.add('fa-video-slash')
         } else {
 
             this.localStream.getVideoTracks()[0].enabled = true;
+            try {
+                for (let i in this.mod.peer_connections) {
+                    this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "unmute", kind: 'video' }))
+                }
+            } catch (error) {
+
+            }
+
             this.videoEnabled = true;
             document.querySelector('.video_control').classList.remove('fa-video-slash')
             document.querySelector('.video_control').classList.add('fa-video')
@@ -358,27 +376,27 @@ class VideoChatManager {
         this.timer_interval = setInterval(timer, 1000);
     }
 
-    stopTimer (){
+    stopTimer() {
         clearInterval(this.timer_interval)
         this.timer_interval = null
     }
 
-    startWaitTimer(peer){
-       this.waitTimer = setInterval(()=> {
-                this.waitSeconds+= 1;    
-                if(this.waitSeconds === 10){
-                    this.updateConnectionState(peer, 'ten_seconds')
-                }  
-                if(this.waitSeconds === 20){
-                    this.updateConnectionState(peer, 'twenty_seconds')
-                }  
-                if(this.waitSeconds === 120){
-                    this.updateConnectionState(peer, 'two_minutes')
-                }  
-                if(this.waitSeconds === (180*7)){
-                    this.updateConnectionState(peer, 'failed')
-                    clearInterval(this.waitTimer)
-                }  
+    startWaitTimer(peer) {
+        this.waitTimer = setInterval(() => {
+            this.waitSeconds += 1;
+            if (this.waitSeconds === 10) {
+                this.updateConnectionState(peer, 'ten_seconds')
+            }
+            if (this.waitSeconds === 20) {
+                this.updateConnectionState(peer, 'twenty_seconds')
+            }
+            if (this.waitSeconds === 120) {
+                this.updateConnectionState(peer, 'two_minutes')
+            }
+            if (this.waitSeconds === (180 * 7)) {
+                this.updateConnectionState(peer, 'failed')
+                clearInterval(this.waitTimer)
+            }
         }, 1000)
     }
 

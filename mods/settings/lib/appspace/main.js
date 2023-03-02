@@ -69,21 +69,14 @@ class SettingsAppspace {
         }
       }
 
-      document.getElementById("register-email-btn").onclick = function (e) {
-        mod.modal_register_username = new RegisterUsernameModal(app, mod, function () {
-        });
-        mod.modal_register_username.render(app, mod, RegisterUsernameModal.MODES.REGISTEREMAIL);
-        mod.modal_register_username.attachEvents(app, mod);
-      }
-
       document.getElementById("register-identifier-btn").onclick = function (e) {
        mod.modal_register_username = new RegisterUsernameModal(app, mod);
        mod.modal_register_username.render(app, mod);
        mod.modal_register_username.attachEvents(app, mod);
       }
 
-      document.querySelector(".settings-appspace-privatekey").onclick = function (e) {
-        document.querySelector(".settings-appspace-privatekey").classList.toggle("saito-password");
+      document.querySelector(".settings-appspace-see-privatekey").onclick = function (e) {
+        document.querySelector(".settings-appspace-see-privatekey").classList.toggle("saito-password");
       }
 
 

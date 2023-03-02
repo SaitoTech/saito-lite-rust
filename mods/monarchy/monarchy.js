@@ -23,7 +23,7 @@ class Monarchy extends GameTemplate {
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 4;
     this.game_length   = 20; //Estimated number of minutes to complete a game
-    this.categories 	 = "Games Boardgame Strategy Deckbuilding";
+    this.categories 	 = "Games Cardgame Strategy Deckbuilding";
 
     this.hud.mode = 0;  // long-horizontal
     //this.hud.enable_mode_change = 1;

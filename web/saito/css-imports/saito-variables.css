@@ -44,7 +44,7 @@ font imports
   --saito-font: "visuelt-light";
 
   --saito-header-height: 5em;
-  --saito-width: 1500px;
+  --saito-width: 1250px;
 
   --saito-left-sidebar-width: 26rem;
   --saito-main-appspace-width: 70rem;
@@ -98,8 +98,8 @@ html[data-theme="dark"] {
   --saito-font-color-light: #aaa;
   --saito-font-color-inverse: #010101;
   --saito-profile-background: #222;
-  --saito-border-color: #343434;
-  --saito-border-color-dark: #454545;
+  --saito-border-color: #555;
+  --saito-border-color-dark: #666;
   --saito-border: 1px solid #c5c5c5bb;
   --saito-background-color: #211f25;
   --saito-background-light: #181a29;

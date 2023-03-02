@@ -14,7 +14,7 @@ class Mahjong extends GameTemplate {
     this.gamename        = "Mahjong";
     this.game_length     = 10; //Estimated number of minutes to complete a game
     this.description     = `Remove matching mahjong tiles in pairs until the board is clear or you lose`;
-    this.categories      = "Games Cardgame one-player";
+    this.categories      = "Games Cardgame One-player";
 
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
@@ -653,16 +653,6 @@ class Mahjong extends GameTemplate {
 
     return deck;
 
-  }
-
-
-/* So player can delete game from Arcade, no need to send a message*/
-  quitGame(game_id = null, reason = "forfeit") {
-    console.log("Mark game as closed");
-    this.loadGame(game_id);
-    this.game.over = 2;
-    this.saveGame(game_id);
-    this.app.connection.emit("arcade-remove-game", game_id);
   }
 
 

@@ -18,7 +18,7 @@ class Solitrio extends GameTemplate {
     this.slug            = "solitrio";
     this.game_length     = 5; //Estimated number of minutes to complete a game
     this.description     = 'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.';
-    this.categories      = "Games Cardgame one-player";
+    this.categories      = "Games Cardgame One-player";
 
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
@@ -839,14 +839,6 @@ no status atm, but this is to update the hud
     if (card[0]==="E") //empty slot
       return 11;
     return card.substring(1);
-  }
-
-  quitGame(game_id = null, reason = "forfeit") {
-    console.log("Mark game as closed");
-    this.loadGame(game_id);
-    this.game.over = 2;
-    this.saveGame(game_id);
-    this.app.connection.emit("arcade-remove-game", game_id);
   }
 
   receiveGameoverRequest(blk, tx, conf, app) {

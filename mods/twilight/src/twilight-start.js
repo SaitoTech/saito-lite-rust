@@ -5575,12 +5575,12 @@ playerTurnHeadlineSelected(card, player) {
 	      let roll_modifier = Math.abs(this.game.state.events.deathsquads);
         if (this.countries[countryname].region == "camerica" || this.countries[countryname].region == "samerica") {
           if (player == "ussr") {
-            this.updateLog(`${this.cardToText("deathsquads")} triggers: USSR +"+roll_modifier+" modifier`);
+            this.updateLog(`${this.cardToText("deathsquads")} triggers: USSR +${roll_modifier} modifier`);
             modifier += roll_modifier;
           }
           if (player == "us")   {
             if (this.countries[countryname].region == "camerica" || this.countries[countryname].region == "samerica") {
-              this.updateLog(`${this.cardToText("deathsquads")} triggers: US -"+roll_modifier+" modifier`);
+              this.updateLog(`${this.cardToText("deathsquads")} triggers: US -${roll_modifier} modifier`);
               modifier -= roll_modifier;
             }
           }
@@ -5590,11 +5590,11 @@ playerTurnHeadlineSelected(card, player) {
         let roll_modifier = this.game.state.events.deathsquads;
         if (this.countries[countryname].region == "camerica" || this.countries[countryname].region == "samerica") {
           if (player == "ussr") {
-            this.updateLog(`${this.cardToText("deathsquads")} triggers: USSR -"+roll_modifier+" modifier`);
+            this.updateLog(`${this.cardToText("deathsquads")} triggers: USSR -${roll_modifier} modifier`);
             modifier -= roll_modifier;
           }
           if (player == "us")   {
-            this.updateLog(`${this.cardToText("deathsquads")} triggers: US +"+roll_modifier+" modifier`);
+            this.updateLog(`${this.cardToText("deathsquads")} triggers: US +${roll_modifier} modifier`);
             modifier += roll_modifier;
           }
         }

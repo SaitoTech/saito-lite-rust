@@ -14,15 +14,6 @@ module.exports = () => {
         <div class="mainop">
           <i id="addIcon" class="material-icons">+</i>
         </div>
-        <div id="forms" class="minifab op5">
-          <i class="fas fa-gamepad"></i>
-        </div>
-        <div id="drawings" class="minifab op4">
-          <i class="fas fa-gamepad"></i>
-        </div>
-        <div id="slides" class="minifab op3">
-          <i class="fas fa-gamepad"></i>
-        </div>
       </div>
 
 

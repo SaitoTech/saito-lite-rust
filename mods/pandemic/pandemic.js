@@ -2573,14 +2573,17 @@ displayDisease() {
     return html;
   }
 
-  processResignation(resigning_player, player_key, reason){
-    this.updateLog(`Player ${resigning_player} quits the game, perhaps they fell ill?`);
+  processResignation(resigning_player){
+    this.updateLog(`${resigning_player} quits the game, perhaps they fell ill?`);
     this.removeEvents();
-    if (this.game.step.game > this.grace_window){
-      this.endGame([], `${this.game.players_info[this.game.player-1].name} is gone`);
-    }else{
-      this.endGame([],"cancellation");
+
+    if (this.game.over > 0){
+      return;
     }
+
+    this.game.over = 2;
+    this.saveGame(this.game.id);
+    this.endGame([],"cancellation");
     
   }
 

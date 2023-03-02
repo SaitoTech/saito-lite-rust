@@ -690,6 +690,8 @@ console.log("ERROR 2: " + err);
     let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
     let links = this.text.match(expression);
 
+
+
     if (links != null && links.length > 0) {
 
       //

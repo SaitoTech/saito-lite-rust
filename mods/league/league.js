@@ -26,7 +26,6 @@ class League extends ModTemplate {
     this.styles = ['/league/style.css'];
 
     this.leagues = [];
-    this.league_idx = -1; // if a league is active, this will be idx
 
     //
     // UI components
@@ -35,7 +34,7 @@ class League extends ModTemplate {
     this.header = null;
 
     this.icon_fa = "fas fa-user-friends";
-
+    this.debug = false;
   }
 
 
@@ -63,7 +62,7 @@ class League extends ModTemplate {
     this.app.modules.getRespondTos("default-league").forEach((modResponse) => {
        this.addLeague({
         	id     			: 	  app.crypto.hash(modResponse.modname) ,	// id
-    	   	game   			: 	  modResponse.modname , 				// game - name of game mod
+    	   	game   			: 	  modResponse.module , 				// game - name of game mod
     	   	name   			: 	  modResponse.name , 				// name - name of league
     	   	admin  			: 	  "" ,					// admin - publickey (if exists)
       		status 			: 	  "public" ,				// status - public or private
@@ -72,9 +71,41 @@ class League extends ModTemplate {
 		      default_score 		:	modResponse.default_score 					// default ranking for newbies
        });
     });
+
+    this.sortLeagues();
   }
 
-    
+  //
+  // So leagues are displayed in same order as game list for consistency's sake
+  //
+  sortLeagues(){
+    let superArray = [];
+    try{
+      this.leagues.forEach(l => {
+        let gm = this.app.modules.returnModuleByName(l.game);
+        superArray.push([l.admin, gm.categories, l]);
+      });
+
+      superArray.sort((a,b) => {
+        //Push community leagues to the bottom
+        if (a[0] && !b[0]){ return 1;}
+        if (!a[0] && b[0]){ return -1;}
+        
+        //Sort by game categories
+        if (a[1]>b[1]){ return 1;}
+        if (a[1]<b[1]){ return -1;}
+
+        return 0;
+      });
+
+      this.leagues = [];
+      for (let i = 0; i < superArray.length; i++){
+        this.leagues.push(superArray[i][2]);
+      }
+    }catch(err){
+      console.warn(err);
+    }
+  }    
 
 
   //////////////////////////
@@ -134,10 +165,12 @@ class League extends ModTemplate {
   }
 
   addLeague(obj) {
-
+    
     if (!obj)                   { return; }
     if (!obj.id)                { return; }
 
+      if (this.debug) { console.log("Add League with ID: " + obj.id); }
+    
     if (!this.returnLeague(obj.id)) {
       let newLeague = this.validateLeague(obj);
 
@@ -148,6 +181,9 @@ class League extends ModTemplate {
       newLeague.games = [];
       newLeague.rank = 0; //My rank in the league
     
+
+      if (this.debug) { console.log("New League", JSON.parse(JSON.stringify(newLeague))); }
+
       this.leagues.push(newLeague);
 
       if (!this.app.BROWSER){
@@ -295,6 +331,12 @@ class League extends ModTemplate {
     //
     if (service.service === "league") {
 
+      if (this.debug){
+        console.log("======================================");
+        console.log("=======  peer server up  =============");
+        console.log("======================================");
+      }
+
       //
       // fetch updated rankings
       //
@@ -361,7 +403,10 @@ class League extends ModTemplate {
 
       let txmsg = tx.returnMessage();
 
-      //console.log("LEAGUE onConfirmation: " + txmsg.request);
+      if (this.debug){
+        console.log("LEAGUE onConfirmation: " + txmsg.request);  
+      }
+      
 
       if (txmsg.request === "league create") {
         this.receiveCreateTransaction(blk, tx, conf, app);
@@ -416,7 +461,10 @@ class League extends ModTemplate {
 
   loadLeagues() {
     if (this.app.options.leagues) {
-      console.log("Locally stored leagues:", JSON.parse(JSON.stringify(this.app.options.leagues)));
+      if (this.debug){
+        console.log("Locally stored leagues:", JSON.parse(JSON.stringify(this.app.options.leagues)));  
+      }
+      
       this.leagues = this.app.options.leagues;
       return;
     }
@@ -683,10 +731,11 @@ class League extends ModTemplate {
 
   async receiveAcceptTransaction(blk, tx, conf, app){
 
-    
     let txmsg = tx.returnMessage();
 
-    //console.log(`League processing game start of ${txmsg.game}!`);
+    if (this.debug){console.log(`League processing game start of ${txmsg.game}!`);}
+
+    if (this.app.BROWSER){ return; }
 
     let sql = `SELECT * FROM leagues WHERE game = ?`;
     const relevantLeagues = await this.app.storage.queryDatabase(sql, [txmsg.game], "league");
@@ -701,7 +750,7 @@ class League extends ModTemplate {
       }
     }
 
-    //console.log(relevantLeagues, publickeys);
+    if (this.debug){console.log(relevantLeagues, publickeys);}
 
     //
     // and insert if needed

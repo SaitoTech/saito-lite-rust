@@ -77,6 +77,7 @@
   position: relative;
   font-size: 1.4rem;
   white-space: nowrap;
+  margin: 0 0 0 4.5rem;
 }
 
 .tweet-notice .saito-address {
@@ -205,7 +206,7 @@
 
 .tweet-picture {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(49%, 1fr));
   grid-gap: 0.3rem;
   width: 100%;
 }
@@ -313,28 +314,17 @@
     padding-bottom: 0;
     line-height: 2rem;
   }
-  .tweet-picture {
-    grid-template-columns: repeat(auto-fit, minmax(23rem, 1fr));
-  }
   .tweet-notice .saito-address {
     max-width: 70%;
   }
 }
 
 @media screen and (max-width: 529px) {
-  .tweet-picture {
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  }
+
   .tweet-picture>img {
     height: 15rem;
   }
   .preview-img {
     height: 15rem;
-  }
-}
-
-@media screen and (max-width: 375px) {
-  .tweet-picture {
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   }
 }

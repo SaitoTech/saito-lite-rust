@@ -75,6 +75,7 @@
   z-index: 3;
 }
 
+<<<<<<< HEAD
 
 .fab {
   background-color: transparent;
@@ -158,6 +159,9 @@
 
 
 @media screen and (max-width: 768px) {
+=======
+@media screen and (max-width: 900px) {
+>>>>>>> 98fe027128cac45409b74d22ae3702e919bbea43
   .redsquare-page-header-title {
     font-size: 2rem;
   }

@@ -49,6 +49,13 @@ class Registry extends ModTemplate {
           this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
             Object.entries(answer).forEach(([key, value]) => {
 	      this.cached_keys[key] = value;
+	      if (key === this.app.wallet.returnPublicKey()) {
+		let k = this.app.keychain.returnKey(key);
+		if (k) { if (!k.identifier) {
+		  this.app.keychain.addKey(key, { identifier : value });
+		  this.app.connection.emit("update_identifier", (key));
+		} }
+	      }
 	      this.app.browser.updateAddressHTML(key, value);
 	    });
           });
@@ -80,6 +87,78 @@ class Registry extends ModTemplate {
       services.push({ service: "registry", domain: "saito" });
     }
     return services;
+  }
+
+  //
+  // fetching identifiers
+  //
+  fetchManyPublicKeys(identifiers = [], peer = null, mycallback = null) {
+
+    if (mycallback == null) { return; }
+
+    const found_keys = [];
+    const missing_keys = [];
+
+    identifiers.forEach((identifier) => {
+      let publickey = this.app.browser.returnPublicKeyByIdentifier(identifier);
+      if (publickey != "" && publickey != identifier) {
+        found_keys.push[publickey] = identifier;
+      } else {
+        missing_keys.push(identifier);
+      }
+    });
+
+    if (missing_keys.length == 0) {
+      mycallback(found_keys);
+      return;
+    }
+
+    const where_statement = `identifier in (${missing_keys.join(",")})`;
+    const sql = `select * from records where ${where_statement}`;
+
+    this.sendPeerDatabaseRequestWithFilter(
+
+      "Registry",
+
+      sql,
+
+      (res) => {
+        try {
+          let rows = [];
+          if (typeof res.rows != "undefined") {
+            if (!res.err) {
+              if (res.rows.length > 0) {
+                rows = res.rows.map((row) => {
+                  const { publickey, identifier, bid, bsh, lc } = row;
+                  if (!found_keys.includes(publickey)) {
+                    found_keys[publickey] = identifier;
+                  }
+                });
+              }
+            }
+          }
+          mycallback(found_keys);
+        } catch (err) {
+          console.log(err);
+        }
+      },
+
+      (p) => {
+	if (peer == null) {
+          if (peer.peer.services) {
+            for (let z = 0; z < peer.peer.services.length; z++) {
+              if (peer.peer.services[z].service === "registry") {
+                return 1;
+              }
+            }
+          }
+        } else {
+          if (p == peer) {
+	    return 1;
+	  }
+	}
+      }
+    );
   }
 
 
@@ -125,13 +204,6 @@ class Registry extends ModTemplate {
               if (res.rows.length > 0) {
                 rows = res.rows.map((row) => {
                   const { publickey, identifier, bid, bsh, lc } = row;
-                  this.app.keychain.addKey(publickey, {
-                    identifier: identifier,
-                    watched: false,
-                    block_id: bid,
-                    block_hash: bsh,
-                    lc: lc,
-                  });
                   if (!found_keys.includes(publickey)) {
                     found_keys[publickey] = identifier;
                   }
@@ -193,14 +265,7 @@ class Registry extends ModTemplate {
           const { publickey, identifier, bid, bsh, lc } = row;
       
           // keep track that we fetched this already
-          this.cached_keys[publickey] = 1;
-          this.addKey(publickey, {
-            identifier: identifier,
-            watched: false,
-            block_id: bid, 
-            block_hash: bsh,
-            lc: lc,
-          });
+          this.cached_keys[publickey] = identifier;
           if (!found_keys.includes(publickey)) {
             found_keys[publickey] = identifier;
           }
@@ -233,6 +298,35 @@ class Registry extends ModTemplate {
 
     let registry_self = this;
 
+    if (type == "saito-return-key") {
+      return {
+        returnKey : (data = null) => {
+  
+          // 
+          // data might be a publickey, permit flexibility
+          // in how this is called by pushing it into a
+          // suitable object for searching
+          //
+          if (typeof data === 'string') {
+            let d = { publickey: "" };
+            d.publickey = data;
+            data = d;
+          }
+
+          // 
+          // if keys exist
+          // 
+          for (let key in this.cached_keys) {
+	    if (key === data.publickey) { data.identifier = this.cached_keys[key]; return data; }
+	    if (key === data.identifier) { data.publickey = key; return data; }
+	  }
+
+	  return null;
+
+        }
+      }
+    }
+
     if (type == "do-registry-prompt") {
       return {
         doRegistryPrompt: async () => {
@@ -255,6 +349,7 @@ class Registry extends ModTemplate {
       }
     }
 
+/**** part of profile now
     if (type === 'saito-header') {
       let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
       let has_registered_username = false;
@@ -273,7 +368,7 @@ class Registry extends ModTemplate {
         return m;
       }
     }
-
+****/
     return null;
   }
 

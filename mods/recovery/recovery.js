@@ -1,7 +1,7 @@
+const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoLogin = require("./../../lib/saito/ui/modals/login/login");
 const SaitoBackup = require("./../../lib/saito/ui/modals/backup/backup");
-
 
 class Recovery extends ModTemplate {
 
@@ -38,7 +38,7 @@ class Recovery extends ModTemplate {
 	//
 	// save email
 	//
-	this.app.keychain.addKey(this.app.wallet.returnPublicKey(), { email : email });
+	this.app.keychain.addKey(this.app.wallet.returnPublicKey(), { email : obj.email });
 
 	//
 	// and send transaction
@@ -69,9 +69,52 @@ class Recovery extends ModTemplate {
         let decryption_secret = this.returnDecryptionSecret(obj.email, obj.pass);
         let retrieval_hash    = this.returnRetrievalHash(obj.email, obj.pass);
 
-        let newtx = this.createBackupTransaction(decryption_secret, retrieval_hash);
-        this.app.network.propagateTransaction(newtx);
-        if (this.recover_overlay.success_callback) { this.recover_overlay.success_callback(true); }
+        let newtx = this.createRecoverTransaction(retrieval_hash);
+	let peers = this.app.network.returnPeersWithService("recovery");
+
+	if (peers.length > 0) {
+          this.app.network.sendTransactionWithCallback(newtx, (res) => {
+
+	      if (!res) { 
+		console.log("empty response!"); return; }
+	      if (!res.rows) { 
+		console.log("no rows returned!");
+                if (this.recover_overlay.failure_callback) { this.recover_overlay.failure_callback(true); }
+		return;
+	      }
+	      if (!res.rows[0].tx) { console.log("no transaction in row returned");
+                if (this.recover_overlay.failure_callback) { this.recover_overlay.failure_callback(true); }
+		return;
+	      }
+
+              let tx = JSON.parse(res.rows[0].tx);
+              let identifier = res.rows[0].identifier;
+              let newtx2 = new saito.default.transaction(tx);
+              let txmsg = newtx2.returnMessage();
+
+              let encrypted_wallet = txmsg.wallet;
+              let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
+	      this.app.wallet.wallet = JSON.parse(decrypted_wallet);
+	      this.app.wallet.saveWallet();
+	      this.app.keychain.addKey(this.app.wallet.returnPublicKey(), { identifier : identifier });
+	      this.app.keychain.saveKeys();
+	      this.recover_overlay.remove();
+
+	      try {
+	        window.location.reload();
+		return;
+	      } catch (err) {}
+
+              if (this.recover_overlay.success_callback) { this.recover_overlay.success_callback(true); }
+
+	  }, peers[0]);
+        } else {
+	  if (document.querySelector(".saito-overlay-form-text")) {
+	    document.querySelector(".saito-overlay-form-text").innerHTML = "<center>Unable to download encrypted wallet from network...</center>";
+	  }
+          if (this.recover_overlay.failure_callback) { this.recover_overlay.failure_callback(true); }
+	}
+
 	return;
       }
 

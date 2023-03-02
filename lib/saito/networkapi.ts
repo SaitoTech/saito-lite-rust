@@ -105,7 +105,7 @@ class NetworkAPI {
    * @returns
    */
   sendAPICall(ws, command: MessageType, message_bytes: Buffer) {
-    console.debug("sendAPICall : " + command);
+    //console.debug("sendAPICall : " + command);
     return new Promise((resolve, reject) => {
       this.api_callbacks[this.api_call_index] = {
         resolve: resolve,

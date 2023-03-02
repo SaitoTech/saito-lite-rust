@@ -4,28 +4,28 @@
 #
 # create saito-full.css and game-full.css
 #
-echo "" > ./web/saito/saito-full.css
-for file in ./web/saito/css-imports/saito-*
-do
-  cat $file >> ./web/saito/saito-full.css
-done
-echo "" > ./web/saito/game-full.css
-for file in ./web/saito/css-imports/game-*
-do
-  cat $file >> ./web/saito/game-full.css
-done
+#echo "" > ./web/saito/saito-full.css
+#for file in ./web/saito/css-imports/saito-*
+#do
+#  cat $file >> ./web/saito/saito-full.css
+#done
+#echo "" > ./web/saito/game-full.css
+#for file in ./web/saito/css-imports/game-*
+#do
+#  cat $file >> ./web/saito/game-full.css
+#done
 
 #
 # all modules get merged css as well
 #
-for d in mods/*/ ;
-do
-  echo "" > "$d"web/style-full.css
-  for file in "$d"web/css/*.css ;
-    do
-      cat "$file" >> "$d"web/style-full.css
-    done
-done
+#for d in mods/*/ ;
+#do
+#  echo "" > "$d"web/style-full.css
+#  for file in "$d"web/css/*.css ;
+#    do
+#      cat "$file" >> "$d"web/style-full.css
+#    done
+#done
 
 
 

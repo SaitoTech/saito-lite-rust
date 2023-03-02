@@ -130,7 +130,7 @@ class Browser {
       }
 
       //
-      // try and figure out what module is running
+      // try and figure out what moule is running
       // This code will error in a node.js environment - that's ok.
       // Abercrombie's rule.
       //
@@ -193,6 +193,8 @@ class Browser {
           // if urlParams exist, hand them to the module
           //
           const urlParams = new URLSearchParams(location.search);
+
+          console.log("url params ", urlParams);
 
           this.app.modules.mods[i].handleUrlParams(urlParams);
         }
@@ -306,6 +308,25 @@ class Browser {
   }
 
 
+  extractIdentifiers(text = "") {
+    let identifiers = [];
+
+    let w = text.split(/(\s+)/);
+
+    for (let i = 0; i < w.length; i++) {
+      if (w[i].length > 0) {
+        if (w[i][0] === "@") {
+          if (w.length > 1) {
+            let cleaner = w[i].substring(1);
+	    identifiers.push(cleaner);
+          }
+        }
+      }
+    }
+
+    return identifiers;
+
+  }
 
 
   extractKeys(text = "") {
@@ -541,6 +562,19 @@ class Browser {
   generateQRCode(data) {
     const QRCode = require("./../helpers/qrcode");
     return new QRCode(document.getElementById("qrcode"), data);
+  }
+
+  isElementVisible(elem=null) {
+    if (!elem) { return false; }
+    return !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length );
+  }
+
+  isSelectorVisible(c) {
+    return this.isElementVisible(document.querySelector(c));
+  }
+
+  isIdVisible(id) {
+    return this.isElementVisible(document.getElementById(id));
   }
 
   // https://github.com/sindresorhus/screenfull.js
@@ -1225,8 +1259,8 @@ class Browser {
         this.updateAddressHTML(keys[i], this.app.keychain.returnIdentifierByPublicKey(keys[i]));
       }
     }
-    this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unidentified_keys);  }
-
+    this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unidentified_keys);  
+  }
 
   addModalIdentifierAddPublickey(app, mod) {
     try {
@@ -1895,7 +1929,7 @@ console.log("IDENTIFIER: " + identifier);
           this.app.options.theme[mod_obj.slug] = theme;
           this.app.storage.saveOptions();
       }
-      console.log(this.app.options);
+      console.debug(this.app.options);
     }
   }
 
