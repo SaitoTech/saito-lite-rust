@@ -11,7 +11,7 @@ module.exports = StunAppspaceTemplate = () => {
 
           <div class="stunx-appspace-actions">
             <div class="stunx-appspace-create">
-              <div class="saito-button-primary" id="createRoom">create chat room!</div>
+              <div class="saito-button-primary" id="createRoom">Start Call</div>
             </div>
           </div>
 

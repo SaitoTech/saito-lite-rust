@@ -113,7 +113,7 @@ html[data-theme="dark"] {
 
 html[data-theme="arcade"] {
   --saito-arcade-background: linear-gradient(-45deg, #0f0020 50%, #08000b 100%);
-  --saito-primary: #84a;
+  --saito-primary: #639;
   /* --dreamscape: #84a; */
   --saito-secondary: #060606;
   --saito-font-color: #dedede;
@@ -122,9 +122,9 @@ html[data-theme="arcade"] {
   --saito-font-color-inverse: #010101;
   --saito-profile-background: #22222269;
   --saito-border: 1px solid #c5c5c5bb;
-  --saito-border-color: #639;
-  --saito-background-color: #3b1b5b;
-  --saito-background-light: #2e2636;
+  --saito-border-color: #426;
+  --saito-background-color: #180c24;
+  --saito-background-light: #140a1e;
   --saito-gray-transparent: #88888818;
   --saito-background-shim: #0008;
   --saito-dark-shim: #0009;

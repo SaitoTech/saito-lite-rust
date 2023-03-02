@@ -1,11 +1,16 @@
-const SaitoUser = require('./../../../lib/saito/ui/templates/saito-user.template');
+//const SaitoUser = require('./../../../lib/saito/ui/templates/saito-user.template');
 
 module.exports = (app, mod, tweet) => {
 
   let optional = tweet.tx.optional;
   let notice = "";
   if (tweet.notice != "") { notice = tweet.notice; }
-  let publickey = tweet.tx.transaction.from[0].add || "";
+
+  let publickey = "";
+  try { 
+    if (tweet.tx.transaction.from[0].add) { publickey = tweet.tx.transaction.from[0].add; }
+  } catch (err) {}
+;
   let text = tweet.text || "";
   let flagged =  optional.flagged ||  null;
   let link_properties =  optional.link_properties ||  null;
@@ -47,11 +52,7 @@ module.exports = (app, mod, tweet) => {
   return `
         <div class="tweet ${sig_class}" data-id="${tweet.tx.transaction.sig}">
           <div class="tweet-notice">${notice}</div>
-          <div class="tweet-header">
-
-            ${SaitoUser(app, publickey, userline)}
-
-          </div>
+          <div class="tweet-header"></div>
           <div class="tweet-body">
             <div class="tweet-sidebar">
             </div>
