@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.761,
+    version: 4.762,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -133,9 +133,7 @@ export default class Wallet {
   }
 
   addTransactionToPending(tx: Transaction) {
-console.log("1. TXJSON: " + JSON.stringify(tx.transaction));
     let txjson = tx.serialize_to_web(this.app);
-console.log("2. TXJSON: " + JSON.stringify(tx.transaction));
     if (txjson.length > 100000) {
       return;
     }
@@ -341,6 +339,7 @@ console.log("---------------------");
   }
 
   async initialize() {
+
     //
     // add ghost crypto module so Saito interface available
     //
@@ -429,6 +428,8 @@ console.log("---------------------");
             let mixin = this.app.options.mixin;
             let crypto = this.app.options.crypto;
 
+            let theme = this.app.options.theme;
+
             // specify before reset to avoid archives reset problem
             this.wallet.publickey = tmppubkey;
             this.wallet.privatekey = tmpprivkey;
@@ -461,6 +462,9 @@ console.log("---------------------");
             this.app.options.mixin = mixin;
             this.app.options.crypto = crypto;
 
+            // keep theme
+            this.app.options.theme = theme;
+
             this.saveWallet();
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -484,6 +488,7 @@ console.log("---------------------");
         this.wallet = Object.assign(this.wallet, this.app.options.wallet);
       }
     }
+
     ////////////////
     // new wallet //
     ////////////////

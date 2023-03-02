@@ -346,6 +346,7 @@ button,
   font-weight: 500;
   border-radius: 0.5rem;
   cursor: pointer;
+  margin: 0.5rem;
   border: 1px solid transparent;
 }
 
@@ -383,11 +384,10 @@ button.small,
   min-width: 4rem;
 }
 button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-gradient.fat {
-    height: 7rem;
-    font-size: 2rem;
-    padding: 2.4rem !important;
-    min-width: 30rem;
-    text-align: center;
+  height: 7rem;
+  font-size: 2rem;
+  padding: 2rem !important;
+  width: 30rem;
 }
 
 :root {
@@ -566,7 +566,7 @@ button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-
   height: 66rem;
   width: 44rem;
   border-radius: 0.5rem;
-  z-index: 9;
+  z-index: 90;
   position: fixed;
   bottom: 0px;
   right: 0px;
@@ -739,7 +739,7 @@ button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-
   .chat-container {
     margin: 0;
     width: 100vw;
-    height: calc(100% - var(--saito-header-height));
+    height: calc(100vh - var(--saito-header-height));
     max-height: none;
     border-radius: 0;
   }
@@ -862,7 +862,6 @@ text and password inputs
 -----------------------------------------------------------------*/
 
 input[type="text"],
-input[type="number"],
 input[type="password"],
 input[type="date"],
 input[type="datetime-local"] {
@@ -1070,7 +1069,7 @@ input[type="range"]:focus::-ms-fill-upper {
 input[type="text"],
 input[type="password"],
 select {
-  width: 99%;
+  width: 100%;
 }
 #saito-header {
   position: fixed;
@@ -1189,13 +1188,13 @@ select {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  height: 42rem;
   align-items: center;
 }
 
 #qrcode img {
   height: auto;
-  max-width: 20rem;
-  width: 20vh;
+  width: 20rem;
   border: 2px solid var(--saito-black);
   padding: 0.5rem;
   border-radius: 0.5rem;
@@ -1204,8 +1203,8 @@ select {
 }
 
 .balance-amount {
-  font-size: 4.2rem;
-  margin-right: -1.5rem;
+  font-size: 5rem;
+  margin-right: -2.0rem;
 }
 
 .wallet-balance select {
@@ -1264,8 +1263,8 @@ select {
 }
 
 .wallet-idenicon {
-  width: 3rem;
-  height: 3rem;
+  width: 3.5rem;
+  height: 3.5rem;
 }
 
 .pubkey-containter {
@@ -1291,7 +1290,6 @@ select {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0rem 0 0;
 }
 
 .wallet-balance {
@@ -1322,7 +1320,6 @@ select {
 #header-username {
   color: var(--saito-white);
   cursor: pointer;
-  font-size: 2rem;
 }
 
 
@@ -1370,7 +1367,6 @@ select {
     max-width: 12rem;
   }
 }
-
 .saito-img-arrow-box {
   position: absolute;
   top: 50%;
@@ -2137,154 +2133,52 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .saito-overlay-backdrop {
-    position: fixed !important;
-    display: none;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: var(--saito-dark-shim);
-    z-index: 100;
+  position: fixed !important;
+  display: none;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--saito-dark-shim);
+  z-index: 100;
 }
 
 .saito-overlay {
-    position: fixed;
-    display: inline-block;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    margin: 0 auto;
-    z-index: 1000;
-    height: min-content;
-    width: min-content;
-    min-height: 10%;
-    min-height: 10%;
-    max-height: 100vh;
-    max-width: 100vw;
+  position: fixed;
+  display: inline-block;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0 auto;
+  z-index: 1000;
+  height: min-content;
+  width: min-content;
+  min-height: 10%;
+  min-height: 10%;
+  max-height: 100vh;
+  max-width: 100vw;
 }
 
 .saito-overlay-closebox {
-    position: absolute;
-    width: 3rem;
-    height: 3rem;
-    right: -1.3rem;
-    border-radius: 50%;
-    top: -1.5rem;
-    background-color: var(--saito-white);
-    z-index: 100;
+  position: absolute;
+  width: 3rem;
+  height: 3rem;
+  right: -1.3rem;
+  border-radius: 50%;
+  top: -1.5rem;
+  background-color: var(--saito-white);
+  z-index: 100;
 }
 
 .saito-overlay-closebox-btn {
-    cursor: pointer;
-    display: block;
-    height: 3.2rem;
-    width: 3.2rem;
-    color: var(--saito-primary);
-    font-size: 3.1rem;
+  cursor: pointer;
+  display: block;
+  height: 3.2rem;
+  width: 3.2rem;
+  color: var(--saito-primary);
+  font-size: 3.1rem;
 }
-
-.saito-overlay-form {
-    width: 60rem;
-    min-width: 300px;
-    max-width: 90vw;
-    padding: 2rem;
-    background-color: var(--saito-background-color);
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-}
-
-.saito-overlay-form-header {
-    height: 6rem;
-    background: var(--dreamscape);
-}
-
-.saito-overlay-form-header-title {
-    position: absolute;
-    height: 6rem;
-    color: var(--saito-white);
-    width: 100%;
-    padding: 1.6rem;
-    font-size: 2.5rem;
-    text-transform: uppercase;
-    white-space: nowrap;
-    display: block;
-}
-
-.saito-overlay-form-input {
-    margin: 0 3px;
-}
-
-.saito-overlay-form-text {
-    font-size: 2rem;
-    line-height: 3rem;
-    color: var(--saito-font-color);
-    padding: 0 1rem;
-}
-
-.saito-overlay-form-inputs>input[type="text"] {
-    height: 6rem;
-    font-size: 2.3rem;
-}
-
-.saito-overlay-form>input[type="text"], .saito-overlay-form-input[type="text"] {
-    height: 6rem;
-    font-size: 2.3rem;
-}
-
-.saito-overlay-form>button[type="button"], .saito-overlay-form-submitline>button[type="button"] {
-    height: 7rem;
-    font-size: 2.1rem;
-    width: 20rem;
-    margin: 0;
-}
-
-.saito-overlay-subform {
-    display: grid;
-    grid-template-columns: min-content 1fr;
-    column-gap: 0.5rem;
-    border: 1px dashed var(--saito-border-color-dark);
-    border-radius: var(--saito-border-radius);
-    padding: 1.4rem;
-}
-
-.saito-overlay-subform-text {
-    font-size: 2rem;
-    flex-grow: 1;
-}
-
-.saito-overlay-form-alt-opt {
-    margin-left: 2rem;
-    font-size: 1.8rem;
-    color: var(--saito-font-color);
-    width: min-content;
-    white-space: nowrap;
-    cursor: pointer;
-    flex-grow: 1;
-    text-decoration: underline dashed 1px;
-}
-
-.saito-overlay-form-submitline {
-   display: flex;
-   flex-direction: row;
-   justify-content: flex-end;
-   flex-grow: 1;
-   align-items: center;
-   gap: 1rem;
-}
-
-.saito-overlay-form textarea, .saito-overlay-form input {
-    border: 1px solid var(--saito-font-color-light);
-}
-
-@media screen and (max-width: 768px) {
-    .saito-overlay-form-submitline {
-        flex-direction: column;   
-    }
-    .saito-overlay-form>button[type="button"], .saito-overlay-form-submitline>button[type="button"] {
-        width: 100%;
-    }
-}.saito-container {
+.saito-container {
   width: 100vw;
   height: calc(100vh - var(--saito-header-height));
   display: grid;
@@ -2367,7 +2261,7 @@ This alows for a header with a header with title to be added without extra CSS
   }
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 768px) {
   .saito-main {
     min-width: 0;
     width: 100vw !important;
@@ -2741,7 +2635,6 @@ Saito Table
   position: relative;
   font-size: 1.4rem;
   white-space: nowrap;
-  margin: 0 0 0 4.5rem;
 }
 
 .tweet-notice .saito-address {
@@ -3137,7 +3030,7 @@ font imports
   --saito-font: "visuelt-light";
 
   --saito-header-height: 5em;
-  --saito-width: 1250px;
+  --saito-width: 1500px;
 
   --saito-left-sidebar-width: 26rem;
   --saito-main-appspace-width: 70rem;
@@ -3147,7 +3040,6 @@ font imports
   --saito-gray: #eaeaef45;
   --saito-gray-mid: #444;
   --saito-primary: #f71f3d;
-  --saito-red: #f71f3d;
   --saito-secondary: #ff8235;
   --saito-tertiary: rgb(234, 234, 239);
   --saito-white: #fff;
@@ -3228,6 +3120,7 @@ html[data-theme="arcade"] {
   --saito-modal-background: var(--saito-background-light);
   --saito-font-color-dark-modal: #efefef;
 }
+
 .mixin_crypto_overlay {
   padding: 2rem;
   background-color: var(--saito-white);
@@ -3236,279 +3129,300 @@ html[data-theme="arcade"] {
   font-size: 1.5em;
   width: 90rem;
 }
-
 .mixin_crypto_title {
   margin: 0.5em 0;
   font-size: 2em;
   font-weight: bold;
 }
-
 .mixin_crypto_warning {
   margin-top: 0px;
   margin-bottom: 20px;
 }
-
 .mixin_risk_acknowledge {
   max-width: 200px;
   text-align: center;
   margin-right: auto;
 }
 
-.email-appspace-deposit-overlay {
-  padding: 2rem;
-  background-image: linear-gradient(to bottom right, #EA4843, #f78754);
-  color: #fff;
-  background-position: 0em;
-  background-size: 120% 100%;
-  color: white;
-  border-radius: 1rem;
-  width: 40vw;
-}
-
-.email-appspace-deposit-overlay p {
-  font-size: 17px;
-}
-
-.input-cont {
-  margin-bottom: 20px;
-  position: relative;
-  padding-bottom: 10px;
-}
-
-.input-cont p {
-  color: #fff;
-}
-
-.input-heading {
-  margin-bottom: 10px;
-  font-weight: 700;
-  font-size: 18px;
-}
-
-.input-elem {
-  width: 99%;
-  height: 35px;
-  padding: 7px 10px;
-  position: relative;
-}
-
-#copy-deposit-add {
-  position: absolute;
-  top: 54%;
-  right: 4%;
-  color: #444;
-  cursor: pointer;
-}
-
-.copy-check::before {
-  content: "\f00c";
-}
-
-.info-cont {
-  display: flex;
-  justify-content: space-between;
-}
-
-.info-item {}
-
-.info-item-title {
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.info-item-detail {
-  font-size: 12px;
-}
-
-.note {
-  margin-top: 30px;
-  font-size: 13px;
-}
-
-.add-cont {
-  display: flex;
-  justify-content: space-between;
-}
-
-.add-item-cont {}
-
-.add-input-box {
-  width: 100%;
-}
 
 .email-appspace-deposit-overlay {
-  max-width: 32vw;
-}
+    padding: 2rem;
+    background-image: linear-gradient(to bottom right, #EA4843, #f78754);
+    color: #fff;
+    background-image: url(/saito/img/dreamscape.png);
+    background-position: 0em;
+    background-size: 120% 100%;
+    color: white;
+    border-radius: 1rem;
+    width: 40vw;
+  }
 
-.deposit_title {
-  font-size: 2em;
-}
+  .email-appspace-deposit-overlay p {
+    font-size: 17px;
+  }
 
-.deposit_desc {
-  font-size: 1.2em;
-  line-height: 1.6em;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
+  .input-cont {
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 10px;
+  }
 
-.deposit_qrcode {
-  clear: both;
-  margin-top: 10px;
-  margin-bottom: 20px;
-}
+  .input-cont p {
+    color: #fff;
+  }
 
-.deposit_address {
-  font-size: 1.2em;
-  font-weight: bold;
-  letter-spacing: 0.05em;
-}
+  .input-heading{
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 18px;
+  }
 
-#withdrawl-confirm-cont, #withdrawl-sent-cont {
-  display: none;
-}
+  .input-elem {
+    width: 99%;
+    height: 35px;
+    padding: 7px 10px;
+    position:relative;
+  }
 
-.decision-cont a {
-  color: #fff;
-  transition: all 0.1s ease-in-out;
-}
+  #copy-deposit-add {
+    position: absolute;
+    top: 54%;
+    right: 4%;
+    color: #444;
+    cursor: pointer;
+  }
 
-.decision-cont a:hover {
-  color: #333;
-}
+  .copy-check::before {
+    content:  "\f00c";
+  }
 
-.saito-withdraw-overlay {
-  width: 38vw;
-  padding: 2rem;
-  color: #fff;
-  background-position: 0em;
-  background-size: 120% 100%;
-  color: white;
-  border-radius: 1rem;
-}
+  .info-cont {
+    display: flex;
+    justify-content: space-between;
+  }
 
-.mixin-withdraw-token-wrapper {
-  margin-bottom: 2rem;
-}
+  .info-item {
+  }
 
-.mixin-withdraw-token-wrapper p {
-  color: #fff;
-}
+  .info-item-title {
+    font-size: 13px;
+    font-weight: 700;
+  }
 
-.mixin-withdraw-input {
-  margin-bottom: 1rem;
-  position: relative;
-  padding-bottom: 20px;
-}
+  .info-item-detail {
+    font-size: 12px;
+  }
 
-.no-margin {
-  margin: 0px;
-}
+  .note {
+    margin-top: 30px;
+    font-size: 13px;
+  }
 
-.max-amount-error {
-  display: none;
-  color: #5d1919;
-}
+  .add-cont {
+    display: flex;
+    justify-content: space-between;
+  }
 
-.input-heading {
-  margin-bottom: 10px;
-  font-weight: 700;
-  font-size: 18px;
-}
+  .add-item-cont {
+  }
 
-.input-elem {
-  width: 100% !important;
-  height: 45px;
-  padding: 10px 10px !important;
-  font-size: 16px !important;
-  color: var(--saito-font-color);
-}
+  .add-input-box {
+    width: 100%;
+  }
 
-.info-cont {
-  display: flex;
-  justify-content: space-between;
-}
+  .email-appspace-deposit-overlay {
+    max-width: 32vw;
+  }
+  .deposit_title {
+    font-size: 2em;
+  }
+  .deposit_desc {
+    font-size: 1.2em;
+    line-height: 1.6em;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .deposit_qrcode {
+    clear:both;
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+  .deposit_address {
+    font-size: 1.2em;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+  }
 
-.info-item {}
+   #withdrawl-confirm-cont, #withdrawl-sent-cont {
+    display: none;
+  }
 
-.info-item-title {
-  font-size: 13px;
-  font-weight: 700;
-}
+  .decision-cont a {
+    color: #fff;
+    transition: all 0.1s ease-in-out;
+  }
 
-.info-item-detail {
-  font-size: 12px;
-}
+  .decision-cont a:hover {
+    color: #333;
+  }
 
-.note {
-  margin-top: 30px;
-  font-size: 12px;
-}
+  .email-appspace-withdraw-overlay {
+    width: 38vw;
+    padding: 2rem;
+    background-image: linear-gradient(to bottom right, #EA4843, #f78754);
+    color: #fff;
+    background-image: url(/saito/img/dreamscape.png);
+    background-position: 0em;
+    background-size: 120% 100%;
+    color: white;
+    border-radius: 1rem;
+  }
 
-.note.withdrawl {
-  font-size: 15px;
-  margin-top: 25px;
-  margin-bottom: 30px;
-}
+  .mixin-withdraw-token-wrapper {
+    margin-bottom: 2rem;
+  }
 
-.add-cont {
-  display: flex;
-  justify-content: space-between;
-}
+  .mixin-withdraw-token-wrapper p {
+    color: #fff;
+  }
 
-.amount-cont {
-  display: flex;
-  justify-content: space-between;
-  gap: 2rem;
-}
+  .mixin-withdraw-input {
+    margin-bottom: 1rem;
+    position: relative;
+    padding-bottom: 20px;
+  }
+
+  .no-margin {
+    margin: 0px;
+  }
+
+  .max-amount-error {
+    display: none;
+    color: #5d1919;
+  }
+
+  .input-heading{
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 18px;
+  }
+
+  .input-elem {
+    width: 100% !important;
+    height: 45px;
+    padding: 10px 10px !important;
+    font-size: 16px !important;
+    background: var(--saito-white);
+    color: var(--saito-font-color);
+  }
+
+  .info-cont {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .info-item {
+  }
+
+  .info-item-title {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .info-item-detail {
+    font-size: 12px;
+  }
+
+  .note {
+    margin-top: 30px;
+    font-size: 12px;
+  }
+
+  .note.withdrawl {
+    font-size: 15px;
+    margin-top: 25px;
+    margin-bottom: 30px;
+  }
+
+  .add-cont {
+    display: flex;
+    justify-content: space-between;
+  } 
+
+  .add-input-box {
+  }
+
+  .withdraw_submit {
+    cursor: pointer;
+    background-color: #fff;
+    color: var(--saito-primary);
+    font-size: 1.5rem;
+  }
+
+  .amount-cont {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .max-amount-btn {
+    display: inline-block;
+    background-color: #fff;
+    color: #222;
+    position: absolute;
+    right: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    top: 50%;
+    transform: translateY(-10%);
+  }
+
 
 #mixin-warning-note {
-  font-size: 1.7rem;
-  color: #4a4848;
-  margin-bottom: 1.5rem;
+    font-size: 1.7rem;
+    color: #4a4848;
+    margin-bottom: 1.5rem;
 }
 
-.mixin-no-history {
-  margin-left: 2rem;
-}
+  .mixin-no-history {
+    margin-left: 2rem;
+  }
 
-.mixin-txn-his-container {
-  margin-top: 1rem;
-}
+  .mixin-txn-his-container {
+    margin-top: 1rem;
+  }
 
-.mixin-txn-his-container .saito-table-body {
-  height: auto;
-  margin-top: 1rem;
-}
+  .mixin-txn-his-container .saito-table-body {
+    height: auto;
+    margin-top: 1rem;
+  }
 
-.amount-item-amount {
-  flex-grow: 1;
-}
+  .mixin-txn-his-container .saito-table-header {
+    grid-template-columns: 15rem 15rem  15rem 15rem;
+    text-align: center;
+  }
 
+  .mixin-txn-his-container .saito-table-row {
+    grid-template-columns: 16rem 16rem 14rem 16rem;
+    text-align: center;
+  }
+
+  .hide-btn {
+    display: none;
+  }
+
+  .mixin-items-container {
+    margin-top: 3rem;
+  }
+
+.mixin-items-container .saito-table-header,
 .mixin-txn-his-container .saito-table-header {
-  grid-template-columns: 15rem 15rem 15rem 15rem;
-  text-align: center;
-}
-
-.mixin-txn-his-container .saito-table-row {
-  grid-template-columns: 16rem 16rem 14rem 16rem;
-  text-align: center;
-}
-
-.hide-btn {
-  display: none;
-}
-
-.mixin-items-container {
-  margin-top: 3rem;
-}
-
-.mixin-items-container .saito-table-header, .mixin-txn-his-container .saito-table-header {
   padding: 1rem 0rem;
   border-radius: 0.5rem;
   text-align: center;
   background: var(--saito-white);
   color: var(--saito-gray-mid);
 }
+
 
 .mixin-items-container .saito-table-header {
   grid-template-columns: 14rem 14rem;
@@ -3522,9 +3436,11 @@ html[data-theme="arcade"] {
   grid-template-columns: 13rem 13rem 13rem 13rem 13rem;
   text-align: center;
   margin-bottom: 1rem;
+
 }
 
-.mixin-items-container .saito-table-row, .mixin-txn-his-container .saito-table-row {
+.mixin-items-container .saito-table-row,
+.mixin-txn-his-container .saito-table-row {
   margin-bottom: 1rem;
 }
 
@@ -3545,98 +3461,87 @@ html[data-theme="arcade"] {
 }
 
 .balances_container {
-  box-shadow: 0px 1px 3px 0px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 2px 1px -1px rgb(0 0 0 / 12%);
-  border-radius: 4px;
-  color: rgba(0, 0, 0, 0.87);
-  font-size: 1.5rem;
-  font-weight: 400;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-  line-height: 1.35417em;
-  padding: 15px;
+    box-shadow: 0px 1px 3px 0px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 2px 1px -1px rgb(0 0 0 / 12%);
+    border-radius: 4px;
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 1.5rem;
+    font-weight: 400;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    line-height: 1.35417em;
+    padding: 15px;
 }
-
 .balances_header {
-  display: flex;
+    display: flex;
 }
-
 .balances_header_title {
-  flex: 1 1 auto;
+    flex: 1 1 auto;
 }
-
-.balances_header_icons {}
-
+.balances_header_icons {
+}
 .balances_header_icon {
-  fill: currentColor;
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  font-size: 24px;
-  transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-  user-select: none;
-  flex-shrink: 0;
-  display: none;
+    fill: currentColor;
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    font-size: 24px;
+    transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    user-select: none;
+    flex-shrink: 0;
+    display: none;
 }
-
 .balances_table {
-  width: 100%;
-  display: table;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-  border-spacing: 0;
-  border-collapse: collapse;
+    width: 100%;
+    display: table;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    border-spacing: 0;
+    border-collapse: collapse;
 }
-
 .balances_tablehead {
-  display: table-header-group;
+    display: table-header-group;
 }
-
 .balances_tablerow {
-  color: inherit;
-  height: 48px;
-  display: table-row;
-  outline: none;
-  vertical-align: middle;
-  box-sizing: inherit;
+    color: inherit;
+    height: 48px;
+    display: table-row;
+    outline: none;
+    vertical-align: middle;
+    box-sizing: inherit;
 }
-
 .balances_tablerow:hover {
-  background-color: #e7e7e7;
+    background-color: #e7e7e7;
 }
-
 .balances_tablecell {
-  cursor: pointer;
-  color: rgba(0, 0, 0, 0.87);
-  font-size: 1.2rem;
-  font-weight: 400;
-  display: table-cell;
-  padding: 4px 56px 4px 24px;
-  text-align: left;
-  border-bottom: 1px solid rgba(224, 224, 224, 1);
-  vertical-align: inherit;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 1.2rem;
+    font-weight: 400;
+    display: table-cell;
+    padding: 4px 56px 4px 24px;
+    text-align: left;
+    border-bottom: 1px solid rgba(224, 224, 224, 1);
+    vertical-align: inherit;
 }
-
 .balances_link {
-  font-size: 1.2rem;
-  font-weight: 400;
+    font-size: 1.2rem;
+    font-weight: 400;
 }
-
 .deposit {
-  color: #14b214;
+    color: #14b214;
 }
-
 .withdrawal {
-  color: #e34927;
+    color: #e34927;
 }
 
 #mixin-balance-container .mixin-item {
-  width: calc(100% * (1/4));
+    width: calc(100% * (1/4));
 }
 
 .mixin-his-created-at {
-  font-size: 1.15rem;
+    font-size: 1.15rem;
 }
 
 .mixin-balances_deposit, .mixin-balances_withdraw, .mixin-balance-history {
-  color: var(--saito-primary);
+    color: var(--saito-primary);
 }
 
 .mixin-overlay-history {
@@ -3648,8 +3553,9 @@ html[data-theme="arcade"] {
   color: var(--saito-white);
 }
 
-/********************************************************/
 
+
+/********************************************************/
 /********    Checking balance overlay       *************/
 
 .game-crypto-transfer-manager-container {
@@ -3661,7 +3567,7 @@ html[data-theme="arcade"] {
 }
 
 .auth_title {
-  font-size: 3.5rem;
+  font-size:3.5rem;
   margin-bottom: 1rem;
 }
 
@@ -3670,40 +3576,51 @@ html[data-theme="arcade"] {
   margin-bottom: 2rem;
 }
 
-.from_address, .to_address {
+.from_address,
+.to_address {
   margin-bottom: 1rem;
-  font-size: 2rem;
+  font-size: 2rem;  
 }
 
+
 @media screen and (max-width: 768px) {
+
+
   .mixin-items-container .saito-table-header {
     grid-template-columns: 8rem 8rem;
   }
+
   .mixin-items-container .saito-table-row {
     grid-template-columns: 7rem 7rem 7rem 7rem 7rem;
   }
+
   .email-appspace-deposit-overlay {
     max-width: fit-content;
     width: 95vw;
   }
+
   .email-appspace-deposit-overlay #qrcode img {
     width: 24vw;
     height: auto;
   }
-  .saito-withdraw-overlay {
+
+  .email-appspace-withdraw-overlay {
     width: 95vw;
   }
+
   .mixin-no-history {
     margin-top: 1rem;
     margin-left: 0rem;
   }
+
   .mixin-txn-his-container {
     width: 86vw;
   }
-  .mixin-txn-his-container .saito-table-header {
+
+  .mixin-txn-his-container .saito-table-header  {
     grid-template-columns: 1fr 1fr 1fr 1fr;
   }
-  .mixin_crypto_overlay {
-    width: 99vw;
-  }
+
 }
+
+

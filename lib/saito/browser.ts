@@ -130,7 +130,7 @@ class Browser {
       }
 
       //
-      // try and figure out what module is running
+      // try and figure out what moule is running
       // This code will error in a node.js environment - that's ok.
       // Abercrombie's rule.
       //
@@ -193,6 +193,8 @@ class Browser {
           // if urlParams exist, hand them to the module
           //
           const urlParams = new URLSearchParams(location.search);
+
+          console.log("url params ", urlParams);
 
           this.app.modules.mods[i].handleUrlParams(urlParams);
         }
@@ -560,6 +562,19 @@ class Browser {
   generateQRCode(data) {
     const QRCode = require("./../helpers/qrcode");
     return new QRCode(document.getElementById("qrcode"), data);
+  }
+
+  isElementVisible(elem=null) {
+    if (!elem) { return false; }
+    return !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length );
+  }
+
+  isSelectorVisible(c) {
+    return this.isElementVisible(document.querySelector(c));
+  }
+
+  isIdVisible(id) {
+    return this.isElementVisible(document.getElementById(id));
   }
 
   // https://github.com/sindresorhus/screenfull.js
