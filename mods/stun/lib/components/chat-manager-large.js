@@ -72,7 +72,7 @@ class VideoChatManager {
                 this.startWaitTimer(offer_recipient)
             } else {
                 this.renderRemoteStreamPlaceholder(offer_creator, "Attempting to connect");
-                this.startWaitTimer(offer_creator)
+                this.startWaitTimer(offer_creator, true);
             }
 
         })
@@ -384,7 +384,7 @@ class VideoChatManager {
         this.timer_interval = null
     }
 
-    startWaitTimer(peer) {
+    startWaitTimer(peer, is_creator) {
         this.waitTimer = setInterval(() => {
             this.waitSeconds += 1;
             if (this.waitSeconds === 10) {
@@ -396,8 +396,10 @@ class VideoChatManager {
             if (this.waitSeconds === 120) {
                 this.updateConnectionState(peer, 'two_minutes')
             }
-            if(this.waitSeconds === 200){
-                this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
+            if(this.waitSeconds === 180){
+                if(is_creator){
+                    this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
+                }         
             }
             if (this.waitSeconds === (180 * 7)) {
                 this.updateConnectionState(peer, 'failed')

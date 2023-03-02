@@ -414,6 +414,7 @@ class Stun extends ModTemplate {
                                 break;
                             case "disconnected":
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
+                              
                                 break;
                             case "failed":
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
@@ -617,13 +618,12 @@ class Stun extends ModTemplate {
                             break;
                         case "disconnected":
                             console.log("connection state ", pc.connectionState);
-                            // this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
-
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         case "failed":
                             console.log("connection state ", pc.connectionState)
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
-                            this.createMediaChannelConnectionWithPeers([offer_creator], offer.ui_type, offer.call_type, room_code);
+                            // this.createMediaChannelConnectionWithPeers([offer_creator], offer.ui_type, offer.call_type, room_code);
                             break;
                         default:
                             ""
