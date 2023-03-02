@@ -88,6 +88,7 @@ class Recovery extends ModTemplate {
 	      }
 
               let tx = JSON.parse(res.rows[0].tx);
+              let identifier = res.rows[0].identifier;
               let newtx2 = new saito.default.transaction(tx);
               let txmsg = newtx2.returnMessage();
 
@@ -95,6 +96,8 @@ class Recovery extends ModTemplate {
               let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
 	      this.app.wallet.wallet = JSON.parse(decrypted_wallet);
 	      this.app.wallet.saveWallet();
+	      this.app.keychain.addKey(this.app.wallet.returnPublicKey(), { identifier : identifier });
+	      this.app.keychain.saveKeys();
 	      this.recover_overlay.remove();
 
 	      try {

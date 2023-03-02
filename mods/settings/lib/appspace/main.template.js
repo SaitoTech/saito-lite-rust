@@ -1,9 +1,7 @@
 module.exports = SettingsAppspaceTemplate = (app) => {
 
   let key = app.keychain.returnKey({ publickey : app.wallet.returnPublicKey()});
-  let email_registered = key.email || "";
   let identifier_registered = key.identifier || "";
-  if (email_registered == "") { email_registered = `<span id="register-email-btn" style="cursor:pointer" class="register-email-btn settings-appspace-link">Register an email address</span>`; }
   if (identifier_registered == "") {
     identifier_registered = `
     <span id="register-identifier-btn" style="cursor:pointer" class="register-identifier-btn settings-appspace-link">Register a username</span>
@@ -80,8 +78,6 @@ module.exports = SettingsAppspaceTemplate = (app) => {
       <div class="settings-appspace-user-details-container">
         <h6>Wallet</h6>
           <div class="settings-appspace-user-details">
-            <div  class="saito-black">Email:</div>
-            <div>${email_registered}</div>
             <div id="register-identifier-btn-label" class="saito-black">Username:</div>
             <div>${identifier_registered}</div>
             <div class="saito-black">Public Key:</div>
