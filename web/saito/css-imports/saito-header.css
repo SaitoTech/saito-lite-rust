@@ -249,6 +249,10 @@
   color: var(--saito-white);
   cursor: pointer;
   font-size: 2rem;
+  padding: 0 0 0 2rem;
+  max-width: 20rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 
@@ -294,5 +298,10 @@
   }
   .saito-header-logo {
     max-width: 12rem;
+  }
+}
+@media screen and (max-width: 420px) {
+  #header-username {
+    font-size: 1.5rem;
   }
 }
