@@ -15,8 +15,6 @@ class RedSquareMain {
     this.container = container;
     this.name = "RedSquareMain";
 
-    this.callbacks = {};
-
     this.components = {};
     this.components['home'] = new RedSquareAppspaceHome(app, mod, ".saito-main");
     this.components['profile'] = new RedSquareAppspaceProfile(app, mod, ".saito-main");
@@ -129,7 +127,6 @@ class RedSquareMain {
   }
 
   render() {
-    this_main = this;
     //
     // render framework for app
     //
@@ -144,7 +141,6 @@ class RedSquareMain {
 
 
   attachEvents() {
-    this_main = this;
     var scrollableElement = document.querySelector(".saito-container");
     var sidebar = document.querySelector(".saito-sidebar.right");
     var scrollTop = 0;
@@ -181,7 +177,6 @@ class RedSquareMain {
       }
       scrollTop = scrollableElement.scrollTop;
     });
-
   }
 
 }

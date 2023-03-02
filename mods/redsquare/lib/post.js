@@ -21,16 +21,11 @@ class Post {
 	if (tweet.thread_id) { this.thread_id = tweet.thread_id; } else { this.thread_id = this.parent_id; }
       }
     }
-    
-    console.log("app ////");
-    console.log(app);
 
     this.render_after_submit = 1;
     this.file_event_added = false;
     this.publickey = app.wallet.returnPublicKey();
     this.source = 'Tweet';
-
-
 
     let userline = "create a text-tweet or drag-and-drop images...";
     if (this.source == 'Retweet / Share') {
