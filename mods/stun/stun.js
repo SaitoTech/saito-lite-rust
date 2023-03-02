@@ -617,6 +617,11 @@ class Stun extends ModTemplate {
 
                             break;
                         case "disconnected":
+                            if (this.central === true) {
+                                if (this.room.peers.includes(offer_creator)) {
+                                    this.room.peers = this.room.peers.filter(peer => peer !== offer_creator);
+                                }                           
+                            }
                             console.log("connection state ", pc.connectionState);
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
