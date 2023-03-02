@@ -50,7 +50,12 @@ class Initializer {
   
     if (document.querySelector(".arcade-game-initializer-success-button")){
       document.querySelector(".arcade-game-initializer-success-button").onclick = (e) => {
-        this.app.browser.logMatomoEvent("Arcade", "StartGameClick", slug);
+        //Remember where we enter the game from
+        let am = this.app.modules.returnActiveModule().returnName();
+        this.app.options.homeModule = am;
+        this.app.storage.saveOptions();
+
+        this.app.browser.logMatomoEvent("StartGameClick", am, slug.slice(0,1).toUpperCase() + slug.slice(1));
         window.location = "/" + slug;
       }
     }

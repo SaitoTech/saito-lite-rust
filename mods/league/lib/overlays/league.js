@@ -13,7 +13,7 @@ class LeagueOverlay {
     this.leaderboards = {};
 
      app.connection.on('league-overlay-render-request', (league_id) => {
-      console.log('league-overlay-render-request:',league_id);
+      //console.log('league-overlay-render-request:',league_id);
       this.league = this.mod.returnLeague(league_id);
       this.render();
     });
@@ -57,7 +57,7 @@ class LeagueOverlay {
       game.onclick = (e) => {
 	
         this.overlay.remove();
-
+        this.app.browser.logMatomoEvent("GameWizard", "LeagueOverlay", this.league.game);
       	if (this.league.admin) {
           // private leagues get league provided
           this.app.connection.emit("arcade-launch-game-wizard", ({ game: this.league.game , league : this.league }));
@@ -109,7 +109,7 @@ class LeagueOverlay {
 
       html += `
         <div class="saito-table-row league_recent_game">
-          <div class="league_recent_date">${date}</div>${players_html}<div class="league_recent_cause">${g.method}</div>
+          <div class="league_recent_date">${date}</div>${players_html}<div class="league_recent_cause">${g.method?g.method:""}</div>
         </div>
       `;
     }

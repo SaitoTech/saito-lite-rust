@@ -1,4 +1,3 @@
-const SaitoUserTemplate = require('./../../../lib/saito/ui/templates/saito-user.template');
 
 module.exports = (app, mod, tx) => {
 
@@ -11,7 +10,6 @@ module.exports = (app, mod, tx) => {
         <div class="tweet notification-item-${tx.transaction.sig} tweet-notif-${txsig}" data-id="${txsig}">
           <div class="tweet-notice"></div>
           <div class="tweet-header">
-            ${SaitoUserTemplate(app, tx.transaction.from[0].add, "<i class='fas fa-heart fa-notification'></i> <span class='notification-type'>liked your tweet</span>", app.browser.returnTime(new Date().getTime()))}
           </div>
           <div class="tweet-body">
             <div class="tweet-sidebar">
