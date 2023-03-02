@@ -46,6 +46,7 @@ class GameSelector {
       	if (this.obj.callback != null) {
       	  this.obj.callback(this.obj);
       	} else {
+          this.app.browser.logMatomoEvent("GameWizard", "GameSelector", modname);
           this.app.connection.emit("arcade-launch-game-wizard", (this.obj));
       	}
 

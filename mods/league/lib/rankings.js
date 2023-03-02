@@ -54,7 +54,7 @@ class LeagueRankings {
       leagues.forEach(l => {
         if (l.rank <= 0) {
           html += `
-	    <div data-id="${l.id}" class="saito-table-row league-leaderboard-ranking">
+	    <div data-id="${l.id}" data-game="${l.game}" class="saito-table-row league-leaderboard-ranking">
               <div class="saito-table-gamename">${l.name}</div>
               <div class="saito-table-rank saito-deemphasize">…</div>
             </div>`;
@@ -73,6 +73,7 @@ class LeagueRankings {
     document.querySelectorAll(".league-leaderboard-ranking").forEach((el) => {
       el.onclick = (e) => {
 	      let lid = e.currentTarget.getAttribute("data-id");
+        this.app.browser.logMatomoEvent("LeagueOverlay", this.app.modules.returnActiveModule().returnName(), e.currentTarget.getAttribute("data-game"));
 	      this.app.connection.emit("league-overlay-render-request", lid);
       }
     });
