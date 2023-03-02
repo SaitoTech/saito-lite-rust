@@ -139,73 +139,8 @@ class RedSquareMain {
       this.app.browser.addElementToSelectorOrDom(RedSquareMainTemplate(), this.container);
     }
 
-
-    let mods = this.app.modules.respondTo("saito-floating-menu");
-
-    console.log("respondto floating menus /////");
-    console.log(mods);
-
-    let index = 0;
-    let menu_entries = [];
-    mods.forEach((mod) => {
-      let item = mod.respondTo('saito-floating-menu');
-
-      console.log("respondto modd  /////");
-      console.log(item);
-
-
-      if (item instanceof Array) {
-        item.forEach(j => {
-          if (!j.rank) { j.rank = 100; }
-          menu_entries.push(j);
-        });
-      }
-    });
-
-    let menu_sort = function (a, b) {
-      if (a.rank < b.rank) { return -1; }
-      if (a.rank > b.rank) { return 1; }
-      return 0;
-    }
-    menu_entries = menu_entries.sort(menu_sort);
-
-    for (let i = 0; i < menu_entries.length; i++) {
-      let j = menu_entries[i];
-      let show_me = true;
-      let active_mod = this.app.modules.returnActiveModule();
-      if (typeof j.disallowed_mods != 'undefined') { if (j.disallowed_mods.includes(active_mod.slug)) { show_me = false; } }
-      if (typeof j.allowed_mods != 'undefined') {
-        show_me = false;
-        if (j.allowed_mods.includes(active_mod.slug)) { show_me = true; }
-      }
-      if (show_me) {
-        let id = `saito_floating_menu_item_${index}`;
-        this_main.callbacks[index] = j.callback;
-        this_main.addMenuItem(j, id, index);
-        index++;
-      }
-    }
-
-
     this.attachEvents();
-
   }
-
-
-    addMenuItem(item, id, index) {
-
-      let html = `
-        <div id="${id}" data-id="${index}" class="minifab">
-          <i class="${item.icon}"></i>
-        </div>
-      `;
-
-      console.log("floating item ///////////");
-      console.log(html);
-      console.log(item);
-
-      document.querySelector(".saito-floating-item-container").innerHTML += html;
-    }
 
 
   attachEvents() {
@@ -247,29 +182,6 @@ class RedSquareMain {
       scrollTop = scrollableElement.scrollTop;
     });
 
-
-
-    document.getElementById('fab').addEventListener('click', (e) => { 
-      this.triggerEvent();
-    });
-
-
-    document.querySelectorAll('.minifab').forEach(menu => {
-      let id = menu.getAttribute("id");
-      let data_id = menu.getAttribute("data-id");
-      let callback = this_main.callbacks[data_id];
-
-      menu.addEventListener('click', (e) => {
-        e.preventDefault();
-        callback(this_main.app, data_id);
-      });
-    });
-
-  }
-
-  triggerEvent(){
-    document.querySelector(".saito-floating-item-container").classList.toggle("show");
-    document.querySelector(".fab").classList.toggle("activated");
   }
 
 }

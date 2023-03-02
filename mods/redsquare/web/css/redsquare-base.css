@@ -74,83 +74,6 @@
   z-index: 3;
 }
 
-.fab {
-  margin: auto;
-  width: 6rem;
-  height: 6rem;
-  bottom: 0;
-  right: 0;
-  transition: all 0.2s ease-in-out;
-  -webkit-transition: transform 200ms;
-  -webkit-transition: -webkit-transform 200ms;
-  background-color: var(--saito-button-background);
-  border-radius: 50%;
-  text-align: center;
-  line-height: 6rem;
-  z-index: 6;
-  cursor: pointer;
-  display: none;
-}
-
-.fab.activated {
-  transform: rotate(45deg);
-}
-
-.fab i {
-  font-size: 2.5rem;
-  color: #fff;
-  line-height: 64px;
-}
-
-.minifab {
-  position: relative;
-  width: 5rem;
-  height: 5rem;
-  border-radius: 50%;
-  z-index: 5;
-  margin-bottom: 0rem;
-  background-color: var(--saito-background-color);
-  transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
-  line-height: 5rem;
-  border: 1px solid var(--saito-font-color-inverse);
-  color: var(--saito-font-color);
-  cursor: pointer;
-  text-align: center;
-  margin-top: 2.5rem;
-}
-
-.minifab:hover {
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}
-
-.redsquare-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.saito-floating-container {
-  display: inline-block;
-  height: max-content;
-  display: block;
-  position: fixed;
-  bottom: 2.5rem;
-  right: 2.5rem;
-  z-index: 2;
-}
-
-.saito-floating-item-container {
-  display: none;
-  transition: all 0.2s ease-in-out;
-  -webkit-transition: transform 200ms;
-  -webkit-transition: -webkit-transform 200ms;
-}
-
-.saito-floating-item-container.show {
-  display: block;
-  margin-bottom: 2rem;
-}
 
 @media screen and (max-width: 900px) {
   .redsquare-page-header-title {
@@ -192,14 +115,6 @@
   }
   .post-tweet {
     display: inline-block;
-  }
-
-  .fab {
-    display: block;
-  }
-
-  .mainopShadow{
-    display: block;
   }
 }
 
