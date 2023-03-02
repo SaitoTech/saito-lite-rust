@@ -75,8 +75,8 @@ class SettingsAppspace {
        mod.modal_register_username.attachEvents(app, mod);
       }
 
-      document.querySelector(".settings-appspace-privatekey").onclick = function (e) {
-        document.querySelector(".settings-appspace-privatekey").classList.toggle("saito-password");
+      document.querySelector(".settings-appspace-see-privatekey").onclick = function (e) {
+        document.querySelector(".settings-appspace-see-privatekey").classList.toggle("saito-password");
       }
 
 
