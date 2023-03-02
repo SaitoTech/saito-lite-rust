@@ -9,11 +9,24 @@ module.exports = () => {
       -->
 
 
-      <div class="mainopShadow"></div>
-      <div class="fab" id="fab">
-        <div class="mainop">
-          <i id="addIcon" class="material-icons">+</i>
+      <div class="saito-floating-container">
+        <div class="saito-floating-item-container">
+          
         </div>
+    
+        <div class="fab" id="fab">
+            <i class="fa-solid fa-plus"></i>
+        </div>
+
+        <!--
+        <div class="fab" id="fab">
+          <div class="mainop">
+            <i class="fa-solid fa-plus"></i>
+          </div>
+        </div>
+        -->
+
+
       </div>
 
 

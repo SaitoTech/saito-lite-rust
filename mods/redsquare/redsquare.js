@@ -143,7 +143,7 @@ class RedSquare extends ModTemplate {
   // inter-module communications //
   /////////////////////////////////
   respondTo(type = "") {
-
+    this_mod = this;
     if (type === 'user-menu') {
       return {
         text: "View Profile",
@@ -192,8 +192,7 @@ class RedSquare extends ModTemplate {
         icon: "fa-solid fa-pen",
         rank: 20 ,
         callback: function (app, id) {
-          alert("clicked");
-          let post = new Post(this.app, this.mod);
+          let post = new Post(app, this_mod);
           post.render();
         }
       });

@@ -142,10 +142,18 @@ class RedSquareMain {
 
     let mods = this.app.modules.respondTo("saito-floating-menu");
 
+    console.log("respondto floating menus /////");
+    console.log(mods);
+
     let index = 0;
     let menu_entries = [];
     mods.forEach((mod) => {
-      let item = this.mod.respondTo('saito-floating-menu');
+      let item = mod.respondTo('saito-floating-menu');
+
+      console.log("respondto modd  /////");
+      console.log(item);
+
+
       if (item instanceof Array) {
         item.forEach(j => {
           if (!j.rank) { j.rank = 100; }
@@ -172,8 +180,8 @@ class RedSquareMain {
       }
       if (show_me) {
         let id = `saito_floating_menu_item_${index}`;
-        this_main.callbacks[id] = j.callback;
-        this_main.addMenuItem(j, id);
+        this_main.callbacks[index] = j.callback;
+        this_main.addMenuItem(j, id, index);
         index++;
       }
     }
@@ -184,20 +192,24 @@ class RedSquareMain {
   }
 
 
-    addMenuItem(item, id) {
+    addMenuItem(item, id, index) {
 
       let html = `
-        <div id="${id}" data-id="${item.text}" class="minifab op5">
+        <div id="${id}" data-id="${index}" class="minifab">
           <i class="${item.icon}"></i>
         </div>
       `;
 
-      document.querySelector("#fab").innerHTML += html;
+      console.log("floating item ///////////");
+      console.log(html);
+      console.log(item);
+
+      document.querySelector(".saito-floating-item-container").innerHTML += html;
     }
 
 
   attachEvents() {
-    this_menu = this;
+    this_main = this;
     var scrollableElement = document.querySelector(".saito-container");
     var sidebar = document.querySelector(".saito-sidebar.right");
     var scrollTop = 0;
@@ -238,22 +250,26 @@ class RedSquareMain {
 
 
     document.getElementById('fab').addEventListener('click', (e) => { 
-      e.currentTarget.classList.toggle("activated");
+      this.triggerEvent();
     });
 
 
-    document.querySelectorAll('.mini-fab').forEach(menu => {
+    document.querySelectorAll('.minifab').forEach(menu => {
       let id = menu.getAttribute("id");
       let data_id = menu.getAttribute("data-id");
-      let callback = this_menu.callbacks[id];
+      let callback = this_main.callbacks[data_id];
 
       menu.addEventListener('click', (e) => {
-        this.closeMenu();
         e.preventDefault();
-        callback(app, data_id);
+        callback(this_main.app, data_id);
       });
-    })
+    });
 
+  }
+
+  triggerEvent(){
+    document.querySelector(".saito-floating-item-container").classList.toggle("show");
+    document.querySelector(".fab").classList.toggle("activated");
   }
 
 }
