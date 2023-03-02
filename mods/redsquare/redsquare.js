@@ -414,6 +414,8 @@ class RedSquare extends ModTemplate {
     // this runs after components are rendered or it breaks/fails
     //
     try {
+      if (this.app.browser.returnURLParameter('tweet_id')) { return; }
+      if (this.app.browser.returnURLParameter('user_id')) { return; }
       for (let z = 0; z < tweets.length; z++) {
 	let newtx = new saito.default.transaction();
 	newtx.deserialize_from_web(this.app, tweets[z]);
