@@ -68,7 +68,8 @@ console.log("ERROR 2: " + err);
     // create retweet if exists
     //
     if (this.retweet_tx != null) {
-      let newtx = new saito.default.transaction(JSON.parse(this.retweet_tx));
+      let newtx = new saito.default.transaction();
+      newtx.deserialize_from_web(this.retweet_tx);
       this.retweet = new Tweet(this.app, this.mod, `.tweet-preview-${this.tx.transaction.sig}`, newtx);
       this.retweet.is_retweet = true;
       this.retweet.show_controls = 0;
