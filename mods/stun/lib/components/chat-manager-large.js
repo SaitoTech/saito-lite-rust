@@ -252,8 +252,7 @@ class VideoChatManager {
         this.createVideoBox(peer)
         this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state);
         switch (state) {
-            case "connecting":
-                
+            case "connecting":    
                 break;
             case "disconnected":
                 this.stopTimer();
@@ -395,9 +394,9 @@ class VideoChatManager {
                 this.updateConnectionState(peer, 'twenty_seconds')
             }
             if (this.waitSeconds === 120) {
-                this.updateConnectionState(peer, 'two_minutes')
+                this.updateConnectionState(peer, 'two_minutes');
             }
-            if(this.waitSeconds === 180){
+            if(this.waitSeconds === 120){
                 if(is_creator){
                 this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
                 }         
