@@ -1259,8 +1259,8 @@ class Browser {
         this.updateAddressHTML(keys[i], this.app.keychain.returnIdentifierByPublicKey(keys[i]));
       }
     }
-    this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unidentified_keys);  }
-
+    this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unidentified_keys);  
+  }
 
   addModalIdentifierAddPublickey(app, mod) {
     try {
