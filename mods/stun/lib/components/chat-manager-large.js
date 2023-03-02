@@ -253,7 +253,7 @@ class VideoChatManager {
         this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state);
         switch (state) {
             case "connecting":
-                clearInterval(this.waitTimer)
+                
                 break;
             case "disconnected":
                 this.stopTimer();
@@ -262,6 +262,7 @@ class VideoChatManager {
                 console.log("video boxes: after ", this.video_boxes);
                 break;
             case "connected":
+                clearInterval(this.waitTimer);
                 this.startTimer();
                 this.updateImages();
                 break;
@@ -398,7 +399,7 @@ class VideoChatManager {
             }
             if(this.waitSeconds === 180){
                 if(is_creator){
-                    this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
+                this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
                 }         
             }
             if (this.waitSeconds === (180 * 7)) {
