@@ -69,7 +69,7 @@ console.log("ERROR 2: " + err);
     //
     if (this.retweet_tx != null) {
       let newtx = new saito.default.transaction();
-      newtx.deserialize_from_web(this.retweet_tx);
+      newtx.deserialize_from_web(this.app, this.retweet_tx);
       this.retweet = new Tweet(this.app, this.mod, `.tweet-preview-${this.tx.transaction.sig}`, newtx);
       this.retweet.is_retweet = true;
       this.retweet.show_controls = 0;
