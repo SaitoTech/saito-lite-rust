@@ -1,4 +1,5 @@
 const saito = require('./../../../lib/saito/saito');
+const SaitoUser = require('./../../../lib/saito/ui/saito-user/saito-user');
 const TweetTemplate = require("./tweet.template");
 const Link = require("./link");
 const Image = require("./image");
@@ -29,6 +30,8 @@ class Tweet {
     this.thread_id = "";
     this.updated_at = 0;
     this.notice = "";
+    
+    this.user = new SaitoUser(app, mod, `.tweet-${this.tx.transaction.sig} > .tweet-header`, this.tx.transaction.from[0].add);
 
     this.children = [];
     this.children_sigs_hmap = {};
@@ -99,6 +102,7 @@ console.log("ERROR 2: " + err);
     let myqs = `.tweet-${this.tx.transaction.sig}`;
     let replace_existing_element = true;
 
+
     //
     // if prepend = true, remove existing element
     //
@@ -108,7 +112,6 @@ console.log("ERROR 2: " + err);
 	document.querySelector(eqs).remove();
       }
     }
-
 
     //
     // retweets displayed in container even if master exists elsewhere on page
@@ -144,6 +147,16 @@ console.log("ERROR 2: " + err);
         }
       }
     }
+
+    //
+    // render user
+    //
+    let dt = this.app.browser.formatDate(this.tx.transaction.ts);
+    this.user.notice = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
+    this.user.render();
+
+
+
 
     if (this.retweet != null) {
       this.retweet.render();

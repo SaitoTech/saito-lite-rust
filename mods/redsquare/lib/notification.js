@@ -3,6 +3,8 @@ const ReplyNotificationTemplate = require("./reply-notification.template");
 const RetweetNotificationTemplate = require("./retweet-notification.template");
 const saito = require("./../../../lib/saito/saito");
 const Tweet = require("./tweet");
+const SaitoUser = require("./../../../lib/saito/ui/saito-user/saito-user");
+
 
 class RedSquareNotification {
 
@@ -13,6 +15,12 @@ class RedSquareNotification {
     this.type = 1; 	// 1 reply
 			// 2 retweet
 			// 3 like
+
+
+
+
+    this.user = new SaitoUser(this.app, this.mod, `.notification-item-${tx.transaction.sig} > .tweet-header`, tx.transaction.from[0].add);
+
   }
 
   render(selector = "") {
@@ -35,6 +43,8 @@ class RedSquareNotification {
           return;
         } else {
           html = LikeNotificationTemplate(app, mod, this.tx);
+	  this.user.notice = "<i class='fas fa-heart fa-notification'></i> <span class='notification-type'>liked your tweet</span>";
+	  this.user.fourthelem = app.browser.returnTime(new Date().getTime());
 	  this.type = 3; // like
         }
       }
@@ -48,11 +58,16 @@ class RedSquareNotification {
           let retweet_txmsg = retweet_tx.returnMessage();
           html = RetweetNotificationTemplate(app, mod, this.tx, retweet_tx, retweet_txmsg);
 	  this.type = 2; // retweet
+	  this.user.notice = '<i class='fa fa-repeat fa-notification'></i> <span class='notification-type'>retweeted your tweet</span>");
+	  this.user.fourthelem = app.browser.returnTime(new Date().getTime());
+
           //
           // or reply
           //
         } else {
           html = ReplyNotificationTemplate(app, mod, this.tx, txmsg);
+	  this.user.notice = "<i class='fas fa-heart fa-notification'></i> <span class='notification-type'>replies to your tweet</span>";
+	  this.user.fourthelem = app.browser.returnTime(new Date().getTime());
         }
       }
   
@@ -61,6 +76,9 @@ class RedSquareNotification {
         mod.save();
       }
  
+
+
+
       //
       //
       //

@@ -1,3 +1,4 @@
+const SaitoUser = require("./../../../lib/saito/ui/saito-user/saito-user");
 const PostTemplate = require("./post.template");
 const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
 const SaitoEmoji = require("./../../../lib/saito/ui/saito-emoji/saito-emoji");
@@ -13,6 +14,7 @@ class Post {
     this.thread_id = "";
     this.images = [];
     this.tweet = tweet;
+
     if (tweet != null) {
       if (tweet.parent_id) {
 	this.parent_id = tweet.parent_id;
@@ -23,11 +25,26 @@ class Post {
     this.file_event_added = false;
     this.publickey = app.wallet.returnPublicKey();
     this.source = 'Tweet';
+
+    let userline = "create a text-tweet or drag-and-drop images...";
+    if (post.source == 'Retweet / Share') {
+      userline = 'add a comment to your retweet or just click submit...';
+    }
+
+    this.user = new SaitoUser(this.app, this.mod, `.tweet-overlay-header`, post.publickey, userline);
+
   }
 
   render() {
 
     this.overlay.show(PostTemplate(this.app, this.mod, this));
+
+    //
+    //
+    //
+    this.user.render();
+
+
     this.emoji = new SaitoEmoji(this.app, this.mod, 'post-tweet-textarea', '.saito-emoji-icon-container');
     this.emoji.render();
 

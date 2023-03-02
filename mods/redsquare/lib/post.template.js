@@ -1,13 +1,8 @@
-const SaitoUserTemplate = require('./../../../lib/saito/ui/templates/saito-user.template');
-
 
 module.exports = (app, mod, post) => {
 
-  let userline = "create a text-tweet or drag-and-drop images...";
   let placeholder = "What's happening";
-
   if (post.source == 'Retweet / Share') {
-    userline = 'add a comment to your retweet or just click submit...';
     placeholder = "Optional comment?"
   }
 
@@ -15,11 +10,10 @@ module.exports = (app, mod, post) => {
 
     <div class="tweet-overlay" id="tweet-overlay">
       <div class="tweet-overlay-content">
-
-        ${SaitoUserTemplate(app, post.publickey, userline)}
+	<div class="tweet-overlay-header"></div>
 
         <textarea rows="7" class="post-tweet-textarea" name="post-tweet-textarea" id="post-tweet-textarea" placeholder="${placeholder}" cols="60"></textarea>
-
+	
         <div id="post-tweet-img-preview-container"></div>
 
         <div class="tweet-overlay-content-controls">
