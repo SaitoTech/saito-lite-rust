@@ -47,8 +47,10 @@ class InviteManager {
 		//
 		// replace element or insert into page (deletes invites for a full refresh)
 		//
-		if (document.querySelector(".invite-manager")) {
-			this.app.browser.replaceElementBySelector(InviteManagerTemplate(this.app, this.mod), ".invite-manager");
+		let target = this.container + " .invite-manager";
+
+		if (document.querySelector(target)) {
+			this.app.browser.replaceElementBySelector(InviteManagerTemplate(this.app, this.mod), target);
 		} else {
 			this.app.browser.addElementToSelectorOrDom(InviteManagerTemplate(this.app, this.mod), this.container);
 		}
@@ -61,11 +63,15 @@ class InviteManager {
 
 				if (this.mod.games[list].length > 0) {
 					if (list === "mine") {
-						this.app.browser.addElementToSelector(`<h5>My Games</h5>`, ".invite-manager");
+						this.app.browser.addElementToSelector(`<h5>My Games</h5>`, target);
 					}else if (list == "open"){
-						this.app.browser.addElementToSelector(`<h5>Open Invites</h5>`, ".invite-manager");
+						this.app.browser.addElementToSelector(`<h5>Open Invites</h5>`, target);
+					}else if (list == "active"){
+						this.app.browser.addElementToSelector(`<h5>Active Matches</h5>`, target);
+					}else if (list == "over"){
+						this.app.browser.addElementToSelector(`<h5>Recent Matches</h5>`, target);
 					}else{
-						this.app.browser.addElementToSelector(`<h5>${list.charAt(0).toUpperCase() + list.slice(1)} Games</h5>`, ".invite-manager");
+						this.app.browser.addElementToSelector(`<h5>${list.charAt(0).toUpperCase() + list.slice(1)} Games</h5>`, target);
 					}
 				}
 
@@ -73,7 +79,7 @@ class InviteManager {
 					let newInvite = new Invite(
 						this.app,
 						this.mod,
-						".invite-manager",
+						target,
 						this.mod.games[list][i]
 					);
 					newInvite.render();

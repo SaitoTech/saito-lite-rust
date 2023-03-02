@@ -42,7 +42,7 @@ class League extends ModTemplate {
     this.inactive_player_cutoff = 30 * 24 * 60 * 60 * 1000; 
 
     this.icon_fa = "fas fa-user-friends";
-    this.debug = true;
+    this.debug = false;
   }
 
 
@@ -1014,7 +1014,7 @@ class League extends ModTemplate {
       $players_array: obj.players_array,
       $time_started: obj.time_started,
       $time_finished: obj.time_finished,
-      $method: obj.reason,
+      $method: obj.method,
     };
     await this.app.storage.executeDatabase(sql, params, "league");
 
