@@ -46,6 +46,8 @@ class ArcadeMenu {
 
     Array.from(document.getElementsByClassName('arcade-menu-item')).forEach(game => {
       game.addEventListener('click', (e) => {
+
+        this.app.browser.logMatomoEvent("GameWizard", "ArcadeMenu", e.currentTarget.id);
         menu_self.app.connection.emit("arcade-launch-game-wizard", { game: e.currentTarget.id });
       });
     });

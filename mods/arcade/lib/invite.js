@@ -125,6 +125,7 @@ class Invite {
     document.querySelector(qs).onclick = (e) => {
       e.stopImmediatePropagation();
 
+      this.app.browser.logMatomoEvent("GameInvite", this.invite_data.game_status, this.invite_data.game_mod.name);
       let game_overlay = new JoinGameOverlay(this.app, this.mod, this.invite_data);
       game_overlay.render();
 

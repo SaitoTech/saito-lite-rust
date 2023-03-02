@@ -212,6 +212,8 @@ class Arcade extends ModTemplate {
             return;
           }
 
+          this.app.browser.logMatomoEvent("PrivateInvite", "JoinGame", game.game);
+
           let newtx = arcade_self.createJoinTransaction(game);
 
           arcade_self.app.network.propagateTransaction(newtx);
