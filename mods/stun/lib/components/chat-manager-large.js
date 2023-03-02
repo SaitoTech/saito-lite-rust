@@ -310,7 +310,7 @@ class VideoChatManager {
         if (this.videoEnabled === true) {
             console.log(this.localStream.getVideoTracks()[0], 'video track');
             this.localStream.getVideoTracks()[0].enabled = false;
-            // this.mod.peer_connections[].dc.send({event:"mute", kind:'video'});
+            this.app.connection.emit("mute", 'video', 'local');
             try {
                 for (let i in this.mod.peer_connections) {
                     this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "mute", kind: 'video' }))
@@ -319,12 +319,16 @@ class VideoChatManager {
 
             }
 
+           
+           
+
             this.videoEnabled = false
             document.querySelector('.video_control').classList.remove('fa-video')
             document.querySelector('.video_control').classList.add('fa-video-slash')
         } else {
 
             this.localStream.getVideoTracks()[0].enabled = true;
+            this.app.connection.emit("unmute", 'video', 'local');
             try {
                 for (let i in this.mod.peer_connections) {
                     this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "unmute", kind: 'video' }))
@@ -393,7 +397,7 @@ class VideoChatManager {
                 this.updateConnectionState(peer, 'two_minutes')
             }
             if(this.waitSeconds === 200){
-                this.mod.createMediaChannelConnectionWithPeers([peer]);
+                this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
             }
             if (this.waitSeconds === (180 * 7)) {
                 this.updateConnectionState(peer, 'failed')

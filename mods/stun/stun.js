@@ -617,8 +617,7 @@ class Stun extends ModTemplate {
                             break;
                         case "disconnected":
                             console.log("connection state ", pc.connectionState);
-                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
-
+                            // this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
 
                             break;
                         case "failed":

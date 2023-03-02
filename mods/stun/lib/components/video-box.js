@@ -23,7 +23,14 @@ class VideoBox {
             if(public_key !== this.stream_id) return;
             console.log('receiving event');
             if(kind === "video"){
-                let name = app.keychain.returnUsername(public_key);
+                let name;
+                if(public_key === "local"){
+                    let public_key = app.wallet.returnPublicKey();
+                    name = app.keychain.returnUsername(public_key)
+                }else {
+                    name = app.keychain.returnUsername(public_key);
+                }
+                
                 if(name.length > 10){
                     name = `${name.slice(0,10)}...`
                 }
@@ -189,7 +196,7 @@ class VideoBox {
                 break;
             case "disconnected":
                 if(this.central === peer){
-                    this.app.connection.emit('stun-disconnect');
+                    // this.app.connection.emit('stun-disconnect');
                     siteMessage("Call ended", 5000);
                     return;
                 }
