@@ -52,6 +52,10 @@
   background-color: whitesmoke;
 }
 
+.status-text-menu ul li, .status ul li {
+  background-color: whitesmoke;
+}
+
 .status-header {
   background-color: whitesmoke;
 }
