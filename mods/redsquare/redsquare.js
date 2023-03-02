@@ -190,6 +190,8 @@ class RedSquare extends ModTemplate {
       x.push({
         text: "Tweet",
         icon: "fa-solid fa-pen",
+        allowed_mods: ['redsquare'],
+        disallowed_mods: ['arcade'],
         rank: 20 ,
         callback: function (app, id) {
           let post = new Post(app, this_mod);

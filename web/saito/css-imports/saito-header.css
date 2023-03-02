@@ -267,7 +267,7 @@
   bottom: 0;
   right: 0;
   transition: transform 200ms ease-out;
-  background-color: var(--saito-button-background);
+  background-color: var(--saito-primary);
   border-radius: 50%;
   text-align: center;
   line-height: 6rem;
