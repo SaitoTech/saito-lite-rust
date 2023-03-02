@@ -46,7 +46,7 @@ class VideoBox {
             }else {
                 document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
                 mod.closeMediaConnections(public_key);
-                siteMessage("User Disconnected", 5000);
+                siteMessage(`${public_key} disconnected from call`, 5000);
                 if(mod.central === true){
                    mod.room.peers =  mod.room.peers.filter(key => public_key !== key);
                 }
@@ -200,16 +200,15 @@ class VideoBox {
                 video_box.firstElementChild.srcObject = this.stream
                 // document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
                 // this.updateConnectionMessage('Connection disconnected, Retrying connection');
-                siteMessage("User Disconnected", 5000);
+                siteMessage(`Connection with ${this.stream_id} unstable`, 5000);
                 break;
             case "failed":
                 if (document.querySelector(`#stream${this.stream_id}`)) {
-                    console.log(`#stream${this.stream_id}`, "stream id")
+                    console.log(`#stream${this.stream_id}`, "stream id");
                     this.stream = null
                     this.stream_rendered = false;
                     video_box.firstElementChild.srcObject = this.stream
                     this.updateConnectionMessage('Connection failed, Retrying connection');
-                    // document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
                     siteMessage(`Connection with  ${this.stream_id} failed`, 5000);
                 }
                 break;
