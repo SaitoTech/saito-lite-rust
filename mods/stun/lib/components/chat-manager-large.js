@@ -72,7 +72,7 @@ class VideoChatManager {
                 this.startWaitTimer(offer_recipient)
             } else {
                 this.renderRemoteStreamPlaceholder(offer_creator, "Attempting to connect");
-                this.startWaitTimer(offer_creator)
+                this.startWaitTimer(offer_creator, true);
             }
 
         })
@@ -86,7 +86,6 @@ class VideoChatManager {
     render() {
         this.app.browser.addElementToDom(ChatManagerLargeTemplate(this.call_type, this.room_code), document.getElementById('content__'));
         this.isActive = true;
-
     }
 
     attachEvents(app, mod) {
@@ -253,8 +252,7 @@ class VideoChatManager {
         this.createVideoBox(peer)
         this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state);
         switch (state) {
-            case "connecting":
-                clearInterval(this.waitTimer)
+            case "connecting":    
                 break;
             case "disconnected":
                 this.stopTimer();
@@ -263,6 +261,7 @@ class VideoChatManager {
                 console.log("video boxes: after ", this.video_boxes);
                 break;
             case "connected":
+                clearInterval(this.waitTimer);
                 this.startTimer();
                 this.updateImages();
                 break;
@@ -311,7 +310,7 @@ class VideoChatManager {
         if (this.videoEnabled === true) {
             console.log(this.localStream.getVideoTracks()[0], 'video track');
             this.localStream.getVideoTracks()[0].enabled = false;
-            // this.mod.peer_connections[].dc.send({event:"mute", kind:'video'});
+            this.app.connection.emit("mute", 'video', 'local');
             try {
                 for (let i in this.mod.peer_connections) {
                     this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "mute", kind: 'video' }))
@@ -320,12 +319,16 @@ class VideoChatManager {
 
             }
 
+           
+           
+
             this.videoEnabled = false
             document.querySelector('.video_control').classList.remove('fa-video')
             document.querySelector('.video_control').classList.add('fa-video-slash')
         } else {
 
             this.localStream.getVideoTracks()[0].enabled = true;
+            this.app.connection.emit("unmute", 'video', 'local');
             try {
                 for (let i in this.mod.peer_connections) {
                     this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "unmute", kind: 'video' }))
@@ -381,7 +384,7 @@ class VideoChatManager {
         this.timer_interval = null
     }
 
-    startWaitTimer(peer) {
+    startWaitTimer(peer, is_creator) {
         this.waitTimer = setInterval(() => {
             this.waitSeconds += 1;
             if (this.waitSeconds === 10) {
@@ -390,10 +393,20 @@ class VideoChatManager {
             if (this.waitSeconds === 20) {
                 this.updateConnectionState(peer, 'twenty_seconds')
             }
-            if (this.waitSeconds === 120) {
-                this.updateConnectionState(peer, 'two_minutes')
+            if (this.waitSeconds === 90) {
+                this.updateConnectionState(peer, 'two_minutes');
             }
-            if (this.waitSeconds === (180 * 7)) {
+            if(this.waitSeconds === 90){
+                if(is_creator){
+                this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
+                }         
+            }
+            if(this.waitSeconds === 150){
+                if(is_creator){
+                this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
+                }         
+            }
+            if (this.waitSeconds === (180* 6)) {
                 this.updateConnectionState(peer, 'failed')
                 clearInterval(this.waitTimer)
             }

@@ -23,7 +23,14 @@ class VideoBox {
             if(public_key !== this.stream_id) return;
             console.log('receiving event');
             if(kind === "video"){
-                let name = app.keychain.returnUsername(public_key);
+                let name;
+                if(public_key === "local"){
+                    let public_key = app.wallet.returnPublicKey();
+                    name = app.keychain.returnUsername(public_key)
+                }else {
+                    name = app.keychain.returnUsername(public_key);
+                }
+                
                 if(name.length > 10){
                     name = `${name.slice(0,10)}...`
                 }
@@ -46,7 +53,7 @@ class VideoBox {
             }else {
                 document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
                 mod.closeMediaConnections(public_key);
-                siteMessage("User Disconnected", 5000);
+                siteMessage(`${public_key} disconnected from call`, 5000);
                 if(mod.central === true){
                    mod.room.peers =  mod.room.peers.filter(key => public_key !== key);
                 }
@@ -189,7 +196,7 @@ class VideoBox {
                 break;
             case "disconnected":
                 if(this.central === peer){
-                    this.app.connection.emit('stun-disconnect');
+                    // this.app.connection.emit('stun-disconnect');
                     siteMessage("Call ended", 5000);
                     return;
                 }
@@ -200,16 +207,15 @@ class VideoBox {
                 video_box.firstElementChild.srcObject = this.stream
                 // document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
                 // this.updateConnectionMessage('Connection disconnected, Retrying connection');
-                siteMessage("User Disconnected", 5000);
+                siteMessage(`Connection with ${this.stream_id} unstable`, 5000);
                 break;
             case "failed":
                 if (document.querySelector(`#stream${this.stream_id}`)) {
-                    console.log(`#stream${this.stream_id}`, "stream id")
+                    console.log(`#stream${this.stream_id}`, "stream id");
                     this.stream = null
                     this.stream_rendered = false;
                     video_box.firstElementChild.srcObject = this.stream
                     this.updateConnectionMessage('Connection failed, Retrying connection');
-                    // document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
                     siteMessage(`Connection with  ${this.stream_id} failed`, 5000);
                 }
                 break;

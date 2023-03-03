@@ -21,6 +21,7 @@ class Post {
 	if (tweet.thread_id) { this.thread_id = tweet.thread_id; } else { this.thread_id = this.parent_id; }
       }
     }
+
     this.render_after_submit = 1;
     this.file_event_added = false;
     this.publickey = app.wallet.returnPublicKey();
