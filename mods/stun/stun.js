@@ -428,11 +428,11 @@ class Stun extends ModTemplate {
                         console.log(pc.connectonState, e);
                         console.log(pc.currentLocalDescription, this.peer_connections[publicKey].currentLocalDescription, 'current local description')
 
-                        if (pc !== this.peer_connections[publicKey]) {
+                        if (pc.connectionState !== this.peer_connections[publicKey].connectionState) {
                             console.log('peer objects not equal')
                             return;
                         }
-
+                      
                         switch (pc.connectionState) {
                             case "connecting":
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
@@ -608,8 +608,8 @@ class Stun extends ModTemplate {
 
                 pc.addEventListener('connectionstatechange', () => {
                     console.log('')
-                    if (pc !== this.peer_connections[offer_creator]) {
-                        console.log('peer objects not equal')
+                    if (pc.connectionState !== this.peer_connections[offer_creator].connectionState) {
+                        console.log('peer objects not equal');
                         return;
                     }
                     try {
