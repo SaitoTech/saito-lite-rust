@@ -475,11 +475,13 @@
 
 .control-panel .timer {
   display: flex;
-  flex-direction: column;
+  flex-direction: row-reverse;
+  align-items: center;
 }
 
 .timer p {
   color: var(--saito-white);
+  margin-right: 1rem;
 }
 .timer .counter {
   font-size: 2rem;
@@ -505,7 +507,6 @@
   width: 4rem;
   height: 4rem;
   margin-right: -1rem;
-  border-radius: 50%;
 }
 
 .control-list {
@@ -563,7 +564,7 @@
   .control-panel {
     padding-bottom: 5rem;
     flex-direction: column-reverse;
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: start;
   }
 

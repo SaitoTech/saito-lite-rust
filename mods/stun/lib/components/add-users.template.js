@@ -1,7 +1,7 @@
 const AddUsersTemplate = (app, mod, code) => {
   return `
     <div class="add-users-container saito-modal saito-modal-add-contact">
-    <div class="saito-modal-title">Copy Video Chat Invitation Link</div>
+    <div class="saito-modal-title">Copy Invitation Link</div>
     <div class="saito-modal-content">
      <div class="add-users-container">
       <h4 class="add-users-header"> Share this call link with others you want in the call </h4>
