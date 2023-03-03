@@ -28,7 +28,7 @@ class Mixin extends ModTemplate {
     this.categories = "Finance Utilities";
     this.icon = "fas fa-wallet";
 
-    this.stylesheets = ['/mixin/css/appspace.css'];
+    this.stylesheets = ['/mixin/style.css'];
 
     this.mixin = {};
     this.mixin.app_id 		= "";    

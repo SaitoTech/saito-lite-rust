@@ -49,7 +49,7 @@ module.exports = (app, mod, tweet) => {
                 <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
               </div>`;
 
-  return `
+  let html = `
         <div class="tweet ${sig_class}" data-id="${tweet.tx.transaction.sig}">
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header"></div>
@@ -58,16 +58,26 @@ module.exports = (app, mod, tweet) => {
             </div>
             <div class="tweet-main">
               <div class="tweet-text">${app.browser.sanitize(text)}</div>
+  `;
+  if (tweet.youtube_id != null) {
+    html += `
+      <iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>
+    `;
+  } else {
+    html += `
               <div class="tweet-preview tweet-preview-${tweet.tx.transaction.sig}">
-
               </div>
-
+    `;
+  }
+  html += `
               ${(show_controls) ? controls : ``}
-
             </div>
           </div>
         </div>
   `;
+
+  return html;
+
 }
 
 

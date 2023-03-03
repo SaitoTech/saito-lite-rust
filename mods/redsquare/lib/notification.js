@@ -16,9 +16,6 @@ class RedSquareNotification {
 			// 2 retweet
 			// 3 like
 
-
-
-
     this.user = new SaitoUser(this.app, this.mod, `.notification-item-${tx.transaction.sig} > .tweet-header`, tx.transaction.from[0].add);
 
   }
@@ -77,9 +74,6 @@ class RedSquareNotification {
         mod.save();
       }
  
-
-
-
       //
       //
       //
@@ -89,6 +83,13 @@ class RedSquareNotification {
       } else {
         app.browser.addElementToSelector(html, ".redsquare-notifications");
       }
+
+
+      //
+      // and render the user
+      //
+      this.user.render();
+
       this.attachEvents();
     }
   
