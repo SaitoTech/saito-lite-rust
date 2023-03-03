@@ -256,6 +256,88 @@
 }
 
 
+/*
+  Floating menu
+*/
+
+.saito-floating-plus-btn {
+  margin: auto;
+  width: 6rem;
+  height: 6rem;
+  bottom: 0;
+  right: 0;
+  transition: transform 200ms ease-out;
+  background-color: var(--saito-primary);
+  border-radius: 50%;
+  text-align: center;
+  line-height: 6rem;
+  z-index: 6;
+  cursor: pointer;
+  display: none;
+}
+
+.saito-floating-plus-btn.activated {
+  transform: rotate(45deg);
+}
+
+.saito-floating-plus-btn i {
+  font-size: 2.5rem;
+  color: #fff;
+  line-height: 64px;
+}
+
+.saito-floating-menu-item {
+  position: relative;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  z-index: 5;
+  background-color: var(--saito-background-color);
+  transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 1px 1px 1px var(--saito-border-color-dark), -1px -1px 1px var(--saito-border-color-dark), -1px 1px 1px var(--saito-border-color-dark), 1px -1px 1px var(--saito-border-color-dark);
+  line-height: 5rem;
+  border: 1px solid var(--saito-border-color);
+  color: var(--saito-font-color);
+  cursor: pointer;
+  text-align: center;
+}
+
+.redsquare-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.saito-floating-container {
+  display: inline-block;
+  height: max-content;
+  display: block;
+  position: fixed;
+  bottom: 2.5rem;
+  right: 2.5rem;
+  z-index: 2;
+}
+
+.saito-floating-item-container {
+  display: none;
+  transition: opacity 200ms ease-out;
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+}
+
+.saito-floating-item-container.show {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 2rem;  
+  z-index: 2;
+  opacity: 1;
+  position: relative;
+}
+
+
 @media screen and (max-width: 1600px) {
   #saito-header {
     padding: 1.3rem calc((100vw - var(--saito-width)) / 2);
@@ -279,6 +361,10 @@
 
   .external-links {
     padding-bottom: 10rem;
+  }
+
+  .saito-floating-plus-btn {
+    display: block;
   }
 }
 

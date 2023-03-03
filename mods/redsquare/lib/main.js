@@ -127,7 +127,6 @@ class RedSquareMain {
   }
 
   render() {
-
     //
     // render framework for app
     //
@@ -138,11 +137,10 @@ class RedSquareMain {
     }
 
     this.attachEvents();
-
   }
 
-  attachEvents() {
 
+  attachEvents() {
     var scrollableElement = document.querySelector(".saito-container");
     var sidebar = document.querySelector(".saito-sidebar.right");
     var scrollTop = 0;
