@@ -6,6 +6,8 @@ ioquake3.original is the original Quake3 engine as compiled by emscripten. The v
  - webGL buffers re-enabled so that canvas supports screenshots
  - event listeners on the keyboard so that other UI components get tweets and chat
 
+CSS:
+ - CSS loading needs to happen in the order provided in the index.html FILE, so only the Saito CSS files are in /css subdir
 
 
 

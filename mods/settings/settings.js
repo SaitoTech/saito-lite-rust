@@ -18,7 +18,7 @@ class Settings extends ModTemplate {
     this.icon = "fas fa-cog";
     this.description = "User settings module.";
     this.categories = "Admin Users";
-    this.styles = ['/settings/style.css','/saito/lib/jsonTree/jsonTree.css','/settings/theme-switcher.css'];
+    this.styles = ['/settings/css/settings-base.css','/saito/lib/jsonTree/jsonTree.css','/settings/css/theme-switcher.css'];
     this.main = null;
 
     return this;
