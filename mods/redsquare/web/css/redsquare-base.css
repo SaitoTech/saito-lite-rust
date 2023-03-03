@@ -74,6 +74,10 @@
   z-index: 3;
 }
 
+.redsquare-menu-home:hover .fa-house::before {
+  content: "\f021";
+}
+
 
 @media screen and (max-width: 900px) {
   .redsquare-page-header-title {
