@@ -176,7 +176,7 @@ class VideoChatManager {
         document.querySelector('#stunx-chatbox').parentElement.removeChild(document.querySelector('#stunx-chatbox'));
         let stun_mod = this.app.modules.returnModule("Stun");
         this.isActive = false;
-        stun_mod.renderInto('.saito-overlay');
+        stun_mod.renderInto(this.mod.renderedInto);
         
     }
 

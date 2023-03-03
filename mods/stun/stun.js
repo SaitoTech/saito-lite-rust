@@ -89,9 +89,7 @@ class Stun extends ModTemplate {
                 // JOIN THE ROOM
                
                 let stun_self = app.modules.returnModule("Stun");
-                // stun_self.styles = [`/${this.returnSlug()}/style.css`,];
-                // stun_self.attachStyleSheets();
-                stun_self.renderInto(".saito-overlay");
+                stun_self.renderInto("body");
                 app.connection.emit("stun-show-loader");
                 // super.render(this.app, this);
 
@@ -121,11 +119,9 @@ class Stun extends ModTemplate {
     }
 
 
-    // render(){
-    //     console.log('rendering');
-     
-    //     // super.render();
-    // }
+    render(){
+        this.renderInto('body');
+    }
 
     canRenderInto(qs) {
         if (qs === ".saito-overlay") { return true; }
@@ -134,17 +130,28 @@ class Stun extends ModTemplate {
 
     renderInto(qs) {
         if (qs == ".saito-overlay") {
+
+            
+            if (!this.renderIntos[qs]) {
+                this.renderIntos[qs] = [];
+                this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
+                console.log('rendering into');
+            }
+
+        
+            this.attachStyleSheets();
+            this.renderIntos[qs].forEach((comp) => { comp.render(); });
+            this.renderedInto = qs;
+        }
+        if (qs == "body") {
             if (!this.renderIntos[qs]) {
                 this.renderIntos[qs] = [];
                 this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
                 console.log('rendering into')
             }
-            // this.styles = [`/${this.returnSlug()}/style.css`];
-            
-            console.log('gotten styles', this.styles)
-            // this.styles = [`/style.css`];
             this.attachStyleSheets();
             this.renderIntos[qs].forEach((comp) => { comp.render(); });
+            this.renderedInto = "body";
         }
 
    
@@ -404,7 +411,7 @@ class Stun extends ModTemplate {
                     let pc = new RTCPeerConnection({
                         iceServers: this.servers,
                     });
-
+                    this.peer_connections[publicKey] = "";
                     this.peer_connections[publicKey] = pc;
                     pc.onicecandidate = (ice) => {
                         if (!ice || !ice.candidate || !ice.candidate.candidate) {
@@ -449,14 +456,12 @@ class Stun extends ModTemplate {
 
                     // add data channels 
                     const data_channel = pc.createDataChannel('channel');
-
                     pc.dc = data_channel;
                     pc.dc.onmessage = (event) => {
-                        if(pc !== this.peer_connections[publicKey]) return
+                        // if(pc !== this.peer_connections[publicKey]) return
                         console.log("Received message:", event.data);
                         let data = JSON.parse(event.data);
                         this.app.connection.emit(data.event, data.kind, publicKey);
-
 
                     };
                     pc.dc.onopen = (e) => {
@@ -586,7 +591,7 @@ class Stun extends ModTemplate {
                 iceServers: this.servers,
             });
 
-
+            stunx_mod.peer_connections[offer_creator] = "";
             stunx_mod.peer_connections[offer_creator] = pc;
 
             try {
@@ -659,11 +664,11 @@ class Stun extends ModTemplate {
                 // add data channels 
 
 
-                pc.ondatachannel = function (event) {
+                pc.ondatachannel = function (event) {              
                     let dataChannel = event.channel;
                     pc.dc = dataChannel;
-                    dataChannel.onmessage = function (event) {
-                        if(pc !== stunx_mod.peer_connections[offer_creator]) return
+                    pc.dc.onmessage = function (event) {
+                        // if(pc !== stunx_mod.peer_connections[offer_creator]) return
                         let data = JSON.parse(event.data);
                         app.connection.emit(data.event, data.kind, offer_creator);
                         console.log("Received message:", event.data);
