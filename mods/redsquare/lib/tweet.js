@@ -28,6 +28,7 @@ class Tweet {
     this.text = "";
     this.parent_id = "";
     this.thread_id = "";
+    this.youtube_id = null;
     this.updated_at = 0;
     this.notice = "";
     
@@ -54,12 +55,12 @@ class Tweet {
     try {
       this.setKeys(txmsg.data);
     } catch (err) {
-console.log("ERROR 1: " + err);
+      console.log("ERROR 1: " + err);
     }
     try {
       this.setKeys(tx.optional);
     } catch (err) {
-console.log("ERROR 2: " + err);
+      console.log("ERROR 2: " + err);
     }
 
     this.generateTweetProperties(app, mod, 1);
@@ -89,7 +90,6 @@ console.log("ERROR 2: " + err);
       }
     }
   }
-
 
   remove() {
     let eqs = `.tweet-${this.tx.transaction.sig}`;
@@ -158,14 +158,30 @@ console.log("ERROR 2: " + err);
     }
 
     //
+    // modify width of any iframe
+    //
+    if (this.youtube_id != null) {
+      let tbqs = myqs + " .tweet-body .tweet-main";
+      let ytqs = myqs + " .tweet-body .tweet-main .youtube-embed";
+      if (document.querySelector(tbqs)) {
+        let x = document.querySelector(tbqs).getBoundingClientRect();
+        let y = document.querySelector(ytqs);
+        if (x) {
+          if (y) {
+	    y.style.width = Math.floor(x.width) + "px";
+  	    y.style.height = Math.floor((x.width / 16) * 9) + "px";
+          }
+        }
+      }
+    }
+
+
+    //
     // render user
     //
     let dt = this.app.browser.formatDate(this.tx.transaction.ts);
     this.user.notice = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
     this.user.render();
-
-
-
 
     if (this.retweet != null) {
       this.retweet.render();
@@ -203,7 +219,6 @@ console.log("ERROR 2: " + err);
           obj.classList.add("has-reply-disconnected");
         }
       }
-
     }
 
     this.attachEvents();
@@ -707,14 +722,21 @@ console.log("ERROR 2: " + err);
 
   async generateTweetProperties(app, mod, fetch_open_graph = 0) {
 
+console.log("A");
+
     if (this.text == null) { return this; }
+
+console.log("B");
 
     let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
     let links = this.text.match(expression);
 
 
+console.log("C");
 
     if (links != null && links.length > 0) {
+
+console.log("C");
 
       //
       // save the first link
@@ -726,6 +748,9 @@ console.log("ERROR 2: " + err);
       // youtube link
       //
       if (this.link.indexOf("youtube.com") != -1 || this.link.indexOf("youtu.be") != -1) {
+
+console.log("D");
+
         let videoId = "";
 
         if (this.link.indexOf("youtu.be") != -1) {
@@ -736,24 +761,32 @@ console.log("ERROR 2: " + err);
           videoId = urlParams.get('v');
         }
 
+console.log("E");
+
         this.youtube_id = videoId;
         return this;
       }
+
+console.log("F");
 
       //
       // normal link
       //
       if (fetch_open_graph == 1) {
+console.log("G");
         let res = await mod.fetchOpenGraphProperties(app, mod, this.link);
-
+console.log("FETCH PROPERTIES: " + JSON.stringify(res));
         if (res != '') {
           this.link_properties = res;
         }
       }
 
+console.log("H");
       return this;
 
     }
+
+console.log("J");
 
     return this;
 

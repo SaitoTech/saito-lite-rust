@@ -1026,6 +1026,8 @@ console.log("loadTweetsFromPeerAndREturn...");
           .then(res => res.text())
           .then(data => {
 
+console.log("fetched link now processing...");
+
             // prettify html - unminify html if minified
             let html = prettify(data);
 
@@ -1247,7 +1249,10 @@ console.log("loadTweetsFromPeerAndREturn...");
       //
       // fetch supporting link properties
       //
+console.log("SERVER FETCHING OPEN GRAPH PROPERTIES!");
+console.log("this is for: " + tweet.text);
       tweet = await tweet.generateTweetProperties(app, this, 1);
+console.log("DONE: " + JSON.stringify(tweet.link_properties));
 
 
       let type_of_tweet = 0; // unknown
@@ -1323,6 +1328,8 @@ console.log("loadTweetsFromPeerAndREturn...");
         $has_images: has_images,
         $tx_size: tx_size
       };
+
+console.log("ABOUT TO INSERT!");
 
       await app.storage.executeDatabase(sql, params, "redsquare");
 
