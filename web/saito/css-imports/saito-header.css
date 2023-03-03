@@ -292,16 +292,14 @@
   height: 5rem;
   border-radius: 50%;
   z-index: 5;
-  margin-bottom: 0rem;
   background-color: var(--saito-background-color);
   transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
+  box-shadow: 1px 1px 1px var(--saito-border-color-dark), -1px -1px 1px var(--saito-border-color-dark), -1px 1px 1px var(--saito-border-color-dark), 1px -1px 1px var(--saito-border-color-dark);
   line-height: 5rem;
-  border: 1px solid var(--saito-font-color-inverse);
+  border: 1px solid var(--saito-border-color);
   color: var(--saito-font-color);
   cursor: pointer;
   text-align: center;
-  margin-top: 2.5rem;
 }
 
 .redsquare-menu {
@@ -329,7 +327,10 @@
 }
 
 .saito-floating-item-container.show {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
   margin-bottom: 2rem;  
   z-index: 2;
   opacity: 1;
