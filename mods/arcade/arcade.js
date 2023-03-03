@@ -351,7 +351,18 @@ class Arcade extends ModTemplate {
         }
       }
     }
-
+    if (type === 'saito-header') {
+      return [
+        {
+          text: "Games",
+          icon: this.icon || "fas fa-gamepad",
+	  rank: 10,
+          callback: function (app, id) {
+            app.connection.emit("arcade-launch-game-selector", {});
+          }
+        }
+      ]
+    }
     if (type === 'saito-floating-menu') {
       let x = [];
       x.push({
