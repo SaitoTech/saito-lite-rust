@@ -103,7 +103,6 @@ console.log("ERROR 2: " + err);
     let myqs = `.tweet-${this.tx.transaction.sig}`;
     let replace_existing_element = true;
 
-
     //
     // if prepend = true, remove existing element
     //
@@ -132,6 +131,15 @@ console.log("ERROR 2: " + err);
         if (parent.classList.contains("tweet-main")) {
           replace_existing_element = false;
         }
+      }
+    }
+
+    //
+    // remove if selector does not exist
+    // - if we click on a child we rerender but w/o parent just insert in container
+    if (this.render_after_selector) {
+      if (!document.querySelector(this.render_after_selector)) {
+	this.render_after_selector = false;
       }
     }
 
