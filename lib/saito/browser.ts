@@ -1384,6 +1384,7 @@ class Browser {
     return this.modifyHash(this.defaultHashTo(defaultHash, deepLinkHash), forcedHashValues);
   }
 
+
   //////////////////////////////////////////////////////////////////////////////
   /////////////////////// end url-hash helper functions ////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -1868,6 +1869,11 @@ console.log("IDENTIFIER: " + identifier);
           console.err(err);
         }
       };
+
+      window.setHash = function (hash){
+        window.history.pushState("", "", `/redsquare/#${hash}`);
+      }
+    
 
     }
 

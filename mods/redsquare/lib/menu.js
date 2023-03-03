@@ -44,7 +44,7 @@ class RedSquareMenu {
   attachEvents() {
 
     document.querySelector(".redsquare-menu-home").onclick = (e) => {
-      this.setHash('home')
+      setHash('home')
       this.app.connection.emit("redsquare-home-render-request");
     }
 
@@ -61,7 +61,7 @@ class RedSquareMenu {
     }
 
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
-      this.setHash('notifications')
+      setHash('notifications')
       this.app.connection.emit("redsquare-notifications-render-request");
       this.mod.notifications_number_unviewed = 0;
       this.mod.notifications_last_viewed_ts = new Date().getTime();
@@ -73,16 +73,16 @@ class RedSquareMenu {
       this.app.connection.emit("redsquare-profile-render-request");
     }
 
-//    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
-//      this.app.connection.emit("redsquare-contacts-render-request");
-//    }
+    //    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
+    //      this.app.connection.emit("redsquare-contacts-render-request");
+    //    }
 
     //
     // appspace modules
     //
     this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
       document.querySelector(`.redsquare-menu-${mod.returnSlug()}`).onclick = (e) => {
-        this.setHash(mod.returnSlug())
+        setHash(mod.returnSlug())
         document.querySelector(".saito-main").innerHTML = "";
         mod.renderInto(".saito-main");
         document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
@@ -105,16 +105,16 @@ class RedSquareMenu {
       let obj = document.querySelector(qs);
       if (!obj) {
         if (notifications > 0) {
-	  this.app.browser.addElementToSelector(`<div class="saito-notification-dot">${notifications}</div>`, `.redsquare-menu-${menu_item}`);
-	} else {
+          this.app.browser.addElementToSelector(`<div class="saito-notification-dot">${notifications}</div>`, `.redsquare-menu-${menu_item}`);
+        } else {
           this.app.browser.addElementToSelector(`<div class="saito-notification-dot"></div>`, `.redsquare-menu-${menu_item}`);
           qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
           let obj = document.querySelector(qs);
           obj.style.display = "none";
-	}
+        }
       } else {
         let existing_notifications = 0;
-	if (obj.innerHTML) { existing_notificaitons = parseInt(obj.innerHTML); }
+        if (obj.innerHTML) { existing_notificaitons = parseInt(obj.innerHTML); }
         if (notifications <= 0) {
           obj.style.display = "none";
           obj.innerHTML = 0;
@@ -127,9 +127,7 @@ class RedSquareMenu {
     }
   }
 
-  setHash (hash){
-    window.history.pushState("", "", `/redsquare/#${hash}`)
-  }
+
 }
 
 module.exports = RedSquareMenu;

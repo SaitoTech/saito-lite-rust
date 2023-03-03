@@ -414,10 +414,11 @@ class Stun extends ModTemplate {
                                 break;
                             case "disconnected":
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
+                              
                                 break;
                             case "failed":
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
-                                this.createMediaChannelConnectionWithPeers([publicKey]);
+                                this.createMediaChannelConnectionWithPeers([publicKey], ui_type, call_type, room_code );
                                 break;
                             default:
                                 ""
@@ -616,15 +617,17 @@ class Stun extends ModTemplate {
 
                             break;
                         case "disconnected":
+                            if (this.central === true) {
+                                if (this.room.peers.includes(offer_creator)) {
+                                    this.room.peers = this.room.peers.filter(peer => peer !== offer_creator);
+                                }                           
+                            }
                             console.log("connection state ", pc.connectionState);
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
-
-
                             break;
                         case "failed":
                             console.log("connection state ", pc.connectionState)
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
-                            this.createMediaChannelConnectionWithPeers([publicKey]);
                             break;
                         default:
                             ""
