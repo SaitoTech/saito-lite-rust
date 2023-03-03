@@ -73,7 +73,7 @@ class RedSquare extends ModTemplate {
     //
     // used to fetch more content
     //
-    this.increment_for_tweets = 1;
+    this.increment_for_tweets = 0; // start a 0
     this.increment_for_notifications = 1;
     this.results_per_page = 10;
     this.results_loaded = false;
@@ -309,7 +309,8 @@ class RedSquare extends ModTemplate {
     if (service.service === "redsquare") {
       if (this.app.browser.returnURLParameter('tweet_id')) { return; }
       if (this.app.browser.returnURLParameter('user_id')) { return; }
-      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+      // needs be the same as in loadMoreTweets
+      let sql = `SELECT * FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
       this.loadTweetsFromPeer(peer, sql, (txs) => {
         let hash = this.app.browser.returnHashAndParameters();
         if (!hash.hash) {
@@ -532,7 +533,6 @@ class RedSquare extends ModTemplate {
   // them for more data.
   //
   loadProfile(publickey) {
-console.log("loadProfile");
     for (let i = 0; i < this.peers_for_tweets.length; i++) {
       let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND publickey = '${publickey}' ORDER BY created_at DESC;`;
       let peer = this.peers_for_tweets[i];
@@ -545,8 +545,6 @@ console.log("loadProfile");
   }
 
   loadChildrenOfTweet(sig, mycallback = null) {
-
-console.log("loadChildrenOfTweet");
 
     if (this.peers_for_tweets.length == 0) { return; }
     if (mycallback == null) { return; }
@@ -565,8 +563,6 @@ console.log("loadChildrenOfTweet");
 
   }
   loadTweetWithSig(sig, mycallback = null) {
-
-console.log("loadTweetWithSig");
 
     if (this.peers_for_tweets.length == 0) { return; }
     if (mycallback == null) { return; }
@@ -588,8 +584,6 @@ console.log("loadTweetWithSig");
   }
 
   loadTweetsWithParentId(sig, mycallback = null) {
-
-console.log("loadTweetsWithParentId");
 
     if (this.peers_for_tweets.length == 0) { return; }
     if (mycallback == null) { return; }
@@ -625,14 +619,12 @@ console.log("loadTweetsWithParentId");
 
   loadMoreTweets(post_load_tweet_callback = null) {
 
-console.log("loadMoreTweets...");
-
     this.increment_for_tweets++;
     let pre_existing_tweets_on_page = this.tweets.length;
     let loaded_tweets = false;
     for (let i = 0; i < this.peers_for_tweets.length; i++) {
       let peer = this.peers_for_tweets[i];
-      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT '${this.results_per_page * this.increment_for_tweets - 1}','${this.results_per_page}'`;
+      let sql = `SELECT * FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT '${this.results_per_page * this.increment_for_tweets - 1}','${this.results_per_page}'`;
       this.loadTweetsFromPeer(peer, sql, (txs) => {
         if (txs.length > 0) {
           let x = [];
@@ -696,8 +688,6 @@ console.log("loadMoreTweets...");
 
 
   loadTweetsFromPeerAndReturn(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
-
-console.log("loadTweetsFromPeerAndREturn...");
 
     let txs = [];
     let tweet_to_track = null;
@@ -773,6 +763,7 @@ console.log("loadTweetsFromPeerAndREturn...");
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, "", tx);
+
     tweet.updated_at = tx.transaction.ts;
 
     let is_notification = 0;
