@@ -71,6 +71,13 @@ class Stun extends ModTemplate {
                 credential: "somepassword",
             }
         ];
+
+
+        this.styles = [
+            '/saito/saito.css',
+            '/videocall/style.css',
+          ];
+      
     }
 
 
@@ -80,10 +87,9 @@ class Stun extends ModTemplate {
                 let room_obj = JSON.parse(app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat")));
                 console.log(room_obj, 'stun video chat')
                 // JOIN THE ROOM
-                this.styles = [`/${this.returnSlug()}/style.css`,];
-                this.attachStyleSheets();
+               
                 let stun_self = app.modules.returnModule("Stun");
-                stun_self.renderInto(".saito-overlay");
+                stun_self.renderInto("body");
                 app.connection.emit("stun-show-loader");
                 // super.render(this.app, this);
 
@@ -112,6 +118,11 @@ class Stun extends ModTemplate {
         });
     }
 
+
+    render(){
+        this.renderInto('body');
+    }
+
     canRenderInto(qs) {
         if (qs === ".saito-overlay") { return true; }
         return false;
@@ -119,19 +130,36 @@ class Stun extends ModTemplate {
 
     renderInto(qs) {
         if (qs == ".saito-overlay") {
+
+            
             if (!this.renderIntos[qs]) {
                 this.renderIntos[qs] = [];
                 this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
+                console.log('rendering into');
             }
-            this.styles = [`/${this.returnSlug()}/style.css`];
+
+        
             this.attachStyleSheets();
             this.renderIntos[qs].forEach((comp) => { comp.render(); });
+            this.renderedInto = qs;
         }
+        if (qs == "body") {
+            if (!this.renderIntos[qs]) {
+                this.renderIntos[qs] = [];
+                this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
+                console.log('rendering into')
+            }
+            this.attachStyleSheets();
+            this.renderIntos[qs].forEach((comp) => { comp.render(); });
+            this.renderedInto = "body";
+        }
+
+   
     }
 
     respondTo(type) {
         if (type === 'invite') {
-            this.styles = [`/stun/style.css`,];
+            // this.styles = [`/stun/style.css`,];
             super.render(this.app, this);
             return new StunxInvite(this.app, this);
         }
@@ -383,7 +411,7 @@ class Stun extends ModTemplate {
                     let pc = new RTCPeerConnection({
                         iceServers: this.servers,
                     });
-
+                    this.peer_connections[publicKey] = "";
                     this.peer_connections[publicKey] = pc;
                     pc.onicecandidate = (ice) => {
                         if (!ice || !ice.candidate || !ice.candidate.candidate) {
@@ -400,11 +428,11 @@ class Stun extends ModTemplate {
                         console.log(pc.connectonState, e);
                         console.log(pc.currentLocalDescription, this.peer_connections[publicKey].currentLocalDescription, 'current local description')
 
-                        if (pc !== this.peer_connections[publicKey]) {
+                        if (pc.connectionState !== this.peer_connections[publicKey].connectionState) {
                             console.log('peer objects not equal')
                             return;
                         }
-
+                      
                         switch (pc.connectionState) {
                             case "connecting":
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
@@ -428,14 +456,12 @@ class Stun extends ModTemplate {
 
                     // add data channels 
                     const data_channel = pc.createDataChannel('channel');
-
                     pc.dc = data_channel;
                     pc.dc.onmessage = (event) => {
-                        if(pc !== this.peer_connections[publicKey]) return
+                        // if(pc !== this.peer_connections[publicKey]) return
                         console.log("Received message:", event.data);
                         let data = JSON.parse(event.data);
                         this.app.connection.emit(data.event, data.kind, publicKey);
-
 
                     };
                     pc.dc.onopen = (e) => {
@@ -565,7 +591,7 @@ class Stun extends ModTemplate {
                 iceServers: this.servers,
             });
 
-
+            stunx_mod.peer_connections[offer_creator] = "";
             stunx_mod.peer_connections[offer_creator] = pc;
 
             try {
@@ -582,8 +608,8 @@ class Stun extends ModTemplate {
 
                 pc.addEventListener('connectionstatechange', () => {
                     console.log('')
-                    if (pc !== this.peer_connections[offer_creator]) {
-                        console.log('peer objects not equal')
+                    if (pc.connectionState !== stunx_mod.peer_connections[offer_creator].connectionState) {
+                        console.log('peer objects not equal');
                         return;
                     }
                     try {
@@ -600,8 +626,7 @@ class Stun extends ModTemplate {
                             break;
                         case "connected":
                             console.log("connection state ", pc.connectionState)
-
-
+                            
                             if (this.central === true) {
                                 if (!this.room.peers.includes(offer_creator)) {
                                     this.room.peers.push(offer_creator);
@@ -639,11 +664,11 @@ class Stun extends ModTemplate {
                 // add data channels 
 
 
-                pc.ondatachannel = function (event) {
+                pc.ondatachannel = function (event) {              
                     let dataChannel = event.channel;
                     pc.dc = dataChannel;
-                    dataChannel.onmessage = function (event) {
-                        if(pc !== stunx_mod.peer_connections[offer_creator]) return
+                    pc.dc.onmessage = function (event) {
+                        // if(pc !== stunx_mod.peer_connections[offer_creator]) return
                         let data = JSON.parse(event.data);
                         app.connection.emit(data.event, data.kind, offer_creator);
                         console.log("Received message:", event.data);

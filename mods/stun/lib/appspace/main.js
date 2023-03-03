@@ -33,7 +33,12 @@ class StunAppspace {
   }
 
   render() {
-    this.overlay.show(StunAppspaceTemplate(this.app, this.mod))
+    if(this.container === ".saito-overlay"){
+      this.overlay.show(StunAppspaceTemplate(this.app, this.mod))
+    }else if(this.container === "body"){
+      this.app.browser.addElementToDom(StunAppspaceTemplate(this.app, this.mod))
+    }
+  
     this.attachEvents(this.app, this.mod);
   }
 

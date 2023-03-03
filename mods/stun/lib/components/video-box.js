@@ -11,13 +11,16 @@ class VideoBox {
     stream = null;
     placeholderRendered = false;
     stream_rendered = false;
+    waitTimer;
+    waitSeconds
 
-    constructor(app, mod, ui_type, call_type, central) {
+    constructor(app, mod, ui_type, call_type, central, room_code) {
         this.app = app;
         this.mod = mod;
         this.ui_type = ui_type
         this.call_type = call_type;
         this.central = central;
+        this.room_code = room_code;
 
         app.connection.on('mute', (kind, public_key) => {
             if(public_key !== this.stream_id) return;
@@ -173,8 +176,6 @@ class VideoBox {
 
 
     handleConnectionStateChange(peer, connectionState) {
-        // console.log('');
-        // const videoBox = document.querySelector(`#stream${this.stream_id}`);
         let video_box = document.querySelector(`#stream${this.stream_id}`);
         console.log('video box handle connection state ', video_box, this);
         let connection_message = document.querySelector('#connection-message');
@@ -182,31 +183,21 @@ class VideoBox {
         switch (connectionState) {
             case "connecting":
                 if(this.stream_rendered) return;
-                    this.updateConnectionMessage(`Starting ${this.call_type.toUpperCase()} Chat ` );
-      
-               
-                // document.querySelector('#connection-message').innerHTML = `<p>Starting ${this.call_type.toUpperCase()} Chat </p> <span class='lds-dual-ring'>`
+                    this.updateConnectionMessage(`Starting ${this.call_type.toUpperCase()} Chat ` );            
                 break;
             case "connected":
                 if (this.stream) {
                     this.removeConnectionMessage();
                     this.renderStream({ muted: false });
                     this.stream_rendered = true;
+                    this.stopWaitTimer()
                 }
                 break;
             case "disconnected":
-                if(this.central === peer){
-                    // this.app.connection.emit('stun-disconnect');
-                    siteMessage("Call ended", 5000);
-                    return;
-                }
-
                 console.log(`#stream${this.stream_id}`, "stream id")
                 this.stream = null
                 this.stream_rendered = false;
                 video_box.firstElementChild.srcObject = this.stream
-                // document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
-                // this.updateConnectionMessage('Connection disconnected, Retrying connection');
                 siteMessage(`Connection with ${this.stream_id} unstable`, 5000);
                 break;
             case "failed":
@@ -233,6 +224,41 @@ class VideoBox {
                 break;
         }
     }
+
+        startWaitTimer(is_creator = false) {
+           this.stopWaitTimer();          
+            this.waitTimer = setInterval(() => {
+                this.waitSeconds += 1;
+                if (this.waitSeconds === 10) {
+                    this.handleConnectionStateChange(peer, 'ten_seconds')
+                }
+                if (this.waitSeconds === 20) {
+                    this.handleConnectionStateChange(peer, 'twenty_seconds')
+                }
+                if (this.waitSeconds === 90) {
+                    this.handleConnectionStateChange(peer, 'two_minutes');
+                    if(is_creator){
+                        this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
+                     }    
+                }
+                if(this.waitSeconds === 150){
+                    if(is_creator){
+                    this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
+                    }         
+                }
+                if (this.waitSeconds === (180* 6)) {
+                    this.handleConnectionStateChange(peer, 'failed')
+                    clearInterval(this.waitTimer)
+                }
+            }, 1000)
+        }
+
+        stopWaitTimer(){
+            if(this.waitTimer){
+                clearInterval(this.waitTimer)
+            }
+        }
+    
 
 
 
