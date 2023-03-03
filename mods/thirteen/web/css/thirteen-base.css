@@ -1,0 +1,365 @@
+
+
+/*** increase cardbox default size ***/
+.game-cardbox {
+  top: 4vh;
+  height: 72vh;
+  width: calc(72vh * 0.730);
+}
+
+.cardbox-card {
+  height: 72vh;
+  width: calc(72vh * 0.730);
+}
+
+
+.hud-header.soviet {
+  background: linear-gradient(to right, rgba(255, 0, 0, 0.6), rgba(255, 255, 0, 0.4), rgba(255, 0, 0, 0.6));
+}
+
+.hud-header.american {
+  background: linear-gradient(to right, rgba(0, 0, 255, 0.6), rgba(255, 255, 255, 0.4), rgba(0, 0, 255, 0.6));
+}
+
+.hud{
+  background: #FFFA;
+}
+
+img{
+  width: unset;
+}
+
+img.cube{
+  position: relative;
+  width: 60px;
+}
+
+li.card {
+  height: 50px;
+}
+
+.strategy_card.cardimg {
+  width: 100%;
+  height: 100%;
+}
+
+.cardlist-container {
+  width: 80vw;
+  height: 80vh;
+  overflow-y: scroll;
+}
+
+.cardlist-card {
+  width: 18vw;
+  height: auto;
+  margin-left: 10px;
+  margin-bottom: 10px;
+  float: left;
+}
+
+.cardlist-card .cardimg {
+  position: relative;
+  float: left;
+  height: auto;
+  width: 100%;
+}
+
+.agenda, .agenda .agenda_card{
+  position: absolute;
+  height: 362px;
+  width: 264px;
+}
+
+#us_agenda{
+  left: 145px;
+  top: 790px;
+}
+
+#ussr_agenda{
+  left:2054px;
+  top: 220px;
+}
+
+.flag {
+  position: absolute;
+  height: 60px;
+  width: 60px;
+}
+
+.cardimg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.defcon_disc_us {
+  position: absolute;
+  z-index: 9;
+}
+
+.defcon_disc_ussr {
+  position: relative;
+  top: 10px;
+  left: 4px;
+  z-index: 10;
+}
+
+
+.active_battleground {
+  box-shadow: 0 0 15px 15px blanchedalmond;
+}
+
+.prestige_slot {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+}
+
+.round_slot {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+}
+
+.agenda_deck {
+  position: absolute;
+  background-image: url("/thirteen/img/Agenda Card-Backb.png");
+  top: 830px;
+  left: 2068px;
+  width: 264px;
+  height: 362px;
+}
+
+.strategy_deck {
+  position: absolute;
+  background-image: url("/thirteen/img/Strategy Card-Backb.png");
+  top: 1360px;
+  left: 465px;
+  width: 264px;
+  height: 362px;
+
+}
+
+#agenda_discard{
+  position: absolute;
+  top: 1360px;
+  left: 790px;
+  width: 264px;
+  height: 362px;
+
+}
+
+
+.agenda_card {
+  width: 20vw;
+  height: 28vw;
+}
+
+#agenda_discard .agenda_card{
+  width: 100%;
+  height: auto;
+}
+
+.country {
+  width: 260px;
+  height: 100px;
+ /* display: flex;
+  flex-direction: row;*/
+}
+
+.country div{
+  width: 130px;
+  height: 100px;
+}
+
+.us {
+  float: left;
+}
+
+.ussr {
+  float: right;
+}
+
+.defcon_track_slot {
+  background_color: blue;
+  width: 60px;
+  height: 60px;
+  position: absolute;
+}
+
+
+.round_slot {
+  position: absolute;
+  height: 50px;
+  width: 50px;
+}
+
+
+
+/** Modal **/
+.modal {
+  display: none;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal_header {
+  padding: 2px 16px;
+  color: white;
+}
+
+.modal_body {
+  padding: 2px 16px;
+  color: white;
+}
+
+#modal_header_text {
+  margin-top: 1em;
+  margin-bottom: 0.25em;
+  text-decoration: center;
+}
+
+#modal_body_text {
+  margin: 1em 0 1em 0;
+}
+
+.modal_footer {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  padding: 2px 16px;
+  color: white;
+}
+
+.modal_ok_button {
+  float: right;
+  padding: 12px;
+  border-radius: 7px;
+  margin: 10px;
+  font-size: 1em;
+  color: white;
+  border: unset;
+  color: white;
+  width: 125px;
+  background-color: rgb(0, 190, 10);
+}
+
+.modal_content {
+  position: absolute;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #888;
+  width: 33%;
+  min-width: 250px;
+  max-width: 600px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  animation-name: animatetop;
+  animation-duration: 0.4s;
+  background: #4e4e4e;
+  border-radius: 5px;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/** DEFAULTS DONE**/
+
+
+.connection_monitor {
+  position: fixed;
+  display: none;
+  min-height: 30px;
+  z-index: 90000;
+  background: #ef6666;
+  font-size: 1.8em;
+  padding: 15px;
+}
+
+.link {
+  border-bottom: 1px dashed;
+}
+
+.dashed {
+  border-bottom: 1px dashed;
+}
+
+
+.gameboard {
+  position: relative;
+  background-image: url("/thirteen/img/game map - large.jpg");
+  background-size: cover;
+  width: 2450px;
+  height: 1800px;
+}
+
+.inline {
+  display: inline;
+}
+
+.card {
+  cursor: pointer;
+  height: 205px;
+  width: 150px;
+}
+
+.link {
+  display: inline;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.country {
+  position: absolute;
+  cursor: pointer;
+}
+
+.us_tokens{
+  color: blue;
+  font-size: 18px;
+  margin: 1px 5px;
+}
+
+.ussr_tokens{
+  color: darkred;
+  font-size: 18px;
+  margin: 1px 5px;
+}
+
+
+/*** makes cards smaller in hud ***/
+.hud-card .agenda_card {
+  width: 131px;
+  height: 180px;
+}
