@@ -18,7 +18,7 @@ class Invites extends InviteTemplate {
     this.icon = "fas fa-envelope-open-text";
     this.invites = [];
     this.scripts = [];
-    this.styles = ['/invites/css/appspace.css'];
+    this.styles = ['/invites/style.css'];
 
     return this;
 

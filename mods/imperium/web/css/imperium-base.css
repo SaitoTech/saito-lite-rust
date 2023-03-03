@@ -1,7 +1,46 @@
 
+/********************/
+/*** MOD DEFAULTS ***/
+/********************/
+.hud-controls {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.hud-header {
+  margin: 0px;
+}
+.status ul {
+  width: 100%;
+}
+
+
+.chat-body>.saito-user>.saito-userline {
+  font-family: sans-serif;
+}
+
+
+
+#status::-webkit-scrollbar { width: 0 !important }
+
+
+.status-header > status-content ,
+.status-message > #status-content {
+  line-height: 1.5em;
+  padding-top: 10px;
+}
+
+
+
 .game-menu ul li {
     width: 160px;
 }
+.game-overlay-cardlist-title {
+  font-family: 'orbitron-medium', helvetica;
+}
+.game-overlay-cardlist-subtitle {
+  font-family: 'orbitron-light', helvetica;
+}
+
 
 @font-face {
   font-family: 'bank-gothic';
@@ -27,6 +66,11 @@
   font-style: normal;
 }
 
+
+/*** generic cardlist overlays ***/
+.game-overlay-cardlist-title {
+  font-family: 'orbitron-medium',helvetica;
+}
 
 /*** unit overlay ***/
 
@@ -192,12 +236,12 @@
   font-family: 'orbitron-medium';
   position: absolute;
   color: white;
-  margin-top: 50px;
   padding: 20px;
   padding-right: 50px;
   padding-top:10px;
   font-size: 1.2em;
   line-height: 1.5em;
+  cursor: pointer;
 }
 
 .game-menu {
@@ -419,7 +463,7 @@
   line-height: 2em;
   text-align: center;
   padding: 20px;
-  max-width: 800px;
+  max-width: 900px;
 }
 .new_action_cards_title {
   font-size: 3em;
@@ -440,6 +484,73 @@
   text-align:center;
 }
 
+.strategy_card {
+  font-family: 'orbitron-medium';
+  position:relative;
+  float: left;
+  width: calc(42vh * 0.72110);
+  display: block;
+  height: 42vh;
+  color: white;
+  padding: 20px;
+  font-size: 1.5em;
+  line-height: 1.5em;
+  cursor: pointer;
+}
+.strategy_card_img {
+  position: absolute;
+}
+.strategy_card_text {
+  position: absolute;
+  font-size: 16px;
+  color: whitesmoke;
+  padding-top: 19%;
+  padding-left: 7%;
+  padding-right: 20%;
+  font-family: 'orbitron-light', helvetica, sans-serif;
+  line-height: 1.7em;
+  z-index: 101;
+}
+
+
+.action_card {
+  padding: 25px;
+  padding-top: 30px;
+  height: 34vh;
+  width: calc(34vh * 0.72110);
+  background-size: cover;
+  text-align: center;
+  font-size: 1em;
+  transition: all 50ms;
+  border: 1px solid;
+  cursor: pointer;
+}
+.action_card_title {
+  position: relative;
+  font-family: 'orbitron-medium', helvetica, arial;
+  color: white;
+  padding-right: 10px;
+  white-space: nowrap;
+  margin: 0.2vw 0 0 0;
+  font-weight: bold;
+}
+.action_card_text {
+  position: relative;
+  font-family: 'orbitron-medium', helvetica, arial;
+  color: white;
+  padding: 0px;
+  padding-top:15px;
+  margin: 1.1vw 0 0 0;
+  height: 11vw;
+  text-align: left;
+  line-height: 1.6em;
+}
+.action_card:hover {
+  transform: scale(1.2);
+  z-index: 10;
+  border: 1px solid whitesmoke;
+}
+
 
 .overlay_strategy_container {
   width: 86vw;
@@ -452,13 +563,13 @@
   font-family: 'orbitron-medium';
   position:relative;
   float: left;
-  width: calc(52vh * 0.72110);
+  width: calc(42vh * 0.72110);
   display: block;
-  height: 52vh;
+  height: 42vh;
   color: white;
   margin-top: 50px;
   padding: 20px;
-  font-size: 2.5em;
+  font-size: 1.5em;
   line-height: 1.5em;
 }
 
@@ -472,13 +583,12 @@
 .overlay_strategy_card_text {
   position: relative;
   color: white;
-  padding-left: 25px;
-  padding-right: 30px;
-  padding-top: 65px;
+  padding-left: 15px;
+  padding-top: 45px;
   top: 0px;
   width: 100%;
   font-family: 'orbitron-light', helvetica, sans-serif;
-  font-size: 0.65em;
+  font-size: 0.7em;
   line-height: 1.4;
   z-index: 101;
 }
@@ -647,7 +757,8 @@
   font-family: helvetica, sans-serif;
   line-height: 1.6em;
   font-weight: normal;
-  padding-top: 14px;
+  padding-top: 16px;
+  padding-bottom: 16px;
 }
 
 * {
@@ -657,6 +768,7 @@
 
 .doublespace {
   line-height: 1.8em;
+  color: whitesmoke;
 }
 
 :root {
@@ -973,9 +1085,9 @@ body {
   background-image: url(img/action_card_back.jpg);
 }
 
-.overlay_action_card:hover, .faction_sheet_action_card:hover, .faction_sheet_planet_card:hover, .faction_sheet_tech_card:hover {
+.overlay_action_card:hover, .faction_sheet_action_card:hover, .faction_sheet_planet_card:hover, .tech_card:hover {
   transform: scale(1.5) translate(1vw, 1vw);
-  z-index: 10;
+  z-index: 100;
 }
 
 .combat_attacker {
@@ -1153,7 +1265,10 @@ body {
   margin: 1em 1em 1em 1em;
 }
 
-.faction_sheet_unearned_tech {
+.card_nonopaque {
+  opacity: 1;
+}
+.card_opaque {
   opacity: 0.55;
 }
 
@@ -1170,6 +1285,7 @@ body {
   transition: all 50ms;
   border: 1px solid;
   color: white;
+  z-index: 10;
 }
 
 .tech_card::before {
@@ -1197,20 +1313,20 @@ body {
   ;
 }
 
-.faction_sheet_tech_card {
+.tech_card {
   background-image: url(img/tech_card_template.jpg);
   position: relative;
-  width: 12vw;
-  height: 8vw;
+  width: 16vw;
+  height: 10vw;
   background-size: cover;
   margin: 1vw;
   text-align: center;
-  font-size: 0.75vw;
+  font-size: 1vw;
   transition: all 50ms;
   border: 1px solid;
 }
 
-.faction_sheet_tech_card::before {
+.tech_card::before {
   content: "";
   width: 0;
   height: 0;
@@ -1376,11 +1492,18 @@ body {
 }
 .hud-square .hud-body {
   min-height: 367px;
+  height: 367px;
+  max-height: 367px;
 }
 
+.status-message{
+  background-color: unset;
+  box-shadow: none;
+}
 
 .hud-header {
-  height: 100%;
+  min-height: 40px;
+  height: 40px;
   width: 100%;
   opacity: 1;
   visibility: visible;
@@ -1600,6 +1723,15 @@ body {
   cursor: pointer;
   font-family: 'orbitron-medium', helvetica, arial, courier;
   text-transform: uppercase;
+  padding: 15px;
+}
+.buildchoice {
+  padding: 15px;
+}
+.option {
+  cursor: pointer;
+  font-family: 'orbitron-medium', helvetica, arial, courier;
+  padding: 15px;
 }
 
 .status ul .cardchoice-card {
@@ -2621,6 +2753,7 @@ input[type=range] {
 
 
 
+
 #
 # OVerlays
 #
@@ -2667,5 +2800,8 @@ input[type=range] {
   padding-top: 20px;
 }
 
+
+
+~                             
 
 
