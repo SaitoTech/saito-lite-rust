@@ -608,7 +608,7 @@ class Stun extends ModTemplate {
 
                 pc.addEventListener('connectionstatechange', () => {
                     console.log('')
-                    if (pc.connectionState !== this.peer_connections[offer_creator].connectionState) {
+                    if (pc.connectionState !== stunx_mod.peer_connections[offer_creator].connectionState) {
                         console.log('peer objects not equal');
                         return;
                     }
