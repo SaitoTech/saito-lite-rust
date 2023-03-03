@@ -71,6 +71,13 @@ class Stun extends ModTemplate {
                 credential: "somepassword",
             }
         ];
+
+
+        this.styles = [
+            '/saito/saito.css',
+            '/videocall/style.css',
+          ];
+      
     }
 
 
@@ -80,9 +87,10 @@ class Stun extends ModTemplate {
                 let room_obj = JSON.parse(app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat")));
                 console.log(room_obj, 'stun video chat')
                 // JOIN THE ROOM
-                this.styles = [`/${this.returnSlug()}/style.css`,];
-                this.attachStyleSheets();
+               
                 let stun_self = app.modules.returnModule("Stun");
+                // stun_self.styles = [`/${this.returnSlug()}/style.css`,];
+                // stun_self.attachStyleSheets();
                 stun_self.renderInto(".saito-overlay");
                 app.connection.emit("stun-show-loader");
                 // super.render(this.app, this);
@@ -112,6 +120,13 @@ class Stun extends ModTemplate {
         });
     }
 
+
+    // render(){
+    //     console.log('rendering');
+     
+    //     // super.render();
+    // }
+
     canRenderInto(qs) {
         if (qs === ".saito-overlay") { return true; }
         return false;
@@ -122,16 +137,22 @@ class Stun extends ModTemplate {
             if (!this.renderIntos[qs]) {
                 this.renderIntos[qs] = [];
                 this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
+                console.log('rendering into')
             }
-            this.styles = [`/${this.returnSlug()}/style.css`];
+            // this.styles = [`/${this.returnSlug()}/style.css`];
+            
+            console.log('gotten styles', this.styles)
+            // this.styles = [`/style.css`];
             this.attachStyleSheets();
             this.renderIntos[qs].forEach((comp) => { comp.render(); });
         }
+
+   
     }
 
     respondTo(type) {
         if (type === 'invite') {
-            this.styles = [`/stun/style.css`,];
+            // this.styles = [`/stun/style.css`,];
             super.render(this.app, this);
             return new StunxInvite(this.app, this);
         }
@@ -600,8 +621,7 @@ class Stun extends ModTemplate {
                             break;
                         case "connected":
                             console.log("connection state ", pc.connectionState)
-
-
+                            
                             if (this.central === true) {
                                 if (!this.room.peers.includes(offer_creator)) {
                                     this.room.peers.push(offer_creator);

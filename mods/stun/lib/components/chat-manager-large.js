@@ -16,8 +16,6 @@ class VideoChatManager {
     videoEnabled = true;
     audioEnabled = true;
     isActive = false;
-    waitSeconds = 0;
-    waitTimer = null;
     central;
 
     constructor(app, mod) {
@@ -68,11 +66,9 @@ class VideoChatManager {
 
             let my_public_key = this.app.wallet.returnPublicKey()
             if (my_public_key === offer_creator) {
-                this.renderRemoteStreamPlaceholder(offer_recipient, "Attempting to connect");
-                this.startWaitTimer(offer_recipient)
+                this.renderRemoteStreamPlaceholder(offer_recipient, "Attempting to connect", true);
             } else {
                 this.renderRemoteStreamPlaceholder(offer_creator, "Attempting to connect");
-                this.startWaitTimer(offer_creator, true);
             }
 
         })
@@ -93,7 +89,6 @@ class VideoChatManager {
 
 
         document.querySelector('.disconnect_btn').addEventListener('click', (e) => {
-
             this.disconnect()
 
             siteMessage("You have been disconnected", 5000);
@@ -142,13 +137,6 @@ class VideoChatManager {
 
     updateRoomLink() {
         let public_keys = []
-        // for (let i in this.video_boxes) {
-        //     if (i === "local") {
-        //         public_keys.push(this.app.wallet.returnPublicKey())
-        //     } else {
-        //         public_keys.push(i);
-        //     }
-        // }
         public_keys.push(this.central);
         let obj = {
             room_id: this.room_code,
@@ -163,6 +151,7 @@ class VideoChatManager {
         }
         let myurl = new URL(url);
         myurl = myurl.href.split('#')[0];
+        myurl = myurl.replace('redsquare', 'videocall');
         console.log(myurl, 'myurl')
         this.room_link = `${myurl}?stun_video_chat=${base64obj}`;
         this.chatInvitationOverlay = new ChatInvitationOverlay(this.app, this.mod, this.room_link)
@@ -185,7 +174,10 @@ class VideoChatManager {
     hide() {
         console.log('hiding')
         document.querySelector('#stunx-chatbox').parentElement.removeChild(document.querySelector('#stunx-chatbox'));
+        let stun_mod = this.app.modules.returnModule("Stun");
         this.isActive = false;
+        stun_mod.renderInto('.saito-overlay');
+        
     }
 
     disconnect() {
@@ -206,8 +198,13 @@ class VideoChatManager {
             console.log(track);
             console.log('stopping track');
         })
+        for(let i in this.video_boxes){
+            this.video_boxes[i].video_box.stopWaitTimer();
+        }
         this.video_boxes = {}
         this.hide();
+
+
 
 
     }
@@ -233,22 +230,21 @@ class VideoChatManager {
 
 
 
-    renderRemoteStreamPlaceholder(peer, placeholder_info) {
+    renderRemoteStreamPlaceholder(peer, placeholder_info, isCreator) {
         this.createVideoBox(peer, placeholder_info);
         this.video_boxes[peer].video_box.render(null, peer, 'large-wrapper', placeholder_info);
+        this.video_boxes[peer].video_box.startWaitTimer(isCreator);
     }
 
     createVideoBox(peer) {
         if (!this.video_boxes[peer]) {
-            const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type, this.central);
+            const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type, this.central, this.room_code);
             this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
         }
     }
 
 
     updateConnectionState(peer, state) {
-        // if(this.mod.peer_connections[peer].connectionState !== state)
-        // return;
         this.createVideoBox(peer)
         this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state);
         switch (state) {
@@ -261,13 +257,11 @@ class VideoChatManager {
                 console.log("video boxes: after ", this.video_boxes);
                 break;
             case "connected":
-                clearInterval(this.waitTimer);
                 this.startTimer();
                 this.updateImages();
                 break;
 
             case "failed":
-                delete this.video_boxes[peer];
                 this.stopTimer();
                 this.updateImages();
                 this.mod.closeMediaConnections(peer)
@@ -384,34 +378,7 @@ class VideoChatManager {
         this.timer_interval = null
     }
 
-    startWaitTimer(peer, is_creator) {
-        this.waitTimer = setInterval(() => {
-            this.waitSeconds += 1;
-            if (this.waitSeconds === 10) {
-                this.updateConnectionState(peer, 'ten_seconds')
-            }
-            if (this.waitSeconds === 20) {
-                this.updateConnectionState(peer, 'twenty_seconds')
-            }
-            if (this.waitSeconds === 90) {
-                this.updateConnectionState(peer, 'two_minutes');
-            }
-            if(this.waitSeconds === 90){
-                if(is_creator){
-                this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
-                }         
-            }
-            if(this.waitSeconds === 150){
-                if(is_creator){
-                this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
-                }         
-            }
-            if (this.waitSeconds === (180* 6)) {
-                this.updateConnectionState(peer, 'failed')
-                clearInterval(this.waitTimer)
-            }
-        }, 1000)
-    }
+   
 
     updateImages() {
         let images = ``;
