@@ -370,13 +370,20 @@ class RedSquare extends ModTemplate {
       let tweet_id = this.app.browser.returnURLParameter('tweet_id');
       if (tweet_id != "") {
         let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}' ORDER BY created_at DESC`;
-        //this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
         this.loadTweetsFromPeer(peer, sql, (txs) => {
           this.results_loaded = true;
           let x = [];
           for (let z = 0; z < txs.length; z++) {
-            let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
-            x.push(tweet);
+	    if (txs[z].transaction.sig === tweet_id) {
+              let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
+              x.push(tweet);
+	    }
+          }
+	  for (let z = 0; z < txs.length; z++) {
+	    if (txs[z].transaction.sig !== tweet_id) {
+              let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
+              x[0].addTweet(tweet);
+	    }
           }
           this.app.connection.emit('redsquare-home-thread-render-request', x);
         }, false, false);
@@ -525,6 +532,7 @@ class RedSquare extends ModTemplate {
   // them for more data.
   //
   loadProfile(publickey) {
+console.log("loadProfile");
     for (let i = 0; i < this.peers_for_tweets.length; i++) {
       let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND publickey = '${publickey}' ORDER BY created_at DESC;`;
       let peer = this.peers_for_tweets[i];
@@ -537,6 +545,8 @@ class RedSquare extends ModTemplate {
   }
 
   loadChildrenOfTweet(sig, mycallback = null) {
+
+console.log("loadChildrenOfTweet");
 
     if (this.peers_for_tweets.length == 0) { return; }
     if (mycallback == null) { return; }
@@ -555,6 +565,8 @@ class RedSquare extends ModTemplate {
 
   }
   loadTweetWithSig(sig, mycallback = null) {
+
+console.log("loadTweetWithSig");
 
     if (this.peers_for_tweets.length == 0) { return; }
     if (mycallback == null) { return; }
@@ -576,6 +588,8 @@ class RedSquare extends ModTemplate {
   }
 
   loadTweetsWithParentId(sig, mycallback = null) {
+
+console.log("loadTweetsWithParentId");
 
     if (this.peers_for_tweets.length == 0) { return; }
     if (mycallback == null) { return; }
@@ -610,6 +624,9 @@ class RedSquare extends ModTemplate {
 
 
   loadMoreTweets(post_load_tweet_callback = null) {
+
+console.log("loadMoreTweets...");
+
     this.increment_for_tweets++;
     let pre_existing_tweets_on_page = this.tweets.length;
     let loaded_tweets = false;
@@ -679,6 +696,9 @@ class RedSquare extends ModTemplate {
 
 
   loadTweetsFromPeerAndReturn(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
+
+console.log("loadTweetsFromPeerAndREturn...");
+
     let txs = [];
     let tweet_to_track = null;
 

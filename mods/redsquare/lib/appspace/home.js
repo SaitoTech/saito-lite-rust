@@ -21,8 +21,11 @@ class AppspaceHome {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           if (mod.viewing !== "home") { return; }
+          if (this.app.browser.returnURLParameter('user_id') || this.app.browser.returnURLParameter('tweet_id')) { return; }
+
           this.intersection_loader.render();
           mod.loadMoreTweets(() => this.intersection_loader.hide());
+
         }
       });
     }, {
