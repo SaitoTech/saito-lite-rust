@@ -76,14 +76,11 @@ class Tweet {
       this.retweet.show_controls = 0;
     } else {
       //
-      // create image preview if exists
+      // create image preview
       //
       if (this.images?.length > 0) {
         this.img_preview = new Image(this.app, this.mod, `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`, this);
       } else {
-        //
-        // create link preview if exists
-        //
         if (this.link != null) {
           this.link_preview = new Link(this.app, this.mod, `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`, this);
         }

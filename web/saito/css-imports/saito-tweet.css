@@ -46,6 +46,7 @@
 .tweet-body {
   display: grid;
   grid-template-columns: 4.5rem 1fr;
+  min-height: 10rem;
 }
 
 .tweet.quoted {
@@ -102,7 +103,7 @@
   transition: all 0.2s linear;
   max-height: 50rem;
   overflow-y: auto;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .tweet-text.full::after {
@@ -116,7 +117,12 @@
   padding: 0 0.5rem;
   transition: all 0.2s linear;
 }
-
+.tweet-preview {
+  margin-top: 2rem;
+}
+.tweet-text.full~.tweet-preview {
+  margin-top: 1rem;
+}
 .tweet-text.preview::before {
   content: " ";
   position: absolute;
