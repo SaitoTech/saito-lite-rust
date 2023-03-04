@@ -22,25 +22,43 @@ class RedSquareImage {
     let expected_height = "auto";
 
 
-    let available_width_qs = ".tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body .tweet-main";
-    if (document.querySelector(available_width_qs)) {
-      let obj = document.querySelector(available_width_qs);
-      expected_width = obj.getBoundingClientRect().width;
-    }
 
     //
     // avoid length vertical posts
     //
     var img = new Image;
+    let tweet = this.tweet;
+
     img.onload = function() {
-      expected_height = parseInt((expected_width / img.width) * img.height);
+
+      let available_width_qs = ".tweet-"+tweet.tx.transaction.sig+ " > .tweet-body .tweet-main";
+      if (document.querySelector(available_width_qs)) {
+        let obj = document.querySelector(available_width_qs);
+        expected_width = parseInt(obj.getBoundingClientRect().width);
+console.log("set expected width to: " + expected_width);
+      }
+
+console.log(tweet.text);
+console.log("expected width: " + expected_width);
       expected_width = parseInt(expected_width);
-      if (expected_height > (expected_width+10)) {
+console.log("expected width: " + expected_width);
+      expected_height = parseInt((expected_width / img.width) * img.height);
+
+console.log(img.height + " -- " + img.width);
+console.log(expected_height + " -- " + expected_width);
+
+     while (Math.floor(expected_height) > expected_width) {
+	expected_height = expected_width * 0.75;
+     }
+
+//console.log("yes as: " + Math.floor(expected_height*0.70) + " > " + expected_width);
         let qs = ".tweet-"+sig+ " > .tweet-body  .tweet-picture img";
 	let obj = document.querySelector(qs);
-	obj.style.maxHeight = expected_width + "px";
+	//obj.style.maxHeight = Math.floor(expected_width*0.70) + "px";
+	obj.style.maxHeight = Math.floor(expected_height) + "px";
+console.log("MAX HEIGHT: " + obj.style.maxHeight);
 	obj.style.maxWidth = expected_width + "px";
-      }
+console.log("MAX WIDTH: " + obj.style.maxWidth);
     };
     img.src = this.images[0];
 
