@@ -12,6 +12,14 @@ module.exports = (app, mod, tweet) => {
   } catch (err) {}
 ;
   let text = tweet.text || "";
+ 
+  if (text == "" && tweet.retweet_tx != null && tweet.retweet_tx != "" && notice == "") {
+    //
+    // set notice
+    //
+    notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.transaction.from[0].add);
+  }
+
   let flagged =  optional.flagged ||  null;
   let link_properties =  optional.link_properties ||  null;
   let num_likes =  optional.num_likes ||  0;
@@ -21,13 +29,6 @@ module.exports = (app, mod, tweet) => {
   let dt = app.browser.formatDate(tweet.tx.transaction.ts);
   let show_controls = tweet.show_controls;
   let sig_class = "tweet-"+tweet.tx.transaction.sig;
- 
-  if (text == "" && tweet.retweet_tx != null && tweet.retweet_tx != "" && notice == "") {
-    //
-    // set notice
-    //
-    notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.transaction.from[0].add);
-  }
 
   let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
   let controls = `

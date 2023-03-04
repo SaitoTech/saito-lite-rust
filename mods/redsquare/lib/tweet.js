@@ -111,6 +111,27 @@ class Tweet {
     }
 
     //
+    // retweetsnw without commentary? pass-through and render subtweet
+    //
+    //          
+    // this is if i retweet my own tweet
+    //
+    if (this.text == "" && this.retweet_tx != null) {
+console.log("A: " + JSON.stringify(this.retweet.tx));          
+      //  
+      // i am retweeting myself
+      //    
+      this.retweet.notice = "retweeted by " + this.app.browser.returnAddressHTML(this.tx.transaction.from[0].add);
+      this.retweet.container = this.container;
+      this.retweet.render(prepend);
+console.log("B: done!");
+      return;
+
+    }
+         
+
+
+    //
     // retweets displayed in container even if master exists elsewhere on page
     //
     if (this.is_retweet) {
