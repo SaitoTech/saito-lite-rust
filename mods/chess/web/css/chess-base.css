@@ -2,6 +2,16 @@ html, body {
     height: 99.999%;
 }
 
+.mobile-log-tab {
+    background-color: #f9efdf;
+    height: 4rem;
+    margin-top:2px;
+    color: black;
+    font-size: 2.2rem;
+    padding-top: 0.4rem;
+}
+
+
 body {
     font-family: arial, helvetica, sans-serif;
     font-size: 13px;
@@ -63,7 +73,8 @@ input[type="checkbox"]:checked {
 .tool-cont {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: left;
+    column-gap: 2rem;
     align-items: center;
     padding: 10px 20px;
     width: 100%;
@@ -215,8 +226,8 @@ img.captured {
         max-width: 700px;
         grid-template-columns: repeat(2, calc(50% - 4px));
         grid-gap: 8px;
+        margin-top: 1rem;
     }
-
 
     .tool-cont {
         width: 100%;
@@ -245,6 +256,7 @@ img.captured {
     #board {
         width: 100%;
         max-width: min(100vw, 60vh);
+        margin-top: 1rem;
     }
 
     .alpha-d2270 {
@@ -265,17 +277,13 @@ img.captured {
         width: 6vw;
     }
 
- 
-
-
     .controls-space {
         width: 95%;
         grid-template-rows: repeat(4, 1fr);
         grid-template-columns: repeat(1, 1fr);
-
+        margin-top: 1rem;
     }
 
-    
     .tool-cont {
         width: 98%;
         margin-top: 4px;
