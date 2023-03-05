@@ -21,46 +21,37 @@ class RedSquareImage {
     let expected_width = "100%";
     let expected_height = "auto";
 
-
-
     //
     // avoid length vertical posts
     //
-    var img = new Image;
-    let tweet = this.tweet;
+    for (let i = 0; i < this.images.length; i++) {
 
-    img.onload = function() {
+      var img = new Image;
+      let tweet = this.tweet;
 
-      let available_width_qs = ".tweet-"+tweet.tx.transaction.sig+ " > .tweet-body .tweet-main";
-      if (document.querySelector(available_width_qs)) {
-        let obj = document.querySelector(available_width_qs);
-        expected_width = parseInt(obj.getBoundingClientRect().width);
-console.log("set expected width to: " + expected_width);
-      }
+      img.onload = function() {
 
-console.log(tweet.text);
-console.log("expected width: " + expected_width);
-      expected_width = parseInt(expected_width);
-console.log("expected width: " + expected_width);
-      expected_height = parseInt((expected_width / img.width) * img.height);
+        let available_width_qs = ".tweet-"+tweet.tx.transaction.sig+ " > .tweet-body .tweet-main";
+        if (document.querySelector(available_width_qs)) {
+          let obj = document.querySelector(available_width_qs);
+          expected_width = parseInt(obj.getBoundingClientRect().width);
+        }
 
-console.log(img.height + " -- " + img.width);
-console.log(expected_height + " -- " + expected_width);
+        expected_width = parseInt(expected_width);
+        expected_height = parseInt((expected_width / img.width) * img.height);
 
-     while (Math.floor(expected_height) > expected_width) {
-	expected_height = expected_width * 0.75;
-     }
+        while (Math.floor(expected_height) > expected_width) {
+  	  expected_height = expected_width * 0.69;
+        }
 
-//console.log("yes as: " + Math.floor(expected_height*0.70) + " > " + expected_width);
-        let qs = ".tweet-"+sig+ " > .tweet-body  .tweet-picture img";
+        let qs = ".tweet-"+sig+ " > .tweet-body  .tweet-picture .image-"+i;
 	let obj = document.querySelector(qs);
-	//obj.style.maxHeight = Math.floor(expected_width*0.70) + "px";
 	obj.style.maxHeight = Math.floor(expected_height) + "px";
-console.log("MAX HEIGHT: " + obj.style.maxHeight);
 	obj.style.maxWidth = expected_width + "px";
-console.log("MAX WIDTH: " + obj.style.maxWidth);
+      };
+      img.src = this.images[0];
+
     };
-    img.src = this.images[0];
 
 
 

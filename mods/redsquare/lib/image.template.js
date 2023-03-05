@@ -4,7 +4,7 @@ module.exports = (app, mod, images) => {
 
   if (images.length > 0) {
     for (let i = 0; i < images.length; i++) {
-      imgs += `<img data-index="${i}" alt="saito dymamic image" src="${images[i]}">`
+      imgs += `<img class="image-${i}" data-index="${i}" alt="saito dymamic image" src="${images[i]}">`
     }
   }
 
