@@ -80,6 +80,7 @@ class InviteManager {
 						this.app,
 						this.mod,
 						target,
+						this.type,
 						this.mod.games[list][i]
 					);
 					newInvite.render();

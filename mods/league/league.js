@@ -481,28 +481,7 @@ class League extends ModTemplate {
     //
     // update database
     //
-    for (let y = 0; y < relevantLeagues.length; y++){
-
-      let leag = relevantLeagues[y];
-
-      //
-      // update games table if game is over 
-      //
-      if (is_gameover) {
-
-        obj = {
-          league_id: leag.id,
-          game_id: txmsg.game_id,
-          game: game,
-          winner: (Array.isArray(txmsg.winner))? txmsg.winner.join("_") : txmsg.winner,
-          players_array: txmsg.players,
-          time_started: 0,
-          time_finished: new Date().getTime(),
-          method: txmsg.reason,
-        };
-        await this.gameInsert(obj);
-
-      }
+    for (let leag of relevantLeagues){
 
       //
       // update rankings (ELO)
@@ -844,7 +823,6 @@ class League extends ModTemplate {
       // dynamic data-storage
       //
       newLeague.players = [];
-      newLeague.games = [];
       newLeague.rank = 0; //My rank in the league
     
 
@@ -860,39 +838,6 @@ class League extends ModTemplate {
   }
 
 
-  addLeagueGame(league_id, game_id, winner, players_array, rank, time_started, time_finished, method) {
-
-    let game_idx = -1;
-
-    for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].id === league_id) {
-        for (let z = 0; z < this.leagues[i].games.length; z++) {
-          if (this.leagues[i].games[z].game_id === game_id) {
-            this.leagues[i].games[z].game_id = game_id;
-            this.leagues[i].games[z].winner = winner;
-            this.leagues[i].games[z].players_array = players_array;
-            this.leagues[i].games[z].rank = rank;
-            this.leagues[i].games[z].time_started = time_started;
-            this.leagues[i].games[z].time_finished = time_finished;
-            this.leagues[i].games[z].method = method;
-            return;
-          }
-        }
-        
-        this.leagues[i].games.push({ 
-          game_id : game_id ,
-          winner : winner ,
-          players_array : players_array ,
-          rank : rank ,
-          time_started : time_started ,
-          time_finished : time_finished ,
-          method : method 
-        });
-
-        return;
-      }
-    }
-  }
 
 
   validatePlayer(obj){
@@ -947,25 +892,6 @@ class League extends ModTemplate {
 
   }
 
-  fetchLeagueGames(league_id, mycallback=null) {
-
-    let league = this.returnLeague(league_id);
-    league.games = [];
-
-    this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM games WHERE league_id = '${league_id}' ORDER BY time_finished DESC LIMIT 10` ,
-      (res) => {
-        if (res?.rows) {
-          for (let g of res.rows) {
-            this.addLeagueGame(league_id, g.game_id, g.winner, g.players_array, g.rank, g.time_started, g.time_finished, g.method);
-          }
-        }
-        if (mycallback != null) {
-          mycallback(res);
-        }
-      }
-    );
-
-  }
 
   fetchLeagueLeaderboard(league_id, mycallback=null) {
 
@@ -1036,28 +962,6 @@ class League extends ModTemplate {
   }
 
 
-  async gameInsert(obj) {
-
-    let sql = `INSERT OR IGNORE INTO games (league_id, game_id, game, winner, players_array, time_started, time_finished, method) 
-                            VALUES ($league_id, $game_id, $game, $winner, $players_array, $time_started, $time_finished, $method)`;
-    let params = {
-      $league_id: obj.league_id,
-      $game_id: obj.game_id,
-      $game: obj.game,
-      $winner: obj.winner ,
-      $players_array: obj.players_array,
-      $time_started: obj.time_started,
-      $time_finished: obj.time_finished,
-      $method: obj.method,
-    };
-    await this.app.storage.executeDatabase(sql, params, "league");
-
-    sql = `UPDATE games SET rank=rank+1 WHERE league_id = $league_id`;
-    params = { $league_id : obj.league_id };
-    await this.app.storage.executeDatabase(sql, params, "league");
-	  return;
-
-  }
 
   async playerInsert(obj) {
 
@@ -1074,10 +978,6 @@ class League extends ModTemplate {
   }
 
 
-  async pruneOldGames(){
-    let sql = `DELETE FROM games WHERE rank > ?`;
-    await this.app.storage.executeDatabase(sql, [this.recent_game_cutoff], "league");
-  }
   async pruneOldPlayers(){
    let sql = `DELETE FROM players WHERE ts < ?`;
    let cutoff = new Date().getTime() - this.inactive_player_cutoff;

@@ -8,7 +8,6 @@ class LeagueOverlay {
     this.app = app;
     this.mod = mod;
     this.overlay = new SaitoOverlay(this.app, this.mod, false);
-    this.games = [];
 
     this.leaderboards = {};
 
@@ -41,10 +40,7 @@ class LeagueOverlay {
     this.leaderboards[this.league.id].render();
 
     //Show list of recent games (once refreshed)
-    this.mod.fetchLeagueGames(this.league.id, () => {
-      this.renderRecentGames(this.league);
-    });
-    //this.app.modules.renderInto(".league-overlay-league-body-games-list");
+    this.app.modules.renderInto(".league-overlay-league-body-games-list");
 
     //Add click event to create game
     this.attachEvents();

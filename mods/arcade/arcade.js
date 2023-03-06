@@ -184,6 +184,9 @@ class Arcade extends ModTemplate {
               }
             }
 
+            game_tx.msg.winner = record.winner;
+            game_tx.msg.method = record.method;
+            
             if (arcade_self.debug){
               console.log("Load DB Game: " + record.status, game_tx.returnMessage());
             }
@@ -313,7 +316,7 @@ class Arcade extends ModTemplate {
         this.styles = ['/arcade/css/arcade-overlays.css', '/arcade/css/arcade-invites.css'];
         this.renderIntos[qs] = [];
         let obj = new InviteManager(this.app, this, ".league-overlay-league-body-games-list");
-        obj.type = "long";
+        obj.type = "sparse";
         obj.lists = ["open", "active", "over"];
         this.renderIntos[qs].push(obj);
         this.attachStyleSheets();
@@ -690,7 +693,6 @@ class Arcade extends ModTemplate {
     let start_bid = (blk != null) ? blk.block.id : BigInt(1);
 
     let created_at = parseInt(tx.transaction.ts);
-    let expires_at = created_at + 60000 * 60;
 
     let sql = `INSERT OR IGNORE INTO games (
                 game_id ,
@@ -702,7 +704,6 @@ class Arcade extends ModTemplate {
                 tx ,
                 start_bid ,
                 created_at ,
-                expires_at ,
                 winner
               ) VALUES (
                 $game_id ,
@@ -714,7 +715,6 @@ class Arcade extends ModTemplate {
                 $tx,
                 $start_bid ,
                 $created_at ,
-                $expires_at ,
                 $winner
               )`;
     let params = {
@@ -727,7 +727,6 @@ class Arcade extends ModTemplate {
       $tx: JSON.stringify(tx.transaction),
       $start_bid: start_bid,
       $created_at: created_at,
-      $expires_at: expires_at,
       $winner: "",
     };
     await this.app.storage.executeDatabase(sql, params, "arcade");
@@ -882,8 +881,14 @@ class Arcade extends ModTemplate {
 
     await this.changeGameStatus(txmsg.game_id, "over");
 
-    let sql = `UPDATE games SET winner = $winner WHERE game_id = $game_id`;
-    let params = { $winner: txmsg.winner, $game_id: txmsg.game_id };
+    let game = this.returnGame(txmsg.game_id);
+
+    //Store the results locally
+    game.msg.winner = txmsg.winner;
+    game.msg.method = txmsg.reason;
+
+    let sql = `UPDATE games SET winner = $winner, method = $method WHERE game_id = $game_id`;
+    let params = { $winner: txmsg.winner, $method: txmsg.reason, $game_id: txmsg.game_id };
     await this.app.storage.executeDatabase(sql, params, "arcade");
   }
 

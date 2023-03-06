@@ -9,8 +9,9 @@ CREATE TABLE IF NOT EXISTS games (
   tx TEXT,
   start_bid INTEGER,
   created_at INTEGER,
-  expires_at INTEGER,
+  step INTEGER DEFAULT 0,
   winner TEXT,
+  method VARCHAR(100) DEFAULT "",
   UNIQUE (game_id),
   PRIMARY KEY (id ASC)
 );
