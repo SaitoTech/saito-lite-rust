@@ -99,6 +99,7 @@ class Mixin extends ModTemplate {
   }
 
 
+
   async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
     if (tx == null) { return; }
