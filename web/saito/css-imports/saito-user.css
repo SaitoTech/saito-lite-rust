@@ -61,14 +61,6 @@ Saito User
   grid-row-end: span 1;
 }
 
-.saito-user>.saito-user-timestamp {
-  grid-column-start: 2;
-  grid-column-end: span 1;
-  grid-row-start: 2;
-  grid-row-end: span 1;
-  font-size: 1.4rem;
-  color: var(--saito-font-color-light);
-}
 
 .saito-user>.saito-userline {
   grid-column-start: 2;
