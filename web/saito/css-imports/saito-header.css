@@ -337,6 +337,50 @@
   position: relative;
 }
 
+.saito-back-arrow {
+  width: 20rem;
+  height: 6rem;
+  background: var(--saito-button-background);
+  line-height: 6rem;
+  color: var(--saito-button-background);
+  position: relative;
+  /* margin-left: 10rem; */
+  /* margin-top: 10rem; */
+  position: absolute;
+  right: 9.8rem;
+  bottom: 0rem;
+  z-index: -1;
+}
+
+.saito-back-arrow::after {
+  content: "";
+  width: 6rem;
+  height: 6rem;
+  display: block;
+  background-color: #fff;
+  position: absolute;
+  right: 0rem;
+  top: 0rem;
+  border-radius: 50%;
+  transform: translateX(67%);
+  border: 1px solid #000;
+}
+
+.saito-back-arrow::before {
+  content: "";
+  width: 4.2rem;
+  height: 4.2rem;
+  display: block;
+  position: absolute;
+  left: 0rem;
+  top: 50%;
+  transform: translateY(-50%) translateX(-50%) rotate(45deg);
+  background: var(--saito-button-background);
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(0, 0, 0);
+  border-image: initial;
+}
 
 @media screen and (max-width: 1600px) {
   #saito-header {
