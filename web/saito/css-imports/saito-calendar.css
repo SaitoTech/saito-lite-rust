@@ -75,18 +75,6 @@
     padding: 0 2rem;
 }
 
-.saito-calendar-month i {
-    font-size: 2rem;
-    cursor: pointer;
-}
-
-.saito-calendar-date div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
-
 .saito-calendar-date h4 {
     font-size: 2.3rem;
     margin-right: 1rem;
@@ -96,11 +84,6 @@
     font-size: 2.3rem;
 }
 
-.x {
-    display: flex;
-    justify-content: center;
-    padding: .5rem .5rem;
-}
 
 .saito-calendar-weekdays div {
     font-size: 1.6rem;
@@ -128,10 +111,6 @@
 .saito-calendar-day-icon {
     font-size: 2.3rem;
     padding-right: 0.75rem;
-}
-
-.saito-calendar-day > span {
-    margin-left: .5rem;
 }
 
 .saito-calendar-days div:hover {
