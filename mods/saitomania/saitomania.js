@@ -1,12 +1,11 @@
-var saito = require('./../../lib/saito/saito');
-var GameTemplate = require('./../../lib/templates/gametemplate');
+const OnePlayerGameTemplate = require('./../../lib/templates/oneplayergametemplate');
 const SaitoManiaGameOptionsTemplate = require("./lib/saitomania-game-options.template");
 
 
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
-class SaitoMania extends GameTemplate {
+class SaitoMania extends OnePlayerGameTemplate {
 
   constructor(app) {
 
@@ -18,8 +17,6 @@ class SaitoMania extends GameTemplate {
     this.description     = 'Blast shitcoins, pick up superpowers, destroy rocks to collect Saito and learn about the Saito project while playing ;)';
     this.categories      = "Games Arcadegame One-player";
     this.request_no_interrupts = true; // don't popup chat
-    this.maxPlayers      = 1;
-    this.minPlayers      = 1;
     this.app = app;
   }
 
@@ -29,7 +26,6 @@ class SaitoMania extends GameTemplate {
     if (type == "default-league") {
       let obj = super.respondTo(type);
       obj.ranking_algorithm = "HSC";
-      obj.default_score = 0;
       return obj;
     }
     return super.respondTo(type);
@@ -139,10 +135,6 @@ class SaitoMania extends GameTemplate {
     return 0;
   }
 
-  receiveGameoverRequest(blk, tx, conf, app) {
-    console.log("The game never ends in the Saito Arcade");
-    return;
-  }
 
 }
 

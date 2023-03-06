@@ -23,17 +23,6 @@ class Beleaguered extends OnePlayerGameTemplate {
     this.sides = ["r", "l"];
   }
 
-  // Create an exp league by default
-  respondTo(type) {
-    if (type == "default-league") {
-      let obj = super.respondTo(type);
-      obj.ranking_algorithm = "EXP";
-      obj.default_score = 0;
-      return obj;
-    }
-    return super.respondTo(type);
-  }
-
 
   returnGameRulesHTML() {
     return BeleagueredGameRulesTemplate(this.app, this);

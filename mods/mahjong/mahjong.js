@@ -21,16 +21,6 @@ class Mahjong extends OnePlayerGameTemplate {
 
   }
 
-  // adds league support
-  respondTo(type){
-    if (type === "default-league") {
-      let obj = super.respondTo(type);
-      obj.ranking_algorithm = "EXP";
-      obj.default_score = 0;
-      return obj;
-    }
-    return super.respondTo(type);
-  }
 
   returnGameRulesHTML(){
     return MahjongGameRulesTemplate(this.app, this);
