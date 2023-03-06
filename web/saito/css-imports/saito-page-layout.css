@@ -17,10 +17,7 @@
   min-width: 54rem;
   margin: 0 2rem 15rem;
   position: relative;
-}
 
-.saito-mobile-bar {
-  display: none;
 }
 
 .saito-sidebar {
@@ -31,10 +28,6 @@
   margin-bottom: 2rem;
 }
 
-.saito-sidebar-container {
-  width: 25rem;
-  position: relative;
-}
 
 .saito-sidebar.left {
   padding-top: 2rem;
@@ -55,15 +48,6 @@
   height: max-content;
 }
 
-.saito-sidebar.right.mobile {
-  visibility: visible;
-  z-index: 3;
-}
-
-.saito-sidebar.left.mobile {
-  visibility: visible;
-  z-index: 3;
-}
 
 @media screen and (max-width: 1200px) {
   .saito-container {
@@ -105,44 +89,4 @@
     height: 100vh;
     z-index: 12;
   }
-
-  /*
-  .saito-mobile-bar {
-    background: var(--saito-dark-shim);
-    z-index: 1;
-    height: 7rem;
-    content: " ";
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: 2;
-    display: flex;
-    flex-flow: row;
-    justify-content: space-around;
-    align-items: center;
-  }
-
-  .saito-mobile-bar > div {
-    content: "";
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 0.5rem;
-    background-color: var(--saito-primary);
-    cursor: pointer;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-  }
-
-  .saito-mobile-bar > div i {
-    color: var(--saito-background-color);
-    display: initial;
-    font-size: 2.5rem;
-  }
-
-  .saito-mobile-bar > div:nth-child(2) {
-    display: none;
-  }
-  */
 }
