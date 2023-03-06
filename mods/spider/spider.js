@@ -1,5 +1,4 @@
-var saito = require('../../lib/saito/saito');
-var GameTemplate = require('../../lib/templates/gametemplate');
+const OnePlayerGameTemplate = require('../../lib/templates/oneplayergametemplate');
 const SpiderGameRulesTemplate = require("./lib/spider-game-rules.template");
 const SpiderGameOptionsTemplate = require("./lib/spider-game-options.template");
 
@@ -7,7 +6,7 @@ const SpiderGameOptionsTemplate = require("./lib/spider-game-options.template");
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
-class Spider extends GameTemplate {
+class Spider extends OnePlayerGameTemplate {
 
   constructor(app) {
 
@@ -18,8 +17,6 @@ class Spider extends GameTemplate {
     this.description     = 'Two deck solitaire card game that traps you in a web of addiction';
     this.categories       = "Games Cardgame One-player";
 
-    this.maxPlayers      = 1;
-    this.minPlayers      = 1;
     this.status          = "Beta";
     this.difficulty      = 2; //default medium, 1 = easy, 4 = hard
     this.app = app;
@@ -177,6 +174,24 @@ class Spider extends GameTemplate {
     }
 
     this.attachEventsToBoard();
+  }
+
+
+  returnState() {
+
+    let state = super.returnState();
+
+    state.moves = 0;
+    state.score = 100;
+    state.recycles_remaining = 5;
+
+    state.completed_stacks = [];
+    state.board = [];
+    for (let i = 0; i < 10; i++){
+      state.board.push([]);
+    }
+    return state;
+
   }
 
 
@@ -352,23 +367,6 @@ class Spider extends GameTemplate {
     }
   }
   
-  returnState() {
-
-    let state = {};
-
-    state.round = 0;
-    state.wins = 0;
-    state.moves = 0;
-    state.score = 100;
-    state.recycles_remaining = 5;
-    state.completed_stacks = [];
-    state.board = [];
-    for (let i = 0; i < 10; i++){
-      state.board.push([]);
-    }
-    return state;
-
-  }
 
 
   returnStatsHTML(title = "Game Statistics"){

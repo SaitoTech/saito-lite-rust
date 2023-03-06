@@ -1,11 +1,10 @@
-var saito = require('../../lib/saito/saito');
-var GameTemplate = require('../../lib/templates/gametemplate');
+const OnePlayerGameTemplate = require('../../lib/templates/oneplayergametemplate');
 const MahjongGameRulesTemplate = require('./lib/mahjong-game-rules.template');
 
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
-class Mahjong extends GameTemplate {
+class Mahjong extends OnePlayerGameTemplate {
 
   constructor(app) {
     super(app);
@@ -15,9 +14,8 @@ class Mahjong extends GameTemplate {
     this.game_length     = 10; //Estimated number of minutes to complete a game
     this.description     = `Remove matching mahjong tiles in pairs until the board is clear or you lose`;
     this.categories      = "Games Cardgame One-player";
+    this.publisher_message = "Community-created game";
 
-    this.maxPlayers      = 1;
-    this.minPlayers      = 1;
     this.status          = "Beta";
     this.app = app;
 
@@ -53,10 +51,7 @@ class Mahjong extends GameTemplate {
     if (!this.game.state) {
 
       this.game.state = this.returnState();
-
-      this.game.queue = [];
-      this.game.queue.push("READY");
-
+      this.newRound();
     }
     
     this.saveGame(this.game.id);
@@ -69,7 +64,7 @@ class Mahjong extends GameTemplate {
 
   newRound(){
     //Set up queue
-    this.game.queue = [];
+    this.game.queue = ["READY"];
 
     //Clear board
     this.game.board = {};
@@ -259,8 +254,8 @@ class Mahjong extends GameTemplate {
       class : "game-new",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.endGame([], "abandon");
-        game_mod.newRound();
+        game_mod.prependMove("lose");
+        game_mod.endTurn();
       }
     });
     this.menu.addSubMenuOption("game-info", {
@@ -296,22 +291,6 @@ class Mahjong extends GameTemplate {
 
   }
 
-  returnState() {
-
-    let state = {};
-
-    state.round = 0;
-    state.wins = 0;
-
-    return state;
-
-  }
-
-  exitGame(){
-    this.updateStatusWithOptions("Saving game to the blockchain...");
-    this.addMove("exit_game\t"+this.game.player);
-    this.endTurn();
-  }
 
   returnStatsHTML(){
     let html = `<div class="rules-overlay">
@@ -356,7 +335,7 @@ class Mahjong extends GameTemplate {
             mahjong_self.game.hidden.push(mahjong_self.game.selected);
             mahjong_self.game.cardsLeft = mahjong_self.game.cardsLeft - 2;
             if (mahjong_self.game.cardsLeft === 0) {
-              mahjong_self.addMove("win");
+              mahjong_self.prependMove("win");
               mahjong_self.endTurn();
               return;              
             }
@@ -444,7 +423,7 @@ class Mahjong extends GameTemplate {
     if (!tilesLeftToUnlock || tilesLeftToUnlock.length == 0) {
       let c = await sconfirm("There are no more available moves to make, start new game?");
       if (c){
-        this.addMove("lose");
+        this.prependMove("lose");
         this.endTurn();
         return;
       }
@@ -545,43 +524,28 @@ class Mahjong extends GameTemplate {
 
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
-      if (mv[0] === "round") {
-        this.newRound();
-      }
 
       if (mv[0] === "lose"){
         this.game.queue.splice(qe, 1);
-        this.endGame([], "no more moves");
         this.newRound();
+        this.game.state.losses++;
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);
+
         return 1;
       }
 
       if (mv[0] === "win"){
         this.game.queue.splice(qe, 1);
         this.game.state.wins++;
-        this.endGame(this.app.wallet.returnPublicKey());
         this.displayModal("Congratulations!", "You solved the puzzle!");
         this.newRound();
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${JSON.stringify([])}`);
 
-        return 0;
+        return 1;
       }
 
 
-
-      if (mv[0] === "exit_game"){
-        this.game.queue = [];
-        let player = parseInt(mv[1])
-        this.saveGame(this.game.id);
-
-        if (this.game.player === player){
-          super.exitGame();
-        }else{
-          this.updateStatus("Player has exited the building");
-        }
-        return 0;
-      }
-
-      return 1;
+      return 0;
 
     } 
 
@@ -655,11 +619,6 @@ class Mahjong extends GameTemplate {
 
   }
 
-
-  receiveGameoverRequest(blk, tx, conf, app) {
-    console.log("The game never ends in Mahjong Solitaire");
-    return;
-  }
 
 }
 

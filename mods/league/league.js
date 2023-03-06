@@ -42,7 +42,7 @@ class League extends ModTemplate {
     this.inactive_player_cutoff = 30 * 24 * 60 * 60 * 1000; 
 
     this.icon_fa = "fas fa-user-friends";
-    this.debug = false;
+    this.debug = true;
   }
 
 
@@ -282,7 +282,7 @@ class League extends ModTemplate {
     if (modname == "League") { return 1; }
     if (modname == "Arcade") { return 1; }
     for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].name === modname) {
+      if (this.leagues[i].game === modname) {
         return 1;
       }
     }
@@ -457,7 +457,7 @@ class League extends ModTemplate {
     //
     // small grace period
     //
-    if ((txmsg.reason == "cancellation" || txmsg.reason == "arcadeclose") && is_gameover) { 
+    if (is_gameover && (txmsg.reason == "cancellation" || txmsg.reason?.includes("Wins:"))) { 
       console.log(txmsg.reason);
       return; 
     }
@@ -470,12 +470,13 @@ class League extends ModTemplate {
       txmsg.winner = txmsg.winner[0];
     }
 
+    if (this.debug){console.log(`League updating player scores for end of ${is_gameover? "game":"round"}`); }
     //
     // fetch leagues
     //
     let relevantLeagues = await this.getRelevantLeagues(game);
 
-    if (this.debug){console.log(relevantLeagues, publickeys);}
+  //  if (this.debug){console.log(relevantLeagues, publickeys);}
 
     //
     // update database
@@ -549,7 +550,7 @@ class League extends ModTemplate {
       }
     }
 
-    if (this.debug){console.log(relevantLeagues, publickeys);}
+//    if (this.debug){console.log(relevantLeagues, publickeys);}
 
     //
     // and insert if needed
@@ -618,7 +619,7 @@ class League extends ModTemplate {
       await this.incrementPlayer(players[i], league.id, "games_finished", 1);
     }
 
-    let numPoints = (txmsg.reason == "tie") ? 2: 3;
+    let numPoints = (txmsg.reason == "tie") ? 2: 4;
     let gamekey = (txmsg.reason == "tie") ? "games_tied" : "games_won";
 
     for (let i = 0; i < players.length; i++){
@@ -701,7 +702,7 @@ class League extends ModTemplate {
       for (let i = 0; i < league.players.length; i++){
         if (league.players[i].publickey === publickey){
           league.players[i][field]++;
-          console.log("Incremented:");
+          console.log(`Incremented ${field}:`);
           console.log(JSON.parse(JSON.stringify(league.players[i])));
           success = true;
         }
@@ -734,7 +735,7 @@ class League extends ModTemplate {
       for (let i = 0; i < league.players.length; i++){
         if (league.players[i].publickey === playerObj.publickey){
           league.players[i]["score"] = playerObj.score;
-          console.log("New Score:");
+          console.log("New Score: " + playerObj.score);
           console.log(JSON.parse(JSON.stringify(league.players[i])));
         }
       }
@@ -802,7 +803,7 @@ class League extends ModTemplate {
 
     if (!this.returnLeague(obj.id)) {
       
-      if (this.debug) { console.log("Add League with ID: " + obj.id); }
+      //if (this.debug) { console.log("Add League with ID: " + obj.id); }
 
       let newLeague = this.validateLeague(obj);
 
@@ -814,7 +815,7 @@ class League extends ModTemplate {
       newLeague.rank = 0; //My rank in the league
     
 
-      if (this.debug) { console.log("New League", JSON.parse(JSON.stringify(newLeague))); }
+      //if (this.debug) { console.log("New League", JSON.parse(JSON.stringify(newLeague))); }
 
       this.leagues.push(newLeague);
 

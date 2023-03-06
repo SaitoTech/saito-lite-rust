@@ -48,7 +48,7 @@ class Arcade extends ModTemplate {
       'arcade': 'fa-solid fa-gamepad'
     };
 
-    this.debug = false;
+    this.debug = true;
   }
 
 
@@ -1295,6 +1295,24 @@ class Arcade extends ModTemplate {
   // single player game
   //
   async launchSinglePlayerGame(gameobj) {
+    
+      let opentx = this.createOpenTransaction(gameobj, this.app.wallet.returnPublicKey());
+      
+      this.app.connection.emit("relay-send-message", { recipient: "PEERS", request: "arcade spv update", data: opentx.transaction });
+      this.addGame(opentx, "private");
+
+      opentx.msg.players.splice(0, 1);
+      opentx.msg.players_sigs.splice(0, 1);
+
+      let newtx = this.createAcceptTransaction(opentx);
+      
+      this.app.network.propagateTransaction(newtx);
+      this.app.connection.emit("relay-send-message", { recipient: "PEERS", request: "arcade spv update", data: newtx.transaction });
+  
+      //Start Spinner  
+      this.app.connection.emit("arcade-game-initialize-render-request");
+
+/*
     try {
 
       this.app.connection.emit("arcade-game-initialize-render-request");
@@ -1334,6 +1352,7 @@ class Arcade extends ModTemplate {
       console.log(err);
       return;
     }
+*/
 
   }
 
@@ -1413,6 +1432,9 @@ class Arcade extends ModTemplate {
     if (this.app.options.games) {
       for (let i = this.app.options.games.length - 1; i >= 0; i--) {
         if (this.app.options.games[i].module === "" && this.app.options.games[i].id.length < 25) {
+          this.app.options.games.splice(i, 1);
+        }else if (this.app.options.games[i].players_set == 0){
+          //This will be games created but not fully initialized for whatever reason
           this.app.options.games.splice(i, 1);
         }
       }
