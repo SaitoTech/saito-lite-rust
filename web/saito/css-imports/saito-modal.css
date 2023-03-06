@@ -53,65 +53,20 @@ This alows for a header with a header with title to be added without extra CSS
   margin-top: auto;
   line-height: 3rem;
   height: 3rem;
+
 }
 
-.saito-modal-text-input {
-  margin-left: 3rem;
-  margin-right: 3rem;
-  width: 50rem;
-  max-width: 50rem;
-  margin-top: 0.75rem;
-}
-
-.saito-modal-button {
-  background-color: var(--saito-white);
-  margin-top: 3rem;
-  margin-left: 3rem;
-  max-width: min-content;
-  padding-left: 4rem;
-  padding-right: 4rem;
-}
-
-.saito-modal-button:hover {
-  border: 1px solid var(--saito-white);
-}
-
-#saito-confirm-add-publickey {
-  background-color:  var(--saito-white);
-  height: auto;
-  width: 30vh;
-  border-radius: 1.5rem;
-  padding: 2rem;
-}
-
-#saito-confirm-add-publickey .saito-identicon-box {
+.saito-identicon-box {
   display: inline-block;
   margin-left: 50%;
   transform: translateX(-50%);
 }
 
-#saito-confirm-add-publickey .saito-identicon-box .saito-identicon {
+.saito-identicon-box .saito-identicon {
   width: 8rem;
   height: 8rem;
 }
 
-#saito-confirm-add-publickey>.saito-address {
-  width: 100%;
-  max-width: 100%;
-  overflow: inherit;
-  display: block;
-  height: auto;
-  word-break: break-word;
-  text-overflow: inherit;
-  white-space: break-spaces;
-  text-align: center;
-  margin-top: 5rem;
-  margin-bottom: 1rem;
-}
-
-#saito-confirm-add-publickey>.saito-contact-status {
-  text-align: center;
-}
 
 .saito-modal-title .saito-user .saito-identicon {
   width: 4rem;
