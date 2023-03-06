@@ -14,7 +14,7 @@ class RedSquareImage {
 
   render() {
 
-    let element = ".tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body  .tweet-picture";
+    let element = ".tweet-" + this.tweet.tx.transaction.sig + " > .tweet-body  .tweet-picture";
     let template = RedSquareImageTemplate(this.app, this.mod, this.images);
     let sig = this.tweet.tx.transaction.sig;
 
@@ -29,9 +29,9 @@ class RedSquareImage {
       var img = new Image;
       let tweet = this.tweet;
 
-      img.onload = function() {
+      img.onload = function () {
 
-        let available_width_qs = ".tweet-"+tweet.tx.transaction.sig+ " > .tweet-body .tweet-main";
+        let available_width_qs = ".tweet-" + tweet.tx.transaction.sig + " > .tweet-body .tweet-main";
         if (document.querySelector(available_width_qs)) {
           let obj = document.querySelector(available_width_qs);
           expected_width = parseInt(obj.getBoundingClientRect().width);
@@ -41,13 +41,15 @@ class RedSquareImage {
         expected_height = parseInt((expected_width / img.width) * img.height);
 
         while (Math.floor(expected_height) > expected_width) {
-  	  expected_height = expected_width * 0.69;
+          expected_height = expected_width * 0.69;
         }
 
-        let qs = ".tweet-"+sig+ " > .tweet-body  .tweet-picture .image-"+i;
-	let obj = document.querySelector(qs);
-	obj.style.maxHeight = Math.floor(expected_height) + "px";
-	obj.style.maxWidth = expected_width + "px";
+        let qs = ".tweet-" + sig + " > .tweet-body  .tweet-picture .image-" + i;
+        let obj = document.querySelector(qs);
+        if (obj) {
+          obj.style.maxHeight = Math.floor(expected_height) + "px";
+          obj.style.maxWidth = expected_width + "px";
+          }
       };
       img.src = this.images[0];
 
@@ -66,18 +68,18 @@ class RedSquareImage {
     }
 
     this.attachEvents();
-  }  
+  }
 
 
 
   attachEvents() {
 
-    let sel = ".tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body .tweet-preview .tweet-picture > img";
+    let sel = ".tweet-" + this.tweet.tx.transaction.sig + " > .tweet-body .tweet-preview .tweet-picture > img";
 
     if (document.querySelectorAll(sel)) {
       document.querySelectorAll(sel).forEach(image => {
         image.onclick = (e) => {
-          let image_idx = e.currentTarget.getAttribute("data-index");	  
+          let image_idx = e.currentTarget.getAttribute("data-index");
           this.overlay.render(image_idx);
         }
       });
