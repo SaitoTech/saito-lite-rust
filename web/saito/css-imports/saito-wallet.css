@@ -146,14 +146,13 @@
   color: #333;
 }
 
-.saito-withdraw-overlay {
-  width: 38vw;
+#saito-withdraw-overlay {
+  min-width: 38vw;
   padding: 2rem;
   color: #fff;
   background-position: 0em;
   background-size: 120% 100%;
   color: white;
-  border-radius: 1rem;
 }
 
 .mixin-withdraw-token-wrapper {
@@ -445,6 +444,84 @@
   font-size: 2rem;
 }
 
+
+/*
+  Withdrawl overlay 
+*/
+
+.token-dropdown {
+  display: flex;
+  position: relative;
+  background: var(--saito-light-shim);
+  padding-right: 0.5rem;
+  border-radius: 0.5rem;
+  //border: 1px solid var(--saito-font-color-light);
+}
+
+.token-dropdown img { 
+  width: 2rem;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 1rem;
+}
+
+.token-dropdown select {
+  height: 45px;
+  padding: 0rem 3rem;
+  border: none;
+  background: none;
+}
+
+.withdraw-address-cont {
+  position: relative; 
+}
+
+
+.withdraw-address-cont input  {
+  border: none;
+}
+
+.withdraw_address {
+  border: none;
+  background: var(--saito-light-shim);
+  font-size: 1.3rem !important;
+  color: var(--saito-gray-mid);
+}
+
+.withdraw-options-cont {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--saito-gray-mid);
+}
+
+.withdraw-options-cont span:nth-child(1) {
+  margin-right: 1rem;
+}
+
+.withdrawl-notes {
+  background: var(--saito-light-shim);
+  padding: 1rem 1rem;
+  border-radius: 0.5rem;
+  color: var(--saito-black-faded);
+  //border: 1px solid var(--saito-font-color-light);
+}
+
+.withdrawl-notes div:nth-child(2) {
+  margin-top: 1rem;
+}
+
+#saito-overlay-submit {
+  width: 100%;
+  display: block;
+  height: 3rem;
+  padding: 0rem;
+  line-height: 0rem;
+}
+
+
 @media screen and (max-width: 768px) {
   .mixin-items-container .saito-table-header {
     grid-template-columns: 8rem 8rem;
@@ -460,9 +537,6 @@
     width: 24vw;
     height: auto;
   }
-  .saito-withdraw-overlay {
-    width: 95vw;
-  }
   .mixin-no-history {
     margin-top: 1rem;
     margin-left: 0rem;
@@ -475,5 +549,9 @@
   }
   .mixin_crypto_overlay {
     width: 99vw;
+  }
+
+  #saito-withdraw-overlay {
+    min-width: 99vw;
   }
 }
