@@ -59,6 +59,11 @@ web/saito/saito.js.LICENSE.txt
 mods/covid/bundler/
 web/saito/game-full.css
 web/saito/saito-full.css
+web/saito/game.css
+web/saito/saito.css
+
+# ignore all style.css files as these are not compiled
+style.css
 
 mods/popup
 mods/popup/*
