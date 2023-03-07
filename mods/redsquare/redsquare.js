@@ -298,6 +298,8 @@ class RedSquare extends ModTemplate {
   //
   async onPeerServiceUp(app, peer, service = {}) {
 
+return;
+
     //
     // avoid network overhead if in other apps
     //
@@ -646,6 +648,7 @@ class RedSquare extends ModTemplate {
   }
 
   loadMoreNotifications() {
+
     this.increment_for_notifications++;
     let pre_existing_notifications = this.notifications.length;
     let loaded_notifications = false;
