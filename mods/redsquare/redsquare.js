@@ -298,8 +298,6 @@ class RedSquare extends ModTemplate {
   //
   async onPeerServiceUp(app, peer, service = {}) {
 
-return;
-
     //
     // avoid network overhead if in other apps
     //
