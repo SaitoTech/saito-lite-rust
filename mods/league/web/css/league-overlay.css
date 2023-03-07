@@ -53,9 +53,8 @@
 }
 
 .league-overlay-body {
-  display: grid;
-  grid-template-columns: 1fr 0.5fr;
-  grid-gap: 2rem;
+  display: flex;
+  gap: 2rem;
   min-height: 25rem;
 }
 
@@ -65,11 +64,21 @@
 }
 
 .league-overlay-body>div {
+  max-height: calc(90vh - 22rem);
+  flex-grow: 1;
+}
+
+.league-overlay-description, .league-overlay-league-body-games, .league-overlay-leaderboard {
   box-shadow: var(--saito-box-shadow) var(--saito-border-color);
   padding: 2rem;
   border-radius: 0.5rem;
-  max-height: calc(90vh - 22rem);
   overflow-y: auto;
+}
+
+.league-overlay-body-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .league-overlay-header-image {
@@ -83,12 +92,14 @@
 .league-overlay-description {
   font-size: 1.7rem;
   line-height: 2.3rem;
+  overflow: visible;
 }
 
 .league-overlay-league-body-games {
   display: flex;
   flex-direction: column;
   row-gap: 1rem;
+  flex-grow: 1;
 }
 
 .league_recent_game {
@@ -117,9 +128,8 @@
   flex-direction: row;
 }
 
-.league-overlay-league-body-games-list .saito-table {
+.league-overlay-games-list .saito-table {
   overflow-y: scroll;
-  max-height: 25vh;
 }
 
 .league_recent_player{
@@ -149,7 +159,7 @@
 }
 
 .league-overlay-leaderboard{
-  grid-row: span 2;
+  min-width: min(40rem, 100%);
 }
 
 @media screen and (max-width: 1000px) {

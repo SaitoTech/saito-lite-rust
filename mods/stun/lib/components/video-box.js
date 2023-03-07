@@ -122,7 +122,7 @@ class VideoBox {
 
     }
 
-    renderPlaceholder(placeholder_info = "Negotiating Peer connection") {
+    renderPlaceholder(placeholder_info = "negotiating peer connection") {
         if (!document.querySelector(`#stream${this.stream_id}`)) {
             if (this.containerClass) {
                 this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, false, this.ui_type), this.containerClass);
@@ -183,7 +183,7 @@ class VideoBox {
         switch (connectionState) {
             case "connecting":
                 if(this.stream_rendered) return;
-                    this.updateConnectionMessage(`Starting ${this.call_type.toUpperCase()} Chat ` );            
+                    this.updateConnectionMessage(`starting ${this.call_type} chat ` );            
                 break;
             case "connected":
                 if (this.stream) {
@@ -198,7 +198,7 @@ class VideoBox {
                 this.stream = null
                 this.stream_rendered = false;
                 video_box.firstElementChild.srcObject = this.stream
-                siteMessage(`Connection with ${this.stream_id} unstable`, 5000);
+                siteMessage(`connection with ${this.stream_id} unstable`, 5000);
                 break;
             case "failed":
                 if (document.querySelector(`#stream${this.stream_id}`)) {
@@ -206,18 +206,18 @@ class VideoBox {
                     this.stream = null
                     this.stream_rendered = false;
                     video_box.firstElementChild.srcObject = this.stream
-                    this.updateConnectionMessage('Connection failed, Retrying connection');
+                    this.updateConnectionMessage('connection failed, retrying connection');
                     siteMessage(`Connection with  ${this.stream_id} failed`, 5000);
                 }
                 break;
             case "ten_seconds":
-                this.updateConnectionMessage('Negotiating Peer Connection')
+                this.updateConnectionMessage('negotiating peer connection')
                 break
             case "twenty_seconds":
-                this.updateConnectionMessage('Trying Alternative Route')
+                this.updateConnectionMessage('trying alternative route')
                 break
             case "two_minutes":
-                this.updateConnectionMessage('Retrying Connection')
+                this.updateConnectionMessage('retrying connection')
                 break
 
             default:

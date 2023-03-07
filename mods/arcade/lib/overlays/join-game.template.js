@@ -74,26 +74,26 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	  </div>
 	  <div class="arcade-game-controls">`;
 
-
-	  if (mod.isAcceptedGame(invite.game_id)){
-	  		html += `<div id="arcade-game-controls-continue-game" class="saito-button saito-button-primary">continue game</div>`;
-	    	if (invite.players.length > 1){
-	    		html += `<div id="arcade-game-controls-forfeit-game" class="saito-button saito-button-primary">forfeit game</div>`	    		
-	    	}
-	    	html += `<div id="arcade-game-controls-close-game" class="saito-button saito-button-primary">close game</div>`;
-	  }else{
-	  	if (invite.players.includes(app.wallet.returnPublicKey())) {
-	  		if (app.wallet.returnPublicKey() === invite.originator){
-					html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">cancel invite</div>`;
-	  		}else{
-	  			html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">leave invite</div>`;	
-	  		}
-	  		
-	  	}else if (invite.empty_slots > 0){
-	  		html += `<div id="arcade-game-controls-join-game" class="saito-button saito-button-primary">join game</div>`;
-	  	}
-	  }
-
+	  if (!invite.time_finished){
+		  if (mod.isAcceptedGame(invite.game_id)){
+		  		html += `<div id="arcade-game-controls-continue-game" class="saito-button saito-button-primary">continue game</div>`;
+		    	if (invite.players.length > 1){
+		    		html += `<div id="arcade-game-controls-forfeit-game" class="saito-button saito-button-primary">forfeit game</div>`	    		
+		    	}
+		    	html += `<div id="arcade-game-controls-close-game" class="saito-button saito-button-primary">close game</div>`;
+		  }else{
+		  	if (invite.players.includes(app.wallet.returnPublicKey())) {
+		  		if (app.wallet.returnPublicKey() === invite.originator){
+						html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">cancel invite</div>`;
+		  		}else{
+		  			html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">leave invite</div>`;	
+		  		}
+		  		
+		  	}else if (invite.empty_slots > 0){
+		  		html += `<div id="arcade-game-controls-join-game" class="saito-button saito-button-primary">join game</div>`;
+		  	}
+		  }
+		}
 	html += `
 	  </div>
 </div>

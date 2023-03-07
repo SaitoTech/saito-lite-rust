@@ -15,9 +15,11 @@ class RedSquareNotification {
     this.type = 1; 	// 1 reply
 			// 2 retweet
 			// 3 like
-
-    this.user = new SaitoUser(this.app, this.mod, `.notification-item-${tx.transaction.sig} > .tweet-header`, tx.transaction.from[0].add);
-
+    if (tx != null) {
+      this.user = new SaitoUser(this.app, this.mod, `.notification-item-${tx.transaction.sig} > .tweet-header`, tx.transaction.from[0].add);
+    } else {
+      this.user = null;
+    }
   }
 
   render(selector = "") {

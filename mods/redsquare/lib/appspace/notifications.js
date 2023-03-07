@@ -42,6 +42,7 @@ class RedSquareAppspaceNotifications {
       notification.render(".redsquare-notifications");
     }
 
+
     if (this.mod.notifications.length === 0){
       let notification = new Notification(this.app, this.mod, null);
       notification.render(".redsquare-notifications");
