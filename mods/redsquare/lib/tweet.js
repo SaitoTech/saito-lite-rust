@@ -138,19 +138,21 @@ class Tweet {
     //          
     // this is if i retweet my own tweet
     //
-//    if (this.text == "" && this.retweet_tx != null) {
+    if (this.text == "" && this.retweet_tx != null) {
       //  
       // i am retweeting myself
-      //    
-//      this.retweet.notice = "retweeted by " + this.app.browser.returnAddressHTML(this.tx.transaction.from[0].add);
-//console.log("CONTAINER: " + this.container);
-//console.log("RETWEET CONT: " + this.retweet.container);
-//console.log("MYQS: " + myqs);
-//      this.retweet.container = this.container;
-//      this.retweet.render(prepend);
-//console.log("B: done!");
-//      return;
-//    }
+      //
+      this.retweet.notice = "retweeted by " + this.app.browser.returnAddressHTML(this.tx.transaction.from[0].add);
+      this.retweet.container = ".tweet-" + this.retweet.tx.transaction.sig;
+      let t = this.mod.returnTweet(this.retweet.tx.transaction.sig);
+      if (t) { 
+	t.notice = this.retweet.notice;
+        t.render(prepend);
+      } else {
+        this.retweet.render(prepend);
+      }
+      return;
+    }
          
 
     //
