@@ -24,7 +24,7 @@ class InviteManager {
 		//
 		// handle requests to re-render invite manager
 		//
-		this.app.connection.on("arcade-invite-manager-render-request", () => {
+		app.connection.on("arcade-invite-manager-render-request", () => {
 			if (!this.mod.is_game_initializing) {
 				this.render();
 			}
@@ -80,6 +80,7 @@ class InviteManager {
 						this.app,
 						this.mod,
 						target,
+						this.type,
 						this.mod.games[list][i]
 					);
 					newInvite.render();
