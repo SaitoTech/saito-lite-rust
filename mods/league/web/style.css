@@ -675,9 +675,8 @@ i.link_icon.private {
 }
 
 .league-overlay-body {
-  display: grid;
-  grid-template-columns: 1fr 0.5fr;
-  grid-gap: 2rem;
+  display: flex;
+  gap: 2rem;
   min-height: 25rem;
 }
 
@@ -687,10 +686,13 @@ i.link_icon.private {
 }
 
 .league-overlay-body>div {
+  max-height: calc(90vh - 22rem);
+}
+
+.league-overlay-description, .league-overlay-league-body-games, .league-overlay-leaderboard {
   box-shadow: var(--saito-box-shadow) var(--saito-border-color);
   padding: 2rem;
   border-radius: 0.5rem;
-  max-height: calc(90vh - 22rem);
   overflow-y: auto;
 }
 
