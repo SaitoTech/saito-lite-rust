@@ -128,7 +128,7 @@
   flex-direction: row;
 }
 
-.league-overlay-league-body-games-list .saito-table {
+.league-overlay-games-list .saito-table {
   overflow-y: scroll;
 }
 
