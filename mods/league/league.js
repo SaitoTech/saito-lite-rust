@@ -42,7 +42,7 @@ class League extends ModTemplate {
     this.inactive_player_cutoff = 30 * 24 * 60 * 60 * 1000; 
 
     this.icon_fa = "fas fa-user-friends";
-    this.debug = true;
+    this.debug = false;
   }
 
 
@@ -457,7 +457,7 @@ class League extends ModTemplate {
     //
     // small grace period
     //
-    if (is_gameover && (txmsg.reason == "cancellation" || txmsg.reason?.includes("Wins:"))) { 
+    if (is_gameover && (txmsg.reason == "cancellation" || txmsg.reason?.includes("Wins:") || txmsg.reason?.includes("Scores: "))) { 
       console.log(txmsg.reason);
       return; 
     }

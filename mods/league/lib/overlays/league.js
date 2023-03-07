@@ -41,11 +41,11 @@ class LeagueOverlay {
 
     //Show list of recent games (once refreshed)
     this.app.modules.renderInto(".league-overlay-games-list");
+
     let obj = {game: this.league.game};
     if (this.league.admin){
       obj["league"] = this.league.id;
     }
-    console.log(obj);
     this.app.connection.emit("league-overlay-games-list", obj);
 
     //Add click event to create game
@@ -69,60 +69,6 @@ class LeagueOverlay {
       	}
       };
     });
-
-  }
-
-
-  renderRecentGames(league) {
-
-    let html = "";
-
-    //
-    // recent league games 
-    //
-    if (league.games.length > 0) {
-      html += `
-        <h5>Recent${league.admin?" League":""} Matches</h5>
-        <div class="saito-table">
-          <div class="saito-table-body">
-      `;
-    }
-    for (let i = 0; i < league.games.length; i++) {
-
-      let g = league.games[i];
-      let players = g.players_array.split("_");
-      let datetime = this.app.browser.formatDate(g.time_finished);
-      let date = datetime.month + ' ' + datetime.day + ', ' + datetime.year; 
-      let players_html = `<div class="league_recent_players_list">`;
-
-      players.forEach( (player, key) => {
-        players_html += `<div class="league_recent_player${g.winner==player?" winner":""}"><img class="saito-module-identicon saito-identicon" id-${player}" src="${this.app.keychain.returnIdenticon(player)}"></div>`;
-
-        /*players_html += `<div class="league_recent_players_list_item"><div class='league_recent_player saito-address' data-id='${player}'>${player}</div>`;
-        if (g.winner == player) {
-          players_html += `<div class="league_recent_player_winner">(w)</i></div>`;
-        } else {
-          players_html += `<div></div>`;
-        }
-        players_html += `</div>`;
-        */
-      });
-      players_html += "</div>";
-
-      html += `
-        <div class="saito-table-row league_recent_game">
-          <div class="league_recent_date">${date}</div>${players_html}<div class="league_recent_cause">${g.method?g.method:""}</div>
-        </div>
-      `;
-    }
-    if (league.games.length > 0) {
-      html += `
-          </div>
-        </div>
-      `;
-    }
-
-    this.app.browser.addElementToSelector(html, ".league_recent_games");
 
   }
 

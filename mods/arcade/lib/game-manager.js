@@ -14,7 +14,6 @@ class GameManager {
 		this.lists = ["over"];
 		
 		app.connection.on("league-overlay-games-list", (filter)=>{
-			console.log("Render Request:", filter);
 			this.filter = filter;
 			this.render();
 		});
@@ -25,7 +24,6 @@ class GameManager {
 		// replace element or insert into page (deletes invites for a full refresh)
 		//
 		let target = this.container + " .game-manager";
-		console.log(target);
 
 		if (document.querySelector(target)) {
 			this.app.browser.replaceElementBySelector(`<div class="game-manager"></div>`, target);

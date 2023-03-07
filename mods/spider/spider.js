@@ -70,20 +70,20 @@ class Spider extends OnePlayerGameTemplate {
 
     console.log(JSON.parse(JSON.stringify(this.game)));
     
-    if (this.game.queue.length == 0){
-        this.game.queue.push("play");
-    }
     
     //Set difficulty
     let input_dif = this.game.options?.difficulty || "medium";
-    this.changeDifficulty(input_dif);
-      
-    this.game.queue.push("READY");
-
+ 
     if (this.browser_active){
       // Insert game board
       $(".gameboard").html(this.returnBoard());
     }
+ 
+    this.changeDifficulty(input_dif);
+      
+    this.game.queue.push("READY");
+
+
   }
 
 
@@ -101,7 +101,8 @@ class Spider extends OnePlayerGameTemplate {
       console.log("Original Difficulty = "+saved_dif + ", new difficulty: " +dif);
 
       this.saveGamePreference("spider_difficulty", dif);
-      this.newRound();  
+      this.game.queue.push("lose");
+      this.endTurn();
     }
   }
 
@@ -182,11 +183,14 @@ class Spider extends OnePlayerGameTemplate {
     let state = super.returnState();
 
     state.moves = 0;
-    state.score = 100;
+    state.score = 100 * this.difficulty;
     state.recycles_remaining = 5;
 
     state.completed_stacks = [];
     state.board = [];
+    
+    state.scores = [];
+
     for (let i = 0; i < 10; i++){
       state.board.push([]);
     }
@@ -211,7 +215,7 @@ class Spider extends OnePlayerGameTemplate {
 
     this.game.state.moves = 0;
     this.game.state.completed_stacks = [];
-    this.game.state.score = 100;
+    this.game.state.score = 100 * this.difficulty;
 
     //Reset/Increment State
     this.game.state.round++;
@@ -302,7 +306,6 @@ class Spider extends OnePlayerGameTemplate {
       class:"game-confirm-easy",
       callback: function(app,game_mod){
         game_mod.changeDifficulty("easy");
-        game_mod.endTurn();
       }
     });
    
@@ -312,7 +315,6 @@ class Spider extends OnePlayerGameTemplate {
       class:"game-confirm-medium",
       callback: function(app,game_mod){
          game_mod.changeDifficulty("medium");
-         game_mod.endTurn();   
       }
     });
 
@@ -322,7 +324,6 @@ class Spider extends OnePlayerGameTemplate {
       class:"game-confirm-hard",
       callback: function(app,game_mod){
        game_mod.changeDifficulty("hard");
-       game_mod.endTurn();
       }
     });
 
@@ -785,7 +786,8 @@ class Spider extends OnePlayerGameTemplate {
         this.game.queue.splice(qe, 1);
         if (this.game.state.moves > 0){
           this.game.state.losses++;
-          let final_score = this.game.state.score + this.difficulty*100; 
+          let final_score = this.game.state.score; 
+          this.game.state.scores.push(final_score);
           this.endGame([], final_score.toString());  
         }
         this.newRound();
@@ -796,7 +798,8 @@ class Spider extends OnePlayerGameTemplate {
         this.game.queue.splice(qe, 1);
         this.game.state.wins++;
         this.animateFinalVictory();
-        let final_score = this.game.state.score + this.difficulty*100 + 500;
+        let final_score = this.game.state.score + 400;
+        this.game.state.scores.push(final_score);
         this.endGame(this.app.wallet.returnPublicKey(), final_score.toString());
         this.overlay.show(this.returnStatsHTML("Winner!"), ()=>{
           this.newRound();
@@ -819,7 +822,6 @@ class Spider extends OnePlayerGameTemplate {
       if (mv[0] === "play") {
         
         if (this.browser_active){
-          this.game.queue.splice(qe, 1);
           /* We want to deal the cards onto the table, each stack is an array*/
           let indexCt = 0;
 

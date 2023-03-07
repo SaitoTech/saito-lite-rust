@@ -36,11 +36,14 @@ class SaitoMania extends OnePlayerGameTemplate {
 
     this.app.connection.emit("chat-manager-request-no-interrupts");
 
-    if (!this.game.queue || this.game.queue.length == 0) {
+    if (!this.game.state) {
       console.log("******Generating the Game******");
       this.game.queue = [];
       this.game.queue.push("play");
       this.game.queue.push("READY");
+      this.game.state = {
+        scores: [],
+      };
     }
     
     console.log(JSON.parse(JSON.stringify(this.game)));
@@ -129,6 +132,7 @@ class SaitoMania extends OnePlayerGameTemplate {
     if (log_msg.includes("SAITOMANIA:")){
       let score = log_msg.replace("SAITOMANIA:","");
       console.log("Game over, final score:" + score);
+      this.game.state.scores.push(score);
       this.endGame([], score);
       return 1;
     }
