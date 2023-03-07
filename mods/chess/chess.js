@@ -115,7 +115,27 @@ class Chessgame extends GameTemplate {
     });
 
     this.menu.addSubMenuOption("game-game", {
-      text : "Resign Game",
+      text : "Offer Draw",
+      id : "game-draw",
+      class : "game-draw",
+      callback : async function(app, game_mod) {
+        let c = await sconfirm("Do you really want to offer a draw?");
+        if (c) {
+          if (game_mod.game.draw_offered >= 0){
+            if (game_mod.game.draw_offered == 0){
+              game_mod.updateStatusMessage("Draw offer sent; " + game_mod.status);
+              game_mod.game.draw_offered = -1;
+              var data = {draw: "offer"};
+              game_mod.endTurn(data);
+              return;
+            }
+          } 
+        }
+      }
+    });
+
+    this.menu.addSubMenuOption("game-game", {
+      text : "Resign",
       id : "game-resign",
       class : "game-resign",
       callback : async function(app, game_mod) {
