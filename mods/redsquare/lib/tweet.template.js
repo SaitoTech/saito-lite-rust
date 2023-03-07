@@ -6,6 +6,8 @@ module.exports = (app, mod, tweet) => {
   let notice = "";
   if (tweet.notice != "") { notice = tweet.notice; }
 
+console.log("notice is: " + notice);
+
   let publickey = "";
   try { 
     if (tweet.tx.transaction.from[0].add) { publickey = tweet.tx.transaction.from[0].add; }
