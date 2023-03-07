@@ -32,6 +32,7 @@ class Invite {
       game_type: "standard game",
       winner: "",
       method: "",
+      time_finished: 0,
     };
 
     //
@@ -50,6 +51,7 @@ class Invite {
 
       if (txmsg.winner) { this.invite_data.winner = txmsg.winner; }
       if (txmsg.method) { this.invite_data.method = txmsg.method; }
+      if (txmsg.time_finished) { this.invite_data.time_finished = txmsg.time_finished; }
 
       //We still don't know the exact data structures for specified invite(s)
       //But it isn't going to be a single string pushed into an array!

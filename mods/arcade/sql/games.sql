@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS games (
   tx TEXT,
   start_bid INTEGER,
   created_at INTEGER,
+  time_finished INTEGER DEFAULT 0,
   step INTEGER DEFAULT 0,
   winner TEXT,
   method VARCHAR(100) DEFAULT "",

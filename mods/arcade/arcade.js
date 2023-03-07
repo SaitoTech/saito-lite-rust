@@ -3,6 +3,7 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeMain = require("./lib/main/main");
 const SaitoHeader = require("./../../lib/saito/ui/saito-header/saito-header");
 const InviteManager = require("./lib/invite-manager");
+const GameManager = require("./lib/game-manager");
 const GameWizard = require("./lib/overlays/game-wizard");
 const GameSelector = require("./lib/overlays/game-selector");
 const GameScheduler = require("./lib/overlays/game-scheduler");
@@ -131,6 +132,7 @@ class Arcade extends ModTemplate {
             game_tx.transaction.sig = game.id;
             game_tx.msg = msg;
 
+
             console.log("Processing games from app.options:");
 
             //
@@ -184,8 +186,12 @@ class Arcade extends ModTemplate {
               }
             }
 
+            //
+            //Game Meta Data stored directly in DB
+            //
             game_tx.msg.winner = record.winner;
             game_tx.msg.method = record.method;
+            game_tx.msg.time_finished = record.time_finished;
             
             if (arcade_self.debug){
               console.log("Load DB Game: " + record.status, game_tx.returnMessage());
@@ -280,7 +286,7 @@ class Arcade extends ModTemplate {
   //
   canRenderInto(qs) {
     if (qs === ".redsquare-sidebar") { return true; }
-    if (qs == ".league-overlay-league-body-games-list") { return true; }
+    if (qs == ".league-overlay-games-list") { return true; }
     return false;
   }
 
@@ -311,18 +317,15 @@ class Arcade extends ModTemplate {
       }
     }
 
-    if (qs == ".league-overlay-league-body-games-list") {
+    if (qs == ".league-overlay-games-list") {
       if (!this.renderIntos[qs]) {
         this.styles = ['/arcade/css/arcade-overlays.css', '/arcade/css/arcade-invites.css'];
         this.renderIntos[qs] = [];
-        let obj = new InviteManager(this.app, this, ".league-overlay-league-body-games-list");
-        obj.type = "sparse";
-        obj.lists = ["open", "active", "over"];
+        let obj = new GameManager(this.app, this, ".league-overlay-games-list");
         this.renderIntos[qs].push(obj);
         this.attachStyleSheets();
       }
     }
-
 
     if (this.renderIntos[qs] != null && this.renderIntos[qs].length > 0) {
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
@@ -882,13 +885,22 @@ class Arcade extends ModTemplate {
     await this.changeGameStatus(txmsg.game_id, "over");
 
     let game = this.returnGame(txmsg.game_id);
+    if (game?.msg){
+      //Store the results locally
+      game.msg.winner = txmsg.winner;
+      game.msg.method = txmsg.reason;
+      game.msg.time_finished = txmsg.ts;
+    }else{
+      console.warn("Game not found");
+    }
 
-    //Store the results locally
-    game.msg.winner = txmsg.winner;
-    game.msg.method = txmsg.reason;
-
-    let sql = `UPDATE games SET winner = $winner, method = $method WHERE game_id = $game_id`;
-    let params = { $winner: txmsg.winner, $method: txmsg.reason, $game_id: txmsg.game_id };
+    let sql = `UPDATE games SET winner = $winner, method = $method, time_finished = $ts WHERE game_id = $game_id`;
+    let params = { 
+        $winner: txmsg.winner, 
+        $method: txmsg.reason, 
+        $ts: txmsg.ts,
+        $game_id: txmsg.game_id, 
+        };
     await this.app.storage.executeDatabase(sql, params, "arcade");
   }
 

@@ -40,7 +40,13 @@ class LeagueOverlay {
     this.leaderboards[this.league.id].render();
 
     //Show list of recent games (once refreshed)
-    this.app.modules.renderInto(".league-overlay-league-body-games-list");
+    this.app.modules.renderInto(".league-overlay-games-list");
+    let obj = {game: this.league.game};
+    if (this.league.admin){
+      obj["league"] = this.league.id;
+    }
+    console.log(obj);
+    this.app.connection.emit("league-overlay-games-list", obj);
 
     //Add click event to create game
     this.attachEvents();
@@ -77,7 +83,7 @@ class LeagueOverlay {
     if (league.games.length > 0) {
       html += `
         <h5>Recent${league.admin?" League":""} Matches</h5>
-        <div class="saito-table league_recent_others">
+        <div class="saito-table">
           <div class="saito-table-body">
       `;
     }
