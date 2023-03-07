@@ -1,12 +1,11 @@
-var saito = require('../../lib/saito/saito');
-var GameTemplate = require('../../lib/templates/gametemplate');
+const OnePlayerGameTemplate = require('../../lib/templates/oneplayergametemplate');
 const BeleagueredGameRulesTemplate = require("./lib/beleaguered-game-rules.template");
 
 
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
-class Beleaguered extends GameTemplate {
+class Beleaguered extends OnePlayerGameTemplate {
 
   constructor(app) {
 
@@ -17,23 +16,11 @@ class Beleaguered extends GameTemplate {
     this.slug = "beleaguered";
     this.description = 'Stack all cards by suit from aces to kings to win this game';
     this.categories = "Games Cardgame One-player";
+    this.publisher_message = "Community-created game";
 
-    this.maxPlayers = 1;
-    this.minPlayers = 1;
     this.app = app;
     this.status = "Beta";
     this.sides = ["r", "l"];
-  }
-
-  // Create an exp league by default
-  respondTo(type) {
-    if (type == "default-league") {
-      let obj = super.respondTo(type);
-      obj.ranking_algorithm = "EXP";
-      obj.default_score = 0;
-      return obj;
-    }
-    return super.respondTo(type);
   }
 
 
@@ -92,12 +79,11 @@ class Beleaguered extends GameTemplate {
       class: "game-new",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.endGame();
-        game_mod.newRound();
+        game_mod.prependMove("lose");
         game_mod.endTurn();
       }
     });
-    this.menu.addSubMenuOption("game-game", {
+    /*this.menu.addSubMenuOption("game-game", {
       text: "Play Mode",
       id: "game-play",
       class: "game-play",
@@ -105,7 +91,7 @@ class Beleaguered extends GameTemplate {
         game_mod.menu.showSubSubMenu("game-play");
       }
     });
-
+    */
     this.menu.addMenuOption("game-info", "Info");
 
     this.menu.addSubMenuOption("game-info", {
@@ -133,22 +119,6 @@ class Beleaguered extends GameTemplate {
   }
 
 
-  returnState() {
-
-    let state = {};
-
-    state.round = 0;
-    state.wins = 0;
-
-    return state;
-
-  }
-
-  exitGame() {
-    this.updateStatusWithOptions("Saving game to the blockchain...");
-    this.prependMove("exit_game\t" + this.game.player);
-    this.endTurn();
-  }
 
   returnStatsHTML() {
     let html = `<div class="rules-overlay">
@@ -471,8 +441,14 @@ class Beleaguered extends GameTemplate {
 
       if (mv[0] === "win") {
         this.game.state.wins++;
-        this.endGame(this.app.wallet.returnPublicKey());
-        this.newRound();
+        this.game.queue.push("round");
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${JSON.stringify([])}`);
+      }
+
+      if (mv[0] === "lose"){
+        this.game.state.losses++;
+        this.game.queue.push("round");
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);
       }
 
       if (mv[0] === "play") {
@@ -481,20 +457,6 @@ class Beleaguered extends GameTemplate {
           this.handToBoard();
           this.displayBoard();
           this.displayUserInterface();
-        }
-        return 0;
-      }
-
-      if (mv[0] === "exit_game") {
-        this.game.queue.splice(qe, 1);
-        let player = parseInt(mv[1])
-        this.removeAllAvailable();
-        this.saveGame(this.game.id);
-
-        if (this.game.player === player) {
-          super.exitGame();
-        } else {
-          this.updateStatus("Player has exited the building");
         }
         return 0;
       }
@@ -510,15 +472,6 @@ class Beleaguered extends GameTemplate {
         let temp = this.game.deck[0].hand[x];
         this.game.deck[0].hand[x] = this.game.deck[0].hand[y];
         this.game.deck[0].hand[y] = temp;
-        return 1;
-      }
-
-      //
-      // avoid infinite loops
-      //
-      if (shd_continue == 0) {
-        console.log("NOT CONTINUING");
-        return 0;
       }
 
     }
@@ -604,10 +557,6 @@ class Beleaguered extends GameTemplate {
     return card.substring(1);
   }
 
-  receiveGameoverRequest(blk, tx, conf, app) {
-    console.log("The game never ends in Beleaguered");
-    return;
-  }
 
 
 }
