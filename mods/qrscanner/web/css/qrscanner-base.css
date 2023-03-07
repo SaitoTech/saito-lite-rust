@@ -31,19 +31,19 @@ video {
 }
 
 .scanline {
-  border: 3px solid var(--saito-red);
-  width: 80vw;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  width: 78vw;
   position: absolute;
-  left: 10vw;
+  left: 11vw;
   top: 3vh;
   z-index: 9999999;
   animation: scanning 2s infinite;
   animation-timing-function: cubic-bezier();
-  box-shadow: 0 0 15px 20px rgba(247, 31, 61, 0.76);
+  box-shadow: 0 0 15px 10px var(--saito-primary);
 }
 
 .qr-target {
-
   position: absolute;
   left: 10vw;
   top: 10vw;
@@ -56,7 +56,7 @@ video {
   position: absolute;
   width: 10%;
   height: 10%;
-  border-color: var(--saito=white);
+  border-color: var(--saito-white);
   border-style: solid;
   content: ' ';
 }
@@ -92,7 +92,6 @@ video {
   left: 0;
   border-width: 0 0 2px 2px;
 }
-
 
 .close-scanner {
   border: 3px solid var(--saito-primary);
