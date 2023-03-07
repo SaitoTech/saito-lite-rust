@@ -66,9 +66,9 @@ class VideoChatManager {
 
             let my_public_key = this.app.wallet.returnPublicKey()
             if (my_public_key === offer_creator) {
-                this.renderRemoteStreamPlaceholder(offer_recipient, "Attempting to connect", true);
+                this.renderRemoteStreamPlaceholder(offer_recipient, "attempting to connect", true);
             } else {
-                this.renderRemoteStreamPlaceholder(offer_creator, "Attempting to connect");
+                this.renderRemoteStreamPlaceholder(offer_creator, "attempting to connect");
             }
 
         })
