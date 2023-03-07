@@ -65,6 +65,7 @@
 
 .league-overlay-body>div {
   max-height: calc(90vh - 22rem);
+  flex-grow: 1;
 }
 
 .league-overlay-description, .league-overlay-league-body-games, .league-overlay-leaderboard {
