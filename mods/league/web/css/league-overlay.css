@@ -159,7 +159,7 @@
 }
 
 .league-overlay-leaderboard{
-  grid-row: span 2;
+  min-width: min(40rem, 100%);
 }
 
 @media screen and (max-width: 1000px) {
