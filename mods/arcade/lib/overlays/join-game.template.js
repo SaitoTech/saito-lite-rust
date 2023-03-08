@@ -4,7 +4,15 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 		console.log("INVITATION DETAILS: ", invite);
 	}
 
-	let desc =  (invite?.desired_opponent_publickeys?.length > 0) ? 'private invitation' : 'open invitation';
+	//Uncreated games
+	let desc =  (invite?.desired_opponent_publickeys?.length > 0 || invite.game_status == "private") ? 'private invitation' : 'open invitation';
+	//If created
+	if (mod.isAcceptedGame(invite.game_id)){
+		desc = "active game";
+	}
+	if (invite.time_finished){
+		desc = "finished game";
+	}
 
   let html = `
   <div class="arcade-game-overlay">

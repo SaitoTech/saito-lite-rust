@@ -230,7 +230,7 @@ class VideoChatManager {
 
 
 
-    renderRemoteStreamPlaceholder(peer, placeholder_info, isCreator) {
+    renderRemoteStreamPlaceholder(peer, placeholder_info, isCreator = false) {
         this.createVideoBox(peer, placeholder_info);
         this.video_boxes[peer].video_box.render(null, peer, 'large-wrapper', placeholder_info);
         this.video_boxes[peer].video_box.startWaitTimer(isCreator);
