@@ -63,10 +63,6 @@ class Tweet {
       console.log("ERROR 2: " + err);
     }
 
-console.log("LINK: " + this.link);
-console.log("LNKP: " + this.link_properties);
-console.log("LNKP: " + JSON.stringify(this.link_properties));
-
     this.generateTweetProperties(app, mod, 1);
 
     //
