@@ -161,16 +161,16 @@ img {
   height: 102px;
 }
 .vial_yellow {
-  background-image: url(/mods/pandemic/img/Vial%20Yellow.png);
+  background-image: url(/mods/pandemic/web/img/Vial%20Yellow.png);
 }
 .vial_blue {
-  background-image: url(/mods/pandemic/img/Vial%20Blue.png);
+  background-image: url(/mods/pandemic/web/img/Vial%20Blue.png);
 }
 .vial_red {
-  background-image: url(/mods/pandemic/img/Vial%20Red.png);
+  background-image: url(/mods/pandemic/web/img/Vial%20Red.png);
 }
 .vial_black {
-  background-image: url(/mods/pandemic/img/Vial%20Black.png);
+  background-image: url(/mods/pandemic/web/img/Vial%20Black.png);
 }
 
 
