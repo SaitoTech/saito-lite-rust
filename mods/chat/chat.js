@@ -1,4 +1,4 @@
-const SaitoUserTemplate = require('./../../lib/saito/ui/templates/saito-user.template.js');
+const SaitoUserTemplate = require('./../../lib/saito/ui/saito-user/saito-user.template.js');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ChatManager = require('./lib/chat-manager/main');
@@ -535,7 +535,7 @@ try {
                     ts = txmsg.timestamp;
                 }
                 msg = this.app.browser.sanitize(msg);
-                html += `${SaitoUserTemplate(this.app, sender, msg, this.app.browser.returnTime(ts))}`;
+                html += `${SaitoUserTemplate({ app : this.app, publickey : sender, notice : msg, fourthelem : this.app.browser.returnTime(ts) })}`;
             }
         }
 

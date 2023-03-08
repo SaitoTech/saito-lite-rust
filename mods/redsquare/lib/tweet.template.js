@@ -62,11 +62,14 @@ console.log("notice is: " + notice);
             <div class="tweet-main">
               <div class="tweet-text">${app.browser.sanitize(text)}</div>
   `;
-  if (tweet.youtube_id != null) {
+  if (tweet.youtube_id != null && tweet.youtube_id != "null") {
+console.log("HERE---->"+tweet.link+"<------");
+console.log("HERE---->"+tweet.youtube_id+"<------");
     html += `
       <iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>
     `;
   } else {
+console.log("TWEET PREVIEW INSERTED INSTEAD!");
     html += `
               <div class="tweet-preview tweet-preview-${tweet.tx.transaction.sig}">
               </div>
