@@ -7,7 +7,7 @@ body {
   padding: 0px;
   margin: 0px;
   background-color: #024;
-  background:  url("img/background.jpg");
+  background:  url(/mods/wordblocks/web/img/background.jpg);
   background-size: cover;
   overflow-x: hidden;
   overflow-y: auto;
@@ -293,7 +293,7 @@ thead,  tfoot{
   width: 58px;
   height: 58px;
   margin: 9px;
-  background-image: url("img/empty_tile.png");
+  background-image: url(/mods/wordblocks/web/img/empty_tile.png);
   background-size: cover;
   color: rgb(43,29,14);
   border-radius: 6px;
@@ -305,7 +305,7 @@ thead,  tfoot{
 .slot {
   cursor: pointer;
   display: flex;
-  background-image: url("img/slot2.png");
+  background-image: url(/mods/wordblocks/web/img/slot2.png);
   background-size: contain;
   border-image: initial;
   border-radius: 4px;
@@ -325,7 +325,7 @@ thead,  tfoot{
   color: rgb(43,29,14);
   font-size: 36px; 
   background-color: rgba(68, 68, 68, 0.85);
-  background-image: url("img/empty_tile.png");
+  background-image: url(/mods/wordblocks/web/img/empty_tile.png);
   background-size: cover;
   text-align: center;
   /*padding-top: 6px;*/
@@ -621,7 +621,7 @@ Resize board on smaller screens
   width: 54px;
   height: 54px;
   /*background-color: limegreen;*/
-  background-image: url("img/empty_tile.png");
+  background-image: url(/mods/wordblocks/web/img/empty_tile.png);
   background-size: cover;
   color: rgb(43,29,14);
   font-size: 36px;
