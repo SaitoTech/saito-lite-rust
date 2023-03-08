@@ -11,7 +11,6 @@ const emoji = require("node-emoji");
 const UserMenu = require("./ui/modals/user-menu/user-menu");
 const MyUserMenu = require("./ui/modals/my-user-menu/my-user-menu");
 
-
 class Browser {
   public app: any;
   public browser_active: any;
@@ -54,7 +53,7 @@ class Browser {
 
     try {
       if (!document.hidden) {
-        this.setActiveTab(1);
+        await this.setActiveTab(1);
       }
 
       //
@@ -63,17 +62,15 @@ class Browser {
       // up instead and showed it to them and they understood.
       //
       try {
-
         this.attachWindowFunctions();
 
         const channel = new BroadcastChannel("saito");
         if (!document.hidden) {
           channel.postMessage({
             active: 1,
-            publickey: this.app.wallet.getPublicKey()
+            publickey: await this.app.wallet.getPublicKey(),
           });
         }
-
 
         /******
          channel.onmessage = (e) => {
@@ -105,13 +102,14 @@ class Browser {
             if (document.hidden) {
               channel.postMessage({
                 active: 0,
-                publickey: this.app.wallet.getPublicKey()
+                publickey: this.app.wallet.getPublicKey(),
               });
             } else {
-              this.setActiveTab(1);
-              channel.postMessage({
-                active: 1,
-                publickey: this.app.wallet.getPublicKey()
+              this.setActiveTab(1).then(() => {
+                channel.postMessage({
+                  active: 1,
+                  publickey: this.app.wallet.getPublicKey(),
+                });
               });
             }
           },
@@ -222,12 +220,12 @@ class Browser {
       //
       // Add Connection Monitors
       //
-      this.app.connection.on("connection_up", function(peer) {
+      this.app.connection.on("connection_up", function (peer) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         siteMessage("Websocket Connection Established", 1000);
       });
-      this.app.connection.on("connection_down", function(peer) {
+      this.app.connection.on("connection_down", function (peer) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         siteMessage("Websocket Connection Lost");
@@ -242,23 +240,20 @@ class Browser {
       "click",
       (e) => {
         if (
-          e.target?.classList?.contains("saito-identicon") || e.target?.classList?.contains("saito-address")
+          e.target?.classList?.contains("saito-identicon") ||
+          e.target?.classList?.contains("saito-address")
         ) {
-
           let publickey = e.target.getAttribute("data-id");
           if (!publickey || !app.crypto.isPublicKey(publickey)) {
             return;
           }
           if (publickey !== app.wallet.getPublicKey()) {
-
             e.preventDefault();
             e.stopImmediatePropagation();
 
             let userMenu = new UserMenu(app, publickey);
             userMenu.render(app);
-
           } else {
-
             e.preventDefault();
             e.stopImmediatePropagation();
 
@@ -268,7 +263,7 @@ class Browser {
         }
       },
       {
-        capture: true
+        capture: true,
       }
     );
   }
@@ -290,7 +285,7 @@ class Browser {
             if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) {
               add = cleaner;
             }
-            if (!keys.includes(add) && (add != "" && add != null)) {
+            if (!keys.includes(add) && add != "" && add != null) {
               keys.push(add);
             }
           }
@@ -302,14 +297,14 @@ class Browser {
     let adds = text.match(/([a-zA-Z0-9._-]{44}|[a-zA-Z0-9._-]{45})/gi);
 
     if (adds) {
-      adds.forEach(add => {
+      adds.forEach((add) => {
         if (this.app.crypto.isPublicKey(add) && !keys.includes(add)) {
           keys.push(add);
         }
       });
     }
     if (identifiers) {
-      identifiers.forEach(id => {
+      identifiers.forEach((id) => {
         let key = this.app.keychain.returnKey({ identifier: id });
         if (key.publickey) {
           let add = key.publickey;
@@ -341,8 +336,7 @@ class Browser {
           return pair[1];
         }
       }
-    } catch (err) {
-    }
+    } catch (err) {}
     return "";
   }
 
@@ -353,15 +347,13 @@ class Browser {
         return x.substring(0, 2);
       }
       return x;
-    } catch (err) {
-    }
+    } catch (err) {}
     return "en";
   }
 
-
   isMobileBrowser(user_agent = navigator.userAgent) {
     let check = false;
-    (function(user_agent) {
+    (function (user_agent) {
       if (
         /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(
           user_agent
@@ -475,13 +467,14 @@ class Browser {
   // toggle active tab and disable / enable core blockchain
   // functionality as needed.
   //
-  setActiveTab(active) {
+  async setActiveTab(active) {
     console.log("SET ACTIVE TAB");
     this.active_tab = active;
     this.app.blockchain.process_blocks = active;
     this.app.storage.save_options = active;
-    for (let i = 0; i < this.app.network.peers.length; i++) {
-      this.app.network.peers[i].handle_peer_requests = active;
+    console.log("peers : ", await this.app.network.getPeers());
+    for (let peer of await this.app.network.getPeers()) {
+      peer.handle_peer_requests = active;
     }
   }
 
@@ -701,7 +694,6 @@ class Browser {
     }
   }
 
-
   makeElement(elemType, elemId, elemClass) {
     const headerDiv = document.createElement(elemType);
     headerDiv.id = elemId;
@@ -726,7 +718,6 @@ class Browser {
   }
 
   formatTime(milliseconds = 0) {
-
     let hours = parseInt(milliseconds / 3600000);
     milliseconds = milliseconds % 3600000;
 
@@ -736,7 +727,6 @@ class Browser {
     let seconds = parseInt(milliseconds / 1000);
 
     return { hours: hours, minutes: minutes, seconds: seconds };
-
   }
 
   returnTime(timestamp) {
@@ -785,7 +775,12 @@ class Browser {
     return { year, month, day, hours, minutes };
   }
 
-  addDragAndDropFileUploadToElement(id, handleFileDrop = null, click_to_upload = true, read_as_array_buffer = false) {
+  addDragAndDropFileUploadToElement(
+    id,
+    handleFileDrop = null,
+    click_to_upload = true,
+    read_as_array_buffer = false
+  ) {
     const hidden_upload_form = `
       <form class="my-form" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
@@ -812,10 +807,10 @@ class Browser {
       });
       dropArea.addEventListener(
         "drop",
-        function(e) {
+        function (e) {
           const dt = e.dataTransfer;
           const files = dt.files;
-          [...files].forEach(function(file) {
+          [...files].forEach(function (file) {
             const reader = new FileReader();
             reader.addEventListener("load", (event) => {
               handleFileDrop(event.target.result);
@@ -831,9 +826,9 @@ class Browser {
       );
       dropArea.parentNode.parentNode.addEventListener(
         "paste",
-        function(e) {
+        function (e) {
           const files = e.clipboardData.files;
-          [...files].forEach(function(file) {
+          [...files].forEach(function (file) {
             const reader = new FileReader();
             reader.addEventListener("load", (event) => {
               handleFileDrop(event.target.result);
@@ -849,18 +844,18 @@ class Browser {
       );
       const input = document.getElementById(`hidden_file_element_${id}`);
       if (click_to_upload == true) {
-        dropArea.addEventListener("click", function(e) {
+        dropArea.addEventListener("click", function (e) {
           input.click();
         });
       }
 
       input.addEventListener(
         "change",
-        function(e) {
+        function (e) {
           const fileName = "";
           if (this.files && this.files.length > 0) {
             const files = this.files;
-            [...files].forEach(function(file) {
+            [...files].forEach(function (file) {
               const reader = new FileReader();
               reader.addEventListener("load", (event) => {
                 handleFileDrop(event.target.result);
@@ -914,7 +909,7 @@ class Browser {
       let element_start_left = 0;
       let element_start_top = 0;
 
-      element_to_drag.onmousedown = function(e) {
+      element_to_drag.onmousedown = function (e) {
         if (timeout) {
           clearTimeout(timeout);
         }
@@ -956,7 +951,7 @@ class Browser {
 
         element_moved = false;
 
-        document.onmouseup = function(e) {
+        document.onmouseup = function (e) {
           if (dockable) {
             if (element_to_move.classList.contains("dockedLeft")) {
               element_to_move.style.left = 0;
@@ -993,7 +988,7 @@ class Browser {
           }
         };
 
-        document.onmousemove = function(e) {
+        document.onmousemove = function (e) {
           e = e || window.event;
           e.preventDefault();
           const threshold = 25;
@@ -1025,9 +1020,11 @@ class Browser {
             }
 
             if (
-              Math.abs(element_to_move.getBoundingClientRect().x +
-                element_to_move.getBoundingClientRect().width -
-                window.innerWidth) < threshold
+              Math.abs(
+                element_to_move.getBoundingClientRect().x +
+                  element_to_move.getBoundingClientRect().width -
+                  window.innerWidth
+              ) < threshold
             ) {
               element_to_move.classList.add("dockedRight");
             } else {
@@ -1035,9 +1032,11 @@ class Browser {
             }
 
             if (
-              Math.abs(element_to_move.getBoundingClientRect().y +
-                element_to_move.getBoundingClientRect().height -
-                window.innerHeight) < threshold
+              Math.abs(
+                element_to_move.getBoundingClientRect().y +
+                  element_to_move.getBoundingClientRect().height -
+                  window.innerHeight
+              ) < threshold
             ) {
               element_to_move.classList.add("dockedBottom");
             } else {
@@ -1049,17 +1048,24 @@ class Browser {
             if (Math.abs(newPosX) < threshold) {
               newPosX = 0;
             }
-            if (Math.abs(newPosX + element_to_move.getBoundingClientRect().width - window.innerWidth) < threshold) {
+            if (
+              Math.abs(
+                newPosX + element_to_move.getBoundingClientRect().width - window.innerWidth
+              ) < threshold
+            ) {
               newPosX = window.innerWidth - element_to_move.getBoundingClientRect().width;
             }
 
             if (Math.abs(newPosY) < threshold) {
               newPosY = 0;
             }
-            if (Math.abs(newPosY + element_to_move.getBoundingClientRect().height - window.innerHeight) < threshold) {
+            if (
+              Math.abs(
+                newPosY + element_to_move.getBoundingClientRect().height - window.innerHeight
+              ) < threshold
+            ) {
               newPosY = window.innerHeight - element_to_move.getBoundingClientRect().height;
             }
-
           }
 
           element_to_move.style.left = newPosX + "px";
@@ -1077,7 +1083,7 @@ class Browser {
         return false;
       };
 
-      element_to_drag.ontouchstart = function(e) {
+      element_to_drag.ontouchstart = function (e) {
         e = e || window.event;
 
         if (
@@ -1109,7 +1115,7 @@ class Browser {
         mouse_current_left = mouse_down_left;
         mouse_current_top = mouse_down_top;
 
-        document.ontouchend = function(e) {
+        document.ontouchend = function (e) {
           document.ontouchend = null;
           document.ontouchmove = null;
           if (mycallback && element_moved) {
@@ -1117,7 +1123,7 @@ class Browser {
           }
         };
 
-        document.ontouchmove = function(e) {
+        document.ontouchmove = function (e) {
           e = e || window.event;
           //e.preventDefault();
 
@@ -1149,7 +1155,6 @@ class Browser {
     }
   }
 
-
   /**
    * Fetches publickeys visible in application HTML
    *
@@ -1178,7 +1183,6 @@ class Browser {
     }
     return unidentified_keys;
   }
-
 
   /**
    * Fetchs identifiers from a set of keys
@@ -1227,8 +1231,7 @@ class Browser {
     try {
       const addresses = document.getElementsByClassName(`saito-address-${key}`);
       Array.from(addresses).forEach((add) => (add.innerHTML = id));
-    } catch (err) {
-    }
+    } catch (err) {}
   }
 
   logMatomoEvent(category, action, name, value) {
@@ -1261,7 +1264,7 @@ class Browser {
     return hash
       .substr(1)
       .split("&")
-      .reduce(function(result, item) {
+      .reduce(function (result, item) {
         const parts = item.split("=");
         result[parts[0]] = parts[1];
         return result;
@@ -1319,14 +1322,14 @@ class Browser {
   async captureScreenshot(callback = null) {
     // svg needs converstion
     let svgElements = document.body.querySelectorAll("svg");
-    svgElements.forEach(function(item) {
+    svgElements.forEach(function (item) {
       item.setAttribute("width", item.getBoundingClientRect().width);
       item.setAttribute("height", item.getBoundingClientRect().height);
       item.style.width = null;
       item.style.height = null;
     });
 
-    html2canvas(document.body).then(function(canvas) {
+    html2canvas(document.body).then(function (canvas) {
       let img = canvas.toDataURL("image/jpeg", 0.35);
       if (callback != null) {
         callback(img);
@@ -1397,12 +1400,12 @@ class Browser {
           "pre",
           "img",
           "marquee",
-          "pre"
+          "pre",
         ],
         allowedAttributes: {
           div: ["class", "id"],
           a: ["href", "name", "target", "class", "id"],
-          img: ["src", "class"]
+          img: ["src", "class"],
         },
         selfClosing: ["img", "br", "hr", "area", "base", "basefont", "input", "link", "meta"],
         allowedSchemes: ["http", "https", "ftp", "mailto"],
@@ -1410,14 +1413,14 @@ class Browser {
         allowedSchemesAppliedToAttributes: ["href", "cite"],
         allowProtocolRelative: true,
         transformTags: {
-          a: sanitizeHtml.simpleTransform("a", { target: "_blank" })
-        }
+          a: sanitizeHtml.simpleTransform("a", { target: "_blank" }),
+        },
       });
 
       /* wrap link in <a> tag */
       let urlPattern =
         /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/gi;
-      text = text.replace(urlPattern, function(url) {
+      text = text.replace(urlPattern, function (url) {
         return `<a target="_blank" class="saito-treated-link" href="${url.trim()}">${url.trim()}</a>`;
       });
 
@@ -1439,7 +1442,7 @@ class Browser {
       return;
     }
     let elements = element.childNodes;
-    elements.forEach(async el => {
+    elements.forEach(async (el) => {
       const new_el = document.createElement("span");
       if (el.childNodes.length > 0) {
         const tags = ["P", "SPAN", "DIV", "BLOCKQUOTE"];
@@ -1456,7 +1459,6 @@ class Browser {
         if (!identifiers) {
           identifiers = [];
         }
-        ;
         if (!keys) {
           keys = [];
         }
@@ -1466,7 +1468,6 @@ class Browser {
           identifiers = [...new Set(identifiers)];
 
           try {
-
             identifiers.forEach(async (identifier) => {
               let answer = this.app.keychain.returnKey({ identifier: identifier });
               console.log(answer + " - " + identifier);
@@ -1482,16 +1483,22 @@ class Browser {
             const answer = await this.app.keychain.fetchManyIdentifiersPromise(keys);
             mappedKeyIdentifiers = Object.assign({}, mappedKeyIdentifiers, answer);
 
-            keys.forEach(k => {
+            keys.forEach((k) => {
               let matched = false;
               Object.entries(mappedKeyIdentifiers).forEach(([key, value]) => {
                 if (key == k) {
-                  html = html.replaceAll(key, `<span data-id="${key}" class="saito-active-key saito-address">${value}</span>`);
+                  html = html.replaceAll(
+                    key,
+                    `<span data-id="${key}" class="saito-active-key saito-address">${value}</span>`
+                  );
                   matched = true;
                 }
               });
               if (!matched) {
-                html = html.replaceAll(k, `<span data-id="${k}" class="saito-active-key saito-address">${k}</span>`);
+                html = html.replaceAll(
+                  k,
+                  `<span data-id="${k}" class="saito-active-key saito-address">${k}</span>`
+                );
               }
             });
             if (typeof el.tagName == "undefined") {
@@ -1504,18 +1511,14 @@ class Browser {
             console.error(err);
           }
         }
-        ;
       }
     });
-  };
-
+  }
 
   activatePublicKeyObserver(app) {
-
     return;
 
     let mutationObserver = new MutationObserver((entries) => {
-
       entries.forEach((entry) => {
         entry.addedNodes.forEach((node) => {
           recursive_search(app, node);
@@ -1530,12 +1533,10 @@ class Browser {
             //Replace identifier from Registry -- there should just be one child
             Array.from(node.children).forEach((child_node) => {
               if (child_node?.classList?.contains("saito-address")) {
-
                 console.log("FOUND PUBLIC KEY!: " + address);
 
                 let identifier = app.keychain.returnIdentifierByPublicKey(address, true);
                 if (identifier) {
-
                   console.log("IDENTIFIER: " + identifier);
 
                   try {
@@ -1549,7 +1550,6 @@ class Browser {
               }
             });
           }
-
         } else {
           if (node && node.children && Array.from(node.children).length > 0) {
             Array.from(node.children).forEach((child_node) => {
@@ -1562,7 +1562,7 @@ class Browser {
 
     mutationObserver.observe(document.documentElement, {
       childList: true,
-      subtree: true
+      subtree: true,
     });
   }
 
@@ -1613,11 +1613,10 @@ class Browser {
     return new_img;
   }
 
-
   getImageDimensions(file) {
-    return new Promise(function(resolved, rejected) {
+    return new Promise(function (resolved, rejected) {
       let i = new Image();
-      i.onload = function() {
+      i.onload = function () {
         resolved({ w: i.width, h: i.height });
       };
       i.src = file;
@@ -1631,13 +1630,11 @@ class Browser {
   }
 
   attachWindowFunctions() {
-
     if (typeof window !== "undefined") {
-
       let browser_self = this;
 
-      let mutationObserver = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
+      let mutationObserver = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
           if (mutation.addedNodes.length > 0) {
             browser_self.treatElements(mutation.addedNodes);
           }
@@ -1649,24 +1646,24 @@ class Browser {
         characterData: true,
         childList: true,
         subtree: true,
-        attributeOldValue: true
+        attributeOldValue: true,
       });
 
-      window.sanitize = function(msg) {
+      window.sanitize = function (msg) {
         let result = browser_self.sanitize(msg);
         return result;
       };
 
-      window.salert = function(message) {
+      window.salert = function (message) {
         if (document.getElementById("saito-alert")) {
           return;
         }
         let wrapper = document.createElement("div");
         wrapper.id = "saito-alert";
-        let html = "<div id=\"saito-alert-shim\">";
-        html += "<div id=\"saito-alert-box\">";
-        html += "<p class=\"saito-alert-message\">" + browser_self.sanitize(message) + "</p>";
-        html += "<div id=\"saito-alert-buttons\"><button id=\"alert-ok\">OK</button>";
+        let html = '<div id="saito-alert-shim">';
+        html += '<div id="saito-alert-box">';
+        html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
+        html += '<div id="saito-alert-buttons"><button id="alert-ok">OK</button>';
         html += "</div></div></div>";
         wrapper.innerHTML = html;
         document.body.appendChild(wrapper);
@@ -1674,7 +1671,7 @@ class Browser {
           document.querySelector("#saito-alert-box").style.top = "0";
         }, 100);
         document.querySelector("#alert-ok").focus();
-        document.querySelector("#saito-alert-shim").addEventListener("keyup", function(event) {
+        document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
           if (event.keyCode === 13) {
             event.preventDefault();
             document.querySelector("#alert-ok").click();
@@ -1682,25 +1679,25 @@ class Browser {
         });
         document.querySelector("#alert-ok").addEventListener(
           "click",
-          function() {
+          function () {
             wrapper.remove();
           },
           false
         );
       };
 
-      window.sconfirm = function(message) {
+      window.sconfirm = function (message) {
         if (document.getElementById("saito-alert")) {
           return;
         }
         return new Promise((resolve, reject) => {
           let wrapper = document.createElement("div");
           wrapper.id = "saito-alert";
-          let html = "<div id=\"saito-alert-shim\">";
-          html += "<div id=\"saito-alert-box\">";
-          html += "<p class=\"saito-alert-message\">" + browser_self.sanitize(message) + "</p>";
+          let html = '<div id="saito-alert-shim">';
+          html += '<div id="saito-alert-box">';
+          html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
           html +=
-            "<div id=\"saito-alert-buttons\"><button id=\"alert-cancel\">Cancel</button><button id=\"alert-ok\">OK</button>";
+            '<div id="saito-alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
           html += "</div></div></div>";
           wrapper.innerHTML = html;
           document.body.appendChild(wrapper);
@@ -1728,20 +1725,20 @@ class Browser {
         });
       };
 
-      window.sprompt = function(message) {
+      window.sprompt = function (message) {
         if (document.getElementById("saito-alert")) {
           return;
         }
         return new Promise((resolve, reject) => {
           let wrapper = document.createElement("div");
           wrapper.id = "saito-alert";
-          let html = "<div id=\"saito-alert-shim\">";
-          html += "<div id=\"saito-alert-box\">";
-          html += "<p class=\"saito-alert-message\">" + browser_self.sanitize(message) + "</p>";
+          let html = '<div id="saito-alert-shim">';
+          html += '<div id="saito-alert-box">';
+          html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
           html +=
-            "<div class=\"alert-prompt\"><input type=\"text\" id=\"promptval\" class=\"promptval\" /></div>";
+            '<div class="alert-prompt"><input type="text" id="promptval" class="promptval" /></div>';
           html +=
-            "<div id=\"alert-buttons\"><button id=\"alert-cancel\">Cancel</button><button id=\"alert-ok\">OK</button>";
+            '<div id="alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
           html += "</div></div></div>";
           wrapper.innerHTML = html;
           document.body.appendChild(wrapper);
@@ -1750,7 +1747,7 @@ class Browser {
           setTimeout(() => {
             document.querySelector("#alert-box").style.top = "0";
           }, 100);
-          document.querySelector("#saito-alert-shim").addEventListener("keyup", function(event) {
+          document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
             if (event.keyCode === 13) {
               event.preventDefault();
               document.querySelector("#alert-ok").click();
@@ -1758,7 +1755,7 @@ class Browser {
           });
           document.querySelector("#alert-ok").addEventListener(
             "click",
-            function() {
+            function () {
               let val = document.querySelector("#promptval").value;
               wrapper.remove();
               resolve(val);
@@ -1767,7 +1764,7 @@ class Browser {
           );
           document.querySelector("#alert-cancel").addEventListener(
             "click",
-            function() {
+            function () {
               wrapper.remove();
               resolve(false);
             },
@@ -1776,14 +1773,14 @@ class Browser {
         });
       };
 
-      window.siteMessage = function(message, killtime = 9999999) {
+      window.siteMessage = function (message, killtime = 9999999) {
         if (document.getElementById("message-wrapper")) {
           document.getElementById("message-wrapper").remove();
         }
         let wrapper = document.createElement("div");
         wrapper.id = "message-wrapper";
-        let html = "<div id=\"message-box\">";
-        html += "<p class=\"message-message\">" + browser_self.sanitize(message) + "</p>";
+        let html = '<div id="message-box">';
+        html += '<p class="message-message">' + browser_self.sanitize(message) + "</p>";
         html += "</div>";
         wrapper.innerHTML = html;
         document.body.appendChild(wrapper);
@@ -1792,7 +1789,7 @@ class Browser {
         }, killtime);
         document.querySelector("#message-wrapper").addEventListener(
           "click",
-          function() {
+          function () {
             wrapper.remove();
           },
           false
@@ -1806,12 +1803,8 @@ class Browser {
           console.err(err);
         }
       };
-
     }
-
-
   }
-
 
   treatElements(nodeList) {
     for (let i = 0; i < nodeList.length; i++) {
@@ -1828,7 +1821,7 @@ class Browser {
     if (input.classList.contains("treated")) {
       return;
     } else {
-      input.addEventListener("change", function(e) {
+      input.addEventListener("change", function (e) {
         let fileName = "";
         if (this.files && this.files.length > 1) {
           fileName = this.files.length + " files selected.";
@@ -1870,8 +1863,6 @@ class Browser {
       console.log(this.app.options);
     }
   }
-
 }
 
 export default Browser;
-

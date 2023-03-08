@@ -1,3 +1,5 @@
+import Peer from "./peer";
+
 const getUuid = require("uuid-by-string");
 const ModalSelectCrypto = require("./ui/modals/select-crypto/select-crypto");
 import Transaction from "./transaction";
@@ -34,42 +36,43 @@ export default class Wallet {
   public recreate_pending_transactions: any;
   public saitoCrypto: any;
 
-  public async createUnsignedTransactionWithDefaultFee(
-    publickey = "",
-    amount = BigInt(0)
-  ): Promise<Transaction> {
+  public createUnsignedTransactionWithDefaultFee(publickey = "", amount = BigInt(0)): Transaction {
     if (publickey == "") {
-      publickey = await this.getPublicKey();
+      publickey = this.getPublicKey();
     }
     return this.createUnsignedTransaction(publickey, amount, BigInt(0));
   }
 
-  public async createUnsignedTransaction(
+  public createUnsignedTransaction(
     publicKey = "",
     amount = BigInt(0),
     fee = BigInt(0),
     force_merge = false
-  ): Promise<Transaction> {
+  ): Transaction {
     return S.getInstance().createTransaction(publicKey, amount, fee, force_merge);
   }
 
-  public async signTransaction(tx: Transaction) {
+  public signTransaction(tx: Transaction) {
     return S.getInstance().signTransaction(tx);
   }
 
-  public async getPublicKey(): Promise<string> {
+  public getPublicKey(): string {
     return S.getInstance().getPublicKey();
   }
 
-  public async getPendingTransactions(): Promise<Array<Transaction>> {
+  public returnPrivateKey(): string {
+    return S.getInstance().getPrivateKey();
+  }
+
+  public getPendingTransactions(): Array<Transaction> {
     return S.getInstance().getPendingTransactions();
   }
 
-  public async signAndEncryptTransaction(tx: Transaction) {
+  public signAndEncryptTransaction(tx: Transaction) {
     return S.getInstance().signAndEncryptTransaction(tx);
   }
 
-  public async getBalance(ticker = "SAITO"): Promise<bigint> {
+  public getBalance(ticker = "SAITO"): bigint {
     if (ticker === "SAITO") {
       return S.getInstance().getBalance();
     }
@@ -88,7 +91,7 @@ export default class Wallet {
       }
 
       async returnBalance() {
-        return parseFloat(this.app.wallet.returnBalance());
+        return parseFloat(await this.app.wallet.getBalance());
       }
 
       returnAddress() {
@@ -102,7 +105,7 @@ export default class Wallet {
       async sendPayment(amount, to_address, unique_hash = "") {
         let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(to_address, amount);
         newtx = this.app.wallet.signAndEncryptTransaction(newtx);
-        this.app.network.propagateTransaction(newtx);
+        await this.app.network.propagateTransaction(newtx);
         return newtx.transaction.sig;
       }
 

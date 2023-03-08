@@ -9,6 +9,7 @@ export default class Blockchain {
   }
 
   resetBlockchain() {
+    // TODO : implement
     // //
     // // last in longest_chain
     // //
@@ -34,14 +35,18 @@ export default class Blockchain {
   }
 
   saveBlockchain() {
-    throw new Error("not implemented");
+    // TODO : implement
+    // throw new Error("not implemented");
   }
 
   async loadBlockAsync(hash: string): Promise<Block | null> {
-    throw new Error("not implemented");
+    // TODO : implement
+    // throw new Error("not implemented");
+    return null;
   }
 
   async initialize() {
+    // TODO : implement
     //
     // load blockchain from options if exists
     //

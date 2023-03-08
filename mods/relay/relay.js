@@ -1,17 +1,15 @@
-var ModTemplate = require('../../lib/templates/modtemplate');
-var saito = require('../../lib/saito/saito');
-const JSON = require('json-bigint');
-
+var ModTemplate = require("../../lib/templates/modtemplate");
+var saito = require("../../lib/saito/saito");
+const JSON = require("json-bigint");
 
 class Relay extends ModTemplate {
-
   constructor(app) {
-
     super(app);
 
     this.app = app;
     this.name = "Relay";
-    this.description = "Adds support for off-chain, realtime communications channels through relay servers, for mobile users and real-time gaming needs.";
+    this.description =
+      "Adds support for off-chain, realtime communications channels through relay servers, for mobile users and real-time gaming needs.";
     this.categories = "Utilities Core";
     this.description = "Simple Message Relay for Saito";
     this.categories = "Utilities Communications";
@@ -19,20 +17,21 @@ class Relay extends ModTemplate {
     this.busy = false;
 
     app.connection.on("send-relay-message", (obj) => {
-      if (obj.recipient === "PEERS") {
-        let peers = [];
-        for (let i = 0; i < app.network.peers.length; i++) {
-          peers.push(app.network.peers[i].returnPublicKey());
+      app.network.getPeers().then((peers) => {
+        if (obj.recipient === "PEERS") {
+          let peers = [];
+          for (let i = 0; i < peers.length; i++) {
+            peers.push(peers[i].getPublicKey());
+          }
+          obj.recipient = peers;
         }
-        obj.recipient = peers;
-      }
-      this.sendRelayMessage(obj.recipient, obj.request, obj.data);
-    })
+        this.sendRelayMessage(obj.recipient, obj.request, obj.data);
+      });
+    });
     app.connection.on("set-relay-status-to-busy", () => {
       this.busy = true;
     });
   }
-
 
   returnServices() {
     let services = [];
@@ -40,13 +39,11 @@ class Relay extends ModTemplate {
     return services;
   }
 
-
   //
   // currently a 1-hop function, should abstract to take an array of
   // recipients and permit multi-hop transaction construction.
   //
   sendRelayMessage(recipients, message_request, message_data) {
-
     //
     // recipient can be an array
     //
@@ -89,23 +86,18 @@ class Relay extends ModTemplate {
     }
 
     return;
-
   }
 
-
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
-
     if (tx == null) {
       return;
     }
     let message = tx.returnMessage();
 
     try {
-
       let relay_self = app.modules.returnModule("Relay");
 
       if (message.request === "relay peer message") {
-
         //
         // sanity check on tx
         //
@@ -124,7 +116,6 @@ class Relay extends ModTemplate {
         // if interior transaction is intended for me, I process regardless
         //
         if (inner_tx.isTo(app.wallet.getPublicKey())) {
-
           if (inner_txmsg.request === "ping") {
             this.sendRelayMessage(inner_tx.transaction.from[0].add, "echo", { status: this.busy });
             return;
@@ -146,20 +137,17 @@ class Relay extends ModTemplate {
           // otherwise relay
           //
         } else {
-
           //
           // check to see if original tx is for a peer
           //
           let peer_found = 0;
 
           for (let i = 0; i < app.network.peers.length; i++) {
-
             if (inner_tx.isTo(app.network.peers[i].peer.publickey)) {
-
               peer_found = 1;
 
               if (this.app.BROWSER == 0) {
-                app.network.peers[i].sendTransactionWithCallback(inner_tx, function() {
+                app.network.peers[i].sendTransactionWithCallback(inner_tx, function () {
                   if (mycallback != null) {
                     mycallback({ err: "", success: 1 });
                   }
@@ -177,9 +165,7 @@ class Relay extends ModTemplate {
     } catch (err) {
       console.log(err);
     }
-
   }
-
 }
 
 module.exports = Relay;

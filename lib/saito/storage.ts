@@ -115,4 +115,8 @@ export default class Storage {
       }
     }
   }
+
+  async queryDatabase(sql, params, database) {
+  }
+
 }

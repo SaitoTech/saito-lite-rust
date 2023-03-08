@@ -68,12 +68,16 @@ export default class Network {
     return S.getInstance().propagateTransaction(tx);
   }
 
-  public async getPeers() {
+  public getPeers() {
     return S.getInstance().getPeers();
   }
 
-  public async getPeer(index: bigint) {
-    return await S.getInstance().getPeer(index);
+  public get peers(): Array<Peer> {
+    return S.getInstance().getPeers();
+  }
+
+  public getPeer(index: bigint) {
+    return S.getInstance().getPeer(index);
   }
 
   public async sendRequest(message: string, data: any = "", peer: Peer = null) {
