@@ -47,7 +47,7 @@ body {
 
 .gameboard {
   position: absolute;
-  background-image: url("img/gameboard.jpg");
+  background-image: url(/mods/solitrio/web/img/gameboard.jpg);
   background-size: cover;
   width: 100vw;
   height: 100vh;
