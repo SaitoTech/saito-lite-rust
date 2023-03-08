@@ -365,6 +365,12 @@ return;
     //
     if (!this.browser_active) { return; }
 
+    // make sure we have at least one peer for tweets
+
+    if (!this.peers_for_tweets.includes(peer)) {
+      this.peers_for_tweets.push(peer);
+    }
+
     //
     // render tweet thread
     //
