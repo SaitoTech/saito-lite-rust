@@ -1530,7 +1530,9 @@ class Arcade extends ModTemplate {
 
       let game = this.games[key].find((g) => g.transaction.sig == game_id);
       if (game) { 
-        console.log(`Game found in ${key} list`);
+        if (this.debug){
+          console.log(`Game found in ${key} list`);
+        }
         return game; 
       }
     }
