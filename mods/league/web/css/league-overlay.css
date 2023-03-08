@@ -73,7 +73,7 @@
 }
 
 .league-overlay-header-image {
-  background-image: url(/saito/img/dreamscape.png);
+  background-image: url(/web/saito/img/dreamscape.png);
   background-size: cover;
   width: 11rem;
   height: 7rem;
@@ -147,7 +147,7 @@
 .league_recent_game div{
   align-self: center;
 }
-
+d
 .league-overlay-leaderboard{
   grid-row: span 2;
 }
