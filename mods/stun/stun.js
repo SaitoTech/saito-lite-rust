@@ -439,11 +439,7 @@ class Stun extends ModTemplate {
                         console.log(pc.connectonState, e);
                         console.log(pc.currentLocalDescription, this.peer_connections[publicKey].currentLocalDescription, 'current local description')
 
-                        if (pc.connectionState !== this.peer_connections[publicKey].connectionState) {
-                            console.log('peer objects not equal')
-                            return;
-                        }
-
+                       
                         switch (pc.connectionState) {
                             case "connecting":
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code, true);
@@ -453,10 +449,19 @@ class Stun extends ModTemplate {
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code, true);
                                 break;
                             case "disconnected":
+                                if (pc.connectionState !== this.peer_connections[publicKey].connectionState) {
+                                    console.log('peer objects not equal')
+                                    return;
+                                }
+
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code, true);
 
                                 break;
                             case "failed":
+                                if (pc.connectionState !== this.peer_connections[publicKey].connectionState) {
+                                    console.log('peer objects not equal')
+                                    return;
+                                }
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code, true);
 
                                 break;
@@ -665,6 +670,10 @@ class Stun extends ModTemplate {
 
                             break;
                         case "disconnected":
+                            if (pc.connectionState !== stunx_mod.peer_connections[offer_creator].connectionState) {
+                                console.log('peer objects not equal');
+                                return;
+                            }
                             if (this.central === true) {
                                 if (this.room.peers.includes(offer_creator)) {
                                     this.room.peers = this.room.peers.filter(peer => peer !== offer_creator);
@@ -675,6 +684,10 @@ class Stun extends ModTemplate {
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         case "failed":
+                            if (pc.connectionState !== stunx_mod.peer_connections[offer_creator].connectionState) {
+                                console.log('peer objects not equal');
+                                return;
+                            }
                             console.log("connection state ", pc.connectionState);
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
