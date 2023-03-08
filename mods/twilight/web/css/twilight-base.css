@@ -185,7 +185,7 @@ table caption {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url(/twilight/img/Formosan.png);
   background-size: cover;
 }
 
@@ -375,11 +375,11 @@ body {
 
 .gameboard {
   position: relative;
-  /*background-image: url("/twilight/img/TS Map-11.jpg");*/
+  /*background-image: url('/mods/twilight/web/img/TS Map-11.jpg');*/
   /* width: 5100px; */
   /* height: 3300px; */
-  background-image: url("/twilight/img/TS Map-11-medium.jpg");
-  /*background-image: url("/twilight/img/TS Map-11-small.jpg");*/
+  background-image: url('/mods/twilight/web/img/TS Map-11-medium.jpg');
+  /*background-image: url('/mods/twilight/web/img/TS Map-11-small.jpg');*/
   background-size: cover;
   width: 2550px;
   height: 1650px;
@@ -398,58 +398,58 @@ body {
 
 .round {
   position: absolute;
-  background-image: url("/twilight/img/Turn.svg");
+  background-image: url(/mods/twilight/web/img/Turn.svg);
   background-size: cover;
 }
 
 .action_round_us {
   position: absolute;
-  background-image: url("/twilight/img/AmericanActionRound.svg");
+  background-image: url(/mods/twilight/web/img/AmericanActionRound.svg);
   background-size: cover;
   display: all;
 }
 
 .action_round_ussr {
   position: absolute;
-  background-image: url("/twilight/img/SovietActionRound.svg");
+  background-image: url(/mods/twilight/web/img/SovietActionRound.svg);
   background-size: cover;
   display: all;
 }
 
 .defcon {
   position: absolute;
-  background-image: url("/twilight/img/Radiation_warning_symbol.svg");
+  background-image: url(/mods/twilight/web/img/Radiation_warning_symbol.svg);
   background-size: cover;
 }
 
 .vp {
   position: absolute;
-  background-image: url("/twilight/img/VPs.svg");
+  background-image: url(/mods/twilight/web/img/VPs.svg);
   background-size: cover;
   transition: top 2s, left 2s;
 }
 
 .space_race_us {
   position: absolute;
-  background-image: url("/twilight/img/AmericanSpaceRace.svg");
+  background-image: url(/mods/twilight/web/img/AmericanSpaceRace.svg);
   background-size: cover;
 }
 
 .space_race_ussr {
   position: absolute;
-  background-image: url("/twilight/img/SovietSpaceRace.svg");
+  background-image: url(/mods/twilight/web/img/SovietSpaceRace.svg);
   background-size: cover;
 }
 
 .milops_us {
   position: absolute;
-  background-image: url("/twilight/img/AmericanMilitaryOperations.svg");
+  background-image: url(/mods/twilight/web/img/AmericanMilitaryOperations.svg);
   background-size: cover;
 }
 
 .milops_ussr {
   position: absolute;
-  background-image: url("/twilight/img/SovietMilitaryOperations.svg");
+  background-image: url(/mods/twilight/web/img/SovietMilitaryOperations.svg);
   background-size: cover;
 }
 
@@ -491,7 +491,7 @@ body {
 
 .us_control {
   color: #FFFFFF;
-  background-image: url("/twilight/img/AmericanInfluenceControlledBackground.png");
+  background-image: url(/mods/twilight/web/img/AmericanInfluenceControlledBackground.png);
   background-size: cover;
   text-align: center;
   line-height: 48px;
@@ -500,7 +500,7 @@ body {
 
 .us_uncontrol {
   color: #008fd5;
-  background-image: url("/twilight/img/AmericanInfluenceUnControlledBackground.png");
+  background-image: url(/mods/twilight/web/img/AmericanInfluenceUnControlledBackground.png);
   background-size: cover;
   text-align: center;
   line-height: 48px;
@@ -509,7 +509,7 @@ body {
 
 .ussr_control {
   color: #FFFFFF;
-  background-image: url("/twilight/img/SovietInfluenceControlledBackground.png");
+  background-image: url(/mods/twilight/web/img/SovietInfluenceControlledBackground.png);
   background-size: cover;
   text-align: center;
   line-height: 48px;
@@ -519,7 +519,7 @@ body {
 .ussr_uncontrol {
   color: #d2232a;
   background-size: cover;
-  background-image: url("/twilight/img/SovietInfluenceUnControlledBackground.png");
+  background-image: url(/mods/twilight/web/img/SovietInfluenceUnControlledBackground.png);
   text-align: center;
   line-height: 48px;
   padding-top: 3px;
@@ -553,7 +553,7 @@ body {
   max-height: 520px;
   width: calc(30vh * 0.72110);
   max-width: 375px;
-  background-image: url("/twilight/img/Base.svg");
+  background-image: url(/mods/twilight/web/img/Base.svg);
   z-index: 2;
   display: block;
   background-size: contain;
@@ -570,7 +570,7 @@ body {
 
 
 .hud-card {
-  background-image: url(/twilight/img/Base.svg);
+  background-image: url(/mods/twilight/web/img/Base.svg);
   background-size: contain;
   background-repeat: no-repeat;
   /*max-width: 120px;*/
@@ -589,7 +589,7 @@ body {
 
 .cardbox-card {
   left: 6px;
-  background-image: url("/twilight/img/Base.svg");
+  background-image: url(/mods/twilight/web/img/Base.svg);
   background-size: cover;
   background-repeat: no-repeat;
   width: 388px;
