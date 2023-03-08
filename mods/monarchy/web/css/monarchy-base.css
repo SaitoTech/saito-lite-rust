@@ -38,7 +38,7 @@ img.animated_elem{
 .main{
   /* Default fill the background with image */
   position: absolute;
-  background-image: url("img/gameboard.jpg");
+  background-image: url(/mods/monarchy/web/img/gameboard.jpg);
   background-size: cover;
   width: 100vw;
   height: 100vh;
