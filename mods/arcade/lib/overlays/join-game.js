@@ -25,6 +25,8 @@ class JoinGameOverlay {
 
     this.overlay.show(JoinGameOverlayTemplate(this.app, this.mod, this.invite));
     this.overlay.setBackground(game_mod.returnArcadeImg());
+    console.log("Render Join GAme Overlay");
+    this.app.browser.addIdentifiersToDom();
     this.attachEvents();
   }
   
