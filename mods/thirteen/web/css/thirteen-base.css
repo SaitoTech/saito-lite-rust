@@ -125,7 +125,7 @@ li.card {
 
 .agenda_deck {
   position: absolute;
-  background-image: url("/thirteen/img/Agenda Card-Backb.png");
+  background-image: url('mods/thirteen/web/img/Agenda Card-Backb.png');
   top: 830px;
   left: 2068px;
   width: 264px;
@@ -134,7 +134,7 @@ li.card {
 
 .strategy_deck {
   position: absolute;
-  background-image: url("/thirteen/img/Strategy Card-Backb.png");
+  background-image: url('mods/thirteen/web/img/Strategy Card-Backb.png');
   top: 1360px;
   left: 465px;
   width: 264px;
@@ -318,7 +318,7 @@ li.card {
 
 .gameboard {
   position: relative;
-  background-image: url("/thirteen/img/game map - large.jpg");
+  background-image: url('mods/thirteen/web/img/game map - large.jpg');
   background-size: cover;
   width: 2450px;
   height: 1800px;
