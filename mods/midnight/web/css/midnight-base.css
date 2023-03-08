@@ -11,7 +11,7 @@ body {
 
 .gameboard {
   position: absolute;
-  background-image: url("img/arcade/arcade-banner-background.png"); 
+  background-image: url(/mods/midnight/web/img/arcade/arcade-banner-background.png); 
   background-size: cover; 
   width: 100vw;
   height: 100vh;
