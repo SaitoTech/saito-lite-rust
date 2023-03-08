@@ -47,24 +47,24 @@
 
 @font-face {
   font-family: 'bank-gothic';
-  src: url('./font/BankGothicRegular.eot');
-  src: local('BankGothicRegular'), url('./font/BankGothicRegular.woff') format('woff'), url('./font/BankGothicRegular.ttf') format('truetype');
+  src: url(/mods/imperium/web/font/BankGothicRegular.eot);
+  src: local('BankGothicRegular'), url(/mods/imperium/web/font/BankGothicRegular.woff) format('woff'), url(/mods/imperium/web/font/BankGothicRegular.ttf) format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'orbitron-medium';
-  src: url('./font/orbitron-medium-webfont.eot');
-  src: local('orbitron-medium-webfont'), url('./font/orbitron-medium-webfont.woff') format('woff'), url('./font/orbitron-medium-webfont.ttf') format('truetype');
+  src: url(/mods/imperium/web/font/orbitron-medium-webfont.eot);
+  src: local('orbitron-medium-webfont'), url(/mods/imperium/web/font/orbitron-medium-webfont.woff) format('woff'), url(/mods/imperium/web/font/orbitron-medium-webfont.ttf) format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'orbitron-light';
-  src: url('./font/orbitron-light-webfont.eot');
-  src: local('orbitron-light-webfont'), url('./font/orbitron-light-webfont.woff') format('woff'), url('./font/orbitron-light-webfont.ttf') format('truetype');
+  src: url(/mods/imperium/web/font/orbitron-light-webfont.eot);
+  src: local('orbitron-light-webfont'), url(/mods/imperium/web/font/orbitron-light-webfont.woff) format('woff'), url(/mods/imperium/web/font/orbitron-light-webfont.ttf) format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -99,47 +99,47 @@
   font-family: 'bank-gothic', 'orbitron-medium', helvetica;
 }
 .unit-box-ship-fighter, .unit-box-ship-fighter-ii {
-  background-image: url("/imperium/img/ships/fighter_100x200.png");
+  background-image: url(/mods/imperium/web/img/ships/fighter_100x200.png);
   background-size: cover;
 }
 .unit-box-ship-destroyer, .unit-box-ship-destroyer-ii {
-  background-image: url("/imperium/img/ships/destroyer_100x200.png");
+  background-image: url(/mods/imperium/web/img/ships/destroyer_100x200.png);
   background-size: cover;
 }
 .unit-box-ship-carrier, .unit-box-ship-carrier-ii {
-  background-image: url("/imperium/img/ships/carrier_100x200.png");
+  background-image: url(/mods/imperium/web/img/ships/carrier_100x200.png);
   background-size: cover;
 }
 .unit-box-ship-cruiser, .unit-box-ship-cruiser-ii {
-  background-image: url("/imperium/img/ships/cruiser_100x200.png");
+  background-image: url(/mods/imperium/web/img/ships/cruiser_100x200.png);
   background-size: cover;
 }
 .unit-box-ship-dreadnaught, .unit-box-ship-dreadnaught-ii {
-  background-image: url("/imperium/img/ships/dreadnaught_100x200.png");
+  background-image: url(/mods/imperium/web/img/ships/dreadnaught_100x200.png);
   background-size: cover;
 }
 .unit-box-ship-flagship {
-  background-image: url("/imperium/img/ships/flagship_100x200.png");
+  background-image: url(/mods/imperium/web/img/ships/flagship_100x200.png);
   background-size: cover;
 }
 .unit-box-ship-warsun, .unit-box-ship-warsun-ii {
-  background-image: url("/imperium/img/ships/warsun_100x200.png");
+  background-image: url(/mods/imperium/web/img/ships/warsun_100x200.png);
   background-size: cover;
 }
 .unit-box-ship-infantry, .unit-box-ship-infantry-ii {
-  background-image: url("/imperium/img/ships/infantry_100x200.png");
+  background-image: url(/mods/imperium/web/img/ships/infantry_100x200.png);
   background-size: cover;
 }
 .unit-box-ship-pds, .unit-box-ship-pds-ii {
-  background-image: url("/imperium/img/ships/pds_100x200.png");
+  background-image: url(/mods/imperium/web/img/ships/pds_100x200.png);
   background-size: cover;
 }
 .unit-box-ship-spacedock, .unit-box-ship-spacedock-ii {
-  background-image: url("/imperium/img/ships/spacedock_100x200.png");
+  background-image: url(/mods/imperium/web/img/ships/spacedock_100x200.png);
   background-size: cover;
 }
 .units-overlay-container {
-  background-image: url(/imperium/img/starscape_background1.jpg);
+  background-image: url(/mods/imperium/web/img/starscape_background1.jpg);
   background-size: cover;
   min-width: 80vw;
   min-height: 80vh;
@@ -209,7 +209,7 @@
 
 
 .new_secret_objective_overlay {
-  background-image: url(/imperium/img/starscape_background1.jpg);
+  background-image: url(/mods/imperium/web/img/starscape_background1.jpg);
   width: 50vw;
   height: auto;
   text-align:center;
@@ -421,7 +421,7 @@
 
 
 .new_objectives_overlay_container {
-  background-image: url('/imperium/img/starscape_background1.jpg');
+  background-image: url(/mods/imperium/web/img/starscape_background1.jpg);
   background-size: cover;
   border-radius: 15px;
   width: 80vw;
@@ -457,7 +457,7 @@
   display: inline-block;
 }
 .new_action_cards_overlay_container {
-  background-image: url('/imperium/img/starscape_background3.jpg');
+  background-image: url(/mods/imperium/web/img/starscape_background3.jpg);
   background-size: cover;
   border-radius: 15px;
   width: 80vw;
@@ -916,8 +916,8 @@ body {
 }
 
 .game_background {
-  background-image: url(img/spacebg.png);
-  background-image: url(img/spaceb2.jpg);
+  background-image: url(/mods/imperium/web/img/spacebg.png);
+  background-image: url(/mods/imperium/web/img/spaceb2.jpg);
   background-size: cover;
   position: absolute;
   top: -50%;
@@ -1055,7 +1055,7 @@ body {
 }
 
 .faction_sheet_action_card {
-  background-image: url(img/action_card_template.png);
+  background-image: url(/mods/imperium/web/img/action_card_template.png);
   height: 26vh;
   width: calc(26vh * 0.72110);
   background-size: cover;
@@ -1070,7 +1070,7 @@ body {
   z-index: 1;
 }
 .overlay_action_card {
-  background-image: url(img/action_card_template.png);
+  background-image: url(/mods/imperium/web/img/action_card_template.png);
   height: 34vh;
   width: calc(34vh * 0.72110);
   background-size: cover;
@@ -1085,7 +1085,7 @@ body {
 }
 
 .faction_sheet_action_card_back {
-  background-image: url(img/action_card_back.jpg);
+  background-image: url(/mods/imperium/web/img/action_card_back.jpg);
 }
 
 .overlay_action_card:hover, .faction_sheet_action_card:hover, .faction_sheet_planet_card:hover, .tech_card:hover {
@@ -1276,7 +1276,7 @@ body {
 }
 
 .tech_card {
-  background-image: url(img/tech_card_template.jpg);
+  background-image: url(/mods/imperium/web/img/tech_card_template.jpg);
   position: relative;
   width: 340px;
   height: 200px;
@@ -1317,7 +1317,7 @@ body {
 }
 
 .tech_card {
-  background-image: url(img/tech_card_template.jpg);
+  background-image: url(/mods/imperium/web/img/tech_card_template.jpg);
   position: relative;
   width: 16vw;
   height: 10vw;
@@ -2159,7 +2159,7 @@ body {
 }
 
 .dash-item.resources {
-  background-image: url('/imperium/img/blank_resources_hex.png');
+  background-image: url(/mods/imperium/web/img/blank_resources_hex.png);
   background-size: cover;
   /* content: "\2B23"; */
   /* background-color: #c16400; */
@@ -2174,7 +2174,7 @@ body {
 }
 
 .dash-item.influence {
-  background-image: url('/imperium/img/blank_influence_hex.png');
+  background-image: url(/mods/imperium/web/img/blank_influence_hex.png);
   background-size: cover;
   /* content: "\2B23";
   /* background-color: #000000; */
@@ -2313,7 +2313,7 @@ body {
 
 
 .system_summary {
-  background-image: url('/imperium/img/starscape-background4.jpg');
+  background-image: url(/mods/imperium/web/img/starscape-background4.jpg);
   color: white;
   width: auto;
   height: auto;
@@ -2793,7 +2793,7 @@ input[type=range] {
   font-family: 'orbitron-medium', helvetica, arial;
   line-height: 1.7em;
   font-size: 1.1em;
-  background-image: url('/imperium/img/starscape-background4.jpg');
+  background-image: url(/mods/imperium/web/img/starscape-background4.jpg);
   background-size: cover;
   color: white;
   overflow-y: scroll;
