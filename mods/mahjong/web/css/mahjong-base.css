@@ -103,7 +103,7 @@ body {
 
 .gameboard {
   position: absolute;
-  background-image: url("/mahjong/img/gameboard.jpg");
+  background-image: url(/mods/mahjong/web/img/gameboard.jpg);
   background-size: cover;
   width: 100vw;
   height: 100vh;
