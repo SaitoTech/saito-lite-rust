@@ -21,7 +21,7 @@ body {
 .gameboard{
   /* Default fill the background with image */
   position: absolute;
-  background-image: url(/mods/steamed/web/img/gameboard.jpg);
+  background-image: url("img/gameboard.jpg");
   background-size: cover;
   background-position: center;
   width: 100vw;
