@@ -36,14 +36,16 @@ module.exports = (app, publickey="") => {
 	if (publickey) {
 	  html += `
             <div>Public Key:</div>
-            <div>${publickey} <span style="margin-left: .5rem;" class="copy-public-key">  <i class="fas fa-copy"></i></span></div>
+            <div>${publickey} <span class="copy-public-key">  <i class="fas fa-copy"></i></span></div>
 	  `;
 	}
 
 	html += `
           </div>
 
-	  <div class="redsquare-profile-tweets"><div style="padding-left:2rem">loading recent tweets...</div></div>
+	  <div class="redsquare-profile-tweets">
+      <div class="saito-loader temp"></div>
+    </div>
 
         </div>
       </div>

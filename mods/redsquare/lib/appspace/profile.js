@@ -37,6 +37,7 @@ class AppspaceProfile {
         this.attachEvents();
       }, false, false);
     }
+    this.attachEvents();
     document.querySelector('.saito-container').scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }
 
@@ -44,7 +45,7 @@ class AppspaceProfile {
 
     document.querySelector('.copy-public-key').onclick = (e) => {
       navigator.clipboard.writeText(this.publickey);
-      salert("Public key copied");
+      siteMessage("Public key copied", 1000);
     }
 
   }
