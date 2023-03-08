@@ -56,53 +56,71 @@ module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
 
 
 
-  <div class="saito-overlay-form" id="saito-withdraw-overlay">
+    <div class="saito-overlay-form" id="saito-withdraw-overlay">
     <div class="saito-overlay-form-header">
       <div class="saito-overlay-form-header-title">Send Token</div>
     </div>
-    <div class="saito-overlay-form-input">
-      <div class="token-dropdown">
-        <img src="https://saito.io/saito/img/touch/pwa-192x192.png">
-        <select>
-          <option>SAITO</option>
-          <option>TRX</option>
-        </select>
-      </div>
-    </div>
-    <div class="saito-overlay-form-input">
-      <div class="withdraw-address-cont">
-        <input type="text" class="input-elem withdraw_address" value="" required="" placeholder="Enter or paste address">
-        <div class="withdraw-options-cont">
-          <span>Paste</span>
-          <i class="fas fa-expand"></i>
+
+          <div class="saito-overlay-form-input">
+        <div class="token-dropdown">
+          <img src="https://saito.io/saito/img/touch/pwa-192x192.png">
+          <select>
+            <option>SAITO - 54.2</option>
+            <option>TRX</option>
+          </select>
         </div>
       </div>
-    </div>
-    <div class="saito-overlay-form-input">
-      <div class="withdraw-address-cont">
-        <input type="text" class="input-elem withdraw_address" value="" required="" placeholder="Min amount 0.1 SAITO">
-        <div class="withdraw-options-cont">
-          <span>SAITO</span>
-          <span>Max</span>
+
+<div class="input-elements-container">
+
+
+      <div class="saito-overlay-form-input">
+        <div class="withdraw-address-cont">
+          <input type="text" class="input-elem withdraw_address" value="" required  placeholder="Withdrawl amount">
+          <div class="withdraw-options-cont">
+            <span>Max</span>
+          </div>
         </div>
       </div>
+
+      <div class="saito-overlay-form-input">
+        <div class="withdraw-address-cont">
+          <input type="text" class="input-elem withdraw_address" value="" required placeholder="Withdrawl fee">
+          <div class="withdraw-options-cont">
+            <span style="
+                color: var(--saito-font-color-light);
+            ">SAITO</span>
+          </div>
+        </div>
+      </div>
+      
     </div>
-    <div class="withdrawl-notes">
-      <div>Available 5.2 SAITO</div>
-      <div>Fee 0.2 SAITO</div>
-    </div>
-    <div class="saito-overlay-form-submitline">
+
+
+      <div class="saito-overlay-form-input">
+        <div class="withdraw-address-cont">
+          <input type="text" class="input-elem withdraw_address" value="" required placeholder="Receiving address">
+        </div>
+      </div>
+
+      <div class="confirm-msg-container">
+          <i class="withdraw-msg-icon fa-solid fa-circle-exclamation"></i>
+          <div class="confirm-msg">
+            <span class="withdraw-msg-text">Withdraw</span> <b>42 SAITO</b> to address <b>wcyj2qSvmPsNcbEx9PnjXtNzsDoCf1Xtv9SqWH6wYxnk</b><span class="withdraw-msg-question">?</span>      
+          </div>
+      </div>
+
+
+    <div class="saito-overlay-form-submitline form-submit-container">
       <button type="submit" class="withdraw-submit saito-button-primary fat saito-overlay-form-submit" id="saito-overlay-submit">Send</button>
     </div>
+
+    <div class="saito-overlay-form-submitline confirm-submit">
+      <button type="submit" class="withdraw-submit saito-button-primary saito-overlay-form-submit" id="withdraw-confirm">Confirm</button>
+      <button type="submit" class="withdraw-submit saito-button-primary saito-overlay-form-submit" id="withdraw-cancel">Cancel</button> 
+    </div>
+
   </div>
-
-
-
-
-
-
-
-
 
 
 

@@ -69,31 +69,72 @@ class MixinWithdraw {
 
 
         if (document.querySelector("#withdrawal-form") != null) {
+          // document.querySelector("#withdrawal-form").onsubmit = (e) => {
+          //   e.preventDefault();
+          //   document.querySelector(".error-msg").style.display = "none";
+          //   amount = document.querySelector(".withdraw_amount").value;
+          //   address = document.querySelector(".withdraw_address").value;
+          //   amount_avl = document.querySelector("#amount-avl").getAttribute('data-amount-avl');
+
+          //   if (amount > amount_avl) {
+          //     document.querySelector(".max-amount-error").innerHTML = "Error: Not enough amount avaibale ("+amount_avl+" available)";
+          //     document.querySelector(".max-amount-error").style.display = "block";
+          //     return false;          
+          //   }
+
+          //   if (amount <= 0) {
+          //     document.querySelector(".max-amount-error").innerHTML = "Error: Amount should be greater than 0";
+          //     document.querySelector(".max-amount-error").style.display = "block";
+          //     return false;          
+          //   }
+
+
+          //   document.querySelector(".decision-cont").style.display = 'none';
+          //   document.querySelector("#withdrawl-sent-cont").style.display = 'none';
+          //   document.getElementById("check-fee-text").innerHTML = 'Check fee for withdrawing <b>'+amount+'</b> to <b>'+address+'</b>?';
+          //   document.querySelector("#withdrawl-confirm-cont").style.display = 'block';
+
+          // }
+
           document.querySelector("#withdrawal-form").onsubmit = (e) => {
             e.preventDefault();
-            document.querySelector(".error-msg").style.display = "none";
-            amount = document.querySelector(".withdraw_amount").value;
-            address = document.querySelector(".withdraw_address").value;
-            amount_avl = document.querySelector("#amount-avl").getAttribute('data-amount-avl');
 
-            if (amount > amount_avl) {
-              document.querySelector(".max-amount-error").innerHTML = "Error: Not enough amount avaibale ("+amount_avl+" available)";
-              document.querySelector(".max-amount-error").style.display = "block";
-              return false;          
-            }
+            document.querySelectorAll(".saito-overlay-form-input, .input-elements-container, .form-submit-container").forEach(function(item, key){
+              item.classList.toggle("hide-element");
+            });
 
-            if (amount <= 0) {
-              document.querySelector(".max-amount-error").innerHTML = "Error: Amount should be greater than 0";
-              document.querySelector(".max-amount-error").style.display = "block";
-              return false;          
-            }
+            document.querySelectorAll(".confirm-msg-container, .confirm-btn-container, .confirm-submit").forEach(function(item, key){
+              item.classList.toggle("activated"); 
+            });
 
+          }
 
-            document.querySelector(".decision-cont").style.display = 'none';
-            document.querySelector("#withdrawl-sent-cont").style.display = 'none';
-            document.getElementById("check-fee-text").innerHTML = 'Check fee for withdrawing <b>'+amount+'</b> to <b>'+address+'</b>?';
-            document.querySelector("#withdrawl-confirm-cont").style.display = 'block';
+          document.querySelector("#withdraw-cancel").onclick = (e) => {
+            e.preventDefault();
 
+            document.querySelectorAll(".saito-overlay-form-input, .input-elements-container, .form-submit-container").forEach(function(item, key){
+              item.classList.toggle("hide-element");
+            });
+
+            document.querySelectorAll(".confirm-msg-container, .confirm-btn-container, .confirm-submit").forEach(function(item, key){
+              item.classList.toggle("activated"); 
+            });
+          }
+
+          document.querySelector("#withdraw-confirm").onclick = (e) => {
+            e.preventDefault();
+
+            document.querySelector(".withdraw-msg-icon").classList.toggle("fa-circle-exclamation");
+            document.querySelector(".withdraw-msg-icon").classList.toggle("fa-circle-notch");
+            document.querySelector(".confirm-submit").style.opacity = 0;
+            document.querySelector(".withdraw-msg-text").innerText = "Withdrawing";
+            document.querySelector(".withdraw-msg-question").innerText = "...";
+
+            setTimeout(function() {
+              document.querySelector(".confirm-msg").innerHTML = "Withdrawl successful";
+              document.querySelector(".withdraw-msg-icon").classList.toggle("fa-circle-notch");
+              document.querySelector(".withdraw-msg-icon").classList.toggle("fa-circle-check");
+            }, 3000);
           }
         }
 
