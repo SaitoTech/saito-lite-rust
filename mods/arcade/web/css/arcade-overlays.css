@@ -19,10 +19,6 @@
   grid-template-columns: 1fr 1fr;
 }
 
-.arcade-game-overlay .saito-table-row{
-  cursor: unset;
-}
-
 .arcade-game-playerbox {
   display: grid;
   grid-template-columns: 5rem 1fr;
@@ -71,6 +67,8 @@
 
 .arcade-game-overlay .saito-table-row {
   grid-template-columns: 5rem 1fr;
+  align-items: center;
+  cursor: unset;
 }
 
 .arcade-overlay-game-options .saito-table-row {
