@@ -217,7 +217,7 @@ class Settlers extends GameTemplate {
       this.playerbox.addClass("me", this.game.player);
 
       for (let i = 1; i <= this.game.players.length; i++) {
-        this.playerbox.addClass(`c${i}`, i);
+        this.playerbox.addClass(`c${this.game.colors[i-1]}`, i);
         if (i != this.game.player) {
           this.playerbox.addClass("notme", i);
         }
@@ -261,6 +261,14 @@ class Settlers extends GameTemplate {
     //
     if (this.game.state == undefined) {
       this.game.state = this.returnState();
+
+      //Randomly assign colors
+      let colors = [1, 2, 3, 4];
+      this.game.colors = [];
+      for (let i = 0; i < this.game.players.length; i++){
+        this.game.colors = this.game.colors.concat(colors.splice(this.rollDice(colors.length)-1,1));
+      }
+      console.log("Colors: " + JSON.stringify(this.game.colors));
 
       //Running in InitializeHTML and InitializeGame just in case
       this.skin.render(this.game.options.theme);
@@ -365,8 +373,8 @@ class Settlers extends GameTemplate {
     
     //VP Race
     html += `<table class="stats-table"><caption>VP Race</caption><thead><tr><th></th>`;
-    html += `<th><div class="tip token p${this.game.player}">${this.skin.c1.svg}<div class="tiptext">${this.skin.c1.name}</div></div></th>`;
-    html += `<th><div class="tip token p${this.game.player}">${this.skin.c2.svg}<div class="tiptext">${this.skin.c2.name}</div></div></th>`;
+    html += `<th><div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c1.svg}<div class="tiptext">${this.skin.c1.name}</div></div></th>`;
+    html += `<th><div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c2.svg}<div class="tiptext">${this.skin.c2.name}</div></div></th>`;
     html += `<th><div class="tip token">${this.skin.vp.svg}<div class="tiptext">${this.skin.vp.name}</div></div></th>`;
     html += `<th><div class="tip token">${this.skin.largest.svg}<div class="tiptext">${this.skin.largest.name}</div></div></th>`;
     html += `<th><div class="tip token">${this.skin.longest.svg}<div class="tiptext">${this.skin.longest.name}</div></div></th>`;
@@ -883,7 +891,7 @@ class Settlers extends GameTemplate {
             this.game.state.players[player - 1].towns++;
             let divname = "#" + slot;
             $(divname).html(this.skin.c2.svg);
-            $(divname).addClass(`p${player}`);
+            $(divname).addClass(`p${this.game.colors[player-1]}`);
             return 1;
           }
         }
@@ -2038,7 +2046,7 @@ class Settlers extends GameTemplate {
     */
     for (let i in this.game.state.cities) {
       let divname = "#" + this.game.state.cities[i].slot;
-      let classname = "p" + this.game.state.cities[i].player;
+      let classname = "p" + this.game.colors[this.game.state.cities[i].player-1];
       $(divname).addClass(classname);
       $(divname).removeClass("empty");
 
@@ -2436,7 +2444,7 @@ class Settlers extends GameTemplate {
 
     //Put City on GUI Board
     let divname = "#" + slot;
-    let classname = "p" + player;
+    let classname = "p" + this.game.colors[player-1];
 
     $(divname).addClass(classname);
     $(divname).removeClass("empty");
@@ -2526,7 +2534,7 @@ class Settlers extends GameTemplate {
     }
 
     let settlers_self = this;
-    //let selector = `.city.p${player}`;
+    //let selector = `.city.p${this.game.colors[player-1]}`;
     //Manually go through available player's cities because DOM doesn't have convenient selector
     for (let c of settlers_self.game.state.cities) {
       if (c.level === 1 && c.player === player) {
@@ -2639,7 +2647,7 @@ class Settlers extends GameTemplate {
   */
   buildRoad(player, slot) {
     let divname = "#" + slot;
-    let owner = "p" + player;
+    let owner = "p" + this.game.colors[player-1];
 
     //Check if road exists in DOM and update status
     if (!document.querySelector(divname)) {
@@ -2783,12 +2791,12 @@ class Settlers extends GameTemplate {
       let html = `<div class="construction-costs">
               <div class="h2">Building Costs</div>
               <div class="table">
-              <div class="tip token p${this.game.player}"><svg viewbox="0 0 200 200"><polygon points="0,175 175,0, 200,25 25,200"/></svg>
+              <div class="tip token p${this.game.colors[this.game.player-1]}"><svg viewbox="0 0 200 200"><polygon points="0,175 175,0, 200,25 25,200"/></svg>
                 <div class="tiptext">${this.skin.r.name}: Longest road worth 2 VP</div></div>
                   <div class="cost">${this.visualizeCost(0)}</div>
-                <div class="tip token p${this.game.player}">${this.skin.c1.svg}<div class="tiptext">${this.skin.c1.name}: 1 VP</div></div>
+                <div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c1.svg}<div class="tiptext">${this.skin.c1.name}: 1 VP</div></div>
                     <div class="cost">${this.visualizeCost(1)}</div>
-                    <div class="tip token p${this.game.player}">${this.skin.c2.svg}<div class="tiptext">${this.skin.c2.name}: 2 VP</div></div>
+                    <div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c2.svg}<div class="tiptext">${this.skin.c2.name}: 2 VP</div></div>
                     <div class="cost">${this.visualizeCost(2)}</div>
                 <div class="tip token"><svg viewbox="0 0 200 200"><polygon points="25,0 175,0, 175,200 25,200"/>
                 <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="132px" fill="red">?</text></svg>
