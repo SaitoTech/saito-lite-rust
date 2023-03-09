@@ -796,25 +796,25 @@ export default class Transaction extends SaitoTransaction {
   //
   // everything but the signature
   //
-  // presign(app: Saito) {
-  //   //
-  //   // set slip ordinals
-  //   //
-  //   for (let i = 0; i < this.transaction.to.length; i++) {
-  //     this.transaction.to[i].sid = i;
-  //   }
-  //
-  //   //
-  //   // transaction message
-  //   //
-  //   if (this.transaction.m.byteLength === 0) {
-  //     if (Object.keys(this.msg).length === 0) {
-  //       this.transaction.m = Buffer.alloc(0);
-  //     } else {
-  //       this.transaction.m = Buffer.from(JSON.stringify(this.msg), "utf-8");
-  //     }
-  //   }
-  // }
+  presign(app: Saito) {
+    //
+    // set slip ordinals
+    //
+    // for (let i = 0; i < this.transaction.to.length; i++) {
+    //   this.to[i].sid = i;
+    // }
+
+    //
+    // transaction message
+    //
+    if (this.transaction.m.byteLength === 0) {
+      if (Object.keys(this.msg).length === 0) {
+        this.data = Buffer.alloc(0);
+      } else {
+        this.data = Buffer.from(JSON.stringify(this.msg), "utf-8");
+      }
+    }
+  }
 
   // sign(app: Saito) {
   //   //
@@ -1045,5 +1045,17 @@ export default class Transaction extends SaitoTransaction {
 
   base64ToString(str: string): string {
     return Buffer.from(str, "base64").toString("utf-8");
+  }
+
+  public get transaction() {
+    return {
+      to: this.to,
+      from: this.from,
+      ts: this.timestamp,
+      sig: this.signature,
+      r: this.txs_replacements, // "replaces" (how many txs this represents in merkle-tree -- spv block)
+      type: this.type,
+      m: this.data,
+    };
   }
 }

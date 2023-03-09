@@ -17,16 +17,15 @@ class Relay extends ModTemplate {
     this.busy = false;
 
     app.connection.on("send-relay-message", (obj) => {
-      app.network.getPeers().then((peers) => {
-        if (obj.recipient === "PEERS") {
-          let peers = [];
-          for (let i = 0; i < peers.length; i++) {
-            peers.push(peers[i].getPublicKey());
-          }
-          obj.recipient = peers;
+      let peers = app.network.getPeers();
+      if (obj.recipient === "PEERS") {
+        let peers = [];
+        for (let i = 0; i < peers.length; i++) {
+          peers.push(peers[i].getPublicKey());
         }
-        this.sendRelayMessage(obj.recipient, obj.request, obj.data);
-      });
+        obj.recipient = peers;
+      }
+      this.sendRelayMessage(obj.recipient, obj.request, obj.data);
     });
     app.connection.on("set-relay-status-to-busy", () => {
       this.busy = true;
@@ -62,11 +61,16 @@ class Relay extends ModTemplate {
     //
     let tx = new saito.default.transaction();
 
-    tx.transaction.from.push(new saito.default.slip(this.app.wallet.getPublicKey()));
+    let slip = new saito.default.slip();
+    slip.publicKey = this.app.wallet.getPublicKey();
+    tx.addFromSlip(slip);
     for (let i = 0; i < recipients.length; i++) {
-      tx.transaction.to.push(new saito.default.slip(recipients[i]));
+      let slip = new saito.default.slip();
+      slip.publicKey = recipients[i];
+      tx.addToSlip(slip);
+      // tx.transaction.to.push(new saito.default.slip(recipients[i]));
     }
-    tx.transaction.ts = new Date().getTime();
+    tx.timestamp = new Date().getTime();
     tx.msg.request = message_request;
     tx.msg.data = message_data;
 
@@ -102,7 +106,7 @@ class Relay extends ModTemplate {
         // sanity check on tx
         //
         let txjson = message.data;
-        let inner_tx = new saito.default.transaction(txjson);
+        let inner_tx = new saito.default.transaction(undefined, txjson);
         if (inner_tx.transaction.to.length <= 0) {
           return;
         }

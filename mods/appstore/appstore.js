@@ -512,7 +512,20 @@ class AppStore extends ModTemplate {
 
       ////console.log("server is starting app insert");
 
-      let sql = `INSERT OR IGNORE INTO modules (name, description, version, image, categories, publickey, unixtime, bid, bsh, tx, featured) VALUES ($name, $description, $version, $image, $categories, $publickey, $unixtime, $bid, $bsh, $tx, $featured)`;
+      let sql = `INSERT
+      OR IGNORE INTO modules (name, description, version, image, categories, publickey, unixtime, bid, bsh, tx, featured) VALUES (
+      $name,
+      $description,
+      $version,
+      $image,
+      $categories,
+      $publickey,
+      $unixtime,
+      $bid,
+      $bsh,
+      $tx,
+      $featured
+      )`;
 
       let { from, sig, ts } = tx.transaction;
 
@@ -636,13 +649,15 @@ class AppStore extends ModTemplate {
       //
       //
       for (let i = 0; i < module_names.length; i++) {
-        sql = `SELECT * FROM modules WHERE name = $name`;
+        sql = `SELECT *
+               FROM modules
+               WHERE name = $name`;
         params = { $name: module_names[i] };
         let rows = await this.app.storage.queryDatabase(sql, params, "appstore");
 
         for (let i = 0; i < rows.length; i++) {
           let tx = JSON.parse(rows[i].tx);
-          let { module_zip } = new saito.default.transaction(tx).returnMessage();
+          let { module_zip } = new saito.default.transaction(undefined, tx).returnMessage();
           modules_selected.push({
             name: rows[i].name,
             description: rows[i].description,
@@ -657,13 +672,15 @@ class AppStore extends ModTemplate {
       // versioned apps (second as overrules default)
       //
       for (let i = 0; i < module_versions.length; i++) {
-        sql = `SELECT * FROM modules WHERE version = $version`;
+        sql = `SELECT *
+               FROM modules
+               WHERE version = $version`;
         params = { $version: module_versions[i] };
         let rows = await this.app.storage.queryDatabase(sql, params, "appstore");
 
         for (let i = 0; i < rows.length; i++) {
           let tx = JSON.parse(rows[i].tx);
-          let { module_zip } = new saito.default.transaction(tx).returnMessage();
+          let { module_zip } = new saito.default.transaction(undefined, tx).returnMessage();
           modules_selected.push({
             name: rows[i].name,
             description: rows[i].description,
@@ -690,7 +707,16 @@ class AppStore extends ModTemplate {
       //
       // show link to bundle or save in it? Should save it as a file
       //
-      sql = `INSERT OR IGNORE INTO bundles (version, publickey, unixtime, bid, bsh, name, script) VALUES ($version, $publickey, $unixtime, $bid, $bsh, $name, $script)`;
+      sql = `INSERT
+      OR IGNORE INTO bundles (version, publickey, unixtime, bid, bsh, name, script) VALUES (
+      $version,
+      $publickey,
+      $unixtime,
+      $bid,
+      $bsh,
+      $name,
+      $script
+      )`;
       let { from, sig, ts } = tx.transaction;
       params = {
         $version: this.app.crypto.hash(`${ts}-${sig}`),
@@ -1121,7 +1147,6 @@ class AppStore extends ModTemplate {
 
 module.exports = AppStore;
 
-
 //
 // supporting utility functions
 //
@@ -1163,4 +1188,3 @@ function deleteDirs(dir) {
     console.log("error in deleteDirs");
   }
 }
-

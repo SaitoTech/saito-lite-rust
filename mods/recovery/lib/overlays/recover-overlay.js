@@ -5,12 +5,12 @@ const SaitoLoader = require("./../../../../lib/saito/ui/saito-loader/saito-loade
 
 /**
  * This near full-screen overlay allows users to restore their account by providing an email
- * address plus password. Both components are hashed with ONE salt to provide a lookup key 
+ * address plus password. Both components are hashed with ONE salt to provide a lookup key
  * that is used to fetch a transaction from the network. That transaction contains an encrypted
  * copy of the user's wallet.
  *
  * The same information is then hashed with a SECOND salt to generate the decryption key. This
- * permits users who lose access to their account to restore their privatekey and potentially 
+ * permits users who lose access to their account to restore their privatekey and potentially
  * any additional information.
  *
  * we can put backup functionality in this module as well / or in browser.js
@@ -46,7 +46,7 @@ class RecoverOverlay {
 
     document.querySelector("#saito-login-password").onkeydown = (e) => {
       if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
-        e.preventDefault(); 
+        e.preventDefault();
         document.querySelector(".saito-restore-button").click();
       }
     }
@@ -54,10 +54,10 @@ class RecoverOverlay {
     document.querySelector(".saito-restore-button").onclick = (e) => {
 
       let email = document.getElementById("saito-login-email").value;
-      let pass  = document.getElementById("saito-login-password").value;
+      let pass = document.getElementById("saito-login-password").value;
 
-      let decryption_secret = this.app.crypto.hash(this.app.crypto.hash(email+pass)+hash1);
-      let retrieval_secret = this.app.crypto.hash(this.app.crypto.hash(hash2+email)+pass);
+      let decryption_secret = this.app.crypto.hash(this.app.crypto.hash(email + pass) + hash1);
+      let retrieval_secret = this.app.crypto.hash(this.app.crypto.hash(hash2 + email) + pass);
 
       let newtx = this.mod.createRecoverTransaction(retrieval_secret);
 
@@ -66,7 +66,7 @@ class RecoverOverlay {
       //
       document.querySelector(".saito-modal-subtitle").innerHTML = "looking for wallet to restore...";
       document.querySelectorAll(".saito-login-overlay-field").forEach((el) => {
-	el.style.display = "none";
+        el.style.display = "none";
       });
       let ld = new SaitoLoader(this.app, this.mod, ".saito-login-overlay");
       ld.render();
@@ -78,18 +78,18 @@ class RecoverOverlay {
             if (res.rows[0]) {
 
               let tx = JSON.parse(res.rows[0].tx);
-              let newtx = new saito.default.transaction(tx);
+              let newtx = new saito.default.transaction(undefined, tx);
               let txmsg = newtx.returnMessage();
 
               let encrypted_wallet = txmsg.wallet;
               let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
 
-	      this.app.wallet.wallet = JSON.parse(decrypted_wallet);
-	      this.app.wallet.saveWallet();
-	      this.overlay.hide();
+              this.app.wallet.wallet = JSON.parse(decrypted_wallet);
+              this.app.wallet.saveWallet();
+              this.overlay.hide();
 
-            } 
-          } 
+            }
+          }
         }
       });
 

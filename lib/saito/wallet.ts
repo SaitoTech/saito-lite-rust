@@ -52,8 +52,8 @@ export default class Wallet {
     return S.getInstance().createTransaction(publicKey, amount, fee, force_merge);
   }
 
-  public signTransaction(tx: Transaction) {
-    return S.getInstance().signTransaction(tx);
+  public signTransaction<T extends Transaction>(tx: T): T {
+    return S.getInstance().signTransaction(tx) as T;
   }
 
   public getPublicKey(): string {

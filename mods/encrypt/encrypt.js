@@ -19,9 +19,9 @@
  where they are generally available for any Saito application to leverage.
 
  *********************************************************************************/
-var saito = require('../../lib/saito/saito');
-var ModTemplate = require('../../lib/templates/modtemplate');
-const Big = require('big.js');
+var saito = require("../../lib/saito/saito");
+var ModTemplate = require("../../lib/templates/modtemplate");
+const Big = require("big.js");
 
 
 class Encrypt extends ModTemplate {
@@ -58,7 +58,7 @@ class Encrypt extends ModTemplate {
           //let stun_mod = app.modules.returnModule("Stun");
           //stun_mod.createStunConnectionWithPeers([public_key]);
         }
-      }
+      };
     }
     return super.respondTo(type);
   }
@@ -79,7 +79,7 @@ class Encrypt extends ModTemplate {
       console.log("!!!! dhke !!!!");
       console.log("!!!!");
 
-      let tx = new saito.default.transaction(message.data.tx);
+      let tx = new saito.default.transaction(undefined, message.data.tx);
 
       let sender = tx.transaction.from[0].add;
       let receiver = tx.transaction.to[0].add;
@@ -104,7 +104,7 @@ class Encrypt extends ModTemplate {
 
     if (message.request === "diffie hellman key response") {
 
-      let tx = new saito.default.transaction(message.data.tx);
+      let tx = new saito.default.transaction(undefined, message.data.tx);
 
       let sender = tx.transaction.from[0].add;
       let receiver = tx.transaction.to[0].add;
@@ -138,7 +138,7 @@ class Encrypt extends ModTemplate {
       //
       //
       //
-      this.sendEvent('encrypt-key-exchange-confirm', { members: [sender, app.wallet.getPublicKey()] });
+      this.sendEvent("encrypt-key-exchange-confirm", { members: [sender, app.wallet.getPublicKey()] });
       this.saveEncrypt();
 
     }
@@ -286,7 +286,7 @@ class Encrypt extends ModTemplate {
     }
 
     this.app.keychain.updateCryptoByPublicKey(remote_address, bob_publickey.toString("hex"), bob_privatekey.toString("hex"), bob_secret.toString("hex"));
-    this.sendEvent('encrypt-key-exchange-confirm', { members: [remote_address, our_address] });
+    this.sendEvent("encrypt-key-exchange-confirm", { members: [remote_address, our_address] });
     this.saveEncrypt();
 
   }
@@ -299,7 +299,7 @@ class Encrypt extends ModTemplate {
     if (conf == 0) {
 
       if (tx.transaction.from[0].add == app.wallet.getPublicKey()) {
-        encrypt_self.sendEvent('encrypt-key-exchange-confirm', { members: [tx.transaction.to[0].add, tx.transaction.from[0].add] });
+        encrypt_self.sendEvent("encrypt-key-exchange-confirm", { members: [tx.transaction.to[0].add, tx.transaction.from[0].add] });
       }
       if (tx.transaction.to[0].add === app.wallet.getPublicKey()) {
 
@@ -347,7 +347,7 @@ class Encrypt extends ModTemplate {
           //
           //
           //
-          encrypt_self.sendEvent('encrypt-key-exchange-confirm', { members: [sender, app.wallet.getPublicKey()] });
+          encrypt_self.sendEvent("encrypt-key-exchange-confirm", { members: [sender, app.wallet.getPublicKey()] });
           encrypt_self.saveEncrypt();
 
         }
