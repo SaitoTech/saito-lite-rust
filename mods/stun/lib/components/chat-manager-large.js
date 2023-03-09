@@ -50,10 +50,10 @@ class VideoChatManager {
             // this.updateRoomLink()
         });
 
-        this.app.connection.on('change-connection-state-request', (peer, state, ui_type, call_type, room_code) => {
+        this.app.connection.on('change-connection-state-request', (peer, state, ui_type, call_type, room_code, is_creator = false) => {
             if (!this.isActive) return;
             if (ui_type !== "large" || this.room_code !== room_code) return
-            this.updateConnectionState(peer, state)
+            this.updateConnectionState(peer, state, is_creator)
             // this.updateRoomLink()
         })
 
@@ -214,8 +214,6 @@ class VideoChatManager {
         this.createVideoBox(peer);
         this.video_boxes[peer].video_box.addStream(remoteStream);
         this.video_boxes[peer].peer_connection = pc;
-
-        console.log('adding remote stream to ', this.video_boxes[peer])
     }
 
     renderLocalStream(localStream) {
@@ -244,17 +242,17 @@ class VideoChatManager {
     }
 
 
-    updateConnectionState(peer, state) {
-        this.createVideoBox(peer)
-        this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state);
+    updateConnectionState(peer, state, is_creator) {
+        this.createVideoBox(peer);
+        this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state, is_creator);
         switch (state) {
             case "connecting":    
                 break;
             case "disconnected":
-                this.stopTimer();
-                this.updateImages();
-                this.mod.closeMediaConnections(peer)
-                console.log("video boxes: after ", this.video_boxes);
+                // this.stopTimer();
+                // this.updateImages();
+                // this.mod.closeMediaConnections(peer);
+                // console.log("video boxes: after ", this.video_boxes);
                 break;
             case "connected":
                 this.startTimer();
@@ -262,11 +260,10 @@ class VideoChatManager {
                 break;
 
             case "failed":
-                this.stopTimer();
-                this.updateImages();
-                this.mod.closeMediaConnections(peer)
-                console.log("video boxes: after ", this.video_boxes);
-
+                // this.stopTimer();
+                // this.updateImages();
+                // this.mod.closeMediaConnections(peer)
+                // console.log("video boxes: after ", this.video_boxes);
                 break;
 
             default:

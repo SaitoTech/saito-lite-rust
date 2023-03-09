@@ -35,18 +35,21 @@ class Recovery extends ModTemplate {
         let decryption_secret = this.returnDecryptionSecret(obj.email, obj.pass);
         let retrieval_hash    = this.returnRetrievalHash(obj.email, obj.pass);
 
-	//
-	// save email
-	//
-	this.app.keychain.addKey(this.app.wallet.returnPublicKey(), { email : obj.email });
+      	//
+      	// save email
+      	//
+      	this.app.keychain.addKey(this.app.wallet.returnPublicKey(), { email : obj.email });
 
-	//
-	// and send transaction
-	//
+      	//
+      	// and send transaction
+      	//
         let newtx = this.createBackupTransaction(decryption_secret, retrieval_hash);
         this.app.network.propagateTransaction(newtx);
-        if (this.backup_overlay.success_callback) { this.backup_overlay.success_callback(true); }
-	return;
+      
+        if (this.backup_overlay.success_callback) { 
+          this.backup_overlay.success_callback(true); 
+        }
+      	return;
       }
 
       this.backup_overlay.render();

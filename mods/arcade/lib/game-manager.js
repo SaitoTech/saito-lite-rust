@@ -63,12 +63,6 @@ class GameManager {
 				});
 
 				if (gameList.length > 0){
-					if (list == "active"){
-						this.app.browser.addElementToSelector(`<h5>Active Matches</h5>`, target);
-					}else if (list == "over"){
-						this.app.browser.addElementToSelector(`<h5>Recent Matches</h5>`, target);
-					}
-				
 					for (let i = 0; i < gameList.length; i++) {
 						let newInvite = new Invite(
 							this.app,

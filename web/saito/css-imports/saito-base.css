@@ -177,6 +177,7 @@ Scrollbars
   opacity: 0.66;
 }
 
+/* Also in saito-user.css */
 .saito-address {
   overflow: hidden;
   text-overflow: ellipsis;

@@ -14,15 +14,15 @@ Saito Identicon
 }
 
 /* ----------------------------------------------------------------
-Saito Username
+Saito Username  --- Partially duplicated in saito-base
 -----------------------------------------------------------------*/
 
-.saito-address, .saito-username {
+.saito-address {
   max-width: 99%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: flex;
+  display: inline-block;  /* changed from flex... */
   align-items: center;
   color: var(--saito-font-color-heavy);
 }

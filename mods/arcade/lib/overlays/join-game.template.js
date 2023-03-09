@@ -4,7 +4,15 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 		console.log("INVITATION DETAILS: ", invite);
 	}
 
-	let desc =  (invite?.desired_opponent_publickeys?.length > 0) ? 'private invitation' : 'open invitation';
+	//Uncreated games
+	let desc =  (invite?.desired_opponent_publickeys?.length > 0 || invite.game_status == "private") ? 'private invitation' : 'open invitation';
+	//If created
+	if (mod.isAcceptedGame(invite.game_id)){
+		desc = "active game";
+	}
+	if (invite.time_finished){
+		desc = "finished game";
+	}
 
   let html = `
   <div class="arcade-game-overlay">
@@ -26,7 +34,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
   		  html += `
 		  <div class="arcade-game-playerbox saito-table-row">
 		    <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(invite.players[i])}"></div>
-		    <div class="saito-username">${invite.players[i]}</div>
+		    <div class="saito-address saito-address-${invite.players[i]}" data-id="${invite.players[i]}">${invite.players[i]}</div>
 		  </div>					  	  
 			`;
 		}
@@ -37,7 +45,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 
       <div class="arcade-game-playerbox empty saito-table-row requested_player">
 	      <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(invite.desired_opponent_publickeys[i])}"></div>
- 	      <div class="saito-username">${invite.desired_opponent_publickeys[i]}</div>
+ 	      <div class="saito-address saito-address-${invite.players[i]}" data-id="${invite.players[i]}">${invite.desired_opponent_publickeys[i]}</div>
 	    </div>
 
       `;
@@ -48,7 +56,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 		    html += `
 	        <div class="arcade-game-playerbox saito-table-row${(app.wallet.returnPublicKey() === invite.originator)?" available_slot":""}">  
 	      		<div class="saito-identicon-box empty-slot"></div>
-	    			<div class="saito-username">open player slot</div>	
+	    			<div class="saito-address">open player slot</div>	
 	  			</div>
 		    `;
 	  }
