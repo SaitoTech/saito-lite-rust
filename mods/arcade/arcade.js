@@ -49,7 +49,7 @@ class Arcade extends ModTemplate {
       'arcade': 'fa-solid fa-gamepad'
     };
 
-    this.debug = true;
+    this.debug = false;
   }
 
 
@@ -196,6 +196,13 @@ class Arcade extends ModTemplate {
             if (arcade_self.debug){
               console.log("Load DB Game: " + record.status, game_tx.returnMessage());
             }
+            if (record.time_finished){
+              if (record.status !== "over" && record.status !== "close"){
+                console.log("Game status mismatch");
+                record.status = "close";
+              }
+            }
+
             //
             //record.status will overwrite the open/private msg.request from the original game invite creation
             //
@@ -818,7 +825,7 @@ class Arcade extends ModTemplate {
   // and use an internal message to finish the process (because the sequencing matters!)
   /////////////////////////////////////////////////////////////////////
 
-  createQuitTransaction(orig_tx, reason = "cancellation") {
+  createQuitTransaction(orig_tx, reason) {
 
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
  
@@ -861,7 +868,10 @@ class Arcade extends ModTemplate {
   async changeGameStatus(game_id, newStatus){
     let game = this.returnGame(game_id);
 
-    if (!game){ return; }
+    if (!game){ 
+      console.log("Game not found");
+      return;
+    }
 
     //Move game to different list
     this.removeGame(game_id);  

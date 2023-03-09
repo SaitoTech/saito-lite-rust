@@ -109,19 +109,19 @@ dt{
   color: unset;
 }
 
-
+.gameboard.dark {
+  background-color: #369;
+}
 /*Richard background*/
 .gameboard {
   background: linear-gradient(-75deg, #369, #58b, #58b, #369);
   background-size: 100% 100%;
   width: 100vw;
   height: 100vh;
-}
-
-.gameboard.dark{
-  background-color: #369;
+  transition: background 2s;
   background-blend-mode: multiply;
 }
+
 
 #game-hexgrid{
   z-index: 2;

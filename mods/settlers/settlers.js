@@ -202,7 +202,7 @@ class Settlers extends GameTemplate {
 
     this.log.render();
 
-    if (this.game.state?.placedCity){$(".gameboard").addClass("dark");}
+    $(".dark").css("background-color","");
     this.hexgrid.render(".gameboard");
 
     try {
@@ -496,7 +496,7 @@ class Settlers extends GameTemplate {
         this.game.state.placedCity = null; //We are in game play mode, not initial set up
         this.game.state.lastroll = [0,0];
         this.game.queue.push("round");
-        $(".dark").removeClass("dark");
+        $(".dark").css("background-color","unset");
         return 1;
       }
 
