@@ -36,33 +36,40 @@ class Registry extends ModTemplate {
       let unidentified_keys = [];
 
       for (let i = 0; i < keys.length; i++) {
-      	if (this.cached_keys[keys[i]]) {
-      	  this.app.browser.updateAddressHTML(keys[i], this.cached_keys[keys[i]]);
-      	} else {
-      	  unidentified_keys.push(keys[i]);
-      	}
+        if (this.cached_keys[keys[i]]) {
+          this.app.browser.updateAddressHTML(keys[i], this.cached_keys[keys[i]]);
+        } else {
+          unidentified_keys.push(keys[i]);
+        }
       }
 
       for (let i = 0; i < this.app.network.peers.length; i++) {
-      	let peer = this.app.network.peers[i];
-      	if (this.app.network.peers[i].hasService("registry")) {
+        let peer = this.app.network.peers[i];
+        if (this.app.network.peers[i].hasService("registry")) {
           this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
             Object.entries(answer).forEach(([key, value]) => {
-      	      this.cached_keys[key] = value;
-      	      if (key === this.app.wallet.returnPublicKey()) {
-      		      let k = this.app.keychain.returnKey(key);
-      		      if (k) { 
+              this.cached_keys[key] = value;
+              if (key === this.app.wallet.returnPublicKey()) {
+                let k = this.app.keychain.returnKey(key);
+                if (k) {
                   if (!k.identifier) {
-            		    this.app.keychain.addKey(key, { identifier : value });
-            		    this.app.connection.emit("update_identifier", (key));
-            		  } 
+                    this.app.keychain.addKey(key, { identifier: value });
+                    this.app.connection.emit("update_identifier", (key));
+                  }
                 }
-      	      }
-      	      this.app.browser.updateAddressHTML(key, value);
-      	    });
+              }
+              this.app.browser.updateAddressHTML(key, value);
+            });
           });
         }
       }
+      //add null return keys to cache for this session.
+      for (let i = 0; i < unidentified_keys.length; i++) {
+        if (!this.cached_keys[unidentified_keys[i]]) {
+          this.cached_keys[unidentified_keys[i]] = unidentified_keys[i];
+        }
+      }
+      
     });
 
     this.username_modal = null;
@@ -85,7 +92,7 @@ class Registry extends ModTemplate {
     // registering domains should report they run the registry module.
     //
     if (this.app.BROWSER == 0) {
-    //if (this.publickey == this.app.wallet.returnPublicKey()) {
+      //if (this.publickey == this.app.wallet.returnPublicKey()) {
       services.push({ service: "registry", domain: "saito" });
     }
     return services;
@@ -146,7 +153,7 @@ class Registry extends ModTemplate {
       },
 
       (p) => {
-	if (peer == null) {
+        if (peer == null) {
           if (peer.peer.services) {
             for (let z = 0; z < peer.peer.services.length; z++) {
               if (peer.peer.services[z].service === "registry") {
@@ -156,9 +163,9 @@ class Registry extends ModTemplate {
           }
         } else {
           if (p == peer) {
-	    return 1;
-	  }
-	}
+            return 1;
+          }
+        }
       }
     );
   }
@@ -192,6 +199,13 @@ class Registry extends ModTemplate {
     const where_statement = `publickey in (${missing_keys.join(",")})`;
     const sql = `select * from records where ${where_statement}`;
 
+    /*
+    console.info(this.cached_keys);
+    console.info(publickeys);
+    console.info(missing_keys);
+    console.info("%%%%%%%%%%%%%%%%%%%%% PEER REGISTRY REQUEST %%%%%%%%%%%%%%%%%%%%%%%%%");
+    */
+
     this.sendPeerDatabaseRequestWithFilter(
 
       "Registry",
@@ -220,7 +234,7 @@ class Registry extends ModTemplate {
       },
 
       (p) => {
-	if (peer == null) {
+        if (peer == null) {
           if (peer.peer.services) {
             for (let z = 0; z < peer.peer.services.length; z++) {
               if (peer.peer.services[z].service === "registry") {
@@ -230,9 +244,9 @@ class Registry extends ModTemplate {
           }
         } else {
           if (p == peer) {
-	    return 1;
-	  }
-	}
+            return 1;
+          }
+        }
       }
     );
   }
@@ -250,7 +264,7 @@ class Registry extends ModTemplate {
 
       (res) => {
         let rows = [];
-    
+
         if (res.rows == undefined) {
           mycallback(rows);
         }
@@ -265,7 +279,7 @@ class Registry extends ModTemplate {
         }
         rows = res.rows.map((row) => {
           const { publickey, identifier, bid, bsh, lc } = row;
-      
+
           // keep track that we fetched this already
           this.cached_keys[publickey] = identifier;
           if (!found_keys.includes(publickey)) {
@@ -276,7 +290,7 @@ class Registry extends ModTemplate {
       },
 
       (p) => {
-	if (peer == null) {
+        if (peer == null) {
           if (peer.peer.services) {
             for (let z = 0; z < peer.peer.services.length; z++) {
               if (peer.peer.services[z].service === "registry") {
@@ -286,9 +300,9 @@ class Registry extends ModTemplate {
           }
         } else {
           if (p == peer) {
-	    return 1;
-	  }
-	}
+            return 1;
+          }
+        }
       }
     );
   }
@@ -302,8 +316,8 @@ class Registry extends ModTemplate {
 
     if (type == "saito-return-key") {
       return {
-        returnKey : (data = null) => {
-  
+        returnKey: (data = null) => {
+
           // 
           // data might be a publickey, permit flexibility
           // in how this is called by pushing it into a
@@ -319,11 +333,11 @@ class Registry extends ModTemplate {
           // if keys exist
           // 
           for (let key in this.cached_keys) {
-	    if (key === data.publickey) { data.identifier = this.cached_keys[key]; return data; }
-	    if (key === data.identifier) { data.publickey = key; return data; }
-	  }
+            if (key === data.publickey) { data.identifier = this.cached_keys[key]; return data; }
+            if (key === data.identifier) { data.publickey = key; return data; }
+          }
 
-	  return null;
+          return null;
 
         }
       }
@@ -351,26 +365,26 @@ class Registry extends ModTemplate {
       }
     }
 
-/**** part of profile now
-    if (type === 'saito-header') {
-      let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
-      let has_registered_username = false;
-      if (key) { if (key.has_registered_username) { has_registered_username = true; } }
-      if (!has_registered_username) {
-        let m = [{
-          text: "Username",
-          icon: "fa-solid fa-user",
-  	  rank: 80 ,
-          callback: function (app, id) {
-           let m = new RegisterUsernameModal(app, registry_self); //No callback
-           m.render();
-           return;
+    /**** part of profile now
+        if (type === 'saito-header') {
+          let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+          let has_registered_username = false;
+          if (key) { if (key.has_registered_username) { has_registered_username = true; } }
+          if (!has_registered_username) {
+            let m = [{
+              text: "Username",
+              icon: "fa-solid fa-user",
+          rank: 80 ,
+              callback: function (app, id) {
+               let m = new RegisterUsernameModal(app, registry_self); //No callback
+               m.render();
+               return;
+              }
+            }];
+            return m;
           }
-        }];
-        return m;
-      }
-    }
-****/
+        }
+    ****/
     return null;
   }
 
@@ -380,7 +394,7 @@ class Registry extends ModTemplate {
   }
 
 
-  async handlePeerTransaction(app, tx=null, peer, mycallback) {
+  async handlePeerTransaction(app, tx = null, peer, mycallback) {
 
     if (tx == null) { return; }
     let message = tx.returnMessage();
@@ -408,7 +422,7 @@ class Registry extends ModTemplate {
           console.debug("failed verifying message for username registration : ", tx);
         }
       } catch (err) {
-        console.error("ERROR verifying username registration message: " , err);
+        console.error("ERROR verifying username registration message: ", err);
       }
     }
 
@@ -595,17 +609,15 @@ console.log("WE ARE NOW LOCAL SERVER");
                 if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
                   registry_self.app.keychain.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: blk.block.id, block_hash: blk.returnHash(), lc: 1 });
                 } else {
-                  registry_self.app.keychain.addKey(tx.transaction.to[0].add, { has_registered_username : false });
+                  registry_self.app.keychain.addKey(tx.transaction.to[0].add, { has_registered_username: false });
                   console.debug("verification failed for sig : ", tx);
                 }
                 registry_self.app.connection.emit("update_identifier", (tx.transaction.to[0].add));
               } catch (err) {
-                console.error("ERROR verifying username registration message: " , err);
+                console.error("ERROR verifying username registration message: ", err);
               }
             }
           } else {
-
-console.log("#10 in registry!");
 
             if (registry_self.app.wallet.returnPublicKey() != registry_self.publickey) {
               //
