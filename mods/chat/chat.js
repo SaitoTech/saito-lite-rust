@@ -67,6 +67,7 @@ class Chat extends ModTemplate {
 
           this.app.network.sendTransactionWithCallback(newtx, (txs) => {
 try {
+console.log("adding: " + txs.length + " to local community chat");
 	    for (let i = 0; i < txs.length; i++) {
 	      let newtx = new saito.default.transaction(txs[i].transaction);
 	      let txmsg = newtx.returnMessage();
@@ -79,7 +80,6 @@ try {
             this.app.connection.emit("chat-manager-and-popup-render-request", (local_group));
           });
         }
-
       }
     }
 
@@ -714,6 +714,7 @@ try {
             }
             if (tx.transaction.ts < group.txs[i].transaction.ts) {
                 let pos = Math.max(0, i - 1);
+console.log("inserting at: " + pos);
                 group.txs.splice(pos, 0, tx);
                 return;
             }
@@ -724,6 +725,7 @@ try {
         //and clear them when we render them in the popup
         if (!group.unread) { group.unread = 0; }
         group.unread++;
+
     }
 
 
