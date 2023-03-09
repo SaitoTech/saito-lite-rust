@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  background-image: url('img/background.png');
+  background-image: url("/saitorun/img/background.png");
   background-size: cover;
   background-position: center;
   color: white;

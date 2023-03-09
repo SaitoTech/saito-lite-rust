@@ -9,6 +9,10 @@
   white-space: nowrap;
 }
 
+.chat-manager .saito-userline .img-prev {
+  max-width: 100%;
+}
+
 .chat-manager .saito-user {
   column-gap: 2rem;
   margin-bottom: 0.5rem;

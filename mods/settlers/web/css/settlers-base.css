@@ -24,7 +24,14 @@
 
 .handy-help{
   margin: 0 auto;
-  cursor: help;
+  grid-row: span 2;
+  font-size: 22px;
+  padding: 5px;
+}
+
+#cleartrade{
+  cursor: pointer;
+  font-size: 20px;
 }
 
 /* Building costs as cardbox overlay */
@@ -98,36 +105,23 @@ dt{
 }
 
 
-/*My Background*/
-.gameboard {
-  background-color: #369 !important;
-  background: radial-gradient(circle farthest-corner at 50% 0%, #369 40%, lightseagreen 45%, #369 50%);
-  background-size: 25px 25px;
-  position: absolute; /* fixed from game.css does weird stuff*/
-  width: 100vw;
-  height: 100vh;
-  z-index: 0;
+.saito-address{
+  color: unset;
 }
 
+.gameboard.dark {
+  background-color: #369;
+}
 /*Richard background*/
 .gameboard {
   background: linear-gradient(-75deg, #369, #58b, #58b, #369);
   background-size: 100% 100%;
-  /*animation: gradient 20s ease infinite;*/
+  width: 100vw;
   height: 100vh;
+  transition: background 2s;
+  background-blend-mode: multiply;
 }
 
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
 
 #game-hexgrid{
   z-index: 2;
@@ -141,7 +135,7 @@ dt{
 }
 
 .player-box{
-  background-color: #444D;
+  background-color: #444E;
   z-index: 3;
   border: 1px solid;
   max-width: 25vw;
@@ -158,6 +152,10 @@ dt{
 }
 
 
+.plog{
+  flex: 1;
+}
+
 .plog .status-text-menu ul, .plog .status-text-menu ul li{
   background-color: unset;
 } 
@@ -167,7 +165,19 @@ dt{
   box-shadow: unset;
 }
 
+#tradenow{
+  text-align: center;
+  width: 80%;
+  margin: 0 10%;
+  border: 1px silver dashed;
+  cursor: pointer;
+  padding: 0.5em 0;
+}
 
+#tradenow:hover{
+  color: black;
+  background-color: #e7e7e7;
+}
 
 .status-message ul li:hover, .status ul li:hover, .cardselector:hover{
   color: black;
@@ -342,8 +352,9 @@ dt{
 
 .road5{
     transform: rotate(90deg);
-    left: -35%;
-    top: 45%;
+    left: -34%;
+    top: 43%;
+    width: 62%;
 }
 .road6{
     transform: rotate(-30deg);
@@ -353,8 +364,9 @@ dt{
 
 .road1{
   transform: rotate(30deg);
-  right: -8%;
-  top: 8%;
+  right: -4%;
+  top: 7%;
+  width: 62%;
 }
 
 .road2{ /* Overlaps with Road5 */ 
@@ -437,7 +449,7 @@ dt{
   stroke: white;
 }*/
 .producer{
-  box-shadow: 0 0 10px 5px whitesmoke;
+  box-shadow: 0 0 10px 5px;
 }
 
 
@@ -494,6 +506,10 @@ input[type="checkbox"]{
   text-align: center;
   background: #6664;
   color: white;
+}
+
+.sector_value.rolled{
+  box-shadow: 0 0 10px 5px ghostwhite;
 }
 
 .bandit{
@@ -553,27 +569,25 @@ input[type="checkbox"]{
 }
 
 .trade_overlay .icon{
-  width: 2em;
+  width: 50px;
+  margin: 2px 25px 0;
+  border: 2px solid transparent;
+  cursor: pointer;
 }
 
-.trade_overlay .selected{
-  padding: 0em;
-}
-
-.trade_overlay .noselect{
-  color: lightgrey;
-}
-
-.trade_overlay .selected{
-  font-weight: bold;
+.trade_overlay .icon:hover{
+  border-color: whitesmoke;
 }
 
 .trade_overlay .selected .icon{
-  width: 3em;
+  margin: 0 23px;
+  border-color: whitesmoke;
+  filter: drop-shadow(5px 5px 4px);
 }
 
 .noselect .icon{
-  filter: grayscale(100%);
+  filter: grayscale(100%) brightness(0.55);
+  cursor: default;
 }
 
 .button.noselect:hover{
@@ -587,9 +601,7 @@ input[type="checkbox"]{
 
 .trade_button {
   width: 120px;
-  padding: 0.5em;
   text-transform: uppercase;
-  cursor: pointer;
 }
 
 .trade_button div{
@@ -919,7 +931,7 @@ ul.horizontal_list li.iconoption{
   animation-name: flash;
   animation-duration: 1.8s;
   animation-delay: 0.2s;
-  animation-iteration-count: 5;
+  /*animation-iteration-count: 5;*/
   /*animation-fill-mode: backwards;*/
 }
 

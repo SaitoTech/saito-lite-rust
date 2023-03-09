@@ -181,7 +181,8 @@ class Tweet {
     //
     // modify width of any iframe
     //
-    if (this.youtube_id != null) {
+    if (this.youtube_id != null && this.youtube_id != "null") {
+console.log("MODIFY IFRAME WIDTH!");
       let tbqs = myqs + " .tweet-body .tweet-main";
       let ytqs = myqs + " .tweet-body .tweet-main .youtube-embed";
       if (document.querySelector(tbqs)) {
@@ -195,7 +196,6 @@ class Tweet {
         }
       }
     }
-
 
     //
     // render user
@@ -213,6 +213,7 @@ class Tweet {
     if (this.link_preview != null) {
       if (this.link_properties != null) {
         if (Object.keys(this.link_properties).length > 0) {
+console.log("rendering link preview!");
           this.link_preview.render();
         }
       }
@@ -748,6 +749,8 @@ class Tweet {
     let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
     let links = this.text.match(expression);
 
+console.log("GTP: " + JSON.stringify(links));
+
     if (links != null && links.length > 0) {
 
       //
@@ -771,7 +774,10 @@ class Tweet {
           videoId = urlParams.get('v');
         }
 
-        this.youtube_id = videoId;
+	if (videoId != null && videoId != "null") {
+console.log("GTP 2: " + videoId);
+          this.youtube_id = videoId;
+        }
         return this;
       }
 
@@ -781,6 +787,7 @@ class Tweet {
       if (fetch_open_graph == 1) {
         let res = await mod.fetchOpenGraphProperties(app, mod, this.link);
         if (res != '') {
+console.log("GTP 3: " + JSON.stringify(res));
           this.link_properties = res;
         }
       }

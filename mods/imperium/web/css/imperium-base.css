@@ -136,7 +136,7 @@
   background-size: cover;
 }
 .units-overlay-container {
-  background-image: url(/imperium/img/starscape_background1.jpg);
+  background-image: url("/imperium/img/starscape_background1.jpg");
   background-size: cover;
   min-width: 80vw;
   min-height: 80vh;
@@ -206,7 +206,7 @@
 
 
 .new_secret_objective_overlay {
-  background-image: url(/imperium/img/starscape_background1.jpg);
+  background-image: url("/imperium/img/starscape_background1.jpg");
   width: 50vw;
   height: auto;
   text-align:center;
@@ -418,7 +418,7 @@
 
 
 .new_objectives_overlay_container {
-  background-image: url('/imperium/img/starscape_background1.jpg');
+  background-image: url("/imperium/img/starscape_background1.jpg");
   background-size: cover;
   border-radius: 15px;
   width: 80vw;
@@ -454,7 +454,7 @@
   display: inline-block;
 }
 .new_action_cards_overlay_container {
-  background-image: url('/imperium/img/starscape_background3.jpg');
+  background-image: url("/imperium/img/starscape_background3.jpg");
   background-size: cover;
   border-radius: 15px;
   width: 80vw;
@@ -913,8 +913,8 @@ body {
 }
 
 .game_background {
-  background-image: url(img/spacebg.png);
-  background-image: url(img/spaceb2.jpg);
+  background-image: url("/imperium/img/spacebg.png");
+  background-image: url("/imperium/img/spaceb2.png");
   background-size: cover;
   position: absolute;
   top: -50%;
@@ -1052,7 +1052,7 @@ body {
 }
 
 .faction_sheet_action_card {
-  background-image: url(img/action_card_template.png);
+  background-image: url("/imperium/img/action_card_template.png");
   height: 26vh;
   width: calc(26vh * 0.72110);
   background-size: cover;
@@ -1067,7 +1067,7 @@ body {
   z-index: 1;
 }
 .overlay_action_card {
-  background-image: url(img/action_card_template.png);
+  background-image: url("/imperium/img/action_card_template.png");
   height: 34vh;
   width: calc(34vh * 0.72110);
   background-size: cover;
@@ -1082,7 +1082,7 @@ body {
 }
 
 .faction_sheet_action_card_back {
-  background-image: url(img/action_card_back.jpg);
+  background-image: url("/imperium/img/action_card_back.jpg");
 }
 
 .overlay_action_card:hover, .faction_sheet_action_card:hover, .faction_sheet_planet_card:hover, .tech_card:hover {
@@ -1273,7 +1273,7 @@ body {
 }
 
 .tech_card {
-  background-image: url(img/tech_card_template.jpg);
+  background-image: url("/imperium/img/tech_card_template.jpg");
   position: relative;
   width: 340px;
   height: 200px;
@@ -1314,7 +1314,7 @@ body {
 }
 
 .tech_card {
-  background-image: url(img/tech_card_template.jpg);
+  background-image: url("/imperium/img/tech_card_template.jpg");
   position: relative;
   width: 16vw;
   height: 10vw;
@@ -2156,7 +2156,7 @@ body {
 }
 
 .dash-item.resources {
-  background-image: url('/imperium/img/blank_resources_hex.png');
+  background-image: url("/imperium/img/blank_resources_hex.png");
   background-size: cover;
   /* content: "\2B23"; */
   /* background-color: #c16400; */
@@ -2171,7 +2171,7 @@ body {
 }
 
 .dash-item.influence {
-  background-image: url('/imperium/img/blank_influence_hex.png');
+  background-image: url("/imperium/img/blank_influence_hex.png");
   background-size: cover;
   /* content: "\2B23";
   /* background-color: #000000; */
@@ -2310,7 +2310,7 @@ body {
 
 
 .system_summary {
-  background-image: url('/imperium/img/starscape-background4.jpg');
+  background-image: url("/imperium/img/starscape-background4.jpg");
   color: white;
   width: auto;
   height: auto;
@@ -2790,7 +2790,7 @@ input[type=range] {
   font-family: 'orbitron-medium', helvetica, arial;
   line-height: 1.7em;
   font-size: 1.1em;
-  background-image: url('/imperium/img/starscape-background4.jpg');
+  background-image: url("/imperium/img/starscape-background4.jpg");
   background-size: cover;
   color: white;
   overflow-y: scroll;

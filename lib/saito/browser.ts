@@ -1254,7 +1254,7 @@ class Browser {
     let unidentified_keys = [];
     for (let i = 0; i < keys.length; i++) {
       if (this.app.keychain.returnIdentifierByPublicKey(keys[i], true) === keys[i]) {
-	unidentified_keys.push(keys[i]);
+	      unidentified_keys.push(keys[i]);
       } else {
         this.updateAddressHTML(keys[i], this.app.keychain.returnIdentifierByPublicKey(keys[i]));
       }

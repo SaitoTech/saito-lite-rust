@@ -154,7 +154,7 @@ thead,  tfoot{
   padding: 12.5px;
   width: 900px;
   height: 900px;
-  background-image: url(/wordblocks/img/textures/wood2.jpg);
+  background-image: url("/wordblocks/img/textures/wood2.jpg");
   background-size: cover;
 }
 

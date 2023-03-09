@@ -6,8 +6,6 @@ module.exports = (app, mod, tweet) => {
   let notice = "";
   if (tweet.notice != "") { notice = tweet.notice; }
 
-console.log("notice is: " + notice);
-
   let publickey = "";
   try { 
     if (tweet.tx.transaction.from[0].add) { publickey = tweet.tx.transaction.from[0].add; }
@@ -62,7 +60,7 @@ console.log("notice is: " + notice);
             <div class="tweet-main">
               <div class="tweet-text">${app.browser.sanitize(text)}</div>
   `;
-  if (tweet.youtube_id != null) {
+  if (tweet.youtube_id != null && tweet.youtube_id != "null") {
     html += `
       <iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>
     `;

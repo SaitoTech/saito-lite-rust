@@ -1,4 +1,4 @@
-const SaitoUserTemplate = require('./../../lib/saito/ui/templates/saito-user.template.js');
+const SaitoUserTemplate = require('./../../lib/saito/ui/saito-user/saito-user.template.js');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ChatManager = require('./lib/chat-manager/main');
@@ -67,6 +67,7 @@ class Chat extends ModTemplate {
 
           this.app.network.sendTransactionWithCallback(newtx, (txs) => {
 try {
+console.log("adding: " + txs.length + " to local community chat");
 	    for (let i = 0; i < txs.length; i++) {
 	      let newtx = new saito.default.transaction(txs[i].transaction);
 	      let txmsg = newtx.returnMessage();
@@ -79,7 +80,6 @@ try {
             this.app.connection.emit("chat-manager-and-popup-render-request", (local_group));
           });
         }
-
       }
     }
 
@@ -229,7 +229,6 @@ try {
                     }
                 );
             }
-
         }
 
         //
@@ -372,7 +371,7 @@ try {
      * We send messages on chain to their target and to the chat-services node via Relay
      * 
     */
-    sendChatTransaction(app, tx, broadcast = 0) {
+    sendChatTransaction(app, tx) {
 
         if (tx.msg.message.substring(0, 4) == "<img") {
             if (this.inTransitImageMsgSig) {
@@ -513,8 +512,6 @@ try {
     //
     returnChatBody(group_id) {
 
-        //console.log("group ID: " + group_id);
-
         let html = '';
         let group = this.returnGroup(group_id);
         if (!group) { return ""; }
@@ -528,14 +525,19 @@ try {
                 let sender = "";
                 let msg = "";
                 for (let z = 0; z < block.length; z++) {
-                    if (z > 0) { msg += '<br/>'; }
                     let txmsg = block[z].returnMessage();
-                    sender = block[z].transaction.from[0].add;
-                    msg += txmsg.message;
-                    ts = txmsg.timestamp;
-                }
-                msg = this.app.browser.sanitize(msg);
-                html += `${SaitoUserTemplate(this.app, sender, msg, this.app.browser.returnTime(ts))}`;
+		    if (txmsg.message) {
+                        if (z > 0) { msg += '<br/>'; }
+                        sender = block[z].transaction.from[0].add;
+	                if (txmsg.message.indexOf('<img') != 0) {
+                            msg += this.app.browser.sanitize(txmsg.message);
+                        } else {
+		            msg += txmsg.message.substring(0, txmsg.message.indexOf('>')+1);
+ 		        }
+		        ts = txmsg.timestamp;
+		    }
+		}
+                html += `${SaitoUserTemplate({ app : this.app, publickey : sender, notice : msg, fourthelem : this.app.browser.returnTime(ts) })}`;
             }
         }
 
@@ -629,7 +631,7 @@ try {
             }
         }
 
-        if (!name) {
+        if (name == null) {
             name = "";
             for (let i = 0; i < members.length; i++) {
                 if (members[i] != this.app.wallet.returnPublicKey()) {
@@ -712,6 +714,7 @@ try {
             }
             if (tx.transaction.ts < group.txs[i].transaction.ts) {
                 let pos = Math.max(0, i - 1);
+console.log("inserting at: " + pos);
                 group.txs.splice(pos, 0, tx);
                 return;
             }
@@ -722,6 +725,7 @@ try {
         //and clear them when we render them in the popup
         if (!group.unread) { group.unread = 0; }
         group.unread++;
+
     }
 
 
@@ -759,16 +763,13 @@ try {
     }
 
     returnMembers(group_id) {
-
         for (let i = 0; i < this.groups.length; i++) {
             if (group_id === this.groups[i].id) {
                 return [...new Set(this.groups[i].members)];
             }
         }
-
         return [];
     }
-
 
     returnChatByName(name = "") {
         for (let i = 0; i < this.groups.length; i++) {
@@ -780,7 +781,6 @@ try {
         }
         return this.groups[0];
     }
-
 
     returnCommunityChat() {
         for (let i = 0; i < this.groups.length; i++) {
