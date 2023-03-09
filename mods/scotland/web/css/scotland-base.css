@@ -11,7 +11,7 @@
 }
 
 .gameboard {
-  background-image: url(/mods/scotland/web/img/gameboard-large.jpg);
+  background-image: url("/scotland/img/gameboard-large.jpg");
   width: 5135px;
   height: 3829px;
   margin-top: 50px;

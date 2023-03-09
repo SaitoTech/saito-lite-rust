@@ -158,16 +158,16 @@ img {
   height: 102px;
 }
 .vial_yellow {
-  background-image: url(/mods/pandemic/web/img/Vial%20Yellow.png);
+  background-image: url("/mods/pandemic/img/Vial%20Yellow.png");
 }
 .vial_blue {
-  background-image: url(/mods/pandemic/web/img/Vial%20Blue.png);
+  background-image: url(""/mods/pandemic/img/Vial%20Blue.png");
 }
 .vial_red {
-  background-image: url(/mods/pandemic/web/img/Vial%20Red.png);
+  background-image: url(""/mods/pandemic/img/Vial%20Red.png");
 }
 .vial_black {
-  background-image: url(/mods/pandemic/web/img/Vial%20Black.png);
+  background-image: url(""/mods/pandemic/img/Vial%20Black.png");
 }
 
 
@@ -209,7 +209,7 @@ img {
   max-height: 520px;
   width: 100vw;
   max-width: 375px;
-  background-image: url(/mods/pandemic/web/img/Base.svg);
+  background-image: url(""/mods/pandemic/img/Base.svg");
   background-size: cover;
   z-index: 2;
   display: none;
@@ -370,7 +370,7 @@ img {
 /* For displaying an image */
 .research_station {
   position: absolute;
-  background-image: url(/mods/pandemic/web/img/Marker%20Research%20Station.png);
+  background-image: url("/mods/pandemic/img/Marker%20Research%20Station.png");
   background-size: cover;
   width: 90px;
   height: 102px;
@@ -386,14 +386,14 @@ img {
 
 .marker_infection_rate {
   position: absolute;
-  background-image: url(/mods/pandemic/web/img/Marker%20Infection%20Rate.png);
+  background-image: url("/mods/pandemic/img/Marker%20Infection%20Rate.png");
   background-size: cover;
   width: 86px;
   height: 84px;
 }
 .marker_outbreak {
   position: absolute;
-  background-image: url(/mods/pandemic/web/img/Marker%20Outbreak.png);
+  background-image: url("/mods/pandemic/img/Marker%20Outbreak.png");
   background-size: cover;
   width: 87px;
   height: 88px;
@@ -403,7 +403,7 @@ img {
 }
 .back_player_card {
   position: absolute;
-  /*background-image: url(/mods/pandemic/web/img/Back%20Player%20Card.gif);
+  /*background-image: url("/mods/pandemic/img/Back%20Player%20Card.gif");
   background-size: cover;*/
   width: 243px;
   height: 341px;
@@ -412,7 +412,7 @@ img {
 }
 .player_discard_pile {
   position: absolute;
-  /*background-image: url(/mods/pandemic/web/img/Back%20Player%20Card.gif);
+  /*background-image: url("/mods/pandemic/img/Back%20Player%20Card.gif");
   background-size: cover;*/
   width: 243px;
   height: 341px;
@@ -421,7 +421,7 @@ img {
 }
 .back_infection_card {
   position: absolute;
-  /*background-image: url(/mods/pandemic/web/img/Back%20Infection.gif);
+  /*background-image: url("/mods/pandemic/img/Back%20Infection.gif");
   background-size: cover;*/
   width: 340px;
   height: 243px;
@@ -431,7 +431,7 @@ img {
 
 .infection_discard_pile {
   position: absolute;
-  /*background-image: url(/mods/pandemic/web/img/Back%20Infection.gif);
+  /*background-image: url("/mods/pandemic/img/Back%20Infection.gif");
   background-size: cover;*/
   width: 340px;
   height: 243px;
