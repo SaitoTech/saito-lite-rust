@@ -88,7 +88,7 @@
   background-repeat: no-repeat;
 }
 
-game-overlay-cardlist-button {
+.game-overlay-cardlist-button {
 }
 .game-overlay-cardlist-unselectable {
   opacity: 0.4;
