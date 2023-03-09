@@ -64,7 +64,7 @@ class Settlers extends GameTemplate {
     }
     let overlay_html = `
 
-  <div class="rules-overlay trade_overlay">
+  <div class="saitoa rules-overlay trade_overlay">
   <div class="h1">${skin.gametitle}</div>
   <div class="h2">Overview</div>
   <p>The game mechanics should be familiar to anyone who has played resource-acquisition boardgames based on trading and building.</p>
@@ -214,6 +214,7 @@ class Settlers extends GameTemplate {
       
       this.playerbox.render();
       this.playerbox.addStatus();
+      //this.playerbox.classList.add("saitoa");
       this.playerbox.addClass("me", this.game.player);
 
       for (let i = 1; i <= this.game.players.length; i++) {
@@ -330,7 +331,7 @@ class Settlers extends GameTemplate {
   }
 
   returnStatsOverlay(){
-    let html = `<div class="rules-overlay">
+    let html = `<div class="rules-overlay saitoa">
                 <div class="h1">Game Statistics</div>`;
 
     //Fucking Dice
@@ -3411,7 +3412,7 @@ class Settlers extends GameTemplate {
     let submit = tradeType > 0 ? "Send offer" : "Broadcast Offer";
 
     let updateOverlay = function (settlers_self, resList, myRes, offering, receiving) {
-      let html = `<div class="trade_overlay" id="trade_overlay">
+      let html = `<div class="trade_overlay saitoa" id="trade_overlay">
             <div style="width:100%"><div class="h1 trade_overlay_title">${title}</div></div>`;
       html += `<p>Interrupt game play to send a concrete trade offer to ${(tradeType>0)?`${settlers_self.game.playerNames[tradeType-1]}.`:"all your opponents. The first to accept completes the trade. You may rescind the trade and move on with your turn if they take too long to think about it."}</p>`;
   
@@ -3534,7 +3535,7 @@ class Settlers extends GameTemplate {
       if (temp > 0) myRes[resource] = temp;
     }
 
-    let html = `<div class="trade_overlay" id="trade_overlay">
+    let html = `<div class="trade_overlay saitoa" id="trade_overlay">
             <div style="width:100%"><div class="h1 trade_overlay_title">Advertise Trade</div>
             <p>You may share information about your resources with the other players, telling them which resources you may be interested in trading. It will be up to them to initiate a trade offer on their. This should facilitate trading without interrupting game play.</p></div>
             <div class="h2">You Want</div>
