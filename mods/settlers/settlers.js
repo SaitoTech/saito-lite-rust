@@ -104,6 +104,7 @@ class Settlers extends GameTemplate {
   initializeHTML(app) {
 
     if (!this.browser_active) { return; }
+
     //Prevent this function from running twice as saito-lite is configured to run it twice
     if (this.initialize_game_run) {return;} 
 
@@ -202,7 +203,6 @@ class Settlers extends GameTemplate {
 
     this.log.render();
 
-    $(".dark").css("background-color","");
     this.hexgrid.render(".gameboard");
 
     try {
@@ -250,6 +250,11 @@ class Settlers extends GameTemplate {
 
       this.displayBoard();
    
+      if (this.game.state.placedCity == null){
+        $(".dark").css("backgroundColor","unset");  
+      }
+      
+
     } catch (err) {
       console.log("Intialize HTML: "+err);
     }
@@ -1564,8 +1569,10 @@ class Settlers extends GameTemplate {
           document.querySelector(`#${city.slot}`).classList.remove("producer");
         }
 
+
         let divname = `.sector_value:not(.bandit)`;
-        $(divname).removeAttr("style");
+        $(divname).attr("style", "");
+        $(".rolled").removeClass("rolled");
         return 1;
       }
     }
@@ -3899,7 +3906,7 @@ class Settlers extends GameTemplate {
   animateDiceRoll(roll) {
     //console.log("Dice Animated: " + roll);
     $(".rolled").removeClass("rolled");
-    $(".sector_value").attr("style","");
+    $(".sector_value:not(.bandit)").attr("style","");
     let divname = ".sv" + roll + ":not(.bandit)";
     $(divname).addClass("rolled")
       .css("color", "#000")

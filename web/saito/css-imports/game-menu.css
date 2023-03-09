@@ -5,7 +5,6 @@
   display: block;
   width: auto;
   height: 40px;
-  background-color: #f5f5f5cc;
   border: 1px solid #444;
   border-radius: 5px;
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
@@ -13,6 +12,10 @@
   margin: 1px 1px 3px 3px;
   z-index: 500;
   font-size: 1.9rem;
+  
+  cursor: pointer;
+  color: black;
+  background-color: #f5f5f5cc;
 }
 
 .game-menu > ul {
@@ -22,7 +25,6 @@
 
 .game-menu ul li {
   user-select: none;
-  color: black;
   list-style: none;
   text-align: center;
   padding: 0;
@@ -32,7 +34,7 @@
   border-bottom: none;
   height: 40px;
   line-height: 40px;
-  cursor: pointer;
+
 }
 
 #quake-controls {
@@ -83,7 +85,7 @@
   line-height: 40px;
 }
 
-.game-menu ul .game-menu-sub-option, .game-menu-sub-option ul .game-menu-sub-sub-option {
+.game-menu-sub-option, .game-menu-sub-sub-option {
   position: relative;
   background-color: #f5f5f5ee;
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
