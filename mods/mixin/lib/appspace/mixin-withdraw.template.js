@@ -54,20 +54,61 @@ module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
 
 
 
-
-
     <div class="saito-overlay-form" id="saito-withdraw-overlay">
     <div class="saito-overlay-form-header">
       <div class="saito-overlay-form-header-title">Send Token</div>
     </div>
 
-          <div class="saito-overlay-form-input">
+
+<div class="dropdown-cont" style="
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    /* border: 1px solid #111; */
+">
+    <div class="saito-overlay-form-input" style="
+    width: 30%;
+">
         <div class="token-dropdown">
           <img src="https://saito.io/saito/img/touch/pwa-192x192.png">
           <select>
-            <option>SAITO - 54.2</option>
+            <option>SAITO</option>
             <option>TRX</option>
           </select>
+        </div>
+    </div>
+
+
+<div style="
+    color: var(--saito-font-color);
+    /* border: 1px solid; */
+    text-align: center;
+"><span style="
+    width: 11rem;
+    /* border: 1px solid; */
+    display: block;
+">network fee</span> 2 SAITO</div>
+
+<div style="
+    color: var(--saito-font-color);
+    line-height: 2rem;
+    /* border: 1px solid; */
+    text-align: right;
+">
+<span style="
+    width: 11rem;
+    /* border: 1px solid; */
+    display: block;
+">balance</span> 54.2 SAITO
+</div>
+
+</div>
+
+
+
+      <div class="saito-overlay-form-input">
+        <div class="withdraw-address-cont">
+          <input type="text" class="input-elem withdraw_address" value="" required="" placeholder="receiving address">
         </div>
       </div>
 
@@ -76,33 +117,18 @@ module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
 
       <div class="saito-overlay-form-input">
         <div class="withdraw-address-cont">
-          <input type="text" class="input-elem withdraw_address" value="" required  placeholder="Withdrawl amount">
+          <input type="text" class="input-elem withdraw_address" value="" required="" placeholder="withdraw amount">
           <div class="withdraw-options-cont">
             <span>Max</span>
           </div>
         </div>
       </div>
 
-      <div class="saito-overlay-form-input">
-        <div class="withdraw-address-cont">
-          <input type="text" class="input-elem withdraw_address" value="" required placeholder="Withdrawl fee">
-          <div class="withdraw-options-cont">
-            <span style="
-                color: var(--saito-font-color-light);
-            ">SAITO</span>
-          </div>
-        </div>
-      </div>
+      
       
     </div>
 
-
-      <div class="saito-overlay-form-input">
-        <div class="withdraw-address-cont">
-          <input type="text" class="input-elem withdraw_address" value="" required placeholder="Receiving address">
-        </div>
-      </div>
-
+    
       <div class="confirm-msg-container">
           <i class="withdraw-msg-icon fa-solid fa-circle-exclamation"></i>
           <div class="confirm-msg">
@@ -112,17 +138,37 @@ module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
 
 
     <div class="saito-overlay-form-submitline form-submit-container">
+<div class="fee-cont" style="
+    /* color: var(--saito-font-color); */
+"> 
+<div style="
+    /* color: var(--saito-font-color); */
+    line-height: 2rem;
+">
+<span style="
+    width: 11rem;
+    /* border: 1px solid; */
+    display: inline-block;
+">balance:</span> 54.2 SAITO
+</div>
+<div><span style="
+    width: 11rem;
+    /* border: 1px solid; */
+    display: inline-block;
+">network fee:</span> 2 SAITO</div>
+</div>
+
       <button type="submit" class="withdraw-submit saito-button-primary fat saito-overlay-form-submit" id="saito-overlay-submit">Send</button>
     </div>
 
-    <div class="saito-overlay-form-submitline confirm-submit">
+    <div class="saito-overlay-form-submitline confirm-submit" style="
+    color: var(--saito-font-color);
+">
       <button type="submit" class="withdraw-submit saito-button-primary saito-overlay-form-submit" id="withdraw-confirm">Confirm</button>
       <button type="submit" class="withdraw-submit saito-button-primary saito-overlay-form-submit" id="withdraw-cancel">Cancel</button> 
     </div>
 
   </div>
-
-
 
 
   </form>
