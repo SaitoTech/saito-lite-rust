@@ -176,6 +176,7 @@ class VideoBox {
 
 
     async handleConnectionStateChange(peer, connectionState, is_creator = false) {
+        let my_pub_key = this.app.wallet.returnPublicKey();
         let video_box = document.querySelector(`#stream${this.stream_id}`);
         console.log('video box handle connection state ', video_box, this);
         let connection_message = document.querySelector('#connection-message');
@@ -200,36 +201,42 @@ class VideoBox {
                 video_box.firstElementChild.srcObject = this.stream
                 siteMessage(`connection with ${this.stream_id} unstable`, 5000);
 
-                let online = await this.checkOnlineStatus();
-                if(!online){
-                    this.updateConnectionMessage('please check internet connectivity');
-                }else {
-                    this.updateConnectionMessage('re-establishing connection');
-                }
-
-               
 
                 if (is_creator) {
                     let interval = setInterval(async () => {
                         let online = await this.checkOnlineStatus();
-                        if(!online){
+                        if (!online) {
                             this.updateConnectionMessage('please check internet connectivity');
                         }
                         else {
                             this.updateConnectionMessage('re-establishing connection');
+                            // check if other peer is online, then send a connection.
                             this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code, false);
                             clearInterval(interval);
-                            let counter = 0;
-                            let interval_2 = setInterval(() => {  
-                                if (this.mod.peer_connections[peer].connectionState ==="connected" ) {
-                                    clearInterval(interval_2);
-                                } else if(this.mod.peer_connections[peer].connectionState !=="connected") {
-                                    if(counter > 0){
-                                        this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code, false);
-                                    }                  
-                                }
-                                counter++
-                            }, 20000)
+                            // let counter = 0;
+                            // let interval_2 = setInterval(() => {  
+                            //     if (this.mod.peer_connections[peer].connectionState ==="connected" ) {
+                            //         clearInterval(interval_2);
+                            //     } else if(this.mod.peer_connections[peer].connectionState !=="connected") {
+                            //         if(counter > 0){
+                            //             this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code, false);
+                            //         }                  
+                            //     }
+                            //     counter++
+                            // }, 20000);
+                        }
+                    }, 2000)
+                } else {
+                    let interval = setInterval(async () => {
+                        let online = await this.checkOnlineStatus();
+                        if (!online) {
+                            this.updateConnectionMessage('please check internet connectivity');
+                        }
+                        else {
+                            this.updateConnectionMessage('re-establishing connection');
+                            // send message to other peer telling it I am online and ask it to send a connection
+                            this.mod.sendCommandToPeerTransaction(my_pub_key, peer, "initiate transaction");
+                            clearInterval(interval);
                         }
                     }, 2000)
                 }
@@ -312,3 +319,4 @@ class VideoBox {
 
 
 module.exports = VideoBox;
+

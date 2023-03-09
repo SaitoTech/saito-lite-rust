@@ -1,6 +1,8 @@
 
 
 
+
+
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
@@ -299,6 +301,11 @@ class Stun extends ModTemplate {
         if (txmsg.request === "update room") {
             this.receiveUpdateRoomTransaction(app, tx)
         }
+        if (txmsg.request === "stun command transmission request") {
+            this.receiveCommandToPeerTransaction(app, tx)
+        }
+
+
 
         super.handlePeerTransaction(app, tx, peer, mycallback)
 
@@ -439,7 +446,7 @@ class Stun extends ModTemplate {
                         console.log(pc.connectonState, e);
                         console.log(pc.currentLocalDescription, this.peer_connections[publicKey].currentLocalDescription, 'current local description')
 
-                       
+
                         switch (pc.connectionState) {
                             case "connecting":
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code, true);
@@ -504,16 +511,16 @@ class Stun extends ModTemplate {
                         });
 
                         console.log('ui_type ', ui_type, 'public key ', publicKey, "call type", call_type);
-                        
+
                         console.log(remoteStream, pc, publicKey, "This is for the offer creator")
                         this.app.connection.emit('add-remote-stream-request', publicKey, remoteStream, pc, ui_type, call_type, room_code);
 
                     });
 
-                  
+
                     const offer = await pc.createOffer();
                     pc.setLocalDescription(offer);
-            
+
 
                 } catch (error) {
                     console.log(error);
@@ -649,7 +656,6 @@ class Stun extends ModTemplate {
                             break;
                         case "connected":
                             console.log("connection state ", pc.connectionState)
-
                             if (this.central === true) {
                                 if (!this.room.peers.includes(offer_creator)) {
                                     this.room.peers.push(offer_creator);
@@ -661,8 +667,6 @@ class Stun extends ModTemplate {
                             }
                             this.receiving_from[offer_creator] = false;
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
-
-
                             break;
                         case "disconnected":
                             if (pc.connectionState !== stunx_mod.peer_connections[offer_creator].connectionState) {
@@ -928,6 +932,61 @@ class Stun extends ModTemplate {
 
 
 
+    createSendCommandToPeerTransaction(sender, recipient, command) {
+
+        let _data = {
+            sender,
+            recipient,
+            command
+        }
+        let request = "stun command transmission request"
+
+        // offchain data
+        let data = {
+            recipient: [recipient],
+            request,
+            data: _data
+        }
+
+        return [null, data];
+    }
+
+    async sendCommandToPeerTransaction(sender, recipient, command) {
+        let [tx, data] = this.createSendCommandToPeerTransaction(sender, recipient, command);
+        console.log('sending command ', data)
+        this.app.connection.emit('relay-send-message', data);
+
+    }
+
+    async receiveCommandToPeerTransaction(app, tx, conf, blk) {
+        if (app.BROWSER !== 1) return;
+
+        if (!this.ChatManagerLarge.isActive) return;
+        const command = tx.msg.data.command
+        const recipient = tx.msg.data.recipient;
+        const sender = tx.msg.data.recipient;
+
+        console.log(tx, 'receiving command', command, 'room code', this.room_code);
+
+
+        switch (command) {
+            case "initiate transaction":
+                this.createMediaChannelConnectionWithPeers([sender], 'large', 'video', this.room_code);
+                break;
+
+            default:
+                break;
+        }
+
+
+
+
+        let my_pubkey = app.wallet.returnPublicKey();
+
+
+
+
+    }
     createMediaChannelNotificationTransaction(offer_creator, offer_recipient, room_code) {
         console.log('offer creator ', offer_recipient, offer_creator)
         let _data = {
@@ -966,9 +1025,6 @@ class Stun extends ModTemplate {
 
         let my_pubkey = app.wallet.returnPublicKey();
 
-        if (offer_recipient === my_pubkey) {
-            this.receiving_from[offer_creator] = true;
-        }
 
         app.connection.emit('stun-receive-media-offer', {
             room_code,
@@ -1377,5 +1433,6 @@ class Stun extends ModTemplate {
 }
 
 module.exports = Stun;
+
 
 
