@@ -3,7 +3,7 @@
     background: linear-gradient(217deg, #125552, transparent 70.71%),
     linear-gradient(127deg, #093637, #44A08D 70.71%),
     linear-gradient(336deg, #67B26F, #4ca2cd 70.71%);
-    background-image: url("/wuziqi/img/BG.png")/*, url("../poker/img/gameboard.jpg")*/;
+    background-image: url(/mods/wuziqi/web/img/BG.png)/*, url(/mods/poker/web/img/gameboard.jpg)*/;
     background-size: cover;
 }
 
@@ -26,8 +26,8 @@
     margin: auto auto;
     /*border: 1px solid #00cfff61;
     background: #2222;
-    background-image: url("/wuziqi/img/004-polished-wood.png");*/
-    background-image: url("/wuziqi/img/wood-giant.png");
+    background-image: url(/mods/wuziqi/web/img/004-polished-wood.png);*/
+    background-image: url(/mods/wuziqi/web/img/wood-giant.png);
     background-size: 102%;
     padding:  2em;
     /*box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);*/
@@ -117,14 +117,14 @@ Board is a grid of wooden squares
 .piece.white{
     /*background: white;
     border: 1px solid #111 !important;*/
-    background-image: url("/wuziqi/img/whitepiece.png");
+    background-image: url(/mods/wuziqi/web/img/whitepiece.png);
     background-size: cover;
 }
 
 .piece.black{
     /*background: black;
     border: 1px solid #eee !important;*/
-    background-image: url("/wuziqi/img/blackpiece.png");
+    background-image: url(/mods/wuziqi/web/img/blackpiece.png);
     background-size: cover;
 }
 

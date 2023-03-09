@@ -49,19 +49,6 @@
   min-height: 10rem;
 }
 
-.tweet.quoted {
-  margin-top: -2rem;
-}
-
-.tweet.quoted .tweet-contents {
-  display: grid;
-  grid-template-columns: 4.5rem 1fr;
-}
-
-.tweet.quoted:hover {
-  border-top: 1px solid transparent;
-  border-bottom: 1px solid var(--saito-border-color);
-}
 
 .tweet-overlay .tweet-main {
   overflow-y: auto;
@@ -222,12 +209,7 @@
   height: auto;
   border-radius: 0.5rem;
   object-fit: cover;
-}
 
-.tweet-overlay-img-cont img {
-  min-width: 50vw;
-  max-height: 90vh;
-  max-width: 90vw;
 }
 
 .tweet-img-icon {
@@ -248,23 +230,6 @@
   font-size: 2.2rem;
 }
 
-.tweet-img-arrow-box {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.tweet-overlay-img-cont>img {
-  transition: all 0.2s ease-in-out;
-}
-
-.tweet-img-arrow-box.left {
-  left: -10rem;
-}
-
-.tweet-img-arrow-box.right {
-  right: -10rem;
-}
 
 .link-img {
   width: 100%;
@@ -296,11 +261,7 @@
 
 .link-description {
   color: var(--saito-font-color-light);
-}
 
-.youtube-embed-container>iframe {
-  width: 100%;
-  height: 25rem;
 }
 
 @media screen and (max-width: 1280px) {
@@ -308,9 +269,6 @@
     grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
   }
   .tweet-picture>img {
-    max-height: 35rem !important;
-  }
-  .preview-img {
     max-height: 35rem !important;
   }
 }
@@ -335,9 +293,6 @@
 @media screen and (max-width: 529px) {
 
   .tweet-picture>img {
-    height: 15rem;
-  }
-  .preview-img {
     height: 15rem;
   }
 }

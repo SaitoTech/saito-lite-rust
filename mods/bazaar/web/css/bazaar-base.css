@@ -23,7 +23,7 @@ body {
 .gameboard{
   /* Default fill the background with image */
   position: absolute;
-  background-image: url("img/gameboard.jpg");
+  background-image: url(/mods/bazaar/web/img/gameboard.jpg);
   background-size: cover;
   background-position: top right;
   width: 100vw;
@@ -282,7 +282,7 @@ body {
 #draw{
   color: maroon;
   cursor: default;
-  /*background-image:url('${this.card_img_dir}card_back.png');*/
+  /*background-image:url(/mods/bazaar/web/img/cards/card_back.png);*/
   background-color: #ffffffaa;
 }
 
