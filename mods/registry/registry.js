@@ -49,7 +49,6 @@ class Registry extends ModTemplate {
           this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
             Object.entries(answer).forEach(([key, value]) => {
       	      this.cached_keys[key] = value;
-      	      if (key === this.app.wallet.returnPublicKey()) {
       		      let k = this.app.keychain.returnKey(key);
       		      if (k) { 
                   if (!k.identifier) {
@@ -57,7 +56,6 @@ class Registry extends ModTemplate {
             		    this.app.connection.emit("update_identifier", (key));
             		  } 
                 }
-      	      }
       	      this.app.browser.updateAddressHTML(key, value);
       	    });
           });

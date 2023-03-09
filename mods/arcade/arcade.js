@@ -49,7 +49,7 @@ class Arcade extends ModTemplate {
       'arcade': 'fa-solid fa-gamepad'
     };
 
-    this.debug = false;
+    this.debug = true;
   }
 
 
@@ -896,7 +896,7 @@ class Arcade extends ModTemplate {
 
     let sql = `UPDATE games SET winner = $winner, method = $method, time_finished = $ts WHERE game_id = $game_id`;
     let params = { 
-        $winner: txmsg.winner, 
+        $winner: txmsg.winner || "", 
         $method: txmsg.reason, 
         $ts: txmsg.ts,
         $game_id: txmsg.game_id, 
