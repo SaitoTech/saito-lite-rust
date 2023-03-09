@@ -36,28 +36,30 @@ class Registry extends ModTemplate {
       let unidentified_keys = [];
 
       for (let i = 0; i < keys.length; i++) {
-	if (this.cached_keys[keys[i]]) {
-	  this.app.browser.updateAddressHTML(keys[i], this.cached_keys[keys[i]]);
-	} else {
-	  unidentified_keys.push(keys[i]);
-	}
+      	if (this.cached_keys[keys[i]]) {
+      	  this.app.browser.updateAddressHTML(keys[i], this.cached_keys[keys[i]]);
+      	} else {
+      	  unidentified_keys.push(keys[i]);
+      	}
       }
 
       for (let i = 0; i < this.app.network.peers.length; i++) {
-	let peer = this.app.network.peers[i];
-	if (this.app.network.peers[i].hasService("registry")) {
+      	let peer = this.app.network.peers[i];
+      	if (this.app.network.peers[i].hasService("registry")) {
           this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
             Object.entries(answer).forEach(([key, value]) => {
-	      this.cached_keys[key] = value;
-	      if (key === this.app.wallet.returnPublicKey()) {
-		let k = this.app.keychain.returnKey(key);
-		if (k) { if (!k.identifier) {
-		  this.app.keychain.addKey(key, { identifier : value });
-		  this.app.connection.emit("update_identifier", (key));
-		} }
-	      }
-	      this.app.browser.updateAddressHTML(key, value);
-	    });
+      	      this.cached_keys[key] = value;
+      	      if (key === this.app.wallet.returnPublicKey()) {
+      		      let k = this.app.keychain.returnKey(key);
+      		      if (k) { 
+                  if (!k.identifier) {
+            		    this.app.keychain.addKey(key, { identifier : value });
+            		    this.app.connection.emit("update_identifier", (key));
+            		  } 
+                }
+      	      }
+      	      this.app.browser.updateAddressHTML(key, value);
+      	    });
           });
         }
       }
@@ -516,6 +518,8 @@ console.log("WE ARE NOW LOCAL SERVER");
 
     if (conf == 0) {
 
+      //console.log(JSON.parse(JSON.stringify(txmsg)));
+
       if (!!txmsg && txmsg.module === "Registry") {
 
         //
@@ -590,10 +594,11 @@ console.log("WE ARE NOW LOCAL SERVER");
               try {
                 if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
                   registry_self.app.keychain.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: blk.block.id, block_hash: blk.returnHash(), lc: 1 });
-		  registry_self.app.connection.emit("update_identifier", (tx.transaction.to[0].add));
                 } else {
+                  registry_self.app.keychain.addKey(tx.transaction.to[0].add, { has_registered_username : false });
                   console.debug("verification failed for sig : ", tx);
                 }
+                registry_self.app.connection.emit("update_identifier", (tx.transaction.to[0].add));
               } catch (err) {
                 console.error("ERROR verifying username registration message: " , err);
               }

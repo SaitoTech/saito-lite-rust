@@ -78,8 +78,9 @@ class RedSquareMain {
       }
       this.app.browser.addIdentifiersToDom();
     });
-    this.app.connection.on("redsquare-profile-render-request", () => {
-      this.renderAppspaceComponent("profile");
+    this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
+      setHash('profile');
+      this.renderAppspaceComponent("profile", publickey);
     });
     //this.app.connection.on("redsquare-contacts-render-request", () => {
     //  this.renderAppspaceComponent("contacts");
@@ -118,11 +119,11 @@ class RedSquareMain {
   }
 
 
-  renderAppspaceComponent(component) {
+  renderAppspaceComponent(component, id=null) {
     document.querySelector(".saito-main").innerHTML = "";
     this.mod.viewing = component;
     this.render_component = component;
-    this.components[this.render_component].render();
+    this.components[this.render_component].render(id);
     document.querySelector(".saito-sidebar.right").innerHTML = "";
     this.mod.sidebar.render();
   }

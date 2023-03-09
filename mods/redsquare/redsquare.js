@@ -307,6 +307,13 @@ class RedSquare extends ModTemplate {
     // redsquare -- fetch community tweets
     //
     if (service.service === "redsquare") {
+
+      // make sure we have at least one peer for tweets
+
+      if (!this.peers_for_tweets.includes(peer)) {
+        this.peers_for_tweets.push(peer);
+      }
+
       if (this.app.browser.returnURLParameter('tweet_id')) { return; }
       if (this.app.browser.returnURLParameter('user_id')) { return; }
       // needs be the same as in loadMoreTweets
@@ -375,16 +382,16 @@ class RedSquare extends ModTemplate {
           this.results_loaded = true;
           let x = [];
           for (let z = 0; z < txs.length; z++) {
-	    if (txs[z].transaction.sig === tweet_id) {
+            if (txs[z].transaction.sig === tweet_id) {
               let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
               x.push(tweet);
-	    }
+            }
           }
-	  for (let z = 0; z < txs.length; z++) {
-	    if (txs[z].transaction.sig !== tweet_id) {
+          for (let z = 0; z < txs.length; z++) {
+            if (txs[z].transaction.sig !== tweet_id) {
               let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
               x[0].addTweet(tweet);
-	    }
+            }
           }
           this.app.connection.emit('redsquare-home-thread-render-request', x);
         }, false, false);
@@ -1018,7 +1025,7 @@ class RedSquare extends ModTemplate {
           .then(res => res.text())
           .then(data => {
 
-console.log("fetched link now processing...");
+            console.log("fetched link now processing...");
 
             // prettify html - unminify html if minified
             let html = prettify(data);
@@ -1241,10 +1248,10 @@ console.log("fetched link now processing...");
       //
       // fetch supporting link properties
       //
-console.log("SERVER FETCHING OPEN GRAPH PROPERTIES!");
-console.log("this is for: " + tweet.text);
+      console.log("SERVER FETCHING OPEN GRAPH PROPERTIES!");
+      console.log("this is for: " + tweet.text);
       tweet = await tweet.generateTweetProperties(app, this, 1);
-console.log("DONE: " + JSON.stringify(tweet.link_properties));
+      console.log("DONE: " + JSON.stringify(tweet.link_properties));
 
 
       let type_of_tweet = 0; // unknown
@@ -1321,7 +1328,7 @@ console.log("DONE: " + JSON.stringify(tweet.link_properties));
         $tx_size: tx_size
       };
 
-console.log("ABOUT TO INSERT!");
+      console.log("ABOUT TO INSERT!");
 
       await app.storage.executeDatabase(sql, params, "redsquare");
 

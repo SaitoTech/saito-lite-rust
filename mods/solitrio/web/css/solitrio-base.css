@@ -107,15 +107,39 @@ body {
   max-width: min(90vw,160vh);
   grid-gap: min(5px,1vh);
   height: fit-content;
+  transition: filter 2s;
 }
 
-.slot {
+.rowbox.nomoves{
+  filter: brightness(0.5);
+}
+
+.slot, .selected .slot.empty{
  width:100%;
+ cursor: pointer;
+}
+
+.slot.empty, .selected .slot, .nomoves .slot{
+  cursor: unset;
+}
+
+.slot:hover{
+  filter: brightness(0.85);
+}
+
+.selected .slot:hover, .nomoves .slot:hover{
+  filter: unset;
 }
 
 .slot img {
  width: 100%;
+ transition: transform 1s;
 }
+
+.slot.misclick img{
+  transform: rotate(360deg);
+}
+
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
   .logobox{

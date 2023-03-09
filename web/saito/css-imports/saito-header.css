@@ -23,6 +23,7 @@
 
 .saito-header-logo {
   width: 15rem;
+  cursor: pointer;
 }
 
 #saito-header-menu-toggle {

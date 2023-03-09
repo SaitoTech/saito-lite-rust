@@ -1,5 +1,6 @@
 const SettingsAppspaceTemplate = require('./main.template.js');
 const RegisterUsernameModal = require('./../../../../lib/saito/ui/modals/register-username/register-username.js');
+const SetupRecoveryOverlay = require('./../../../../lib/saito/ui/modals/backup/backup.js');
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 const jsonTree = require('json-tree-viewer');
@@ -70,9 +71,12 @@ class SettingsAppspace {
       }
 
       document.getElementById("register-identifier-btn").onclick = function (e) {
-       mod.modal_register_username = new RegisterUsernameModal(app, mod);
-       mod.modal_register_username.render(app, mod);
-       mod.modal_register_username.attachEvents(app, mod);
+       if (!mod.modal_register_username){
+        mod.modal_register_username = new RegisterUsernameModal(app, mod, null); 
+       }
+       
+       mod.modal_register_username.render();
+
       }
 
       document.querySelector(".settings-appspace-see-privatekey").onclick = function (e) {

@@ -59,6 +59,7 @@
 .saito-overlay-form-header {
     height: 6rem;
     background: var(--dreamscape);
+    width: 100%;
 }
 
 .saito-overlay-form-header-title {
@@ -100,6 +101,7 @@
     font-size: 2.1rem;
     width: 20rem;
     margin: 0;
+    align-self: flex-end;
 }
 
 .saito-overlay-subform {
