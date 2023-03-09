@@ -161,6 +161,7 @@ class ChatPopup {
     // our query selector
     //
     let popup_qs = ".chat-popup-" + this.group.id;
+    let popup_id = "chat-popup-" + this.group.id;
 
 
     try {
@@ -228,6 +229,36 @@ class ChatPopup {
 	  document.getElementById(input_id).innerHTML = "";
 	}
       }
+
+
+      //  
+      // drag and drop images into chat window
+      //
+      
+      app.browser.addDragAndDropFileUploadToElement(popup_id, function(filesrc) {      
+    
+        let img = document.createElement('img');
+        img.classList.add('img-prev');
+        img.src = filesrc;
+        let msg = img.outerHTML;
+
+        //if (msg.length > mod.max_msg_size) {
+        //  salert("Image too large: 220kb max");
+        //} else {
+
+console.log("about to create chat transaction");
+	let newtx = mod.createChatTransaction(group_id, img.outerHTML); // img into msg
+console.log("about to sign chat transaction");
+console.log(JSON.stringify(newtx.msg));
+	newtx = app.wallet.signTransaction(newtx);
+console.log("about to broadcast chat transaction");
+	mod.sendChatTransaction(app, newtx);
+console.log("done!");
+        mod.receiveChatTransaction(app, newtx);
+
+        //}
+      }, false); // false = no drag-and-drop image click
+
 
     } catch (err) {
       console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);

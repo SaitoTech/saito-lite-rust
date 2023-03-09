@@ -229,7 +229,6 @@ try {
                     }
                 );
             }
-
         }
 
         //
@@ -372,7 +371,7 @@ try {
      * We send messages on chain to their target and to the chat-services node via Relay
      * 
     */
-    sendChatTransaction(app, tx, broadcast = 0) {
+    sendChatTransaction(app, tx) {
 
         if (tx.msg.message.substring(0, 4) == "<img") {
             if (this.inTransitImageMsgSig) {
@@ -513,8 +512,6 @@ try {
     //
     returnChatBody(group_id) {
 
-        //console.log("group ID: " + group_id);
-
         let html = '';
         let group = this.returnGroup(group_id);
         if (!group) { return ""; }
@@ -528,13 +525,18 @@ try {
                 let sender = "";
                 let msg = "";
                 for (let z = 0; z < block.length; z++) {
-                    if (z > 0) { msg += '<br/>'; }
                     let txmsg = block[z].returnMessage();
-                    sender = block[z].transaction.from[0].add;
-                    msg += txmsg.message;
-                    ts = txmsg.timestamp;
-                }
-                msg = this.app.browser.sanitize(msg);
+		    if (txmsg.message) {
+                        if (z > 0) { msg += '<br/>'; }
+                        sender = block[z].transaction.from[0].add;
+	                if (txmsg.message.indexOf('<img') != 0) {
+                            msg += this.app.browser.sanitize(txmsg.message);
+                        } else {
+		            msg += txmsg.message.substring(0, txmsg.message.indexOf('>')+1);
+ 		        }
+		        ts = txmsg.timestamp;
+		    }
+		}
                 html += `${SaitoUserTemplate({ app : this.app, publickey : sender, notice : msg, fourthelem : this.app.browser.returnTime(ts) })}`;
             }
         }
@@ -629,7 +631,7 @@ try {
             }
         }
 
-        if (!name) {
+        if (name == null) {
             name = "";
             for (let i = 0; i < members.length; i++) {
                 if (members[i] != this.app.wallet.returnPublicKey()) {
@@ -759,16 +761,13 @@ try {
     }
 
     returnMembers(group_id) {
-
         for (let i = 0; i < this.groups.length; i++) {
             if (group_id === this.groups[i].id) {
                 return [...new Set(this.groups[i].members)];
             }
         }
-
         return [];
     }
-
 
     returnChatByName(name = "") {
         for (let i = 0; i < this.groups.length; i++) {
@@ -780,7 +779,6 @@ try {
         }
         return this.groups[0];
     }
-
 
     returnCommunityChat() {
         for (let i = 0; i < this.groups.length; i++) {
