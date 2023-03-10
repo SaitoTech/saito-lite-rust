@@ -30,7 +30,7 @@
 
 #advanced-options-overlay-container {
   color: var(--saito-font-color-dark-modal);
-  background: var(--hover-background-color);
+  background: var(--saito-arcade-background-color);
   border-radius: 0.5rem;
   width: min-content;
   min-height: 15rem;

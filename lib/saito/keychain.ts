@@ -270,8 +270,8 @@ class Keychain {
     //
     if (data.identifier && !data.publickey) {
       this.app.modules.getRespondTos("saito-return-key").forEach((modResponse) => {
-	let key = modResponse.returnKey(data);
-	if (key) { return key; }
+        let key = modResponse.returnKey(data);
+        if (key) { return key; }
       });
     }
 
