@@ -410,10 +410,12 @@ class Stun extends ModTemplate {
             const execute = async () => {
                 try {
                     let pc;
+
                     if (true) {
                         pc = new RTCPeerConnection({
                             iceServers: this.servers,
                         });
+                        console.log(this.servers)
                         this.peer_connections[publicKey] = pc;
                     } else {
                         pc = this.peer_connections[publicKey];
@@ -618,6 +620,7 @@ class Stun extends ModTemplate {
                 pc = new RTCPeerConnection({
                     iceServers: this.servers,
                 });
+                console.log(this.servers);
                 stunx_mod.peer_connections[offer_creator] = pc;
             } else {
                 pc = stunx_mod.peer_connections[offer_creator]
