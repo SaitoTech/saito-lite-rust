@@ -26,7 +26,7 @@ img {
     left: 4600px;
     position: absolute;
     transform: rotate(15deg);
-    background-image: url(/mods/his/img/cards/HIS-092.svg);
+    background-image: url(/his/img/cards/HIS-092.svg);
     background-size: contain;
     background-repeat: no-repeat;
 }
@@ -38,7 +38,7 @@ img {
     left: 900px;
     position: absolute;
     transform: rotate(15deg);
-    background-image: url(/mods/his/img/cards/HIS-093.svg);
+    background-image: url(/his/img/cards/HIS-093.svg);
     background-size: contain;
     background-repeat: no-repeat;
 }
@@ -50,7 +50,7 @@ img {
     left: 4650px;
     position: absolute;
     transform: rotate(15deg);
-    background-image: url(/mods/his/img/cards/HIS-110.svg);
+    background-image: url(/his/img/cards/HIS-110.svg);
     background-size: contain;
     background-repeat: no-repeat;
 }
@@ -126,7 +126,7 @@ img {
 }
 
 .theological_debate_sheet {
-  background-image: url(/mods/his/img/backgrounds/theological-debate2.jpg);
+  background-image: url(/his/img/backgrounds/theological-debate2.jpg);
   background-size: cover;
   width: 80vw;
   min-height: 800px;
@@ -151,7 +151,7 @@ img {
     left: 10vw;
     bottom: 0px;
     left: 0px;
-    /* background-image: url(/mods/his/img/tiles/debaters/AleanderDebater.svg); */
+    /* background-image: url(/his/img/tiles/debaters/AleanderDebater.svg); */
     background-size: cover;
 }
 
@@ -161,7 +161,7 @@ img {
     position: absolute;
     bottom: 0px;
     right: 0px;
-    /* background-image: url(/mods/his/img/tiles/debaters/AleanderDebater.svg); */
+    /* background-image: url(/his/img/tiles/debaters/AleanderDebater.svg); */
     background-size: cover;
 }
 
@@ -212,7 +212,7 @@ img {
 }
 
 .new_testament_german_tile {
-  background-image: url(/mods/his/img/factions/NewTestament_German.svg);
+  background-image: url(/his/img/factions/NewTestament_German.svg);
   background-size: cover;
   width: 50px;
   height: 50px;
@@ -220,7 +220,7 @@ img {
   margin-top: 0rem; 
 }
 .new_testament_french_tile {
-  background-image: url(/mods/his/img/factions/NewTestament_French.svg);
+  background-image: url(/his/img/factions/NewTestament_French.svg);
   background-size: cover;
   width: 50px;
   height: 50px;
@@ -228,7 +228,7 @@ img {
   margin-top: 1rem; 
 }
 .new_testament_english_tile {
-  background-image: url(/mods/his/img/factions/NewTestament_English.svg);
+  background-image: url(/his/img/factions/NewTestament_English.svg);
   background-size: cover;
   width: 50px;
   height: 50px;
@@ -237,7 +237,7 @@ img {
 }
 
 .bible_german_tile {
-  background-image: url(/mods/his/img/factions/BibleGerman.svg);
+  background-image: url(/his/img/factions/BibleGerman.svg);
   background-size: cover;
   width: 50px;
   height: 50px;
@@ -245,7 +245,7 @@ img {
   margin-top: 0rem; 
 }
 .bible_french_tile {
-  background-image: url(/mods/his/img/factions/BibleFrench.svg);
+  background-image: url(/his/img/factions/BibleFrench.svg);
   background-size: cover;
   width: 50px;
   height: 50px;
@@ -253,7 +253,7 @@ img {
   margin-top: 1rem; 
 }
 .bible_english_tile {
-  background-image: url(/mods/his/img/factions/BibleEnglish.svg);
+  background-image: url(/his/img/factions/BibleEnglish.svg);
   background-size: cover;
   width: 50px;
   height: 50px;
@@ -263,27 +263,27 @@ img {
 
 
 #hapsburg_vp_tile {
-  background-image: url(/mods/his/img/vp/VP_Hapsburg.svg);
+  background-image: url(/his/img/vp/VP_Hapsburg.svg);
   background-size: cover;
 }
 #protestant_vp_tile {
-  background-image: url(/mods/his/img/vp/VP_Hapsburg.svg);
+  background-image: url(/his/img/vp/VP_Hapsburg.svg);
   background-size: cover;
 }
 #france_vp_tile {
-  background-image: url(/mods/his/img/vp/VP_France.svg);
+  background-image: url(/his/img/vp/VP_France.svg);
   background-size: cover;
 }
 #england_vp_tile {
-  background-image: url(/mods/his/img/vp/VP_England.svg);
+  background-image: url(/his/img/vp/VP_England.svg);
   background-size: cover;
 }
 #ottoman_vp_tile {
-  background-image: url(/mods/his/img/vp/VP_Ottoman.svg);
+  background-image: url(/his/img/vp/VP_Ottoman.svg);
   background-size: cover;
 }
 #papacy_vp_tile {
-  background-image: url(/mods/his/img/vp/VP_Papacy.svg);
+  background-image: url(/his/img/vp/VP_Papacy.svg);
   background-size: cover;
 }
 
@@ -348,7 +348,7 @@ img {
   position: absolute;
   height: 75px;
   width: 75px;
-  background-image: url(/mods/his/img/tiles/independent/Independent_key.svg);
+  background-image: url(/his/img/tiles/independent/Independent_key.svg);
   background-color: yellow;
   background-size: contain;
 }
@@ -901,7 +901,7 @@ img {
 
 
 .gameboard {
-  background-image: url(/mods/his/img/gameboard-large.png);
+  background-image: url(/his/img/gameboard-large.png);
   background-size: cover;
   width: 4950px;
   height: 3164px;
