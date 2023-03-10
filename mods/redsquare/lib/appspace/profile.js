@@ -42,6 +42,36 @@ class AppspaceProfile {
 
   attachEvents() {
 
+
+    try {
+    document.querySelector('.redsquare-appspace-profile-follow-btn').onclick = (e) => {
+
+      let obj = document.querySelector('.redsquare-appspace-profile-follow-btn');
+      let publickey = obj.getAttribute("data-id");
+      let key = this.app.keychain.returnKey(publickey);
+
+      if (obj.innerHTML === "follow") {
+	obj.innerHTML = "unfollow";
+      } else {
+	obj.innerHTML = "follow";
+      }
+
+console.log("KEY IS: " + JSON.stringify(key));
+
+      if (key.watched == true) { 
+	key.watched = false;
+	this.app.keychain.addKey(key);
+	this.app.keychain.saveKeys();
+      } else {
+	key.watched = true;
+	this.app.keychain.addKey(key);
+	this.app.keychain.saveKeys();
+      }
+
+    }
+    } catch (err) {}
+
+
     document.querySelector('.copy-public-key').onclick = (e) => {
       navigator.clipboard.writeText(this.publickey);
       siteMessage("Public key copied", 1000);

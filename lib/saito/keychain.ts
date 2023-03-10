@@ -323,6 +323,7 @@ class Keychain {
   }
 
   saveKeys() {
+console.log("saving keys: " + JSON.stringify(this.keys));
     this.app.options.keys = this.keys;
     this.app.storage.saveOptions();
   }
