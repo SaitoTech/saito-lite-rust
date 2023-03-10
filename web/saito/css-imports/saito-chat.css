@@ -35,6 +35,10 @@
   max-height: calc(99vh - var(--saito-header-height));
 }
 
+.chat-container img.img-prev {
+  width: 100%;
+}
+
 .chat-header {
   display: flex;
   align-items: center;
