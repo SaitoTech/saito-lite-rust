@@ -784,6 +784,11 @@ class Network {
 
         try {
           peer.peer.keylist = JSON.parse(buffer.toString("utf8"));
+console.log(" - ");
+console.log(" - ");
+console.log(" - ");
+console.log("KEYLIST UPDATE: " + JSON.stringify(peer.peer.keylist));
+
         } catch (err) {
           console.error("ERROR parsing peer services list or setting services in peer");
         }
@@ -1248,7 +1253,7 @@ class Network {
   propagateKeylist() {
     let keys = this.app.keychain.returnWatchedPublicKeys();
     this.peers.forEach((peer) => {
-      this.sendRequest("SKEYLIST", keys, peer);
+      this.sendRequest("SKEYLIST", Buffer.from(JSON.stringify(keys)), peer);
     });
   }
 

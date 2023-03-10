@@ -235,8 +235,9 @@ class ChatPopup {
       // drag and drop images into chat window
       //
       
-      app.browser.addDragAndDropFileUploadToElement(popup_id, function(filesrc) {      
-    
+      app.browser.addDragAndDropFileUploadToElement(popup_id, async (filesrc) => {      
+	filesrc = await app.browser.resizeImg(filesrc, 230, 0.75); // (img, dimensions, quality)
+
         let img = document.createElement('img');
         img.classList.add('img-prev');
         img.src = filesrc;
@@ -246,14 +247,9 @@ class ChatPopup {
         //  salert("Image too large: 220kb max");
         //} else {
 
-console.log("about to create chat transaction");
 	let newtx = mod.createChatTransaction(group_id, img.outerHTML); // img into msg
-console.log("about to sign chat transaction");
-console.log(JSON.stringify(newtx.msg));
 	newtx = app.wallet.signTransaction(newtx);
-console.log("about to broadcast chat transaction");
 	mod.sendChatTransaction(app, newtx);
-console.log("done!");
         mod.receiveChatTransaction(app, newtx);
 
         //}

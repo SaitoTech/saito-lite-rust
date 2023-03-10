@@ -44,31 +44,34 @@ class AppspaceProfile {
 
 
     try {
-    document.querySelector('.redsquare-appspace-profile-follow-btn').onclick = (e) => {
+      document.querySelector('.redsquare-appspace-profile-follow-btn').onclick = (e) => {
 
-      let obj = document.querySelector('.redsquare-appspace-profile-follow-btn');
-      let publickey = obj.getAttribute("data-id");
-      let key = this.app.keychain.returnKey(publickey);
+        let obj = document.querySelector('.redsquare-appspace-profile-follow-btn');
+        let publickey = obj.getAttribute("data-id");
+        let key = this.app.keychain.returnKey(publickey);
 
-      if (obj.innerHTML === "follow") {
-	obj.innerHTML = "unfollow";
-      } else {
-	obj.innerHTML = "follow";
+        if (obj.innerHTML === "follow") {
+	  obj.innerHTML = "unfollow";
+        } else {
+  	  obj.innerHTML = "follow";
+        }
+
+        if (key.watched == true) { 
+	  key.watched = false;
+	  this.app.keychain.addKey(key);
+  	  this.app.keychain.saveKeys();
+        } else {
+	  key.watched = true;
+	  this.app.keychain.addKey(key);
+   	  this.app.keychain.saveKeys();
+        }
+
+	//
+	// our peers should start listening
+	//
+	this.app.network.propagateKeylist();
+
       }
-
-console.log("KEY IS: " + JSON.stringify(key));
-
-      if (key.watched == true) { 
-	key.watched = false;
-	this.app.keychain.addKey(key);
-	this.app.keychain.saveKeys();
-      } else {
-	key.watched = true;
-	this.app.keychain.addKey(key);
-	this.app.keychain.saveKeys();
-      }
-
-    }
     } catch (err) {}
 
 
