@@ -412,7 +412,6 @@ class Stun extends ModTemplate {
 
 
     createMediaConnectionOffer(publicKey, ui_type, call_type, room_code, create_new = true) {
-        delete this.peer_connections[publicKey];
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
             const execute = async () => {
@@ -597,7 +596,6 @@ class Stun extends ModTemplate {
     acceptMediaChannelConnectionOffer(app, offer_creator, offer) {
         console.log('rendering remote stream place holder');
         let stunx_mod = app.modules.returnModule("Stun");
-        delete stunx_mod.peer_connections[offer_creator];
         // this.app.connection.emit('render-remote-stream-placeholder-request', offer_creator, offer.ui_type);
         const room_code = offer.room_code
         const createPeerConnection = async () => {
@@ -757,7 +755,6 @@ class Stun extends ModTemplate {
             if (stunx_mod.peer_connections[offer_creator]) {
                 pc = stunx_mod.peer_connections[offer_creator]
             } else {
-
                 pc = new RTCPeerConnection({
                     iceServers: this.servers,
                 });
