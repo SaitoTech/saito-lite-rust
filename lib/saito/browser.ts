@@ -1299,6 +1299,9 @@ class Browser {
     if (!id) {
       return;
     }
+    if (key === id) {
+      return; 
+    }
     try {
       const addresses = document.getElementsByClassName(`saito-address-${key}`);
       Array.from(addresses).forEach((add) => (add.innerHTML = id));

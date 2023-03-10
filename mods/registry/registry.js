@@ -63,7 +63,11 @@ class Registry extends ModTemplate {
           });
         }
       }
-      //add null return keys to cache for this session.
+
+      //
+      // save all keys queried to cache so even if we get nothing
+      // back we won't query the server again for them.
+      //
       for (let i = 0; i < unidentified_keys.length; i++) {
         if (!this.cached_keys[unidentified_keys[i]]) {
           this.cached_keys[unidentified_keys[i]] = unidentified_keys[i];
