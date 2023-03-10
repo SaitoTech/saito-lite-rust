@@ -83,7 +83,7 @@ body {
 
 .gameboard {
   position: absolute;
-  background-image: url(/mods/president/web/img/gameboard.jpg);
+  background-image: url(/president/img/gameboard.jpg);
   background-size: cover;
   width: 100vw;
   height: 100vh;
