@@ -53,8 +53,7 @@ module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
 
 
 
-
-    <div class="saito-overlay-form" id="saito-withdraw-overlay">
+<div class="saito-overlay-form" id="saito-withdraw-overlay">
     <div class="saito-overlay-form-header">
       <div class="saito-overlay-form-header-title">Send Token</div>
     </div>
@@ -79,21 +78,13 @@ module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
     </div>
 
 
-<div style="
-    color: var(--saito-font-color);
-    /* border: 1px solid; */
-    text-align: center;
-"><span style="
-    width: 11rem;
-    /* border: 1px solid; */
-    display: block;
-">network fee</span> 2 SAITO</div>
+
 
 <div style="
     color: var(--saito-font-color);
     line-height: 2rem;
     /* border: 1px solid; */
-    text-align: right;
+    text-align: center;
 ">
 <span style="
     width: 11rem;
@@ -101,6 +92,17 @@ module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
     display: block;
 ">balance</span> 54.2 SAITO
 </div>
+
+
+<div style="
+    color: var(--saito-font-color);
+    /* border: 1px solid; */
+    text-align: right;
+"><span style="
+    width: 11rem;
+    /* border: 1px solid; */
+    display: block;
+">network fee</span> 2 SAITO</div>
 
 </div>
 
@@ -119,7 +121,7 @@ module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
         <div class="withdraw-address-cont">
           <input type="text" class="input-elem withdraw_address" value="" required="" placeholder="withdraw amount">
           <div class="withdraw-options-cont">
-            <span>Max</span>
+            <span>MAX</span>
           </div>
         </div>
       </div>
@@ -132,7 +134,7 @@ module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
       <div class="confirm-msg-container">
           <i class="withdraw-msg-icon fa-solid fa-circle-exclamation"></i>
           <div class="confirm-msg">
-            <span class="withdraw-msg-text">Withdraw</span> <b>42 SAITO</b> to address <b>wcyj2qSvmPsNcbEx9PnjXtNzsDoCf1Xtv9SqWH6wYxnk</b><span class="withdraw-msg-question">?</span>      
+            <span class="withdraw-msg-text">Send</span> <b>42 SAITO</b> to address <b>wcyj2qSvmPsNcbEx9PnjXtNzsDoCf1Xtv9SqWH6wYxnk</b><span class="withdraw-msg-question">?</span>      
           </div>
       </div>
 

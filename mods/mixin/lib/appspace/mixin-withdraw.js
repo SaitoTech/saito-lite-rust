@@ -99,7 +99,7 @@ class MixinWithdraw {
           document.querySelector("#withdrawal-form").onsubmit = (e) => {
             e.preventDefault();
 
-            document.querySelectorAll(".saito-overlay-form-input, .input-elements-container, .form-submit-container").forEach(function(item, key){
+            document.querySelectorAll(".saito-overlay-form-input, .input-elements-container, .form-submit-container, .dropdown-cont").forEach(function(item, key){
               item.classList.toggle("hide-element");
             });
 
@@ -112,7 +112,7 @@ class MixinWithdraw {
           document.querySelector("#withdraw-cancel").onclick = (e) => {
             e.preventDefault();
 
-            document.querySelectorAll(".saito-overlay-form-input, .input-elements-container, .form-submit-container").forEach(function(item, key){
+            document.querySelectorAll(".saito-overlay-form-input, .input-elements-container, .form-submit-container, .dropdown-cont").forEach(function(item, key){
               item.classList.toggle("hide-element");
             });
 
@@ -127,11 +127,11 @@ class MixinWithdraw {
             document.querySelector(".withdraw-msg-icon").classList.toggle("fa-circle-exclamation");
             document.querySelector(".withdraw-msg-icon").classList.toggle("fa-circle-notch");
             document.querySelector(".confirm-submit").style.opacity = 0;
-            document.querySelector(".withdraw-msg-text").innerText = "Withdrawing";
+            document.querySelector(".withdraw-msg-text").innerText = "Sending";
             document.querySelector(".withdraw-msg-question").innerText = "...";
 
             setTimeout(function() {
-              document.querySelector(".confirm-msg").innerHTML = "Withdrawl successful";
+              document.querySelector(".confirm-msg").innerHTML = "Request Successful";
               document.querySelector(".withdraw-msg-icon").classList.toggle("fa-circle-notch");
               document.querySelector(".withdraw-msg-icon").classList.toggle("fa-circle-check");
             }, 3000);
