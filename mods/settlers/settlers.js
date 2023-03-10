@@ -19,7 +19,7 @@ class Settlers extends GameTemplate {
 
     this.skin = new SettlersSkin();
 
-    this.cardbox.skip_card_prompt = 0;
+    this.cardbox.a_prompt = 0;
     this.minPlayers = 2;
     this.maxPlayers = 4;
     this.game_length = 20; //Estimated number of minutes to complete a game
@@ -210,8 +210,9 @@ class Settlers extends GameTemplate {
       this.skin.render(this.game.options.theme);
 
       this.cardbox.render();
-      this.cardbox.addCardType("handy-help","",this.cardbox_callback);
-      
+      this.cardbox.addCardType("handy-help","",null);
+      this.cardbox.makeDraggable();
+
       this.playerbox.render();
       this.playerbox.addStatus();
       //this.playerbox.classList.add("saitoa");
@@ -922,12 +923,12 @@ class Settlers extends GameTemplate {
           let offer = this.wishListToImage(stuff_on_offer);
           let ask = this.wishListToImage(stuff_in_return);
           let id = `trade_${offering_player}`;
-          let html = `<div class="trade" id="${id}">`;
+          let html = `<div class="trade flexline" id="${id}">`;
           if (ask) {
-            html += `<div class="flexline wishlist"><span>Wants: </span><span class="tip">${ask}</span></div>`;
+            html += `<span>Wants:</span><span class="tip">${ask}</span>`;
           }
           if (offer) {
-            html += `<div class="flexline wishlist"><span>Has: </span><span class="tip">${offer}</span></div></div>`;
+            html += `<span>Has:</span><span class="tip">${offer}</span></div>`;
           }
           this.playerbox.refreshLog(html, offering_player);
           id = "#" + id;
@@ -937,9 +938,9 @@ class Settlers extends GameTemplate {
             if (settlers_self.game.state.canTrade) {
               //It's my turn or their turn
               if (settlers_self.game.player === settlers_self.game.state.playerTurn) {
-                settlers_self.showTradeOverlay(offering_player);
+                settlers_self.showTradeOverlay(offering_player, stuff_in_return, stuff_on_offer);
               } else if (offering_player === settlers_self.game.state.playerTurn) {
-                settlers_self.showTradeOverlay(offering_player);
+                settlers_self.showTradeOverlay(offering_player, stuff_in_return, stuff_on_offer);
               } else {
                 salert(`You can only trade on your turn or during ${this.game.playerNames[offering_player-1]}'s turn.`);
               }
@@ -2243,6 +2244,7 @@ class Settlers extends GameTemplate {
         if (!this.game.state.placedCity){
           newhtml += `<div class="flexline">`;
           if (this.game.state.myOffer || this.game.state.myAsk){
+            newhtml += "<span>";
             if (this.game.state.myOffer){
               newhtml += this.wishListToImage(this.game.state.myOffer);
             }
@@ -2250,7 +2252,7 @@ class Settlers extends GameTemplate {
             if (this.game.state.myAsk){
              newhtml += this.wishListToImage(this.game.state.myAsk); 
             }
-            newhtml += `<i id="cleartrade" class="fas fa-ban"></i>`;
+            newhtml += `</span><i id="cleartrade" class="fas fa-ban"></i>`;
           }else{
             newhtml += `<span id="tradenow">Trade</span>`;
           }
@@ -2796,7 +2798,7 @@ class Settlers extends GameTemplate {
   */
   returnCardImage(card){
     if (card == "construction-costs"){
-      let html = `<div class="construction-costs">
+      let html = `<div class="construction-costs saitoa">
               <div class="h2">Building Costs</div>
               <div class="table">
               <div class="tip token p${this.game.colors[this.game.player-1]}"><svg viewbox="0 0 200 200"><polygon points="0,175 175,0, 200,25 25,200"/></svg>
@@ -2834,24 +2836,16 @@ class Settlers extends GameTemplate {
 
     if (settlers_self.canPlayerBuildRoad(settlers_self.game.player)) {
       html += `<li class="option" id="0">build ${this.skin.r.name} </li>`;
-    } /*else{
-      html += `<li class="disabled" id="0">${this.visualizeCost(0)} to build ${this.skin.r.name}</li>`;
-    }*/
+    } 
     if (settlers_self.canPlayerBuildTown(settlers_self.game.player)) {
       html += `<li class="option" id="1">build ${this.skin.c1.name}</li>`;
-    } /*else{
-      html += `<li class="disabled" id="1">${this.visualizeCost(1)} to build ${this.skin.c1.name}</li>`;
-    }*/
+    } 
     if (settlers_self.canPlayerBuildCity(settlers_self.game.player)) {
       html += `<li class="option" id="2">build ${this.skin.c2.name}</li>`;
-    } /*else{
-      html += `<li class="disabled" id="2">${this.visualizeCost(2)} to build ${this.skin.c2.name}</li>`;
-    }*/
+    } 
     if (settlers_self.canPlayerBuyCard(settlers_self.game.player)) {
       html += `<li class="option" id="3">buy ${this.skin.card.name} card</li>`;
-    } /*else{
-      html += `<li class="disabled" id="3">${this.visualizeCost(3)} to buy card</li>`;
-    }*/
+    } 
     html += `<li class="option" id="cancel">go back</li>`;
     html += "</ul>";
     html += "</div>";
@@ -3394,7 +3388,7 @@ class Settlers extends GameTemplate {
   and there is no game mechanic to go directly into accepting or rejecting the trade
   @param tradeType (integer) the player number of the targeted player, 0 for all players, -1 for advertisement
   */
-  showTradeOverlay(tradeType = -1) {
+  showTradeOverlay(tradeType = -1, i_should_give, i_should_accept) {
     let settlers_self = this;
 
     this.tradeWindowOpen = true;
@@ -3402,6 +3396,9 @@ class Settlers extends GameTemplate {
     let resources = settlers_self.skin.resourceArray();
     let offer_resources = settlers_self.skin.resourceObject();
     let receive_resources = settlers_self.skin.resourceObject();
+
+    offer_resources = Object.assign(offer_resources, i_should_give);
+    receive_resources = Object.assign(receive_resources, i_should_accept);
 
     //Convert the players array of resources into a compact object {wheat:1, wood:2,...}
     for (let resource of resources) {
@@ -3411,54 +3408,61 @@ class Settlers extends GameTemplate {
       );
       if (temp > 0) my_resources[resource] = temp;
     }
-    //Customize UI for dealing with 1 or more players
-    let title =
-      tradeType > 0
-        ? `Trade with ${settlers_self.game.playerNames[tradeType-1]}`
-        : "Broadcast Trade Offer";
-    let submit = tradeType > 0 ? "Send offer" : "Broadcast Offer";
-
+//>>>>>>>>>>>>>>>
     let updateOverlay = function (settlers_self, resList, myRes, offering, receiving) {
-      let html = `<div class="trade_overlay saitoa" id="trade_overlay">
-            <div style="width:100%"><div class="h1 trade_overlay_title">${title}</div></div>`;
-      html += `<p>Interrupt game play to send a concrete trade offer to ${(tradeType>0)?`${settlers_self.game.playerNames[tradeType-1]}.`:"all your opponents. The first to accept completes the trade. You may rescind the trade and move on with your turn if they take too long to think about it."}</p>`;
-  
-      html += `<div class="h2">You Want</div>
+      let resource_cnt = 0;
+      let can_afford = true;
+
+      let html = `
+          <div class="trade_overlay saitoa" id="trade_overlay">
+            <div class="h1 trade_overlay_title">Trade with ${settlers_self.game.playerNames[tradeType-1]}</div>
+            <div class="h2">You will accept</div>
             <div class="trade_overlay_offers">`;
       for (let i = 0; i < resList.length; i++){
-        html += `<div id="want_${i}" class="trade_button select">
+        resource_cnt += receiving[resList[i]];
+        html += `<div id="want_${i}" class="trade_area select">
                   <div>${resList[i]}</div>
                   <div class="offer_icons" id="want_${resList[i]}">`;
-
-        for (let j = 0; j< receiving[resList[i]]; j++){
+        if (receiving[resList[i]]>0){
           html += `<img id="${resList[i]}" class="icon receive" src="${settlers_self.skin.resourceIcon(resList[i])}"/>`;
+        }
+        if (receiving[resList[i]]>1){
+          html += `<div class="icon_multiplier">x${receiving[resList[i]]}</div>`;
         }
          html +=  `</div></div>`;
       }
-        
 
-      html += `</div><div class="h2">You Offer</div><div class="trade_overlay_offers">`;
+      html += `</div>
+            <div class="h2">You will give</div>
+            <div class="trade_overlay_offers">`;
 
       for (let i = 0; i < resList.length; i++) {
-        html += `<div id="offer_${i}" class="trade_button ${(myRes[resList[i]])?"select":"noselect"}">
+        resource_cnt += offering[resList[i]];
+        if (offering[resList[i]] > myRes[resList[i]]){
+          can_afford = false;
+        }
+        html += `<div id="offer_${i}" class="trade_area ${(myRes[resList[i]])?"select":"noselect"}">
                  <div class="tip"><span>${resList[i]}</span>
                  <div class="tiptext">${(myRes[resList[i]])?myRes[resList[i]]:0} total</div></div>
                  <div class="offer_icons" id="offer_${resList[i]}">`;
-          for (let j = 0; j< offering[resList[i]]; j++){
+          if (offering[resList[i]]>0){
             html += `<img id="${resList[i]}" class="icon offer" src="${settlers_self.skin.resourceIcon(resList[i])}"/>`;
+          }
+          if (offering[resList[i]]>1){
+            html += `<div class="icon_multiplier">x${offering[resList[i]]}</div>`;
           }
           html += `</div></div>`;
       }
 
       html += `</div><div class="trade_overlay_buttons">
             <div class="trade_overlay_button saito-button-primary trade_overlay_reset_button">Reset</div>
-            <div class="trade_overlay_button saito-button-primary trade_overlay_broadcast_button">${submit}</div>
+            <div class="trade_overlay_button saito-button-primary trade_overlay_broadcast_button${(can_afford && resource_cnt>0)?"":" noselect"}">Submit Offer</div>
           </div></div>`;
 
       settlers_self.overlay.closebox = true;
       settlers_self.overlay.show(html);
-      $(".trade_button.select").off();
-      $(".trade_button.select").on("click", function () {
+      $(".trade_area.select").off();
+      $(".trade_area.select").on("click", function () {
         //Update Offer
         let item = $(this).attr("id");
         let temp = item.split("_");
@@ -3496,6 +3500,7 @@ class Settlers extends GameTemplate {
       });
       $(".trade_overlay_broadcast_button").off();
       $(".trade_overlay_broadcast_button").on("click", function () {
+        if ($(this).hasClass("noselect")) { return; }
         settlers_self.tradeWindowOpen = false;
         if (tradeType > 0) {
           settlers_self.addMove(
@@ -3543,45 +3548,55 @@ class Settlers extends GameTemplate {
     }
 
     let html = `<div class="trade_overlay saitoa" id="trade_overlay">
-            <div style="width:100%"><div class="h1 trade_overlay_title">Advertise Trade</div>
-            <p>You may share information about your resources with the other players, telling them which resources you may be interested in trading. It will be up to them to initiate a trade offer on their. This should facilitate trading without interrupting game play.</p></div>
-            <div class="h2">You Want</div>
+            <div>
+              <div class="h1 trade_overlay_title">Advertise Trade</div>
+              <p>You may share information about your resources with the other players, telling them which resources you may be interested in trading. It will be up to them to initiate a trade offer on their. This should facilitate trading without interrupting game play.</p>
+            </div>
+            <div class="h2">You Want:</div>
             <div class="trade_overlay_offers">`;
     for (let i = 0; i < resources.length; i++)
-      html += `<div id="want_${i}" class="trade_button select tip"><img class="icon" src="${this.skin.resourceIcon(
+      html += `<div id="want_${i}" class="trade_area select tip"><img class="icon" src="${this.skin.resourceIcon(
         resources[i]
       )}"/><div class="tiptext">${resources[i]}</div></div>`;
 
-    html += `</div><div class="h2">You Offer</div><div class="trade_overlay_offers">`;
+    html += `</div><div class="h2">You Offer:</div><div class="trade_overlay_offers">`;
 
     for (let i = 0; i < resources.length; i++) {
       if (myRes[resources[i]])
-        html += `<div id="offer_${i}" class="trade_button select tip"><img class="icon" src="${this.skin.resourceIcon(
+        html += `<div id="offer_${i}" class="trade_area select tip"><img class="icon" src="${this.skin.resourceIcon(
           resources[i]
         )}"/><div class="tiptext">You have ${myRes[resources[i]]} ${resources[i]} available</div></div>`;
       else
-        html += `<div id="offer_${i}" class="trade_button noselect tip"><img class="icon" src="${this.skin.resourceIcon(
+        html += `<div id="offer_${i}" class="trade_area noselect tip"><img class="icon" src="${this.skin.resourceIcon(
           resources[i]
         )}"/><div class="tiptext">You have no ${resources[i]} to offer</div></div>`;
     }
 
     html += `</div><div class="trade_overlay_buttons">
             <div class="trade_overlay_button saito-button-primary trade_overlay_reset_button">Reset</div>
-            <div class="trade_overlay_button saito-button-primary trade_overlay_broadcast_button">Broadcast Offer</div>
+            <div class="trade_overlay_button saito-button-primary trade_overlay_broadcast_button noselect">Broadcast Offer</div>
           </div></div>`;
 
     this.overlay.closebox = true;
     this.overlay.show(html);
 
-    $(".trade_button.select").on("click", function () {
+    $(".trade_area.select").on("click", function () {
       $(this).toggleClass("selected");
+      if (document.querySelector(".trade_area.selected")){
+        $(".trade_overlay_broadcast_button").removeClass("noselect");
+      }else{
+        $(".trade_overlay_broadcast_button").addClass("noselect");
+      }
     });
 
     $(".trade_overlay_reset_button").on("click", function () {
-      $(".trade_button.select").removeClass("selected");
+      $(".trade_area.select").removeClass("selected");
     });
 
     $(".trade_overlay_broadcast_button").on("click", function () {
+      if ($(this).hasClass("noselect")){
+        return;
+      }
       let offering = {};
       let receiving = {};
       let divs = document.querySelectorAll(".selected");
@@ -3627,8 +3642,9 @@ class Settlers extends GameTemplate {
     let settlers_self = this;
     let resList = settlers_self.skin.resourceArray();
 
-    let html = `<div class="trade_overlay" id="trade_overlay">
-            <div style="width:100%"><div class="h1 trade_overlay_title">Trade Offer</div></div>
+    let html = 
+          `<div class="trade_overlay saitoa" id="trade_overlay">
+            <div class="h1 trade_overlay_title">Trade Offer</div>
             <div class="h2">${this.game.playerNames[player-1]} will give you</div>
             <div class="trade_overlay_offers">`;
     for (let i = 0; i < resList.length; i++) {
@@ -3699,11 +3715,7 @@ class Settlers extends GameTemplate {
       }
       if (choice == "reject") {
         settlers_self.overlay.hide();
-        //if (exclusive){
         settlers_self.addMove(`reject_offer\t${settlers_self.game.player}\t${player}`);
-        //}else{
-        // settlers_self.addMove("reject_open_offer\t"+settlers_self.game.player+"\t"+player);
-        //}
         settlers_self.endTurn();
       }
       //Short cut to chat window

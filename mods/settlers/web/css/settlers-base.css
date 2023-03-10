@@ -13,6 +13,10 @@ p {
   overflow: unset;
 }
 
+.status-text-menu ul li, .status ul li{
+  border-color: #331800;
+}
+
 .tip {
   width: unset;
 }
@@ -45,29 +49,23 @@ p {
 .game-cardbox {
   display: none;
   width: fit-content;
-  height: 460px;
   background-color: rgba(245, 245, 245, 0.95);
-  border: 2px solid black;
-  border-radius: 10px;
-  color: black;
-  transform: unset;
-  left: 10px;
-  top: 60px;
 }
 
 .construction-costs {
   font-size: 24px;
+  text-align: center;
 }
 
-.construction-costs h2 {
-  text-align: center;
+.construction-costs.saitoa{
+  min-width: unset;
+  padding: ;
 }
 
 .construction-costs .table {
   display: grid;
   grid-template-columns: 60px 1fr;
-  grid-gap: 1em;
-  margin: 0.75em;
+  grid-gap: 10px;
 }
 
 .construction-costs .table .cost {
@@ -82,6 +80,7 @@ p {
 .construction-costs .message {
   font-size: 0.8em;
   text-align: center;
+  margin: 15px 0;
 }
 
 .cardfan {
@@ -558,6 +557,13 @@ input[type="checkbox"] {
   color: var(--p4-color);
 }
 
+
+/*********
+ * 
+ * Trading overlays
+ * 
+ * ********/
+
 .trade_overlay {
   padding: 25px;
   font-size: 1.25em;
@@ -568,20 +574,26 @@ input[type="checkbox"] {
   /*overflow-y: scroll;*/
 }
 
-.trade_overlay_title {
+.trade_overlay > div {
   width: 100%;
+}
+
+.trade_overlay_title {
   text-align: center;
 }
 
-.trade_overlay_offers, .trade_overlay_buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  margin: 1em 0px;
+.trade_overlay_offers {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(5, 1fr);
 }
 
 .trade_overlay_buttons {
+  display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-evenly;
+  margin: 1em 0px;
 }
 
 .trade_overlay_buttons .notice {
@@ -605,28 +617,47 @@ input[type="checkbox"] {
   filter: drop-shadow(5px 5px 4px);
 }
 
+/* Disable trade submit button in overlays */
+.trade_overlay_button.noselect {
+  background-color: lightgrey;
+  border: unset;
+  color: unset;
+  cursor: unset;
+}
+/*.trade_overlay_button.noselect:hover {
+  background-color: lightgrey;
+  color: unset;
+}*/
+
+/* Disable resource selection in trade overlays */ 
 .noselect .icon {
   filter: grayscale(100%) brightness(0.55);
   cursor: default;
 }
 
-.button.noselect:hover {
-  background: rgba(247, 31, 61, 0.2);
-  /* based on saito-red */
-}
 
 .option.noselect {
   font-style: italic;
   color: lightgrey;
 }
 
-.trade_button {
-  width: 120px;
+
+/* TradeOverlay --> specify numbers */
+.trade_area {
+  height: 72px;
   text-transform: uppercase;
+  text-align: center;
 }
 
-.trade_button div {
-  text-align: center;
+.trade_area.select{
+  cursor: pointer;
+}
+
+.offer_icons{
+  position: relative;
+}
+.icon_multiplier{
+  position: absolute;
 }
 
 .button {
@@ -643,9 +674,6 @@ input[type="checkbox"] {
   height: 1.25em;
 }*/
 
-.wishlist .icon {
-  display: inline-block;
-}
 
 .horizontal_list {
   display: flex;
@@ -666,15 +694,6 @@ ul.horizontal_list li.iconoption {
   border-top: unset;
 }
 
-.status .disabled:hover {
-  color: inherit;
-  background-color: inherit;
-}
-
-.disabled .icon, .player-box .icon {
-  width: 1.5em;
-  vertical-align: middle;
-}
 
 .status-message {
   width: unset;
@@ -857,6 +876,15 @@ ul.horizontal_list li.iconoption {
   color: var(--p4-color);
 }*/
 
+.player-box .icon {
+  display: inline-block;
+  width: 30px;
+  vertical-align: middle;
+  margin: 0 4px;
+  border-radius: 5px;
+}
+
+
 .player-notice {
   margin-bottom: 0.5em;
   line-height: 1.25em;
@@ -867,12 +895,6 @@ ul.horizontal_list li.iconoption {
   /*justify-content: space-between;*/
 }
 
-.player-box .player-notice .icon {
-  height: 25px;
-  width: 25px;
-  margin: 0 4px;
-  border-radius: 5px;
-}
 
 .player-box.notme, .opponents {
   position: absolute;
