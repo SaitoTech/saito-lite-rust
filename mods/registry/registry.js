@@ -61,18 +61,20 @@ class Registry extends ModTemplate {
               this.app.browser.updateAddressHTML(key, value);
             });
           });
+
+          //
+          // save all keys queried to cache so even if we get nothing
+          // back we won't query the server again for them.
+          //
+          for (let i = 0; i < unidentified_keys.length; i++) {
+            if (!this.cached_keys[unidentified_keys[i]]) {
+              this.cached_keys[unidentified_keys[i]] = unidentified_keys[i];
+            }
+          }
+
         }
       }
 
-      //
-      // save all keys queried to cache so even if we get nothing
-      // back we won't query the server again for them.
-      //
-      for (let i = 0; i < unidentified_keys.length; i++) {
-        if (!this.cached_keys[unidentified_keys[i]]) {
-          this.cached_keys[unidentified_keys[i]] = unidentified_keys[i];
-        }
-      }
       
     });
 
@@ -337,8 +339,13 @@ class Registry extends ModTemplate {
           // if keys exist
           // 
           for (let key in this.cached_keys) {
-            if (key === data.publickey) { data.identifier = this.cached_keys[key]; return data; }
-            if (key === data.identifier) { data.publickey = key; return data; }
+            if (this.cached_keys[key]) {
+	      if (this.cached_keys[key] !== data.publickey) {
+	        return { publickey : key , identifier : this.cached_keys[key] };
+	      } else {
+	        return { publickey : key };
+	      }
+	    }
           }
 
           return null;
@@ -513,18 +520,33 @@ class Registry extends ModTemplate {
   }
 
 
+  onPeerServiceUp(app, peer, service = {}) {
+ 
+    //
+    // redsquare -- fetch community tweets
+    //
+    if (service.service === "registry") {
+      if (app.BROWSER == 1) {
+	app.browser.addIdentifiersToDom();	
+      }
+    }    
+
+  }
+
+
+
   onPeerHandshakeComplete(app, peer) {
 
     let registry_self = app.modules.returnModule("Registry");
 
-    /***** UNCOMMENT FOR LOCAL DEVELOPMENT ******
+    /***** UNCOMMENT FOR LOCAL DEVELOPMENT ******/
     if (registry_self.app.options.server != undefined) {
       registry_self.publickey = registry_self.app.wallet.returnPublicKey();
     } else {
       registry_self.publickey = peer.peer.publickey;
     }
 console.log("WE ARE NOW LOCAL SERVER");
-    *******************************************/
+    /*******************************************/
 
   }
 

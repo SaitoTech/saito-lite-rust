@@ -1,6 +1,7 @@
 module.exports = (app, publickey="") => {
 
    let key = app.keychain.returnKey(publickey);
+
    if (!key) { key = {}; }
 
    let email  = key.email || "";

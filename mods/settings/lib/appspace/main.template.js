@@ -70,6 +70,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
           <div class="saito-button-secondary small" id="restore-privatekey-btn">Import Key</div>
           <div class="saito-button-secondary small"id="restore-account-btn">Restore Wallet</div>
           <div class="saito-button-secondary small"id="backup-account-btn">Backup Wallet</div>
+          <div class="saito-button-secondary small"id="nuke-account-btn">Nuke Account</div>
         </div>
       </div>
     </div>

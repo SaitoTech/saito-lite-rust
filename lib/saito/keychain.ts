@@ -253,29 +253,37 @@ class Keychain {
     //
     // if keys exist
     //
+    let key_idx = -1;
     for (let x = 0; x < this.keys.length; x++) {
       let match = true;
       for (let key in data) {
         if (this.keys[x][key] !== data[key]) {
           match = false;
+	  key_idx = -1;
+        } else {
+	  if (match != false && this.keys[x][key] === data[key]) {
+	    key_idx = x;
+	  }
         }
       }
-      if (match == true) {
-        return this.keys[x];
-      }
+    }
+    if (key_idx != -1) {
+      return this.keys[key_idx];
     }
 
     //
     // no match - maybe we have a module that has cached this information?
     //
-    if (data.identifier && !data.publickey) {
-      this.app.modules.getRespondTos("saito-return-key").forEach((modResponse) => {
-        let key = modResponse.returnKey(data);
-        if (key) { return key; }
-      });
-    }
+    let return_key = null;
+    this.app.modules.getRespondTos("saito-return-key").forEach((modResponse) => {
+      let key = modResponse.returnKey(data);
+      if (key != null) { 
+	return_key = key; 
+      }
+    });
 
-    return null;
+    return return_key;
+
   }
 
   returnKeys(data = null) {
@@ -431,7 +439,6 @@ class Keychain {
   }
 
   updateCryptoByPublicKey(publickey, aes_publickey = "", aes_privatekey = "", shared_secret = "") {
-    console.log("updating crypto for: " + publickey);
 
     if (publickey == "") {
       return;

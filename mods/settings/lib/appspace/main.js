@@ -142,11 +142,13 @@ class SettingsAppspace {
         navigator.clipboard.writeText(app.wallet.returnPublicKey());
         salert("Public key copied");
       }
-      /*
-          document.getElementById('reset-account-btn').onclick = async (e) => {
+      document.getElementById('nuke-account-btn').onclick = async (e) => {
       
-            confirmation = await sconfirm('This will reset your account, do you wish to proceed?');
+            confirmation = await sconfirm('This will reset/nuke your account, do you wish to proceed?');
             if (confirmation) {
+
+	      app.options.keys = [];
+	      app.options.groups = [];
               app.wallet.resetWallet();
               app.modules.returnModule('Arcade').onResetWallet();
               app.storage.resetOptions();
@@ -160,8 +162,7 @@ class SettingsAppspace {
       
               app.blockchain.resetBlockchain();
             }
-          };
-      */
+      };
 
       document.getElementById('restore-privatekey-btn').onclick = async (e) => {
 

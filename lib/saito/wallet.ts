@@ -422,6 +422,7 @@ console.log("---------------------");
         /////////////
         if (this.app.options.wallet.version < this.wallet.version) {
           if (this.app.BROWSER == 1) {
+
             const tmpprivkey = this.app.options.wallet.privatekey;
             const tmppubkey = this.app.options.wallet.publickey;
 
@@ -786,10 +787,12 @@ console.log("---------------------");
       this.app.blockchain.resetBlockchain();
     }
 
-    // keychain
-    if (this.app.options.keys != undefined) {
-      this.app.options.keys = [];
-    }
+    // 
+    // keep keychain info now
+    // 
+    //if (this.app.options.keys != undefined) {
+    //  this.app.options.keys = [];
+    //}
 
     this.wallet.inputs = [];
     this.wallet.outputs = [];

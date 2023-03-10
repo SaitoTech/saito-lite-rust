@@ -15,7 +15,6 @@ class AppspaceProfile {
 
   render(publickey = "") {
 
-
     if (publickey == "") { if (this.publickey != "") { publickey = this.publickey; } }
     if (publickey == "") { publickey = this.app.wallet.returnPublicKey(); }
     this.publickey = publickey;
