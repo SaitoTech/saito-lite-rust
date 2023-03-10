@@ -47,6 +47,7 @@ class Stun extends ModTemplate {
         this.stunGameMenu = new StunxGameMenu(app, this);
         this.current_step = 0;
         this.receiving_from = {}
+        this.commands = []
 
         this.servers = [
             {
@@ -411,25 +412,18 @@ class Stun extends ModTemplate {
 
 
     createMediaConnectionOffer(publicKey, ui_type, call_type, room_code, create_new = true) {
-        console.log('create new ', create_new)
+        delete this.peer_connections[publicKey];
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
             const execute = async () => {
                 try {
-                    let pc;
-                    if (true) {
-                        pc = new RTCPeerConnection({
-                            iceServers: this.servers,
-                        });
-                        this.peer_connections[publicKey] = pc;
-                    } else {
-                        pc = this.peer_connections[publicKey];
-                        const senders = pc.getSenders();
-                        senders.forEach((sender) => pc.removeTrack(sender));
-                        // newTracks.forEach((tr) => pc.addTrack(tr));
-                    }
+                    let pc = new RTCPeerConnection({
+                        iceServers: this.servers,
+                    });
 
+                    this.peer_connections[publicKey] = pc;
 
+                    pc = this.peer_connections[publicKey];
 
                     pc.onicecandidate = (ice) => {
                         if (!ice || !ice.candidate || !ice.candidate.candidate) {
@@ -442,7 +436,7 @@ class Stun extends ModTemplate {
 
                     };
 
-                    pc.addEventListener('connectionstatechange', e => {
+                    pc.onconnectionstatechange = (e) => {
                         console.log(pc.connectonState, e);
                         console.log(pc.currentLocalDescription, this.peer_connections[publicKey].currentLocalDescription, 'current local description')
 
@@ -476,7 +470,8 @@ class Stun extends ModTemplate {
                                 ""
                                 break;
                         }
-                    })
+                    }
+
 
                     // add data channels 
                     const data_channel = pc.createDataChannel('channel');
@@ -503,7 +498,7 @@ class Stun extends ModTemplate {
                     });
 
                     const remoteStream = new MediaStream();
-                    pc.addEventListener('track', (event) => {
+                    pc.ontrack = (event) => {
                         console.log('got remote stream', event.streams);
                         event.streams[0].getTracks().forEach(track => {
                             remoteStream.addTrack(track);
@@ -515,9 +510,7 @@ class Stun extends ModTemplate {
                         console.log(remoteStream, pc, publicKey, "This is for the offer creator")
                         this.app.connection.emit('add-remote-stream-request', publicKey, remoteStream, pc, ui_type, call_type, room_code);
 
-                    });
-
-
+                    }
                     const offer = await pc.createOffer();
                     pc.setLocalDescription(offer);
 
@@ -603,6 +596,8 @@ class Stun extends ModTemplate {
 
     acceptMediaChannelConnectionOffer(app, offer_creator, offer) {
         console.log('rendering remote stream place holder');
+        let stunx_mod = app.modules.returnModule("Stun");
+        delete stunx_mod.peer_connections[offer_creator];
         // this.app.connection.emit('render-remote-stream-placeholder-request', offer_creator, offer.ui_type);
         const room_code = offer.room_code
         const createPeerConnection = async () => {
@@ -612,19 +607,17 @@ class Stun extends ModTemplate {
                 ice_candidates: []
             }
 
-            let stunx_mod = app.modules.returnModule("Stun");
 
 
-            let pc;
-            console.log('offer create new ', offer.create_new)
-            if (true) {
-                pc = new RTCPeerConnection({
-                    iceServers: this.servers,
-                });
-                stunx_mod.peer_connections[offer_creator] = pc;
-            } else {
-                pc = stunx_mod.peer_connections[offer_creator]
-            }
+
+            let pc = new RTCPeerConnection({
+                iceServers: this.servers,
+            });
+
+            stunx_mod.peer_connections[offer_creator] = pc;
+
+            pc = stunx_mod.peer_connections[offer_creator];
+
 
 
 
@@ -640,8 +633,7 @@ class Stun extends ModTemplate {
                 }
 
 
-
-                pc.addEventListener('connectionstatechange', () => {
+                pc.onconnectionstatechange = (e) => {
                     try {
                         console.log('peer connections', this.peer_connections[offer_creator].connectionState)
                     } catch (error) {
@@ -694,7 +686,8 @@ class Stun extends ModTemplate {
                             ""
                             break;
                     }
-                })
+                }
+
 
 
                 // add data channels 
@@ -724,7 +717,7 @@ class Stun extends ModTemplate {
                 });
 
                 const remoteStream = new MediaStream();
-                pc.addEventListener('track', (event) => {
+                pc.ontrack = (event) => {
                     console.log('got remote stream from offer creator ', event.streams);
                     event.streams[0].getTracks().forEach(track => {
                         remoteStream.addTrack(track);
@@ -732,7 +725,8 @@ class Stun extends ModTemplate {
                     });
                     app.connection.emit('add-remote-stream-request', offer_creator, remoteStream, pc, offer.ui_type);
 
-                });
+                }
+
                 await pc.setRemoteDescription(offer.offer_sdp);
                 const offer_ice_candidates = offer.ice_candidates;
                 // console.log('peer ice candidates', offer_ice_candidates);
@@ -781,7 +775,7 @@ class Stun extends ModTemplate {
                     };
                     reply.ice_candidates.push(ice.candidate);
                 }
-                pc.onconnectionstatechange = e => {
+                pc.onconnectionstatechange = () => {
                     console.log("connection state ", pc.connectionState)
                     switch (pc.connectionState) {
                         // case "connecting":
@@ -960,7 +954,7 @@ class Stun extends ModTemplate {
 
     async receiveCommandToPeerTransaction(app, tx, conf, blk) {
         if (app.BROWSER !== 1) return;
-
+        let stun_self = app.modules.returnModule("Stun");
         if (!this.ChatManagerLarge.isActive) return;
         const command = tx.msg.data.command
         const recipient = tx.msg.data.recipient;
@@ -968,13 +962,25 @@ class Stun extends ModTemplate {
 
         console.log(tx, 'receiving command', command, 'room code', this.room_code);
 
+        let reply_sender = recipient;
+        let reply_recipient = sender;
+        let reply_command;
 
-        switch (command) {
-            case "initiate transaction":
-                console.log(this.createMediaChannelConnectionWithPeers, 'creation function');
-                this.createMediaChannelConnectionWithPeers([sender], 'large', 'video', this.room_code);
+        switch (command.name) {
+            case "PING":
+                console.log('pinging, to reply');
+                reply_command = { name: "PING_SUCCESSFULL", id: command.id }
+                stun_self.sendCommandToPeerTransaction(reply_recipient, reply_sender, reply_command);
                 break;
-
+            case "PING_SUCCESSFULL":
+                stun_self.sendCommandToPeerTransaction(reply_recipient, reply_sender, reply_command);
+                stun_self.commands.forEach(c => {
+                    if (c.id === command.id) {
+                        c.status = "success"
+                    }
+                })
+                console.log('PING SUCCESSFUL', stun_self.commands);
+                break;
             default:
                 break;
         }
@@ -1025,6 +1031,10 @@ class Stun extends ModTemplate {
         if (!this.ChatManagerLarge.isActive || this.ChatManagerLarge.room_code !== room_code) return;
 
         let my_pubkey = app.wallet.returnPublicKey();
+
+        if (my_pubkey === offer_creator) {
+
+        }
 
 
         app.connection.emit('stun-receive-media-offer', {
@@ -1428,6 +1438,10 @@ class Stun extends ModTemplate {
 
     resetStep() {
         this.current_step = 0;
+    }
+
+    saveCommand(command) {
+        this.commands.push(command)
     }
 
 

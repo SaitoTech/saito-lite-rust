@@ -203,42 +203,52 @@ class VideoBox {
 
 
                 if (is_creator) {
-                    let interval = setInterval(async () => {
+                    const stun_mod = this.app.modules.returnModule('Stun');
+                    let checkOnlineInterval = setInterval(async () => {
+
                         let online = await this.checkOnlineStatus();
                         if (!online) {
                             this.updateConnectionMessage('please check internet connectivity');
                         }
                         else {
+                            clearInterval(checkOnlineInterval);
                             this.updateConnectionMessage('re-establishing connection');
                             // check if other peer is online, then send a connection.
-                            this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code, false);
-                            clearInterval(interval);
-                            // let counter = 0;
-                            // let interval_2 = setInterval(() => {  
-                            //     if (this.mod.peer_connections[peer].connectionState ==="connected" ) {
-                            //         clearInterval(interval_2);
-                            //     } else if(this.mod.peer_connections[peer].connectionState !=="connected") {
-                            //         if(counter > 0){
-                            //             this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code, false);
-                            //         }                  
-                            //     }
-                            //     counter++
-                            // }, 20000);
+                            let command = {
+                                name: 'PING',
+                                id: 2233,
+                                status: null,
+                                callback: () => {
+                                    const stun_mod = this.app.modules.returnModule('Stun');
+                                    stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
+                                }
+                            }
+                            this.mod.saveCommand(command);
+                            this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+
+                            const checkPingInterval = setInterval(() => {
+
+                                stun_mod.commands.forEach(c => {
+                                    console.log('checking ping ');
+                                    if (c.id === command.id) {
+                                        console.log('commandsss')
+                                        if (command.status === "success") {
+                                            command.callback();
+                                            clearInterval(checkPingInterval)
+                                        }
+                                    }
+                                })
+                            }, 2000)
+
                         }
                     }, 2000)
                 } else {
-                    let interval = setInterval(async () => {
-                        let online = await this.checkOnlineStatus();
-                        if (!online) {
-                            this.updateConnectionMessage('please check internet connectivity');
-                        }
-                        else {
-                            this.updateConnectionMessage('re-establishing connection');
-                            // send message to other peer telling it I am online and ask it to send a connection
-                            this.mod.sendCommandToPeerTransaction(peer, my_pub_key, "initiate transaction");
-                            clearInterval(interval);
-                        }
-                    }, 2000)
+                    let online = await this.checkOnlineStatus();
+                    if (!online) {
+                        this.updateConnectionMessage('please check internet connectivity');
+                    } else {
+                        this.updateConnectionMessage('re-establishing connection');
+                    }
                 }
                 break;
             case "failed":
