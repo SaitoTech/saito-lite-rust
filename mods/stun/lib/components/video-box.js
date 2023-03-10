@@ -214,7 +214,6 @@ class VideoBox {
                             clearInterval(checkOnlineInterval);
                             this.updateConnectionMessage('re-establishing connection');
                             // check if other peer is online, then send a connection.
-                            let id = this.app.crypto.stringToBase64(JSON.stringify(obj));
                             let command = {
                                 name: 'PING',
                                 id: stun_mod.commands.length,

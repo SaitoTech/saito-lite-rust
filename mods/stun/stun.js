@@ -611,7 +611,7 @@ class Stun extends ModTemplate {
 
 
             let pc = new RTCPeerConnection({
-                iceServers: this.servers,
+                iceSçervers: this.servers,
             });
 
             stunx_mod.peer_connections[offer_creator] = pc;
