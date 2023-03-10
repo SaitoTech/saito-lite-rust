@@ -235,7 +235,7 @@ class VideoBox {
                         else {
                             this.updateConnectionMessage('re-establishing connection');
                             // send message to other peer telling it I am online and ask it to send a connection
-                            this.mod.sendCommandToPeerTransaction(my_pub_key, peer, "initiate transaction");
+                            this.mod.sendCommandToPeerTransaction(peer, my_pub_key, "initiate transaction");
                             clearInterval(interval);
                         }
                     }, 2000)

@@ -830,7 +830,7 @@ class Stun extends ModTemplate {
 
 
     async createMediaChannelConnectionWithPeers(public_keys, ui_type, call_type, room_code, create_new) {
-
+        console.log('got here');
         let my_pubkey = this.app.wallet.returnPublicKey();
         if (public_keys.includes(my_pubkey)) return;
         let peerConnectionOffers = [];
@@ -932,7 +932,7 @@ class Stun extends ModTemplate {
 
 
 
-    createSendCommandToPeerTransaction(sender, recipient, command) {
+    createSendCommandToPeerTransaction(recipient, sender, command) {
 
         let _data = {
             sender,
@@ -951,8 +951,8 @@ class Stun extends ModTemplate {
         return [null, data];
     }
 
-    async sendCommandToPeerTransaction(sender, recipient, command) {
-        let [tx, data] = this.createSendCommandToPeerTransaction(sender, recipient, command);
+    async sendCommandToPeerTransaction(recipient, sender, command) {
+        let [tx, data] = this.createSendCommandToPeerTransaction(recipient, sender, command);
         console.log('sending command ', data)
         this.app.connection.emit('relay-send-message', data);
 
@@ -964,13 +964,14 @@ class Stun extends ModTemplate {
         if (!this.ChatManagerLarge.isActive) return;
         const command = tx.msg.data.command
         const recipient = tx.msg.data.recipient;
-        const sender = tx.msg.data.recipient;
+        const sender = tx.msg.data.sender;
 
         console.log(tx, 'receiving command', command, 'room code', this.room_code);
 
 
         switch (command) {
             case "initiate transaction":
+                console.log(this.createMediaChannelConnectionWithPeers, 'creation function');
                 this.createMediaChannelConnectionWithPeers([sender], 'large', 'video', this.room_code);
                 break;
 
