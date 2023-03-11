@@ -74,7 +74,9 @@ class AppspaceProfile {
 	//
 	// try to initiate key exchange
 	//
-	this.app.connection.emit("encrypt-key-exchange", (publickey));
+        if (!key.aes_secret) {
+	  this.app.connection.emit("encrypt-key-exchange", (publickey));
+	}
 
       }
     } catch (err) {}
