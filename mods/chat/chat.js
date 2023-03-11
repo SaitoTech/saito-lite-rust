@@ -71,6 +71,7 @@ class Chat extends ModTemplate {
 	        txs[z].decryptMessage(chat_self.app);
 	        chat_self.addTransactionToGroup(group, txs[z]);
               }
+              chat_self.app.connection.emit("chat-manager-render-request");
             } catch (err) {
               log("error loading chats...: " + err);
             }
@@ -442,24 +443,15 @@ class Chat extends ModTemplate {
     createChatTransaction(group_id, msg) {
 
         let members = this.returnMembers(group_id);
+        let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), 0.0, 0.0);
+        if (newtx == null) { return; }
 
-        //
-        // rearrange if needed so we are not first --- WHY IS THIS NECESSARY???
-        //
-        if (members[0] === this.app.wallet.returnPublicKey()) {
-            members.splice(0, 1);
-            members.push(this.app.wallet.returnPublicKey());
+        for (let i = 0; i < members.length; i++) {
+	    if (members[i] !== this.app.wallet.returnPublicKey()) {
+                newtx.transaction.to.push(new saito.default.slip(members[i]));
+	    }
         }
 
-        let newtx = this.app.wallet.createUnsignedTransaction(members[0], 0.0, 0.0);
-
-        if (newtx == null) {
-            return;
-        }
-
-        for (let i = 1; i < members.length; i++) {
-            newtx.transaction.to.push(new saito.default.slip(members[i]));
-        }
         newtx.msg = {
             module: "Chat",
             request: "chat message",

@@ -71,6 +71,11 @@ class AppspaceProfile {
 	//
 	this.app.network.propagateKeylist();
 
+	//
+	// try to initiate key exchange
+	//
+	this.app.connection.emit("encrypt-key-exchange", (publickey));
+
       }
     } catch (err) {}
 
