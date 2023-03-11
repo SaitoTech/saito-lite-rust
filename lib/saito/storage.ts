@@ -42,6 +42,9 @@ class Storage {
   // hit up all peers
   //
   loadTransactions(type = "all", num = 50, mycallback) {
+
+    let storage_self = this;
+
     const message = "archive";
     const data: any = {};
     data.request = "load";
@@ -49,13 +52,15 @@ class Storage {
     data.num = num;
     data.publickey = this.app.wallet.returnPublicKey();
 
+console.log("about to send req w. callback: " + type);
+
     this.app.network.sendRequestWithCallback(message, data, function (obj) {
       let txs = [];
       if (obj) {
         if (obj.txs) {
           for (let i = 0; i < obj.txs.length; i++) {
             let tx = new Transaction();
-	    tx.deserialize_from_web(this.app, obj.txs[i].tx);
+	    tx.deserialize_from_web(storage_self.app, obj.txs[i].tx);
             txs.push(tx);
           }
         }
@@ -295,15 +300,13 @@ class Storage {
     data.optional = optional;
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
   }
-  saveTransaction(tx: Transaction) {
-
-console.log("SAVE TRANSACTION");
-
+  saveTransaction(tx: Transaction, type = null) {
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = {
       request: "archive save",
-      data: tx.serialize(this.app),
+      data: tx.serialize_to_web(this.app),
     };
+    if (type != null) { newtx.msg.type = type; }
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.network.sendTransactionWithCallback(newtx, function (res) {});
 
@@ -316,7 +319,6 @@ console.log("SAVE TRANSACTION");
     console.log("=============");
     console.log("SAVING THE TX");
     console.log("=============");
-    //    this.app.network.sendRequestWithCallback(message, data, function (res) {});
     this.app.connection.emit("save-transaction", tx);
   }
   saveTransactionByKey(key, tx) {

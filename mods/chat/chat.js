@@ -50,11 +50,39 @@ class Chat extends ModTemplate {
 
     onPeerServiceUp(app, peer, service = {}) {
 
+      let chat_self = this;
+
+      //
+      // load private chat
+      //
+      if (service.service === "archive") {
+
+ 	//
+        // load 5 saved chat messages per group
+        //
+	for (let i = 0; i < this.groups.length; i++) {
+
+	  let group_id = this.groups[i].id;
+	  let group = this.groups[i];
+
+          this.app.storage.loadTransactions(group_id, 5, function(txs) {
+            try {        
+              for (let z = 0; z < txs.length; z++) {
+	        txs[z].decryptMessage(chat_self.app);
+	        chat_self.addTransactionToGroup(group, txs[z]);
+              }
+            } catch (err) {
+              log("error loading chats...: " + err);
+            }
+          });
+        }
+      }
+ 
+      //
+      // load public chat
+      //
       if (service.service === "chat") {
 
-        //
-        // fetch chat content from community server
-        //
         let newtx = this.app.wallet.createUnsignedTransaction();
         let local_group = this.returnGroupOrCreateFromMembers([peer.returnPublicKey()], "Saito Community Chat");
         if (local_group) {
@@ -66,18 +94,19 @@ class Chat extends ModTemplate {
           newtx = this.app.wallet.signTransaction(newtx);
 
           this.app.network.sendTransactionWithCallback(newtx, (txs) => {
-try {
-console.log("adding: " + txs.length + " to local community chat");
-	    for (let i = 0; i < txs.length; i++) {
-	      let newtx = new saito.default.transaction(txs[i].transaction);
-	      let txmsg = newtx.returnMessage();
-              this.addTransactionToGroup(local_group, newtx);
+
+	    try {
+	      for (let i = 0; i < txs.length; i++) {
+	        let newtx = new saito.default.transaction(txs[i].transaction);
+	        let txmsg = newtx.returnMessage();
+                this.addTransactionToGroup(local_group, newtx);
+	      }
+	    } catch (err) {
+	      console.log("chat history adding: " + err);
 	    }
-} catch (err) {
-  console.log("chat history adding: " + err);
-}
 
             this.app.connection.emit("chat-manager-and-popup-render-request", (local_group));
+
           });
         }
       }
@@ -129,6 +158,11 @@ console.log("adding: " + txs.length + " to local community chat");
 
     initialize(app) {
 
+	//
+	app.options.chat = {};
+        app.storage.saveOptions();
+
+
         super.initialize(app);
 
         //
@@ -159,6 +193,7 @@ console.log("adding: " + txs.length + " to local community chat");
 	if (app.BROWSER) {
           this.attachPostScripts();
 	}
+
     }
 
 
@@ -462,6 +497,16 @@ console.log("adding: " + txs.length + " to local community chat");
             }
         }
 
+	//
+	// save transaction if private chat
+	//
+        for (let i = 0; i < tx.transaction.to.length; i++) {
+	  if (tx.transaction.to[i].add == app.wallet.returnPublicKey()) {
+            this.app.storage.saveTransaction(tx, txmsg.group_id);
+	    break;
+	  }
+	}
+
         let group = this.returnGroup(txmsg.group_id);
 
         if (group) {
@@ -714,15 +759,12 @@ console.log("adding: " + txs.length + " to local community chat");
             }
             if (tx.transaction.ts < group.txs[i].transaction.ts) {
                 let pos = Math.max(0, i - 1);
-console.log("inserting at: " + pos);
                 group.txs.splice(pos, 0, tx);
                 return;
             }
         }
 
         group.txs.push(tx);
-        //We mark "new/unread" messages as we add them to the group
-        //and clear them when we render them in the popup
         if (!group.unread) { group.unread = 0; }
         group.unread++;
 
@@ -856,14 +898,15 @@ console.log("inserting at: " + pos);
     }
 
     saveChat(group) {
+
         if (!this.app.options.chat) {
             this.app.options.chat = {};
         }
 
         this.app.options.chat[group.id] = [];
-        for (let t of group.txs.slice(-100)) {
-            this.app.options.chat[group.id].push(t.transaction);
-        }
+        //for (let t of group.txs.slice(-100)) {
+        //    this.app.options.chat[group.id].push(t.transaction);
+        //}
 
         this.app.storage.saveOptions();
     }
@@ -872,7 +915,6 @@ console.log("inserting at: " + pos);
     ///////////////////
     // CHAT DEBUGGING //
     ///////////////////
-
     //
     // I'm a lazy man who stores the popup module in the group, 
     // but the popup module includes a reference to this,

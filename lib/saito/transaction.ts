@@ -201,7 +201,7 @@ try {
    * @param {number} start_of_transaction_data - where in the buffer does the tx data begin
    * @returns {Transaction}
    */
-  deserialize(app: Saito, buffer: Uint8Array, start_of_transaction_data) {
+  deserialize(app: Saito, buffer: Uint8Array, start_of_transaction_data=0) {
     const inputs_len = app.binary.u32FromBytes(
       buffer.slice(start_of_transaction_data, start_of_transaction_data + 4)
     );

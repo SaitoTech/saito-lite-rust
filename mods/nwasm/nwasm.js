@@ -468,9 +468,14 @@ class Nwasm extends GameTemplate {
     // larger tx, so we use subrequest and manually handle the save
     // transaction process...
     //
+    // the transaction goes into data, the type goes into type
+    // and the rest is used by this module in handling the tansaction
+    // callback.
+    //
     let obj = {
       module: this.name,
       id: this.app.crypto.hash(this.active_rom_name) ,
+      type: this.app.crypto.hash(this.active_rom_name) ,
       title: this.active_rom_name.trim() ,
       request: "archive save",
       subrequest: "archive rom",
@@ -489,21 +494,12 @@ class Nwasm extends GameTemplate {
 
     if (iobj) { iobj.innerHTML = "uploading archive file: "+newtx.transaction.m.length+" bytes"; }
 
-//
-//
-//
-console.log("sending transaction with callback!");
-
     this.app.network.sendTransactionWithCallback(newtx, async function (res) {
-
       if (iobj) { iobj.innerHTML = "archive upload completed..."; }
-
       if (added_to_library == 1) { return; }
       added_to_library = 1;
       nwasm_self.app.connection.emit("save-transaction", newtx);
-
       if (iobj) { iobj.innerHTML = "adding to personal library..."; }    
-
     });
 
   }
@@ -511,7 +507,6 @@ console.log("sending transaction with callback!");
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-
 
   loadSaveGame(sig) {
     for (let i = 0; i < this.active_game_saves.length; i++) {
@@ -524,6 +519,7 @@ console.log("sending transaction with callback!");
       }
     }
   }
+
   loadGameFile() {
 
     let nwasm_mod = this;
@@ -544,6 +540,7 @@ console.log("sending transaction with callback!");
       }
     });
   }
+
   async saveGameFile(data) {
 
     let base64data = this.convertByteArrayToBase64(data);
@@ -565,7 +562,6 @@ console.log("sending transaction with callback!");
     newtx.msg = obj;
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.storage.saveTransaction(newtx);
-
     this.active_game_saves.push(newtx);
 
   }
@@ -585,6 +581,7 @@ console.log("sending transaction with callback!");
     }
     return b2;
   }
+
   xorBase64(data) {
     let b = Buffer.from(data, 'base64');
     let r = Buffer.from(this.nwasm.random, 'utf8');

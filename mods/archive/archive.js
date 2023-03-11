@@ -1,6 +1,16 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
+const saito = require('../../lib/saito/saito');
 const JSON = require('json-bigint');
 
+
+
+//
+// HOW THE ARCHIVE SAVES TXS
+//
+// modules call ---> app.storage.saveTransaction()
+//		---> submits TX to peers via "archive save" 
+// 		---> saves to DB with ID or TYPE
+//
 class Archive extends ModTemplate {
 
   constructor(app) {
@@ -66,16 +76,23 @@ class Archive extends ModTemplate {
     //
     if (req.request === "archive save") {
 
-      // module: this.name,
-      // id: this.app.crypto.hash(this.active_rom_name) ,
-      // title: this.active_rom_name.trim() ,
-      // request: "archive save",
-      // subrequest: "archive rom",
-      // data: base64data,
+      let newtx = new saito.default.transaction();
+      newtx.deserialize_from_web(app, req.data);
+      let txmsg = newtx.returnMessage();
 
-      this.saveTransaction(tx, req.data.id);
+      try {
+
+	let type = "";
+	if (txmsg.module) { type = txmsg.module;; }
+	if (req.type) { type = req.type; }
+
+        this.saveTransaction(newtx, type);
+
+      } catch (err) {}
+
       mycallback(true);
       return;
+
     }
     if (req.request === "archive") {
 
@@ -117,6 +134,7 @@ class Archive extends ModTemplate {
         let num  = 50;
         if (req.data.num != "")  { num = req.data.num; }
         if (req.data.type != "") { type = req.data.type; }
+console.log("loading type: " + type);
         txs = await this.loadTransactions(req.data.publickey, req.data.sig, type, num);
         response.err = "";
         response.txs = txs;
@@ -168,6 +186,8 @@ class Archive extends ModTemplate {
 
 
   async saveTransaction(tx=null, msgtype="") {
+
+console.log("IN SAVE TRANSACTION IN ARCHIVE>JS");
 
     if (tx == null) { return; }
 
@@ -314,6 +334,9 @@ class Archive extends ModTemplate {
 
 
   async loadTransactions(publickey, sig, type, num) {
+
+console.log("loading txs with publickey: " + publickey);
+console.log("... and type: " + type);
 
     let sql = "";
     let params = {};

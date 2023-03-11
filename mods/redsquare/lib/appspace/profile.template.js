@@ -1,6 +1,11 @@
 module.exports = (app, publickey="") => {
 
    let key = app.keychain.returnKey(publickey);
+
+console.log(">");
+console.log("KEY RETURNED: " + JSON.stringify(key));
+console.log(">");
+
    let is_this_me = false;
    if (publickey === app.wallet.returnPublicKey()) { is_this_me = true; }
    let follow_text = "follow";

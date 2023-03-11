@@ -1225,6 +1225,7 @@ class Block {
               await this.callbacks[ii](this, this.transactions[this.callbackTxs[ii]], i, this.app);
             }
           } catch (err) {
+console.log("TX CAUSING ERROR: " + JSON.stringify(this.transactions[this.callbackTxs[ii]].returnMessage()));
             console.error("ERROR 567567: ", err);
           }
         }
