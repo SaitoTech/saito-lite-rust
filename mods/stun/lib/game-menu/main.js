@@ -33,6 +33,8 @@ class StunxGameMenu {
       this.app.connection.emit('render-local-stream-request', localStream, 'large');
       this.app.connection.emit('remove-overlay-request')
 
+
+      // ping peer to know if it's available
       mod.createMediaChannelConnectionWithPeers([peer], 'large', "Video", room_code);
 
 

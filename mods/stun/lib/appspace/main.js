@@ -176,13 +176,11 @@ class StunAppspace {
     const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     mod.setLocalStream(localStream);
     let my_public_key = this.app.wallet.returnPublicKey();
+    mod.central = true;
     this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code, my_public_key);
     this.app.connection.emit('stun-remove-loader')
     this.app.connection.emit('render-local-stream-request', localStream, 'large', 'video');
     this.app.connection.emit('remove-overlay-request');
-
-    mod.central = true;
-
     siteMessage("You are the only participant in this room", 3000);
     return;
   }

@@ -58,6 +58,8 @@ class VideoChatManager {
             // this.updateRoomLink()
         })
 
+
+
         this.app.connection.on('stun-receive-media-offer', ({ room_code, offer_creator, offer_recipient }) => {
             if (!this.isActive) return;
             console.log(room_code, offer_creator, offer_recipient, 'stun-receive-media-offer')
@@ -86,8 +88,6 @@ class VideoChatManager {
     }
 
     attachEvents(app, mod) {
-        // app.browser.makeDraggable("stunx-chatbox", null, true);
-
 
         document.querySelector('.disconnect_btn').addEventListener('click', (e) => {
             this.disconnect()
@@ -135,48 +135,60 @@ class VideoChatManager {
         })
     }
 
-    updateRoomLink() {
+    createRoomLink() {
         let public_keys = [];
-        let keys = []
-        for (let i = 0; i < this.peers.length; i++) {
-            keys.push(this.peers[i]);
+        let pub_key
+
+        if (this.peers.length === 0) {
+            pub_key = this.app.wallet.returnPublicKey();
+        } else if (this.peers.length > 0) {
+            pub_key = this.peers[0];
         }
 
-        if (keys.length === 0) {
-            public_keys.push(this.central);
-        } else if (keys > 0) {
-            public_keys.push(keys[0]);
-        }
+        public_keys.push(pub_key);
         let obj = {
             room_id: this.room_code,
             public_keys,
         }
         let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
-
         let url = window.location.toString();
+
         if (url.includes('?')) {
             let index = url.indexOf('?');
             url = url.slice(0, index);
         }
+
         let myurl = new URL(url);
         myurl = myurl.href.split('#')[0];
         myurl = myurl.replace('redsquare', 'videocall');
-        console.log(myurl, 'myurl')
-        this.room_link = `${myurl}?stun_video_chat=${base64obj}`;
-        this.chatInvitationOverlay = new ChatInvitationOverlay(this.app, this.mod, this.room_link)
+        return `${myurl}?stun_video_chat=${base64obj}`;
 
+    }
+
+    updateRoomLink() {
+        const room_link = this.createRoomLink();
+        this.room_link = room_link
+        this.chatInvitationOverlay = new ChatInvitationOverlay(this.app, this.mod, this.room_link)
         if (document.querySelector('.add-users-code-container span')) {
             document.querySelector('.add-users-code-container span').textContent = this.room_link.slice(0, 30);
         }
-
-        return public_keys;
+        // return public_keys;
     }
 
+    removePeer(peer) {
+        this.peers = this.peers.filter(p => peer === p)
+    }
     show(app, mod) {
         if (!document.querySelector('.stunx-chatbox')) {
             this.render();
             this.attachEvents(app, mod);
         }
+
+        if (this.mod.central === true) {
+            let room_link = this.createRoomLink();
+            history.pushState(null, null, room_link);
+        }
+
         this.isActive = true
     }
 
@@ -212,25 +224,28 @@ class VideoChatManager {
         }
         this.video_boxes = {}
         this.hide();
-
-
-
-
+        this.isActive = false;
+        this.peers = [];
+        this.room_code = null;
     }
 
 
     addRemoteStream(peer, remoteStream, pc) {
-        this.createVideoBox(peer);
-        this.video_boxes[peer].video_box.addStream(remoteStream);
+        this.video_boxes[peer].video_box.render(remoteStream)
         this.video_boxes[peer].peer_connection = pc;
-        this.peers.push(peer);
-        console.log('adding remote stream to ', this.video_boxes[peer])
+        if (!this.peers.includes(peer)) {
+            this.peers.push(peer);
+        }
+
+        // console.log(this.mod.central, "is mod central or not")
+        let room_link = this.createRoomLink();
+        history.pushState(null, null, room_link);
+
     }
 
     renderLocalStream(localStream) {
-        const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type);
-        videoBox.render(localStream, 'local', 'large-wrapper');
-        this.video_boxes['local'] = { video_box: videoBox, peer_connection: null }
+        this.createVideoBox('local')
+        this.video_boxes['local'].video_box.render(localStream, 'large-wrapper');
         this.localStream = localStream;
         this.updateImages();
         // segmentBackground(document.querySelector('#streamlocal video'), document.querySelector('#streamlocal canvas'), 1);  
@@ -241,13 +256,13 @@ class VideoChatManager {
 
     renderRemoteStreamPlaceholder(peer, placeholder_info, isCreator = false) {
         this.createVideoBox(peer, placeholder_info);
-        this.video_boxes[peer].video_box.render(null, peer, 'large-wrapper', placeholder_info);
+        this.video_boxes[peer].video_box.render(null, placeholder_info);
         this.video_boxes[peer].video_box.startWaitTimer(isCreator);
     }
 
     createVideoBox(peer) {
         if (!this.video_boxes[peer]) {
-            const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type, this.central, this.room_code);
+            const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type, this.central, this.room_code, peer, 'large-wrapper');
             this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
         }
     }
@@ -262,7 +277,8 @@ class VideoChatManager {
             case "disconnected":
                 this.stopTimer();
                 this.updateImages();
-                this.mod.closeMediaConnections(peer)
+                this.mod.closeMediaConnections(peer);
+                this.removePeer(peer);
                 console.log("video boxes: after ", this.video_boxes);
                 break;
             case "connected":
@@ -273,7 +289,8 @@ class VideoChatManager {
             case "failed":
                 this.stopTimer();
                 this.updateImages();
-                this.mod.closeMediaConnections(peer)
+                this.mod.closeMediaConnections(peer);
+                this.removePeer(peer);
                 console.log("video boxes: after ", this.video_boxes);
 
                 break;
