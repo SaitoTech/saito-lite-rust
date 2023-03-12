@@ -561,7 +561,7 @@ class Nwasm extends GameTemplate {
 
     newtx.msg = obj;
     newtx = this.app.wallet.signTransaction(newtx);
-    this.app.storage.saveTransaction(newtx);
+    this.app.storage.saveTransaction(newtx, ("Nwasm-"+this.active_rom_sig));
     this.active_game_saves.push(newtx);
 
   }
