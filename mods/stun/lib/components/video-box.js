@@ -12,7 +12,7 @@ class VideoBox {
     placeholderRendered = false;
     stream_rendered = false;
     waitTimer;
-    waitSeconds = 0;
+    waitSeconds
 
     constructor(app, mod, ui_type, call_type, central, room_code) {
         this.app = app;
@@ -49,18 +49,11 @@ class VideoBox {
 
         app.connection.on('disconnect', (kind, public_key) => {
             if (public_key !== this.stream_id) return;
-            if (kind === "all") {
-                app.connection.emit('stun-disconnect');
-                siteMessage("Call ended", 5000);
-                return;
-            } else {
-                document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
-                mod.closeMediaConnections(public_key);
-                siteMessage(`${public_key} disconnected from call`, 5000);
-                if (mod.central === true) {
-                    mod.room.peers = mod.room.peers.filter(key => public_key !== key);
-                }
-            }
+            document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
+            mod.closeMediaConnections(public_key);
+            siteMessage(`${public_key} disconnected from call`, 5000);
+            mod.room.peers = mod.room.peers.filter(key => public_key !== key);
+
 
 
         })
@@ -175,7 +168,7 @@ class VideoBox {
 
 
 
-    async handleConnectionStateChange(peer, connectionState, is_creator = false) {
+    handleConnectionStateChange(peer, connectionState) {
         let video_box = document.querySelector(`#stream${this.stream_id}`);
         console.log('video box handle connection state ', video_box, this);
         let connection_message = document.querySelector('#connection-message');
@@ -190,7 +183,7 @@ class VideoBox {
                     this.removeConnectionMessage();
                     this.renderStream({ muted: false });
                     this.stream_rendered = true;
-                    this.stopWaitTimer();
+                    this.stopWaitTimer()
                 }
                 break;
             case "disconnected":
@@ -199,50 +192,14 @@ class VideoBox {
                 this.stream_rendered = false;
                 video_box.firstElementChild.srcObject = this.stream
                 siteMessage(`connection with ${this.stream_id} unstable`, 5000);
-
-                let online = await this.checkOnlineStatus();
-                if(!online){
-                    this.updateConnectionMessage('please check internet connectivity');
-                }else {
-                    this.updateConnectionMessage('re-establishing connection');
-                }
-
-               
-
-                if (is_creator) {
-                    let interval = setInterval(async () => {
-                        let online = await this.checkOnlineStatus();
-                        if(!online){
-                            this.updateConnectionMessage('please check internet connectivity');
-                        }
-                        else {
-                            this.updateConnectionMessage('re-establishing connection');
-                            this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code, false);
-                            clearInterval(interval);
-                            let counter = 0;
-                            let interval_2 = setInterval(() => {  
-                                if (this.mod.peer_connections[peer].connectionState ==="connected" ) {
-                                    clearInterval(interval_2);
-                                } else if(this.mod.peer_connections[peer].connectionState !=="connected") {
-                                    if(counter > 0){
-                                        this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code, false);
-                                    }                  
-                                }
-                                counter++
-                            }, 20000)
-                        }
-                    }, 2000)
-                }
                 break;
             case "failed":
                 if (document.querySelector(`#stream${this.stream_id}`)) {
+                    console.log(`#stream${this.stream_id}`, "stream id");
                     this.stream = null
                     this.stream_rendered = false;
                     video_box.firstElementChild.srcObject = this.stream
-                    this.updateConnectionMessage('connection failed');
-                    if (is_creator) {
-                        console.log('beginning connection again');
-                    }
+                    this.updateConnectionMessage('connection failed, retrying connection');
                     siteMessage(`Connection with  ${this.stream_id} failed`, 5000);
                 }
                 break;
@@ -266,21 +223,24 @@ class VideoBox {
         this.waitTimer = setInterval(() => {
             this.waitSeconds += 1;
             if (this.waitSeconds === 10) {
-                this.handleConnectionStateChange(this.stream_id, 'ten_seconds')
+                this.handleConnectionStateChange(peer, 'ten_seconds')
             }
-            if (this.waitSeconds === 30) {
-                this.handleConnectionStateChange(this.stream_id, 'twenty_seconds')
+            if (this.waitSeconds === 20) {
+                this.handleConnectionStateChange(peer, 'twenty_seconds')
             }
             if (this.waitSeconds === 90) {
-                this.handleConnectionStateChange(this.stream_id, 'disconnected', is_creator);
+                this.handleConnectionStateChange(peer, 'two_minutes');
+                if (is_creator) {
+                    this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
+                }
             }
             if (this.waitSeconds === 150) {
                 if (is_creator) {
-                    // this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
+                    this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
                 }
             }
             if (this.waitSeconds === (180 * 6)) {
-                this.handleConnectionStateChange(this.stream_id, 'failed')
+                this.handleConnectionStateChange(peer, 'failed')
                 clearInterval(this.waitTimer)
             }
         }, 1000)
@@ -292,14 +252,6 @@ class VideoBox {
         }
     }
 
-    checkOnlineStatus = async () => {
-        try {
-            const online = await fetch("https://get.geojs.io/v1/ip/country.json?ip=8.8.8.8");
-            return online.status >= 200 && online.status < 300; // either true or false
-        } catch (err) {
-            return false; // definitely offline
-        }
-    };
 
 
 

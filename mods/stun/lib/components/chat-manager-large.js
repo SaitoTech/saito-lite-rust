@@ -8,7 +8,7 @@ const Effects = require('../overlays/effects');
 
 class VideoChatManager {
 
-    // peers = {};
+    peers = [];
     localStream;
     room_code;
     // my_pc = [];
@@ -17,6 +17,7 @@ class VideoChatManager {
     audioEnabled = true;
     isActive = false;
     central;
+
 
     constructor(app, mod) {
         this.app = app;
@@ -50,10 +51,10 @@ class VideoChatManager {
             // this.updateRoomLink()
         });
 
-        this.app.connection.on('change-connection-state-request', (peer, state, ui_type, call_type, room_code, is_creator = false) => {
+        this.app.connection.on('change-connection-state-request', (peer, state, ui_type, call_type, room_code) => {
             if (!this.isActive) return;
             if (ui_type !== "large" || this.room_code !== room_code) return
-            this.updateConnectionState(peer, state, is_creator)
+            this.updateConnectionState(peer, state)
             // this.updateRoomLink()
         })
 
@@ -98,7 +99,6 @@ class VideoChatManager {
         if (add_users) {
             add_users.addEventListener('click', (e) => {
                 this.updateRoomLink();
-
                 this.chatInvitationOverlay.render()
 
             })
@@ -136,8 +136,17 @@ class VideoChatManager {
     }
 
     updateRoomLink() {
-        let public_keys = []
-        public_keys.push(this.central);
+        let public_keys = [];
+        let keys = []
+        for (let i = 0; i < this.peers.length; i++) {
+            keys.push(this.peers[i]);
+        }
+
+        if (keys.length === 0) {
+            public_keys.push(this.central);
+        } else if (keys > 0) {
+            public_keys.push(keys[0]);
+        }
         let obj = {
             room_id: this.room_code,
             public_keys,
@@ -177,13 +186,13 @@ class VideoChatManager {
         let stun_mod = this.app.modules.returnModule("Stun");
         this.isActive = false;
         stun_mod.renderInto(this.mod.renderedInto);
-        
+
     }
 
     disconnect() {
         let stun_mod = this.app.modules.returnModule("Stun");
         console.log("peer connections ", stun_mod.peer_connections);
-        let kind = this.mod.central ? 'all': 'one'
+        let kind = this.mod.central ? 'all' : 'one'
         try {
             for (let i in this.mod.peer_connections) {
                 this.mod.peer_connections[i].dc.send(JSON.stringify({ event: 'disconnect', kind }))
@@ -198,7 +207,7 @@ class VideoChatManager {
             console.log(track);
             console.log('stopping track');
         })
-        for(let i in this.video_boxes){
+        for (let i in this.video_boxes) {
             this.video_boxes[i].video_box.stopWaitTimer();
         }
         this.video_boxes = {}
@@ -214,6 +223,8 @@ class VideoChatManager {
         this.createVideoBox(peer);
         this.video_boxes[peer].video_box.addStream(remoteStream);
         this.video_boxes[peer].peer_connection = pc;
+        this.peers.push(peer);
+        console.log('adding remote stream to ', this.video_boxes[peer])
     }
 
     renderLocalStream(localStream) {
@@ -242,17 +253,17 @@ class VideoChatManager {
     }
 
 
-    updateConnectionState(peer, state, is_creator) {
-        this.createVideoBox(peer);
-        this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state, is_creator);
+    updateConnectionState(peer, state) {
+        this.createVideoBox(peer)
+        this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state);
         switch (state) {
-            case "connecting":    
+            case "connecting":
                 break;
             case "disconnected":
-                // this.stopTimer();
-                // this.updateImages();
-                // this.mod.closeMediaConnections(peer);
-                // console.log("video boxes: after ", this.video_boxes);
+                this.stopTimer();
+                this.updateImages();
+                this.mod.closeMediaConnections(peer)
+                console.log("video boxes: after ", this.video_boxes);
                 break;
             case "connected":
                 this.startTimer();
@@ -260,10 +271,11 @@ class VideoChatManager {
                 break;
 
             case "failed":
-                // this.stopTimer();
-                // this.updateImages();
-                // this.mod.closeMediaConnections(peer)
-                // console.log("video boxes: after ", this.video_boxes);
+                this.stopTimer();
+                this.updateImages();
+                this.mod.closeMediaConnections(peer)
+                console.log("video boxes: after ", this.video_boxes);
+
                 break;
 
             default:
@@ -310,8 +322,8 @@ class VideoChatManager {
 
             }
 
-           
-           
+
+
 
             this.videoEnabled = false
             document.querySelector('.video_control').classList.remove('fa-video')
@@ -375,7 +387,7 @@ class VideoChatManager {
         this.timer_interval = null
     }
 
-   
+
 
     updateImages() {
         let images = ``;
