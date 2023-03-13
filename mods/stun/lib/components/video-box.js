@@ -187,7 +187,7 @@ class VideoBox {
                                     stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
                                 }
                             }
-                            this.mod.saveCommand(command);
+
                             let my_pub_key = this.app.wallet.returnPublicKey();
                             this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
 
@@ -218,11 +218,11 @@ class VideoBox {
                                                         stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
                                                     }
                                                 }
+
                                                 this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
                                                 console.log('sending command again');
                                             }
                                             if (count === 20) {
-
                                                 this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
                                                 clearInterval(checkPingInterval);
                                                 stun_mod.deleteCommand(command);
@@ -258,7 +258,7 @@ class VideoBox {
                                     // stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
                                 }
                             }
-                            this.mod.saveCommand(command);
+
                             let my_pub_key = this.app.wallet.returnPublicKey();
                             this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
 
@@ -354,7 +354,7 @@ class VideoBox {
                                     stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
                                 }
                             }
-                            this.mod.saveCommand(command);
+
                             let my_pub_key = this.app.wallet.returnPublicKey();
                             this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
                             let count = 0;
@@ -410,7 +410,7 @@ class VideoBox {
                                     // stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
                                 }
                             }
-                            this.mod.saveCommand(command);
+
                             let my_pub_key = this.app.wallet.returnPublicKey();
                             this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
 

@@ -363,6 +363,7 @@ class Stun extends ModTemplate {
     }
 
     async sendCommandToPeerTransaction(recipient, sender, command) {
+        this.mod.saveCommand(command);
         let [tx, data] = this.createSendCommandToPeerTransaction(recipient, sender, command);
         console.log('sending command ', data)
         this.app.connection.emit('relay-send-message', data);
@@ -376,15 +377,11 @@ class Stun extends ModTemplate {
         const command = tx.msg.data.command
         const recipient = tx.msg.data.recipient;
         const sender = tx.msg.data.sender;
-        console.log(tx, 'receiving command', command, 'room code', this.room_code);
         let reply_sender = recipient;
         let reply_recipient = sender;
         let reply_command;
-        console.log(tx, 'receiving command', command, 'room code', this.room_code);
-
 
         switch (command.name) {
-
             case "PING":
                 console.log('pinging, to reply');
                 let status = "success";
