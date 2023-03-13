@@ -35,14 +35,18 @@ class ChatManager {
     });
 
     app.connection.on("chat-manager-and-popup-render-request", (group) => {
+console.log("chat-manager-and-popup-render-request");
       if (this.render_manager_to_screen) {
 	group.unread = 0;
         this.render();
-        app.connection.emit("chat-popup-render-request", (group));
+	if (!this.mod.mute) {
+          app.connection.emit("chat-popup-render-request", (group));
+        }
       }
     });
 
     app.connection.on("chat-manager-request-no-interrupts", () => {
+console.log("chat-manager-and-request-no-interrupts...");
       this.render_popups_to_screen = 0;
     });
 
@@ -50,6 +54,7 @@ class ChatManager {
     // handle requests to re-render chat popups
     //
     app.connection.on("chat-popup-render-request", (group = null) => {
+console.log("chat-popup render request...");
 
       //
       // mobile devices should not force open chat for us
@@ -76,6 +81,8 @@ class ChatManager {
     });
 
     app.connection.on("open-chat-with", (data = null) => {
+
+console.log("open chat with...");
 
       this.render_popups_to_screen = 1;
 

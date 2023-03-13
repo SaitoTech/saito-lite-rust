@@ -1,3 +1,9 @@
+.redsquare-appspace-profile-follow-btn {
+  position: relative;
+  float: right;
+  margin-top: -0.75rem;
+}
+
 .redsquare-page-header-title {
   color: var(--saito-red);
   font-size: 2.5rem;
@@ -25,10 +31,11 @@
   grid-template-columns: max-content 1fr;
   gap: 1rem;
   padding: 2rem;
+}
+.redsquare-appspace-profile-container {
   border: 1px solid var(--saito-border-color);
   border-radius: 0.5rem;
 }
-
 .redsquare-actions-buttons {
   position: relative;
   display: flex;

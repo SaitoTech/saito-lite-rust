@@ -35,7 +35,14 @@ class Encrypt extends ModTemplate {
     this.encrypt = this.loadEncrypt(app);
 
     this.description = "A Diffie-Hellman encryption tool for Saito";
-    this.categories = "Crpyto Utilities";
+    this.categories = "Crypto Utilities";
+
+
+    app.connection.on("encrypt-key-exchange", (publickey) => {
+console.log("initiating key exchange...");
+      this.initiate_key_exchange(publickey, 0);
+    });
+
     return this;
   }
 
@@ -72,13 +79,7 @@ class Encrypt extends ModTemplate {
     let message = newtx.returnMessage();
     let encrypt_self = this;
                 
-
-
     if (message.request === "diffie hellman key exchange") {
-
-console.log("!!!!");
-console.log("!!!! dhke !!!!");
-console.log("!!!!");
 
       let tx = new saito.default.transaction(message.data.tx);
 
@@ -134,6 +135,7 @@ console.log("!!!!");
       let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
       let alice = app.crypto.createDiffieHellman(alice_publickey, alice_privatekey);
       let alice_secret = app.crypto.createDiffieHellmanSecret(alice, bob_publickey);
+
       app.keychain.updateCryptoByPublicKey(sender, alice_publickey.toString("hex"), alice_privatekey.toString("hex"), alice_secret.toString("hex"));
 
       //

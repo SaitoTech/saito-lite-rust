@@ -90,6 +90,10 @@ class Settings extends ModTemplate {
           icon: "fa-solid fa-radiation",
 	  rank: 120 ,
           callback: function (app, id) {
+	    app.keychain.keys = [];
+	    app.keychain.groups = [];
+	    app.keychain.saveKeys();
+	    app.keychain.saveGroups();
             app.wallet.resetWallet();
           }
         },

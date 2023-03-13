@@ -18,6 +18,7 @@ class NwasmLibrary {
     if (obj) { obj.style.display = "none"; }
   }
 
+
   renderItemInLibrary(item, publickey) {
 
     let status = "available";

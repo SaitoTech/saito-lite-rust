@@ -6,8 +6,6 @@ module.exports = (app, mod, tweet) => {
   let notice = "";
   if (tweet.notice != "") { notice = tweet.notice; }
 
-console.log("notice is: " + notice);
-
   let publickey = "";
   try { 
     if (tweet.tx.transaction.from[0].add) { publickey = tweet.tx.transaction.from[0].add; }
@@ -28,11 +26,9 @@ console.log("notice is: " + notice);
   let num_replies =  optional.num_replies ||  0;
   let num_retweets = optional.num_retweets || 0;
   let parent_id = optional.parent_id || "";
-  let dt = app.browser.formatDate(tweet.tx.transaction.ts);
   let show_controls = tweet.show_controls;
   let sig_class = "tweet-"+tweet.tx.transaction.sig;
 
-  let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
   let controls = `
               <div class="tweet-controls">
                 <div class="tweet-tool tweet-tool-comment">
@@ -62,7 +58,7 @@ console.log("notice is: " + notice);
             <div class="tweet-main">
               <div class="tweet-text">${app.browser.sanitize(text)}</div>
   `;
-  if (tweet.youtube_id != null) {
+  if (tweet.youtube_id != null && tweet.youtube_id != "null") {
     html += `
       <iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>
     `;

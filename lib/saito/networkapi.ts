@@ -15,6 +15,7 @@ export enum MessageType {
   Result,
   Error,
   ApplicationTransaction,
+  Keylist,
 }
 
 /**

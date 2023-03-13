@@ -777,6 +777,25 @@ class Network {
         break;
       }
 
+
+      case MessageType.Keylist: {
+
+        const buffer = Buffer.from(message.message_data, "utf8");
+
+        try {
+          peer.peer.keylist = JSON.parse(buffer.toString("utf8"));
+console.log(" - ");
+console.log(" - ");
+console.log(" - ");
+console.log("KEYLIST UPDATE: " + JSON.stringify(peer.peer.keylist));
+
+        } catch (err) {
+          console.error("ERROR parsing peer services list or setting services in peer");
+        }
+
+        break;
+      }
+
       case MessageType.GhostChain: {
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
@@ -1227,6 +1246,18 @@ class Network {
     }
   }
 
+
+  //
+  // update peers with our list of watched publickeys
+  //
+  propagateKeylist() {
+    let keys = this.app.keychain.returnWatchedPublicKeys();
+    this.peers.forEach((peer) => {
+      this.sendRequest("SKEYLIST", Buffer.from(JSON.stringify(keys)), peer);
+    });
+  }
+
+
   //
   // propagate transaction
   //
@@ -1298,6 +1329,9 @@ class Network {
       fees = fees / BigInt(2);
     }
     this.peers.forEach((peer) => {
+      //
+      // TODO - decision should be made on client preferences, not connection protocol
+      //
       if (peer.uses_stun) {
         return;
       }

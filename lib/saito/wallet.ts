@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.779,
+    version: 4.795,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -422,6 +422,7 @@ console.log("---------------------");
         /////////////
         if (this.app.options.wallet.version < this.wallet.version) {
           if (this.app.BROWSER == 1) {
+
             const tmpprivkey = this.app.options.wallet.privatekey;
             const tmppubkey = this.app.options.wallet.publickey;
 
@@ -786,10 +787,12 @@ console.log("---------------------");
       this.app.blockchain.resetBlockchain();
     }
 
-    // keychain
-    if (this.app.options.keys != undefined) {
-      this.app.options.keys = [];
-    }
+    // 
+    // keep keychain info now
+    // 
+    //if (this.app.options.keys != undefined) {
+    //  this.app.options.keys = [];
+    //}
 
     this.wallet.inputs = [];
     this.wallet.outputs = [];

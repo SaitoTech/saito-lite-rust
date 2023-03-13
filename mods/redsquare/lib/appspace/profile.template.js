@@ -1,16 +1,39 @@
 module.exports = (app, publickey="") => {
 
    let key = app.keychain.returnKey(publickey);
-   if (!key) { key = {}; }
+
+console.log(">");
+console.log("KEY RETURNED: " + JSON.stringify(key));
+console.log(">");
+
+   let is_this_me = false;
+   if (publickey === app.wallet.returnPublicKey()) { is_this_me = true; }
+   let follow_text = "follow";
+
+   if (!key) {
+     key = {};
+   } else {
+     if (key.watched == true) {
+       follow_text = "unfollow";
+     }
+   }
 
    let email  = key.email || "";
    let identifier = key.identifier || "";
    let telegram = key.telegram || "";
-   
+
+
    let html = '';
    html += `
       <div class="redsquare-profile">
         <div class="redsquare-appspace-header">
+   `;
+   if (!is_this_me) {
+     html += `
+	  <div class="redsquare-appspace-profile-follow-btn saito-button-secondary" data-id="${publickey}">${follow_text}</div>
+     `;
+   }
+   html += `
           <div class="redsquare-actions-buttons">
             <div class="redsquare-actions-buttons-icon"></div>
             <div id="redsquare-page-header-title" class="redsquare-page-header-title"><i class="redsquare-redsquare fa-solid fa-square"></i> PROFILE</div>
@@ -18,8 +41,8 @@ module.exports = (app, publickey="") => {
           </div>
         </div>
         <div class="redsquare-appspace-body">
-
-          <div class="redsquare-appspace-profile">
+	  <div class="redsquare-appspace-profile-container">
+            <div class="redsquare-appspace-profile">
 	`;
 	if (email) {
 	  html += `	
@@ -42,10 +65,10 @@ module.exports = (app, publickey="") => {
 
 	html += `
           </div>
-
+	  </div>
 	  <div class="redsquare-profile-tweets">
-      <div class="saito-loader temp"></div>
-    </div>
+            <div class="saito-loader temp"></div>
+          </div>
 
         </div>
       </div>

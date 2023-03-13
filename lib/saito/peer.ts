@@ -254,6 +254,11 @@ class Peer {
       this.app.networkApi.send(socket, MessageType.Services, data);
       return;
     }
+    // send keylist
+    if (message === "SKEYLIST") {
+      this.app.networkApi.send(socket, MessageType.Keylist, data);
+      return;
+    }
     if (message === "PINGPING") {
       this.app.networkApi.send(socket, MessageType.Ping, data);
       return;

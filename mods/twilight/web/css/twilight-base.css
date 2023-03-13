@@ -375,18 +375,18 @@ body {
 
 .gameboard {
   position: relative;
-  /*background-image: url("/twilight/img/TS Map-11.jpg");*/
+  /*background-image: url('/twilight/img/TS Map-11.jpg');*/
   /* width: 5100px; */
   /* height: 3300px; */
-  background-image: url("/twilight/img/TS Map-11-medium.jpg");
-  /*background-image: url("/twilight/img/TS Map-11-small.jpg");*/
+  background-image: url('/twilight/img/TS Map-11-medium.jpg');
+  /*background-image: url('/mods/twilight/img/TS Map-11-small.jpg');*/
   background-size: cover;
   width: 2550px;
   height: 1650px;
 
 
   /*   3D Perspective
-  -webkit-transform: perspective(200px) rotateX(5deg);
+  -webkit-transform: perspective(200px) rotateX(5deg");
   -moz-transform: perspective(200px) rotateX(5deg);
   -ms-transform: perspective(200px) rotateX(5deg);
   -o-transform: perspective(200px) rotateX(5deg);
@@ -570,7 +570,7 @@ body {
 
 
 .hud-card {
-  background-image: url(/twilight/img/Base.svg);
+  background-image: url("/twilight/img/Base.svg");
   background-size: contain;
   background-repeat: no-repeat;
   /*max-width: 120px;*/

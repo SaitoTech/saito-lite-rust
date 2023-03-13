@@ -9,6 +9,10 @@
   white-space: nowrap;
 }
 
+.chat-manager .saito-userline .img-prev {
+  max-width: 100%;
+}
+
 .chat-manager .saito-user {
   column-gap: 2rem;
   margin-bottom: 0.5rem;
@@ -29,6 +33,10 @@
   background: var(--saito-arcade-background);
   color: var(--saito-font-color);
   max-height: calc(99vh - var(--saito-header-height));
+}
+
+.chat-container img.img-prev {
+  width: 100%;
 }
 
 .chat-header {
