@@ -45,12 +45,12 @@ class VideoChatManager {
             this.addRemoteStream(peer, remoteStream, pc)
             // this.updateRoomLink()
         });
-        this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type) => {
-            if (!this.isActive) return;
-            if (ui_type !== "large") return
-            this.renderRemoteStreamPlaceholder(peer);
-            // this.updateRoomLink()
-        });
+        // this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type) => {
+        //     if (!this.isActive) return;
+        //     if (ui_type !== "large") return
+        //     this.renderRemoteStreamPlaceholder(peer);
+        //     // this.updateRoomLink()
+        // });
 
         this.app.connection.on('change-connection-state-request', (peer, state, ui_type, call_type, room_code) => {
             if (!this.isActive) return;
@@ -70,11 +70,11 @@ class VideoChatManager {
 
             let my_public_key = this.app.wallet.returnPublicKey()
             if (my_public_key === offer_creator) {
-                this.renderRemoteStreamPlaceholder(offer_recipient, "attempting to connect");
                 this.is_creator = true;
+                this.renderRemoteStreamPlaceholder(offer_recipient, "attempting to connect");
             } else {
-                this.renderRemoteStreamPlaceholder(offer_creator, "attempting to connect");
                 this.is_creator = false
+                this.renderRemoteStreamPlaceholder(offer_creator, "attempting to connect");
             }
 
         })
@@ -270,6 +270,7 @@ class VideoChatManager {
     renderRemoteStreamPlaceholder(peer, placeholder_info) {
         this.createVideoBox(peer, placeholder_info);
         this.video_boxes[peer].video_box.render(null, placeholder_info);
+        console.log('is creator ', this.is_creator)
         this.video_boxes[peer].video_box.startWaitTimer(this.is_creator);
     }
 
