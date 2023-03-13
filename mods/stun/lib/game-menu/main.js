@@ -5,8 +5,6 @@ class StunxGameMenu {
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
-
-
     app.connection.on('stun-join-conference-room-with-link', (room_obj) => {
       console.log('app', this.app, 'mod', this.mod)
       this.mod.createRoom();
@@ -21,21 +19,53 @@ class StunxGameMenu {
 
     console.log('peer ', peer, 'room_code', room_code)
 
-
     const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    mod.setLocalStream(localStream);
-    mod.room_code = room_code;
+    this.mod.setLocalStream(localStream);
+    this.mod.room_code = room_code;
 
     {
-      // filter my public key
       this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code, peer);
       this.app.connection.emit('stun-remove-loader');
       this.app.connection.emit('render-local-stream-request', localStream, 'large');
       this.app.connection.emit('remove-overlay-request')
 
-
+      // this.mod.createMediaChannelConnectionWithPeers([peer], 'large', "Video", room_code);
       // ping peer to know if it's available
-      mod.createMediaChannelConnectionWithPeers([peer], 'large', "Video", room_code);
+      let command = {
+        name: 'PING',
+        id: this.mod.commands.length,
+        status: null,
+        room_code: mod.room_code,
+        callback: () => {
+          this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.mod.room_code, false);
+        }
+      }
+      this.mod.saveCommand(command);
+      let my_pub_key = this.app.wallet.returnPublicKey();
+      this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+
+      const checkPingInterval = setInterval(() => {
+        console.log('checking for ping back from peer');
+        this.mod.commands.forEach(c => {
+          if (c.id === command.id) {
+            if (command.status === "success") {
+              command.callback();
+              console.log('got success ping back from peer')
+              clearInterval(checkPingInterval);
+
+            } else if (command.status === "failed") {
+              console.log('got failed ping back from peer')
+              salert("invite link expired");
+              clearInterval(checkPingInterval);
+            } else {
+              salert("invite link expired");
+              clearInterval(checkPingInterval);
+            }
+          }
+        })
+      }, 2000)
+
+
 
 
     }

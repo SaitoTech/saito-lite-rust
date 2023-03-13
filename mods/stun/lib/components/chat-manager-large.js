@@ -17,6 +17,7 @@ class VideoChatManager {
     audioEnabled = true;
     isActive = false;
     central;
+    is_creator;
 
 
     constructor(app, mod) {
@@ -69,15 +70,22 @@ class VideoChatManager {
 
             let my_public_key = this.app.wallet.returnPublicKey()
             if (my_public_key === offer_creator) {
-                this.renderRemoteStreamPlaceholder(offer_recipient, "attempting to connect", true);
+                this.renderRemoteStreamPlaceholder(offer_recipient, "attempting to connect");
+                this.is_creator = true;
             } else {
                 this.renderRemoteStreamPlaceholder(offer_creator, "attempting to connect");
+                this.is_creator = false
             }
 
         })
 
         this.app.connection.on('stun-disconnect', () => {
-            this.disconnect()
+            // disconnect peer from the list of room peers, clean up after the peer
+            this.disconnect();
+        })
+        this.app.connection.on('disconnect', (kind, peer) => {
+            // disconnect peer from the list of room peers, clean up after the peer
+            this.disconnectOtherPeer(peer)
         })
     }
 
@@ -142,9 +150,8 @@ class VideoChatManager {
         if (this.peers.length === 0) {
             pub_key = this.app.wallet.returnPublicKey();
         } else if (this.peers.length > 0) {
-            pub_key = this.peers[0];
+            pub_key = this.peers[this.peers.length - 1];
         }
-
         public_keys.push(pub_key);
         let obj = {
             room_id: this.room_code,
@@ -176,7 +183,7 @@ class VideoChatManager {
     }
 
     removePeer(peer) {
-        this.peers = this.peers.filter(p => peer === p)
+        this.peers = this.peers.filter(p => peer !== p)
     }
     show(app, mod) {
         if (!document.querySelector('.stunx-chatbox')) {
@@ -210,10 +217,9 @@ class VideoChatManager {
                 this.mod.peer_connections[i].dc.send(JSON.stringify({ event: 'disconnect', kind }))
             }
         } catch (error) {
-
         }
-        stun_mod.closeMediaConnections();
 
+        stun_mod.closeMediaConnections();
         this.localStream.getTracks().forEach(track => {
             track.stop();
             console.log(track);
@@ -229,6 +235,12 @@ class VideoChatManager {
         this.room_code = null;
     }
 
+    disconnectOtherPeer(peer) {
+        this.removePeer(peer);
+        this.mod.closeMediaConnections(peer);
+        console.log(this.peers);
+    }
+
 
     addRemoteStream(peer, remoteStream, pc) {
         this.video_boxes[peer].video_box.render(remoteStream)
@@ -236,6 +248,7 @@ class VideoChatManager {
         if (!this.peers.includes(peer)) {
             this.peers.push(peer);
         }
+        console.log(this.peers, 'peers ')
 
         // console.log(this.mod.central, "is mod central or not")
         let room_link = this.createRoomLink();
@@ -254,10 +267,10 @@ class VideoChatManager {
 
 
 
-    renderRemoteStreamPlaceholder(peer, placeholder_info, isCreator = false) {
+    renderRemoteStreamPlaceholder(peer, placeholder_info) {
         this.createVideoBox(peer, placeholder_info);
         this.video_boxes[peer].video_box.render(null, placeholder_info);
-        this.video_boxes[peer].video_box.startWaitTimer(isCreator);
+        this.video_boxes[peer].video_box.startWaitTimer(this.is_creator);
     }
 
     createVideoBox(peer) {
@@ -270,15 +283,14 @@ class VideoChatManager {
 
     updateConnectionState(peer, state) {
         this.createVideoBox(peer)
-        this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state);
+        this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state, this.is_creator);
         switch (state) {
             case "connecting":
                 break;
             case "disconnected":
-                this.stopTimer();
+                // this.stopTimer();
                 this.updateImages();
-                this.mod.closeMediaConnections(peer);
-                this.removePeer(peer);
+                this.disconnectOtherPeer(peer)
                 console.log("video boxes: after ", this.video_boxes);
                 break;
             case "connected":
@@ -287,10 +299,9 @@ class VideoChatManager {
                 break;
 
             case "failed":
-                this.stopTimer();
+                // this.stopTimer();
                 this.updateImages();
-                this.mod.closeMediaConnections(peer);
-                this.removePeer(peer);
+                this.disconnectOtherPeer(peer)
                 console.log("video boxes: after ", this.video_boxes);
 
                 break;
@@ -338,7 +349,6 @@ class VideoChatManager {
             } catch (error) {
 
             }
-
 
 
 
@@ -409,7 +419,6 @@ class VideoChatManager {
     updateImages() {
         let images = ``;
         let count = 0
-        console.log('video boxes ', this.video_boxes)
         for (let i in this.video_boxes) {
             if (i === "local") {
                 let publickey = this.app.wallet.returnPublicKey()

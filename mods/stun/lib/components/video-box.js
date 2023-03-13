@@ -50,15 +50,8 @@ class VideoBox {
             }
         })
 
-        app.connection.on('disconnect', (kind, public_key) => {
-            if (public_key !== this.stream_id) return;
-            document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
-            mod.closeMediaConnections(public_key);
-            siteMessage(`${public_key} disconnected from call`, 5000);
-            mod.room.peers = mod.room.peers.filter(key => public_key !== key);
-
-
-
+        app.connection.on('disconnect', (kind, peer) => {
+            this.disconnectFromPeer(peer)
         })
     }
 
@@ -145,9 +138,10 @@ class VideoBox {
 
 
 
-    handleConnectionStateChange(peer, connectionState) {
+    async handleConnectionStateChange(peer, connectionState, is_creator = false) {
+
         let video_box = document.querySelector(`#stream${this.stream_id}`);
-        console.log('video box handle connection state ', video_box, this);
+        console.log('video box handle connection state ', is_creator);
         let connection_message = document.querySelector('#connection-message');
         if (!video_box) return;
         switch (connectionState) {
@@ -170,7 +164,59 @@ class VideoBox {
                 this.stream = null
                 this.stream_rendered = false;
                 video_box.firstElementChild.srcObject = this.stream
+
                 siteMessage(`connection with ${this.stream_id} unstable`, 5000);
+                if (is_creator) {
+                    const stun_mod = this.app.modules.returnModule('Stun');
+                    let checkOnlineInterval = setInterval(async () => {
+                        let online = await this.checkOnlineStatus();
+                        if (!online) {
+                            this.updateConnectionMessage('please check internet connectivity');
+                        }
+                        else {
+                            clearInterval(checkOnlineInterval);
+                            this.updateConnectionMessage('re-establishing connection');
+                            // check if other peer is online, then send a connection.
+                            let command = {
+                                name: 'PING',
+                                id: stun_mod.commands.length + 5,
+                                status: null,
+                                room_code: this.room_code,
+                                callback: () => {
+                                    const stun_mod = this.app.modules.returnModule('Stun');
+                                    stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
+                                }
+                            }
+                            this.mod.saveCommand(command);
+                            let my_pub_key = this.app.wallet.returnPublicKey();
+                            this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+                            const checkPingInterval = setInterval(() => {
+                                console.log('checking for ping back from peer')
+                                stun_mod.commands.forEach(c => {
+                                    if (c.id === command.id) {
+                                        if (command.status === "success") {
+                                            command.callback();
+                                            clearInterval(checkPingInterval)
+                                        } else if (command.status === "failed") {
+                                            this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
+                                            clearInterval(checkPingInterval)
+                                        } else {
+                                            this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
+                                            clearInterval(checkPingInterval)
+                                        }
+                                    }
+                                })
+                            }, 2000)
+                        }
+                    }, 2000)
+                } else {
+                    let online = await this.checkOnlineStatus();
+                    if (!online) {
+                        this.updateConnectionMessage('please check internet connectivity');
+                    } else {
+                        this.updateConnectionMessage('re-establishing connection');
+                    }
+                }
                 break;
             case "failed":
                 if (document.querySelector(`#stream${this.stream_id}`)) {
@@ -178,8 +224,11 @@ class VideoBox {
                     this.stream = null
                     this.stream_rendered = false;
                     video_box.firstElementChild.srcObject = this.stream
-                    this.updateConnectionMessage('connection failed, retrying connection');
-                    siteMessage(`Connection with  ${this.stream_id} failed`, 5000);
+                    if (is_creator) {
+                        console.log('beginning connection again');
+                    }
+                    this.updateConnectionMessage('connection failed');
+                    siteMessage(`connection with  ${this.stream_id} failed`, 5000);
                 }
                 break;
             case "ten_seconds":
@@ -202,13 +251,13 @@ class VideoBox {
         this.waitTimer = setInterval(() => {
             this.waitSeconds += 1;
             if (this.waitSeconds === 10) {
-                this.handleConnectionStateChange(peer, 'ten_seconds')
+                this.handleConnectionStateChange(peer, 'ten_seconds', is_creator)
             }
             if (this.waitSeconds === 20) {
-                this.handleConnectionStateChange(peer, 'twenty_seconds')
+                this.handleConnectionStateChange(peer, 'twenty_seconds', is_creator)
             }
             if (this.waitSeconds === 90) {
-                this.handleConnectionStateChange(peer, 'two_minutes');
+                this.handleConnectionStateChange(peer, 'two_minutes', is_creator);
                 if (is_creator) {
                     this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
                 }
@@ -219,7 +268,7 @@ class VideoBox {
                 }
             }
             if (this.waitSeconds === (180 * 6)) {
-                this.handleConnectionStateChange(peer, 'failed')
+                this.handleConnectionStateChange(peer, 'failed', is_creator)
                 clearInterval(this.waitTimer)
             }
         }, 1000)
@@ -241,6 +290,23 @@ class VideoBox {
     streamExists() {
         return this.stream;
     }
+
+    disconnectFromPeer(peer, message = "disconnected from call") {
+        if (peer !== this.stream_id) return;
+        document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
+        siteMessage(`${peer} ${message}`, 5000);
+
+    }
+
+    checkOnlineStatus = async () => {
+        try {
+            const online = await fetch("https://get.geojs.io/v1/ip/country.json?ip=8.8.8.8");
+            return online.status >= 200 && online.status < 300; // either true or false
+        } catch (err) {
+            return false; // definitely offline
+        }
+    };
+
 
 
 }

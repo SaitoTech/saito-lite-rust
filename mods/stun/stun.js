@@ -45,6 +45,7 @@ class Stun extends ModTemplate {
         this.stunGameMenu = new StunxGameMenu(app, this);
         this.current_step = 0;
         this.gotten_keys = false
+        this.commands = []
         // this.receiving_from = {}
 
 
@@ -246,21 +247,31 @@ class Stun extends ModTemplate {
 
         if (conf === 0) {
             if (txmsg.module === 'Stun') {
-                if (txmsg.request === "stun media channel answer") {
-                    this.receiveMediaChannelAnswerTransaction(app, tx, conf, blk)
-                }
-                if (txmsg.request === "stun data channel answer") {
-                    this.receiveDataChannelAnswerTransaction(app, tx, conf, blk)
-                }
                 if (txmsg.request === "stun media channel offer") {
-                    this.receiveMediaChannelOfferTransaction(app, tx, conf, blk)
+                    this.receiveMediaChannelOfferTransaction(app, tx)
                 }
                 if (txmsg.request === "stun data channel offer") {
-                    this.receiveDataChannelOfferTransaction(app, tx, conf, blk)
+                    this.receiveDataChannelOfferTransaction(app, tx)
+                }
+                if (txmsg.request === "stun media channel answer") {
+                    this.receiveMediaChannelAnswerTransaction(app, tx)
+                }
+                if (txmsg.request === "stun data channel answer") {
+                    this.receiveDataChannelAnswerTransaction(app, tx)
+                }
+                if (txmsg.request === "stun notifcation transmission request") {
+                    this.receiveMediaChannelNotificationTransaction(app, tx)
+                }
+                if (txmsg.request === "stun key update") {
+                    this.receiveKeyUpdateTransaction(app, tx)
                 }
                 if (txmsg.request === "receive room code") {
-                    this.receiveRoomCodeTransaction(app, tx, conf, blk)
+                    this.receiveRoomCodeTransaction(app, tx)
                 }
+                if (txmsg.request === "stun command transmission request") {
+                    this.receiveCommandToPeerTransaction(app, tx, conf, blk)
+                }
+
             }
         }
     }
@@ -292,7 +303,9 @@ class Stun extends ModTemplate {
         if (txmsg.request === "receive room code") {
             this.receiveRoomCodeTransaction(app, tx)
         }
-
+        if (txmsg.request === "stun command transmission request") {
+            this.receiveCommandToPeerTransaction(app, tx)
+        }
 
         super.handlePeerTransaction(app, tx, peer, mycallback)
 
@@ -312,24 +325,98 @@ class Stun extends ModTemplate {
 
 
 
-    async sendUpdateRoomTransaction(room_code, data) {
-        const { peers_in_room, peer_count, is_max_capacity } = data;
-        let newtx = this.app.wallet.createUnsignedTransaction();
-        // get recipient -- server in this case
-        let server = this.app.network.peers[0];
+    // async sendUpdateRoomTransaction(room_code, data) {
+    //     const { peers_in_room, peer_count, is_max_capacity } = data;
+    //     let newtx = this.app.wallet.createUnsignedTransaction();
+    //     // get recipient -- server in this case
+    //     let server = this.app.network.peers[0];
 
-        let data_ = {
-            room_code,
-            peers_in_room,
-            peer_count,
-            is_max_capacity
-        };
+    //     let data_ = {
+    //         room_code,
+    //         peers_in_room,
+    //         peer_count,
+    //         is_max_capacity
+    //     };
 
-        server.sendRequestAsTransaction('update room', data_);
+    //     server.sendRequestAsTransaction('update room', data_);
+    // }
+
+
+
+
+    createSendCommandToPeerTransaction(recipient, sender, command) {
+        let _data = {
+            sender,
+            recipient,
+            command
+        }
+        let request = "stun command transmission request"
+
+        // offchain data
+        let data = {
+            recipient: [recipient],
+            request,
+            data: _data
+        }
+
+        return [null, data];
     }
 
+    async sendCommandToPeerTransaction(recipient, sender, command) {
+        let [tx, data] = this.createSendCommandToPeerTransaction(recipient, sender, command);
+        console.log('sending command ', data)
+        this.app.connection.emit('relay-send-message', data);
+    }
+
+    async receiveCommandToPeerTransaction(app, tx, conf, blk) {
+        if (app.BROWSER !== 1) return;
+        let stun_self = app.modules.returnModule("Stun");
+        console.log("getting stun command");
+        // if (!stun_self.ChatManagerLarge.isActive) return;
+        const command = tx.msg.data.command
+        const recipient = tx.msg.data.recipient;
+        const sender = tx.msg.data.sender;
+        console.log(tx, 'receiving command', command, 'room code', this.room_code);
+        let reply_sender = recipient;
+        let reply_recipient = sender;
+        let reply_command;
+        console.log(tx, 'receiving command', command, 'room code', this.room_code);
 
 
+        switch (command.name) {
+
+            case "PING":
+                console.log('pinging, to reply');
+                let status = "success";
+                if (!stun_self.ChatManagerLarge.isActive || command.room_code !== stun_self.ChatManagerLarge.room_code) {
+                    status = "failed";
+                }
+                reply_command = { name: "PING_REPLY", id: command.id, status }
+                stun_self.sendCommandToPeerTransaction(reply_recipient, reply_sender, reply_command);
+                break;
+
+            case "PING_REPLY":
+                stun_self.sendCommandToPeerTransaction(reply_recipient, reply_sender, reply_command);
+                stun_self.commands.forEach(c => {
+                    if (c.id === command.id) {
+                        c.status = command.status
+                    }
+                })
+                console.log('PING REPLY', stun_self.commands);
+                break;
+            default:
+                break;
+        }
+
+
+
+
+        let my_pubkey = app.wallet.returnPublicKey();
+
+
+
+
+    }
 
 
 
@@ -358,34 +445,12 @@ class Stun extends ModTemplate {
                     };
 
                     pc.addEventListener('connectionstatechange', e => {
-                        console.log(pc.connectonState, " with ", publicKey);
-
+                        console.log(pc.connectionState, " with ", publicKey);
                         if (pc.connectionState !== this.peer_connections[publicKey].connectionState) {
                             console.log('peer objects not equal')
                             return;
                         }
-
-                        switch (pc.connectionState) {
-                            case "connecting":
-                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
-                                break;
-                            case "connected":
-
-                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
-                                break;
-                            case "disconnected":
-                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
-
-                                break;
-                            case "failed":
-                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
-                                this.createMediaChannelConnectionWithPeers([publicKey], ui_type, call_type, room_code);
-
-                                break;
-                            default:
-                                ""
-                                break;
-                        }
+                        this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                     })
 
                     // add data channels 
@@ -395,7 +460,9 @@ class Stun extends ModTemplate {
                         console.log("Received message from :", publicKey, ' ', event.data);
                         let data = JSON.parse(event.data);
                         this.app.connection.emit(data.event, data.kind, publicKey);
-
+                        if (data.event === "disconnect") {
+                            // remove peer and disconnect media peer
+                        }
                     };
                     pc.dc.onopen = (e) => {
                         console.log('data channel connection opened with ', publicKey);
@@ -945,7 +1012,6 @@ class Stun extends ModTemplate {
         if (app.BROWSER !== 1) return;
 
 
-
         if (!this.gotten_keys) {
             if (tx.msg.data.public_keys.length > 0) {
                 this.room.peers = tx.msg.data.all_peers;
@@ -1184,8 +1250,9 @@ class Stun extends ModTemplate {
             delete this.peer_connections[i];
             console.log('closing peer connection', this.peer_connections);
         }
+        this.room.peers = this.room.peers.filter(p => p !== peer);
 
-
+        console.log(this.room);
 
         // update database and delete public key from room
     }
@@ -1219,6 +1286,10 @@ class Stun extends ModTemplate {
         this.current_step = 0;
     }
 
+
+    saveCommand(command) {
+        this.commands.push(command)
+    }
 
 }
 
