@@ -1287,7 +1287,13 @@ class Stun extends ModTemplate {
 
 
     saveCommand(command) {
-        this.commands.push(command)
+        let index = this.commands.findIndex(c => c.id === command);
+        if (index === -1) {
+            this.commands.push(command)
+            console.log('new command saved');
+        }
+
+
     }
 
     deleteCommand(command) {

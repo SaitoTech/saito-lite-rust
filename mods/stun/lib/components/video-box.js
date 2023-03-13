@@ -176,29 +176,30 @@ class VideoBox {
                         else {
                             clearInterval(checkOnlineInterval);
                             this.updateConnectionMessage('re-establishing connection');
-                            // check if other peer is online, then send a connection.
-                            let command = {
-                                name: 'PING',
-                                id: stun_mod.commands.length + 5,
-                                status: null,
-                                room_code: this.room_code,
-                                callback: () => {
-                                    const stun_mod = this.app.modules.returnModule('Stun');
-                                    stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
-                                }
-                            }
-                            this.mod.saveCommand(command);
-                            let my_pub_key = this.app.wallet.returnPublicKey();
-                            this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+
 
                             let count = 0;
                             const checkPingInterval = setInterval(() => {
-                                // console.log('checking for ping back from peer')
+                                let command = {
+                                    name: 'PING',
+                                    id: stun_mod.commands.length,
+                                    status: null,
+                                    room_code: this.room_code,
+                                    callback: () => {
+                                        const stun_mod = this.app.modules.returnModule('Stun');
+                                        stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
+                                    }
+                                }
+                                this.mod.saveCommand(command);
+                                let my_pub_key = this.app.wallet.returnPublicKey();
+                                this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+
                                 stun_mod.commands.forEach(c => {
                                     if (c.id === command.id) {
                                         if (command.status === "success") {
                                             command.callback();
                                             clearInterval(checkPingInterval)
+                                            stun_mod.deleteCommand(command);
                                         } else if (command.status === "failed") {
                                             this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
                                             clearInterval(checkPingInterval);
@@ -228,24 +229,27 @@ class VideoBox {
                             // count++;
                         } else {
                             clearInterval(checkOnlineInterval)
-                            const stun_mod = this.app.modules.returnModule('Stun');
-                            this.updateConnectionMessage('re-establishing connection');
-                            let command = {
-                                name: 'PING',
-                                id: stun_mod.commands.length,
-                                status: null,
-                                room_code: this.room_code,
-                                callback: () => {
-                                    // const stun_mod = this.app.modules.returnModule('Stun');
-                                    // stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
-                                }
-                            }
-                            this.mod.saveCommand(command);
-                            let my_pub_key = this.app.wallet.returnPublicKey();
-                            this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+
 
                             let count = 0;
                             const checkPingInterval = setInterval(() => {
+                                const stun_mod = this.app.modules.returnModule('Stun');
+                                this.updateConnectionMessage('re-establishing connection');
+                                let command = {
+                                    name: 'PING',
+                                    id: stun_mod.commands.length,
+                                    status: null,
+                                    room_code: this.room_code,
+                                    callback: () => {
+                                        // const stun_mod = this.app.modules.returnModule('Stun');
+                                        // stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
+                                    }
+                                }
+                                this.mod.saveCommand(command);
+                                let my_pub_key = this.app.wallet.returnPublicKey();
+                                this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+
+
                                 // console.log('checking for ping back from peer')
                                 stun_mod.commands.forEach(c => {
                                     if (c.id === command.id) {
@@ -376,7 +380,7 @@ class VideoBox {
                         } else {
                             clearInterval(checkOnlineInterval)
                             const stun_mod = this.app.modules.returnModule('Stun');
-                            this.updateConnectionMessage('re-establishing connection');
+                            this.updateConnectionMessage('retrying connection');
                             let command = {
                                 name: 'PING',
                                 id: stun_mod.commands.length,
