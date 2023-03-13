@@ -363,7 +363,6 @@ class Stun extends ModTemplate {
     }
 
     async sendCommandToPeerTransaction(recipient, sender, command) {
-        this.saveCommand(command);
         let [tx, data] = this.createSendCommandToPeerTransaction(recipient, sender, command);
         console.log('sending command ', data)
         this.app.connection.emit('relay-send-message', data);
