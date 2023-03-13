@@ -205,7 +205,7 @@ class VideoBox {
                                             clearInterval(checkPingInterval);
                                             stun_mod.deleteCommand(command);
                                         } else {
-                                            if (count === 5) {
+                                            if (count === 10) {
                                                 this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
                                                 clearInterval(checkPingInterval);
                                                 stun_mod.deleteCommand(command);
@@ -251,7 +251,7 @@ class VideoBox {
                                         this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
                                         clearInterval(checkPingInterval);
                                     } else {
-                                        if (count === 5) {
+                                        if (count === 10) {
                                             this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
                                             clearInterval(checkPingInterval);
                                             stun_mod.deleteCommand(command);
