@@ -1915,12 +1915,12 @@ class Browser {
           //this should be neatened up and standardised.
           if (el.classList.contains('saito-username') || el.classList.contains('saito-address')) {
             if (!el.classList.contains('treated')) {
+              el.classList.add('treated');
               let key = el.innerText;
               if (key.length == 43 || key.length == 44) {
                 if (this_browser.app.keychain.returnIdentifierByPublicKey(key, true) != key) {
                   el.innerText = this_browser.app.keychain.returnIdentifierByPublicKey(key);
                   el.classList.add('saito-address-' + this_browser.app.keychain.returnIdentifierByPublicKey(key))
-                  el.classList.add('treated');
                   console.info('upated ' + key + " to " + this_browser.app.keychain.returnIdentifierByPublicKey(key));
                 } else {
                   if (!unknown_keys.includes(key)) {
