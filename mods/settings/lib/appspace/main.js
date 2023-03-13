@@ -23,7 +23,6 @@ class SettingsAppspace {
 
   render() {
 
-alert("1");
 
     this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod));
 
@@ -40,7 +39,6 @@ alert("1");
     //debug info
     let el = document.querySelector(".settings-appspace-debug-content");
 
-alert("2");
 
     try {
       let optjson = JSON.parse(JSON.stringify(this.app.options, (key, value) =>
@@ -51,13 +49,10 @@ alert("2");
 
 console.log("A");
 console.log(JSON.stringify(optjson));
-alert("2.5");
       var tree = jsonTree.create(optjson, el);
-alert("3");
     } catch (err) {
       console.log("error creating jsonTree: " + err);
     }
-alert("4");
 
     this.attachEvents();
 
