@@ -16,7 +16,7 @@
   position: relative;
   /* top: -50rem; */
   border: 1px solid var(--saito-border-color);
-  border-radius: 0 0 5px 5px;
+  border-radius: 0.5rem;
   padding: 1em;
   color: var(--saito-font-color);
   display: flex;
