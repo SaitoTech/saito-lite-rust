@@ -962,7 +962,6 @@ class Stun extends ModTemplate {
         if (my_pubkey === offer_creator) {
             return
         }
-        console.log("offer received from ", offer_creator);
         // check if current instance is a recipent
         if (my_pubkey === recipient) {
             this.peer_connection_states[offer_creator] = "connecting"
