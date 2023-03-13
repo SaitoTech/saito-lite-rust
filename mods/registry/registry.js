@@ -339,8 +339,8 @@ class Registry extends ModTemplate {
           // if keys exist
           // 
           for (let key in this.cached_keys) {
-            if (this.cached_keys[key]) {
-	      if (this.cached_keys[key] !== data.publickey) {
+	    if (key === data.publickey) {
+	      if (this.cached_keys[key]) {
 	        return { publickey : key , identifier : this.cached_keys[key] };
 	      } else {
 	        return { publickey : key };
