@@ -208,7 +208,7 @@ class VideoBox {
                                             stun_mod.deleteCommand(command);
                                         } else {
                                             if (count === 10) {
-                                                let command = {
+                                                command = {
                                                     name: 'PING',
                                                     id: stun_mod.commands.length + 5,
                                                     status: null,
