@@ -72,7 +72,17 @@ class Archive extends ModTemplate {
     var response = {};
 
     //
-    // only handle archive request 
+    // saves TX containing archive insert instruction
+    //
+    if (req.request === "archive insert") {
+
+      let type = "";
+      if (req.type) { type = req.type; }
+      this.saveTransaction(tx, type);
+
+    }
+    //
+    // saves TX embedded in data
     //
     if (req.request === "archive save") {
 
@@ -195,6 +205,8 @@ console.log("IN SAVE TRANSACTION IN ARCHIVE>JS");
     let params = {};
     let optional = {};
     if (tx.optional) { optional = tx.optional; }
+
+console.log("TXS to: " + tx.transaction.to.length);
 
     for (let i = 0; i < tx.transaction.to.length; i++) {
       sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";

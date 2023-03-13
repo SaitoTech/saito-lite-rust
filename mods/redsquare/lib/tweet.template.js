@@ -26,11 +26,9 @@ module.exports = (app, mod, tweet) => {
   let num_replies =  optional.num_replies ||  0;
   let num_retweets = optional.num_retweets || 0;
   let parent_id = optional.parent_id || "";
-  let dt = app.browser.formatDate(tweet.tx.transaction.ts);
   let show_controls = tweet.show_controls;
   let sig_class = "tweet-"+tweet.tx.transaction.sig;
 
-  let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
   let controls = `
               <div class="tweet-controls">
                 <div class="tweet-tool tweet-tool-comment">
