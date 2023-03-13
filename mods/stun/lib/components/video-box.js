@@ -193,6 +193,7 @@ class VideoBox {
 
                             let count = 0;
                             const checkPingInterval = setInterval(() => {
+                                console.log(count)
                                 // console.log('checking for ping back from peer')
                                 stun_mod.commands.forEach(c => {
                                     if (c.id === command.id) {
@@ -202,13 +203,26 @@ class VideoBox {
                                             stun_mod.deleteCommand(command);
                                         } else if (command.status === "failed") {
                                             this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
+                                            console.log('connection to peer failed');
                                             clearInterval(checkPingInterval);
                                             stun_mod.deleteCommand(command);
                                         } else {
                                             if (count === 10) {
+                                                let command = {
+                                                    name: 'PING',
+                                                    id: stun_mod.commands.length + 5,
+                                                    status: null,
+                                                    room_code: this.room_code,
+                                                    callback: () => {
+                                                        const stun_mod = this.app.modules.returnModule('Stun');
+                                                        stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
+                                                    }
+                                                }
                                                 this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+                                                console.log('sending command again');
                                             }
                                             if (count === 20) {
+
                                                 this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
                                                 clearInterval(checkPingInterval);
                                                 stun_mod.deleteCommand(command);
@@ -259,6 +273,7 @@ class VideoBox {
                                             stun_mod.deleteCommand(command);
                                         } else if (command.status === "failed") {
                                             this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
+
                                             clearInterval(checkPingInterval);
                                         } else {
                                             if (count === 10) {
@@ -350,12 +365,13 @@ class VideoBox {
                                         if (command.status === "success") {
                                             command.callback();
                                             clearInterval(checkPingInterval)
+                                            stun_mod.deleteCommand(command);
                                             this.stopWaitTimer()
                                         } else if (command.status === "failed") {
                                             this.disconnectFromPeer(peer, "cannot connect, peer not available");
                                             clearInterval(checkPingInterval);
                                             stun_mod.deleteCommand(command);
-                                            this.stopWaitTimer()
+                                            this.stopWaitTimer();
                                         } else {
                                             if (count === 10) {
                                                 this.disconnectFromPeer(peer, "cannot connect, peer not available");
@@ -410,6 +426,7 @@ class VideoBox {
                                         } else if (command.status === "failed") {
                                             this.disconnectFromPeer(peer, "cannot connect, peer not available");
                                             clearInterval(checkPingInterval);
+                                            stun_mod.deleteCommand(command);
                                         } else {
                                             if (count === 10) {
                                                 this.disconnectFromPeer(peer, "cannot connect, peer not available");
