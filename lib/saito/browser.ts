@@ -905,24 +905,31 @@ class Browser {
         },
         false
       );
-      dropArea.parentNode.parentNode.addEventListener(
-        "paste",
-        function (e) {
-          const files = e.clipboardData.files;
-          [...files].forEach(function (file) {
-            const reader = new FileReader();
-            reader.addEventListener("load", (event) => {
-              handleFileDrop(event.target.result);
+      if (!dropArea.classList.contains("paste_event")) {
+        dropArea.addEventListener(
+          "paste",
+          function (e) {
+            console.info('Paste Event');
+            console.info(e);
+
+            const files = e.clipboardData.files;
+            [...files].forEach(function (file) {
+              const reader = new FileReader();
+              reader.addEventListener("load", (event) => {
+                handleFileDrop(event.target.result);
+              });
+              if (read_as_array_buffer) {
+                reader.readAsArrayBuffer(file);
+              } else {
+                reader.readAsDataURL(file);
+              }
             });
-            if (read_as_array_buffer) {
-              reader.readAsArrayBuffer(file);
-            } else {
-              reader.readAsDataURL(file);
-            }
-          });
-        },
-        false
-      );
+            console.info(dropArea.innerHTML);
+            console.info(dropArea.innerText);    
+          },
+          false
+        );
+      }
       const input = document.getElementById(`hidden_file_element_${id}`);
       if (click_to_upload == true) {
         dropArea.addEventListener("click", function (e) {
@@ -1300,7 +1307,7 @@ class Browser {
       return;
     }
     if (key === id) {
-      return; 
+      return;
     }
     try {
       const addresses = document.getElementsByClassName(`saito-address-${key}`);

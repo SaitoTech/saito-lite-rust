@@ -54,12 +54,15 @@
     display: flex;
     flex-direction: column;
     gap: 3rem;
+    border-radius: 0.5rem;
 }
 
 .saito-overlay-form-header {
     height: 6rem;
     background: var(--dreamscape);
     width: 100%;
+    border-radius: 0.5rem;
+
 }
 
 .saito-overlay-form-header-title {

@@ -3,7 +3,7 @@ const StunAppspaceTemplate = require('./main.template.js');
 const SaitoLoader = require('../../../../lib/saito/ui/saito-loader/saito-loader.js');
 class StunAppspace {
 
-  
+
 
   constructor(app, mod, container = "") {
     this.app = app;
@@ -15,17 +15,17 @@ class StunAppspace {
     //   this.joinVideoInvite(app, mod, code)
     // })
 
-    app.connection.on('stun-enter-conference-call', (code)=> {
+    app.connection.on('stun-enter-conference-call', (code) => {
       this.enterConferenceCall(app, mod, code)
     })
     app.connection.on('remove-overlay-request', () => {
       this.overlay.remove();
     })
 
-    app.connection.on('stun-show-loader', ()=> {
+    app.connection.on('stun-show-loader', () => {
       this.loader.render(true);
     })
-    app.connection.on('stun-remove-loader', ()=> {
+    app.connection.on('stun-remove-loader', () => {
       console.log('removing loader')
       this.loader.remove()
     })
@@ -33,12 +33,12 @@ class StunAppspace {
   }
 
   render() {
-    if(this.container === ".saito-overlay"){
+    if (this.container === ".saito-overlay") {
       this.overlay.show(StunAppspaceTemplate(this.app, this.mod))
-    }else if(this.container === "body"){
+    } else if (this.container === "body") {
       this.app.browser.addElementToDom(StunAppspaceTemplate(this.app, this.mod))
     }
-  
+
     this.attachEvents(this.app, this.mod);
   }
 
@@ -56,10 +56,10 @@ class StunAppspace {
         //   this.app.connection.emit('join-room-with-code', roomCode);
         // });
 
-        this.mod.createRoom((room_code)=> {
+        this.mod.createRoom((room_code) => {
           this.app.connection.emit('stun-enter-conference-call', room_code);
         })
-      
+
       }
     })
 
@@ -139,15 +139,15 @@ class StunAppspace {
   //       this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
   //       this.app.connection.emit('stun-remove-loader')
   //       this.app.connection.emit('render-local-stream-request', localStream, 'large');
-      
+
   //       this.app.connection.emit('remove-overlay-request')
 
   //       // peers_in_room.forEach(peer => {
   //       //   this.app.connection.emit('render-remote-stream-placeholder-request', peer, 'large');
   //       // });
   //       mod.createMediaChannelConnectionWithPeers(peers_in_room, 'large', "Video", room_code);
-        
-    
+
+
   //     }
   //   }
 
@@ -157,34 +157,32 @@ class StunAppspace {
   //   // stunx_mod.sendRequest("message", {}, room_code);
   // }
 
-  async enterConferenceCall(app, mod, room_code){
-        // add to the room list and save
-        let peers = [];
-        let peer_count = 0;
-        let is_max_capacity = false;
+  async enterConferenceCall(app, mod, room_code) {
+    // add to the room list and save
+    let peers = [];
+    let peer_count = 0;
+    let is_max_capacity = false;
 
 
-        const room = {
-          peers,
-          peer_count,
-          is_max_capacity
-        }
+    const room = {
+      peers,
+      peer_count,
+      is_max_capacity
+    }
 
-        this.room = room;
+    this.room = room;
 
 
-        const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        mod.setLocalStream(localStream);
-        let my_public_key = this.app.wallet.returnPublicKey();
-        this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code, my_public_key);
-        this.app.connection.emit('stun-remove-loader')
-        this.app.connection.emit('render-local-stream-request', localStream, 'large', 'video');
-        this.app.connection.emit('remove-overlay-request');
-
-        mod.central = true;
-
-        siteMessage("You are the only participant in this room", 3000);
-        return;
+    const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    mod.setLocalStream(localStream);
+    let my_public_key = this.app.wallet.returnPublicKey();
+    mod.central = true;
+    this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code, my_public_key);
+    this.app.connection.emit('stun-remove-loader')
+    this.app.connection.emit('render-local-stream-request', localStream, 'large', 'video');
+    this.app.connection.emit('remove-overlay-request');
+    siteMessage("You are the only participant in this room", 3000);
+    return;
   }
 
 }

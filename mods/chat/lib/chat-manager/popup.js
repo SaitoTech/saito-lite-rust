@@ -49,7 +49,7 @@ class ChatPopup {
     //
     //
     if (this.emoji == null) {
-        this.emoji = new SaitoEmoji(this.app, this.mod, input_id);
+      this.emoji = new SaitoEmoji(this.app, this.mod, input_id);
     }
 
     //
@@ -61,13 +61,13 @@ class ChatPopup {
     let am_i_on_page = 0;
 
     document.querySelectorAll(".chat-popup").forEach((el) => {
-        popups_on_page++;
-	var rect = el.getBoundingClientRect();
-        x_range = rect.right - rect.left;
-        if (rect.left < x_offset) {
-	  x_offset = rect.left;
-	}
-    });    
+      popups_on_page++;
+      var rect = el.getBoundingClientRect();
+      x_range = rect.right - rect.left;
+      if (rect.left < x_offset) {
+        x_offset = rect.left;
+      }
+    });
 
     if (document.querySelector(popup_qs)) {
       am_i_on_page = 1;
@@ -191,8 +191,8 @@ class ChatPopup {
       //
       if (!mod.isOtherInputActive()) {
         document.getElementById(input_id).focus();
-	document.execCommand('selectAll', false, null);
-	document.getSelection().collapseToEnd();
+        document.execCommand('selectAll', false, null);
+        document.getSelection().collapseToEnd();
       }
 
       //
@@ -208,10 +208,16 @@ class ChatPopup {
           mod.receiveChatTransaction(app, newtx);
           msg_input.textContent = "";
           msg_input.innerHTML = "";
-	  if (document.getElementById(input_id)) {
-	    document.getElementById(input_id).innerHTML = "";
-	  }
+          if (document.getElementById(input_id)) {
+            document.getElementById(input_id).innerHTML = "";
+          }
         }
+      }
+      msg_input.onpaste = (e) => {
+        var el = e.target;
+        setTimeout(function() {
+          el.innerHTML = el.textContent;
+        }, 0)
       }
 
       //
@@ -225,18 +231,18 @@ class ChatPopup {
         mod.receiveChatTransaction(app, newtx);
         msg_input.textContent = "";
         msg_input.innerHTML = "";
-	if (document.getElementById(input_id)) {
-	  document.getElementById(input_id).innerHTML = "";
-	}
+        if (document.getElementById(input_id)) {
+          document.getElementById(input_id).innerHTML = "";
+        }
       }
 
 
       //  
       // drag and drop images into chat window
       //
-      
-      app.browser.addDragAndDropFileUploadToElement(popup_id, async (filesrc) => {      
-	filesrc = await app.browser.resizeImg(filesrc, 230, 0.75); // (img, dimensions, quality)
+
+      app.browser.addDragAndDropFileUploadToElement(popup_id, async (filesrc) => {
+        filesrc = await app.browser.resizeImg(filesrc, 230, 0.75); // (img, dimensions, quality)
 
         let img = document.createElement('img');
         img.classList.add('img-prev');
@@ -247,9 +253,9 @@ class ChatPopup {
         //  salert("Image too large: 220kb max");
         //} else {
 
-	let newtx = mod.createChatTransaction(group_id, img.outerHTML); // img into msg
-	newtx = app.wallet.signTransaction(newtx);
-	mod.sendChatTransaction(app, newtx);
+        let newtx = mod.createChatTransaction(group_id, img.outerHTML); // img into msg
+        newtx = app.wallet.signTransaction(newtx);
+        mod.sendChatTransaction(app, newtx);
         mod.receiveChatTransaction(app, newtx);
 
         //}

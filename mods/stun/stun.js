@@ -44,7 +44,10 @@ class Stun extends ModTemplate {
         this.peer_connection_states = {}
         this.stunGameMenu = new StunxGameMenu(app, this);
         this.current_step = 0;
-        this.receiving_from = {}
+        this.gotten_keys = false
+        this.commands = []
+        // this.receiving_from = {}
+
 
         this.servers = [
             {
@@ -86,7 +89,7 @@ class Stun extends ModTemplate {
         if (!this.video_chat_loaded) {
             if (app.browser.returnURLParameter("stun_video_chat")) {
                 let room_obj = JSON.parse(app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat")));
-                console.log(room_obj, 'stun video chat')
+
                 // JOIN THE ROOM
 
                 let stun_self = app.modules.returnModule("Stun");
@@ -136,7 +139,6 @@ class Stun extends ModTemplate {
             if (!this.renderIntos[qs]) {
                 this.renderIntos[qs] = [];
                 this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
-                console.log('rendering into');
             }
 
 
@@ -148,7 +150,6 @@ class Stun extends ModTemplate {
             if (!this.renderIntos[qs]) {
                 this.renderIntos[qs] = [];
                 this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
-                console.log('rendering into')
             }
             this.attachStyleSheets();
             this.renderIntos[qs].forEach((comp) => { comp.render(); });
@@ -191,7 +192,6 @@ class Stun extends ModTemplate {
                         id: "game-video-chat",
                         class: "game-video-chat",
                         callback: function (app, game_mod) {
-                            console.log('all players ', game_mod.game.players);
                             if (game_mod.game.player.length > 1) {
                                 app.connection.emit('game-start-video-call', [...game_mod.game.players]);
                             } else {
@@ -247,21 +247,31 @@ class Stun extends ModTemplate {
 
         if (conf === 0) {
             if (txmsg.module === 'Stun') {
-                if (txmsg.request === "stun media channel answer") {
-                    this.receiveMediaChannelAnswerTransaction(app, tx, conf, blk)
-                }
-                if (txmsg.request === "stun data channel answer") {
-                    this.receiveDataChannelAnswerTransaction(app, tx, conf, blk)
-                }
                 if (txmsg.request === "stun media channel offer") {
-                    this.receiveMediaChannelOfferTransaction(app, tx, conf, blk)
+                    this.receiveMediaChannelOfferTransaction(app, tx)
                 }
                 if (txmsg.request === "stun data channel offer") {
-                    this.receiveDataChannelOfferTransaction(app, tx, conf, blk)
+                    this.receiveDataChannelOfferTransaction(app, tx)
+                }
+                if (txmsg.request === "stun media channel answer") {
+                    this.receiveMediaChannelAnswerTransaction(app, tx)
+                }
+                if (txmsg.request === "stun data channel answer") {
+                    this.receiveDataChannelAnswerTransaction(app, tx)
+                }
+                if (txmsg.request === "stun notifcation transmission request") {
+                    this.receiveMediaChannelNotificationTransaction(app, tx)
+                }
+                if (txmsg.request === "stun key update") {
+                    this.receiveKeyUpdateTransaction(app, tx)
                 }
                 if (txmsg.request === "receive room code") {
-                    this.receiveRoomCodeTransaction(app, tx, conf, blk)
+                    this.receiveRoomCodeTransaction(app, tx)
                 }
+                if (txmsg.request === "stun command transmission request") {
+                    this.receiveCommandToPeerTransaction(app, tx, conf, blk)
+                }
+
             }
         }
     }
@@ -293,11 +303,8 @@ class Stun extends ModTemplate {
         if (txmsg.request === "receive room code") {
             this.receiveRoomCodeTransaction(app, tx)
         }
-        if (txmsg.request === "create room") {
-            this.receiveCreateRoomTransaction(app, tx)
-        }
-        if (txmsg.request === "update room") {
-            this.receiveUpdateRoomTransaction(app, tx)
+        if (txmsg.request === "stun command transmission request") {
+            this.receiveCommandToPeerTransaction(app, tx)
         }
 
         super.handlePeerTransaction(app, tx, peer, mycallback)
@@ -305,97 +312,110 @@ class Stun extends ModTemplate {
     }
 
 
-    async createRoom(callback) {
+    async createRoom(callback = null) {
         let room_code = this.app.crypto.generateRandomNumber().substring(0, 6);
         let room = { code: room_code, peers: [], peerCount: 0, isMaxCapicity: 0, validityPeriod: 86400, startTime: Date.now() };
         this.room = room;
+        if (callback) {
+            callback(room_code);
+        }
 
-        callback(room_code);
     }
 
-    // async sendCreateRoomTransaction(callback = null) {
-    //     let roomCode = this.app.crypto.generateRandomNumber().substring(0, 6);
-    //     let room = { code: roomCode, peers: "[]", peerCount: 0, isMaxCapicity: 0, validityPeriod: 86400, startTime: Date.now() };
-    //     let newtx = this.app.wallet.createUnsignedTransaction();
 
+
+
+    // async sendUpdateRoomTransaction(room_code, data) {
+    //     const { peers_in_room, peer_count, is_max_capacity } = data;
+    //     let newtx = this.app.wallet.createUnsignedTransaction();
     //     // get recipient -- server in this case
-    //     let server_pub_key = this.app.network.peers[0].peer.publicKey;
     //     let server = this.app.network.peers[0];
 
-    //     newtx = this.app.wallet.signTransaction(newtx);
-    //     console.log(newtx.returnMessage(), 'return new tx message');
-    //     server.sendRequestAsTransaction('create room', room);
-    //     if (callback) {
-    //         callback(this.app, this.mod, roomCode)
-    //     }
+    //     let data_ = {
+    //         room_code,
+    //         peers_in_room,
+    //         peer_count,
+    //         is_max_capacity
+    //     };
+
+    //     server.sendRequestAsTransaction('update room', data_);
     // }
 
-    async receiveCreateRoomTransaction(app, tx) {
-        if (app.BROWSER === 1) return;
-        let room = tx.msg.data;
-        let sql = `INSERT INTO rooms (
-            room_code,
-            peers,
-            peer_count,
-            is_max_capacity,
-            start_time,
-            created_at,
-            validity_period
-          ) VALUES (
-            $room_code,
-            $peers,
-            $peer_count,
-            $is_max_capacity,
-            $start_time,
-            $created_at,
-            $validity_period
-          )`;
-
-        let params = {
-            $room_code: room.code,
-            $peers: room.peers,
-            $peer_count: room.peerCount,
-            $is_max_capacity: room.isMaxCapicity,
-            $start_time: room.startTime,
-            $created_at: Date.now(),
-            $validity_period: room.validityPeriod,
-        };
-        const result = await app.storage.executeDatabase(sql, params, "videocall");
-        console.log('db result ', result, app.storage.executeDatabase);
-    }
-
-    async sendUpdateRoomTransaction(room_code, data) {
-        const { peers_in_room, peer_count, is_max_capacity } = data;
-        let newtx = this.app.wallet.createUnsignedTransaction();
-        // get recipient -- server in this case
-        let server = this.app.network.peers[0];
-
-        let data_ = {
-            room_code,
-            peers_in_room,
-            peer_count,
-            is_max_capacity
-        };
-
-        server.sendRequestAsTransaction('update room', data_);
-    }
 
 
-    receiveUpdateRoomTransaction(app, tx) {
-        if (app.BROWSER === 1) return;
-        let peers_in_room = tx.msg.data.peers_in_room;
-        let room_code = tx.msg.data.room_code;
-        let peer_count = tx.msg.data.peer_count;
-        let is_max_capacity = tx.msg.data.is_max_capacity;
-        let sql = "UPDATE rooms SET peers = $peers_in_room, peer_count = $peer_count, is_max_capacity = $is_max_capacity WHERE room_code = $room_code";
-        let params = {
-            $peers_in_room: peers_in_room,
-            $room_code: room_code,
-            $peer_count: peer_count,
-            $is_max_capacity: is_max_capacity
+
+    createSendCommandToPeerTransaction(recipient, sender, command) {
+        let _data = {
+            sender,
+            recipient,
+            command
         }
-        app.storage.executeDatabase(sql, params, "videocall");
-        return;
+        let request = "stun command transmission request"
+
+        // offchain data
+        let data = {
+            recipient: [recipient],
+            request,
+            data: _data
+        }
+
+        return [null, data];
+    }
+
+    async sendCommandToPeerTransaction(recipient, sender, command) {
+        let [tx, data] = this.createSendCommandToPeerTransaction(recipient, sender, command);
+        console.log('sending command ', data)
+        this.app.connection.emit('relay-send-message', data);
+    }
+
+    async receiveCommandToPeerTransaction(app, tx, conf, blk) {
+        if (app.BROWSER !== 1) return;
+        let stun_self = app.modules.returnModule("Stun");
+        console.log("getting stun command");
+        // if (!stun_self.ChatManagerLarge.isActive) return;
+        const command = tx.msg.data.command
+        const recipient = tx.msg.data.recipient;
+        const sender = tx.msg.data.sender;
+        console.log(tx, 'receiving command', command, 'room code', this.room_code);
+        let reply_sender = recipient;
+        let reply_recipient = sender;
+        let reply_command;
+        console.log(tx, 'receiving command', command, 'room code', this.room_code);
+
+
+        switch (command.name) {
+
+            case "PING":
+                console.log('pinging, to reply');
+                let status = "success";
+                if (!stun_self.ChatManagerLarge.isActive || command.room_code !== stun_self.ChatManagerLarge.room_code) {
+                    status = "failed";
+                }
+                reply_command = { name: "PING_REPLY", id: command.id, status }
+                stun_self.sendCommandToPeerTransaction(reply_recipient, reply_sender, reply_command);
+                break;
+
+            case "PING_REPLY":
+                stun_self.sendCommandToPeerTransaction(reply_recipient, reply_sender, reply_command);
+                stun_self.commands.forEach(c => {
+                    if (c.id === command.id) {
+                        c.status = command.status
+                    }
+                })
+                console.log('PING REPLY', stun_self.commands);
+                break;
+            default:
+                break;
+        }
+
+
+
+
+        let my_pubkey = app.wallet.returnPublicKey();
+
+
+
+
     }
 
 
@@ -403,31 +423,20 @@ class Stun extends ModTemplate {
 
 
 
-    createMediaConnectionOffer(publicKey, ui_type, call_type, room_code, create_new = true) {
-        console.log('create new ', create_new)
+    createMediaConnectionOffer(publicKey, ui_type, call_type, room_code) {
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
             const execute = async () => {
                 try {
-                    let pc;
-                    if (true) {
-                        pc = new RTCPeerConnection({
-                            iceServers: this.servers,
-                        });
-                        this.peer_connections[publicKey] = pc;
-                    } else {
-                        pc = this.peer_connections[publicKey];
-                        const senders = pc.getSenders();
-                        senders.forEach((sender) => pc.removeTrack(sender));
-                        // newTracks.forEach((tr) => pc.addTrack(tr));
-                    }
-
-
-
+                    let pc = new RTCPeerConnection({
+                        iceServers: this.servers,
+                    });
+                    this.peer_connections[publicKey] = "";
+                    this.peer_connections[publicKey] = pc;
                     pc.onicecandidate = (ice) => {
                         if (!ice || !ice.candidate || !ice.candidate.candidate) {
                             let offer_sdp = pc.localDescription;
-                            resolve({ recipient: publicKey, offer_sdp, ice_candidates, pc, ui_type, call_type, create_new });
+                            resolve({ recipient: publicKey, offer_sdp, ice_candidates, pc, ui_type, call_type });
                             return;
                         } else {
                             ice_candidates.push(ice.candidate);
@@ -436,53 +445,27 @@ class Stun extends ModTemplate {
                     };
 
                     pc.addEventListener('connectionstatechange', e => {
-                        console.log(pc.connectonState, e);
-                        console.log(pc.currentLocalDescription, this.peer_connections[publicKey].currentLocalDescription, 'current local description')
-
-                       
-                        switch (pc.connectionState) {
-                            case "connecting":
-                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code, true);
-                                break;
-                            case "connected":
-                                this.receiving_from[publicKey] = false;
-                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code, true);
-                                break;
-                            case "disconnected":
-                                if (pc.connectionState !== this.peer_connections[publicKey].connectionState) {
-                                    console.log('peer objects not equal')
-                                    return;
-                                }
-
-                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code, true);
-
-                                break;
-                            case "failed":
-                                if (pc.connectionState !== this.peer_connections[publicKey].connectionState) {
-                                    console.log('peer objects not equal')
-                                    return;
-                                }
-                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code, true);
-
-                                break;
-                            default:
-                                ""
-                                break;
+                        console.log(pc.connectionState, " with ", publicKey);
+                        if (pc.connectionState !== this.peer_connections[publicKey].connectionState) {
+                            console.log('peer objects not equal')
+                            return;
                         }
+                        this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                     })
 
                     // add data channels 
                     const data_channel = pc.createDataChannel('channel');
                     pc.dc = data_channel;
                     pc.dc.onmessage = (event) => {
-                        // if(pc !== this.peer_connections[publicKey]) return
-                        console.log("Received message:", event.data);
+                        console.log("Received message from :", publicKey, ' ', event.data);
                         let data = JSON.parse(event.data);
                         this.app.connection.emit(data.event, data.kind, publicKey);
-
+                        if (data.event === "disconnect") {
+                            // remove peer and disconnect media peer
+                        }
                     };
                     pc.dc.onopen = (e) => {
-                        console.log('connection opened');
+                        console.log('data channel connection opened with ', publicKey);
                     }
 
                     const stunx_self = this.app.modules.returnModule('Stun');
@@ -491,29 +474,20 @@ class Stun extends ModTemplate {
 
                     stunx_self.localStream.getTracks().forEach(track => {
                         pc.addTrack(track, localStream);
-                        console.log('adding track', track)
-
                     });
 
                     const remoteStream = new MediaStream();
                     pc.addEventListener('track', (event) => {
-                        console.log('got remote stream', event.streams);
                         event.streams[0].getTracks().forEach(track => {
                             remoteStream.addTrack(track);
                             this.remoteStreamPosition += 1;
                         });
-
-                        console.log('ui_type ', ui_type, 'public key ', publicKey, "call type", call_type);
-                        
-                        console.log(remoteStream, pc, publicKey, "This is for the offer creator")
                         this.app.connection.emit('add-remote-stream-request', publicKey, remoteStream, pc, ui_type, call_type, room_code);
+                        console.log('adding remote stream from ', publicKey, '  ', event.streams);
 
                     });
-
-                  
                     const offer = await pc.createOffer();
                     pc.setLocalDescription(offer);
-            
 
                 } catch (error) {
                     console.log(error);
@@ -595,8 +569,7 @@ class Stun extends ModTemplate {
 
 
     acceptMediaChannelConnectionOffer(app, offer_creator, offer) {
-        console.log('rendering remote stream place holder');
-        // this.app.connection.emit('render-remote-stream-placeholder-request', offer_creator, offer.ui_type);
+
         const room_code = offer.room_code
         const createPeerConnection = async () => {
             let reply = {
@@ -604,92 +577,51 @@ class Stun extends ModTemplate {
                 answer: "",
                 ice_candidates: []
             }
-
             let stunx_mod = app.modules.returnModule("Stun");
+            stunx_mod.peer_connections[offer_creator] = "";
+            let pc = new RTCPeerConnection({
+                iceServers: this.servers,
+            });
 
-
-            let pc;
-            console.log('offer create new ', offer.create_new)
-            if (true) {
-                pc = new RTCPeerConnection({
-                    iceServers: this.servers,
-                });
-                stunx_mod.peer_connections[offer_creator] = pc;
-            } else {
-                pc = stunx_mod.peer_connections[offer_creator]
-            }
-
-
-
+            stunx_mod.peer_connections[offer_creator] = "";
+            stunx_mod.peer_connections[offer_creator] = pc;
 
             try {
                 pc.onicecandidate = (ice) => {
                     if (!ice || !ice.candidate || !ice.candidate.candidate) {
-                        console.log('ice candidate check closed');
                         stunx_mod.sendMediaChannelAnswerTransaction(stunx_mod.app.wallet.returnPublicKey(), offer_creator, reply);
                         return;
                     };
                     reply.ice_candidates.push(ice.candidate);
                 }
 
-
-
                 pc.addEventListener('connectionstatechange', () => {
-                    try {
-                        console.log('peer connections', this.peer_connections[offer_creator].connectionState)
-                    } catch (error) {
-                        console.log(error);
+                    console.log(pc.connectionState, ' with ', offer_creator)
+                    if (pc.connectionState !== stunx_mod.peer_connections[offer_creator].connectionState) {
+                        console.log('peer objects not equal');
+                        return;
                     }
-
 
                     switch (pc.connectionState) {
                         case "connecting":
-                            console.log("connection state ", pc.connectionState)
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         case "connected":
-                            console.log("connection state ", pc.connectionState)
-
-                            if (this.central === true) {
-                                if (!this.room.peers.includes(offer_creator)) {
-                                    this.room.peers.push(offer_creator);
-                                }
-
-                                console.log(this.room, 'this room');
-                                let other_peers = this.room.peers.filter(peer => peer !== offer_creator);
-                                this.sendKeyUpdateTransaction([offer_creator], other_peers);
-                            }
-                            this.receiving_from[offer_creator] = false;
-                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
-
-
                             break;
                         case "disconnected":
-                            if (pc.connectionState !== stunx_mod.peer_connections[offer_creator].connectionState) {
-                                console.log('peer objects not equal');
-                                return;
+                            if (this.room.peers.includes(offer_creator)) {
+                                this.room.peers = this.room.peers.filter(peer => peer !== offer_creator);
                             }
-                            if (this.central === true) {
-                                if (this.room.peers.includes(offer_creator)) {
-                                    this.room.peers = this.room.peers.filter(peer => peer !== offer_creator);
-                                }
-                            }
-                            console.log("connection state ", pc.connectionState);
-                            this.receiving_from[offer_creator] = false;
-                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         case "failed":
-                            if (pc.connectionState !== stunx_mod.peer_connections[offer_creator].connectionState) {
-                                console.log('peer objects not equal');
-                                return;
-                            }
-                            console.log("connection state ", pc.connectionState);
-                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
+                            // console.log("connection state ", pc.connectionState);
                             break;
                         default:
                             ""
                             break;
                     }
+
+                    this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                 })
 
 
@@ -711,12 +643,9 @@ class Stun extends ModTemplate {
                     };
                 };
 
-                // add local stream tracks to send
                 const localStream = this.localStream;
                 localStream.getTracks().forEach(track => {
-
                     pc.addTrack(track, localStream);
-                    console.log('adding local stream to track', track);
                 });
 
                 const remoteStream = new MediaStream();
@@ -724,21 +653,36 @@ class Stun extends ModTemplate {
                     console.log('got remote stream from offer creator ', event.streams);
                     event.streams[0].getTracks().forEach(track => {
                         remoteStream.addTrack(track);
-
                     });
+                    let my_pubkey = this.app.wallet.returnPublicKey();
+                    if (!this.room.peers.includes(my_pubkey)) {
+                        this.room.peers.push(my_pubkey);
+                    }
+                    if (!this.room.peers.includes(offer_creator)) {
+                        this.room.peers.push(offer_creator);
+                    }
+                    let other_peers = this.room.peers.filter(peer => {
+                        if (peer !== offer_creator && peer !== my_pubkey) {
+                            return peer;
+                        }
+                    });
+
+                    this.sendKeyUpdateTransaction([offer_creator], other_peers, this.room.peers);
                     app.connection.emit('add-remote-stream-request', offer_creator, remoteStream, pc, offer.ui_type);
+                    console.log('adding remote stream from ', offer_creator, '  ', event.streams);
 
                 });
+
                 await pc.setRemoteDescription(offer.offer_sdp);
                 const offer_ice_candidates = offer.ice_candidates;
-                // console.log('peer ice candidates', offer_ice_candidates);
+
+
                 if (offer_ice_candidates.length > 0) {
                     console.log('adding offer icecandidates');
                     for (let i = 0; i < offer_ice_candidates.length; i++) {
                         pc.addIceCandidate(offer_ice_candidates[i]);
                     }
                 }
-                console.log('remote description  is set');
                 reply.answer = await pc.createAnswer();
                 console.log("answer ", reply.answer);
                 pc.setLocalDescription(reply.answer);
@@ -825,8 +769,7 @@ class Stun extends ModTemplate {
     }
 
 
-    async createMediaChannelConnectionWithPeers(public_keys, ui_type, call_type, room_code, create_new) {
-
+    async createMediaChannelConnectionWithPeers(public_keys, ui_type, call_type, room_code) {
         let my_pubkey = this.app.wallet.returnPublicKey();
         if (public_keys.includes(my_pubkey)) return;
         let peerConnectionOffers = [];
@@ -836,16 +779,12 @@ class Stun extends ModTemplate {
                 console.log('public key ', public_keys[i], ' ui_type ', ui_type);
                 // send notification
                 this.sendMediaChannelNotificationTransaction(this.app.wallet.returnPublicKey(), public_keys[i], room_code)
-                peerConnectionOffers.push(this.createMediaConnectionOffer(public_keys[i], ui_type, call_type, room_code, create_new));
+                peerConnectionOffers.push(this.createMediaConnectionOffer(public_keys[i], ui_type, call_type, room_code));
             }
         }
-
-
         try {
             let time = Date.now()
-            // console.log('before promise')
             peerConnectionOffers = await Promise.all(peerConnectionOffers);
-            // console.log('after promise', Date.now() - time)
             if (peerConnectionOffers.length > 0) {
                 const offers = [];
                 peerConnectionOffers.forEach((offer) => {
@@ -857,8 +796,7 @@ class Stun extends ModTemplate {
                         recipient: offer.recipient,
                         ui_type: offer.ui_type,
                         call_type: offer.call_type,
-                        room_code,
-                        create_new: offer.create_new
+                        room_code
                     })
                 })
 
@@ -880,7 +818,6 @@ class Stun extends ModTemplate {
         } catch (error) {
             console.log('an error occurred with peer connection creation', error);
         }
-        console.log("peer connections ", this.peer_connections);
         siteMessage(`Starting ${call_type} connection`, 5000);
     }
 
@@ -888,7 +825,6 @@ class Stun extends ModTemplate {
 
 
     async createDataChannelConnectionWithPeers(public_keys) {
-
         let peerConnectionOffers = [];
         if (public_keys.length > 0) {
             // send connection to other peers if they exit
@@ -929,7 +865,6 @@ class Stun extends ModTemplate {
 
 
     createMediaChannelNotificationTransaction(offer_creator, offer_recipient, room_code) {
-        console.log('offer creator ', offer_recipient, offer_creator)
         let _data = {
             offer_creator,
             offer_recipient,
@@ -949,15 +884,12 @@ class Stun extends ModTemplate {
 
     async sendMediaChannelNotificationTransaction(offer_creator, recipient, room_code) {
         let [tx, data] = this.createMediaChannelNotificationTransaction(offer_creator, recipient, room_code);
-        console.log('data sending ', data)
         this.app.connection.emit('relay-send-message', data);
 
     }
 
     async receiveMediaChannelNotificationTransaction(app, tx, conf, blk) {
         if (app.BROWSER !== 1) return;
-        console.log('notifications gotten ');
-        console.log(tx, 'receive notification');
         const offer_creator = tx.msg.data.offer_creator;
         const room_code = tx.msg.data.room_code
         const offer_recipient = tx.msg.data.offer_recipient;
@@ -966,9 +898,6 @@ class Stun extends ModTemplate {
 
         let my_pubkey = app.wallet.returnPublicKey();
 
-        if (offer_recipient === my_pubkey) {
-            this.receiving_from[offer_creator] = true;
-        }
 
         app.connection.emit('stun-receive-media-offer', {
             room_code,
@@ -981,7 +910,6 @@ class Stun extends ModTemplate {
 
 
     createMediaChannelOfferTransaction(offer_creator, offer) {
-        console.log('broadcasting offer', offer)
         let _data = {
             offer_creator,
             offer
@@ -1026,7 +954,6 @@ class Stun extends ModTemplate {
 
         let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
-        console.log(tx, 'stun media channel offer')
         const offer_creator = tx.msg.data.offer_creator;
 
         const recipient = tx.msg.data.offer.recipient;
@@ -1035,7 +962,6 @@ class Stun extends ModTemplate {
         if (my_pubkey === offer_creator) {
             return
         }
-        console.log("offer received from ", offer_creator);
         // check if current instance is a recipent
         if (my_pubkey === recipient) {
             this.peer_connection_states[offer_creator] = "connecting"
@@ -1046,10 +972,10 @@ class Stun extends ModTemplate {
     }
 
 
-    createKeyUpdateTransaction(recipients, public_keys) {
-        // console.log('broadcasting answer to ', offer_creator);
+    createKeyUpdateTransaction(recipients, public_keys, all_peers) {
         let _data = {
             public_keys,
+            all_peers
         };
         let request = "stun key update"
 
@@ -1066,14 +992,15 @@ class Stun extends ModTemplate {
         let data = {
             request,
             recipient: [...recipients],
+            all_peers,
             data: _data
         }
 
         return [null, data]
     }
 
-    sendKeyUpdateTransaction(recipients, public_keys) {
-        [newtx, data] = this.createKeyUpdateTransaction(recipients, public_keys);
+    sendKeyUpdateTransaction(recipients, public_keys, all_peers) {
+        [newtx, data] = this.createKeyUpdateTransaction(recipients, public_keys, all_peers);
 
         // offchain
         this.app.connection.emit('relay-send-message', data)
@@ -1082,19 +1009,23 @@ class Stun extends ModTemplate {
 
     receiveKeyUpdateTransaction(app, tx, conf, blk) {
         if (app.BROWSER !== 1) return;
-        console.log("receiving key update");
-        console.log(tx.msg.data.public_keys);
-        console.log(this.room_code, 'room code');
-        if (tx.msg.data.public_keys.length > 0) {
-            this.createMediaChannelConnectionWithPeers(tx.msg.data.public_keys, 'large', 'video', this.room_code);
+
+
+        if (!this.gotten_keys) {
+            if (tx.msg.data.public_keys.length > 0) {
+                this.room.peers = tx.msg.data.all_peers;
+                this.createMediaChannelConnectionWithPeers(tx.msg.data.public_keys, 'large', 'video', this.room_code);
+                this.gotten_keys = true;
+            }
         }
+
+        console.log(this, 'this')
 
     }
 
 
 
     createMediaChannelAnswerTransaction(answer_creator, offer_creator, reply) {
-        console.log('broadcasting answer to ', offer_creator);
         let _data = {
             answer_creator,
             offer_creator,
@@ -1151,19 +1082,15 @@ class Stun extends ModTemplate {
 
         if (my_pubkey === tx.msg.data.offer_creator) {
             console.log('receiving stun media channel answer');
-            console.log("current instance: ", my_pubkey, " answer room: ", tx.msg.data);
-            console.log("peer connections: ", stunx_self.peer_connections);
             const reply = tx.msg.data.reply;
 
             if (stunx_self.peer_connections[tx.msg.data.answer_creator]) {
                 if (stunx_self.peer_connections[tx.msg.data.answer_creator].remoteDescription == null || stunx_self.peer_connections[tx.msg.data.answer_creator].currentRemoteDescription == null) {
                     stunx_self.peer_connections[tx.msg.data.answer_creator].setRemoteDescription(reply.answer).then(result => {
-                        console.log('setting remote description of ', stunx_self.peer_connections[tx.msg.data.answer_creator], 'reply ', reply);
                     }).catch(error => console.log(" An error occured with setting remote description for :", stunx_self.peer_connections[tx.msg.data.answer_creator], error));
                 }
 
                 if (reply.ice_candidates.length > 0) {
-                    console.log("Adding answer candidates");
                     for (let i = 0; i < reply.ice_candidates.length; i++) {
                         stunx_self.peer_connections[tx.msg.data.answer_creator].addIceCandidate(reply.ice_candidates[i]);
                     }
@@ -1192,7 +1119,6 @@ class Stun extends ModTemplate {
             offers
         }
         newtx = this.app.wallet.signTransaction(newtx);
-        console.log(this.app.network);
         this.app.network.propagateTransaction(newtx);
     }
 
@@ -1200,23 +1126,9 @@ class Stun extends ModTemplate {
 
 
     acceptMediaChannelOfferAndBroadcastAnswer(app, offer_creator, offer) {
-
-        console.log('accepting offer');
-        console.log('from:', offer_creator, offer);
-        // if (offer.ui_type == "small") {
-        //     this.app.connection.emit('game-receive-video-call', app, offer_creator, offer);
-        //     return;
-        // }
-
         if (offer.ui_type == "large") {
             this.acceptMediaChannelConnectionOffer(app, offer_creator, offer);
         }
-
-
-
-
-
-
     }
 
 
@@ -1301,7 +1213,6 @@ class Stun extends ModTemplate {
             return;
         }
         sconfirm("Accept video call from " + tx.msg.data.creator).then((e) => {
-            console.log(e, 'result')
             if (e === false) {
                 salert("Video call rejected")
                 return;
@@ -1338,8 +1249,9 @@ class Stun extends ModTemplate {
             delete this.peer_connections[i];
             console.log('closing peer connection', this.peer_connections);
         }
+        this.room.peers = this.room.peers.filter(p => p !== peer);
 
-
+        console.log(this.room);
 
         // update database and delete public key from room
     }
@@ -1373,6 +1285,14 @@ class Stun extends ModTemplate {
         this.current_step = 0;
     }
 
+
+    saveCommand(command) {
+        this.commands.push(command)
+    }
+
+    deleteCommand(command) {
+        this.commands = this.commands.filter(c => c.id !== command.id);
+    }
 
 }
 
