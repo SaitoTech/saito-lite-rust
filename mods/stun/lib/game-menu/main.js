@@ -52,14 +52,17 @@ class StunxGameMenu {
               command.callback();
               console.log('got success ping back from peer')
               clearInterval(checkPingInterval);
+              this.mod.deleteCommand(command);
 
             } else if (command.status === "failed") {
               console.log('got failed ping back from peer')
               salert("invite link expired");
               clearInterval(checkPingInterval);
+              this.mod.deleteCommand(command);
             } else {
               salert("invite link expired");
               clearInterval(checkPingInterval);
+              this.mod.deleteCommand(command);
             }
           }
         })

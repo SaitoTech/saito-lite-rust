@@ -1291,6 +1291,10 @@ class Stun extends ModTemplate {
         this.commands.push(command)
     }
 
+    deleteCommand(command) {
+        this.commands = this.commands.filter(c => c.id !== command.id);
+    }
+
 }
 
 module.exports = Stun;
