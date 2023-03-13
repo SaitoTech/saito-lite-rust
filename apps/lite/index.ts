@@ -6,6 +6,7 @@ import { initialize as initSaito } from "saito-js/index.web";
 import S from "saito-js/saito";
 import WebSharedMethods from "saito-js/lib/custom/shared_methods.web";
 import Transaction from "../../lib/saito/transaction";
+import Factory from "../../lib/saito/factory";
 
 class WebMethods extends WebSharedMethods {
   app: Saito;
@@ -57,7 +58,8 @@ async function init() {
       },
       peers: [],
     },
-    new WebMethods(saito)
+    new WebMethods(saito),
+    new Factory()
   );
 
   saito.BROWSER = 1;

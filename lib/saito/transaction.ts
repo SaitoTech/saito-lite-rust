@@ -1049,8 +1049,8 @@ export default class Transaction extends SaitoTransaction {
 
   public get transaction() {
     return {
-      to: this.to,
-      from: this.from,
+      to: this.to.map((slip) => slip.toJson()),
+      from: this.from.map((slip) => slip.toJson()),
       ts: this.timestamp,
       sig: this.signature,
       r: this.txs_replacements, // "replaces" (how many txs this represents in merkle-tree -- spv block)

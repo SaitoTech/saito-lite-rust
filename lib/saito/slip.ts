@@ -17,8 +17,8 @@ import { SLIP_SIZE } from "./transaction";
 // }
 
 export default class Slip extends SaitoSlip {
-  public constructor(data?: any) {
-    super(data);
+  public constructor(data?: any, json?: any) {
+    super(data, json);
   }
 
   // public add: string;

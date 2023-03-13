@@ -10,12 +10,13 @@ import fs from "fs";
 import process from "process";
 import { WebSocket, WebSocketServer } from "ws";
 import configs from "./config/configs.json";
+import Factory from "./lib/saito/factory";
 
 async function initSaito() {
   const app = new Saito({
     mod_paths: mods_config.core,
   });
-  await initS(configs, new NodeSharedMethods(app)).then(() => {
+  await initS(configs, new NodeSharedMethods(app), new Factory()).then(() => {
     console.log("zzzzzzzzzzzzzzz");
   });
 

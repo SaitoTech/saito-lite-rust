@@ -673,7 +673,8 @@ class Arcade extends ModTemplate {
     if (this.debug) {
       console.log("Creating Game Invite: ", JSON.parse(JSON.stringify(tx.msg)));
     }
-
+    console.log("222 : ", tx);
+    tx.presign(this.app);
     tx = this.app.wallet.signTransaction(tx);
 
     return tx;
@@ -1871,20 +1872,22 @@ class Arcade extends ModTemplate {
       }
 
       let newtx = this.createOpenTransaction(gamedata, desired_opponent_publickey);
-      this.app.network.propagateTransaction(newtx);
-      this.app.connection.emit("send-relay-message", {
-        recipient: "PEERS",
-        request: "arcade spv update",
-        data: newtx.transaction,
+      this.app.network.propagateTransaction(newtx).then(() => {
+        console.log("33333 : ", newtx.toJson());
+        this.app.connection.emit("send-relay-message", {
+          recipient: "PEERS",
+          request: "arcade spv update",
+          data: newtx.toJson(),
+        });
+
+        this.addGame(newtx, "mine");
+
+        this.app.connection.emit("arcade-invite-manager-render-request");
+
+        if (gameType == "private") {
+          this.showShareLink(newtx.transaction.sig);
+        }
       });
-
-      this.addGame(newtx, "mine");
-
-      this.app.connection.emit("arcade-invite-manager-render-request");
-
-      if (gameType == "private") {
-        this.showShareLink(newtx.transaction.sig);
-      }
     }
   }
 }
