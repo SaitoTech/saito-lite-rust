@@ -478,16 +478,11 @@
   position: relative; 
 }
 
-
-.withdraw-address-cont input  {
-  border: none;
-  font-size: 1.6rem;
-}
-
-.withdraw_address {
+.saito-overlay-form-input input {
   border: none;
   background: var(--saito-light-shim);
   color: var(--saito-gray-mid);
+  font-size: 1.6rem;
 }
 
 .withdraw-options-cont {
@@ -496,6 +491,7 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--saito-gray-mid);
+  cursor: pointer;
 }
 
 .withdraw-options-cont span {
@@ -544,13 +540,7 @@
   flex-direction: row;
   gap: 1rem;
   transition: all 0.4s ease-in-out;
-  opacity: 0;
   margin-left: 100rem;
-}
-
-.confirm-btn-container.activated {
-  margin-left: 0rem;
-  opacity: 1;
 }
 
 .confirm-btn-container button {
@@ -563,17 +553,8 @@
   flex-direction: column;
   align-items: center;
   gap: 3rem;
-  display: flex;  
-  transform: scale(0);
-  opacity: 0;
+  display: flex; 
   transition: all 0.3s ease-in-out;
-  display: none;
-}
-
-.confirm-msg-container.activated {
-  transform: scale(1);
-  opacity: 1;
-  display: flex;
 }
 
 .confirm-msg-container .withdraw-msg-icon {
@@ -584,22 +565,14 @@
   display: inline-block;
   width: min-content;
   text-align: center;
-  min-width: 20rem;
+  min-width: 40rem;
   font-size: 1.8rem;
+  line-height: 2.8rem;
 }
 
 .confirm-submit {
-  transform: scale(0);
-  opacity: 0;
   transition: all 0.3s ease-in-out;
   justify-content: center;
-  display: none;
-}
-
-.confirm-submit.activated {
-  transform: scale(1);
-  opacity: 1;
-  display: flex;
 }
 
 .hide-element {
@@ -610,6 +583,39 @@
 .fa-circle-notch {
   animation: spin 1.5s ease-in-out infinite;
   -webkit-animation: spin 1.5s ease-in-out infinite;
+}
+
+.dropdown-cont {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.dropdown-cont .saito-overlay-form-input {
+  width: 30%;
+}
+
+.withdraw-info-cont {
+  color: var(--saito-font-color);
+  line-height: 2rem;
+  text-align: center;
+}
+
+.withdraw-info-cont .withdraw-info-title {
+  width: 11rem;
+  display: block;
+}
+
+#withdraw-step-one {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+#withdraw-step-two {
+  gap: 3rem;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes spin {
