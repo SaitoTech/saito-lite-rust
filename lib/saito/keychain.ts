@@ -127,11 +127,11 @@ class Keychain {
           const tmpmsg = this.app.crypto.aesDecrypt(encrypted_msg, this.keys[x].aes_secret);
           if (tmpmsg != null) {
             const tmpx = JSON.parse(tmpmsg);
-console.log("DECRYPTED: " + JSON.stringify(tmpx));
             if (tmpx.module != null) {
               return tmpx;
             }
           } else {
+	    // we appear to have received a message we cannot decrypto
 	  }
         }
       }
