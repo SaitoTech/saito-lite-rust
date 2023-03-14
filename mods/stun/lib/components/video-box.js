@@ -446,7 +446,7 @@ class VideoBox {
         this.updateConnectionMessage("awaiting connection");
         this.receiving_connection = false;
         let interval = setInterval(() => {
-            if (count === 30) {
+            if (count === 60) {
                 if (!this.receiving_connection) {
                     this.disconnectFromPeer(peer, "no connection received");
                 }
@@ -498,25 +498,26 @@ class VideoBox {
                                 clearInterval(checkPingInterval);
                                 stun_mod.deleteCommand(command);
                             } else {
-                                if (count === 5) {
-                                    command = {
-                                        name: 'PING',
-                                        id,
-                                        status: null,
-                                        room_code: this.room_code,
-                                        callback: () => {
-                                            const stun_mod = this.app.modules.returnModule('Stun');
-                                            stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
-                                        }
-                                    }
-                                    this.mod.saveCommand(command);
-                                    this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
-                                }
-                                if (count === 10) {
-                                    this.disconnectFromPeer("cannot reconnect, user is offline");
-                                    clearInterval(checkPingInterval);
-                                    stun_mod.deleteCommand(command);
-                                }
+                                this.updateReconnectionButton(true);
+                                // if (count === 5) {
+                                //     command = {
+                                //         name: 'PING',
+                                //         id,
+                                //         status: null,
+                                //         room_code: this.room_code,
+                                //         callback: () => {
+                                //             const stun_mod = this.app.modules.returnModule('Stun');
+                                //             stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
+                                //         }
+                                //     }
+                                //     this.mod.saveCommand(command);
+                                //     this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+                                // }
+                                // if (count === 10) {
+                                //     this.disconnectFromPeer("cannot reconnect, user is offline");
+                                //     clearInterval(checkPingInterval);
+                                //     stun_mod.deleteCommand(command);
+                                // }
                             }
                         }
                     })
