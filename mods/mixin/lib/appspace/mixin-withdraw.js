@@ -205,7 +205,7 @@ class MixinWithdraw {
 
         if (document.querySelector("#withdraw-max-btn") != null) {
           document.querySelector("#withdraw-max-btn").onclick = (e) => {
-            let amount_avl = document.querySelector("#withdraw-input-amount").getAttribute('data-amount-avl');
+            let amount_avl = document.querySelector("#withdraw-balance").value;
             document.querySelector("#withdraw-input-amount").value = amount_avl;
           }
         }
