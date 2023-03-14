@@ -491,6 +491,10 @@ class Stun extends ModTemplate {
                         this.app.connection.emit('add-remote-stream-request', publicKey, remoteStream, pc, ui_type, call_type, room_code);
                         console.log('adding remote stream from ', publicKey, '  ', event.streams);
 
+                        if (!this.room.peers.includes(publicKey)) {
+                            this.room.peers.push(publicKey);
+                        }
+
                     });
                     const offer = await pc.createOffer();
                     pc.setLocalDescription(offer);
@@ -1013,7 +1017,6 @@ class Stun extends ModTemplate {
 
     receiveKeyUpdateTransaction(app, tx, conf, blk) {
         if (app.BROWSER !== 1) return;
-
 
         if (!this.gotten_keys) {
             if (tx.msg.data.public_keys.length > 0) {
