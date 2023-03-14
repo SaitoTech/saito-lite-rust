@@ -144,7 +144,6 @@ class Archive extends ModTemplate {
         let num  = 50;
         if (req.data.num != "")  { num = req.data.num; }
         if (req.data.type != "") { type = req.data.type; }
-console.log("loading type: " + type);
         txs = await this.loadTransactions(req.data.publickey, req.data.sig, type, num);
         response.err = "";
         response.txs = txs;
@@ -346,9 +345,6 @@ console.log("TXS to: " + tx.transaction.to.length);
 
 
   async loadTransactions(publickey, sig, type, num) {
-
-console.log("loading txs with publickey: " + publickey);
-console.log("... and type: " + type);
 
     let sql = "";
     let params = {};

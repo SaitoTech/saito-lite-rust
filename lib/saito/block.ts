@@ -114,7 +114,9 @@ class Block {
   affixCallbacks() {
     for (let z = 0; z < this.transactions.length; z++) {
       if (this.transactions[z].transaction.type === TransactionType.Normal) {
+        this.transactions[z].decryptMessage(this.app);
         const txmsg = this.transactions[z].returnMessage();
+console.log("RESULT: " + JSON.stringify(txmsg));
         this.app.modules.affixCallbacks(
           this.transactions[z],
           z,

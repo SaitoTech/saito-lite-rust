@@ -494,7 +494,7 @@ class RedSquare extends ModTemplate {
       for (let z = 0; z < tweets.length; z++) {
         let newtx = new saito.default.transaction();
         newtx.deserialize_from_web(this.app, tweets[z]);
-        this.addTweet(newtx);
+        this.addTweet(newtx, true, true); // prepend and render ?
       }
       this.app.connection.emit("redsquare-home-render-request");
     } catch (err) {
