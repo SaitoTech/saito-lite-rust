@@ -1389,8 +1389,6 @@ class RedSquare extends ModTemplate {
 
     for (let i = 0; i < rows.length; i++) {
 
-console.log("rows["+i+"]: " + rows[i].tx);
-
       //
       // create the transaction
       //

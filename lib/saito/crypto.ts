@@ -408,7 +408,7 @@ class Crypto {
   **/
   isAesEncrypted(msg) {
     if (msg.module) { return false; }
-    if (msg.ct && msg.s && msv.iv) { return true; }
+    if (msg.ct && msg.s && msg.iv) { return true; }
     return false;
   }
 

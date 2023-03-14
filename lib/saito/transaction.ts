@@ -187,7 +187,7 @@ try {
     //
     // regenerate shared secret, because we can't decrypt this
     //
-    let key = app,keychain.returnKey(publickey);
+    let key = app.keychain.returnKey(publickey);
     if (!key.aes_secret) {
       app.connection.emit("encrypt-key-exchange", (publickey));
       return;
