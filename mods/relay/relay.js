@@ -85,9 +85,6 @@ class Relay extends ModTemplate {
               // forward to peer
               //
               let peer = this.app.network.peers[i];
-console.log("relaying peer message to peer...");
-console.log("this tx --> " + JSON.stringify(tx.returnMessage()));
-console.log("this peer --> " + peer.returnPublicKey());
               peer.sendRequestAsTransaction("relay peer message", tx.transaction);
             }
         }
@@ -100,20 +97,14 @@ console.log("this peer --> " + peer.returnPublicKey());
 
     async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
-console.log("IN RELAY: handlePeerTransaction");
-
       if (tx == null) { return; }
       let message = tx.returnMessage();
-
-console.log("MESSAGE: " + JSON.stringify(message));
 
         try {
 
             let relay_self = app.modules.returnModule("Relay");
 
             if (message.request === "relay peer message") {
-
-console.log("RECEIVED RELAY PEER MESSAGE!");
 
                 //
                 // sanity check on tx
@@ -130,14 +121,10 @@ console.log("RECEIVED RELAY PEER MESSAGE!");
                 inner_tx.decryptMessage(this.app);
                 let inner_txmsg = inner_tx.returnMessage();
 
-console.log("inner TXMSG is: " + JSON.stringify(inner_txmsg));
-
                 //
                 // if interior transaction is intended for me, I process regardless
                 //
                 if (inner_tx.isTo(app.wallet.returnPublicKey())) {
-
-console.log("inner tx is to us, process it!");
 
                     if (inner_txmsg.request === "ping"){
                         this.sendRelayMessage(inner_tx.transaction.from[0].add, "echo", {status:this.busy});
@@ -161,8 +148,6 @@ console.log("inner tx is to us, process it!");
                 //
                 } else {
 
-console.log("inner tx is not to us, relay it");
-
                     //
                     // check to see if original tx is for a peer
                     //
@@ -172,14 +157,9 @@ console.log("inner tx is not to us, relay it");
 
                         if (inner_tx.isTo(app.network.peers[i].peer.publickey)) {
 
-console.log(">");
-console.log("> WE HAVE FOUND PEER TO RELAY");
-console.log(">");
-
                             peer_found = 1;
 
 			    if (this.app.BROWSER == 0) {
-console.log("sending tx with callback");
                               app.network.peers[i].sendTransactionWithCallback(inner_tx, function () {
                                 if (mycallback != null) {
                                     mycallback({ err: "", success: 1 });

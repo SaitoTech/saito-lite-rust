@@ -329,19 +329,10 @@ class Chat extends ModTemplate {
     //
     async handlePeerTransaction(app, tx = null, peer, mycallback) {
 
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("received handle peer tx!");
-
         if (tx == null) { return; }
 
         tx.decryptMessage(app); //In case forwarding private messages
-console.log("#");
-console.log("# decrypted");
-console.log("#");
         let txmsg = tx.returnMessage();
-console.log("peer txmsg is: " + JSON.stringify(txmsg));
 
         if (!txmsg.request) { return; }
 
@@ -373,12 +364,8 @@ console.log("peer txmsg is: " + JSON.stringify(txmsg));
 
         } else if (txmsg.request === "chat message broadcast") {
 
-console.log("RECEIVED CHAT MESSAGE BROADCAST!");
-
             let inner_tx = new saito.default.transaction(txmsg.data);
             let inner_txmsg = inner_tx.returnMessage();
-
-console.log("inner txmsg: " + JSON.stringify(inner_txmsg));
 
 	    //
 	    // if chat message broadcast is received - we are being asked to broadcast this
@@ -389,7 +376,6 @@ console.log("inner txmsg: " + JSON.stringify(inner_txmsg));
                 if (app.BROWSER == 0) {
                   app.network.peers.forEach(p => {
                     if (p.peer.publickey === inner_tx.transaction.to[0].add) {
-console.log("forwarding TX to: " + p.peer.publickey);
                         p.sendTransactionWithCallback(inner_tx, () => { });
                     }
 		    return;
@@ -419,7 +405,6 @@ console.log("forwarding TX to: " + p.peer.publickey);
             //if (app.BROWSER == 0) {
             //    app.network.peers.forEach(p => {
             //        if (p.peer.publickey !== peer.peer.publickey) {
-//console.log("forwarding TX to: " + p.peer.publickey);
             //            p.sendTransactionWithCallback(inner_tx, () => { });
             //        }
             //    });
