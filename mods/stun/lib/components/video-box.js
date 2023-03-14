@@ -263,11 +263,13 @@ class VideoBox {
             }
             else {
                 clearInterval(checkOnlineInterval);
-                this.updateConnectionMessage('re-establishing connection');
+                this.updateConnectionMessage('sending connection request');
+
                 // check if other peer is online, then send a connection.
+                let id = this.app.crypto.stringToBase64(JSON.stringify(peer));
                 let command = {
                     name: 'PING',
-                    id: stun_mod.commands.length,
+                    id,
                     status: null,
                     room_code: this.room_code,
                     callback: () => {
@@ -281,8 +283,6 @@ class VideoBox {
 
                 let count = 0;
                 const checkPingInterval = setInterval(() => {
-                    // console.log(count)
-                    // console.log('checking for ping back from peer')
                     stun_mod.commands.forEach(c => {
                         if (c.id === command.id) {
                             if (command.status === "success") {
@@ -298,7 +298,7 @@ class VideoBox {
                                 if (count === 5) {
                                     command = {
                                         name: 'PING',
-                                        id: stun_mod.commands.length + 5,
+                                        id,
                                         status: null,
                                         room_code: this.room_code,
                                         callback: () => {
@@ -331,17 +331,15 @@ class VideoBox {
             let online = await this.checkOnlineStatus();
             if (!online) {
                 this.updateConnectionMessage('please check internet connectivity');
-                // if (count === 10) {
-                //     clearInterval(checkOnlineInterval)
-                // }
-                // count++;
             } else {
                 clearInterval(checkOnlineInterval)
                 const stun_mod = this.app.modules.returnModule('Stun');
-                this.updateConnectionMessage('re-establishing connection');
+                this.updateConnectionMessage('accepting connection request connection');
+                let id = this.app.crypto.stringToBase64(JSON.stringify(peer));
+                console.log('connecting to id: ', id)
                 let command = {
                     name: 'PING',
-                    id: stun_mod.commands.length,
+                    id,
                     status: null,
                     room_code: this.room_code,
                     callback: () => { }
@@ -365,7 +363,7 @@ class VideoBox {
                                 if (count === 5) {
                                     command = {
                                         name: 'PING',
-                                        id: stun_mod.commands.length + 5,
+                                        id,
                                         status: null,
                                         room_code: this.room_code,
                                         callback: () => { }

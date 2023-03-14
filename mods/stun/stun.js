@@ -441,7 +441,7 @@ class Stun extends ModTemplate {
                     };
 
                     pc.addEventListener('connectionstatechange', e => {
-                        console.log(pc.connectionState, " with ", publicKey);
+                        // console.log(pc.connectionState, " with ", publicKey);
                         if (pc.connectionState !== this.peer_connections[publicKey].connectionState) {
                             console.log('peer objects not equal')
                             return;
@@ -592,7 +592,7 @@ class Stun extends ModTemplate {
                 }
 
                 pc.addEventListener('connectionstatechange', () => {
-                    console.log(pc.connectionState, ' with ', offer_creator);
+                    // console.log(pc.connectionState, ' with ', offer_creator);
                     if (pc.connectionState !== stunx_mod.peer_connections[offer_creator].connectionState) {
                         console.log('peer objects not equal');
                         return;
@@ -1287,6 +1287,8 @@ class Stun extends ModTemplate {
         if (index === -1) {
             this.commands.push(command)
             console.log('new command saved');
+        } else {
+            this.commands[index] = command;
         }
 
 
