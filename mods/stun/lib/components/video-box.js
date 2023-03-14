@@ -1,6 +1,7 @@
 
 const { forEach } = require("jszip");
 const videoBoxTemplate = require("./video-box.template");
+const { setTextRange } = require("typescript");
 // import {applyVideoBackground, } from 'virtual-bg';
 
 
@@ -74,7 +75,21 @@ class VideoBox {
 
 
     attachEvents(app, mod) {
+        const video_box = document.querySelector(`#stream${this.stream_id}`);
+        if (video_box) {
 
+            // setTimeout(() => {
+            //     this.mod.createMediaChannelConnectionWithPeers([this.stream_id], 'large', 'video', this.room_code, false);
+            // }, 15000)
+            video_box.querySelector('#reconnect-button').onclick = () => {
+                this._reconnectCreator(this.stream_id);
+                video_box.querySelector('#reconnect-button button').innerHTML = `<span class="lds-dual-ring2"> </span>`
+                setTimeout(() => {
+                    video_box.querySelector('#reconnect-button').style.opacity = 1;
+                }, 30000)
+            }
+
+        }
     }
 
 
@@ -114,27 +129,17 @@ class VideoBox {
         if (show) {
             // show reconnection button
             this.removeConnectionMessage();
-            if (video_box) {
-                if (!video_box.querySelector('#reconnect-button')) {
-                    video_box.insertAdjacentHTML('beforeend', `<div id="reconnect-button"><button>Reconnect</button></div> `);
-                }
-                console.log(video_box.querySelector('#reconnect-button'));
+            video_box.querySelector('#reconnect-button').style.opacity = 1;
+            console.log(video_box.querySelector('#reconnect-button'));
 
-                video_box.querySelector('#reconnect-button button').onclick = (e) => {
-                    console.log('clicking reconnect button');
-                    this._reconnectCreator(this.stream_id);
-                    setTimeout(() => {
-                        this.mod.createMediaChannelConnectionWithPeers([this.stream_id], 'large', 'video', this.room_code, false);
-                    }, 15000)
-
-                }
-
-            }
         } else {
-            if (video_box.querySelector('#reconnect-button')) {
-                video_box.querySelector('#reconnect-button').parentElement.removeChild(video_box.querySelector('#reconnect-button'));
-            }
-
+            setTimeout(() => {
+                if (video_box.querySelector('#reconnect-button')) {
+                    video_box.querySelector('#reconnect-button').style.opacity = 0;
+                    video_box.querySelector('#reconnect-button button').innerHTML = ""
+                    video_box.querySelector('#reconnect-button button').textContent = "connect"
+                }
+            }, 3000)
         }
     }
 
@@ -219,10 +224,23 @@ class VideoBox {
     }
 
     startWaitTimer(is_creator = false) {
-
+        this.attachEvents(this.app, this.mod)
         if (!is_creator) {
             this.receiving_connection = true;
+
+
         }
+
+        setTimeout(() => {
+            if (is_creator) {
+                const video_box = document.querySelector(`#stream${this.stream_id}`);
+                if (video_box) {
+                    video_box.querySelector('#reconnect-button').style.opacity = 1;
+                }
+            }
+
+        }, 45000)
+
 
         let peer = this.stream_id;
         this.is_creator = is_creator;

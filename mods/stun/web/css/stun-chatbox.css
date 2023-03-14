@@ -323,15 +323,33 @@
 
 #reconnect-button {
   color: var(--saito-white);
-  width: 50%;
+  /* width: 50%; */
   line-height: 1.5;
   position: absolute;
-  display: flex;
+  /* display: flex; */
   align-items: center;
   justify-content: center;
   z-index: 10;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  opacity: 0;
 }
 
+#reconnect-button button {
+  background: var(--saito-primary);
+  text-align: center;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  letter-spacing: 1px;
+  color: var(--saito-white);
+  font-weight: 500;
+  font-size: 1.2rem;
+  border-radius: 0.5rem;
+  min-width: 0;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
 .video-box-container-large > #connection-message > p {
   color: var(--saito-white);
   font-size: 2.8rem;
@@ -408,6 +426,22 @@
   width: 10px;
   height: 10px;
   margin: 8px;
+  border-radius: 50%;
+  border: 6px solid var(--saito-white);
+  border-color: var(--saito-white) transparent var(--saito-white) transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+
+.ls-dual-ring2 {
+  display: inline-block;
+}
+
+.lds-dual-ring2:after {
+  content: " ";
+  display: block;
+  width: 10px;
+  height: 10px;
+  /* margin: 8px; */
   border-radius: 50%;
   border: 6px solid var(--saito-white);
   border-color: var(--saito-white) transparent var(--saito-white) transparent;
