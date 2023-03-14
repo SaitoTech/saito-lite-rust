@@ -784,11 +784,6 @@ class Network {
 
         try {
           peer.peer.keylist = JSON.parse(buffer.toString("utf8"));
-console.log(" - ");
-console.log(" - ");
-console.log(" - ");
-console.log("KEYLIST UPDATE: " + JSON.stringify(peer.peer.keylist));
-
         } catch (err) {
           console.error("ERROR parsing peer services list or setting services in peer");
         }
@@ -1019,8 +1014,8 @@ console.log("KEYLIST UPDATE: " + JSON.stringify(peer.peer.keylist));
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
 
-tx.decryptMessage(this.app);
-console.log("RECEIVED: " + JSON.stringify(tx.returnMessage()));
+	// TODO - is this needed? or do it manually in mods
+	//tx.decryptMessage(this.app);
        
         let app = this.app;
 
