@@ -592,7 +592,7 @@ class Stun extends ModTemplate {
                 }
 
                 pc.addEventListener('connectionstatechange', () => {
-                    console.log(pc.connectionState, ' with ', offer_creator)
+                    console.log(pc.connectionState, ' with ', offer_creator);
                     if (pc.connectionState !== stunx_mod.peer_connections[offer_creator].connectionState) {
                         console.log('peer objects not equal');
                         return;
@@ -718,7 +718,7 @@ class Stun extends ModTemplate {
                     reply.ice_candidates.push(ice.candidate);
                 }
                 pc.onconnectionstatechange = e => {
-                    console.log("connection state ", pc.connectionState)
+                    // console.log("connection state ", pc.connectionState)
                     switch (pc.connectionState) {
                         // case "connecting":
                         //     this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, ui_type);
