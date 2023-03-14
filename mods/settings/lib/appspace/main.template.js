@@ -1,7 +1,8 @@
 module.exports = SettingsAppspaceTemplate = (app) => {
 
   let key = app.keychain.returnKey({ publickey : app.wallet.returnPublicKey()});
-  let identifier_registered = key.identifier || "";
+  let identifier_registered = "";
+  if (key != null) { identifier_registered = key.identifier || ""; }
   if (identifier_registered == "") {
     identifier_registered = `
     <span id="register-identifier-btn" style="cursor:pointer" class="register-identifier-btn settings-appspace-link">Register a username</span>
@@ -70,6 +71,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
           <div class="saito-button-secondary small" id="restore-privatekey-btn">Import Key</div>
           <div class="saito-button-secondary small"id="restore-account-btn">Restore Wallet</div>
           <div class="saito-button-secondary small"id="backup-account-btn">Backup Wallet</div>
+          <div class="saito-button-secondary small"id="nuke-account-btn">Nuke Account</div>
         </div>
       </div>
     </div>

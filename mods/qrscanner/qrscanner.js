@@ -168,7 +168,7 @@ class QRScanner extends ModTemplate {
   returnScannerHTML() {
     return `
       <div class="qrscanner-container">
-        <div id="qr-target" class="qr-target"></div>
+        <div id="qr-target" class="qr-target"><div class="corners"></div></div>
         <div id="scanline" class="scanline"></div>
         <div id="close-scanner" class="close-scanner"><i class="fa-solid fa-xmark"></i></div>
         <div class="video-container">

@@ -57,17 +57,23 @@ class Library extends ModTemplate {
     //
     // array of content our modules care about
     //
+    // the information stored will look like this
+    //
+    //    module : "Nwasm" ,
+    //    mod : this ,     
+    //    collection : "Nwasm" ,
+    //    key : this.nwasm.random ,
+    //    shouldArchive : (request="", subrequest="") => {
+    //      if (request === "archive rom" || subrequest === "archive rom") { return true; }
+    //      return false;
+    //    },
+    //
     this.monitor = [];
 
     //
     //
     //
     this.load();
-
-console.log(" - ");
-console.log(" - loaded library...");
-console.log(" - ");
-console.log(JSON.stringify(this.library));
 
     //
     // index transactions that are saved
@@ -113,15 +119,15 @@ console.log("---------------------");
 	  if (this.monitor[i].shouldArchive(request, subrequest)) {
 
 	    if (contains_item == false) {
-	        let item = {
-  		  id : id ,
-		  title : txmsg.title ,
-		  description : "" ,
-		  num : 1 ,			// total
-		  available : 1 ,		// total available
-		  checkout : [] ,
-		  sig : sig
-	        }
+	      let item = {
+  		id : id ,
+		title : txmsg.title ,
+		description : "" ,
+		num : 1 ,			// total
+		available : 1 ,		// total available
+		checkout : [] ,
+		sig : sig
+	      }
 	      if (!this.library[module])       { this.library[module] = {}; }
 	      if (!this.library[module].local) { this.library[module].local = []; }
 	      if (!this.library[module].peers) { this.library[module].peers = {}; }

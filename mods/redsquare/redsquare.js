@@ -307,6 +307,13 @@ class RedSquare extends ModTemplate {
     // redsquare -- fetch community tweets
     //
     if (service.service === "redsquare") {
+
+      // make sure we have at least one peer for tweets
+
+      if (!this.peers_for_tweets.includes(peer)) {
+        this.peers_for_tweets.push(peer);
+      }
+
       if (this.app.browser.returnURLParameter('tweet_id')) { return; }
       if (this.app.browser.returnURLParameter('user_id')) { return; }
       // needs be the same as in loadMoreTweets
@@ -375,16 +382,16 @@ class RedSquare extends ModTemplate {
           this.results_loaded = true;
           let x = [];
           for (let z = 0; z < txs.length; z++) {
-	    if (txs[z].transaction.sig === tweet_id) {
+            if (txs[z].transaction.sig === tweet_id) {
               let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
               x.push(tweet);
-	    }
+            }
           }
-	  for (let z = 0; z < txs.length; z++) {
-	    if (txs[z].transaction.sig !== tweet_id) {
+          for (let z = 0; z < txs.length; z++) {
+            if (txs[z].transaction.sig !== tweet_id) {
               let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
               x[0].addTweet(tweet);
-	    }
+            }
           }
           this.app.connection.emit('redsquare-home-thread-render-request', x);
         }, false, false);
@@ -646,6 +653,7 @@ class RedSquare extends ModTemplate {
   }
 
   loadMoreNotifications() {
+
     this.increment_for_notifications++;
     let pre_existing_notifications = this.notifications.length;
     let loaded_notifications = false;
@@ -668,6 +676,7 @@ class RedSquare extends ModTemplate {
     }
   }
   loadNotificationsFromPeer(peer, increment = 1, post_load_callback = null) {
+
     this.app.storage.loadTransactionsFromPeer("RedSquare", (10 * increment), peer, (txs) => {
 
       if (!this.peers_for_notifications.includes(peer)) {
@@ -730,6 +739,7 @@ class RedSquare extends ModTemplate {
 
 
   loadTweetsFromPeer(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
+
     let txs = [];
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs, tweet_to_track = null) => {
       if (to_track_tweet) {
@@ -811,7 +821,6 @@ class RedSquare extends ModTemplate {
           this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
         }
 
-
       }
 
       //
@@ -830,9 +839,7 @@ class RedSquare extends ModTemplate {
         }
         return;
       }
-
     }
-
 
     //
     // if this is a like, we can avoid adding it to our tweet index
@@ -848,7 +855,7 @@ class RedSquare extends ModTemplate {
     //
     // this is a post
     //
-    if (tweet.parent_id === "" || (tweet.parent_id === tweet.thread_id && tweet.parent_id === tweet.tx.transaction.sig)) {
+    if (tweet.parent_id === "") {
 
       //
       // we do not have this tweet indexed, it's new
@@ -862,7 +869,7 @@ class RedSquare extends ModTemplate {
         if (prepend == false) {
           for (let i = 0; i < this.tweets.length; i++) {
             if (this.tweets[i].updated_at > tweet.updated_at) {
-              insertion_index++;
+              //insertion_index++;
               break;
             } else {
               insertion_index++;
@@ -871,20 +878,23 @@ class RedSquare extends ModTemplate {
         }
 
         //
+        // add unknown children if possible
+        //
+        for (let i = 0; i < this.unknown_children.length; i++) {
+	  if (this.unknown_children[i].thread_id === tweet.tx.transaction.sig) {
+            if (this.tweets[insertion_index].addTweet(this.unknown_children[i]) == 1) {
+              this.unknown_children.splice(i, 1);
+              i--;
+            }
+	  }
+        }
+
+        //
         // and insert it
         //
         this.tweets.splice(insertion_index, 0, tweet);
         this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
 
-        //
-        // add unknown children if possible
-        //
-        for (let i = 0; i < this.unknown_children.length; i++) {
-          if (this.tweets[insertion_index].addTweet(this.unknown_children[i]) == 1) {
-            this.unknown_children.splice(i, 1);
-            i--;
-          }
-        }
 
       } else {
 
@@ -1017,7 +1027,7 @@ class RedSquare extends ModTemplate {
           .then(res => res.text())
           .then(data => {
 
-console.log("fetched link now processing...");
+            console.log("fetched link now processing...");
 
             // prettify html - unminify html if minified
             let html = prettify(data);
@@ -1240,10 +1250,10 @@ console.log("fetched link now processing...");
       //
       // fetch supporting link properties
       //
-console.log("SERVER FETCHING OPEN GRAPH PROPERTIES!");
-console.log("this is for: " + tweet.text);
+      console.log("SERVER FETCHING OPEN GRAPH PROPERTIES!");
+      console.log("this is for: " + tweet.text);
       tweet = await tweet.generateTweetProperties(app, this, 1);
-console.log("DONE: " + JSON.stringify(tweet.link_properties));
+      console.log("DONE: " + JSON.stringify(tweet.link_properties));
 
 
       let type_of_tweet = 0; // unknown
@@ -1320,7 +1330,7 @@ console.log("DONE: " + JSON.stringify(tweet.link_properties));
         $tx_size: tx_size
       };
 
-console.log("ABOUT TO INSERT!");
+      console.log("ABOUT TO INSERT!");
 
       await app.storage.executeDatabase(sql, params, "redsquare");
 
@@ -1373,11 +1383,13 @@ console.log("ABOUT TO INSERT!");
 
     let hex_entries = [];
 
-    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 1400000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 3`;
+    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 AND moderated IS NOT 1) AND (((num_replies > 0 OR num_likes > 0) AND parent_id IS NOT "") OR (parent_id IS "")) AND (sig IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10)) OR (thread_id IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10))  ORDER BY created_at ASC LIMIT 20`;
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 
     for (let i = 0; i < rows.length; i++) {
+
+console.log("rows["+i+"]: " + rows[i].tx);
 
       //
       // create the transaction
@@ -1388,11 +1400,75 @@ console.log("ABOUT TO INSERT!");
       tx.optional.num_retweets = rows[i].num_retweets;
       tx.optional.num_likes = rows[i].num_likes;
       tx.optional.flagged = rows[i].flagged;
-
       let hexstring = tx.serialize_to_web(this.app);
       hex_entries.push(hexstring);
 
     }
+
+/*****
+    //
+    // get the parent posts
+    //
+    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 1400000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 4`;
+    let params = {};
+    let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
+
+    for (let i = 0; i < rows.length; i++) {
+
+      //
+      // create the transaction
+      //
+      let tx = new saito.default.transaction();
+      tx.deserialize_from_web(this.app, rows[i].tx);
+
+let txmsg = tx.returnMessage();
+console.log("TX: ");
+console.log(rows[i].tx.msg);
+
+      tx.optional.num_replies = rows[i].num_replies;
+      tx.optional.num_retweets = rows[i].num_retweets;
+      tx.optional.num_likes = rows[i].num_likes;
+      tx.optional.flagged = rows[i].flagged;
+      let hexstring = tx.serialize_to_web(this.app);
+      hex_entries.push(hexstring);
+
+    }
+
+    //
+    // get the most engaging children
+    //
+    for (let z = 0; z < rows.length; z++) {
+
+      //
+      // fetch best child
+      //
+      let sql2 = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 1400000 AND tx_size > 1500 AND parent_id = $parent_id ORDER BY num_likes, num_replies DESC LIMIT 1`;
+      let params2 = {
+        $parent_id : rows[i].sig
+      };
+      let rows2 = await this.app.storage.queryDatabase(sql2, params2, "redsquare");
+
+      for (let ii = 0; ii < rows.length; ii++) {
+
+        //
+        // create the transaction
+        //
+        let tx = new saito.default.transaction();
+        tx.deserialize_from_web(this.app, rows[ii].tx);
+        tx.optional.num_replies = rows[ii].num_replies;
+        tx.optional.num_retweets = rows[ii].num_retweets;
+        tx.optional.num_likes = rows[ii].num_likes;
+        tx.optional.flagged = rows[ii].flagged;
+        let hexstring = tx.serialize_to_web(this.app);
+        hex_entries.push(hexstring);
+
+      }
+
+    }
+*****/
+
+
+
 
     try {
 

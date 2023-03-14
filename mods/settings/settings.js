@@ -30,11 +30,12 @@ class Settings extends ModTemplate {
 
     let settings_self = this;
     this.app.connection.on("update_identifier", (publickey) => {
-console.log("testing update identifier event");
+      console.log("testing update identifier event");
       if (document.getElementById("register-identifier-btn")) {
         if (publickey === settings_self.app.wallet.returnPublicKey()) {
           let username = settings_self.app.keychain.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
           document.getElementById("register-identifier-btn").innerHTML = username;
+          document.getElementById("register-identifier-btn").onclick = null;
         }
       }
     });
@@ -97,6 +98,10 @@ console.log("testing update identifier event");
           icon: "fa-solid fa-radiation",
 	        rank: 130 ,
           callback: function (app, id) {
+	    app.keychain.keys = [];
+	    app.keychain.groups = [];
+	    app.keychain.saveKeys();
+	    app.keychain.saveGroups();
             app.wallet.resetWallet();
           }
         },

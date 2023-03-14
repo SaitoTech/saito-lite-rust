@@ -1,5 +1,6 @@
 const SettingsAppspaceTemplate = require('./main.template.js');
 const RegisterUsernameModal = require('./../../../../lib/saito/ui/modals/register-username/register-username.js');
+const SetupRecoveryOverlay = require('./../../../../lib/saito/ui/modals/backup/backup.js');
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 const jsonTree = require('json-tree-viewer');
@@ -22,6 +23,8 @@ class SettingsAppspace {
 
   render() {
 
+alert("1");
+
     this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod));
 
     let settings_appspace = document.querySelector(".settings-appspace");
@@ -37,16 +40,24 @@ class SettingsAppspace {
     //debug info
     let el = document.querySelector(".settings-appspace-debug-content");
 
+alert("2");
+
     try {
       let optjson = JSON.parse(JSON.stringify(this.app.options, (key, value) =>
             typeof value === 'bigint'
                 ? value.toString()
                 : value // return everything else unchanged
         ));
+
+console.log("A");
+console.log(JSON.stringify(optjson));
+alert("2.5");
       var tree = jsonTree.create(optjson, el);
+alert("3");
     } catch (err) {
       console.log("error creating jsonTree: " + err);
     }
+alert("4");
 
     this.attachEvents();
 
@@ -70,9 +81,12 @@ class SettingsAppspace {
       }
 
       document.getElementById("register-identifier-btn").onclick = function (e) {
-       mod.modal_register_username = new RegisterUsernameModal(app, mod);
-       mod.modal_register_username.render(app, mod);
-       mod.modal_register_username.attachEvents(app, mod);
+       if (!mod.modal_register_username){
+        mod.modal_register_username = new RegisterUsernameModal(app, mod, null); 
+       }
+       
+       mod.modal_register_username.render();
+
       }
 
       document.querySelector(".settings-appspace-see-privatekey").onclick = function (e) {
@@ -138,11 +152,13 @@ class SettingsAppspace {
         navigator.clipboard.writeText(app.wallet.returnPublicKey());
         salert("Public key copied");
       }
-      /*
-          document.getElementById('reset-account-btn').onclick = async (e) => {
+      document.getElementById('nuke-account-btn').onclick = async (e) => {
       
-            confirmation = await sconfirm('This will reset your account, do you wish to proceed?');
+            confirmation = await sconfirm('This will reset/nuke your account, do you wish to proceed?');
             if (confirmation) {
+
+	      app.options.keys = [];
+	      app.options.groups = [];
               app.wallet.resetWallet();
               app.modules.returnModule('Arcade').onResetWallet();
               app.storage.resetOptions();
@@ -156,8 +172,7 @@ class SettingsAppspace {
       
               app.blockchain.resetBlockchain();
             }
-          };
-      */
+      };
 
       document.getElementById('restore-privatekey-btn').onclick = async (e) => {
 

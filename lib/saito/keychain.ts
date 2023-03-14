@@ -205,7 +205,7 @@ class Keychain {
   isWatched(publickey) {
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey == publickey || this.keys[x].isIdentifier(publickey)) {
-        if (this.keys[x].isWatched()) {
+        if (this.keys[x].watched == true) {
           return true;
         }
       }
@@ -253,29 +253,37 @@ class Keychain {
     //
     // if keys exist
     //
+    let key_idx = -1;
     for (let x = 0; x < this.keys.length; x++) {
       let match = true;
       for (let key in data) {
         if (this.keys[x][key] !== data[key]) {
           match = false;
+	  key_idx = -1;
+        } else {
+	  if (match != false && this.keys[x][key] === data[key]) {
+	    key_idx = x;
+	  }
         }
       }
-      if (match == true) {
-        return this.keys[x];
-      }
+    }
+    if (key_idx != -1) {
+      return this.keys[key_idx];
     }
 
     //
     // no match - maybe we have a module that has cached this information?
     //
-    if (data.identifier && !data.publickey) {
-      this.app.modules.getRespondTos("saito-return-key").forEach((modResponse) => {
-	let key = modResponse.returnKey(data);
-	if (key) { return key; }
-      });
-    }
+    let return_key = null;
+    this.app.modules.getRespondTos("saito-return-key").forEach((modResponse) => {
+      let key = modResponse.returnKey(data);
+      if (key != null) { 
+	return_key = key; 
+      }
+    });
 
-    return null;
+    return return_key;
+
   }
 
   returnKeys(data = null) {
@@ -315,6 +323,7 @@ class Keychain {
   }
 
   saveKeys() {
+console.log("saving keys: " + JSON.stringify(this.keys));
     this.app.options.keys = this.keys;
     this.app.storage.saveOptions();
   }
@@ -417,7 +426,7 @@ class Keychain {
   returnWatchedPublicKeys() {
     const x = [];
     for (let i = 0; i < this.keys.length; i++) {
-      if (this.keys[i].isWatched() && this.keys[i].lc) {
+      if (this.keys[i].watched) {
         x.push(this.keys[i].publickey);
       }
     }
@@ -431,23 +440,19 @@ class Keychain {
   }
 
   updateCryptoByPublicKey(publickey, aes_publickey = "", aes_privatekey = "", shared_secret = "") {
-    console.log("updating crypto for: " + publickey);
+
+console.log(" > ");
+console.log(" > ");
+console.log(" > ");
+console.log("updating crypto by publickey...: " + publickey);
 
     if (publickey == "") {
       return;
     }
 
-    this.addKey(publickey);
+    this.addKey(publickey, { aes_publickey : aes_publickey , aes_privatekey : aes_privatekey , aes_secret : shared_secret});
 
-    for (let x = 0; x < this.keys.length; x++) {
-      console.log("TESTING: " + this.keys[x].publickey + " -- " + this.keys[x].lc);
-      if (this.keys[x].publickey == publickey && this.keys[x].lc) {
-        console.log("UPDATING: " + shared_secret);
-        this.keys[x].aes_publickey = aes_publickey;
-        this.keys[x].aes_privatekey = aes_privatekey;
-        this.keys[x].aes_secret = shared_secret;
-      }
-    }
+console.log("key added!");
 
     this.saveKeys();
 

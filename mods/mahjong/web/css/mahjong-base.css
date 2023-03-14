@@ -5,6 +5,11 @@ body {
   margin: 0px;
 }
 
+.logobox .status-header, .logobox .status-text-menu{
+  background-color: #fffe
+}
+
+
 .main {
   margin: 0 0 0 0 ;
   padding: 0 0 0 0 ;
@@ -98,7 +103,7 @@ body {
 
 .gameboard {
   position: absolute;
-  background-image: url("img/gameboard.jpg");
+  background-image: url("/mahjong/img/gameboard.jpg");
   background-size: cover;
   width: 100vw;
   height: 100vh;

@@ -1,14 +1,16 @@
 const JoinGameOverlay = require("./overlays/join-game");
 const InviteTemplate = require("./invite.template");
+const InviteTemplateSparse = require("./invite.template.sparse");
 const JSON = require('json-bigint');
 
 class Invite {
 	
-  constructor(app, mod, container="", tx=null) {
+  constructor(app, mod, container, type, tx=null) {
 
     this.app = app;
     this.mod = mod;
     this.container = container;
+    this.type = type;
 
     //
     // information may be stored in different places, so we 
@@ -28,6 +30,9 @@ class Invite {
       game_mod: null,
       game_slug: "",
       game_type: "standard game",
+      winner: "",
+      method: "",
+      time_finished: 0,
     };
 
     //
@@ -43,6 +48,10 @@ class Invite {
       this.invite_data.originator = txmsg.originator;
       this.invite_data.players = txmsg.players;
       this.invite_data.players_needed = txmsg.players_needed;
+
+      if (txmsg.winner) { this.invite_data.winner = txmsg.winner; }
+      if (txmsg.method) { this.invite_data.method = txmsg.method; }
+      if (txmsg.time_finished) { this.invite_data.time_finished = txmsg.time_finished; }
 
       //We still don't know the exact data structures for specified invite(s)
       //But it isn't going to be a single string pushed into an array!
@@ -109,10 +118,17 @@ class Invite {
       console.log("Rendering Invite into: ", this.container);
     }
 
+    let html = "";
+    if (this.type == "sparse"){
+      html = InviteTemplateSparse(this.app, this.mod, this.invite_data);
+    }else{
+      html = InviteTemplate(this.app, this.mod, this.invite_data);
+    }
+
     if (this.container && document.querySelector(this.container)) {
-      this.app.browser.addElementToSelector(InviteTemplate(this.app, this.mod, this.invite_data), this.container);
+      this.app.browser.addElementToSelector(html, this.container);
     } else {
-      this.app.browser.replaceElementBySelector(InviteTemplate(this.app, this.mod, this.invite_data), ".arcade-invites");
+      this.app.browser.replaceElementBySelector(html, ".arcade-invites");
     }
     this.attachEvents();
   }

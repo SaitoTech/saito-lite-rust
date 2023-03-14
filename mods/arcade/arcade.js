@@ -3,6 +3,7 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeMain = require("./lib/main/main");
 const SaitoHeader = require("./../../lib/saito/ui/saito-header/saito-header");
 const InviteManager = require("./lib/invite-manager");
+const GameManager = require("./lib/game-manager");
 const GameWizard = require("./lib/overlays/game-wizard");
 const GameSelector = require("./lib/overlays/game-selector");
 const GameScheduler = require("./lib/overlays/game-scheduler");
@@ -131,6 +132,7 @@ class Arcade extends ModTemplate {
             game_tx.transaction.sig = game.id;
             game_tx.msg = msg;
 
+
             console.log("Processing games from app.options:");
 
             //
@@ -184,9 +186,23 @@ class Arcade extends ModTemplate {
               }
             }
 
+            //
+            //Game Meta Data stored directly in DB
+            //
+            game_tx.msg.winner = record.winner;
+            game_tx.msg.method = record.method;
+            game_tx.msg.time_finished = record.time_finished;
+            
             if (arcade_self.debug){
               console.log("Load DB Game: " + record.status, game_tx.returnMessage());
             }
+            if (record.time_finished){
+              if (record.status !== "over" && record.status !== "close"){
+                console.log("Game status mismatch");
+                record.status = "close";
+              }
+            }
+
             //
             //record.status will overwrite the open/private msg.request from the original game invite creation
             //
@@ -277,7 +293,7 @@ class Arcade extends ModTemplate {
   //
   canRenderInto(qs) {
     if (qs === ".redsquare-sidebar") { return true; }
-    if (qs == ".league-overlay-league-body-games-list") { return true; }
+    if (qs == ".league-overlay-games-list") { return true; }
     return false;
   }
 
@@ -308,18 +324,15 @@ class Arcade extends ModTemplate {
       }
     }
 
-    if (qs == ".league-overlay-league-body-games-list") {
+    if (qs == ".league-overlay-games-list") {
       if (!this.renderIntos[qs]) {
         this.styles = ['/arcade/css/arcade-overlays.css', '/arcade/css/arcade-invites.css'];
         this.renderIntos[qs] = [];
-        let obj = new InviteManager(this.app, this, ".league-overlay-league-body-games-list");
-        obj.type = "long";
-        obj.lists = ["open", "active", "over"];
+        let obj = new GameManager(this.app, this, ".league-overlay-games-list");
         this.renderIntos[qs].push(obj);
         this.attachStyleSheets();
       }
     }
-
 
     if (this.renderIntos[qs] != null && this.renderIntos[qs].length > 0) {
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
@@ -690,7 +703,6 @@ class Arcade extends ModTemplate {
     let start_bid = (blk != null) ? blk.block.id : BigInt(1);
 
     let created_at = parseInt(tx.transaction.ts);
-    let expires_at = created_at + 60000 * 60;
 
     let sql = `INSERT OR IGNORE INTO games (
                 game_id ,
@@ -702,7 +714,6 @@ class Arcade extends ModTemplate {
                 tx ,
                 start_bid ,
                 created_at ,
-                expires_at ,
                 winner
               ) VALUES (
                 $game_id ,
@@ -714,7 +725,6 @@ class Arcade extends ModTemplate {
                 $tx,
                 $start_bid ,
                 $created_at ,
-                $expires_at ,
                 $winner
               )`;
     let params = {
@@ -727,7 +737,6 @@ class Arcade extends ModTemplate {
       $tx: JSON.stringify(tx.transaction),
       $start_bid: start_bid,
       $created_at: created_at,
-      $expires_at: expires_at,
       $winner: "",
     };
     await this.app.storage.executeDatabase(sql, params, "arcade");
@@ -816,7 +825,7 @@ class Arcade extends ModTemplate {
   // and use an internal message to finish the process (because the sequencing matters!)
   /////////////////////////////////////////////////////////////////////
 
-  createQuitTransaction(orig_tx, reason = "cancellation") {
+  createQuitTransaction(orig_tx, reason) {
 
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
  
@@ -859,7 +868,10 @@ class Arcade extends ModTemplate {
   async changeGameStatus(game_id, newStatus){
     let game = this.returnGame(game_id);
 
-    if (!game){ return; }
+    if (!game){ 
+      console.log("Game not found");
+      return;
+    }
 
     //Move game to different list
     this.removeGame(game_id);  
@@ -882,8 +894,23 @@ class Arcade extends ModTemplate {
 
     await this.changeGameStatus(txmsg.game_id, "over");
 
-    let sql = `UPDATE games SET winner = $winner WHERE game_id = $game_id`;
-    let params = { $winner: txmsg.winner, $game_id: txmsg.game_id };
+    let game = this.returnGame(txmsg.game_id);
+    if (game?.msg){
+      //Store the results locally
+      game.msg.winner = txmsg.winner;
+      game.msg.method = txmsg.reason;
+      game.msg.time_finished = txmsg.ts;
+    }else{
+      console.warn("Game not found");
+    }
+
+    let sql = `UPDATE games SET winner = $winner, method = $method, time_finished = $ts WHERE game_id = $game_id`;
+    let params = { 
+        $winner: txmsg.winner || "", 
+        $method: txmsg.reason, 
+        $ts: txmsg.ts,
+        $game_id: txmsg.game_id, 
+        };
     await this.app.storage.executeDatabase(sql, params, "arcade");
   }
 
@@ -1295,6 +1322,24 @@ class Arcade extends ModTemplate {
   // single player game
   //
   async launchSinglePlayerGame(gameobj) {
+    
+      let opentx = this.createOpenTransaction(gameobj, this.app.wallet.returnPublicKey());
+      
+      this.app.connection.emit("relay-send-message", { recipient: "PEERS", request: "arcade spv update", data: opentx.transaction });
+      this.addGame(opentx, "private");
+
+      opentx.msg.players.splice(0, 1);
+      opentx.msg.players_sigs.splice(0, 1);
+
+      let newtx = this.createAcceptTransaction(opentx);
+      
+      this.app.network.propagateTransaction(newtx);
+      this.app.connection.emit("relay-send-message", { recipient: "PEERS", request: "arcade spv update", data: newtx.transaction });
+  
+      //Start Spinner  
+      this.app.connection.emit("arcade-game-initialize-render-request");
+
+/*
     try {
 
       this.app.connection.emit("arcade-game-initialize-render-request");
@@ -1334,6 +1379,7 @@ class Arcade extends ModTemplate {
       console.log(err);
       return;
     }
+*/
 
   }
 
@@ -1414,6 +1460,9 @@ class Arcade extends ModTemplate {
       for (let i = this.app.options.games.length - 1; i >= 0; i--) {
         if (this.app.options.games[i].module === "" && this.app.options.games[i].id.length < 25) {
           this.app.options.games.splice(i, 1);
+        }else if (this.app.options.games[i].players_set == 0){
+          //This will be games created but not fully initialized for whatever reason
+          this.app.options.games.splice(i, 1);
         }
       }
     }
@@ -1491,7 +1540,9 @@ class Arcade extends ModTemplate {
 
       let game = this.games[key].find((g) => g.transaction.sig == game_id);
       if (game) { 
-        console.log(`Game found in ${key} list`);
+        if (this.debug){
+          console.log(`Game found in ${key} list`);
+        }
         return game; 
       }
     }
