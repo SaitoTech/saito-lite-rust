@@ -138,7 +138,7 @@ class VideoBox {
 
 
 
-    async handleConnectionStateChange(peer, connectionState, is_creator = false) {
+    async handleConnectionStateChange(peer, connectionState) {
 
         let video_box = document.querySelector(`#stream${this.stream_id}`);
         let connection_message = document.querySelector('#connection-message');
@@ -165,7 +165,7 @@ class VideoBox {
                 video_box.firstElementChild.srcObject = this.stream
 
                 siteMessage(`connection with ${this.stream_id} unstable`, 5000);
-                if (is_creator) {
+                if (this.is_creator) {
                     this.reconnectCreator(peer);
                 } else {
                     this.reconnectRecipient(peer)
@@ -190,6 +190,8 @@ class VideoBox {
 
     startWaitTimer(is_creator = false) {
         let peer = this.stream_id;
+        this.is_creator = is_creator;
+
         this.stopWaitTimer();
         this.waitTimer = setInterval(() => {
             // console.log(this.waitSeconds, is_creator)
@@ -311,7 +313,6 @@ class VideoBox {
                                     // console.log('sending command again');
                                 }
                                 if (count === 10) {
-
                                     this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
                                     clearInterval(checkPingInterval);
                                     stun_mod.deleteCommand(command);
@@ -334,7 +335,7 @@ class VideoBox {
             } else {
                 clearInterval(checkOnlineInterval)
                 const stun_mod = this.app.modules.returnModule('Stun');
-                this.updateConnectionMessage('accepting connection request connection');
+                this.updateConnectionMessage('accepting connection request');
                 let id = this.app.crypto.stringToBase64(JSON.stringify(peer));
                 console.log('connecting to id: ', id)
                 let command = {

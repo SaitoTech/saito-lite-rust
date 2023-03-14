@@ -284,7 +284,7 @@ class VideoChatManager {
 
     updateConnectionState(peer, state) {
         this.createVideoBox(peer)
-        this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state, this.is_creator);
+        this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state);
         switch (state) {
             case "connecting":
                 break;
