@@ -236,8 +236,11 @@ class VideoChatManager {
     }
 
     disconnectOtherPeer(peer) {
+        this.updateImages();
+        console.log("video boxes: after ", this.video_boxes);
         this.removePeer(peer);
         this.mod.closeMediaConnections(peer);
+        // delete this.video_boxes[peer];
         console.log(this.peers);
     }
 
@@ -290,9 +293,7 @@ class VideoChatManager {
                 break;
             case "disconnected":
                 // this.stopTimer();
-                this.updateImages();
-                this.disconnectOtherPeer(peer)
-                console.log("video boxes: after ", this.video_boxes);
+                // this.disconnectOtherPeer(peer)
                 break;
             case "connected":
                 this.startTimer();
