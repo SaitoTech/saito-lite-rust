@@ -14,7 +14,10 @@ module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
           <div class="dropdown-cont">
             <div class="saito-overlay-form-input">
                 <div class="token-dropdown">
-                  <img src="https://saito.io/saito/img/touch/pwa-192x192.png">
+
+                  <div id="withdraw-logo-cont"> 
+                    <img src="https://saito.io/saito/img/touch/pwa-192x192.png">
+                  </div>
                   <select class="withdraw-select-crypto" id="withdraw-select-crypto">
                    
                   </select>
@@ -56,6 +59,7 @@ module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
           <input type="hidden" id="withdraw-balance"  value="0">
           <input type="hidden" id="withdraw-asset-id"  value="">
           <input type="hidden" id="withdraw-sender"  value="">
+          <input type="hidden" id="withdraw-fee"  value="">
 
 
           <div class="saito-overlay-form-submitline form-submit-container">
@@ -69,8 +73,8 @@ module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
           <div class="confirm-msg-container">
             <i class="withdraw-msg-icon fa-solid fa-circle-exclamation"></i>
             <div class="confirm-msg">
-              <span class="withdraw-msg-text">Send</span> <b>42 SAITO</b> to address <b>wcyj2qSvmPsNcbEx9PnjXtNzsDoCf1Xtv9SqWH6wYxnk</b><span class="withdraw-msg-question">?</span> <br>
-              <span>(fee: 25 SAITO)</span>      
+              <span class="withdraw-msg-text">Send</span> <b><span class="withdraw-confirm-amount">42 SAITO</span></b> to address <b><span class="withdraw-confirm-address">wcyj2qSvmPsNcbEx9PnjXtNzsDoCf1Xtv9SqWH6wYxnk</span></b><span class="withdraw-msg-question">?</span> <br>
+              <span class="withdraw-confirm-fee">(fee: 2 SAITO)</span>      
             </div>
           </div>
 

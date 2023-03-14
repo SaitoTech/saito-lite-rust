@@ -484,7 +484,7 @@ console.log(res.data);
 	  for (let i = 0; i < this.mods.length; i++) {
 	    if (this.mods[i].asset_id === asset_id) {
 
-	      if (d.type && d.amount) {
+	      if (d.amount) {
 	        if (callback) {
 		  callback(d.amount);
 	        }

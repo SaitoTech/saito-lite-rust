@@ -75,19 +75,27 @@ console.log("testing update identifier event");
   respondTo(type = "") {
     if (type === 'saito-header') {      
       return [
-	{
-          text: "Theme",
-          icon: "fa-solid fa-moon",
-	  rank: 110 ,
+	      {
+          text: "Scan",
+          icon: "fas fa-expand",
+	        rank: 110 ,
           callback: function (app, id) {
-            let settings_self = app.modules.returnModule("Settings");
-	    settings_self.renderInto(".saito-overlay");
+            app.connection.emit("scanner-start-scanner", {});
           }
         },
-	{
+        {
+          text: "Theme",
+          icon: "fa-solid fa-moon",
+          rank: 120 ,
+          callback: function (app, id) {
+            let settings_self = app.modules.returnModule("Settings");
+             settings_self.renderInto(".saito-overlay");
+          }
+        },
+	      {
           text: "Nuke",
           icon: "fa-solid fa-radiation",
-	  rank: 120 ,
+	        rank: 130 ,
           callback: function (app, id) {
             app.wallet.resetWallet();
           }
