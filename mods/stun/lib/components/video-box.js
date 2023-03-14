@@ -14,6 +14,7 @@ class VideoBox {
     stream_rendered = false;
     waitTimer;
     waitSeconds = 0;
+    is_connected_creator = false;
     receiving_connection = false
 
     constructor(app, mod, ui_type, call_type, central, room_code, peer, container_class) {
@@ -64,6 +65,7 @@ class VideoBox {
             } else {
                 this.stopWaitTimer();
                 this.renderStream({ muted: false })
+                this.is_connected_creator = true;
             }
         } else {
             this.renderPlaceholder(placeholder_info);
@@ -77,7 +79,6 @@ class VideoBox {
     attachEvents(app, mod) {
         const video_box = document.querySelector(`#stream${this.stream_id}`);
         if (video_box) {
-
             // setTimeout(() => {
             //     this.mod.createMediaChannelConnectionWithPeers([this.stream_id], 'large', 'video', this.room_code, false);
             // }, 15000)
@@ -201,7 +202,7 @@ class VideoBox {
                 siteMessage(`connection with ${this.stream_id} unstable`, 5000);
                 if (this.is_creator) {
                     this.updateReconnectionButton(true)
-
+                    this.is_connected_creator = false;
                 } else {
                     // this.reconnectRecipient(peer)
                     this._reconnectRecipient(this.stream_id)
@@ -230,7 +231,7 @@ class VideoBox {
         }
 
         setTimeout(() => {
-            if (is_creator) {
+            if (is_creator && !this.is_connected_creator) {
                 const video_box = document.querySelector(`#stream${this.stream_id}`);
                 if (video_box) {
                     video_box.querySelector('#reconnect-button').style.opacity = 1;
