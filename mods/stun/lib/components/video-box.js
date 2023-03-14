@@ -227,8 +227,6 @@ class VideoBox {
         this.attachEvents(this.app, this.mod)
         if (!is_creator) {
             this.receiving_connection = true;
-
-
         }
 
         setTimeout(() => {
@@ -239,7 +237,7 @@ class VideoBox {
                 }
             }
 
-        }, 45000)
+        }, 60000)
 
 
         let peer = this.stream_id;
@@ -253,10 +251,10 @@ class VideoBox {
             if (this.waitSeconds === 10) {
                 this.handleConnectionStateChange(peer, 'ten_seconds', is_creator)
             }
-            // if (this.waitSeconds === 20) {
-            //     this.handleConnectionStateChange(peer, 'twenty_seconds', is_creator)
-            // }
-            if (this.waitSeconds === 10) {
+            if (this.waitSeconds === 20) {
+                this.handleConnectionStateChange(peer, 'twenty_seconds', is_creator)
+            }
+            if (this.waitSeconds === 50) {
                 this.stopWaitTimer();
                 // this.retry_attempt_no += 1;
                 // if (this.retry_attempt_no > 2) {
