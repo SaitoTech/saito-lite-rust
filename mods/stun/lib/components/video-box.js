@@ -169,7 +169,6 @@ class VideoBox {
                     this.reconnectCreator(peer);
                 } else {
                     this.reconnectRecipient(peer)
-
                 }
                 break;
             case "failed":
