@@ -170,6 +170,9 @@ try {
 
   decryptMessage(app: Saito) {
 try {
+    //
+    // if not ours, decrypt with first from address
+    //
     if (this.transaction.from[0].add !== app.wallet.returnPublicKey()) {
       try {
         if (this.msg === null) {

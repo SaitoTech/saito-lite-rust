@@ -15,6 +15,29 @@ class Recovery extends ModTemplate {
     this.backup_overlay = new SaitoBackup(app, this);
     this.recover_overlay = new SaitoLogin(app, this);
 
+    this.keychain_hash = "";
+
+    app.connection.on("wallet-updated", () => {
+
+      let new_keychain_hash = app.crypto.hash(JSON.stringify(app.keychain.keys) + JSON.stringify(app.keychain.groups));
+      if (new_keychain_hash != this.keychain_hash) {
+
+	this.keychain_hash = new_keychain_hash;
+console.log("our wallet has updated, so rebroadcasting wallet recovery TX");
+	let key = app.keychain.returnKey(app.wallet.returnPublicKey());
+	if (key) {
+	  if (key.wallet_decryption_secret && key.wallet_retrieval_hash) {
+            let newtx = this.createBackupTransaction(key.wallet_decryption_secret, key.wallet_retrieval_hash);
+            this.app.network.propagateTransaction(newtx);
+	  }
+	}
+
+        return;
+
+      }
+    });
+
+
     app.connection.on("recovery-backup-overlay-render-request", (obj) => {
 
       //
@@ -38,7 +61,7 @@ class Recovery extends ModTemplate {
       	//
       	// save email
       	//
-      	this.app.keychain.addKey(this.app.wallet.returnPublicKey(), { email : obj.email });
+      	this.app.keychain.addKey(this.app.wallet.returnPublicKey(), { email : obj.email , wallet_decryption_secret : decryption_secret , wallet_retrieval_hash : retrieval_hash });
 
       	//
       	// and send transaction

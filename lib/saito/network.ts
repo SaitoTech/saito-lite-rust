@@ -1002,6 +1002,7 @@ console.log("KEYLIST UPDATE: " + JSON.stringify(peer.peer.keylist));
       case MessageType.Transaction:
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
+
         //
         // adding TX done in propagate TX
         //
@@ -1018,6 +1019,9 @@ console.log("KEYLIST UPDATE: " + JSON.stringify(peer.peer.keylist));
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
 
+tx.decryptMessage(this.app);
+console.log("RECEIVED: " + JSON.stringify(tx.returnMessage()));
+       
         let app = this.app;
 
         const mycallback = function (response_object) {

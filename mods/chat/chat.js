@@ -329,11 +329,19 @@ class Chat extends ModTemplate {
     //
     async handlePeerTransaction(app, tx = null, peer, mycallback) {
 
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("received handle peer tx!");
+
         if (tx == null) { return; }
 
         tx.decryptMessage(app); //In case forwarding private messages
-
+console.log("#");
+console.log("# decrypted");
+console.log("#");
         let txmsg = tx.returnMessage();
+console.log("peer txmsg is: " + JSON.stringify(txmsg));
 
         if (!txmsg.request) { return; }
 
@@ -365,29 +373,57 @@ class Chat extends ModTemplate {
 
         } else if (txmsg.request === "chat message broadcast") {
 
+console.log("RECEIVED CHAT MESSAGE BROADCAST!");
+
             let inner_tx = new saito.default.transaction(txmsg.data);
             let inner_txmsg = inner_tx.returnMessage();
 
-            if (!inner_txmsg?.group_id) { return; }
+console.log("inner txmsg: " + JSON.stringify(inner_txmsg));
+
+	    //
+	    // if chat message broadcast is received - we are being asked to broadcast this
+	    // to a peer if the inner_tx is addressed to one of our peers.
+	    //
+	    if (inner_tx.transaction.to.length > 0) {
+	      if (inner_tx.transaction.to[0].add != this.app.wallet.returnPublicKey()) {
+                if (app.BROWSER == 0) {
+                  app.network.peers.forEach(p => {
+                    if (p.peer.publickey === inner_tx.transaction.to[0].add) {
+console.log("forwarding TX to: " + p.peer.publickey);
+                        p.sendTransactionWithCallback(inner_tx, () => { });
+                    }
+		    return;
+                  });
+		  return;
+                }
+	      }
+	    }
+
+
+	    // MAR 14
+            //if (!inner_txmsg?.group_id) { return; }
 
             //Chat message broadcast is the Relay to the Chat-services server
             //that handles Community chat and will forward the message as a "chat message"
             //Without relay + handlePeerTransaction, we do not receive community chat messages
 
             //Tell Archive to save a copy of this TX
-            app.connection.emit("archive-save-transaction", { key: inner_txmsg.group_id, type: "Chat", inner_tx });
+            //app.connection.emit("archive-save-transaction", { key: inner_txmsg.group_id, type: "Chat", inner_tx });
 
-            //Forward to all my peers (but not me again) with new request & same data 
+            //
+            // Forward to all my peers (but not me again) with new request & same data 
             //
             // servers can forward if they get chat broadcast
             //
-            if (app.BROWSER == 0) {
-                app.network.peers.forEach(p => {
-                    if (p.peer.publickey !== peer.peer.publickey) {
-                        p.sendTransactionWithCallback(inner_tx, () => { });
-                    }
-                });
-            }
+	    // MAR 14
+            //if (app.BROWSER == 0) {
+            //    app.network.peers.forEach(p => {
+            //        if (p.peer.publickey !== peer.peer.publickey) {
+//console.log("forwarding TX to: " + p.peer.publickey);
+            //            p.sendTransactionWithCallback(inner_tx, () => { });
+            //        }
+            //    });
+            //}
 
             //
             // notify sender if requested
@@ -409,12 +445,17 @@ class Chat extends ModTemplate {
     */
     sendChatTransaction(app, tx) {
 
-        if (tx.msg.message.substring(0, 4) == "<img") {
+        //
+        // won't exist if encrypted
+        //
+        if (tx.msg.message) {
+          if (tx.msg.message.substring(0, 4) == "<img") {
             if (this.inTransitImageMsgSig) {
                 salert("Image already being sent");
                 return;
             }
             this.inTransitImageMsgSig = tx.transaction.sig;
+          }
         }
         if (app.network.peers.length > 0) {
 
@@ -426,11 +467,7 @@ class Chat extends ModTemplate {
                 }
             }
 
-            //We want to send this info unencrypted, so save a copy first
-            let group_id = tx.msg.group_id;
-            tx = app.wallet.signAndEncryptTransaction(tx);
             app.network.propagateTransaction(tx);
-
             app.connection.emit("relay-send-message", { recipient, request: 'chat message broadcast', data: tx.transaction });
 
         } else {
@@ -440,16 +477,35 @@ class Chat extends ModTemplate {
     }
 
 
-    createChatTransaction(group_id, msg) {
+    createChatTransaction(group_id, msg="") {
 
-        let members = this.returnMembers(group_id);
         let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), 0.0, 0.0);
         if (newtx == null) { return; }
 
+        let members = this.returnMembers(group_id);
         for (let i = 0; i < members.length; i++) {
 	    if (members[i] !== this.app.wallet.returnPublicKey()) {
                 newtx.transaction.to.push(new saito.default.slip(members[i]));
 	    }
+        }
+
+	//
+	// swap first two addresses so if private chat we will encrypt with proper shared-secret 
+	//
+	if (newtx.transaction.to.length > 1) {
+	  let x = newtx.transaction.to[0];
+	  newtx.transaction.to[0] = newtx.transaction.to[1];
+	  newtx.transaction.to[1] = x;
+	}
+
+console.log("FIRST RECIPIENT IS NOW: " + newtx.transaction.to[0].add);
+
+        if (msg.substring(0, 4) == "<img") {
+          if (this.inTransitImageMsgSig) {
+              salert("Image already being sent");
+              return;
+          }
+          this.inTransitImageMsgSig = tx.transaction.sig;
         }
 
         newtx.msg = {
@@ -460,8 +516,19 @@ class Chat extends ModTemplate {
             timestamp: new Date().getTime()
         };
 
-        newtx.msg.sig = this.app.wallet.signMessage(JSON.stringify(newtx.msg));
-        newtx = this.app.wallet.signTransaction(newtx);
+	if (members.length == 2) {
+	  //
+	  // the first recipient is ourself, so the second is the one with the shared secret
+	  //
+console.log("from us so sign and encrypt to: " + newtx.transaction.to[0].add);
+let key = this.app.keychain.returnKey(newtx.transaction.to[0].add);
+console.log("pre-encrypt in create!");
+console.log("key should be: " + key.aes_secret);
+          newtx = this.app.wallet.signAndEncryptTransaction(newtx);
+console.log("post-encrypt in create!");
+	} else {
+          newtx = this.app.wallet.signTransaction(newtx);
+	}
         return newtx;
 
     }
@@ -476,18 +543,17 @@ class Chat extends ModTemplate {
             this.inTransitImageMsgSig = null;
         }
 
+        tx.decryptMessage(app);
         let txmsg = tx.returnMessage();
 
         //
         // if to someone else and encrypted 
         // (i.e. I am sending an encrypted message and not waiting for relay)
         //
-        if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
-            if (app.keychain.hasSharedSecret(tx.transaction.to[0].add)) {
-                tx.decryptMessage(app);
-                txmsg = tx.returnMessage();
-            }
-        }
+        //if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
+        //    if (app.keychain.hasSharedSecret(tx.transaction.to[0].add)) {
+        //    }
+        //}
 
 	//
 	// save transaction if private chat
