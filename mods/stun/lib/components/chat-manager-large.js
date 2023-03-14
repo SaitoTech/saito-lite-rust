@@ -301,9 +301,9 @@ class VideoChatManager {
 
             case "failed":
                 // this.stopTimer();
-                this.updateImages();
-                this.disconnectOtherPeer(peer)
-                console.log("video boxes: after ", this.video_boxes);
+                // this.updateImages();
+                // this.disconnectOtherPeer(peer)
+                // console.log("video boxes: after ", this.video_boxes);
 
                 break;
 

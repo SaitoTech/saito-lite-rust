@@ -207,7 +207,7 @@ class VideoBox {
                                             clearInterval(checkPingInterval);
                                             stun_mod.deleteCommand(command);
                                         } else {
-                                            if (count === 10) {
+                                            if (count === 5) {
                                                 command = {
                                                     name: 'PING',
                                                     id: stun_mod.commands.length + 5,
@@ -222,7 +222,7 @@ class VideoBox {
                                                 this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
                                                 console.log('sending command again');
                                             }
-                                            if (count === 20) {
+                                            if (count === 10) {
 
                                                 this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
                                                 clearInterval(checkPingInterval);
@@ -254,10 +254,7 @@ class VideoBox {
                                 id: stun_mod.commands.length,
                                 status: null,
                                 room_code: this.room_code,
-                                callback: () => {
-                                    // const stun_mod = this.app.modules.returnModule('Stun');
-                                    // stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
-                                }
+                                callback: () => { }
                             }
                             this.mod.saveCommand(command);
                             let my_pub_key = this.app.wallet.returnPublicKey();
@@ -265,7 +262,6 @@ class VideoBox {
 
                             let count = 0;
                             const checkPingInterval = setInterval(() => {
-                                // console.log('checking for ping back from peer')
                                 stun_mod.commands.forEach(c => {
                                     if (c.id === command.id) {
                                         if (command.status === "success") {
@@ -276,10 +272,18 @@ class VideoBox {
                                             this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
                                             clearInterval(checkPingInterval);
                                         } else {
-                                            if (count === 10) {
+                                            if (count === 5) {
+                                                command = {
+                                                    name: 'PING',
+                                                    id: stun_mod.commands.length + 5,
+                                                    status: null,
+                                                    room_code: this.room_code,
+                                                    callback: () => { }
+                                                }
+                                                this.mod.saveCommand(command);
                                                 this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
                                             }
-                                            if (count === 20) {
+                                            if (count === 10) {
                                                 this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
                                                 clearInterval(checkPingInterval);
                                                 stun_mod.deleteCommand(command);
@@ -328,7 +332,6 @@ class VideoBox {
                 this.retry_attempt_no += 1;
                 if (this.retry_attempt_no > 2) {
                     console.log('could not establish connection');
-                    this.stopWaitTimer();
                     this.disconnectFromPeer(peer, "cannot connect, please check network");
                     return;
                 }
@@ -373,11 +376,25 @@ class VideoBox {
                                             stun_mod.deleteCommand(command);
                                             this.stopWaitTimer();
                                         } else {
+                                            if (count === 5) {
+                                                command = {
+                                                    name: 'PING',
+                                                    id: stun_mod.commands.length + 5,
+                                                    status: null,
+                                                    room_code: this.room_code,
+                                                    callback: () => {
+                                                        const stun_mod = this.app.modules.returnModule('Stun');
+                                                        stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
+                                                    }
+                                                }
+                                                this.mod.saveCommand(command);
+                                                this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+                                                console.log('sending command again');
+                                            }
                                             if (count === 10) {
-                                                this.disconnectFromPeer(peer, "cannot connect, peer not available");
+                                                this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
                                                 clearInterval(checkPingInterval);
                                                 stun_mod.deleteCommand(command);
-                                                this.stopWaitTimer()
                                             }
                                         }
                                     }
@@ -392,10 +409,6 @@ class VideoBox {
                         let online = await this.checkOnlineStatus();
                         if (!online) {
                             this.updateConnectionMessage('please check internet connectivity');
-                            // if (count === 10) {
-                            //     clearInterval(checkOnlineInterval)
-                            // }
-                            // count++;
                         } else {
                             clearInterval(checkOnlineInterval)
                             const stun_mod = this.app.modules.returnModule('Stun');
@@ -406,8 +419,6 @@ class VideoBox {
                                 status: null,
                                 room_code: this.room_code,
                                 callback: () => {
-                                    // const stun_mod = this.app.modules.returnModule('Stun');
-                                    // stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
                                 }
                             }
                             this.mod.saveCommand(command);
@@ -416,7 +427,6 @@ class VideoBox {
 
                             let count = 0;
                             const checkPingInterval = setInterval(() => {
-                                // console.log('checking for ping back from peer')
                                 stun_mod.commands.forEach(c => {
                                     if (c.id === command.id) {
                                         if (command.status === "success") {
@@ -428,8 +438,21 @@ class VideoBox {
                                             clearInterval(checkPingInterval);
                                             stun_mod.deleteCommand(command);
                                         } else {
+                                            if (count === 5) {
+                                                command = {
+                                                    name: 'PING',
+                                                    id: stun_mod.commands.length + 5,
+                                                    status: null,
+                                                    room_code: this.room_code,
+                                                    callback: () => {
+                                                    }
+                                                }
+                                                this.mod.saveCommand(command);
+                                                this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+                                                console.log('sending command again');
+                                            }
                                             if (count === 10) {
-                                                this.disconnectFromPeer(peer, "cannot connect, peer not available");
+                                                this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
                                                 clearInterval(checkPingInterval);
                                                 stun_mod.deleteCommand(command);
                                             }
