@@ -33,9 +33,6 @@ class MixinHistory {
             let ticker = '';
             let asset_id = '';
 
-            console.log("history ////////////");
-            console.log(this_history);
-
             for (let j=0; j<this_history.mod.mods.length; j++) {
               if (this_history.mod.mods[j].asset_id == d.data[i].asset_id) {
                 ticker = this_history.mod.mods[j].ticker;
