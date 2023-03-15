@@ -87,7 +87,6 @@ class ChatPopup {
       obj = document.querySelector(popup_qs);
       obj.style.left = this.x_pos + "px";
       obj.style.top = this.y_pos + "px";
-      obj.style.zIndex = 10;
     } else {
       this.app.browser.addElementToDom(ChatPopupTemplate(this.app, this.mod, this.group));
     }
@@ -100,7 +99,6 @@ class ChatPopup {
       if (this.x_pos < 0) { this.x_pos = 0; }
       let obj = document.querySelector(popup_qs);
       obj.style.left = this.x_pos + "px";
-      obj.style.zIndex = 10;
     }
 
     //

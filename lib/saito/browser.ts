@@ -1921,7 +1921,7 @@ class Browser {
                 if (this_browser.app.keychain.returnIdentifierByPublicKey(key, true) != key) {
                   el.innerText = this_browser.app.keychain.returnIdentifierByPublicKey(key);
                   el.classList.add('saito-address-' + this_browser.app.keychain.returnIdentifierByPublicKey(key))
-                  console.info('upated ' + key + " to " + this_browser.app.keychain.returnIdentifierByPublicKey(key));
+                  console.info('updated ' + key + " to " + this_browser.app.keychain.returnIdentifierByPublicKey(key));
                 } else {
                   if (!unknown_keys.includes(key)) {
                     unknown_keys.push(key);
