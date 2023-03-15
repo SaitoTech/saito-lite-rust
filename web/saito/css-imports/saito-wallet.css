@@ -273,6 +273,7 @@
   text-align: center;
   background: var(--saito-white);
   color: var(--saito-gray-mid);
+  border: 1px solid var(--saito-font-color);
 }
 
 .mixin-items-container .saito-table-header {
@@ -314,12 +315,11 @@
 }
 
 .mixin-overlay-history {
-  background: #fff;
   min-height: 20rem;
   padding: 1.5rem;
   border-radius: 0.5rem;
-  background: var(--dreamscape);
-  color: var(--saito-white);
+  background: var(--saito-background-color);
+  color: var(--saito-font-color-heavy);
 }
 
 /********************************************************/
