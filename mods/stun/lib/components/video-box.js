@@ -227,9 +227,11 @@ class VideoBox {
     startWaitTimer(is_creator = false) {
         this.attachEvents(this.app, this.mod)
         this.is_creator = is_creator;
-        if (!is_creator) {
-            this.receiving_connection = true;
-        }
+        this.receiving_connection = true;
+
+        // if (!is_creator) {
+        //     this.receiving_connection = true;
+        // }
 
         setTimeout(() => {
             if (is_creator && !this.is_connected_creator) {
@@ -446,7 +448,7 @@ class VideoBox {
         this.updateConnectionMessage("awaiting connection");
         this.receiving_connection = false;
         let interval = setInterval(() => {
-            if (count === 60) {
+            if (count === 75) {
                 if (!this.receiving_connection) {
                     this.disconnectFromPeer(peer, "no connection received");
                 }
