@@ -38,26 +38,30 @@ class WebMethods extends WebSharedMethods {
 }
 
 async function init() {
+  console.log("lite init...");
   const saito = new Saito({ mod_paths: mods_config.lite });
+  await saito.storage.initialize();
+
   await initSaito(
-    {
-      server: {
-        host: "",
-        port: 0,
-        protocol: "",
-        endpoint: {
-          host: "",
-          port: 0,
-          protocol: "",
-        },
-        verification_threads: 0,
-        channel_size: 0,
-        stat_timer_in_ms: 0,
-        thread_sleep_time_in_ms: 0,
-        block_fetch_batch_size: 0,
-      },
-      peers: [],
-    },
+    saito.options,
+    // {
+    //   server: {
+    //     host: "",
+    //     port: 0,
+    //     protocol: "",
+    //     endpoint: {
+    //       host: "",
+    //       port: 0,
+    //       protocol: "",
+    //     },
+    //     verification_threads: 0,
+    //     channel_size: 0,
+    //     stat_timer_in_ms: 0,
+    //     thread_sleep_time_in_ms: 0,
+    //     block_fetch_batch_size: 0,
+    //   },
+    //   peers: [],
+    // },
     new WebMethods(saito),
     new Factory()
   );

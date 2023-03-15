@@ -33,6 +33,7 @@ async function initSaito() {
   //
   global.__webdir = __dirname + "/lib/saito/web/";
 
+  await app.storage.initialize();
   await app.init();
 
   const { protocol, host, port } = app.options.server;

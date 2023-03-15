@@ -85,11 +85,14 @@ class Relay extends ModTemplate {
         // forward to peer
         //
         let peer = this.app.network.peers[i];
-        peer.sendRequestAsTransaction("relay peer message", tx.transaction);
+        this.app.network.sendRequestAsTransaction(
+          "relay peer message",
+          tx.transaction,
+          undefined,
+          peer.peerIndex
+        );
       }
     }
-
-    return;
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {

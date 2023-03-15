@@ -94,20 +94,25 @@ export default class Storage {
   }
 
   async initialize() {
+    console.log("storage.initialize");
     await this.loadOptions();
     this.saveOptions();
     return;
   }
 
   async loadOptions() {
+    console.log("loading options");
     if (typeof Storage !== "undefined") {
       const data = localStorage.getItem("options");
       if (data != "null" && data != null) {
         this.app.options = JSON.parse(data);
+        console.log("loaded from local storage", this.app.options);
       } else {
         try {
+          console.log("fetching options from server...");
           const response = await fetch(`/options`);
           this.app.options = await response.json();
+          console.log("options loaded : ", this.app.options);
           this.saveOptions();
         } catch (err) {
           console.error(err);
@@ -116,7 +121,5 @@ export default class Storage {
     }
   }
 
-  async queryDatabase(sql, params, database) {
-  }
-
+  async queryDatabase(sql, params, database) {}
 }

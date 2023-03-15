@@ -81,11 +81,16 @@ export default class Network {
   }
 
   public async sendRequest(message: string, data: any = "", peer: Peer = null) {
-    throw new Error("not implemented");
+    let buffer = Buffer.from(JSON.stringify(data), "utf-8");
+    return S.getInstance().sendRequest(message, data, peer ? peer.peerIndex : undefined);
   }
 
-  public async sendTransactionWithCallback() {
-    throw new Error("not implemented");
+  public async sendTransactionWithCallback(
+    transaction: Transaction,
+    callback?: any,
+    peerIndex?: bigint
+  ) {
+    return S.getInstance().sendTransactionWithCallback(transaction, callback, peerIndex);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -101,7 +106,14 @@ export default class Network {
     throw new Error("not implemented");
   }
 
-  sendRequestAsTransaction() {}
+  public async sendRequestAsTransaction(
+    message: string,
+    data: any = "",
+    callback?: any,
+    peerIndex?: bigint
+  ) {
+    return S.getInstance().sendRequest(message, data, callback, peerIndex);
+  }
 
   returnPeersWithService() {}
 }
