@@ -204,6 +204,10 @@
   cursor: pointer;
 }
 
+.pubkey-containter:hover i {
+  transform: scale(1.1);
+}
+
 .wallet-infoo {
   padding: 0rem;
   margin: 0rem;
