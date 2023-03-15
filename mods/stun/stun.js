@@ -446,6 +446,16 @@ class Stun extends ModTemplate {
                             console.log('peer objects not equal')
                             return;
                         }
+                        switch (pc.connectionState) {
+                            case "disconnected":
+                                // if (this.room.peers.includes(publicKey)) {
+                                //     this.room.peers = this.room.peers.filter(peer => peer !== publicKey);
+                                // }
+                                break;
+                            default:
+                                ""
+                                break;
+                        }
                         this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                     })
 
@@ -480,6 +490,10 @@ class Stun extends ModTemplate {
                         });
                         this.app.connection.emit('add-remote-stream-request', publicKey, remoteStream, pc, ui_type, call_type, room_code);
                         console.log('adding remote stream from ', publicKey, '  ', event.streams);
+
+                        if (!this.room.peers.includes(publicKey)) {
+                            this.room.peers.push(publicKey);
+                        }
 
                     });
                     const offer = await pc.createOffer();
@@ -605,9 +619,7 @@ class Stun extends ModTemplate {
                         case "connected":
                             break;
                         case "disconnected":
-                            if (this.room.peers.includes(offer_creator)) {
-                                this.room.peers = this.room.peers.filter(peer => peer !== offer_creator);
-                            }
+
                             break;
                         case "failed":
                             // console.log("connection state ", pc.connectionState);
@@ -1006,7 +1018,6 @@ class Stun extends ModTemplate {
     receiveKeyUpdateTransaction(app, tx, conf, blk) {
         if (app.BROWSER !== 1) return;
 
-
         if (!this.gotten_keys) {
             if (tx.msg.data.public_keys.length > 0) {
                 this.room.peers = tx.msg.data.all_peers;
@@ -1247,6 +1258,10 @@ class Stun extends ModTemplate {
         }
         this.room.peers = this.room.peers.filter(p => p !== peer);
 
+        // if (this.room.peers.includes(offer_creator)) {
+        //     this.room.peers = this.room.peers.filter(peer => peer !== offer_creator);
+        // }
+
         console.log(this.room);
 
         // update database and delete public key from room
@@ -1285,7 +1300,7 @@ class Stun extends ModTemplate {
     saveCommand(command) {
         let index = this.commands.findIndex(c => c.id === command);
         if (index === -1) {
-            this.commands.push(command)
+            this.commands.unshift(command)
             console.log('new command saved');
         } else {
             this.commands[index] = command;
