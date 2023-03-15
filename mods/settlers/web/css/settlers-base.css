@@ -7,6 +7,8 @@
   #7bfb15;
   --p4-color: /*#D63;*/
   #9515fb;
+
+  --text-color: #331800;
 }
 
 p {
@@ -14,7 +16,7 @@ p {
 }
 
 .status-text-menu ul li, .status ul li{
-  border-color: #331800;
+  border-color: var(--text-color);
 }
 
 .tip {
@@ -440,7 +442,7 @@ dt {
   width: 100%;
 }
 
-.player-box.c1 .saito-userline, .player-box.c1 .saito-address{
+/*.player-box.c1 .saito-userline, .player-box.c1 .saito-address{
   background-color: var(--p1-color);
 }
 
@@ -454,6 +456,24 @@ dt {
 
 .player-box.c4 .saito-userline, .player-box.c4 .saito-address{
   background-color: var(--p4-color);
+}*/
+
+.player-box.c1 .saito-identicon-box{
+  border: 5px solid var(--p1-color);
+}
+.player-box.c2 .saito-identicon-box{
+  border: 5px solid var(--p2-color);
+}
+.player-box.c3 .saito-identicon-box{
+  border: 5px solid var(--p3-color);
+}
+.player-box.c4 .saito-identicon-box{
+  border: 5px solid var(--p4-color);
+}
+
+.player-box .saito-identicon{
+  width: 100%;
+  height: unset;
 }
 
 /*.producer polygon{
@@ -645,12 +665,20 @@ input[type="checkbox"] {
 /* TradeOverlay --> specify numbers */
 .trade_area {
   height: 72px;
+}
+
+.trade_area > div:first-child{
   text-transform: uppercase;
   text-align: center;
 }
 
-.trade_area.select{
+.trade_area.select > div:first-child{
   cursor: pointer;
+}
+
+.trade_overlay .trade_area .icon:hover{
+  border-color: grey;
+  filter: grayscale(50%);
 }
 
 .offer_icons{
@@ -658,6 +686,8 @@ input[type="checkbox"] {
 }
 .icon_multiplier{
   position: absolute;
+  bottom: 0;
+  right: 2px;
 }
 
 .button {
@@ -785,11 +815,12 @@ ul.horizontal_list li.iconoption {
 }
 
 .pbtrade ul li {
-  width: 100%;
+  width: 45%;
   line-height: 1.5em;
   cursor: pointer;
   list-style: none;
-  border-top: 1px solid var(--saito-skyline-grey);
+  border: 1px solid var(--text-color);
+  text-align: center;
 }
 
 .pbtrade ul li:hover {
@@ -892,9 +923,16 @@ ul.horizontal_list li.iconoption {
   flex-direction: row;
   align-items: center;
   flex-wrap: wrap;
-  /*justify-content: space-between;*/
 }
 
+.player-notice + .tbd {
+  border-top: 1px dashed var(--text-color);
+  padding-top: 0.5em;
+}
+
+.tbd ul{
+  margin-top: 0.5em;
+}
 
 .player-box.notme, .opponents {
   position: absolute;
@@ -1054,7 +1092,7 @@ ul.horizontal_list li.iconoption {
   border-image-repeat: stretch;
   border-style: solid;
   border-image-outset: 10px;
-  color: #331800;
+  color: var(--text-color);
   /*background-blend-mode: darken;*/
 }
 
@@ -1066,7 +1104,7 @@ ul.horizontal_list li.iconoption {
 
 .game-menu {
   background-color: #d3c38df5;
-  color: #331800;
+  color: var(--text-color);
 }
 
 .game-menu-sub-option, .game-menu-sub-sub-option{
