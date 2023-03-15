@@ -174,6 +174,7 @@ try {
     // skip decrypting un-encrypted messages
     //
     if (!app.crypto.isAesEncrypted(this.msg)) {
+console.log("this message is not AesEncrypted!!!");
       return;
     }
 
@@ -188,10 +189,10 @@ try {
     // regenerate shared secret, because we can't decrypt this
     //
     let key = app.keychain.returnKey(publickey);
-    if (!key.aes_secret) {
+    if (key != null) { if (key.aes_secret) {
       app.connection.emit("encrypt-key-exchange", (publickey));
       return;
-    }
+    } }
 
     //
     // now we can try to decryp

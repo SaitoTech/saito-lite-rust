@@ -407,8 +407,17 @@ class Crypto {
    * a plaintext-containing javascript object.
   **/
   isAesEncrypted(msg) {
+console.log("MSG.CT 1: " + msg.ct);
+console.log("MSG.Ct 2: " + JSON.stringify(msg.ct));
+    try {
+      let msg2 = JSON.parse(msg);
+if (msg2.ct) { return true; }
+    } catch (err) {
+      return false;
+    }
     if (msg.module) { return false; }
-    if (msg.ct && msg.s && msg.iv) { return true; }
+    if (msg.ct) { return true; }
+console.log("cannot find ct or s or iv");
     return false;
   }
 
