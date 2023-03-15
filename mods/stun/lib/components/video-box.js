@@ -16,6 +16,7 @@ class VideoBox {
     waitSeconds = 0;
     is_connected_creator = false;
     receiving_connection = false
+    is_connected = false
 
     constructor(app, mod, ui_type, call_type, central, room_code, peer, container_class) {
         this.app = app;
@@ -27,6 +28,7 @@ class VideoBox {
         this.stream_id = peer
         this.containerClass = container_class
         this.retry_attempt_no = 0
+
 
         app.connection.on('mute', (kind, public_key) => {
             if (public_key !== this.stream_id) return;
@@ -57,31 +59,12 @@ class VideoBox {
         })
     }
 
-    render(stream, placeholder_info = null) {
-        this.stream = stream;
-        if (stream !== null) {
-            if (this.stream_id === 'local') {
-                this.renderStream({ muted: true });
-            } else {
-                this.stopWaitTimer();
-                this.renderStream({ muted: false })
-                this.is_connected_creator = true;
-            }
-        } else {
-            this.renderPlaceholder(placeholder_info);
-        }
 
-
-
-    }
 
 
     attachEvents(app, mod) {
         const video_box = document.querySelector(`#stream${this.stream_id}`);
         if (video_box) {
-            // setTimeout(() => {
-            //     this.mod.createMediaChannelConnectionWithPeers([this.stream_id], 'large', 'video', this.room_code, false);
-            // }, 15000)
             video_box.querySelector('#reconnect-button').onclick = () => {
                 this._reconnectCreator(this.stream_id);
                 video_box.querySelector('#reconnect-button button').innerHTML = `<span class="lds-dual-ring2"> </span>`
@@ -93,6 +76,29 @@ class VideoBox {
         }
     }
 
+
+    render(stream, placeholder_info = null) {
+        if (!this.stream) {
+            this.stream = stream;
+        }
+
+        this.stream = stream;
+        if (stream !== null) {
+            if (this.stream_id === 'local') {
+                this.renderStream({ muted: true });
+            } else {
+                this.stopWaitTimer();
+                console.log('wait timer stopped');
+                this.renderStream({ muted: false })
+                console.log('rendering stream ', this.is_creator);
+            }
+        } else {
+            this.renderPlaceholder(placeholder_info);
+        }
+
+
+
+    }
 
 
     renderStream({ muted }) {
@@ -127,7 +133,7 @@ class VideoBox {
 
     updateReconnectionButton(show) {
         const video_box = document.querySelector(`#stream${this.stream_id}`);
-        if (show) {
+        if (show & this.is_creator) {
             // show reconnection button
             this.removeConnectionMessage();
             video_box.querySelector('#reconnect-button').style.opacity = 1;
@@ -184,29 +190,38 @@ class VideoBox {
                 this.updateConnectionMessage(`starting ${this.call_type} chat `);
                 break;
             case "connected":
-                if (this.stream) {
-                    this.removeConnectionMessage();
-                    if (this.streamExists()) {
-                        // this.renderStream({ muted: false });
-                        // this.stream_rendered = true;
-                        this.stopWaitTimer()
-                    }
+
+                this.removeConnectionMessage();
+                this.updateReconnectionButton(false);
+
+                if (this.streamExists()) {
+                    this.renderStream({ muted: false })
+                    console.log('connected')
+                    this.stopWaitTimer()
                 }
+
+                this.is_connected = true
+
+                if (this.is_creator) {
+                    this.updateReconnectionButton(false)
+                }
+
+                console.log('is creator ', this.is_creator, this.stream)
+
                 break;
             case "disconnected":
-                console.log(`#stream${this.stream_id}`, "stream id")
-                this.stream = null
-                this.stream_rendered = false;
-                video_box.firstElementChild.srcObject = this.stream
-
+                console.log(`#stream${this.stream_id}`, "stream id", this.stream)
+                // this.stream = null
+                // this.stream_rendered = false;
+                video_box.firstElementChild.srcObject = this.stream;
                 siteMessage(`connection with ${this.stream_id} unstable`, 5000);
                 if (this.is_creator) {
                     this.updateReconnectionButton(true)
-                    this.is_connected_creator = false;
                 } else {
-                    // this.reconnectRecipient(peer)
                     this._reconnectRecipient(this.stream_id)
                 }
+                this.is_connected = false;
+                console.log('is disconnected ', this.is_creator, this.stream)
                 break;
             case "failed":
 
@@ -224,57 +239,59 @@ class VideoBox {
         }
     }
 
-    startWaitTimer(is_creator = false) {
+    startWaitTimer(is_creator) {
         this.attachEvents(this.app, this.mod)
         this.is_creator = is_creator;
-        this.receiving_connection = true;
 
+        if (!is_creator) {
+            this.receiving_connection = true;
+        }
         // if (!is_creator) {
         //     this.receiving_connection = true;
         // }
+        // this.checkConnectionStatus();
 
-        setTimeout(() => {
-            if (is_creator && !this.is_connected_creator) {
-                const video_box = document.querySelector(`#stream${this.stream_id}`);
-                if (video_box) {
-                    video_box.querySelector('#reconnect-button').style.opacity = 1;
-                }
-            }
-
-        }, 60000)
+        // checking to see if we should show the reconnect button again;
 
 
         let peer = this.stream_id;
-
-
         this.stopWaitTimer();
+
         this.waitTimer = setInterval(() => {
             // console.log(this.waitSeconds, is_creator)
             console.log(this.waitSeconds)
             this.waitSeconds += 1;
             if (this.waitSeconds === 10) {
-                this.handleConnectionStateChange(peer, 'ten_seconds', is_creator)
+                this.handleConnectionStateChange(peer, 'ten_seconds')
             }
             if (this.waitSeconds === 20) {
-                this.handleConnectionStateChange(peer, 'twenty_seconds', is_creator)
+                this.handleConnectionStateChange(peer, 'twenty_seconds')
             }
             if (this.waitSeconds === 50) {
                 this.stopWaitTimer();
-                // this.retry_attempt_no += 1;
-                // if (this.retry_attempt_no > 2) {
-                //     console.log('could not establish connection');
-                //     this.disconnectFromPeer(peer, "cannot connect, please check network");
-                //     return;
-                // }
-
                 if (is_creator) {
-                    this._reconnectCreator(peer)
+                    this.updateReconnectionButton(true)
                 } else {
                     this._reconnectRecipient(peer)
                 }
             }
         }, 1000)
     }
+
+    checkConnectionStatus() {
+        let count = 0;
+        const interval = setInterval(() => {
+            count++;
+            if (this.is_connected) {
+                this.updateReconnectionButton(false);
+                clearInterval(interval);
+            } else if (count >= 60 && this.is_creator) {
+                this.updateReconnectionButton(true);
+                clearInterval(interval);
+            }
+        }, 1000);
+    }
+
 
     stopWaitTimer() {
         if (this.waitTimer) {
@@ -448,7 +465,7 @@ class VideoBox {
         this.updateConnectionMessage("awaiting connection");
         this.receiving_connection = false;
         let interval = setInterval(() => {
-            if (count === 75) {
+            if (count === 2000) {
                 if (!this.receiving_connection) {
                     this.disconnectFromPeer(peer, "no connection received");
                 }
@@ -485,8 +502,9 @@ class VideoBox {
                 this.mod.saveCommand(command);
                 let my_pub_key = this.app.wallet.returnPublicKey();
                 this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
-
                 let count = 0;
+
+
                 const checkPingInterval = setInterval(() => {
                     stun_mod.commands.forEach(c => {
                         if (c.id === command.id) {

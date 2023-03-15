@@ -17,7 +17,7 @@ class VideoChatManager {
     audioEnabled = true;
     isActive = false;
     central;
-    is_creator;
+
 
 
     constructor(app, mod) {
@@ -45,13 +45,6 @@ class VideoChatManager {
             this.addRemoteStream(peer, remoteStream, pc)
             // this.updateRoomLink()
         });
-        // this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type) => {
-        //     if (!this.isActive) return;
-        //     if (ui_type !== "large") return
-        //     this.renderRemoteStreamPlaceholder(peer);
-        //     // this.updateRoomLink()
-        // });
-
         this.app.connection.on('change-connection-state-request', (peer, state, ui_type, call_type, room_code) => {
             if (!this.isActive) return;
             if (ui_type !== "large" || this.room_code !== room_code) return
@@ -70,11 +63,11 @@ class VideoChatManager {
 
             let my_public_key = this.app.wallet.returnPublicKey()
             if (my_public_key === offer_creator) {
-                this.is_creator = true;
-                this.renderRemoteStreamPlaceholder(offer_recipient, "attempting to connect");
+                let is_creator = true
+                this.renderRemoteStreamPlaceholder(offer_recipient, "attempting to connect", is_creator);
             } else {
-                this.is_creator = false
-                this.renderRemoteStreamPlaceholder(offer_creator, "attempting to connect");
+                let is_creator = false;
+                this.renderRemoteStreamPlaceholder(offer_creator, "attempting to connect", is_creator);
             }
 
         })
@@ -270,11 +263,11 @@ class VideoChatManager {
 
 
 
-    renderRemoteStreamPlaceholder(peer, placeholder_info) {
+    renderRemoteStreamPlaceholder(peer, placeholder_info, is_creator) {
         this.createVideoBox(peer, placeholder_info);
         this.video_boxes[peer].video_box.render(null, placeholder_info);
-        console.log('is creator ', this.is_creator)
-        this.video_boxes[peer].video_box.startWaitTimer(this.is_creator);
+        console.log('is creator ', is_creator)
+        this.video_boxes[peer].video_box.startWaitTimer(is_creator);
     }
 
     createVideoBox(peer) {

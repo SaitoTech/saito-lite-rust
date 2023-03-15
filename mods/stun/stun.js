@@ -427,7 +427,6 @@ class Stun extends ModTemplate {
                     let pc = new RTCPeerConnection({
                         iceServers: this.servers,
                     });
-                    this.peer_connections[publicKey] = "";
                     this.peer_connections[publicKey] = pc;
                     pc.onicecandidate = (ice) => {
                         if (!ice || !ice.candidate || !ice.candidate.candidate) {
@@ -442,21 +441,25 @@ class Stun extends ModTemplate {
 
                     pc.addEventListener('connectionstatechange', e => {
                         // console.log(pc.connectionState, " with ", publicKey);
-                        if (pc.connectionState !== this.peer_connections[publicKey].connectionState) {
-                            console.log('peer objects not equal')
-                            return;
+
+                        if (pc.connectionState === 'disconnected') {
+                            if (this.peer_connections[publicKey].connectionState !== "disconnected") {
+                                console.log('peer objects not equal')
+                                return;
+                            }
+                            this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                         }
-                        switch (pc.connectionState) {
-                            case "disconnected":
-                                // if (this.room.peers.includes(publicKey)) {
-                                //     this.room.peers = this.room.peers.filter(peer => peer !== publicKey);
-                                // }
-                                break;
-                            default:
-                                ""
-                                break;
+                        else if (pc.connectionState === "failed") {
+                            if (this.peer_connections[publicKey].connectionState !== "failed") {
+                                console.log('peer objects not equal')
+                                return;
+                            }
+                            this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
+                        } else {
+                            this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                         }
-                        this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
+
+
                     })
 
                     // add data channels 
@@ -617,19 +620,24 @@ class Stun extends ModTemplate {
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         case "connected":
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         case "disconnected":
-
+                            if (stunx_mod.peer_connections[offer_creator].connectionState !== "disconnected") {
+                                console.log('peer objects not equal');
+                                return;
+                            }
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         case "failed":
-                            // console.log("connection state ", pc.connectionState);
+
                             break;
                         default:
                             ""
                             break;
                     }
 
-                    this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
+
                 })
 
 
