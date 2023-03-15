@@ -78,14 +78,17 @@ module.exports = SettingsAppspaceTemplate = (app) => {
       <div class="settings-appspace-user-details-container">
         <h6>Wallet</h6>
           <div class="settings-appspace-user-details">
-            <div id="register-identifier-btn-label" class="saito-black">Username:</div>
+            <div>Username:</div>
             <div>${identifier_registered}</div>
-            <div class="saito-black">Public Key:</div>
-            <div class="saito-address">${app.wallet.returnPublicKey()} <span style="margin-left: .5rem;" class="copy-public-key">  <i class="fas fa-copy"></i></span></div>
-            <div class="saito-black">Private Key:</div>
-            <div class="settings-appspace-privatekey saito-password">
-              ${app.wallet.returnPrivateKey()}
-              <i class="settings-appspace-see-privatekey fas fa-eye" id="settings-appspace-see-privatekey"></i>
+      
+            <div>Public Key:</div>
+            <div class="pubkey-containter" data-id="${app.wallet.returnPublicKey()}">
+              <span class="profile-public-key">${app.wallet.returnPublicKey()}</span><i class="fas fa-copy" id="copy-public-key"></i>
+            </div>
+      
+            <div>Private Key:</div>
+            <div class="pubkey-containter" data-id="${app.wallet.returnPrivateKey()}">
+              <span class="profile-public-key saito-password">${app.wallet.returnPrivateKey()}</span><i class="fas fa-copy" id="copy-private-key"></i>
             </div>
           </div>
         </div>

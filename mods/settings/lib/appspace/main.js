@@ -70,17 +70,16 @@ class SettingsAppspace {
         }
       }
 
-      document.getElementById("register-identifier-btn").onclick = function (e) {
-       if (!mod.modal_register_username){
-        mod.modal_register_username = new RegisterUsernameModal(app, mod, null); 
-       }
-       
-       mod.modal_register_username.render();
+      if (document.getElementById("register-identifier-btn")){
+        document.getElementById("register-identifier-btn").onclick = function (e) {
+         if (!mod.modal_register_username){
+          mod.modal_register_username = new RegisterUsernameModal(app, mod, null); 
+         }
+         
+         mod.modal_register_username.render();
 
-      }
+        }
 
-      document.querySelector(".settings-appspace-see-privatekey").onclick = function (e) {
-        document.querySelector(".settings-appspace-see-privatekey").classList.toggle("saito-password");
       }
 
 
@@ -126,42 +125,39 @@ class SettingsAppspace {
         };
       });
 
-      document.getElementById('backup-account-btn').addEventListener('click', (e) => {
-        app.wallet.backupWallet();
+      if (document.getElementById('backup-account-btn')){
+        document.getElementById('backup-account-btn').onclick = (e) => {
+          app.wallet.backupWallet();
+        }
+      }
+
+      if (document.getElementById('restore-account-btn')){
+        document.getElementById('restore-account-btn').onclick = async (e) => {
+          document.getElementById('file-input').addEventListener('change', function (e) {
+            var file = e.target.files[0];
+            app.wallet.restoreWallet(file);
+          });
+          document.querySelector('#file-input').click();
+        }
+
+      }
+
+      Array.from(document.querySelectorAll('.settings-appspace .pubkey-containter')).forEach(key => {
+        key.onclick = (e) =>{
+          console.log(e.currentTarget, e.target);
+          navigator.clipboard.writeText(e.currentTarget.dataset.id);
+          let icon_element = e.currentTarget.querySelector(".pubkey-containter i");
+          icon_element.classList.toggle("fa-copy");
+          icon_element.classList.toggle("fa-check");
+
+          setTimeout(() => {
+            icon_element.classList.toggle("fa-copy");
+            icon_element.classList.toggle("fa-check");
+          }, 1500);
+        }
+
       });
 
-      document.getElementById('restore-account-btn').onclick = async (e) => {
-        document.getElementById('file-input').addEventListener('change', function (e) {
-          var file = e.target.files[0];
-          app.wallet.restoreWallet(file);
-        });
-        document.querySelector('#file-input').click();
-      }
-
-      document.querySelector('.copy-public-key').onclick = (e) =>{
-        navigator.clipboard.writeText(app.wallet.returnPublicKey());
-        salert("Public key copied");
-      }
-      /*
-          document.getElementById('reset-account-btn').onclick = async (e) => {
-      
-            confirmation = await sconfirm('This will reset your account, do you wish to proceed?');
-            if (confirmation) {
-              app.wallet.resetWallet();
-              app.modules.returnModule('Arcade').onResetWallet();
-              app.storage.resetOptions();
-      
-              mod.emails.inbox = [];
-              mod.emails.sent = [];
-              mod.emails.trash = [];
-      
-              mod.render(app, mod);
-              mod.attachEvents(app, mod);
-      
-              app.blockchain.resetBlockchain();
-            }
-          };
-      */
 
       document.getElementById('restore-privatekey-btn').onclick = async (e) => {
 
@@ -194,7 +190,7 @@ class SettingsAppspace {
       };
 
     } catch (err) {
-      console.log("Error in Settings Appspace: " + JSON.stringify(err));
+      console.log("Error in Settings Appspace: ", err);
     }
   }
 
