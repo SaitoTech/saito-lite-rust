@@ -106,6 +106,10 @@ class Relay extends ModTemplate {
 
             if (message.request === "relay peer message") {
 
+console.log(">");
+console.log("> relay peer message");
+console.log(">");
+
                 //
                 // sanity check on tx
                 //
@@ -125,6 +129,10 @@ class Relay extends ModTemplate {
                 // if interior transaction is intended for me, I process regardless
                 //
                 if (inner_tx.isTo(app.wallet.returnPublicKey())) {
+
+console.log(">");
+console.log("> inner tx is to me - send to HPT");
+console.log(">");
 
                     if (inner_txmsg.request === "ping"){
                         this.sendRelayMessage(inner_tx.transaction.from[0].add, "echo", {status:this.busy});
@@ -147,6 +155,11 @@ class Relay extends ModTemplate {
                 // otherwise relay
                 //
                 } else {
+
+console.log(">");
+console.log("> inner tx is not to me");
+console.log(">");
+
 
                     //
                     // check to see if original tx is for a peer
