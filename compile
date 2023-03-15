@@ -116,7 +116,6 @@ function reset_nonpersistent {
   rm -f ./data/explorer.sq3
   rm -f ./data/timeclock.sq3
   rm -f ./data/earlybirds.sq3
-  rm -f ./data/arcade.sq3
   rm -f ./data/observer.sq3
   rm -f ./data/chat.sq3
   rm -f ./data/database.sq3
@@ -169,11 +168,11 @@ function reset_persistent {
   mkdir -p ./data/backup
   cp -v ./data/*.sq3 ./data/backup/
 
-  rm -f ./data/forum.sq3
-  rm -f ./data/post.sq3
+#  rm -f ./data/post.sq3
+  rm -f ./data/arcade.sq3
   rm -f ./data/registry.sq3
-  rm -f ./data/rewards.sq3
-  rm -f ./data/forum.sq3
+#  rm -f ./data/rewards.sq3
+ # rm -f ./data/forum.sq3
   rm -f ./data/league.sq3
   rm -f ./data/tutorial.sq3
   rm -f ./web/client.options
