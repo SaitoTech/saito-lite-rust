@@ -251,7 +251,7 @@
 }
 
 .mixin-txn-his-container .saito-table-header {
-  grid-template-columns: 15rem 15rem 15rem 15rem;
+  grid-template-columns: 16rem 16rem 15rem 15rem;
   text-align: center;
 }
 
