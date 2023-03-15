@@ -15,6 +15,7 @@ class Keychain {
   public bid: bigint;
   public bsh: string;
   public lc: boolean;
+  public hash: string;
 
   constructor(app: Saito) {
     this.app = app;
@@ -52,7 +53,17 @@ class Keychain {
       this.addKey({ publickey: this.app.wallet.returnPublicKey(), watched: true });
     }
 
+    //
+    // creates hash of important info so we know if values change
+    //
+    this.hash = this.returnHash();
+
   }
+
+  returnHash() {
+    return this.app.crypto.hash((JSON.stringify(this.keys) + JSON.stringify(this.groups)));
+  }
+
 
   //
   // adds an individual key, we have two ways of doing this !
@@ -107,10 +118,11 @@ class Keychain {
 
   }
 
+
   decryptMessage(publickey: string, encrypted_msg) {
     // submit JSON parsed object after unencryption
     for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].publickey == publickey) {
+      if (this.keys[x].publickey === publickey) {
         if (this.keys[x].aes_secret != "") {
           const tmpmsg = this.app.crypto.aesDecrypt(encrypted_msg, this.keys[x].aes_secret);
           if (tmpmsg != null) {
@@ -118,7 +130,9 @@ class Keychain {
             if (tmpx.module != null) {
               return tmpx;
             }
-          }
+          } else {
+	    // we appear to have received a message we cannot decrypto
+	  }
         }
       }
     }
@@ -323,14 +337,21 @@ class Keychain {
   }
 
   saveKeys() {
-console.log("saving keys: " + JSON.stringify(this.keys));
     this.app.options.keys = this.keys;
     this.app.storage.saveOptions();
+    if (this.returnHash() != this.hash) {
+      this.hash = this.returnHash();
+      this.app.connection.emit("wallet-updated");
+    }
   }
 
   saveGroups() {
     this.app.options.groups = this.groups;
     this.app.storage.saveOptions();
+    if (this.returnHash() != this.hash) {
+      this.hash = this.returnHash();
+      this.app.connection.emit("wallet-updated");
+    }
   }
 
 
@@ -440,22 +461,9 @@ console.log("saving keys: " + JSON.stringify(this.keys));
   }
 
   updateCryptoByPublicKey(publickey, aes_publickey = "", aes_privatekey = "", shared_secret = "") {
-
-console.log(" > ");
-console.log(" > ");
-console.log(" > ");
-console.log("updating crypto by publickey...: " + publickey);
-
-    if (publickey == "") {
-      return;
-    }
-
+    if (publickey == "") { return; }
     this.addKey(publickey, { aes_publickey : aes_publickey , aes_privatekey : aes_privatekey , aes_secret : shared_secret});
-
-console.log("key added!");
-
     this.saveKeys();
-
     return true;
   }
 

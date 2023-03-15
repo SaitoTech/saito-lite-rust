@@ -784,11 +784,6 @@ class Network {
 
         try {
           peer.peer.keylist = JSON.parse(buffer.toString("utf8"));
-console.log(" - ");
-console.log(" - ");
-console.log(" - ");
-console.log("KEYLIST UPDATE: " + JSON.stringify(peer.peer.keylist));
-
         } catch (err) {
           console.error("ERROR parsing peer services list or setting services in peer");
         }
@@ -1002,6 +997,7 @@ console.log("KEYLIST UPDATE: " + JSON.stringify(peer.peer.keylist));
       case MessageType.Transaction:
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
+
         //
         // adding TX done in propagate TX
         //
@@ -1018,6 +1014,9 @@ console.log("KEYLIST UPDATE: " + JSON.stringify(peer.peer.keylist));
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
 
+	// TODO - is this needed? or do it manually in mods
+	//tx.decryptMessage(this.app);
+       
         let app = this.app;
 
         const mycallback = function (response_object) {

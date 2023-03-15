@@ -146,14 +146,14 @@
   color: #333;
 }
 
-.saito-withdraw-overlay {
-  width: 38vw;
+#saito-withdraw-overlay {
+  min-width: 32vw;
   padding: 2rem;
   color: #fff;
   background-position: 0em;
   background-size: 120% 100%;
   color: white;
-  border-radius: 1rem;
+  overflow: hidden;
 }
 
 .mixin-withdraw-token-wrapper {
@@ -189,7 +189,6 @@
   width: 100% !important;
   height: 45px;
   padding: 10px 10px !important;
-  font-size: 16px !important;
   color: var(--saito-font-color);
 }
 
@@ -340,14 +339,191 @@
   margin-bottom: 1rem;
 }
 
-.balance {
-  font-size: 2rem;
-  margin-bottom: 2rem;
-}
 
 .from_address, .to_address {
   margin-bottom: 1rem;
   font-size: 2rem;
+}
+
+
+/*
+  Withdrawl overlay 
+*/
+
+.token-dropdown {
+  display: flex;
+  position: relative;
+  background: var(--saito-light-shim);
+  padding-right: 0.5rem;
+  border-radius: 0.5rem;
+  //border: 1px solid var(--saito-font-color-light);
+}
+
+.token-dropdown img { 
+  width: 2rem;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 1rem;
+}
+
+.token-dropdown select {
+  height: 45px;
+  padding: 0rem 3rem;
+  border: none;
+  background: none;
+  font-size: 1.6rem;
+}
+
+.withdraw-address-cont {
+  position: relative; 
+}
+
+.saito-overlay-form-input input {
+  border: none;
+  background: var(--saito-light-shim);
+  color: var(--saito-gray-mid);
+  font-size: 1.6rem;
+}
+
+.withdraw-options-cont {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--saito-gray-mid);
+  cursor: pointer;
+}
+
+.withdraw-options-cont span {
+  font-size: 1.6rem;
+}
+
+
+.withdrawl-notes {
+  background: var(--saito-light-shim);
+  padding: 1.5rem 1rem;
+  border-radius: 0.5rem;
+  color: var(--saito-black-faded);
+  font-size: 1.6rem;
+}
+
+.withdrawl-notes div:nth-child(2) {
+  margin-top: 1rem;
+}
+
+#saito-overlay-submit {
+  display: block;
+  height: 3rem;
+  padding: 0rem;
+  line-height: 0rem;
+  min-width: 15rem;
+  width: auto;
+}
+
+.input-elements-container {
+  gap: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+  overflow: auto;
+  flex-direction: row;
+}
+
+.input-elements-container .saito-overlay-form-input {
+  width: 100%;
+}
+
+.confirm-btn-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  transition: all 0.4s ease-in-out;
+  margin-left: 100rem;
+}
+
+.confirm-btn-container button {
+  padding: 1.5rem;
+}
+
+.confirm-msg-container {
+  color: var(--saito-font-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  display: flex; 
+  transition: all 0.3s ease-in-out;
+}
+
+.confirm-msg-container .withdraw-msg-icon {
+  font-size: 10rem;
+}
+
+.confirm-msg-container .confirm-msg {
+  display: inline-block;
+  width: min-content;
+  text-align: center;
+  min-width: 40rem;
+  font-size: 1.8rem;
+  line-height: 2.8rem;
+}
+
+.confirm-submit {
+  transition: all 0.3s ease-in-out;
+  justify-content: center;
+}
+
+.hide-element {
+  display: none!important;
+}
+
+
+.fa-circle-notch {
+  animation: spin 1.5s ease-in-out infinite;
+  -webkit-animation: spin 1.5s ease-in-out infinite;
+}
+
+.dropdown-cont {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.dropdown-cont .saito-overlay-form-input {
+  width: 30%;
+}
+
+.withdraw-info-cont {
+  color: var(--saito-font-color);
+  line-height: 2rem;
+  text-align: center;
+}
+
+.withdraw-info-cont .withdraw-info-title {
+  width: 11rem;
+  display: block;
+}
+
+#withdraw-step-one {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+#withdraw-step-two {
+  gap: 3rem;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
 }
 
 @media screen and (max-width: 768px) {
@@ -365,9 +541,6 @@
     width: 24vw;
     height: auto;
   }
-  .saito-withdraw-overlay {
-    width: 95vw;
-  }
   .mixin-no-history {
     margin-top: 1rem;
     margin-left: 0rem;
@@ -380,5 +553,9 @@
   }
   .mixin_crypto_overlay {
     width: 99vw;
+  }
+
+  #saito-withdraw-overlay {
+    min-width: 92vw;
   }
 }

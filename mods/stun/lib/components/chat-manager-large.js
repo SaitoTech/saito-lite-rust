@@ -45,12 +45,12 @@ class VideoChatManager {
             this.addRemoteStream(peer, remoteStream, pc)
             // this.updateRoomLink()
         });
-        this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type) => {
-            if (!this.isActive) return;
-            if (ui_type !== "large") return
-            this.renderRemoteStreamPlaceholder(peer);
-            // this.updateRoomLink()
-        });
+        // this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type) => {
+        //     if (!this.isActive) return;
+        //     if (ui_type !== "large") return
+        //     this.renderRemoteStreamPlaceholder(peer);
+        //     // this.updateRoomLink()
+        // });
 
         this.app.connection.on('change-connection-state-request', (peer, state, ui_type, call_type, room_code) => {
             if (!this.isActive) return;
@@ -70,11 +70,11 @@ class VideoChatManager {
 
             let my_public_key = this.app.wallet.returnPublicKey()
             if (my_public_key === offer_creator) {
-                this.renderRemoteStreamPlaceholder(offer_recipient, "attempting to connect");
                 this.is_creator = true;
+                this.renderRemoteStreamPlaceholder(offer_recipient, "attempting to connect");
             } else {
-                this.renderRemoteStreamPlaceholder(offer_creator, "attempting to connect");
                 this.is_creator = false
+                this.renderRemoteStreamPlaceholder(offer_creator, "attempting to connect");
             }
 
         })
@@ -236,8 +236,11 @@ class VideoChatManager {
     }
 
     disconnectOtherPeer(peer) {
+        this.updateImages();
+        console.log("video boxes: after ", this.video_boxes);
         this.removePeer(peer);
         this.mod.closeMediaConnections(peer);
+        // delete this.video_boxes[peer];
         console.log(this.peers);
     }
 
@@ -270,6 +273,7 @@ class VideoChatManager {
     renderRemoteStreamPlaceholder(peer, placeholder_info) {
         this.createVideoBox(peer, placeholder_info);
         this.video_boxes[peer].video_box.render(null, placeholder_info);
+        console.log('is creator ', this.is_creator)
         this.video_boxes[peer].video_box.startWaitTimer(this.is_creator);
     }
 
@@ -283,15 +287,13 @@ class VideoChatManager {
 
     updateConnectionState(peer, state) {
         this.createVideoBox(peer)
-        this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state, this.is_creator);
+        this.video_boxes[peer].video_box.handleConnectionStateChange(peer, state);
         switch (state) {
             case "connecting":
                 break;
             case "disconnected":
                 // this.stopTimer();
-                this.updateImages();
-                this.disconnectOtherPeer(peer)
-                console.log("video boxes: after ", this.video_boxes);
+                // this.disconnectOtherPeer(peer)
                 break;
             case "connected":
                 this.startTimer();
@@ -300,9 +302,9 @@ class VideoChatManager {
 
             case "failed":
                 // this.stopTimer();
-                this.updateImages();
-                this.disconnectOtherPeer(peer)
-                console.log("video boxes: after ", this.video_boxes);
+                // this.updateImages();
+                // this.disconnectOtherPeer(peer)
+                // console.log("video boxes: after ", this.video_boxes);
 
                 break;
 

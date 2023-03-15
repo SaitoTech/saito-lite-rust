@@ -44,6 +44,8 @@ class StunxGameMenu {
       let my_pub_key = this.app.wallet.returnPublicKey();
       this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
 
+
+
       const checkPingInterval = setInterval(() => {
         console.log('checking for ping back from peer');
         this.mod.commands.forEach(c => {

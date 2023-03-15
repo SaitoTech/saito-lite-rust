@@ -1,6 +1,7 @@
 
 const { forEach } = require("jszip");
 const videoBoxTemplate = require("./video-box.template");
+const { setTextRange } = require("typescript");
 // import {applyVideoBackground, } from 'virtual-bg';
 
 
@@ -12,7 +13,9 @@ class VideoBox {
     placeholderRendered = false;
     stream_rendered = false;
     waitTimer;
-    waitSeconds
+    waitSeconds = 0;
+    is_connected_creator = false;
+    receiving_connection = false
 
     constructor(app, mod, ui_type, call_type, central, room_code, peer, container_class) {
         this.app = app;
@@ -23,11 +26,10 @@ class VideoBox {
         this.room_code = room_code;
         this.stream_id = peer
         this.containerClass = container_class
-
+        this.retry_attempt_no = 0
 
         app.connection.on('mute', (kind, public_key) => {
             if (public_key !== this.stream_id) return;
-            console.log('receiving event');
             if (kind === "video") {
                 let name;
                 if (public_key === "local") {
@@ -61,23 +63,37 @@ class VideoBox {
             if (this.stream_id === 'local') {
                 this.renderStream({ muted: true });
             } else {
+                this.stopWaitTimer();
                 this.renderStream({ muted: false })
+                this.is_connected_creator = true;
             }
         } else {
             this.renderPlaceholder(placeholder_info);
         }
 
+
+
     }
 
 
-    // addRemoteStream(stream) {
-    //     if (stream) {
-    //         this.removeConnectionMessage();
-    //         this.stream = stream;
-    //         this.render
+    attachEvents(app, mod) {
+        const video_box = document.querySelector(`#stream${this.stream_id}`);
+        if (video_box) {
+            // setTimeout(() => {
+            //     this.mod.createMediaChannelConnectionWithPeers([this.stream_id], 'large', 'video', this.room_code, false);
+            // }, 15000)
+            video_box.querySelector('#reconnect-button').onclick = () => {
+                this._reconnectCreator(this.stream_id);
+                video_box.querySelector('#reconnect-button button').innerHTML = `<span class="lds-dual-ring2"> </span>`
+                setTimeout(() => {
+                    video_box.querySelector('#reconnect-button').style.opacity = 1;
+                }, 30000)
+            }
 
-    //     }
-    // }
+        }
+    }
+
+
 
     renderStream({ muted }) {
         if (!document.querySelector(`#stream${this.stream_id}`)) {
@@ -106,6 +122,25 @@ class VideoBox {
             video_box.querySelector('#connection-message').innerHTML = `<p>${message}</p> <span class="lds-dual-ring"> </span> `
         } else {
             video_box.insertAdjacentHTML('beforeend', `<div id="connection-message"> <p> ${message} </p> <span class="lds-dual-ring"> </span></div> `);
+        }
+    }
+
+    updateReconnectionButton(show) {
+        const video_box = document.querySelector(`#stream${this.stream_id}`);
+        if (show) {
+            // show reconnection button
+            this.removeConnectionMessage();
+            video_box.querySelector('#reconnect-button').style.opacity = 1;
+            console.log(video_box.querySelector('#reconnect-button'));
+
+        } else {
+            setTimeout(() => {
+                if (video_box.querySelector('#reconnect-button')) {
+                    video_box.querySelector('#reconnect-button').style.opacity = 0;
+                    video_box.querySelector('#reconnect-button button').innerHTML = ""
+                    video_box.querySelector('#reconnect-button button').textContent = "connect"
+                }
+            }, 3000)
         }
     }
 
@@ -138,10 +173,9 @@ class VideoBox {
 
 
 
-    async handleConnectionStateChange(peer, connectionState, is_creator = false) {
+    async handleConnectionStateChange(peer, connectionState) {
 
         let video_box = document.querySelector(`#stream${this.stream_id}`);
-        console.log('video box handle connection state ', is_creator);
         let connection_message = document.querySelector('#connection-message');
         if (!video_box) return;
         switch (connectionState) {
@@ -166,124 +200,16 @@ class VideoBox {
                 video_box.firstElementChild.srcObject = this.stream
 
                 siteMessage(`connection with ${this.stream_id} unstable`, 5000);
-                if (is_creator) {
-                    const stun_mod = this.app.modules.returnModule('Stun');
-                    let checkOnlineInterval = setInterval(async () => {
-                        let online = await this.checkOnlineStatus();
-                        if (!online) {
-                            this.updateConnectionMessage('please check internet connectivity');
-                        }
-                        else {
-                            clearInterval(checkOnlineInterval);
-                            this.updateConnectionMessage('re-establishing connection');
-                            // check if other peer is online, then send a connection.
-                            let command = {
-                                name: 'PING',
-                                id: stun_mod.commands.length + 5,
-                                status: null,
-                                room_code: this.room_code,
-                                callback: () => {
-                                    const stun_mod = this.app.modules.returnModule('Stun');
-                                    stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
-                                }
-                            }
-                            this.mod.saveCommand(command);
-                            let my_pub_key = this.app.wallet.returnPublicKey();
-                            this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
-
-                            let count = 0;
-                            const checkPingInterval = setInterval(() => {
-                                // console.log('checking for ping back from peer')
-                                stun_mod.commands.forEach(c => {
-                                    if (c.id === command.id) {
-                                        if (command.status === "success") {
-                                            command.callback();
-                                            clearInterval(checkPingInterval)
-                                        } else if (command.status === "failed") {
-                                            this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
-                                            clearInterval(checkPingInterval);
-                                            stun_mod.deleteCommand(command);
-                                        } else {
-                                            if (count === 10) {
-                                                this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
-                                                clearInterval(checkPingInterval);
-                                                stun_mod.deleteCommand(command);
-                                            }
-                                        }
-                                    }
-                                })
-                                count++;
-                            }, 2000)
-                        }
-                    }, 2000)
+                if (this.is_creator) {
+                    this.updateReconnectionButton(true)
+                    this.is_connected_creator = false;
                 } else {
-                    let count = 0
-                    let checkOnlineInterval = setInterval(async () => {
-                        let online = await this.checkOnlineStatus();
-                        if (!online) {
-                            this.updateConnectionMessage('please check internet connectivity');
-                            if (count === 10) {
-                                clearInterval(checkOnlineInterval)
-                            }
-                            count++;
-                        } else {
-                            clearInterval(checkOnlineInterval)
-                            const stun_mod = this.app.modules.returnModule('Stun');
-                            this.updateConnectionMessage('re-establishing connection');
-                            let command = {
-                                name: 'PING',
-                                id: stun_mod.commands.length,
-                                status: null,
-                                room_code: this.room_code,
-                                callback: () => {
-                                    // const stun_mod = this.app.modules.returnModule('Stun');
-                                    // stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
-                                }
-                            }
-                            this.mod.saveCommand(command);
-                            let my_pub_key = this.app.wallet.returnPublicKey();
-                            this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
-
-                            let count = 0;
-                            const checkPingInterval = setInterval(() => {
-                                // console.log('checking for ping back from peer')
-                                stun_mod.commands.forEach(c => {
-                                    if (c.id === command.id) {
-                                        if (command.status === "success") {
-                                            command.callback();
-                                            clearInterval(checkPingInterval)
-                                            stun_mod.deleteCommand(command);
-                                        } else if (command.status === "failed") {
-                                            this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
-                                            clearInterval(checkPingInterval);
-                                        } else {
-                                            if (count === 10) {
-                                                this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
-                                                clearInterval(checkPingInterval);
-                                                stun_mod.deleteCommand(command);
-                                            }
-                                        }
-                                    }
-                                })
-                                count++;
-                            }, 2000)
-                        }
-                    }, 2000)
-
+                    // this.reconnectRecipient(peer)
+                    this._reconnectRecipient(this.stream_id)
                 }
                 break;
             case "failed":
-                if (document.querySelector(`#stream${this.stream_id}`)) {
-                    console.log(`#stream${this.stream_id}`, "stream id");
-                    this.stream = null
-                    this.stream_rendered = false;
-                    video_box.firstElementChild.srcObject = this.stream
-                    if (is_creator) {
-                        console.log('beginning connection again');
-                    }
-                    this.updateConnectionMessage('connection failed');
-                    siteMessage(`connection with  ${this.stream_id} failed`, 5000);
-                }
+
                 break;
             case "ten_seconds":
                 this.updateConnectionMessage('negotiating peer connection')
@@ -291,9 +217,7 @@ class VideoBox {
             case "twenty_seconds":
                 this.updateConnectionMessage('trying alternative route')
                 break
-            case "two_minutes":
-                this.updateConnectionMessage('retrying connection')
-                break
+
 
             default:
                 break;
@@ -301,8 +225,32 @@ class VideoBox {
     }
 
     startWaitTimer(is_creator = false) {
+        this.attachEvents(this.app, this.mod)
+        this.is_creator = is_creator;
+        this.receiving_connection = true;
+
+        // if (!is_creator) {
+        //     this.receiving_connection = true;
+        // }
+
+        setTimeout(() => {
+            if (is_creator && !this.is_connected_creator) {
+                const video_box = document.querySelector(`#stream${this.stream_id}`);
+                if (video_box) {
+                    video_box.querySelector('#reconnect-button').style.opacity = 1;
+                }
+            }
+
+        }, 60000)
+
+
+        let peer = this.stream_id;
+
+
         this.stopWaitTimer();
         this.waitTimer = setInterval(() => {
+            // console.log(this.waitSeconds, is_creator)
+            console.log(this.waitSeconds)
             this.waitSeconds += 1;
             if (this.waitSeconds === 10) {
                 this.handleConnectionStateChange(peer, 'ten_seconds', is_creator)
@@ -310,27 +258,28 @@ class VideoBox {
             if (this.waitSeconds === 20) {
                 this.handleConnectionStateChange(peer, 'twenty_seconds', is_creator)
             }
-            if (this.waitSeconds === 90) {
-                this.handleConnectionStateChange(peer, 'two_minutes', is_creator);
+            if (this.waitSeconds === 50) {
+                this.stopWaitTimer();
+                // this.retry_attempt_no += 1;
+                // if (this.retry_attempt_no > 2) {
+                //     console.log('could not establish connection');
+                //     this.disconnectFromPeer(peer, "cannot connect, please check network");
+                //     return;
+                // }
+
                 if (is_creator) {
-                    this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
+                    this._reconnectCreator(peer)
+                } else {
+                    this._reconnectRecipient(peer)
                 }
-            }
-            if (this.waitSeconds === 150) {
-                if (is_creator) {
-                    this.mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', this.room_code);
-                }
-            }
-            if (this.waitSeconds === (180 * 6)) {
-                this.handleConnectionStateChange(peer, 'failed', is_creator)
-                clearInterval(this.waitTimer)
             }
         }, 1000)
     }
 
     stopWaitTimer() {
         if (this.waitTimer) {
-            clearInterval(this.waitTimer)
+            clearInterval(this.waitTimer);
+            this.waitSeconds = 0;
         }
     }
 
@@ -348,6 +297,7 @@ class VideoBox {
     disconnectFromPeer(peer, message = "disconnected from call") {
         if (peer !== this.stream_id) return;
         document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
+        this.mod.ChatManagerLarge.disconnectOtherPeer(peer);
         siteMessage(`${peer} ${message}`, 5000);
 
     }
@@ -360,6 +310,224 @@ class VideoBox {
             return false; // definitely offline
         }
     };
+
+
+    reconnectCreator = (peer) => {
+        const stun_mod = this.app.modules.returnModule('Stun');
+        let checkOnlineInterval = setInterval(async () => {
+            let online = await this.checkOnlineStatus();
+            if (!online) {
+                this.updateConnectionMessage('please check internet connectivity');
+            }
+            else {
+                clearInterval(checkOnlineInterval);
+                this.updateConnectionMessage('sending connection request');
+
+                // check if other peer is online, then send a connection.
+                let id = this.app.crypto.stringToBase64(JSON.stringify(peer));
+                let command = {
+                    name: 'PING',
+                    id,
+                    status: null,
+                    room_code: this.room_code,
+                    callback: () => {
+                        const stun_mod = this.app.modules.returnModule('Stun');
+                        stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
+                    }
+                }
+                this.mod.saveCommand(command);
+                let my_pub_key = this.app.wallet.returnPublicKey();
+                this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+
+                let count = 0;
+                const checkPingInterval = setInterval(() => {
+                    stun_mod.commands.forEach(c => {
+                        if (c.id === command.id) {
+                            if (command.status === "success") {
+                                command.callback();
+                                clearInterval(checkPingInterval);
+                                stun_mod.deleteCommand(command);
+                            } else if (command.status === "failed") {
+                                this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
+                                console.log('connection to peer failed');
+                                clearInterval(checkPingInterval);
+                                stun_mod.deleteCommand(command);
+                            } else {
+                                if (count === 5) {
+                                    command = {
+                                        name: 'PING',
+                                        id,
+                                        status: null,
+                                        room_code: this.room_code,
+                                        callback: () => {
+                                            const stun_mod = this.app.modules.returnModule('Stun');
+                                            stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
+                                        }
+                                    }
+                                    this.mod.saveCommand(command);
+                                    this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+                                    // console.log('sending command again');
+                                }
+                                if (count === 10) {
+                                    this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
+                                    clearInterval(checkPingInterval);
+                                    stun_mod.deleteCommand(command);
+                                }
+                            }
+                        }
+                    })
+                    count++;
+                }, 2000)
+            }
+        }, 2000)
+    }
+
+    reconnectRecipient(peer) {
+        let count = 0
+        let checkOnlineInterval = setInterval(async () => {
+            let online = await this.checkOnlineStatus();
+            if (!online) {
+                this.updateConnectionMessage('please check internet connectivity');
+            } else {
+                clearInterval(checkOnlineInterval)
+                const stun_mod = this.app.modules.returnModule('Stun');
+                this.updateConnectionMessage('accepting connection request');
+                let id = this.app.crypto.stringToBase64(JSON.stringify(peer));
+                console.log('connecting to id: ', id)
+                let command = {
+                    name: 'PING',
+                    id,
+                    status: null,
+                    room_code: this.room_code,
+                    callback: () => { }
+                }
+                this.mod.saveCommand(command);
+                let my_pub_key = this.app.wallet.returnPublicKey();
+                this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+
+                let count = 0;
+                const checkPingInterval = setInterval(() => {
+                    stun_mod.commands.forEach(c => {
+                        if (c.id === command.id) {
+                            if (command.status === "success") {
+                                command.callback();
+                                clearInterval(checkPingInterval)
+                                stun_mod.deleteCommand(command);
+                            } else if (command.status === "failed") {
+                                this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
+                                clearInterval(checkPingInterval);
+                            } else {
+                                if (count === 5) {
+                                    command = {
+                                        name: 'PING',
+                                        id,
+                                        status: null,
+                                        room_code: this.room_code,
+                                        callback: () => { }
+                                    }
+                                    this.mod.saveCommand(command);
+                                    this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+                                }
+                                if (count === 10) {
+                                    this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
+                                    clearInterval(checkPingInterval);
+                                    stun_mod.deleteCommand(command);
+                                }
+                            }
+                        }
+                    })
+                    count++;
+                }, 2000)
+            }
+        }, 2000)
+    }
+
+
+    _reconnectRecipient(peer) {
+        let count = 0
+        this.updateConnectionMessage("awaiting connection");
+        this.receiving_connection = false;
+        let interval = setInterval(() => {
+            if (count === 75) {
+                if (!this.receiving_connection) {
+                    this.disconnectFromPeer(peer, "no connection received");
+                }
+                clearInterval(interval);
+            }
+            count++;
+        }, 1000)
+    }
+
+
+    _reconnectCreator = (peer) => {
+        this.updateReconnectionButton(false);
+        const stun_mod = this.app.modules.returnModule('Stun');
+        let checkOnlineInterval = setInterval(async () => {
+            let online = await this.checkOnlineStatus();
+            if (!online) {
+                this.updateConnectionMessage('please check internet connectivity');
+            }
+            else {
+                clearInterval(checkOnlineInterval);
+                this.updateConnectionMessage('sending connection request');
+                // check if other peer is online, then send a connection.
+                let id = this.app.crypto.stringToBase64(JSON.stringify(peer));
+                let command = {
+                    name: 'PING',
+                    id,
+                    status: null,
+                    room_code: this.room_code,
+                    callback: () => {
+                        const stun_mod = this.app.modules.returnModule('Stun');
+                        stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
+                    }
+                }
+                this.mod.saveCommand(command);
+                let my_pub_key = this.app.wallet.returnPublicKey();
+                this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+
+                let count = 0;
+                const checkPingInterval = setInterval(() => {
+                    stun_mod.commands.forEach(c => {
+                        if (c.id === command.id) {
+                            if (command.status === "success") {
+                                command.callback();
+                                clearInterval(checkPingInterval);
+                                stun_mod.deleteCommand(command);
+                            } else if (command.status === "failed") {
+                                this.disconnectFromPeer(peer, "cannot reconnect, peer not available");
+                                console.log('connection to peer failed');
+                                clearInterval(checkPingInterval);
+                                stun_mod.deleteCommand(command);
+                            } else {
+                                this.updateReconnectionButton(true);
+                                // if (count === 5) {
+                                //     command = {
+                                //         name: 'PING',
+                                //         id,
+                                //         status: null,
+                                //         room_code: this.room_code,
+                                //         callback: () => {
+                                //             const stun_mod = this.app.modules.returnModule('Stun');
+                                //             stun_mod.createMediaChannelConnectionWithPeers([peer], 'large', 'video', stun_mod.room_code, false);
+                                //         }
+                                //     }
+                                //     this.mod.saveCommand(command);
+                                //     this.mod.sendCommandToPeerTransaction(peer, my_pub_key, command);
+                                // }
+                                // if (count === 10) {
+                                //     this.disconnectFromPeer("cannot reconnect, user is offline");
+                                //     clearInterval(checkPingInterval);
+                                //     stun_mod.deleteCommand(command);
+                                // }
+                            }
+                        }
+                    })
+                    count++;
+                }, 1000)
+            }
+        }, 2000)
+    }
 
 
 

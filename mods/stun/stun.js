@@ -376,15 +376,11 @@ class Stun extends ModTemplate {
         const command = tx.msg.data.command
         const recipient = tx.msg.data.recipient;
         const sender = tx.msg.data.sender;
-        console.log(tx, 'receiving command', command, 'room code', this.room_code);
         let reply_sender = recipient;
         let reply_recipient = sender;
         let reply_command;
-        console.log(tx, 'receiving command', command, 'room code', this.room_code);
-
 
         switch (command.name) {
-
             case "PING":
                 console.log('pinging, to reply');
                 let status = "success";
@@ -445,10 +441,20 @@ class Stun extends ModTemplate {
                     };
 
                     pc.addEventListener('connectionstatechange', e => {
-                        console.log(pc.connectionState, " with ", publicKey);
+                        // console.log(pc.connectionState, " with ", publicKey);
                         if (pc.connectionState !== this.peer_connections[publicKey].connectionState) {
                             console.log('peer objects not equal')
                             return;
+                        }
+                        switch (pc.connectionState) {
+                            case "disconnected":
+                                // if (this.room.peers.includes(publicKey)) {
+                                //     this.room.peers = this.room.peers.filter(peer => peer !== publicKey);
+                                // }
+                                break;
+                            default:
+                                ""
+                                break;
                         }
                         this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                     })
@@ -484,6 +490,10 @@ class Stun extends ModTemplate {
                         });
                         this.app.connection.emit('add-remote-stream-request', publicKey, remoteStream, pc, ui_type, call_type, room_code);
                         console.log('adding remote stream from ', publicKey, '  ', event.streams);
+
+                        if (!this.room.peers.includes(publicKey)) {
+                            this.room.peers.push(publicKey);
+                        }
 
                     });
                     const offer = await pc.createOffer();
@@ -596,7 +606,7 @@ class Stun extends ModTemplate {
                 }
 
                 pc.addEventListener('connectionstatechange', () => {
-                    console.log(pc.connectionState, ' with ', offer_creator)
+                    // console.log(pc.connectionState, ' with ', offer_creator);
                     if (pc.connectionState !== stunx_mod.peer_connections[offer_creator].connectionState) {
                         console.log('peer objects not equal');
                         return;
@@ -609,9 +619,7 @@ class Stun extends ModTemplate {
                         case "connected":
                             break;
                         case "disconnected":
-                            if (this.room.peers.includes(offer_creator)) {
-                                this.room.peers = this.room.peers.filter(peer => peer !== offer_creator);
-                            }
+
                             break;
                         case "failed":
                             // console.log("connection state ", pc.connectionState);
@@ -722,7 +730,7 @@ class Stun extends ModTemplate {
                     reply.ice_candidates.push(ice.candidate);
                 }
                 pc.onconnectionstatechange = e => {
-                    console.log("connection state ", pc.connectionState)
+                    // console.log("connection state ", pc.connectionState)
                     switch (pc.connectionState) {
                         // case "connecting":
                         //     this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, ui_type);
@@ -1010,7 +1018,6 @@ class Stun extends ModTemplate {
     receiveKeyUpdateTransaction(app, tx, conf, blk) {
         if (app.BROWSER !== 1) return;
 
-
         if (!this.gotten_keys) {
             if (tx.msg.data.public_keys.length > 0) {
                 this.room.peers = tx.msg.data.all_peers;
@@ -1251,6 +1258,10 @@ class Stun extends ModTemplate {
         }
         this.room.peers = this.room.peers.filter(p => p !== peer);
 
+        // if (this.room.peers.includes(offer_creator)) {
+        //     this.room.peers = this.room.peers.filter(peer => peer !== offer_creator);
+        // }
+
         console.log(this.room);
 
         // update database and delete public key from room
@@ -1287,7 +1298,15 @@ class Stun extends ModTemplate {
 
 
     saveCommand(command) {
-        this.commands.push(command)
+        let index = this.commands.findIndex(c => c.id === command);
+        if (index === -1) {
+            this.commands.unshift(command)
+            console.log('new command saved');
+        } else {
+            this.commands[index] = command;
+        }
+
+
     }
 
     deleteCommand(command) {

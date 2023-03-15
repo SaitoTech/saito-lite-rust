@@ -10,6 +10,7 @@ class TRX extends ModTemplate {
     this.appname = "TRX";
     this.name = "TRX";
     this.ticker = "TRX";
+    this.slug = "trx";
     this.description = "Adds support for Mixin-powered Ethereum transfers on the Saito Network";
     this.categories = "Utility Cryptocurrency Finance";
 

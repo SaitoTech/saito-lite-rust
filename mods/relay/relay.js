@@ -66,7 +66,6 @@ class Relay extends ModTemplate {
         // transaction to end-user, containing msg.request / msg.data is
         //
         let tx = new saito.default.transaction();
-
         tx.transaction.from.push(new saito.default.slip(this.app.wallet.returnPublicKey()));
         for (let i = 0; i < recipients.length; i++) {
             tx.transaction.to.push(new saito.default.slip(recipients[i]));
@@ -97,7 +96,7 @@ class Relay extends ModTemplate {
 
 
     async handlePeerTransaction(app, tx=null, peer, mycallback) {
-  
+
       if (tx == null) { return; }
       let message = tx.returnMessage();
 
@@ -118,6 +117,7 @@ class Relay extends ModTemplate {
                 if (inner_tx.transaction.to[0].add == undefined) {
                     return;
                 }
+
                 inner_tx.decryptMessage(this.app);
                 let inner_txmsg = inner_tx.returnMessage();
 

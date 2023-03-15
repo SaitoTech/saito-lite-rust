@@ -864,7 +864,7 @@ console.log("---------------------");
    * @param {Transaction}
    * @return {Transaction}
    */
-  signAndEncryptTransaction(tx) {
+  signAndEncryptTransaction(tx, recipient="") {
     if (tx == null) {
       return null;
     }
@@ -878,9 +878,16 @@ console.log("---------------------");
     //
     try {
 
-      if (this.app.keychain.hasSharedSecret(tx.transaction.to[0].add)) {
-        tx.msg = this.app.keychain.encryptMessage(tx.transaction.to[0].add, tx.msg);
+      if (recipient == "") {
+        if (this.app.keychain.hasSharedSecret(tx.transaction.to[0].add)) {
+          tx.msg = this.app.keychain.encryptMessage(tx.transaction.to[0].add, tx.msg);
+        }
+      } else {
+        if (this.app.keychain.hasSharedSecret(recipient)) {
+          tx.msg = this.app.keychain.encryptMessage(recipient, tx.msg);
+        }
       }
+
       //
       // nov 25 2022 - eliminate base64 formatting for TXS
       //

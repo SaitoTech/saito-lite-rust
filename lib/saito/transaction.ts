@@ -169,27 +169,43 @@ try {
   }
 
   decryptMessage(app: Saito) {
-try {
-    if (this.transaction.from[0].add !== app.wallet.returnPublicKey()) {
-      try {
-        if (this.msg === null) {
-          this.dmsg = "";
-        } else {
-          const parsed_msg = this.msg;
-          this.dmsg = app.keychain.decryptMessage(this.transaction.from[0].add, parsed_msg);
-        }
-      } catch (e) {
-        console.error("ERROR: " + e);
-      }
+
+    //
+    // skip decrypting un-encrypted messages
+    //
+    if (!app.crypto.isAesEncrypted(this.msg)) {
+console.log("this message is not AesEncrypted!!!");
       return;
     }
-      if (this.msg === null) {
-        this.dmsg = "";
-        return;
-      }
-      this.dmsg = app.keychain.decryptMessage(this.transaction.to[0].add, this.msg);
+
+    let publickey = "";
+    if (this.transaction.from[0].add !== app.wallet.returnPublicKey()) {
+      publickey = this.transaction.from[0].add;
+    } else {
+      publickey = this.transaction.to[0].add;
+    }
+
+    //
+    // regenerate shared secret, because we can't decrypt this
+    //
+    let key = app.keychain.returnKey(publickey);
+    if (key != null) { if (key.aes_secret) {
+      app.connection.emit("encrypt-key-exchange", (publickey));
+      return;
+    } }
+
+    //
+    // now we can try to decryp
+    //
+try {
+    if (this.msg === null) {
+      this.dmsg = "";
+    } else {
+      const parsed_msg = this.msg;
+      this.dmsg = app.keychain.decryptMessage(publickey, parsed_msg);
+    }
 } catch (e) {
-  this.dmsg = "";
+  console.error("ERROR: " + e);
 }
     return;
   }
