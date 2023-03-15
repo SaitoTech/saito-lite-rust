@@ -80,17 +80,16 @@ alert("4");
         }
       }
 
-      document.getElementById("register-identifier-btn").onclick = function (e) {
-       if (!mod.modal_register_username){
-        mod.modal_register_username = new RegisterUsernameModal(app, mod, null); 
-       }
-       
-       mod.modal_register_username.render();
+      if (document.getElementById("register-identifier-btn")){
+        document.getElementById("register-identifier-btn").onclick = function (e) {
+         if (!mod.modal_register_username){
+          mod.modal_register_username = new RegisterUsernameModal(app, mod, null); 
+         }
+         
+         mod.modal_register_username.render();
 
-      }
+        }
 
-      document.querySelector(".settings-appspace-see-privatekey").onclick = function (e) {
-        document.querySelector(".settings-appspace-see-privatekey").classList.toggle("saito-password");
       }
 
 
@@ -136,22 +135,23 @@ alert("4");
         };
       });
 
-      document.getElementById('backup-account-btn').addEventListener('click', (e) => {
-        app.wallet.backupWallet();
-      });
-
-      document.getElementById('restore-account-btn').onclick = async (e) => {
-        document.getElementById('file-input').addEventListener('change', function (e) {
-          var file = e.target.files[0];
-          app.wallet.restoreWallet(file);
-        });
-        document.querySelector('#file-input').click();
+      if (document.getElementById('backup-account-btn')){
+        document.getElementById('backup-account-btn').onclick = (e) => {
+          app.wallet.backupWallet();
+        }
       }
 
-      document.querySelector('.copy-public-key').onclick = (e) =>{
-        navigator.clipboard.writeText(app.wallet.returnPublicKey());
-        salert("Public key copied");
+      if (document.getElementById('restore-account-btn')){
+        document.getElementById('restore-account-btn').onclick = async (e) => {
+          document.getElementById('file-input').addEventListener('change', function (e) {
+            var file = e.target.files[0];
+            app.wallet.restoreWallet(file);
+          });
+          document.querySelector('#file-input').click();
+        }
+
       }
+
       document.getElementById('nuke-account-btn').onclick = async (e) => {
       
             confirmation = await sconfirm('This will reset/nuke your account, do you wish to proceed?');
@@ -173,6 +173,22 @@ alert("4");
               app.blockchain.resetBlockchain();
             }
       };
+
+      Array.from(document.querySelectorAll('.settings-appspace .pubkey-containter')).forEach(key => {
+        key.onclick = (e) =>{
+          console.log(e.currentTarget, e.target);
+          navigator.clipboard.writeText(e.currentTarget.dataset.id);
+          let icon_element = e.currentTarget.querySelector(".pubkey-containter i");
+          icon_element.classList.toggle("fa-copy");
+          icon_element.classList.toggle("fa-check");
+
+          setTimeout(() => {
+            icon_element.classList.toggle("fa-copy");
+            icon_element.classList.toggle("fa-check");
+          }, 1500);
+        }
+
+      });
 
       document.getElementById('restore-privatekey-btn').onclick = async (e) => {
 
@@ -205,7 +221,7 @@ alert("4");
       };
 
     } catch (err) {
-      console.log("Error in Settings Appspace: " + JSON.stringify(err));
+      console.log("Error in Settings Appspace: ", err);
     }
   }
 
