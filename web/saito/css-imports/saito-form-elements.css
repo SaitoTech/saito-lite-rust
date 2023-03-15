@@ -58,10 +58,7 @@ input {
   border: 1px solid var(--saito-border-color);
 }
 
-::-webkit-input-placeholder, ::placeholder {
-  color: var(--saito-font-color);
-  opacity: 0.25;
-}
+
 
 
 textarea:focus, input:focus, select:focus {
@@ -97,7 +94,8 @@ input[type="datetime-local"] {
 
 input[type="text"]::placeholder,
 input[type="password"]::placeholder {
-  color: var(--saito-border-color);
+  color: var(--saito-font-color);
+  opacity: 0.33;
 }
 
 /* ----------------------------------------------------------------
