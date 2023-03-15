@@ -217,7 +217,12 @@ class Server {
     wss.on("connection", (socket: any, request: any) => {
       let index = S.getInstance().addNewSocket(socket);
       socket.on("message", (buffer: any) => {
-        S.getLibInstance().process_msg_buffer_from_peer(buffer, index);
+        console.log("000000");
+        S.getLibInstance()
+          .process_msg_buffer_from_peer(new Uint8Array(buffer), index)
+          .then(() => {
+            console.log("444444");
+          });
       });
       socket.on("close", () => {
         S.getLibInstance().process_peer_disconnection(index);
