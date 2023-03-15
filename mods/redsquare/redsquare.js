@@ -1600,7 +1600,7 @@ console.log(rows[i].tx.msg);
               let tx = new saito.default.transaction();
               tx.deserialize_from_web(app, rows[i].tx);
               let txmsg = tx.returnMessage();
-              let text = tx.msg.data.text;
+              let text = txmsg.data.text;
               let publickey = tx.transaction.from[0].add;
               let user = app.keychain.returnIdentifierByPublicKey(publickey, true);
 
@@ -1627,19 +1627,21 @@ console.log(rows[i].tx.msg);
           }
 
           if (typeof query_params.og_img_sig != "undefined") {
+            console.info(query_params.og_img_sig);
 
             let sig = query_params.og_img_sig;
             let sql = `SELECT * FROM tweets WHERE sig = '${sig}' ORDER BY created_at DESC`;
 
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
-
+            console.info(rows.length);
             for (let i = 0; i < rows.length; i++) {
               let tx = new saito.default.transaction();
-              tx.deserialize_from_web(this.app, rows[i].tx);
-              let txmsg = tx.returnMessage();
-
-              if (typeof tx.msg.data.images != "undefined") {
-                let img_uri = tx.msg.data?.images[0];
+              tx.deserialize_from_web(redsquare_self.app, rows[i].tx);
+              //console.info(rows[i]);
+              txmsg = tx.returnMessage();
+              console.info(txmsg);
+              if (typeof txmsg.data.images != "undefined") {
+                let img_uri = txmsg.data?.images[0];
                 let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
                 let base64Data = img_uri.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
                 let img = Buffer.from(base64Data, 'base64');

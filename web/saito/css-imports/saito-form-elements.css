@@ -58,6 +58,11 @@ input {
   border: 1px solid var(--saito-border-color);
 }
 
+::-webkit-input-placeholder, ::placeholder {
+  color: var(--saito-font-color);
+  opacity: 0.25;
+}
+
 
 textarea:focus, input:focus, select:focus {
   outline: none;
