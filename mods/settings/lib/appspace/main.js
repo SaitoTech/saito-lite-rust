@@ -23,8 +23,6 @@ class SettingsAppspace {
 
   render() {
 
-alert("1");
-
     this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod));
 
     let settings_appspace = document.querySelector(".settings-appspace");
@@ -40,8 +38,6 @@ alert("1");
     //debug info
     let el = document.querySelector(".settings-appspace-debug-content");
 
-alert("2");
-
     try {
       let optjson = JSON.parse(JSON.stringify(this.app.options, (key, value) =>
             typeof value === 'bigint'
@@ -49,15 +45,12 @@ alert("2");
                 : value // return everything else unchanged
         ));
 
-console.log("A");
-console.log(JSON.stringify(optjson));
-alert("2.5");
+      console.log("A");
+      console.log(JSON.stringify(optjson));
       var tree = jsonTree.create(optjson, el);
-alert("3");
     } catch (err) {
       console.log("error creating jsonTree: " + err);
     }
-alert("4");
 
     this.attachEvents();
 
@@ -176,7 +169,7 @@ alert("4");
 
       Array.from(document.querySelectorAll('.settings-appspace .pubkey-containter')).forEach(key => {
         key.onclick = (e) =>{
-          console.log(e.currentTarget, e.target);
+
           navigator.clipboard.writeText(e.currentTarget.dataset.id);
           let icon_element = e.currentTarget.querySelector(".pubkey-containter i");
           icon_element.classList.toggle("fa-copy");
