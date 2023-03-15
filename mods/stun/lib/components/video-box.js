@@ -226,6 +226,7 @@ class VideoBox {
 
     startWaitTimer(is_creator = false) {
         this.attachEvents(this.app, this.mod)
+        this.is_creator = is_creator;
         if (!is_creator) {
             this.receiving_connection = true;
         }
@@ -242,7 +243,7 @@ class VideoBox {
 
 
         let peer = this.stream_id;
-        this.is_creator = is_creator;
+
 
         this.stopWaitTimer();
         this.waitTimer = setInterval(() => {
