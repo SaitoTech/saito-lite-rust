@@ -1,4 +1,10 @@
 
+
+.flash-color {
+  /* override player_color when flashing */
+  filter: none !important;
+}
+
 /********************/
 /*** MOD DEFAULTS ***/
 /********************/
@@ -44,24 +50,24 @@
 
 @font-face {
   font-family: 'bank-gothic';
-  src: url('./font/BankGothicRegular.eot');
-  src: local('BankGothicRegular'), url('./font/BankGothicRegular.woff') format('woff'), url('./font/BankGothicRegular.ttf') format('truetype');
+  src: url('/imperium/font/BankGothicRegular.eot');
+  src: local('BankGothicRegular'), url('/imperium/font/BankGothicRegular.woff') format('woff'), url('/imperium/font/BankGothicRegular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'orbitron-medium';
-  src: url('./font/orbitron-medium-webfont.eot');
-  src: local('orbitron-medium-webfont'), url('./font/orbitron-medium-webfont.woff') format('woff'), url('./font/orbitron-medium-webfont.ttf') format('truetype');
+  src: url('/imperium/font/orbitron-medium-webfont.eot');
+  src: local('orbitron-medium-webfont'), url('/imperium/font/orbitron-medium-webfont.woff') format('woff'), url('/imperium/font/orbitron-medium-webfont.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'orbitron-light';
-  src: url('./font/orbitron-light-webfont.eot');
-  src: local('orbitron-light-webfont'), url('./font/orbitron-light-webfont.woff') format('woff'), url('./font/orbitron-light-webfont.ttf') format('truetype');
+  src: url('/imperium/font/orbitron-light-webfont.eot');
+  src: local('orbitron-light-webfont'), url('/imperium/font/orbitron-light-webfont.woff') format('woff'), url('/imperium/font/orbitron-light-webfont.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -913,8 +919,8 @@ body {
 }
 
 .game_background {
-  background-image: url("/imperium/img/spacebg.png");
-  background-image: url("/imperium/img/spaceb2.png");
+  /* background-image: url("/imperium/img/spacebg.png"); */
+  background-image: url("/imperium/img/spaceb2.jpg");
   background-size: cover;
   position: absolute;
   top: -50%;
