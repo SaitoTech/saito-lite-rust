@@ -373,6 +373,7 @@ class Chat extends ModTemplate {
 	    //
 	    if (inner_tx.transaction.to.length > 0) {
 	      if (inner_tx.transaction.to[0].add != this.app.wallet.returnPublicKey()) {
+console.log("INNER TRANSACTION IS NOT FOR ME");
                 if (app.BROWSER == 0) {
                   app.network.peers.forEach(p => {
                     if (p.peer.publickey === inner_tx.transaction.to[0].add) {
@@ -382,6 +383,20 @@ class Chat extends ModTemplate {
                   });
 		  return;
                 }
+	      } else {
+
+console.log("INNER TX IS FOR ME");
+		//
+		// broadcast to me, so send to all non-this-peers
+		//
+                if (app.BROWSER == 0) {
+                  app.network.peers.forEach(p => {
+                    if (p.peer.publickey !== peer.peer.publickey) {
+                        p.sendTransactionWithCallback(inner_tx, () => { });
+                    }
+                  });
+                }
+
 	      }
 	    }
 
