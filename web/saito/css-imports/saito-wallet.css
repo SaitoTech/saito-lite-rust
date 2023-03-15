@@ -11,6 +11,7 @@
   margin: 0.5em 0;
   font-size: 2em;
   font-weight: bold;
+  margin-top: 0rem;
 }
 
 .mixin_crypto_warning {
@@ -236,10 +237,6 @@
   margin-bottom: 1.5rem;
 }
 
-.mixin-no-history {
-  margin-left: 2rem;
-}
-
 .mixin-txn-his-container {
   margin-top: 1rem;
 }
@@ -254,7 +251,7 @@
 }
 
 .mixin-txn-his-container .saito-table-header {
-  grid-template-columns: 15rem 15rem 15rem 15rem;
+  grid-template-columns: 16rem 16rem 15rem 15rem;
   text-align: center;
 }
 
@@ -273,6 +270,7 @@
   text-align: center;
   background: var(--saito-white);
   color: var(--saito-gray-mid);
+  border: 1px solid var(--saito-font-color);
 }
 
 .mixin-items-container .saito-table-header {
@@ -314,12 +312,11 @@
 }
 
 .mixin-overlay-history {
-  background: #fff;
   min-height: 20rem;
   padding: 1.5rem;
   border-radius: 0.5rem;
-  background: var(--dreamscape);
-  color: var(--saito-white);
+  background: var(--saito-background-color);
+  color: var(--saito-font-color-heavy);
 }
 
 /********************************************************/

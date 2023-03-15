@@ -45,6 +45,7 @@ class SettingsAppspace {
                 : value // return everything else unchanged
         ));
 
+
       console.log("A");
       console.log(JSON.stringify(optjson));
       var tree = jsonTree.create(optjson, el);
