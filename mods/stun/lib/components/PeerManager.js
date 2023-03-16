@@ -35,6 +35,7 @@ class PeerManager {
         ];
         this.videoEnabled = true;
 
+
         this.room_code = room_code;
 
 
@@ -212,10 +213,25 @@ class PeerManager {
 
     }
 
-    renegotiate(peerId) {
+    renegotiate(peerId, retryCount = 0) {
+        const maxRetries = 4;
+        const retryDelay = 3000;
+
         const peerConnection = this.peers.get(peerId);
-        if (!peerConnection || peerConnection.signalingState !== 'stable') {
-            console.log('Cannot renegotiate, signaling state is not stable');
+        if (!peerConnection) {
+            console.log('Cannot renegotiate, no peer connection found');
+            return;
+        }
+
+        if (peerConnection.signalingState !== 'stable') {
+            if (retryCount < maxRetries) {
+                console.log(`Signaling state is not stable, will retry in ${retryDelay} ms (attempt ${retryCount + 1}/${maxRetries})`);
+                setTimeout(() => {
+                    this.renegotiate(peerId, retryCount + 1);
+                }, retryDelay);
+            } else {
+                console.log('Reached maximum number of renegotiation attempts, giving up');
+            }
             return;
         }
 
