@@ -86,6 +86,8 @@ class PeerManager {
             } else {
                 this.localStream.getVideoTracks()[0].enabled = true;
                 this.app.connection.emit("unmute", 'video', 'local');
+                document.querySelector('.video_control').classList.add('fa-video')
+                document.querySelector('.video_control').classList.remove('fa-video-slash')
                 try {
                     // for (let i in this.mod.peer_connections) {
                     //     this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "unmute", kind: 'video' }))
@@ -108,7 +110,6 @@ class PeerManager {
     }
 
     handleSignalingMessage(peerConnection, data) {
-
         const { type, sdp, candidate, targetPeerId, public_key } = data;
         if (type === 'renegotiate-offer' || type === 'offer') {
             peerConnection.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }))
@@ -130,7 +131,6 @@ class PeerManager {
                 .catch((error) => {
                     console.error('Error handling offer:', error);
                 });
-
         } else if (type === 'renegotiate-answer' || type === 'answer') {
             peerConnection.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp })).then(answer => {
 
@@ -153,7 +153,6 @@ class PeerManager {
 
         this.peers.set(peerId, peerConnection);
         // Implement the creation of a new RTCPeerConnection and its event handlers
-
 
         // Handle ICE candidates
         peerConnection.onicecandidate = (event) => {
@@ -187,8 +186,9 @@ class PeerManager {
         peerConnection.addEventListener('connectionstatechange', () => {
             if (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected') {
                 // Renegotiate the connection if the state is failed or disconnected
-                this.renegotiate(peerId);
+                this.handleDisconnectedState(peerId)
             }
+
 
             this.app.connection.emit('stun-update-connection-message', this.room_code, peerId, peerConnection.connectionState);
         });
@@ -210,12 +210,27 @@ class PeerManager {
 
     }
 
-    renegotiate(peerId, retryCount = 0) {
-        const maxRetries = 4;
+    handleDisconnectedState(peerId) {
+        console.log(`Connection to peer ${peerId} lost. Initiating reconnect attempt.`);
+        this.renegotiate(peerId, 0, () => {
+
+            console.log(`Failed to reconnect to peer ${peerId}. Notifying user.`);
+            const userAction = sconfirm('Connection to a peer has been lost. Would you like to try reconnecting?');
+            if (userAction) {
+                this.renegotiate(peerId, 0, this.handleDisconnectedState);
+            } else {
+                this.leave();
+            }
+        });
+    }
+
+    renegotiate(peerId, retryCount = 0, onMaxRetriesReached) {
+        const maxRetries = 5;
         const retryDelay = 3000;
 
         const peerConnection = this.peers.get(peerId);
         if (!peerConnection) {
+            console.log('Cannot renegotiate, no peer connection found');
             return;
         }
 
@@ -223,10 +238,13 @@ class PeerManager {
             if (retryCount < maxRetries) {
                 console.log(`Signaling state is not stable, will retry in ${retryDelay} ms (attempt ${retryCount + 1}/${maxRetries})`);
                 setTimeout(() => {
-                    this.renegotiate(peerId, retryCount + 1);
+                    this.renegotiate(peerId, retryCount + 1, onMaxRetriesReached);
                 }, retryDelay);
             } else {
                 console.log('Reached maximum number of renegotiation attempts, giving up');
+                if (onMaxRetriesReached) {
+                    onMaxRetriesReached(peerId);
+                }
             }
             return;
         }

@@ -30,6 +30,7 @@ class VideoBox {
 
 
         app.connection.on('mute', (kind, public_key) => {
+
             if (public_key !== this.stream_id) return;
             if (kind === "video") {
                 let name;
