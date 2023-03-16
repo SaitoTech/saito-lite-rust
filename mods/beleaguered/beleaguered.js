@@ -16,7 +16,7 @@ class Beleaguered extends OnePlayerGameTemplate {
     this.slug = "beleaguered";
     this.description = 'Stack all cards by suit from aces to kings to win this game';
     this.categories = "Games Cardgame One-player";
-    this.publisher_message = "Community-created game";
+    this.publisher_message = "developed by Pawel (twitter: @PawelPawlak14). Feel free to pm me with any suggestions/feedback";
 
     this.app = app;
     this.status = "Beta";
