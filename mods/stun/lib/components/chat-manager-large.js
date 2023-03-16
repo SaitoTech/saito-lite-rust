@@ -25,25 +25,21 @@ class VideoChatManager {
         this.mod = mod;
         this.effectsMenu = new Effects(app, mod)
 
-        this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type = "Video", room_code) => {
-            console.log('showing chat manager')
-            if (ui_type !== "large") return
+        this.app.connection.on('show-video-chat-request', (app, mod, call_type = "Video", room_code) => {
+
             this.call_type = "video"
             this.room_code = room_code
-            this.ui_type = "large";
-            this.central = null;
             this.show(app, mod);
+            this.updateRoomLink()
         })
 
 
-        this.app.connection.on('render-local-stream-request', (localStream, ui_type) => {
+        this.app.connection.on('render-local-stream-request', (localStream) => {
             if (!this.isActive) return;
-            if (ui_type !== "large") return
             this.renderLocalStream(localStream);
         })
-        this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, ui_type) => {
+        this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc) => {
             if (!this.isActive) return;
-            if (ui_type !== "large") return
             this.addRemoteStream(peer, remoteStream, pc)
         });
 
@@ -228,7 +224,7 @@ class VideoChatManager {
 
     createVideoBox(peer) {
         if (!this.video_boxes[peer]) {
-            const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type, this.central, this.room_code, peer, 'large-wrapper');
+            const videoBox = new VideoBox(this.app, this.mod, this.call_type, this.central, this.room_code, peer, 'large-wrapper');
             this.video_boxes[peer] = { video_box: videoBox }
         }
     }

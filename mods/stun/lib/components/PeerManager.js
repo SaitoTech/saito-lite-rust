@@ -86,6 +86,8 @@ class PeerManager {
             } else {
                 this.localStream.getVideoTracks()[0].enabled = true;
                 this.app.connection.emit("unmute", 'video', 'local');
+                document.querySelector('.video_control').classList.add('fa-video')
+                document.querySelector('.video_control').classList.remove('fa-video-slash')
                 try {
                     // for (let i in this.mod.peer_connections) {
                     //     this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "unmute", kind: 'video' }))
@@ -101,14 +103,13 @@ class PeerManager {
 
     showChatManager() {
         // emit events to show chatmanager;
-        this.app.connection.emit('show-video-chat-request', this.app, this.mod, 'large', 'video', this.room_code);
+        this.app.connection.emit('show-video-chat-request', this.app, this.mod, 'video', this.room_code);
         this.app.connection.emit('stun-remove-loader')
-        this.app.connection.emit('render-local-stream-request', this.localStream, 'large', 'video');
+        this.app.connection.emit('render-local-stream-request', this.localStream, 'video');
         this.app.connection.emit('remove-overlay-request');
     }
 
     handleSignalingMessage(peerConnection, data) {
-
         const { type, sdp, candidate, targetPeerId, public_key } = data;
         if (type === 'renegotiate-offer' || type === 'offer') {
             peerConnection.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }))
@@ -130,7 +131,6 @@ class PeerManager {
                 .catch((error) => {
                     console.error('Error handling offer:', error);
                 });
-
         } else if (type === 'renegotiate-answer' || type === 'answer') {
             peerConnection.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp })).then(answer => {
 
@@ -153,7 +153,6 @@ class PeerManager {
 
         this.peers.set(peerId, peerConnection);
         // Implement the creation of a new RTCPeerConnection and its event handlers
-
 
         // Handle ICE candidates
         peerConnection.onicecandidate = (event) => {
@@ -180,14 +179,20 @@ class PeerManager {
                 remoteStream.addTrack(track);
             });
 
-            this.app.connection.emit('add-remote-stream-request', peerId, remoteStream, peerConnection, 'large')
+            this.app.connection.emit('add-remote-stream-request', peerId, remoteStream, peerConnection)
 
         });
 
         peerConnection.addEventListener('connectionstatechange', () => {
             if (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected') {
-                // Renegotiate the connection if the state is failed or disconnected
-                this.renegotiate(peerId);
+                if (type === "offer") {
+                    setTimeout(() => {
+                        console.log('sending offer');
+                        this.createPeerConnection(peerId, 'offer');
+                    }, 4000)
+
+                }
+
             }
 
             this.app.connection.emit('stun-update-connection-message', this.room_code, peerId, peerConnection.connectionState);
@@ -219,6 +224,7 @@ class PeerManager {
             return;
         }
 
+        console.log('signalling state, ', peerConnection.signalingState)
         if (peerConnection.signalingState !== 'stable') {
             if (retryCount < maxRetries) {
                 console.log(`Signaling state is not stable, will retry in ${retryDelay} ms (attempt ${retryCount + 1}/${maxRetries})`);
@@ -252,7 +258,6 @@ class PeerManager {
     }
 
     join() {
-        // Send a message to the signaling channel to indicate joining the mesh network
         console.log('joining mesh network');
         this.app.connection.emit('stun-send-message-to-server', { type: 'peer-joined', room_code: this.room_code });
     }
