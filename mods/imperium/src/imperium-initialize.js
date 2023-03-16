@@ -82,7 +82,7 @@
       class : "game-strategy-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-	game_mod.handleStrategyMenuItem();
+	game_mod.strategy_card_overlay.render();
       }
     });
     this.menu.addSubMenuOption("game-cards", {
