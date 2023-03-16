@@ -11690,6 +11690,33 @@ console.log("qe: " + qe);
 
     this.menu.addMenuOption("game-game", "Game");
 
+    this.menu.addSubMenuOption("game-game", {
+      text : "Factions",
+      id : "game-factions",
+      class : "game-factions",
+      callback : function(app, game_mod) {
+         game_mod.menu.showSubSubMenu("game-factions");
+      }
+    });
+    for (let i = 0; i < this.game.players.length; i++) {
+      this.menu.addSubMenuOption("game-factions", {
+        text : this.returnFactionNickname(i+1),
+        id : "game-faction-"+(i+1),
+        class : "game-faction-"+(i+1),
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+          game_mod.faction_sheet_overlay.render((i+1));
+        }
+      });
+    }
+
+
+
+
+
+
+
+
 /***
     this.menu.addSubMenuOption("game-game", {
       text : "Save",
@@ -11722,60 +11749,16 @@ console.log("qe: " + qe);
     });
 
     //
-    // factions
-    //
-    this.menu.addMenuOption("game-factions", "Factions");
-
-    for (let i = 0; i < this.game.players.length; i++) {
-      this.menu.addSubMenuOption("game-factions", {
-        text : this.returnFactionNickname(i+1),
-        id : "game-faction-"+(i+1),
-        class : "game-faction-"+(i+1),
-        callback : function(app, game_mod) {
-          game_mod.menu.hideSubMenus();
-          game_mod.faction_sheet_overlay.render((i+1));
-        }
-      });
-    }
-
-    //
     // cards
     //
-    this.menu.addMenuOption("game-cards", "Cards");
-
+    this.menu.addMenuOption("game-cards", "Info");
     this.menu.addSubMenuOption("game-cards", {
-      text : "Strategy",
+      text : "Strategy Cards",
       id : "game-strategy-cardlist",
       class : "game-strategy-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
 	game_mod.strategy_card_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Agendas",
-      id : "game-agenda-cardlist",
-      class : "game-agenda-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let ac = [];
-	for (let i = 0; i < game_mod.game.state.agendas.length; i++) {
-	  ac.push(game_mod.agenda_cards[game_mod.game.state.agendas[i]]);
-        }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac, { columns : 3 , cardlistWidth : "90vw" , cardlistHeight : "90vh" });
-      }
-    });
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Laws",
-      id : "game-laws-cardlist",
-      class : "game-laws-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        if (game_mod.game.state.laws.length == 0) {
-	  salert("There are currently no Active Laws");
-	  return;
-	}
-        game_mod.overlay.show(game_mod.returnLawsOverlay());
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -11786,36 +11769,6 @@ console.log("qe: " + qe);
         game_mod.menu.hideSubMenus();
 	game_mod.handleObjectivesMenuItem();
         //game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.stage_i_objectives, { cardlistHeight: "90vh" , cardlistWidth : "90vw" });
-      }
-    });
-
-
-
-
-
-
-
-    this.menu.addMenuOption("game-reference", "Reference");
-    
-    this.menu.addSubMenuOption("game-reference", {
-      text : "Action",
-      id : "game-action-cardlist",
-      class : "game-action-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.returnPlayerActionCards(), {});
-      }
-    });
-    this.menu.addSubMenuOption("game-reference", {
-      text : "Tech",
-      id : "game-tech-cardlist",
-      class : "game-tech-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let tech = game_mod.returnTechnology();
-        let t2 = [];
-        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
       }
     });
     this.menu.addSubMenuOption("game-reference", {
@@ -11846,6 +11799,57 @@ console.log("qe: " + qe);
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.handleTechMenuItem();
+      }
+    });
+    this.menu.addSubMenuOption("game-reference", {
+      text : "Tech",
+      id : "game-tech-cardlist",
+      class : "game-tech-cardlist",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	let tech = game_mod.returnTechnology();
+        let t2 = [];
+        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Agendas",
+      id : "game-agenda-cardlist",
+      class : "game-agenda-cardlist",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	let ac = [];
+	for (let i = 0; i < game_mod.game.state.agendas.length; i++) {
+	  ac.push(game_mod.agenda_cards[game_mod.game.state.agendas[i]]);
+        }
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac, { columns : 3 , cardlistWidth : "90vw" , cardlistHeight : "90vh" });
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Laws",
+      id : "game-laws-cardlist",
+      class : "game-laws-cardlist",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        if (game_mod.game.state.laws.length == 0) {
+	  salert("There are currently no Active Laws");
+	  return;
+	}
+        game_mod.overlay.show(game_mod.returnLawsOverlay());
+      }
+    });
+
+
+    this.menu.addMenuOption("game-reference", "Reference");
+    
+    this.menu.addSubMenuOption("game-reference", {
+      text : "Action",
+      id : "game-action-cardlist",
+      class : "game-action-cardlist",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.returnPlayerActionCards(), {});
       }
     });
 
@@ -30805,165 +30809,6 @@ buy command tokens and vote on laws.
   return html;
 }
 
-returnMovementOverlay() {
-  let imperium_self = this;
-  let html = `
-
-    <div class="how_to_play_overlay" id="how_to_play_overlay">
-
-<h2>Moving Ships:</h2>
-
-<p style="margin-top:15px"></p>
-
-Each ship can move a maximum number of hexes per turn. The INFO > UNITS 
-menu will show you how many hexes.
-
-<p style="margin-top:15px"></p>
-
-To move a ship, activate the destination sector. You will be able to 
-to select the ships you wish to move.
-
-<p style="margin-top:15px"></p>
-
-Some tech upgrades and action cards can increase movement distance. You 
-can also <b>upgrade</b> units to increase combat and movement.
-
-
-<h2 style="margin-top:30px">Carrying Units:</h2>
-
-<p style="margin-top:15px"></p>
-
-Some units like the CARRIER have the capacity to carry planet-based 
-units like INFANTRY. You need these units to invade and controls
-planets..
-
-<p style="margin-top:15px"></p>
-
-Capacity of each ship can be found in the INFO > UNITS menu.
-
-</div>
-
-    </div>
-  `;
-
-  return html;
-}
-
-returnCombatOverlay() {
-  let imperium_self = this;
-  let html = `
-
-    <div class="how_to_play_overlay" id="how_to_play_overlay">
-
-<h2>Space Battles:</h2>
-
-<p style="margin-top:15px"></p>
-
-The strength of each ship in combat can be found on the INFO > UNITS
-menu. This is the number which must be rolled on a 10-sided dice to
-secure a hit in combat.
-
-<p style="margin-top:15px"></p>
-
-In combat both players fire all available units, and both players then
-take damage. Combat ends when one player is destroyed or retreats from
-the battle.
-
-<p style="margin-top:15px"></p>
-
-Space battles are automated. If you have action cards that will
-modify combat or allow you to avoid damage you will have the option to 
-play them during your turn.
-
-<p style="margin-top:15px"></p>
-
-The order of combat:
-
-<p style="margin-top:15px"></p>
-
-<div style="padding-left:30px;font-family:'orbitron-medium', helvetica, arial;line-height:2em;">
-  <ol class="demo_ordered_list" style="font-family: 'orbitron-medium', helvetica, arial">
-    <li>PDS combat (optional)</li>
-    <li>Anti-fighter barrage</li>
-    <li>Space Combat</li>
-  </ol>
-</div>
-
-<h2 style="clear:both;margin-top:35px;">Ground Combat:</h2>
-
-<div style="padding-left: 30px">
-
-Ground combat works like space combat. The sequence of events:
-
-<p style="margin-top:15px"></p>
-
-<div style="padding-left:30px;font-family:'orbitron-medium', helvetica, arial;line-height:2em;">
-  <ol class="demo_ordered_list" style="font-family: 'orbitron-medium', helvetica, arial">
-    <li>Bombardment (optional)</li>
-    <li>Landing of Infantry</li>
-    <li>Ground Combat</li>
-  </ol>
-</div>
-
-<p style="margin-top:15px"></p>
-
-Ground combat ends when one player's infantry are totally destroyed. The 
-winner holds the planet, regardless of who controls the sector in space.
-
-</div>
-
-    </div>
-  `;
-
-  return html;
-}
-
-returnFactionOverlay() {
-  let imperium_self = this;
-  let html = `
-
-    <div class="how_to_play_overlay" id="how_to_play_overlay">
-
-<h2 style="clear:both;margin-top:35px;">Faction Abilities:</h2>
-
-<div style="padding-left: 30px">
-
-<img src="/imperium/img/factions/faction_dashboard.png" class="demo_planet_card" />
-
-<p></p>
-
-The faction dashboard shows the total influence and resources controlled by 
-every faction. The third hex is the number of trade goods held by each 
-faction. Trade goods may be spent 1-for-1 in lieu of resources or influence.
-
-<p></p>
-
-<div style="padding-left:30px;padding-right:30px;">
-<div class="how_to_play_resources_entry">
-<b>TRADE GOODS:</b>
-<p></p>
-can be used instead of resources or influence.
-</div>
-
-<div class="how_to_play_resources_entry">
-<b>COMMODITIES:</b>
-<p></p>
-turn into trade goods when you trade them away
-</div>
-</div>
-
-<p style="margin-top:15px"></p>
-
-Learn more about the factions in the game by clicking on their faction 
-dashboard. Each faction has unique faction abilities that can change the 
-game radically. Learn your opponent's weaknesses and strengths.
-
-    </div>
-  `;
-
-  return html;
-}
-
 
 
 
@@ -30982,12 +30827,6 @@ returnNewSecretObjectiveOverlay(card) {
       </div></div>
     </div>
   `;
-  return html;
-}
-
-
-returnTechOverlay() {
-  let html = '<div class="tech_overlay overlay" id="tech_overlay"><img src="/imperium/img/tech_tree.png" style="height:90vh;width:auto"></div>';
   return html;
 }
 
