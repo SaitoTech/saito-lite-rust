@@ -33,7 +33,7 @@ class PeerManager {
                 credential: "somepassword",
             }
         ];
-        this.videoEnabled
+        this.videoEnabled = true;
 
         this.room_code = room_code;
 
@@ -185,13 +185,14 @@ class PeerManager {
 
         });
 
-
         peerConnection.addEventListener('connectionstatechange', () => {
             console.log(peerConnection.connectionState, 'connection state')
             if (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected') {
                 // Renegotiate the connection if the state is failed or disconnected
                 this.renegotiate(peerId);
             }
+
+            this.app.connection.emit('stun-update-connection-message', this.room_code, peerId, peerConnection.connectionState);
         });
 
         if (type === "offer") {

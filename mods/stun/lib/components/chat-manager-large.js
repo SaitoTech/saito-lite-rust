@@ -46,31 +46,34 @@ class VideoChatManager {
             if (ui_type !== "large") return
             this.addRemoteStream(peer, remoteStream, pc)
         });
-        this.app.connection.on('change-connection-state-request', (peer, state, ui_type, call_type, room_code) => {
-            if (!this.isActive) return;
-            if (ui_type !== "large" || this.room_code !== room_code) return
-            this.updateConnectionState(peer, state)
-        })
+
+        this.app.connection.on('stun-update-connection-message', (room_code, peer_id, status) => {
 
 
-
-        this.app.connection.on('stun-receive-media-offer', ({ room_code, offer_creator, offer_recipient }) => {
-            if (!this.isActive) return;
-            console.log(room_code, offer_creator, offer_recipient, 'stun-receive-media-offer')
             if (room_code !== this.room_code) {
                 return;
             }
 
-            let my_public_key = this.app.wallet.returnPublicKey()
-            if (my_public_key === offer_creator) {
-                let is_creator = true
-                this.renderRemoteStreamPlaceholder(offer_recipient, "attempting to connect", is_creator);
-            } else {
-                let is_creator = false;
-                this.renderRemoteStreamPlaceholder(offer_creator, "attempting to connect", is_creator);
+            this.createVideoBox(peer_id)
+            if (status === "connecting") {
+                this.video_boxes[peer_id].video_box.renderPlaceholder('connecting')
+            } else if (status === "connected") {
+                this.video_boxes[peer_id].video_box.removeConnectionMessage();
+                this.startTimer();
+                this.updateImages();
+            } else if (status === "disconnected") {
+                this.video_boxes[peer_id].video_box.renderPlaceholder('retrying connection')
             }
 
         })
+
+        this.app.connection.on('video-box-remove', (peer_id) => {
+            this.video_boxes[peer_id].video_box.remove()
+            delete this.video_boxes[peer_id];
+            this.updateImages();
+        })
+
+
 
     }
 
@@ -284,6 +287,45 @@ class VideoChatManager {
         }
         document.querySelector('.stunx-chatbox .image-list').innerHTML = images;
         document.querySelector('.stunx-chatbox .users-on-call-count').innerHTML = count
+    }
+
+    startTimer() {
+        if (this.timer_interval) {
+            return;
+        }
+        let timerElement = document.querySelector(".stunx-chatbox .counter");
+        let seconds = 0;
+
+        const timer = () => {
+            seconds++;
+
+            // Get hours
+            let hours = Math.floor(seconds / 3600);
+            // Get minutes
+            let minutes = Math.floor((seconds - hours * 3600) / 60);
+            // Get seconds
+            let secs = Math.floor(seconds % 60);
+
+            if (hours < 10) {
+                hours = `0${hours}`;
+            }
+            if (minutes < 10) {
+                minutes = `0${minutes}`;
+            }
+            if (secs < 10) {
+                secs = `0${secs}`;
+            }
+
+            timerElement.innerHTML = `<span style="" >${hours}:${minutes}:${secs} </span>`;
+
+        };
+
+        this.timer_interval = setInterval(timer, 1000);
+    }
+
+    stopTimer() {
+        clearInterval(this.timer_interval)
+        this.timer_interval = null
     }
 
 
