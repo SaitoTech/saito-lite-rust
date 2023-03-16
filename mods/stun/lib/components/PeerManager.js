@@ -217,7 +217,6 @@ class PeerManager {
         if (!peerConnection) {
             return;
         }
-
         if (peerConnection.signalingState !== 'stable') {
             if (retryCount < maxRetries) {
                 console.log(`Signaling state is not stable, will retry in ${retryDelay} ms (attempt ${retryCount + 1}/${maxRetries})`);
