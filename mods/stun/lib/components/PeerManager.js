@@ -189,7 +189,7 @@ class PeerManager {
                     setTimeout(() => {
                         console.log('sending offer');
                         this.reconnect(peerId, type);
-                    }, 4000)
+                    }, 10000)
 
                 }
 
@@ -245,22 +245,29 @@ class PeerManager {
         const retryDelay = 10000;
 
         const attemptReconnect = (currentRetry) => {
+
+            const peerConnection = this.peers.get(peerId);
             if (currentRetry > maxRetries) {
-                console.log('Reached maximum number of reconnection attempts, giving up');
-                this.removePeerConnection(peerId);
+                if ((peerConnection && peerConnection.connectionState !== 'connected')) {
+                    console.log('Reached maximum number of reconnection attempts, giving up');
+                    this.removePeerConnection(peerId);
+                }
                 return;
             }
 
-            const peerConnection = this.peers.get(peerId);
+
             if (peerConnection && peerConnection.connectionState === 'connected') {
                 console.log('Reconnection successful');
                 return;
             }
 
-            this.removePeerConnection(peerId);
-            if (type === "offer") {
-                this.createPeerConnection(peerId, 'offer');
+            if (peerConnection && peerConnection.connectionState !== 'connected') {
+                this.removePeerConnection(peerId);
+                if (type === "offer") {
+                    this.createPeerConnection(peerId, 'offer');
+                }
             }
+
 
             setTimeout(() => {
                 console.log(`Reconnection attempt ${currentRetry + 1}/${maxRetries}`);

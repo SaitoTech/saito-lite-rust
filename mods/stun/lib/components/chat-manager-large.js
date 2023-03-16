@@ -64,9 +64,12 @@ class VideoChatManager {
         })
 
         this.app.connection.on('video-box-remove', (peer_id) => {
-            this.video_boxes[peer_id].video_box.remove()
-            delete this.video_boxes[peer_id];
-            this.updateImages();
+            if (this.video_boxes[peer_id].video_box) {
+                this.video_boxes[peer_id].video_box.remove()
+                delete this.video_boxes[peer_id];
+                this.updateImages();
+            }
+
         })
 
 
