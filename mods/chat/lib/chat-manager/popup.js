@@ -16,6 +16,8 @@ class ChatPopup {
 
     this.x_pos = 0;
     this.y_pos = 0;
+    this.width = 0;
+    this.height = 0;
 
   }
 
@@ -91,9 +93,13 @@ console.log("removing: " + popup_qs);
       this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group), popup_qs);
       this.x_pos = rect.left;
       this.y_pos = rect.top;
+      this.width = rect.width;
+      this.height = rect.height;
       obj = document.querySelector(popup_qs);
       obj.style.left = this.x_pos + "px";
       obj.style.top = this.y_pos + "px";
+      obj.style.width = this.width + "px";
+      obj.style.height = this.height + "px";
     } else {
       this.app.browser.addElementToDom(ChatPopupTemplate(this.app, this.mod, this.group));
     }

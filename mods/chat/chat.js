@@ -121,7 +121,7 @@ class Chat extends ModTemplate {
 	      console.log("chat history adding: " + err);
 	    }
 
-            //this.app.connection.emit("chat-manager-and-popup-render-request", (local_group));
+            this.app.connection.emit("chat-manager-and-popup-render-request", (local_group));
 
           });
         }
@@ -287,9 +287,9 @@ class Chat extends ModTemplate {
                 let group = this.returnGroupByMemberPublickey(peer.returnPublicKey());
                 if (group) {
                     let active_module = app.modules.returnActiveModule();
-		    if (active_module) {
+		            if (active_module) {
                       if (active_module.request_no_interrupts != true) {
-                        //this.app.connection.emit('chat-popup-render-request', group);
+                        this.app.connection.emit('chat-popup-render-request', group);
                       }
                     }
                 }

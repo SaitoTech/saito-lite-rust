@@ -155,7 +155,7 @@ class Wordblocks extends GameTemplate {
   returnStatsOverlay() {
     let html = `<div class="stats-overlay"><table cellspacing="10px" rowspacing="10px"><tr><th>Round</th>`;
     for (let i = 0; i < this.game.opponents.length + 1; i++) {
-      html += `<th colspan="2">Player ${i + 1}</th>`;
+      html += `<th colspan="2">${this.game.playerNames[i]}</th>`;
     }
 
     let totals = new Array(this.game.opponents.length + 1); //Each players total...
@@ -191,8 +191,9 @@ class Wordblocks extends GameTemplate {
 
   initializeGame(game_id) {
 
-
     console.log("InitializeGame");
+
+    this.resetPlayerNames();
 
     //
     // deal cards
@@ -301,7 +302,7 @@ class Wordblocks extends GameTemplate {
       this.enableEvents();
     } else {
       this.stopClock();
-      this.updateStatusWithTiles(`Waiting for Player ${this.game.target} to move.`);
+      this.updateStatusWithTiles(`Waiting for ${this.game.playerNames[this.game.target-1]} to move.`);
     }
 
     if (this.game.players.length > 2){
@@ -2166,7 +2167,7 @@ class Wordblocks extends GameTemplate {
           this.playerbox.appendLog(`<div class="lastmove"><span>Tiles:</span><span class="playerscore">${tileCt}</span></div>`, player);
         }
 
-        let name = (player === this.game.player)? "You are" : `Player ${player} is`;
+        let name = (player === this.game.player)? "You are" : `${this.game.playerNames[player-1]} is`;
         this.updateLog(`${name} down to ${tileCt} tiles`);
 
         return 1;
@@ -2202,7 +2203,7 @@ class Wordblocks extends GameTemplate {
             word: expanded,
             score: score,
           });
-          this.updateLog(`Player ${player} played ${expanded} for ${score} points`);
+          this.updateLog(`${this.game.playerNames[player-1]} played ${expanded} for ${score} points`);
         } else {
           score = this.getLastMove(player).score;
         }
@@ -2224,7 +2225,7 @@ class Wordblocks extends GameTemplate {
           this.enableEvents();
         } else {
           this.stopClock(); //Make sure clock didn't start again on browser refresh
-          this.updateStatusWithTiles(`Player ${this.game.target}'s turn`);
+          this.updateStatusWithTiles(`${this.game.playerNames[this.game.target-1]}'s turn`);
         }
         $(".player-box").removeClass("active");
         this.playerbox.addClass("active", this.game.target);
@@ -2249,7 +2250,7 @@ class Wordblocks extends GameTemplate {
 
         let msg = (discardedTiles.length > 0) ? "discarded some tiles" : "passed";
         if (player !== this.game.player) {
-          this.updateLog(`Player ${player} ${msg}.`);
+          this.updateLog(`${this.game.playerNames[player-1]} ${msg}.`);
         } else {
           this.updateLog(`You ${msg}.`);
         }
@@ -2287,7 +2288,7 @@ class Wordblocks extends GameTemplate {
           this.enableEvents();
         } else {
           this.stopClock(); //Make sure clock didn't start again on browser refresh
-          this.updateStatusWithTiles(`Player ${this.game.target}'s turn`);
+          this.updateStatusWithTiles(`${this.game.playerNames[this.game.target-1]}'s turn`);
        }
         $("player-box").removeClass("active");
         this.playerbox.addClass("active", this.game.target);
