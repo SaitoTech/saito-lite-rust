@@ -30,7 +30,8 @@ class VideoChatManager {
             this.call_type = "video"
             this.room_code = room_code
             this.show(app, mod);
-            this.updateRoomLink()
+            this.updateRoomLink();
+
         })
 
 
@@ -170,10 +171,9 @@ class VideoChatManager {
             this.attachEvents(app, mod);
         }
 
-        if (this.mod.central === true) {
-            let room_link = this.createRoomLink();
-            history.pushState(null, null, room_link);
-        }
+        let room_link = this.createRoomLink();
+        history.pushState(null, null, room_link);
+
 
         this.isActive = true
     }
