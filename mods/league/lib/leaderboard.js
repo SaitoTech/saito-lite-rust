@@ -58,7 +58,7 @@ class Leaderboard {
       html += `
         <div class="saito-table-row${(publickey == this.app.wallet.returnPublicKey())?" my-leaderboard-position":""}">
           <div class="center-align">${i+1}</div>
-          <div class="saito-address saito-address-${publickey}" data-id="${publickey}">${publickey}</div>
+          ${this.app.browser.returnAddressHTML(publickey)}
           <div class="right-align">${Math.round(player.score)}</div>
           <div class="right-align">${Math.round(player.games_finished)}</div>
         </div>
@@ -69,7 +69,6 @@ class Leaderboard {
       this.app.browser.addElementToSelector(html, ".league-leaderboard .saito-table-body");
     }
     
-    this.app.browser.addIdentifiersToDom();
     let myListing = document.querySelector('.my-leaderboard-position');
     if (myListing) {
       myListing.scrollIntoView();

@@ -188,8 +188,8 @@ class PeerManager {
                 if (type === "offer") {
                     setTimeout(() => {
                         console.log('sending offer');
-                        this.reconnect(peerId, 0);
-                    }, 4000)
+                        this.reconnect(peerId, type);
+                    }, 10000)
 
                 }
 
@@ -204,23 +204,78 @@ class PeerManager {
 
     }
 
-    reconnect(peerId, retryCount) {
+    // reconnect(peerId, type) {
+    //     // const maxRetries = 2;
+    //     // const peerConnection = this.peers.get(peerId);
+    //     const peerConnection = this.peers.get(peerId);
+    //     if (peerConnection && (peerConnection.connectionState === "connected")) {
+    //         return;
+    //     }
+
+    //     this.removePeerConnection(peerId);
+    //     if (type === "offer") {
+    //         this.createPeerConnection(peerId, 'offer');
+    //     }
+
+    //     setTimeout(() => {
+    //         const peerConnection = this.peers.get(peerId);
+    //         if (peerConnection && (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected')) {
+    //             this.removePeerConnection(peerId);
+    //             if (type === "offer") {
+    //                 this.createPeerConnection(peerId, 'offer');
+    //             }
+
+    //             setTimeout(() => {
+    //                 const peerConnection = this.peers.get(peerId);
+    //                 if (peerConnection && (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected')) {
+    //                     this.removePeerConnection(peerId)
+    //                 }
+    //             }, 10000)
+
+    //         }
+    //     }, 10000);
+
+
+
+
+    // }
+
+    reconnect(peerId, type) {
         const maxRetries = 2;
-        const peerConnection = this.peers.get(peerId);
+        const retryDelay = 10000;
 
-        if (retryCount >= maxRetries) {
-            console.log(`Reached maximum number of reconnect attempts (${maxRetries}). Giving up.`);
-            return;
-        }
+        const attemptReconnect = (currentRetry) => {
 
-        if (peerConnection && (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected')) {
-            this.removePeerConnection(peerId);
-            this.createPeerConnection(peerId, 'offer');
+            const peerConnection = this.peers.get(peerId);
+            if (currentRetry > maxRetries) {
+                if ((peerConnection && peerConnection.connectionState !== 'connected')) {
+                    console.log('Reached maximum number of reconnection attempts, giving up');
+                    this.removePeerConnection(peerId);
+                }
+                return;
+            }
+
+
+            if (peerConnection && peerConnection.connectionState === 'connected') {
+                console.log('Reconnection successful');
+                return;
+            }
+
+            if (peerConnection && peerConnection.connectionState !== 'connected') {
+                this.removePeerConnection(peerId);
+                if (type === "offer") {
+                    this.createPeerConnection(peerId, 'offer');
+                }
+            }
+
 
             setTimeout(() => {
-                this.reconnect(peerId, retryCount + 1);
-            }, 4000);
-        }
+                console.log(`Reconnection attempt ${currentRetry + 1}/${maxRetries}`);
+                attemptReconnect(currentRetry + 1);
+            }, retryDelay);
+        };
+
+        attemptReconnect(0);
     }
 
     removePeerConnection(peerId) {

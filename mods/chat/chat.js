@@ -121,7 +121,7 @@ class Chat extends ModTemplate {
 	      console.log("chat history adding: " + err);
 	    }
 
-            this.app.connection.emit("chat-manager-and-popup-render-request", (local_group));
+            //this.app.connection.emit("chat-manager-and-popup-render-request", (local_group));
 
           });
         }
@@ -235,7 +235,7 @@ class Chat extends ModTemplate {
 	      this.communityGroupHash = this.communityGroup.id; 
 	    }
 
-            this.app.connection.emit("chat-manager-render-request");
+            //this.app.connection.emit("chat-manager-render-request");
 
 
             this.loadChats();
@@ -266,10 +266,6 @@ class Chat extends ModTemplate {
                                 this.receiveChatTransaction(app, tx);
                             }
 
-                            //
-                            // add identifiers
-                            //
-                            app.browser.addIdentifiersToDom();
                         }
                     },
 
@@ -293,7 +289,7 @@ class Chat extends ModTemplate {
                     let active_module = app.modules.returnActiveModule();
 		    if (active_module) {
                       if (active_module.request_no_interrupts != true) {
-                        this.app.connection.emit('chat-popup-render-request', group);
+                        //this.app.connection.emit('chat-popup-render-request', group);
                       }
                     }
                 }
