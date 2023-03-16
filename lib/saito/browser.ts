@@ -1256,9 +1256,6 @@ class Browser {
    * @param {Array} keys
    */
   async addIdentifiersToDom(keys = []) {
-
-    return;
-
     let keys = this.returnArrayOfPublicKeysInDom();
     let unidentified_keys = [];
     for (let i = 0; i < keys.length; i++) {

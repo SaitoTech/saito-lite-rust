@@ -174,7 +174,6 @@ try {
     // skip decrypting un-encrypted messages
     //
     if (!app.crypto.isAesEncrypted(this.msg)) {
-console.log("this message is not AesEncrypted!!!");
       return;
     }
 
