@@ -186,9 +186,8 @@ class PeerManager {
         peerConnection.addEventListener('connectionstatechange', () => {
             if (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected') {
                 // Renegotiate the connection if the state is failed or disconnected
-                this.handleDisconnectedState(peerId)
+                this.renegotiate(peerId);
             }
-
 
             this.app.connection.emit('stun-update-connection-message', this.room_code, peerId, peerConnection.connectionState);
         });
@@ -210,27 +209,12 @@ class PeerManager {
 
     }
 
-    handleDisconnectedState(peerId) {
-        console.log(`Connection to peer ${peerId} lost. Initiating reconnect attempt.`);
-        this.renegotiate(peerId, 0, () => {
-
-            console.log(`Failed to reconnect to peer ${peerId}. Notifying user.`);
-            const userAction = sconfirm('Connection to a peer has been lost. Would you like to try reconnecting?');
-            if (userAction) {
-                this.renegotiate(peerId, 0, this.handleDisconnectedState);
-            } else {
-                this.leave();
-            }
-        });
-    }
-
-    renegotiate(peerId, retryCount = 0, onMaxRetriesReached) {
-        const maxRetries = 5;
+    renegotiate(peerId, retryCount = 0) {
+        const maxRetries = 4;
         const retryDelay = 3000;
 
         const peerConnection = this.peers.get(peerId);
         if (!peerConnection) {
-            console.log('Cannot renegotiate, no peer connection found');
             return;
         }
 
@@ -238,13 +222,10 @@ class PeerManager {
             if (retryCount < maxRetries) {
                 console.log(`Signaling state is not stable, will retry in ${retryDelay} ms (attempt ${retryCount + 1}/${maxRetries})`);
                 setTimeout(() => {
-                    this.renegotiate(peerId, retryCount + 1, onMaxRetriesReached);
+                    this.renegotiate(peerId, retryCount + 1);
                 }, retryDelay);
             } else {
                 console.log('Reached maximum number of renegotiation attempts, giving up');
-                if (onMaxRetriesReached) {
-                    onMaxRetriesReached(peerId);
-                }
             }
             return;
         }
