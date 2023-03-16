@@ -188,7 +188,7 @@ class PeerManager {
                 if (type === "offer") {
                     setTimeout(() => {
                         console.log('sending offer');
-                        this.createPeerConnection(peerId, 'offer');
+                        this.reconnect(peerId, 0);
                     }, 4000)
 
                 }
@@ -202,6 +202,25 @@ class PeerManager {
             this.renegotiate(peerId);
         }
 
+    }
+
+    reconnect(peerId, retryCount) {
+        const maxRetries = 2;
+        const peerConnection = this.peers.get(peerId);
+
+        if (retryCount >= maxRetries) {
+            console.log(`Reached maximum number of reconnect attempts (${maxRetries}). Giving up.`);
+            return;
+        }
+
+        if (peerConnection && (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected')) {
+            this.removePeerConnection(peerId);
+            this.createPeerConnection(peerId, 'offer');
+
+            setTimeout(() => {
+                this.reconnect(peerId, retryCount + 1);
+            }, 4000);
+        }
     }
 
     removePeerConnection(peerId) {

@@ -297,7 +297,6 @@ class Stun extends ModTemplate {
         if (app.BROWSER === 1) {
             if (txmsg.request === "stun-send-message-to-peers") {
                 let stun_mod = app.modules.returnModule('Stun');
-                console.log('receiving stun message to peers');
                 stun_mod.receiveStunMessageToPeersTransaction(app, tx);
 
             }
@@ -339,10 +338,8 @@ class Stun extends ModTemplate {
         let txmsg = tx.returnMessage();
         let stun_mod = app.modules.returnModule('Stun');
 
-        console.log(txmsg, 'transaction')
         let room_code = txmsg.data.data.room_code;
         let public_key = txmsg.data.data.public_key;
-        console.log("gotten on the server", room_code);
         stun_mod.addRoom(room_code);
         stun_mod.addKeyToRoom(room_code, public_key)
     }
@@ -411,7 +408,6 @@ class Stun extends ModTemplate {
     receiveStunMessageToPeersTransaction(app, tx) {
         let txmsg = tx.returnMessage();
         let data = tx.msg.data;
-        console.log(data, tx)
         app.connection.emit('stun-event-message', data);
 
     }
@@ -425,7 +421,6 @@ class Stun extends ModTemplate {
         if (!this.rooms.has(room_code)) {
             this.rooms.set(room_code, []);
         }
-        console.log('room code added', this.rooms)
     }
 
     addKeyToRoom(room_code, public_key) {
@@ -435,8 +430,6 @@ class Stun extends ModTemplate {
                 public_keys.push(public_key)
             }
             this.rooms.set(room_code, public_keys)
-
-            console.log(this.rooms)
         }
     }
 
@@ -444,7 +437,6 @@ class Stun extends ModTemplate {
         if (this.rooms.has(room_code)) {
             let public_keys = this.rooms.get(room_code).filter(p => p !== public_key);
             this.rooms.set(room_code, public_keys);
-            console.log(this.rooms)
         }
     }
 
