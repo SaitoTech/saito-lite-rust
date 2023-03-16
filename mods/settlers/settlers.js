@@ -314,7 +314,7 @@ class Settlers extends GameTemplate {
     
     }
 
-    this.setPlayerNames();
+    this.resetPlayerNames();
 
     if (this.game.players.length > 2){
       this.grace_window = this.game.players.length * 12;
@@ -1976,7 +1976,7 @@ class Settlers extends GameTemplate {
       let playerHTML = `
           <div class="saito-user">
             <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i-1])}"></div>
-            <div class="saito-address">${this.game.playerNames[i-1]}</div>
+            <div class="saito-playername" data-id="${this.game.players[i-1]}">${this.game.playerNames[i-1]}</div>
             <div class="saito-userline">${this.skin.vp.name}: ${this.game.state.players[i - 1].vp}</div>
             ${(i==this.game.player)? `<i id="construction-costs" class="handy-help fa fa-question-circle" aria-hidden="true"></i>`: ""}
           </div>`;
