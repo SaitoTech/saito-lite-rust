@@ -6,6 +6,8 @@ const StrategyCardOverlay = require('./lib/overlays/strategy-card');
 const CombatOverlay = require('./lib/overlays/combat');
 const MovementOverlay = require('./lib/overlays/movement');
 const TechTreeOverlay = require('./lib/overlays/tech-tree');
+const TokenBar = require('./lib/tokenbar');
+const Dashboard = require('./lib/dashboard');
 
 
 class Imperium extends GameTemplate {
@@ -36,6 +38,7 @@ class Imperium extends GameTemplate {
     this.combat_overlay = new CombatOverlay(this.app, this);
     this.movement_overlay = new MovementOverlay(this.app, this);
     this.tech_tree_overlay = new TechTreeOverlay(this.app, this);
+    this.dashboard = new Dashboard(this.app, this, ".dashboard");
 
 
     //
@@ -11771,7 +11774,7 @@ console.log("qe: " + qe);
         //game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.stage_i_objectives, { cardlistHeight: "90vh" , cardlistWidth : "90vw" });
       }
     });
-    this.menu.addSubMenuOption("game-reference", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Units",
       id : "game-units-cardlist",
       class : "game-units-cardlist",
@@ -11780,7 +11783,7 @@ console.log("qe: " + qe);
         game_mod.overlay.show(game_mod.returnUnitsOverlay());
       }
     });
-    this.menu.addSubMenuOption("game-reference", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Upgrades",
       id : "game-unit-cardlist",
       class : "game-unit-cardlist",
@@ -11792,7 +11795,7 @@ console.log("qe: " + qe);
         game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
       }
     });
-    this.menu.addSubMenuOption("game-reference", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Tech Tree",
       id : "game-tech-dependencies",
       class : "game-tech-dependencies",
@@ -11801,7 +11804,7 @@ console.log("qe: " + qe);
         game_mod.handleTechMenuItem();
       }
     });
-    this.menu.addSubMenuOption("game-reference", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Tech",
       id : "game-tech-cardlist",
       class : "game-tech-cardlist",
@@ -11842,7 +11845,6 @@ console.log("qe: " + qe);
 
 
     this.menu.addMenuOption("game-reference", "Reference");
-    
     this.menu.addSubMenuOption("game-reference", {
       text : "Action",
       id : "game-action-cardlist",
@@ -18623,6 +18625,11 @@ console.log("K: " + z[k].name);
 	  this.addMove("pds_space_defense\t"+player+"\t"+sector);
 	  this.endTurn();
 	}
+
+	//
+	// and draw attention to sector
+	//
+	this.flashSector(sector);
 
         return 0;
 
@@ -30998,64 +31005,6 @@ returnPlanetInformationHTML(planet) {
 
 }
 
-returnFactionDashboard(agenda_phase=0) {
-
-  let html = '';
-  for (let i = 0; i < this.game.state.players_info.length; i++) {
-
-    html += `
-
-    <div data-id="${(i+1)}" class="dash-faction p${i+1}">
-     <div data-id="${(i+1)}" class="dash-faction-name bk"></div>
-    `;
-
-    if (agenda_phase == 1) {
-    html += `
-      <div data-id="${(i+1)}" class="dash-faction-agenda">
-        <div data-id="${(i+1)}" class="dash-item-agenda-influence agenda-influence">
-          <span data-id="${(i+1)}" class="avail">${this.game.state.votes_available[i]}</span>
-        </div>
-      </div>
-    `;
-    } else {
-    html += `
-      <div data-id="${(i+1)}" class="dash-faction-info">
-        <div data-id="${(i+1)}" class="dash-item tooltip dash-item-resources resources">
-          <span data-id="${(i+1)}" class="avail"></span>
-          <span data-id="${(i+1)}" class="total"></span>
-        </div>
-
-        <div data-id="${(i+1)}" class="dash-item tooltip dash-item-influence influence">
-          <span data-id="${(i+1)}" class="avail"></span>
-          <span data-id="${(i+1)}" class="total"></span>
-        </div>
-
-        <div data-id="${(i+1)}" class="dash-item tooltip dash-item-trade trade">
-          <i data-id="${(i+1)}" class="fas fa-database pc white-stroke"></i>
-          <div data-id="${(i+1)}" id="dash-item-goods" class="dash-item-goods">
-            ${this.game.state.players_info[i].goods}
-          </div>
-        </div>
-      </div>
-    `;
-    }
-    html += `
-      <div data-id="${(i+1)}" class="dash-faction-base">
-	<div data-id="${(i+1)}" class="dash-faction-status-${(i+1)} dash-faction-status"></div>
-	commodities : <span data-id="${(i+1)}" class="dash-item-commodities">${this.game.state.players_info[i].commodities}</span> / <span data-id="${(i+1)}" class="dash-item-commodity-limit">${this.game.state.players_info[i].commodity_limit}</span>
-      </div>
-
-      <div data-id="${(i+1)}" class="dash-faction-speaker`;
-      if (this.game.state.speaker == (i+1)) {  html += ' speaker">speaker'; } else { html += '">'; }
-      html += `</div>
-    </div>
-    `;
-
-  }
-  return html;
-
-}
-
 
 returnLawsOverlay() {
 
@@ -31440,7 +31389,7 @@ displayFactionDashboard(agenda_phase=0) {
 
   try {
 
-    document.querySelector('.dashboard').innerHTML = this.returnFactionDashboard(agenda_phase);
+    this.dashboard.render(agenda_phase);
 
     let pl = "";
     let fo = "";

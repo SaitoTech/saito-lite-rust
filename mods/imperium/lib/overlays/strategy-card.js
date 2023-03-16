@@ -14,7 +14,7 @@ class StrategyCardOverlay {
     //
     // show overlay
     //
-    this.overlay.showCardSelectionOverlay(this.app, this.mod, this.returnStrategyCards(), {
+    this.overlay.showCardSelectionOverlay(this.app, this.mod, this.mod.returnStrategyCards(), {
       columns : 4 ,
       backgroundImage : "/imperium/img/starscape_background3.jpg" ,
     });
@@ -22,15 +22,15 @@ class StrategyCardOverlay {
     //
     // add player, state and bonus
     //
-    for (let s in this.strategy_cards) {
+    for (let s in this.mod.strategy_cards) {
 
       let strategy_card_state = "not picked";
       let strategy_card_player = -1;
       let strategy_card_bonus = 0;
 
-      for (let i = 0; i < this.game.state.strategy_cards.length; i++) {
-        if (s === this.game.state.strategy_cards[i]) {
-          strategy_card_bonus = this.game.state.strategy_cards_bonus[i];
+      for (let i = 0; i < this.mod.game.state.strategy_cards.length; i++) {
+        if (s === this.mod.game.state.strategy_cards[i]) {
+          strategy_card_bonus = this.mod.game.state.strategy_cards_bonus[i];
         }
       }
 
@@ -44,12 +44,12 @@ class StrategyCardOverlay {
         this.app.browser.addElementToDom(strategy_card_bonus_html, document.getElementById(s));
       }
 
-      let thiscard = this.strategy_cards[s];
-      for (let i = 0; i < this.game.state.players_info.length; i++) {
-        if (this.game.state.players_info[i].strategy.includes(s)) {
+      let thiscard = this.mod.strategy_cards[s];
+      for (let i = 0; i < this.mod.game.state.players_info.length; i++) {
+        if (this.mod.game.state.players_info[i].strategy.includes(s)) {
           strategy_card_state = "unplayed";
           strategy_card_player = (i+1);
-          if (this.game.state.players_info[i].strategy_cards_played.includes(s)) {
+          if (this.mod.game.state.players_info[i].strategy_cards_played.includes(s)) {
             strategy_card_state = "played";
           };
         };

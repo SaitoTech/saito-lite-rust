@@ -6,6 +6,8 @@ const StrategyCardOverlay = require('./lib/overlays/strategy-card');
 const CombatOverlay = require('./lib/overlays/combat');
 const MovementOverlay = require('./lib/overlays/movement');
 const TechTreeOverlay = require('./lib/overlays/tech-tree');
+const TokenBar = require('./lib/tokenbar');
+const Dashboard = require('./lib/dashboard');
 
 
 class Imperium extends GameTemplate {
@@ -36,6 +38,7 @@ class Imperium extends GameTemplate {
     this.combat_overlay = new CombatOverlay(this.app, this);
     this.movement_overlay = new MovementOverlay(this.app, this);
     this.tech_tree_overlay = new TechTreeOverlay(this.app, this);
+    this.dashboard = new Dashboard(this.app, this, ".dashboard");
 
 
     //

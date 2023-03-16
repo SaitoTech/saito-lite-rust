@@ -104,7 +104,7 @@
         //game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.stage_i_objectives, { cardlistHeight: "90vh" , cardlistWidth : "90vw" });
       }
     });
-    this.menu.addSubMenuOption("game-reference", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Units",
       id : "game-units-cardlist",
       class : "game-units-cardlist",
@@ -113,7 +113,7 @@
         game_mod.overlay.show(game_mod.returnUnitsOverlay());
       }
     });
-    this.menu.addSubMenuOption("game-reference", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Upgrades",
       id : "game-unit-cardlist",
       class : "game-unit-cardlist",
@@ -125,7 +125,7 @@
         game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
       }
     });
-    this.menu.addSubMenuOption("game-reference", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Tech Tree",
       id : "game-tech-dependencies",
       class : "game-tech-dependencies",
@@ -134,7 +134,7 @@
         game_mod.handleTechMenuItem();
       }
     });
-    this.menu.addSubMenuOption("game-reference", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Tech",
       id : "game-tech-cardlist",
       class : "game-tech-cardlist",
@@ -175,7 +175,6 @@
 
 
     this.menu.addMenuOption("game-reference", "Reference");
-    
     this.menu.addSubMenuOption("game-reference", {
       text : "Action",
       id : "game-action-cardlist",

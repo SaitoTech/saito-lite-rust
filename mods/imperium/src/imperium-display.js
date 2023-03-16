@@ -431,64 +431,6 @@ returnPlanetInformationHTML(planet) {
 
 }
 
-returnFactionDashboard(agenda_phase=0) {
-
-  let html = '';
-  for (let i = 0; i < this.game.state.players_info.length; i++) {
-
-    html += `
-
-    <div data-id="${(i+1)}" class="dash-faction p${i+1}">
-     <div data-id="${(i+1)}" class="dash-faction-name bk"></div>
-    `;
-
-    if (agenda_phase == 1) {
-    html += `
-      <div data-id="${(i+1)}" class="dash-faction-agenda">
-        <div data-id="${(i+1)}" class="dash-item-agenda-influence agenda-influence">
-          <span data-id="${(i+1)}" class="avail">${this.game.state.votes_available[i]}</span>
-        </div>
-      </div>
-    `;
-    } else {
-    html += `
-      <div data-id="${(i+1)}" class="dash-faction-info">
-        <div data-id="${(i+1)}" class="dash-item tooltip dash-item-resources resources">
-          <span data-id="${(i+1)}" class="avail"></span>
-          <span data-id="${(i+1)}" class="total"></span>
-        </div>
-
-        <div data-id="${(i+1)}" class="dash-item tooltip dash-item-influence influence">
-          <span data-id="${(i+1)}" class="avail"></span>
-          <span data-id="${(i+1)}" class="total"></span>
-        </div>
-
-        <div data-id="${(i+1)}" class="dash-item tooltip dash-item-trade trade">
-          <i data-id="${(i+1)}" class="fas fa-database pc white-stroke"></i>
-          <div data-id="${(i+1)}" id="dash-item-goods" class="dash-item-goods">
-            ${this.game.state.players_info[i].goods}
-          </div>
-        </div>
-      </div>
-    `;
-    }
-    html += `
-      <div data-id="${(i+1)}" class="dash-faction-base">
-	<div data-id="${(i+1)}" class="dash-faction-status-${(i+1)} dash-faction-status"></div>
-	commodities : <span data-id="${(i+1)}" class="dash-item-commodities">${this.game.state.players_info[i].commodities}</span> / <span data-id="${(i+1)}" class="dash-item-commodity-limit">${this.game.state.players_info[i].commodity_limit}</span>
-      </div>
-
-      <div data-id="${(i+1)}" class="dash-faction-speaker`;
-      if (this.game.state.speaker == (i+1)) {  html += ' speaker">speaker'; } else { html += '">'; }
-      html += `</div>
-    </div>
-    `;
-
-  }
-  return html;
-
-}
-
 
 returnLawsOverlay() {
 
@@ -873,7 +815,7 @@ displayFactionDashboard(agenda_phase=0) {
 
   try {
 
-    document.querySelector('.dashboard').innerHTML = this.returnFactionDashboard(agenda_phase);
+    this.dashboard.render(agenda_phase);
 
     let pl = "";
     let fo = "";

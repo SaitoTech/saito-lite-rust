@@ -4905,6 +4905,11 @@ console.log("K: " + z[k].name);
 	  this.endTurn();
 	}
 
+	//
+	// and draw attention to sector
+	//
+	this.flashSector(sector);
+
         return 0;
 
       }
