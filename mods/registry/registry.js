@@ -29,7 +29,7 @@ class Registry extends ModTemplate {
     this.cached_keys = {};
 
     //
-    // event listeners - browser.ts calls this in addIdentifiersToDom()
+    // event listeners - 
     //
     this.app.connection.on("registry-fetch-identifiers-and-update-dom", (keys) => {
 
@@ -49,20 +49,18 @@ class Registry extends ModTemplate {
           this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
             Object.entries(answer).forEach(([key, value]) => {
               this.cached_keys[key] = value;
-              if (key === this.app.wallet.returnPublicKey()) {
-                let k = this.app.keychain.returnKey(key);
-                if (k) {
-                  if (!k.identifier) {
-                    this.app.keychain.addKey(key, { identifier: value });
-                    this.app.connection.emit("update_identifier", (key));
-                  }
-                }
-              } else {
-		// save if locally stored
-		if (this.app.keychain.hasPublicKey(key)) {
-		  this.app.keychain.addKey({ publickey : key , identifier : value });
-		}
-	      }
+              
+              //
+              // We don't NEED or WANT to filter for key == wallet.returnPublicKey
+              // If the key is in our keychain, we obviously care enough that we 
+              // want to update that key in the keychain! 
+              //
+
+              // save if locally stored
+              if (this.app.keychain.hasPublicKey(key)) {
+                this.app.keychain.addKey({ publickey : key , identifier : value });
+              }
+              
               this.app.browser.updateAddressHTML(key, value);
             });
           });
@@ -79,6 +77,8 @@ class Registry extends ModTemplate {
 
         }
       }
+
+      console.log("New Cache:", JSON.parse(JSON.stringify(this.cached_keys)));
 
       
     });
@@ -202,6 +202,13 @@ class Registry extends ModTemplate {
       }
     });
 
+//    /*
+    console.info(this.cached_keys);
+    console.info(publickeys);
+    console.info(missing_keys);
+    console.info("%%%%%%%%%%%%%%%%%%%%% PEER REGISTRY REQUEST %%%%%%%%%%%%%%%%%%%%%%%%%");
+//    */
+
     if (missing_keys.length == 0) {
       mycallback(found_keys);
       return;
@@ -210,12 +217,6 @@ class Registry extends ModTemplate {
     const where_statement = `publickey in (${missing_keys.join(",")})`;
     const sql = `select * from records where ${where_statement}`;
 
-    /*
-    console.info(this.cached_keys);
-    console.info(publickeys);
-    console.info(missing_keys);
-    console.info("%%%%%%%%%%%%%%%%%%%%% PEER REGISTRY REQUEST %%%%%%%%%%%%%%%%%%%%%%%%%");
-    */
 
     this.sendPeerDatabaseRequestWithFilter(
 
@@ -469,8 +470,8 @@ class Registry extends ModTemplate {
     let registry_self = this.app.modules.returnModule("Registry");
 
     //console.log("REGISTERING TO WHICH MODULE: " + this.name);
-    //console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
-    //console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
+    console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
+    console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
 
     let newtx = this.app.wallet.createUnsignedTransaction(registry_self.publickey, 0.0, this.app.wallet.wallet.default_fee);
     if (!newtx) {
@@ -527,15 +528,7 @@ class Registry extends ModTemplate {
 
   onPeerServiceUp(app, peer, service = {}) {
  
-    //
-    // redsquare -- fetch community tweets
-    //
-    if (service.service === "registry") {
-      if (app.BROWSER == 1) {
-	app.browser.addIdentifiersToDom();	
-      }
-    }    
-
+  
   }
 
 
@@ -639,6 +632,7 @@ console.log("WE ARE NOW LOCAL SERVER");
               try {
                 if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
                   registry_self.app.keychain.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: blk.block.id, block_hash: blk.returnHash(), lc: 1 });
+                  console.info("verification success for : " + identifier);
                 } else {
                   registry_self.app.keychain.addKey(tx.transaction.to[0].add, { has_registered_username: false });
                   console.debug("verification failed for sig : ", tx);

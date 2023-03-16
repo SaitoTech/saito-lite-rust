@@ -322,8 +322,6 @@ class RedSquare extends ModTemplate {
         let hash = this.app.browser.returnHashAndParameters();
         if (!hash.hash) {
           this.app.connection.emit("redsquare-home-render-request");
-          this.app.browser.addIdentifiersToDom();
-          this.app.connection.emit("registry-fetch-identifiers-and-update-dom", {});
         }
       }, true);
     }
@@ -342,19 +340,12 @@ class RedSquare extends ModTemplate {
           let hash = app.browser.returnHashAndParameters();
           if (hash.hash === "notifications") {
             app.connection.emit("redsquare-notifications-render-request");
-            app.browser.addIdentifiersToDom();
           }
         });
       }, 1500);
 
     }
 
-    //
-    // registry -- load DNS names
-    //
-    if (service.service === "registry") {
-      this.app.browser.addIdentifiersToDom();
-    }
 
   }
 
@@ -665,7 +656,6 @@ class RedSquare extends ModTemplate {
         if (hash) {
           if (hash.hash === "notifications") {
             this.app.connection.emit("redsquare-home-notifications-render-request");
-            this.app.browser.addIdentifiersToDom();
           }
         }
       });
