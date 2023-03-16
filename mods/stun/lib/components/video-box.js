@@ -54,12 +54,7 @@ class VideoBox {
             }
         })
 
-        app.connection.on('video-box-remove', (public_key) => {
-            if (public_key === this.stream_id) {
-                this.remove()
-            }
 
-        })
     }
 
 
@@ -87,6 +82,7 @@ class VideoBox {
 
         this.stream = stream;
         if (stream !== null) {
+            this.removeConnectionMessage();
             if (this.stream_id === 'local') {
                 this.renderStream({ muted: true });
             } else {
@@ -134,7 +130,8 @@ class VideoBox {
 
     removeConnectionMessage() {
         const video_box = document.querySelector(`#stream${this.stream_id}`);
-        if (video_box.querySelector('#connection-message')) {
+
+        if (video_box && video_box.querySelector('#connection-message')) {
             video_box.querySelectorAll('#connection-message').forEach(item => {
                 item.parentElement.removeChild(video_box.querySelector('#connection-message'));
             })

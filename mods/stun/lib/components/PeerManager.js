@@ -33,12 +33,16 @@ class PeerManager {
                 credential: "somepassword",
             }
         ];
-        this.videoEnabled
+        this.videoEnabled = true;
+
 
         this.room_code = room_code;
 
 
         app.connection.on('stun-event-message', (data) => {
+            if (data.room_code !== this.room_code) {
+                return;
+            }
 
             if (data.type === 'peer-joined') {
                 this.createPeerConnection(data.public_key, 'offer');
@@ -46,7 +50,6 @@ class PeerManager {
                 this.removePeerConnection(data.public_key);
             } else {
                 let peerConnection = this.peers.get(data.public_key);
-                console.log('gotten peer connection', peerConnection)
                 if (!peerConnection) {
                     this.createPeerConnection(data.public_key);
                     peerConnection = this.peers.get(data.public_key);
@@ -105,6 +108,7 @@ class PeerManager {
     }
 
     handleSignalingMessage(peerConnection, data) {
+
         const { type, sdp, candidate, targetPeerId, public_key } = data;
         if (type === 'renegotiate-offer' || type === 'offer') {
             peerConnection.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }))
@@ -128,9 +132,8 @@ class PeerManager {
                 });
 
         } else if (type === 'renegotiate-answer' || type === 'answer') {
-            console.log('handling answers', data)
             peerConnection.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp })).then(answer => {
-                console.log('answers added', answer)
+
             }).catch((error) => {
                 console.error('Error handling answer:', error);
             });
@@ -144,7 +147,6 @@ class PeerManager {
 
 
     createPeerConnection(peerId, type) {
-        console.log('creating peer connection with ', peerId);
         const peerConnection = new RTCPeerConnection({
             iceServers: this.servers,
         });
@@ -155,7 +157,6 @@ class PeerManager {
 
         // Handle ICE candidates
         peerConnection.onicecandidate = (event) => {
-            console.log(event.candidate, 'ice canditate');
             if (event.candidate) {
                 let data = {
                     room_code: this.room_code,
@@ -172,11 +173,9 @@ class PeerManager {
             peerConnection.addTrack(track, this.localStream);
         });
 
-        console.log('local stream added');
 
         const remoteStream = new MediaStream();
         peerConnection.addEventListener('track', (event) => {
-            console.log('gotten tracks')
             event.streams[0].getTracks().forEach(track => {
                 remoteStream.addTrack(track);
             });
@@ -185,13 +184,13 @@ class PeerManager {
 
         });
 
-
         peerConnection.addEventListener('connectionstatechange', () => {
-            console.log(peerConnection.connectionState, 'connection state')
             if (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected') {
                 // Renegotiate the connection if the state is failed or disconnected
                 this.renegotiate(peerId);
             }
+
+            this.app.connection.emit('stun-update-connection-message', this.room_code, peerId, peerConnection.connectionState);
         });
 
         if (type === "offer") {
@@ -211,10 +210,24 @@ class PeerManager {
 
     }
 
-    renegotiate(peerId) {
+    renegotiate(peerId, retryCount = 0) {
+        const maxRetries = 4;
+        const retryDelay = 3000;
+
         const peerConnection = this.peers.get(peerId);
-        if (!peerConnection || peerConnection.signalingState !== 'stable') {
-            console.log('Cannot renegotiate, signaling state is not stable');
+        if (!peerConnection) {
+            return;
+        }
+
+        if (peerConnection.signalingState !== 'stable') {
+            if (retryCount < maxRetries) {
+                console.log(`Signaling state is not stable, will retry in ${retryDelay} ms (attempt ${retryCount + 1}/${maxRetries})`);
+                setTimeout(() => {
+                    this.renegotiate(peerId, retryCount + 1);
+                }, retryDelay);
+            } else {
+                console.log('Reached maximum number of renegotiation attempts, giving up');
+            }
             return;
         }
 
@@ -240,7 +253,7 @@ class PeerManager {
 
     join() {
         // Send a message to the signaling channel to indicate joining the mesh network
-        console.log('join mesh network');
+        console.log('joining mesh network');
         this.app.connection.emit('stun-send-message-to-server', { type: 'peer-joined', room_code: this.room_code });
     }
 
