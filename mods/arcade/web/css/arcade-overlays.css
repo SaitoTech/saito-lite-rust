@@ -114,15 +114,6 @@
   height: 3.5rem;
 }
 
-.saito-identicon-box .saito-username {
-  line-height: 3.5rem;
-}
-
-.saito-username {
-  display: block;
-  align-self: center;
-}
-
 .arcade_game_overlay_loader {
     min-width: 32vw;
     background: var(--saito-arcade-background);

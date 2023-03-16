@@ -87,9 +87,6 @@ body {
   color: var(--saito-red);
 }
 
-.player-info-name{
-  font-size: 2.5vh;
-}
 
 .stats-overlay {
   min-width: 300px;
@@ -487,7 +484,7 @@ thead,  tfoot{
     font-size: 15px;
   }
 
-  .player-info-name{
+  .player-box-head-name{
     font-size: 2vh;
   }
 

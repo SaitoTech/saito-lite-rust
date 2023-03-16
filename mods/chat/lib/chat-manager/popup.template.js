@@ -9,7 +9,7 @@ module.exports = (app, mod, group) => {
 
         <div class="chat-header" id="chat-header-${group.id}">
           <i  class="far fa-comment-dots"></i>
-          <div id="chat-group-${group.id}" class="chat-group active-chat-tab saito-username">${group.name}</div>
+          <div id="chat-group-${group.id}" class="chat-group active-chat-tab">${group.name}</div>
           <i id="chat-container-close" class="chat-container-close fas fa-times"></i>
         </div>
 
