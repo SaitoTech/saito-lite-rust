@@ -106,11 +106,13 @@ class Post {
       let thread_id = document.getElementById("thread_id").value;
       let source = document.getElementById("source").value;
       let keys = []
+      let identifiers = []
 
       //
       // extract keys from text AND then tweet
       //
       keys = post_self.app.browser.extractKeys(text);
+      identifiers = post_self.app.browser.extractIdentifiers(text);
 
       if (this.tweet != null) {
         for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
@@ -119,6 +121,19 @@ class Post {
           }
         }
       }
+
+      //
+      // add identifiers as available
+      //
+      for (let i = 0; i < identifiers.length; i++) {
+        let key = this.app.keychain.returnPublicKeyByIdentifier(identifiers[i]);
+	if (key) {
+          if (!keys.includes(key)) {
+            keys.push(key);
+          }
+        }
+      }
+
 
       //
       // any previous recipients get added to "to"

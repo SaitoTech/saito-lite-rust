@@ -35,7 +35,6 @@ class ChatManager {
     });
 
     app.connection.on("chat-manager-and-popup-render-request", (group) => {
-console.log("chat-manager-and-popup-render-request");
       if (this.render_manager_to_screen) {
 	group.unread = 0;
         this.render();
@@ -46,7 +45,6 @@ console.log("chat-manager-and-popup-render-request");
     });
 
     app.connection.on("chat-manager-request-no-interrupts", () => {
-console.log("chat-manager-and-request-no-interrupts...");
       this.render_popups_to_screen = 0;
     });
 
@@ -54,7 +52,6 @@ console.log("chat-manager-and-request-no-interrupts...");
     // handle requests to re-render chat popups
     //
     app.connection.on("chat-popup-render-request", (group = null) => {
-console.log("chat-popup render request...");
 
       //
       // mobile devices should not force open chat for us
@@ -80,9 +77,26 @@ console.log("chat-popup render request...");
       }
     });
 
-    app.connection.on("open-chat-with", (data = null) => {
+    //
+    // handle requests to re-render chat popups
+    //
+    app.connection.on("chat-popup-remove-request", (group = null) => {
+      //
+      // mobile devices should not force open chat for us
+      //
+      if (group == null) {
+        return; 
+      } else {
+        if (this.popups[group.id]) {
+          this.popups[group.id].remove();
+	  delete this.popups[group.id];
+        }
+      }
+    });
 
-console.log("open chat with...");
+
+
+    app.connection.on("open-chat-with", (data = null) => {
 
       this.render_popups_to_screen = 1;
 

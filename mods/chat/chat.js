@@ -86,6 +86,21 @@ class Chat extends ModTemplate {
 
         let newtx = this.app.wallet.createUnsignedTransaction();
         let local_group = this.returnGroupOrCreateFromMembers([peer.returnPublicKey()], "Saito Community Chat");
+
+	//
+	// remove duplicate public chats caused by server update
+	//
+	for (let i = 0; i < this.groups.length; i++) {
+	  if (this.groups[i].name === local_group.name && this.groups[i] !== local_group) {
+	    if (this.groups[i].members.length == 1) {
+	      if (!this.app.network.isConnectedToPublicKey(this.groups[i].members[0])) {
+		this.app.connection.emit("chat-popup-remove-request", (this.groups[i]));
+	        this.groups.splice(i, 0);
+	      } 
+	    }
+	  }
+	}
+
         if (local_group) {
 
           newtx.msg = {
