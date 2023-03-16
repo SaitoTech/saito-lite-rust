@@ -101,9 +101,9 @@ class PeerManager {
 
     showChatManager() {
         // emit events to show chatmanager;
-        this.app.connection.emit('show-video-chat-request', this.app, this.mod, 'large', 'video', this.room_code);
+        this.app.connection.emit('show-video-chat-request', this.app, this.mod, 'video', this.room_code);
         this.app.connection.emit('stun-remove-loader')
-        this.app.connection.emit('render-local-stream-request', this.localStream, 'large', 'video');
+        this.app.connection.emit('render-local-stream-request', this.localStream, 'video');
         this.app.connection.emit('remove-overlay-request');
     }
 
@@ -180,7 +180,7 @@ class PeerManager {
                 remoteStream.addTrack(track);
             });
 
-            this.app.connection.emit('add-remote-stream-request', peerId, remoteStream, peerConnection, 'large')
+            this.app.connection.emit('add-remote-stream-request', peerId, remoteStream, peerConnection)
 
         });
 
@@ -252,7 +252,6 @@ class PeerManager {
     }
 
     join() {
-        // Send a message to the signaling channel to indicate joining the mesh network
         console.log('joining mesh network');
         this.app.connection.emit('stun-send-message-to-server', { type: 'peer-joined', room_code: this.room_code });
     }

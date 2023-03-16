@@ -18,10 +18,9 @@ class VideoBox {
     receiving_connection = false
     is_connected = false
 
-    constructor(app, mod, ui_type, call_type, central, room_code, peer, container_class) {
+    constructor(app, mod, call_type, central, room_code, peer, container_class) {
         this.app = app;
         this.mod = mod;
-        this.ui_type = ui_type
         this.call_type = call_type;
         this.central = central;
         this.room_code = room_code;
@@ -100,7 +99,7 @@ class VideoBox {
 
     renderStream({ muted }) {
         if (!document.querySelector(`#stream${this.stream_id}`)) {
-            this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, muted, this.ui_type), this.containerClass);
+            this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, muted), this.containerClass);
 
         }
 
@@ -114,7 +113,7 @@ class VideoBox {
 
     renderPlaceholder(placeholder_info = "negotiating peer connection") {
         if (!document.querySelector(`#stream${this.stream_id}`)) {
-            this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, false, this.ui_type), this.containerClass);
+            this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, false), this.containerClass);
         }
         this.updateConnectionMessage(placeholder_info);
     }
