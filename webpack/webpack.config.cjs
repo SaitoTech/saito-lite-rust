@@ -3,7 +3,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 
 const webpack = require("webpack");
 
-let minimize = true;
+let minimize = false;
 let devtool = undefined;
 let entrypoint = "./../bundler/default/apps/lite/index.ts";
 let outputfile = "saito.js";

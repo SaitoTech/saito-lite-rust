@@ -55,7 +55,7 @@ class StunAppspace {
       }
 
       if (e.target.id === "createRoom") {
-        this.createRoom()
+        this.createRoom();
       }
     })
 
@@ -64,41 +64,30 @@ class StunAppspace {
   async createRoom() {
     // get local stream;
     const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    // create peer manager and initialize , send an event to stun to initialize
-    this.app.emit('stun-init-peer-manager', localStream)
 
     // create a room code, and update the server about a new room, then add the my public key into that room
+    let room_code = this.app.crypto.generateRandomNumber().substring(0, 6);
 
-    this.mod.sendCreateRoomTransaction();
+    // create peer manager and initialize , send an event to stun to initialize
+    this.app.connection.emit('stun-init-peer-manager', localStream, room_code);
+
+    this.mod.sendCreateRoomTransaction(room_code);
   }
 
 
   async createConferenceCall(app, mod, room_code) {
-    console.log('creating conference call');
-    // add to the room list and save
-    // let peers = [];
-    // let peer_count = 0;
-    // let is_max_capacity = false;
+    // console.log('creating conference call');
 
-
-    // const room = {
-    //   peers,
-    //   peer_count,
-    //   is_max_capacity
-    // }
-
-    // this.room = room;
-
-    const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    mod.setLocalStream(localStream);
-    let my_public_key = this.app.wallet.returnPublicKey();
-    mod.central = true;
-    this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code, my_public_key);
-    this.app.connection.emit('stun-remove-loader')
-    this.app.connection.emit('render-local-stream-request', localStream, 'large', 'video');
-    this.app.connection.emit('remove-overlay-request');
-    siteMessage("You are the only participant in this room", 3000);
-    return;
+    // const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    // mod.setLocalStream(localStream);
+    // let my_public_key = this.app.wallet.returnPublicKey();
+    // mod.central = true;
+    // this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code, my_public_key);
+    // this.app.connection.emit('stun-remove-loader')
+    // this.app.connection.emit('render-local-stream-request', localStream, 'large', 'video');
+    // this.app.connection.emit('remove-overlay-request');
+    // siteMessage("You are the only participant in this room", 3000);
+    // return;
   }
 
 }

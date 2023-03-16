@@ -18,6 +18,7 @@ const PeerManager = require('./lib/components/PeerManager');
 
 
 
+
 class Stun extends ModTemplate {
 
     constructor(app, mod) {
@@ -36,7 +37,6 @@ class Stun extends ModTemplate {
         this.ChatManagerSmall = new ChatManagerSmall(app, this);
         this.InviteOverlay = new InviteOverlay(app, this);
         this.icon = "fas fa-video"
-        //this.stunxGameMenu = new StunxGameMenu(app, this);
         this.localStream = null;
         this.hasRendered = true
         this.chatType = null;
@@ -47,6 +47,7 @@ class Stun extends ModTemplate {
         this.current_step = 0;
         this.gotten_keys = false
         this.commands = [];
+        this.rooms = new Map()
         // this.receiving_from = {}
 
 
@@ -83,8 +84,17 @@ class Stun extends ModTemplate {
             '/videocall/style.css',
         ];
 
-        app.connection.on('stun-init-peer-manager', (app, mod, localstream) => {
-            this.peerManager = new PeerManager(app, mod, localstream)
+        app.connection.on('stun-init-peer-manager', (localstream, room_code, to_join) => {
+            this.peerManager = new PeerManager(app, mod, localstream, room_code);
+            this.peerManager.showChatManager();
+
+            if (to_join) {
+                this.peerManager.join();
+            }
+        })
+
+        app.connection.on('stun-send-message-to-server', (data) => {
+            this.sendStunMessageToServerTransaction(data)
         })
 
     }
@@ -272,31 +282,29 @@ class Stun extends ModTemplate {
         if (tx == null) { return; }
         let txmsg = tx.returnMessage();
 
-        // if (txmsg.request === "stun media channel offer") {
-        //     this.receiveMediaChannelOfferTransaction(app, tx)
-        // }
-        // if (txmsg.request === "stun data channel offer") {
-        //     this.receiveDataChannelOfferTransaction(app, tx)
-        // }
-        // if (txmsg.request === "stun media channel answer") {
-        //     this.receiveMediaChannelAnswerTransaction(app, tx)
-        // }
-        // if (txmsg.request === "stun data channel answer") {
-        //     this.receiveDataChannelAnswerTransaction(app, tx)
-        // }
-        // if (txmsg.request === "stun notifcation transmission request") {
-        //     this.receiveMediaChannelNotificationTransaction(app, tx)
-        // }
-        // if (txmsg.request === "stun key update") {
-        //     this.receiveKeyUpdateTransaction(app, tx)
-        // }
-        // if (txmsg.request === "receive room code") {
-        //     this.receiveRoomCodeTransaction(app, tx)
-        // }
-        // if (txmsg.request === "stun command transmission request") {
-        //     this.receiveCommandToPeerTransaction(app, tx)
-        // }
+        if (app.BROWSER === 0) {
+            if (txmsg.request === "stun-create-room-transaction") {
+                let stun_mod = app.modules.returnModule('Stun');
+                stun_mod.receiveCreateRoomTransaction(app, tx);
 
+            }
+            if (txmsg.request === "stun-send-message-to-server") {
+                let stun_mod = app.modules.returnModule('Stun');
+                stun_mod.receiveStunMessageToServerTransaction(app, tx, peer);
+
+            }
+
+        }
+
+        if (app.BROWSER === 1) {
+            if (txmsg.request === "stun-send-message-to-peers") {
+                let stun_mod = app.modules.returnModule('Stun');
+                console.log('receiving stun message to peers');
+                stun_mod.receiveStunMessageToPeersTransaction(app, tx);
+
+            }
+
+        }
         super.handlePeerTransaction(app, tx, peer, mycallback)
 
     }
@@ -306,41 +314,142 @@ class Stun extends ModTemplate {
 
 
 
+    async sendCreateRoomTransaction(room_code) {
+        let public_key = this.app.wallet.returnPublicKey();
+        let newtx = this.app.wallet.createUnsignedTransaction();
+
+        let _data = {
+            public_key,
+            room_code
+        }
+        let request = "stun command transmission request"
+        let server = this.app.network.peers[0];
+
+        // offchain data
+        let data = {
+            request,
+            data: _data
+        }
+
+        server.sendRequestAsTransaction('stun-create-room-transaction', data);
+
+    }
+
+
+    // server receives this
+    async receiveCreateRoomTransaction(app, tx) {
+        let txmsg = tx.returnMessage();
+        let stun_mod = app.modules.returnModule('Stun');
+
+        console.log(txmsg, 'transaction')
+        let room_code = txmsg.data.data.room_code;
+        let public_key = txmsg.data.data.public_key;
+        console.log("gotten on the server", room_code);
+        stun_mod.addRoom(room_code);
+        stun_mod.addKeyToRoom(room_code, public_key)
+    }
+
+
+    async sendStunMessageToServerTransaction(_data) {
+        let request = "stun-send-message-to-server"
+        let server = this.app.network.peers[0];
+
+        // offchain data
+        let data = {
+            request,
+            data: _data
+        }
+        server.sendRequestAsTransaction('stun-send-message-to-server', data);
+    }
+
+    // server receives this
+    async receiveStunMessageToServerTransaction(app, tx, peer) {
+        let txmsg = tx.returnMessage();
+        let stun_mod = app.modules.returnModule('Stun');
+
+        let room_code = txmsg.data.data.room_code;
+        let type = txmsg.data.data.type;
+        let public_key = peer.peer.publickey
+
+        if (type === "peer-joined") {
+            this.addKeyToRoom(room_code, public_key);
+        }
+        if (type === "peer-left") {
+            this.removeKeyFromRoom(room_code, public_key);
+        }
+        // public keys in the room and relay;
+        let recipients = [];
+        if (txmsg.data.data.targetPeerId) {
+            recipients.push(txmsg.data.data.targetPeerId);
+        } else {
+            recipients = stun_mod.rooms.get(room_code)?.filter(p => p !== public_key)
+        }
+
+
+        let data = {
+            ...txmsg.data.data,
+            public_key
+        }
+
+        this.sendStunMessageToPeersTransaction(data, recipients)
+
+    }
+
+
+    sendStunMessageToPeersTransaction(_data, recipients) {
+        // send data to the peers in the room
+        let request = "stun-send-message-to-peers"
+
+        // offchain data
+        let data = {
+            recipient: recipients,
+            request,
+            data: _data
+        }
+
+        this.app.connection.emit('relay-send-message', data);
+    }
+
+    receiveStunMessageToPeersTransaction(app, tx) {
+        let txmsg = tx.returnMessage();
+        let data = tx.msg.data;
+        console.log(data, tx)
+
+        app.connection.emit('stun-event-message', data);
+
+    }
 
 
 
 
 
+    // server functions
+    addRoom(room_code) {
+        if (!this.rooms.has(room_code)) {
+            this.rooms.set(room_code, []);
+        }
+        console.log('room code added', this.rooms)
+    }
 
+    addKeyToRoom(room_code, public_key) {
+        if (this.rooms.has(room_code)) {
+            let public_keys = this.rooms.get(room_code);
+            if (!public_keys.includes(public_key)) {
+                public_keys.push(public_key)
+            }
+            this.rooms.set(room_code, public_keys)
 
+            console.log(this.rooms)
+        }
+    }
 
-
-
-
-
-
-    // showShareLink(room_obj = {}) {
-
-
-    //     let base64string = this.app.crypto.toBase58(JSON.stringify(room_obj));
-
-    //     let inviteLink = window.location.href;
-    //     if (!inviteLink.includes("#")) { inviteLink += "#"; }
-
-    //     if (inviteLink.includes("?")) {
-    //         inviteLink = inviteLink.replace("#", "&stun_video_chat=" + base64string);
-    //     } else {
-    //         inviteLink = inviteLink.replace("#", "?stun_video_chat=" + base64string);
-    //     }
-
-
-    //     let linkModal = new ChatInvitationLink(this.app, this, inviteLink);
-    //     linkModal.render();
-
-    // }
-
-
-
+    removeKeyFromRoom(room_code, public_key) {
+        if (this.rooms.has(room_code)) {
+            let public_keys = this.rooms.get(room_code).filter(p => p !== public_key);
+            this.rooms.set(room_code, public_keys);
+            console.log(this.rooms)
+        }
+    }
 
 
 }
