@@ -188,7 +188,7 @@ class PeerManager {
                 if (type === "offer") {
                     setTimeout(() => {
                         console.log('sending offer');
-                        this.reconnect(peerId, 0);
+                        this.reconnect(peerId, type);
                     }, 4000)
 
                 }
@@ -204,23 +204,40 @@ class PeerManager {
 
     }
 
-    reconnect(peerId, retryCount) {
-        const maxRetries = 2;
+    reconnect(peerId, type) {
+        // const maxRetries = 2;
+        // const peerConnection = this.peers.get(peerId);
         const peerConnection = this.peers.get(peerId);
-
-        if (retryCount >= maxRetries) {
-            console.log(`Reached maximum number of reconnect attempts (${maxRetries}). Giving up.`);
+        if (peerConnection && (peerConnection.connectionState === "connected")) {
             return;
         }
 
-        if (peerConnection && (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected')) {
-            this.removePeerConnection(peerId);
+        this.removePeerConnection(peerId);
+        if (type === "offer") {
             this.createPeerConnection(peerId, 'offer');
-
-            setTimeout(() => {
-                this.reconnect(peerId, retryCount + 1);
-            }, 4000);
         }
+
+        setTimeout(() => {
+            const peerConnection = this.peers.get(peerId);
+            if (peerConnection && (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected')) {
+                this.removePeerConnection(peerId);
+                if (type === "offer") {
+                    this.createPeerConnection(peerId, 'offer');
+                }
+
+                setTimeout(() => {
+                    const peerConnection = this.peers.get(peerId);
+                    if (peerConnection && (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected')) {
+                        this.removePeerConnection(peerId)
+                    }
+                }, 10000)
+
+            }
+        }, 10000);
+
+
+
+
     }
 
     removePeerConnection(peerId) {
