@@ -516,6 +516,10 @@
 	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " in " + sys.s.name, 1); // force message
         }
 
+	//
+	// flash sector graphics
+	//
+        this.flashSector(sector);
 
   	//
   	// update sector
@@ -1745,7 +1749,7 @@ this.game.state.end_round_scoring = 0;
   	  subtitle = "view all public and secret objectives in the CARDS menu...";
   	}
 
-        this.overlay.showCardSelectionOverlay(cards, {
+        this.overlay.showCardSelectionOverlay(this.app, this, cards, {
 
 	  title : title,
 	  subtitle : subtitle,
@@ -3179,6 +3183,13 @@ console.log("K: " + z[k].name);
 	    }
           }
         }
+
+	//
+	// flash sector graphics
+	//
+        this.flashSector(sector);
+
+
   	return 1;
       }
 

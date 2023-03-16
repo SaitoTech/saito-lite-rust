@@ -1,5 +1,8 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const JSON = require('json-bigint');
+const RulesOverlay = require('./lib/overlays/rules');
+const FactionSheetOverlay = require('./lib/overlays/faction-sheet');
+
 
 class Imperium extends GameTemplate {
   
@@ -14,13 +17,17 @@ class Imperium extends GameTemplate {
     this.categories	  = "Games Boardgame Strategy";
     this.minPlayers       = 2;
     this.maxPlayers       = 6;
-    //this.status           = "Beta";
 
     this.boardWidth   = 1900;
   
     this.rmoves           = [];
     this.totalPlayers     = 2;
 
+    //
+    // components and overlays
+    //
+    this.rules_overlay = new RulesOverlay(this.app, this);
+    this.faction_sheet_overlay = new FactionSheetOverlay(this.app, this);
 
 
     //
@@ -11674,8 +11681,8 @@ console.log("qe: " + qe);
     //
 
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addMenuOption("game-info", "Info");
 
+/***
     this.menu.addSubMenuOption("game-game", {
       text : "Save",
       id : "game-save",
@@ -11686,7 +11693,8 @@ console.log("qe: " + qe);
 	game_mod.endTurn();
       }
     });
-    this.menu.addSubMenuOption("game-info", {
+***/
+    this.menu.addSubMenuOption("game-game", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -11695,59 +11703,15 @@ console.log("qe: " + qe);
         game_mod.log.toggleLog();
       }
     });
-
-
-
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text : "Rules",
       id : "game-rules",
       class : "game-rules",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-
-        let html = `
-        <div class="game-overlay-menu" id="game-overlay-menu">
-          <div>Game Rules:</div>
-            <ul style="font-family: 'orbitron-medium', helvetica">
-              <li class="menu-item" id="basic">Basic Rules</li>
-              <li class="menu-item" id="movement">Moving Units</li>
-              <li class="menu-item" id="production">Producing Units</li>
-              <li class="menu-item" id="combat">Combat</li>
-              <li class="menu-item" id="factions">Factions</li>
-            </ul>
-          </div>
-        `;
-
-        game_mod.overlay.show(html);
-
-        $('.menu-item').on('click', function() {
-
-          let player_action = $(this).attr("id");
-
-          switch (player_action) {
-            case "basic":
-	      game_mod.handleHowToPlayMenuItem();
-              break;
-            case "movement":
-              game_mod.overlay.show(game_mod.returnUnitsOverlay());
-              break;
-            case "production":
-	      game_mod.overlay.show('<div style="margin-left:auto;margin-right:auto;width:auto;height:90vh"><img src="/imperium/img/tutorials/production.png" style="width:auto; height:90vh;" /></div>');
-              break;
-            case "combat":
-	      game_mod.handleCombatMenuItem();
-              break;
-            case "factions":
-	      game_mod.handleFactionMenuItem();
-              break;
-            default:
-              break;
-          }
-        });
+	game_mod.rules_overlay.render();
       }
     });
-
-
 
     //
     // factions
@@ -11761,14 +11725,14 @@ console.log("qe: " + qe);
         class : "game-faction-"+(i+1),
         callback : function(app, game_mod) {
           game_mod.menu.hideSubMenus();
-          game_mod.displayFactionSheet((i+1));
+          game_mod.faction_sheet_overlay.render((i+1));
         }
       });
     }
 
-
-
-
+    //
+    // cards
+    //
     this.menu.addMenuOption("game-cards", "Cards");
 
     this.menu.addSubMenuOption("game-cards", {
@@ -14310,6 +14274,10 @@ handleSystemsMenuItem() {
 	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " in " + sys.s.name, 1); // force message
         }
 
+	//
+	// flash sector graphics
+	//
+        this.flashSector(sector);
 
   	//
   	// update sector
@@ -15539,7 +15507,7 @@ this.game.state.end_round_scoring = 0;
   	  subtitle = "view all public and secret objectives in the CARDS menu...";
   	}
 
-        this.overlay.showCardSelectionOverlay(cards, {
+        this.overlay.showCardSelectionOverlay(this.app, this, cards, {
 
 	  title : title,
 	  subtitle : subtitle,
@@ -16973,6 +16941,13 @@ console.log("K: " + z[k].name);
 	    }
           }
         }
+
+	//
+	// flash sector graphics
+	//
+        this.flashSector(sector);
+
+
   	return 1;
       }
 
@@ -30640,6 +30615,51 @@ displayBoard() {
   this.addEventsToBoard();
 }
 
+
+//
+// flash a sector
+//
+flashSector(sector) {
+
+  if (sector.indexOf("_") > -1) { sector = this.game.board[sector].tile; }
+console.log("sector: " + sector);
+
+console.log(this.game.sectors[sector].tile);
+  let tile = this.game.sectors[sector].tile;
+
+  let qs = "#hex_bg_" + tile + " > img";
+
+  $(qs).addClass("flash-color")
+      .delay(500)
+      .queue(function () {
+        $(this).removeClass("flash-color").dequeue();
+      })          
+      .delay(500)
+      .queue(function () {
+        $(this).addClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).removeClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).addClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).removeClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).addClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).removeClass("flash-color").dequeue();
+      });
+
+}
 
 
 

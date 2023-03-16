@@ -1,0 +1,129 @@
+#faction_main {
+  min-height: 100vh;
+  grid-column: 1 / 2;
+}
+#faction_sidebar {
+  min-height: 100vh;
+  grid-column: 2;
+  width: 25rem;
+}
+
+.faction_sheet_token_box {
+  width: 40em;
+  height: 10em;
+  display: grid;
+  grid-gap: 0 2em;
+  grid-template-columns: auto auto auto;
+  font-family: 'bank-gothic';
+  transform: scale(1);
+  font-size: 0.4rem;
+  margin: 0.5rem;
+}
+
+.faction_sheet_empire_title {
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 0.2rem;
+  background: linear-gradient(90deg, #000D, #0000);
+  margin-left: 0rem;
+  margin-right: 1rem;
+  padding: 0.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.faction_sheet_empire_title_name {
+  color: white;
+  padding-left: 0.75rem;
+}
+
+
+.faction_sheet_container {
+  overflow-y:scroll;
+  width:90vw;
+  height:90vh;
+  background-image:url('/imperium/img/factions/faction3.jpg');
+  background-size:cover;
+  display: grid;
+  grid-template-columns: 1fr min-content;
+  position: relative;
+  padding: 1rem;
+}
+.fa-stack {
+  height: 1em;
+  line-height: 1.5em;
+}
+.faction_abilities_container {
+  background-color: #0008;
+  color: white;
+  padding: 1rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+.faction_ability:nth-child(n+2) {
+  margin-top: 1rem;
+}
+.faction_ability_title {
+  font-weight: bold;
+  border-bottom:1px solid #fff;
+  margin-bottom: 0.5rem;
+}
+.faction_ability_text {
+  font-weight: normal;
+  font-family: 'orbitron-medium', helvetica, sans-serif;
+}
+.faction_flagship_image {
+  background-image: url('/imperium/img/ships/flagship_100x200.png');
+  min-width: 160px;
+  min-height: 80px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.faction_flagship_text_container {
+}
+.faction_flagship_title {
+  font-weight: bold;
+  border-bottom:1px solid #fff;
+  margin-bottom: 0.5rem;
+}
+.faction_flagship_text {
+  font-weight: normal;
+  font-family: 'orbitron-medium', helvetica, sans-serif;
+}
+.faction_flagship_container {
+  background-color: #0008;
+  color: white;
+  padding: 1rem;
+  max-width: 100%;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.faction_tech_container {
+  max-width: 100%;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.faction_tech_container.tech_card {
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+}
+
+
+.faciton_sheet_empire_title {
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 0.2rem;
+  background-color: #0005;
+}
+.faction_sheet_planet_card_box {
+  margin: 1em 1em 17em 1em;
+}
+

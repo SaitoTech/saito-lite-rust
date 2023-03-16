@@ -22,8 +22,8 @@
     //
 
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addMenuOption("game-info", "Info");
 
+/***
     this.menu.addSubMenuOption("game-game", {
       text : "Save",
       id : "game-save",
@@ -34,7 +34,8 @@
 	game_mod.endTurn();
       }
     });
-    this.menu.addSubMenuOption("game-info", {
+***/
+    this.menu.addSubMenuOption("game-game", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -43,59 +44,15 @@
         game_mod.log.toggleLog();
       }
     });
-
-
-
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text : "Rules",
       id : "game-rules",
       class : "game-rules",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-
-        let html = `
-        <div class="game-overlay-menu" id="game-overlay-menu">
-          <div>Game Rules:</div>
-            <ul style="font-family: 'orbitron-medium', helvetica">
-              <li class="menu-item" id="basic">Basic Rules</li>
-              <li class="menu-item" id="movement">Moving Units</li>
-              <li class="menu-item" id="production">Producing Units</li>
-              <li class="menu-item" id="combat">Combat</li>
-              <li class="menu-item" id="factions">Factions</li>
-            </ul>
-          </div>
-        `;
-
-        game_mod.overlay.show(html);
-
-        $('.menu-item').on('click', function() {
-
-          let player_action = $(this).attr("id");
-
-          switch (player_action) {
-            case "basic":
-	      game_mod.handleHowToPlayMenuItem();
-              break;
-            case "movement":
-              game_mod.overlay.show(game_mod.returnUnitsOverlay());
-              break;
-            case "production":
-	      game_mod.overlay.show('<div style="margin-left:auto;margin-right:auto;width:auto;height:90vh"><img src="/imperium/img/tutorials/production.png" style="width:auto; height:90vh;" /></div>');
-              break;
-            case "combat":
-	      game_mod.handleCombatMenuItem();
-              break;
-            case "factions":
-	      game_mod.handleFactionMenuItem();
-              break;
-            default:
-              break;
-          }
-        });
+	game_mod.rules_overlay.render();
       }
     });
-
-
 
     //
     // factions
@@ -109,14 +66,14 @@
         class : "game-faction-"+(i+1),
         callback : function(app, game_mod) {
           game_mod.menu.hideSubMenus();
-          game_mod.displayFactionSheet((i+1));
+          game_mod.faction_sheet_overlay.render((i+1));
         }
       });
     }
 
-
-
-
+    //
+    // cards
+    //
     this.menu.addMenuOption("game-cards", "Cards");
 
     this.menu.addSubMenuOption("game-cards", {

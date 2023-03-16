@@ -10,6 +10,51 @@ displayBoard() {
 }
 
 
+//
+// flash a sector
+//
+flashSector(sector) {
+
+  if (sector.indexOf("_") > -1) { sector = this.game.board[sector].tile; }
+console.log("sector: " + sector);
+
+console.log(this.game.sectors[sector].tile);
+  let tile = this.game.sectors[sector].tile;
+
+  let qs = "#hex_bg_" + tile + " > img";
+
+  $(qs).addClass("flash-color")
+      .delay(500)
+      .queue(function () {
+        $(this).removeClass("flash-color").dequeue();
+      })          
+      .delay(500)
+      .queue(function () {
+        $(this).addClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).removeClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).addClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).removeClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).addClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).removeClass("flash-color").dequeue();
+      });
+
+}
+
 
 
 
