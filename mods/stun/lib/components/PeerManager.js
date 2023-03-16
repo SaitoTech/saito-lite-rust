@@ -217,17 +217,17 @@ class PeerManager {
         if (!peerConnection) {
             return;
         }
-        if (peerConnection.signalingState !== 'stable') {
-            if (retryCount < maxRetries) {
-                console.log(`Signaling state is not stable, will retry in ${retryDelay} ms (attempt ${retryCount + 1}/${maxRetries})`);
-                setTimeout(() => {
-                    this.renegotiate(peerId, retryCount + 1);
-                }, retryDelay);
-            } else {
-                console.log('Reached maximum number of renegotiation attempts, giving up');
-            }
-            return;
-        }
+        // if (peerConnection.signalingState !== 'stable') {
+        //     if (retryCount < maxRetries) {
+        //         console.log(`Signaling state is not stable, will retry in ${retryDelay} ms (attempt ${retryCount + 1}/${maxRetries})`);
+        //         setTimeout(() => {
+        //             this.renegotiate(peerId, retryCount + 1);
+        //         }, retryDelay);
+        //     } else {
+        //         console.log('Reached maximum number of renegotiation attempts, giving up');
+        //     }
+        //     return;
+        // }
 
         peerConnection.createOffer()
             .then((offer) => {
