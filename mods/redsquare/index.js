@@ -10,7 +10,7 @@ module.exports = (app, mod) => {
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes" />
 
   <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
 
@@ -49,7 +49,7 @@ module.exports = (app, mod) => {
   <title>Saito RedSquare</title>
 </head>
 
-<body>
+<body style="opacity: 0; transition: opacity 1s;">
 
 <div class="saito-loader"></div>
 
