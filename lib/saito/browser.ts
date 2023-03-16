@@ -1249,6 +1249,9 @@ class Browser {
     } catch (err) { 
       console.error(err);
     }
+
+    this.app.connection.emit("update-username-in-game");
+  
   }
 
   logMatomoEvent(category, action, name, value) {
@@ -1733,7 +1736,6 @@ class Browser {
                 console.info('updated ' + key + " to " + identifier);
               } else {
                 if (!unknown_keys.includes(key)) {
-                  console.info(`Add ${key} to unknown keys`);
                   unknown_keys.push(key);
                 }
               }
@@ -1747,7 +1749,6 @@ class Browser {
     }
     treat(nodeList);
     if (unknown_keys.length > 0) {
-      console.info("Unknown keys: " + unknown_keys.length)
       this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unknown_keys);
     }
   }

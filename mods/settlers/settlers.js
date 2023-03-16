@@ -314,20 +314,7 @@ class Settlers extends GameTemplate {
     
     }
 
-    this.game.playerNames = [];
-    this.game.players.forEach((playerKey, i) => {
-      
-      let name = this.app.keychain.returnUsername(playerKey);
-      if (name.includes("...")){
-        name = `Player ${i+1}`;
-      }
-      if (name.includes("@")){
-        name = name.substring(0, name.indexOf("@"));
-      }
-      console.log(playerKey, i, name);
-      this.game.playerNames.push(name);
-    });
-
+    this.setPlayerNames();
 
     if (this.game.players.length > 2){
       this.grace_window = this.game.players.length * 12;

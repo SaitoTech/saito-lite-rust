@@ -2,7 +2,6 @@ const path = require('path');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const RegistryModal = require('./lib/modal/registry-modal');
-const RegisterUsernameModal = require("../../lib/saito/ui/modals/register-username/register-username.js");
 
 class Registry extends ModTemplate {
 
@@ -78,12 +77,8 @@ class Registry extends ModTemplate {
         }
       }
 
-      console.log("New Cache:", JSON.parse(JSON.stringify(this.cached_keys)));
-
       
     });
-
-    this.username_modal = null;
 
     return this;
   }
@@ -91,7 +86,6 @@ class Registry extends ModTemplate {
 
   initialize(app) {
     super.initialize(app);
-    this.username_modal = new RegisterUsernameModal(app, this);
   }
 
 
@@ -202,12 +196,12 @@ class Registry extends ModTemplate {
       }
     });
 
-//    /*
+    /*
     console.info(this.cached_keys);
     console.info(publickeys);
     console.info(missing_keys);
     console.info("%%%%%%%%%%%%%%%%%%%%% PEER REGISTRY REQUEST %%%%%%%%%%%%%%%%%%%%%%%%%");
-//    */
+    */
 
     if (missing_keys.length == 0) {
       mycallback(found_keys);
@@ -345,13 +339,13 @@ class Registry extends ModTemplate {
           // if keys exist
           // 
           for (let key in this.cached_keys) {
-	    if (key === data.publickey) {
-	      if (this.cached_keys[key]) {
-	        return { publickey : key , identifier : this.cached_keys[key] };
-	      } else {
-	        return { publickey : key };
-	      }
-	    }
+      	    if (key === data.publickey) {
+      	      if (this.cached_keys[key]) {
+      	        return { publickey : key , identifier : this.cached_keys[key] };
+      	      } else {
+      	        return { publickey : key };
+      	      }
+      	    }
           }
 
           return null;
@@ -470,8 +464,8 @@ class Registry extends ModTemplate {
     let registry_self = this.app.modules.returnModule("Registry");
 
     //console.log("REGISTERING TO WHICH MODULE: " + this.name);
-    console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
-    console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
+    //console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
+    //console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
 
     let newtx = this.app.wallet.createUnsignedTransaction(registry_self.publickey, 0.0, this.app.wallet.wallet.default_fee);
     if (!newtx) {
