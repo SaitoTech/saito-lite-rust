@@ -86,6 +86,8 @@ class PeerManager {
             } else {
                 this.localStream.getVideoTracks()[0].enabled = true;
                 this.app.connection.emit("unmute", 'video', 'local');
+                document.querySelector('.video_control').classList.add('fa-video')
+                document.querySelector('.video_control').classList.remove('fa-video-slash')
                 try {
                     // for (let i in this.mod.peer_connections) {
                     //     this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "unmute", kind: 'video' }))
@@ -108,7 +110,6 @@ class PeerManager {
     }
 
     handleSignalingMessage(peerConnection, data) {
-
         const { type, sdp, candidate, targetPeerId, public_key } = data;
         if (type === 'renegotiate-offer' || type === 'offer') {
             peerConnection.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }))
@@ -130,7 +131,6 @@ class PeerManager {
                 .catch((error) => {
                     console.error('Error handling offer:', error);
                 });
-
         } else if (type === 'renegotiate-answer' || type === 'answer') {
             peerConnection.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp })).then(answer => {
 
@@ -153,7 +153,6 @@ class PeerManager {
 
         this.peers.set(peerId, peerConnection);
         // Implement the creation of a new RTCPeerConnection and its event handlers
-
 
         // Handle ICE candidates
         peerConnection.onicecandidate = (event) => {
@@ -186,8 +185,11 @@ class PeerManager {
 
         peerConnection.addEventListener('connectionstatechange', () => {
             if (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected') {
-                // Renegotiate the connection if the state is failed or disconnected
-                this.renegotiate(peerId);
+                if (type === "offer") {
+                    this.renegotiate(peerId);
+
+                }
+
             }
 
             this.app.connection.emit('stun-update-connection-message', this.room_code, peerId, peerConnection.connectionState);
@@ -219,7 +221,9 @@ class PeerManager {
             return;
         }
 
+        console.log('signalling state, ', peerConnection.signalingState)
         if (peerConnection.signalingState !== 'stable') {
+
             if (retryCount < maxRetries) {
                 console.log(`Signaling state is not stable, will retry in ${retryDelay} ms (attempt ${retryCount + 1}/${maxRetries})`);
                 setTimeout(() => {
