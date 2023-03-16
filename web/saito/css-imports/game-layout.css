@@ -38,10 +38,12 @@ body {
 div.h1{
   font-size: 32px;
   margin: 12px 0;
+  font-weight: bold;
 }
 div.h2{
   font-size: 24px;
   margin: 10px 0;
+  font-weight: bold;
 }
 div.h3{
   font-size: 18px;

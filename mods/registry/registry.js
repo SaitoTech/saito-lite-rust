@@ -57,7 +57,12 @@ class Registry extends ModTemplate {
                     this.app.connection.emit("update_identifier", (key));
                   }
                 }
-              }
+              } else {
+		// save if locally stored
+		if (this.app.keychain.hasPublicKey(key)) {
+		  this.app.keychain.addKey({ publickey : key , identifier : value });
+		}
+	      }
               this.app.browser.updateAddressHTML(key, value);
             });
           });

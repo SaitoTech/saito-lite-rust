@@ -89,8 +89,12 @@
 .tweet-text.full {
   transition: all 0.2s linear;
   max-height: 50rem;
-  overflow-y: auto;
+  overflow-y: hidden;
   margin-bottom: 1rem;
+}
+
+.tweet-text.full:hover {
+  overflow-y: auto;
 }
 
 .tweet-text.full::after {

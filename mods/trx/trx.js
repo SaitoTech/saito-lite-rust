@@ -20,6 +20,10 @@ class TRX extends ModTemplate {
 
 
   }
+
+  returnBalance(){
+    return this.balance;
+  }
   
   respondTo(type = "") {
     if (type == "mixin-crypto") {

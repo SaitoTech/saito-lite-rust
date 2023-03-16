@@ -33,6 +33,8 @@
   background: var(--saito-arcade-background);
   color: var(--saito-font-color);
   max-height: calc(99vh - var(--saito-header-height));
+  overflow: hidden;
+  resize: both;
 }
 
 .chat-container img.img-prev {
@@ -69,8 +71,10 @@
 }
 
 .chat-header .chat-group {
-  max-width: 99%;
+  max-width: 95%;
   overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .chat-body {

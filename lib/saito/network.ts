@@ -651,6 +651,15 @@ class Network {
     }, this.peer_monitor_timer_speed);
   }
 
+  isConnectedToPublicKey(publickey="") {
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].returnPublicKey() === publickey) {
+	if (this.peers[i].isConnected()) { return true; }
+      }
+    }
+    return false;
+  }
+
   isNetworkUp() {
     for (let i = 0; i < this.peers.length; i++) {
       if (this.peers[i].isConnected()) {
