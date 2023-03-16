@@ -414,7 +414,6 @@ class Stun extends ModTemplate {
         let txmsg = tx.returnMessage();
         let data = tx.msg.data;
         console.log(data, tx)
-
         app.connection.emit('stun-event-message', data);
 
     }
