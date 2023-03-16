@@ -186,7 +186,10 @@ class PeerManager {
         peerConnection.addEventListener('connectionstatechange', () => {
             if (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected') {
                 if (type === "offer") {
-                    this.renegotiate(peerId);
+                    setTimeout(() => {
+                        console.log('sending offer');
+                        this.createPeerConnection(peerId, 'offer');
+                    }, 4000)
 
                 }
 
@@ -223,7 +226,6 @@ class PeerManager {
 
         console.log('signalling state, ', peerConnection.signalingState)
         if (peerConnection.signalingState !== 'stable') {
-
             if (retryCount < maxRetries) {
                 console.log(`Signaling state is not stable, will retry in ${retryDelay} ms (attempt ${retryCount + 1}/${maxRetries})`);
                 setTimeout(() => {
