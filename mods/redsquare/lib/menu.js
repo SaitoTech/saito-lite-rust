@@ -1,4 +1,5 @@
 const RedSquareMenuTemplate = require("./menu.template");
+const Post = require("./post");
 
 class RedSquareMenu {
 
@@ -43,34 +44,46 @@ class RedSquareMenu {
   attachEvents() {
 
     document.querySelector(".redsquare-menu-home").onclick = (e) => {
-      this.setHash('home')
-      this.mod.main.render_component = "home"
-      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.mod.results_per_page}'`;
-      this.mod.tweets = [];
-      this.mod.loadTweetsFromPeer(this.mod.peers_for_tweets[0], sql, (txs) => {
-        this.app.connection.emit("redsquare-home-render-request");
-      }, true);
+      setHash('home')
+      this.app.connection.emit("redsquare-home-render-request");
     }
 
+    document.getElementById("new-tweet").onclick = (e) => {
+      let post = new Post(this.app, this.mod);
+      post.render();
+    }
+
+    if (document.getElementById("mobile-new-tweet") != null) {
+      document.getElementById("mobile-new-tweet").onclick = (e) => {
+        let post = new Post(this.app, this.mod);
+        post.render();
+      }
+    }
 
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
-      this.setHash('notifications')
-      this.mod.main.render_component = "notifications"
-      this.mod.viewing = "notifications";
+      setHash('notifications');
       this.app.connection.emit("redsquare-notifications-render-request");
-
+      this.mod.notifications_number_unviewed = 0;
+      this.mod.notifications_last_viewed_ts = new Date().getTime();
+      this.mod.save();
+      this.incrementNotifications("notifications", this.notifications_number_unviewed);
     }
 
-//    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
-//      this.app.connection.emit("redsquare-contacts-render-request");
-//    }
+    document.querySelector(".redsquare-menu-profile").onclick = (e) => {
+      setHash('profile');
+      this.app.connection.emit("redsquare-profile-render-request", this.app.wallet.returnPublicKey());
+    }
+
+    //    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
+    //      this.app.connection.emit("redsquare-contacts-render-request");
+    //    }
 
     //
     // appspace modules
     //
     this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
       document.querySelector(`.redsquare-menu-${mod.returnSlug()}`).onclick = (e) => {
-        this.setHash(mod.returnSlug())
+        setHash(mod.returnSlug());
         document.querySelector(".saito-main").innerHTML = "";
         mod.renderInto(".saito-main");
         document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
@@ -86,7 +99,6 @@ class RedSquareMenu {
 
   incrementNotifications(menu_item, notifications = -1) {
 
-    console.log('notifications number ', notifications)
     let qs = `.redsquare-menu-${menu_item}`;
 
     if (document.querySelector(qs)) {
@@ -94,15 +106,16 @@ class RedSquareMenu {
       let obj = document.querySelector(qs);
       if (!obj) {
         if (notifications > 0) {
-	  this.app.browser.addElementToSelector(`<div class="saito-notification-dot">${notifications}</div>`, `.redsquare-menu-${menu_item}`);
-	} else {
+          this.app.browser.addElementToSelector(`<div class="saito-notification-dot">${notifications}</div>`, `.redsquare-menu-${menu_item}`);
+        } else {
           this.app.browser.addElementToSelector(`<div class="saito-notification-dot"></div>`, `.redsquare-menu-${menu_item}`);
           qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
           let obj = document.querySelector(qs);
           obj.style.display = "none";
-	}
+        }
       } else {
-        let existing_notifications = parseInt(obj.innerHTML);
+        let existing_notifications = 0;
+        if (obj.innerHTML) { existing_notificaitons = parseInt(obj.innerHTML); }
         if (notifications <= 0) {
           obj.style.display = "none";
           obj.innerHTML = 0;
@@ -115,9 +128,7 @@ class RedSquareMenu {
     }
   }
 
-  setHash (hash){
-    window.history.pushState("", "", `/redsquare/#${hash}`)
-  }
+
 }
 
 module.exports = RedSquareMenu;

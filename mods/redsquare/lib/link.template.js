@@ -1,18 +1,5 @@
 module.exports = (link) => {
 
-  console.log('inside link template');
-  console.log(link.tweet);
-
-  if (typeof link.tweet.youtube_id != "undefined" && link.tweet.youtube_id != "") {
-  
-    return `
-	    <div class="youtube-embed-container">
-	      <iframe class="youtube-embed" src="https://www.youtube.com/embed/${link.tweet.youtube_id}"></iframe>
-	    </div>
-	  `;
-  
-  } else if (link.tweet.link_properties != null) {
-
     return `
 	<div class="link-preview">
           <a target="_blank">
@@ -28,7 +15,5 @@ module.exports = (link) => {
         </div>
     `;
 
-  }
- 
 }
 

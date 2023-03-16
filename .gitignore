@@ -57,6 +57,13 @@ web/saito/saito.js.map
 web/saito/*.wasm
 web/saito/saito.js.LICENSE.txt
 mods/covid/bundler/
+web/saito/game-full.css
+web/saito/saito-full.css
+web/saito/game.css
+web/saito/saito.css
+
+# ignore all style.css files as these are not compiled
+style.css
 
 mods/popup
 mods/popup/*
@@ -89,7 +96,9 @@ mods/fcm-notification/*.json
 mods/registry/web/addresses.txt
 mods/reddit/web
 mods/reddit/web/*
+mods/redsquare/web/tweets.js
 mods/mailrelay/lib/template-credentials.js
 mods/tutorial4/web/txid
+mods/redsquare/web/tweets.js
 
 extras/shashmap/build

@@ -10,28 +10,12 @@ class ThemeSwitcherOverlay {
   }
 
   render() {
+
     let mod_obj = this.app.modules.returnActiveModule();
     let selected_theme = "";
     if (this.app.options.theme) {
       selected_theme = this.app.options.theme[mod_obj.returnSlug()];
     }
-
-
-    console.log('mod_obj')
-    console.log(mod_obj);
-
-    /*
-    console.log('mod_obj')
-    console.log(mod_obj);
-    console.log('mod_obj.theme_options')
-    console.log(mod_obj.theme_options);
-    console.log("selected theme");
-    console.log(selected_theme);
-
-    console.log("options");
-    console.log(this.app.options.theme);
-    */
-
     this.overlay.show(ThemeSwitcherOverlayTemplate(this.app, this.mod, mod_obj.theme_options, selected_theme));
     this.attachEvents();
   }
@@ -41,9 +25,7 @@ class ThemeSwitcherOverlay {
     this_self = this;
     document.querySelectorAll('.saito-modal-menu-option').forEach(function(elem){
       elem.addEventListener('click', function(e) {
-    
         let theme = e.currentTarget.getAttribute('data-theme');
-
         if (theme != null) {
           this_self.app.browser.switchTheme(theme);
           this_self.overlay.hide();

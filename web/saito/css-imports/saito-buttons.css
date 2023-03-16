@@ -15,7 +15,6 @@ button,
   font-weight: 500;
   border-radius: 0.5rem;
   cursor: pointer;
-  margin: 0.5rem;
   border: 1px solid transparent;
 }
 
@@ -31,6 +30,7 @@ button,
   margin: 0.5rem;
   border: 1px solid var(--saito-primary);
   color: var(--saito-primary);
+  background: var(--saito-background-color);
 }
 
 .saito-button-primary:hover {
@@ -52,10 +52,11 @@ button.small,
   font-size: 1.4rem;
   min-width: 4rem;
 }
-button.fat, saito-button-primary.fat, .saito-button-seconary.fat, saito-button-gradient.fat {
-  height: 7rem;
-  font-size: 2rem;
-  padding: 2rem !important;
-  width: 30rem;
+button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-gradient.fat {
+    height: 7rem;
+    font-size: 2rem;
+    padding: 2.4rem !important;
+    min-width: 30rem;
+    text-align: center;
 }
 

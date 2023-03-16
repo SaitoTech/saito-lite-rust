@@ -25,6 +25,8 @@ class JoinGameOverlay {
 
     this.overlay.show(JoinGameOverlayTemplate(this.app, this.mod, this.invite));
     this.overlay.setBackground(game_mod.returnArcadeImg());
+    console.log("Render Join GAme Overlay");
+    this.app.browser.addIdentifiersToDom();
     this.attachEvents();
   }
   
@@ -42,26 +44,27 @@ class JoinGameOverlay {
           //
           this.app.network.propagateTransaction(newtx);
 
-          this.app.connection.emit("send-relay-message", {recipient: this.invite.players, request: "arcade spv update", data: newtx.transaction });
-          this.app.connection.emit("send-relay-message", {recipient: "PEERS", request: "arcade spv update", data: newtx.transaction });
+          this.app.connection.emit("relay-send-message", {recipient: this.invite.players, request: "arcade spv update", data: newtx.transaction });
+          this.app.connection.emit("relay-send-message", {recipient: "PEERS", request: "arcade spv update", data: newtx.transaction });
 
           this.overlay.remove();
-     
+          this.app.browser.logMatomoEvent("GameInvite", "JoinGame", this.invite.game_mod.name);
           this.app.connection.emit("arcade-invite-manager-render-request");        
         }
      }
 
     if (document.getElementById("arcade-game-controls-continue-game")){
       document.getElementById("arcade-game-controls-continue-game").onclick = (e) => {
+          this.app.browser.logMatomoEvent("GameInvite", "ContinueGame", this.invite.game_mod.name);
           window.location = `/${this.invite.game_slug}/#gid=${this.invite.game_id}`;
       }
     }
     
-    if (document.getElementById("arcade-game-controls-cancel-game")){
-      document.getElementById("arcade-game-controls-cancel-game").onclick = (e) => {
-          this.mod.sendCloseTransaction(this.invite.game_id);
-          this.mod.removeGame(this.invite.game_id);
+    if (document.getElementById("arcade-game-controls-close-game")){
+      document.getElementById("arcade-game-controls-close-game").onclick = (e) => {
           this.overlay.remove();
+          this.app.browser.logMatomoEvent("GameInvite", "CloseActiveGame", this.invite.game_mod.name);
+          this.mod.sendQuitTransaction(this.invite.game_id);
       }
     }
 
@@ -76,32 +79,28 @@ class JoinGameOverlay {
     //
     if (document.getElementById("arcade-game-controls-forfeit-game")){
       document.getElementById("arcade-game-controls-forfeit-game").onclick = (e) => {
-          this.mod.removeGame(this.invite.game_id);
           this.overlay.remove();
-
-          for (let i = 0; i < this.app.options?.games.length; i++) {
-            if (this.app.options.games[i].id == this.invite.game_id) { 
-              let gamemod = this.app.modules.returnModule(this.app.options.games[i].module);
-              if (gamemod) {
-                gamemod.resignGame(this.invite.game_id, "cancellation");
-                setTimeout(()=>{ 
-                  gamemod.removeGameFromOptions(this.invite.game_id);
-                  this.mod.sendCloseTransaction(this.invite.game_id); 
-                }, 3000);
-                return;
-              }
-            }
-          }
-
-          this.mod.sendCloseTransaction(this.invite.game_id); 
+          this.app.browser.logMatomoEvent("GameInvite", "ForfeitGame", this.invite.game_mod.name);
+          this.mod.sendQuitTransaction(this.invite.game_id, "forfeit"); 
       }
-    }
+    }    
+
     if (document.getElementById("arcade-game-controls-cancel-join")){
       document.getElementById("arcade-game-controls-cancel-join").onclick = (e) => {
           this.mod.sendCancelTransaction(this.invite.game_id);
           this.overlay.remove();
+          this.app.browser.logMatomoEvent("GameInvite", "CancelJoin", this.invite.game_mod.name);
       }
     }
+
+
+    Array.from(document.querySelectorAll(".available_slot")).forEach((emptySlot) => {
+      emptySlot.onclick = () => {
+        this.mod.showShareLink(this.invite.game_id);  
+      }
+      
+    });
+    
 
   }
 

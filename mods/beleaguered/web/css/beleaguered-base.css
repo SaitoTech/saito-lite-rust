@@ -1,0 +1,1046 @@
+body {
+  font-family: arial, helvetica, sans-serif;
+  font-size: 13px;
+  padding: 0px;
+  margin: 0px;
+}
+
+.main {
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+.logobox .status-header, .logobox .status-text-menu{
+  background-color: #fffe
+}
+
+
+.rules-overlay ul {
+  margin-left: 25px;
+}
+
+.rules-overlay table {
+  font-size: 1.5em;
+  margin: 0 auto;
+}
+
+.rules-overlay th {
+  text-align: right;
+}
+
+.rules-overlay td {
+  text-align: center;
+  width: 4em;
+}
+
+.gameboard {
+  position: absolute;
+  background-image: url("/beleaguered/img/gameboard.jpg");
+  background-size: cover;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(20%, max-content) 1fr;
+}
+
+.logobox {
+  position: relative;
+  margin-top: 50px;
+  font-size: 20px;
+  order: 1;
+  max-width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 80px;
+}
+
+.logobox div {
+  border-radius: 5px;
+}
+
+.logobox img {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.status-header {
+  padding: 10px 5px;
+  margin-top: 20px;
+  height: 160px;
+}
+
+
+/* Mark place you can put selected card*/
+.selected_state .slot.valid:hover {
+  opacity: 0.95 !important;
+  border: solid 1px #00ff00;
+  background-color: rgba(160, 255, 160, 0.85);
+  margin-top: 10px;
+}
+
+.slot.valid:hover img {
+  filter: sepia(100%) hue-rotate(30deg) saturate(6);
+}
+
+.slot.selected{
+  background-color: #00ff00;
+  border: solid 1px #00ff00;
+  filter: sepia(100%) hue-rotate(45deg) saturate(4);
+}
+
+
+
+.rowbox {
+  order: 2;
+  margin-top: 25px;
+  padding: 25px;
+  display: block;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+  max-width: min(40vw, 40vh);
+  max-height: max(100vw);
+  height: fit-content;
+}
+
+.slot {
+  position: absolute;
+  min-width: 14vh;
+  max-width: 14vh;
+  border-radius: 10px;
+  min-height: 21vh;
+  max-height: 21vh;
+  margin-bottom: 2vh;
+  margin-top: 1vh;
+}
+
+.slot img {
+  width: 100%;
+  border-radius: 10px;
+  border: 0.5px solid black;
+}
+
+.slot.invisible{
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+
+
+.portrait-info {
+  display: none;
+}
+
+@media screen and (orientation: portrait) {
+  .logobox {
+    display: none;
+    display: none;
+  }
+
+  .portrait-info {
+    background-color: white;
+    text-align: center;
+    padding: 20px;
+    width: 100vw;
+    margin-top: 50vh;
+    display: block;
+    height: fit-content;
+  }
+
+  .rowbox {
+    display: none;
+  }
+
+  .hidable {
+    display: none;
+  }
+}
+
+#row1_slot_l0 {
+  left: calc(50vw - 22.5vh + 100px);
+  top: 0;
+  z-index: 1;
+}
+
+#row1_slot_r0 {
+  left: calc(50vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 1;
+}
+
+#row1_slot_l17 {
+  top: 0;
+  left: calc(30vw - 22.5vh + 100px);
+  z-index: 18;
+}
+
+#row1_slot_l16 {
+  top: 0;
+  left: calc(31.2vw - 22.5vh + 100px);
+  z-index: 17;
+}
+
+#row1_slot_l15 {
+  top: 0;
+  left: calc(32.4vw - 22.5vh + 100px);
+  z-index: 16;
+}
+
+#row1_slot_l14 {
+  top: 0;
+  left: calc(33.6vw - 22.5vh + 100px);
+  z-index: 15;
+}
+
+#row1_slot_l13 {
+  top: 0;
+  left: calc(34.8vw - 22.5vh + 100px);
+  z-index: 14;
+}
+
+#row1_slot_l12 {
+  top: 0;
+  left: calc(36vw - 22.5vh + 100px);
+  z-index: 13;
+}
+
+#row1_slot_l11 {
+  top: 0;
+  left: calc(37.2vw - 22.5vh + 100px);
+  z-index: 12;
+}
+
+#row1_slot_l10 {
+  top: 0;
+  left: calc(38.4vw - 22.5vh + 100px);
+  z-index: 11;
+}
+
+#row1_slot_l9 {
+  top: 0;
+  left: calc(39.6vw - 22.5vh + 100px);
+  z-index: 10;
+}
+
+#row1_slot_l8 {
+  top: 0;
+  left: calc(40.8vw - 22.5vh + 100px);
+  z-index: 9;
+}
+
+#row1_slot_l7 {
+  top: 0;
+  left: calc(41.6vw - 22.5vh + 100px);
+  z-index: 8;
+}
+
+#row1_slot_l6 {
+  top: 0;
+  left: calc(42.8vw - 22.5vh + 100px);
+  z-index: 7;
+}
+
+#row1_slot_l5 {
+  top: 0;
+  left: calc(44vw - 22.5vh + 100px);
+  z-index: 6;
+}
+
+#row1_slot_l4 {
+  top: 0;
+  left: calc(45.2vw - 22.5vh + 100px);
+  z-index: 5;
+}
+
+#row1_slot_l3 {
+  top: 0;
+  left: calc(46.4vw - 22.5vh + 100px);
+  z-index: 4;
+}
+
+#row1_slot_l2 {
+  top: 0;
+  left: calc(47.6vw - 22.5vh + 100px);
+  z-index: 3;
+}
+
+#row1_slot_l1 {
+  left: calc(48.8vw - 22.5vh + 100px);
+  top: 0;
+  z-index: 2;
+}
+
+#row1_m {
+  top: 0;
+  left: calc(50vw - 7.5vh + 100px);
+}
+
+#row1_slot_r1 {
+  left: calc(51.2vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 2;
+}
+
+#row1_slot_r2 {
+  left: calc(52.4vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 3;
+}
+
+#row1_slot_r3 {
+  left: calc(53.6vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 4;
+}
+
+#row1_slot_r4 {
+  left: calc(54.8vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 5;
+}
+
+#row1_slot_r5 {
+  left: calc(56vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 6;
+}
+
+#row1_slot_r6 {
+  left: calc(57.2vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 7;
+}
+
+#row1_slot_r7 {
+  left: calc(58.4vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 8;
+}
+
+#row1_slot_r8 {
+  left: calc(59.6vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 9;
+}
+
+#row1_slot_r9 {
+  left: calc(60.8vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 10;
+}
+
+#row1_slot_r10 {
+  left: calc(62vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 11;
+}
+
+#row1_slot_r11 {
+  left: calc(63.2vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 12;
+}
+
+#row1_slot_r12 {
+  left: calc(64.4vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 13;
+}
+
+#row1_slot_r13 {
+  left: calc(65.6vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 14;
+}
+
+#row1_slot_r14 {
+  left: calc(66.8vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 15;
+}
+
+#row1_slot_r15 {
+  left: calc(68vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 16;
+}
+
+#row1_slot_r16 {
+  left: calc(69.2vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 17;
+}
+
+#row1_slot_r17 {
+  left: calc(70.4vw + 7.5vh + 100px);
+  top: 0;
+  z-index: 18;
+}
+
+/* row2 */
+
+#row2_slot_l0 {
+  left: calc(50vw - 22.5vh + 100px);
+  top: 25vh;
+  z-index: 1;
+}
+
+#row2_slot_r0 {
+  left: calc(50vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 1;
+}
+
+#row2_slot_l17 {
+  top: 25vh;
+  left: calc(29.6vw - 22.5vh + 100px);
+  z-index: 18;
+}
+
+#row2_slot_l16 {
+  top: 25vh;
+  left: calc(30.8vw - 22.5vh + 100px);
+  z-index: 17;
+}
+
+#row2_slot_l15 {
+  top: 25vh;
+  left: calc(32vw - 22.5vh + 100px);
+  z-index: 16;
+}
+
+#row2_slot_l14 {
+  top: 25vh;
+  left: calc(33.2vw - 22.5vh + 100px);
+  z-index: 15;
+}
+
+#row2_slot_l13 {
+  top: 25vh;
+  left: calc(34.4vw - 22.5vh + 100px);
+  z-index: 14;
+}
+
+#row2_slot_l12 {
+  top: 25vh;
+  left: calc(35.6vw - 22.5vh + 100px);
+  z-index: 13;
+}
+
+#row2_slot_l11 {
+  top: 25vh;
+  left: calc(36.8vw - 22.5vh + 100px);
+  z-index: 12;
+}
+
+#row2_slot_l10 {
+  top: 25vh;
+  left: calc(38vw - 22.5vh + 100px);
+  z-index: 11;
+}
+
+#row2_slot_l9 {
+  top: 25vh;
+  left: calc(39.2vw - 22.5vh + 100px);
+  z-index: 10;
+}
+
+#row2_slot_l8 {
+  top: 25vh;
+  left: calc(40.4vw - 22.5vh + 100px);
+  z-index: 9;
+}
+
+#row2_slot_l7 {
+  top: 25vh;
+  left: calc(41.6vw - 22.5vh + 100px);
+  z-index: 8;
+}
+
+#row2_slot_l6 {
+  top: 25vh;
+  left: calc(42.8vw - 22.5vh + 100px);
+  z-index: 7;
+}
+
+#row2_slot_l5 {
+  top: 25vh;
+  left: calc(44vw - 22.5vh + 100px);
+  z-index: 6;
+}
+
+#row2_slot_l4 {
+  top: 25vh;
+  left: calc(45.2vw - 22.5vh + 100px);
+  z-index: 5;
+}
+
+#row2_slot_l3 {
+  top: 25vh;
+  left: calc(46.4vw - 22.5vh + 100px);
+  z-index: 4;
+}
+
+#row2_slot_l2 {
+  top: 25vh;
+  left: calc(47.6vw - 22.5vh + 100px);
+  z-index: 3;
+}
+
+#row2_slot_l1 {
+  left: calc(48.8vw - 22.5vh + 100px);
+  top: 25vh;
+  z-index: 2;
+}
+
+#row2_m {
+  top: 25vh;
+  left: calc(50vw - 7.5vh + 100px);
+}
+
+#row2_slot_r1 {
+  left: calc(51.2vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 2;
+}
+
+#row2_slot_r2 {
+  left: calc(52.4vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 3;
+}
+
+#row2_slot_r3 {
+  left: calc(53.6vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 4;
+}
+
+#row2_slot_r4 {
+  left: calc(54.8vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 5;
+}
+
+#row2_slot_r5 {
+  left: calc(56vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 6;
+}
+
+#row2_slot_r6 {
+  left: calc(57.2vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 7;
+}
+
+#row2_slot_r7 {
+  left: calc(58.4vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 8;
+}
+
+#row2_slot_r8 {
+  left: calc(59.6vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 9;
+}
+
+#row2_slot_r9 {
+  left: calc(60.8vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 10;
+}
+
+#row2_slot_r10 {
+  left: calc(62vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 11;
+}
+
+#row2_slot_r11 {
+  left: calc(63.2vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 12;
+}
+
+#row2_slot_r12 {
+  left: calc(64.4vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 13;
+}
+
+#row2_slot_r13 {
+  left: calc(65.6vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 14;
+}
+
+#row2_slot_r14 {
+  left: calc(66.8vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 15;
+}
+
+#row2_slot_r15 {
+  left: calc(68vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 16;
+}
+
+#row2_slot_r16 {
+  left: calc(69.2vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 17;
+}
+
+#row2_slot_r17 {
+  left: calc(70.4vw + 7.5vh + 100px);
+  top: 25vh;
+  z-index: 18;
+}
+
+/* row3 */
+
+#row3_slot_l0 {
+  left: calc(50vw - 22.5vh + 100px);
+  top: 50vh;
+  z-index: 1;
+}
+
+#row3_slot_r0 {
+  left: calc(50vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 1;
+}
+
+#row3_slot_l17 {
+  top: 50vh;
+  left: calc(29.6vw - 22.5vh + 100px);
+  z-index: 18;
+}
+
+#row3_slot_l16 {
+  top: 50vh;
+  left: calc(30.8vw - 22.5vh + 100px);
+  z-index: 17;
+}
+
+#row3_slot_l15 {
+  top: 50vh;
+  left: calc(32vw - 22.5vh + 100px);
+  z-index: 16;
+}
+
+#row3_slot_l14 {
+  top: 50vh;
+  left: calc(33.2vw - 22.5vh + 100px);
+  z-index: 15;
+}
+
+#row3_slot_l13 {
+  top: 50vh;
+  left: calc(34.4vw - 22.5vh + 100px);
+  z-index: 14;
+}
+
+#row3_slot_l12 {
+  top: 50vh;
+  left: calc(35.6vw - 22.5vh + 100px);
+  z-index: 13;
+}
+
+#row3_slot_l11 {
+  top: 50vh;
+  left: calc(36.8vw - 22.5vh + 100px);
+  z-index: 12;
+}
+
+#row3_slot_l10 {
+  top: 50vh;
+  left: calc(38vw - 22.5vh + 100px);
+  z-index: 11;
+}
+
+#row3_slot_l9 {
+  top: 50vh;
+  left: calc(39.2vw - 22.5vh + 100px);
+  z-index: 10;
+}
+
+#row3_slot_l8 {
+  top: 50vh;
+  left: calc(40.4vw - 22.5vh + 100px);
+  z-index: 9;
+}
+
+#row3_slot_l7 {
+  top: 50vh;
+  left: calc(41.6vw - 22.5vh + 100px);
+  z-index: 8;
+}
+
+#row3_slot_l6 {
+  top: 50vh;
+  left: calc(42.8vw - 22.5vh + 100px);
+  z-index: 7;
+}
+
+#row3_slot_l5 {
+  top: 50vh;
+  left: calc(44vw - 22.5vh + 100px);
+  z-index: 6;
+}
+
+#row3_slot_l4 {
+  top: 50vh;
+  left: calc(45.2vw - 22.5vh + 100px);
+  z-index: 5;
+}
+
+#row3_slot_l3 {
+  top: 50vh;
+  left: calc(46.4vw - 22.5vh + 100px);
+  z-index: 4;
+}
+
+#row3_slot_l2 {
+  top: 50vh;
+  left: calc(47.6vw - 22.5vh + 100px);
+  z-index: 3;
+}
+
+#row3_slot_l1 {
+  left: calc(48.8vw - 22.5vh + 100px);
+  top: 50vh;
+  z-index: 2;
+}
+
+#row3_m {
+  top: 50vh;
+  left: calc(50vw - 7.5vh + 100px);
+}
+
+#row3_slot_r1 {
+  left: calc(51.2vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 2;
+}
+
+#row3_slot_r2 {
+  left: calc(52.4vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 3;
+}
+
+#row3_slot_r3 {
+  left: calc(53.6vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 4;
+}
+
+#row3_slot_r4 {
+  left: calc(54.8vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 5;
+}
+
+#row3_slot_r5 {
+  left: calc(56vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 6;
+}
+
+#row3_slot_r6 {
+  left: calc(57.2vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 7;
+}
+
+#row3_slot_r7 {
+  left: calc(58.4vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 8;
+}
+
+#row3_slot_r8 {
+  left: calc(59.6vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 9;
+}
+
+#row3_slot_r9 {
+  left: calc(60.8vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 10;
+}
+
+#row3_slot_r10 {
+  left: calc(62vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 11;
+}
+
+#row3_slot_r11 {
+  left: calc(63.2vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 12;
+}
+
+#row3_slot_r12 {
+  left: calc(64.4vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 13;
+}
+
+#row3_slot_r13 {
+  left: calc(65.6vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 14;
+}
+
+#row3_slot_r14 {
+  left: calc(66.8vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 15;
+}
+
+#row3_slot_r15 {
+  left: calc(68vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 16;
+}
+
+#row3_slot_r16 {
+  left: calc(69.2vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 17;
+}
+
+#row3_slot_r17 {
+  left: calc(70.4vw + 7.5vh + 100px);
+  top: 50vh;
+  z-index: 18;
+}
+
+/* row4 */
+
+#row4_slot_l0 {
+  left: calc(50vw - 22.5vh + 100px);
+  top: 75vh;
+  z-index: 1;
+}
+
+#row4_slot_r0 {
+  left: calc(50vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 1;
+}
+
+#row4_slot_l17 {
+  top: 75vh;
+  left: calc(29.6vw - 22.5vh + 100px);
+  z-index: 18;
+}
+
+#row4_slot_l16 {
+  top: 75vh;
+  left: calc(30.8vw - 22.5vh + 100px);
+  z-index: 17;
+}
+
+#row4_slot_l15 {
+  top: 75vh;
+  left: calc(32vw - 22.5vh + 100px);
+  z-index: 16;
+}
+
+#row4_slot_l14 {
+  top: 75vh;
+  left: calc(33.2vw - 22.5vh + 100px);
+  z-index: 15;
+}
+
+#row4_slot_l13 {
+  top: 75vh;
+  left: calc(34.4vw - 22.5vh + 100px);
+  z-index: 14;
+}
+
+#row4_slot_l12 {
+  top: 75vh;
+  left: calc(35.6vw - 22.5vh + 100px);
+  z-index: 13;
+}
+
+#row4_slot_l11 {
+  top: 75vh;
+  left: calc(36.8vw - 22.5vh + 100px);
+  z-index: 12;
+}
+
+#row4_slot_l10 {
+  top: 75vh;
+  left: calc(38vw - 22.5vh + 100px);
+  z-index: 11;
+}
+
+#row4_slot_l9 {
+  top: 75vh;
+  left: calc(39.2vw - 22.5vh + 100px);
+  z-index: 10;
+}
+
+#row4_slot_l8 {
+  top: 75vh;
+  left: calc(40.4vw - 22.5vh + 100px);
+  z-index: 9;
+}
+
+#row4_slot_l7 {
+  top: 75vh;
+  left: calc(41.6vw - 22.5vh + 100px);
+  z-index: 8;
+}
+
+#row4_slot_l6 {
+  top: 75vh;
+  left: calc(42.8vw - 22.5vh + 100px);
+  z-index: 7;
+}
+
+#row4_slot_l5 {
+  top: 75vh;
+  left: calc(44vw - 22.5vh + 100px);
+  z-index: 6;
+}
+
+#row4_slot_l4 {
+  top: 75vh;
+  left: calc(45.2vw - 22.5vh + 100px);
+  z-index: 5;
+}
+
+#row4_slot_l3 {
+  top: 75vh;
+  left: calc(46.4vw - 22.5vh + 100px);
+  z-index: 4;
+}
+
+#row4_slot_l2 {
+  top: 75vh;
+  left: calc(47.6vw - 22.5vh + 100px);
+  z-index: 3;
+}
+
+#row4_slot_l1 {
+  left: calc(48.8vw - 22.5vh + 100px);
+  top: 75vh;
+  z-index: 2;
+}
+
+#row4_m {
+  top: 75vh;
+  left: calc(50vw - 7.5vh + 100px);
+}
+
+#row4_slot_r1 {
+  left: calc(51.2vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 2;
+}
+
+#row4_slot_r2 {
+  left: calc(52.4vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 3;
+}
+
+#row4_slot_r3 {
+  left: calc(53.6vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 4;
+}
+
+#row4_slot_r4 {
+  left: calc(54.8vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 5;
+}
+
+#row4_slot_r5 {
+  left: calc(56vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 6;
+}
+
+#row4_slot_r6 {
+  left: calc(57.2vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 7;
+}
+
+#row4_slot_r7 {
+  left: calc(58.4vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 8;
+}
+
+#row4_slot_r8 {
+  left: calc(59.6vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 9;
+}
+
+#row4_slot_r9 {
+  left: calc(60.8vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 10;
+}
+
+#row4_slot_r10 {
+  left: calc(62vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 11;
+}
+
+#row4_slot_r11 {
+  left: calc(63.2vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 12;
+}
+
+#row4_slot_r12 {
+  left: calc(64.4vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 13;
+}
+
+#row4_slot_r13 {
+  left: calc(65.6vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 14;
+}
+
+#row4_slot_r14 {
+  left: calc(66.8vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 15;
+}
+
+#row4_slot_r15 {
+  left: calc(68vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 16;
+}
+
+#row4_slot_r16 {
+  left: calc(69.2vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 17;
+}
+
+#row4_slot_r17 {
+  left: calc(70.4vw + 7.5vh + 100px);
+  top: 75vh;
+  z-index: 18;
+}

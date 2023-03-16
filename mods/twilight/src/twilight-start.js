@@ -5575,12 +5575,12 @@ playerTurnHeadlineSelected(card, player) {
 	      let roll_modifier = Math.abs(this.game.state.events.deathsquads);
         if (this.countries[countryname].region == "camerica" || this.countries[countryname].region == "samerica") {
           if (player == "ussr") {
-            this.updateLog(`${this.cardToText("deathsquads")} triggers: USSR +"+roll_modifier+" modifier`);
+            this.updateLog(`${this.cardToText("deathsquads")} triggers: USSR +${roll_modifier} modifier`);
             modifier += roll_modifier;
           }
           if (player == "us")   {
             if (this.countries[countryname].region == "camerica" || this.countries[countryname].region == "samerica") {
-              this.updateLog(`${this.cardToText("deathsquads")} triggers: US -"+roll_modifier+" modifier`);
+              this.updateLog(`${this.cardToText("deathsquads")} triggers: US -${roll_modifier} modifier`);
               modifier -= roll_modifier;
             }
           }
@@ -5590,11 +5590,11 @@ playerTurnHeadlineSelected(card, player) {
         let roll_modifier = this.game.state.events.deathsquads;
         if (this.countries[countryname].region == "camerica" || this.countries[countryname].region == "samerica") {
           if (player == "ussr") {
-            this.updateLog(`${this.cardToText("deathsquads")} triggers: USSR -"+roll_modifier+" modifier`);
+            this.updateLog(`${this.cardToText("deathsquads")} triggers: USSR -${roll_modifier} modifier`);
             modifier -= roll_modifier;
           }
           if (player == "us")   {
-            this.updateLog(`${this.cardToText("deathsquads")} triggers: US +"+roll_modifier+" modifier`);
+            this.updateLog(`${this.cardToText("deathsquads")} triggers: US +${roll_modifier} modifier`);
             modifier += roll_modifier;
           }
         }
@@ -5889,7 +5889,6 @@ playerTurnHeadlineSelected(card, player) {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) {
 	    // hard-exception
 	    if (this.game.options.deck != "late-war" && this.game.state.round != 8) {
-              this.game.over = 1;
               //There may be an issue if both players simulataneously resign...
               this.resignGame(this.game.id, "scoring card held");
               return 0;

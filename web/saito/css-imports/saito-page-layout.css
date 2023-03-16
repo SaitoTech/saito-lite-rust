@@ -2,7 +2,7 @@
   width: 100vw;
   height: calc(100vh - var(--saito-header-height));
   display: grid;
-  grid-template-columns: min-content 1fr min-content;
+  grid-template-columns: min-content 5fr 3fr;
   padding: 0 calc((100vw - var(--saito-width)) / 2);
   z-index: 0;
   margin: 0;
@@ -17,10 +17,6 @@
   min-width: 54rem;
   margin: 0 2rem 15rem;
   position: relative;
-}
-
-.saito-mobile-bar {
-  display: none;
 }
 
 .saito-sidebar {
@@ -42,30 +38,21 @@
   height: inherit;
   width: 25rem;
   top: 0;
+  margin: 0 0 0 1rem;
 }
 
 .saito-sidebar.right {
-  padding: 2rem 0 10rem;
+  padding: 2rem 1rem 10rem 0;
   grid-column-start: 3;
   grid-row: 1/2;
   position: relative;
   top: 0;
-  min-width: 26rem;
-  width: 50rem;
+  min-width: 30rem;
   height: max-content;
+
 }
 
-.saito-sidebar.right.mobile {
-  visibility: visible;
-  z-index: 3;
-}
-
-.saito-sidebar.left.mobile {
-  visibility: visible;
-  z-index: 3;
-}
-
-@media screen and (max-width: 1500px) {
+@media screen and (max-width: 1200px) {
   .saito-container {
     grid-template-columns: 1fr min-content;
   }
@@ -81,59 +68,7 @@
   }
 }
 
-@media screen and (max-width: 1500px) and (min-width: 768px) {
-  .saito-sidebar.left {
-    left: 0;
-    width: 30rem;
-  }
-
-  .saito-mobile-bar {
-    height: 7rem;
-    content: " ";
-    width: 10%;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: 2;
-    display: flex;
-    flex-flow: row;
-    justify-content: space-around;
-    align-items: center;
-  }
-
-  .saito-mobile-bar > div {
-    content: "";
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 0.5rem;
-    background-color: var(--saito-primary);
-    cursor: pointer;
-    justify-content: center;
-    align-items: center;
-    display: none;
-  }
-
-  .saito-mobile-bar > div:nth-child(1) {
-    display: flex;
-  }
-
-  .saito-mobile-bar > div i {
-    color: var(--saito-background-color);
-    display: initial;
-    font-size: 2.5rem;
-  }
-}
-
-.saito-redsquare-actions-buttons {
-  display: flex;
-  align-items: center;
-}
-
-.saito-redsquare-actions-buttons .saito-button-secondary {
-  display: block;
-}
-
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 900px) {
   .saito-main {
     min-width: 0;
     width: 100vw !important;
@@ -157,44 +92,4 @@
     height: 100vh;
     z-index: 12;
   }
-
-  /*
-  .saito-mobile-bar {
-    background: var(--saito-dark-shim);
-    z-index: 1;
-    height: 7rem;
-    content: " ";
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: 2;
-    display: flex;
-    flex-flow: row;
-    justify-content: space-around;
-    align-items: center;
-  }
-
-  .saito-mobile-bar > div {
-    content: "";
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 0.5rem;
-    background-color: var(--saito-primary);
-    cursor: pointer;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-  }
-
-  .saito-mobile-bar > div i {
-    color: var(--saito-background-color);
-    display: initial;
-    font-size: 2.5rem;
-  }
-
-  .saito-mobile-bar > div:nth-child(2) {
-    display: none;
-  }
-  */
 }

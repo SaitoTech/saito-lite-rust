@@ -1,0 +1,328 @@
+html, body {
+    height: 99.999%;
+}
+
+.log-lock .mobile-log-tab {
+    background-color: #222d;
+    color: #f9efdf;  
+}
+.mobile-log-tab {
+    background-color: #f9efdf;
+    height: 4rem;
+    margin-top:2px;
+    color: black;
+    font-size: 2.2rem;
+    padding-top: 1rem;
+}
+
+
+body {
+    font-family: arial, helvetica, sans-serif;
+    font-size: 13px;
+    padding: 0;
+    margin: 0;
+    background: url("/chess/img/background.png");
+    overflow: hidden;
+    background-size: 70% 100%;
+}
+
+h1 {
+    margin: 0;
+}
+
+input[type="checkbox"] {
+    border: 1px solid #644b37;
+    margin: 0;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #533a26;
+}
+
+.game-menu{
+    background-color: #f9efdf;
+    box-shadow: 2px 2px 5px 0px #644b37;
+}
+
+.main{
+    width: 100vw;
+    height: 100vh;
+    padding: 40px;
+    position: relative;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+
+#board {
+    max-width: min(98vh,98vw);
+    width: 50%;
+}
+
+
+.controls-space {    
+    width: 35%;
+    max-width: 500px;
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+    grid-gap: 6px;   
+    font-size: max(14px, 1.2vw);
+
+}
+
+.tool-cont {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    column-gap: 2rem;
+    align-items: center;
+    padding: 10px 20px;
+    width: 100%;
+    max-width: 450px;
+    background: #f9efdf;
+    border-radius: 10px;
+    box-shadow: 0 2px 3px 2px #644b37;
+    gap: 1rem;
+    overflow: hidden;
+}
+
+.player-identicon {
+    width: 48px;
+    margin: 1px 4px;
+    box-shadow: 0 0 1px 1px dimgray;
+}
+
+#opponent_id {
+    font-family: 'Courier New', Courier, monospace;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+
+.tool-cont i {
+    color: sandybrown;
+    font-size: 32px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    flex-grow: 1;
+}
+
+.tool-cont i:hover {
+    color: var(--saito-color-primary);
+}
+
+#status {
+    max-width: 72%;
+}
+
+.turn-shape {
+    box-sizing: border-box;
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    border: 2px solid;
+}
+
+
+
+
+.promotion-choices img.captured {
+    width: 50px;
+    border: 2px solid #999;
+    border-radius: 10px;
+    padding: 2px;
+    background-color: #ccc;
+    cursor: pointer;
+}
+
+.promotion-choices img:hover {
+    background-color: #222;
+}
+
+
+
+.popup-confirm-menu{
+    background-color: #644b37;
+    padding: 5px;
+    font-size: 18px;
+}
+.popup-confirm-menu div{
+    background-color: #f9efdf;
+    margin: 7px 0;
+    padding: 7px 5px;
+}
+.popup-confirm-menu .action:hover{
+    background-color: #fffff8;
+}
+
+.promotion-choices.popup-confirm-menu{
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 140px;
+    justify-content: space-evenly;
+}
+
+.popup-confirm-menu div.action.piece{
+    width: fit-content;
+}
+
+img.captured {
+    width: 25px;
+}
+
+.hidden{
+    visibility: hidden;
+}
+
+
+.status-text-menu ul li{
+    line-height: unset;
+}
+
+
+/* The letters numbers go in a 30px wide border, default 16px size
+*/
+.alpha-d2270 {
+    bottom: -24px;
+    right: 50%;
+    transform: translateX(50%);
+}
+
+.numeric-fc462 {
+    top: 50%;
+    left: -20px;
+    transform: translateY(-50%);
+}
+
+
+
+@media only screen and (max-width: 900px) and (orientation: portrait) {
+    .main{
+        padding: 25px;
+    }
+
+    #board {
+        max-width: 60vh;
+        width: 90%;
+    }
+
+    .board-b72b1{
+        border-width: 25px;
+    }
+
+    .alpha-d2270 {
+        bottom: -20px;
+        font-size: 14px;
+    }
+
+    .numeric-fc462 {
+        left: -16px;
+        font-size: 14px;
+    }
+
+    .controls-space {    
+        width: 100%;
+        max-width: 700px;
+        grid-template-columns: repeat(2, calc(50% - 4px));
+        grid-gap: 8px;
+        margin-top: 1rem;
+    }
+
+    .tool-cont {
+        width: 100%;
+        padding: 5px 10px;
+    }
+
+    .player-identicon {
+        width: 40px;
+        margin: 5px 4px;
+    }
+    .turn-shape {
+        width: 40px;
+        height: 40px;
+        margin: 5px;
+    }
+
+
+
+}
+
+@media only screen and (max-width: 525px) {
+    .main{
+        padding: 40px 5px;
+    }
+
+    #board {
+        width: 100%;
+        max-width: min(100vw, 60vh);
+        margin-top: 1rem;
+    }
+
+    .alpha-d2270 {
+        bottom: -15px;
+        font-size: 12px;
+    }
+
+    .numeric-fc462 {
+        left: -12px;
+        font-size: 12px;
+    }
+
+    .board-b72b1 {
+        border-width: 16px;
+    }
+
+    img.captured {
+        width: 6vw;
+    }
+
+    .controls-space {
+        width: 95%;
+        grid-template-rows: repeat(4, 1fr);
+        grid-template-columns: repeat(1, 1fr);
+        margin-top: 1rem;
+    }
+
+    .tool-cont {
+        width: 98%;
+        margin-top: 4px;
+        min-height: unset;
+    }
+
+    #identicon-cont{
+        display: none;
+    }
+    #commands-cont{
+        display: none;
+    }
+
+}
+
+@media only screen and (max-height: 525px) and (orientation:landscape){
+    .main{
+        padding: 5px 50px;
+    }
+
+   .board-b72b1{
+        border-width: 16px;
+    }
+
+    .alpha-d2270 {
+        bottom: -15px;
+        font-size: 12px;
+    }
+
+    .numeric-fc462 {
+        left: -12px;
+        font-size: 12px;
+    }
+
+
+}
+
+

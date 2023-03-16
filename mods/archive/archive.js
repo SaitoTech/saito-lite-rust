@@ -1,6 +1,16 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
+const saito = require('../../lib/saito/saito');
 const JSON = require('json-bigint');
 
+
+
+//
+// HOW THE ARCHIVE SAVES TXS
+//
+// modules call ---> app.storage.saveTransaction()
+//		---> submits TX to peers via "archive save" 
+// 		---> saves to DB with ID or TYPE
+//
 class Archive extends ModTemplate {
 
   constructor(app) {
@@ -28,14 +38,11 @@ class Archive extends ModTemplate {
 
   }
 
-
-
   returnServices() {
       let services = [];
       if (this.app.BROWSER == 0) { services.push({ service: "archive" }); }
       return services;
   }
-
 
   onConfirmation(blk, tx, conf, app) {
 
@@ -53,7 +60,6 @@ class Archive extends ModTemplate {
     }
   }
 
-
   async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
     if (tx == null) { return; }
@@ -66,30 +72,50 @@ class Archive extends ModTemplate {
     var response = {};
 
     //
-    // only handle archive request 
+    // saves TX containing archive insert instruction
     //
-    if (req.request === "archive") {
+    if (req.request === "archive insert") {
 
-console.log("...");
-console.log("...");
-console.log("THIS IS AN ARCHIVE REQUEST!");
-console.log("...");
-console.log("...");
-console.log("req is: "+ JSON.stringify(req));
+      let type = "";
+      if (req.type) { type = req.type; }
+      this.saveTransaction(tx, type);
+
+    }
+    //
+    // saves TX embedded in data
+    //
+    if (req.request === "archive save") {
+
+      let newtx = new saito.default.transaction();
+      newtx.deserialize_from_web(app, req.data);
+      let txmsg = newtx.returnMessage();
+
+      try {
+
+	let type = "";
+	if (txmsg.module) { type = txmsg.module;; }
+	if (req.type) { type = req.type; }
+
+        this.saveTransaction(newtx, type);
+
+      } catch (err) {}
+
+      mycallback(true);
+      return;
+
+    }
+    if (req.request === "archive") {
 
       if (req.data.request === "delete") {
         this.deleteTransaction(req.data.tx, req.data.publickey, req.data.sig);
       }
       if (req.data.request === "save") {
-        console.log("archive save");
         this.saveTransaction(req.data.tx, req.data.type);
       }
       if (req.data.request === "update") {
-        console.log("archive update");
         this.updateTransaction(req.data.tx);
       }
       if (req.data.request === "save_key") {
-        console.log("PeerRequest: save TX by Key");
         if (!req.data.key) { return; }
         this.saveTransactionByKey(req.data.key, req.data.tx, req.data.type);
       }
@@ -107,7 +133,6 @@ console.log("req is: "+ JSON.stringify(req));
       }
       if (req.data.request === "delete") {
         if (!req.data.publickey) { return; }
-        console.log("archive delete / purge");
         await this.deleteTransactions(req.data.type, req.data.publickey);
         response.err = "";
         response.txs = [];
@@ -127,7 +152,6 @@ console.log("req is: "+ JSON.stringify(req));
 	return;
       }
       if (req.data.request === "load_keys") {
-        console.log("PeerRequest: load TX by Keys");
         if (!req.data.keys) { return; }
         txs = await this.loadTransactionsByKeys(req.data);
         response.err = "";
@@ -136,13 +160,10 @@ console.log("req is: "+ JSON.stringify(req));
 	return;
       }
       if (req.data.request === "load_sig") {
-        console.log("PeerRequest: load TX by Sig");
         if (!req.data.sig) { return; }
-        console.log("PeerRequest: load TX by Sig 2");
         txs = await this.loadTransactionBySig(req.data.sig);
         response.err = "";
         response.txs = txs;
-console.log("TXS is the object returned!");
         mycallback(response);
 	return;
       }
@@ -175,7 +196,7 @@ console.log("TXS is the object returned!");
 
   async saveTransaction(tx=null, msgtype="") {
 
-console.log("SAVING TX");
+console.log("IN SAVE TRANSACTION IN ARCHIVE>JS");
 
     if (tx == null) { return; }
 
@@ -184,12 +205,14 @@ console.log("SAVING TX");
     let optional = {};
     if (tx.optional) { optional = tx.optional; }
 
+console.log("TXS to: " + tx.transaction.to.length);
+
     for (let i = 0; i < tx.transaction.to.length; i++) {
       sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
       params = {
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.to[i].add ,
-        $tx		:	JSON.stringify(tx.transaction) ,
+        $tx		:	tx.serialize_to_web(this.app) ,
         $optional	:	JSON.stringify(optional) ,
         $ts		:	tx.transaction.ts ,
         $preserve	:	0 ,
@@ -208,7 +231,7 @@ console.log("SAVING TX");
       params = {
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.from[i].add ,
-        $tx		:	JSON.stringify(tx.transaction) ,
+        $tx		:	tx.serialize_to_web(this.app) ,
         $optional	:	JSON.stringify(optional) ,
         $ts		:	tx.transaction.ts ,
         $preserve	:	0 ,
@@ -237,7 +260,7 @@ console.log("SAVING TX");
     for (let i = 0; i < tx.transaction.to.length; i++) {
       sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
       params = {
-        $tx		:	JSON.stringify(tx.transaction) ,
+        $tx		:	tx.serialize_to_web(this.app) ,
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.to[i].add ,
         $optional	:	JSON.stringify(optional) ,
@@ -247,7 +270,7 @@ console.log("SAVING TX");
     for (let i = 0; i < tx.transaction.from.length; i++) {
       sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
       params = {
-        $tx		:	JSON.stringify(tx.transaction) ,
+        $tx		:	tx.serialize_to_web(this.app) ,
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.from[i].add ,
         $optional	:	JSON.stringify(optional) ,
@@ -281,7 +304,7 @@ console.log("SAVING TX");
     let params = {
       $sig:		tx.transaction.sig,
       $publickey:	key,
-      $tx:		JSON.stringify(tx.transaction),
+      $tx:		tx.serialize_to_web(this.app) ,
       $optional: 	optional,
       $ts:		tx.transaction.ts,
       $preserve	:	0 ,
@@ -425,18 +448,13 @@ console.log("SAVING TX");
       let rows = await this.app.storage.queryDatabase(sql, params, "archive");
       let txs = [];
 
-console.log("ROWS: " + rows.length);
-
       if (rows?.length > 0) {
         for (let row of rows){
-console.log("push TX and optional!");
           txs.push({ tx : row.tx , optional : row.optional });
         }
       }
-console.log("TXS returned: " + txs.length);
       return txs;
     } catch (err) {
-console.log("ERROR WITH TXS returned");
       console.log(err);
       return [];
     }

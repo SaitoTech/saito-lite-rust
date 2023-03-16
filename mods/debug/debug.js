@@ -27,7 +27,7 @@ class Debug extends ModTemplate {
   respondTo(type) {
 
     if (type === "appspace") {
-      this.styles = ['/saito/lib/jsonTree/jsonTree.css', '/debug/css/appspace.css'];
+      this.styles = ['/saito/lib/jsonTree/jsonTree.css', '/debug/style.css'];
       super.render(this.app, this);
       return new DebugAppspaceMain(this.app, this);
     }

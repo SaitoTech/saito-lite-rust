@@ -1,137 +1,155 @@
 const JoinGameOverlay = require("./overlays/join-game");
 const InviteTemplate = require("./invite.template");
-const JSON = require("json-bigint");
+const InviteTemplateSparse = require("./invite.template.sparse");
+const JSON = require('json-bigint');
 
 class Invite {
-  constructor(app, mod, container = "", tx = null) {
+	
+  constructor(app, mod, container, type, tx=null) {
+
     this.app = app;
     this.mod = mod;
     this.container = container;
-
-    //Save a copy of the tx, though we parse it for info here
-    this.tx = tx;
+    this.type = type;
 
     //
-    // information may be stored in different places, so we
+    // information may be stored in different places, so we 
     // save these variables in our invite, and use the invite
     // version to display our overlay templates.
     //
-    this.game_id = "";
-    this.game_type = "standard game";
-    this.game_name = "";
-    this.game_slug = "";
-    this.game_mod = null;
-    this.game_status = "";
-    this.originator = null;
-    this.desired_opponent_publickeys = [];
-    this.options = {};
+    this.invite_data = { 
+      tx,
+      game_id: "",
+      game_name: "",
+      game_status: "",
+      originator: null,
+      players: [],
+      players_needed: 0,
+      desired_opponent_publickeys: [],
+      options: {}, 
+      game_mod: null,
+      game_slug: "",
+      game_type: "standard game",
+      winner: "",
+      method: "",
+      time_finished: 0,
+    };
 
-    if (this.tx) {
-      let txmsg = this.tx.returnMessage();
+    //
+    // if we have a valid tx, parse the data, so that the UI components have easy access to info to render
+    //
+    if (tx) {
 
-      if (txmsg.status) {
-        this.game_status = txmsg.status;
-      }
-      if (this.tx.transaction.sig) {
-        this.game_id = this.tx.transaction.sig;
-      }
-      if (txmsg.game_id) {
-        this.game_id = txmsg.game_id;
-      }
-      if (txmsg.name) {
-        this.game_name = txmsg.name;
-      }
-      if (!txmsg.name) {
-        this.game_name = txmsg.game;
-      }
-      if (txmsg.players) {
-        this.players = txmsg.players;
-      }
-      if (txmsg.players_needed) {
-        this.players_needed = txmsg.players_needed;
-      }
-      if (txmsg.desired_opponent_publickey) {
-        this.desired_opponent_publickeys.push(txmsg.desired_opponent_publickey);
-      }
+      let txmsg = tx.returnMessage();
 
-      this.game_mod = app.modules.returnModule(txmsg.game);
-      this.originator = txmsg.originator || null;
+      this.invite_data.game_id = tx.transaction.sig;
+      this.invite_data.game_name = txmsg.game;
+      this.invite_data.game_status = txmsg.request;
+      this.invite_data.originator = txmsg.originator;
+      this.invite_data.players = txmsg.players;
+      this.invite_data.players_needed = txmsg.players_needed;
 
-      this.game_slug = this.game_mod.returnSlug() || this.game_name.toLowerCase();
+      if (txmsg.winner) { this.invite_data.winner = txmsg.winner; }
+      if (txmsg.method) { this.invite_data.method = txmsg.method; }
+      if (txmsg.time_finished) { this.invite_data.time_finished = txmsg.time_finished; }
 
+      //We still don't know the exact data structures for specified invite(s)
+      //But it isn't going to be a single string pushed into an array!
+      if (txmsg.desired_opponent_publickey){
+        this.invite_data.desired_opponent_publickeys.push(txmsg.desired_opponent_publickey);  
+      }
+     
+      this.invite_data.options = txmsg.options;
+
+      let game_mod = app.modules.returnModule(txmsg.game);
+      if (game_mod) {
+        this.invite_data.game_mod = game_mod;
+        this.invite_data.game_slug = game_mod.returnSlug();  
+        this.invite_data.game_name = game_mod.returnName();  
+      } else {
+        this.invite_data.game_slug = this.invite_data.game_name.toLowerCase();
+      }
+      
       //
-      // crypto invites and games
+      //Figure out what kind of game invite for convenient display
       //
-      if (txmsg.options) {
-        this.options = txmsg.options;
-        if (txmsg.options.crypto) {
-          this.game_type = `${txmsg.options.crypto} invite`;
-          if (this.players_needed <= this.players.length) {
-            this.game_type = `${txmsg.options.crypto} game`;
-          }
-        }
+
+      //Custom Game
+
+      //Crypto Game
+      if (txmsg.options?.crypto) {
+        this.invite_data.game_type = `${txmsg.options.crypto} game`;
       }
+
+      //Invitation / Challenge ?
+      if (app.wallet.returnPublicKey() == txmsg.desired_opponent_publickey){
+       this.invite_data.game_type = "direct invite"; 
+      }
+
+      //League
+      if (txmsg.options?.league){
+        this.invite_data.game_type = "league game"; 
+      }
+
+      //Private (only shown to the originator)
+      if (txmsg.request === "private"){
+        this.invite_data.game_type = "private game"; 
+      }
+
+
     }
-
-    //
-    // private invites
-    //
-    /*if (mod.isMyGame(this.tx)) {
-      if (!mod.isJoined(tx, app.wallet.getPublicKey())) {
-        this.game_type = "private invite";
-      }
-      if (this.tx.transaction.to.length > 1) {
-        this.game_type = "private invite";
-      }
-      if (this.players_needed <= this.players.length) {
-        this.game_type = "private game";
-      }
-    }*/
 
     // calculate empty slots
-    if (this.players.length < this.players_needed) {
-      this.empty_slots = this.players_needed - this.players.length;
-    }
+    this.invite_data.empty_slots = Math.max(0, this.invite_data.players_needed - this.invite_data.players.length);
 
     // remove empty slots if any players are requested
-    if (this.game_type == "private invite") {
-      if (this.desired_opponent_publickeys.length != 0) {
-        this.empty_slots = this.empty_slots - this.desired_opponent_publickeys.length;
+    // because we will pre-fill in the invitees
+    if (this.invite_data.game_type == 'direct invite') {
+      if (this.invite_data.desired_opponent_publickeys.length > 0) {
+        this.invite_data.empty_slots = this.invite_data.empty_slots - this.invite_data.desired_opponent_publickeys.length;
       }
     }
+
   }
 
+
   render() {
-    if (this.debug) {
+    if (this.debug){
       console.log("Rendering Invite into: ", this.container);
     }
 
+    let html = "";
+    if (this.type == "sparse"){
+      html = InviteTemplateSparse(this.app, this.mod, this.invite_data);
+    }else{
+      html = InviteTemplate(this.app, this.mod, this.invite_data);
+    }
+
     if (this.container && document.querySelector(this.container)) {
-      this.app.browser.addElementToSelector(
-        InviteTemplate(this.app, this.mod, this),
-        this.container
-      );
+      this.app.browser.addElementToSelector(html, this.container);
     } else {
-      this.app.browser.replaceElementBySelector(
-        InviteTemplate(this.app, this.mod, this),
-        ".arcade-invites"
-      );
+      this.app.browser.replaceElementBySelector(html, ".arcade-invites");
     }
     this.attachEvents();
   }
 
+
   attachEvents() {
-    let qs = `#saito-game-${this.game_id}`;
+
+    let qs = `#saito-game-${this.invite_data.game_id}`;
 
     document.querySelector(qs).onclick = (e) => {
       e.stopImmediatePropagation();
 
-      let game_overlay = new JoinGameOverlay(this.app, this.mod, this);
+      this.app.browser.logMatomoEvent("GameInvite", this.invite_data.game_status, this.invite_data.game_mod.name);
+      let game_overlay = new JoinGameOverlay(this.app, this.mod, this.invite_data);
       game_overlay.render();
 
-      return;
+  	  return;
     };
+
   }
+
 };
 
 module.exports = Invite;

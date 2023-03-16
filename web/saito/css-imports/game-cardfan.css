@@ -137,6 +137,13 @@
 .staggered-hand>.card:nth-child(5){
   top: 16vh;
 }
+.staggered-hand>.card:nth-child(6){
+  top: 20vh;
+}
+.staggered-hand>.card:nth-child(7){
+  top: 24vh;
+}
+
 
 /** MOBILE STYLING FOR CARDFAN**/
 @media screen and (orientation: landscape) and (max-height: 600px) {

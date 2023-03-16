@@ -1,0 +1,172 @@
+.settings-appspace {
+  display: flex;
+  flex-direction: column;
+  row-gap: 3rem;
+  width: 95vw;
+  height: 80vh;
+  max-height: 80%;
+  overflow: auto;
+  background: var(--saito-background-color);
+  color: var(--saito-font-color);
+  padding: 2rem;
+}
+
+.settings-appspace-user-details {
+  display: grid;
+  grid-template-columns: minmax(8rem, auto) 1fr;
+  grid-column-gap: 1.5rem;
+  grid-row-gap: 1.5rem;
+  padding: 1rem;
+  border-radius: .5rem;
+  max-width: 100%;
+  overflow: auto;
+}
+
+.settings-appspace-user-details *{
+  height: 2.5rem;
+  line-height: 2.5rem;
+  max-width: 100%;
+}
+
+.settings-appspace-user-details .pubkey-containter{
+  justify-content: initial;
+}
+
+.settings-appspace-user-details .profile-public-key{
+  width: min-content;
+  margin-right: 1rem;
+}
+
+
+.settings-appspace-user-actions {
+  display: grid;
+  grid-gap: 0.5rem;
+}
+
+.settings-appspace-modules {
+  display: grid;
+  grid-gap: 1em;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  border-radius: .5rem;
+  padding: 1rem;
+}
+
+.settings-appspace-modules-modal {
+  display: grid;
+  grid-gap: 1em;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  border-radius: .5rem;
+  padding: 2rem 0 0 2rem;
+}
+
+.settings-appspace-modules-container {
+  margin-bottom: 4rem;
+}
+
+
+.settings-appspace-upload-button {
+  display: none;
+}
+
+.settings-appspace-app {
+  line-height: 2rem;
+  display: flex;
+  align-items: center;
+}
+
+.settings-appspace-app label {
+  text-transform: none;
+  font-size: 1.6rem;
+  margin-right: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 13rem;
+}
+
+.settings-appspace-installed-app {
+  line-height: 2rem;
+  display: flex;
+  align-items: center;
+}
+
+.settings-appspace-installed-app label {
+  text-transform: none;
+  font-size: 1.6rem;
+  margin-right: .5rem;
+}
+
+label.treated {
+  display: none;
+}
+
+.settings-appspace-versions-container {
+  margin-bottom: 4rem;
+}
+
+.settings-appspace-versions-container {}
+
+.settings-appspace-versions {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  margin-bottom: 2rem;
+  grid-column-gap: 1rem;
+  padding: 1rem;
+  grid-row-gap: 1.5rem;
+}
+
+.settings-appspace-icons {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 1.5rem;
+  padding: 2rem 1rem;
+  overflow: auto;
+}
+
+.settings-appspace-icons div, .settings-appspace-icons div a {
+  display: flex;
+  align-items: end;
+  cursor: pointer;
+}
+
+.settings-appspace-icons i {
+  color: var(--saito-primary);
+  font-size: 2rem;
+  margin: 0 1rem 0 0;
+}
+
+.settings-priv-key-text {
+  font-family: inherit !important;
+  overflow-y: clip;
+}
+
+
+@media only screen and (max-width: 768px) {
+  .settings-appspace {
+    padding: 1rem;
+  }
+
+}
+
+
+@media only screen and (max-width: 600px) {
+  .settings-appspace-modules {
+    grid-template-columns: 1fr 1fr;
+  }
+
+}
+
+
+
+
+.settings-appspace-debug-content {
+  margin: 1rem 0;
+  padding: 1rem 0;
+}
+
+/*json tree */
+
+.jsontree_node {
+  list-style: none;
+}

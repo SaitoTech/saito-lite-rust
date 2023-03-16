@@ -1,12 +1,11 @@
-var saito = require('../../lib/saito/saito');
-var GameTemplate = require('../../lib/templates/gametemplate');
+const OnePlayerGameTemplate = require('../../lib/templates/oneplayergametemplate');
 const BeleagueredGameRulesTemplate = require("./lib/beleaguered-game-rules.template");
 
 
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
-class Beleaguered extends GameTemplate {
+class Beleaguered extends OnePlayerGameTemplate {
 
   constructor(app) {
 
@@ -16,23 +15,12 @@ class Beleaguered extends GameTemplate {
     this.gamename = "Beleaguered Castle";
     this.slug = "beleaguered";
     this.description = 'Stack all cards by suit from aces to kings to win this game';
-    this.categories = "Games Cardgame one-player";
+    this.categories = "Games Cardgame One-player";
+    this.publisher_message = "Community-created game";
 
-    this.maxPlayers = 1;
-    this.minPlayers = 1;
     this.app = app;
     this.status = "Beta";
     this.sides = ["r", "l"];
-  }
-
-  // Create an exp league by default
-  respondTo(type) {
-    if (type == "default-league") {
-      let obj = super.respondTo(type);
-      obj.type = "exp";
-      return obj;
-    }
-    return super.respondTo(type);
   }
 
 
@@ -76,9 +64,7 @@ class Beleaguered extends GameTemplate {
 
   initializeHTML(app) {
     //console.trace("Initialize HTML");
-    if (!this.browser_active) {
-      return;
-    }
+    if (!this.browser_active) { return; }
 
     super.initializeHTML(app);
 
@@ -91,29 +77,28 @@ class Beleaguered extends GameTemplate {
       text: "Start New Game",
       id: "game-new",
       class: "game-new",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.endGame();
-        game_mod.newRound();
+        game_mod.prependMove("lose");
         game_mod.endTurn();
       }
     });
-    this.menu.addSubMenuOption("game-game", {
+    /*this.menu.addSubMenuOption("game-game", {
       text: "Play Mode",
       id: "game-play",
       class: "game-play",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.showSubSubMenu("game-play");
       }
     });
-
+    */
     this.menu.addMenuOption("game-info", "Info");
 
     this.menu.addSubMenuOption("game-info", {
       text: "How to Play",
       id: "game-intro",
       class: "game-intro",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(game_mod.returnGameRulesHTML());
       }
@@ -123,7 +108,7 @@ class Beleaguered extends GameTemplate {
       text: "Stats",
       id: "game-stats",
       class: "game-stats",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(game_mod.returnStatsHTML());
       }
@@ -134,22 +119,6 @@ class Beleaguered extends GameTemplate {
   }
 
 
-  returnState() {
-
-    let state = {};
-
-    state.round = 0;
-    state.wins = 0;
-
-    return state;
-
-  }
-
-  exitGame() {
-    this.updateStatusWithOptions("Saving game to the blockchain...");
-    this.prependMove("exit_game\t" + this.game.player);
-    this.endTurn();
-  }
 
   returnStatsHTML() {
     let html = `<div class="rules-overlay">
@@ -169,7 +138,7 @@ class Beleaguered extends GameTemplate {
     if (id.length === 6) {
       return "m";
     } else {
-      return id.substring(10, 11);
+      return id.substring(10,11);
     }
   }
 
@@ -180,14 +149,14 @@ class Beleaguered extends GameTemplate {
   }
 
   getSlotRow(id) {
-    return parseInt(id.substring(3, 4))
+    return parseInt(id.substring(3,4))
   }
 
   attachEventsToBoard() {
     let beleaguered_self = this;
 
     $('.slot').off();
-    $('.slot').on('click', function() {
+    $('.slot').on('click', function () {
 
       let slot = $(this).attr("id");
 
@@ -220,7 +189,7 @@ class Beleaguered extends GameTemplate {
             if (moveToSide !== "m") {
               beleaguered_self.game.outerMost[`${moveToSide}${moveToRow}`] = beleaguered_self.game.outerMost[`${moveToSide}${moveToRow}`] + 1;
             }
-
+            
             beleaguered_self.game.outerMost[`${moveFromSide}${moveFromRow}`] = beleaguered_self.game.outerMost[`${moveFromSide}${moveFromRow}`] - 1;
 
             beleaguered_self.game.selected = "";
@@ -284,7 +253,7 @@ class Beleaguered extends GameTemplate {
           continue;
         }
 
-        // if another outermost card is one greater than currently checked other outermost card,
+        // if another outermost card is one greater than currently checked other outermost card, 
         // add current card to available moves
         for (let j = 0; j < outerMost.length; j++) {
           let comparedCardSide = outerMost[j][0];
@@ -358,7 +327,7 @@ class Beleaguered extends GameTemplate {
       }
     }
     if (index > -1) {
-      this.game.availableMoves.splice(index, 1);
+      this.game.availableMoves.splice(index,1);
     }
   }
 
@@ -428,10 +397,10 @@ class Beleaguered extends GameTemplate {
       this.game.outerMost = []
       for (let i = 1; i <= 4; i++) {
         for (let s = 0; s < this.sides.length; s++) {
-          for (let j = 0; j <= 17; j++) {
+          for (let j = 0; j <= 17; j++) { 
             let position = `row${i}_slot_${this.sides[s]}${j}`;
             if (this.game.board[position] === "E") {
-              this.game.outerMost[`${this.sides[s]}${i}`] = j - 1;
+              this.game.outerMost[`${this.sides[s]}${i}`] = j-1;
               j = 18; // break the innermost loop
             }
           }
@@ -472,8 +441,14 @@ class Beleaguered extends GameTemplate {
 
       if (mv[0] === "win") {
         this.game.state.wins++;
-        this.endGame(this.app.wallet.getPublicKey());
-        this.newRound();
+        this.game.queue.push("round");
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${JSON.stringify([])}`);
+      }
+
+      if (mv[0] === "lose"){
+        this.game.state.losses++;
+        this.game.queue.push("round");
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);
       }
 
       if (mv[0] === "play") {
@@ -482,20 +457,6 @@ class Beleaguered extends GameTemplate {
           this.handToBoard();
           this.displayBoard();
           this.displayUserInterface();
-        }
-        return 0;
-      }
-
-      if (mv[0] === "exit_game") {
-        this.game.queue.splice(qe, 1);
-        let player = parseInt(mv[1])
-        this.removeAllAvailable();
-        this.saveGame(this.game.id);
-
-        if (this.game.player === player) {
-          super.exitGame();
-        } else {
-          this.updateStatus("Player has exited the building");
         }
         return 0;
       }
@@ -511,15 +472,6 @@ class Beleaguered extends GameTemplate {
         let temp = this.game.deck[0].hand[x];
         this.game.deck[0].hand[x] = this.game.deck[0].hand[y];
         this.game.deck[0].hand[y] = temp;
-        return 1;
-      }
-
-      //
-      // avoid infinite loops
-      //
-      if (shd_continue == 0) {
-        console.log("NOT CONTINUING");
-        return 0;
       }
 
     }
@@ -528,9 +480,7 @@ class Beleaguered extends GameTemplate {
 
   displayBoard() {
 
-    if (this.browser_active == 0) {
-      return;
-    }
+    if (this.browser_active == 0) { return; }
     for (let i in this.game.board) {
       let divname = '#' + i;
       $(divname).html(this.returnCardImageHTML(this.game.board[i]));
@@ -556,8 +506,8 @@ class Beleaguered extends GameTemplate {
   no status atm, but this is to update the hud
   */
   displayUserInterface() {
-    let html = '<span class="hidable">Place all cards ascending by number on their suit stacks to win the game.<br>' +
-      'Cards can be moved around on higher cards on the side stacks regardless of their suit. Any card can be placed on the empty side stack</span>';
+    let html = '<span class="hidable">Place all cards ascending by number on their suit stacks to win the game.<br>' + 
+    'Cards can be moved around on higher cards on the side stacks regardless of their suit. Any card can be placed on the empty side stack</span>';
 
     this.updateStatusWithOptions(html, '');
   }
@@ -565,10 +515,10 @@ class Beleaguered extends GameTemplate {
 
   returnCardImageHTML(name) {
     // return '<img src="/beleaguered/img/cards/C1.png"/>'
-    if (name[0] == 'E') {
+    if (name[0] == 'E') { 
       return "";
-    } else {
-      return '<img src="/beleaguered/img/cards/' + name + '.png" />';
+    } else { 
+      return '<img src="/beleaguered/img/cards/' + name + '.png" />'; 
     }
   }
 
@@ -592,16 +542,11 @@ class Beleaguered extends GameTemplate {
 
   cardSuitHTML(suit) {
     switch (suit) {
-      case "D":
-        return "&diams;"
-      case "H":
-        return "&hearts;"
-      case "S":
-        return "&spades;"
-      case "C":
-        return "&clubs;"
-      default:
-        return "";
+      case "D": return "&diams;"
+      case "H": return "&hearts;"
+      case "S": return "&spades;"
+      case "C": return "&clubs;"
+      default: return "";
     }
   }
 
@@ -612,18 +557,6 @@ class Beleaguered extends GameTemplate {
     return card.substring(1);
   }
 
-  resignGame(game_id = null, reason = "forfeit") {
-    console.log("Mark game as closed");
-    this.loadGame(game_id);
-    this.game.over = 2;
-    this.saveGame(game_id);
-    this.app.connection.emit("arcade-remove-game", game_id);
-  }
-
-  receiveGameoverRequest(blk, tx, conf, app) {
-    console.log("The game never ends in Beleaguered");
-    return;
-  }
 
 
 }

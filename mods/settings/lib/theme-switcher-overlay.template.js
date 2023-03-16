@@ -14,7 +14,7 @@ module.exports = ThemeSwitcherOverlayTemplate = (app, mod, theme_options, select
   }  
 
   let html = `
-    <div class="saito-modal saito-modal-menu" id="saito-user-menu">
+    <div class="saito-modal saito-modal-menu" id="saito-them-menu">
       <div class="saito-modal-content">
           ${options}
       </div>

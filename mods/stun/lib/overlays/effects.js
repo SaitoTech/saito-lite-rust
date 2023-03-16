@@ -18,11 +18,14 @@ class Effects {
 
     attachEvents() {
         try{
-           document.querySelector('#apply-blur-background').onclick = (e) => {
-            console.log('appying blur')
-            this.overlay.remove()
-               applyBlur(1); 
-           }
+            if( document.querySelector('#apply-blur-background')){
+                document.querySelector('#apply-blur-background').onclick = (e) => {
+                    console.log('appying blur')
+                    this.overlay.remove()
+                       applyBlur(1); 
+                   }
+            }
+         
         } catch(err){
             console.error(err);
         }

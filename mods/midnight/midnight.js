@@ -15,7 +15,7 @@ class Midnight extends GameTemplate {
     this.gamename = "Midnight Rogue";
 
     this.description = "Experimental Interactive Fiction demo";
-    this.categories = "Games Roleplaying Fiction one-player";
+    this.categories = "Games Roleplaying One-player";
     this.maxPlayers = 1;
     this.minPlayers = 1;
     this.app = app;

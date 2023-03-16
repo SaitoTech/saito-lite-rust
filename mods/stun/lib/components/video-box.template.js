@@ -1,8 +1,9 @@
-module.exports = (streamId, muted, ui_type) => {
+module.exports = (streamId, muted) => {
   return `
-    <div id="stream${streamId}"  class="${ui_type === "large" ? "video-box-container-large" : "video-box-container"}">
+    <div id="stream${streamId}"  class="video-box-container-large">
       <video ${muted ? "muted" : " "} autoplay playsinline="true" class="video-box"></video>
       <canvas id="output_canvas"></canvas>
+      <div id="reconnect-button"><button>reconnect</button> </div>
     </div>`
 
 }

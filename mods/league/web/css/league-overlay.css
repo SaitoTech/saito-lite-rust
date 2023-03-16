@@ -6,6 +6,14 @@
   border-radius: 0.5rem;
 }
 
+.league-join-email-note {
+  width: 50rem;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 2rem;
+  line-height: 2.8rem;
+}
+
 .league-overlay {
   padding: 2rem 1rem;
   display: flex;
@@ -45,9 +53,9 @@
 }
 
 .league-overlay-body {
-  display: grid;
-  grid-template-columns: 1fr 0.5fr;
-  grid-gap: 2rem;
+  display: flex;
+  gap: 2rem;
+  min-height: 25rem;
 }
 
 .league-error {
@@ -56,15 +64,25 @@
 }
 
 .league-overlay-body>div {
+  max-height: calc(90vh - 22rem);
+  flex-grow: 1;
+}
+
+.league-overlay-description, .league-overlay-league-body-games, .league-overlay-leaderboard {
   box-shadow: var(--saito-box-shadow) var(--saito-border-color);
   padding: 2rem;
   border-radius: 0.5rem;
-  max-height: calc(90vh - 22rem);
   overflow-y: auto;
 }
 
+.league-overlay-body-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 .league-overlay-header-image {
-  background-image: url(/saito/img/dreamscape.png);
+  background-image: url(/web/saito/img/dreamscape.png);
   background-size: cover;
   width: 11rem;
   height: 7rem;
@@ -74,31 +92,77 @@
 .league-overlay-description {
   font-size: 1.7rem;
   line-height: 2.3rem;
+  overflow: visible;
 }
 
 .league-overlay-league-body-games {
   display: flex;
   flex-direction: column;
   row-gap: 1rem;
+  flex-grow: 1;
+}
+
+.league_recent_game {
+  display: grid;
+  grid-template-columns: auto 25rem auto;
+  grid-gap: 1rem;
 }
 
 .league_recent_player {
-  width: 20rem;
+  max-width: 27rem;
   overflow: hidden;
   display: inline-block;
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: bottom;
 }
 
-.league-overlay-league-body-games-list .saito-table {
-  overflow-y: scroll;
-  max-height: 25vh;
-
+.league_recent_players_list {
+  display: flex;
+  flex-direction: row;
+  column-gap: 1rem;
 }
 
-@media screen and (max-width: 1000px) { 
+.league_recent_players_list_item {
+  display: flex;
+  flex-direction: row;
+}
+
+.league-overlay-games-list .saito-table {
+  overflow-y: scroll;
+}
+
+.league_recent_player{
+  position: relative;
+  overflow: visible;
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.league_recent_player.winner::before{
+    content: "♕";
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    position: absolute;
+    top: -1.1rem;
+    right: -1rem;
+    font-size: 30px;
+    font-weight: 900;
+    color: var(--saito-red);
+    text-shadow: 0px 0px 3px var(--saito-white);
+}
+
+.league_recent_game div{
+  align-self: center;
+}
+
+.league-overlay-leaderboard{
+  min-width: min(40rem, 100%);
+}
+
+@media screen and (max-width: 1000px) {
   .league-overlay-body {
     display: flex;
     flex-direction: column;
@@ -108,7 +172,6 @@
     margin: 0 !important;
     padding: 1px 1rem;
   }
-
   .league-overlay-body>div {
     max-height: unset;
     overflow-y: unset;

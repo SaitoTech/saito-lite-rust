@@ -16,7 +16,7 @@
   position: relative;
   /* top: -50rem; */
   border: 1px solid var(--saito-border-color);
-  border-radius: 0 0 5px 5px;
+  border-radius: 0.5rem;
   padding: 1em;
   color: var(--saito-font-color);
   display: flex;
@@ -24,7 +24,7 @@
   gap: 2rem;
 }
 
-#saito-alert-buttons {
+#saito-alert-buttons, #alert-buttons {
   display: flex;
   flex-direction: row;
   gap: 1rem;
@@ -46,7 +46,11 @@
 }
 
 @media screen and (max-width: 740px) {
-  #saito-alert-buttons {
+  #saito-alert-buttons, #alert-buttons {
     flex-direction: column;
   }
+  #saito-alert-buttons button, #alert-buttons button {
+    width: 100%;
+  }
+
 }

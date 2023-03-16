@@ -15,7 +15,7 @@ class SaitoRun extends GameTemplate {
     this.gamename        = "SaitoRun";
     this.slug            = "saitorun";
     this.description     = 'Collect cubes and navigate through obstacles to get highest possible score!';
-    this.categories      = "action games";
+    this.categories      = "Games Arcadegame One-player";
     this.request_no_interrupts = true; // don't popup chat
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
@@ -27,8 +27,9 @@ class SaitoRun extends GameTemplate {
   respondTo(type){
     if (type == "default-league") {
       let obj = super.respondTo(type);
-      obj.type = "exp";
-      return obj;
+      obj.ranking_algorithm = "EXP";
+      obj.default_score = 0;
+     return obj;
     }
     return super.respondTo(type);
   }

@@ -1,6 +1,6 @@
-const LeagueWizard = require("./components/league-wizard");
-const LeagueMainTemplate = require("./main.template");
-const LeagueComponentExistingLeague = require("./components/existing-league");
+const LeagueWizard = require("./overlays/league-wizard");
+const LeagueMainTemplate    = require("./main.template");
+const LeagueMenu = require("./menu");
 
 class LeagueMain {
 
@@ -10,7 +10,10 @@ class LeagueMain {
     this.mod = mod;
     this.wizard = null;
 
-    app.connection.on("league-add-league", (league) => {
+    app.connection.on("leagues-render-request", (league) => {
+      this.render();
+    });
+    app.connection.on("league-render-request", (league) => {
       this.render();
     });
 
@@ -28,33 +31,35 @@ class LeagueMain {
       this.app.browser.addElementToDom(LeagueMainTemplate());
     }
 
+    let leagues = this.mod.leagues;
 
-    let leagues = this.mod.filterLeagues(this.app, false);
-
-    let filter1 = leagues.filter(l => l.admin == this.app.wallet.getPublicKey());
-    let filter2 = leagues.filter(l => l.myRank > 0 && l.admin != this.app.wallet.getPublicKey());
-    let filter3 = leagues.filter(l => l.myRank <= 0 && l.admin != this.app.wallet.getPublicKey());
+    let filter1 = leagues.filter(l => l.admin == this.app.wallet.returnPublicKey());
+    let filter2 = leagues.filter(l => l.myRank > 0 && l.admin != this.app.wallet.returnPublicKey());
+    let filter3 = leagues.filter(l => l.myRank <= 0 && l.admin != this.app.wallet.returnPublicKey());
 
     if (filter1.length > 0) {
-      filter1.forEach((game) => {
-        LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-admin");
+      filter1.forEach((lg) => {
+        let x = new LeagueMenu(this.app, this.mod, ".leagues-for-admin" , lg);
+        x.render();
       });
     }
 
     if (filter2.length > 0) {
-      filter2.forEach((game) => {
-        LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-play");
+      filter2.forEach((lg) => {
+        let x = new LeagueMenu(this.app, this.mod, ".leagues-for-play" , lg);
+        x.render();
       });
     }
 
     if (filter3.length > 0) {
-      filter3.forEach((game) => {
-        LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-join");
+      filter3.forEach((lg) => {
+        let x = new LeagueMenu(this.app, this.mod, ".leagues-for-play" , lg);
+        x.render();
       });
     }
 
     this.attachEvents();
-    LeagueComponentExistingLeague.attachEvents(this.app, this.mod);
+
   }
 
 
@@ -63,20 +68,19 @@ class LeagueMain {
     if (document.getElementById('create-new-league')) {
       document.getElementById('create-new-league').onclick = () => {
 
-        this.app.connection.emit("arcade-launch-game-selector", {
-          callback: (obj) => {
-            if (this.wizard != null) {
-              delete this.wizard;
-            }
-            let game_mod = this.app.modules.returnModuleByName(obj.game);
-            this.wizard = new LeagueWizard(this.app, this.mod, game_mod);
+        this.app.connection.emit("arcade-launch-game-selector", { 
+	  callback : (obj) => {
+    	    if (this.wizard != null) { delete this.wizard; }
+	    let game_mod = this.app.modules.returnModuleByName(obj.game);
+	    this.wizard = new LeagueWizard(this.app, this.mod, game_mod);
             this.wizard.render();
-          }
-        });
+	  }
+	});
 
       }
     }
   }
+
 
 
 }

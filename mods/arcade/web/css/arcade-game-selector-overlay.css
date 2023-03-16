@@ -18,7 +18,8 @@
   height: 20rem;
   max-width: 30rem;
   max-height: 30rem;
-  opacity: 0.9;
+  border: 1px solid var(--saito-border-color);
+  position: relative;
 }
 
 .arcade-game-selector-game:hover {
@@ -26,13 +27,13 @@
 }
 
 .arcade-game-selector-game-title {
-  position: relative;
+  position: absolute;
   height: 6rem;
   background-color: #000A;
   overflow-x: hide;
   color: white;
   width: 100%;
-  top: -20rem;
+  top: 0;
   left: 0px;
   padding: 1.6rem;
   font-size: 2.5rem;

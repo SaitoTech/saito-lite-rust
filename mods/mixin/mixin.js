@@ -10,8 +10,10 @@ const axios = require('axios');
 const { sharedKey: sharedKey } = require('curve25519-js');
 const LittleEndian = require('int64-buffer');
 const JSON = require("json-bigint");
-
 const MixinAppspaceSidebar = require('./lib/appspace-sidebar/main');
+const MixinDeposit = require('./lib/appspace/mixin-deposit');
+const MixinWithdraw = require('./lib/appspace/mixin-withdraw.js');
+const MixinHistory = require('./lib/appspace/mixin-history');
 
 class Mixin extends ModTemplate {
 
@@ -26,27 +28,27 @@ class Mixin extends ModTemplate {
     this.categories = "Finance Utilities";
     this.icon = "fas fa-wallet";
 
-    this.stylesheets = ['/mixin/css/appspace.css'];
+    this.stylesheets = ['/mixin/style.css'];
 
     this.mixin = {};
-    this.mixin.app_id = "";
-    this.mixin.user_id = "";
-    this.mixin.session_id = "";
-    this.mixin.full_name = "";
-    this.mixin.publickey = "";
-    this.mixin.privatekey = "";
-    this.mixin.pin_token = "";
+    this.mixin.app_id 		= "";    
+    this.mixin.user_id 		= "";    
+    this.mixin.session_id 	= "";    
+    this.mixin.full_name	= "";
+    this.mixin.publickey 	= "";
+    this.mixin.privatekey 	= "";
+    this.mixin.pin_token	= "";
     this.mixin.pin_token_base64 = "";
-    this.mixin.pin = "";
+    this.mixin.pin		= "";
 
     this.account_created = 0;
 
-    this.mods = [];
-    this.addresses = [];
-    this.withdrawals = [];
-    this.deposits = [];
+    this.mods		= [];
+    this.addresses      = [];
+    this.withdrawals    = [];
+    this.deposits       = [];
 
-    this.styles = ['/mixin/css/appspace.css'];
+    //this.styles = ['/mixin/css/appspace.css'];
   }
 
 
@@ -55,26 +57,25 @@ class Mixin extends ModTemplate {
     this.loadCryptos();
   }
 
-
+  
   canRenderInto(qs) {
-    if (qs === ".saito-main") {
-      return true;
-    }
+//
+// FEB 16
+//    
+//    if (qs === ".saito-main") { return true; }
     return false;
   }
 
   renderInto(qs) {
-
-    if (qs == ".saito-main") {
+    if (qs == ".saito-header") {
       if (!this.renderIntos[qs]) {
 
         this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new MixinAppspace(this.app, this, qs));
-
+        this.renderIntos[qs].push(new MixinDeposit(this.app, this));
+        this.renderIntos[qs].push(new MixinWithdraw(this.app, this));
+        this.renderIntos[qs].push(new MixinHistory(this.app, this));
+      
         this.attachStyleSheets();
-        this.renderIntos[qs].forEach((comp) => {
-          comp.render();
-        });
       }
     }
   }
@@ -84,28 +85,24 @@ class Mixin extends ModTemplate {
   // flexible inter-module-communications
   //
   respondTo(type = "") {
-    if (type === 'saito-header') {
-      console.log("INSIDE MIXIN RESPONDTO");
-
-      return [{
-        text: "Wallet",
-        icon: this.icon,
-        allowed_mods: ["redsquare"],
-        callback: function(app, id) {
-          window.location = "/redsquare#wallet";
-        }
-      }]
-    }
-
+    // if (type === 'saito-header') {
+    //   return [{
+    //     text: "Wallet",
+    //     icon: this.icon,
+    //     allowed_mods: ["redsquare"],
+    //     callback: function (app, id) {
+    //       window.location = "/redsquare#wallet";
+    //     }
+    //   }]
+    // }
     return null;
   }
 
 
-  async handlePeerTransaction(app, tx = null, peer, mycallback) {
 
-    if (tx == null) {
-      return;
-    }
+  async handlePeerTransaction(app, tx=null, peer, mycallback) {
+
+    if (tx == null) { return; }
     let message = tx.returnMessage();
 
     //
@@ -118,8 +115,8 @@ class Mixin extends ModTemplate {
 
       if (app.BROWSER == 0) {
 
-        m = JSON.parse(process.env.MIXIN);
-
+       m = JSON.parse(process.env.MIXIN);
+        
         if (m.appId) {
 
           let method = "POST";
@@ -136,11 +133,9 @@ class Mixin extends ModTemplate {
           try {
             this.request(appId, sessionId, privateKey, method, uri, body).then(
               (res) => {
-                let d = res.data;
-                // send response to browser
-                if (mycallback) {
-                  mycallback(d);
-                }
+		let d = res.data;
+		// send response to browser
+		if (mycallback) { mycallback(d); }
               }
             );
           } catch (err) {
@@ -150,6 +145,7 @@ class Mixin extends ModTemplate {
       }
     }
   }
+
 
 
   loadCryptos() {
@@ -163,18 +159,15 @@ class Mixin extends ModTemplate {
       this.app.modules.mods.push(crypto_module);
       let pc = this.app.wallet.returnPreferredCryptoTicker();
       if (mixin_self.mixin.user_id !== "" || (pc !== "SAITO" && pc !== "")) {
-        this.checkBalance(crypto_module.asset_id, function(res) {
-        });
-        this.fetchAddresses(crypto_module.asset_id, function(res) {
-        });
-        this.fetchDeposits(crypto_module.asset_id, crypto_module.ticker, function(res) {
-        });
+        this.checkBalance(crypto_module.asset_id, function(res) {});
+        this.fetchAddresses(crypto_module.asset_id, function(res) {});
+        this.fetchDeposits(crypto_module.asset_id, crypto_module.ticker, function(res) {});
       }
     });
 
   }
 
-
+  
   ///////////
   // MIXIN //
   ///////////
@@ -185,19 +178,19 @@ class Mixin extends ModTemplate {
   // createAccount(callback);
   // fetchDeposits(asset_id, callback)
   // fetchAddresses(asset_id, callback)
-  // doesWithdrawalAddressExist(asset_id, address_id_or_withdrawal_address)
+  // doesWithdrawalAddressExist(asset_id, address_id_or_withdrawal_address) 
   // sendInNetworkTransferRequest(asset_id, address_id, amount, unique_hash, callback);
   // sendWithdrawalRequest(asset_id, address_id, address, amount, unique_hash, callback)
   // updateUserPin(new_pin, callback)
   //
 
-
+ 
   //
   // DEPOSITS
   //
   // https://developers.mixin.one/docs/api/transfer/snapshots
   //
-  fetchDeposits(asset_id, ticker, callback = null) {
+  fetchDeposits(asset_id, ticker, callback=null) {
 
     const appId = this.mixin.user_id;
     const sessionId = this.mixin.session_id;
@@ -213,8 +206,8 @@ class Mixin extends ModTemplate {
           let d = res.data;
           for (let i = 0; i < d.data.length; i++) {
             /********************************************
-             "amount":     "-1688168",
-             "asset": {
+	    "amount":     "-1688168",
+	    "asset": {
 	      "asset_id": "965e5c6e-434c-3fa9-b780-c50f43cd955c",
 	      "chain_id": "43d61dcd-e413-450d-80b8-101d5e903357",
 	      "icon_url": "https://images.mixin.one/0sQY63dDMkWTURkJVjowWY6Le4ICjAFuu3ANVyZA4uI3UdkbuOT5fjJUT82ArNYmZvVcxDXyNjxoOv0TAYbQTNKS=s128",
@@ -222,36 +215,34 @@ class Mixin extends ModTemplate {
 	      "symbol":   "CNB",
 	      "type":     "asset"
 	    },
-             "created_at": "2018-05-29T09:31:04.202186212Z",
-             "data":       "",
-             "snapshot_id":"529934b0-abfd-43ab-9431-1805773000a4",
-             "source":     "TRANSFER_INITIALIZED",
-             "type":       "snapshot",      // Options only for user (or App) who has access.
-             // 4 private fields that only be returend with correct permission
-             "user_id":    "06aed1e3-bd77-4a59-991a-5bb5ae6fbb09",
-             "trace_id":   "7c67e8e8-b142-488b-80a3-61d4d29c90bf",
-             "opponent_id":"a465ffdb-4441-4cb9-8b45-00cf79dfbc46",
-             "data":       "Transfer!"
-             *********************************************/
-            let contains_transfer = 0;
-            for (let z = 0; z < this.deposits.length; z++) {
-              if (d.data[i].trace_id === this.deposits[z].trace_id) {
-                contains_transfer = 1;
-              }
+	    "created_at": "2018-05-29T09:31:04.202186212Z",
+	    "data":       "",
+	    "snapshot_id":"529934b0-abfd-43ab-9431-1805773000a4",
+	    "source":     "TRANSFER_INITIALIZED",
+	    "type":       "snapshot",      // Options only for user (or App) who has access.
+	    // 4 private fields that only be returend with correct permission
+	    "user_id":    "06aed1e3-bd77-4a59-991a-5bb5ae6fbb09",
+	    "trace_id":   "7c67e8e8-b142-488b-80a3-61d4d29c90bf",
+	    "opponent_id":"a465ffdb-4441-4cb9-8b45-00cf79dfbc46",
+	    "data":       "Transfer!"
+            *********************************************/
+      	    let contains_transfer = 0;
+      	    for (let z = 0; z < this.deposits.length; z++) {
+      	      if (d.data[i].trace_id === this.deposits[z].trace_id) {
+      	        contains_transfer = 1;
+      	      }
             }
             if (contains_transfer === 0) {
-              this.deposits.push(d.data[i]);
+      	      this.deposits.push(d.data[i]);
 
               ticker = (typeof ticker == 'undefined') ? '' : ticker;
 
               if (d.data[i].closing_balance > d.data[i].opening_balance) {
-                siteMessage('Recieved new funds in ' + ticker + ' wallet', 3000);
+                siteMessage('Recieved new funds in '+ ticker +' wallet', 3000);
               }
-            }
+      	    }
           }
-          if (callback) {
-            callback(res.data);
-          }
+          if (callback) { callback(res.data); }
         }
       );
     } catch (err) {
@@ -260,7 +251,7 @@ class Mixin extends ModTemplate {
   }
 
 
-  fetchAddresses(asset_id, callback = null) {
+  fetchAddresses(asset_id, callback=null) {
 
     const appId = this.mixin.user_id;
     const sessionId = this.mixin.session_id;
@@ -272,34 +263,32 @@ class Mixin extends ModTemplate {
     try {
       this.request(appId, sessionId, privateKey, method, uri).then(
         (res) => {
-          console.log(res.data);
-          let d = res.data;
-          for (let i = 0; i < d.data.length; i++) {
-            /********************************************
-             "type":       "address",
-             "address_id": "e1524f3c-2e4f-411f-8a06-b5e1b1601308",
-             "asset_id":   "43d61dcd-e413-450d-80b8-101d5e903357",
-             "destination":"0x86Fa049857E0209aa7D9e616F7eb3b3B78ECfdb0",
-             "tag":        "",
-             "label":      "Eth Address",
-             "fee":        "0.016",
-             "reserve":    "0",
-             "dust":       "0.0001",
-             "updated_at": "2018-07-10T03:58:17.5559296Z"
-             *********************************************/
-            let contains_address = 0;
-            for (let z = 0; z < this.addresses.length; z++) {
-              if (this.addresses[z].destination === d.data[i].destination) {
-                contains_address = 1;
-              }
-            }
-            if (contains_address == 0) {
-              this.addresses.push(d.data[i]);
-            }
-          }
-          if (callback) {
-            callback(res.data);
-          }
+console.log(res.data);
+	  let d = res.data;
+	  for (let i = 0; i < d.data.length; i++) {
+	    	/********************************************
+    		  "type":       "address",
+    		  "address_id": "e1524f3c-2e4f-411f-8a06-b5e1b1601308",
+    		  "asset_id":   "43d61dcd-e413-450d-80b8-101d5e903357",
+    		  "destination":"0x86Fa049857E0209aa7D9e616F7eb3b3B78ECfdb0",
+    		  "tag":        "",
+    		  "label":      "Eth Address",
+    		  "fee":        "0.016",
+    		  "reserve":    "0",
+    		  "dust":       "0.0001",
+    		  "updated_at": "2018-07-10T03:58:17.5559296Z"
+		*********************************************/
+	    let contains_address = 0;
+	    for (let z = 0; z < this.addresses.length; z++) {
+	      if (this.addresses[z].destination === d.data[i].destination) {
+		contains_address = 1;
+	      }
+	    }
+	    if (contains_address == 0) {
+	      this.addresses.push(d.data[i]);
+	    }
+	  }
+	  if (callback) { callback(res.data); }
         }
       );
     } catch (err) {
@@ -307,7 +296,7 @@ class Mixin extends ModTemplate {
     }
   }
 
-  fetchSnapshots(asset_id = "", order = "DESC", limit = 20, callback = null) {
+  fetchSnapshots(asset_id="", order="DESC", limit=20, callback=null) {
 
     let appId = this.mixin.user_id;
     let sessionId = this.mixin.session_id;
@@ -315,19 +304,17 @@ class Mixin extends ModTemplate {
 
     let method = "GET";
     let uri = `/snapshots?limit=${limit}&order=${order}`;
-    if (asset_id !== "") {
-      url += `&asset=${asset_id}`;
-    }
+    if (asset_id !== "") { url += `&asset=${asset_id}`; }
 
     try {
       this.request(appId, sessionId, privateKey, method, uri).then(
         (res) => {
-          console.log(res.data);
-          let d = res.data;
-          for (let i = 0; i < d.data.length; i++) {
-            /*******************************************
-             "amount":     "-1688168",
-             "asset": {
+console.log(res.data);
+	  let d = res.data;
+	  for (let i = 0; i < d.data.length; i++) {
+	    /*******************************************
+	    "amount":     "-1688168",
+	    "asset": {
 	      "asset_id": "965e5c6e-434c-3fa9-b780-c50f43cd955c",
 	      "chain_id": "43d61dcd-e413-450d-80b8-101d5e903357",
 	      "icon_url": "https://images.mixin.one/0sQY63dDMkWTURkJVjowWY6Le4ICjAFuu3ANVyZA4uI3UdkbuOT5fjJUT82ArNYmZvVcxDXyNjxoOv0TAYbQTNKS=s128",
@@ -335,44 +322,38 @@ class Mixin extends ModTemplate {
 	      "symbol":   "CNB",
 	      "type":     "asset"
 	    },
-             "created_at": "2018-05-29T09:31:04.202186212Z",
-             "data":       "",
-             "snapshot_id":"529934b0-abfd-43ab-9431-1805773000a4",
-             "source":     "TRANSFER_INITIALIZED",
-             "type":       "snapshot",      // Options only for user (or App) who has access.
-             // 4 private fields that only be returend with correct permission
-             "user_id":    "06aed1e3-bd77-4a59-991a-5bb5ae6fbb09",
-             "trace_id":   "7c67e8e8-b142-488b-80a3-61d4d29c90bf",
-             "opponent_id":"a465ffdb-4441-4cb9-8b45-00cf79dfbc46",
-             "data":       "Transfer!"
-             *******************************************/
-          }
-          ;
-          if (callback) {
-            callback(res.data);
-          }
+	    "created_at": "2018-05-29T09:31:04.202186212Z",
+	    "data":       "",
+	    "snapshot_id":"529934b0-abfd-43ab-9431-1805773000a4",
+	    "source":     "TRANSFER_INITIALIZED",
+	    "type":       "snapshot",      // Options only for user (or App) who has access.
+	    // 4 private fields that only be returend with correct permission
+	    "user_id":    "06aed1e3-bd77-4a59-991a-5bb5ae6fbb09",
+	    "trace_id":   "7c67e8e8-b142-488b-80a3-61d4d29c90bf",
+	    "opponent_id":"a465ffdb-4441-4cb9-8b45-00cf79dfbc46",
+	    "data":       "Transfer!"
+	    *******************************************/
+	  };
+          if (callback) { callback(res.data); }
         }
       );
     } catch (err) {
       console.log("ERROR: Mixin error sending network request: " + err);
+      callback(false);
     }
   }
 
   doesWithdrawalAddressExist(asset_id, address) {
     for (let i = 0; i < this.addresses.length; i++) {
       if (this.addresses[i].asset_id === asset_id) {
-        if (this.addresses[i].address_id === address) {
-          return 1;
-        }
-        if (this.addresses[i].destination === address) {
-          return 1;
-        }
+        if (this.addresses[i].address_id === address) { return 1; }
+        if (this.addresses[i].destination === address) { return 1; }
       }
     }
     return 0;
   }
 
-  createWithdrawalAddress(asset_id, withdrawal_address, label = "", tag = "", callback = null) {
+  createWithdrawalAddress(asset_id, withdrawal_address, label="", tag="", callback=null) {
 
     let appId = this.mixin.user_id;
     let sessionId = this.mixin.session_id;
@@ -382,36 +363,34 @@ class Mixin extends ModTemplate {
     const uri = '/addresses';
 
     const body = {
-      asset_id: asset_id,
-      label: `Withdrawal Address`,
-      destination: withdrawal_address,
-      tag: tag,
-      pin: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey),
+      asset_id		: asset_id ,
+      label		: `Withdrawal Address` ,
+      destination	: withdrawal_address ,
+      tag		: tag ,
+      pin 		: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey) ,
     };
 
     try {
       this.request(appId, sessionId, privateKey, method, uri, body).then(
         (res) => {
-          console.log("WITHDRAWAL REQUEST ADDED: ");
-          console.log(res.data);
-          /********************************************
-           "type":       "address",
-           "address_id": "e1524f3c-2e4f-411f-8a06-b5e1b1601308",
-           "asset_id":   "43d61dcd-e413-450d-80b8-101d5e903357",
-           "destination":"0x86Fa049857E0209aa7D9e616F7eb3b3B78ECfdb0",
-           "tag":        "",
-           "label":      "Eth Address",
-           "fee":        "0.016",
-           "reserve":    "0",
-           "dust":       "0.0001",
-           "updated_at": "2018-07-10T03:58:17.5559296Z"
-           *********************************************/
-          let d = res.data;
-          this.addresses.push(d.data);
-          if (callback) {
-            callback(res.data);
-          }
-        }
+	  console.log("WITHDRAWAL REQUEST ADDED: ");
+	  console.log(res.data);
+	    	/********************************************
+    		  "type":       "address",
+    		  "address_id": "e1524f3c-2e4f-411f-8a06-b5e1b1601308",
+    		  "asset_id":   "43d61dcd-e413-450d-80b8-101d5e903357",
+    		  "destination":"0x86Fa049857E0209aa7D9e616F7eb3b3B78ECfdb0",
+    		  "tag":        "",
+    		  "label":      "Eth Address",
+    		  "fee":        "0.016",
+    		  "reserve":    "0",
+    		  "dust":       "0.0001",
+    		  "updated_at": "2018-07-10T03:58:17.5559296Z"
+		*********************************************/
+	  let d = res.data;
+	  this.addresses.push(d.data);
+	  if (callback) { callback(res.data); }
+	}
       );
     } catch (err) {
       console.log("ERROR: Mixin error sending network request: " + err);
@@ -419,7 +398,7 @@ class Mixin extends ModTemplate {
   }
 
 
-  sendInNetworkTransferRequest(asset_id, address_id, amount, unique_hash = "", callback = null) {
+  sendInNetworkTransferRequest(asset_id, address_id, amount, unique_hash="", callback=null) {
 
     let appId = this.mixin.user_id;
     let sessionId = this.mixin.session_id;
@@ -428,24 +407,22 @@ class Mixin extends ModTemplate {
     let method = "POST";
     let uri = '/transfers';
     let body = {
-      asset_id: asset_id,
-      opponent_id: address_id,
-      amount: amount,
-      pin: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey),
-      trace_id: getUuid(unique_hash),
-      memo: "",
+      asset_id		: asset_id ,
+      opponent_id	: address_id ,
+      amount		: amount ,
+      pin 		: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey) ,
+      trace_id		: getUuid(unique_hash) ,
+      memo		: "",
     };
 
     try {
       this.request(appId, sessionId, privateKey, method, uri, body).then(
         (res) => {
-          console.log("WITHDRAWAL REQUEST SUBMITTED: ");
-          console.log(res.data);
-          let d = res.data;
-          this.withdrawals.push(d.data);
-          if (callback) {
-            callback(res.data);
-          }
+console.log("WITHDRAWAL REQUEST SUBMITTED: ");
+console.log(res.data);
+	  let d = res.data;
+	  this.withdrawals.push(d.data);
+	  if (callback) { callback(res.data); }
         }
       );
 
@@ -454,7 +431,7 @@ class Mixin extends ModTemplate {
     }
   }
 
-  sendWithdrawalRequest(asset_id, address_id, address, amount, unique_hash = "", callback = null) {
+  sendWithdrawalRequest(asset_id, address_id, address, amount, unique_hash="", callback=null) {
 
     let appId = this.mixin.user_id;
     let sessionId = this.mixin.session_id;
@@ -464,23 +441,21 @@ class Mixin extends ModTemplate {
     const uri = '/withdrawals';
 
     const body = {
-      address_id: address_id,
-      amount: amount,
-      trace_id: getUuid(unique_hash),
-      pin: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey),
+      address_id	: address_id ,
+      amount		: amount ,
+      trace_id		: getUuid(unique_hash) ,
+      pin 		: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey) ,
     };
-    console.log("AAAA 3");
+console.log("AAAA 3");
 
     try {
       this.request(appId, sessionId, privateKey, method, uri, body).then(
         (res) => {
-          console.log("WITHDRAWAL REQUEST SUBMITTED: ");
-          console.log(res.data);
-          let d = res.data;
-          this.withdrawals.push(d.data);
-          if (callback) {
-            callback(res.data);
-          }
+console.log("WITHDRAWAL REQUEST SUBMITTED: ");
+console.log(res.data);
+	  let d = res.data;
+	  this.withdrawals.push(d.data);
+	  if (callback) { callback(res.data); }
         }
       );
     } catch (err) {
@@ -489,7 +464,7 @@ class Mixin extends ModTemplate {
   }
 
 
-  checkWithdrawalFee(asset_id, callback = null) {
+  checkWithdrawalFee(asset_id, callback=null) {
     //
     // CHECK BALANCE
     //
@@ -505,20 +480,20 @@ class Mixin extends ModTemplate {
     try {
       this.request(appId, sessionId, privateKey, method, uri).then(
         (res) => {
-          let d = res.data.data;
-          for (let i = 0; i < this.mods.length; i++) {
-            if (this.mods[i].asset_id === asset_id) {
+	  let d = res.data.data;
+	  for (let i = 0; i < this.mods.length; i++) {
+	    if (this.mods[i].asset_id === asset_id) {
 
-              if (d.type && d.amount) {
-                if (callback) {
-                  callback(d.amount);
-                }
-              }
+	      if (d.amount) {
+	        if (callback) {
+		  callback(d.amount);
+	        }
+	      }
 
-              return;
+	      return;
 
-            }
-          }
+	    }
+	  }
         }
       );
     } catch (err) {
@@ -527,7 +502,7 @@ class Mixin extends ModTemplate {
   }
 
 
-  checkBalance(asset_id, callback = null) {
+  checkBalance(asset_id, callback=null) {
     //
     // CHECK BALANCE
     //
@@ -541,34 +516,33 @@ class Mixin extends ModTemplate {
     try {
       this.request(appId, sessionId, privateKey, method, uri).then(
         (res) => {
-          let d = res.data.data;
-          console.log("RETURNED DATA: " + JSON.stringify(d));
-          for (let i = 0; i < this.mods.length; i++) {
-            if (this.mods[i].asset_id === asset_id) {
-              let initial_balance = this.mods[i].balance;
-              let initial_address = this.mods[i].destination;
+	  let d = res.data.data;
+	  for (let i = 0; i < this.mods.length; i++) {
+	    if (this.mods[i].asset_id === asset_id) {
+	      let initial_balance = this.mods[i].balance;
+	      let initial_address = this.mods[i].destination;
 
-              this.mods[i].balance = d.balance;
+	      this.mods[i].balance = d.balance;
               this.mods[i].icon_url = d.icon_url;
-              this.mods[i].deposit_entries = d.deposit_entries;
+	      this.mods[i].deposit_entries  = d.deposit_entries;
 
-              this.mods[i].destination = d.destination;
-              this.mods[i].tag = d.tag;
-              this.mods[i].price_btc = d.price_btc;
-              this.mods[i].price_usd = d.price_usd;
-              this.mods[i].change_btc = d.change_btc;
-              this.mods[i].change_usd = d.change_usd;
-              this.mods[i].asset_key = d.asset_key;
-              this.mods[i].mixin_id = d.mixin_id;
-              this.mods[i].confirmations = d.confirmations;
+	      this.mods[i].destination = d.destination;
+	      this.mods[i].tag = d.tag;
+	      this.mods[i].price_btc = d.price_btc;
+	      this.mods[i].price_usd = d.price_usd;
+	      this.mods[i].change_btc = d.change_btc;
+	      this.mods[i].change_usd = d.change_usd;
+	      this.mods[i].asset_key = d.asset_key;
+	      this.mods[i].mixin_id = d.mixin_id;
+	      this.mods[i].confirmations = d.confirmations;
 
-              if (initial_balance !== this.mods[i].balance || initial_address !== this.mods[i].destination) {
+	      if (initial_balance !== this.mods[i].balance || initial_address !== this.mods[i].destination) {
                 this.app.connection.emit("update_balance", this.app.wallet);
-              }
-            }
-          }
-          if (callback) {
-            callback(res.data);
+	      }
+	    }
+	  }
+	  if (callback) {
+	    callback(res.data);
           }
         }
       );
@@ -578,15 +552,15 @@ class Mixin extends ModTemplate {
 
   }
 
-  updateUserPin(new_pin, callback = null) {
+  updateUserPin(new_pin, callback=null) {
 
     let mixin_self = this;
 
     //
     // CREATE ACCOUNT
     //
-    // todo - ping us and we do this, so that we don't compromise the
-    // privatekey associated with account creation. for now we will
+    // todo - ping us and we do this, so that we don't compromise the 
+    // privatekey associated with account creation. for now we will 
     // have the module make the call directly for simplified
     // development.
     //
@@ -596,8 +570,8 @@ class Mixin extends ModTemplate {
     let old_pin = this.mixin.pin;
 
     let encrypted_old_pin = "";
-    if (old_pin !== "") {
-      encrypted_old_pin = this.signEd25519PIN(old_pin, this.mixin.pin_token, session_id, privatekey);
+    if (old_pin !== "") { 
+      encrypted_old_pin = this.signEd25519PIN(old_pin, this.mixin.pin_token, session_id, privatekey); 
     }
     let encrypted_new_pin = this.signEd25519PIN(new_pin, this.mixin.pin_token, session_id, privatekey);
 
@@ -611,12 +585,9 @@ class Mixin extends ModTemplate {
     try {
       this.request(user_id, session_id, privatekey, method, uri, body).then(
         (res) => {
-          console.log("RETURNED PIN DATA: " + JSON.stringify(res.data));
-          mixin_self.mixin.pin = new_pin;
-          mixin_self.save();
-          if (callback != null) {
-            callback(res.data);
-          }
+	  mixin_self.mixin.pin = new_pin;
+	  mixin_self.save();
+	  if (callback != null) { callback(res.data); }
         }
       );
     } catch (err) {
@@ -625,7 +596,7 @@ class Mixin extends ModTemplate {
   }
 
 
-  createAccountCallback(res, callback = null) {
+  createAccountCallback(res, callback=null) {
 
     let mixin_self = this;
 
@@ -643,7 +614,6 @@ class Mixin extends ModTemplate {
     mixin_self.mixin.pin_token = d.data.pin_token;
     mixin_self.mixin.pin_token_base64 = d.data.pin_token_base64;
 
-    console.log("RETURNED DATA: " + JSON.stringify(d.data));
     mixin_self.save();
 
     //
@@ -670,20 +640,19 @@ class Mixin extends ModTemplate {
     // and set our pin
     //
     let new_pin = (new Date()).getTime().toString().substr(-6);
-    mixin_self.updateUserPin(new_pin, () => {
-    });
-    if (callback != null) {
-      callback(res.data);
-    }
+    mixin_self.updateUserPin(new_pin, () => {});
+    if (callback != null) { callback(res.data); }
 
   };
 
 
-  createAccount(callback = null) {
+
+
+  createAccount(callback=null) {
 
     let mixin_self = this;
 
-    if (this.mixin.publickey !== "") {
+    if (this.mixin.publickey !== "") { 
       console.log("Mixin Account already created. Skipping");
       return;
     }
@@ -693,8 +662,8 @@ class Mixin extends ModTemplate {
     //
     // CREATE ACCOUNT
     //
-    // todo - ping us and we do this, so that we don't compromise the
-    // privatekey associated with account creation. for now we will
+    // todo - ping us and we do this, so that we don't compromise the 
+    // privatekey associated with account creation. for now we will 
     // have the module make the call directly for simplified
     // development.
     //
@@ -708,20 +677,20 @@ class Mixin extends ModTemplate {
     let uri = '/users';
     let body = {
       session_secret: user_public_key,
-      full_name: `Saito User ${this.app.wallet.getPublicKey()}`,
+      full_name: `Saito User ${this.app.wallet.returnPublicKey()}`,
     };
 
     this.mixin.publickey = original_user_public_key;
     this.mixin.privatekey = original_user_private_key;
-    this.mixin.user_id = "";
-    this.mixin.session_id = "";
+    this.mixin.user_id          = "";
+    this.mixin.session_id       = "";
 
     let m = "";
 
     //
     // process directly if ENV variable set
     //
-    if (process.env.MIXIN) {
+    if (process.env.MIXIN) { 
 
       m = JSON.parse(process.env.MIXIN);
 
@@ -735,10 +704,10 @@ class Mixin extends ModTemplate {
       //
       try {
         this.request(appId, sessionId, privateKey, method, uri, body).then(
-          (res) => {
-            mixin_self.createAccountCallback(res, callback);
-            //processRes(res);
-          }
+  	  (res) => { 
+	    mixin_self.createAccountCallback(res, callback);
+	    //processRes(res);
+	  }
         );
       } catch (err) {
         console.log("ERROR: Mixin error sending network request: " + err);
@@ -750,31 +719,30 @@ class Mixin extends ModTemplate {
     // users handle manually
     //
     if (!m.appId) {
+   
 
-
-      m = {
-        appId: "9be2f213-ca9d-4573-80ca-3b2711bb2105",
-        sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511",
-        privateKey: "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg"
-      };
+      m = { appId : "9be2f213-ca9d-4573-80ca-3b2711bb2105", sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511", privateKey: "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg"};
 
       let appId = m.appId;
       let sessionId = m.sessionId;
       let privateKey = m.privateKey;
 
       let data = {
-        saito_publickey: mixin_self.app.wallet.getPublicKey(),
-        mixin_publickey: user_public_key
+	saito_publickey	:	mixin_self.app.wallet.returnPublicKey() ,
+	mixin_publickey :	user_public_key 
       };
 
 //console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
       mixin_self.app.network.peers[0].sendRequestAsTransactionWithCallback("mixin create account", data, function(res) {
 //console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
-        mixin_self.createAccountCallback(res, callback);
+	mixin_self.createAccountCallback(res, callback);
       });
 
     }
   }
+
+
+
 
 
   /////////////////////////
@@ -782,7 +750,7 @@ class Mixin extends ModTemplate {
   /////////////////////////
   //
   // Core functions needed by the request-specific functions above (and by each other)
-  // such as base64 processing, network requests, and cryptographic functions. These
+  // such as base64 processing, network requests, and cryptographic functions. These 
   // functions should not be changed. We may put them into a separate file at some
   // point for the sake of cleanliness.
   //
@@ -825,7 +793,7 @@ class Mixin extends ModTemplate {
     })
   }
 
-  request(uid, sid, privateKey, method, path, data = null) {
+  request(uid, sid, privateKey, method, path, data=null) {
     const m = method;
     let accessToken = '';
     if (data == null) {
@@ -903,15 +871,14 @@ class Mixin extends ModTemplate {
     return sharedKey(privateKey, pinToken);
   }
 
-  signEd25519PIN(pin, pinToken, sessionId, privateKey, iterator = null) {
+  signEd25519PIN(pin, pinToken, sessionId, privateKey, iterator=null) {
     const blockSize = 16
     let Uint64
 
     try {
       if (LittleEndian) Uint64 = LittleEndian.Int64LE
       if (Uint64BE) Uint64 = Uint64LE
-    } catch (error) {
-    }
+    } catch (error) {}
 
     const sharedKey = this.sharedEd25519Key(pinToken, privateKey)
 
@@ -932,7 +899,7 @@ class Mixin extends ModTemplate {
     let paddingLen = blockSize - (buffer.length() % blockSize)
     let padding = forge.util.hexToBytes(paddingLen.toString(16))
 
-    for (let i = 0; i < paddingLen; i++) {
+    for (let i=0; i < paddingLen; i++) {
       buffer.putBytes(padding)
     }
     let iv = forge.random.getBytesSync(16)
@@ -954,17 +921,18 @@ class Mixin extends ModTemplate {
   }
 
 
+
+
+
   load() {
-    if (this.app?.options?.mixin) {
-      this.mixin = this.app.options.mixin;
-    }
+    if (this.app?.options?.mixin) { this.mixin = this.app.options.mixin; }
     if (this.mixin.publickey !== "") {
       this.account_created = 1;
     }
   }
 
   save() {
-    console.log("SAVING IN MIXIN: " + JSON.stringify(this.mixin));
+console.log("SAVING IN MIXIN: " + JSON.stringify(this.mixin));
     this.app.options.mixin = this.mixin;
     this.app.storage.saveOptions();
   }

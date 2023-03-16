@@ -14,15 +14,15 @@ Saito Identicon
 }
 
 /* ----------------------------------------------------------------
-Saito Username
+Saito Username  --- Partially duplicated in saito-base
 -----------------------------------------------------------------*/
 
-.saito-address, .saito-username {
+.saito-address {
   max-width: 99%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: flex;
+  display: inline-block;  /* changed from flex... */
   align-items: center;
   color: var(--saito-font-color-heavy);
 }
@@ -59,15 +59,6 @@ Saito User
   grid-column-end: span 1;
   grid-row-start: 1;
   grid-row-end: span 1;
-}
-
-.saito-user>.saito-user-timestamp {
-  grid-column-start: 2;
-  grid-column-end: span 1;
-  grid-row-start: 2;
-  grid-row-end: span 1;
-  font-size: 1.4rem;
-  color: var(--saito-font-color-light);
 }
 
 .saito-user>.saito-userline {

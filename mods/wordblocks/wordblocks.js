@@ -15,7 +15,7 @@ class Wordblocks extends GameTemplate {
 
     this.name = "Wordblocks";
     this.description = `A crossword puzzle game, spell out words on the board to earn points.`;
-    this.categories = "Games Boardgame Classic Wordgame";
+    this.categories = "Games Boardgame Classic";
     //
     // Game Class VARS
     //
@@ -95,19 +95,27 @@ class Wordblocks extends GameTemplate {
       this.playerbox.groupOpponents(false);
       $("#opponentbox *").disableSelection();
 
+      let compact_html = "";
+
       for (let i = 1; i <= this.game.players.length; i++) {
         this.playerbox.refreshName(i);
-        this.playerbox.refreshInfo(
-          `<span>Player ${i}:</span> <span class="playerscore" id="score_${i}">${this.getPlayerScore(
-            i
-          )}</span>`,
-          i
-        );
+        let score = this.getPlayerScore(i);
+        this.playerbox.refreshInfo(`<span>Player ${i}:</span> <span class="playerscore" id="score_${i}">${score}</span>`, i);
+
+        compact_html += `<div class="score"><img class="player-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i-1])}"/> : ${score} </div>`;
 
         let lastMove = this.getLastMove(i);
         let html = `<div class="lastmove" id="lastmove_${i}"><span>Last:</span><span class="playedword" style="text-decoration:none">${lastMove.word}</span> <span class="wordscore">${lastMove.score}</span></div>`;
         this.playerbox.refreshLog(html, i);
       }
+      
+      this.scoreboard.update(compact_html);
+
+      $("#game-scoreboard").off();
+      $("#game-scoreboard").on("click", function(){
+        $("#opponentbox").toggleClass("visible");
+      });
+
     } catch (err) {
       console.error(err);
     }
@@ -365,7 +373,7 @@ class Wordblocks extends GameTemplate {
           <div class="rack-controls">
             <div id="shuffle" class="shuffle">Shuffle: <i class="fa fa-random"></i></div>
             <div id="deletectrl" class="hidden deletectrl">Discard: <i class="fa fa-trash" id="delete"></i><i id="canceldelete" class="hidden far fa-window-close"></i></div>
-            <div>Remaining Tiles: ${this.game.deck[0].crypt.length}</div>
+            <div>Tiles: ${this.game.deck[0].crypt.length}</div>
             <div id="skipturn" class="hidden">Skip: <i class="fas fa-fast-forward"></i></div>
           </div>
         </div>
@@ -463,6 +471,7 @@ class Wordblocks extends GameTemplate {
         $("#status").off();
         $("#canceldelete").off();
         $(".tile").off();
+        $(".selected_space").removeClass("selected_space");
     }
   }
 
@@ -482,6 +491,9 @@ class Wordblocks extends GameTemplate {
     if (this.browser_active == 0) {
       return;
     }
+
+    $(".selected_space").removeClass("selected_space");
+
     let wordblocks_self = this;
     let tile = document.querySelector(".highlighttile");
     let interactiveMode =
@@ -711,6 +723,9 @@ class Wordblocks extends GameTemplate {
           if (Math.abs(ypos - e.clientY) > 4) {
             return;
           }
+          $(".selected_space").removeClass("selected_space");
+          $(this).addClass("selected_space");
+
           let divname = $(this).attr("id");
           let html = `
             <div class="tile-placement-controls">
@@ -741,51 +756,28 @@ class Wordblocks extends GameTemplate {
 
           $(".tile-placement-controls").remove(); //Removes previous addition
 
-          if (wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent)) {
-            let tile_html = "";
-            for (let i = 0; i < wordblocks_self.game.deck[0].hand.length; i++) {
-              tile_html += wordblocks_self.returnTileHTML(
-                wordblocks_self.game.deck[0].cards[
-                  wordblocks_self.game.deck[0].hand[i]
-                ].name
-              );
-            }
-            let updated_status = `
-            <div class="rack" id="rack">
-              <div class="tiles" id="tiles">
-                ${tile_html}
-              </div>
-              <img id="shuffle" class="shuffle" src="/wordblocks/img/reload.png">
-            </div>
-            ${html}
-            `;
-            $(".status").html(updated_status); //may be a problem?
-            wordblocks_self.enableEvents();
-          } else {
-            $("body").append(html);
-            $(".tile-placement-controls").css({
-              top: top,
-              left: left,
-              bottom: "unset",
-              right: "unset",
-            });
-          }
+          $("body").append(html);
+          $(".tile-placement-controls").css({
+            top: top,
+            left: left,
+            bottom: "unset",
+            right: "unset",
+          });
 
           //Launch asynch prompt for typed word
           $(".action").off();
           $(".action").on("click", async function () {
+            $(".tile-placement-controls").remove();
             let orientation = $(this).attr("id"); //horizontal, vertical, cancel
 
-            if (orientation == "cancel") {
-              $(".action").off();
-              $(".tile-placement-controls").remove();
+            if (orientation == "cancel") {  
               wordblocks_self.updateStatusWithTiles(wordblocks_self.defaultMsg);
               wordblocks_self.enableEvents();
               return;
             }
 
             word = await sprompt("Provide your word:");
-
+            $(".selected_space").removeClass("selected_space");
             //Process Word
             if (word) {
               //console.log(`Submitting ${word}, ${orientation} at col ${x}, row ${y}`);
@@ -2334,6 +2326,13 @@ class Wordblocks extends GameTemplate {
       }</span>`,
       player
     );
+
+    let compact_html = "";
+    for (let i = 0; i < this.game.score.length; i++){
+      compact_html += `<div class="score"><img class="player-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i])}"> : ${this.game.score[i]} </div>`;
+    }
+    this.scoreboard.update(compact_html);
+
   }
 
   endTurn() {

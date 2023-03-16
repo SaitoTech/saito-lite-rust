@@ -6,30 +6,26 @@ const LeagueMain = require('./lib/main');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 const InvitationLink = require("./lib/overlays/league-invitation-link");
-const LeagueWizard = require('./lib/components/league-wizard');
-const JoinLeagueOverlay = require('./lib/overlays/join-league');
+const JoinLeagueOverlay = require('./lib/overlays/join');
+
+//Trial -- So that we can display league results in game page
+//const LeagueOverlay = require("./lib/overlays/league");
 
 class League extends ModTemplate {
 
   constructor(app) {
+
     super(app);
 
     this.name = "League";
     this.slug = "league";
     this.description = "Leaderboards and leagues for Saito Games";
-    this.categories = "Arcade Competition";
+    this.categories = "Arcade Gaming";
     this.overlay = null;
 
     this.styles = ['/league/style.css'];
 
     this.leagues = [];
-    this.league_idx = -1; // if a league is active, this will be idx
-    this.leagueCount = 0;
-
-    //
-    // used in onPeerHandshakeComplete
-    //
-    this.services = [{ service: "league", domain: "saito" }];
 
     //
     // UI components
@@ -37,619 +33,499 @@ class League extends ModTemplate {
     this.main = null;
     this.header = null;
 
-    this.icon_fa = "fas fa-user-friends";
+    /* Not fully implemented
+    Only keep the last N recent games 
+    You don't play a game for 30 days, you get dropped from leaderboard
+     (should prune data from SQL table or just filter from UI???)
+    */
+    this.recent_game_cutoff = 10;
+    this.inactive_player_cutoff = 30 * 24 * 60 * 60 * 1000; 
 
+    this.icon_fa = "fas fa-user-friends";
+    this.debug = false;
   }
 
 
+  //
+  // declare that we support the "league" service, which allows peers to query
+  // us for league-related information (leagues, players, leaderboards, etc.)
+  //
+  returnServices() {
+    if (this.app.BROWSER) { return []; }
+    return [{ service : "league" , domain : "saito" }];
+  }
+
   initialize(app) {
+
+    this.loadLeagues();
+
     super.initialize(app);
+
+    //Trial -- So that we can display league results in game page
+    //this.overlay = new LeagueOverlay(app, this);
 
     //
     // create initial leagues
     //
-    this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
-      this.addLeague({
-        id: app.crypto.hash(mod.returnName()),	// id
-        default: 1,					// default league
-        name: mod.returnName(), 			// name - name of league
-        game: mod.returnName(), 			// game - name of game mod
-        rank: 0 					// rank
+    this.app.modules.getRespondTos("default-league").forEach((modResponse) => {
+       this.addLeague({
+        	id     			: 	  app.crypto.hash(modResponse.modname) ,	// id
+    	   	game   			: 	  modResponse.game , 				// game - name of game mod
+    	   	name   			: 	  modResponse.name , 				// name - name of league
+    	   	admin  			: 	  "" ,					// admin - publickey (if exists)
+      		status 			: 	  "public" ,				// status - public or private
+		      description 		: modResponse.description ,			// 
+		      ranking_algorithm : 	modResponse.ranking_algorithm ,					//
+		      default_score 		:	modResponse.default_score 					// default ranking for newbies
+       });
+    });
+
+    this.sortLeagues();
+  }
+
+  //
+  // So leagues are displayed in same order as game list for consistency's sake
+  //
+  sortLeagues(){
+    let superArray = [];
+    try{
+      this.leagues.forEach(l => {
+        let gm = this.app.modules.returnModuleByName(l.game);
+        superArray.push([l.admin, gm.categories, l]);
       });
-    });
-    league_self = this;
-    app.connection.on("league-update", () => {
-      if (this.browser_active) {
 
-        league_self.renderArcadeTab(app, league_self);
+      superArray.sort((a,b) => {
+        //Push community leagues to the bottom
+        if (a[0] && !b[0]){ return 1;}
+        if (!a[0] && b[0]){ return -1;}
+        
+        //Sort by game categories
+        if (a[1]>b[1]){ return 1;}
+        if (a[1]<b[1]){ return -1;}
 
+        return 0;
+      });
+
+      this.leagues = [];
+      for (let i = 0; i < superArray.length; i++){
+        this.leagues.push(superArray[i][2]);
       }
-    });
-
-    this.league_wizard = new LeagueWizard(this.app, this, null);
-  }
-
-  returnLeague(league_id) {
-    for (let i = 0; i < this.leagues.length; i++) {
-      console.log("comparing: " + this.leagues[i].id + " - " + league_id);
-      if (this.leagues[i].id === league_id) {
-        return this.leagues[i];
-      }
+    }catch(err){
+      console.warn(err);
     }
-    return null;
-  }
+  }    
 
-  render(app, mod) {
+
+  //////////////////////////
+  // Rendering Components //
+  //////////////////////////
+  render() {
+
+    let app = this.app;
+    let mod = this.mod;
 
     this.main = new LeagueMain(app, this)
     this.header = new SaitoHeader(app, this);
     this.addComponent(this.main);
     this.addComponent(this.header);
 
-
-    //
-    // league join league
-    //
-    if (this.app.browser.returnURLParameter("league_join_league")) {
-      let so = new SaitoOverlay(app, this);
-      let backdrop_image = `/saito/img/dreamscape.png`;
-      let game = this.app.browser.returnURLParameter("game");
-      let game_mod = this.app.modules.returnModuleByName(game);
-      if (game_mod != null) {
-        backdrop_image = game_mod.returnArcadeImg();
-      }
-      so.setBackground(backdrop_image);
-      so.render(' ');
-    }
-
     super.render(app, this);
   }
 
   canRenderInto(qs) {
-    if (qs == ".redsquare-sidebar") {
-      return true;
-    }
-    if (qs == ".arcade-leagues") {
-      return true;
-    }
+    if (qs == ".redsquare-sidebar") { return true; }
+    if (qs == ".arcade-leagues") { return true; }
     return false;
   }
 
   renderInto(qs) {
-    if (qs == ".redsquare-sidebar") {
+    if (qs == ".redsquare-sidebar" || qs == ".arcade-leagues") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new LeagueRankings(this.app, this, qs));
       }
       this.styles = ['/league/css/league-leaderboard.css', '/league/css/league-overlay.css', '/arcade/css/arcade-wizard.css'];
       this.attachStyleSheets();
-      this.renderIntos[qs].forEach((comp) => {
-        comp.render();
-      });
+      this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
-    if (qs == ".arcade-leagues") {
-      if (!this.renderIntos[qs]) {
-        this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new LeagueRankings(this.app, this, qs));
+  }
+
+
+
+
+  async onPeerServiceUp(app, peer, service) {
+
+    //
+    // add remote leagues
+    //
+    if (service.service === "league") {
+
+      if (this.debug){
+        console.log("======================================");
+        console.log("=======  peer server up  =============");
+        console.log("======================================");
       }
-      this.styles = ['/league/css/league-leaderboard.css', '/league/css/league-overlay.css', '/arcade/css/arcade-wizard.css'];
-      this.attachStyleSheets();
-      this.renderIntos[qs].forEach((comp) => {
-        comp.render();
-      });
-    }
-  }
 
-
-  /**
-   Create the html for an arcade-style list of my leagues and open leagues,
-   inserted into elem
-   */
-  renderArcadeTab(app, mod) {
-    if (!app.BROWSER) {
-      return;
-    }
-
-    let tab = document.getElementById("league-hero");
-
-    if (tab) {
-      tab.innerHTML = "";
-
-      let leagues_to_display = this.filterLeagues(app);
-      for (let le of leagues_to_display) {
-        if (le.admin === "saito") {
-          let altElm = document.getElementById(`forum-topic-${le.id.toLowerCase()}`);
-          let al = new ForumLeague(app, this, le);
-          al.render(app, this, altElm);
-        }
-
-        if (le.myRank > 0 || le.admin !== "saito") {
-          let al = new ArcadeLeague(app, this, le);
-          al.render(app, this, tab);
-        }
-      }
-    } else {
-      //Probably on initialization screen
-      //console.error("League cannot render in Arcade");
-    }
-  }
-
-  renderLeagues(app, mod) {
-    if (this.app.BROWSER == 0) {
-      return;
-    }
-
-    if (this.browser_active) {
-      this.main.render(app, this);
-    } else {
-      app.connection.emit("league-update", {});
-    }
-  }
-
-  resetLeagues() {
-    this.leagues = [];
-    this.leagueCount = 0;
-  }
-
-  //
-  // the league is an array of objects with the following structure
-  //
-  // {
-  //   id   	: $LEAGUE_ID ,
-  //   default  : 0 ,
-  //   name 	: $LEAGUE_NAME ,
-  //   rank 	: $MY_RANK_IN_LEAGUE ,
-  //   players 	: [player_array] ,
-  //   games 	: [games_array] ,
-  // }
-  //
-  addLeague(obj) {
-
-    //
-    // default values
-    //
-    if (!obj) {
-      return;
-    }
-    if (!obj.name) {
-      obj.name = "Unknown";
-    }
-    if (!obj.rank) {
-      obj.rank = 0;
-    }
-    if (!obj.players) {
-      obj.players = [];
-    }
-    if (!obj.games) {
-      obj.games = [];
-    }
-    if (!obj.mod) {
-      obj.mod = this.app.modules.returnModuleByName(obj.name);
-    }
-    if (!obj.default) {
-      obj.default = 0;
-    }
-    if (!obj.module && obj.mod) {
-      obj.module = obj.mod.name;
-    }
-
-
-    let league_idx = -1;
-    for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].id === obj.id) {
-        league_idx = i;
-        break;
-      }
-    }
-
-    if (league_idx == -1) {
-      this.leagues.push(obj);
-      league_idx = this.leagues.length - 1;
-      this.app.connection.emit("league-add-league", (this.leagues[league_idx]));
-    }
-
-  }
-
-
-  async onPeerHandshakeComplete(app, peer) {
-
-    let league_self = this;
-
-    //
-    // fetch any leagues
-    //
-    this.sendPeerDatabaseRequestWithFilter(
-      "League",
-      `SELECT * FROM league`,
-      (res) => {
-        let rows = res.rows || [];
-        if (rows.length > 0) {
-          rows.forEach(function(league, key) {
-            league_self.addLeague(league);
+      //
+      // fetch updated rankings
+      //
+      let helper_array = [];
+      for (let i = 0; i < this.leagues.length; i++) {
+        //To avoid calling rending 15 times in a row, we use an array to see when
+        //the last async database query finishes and only update the UI then
+        helper_array.push(0);
+        
+        this.fetchLeagueLeaderboard(this.leagues[i].id, 
+          ()=>{
+            helper_array.pop();
+            if (helper_array.length == 0){
+              app.connection.emit("league-rankings-render-request");   
+            } 
           });
+      }
 
-          //
-          // league join league
-          //
-          if (this.app.browser.returnURLParameter("league_join_league")) {
+      //    
+      // load any requested league we may not have in options file
+      //    
+      if (this.app.browser.returnURLParameter("league_join_league")) {
+
+        this.sendPeerDatabaseRequestWithFilter(
+          "League" , 
+          `SELECT * FROM leagues WHERE id = "${this.app.browser.returnURLParameter("league_join_league")}"` ,
+          (res) => {
+            let rows = res.rows || [];
+            if (rows.length > 0) {
+              rows.forEach(function(league, key) {
+                this.addLeague(league);
+              }); 
+              //Main module
+      	      app.connection.emit("leagues-render-request");
+              //Sidebar component
+      	      app.connection.emit("league-rankings-render-request");
+            }
+
+            //
+            // league join league
+            //
             let league_id = this.app.browser.returnURLParameter("league_join_league");
             let jlo = new JoinLeagueOverlay(app, this, league_id);
             jlo.render();
-          }
-        }
-      }
-    );
 
-  }
+          },
+          (p) => {
+  	          if (p == peer) { 
+                return 1; 
+              }
+ 	            return 0;
+	        }
+        );
+      }
 
-  filterLeagues(app, include_default = true) {
-    let leagues_to_display = [];
-    //filter leagues to display
-    for (let le of this.leagues) {
-      if (!include_default && le.admin === "saito") {
-        continue;
-      }
-      if (le.admin == app.wallet.getPublicKey() || le.myRank > 0) {
-        leagues_to_display.push(le);
-      } else if (le.type == "public") {
-        //Only show public leagues if there are available slots or I am a member
-        if (le.max_players == 0 || le?.playerCnt < le.max_players) {
-          leagues_to_display.push(le);
-        }
-      }
     }
 
-    //sort leagues
-    leagues_to_display.sort((a, b) => {
-      if (a.id === "SAITOLICIOUS") {
-        return -1
-      }
-      ;
-      if (b.id === "SAITOLICIOUS") {
-        return 1
-      }
-      ;
-      if (a.myRank < 0) {
-        return 1;
-      }
-      if (b.myRank < 0) {
-        return -1;
-      }
-      return a.myRank - b.myRank
-    });
-    return leagues_to_display;
   }
+
 
   async onConfirmation(blk, tx, conf, app) {
 
+    if (conf != 0) { return; }
+
     try {
+
       let txmsg = tx.returnMessage();
 
-      if (conf == 0) {
-        //if (app.BROWSER == 0 && txmsg.module == "League") {
-        //  console.log("SERVER NOTIFY PEERS");
-        //    this.notifyPeers(app, tx);
-        //}
+      if (this.debug){
+        console.log("LEAGUE onConfirmation: " + txmsg.request);  
+      }
+      
 
-        if (txmsg.request === "create league") {
-          this.receiveCreateLeagueTransaction(blk, tx, conf, app);
-        }
-
-        if (txmsg.request === "join league") {
-          //Perform db ops
-          this.receiveJoinLeagueTransaction(blk, tx, conf, app);
-          //Update saito-lite, refresh UI
-          if (app.BROWSER) {
-            console.log("Receive League Join Request");
-            this.addPlayer(tx);
-          }
-
-        }
-
-        if (txmsg.request === "remove league") {
-          //Perform db ops
-          this.receiveDisbandLeagueTransaction(blk, tx, conf, app);
-          //Update saito-lite, refresh UI
-          if (app.BROWSER) {
-            console.log("Receive League Removal Request");
-            this.removeLeague(txmsg.request.league);
-          }
-
-        }
-
-        if (txmsg.request === "quit league") {
-          //Perform db ops
-          this.receiveQuitLeagueTransaction(blk, tx, conf, app);
-          //Update saito-lite, refresh UI
-          if (app.BROWSER) {
-            console.log("Receive Quit Request");
-            this.removePlayer(tx);
-          }
-        }
-
-        //Listen for gameovers
-        if (txmsg.request === "gameover") {
-          this.processUpdateTransaction(app, txmsg, true);
-        }
-
-        if (txmsg.request === "roundover") {
-          console.log("On Confirm Receive Round Over TX");
-          this.processUpdateTransaction(app, txmsg, false);
-        }
-
-        //Keep track of how many games a player starts
-        if (txmsg.request === "accept" || txmsg.request === "launch singleplayer") {
-          //console.log("On Confirm Receive Game Accept TX");
-          this.receiveAcceptTransaction(blk, tx, conf, app);
-        }
+      if (txmsg.request === "league create") {
+        this.receiveCreateTransaction(blk, tx, conf, app);
       }
 
+      if (txmsg.request === "league join") {
+        this.receiveJoinTransaction(blk, tx, conf, app);
+      }
+      if (txmsg.request === "league quit") {
+        this.receiveQuitTransaction(blk, tx, conf, app);
+      }
+
+      if (txmsg.request === "league remove") {
+        this.receiveRemoveTransaction(blk, tx, conf, app);
+      }
+
+      if (txmsg.request === "gameover"){
+        this.receiveGameoverTransaction(app, txmsg);
+      }
+
+      if (txmsg.request === "roundover"){
+        this.receiveRoundoverTransaction(app, txmsg);
+      }
+
+      if (txmsg.request === "accept") {
+        this.receiveAcceptTransaction(blk, tx, conf, app);
+      }
+
+      if (txmsg.request === "launch singleplayer") {
+        this.receiveLaunchSinglePlayerTransaction(blk, tx, conf, app);
+      }
 
     } catch (err) {
       console.log("ERROR in league onConfirmation: " + err);
     }
-  }
 
-
-  //
-  // TODO -- consistency in variable names -- game_id not game in DB etc.
-  // -- game should be game_module, i imagine
-  //
-  sendCreateLeagueTransaction(leagueObj = null) {
-    if (leagueObj == null) {
-      return;
-    }
-
-    console.log(leagueObj);
-
-    let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    tx.transaction.to.push(new saito.default.slip(this.app.wallet.getPublicKey(), 0.0));
-    tx.msg = {
-      module: "League",
-      request: "create league",
-      league: leagueObj,
-    };
-
-    let newtx = this.app.wallet.signTransaction(tx);
-
-    this.app.network.propagateTransaction(newtx);
-
-    //
-    // and immediately process !
-    //
-    this.addLeague(tx.msg);
-  }
-
-
-  async receiveCreateLeagueTransaction(blk, tx, conf, app) {
-
-    //
-    // extract league from tx
-    //
-    let league = Object.assign({ id: tx.transaction.sig }, tx.returnMessage().league);
-
-    //
-    // add league
-    //
-    //this.addLeague(league);
-
-    let sql = `INSERT INTO league (id, game, type, admin, name, description, ranking, starting_score, max_players, options, startdate, enddate, allowlate)
-                        VALUES ($id, $game, $type, $admin, $name, $description, $ranking, $starting_score, $max_players, $options, $startdate, $enddate, $allowlate)`;
-    let params = {};
-    for (let i in league) {
-      params[`$${i}`] = league[i];
-    }
-    await app.storage.executeDatabase(sql, params, "league");
     return;
-
   }
 
 
-  removeLeague(league_id) {
-    if (!league_id) {
+  shouldAffixCallbackToModule(modname, tx = null) {
+    if (modname == "League") { return 1; }
+    if (modname == "Arcade") { return 1; }
+    for (let i = 0; i < this.leagues.length; i++) {
+      if (this.leagues[i].game === modname) {
+        return 1;
+      }
+    }
+    return 0;
+  }
+
+
+  loadLeagues() {
+    if (this.app.options.leagues) {
+      if (this.debug){
+        console.log("Locally stored leagues:", JSON.parse(JSON.stringify(this.app.options.leagues)));  
+      }
+      
+      this.leagues = this.app.options.leagues;
       return;
     }
-
-    for (let i = this.leagues.length - 1; i >= 0; i--) {
-      if (this.leagues[i].id === league_id) {
-        this.leagues.splice(i, 1);
-      }
-    }
-    this.renderLeagues(this.app, this);
+    this.leagues = [];
   }
 
-  addPlayer(tx) {
-    let txmsg = tx.returnMessage();
-    for (let league of this.leagues) {
-      if (txmsg.league_id == league.id) {
-        this.updateLeague(league);
-      }
-    }
-    setTimeout(() => {
-      this.renderLeagues(this.app, this);
-    }, 1000);
+  saveLeagues() {
+    this.app.options.leagues = this.leagues;
+    this.app.storage.saveOptions();
   }
 
-  removePlayer(tx) {
-    let txmsg = tx.returnMessage();
-    for (let league of this.leagues) {
-      if (txmsg.league_id == league.id) {
-        this.updateLeague(league);
-      }
-    }
-    // setTimeout(()=>{
-    //   this.renderLeagues(this.app, this);
-    // },1000);
 
-  }
 
-  createPingTX(recipients) {
+  /////////////////////
+  // create a league //
+  /////////////////////
+  createCreateTransaction(obj = null) {
+
+    if (obj == null) { return null; }
+
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    for (let player of recipients) {
-      newtx.transaction.to.push(new saito.default.slip(player, 0.0));
-    }
+    newtx.msg = this.validateLeague(obj);
+    newtx.msg.module = "League";
+    newtx.msg.request = "league create";
 
-    newtx.msg = {
-      module: "League",
-      request: "ping",
-      ts: new Date().getTime()
-    };
+    return this.app.wallet.signTransaction(newtx);
 
-    newtx = this.app.wallet.signTransaction(newtx);
+  }
 
-    return newtx;
+  async receiveCreateTransaction(blk, tx, conf, app) {
+
+    let txmsg = tx.returnMessage();
+
+    let obj = this.validateLeague(txmsg);
+    obj.id = tx.transaction.sig;
+
+    this.addLeague(obj);
+
+    return;
+
   }
 
 
-  sendJoinLeagueTransaction(league_id = "", data = null) {
+  ///////////////////
+  // join a league //
+  ///////////////////
+  createJoinTransaction(league_id="", data = null) {
 
     let newtx = this.app.wallet.createUnsignedTransaction();
 
-    let tx_obj = {
-      module: "League",
+    newtx.msg = {
+      module:    "League",
       league_id: league_id,
-      request: "join league",
-      timestamp: new Date().getTime()
+      request:   "league join",
     };
 
-    if (data != null && typeof data == "object") {
-      tx_obj = Object.assign(tx_obj, data);
+    if (data != null && typeof data == "object"){
+      if (data.email) {
+      	newtx.msg.email = data.email;
+      }
     }
 
-    newtx.msg = tx_obj;
-
-    newtx = this.app.wallet.signTransaction(newtx);
-    this.app.network.propagateTransaction(newtx);
-    setTimeout(() => {
-      this.addPlayer(newtx);
-    }, 1500);
+    return this.app.wallet.signTransaction(newtx);
 
   }
 
-  async receiveJoinLeagueTransaction(blk, tx, conf, app) {
-    if (this.app.BROWSER) {
-      return;
-    }
+
+  async receiveJoinTransaction(blk, tx, conf, app) {
 
     let txmsg = tx.returnMessage();
-    let league_id = txmsg.league_id;
-    let email = txmsg.email;
-    let publickey = tx.transaction.from[0].add;
-
-    let base_score = await this.getLeagueData(league_id, "starting_score");
-
-    let sql = `INSERT INTO players (
-                league_id,
-                pkey,
-                score,
-		email,
-                ts
-              ) VALUES (
-                $league_id,
-                $publickey,
-                $score,
-                $email,
-                $timestamp
-              )`;
 
     let params = {
-      $league_id: league_id,
-      $publickey: publickey,
-      $score: base_score,
-      $email: email,
-      $timestamp: parseInt(txmsg.timestamp)
+      league_id: txmsg.league_id,
+      publickey: tx.transaction.from[0].add,
+      email: txmsg.email || "",
+      ts: parseInt(tx.transaction.ts)
     };
 
-    await app.storage.executeDatabase(sql, params, "league");
+    this.addLeaguePlayer(params);
 
-    this.app.connection.emit("league-rankings-render-request");
     return;
   }
 
-  sendQuitLeagueTransaction(pkey, league_id) {
+  ///////////////////
+  // quit a league //
+  ///////////////////
+  createQuitTransaction(publickey, league_id){
     let newtx = this.app.wallet.createUnsignedTransaction();
 
     newtx.msg = {
-      module: "League",
+      module:    "League",
       league_id: league_id,
-      player_key: pkey,
-      request: "quit league",
-      timestamp: new Date().getTime()
+      request:   "league quit",
     };
-
-    newtx = this.app.wallet.signTransaction(newtx);
-    this.app.network.propagateTransaction(newtx);
-
-    setTimeout(() => {
-      this.removePlayer(newtx);
-    }, 2500);
-
+    return this.app.wallet.signTransaction(newtx);
   }
 
-  async receiveQuitLeagueTransaction(blk, tx, conf, app) {
-    if (this.app.BROWSER) {
-      return;
-    }
+  async receiveQuitTransaction(blk, tx, conf, app){
 
     let txmsg = tx.returnMessage();
-
+    let sql = `DELETE FROM players WHERE league_id=$league AND publickey=$publickey`;
     let params = {
-      $league: txmsg.league_id,
-      $player: txmsg.player_key,
+      $league : txmsg.league_id,
+      $publickey: tx.transaction.from[0].add,
     }
+    this.app.storage.executeDatabase(sql, params, "league");
 
-    let sql = `DELETE FROM players WHERE league_id=$league AND pkey=$player`;
-    await this.app.storage.executeDatabase(sql, params, "league");
-    this.app.connection.emit("league-rankings-render-request");
   }
 
-  sendDisbandLeagueTransaction(league_id) {
-    let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    tx.transaction.to.push(new saito.default.slip(this.app.wallet.getPublicKey(), 0.0));
-    tx.msg = {
-      module: "League",
-      request: "remove league",
-      league: league_id,
+
+
+  /////////////////////
+  // remove a league //
+  /////////////////////
+  createRemoveTransaction(league_id){
+
+    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    newtx.msg = {
+      module:  "League",
+      request: "league remove",
+      league:   league_id,
     };
 
-    let newtx = this.app.wallet.signTransaction(tx);
+    return this.app.wallet.signTransaction(newtx);
 
-    this.app.network.propagateTransaction(newtx);
-
-    //Short circuit transaction to immediately process
-    this.removeLeague(newtx);
   }
-
-
-  async receiveDisbandLeagueTransaction(blk, tx, conf, app) {
-    if (this.app.BROWSER) {
-      return;
-    }
+  async receiveRemoveTransaction(blk, tx, conf, app){
 
     let txmsg = tx.returnMessage();
+    let sql1 = `DELETE FROM leagues WHERE id=$league_id AND admin=$publickey`;
+    let params1 = {
+      $league_id : txmsg.league_id ,
+      $publickey : tx.transaction.from[0].add ,
+    }
+    this.app.storage.executeDatabase(sql1, params1, "league");
 
-    let sql1 = `DELETE FROM league WHERE id='${txmsg.league}'`;
-    await this.app.storage.executeDatabase(sql1, {}, "league");
-    console.log(sql1);
-    let sql2 = `DELETE FROM players WHERE league_id='${txmsg.league}'`;
-    await this.app.storage.executeDatabase(sql2, {}, "league");
-    console.log(sql2);
+    let sql2 = `DELETE FROM players WHERE league_id='$league_id'`;
+    let params2 = { $league_id : txmsg.league_id };
+    this.app.storage.executeDatabase(sql2, params2, "league");
+
   }
 
+  ///////////////////////////
+  // roundover transaction //
+  ///////////////////////////
+  async receiveRoundoverTransaction(app, txmsg) {
+    this.receiveGameoverTransaction(app, txmsg, false);
+  }
 
-  async receiveAcceptTransaction(blk, tx, conf, app) {
-    if (this.app.BROWSER) {
-      return;
-    }
+  //////////////////////////
+  // gameover transaction //
+  //////////////////////////
+  async receiveGameoverTransaction(app, txmsg, is_gameover=true){
 
-    let txmsg = tx.returnMessage();
+    //if (app.BROWSER == 1) { return; }
+
     let game = txmsg.module;
 
-    //Which leagues may this gameover affect?
-    let sql = `SELECT * FROM league WHERE game = ? OR id='SAITOLICIOUS'`;
-    const relevantLeagues = await this.app.storage.queryDatabase(sql, [game], "league");
+    //
+    // small grace period
+    //
+    if (is_gameover && (txmsg.reason == "cancellation" || txmsg.reason?.includes("Wins:") || txmsg.reason?.includes("Scores: "))) { 
+      console.log(txmsg.reason);
+      return; 
+    }
 
-    //Who are all the players in the game?
+    //
+    // fetch players
+    //
+    let publickeys = txmsg.players.split("_");
+    if (Array.isArray(txmsg.winner) && txmsg.winner.length == 1){
+      txmsg.winner = txmsg.winner[0];
+    }
+
+    if (this.debug){console.log(`League updating player scores for end of ${is_gameover? "game":"round"}`); }
+    //
+    // fetch leagues
+    //
+    let relevantLeagues = await this.getRelevantLeagues(game);
+
+  //  if (this.debug){console.log(relevantLeagues, publickeys);}
+
+    //
+    // update database
+    //
+    for (let leag of relevantLeagues){
+
+      //
+      // update rankings (ELO)
+      //
+      if (leag.ranking_algorithm === "ELO"){
+	      await this.updateELORanking(publickeys, leag, txmsg);
+      }
+      if (leag.ranking_algorithm === "EXP"){
+        await this.updateEXPRanking(publickeys, leag, txmsg);
+      }
+      if (leag.ranking_algorithm === "HSC"){
+        await this.updateHighScore(publickeys, leag, txmsg);
+      }
+
+      //Main module
+      this.app.connection.emit("leagues-render-request");
+      //Sidebar component
+      this.app.connection.emit("league-rankings-render-request");    
+    }
+  }
+
+  ////////////////////////
+  // accept transaction //
+  ////////////////////////
+  //
+  // inserts player into public league if one exists
+  //
+  async receiveLaunchSinglePlayerTransaction(blk, tx, conf, app) {
+    return this.receiveAcceptTransaction(blk, tx, conf, app);
+  }
+
+  async receiveAcceptTransaction(blk, tx, conf, app){
+
+    let txmsg = tx.returnMessage();
+
+    if (this.debug){console.log(`League processing game start of ${txmsg.game}!`);}
+
+    //if (this.app.BROWSER){ return; }
+
+    const relevantLeagues = await this.getRelevantLeagues(txmsg.game);
+
+    //
+    // who are the players ?
+    //
     let publickeys = [];
     for (let i = 0; i < tx.transaction.to.length; i++) {
       if (!publickeys.includes(tx.transaction.to[i].add)) {
@@ -657,659 +533,463 @@ class League extends ModTemplate {
       }
     }
 
-    let today = new Date().getTime();
+//    if (this.debug){console.log(relevantLeagues, publickeys);}
 
-    //CHECK EVERY LEAGUE TO SEE IF WE WANT TO UPDATE START_GAME STATS
-    for (let leag of relevantLeagues) {
-      //console.log(leag);
+    //
+    // and insert if needed
+    //
+    for (let leag of relevantLeagues){
+      if (leag.admin === "") {
+        let league_id = leag.id;
 
-      if (leag.options) {
-        if (!txmsg?.options?.league || leag.id !== txmsg.options.league) {
-          //console.log("Exclusive league, skip");
-          continue;
+        for (let publickey of publickeys){
+    	    await this.addLeaguePlayer({ league_id, publickey });
+
+          //Update Player's game started count
+          await this.incrementPlayer(publickey, leag.id, "games_started");
         }
       }
-      if (leag.startdate) {
-        let sd = Date.parse(leag.startdate);
-        if (today < sd) {
-          //console.log("League hasn't begun yet.");
-          continue;
-        }
+    }
+  }
+
+  /////////////////////
+  /////////////////////
+
+  async getRelevantLeagues(game){
+
+    let sql = `SELECT * FROM leagues WHERE game = $game`;
+    let params = { $game : game };   
+    let sqlResults = await this.app.storage.queryDatabase(sql, params, "league");
+
+    let localLeagues = this.leagues.filter(l => l.game === game);
+
+    return sqlResults || localLeagues;
+  } 
+
+  /////////////////////
+  /////////////////////
+
+  async getPlayersFromLeague(league_id, players){
+
+    let sql2 = `SELECT * FROM players WHERE league_id = ? AND publickey IN (`;
+    for (let pk of players) { sql2 += `'${pk}', `; }
+    sql2 = sql2.substr(0, sql2.length - 2) + `)`;
+
+    let sqlResults = await this.app.storage.queryDatabase(sql2, [league_id], "league");
+
+    let league = this.returnLeague(league_id);
+    let localStats = league.players.filter(p => players.includes(p.publickey));
+
+    return localStats || sqlResults;
+  }
+
+  /////////////////////
+  // update rankings //
+  /////////////////////
+  async updateEXPRanking(publickeys, league, txmsg) {
+
+    let players = [...publickeys]; //Need to refresh this each loop (since we splice below)
+
+    //
+    // winning += 5 points
+    // ties    += 3 points
+    // losing  += 1 point
+    //
+
+    // everyone gets a point for playing
+    for (let i = 0; i < players.length; i++){
+      await this.incrementPlayer(players[i], league.id, "score", 1);
+      await this.incrementPlayer(players[i], league.id, "games_finished", 1);
+    }
+
+    let numPoints = (txmsg.reason == "tie") ? 2: 4;
+    let gamekey = (txmsg.reason == "tie") ? "games_tied" : "games_won";
+
+    for (let i = 0; i < players.length; i++){
+      if (txmsg.winner === players[i] || txmsg.winner.includes(players[i])){
+        await this.incrementPlayer(players[i], league.id, "score", numPoints);
+        await this.incrementPlayer(players[i], league.id, gamekey, 1);
       }
-      if (leag.enddate) {
-        let ed = Date.parse(leag.enddate);
-        if (today > ed) {
-          //console.log("League already finished.");
-          continue;
-        }
+    }
+  }
+
+  async updateELORanking(players, league, txmsg){
+
+    //
+    // no change for 1P games
+    //
+    if (players.length < 2) { return; }
+
+    let playerStats = await this.getPlayersFromLeague(league.id, players);
+
+    if (playerStats.length !== players.length){
+      // skip out - not all players are league members
+      return; 
+    }
+
+    let winner = [], loser = [];
+    let qsum = 0;
+    for (let player of playerStats){
+      //Convert each players ELO rating into a logistic function
+      player.q = Math.pow(10, (player.score/400));
+      //Sum the denominator so that the Expected values add to 1
+      qsum += player.q;
+
+      //
+      //Dynamically calculate each player's K-factor
+      //
+      player.k = 10;
+      if (player?.score < 2400){
+        player.k = 20;
+      }
+      if (player?.games_finished < 30 && player?.score < 2300){
+        player.k = 40;
       }
 
+      await this.incrementPlayer(player.publickey, league.id, "games_finished");
 
-      if (leag.admin !== "saito") {
-        if (leag.ranking == "elo") {
-          //Is this a game we can rank?
-          if (!await this.isELOeligible(publickeys, leag)) {
-            //console.log("Not ELO Eligible");
-            continue;
+      //
+      //Sort into winners and losers
+      //
+      if (player.publickey == txmsg.winner || txmsg.winner.includes(player.publickey)){
+        winner.push(player);
+      }else{
+        loser.push(player);
+      }
+    }
+
+    for (let p of winner){
+      let outcome = (winner.length == 1) ? "games_won" : "games_tied";
+      await this.incrementPlayer(p.publickey, league.id, outcome);
+      
+      p.score += p.k * ( (1/winner.length) - (p.q / qsum));
+      await this.updatePlayerScore(p);
+    }
+    for (let p of loser){
+      p.score -= (p.k * p.q / qsum);
+      await this.updatePlayerScore(p);
+    }
+
+  }
+
+
+  async updateHighScore(players, league, txmsg){
+    //
+    // it better be a 1P games
+    //
+    if (players.length > 1) { 
+      return; 
+    }
+
+    let playerStats = await this.getPlayersFromLeague(league.id, players);
+
+    if (playerStats.length !== players.length){
+      // skip out - not all players are league members
+      return; 
+    }
+
+    for (let player of playerStats){
+      let newScore = parseInt(txmsg.reason);
+      
+      player.score = Math.max(player.score, newScore)
+      await this.incrementPlayer(player.publickey, league.id, "games_finished");
+      await this.updatePlayerScore(player);
+    }
+
+  }
+
+  async incrementPlayer(publickey, league_id, field, amount = 1){
+    if (!(field === "score" || field === "games_finished" || field === "games_won" || field === "games_tied" || field === "games_started")){
+      return 0;
+    }
+
+    let success = false;
+
+    let league = this.returnLeague(league_id);
+    if (league?.players){
+      for (let i = 0; i < league.players.length; i++){
+        if (league.players[i].publickey === publickey){
+          league.players[i][field]++;
+          if (this.debug){
+            console.log(`Incremented ${field}:`);
+            console.log(JSON.parse(JSON.stringify(league.players[i])));
           }
-        }
-      } else {
-        for (let player of publickeys) {
-          await this.autoJoinPublicLeague(player, leag);
+          success = true;
         }
       }
-      this.countGameStart(publickeys, leag);
-
-    }
-  }
-
-  async autoJoinPublicLeague(player_key, league) {
-    let sql = `SELECT * from players WHERE pkey="${player_key}" AND league_id="${league.id}"`;
-    let rows = await this.app.storage.queryDatabase(sql, {}, "league");
-    //Add player if not found
-    if (!rows || !rows.length || rows.length == 0) {
-      sql = `INSERT INTO players (
-                league_id,
-                pkey,
-                score,
-                ts
-              ) VALUES (
-                $league_id,
-                $publickey,
-                $score,
-                $timestamp
-              )`;
-
-      let params = {
-        $league_id: league.id,
-        $publickey: player_key,
-        $score: league.starting_score,
-        $timestamp: new Date().getTime(),
-      };
-      await this.app.storage.executeDatabase(sql, params, "league");
-    }
-    return 1;
-  }
-
-  async isELOeligible(players, league) {
-    if (players.length < 2) {
-      console.log(`This game will not be ELO rated because there are not at least 2 players`);
-      return false;
     }
 
-    let sql2 = `SELECT * FROM players WHERE league_id = ? AND pkey IN (`;
-    for (let pk of players) {
-      sql2 += `'${pk}', `;
-    }
-    sql2 = sql2.substr(0, sql2.length - 2);
-    sql2 += `)`;
-
-    let playerStats = await this.app.storage.queryDatabase(sql2, [league.id], "league");
-
-    if (playerStats.length !== players.length) {
-      console.log(`This game will not be rated because not all the players are League members: ${league.id}`);
-      console.log(playerStats);
-      console.log(players);
-      return false;
-    }
-    return playerStats;
-  }
-
-  async receiveRoundOverTransaction(blk, tx, conf, app) {
-    if (app.BROWSER == 1) {
+    if (!success){
       return;
     }
 
-    let txmsg = tx.returnMessage();
-    let game = txmsg.module;
-
-  }
-
-  /* Let's try this function as a service node only */
-  async processUpdateTransaction(app, txmsg, gameover) {
-    if (app.BROWSER == 1) {
-      return;
-    }
-
-    //All games have a grace window where if a player "quits" within X moves
-    //it won't count as a win or loss for anyone
-    if ((txmsg.reason == "cancellation" || txmsg.reason == "arcadeclose")
-      && gameover) {
-      return;
-    }
-
-    let game = txmsg.module;
-
-    //Which leagues may this gameover affect?
-    let sql = `SELECT * FROM league WHERE game = ?${(gameover) ? ` OR id='SAITOLICIOUS'` : ''}`;
-    const relevantLeagues = await app.storage.queryDatabase(sql, [game], "league");
-
-    //Who are all the players in the game?
-    let publickeys = txmsg.players.split("_");
-
-    if (Array.isArray(txmsg.winner) && txmsg.winner.length == 1) {
-      txmsg.winner = txmsg.winner[0];
-    }
-
-    let today = new Date().getTime();
-    //Let's check each league
-    for (let leag of relevantLeagues) {
-      if (leag.options && leag.id !== txmsg.league) {
-        console.log("Specified League ID:", txmsg.league);
-        console.log(leag);
-        continue;
-      }
-      if (leag.startdate) {
-        let sd = Date.parse(leag.startdate);
-        if (today < sd) {
-          console.log("League hasn't begun yet.");
-          continue;
-        }
-      }
-      if (leag.enddate) {
-        let ed = Date.parse(leag.enddate);
-        if (today > ed) {
-          console.log("League already finished.");
-          continue;
-        }
-      }
-
-      if (gameover) {
-        //Make a record of the game
-        sql = `INSERT INTO games (league_id, game_id, module, winner, players_array, time_started, time_finished, method) VALUES ($league_id, $game_id, $module, $winner, $players_array, $time_started, $time_finished, $method)`;
-
-        let params = {
-          $league_id: leag.id,
-          $game_id: txmsg.game_id,
-          $module: game,
-          $winner: (Array.isArray(txmsg.winner)) ? txmsg.winner.join("_") : txmsg.winner,
-          $players_array: txmsg.players,
-          $time_started: 0,
-          $time_finished: new Date().getTime(),
-          $method: txmsg.reason,
-        };
-
-        console.log(sql, params);
-        await this.app.storage.executeDatabase(sql, params, "league");
-        sql = `UPDATE games SET rank=rank+1 WHERE league_id = "${leag.id}"`;
-        await this.app.storage.executeDatabase(sql, {}, "league");
-      }
-
-      //Update players in the league based on results
-      if (leag.ranking == "elo") {
-        //All players must belong to ELO league for points to change
-
-        let playerStats = await this.isELOeligible(publickeys, leag);
-
-        if (!playerStats) {
-          continue;
-        }
-
-        let winner = [], loser = [];
-        let qsum = 0;
-        for (let player of playerStats) {
-          //Convert each players ELO rating into a logistic function
-          player.q = Math.pow(10, (player.score / 400));
-          //Sum the denominator so that the Expected values add to 1
-          qsum += player.q;
-          //Dynamically calculate each player's K-factor
-          player.k = this.calculateK(player);
-
-          //Sort into winners and losers
-          if (player.pkey == txmsg.winner || txmsg.winner.includes(player.pkey)) {
-            winner.push(player);
-          } else {
-            loser.push(player);
-          }
-        }
-
-        console.log(winner, loser);
-        for (let p of winner) {
-          let outcome = (winner.length == 1) ? "games_won" : "games_tied";
-          p.score += p.k * ((1 / winner.length) - (p.q / qsum));
-          await this.updatePlayerScore(p, outcome);
-        }
-        for (let p of loser) {
-          p.score -= (p.k * p.q / qsum);
-          await this.updatePlayerScore(p);
-        }
-
-      } else if (leag.ranking == "exp") {
-        let players = [...publickeys]; //Need to refresh this each loop (since we splice below)
-
-        //Winner(s) get 5 points, true ties get 3 pts, losers get 1 pt
-        //as long as player is in the league
-
-        if (Array.isArray(txmsg.winner)) {
-          let numPoints = (txmsg.reason == "tie") ? 3 : 4;
-          let gamekey = (txmsg.reason == "tie") ? "games_tied" : "games_won";
-
-          for (let i = players.length - 1; i >= 0; i--) {
-            if (txmsg.winner.includes(players[i])) {
-              await this.incrementPlayer(players[i], leag.id, numPoints, gamekey);
-              players.splice(i, 1);
-            }
-          }
-        } else {
-          for (let i = players.length - 1; i >= 0; i--) {
-            if (txmsg.winner == players[i]) {
-              await this.incrementPlayer(players[i], leag.id, 5, "games_won");
-              players.splice(i, 1);
-            }
-          }
-        }
-        //Everyone left gets a point for playing
-        for (let i = 0; i < players.length; i++) {
-          await this.incrementPlayer(players[i], leag.id, 1);
-        }
-      } else {
-        //No idea what to do here, but should call a function of the game module/game engine
-      }
-    }
-
-  }
-
-  //Our native ELO system
-  calculateK(playerObj) {
-    if (playerObj?.games_finished < 30 && playerObj?.score < 2300) {
-      return 40;
-    }
-    if (playerObj?.score < 2400) {
-      return 20;
-    }
-    return 10;
-  }
-
-  /*
-  * Some wrapper functions to query individual stats of the league
-  */
-  async getLeagueData(league_id, data_field = null) {
-    if (!data_field) {
-      return null;
-    }
-
-    if (this.app.BROWSER == 1) {
-      for (let l of this.leagues) {
-        if (l.id == league_id) {
-          return l[data_field];
-        }
-      }
-    } else {
-
-      let row = await this.app.storage.queryDatabase(`SELECT * FROM league WHERE id = ?`, [league_id], "league");
-
-      if (row?.length > 0) {
-        return row[0][data_field];
-      }
-    }
-    return null;
-  }
-
-
-  /*
-  *  Get league data from league id
-  */
-  async getAllLeagueData(league_id) {
-
-    if (!league_id) {
-      return null;
-    }
-
-    if (this.app.BROWSER == 1) {
-      for (let l of this.leagues) {
-        if (l.id == league_id) {
-          return l;
-        }
-      }
-    } else {
-
-      let row = await this.app.storage.queryDatabase(`SELECT * FROM league WHERE id = ?`, [league_id], "league");
-      if (row?.length > 0) {
-        return row[0];
-      }
-    }
-    return null;
-  }
-
-
-  /**
-   *
-   */
-  updateLeague(league, invitation = false) {
-    let lid = league.id;
-    let pid = this.app.wallet.getPublicKey();
-    league.myRank = -1;
-    let league_self = this;
-    league.players = [];
-    league.top3 = [];
-    this.sendPeerDatabaseRequestWithFilter("League", `SELECT * FROM players WHERE league_id = '${lid}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
-
-      async (res) => {
-        //A little trick to use league.playerCnt == undefined to flag that the database query hasn't come back yet
-        league.playerCnt = 0;
-        //Keep track of the number of updated leagues
-        league_self.leagueCount++;
-
-        if (res.rows) {
-          let cnt = 0;
-          for (let p of res.rows) {
-            league.players.push(p.pkey); //Keep a list of who is in each league
-            cnt++; //Count number of players
-            if (p.pkey == pid) {
-              league.myRank = cnt; //I am the cnt player in the leaderboard
-            }
-            if (cnt <= 3) {
-              league.top3.push(p.pkey);
-            }
-          }
-          league.playerCnt = cnt;
-        }
-
-        if (invitation) {
-          let myLocation = window.location.href;
-          myLocation = myLocation.substring(0, myLocation.indexOf("?") - 1);
-          myLocation = myLocation.replace("league", "arcade");
-
-          if (league.myRank < 0) {
-            if (league_self.checkDate(league.startdate) || league.allowlate) {
-              if (league.playerCnt < league.max_players || league.max_players == 0) {
-                league_self.sendJoinLeagueTransaction(lid);
-                setTimeout(() => {
-                  window.location = myLocation;
-                }, 1500);
-              } else {
-                if (document.getElementById("alert-wrapper")) {
-                  document.getElementById("alert-wrapper").remove();
-                }
-                let c = await sconfirm("League full, cannot join");
-                window.location = myLocation;
-              }
-            } else {
-              let c = await sconfirm("We are past the signup phase for the league");
-              window.location = myLocation;
-            }
-          } else {
-            let c = await sconfirm("You are already a member of the league");
-          }
-        }
-
-        //console.log(`League updated: ${league.myRank} / ${league.playerCnt}`);
-        if (league_self.leagueCount >= league_self.leagues.length) {
-          league_self.renderLeagues(league_self.app, league_self);
-        }
-
-
-        this.app.connection.emit("league-rankings-render-request");
-
-      });
-
-  }
-
-
-  async countGameStart(players, league) {
-    let now = new Date().getTime();
-    let sql = `UPDATE players SET games_started = (games_started + 1), ts = $ts WHERE pkey IN (`;
-    for (let pk of players) {
-      sql += `'${pk}', `;
-    }
-    sql = sql.substr(0, sql.length - 2);
-    sql += `) AND league_id = $lid`;
-
+    let sql = `UPDATE players SET ${field} = (${field} + ${amount}), ts = $ts WHERE publickey = $publickey AND league_id = $league_id`;
     let params = {
-      $ts: now,
-      $lid: league.id
+      $ts: new Date().getTime() ,
+      $publickey: publickey ,
+      $league_id: league_id
     }
-    console.log(sql);
-    console.log(params);
+    
+    //if (this.debug) { console.log(sql); }
+
     await this.app.storage.executeDatabase(sql, params, "league");
     return 1;
   }
 
-  async incrementPlayer(pkey, lid, amount, game_status = null) {
-    //if (this.app.wallet.getPublicKey() !== pkey){ return; }
-    let now = new Date().getTime();
-    let sql = `UPDATE players SET score = (score + ${amount}), games_finished = (games_finished + 1), ts = $ts`;
-    if (game_status) {
-      sql += `, ${game_status} = (${game_status} + 1)`;
-    }
-    sql += ` WHERE pkey = $pkey AND league_id = $lid`;
-    console.log(sql);
-    let params = {
-      $ts: now,
-      $pkey: pkey,
-      $lid: lid
-    }
-    console.log(params);
-    await this.app.storage.executeDatabase(sql, params, "league");
-    this.app.connection.emit("league-rankings-render-request");
-    return 1;
-  }
 
-  async updatePlayerScore(playerObj, game_status = null) {
-    let now = new Date().getTime();
-    let sql = `UPDATE players SET score = $score, games_finished = ${playerObj.games_finished + 1}, ts = $ts`;
-    if (game_status) {
-      sql += `, ${game_status} = ${playerObj[game_status] + 1}`;
+
+  async updatePlayerScore(playerObj) {
+
+    let league = this.returnLeague(playerObj.league_id);
+    if (league?.players){
+      for (let i = 0; i < league.players.length; i++){
+        if (league.players[i].publickey === playerObj.publickey){
+          league.players[i]["score"] = playerObj.score;
+          if (this.debug){
+            console.log("New Score: " + playerObj.score);
+            console.log(JSON.parse(JSON.stringify(league.players[i])));
+          }
+        }
+      }
     }
-    sql += ` WHERE pkey = $pkey AND league_id = $lid`;
-    console.log(sql);
+
+    let sql = `UPDATE players SET score = $score, ts = $ts WHERE publickey = $publickey AND league_id = $league_id`;
     let params = {
       $score: playerObj.score,
-      $ts: now,
-      $pkey: playerObj.pkey,
-      $lid: playerObj.league_id
+      $ts: new Date().getTime() ,
+      $publickey: playerObj.publickey,
+      $league_id: playerObj.league_id
     }
-    console.log(params);
+
     await this.app.storage.executeDatabase(sql, params, "league");
-    this.app.connection.emit("league-rankings-render-request");
     return 1;
   }
 
+  ////////////////////////////////////////////////
+  // convenience functions for local data inserts //
+  ////////////////////////////////////////////////
 
-  showShareLink(league_id) {
-
-    let data = {};
-
-    //Add more information about the game
-    let league = this.leagues.find((g) => g.id === league_id);
-
-    if (league) {
-      data.game = league.name;
-    } else {
-      console.log("League not found!");
-      return;
-    }
-
-    //Create invite link from the game_sig
-    let inviteLink = window.location.href;
-    if (inviteLink.includes("arcade")) {
-      inviteLink = inviteLink.replace("arcade", "league");
-    }
-    if (!inviteLink.includes("#")) {
-      inviteLink += "#";
-    }
-    if (inviteLink.includes("?")) {
-      inviteLink = inviteLink.replace("#", "&league_join_league=" + league_id);
-    } else {
-      inviteLink = inviteLink.replace("#", "?league_join_league=" + league_id);
-    }
-
-    inviteLink += "&game=";
-    inviteLink += league.game;
-
-    let linkModal = new InvitationLink(this.app, this, inviteLink);
-    linkModal.render();
-  }
-
-
-  /**
-   * Wrapper function to help us launch a League specific game!
-   */
-  async createLeagueGame(league) {
-
-    let arcade_mod = this.app.modules.returnModule("Arcade");
-    if (!arcade_mod) {
-      return;
-    }
-
-    console.log(JSON.parse(JSON.stringify(league)));
-
-    //Check League Membership
-    if (!this.isLeagueMember(league.id)) {
-      alert("You need to be a member of the League to create a League-only game invite");
-      return;
-    }
-
-    let options = (league.options) ? JSON.parse(league.options) : null;
-
-    //Get options if needed through the normal interface
-    if (!options) {
-      let tx = new saito.default.transaction();
-      tx.msg.game = league.game;
-      if (league.admin !== "saito") {
-        tx.msg.league = league.id;
-      }
-      arcade_mod.createGameWizard(league.game, tx);
-      return;
-    }
-
-    //Check options
-    let c = await arcade_mod.verifyOptions("public", options);
-    if (!c) {
-      return;
-    }
-
-    options.league = league.id;
-    options.game = league.game;
-
-    //Create invite
-    arcade_mod.makeGameInvite(options, "public");
-
-  }
-
-
-  async createLeagueChallenge(league, player_id) {
-    /*
-    let arcade_mod = this.app.modules.returnModule("Arcade");
-    if (!arcade_mod) { return; }
-    //Check League Membership
-    if (!this.isLeagueMember(league.id)){
-      alert("You need to be a member of the League to create a League-only game invite");
-      return;
-    }
-    let options = (league.options) ? JSON.parse(league.options) : null;
-    //Get options if needed
-    if (!options){
-      let selector = new GameOptionsSelect(this.app);
-      options = await selector.selectGameOptions(this.app, this.app.modules.returnModule(league.game));
-    }
-    console.log(JSON.parse(JSON.stringify(options)));
-    if (options["game-wizard-players-select"] != 2){
-      alert("You can only challenge head-to-head");
-      return;
-    }
-    //Check options
-    let c = await arcade_mod.verifyOptions("public", options);
-    if (!c){
-      return;
-    }
-    options.league = league.id;
-    options.game = league.game;
-    //Issue Challenge
-    let challenge_overlay = new SaitoOverlay(this.app);
-    let players = [this.app.wallet.getPublicKey(), player_id];
-    this.app.connection.emit("arcade-issue-challenge", {
-      game: league.game,
-      players: players,
-      options: options
-    });
-    challenge_overlay.show(ChallengeIssuedTemplate());
-    timeout = setTimeout(async ()=>{
-      alert("It seems your opponent isn't available.");
-      challenge_overlay.remove();
-    }, 30000);
-    this.app.connection.on("arcade-reject-challenge", (game_id)=>{
-      clearTimeout(timeout);
-      challenge_overlay.show(ChallengeRejectedTemplate());
-    });
-    this.app.connection.on("arcade-game-loading" , () =>{
-      clearTimeout(timeout);
-      challenge_overlay.show(ChallengeAcceptedTemplate());
-    });
-  */
-  }
-
-  /**
-   * Tell League to also listen to messages from Arcade and every installed game
-   * (Overwrites modtemplate function)
-   */
-  shouldAffixCallbackToModule(modname, tx = null) {
-
-    if (modname == "League") {
-      return 1;
-    }
-    if (modname == "Arcade") {
-      return 1;
-    }
-
+  /////////////////////////////
+  // League Array Management //
+  /////////////////////////////
+  returnLeague(league_id) {
     for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].module == modname) {
-        return 1;
-      }
+      if (this.leagues[i].id === league_id) { return this.leagues[i]; }
     }
-    return 0;
+    return null;
   }
 
-  //API Function
-  isLeagueMember(league_id) {
-    for (let leag of this.leagues) {
-      if (leag.id == league_id) {
-        if (leag.myRank > 0) {
-          return true;
-        } else {
-          return false;
+  removeLeague(league_id) {
+    for (let i = 0; i < this.leagues.length; i++) {
+      if (this.leagues[i].id === league_id) { 
+        this.leagues.splice(i, 1); 
+        return;
+      }
+    }
+    return null;
+  }
+
+
+  validateLeague(obj){
+    let newObj = {};
+    //
+    // default values
+    //
+    newObj.id = obj.id || "";
+    newObj.game = obj.game || "Unknown";
+    newObj.name = obj.name || "Unknown";
+    newObj.admin = obj.admin || "";
+    newObj.status = obj.status || "public";
+    newObj.description = obj.description || "";
+    newObj.ranking_algorithm = obj.ranking_algorithm || "EXP";
+    newObj.default_score = obj.default_score || 0;
+        
+    return newObj;
+  }
+
+
+  addLeague(obj) {
+    
+    if (!obj)                   { return; }
+    if (!obj.id)                { return; }
+
+    if (!this.returnLeague(obj.id)) {
+      
+      //if (this.debug) { console.log("Add League with ID: " + obj.id); }
+
+      let newLeague = this.validateLeague(obj);
+
+      //
+      // dynamic data-storage
+      //
+      newLeague.players = [];
+      newLeague.rank = 0; //My rank in the league
+    
+
+      //if (this.debug) { console.log("New League", JSON.parse(JSON.stringify(newLeague))); }
+
+      this.leagues.push(newLeague);
+
+      //if (!this.app.BROWSER){
+        this.leagueInsert(newLeague);        
+      //}
+    }
+
+  }
+
+
+
+
+  validatePlayer(obj){
+
+    let newObj = {};
+    
+    newObj.league_id      = obj.league_id || "";
+    newObj.publickey      = obj.publickey || "";
+    newObj.email          = obj.email || "";
+    newObj.score          = obj.score || 0;
+    newObj.games_started  = obj.games_started || 0;
+    newObj.games_finished = obj.games_finished || 0;
+    newObj.games_won      = obj.games_won || 0;
+    newObj.games_tied     = obj.games_tied || 0; 
+
+    return newObj;
+  }
+
+  async addLeaguePlayer(obj) {
+
+    let league = this.returnLeague(obj.league_id);
+  
+    if (!league) { 
+      console.error("League not found"); 
+      return; 
+    }
+
+    let newPlayer = this.validatePlayer(obj);
+    if (!newPlayer.score) { 
+      newPlayer.score = league.default_score; 
+    } 
+
+    //If we have the player already, just update the stats
+    for (let z = 0; z < league.players.length; z++) {
+      if (league.players[z].publickey === newPlayer.publickey) {
+        console.log("BEFORE:");
+        console.log(JSON.parse(JSON.stringify(league.players[z])));
+        league.players[z].score = newPlayer.score || league.players[z].score;
+        league.players[z].games_started = newPlayer.games_started || league.players[z].games_started;
+        league.players[z].games_won = newPlayer.games_won || league.players[z].games_won;
+        league.players[z].games_tied = newPlayer.games_tied || league.players[z].games_tied;
+        league.players[z].games_finished = newPlayer.games_finished || league.players[z].games_finished;
+        console.log("AFTER:");
+        console.log(JSON.parse(JSON.stringify(league.players[z])));
+        return;
+      }
+    }
+        
+    league.players.push(newPlayer);    
+
+    await this.playerInsert(newPlayer); 
+
+  }
+
+
+  fetchLeagueLeaderboard(league_id, mycallback=null) {
+
+    let league = this.returnLeague(league_id);
+    let rank = 0;
+
+    //We need to reset this because this should be an ordered array
+    //and if the scores have changed, we need to resort the players
+    league.players = [];
+
+    this.sendPeerDatabaseRequestWithFilter(
+      "League" ,
+      `SELECT * FROM players WHERE league_id = '${league_id}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
+      (res) => {
+          if (res?.rows) {
+
+            for (let p of res.rows){
+              //
+              // Count how many people are ranked above me in the leaderboard
+              //
+              rank++;
+              
+              if (p.publickey == this.app.wallet.returnPublicKey()) {
+                league.rank = rank;
+              }
+
+              //
+              // Update player-league data in our live data structure
+              //
+              this.addLeaguePlayer(p);
+            }
         }
-      }
-    }
-    return false;
+        
+        if (mycallback != null) { mycallback(res); }
+      },
+      (p) => {
+          if (p.hasService("league")) { 
+            return 1; 
+          }
+            return 0;
+        }
+    );
   }
 
 
-  loadLeagues() {
 
-//    if (this.app.options.leagues) {
-//      this.leagues = this.app.options.leagues;
-//      return;
-//    }
+  ////////////////////////////////////////////////
+  // convenience functions for database inserts //
+  ////////////////////////////////////////////////
+  async leagueInsert(obj) {
 
-    //
-    // set default values
-    //
-//    this.leagues = {};
+    let sql = `INSERT OR REPLACE INTO leagues (id, game, name, admin, status, description, ranking_algorithm, default_score) 
+                    VALUES ( $id, $game, $name, $admin, $status, $description, $ranking_algorithm, $default_score )`;
+    let params = {
+      $id         :   obj.id ,
+      $game       :   obj.game,
+      $name       :   obj.name,
+      $admin      :   obj.admin,
+      $status     :   obj.status,
+      $description        :   obj.description,
+      $ranking_algorithm  :   obj.ranking_algorithm,
+      $default_score      :   obj.default_score,
+    };
 
+    await this.app.storage.executeDatabase(sql, params, "league");
+
+    return;
   }
 
-  saveLeagues() {
-//      this.app.options.leagues = this.leagues;
-//      this.app.options.saveOptions();
+
+
+  async playerInsert(obj) {
+
+    let sql = `INSERT OR IGNORE INTO players (league_id, publickey, score, ts) 
+                                VALUES ( $league_id, $publickey, $score, $ts)`;
+    let params = {
+          $league_id: obj.league_id,
+          $publickey: obj.publickey,
+          $score: obj.score,
+          $ts: obj.ts
+        };
+    await this.app.storage.executeDatabase(sql, params, "league");
+	  return;
   }
 
 
-  checkDate(date_as_string, after = false) {
-    if (date_as_string == "") {
-      return true;
-    }
-
-    let now = new Date().getTime();
-    let cutoff = Date.parse(date_as_string);
-    if (after) {
-      return cutoff > now;
-    } else {
-      return now < cutoff;
-    }
+  async pruneOldPlayers(){
+   let sql = `DELETE FROM players WHERE ts < ?`;
+   let cutoff = new Date().getTime() - this.inactive_player_cutoff;
+   await this.app.storage.executeDatabase(sql, [cutoff], "league"); 
   }
 
 }
 
 module.exports = League;
+
+
+
+
+
 

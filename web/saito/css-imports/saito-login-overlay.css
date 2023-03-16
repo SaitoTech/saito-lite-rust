@@ -13,6 +13,8 @@
     margin-right: auto;
     width: 50rem;
     text-align: left;
+    max-width: 90vw;
+
 }
 
 .saito-restore-button {
@@ -35,7 +37,7 @@
 }
 
 .saito-login-overlay-field input[type="text"] , .saito-login-overlay-field input[type="password"] {
-    font-size: 3rem;
+    font-size: 2.5rem;
     padding: 1rem;
     width: 50rem;
 }
@@ -57,17 +59,21 @@
     width: 100%;
     text-align: center;
     font-size: 5rem;
-    padding-top: 15vh;
+    padding-top: 20vh;
 }
 
 .saito-modal-subtitle {
     width: 100%;
     text-align: center;
     font-size: 2rem;
-    padding-top: 2.5vh;
+    padding-top: 1rem;
     height: 10vh;
 }
 
 
-
-
+@media screen and (max-width: 768px) {
+    .saito-login-overlay-field input[type="text"],
+    .saito-login-overlay-field input[type="password"]  {
+        width: 100%;
+    }
+}

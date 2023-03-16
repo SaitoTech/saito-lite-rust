@@ -44,7 +44,7 @@ font imports
   --saito-font: "visuelt-light";
 
   --saito-header-height: 5em;
-  --saito-width: 1500px;
+  --saito-width: 1250px;
 
   --saito-left-sidebar-width: 26rem;
   --saito-main-appspace-width: 70rem;
@@ -54,9 +54,11 @@ font imports
   --saito-gray: #eaeaef45;
   --saito-gray-mid: #444;
   --saito-primary: #f71f3d;
+  --saito-red: #f71f3d;
   --saito-secondary: #ff8235;
   --saito-tertiary: rgb(234, 234, 239);
   --saito-white: #fff;
+  --saito-black: #000;
   --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%),
     linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000),
     linear-gradient(180deg, #e9ce93, #f71f3d);
@@ -90,14 +92,14 @@ font imports
 
 html[data-theme="dark"] {
   --saito-primary: #e05b08;
-  --saito-secondary: #060606;
+  --saito-secondary: #c16a00;
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
   --saito-font-color-light: #aaa;
   --saito-font-color-inverse: #010101;
   --saito-profile-background: #222;
-  --saito-border-color: #343434;
-  --saito-border-color-dark: #454545;
+  --saito-border-color: #555;
+  --saito-border-color-dark: #666;
   --saito-border: 1px solid #c5c5c5bb;
   --saito-background-color: #211f25;
   --saito-background-light: #181a29;
@@ -111,7 +113,7 @@ html[data-theme="dark"] {
 
 html[data-theme="arcade"] {
   --saito-arcade-background: linear-gradient(-45deg, #0f0020 50%, #08000b 100%);
-  --saito-primary: #84a;
+  --saito-primary: #639;
   /* --dreamscape: #84a; */
   --saito-secondary: #060606;
   --saito-font-color: #dedede;
@@ -120,9 +122,9 @@ html[data-theme="arcade"] {
   --saito-font-color-inverse: #010101;
   --saito-profile-background: #22222269;
   --saito-border: 1px solid #c5c5c5bb;
-  --saito-border-color: #639;
-  --saito-background-color: #3b1b5b;
-  --saito-background-light: #2e2636;
+  --saito-border-color: #426;
+  --saito-background-color: #180c24;
+  --saito-background-light: #140a1e;
   --saito-gray-transparent: #88888818;
   --saito-background-shim: #0008;
   --saito-dark-shim: #0009;

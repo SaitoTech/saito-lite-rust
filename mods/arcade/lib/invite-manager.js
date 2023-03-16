@@ -11,12 +11,11 @@ class InviteManager {
 		this.container = container;
 		this.name = "InviteManager";
 		this.type = "short";
-		this.invites = {};
 
-    // For filtering which games get displayed
+    	// For filtering which games get displayed
 		// We may want to only display one type of game invite, so overwrite this before render()
 		this.list = "all";
-		this.lists = ["mine","open"];
+		this.lists = ["mine","open","active"];
 		
 
 		this.loader_overlay = new SaitoOverlay(app, mod, false, true);
@@ -25,10 +24,7 @@ class InviteManager {
 		//
 		// handle requests to re-render invite manager
 		//
-		this.app.connection.on("arcade-invite-manager-render-request", () => {
-			if (this.mod.debug) {
-				console.log("Arcade render request");
-			}
+		app.connection.on("arcade-invite-manager-render-request", () => {
 			if (!this.mod.is_game_initializing) {
 				this.render();
 			}
@@ -51,8 +47,10 @@ class InviteManager {
 		//
 		// replace element or insert into page (deletes invites for a full refresh)
 		//
-		if (document.querySelector(".invite-manager")) {
-			this.app.browser.replaceElementBySelector(InviteManagerTemplate(this.app, this.mod), ".invite-manager");
+		let target = this.container + " .invite-manager";
+
+		if (document.querySelector(target)) {
+			this.app.browser.replaceElementBySelector(InviteManagerTemplate(this.app, this.mod), target);
 		} else {
 			this.app.browser.addElementToSelectorOrDom(InviteManagerTemplate(this.app, this.mod), this.container);
 		}
@@ -65,10 +63,15 @@ class InviteManager {
 
 				if (this.mod.games[list].length > 0) {
 					if (list === "mine") {
-						this.app.browser.addElementToSelector(`<h5>My Games</h5>`, ".invite-manager");
-					}
-					if (list === "open") {
-						this.app.browser.addElementToSelector(`<h5>Open Invites</h5>`, ".invite-manager");
+						this.app.browser.addElementToSelector(`<h5>My Games</h5>`, target);
+					}else if (list == "open"){
+						this.app.browser.addElementToSelector(`<h5>Open Invites</h5>`, target);
+					}else if (list == "active"){
+						this.app.browser.addElementToSelector(`<h5>Active Matches</h5>`, target);
+					}else if (list == "over"){
+						this.app.browser.addElementToSelector(`<h5>Recent Matches</h5>`, target);
+					}else{
+						this.app.browser.addElementToSelector(`<h5>${list.charAt(0).toUpperCase() + list.slice(1)} Games</h5>`, target);
 					}
 				}
 
@@ -76,7 +79,8 @@ class InviteManager {
 					let newInvite = new Invite(
 						this.app,
 						this.mod,
-						".invite-manager",
+						target,
+						this.type,
 						this.mod.games[list][i]
 					);
 					newInvite.render();

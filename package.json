@@ -17,7 +17,8 @@
     "test": "jest",
     "analyze": " --config ./webpack/old/webpack.analyze.js",
     "jsdoc": "jsdoc --destination saitolitedocs lib/templates/abstractcryptomodule.js lib/templates/substratebasedcrypto.js lib/saito/wallet.js README.md",
-    "pretty": "npx prettier --write ."
+    "pretty": "npx prettier --write .",
+    "go": "npm run compile dev && npm start"
   },
   "author": "Team Saito",
   "license": "SAITO",
@@ -50,6 +51,7 @@
     "image-resolver": "^0.6.1",
     "int64-buffer": "^1.0.1",
     "jimp": "^0.16.2",
+    "js-chess-engine": "^1.0.2",
     "json-bigint": "^1.0.0",
     "json-tree-viewer": "0.0.2",
     "jszip": "^3.5.0",
@@ -82,6 +84,7 @@
     "uuid-by-string": "^3.0.6",
     "vanilla-toast": "^0.5.0",
     "virtual-bg": "^0.1.1",
+    "webrtc-adapter": "^8.2.0",
     "websocket": "^1.0.34",
     "ws": "^7.5.5"
   },

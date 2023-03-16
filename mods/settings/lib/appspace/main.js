@@ -1,23 +1,29 @@
 const SettingsAppspaceTemplate = require('./main.template.js');
 const RegisterUsernameModal = require('./../../../../lib/saito/ui/modals/register-username/register-username.js');
+const SetupRecoveryOverlay = require('./../../../../lib/saito/ui/modals/backup/backup.js');
+const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 const jsonTree = require('json-tree-viewer');
 
 class SettingsAppspace {
 
-  constructor(app, mod, container = "") {
+  constructor(app, mod, container="") {
     this.app = app;
     this.mod = mod;
     this.container = container;
+
+    this.overlay = new SaitoOverlay(app, mod);
+
+    this.app.connection.on("settings-overlay-render-request", () => {
+      this.mod.attachStyleSheets();
+      this.render();
+    });
+
   }
 
   render() {
 
-    if (document.querySelector(".settings-appspace")) {
-      this.app.browser.replaceElementBySelector(SettingsAppspaceTemplate(this.app, this.mod), ".settings-appspace");
-    } else {
-      this.app.browser.addElementToSelectorOrDom(SettingsAppspaceTemplate(this.app, this.mod), this.container);
-    }
+    this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod));
 
     let settings_appspace = document.querySelector(".settings-appspace");
     if (settings_appspace) {
@@ -34,10 +40,10 @@ class SettingsAppspace {
 
     try {
       let optjson = JSON.parse(JSON.stringify(this.app.options, (key, value) =>
-        typeof value === 'bigint'
-          ? value.toString()
-          : value // return everything else unchanged
-      ));
+            typeof value === 'bigint'
+                ? value.toString()
+                : value // return everything else unchanged
+        ));
       var tree = jsonTree.create(optjson, el);
     } catch (err) {
       console.log("error creating jsonTree: " + err);
@@ -64,26 +70,21 @@ class SettingsAppspace {
         }
       }
 
-      document.getElementById("register-email-btn").onclick = function(e) {
-        mod.modal_register_username = new RegisterUsernameModal(app, mod, function() {
-        });
-        mod.modal_register_username.render(app, mod, RegisterUsernameModal.MODES.REGISTEREMAIL);
-        mod.modal_register_username.attachEvents(app, mod);
-      }
+      if (document.getElementById("register-identifier-btn")){
+        document.getElementById("register-identifier-btn").onclick = function (e) {
+         if (!mod.modal_register_username){
+          mod.modal_register_username = new RegisterUsernameModal(app, mod, null); 
+         }
+         
+         mod.modal_register_username.render();
 
-      document.getElementById("register-identifier-btn").onclick = function(e) {
-        mod.modal_register_username = new RegisterUsernameModal(app, mod);
-        mod.modal_register_username.render(app, mod);
-        mod.modal_register_username.attachEvents(app, mod);
-      }
+        }
 
-      document.querySelector(".settings-appspace-privatekey").onclick = function(e) {
-        document.querySelector(".settings-appspace-privatekey").classList.toggle("saito-password");
       }
 
 
       if (document.getElementById("trigger-appstore-btn")) {
-        document.getElementById("trigger-appstore-btn").onclick = function(e) {
+        document.getElementById("trigger-appstore-btn").onclick = function (e) {
           let appstore_mod = app.modules.returnModule("AppStore");
           if (appstore_mod) {
             appstore_mod.openAppstoreOverlay(app, appstore_mod);
@@ -124,42 +125,60 @@ class SettingsAppspace {
         };
       });
 
-      document.getElementById('backup-account-btn').addEventListener('click', (e) => {
-        app.wallet.backupWallet();
-      });
-
-      document.getElementById('restore-account-btn').onclick = async (e) => {
-        document.getElementById('file-input').addEventListener('change', function(e) {
-          var file = e.target.files[0];
-          app.wallet.restoreWallet(file);
-        });
-        document.querySelector('#file-input').click();
+      if (document.getElementById('backup-account-btn')){
+        document.getElementById('backup-account-btn').onclick = (e) => {
+          app.wallet.backupWallet();
+        }
       }
 
-      document.querySelector('.copy-public-key').onclick = (e) => {
-        navigator.clipboard.writeText(app.wallet.getPublicKey());
-        salert("Public key copied");
-      }
-      /*
-          document.getElementById('reset-account-btn').onclick = async (e) => {
+      if (document.getElementById('restore-account-btn')){
+        document.getElementById('restore-account-btn').onclick = async (e) => {
+          document.getElementById('file-input').addEventListener('change', function (e) {
+            var file = e.target.files[0];
+            app.wallet.restoreWallet(file);
+          });
+          document.querySelector('#file-input').click();
+        }
 
-            confirmation = await sconfirm('This will reset your account, do you wish to proceed?');
+      }
+
+      document.getElementById('nuke-account-btn').onclick = async (e) => {
+      
+            confirmation = await sconfirm('This will reset/nuke your account, do you wish to proceed?');
             if (confirmation) {
+
+	      app.options.keys = [];
+	      app.options.groups = [];
               app.wallet.resetWallet();
               app.modules.returnModule('Arcade').onResetWallet();
               app.storage.resetOptions();
-
+      
               mod.emails.inbox = [];
               mod.emails.sent = [];
               mod.emails.trash = [];
-
+      
               mod.render(app, mod);
               mod.attachEvents(app, mod);
-
+      
               app.blockchain.resetBlockchain();
             }
-          };
-      */
+      };
+
+      Array.from(document.querySelectorAll('.settings-appspace .pubkey-containter')).forEach(key => {
+        key.onclick = (e) =>{
+
+          navigator.clipboard.writeText(e.currentTarget.dataset.id);
+          let icon_element = e.currentTarget.querySelector(".pubkey-containter i");
+          icon_element.classList.toggle("fa-copy");
+          icon_element.classList.toggle("fa-check");
+
+          setTimeout(() => {
+            icon_element.classList.toggle("fa-copy");
+            icon_element.classList.toggle("fa-check");
+          }, 1500);
+        }
+
+      });
 
       document.getElementById('restore-privatekey-btn').onclick = async (e) => {
 
@@ -192,7 +211,7 @@ class SettingsAppspace {
       };
 
     } catch (err) {
-      console.log("Error in Settings Appspace: " + JSON.stringify(err));
+      console.log("Error in Settings Appspace: ", err);
     }
   }
 
