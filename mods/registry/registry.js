@@ -57,7 +57,12 @@ class Registry extends ModTemplate {
                     this.app.connection.emit("update_identifier", (key));
                   }
                 }
-              }
+              } else {
+		// save if locally stored
+		if (this.app.keychain.hasPublicKey(key)) {
+		  this.app.keychain.addKey({ publickey : key , identifier : value });
+		}
+	      }
               this.app.browser.updateAddressHTML(key, value);
             });
           });
@@ -539,14 +544,14 @@ class Registry extends ModTemplate {
 
     let registry_self = app.modules.returnModule("Registry");
 
-    /***** UNCOMMENT FOR LOCAL DEVELOPMENT ******
+    /***** UNCOMMENT FOR LOCAL DEVELOPMENT ******/
     if (registry_self.app.options.server != undefined) {
       registry_self.publickey = registry_self.app.wallet.returnPublicKey();
     } else {
       registry_self.publickey = peer.peer.publickey;
     }
 console.log("WE ARE NOW LOCAL SERVER");
-    *******************************************/
+    /*******************************************/
 
   }
 

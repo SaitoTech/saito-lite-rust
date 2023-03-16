@@ -6,6 +6,7 @@ import { Saito } from "../../apps/core";
 
 class Keychain {
   public app: Saito;
+  public publickey_keys_hmap: any;
   public keys: Array<any>;
   public groups: any;
   public modtemplate: any;
@@ -19,6 +20,7 @@ class Keychain {
 
   constructor(app: Saito) {
     this.app = app;
+    this.publickey_keys_hmap = {}; // 1 if saved
     this.keys = [];
     this.groups = [];
     this.modtemplate = new modtemplate(this.app);
@@ -35,6 +37,7 @@ class Keychain {
     //
     for (let i = 0; i < this.app.options.keys.length; i++) {
       this.keys.push(this.app.options.keys[i]);
+      this.publickey_keys_hmap[this.app.options.keys[i].publickey] = 1;
     }
 
     //
@@ -114,6 +117,7 @@ class Keychain {
     newkey.publickey = data.publickey;
     for (let key in data) { if (key !== "publickey") { newkey[key] = data[key]; } }
     this.keys.push(newkey);
+    this.publickey_keys_hmap[newkey.publickey] = 1;
     this.saveKeys();
 
   }
@@ -139,6 +143,11 @@ class Keychain {
 
     // or return original
     return encrypted_msg;
+  }
+
+  hasPublicKey(publickey="") {
+    if (this.publickey_keys_hmap[publickey]) { return true; }
+    return false;
   }
 
   addGroup(group_id = "", data = { members: [] }) {
@@ -263,12 +272,11 @@ class Keychain {
       data = d;
     }
 
-
     //
     // if keys exist
     //
     let key_idx = -1;
-    for (let x = 0; x < this.keys.length; x++) {
+    for (let x = 0; key_idx == -1 && x < this.keys.length; x++) {
       let match = true;
       for (let key in data) {
         if (this.keys[x][key] !== data[key]) {
