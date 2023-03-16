@@ -30,7 +30,6 @@
 
 #advanced-options-overlay-container {
   color: var(--saito-font-color-dark-modal);
-  background: var(--saito-arcade-background-color);
   border-radius: 0.5rem;
   width: min-content;
   min-height: 15rem;
@@ -43,6 +42,8 @@
   max-height: 95vh;
   overflow-y: auto;
   overflow-x: hidden;
+  background: var(--saito-background-color);
+  min-width: 40rem;
 }
 
 .overlay-title {
