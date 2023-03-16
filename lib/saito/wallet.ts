@@ -36,19 +36,22 @@ export default class Wallet {
   public recreate_pending_transactions: any;
   public saitoCrypto: any;
 
-  public createUnsignedTransactionWithDefaultFee(publickey = "", amount = BigInt(0)): Transaction {
+  public async createUnsignedTransactionWithDefaultFee(
+    publickey = "",
+    amount = BigInt(0)
+  ): Promise<Transaction> {
     if (publickey == "") {
-      publickey = this.getPublicKey();
+      publickey = await this.getPublicKey();
     }
     return this.createUnsignedTransaction(publickey, amount, BigInt(0));
   }
 
-  public createUnsignedTransaction(
+  public async createUnsignedTransaction(
     publicKey = "",
     amount = BigInt(0),
     fee = BigInt(0),
     force_merge = false
-  ): Transaction {
+  ): Promise<Transaction> {
     return S.getInstance().createTransaction(publicKey, amount, fee, force_merge);
   }
 
@@ -56,15 +59,15 @@ export default class Wallet {
     return S.getInstance().signTransaction(tx) as T;
   }
 
-  public getPublicKey(): string {
+  public async getPublicKey(): Promise<string> {
     return S.getInstance().getPublicKey();
   }
 
-  public returnPrivateKey(): string {
+  public async returnPrivateKey(): Promise<string> {
     return S.getInstance().getPrivateKey();
   }
 
-  public getPendingTransactions(): Array<Transaction> {
+  public async getPendingTransactions(): Promise<Array<Transaction>> {
     return S.getInstance().getPendingTransactions();
   }
 
@@ -72,7 +75,7 @@ export default class Wallet {
     return S.getInstance().signAndEncryptTransaction(tx);
   }
 
-  public getBalance(ticker = "SAITO"): bigint {
+  public async getBalance(ticker = "SAITO"): Promise<bigint> {
     if (ticker === "SAITO") {
       return S.getInstance().getBalance();
     }

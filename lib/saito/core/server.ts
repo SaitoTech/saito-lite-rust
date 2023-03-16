@@ -436,7 +436,7 @@ class Server {
       let peers: Peer[] = await this.app.network.getPeers();
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      for (let i = 0; i < this.app.network.peers.length; i++) {
+      for (let i = 0; i < peers.length; i++) {
         if (peers[i].publicKey === pkey) {
           peer = peers[i];
         }
