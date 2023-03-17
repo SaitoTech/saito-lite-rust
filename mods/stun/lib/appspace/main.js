@@ -13,9 +13,7 @@ class StunAppspace {
     this.container = container;
     this.overlay = new SaitoOverlay(app, mod);
     this.loader = new SaitoLoader(app, mod);
-    // app.connection.on('join-room-with-code', (code) => {
-    //   this.joinVideoInvite(app, mod, code)
-    // })
+ 
 
     app.connection.on('stun-create-conference-call', (code) => {
       this.createConferenceCall(app, mod, code)
@@ -35,6 +33,9 @@ class StunAppspace {
   }
 
   render() {
+    if(document.querySelector('.stun-appspace')){
+      return;
+    }
     if (this.container === ".saito-overlay") {
       this.overlay.show(StunAppspaceTemplate(this.app, this.mod))
     } else if (this.container === "body") {
@@ -62,14 +63,11 @@ class StunAppspace {
   }
 
   async createRoom() {
-    // get local stream;
-    const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-
     // create a room code, and update the server about a new room, then add the my public key into that room
     let room_code = this.app.crypto.generateRandomNumber().substring(0, 6);
 
     // create peer manager and initialize , send an event to stun to initialize
-    this.app.connection.emit('stun-init-peer-manager', localStream, room_code);
+    this.app.connection.emit('stun-init-peer-manager', room_code);
 
     this.mod.sendCreateRoomTransaction(room_code);
   }

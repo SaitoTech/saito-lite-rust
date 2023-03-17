@@ -7,7 +7,7 @@
   padding: 2rem;
   top: 0;
   display: flex;
-  z-index: 12;
+  /* z-index: 12; */
   /* justify-content: center; */
   align-items: center;
   background-color: var(--saito-white);
@@ -15,8 +15,6 @@
   color: white;
   padding: 3rem;
 }
-
-
 
 .stunx-appspace-card {
   width: 50%;
@@ -37,7 +35,6 @@
   font-size: 2.2rem;
   line-height: 3rem;
   color: var(--saito-white);
-
 }
 
 .stunx-appspace-card > p span {
@@ -89,13 +86,13 @@
 }
 
 .stunx-appspace-join input {
-    margin-right: 1rem;
-    padding-left: 1rem;
-    font-size: 3rem;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    height: 4.5rem;
-    max-width: 20rem;
+  margin-right: 1rem;
+  padding-left: 1rem;
+  font-size: 3rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  height: 4.5rem;
+  max-width: 20rem;
 }
 
 .stunx-appspace-join p {
@@ -135,7 +132,7 @@
   .stunx-appspace-card {
     width: 80%;
     margin-left: 2rem;
-  }  
+  }
 }
 @media screen and (max-width: 503px) {
   .stun-appspace {
