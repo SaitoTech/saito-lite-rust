@@ -689,6 +689,7 @@
   align-items: center;
   justify-content: center;
   color: var(--saito-white);
+  
 }
 .chat-settings-join-section h2 {
   margin-bottom: 1.5rem;
