@@ -289,18 +289,20 @@ class Keychain {
       }
     }
 
-    if (key_idx != -1) {
-      return this.keys[key_idx];
-    }
+    let return_key = (key_idx != -1) ? this.keys[key_idx] : null;
 
     //
     // no match - maybe we have a module that has cached this information?
     //
-    let return_key = null;
+    
     this.app.modules.getRespondTos("saito-return-key").forEach((modResponse) => {
       let key = modResponse.returnKey(data);
       if (key) { 
-	       return_key = key; 
+	       if (return_key){
+          return_key = Object.assign(return_key, key);
+         }else{
+          return_key = key;  
+         }
       }
     });
 
