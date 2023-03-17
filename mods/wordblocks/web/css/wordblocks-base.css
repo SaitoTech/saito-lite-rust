@@ -38,6 +38,7 @@ body {
   position: absolute;
   right: 40px;
   top: 50px;
+  cursor: default;
 }
 .plog {
   padding: 0.5em;
@@ -70,6 +71,7 @@ body {
   text-transform: uppercase;
   color: #3df71f;
   text-decoration: underline dotted;
+  cursor: pointer;
 }
 
 .wordscore{
@@ -146,13 +148,14 @@ thead,  tfoot{
   grid-template-rows: repeat(15, 15fr);
   grid-gap: 3px;
   background: rgb(230,204,179);
-  border: 10px solid rgb(43,29,14);
+  border: 8px solid rgb(43,29,14);
   border-radius: 10px;
-  padding: 12.5px;
+  padding: 6.5px;
   width: 900px;
   height: 900px;
   background-image: url("/wordblocks/img/textures/wood2.jpg");
   background-size: cover;
+  filter: drop-shadow(5px 5px 10px black);
 }
 
 
@@ -296,8 +299,17 @@ thead,  tfoot{
 }
 
 /*Game board spaces*/
-.slot {
+.active_board .slot{
   cursor: pointer;
+}
+
+.active_board.slot:hover {
+  filter: brightness(0.5);
+}
+
+
+.slot {
+
   display: flex;
   background-image: url("/wordblocks/img/slot2.png");
   background-size: contain;
@@ -330,9 +342,6 @@ thead,  tfoot{
   
 }
 
-.slot:hover {
-  filter: brightness(0.5);
-}
 
 .slot.selected_space{
   filter: brightness(0.4) hue-rotate(90deg);
@@ -416,7 +425,7 @@ thead,  tfoot{
 }
 
 
-.shuffle, #skipturn, #deletectrl i {
+.shuffle, #skipturn, #deletectrl {
   cursor: pointer;
 }
 
@@ -434,6 +443,7 @@ thead,  tfoot{
   border-radius: 5px;
   color: rgb(250,244,239);
   padding: 0;
+  cursor: default;
 }
 
 .hud-body {
@@ -441,7 +451,6 @@ thead,  tfoot{
   height: fit-content;
   height: -moz-fit-content;
   overflow-y: visible;
-  cursor: initial;
   padding: 0 16px;
 }
 
