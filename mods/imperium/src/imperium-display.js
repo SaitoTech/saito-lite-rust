@@ -889,55 +889,13 @@ addUIEvents() {
   //set player highlight color
   document.documentElement.style.setProperty('--my-color', `var(--p${this.game.player})`);
   this.displayFactionDashboard();
-  var html = this.returnTokenDisplay(); 
-  document.querySelector('.hud-header').append(this.app.browser.htmlToElement(html));
+  this.tokenbar.render(this.game.player);
 
 }
 
 
 
 
-returnTokenDisplay(player=null) {
-
-  if (player == null) { player = this.game.player; }
-
-  let html = `
-    <div class="hud-token-count">
-      <div>	
-        <span class="fa-stack fa-3x">
-        <i class="fas fa-dice-d20 fa-stack-2x pc white-stroke"></i>
-        <span class="fa fa-stack-1x">
-        <div id="token_display_command_token_count" class="token_count command_token_count">
-        ${this.game.state.players_info[player-1].command_tokens}
-        </div>
-        </span>
-        </span>
-      </div>
-      <div>
-        <span class="fa-stack fa-3x">
-        <i class="far fa-futbol fa-stack-2x pc white-stroke"></i>
-        <span class="fa fa-stack-1x">
-        <div id="token_display_strategy_token_count" class="token_count strategy_token_count">
-        ${this.game.state.players_info[player-1].strategy_tokens}
-        </div>
-        </span>
-        </span>
-      </div>
-      <div>
-        <span class="fa-stack fa-3x">
-        <i class="fas fa-space-shuttle fa-stack-2x pc white-stroke"></i>
-        <span class="fa fa-stack-1x">
-        <div id="token_display_fleet_supply_count" class="token_count fleet_supply_count">
-        ${this.game.state.players_info[player-1].fleet_supply}
-        </div>
-        </span>
-        </span>
-      </div>
-    </div>`;
-
-  return html;
-
-}
 
 
 showSector(pid) {
@@ -970,15 +928,10 @@ hideSector(pid) {
 updateTokenDisplay() {
 
   let imperium_self = this;
-
-  try {
-    $('#token_display_command_token_count').html(imperium_self.game.state.players_info[imperium_self.game.player-1].command_tokens);
-    $('#token_display_strategy_token_count').html(imperium_self.game.state.players_info[imperium_self.game.player-1].strategy_tokens);
-    $('#token_display_fleet_supply_count').html(imperium_self.game.state.players_info[imperium_self.game.player-1].fleet_supply_tokens);
-  } catch (err) {
-  }
+  this.tokenbar.render(this.game.player);
 
 }
+
 updateLeaderboard() {
 
   if (this.browser_active == 0) { return; }

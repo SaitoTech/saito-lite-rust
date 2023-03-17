@@ -554,7 +554,7 @@
 
       if (mv[0] === "play") {
 
-        this.updateTokenDisplay();
+	this.tokenbar.render(this.game.player);
         this.updateLeaderboard();
 
     	let player = mv[1];
@@ -2822,18 +2822,6 @@ this.game.state.end_round_scoring = 0;
 	  }
 	  this.game.state.players_info[player-1].secret_objectives_in_hand += amount;
 	}
-
-	//
-	// MARCH 28
-	//
-	try {
-          let html = this.returnTokenDisplay();
-          //Not safe to directly plug html into hud-header (if header has controls), try append(app.browser.htmlToElement) ???
-          document.querySelector('.hud-header').innerHTML = html;
-	} catch (err) {
-	  console.log("error updating hud-header: " + err);
- 	}
-
 
 	this.updateTokenDisplay();
 	this.updateLeaderboard();

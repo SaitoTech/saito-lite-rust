@@ -39,6 +39,7 @@ class Imperium extends GameTemplate {
     this.movement_overlay = new MovementOverlay(this.app, this);
     this.tech_tree_overlay = new TechTreeOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
+    this.tokenbar = new TokenBar(this.app, this, ".hud-header");
 
 
     //

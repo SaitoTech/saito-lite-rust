@@ -1,0 +1,671 @@
+
+
+.flash-color {
+  /* override player_color when flashing */
+  filter: none !important;
+}
+
+/********************/
+/*** MOD DEFAULTS ***/
+/********************/
+.hud-controls {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.hud-header {
+  margin: 0px;
+}
+.status ul {
+  width: 100%;
+}
+
+
+.chat-body>.saito-user>.saito-userline {
+  font-family: sans-serif;
+}
+
+
+
+#status::-webkit-scrollbar { width: 0 !important }
+
+
+.status-header > status-content ,
+.status-message > #status-content {
+  line-height: 1.5em;
+  padding-top: 10px;
+}
+
+
+
+.game-menu ul li {
+    width: 160px;
+}
+.game-overlay-cardlist-title {
+  font-family: 'orbitron-medium', helvetica;
+}
+.game-overlay-cardlist-subtitle {
+  font-family: 'orbitron-light', helvetica;
+}
+
+
+.sf-title {
+  font-family: 'bank-gothic';
+}
+.sf-readable {
+  font-family: 'sans-serif';
+}
+
+@font-face {
+  font-family: 'bank-gothic';
+  src: url('/imperium/font/BankGothicRegular.eot');
+  src: local('BankGothicRegular'), url('/imperium/font/BankGothicRegular.woff') format('woff'), url('/imperium/font/BankGothicRegular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'orbitron-medium';
+  src: url('/imperium/font/orbitron-medium-webfont.eot');
+  src: local('orbitron-medium-webfont'), url('/imperium/font/orbitron-medium-webfont.woff') format('woff'), url('/imperium/font/orbitron-medium-webfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'orbitron-light';
+  src: url('/imperium/font/orbitron-light-webfont.eot');
+  src: local('orbitron-light-webfont'), url('/imperium/font/orbitron-light-webfont.woff') format('woff'), url('/imperium/font/orbitron-light-webfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+/*** generic cardlist overlays ***/
+.game-overlay-cardlist-title {
+  font-family: 'orbitron-medium',helvetica;
+}
+
+/*** unit overlay ***/
+
+#close-units-btn {
+  margin-bottom: 30px;
+  width: 120px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 2em;
+}
+.unit-box-ship {
+  float: left;
+  color: black;
+  width: 200px;
+  text-align: center;
+  height: 100px;
+  vertical-align: middle;
+  padding-top: 40px;
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-family: 'bank-gothic', 'orbitron-medium', helvetica;
+}
+.unit-box-ship-fighter, .unit-box-ship-fighter-ii {
+  background-image: url("/imperium/img/ships/fighter_100x200.png");
+  background-size: cover;
+}
+.unit-box-ship-destroyer, .unit-box-ship-destroyer-ii {
+  background-image: url("/imperium/img/ships/destroyer_100x200.png");
+  background-size: cover;
+}
+.unit-box-ship-carrier, .unit-box-ship-carrier-ii {
+  background-image: url("/imperium/img/ships/carrier_100x200.png");
+  background-size: cover;
+}
+.unit-box-ship-cruiser, .unit-box-ship-cruiser-ii {
+  background-image: url("/imperium/img/ships/cruiser_100x200.png");
+  background-size: cover;
+}
+.unit-box-ship-dreadnaught, .unit-box-ship-dreadnaught-ii {
+  background-image: url("/imperium/img/ships/dreadnaught_100x200.png");
+  background-size: cover;
+}
+.unit-box-ship-flagship {
+  background-image: url("/imperium/img/ships/flagship_100x200.png");
+  background-size: cover;
+}
+.unit-box-ship-warsun, .unit-box-ship-warsun-ii {
+  background-image: url("/imperium/img/ships/warsun_100x200.png");
+  background-size: cover;
+}
+.unit-box-ship-infantry, .unit-box-ship-infantry-ii {
+  background-image: url("/imperium/img/ships/infantry_100x200.png");
+  background-size: cover;
+}
+.unit-box-ship-pds, .unit-box-ship-pds-ii {
+  background-image: url("/imperium/img/ships/pds_100x200.png");
+  background-size: cover;
+}
+.unit-box-ship-spacedock, .unit-box-ship-spacedock-ii {
+  background-image: url("/imperium/img/ships/spacedock_100x200.png");
+  background-size: cover;
+}
+.units-overlay-container {
+  background-image: url("/imperium/img/starscape_background1.jpg");
+  background-size: cover;
+  min-width: 80vw;
+  min-height: 80vh;
+  overflow-y: scroll;
+  max-height: 80vh;
+}
+.unit-element {
+  margin-top:20px;
+  color: white;
+  font-family: 'orbitron-light', helvetica, arial;
+}
+.unit-box {
+  float: left;
+  width: 120px;
+  height: 120px;
+  border: 1px solid green;
+  text-align: center;
+}
+.unit-box-num {
+  font-size: 60px;
+  padding-top: 17px;
+}
+.unit-box-desc {
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 18px;
+  clear:both;
+}
+.unit-description {
+  clear: both;
+  padding: 10px;
+  font-weight: bold;
+  min-height: 50px;
+  line-height: 1.7em;
+  letter-spacing: 0.1em;
+}
+.units-overlay-container {
+  background-colour: whitesmoke;
+  width: 800px;
+}
+.units-overlay-title {
+  padding-top:30px;
+  color: white;
+  width: 100%;
+  text-align: center;
+  font-size: 4em;
+  font-family: 'orbitron-medium';
+}
+.units-overlay-text {
+  display: inline-block;
+  color: black;
+  text-align: center;
+  font-size: 1.2em;
+  font-family: 'orbitron-medium';
+  background-color: whitesmoke;
+  padding-top:8px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-top: 15px;
+}
+.unit-table {
+  width: 685px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.new_secret_objective_overlay {
+  background-image: url("/imperium/img/starscape_background1.jpg");
+  width: 50vw;
+  height: auto;
+  text-align:center;
+  transform: scale(1.4);
+  min-height: 30vh;
+  max-width: 50vw;
+}
+.new_secret_objective_overlay_title {
+  margin-top:15px;
+  background: #3335;
+  display: inline-block;
+  color: white;
+  font-size: 3em;
+  font-family: 'orbitron-medium', helvetica, arial;
+  font-weight: bold;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+
+.cardbox-card img {
+  position: absolute;
+}
+
+.game-menu {
+  font-family: 'bank-gothic', 'orbitron-medium', arial, helvetica, sans-serif;
+}
+
+.overlay_laws_container {
+  width: 80vw;
+  height: auto;
+  max-height: 90vh;
+  overflow-y: scroll;
+}
+
+.overlay_laws_header {
+  font-size: 2em;
+  color: #fff;
+  padding: 1em;
+}
+
+.overlay_laws_list {
+  display: flex;
+  justify-content: space-around;
+}
+
+.overlay_agendacard {
+  width: calc(42vh * 0.72110);
+  height: 42vh;
+  color: white;
+  padding: 10px;
+  background-size: cover;
+  margin: 5px 10px;
+  font-size:0.7em;
+}
+
+.overlay_agendatitle {
+  font-size: 2em;
+  min-height: 7vh;
+  font-family: 'orbitron-medium' ariel;
+  font-weight: bold;
+  min-height: 7vh;
+  text-align: center;
+  width: 100%;
+}
+
+.overlay_agendacontent {
+  font-family: 'orbitron-medium';
+  position: absolute;
+  color: white;
+  margin-top: 10px;
+  padding: 14px;
+  padding-top:10px;
+  font-size: 1.6em;
+  line-height: 1.5em;
+}
+
+.objectives-overlay-container {
+  width:80vw;
+  height: auto;
+  overflow-y: scroll;
+  max-height: 90vh;
+}
+.objectives_card_name {
+  min-height: 60px;
+  color: white;
+  font-size: 1em;
+  padding: 15px 5px 10px;
+  background: #0008;
+  position: relative;
+  font-size: 2em;
+  min-height: 4em;
+  font-family: 'orbitron-medium' ariel;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.objectives_card_content {
+  color: white;
+  padding: 10px;
+  background: #0006;
+  font-family: 'orbitron-medium';
+  position: relative;
+  color: white;
+  margin-top: 0px;
+  padding: 14px;
+  padding-top:10px;
+  font-size: 1.6em;
+  line-height: 1.5em;
+  height: calc(42vh - 5em);
+  text-align: center;
+}
+
+
+.objectives_overlay_objectives_card {
+  position: relative;
+  width: calc(42vh * 0.72110);
+  height: 42vh;
+  margin: 10px;
+  background-size: cover;
+  max-width: 300px;
+  max-height: 450px;
+  float: left;
+  font-size: 0.8em;
+  z-index: 5;
+  border: 1px solid transparent;
+}
+
+.objectives_overlay_objectives_card:hover {
+ /* transform: scale(1.2); */
+  z-index: 10;
+  border: 1px solid whitesmoke;
+}
+
+#close-action-cards-btn {
+  max-width: 240px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 240px;
+  margin-top: 14px;
+  margin-bottom: 20px;
+  font-size: 2em;
+  font-family: 'bank-gothic';
+}
+#close-agendas-btn {
+  max-width: 240px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 240px;
+  margin-top: 14px;
+  margin-bottom: 20px;
+  font-size: 2em;
+  font-family: 'bank-gothic';
+}
+#close-objectives-btn {
+  max-width: 240px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 240px;
+  margin-top: 14px;
+  margin-bottom: 20px;
+  font-size: 2em;
+  font-family: 'bank-gothic';
+}
+.new_objectives_container {
+  display: inline-block;
+  text-align:center;
+}
+.new_objectives_text {
+  background-color: whitesmoke;
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 6px;
+  padding-bottom: 2px;
+  border-radius: 5px;
+  font-size: 1.3em;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+.objectives_secret_notice {
+  position: relative;
+  bottom: 0px;
+  left: 0px;
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  font-size: 1em;
+  margin-top: 5px;
+}
+
+
+.new_objectives_overlay_container {
+  background-image: url("/imperium/img/starscape_background1.jpg");
+  background-size: cover;
+  border-radius: 15px;
+  width: 80vw;
+  font-family: 'orbitron-medium';
+  letter-spacing: 0.1em;
+  line-height: 2em;
+  text-align: center;
+  padding: 20px;
+}
+.new_objectives_title {
+  font-size: 3em;
+  padding: 20px;
+  text-align: center;
+  color: white;
+  padding-bottom: 20px;
+}
+.close-objectives-btn {
+  max-width: 240px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 240px;
+  margin-top: 14px;
+  margin-bottom: 20px;
+  font-size: 2em;
+  font-family: 'bank-gothic';
+  text-align:center;
+}
+
+.new_action_cards {
+  height: 35vh;
+  min-height: 35vh;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+.new_action_cards_overlay_container {
+  background-image: url("/imperium/img/starscape_background3.jpg");
+  background-size: cover;
+  border-radius: 15px;
+  width: 80vw;
+  font-family: 'orbitron-medium';
+  letter-spacing: 0.1em;
+  line-height: 2em;
+  text-align: center;
+  padding: 20px;
+  max-width: 900px;
+}
+.new_action_cards_title {
+  font-size: 3em;
+  padding: 20px;
+  text-align: center;
+  color: white;
+  padding-bottom: 20px;
+}
+.close-action-cards-btn {
+  max-width: 240px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 240px;
+  margin-top: 14px;
+  margin-bottom: 20px;
+  font-size: 2em;
+  font-family: 'bank-gothic';
+  text-align:center;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.strategy_card {
+  font-family: 'orbitron-medium';
+  position:relative;
+  float: left;
+  width: calc(42vh * 0.72110);
+  display: block;
+  height: 42vh;
+  color: white;
+  padding: 20px;
+  font-size: 1.5em;
+  line-height: 1.5em;
+  cursor: pointer;
+}
+.strategy_card_img {
+  position: absolute;
+}
+.strategy_card_text {
+  position: absolute;
+  font-size: 16px;
+  color: whitesmoke;
+  padding-top: 19%;
+  padding-left: 7%;
+  padding-right: 20%;
+  font-family: 'orbitron-light', helvetica, sans-serif;
+  line-height: 1.7em;
+  z-index: 101;
+}
+
+
+.action_card {
+  padding: 25px;
+  padding-top: 30px;
+  height: 34vh;
+  width: calc(34vh * 0.72110);
+  background-size: cover;
+  text-align: center;
+  font-size: 1em;
+  transition: all 50ms;
+  border: 1px solid;
+  cursor: pointer;
+}
+.action_card_title {
+  position: relative;
+  font-family: 'orbitron-medium', helvetica, arial;
+  color: white;
+  padding-right: 10px;
+  white-space: nowrap;
+  margin: 0.2vw 0 0 0;
+  font-weight: bold;
+}
+.action_card_text {
+  position: relative;
+  font-family: 'orbitron-medium', helvetica, arial;
+  color: white;
+  padding: 0px;
+  padding-top:15px;
+  margin: 1.1vw 0 0 0;
+  height: 11vw;
+  text-align: left;
+  line-height: 1.6em;
+}
+.action_card:hover {
+  transform: scale(1.2);
+  z-index: 10;
+  border: 1px solid whitesmoke;
+}
+
+
+.overlay_strategy_card_box {
+  font-family: 'orbitron-medium';
+  position:relative;
+  float: left;
+  width: calc(42vh * 0.72110);
+  display: block;
+  height: 42vh;
+  color: white;
+  margin-top: 50px;
+  padding: 20px;
+  font-size: 1.5em;
+  line-height: 1.5em;
+}
+
+.overlay_strategy_card_box_img {
+  position: absolute;
+}
+.overlay_strategy_card_text {
+  position: relative;
+  color: white;
+  padding-left: 15px;
+  padding-top: 45px;
+  top: 0px;
+  width: 100%;
+  font-family: 'orbitron-light', helvetica, sans-serif;
+  font-size: 0.7em;
+  line-height: 1.4;
+  z-index: 101;
+}
+
+
+
+
+
+
+
+
+
+
+.cardbox_card tech_card {
+  font-size: 1.6em;
+  padding: 5px;
+}
+.tech_card_overlay {
+  position: absolute;
+  color: white;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 100px;
+  top: 0px;
+  line-height: 1.8em;
+  font-family: 'orbitron-light', helvetica, sans-serif;
+  font-size: 2em;
+}
+
+.strategy_card_bonus {
+  position: relative;
+  bottom: 0px;
+  left: 75%;
+  font-size: 3em;
+  color: gold;
+  float: right;
+  width: 100%;
+}
+
+.strategy_card_bonus span {
+  position: relative;
+  right: 1.135em;
+  color: white;
+  text-shadow: 1px 1px #444;
+  background: #8888;
+}
+
+.cardbox .strategy_card_bonus {
+  right: 15px;
+  bottom: 0px;
+}
+
+.cardbox .strategy_card_bonus span {
+  right: 1em;
+  background-color: #fff0;
+}
+

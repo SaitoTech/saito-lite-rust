@@ -10,7 +10,7 @@ class TokenBar {
 
   render(player) {
  
-    let myqs = this.container + " .hud-token-count";
+    let myqs = this.container + " .tokenbar";
 
     let ct = this.mod.game.state.players_info[player-1].command_tokens;
     let st = this.mod.game.state.players_info[player-1].strategy_tokens;
@@ -19,7 +19,7 @@ class TokenBar {
     if (document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(ImperiumTokenBarTemplate(ct, st, fs), myqs);
     } else {
-      this.app.browser.addElementToSelector(ImperiumTokenCarTemplate(ct, st, fs), this.container);
+      this.app.browser.addElementToSelector(ImperiumTokenBarTemplate(ct, st, fs), this.container);
     }
 
     this.attachEvents();

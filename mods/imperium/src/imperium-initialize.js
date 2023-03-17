@@ -174,8 +174,7 @@
     });
 
 
-    this.menu.addMenuOption("game-reference", "Reference");
-    this.menu.addSubMenuOption("game-reference", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Action",
       id : "game-action-cardlist",
       class : "game-action-cardlist",

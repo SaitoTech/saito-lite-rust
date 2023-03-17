@@ -1,12 +1,87 @@
-#faction_main {
-  min-height: 100vh;
+.faction-sheet {
+  display: grid;
+  grid-template-columns: 1fr min-content;
+  height: 90vh;
+  width: 90vw;
+  background-image:url('/imperium/img/factions/faction3.jpg');
+  background-size:cover;
+  overflow-y:scroll;
+  position: relative;
+  padding: 1rem;
+}
+.faction-sheet-main {
   grid-column: 1 / 2;
+
 }
-#faction_sidebar {
-  min-height: 100vh;
+.faction-sheet-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;  
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 0.2rem;
+  background: linear-gradient(90deg, #000D, #0000);
+  margin-left: 0rem;
+  margin-right: 1rem;
+  padding: 0.25rem;
+}
+.faction-sheet-title {
+  color: white;
+  padding-left: 0.75rem;
+  font-family: 'bank-gothic';
+  font-size: 3rem
+
+}
+
+.faction-sheet-tokens {
+
+}
+.faction-sheet-action-cards {
+
+}
+.faction-sheet-tech-cards {
+
+}
+.faction-sheet-planets {
+
+}
+.faction-sheet-sidebar {
   grid-column: 2;
-  width: 25rem;
+  min-width: 25rem;
+  max-width: 25vw;
 }
+.faction-sheet-faction-abilities {
+  background-color: #0008;
+  color: white;
+  padding: 1rem;
+}
+.faction-sheet-faction-tech {
+  max-width: 100%;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  width: 100%;
+  display: grid;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .faction_sheet_token_box {
   width: 40em;

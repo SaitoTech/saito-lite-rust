@@ -1,7 +1,6 @@
 module.exports = ImperiumDashboardTemplate = (imperium_self, agenda_phase=0) => {
 
-  html = '<div class="imperium-dashboard">';
-
+  html = '<div class="imperium-dashboard"></div>';
   for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 
     html += `
@@ -42,7 +41,9 @@ module.exports = ImperiumDashboardTemplate = (imperium_self, agenda_phase=0) => 
     html += `
       <div data-id="${(i+1)}" class="dash-faction-base">
         <div data-id="${(i+1)}" class="dash-faction-status-${(i+1)} dash-faction-status"></div>
-        commodities : <span data-id="${(i+1)}" class="dash-item-commodities">${imperium_self.game.state.players_info[i].commodities}</span> / <span data-id="${(i+1)}" class="dash-item-commodity-limit">${imperium_self.game.state.players_info[i].commodity_limit}</span>
+	<div class="dash-faction-status-text">
+          commodities : <span data-id="${(i+1)}" class="dash-item-commodities">${imperium_self.game.state.players_info[i].commodities}</span> / <span data-id="${(i+1)}" class="dash-item-commodity-limit">${imperium_self.game.state.players_info[i].commodity_limit}</span>
+        </div>
       </div>
 
       <div data-id="${(i+1)}" class="dash-faction-speaker`;
