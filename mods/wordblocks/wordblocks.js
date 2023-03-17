@@ -417,6 +417,7 @@ class Wordblocks extends GameTemplate {
     let wordblocks_self = this;
 
     if (this.browser_active == 1) {
+      $(".gameboard").removeClass("active_board");
       $(".slot").off();
       $("#rack .tile").off();
 
@@ -473,12 +474,14 @@ class Wordblocks extends GameTemplate {
         $("#canceldelete").off();
         $(".tile").off();
         $(".selected_space").removeClass("selected_space");
+        $(".gameboard").removeClass("active_board");
     }
   }
 
   enableEvents() {
     if (this.browser_active == 1) {
       this.addEventsToBoard();
+      $(".gameboard").addClass("active_board");
     }
   }
 
