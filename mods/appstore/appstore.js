@@ -42,10 +42,10 @@ class AppStore extends ModTemplate {
   //
   // appstore upload is in email
   //
-  respondTo(type) {
+  async respondTo(type) {
     if (type == "appspace") {
       this.styles = ["/appstore/css/appspace.css"];
-      super.render(this.app, this);
+      await super.render(this.app, this);
       return new AppStoreAppspace(this.app, this);
     }
     return null;
@@ -54,13 +54,13 @@ class AppStore extends ModTemplate {
   //
   // click-to-access overlay access
   //
-  initializeHTML(app) {
-    super.initializeHTML(app);
+  async initializeHTML(app) {
+    await super.initializeHTML(app);
 
     if (this.header == null) {
       this.header = new SaitoHeader(app, this);
     }
-    this.header.render(app, this);
+    await this.header.render(app, this);
     this.header.attachEvents(app, this);
   }
 
@@ -80,7 +80,7 @@ class AppStore extends ModTemplate {
     }
     let message = tx.returnMessage();
 
-    super.handlePeerTransaction(app, tx, peer, mycallback);
+    await super.handlePeerTransaction(app, tx, peer, mycallback);
 
     if (message.request === "appstore search modules") {
       let squery1 = "%" + message.data + "%";
@@ -210,19 +210,19 @@ class AppStore extends ModTemplate {
     }
   }
 
-  initialize(app) {
-    super.initialize(app);
+  async initialize(app) {
+    await super.initialize(app);
   }
 
-  onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf, app) {
     try {
       let txmsg = tx.returnMessage();
 
       if (conf == 0) {
         switch (txmsg.request) {
           case "submit module":
-            this.submitModule(blk, tx);
-            if (tx.isFrom(app.wallet.getPublicKey())) {
+            await this.submitModule(blk, tx);
+            if (tx.isFrom(await app.wallet.getPublicKey())) {
               try {
                 document.querySelector(".appstore-loading-text").innerHTML =
                   'Your application is being broadcast to the network. <p></p>Your AppStore should receive it within <span class="time_remaining">45</span> seconds.';
@@ -249,7 +249,7 @@ class AppStore extends ModTemplate {
             }
             break;
           case "request bundle":
-            if (tx.isFrom(app.wallet.getPublicKey())) {
+            if (tx.isFrom(await app.wallet.getPublicKey())) {
               try {
                 document.querySelector(".appstore-loading-text").innerHTML =
                   'Your application is being processed by the network. Your upgrade should be complete within about <span class="time_remaining">120</span> seconds.';
@@ -272,14 +272,17 @@ class AppStore extends ModTemplate {
                 }, 1000);
               } catch (err) {}
             }
-            if (!tx.isTo(app.wallet.getPublicKey())) {
+            if (!tx.isTo(await app.wallet.getPublicKey())) {
               return;
             }
-            this.requestBundle(blk, tx);
+            await this.requestBundle(blk, tx);
             break;
           case "receive bundle":
             ////console.log("##### - RECEIVE BUNDLE 1");
-            if (tx.isTo(app.wallet.getPublicKey()) && !tx.isFrom(app.wallet.getPublicKey())) {
+            if (
+              tx.isTo(await app.wallet.getPublicKey()) &&
+              !tx.isFrom(await app.wallet.getPublicKey())
+            ) {
               ////console.log("##### BUNDLE RECEIVED #####");
               if (app.options.appstore) {
                 ////console.log("##### - RECEIVE BUNDLE 2");
@@ -460,7 +463,7 @@ class AppStore extends ModTemplate {
       //
       // delete unziped module
       try {
-        fs.unlink(path.resolve(__dirname, zip_path));
+        await fs.unlink(path.resolve(__dirname, zip_path));
       } catch (error) {
         console.error(error);
       }
@@ -504,7 +507,7 @@ class AppStore extends ModTemplate {
           if (emailmod) {
             emailmod.addEmail(newtx);
           }
-          this.app.storage.saveTransaction(newtx);
+          await this.app.storage.saveTransaction(newtx);
         }
 
         return;
@@ -548,7 +551,7 @@ class AppStore extends ModTemplate {
       }
 
       let featured_app = 0;
-      if (tx.transaction.from[0].add == this.app.wallet.getPublicKey()) {
+      if (tx.transaction.from[0].add == (await this.app.wallet.getPublicKey())) {
         featured_app = 1;
       }
       if (featured_app == 1) {
@@ -745,15 +748,15 @@ class AppStore extends ModTemplate {
       //
       // send our filename back at our person of interest
       //
-      let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(from[0].add);
+      let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(from[0].add);
       let msg = {
         module: "AppStore",
         request: "receive bundle",
         bundle: online_version,
       };
       newtx.msg = msg;
-      newtx = this.app.wallet.signTransaction(newtx);
-      this.app.network.propagateTransaction(newtx);
+      newtx = await this.app.wallet.signTransaction(newtx);
+      await this.app.network.propagateTransaction(newtx);
 
       ////console.log("FINISHED MAKING BUNDLE!");
     } catch (err) {
@@ -935,7 +938,7 @@ class AppStore extends ModTemplate {
       //
       // create tx
       //
-      let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+      let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
       let bundle_bin = "";
 
       ////console.log("Bundle Filename: " + bundle_filename);
@@ -947,8 +950,8 @@ class AppStore extends ModTemplate {
         });
       }
       newtx.msg = { module: "AppStore", request: "add bundle", bundle: bundle_bin };
-      newtx = this.app.wallet.signTransaction(newtx);
-      this.app.network.propagateTransaction(newtx);
+      newtx = await this.app.wallet.signTransaction(newtx);
+      await this.app.network.propagateTransaction(newtx);
 
       //
       // cleanup
@@ -1048,28 +1051,28 @@ class AppStore extends ModTemplate {
   //////////////////
   // UI Functions //
   //////////////////
-  openAppstoreOverlay(options) {
-    AppStoreOverlay.render(this.app, this, options);
+  async openAppstoreOverlay(options) {
+    await AppStoreOverlay.render(this.app, this, options);
     AppStoreOverlay.attachEvents(this.app, this);
   }
 
-  sendSubmitModuleTransaction(app, mod, data) {
-    let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
+  async sendSubmitModuleTransaction(app, mod, data) {
+    let newtx = await app.wallet.createUnsignedTransactionWithDefaultFee();
     let { name, description, zip } = data;
     newtx.msg = {
       module: "AppStore",
       request: "submit module",
       module_zip: zip,
     };
-    newtx = app.wallet.signTransaction(newtx);
-    app.network.propagateTransaction(newtx);
+    newtx = await app.wallet.signTransaction(newtx);
+    await app.network.propagateTransaction(newtx);
     return newtx;
   }
 
   /////////////////////
   // Database Search //
   /////////////////////
-  searchForApps(search_options = {}, mycallback = null) {
+  async searchForApps(search_options = {}, mycallback = null) {
     if (mycallback == null) {
       return;
     }
@@ -1129,7 +1132,7 @@ class AppStore extends ModTemplate {
     //console.log(sql_query);
 
     if (this.app.BROWSER === 1) {
-      this.sendPeerDatabaseRequestWithFilter(this.name, sql_query, (res) => {
+      await this.sendPeerDatabaseRequestWithFilter(this.name, sql_query, (res) => {
         if (res.rows != undefined) {
           mycallback(res.rows);
         } else {

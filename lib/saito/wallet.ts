@@ -55,8 +55,8 @@ export default class Wallet {
     return S.getInstance().createTransaction(publicKey, amount, fee, force_merge);
   }
 
-  public signTransaction<T extends Transaction>(tx: T): T {
-    return S.getInstance().signTransaction(tx) as T;
+  public async signTransaction<T extends Transaction>(tx: T): Promise<T> {
+    return (await S.getInstance().signTransaction(tx)) as T;
   }
 
   public async getPublicKey(): Promise<string> {
@@ -71,7 +71,7 @@ export default class Wallet {
     return S.getInstance().getPendingTransactions();
   }
 
-  public signAndEncryptTransaction(tx: Transaction) {
+  public async signAndEncryptTransaction(tx: Transaction) {
     return S.getInstance().signAndEncryptTransaction(tx);
   }
 

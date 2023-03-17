@@ -12,7 +12,7 @@ class RedSquareSidebar {
 
   }
 
-  render() {
+  async render() {
 
     if (document.querySelector(".redsquare-sidebar")) {
       this.app.browser.replaceElementBySelector(RedSquareSidebarTemplate(), ".redsquare-sidebar");
@@ -23,15 +23,15 @@ class RedSquareSidebar {
     //
     // render calendar
     //
-    this.calendar.render();
+    await this.calendar.render();
 
     //
     // appspace modules
     //
-    this.app.modules.renderInto(".redsquare-sidebar");
+    await this.app.modules.renderInto(".redsquare-sidebar");
 
     this.attachEvents();
-  }  
+  }
 
 
   attachEvents() {

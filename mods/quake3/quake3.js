@@ -1,19 +1,18 @@
-const GameTemplate = require('./../../lib/templates/gametemplate');
-const QuakeGameOptionsTemplate = require('./lib/quake-game-options.template');
-const QuakeControls = require('./lib/controls');
-
+const GameTemplate = require("./../../lib/templates/gametemplate");
+const QuakeGameOptionsTemplate = require("./lib/quake-game-options.template");
+const QuakeControls = require("./lib/controls");
 
 class Quake3 extends GameTemplate {
-
   constructor(app) {
-
     super(app);
 
     this.app = app;
     this.name = "Quake3";
-    this.description = "Quake3 is a multiplayer first-person-shooter originally released by ID Software in 1999. This version runs directly in your browser and connects with Saito to use other Saito applications and bring modules right into the game.";
+    this.description =
+      "Quake3 is a multiplayer first-person-shooter originally released by ID Software in 1999. This version runs directly in your browser and connects with Saito to use other Saito applications and bring modules right into the game.";
     this.categories = "Games Videogame Shooter";
-    this.publisher_message = "Quake 3 is owned by ID Software. This module is made available under an open source license. Your browser will use data-files distributed freely online but please note that the publisher requires purchase of the game to play. Saito recommends GOG.com for purchase.";
+    this.publisher_message =
+      "Quake 3 is owned by ID Software. This module is made available under an open source license. Your browser will use data-files distributed freely online but please note that the publisher requires purchase of the game to play. Saito recommends GOG.com for purchase.";
 
     this.controls = {};
     this.controls = new QuakeControls(app, this);
@@ -26,7 +25,6 @@ class Quake3 extends GameTemplate {
     //
     this.crypto_msg = "tribute per kill";
 
-
     // ask chat not to start on launch
     this.request_no_interrupts = true;
 
@@ -36,7 +34,6 @@ class Quake3 extends GameTemplate {
     //this.content_server  = "18.163.184.251:80";
     //this.game_server     = "18.163.184.251:27960";
   }
-
 
   handleGameLoop() {
     ///////////
@@ -54,7 +51,6 @@ class Quake3 extends GameTemplate {
       }
 
       if (mv[0] === "player_kill") {
-
         this.game.queue.splice(qe, 1);
         let victim = mv[1];
         let killer = mv[2];
@@ -88,12 +84,11 @@ class Quake3 extends GameTemplate {
               [stake],
               ts,
               uhash,
-              function() {
+              function () {
                 siteMessage(`${stake} ${ticker} sent in tribute`, 8000);
               },
               ticker
             );
-
           } else {
             let ts = new Date().getTime();
             let ticker = this.game.options.crypto;
@@ -108,7 +103,7 @@ class Quake3 extends GameTemplate {
               [stake],
               ts,
               uhash,
-              function() {
+              function () {
                 siteMessage(`${stake} ${ticker} received in tribute`, 8000);
               },
               ticker
@@ -117,7 +112,6 @@ class Quake3 extends GameTemplate {
         }
         return 1;
       }
-
 
       if (mv[0] === "player_name") {
         this.game.queue.splice(qe, 1);
@@ -137,7 +131,6 @@ class Quake3 extends GameTemplate {
         console.log("NOT CONTINUING");
         return 0;
       }
-
     } else {
       console.log("QUEUE EMPTY!");
     }
@@ -149,14 +142,12 @@ class Quake3 extends GameTemplate {
     return QuakeGameOptionsTemplate(this.app, this);
   }
 
-
   attachAdvancedOptionsEventListeners() {
-
     let crypto = document.getElementById("crypto");
     let stake = document.getElementById("stake");
     let stake_wrapper = document.getElementById("stake_wrapper");
 
-    const updateChips = function() {
+    const updateChips = function () {
       if (stake) {
         if (crypto.value == "") {
           stake_wrapper.style.display = "none";
@@ -174,12 +165,9 @@ class Quake3 extends GameTemplate {
     if (stake) {
       stake.onchange = updateChips;
     }
-
   }
 
-
   initializeGame(game_id) {
-
     this.load();
 
     if (!this.game.state) {
@@ -211,29 +199,26 @@ class Quake3 extends GameTemplate {
     this.game.player_name_identified = false;
   }
 
-
   initialize(app) {
-
     if (app.BROWSER == 0) {
       return;
     }
     super.initialize(app);
-
 
     if (this.browser_active == 1) {
       //
       // bind console.log to track outside app
       //
       {
-        const log = console.log.bind(console)
+        const log = console.log.bind(console);
         console.log = (...args) => {
           if (args.length > 0) {
-            if (typeof args[0] === 'string') {
+            if (typeof args[0] === "string") {
               this.processQuakeLog(args[0], log);
             }
             log(...args);
           }
-        }
+        };
       }
     }
   }
@@ -242,23 +227,21 @@ class Quake3 extends GameTemplate {
   // for the love of God don't add console.logs within this function
   //
   processQuakeLog(logline = "", log) {
-
     //
     // register publickey/name when we enter the game if unset
     //
     if (this.game.player_name_identified == false) {
       if (logline.indexOf("entered the game") > 0) {
-
         let q3self = this;
 
-        setTimeout(function() {
+        setTimeout(function () {
           q3self.registerPlayerName();
         }, 500);
 
         // load & apply saved controls while here
         // since this block only happens on client startup
         try {
-          setTimeout(function() {
+          setTimeout(function () {
             q3self.controls.loadSavedControls();
             q3self.controls.writeControls();
             q3self.controls.applyControls();
@@ -276,25 +259,31 @@ class Quake3 extends GameTemplate {
       for (let z = 0; z < this.game.all_player_names.length; z++) {
         let pn = this.game.all_player_names[z].toLowerCase().substring(0, 15);
 
-//log("1::: " + logline);
+        //log("1::: " + logline);
 
         let pos = logline.indexOf(pn);
         if (pos == 0) {
-//log("2::: " + logline);
+          //log("2::: " + logline);
           for (let i = 0; i < this.game.all_player_names.length; i++) {
             let pn2 = this.game.all_player_names[i].toLowerCase().substring(0, 15);
-//log("searching for pn2: " + pn2);
+            //log("searching for pn2: " + pn2);
             if (pn !== pn2) {
-//log("not the same as pn");
+              //log("not the same as pn");
               if (logline.indexOf(pn2) > -1) {
-//log("3::: " + logline);
+                //log("3::: " + logline);
                 let victim = z;
                 let killer = i;
-//log(this.game.players[victim] + " --- " + this.app.wallet.getPublicKey());
+                //log(this.game.players[victim] + " --- " + this.app.wallet.getPublicKey());
                 if (this.game.players[victim] === this.app.wallet.getPublicKey()) {
                   console.log("THIS ONE IS ON US");
-                  this.addMove("player_kill\t" + this.game.players[victim] + "\t" + this.game.players[killer]);
-                  this.addMove(`ROUNDOVER\t${JSON.stringify([this.game.players[killer]])}\t${JSON.stringify([this.game.players[victim]])}`);
+                  this.addMove(
+                    "player_kill\t" + this.game.players[victim] + "\t" + this.game.players[killer]
+                  );
+                  this.addMove(
+                    `ROUNDOVER\t${JSON.stringify([this.game.players[killer]])}\t${JSON.stringify([
+                      this.game.players[victim],
+                    ])}`
+                  );
                   this.endTurn();
                 }
               }
@@ -304,7 +293,6 @@ class Quake3 extends GameTemplate {
       }
     }
   }
-
 
   registerPlayerName() {
     //
@@ -320,15 +308,15 @@ class Quake3 extends GameTemplate {
       document.getElementById("viewport").focus();
     }
 
-    document.dispatchEvent(new KeyboardEvent('keydown', { 'keyCode': 192 }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 192 }));
 
     // type "/name "
-    document.dispatchEvent(new KeyboardEvent('keydown', { 'keyCode': 191 }));
-    document.dispatchEvent(new KeyboardEvent('keydown', { 'keyCode': 78 }));
-    document.dispatchEvent(new KeyboardEvent('keydown', { 'keyCode': 65 }));
-    document.dispatchEvent(new KeyboardEvent('keydown', { 'keyCode': 77 }));
-    document.dispatchEvent(new KeyboardEvent('keydown', { 'keyCode': 69 }));
-    document.dispatchEvent(new KeyboardEvent('keydown', { 'keyCode': 32 }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 191 }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 78 }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 65 }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 77 }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 69 }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 32 }));
 
     // type lowercase publickey
     let publickey = this.app.wallet.getPublicKey().toLowerCase();
@@ -339,12 +327,12 @@ class Quake3 extends GameTemplate {
         charCode -= 32;
       } // 97 -> 65
       console.log("typing in: " + char);
-      document.dispatchEvent(new KeyboardEvent('keydown', { 'keyCode': charCode }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: charCode }));
     }
 
     // type "enter" and hide console (w/ tilde)
-    document.dispatchEvent(new KeyboardEvent('keydown', { 'keyCode': 13 }));
-    document.dispatchEvent(new KeyboardEvent('keydown', { 'keyCode': 192 }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 13 }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 192 }));
 
     this.setPlayerName(this.app.wallet.getPublicKey(), publickey);
     this.addMove("player_name\t" + this.app.wallet.getPublicKey() + "\t" + this.game.player_name);
@@ -365,7 +353,6 @@ class Quake3 extends GameTemplate {
     }
   }
 
-
   onPeerHandshakeComplete(app, peer) {
     if (app.BROWSER == 0 || !document) {
       return;
@@ -374,15 +361,13 @@ class Quake3 extends GameTemplate {
       if (document.querySelector(".chat-input")) {
         let c = document.querySelector(".chat-input");
         if (c) {
-          c.placeholder = 'typing T activates chat...';
+          c.placeholder = "typing T activates chat...";
         }
       }
     }
   }
 
-
   initializeHTML(app) {
-
     if (this.browser_active != 1) {
       return;
     }
@@ -402,16 +387,14 @@ class Quake3 extends GameTemplate {
       text: "Settings",
       id: "game-controls",
       class: "game-game-controls",
-      callback: async function(app, game_mod) {
-
+      callback: async function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         //if (!game_mod.controls) {game_mod.controls = new QuakeControls(app, game_mod);}
         //game_mod.controls = new QuakeControls(app, game_mod);
         game_mod.controls.overlay.hide();
-        game_mod.controls.render(app, game_mod);
+        await game_mod.controls.render(app, game_mod);
         SAITO_COMPONENT_ACTIVE = true;
         SAITO_COMPONENT_CLICKED = true;
-
       },
     });
 
@@ -419,7 +402,7 @@ class Quake3 extends GameTemplate {
       text: "Screenshot",
       id: "game-post",
       class: "game-post",
-      callback: async function(app, game_mod) {
+      callback: async function (app, game_mod) {
         let m = game_mod.app.modules.returnModule("RedSquare");
         if (m) {
           let log = document.getElementById("log-wrapper");
@@ -428,7 +411,7 @@ class Quake3 extends GameTemplate {
           }
           let menu = document.getElementById("game-menu");
           menu.style.display = "none";
-          await app.browser.screenshotCanvasElementById("viewport", function(image) {
+          await app.browser.screenshotCanvasElementById("viewport", function (image) {
             if (log && !log.classList.contains("log_lock")) {
               log.style.display = "block";
             }
@@ -446,7 +429,7 @@ class Quake3 extends GameTemplate {
       text: "Update Name",
       id: "game-register",
       class: "game-register",
-      callback: async function(app, game_mod) {
+      callback: async function (app, game_mod) {
         siteMessage("Updating Player Name to Saito Address");
         game_mod.menu.hideSubMenus();
         game_mod.registerPlayerName();
@@ -455,7 +438,6 @@ class Quake3 extends GameTemplate {
 
     this.menu.addChatMenu();
     this.menu.render();
-
 
     if (app.BROWSER != 0) {
       if (this.game.options.server === "as") {
@@ -468,75 +450,77 @@ class Quake3 extends GameTemplate {
       }
     }
 
-
     //
     // helper functions
     //
-    let getQueryCommands = function() {
-
+    let getQueryCommands = function () {
       var search = /([^&=]+)/g;
       var query = window.location.search.substring(1);
       var args = [];
       var match;
 
-      while (match = search.exec(query)) {
+      while ((match = search.exec(query))) {
         var val = decodeURIComponent(match[1]);
-        val = val.split(' ');
-        val[0] = '+' + val[0];
+        val = val.split(" ");
+        val[0] = "+" + val[0];
         args.push.apply(args, val);
       }
       return args;
     };
 
-    let resizeViewport = function() {
+    let resizeViewport = function () {
       if (!ioq3.canvas) {
         return;
       }
-      if ((document['webkitFullScreenElement'] || document['webkitFullscreenElement'] || document['mozFullScreenElement'] || document['mozFullscreenElement'] || document['fullScreenElement'] || document['fullscreenElement'])) {
+      if (
+        document["webkitFullScreenElement"] ||
+        document["webkitFullscreenElement"] ||
+        document["mozFullScreenElement"] ||
+        document["mozFullscreenElement"] ||
+        document["fullScreenElement"] ||
+        document["fullscreenElement"]
+      ) {
         return;
       }
       ioq3.setCanvasSize(ioq3.viewport.offsetWidth, ioq3.viewport.offsetHeight);
-    }
+    };
 
-    ioq3.viewport = document.getElementById('viewport-frame');
+    ioq3.viewport = document.getElementById("viewport-frame");
     ioq3.elementPointerLock = true;
-    ioq3.exitHandler = function(err) {
-
+    ioq3.exitHandler = function (err) {
       console.log(err);
       return;
 
       if (err) {
-        var form = document.createElement('form');
-        form.setAttribute('method', 'POST');
-        form.setAttribute('action', '/');
-        var hiddenField = document.createElement('input');
-        hiddenField.setAttribute('type', 'hidden');
-        hiddenField.setAttribute('name', 'error');
-        hiddenField.setAttribute('value', err);
+        var form = document.createElement("form");
+        form.setAttribute("method", "POST");
+        form.setAttribute("action", "/");
+        var hiddenField = document.createElement("input");
+        hiddenField.setAttribute("type", "hidden");
+        hiddenField.setAttribute("name", "error");
+        hiddenField.setAttribute("value", err);
         form.appendChild(hiddenField);
         document.body.appendChild(form);
         form.submit();
         return;
       }
-      window.location.href = '/';
-    }
+      window.location.href = "/";
+    };
 
-    window.addEventListener('resize', resizeViewport);
+    window.addEventListener("resize", resizeViewport);
 
     // merge default args with query string args
     //var args = ['+set', 'fs_cdn', 'content.quakejs.com:80', '+set', 'sv_master1', 'master.quakejs.com:27950']; //original args to list the servers from master.quakejs.com
     //var args = ['+set', 'fs_cdn', 'content.quakejs.com:80', '+set', 'sv_master1', 'master.quakejs.com:27950', '+connect', 'YOUR_SERVER_HERE:27960']; //additional +connect arguement to connect to a specific server
     //var args = ['+set', 'fs_cdn', '18.163.184.251:80', '+connect', '18.163.184.251:27960']; //custom args list targeting a local content server and local game server both at the address 'quakejs'
-    var args = ['+set', 'fs_cdn', this.content_server, '+connect', this.game_server];
+    var args = ["+set", "fs_cdn", this.content_server, "+connect", this.game_server];
     args.push.apply(args, getQueryCommands());
 
     if (this.browser_active == 1) {
       console.log("CALLING QUAKE");
       ioq3.callMain(args);
     }
-
   }
-
 
   load() {
     this.quake3 = this.app.options.quake3;
@@ -546,7 +530,6 @@ class Quake3 extends GameTemplate {
     this.app.options.quake3 = this.quake3;
     this.app.storage.saveOptions();
   }
-
 }
 
 module.exports = Quake3;

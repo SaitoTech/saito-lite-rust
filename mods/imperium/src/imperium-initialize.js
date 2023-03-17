@@ -1,4 +1,4 @@
-  
+
 
   } // end initializeGameObjects
 
@@ -172,7 +172,7 @@
 
 
     this.menu.addMenuOption("game-reference", "Reference");
-    
+
     this.menu.addSubMenuOption("game-reference", {
       text : "Action",
       id : "game-action-cardlist",
@@ -246,25 +246,25 @@
     if (this.browser_active == 0) { return; }
 
 
-    this.menu.render();
+    await this.menu.render();
 
     this.hud.auto_sizing = 0;
-    this.hud.render();
+      await this.hud.render();
 
-    this.log.render();
+      await this.log.render();
 
-    this.cardbox.render();
+      await this.cardbox.render();
 
     try {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
 
-        this.hammer.render(this.app, this);
+        await this.hammer.render(this.app, this);
         this.hammer.attachEvents(this.app, this, '#hexGrid');
 
       } else {
 
-        this.sizer.render();
+        await this.sizer.render();
         this.sizer.attachEvents('#hexGrid'); // gameboard is hexgrid
 
       }
@@ -279,7 +279,7 @@
 
 
 
-  
+
   async initializeGame(game_id) {
 
     //
@@ -291,11 +291,11 @@
     this.loadGame(game_id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-  
+
     //
     // specify players
     //
-    this.totalPlayers = this.game.players.length;  
+    this.totalPlayers = this.game.players.length;
 
 
     //
@@ -332,7 +332,7 @@
 
       is_this_a_new_game = 1;
 
-      
+
 
       //
       // players first
@@ -371,10 +371,10 @@
       this.game.strategy_cards = [];
       for (let i in this.strategy_cards) {
         this.game.strategy_cards.push(i);
-        this.game.state.strategy_cards_bonus.push(0); 
+        this.game.state.strategy_cards_bonus.push(0);
       }
- 
- 
+
+
       //
       // remove tiles in 3 player game
       //
@@ -447,20 +447,20 @@
         delete this.game.board["7_3"];
         delete this.game.board["7_4"];
       }
-  
-  
+
+
       //
       // add other planet tiles
       //
       let tmp_sys = JSON.parse(JSON.stringify(this.returnSectors()));
       let seltil = [];
-  
-  
+
+
       //
       // empty space in board center
       //
       this.game.board["4_4"].tile = "new-byzantium";
- 
+
       for (let i in this.game.board) {
         if (i != "4_4" && !hwsectors.includes(i)) {
           let oksel = 0;
@@ -476,7 +476,7 @@
           }
         }
       }
- 
+
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
@@ -491,16 +491,16 @@
         this.game.state.players_info[i].homeworld = hwsectors[i];
         this.game.board[hwsectors[i]].tile = this.factions[this.game.state.players_info[i].faction].homeworld;
       }
-  
+
 
 
       //
       // add starting units to player homewords
       //
       for (let i = 0; i < this.totalPlayers; i++) {
-  
-        let sys = this.returnSectorAndPlanets(hwsectors[i]); 
-  
+
+        let sys = this.returnSectorAndPlanets(hwsectors[i]);
+
         let strongest_planet = 0;
         let strongest_planet_resources = 0;
         for (z = 0; z < sys.p.length; z++) {
@@ -543,7 +543,7 @@
 
 
         this.saveSystemAndPlanets(sys);
-  
+
       }
 
 
@@ -574,7 +574,7 @@
         }
 
         this.game.queue.push("turn");
-        this.game.queue.push("newround"); 
+        this.game.queue.push("newround");
         //
         // add cards to deck and shuffle as needed
         //
@@ -593,13 +593,13 @@
         this.game.queue.push("POOL\t2");   // stage i objectives
         this.game.queue.push("POOL\t1");   // agenda cards
         this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnStrategyCards()));
-        this.game.queue.push("DECK\t2\t"+JSON.stringify(this.returnActionCards()));	
+        this.game.queue.push("DECK\t2\t"+JSON.stringify(this.returnActionCards()));
         this.game.queue.push("DECK\t3\t"+JSON.stringify(this.returnAgendaCards()));
         this.game.queue.push("DECK\t4\t"+JSON.stringify(my_stage1_objectives));
         this.game.queue.push("DECK\t5\t"+JSON.stringify(my_stage2_objectives));
         this.game.queue.push("DECK\t6\t"+JSON.stringify(my_secret_objectives));
 //        this.game.queue.push("preloader");
-  
+
       }
     }
 
@@ -652,7 +652,7 @@
       this.saveSystemAndPlanets(sys);
     }
 
-    let tmps3 = this.returnSectorAndPlanets("2_1"); 
+    let tmps3 = this.returnSectorAndPlanets("2_1");
 
     //
     // initialize laws
@@ -678,7 +678,7 @@
     // display board
     //
     for (let i in this.game.board) {
-  
+
       // add html to index
       let boardslot = "#" + i;
 
@@ -703,21 +703,21 @@ try {
           </div> \
         '
       );
-  
+
       // insert planet
       let planet_div = "#hex_img_"+i;
       $(planet_div).attr("src", this.game.sectors[this.game.board[i].tile].img);
 
       // add planet info
-  
+
       this.updateSectorGraphics(i);
 } catch (err) {}
-        
+
     }
-  
-  
+
+
     this.updateLeaderboard();
-  
+
 
     //
     // prevent hangs
@@ -726,45 +726,45 @@ try {
 
 
     //
-    // add events to board 
+    // add events to board
     //
     try {
       this.addEventsToBoard();
       this.addUIEvents();
     } catch (err) {
-     
+
     }
 
 
   }
-  
+
   async preloadImages() {
 
-    var allImages = [	"img/starscape_background1.jpg", 
-                        "img/ships/carrier_100x200.png", 
-                     	"img/ships/destroyer_100x200.png", 
-                     	"img/ships/dreadnaught_100x200.png", 
-                     	"img/ships/fighter_100x200.png", 
-                     	"img/ships/pds_100x200.png", 
-                     	"img/ships/spacedock_100x200.png", 
-                     	"img/ships/cruiser_100x200.png", 
-                     	"img/strategy/BUILD.png", 
-                     	"img/strategy/DIPLOMACY.png", 
-                     	"img/strategy/EMPIRE.png", 
+    var allImages = [	"img/starscape_background1.jpg",
+                        "img/ships/carrier_100x200.png",
+                     	"img/ships/destroyer_100x200.png",
+                     	"img/ships/dreadnaught_100x200.png",
+                     	"img/ships/fighter_100x200.png",
+                     	"img/ships/pds_100x200.png",
+                     	"img/ships/spacedock_100x200.png",
+                     	"img/ships/cruiser_100x200.png",
+                     	"img/strategy/BUILD.png",
+                     	"img/strategy/DIPLOMACY.png",
+                     	"img/strategy/EMPIRE.png",
                      	"img/strategy/INITIATIVE.png",
-                     	"img/strategy/MILITARY.png", 
-                     	"img/strategy/POLITICS.png", 
-                     	"img/strategy/TECH.png", 
-                     	"img/strategy/TRADE.png", 
-			"img/influence/5.png", 
-			"img/influence/8.png", 
-			"img/influence/2.png", 
-			"img/influence/1.png", 
-			"img/influence/7.png", 
-			"img/influence/0.png", 
-			"img/influence/9.png", 
+                     	"img/strategy/MILITARY.png",
+                     	"img/strategy/POLITICS.png",
+                     	"img/strategy/TECH.png",
+                     	"img/strategy/TRADE.png",
+			"img/influence/5.png",
+			"img/influence/8.png",
+			"img/influence/2.png",
+			"img/influence/1.png",
+			"img/influence/7.png",
+			"img/influence/0.png",
+			"img/influence/9.png",
 			"img/influence/4.png",
-			"img/influence/3.png", 
+			"img/influence/3.png",
 			"img/influence/6.png",
 			"img/agenda_card_template.png",
 			"img/card_template.jpg",
@@ -777,7 +777,7 @@ try {
 			"img/units/cruiser.png",
 			"img/units/infantry.png",
 			"img/units/pds.png",
-			"img/units/carrier.png", 
+			"img/units/carrier.png",
 			"img/units/destroyer.png",
 "img/action_card_back.jpg",
 "img/arcade/arcade-banner-background.png",

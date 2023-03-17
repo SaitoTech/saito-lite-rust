@@ -3,12 +3,10 @@ const ArcadeMainTemplate = require("./main.template");
 const ArcadeMenu = require("./menu");
 const GameSlider = require("../game-slider");
 const ArcadeInitializer = require("./initializer");
-const SaitoSidebar = require('./../../../../lib/saito/ui/saito-sidebar/saito-sidebar');
+const SaitoSidebar = require("./../../../../lib/saito/ui/saito-sidebar/saito-sidebar");
 
 class ArcadeMain {
-
   constructor(app, mod, container = "") {
-
     this.app = app;
     this.mod = mod;
 
@@ -20,7 +18,6 @@ class ArcadeMain {
     this.menu = new ArcadeMenu(this.app, this.mod, ".saito-sidebar.left");
     this.sidebar.addComponent(this.menu);
     this.slider = new GameSlider(this.app, this.mod, ".arcade-game-slider");
-    
 
     //
     // load init page
@@ -28,52 +25,44 @@ class ArcadeMain {
     app.connection.on("arcade-game-initialize-render-request", () => {
       document.querySelector(".arcade-central-panel").innerHTML = "";
       this.slider.hide();
-      
+
       let initializer = new ArcadeInitializer(this.app, this.mod, ".arcade-central-panel");
       initializer.render();
     });
-
   }
 
-
-
-  render() {
-
+  async render() {
     if (document.querySelector(".saito-container")) {
       this.app.browser.replaceElementBySelector(ArcadeMainTemplate(), ".saito-container");
     } else {
       this.app.browser.addElementToSelectorOrDom(ArcadeMainTemplate(), this.container);
     }
 
-    this.sidebar.render();
+    await this.sidebar.render();
 
     //
     // slider
     //
-    this.slider.render();
+    await this.slider.render();
 
     //
     // invite manager
     //
-    this.app.modules.renderInto(".arcade-invites-box");
+    await this.app.modules.renderInto(".arcade-invites-box");
 
     //
     // appspace modules
     //
-    this.app.modules.renderInto(".arcade-leagues");
+    await this.app.modules.renderInto(".arcade-leagues");
 
     this.attachEvents();
-
   }
 
-
-
   attachEvents() {
-
-    var scrollableElement = document.querySelector(".saito-container");
-    var sidebar = document.querySelector(".saito-sidebar.right");
-    var scrollTop = 0;
-    var stop = 0;
+    const scrollableElement = document.querySelector(".saito-container");
+    const sidebar = document.querySelector(".saito-sidebar.right");
+    let scrollTop = 0;
+    let stop = 0;
 
     scrollableElement.addEventListener("scroll", (e) => {
       if (window.innerHeight - 150 < sidebar.clientHeight) {
@@ -94,10 +83,7 @@ class ArcadeMain {
       }
       scrollTop = scrollableElement.scrollTop;
     });
-
   }
-
 }
 
 module.exports = ArcadeMain;
-

@@ -1,7 +1,6 @@
-const ChatManagerOverlayTemplate = require('./chat-manager.template');
+const ChatManagerOverlayTemplate = require("./chat-manager.template");
 
 class ChatManagerOverlay {
-
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
@@ -10,8 +9,7 @@ class ChatManagerOverlay {
     this.header_first_click = 0;
   }
 
-  render() {
-
+  async render() {
     let app = this.app;
     let mod = this.mod;
 
@@ -32,42 +30,43 @@ class ChatManagerOverlay {
     //
     this.chat_manager.container = ".chat-manager-overlay";
     this.header_first_click = 0;
-    this.chat_manager.render();
+    await this.chat_manager.render();
 
     this.attachEvents();
-
   }
 
   //
   // Note: mod = Arcade
   //
   attachEvents() {
-
-    document.querySelector(".chat-manager-overlay").onclick = (e) => {
+    document.querySelector(".chat-manager-overlay").onclick = async (e) => {
       document.querySelector(".chat-manager-overlay").remove();
       if (this.old_chat_manager_container) {
         this.chat_manager.container = this.old_chat_manager_container;
-        this.chat_manager.render();
+        await this.chat_manager.render();
       }
-    }
+    };
 
     let sh = document.getElementById("saito-header");
     if (sh) {
       sh.addEventListener("click", this.onOffChatClick, false);
     }
-
   }
 
-
-  onOffChatClick(e) {
-
+  async onOffChatClick(e) {
     let cl = e.target.classList.toString();
     let should_remove = true;
 
     // if an icon-click in header triggered this, avoid pain
-    if (cl.indexOf("fa-") > -1) { should_remove = false; }
-    if (cl.indexOf("fas ") > -1) { should_remove = false; }
-    if (cl.indexOf("saito-header-chat") > -1) { should_remove = false; }
+    if (cl.indexOf("fa-") > -1) {
+      should_remove = false;
+    }
+    if (cl.indexOf("fas ") > -1) {
+      should_remove = false;
+    }
+    if (cl.indexOf("saito-header-chat") > -1) {
+      should_remove = false;
+    }
 
     if (should_remove && document.querySelector(".chat-manager-overlay")) {
       let sh = document.getElementById("saito-header");
@@ -75,11 +74,10 @@ class ChatManagerOverlay {
       document.querySelector(".chat-manager-overlay").remove();
       if (this.old_chat_manager_container) {
         this.chat_manager.container = this.old_chat_manager_container;
-        this.chat_manager.render();
+        await this.chat_manager.render();
       }
     }
   }
-
 }
 
 module.exports = ChatManagerOverlay;

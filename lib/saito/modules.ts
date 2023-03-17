@@ -72,7 +72,7 @@ class Mods {
   async handlePeerTransaction(tx, peer: Peer, mycallback = null) {
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {
-        this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback);
+        await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback);
       } catch (err) {
         console.log("handlePeerTransaction Unknown Error: \n" + err);
       }
@@ -214,28 +214,28 @@ class Mods {
     }
   }
 
-  render() {
+  async render() {
     for (let icb = 0; icb < this.mods.length; icb++) {
       if (this.mods[icb].browser_active == 1) {
-        this.mods[icb].render(this.app, this.mods[icb]);
+        await this.mods[icb].render(this.app, this.mods[icb]);
       }
     }
     return null;
   }
 
-  initializeHTML() {
+  async initializeHTML() {
     for (let icb = 0; icb < this.mods.length; icb++) {
       if (this.mods[icb].browser_active == 1) {
-        this.mods[icb].initializeHTML(this.app);
+        await this.mods[icb].initializeHTML(this.app);
       }
     }
     return null;
   }
 
-  renderInto(qs) {
-    this.mods.forEach((mod) => {
-      mod.renderInto(qs);
-    });
+  async renderInto(qs) {
+    for (const mod of this.mods) {
+      await mod.renderInto(qs);
+    }
   }
 
   returnModulesRenderingInto(qs) {
@@ -244,28 +244,36 @@ class Mods {
     });
   }
 
-  returnModulesRespondingTo(request) {
-    return this.mods.filter((mod) => {
-      return mod.respondTo(request) != null;
-    });
+  async returnModulesRespondingTo(request) {
+    let m = [];
+    for (let mod of this.mods) {
+      if ((await mod.respondTo(request)) != null) {
+        m.push(mod);
+      }
+    }
+    return m;
   }
 
-  respondTo(request) {
-    return this.mods.filter((mod) => {
-      return mod.respondTo(request) != null;
-    });
+  async respondTo(request) {
+    let m = [];
+    for (let mod of this.mods) {
+      if ((await mod.respondTo(request)) != null) {
+        m.push(mod);
+      }
+    }
+    return m;
   }
 
-  getRespondTos(request) {
+  async getRespondTos(request) {
     const compliantInterfaces = [];
-    this.mods.forEach((mod) => {
-      const itnerface = mod.respondTo(request);
+    for (const mod of this.mods) {
+      const itnerface = await mod.respondTo(request);
       if (itnerface != null) {
         if (Object.keys(itnerface)) {
           compliantInterfaces.push({ ...itnerface, modname: mod.returnName() });
         }
       }
-    });
+    }
     return compliantInterfaces;
   }
 
@@ -327,24 +335,24 @@ class Mods {
     return null;
   }
 
-  onPeerHandshakeComplete(peer) {
+  async onPeerHandshakeComplete(peer) {
     //
     // all modules learn about the peer connecting
     //
     for (let i = 0; i < this.mods.length; i++) {
-      this.mods[i].onPeerHandshakeComplete(this.app, peer);
+      await this.mods[i].onPeerHandshakeComplete(this.app, peer);
     }
     //
     // then they learn about any services now-available
     //
     for (let i = 0; i < peer.peer.services.length; i++) {
-      this.onPeerServiceUp(peer, peer.peer.services[i]);
+      await this.onPeerServiceUp(peer, peer.peer.services[i]);
     }
   }
 
-  onPeerServiceUp(peer, service) {
+  async onPeerServiceUp(peer, service) {
     for (let i = 0; i < this.mods.length; i++) {
-      this.mods[i].onPeerServiceUp(this.app, peer, service);
+      await this.mods[i].onPeerServiceUp(this.app, peer, service);
     }
   }
 

@@ -1,10 +1,10 @@
-const AddContactCompleteTemplate = require('./add-contact-complete.template');
+const AddContactCompleteTemplate = require("./add-contact-complete.template");
 
 module.exports = AddContact = {
-  render(app, data) {
-    document.querySelector('body').innerHTML = AddContactCompleteTemplate(data);
+  async render(app, data) {
+    document.querySelector("body").innerHTML = AddContactCompleteTemplate(data);
 
-    data.header.render(app, data);
+    await data.header.render(app, data);
     data.header.attachEvents(app, data);
   },
 
@@ -16,4 +16,4 @@ module.exports = AddContact = {
     //           encrypt_mod.initiate_key_exchange(publickey);
     //         }
   },
-}
+};

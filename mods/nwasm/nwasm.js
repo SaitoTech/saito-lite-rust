@@ -24,11 +24,11 @@ class Nwasm extends GameTemplate {
     this.description = "The Saito Nintendo 64 emulator provides a user-friendly in-browser N64 emulator that allows players to archive and play the N64 games you own directly in your browser. Game files are encrypted so only you can access them and archived in your private transaction store.";
     this.categories = "Games Videogame Classic";
 
-    this.maxPlayers      = 1;
-    this.minPlayers      = 1;
-    this.winnable        = 0;
+    this.maxPlayers = 1;
+    this.minPlayers = 1;
+    this.winnable = 0;
 
-    this.uploader        = null;
+    this.uploader = null;
 
     this.library_ui = new NwasmLibrary(this.app, this);
 
@@ -53,7 +53,9 @@ class Nwasm extends GameTemplate {
 
   initialize(app) {
 
-    if (app.BROWSER == 0) { return; }
+    if (app.BROWSER == 0) {
+      return;
+    }
     super.initialize(app);
 
     //
@@ -74,26 +76,30 @@ class Nwasm extends GameTemplate {
     }
   }
 
-  respondTo(type="") {
+  respondTo(type = "") {
     if (type === "library-collection") {
-      return { 
-	module : "Nwasm" , 
-	mod : this ,
-	collection : "Nwasm" , 
-	key : this.nwasm.random ,
-	shouldArchive : (request="", subrequest="") => {
-	  if (request === "archive rom" || subrequest === "archive rom") { return true; }
-	  return false;
-	},
+      return {
+        module: "Nwasm",
+        mod: this,
+        collection: "Nwasm",
+        key: this.nwasm.random,
+        shouldArchive: (request = "", subrequest = "") => {
+          if (request === "archive rom" || subrequest === "archive rom") {
+            return true;
+          }
+          return false;
+        },
       };
     }
     return super.respondTo(type);
   }
 
 
-  async handlePeerTransaction(app, tx=null, peer, mycallback) {
+  async handlePeerTransaction(app, tx = null, peer, mycallback) {
 
-    if (tx == null) { return; }
+    if (tx == null) {
+      return;
+    }
     let message = tx.returnMessage();
     //
     // this code doubles onConfirmation
@@ -114,7 +120,9 @@ class Nwasm extends GameTemplate {
   initializeHTML(app) {
 
     let game_mod = this;
-    if (!this.browser_active) { return; }
+    if (!this.browser_active) {
+      return;
+    }
 
     super.initializeHTML(app);
 
@@ -122,19 +130,19 @@ class Nwasm extends GameTemplate {
     // ADD MENU
     //
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addSubMenuOption("game-game",{
-      text : "Upload",
-      id : "game-upload-rom",
-      class : "game-upload-rom",
-      callback : function(app, game_mod) {
-	game_mod.uploaded_rom = false;
-	game_mod.active_rom_name = "";
+    this.menu.addSubMenuOption("game-game", {
+      text: "Upload",
+      id: "game-upload-rom",
+      class: "game-upload-rom",
+      callback: function(app, game_mod) {
+        game_mod.uploaded_rom = false;
+        game_mod.active_rom_name = "";
         game_mod.menu.hideSubMenus();
         game_mod.uploadRom(app, game_mod);
       }
     });
     /***
-    this.menu.addSubMenuOption("game-game",{
+     this.menu.addSubMenuOption("game-game",{
       text : "Controls",
       id : "game-controls",
       class : "game-controls",
@@ -143,7 +151,7 @@ class Nwasm extends GameTemplate {
         game_mod.editControls(app, game_mod);
       }
     });
-    this.menu.addSubMenuOption("game-game",{
+     this.menu.addSubMenuOption("game-game",{
       text : "Instant Save",
       id : "game-save",
       class : "game-save",
@@ -152,7 +160,7 @@ class Nwasm extends GameTemplate {
 	game_mod.saveState();
       }
     });
-    this.menu.addSubMenuOption("game-game",{
+     this.menu.addSubMenuOption("game-game",{
       text : "Instant Load",
       id : "game-load",
       class : "game-load",
@@ -161,29 +169,29 @@ class Nwasm extends GameTemplate {
 	game_mod.loadState();
       }
     });
-   ***/
-    this.menu.addSubMenuOption("game-game",{
-      text : "Save",
-      id : "game-export",
-      class : "game-export",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	game_mod.exportState();
-      }
-    });
-    this.menu.addSubMenuOption("game-game",{
-      text : "Load",
-      id : "game-import",
-      class : "game-import",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let x = new SaveGameOverlay(app, game_mod);
-	x.render(app, game_mod);
-	//game_mod.importState();
-      }
-    });
-/****
+     ***/
     this.menu.addSubMenuOption("game-game", {
+      text: "Save",
+      id: "game-export",
+      class: "game-export",
+      callback: function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.exportState();
+      }
+    });
+    this.menu.addSubMenuOption("game-game", {
+      text: "Load",
+      id: "game-import",
+      class: "game-import",
+      callback: function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        let x = new SaveGameOverlay(app, game_mod);
+        x.render(app, game_mod);
+        //game_mod.importState();
+      }
+    });
+    /****
+     this.menu.addSubMenuOption("game-game", {
         text : "Share",
         id : "game-share",
         class : "game-share",
@@ -205,18 +213,18 @@ class Nwasm extends GameTemplate {
           }
         },
     });
-****/
-    this.menu.addSubMenuOption("game-game",{
-      text : "Delete",
-      id : "game-rom-delete",
-      class : "game-rom-delete",
-      callback : function(app, game_mod) {
+     ****/
+    this.menu.addSubMenuOption("game-game", {
+      text: "Delete",
+      id: "game-rom-delete",
+      class: "game-rom-delete",
+      callback: function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-	let c = confirm("Confirm: delete all your ROMS?");
-	if (c) {
-	  game_mod.deleteRoms();
-	  game_mod.library_ui.render();
-	}
+        let c = confirm("Confirm: delete all your ROMS?");
+        if (c) {
+          game_mod.deleteRoms();
+          game_mod.library_ui.render();
+        }
       }
     });
 
@@ -245,43 +253,47 @@ class Nwasm extends GameTemplate {
 
   }
 
-  startPlaying(ts=null) {
-    if (ts == null) { ts = new Date().getTime(); }
+  startPlaying(ts = null) {
+    if (ts == null) {
+      ts = new Date().getTime();
+    }
     this.active_game_load_ts = ts;
     this.active_game_save_ts = ts;
   }
 
-  stopPlaying(ts=null) {
-    if (ts == null) { ts = new Date().getTime(); }
+  stopPlaying(ts = null) {
+    if (ts == null) {
+      ts = new Date().getTime();
+    }
     this.active_game_time_played += (ts - this.active_game_load_ts);
     this.active_game_load_ts = ts;
   }
 
   deleteRoms() {
 
-alert("Deletion Not Supported Yet! ");
+    alert("Deletion Not Supported Yet! ");
 
-/*
-    let message = {};
-        message.request = "library delete";
-        message.data = {};
-        message.data.collection = "Nwasm";
-        message.data.publickey = this.app.wallet.returnPublicKey();
+    /*
+        let message = {};
+            message.request = "library delete";
+            message.data = {};
+            message.data.collection = "Nwasm";
+            message.data.publickey = this.app.wallet.returnPublicKey();
 
-	let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), BigInt(0), BigInt(0));
-	newtx.msg = message;
-	newtx.presign(this.app);
-	newtx.sign(this.app);
+      let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), BigInt(0), BigInt(0));
+      newtx.msg = message;
+      newtx.presign(this.app);
+      newtx.sign(this.app);
 
-	let library_mod = this.app.modules.returnModule("Library");
-	if (library_mod) {
-	  library_mod.handlePeerTransaction(this.app, newtx, null, function() {
-            nwasm_mod.libraries = {};
-	    nwasm_mod.save();
-            nwasm_mod.updateVisibleLibrary();
-	  });
-	}
-*/
+      let library_mod = this.app.modules.returnModule("Library");
+      if (library_mod) {
+        library_mod.handlePeerTransaction(this.app, newtx, null, function() {
+                nwasm_mod.libraries = {};
+          nwasm_mod.save();
+                nwasm_mod.updateVisibleLibrary();
+        });
+      }
+    */
   }
 
   hideSplashScreen() {
@@ -308,7 +320,7 @@ alert("Deletion Not Supported Yet! ");
   //
   // for the love of God don't add console.logs within this function
   //
-  processNwasmLog(logline="", log) {
+  processNwasmLog(logline = "", log) {
 
     let x = logline;
     let nwasm_self = this;
@@ -323,13 +335,16 @@ alert("Deletion Not Supported Yet! ");
       x = logline.substring(13);
       if (x.indexOf("Name: ") == 0) {
         x = x.substring(6);
-	if (x.indexOf("muopen") > -1) {
-	  x = x.substring(0, x.indexOf("muopen"));
-	}
+        if (x.indexOf("muopen") > -1) {
+          x = x.substring(0, x.indexOf("muopen"));
+        }
 
-	let len = x.trim().length; if (len > 6) { len = 6; }
+        let len = x.trim().length;
+        if (len > 6) {
+          len = 6;
+        }
 
-	if (this.active_rom_name.indexOf(x.trim().substring(0, len)) != 0) {
+        if (this.active_rom_name.indexOf(x.trim().substring(0, len)) != 0) {
 
           this.active_rom_name = x.trim();
           this.active_rom_sig = this.app.crypto.hash(this.active_rom_name);
@@ -342,29 +357,31 @@ alert("Deletion Not Supported Yet! ");
             // save ROM in archives --dynamically is best
             //
             this.uploaded_rom = true;
-	    let similar_rom_exists = false;
-	    for (let item in this.libraries[this.app.wallet.returnPublicKey()]) {
-	      if (item.title === this.active_rom_name) { similar_rom_exists = true; }
-	    }
-	    if (this.browser_active) {
-	      if (similar_rom_exists) {
-	        let c = confirm("Archive: ROM with this name already archived - is this a separate lawful copy?");
-	        if (c) {
+            let similar_rom_exists = false;
+            for (let item in this.libraries[this.app.wallet.returnPublicKey()]) {
+              if (item.title === this.active_rom_name) {
+                similar_rom_exists = true;
+              }
+            }
+            if (this.browser_active) {
+              if (similar_rom_exists) {
+                let c = confirm("Archive: ROM with this name already archived - is this a separate lawful copy?");
+                if (c) {
                   this.saveRomFile(this.active_rom);
-	        }
-	      } else {
+                }
+              } else {
                 this.saveRomFile(this.active_rom);
-	      }
-	    }
+              }
+            }
           }
 
 
-	  //
-	  // load 5 saved games
-	  //
-          this.app.storage.loadTransactions(("Nwasm"+this.active_rom_sig), 5, function(txs) {
+          //
+          // load 5 saved games
+          //
+          this.app.storage.loadTransactions(("Nwasm" + this.active_rom_sig), 5, function(txs) {
             try {
-	      for (let z = 0; z < txs.length; z++) {
+              for (let z = 0; z < txs.length; z++) {
                 let newtx = new saito.default.transaction(txs[z].transaction);
                 nwasm_self.active_game_saves.push(newtx);
               }
@@ -373,22 +390,22 @@ alert("Deletion Not Supported Yet! ");
             }
           });
 
-	}
+        }
       }
     }
   }
 
-  handleGameLoop(msg=null) {
+  handleGameLoop(msg = null) {
 
     ///////////
     // QUEUE //
     ///////////
     if (this.game.queue.length > 0) {
-      let qe = this.game.queue.length-1;
+      let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
       if (mv[0] === "round") {
-        this.game.queue.splice(this.game.queue.length-1, 1);
+        this.game.queue.splice(this.game.queue.length - 1, 1);
       }
       if (shd_continue == 0) {
         return 0;
@@ -397,13 +414,14 @@ alert("Deletion Not Supported Yet! ");
     return 1;
   }
 
-  editControls(app) {
+  async editControls(app) {
     this.controls = new ControlsOverlay(app, this);
-    this.controls.render(app, this);
+    await this.controls.render(app, this);
   }
-  uploadRom(app) {
+
+  async uploadRom(app) {
     this.uploader = new UploadRom(app, this);
-    this.uploader.render(app, this);
+    await this.uploader.render(app, this);
   }
 
   //////////////////
@@ -428,6 +446,7 @@ alert("Deletion Not Supported Yet! ");
     myApp.initializeRom(ab, this.app, this);
 
   }
+
   async saveRomFile(data) {
 
     let nwasm_self = this;
@@ -446,29 +465,41 @@ alert("Deletion Not Supported Yet! ");
     //
     let obj = {
       module: this.name,
-      id: this.app.crypto.hash(this.active_rom_name) ,
-      type: this.app.crypto.hash(this.active_rom_name) ,
-      title: this.active_rom_name.trim() ,
+      id: this.app.crypto.hash(this.active_rom_name),
+      type: this.app.crypto.hash(this.active_rom_name),
+      title: this.active_rom_name.trim(),
       request: "archive insert",
       data: base64data,
     };
 
-    if (iobj) { iobj.innerHTML = "bundling ROM into archive file..."; }
+    if (iobj) {
+      iobj.innerHTML = "bundling ROM into archive file...";
+    }
 
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
 
     document.querySelector('.loader').classList.add("steptwo");
-    if (iobj) { iobj.innerHTML = "cryptographically signing archive file..."; }
+    if (iobj) {
+      iobj.innerHTML = "cryptographically signing archive file...";
+    }
     newtx = this.app.wallet.signTransaction(newtx);
-    if (iobj) { iobj.innerHTML = "uploading archive file: "+newtx.transaction.m.length+" bytes"; }
+    if (iobj) {
+      iobj.innerHTML = "uploading archive file: " + newtx.transaction.m.length + " bytes";
+    }
 
-    this.app.network.sendTransactionWithCallback(newtx, async function (res) {
-      if (iobj) { iobj.innerHTML = "archive upload completed..."; }
-      if (added_to_library == 1) { return; }
+    this.app.network.sendTransactionWithCallback(newtx, async function(res) {
+      if (iobj) {
+        iobj.innerHTML = "archive upload completed...";
+      }
+      if (added_to_library == 1) {
+        return;
+      }
       added_to_library = 1;
       nwasm_self.app.connection.emit("save-transaction", newtx);
-      if (iobj) { iobj.innerHTML = "adding to personal library..."; }    
+      if (iobj) {
+        iobj.innerHTML = "adding to personal library...";
+      }
     });
 
   }
@@ -492,17 +523,19 @@ alert("Deletion Not Supported Yet! ");
   loadGameFile() {
 
     let nwasm_mod = this;
-    let module_type = "Nwasm"+this.active_rom_sig;
+    let module_type = "Nwasm" + this.active_rom_sig;
 
-    this.app.storage.loadTransactions(("Nwasm"+this.active_rom_sig), 1, function(txs) {
+    this.app.storage.loadTransactions(("Nwasm" + this.active_rom_sig), 1, function(txs) {
       try {
-        if (txs.length <= 0) { alert("No Saved Games Available"); }
+        if (txs.length <= 0) {
+          alert("No Saved Games Available");
+        }
         let newtx = new saito.default.transaction(txs[0].transaction);
         let txmsg = newtx.returnMessage();
         let byteArray = nwasm_mod.convertBase64ToByteArray(txmsg.data);
         nwasm_mod.active_game = byteArray;
         mwasm_mod.active_game_time_played = txmsg.time_played;
-	nwasm.startPlaying();
+        nwasm.startPlaying();
         myApp.loadStateLocal();
       } catch (err) {
         console.log("error loading Nwasm game...: " + err);
@@ -522,15 +555,15 @@ alert("Deletion Not Supported Yet! ");
     let obj = {
       module: (this.name + this.active_rom_sig),
       request: "upload savegame",
-      name: this.active_rom_name.trim() ,
+      name: this.active_rom_name.trim(),
       screenshot: screenshot,
-      time_played: this.active_game_time_played ,
+      time_played: this.active_game_time_played,
       data: base64data,
     };
 
     newtx.msg = obj;
     newtx = this.app.wallet.signTransaction(newtx);
-    this.app.storage.saveTransaction(newtx, ("Nwasm-"+this.active_rom_sig));
+    this.app.storage.saveTransaction(newtx, ("Nwasm-" + this.active_rom_sig));
     this.active_game_saves.push(newtx);
 
   }
@@ -539,8 +572,9 @@ alert("Deletion Not Supported Yet! ");
   // data conversion //
   /////////////////////
   convertByteArrayToBase64(data) {
-    return Buffer.from(data, 'binary').toString('base64');;
-  } 
+    return Buffer.from(data, 'binary').toString('base64');
+    ;
+  }
 
   convertBase64ToByteArray(data) {
     let b = Buffer.from(data, 'base64');

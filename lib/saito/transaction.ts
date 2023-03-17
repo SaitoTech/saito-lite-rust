@@ -796,25 +796,25 @@ export default class Transaction extends SaitoTransaction {
   //
   // everything but the signature
   //
-  presign(app: Saito) {
-    //
-    // set slip ordinals
-    //
-    // for (let i = 0; i < this.transaction.to.length; i++) {
-    //   this.to[i].sid = i;
-    // }
-
-    //
-    // transaction message
-    //
-    if (this.transaction.m.byteLength === 0) {
-      if (Object.keys(this.msg).length === 0) {
-        this.data = Buffer.alloc(0);
-      } else {
-        this.data = Buffer.from(JSON.stringify(this.msg), "utf-8");
-      }
-    }
-  }
+  // presign(app: Saito) {
+  //   //
+  //   // set slip ordinals
+  //   //
+  //   // for (let i = 0; i < this.transaction.to.length; i++) {
+  //   //   this.to[i].sid = i;
+  //   // }
+  //
+  //   //
+  //   // transaction message
+  //   //
+  //   if (this.transaction.m.byteLength === 0) {
+  //     if (Object.keys(this.msg).length === 0) {
+  //       this.data = Buffer.alloc(0);
+  //     } else {
+  //       this.data = Buffer.from(JSON.stringify(this.msg), "utf-8");
+  //     }
+  //   }
+  // }
 
   // sign(app: Saito) {
   //   //

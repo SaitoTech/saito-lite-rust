@@ -122,4 +122,6 @@ export default class Storage {
   }
 
   async queryDatabase(sql, params, database) {}
+
+  async executeDatabase(sql, params, database, mycallback = null) {}
 }

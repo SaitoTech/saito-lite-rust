@@ -37,9 +37,9 @@
         game_mod.log.toggleLog();
       }
     });
-    let initial_confirm_moves = "Newbie Mode"; 
+    let initial_confirm_moves = "Newbie Mode";
     if (this.confirm_moves == 1) {
-      initial_confirm_moves = "Expert Mode"; 
+      initial_confirm_moves = "Expert Mode";
     }
     this.menu.addSubMenuOption("game-game", {
       text : initial_confirm_moves,
@@ -50,11 +50,11 @@
 	if (game_mod.confirm_moves == 0) {
 	  game_mod.confirm_moves = 1;
           game_mod.saveGamePreference('twilight_expert_mode', 0);
-	  window.location.reload();	
+	  window.location.reload();
 	} else {
 	  game_mod.confirm_moves = 0;
           game_mod.saveGamePreference('twilight_expert_mode', 1);
-	  window.location.reload();	
+	  window.location.reload();
 	}
       }
     });
@@ -68,7 +68,7 @@
       }
     });
     this.menu.addMenuOption("game-cards", "Cards");
-    
+
     this.menu.addSubMenuOption("game-cards", {
       text : "Religion",
       id : "game-religious-conflict",
@@ -107,13 +107,13 @@
     });
 
     this.menu.addMenuOption("game-factions", "Factions");
-    
+
     this.menu.addSubMenuOption("game-factions", {
       text : "Hapsburgs",
       id : "game-hapsburgs",
       class : "game-hapsburgs",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("hapsburg"); 
+        game_mod.displayFactionSheet("hapsburg");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -121,7 +121,7 @@
       id : "game-england",
       class : "game-england",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("england"); 
+        game_mod.displayFactionSheet("england");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -158,11 +158,11 @@
     });
 
     this.menu.addChatMenu();
-    this.menu.render();
+    await this.menu.render();
 
-    this.log.render();
+    await this.log.render();
 
-    this.cardbox.render();
+    await this.cardbox.render();
 
     //
     // add card events -- text shown and callback run if there

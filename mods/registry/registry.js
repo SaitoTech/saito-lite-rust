@@ -1,24 +1,23 @@
-const path = require('path');
-const saito = require('../../lib/saito/saito');
-const ModTemplate = require('../../lib/templates/modtemplate');
-const RegistryModal = require('./lib/modal/registry-modal');
+const path = require("path");
+const saito = require("../../lib/saito/saito");
+const ModTemplate = require("../../lib/templates/modtemplate");
+const RegistryModal = require("./lib/modal/registry-modal");
 const RegisterUsernameModal = require("../../lib/saito/ui/modals/register-username/register-username.js");
 
 class Registry extends ModTemplate {
-
   constructor(app) {
-
     super(app);
 
     this.app = app;
     this.name = "Registry";
-    this.description = "Adds support for the Saito DNS system, so that users can register user-generated names. Runs DNS server on core nodes.";
+    this.description =
+      "Adds support for the Saito DNS system, so that users can register user-generated names. Runs DNS server on core nodes.";
     this.categories = "Core Utilities Messaging";
 
     //
     // master DNS publickey for this module
     //
-    this.publickey = 'zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK';
+    this.publickey = "zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK";
 
     //
     // we could save the cached keys here instead of inserting them
@@ -32,7 +31,6 @@ class Registry extends ModTemplate {
     // event listeners - browser.ts calls this in addIdentifiersToDom()
     //
     this.app.connection.on("registry-fetch-identifiers-and-update-dom", (keys) => {
-
       let unidentified_keys = [];
 
       for (let i = 0; i < keys.length; i++) {
@@ -54,15 +52,15 @@ class Registry extends ModTemplate {
                 if (k) {
                   if (!k.identifier) {
                     this.app.keychain.addKey(key, { identifier: value });
-                    this.app.connection.emit("update_identifier", (key));
+                    this.app.connection.emit("update_identifier", key);
                   }
                 }
               } else {
-		// save if locally stored
-		if (this.app.keychain.hasPublicKey(key)) {
-		  this.app.keychain.addKey({ publickey : key , identifier : value });
-		}
-	      }
+                // save if locally stored
+                if (this.app.keychain.hasPublicKey(key)) {
+                  this.app.keychain.addKey({ publickey: key, identifier: value });
+                }
+              }
               this.app.browser.updateAddressHTML(key, value);
             });
           });
@@ -76,11 +74,8 @@ class Registry extends ModTemplate {
               this.cached_keys[unidentified_keys[i]] = unidentified_keys[i];
             }
           }
-
         }
       }
-
-      
     });
 
     this.username_modal = null;
@@ -88,12 +83,10 @@ class Registry extends ModTemplate {
     return this;
   }
 
-
   initialize(app) {
     super.initialize(app);
     this.username_modal = new RegisterUsernameModal(app, this);
   }
-
 
   returnServices() {
     let services = [];
@@ -113,8 +106,9 @@ class Registry extends ModTemplate {
   // fetching identifiers
   //
   fetchManyPublicKeys(identifiers = [], peer = null, mycallback = null) {
-
-    if (mycallback == null) { return; }
+    if (mycallback == null) {
+      return;
+    }
 
     const found_keys = [];
     const missing_keys = [];
@@ -134,10 +128,11 @@ class Registry extends ModTemplate {
     }
 
     const where_statement = `identifier in (${missing_keys.join(",")})`;
-    const sql = `select * from records where ${where_statement}`;
+    const sql = `select *
+                 from records
+                 where ${where_statement}`;
 
     this.sendPeerDatabaseRequestWithFilter(
-
       "Registry",
 
       sql,
@@ -181,14 +176,13 @@ class Registry extends ModTemplate {
     );
   }
 
-
-
   //
   // fetching identifiers
   //
   fetchManyIdentifiers(publickeys = [], peer = null, mycallback = null) {
-
-    if (mycallback == null) { return; }
+    if (mycallback == null) {
+      return;
+    }
 
     const found_keys = [];
     const missing_keys = [];
@@ -208,7 +202,9 @@ class Registry extends ModTemplate {
     }
 
     const where_statement = `publickey in (${missing_keys.join(",")})`;
-    const sql = `select * from records where ${where_statement}`;
+    const sql = `select *
+                 from records
+                 where ${where_statement}`;
 
     /*
     console.info(this.cached_keys);
@@ -218,7 +214,6 @@ class Registry extends ModTemplate {
     */
 
     this.sendPeerDatabaseRequestWithFilter(
-
       "Registry",
 
       sql,
@@ -262,13 +257,12 @@ class Registry extends ModTemplate {
     );
   }
 
-
   fetchIdentifier(publickey, peer = null, mycallback = null) {
-
-    if (mycallback == null) { return; }
+    if (mycallback == null) {
+      return;
+    }
 
     this.sendPeerDatabaseRequestWithFilter(
-
       "Registry",
 
       'SELECT * FROM records WHERE publickey = "' + publickey + '"',
@@ -318,51 +312,47 @@ class Registry extends ModTemplate {
     );
   }
 
-
-
-
   respondTo(type = "") {
-
     let registry_self = this;
 
     if (type == "saito-return-key") {
       return {
         returnKey: (data = null) => {
-
-          // 
+          //
           // data might be a publickey, permit flexibility
           // in how this is called by pushing it into a
           // suitable object for searching
           //
-          if (typeof data === 'string') {
+          if (typeof data === "string") {
             let d = { publickey: "" };
             d.publickey = data;
             data = d;
           }
 
-          // 
+          //
           // if keys exist
-          // 
+          //
           for (let key in this.cached_keys) {
-	    if (key === data.publickey) {
-	      if (this.cached_keys[key]) {
-	        return { publickey : key , identifier : this.cached_keys[key] };
-	      } else {
-	        return { publickey : key };
-	      }
-	    }
+            if (key === data.publickey) {
+              if (this.cached_keys[key]) {
+                return { publickey: key, identifier: this.cached_keys[key] };
+              } else {
+                return { publickey: key };
+              }
+            }
           }
 
           return null;
-
-        }
-      }
+        },
+      };
     }
 
     if (type == "do-registry-prompt") {
       return {
         doRegistryPrompt: async () => {
-          var requested_id = await sprompt("Pick a handle or nickname. <br /><sub>Alphanumeric characters only - Do not include an @</sub.>");
+          var requested_id = await sprompt(
+            "Pick a handle or nickname. <br /><sub>Alphanumeric characters only - Do not include an @</sub.>"
+          );
           try {
             let success = this.tryRegisterIdentifier(requested_id);
             if (success) {
@@ -377,12 +367,12 @@ class Registry extends ModTemplate {
               throw err;
             }
           }
-        }
-      }
+        },
+      };
     }
 
     /**** part of profile now
-        if (type === 'saito-header') {
+     if (type === 'saito-header') {
           let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
           let has_registered_username = false;
           if (key) { if (key.has_registered_username) { has_registered_username = true; } }
@@ -400,7 +390,7 @@ class Registry extends ModTemplate {
             return m;
           }
         }
-    ****/
+     ****/
     return null;
   }
 
@@ -409,17 +399,16 @@ class Registry extends ModTemplate {
     RegistryModal.attachEvents(this.app, this);
   }
 
-
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
-
-    if (tx == null) { return; }
+    if (tx == null) {
+      return;
+    }
     let message = tx.returnMessage();
 
     //
     // this code doubles onConfirmation
     //
-    if (message.request === 'registry username update') {
-
+    if (message.request === "registry username update") {
       let tx = message?.data?.tx;
       let registry_self = app.modules.returnModule("Registry");
 
@@ -432,7 +421,13 @@ class Registry extends ModTemplate {
 
       try {
         if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
-          registry_self.app.keychain.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: registry_self.app.blockchain.returnLatestBlockId(), block_hash: registry_self.app.blockchain.returnLatestBlockHash(), lc: 1 });
+          registry_self.app.keychain.addKey(tx.transaction.to[0].add, {
+            identifier: identifier,
+            watched: true,
+            block_id: registry_self.app.blockchain.returnLatestBlockId(),
+            block_hash: registry_self.app.blockchain.returnLatestBlockHash(),
+            lc: 1,
+          });
           registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].add, identifier);
         } else {
           console.debug("failed verifying message for username registration : ", tx);
@@ -442,13 +437,13 @@ class Registry extends ModTemplate {
       }
     }
 
-    super.handlePeerTransaction(app, tx, peer, mycallback);
+    await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
-
-  notifyPeers(app, tx) {
-    for (let i = 0; i < app.network.peers.length; i++) {
-      if (app.network.peers[i].peer.synctype == "lite") {
+  async notifyPeers(app, tx) {
+    let peers = await app.network.getPeers();
+    for (let i = 0; i < peers.length; i++) {
+      if (peers[i].peer.synctype == "lite") {
         //
         // fwd tx to peer
         //
@@ -456,29 +451,29 @@ class Registry extends ModTemplate {
         message.request = "registry username update";
         message.data = {};
         message.data.tx = tx;
-        app.network.peers[i].sendRequest(message.request, message.data);
+        await app.network.sendRequest(message.request, message.data, null, peers[i].peerIndex);
       }
     }
   }
 
-
-
-
-  tryRegisterIdentifier(identifier, domain = "@saito") {
-
+  async tryRegisterIdentifier(identifier, domain = "@saito") {
     let registry_self = this.app.modules.returnModule("Registry");
 
     //console.log("REGISTERING TO WHICH MODULE: " + this.name);
     //console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
     //console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
 
-    let newtx = this.app.wallet.createUnsignedTransaction(registry_self.publickey, 0.0, this.app.wallet.wallet.default_fee);
+    let newtx = this.app.wallet.createUnsignedTransaction(
+      registry_self.publickey,
+      0.0,
+      this.app.wallet.wallet.default_fee
+    );
     if (!newtx) {
-      console.log("NULL TX CREATED IN REGISTRY MODULE")
+      console.log("NULL TX CREATED IN REGISTRY MODULE");
       throw Error("NULL TX CREATED IN REGISTRY MODULE");
     }
 
-    if (typeof identifier === 'string' || identifier instanceof String) {
+    if (typeof identifier === "string" || identifier instanceof String) {
       var regex = /^[0-9A-Za-z]+$/;
       if (!regex.test(identifier)) {
         throw Error("Alphanumeric Characters only");
@@ -487,8 +482,8 @@ class Registry extends ModTemplate {
       //newtx.msg.request	= "register";
       newtx.msg.identifier = identifier + domain;
 
-      newtx = this.app.wallet.signTransaction(newtx);
-      this.app.network.propagateTransaction(newtx);
+      newtx = await this.app.wallet.signTransaction(newtx);
+      await this.app.network.propagateTransaction(newtx);
 
       // sucessful send
       return true;
@@ -499,79 +494,75 @@ class Registry extends ModTemplate {
   }
 
   // DEPRECATED, USE tryRegisterIdentifier()
-  registerIdentifier(identifier, domain = "@saito") {
-
-    let newtx = this.app.wallet.createUnsignedTransaction(this.publickey, 0.0, this.app.wallet.wallet.default_fee);
+  async registerIdentifier(identifier, domain = "@saito") {
+    let newtx = await this.app.wallet.createUnsignedTransaction(
+      this.publickey,
+      0.0,
+      this.app.wallet.wallet.default_fee
+    );
     if (newtx == null) {
-      console.log("NULL TX CREATED IN REGISTRY MODULE")
+      console.log("NULL TX CREATED IN REGISTRY MODULE");
       return;
     }
 
-    if (typeof identifier === 'string' || identifier instanceof String) {
+    if (typeof identifier === "string" || identifier instanceof String) {
       var regex = /^[0-9A-Za-z]+$/;
-      if (!regex.test(identifier)) { salert("Alphanumeric Characters only"); return false; }
+      if (!regex.test(identifier)) {
+        salert("Alphanumeric Characters only");
+        return false;
+      }
 
       newtx.msg.module = "Registry";
       //newtx.msg.request	= "register";
       newtx.msg.identifier = identifier + domain;
 
-      newtx = this.app.wallet.signTransaction(newtx);
-      this.app.network.propagateTransaction(newtx);
+      newtx = await this.app.wallet.signTransaction(newtx);
+      await this.app.network.propagateTransaction(newtx);
 
       // sucessful send
       return true;
     }
-
   }
 
-
-  onPeerServiceUp(app, peer, service = {}) {
- 
+  async onPeerServiceUp(app, peer, service = {}) {
     //
     // redsquare -- fetch community tweets
     //
     if (service.service === "registry") {
       if (app.BROWSER == 1) {
-	app.browser.addIdentifiersToDom();	
+        await app.browser.addIdentifiersToDom();
       }
-    }    
-
+    }
   }
 
-
-
   onPeerHandshakeComplete(app, peer) {
-
     let registry_self = app.modules.returnModule("Registry");
 
     /***** UNCOMMENT FOR LOCAL DEVELOPMENT ******
-    if (registry_self.app.options.server != undefined) {
+     if (registry_self.app.options.server != undefined) {
       registry_self.publickey = registry_self.app.wallet.returnPublicKey();
     } else {
       registry_self.publickey = peer.peer.publickey;
     }
-console.log("WE ARE NOW LOCAL SERVER");
-    *******************************************/
-
+     console.log("WE ARE NOW LOCAL SERVER");
+     *******************************************/
   }
 
-
   async onConfirmation(blk, tx, conf, app) {
-
     let registry_self = app.modules.returnModule("Registry");
     let txmsg = tx.returnMessage();
 
     if (conf == 0) {
-
       //console.log(JSON.parse(JSON.stringify(txmsg)));
 
       if (!!txmsg && txmsg.module === "Registry") {
-
         //
         // this is to us, and we are the main registry server
         //
-        if (tx.isTo(registry_self.publickey) && app.wallet.returnPublicKey() === registry_self.publickey) {
-
+        if (
+          tx.isTo(registry_self.publickey) &&
+          app.wallet.returnPublicKey() === registry_self.publickey
+        ) {
           let request = txmsg.request;
           let identifier = txmsg.identifier;
           let publickey = tx.transaction.from[0].add;
@@ -585,50 +576,71 @@ console.log("WE ARE NOW LOCAL SERVER");
           let lc = 1;
 
           // servers update database
-          let res = await registry_self.addRecord(identifier, publickey, unixtime, bid, bsh, lock_block, sig, signer, 1);
+          let res = await registry_self.addRecord(
+            identifier,
+            publickey,
+            unixtime,
+            bid,
+            bsh,
+            lock_block,
+            sig,
+            signer,
+            1
+          );
           let fee = tx.returnPaymentTo(registry_self.publickey);
 
           // send message
           if (res == 1) {
-
-            let newtx = registry_self.app.wallet.createUnsignedTransaction(tx.transaction.from[0].add, 0, fee);
+            let newtx = registry_self.app.wallet.createUnsignedTransaction(
+              tx.transaction.from[0].add,
+              0,
+              fee
+            );
             newtx.msg.module = "Email";
             newtx.msg.origin = "Registry";
             newtx.msg.title = "Address Registration Success!";
-            newtx.msg.message = "<p>You have successfully registered the identifier: <span class='boldred'>" + identifier + "</span></p>";
+            newtx.msg.message =
+              "<p>You have successfully registered the identifier: <span class='boldred'>" +
+              identifier +
+              "</span></p>";
             newtx.msg.identifier = identifier;
             newtx.msg.signed_message = signed_message;
             newtx.msg.sig = sig;
 
             newtx = registry_self.app.wallet.signTransaction(newtx);
             registry_self.app.network.propagateTransaction(newtx);
-
           } else {
-
-            let newtx = registry_self.app.wallet.createUnsignedTransaction(tx.transaction.from[0].add, 0.0, fee);
+            let newtx = registry_self.app.wallet.createUnsignedTransaction(
+              tx.transaction.from[0].add,
+              0.0,
+              fee
+            );
             newtx.msg.module = "Email";
             newtx.msg.title = "Address Registration Failed!";
-            newtx.msg.message = "<p>The identifier you requested (<span class='boldred'>" + identifier + "</span>) has already been registered.</p>";
+            newtx.msg.message =
+              "<p>The identifier you requested (<span class='boldred'>" +
+              identifier +
+              "</span>) has already been registered.</p>";
             newtx.msg.identifier = identifier;
             newtx.msg.signed_message = "";
             newtx.msg.sig = "";
 
             newtx = registry_self.app.wallet.signTransaction(newtx);
             registry_self.app.network.propagateTransaction(newtx);
-
           }
 
           return;
-
         }
       }
-
 
       if (!!txmsg && txmsg.module == "Email") {
         if (tx.transaction.from[0].add == registry_self.publickey) {
           if (tx.transaction.to[0].add == registry_self.app.wallet.returnPublicKey()) {
-            if (tx.msg.identifier != undefined && tx.msg.signed_message != undefined && tx.msg.sig != undefined) {
-
+            if (
+              tx.msg.identifier != undefined &&
+              tx.msg.signed_message != undefined &&
+              tx.msg.sig != undefined
+            ) {
               //
               // am email? for us? from the DNS registrar?
               //
@@ -637,19 +649,32 @@ console.log("WE ARE NOW LOCAL SERVER");
               let sig = tx.msg.sig;
 
               try {
-                if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
-                  registry_self.app.keychain.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: blk.block.id, block_hash: blk.returnHash(), lc: 1 });
+                if (
+                  registry_self.app.crypto.verifyMessage(
+                    signed_message,
+                    sig,
+                    registry_self.publickey
+                  )
+                ) {
+                  registry_self.app.keychain.addKey(tx.transaction.to[0].add, {
+                    identifier: identifier,
+                    watched: true,
+                    block_id: blk.block.id,
+                    block_hash: blk.returnHash(),
+                    lc: 1,
+                  });
                 } else {
-                  registry_self.app.keychain.addKey(tx.transaction.to[0].add, { has_registered_username: false });
+                  registry_self.app.keychain.addKey(tx.transaction.to[0].add, {
+                    has_registered_username: false,
+                  });
                   console.debug("verification failed for sig : ", tx);
                 }
-                registry_self.app.connection.emit("update_identifier", (tx.transaction.to[0].add));
+                registry_self.app.connection.emit("update_identifier", tx.transaction.to[0].add);
               } catch (err) {
                 console.error("ERROR verifying username registration message: ", err);
               }
             }
           } else {
-
             if (registry_self.app.wallet.returnPublicKey() != registry_self.publickey) {
               //
               // am email? for us? from the DNS registrar?
@@ -659,12 +684,20 @@ console.log("WE ARE NOW LOCAL SERVER");
               let sig = tx.msg.sig;
 
               // if i am server, save copy of record
-              registry_self.addRecord(identifier, tx.transaction.to[0].add, tx.transaction.ts, blk.block.id, blk.returnHash(), 0, sig, registry_self.publickey);
+              registry_self.addRecord(
+                identifier,
+                tx.transaction.to[0].add,
+                tx.transaction.ts,
+                blk.block.id,
+                blk.returnHash(),
+                0,
+                sig,
+                registry_self.publickey
+              );
 
               // if i am a server, i will notify lite-peers of
               console.log("notifying lite-peers of registration!");
               this.notifyPeers(app, tx);
-
             }
           }
         }
@@ -672,29 +705,35 @@ console.log("WE ARE NOW LOCAL SERVER");
     }
   }
 
-  async addRecord(identifier = "", publickey = "", unixtime = 0, bid = 0, bsh = "", lock_block = 0, sig = "", signer = "", lc = 1) {
-
-    let sql = `INSERT INTO records (
-        identifier, 
-        publickey, 
-        unixtime, 
-        bid, 
-        bsh, 
-        lock_block, 
-        sig,
-        signer, 
-        lc
-      ) VALUES (
-        $identifier, 
-        $publickey,
-        $unixtime, 
-        $bid, 
-        $bsh, 
-        $lock_block, 
-        $sig, 
-        $signer, 
-        $lc
-      )`;
+  async addRecord(
+    identifier = "",
+    publickey = "",
+    unixtime = 0,
+    bid = 0,
+    bsh = "",
+    lock_block = 0,
+    sig = "",
+    signer = "",
+    lc = 1
+  ) {
+    let sql = `INSERT INTO records (identifier,
+                                    publickey,
+                                    unixtime,
+                                    bid,
+                                    bsh,
+                                    lock_block,
+                                    sig,
+                                    signer,
+                                    lc)
+               VALUES ($identifier,
+                       $publickey,
+                       $unixtime,
+                       $bid,
+                       $bsh,
+                       $lock_block,
+                       $sig,
+                       $signer,
+                       $lc)`;
     let params = {
       $identifier: identifier,
       $publickey: publickey,
@@ -705,37 +744,35 @@ console.log("WE ARE NOW LOCAL SERVER");
       $sig: sig,
       $signer: signer,
       $lc: lc,
-    }
+    };
     await this.app.storage.executeDatabase(sql, params, "registry");
 
-    sql = "SELECT * FROM records WHERE identifier = $identifier AND publickey = $publickey AND unixtime = $unixtime AND bid = $bid AND bsh = $bsh AND lock_block = $lock_block AND sig = $sig AND signer = $signer AND lc = $lc";
+    sql =
+      "SELECT * FROM records WHERE identifier = $identifier AND publickey = $publickey AND unixtime = $unixtime AND bid = $bid AND bsh = $bsh AND lock_block = $lock_block AND sig = $sig AND signer = $signer AND lc = $lc";
     let rows = await this.app.storage.queryDatabase(sql, params, "registry");
     if (rows.length == 0) {
       return 0;
     } else {
       return 1;
     }
-
   }
-
 
   async onChainReorganization(bid, bsh, lc) {
-
     var sql = "UPDATE records SET lc = $lc WHERE bid = $bid AND bsh = $bsh";
-    var params = { $bid: bid, $bsh: bsh }
+    var params = { $bid: bid, $bsh: bsh };
     await this.app.storage.executeDatabase(sql, params, "registry");
     return;
-
   }
-
 
   shouldAffixCallbackToModule(modname) {
-    if (modname == this.name) { return 1; }
-    if (modname == "Email") { return 1; }
+    if (modname == this.name) {
+      return 1;
+    }
+    if (modname == "Email") {
+      return 1;
+    }
     return 0;
   }
-
 }
 
 module.exports = Registry;
-
