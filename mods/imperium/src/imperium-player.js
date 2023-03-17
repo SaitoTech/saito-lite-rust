@@ -263,7 +263,7 @@ playerTurn(stage = "main") {
     let playercol = "player_color_" + this.game.player;
 
     let html = '';
-    html += '<div class="terminal_header2 sf-readable"><div class="player_color_box ' + playercol + '"></div>' + this.returnFaction(this.game.player) + ":</div><p><ul class='terminal_header3'>";
+    html += '<div class="terminal_header2 sf-readable status-update"><div class="player_color_box ' + playercol + '"></div>' + this.returnFaction(this.game.player) + ":</div><p><ul class='terminal_header3'>";
 
     if (this.canPlayerPass(this.game.player) == 1) {
       if (this.game.state.active_player_moved == 1) {
@@ -2289,7 +2289,7 @@ playerContinueTurn(player, sector) {
   // check to see if any ships survived....
   //
   let playercol = "player_color_" + this.game.player;
-  let html = "<div class='sf-readable'><div class='player_color_box " + playercol + "'></div>" + this.returnFaction(player) + ": </div><ul>";
+  let html = "<div class='sf-readable status-update'><div class='player_color_box " + playercol + "'></div>" + this.returnFaction(player) + ": </div><ul>";
 
   if (this.canPlayerScoreActionStageVictoryPoints(player) != "") {
     html += '<li class="option" id="score">score secret objective</li>';
@@ -4271,7 +4271,7 @@ playerSelectStrategyCards(mycallback, selection = 0) {
   let relevant_action_cards = ["strategy"];
   let ac = this.returnPlayerActionCards(this.game.player, relevant_action_cards);
 
-  let html = "<div class='terminal_header'><div class='player_color_box " + playercol + "'></div>" + this.returnFaction(this.game.player) + ": select your strategy card:</div><ul>";
+  let html = "<div class='terminal_header status-update'><div class='player_color_box " + playercol + "'></div>" + this.returnFaction(this.game.player) + ": select your strategy card:</div><ul>";
   if (this.game.state.round > 1) {
     html = "<div class='terminal_header'>" + this.returnFaction(this.game.player) + ": select your strategy card:</div><ul>";
   }
@@ -4567,7 +4567,7 @@ playerSelectUnitsToMove(destination) {
     let spent_distance_boost = (obj.distance_adjustment - subjective_distance_adjustment);
 
     let playercol = "player_color_" + imperium_self.game.player;
-    let html = "<div class='player_color_box " + playercol + "'></div> " + imperium_self.returnFaction(imperium_self.game.player) + ': select ships to move<ul>';
+    let html = "<div class=\"status-update\"><div class='player_color_box " + playercol + "'></div> " + imperium_self.returnFaction(imperium_self.game.player) + ': select ships to move</div><ul>';
 
     //
     // select ships

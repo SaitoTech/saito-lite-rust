@@ -1,6 +1,6 @@
 module.exports = ImperiumDashboardTemplate = (imperium_self, agenda_phase=0) => {
 
-  html = '<div class="imperium-dashboard"></div>';
+  html = '<div class="imperium-dashboard">';
   for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 
     html += `

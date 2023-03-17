@@ -1418,10 +1418,11 @@ body {
 .player_color_8 {}
 
 .player_color_box {
-  width: 25px;
-  height: 25px;
+  width: 2.5rem;
+  height: 2.5rem;
   display: inline-block;
-  margin-right: 10px;
+  margin-right: 1rem;
+  padding-top:0.5rem;
   background-color: #000;
 }
 
