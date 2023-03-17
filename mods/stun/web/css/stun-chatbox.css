@@ -649,7 +649,6 @@
 /* CHAT SETTINGS */
 
 .chat-settings-container {
-  font-family: Arial, sans-serif;
   background-color: #000;
   color: var(--saito-white);
   display: flex;
@@ -669,7 +668,6 @@
   padding: 2rem;
   border-radius: 1rem;
   z-index: 40;
-  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
 }
 
 .chat-settings-preview-section {
