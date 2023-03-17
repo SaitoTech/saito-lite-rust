@@ -3099,7 +3099,6 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
  playerProduceUnits(sector, production_limit = 0, cost_limit = 0, stage = 0, warfare = 0) {
 
   let imperium_self = this;
-
   let player_fleet = this.returnPlayerFleet(imperium_self.game.player);
   let player_build = {};
   player_build.infantry = 0;
@@ -3110,6 +3109,7 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   player_build.destroyers = 0;
   player_build.flagships = 0;
   player_build.warsuns = 0;
+  let available_units = [];
 
   //
   // determine production_limit from sector
@@ -3117,7 +3117,6 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   let sys = this.returnSectorAndPlanets(sector);
   let available_resources = imperium_self.returnAvailableResources(imperium_self.game.player);
   available_resources += imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus;
-
 
   let calculated_production_limit = 0;
   for (let i = 0; i < sys.s.units[this.game.player - 1].length; i++) {
@@ -3136,37 +3135,43 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
     if (production_limit == 0 && this.game.state.players_info[this.game.player - 1].may_player_produce_without_spacedock_production_limit >= 0) { production_limit = this.game.state.players_info[this.game.player - 1].may_player_produce_without_spacedock_production_limit; }
     if (cost_limit == 0 && this.game.state.players_info[this.game.player - 1].may_player_produce_without_spacedock_cost_limit >= 0) { cost_limit = this.game.state.players_info[this.game.player - 1].may_player_produce_without_spacedock_cost_limit; }
   };
-
   if (calculated_production_limit > production_limit) { production_limit = calculated_production_limit; }
-
 
   let html = '<div class="sf-readable">Produce Units in this Sector: ';
   if (production_limit != 0) { html += '(' + production_limit + ' units max)'; }
   if (cost_limit != 0) { html += '(' + cost_limit + ' cost max)'; }
   html += '</div><ul>';
   if (available_resources >= 1) {
+    available_units.push("infantry");
     html += '<li class="buildchoice" id="infantry">Infantry - <span class="infantry_total">0</span></li>';
   }
   if (available_resources >= 1) {
+    available_units.push("fighter");
     html += '<li class="buildchoice" id="fighter">Fighter - <span class="fighter_total">0</span></li>';
   }
   if (available_resources >= 1) {
+    available_units.push("destroyer");
     html += '<li class="buildchoice" id="destroyer">Destroyer - <span class="destroyer_total">0</span></li>';
   }
   if (available_resources >= 3) {
+    available_units.push("carrier");
     html += '<li class="buildchoice" id="carrier">Carrier - <span class="carrier_total">0</span></li>';
   }
   if (available_resources >= 2) {
+    available_units.push("cruiser");
     html += '<li class="buildchoice" id="cruiser">Cruiser - <span class="cruiser_total">0</span></li>';
   }
   if (available_resources >= 4) {
+    available_units.push("dreadnaught");
     html += '<li class="buildchoice" id="dreadnaught">Dreadnaught - <span class="dreadnaught_total">0</span></li>';
   }
   if (available_resources >= 8 && this.canPlayerProduceFlagship(imperium_self.game.player)) {
+    available_units.push("flagship");
     html += '<li class="buildchoice" id="flagship">Flagship - <span class="flagship_total">0</span></li>';
   }
   if (imperium_self.game.state.players_info[imperium_self.game.player - 1].may_produce_warsuns == 1) {
     if (available_resources >= 12) {
+      available_units.push("warsun");
       html += '<li class="buildchoice" id="warsun">War Sun - <span class="warsun_total">0</span></li>';
     }
   }
@@ -3178,77 +3183,9 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   this.updateStatus(html);
 
   let stuff_to_build = [];
-
   imperium_self.lockInterface();
 
-  $('.buildchoice').off();
-  $('.buildchoice').on('mouseenter', function () { let s = $(this).attr("id"); imperium_self.showUnit(s); });
-  $('.buildchoice').on('mouseleave', function () { let s = $(this).attr("id"); imperium_self.hideUnit(s); });
-  $('.buildchoice').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-
-    let id = $(this).attr("id");
-
-    //
-    // submit when done
-    //
-    if (id == "confirm") {
-
-      $('.buildchoice').off();
-
-      let total_cost = 0;
-      for (let i = 0; i < stuff_to_build.length; i++) {
-        total_cost += imperium_self.returnUnitCost(stuff_to_build[i], imperium_self.game.player);
-      }
-
-      if (imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus > 0) {
-        total_cost -= imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus;
-        if (total_cost < 0) { total_cost = 0; }
-      }
-
-      if (warfare == 0) {
-        imperium_self.addMove("resolve\tplay");
-        imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
-      } else {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-        imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
-      }
-
-      //
-      // sanity check on people trying to produce nothing
-      //
-      if (total_cost == 0 && stuff_to_build.length == 0) {
-	let c = confirm("Are you sure you want to produce no units at all? Click cancel to re-pick!");
-	if (!c) { return; }
-      }
-
-      imperium_self.unlockInterface();
-      imperium_self.playerSelectResources(total_cost, function (success) {
-
-        if (success == 1) {
-          imperium_self.addMove("post_production\t" + imperium_self.game.player + "\t" + sector + "\t" + JSON.stringify(stuff_to_build));
-          for (let y = 0; y < stuff_to_build.length; y++) {
-            let planet_idx = imperium_self.returnPlayersLeastDefendedPlanetInSector(imperium_self.game.player, sector);
-            if (stuff_to_build[y] != "infantry") { planet_idx = -1; }
-            imperium_self.addMove("produce\t" + imperium_self.game.player + "\t" + 1 + "\t" + planet_idx + "\t" + stuff_to_build[y] + "\t" + sector);
-            imperium_self.addMove("setvar"+"\t"+"state"+"\t"+"0"+"\t"+"active_player_has_produced"+"\t"+1)
-            imperium_self.game.tracker.production = 1;
-          }
-          imperium_self.endTurn();
-          return;
-        } else {
-          salert("failure to find appropriate influence");
-        }
-      });
-
-      return;
-    };
-
+  let selectUnit = function(id) {
 
     let calculated_total_cost = 0;
     for (let i = 0; i < stuff_to_build.length; i++) {
@@ -3262,9 +3199,6 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
     if (imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus > 0) {
       calculated_total_cost -= imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus;
     }
-
-
-
 
     //
     // respect production / cost limits
@@ -3337,6 +3271,7 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
       player_build.destroyers = 0;
       player_build.flagships = 0;
       player_build.warsuns = 0;
+      imperium_self.production_overlay.reset();
       return;
     }
 
@@ -3366,8 +3301,85 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
     let resourcetxt = " resources";
     if (total_cost == 1) { resourcetxt = " resource"; }
     $('.buildcost_total').html(total_cost + resourcetxt);
+  }
+  let submitBuild = function() {
+
+      let total_cost = 0;
+      for (let i = 0; i < stuff_to_build.length; i++) {
+        total_cost += imperium_self.returnUnitCost(stuff_to_build[i], imperium_self.game.player);
+      }
+
+      if (imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus > 0) {
+        total_cost -= imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus;
+        if (total_cost < 0) { total_cost = 0; }
+      }
+
+      if (warfare == 0) {
+        imperium_self.addMove("resolve\tplay");
+        imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
+      } else {
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+        imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
+      }
+
+      //
+      // sanity check on people trying to produce nothing
+      //
+      if (total_cost == 0 && stuff_to_build.length == 0) {
+	let c = confirm("Are you sure you want to produce no units at all? Click cancel to re-pick!");
+	if (!c) { return; }
+      }
+
+      imperium_self.unlockInterface();
+      imperium_self.playerSelectResources(total_cost, function (success) {
+
+        if (success == 1) {
+          imperium_self.addMove("post_production\t" + imperium_self.game.player + "\t" + sector + "\t" + JSON.stringify(stuff_to_build));
+          for (let y = 0; y < stuff_to_build.length; y++) {
+            let planet_idx = imperium_self.returnPlayersLeastDefendedPlanetInSector(imperium_self.game.player, sector);
+            if (stuff_to_build[y] != "infantry") { planet_idx = -1; }
+            imperium_self.addMove("produce\t" + imperium_self.game.player + "\t" + 1 + "\t" + planet_idx + "\t" + stuff_to_build[y] + "\t" + sector);
+            imperium_self.addMove("setvar"+"\t"+"state"+"\t"+"0"+"\t"+"active_player_has_produced"+"\t"+1)
+            imperium_self.game.tracker.production = 1;
+          }
+          imperium_self.endTurn();
+          return;
+        } else {
+          salert("failure to find appropriate influence");
+        }
+      });
+
+  }
+
+
+  $('.buildchoice').off();
+  $('.buildchoice').on('mouseenter', function () { let s = $(this).attr("id"); imperium_self.showUnit(s); });
+  $('.buildchoice').on('mouseleave', function () { let s = $(this).attr("id"); imperium_self.hideUnit(s); });
+  $('.buildchoice').on('click', function () {
+
+    let id = $(this).attr("id");
+
+    //
+    // submit when done
+    //
+    if (id == "confirm") {
+
+      $('.buildchoice').off();
+      submitBuild();
+
+    } else {
+
+      selectUnit(id);
+
+    }
 
   });
+
+  //
+  // show the overlay
+  //
+  imperium_self.production_overlay.render(cost_limit, production_limit, available_resources, selectUnit, submitBuild, available_units);
 
 }
 

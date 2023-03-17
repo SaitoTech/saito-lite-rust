@@ -18,7 +18,7 @@ handleCombatMenuItem() {
   this.combat_overlay.render();
 }
 handleFactionMenuItem() {
-  this.overlay.show(this.returnFactionOverlay());
+  this.factions_overlay.render();
 }
 handleHowToPlayMenuItem() {
   this.rules_overlay.render();
@@ -49,6 +49,8 @@ handleLawsMenuItem() {
   this.overlay.show(this.returnLawsOverlay());
 }
 handleUnitsMenuItem() {
+  this.production_overlay.render();
+return;
   this.overlay.show(this.returnUnitsOverlay());
   let imperium_self = this;
   $('#close-units-btn').on('click', function() {

@@ -484,24 +484,14 @@ returnAgendasOverlay() {
 
 returnUnitsOverlay() {
 
-  let html = `<div class="units-overlay-container" style="">`;
+  let html = `<div class="units-overlay-container" style=""><div class="unit-table">`;
   let units = [];
   let imperium_self = this;
 
+  //
+  // first round we show only the units you have
+  //
   if (this.game.state.round == 1) {
-    html += `
-      <div style="width:100%;text-align:center"><div class="units-overlay-text" style="line-height: 1.4em; font-size: 1.8em; margin-top: 50px; margin-bottom: 30px; padding: 20px;">
-        units <b>COST</b> resources to produce
-<p style="margin-top:10px"></p>
-        ships <b>MOVE</b> a maximum number of hexes
-<p style="margin-top:10px"></p>
-	some <b>CARRY</b> infantry or fighters
-<p style="margin-top:10px"></p>
-	lower <b>COMBAT</b> scores hit more often
-
-      </div></div>
-      <div class="unit-table">
-    `;
 
     let fleet = this.returnPlayerFleet(this.game.player);
 
@@ -517,13 +507,8 @@ returnUnitsOverlay() {
     if (fleet.spacedocks > 0) 	{ }
 
   } else {
-    let player = this.game.state.players_info[this.game.player-1];
 
-    html += `
-      <div style="width:100%;text-align:center"><div class="units-overlay-title">Your Units</div></div>
-      <div style="width:100%;text-align:center"><div class="units-overlay-text">check available upgrades in your faction overlay...</div></div>
-      <div class="unit-table">
-    `;
+    let player = this.game.state.players_info[this.game.player-1];
 
     if (imperium_self.doesPlayerHaveTech(this.game.player, "infantry-ii")) {
       units.push("infantry-ii");
@@ -590,13 +575,17 @@ returnUnitsOverlay() {
   }
 
   for (let i = 0; i < units.length; i++) {
-    html += this.returnUnitTableEntry(units[i]);
+    let preobj = this.units[units[i]];
+    let obj = JSON.parse(JSON.stringify(preobj));
+    obj.owner = this.game.player;
+    obj = this.upgradeUnit(obj, this.game.player);
+    html += UnitTemplate(obj);
   }
 
   html += `
-
+    </div>
     <div id="close-units-btn" class="button" style="">CONTINUE</div>
-
+    </div>
   `;
 
   return html;
@@ -647,45 +636,6 @@ returnUnitPopupEntry(unittype) {
   return html;
 
 }
-
-returnUnitTableEntry(unittype) {
-
-  let preobj = this.units[unittype];
-  let obj = JSON.parse(JSON.stringify(preobj));
-
-  obj.owner = this.game.player;
-  obj = this.upgradeUnit(obj, this.game.player);
-
-  if (!obj) { return ""; }
-
-  let html = `
-      <div class="unit-element">
-        <div class="unit-box-ship unit-box-ship-${unittype}"></div>
-        <div class="unit-box">
-	  <div class="unit-box-num">${obj.cost}</div>
-	  <div class="unit-box-desc">cost</div>
-	</div>
-        <div class="unit-box">
-	  <div class="unit-box-num">${obj.move}</div>
-	  <div class="unit-box-desc">move</div>
-	</div>
-        <div class="unit-box">
-	  <div class="unit-box-num">${obj.combat}</div>
-	  <div class="unit-box-desc">combat</div>
-	</div>
-        <div class="unit-box">
-	  <div class="unit-box-num">${obj.capacity}</div>
-	  <div class="unit-box-desc">carry</div>
-	</div>
-        <div class="unit-description">${obj.description}.</div>
-      </div>
-    `;
-
-  return html;
-
-}
-
-
 
 returnNewActionCardsOverlay(cards) {
 

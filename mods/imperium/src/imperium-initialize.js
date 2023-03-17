@@ -110,7 +110,9 @@
       class : "game-units-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(game_mod.returnUnitsOverlay());
+        game_mod.production_overlay.render();
+//overlay.show(game_mod.returnUnitsOverlay());
+//        game_mod.overlay.show(game_mod.returnUnitsOverlay());
       }
     });
     this.menu.addSubMenuOption("game-cards", {

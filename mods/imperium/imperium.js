@@ -6,6 +6,10 @@ const StrategyCardOverlay = require('./lib/overlays/strategy-card');
 const CombatOverlay = require('./lib/overlays/combat');
 const MovementOverlay = require('./lib/overlays/movement');
 const TechTreeOverlay = require('./lib/overlays/tech-tree');
+const FactionsOverlay = require('./lib/overlays/factions');
+const ProductionOverlay = require('./lib/overlays/production');
+const UnitTemplate = require('./lib/unit.template');
+const Unit = require('./lib/unit');
 const TokenBar = require('./lib/tokenbar');
 const Dashboard = require('./lib/dashboard');
 
@@ -37,7 +41,9 @@ class Imperium extends GameTemplate {
     this.strategy_card_overlay = new StrategyCardOverlay(this.app, this);
     this.combat_overlay = new CombatOverlay(this.app, this);
     this.movement_overlay = new MovementOverlay(this.app, this);
+    this.production_overlay = new ProductionOverlay(this.app, this);
     this.tech_tree_overlay = new TechTreeOverlay(this.app, this);
+    this.factions_overlay = new FactionsOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
 
@@ -982,7 +988,7 @@ class Imperium extends GameTemplate {
       ground		:	1,
       can_be_stored	:	1,
       capacity_required :	1,
-      description	:	"Infantry invade planets, but cannot move between sectors without being carried on carriers or other ships with capacity.",
+      description	:	"Infantry invade planets, but require transport on carriers or other capital ships.",
     });
 
     this.importUnit("fighter", {
@@ -994,7 +1000,7 @@ class Imperium extends GameTemplate {
       strength 		:	1,
       can_be_stored	:	1,
       capacity_required :	1,
-      description	:	"Fighters are disposable ships deployed to protect capital ships. They must be transported on carriers or other ships with capacity.",
+      description	:	"Fighters are weak ships that soak up hits in battle. Transport them on carriers or other capital ships.",
     });
 
 
@@ -1004,7 +1010,7 @@ class Imperium extends GameTemplate {
       range 		:	0,
       cost 		:	5,
       combat 		:	6,
-      description	:	"PDS units fire on other ships that invade their sectors. They can also fire on foreign infantry that invade a planet.",
+      description	:	"PDS units fire on ships that enter their firing range, and foreign infantry invading their planet.",
     });
 
     this.importUnit("spacedock", {
@@ -1014,7 +1020,7 @@ class Imperium extends GameTemplate {
       production 	:	2,
       combat      	: 	0,
       range       	: 	0,
-      description	:	"Spacedocks are used to produce infantry and other ships. They cannot produce ships in space if an opponent fighter is in the sector",
+      description	:	"Spacedocks can produce infantry and other ships unless blockaded by enemy ships.",
     });
 
     this.importUnit("carrier", {
@@ -1025,7 +1031,7 @@ class Imperium extends GameTemplate {
       combat 		:	9,
       capacity 		:	4,
       strength 		:	1,
-      description	:	"The Carrier is a troop and fighter transport ship. Load it with infantry and fighters and use it to conquer other sectors.",
+      description	:	"The Carrier is a troop and fighter transport ship that is weak in battle.",
     });
 
     this.importUnit("destroyer", {
@@ -1037,7 +1043,7 @@ class Imperium extends GameTemplate {
       strength 		:	1,
       anti_fighter_barrage :	2,
       anti_fighter_barrage_combat :	9,
-      description	:	"The Destroyer is an inexpensive but mobile ship designed to counter fighter swarms - its ANTI-FIGHTER BARRAGE (2 rolls hitting on 9 or higher) happens at the very start of space-combat",
+      description	:	"The Destroyer is a cheap ship with ANTI-FIGHTER BARRAGE capable of moving two hexes",
     });
 
     this.importUnit("cruiser", {
@@ -1047,7 +1053,7 @@ class Imperium extends GameTemplate {
       move 		:	2,
       combat 		:	7,
       strength 		:	1,
-      description	:	"The Cruiser is a more powerful ship with a reasonable chance of landing hits in battle.",
+      description	:	"The Cruiser is a more powerful ship with a reasonable range",
     });
 
     this.importUnit("dreadnaught", {
@@ -1060,7 +1066,7 @@ class Imperium extends GameTemplate {
       strength 		:	2,
       bombardment_rolls	:	1,
       bombardment_combat:	5,
-      description	:	"The Dreadnaught is a powerful combat ship able to SUSTAIN DAMAGE once before being destroyed in combat",
+      description	:	"The Dreadnaught is a powerful combat ship able to SUSTAIN DAMAGE before destruction in combat",
     });
 
     this.importUnit("flagship", {
@@ -1071,7 +1077,7 @@ class Imperium extends GameTemplate {
       capacity 		:	1,
       combat 		:	7,
       strength 		:	2,
-      description	:	"The Flagship is the pride of the fleet -- each faction's flagship confers specific abilities. See your factino sheet for more details",
+      description	:	"Each faction's flagship has special abilities. See your factino sheet for more details",
     });
 
     this.importUnit("warsun", {
@@ -1085,7 +1091,7 @@ class Imperium extends GameTemplate {
       strength 		:	2,
       bombardment_rolls	:	3,
       bombardment_combat:	3,
-      description	:	"The War Sun is death packaged in a mass of planet-destroying turbinium. Rumours of their lethality abound, as few have fought one and lived to tell the tale." ,
+      description	:	"Death packaged in a mass of planet-destroying turbinium. Rumours of lethality abound, but few have fought and lived to tell the tale." ,
     });
 
   
@@ -1100,7 +1106,7 @@ class Imperium extends GameTemplate {
       can_be_stored	:	1,
       capacity_required :	1,
       extension 	: 	1,
-      description	:	"Infantry II are stronger and more resilient but cannot typically be moved between sectors without moving on carriers or other ships with capacity.",
+      description	:	"Infantry II are stronger and more resilient with a chance of revivication on your homeworld post-death",
     });
 
     this.importUnit("fighter-ii", {
@@ -1113,7 +1119,7 @@ class Imperium extends GameTemplate {
       can_be_stored	:	1,
       capacity_required :	1,
       extension 	: 	1,
-      description	:	"Fighter II can move without being transported by other ships. Any ships inexcess of your carrying capacity could against your fleet supply.",
+      description	:	"Fighter II can move without being transported by other ships. Excess count against your sector fleet supply.",
       
     });
 
@@ -1123,7 +1129,7 @@ class Imperium extends GameTemplate {
       capacity 		:	3,
       production 	:	4,
       extension 	: 	1,
-      description	:	"Spacedock II can produce more units whenever they produce.",
+      description	:	"Spacedock II can produce 4 more units than their planet resource limit.",
     });
 
     this.importUnit("pds-ii", {
@@ -1133,7 +1139,7 @@ class Imperium extends GameTemplate {
       combat 		:	5,
       range		:	1,
       extension 	: 	1,
-      description	:	"PDS II has a slightly more accurate targeting mechanism and can fire into adjacent sectors.",
+      description	:	"PDS II has a greater chance of scoring hits and fires into adjacent sectors.",
     });
 
     this.importUnit("carrier-ii", {
@@ -11781,7 +11787,9 @@ console.log("qe: " + qe);
       class : "game-units-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(game_mod.returnUnitsOverlay());
+        game_mod.production_overlay.render();
+//overlay.show(game_mod.returnUnitsOverlay());
+//        game_mod.overlay.show(game_mod.returnUnitsOverlay());
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -12743,7 +12751,7 @@ handleCombatMenuItem() {
   this.combat_overlay.render();
 }
 handleFactionMenuItem() {
-  this.overlay.show(this.returnFactionOverlay());
+  this.factions_overlay.render();
 }
 handleHowToPlayMenuItem() {
   this.rules_overlay.render();
@@ -12774,6 +12782,8 @@ handleLawsMenuItem() {
   this.overlay.show(this.returnLawsOverlay());
 }
 handleUnitsMenuItem() {
+  this.production_overlay.render();
+return;
   this.overlay.show(this.returnUnitsOverlay());
   let imperium_self = this;
   $('#close-units-btn').on('click', function() {
@@ -22892,7 +22902,6 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
  playerProduceUnits(sector, production_limit = 0, cost_limit = 0, stage = 0, warfare = 0) {
 
   let imperium_self = this;
-
   let player_fleet = this.returnPlayerFleet(imperium_self.game.player);
   let player_build = {};
   player_build.infantry = 0;
@@ -22903,6 +22912,7 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   player_build.destroyers = 0;
   player_build.flagships = 0;
   player_build.warsuns = 0;
+  let available_units = [];
 
   //
   // determine production_limit from sector
@@ -22910,7 +22920,6 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   let sys = this.returnSectorAndPlanets(sector);
   let available_resources = imperium_self.returnAvailableResources(imperium_self.game.player);
   available_resources += imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus;
-
 
   let calculated_production_limit = 0;
   for (let i = 0; i < sys.s.units[this.game.player - 1].length; i++) {
@@ -22929,37 +22938,43 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
     if (production_limit == 0 && this.game.state.players_info[this.game.player - 1].may_player_produce_without_spacedock_production_limit >= 0) { production_limit = this.game.state.players_info[this.game.player - 1].may_player_produce_without_spacedock_production_limit; }
     if (cost_limit == 0 && this.game.state.players_info[this.game.player - 1].may_player_produce_without_spacedock_cost_limit >= 0) { cost_limit = this.game.state.players_info[this.game.player - 1].may_player_produce_without_spacedock_cost_limit; }
   };
-
   if (calculated_production_limit > production_limit) { production_limit = calculated_production_limit; }
-
 
   let html = '<div class="sf-readable">Produce Units in this Sector: ';
   if (production_limit != 0) { html += '(' + production_limit + ' units max)'; }
   if (cost_limit != 0) { html += '(' + cost_limit + ' cost max)'; }
   html += '</div><ul>';
   if (available_resources >= 1) {
+    available_units.push("infantry");
     html += '<li class="buildchoice" id="infantry">Infantry - <span class="infantry_total">0</span></li>';
   }
   if (available_resources >= 1) {
+    available_units.push("fighter");
     html += '<li class="buildchoice" id="fighter">Fighter - <span class="fighter_total">0</span></li>';
   }
   if (available_resources >= 1) {
+    available_units.push("destroyer");
     html += '<li class="buildchoice" id="destroyer">Destroyer - <span class="destroyer_total">0</span></li>';
   }
   if (available_resources >= 3) {
+    available_units.push("carrier");
     html += '<li class="buildchoice" id="carrier">Carrier - <span class="carrier_total">0</span></li>';
   }
   if (available_resources >= 2) {
+    available_units.push("cruiser");
     html += '<li class="buildchoice" id="cruiser">Cruiser - <span class="cruiser_total">0</span></li>';
   }
   if (available_resources >= 4) {
+    available_units.push("dreadnaught");
     html += '<li class="buildchoice" id="dreadnaught">Dreadnaught - <span class="dreadnaught_total">0</span></li>';
   }
   if (available_resources >= 8 && this.canPlayerProduceFlagship(imperium_self.game.player)) {
+    available_units.push("flagship");
     html += '<li class="buildchoice" id="flagship">Flagship - <span class="flagship_total">0</span></li>';
   }
   if (imperium_self.game.state.players_info[imperium_self.game.player - 1].may_produce_warsuns == 1) {
     if (available_resources >= 12) {
+      available_units.push("warsun");
       html += '<li class="buildchoice" id="warsun">War Sun - <span class="warsun_total">0</span></li>';
     }
   }
@@ -22971,77 +22986,9 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   this.updateStatus(html);
 
   let stuff_to_build = [];
-
   imperium_self.lockInterface();
 
-  $('.buildchoice').off();
-  $('.buildchoice').on('mouseenter', function () { let s = $(this).attr("id"); imperium_self.showUnit(s); });
-  $('.buildchoice').on('mouseleave', function () { let s = $(this).attr("id"); imperium_self.hideUnit(s); });
-  $('.buildchoice').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-
-    let id = $(this).attr("id");
-
-    //
-    // submit when done
-    //
-    if (id == "confirm") {
-
-      $('.buildchoice').off();
-
-      let total_cost = 0;
-      for (let i = 0; i < stuff_to_build.length; i++) {
-        total_cost += imperium_self.returnUnitCost(stuff_to_build[i], imperium_self.game.player);
-      }
-
-      if (imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus > 0) {
-        total_cost -= imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus;
-        if (total_cost < 0) { total_cost = 0; }
-      }
-
-      if (warfare == 0) {
-        imperium_self.addMove("resolve\tplay");
-        imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
-      } else {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-        imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
-      }
-
-      //
-      // sanity check on people trying to produce nothing
-      //
-      if (total_cost == 0 && stuff_to_build.length == 0) {
-	let c = confirm("Are you sure you want to produce no units at all? Click cancel to re-pick!");
-	if (!c) { return; }
-      }
-
-      imperium_self.unlockInterface();
-      imperium_self.playerSelectResources(total_cost, function (success) {
-
-        if (success == 1) {
-          imperium_self.addMove("post_production\t" + imperium_self.game.player + "\t" + sector + "\t" + JSON.stringify(stuff_to_build));
-          for (let y = 0; y < stuff_to_build.length; y++) {
-            let planet_idx = imperium_self.returnPlayersLeastDefendedPlanetInSector(imperium_self.game.player, sector);
-            if (stuff_to_build[y] != "infantry") { planet_idx = -1; }
-            imperium_self.addMove("produce\t" + imperium_self.game.player + "\t" + 1 + "\t" + planet_idx + "\t" + stuff_to_build[y] + "\t" + sector);
-            imperium_self.addMove("setvar"+"\t"+"state"+"\t"+"0"+"\t"+"active_player_has_produced"+"\t"+1)
-            imperium_self.game.tracker.production = 1;
-          }
-          imperium_self.endTurn();
-          return;
-        } else {
-          salert("failure to find appropriate influence");
-        }
-      });
-
-      return;
-    };
-
+  let selectUnit = function(id) {
 
     let calculated_total_cost = 0;
     for (let i = 0; i < stuff_to_build.length; i++) {
@@ -23055,9 +23002,6 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
     if (imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus > 0) {
       calculated_total_cost -= imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus;
     }
-
-
-
 
     //
     // respect production / cost limits
@@ -23130,6 +23074,7 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
       player_build.destroyers = 0;
       player_build.flagships = 0;
       player_build.warsuns = 0;
+      imperium_self.production_overlay.reset();
       return;
     }
 
@@ -23159,8 +23104,85 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
     let resourcetxt = " resources";
     if (total_cost == 1) { resourcetxt = " resource"; }
     $('.buildcost_total').html(total_cost + resourcetxt);
+  }
+  let submitBuild = function() {
+
+      let total_cost = 0;
+      for (let i = 0; i < stuff_to_build.length; i++) {
+        total_cost += imperium_self.returnUnitCost(stuff_to_build[i], imperium_self.game.player);
+      }
+
+      if (imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus > 0) {
+        total_cost -= imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus;
+        if (total_cost < 0) { total_cost = 0; }
+      }
+
+      if (warfare == 0) {
+        imperium_self.addMove("resolve\tplay");
+        imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
+      } else {
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+        imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
+      }
+
+      //
+      // sanity check on people trying to produce nothing
+      //
+      if (total_cost == 0 && stuff_to_build.length == 0) {
+	let c = confirm("Are you sure you want to produce no units at all? Click cancel to re-pick!");
+	if (!c) { return; }
+      }
+
+      imperium_self.unlockInterface();
+      imperium_self.playerSelectResources(total_cost, function (success) {
+
+        if (success == 1) {
+          imperium_self.addMove("post_production\t" + imperium_self.game.player + "\t" + sector + "\t" + JSON.stringify(stuff_to_build));
+          for (let y = 0; y < stuff_to_build.length; y++) {
+            let planet_idx = imperium_self.returnPlayersLeastDefendedPlanetInSector(imperium_self.game.player, sector);
+            if (stuff_to_build[y] != "infantry") { planet_idx = -1; }
+            imperium_self.addMove("produce\t" + imperium_self.game.player + "\t" + 1 + "\t" + planet_idx + "\t" + stuff_to_build[y] + "\t" + sector);
+            imperium_self.addMove("setvar"+"\t"+"state"+"\t"+"0"+"\t"+"active_player_has_produced"+"\t"+1)
+            imperium_self.game.tracker.production = 1;
+          }
+          imperium_self.endTurn();
+          return;
+        } else {
+          salert("failure to find appropriate influence");
+        }
+      });
+
+  }
+
+
+  $('.buildchoice').off();
+  $('.buildchoice').on('mouseenter', function () { let s = $(this).attr("id"); imperium_self.showUnit(s); });
+  $('.buildchoice').on('mouseleave', function () { let s = $(this).attr("id"); imperium_self.hideUnit(s); });
+  $('.buildchoice').on('click', function () {
+
+    let id = $(this).attr("id");
+
+    //
+    // submit when done
+    //
+    if (id == "confirm") {
+
+      $('.buildchoice').off();
+      submitBuild();
+
+    } else {
+
+      selectUnit(id);
+
+    }
 
   });
+
+  //
+  // show the overlay
+  //
+  imperium_self.production_overlay.render(cost_limit, production_limit, available_resources, selectUnit, submitBuild, available_units);
 
 }
 
@@ -31046,24 +31068,14 @@ returnAgendasOverlay() {
 
 returnUnitsOverlay() {
 
-  let html = `<div class="units-overlay-container" style="">`;
+  let html = `<div class="units-overlay-container" style=""><div class="unit-table">`;
   let units = [];
   let imperium_self = this;
 
+  //
+  // first round we show only the units you have
+  //
   if (this.game.state.round == 1) {
-    html += `
-      <div style="width:100%;text-align:center"><div class="units-overlay-text" style="line-height: 1.4em; font-size: 1.8em; margin-top: 50px; margin-bottom: 30px; padding: 20px;">
-        units <b>COST</b> resources to produce
-<p style="margin-top:10px"></p>
-        ships <b>MOVE</b> a maximum number of hexes
-<p style="margin-top:10px"></p>
-	some <b>CARRY</b> infantry or fighters
-<p style="margin-top:10px"></p>
-	lower <b>COMBAT</b> scores hit more often
-
-      </div></div>
-      <div class="unit-table">
-    `;
 
     let fleet = this.returnPlayerFleet(this.game.player);
 
@@ -31079,13 +31091,8 @@ returnUnitsOverlay() {
     if (fleet.spacedocks > 0) 	{ }
 
   } else {
-    let player = this.game.state.players_info[this.game.player-1];
 
-    html += `
-      <div style="width:100%;text-align:center"><div class="units-overlay-title">Your Units</div></div>
-      <div style="width:100%;text-align:center"><div class="units-overlay-text">check available upgrades in your faction overlay...</div></div>
-      <div class="unit-table">
-    `;
+    let player = this.game.state.players_info[this.game.player-1];
 
     if (imperium_self.doesPlayerHaveTech(this.game.player, "infantry-ii")) {
       units.push("infantry-ii");
@@ -31152,13 +31159,17 @@ returnUnitsOverlay() {
   }
 
   for (let i = 0; i < units.length; i++) {
-    html += this.returnUnitTableEntry(units[i]);
+    let preobj = this.units[units[i]];
+    let obj = JSON.parse(JSON.stringify(preobj));
+    obj.owner = this.game.player;
+    obj = this.upgradeUnit(obj, this.game.player);
+    html += UnitTemplate(obj);
   }
 
   html += `
-
+    </div>
     <div id="close-units-btn" class="button" style="">CONTINUE</div>
-
+    </div>
   `;
 
   return html;
@@ -31209,45 +31220,6 @@ returnUnitPopupEntry(unittype) {
   return html;
 
 }
-
-returnUnitTableEntry(unittype) {
-
-  let preobj = this.units[unittype];
-  let obj = JSON.parse(JSON.stringify(preobj));
-
-  obj.owner = this.game.player;
-  obj = this.upgradeUnit(obj, this.game.player);
-
-  if (!obj) { return ""; }
-
-  let html = `
-      <div class="unit-element">
-        <div class="unit-box-ship unit-box-ship-${unittype}"></div>
-        <div class="unit-box">
-	  <div class="unit-box-num">${obj.cost}</div>
-	  <div class="unit-box-desc">cost</div>
-	</div>
-        <div class="unit-box">
-	  <div class="unit-box-num">${obj.move}</div>
-	  <div class="unit-box-desc">move</div>
-	</div>
-        <div class="unit-box">
-	  <div class="unit-box-num">${obj.combat}</div>
-	  <div class="unit-box-desc">combat</div>
-	</div>
-        <div class="unit-box">
-	  <div class="unit-box-num">${obj.capacity}</div>
-	  <div class="unit-box-desc">carry</div>
-	</div>
-        <div class="unit-description">${obj.description}.</div>
-      </div>
-    `;
-
-  return html;
-
-}
-
-
 
 returnNewActionCardsOverlay(cards) {
 

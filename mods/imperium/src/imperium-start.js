@@ -6,6 +6,10 @@ const StrategyCardOverlay = require('./lib/overlays/strategy-card');
 const CombatOverlay = require('./lib/overlays/combat');
 const MovementOverlay = require('./lib/overlays/movement');
 const TechTreeOverlay = require('./lib/overlays/tech-tree');
+const FactionsOverlay = require('./lib/overlays/factions');
+const ProductionOverlay = require('./lib/overlays/production');
+const UnitTemplate = require('./lib/unit.template');
+const Unit = require('./lib/unit');
 const TokenBar = require('./lib/tokenbar');
 const Dashboard = require('./lib/dashboard');
 
@@ -37,7 +41,9 @@ class Imperium extends GameTemplate {
     this.strategy_card_overlay = new StrategyCardOverlay(this.app, this);
     this.combat_overlay = new CombatOverlay(this.app, this);
     this.movement_overlay = new MovementOverlay(this.app, this);
+    this.production_overlay = new ProductionOverlay(this.app, this);
     this.tech_tree_overlay = new TechTreeOverlay(this.app, this);
+    this.factions_overlay = new FactionsOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
 

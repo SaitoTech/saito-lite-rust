@@ -1,4 +1,24 @@
 
+.goods_box {
+  background-color: goldenrod;
+  padding: 4px;
+  border: 1px solid #fff;
+  color: black;
+}
+     
+.resources_box {
+  background-color: goldenrod;
+  padding: 4px;
+  border: 1px solid #fff;
+  color: black;
+}
+     
+.influence_box {
+  background-color: goldenrod;
+  padding: 4px;
+  border: 1px solid #fff;
+  color: black;
+}   
 
 .flash-color {
   /* override player_color when flashing */
