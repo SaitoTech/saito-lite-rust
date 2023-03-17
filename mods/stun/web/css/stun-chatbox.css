@@ -107,6 +107,7 @@
 
 .video-box-container {
   background-color: black;
+  
   display: flex;
   height: 100%;
   position: fixed;
@@ -652,6 +653,7 @@
   background-color: #000;
   color: var(--saito-white);
   display: flex;
+  overflow-y: scroll;
   justify-content: center;
   align-items: center;
   height: 100vh;
@@ -661,6 +663,7 @@
   color: var(--saito-white);
   top: 0;
   z-index: 200;
+  overflow-y: scroll;
 }
 
 .chat-settings {
@@ -689,7 +692,7 @@
   align-items: center;
   justify-content: center;
   color: var(--saito-white);
-  
+
 }
 .chat-settings-join-section h2 {
   margin-bottom: 1.5rem;
@@ -826,6 +829,7 @@
 
   .chat-settings-preview {
     width: 100%;
+
   }
 
   .chat-settings select {
