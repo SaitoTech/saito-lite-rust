@@ -531,7 +531,7 @@ class Registry extends ModTemplate {
 
     let registry_self = app.modules.returnModule("Registry");
 
-    /***** UNCOMMENT FOR LOCAL DEVELOPMENT ******/
+    /***** UNCOMMENT FOR LOCAL DEVELOPMENT ******
     if (registry_self.app.options.server != undefined) {
       registry_self.publickey = registry_self.app.wallet.returnPublicKey();
     } else {
