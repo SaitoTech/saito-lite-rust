@@ -667,8 +667,13 @@ class Wordblocks extends GameTemplate {
           for (let i = 0; i < tileRack.length; i++) {
             if (tileRack[i].classList.contains("todelete"))
               deletedTiles += tileRack[i].textContent;
-          }    
-          wordblocks_self.discardAndDrawTiles(deletedTiles);
+          }
+          if (deletedTiles){
+            wordblocks_self.discardAndDrawTiles(deletedTiles);  
+          }else{
+            revertToPlay();
+          }
+          
         });
       });
 
