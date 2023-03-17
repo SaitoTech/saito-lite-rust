@@ -34,58 +34,40 @@ class LeagueWizard {
       document.querySelector("#league-desc").select();
     }
 
-    Array.from(document.querySelectorAll(".game-invite-btn")).forEach((gameButton) => {
-      gameButton.addEventListener("click", async (e) => {
+    document.querySelector("#create-league-btn").onclick = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      
+      if (!this.validateLeagueInput()) { return; }
 
-        e.stopPropagation();
+      let title = document.getElementById("league-name").value;
+      let desc = document.getElementById("league-desc").value;
+      //let status = document.querySelector(".league-wizard-status-select").value;
 
-	if (!this.validateLeague()) { return; }
+      //
+      let obj = {
+        game        :     this.game_mod.name ,        // game - name of game mod
+        name        :     title ,        // name - name of league
+        admin       :     this.app.wallet.returnPublicKey() ,          // admin - publickey (if exists)
+        status      :     "public" ,        // status - public or private
+        description       : desc ,     // 
+        ranking_algorithm : this.game_mod.ranking_algorithm ,         //
+        default_score     : this.game_mod.default_score           // default ranking for newbies
+      };
 
-        let title = document.getElementById("league-name").value;
-        let desc = document.getElementById("league-desc").value;
-	let status = document.querySelector(".league-wizard-status-select").value;
+      let newtx = this.mod.createCreateTransaction(obj);
+      this.app.network.propagateTransaction(newtx);
+      this.overlay.remove();
 
-        //
-        // id TEXT PRIMARY KEY <--- TX SIG
-        // game TEXT,
-        // name TEXT,
-        // admin TEXT,
-        // status TEXT,
-        // description TEXT,
-        // ranking_algorithm TEXT,
-        // default_score INTEGER,
-        //
-        let obj = {
-          game: this.game_mod.name ,
-          name: title ,
-          admin: this.app.wallet.returnPublicKey() ,
-	        status: status ,
-          description: desc ,
-          ranking_algorithm: "ELO" ,
-          default_score: 1500 ,
-        };
-
-        let newtx = this.mod.createCreateTransaction(obj);
-	      this.app.network.propagateTransaction(newtx);
-
-	//
-	// and add the league
-	//
-	let txmsg = newtx.returnMessage();
-	txmsg.id = newtx.transaction.sig;
-	this.mod.addLeague(txmsg);
-	this.app.connection.emit("leagues-render-request");
-
-        this.overlay.remove();
-
-        return false;
-      });
-    });
+      salert("please wait a few moments for the league to be confirmed");
+      return false;
+      
+    }
   
   }
 
 
-  validateLeague(){
+  validateLeagueInput(){
 
     let title = document.getElementById("league-name").value;
     let desc = document.getElementById("league-desc").value;
@@ -95,7 +77,7 @@ class LeagueWizard {
       return false;
     }
 
-    if (!desc) {
+    if (!desc || desc === "Describe your league...") {
       alert("Your league must have a description");
       return false;
     }

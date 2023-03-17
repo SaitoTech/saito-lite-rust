@@ -13,9 +13,6 @@ class LeagueMain {
     app.connection.on("leagues-render-request", (league) => {
       this.render();
     });
-    app.connection.on("league-render-request", (league) => {
-      this.render();
-    });
 
   }
 
@@ -33,27 +30,29 @@ class LeagueMain {
 
     let leagues = this.mod.leagues;
 
+    console.log(JSON.parse(JSON.stringify(leagues)));
+
     let filter1 = leagues.filter(l => l.admin == this.app.wallet.returnPublicKey());
     let filter2 = leagues.filter(l => l.myRank > 0 && l.admin != this.app.wallet.returnPublicKey());
     let filter3 = leagues.filter(l => l.myRank <= 0 && l.admin != this.app.wallet.returnPublicKey());
 
     if (filter1.length > 0) {
       filter1.forEach((lg) => {
-        let x = new LeagueMenu(this.app, this.mod, ".leagues-for-admin" , lg);
+        let x = new LeagueMenu(this.app, this.mod, "#leagues-for-admin" , lg);
         x.render();
       });
     }
 
     if (filter2.length > 0) {
       filter2.forEach((lg) => {
-        let x = new LeagueMenu(this.app, this.mod, ".leagues-for-play" , lg);
+        let x = new LeagueMenu(this.app, this.mod, "#leagues-for-play" , lg);
         x.render();
       });
     }
 
     if (filter3.length > 0) {
       filter3.forEach((lg) => {
-        let x = new LeagueMenu(this.app, this.mod, ".leagues-for-play" , lg);
+        let x = new LeagueMenu(this.app, this.mod, "#leagues-for-play" , lg);
         x.render();
       });
     }
@@ -69,13 +68,13 @@ class LeagueMain {
       document.getElementById('create-new-league').onclick = () => {
 
         this.app.connection.emit("arcade-launch-game-selector", { 
-	  callback : (obj) => {
-    	    if (this.wizard != null) { delete this.wizard; }
-	    let game_mod = this.app.modules.returnModuleByName(obj.game);
-	    this.wizard = new LeagueWizard(this.app, this.mod, game_mod);
+      	  callback : (obj) => {
+          	    if (this.wizard != null) { delete this.wizard; }
+      	    let game_mod = this.app.modules.returnModuleByName(obj.game);
+      	    this.wizard = new LeagueWizard(this.app, this.mod, game_mod);
             this.wizard.render();
-	  }
-	});
+      	  }
+      	});
 
       }
     }

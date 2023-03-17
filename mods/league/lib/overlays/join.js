@@ -19,7 +19,7 @@ class JoinLeague {
     let league = this.mod.returnLeague(this.league_id);
 
     if (league == null) {
-      alert("League not found");
+      salert(`League ${this.league_id} not found`);
       return;
     }
 
@@ -33,12 +33,9 @@ class JoinLeague {
 
   attachEvents() {
 
-    let app = this.app;
-    let mod = this.mod;
-
     const league_join_form = document.getElementById('league-join-form');
 
-    league_join_form.addEventListener('submit', (e) => {
+    league_join_form.onsubmit = (e) => {
 
       e.preventDefault();
 
@@ -55,44 +52,44 @@ class JoinLeague {
       //
       // before 
       //
-      app.browser.requestBackup(
+      this.app.browser.requestBackup(
 
-	//
-	// successful login / backup
-	//
-	(res) => {
+        	//
+        	// successful login / backup
+        	//
+        	(res) => {
 
-          let co = document.querySelector(".league-join-overlay-box");
-          if (co) {
-            co.style.display = "none";
-          }
+            let co = document.querySelector(".league-join-overlay-box");
+            if (co) {
+              co.style.display = "none";
+            }
 
-          let newtx = this.mod.createJoinTransaction(league_id, {"email": email});
-          this.app.network.propagateTransaction(newtx);
+            let newtx = this.mod.createJoinTransaction(league_id, {"email": email});
+            this.app.network.propagateTransaction(newtx);
 
-          this.mod.addLeaguePlayer({league_id, email, publickey: this.app.wallet.returnPublicKey()}); 
-          this.mod.saveLeagues();
+            this.mod.addLeaguePlayer({league_id, email, publickey: this.app.wallet.returnPublicKey()}); 
+            this.mod.saveLeagues();
 
-          //setTimeout(function(){
-          //  window.location = window.location.origin+"/arcade";
-          //}, 1500);
+            //setTimeout(function(){
+            //  window.location = window.location.origin+"/arcade";
+            //}, 1500);
 
-	},
+        	},
 
-	//
-	// failed login / backup
-	//
-	(res) => {
-	  alert("Account Recovery required for League Membership!");
-	}, 
+        	//
+        	// failed login / backup
+        	//
+        	(res) => {
+        	  alert("Account Recovery required for League Membership!");
+        	}, 
 
-	email ,
+        	email ,
 
-	pass ,
+        	pass ,
 
       );
 
-    });  
+    }  
 
   }
 }
