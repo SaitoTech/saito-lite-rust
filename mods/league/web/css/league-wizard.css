@@ -332,9 +332,6 @@
   justify-content: flex-end;
 }
 
-.game-invite-btn {
-  min-width: 25rem;
-}
 
 @media screen and (max-width: 900px) {
   .league-wizard-overlay {

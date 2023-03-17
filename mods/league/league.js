@@ -9,7 +9,7 @@ const InvitationLink = require("./lib/overlays/league-invitation-link");
 const JoinLeagueOverlay = require('./lib/overlays/join');
 
 //Trial -- So that we can display league results in game page
-//const LeagueOverlay = require("./lib/overlays/league");
+const LeagueOverlay = require("./lib/overlays/league");
 
 class League extends ModTemplate {
 
@@ -41,8 +41,15 @@ class League extends ModTemplate {
     this.recent_game_cutoff = 10;
     this.inactive_player_cutoff = 30 * 24 * 60 * 60 * 1000; 
 
+    this.theme_options = {
+      'lite': 'fa-solid fa-sun',
+      'dark': 'fa-solid fa-moon',
+      'arcade': 'fa-solid fa-gamepad'
+    };
+
+
     this.icon_fa = "fas fa-user-friends";
-    this.debug = false;
+    this.debug = true;
   }
 
 
@@ -62,7 +69,7 @@ class League extends ModTemplate {
     super.initialize(app);
 
     //Trial -- So that we can display league results in game page
-    //this.overlay = new LeagueOverlay(app, this);
+    this.overlay = new LeagueOverlay(app, this);
 
     //
     // create initial leagues
@@ -158,6 +165,8 @@ class League extends ModTemplate {
     //
     // add remote leagues
     //
+    let league_self = this;
+
     if (service.service === "league") {
 
       if (this.debug){
@@ -188,16 +197,17 @@ class League extends ModTemplate {
       // load any requested league we may not have in options file
       //    
       if (this.app.browser.returnURLParameter("league_join_league")) {
-
+        let league_id = this.app.browser.returnURLParameter("league_join_league");
+        console.log("Joining league: ", league_id);
         this.sendPeerDatabaseRequestWithFilter(
           "League" , 
-          `SELECT * FROM leagues WHERE id = "${this.app.browser.returnURLParameter("league_join_league")}"` ,
+          `SELECT * FROM leagues WHERE id = "${league_id}"` ,
           (res) => {
-            let rows = res.rows || [];
-            if (rows.length > 0) {
-              rows.forEach(function(league, key) {
-                this.addLeague(league);
-              }); 
+             if (res?.rows) {
+              console.log(res.rows);
+              for (let league of res.rows){
+                 league_self.addLeague(league);
+              } 
               //Main module
       	      app.connection.emit("leagues-render-request");
               //Sidebar component
@@ -207,8 +217,8 @@ class League extends ModTemplate {
             //
             // league join league
             //
-            let league_id = this.app.browser.returnURLParameter("league_join_league");
-            let jlo = new JoinLeagueOverlay(app, this, league_id);
+
+            let jlo = new JoinLeagueOverlay(app, league_self, league_id);
             jlo.render();
 
           },
@@ -270,6 +280,8 @@ class League extends ModTemplate {
         this.receiveLaunchSinglePlayerTransaction(blk, tx, conf, app);
       }
 
+      this.saveLeagues();
+
     } catch (err) {
       console.log("ERROR in league onConfirmation: " + err);
     }
@@ -317,6 +329,7 @@ class League extends ModTemplate {
     if (obj == null) { return null; }
 
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    newtx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
     newtx.msg = this.validateLeague(obj);
     newtx.msg.module = "League";
     newtx.msg.request = "league create";
@@ -334,10 +347,32 @@ class League extends ModTemplate {
 
     this.addLeague(obj);
 
+    if (this.app.BROWSER){
+      this.app.connection.emit("leagues-render-request");
+    }
+
     return;
 
   }
 
+
+  addressToAll(tx, league_id){
+    
+    tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+
+    let league = this.returnLeague(league_id);
+    if (!league?.admin){
+      return tx;
+    }
+
+    tx.transaction.to.push(new saito.default.slip(league.admin, 0.0));
+
+    for (let p of league.players){
+      tx.transaction.to.push(new saito.default.slip(p.publickey, 0.0));      
+    }
+
+    return tx;
+  }
 
   ///////////////////
   // join a league //
@@ -345,6 +380,7 @@ class League extends ModTemplate {
   createJoinTransaction(league_id="", data = null) {
 
     let newtx = this.app.wallet.createUnsignedTransaction();
+    newtx = this.addressToAll(newtx, league_id);
 
     newtx.msg = {
       module:    "League",
@@ -384,7 +420,8 @@ class League extends ModTemplate {
   ///////////////////
   createQuitTransaction(publickey, league_id){
     let newtx = this.app.wallet.createUnsignedTransaction();
-
+    newtx = this.addressToAll(newtx, league_id);
+    
     newtx.msg = {
       module:    "League",
       league_id: league_id,
@@ -413,6 +450,8 @@ class League extends ModTemplate {
   createRemoveTransaction(league_id){
 
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    newtx = this.addressToAll(newtx, league_id);
+
     newtx.msg = {
       module:  "League",
       request: "league remove",
@@ -815,7 +854,7 @@ class League extends ModTemplate {
 
     if (!this.returnLeague(obj.id)) {
       
-      //if (this.debug) { console.log("Add League with ID: " + obj.id); }
+      if (this.debug) { console.log("Add League with ID: " + obj.id); }
 
       let newLeague = this.validateLeague(obj);
 
@@ -826,7 +865,7 @@ class League extends ModTemplate {
       newLeague.rank = 0; //My rank in the league
     
 
-      //if (this.debug) { console.log("New League", JSON.parse(JSON.stringify(newLeague))); }
+      if (this.debug) { console.log("New League", JSON.parse(JSON.stringify(newLeague))); }
 
       this.leagues.push(newLeague);
 
@@ -955,6 +994,8 @@ class League extends ModTemplate {
       $ranking_algorithm  :   obj.ranking_algorithm,
       $default_score      :   obj.default_score,
     };
+
+    if (this.debug) { console.info(params); }
 
     await this.app.storage.executeDatabase(sql, params, "league");
 

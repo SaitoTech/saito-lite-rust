@@ -223,12 +223,12 @@ class Arcade extends ModTemplate {
           
           let game = arcade_self.returnGame(game_id);
 
-          if (!game || !this.isAvailableGame(game)){
+          if (!game || !arcade_self.isAvailableGame(game)){
             salert("Sorry, the game is no longer available");
             return;
           }
 
-          this.app.browser.logMatomoEvent("PrivateInvite", "JoinGame", game.game);
+          arcade_self.app.browser.logMatomoEvent("PrivateInvite", "JoinGame", game.game);
 
           let newtx = arcade_self.createJoinTransaction(game);
 
