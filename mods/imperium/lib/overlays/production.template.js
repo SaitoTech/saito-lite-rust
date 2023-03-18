@@ -26,7 +26,7 @@ module.exports = ImperiumProductionOverlayTemplate = (imperium_self, resources_a
     html += `
         <div class="unit-element">
           <div class="unit-description" data-type="${obj.type}" data-name="${obj.name}" data-amount="0">${obj.name}</div>
-          <div class="unit-box-ship unit-box-ship-carrier"></div>
+          <div class="unit-box-ship unit-box-ship-${obj.type}"></div>
           <div class="unit-box">
             <div class="unit-box-num">${obj.cost}</div>
             <div class="unit-box-desc">cost</div>

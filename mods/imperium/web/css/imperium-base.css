@@ -1,16 +1,16 @@
 
 .goods_box {
-  background-color: goldenrod;
+  background-color: #006400;
   padding: 4px;
   border: 1px solid #fff;
-  color: black;
+  color: white;
 }
      
 .resources_box {
-  background-color: goldenrod;
+  background-color: black;
   padding: 4px;
   border: 1px solid #fff;
-  color: black;
+  color: white;
 }
      
 .influence_box {

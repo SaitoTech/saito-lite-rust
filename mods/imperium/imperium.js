@@ -8,6 +8,7 @@ const MovementOverlay = require('./lib/overlays/movement');
 const TechTreeOverlay = require('./lib/overlays/tech-tree');
 const FactionsOverlay = require('./lib/overlays/factions');
 const ProductionOverlay = require('./lib/overlays/production');
+const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
 const TokenBar = require('./lib/tokenbar');
@@ -44,6 +45,7 @@ class Imperium extends GameTemplate {
     this.production_overlay = new ProductionOverlay(this.app, this);
     this.tech_tree_overlay = new TechTreeOverlay(this.app, this);
     this.factions_overlay = new FactionsOverlay(this.app, this);
+    this.resource_selection_overlay = new ResourceSelectionOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
 
@@ -11787,7 +11789,13 @@ console.log("qe: " + qe);
       class : "game-units-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.production_overlay.render();
+        let array_of_cards = game_mod.returnPlayerUnexhaustedPlanetCards(game_mod.game.player); // unexhausted
+        let total_trade_goods = game_mod.game.state.players_info[game_mod.game.player-1].goods;
+        game_mod.resource_selection_overlay.render(2, array_of_cards, total_trade_goods, (planet_id) => {
+alert(planet_id);
+        });
+
+//        game_mod.production_overlay.render();
 //overlay.show(game_mod.returnUnitsOverlay());
 //        game_mod.overlay.show(game_mod.returnUnitsOverlay());
       }
@@ -23878,9 +23886,10 @@ playerSelectResources(cost, mycallback) {
   this.updateStatus(html);
   this.lockInterface();
 
-  $('.cardchoice , .textchoice').on('click', function () {
 
-    let action2 = $(this).attr("id");
+  let selectResource = (action2) => {
+
+console.log("ACTION 2: " + action2);
 
     let tmpx = action2.split("_");
 
@@ -23916,6 +23925,9 @@ playerSelectResources(cost, mycallback) {
       selected_cost += parseInt(imperium_self.game.planets[array_of_cards[idx]].resources);
     }
 
+console.log("cost is: " + cost);
+console.log("selected_cost is: " + selected_cost);
+
     if (cost <= selected_cost) { 
 
       if (!imperium_self.mayUnlockInterface()) {
@@ -23925,10 +23937,32 @@ playerSelectResources(cost, mycallback) {
       imperium_self.unlockInterface();
       $('.cardchoice , .textchoice').off();
 
+console.log("running callback!");
+
       mycallback(1); 
-
     }
+  }
 
+
+
+
+  //
+  // allow selection from dedicated overlay
+  //
+  this.resource_selection_overlay.render(cost, array_of_cards, total_trade_goods, (id) => {
+console.log("id: " + id);
+    selectResource(id);
+    if (cost <= selected_cost) { 
+console.log("removing overlay!");
+      this.resource_selection_overlay.overlay.remove();
+    }
+  });
+
+
+
+  $('.cardchoice , .textchoice').on('click', function () {
+    let action2 = $(this).attr("id");
+    selectResource(action2);
   });
 
 }

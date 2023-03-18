@@ -4075,9 +4075,10 @@ playerSelectResources(cost, mycallback) {
   this.updateStatus(html);
   this.lockInterface();
 
-  $('.cardchoice , .textchoice').on('click', function () {
 
-    let action2 = $(this).attr("id");
+  let selectResource = (action2) => {
+
+console.log("ACTION 2: " + action2);
 
     let tmpx = action2.split("_");
 
@@ -4113,6 +4114,9 @@ playerSelectResources(cost, mycallback) {
       selected_cost += parseInt(imperium_self.game.planets[array_of_cards[idx]].resources);
     }
 
+console.log("cost is: " + cost);
+console.log("selected_cost is: " + selected_cost);
+
     if (cost <= selected_cost) { 
 
       if (!imperium_self.mayUnlockInterface()) {
@@ -4122,10 +4126,32 @@ playerSelectResources(cost, mycallback) {
       imperium_self.unlockInterface();
       $('.cardchoice , .textchoice').off();
 
+console.log("running callback!");
+
       mycallback(1); 
-
     }
+  }
 
+
+
+
+  //
+  // allow selection from dedicated overlay
+  //
+  this.resource_selection_overlay.render(cost, array_of_cards, total_trade_goods, (id) => {
+console.log("id: " + id);
+    selectResource(id);
+    if (cost <= selected_cost) { 
+console.log("removing overlay!");
+      this.resource_selection_overlay.overlay.remove();
+    }
+  });
+
+
+
+  $('.cardchoice , .textchoice').on('click', function () {
+    let action2 = $(this).attr("id");
+    selectResource(action2);
   });
 
 }

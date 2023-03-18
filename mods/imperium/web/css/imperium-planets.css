@@ -1,0 +1,17 @@
+
+.planet-card {
+  width: 22.5rem;
+  height: 31.5rem;
+  background-size: contain;
+}
+
+.planet-card:hover {
+  z-index: 10;
+  transform: scale(1.4);
+}
+
+.planet-card.exhausted {
+  opacity: 0.7;
+}
+
+
