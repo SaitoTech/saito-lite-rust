@@ -9,6 +9,7 @@ const TechTreeOverlay = require('./lib/overlays/tech-tree');
 const FactionsOverlay = require('./lib/overlays/factions');
 const ProductionOverlay = require('./lib/overlays/production');
 const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
+const InfluenceSelectionOverlay = require('./lib/overlays/influence-selection');
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
 const TokenBar = require('./lib/tokenbar');
@@ -46,6 +47,7 @@ class Imperium extends GameTemplate {
     this.tech_tree_overlay = new TechTreeOverlay(this.app, this);
     this.factions_overlay = new FactionsOverlay(this.app, this);
     this.resource_selection_overlay = new ResourceSelectionOverlay(this.app, this);
+    this.influence_selection_overlay = new InfluenceSelectionOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
 
@@ -11678,7 +11680,6 @@ console.log("qe: " + qe);
 
 
   
-
   } // end initializeGameObjects
 
 
@@ -23724,86 +23725,6 @@ playerSelectPlanet(mycallback, mode = 0) {
 
 
 
-playerSelectInfluence(cost, mycallback) {
-
-  if (cost == 0) { mycallback(1); return; }
-
-  let imperium_self = this;
-  let array_of_cards = this.returnPlayerUnexhaustedPlanetCards(this.game.player); // unexhausted
-  let array_of_cards_to_exhaust = [];
-  let selected_cost = 0;
-  let total_trade_goods = imperium_self.game.state.players_info[imperium_self.game.player - 1].goods;
-
-
-  let html = "<div class='sf-readable'>Select " + cost + " in influence: </div><ul>";
-  for (let z = 0; z < array_of_cards.length; z++) {
-    html += '<li class="cardchoice cardchoice-card" id="cardchoice_' + array_of_cards[z] + '">' + this.returnPlanetCard(array_of_cards[z]) + '</li>';
-  }
-  if (1 == imperium_self.game.state.players_info[imperium_self.game.player - 1].goods) {
-    html += '<li class="textchoice" id="trade_goods" style="clear:both">' + imperium_self.game.state.players_info[imperium_self.game.player - 1].goods + ' trade good</li>';
-  } else {
-    html += '<li class="textchoice" id="trade_goods" style="clear:both">' + imperium_self.game.state.players_info[imperium_self.game.player - 1].goods + ' trade goods</li>';
-  }
-  html += '</ul>';
-
-  this.updateStatus(html);
-
-  this.lockInterface();
-
-  $('.cardchoice , .textchoice').on('click', function () {
-
-    let action2 = $(this).attr("id");
-    let tmpx = action2.split("_");
-
-    let divid = "#" + action2;
-    let y = tmpx[1];
-    let idx = 0;
-    for (let i = 0; i < array_of_cards.length; i++) {
-      if (array_of_cards[i] === y) {
-        idx = i;
-      }
-    }
-
-
-
-    //
-    // handle spending trade goods
-    //
-    if (action2 == "trade_goods") {
-      if (total_trade_goods > 0) {
-        imperium_self.addMove("expend\t" + imperium_self.game.player + "\tgoods\t1");
-        total_trade_goods--;
-        selected_cost += 1;
-
-        if (1 == total_trade_goods) {
-          $('#trade_goods').html(('' + total_trade_goods + ' trade good'));
-        } else {
-          $('#trade_goods').html(('' + total_trade_goods + ' trade goods'));
-        }
-      }
-    } else {
-      imperium_self.addMove("expend\t" + imperium_self.game.player + "\tplanet\t" + array_of_cards[idx]);
-      array_of_cards_to_exhaust.push(array_of_cards[idx]);
-      $(divid).off();
-      $(divid).css('opacity', '0.2');
-      selected_cost += imperium_self.game.planets[array_of_cards[idx]].influence;
-    }
-
-    if (cost <= selected_cost) {
-
-      if (!imperium_self.mayUnlockInterface()) {
-//        salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//        return;
-      }
-      imperium_self.unlockInterface();
-      $('.cardchoice , .textchoice').off();
-
-      mycallback(1);
-    }
-
-  });
-}
-
 
 
 
@@ -23847,15 +23768,99 @@ playerSelectStrategyAndCommandTokens(cost, mycallback) {
 
 
     if (cost <= selected_cost) { 
-      if (!imperium_self.mayUnlockInterface()) {
-//        salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//        return;
-      }
       imperium_self.unlockInterface();
       $('.textchoice').off();
       mycallback(1); 
     }
 
+  });
+
+}
+
+
+playerSelectInfluence(cost, mycallback) {
+
+  if (cost == 0) { mycallback(1); return; }
+
+  let imperium_self = this;
+  let array_of_cards = this.returnPlayerUnexhaustedPlanetCards(this.game.player); // unexhausted
+  let array_of_cards_to_exhaust = [];
+  let selected_cost = 0;
+  let total_trade_goods = imperium_self.game.state.players_info[imperium_self.game.player - 1].goods;
+
+  let html = "<div class='sf-readable'>Select " + cost + " in influence: </div><ul>";
+  for (let z = 0; z < array_of_cards.length; z++) {
+    html += '<li class="cardchoice cardchoice-card" id="cardchoice_' + array_of_cards[z] + '">' + this.returnPlanetCard(array_of_cards[z]) + '</li>';
+  }
+  if (1 == imperium_self.game.state.players_info[imperium_self.game.player - 1].goods) {
+    html += '<li class="textchoice" id="trade_goods" style="clear:both">' + imperium_self.game.state.players_info[imperium_self.game.player - 1].goods + ' trade good</li>';
+  } else {
+    html += '<li class="textchoice" id="trade_goods" style="clear:both">' + imperium_self.game.state.players_info[imperium_self.game.player - 1].goods + ' trade goods</li>';
+  }
+  html += '</ul>';
+
+  this.updateStatus(html);
+  this.lockInterface();
+
+  let selectInfluence = (action2) => {
+
+    let tmpx = action2.split("_");
+
+    let divid = "#" + action2;
+    let y = tmpx[1];
+    let idx = 0;
+    for (let i = 0; i < array_of_cards.length; i++) {
+      if (array_of_cards[i] === y) {
+        idx = i;
+      }
+    }
+
+    //
+    // handle spending trade goods
+    //
+    if (action2 == "trade_goods") {
+      if (total_trade_goods > 0) {
+        imperium_self.addMove("expend\t" + imperium_self.game.player + "\tgoods\t1");
+        total_trade_goods--;
+        selected_cost += 1;
+
+        if (1 == total_trade_goods) {
+          $('#trade_goods').html(('' + total_trade_goods + ' trade good'));
+        } else {
+          $('#trade_goods').html(('' + total_trade_goods + ' trade goods'));
+        }
+      }
+    } else {
+      imperium_self.addMove("expend\t" + imperium_self.game.player + "\tplanet\t" + array_of_cards[idx]);
+      array_of_cards_to_exhaust.push(array_of_cards[idx]);
+      $(divid).off();
+      $(divid).css('opacity', '0.2');
+      selected_cost += imperium_self.game.planets[array_of_cards[idx]].influence;
+    }
+
+    if (cost <= selected_cost) {
+      imperium_self.unlockInterface();
+      $('.cardchoice , .textchoice').off();
+      mycallback(1);
+    }
+  }
+
+  //
+  // allow selection from dedicated overlay
+  //
+  this.resource_selection_overlay.render(cost, array_of_cards, total_trade_goods, (id) => {
+    selectResource(id);
+    if (cost <= selected_cost) { 
+      this.resource_selection_overlay.overlay.remove();
+    }
+  });
+
+  //
+  // process text choices
+  //
+  $('.cardchoice , .textchoice').on('click', () => {
+    let action2 = $(this).attr("id");
+    selectInfluence(action2);
   });
 
 }
@@ -23888,8 +23893,6 @@ playerSelectResources(cost, mycallback) {
 
 
   let selectResource = (action2) => {
-
-console.log("ACTION 2: " + action2);
 
     let tmpx = action2.split("_");
 
@@ -23925,9 +23928,6 @@ console.log("ACTION 2: " + action2);
       selected_cost += parseInt(imperium_self.game.planets[array_of_cards[idx]].resources);
     }
 
-console.log("cost is: " + cost);
-console.log("selected_cost is: " + selected_cost);
-
     if (cost <= selected_cost) { 
 
       if (!imperium_self.mayUnlockInterface()) {
@@ -23937,30 +23937,21 @@ console.log("selected_cost is: " + selected_cost);
       imperium_self.unlockInterface();
       $('.cardchoice , .textchoice').off();
 
-console.log("running callback!");
-
       mycallback(1); 
     }
   }
-
-
-
 
   //
   // allow selection from dedicated overlay
   //
   this.resource_selection_overlay.render(cost, array_of_cards, total_trade_goods, (id) => {
-console.log("id: " + id);
     selectResource(id);
     if (cost <= selected_cost) { 
-console.log("removing overlay!");
       this.resource_selection_overlay.overlay.remove();
     }
   });
 
-
-
-  $('.cardchoice , .textchoice').on('click', function () {
+  $('.cardchoice , .textchoice').on('click', () => {
     let action2 = $(this).attr("id");
     selectResource(action2);
   });
