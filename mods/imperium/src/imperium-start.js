@@ -10,6 +10,7 @@ const FactionsOverlay = require('./lib/overlays/factions');
 const ProductionOverlay = require('./lib/overlays/production');
 const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
 const InfluenceSelectionOverlay = require('./lib/overlays/influence-selection');
+const SpaceCombatOverlay = require('./lib/overlays/space-combat');
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
 const TokenBar = require('./lib/tokenbar');
@@ -48,6 +49,7 @@ class Imperium extends GameTemplate {
     this.factions_overlay = new FactionsOverlay(this.app, this);
     this.resource_selection_overlay = new ResourceSelectionOverlay(this.app, this);
     this.influence_selection_overlay = new InfluenceSelectionOverlay(this.app, this);
+    this.space_combat_overlay = new SpaceCombatOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
 

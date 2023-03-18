@@ -109,12 +109,12 @@
       class : "game-units-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        let array_of_cards = game_mod.returnPlayerUnexhaustedPlanetCards(game_mod.game.player); // unexhausted
-        let total_trade_goods = game_mod.game.state.players_info[game_mod.game.player-1].goods;
-        game_mod.resource_selection_overlay.render(2, array_of_cards, total_trade_goods, (planet_id) => {
-alert(planet_id);
-        });
-
+        game_mod.space_combat_overlay.render("2_1");
+//        let array_of_cards = game_mod.returnPlayerUnexhaustedPlanetCards(game_mod.game.player); // unexhausted
+//        let total_trade_goods = game_mod.game.state.players_info[game_mod.game.player-1].goods;
+//        game_mod.resource_selection_overlay.render(2, array_of_cards, total_trade_goods, (planet_id) => {
+//alert(planet_id);
+//        });
 //        game_mod.production_overlay.render();
 //overlay.show(game_mod.returnUnitsOverlay());
 //        game_mod.overlay.show(game_mod.returnUnitsOverlay());
@@ -297,8 +297,6 @@ alert(planet_id);
     if (this.game.board == null) {
 
       is_this_a_new_game = 1;
-
-      
 
       //
       // players first

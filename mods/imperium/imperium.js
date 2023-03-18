@@ -10,6 +10,7 @@ const FactionsOverlay = require('./lib/overlays/factions');
 const ProductionOverlay = require('./lib/overlays/production');
 const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
 const InfluenceSelectionOverlay = require('./lib/overlays/influence-selection');
+const SpaceCombatOverlay = require('./lib/overlays/space-combat');
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
 const TokenBar = require('./lib/tokenbar');
@@ -48,6 +49,7 @@ class Imperium extends GameTemplate {
     this.factions_overlay = new FactionsOverlay(this.app, this);
     this.resource_selection_overlay = new ResourceSelectionOverlay(this.app, this);
     this.influence_selection_overlay = new InfluenceSelectionOverlay(this.app, this);
+    this.space_combat_overlay = new SpaceCombatOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
 
@@ -11790,12 +11792,12 @@ console.log("qe: " + qe);
       class : "game-units-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        let array_of_cards = game_mod.returnPlayerUnexhaustedPlanetCards(game_mod.game.player); // unexhausted
-        let total_trade_goods = game_mod.game.state.players_info[game_mod.game.player-1].goods;
-        game_mod.resource_selection_overlay.render(2, array_of_cards, total_trade_goods, (planet_id) => {
-alert(planet_id);
-        });
-
+        game_mod.space_combat_overlay.render("2_1");
+//        let array_of_cards = game_mod.returnPlayerUnexhaustedPlanetCards(game_mod.game.player); // unexhausted
+//        let total_trade_goods = game_mod.game.state.players_info[game_mod.game.player-1].goods;
+//        game_mod.resource_selection_overlay.render(2, array_of_cards, total_trade_goods, (planet_id) => {
+//alert(planet_id);
+//        });
 //        game_mod.production_overlay.render();
 //overlay.show(game_mod.returnUnitsOverlay());
 //        game_mod.overlay.show(game_mod.returnUnitsOverlay());
@@ -11978,8 +11980,6 @@ alert(planet_id);
     if (this.game.board == null) {
 
       is_this_a_new_game = 1;
-
-      
 
       //
       // players first
@@ -21236,8 +21236,6 @@ playerPlaySpaceCombat(attacker, defender, sector) {
 
   this.game.state.space_combat_sector = sector;
 
-  html = '<div class="sf-readable"><b>Space Combat: round ' + this.game.state.space_combat_round + ':</b><div class="combat_attacker">' + this.returnFaction(attacker) + '</div><div class="combat_attacker_fleet">' + this.returnPlayerFleetInSector(attacker, sector) + '</div><div class="combat_defender">' + this.returnFaction(defender) + '</div><div class="combat_defender_fleet">' + this.returnPlayerFleetInSector(defender, sector) + '</div><ul>';
-
   let ac = this.returnPlayerActionCards(this.game.player, relevant_action_cards)
   if (ac.length > 0) {
     html += '<li class="option" id="attack">continue</li>';
@@ -21269,7 +21267,14 @@ playerPlaySpaceCombat(attacker, defender, sector) {
   }
   html += '</ul>';
 
+
+  overlay_html = '<ul>' + html;
+  html = '<div class="sf-readable"><b>Space Combat: round ' + this.game.state.space_combat_round + ':</b><div class="combat_attacker">' + this.returnFaction(attacker) + '</div><div class="combat_attacker_fleet">' + this.returnPlayerFleetInSector(attacker, sector) + '</div><div class="combat_defender">' + this.returnFaction(defender) + '</div><div class="combat_defender_fleet">' + this.returnPlayerFleetInSector(defender, sector) + '</div><ul>' + html;
+
   this.updateStatus(html);
+
+  this.space_combat_overlay.render(attacker, defender, sector, overlay_html);
+
 
   $('.option').on('click', function () {
 
@@ -26628,12 +26633,12 @@ playerDiscardActionCards(num, mycallback=null) {
   ///////////////////////////////
   returnHomeworldSectors(players = 4) {
     if (players <= 2) {
-      return ["1_1", "4_7"];
+//      return ["1_1", "4_7"];
 //
 // for testing - place factions in fighting
 // position on start.
 //
-//      return ["1_1", "2_1"];
+      return ["1_1", "2_1"];
     }
 
     if (players <= 3) {

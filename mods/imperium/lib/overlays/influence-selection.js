@@ -22,7 +22,7 @@ class InfluenceSelectionOverlay {
     this.goods = goods;
     this.submitInfluence = submitInfluence;
 
-    this.overlay.show(ImperiumResourceSelectionOverlayTemplate(Influence_needed, cards, goods));
+    this.overlay.show(ImperiumInfluenceSelectionOverlayTemplate(Influence_needed, cards, goods));
 
     //
     // no trade goods
@@ -82,5 +82,5 @@ class InfluenceSelectionOverlay {
 
 }
 
-module.exports = ResourceSelectionOverlay;
+module.exports = InfluenceSelectionOverlay;
 

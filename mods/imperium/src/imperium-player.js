@@ -1424,8 +1424,6 @@ playerPlaySpaceCombat(attacker, defender, sector) {
 
   this.game.state.space_combat_sector = sector;
 
-  html = '<div class="sf-readable"><b>Space Combat: round ' + this.game.state.space_combat_round + ':</b><div class="combat_attacker">' + this.returnFaction(attacker) + '</div><div class="combat_attacker_fleet">' + this.returnPlayerFleetInSector(attacker, sector) + '</div><div class="combat_defender">' + this.returnFaction(defender) + '</div><div class="combat_defender_fleet">' + this.returnPlayerFleetInSector(defender, sector) + '</div><ul>';
-
   let ac = this.returnPlayerActionCards(this.game.player, relevant_action_cards)
   if (ac.length > 0) {
     html += '<li class="option" id="attack">continue</li>';
@@ -1457,7 +1455,14 @@ playerPlaySpaceCombat(attacker, defender, sector) {
   }
   html += '</ul>';
 
+
+  overlay_html = '<ul>' + html;
+  html = '<div class="sf-readable"><b>Space Combat: round ' + this.game.state.space_combat_round + ':</b><div class="combat_attacker">' + this.returnFaction(attacker) + '</div><div class="combat_attacker_fleet">' + this.returnPlayerFleetInSector(attacker, sector) + '</div><div class="combat_defender">' + this.returnFaction(defender) + '</div><div class="combat_defender_fleet">' + this.returnPlayerFleetInSector(defender, sector) + '</div><ul>' + html;
+
   this.updateStatus(html);
+
+  this.space_combat_overlay.render(attacker, defender, sector, overlay_html);
+
 
   $('.option').on('click', function () {
 
