@@ -428,7 +428,8 @@
       },
       spaceCombatRoundEnd : function(imperium_self, attacker, defender, sector) {
         if (imperium_self.hasUnresolvedSpaceCombat(attacker, sector) || imperium_self.hasUnresolvedSpaceCombat(defender, sector)) {
-	  imperium_self.game.state.players_info[player - 1].tekklar_legion_modifier = 0;
+	  imperium_self.game.state.players_info[attacker - 1].tekklar_legion_modifier = 0;
+	  imperium_self.game.state.players_info[defender - 1].tekklar_legion_modifier = 0;
 	};
 	return 1;
       },

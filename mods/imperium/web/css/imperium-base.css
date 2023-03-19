@@ -207,7 +207,7 @@
   letter-spacing: 0.1em;
 }
 .units-overlay-container {
-  background-colour: whitesmoke;
+  background-color: whitesmoke;
   width: 800px;
 }
 .units-overlay-title {
@@ -2232,15 +2232,6 @@ input[type=range] {
 
 
 
-#
-# OVerlays
-#
-.resources_box {
- background-color:black;padding:4px;border:1px solid #fff;
-}
-.influence_box {
-  background-color:orange;padding:4px;border:1px solid #fff;
-}
 .demo_ordered_list {
   margin-left: 30px;
   font-family: courier;
@@ -2277,9 +2268,4 @@ input[type=range] {
 .how_to_play_resources_entry {
   padding-top: 20px;
 }
-
-
-
-~                             
-
 

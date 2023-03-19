@@ -1,13 +1,9 @@
 
 
 .flash-color {
-  /* override player_color when flashing */
   filter: none !important;
 }
 
-/********************/
-/*** MOD DEFAULTS ***/
-/********************/
 .hud-controls {
   padding-left: 10px;
   padding-right: 10px;
@@ -18,13 +14,9 @@
 .status ul {
   width: 100%;
 }
-
-
 .chat-body>.saito-user>.saito-userline {
   font-family: sans-serif;
 }
-
-
 
 #status::-webkit-scrollbar { width: 0 !important }
 
@@ -187,7 +179,7 @@
   letter-spacing: 0.1em;
 }
 .units-overlay-container {
-  background-colour: whitesmoke;
+  background-color: whitesmoke;
   width: 800px;
 }
 .units-overlay-title {

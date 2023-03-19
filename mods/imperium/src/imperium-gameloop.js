@@ -4638,6 +4638,13 @@ console.log("K: " + z[k].name);
 	  this.updateCombatLog(combat_info);
 
 	  //
+	  // update space combat overlay if visible
+	  //
+          if (this.space_combat_overlay.visible) {
+	    this.space_combat_overlay.updateHits(attacker, defender, sector, combat_info);
+          }
+
+	  //
 	  // total hits to assign
 	  //
 	  let restrictions = [];
@@ -5048,7 +5055,6 @@ console.log("K: " + z[k].name);
 	//
         this.resetSpaceUnitTemporaryModifiers(sector);
 
-
 	this.game.state.space_combat_attacker = player;
 	this.game.state.space_combat_defender = defender;
 
@@ -5067,7 +5073,6 @@ console.log("K: " + z[k].name);
 	// otherwise, process combat
 	//
 	this.updateLog("Space Combat: round " + this.game.state.space_combat_round);
-
 	this.game.queue.push("space_combat_player_menu\t"+defender+"\t"+player+"\t"+sector);
 	this.game.queue.push("space_combat_player_menu\t"+player+"\t"+defender+"\t"+sector);
 

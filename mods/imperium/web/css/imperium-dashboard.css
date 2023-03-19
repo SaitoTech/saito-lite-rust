@@ -1,3 +1,4 @@
+
 .dash-faction-info {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -33,6 +34,7 @@
   background: #0004;
   text-align: center;
 }
+
 .dash-faction-base {
   background-color: #000;
   opacity: 0.95;
@@ -40,10 +42,12 @@
   text-weight: bold;
   margin-top: 2px;
 }
+
 .dash-faction-speaker {
   height: 40px;
   margin-top: 10px;
 }
+
 .speaker {
   background-color: red;
   color: white;
@@ -127,14 +131,11 @@
 .dash-item.resources {
   background-image: url("/imperium/img/blank_resources_hex.png");
   background-size: cover;
-  /* content: "\2B23"; */
-  /* background-color: #c16400; */
   color: #000000;
   font-size: 3em;
   position: relative;
   left: 0em;
   z-index: 1001;
-  /* bottom: 0.66em; */
   height: 58px;
   width: 65px;
 }
@@ -142,20 +143,15 @@
 .dash-item.influence {
   background-image: url("/imperium/img/blank_influence_hex.png");
   background-size: cover;
-  /* content: "\2B23";
-  /* background-color: #000000; */
   color: #c16400;
   font-size: 3em;
   position: relative;
   z-index: 1002;
-  /* bottom: 0.66em; */
   height: 58px;
   width: 65px;
 }
 
 .dash-item.trade {
-  /* content: "\2B1F"; */
-  /* color: #ffaa00; */
   font-size: 4em;
   position: relative;
   z-index: 1001;
@@ -165,5 +161,4 @@
   left: 10px;
   top: 4px;
 }
-
 
