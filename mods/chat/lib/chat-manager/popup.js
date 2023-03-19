@@ -174,6 +174,14 @@ console.log("removing: " + popup_qs);
     let popup_qs = ".chat-popup-" + this.group.id;
     let popup_id = "chat-popup-" + this.group.id;
 
+    // add reply functionality
+
+    document.querySelectorAll(`${popup_qs} .saito-userline-reply`).forEach((el) => {
+      el.addEventListener('click', (e) => {
+        alert(e.target.parentElement.previousElementSibling.innerText + " - " + e.target.parentElement.innerText);
+      });
+    });
+
 
     try {
 
