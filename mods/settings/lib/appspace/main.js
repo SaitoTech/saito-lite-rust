@@ -73,7 +73,7 @@ class SettingsAppspace {
       if (document.getElementById("register-identifier-btn")){
         document.getElementById("register-identifier-btn").onclick = function (e) {
          if (!mod.modal_register_username){
-          mod.modal_register_username = new RegisterUsernameModal(app, mod, null); 
+          mod.modal_register_username = new RegisterUsernameModal(app, mod); 
          }
          
          mod.modal_register_username.render();

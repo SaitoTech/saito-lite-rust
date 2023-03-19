@@ -2,7 +2,6 @@ const path = require('path');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const RegistryModal = require('./lib/modal/registry-modal');
-const RegisterUsernameModal = require("../../lib/saito/ui/modals/register-username/register-username.js");
 
 class Registry extends ModTemplate {
 
@@ -29,7 +28,7 @@ class Registry extends ModTemplate {
     this.cached_keys = {};
 
     //
-    // event listeners - browser.ts calls this in addIdentifiersToDom()
+    // event listeners - 
     //
     this.app.connection.on("registry-fetch-identifiers-and-update-dom", (keys) => {
 
@@ -49,20 +48,18 @@ class Registry extends ModTemplate {
           this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
             Object.entries(answer).forEach(([key, value]) => {
               this.cached_keys[key] = value;
-              if (key === this.app.wallet.returnPublicKey()) {
-                let k = this.app.keychain.returnKey(key);
-                if (k) {
-                  if (!k.identifier) {
-                    this.app.keychain.addKey(key, { identifier: value });
-                    this.app.connection.emit("update_identifier", (key));
-                  }
-                }
-              } else {
-		// save if locally stored
-		if (this.app.keychain.hasPublicKey(key)) {
-		  this.app.keychain.addKey({ publickey : key , identifier : value });
-		}
-	      }
+              
+              //
+              // We don't NEED or WANT to filter for key == wallet.returnPublicKey
+              // If the key is in our keychain, we obviously care enough that we 
+              // want to update that key in the keychain! 
+              //
+
+              // save if locally stored
+              if (this.app.keychain.hasPublicKey(key)) {
+                this.app.keychain.addKey({ publickey : key , identifier : value });
+              }
+              
               this.app.browser.updateAddressHTML(key, value);
             });
           });
@@ -83,15 +80,12 @@ class Registry extends ModTemplate {
       
     });
 
-    this.username_modal = null;
-
     return this;
   }
 
 
   initialize(app) {
     super.initialize(app);
-    this.username_modal = new RegisterUsernameModal(app, this);
   }
 
 
@@ -202,6 +196,13 @@ class Registry extends ModTemplate {
       }
     });
 
+    /*
+    console.info(this.cached_keys);
+    console.info(publickeys);
+    console.info(missing_keys);
+    console.info("%%%%%%%%%%%%%%%%%%%%% PEER REGISTRY REQUEST %%%%%%%%%%%%%%%%%%%%%%%%%");
+    */
+
     if (missing_keys.length == 0) {
       mycallback(found_keys);
       return;
@@ -210,12 +211,6 @@ class Registry extends ModTemplate {
     const where_statement = `publickey in (${missing_keys.join(",")})`;
     const sql = `select * from records where ${where_statement}`;
 
-    /*
-    console.info(this.cached_keys);
-    console.info(publickeys);
-    console.info(missing_keys);
-    console.info("%%%%%%%%%%%%%%%%%%%%% PEER REGISTRY REQUEST %%%%%%%%%%%%%%%%%%%%%%%%%");
-    */
 
     this.sendPeerDatabaseRequestWithFilter(
 
@@ -344,13 +339,13 @@ class Registry extends ModTemplate {
           // if keys exist
           // 
           for (let key in this.cached_keys) {
-	    if (key === data.publickey) {
-	      if (this.cached_keys[key]) {
-	        return { publickey : key , identifier : this.cached_keys[key] };
-	      } else {
-	        return { publickey : key };
-	      }
-	    }
+      	    if (key === data.publickey) {
+      	      if (this.cached_keys[key]) {
+      	        return { publickey : key , identifier : this.cached_keys[key] };
+      	      } else {
+      	        return { publickey : key };
+      	      }
+      	    }
           }
 
           return null;
@@ -527,15 +522,7 @@ class Registry extends ModTemplate {
 
   onPeerServiceUp(app, peer, service = {}) {
  
-    //
-    // redsquare -- fetch community tweets
-    //
-    if (service.service === "registry") {
-      if (app.BROWSER == 1) {
-	app.browser.addIdentifiersToDom();	
-      }
-    }    
-
+  
   }
 
 
@@ -639,6 +626,7 @@ console.log("WE ARE NOW LOCAL SERVER");
               try {
                 if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
                   registry_self.app.keychain.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: blk.block.id, block_hash: blk.returnHash(), lc: 1 });
+                  console.info("verification success for : " + identifier);
                 } else {
                   registry_self.app.keychain.addKey(tx.transaction.to[0].add, { has_registered_username: false });
                   console.debug("verification failed for sig : ", tx);

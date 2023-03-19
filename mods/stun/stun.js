@@ -13,7 +13,7 @@ const ChatInvitationLink = require("./lib/overlays/chat-invitation-link");
 const Relay = require("../relay/relay");
 const adapter = require('webrtc-adapter');
 const PeerManager = require('./lib/components/PeerManager');
-
+const ChatSetting = require('./lib/components/chat-setting');
 
 
 
@@ -45,7 +45,8 @@ class Stun extends ModTemplate {
         this.current_step = 0;
         this.gotten_keys = false
         this.commands = [];
-        this.rooms = new Map()
+        this.rooms = new Map();
+        this.chatSetting = new ChatSetting(app, mod)
         // this.receiving_from = {}
 
 
@@ -82,23 +83,24 @@ class Stun extends ModTemplate {
             '/videocall/style.css',
         ];
 
-        app.connection.on('stun-init-peer-manager', (localstream, room_code, to_join) => {
-            this.peerManager = new PeerManager(app, mod, localstream, room_code);
-            this.peerManager.showChatManager();
 
-            if (to_join) {
-                this.peerManager.join();
-            }
-        })
 
         app.connection.on('stun-send-message-to-server', (data) => {
             this.sendStunMessageToServerTransaction(data)
+        })
+
+        app.connection.on('stun-init-peer-manager', (room_code)=> {
+            this.peerManager = new PeerManager(app, mod, room_code);
+            this.peerManager.showSetting(false);
         })
 
     }
 
 
     onPeerHandshakeComplete(app, peer) {
+        if(app.BROWSER !==1 ){
+            return;
+        }
         if (!this.video_chat_loaded) {
             if (app.browser.returnURLParameter("stun_video_chat")) {
                 let room_obj = JSON.parse(app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat")));
@@ -106,13 +108,14 @@ class Stun extends ModTemplate {
                 // JOIN THE ROOM
                 let stun_self = app.modules.returnModule("Stun");
                 stun_self.renderInto("body");
-                app.connection.emit("stun-show-loader");
 
                 let interval = setInterval(() => {
                     if (document.readyState === "complete") {
-                        app.connection.emit('stun-join-conference-room-with-link', room_obj);
+                        let room_code = room_obj.room_code;
+                        stun_self.peerManager = new PeerManager(app, stun_self, room_code);
+                        stun_self.peerManager.showSetting(true);
                         clearInterval(interval)
-                    }
+                  }
                 }, 500)
 
             }
@@ -137,14 +140,10 @@ class Stun extends ModTemplate {
 
     renderInto(qs) {
         if (qs == ".saito-overlay") {
-
-
             if (!this.renderIntos[qs]) {
                 this.renderIntos[qs] = [];
                 this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
             }
-
-
             this.attachStyleSheets();
             this.renderIntos[qs].forEach((comp) => { comp.render(); });
             this.renderedInto = qs;

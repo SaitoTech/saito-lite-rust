@@ -25,21 +25,21 @@ class VideoChatManager {
         this.mod = mod;
         this.effectsMenu = new Effects(app, mod)
 
-        this.app.connection.on('show-video-chat-request', (app, mod, call_type = "Video", room_code) => {
-
+        this.app.connection.on('show-video-chat-request', (app, mod, call_type = "Video", room_code, videoEnabled, audioEnabled) => {
+            this.videoEnabled = videoEnabled
+            this.audioEnabled = audioEnabled;
             this.call_type = "video"
             this.room_code = room_code
             this.show(app, mod);
-            this.updateRoomLink()
+            this.updateRoomLink();
         })
 
 
-        this.app.connection.on('render-local-stream-request', (localStream) => {
-            if (!this.isActive) return;
+    this.app.connection.on('render-local-stream-request', (localStream) => {
+
             this.renderLocalStream(localStream);
         })
         this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc) => {
-            if (!this.isActive) return;
             this.addRemoteStream(peer, remoteStream, pc)
         });
 
@@ -64,9 +64,12 @@ class VideoChatManager {
         })
 
         this.app.connection.on('video-box-remove', (peer_id) => {
-            this.video_boxes[peer_id].video_box.remove()
-            delete this.video_boxes[peer_id];
-            this.updateImages();
+            if (this.video_boxes[peer_id].video_box) {
+                this.video_boxes[peer_id].video_box.remove()
+                delete this.video_boxes[peer_id];
+                this.updateImages();
+            }
+
         })
 
 
@@ -80,7 +83,6 @@ class VideoChatManager {
     }
 
     attachEvents(app, mod) {
-
         document.querySelector('.disconnect_btn').addEventListener('click', (e) => {
             this.disconnect()
 
@@ -94,7 +96,6 @@ class VideoChatManager {
                 this.chatInvitationOverlay.render()
 
             })
-
 
         }
         document.querySelector('.audio_control').addEventListener('click', (e) => {
@@ -125,10 +126,27 @@ class VideoChatManager {
 
 
         })
+
+
+        if (this.videoEnabled === true) {
+            document.querySelector('.video_control').classList.remove('fa-video-slash')
+            document.querySelector('.video_control').classList.add('fa-video');
+        } else {
+            document.querySelector('.video_control').classList.add('fa-video-slash')
+            document.querySelector('.video_control').classList.remove('fa-video')
+        }
+        if (this.audioEnabled === true) {
+            document.querySelector('.audio_control').classList.remove('fa-microphone-slash')
+            document.querySelector('.audio_control').classList.add('fa-microphone');
+        } else {
+            document.querySelector('.audio_control').classList.add('fa-microphone-slash')
+            document.querySelector('.audio_control').classList.remove('fa-microphone')
+        }
     }
 
-    createRoomLink() {
 
+    
+    createRoomLink() {
         let obj = {
             room_code: this.room_code,
         }
@@ -167,10 +185,9 @@ class VideoChatManager {
             this.attachEvents(app, mod);
         }
 
-        if (this.mod.central === true) {
-            let room_link = this.createRoomLink();
-            history.pushState(null, null, room_link);
-        }
+        let room_link = this.createRoomLink();
+        history.pushState(null, null, room_link);
+
 
         this.isActive = true
     }
@@ -192,6 +209,7 @@ class VideoChatManager {
 
 
     addRemoteStream(peer, remoteStream, pc) {
+        console.log('rendering remote steam ', remoteStream)
         this.createVideoBox(peer);
         this.video_boxes[peer].video_box.render(remoteStream);
         if (!this.peers.includes(peer)) {
@@ -236,28 +254,12 @@ class VideoChatManager {
 
     toggleAudio() {
         console.log('toggling audio');
-        if (this.audioEnabled === true) {
-            this.localStream.getAudioTracks()[0].enabled = false;
-            for (let i in this.mod.peer_connections) {
-                this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "mute", kind: 'audio' }))
-            }
-            this.audioEnabled = false
-            document.querySelector('.audio_control').classList.remove('fa-microphone')
-            document.querySelector('.audio_control').classList.add('fa-microphone-slash')
-        } else {
-            this.localStream.getAudioTracks()[0].enabled = true;
-            for (let i in this.mod.peer_connections) {
-                this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "unmute", kind: 'audio' }))
-            }
-            this.audioEnabled = true;
-            document.querySelector('.audio_control').classList.remove('fa-microphone-slash')
-            document.querySelector('.audio_control').classList.add('fa-microphone')
-        }
+        this.app.connection.emit('stun-toggle-audio')
 
     }
 
     toggleVideo() {
-        console.log('toggling video');
+        console.log('toggling audio');
         this.app.connection.emit('stun-toggle-video')
     }
 

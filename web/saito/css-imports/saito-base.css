@@ -177,12 +177,14 @@ Scrollbars
   opacity: 0.66;
 }
 
-/* Also in saito-user.css */
+
 .saito-address {
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
   display: inline-block !important;
   width: inherit;
+  max-width: 99%;
 }
 
 .tip:hover .tiptext {

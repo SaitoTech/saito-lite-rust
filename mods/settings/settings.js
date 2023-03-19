@@ -28,12 +28,14 @@ class Settings extends ModTemplate {
   initialize(app) {
     super.initialize(app);
 
-    let settings_self = this;
+    //
+    // If you have the settings page open and you trigger a name registration event
+    // it will deactivate the button so you cannot reregister
+    //
     this.app.connection.on("update_identifier", (publickey) => {
-      console.log("testing update identifier event");
-      if (document.getElementById("register-identifier-btn")) {
-        if (publickey === settings_self.app.wallet.returnPublicKey()) {
-          let username = settings_self.app.keychain.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
+      if (publickey === app.wallet.returnPublicKey()) {
+        if (document.getElementById("register-identifier-btn")) {
+          let username = app.keychain.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
           document.getElementById("register-identifier-btn").innerHTML = username;
           document.getElementById("register-identifier-btn").onclick = null;
         }

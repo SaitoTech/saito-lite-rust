@@ -276,31 +276,33 @@ class Keychain {
     // if keys exist
     //
     let key_idx = -1;
-    for (let x = 0; key_idx == -1 && x < this.keys.length; x++) {
+    for (let x = 0; x < this.keys.length; x++) {
       let match = true;
       for (let key in data) {
         if (this.keys[x][key] !== data[key]) {
           match = false;
-	  key_idx = -1;
-        } else {
-	  if (match != false && this.keys[x][key] === data[key]) {
-	    key_idx = x;
-	  }
-        }
+	      } 
+      }
+      if (match) {
+        key_idx = x;
+        break; //Stop Looping
       }
     }
-    if (key_idx != -1) {
-      return this.keys[key_idx];
-    }
+
+    let return_key = (key_idx != -1) ? this.keys[key_idx] : null;
 
     //
     // no match - maybe we have a module that has cached this information?
     //
-    let return_key = null;
+    
     this.app.modules.getRespondTos("saito-return-key").forEach((modResponse) => {
       let key = modResponse.returnKey(data);
-      if (key != null) { 
-	return_key = key; 
+      if (key) { 
+	       if (return_key){
+          return_key = Object.assign(return_key, key);
+         }else{
+          return_key = key;  
+         }
       }
     });
 

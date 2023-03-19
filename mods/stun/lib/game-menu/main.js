@@ -13,14 +13,10 @@ class StunxGameMenu {
 
 
   async joinConferenceRoom(app, mod, room_obj) {
-    let room_code = room_obj.room_code;
 
-    console.log('peer ', 'room_code', room_code);
-
-    const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
 
     // create peer manager and initialize , send an event to stun to initialize
-    this.app.connection.emit('stun-init-peer-manager', localStream, room_code, true)
+    // this.app.connection.emit('stun-init-peer-manager', localStream, room_code, true)
 
   }
 

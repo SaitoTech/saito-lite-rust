@@ -153,10 +153,6 @@ dt {
   max-width: 25vw;
 }
 
-.player-info-name {
-  font-weight: lighter;
-}
-
 .game_board_sizer {
   z-index: 1000;
 }
