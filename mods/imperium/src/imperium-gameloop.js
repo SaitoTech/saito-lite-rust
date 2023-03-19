@@ -457,9 +457,9 @@
 	if (this.space_combat_overlay.visible == 1) {
 	  this.space_combat_overlay.hide();
 	}
-	if (this.ground_combat_overlay.visible == 1) {
-	  this.ground_combat_overlay.hide();
-	}
+//	if (this.ground_combat_overlay.visible == 1) {
+//	  this.ground_combat_overlay.hide();
+//	}
 
 	if (this.handleFleetSupply(player, sector) == 0) {
 	  return 0;
@@ -5030,6 +5030,13 @@ console.log("K: " + z[k].name);
         let z_index      = parseInt(mv[3]);
   	this.game.queue.splice(qe, 1);
 
+	//
+	// hide the overlay if an event happens, it can be restored
+	//
+	if (this.space_combat_overlay.visible == 1) {
+	  this.space_combat_overlay.hide();
+	}
+
 	return z[z_index].spaceCombatEvent(this, player, sector);
 
       }
@@ -5356,7 +5363,7 @@ console.log("K: " + z[k].name);
 	if (this.game.player == attacker) {
           this.playerPlaySpaceCombat(attacker, defender, sector);        
 	} else {
-	  this.space_combat_overlay.render(attacker, defender, sector, "<div>opponent turn</div>");
+	  this.space_combat_overlay.render(attacker, defender, sector, "<div>waiting for move</div>");
         }
 
         return 0;

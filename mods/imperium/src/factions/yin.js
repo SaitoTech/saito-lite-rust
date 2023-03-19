@@ -288,7 +288,6 @@ this.playDevotion = function(imperium_self, player, sector, mycallback, impulse_
     return;
   }
 
-
   let html = "<div class='sf-readable'>Do you wish to sacrifice a Destroyer or Cruiser to assign 1 hit to an enemy ship?</div><ul>";
   if (can_sacrifice_destroyer) {
       html += '<li class="textchoice" id="destroyer">sacrifice destroyer</li>';

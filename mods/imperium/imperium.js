@@ -14192,6 +14192,15 @@ handleSystemsMenuItem() {
   	let player = mv[1];
   	let sector = mv[2];
 
+	//
+	// hide combat overlays
+	//
+	if (this.space_combat_overlay.visible == 1) {
+	  this.space_combat_overlay.hide();
+	}
+//	if (this.ground_combat_overlay.visible == 1) {
+//	  this.ground_combat_overlay.hide();
+//	}
 
 	if (this.handleFleetSupply(player, sector) == 0) {
 	  return 0;
@@ -20624,40 +20633,8 @@ playerAcknowledgeNotice(msg, mycallback) {
           let unit = sys.s.units[imperium_self.game.player - 1][i];
           maximum_assignable_hits++;
           if (targetted_units.includes(unit.type)) { total_targetted_units++; }
-          html += '<li class="textchoice player_ship_' + i + '" id="' + i + '">' + unit.name;
-          if (unit.capacity >= 1) {
-	    let fleet = '';
-            let fighters = 0;
-            let infantry = 0;
-            for (let ii = 0; ii < sys.s.units[imperium_self.game.player-1][i].storage.length; ii++) {
-              if (sys.s.units[imperium_self.game.player-1][i].storage[ii].type == "infantry") {
-                infantry++;
-              }
-              if (sys.s.units[imperium_self.game.player-1][i].storage[ii].type == "fighter") {
-                fighters++;
-              }
-            }
-            if (infantry > 0 || fighters > 0) {
-              fleet += ' ';
-              if (infantry > 0) { fleet += infantry + "i"; }
-              if (fighters > 0) {
-                if (infantry > 0) { fleet += ", "; }
-                fleet += fighters + "f";
-              }
-              fleet += ' ';
-            }
-	    html += fleet;
-	  }
-          if (unit.strength > 1) {
-            maximum_assignable_hits += (unit.strength - 1);
-            html += ' <div style="display:inline" id="player_ship_' + i + '_hits">(';
-            for (let bb = 1; bb < unit.strength; bb++) { html += '*'; }
-            html += ')';
-	    html += '</div>'
-          }
-          html += '</li>';
+          html += '<li class="textchoice player_ship_' + i + '" id="' + i + '">' + imperium_self.returnShipInformation(unit) + '</li>';
         }
-
       }
       html += '</ul>';
 
@@ -20853,42 +20830,10 @@ playerAcknowledgeNotice(msg, mycallback) {
 
       for (let i = 0; i < sys.s.units[imperium_self.game.player - 1].length; i++) {
         if (sys.s.units[imperium_self.game.player - 1][i].destroyed == 0 && sys.s.units[imperium_self.game.player - 1][i].strength > 0) {
-
           let unit = sys.s.units[imperium_self.game.player - 1][i];
           maximum_assignable_hits++;
           if (targetted_units.includes(unit.type)) { total_targetted_units++; }
-          html += '<li class="textchoice player_ship_' + i + '" id="' + i + '">' + unit.name;
-          if (unit.capacity >= 1) {
-	    let fleet = '';
-            let fighters = 0;
-            let infantry = 0;
-            for (let ii = 0; ii < sys.s.units[imperium_self.game.player-1][i].storage.length; ii++) {
-              if (sys.s.units[imperium_self.game.player-1][i].storage[ii].type == "infantry") {
-                infantry++;
-              }
-              if (sys.s.units[imperium_self.game.player-1][i].storage[ii].type == "fighter") {
-                fighters++;
-              }
-            }
-            if (infantry > 0 || fighters > 0) {
-              fleet += ' ';
-              if (infantry > 0) { fleet += infantry + "i"; }
-              if (fighters > 0) {
-                if (infantry > 0) { fleet += ", "; }
-                fleet += fighters + "f";
-              }
-              fleet += ' ';
-            }
-	    html += fleet;
-	  }
-          if (unit.strength > 1) {
-            maximum_assignable_hits += (unit.strength - 1);
-            html += ' <div style="display:inline" id="player_ship_' + i + '_hits">(';
-            for (let bb = 1; bb < unit.strength; bb++) { html += '*'; }
-            html += ')';
-	    html += '</div>'
-          }
-          html += '</li>';
+          html += '<li class="textchoice player_ship_' + i + '" id="' + i + '">' + imperium_self.returnShipInformation(unit) + '</li>';
         }
 
       }
@@ -24407,6 +24352,7 @@ playerSelectUnitsToMove(destination) {
   let hoppable = [];
   let fighters_loaded = 0;
   let infantry_loaded = 0;
+  let ship_status_menu_qs = "";
 
   let obj = {};
   obj.max_hops = 2;
@@ -24444,7 +24390,6 @@ playerSelectUnitsToMove(destination) {
 
   obj.ships_and_sectors = imperium_self.returnShipsMovableToDestinationFromSectors(destination, sectors, distance, hazards, hoppable);
 
-
   let updateInterface = function (imperium_self, obj, updateInterface) {
 
     let subjective_distance_adjustment = 0;
@@ -24457,11 +24402,11 @@ playerSelectUnitsToMove(destination) {
     let spent_distance_boost = (obj.distance_adjustment - subjective_distance_adjustment);
 
     let playercol = "player_color_" + imperium_self.game.player;
-    let html = "<div class=\"status-update\"><div class='player_color_box " + playercol + "'></div> " + imperium_self.returnFaction(imperium_self.game.player) + ': select ships to move</div><ul>';
 
     //
     // select ships
     //
+    let html = "<div class=\"status-update\"><div class='player_color_box " + playercol + "'></div> " + imperium_self.returnFaction(imperium_self.game.player) + ': select ships to move</div><ul>';
     for (let i = 0; i < obj.ships_and_sectors.length; i++) {
 
       let sys = imperium_self.returnSectorAndPlanets(obj.ships_and_sectors[i].sector);
@@ -24488,19 +24433,20 @@ playerSelectUnitsToMove(destination) {
 
 	let rift_passage = 0;
 	if (obj.ships_and_sectors[i].hazards[ii] === "rift") { rift_passage = 1; }
-
         if (already_moved == 1) {
+console.log("UPDATING: already_moved!");
           if (rift_passage == 0) {
-            html += `<li id="sector_${i}_${ii}" class="option"><b>${imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii])}</b></li>`;
+            html += `<li id="sector_${i}_${ii}" class="option"><b>* <span class="sector_${i}_${ii}_ship">${imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii])}</span> *</b></li>`;
 	  } else {
-            html += `<li id="sector_${i}_${ii}" class="option"><b>${imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii])}</b> - rift</li>`;
+            html += `<li id="sector_${i}_${ii}" class="option"><b>* <span class="sector_${i}_${ii}_ship">${imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii])}</span></b> - rift *</li>`;
 	  }
         } else {
+console.log("UPDATING: not already_moved!");
           if (obj.ships_and_sectors[i].ships[ii].move - (obj.ships_and_sectors[i].adjusted_distance[ii] + spent_distance_boost) >= 0) {
             if (rift_passage == 0) {
-	      html += `<li id="sector_${i}_${ii}" class="option">${imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii])}</li>`;
+	      html += `<li id="sector_${i}_${ii}" class="option"><span class="sector_${i}_${ii}_ship">${imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii])}</span></li>`;
             } else {
-	      html += `<li id="sector_${i}_${ii}" class="option">${imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii])} - rift</li>`;
+	      html += `<li id="sector_${i}_${ii}" class="option"><span class="sector_${i}_${ii}_ship">${imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii])}</span> - rift</li>`;
 	    }
           }
         }
@@ -24585,6 +24531,7 @@ playerSelectUnitsToMove(destination) {
       let total_ship_capacity = imperium_self.returnRemainingCapacity(ship);
       let x = { i: i, ii: ii, sector: sector };
 
+      ship_status_menu_qs = `.sector_${i}_${ii}_ship`;
 
       //
       // calculate actual distance
@@ -24593,12 +24540,8 @@ playerSelectUnitsToMove(destination) {
       let free_distance = ship.move + obj.fleet_move_bonus;
 
       if (real_distance > free_distance) {
-        //
-        // 
-        //
         obj.ship_move_bonus--;
       }
-
 
       //
       // if this is a fighter, remove it from the underlying
@@ -24608,12 +24551,22 @@ playerSelectUnitsToMove(destination) {
         obj.ships_and_sectors[i].ships[ii].already_moved = 1;
       }
 
+// HACK
+console.log("STUFF TO MOVE: " + JSON.stringify(obj.stuff_to_move));
+console.log("HERE WE ARE ADDING THE SHIP: " + JSON.stringify(x));
+      let add_to_stuff_to_move = true;
+      for (let p = 0; p < obj.stuff_to_move.length; p++) {
+	if (JSON.stringify(x) === JSON.stringify(obj.stuff_to_move[p])) {
+	  add_to_stuff_to_move = false;
+	}
+      }
+      if (add_to_stuff_to_move) {
+        obj.stuff_to_move.push(x);
+      }
 
+console.log("UPDATING INTERFACE");
 
-
-      obj.stuff_to_move.push(x);
       updateInterface(imperium_self, obj, updateInterface);
-
 
       //
       // is there stuff left to move?
@@ -24632,7 +24585,6 @@ playerSelectUnitsToMove(destination) {
           stuff_available_to_move++;
         }
       }
-
 
       //
       // remove already-moved fighters from stuff-available-to-move
@@ -24654,7 +24606,6 @@ playerSelectUnitsToMove(destination) {
         }
       }
 
-
       if (total_ship_capacity > 0 && stuff_available_to_move > 0) {
         let remove_what_capacity = 0;
         for (let z = 0; z < obj.stuff_to_load.length; z++) {
@@ -24664,7 +24615,6 @@ playerSelectUnitsToMove(destination) {
             remove_what_capacity += thisunit.capacity_required;
           }
         }
-
 
         let user_message = `<div class="sf-readable">This ship has <span class="capacity_remaining">${total_ship_capacity}</span> capacity. Infantry can capture planets and fighters can protect your fleet. Do you wish to add them? </div><ul>`;
 
@@ -24717,7 +24667,6 @@ playerSelectUnitsToMove(destination) {
         user_message += '<li class="option textchoice" id="skip">finish</li>';
         user_message += '</ul></div>';
 
-
         //
         // choice
         //
@@ -24761,7 +24710,6 @@ playerSelectUnitsToMove(destination) {
 		  load_into_this_ship_idx--;
 		}
 	      }
-
 
               //
               // we have to load prematurely. so JSON will be accurate when we move the ship, so player_move is 0 for load
@@ -24878,14 +24826,28 @@ playerSelectUnitsToMove(destination) {
 
               if (ic == 1 && total_ship_capacity == 0) {
                 $('.status').show();
+console.log("UPDATING 1");
+	        if (document.querySelector(ship_status_menu_qs)) {
+		  document.querySelector(ship_status_menu_qs).innerHTML = imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii]);
+		}
                 $('.status-overlay').hide();
-              }
+              } else {
+console.log("UPDATING 2");
+	        if (document.querySelector(ship_status_menu_qs)) {
+		  document.querySelector(ship_status_menu_qs).innerHTML = imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii]);
+		}
+	      }
             }
           } // total ship capacity
 
           if (action2 === "skip") {
+console.log("KHIP!");
             $('.status-overlay').hide();
             $('.status').show();
+console.log("UPDATING 3 " + i + " -- " + ii + " -- " + ship_status_menu_qs);
+	    if (document.querySelector(ship_status_menu_qs)) {
+	      document.querySelector(ship_status_menu_qs).innerHTML = imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii]);
+	    }
           }
 
         });
@@ -30493,19 +30455,10 @@ playerDiscardActionCards(num, mycallback=null) {
 	sys.s.units[player-1].splice(z, 1);
       } else {
         if ((sys.s.units[player-1][z].destroyed == 1 || sys.s.units[player-1][z].strength == 0) && (sys.s.units[player-1][z].type != "spacedock" && sys.s.units[player-1][z].type != "pds")) {
-
-	  //
-	  // update space combat overlay if visible
-	  //
-	  if (this.space_combat_overlay.visible == 1) {
-	    this.space_combat_overlay.removeShip(player, z);
-	  }
-
           save_sector = 1;
           sys.s.units[player-1].splice(z, 1);
           z--;
 	  unit_length--;
-
         }
       }
     }
