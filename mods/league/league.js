@@ -623,6 +623,7 @@ class League extends ModTemplate {
     } catch (err) {
       console.error("No players in league: " + e);
     }
+
     return localStats || sqlResults;
   }
 
