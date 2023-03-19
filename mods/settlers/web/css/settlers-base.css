@@ -1,18 +1,30 @@
+:root {
+  --p1-color: /*#e44;*/
+  #fb2215;
+  --p2-color: /*#049;*/
+  #15eefb;
+  --p3-color: /*#094;*/
+  #7bfb15;
+  --p4-color: /*#D63;*/
+  #9515fb;
 
-
-:root{
-  --p1-color: /*#e44;*/ #fb2215;
-  --p2-color: /*#049;*/ #15eefb;
-  --p3-color: /*#094;*/ #7bfb15;
-  --p4-color: /*#D63;*/ #9515fb;
+  --text-color: #331800;
 }
 
+p {
+  overflow: unset;
+}
 
-.tip{
+.status-text-menu ul li, .status ul li{
+  border-color: var(--text-color);
+}
+
+.tip {
   width: unset;
 }
 
-.tip .tiptext{
+
+.tip .tiptext {
   min-width: 100px;
   width: fit-content;
   padding: 0.5em 1em;
@@ -22,154 +34,157 @@
   z-index: 300;
 }
 
-.handy-help{
+.handy-help {
   margin: 0 auto;
-  cursor: help;
+  grid-row: span 2;
+  font-size: 22px;
+  padding: 5px;
+}
+
+#cleartrade{
+  cursor: pointer;
+  font-size: 20px;
 }
 
 /* Building costs as cardbox overlay */
-.game-cardbox{
+
+.game-cardbox {
   display: none;
   width: fit-content;
-  height: 460px;
-  background-color: rgba(245,245,245,0.95);
-  border: 2px solid black;
-  border-radius: 10px;
-  color: black;
-  transform: unset;
-  left: 10px;
-  top: 60px;
-
+  background-color: rgba(245, 245, 245, 0.95);
 }
 
-.construction-costs{
+.construction-costs {
   font-size: 24px;
-}
-.construction-costs h2{
   text-align: center;
 }
-.construction-costs .table{
-  display: grid;
-  grid-template-columns: 60px 1fr;
-  grid-gap: 1em;
-  margin: 0.75em;
+
+.construction-costs.saitoa{
+  min-width: unset;
+  padding: ;
 }
 
-.construction-costs .table .cost{
+.construction-costs .table {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  grid-gap: 10px;
+}
+
+.construction-costs .table .cost {
   display: flex;
 }
-.construction-costs .icon, .construction-costs .token, .construction-costs img{
+
+.construction-costs .icon, .construction-costs .token, .construction-costs img {
   width: 50px;
   margin: 2.5px;
 }
-.construction-costs .message{
+
+.construction-costs .message {
   font-size: 0.8em;
   text-align: center;
+  margin: 15px 0;
 }
 
-.cardfan{
+.cardfan {
   top: 45vh;
   left: 5vw;
 }
 
-.hexIn{
+.hexIn {
   overflow: unset;
   padding-bottom: 113%;
 }
-.hexLink{
+
+.hexLink {
   overflow: unset;
   height: 105%;
 }
 
-.hex_bg{
+.hex_bg {
   margin: unset;
-   left: -12.5%;
-  right: -12.5%;
-}
-
-.hex_bg img{
   left: -12.5%;
   right: -12.5%;
 }
 
-dt{
+.hex_bg img {
+  left: -12.5%;
+  right: -12.5%;
+}
+
+dt {
   margin-top: 0.8em;
   margin-bottom: 0.5em;
 }
 
-
-/*My Background*/
-.gameboard {
-  background-color: #369 !important;
-  background: radial-gradient(circle farthest-corner at 50% 0%, #369 40%, lightseagreen 45%, #369 50%);
-  background-size: 25px 25px;
-  position: absolute; /* fixed from game.css does weird stuff*/
-  width: 100vw;
-  height: 100vh;
-  z-index: 0;
+.saito-address{
+  color: unset;
 }
 
+.gameboard.dark {
+  background-color: #369;
+}
 /*Richard background*/
 .gameboard {
   background: linear-gradient(-75deg, #369, #58b, #58b, #369);
   background-size: 100% 100%;
-  /*animation: gradient 20s ease infinite;*/
+  width: 100vw;
   height: 100vh;
+  transition: background 2s;
+  background-blend-mode: multiply;
 }
 
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
 
-#game-hexgrid{
+#game-hexgrid {
   z-index: 2;
   width: 1000px;
-  padding: 10% 5% 15%; /*Creates space for board overflow*/
-  padding:  100px 35px 150px;
+  padding: 10% 5% 15%;
+  /*Creates space for board overflow*/
+  padding: 100px 35px 150px;
   box-sizing: content-box;
   border-radius: 400px;
   cursor: grab;
-  background-color: rgba(200,200,240,0.1);
+  background-color: rgba(200, 200, 240, 0.1);
 }
 
-.player-box{
-  background-color: #444D;
+
+.player-box {
+  background-color: #444E;
   z-index: 3;
-  border: 1px solid;
   max-width: 25vw;
 }
 
-
-
-.player-info-name {
-  font-weight: lighter;
-}
-
-.game_board_sizer{
+.game_board_sizer {
   z-index: 1000;
 }
 
+.plog {
+  flex: 1;
+}
 
-.plog .status-text-menu ul, .plog .status-text-menu ul li{
+.plog .status-text-menu ul, .plog .status-text-menu ul li {
   background-color: unset;
-} 
+}
 
-.plog .status-header{
+.plog .status-header {
   background-color: unset;
   box-shadow: unset;
 }
 
+#tradenow {
+  text-align: center;
+  width: 80%;
+  margin: 0 10%;
+  border: 1px silver dashed;
+  cursor: pointer;
+  padding: 0.5em 0;
+}
 
+#tradenow:hover {
+  color: black;
+  background-color: #e7e7e7;
+}
 
-.status-message ul li:hover, .status ul li:hover, .cardselector:hover{
+.status-message ul li:hover, .status ul li:hover, .cardselector:hover {
   color: black;
   background-color: #e7e7e7;
 }
@@ -177,37 +192,37 @@ dt{
 /*
   Shrink Development cards
 */
-.devcards > .card{
+
+.devcards>.card {
   width: 10vh;
   position: absolute;
 }
 
-.card > img{
+.card>img {
   width: 100%;
 }
 
-.card .icon{
+.card .icon {
   position: absolute;
   width: 15%;
   left: 7%;
   top: 5%;
-  pointer-events: none; 
+  pointer-events: none;
 }
 
-
 /* Make room to display two hands of cards*/
-.devcards{
+
+.devcards {
   top: -2vh;
   position: absolute;
 }
 
-.devcards+.rescards{
+.devcards+.rescards {
   top: 2vh;
   position: absolute;
 }
 
-
-.card .cardtitle{
+.card .cardtitle {
   position: absolute;
   font-family: fantasy;
   font-size: 1.2em;
@@ -217,7 +232,7 @@ dt{
   pointer-events: none;
 }
 
-.card .cardrules{
+.card .cardrules {
   position: absolute;
   font-family: fantasy;
   top: 60%;
@@ -233,8 +248,7 @@ dt{
   text-decoration: underline;
 }
 
-
-.hover{
+.hover {
   z-index: 1000;
 }
 
@@ -246,11 +260,10 @@ dt{
   border-color: whitesmoke;
 }
 
-.city.empty.rhover{
-  background-color: rgba(255,255,128,0.95);
+.city.empty.rhover {
+  background-color: rgba(255, 255, 128, 0.95);
   border: 3px dotted purple;
 }
-
 
 .rhover:hover, .city.empty.rhover:hover {
   border: 1px solid white;
@@ -258,57 +271,61 @@ dt{
   cursor: crosshair;
 }
 
-.ship{
+.ship {
   font-size: 2em;
   overflow-x: visible;
   white-space: nowrap;
 }
 
-.ship > .icon{
+.ship>.icon {
   position: relative;
   top: -20%;
   width: 85%;
 }
 
-.port{
+.port {
   width: 100%;
   height: 60%;
 }
 
-.port1{
+.port1 {
   top: -40%;
   left: 40%;
   transform: rotate(27.5deg);
 }
-.port2{
+
+.port2 {
   top: 20%;
   left: 85%;
   transform: rotate(90deg);
 }
 
-.port3{
+.port3 {
   top: 80%;
   left: 40%;
   transform: rotate(152.5deg);
 }
 
-.port4{
+.port4 {
   top: 80%;
   right: 40%;
   transform: rotate(-152.5deg);
 }
-.port5{
+
+.port5 {
   right: 85%;
   top: 20%;
   transform: rotate(-90deg);
 }
-.port6{
+
+.port6 {
   top: -40%;
   right: 40%;
   transform: rotate(-28.5deg);
 }
-.harbor{
-  position:  absolute;
+
+.harbor {
+  position: absolute;
   display: block;
   width: 45px;
   height: 12px;
@@ -316,15 +333,14 @@ dt{
   background: linear-gradient(90deg, tan 0%, brown 50%, tan 100%);
   background-size: 6px 12px;
   bottom: 15%;
-
 }
 
-.rharbor{
+.rharbor {
   transform: rotate(55deg);
   right: 17%;
 }
 
-.lharbor{
+.lharbor {
   transform: rotate(-55deg);
   left: 17%;
 }
@@ -339,38 +355,45 @@ dt{
   border-radius: 10px;
 }
 
-
-.road5{
+.road5 {
     transform: rotate(90deg);
-    left: -35%;
-    top: 45%;
-}
-.road6{
-    transform: rotate(-30deg);
-    top: 9%;
-    left: -9%;
+    left: -34%;
+    top: 43%;
+    width: 62%;
 }
 
-.road1{
+.road6 {
+  transform: rotate(-30deg);
+  top: 9%;
+  left: -9%;
+}
+
+.road1 {
   transform: rotate(30deg);
-  right: -8%;
-  top: 8%;
+  right: -4%;
+  top: 7%;
+  width: 62%;
 }
 
-.road2{ /* Overlaps with Road5 */ 
-    transform: rotate(90deg); 
-    right: -35%;
-    top: 45%;
+.road2 {
+  /* Overlaps with Road5 */
+  transform: rotate(90deg);
+  right: -35%;
+  top: 45%;
 }
-.road3{ /* Overlaps with Road6 */
-    transform: rotate(-30deg);
-    bottom: 9%;
-    right: -9%;
+
+.road3 {
+  /* Overlaps with Road6 */
+  transform: rotate(-30deg);
+  bottom: 9%;
+  right: -9%;
 }
-.road4{ /* Overlaps with Road1 */
-    transform:  rotate(30deg);
-    bottom: 9%;
-    left: -9%;
+
+.road4 {
+  /* Overlaps with Road1 */
+  transform: rotate(30deg);
+  bottom: 9%;
+  left: -9%;
 }
 
 .city {
@@ -385,49 +408,69 @@ dt{
   border-radius: 10px;
 }
 
-.city > svg, .city > img{
+.city>svg, .city>img {
   width: 100%;
   height: 100%;
-  top:  0px;
+  top: 0px;
   left: 0px;
   padding: 0px;
 }
 
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
+
 .p1 {
   background-color: var(--p1-color);
 }
+
 .p2 {
   background-color: var(--p2-color);
 }
+
 .p3 {
   background-color: var(--p3-color);
 }
+
 .p4 {
   background-color: var(--p4-color);
 }
 
-.player-box.me{
-  border-top: 10px solid;
-  border-right: 10px solid;
-}
-.player-box.notme{
-  border-left: 10px solid;
+.saito-userline{
+  width: 100%;
 }
 
-.player-box.c1 {
-  border-color: var(--p1-color);
-}
-.player-box.c2 {
-  border-color: var(--p2-color);
-}
-.player-box.c3 {
-  border-color: var(--p3-color);
-}
-.player-box.c4 {
-  border-color: var(--p4-color);
+/*.player-box.c1 .saito-userline, .player-box.c1 .saito-address{
+  background-color: var(--p1-color);
 }
 
+.player-box.c2 .saito-userline, .player-box.c2 .saito-address{
+  background-color: var(--p2-color);
+}
+
+.player-box.c3 .saito-userline, .player-box.c3 .saito-address{
+  background-color: var(--p3-color);
+}
+
+.player-box.c4 .saito-userline, .player-box.c4 .saito-address{
+  background-color: var(--p4-color);
+}*/
+
+.player-box.c1 .saito-identicon-box{
+  border: 5px solid var(--p1-color);
+}
+.player-box.c2 .saito-identicon-box{
+  border: 5px solid var(--p2-color);
+}
+.player-box.c3 .saito-identicon-box{
+  border: 5px solid var(--p3-color);
+}
+.player-box.c4 .saito-identicon-box{
+  border: 5px solid var(--p4-color);
+}
+
+.player-box .saito-identicon{
+  width: 100%;
+  height: unset;
+}
 
 /*.producer polygon{
   fill: white;
@@ -436,12 +479,11 @@ dt{
 .producer line{
   stroke: white;
 }*/
-.producer{
-  box-shadow: 0 0 10px 5px whitesmoke;
+.producer {
+  box-shadow: 0 0 10px 5px;
 }
 
-
-.popup-confirm-menu .confirm_check{
+.popup-confirm-menu .confirm_check {
   border: 1px gray solid;
   display: flex;
   flex-direction: row;
@@ -449,34 +491,38 @@ dt{
   justify-content: space-between;
 }
 
-input[type="checkbox"]{
+input[type="checkbox"] {
   margin: 0;
 }
 
-.city1{
+.city1 {
   top: -10%;
   left: 50%;
   transform: translate(-50%);
 }
 
-.city2{
+.city2 {
   top: 15%;
   right: -18%;
 }
-.city3{
+
+.city3 {
   bottom: 15%;
   right: -18%;
 }
-.city4{
+
+.city4 {
   bottom: -10%;
   left: 50%;
   transform: translate(-50%);
 }
-.city5{
-  bottom:  15%;
+
+.city5 {
+  bottom: 15%;
   left: -18%;
 }
-.city6{
+
+.city6 {
   top: 15%;
   left: -18%;
 }
@@ -496,33 +542,45 @@ input[type="checkbox"]{
   color: white;
 }
 
-.bandit{
+.sector_value.rolled {
+  box-shadow: 0 0 10px 5px ghostwhite;
+}
+
+.bandit {
   background-color: black;
   color: darkgray;
   border-color: black;
-  box-shadow: 0 0 25px 45px rgba(0,0,0,0.75);
+  box-shadow: 0 0 25px 45px rgba(0, 0, 0, 0.75);
 }
 
 .city.p1 {
   border: 10px solid var(--p1-color);
   color: var(--p1-color);
 }
+
 .city.p2 {
   border: 10px solid var(--p2-color);
   color: var(--p2-color);
 }
+
 .city.p3 {
   border: 10px solid var(--p3-color);
   color: var(--p3-color);
- 
 }
+
 .city.p4 {
   border: 10px solid var(--p4-color);
   color: var(--p4-color);
 }
 
+
+/*********
+ * 
+ * Trading overlays
+ * 
+ * ********/
+
 .trade_overlay {
-  background-color: whitesmoke;
   padding: 25px;
   font-size: 1.25em;
   min-width: 50vw;
@@ -532,75 +590,108 @@ input[type="checkbox"]{
   /*overflow-y: scroll;*/
 }
 
-
-.trade_overlay_title{
+.trade_overlay > div {
   width: 100%;
+}
+
+.trade_overlay_title {
   text-align: center;
 }
 
-.trade_overlay_offers, .trade_overlay_buttons {
+.trade_overlay_offers {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.trade_overlay_buttons {
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: space-evenly;
   margin: 1em 0px;
 }
-.trade_overlay_buttons{
-  align-items: center;
-}
 
-.trade_overlay_buttons .notice{
+.trade_overlay_buttons .notice {
   font-style: italic;
 }
 
-.trade_overlay .icon{
-  width: 2em;
-}
-
-.trade_overlay .selected{
-  padding: 0em;
-}
-
-.trade_overlay .noselect{
-  color: lightgrey;
-}
-
-.trade_overlay .selected{
-  font-weight: bold;
-}
-
-.trade_overlay .selected .icon{
-  width: 3em;
-}
-
-.noselect .icon{
-  filter: grayscale(100%);
-}
-
-.button.noselect:hover{
-  background: rgba(247,31,61,0.2); /* based on saito-red */
-}
-
-.option.noselect{
-  font-style: italic;
-  color: lightgrey;
-}
-
-.trade_button {
-  width: 120px;
-  padding: 0.5em;
-  text-transform: uppercase;
+.trade_overlay .icon {
+  width: 50px;
+  margin: 2px 25px 0;
+  border: 2px solid transparent;
   cursor: pointer;
 }
 
-.trade_button div{
+.trade_overlay .icon:hover {
+  border-color: whitesmoke;
+}
+
+.trade_overlay .selected .icon {
+  margin: 0 23px;
+  border-color: whitesmoke;
+  filter: drop-shadow(5px 5px 4px);
+}
+
+/* Disable trade submit button in overlays */
+.trade_overlay_button.noselect {
+  background-color: lightgrey;
+  border: unset;
+  color: unset;
+  cursor: unset;
+}
+/*.trade_overlay_button.noselect:hover {
+  background-color: lightgrey;
+  color: unset;
+}*/
+
+/* Disable resource selection in trade overlays */ 
+.noselect .icon {
+  filter: grayscale(100%) brightness(0.55);
+  cursor: default;
+}
+
+
+.option.noselect {
+  font-style: italic;
+  color: lightgrey;
+}
+
+
+/* TradeOverlay --> specify numbers */
+.trade_area {
+  height: 72px;
+}
+
+.trade_area > div:first-child{
+  text-transform: uppercase;
   text-align: center;
 }
 
-.button{
+.trade_area.select > div:first-child{
+  cursor: pointer;
+}
+
+.trade_overlay .trade_area .icon:hover{
+  border-color: grey;
+  filter: grayscale(50%);
+}
+
+.offer_icons{
+  position: relative;
+}
+.icon_multiplier{
+  position: absolute;
+  bottom: 0;
+  right: 2px;
+}
+
+.button {
   min-width: 90px;
   text-align: center;
 }
-.highlight{
+
+.highlight {
   font-size: 1.1em;
   font-weight: bold;
 }
@@ -609,63 +700,51 @@ input[type="checkbox"]{
   height: 1.25em;
 }*/
 
-.wishlist .icon{
-  display: inline-block;
-}
 
-.horizontal_list{
+.horizontal_list {
   display: flex;
   flex-wrap: wrap;
-  border-top:  1px solid var(--saito-skyline-grey);
+  border-top: 1px solid var(--saito-skyline-grey);
 }
 
-.horizontal_list .option .icon, .bank .option .icon{
+.horizontal_list .option .icon, .bank .option .icon {
   margin: 0 0.25em;
   width: 2em;
   vertical-align: middle;
 }
 
-ul.horizontal_list li.iconoption{
+ul.horizontal_list li.iconoption {
   margin: 0;
   width: 20%;
   height: 3em;
   border-top: unset;
 }
 
-.status .disabled:hover{
-  color: inherit;
-  background-color: inherit;
-}
-.disabled .icon, .player-box .icon{
-  width: 1.5em;
-  vertical-align: middle;
-}
 
-.status-message{
+.status-message {
   width: unset;
   background-color: unset;
 }
 
-.hexTileCenter{
+.hexTileCenter {
   left: 50%;
   top: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   text-align: center;
 }
 
-
-
 /*Sit graphic on top of playerbox*/
-.me > .player-box-graphic{
+
+.me>.player-box-graphic {
   position: absolute;
   left: calc(100% + 12px);
   top: 5px;
- /*bottom: calc(100% + 12px);
+  /*bottom: calc(100% + 12px);
   left: 50%;
   transform: translateX(-50%);*/
 }
 
-.notme > .player-box-graphic{
+.notme>.player-box-graphic {
   position: absolute;
   top: 50%;
   right: calc(100% + 12px);
@@ -676,9 +755,9 @@ ul.horizontal_list li.iconoption{
   left: 1vw;*/
 }
 
-
 /* Dice display (position handled by playerbox-graphic) */
-.diceroll{
+
+.diceroll {
   position: relative;
   display: flex;
   margin: 0 auto;
@@ -693,12 +772,12 @@ ul.horizontal_list li.iconoption{
   z-index: 3;
   width: 50px;
   height: min(12vw, 110px);
-  padding: 0 min(0.5vw,5px);
+  padding: 0 min(0.5vw, 5px);
   flex-direction: column;
 }
 
-.die{
-  width: min(4vw,40px);
+.die {
+  width: min(4vw, 40px);
 }
 
 /*.notme .diceroll{
@@ -708,7 +787,7 @@ ul.horizontal_list li.iconoption{
   flex-direction: column;
 }*/
 
-.flexline{
+.flexline {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -718,43 +797,47 @@ ul.horizontal_list li.iconoption{
   margin-bottom: 0.5em;
 }
 
-.flexline2{
+.flexline2 {
   display: flex;
   justify-content: space-around;
   align-items: center;
   flex-direction: row;
   width: 100%;
-  /*margin-bottom: 0.5em;*/ 
+  /*margin-bottom: 0.5em;*/
 }
 
-.notme .flexline2{
- margin-bottom: 0.5em; 
+.notme .flexline2 {
+  margin-bottom: 0.5em;
 }
 
-.pbtrade ul li{
-  width: 100%;
+.pbtrade ul li {
+  width: 45%;
   line-height: 1.5em;
   cursor: pointer;
   list-style: none;
-  border-top: 1px solid var(--saito-skyline-grey);
+  border: 1px solid var(--text-color);
+  text-align: center;
 }
-.pbtrade ul li:hover{
+
+.pbtrade ul li:hover {
   color: black;
   background-color: #e7e7e7;
 }
 
-.player-box .trade:hover{
+.player-box .trade:hover {
   color: black;
   background-color: #a7a7a7;
 }
-.trade{
+
+.trade {
   cursor: pointer;
 }
 
-.cardct{
+.cardct {
   width: fit-content;
 }
-.cardselector{
+
+.cardselector {
   border: 1px solid whitesmoke;
   cursor: pointer;
   width: 45%;
@@ -763,45 +846,46 @@ ul.horizontal_list li.iconoption{
 }
 
 /*SVG token coloring*/
-.token{
-  margin: min(3px,1vh);
+
+.token {
+  margin: min(3px, 1vh);
   width: 1.2em;
   background-color: unset;
 }
 
-.token polygon{
+.token polygon {
   fill: var(--saito-white);
 }
 
-.token.p1 polygon{
+.token.p1 polygon {
   fill: var(--p1-color);
 }
 
-.token.p2 polygon{
+.token.p2 polygon {
   fill: var(--p2-color);
 }
 
-.token.p3 polygon{
+.token.p3 polygon {
   fill: var(--p3-color);
 }
 
-.token.p4 polygon{
+.token.p4 polygon {
   fill: var(--p4-color);
 }
 
-.token.p1 line{
+.token.p1 line {
   stroke: var(--p1-color);
 }
 
-.token.p2 line{
+.token.p2 line {
   stroke: var(--p2-color);
 }
 
-.token.p3 line{
+.token.p3 line {
   stroke: var(--p3-color);
 }
 
-.token.p4 line{
+.token.p4 line {
   stroke: var(--p4-color);
 }
 
@@ -819,49 +903,54 @@ ul.horizontal_list li.iconoption{
   color: var(--p4-color);
 }*/
 
-.player-notice{
+.player-box .icon {
+  display: inline-block;
+  width: 30px;
+  vertical-align: middle;
+  margin: 0 4px;
+  border-radius: 5px;
+}
+
+
+.player-notice {
   margin-bottom: 0.5em;
   line-height: 1.25em;
   display: flex;
   flex-direction: row;
   align-items: center;
   flex-wrap: wrap;
-  /*justify-content: space-between;*/
-
 }
 
-
-.player-box .player-notice .icon{
-  height: 25px;
-  width: 25px;
-  margin: 0 4px;
-  border-radius: 5px;
+.player-notice + .tbd {
+  border-top: 1px dashed var(--text-color);
+  padding-top: 0.5em;
 }
 
-.player-box.notme, .opponents{
+.tbd ul{
+  margin-top: 0.5em;
+}
+
+.player-box.notme, .opponents {
   position: absolute;
   height: fit-content;
   top: 50px;
   right: 40px;
 }
 
-
-.opponents > .player-box{
+.opponents>.player-box {
   position: relative;
   right: unset;
   top: unset;
 }
 
-.player-box.me{
+.player-box.me {
   max-height: unset;
-  max-width: 300px;
-  min-width: 250px;
-  left: 10px;
+  left: 30px;
   top: unset;
   bottom: 1px;
 }
 
-.player-box-graphic .hand{
+.player-box-graphic .hand {
   position: absolute;
   top: 0;
   left: -7vw;
@@ -869,45 +958,58 @@ ul.horizontal_list li.iconoption{
 }
 
 /*Stats overlay table*/
-.rules-overlay{
+
+.rules-overlay {
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 
-.rules-overlay h2{
+ /* Hide scrollbar for Chrome, Safari and Opera */
+.rules-overlay::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.rules-overlay {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+} 
+
+.rules-overlay h2 {
   margin-top: 1em;
   clear: both;
 }
-.rules-overlay img{
+
+.rules-overlay img {
   max-width: 100%;
   margin: 0 auto;
   border: 2px solid black;
 }
 
-.stats-table{
+.stats-table {
   font-size: 1.25em;
   width: 100%;
   text-align: center;
   margin: 1em 0;
 }
 
-.stats-table caption{
+.stats-table caption {
   font-size: 1.5em;
   font-weight: bold;
 }
 
-.stats-table td, .stats-table th{
+.stats-table td, .stats-table th {
   width: 2em;
 }
 
-.stats-table th:first-child{
+.stats-table th:first-child {
   width: 3em;
   text-align: left;
 }
 
-.stats-table .icon, .stats-table .token{
+.stats-table .icon, .stats-table .token {
   width: 50px;
   height: 50px;
   margin: 0 auto;
@@ -919,7 +1021,7 @@ ul.horizontal_list li.iconoption{
   animation-name: flash;
   animation-duration: 1.8s;
   animation-delay: 0.2s;
-  animation-iteration-count: 5;
+  /*animation-iteration-count: 5;*/
   /*animation-fill-mode: backwards;*/
 }
 
@@ -930,8 +1032,7 @@ ul.horizontal_list li.iconoption{
   }
 }
 
-
-#game-post{
+#game-post {
   color: grey;
   text-decoration: line-through;
 }
@@ -939,9 +1040,9 @@ ul.horizontal_list li.iconoption{
 /*
     Intermediate (roughly square screen size, technically landscape, but keep portrait layout)
 */
-@media (max-aspect-ratio:  8/7) {
 
-  .opponents{
+@media (max-aspect-ratio : 8/7) {
+  .opponents {
     width: 75vw;
     top: unset;
     right: 1rem;
@@ -950,35 +1051,58 @@ ul.horizontal_list li.iconoption{
     flex-direction: row;
     justify-content: flex-end;
   }
- 
-  .notme > .player-box-graphic{
+  .notme>.player-box-graphic {
     right: unset;
     position: absolute;
     top: calc(100% + 5px);
     left: 50%;
     transform: translateX(-50%);
-  }   
-
-  .notme .diceroll{
+  }
+  .notme .diceroll {
     width: min(12vw, 110px);
     height: 50px;
-    padding: min(0.5vw,5px) 0 ;
+    padding: min(0.5vw, 5px) 0;
     flex-direction: row;
   }
 }
 
 /* reposition playerbox for me on large screens top-left */
+
 @media screen and (orientation: landscape) and (min-width: 1000px) {
-  .player-box.me{
+  .player-box.me {
     max-height: unset;
-    max-width: 300px;
-    min-width: 250px;
     left: 10px;
     top: 56px;
     bottom: unset;
   }
 }
 
+.saitoa, .player-box {
+  border: 5px solid #424143;
+  background-color: /*#edddb8;*/ #d3c38df5;
+  padding: 1rem;
+  /*background-image: url(/settlers/img/bkg.png);*/
+  border-image: url(/settlers/img/border.png);
+  border-image-slice: 51;
+  border-image-width: 21px;
+  border-image-repeat: stretch;
+  border-style: solid;
+  border-image-outset: 10px;
+  color: var(--text-color);
+  /*background-blend-mode: darken;*/
+}
 
 
+.saitoa {
+  min-width: min(500px,95vw);
+  min-height: min(225px, 80vw);
+}
 
+.game-menu {
+  background-color: #d3c38df5;
+  color: var(--text-color);
+}
+
+.game-menu-sub-option, .game-menu-sub-sub-option{
+  background-color: #d3c38dee;
+}

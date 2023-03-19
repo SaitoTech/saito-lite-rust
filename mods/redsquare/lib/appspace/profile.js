@@ -15,7 +15,6 @@ class AppspaceProfile {
 
   render(publickey = "") {
 
-
     if (publickey == "") { if (this.publickey != "") { publickey = this.publickey; } }
     if (publickey == "") { publickey = this.app.wallet.returnPublicKey(); }
     this.publickey = publickey;
@@ -37,14 +36,55 @@ class AppspaceProfile {
         this.attachEvents();
       }, false, false);
     }
+    this.attachEvents();
     document.querySelector('.saito-container').scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }
 
   attachEvents() {
 
+
+    try {
+      document.querySelector('.redsquare-appspace-profile-follow-btn').onclick = (e) => {
+
+        let obj = document.querySelector('.redsquare-appspace-profile-follow-btn');
+        let publickey = obj.getAttribute("data-id");
+        let key = this.app.keychain.returnKey(publickey);
+
+        if (obj.innerHTML === "follow") {
+	  obj.innerHTML = "unfollow";
+        } else {
+  	  obj.innerHTML = "follow";
+        }
+
+        if (key.watched == true) { 
+	  key.watched = false;
+	  this.app.keychain.addKey(key);
+  	  this.app.keychain.saveKeys();
+        } else {
+	  key.watched = true;
+	  this.app.keychain.addKey(key);
+   	  this.app.keychain.saveKeys();
+        }
+
+	//
+	// our peers should start listening
+	//
+	this.app.network.propagateKeylist();
+
+	//
+	// try to initiate key exchange
+	//
+        if (!key.aes_secret) {
+	  this.app.connection.emit("encrypt-key-exchange", (publickey));
+	}
+
+      }
+    } catch (err) {}
+
+
     document.querySelector('.copy-public-key').onclick = (e) => {
       navigator.clipboard.writeText(this.publickey);
-      salert("Public key copied");
+      siteMessage("Public key copied", 1000);
     }
 
   }

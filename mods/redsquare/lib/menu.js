@@ -61,7 +61,7 @@ class RedSquareMenu {
     }
 
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
-      setHash('notifications')
+      setHash('notifications');
       this.app.connection.emit("redsquare-notifications-render-request");
       this.mod.notifications_number_unviewed = 0;
       this.mod.notifications_last_viewed_ts = new Date().getTime();
@@ -70,7 +70,8 @@ class RedSquareMenu {
     }
 
     document.querySelector(".redsquare-menu-profile").onclick = (e) => {
-      this.app.connection.emit("redsquare-profile-render-request");
+      setHash('profile');
+      this.app.connection.emit("redsquare-profile-render-request", this.app.wallet.returnPublicKey());
     }
 
     //    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
@@ -82,7 +83,7 @@ class RedSquareMenu {
     //
     this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
       document.querySelector(`.redsquare-menu-${mod.returnSlug()}`).onclick = (e) => {
-        setHash(mod.returnSlug())
+        setHash(mod.returnSlug());
         document.querySelector(".saito-main").innerHTML = "";
         mod.renderInto(".saito-main");
         document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });

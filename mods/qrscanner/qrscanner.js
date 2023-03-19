@@ -30,12 +30,12 @@ class QRScanner extends ModTemplate {
     this.scanner_callback = null;
 
     this.description = "Helper module with QR code scanning functionality."
-    this.categories  = "Dev Data Utilities";
+    this.categories = "Dev Data Utilities";
 
     this.constraints = {
       audio: false,
       video: {
-          facingMode: 'environment'
+        facingMode: 'environment'
       }
     };
 
@@ -58,7 +58,7 @@ class QRScanner extends ModTemplate {
 
   }
 
-  respondTo(type="") {
+  respondTo(type = "") {
 
     let scanner_self = this;
 
@@ -68,7 +68,7 @@ class QRScanner extends ModTemplate {
         {
           text: "Scan",
           icon: this.icon || "fas fa-expand",
-	  rank: 30 ,
+    rank: 30 ,
           callback: function (app, id) {
             app.connection.emit("scanner-start-scanner", {});
           }
@@ -86,7 +86,7 @@ class QRScanner extends ModTemplate {
 
   attachEvents(app) {
     let scanner_self = this;
-    document.querySelector('.launch-scanner').addEventListener('click', function(e) {
+    document.querySelector('.launch-scanner').addEventListener('click', function (e) {
       scanner_self.startScanner();
     });
   }
@@ -108,14 +108,7 @@ class QRScanner extends ModTemplate {
 
   }
 
-
-
-
-
-
-
-
-  startScanner(mycallback=null) {
+  startScanner(mycallback = null) {
 
     if (this.app.BROWSER == 0) { return; }
     if (!document) { return; }
@@ -125,6 +118,9 @@ class QRScanner extends ModTemplate {
     if (mycallback) { this.scanner_callback = mycallback; }
 
     document.body.innerHTML = this.returnScannerHTML();
+    document.querySelector('.close-scanner').onclick = () => {
+      window.location.reload();
+    };
 
     let scanner_self = this;
 
@@ -135,7 +131,7 @@ class QRScanner extends ModTemplate {
 
   }
 
-  startEmbeddedScanner(el, mycallback=null) {
+  startEmbeddedScanner(el, mycallback = null) {
 
     if (this.app.BROWSER == 0) { return; }
     if (!document) { return; }
@@ -163,7 +159,7 @@ class QRScanner extends ModTemplate {
     if (x == 1) {
     } else {
       setTimeout(() => {
-	this.startQRDecoder();
+        this.startQRDecoder();
       }, 100);
     }
 
@@ -172,8 +168,9 @@ class QRScanner extends ModTemplate {
   returnScannerHTML() {
     return `
       <div class="qrscanner-container">
-        <div id="qr-target" class="qr-target"></div>
+        <div id="qr-target" class="qr-target"><div class="corners"></div></div>
         <div id="scanline" class="scanline"></div>
+        <div id="close-scanner" class="close-scanner"><i class="fa-solid fa-xmark"></i></div>
         <div class="video-container">
           <video playsinline autoplay id="qr-video" class="qr-video"></video>
         </div>
@@ -224,7 +221,7 @@ class QRScanner extends ModTemplate {
   // main loop sending messages to quirc_worker to detect qrcodes on the page
   //
   attemptQRDecode() {
-    if (this.isStreamInit)  {
+    if (this.isStreamInit) {
       try {
         this.canvas.width = this.video.videoWidth;
         this.canvas.height = this.video.videoHeight;
@@ -298,10 +295,10 @@ class QRScanner extends ModTemplate {
   decodeFromFile(f) {
     var reader = new FileReader();
     reader.onload = ((file) => {
-         return (e) => {
-            this.canvas_context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            // port to new quirc system
-         };
+      return (e) => {
+        this.canvas_context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // port to new quirc system
+      };
     })(f);
     reader.readAsDataURL(f);
   }
@@ -318,9 +315,9 @@ class QRScanner extends ModTemplate {
 
   receiveEvent(type, data) {
     if (type === "encrypt-key-exchange-confirm") {
-        if (document.getElementById('qr-canvas') && this.initializing_key) {
-          window.location.assign('/chat');
-        }
+      if (document.getElementById('qr-canvas') && this.initializing_key) {
+        window.location.assign('/chat');
+      }
     }
   }
 

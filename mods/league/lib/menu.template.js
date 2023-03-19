@@ -1,7 +1,7 @@
 module.exports = (app, mod, league) => {
 
   let html = `
-      <div class="league-component-existing-league-box" id="${league.id}">
+      <div class="league-component-existing-league-box" id="lg${league.id}">
         <div class="league-component-existing-league-details">
           <h2>${league.name}</h2>
           <div>Type: ${league.status}</div>

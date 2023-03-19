@@ -14,11 +14,7 @@
     width: 50rem;
     text-align: left;
     max-width: 90vw;
-}
 
-.saito-backup-button-yes, .saito-backup-button-no {
-    background-color: white;
-    margin-button: 2rem;
 }
 
 .saito-restore-button {

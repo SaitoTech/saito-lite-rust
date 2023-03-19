@@ -1,5 +1,4 @@
-var saito = require('../../lib/saito/saito');
-var GameTemplate = require('../../lib/templates/gametemplate');
+const OnePlayerGameTemplate = require('../../lib/templates/oneplayergametemplate');
 const SpiderGameRulesTemplate = require("./lib/spider-game-rules.template");
 const SpiderGameOptionsTemplate = require("./lib/spider-game-options.template");
 
@@ -7,19 +6,18 @@ const SpiderGameOptionsTemplate = require("./lib/spider-game-options.template");
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
-class Spider extends GameTemplate {
+class Spider extends OnePlayerGameTemplate {
 
   constructor(app) {
 
     super(app);
 
     this.name            = "Spider";
+    this.gamename        = "Spider Solitaire";
     this.game_length     = 10; //Estimated number of minutes to complete a game
     this.description     = 'Two deck solitaire card game that traps you in a web of addiction';
     this.categories       = "Games Cardgame One-player";
 
-    this.maxPlayers      = 1;
-    this.minPlayers      = 1;
     this.status          = "Beta";
     this.difficulty      = 2; //default medium, 1 = easy, 4 = hard
     this.app = app;
@@ -29,8 +27,7 @@ class Spider extends GameTemplate {
   respondTo(type){
     if (type == "default-league") {
       let obj = super.respondTo(type);
-      obj.ranking_algorithm = "EXP";
-      obj.default_score = 0;
+      obj.ranking_algorithm = "HSC";
     return obj;
     }
     return super.respondTo(type);
@@ -73,20 +70,20 @@ class Spider extends GameTemplate {
 
     console.log(JSON.parse(JSON.stringify(this.game)));
     
-    if (this.game.queue.length == 0){
-        this.game.queue.push("play");
-    }
     
     //Set difficulty
     let input_dif = this.game.options?.difficulty || "medium";
-    this.changeDifficulty(input_dif);
-      
-    this.game.queue.push("READY");
-
+ 
     if (this.browser_active){
       // Insert game board
       $(".gameboard").html(this.returnBoard());
     }
+ 
+    this.changeDifficulty(input_dif);
+      
+    this.game.queue.push("READY");
+
+
   }
 
 
@@ -104,7 +101,8 @@ class Spider extends GameTemplate {
       console.log("Original Difficulty = "+saved_dif + ", new difficulty: " +dif);
 
       this.saveGamePreference("spider_difficulty", dif);
-      this.newRound();  
+      this.game.queue.push("lose");
+      this.endTurn();
     }
   }
 
@@ -180,6 +178,27 @@ class Spider extends GameTemplate {
   }
 
 
+  returnState() {
+
+    let state = super.returnState();
+
+    state.moves = 0;
+    state.score = 100 * this.difficulty;
+    state.recycles_remaining = 5;
+
+    state.completed_stacks = [];
+    state.board = [];
+    
+    state.scores = [];
+
+    for (let i = 0; i < 10; i++){
+      state.board.push([]);
+    }
+    return state;
+
+  }
+
+
   newRound(){
     //Set up queue
     this.game.queue = [];
@@ -196,7 +215,7 @@ class Spider extends GameTemplate {
 
     this.game.state.moves = 0;
     this.game.state.completed_stacks = [];
-    this.game.state.score = 100;
+    this.game.state.score = 100 * this.difficulty;
 
     //Reset/Increment State
     this.game.state.round++;
@@ -228,8 +247,7 @@ class Spider extends GameTemplate {
       class : "game-new",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.endGame();
-        game_mod.newRound();
+        game_mod.prependMove("lose");
         game_mod.endTurn();
       }
     });
@@ -288,7 +306,6 @@ class Spider extends GameTemplate {
       class:"game-confirm-easy",
       callback: function(app,game_mod){
         game_mod.changeDifficulty("easy");
-        game_mod.endTurn();
       }
     });
    
@@ -298,7 +315,6 @@ class Spider extends GameTemplate {
       class:"game-confirm-medium",
       callback: function(app,game_mod){
          game_mod.changeDifficulty("medium");
-         game_mod.endTurn();   
       }
     });
 
@@ -308,7 +324,6 @@ class Spider extends GameTemplate {
       class:"game-confirm-hard",
       callback: function(app,game_mod){
        game_mod.changeDifficulty("hard");
-       game_mod.endTurn();
       }
     });
 
@@ -337,38 +352,17 @@ class Spider extends GameTemplate {
 
   }
 
-  exitGame(){
-    this.updateStatusWithOptions("Saving game to the blockchain...");
-    this.prependMove("exit_game\t"+this.game.player);
-    this.endTurn();
-  }
 
   updateScore(change = -1){
     this.game.state.score += change;
     this.scoreboard.update(`<div class="score">Score: ${this.game.state.score}</div>`);
     if (this.game.state.score <= 0){
+      this.displayModal("You Lose!", "Too many moves");
       this.prependMove("lose");
       this.endTurn();
     }
   }
   
-  returnState() {
-
-    let state = {};
-
-    state.round = 0;
-    state.wins = 0;
-    state.moves = 0;
-    state.score = 100;
-    state.recycles_remaining = 5;
-    state.completed_stacks = [];
-    state.board = [];
-    for (let i = 0; i < 10; i++){
-      state.board.push([]);
-    }
-    return state;
-
-  }
 
 
   returnStatsHTML(title = "Game Statistics"){
@@ -415,8 +409,7 @@ class Spider extends GameTemplate {
           spider_self.displayWarning("Invalid Move","You cannot deal with open slots!");
         }
       }else{
-        spider_self.endGame();
-        spider_self.newRound();
+        spider_self.prependMove("lose");
         spider_self.endTurn();  
       }
     });
@@ -791,8 +784,12 @@ class Spider extends GameTemplate {
 
       if (mv[0] === "lose"){
         this.game.queue.splice(qe, 1);
-        this.displayModal("You Lose!", "Too many moves");
-        this.endGame();
+        if (this.game.state.moves > 0){
+          this.game.state.losses++;
+          let final_score = this.game.state.score; 
+          this.game.state.scores.push(final_score);
+          this.endGame([], final_score.toString());  
+        }
         this.newRound();
         return 1;
       }
@@ -801,7 +798,9 @@ class Spider extends GameTemplate {
         this.game.queue.splice(qe, 1);
         this.game.state.wins++;
         this.animateFinalVictory();
-        this.endGame(this.app.wallet.returnPublicKey());
+        let final_score = this.game.state.score + 400;
+        this.game.state.scores.push(final_score);
+        this.endGame(this.app.wallet.returnPublicKey(), final_score.toString());
         this.overlay.show(this.returnStatsHTML("Winner!"), ()=>{
           this.newRound();
           $(".completed_card").remove();
@@ -823,7 +822,6 @@ class Spider extends GameTemplate {
       if (mv[0] === "play") {
         
         if (this.browser_active){
-          this.game.queue.splice(qe, 1);
           /* We want to deal the cards onto the table, each stack is an array*/
           let indexCt = 0;
 
@@ -838,21 +836,6 @@ class Spider extends GameTemplate {
           this.animateDeal();
                     
         }        
-        return 0;
-      }
-
-      if (mv[0] === "exit_game"){
-        this.game.queue.splice(qe, 1);
-        this.game.queue.push("play");
-        let player = parseInt(mv[1])
-        this.saveGame(this.game.id);
-
-        if (this.game.player === player){
-          super.exitGame();
-          //window.location.href = "/arcade";
-        }else{
-          this.updateStatus("Player has exited the building");
-        }
         return 0;
       }
 
@@ -976,11 +959,6 @@ class Spider extends GameTemplate {
       case "C": return "&clubs;"
       default: return "";
     }
-  }
-
-   receiveGameoverRequest(blk, tx, conf, app) {
-    console.log("The game never ends in Spider Solitaire");
-    return;
   }
 
 

@@ -31,7 +31,6 @@ class RedSquareMain {
     this.app.connection.on("redsquare-home-render-request", () => {
       this.renderAppspaceComponent("home");
       this.components["home"].renderTweets();
-      this.app.browser.addIdentifiersToDom();
     });
     this.app.connection.on("redsquare-home-loader-render-request", () => {
       this.components["home"].loader.render();
@@ -42,29 +41,23 @@ class RedSquareMain {
     this.app.connection.on("redsquare-home-thread-render-request", (tweets) => {
       this.renderAppspaceComponent("home");
       this.components["home"].renderThread(tweets);
-      this.app.browser.addIdentifiersToDom();
     });
     this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
       this.renderAppspaceComponent("home");
       document.querySelector('.saito-container').scrollTo({top:0, left:0, behavior:"smooth"});
       this.components["home"].appendTweet(tweet);
-      this.app.browser.addIdentifiersToDom();
     });
     this.app.connection.on("redsquare-home-tweet-append-render-request", (tweet) => {
       this.components["home"].appendTweet(tweet);
-      this.app.browser.addIdentifiersToDom();
     });
     this.app.connection.on("redsquare-home-tweet-prepend-render-request", (tweet) => {
       this.components["home"].prependTweet(tweet);
-      this.app.browser.addIdentifiersToDom();
     });
     this.app.connection.on("redsquare-home-tweet-and-critical-child-append-render-request", (tweet) => {
       this.components["home"].prependTweetWithCriticalChild(tweet);
-      this.app.browser.addIdentifiersToDom();
     });
     this.app.connection.on("redsquare-home-tweet-and-critical-child-prepend-render-request", (tweet) => {
       this.components["home"].prependTweetWithCriticalChild(tweet);
-      this.app.browser.addIdentifiersToDom();
     });
     this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {
       if (this.render_component === "home") {
@@ -76,10 +69,10 @@ class RedSquareMain {
           }
         }
       }
-      this.app.browser.addIdentifiersToDom();
     });
-    this.app.connection.on("redsquare-profile-render-request", () => {
-      this.renderAppspaceComponent("profile");
+    this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
+      setHash('profile');
+      this.renderAppspaceComponent("profile", publickey);
     });
     //this.app.connection.on("redsquare-contacts-render-request", () => {
     //  this.renderAppspaceComponent("contacts");
@@ -118,11 +111,11 @@ class RedSquareMain {
   }
 
 
-  renderAppspaceComponent(component) {
+  renderAppspaceComponent(component, id=null) {
     document.querySelector(".saito-main").innerHTML = "";
     this.mod.viewing = component;
     this.render_component = component;
-    this.components[this.render_component].render();
+    this.components[this.render_component].render(id);
     document.querySelector(".saito-sidebar.right").innerHTML = "";
     this.mod.sidebar.render();
   }

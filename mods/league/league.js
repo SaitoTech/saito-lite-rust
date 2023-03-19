@@ -9,7 +9,7 @@ const InvitationLink = require("./lib/overlays/league-invitation-link");
 const JoinLeagueOverlay = require('./lib/overlays/join');
 
 //Trial -- So that we can display league results in game page
-//const LeagueOverlay = require("./lib/overlays/league");
+const LeagueOverlay = require("./lib/overlays/league");
 
 class League extends ModTemplate {
 
@@ -41,8 +41,15 @@ class League extends ModTemplate {
     this.recent_game_cutoff = 10;
     this.inactive_player_cutoff = 30 * 24 * 60 * 60 * 1000; 
 
+    this.theme_options = {
+      'lite': 'fa-solid fa-sun',
+      'dark': 'fa-solid fa-moon',
+      'arcade': 'fa-solid fa-gamepad'
+    };
+
+
     this.icon_fa = "fas fa-user-friends";
-    this.debug = false;
+    this.debug = true;
   }
 
 
@@ -62,7 +69,7 @@ class League extends ModTemplate {
     super.initialize(app);
 
     //Trial -- So that we can display league results in game page
-    //this.overlay = new LeagueOverlay(app, this);
+    this.overlay = new LeagueOverlay(app, this);
 
     //
     // create initial leagues
@@ -70,7 +77,7 @@ class League extends ModTemplate {
     this.app.modules.getRespondTos("default-league").forEach((modResponse) => {
        this.addLeague({
         	id     			: 	  app.crypto.hash(modResponse.modname) ,	// id
-    	   	game   			: 	  modResponse.module , 				// game - name of game mod
+    	   	game   			: 	  modResponse.game , 				// game - name of game mod
     	   	name   			: 	  modResponse.name , 				// name - name of league
     	   	admin  			: 	  "" ,					// admin - publickey (if exists)
       		status 			: 	  "public" ,				// status - public or private
@@ -158,6 +165,8 @@ class League extends ModTemplate {
     //
     // add remote leagues
     //
+    let league_self = this;
+
     if (service.service === "league") {
 
       if (this.debug){
@@ -188,16 +197,17 @@ class League extends ModTemplate {
       // load any requested league we may not have in options file
       //    
       if (this.app.browser.returnURLParameter("league_join_league")) {
-
+        let league_id = this.app.browser.returnURLParameter("league_join_league");
+        console.log("Joining league: ", league_id);
         this.sendPeerDatabaseRequestWithFilter(
           "League" , 
-          `SELECT * FROM leagues WHERE id = "${this.app.browser.returnURLParameter("league_join_league")}"` ,
+          `SELECT * FROM leagues WHERE id = "${league_id}"` ,
           (res) => {
-            let rows = res.rows || [];
-            if (rows.length > 0) {
-              rows.forEach(function(league, key) {
-                this.addLeague(league);
-              }); 
+             if (res?.rows) {
+              console.log(res.rows);
+              for (let league of res.rows){
+                 league_self.addLeague(league);
+              } 
               //Main module
       	      app.connection.emit("leagues-render-request");
               //Sidebar component
@@ -207,8 +217,8 @@ class League extends ModTemplate {
             //
             // league join league
             //
-            let league_id = this.app.browser.returnURLParameter("league_join_league");
-            let jlo = new JoinLeagueOverlay(app, this, league_id);
+
+            let jlo = new JoinLeagueOverlay(app, league_self, league_id);
             jlo.render();
 
           },
@@ -255,7 +265,7 @@ class League extends ModTemplate {
       }
 
       if (txmsg.request === "gameover"){
-        this.receiveGameoverTransaction(app, txmsg, true);
+        this.receiveGameoverTransaction(app, txmsg);
       }
 
       if (txmsg.request === "roundover"){
@@ -270,6 +280,8 @@ class League extends ModTemplate {
         this.receiveLaunchSinglePlayerTransaction(blk, tx, conf, app);
       }
 
+      this.saveLeagues();
+
     } catch (err) {
       console.log("ERROR in league onConfirmation: " + err);
     }
@@ -282,7 +294,7 @@ class League extends ModTemplate {
     if (modname == "League") { return 1; }
     if (modname == "Arcade") { return 1; }
     for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].name === modname) {
+      if (this.leagues[i].game === modname) {
         return 1;
       }
     }
@@ -317,6 +329,7 @@ class League extends ModTemplate {
     if (obj == null) { return null; }
 
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    newtx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
     newtx.msg = this.validateLeague(obj);
     newtx.msg.module = "League";
     newtx.msg.request = "league create";
@@ -334,10 +347,32 @@ class League extends ModTemplate {
 
     this.addLeague(obj);
 
+    if (this.app.BROWSER){
+      this.app.connection.emit("leagues-render-request");
+    }
+
     return;
 
   }
 
+
+  addressToAll(tx, league_id){
+    
+    tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+
+    let league = this.returnLeague(league_id);
+    if (!league?.admin){
+      return tx;
+    }
+
+    tx.transaction.to.push(new saito.default.slip(league.admin, 0.0));
+
+    for (let p of league.players){
+      tx.transaction.to.push(new saito.default.slip(p.publickey, 0.0));      
+    }
+
+    return tx;
+  }
 
   ///////////////////
   // join a league //
@@ -345,6 +380,7 @@ class League extends ModTemplate {
   createJoinTransaction(league_id="", data = null) {
 
     let newtx = this.app.wallet.createUnsignedTransaction();
+    newtx = this.addressToAll(newtx, league_id);
 
     newtx.msg = {
       module:    "League",
@@ -384,7 +420,8 @@ class League extends ModTemplate {
   ///////////////////
   createQuitTransaction(publickey, league_id){
     let newtx = this.app.wallet.createUnsignedTransaction();
-
+    newtx = this.addressToAll(newtx, league_id);
+    
     newtx.msg = {
       module:    "League",
       league_id: league_id,
@@ -413,6 +450,8 @@ class League extends ModTemplate {
   createRemoveTransaction(league_id){
 
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    newtx = this.addressToAll(newtx, league_id);
+
     newtx.msg = {
       module:  "League",
       request: "league remove",
@@ -448,7 +487,7 @@ class League extends ModTemplate {
   //////////////////////////
   // gameover transaction //
   //////////////////////////
-  async receiveGameoverTransaction(app, txmsg, is_gameover=false){
+  async receiveGameoverTransaction(app, txmsg, is_gameover=true){
 
     //if (app.BROWSER == 1) { return; }
 
@@ -457,7 +496,7 @@ class League extends ModTemplate {
     //
     // small grace period
     //
-    if ((txmsg.reason == "cancellation" || txmsg.reason == "arcadeclose") && is_gameover) { 
+    if (is_gameover && (txmsg.reason == "cancellation" || txmsg.reason?.includes("Wins:") || txmsg.reason?.includes("Scores: "))) { 
       console.log(txmsg.reason);
       return; 
     }
@@ -470,38 +509,18 @@ class League extends ModTemplate {
       txmsg.winner = txmsg.winner[0];
     }
 
+    if (this.debug){console.log(`League updating player scores for end of ${is_gameover? "game":"round"}`); }
     //
     // fetch leagues
     //
     let relevantLeagues = await this.getRelevantLeagues(game);
 
-    if (this.debug){console.log(relevantLeagues, publickeys);}
+  //  if (this.debug){console.log(relevantLeagues, publickeys);}
 
     //
     // update database
     //
-    for (let y = 0; y < relevantLeagues.length; y++){
-
-      let leag = relevantLeagues[y];
-
-      //
-      // update games table if game is over 
-      //
-      if (is_gameover) {
-
-        obj = {
-          league_id: leag.id,
-          game_id: txmsg.game_id,
-          game: game,
-          winner: (Array.isArray(txmsg.winner))? txmsg.winner.join("_") : txmsg.winner,
-          players_array: txmsg.players,
-          time_started: 0,
-          time_finished: new Date().getTime(),
-          method: txmsg.reason,
-        };
-        await this.gameInsert(obj);
-
-      }
+    for (let leag of relevantLeagues){
 
       //
       // update rankings (ELO)
@@ -512,6 +531,10 @@ class League extends ModTemplate {
       if (leag.ranking_algorithm === "EXP"){
         await this.updateEXPRanking(publickeys, leag, txmsg);
       }
+      if (leag.ranking_algorithm === "HSC"){
+        await this.updateHighScore(publickeys, leag, txmsg);
+      }
+
       //Main module
       this.app.connection.emit("leagues-render-request");
       //Sidebar component
@@ -549,7 +572,7 @@ class League extends ModTemplate {
       }
     }
 
-    if (this.debug){console.log(relevantLeagues, publickeys);}
+//    if (this.debug){console.log(relevantLeagues, publickeys);}
 
     //
     // and insert if needed
@@ -623,7 +646,7 @@ class League extends ModTemplate {
       await this.incrementPlayer(players[i], league.id, "games_finished", 1);
     }
 
-    let numPoints = (txmsg.reason == "tie") ? 2: 3;
+    let numPoints = (txmsg.reason == "tie") ? 2: 4;
     let gamekey = (txmsg.reason == "tie") ? "games_tied" : "games_won";
 
     for (let i = 0; i < players.length; i++){
@@ -694,6 +717,31 @@ class League extends ModTemplate {
   }
 
 
+  async updateHighScore(players, league, txmsg){
+    //
+    // it better be a 1P games
+    //
+    if (players.length > 1) { 
+      return; 
+    }
+
+    let playerStats = await this.getPlayersFromLeague(league.id, players);
+
+    if (playerStats.length !== players.length){
+      // skip out - not all players are league members
+      return; 
+    }
+
+    for (let player of playerStats){
+      let newScore = parseInt(txmsg.reason);
+      
+      player.score = Math.max(player.score, newScore)
+      await this.incrementPlayer(player.publickey, league.id, "games_finished");
+      await this.updatePlayerScore(player);
+    }
+
+  }
+
   async incrementPlayer(publickey, league_id, field, amount = 1){
     if (!(field === "score" || field === "games_finished" || field === "games_won" || field === "games_tied" || field === "games_started")){
       return 0;
@@ -706,8 +754,10 @@ class League extends ModTemplate {
       for (let i = 0; i < league.players.length; i++){
         if (league.players[i].publickey === publickey){
           league.players[i][field]++;
-          console.log("Incremented:");
-          console.log(JSON.parse(JSON.stringify(league.players[i])));
+          if (this.debug){
+            console.log(`Incremented ${field}:`);
+            console.log(JSON.parse(JSON.stringify(league.players[i])));
+          }
           success = true;
         }
       }
@@ -739,8 +789,10 @@ class League extends ModTemplate {
       for (let i = 0; i < league.players.length; i++){
         if (league.players[i].publickey === playerObj.publickey){
           league.players[i]["score"] = playerObj.score;
-          console.log("New Score:");
-          console.log(JSON.parse(JSON.stringify(league.players[i])));
+          if (this.debug){
+            console.log("New Score: " + playerObj.score);
+            console.log(JSON.parse(JSON.stringify(league.players[i])));
+          }
         }
       }
     }
@@ -815,7 +867,6 @@ class League extends ModTemplate {
       // dynamic data-storage
       //
       newLeague.players = [];
-      newLeague.games = [];
       newLeague.rank = 0; //My rank in the league
     
 
@@ -831,39 +882,6 @@ class League extends ModTemplate {
   }
 
 
-  addLeagueGame(league_id, game_id, winner, players_array, rank, time_started, time_finished, method) {
-
-    let game_idx = -1;
-
-    for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].id === league_id) {
-        for (let z = 0; z < this.leagues[i].games.length; z++) {
-          if (this.leagues[i].games[z].game_id === game_id) {
-            this.leagues[i].games[z].game_id = game_id;
-            this.leagues[i].games[z].winner = winner;
-            this.leagues[i].games[z].players_array = players_array;
-            this.leagues[i].games[z].rank = rank;
-            this.leagues[i].games[z].time_started = time_started;
-            this.leagues[i].games[z].time_finished = time_finished;
-            this.leagues[i].games[z].method = method;
-            return;
-          }
-        }
-        
-        this.leagues[i].games.push({ 
-          game_id : game_id ,
-          winner : winner ,
-          players_array : players_array ,
-          rank : rank ,
-          time_started : time_started ,
-          time_finished : time_finished ,
-          method : method 
-        });
-
-        return;
-      }
-    }
-  }
 
 
   validatePlayer(obj){
@@ -918,25 +936,6 @@ class League extends ModTemplate {
 
   }
 
-  fetchLeagueGames(league_id, mycallback=null) {
-
-    let league = this.returnLeague(league_id);
-    league.games = [];
-
-    this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM games WHERE league_id = '${league_id}' ORDER BY time_finished DESC LIMIT 10` ,
-      (res) => {
-        if (res?.rows) {
-          for (let g of res.rows) {
-            this.addLeagueGame(league_id, g.game_id, g.winner, g.players_array, g.rank, g.time_started, g.time_finished, g.method);
-          }
-        }
-        if (mycallback != null) {
-          mycallback(res);
-        }
-      }
-    );
-
-  }
 
   fetchLeagueLeaderboard(league_id, mycallback=null) {
 
@@ -1001,34 +1000,14 @@ class League extends ModTemplate {
       $default_score      :   obj.default_score,
     };
 
+    if (this.debug) { console.info(params); }
+
     await this.app.storage.executeDatabase(sql, params, "league");
 
     return;
   }
 
 
-  async gameInsert(obj) {
-
-    let sql = `INSERT OR IGNORE INTO games (league_id, game_id, game, winner, players_array, time_started, time_finished, method) 
-                            VALUES ($league_id, $game_id, $game, $winner, $players_array, $time_started, $time_finished, $method)`;
-    let params = {
-      $league_id: obj.league_id,
-      $game_id: obj.game_id,
-      $game: obj.game,
-      $winner: obj.winner ,
-      $players_array: obj.players_array,
-      $time_started: obj.time_started,
-      $time_finished: obj.time_finished,
-      $method: obj.method,
-    };
-    await this.app.storage.executeDatabase(sql, params, "league");
-
-    sql = `UPDATE games SET rank=rank+1 WHERE league_id = $league_id`;
-    params = { $league_id : obj.league_id };
-    await this.app.storage.executeDatabase(sql, params, "league");
-	  return;
-
-  }
 
   async playerInsert(obj) {
 
@@ -1045,10 +1024,6 @@ class League extends ModTemplate {
   }
 
 
-  async pruneOldGames(){
-    let sql = `DELETE FROM games WHERE rank > ?`;
-    await this.app.storage.executeDatabase(sql, [this.recent_game_cutoff], "league");
-  }
   async pruneOldPlayers(){
    let sql = `DELETE FROM players WHERE ts < ?`;
    let cutoff = new Date().getTime() - this.inactive_player_cutoff;

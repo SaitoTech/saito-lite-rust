@@ -59,6 +59,8 @@ input {
 }
 
 
+
+
 textarea:focus, input:focus, select:focus {
   outline: none;
 }
@@ -92,7 +94,8 @@ input[type="datetime-local"] {
 
 input[type="text"]::placeholder,
 input[type="password"]::placeholder {
-  color: var(--saito-border-color);
+  color: var(--saito-font-color);
+  opacity: 0.33;
 }
 
 /* ----------------------------------------------------------------
@@ -106,7 +109,7 @@ input[type="checkbox"] {
   border: 1px solid var(--saito-primary);
   width: 2rem;
   height: 2rem;
-  margin: 0 0.5rem;
+  margin: 3px 0.5rem;
   border-radius: 3px;
   cursor: pointer;
   position: relative;

@@ -29,9 +29,24 @@ class Tweet {
     this.parent_id = "";
     this.thread_id = "";
     this.youtube_id = null;
+    this.created_at = this.tx.transaction.ts;
     this.updated_at = 0;
     this.notice = "";
-    
+
+//
+// userline will be set to this in template if not specified
+//
+// we specify it to indicate why it is showing up now!
+//
+//  let dt = app.browser.formatDate(tweet.tx.transaction.ts);
+//  let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
+//
+    this.userline = "";
+//
+//
+
+
+
     this.user = new SaitoUser(app, mod, `.tweet-${this.tx.transaction.sig} > .tweet-header`, this.tx.transaction.from[0].add);
 
     this.children = [];
@@ -101,6 +116,16 @@ class Tweet {
     let replace_existing_element = true;
 
     //
+    //
+    //
+    if (this.updated_at > this.created_at) {
+      if (this.num_replies > 0) { 
+        let dt = this.app.browser.formatDate(this.updated_at);
+        this.userline = this.user.notice = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
+      }
+    }
+
+    //
     // if prepend = true, remove existing element
     //
     if (prepend == true) {
@@ -109,27 +134,6 @@ class Tweet {
 	document.querySelector(eqs).remove();
       }
     }
-
-    //
-    // retweetsnw without commentary? pass-through and render subtweet
-    //
-    //          
-    // this is if i retweet my own tweet
-    //
-    if (this.text == "" && this.retweet_tx != null) {
-console.log("A: " + JSON.stringify(this.retweet.tx));          
-      //  
-      // i am retweeting myself
-      //    
-      this.retweet.notice = "retweeted by " + this.app.browser.returnAddressHTML(this.tx.transaction.from[0].add);
-      this.retweet.container = this.container;
-      this.retweet.render(prepend);
-console.log("B: done!");
-      return;
-
-    }
-         
-
 
     //
     // retweets displayed in container even if master exists elsewhere on page
@@ -151,6 +155,30 @@ console.log("B: done!");
         }
       }
     }
+
+
+    //
+    // retweetsnw without commentary? pass-through and render subtweet
+    //
+    //          
+    // this is if i retweet my own tweet
+    //
+    if (this.text == "" && this.retweet_tx != null) {
+      //  
+      // i am retweeting myself
+      //
+      this.retweet.notice = "retweeted by " + this.app.browser.returnAddressHTML(this.tx.transaction.from[0].add);
+      this.retweet.container = ".tweet-" + this.retweet.tx.transaction.sig;
+      let t = this.mod.returnTweet(this.retweet.tx.transaction.sig);
+      if (t) { 
+	t.notice = this.retweet.notice;
+        t.render(prepend);
+      } else {
+        this.retweet.render(prepend);
+      }
+      return;
+    }
+         
 
     //
     // remove if selector does not exist
@@ -178,7 +206,7 @@ console.log("B: done!");
     //
     // modify width of any iframe
     //
-    if (this.youtube_id != null) {
+    if (this.youtube_id != null && this.youtube_id != "null") {
       let tbqs = myqs + " .tweet-body .tweet-main";
       let ytqs = myqs + " .tweet-body .tweet-main .youtube-embed";
       if (document.querySelector(tbqs)) {
@@ -193,13 +221,15 @@ console.log("B: done!");
       }
     }
 
-
     //
     // render user
     //
-    let dt = this.app.browser.formatDate(this.tx.transaction.ts);
-    this.user.notice = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
-    this.user.render();
+    if (this.userline == "") {
+      let dt = this.app.browser.formatDate(this.tx.transaction.ts);
+      this.userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
+      this.user.notice = this.userline;
+    }
+   this.user.render();
 
     if (this.retweet != null) {
       this.retweet.render();
@@ -220,6 +250,11 @@ console.log("B: done!");
   }
 
   renderWithCriticalChild(prepend = false) {
+
+    if (this.critical_child) {
+      let dt = this.app.browser.formatDate(this.updated_at);
+      this.userline = this.user.notice = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
+    }
 
     this.render(prepend);
 
@@ -590,8 +625,6 @@ console.log("B: done!");
   addTweet(tweet, levels_deep = 0) {
 
     //
-    // still here? add in unknown children
-    //
     // this means we know the comment is supposed to be somewhere in this thread/parent
     // but its own parent doesn't yet exist, so we are simply going to store it here
     // until we possibly add the parent (where we will check all unknown children) for
@@ -599,6 +632,21 @@ console.log("B: done!");
     //
     this.unknown_children.push(tweet);
     this.unknown_children_sigs_hmap[tweet.tx.transaction.sig] = 1;
+    //
+    // make this UNKNOWN tweet our critical child if we do not have any critical children
+    //
+    if (this.critical_child == null) { 
+      this.critical_child = tweet;
+      if (tweet.created_at > this.updated_at) {
+        this.updated_at = tweet.created_at; 
+        let dt = this.app.browser.formatDate(this.updated_at);
+        this.user.notice = this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
+	this.user.render();
+      }
+
+    }
+
+
     //
     // if this tweet is the parent-tweet of a tweet we have already downloaded
     // and indexed here. this can happen if tweets arrive out-of-order.
@@ -608,6 +656,9 @@ console.log("B: done!");
         if (this.isCriticalChild(this.unknown_children[i])) {
           this.critical_child = this.unknown_children[i];
           this.updated_at = this.critical_child.updated_at;
+
+	  let dt = app.browser.formatDate(this.updated_at);
+	  if (this.userline == "") { this.user.notice = this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; }
         }
         this.unknown_children[i].parent_tweet = tweet;
 
@@ -619,10 +670,7 @@ console.log("B: done!");
         //
         // and delete from unknown children
         //
-        if (this.unknown_children_sigs_hmap[this.unknown_children[i].tx.transaction.sig]) {
-          delete this.unknown_children_sigs_hmap[this.unknown_children[i].tx.transaction.sig];
-        }
-        this.unknown_children.splice(i, 0);
+	this.removeUnknownChild(this.unknown_children[i]);
       }
     }
 
@@ -643,7 +691,9 @@ console.log("B: done!");
       //
       if (this.isCriticalChild(tweet) || tweet.tx.transaction.ts > this.updated_at && this.critical_child == null) {
         this.critical_child = tweet;
-        this.updated_at = tweet.updated_at;
+        if (tweet.created_at > this.updated_at) { this.updated_at = tweet.created_at; }
+	let dt = app.browser.formatDate(this.updated_at);
+	if (this.userline == "") { this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; this.user.notice = this.userline; }
       }
 
       //
@@ -652,11 +702,13 @@ console.log("B: done!");
       if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
         this.children.unshift(tweet);
         this.children_sigs_hmap[tweet.tx.transaction.sig] == 1;
+	this.removeUnknownChild(tweet);
         return 1;
       } else {
         tweet.parent_tweet = this;
         this.children.push(tweet);
         this.children_sigs_hmap[tweet.tx.transaction.sig] == 1;
+        this.removeUnknownChild(tweet);
         return 1;
       }
 
@@ -670,14 +722,21 @@ console.log("B: done!");
       //
       if (this.isCriticalChild(tweet)) {
         this.critical_child = tweet;
+        if (tweet.created_at > this.updated_at) { this.updated_at = tweet.created_at; }
+	let dt = app.browser.formatDate(this.updated_at);
+        if (this.userline == "") { this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; this.user.notice = this.userline; }
       }
 
       if (this.children_sigs_hmap[tweet.parent_id]) {
 
         for (let i = 0; i < this.children.length; i++) {
           if (this.children[i].addTweet(tweet, (levels_deep + 1))) {
+            this.removeUnknownChild(tweet);
             this.children_sigs_hmap[tweet.tx.transaction.sig] = 1;
             this.updated_at = tweet.updated_at;
+            if (tweet.created_at > this.updated_at) { this.updated_at = tweet.created_at; }
+	    let dt = app.browser.formatDate(this.updated_at);
+	    if (this.userline == "") { this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; this.user.notice = this.userline; }
             return 1;
           }
         }
@@ -688,10 +747,11 @@ console.log("B: done!");
         // if still here, add to unknown children if top-level as we didn't add to any children
         //
         if (levels_deep == 0) {
-          this.unknown_children.push(tweet);
-          this.unknown_children_sigs_hmap[tweet.tx.transaction.sig] = 1;
+          if (this.unknown_children_sigs_hmap[tweet.tx.transaction.sig] != 1) {
+            this.unknown_children.push(tweet);
+            this.unknown_children_sigs_hmap[tweet.tx.transaction.sig] = 1;
+          }
         }
-
       }
     }
   }
@@ -723,9 +783,22 @@ console.log("B: done!");
     return null;
   }
 
+  removeUnknownChild(tweet) {
+    if (this.unknown_children_sigs_hmap[tweet.tx.transaction.sig] == 1) {
+      for (let i = 0; i < this.unknown_children.length; i++) {
+	if (this.unknown_children[i].tx.transaction.sig === tweet.tx.transaction.sig) {
+	  this.unknown_children.splice(i, 0);
+	  delete this.unknown_children_sigs_hmap[tweet.tx.transaction.sig];
+	}	
+      }
+    }
+  }
 
   isCriticalChild(tweet) {
-    if (tweet.thread_id === this.thread_id) { return false; }
+    //
+    // TODO -- changed comparison to !== March 13, right?
+    //
+    if (tweet.thread_id !== this.thread_id) { return false; }
     for (let i = 0; i < tweet.tx.transaction.to.length; i++) {
       if (tweet.tx.transaction.to[i].add === this.app.wallet.returnPublicKey()) {
         if (this.critical_child == null) { return true; }
@@ -768,7 +841,9 @@ console.log("B: done!");
           videoId = urlParams.get('v');
         }
 
-        this.youtube_id = videoId;
+	if (videoId != null && videoId != "null") {
+          this.youtube_id = videoId;
+        }
         return this;
       }
 

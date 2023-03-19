@@ -21,6 +21,7 @@ class MixinHistory {
   }
 
   render() {
+    this_history = this;
     this.overlay.show(MixinHistoryTemplate(this.app, this.mod, this));
     
     this.mod.fetchSnapshots("", 20, "DESC", (d) => { 
@@ -31,10 +32,11 @@ class MixinHistory {
 
             let ticker = '';
             let asset_id = '';
-            for (let j=0; j<mod.mods.length; j++) {
-              if (mod.mods[j].asset_id == d.data[i].asset_id) {
-                ticker = mod.mods[j].ticker;
-                asset_id = mod.mods[j].asset_id;
+
+            for (let j=0; j<this_history.mod.mods.length; j++) {
+              if (this_history.mod.mods[j].asset_id == d.data[i].asset_id) {
+                ticker = this_history.mod.mods[j].ticker;
+                asset_id = this_history.mod.mods[j].asset_id;
                 break;
               }
             }

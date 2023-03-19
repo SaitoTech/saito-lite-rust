@@ -4,7 +4,15 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 		console.log("INVITATION DETAILS: ", invite);
 	}
 
-	let desc =  (invite?.desired_opponent_publickeys?.length > 0) ? 'private invitation' : 'open invitation';
+	//Uncreated games
+	let desc =  (invite?.desired_opponent_publickeys?.length > 0 || invite.game_status == "private") ? 'private invitation' : 'open invitation';
+	//If created
+	if (mod.isAcceptedGame(invite.game_id)){
+		desc = "active game";
+	}
+	if (invite.time_finished){
+		desc = "finished game";
+	}
 
   let html = `
   <div class="arcade-game-overlay">
@@ -26,7 +34,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
   		  html += `
 		  <div class="arcade-game-playerbox saito-table-row">
 		    <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(invite.players[i])}"></div>
-		    <div class="saito-username">${invite.players[i]}</div>
+		    ${app.browser.returnAddressHTML(invite.players[i])}
 		  </div>					  	  
 			`;
 		}
@@ -37,7 +45,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 
       <div class="arcade-game-playerbox empty saito-table-row requested_player">
 	      <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(invite.desired_opponent_publickeys[i])}"></div>
- 	      <div class="saito-username">${invite.desired_opponent_publickeys[i]}</div>
+ 	      ${app.browser.returnAddressHTML(invite.desired_opponent_publickeys[i])}
 	    </div>
 
       `;
@@ -48,7 +56,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 		    html += `
 	        <div class="arcade-game-playerbox saito-table-row${(app.wallet.returnPublicKey() === invite.originator)?" available_slot":""}">  
 	      		<div class="saito-identicon-box empty-slot"></div>
-	    			<div class="saito-username">open player slot</div>	
+	    			<div class="saito-address">open player slot</div>	
 	  			</div>
 		    `;
 	  }
@@ -74,26 +82,26 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	  </div>
 	  <div class="arcade-game-controls">`;
 
-
-	  if (mod.isAcceptedGame(invite.game_id)){
-	  		html += `<div id="arcade-game-controls-continue-game" class="saito-button saito-button-primary">continue game</div>`;
-	    	if (invite.players.length > 1){
-	    		html += `<div id="arcade-game-controls-forfeit-game" class="saito-button saito-button-primary">forfeit game</div>`	    		
-	    	}
-	    	html += `<div id="arcade-game-controls-close-game" class="saito-button saito-button-primary">close game</div>`;
-	  }else{
-	  	if (invite.players.includes(app.wallet.returnPublicKey())) {
-	  		if (app.wallet.returnPublicKey() === invite.originator){
-					html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">cancel invite</div>`;
-	  		}else{
-	  			html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">leave invite</div>`;	
-	  		}
-	  		
-	  	}else if (invite.empty_slots > 0){
-	  		html += `<div id="arcade-game-controls-join-game" class="saito-button saito-button-primary">join game</div>`;
-	  	}
-	  }
-
+	  if (!invite.time_finished){
+		  if (mod.isAcceptedGame(invite.game_id)){
+		  		html += `<div id="arcade-game-controls-continue-game" class="saito-button saito-button-primary">continue game</div>`;
+		    	if (invite.players.length > 1){
+		    		html += `<div id="arcade-game-controls-forfeit-game" class="saito-button saito-button-primary">forfeit game</div>`	    		
+		    	}
+		    	html += `<div id="arcade-game-controls-close-game" class="saito-button saito-button-primary">close game</div>`;
+		  }else{
+		  	if (invite.players.includes(app.wallet.returnPublicKey())) {
+		  		if (app.wallet.returnPublicKey() === invite.originator){
+						html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">cancel invite</div>`;
+		  		}else{
+		  			html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">leave invite</div>`;	
+		  		}
+		  		
+		  	}else if (invite.empty_slots > 0){
+		  		html += `<div id="arcade-game-controls-join-game" class="saito-button saito-button-primary">join game</div>`;
+		  	}
+		  }
+		}
 	html += `
 	  </div>
 </div>

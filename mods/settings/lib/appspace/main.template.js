@@ -1,11 +1,14 @@
 module.exports = SettingsAppspaceTemplate = (app) => {
 
   let key = app.keychain.returnKey({ publickey : app.wallet.returnPublicKey()});
-  let identifier_registered = key.identifier || "";
-  if (identifier_registered == "") {
-    identifier_registered = `
-    <span id="register-identifier-btn" style="cursor:pointer" class="register-identifier-btn settings-appspace-link">Register a username</span>
-    `;
+  let identifier_registered = key?.identifier || "";
+
+  if (!identifier_registered) {
+    if (key.has_registered_username){
+      identifier_registered = `<span class="register-identifier-btn settings-appspace-link">Registering...</span>`;  
+    }else{
+      identifier_registered = `<span id="register-identifier-btn" class="register-identifier-btn settings-appspace-link">Register a username</span>`;  
+    }
   }
 
   let modules_html = "Wallet Outdated - module selection not supported";
@@ -70,6 +73,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
           <div class="saito-button-secondary small" id="restore-privatekey-btn">Import Key</div>
           <div class="saito-button-secondary small"id="restore-account-btn">Restore Wallet</div>
           <div class="saito-button-secondary small"id="backup-account-btn">Backup Wallet</div>
+          <div class="saito-button-secondary small"id="nuke-account-btn">Nuke Account</div>
         </div>
       </div>
     </div>
@@ -78,14 +82,17 @@ module.exports = SettingsAppspaceTemplate = (app) => {
       <div class="settings-appspace-user-details-container">
         <h6>Wallet</h6>
           <div class="settings-appspace-user-details">
-            <div id="register-identifier-btn-label" class="saito-black">Username:</div>
+            <div>Username:</div>
             <div>${identifier_registered}</div>
-            <div class="saito-black">Public Key:</div>
-            <div class="saito-address">${app.wallet.returnPublicKey()} <span style="margin-left: .5rem;" class="copy-public-key">  <i class="fas fa-copy"></i></span></div>
-            <div class="saito-black">Private Key:</div>
-            <div class="settings-appspace-privatekey saito-password">
-              ${app.wallet.returnPrivateKey()}
-              <i class="settings-appspace-see-privatekey fas fa-eye" id="settings-appspace-see-privatekey"></i>
+      
+            <div>Public Key:</div>
+            <div class="pubkey-containter" data-id="${app.wallet.returnPublicKey()}">
+              <span class="profile-public-key">${app.wallet.returnPublicKey()}</span><i class="fas fa-copy" id="copy-public-key"></i>
+            </div>
+      
+            <div>Private Key:</div>
+            <div class="pubkey-containter" data-id="${app.wallet.returnPrivateKey()}">
+              <span class="profile-public-key saito-password">${app.wallet.returnPrivateKey()}</span><i class="fas fa-copy" id="copy-private-key"></i>
             </div>
           </div>
         </div>

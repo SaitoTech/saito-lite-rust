@@ -46,7 +46,7 @@ class RedSquareImage {
 
         let qs = ".tweet-" + sig + " > .tweet-body  .tweet-picture .image-" + i;
         let obj = document.querySelector(qs);
-        if (opj) {
+        if (obj) {
           obj.style.maxHeight = Math.floor(expected_height) + "px";
           obj.style.maxWidth = expected_width + "px"; 
         }

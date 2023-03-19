@@ -1,6 +1,16 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
+const saito = require('../../lib/saito/saito');
 const JSON = require('json-bigint');
 
+
+
+//
+// HOW THE ARCHIVE SAVES TXS
+//
+// modules call ---> app.storage.saveTransaction()
+//		---> submits TX to peers via "archive save" 
+// 		---> saves to DB with ID or TYPE
+//
 class Archive extends ModTemplate {
 
   constructor(app) {
@@ -62,20 +72,37 @@ class Archive extends ModTemplate {
     var response = {};
 
     //
-    // only handle archive request 
+    // saves TX containing archive insert instruction
+    //
+    if (req.request === "archive insert") {
+
+      let type = "";
+      if (req.type) { type = req.type; }
+      this.saveTransaction(tx, type);
+
+    }
+    //
+    // saves TX embedded in data
     //
     if (req.request === "archive save") {
 
-      // module: this.name,
-      // id: this.app.crypto.hash(this.active_rom_name) ,
-      // title: this.active_rom_name.trim() ,
-      // request: "archive save",
-      // subrequest: "archive rom",
-      // data: base64data,
+      let newtx = new saito.default.transaction();
+      newtx.deserialize_from_web(app, req.data);
+      let txmsg = newtx.returnMessage();
 
-      this.saveTransaction(tx, req.data.id);
+      try {
+
+	let type = "";
+	if (txmsg.module) { type = txmsg.module;; }
+	if (req.type) { type = req.type; }
+
+        this.saveTransaction(newtx, type);
+
+      } catch (err) {}
+
       mycallback(true);
       return;
+
     }
     if (req.request === "archive") {
 
@@ -169,12 +196,16 @@ class Archive extends ModTemplate {
 
   async saveTransaction(tx=null, msgtype="") {
 
+console.log("IN SAVE TRANSACTION IN ARCHIVE>JS");
+
     if (tx == null) { return; }
 
     let sql = "";
     let params = {};
     let optional = {};
     if (tx.optional) { optional = tx.optional; }
+
+console.log("TXS to: " + tx.transaction.to.length);
 
     for (let i = 0; i < tx.transaction.to.length; i++) {
       sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";

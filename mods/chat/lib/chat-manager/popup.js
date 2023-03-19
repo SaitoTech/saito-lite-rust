@@ -16,6 +16,16 @@ class ChatPopup {
 
     this.x_pos = 0;
     this.y_pos = 0;
+    this.width = 0;
+    this.height = 0;
+
+  }
+
+  remove() {
+
+    let popup_qs = ".chat-popup-" + this.group.id;
+console.log("removing: " + popup_qs);
+    document.querySelector(popup_qs).remove();
 
   }
 
@@ -49,7 +59,7 @@ class ChatPopup {
     //
     //
     if (this.emoji == null) {
-        this.emoji = new SaitoEmoji(this.app, this.mod, input_id);
+      this.emoji = new SaitoEmoji(this.app, this.mod, input_id);
     }
 
     //
@@ -61,13 +71,13 @@ class ChatPopup {
     let am_i_on_page = 0;
 
     document.querySelectorAll(".chat-popup").forEach((el) => {
-        popups_on_page++;
-	var rect = el.getBoundingClientRect();
-        x_range = rect.right - rect.left;
-        if (rect.left < x_offset) {
-	  x_offset = rect.left;
-	}
-    });    
+      popups_on_page++;
+      var rect = el.getBoundingClientRect();
+      x_range = rect.right - rect.left;
+      if (rect.left < x_offset) {
+        x_offset = rect.left;
+      }
+    });
 
     if (document.querySelector(popup_qs)) {
       am_i_on_page = 1;
@@ -81,13 +91,15 @@ class ChatPopup {
       let obj = document.querySelector(popup_qs);
       var rect = obj.getBoundingClientRect();
       this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group), popup_qs);
-      this.app.browser.addIdentifiersToDom();
       this.x_pos = rect.left;
       this.y_pos = rect.top;
+      this.width = rect.width;
+      this.height = rect.height;
       obj = document.querySelector(popup_qs);
       obj.style.left = this.x_pos + "px";
       obj.style.top = this.y_pos + "px";
-      obj.style.zIndex = 10;
+      obj.style.width = this.width + "px";
+      obj.style.height = this.height + "px";
     } else {
       this.app.browser.addElementToDom(ChatPopupTemplate(this.app, this.mod, this.group));
     }
@@ -100,7 +112,6 @@ class ChatPopup {
       if (this.x_pos < 0) { this.x_pos = 0; }
       let obj = document.querySelector(popup_qs);
       obj.style.left = this.x_pos + "px";
-      obj.style.zIndex = 10;
     }
 
     //
@@ -161,6 +172,7 @@ class ChatPopup {
     // our query selector
     //
     let popup_qs = ".chat-popup-" + this.group.id;
+    let popup_id = "chat-popup-" + this.group.id;
 
 
     try {
@@ -190,8 +202,8 @@ class ChatPopup {
       //
       if (!mod.isOtherInputActive()) {
         document.getElementById(input_id).focus();
-	document.execCommand('selectAll', false, null);
-	document.getSelection().collapseToEnd();
+        document.execCommand('selectAll', false, null);
+        document.getSelection().collapseToEnd();
       }
 
       //
@@ -207,10 +219,16 @@ class ChatPopup {
           mod.receiveChatTransaction(app, newtx);
           msg_input.textContent = "";
           msg_input.innerHTML = "";
-	  if (document.getElementById(input_id)) {
-	    document.getElementById(input_id).innerHTML = "";
-	  }
+          if (document.getElementById(input_id)) {
+            document.getElementById(input_id).innerHTML = "";
+          }
         }
+      }
+      msg_input.onpaste = (e) => {
+        var el = e.target;
+        setTimeout(function() {
+          el.innerHTML = el.textContent;
+        }, 0)
       }
 
       //
@@ -224,10 +242,36 @@ class ChatPopup {
         mod.receiveChatTransaction(app, newtx);
         msg_input.textContent = "";
         msg_input.innerHTML = "";
-	if (document.getElementById(input_id)) {
-	  document.getElementById(input_id).innerHTML = "";
-	}
+        if (document.getElementById(input_id)) {
+          document.getElementById(input_id).innerHTML = "";
+        }
       }
+
+
+      //  
+      // drag and drop images into chat window
+      //
+
+      app.browser.addDragAndDropFileUploadToElement(popup_id, async (filesrc) => {
+        filesrc = await app.browser.resizeImg(filesrc, 230, 0.75); // (img, dimensions, quality)
+
+        let img = document.createElement('img');
+        img.classList.add('img-prev');
+        img.src = filesrc;
+        let msg = img.outerHTML;
+
+        //if (msg.length > mod.max_msg_size) {
+        //  salert("Image too large: 220kb max");
+        //} else {
+
+        let newtx = mod.createChatTransaction(group_id, img.outerHTML); // img into msg
+        newtx = app.wallet.signTransaction(newtx);
+        mod.sendChatTransaction(app, newtx);
+        mod.receiveChatTransaction(app, newtx);
+
+        //}
+      }, false); // false = no drag-and-drop image click
+
 
     } catch (err) {
       console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);

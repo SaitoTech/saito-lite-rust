@@ -651,6 +651,15 @@ class Network {
     }, this.peer_monitor_timer_speed);
   }
 
+  isConnectedToPublicKey(publickey="") {
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].returnPublicKey() === publickey) {
+	if (this.peers[i].isConnected()) { return true; }
+      }
+    }
+    return false;
+  }
+
   isNetworkUp() {
     for (let i = 0; i < this.peers.length; i++) {
       if (this.peers[i].isConnected()) {
@@ -770,6 +779,20 @@ class Network {
         try {
           peer.peer.services = JSON.parse(buffer.toString("utf8"));
           //console.log("services : ", peer.peer.services);
+        } catch (err) {
+          console.error("ERROR parsing peer services list or setting services in peer");
+        }
+
+        break;
+      }
+
+
+      case MessageType.Keylist: {
+
+        const buffer = Buffer.from(message.message_data, "utf8");
+
+        try {
+          peer.peer.keylist = JSON.parse(buffer.toString("utf8"));
         } catch (err) {
           console.error("ERROR parsing peer services list or setting services in peer");
         }
@@ -983,6 +1006,7 @@ class Network {
       case MessageType.Transaction:
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
+
         //
         // adding TX done in propagate TX
         //
@@ -999,6 +1023,9 @@ class Network {
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
 
+	// TODO - is this needed? or do it manually in mods
+	//tx.decryptMessage(this.app);
+       
         let app = this.app;
 
         const mycallback = function (response_object) {
@@ -1227,6 +1254,18 @@ class Network {
     }
   }
 
+
+  //
+  // update peers with our list of watched publickeys
+  //
+  propagateKeylist() {
+    let keys = this.app.keychain.returnWatchedPublicKeys();
+    this.peers.forEach((peer) => {
+      this.sendRequest("SKEYLIST", Buffer.from(JSON.stringify(keys)), peer);
+    });
+  }
+
+
   //
   // propagate transaction
   //
@@ -1298,6 +1337,9 @@ class Network {
       fees = fees / BigInt(2);
     }
     this.peers.forEach((peer) => {
+      //
+      // TODO - decision should be made on client preferences, not connection protocol
+      //
       if (peer.uses_stun) {
         return;
       }

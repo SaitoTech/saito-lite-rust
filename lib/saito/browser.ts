@@ -237,9 +237,6 @@ class Browser {
       });
     }
 
-    // listen with mutation observer
-    this.activatePublicKeyObserver(app);
-
     // attach listening events
     document.querySelector("body").addEventListener(
       "click",
@@ -267,7 +264,7 @@ class Browser {
 
             let myUserMenu = new MyUserMenu(app, publickey);
             myUserMenu.render(app);
-	  }
+          }
         }
       },
       {
@@ -279,7 +276,7 @@ class Browser {
   //
   // asks the user to login if they are using an anonymous account
   //
-  requestBackup(success_callback=null, failure_callback=null, email="", pass="") {
+  requestBackup(success_callback = null, failure_callback = null, email = "", pass = "") {
 
     let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
     if (key.recoverable === true) { success_callback(true); return; }
@@ -292,7 +289,7 @@ class Browser {
     this.app.connection.emit("recovery-backup-overlay-render-request", (obj));
 
   }
-  requestLogin(success_callback=null, failure_callback=null, email="", pass="") {
+  requestLogin(success_callback = null, failure_callback = null, email = "", pass = "") {
     let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
     if (key.recoverable === true) { success_callback(true); return; }
     if (key.identifier) { success_callback(true); return; }
@@ -318,7 +315,7 @@ class Browser {
         if (w[i][0] === "@") {
           if (w.length > 1) {
             let cleaner = w[i].substring(1);
-	    identifiers.push(cleaner);
+            identifiers.push(cleaner);
           }
         }
       }
@@ -339,13 +336,13 @@ class Browser {
         if (w[i][0] === "@") {
           if (w.length > 1) {
             let cleaner = w[i].substring(1);
-	    let key = this.app.keychain.returnKey({ identifier : cleaner });
-	    if (key) {
+            let key = this.app.keychain.returnKey({ identifier: cleaner });
+            if (key) {
               let add = key.publickey;
-	    }
+            }
             if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) {
               add = cleaner;
-	    }
+            }
             if (!keys.includes(add) && (add != "" && add != null)) {
               keys.push(add);
             }
@@ -366,9 +363,9 @@ class Browser {
     }
     if (identifiers) {
       identifiers.forEach(id => {
-        let key = this.app.keychain.returnKey({ identifier : id });
-	if (key.publickey) {
-        let add = key.publickey;
+        let key = this.app.keychain.returnKey({ identifier: id });
+        if (key.publickey) {
+          let add = key.publickey;
           if (this.app.crypto.isPublicKey(add)) {
             if (!keys.includes(add)) {
               keys.push(add);
@@ -401,7 +398,7 @@ class Browser {
         component = hash;
       }
     }
-    return { hash : component , params : params };
+    return { hash: component, params: params };
 
   }
 
@@ -564,9 +561,9 @@ class Browser {
     return new QRCode(document.getElementById("qrcode"), data);
   }
 
-  isElementVisible(elem=null) {
+  isElementVisible(elem = null) {
     if (!elem) { return false; }
-    return !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length );
+    return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
   }
 
   isSelectorVisible(c) {
@@ -780,7 +777,7 @@ class Browser {
       }
       el.outerHTML = html;
     } catch (err) {
-      console.log("ERROR 582346: error in addElementToElement. Does " + elem + " exist? : "  + err);
+      console.log("ERROR 582346: error in addElementToElement. Does " + elem + " exist? : " + err);
       console.log(html);
     }
   }
@@ -905,24 +902,31 @@ class Browser {
         },
         false
       );
-      dropArea.parentNode.parentNode.addEventListener(
-        "paste",
-        function (e) {
-          const files = e.clipboardData.files;
-          [...files].forEach(function (file) {
-            const reader = new FileReader();
-            reader.addEventListener("load", (event) => {
-              handleFileDrop(event.target.result);
+      if (!dropArea.classList.contains("paste_event")) {
+        dropArea.addEventListener(
+          "paste",
+          function (e) {
+            console.info('Paste Event');
+            console.info(e);
+
+            const files = e.clipboardData.files;
+            [...files].forEach(function (file) {
+              const reader = new FileReader();
+              reader.addEventListener("load", (event) => {
+                handleFileDrop(event.target.result);
+              });
+              if (read_as_array_buffer) {
+                reader.readAsArrayBuffer(file);
+              } else {
+                reader.readAsDataURL(file);
+              }
             });
-            if (read_as_array_buffer) {
-              reader.readAsArrayBuffer(file);
-            } else {
-              reader.readAsDataURL(file);
-            }
-          });
-        },
-        false
-      );
+            console.info(dropArea.innerHTML);
+            console.info(dropArea.innerText);    
+          },
+          false
+        );
+      }
       const input = document.getElementById(`hidden_file_element_${id}`);
       if (click_to_upload == true) {
         dropArea.addEventListener("click", function (e) {
@@ -1226,81 +1230,28 @@ class Browser {
   }
 
 
-  /**
-  * Fetches publickeys visible in application HTML
-  * 
-  **/
-  returnArrayOfPublicKeysInDom() {
-    let keys = [];
-    const addresses = document.getElementsByClassName(`saito-address`);
-    Array.from(addresses).forEach((add) => {
-      const pubkey = add.getAttribute("data-id");
-      if (pubkey) {
-        keys.push(pubkey);
-      }
-    });
-    return keys;
-  }
-
-
-  /**
-   * Fetchs identifiers from a set of keys
-   *
-   * @param {Array} keys
-   */
-  async addIdentifiersToDom(keys = []) {
-
-    let keys = this.returnArrayOfPublicKeysInDom();
-    let unidentified_keys = [];
-    for (let i = 0; i < keys.length; i++) {
-      if (this.app.keychain.returnIdentifierByPublicKey(keys[i], true) === keys[i]) {
-	unidentified_keys.push(keys[i]);
-      } else {
-        this.updateAddressHTML(keys[i], this.app.keychain.returnIdentifierByPublicKey(keys[i]));
-      }
-    }
-    this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unidentified_keys);  
-  }
-
-  addModalIdentifierAddPublickey(app, mod) {
-    try {
-      const identifiers = document.getElementsByClassName(`saito-identicon`);
-      Array.from(identifiers).forEach((identifier) => {
-        // identifier.addEventListener("click", (e) => {
-        //   console.log("preventing default 444");
-        //   e.preventDefault();
-        //   e.stopImmediatePropagation();
-        //   let identiconUri = e.target.getAttribute("src");
-        //   let publickey = e.target.getAttribute("data-id");
-        //   let addPublicKeyModal = new ModalAddPublicKey(app, mod, identiconUri, publickey);
-        //   addPublicKeyModal.render(app, mod);
-        // });
-      });
-    } catch (err) {
-      console.error("Error while adding event to identifiers: " + err);
-    }
-  }
 
   returnAddressHTML(key) {
-    const identifier = this.app.keychain.returnIdentifierByPublicKey(key);
-    const id = !identifier ? key : identifier;
-    return `<div class="saito-address saito-address-${key}" data-id="${key}">${id}</div>`;
-  }
-
-  async returnAddressHTMLPromise(key) {
-    const identifier = await this.returnIdentifier(key);
-    const id = !identifier ? key : identifier;
-    return `<span data-id="${key}" id="saito-address-${key}" class="saito-address saito-address-${key}">${id}</span>`;
+    return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(key, true)}</div>`;
   }
 
   updateAddressHTML(key, id) {
     if (!id) {
       return;
     }
+    if (key === id) {
+      return;
+    }
     try {
-      const addresses = document.getElementsByClassName(`saito-address-${key}`);
-      Array.from(addresses).forEach((add) => (add.innerHTML = id));
-    } catch (err) { }
+      Array.from(document.querySelectorAll(`.saito-address[data-id='${key}']`)).forEach(
+        add => (add.innerHTML = id)
+      );
+    } catch (err) { 
+      console.error(err);
+    }
+
+    this.app.connection.emit("update-username-in-game");
+  
   }
 
   logMatomoEvent(category, action, name, value) {
@@ -1503,131 +1454,7 @@ class Browser {
     }
   }
 
-  async linkifyKeys(app, mod, element) {
-    if (typeof element == "undefined") { return; }
-    //console.log("linkifyin' " + element.id)
-    if (element.id == "") { return; }
-    let elements = element.childNodes;
-    elements.forEach(async el => {
-      const new_el = document.createElement("span");
-      if (el.childNodes.length > 0) {
-        const tags = ['P', 'SPAN', 'DIV', 'BLOCKQUOTE'];
-        if (tags.includes(el.tagName)) {
-          app.browser.linkifyKeys(el);
-        }
-      } else {
-        let html = el.textContent;
-        let identifiers = html.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]*)/gi);
-        let keys = html.match(/([a-zA-Z0-9._-]{44}|[a-zA-Z0-9._-]{45})/gi);
-        let mappedKeyIdentifiers = [];
-        //remove duplcates
 
-        if (!identifiers) { identifiers = [] };
-        if (!keys) { keys = [] }
-
-        if (identifiers.length + keys.length > 0) {
-          //deduplicate identifier list
-          identifiers = [...new Set(identifiers)];
-
-          try {
-
-            identifiers.forEach(async (identifier) => {
-              let answer = this.app.keychain.returnKey({ identifier : identifier });
-              console.log(answer + " - " + identifier);
-              if (answer != identifier && answer != null) {
-                //html = html.replaceAll(identifier, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
-                html = html.replaceAll(identifier, answer);
-                mappedKeyIdentifiers[answer] = identifier;
-              }
-            });
-            //deduplicate keys list
-            keys = [...new Set(keys)];
-
-            const answer = await this.app.keychain.fetchManyIdentifiersPromise(keys);
-            mappedKeyIdentifiers = Object.assign({}, mappedKeyIdentifiers, answer);
-
-            keys.forEach(k => {
-              let matched = false;
-              Object.entries(mappedKeyIdentifiers).forEach(([key, value]) => {
-                if (key == k) {
-                  html = html.replaceAll(key, `<span data-id="${key}" class="saito-active-key saito-address">${value}</span>`);
-                  matched = true;
-                }
-              });
-              if (!matched) {
-                html = html.replaceAll(k, `<span data-id="${k}" class="saito-active-key saito-address">${k}</span>`);
-              }
-            });
-            if (typeof el.tagName == "undefined") {
-              new_el.innerHTML = html;
-              el.replaceWith(new_el);
-            } else {
-              el.innerHTML = html;
-            }
-          } catch (err) {
-            console.error(err);
-          }
-        };
-      }
-    })
-  };
-
-
-  activatePublicKeyObserver(app) {
-
-return;
-
-    let mutationObserver = new MutationObserver((entries) => {
-
-      entries.forEach((entry) => {
-        entry.addedNodes.forEach((node) => {
-          recursive_search(app, node);
-        });
-      });
-
-      function recursive_search(app, node) {
-        if (node?.classList?.contains("saito-user")) {
-          if (node.children && node.children.length > 0) {
-            let address = node.getAttribute("data-id");
-
-            //Replace identifier from Registry -- there should just be one child
-            Array.from(node.children).forEach((child_node) => {
-              if (child_node?.classList?.contains("saito-address")) {
-
-console.log("FOUND PUBLIC KEY!: " + address);
-
-                let identifier = app.keychain.returnIdentifierByPublicKey(address, true);
-                if (identifier) {
-
-console.log("IDENTIFIER: " + identifier);
-
-                  try {
-                    document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
-                      item.innerHTML = identifier;
-                    });
-                  } catch (err) {
-                    console.log("An error occurred with adding identifiers ", err);
-                  }
-                }
-              }
-            });
-          }
-
-        } else {
-          if (node && node.children && Array.from(node.children).length > 0) {
-            Array.from(node.children).forEach((child_node) => {
-              recursive_search(app, child_node);
-            });
-          }
-        }
-      }
-    });
-
-    mutationObserver.observe(document.documentElement, {
-      childList: true,
-      subtree: true,
-    });
-  }
 
   async resizeImg(img, targetSize = 512, maxDimensions = { w: 1920, h: 1024 }) {
     let self = this;
@@ -1703,6 +1530,7 @@ console.log("IDENTIFIER: " + identifier);
         mutations.forEach(function (mutation) {
           if (mutation.addedNodes.length > 0) {
             browser_self.treatElements(mutation.addedNodes);
+            browser_self.treatIdentifiers(mutation.addedNodes);
           }
         });
       });
@@ -1870,25 +1698,58 @@ console.log("IDENTIFIER: " + identifier);
         }
       };
 
-      window.setHash = function (hash){
+      window.setHash = function (hash) {
         window.history.pushState("", "", `/redsquare/#${hash}`);
       }
-    
+
 
     }
 
-  
+
   }
 
 
   treatElements(nodeList) {
-    for (var i = 0; i < nodeList.length; i++) {
-      if (nodeList[i].files) {
-        this.treatFiles(nodeList[i]);
+    nodeList.forEach((el) => {
+      if (el.files) {
+        this.treatFiles(el);
       }
-      if (nodeList[i].childNodes.length >= 1) {
-        this.treatElements(nodeList[i].childNodes);
+      if (el.childNodes.length >= 1) {
+        this.treatElements(el.childNodes);
       }
+    });
+  }
+
+  treatIdentifiers(nodeList) {
+    let unknown_keys = [];
+    let saito_app = this.app;
+    function treat(nodes) {
+      nodes.forEach((el) => {
+        if (el.classList) {
+          if (el.classList.contains('saito-address') && !el.classList.contains('treated')) {
+            el.classList.add('treated');
+            let key = el.dataset?.id;
+            if (key && saito_app.crypto.isPublicKey(key)){
+              let identifier = saito_app.keychain.returnIdentifierByPublicKey(key, true);
+              if (identifier !== key) {
+                el.innerText = identifier;
+                console.info('updated ' + key + " to " + identifier);
+              } else {
+                if (!unknown_keys.includes(key)) {
+                  unknown_keys.push(key);
+                }
+              }
+            }
+          }
+        }
+        if (el.childNodes.length >= 1) {
+          treat(el.childNodes);
+        }
+      });
+    }
+    treat(nodeList);
+    if (unknown_keys.length > 0) {
+      this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unknown_keys);
     }
   }
 
@@ -1932,8 +1793,8 @@ console.log("IDENTIFIER: " + identifier);
       }
 
       if (mod_obj.slug != null) {
-          this.app.options.theme[mod_obj.slug] = theme;
-          this.app.storage.saveOptions();
+        this.app.options.theme[mod_obj.slug] = theme;
+        this.app.storage.saveOptions();
       }
       console.debug(this.app.options);
     }

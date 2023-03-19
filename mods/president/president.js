@@ -575,66 +575,7 @@ class President extends GameTemplate {
 
   displayPlayers() {
 
-    let player_box = null;
-    let prank = 0;
-
-    if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
-      player_box = this.returnPlayersBoxArray();
-      prank = this.game.players.indexOf(this.app.wallet.returnPublicKey());
-    } else {
-      document.querySelector('.status').innerHTML = "You are out of the game.<br />Feel free to hang out and chat.";
-      document.querySelector('.cardfan').classList.add('hidden');
-      player_box = this.returnViewBoxArray();
-    }
-
-    for (let j = 2; j < 7; j++) {
-      let boxobj = document.querySelector("#player-info-" + j);
-      if (!player_box.includes(j)) {
-        boxobj.style.display = "none";
-      } else {
-        boxobj.style.display = "block";
-      }
-    }
-
-
-    for (let i = 0; i < this.game.players.length; i++) {
-
-      let seat = i - prank;
-      if (seat < 0) { seat += this.game.players.length }
-
-      let player_box_num = player_box[seat];
-      let divname = "#player-info-" + player_box_num;
-      let boxobj = document.querySelector(divname);
-
-
-      let newhtml = `
-        <div class="player-info-hand hand tinyhand" id="player-info-hand-${i + 1}">
-        <div class="player-info-hand-cards">${this.game.players_info[i].cards}</div>
-        <div class="mini-cardfan-holder">
-        <div class="mini-cardfan">`;
-      let closehtml = "";
-
-      for (let c = 0; c < this.game.players_info[i].cards; c++) {
-        newhtml += `<div><img class="card" src="${this.card_img_dir}/red_back.png">`;
-        closehtml += `</div>`;
-      };
-      newhtml += closehtml;
-
-
-      newhtml += `
-          </div>
-        </div>
-        <div class="player-info-name" id="player-info-name-${i + 1}">${this.game.players[i]}</div>
-      `;
-      boxobj.querySelector(".info").innerHTML = newhtml;
-
-      if (boxobj.querySelector(".plog").innerHTML == "") {
-        boxobj.querySelector(".plog").innerHTML += `<div class="player-info-log" id="player-info-log-${i + 1}"></div>`;
-      }
-
-    }
-
-
+  
   }
 
 

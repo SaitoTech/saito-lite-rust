@@ -28,13 +28,16 @@ class Settings extends ModTemplate {
   initialize(app) {
     super.initialize(app);
 
-    let settings_self = this;
+    //
+    // If you have the settings page open and you trigger a name registration event
+    // it will deactivate the button so you cannot reregister
+    //
     this.app.connection.on("update_identifier", (publickey) => {
-console.log("testing update identifier event");
-      if (document.getElementById("register-identifier-btn")) {
-        if (publickey === settings_self.app.wallet.returnPublicKey()) {
-          let username = settings_self.app.keychain.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
+      if (publickey === app.wallet.returnPublicKey()) {
+        if (document.getElementById("register-identifier-btn")) {
+          let username = app.keychain.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
           document.getElementById("register-identifier-btn").innerHTML = username;
+          document.getElementById("register-identifier-btn").onclick = null;
         }
       }
     });
@@ -75,20 +78,32 @@ console.log("testing update identifier event");
   respondTo(type = "") {
     if (type === 'saito-header') {      
       return [
-	{
-          text: "Theme",
-          icon: "fa-solid fa-moon",
-	  rank: 110 ,
+	      {
+          text: "Scan",
+          icon: "fas fa-expand",
+	        rank: 110 ,
           callback: function (app, id) {
-            let settings_self = app.modules.returnModule("Settings");
-	    settings_self.renderInto(".saito-overlay");
+            app.connection.emit("scanner-start-scanner", {});
           }
         },
-	{
+        {
+          text: "Theme",
+          icon: "fa-solid fa-moon",
+          rank: 120 ,
+          callback: function (app, id) {
+            let settings_self = app.modules.returnModule("Settings");
+             settings_self.renderInto(".saito-overlay");
+          }
+        },
+	      {
           text: "Nuke",
           icon: "fa-solid fa-radiation",
-	  rank: 120 ,
+	        rank: 130 ,
           callback: function (app, id) {
+	    app.keychain.keys = [];
+	    app.keychain.groups = [];
+	    app.keychain.saveKeys();
+	    app.keychain.saveGroups();
             app.wallet.resetWallet();
           }
         },

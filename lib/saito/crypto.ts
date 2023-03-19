@@ -402,6 +402,20 @@ class Crypto {
     return CryptoJS.enc.Utf8.stringify(de);
   }
 
+  /**
+   * returns true if this is an AES encrypted message as opposed to 
+   * a plaintext-containing javascript object.
+  **/
+  isAesEncrypted(msg) {
+    try {
+      let msg2 = JSON.parse(msg);
+      if (msg2.ct) { return true; }
+    } catch (err) {
+      return false;
+    }
+    return false;
+  }
+
   //////////////////////////
   // Faster Serialization //
   //////////////////////////

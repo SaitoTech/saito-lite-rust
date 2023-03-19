@@ -114,6 +114,7 @@ class Block {
   affixCallbacks() {
     for (let z = 0; z < this.transactions.length; z++) {
       if (this.transactions[z].transaction.type === TransactionType.Normal) {
+        this.transactions[z].decryptMessage(this.app);
         const txmsg = this.transactions[z].returnMessage();
         this.app.modules.affixCallbacks(
           this.transactions[z],
@@ -1225,6 +1226,7 @@ class Block {
               await this.callbacks[ii](this, this.transactions[this.callbackTxs[ii]], i, this.app);
             }
           } catch (err) {
+console.log("TX CAUSING ERROR: " + JSON.stringify(this.transactions[this.callbackTxs[ii]].returnMessage()));
             console.error("ERROR 567567: ", err);
           }
         }

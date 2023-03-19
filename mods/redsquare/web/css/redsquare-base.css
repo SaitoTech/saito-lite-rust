@@ -1,3 +1,9 @@
+.redsquare-appspace-profile-follow-btn {
+  position: relative;
+  float: right;
+  margin-top: -0.75rem;
+}
+
 .redsquare-page-header-title {
   color: var(--saito-red);
   font-size: 2.5rem;
@@ -14,15 +20,22 @@
   color: transparent;
 }
 
+.redsquare-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 .redsquare-appspace-profile {
   display: grid;
   grid-template-columns: max-content 1fr;
-  column-gap: 2rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  padding-left: 2rem;
+  gap: 1rem;
+  padding: 2rem;
 }
-
+.redsquare-appspace-profile-container {
+  border: 1px solid var(--saito-border-color);
+  border-radius: 0.5rem;
+}
 .redsquare-actions-buttons {
   position: relative;
   display: flex;
@@ -46,8 +59,11 @@
   row-gap: 2rem;
 }
 
-.redsquare-appspace-body {
-  /* min-height: 100vh; */
+
+.redsquare-profile .redsquare-appspace-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 #redsquare-intersection {
@@ -76,6 +92,10 @@
 
 .redsquare-menu-home:hover .fa-house::before {
   content: "\f021";
+}
+
+.saito-loader.temp {
+  margin-top: 3rem;
 }
 
 
