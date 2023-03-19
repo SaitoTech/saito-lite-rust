@@ -16,18 +16,15 @@ class SpaceCombatOverlay {
     this.overlay.hide();
   }
 
-  remove() {
-    this.visible = 0;
-    this.overlay.hide();
-  }
-
   render(attacker, defender, sector, overlay_html) {
-    this.visible = 1;
-    this.overlay.show(ImperiumSpaceCombatOverlayTemplate(this.mod, attacker, defender, sector, overlay_html));
-    this.attachEvents();
+    if (this.visible) {
+      document.querySelector(".space-combat-menu").innerHTML = overlay_html;
+    } else {
+      this.visible = 1;
+      this.overlay.show(ImperiumSpaceCombatOverlayTemplate(this.mod, attacker, defender, sector, overlay_html));
+      this.attachEvents();
+    }
   }
-
-
 
   updateHits(attacker, defender, sector, combat_info) {
 
@@ -46,11 +43,12 @@ console.log(JSON.stringify(combat_info));
       if (combat_info.modified_roll[i] >= combat_info.hits_on[i]) {
         let qs  = `.player-${attacker}-ship-${i} .unit-box:nth-child(2)`;
         let qsn = `.player-${attacker}-ship-${i} .unit-box:nth-child(2) .unit-box-num`;
-        document.query_selector(qs).style.backgroundColor = "green";
-        document.query_selector(qsn).innerHTML = combat_info.modified_roll[i];
+console.log("FAILURE: " + qs);
+        document.querySelector(qs).style.backgroundColor = "green";
+        document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];
       } else {
         let qsn = `.attacker-ship-${i} .unit-box:nth-child(2) .unit-box-num`;
-        document.query_selector(qsn).innerHTML = combat_info.modified_roll[i];
+        document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];
       }
     }
 

@@ -13745,7 +13745,12 @@ handleSystemsMenuItem() {
   // Core Game Logic //
   /////////////////////
   handleGameLoop(msg=null) {
-  
+ 
+    //
+    // set to 1 to speed-up game init for testing 
+    //
+    let debugging = 1;
+ 
     let imperium_self = this;
     let z = imperium_self.returnEventObjects();
 
@@ -13791,7 +13796,6 @@ handleSystemsMenuItem() {
 
       }
   
-
       //
       //
       //
@@ -13822,8 +13826,6 @@ handleSystemsMenuItem() {
 	return 1;
 
       }
-
-
 
       //
       // resolve [action] [1] [publickey voting or 1 for agenda]
@@ -15255,7 +15257,7 @@ handleSystemsMenuItem() {
   	  this.game.state.round_scoring = 0;
 	  this.game.state.playing_strategy_card_secondary = 0; // reset to 0 as no secondary to run
   	}
-this.game.state.end_round_scoring = 0;
+	this.game.state.end_round_scoring = 0;
 
 
 	// testing - give everyone a sabotage
@@ -15340,11 +15342,12 @@ this.game.state.end_round_scoring = 0;
 
 
 	//
-	// ENABLE TESTINGvMODE
+	// ENABLE TESTING MODE
 	//
         //this.game.queue.push("is_testing");
 
-  
+if (debugging == 0) {
+
   	//
   	// STRATEGY CARDS
   	//
@@ -15366,6 +15369,7 @@ this.game.state.end_round_scoring = 0;
  	} else {
           this.game.queue.push("shownewobjectives");
         }
+}
 
 
   
@@ -18250,6 +18254,7 @@ console.log("K: " + z[k].name);
 
 	  let total_shots = 0;
 	  let total_hits = 0;
+	  let ship_idx = [];
 	  let hits_or_misses = [];
 	  let hits_on = [];
 	  let units_firing = [];
@@ -18291,11 +18296,13 @@ console.log("K: " + z[k].name);
 	    if (roll >= sys.s.units[attacker-1][i].combat) {
 	      total_hits++;
 	      total_shots++;
+	      ship_idx.push(i);
 	      hits_on.push(sys.s.units[attacker-1][i].combat);
 	      hits_or_misses.push(1);
 	      units_firing.push(sys.s.units[attacker-1][i]);
 	    } else {
 	      total_shots++;
+	      ship_idx.push(i);
 	      hits_or_misses.push(0);
 	      hits_on.push(sys.s.units[attacker-1][i].combat);
 	      units_firing.push(sys.s.units[attacker-1][i]);
@@ -18369,6 +18376,7 @@ console.log("K: " + z[k].name);
 	  //
 	  let combat_info = {};
               combat_info.attacker        = attacker;
+	      combat_info.ship_idx	  = ship_idx;
 	      combat_info.hits_or_misses  = hits_or_misses;
 	      combat_info.units_firing 	  = units_firing;
 	      combat_info.hits_on 	  = hits_on;
@@ -18681,7 +18689,6 @@ console.log("K: " + z[k].name);
 	    if (this.game.state.space_combat_defender != -1) {
 	      let z = this.returnEventObjects();
 	      for (let z_index in z) {
-console.log("A: " + z[z_index].name);
 	        z[z_index].spaceCombatRoundEnd(this, this.game.state.space_combat_attacker, this.game.state.space_combat_defender, sector);
 	      }
 	    }
@@ -18696,7 +18703,6 @@ console.log("A: " + z[z_index].name);
 	    if (this.game.state.space_combat_defender != -1) {
 	      let z = this.returnEventObjects();
 	      for (let z_index in z) {
-console.log("A: " + z[z_index].name);
 	        z[z_index].spaceCombatRoundEnd(this, this.game.state.space_combat_attacker, this.game.state.space_combat_defender, sector);
 	      }
 	    }
@@ -18716,7 +18722,6 @@ console.log("A: " + z[z_index].name);
           if (this.game.state.space_combat_defender != -1) {
             let z = this.returnEventObjects();
             for (let z_index in z) {
-console.log("C: " + z[z_index].name);
               z[z_index].spaceCombatRoundEnd(this, this.game.state.space_combat_attacker, this.game.state.space_combat_defender, sector);
             }
           }
@@ -19082,7 +19087,9 @@ console.log("C: " + z[z_index].name);
 
 	if (this.game.player == attacker) {
           this.playerPlaySpaceCombat(attacker, defender, sector);        
-	}
+	} else {
+	  this.space_combat_overlay.render(attacker, defender, sector, "waiting for attacker move");
+        }
 
         return 0;
       }
@@ -21276,7 +21283,6 @@ playerPlaySpaceCombat(attacker, defender, sector) {
   }
   html += '</ul>';
 
-
   overlay_html = '<ul>' + html;
   html = '<div class="sf-readable"><b>Space Combat: round ' + this.game.state.space_combat_round + ':</b><div class="combat_attacker">' + this.returnFaction(attacker) + '</div><div class="combat_attacker_fleet">' + this.returnPlayerFleetInSector(attacker, sector) + '</div><div class="combat_defender">' + this.returnFaction(defender) + '</div><div class="combat_defender_fleet">' + this.returnPlayerFleetInSector(defender, sector) + '</div><ul>' + html;
 
@@ -21286,6 +21292,11 @@ playerPlaySpaceCombat(attacker, defender, sector) {
 
 
   $('.option').on('click', function () {
+
+    //
+    // hide it for now
+    //
+    imperium_self.space_combat_overlay.hide();
 
     let action2 = $(this).attr("id");
 

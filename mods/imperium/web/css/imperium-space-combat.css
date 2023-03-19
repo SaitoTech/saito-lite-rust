@@ -35,6 +35,14 @@
   padding-bottom: 1rem;
 }
 
+.space-combat-menu div {
+  font-size: 2rem;
+  color: white;
+  text-align: center;
+  padding-top: 2rem;
+  font-style: italic;
+}
+
 .space-combat-ui .space-combat-menu ul li {
   width: 100%;
   line-height: 3.5rem;

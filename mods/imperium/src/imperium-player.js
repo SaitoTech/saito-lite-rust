@@ -1455,7 +1455,6 @@ playerPlaySpaceCombat(attacker, defender, sector) {
   }
   html += '</ul>';
 
-
   overlay_html = '<ul>' + html;
   html = '<div class="sf-readable"><b>Space Combat: round ' + this.game.state.space_combat_round + ':</b><div class="combat_attacker">' + this.returnFaction(attacker) + '</div><div class="combat_attacker_fleet">' + this.returnPlayerFleetInSector(attacker, sector) + '</div><div class="combat_defender">' + this.returnFaction(defender) + '</div><div class="combat_defender_fleet">' + this.returnPlayerFleetInSector(defender, sector) + '</div><ul>' + html;
 
@@ -1465,6 +1464,10 @@ playerPlaySpaceCombat(attacker, defender, sector) {
 
 
   $('.option').on('click', function () {
+
+    //
+    // hide overlay in all situations except "attack"
+    //
 
     let action2 = $(this).attr("id");
 
@@ -1481,6 +1484,7 @@ playerPlaySpaceCombat(attacker, defender, sector) {
     }
 
     if (action2 == "action") {
+      imperium_self.space_combat_overlay.hide();
       imperium_self.playerSelectActionCard(function (card) {
         imperium_self.addMove("action_card_post\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("action_card\t" + imperium_self.game.player + "\t" + card);
@@ -1501,6 +1505,7 @@ playerPlaySpaceCombat(attacker, defender, sector) {
     }
 
     if (action2 == "retreat") {
+      imperium_self.space_combat_overlay.hide();
       if (imperium_self.canPlayerRetreat(imperium_self.game.player, attacker, defender, sector)) {
         let retreat_options = imperium_self.returnSectorsWherePlayerCanRetreat(imperium_self.game.player, sector);
 
