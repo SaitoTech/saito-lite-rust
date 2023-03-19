@@ -177,8 +177,10 @@ console.log("removing: " + popup_qs);
     // add reply functionality
 
     document.querySelectorAll(`${popup_qs} .saito-userline-reply`).forEach((el) => {
+      var clicked = el;
       el.addEventListener('click', (e) => {
-        alert(e.target.parentElement.previousElementSibling.innerText + " - " + e.target.parentElement.innerText);
+        //alert(el.parentElement.previousElementSibling.innerText + " - " + el.parentElement.innerText);
+        el.parentElement.parentElement.parentElement.nextElementSibling.querySelector('.chat-input').innerText = el.parentElement.previousElementSibling.innerText + " - " + el.parentElement.innerText;
       });
     });
 
