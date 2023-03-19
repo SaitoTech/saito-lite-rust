@@ -19088,7 +19088,7 @@ console.log("K: " + z[k].name);
 	if (this.game.player == attacker) {
           this.playerPlaySpaceCombat(attacker, defender, sector);        
 	} else {
-	  this.space_combat_overlay.render(attacker, defender, sector, "<div>waiting for attacker</div>");
+	  this.space_combat_overlay.render(attacker, defender, sector, "<div>opponent turn</div>");
         }
 
         return 0;
@@ -21293,6 +21293,8 @@ playerPlaySpaceCombat(attacker, defender, sector) {
 
   $('.option').on('click', function () {
 
+    $('.option').off();
+
     //
     // hide overlay in all situations except "attack"
     //
@@ -21328,6 +21330,7 @@ playerPlaySpaceCombat(attacker, defender, sector) {
       //
       // ships_fire needs to make sure it permits any opponents to fire...
       //
+      imperium_self.space_combat_overlay.render(attacker, defender, sector, "<div>calculating hits</div>");
       imperium_self.prependMove("ships_fire\t" + attacker + "\t" + defender + "\t" + sector);
       imperium_self.endTurn();
     }

@@ -5347,7 +5347,7 @@ console.log("K: " + z[k].name);
 	if (this.game.player == attacker) {
           this.playerPlaySpaceCombat(attacker, defender, sector);        
 	} else {
-	  this.space_combat_overlay.render(attacker, defender, sector, "<div>waiting for attacker</div>");
+	  this.space_combat_overlay.render(attacker, defender, sector, "<div>opponent turn</div>");
         }
 
         return 0;

@@ -69,21 +69,20 @@ module.exports = ImperiumSpaceCombatOverlayTemplate = (imperium_self, attacker, 
       if (z == 0) {
         html += `
             <div class="unit-element player-${defender}-ship-${i} player-${defender}-ship-${i}-shot-${z}">
-              <div class="unit-box-ship unit-box-ship-${obj.type}"></div>
-              <div class="unit-box">
-  	        <div class="unit-box-num">${obj.combat}</div>
-	        <div class="unit-box-desc">hits on</div>
-	      </div>
               <div class="unit-box">
   	        <div class="unit-box-num">?</div>
 	        <div class="unit-box-desc">roll</div>
 	      </div>
+              <div class="unit-box">
+  	        <div class="unit-box-num">${obj.combat}</div>
+	        <div class="unit-box-desc">hits on</div>
+	      </div>
+              <div class="unit-box-ship unit-box-ship-${obj.type}"></div>
             </div>
         `;
       } else {
 	html += `
             <div class="unit-element player-${defender}-ship-${i} player-${defender}-ship-${i}-shot-${z}">
-              <div class="unit-box-ship"></div>
               <div class="unit-box">
   	        <div class="unit-box-num">${obj.combat}</div>
 	        <div class="unit-box-desc">hits on</div>
@@ -92,6 +91,7 @@ module.exports = ImperiumSpaceCombatOverlayTemplate = (imperium_self, attacker, 
   	        <div class="unit-box-num">?</div>
 	        <div class="unit-box-desc">roll</div>
 	      </div>
+              <div class="unit-box-ship"></div>
             </div>
 	`;
       }
