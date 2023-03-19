@@ -617,7 +617,12 @@ class League extends ModTemplate {
     let sqlResults = await this.app.storage.queryDatabase(sql2, [league_id], "league");
 
     let league = this.returnLeague(league_id);
-    let localStats = league.players.filter(p => players.includes(p.publickey));
+    let localstats = [];
+    try {
+      localStats = league.players.filter(p => players.includes(p.publickey));
+    } catch (err) {
+      console.error("No players in league: " + e);
+    }
 
     return localStats || sqlResults;
   }
