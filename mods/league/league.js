@@ -621,7 +621,7 @@ class League extends ModTemplate {
     try {
       localStats = league.players.filter(p => players.includes(p.publickey));
     } catch (err) {
-      console.error("No players in league: " + e);
+      console.error("No players in league: " + err);
     }
 
     return localStats || sqlResults;
