@@ -28,6 +28,9 @@ class SpaceCombatOverlay {
 
   updateHits(attacker, defender, sector, combat_info) {
 
+    let nth = 2;
+    if (defender == combat_info.attacker) { nth = 1; }
+
     if (this.visible == 0) {
       this.render(attacker, defender, sector, '');
     }
@@ -39,15 +42,23 @@ console.log(JSON.stringify(combat_info));
     //
     attacker = combat_info.attacker;
 
-    for (let i = 0; i < combat_info.modified_roll.length; i++) {
+    let current_ship_idx = -1;
+    let shot_idx = 0;
+    for (let i = 0; i < combat_info.ship_idx.length; i++) {
+      if (combat_info.ship_idx[i] > current_ship_idx) {
+        current_ship_idx = combat_info.ship_idx[i];
+        shot_idx = 0;
+      } else {
+	shot_idx++;
+      }
       if (combat_info.modified_roll[i] >= combat_info.hits_on[i]) {
-        let qs  = `.player-${attacker}-ship-${i} .unit-box:nth-child(2)`;
-        let qsn = `.player-${attacker}-ship-${i} .unit-box:nth-child(2) .unit-box-num`;
+        let qs  = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx}  .unit-box:nth-child(${nth})`;
+        let qsn = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .unit-box:nth-child(${nth}) .unit-box-num`;
 console.log("FAILURE: " + qs);
         document.querySelector(qs).style.backgroundColor = "green";
         document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];
       } else {
-        let qsn = `.attacker-ship-${i} .unit-box:nth-child(2) .unit-box-num`;
+        let qsn = `.attacker-ship-${i} .unit-box:nth-child(${nth}) .unit-box-num`;
         document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];
       }
     }

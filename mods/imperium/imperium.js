@@ -19088,7 +19088,7 @@ console.log("K: " + z[k].name);
 	if (this.game.player == attacker) {
           this.playerPlaySpaceCombat(attacker, defender, sector);        
 	} else {
-	  this.space_combat_overlay.render(attacker, defender, sector, "waiting for attacker move");
+	  this.space_combat_overlay.render(attacker, defender, sector, "<div>waiting for attacker</div>");
         }
 
         return 0;
@@ -21294,9 +21294,8 @@ playerPlaySpaceCombat(attacker, defender, sector) {
   $('.option').on('click', function () {
 
     //
-    // hide it for now
+    // hide overlay in all situations except "attack"
     //
-    imperium_self.space_combat_overlay.hide();
 
     let action2 = $(this).attr("id");
 
@@ -21313,6 +21312,7 @@ playerPlaySpaceCombat(attacker, defender, sector) {
     }
 
     if (action2 == "action") {
+      imperium_self.space_combat_overlay.hide();
       imperium_self.playerSelectActionCard(function (card) {
         imperium_self.addMove("action_card_post\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("action_card\t" + imperium_self.game.player + "\t" + card);
@@ -21333,6 +21333,7 @@ playerPlaySpaceCombat(attacker, defender, sector) {
     }
 
     if (action2 == "retreat") {
+      imperium_self.space_combat_overlay.hide();
       if (imperium_self.canPlayerRetreat(imperium_self.game.player, attacker, defender, sector)) {
         let retreat_options = imperium_self.returnSectorsWherePlayerCanRetreat(imperium_self.game.player, sector);
 
