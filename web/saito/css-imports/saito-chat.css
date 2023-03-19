@@ -99,6 +99,33 @@
   overflow-wrap: anywhere;
 }
 
+.chat-body .saito-userline:hover::after {
+  content: "reply ->";
+  position: relative;
+  bottom: 0;
+  right: 0;
+  width: 3rem;
+  height: 3rem;
+  z-index: 99999999999;
+  /* border: 3px solid blue; */
+  margin: 1rem;
+}
+
+.saito-chat-line-controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.saito-userline-reply {
+  display: none;
+}
+
+.saito-user:hover .saito-userline-reply {
+  display: block;
+}
+
 .chat-footer {
   height: 4.5rem;
   font-size: 2rem;

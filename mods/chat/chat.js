@@ -651,7 +651,7 @@ console.log("post-encrypt in create!");
 		        ts = txmsg.timestamp;
 		    }
 		}
-                html += `${SaitoUserTemplate({ app : this.app, publickey : sender, notice : msg, fourthelem : this.app.browser.returnTime(ts) })}`;
+                html += `${SaitoUserTemplate({ app : this.app, publickey : sender, notice : msg, fourthelem : `<div class="saito-chat-line-controls"><div>` + this.app.browser.returnTime(ts) + `</div><div data-id="${group_id}" class="saito-userline-reply"><i class="fa-solid fa-reply"></i></div>` })}`;
             }
         }
 
