@@ -57,6 +57,7 @@ class ChatSetting {
 
 
         toggleVideoButton.addEventListener('click', () => {
+            
             if (this.videoEnabled) {
                 this.videoStream.getVideoTracks()[0].enabled = false;
                 toggleVideoButton.classList.remove('fa-video');

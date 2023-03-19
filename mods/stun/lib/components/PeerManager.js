@@ -395,7 +395,7 @@ class PeerManager {
             this.peers.delete(peerId);
         }
 
-        this.app.connection.emit('video-box-remove', peerId);
+        this.app.connection.emit('video-box-remove', peerId, 'disconnection');
 
     }
 
