@@ -451,6 +451,15 @@
   	let player = mv[1];
   	let sector = mv[2];
 
+	//
+	// hide combat overlays
+	//
+	if (this.space_combat_overlay.visible == 1) {
+	  this.space_combat_overlay.hide();
+	}
+	if (this.ground_combat_overlay.visible == 1) {
+	  this.ground_combat_overlay.hide();
+	}
 
 	if (this.handleFleetSupply(player, sector) == 0) {
 	  return 0;

@@ -60,7 +60,7 @@
   letter-spacing: 0.2rem;
 }
 
-.space-combat-ui .space-combat-menu ui li:hover {
+.space-combat-ui .space-combat-menu ul li:hover {
   background: #0005;
 }
 

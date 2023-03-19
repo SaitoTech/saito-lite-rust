@@ -768,7 +768,17 @@ playerAcknowledgeNotice(msg, mycallback) {
   html += '</ul>';
   this.updateStatus(html);
 
+  if (imperium_self.space_combat_overlay.visible) {
+    imperium_self.space_combat_overlay.updateStatus(`<div>You must assign ${total_hits} to your capital ships (if possible)</div><ul><li class="option" id="assign">continue</li></ul>`);
+  }
+
   $('.option').on('click', function () {
+
+    $('.option').off();
+
+    if (imperium_self.space_combat_overlay.visible) {
+      imperium_self.space_combat_overlay.hide();
+    }
 
     let action2 = $(this).attr("id");
 
@@ -902,8 +912,7 @@ playerAcknowledgeNotice(msg, mycallback) {
   let relevant_action_cards = ["assign_hits"];
   if (details == "pds") { relevant_action_cards = ["post_pds"]; }
 
-  html = '<div class="sf-readable">You must assign ' + total_hits + ' to your fleet:</div><ul>';
-
+  html = '<ul>';
   let ac = this.returnPlayerActionCards(imperium_self.game.player, relevant_action_cards);
   if (ac.length > 0) {
     html += '<li class="option" id="assign">continue</li>';
@@ -934,11 +943,23 @@ playerAcknowledgeNotice(msg, mycallback) {
   }
   html += '</ul>';
 
+  let overlay_html = `<div>assign ${total_hits} to your fleet</div>${html}`;
+  html = '<div class="sf-readable">assign ' + total_hits + ' to your fleet:</div><ul>' + html;
+
+
+  if (imperium_self.space_combat_overlay.visible) {
+    imperium_self.space_combat_overlay.updateStatus(`${overlay_html}`);
+  }
+
   this.updateStatus(html);
 
   $('.option').on('click', function () {
 
     let action2 = $(this).attr("id");
+
+    if (imperium_self.space_combat_overlay.visible) {
+      imperium_self.space_combat_overlay.hide();
+    }
 
     //
     // respond to tech and factional abilities

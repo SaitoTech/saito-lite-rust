@@ -365,7 +365,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
         if (unit.storage[ii].type == "infantry") {
           infantry++;
         }
-        if (sys.s.units[imperium_self.game.player-1][i].storage[ii].type == "fighter") {
+        if (unit.storage[ii].type == "fighter") {
           fighters++;
         }
       }

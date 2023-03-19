@@ -6,6 +6,9 @@ class SpaceCombatOverlay {
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
+    this.attacker = null;
+    this.defender = null;
+    this.sector = null;
     this.visible = 0;
     this.overlay = new SaitoOverlay(this.app, this.mod, false);
   }
@@ -16,14 +19,24 @@ class SpaceCombatOverlay {
     this.overlay.hide();
   }
 
+  updateStatus(overlay_html) {
+    document.querySelector(".space-combat-menu").innerHTML = overlay_html;
+  }
+
   render(attacker, defender, sector, overlay_html) {
-    if (this.visible) {
+
+    this.attacker = attacker;
+    this.defender = defender;
+    this.sector = sector;
+
+    if (this.visible && document.querySelector(".space-combat-menu")) {
       document.querySelector(".space-combat-menu").innerHTML = overlay_html;
     } else {
       this.visible = 1;
       this.overlay.show(ImperiumSpaceCombatOverlayTemplate(this.mod, attacker, defender, sector, overlay_html));
       this.attachEvents();
     }
+
   }
 
   updateHits(attacker, defender, sector, combat_info) {

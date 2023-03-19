@@ -4035,7 +4035,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
         if (unit.storage[ii].type == "infantry") {
           infantry++;
         }
-        if (sys.s.units[imperium_self.game.player-1][i].storage[ii].type == "fighter") {
+        if (unit.storage[ii].type == "fighter") {
           fighters++;
         }
       }
@@ -20596,7 +20596,17 @@ playerAcknowledgeNotice(msg, mycallback) {
   html += '</ul>';
   this.updateStatus(html);
 
+  if (imperium_self.space_combat_overlay.visible) {
+    imperium_self.space_combat_overlay.updateStatus(`<div>You must assign ${total_hits} to your capital ships (if possible)</div><ul><li class="option" id="assign">continue</li></ul>`);
+  }
+
   $('.option').on('click', function () {
+
+    $('.option').off();
+
+    if (imperium_self.space_combat_overlay.visible) {
+      imperium_self.space_combat_overlay.hide();
+    }
 
     let action2 = $(this).attr("id");
 
@@ -20730,8 +20740,7 @@ playerAcknowledgeNotice(msg, mycallback) {
   let relevant_action_cards = ["assign_hits"];
   if (details == "pds") { relevant_action_cards = ["post_pds"]; }
 
-  html = '<div class="sf-readable">You must assign ' + total_hits + ' to your fleet:</div><ul>';
-
+  html = '<ul>';
   let ac = this.returnPlayerActionCards(imperium_self.game.player, relevant_action_cards);
   if (ac.length > 0) {
     html += '<li class="option" id="assign">continue</li>';
@@ -20762,11 +20771,23 @@ playerAcknowledgeNotice(msg, mycallback) {
   }
   html += '</ul>';
 
+  let overlay_html = `<div>assign ${total_hits} to your fleet</div>${html}`;
+  html = '<div class="sf-readable">assign ' + total_hits + ' to your fleet:</div><ul>' + html;
+
+
+  if (imperium_self.space_combat_overlay.visible) {
+    imperium_self.space_combat_overlay.updateStatus(`${overlay_html}`);
+  }
+
   this.updateStatus(html);
 
   $('.option').on('click', function () {
 
     let action2 = $(this).attr("id");
+
+    if (imperium_self.space_combat_overlay.visible) {
+      imperium_self.space_combat_overlay.hide();
+    }
 
     //
     // respond to tech and factional abilities
@@ -30467,15 +30488,24 @@ playerDiscardActionCards(num, mycallback=null) {
     // in space
     //
     let unit_length = sys.s.units[player-1].length;
-    for (let z = 0; z < unit_length; z++) {
+    for (let z = unit_length-1; z >= 0; z--) {
       if (sys.s.units[player-1][z] == null) {
 	sys.s.units[player-1].splice(z, 1);
       } else {
         if ((sys.s.units[player-1][z].destroyed == 1 || sys.s.units[player-1][z].strength == 0) && (sys.s.units[player-1][z].type != "spacedock" && sys.s.units[player-1][z].type != "pds")) {
+
+	  //
+	  // update space combat overlay if visible
+	  //
+	  if (this.space_combat_overlay.visible == 1) {
+	    this.space_combat_overlay.removeShip(player, z);
+	  }
+
           save_sector = 1;
           sys.s.units[player-1].splice(z, 1);
           z--;
 	  unit_length--;
+
         }
       }
     }
