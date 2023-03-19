@@ -97,13 +97,17 @@
   width: 100%;
   opacity: 0;
   opacity: 0;
-  animation: fade-in .5s ease-in;
+  animation: fade-in 0.5s ease-in;
   animation-fill-mode: forwards;
 }
 
 @keyframes fade-in {
-  from {opacity: 0;}
-  to {opacity: 1;}
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .stunx-chatbox .side-videos {
@@ -115,13 +119,10 @@
 
 .side-videos .video-box-container-large {
   height: 30%;
-
 }
 
 .stunx-chatbox .video-box-container-large {
-
 }
-
 
 #localStream {
   display: block;
@@ -143,7 +144,6 @@
 }
 
 /* video chat */
-
 
 .lds-dual-ring {
   display: inline-block;
@@ -188,7 +188,6 @@
     transform: scale(0.97);
   }
 }
-
 
 /*  video box */
 .video-box-container-large {
@@ -271,7 +270,6 @@
   font-size: 1rem;
   bottom: 0;
   z-index: 2;
-
 }
 
 .video-box-container-large > #video-mute-message > p {
@@ -284,7 +282,6 @@
   height: 100%;
   width: 100%; */
 }
-
 
 .lds-dual-ring {
   display: inline-block;
@@ -524,7 +521,6 @@
   overscroll-behavior: contain; /* Added overscroll-behavior */
   justify-content: center;
   align-items: center;
-  height: 100vh;
   width: 100vw;
   margin: 0;
   position: fixed;
@@ -559,7 +555,6 @@
   align-items: center;
   justify-content: center;
   color: var(--saito-white);
-
 }
 .chat-settings-join-section h2 {
   margin-bottom: 1.5rem;
@@ -576,8 +571,6 @@
   margin-top: 1rem;
 }
 
-
-
 .chat-settings-audio-controls {
   display: flex;
   align-items: center;
@@ -590,7 +583,7 @@
 }
 
 .chat-settings h1 {
-  color:  var(--saito-white);
+  color: var(--saito-white);
   margin-bottom: 1rem;
 }
 
@@ -604,7 +597,7 @@
   border: 1px solid #e5e5e59d;
   padding: 1rem;
   border-radius: 5px;
-  margin-bottom:  1rem;
+  margin-bottom: 1rem;
   width: 55rem;
   /* background-color: #f9f9f9; */
 }
@@ -633,7 +626,6 @@
   background-color: var(--saito-black-faded);
   color: var(--saito-white);
   width: 55rem;
-
 }
 
 .chat-settings select option {
@@ -646,12 +638,10 @@
   color: #ffffff;
   padding: 0.5rem 1rem;
   border: none;
-  border-radius: .5rem;
+  border-radius: 0.5rem;
   font-size: 1rem;
   cursor: pointer;
 }
-
-
 
 .chat-settings .toggle-icon {
   color: var(--saito-white);
@@ -660,13 +650,13 @@
   cursor: pointer;
   background-color: #4a4a4a;
   border-radius: 50%;
-  padding: .5rem;
+  padding: 0.5rem;
 }
 
 .chat-settings-audio-progress-bar {
   position: relative;
   background-color: var(--saito-white);
-  height: .5rem;
+  height: 0.5rem;
   width: 15rem;
   border-radius: 5px;
   overflow: hidden;
@@ -696,14 +686,19 @@
 
   .chat-settings-preview {
     width: 100%;
-
+  }
+  .video-box-container-large > #connection-message {
+    width: 100%;
+  }
+  .video-box-container-large > #connection-message p {
+    font-size: 1rem;
   }
 
   .chat-settings select {
     width: 100%;
   }
   .video-box-container-large > #video-mute-message > p {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
 }
 
@@ -720,5 +715,3 @@
     width: 40rem;
   }
 }
-
-

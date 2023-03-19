@@ -91,15 +91,15 @@ class PeerManager {
 
                     const oldVideoTracks = this.localStream.getVideoTracks();
                     if (oldVideoTracks.length > 0) {
-                      oldVideoTracks.forEach(track => {
-                        this.localStream.removeTrack(track);
-                      });
+                        oldVideoTracks.forEach(track => {
+                            this.localStream.removeTrack(track);
+                        });
                     }
                     // start a video stream;
                     let localStream = await navigator.mediaDevices.getUserMedia({ video: true })
-                    
+
                     // Add new track to the local stream
-                    
+
 
                     this.app.connection.emit('render-local-stream-request', this.localStream, 'video');
                     let track = localStream.getVideoTracks()[0];
@@ -111,7 +111,7 @@ class PeerManager {
                             videoSenders.forEach(sender => {
                                 sender.replaceTrack(track);
                             })
-                          
+
                         } else {
                             peerConnection.addTrack(track);
                         }
@@ -156,7 +156,7 @@ class PeerManager {
 
 
             }
-            
+
             else {
                 this.localStream.getAudioTracks()[0].enabled = true;
                 this.audioEnabled = true;
@@ -171,7 +171,7 @@ class PeerManager {
                 //     this.peers.forEach((peerConnection, key) => {
                 //         const audioSenders = peerConnection.getSenders().filter(sender => sender.track && sender.track.kind === 'audio');
                 //         console.log(audioSenders, 'senders');
-                     
+
                 //         if (audioSenders.length > 0) {
                 //             audioSenders.forEach(sender => {
                 //                 sender.replaceTrack(track);
@@ -228,7 +228,7 @@ class PeerManager {
         // emit events to show chatmanager;
         // get local stream;
         console.log('video enableddd?', this.videoEnabled)
-       
+
         this.localStream = await navigator.mediaDevices.getUserMedia({ video: this.videoEnabled, audio: true });
         this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
         // this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
@@ -305,7 +305,7 @@ class PeerManager {
 
         const remoteStream = new MediaStream();
         peerConnection.addEventListener('track', (event) => {
-            console.log("trackss", event.track, "stream :", event.streams );
+            console.log("trackss", event.track, "stream :", event.streams);
             if (event.streams.length === 0) {
                 remoteStream.addTrack(event.track);
             } else {
@@ -355,8 +355,8 @@ class PeerManager {
         const attemptReconnect = (currentRetry) => {
 
             const peerConnection = this.peers.get(peerId);
-            if (currentRetry > maxRetries) {
-                if ((peerConnection && peerConnection.connectionState !== 'connected')) {
+            if (currentRetry === maxRetries) {
+                if (peerConnection && peerConnection.connectionState !== 'connected') {
                     console.log('Reached maximum number of reconnection attempts, giving up');
                     this.removePeerConnection(peerId);
                 }
