@@ -130,12 +130,9 @@ class Chat extends ModTemplate {
 
 
     returnServices() {
-
         let services = [];
-
         // servers with chat service run plaintext community chat groups
         if (this.app.BROWSER == 0) { services.push({ service: "chat", name: "Saito Community Chat" }); }
-
         return services;
     }
 

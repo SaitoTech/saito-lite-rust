@@ -12,23 +12,35 @@ hideOverlays() {
 }
 
 handleMovementMenuItem() {
-  this.overlay.show(this.returnMovementOverlay());
+  this.movement_overlay.render();
 }
 handleCombatMenuItem() {
-  this.overlay.show(this.returnCombatOverlay());
+  this.combat_overlay.render();
 }
 handleFactionMenuItem() {
-  this.overlay.show(this.returnFactionOverlay());
+  this.factions_overlay.render();
 }
 handleHowToPlayMenuItem() {
-  this.overlay.show(this.returnHowToPlayOverlay());
-}
-handleHowToPlayMenuItem() {
-  this.overlay.show(this.returnHowToPlayOverlay());
+  this.rules_overlay.render();
 }
 handleTechMenuItem() {
-  this.overlay.show(this.returnTechOverlay());
+  this.tech_tree_overlay.render();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 handleAgendasMenuItem() {
   this.overlay.show(this.returnAgendasOverlay());
@@ -37,76 +49,18 @@ handleLawsMenuItem() {
   this.overlay.show(this.returnLawsOverlay());
 }
 handleUnitsMenuItem() {
+  this.production_overlay.render();
+return;
   this.overlay.show(this.returnUnitsOverlay());
   let imperium_self = this;
   $('#close-units-btn').on('click', function() {
     imperium_self.overlay.hide();
   });
 }
-handleStrategyMenuItem() {
-
-  //
-  // show overlay
-  //
-  this.overlay.showCardSelectionOverlay(this.app, this, this.returnStrategyCards(), {
-    columns : 4 ,
-    backgroundImage : "/imperium/img/starscape_background3.jpg" ,
-  });
-
-  //
-  // add player, state and bonus
-  //
-  for (let s in this.strategy_cards) {
-
-    let strategy_card_state = "not picked";
-    let strategy_card_player = -1;
-    let strategy_card_bonus = 0;
-
-    for (let i = 0; i < this.game.state.strategy_cards.length; i++) {
-      if (s === this.game.state.strategy_cards[i]) {
-        strategy_card_bonus = this.game.state.strategy_cards_bonus[i];
-      }
-    }
-
-    let strategy_card_bonus_html = "";
-    if (strategy_card_bonus > 0) {
-      strategy_card_bonus_html =
-      `<div class="strategy_card_bonus">
-        <i class="fas fa-database white-stroke"></i>
-        <span>${strategy_card_bonus}</span>
-      </div>`;
-      this.app.browser.addElementToDom(strategy_card_bonus_html, document.getElementById(s));
-    }
-
-    let thiscard = this.strategy_cards[s];
-    for (let i = 0; i < this.game.state.players_info.length; i++) {
-      if (this.game.state.players_info[i].strategy.includes(s)) {
-        strategy_card_state = "unplayed";
-        strategy_card_player = (i+1);
-        if (this.game.state.players_info[i].strategy_cards_played.includes(s)) {
-          strategy_card_state = "played";
-        };
-      };
-    }
-
-    card_html = '';
-    if (strategy_card_state != "not picked") {
-      card_html += `
-        <div class="strategy_card_state p${strategy_card_player}">
-          <div class="strategy_card_state_internal bk">${strategy_card_state}</div>
-        </div>
-     `;
-    }
-
-    this.app.browser.addElementToDom(card_html, document.getElementById(s));   
-
-  }
-}
 
 handleObjectivesMenuItem() {
   this.overlay.show(this.returnObjectivesOverlay());
 }
-
 handleInfoMenuItem() {
   if (document.querySelector('.gameboard').classList.contains('bi')) {
     for (let i in this.game.sectors) {
@@ -120,9 +74,6 @@ handleInfoMenuItem() {
     }
   }
 }
-
-
-
 handleSystemsMenuItem() {
 
   let imperium_self = this;

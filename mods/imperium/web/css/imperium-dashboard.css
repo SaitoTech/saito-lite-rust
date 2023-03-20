@@ -1,0 +1,164 @@
+
+.dash-faction-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  height: 4.4em;
+  padding: 0;
+}
+
+.dashboard {
+  display: inline-flex;
+  position: absolute;
+  z-index: 9;
+  color: #fff;
+  background: transparent;
+  margin-top: 6.5rem;
+  margin-left: 15em;
+}
+
+.imperium-dashboard {
+  display: inline-flex;
+}
+
+.dash-item-goods {
+  position: relative;
+  top: -2.5rem;
+  left: -3.5rem;
+  font-size: 0.8em;
+}
+
+.dash-faction-agenda {
+  font-weight: bold;
+  font-size: 4em;
+  color: white;
+  background: #0004;
+  text-align: center;
+}
+
+.dash-faction-base {
+  background-color: #000;
+  opacity: 0.95;
+  color: white;
+  text-weight: bold;
+  margin-top: 2px;
+}
+
+.dash-faction-speaker {
+  height: 40px;
+  margin-top: 10px;
+}
+
+.speaker {
+  background-color: red;
+  color: white;
+  font-size:1.6rem;
+  font-weight: bold;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem;
+  font-family: 'bank-gothic';
+  letter-spacing: 0.1rem;
+}
+
+.dash-faction-status {
+  border: 1px solid #c16400;
+  background-color: green;
+  height: 1rem;
+  width: 2rem;
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+  margin-top: 0.5rem;
+  float: left;
+}
+
+.dash-faction-status-text {
+  padding-top: 0.25rem;
+  font-family: 'orbitron-medium';
+  letter-spacing: 0.1rem;
+}
+
+.dash-faction-name {
+  text-align: center;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1.5rem;
+  font-family: 'orbitron-medium';
+  padding-top: 0.5rem;
+  padding-bottom: 0rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+
+}
+
+.dash-faction {
+  display: grid;
+  grid-gap: 0.2em;
+  margin-right: 15px;
+}
+
+.dash-item {
+  width: 3em;
+  line-height: 1.9em;
+  text-align: center;
+  font-size: 1.5em;
+  text-shadow: 2px 2px #000A;
+}
+
+.dash-item .avail {
+  transform: translateY(-0.2em);
+  display: inline-block;
+  color: white;
+}
+
+.dash-item .total, .dash-item .limit {
+  transform: translateY(0.2em);
+  /* display: inline-block; */
+  display: none;
+  opacity: 0.7;
+}
+
+.dash-faction-action {
+  text-align: center;
+  font-size: large;
+  color: #fff;
+}
+
+.dash-item {
+  color: #fff;
+  position: relative;
+}
+
+.dash-item.resources {
+  background-image: url("/imperium/img/blank_resources_hex.png");
+  background-size: cover;
+  color: #000000;
+  font-size: 3em;
+  position: relative;
+  left: 0em;
+  z-index: 1001;
+  height: 58px;
+  width: 65px;
+}
+
+.dash-item.influence {
+  background-image: url("/imperium/img/blank_influence_hex.png");
+  background-size: cover;
+  color: #c16400;
+  font-size: 3em;
+  position: relative;
+  z-index: 1002;
+  height: 58px;
+  width: 65px;
+}
+
+.dash-item.trade {
+  font-size: 4em;
+  position: relative;
+  z-index: 1001;
+  height: 58px;
+  width: 65px;
+  display: flex;
+  left: 10px;
+  top: 4px;
+}
+

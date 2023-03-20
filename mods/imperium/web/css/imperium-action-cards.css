@@ -1,0 +1,69 @@
+.faction_sheet_action_card {
+  background-image: url("/imperium/img/action_card_template.png");
+  height: 26vh;
+  width: calc(26vh * 0.72110);
+  background-size: cover;
+  margin: 1vw;
+  padding: 1vw;
+  text-align: center;
+  font-size: 0.75vw;
+  transition: all 50ms;
+  margin-bottom: -15vw;
+  border: 1px solid;
+  float: left;
+  z-index: 1;
+}
+
+.overlay_action_card {
+  background-image: url("/imperium/img/action_card_template.png");
+  height: 34vh;
+  width: calc(34vh * 0.72110);
+  background-size: cover;
+  margin: 1vw;
+  padding: 1vw;
+  text-align: center;
+  font-size: 1em;
+  transition: all 50ms;
+  margin-bottom: -15vw;
+  border: 1px solid;
+  float: left;
+}
+
+.action_card {
+  padding: 25px;
+  padding-top: 30px;
+  height: 34vh;
+  width: calc(34vh * 0.72110);
+  background-size: cover;
+  text-align: center;
+  font-size: 1em;
+  transition: all 50ms;
+  border: 1px solid;
+  cursor: pointer;
+}
+.action_card_title {
+  position: relative;
+  font-family: 'orbitron-medium', helvetica, arial;
+  color: white;
+  padding-right: 10px;
+  white-space: nowrap;
+  margin: 0.2vw 0 0 0;
+  font-weight: bold;
+}
+.action_card_text {
+  position: relative;
+  font-family: 'orbitron-medium', helvetica, arial;
+  color: white;
+  padding: 0px;
+  padding-top:15px;
+  margin: 1.1vw 0 0 0;
+  height: 11vw;
+  text-align: left;
+  line-height: 1.6em;
+}
+.action_card:hover {
+  transform: scale(1.2);
+  z-index: 10;
+  border: 1px solid whitesmoke;
+}
+

@@ -538,7 +538,7 @@ class Registry extends ModTemplate {
       registry_self.publickey = peer.peer.publickey;
     }
 console.log("WE ARE NOW LOCAL SERVER");
-    /*******************************************/
+    *******************************************/
 
   }
 

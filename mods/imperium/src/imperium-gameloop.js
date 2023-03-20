@@ -4,7 +4,12 @@
   // Core Game Logic //
   /////////////////////
   handleGameLoop(msg=null) {
-  
+ 
+    //
+    // set to 1 to speed-up game init for testing 
+    //
+    let debugging = 0; 
+
     let imperium_self = this;
     let z = imperium_self.returnEventObjects();
 
@@ -50,7 +55,6 @@
 
       }
   
-
       //
       //
       //
@@ -81,8 +85,6 @@
 	return 1;
 
       }
-
-
 
       //
       // resolve [action] [1] [publickey voting or 1 for agenda]
@@ -449,6 +451,27 @@
   	let player = mv[1];
   	let sector = mv[2];
 
+	//
+	// hide combat overlays
+	//
+	if (this.space_combat_overlay.visible == 1) {
+	  this.space_combat_overlay.updateStatus('<div>space combat over</div><ul><li class="option" id="resume">acknowledge</li></ul>');
+	  $('#resume').on('click', () => {
+  	    this.space_combat_overlay.hide();
+	    this.restartQueue();
+	  });
+	  return 0;
+	}
+	if (this.ground_combat_overlay.visible == 1) {
+	  // we use null because we know is open
+//alert("before update status in continue");
+	  this.ground_combat_overlay.updateStatus(null, null, null, null, '<div>ground combat over</div><ul><li class="option" id="resume">acknowledge</li></ul>');
+	  $('#resume').on('click', () => {
+  	    this.ground_combat_overlay.hide();
+	    this.restartQueue();
+	  });
+	  return 0;
+	}
 
 	if (this.handleFleetSupply(player, sector) == 0) {
 	  return 0;
@@ -516,6 +539,10 @@
 	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " in " + sys.s.name, 1); // force message
         }
 
+	//
+	// flash sector graphics
+	//
+        this.flashSector(sector);
 
   	//
   	// update sector
@@ -550,7 +577,7 @@
 
       if (mv[0] === "play") {
 
-        this.updateTokenDisplay();
+	this.tokenbar.render(this.game.player);
         this.updateLeaderboard();
 
     	let player = mv[1];
@@ -606,7 +633,7 @@
         } else {
 
 	  this.addEventsToBoard();
-  	  this.updateStatus("<div><div class=\"player_color_box player_color_"+player+"\"></div>" + this.returnFaction(parseInt(player)) + " is taking their turn.</div>");
+  	  this.updateStatus("<div class=\"status-update\"><div class=\"player_color_box player_color_"+player+"\"></div>" + this.returnFaction(parseInt(player)) + " is taking their turn.</div>");
 
   	}
   
@@ -1510,7 +1537,7 @@
   	  this.game.state.round_scoring = 0;
 	  this.game.state.playing_strategy_card_secondary = 0; // reset to 0 as no secondary to run
   	}
-this.game.state.end_round_scoring = 0;
+	this.game.state.end_round_scoring = 0;
 
 
 	// testing - give everyone a sabotage
@@ -1595,11 +1622,13 @@ this.game.state.end_round_scoring = 0;
 
 
 	//
-	// ENABLE TESTINGvMODE
+	// ENABLE TESTING MODE
 	//
-        //this.game.queue.push("is_testing");
+if (debugging == 1) {
+        this.game.queue.push("is_testing");
+}
+if (debugging == 0) {
 
-  
   	//
   	// STRATEGY CARDS
   	//
@@ -1621,6 +1650,7 @@ this.game.state.end_round_scoring = 0;
  	} else {
           this.game.queue.push("shownewobjectives");
         }
+}
 
 
   
@@ -1745,7 +1775,7 @@ this.game.state.end_round_scoring = 0;
   	  subtitle = "view all public and secret objectives in the CARDS menu...";
   	}
 
-        this.overlay.showCardSelectionOverlay(cards, {
+        this.overlay.showCardSelectionOverlay(this.app, this, cards, {
 
 	  title : title,
 	  subtitle : subtitle,
@@ -2819,18 +2849,6 @@ this.game.state.end_round_scoring = 0;
 	  this.game.state.players_info[player-1].secret_objectives_in_hand += amount;
 	}
 
-	//
-	// MARCH 28
-	//
-	try {
-          let html = this.returnTokenDisplay();
-          //Not safe to directly plug html into hud-header (if header has controls), try append(app.browser.htmlToElement) ???
-          document.querySelector('.hud-header').innerHTML = html;
-	} catch (err) {
-	  console.log("error updating hud-header: " + err);
- 	}
-
-
 	this.updateTokenDisplay();
 	this.updateLeaderboard();
 	this.displayFactionDashboard();
@@ -3179,6 +3197,13 @@ console.log("K: " + z[k].name);
 	    }
           }
         }
+
+	//
+	// flash sector graphics
+	//
+        this.flashSector(sector);
+
+
   	return 1;
       }
 
@@ -3758,30 +3783,30 @@ console.log("K: " + z[k].name);
 
 	  try {
 
-	    sys.s.units[player-1][unit_idx].last_round_damaged = this.game.state.space_combat_round;
+	    sys.s.units[defender-1][unit_idx].last_round_damaged = this.game.state.space_combat_round;
 	    if ((player_moves == 1 && imperium_self.game.player == player) || imperium_self.game.player != player) {
-	      sys.s.units[player-1][unit_idx].strength--;
+	      sys.s.units[defender-1][unit_idx].strength--;
 	    }
-	    if (sys.s.units[player-1][unit_idx].strength <= 0) {
+	    if (sys.s.units[defender-1][unit_idx].strength <= 0) {
 
-	      this.updateLog(this.returnFactionNickname(player) + " " + sys.s.units[player-1][unit_idx].name + " destroyed");
-	      sys.s.units[player-1][unit_idx].destroyed = 1;
+	      this.updateLog(this.returnFactionNickname(defender) + " " + sys.s.units[defender-1][unit_idx].name + " destroyed");
+	      sys.s.units[defender-1][unit_idx].destroyed = 1;
 	      for (let z_index in z) {
-	        sys.s.units[player-1][unit_idx] = z[z_index].unitDestroyed(imperium_self, attacker, sys.s.units[player-1][unit_idx]);
+	        sys.s.units[defender-1][unit_idx] = z[z_index].unitDestroyed(imperium_self, attacker, sys.s.units[defender-1][unit_idx]);
 	      } 
 
 	      //
 	      // record units destroyed this round
 	      //
 	      try {
-	      if (sys.s.units[player-1][unit_idx].destroyed == 1) {
-		this.game.state.players_info[player-1].my_units_destroyed_this_combat_round.push(sys.s.units[player-1][unit_idx].type);
-		this.game.state.players_info[attacker-1].units_i_destroyed_this_combat_round.push(sys.s.units[player-1][unit_idx].type);
+	      if (sys.s.units[defender-1][unit_idx].destroyed == 1) {
+		this.game.state.players_info[defender-1].my_units_destroyed_this_combat_round.push(sys.s.units[defender-1][unit_idx].type);
+		this.game.state.players_info[attacker-1].units_i_destroyed_this_combat_round.push(sys.s.units[defender-1][unit_idx].type);
 	      }
 	      } catch (err) {}
 
 	    } else {
-	      this.updateLog(this.returnFactionNickname(player) + " " + sys.s.units[player-1][unit_idx].name + " damaged");
+	      this.updateLog(this.returnFactionNickname(defender) + " " + sys.s.units[defender-1][unit_idx].name + " damaged");
 	    }
 	  } catch (err) {
 	    console.log("Error? Not all hits assigned: " + err);
@@ -3949,6 +3974,9 @@ console.log("K: " + z[k].name);
 	      return 0;
 	    } else {
               this.updateStatus(this.returnFaction(defender) + " assigning hits to units ... ");
+	      if (this.space_combat_overlay.visible) {
+		this.space_combat_overlay.updateStatus("<div>opponent assigning hits</div>");
+	      }
 	    }
 	    return 0;
 	  } else {
@@ -4019,6 +4047,13 @@ console.log("K: " + z[k].name);
 	      } else {
 
               }
+
+	      //
+	      // -- re-rendering here removes the units from view
+	      //
+	      //if (this.ground_combat_overlay.visible) {
+	      //  this.ground_combat_overlay.render(attacker, defender, sector, planet_idx, "<div>hits assigned</div>");
+	      //}
 
             }
 
@@ -4510,6 +4545,7 @@ console.log("K: " + z[k].name);
 
 	  let total_shots = 0;
 	  let total_hits = 0;
+	  let ship_idx = [];
 	  let hits_or_misses = [];
 	  let hits_on = [];
 	  let units_firing = [];
@@ -4551,11 +4587,13 @@ console.log("K: " + z[k].name);
 	    if (roll >= sys.s.units[attacker-1][i].combat) {
 	      total_hits++;
 	      total_shots++;
+	      ship_idx.push(i);
 	      hits_on.push(sys.s.units[attacker-1][i].combat);
 	      hits_or_misses.push(1);
 	      units_firing.push(sys.s.units[attacker-1][i]);
 	    } else {
 	      total_shots++;
+	      ship_idx.push(i);
 	      hits_or_misses.push(0);
 	      hits_on.push(sys.s.units[attacker-1][i].combat);
 	      units_firing.push(sys.s.units[attacker-1][i]);
@@ -4629,6 +4667,7 @@ console.log("K: " + z[k].name);
 	  //
 	  let combat_info = {};
               combat_info.attacker        = attacker;
+	      combat_info.ship_idx	  = ship_idx;
 	      combat_info.hits_or_misses  = hits_or_misses;
 	      combat_info.units_firing 	  = units_firing;
 	      combat_info.hits_on 	  = hits_on;
@@ -4637,6 +4676,13 @@ console.log("K: " + z[k].name);
 	      combat_info.reroll 	  = reroll; // rerolls
 
 	  this.updateCombatLog(combat_info);
+
+	  //
+	  // update space combat overlay if visible
+	  //
+          if (this.space_combat_overlay.visible) {
+	    this.space_combat_overlay.updateHits(attacker, defender, sector, combat_info);
+          }
 
 	  //
 	  // total hits to assign
@@ -4715,6 +4761,7 @@ console.log("K: " + z[k].name);
 
 	  let total_shots = 0;
 	  let total_hits = 0;
+	  let infantry_idx = [];
 	  let hits_or_misses = [];
 	  let hits_on = [];
           let units_firing = [];
@@ -4753,10 +4800,12 @@ console.log("K: " + z[k].name);
 	        total_shots++;
 	        hits_or_misses.push(1);
 	        hits_on.push(sys.p[planet_idx].units[attacker-1][i].combat);
+		infantry_idx.push(i);
 	      } else {
 	        total_shots++;
 	        hits_or_misses.push(0);
 	        hits_on.push(sys.p[planet_idx].units[attacker-1][i].combat);
+		infantry_idx.push(i);
 	      }
 
 	    }
@@ -4824,6 +4873,7 @@ console.log("K: " + z[k].name);
 	  //
 	  let combat_info = {};
 	      combat_info.attacker        = attacker;
+	      combat_info.infantry_idx    = infantry_idx;
 	      combat_info.hits_or_misses  = hits_or_misses;
 	      combat_info.units_firing 	  = units_firing;
 	      combat_info.hits_on 	  = hits_on;
@@ -4833,6 +4883,13 @@ console.log("K: " + z[k].name);
 
 	  this.updateCombatLog(combat_info);
 
+	  //
+	  // update space combat overlay if visible
+	  //
+          if (this.ground_combat_overlay.visible) {
+//alert("before update status in infantry_fire");
+	    this.ground_combat_overlay.updateHits(attacker, defender, sector, planet_idx, combat_info);
+          }
 
 	  //
 	  // total hits to assign
@@ -4893,6 +4950,11 @@ console.log("K: " + z[k].name);
 	  this.addMove("pds_space_defense\t"+player+"\t"+sector);
 	  this.endTurn();
 	}
+
+	//
+	// and draw attention to sector
+	//
+	this.flashSector(sector);
 
         return 0;
 
@@ -5002,6 +5064,13 @@ console.log("K: " + z[k].name);
         let z_index      = parseInt(mv[3]);
   	this.game.queue.splice(qe, 1);
 
+	//
+	// hide the overlay if an event happens, it can be restored
+	//
+	if (this.space_combat_overlay.visible == 1) {
+	  this.space_combat_overlay.hide();
+	}
+
 	return z[z_index].spaceCombatEvent(this, player, sector);
 
       }
@@ -5044,7 +5113,6 @@ console.log("K: " + z[k].name);
 	//
         this.resetSpaceUnitTemporaryModifiers(sector);
 
-
 	this.game.state.space_combat_attacker = player;
 	this.game.state.space_combat_defender = defender;
 
@@ -5063,7 +5131,6 @@ console.log("K: " + z[k].name);
 	// otherwise, process combat
 	//
 	this.updateLog("Space Combat: round " + this.game.state.space_combat_round);
-
 	this.game.queue.push("space_combat_player_menu\t"+defender+"\t"+player+"\t"+sector);
 	this.game.queue.push("space_combat_player_menu\t"+player+"\t"+defender+"\t"+sector);
 
@@ -5646,6 +5713,14 @@ console.log("K: " + z[k].name);
         let z_index	 = parseInt(mv[4]);
   	this.game.queue.splice(qe, 1);
 
+	//
+	// hide the overlay if an event happens, it can be restored
+	//
+	if (this.ground_combat_overlay.visible == 1) {
+//alert("hiding ground combat overlay because of ground_combat_event");
+	  this.ground_combat_overlay.hide();
+	}
+
 	return z[z_index].groundCombatEvent(this, player, sector, planet_idx);
 
       }
@@ -5725,6 +5800,14 @@ console.log("K: " + z[k].name);
   	let player = parseInt(mv[1]);
   	let card = mv[2];
 	let z = this.returnEventObjects();
+
+	//
+	// hide space-combat overlay
+	//
+	if (this.space_combat_overlay.visible) {
+console.log("HIDING SPACE COMBAT OVERLAY!");
+	  this.space_combat_overlay.hide();
+	}
 
         if (this.action_cards[card].type == "action") {
 	  this.game.state.active_player_moved = 1;
