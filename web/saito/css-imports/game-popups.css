@@ -14,6 +14,10 @@
   text-align: center;
 }
 
+.game_warning_overlay p {
+  color: var(--saito-white);
+}
+
 .game_warning_header{
   display: flex;
   flex-direction: row;
