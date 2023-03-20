@@ -179,8 +179,26 @@ console.log("removing: " + popup_qs);
     document.querySelectorAll(`${popup_qs} .saito-userline-reply`).forEach((el) => {
       var clicked = el;
       el.addEventListener('click', (e) => {
-        //alert(el.parentElement.previousElementSibling.innerText + " - " + el.parentElement.innerText);
-        el.parentElement.parentElement.parentElement.nextElementSibling.querySelector('.chat-input').innerText = el.parentElement.previousElementSibling.innerText + " - " + el.parentElement.innerText;
+        let quote = "<blockquote>";
+        if  (el.parentElement.previousElementSibling.innerText.length > 25) {
+          quote += el.parentElement.previousElementSibling.innerText.substring(0,25) + "...:<br/><em>"; 
+        } else {
+          quote += el.parentElement.previousElementSibling.innerText + ":<br/><em>"; 
+        }
+        if (el.parentElement.innerText.slice(0,-6).length > 60) {
+          quote += el.parentElement.innerText.slice(0,-6).substring(0,60) + "...</em></blockquote><br/>";
+        } else {
+          quote += el.parentElement.innerText.slice(0,-6) + "</em></blockquote><br/>";
+        }
+        let chat_input = el.parentElement.parentElement.parentElement.nextElementSibling.querySelector('.chat-input');
+        chat_input.innerHTML = quote.replaceAll('\n','<br/>');
+        chat_input.focus();
+        const range = document.createRange();
+        var sel = window.getSelection()
+        range.setStart(chat_input, 2);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
       });
     });
 
@@ -223,8 +241,8 @@ console.log("removing: " + popup_qs);
       msg_input.onkeydown = (e) => {
         if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
           e.preventDefault();
-          if (msg_input.textContent == "") { return; }
-          let newtx = mod.createChatTransaction(group_id, msg_input.textContent);
+          if (msg_input.innerHTML == "") { return; }
+          let newtx = mod.createChatTransaction(group_id, msg_input.innerHTML);
           mod.sendChatTransaction(app, newtx);
           mod.receiveChatTransaction(app, newtx);
           msg_input.textContent = "";
@@ -237,7 +255,7 @@ console.log("removing: " + popup_qs);
       msg_input.onpaste = (e) => {
         var el = e.target;
         setTimeout(function() {
-          el.innerHTML = el.textContent;
+          el.innerHTML = el.innerHTML;
         }, 0)
       }
 
@@ -246,8 +264,8 @@ console.log("removing: " + popup_qs);
       //
       document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
         e.preventDefault();
-        if (msg_input.textContent == "") { return; }
-        let newtx = mod.createChatTransaction(group_id, msg_input.textContent);
+        if (msg_input.innerHTML == "") { return; }
+        let newtx = mod.createChatTransaction(group_id, msg_input.innerHTML);
         mod.sendChatTransaction(app, newtx);
         mod.receiveChatTransaction(app, newtx);
         msg_input.textContent = "";
