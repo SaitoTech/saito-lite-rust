@@ -111,6 +111,13 @@ p.small {
   font-size: 1.3rem;
 }
 
+blockquote {
+  border-color: var(--saito-primary);
+  border-width: 0 0 0 2px;
+  border-style: solid;
+  padding: 0 0 0 0.5rem;
+}
+
 /* ----------------------------------------------------------------
 QR Code
 -----------------------------------------------------------------*/
