@@ -5,18 +5,18 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
 	let key = app.keychain.returnKey({ publickey : pubKey });
 	let user_email = key.email || "";
 
-	let info_html = `<span class="saito-tooltip-box"></span>`;
-
-    	if (typeof league.myRank != "undefined" && league.myRank > 0) {
-
-	  return `
-
-    	    <div class="league-join-overlay-box">
+	let html = `
+	    	    <div class="league-join-overlay-box">
     	      <img src="/${game}/img/arcade/arcade.jpg" />
     	      <div class="title-box">
-	        <div class="title">${league.name}</div> ${info_html}
-	      </div>
-    	      <div class="league-join-controls">
+			        <div class="title">${league.name}</div>
+			        <div class="description">${league.description}</div>
+			      </div>
+						`;
+
+    	if (league.myRank) {
+
+	  return html+`<div class="league-join-controls">
 	        <p class="league-join-email-note">You've joined this league</p>  
 	        <p class="league-join-email-note">Challenge other players at <a href="/arcade">Arcade</a> , <a href="/redsquare">Redsquare</a><a> </a></p>
 	      </div>
@@ -27,16 +27,10 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
 	} else {
 
 
-	  return `
-
-    	    <div class="league-join-overlay-box">
-    	      <img src="/${game}/img/arcade/arcade.jpg" />
-    	      <div class="title-box">
-	        <div class="title">${league.name}</div> ${info_html}
-	      </div>
-    	      <div class="league-join-controls">
+	  return html + `
+	  					<div class="league-join-controls">
                 <p class="league-join-email-note">joining a league shares your email address with the league admin, and enables email/password account login</p>
-		<form id="league-join-form" name="league-join-form" data-form-id="${league.id}">
+									<form id="league-join-form" name="league-join-form" data-form-id="${league.id}">
                   <div class="saito-login-overlay-field">
                     <input type="text" id="saito-login-email" class="saito-login-email" placeholder="email@domain.com" value="${user_email}" />
                   </div>
