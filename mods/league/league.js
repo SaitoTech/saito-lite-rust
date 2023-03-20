@@ -229,6 +229,7 @@ class League extends ModTemplate {
  	            return 0;
 	        }
         );
+        window.history.pushState("", "", `/league/`);
       }
 
     }
@@ -412,6 +413,18 @@ class League extends ModTemplate {
 
     this.addLeaguePlayer(params);
 
+    //
+    //So, when we get our join message returned to us, we will do a query to figure out our rank
+    //save the info locally, and emit an event to update as a success
+    //
+    if (this.app.wallet.returnPublicKey() === tx.transaction.from[0].add){
+      this.fetchLeagueLeaderboard(txmsg.league_id, ()=>{
+        this.app.connection.emit("join-league-success");
+        this.saveLeagues();
+      });
+       
+    }
+
     return;
   }
 
@@ -474,6 +487,11 @@ class League extends ModTemplate {
     let sql2 = `DELETE FROM players WHERE league_id='$league_id'`;
     let params2 = { $league_id : txmsg.league_id };
     this.app.storage.executeDatabase(sql2, params2, "league");
+
+    this.removeLeague(txmsg.league_id);
+    if (this.app.BROWSER){
+      this.app.connection.emit("leagues-render-request");
+    }
 
   }
 
@@ -617,7 +635,8 @@ class League extends ModTemplate {
     let sqlResults = await this.app.storage.queryDatabase(sql2, [league_id], "league");
 
     let league = this.returnLeague(league_id);
-    let localStats = league.players.filter(p => players.includes(p.publickey));
+
+    let localStats = (league) ? league.players.filter(p => players.includes(p.publickey)) : null;
 
     return localStats || sqlResults;
   }
@@ -822,6 +841,7 @@ class League extends ModTemplate {
     for (let i = 0; i < this.leagues.length; i++) {
       if (this.leagues[i].id === league_id) { 
         this.leagues.splice(i, 1); 
+        this.saveLeagues();
         return;
       }
     }
@@ -868,10 +888,10 @@ class League extends ModTemplate {
       if (this.debug) { console.log("New League", JSON.parse(JSON.stringify(newLeague))); }
 
       this.leagues.push(newLeague);
+    
+      this.leagueInsert(newLeague);        
 
-      //if (!this.app.BROWSER){
-        this.leagueInsert(newLeague);        
-      //}
+      this.saveLeagues();      
     }
 
   }
@@ -936,6 +956,11 @@ class League extends ModTemplate {
 
     let league = this.returnLeague(league_id);
     let rank = 0;
+
+    if (!league){
+      console.error("League not found");
+      return;
+    }
 
     //We need to reset this because this should be an ordered array
     //and if the scores have changed, we need to resort the players

@@ -35,7 +35,7 @@ class VideoChatManager {
         })
 
 
-    this.app.connection.on('render-local-stream-request', (localStream) => {
+        this.app.connection.on('render-local-stream-request', (localStream) => {
 
             this.renderLocalStream(localStream);
         })
@@ -44,13 +44,16 @@ class VideoChatManager {
         });
 
         this.app.connection.on('stun-update-connection-message', (room_code, peer_id, status) => {
-
-
             if (room_code !== this.room_code) {
                 return;
             }
+            let my_pub_key = this.app.wallet.returnPublicKey();
+            let container;
+            if (peer_id === my_pub_key) {
+                container = "expanded-video"
+            }
 
-            this.createVideoBox(peer_id)
+            this.createVideoBox(peer_id, container)
             if (status === "connecting") {
                 this.video_boxes[peer_id].video_box.renderPlaceholder('connecting')
             } else if (status === "connected") {
@@ -63,11 +66,14 @@ class VideoChatManager {
 
         })
 
-        this.app.connection.on('video-box-remove', (peer_id) => {
+        this.app.connection.on('video-box-remove', (peer_id, disconnection) => {
             if (this.video_boxes[peer_id].video_box) {
-                this.video_boxes[peer_id].video_box.remove()
-                delete this.video_boxes[peer_id];
-                this.updateImages();
+                if(this.video_boxes[peer_id].video_box.remove){
+                    this.video_boxes[peer_id].video_box.remove(disconnection)
+                    delete this.video_boxes[peer_id];
+                    this.updateImages();
+                }
+              
             }
 
         })
@@ -80,6 +86,7 @@ class VideoChatManager {
     render() {
         this.app.browser.addElementToDom(ChatManagerLargeTemplate(this.call_type, this.room_code), document.getElementById('content__'));
         this.isActive = true;
+
     }
 
     attachEvents(app, mod) {
@@ -142,10 +149,32 @@ class VideoChatManager {
             document.querySelector('.audio_control').classList.add('fa-microphone-slash')
             document.querySelector('.audio_control').classList.remove('fa-microphone')
         }
+
+
+
+        document.querySelector('.large-wrapper').addEventListener('click', (e) => {
+            if (e.target.classList.contains('video-box')) {
+                let stream_id = e.target.id;
+                console.log(e.target, stream_id,)
+                console.log('praent element ', e.target.parentElement.parentElement)
+                if (e.target.parentElement.parentElement.classList.contains('expanded-video')) {
+                    console.log('already expanded');
+                    return;
+                } else {
+                    let id = document.querySelector('.expanded-video').querySelector('.video-box').id;
+                    console.log('current expanded id ', id);
+                    this.video_boxes[id].video_box.containerClass = "side-videos";
+                    this.video_boxes[id].video_box.rerender()
+                    this.video_boxes[stream_id].video_box.containerClass = "expanded-video"
+                    this.video_boxes[stream_id].video_box.rerender()
+                }
+            }
+        }
+        )
+
     }
 
 
-    
     createRoomLink() {
         let obj = {
             room_code: this.room_code,
@@ -224,7 +253,7 @@ class VideoChatManager {
     }
 
     renderLocalStream(localStream) {
-        this.createVideoBox('local');
+        this.createVideoBox('local', "expanded-video");
         this.video_boxes['local'].video_box.render(localStream, 'large-wrapper');
         this.localStream = localStream;
         this.updateImages();
@@ -235,14 +264,14 @@ class VideoChatManager {
 
 
     renderRemoteStreamPlaceholder(peer, placeholder_info, is_creator) {
-        this.createVideoBox(peer, placeholder_info);
+        this.createVideoBox(peer);
         this.video_boxes[peer].video_box.render(null, placeholder_info);
         console.log('is creator ', is_creator)
     }
 
-    createVideoBox(peer) {
+    createVideoBox(peer, container = "side-videos") {
         if (!this.video_boxes[peer]) {
-            const videoBox = new VideoBox(this.app, this.mod, this.call_type, this.central, this.room_code, peer, 'large-wrapper');
+            const videoBox = new VideoBox(this.app, this.mod, this.call_type, this.central, this.room_code, peer, container);
             this.video_boxes[peer] = { video_box: videoBox }
         }
     }

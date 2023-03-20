@@ -6,7 +6,13 @@ const ChatManagerLargeTemplate = (call_type, code) => {
     <div class="stunx-chatbox" id="stunx-chatbox">
       <main>
         <section class="large-wrapper">
-      
+        <div class="video-container-large">
+        <div class="expanded-video">
+
+        </div>
+        <div class="side-videos">
+        </div>
+    </div>
         </section>
 
         <section class="footer">

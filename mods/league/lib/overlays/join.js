@@ -11,6 +11,12 @@ class JoinLeague {
     this.league_id = league_id;
     this.overlay = new SaitoOverlay(app, mod, false, true);
     this.loader = new SaitoLoader(app, mod, ".league-join-controls");
+
+    this.app.connection.on("join-league-success", ()=>{
+      console.log("Join success!");
+      this.loader.remove();
+      this.render();
+    });
   }
 
   async render(league_id="") {
@@ -19,7 +25,8 @@ class JoinLeague {
     let league = this.mod.returnLeague(this.league_id);
 
     if (league == null) {
-      salert(`League ${this.league_id} not found`);
+      salert(`League not found`);
+      console.log("League id: " + this.league_id);
       return;
     }
 
@@ -70,6 +77,7 @@ class JoinLeague {
             this.mod.addLeaguePlayer({league_id, email, publickey: this.app.wallet.returnPublicKey()}); 
             this.mod.saveLeagues();
 
+            console.log("Join sent!");
             //setTimeout(function(){
             //  window.location = window.location.origin+"/arcade";
             //}, 1500);

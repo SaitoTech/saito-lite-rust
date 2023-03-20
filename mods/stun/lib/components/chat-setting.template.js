@@ -34,5 +34,3 @@ module.exports = () => {
 </div>
      `;
 }
-
- // ${window.location.host}/stunx?invite_code=${roomCode}
