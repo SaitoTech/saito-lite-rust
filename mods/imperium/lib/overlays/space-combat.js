@@ -27,9 +27,13 @@ class SpaceCombatOverlay {
     let qs  = `.unit-table.small .unit-element .unit-box`;
     if (overlay_html.indexOf("ssign") == -1) {
       document.querySelector(qs).style.backgroundColor = "transparent";
-      document.querySelector(".space-combat-menu").innerHTML = overlay_html;
     }
+    try {
+      document.querySelector(".space-combat-menu").innerHTML = overlay_html;
+    } catch (err) {}
+
   }
+
 
   render(attacker, defender, sector, overlay_html) {
 
@@ -79,16 +83,11 @@ class SpaceCombatOverlay {
       if (combat_info.modified_roll[i] >= combat_info.hits_on[i]) {
         let qs  = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results`;
         let qsn = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
-console.log("1: " + qs);
         document.querySelector(qs).style.backgroundColor = "green";
-console.log("1: " + qsn);
         document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];
-console.log("1 done");
       } else {
         let qsn = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
-console.log("2: " + qsn);
         document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];
-console.log("2: done");
       }
     }
   }

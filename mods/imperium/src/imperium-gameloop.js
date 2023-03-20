@@ -8,8 +8,8 @@
     //
     // set to 1 to speed-up game init for testing 
     //
-    let debugging = 1;
- 
+    let debugging = 0; 
+
     let imperium_self = this;
     let z = imperium_self.returnEventObjects();
 
@@ -457,9 +457,9 @@
 	if (this.space_combat_overlay.visible == 1) {
 	  this.space_combat_overlay.hide();
 	}
-//	if (this.ground_combat_overlay.visible == 1) {
-//	  this.ground_combat_overlay.hide();
-//	}
+	if (this.ground_combat_overlay.visible == 1) {
+	  this.ground_combat_overlay.hide();
+	}
 
 	if (this.handleFleetSupply(player, sector) == 0) {
 	  return 0;
@@ -1612,8 +1612,9 @@
 	//
 	// ENABLE TESTING MODE
 	//
-        //this.game.queue.push("is_testing");
-
+if (debugging == 1) {
+        this.game.queue.push("is_testing");
+}
 if (debugging == 0) {
 
   	//
@@ -3962,6 +3963,9 @@ console.log("K: " + z[k].name);
 	      return 0;
 	    } else {
               this.updateStatus(this.returnFaction(defender) + " assigning hits to units ... ");
+	      if (this.space_combat_overlay.visible) {
+		this.space_combat_overlay.updateStatus("<div>opponent assigning hits</div>");
+	      }
 	    }
 	    return 0;
 	  } else {
@@ -4032,6 +4036,15 @@ console.log("K: " + z[k].name);
 	      } else {
 
               }
+
+
+	      //
+	      // -- update assigned hits
+	      //
+	      if (this.ground_combat_overlay.visible) {
+		this.ground_combat_overlay.render(attacker, defender, sector, planet_idx, "<div>hits assigned</div>");
+	      }
+
 
             }
 
@@ -4739,6 +4752,7 @@ console.log("K: " + z[k].name);
 
 	  let total_shots = 0;
 	  let total_hits = 0;
+	  let infantry_idx = [];
 	  let hits_or_misses = [];
 	  let hits_on = [];
           let units_firing = [];
@@ -4777,10 +4791,12 @@ console.log("K: " + z[k].name);
 	        total_shots++;
 	        hits_or_misses.push(1);
 	        hits_on.push(sys.p[planet_idx].units[attacker-1][i].combat);
+		infantry_idx.push(i);
 	      } else {
 	        total_shots++;
 	        hits_or_misses.push(0);
 	        hits_on.push(sys.p[planet_idx].units[attacker-1][i].combat);
+		infantry_idx.push(i);
 	      }
 
 	    }
@@ -4848,6 +4864,7 @@ console.log("K: " + z[k].name);
 	  //
 	  let combat_info = {};
 	      combat_info.attacker        = attacker;
+	      combat_info.infantry_idx    = infantry_idx;
 	      combat_info.hits_or_misses  = hits_or_misses;
 	      combat_info.units_firing 	  = units_firing;
 	      combat_info.hits_on 	  = hits_on;
@@ -4857,6 +4874,12 @@ console.log("K: " + z[k].name);
 
 	  this.updateCombatLog(combat_info);
 
+	  //
+	  // update space combat overlay if visible
+	  //
+          if (this.ground_combat_overlay.visible) {
+	    this.ground_combat_overlay.updateHits(attacker, defender, sector, planet_idx, combat_info);
+          }
 
 	  //
 	  // total hits to assign
@@ -5680,6 +5703,13 @@ console.log("K: " + z[k].name);
         let z_index	 = parseInt(mv[4]);
   	this.game.queue.splice(qe, 1);
 
+	//
+	// hide the overlay if an event happens, it can be restored
+	//
+	if (this.ground_combat_overlay.visible == 1) {
+	  this.ground_combat_overlay.hide();
+	}
+
 	return z[z_index].groundCombatEvent(this, player, sector, planet_idx);
 
       }
@@ -5759,6 +5789,14 @@ console.log("K: " + z[k].name);
   	let player = parseInt(mv[1]);
   	let card = mv[2];
 	let z = this.returnEventObjects();
+
+	//
+	// hide space-combat overlay
+	//
+	if (this.space_combat_overlay.visible) {
+console.log("HIDING SPACE COMBAT OVERLAY!");
+	  this.space_combat_overlay.hide();
+	}
 
         if (this.action_cards[card].type == "action") {
 	  this.game.state.active_player_moved = 1;

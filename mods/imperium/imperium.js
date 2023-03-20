@@ -11,6 +11,7 @@ const ProductionOverlay = require('./lib/overlays/production');
 const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
 const InfluenceSelectionOverlay = require('./lib/overlays/influence-selection');
 const SpaceCombatOverlay = require('./lib/overlays/space-combat');
+const GroundCombatOverlay = require('./lib/overlays/ground-combat');
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
 const TokenBar = require('./lib/tokenbar');
@@ -50,6 +51,7 @@ class Imperium extends GameTemplate {
     this.resource_selection_overlay = new ResourceSelectionOverlay(this.app, this);
     this.influence_selection_overlay = new InfluenceSelectionOverlay(this.app, this);
     this.space_combat_overlay = new SpaceCombatOverlay(this.app, this);
+    this.ground_combat_overlay = new GroundCombatOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
 
@@ -1881,7 +1883,7 @@ class Imperium extends GameTemplate {
       ground_units	: 	["infantry","infantry","pds","spacedock"],
       // is_testing -- you can use this to preseed action cards and objectives
       //ground_units	: 	["infantry","infantry","pds","pds","spacedock"],
-      //action_cards	:	["plague", "political-stability"],
+      action_cards	:	["intercept","courageous-to-the-end","maneuvering-jets1","shields-holding1","emergency-repairs","experimental-fighter-prototype"],
       //objectives	:	["close-the-trap"],
       tech		: 	["sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship"],
       background	: 	'faction2.jpg' ,
@@ -10964,8 +10966,6 @@ console.log("qe: " + qe);
 
 
 
-
-
     this.importActionCard('intercept', {
   	name : "Intercept" ,
   	type : "retreat" ,
@@ -10977,10 +10977,6 @@ console.log("qe: " + qe);
 
         }
     });
-
-
-
-
 
     this.importActionCard('courageous-to-the-end', {
   	name : "Courageous to the End" ,
@@ -11127,8 +11123,6 @@ console.log("qe: " + qe);
 	  return 1;
 	}
     });
-
-
 
     this.importActionCard('emergency-repairs', {
   	name : "Emergency Repairs" ,
@@ -13722,8 +13716,8 @@ handleSystemsMenuItem() {
     //
     // set to 1 to speed-up game init for testing 
     //
-    let debugging = 1;
- 
+    let debugging = 0; 
+
     let imperium_self = this;
     let z = imperium_self.returnEventObjects();
 
@@ -14171,9 +14165,9 @@ handleSystemsMenuItem() {
 	if (this.space_combat_overlay.visible == 1) {
 	  this.space_combat_overlay.hide();
 	}
-//	if (this.ground_combat_overlay.visible == 1) {
-//	  this.ground_combat_overlay.hide();
-//	}
+	if (this.ground_combat_overlay.visible == 1) {
+	  this.ground_combat_overlay.hide();
+	}
 
 	if (this.handleFleetSupply(player, sector) == 0) {
 	  return 0;
@@ -15326,8 +15320,9 @@ handleSystemsMenuItem() {
 	//
 	// ENABLE TESTING MODE
 	//
-        //this.game.queue.push("is_testing");
-
+if (debugging == 1) {
+        this.game.queue.push("is_testing");
+}
 if (debugging == 0) {
 
   	//
@@ -17676,6 +17671,9 @@ console.log("K: " + z[k].name);
 	      return 0;
 	    } else {
               this.updateStatus(this.returnFaction(defender) + " assigning hits to units ... ");
+	      if (this.space_combat_overlay.visible) {
+		this.space_combat_overlay.updateStatus("<div>opponent assigning hits</div>");
+	      }
 	    }
 	    return 0;
 	  } else {
@@ -17746,6 +17744,15 @@ console.log("K: " + z[k].name);
 	      } else {
 
               }
+
+
+	      //
+	      // -- update assigned hits
+	      //
+	      if (this.ground_combat_overlay.visible) {
+		this.ground_combat_overlay.render(attacker, defender, sector, planet_idx, "<div>hits assigned</div>");
+	      }
+
 
             }
 
@@ -18453,6 +18460,7 @@ console.log("K: " + z[k].name);
 
 	  let total_shots = 0;
 	  let total_hits = 0;
+	  let infantry_idx = [];
 	  let hits_or_misses = [];
 	  let hits_on = [];
           let units_firing = [];
@@ -18491,10 +18499,12 @@ console.log("K: " + z[k].name);
 	        total_shots++;
 	        hits_or_misses.push(1);
 	        hits_on.push(sys.p[planet_idx].units[attacker-1][i].combat);
+		infantry_idx.push(i);
 	      } else {
 	        total_shots++;
 	        hits_or_misses.push(0);
 	        hits_on.push(sys.p[planet_idx].units[attacker-1][i].combat);
+		infantry_idx.push(i);
 	      }
 
 	    }
@@ -18562,6 +18572,7 @@ console.log("K: " + z[k].name);
 	  //
 	  let combat_info = {};
 	      combat_info.attacker        = attacker;
+	      combat_info.infantry_idx    = infantry_idx;
 	      combat_info.hits_or_misses  = hits_or_misses;
 	      combat_info.units_firing 	  = units_firing;
 	      combat_info.hits_on 	  = hits_on;
@@ -18571,6 +18582,12 @@ console.log("K: " + z[k].name);
 
 	  this.updateCombatLog(combat_info);
 
+	  //
+	  // update space combat overlay if visible
+	  //
+          if (this.ground_combat_overlay.visible) {
+	    this.ground_combat_overlay.updateHits(attacker, defender, sector, planet_idx, combat_info);
+          }
 
 	  //
 	  // total hits to assign
@@ -19394,6 +19411,13 @@ console.log("K: " + z[k].name);
         let z_index	 = parseInt(mv[4]);
   	this.game.queue.splice(qe, 1);
 
+	//
+	// hide the overlay if an event happens, it can be restored
+	//
+	if (this.ground_combat_overlay.visible == 1) {
+	  this.ground_combat_overlay.hide();
+	}
+
 	return z[z_index].groundCombatEvent(this, player, sector, planet_idx);
 
       }
@@ -19473,6 +19497,14 @@ console.log("K: " + z[k].name);
   	let player = parseInt(mv[1]);
   	let card = mv[2];
 	let z = this.returnEventObjects();
+
+	//
+	// hide space-combat overlay
+	//
+	if (this.space_combat_overlay.visible) {
+console.log("HIDING SPACE COMBAT OVERLAY!");
+	  this.space_combat_overlay.hide();
+	}
 
         if (this.action_cards[card].type == "action") {
 	  this.game.state.active_player_moved = 1;
@@ -20438,7 +20470,7 @@ playerPlayBombardment(attacker, sector, planet_idx) {
   for (let i = 0; i < sys.p[planet_idx].units.length; i++) {
     if (i != (attacker-1)) {
       for (let k = 0; k < sys.p[planet_idx].units[i].length; k++) {
-	if (sys.p[planet_idx].units[i][ii].type === "infantry") {
+	if (sys.p[planet_idx].units[i][k].type === "infantry") {
 	  anything_to_kill = 1;
 	}
       }
@@ -21204,13 +21236,12 @@ playerPlaySpaceCombat(attacker, defender, sector) {
   }
   html += '</ul>';
 
-  overlay_html = '<ul>' + html;
+  overlay_html = '<div>round '+ this.game.state.space_combat_round + '</div><ul>' + html;
   html = '<div class="sf-readable"><b>Space Combat: round ' + this.game.state.space_combat_round + ':</b><div class="combat_attacker">' + this.returnFaction(attacker) + '</div><div class="combat_attacker_fleet">' + this.returnPlayerFleetInSector(attacker, sector) + '</div><div class="combat_defender">' + this.returnFaction(defender) + '</div><div class="combat_defender_fleet">' + this.returnPlayerFleetInSector(defender, sector) + '</div><ul>' + html;
 
   this.updateStatus(html);
 
   this.space_combat_overlay.render(attacker, defender, sector, overlay_html);
-
 
   $('.option').on('click', function () {
 
@@ -21251,7 +21282,7 @@ playerPlaySpaceCombat(attacker, defender, sector) {
       //
       // ships_fire needs to make sure it permits any opponents to fire...
       //
-      //imperium_self.space_combat_overlay.render(attacker, defender, sector, "<div>calculating hits</div>");
+      imperium_self.space_combat_overlay.render(attacker, defender, sector, "<div>waiting for opponent</div>");
       imperium_self.prependMove("ships_fire\t" + attacker + "\t" + defender + "\t" + sector);
       imperium_self.endTurn();
     }
@@ -21369,7 +21400,7 @@ playerRespondToRetreat(player, opponent, from, to) {
 //
 // ground combat is over -- provide options for scoring cards, action cards
 //
-playerPlayGroundCombatOver(player, sector) {
+playerPlayGroundCombatOver(player, sector, planet_idx) {
 
   let imperium_self = this;
   let sys = this.returnSectorAndPlanets(sector);
@@ -21429,6 +21460,7 @@ playerPlayGroundCombatOver(player, sector) {
     }
 
     if (action2 === "action") {
+      imperium_self.ground_combat_overlay.hide();
       imperium_self.playerSelectActionCard(function (card) {
         imperium_self.addMove("action_card_post\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("action_card\t" + imperium_self.game.player + "\t" + card);
@@ -21440,6 +21472,7 @@ playerPlayGroundCombatOver(player, sector) {
     }
 
     if (action2 === "ok") {
+      imperium_self.ground_combat_overlay.render(attacker, defender, sector, planet_idx, "<div>waiting for opponent</div>");
       // prepend so it happens after the modifiers
       //
       // ships_fire needs to make sure it permits any opponents to fire...
@@ -21548,19 +21581,14 @@ playerPlayGroundCombat(attacker, defender, sector, planet_idx) {
 
   let imperium_self = this;
   let sys = this.returnSectorAndPlanets(sector);
-  let html = '';
+  let html = '<ul>';
+  let overlay_html = '';
 
   this.game.state.ground_combat_sector = sector;
   this.game.state.ground_combat_planet_idx = planet_idx;
 
   let attacker_forces = this.returnNumberOfGroundForcesOnPlanet(attacker, sector, planet_idx);
   let defender_forces = this.returnNumberOfGroundForcesOnPlanet(defender, sector, planet_idx);
-
-  if (sys.p[planet_idx].owner != attacker) {
-    html = '<div class="sf-readable">'+this.returnFactionNickname(attacker)+' are invading ' + sys.p[planet_idx].name + ' with ' + attacker_forces + ' infantry. ' + this.returnFactionNickname(defender) + ' is defending with ' + defender_forces + ' infantry. This is round ' + this.game.state.ground_combat_round + ' of ground combat. </div><ul>';
-  } else {
-    html = '<div class="sf-readable">' + this.returnFactionNickname(defender) + ' are invading ' + sys.p[planet_idx].name + ' with ' + defender_forces + ' infantry. You have ' + attacker_forces + ' infantry remaining. This is round ' + this.game.state.ground_combat_round + ' of ground combat. </div><ul>';
-  }
 
   let ac = this.returnPlayerActionCards(this.game.player, ["combat", "ground_combat"])
   if (ac.length > 0) {
@@ -21587,6 +21615,21 @@ playerPlayGroundCombat(attacker, defender, sector, planet_idx) {
   }
   html += '</ul>';
 
+  overlay_html = html;
+  overlay_html = '<div>'+sys.p[planet_idx].name+': round ' + this.game.state.ground_combat_round + '</div><ul>' + html;
+
+  if (sys.p[planet_idx].owner != attacker) {
+    html = '<div class="sf-readable">'+this.returnFactionNickname(attacker)+' are invading ' + sys.p[planet_idx].name + ' with ' + attacker_forces + ' infantry. ' + this.returnFactionNickname(defender) + ' is defending with ' + defender_forces + ' infantry. This is round ' + this.game.state.ground_combat_round + ' of ground combat. </div>' + html;
+  } else {
+    html = '<div class="sf-readable">' + this.returnFactionNickname(defender) + ' are invading ' + sys.p[planet_idx].name + ' with ' + defender_forces + ' infantry. You have ' + attacker_forces + ' infantry remaining. This is round ' + this.game.state.ground_combat_round + ' of ground combat. </div>' + html;
+  }
+
+  if (this.game.state.ground_combat_round > 1) {
+    this.ground_combat_overlay.updateStatus(attacker, defender, sector, planet_idx, overlay_html);
+  } else {
+    this.ground_combat_overlay.render(attacker, defender, sector, planet_idx, overlay_html);
+  }
+
   this.updateStatus(html);
 
   $('.option').off();
@@ -21607,6 +21650,7 @@ playerPlayGroundCombat(attacker, defender, sector, planet_idx) {
     }
 
     if (action2 == "action") {
+      imperium_self.ground_combat_overlay.hide();
       imperium_self.playerSelectActionCard(function (card) {
         imperium_self.addMove("action_card_post\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("action_card\t" + imperium_self.game.player + "\t" + card);
@@ -21618,6 +21662,7 @@ playerPlayGroundCombat(attacker, defender, sector, planet_idx) {
     }
 
     if (action2 == "attack") {
+      imperium_self.ground_combat_overlay.render(attacker, defender, sector, planet_idx, "<div>waiting for opponent</div>");
       // prepend so it happens after the modifiers
       //
       // ships_fire needs to make sure it permits any opponents to fire...

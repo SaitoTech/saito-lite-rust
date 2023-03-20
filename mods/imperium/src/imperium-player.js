@@ -622,7 +622,7 @@ playerPlayBombardment(attacker, sector, planet_idx) {
   for (let i = 0; i < sys.p[planet_idx].units.length; i++) {
     if (i != (attacker-1)) {
       for (let k = 0; k < sys.p[planet_idx].units[i].length; k++) {
-	if (sys.p[planet_idx].units[i][ii].type === "infantry") {
+	if (sys.p[planet_idx].units[i][k].type === "infantry") {
 	  anything_to_kill = 1;
 	}
       }
@@ -1388,13 +1388,12 @@ playerPlaySpaceCombat(attacker, defender, sector) {
   }
   html += '</ul>';
 
-  overlay_html = '<ul>' + html;
+  overlay_html = '<div>round '+ this.game.state.space_combat_round + '</div><ul>' + html;
   html = '<div class="sf-readable"><b>Space Combat: round ' + this.game.state.space_combat_round + ':</b><div class="combat_attacker">' + this.returnFaction(attacker) + '</div><div class="combat_attacker_fleet">' + this.returnPlayerFleetInSector(attacker, sector) + '</div><div class="combat_defender">' + this.returnFaction(defender) + '</div><div class="combat_defender_fleet">' + this.returnPlayerFleetInSector(defender, sector) + '</div><ul>' + html;
 
   this.updateStatus(html);
 
   this.space_combat_overlay.render(attacker, defender, sector, overlay_html);
-
 
   $('.option').on('click', function () {
 
@@ -1435,7 +1434,7 @@ playerPlaySpaceCombat(attacker, defender, sector) {
       //
       // ships_fire needs to make sure it permits any opponents to fire...
       //
-      //imperium_self.space_combat_overlay.render(attacker, defender, sector, "<div>calculating hits</div>");
+      imperium_self.space_combat_overlay.render(attacker, defender, sector, "<div>waiting for opponent</div>");
       imperium_self.prependMove("ships_fire\t" + attacker + "\t" + defender + "\t" + sector);
       imperium_self.endTurn();
     }
@@ -1553,7 +1552,7 @@ playerRespondToRetreat(player, opponent, from, to) {
 //
 // ground combat is over -- provide options for scoring cards, action cards
 //
-playerPlayGroundCombatOver(player, sector) {
+playerPlayGroundCombatOver(player, sector, planet_idx) {
 
   let imperium_self = this;
   let sys = this.returnSectorAndPlanets(sector);
@@ -1613,6 +1612,7 @@ playerPlayGroundCombatOver(player, sector) {
     }
 
     if (action2 === "action") {
+      imperium_self.ground_combat_overlay.hide();
       imperium_self.playerSelectActionCard(function (card) {
         imperium_self.addMove("action_card_post\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("action_card\t" + imperium_self.game.player + "\t" + card);
@@ -1624,6 +1624,7 @@ playerPlayGroundCombatOver(player, sector) {
     }
 
     if (action2 === "ok") {
+      imperium_self.ground_combat_overlay.render(attacker, defender, sector, planet_idx, "<div>waiting for opponent</div>");
       // prepend so it happens after the modifiers
       //
       // ships_fire needs to make sure it permits any opponents to fire...
@@ -1732,19 +1733,14 @@ playerPlayGroundCombat(attacker, defender, sector, planet_idx) {
 
   let imperium_self = this;
   let sys = this.returnSectorAndPlanets(sector);
-  let html = '';
+  let html = '<ul>';
+  let overlay_html = '';
 
   this.game.state.ground_combat_sector = sector;
   this.game.state.ground_combat_planet_idx = planet_idx;
 
   let attacker_forces = this.returnNumberOfGroundForcesOnPlanet(attacker, sector, planet_idx);
   let defender_forces = this.returnNumberOfGroundForcesOnPlanet(defender, sector, planet_idx);
-
-  if (sys.p[planet_idx].owner != attacker) {
-    html = '<div class="sf-readable">'+this.returnFactionNickname(attacker)+' are invading ' + sys.p[planet_idx].name + ' with ' + attacker_forces + ' infantry. ' + this.returnFactionNickname(defender) + ' is defending with ' + defender_forces + ' infantry. This is round ' + this.game.state.ground_combat_round + ' of ground combat. </div><ul>';
-  } else {
-    html = '<div class="sf-readable">' + this.returnFactionNickname(defender) + ' are invading ' + sys.p[planet_idx].name + ' with ' + defender_forces + ' infantry. You have ' + attacker_forces + ' infantry remaining. This is round ' + this.game.state.ground_combat_round + ' of ground combat. </div><ul>';
-  }
 
   let ac = this.returnPlayerActionCards(this.game.player, ["combat", "ground_combat"])
   if (ac.length > 0) {
@@ -1771,6 +1767,21 @@ playerPlayGroundCombat(attacker, defender, sector, planet_idx) {
   }
   html += '</ul>';
 
+  overlay_html = html;
+  overlay_html = '<div>'+sys.p[planet_idx].name+': round ' + this.game.state.ground_combat_round + '</div><ul>' + html;
+
+  if (sys.p[planet_idx].owner != attacker) {
+    html = '<div class="sf-readable">'+this.returnFactionNickname(attacker)+' are invading ' + sys.p[planet_idx].name + ' with ' + attacker_forces + ' infantry. ' + this.returnFactionNickname(defender) + ' is defending with ' + defender_forces + ' infantry. This is round ' + this.game.state.ground_combat_round + ' of ground combat. </div>' + html;
+  } else {
+    html = '<div class="sf-readable">' + this.returnFactionNickname(defender) + ' are invading ' + sys.p[planet_idx].name + ' with ' + defender_forces + ' infantry. You have ' + attacker_forces + ' infantry remaining. This is round ' + this.game.state.ground_combat_round + ' of ground combat. </div>' + html;
+  }
+
+  if (this.game.state.ground_combat_round > 1) {
+    this.ground_combat_overlay.updateStatus(attacker, defender, sector, planet_idx, overlay_html);
+  } else {
+    this.ground_combat_overlay.render(attacker, defender, sector, planet_idx, overlay_html);
+  }
+
   this.updateStatus(html);
 
   $('.option').off();
@@ -1791,6 +1802,7 @@ playerPlayGroundCombat(attacker, defender, sector, planet_idx) {
     }
 
     if (action2 == "action") {
+      imperium_self.ground_combat_overlay.hide();
       imperium_self.playerSelectActionCard(function (card) {
         imperium_self.addMove("action_card_post\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("action_card\t" + imperium_self.game.player + "\t" + card);
@@ -1802,6 +1814,7 @@ playerPlayGroundCombat(attacker, defender, sector, planet_idx) {
     }
 
     if (action2 == "attack") {
+      imperium_self.ground_combat_overlay.render(attacker, defender, sector, planet_idx, "<div>waiting for opponent</div>");
       // prepend so it happens after the modifiers
       //
       // ships_fire needs to make sure it permits any opponents to fire...
