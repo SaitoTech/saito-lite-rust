@@ -29,30 +29,33 @@ class VideoBox {
         this.retry_attempt_no = 0
 
 
-        app.connection.on('mute', (kind, public_key) => {
+        // app.connection.on('mute', (kind, public_key) => {
 
-            if (public_key !== this.stream_id) return;
-            if (kind === "video") {
-                let name;
-                if (public_key === "local") {
-                    let public_key = app.wallet.returnPublicKey();
-                    name = app.keychain.returnUsername(public_key)
-                } else {
-                    name = app.keychain.returnUsername(public_key);
-                }
+        //     if (public_key !== this.stream_id) return;
+        //     if (kind === "video") {
+        //         let name;
+        //         if (public_key === "local") {
+        //             let public_key = app.wallet.returnPublicKey();
+        //             name = app.keychain.returnUsername(public_key)
+        //         } else {
+        //             name = app.keychain.returnUsername(public_key);
+        //         }
 
-                if (name.length > 10) {
-                    name = `${name.slice(0, 10)}...`
-                }
-                this.updateVideoMuteStatus(name);
-            }
-        })
-        app.connection.on('unmute', (kind, public_key) => {
-            if (public_key !== this.stream_id) return;
-            if (kind === "video") {
-                this.removeVideoMuteStatus();
-            }
-        })
+        //         if (name.length > 10) {
+        //             name = `${name.slice(0, 10)}...`
+        //         }
+        //         this.updateVideoMuteStatus(name);
+        //     }
+        // })
+        // app.connection.on('unmute', (kind, public_key) => {
+        //     if (public_key !== this.stream_id) return;
+        //     if (kind === "video") {
+        //         this.removeVideoMuteStatus();
+        //     }
+        // })
+        
+
+  
 
 
     }
@@ -87,7 +90,29 @@ class VideoBox {
                 this.renderStream({ muted: true });
             } else {
                 this.renderStream({ muted: false })
-                console.log('rendering stream ', this.is_creator);
+                console.log('rendering stream');
+            }
+
+           
+
+   
+                let name;
+                if (this.stream_id === "local") {
+                    let public_key = this.app.wallet.returnPublicKey();
+                    name = this.app.keychain.returnUsername(public_key)
+                } else {
+                    name = this.app.keychain.returnUsername(this.stream_id);
+                }
+
+                if (name.length > 10) {
+                    name = `${name.slice(0, 10)}...`
+                }
+
+            const video_box = document.querySelector(`#stream${this.stream_id}`);
+            if (video_box.querySelector('#video-mute-message')) {
+                video_box.querySelector('#video-mute-message').innerHTML = `<p>${name}</p>`
+            } else {
+                video_box.insertAdjacentHTML('beforeend', `<div id="video-mute-message"> <p> ${name} </p></div> `);
             }
         } else {
             this.renderPlaceholder(placeholder_info);
@@ -138,93 +163,95 @@ class VideoBox {
         }
     }
 
-    updateVideoMuteStatus(message) {
-        const video_box = document.querySelector(`#stream${this.stream_id}`);
-        if (video_box.querySelector('#video-mute-message')) {
-            video_box.querySelector('#video-mute-message').innerHTML = `<p>${message}</p>`
-        } else {
-            video_box.insertAdjacentHTML('beforeend', `<div id="video-mute-message"> <p> ${message} </p></div> `);
-        }
+
+
+updateVideoMuteStatus(message) {
+    const video_box = document.querySelector(`#stream${this.stream_id}`);
+    if (video_box.querySelector('#video-mute-message')) {
+        video_box.querySelector('#video-mute-message').innerHTML = `<p>${message}</p>`
+    } else {
+        video_box.insertAdjacentHTML('beforeend', `<div id="video-mute-message"> <p> ${message} </p></div> `);
+    }
+}
+
+removeVideoMuteStatus() {
+    const video_box = document.querySelector(`#stream${this.stream_id}`);
+    if (video_box.querySelector('#video-mute-message')) {
+        video_box.querySelectorAll('#video-mute-message').forEach(item => {
+            item.parentElement.removeChild(video_box.querySelector('#video-mute-message'));
+        })
+    }
+}
+
+
+
+// startWaitTimer(is_creator) {
+//     this.attachEvents(this.app, this.mod)
+//     this.is_creator = is_creator;
+
+//     if (!is_creator) {
+//         this.receiving_connection = true;
+//     }
+
+//     let peer = this.stream_id;
+//     this.stopWaitTimer();
+
+//     this.waitTimer = setInterval(() => {
+//         // console.log(this.waitSeconds, is_creator)
+//         console.log(this.waitSeconds)
+//         this.waitSeconds += 1;
+//         if (this.waitSeconds === 10) {
+//             this.handleConnectionStateChange(peer, 'ten_seconds')
+//         }
+//         if (this.waitSeconds === 20) {
+//             this.handleConnectionStateChange(peer, 'twenty_seconds')
+//         }
+//         if (this.waitSeconds === 50) {
+//             this.stopWaitTimer();
+//             if (is_creator) {
+//                 this.updateReconnectionButton(true)
+//             } else {
+//                 this._reconnectRecipient(peer)
+//             }
+//         }
+//     }, 1000)
+// }
+
+// checkConnectionStatus() {
+//     let count = 0;
+//     const interval = setInterval(() => {
+//         count++;
+//         if (this.is_connected) {
+//             this.updateReconnectionButton(false);
+//             clearInterval(interval);
+//         } else if (count >= 60 && this.is_creator) {
+//             this.updateReconnectionButton(true);
+//             clearInterval(interval);
+//         }
+//     }, 1000);
+// }
+
+
+stopWaitTimer() {
+    if (this.waitTimer) {
+        clearInterval(this.waitTimer);
+        this.waitSeconds = 0;
+    }
+}
+
+
+
+
+remove() {
+    if (document.querySelector(`#stream${this.stream_id}`)) {
+        document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`))
     }
 
-    removeVideoMuteStatus() {
-        const video_box = document.querySelector(`#stream${this.stream_id}`);
-        if (video_box.querySelector('#video-mute-message')) {
-            video_box.querySelectorAll('#video-mute-message').forEach(item => {
-                item.parentElement.removeChild(video_box.querySelector('#video-mute-message'));
-            })
-        }
-    }
+}
 
-
-
-    // startWaitTimer(is_creator) {
-    //     this.attachEvents(this.app, this.mod)
-    //     this.is_creator = is_creator;
-
-    //     if (!is_creator) {
-    //         this.receiving_connection = true;
-    //     }
-
-    //     let peer = this.stream_id;
-    //     this.stopWaitTimer();
-
-    //     this.waitTimer = setInterval(() => {
-    //         // console.log(this.waitSeconds, is_creator)
-    //         console.log(this.waitSeconds)
-    //         this.waitSeconds += 1;
-    //         if (this.waitSeconds === 10) {
-    //             this.handleConnectionStateChange(peer, 'ten_seconds')
-    //         }
-    //         if (this.waitSeconds === 20) {
-    //             this.handleConnectionStateChange(peer, 'twenty_seconds')
-    //         }
-    //         if (this.waitSeconds === 50) {
-    //             this.stopWaitTimer();
-    //             if (is_creator) {
-    //                 this.updateReconnectionButton(true)
-    //             } else {
-    //                 this._reconnectRecipient(peer)
-    //             }
-    //         }
-    //     }, 1000)
-    // }
-
-    // checkConnectionStatus() {
-    //     let count = 0;
-    //     const interval = setInterval(() => {
-    //         count++;
-    //         if (this.is_connected) {
-    //             this.updateReconnectionButton(false);
-    //             clearInterval(interval);
-    //         } else if (count >= 60 && this.is_creator) {
-    //             this.updateReconnectionButton(true);
-    //             clearInterval(interval);
-    //         }
-    //     }, 1000);
-    // }
-
-
-    stopWaitTimer() {
-        if (this.waitTimer) {
-            clearInterval(this.waitTimer);
-            this.waitSeconds = 0;
-        }
-    }
-
-
-
-
-    remove() {
-        if (document.querySelector(`#stream${this.stream_id}`)) {
-            document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`))
-        }
-
-    }
-
-    streamExists() {
-        return this.stream;
-    }
+streamExists() {
+    return this.stream;
+}
 
 
 

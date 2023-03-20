@@ -408,6 +408,22 @@ class Tweet {
         this_tweet.dataset.hasClickEvent = true;
         this_tweet.onclick =  (e) => {
 
+	  //
+	  // if we have selected text, then we are trying to copy and paste and 
+          // the last thing we want is for the UI to update and prevent us from
+	  // being able to use the site.
+	  //
+	  let highlightedText = "";
+          if (window.getSelection) {
+            highlightedText = window.getSelection().toString();
+          } else if (document.selection && document.selection.type != "Control") {
+            highlightedText = document.selection.createRange().text;
+          }
+          if (highlightedText != "") {
+            console.log("text highlighted: exiting");
+	    return;
+	  }
+
           let tweet_text = document.querySelector(`.tweet-${this.tx.transaction.sig} > .tweet-body > .tweet-main > .tweet-text`);
 
           if (this.is_long_tweet) {

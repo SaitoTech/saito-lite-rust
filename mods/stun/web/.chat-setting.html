@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join the Meeting Room</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 2rem;
+        }
+
+        .join-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+        }
+
+        .test-mic {
+            margin-top: 1rem;
+        }
+
+        .test-mic {
+            margin-top: 1rem;
+            background-color: #28a745;
+        }
+
+        .test-mic:hover {
+            background-color: #218838;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .toggle-icon {
+            margin-right: 1rem;
+        }
+
+        h1 {
+            color: #4a4a4a;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #4a4a4a;
+            margin-bottom: 1rem;
+        }
+
+        .preview {
+            position: relative;
+            border: 1px solid #e5e5e5;
+            padding: 1rem;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        video {
+            width: 100%;
+            max-width: 400px;
+            /* Increase the max-width to make the video larger */
+            border-radius: 5px;
+        }
+
+        .toggle-icons {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            background-color: #4a4a4a;
+            padding: 5px;
+        }
+
+        .toggle-icon {
+            color: #4a4a4a;
+            font-size: 1.5rem;
+            margin-left: 0.5rem;
+            cursor: pointer;
+        }
+
+        select {
+            width: 100%;
+            max-width: 300px;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+        }
+
+        button.join {
+            background-color: #1a73e8;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        button.join:hover {
+            background-color: #1558d6;
+        }
+
+        button.join:focus {
+            outline: none;
+        }
+
+        .toggle-icon {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            background-color: #4a4a4a;
+            border-radius: 50%;
+            padding: 5px;
+        }
+
+        .audio-progress-bar {
+            position: relative;
+            background-color: white;
+            height: 5px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background-color: #28a745;
+            width: 0%;
+            transition: width 0.1s;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="preview-section">
+            <h1>Welcome to [Meeting Platform Name]!</h1>
+            <p>Before you join the meeting room, please take a moment to review your video and audio settings.</p>
+
+            <div id="video-preview" class="preview">
+                <p>Video Preview Window</p>
+                <video id="video" autoplay muted playsinline></video>
+                <div class="toggle-icons">
+                    <i id="toggle-video" class="fas fa-video toggle-icon"></i>
+                    <i id="toggle-audio" class="fas fa-microphone toggle-icon"></i>
+                </div>
+            </div>
+            <select id="video-input"></select>
+            <select id="audio-input"></select>
+            <button id="test-mic" class="join test-mic">Test Microphone</button>
+            <div class="audio-controls">
+                <i id="play-audio" class="fas fa-play toggle-icon"></i>
+                <i id="pause-audio" class="fas fa-pause toggle-icon"></i>
+                <span id="audio-progress">00:00 / 00:00</span>
+            </div>
+            <div class="audio-progress-bar">
+                <div id="progress" class="progress"></div>
+            </div>
+        </div>
+        <div class="join-section">
+            <h2>Ready to join?</h2>
+            <p>Please ensure your video and audio settings are correct before joining the meeting.</p>
+            <button class="join">Join Meeting</button>
+        </div>
+
+    </div>
+    </div>
+    <script>
+
+    </script>
+</body>
+
+</html>
