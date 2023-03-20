@@ -617,7 +617,8 @@ class League extends ModTemplate {
     let sqlResults = await this.app.storage.queryDatabase(sql2, [league_id], "league");
 
     let league = this.returnLeague(league_id);
-    let localStats = league.players.filter(p => players.includes(p.publickey));
+
+    let localStats = (league) ? league.players.filter(p => players.includes(p.publickey)) : null;
 
     return localStats || sqlResults;
   }
@@ -936,6 +937,11 @@ class League extends ModTemplate {
 
     let league = this.returnLeague(league_id);
     let rank = 0;
+
+    if (!league){
+      console.error("League not found");
+      return;
+    }
 
     //We need to reset this because this should be an ordered array
     //and if the scores have changed, we need to resort the players
