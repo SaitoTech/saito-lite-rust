@@ -1,3 +1,19 @@
+.faction-sheet-action-cards {
+  min-height: 26vh;
+  margin-bottom: 2rem;
+}
+
+.faction-sheet-tech-cards{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.faction_sheet_action_card_back {
+  background-image: url('/imperium/img/action_card_back.jpg') !important;
+  background-image: cover;
+}
+
+
 .faction-sheet {
   display: grid;
   grid-template-columns: 1fr min-content;

@@ -1430,6 +1430,7 @@ playerPlaySpaceCombat(attacker, defender, sector) {
     }
 
     if (action2 == "attack") {
+      imperium_self.space_combat_overlay.removeHits();
       // prepend so it happens after the modifiers
       //
       // ships_fire needs to make sure it permits any opponents to fire...
@@ -1440,6 +1441,7 @@ playerPlaySpaceCombat(attacker, defender, sector) {
     }
 
     if (action2 == "retreat") {
+      imperium_self.space_combat_overlay.removeHits();
       imperium_self.space_combat_overlay.hide();
       if (imperium_self.canPlayerRetreat(imperium_self.game.player, attacker, defender, sector)) {
         let retreat_options = imperium_self.returnSectorsWherePlayerCanRetreat(imperium_self.game.player, sector);
@@ -1612,6 +1614,7 @@ playerPlayGroundCombatOver(player, sector, planet_idx) {
     }
 
     if (action2 === "action") {
+      imperium_self.ground_combat_overlay.removeHits();
       imperium_self.ground_combat_overlay.hide();
       imperium_self.playerSelectActionCard(function (card) {
         imperium_self.addMove("action_card_post\t" + imperium_self.game.player + "\t" + card);
@@ -1624,6 +1627,8 @@ playerPlayGroundCombatOver(player, sector, planet_idx) {
     }
 
     if (action2 === "ok") {
+//console.log("about to re-render ground combat overlay w/o green");
+      imperium_self.ground_combat_overlay.removeHits();
       imperium_self.ground_combat_overlay.render(attacker, defender, sector, planet_idx, "<div>waiting for opponent</div>");
       // prepend so it happens after the modifiers
       //
@@ -1647,15 +1652,10 @@ playerPlaySpaceCombatOver(player, sector) {
   let sys = this.returnSectorAndPlanets(sector);
   let relevant_action_cards = ["space_combat_victory", "space_combat_over", "space_combat_loss"];
   let ac = this.returnPlayerActionCards(this.game.player, relevant_action_cards);
-  let html = '';
+  let html = '<ul>';
+  let overlay_html = '';
   let win = 0;
 
-  if (this.doesPlayerHaveShipsInSector(player, sector)) {
-    html = '<div class="sf-readable">Space Combat is Over (you win): </div><ul>';
-    win = 1;
-  } else {
-    html = '<div class="sf-readable">Space Combat is Over (you lose): </div><ul>';
-  }
 
   if (ac.length > 0) {
     html += '<li class="option" id="ok">acknowledge</li>';
@@ -1680,6 +1680,21 @@ playerPlaySpaceCombatOver(player, sector) {
   }
   html += '</ul>';
 
+
+  if (this.doesPlayerHaveShipsInSector(player, sector)) {
+    overlay_html = '<div class="sf-readable">Space Combat is Over (you win): </div>' + html; 
+    html = '<div class="sf-readable">Space Combat is Over (you win): </div>' + html; 
+    win = 1;
+  } else {
+    overlay_html = '<div class="sf-readable">Space Combat is Over (you lose): </div>' + html; 
+    html = '<div class="sf-readable">Space Combat is Over (you lose): </div>' + html;
+  }
+
+  if (this.space_combat_overlay.visible) {
+    this.space_combat_overlay.removeHits();
+    this.space_combat_overlay.updateStatus(overlay_html);
+  }
+
   this.updateStatus(html);
 
   $('.option').on('click', function () {
@@ -1699,6 +1714,7 @@ playerPlaySpaceCombatOver(player, sector) {
     }
 
     if (action2 == "action") {
+      imperium_self.space_combat_overlay.hide();
       imperium_self.playerSelectActionCard(function (card) {
         imperium_self.addMove("action_card_post\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("action_card\t" + imperium_self.game.player + "\t" + card);
@@ -1710,6 +1726,7 @@ playerPlaySpaceCombatOver(player, sector) {
     }
 
     if (action2 === "ok") {
+      imperium_self.space_combat_overlay.render(attacker, defender, sector, planet_idx, "<div>waiting for opponent</div>");
       // prepend so it happens after the modifiers
       //
       // ships_fire needs to make sure it permits any opponents to fire...
@@ -1777,8 +1794,10 @@ playerPlayGroundCombat(attacker, defender, sector, planet_idx) {
   }
 
   if (this.game.state.ground_combat_round > 1) {
+//alert("about to update status because not just round 1");
     this.ground_combat_overlay.updateStatus(attacker, defender, sector, planet_idx, overlay_html);
   } else {
+//alert("about to render because round 1");
     this.ground_combat_overlay.render(attacker, defender, sector, planet_idx, overlay_html);
   }
 
@@ -1802,6 +1821,7 @@ playerPlayGroundCombat(attacker, defender, sector, planet_idx) {
     }
 
     if (action2 == "action") {
+      imperium_self.ground_combat_overlay.removeHits();
       imperium_self.ground_combat_overlay.hide();
       imperium_self.playerSelectActionCard(function (card) {
         imperium_self.addMove("action_card_post\t" + imperium_self.game.player + "\t" + card);
@@ -1814,6 +1834,7 @@ playerPlayGroundCombat(attacker, defender, sector, planet_idx) {
     }
 
     if (action2 == "attack") {
+      imperium_self.ground_combat_overlay.removeHits();
       imperium_self.ground_combat_overlay.render(attacker, defender, sector, planet_idx, "<div>waiting for opponent</div>");
       // prepend so it happens after the modifiers
       //

@@ -32,20 +32,22 @@ class GroundCombatOverlay {
   }
 
 
+  removeHits() {
+    try {
+      let qs  = `.unit-table.small .unit-element .unit-box`;
+      document.querySelector(qs).style.backgroundColor = "transparent";
+      let qsn = `.dice-results .unit-box-num`;
+      document.querySelector(qsn).innerHTML = "?";
+    } catch (err) {}
+  }
+
+
+
   render(attacker, defender, sector, planet_idx, overlay_html) {
 
     this.attacker = attacker;
     this.defender = defender;
     this.sector = sector;
-
-    //
-    // eliminate green
-    //
-    let qs  = `.unit-table.small .unit-element .unit-box`;
-    if (overlay_html.indexOf("ssign") == -1 && document.querySelector(qs)) {
-      document.querySelector(qs).style.backgroundColor = "transparent";
-    }
-
 
     if (this.visible && document.querySelector(".ground-combat-menu")) {
       this.overlay.show(ImperiumGroundCombatOverlayTemplate(this.mod, attacker, defender, sector, planet_idx, overlay_html));

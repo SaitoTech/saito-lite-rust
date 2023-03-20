@@ -1,3 +1,33 @@
+.faction_sheet_action_card {
+  background-image: url("/imperium/img/action_card_template.png");
+  height: 26vh;
+  width: calc(26vh * 0.72110);
+  background-size: cover;
+  margin: 1vw;
+  padding: 1vw;
+  text-align: center;
+  font-size: 0.75vw;
+  transition: all 50ms;
+  margin-bottom: -15vw;
+  border: 1px solid;
+  float: left;
+  z-index: 1;
+}
+
+.overlay_action_card {
+  background-image: url("/imperium/img/action_card_template.png");
+  height: 34vh;
+  width: calc(34vh * 0.72110);
+  background-size: cover;
+  margin: 1vw;
+  padding: 1vw;
+  text-align: center;
+  font-size: 1em;
+  transition: all 50ms;
+  margin-bottom: -15vw;
+  border: 1px solid;
+  float: left;
+}
 
 .action_card {
   padding: 25px;

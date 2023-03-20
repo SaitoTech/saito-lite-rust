@@ -455,10 +455,22 @@
 	// hide combat overlays
 	//
 	if (this.space_combat_overlay.visible == 1) {
-	  this.space_combat_overlay.hide();
+	  this.space_combat_overlay.updateStatus('<div>space combat over</div><ul><li class="option" id="resume">acknowledge</li></ul>');
+	  $('#resume').on('click', () => {
+  	    this.space_combat_overlay.hide();
+	    this.restartQueue();
+	  });
+	  return 0;
 	}
 	if (this.ground_combat_overlay.visible == 1) {
-	  this.ground_combat_overlay.hide();
+	  // we use null because we know is open
+//alert("before update status in continue");
+	  this.ground_combat_overlay.updateStatus(null, null, null, null, '<div>ground combat over</div><ul><li class="option" id="resume">acknowledge</li></ul>');
+	  $('#resume').on('click', () => {
+  	    this.ground_combat_overlay.hide();
+	    this.restartQueue();
+	  });
+	  return 0;
 	}
 
 	if (this.handleFleetSupply(player, sector) == 0) {
@@ -3871,7 +3883,6 @@ console.log("K: " + z[k].name);
       //
       if (mv[0] === "assign_hits") {
 
-
 	//
 	// we need to permit both sides to play action cards before they fire and start destroying units
 	// so we check to make sure that "space_combat_player_menu" does not immediately precede us... if
@@ -4037,14 +4048,12 @@ console.log("K: " + z[k].name);
 
               }
 
-
 	      //
-	      // -- update assigned hits
+	      // -- re-rendering here removes the units from view
 	      //
-	      if (this.ground_combat_overlay.visible) {
-		this.ground_combat_overlay.render(attacker, defender, sector, planet_idx, "<div>hits assigned</div>");
-	      }
-
+	      //if (this.ground_combat_overlay.visible) {
+	      //  this.ground_combat_overlay.render(attacker, defender, sector, planet_idx, "<div>hits assigned</div>");
+	      //}
 
             }
 
@@ -4878,6 +4887,7 @@ console.log("K: " + z[k].name);
 	  // update space combat overlay if visible
 	  //
           if (this.ground_combat_overlay.visible) {
+//alert("before update status in infantry_fire");
 	    this.ground_combat_overlay.updateHits(attacker, defender, sector, planet_idx, combat_info);
           }
 
@@ -5707,6 +5717,7 @@ console.log("K: " + z[k].name);
 	// hide the overlay if an event happens, it can be restored
 	//
 	if (this.ground_combat_overlay.visible == 1) {
+//alert("hiding ground combat overlay because of ground_combat_event");
 	  this.ground_combat_overlay.hide();
 	}
 

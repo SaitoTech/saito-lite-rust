@@ -19,19 +19,19 @@ class SpaceCombatOverlay {
     this.overlay.hide();
   }
 
-  updateStatus(overlay_html) {
-
-    //
-    // eliminate green
-    //
-    let qs  = `.unit-table.small .unit-element .unit-box`;
-    if (overlay_html.indexOf("ssign") == -1) {
+  removeHits() {
+    try {
+      let qs  = `.unit-table.small .unit-element .unit-box`;
       document.querySelector(qs).style.backgroundColor = "transparent";
-    }
+      let qsn = `.dice-results .unit-box-num`;
+      document.querySelector(qsn).innerHTML = "?";
+    } catch (err) {}
+  }
+
+  updateStatus(overlay_html) {
     try {
       document.querySelector(".space-combat-menu").innerHTML = overlay_html;
     } catch (err) {}
-
   }
 
 
