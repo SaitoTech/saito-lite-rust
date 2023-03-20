@@ -3770,30 +3770,30 @@ console.log("K: " + z[k].name);
 
 	  try {
 
-	    sys.s.units[player-1][unit_idx].last_round_damaged = this.game.state.space_combat_round;
+	    sys.s.units[defender-1][unit_idx].last_round_damaged = this.game.state.space_combat_round;
 	    if ((player_moves == 1 && imperium_self.game.player == player) || imperium_self.game.player != player) {
-	      sys.s.units[player-1][unit_idx].strength--;
+	      sys.s.units[defender-1][unit_idx].strength--;
 	    }
-	    if (sys.s.units[player-1][unit_idx].strength <= 0) {
+	    if (sys.s.units[defender-1][unit_idx].strength <= 0) {
 
-	      this.updateLog(this.returnFactionNickname(player) + " " + sys.s.units[player-1][unit_idx].name + " destroyed");
-	      sys.s.units[player-1][unit_idx].destroyed = 1;
+	      this.updateLog(this.returnFactionNickname(defender) + " " + sys.s.units[defender-1][unit_idx].name + " destroyed");
+	      sys.s.units[defender-1][unit_idx].destroyed = 1;
 	      for (let z_index in z) {
-	        sys.s.units[player-1][unit_idx] = z[z_index].unitDestroyed(imperium_self, attacker, sys.s.units[player-1][unit_idx]);
+	        sys.s.units[defender-1][unit_idx] = z[z_index].unitDestroyed(imperium_self, attacker, sys.s.units[defender-1][unit_idx]);
 	      } 
 
 	      //
 	      // record units destroyed this round
 	      //
 	      try {
-	      if (sys.s.units[player-1][unit_idx].destroyed == 1) {
-		this.game.state.players_info[player-1].my_units_destroyed_this_combat_round.push(sys.s.units[player-1][unit_idx].type);
-		this.game.state.players_info[attacker-1].units_i_destroyed_this_combat_round.push(sys.s.units[player-1][unit_idx].type);
+	      if (sys.s.units[defender-1][unit_idx].destroyed == 1) {
+		this.game.state.players_info[defender-1].my_units_destroyed_this_combat_round.push(sys.s.units[defender-1][unit_idx].type);
+		this.game.state.players_info[attacker-1].units_i_destroyed_this_combat_round.push(sys.s.units[defender-1][unit_idx].type);
 	      }
 	      } catch (err) {}
 
 	    } else {
-	      this.updateLog(this.returnFactionNickname(player) + " " + sys.s.units[player-1][unit_idx].name + " damaged");
+	      this.updateLog(this.returnFactionNickname(defender) + " " + sys.s.units[defender-1][unit_idx].name + " damaged");
 	    }
 	  } catch (err) {
 	    console.log("Error? Not all hits assigned: " + err);
@@ -3869,6 +3869,7 @@ console.log("K: " + z[k].name);
       // triggers menu for user to choose how to assign hits
       //
       if (mv[0] === "assign_hits") {
+
 
 	//
 	// we need to permit both sides to play action cards before they fire and start destroying units
@@ -5362,9 +5363,7 @@ console.log("K: " + z[k].name);
 
 	if (this.game.player == attacker) {
           this.playerPlaySpaceCombat(attacker, defender, sector);        
-	} else {
-	  this.space_combat_overlay.render(attacker, defender, sector, "<div>waiting for move</div>");
-        }
+	}
 
         return 0;
       }

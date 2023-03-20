@@ -20,7 +20,15 @@ class SpaceCombatOverlay {
   }
 
   updateStatus(overlay_html) {
-    document.querySelector(".space-combat-menu").innerHTML = overlay_html;
+
+    //
+    // eliminate green
+    //
+    let qs  = `.unit-table.small .unit-element .unit-box`;
+    if (overlay_html.indexOf("ssign") == -1) {
+      document.querySelector(qs).style.backgroundColor = "transparent";
+      document.querySelector(".space-combat-menu").innerHTML = overlay_html;
+    }
   }
 
   render(attacker, defender, sector, overlay_html) {
@@ -36,6 +44,12 @@ class SpaceCombatOverlay {
       this.overlay.show(ImperiumSpaceCombatOverlayTemplate(this.mod, attacker, defender, sector, overlay_html));
       this.attachEvents();
     }
+
+    //
+    // eliminate green
+    //
+    let qs  = `.unit-table.small .unit-element .unit-box`;
+    document.querySelector(qs).style.backgroundColor = "transparent";
 
   }
 
@@ -63,27 +77,20 @@ class SpaceCombatOverlay {
 	shot_idx++;
       }
       if (combat_info.modified_roll[i] >= combat_info.hits_on[i]) {
-        let qs  = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} div:nth-child(${nth})`;
-        let qsn = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} div:nth-child(${nth}) .unit-box-num`;
+        let qs  = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results`;
+        let qsn = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
+console.log("1: " + qs);
         document.querySelector(qs).style.backgroundColor = "green";
+console.log("1: " + qsn);
         document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];
+console.log("1 done");
       } else {
-        let qsn = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} div:nth-child(${nth}) .unit-box-num`;
+        let qsn = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
+console.log("2: " + qsn);
         document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];
+console.log("2: done");
       }
     }
-
-    // combat_info = {};
-    // combat_info.attacker        = attacker;
-    // combat_info.hits_or_misses  = hits_or_misses;
-    // combat_info.units_firing    = units_firing;
-    // combat_info.hits_on         = hits_on;
-    // combat_info.unmodified_roll = unmodified_roll;  // unmodified roll
-    // combat_info.modified_roll   = modified_roll; // modified roll
-    // combat_info.reroll          = reroll; // rerolls
-      
-
-
   }
 
   attachEvents() {

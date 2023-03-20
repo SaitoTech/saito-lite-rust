@@ -850,6 +850,9 @@
 
   returnShipInformation(ship) {
 
+console.log("ASKED FOR SHIP INFORMATION");
+console.log(JSON.stringify(ship));
+
     let text = ship.name;
 
     for (let i = 1; i < ship.strength; i++) {

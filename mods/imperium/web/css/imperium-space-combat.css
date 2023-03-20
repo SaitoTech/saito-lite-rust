@@ -10,7 +10,7 @@
 }
 
 .space-combat-ui {
-  margin-top:5rem;
+  margin-top:6rem;
   padding: 2rem;
 }
 
@@ -72,5 +72,15 @@
   clear: both;
   width: 32rem;
   max-width: 32rem;
+}
+
+.space-combat-defender-name , .space-combat-attacker-name {
+  font-size: 2rem;
+  color: white;
+  font-family: 'bank-gothic';
+  text-align: center;
+  background-color: #0005;
+  padding: 1rem;
+  border-radius: 1rem;
 }
 
