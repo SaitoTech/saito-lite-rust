@@ -71,7 +71,7 @@
 
 #advanced-options-overlay-container .options_notice {
   margin-bottom: 1.2rem;
-  color: var(--saito-background-color);
+  color: var(--saito-font-color-dark-modal);
   font-style: italic;
   text-align: center;
 }

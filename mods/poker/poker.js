@@ -2946,9 +2946,9 @@ console.log("> > > > > " + this.game.state.player_credit[player-1]);
     if (crypto){
       crypto.onchange = updateChips;
     }
-    if (stake){
-      stake.onchange = updateChips;
-    }
+    // if (stake){
+    //   stake.onchange = updateChips;
+    // }
     if (numChips){
       numChips.onchange = updateChips;
     }
