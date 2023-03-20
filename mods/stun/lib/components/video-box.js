@@ -256,7 +256,7 @@ class VideoBox {
             }
           
           
-          this.stream = null;
+      
         }
 
     }
