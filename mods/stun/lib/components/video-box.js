@@ -69,8 +69,8 @@ class VideoBox {
 
     render(stream, placeholder_info = null) {
 
-        if (!this.stream) {
-            this.stream = stream;
+        if(stream){
+            this.stream = stream
         }
 
         // this.stream = stream;
@@ -82,8 +82,6 @@ class VideoBox {
                 this.renderStream({ muted: false })
                 console.log('rendering stream');
             }
-
-
 
 
             let name;
@@ -258,7 +256,7 @@ class VideoBox {
             }
           
           
-          
+          this.stream = null;
         }
 
     }
@@ -266,8 +264,6 @@ class VideoBox {
     streamExists() {
         return this.stream;
     }
-
-
 
 
 }

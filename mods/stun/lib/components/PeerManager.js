@@ -336,23 +336,17 @@ class PeerManager {
                     setTimeout(() => {
                         console.log('sending offer');
                         this.reconnect(peerId, type);
-                    }, 10000)
-
-            
+                    }, 10000);
 
             }
             if(peerConnection.connectionState === "connected"){
                 let sound = new Audio('/videocall/audio/enter-call.mp3');
                 sound.play();
             }
-            if(peerConnection.connectionState === "disconnected"){
+            // if(peerConnection.connectionState === "disconnected"){
               
-            }
-            if(peerConnection.connectionState === "failed"){
-                let sound = new Audio('/videocall/audio/end-call.mp3');
-                sound.play();
-            }
-
+            // }
+          
 
             this.app.connection.emit('stun-update-connection-message', this.room_code, peerId, peerConnection.connectionState);
         });
