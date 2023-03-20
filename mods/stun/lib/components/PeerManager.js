@@ -207,6 +207,9 @@ class PeerManager {
             if (this.to_join) {
                 this.join()
             }
+
+            let sound = new Audio('/videocall/audio/enter-call.mp3');
+            sound.play();
         })
 
         app.connection.on('update-media-preference', (kind, state) => {
@@ -329,15 +332,27 @@ class PeerManager {
 
         peerConnection.addEventListener('connectionstatechange', () => {
             if (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected') {
-                if (type === "offer") {
+                
                     setTimeout(() => {
                         console.log('sending offer');
                         this.reconnect(peerId, type);
                     }, 10000)
 
-                }
+            
 
             }
+            if(peerConnection.connectionState === "connected"){
+                let sound = new Audio('/videocall/audio/enter-call.mp3');
+                sound.play();
+            }
+            if(peerConnection.connectionState === "disconnected"){
+              
+            }
+            if(peerConnection.connectionState === "failed"){
+                let sound = new Audio('/videocall/audio/end-call.mp3');
+                sound.play();
+            }
+
 
             this.app.connection.emit('stun-update-connection-message', this.room_code, peerId, peerConnection.connectionState);
         });
@@ -395,6 +410,8 @@ class PeerManager {
             this.peers.delete(peerId);
         }
 
+        let sound = new Audio('/videocall/audio/end-call.mp3');
+        sound.play();
         this.app.connection.emit('video-box-remove', peerId, 'disconnection');
 
     }

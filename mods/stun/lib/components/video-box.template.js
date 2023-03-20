@@ -1,6 +1,6 @@
-module.exports = (streamId, muted, position) => {
+module.exports = (streamId, muted) => {
   return `
-    <div id="stream${streamId}"  class="video-box-container-large ${position}">
+    <div id="stream${streamId}"  class="video-box-container-large">
       <video id="${streamId}" ${muted ? "muted" : " "} autoplay playsinline="true" class="video-box"></video>
     </div>`
 

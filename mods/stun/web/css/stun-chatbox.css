@@ -88,9 +88,7 @@
 .stunx-chatbox .expanded-video {
   width: 75%;
   height: 100%;
-  background-color: #ccc;
   margin-right: 10px;
-  border: 2px solid #34495e;
 }
 
 .expanded-video .video-box-container-large {
@@ -99,6 +97,7 @@
   opacity: 0;
   animation: fade-in 0.5s ease-in;
   animation-fill-mode: forwards;
+  border: 2px solid var(--saito-primary);
 }
 
 @keyframes fade-in {
@@ -119,6 +118,8 @@
 
 .side-videos .video-box-container-large {
   height: 30%;
+
+  border: 2px solid var(--saito-secondary);
 }
 
 .stunx-chatbox .video-box-container-large {
@@ -521,6 +522,7 @@
   overscroll-behavior: contain; /* Added overscroll-behavior */
   justify-content: center;
   align-items: center;
+  height: 100vh;
   width: 100vw;
   margin: 0;
   position: fixed;

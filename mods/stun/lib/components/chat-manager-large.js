@@ -147,43 +147,29 @@ class VideoChatManager {
             document.querySelector('.audio_control').classList.remove('fa-microphone')
         }
 
+
+
         document.querySelector('.large-wrapper').addEventListener('click', (e) => {
             if (e.target.classList.contains('video-box')) {
-                // if we have the element, get the element id
                 let stream_id = e.target.id;
                 console.log(e.target, stream_id,)
-
-                // check if the element is in the side video or expanded video
                 console.log('praent element ', e.target.parentElement.parentElement)
-                if(e.target.parentElement.parentElement.classList.contains('expanded-video')){
+                if (e.target.parentElement.parentElement.classList.contains('expanded-video')) {
                     console.log('already expanded');
                     return;
-                }else {
-                    // remove the video already in the expanded video box and put in the side videos section
-                   let id =  document.querySelector('.expanded-video').querySelector('.video-box').id;
-                   console.log('current expanded id ', id);
-                   this.video_boxes[id].video_box.containerClass = "side-videos";
-                   this.video_boxes[id].video_box.rerender()
-
-                       // grab this video by the id in the saved video boxes and re render with the render function inside the respective functions
-                   this.video_boxes[stream_id].video_box.containerClass = "expanded-video"
-                   this.video_boxes[stream_id].video_box.rerender()
+                } else {
+                    let id = document.querySelector('.expanded-video').querySelector('.video-box').id;
+                    console.log('current expanded id ', id);
+                    this.video_boxes[id].video_box.containerClass = "side-videos";
+                    this.video_boxes[id].video_box.rerender()
+                    this.video_boxes[stream_id].video_box.containerClass = "expanded-video"
+                    this.video_boxes[stream_id].video_box.rerender()
                 }
-
-                
-                // if side video, put in expanded video, if in expanded video put in side video
-
-            
-                console.log('Child element clicked!');
-            }else {
-                console.log('not found')
             }
         }
         )
 
-
     }
-
 
 
     createRoomLink() {
