@@ -600,16 +600,19 @@ playerPlayBombardment(attacker, sector, planet_idx) {
   // some laws prohibit bombardment against
   //
   if (this.game.state.bombardment_against_cultural_planets == 0 && sys.p[planet_idx].type == "cultural") {
+    this.acknowledge_overlay("Bombardment not possible against cultural planets. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
     this.updateLog("Bombardment not possible against cultural planets. Skipping.");
     this.endTurn();
     return 0;
   }
   if (this.game.state.bombardment_against_industrial_planets == 0 && sys.p[planet_idx].type == "industrial") {
+    this.acknowledge_overlay("Bombardment not possible against industrial planets. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
     this.updateLog("Bombardment not possible against industrial planets. Skipping.");
     this.endTurn();
     return 0;
   }
   if (this.game.state.bombardment_against_hazardous_planets == 0 && sys.p[planet_idx].type == "hazardous") {
+    this.acknowledge_overlay("Bombardment not possible against hazardous planets. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
     this.updateLog("Bombardment not possible against hazardous planets. Skipping.");
     this.endTurn();
     return 0;
@@ -647,6 +650,7 @@ playerPlayBombardment(attacker, sector, planet_idx) {
     if (this.doesSectorContainPlayerUnit(attacker, sector, "warsun")) {
       this.updateLog("Warsuns make bombardment possible against PDS-defended planets...");
     } else {
+      this.acknowledge_overlay("Bombardment not possible against PDS-defended planets without War Sun. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
       this.updateLog("Bombardment not possible against PDS-defended planets. Skipping.");
       imperium_self.endTurn();
       return 0;

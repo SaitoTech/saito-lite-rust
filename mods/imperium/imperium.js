@@ -12,6 +12,9 @@ const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
 const InfluenceSelectionOverlay = require('./lib/overlays/influence-selection');
 const SpaceCombatOverlay = require('./lib/overlays/space-combat');
 const GroundCombatOverlay = require('./lib/overlays/ground-combat');
+const BombardmentOverlay = require('./lib/overlays/bombardment');
+const AntiFighterBarrageOverlay = require('./lib/overlays/anti-fighter-barrage');
+const AcknowledgeOverlay = require('./lib/overlays/acknowledge');
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
 const TokenBar = require('./lib/tokenbar');
@@ -52,9 +55,11 @@ class Imperium extends GameTemplate {
     this.influence_selection_overlay = new InfluenceSelectionOverlay(this.app, this);
     this.space_combat_overlay = new SpaceCombatOverlay(this.app, this);
     this.ground_combat_overlay = new GroundCombatOverlay(this.app, this);
+    this.bombardment_overlay = new BombardmentOverlay(this.app, this);
+    this.acknowledge_overlay = new AcknowledgeOverlay(this.app, this);
+    this.anti_fighter_barrage_overlay = new AntiFighterBarrageOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
-
 
     //
     // specific to THIS game
@@ -11760,7 +11765,8 @@ console.log("qe: " + qe);
       class : "game-units-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.space_combat_overlay.render("2_1");
+        game_mod.acknowledge_overlay.render("Quick message", '/imperium/img/backgrounds/bombardment.jpg');
+//        game_mod.space_combat_overlay.render("2_1");
 //        let array_of_cards = game_mod.returnPlayerUnexhaustedPlanetCards(game_mod.game.player); // unexhausted
 //        let total_trade_goods = game_mod.game.state.players_info[game_mod.game.player-1].goods;
 //        game_mod.resource_selection_overlay.render(2, array_of_cards, total_trade_goods, (planet_id) => {
@@ -12904,7 +12910,7 @@ handleSystemsMenuItem() {
     if (obj.extension == null)		{ obj.extension = 0; }			// 1 if replacing other unit as upgrade
     if (obj.may_fly_through_sectors_containing_other_ships == null) { obj.may_fly_through_sectors_containing_other_ships = 0; }
     if (obj.description == null)	{ obj.description = ""; }		// shown on unit sheet
-    if (obj.anti_fighter_barrage ==null){ obj.anti_fighter_barrage = 0; }
+    if (obj.anti_fighter_barrage == null){ obj.anti_fighter_barrage = 0; }
     if (obj.anti_fighter_barrage_combat ==null){ obj.anti_fighter_barrage_combat = 0; }
     if (obj.temporary_combat_modifier == null) { obj.temporary_combat_modifier = 0; } // some action cards manipulate
     if (obj.bombardment_rolls == null)  { obj.bombardment_rolls = 0; } // 0 means no bombardment abilities
@@ -18081,10 +18087,12 @@ console.log("K: " + z[k].name);
 
 	  let sys = this.returnSectorAndPlanets(sector);
 	  let defender = sys.p[planet_idx].owner;
+	  let ship_idx = [];
 	  let hits_to_assign = 0;
 	  let total_shots = 0;
 	  let hits_or_misses = [];
 	  let hits_on = [];
+	  let modified_roll = [];
 
 	  let bonus_shots = 0;
 
@@ -18103,9 +18111,13 @@ console.log("K: " + z[k].name);
 	        if (roll >= sys.p[planet_idx].units[attacker-1][i].bombardment_combat) {
 		  hits_to_assign++;
 		  hits_or_misses.push(1);
+		  modified_roll.push(roll);
+		  ship_idx.push(i);
 		  hits_on.push(sys.p[planet_idx].units[attacker-1][i].bombardment_combat);
 	        } else {
+		  modified_roll.push(roll);
 		  hits_or_misses.push(0);
+		  ship_idx.push(i);
 		  hits_on.push(sys.p[planet_idx].units[attacker-1][i].bombardment_combat);
 	        }
 	      }
@@ -18135,15 +18147,19 @@ console.log("K: " + z[k].name);
 
 	    if (roll >= bonus_hits_on) {
 	      hits_to_assign++;
+	      modified_roll.push(roll);
 	      hits_or_misses.push(1);
+// bonus rolls - assign to 1st ship
+              ship_idx.push(0);
 	      hits_on.push(sys.p[planet_idx].units[attacker-1][i].bombardment_combat);
 	    } else {
 	      hits_or_misses.push(0);
+// bonus rolls - assign to 1st ship
+	      modified_roll.push(roll);
+              ship_idx.push(0);
 	      hits_on.push(bonus_hits_on);
 	    }
 	  }
-
-
 
 
 	  //
@@ -18202,6 +18218,34 @@ console.log("K: " + z[k].name);
 	  } else {
 	    this.updateLog("Bombardment produces " + hits_to_assign + " hits");
 	  }
+
+        
+          //
+          // create an object with all this information to update our LOG
+          //
+          let combat_info = {};
+              combat_info.attacker        = attacker;
+              combat_info.defender        = defender;
+              combat_info.ship_idx        = ship_idx;
+              combat_info.hits_or_misses  = hits_or_misses;
+              combat_info.hits_on         = hits_on;
+              //combat_info.unmodified_roll = unmodified_roll;  // unmodified roll
+              combat_info.modified_roll   = modified_roll; // modified roll
+
+          //
+          // hide space combat overlay if visible
+          //
+          if (this.space_combat_overlay.visible) {
+            this.space_combat_overlay.hide();
+          }
+          
+	  //
+	  // and show bombardment overlay
+	  //
+	  this.bombardment_overlay.render(attacker, defender, sector, planet_idx, "Orbital Bombardment");
+          this.bombardment_overlay.updateHits(attacker, defender, sector, planet_idx, combat_info);
+        
+
 
           this.game.queue.push("assign_hits\t"+attacker+"\t"+sys.p[planet_idx].owner+"\tground\t"+sector+"\t"+planet_idx+"\t"+hits_to_assign+"\tbombardment");
 
@@ -18929,6 +18973,7 @@ console.log("K: " + z[k].name);
           this.updateLog(this.returnFactionNickname(attacker) + " anti-fighter barrage...");
 
 	  let total_shots = 0;
+	  let ship_idx = [];
 	  let total_hits = 0;
 	  let hits_or_misses = [];
 	  let hits_on = [];
@@ -18967,12 +19012,14 @@ console.log("K: " + z[k].name);
 	      if (roll >= sys.s.units[attacker-1][i].anti_fighter_barrage_combat) {
 	        total_hits++;
 	        total_shots++;
+	        ship_idx.push(i);
 	        hits_on.push(sys.s.units[attacker-1][i].anti_fighter_barrage_combat);
 	        hits_or_misses.push(1);
 	        units_firing.push(sys.s.units[attacker-1][i]);
 	      } else {
 	        total_shots++;
 	        hits_or_misses.push(0);
+	        ship_idx.push(i);
 	        hits_on.push(sys.s.units[attacker-1][i].anti_fighter_barrage_combat);
 	        units_firing.push(sys.s.units[attacker-1][i]);
 	      }
@@ -19045,6 +19092,7 @@ console.log("K: " + z[k].name);
 	  //
 	  let combat_info = {};
 	      combat_info.attacker        = attacker;
+	      combat_info.ship_idx        = ship_idx;
 	      combat_info.hits_or_misses  = hits_or_misses;
 	      combat_info.units_firing 	  = units_firing;
 	      combat_info.hits_on 	  = hits_on;
@@ -19053,6 +19101,10 @@ console.log("K: " + z[k].name);
 	      combat_info.reroll 	  = reroll; // rerolls
 
 	  this.updateCombatLog(combat_info);
+
+	  this.anti_fighter_barrage_overlay.render(attacker, defender, sector, 'Anti-Fighter-Barrage');
+	  this.anti_fighter_barrage_overlay.updateHits(attacker, defender, sector, combat_info);
+	  this.anti_fighter_barrage_overlay.updateStatusAndAcknowledge('Anti-Fighter-Barrage');
 
 	  //
 	  // total hits to assign
@@ -19158,7 +19210,8 @@ console.log("K: " + z[k].name);
       // BOMBARDMENT //
       /////////////////
       if (mv[0] === "bombardment") {
-  
+
+
   	let player       = mv[1];
         let sector       = mv[2];
         let planet_idx   = mv[3];
@@ -20459,16 +20512,19 @@ playerPlayBombardment(attacker, sector, planet_idx) {
   // some laws prohibit bombardment against
   //
   if (this.game.state.bombardment_against_cultural_planets == 0 && sys.p[planet_idx].type == "cultural") {
+    this.acknowledge_overlay("Bombardment not possible against cultural planets. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
     this.updateLog("Bombardment not possible against cultural planets. Skipping.");
     this.endTurn();
     return 0;
   }
   if (this.game.state.bombardment_against_industrial_planets == 0 && sys.p[planet_idx].type == "industrial") {
+    this.acknowledge_overlay("Bombardment not possible against industrial planets. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
     this.updateLog("Bombardment not possible against industrial planets. Skipping.");
     this.endTurn();
     return 0;
   }
   if (this.game.state.bombardment_against_hazardous_planets == 0 && sys.p[planet_idx].type == "hazardous") {
+    this.acknowledge_overlay("Bombardment not possible against hazardous planets. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
     this.updateLog("Bombardment not possible against hazardous planets. Skipping.");
     this.endTurn();
     return 0;
@@ -20506,6 +20562,7 @@ playerPlayBombardment(attacker, sector, planet_idx) {
     if (this.doesSectorContainPlayerUnit(attacker, sector, "warsun")) {
       this.updateLog("Warsuns make bombardment possible against PDS-defended planets...");
     } else {
+      this.acknowledge_overlay("Bombardment not possible against PDS-defended planets without War Sun. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
       this.updateLog("Bombardment not possible against PDS-defended planets. Skipping.");
       imperium_self.endTurn();
       return 0;

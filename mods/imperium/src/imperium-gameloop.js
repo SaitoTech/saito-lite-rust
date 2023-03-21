@@ -4373,10 +4373,12 @@ console.log("K: " + z[k].name);
 
 	  let sys = this.returnSectorAndPlanets(sector);
 	  let defender = sys.p[planet_idx].owner;
+	  let ship_idx = [];
 	  let hits_to_assign = 0;
 	  let total_shots = 0;
 	  let hits_or_misses = [];
 	  let hits_on = [];
+	  let modified_roll = [];
 
 	  let bonus_shots = 0;
 
@@ -4395,9 +4397,13 @@ console.log("K: " + z[k].name);
 	        if (roll >= sys.p[planet_idx].units[attacker-1][i].bombardment_combat) {
 		  hits_to_assign++;
 		  hits_or_misses.push(1);
+		  modified_roll.push(roll);
+		  ship_idx.push(i);
 		  hits_on.push(sys.p[planet_idx].units[attacker-1][i].bombardment_combat);
 	        } else {
+		  modified_roll.push(roll);
 		  hits_or_misses.push(0);
+		  ship_idx.push(i);
 		  hits_on.push(sys.p[planet_idx].units[attacker-1][i].bombardment_combat);
 	        }
 	      }
@@ -4427,15 +4433,19 @@ console.log("K: " + z[k].name);
 
 	    if (roll >= bonus_hits_on) {
 	      hits_to_assign++;
+	      modified_roll.push(roll);
 	      hits_or_misses.push(1);
+// bonus rolls - assign to 1st ship
+              ship_idx.push(0);
 	      hits_on.push(sys.p[planet_idx].units[attacker-1][i].bombardment_combat);
 	    } else {
 	      hits_or_misses.push(0);
+// bonus rolls - assign to 1st ship
+	      modified_roll.push(roll);
+              ship_idx.push(0);
 	      hits_on.push(bonus_hits_on);
 	    }
 	  }
-
-
 
 
 	  //
@@ -4494,6 +4504,34 @@ console.log("K: " + z[k].name);
 	  } else {
 	    this.updateLog("Bombardment produces " + hits_to_assign + " hits");
 	  }
+
+        
+          //
+          // create an object with all this information to update our LOG
+          //
+          let combat_info = {};
+              combat_info.attacker        = attacker;
+              combat_info.defender        = defender;
+              combat_info.ship_idx        = ship_idx;
+              combat_info.hits_or_misses  = hits_or_misses;
+              combat_info.hits_on         = hits_on;
+              //combat_info.unmodified_roll = unmodified_roll;  // unmodified roll
+              combat_info.modified_roll   = modified_roll; // modified roll
+
+          //
+          // hide space combat overlay if visible
+          //
+          if (this.space_combat_overlay.visible) {
+            this.space_combat_overlay.hide();
+          }
+          
+	  //
+	  // and show bombardment overlay
+	  //
+	  this.bombardment_overlay.render(attacker, defender, sector, planet_idx, "Orbital Bombardment");
+          this.bombardment_overlay.updateHits(attacker, defender, sector, planet_idx, combat_info);
+        
+
 
           this.game.queue.push("assign_hits\t"+attacker+"\t"+sys.p[planet_idx].owner+"\tground\t"+sector+"\t"+planet_idx+"\t"+hits_to_assign+"\tbombardment");
 
@@ -5221,6 +5259,7 @@ console.log("K: " + z[k].name);
           this.updateLog(this.returnFactionNickname(attacker) + " anti-fighter barrage...");
 
 	  let total_shots = 0;
+	  let ship_idx = [];
 	  let total_hits = 0;
 	  let hits_or_misses = [];
 	  let hits_on = [];
@@ -5259,12 +5298,14 @@ console.log("K: " + z[k].name);
 	      if (roll >= sys.s.units[attacker-1][i].anti_fighter_barrage_combat) {
 	        total_hits++;
 	        total_shots++;
+	        ship_idx.push(i);
 	        hits_on.push(sys.s.units[attacker-1][i].anti_fighter_barrage_combat);
 	        hits_or_misses.push(1);
 	        units_firing.push(sys.s.units[attacker-1][i]);
 	      } else {
 	        total_shots++;
 	        hits_or_misses.push(0);
+	        ship_idx.push(i);
 	        hits_on.push(sys.s.units[attacker-1][i].anti_fighter_barrage_combat);
 	        units_firing.push(sys.s.units[attacker-1][i]);
 	      }
@@ -5337,6 +5378,7 @@ console.log("K: " + z[k].name);
 	  //
 	  let combat_info = {};
 	      combat_info.attacker        = attacker;
+	      combat_info.ship_idx        = ship_idx;
 	      combat_info.hits_or_misses  = hits_or_misses;
 	      combat_info.units_firing 	  = units_firing;
 	      combat_info.hits_on 	  = hits_on;
@@ -5345,6 +5387,10 @@ console.log("K: " + z[k].name);
 	      combat_info.reroll 	  = reroll; // rerolls
 
 	  this.updateCombatLog(combat_info);
+
+	  this.anti_fighter_barrage_overlay.render(attacker, defender, sector, 'Anti-Fighter-Barrage');
+	  this.anti_fighter_barrage_overlay.updateHits(attacker, defender, sector, combat_info);
+	  this.anti_fighter_barrage_overlay.updateStatusAndAcknowledge('Anti-Fighter-Barrage');
 
 	  //
 	  // total hits to assign
@@ -5450,7 +5496,8 @@ console.log("K: " + z[k].name);
       // BOMBARDMENT //
       /////////////////
       if (mv[0] === "bombardment") {
-  
+
+
   	let player       = mv[1];
         let sector       = mv[2];
         let planet_idx   = mv[3];

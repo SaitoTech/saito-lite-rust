@@ -1,15 +1,11 @@
-const ImperiumSpaceCombatOverlayTemplate = require("./space-combat.template");
+const ImperiumBombardmentOverlayTemplate = require("./bombardment.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
-class SpaceCombatOverlay {
+class BombardmentOverlay {
 
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
-    this.attacker = null;
-    this.defender = null;
-    this.sector = null;
-    this.visible = 0;
     this.overlay = new SaitoOverlay(this.app, this.mod, false);
   }
 
@@ -18,16 +14,6 @@ class SpaceCombatOverlay {
     this.visible = 0;
     this.overlay.hide();
   }
-
-  removeHits() {
-    try {
-      let qs  = `.unit-table.small .unit-element .unit-box`;
-      document.querySelector(qs).style.backgroundColor = "transparent";
-      let qsn = `.dice-results .unit-box-num`;
-      document.querySelector(qsn).innerHTML = "?";
-    } catch (err) {}
-  }
-
 
   updateStatusAndAcknowledge(msg="") {
     if (!this.visible) { return; }
@@ -45,7 +31,7 @@ class SpaceCombatOverlay {
 
   updateStatus(overlay_html) {
     try {
-      document.querySelector(".space-combat-menu").innerHTML = overlay_html;
+      document.querySelector(".bombardment-menu").innerHTML = overlay_html;
     } catch (err) {}
   }
 
@@ -56,20 +42,13 @@ class SpaceCombatOverlay {
     this.defender = defender;
     this.sector = sector;
 
-    if (this.visible && document.querySelector(".space-combat-menu")) {
-      document.querySelector(".space-combat-menu").innerHTML = overlay_html;
+    if (this.visible && document.querySelector(".bombardment-menu")) {
+      document.querySelector(".bombardment-menu").innerHTML = overlay_html;
     } else {
       this.visible = 1;
-      this.overlay.show(ImperiumSpaceCombatOverlayTemplate(this.mod, attacker, defender, sector, overlay_html));
+      this.overlay.show(ImperiumBombardmentOverlayTemplate(this.mod, attacker, defender, sector, overlay_html));
       this.attachEvents();
     }
-
-    //
-    // eliminate green
-    //
-    let qs  = `.unit-table.small .unit-element .unit-box`;
-    document.querySelector(qs).style.backgroundColor = "transparent";
-
   }
 
   updateHits(attacker, defender, sector, combat_info) {
@@ -112,5 +91,5 @@ class SpaceCombatOverlay {
 
 }
 
-module.exports = SpaceCombatOverlay;
+module.exports = BombardmentOverlay;
 
