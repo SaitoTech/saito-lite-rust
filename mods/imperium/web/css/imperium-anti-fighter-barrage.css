@@ -9,6 +9,10 @@
   overflow-y: scroll;
 }
 
+.anti-fighter-barrage-menu {
+  text-align: center;
+}
+
 .anti-fighter-barrage-ui {
   padding: 2rem;
   color: white;

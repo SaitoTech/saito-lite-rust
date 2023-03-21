@@ -52,6 +52,9 @@ class SpaceCombatOverlay {
 
   render(attacker, defender, sector, overlay_html) {
 
+    if (this.mod.anti_fighter_barrage_overlay.visible) { this.mod.anti_fighter_barrage_overlay.hide(); }
+
+
     this.attacker = attacker;
     this.defender = defender;
     this.sector = sector;
@@ -74,6 +77,8 @@ class SpaceCombatOverlay {
 
   updateHits(attacker, defender, sector, combat_info) {
 
+console.log("COMBAT INFO: " + JSON.stringify(combat_info));
+
     let nth = 1;
     if (combat_info.attacker == 1) { nth = 3; }
 
@@ -86,7 +91,7 @@ class SpaceCombatOverlay {
     //
     attacker = combat_info.attacker;
 
-    let current_ship_idx = -1;
+    let current_ship_idx = -2;
     let shot_idx = 0;
     for (let i = 0; i < combat_info.ship_idx.length; i++) {
       if (combat_info.ship_idx[i] > current_ship_idx) {
@@ -95,13 +100,21 @@ class SpaceCombatOverlay {
       } else {
 	shot_idx++;
       }
+
+
       if (combat_info.modified_roll[i] >= combat_info.hits_on[i]) {
-        let qs = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results`;
+        let qs  = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results`;
         let qsn = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
+console.log("1 SQN: " + qsn); 
+console.log("ROLL: " + combat_info.modified_roll[i]);
         document.querySelector(qs).style.backgroundColor = "green";
+console.log("SET GREEN! " + qs);
         document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];
+console.log("ROLL: " + combat_info.modified_roll[i]);
       } else {
         let qsn = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
+console.log("2 SQN: " + qsn); 
+console.log("ROLL: " + combat_info.modified_roll[i]);
         document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];
       }
     }

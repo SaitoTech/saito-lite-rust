@@ -18,14 +18,16 @@ class AntiFighterBarrageOverlay {
   updateStatusAndAcknowledge(msg="") {
     if (!this.visible) { return; }
     try {
-      this.updateStatus(`<div>${msg}</div><ul><li class="option acknowledge" id="acknowledge">acknowledge</li></ul>`);
-      $('.acknowledge').on('click', () => {
+      this.updateStatus(`<div>${msg}</div><ul><li class="option acknowledge_it" id="acknowledge_it">acknowledge</li></ul>`);
+      // ACKNOWLEDGE or playerAcknowledgeNotice should attach event to this UI element
+      $('.acknowledge_it').on('click', () => {
         this.hide();
-        this.restartQueue();
+	if (document.querySelector('.acknowledge')) {
+	  document.querySelector(".acknowledge").click();
+	}
       });
     } catch (err) {
-      this.hide();
-      this.restartQueue();
+        this.hide();
     }
   }
 
@@ -75,12 +77,12 @@ class AntiFighterBarrageOverlay {
 	shot_idx++;
       }
       if (combat_info.modified_roll[i] >= combat_info.hits_on[i]) {
-        let qs = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results`;
-        let qsn = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
+        let qs = `.player-afb-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results`;
+        let qsn = `.player-afb-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
         document.querySelector(qs).style.backgroundColor = "green";
         document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];
       } else {
-        let qsn = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
+        let qsn = `.player-afb-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
         document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];
       }
     }

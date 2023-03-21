@@ -21,7 +21,7 @@ module.exports = ImperiumBombardmentOverlayTemplate = (imperium_self, attacker, 
       for (let z = 0; z < obj.bombardment_rolls; z++) {
       if (z == 0) {
         html += `
-            <div class="unit-element player-${attacker}-ship-${i} player-${attacker}-ship-${i}-shot-${z}">
+            <div class="unit-element player-bb-${attacker}-ship-${i} player-bb-${attacker}-ship-${i}-shot-${z}">
               <div class="unit-box-ship unit-box-ship-${obj.type}"></div>
               <div class="unit-box">
   	        <div class="unit-box-num">${obj.bombardment_combat}</div>
@@ -35,10 +35,10 @@ module.exports = ImperiumBombardmentOverlayTemplate = (imperium_self, attacker, 
         `;
       } else {
 	html += `
-            <div class="unit-element player-${attacker}-ship-${i} player-${attacker}-ship-${i}-shot-${z}">
+            <div class="unit-element player-bb-${attacker}-ship-${i} player-bb-${attacker}-ship-${i}-shot-${z}">
               <div class="unit-box-ship"></div>
               <div class="unit-box">
-  	        <div class="unit-box-num">${obj.bombardment}</div>
+  	        <div class="unit-box-num">${obj.bombardment_combat}</div>
 	        <div class="unit-box-desc">hits on</div>
 	      </div>
               <div class="unit-box dice-results">

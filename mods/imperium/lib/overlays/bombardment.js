@@ -21,11 +21,12 @@ class BombardmentOverlay {
       this.updateStatus(`<div>${msg}</div><ul><li class="option" id="resume">acknowledge</li></ul>`);
       $('#resume').on('click', () => {
         this.hide();
-        this.restartQueue();
+	if (document.querySelector(".acknowledge")) {
+	  document.querySelector(".acknowledge").click();
+	}
       });
     } catch (err) {
       this.hide();
-      this.restartQueue();
     }
   }
 
@@ -36,7 +37,7 @@ class BombardmentOverlay {
   }
 
 
-  render(attacker, defender, sector, overlay_html) {
+  render(attacker, defender, sector, planet_idx, overlay_html) {
 
     this.attacker = attacker;
     this.defender = defender;
@@ -51,13 +52,10 @@ class BombardmentOverlay {
     }
   }
 
-  updateHits(attacker, defender, sector, combat_info) {
-
-    let nth = 1;
-    if (combat_info.attacker == 1) { nth = 3; }
+  updateHits(attacker, defender, sector, planet_idx, combat_info) {
 
     if (this.visible == 0) {
-      this.render(attacker, defender, sector, '');
+      this.render(attacker, defender, sector, planet_idx, '');
     }
 
     //
@@ -74,13 +72,19 @@ class BombardmentOverlay {
       } else {
 	shot_idx++;
       }
+console.log("ROLL IS: " + combat_info.modified_roll[i]);
+console.log("HITS ON: " + combat_info.hits_on[i]);
       if (combat_info.modified_roll[i] >= combat_info.hits_on[i]) {
-        let qs = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results`;
-        let qsn = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
+        let qs = `.player-bb-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results`;
+        let qsn = `.player-bb-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
         document.querySelector(qs).style.backgroundColor = "green";
         document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];
+console.log("updating: " + qsn);
+console.log("to: " + combat_info.modified_roll[i]);
       } else {
-        let qsn = `.player-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
+        let qsn = `.player-bb-${attacker}-ship-${current_ship_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
+console.log("updating: " + qsn);
+console.log("to: " + combat_info.modified_roll[i]);
         document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];
       }
     }

@@ -14,7 +14,6 @@ const SpaceCombatOverlay = require('./lib/overlays/space-combat');
 const GroundCombatOverlay = require('./lib/overlays/ground-combat');
 const BombardmentOverlay = require('./lib/overlays/bombardment');
 const AntiFighterBarrageOverlay = require('./lib/overlays/anti-fighter-barrage');
-const AcknowledgeOverlay = require('./lib/overlays/acknowledge');
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
 const TokenBar = require('./lib/tokenbar');
@@ -56,7 +55,6 @@ class Imperium extends GameTemplate {
     this.space_combat_overlay = new SpaceCombatOverlay(this.app, this);
     this.ground_combat_overlay = new GroundCombatOverlay(this.app, this);
     this.bombardment_overlay = new BombardmentOverlay(this.app, this);
-    this.acknowledge_overlay = new AcknowledgeOverlay(this.app, this);
     this.anti_fighter_barrage_overlay = new AntiFighterBarrageOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
@@ -18096,17 +18094,23 @@ console.log("K: " + z[k].name);
 
 	  let bonus_shots = 0;
 
-	  for (let i = 0; i < sys.p[planet_idx].units[attacker-1].length; i++) {
-	    if (sys.p[planet_idx].units[attacker-1][i].bombardment_rolls > 0) {
-	      for (let b = 0; b < sys.p[planet_idx].units[attacker-1][i].bombardment_rolls; b++) {
+	  for (let i = 0; i < sys.s.units[attacker-1].length; i++) {
+	    if (sys.s.units[attacker-1][i].bombardment_rolls > 0) {
+	      for (let b = 0; b < sys.s.units[attacker-1][i].bombardment_rolls; b++) {
 
 	        let roll = this.rollDice(10);
+console.log("1 roll: " + roll);
       	        for (z_index in z) { roll = z[z_index].modifyCombatRoll(imperium_self, attacker, sys.p[planet_idx].owner, this.game.player, "bombardment", roll); }
+console.log("2 roll: " + roll);
 
   	        roll += this.game.state.players_info[attacker-1].bombardment_roll_modifier;
+console.log("3 roll: " + roll);
 	        roll += this.game.state.players_info[attacker-1].temporary_bombardment_roll_modifier;
+console.log("4 roll: " + roll);
 	        roll += this.game.state.players_info[attacker-1].combat_roll_modifier;
+console.log("5 roll: " + roll);
 	        roll += sys.s.units[attacker-1][i].temporary_combat_modifier;
+console.log("6 roll: " + roll);
 
 	        if (roll >= sys.p[planet_idx].units[attacker-1][i].bombardment_combat) {
 		  hits_to_assign++;
@@ -18232,6 +18236,8 @@ console.log("K: " + z[k].name);
               //combat_info.unmodified_roll = unmodified_roll;  // unmodified roll
               combat_info.modified_roll   = modified_roll; // modified roll
 
+console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
+
           //
           // hide space combat overlay if visible
           //
@@ -18244,8 +18250,7 @@ console.log("K: " + z[k].name);
 	  //
 	  this.bombardment_overlay.render(attacker, defender, sector, planet_idx, "Orbital Bombardment");
           this.bombardment_overlay.updateHits(attacker, defender, sector, planet_idx, combat_info);
-        
-
+          this.bombardment_overlay.updateStatusAndAcknowledge("Orbital Bombardment - Results");
 
           this.game.queue.push("assign_hits\t"+attacker+"\t"+sys.p[planet_idx].owner+"\tground\t"+sector+"\t"+planet_idx+"\t"+hits_to_assign+"\tbombardment");
 
@@ -18821,6 +18826,11 @@ console.log("K: " + z[k].name);
 	//
 	if (this.space_combat_overlay.visible == 1) {
 	  this.space_combat_overlay.hide();
+	  if (document.querySelector("status-message")) {
+	    if (this.game.player != player) {
+  	      document.querySelector("status-message").innerHTML = "opponent playing special space-combat event";
+	    }
+	  }
 	}
 
 	return z[z_index].spaceCombatEvent(this, player, sector);
@@ -19478,8 +19488,12 @@ console.log("K: " + z[k].name);
 	// hide the overlay if an event happens, it can be restored
 	//
 	if (this.ground_combat_overlay.visible == 1) {
-//alert("hiding ground combat overlay because of ground_combat_event");
 	  this.ground_combat_overlay.hide();
+	  if (document.querySelector("status-message")) {
+	    if (this.game.player != player) {
+  	      document.querySelector("status-message").innerHTML = "opponent playing special ground-combat event";
+	    }
+	  }
 	}
 
 	return z[z_index].groundCombatEvent(this, player, sector, planet_idx);
@@ -20512,19 +20526,19 @@ playerPlayBombardment(attacker, sector, planet_idx) {
   // some laws prohibit bombardment against
   //
   if (this.game.state.bombardment_against_cultural_planets == 0 && sys.p[planet_idx].type == "cultural") {
-    this.acknowledge_overlay("Bombardment not possible against cultural planets. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
+    this.acknowledge_overlay.render("Bombardment not possible against cultural planets. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
     this.updateLog("Bombardment not possible against cultural planets. Skipping.");
     this.endTurn();
     return 0;
   }
   if (this.game.state.bombardment_against_industrial_planets == 0 && sys.p[planet_idx].type == "industrial") {
-    this.acknowledge_overlay("Bombardment not possible against industrial planets. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
+    this.acknowledge_overlay.render("Bombardment not possible against industrial planets. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
     this.updateLog("Bombardment not possible against industrial planets. Skipping.");
     this.endTurn();
     return 0;
   }
   if (this.game.state.bombardment_against_hazardous_planets == 0 && sys.p[planet_idx].type == "hazardous") {
-    this.acknowledge_overlay("Bombardment not possible against hazardous planets. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
+    this.acknowledge_overlay.render("Bombardment not possible against hazardous planets. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
     this.updateLog("Bombardment not possible against hazardous planets. Skipping.");
     this.endTurn();
     return 0;
@@ -20562,7 +20576,7 @@ playerPlayBombardment(attacker, sector, planet_idx) {
     if (this.doesSectorContainPlayerUnit(attacker, sector, "warsun")) {
       this.updateLog("Warsuns make bombardment possible against PDS-defended planets...");
     } else {
-      this.acknowledge_overlay("Bombardment not possible against PDS-defended planets without War Sun. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
+      this.acknowledge_overlay.render("Bombardment not possible against PDS-defended planets without War Sun. Skipping.", '/imperium/img/backgrounds/bombardment.jpg');
       this.updateLog("Bombardment not possible against PDS-defended planets. Skipping.");
       imperium_self.endTurn();
       return 0;
@@ -20644,14 +20658,14 @@ playerPlayBombardment(attacker, sector, planet_idx) {
 playerAcknowledgeNotice(msg, mycallback) {
 
   let html = '<div class="sf-readable">' + msg + "</div><ul>";
-  html += '<li class="textchoice" id="confirmit">I understand...</li>';
+  html += '<li class="textchoice acknowledge" id="acknowledge">I understand...</li>';
   html += '</ul></p>';
 
   this.updateStatus(html);
 
   try {
-  $('.textchoice').off();
-  $('.textchoice').on('click', function () { mycallback(); });
+  $('.acknowledge').off();
+  $('.acknowledge').on('click', function () { mycallback(); });
   } catch (err) {}
 
   return 0;
@@ -30165,11 +30179,20 @@ console.log(JSON.stringify(ship));
     if (!sys) { return 0; }
 
     for (let i = 0; i < sys.s.units[player-1].length; i++) {
-      if (sys.s.units[player-1][i].type == unittype) { return 1; }
+      if (sys.s.units[player-1][i].type == unittype) { 
+	// as long as it isn't destroyed
+	if (sys.s.units[player-1][i].destroyed == 0 && sys.s.units[player-1][i].strength > 0) {
+	  return 1;
+	}
+      }
     }
     for (let i = 0; i < sys.p.length; i++) {
       for (let ii = 0; ii < sys.p[i].units[player-1].length; ii++) {
-        if (sys.p[i].units[player-1][ii].type == unittype) { return 1; }
+        if (sys.p[i].units[player-1][ii].type == unittype) { 
+	  if (sys.p[i].units[player-1][i].destroyed == 0 && sys.p[i].units[player-1][i].strength > 0) {
+	    return 1;
+	  }
+	}
       }
     }
     return 0;

@@ -21,7 +21,7 @@ module.exports = ImperiumAntiFighterBarrageOverlayTemplate = (imperium_self, att
       for (let z = 0; z < obj.anti_fighter_barrage; z++) {
       if (z == 0) {
         html += `
-            <div class="unit-element player-${attacker}-ship-${i} player-${attacker}-ship-${i}-shot-${z}">
+            <div class="unit-element player-afb-${attacker}-ship-${i} player-afb-${attacker}-ship-${i}-shot-${z}">
               <div class="unit-box-ship unit-box-ship-${obj.type}"></div>
               <div class="unit-box">
   	        <div class="unit-box-num">${obj.anti_fighter_barrage_combat}</div>
@@ -35,7 +35,7 @@ module.exports = ImperiumAntiFighterBarrageOverlayTemplate = (imperium_self, att
         `;
       } else {
 	html += `
-            <div class="unit-element player-${attacker}-ship-${i} player-${attacker}-ship-${i}-shot-${z}">
+            <div class="unit-element player-afb-${attacker}-ship-${i} player-afb-${attacker}-ship-${i}-shot-${z}">
               <div class="unit-box-ship"></div>
               <div class="unit-box">
   	        <div class="unit-box-num">${obj.anti_fighter_barrage_combat}</div>

@@ -4382,17 +4382,23 @@ console.log("K: " + z[k].name);
 
 	  let bonus_shots = 0;
 
-	  for (let i = 0; i < sys.p[planet_idx].units[attacker-1].length; i++) {
-	    if (sys.p[planet_idx].units[attacker-1][i].bombardment_rolls > 0) {
-	      for (let b = 0; b < sys.p[planet_idx].units[attacker-1][i].bombardment_rolls; b++) {
+	  for (let i = 0; i < sys.s.units[attacker-1].length; i++) {
+	    if (sys.s.units[attacker-1][i].bombardment_rolls > 0) {
+	      for (let b = 0; b < sys.s.units[attacker-1][i].bombardment_rolls; b++) {
 
 	        let roll = this.rollDice(10);
+console.log("1 roll: " + roll);
       	        for (z_index in z) { roll = z[z_index].modifyCombatRoll(imperium_self, attacker, sys.p[planet_idx].owner, this.game.player, "bombardment", roll); }
+console.log("2 roll: " + roll);
 
   	        roll += this.game.state.players_info[attacker-1].bombardment_roll_modifier;
+console.log("3 roll: " + roll);
 	        roll += this.game.state.players_info[attacker-1].temporary_bombardment_roll_modifier;
+console.log("4 roll: " + roll);
 	        roll += this.game.state.players_info[attacker-1].combat_roll_modifier;
+console.log("5 roll: " + roll);
 	        roll += sys.s.units[attacker-1][i].temporary_combat_modifier;
+console.log("6 roll: " + roll);
 
 	        if (roll >= sys.p[planet_idx].units[attacker-1][i].bombardment_combat) {
 		  hits_to_assign++;
@@ -4518,6 +4524,8 @@ console.log("K: " + z[k].name);
               //combat_info.unmodified_roll = unmodified_roll;  // unmodified roll
               combat_info.modified_roll   = modified_roll; // modified roll
 
+console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
+
           //
           // hide space combat overlay if visible
           //
@@ -4530,8 +4538,7 @@ console.log("K: " + z[k].name);
 	  //
 	  this.bombardment_overlay.render(attacker, defender, sector, planet_idx, "Orbital Bombardment");
           this.bombardment_overlay.updateHits(attacker, defender, sector, planet_idx, combat_info);
-        
-
+          this.bombardment_overlay.updateStatusAndAcknowledge("Orbital Bombardment - Results");
 
           this.game.queue.push("assign_hits\t"+attacker+"\t"+sys.p[planet_idx].owner+"\tground\t"+sector+"\t"+planet_idx+"\t"+hits_to_assign+"\tbombardment");
 
@@ -5107,6 +5114,11 @@ console.log("K: " + z[k].name);
 	//
 	if (this.space_combat_overlay.visible == 1) {
 	  this.space_combat_overlay.hide();
+	  if (document.querySelector("status-message")) {
+	    if (this.game.player != player) {
+  	      document.querySelector("status-message").innerHTML = "opponent playing special space-combat event";
+	    }
+	  }
 	}
 
 	return z[z_index].spaceCombatEvent(this, player, sector);
@@ -5764,8 +5776,12 @@ console.log("K: " + z[k].name);
 	// hide the overlay if an event happens, it can be restored
 	//
 	if (this.ground_combat_overlay.visible == 1) {
-//alert("hiding ground combat overlay because of ground_combat_event");
 	  this.ground_combat_overlay.hide();
+	  if (document.querySelector("status-message")) {
+	    if (this.game.player != player) {
+  	      document.querySelector("status-message").innerHTML = "opponent playing special ground-combat event";
+	    }
+	  }
 	}
 
 	return z[z_index].groundCombatEvent(this, player, sector, planet_idx);
