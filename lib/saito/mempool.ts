@@ -220,7 +220,10 @@ class Mempool {
       }
 
       if (!this.app.miner.isMining()) {
-        if (this.mempool.golden_tickets.length == 0) {
+	//
+	// if we stop mining and TXS build up, we'll start again
+	//
+        if (this.mempool.golden_tickets.length == 0 || this.mempool.transactions.length > 10) {
           this.app.miner.startMining();
         } else {
           console.log("mining mining");
