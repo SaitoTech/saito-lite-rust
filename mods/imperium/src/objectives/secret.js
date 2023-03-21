@@ -446,7 +446,7 @@
 
   this.importSecretObjective('cultural-diplomacy', {
       name 		: 	"Cultural Diplomacy" ,
-      text		:	"Control at least 4 cultural planets" ,
+      text		:	"Control at least 4 blue planets" ,
       type		: 	"secret" ,
       canPlayerScoreVictoryPoints	: function(imperium_self, player) {
         let cultural = 0;

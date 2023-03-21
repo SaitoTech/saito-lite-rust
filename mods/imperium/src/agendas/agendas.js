@@ -709,7 +709,7 @@
   	name : "Holy Planet of Ixth" ,
   	type : "Law" ,
 	elect : "planet" ,
-  	text : "Elect a cultural planet. The planet's controller gains 1 VP. Units cannot be landed, produced or placed on this planet" ,
+  	text : "Elect a blue/cultural planet. The planet's controller gains 1 VP. Units cannot be landed, produced or placed on this planet" ,
         returnAgendaOptions : function(imperium_self) {
 	  return imperium_self.returnPlanetsOnBoard(function(planet) {
 	    if (planet.type === "cultural") { return 1; } return 0; 
@@ -774,7 +774,7 @@
         name : "Research Team: Biotic" ,
         type : "Law" ,
 	elect : "planet" ,
-        text : "Elect an industrial planet. The owner may exhaust this planet to ignore 1 green technology prerequisite the next time they research a technology" ,
+        text : "Elect a green/industrial planet. The owner may exhaust this planet to ignore 1 green technology prerequisite when researching a technology" ,
         returnAgendaOptions : function(imperium_self) {
           return imperium_self.returnPlanetsOnBoard(function(planet) {
             if (planet.type === "industrial") { return 1; } return 0;
@@ -844,7 +844,7 @@
         name : "Research Team: Cybernetic" ,
         type : "Law" ,
 	elect : "planet" ,
-        text : "Elect an industrial planet. The owner may exhaust this planet to ignore 1 yellow technology prerequisite the next time they research a technology" ,
+        text : "Elect a green/industrial planet. The owner may exhaust this planet to ignore 1 yellow technology prerequisite the next time they research a technology" ,
         returnAgendaOptions : function(imperium_self) {
           return imperium_self.returnPlanetsOnBoard(function(planet) {
             if (planet.type === "industrial") { return 1; } return 0;
@@ -914,7 +914,7 @@
         name : "Research Team: Propulsion" ,
         type : "Law" ,
 	elect : "planet" ,
-        text : "Elect an industrial planet. The owner may exhaust this planet to ignore 1 blue technology prerequisite the next time they research a technology" ,
+        text : "Elect a green/industrial planet. The owner may exhaust this planet to ignore 1 blue technology prerequisite the next time they research a technology" ,
         returnAgendaOptions : function(imperium_self) {
           return imperium_self.returnPlanetsOnBoard(function(planet) {
             if (planet.type === "industrial") { return 1; } return 0;
@@ -983,7 +983,7 @@
         name : "Research Team: Warfare" ,
         type : "Law" ,
 	elect : "planet" ,
-        text : "Elect an hazardous planet. The owner may exhaust this planet to ignore 1 red technology prerequisite the next time they research a technology" ,
+        text : "Elect a red/hazardous planet. The owner may exhaust this planet to ignore 1 red technology prerequisite when researching a technology" ,
         returnAgendaOptions : function(imperium_self) {
           return imperium_self.returnPlanetsOnBoard(function(planet) {
             if (planet.type === "industrial") { return 1; } return 0;
@@ -1054,7 +1054,7 @@
   	name : "Demilitarized Zone" ,
   	type : "Law" ,
 	elect : "planet" ,
-  	text : "Elect a cultural planet. All units are destroyed and cannot be landed, produced or placed on this planet" ,
+  	text : "Elect a blue/cultural planet. All units are destroyed and cannot be landed, produced or placed on this planet" ,
         returnAgendaOptions : function(imperium_self) {
 	  return imperium_self.returnPlanetsOnBoard(function(planet) {
 	    if (planet.type === "cultural") { return 1; } return 0; 
@@ -1109,7 +1109,7 @@
   	name : "Core Mining" ,
   	type : "Law" ,
 	elect : "planet" ,
-  	text : "Elect a hazardous planet. Destroy half the infantry on that planet and increase its resource value by +2" ,
+  	text : "Elect a red/hazardous planet. Destroy half the infantry on that planet and increase its resource value by +2" ,
         returnAgendaOptions : function(imperium_self) {
 	  return imperium_self.returnPlanetsOnBoard(function(planet) {
 	    if (planet.type === "hazardous") { return 1; } return 0; 
@@ -1603,7 +1603,7 @@
   this.importAgendaCard('conventions-of-war', {
   	name : "Conventions of War" ,
   	type : "Law" ,
-  	text : "FOR: cultural planets are exempt from bombardment, AGAINST: players who vote against discard all action cards" ,
+  	text : "FOR: blue/cultural planets are exempt from bombardment, AGAINST: players who vote against discard all action cards" ,
         returnAgendaOptions : function(imperium_self) {
 	  return ["for","against"];
 	},
@@ -1935,7 +1935,7 @@
         name : "Terraforming Initiative" ,
         type : "Law" ,
         elect : "planet" ,
-        text : "Elect a hazardous planet. The resource and influence values of this planet are increased by 1 point each" ,
+        text : "Elect a red/hazardous planet. The resource and influence values of this planet are increased by 1 point each" ,
         returnAgendaOptions : function(imperium_self) {
           return imperium_self.returnPlanetsOnBoard(function(planet) {
             if (planet.type === "hazardous") { return 1; } return 0;
@@ -1991,7 +1991,7 @@
         name : "Senate Sanctuary" ,
         type : "Law" ,
         elect : "planet" ,
-        text : "Elect a cultural planet. The influence value of this planet is increased by 2 points" ,
+        text : "Elect a blue/cultural planet. The influence value of this planet is increased by 2 points" ,
         returnAgendaOptions : function(imperium_self) {
           return imperium_self.returnPlanetsOnBoard(function(planet) {
             if (planet.type === "cultural") { return 1; } return 0;
