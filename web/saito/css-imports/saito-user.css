@@ -42,6 +42,8 @@ Saito User
   grid-column-start: 1;
   grid-column-end: span 1;
   grid-row: span 2;
+  position: relative;
+  z-index: 5px;
 }
 
 .saito-user>.saito-address {
