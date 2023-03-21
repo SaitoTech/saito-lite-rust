@@ -611,7 +611,6 @@ class League extends ModTemplate {
 
   /////////////////////
   /////////////////////
-
   async getRelevantLeagues(game){
 
     let sql = `SELECT * FROM leagues WHERE game = $game`;
@@ -623,8 +622,6 @@ class League extends ModTemplate {
     return sqlResults || localLeagues;
   } 
 
-  /////////////////////
-  /////////////////////
 
   async getPlayersFromLeague(league_id, players){
 
@@ -635,6 +632,8 @@ class League extends ModTemplate {
     let sqlResults = await this.app.storage.queryDatabase(sql2, [league_id], "league");
 
     let league = this.returnLeague(league_id);
+
+    if (!league) { return sqlResults; }
 
     let localStats = (league) ? league.players.filter(p => players.includes(p.publickey)) : null;
 
