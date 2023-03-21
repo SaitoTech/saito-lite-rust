@@ -7,11 +7,11 @@ module.exports = (app, mod, league) => {
           <div>Type: ${league.status}</div>
           <div>Algo: ${league.ranking_algorithm}</div>
           <div>Players: ${league.players.length}</div>
-          <div>Admin: ${league.admin.substring(0,10)+"..."}</div>
+          <div style="display:flex;">Admin: ${app.browser.returnAddressHTML(league.admin)}</div>
         </div>
         <div class="league-component-existing-league-controls">`;
 
-    if ((league.myRank == undefined || league.myRank < 0) && (league.max_players == 0 || league.playerCnt < league.max_players)){
+    if (!league.rank){
      html +=`<button class="league-component-existing-league league-join-button">Join</button>`; 
     }
 

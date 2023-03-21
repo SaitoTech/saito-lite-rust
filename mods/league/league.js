@@ -49,7 +49,7 @@ class League extends ModTemplate {
 
 
     this.icon_fa = "fas fa-user-friends";
-    this.debug = false;
+    this.debug = true;
   }
 
 
@@ -208,10 +208,6 @@ class League extends ModTemplate {
               for (let league of res.rows){
                  league_self.addLeague(league);
               } 
-              //Main module
-      	      app.connection.emit("leagues-render-request");
-              //Sidebar component
-      	      app.connection.emit("league-rankings-render-request");
             }
 
             //
@@ -229,7 +225,6 @@ class League extends ModTemplate {
  	            return 0;
 	        }
         );
-        window.history.pushState("", "", `/league/`);
       }
 
     }
@@ -283,6 +278,12 @@ class League extends ModTemplate {
 
       this.saveLeagues();
 
+      if (this.app.BROWSER){
+        this.app.connection.emit("leagues-render-request");
+        this.app.connection.emit("league-rankings-render-request");
+      }
+
+
     } catch (err) {
       console.log("ERROR in league onConfirmation: " + err);
     }
@@ -330,10 +331,11 @@ class League extends ModTemplate {
     if (obj == null) { return null; }
 
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    newtx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
     newtx.msg = this.validateLeague(obj);
     newtx.msg.module = "League";
     newtx.msg.request = "league create";
+
+    newtx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
 
     return this.app.wallet.signTransaction(newtx);
 
@@ -347,10 +349,6 @@ class League extends ModTemplate {
     obj.id = tx.transaction.sig;
 
     this.addLeague(obj);
-
-    if (this.app.BROWSER){
-      this.app.connection.emit("leagues-render-request");
-    }
 
     return;
 
@@ -378,7 +376,7 @@ class League extends ModTemplate {
   ///////////////////
   // join a league //
   ///////////////////
-  createJoinTransaction(league_id="", data = null) {
+  createJoinTransaction(league_id="", email = "") {
 
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx = this.addressToAll(newtx, league_id);
@@ -389,10 +387,8 @@ class League extends ModTemplate {
       request:   "league join",
     };
 
-    if (data != null && typeof data == "object"){
-      if (data.email) {
-      	newtx.msg.email = data.email;
-      }
+    if (email) {
+      newtx.msg.email = email;
     }
 
     return this.app.wallet.signTransaction(newtx);
@@ -489,9 +485,6 @@ class League extends ModTemplate {
     this.app.storage.executeDatabase(sql2, params2, "league");
 
     this.removeLeague(txmsg.league_id);
-    if (this.app.BROWSER){
-      this.app.connection.emit("leagues-render-request");
-    }
 
   }
 
@@ -553,11 +546,11 @@ class League extends ModTemplate {
         await this.updateHighScore(publickeys, leag, txmsg);
       }
 
-      //Main module
-      this.app.connection.emit("leagues-render-request");
+    }
+
       //Sidebar component
       this.app.connection.emit("league-rankings-render-request");    
-    }
+
   }
 
   ////////////////////////

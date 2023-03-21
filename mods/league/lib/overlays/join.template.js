@@ -5,20 +5,23 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
 	let key = app.keychain.returnKey({ publickey : pubKey });
 	let user_email = key.email || "";
 
+	console.log(JSON.parse(JSON.stringify(league)));
+
 	let html = `
-	    	    <div class="league-join-overlay-box">
-    	      <img src="/${game}/img/arcade/arcade.jpg" />
-    	      <div class="title-box">
-			        <div class="title">${league.name}</div>
-			        <div class="description">${league.description}</div>
-			      </div>
+	   <div class="league-join-overlay-box">
+        <img src="/${game}/img/arcade/arcade.jpg" />
+        <div class="title-box">
+		       <div class="title">${league.name}</div>
+		       <div class="description">${league.description}</div>
+		    </div>
+		    <div class="league-join-controls">
 						`;
 
-    	if (league.myRank) {
+  if (league.rank) {
 
-	  return html+`<div class="league-join-controls">
-	        <p class="league-join-email-note">You've joined this league</p>  
-	        <p class="league-join-email-note">Challenge other players at <a href="/arcade">Arcade</a> , <a href="/redsquare">Redsquare</a><a> </a></p>
+	  return html+`
+	        <p>You've joined this league</p>  
+	        <p>Create a game at <a href="/arcade">Arcade</a> , or join the conversation at <a href="/redsquare">Redsquare</a></p>
 	      </div>
 	    </div>
 
@@ -26,21 +29,12 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
   	
 	} else {
 
+		if (user_email){
+			html+= `<p>Note: joining the league will share your email (${user_email}) with the admin</p>`;
+		}
 
 	  return html + `
-	  					<div class="league-join-controls">
-                <p class="league-join-email-note">joining a league shares your email address with the league admin, and enables email/password account login</p>
-									<form id="league-join-form" name="league-join-form" data-form-id="${league.id}">
-                  <div class="saito-login-overlay-field">
-                    <input type="text" id="saito-login-email" class="saito-login-email" placeholder="email@domain.com" value="${user_email}" />
-                  </div>
-
-                  <div class="saito-login-overlay-field">
-                    <input type="text" id="saito-login-password" class="saito-login-password" placeholder="password" value="" />
-                  </div>
-
-   	          <button type="submit" class="saito-button-primary fat league-join-btn" id="league-join-btn" data-cmd="join" >JOIN LEAGUE</button> 
-	        </form>
+	        <button type="button" class="saito-button-primary fat" id="league-join-btn" data-id="${league.id}">JOIN LEAGUE</button>    
 	      </div>
 	    </div>
 

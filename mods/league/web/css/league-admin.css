@@ -312,16 +312,6 @@ i.link_icon.private {
   border-radius: 1rem;
 }
 
-.league-join-btn {
-  color: #fff;
-  margin-left: 0rem;
-  width: 100%;
-  margin-bottom: 1.5rem;
-  margin-top: 0rem;
-  display: inline-block;
-  width: 20rem;
-  padding: 1.2rem !important;
-}
 
 .league-join-table {
   color: #222;
@@ -364,18 +354,11 @@ i.link_icon.private {
 
 .league-join-controls {
   text-align: center;
+  padding: 1rem;
 }
 
-.league-join-email-note {
-  font-size: 2.5rem;
-  font-style: italic;
-  color: #444;
+.league-join-controls button{
   margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.league-join-email-note a {
-  color: var(--saito-primary);
 }
 
 .league-join-controls input {
