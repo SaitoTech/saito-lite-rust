@@ -23,10 +23,10 @@ class Recovery extends ModTemplate {
       if (new_keychain_hash != this.keychain_hash) {
 
 	      this.keychain_hash = new_keychain_hash;
-        console.log("our wallet has updated, so rebroadcasting wallet recovery TX");
 	      let key = app.keychain.returnKey(app.wallet.returnPublicKey());
 	      if (key) {
 	        if (key.wallet_decryption_secret && key.wallet_retrieval_hash) {
+            console.info("our wallet has updated, so rebroadcasting wallet recovery TX");
             let newtx = this.createBackupTransaction(key.wallet_decryption_secret, key.wallet_retrieval_hash);
             this.app.network.propagateTransaction(newtx);
 	        }
@@ -64,7 +64,7 @@ class Recovery extends ModTemplate {
     app.connection.on("recovery-login-overlay-render-request", (success_callback = null) => {
 
       console.debug("Received recovery-login-overlay-render-request");
-      this.login_overlay.callback = success_callback;
+      this.login_overlay.success_callback = success_callback;
       this.login_overlay.render();
     });
 
@@ -100,7 +100,7 @@ class Recovery extends ModTemplate {
             icon: "fa fa-sign-in",
             //allowed_mods: ["redsquare"], //Why restrict it??
             callback: function (app) {
-	             app.connection.emit("recovery-login-overlay-render-request", {});
+	             app.connection.emit("recovery-login-overlay-render-request");
             }
     	  });
       } else {
@@ -109,7 +109,7 @@ class Recovery extends ModTemplate {
             icon: "fa-sharp fa-solid fa-cloud-arrow-up",
             rank: 130,
             callback: function (app) {
-      	      app.connection.emit("recovery-backup-overlay-render-request", {});
+      	      app.connection.emit("recovery-backup-overlay-render-request");
             }
 	      });
       }

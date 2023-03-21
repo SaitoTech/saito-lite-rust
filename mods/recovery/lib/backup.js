@@ -37,6 +37,10 @@ class Backup {
       let email = document.querySelector("#backup-template .saito-overlay-form-email").value;
       let password = document.querySelector("#backup-template .saito-overlay-form-password").value;
 
+      if (!email || !password){
+        return;
+      }
+      
       let div = document.querySelector("#backup-template .saito-overlay-subform");
       if (div){
         div.innerHTML = "";

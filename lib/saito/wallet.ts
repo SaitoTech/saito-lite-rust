@@ -803,6 +803,7 @@ console.log("---------------------");
 
     this.app.options.invites = [];
     this.app.options.games = [];
+    this.app.options.leagues = [];
     this.app.storage.saveOptions();
 
     if (this.app.browser.browser_active == 1) {

@@ -26,7 +26,7 @@ class Registry extends ModTemplate {
     this.cached_keys = {};
 
     //Set True for testing locally
-    this.local_dev = false;
+    this.local_dev = true;
 
     //
     // event listeners - 
@@ -48,20 +48,23 @@ class Registry extends ModTemplate {
         if (this.app.network.peers[i].hasService("registry")) {
           this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
             Object.entries(answer).forEach(([key, value]) => {
-              this.cached_keys[key] = value;
-              
-              //
-              // We don't NEED or WANT to filter for key == wallet.returnPublicKey
-              // If the key is in our keychain, we obviously care enough that we 
-              // want to update that key in the keychain! 
-              //
+  
+              if (value !== this.app.wallet.returnPublicKey()){
+                this.cached_keys[key] = value;
+                
+                //
+                // We don't NEED or WANT to filter for key == wallet.returnPublicKey
+                // If the key is in our keychain, we obviously care enough that we 
+                // want to update that key in the keychain! 
+                //
 
-              // save if locally stored
-              if (this.app.keychain.hasPublicKey(key)) {
-                this.app.keychain.addKey({ publickey : key , identifier : value });
+                // save if locally stored
+                if (this.app.keychain.hasPublicKey(key)){
+                  this.app.keychain.addKey({ publickey : key , identifier : value });
+                }
+                
+                this.app.browser.updateAddressHTML(key, value);
               }
-              
-              this.app.browser.updateAddressHTML(key, value);
             });
           });
 
@@ -347,7 +350,7 @@ class Registry extends ModTemplate {
           // 
           for (let key in this.cached_keys) {
       	    if (key === data.publickey) {
-      	      if (this.cached_keys[key]) {
+      	      if (this.cached_keys[key] && key !== this.cached_keys[key]) {
       	        return { publickey : key , identifier : this.cached_keys[key] };
       	      } else {
       	        return { publickey : key };
@@ -563,7 +566,8 @@ class Registry extends ModTemplate {
                   registry_self.app.keychain.addKey(tx.transaction.to[0].add, { has_registered_username: false });
                   console.debug("verification failed for sig : ", tx);
                 }
-                registry_self.app.connection.emit("update_identifier", (tx.transaction.to[0].add));
+                registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].add, identifier);
+                registry_self.app.connection.emit("update_identifier", tx.transaction.to[0].add);
               } catch (err) {
                 console.error("ERROR verifying username registration message: ", err);
               }

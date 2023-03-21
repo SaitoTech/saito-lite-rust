@@ -74,7 +74,7 @@ class RegisterUsername {
                     // no need for alert
                     document.querySelector(".saito-overlay-form-text").innerHTML = "registering name...";
 
-                    this.app.connection.emit("recovery-backup-overlay-render-request", {});
+                    this.app.connection.emit("recovery-backup-overlay-render-request");
                     
                     //
                     // mark wallet that we have registered username
