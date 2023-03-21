@@ -19,6 +19,21 @@ class GroundCombatOverlay {
     this.overlay.hide();
   }
 
+  updateStatusAndAcknowledge(msg="") {
+    if (!this.visible) { return; }
+    try {
+      this.updateStatus(`<div>${msg}</div><ul><li class="option" id="resume">acknowledge</li></ul>`);
+      $('#resume').on('click', () => {
+        this.hide();
+        this.restartQueue();
+      });
+    } catch (err) {
+      this.hide();
+      this.restartQueue();
+    }
+  }
+
+
   updateStatus(attacker, defender, sector, planet_idx, overlay_html) {
 
     if (this.visible == 0) {
@@ -84,7 +99,7 @@ class GroundCombatOverlay {
 	shot_idx++;
       }
       if (combat_info.modified_roll[i] >= combat_info.hits_on[i]) {
-        let qs  = `.player-${attacker}-ship-${current_infantry_idx}-shot-${shot_idx} .dice-results`;
+        let qs = `.player-${attacker}-ship-${current_infantry_idx}-shot-${shot_idx} .dice-results`;
         let qsn = `.player-${attacker}-ship-${current_infantry_idx}-shot-${shot_idx} .dice-results .unit-box-num`;
         document.querySelector(qs).style.backgroundColor = "green";
         document.querySelector(qsn).innerHTML = combat_info.modified_roll[i];

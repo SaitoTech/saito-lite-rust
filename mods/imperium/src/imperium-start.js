@@ -12,6 +12,8 @@ const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
 const InfluenceSelectionOverlay = require('./lib/overlays/influence-selection');
 const SpaceCombatOverlay = require('./lib/overlays/space-combat');
 const GroundCombatOverlay = require('./lib/overlays/ground-combat');
+const BombardmentOverlay = require('./lib/overlays/bombardment');
+const AntiFighterBarrageOverlay = require('./lib/overlays/anti-fighter-barrage');
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
 const TokenBar = require('./lib/tokenbar');
@@ -52,9 +54,10 @@ class Imperium extends GameTemplate {
     this.influence_selection_overlay = new InfluenceSelectionOverlay(this.app, this);
     this.space_combat_overlay = new SpaceCombatOverlay(this.app, this);
     this.ground_combat_overlay = new GroundCombatOverlay(this.app, this);
+    this.bombardment_overlay = new BombardmentOverlay(this.app, this);
+    this.anti_fighter_barrage_overlay = new AntiFighterBarrageOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
-
 
     //
     // specific to THIS game
