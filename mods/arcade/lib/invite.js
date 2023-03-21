@@ -118,6 +118,9 @@ class Invite {
       console.log("Rendering Invite into: ", this.container);
     }
 
+    console.log("Invite data //////////////");
+    console.log(this.invite_data);
+
     let html = "";
     if (this.type == "sparse"){
       html = InviteTemplateSparse(this.app, this.mod, this.invite_data);
