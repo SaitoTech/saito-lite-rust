@@ -49,7 +49,7 @@ class League extends ModTemplate {
 
 
     this.icon_fa = "fas fa-user-friends";
-    this.debug = true;
+    this.debug = false;
   }
 
 
