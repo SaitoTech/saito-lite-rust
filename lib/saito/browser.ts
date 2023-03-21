@@ -327,6 +327,21 @@ class Browser {
     return `${protocol}://${host}:${port}/r?i=${url_payload}`;
   }
 
+  returnHashAndParameters() {
+    let hash = new URL(document.URL).hash.split("#")[1];
+    let component = "";
+    let params = "";
+    if (hash) {
+      if (hash?.split("").includes("?")) {
+        component = hash.split("?")[0];
+        params = hash.split("?")[1];
+      } else {
+        component = hash;
+      }
+    }
+    return { hash: component, params: params };
+  }
+
   returnURLParameter(name) {
     try {
       this.urlParams = new URLSearchParams(window.location.search);
@@ -1234,16 +1249,19 @@ class Browser {
     } catch (err) {}
   }
 
-  logMatomoEvent(category, action, name, value) {
+  async logMatomoEvent(category, action, name, value) {
     try {
-      this.app.modules
-        .returnFirstRespondTo("matomo_event_push")
-        .push(category, action, name, value);
+      (await this.app.modules.returnFirstRespondTo("matomo_event_push")).push(
+        category,
+        action,
+        name,
+        value
+      );
     } catch (err) {
-      if (err.startsWith("Module responding to")) {
-      } else {
-        console.log(err);
-      }
+      // if (err.startsWith("Module responding to")) {
+      // } else {
+      console.error(err);
+      // }
     }
   }
 

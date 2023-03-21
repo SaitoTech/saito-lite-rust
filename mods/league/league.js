@@ -134,6 +134,7 @@ class League extends ModTemplate {
 
     this.main = new LeagueMain(app, this);
     this.header = new SaitoHeader(app, this);
+    await this.header.initialize(app);
     this.addComponent(this.main);
     this.addComponent(this.header);
 

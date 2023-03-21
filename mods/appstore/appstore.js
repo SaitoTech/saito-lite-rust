@@ -59,6 +59,7 @@ class AppStore extends ModTemplate {
 
     if (this.header == null) {
       this.header = new SaitoHeader(app, this);
+      await this.header.initialize(app);
     }
     await this.header.render(app, this);
     this.header.attachEvents(app, this);

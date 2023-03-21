@@ -113,7 +113,7 @@ class Relay extends ModTemplate {
         // sanity check on tx
         //
         let txjson = message.data;
-        let inner_tx = new saito.default.transaction(txjson);
+        let inner_tx = new Transaction(txjson);
         if (inner_tx.transaction.to.length <= 0) {
           return;
         }
@@ -121,15 +121,17 @@ class Relay extends ModTemplate {
           return;
         }
 
-        inner_tx.decryptMessage(this.app);
+        await inner_tx.decryptMessage(this.app);
         let inner_txmsg = inner_tx.returnMessage();
 
         //
         // if interior transaction is intended for me, I process regardless
         //
-        if (inner_tx.isTo(app.wallet.returnPublicKey())) {
+        if (inner_tx.isTo(await app.wallet.getPublicKey())) {
           if (inner_txmsg.request === "ping") {
-            this.sendRelayMessage(inner_tx.transaction.from[0].add, "echo", { status: this.busy });
+            await this.sendRelayMessage(inner_tx.transaction.from[0].add, "echo", {
+              status: this.busy,
+            });
             return;
           }
 
@@ -142,7 +144,7 @@ class Relay extends ModTemplate {
             return;
           }
 
-          app.modules.handlePeerTransaction(inner_tx, peer, mycallback);
+          await app.modules.handlePeerTransaction(inner_tx, peer, mycallback);
           return;
 
           //
@@ -154,16 +156,21 @@ class Relay extends ModTemplate {
           //
           let peer_found = 0;
 
-          for (let i = 0; i < app.network.peers.length; i++) {
-            if (inner_tx.isTo(app.network.peers[i].peer.publickey)) {
+          let peers = await app.network.getPeers();
+          for (let i = 0; i < peers.length; i++) {
+            if (inner_tx.isTo(peers[i].publicKey)) {
               peer_found = 1;
 
               if (this.app.BROWSER == 0) {
-                app.network.peers[i].sendTransactionWithCallback(inner_tx, function () {
-                  if (mycallback != null) {
-                    mycallback({ err: "", success: 1 });
-                  }
-                });
+                await app.network.sendTransactionWithCallback(
+                  inner_tx,
+                  function () {
+                    if (mycallback != null) {
+                      mycallback({ err: "", success: 1 });
+                    }
+                  },
+                  peers[i].peerIndex
+                );
               }
             }
           }

@@ -30,7 +30,7 @@ class Registry extends ModTemplate {
     //
     // event listeners - browser.ts calls this in addIdentifiersToDom()
     //
-    this.app.connection.on("registry-fetch-identifiers-and-update-dom", (keys) => {
+    this.app.connection.on("registry-fetch-identifiers-and-update-dom", async (keys) => {
       let unidentified_keys = [];
 
       for (let i = 0; i < keys.length; i++) {
@@ -41,13 +41,15 @@ class Registry extends ModTemplate {
         }
       }
 
-      for (let i = 0; i < this.app.network.peers.length; i++) {
-        let peer = this.app.network.peers[i];
+      let peers = await this.app.network.getPeers();
+      let myKey = await this.app.wallet.getPublicKey();
+      for (let i = 0; i < peers.length; i++) {
+        let peer = peers[i];
         if (this.app.network.peers[i].hasService("registry")) {
           this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
             Object.entries(answer).forEach(([key, value]) => {
               this.cached_keys[key] = value;
-              if (key === this.app.wallet.returnPublicKey()) {
+              if (key === myKey) {
                 let k = this.app.keychain.returnKey(key);
                 if (k) {
                   if (!k.identifier) {
@@ -83,8 +85,8 @@ class Registry extends ModTemplate {
     return this;
   }
 
-  initialize(app) {
-    super.initialize(app);
+  async initialize(app) {
+    await super.initialize(app);
     this.username_modal = new RegisterUsernameModal(app, this);
   }
 
@@ -105,7 +107,7 @@ class Registry extends ModTemplate {
   //
   // fetching identifiers
   //
-  fetchManyPublicKeys(identifiers = [], peer = null, mycallback = null) {
+  async fetchManyPublicKeys(identifiers = [], peer = null, mycallback = null) {
     if (mycallback == null) {
       return;
     }
@@ -132,12 +134,10 @@ class Registry extends ModTemplate {
                  from records
                  where ${where_statement}`;
 
-    this.sendPeerDatabaseRequestWithFilter(
+    await this.sendPeerDatabaseRequestWithFilter(
       "Registry",
-
       sql,
-
-      (res) => {
+      async (res) => {
         try {
           let rows = [];
           if (typeof res.rows != "undefined") {
@@ -152,7 +152,7 @@ class Registry extends ModTemplate {
               }
             }
           }
-          mycallback(found_keys);
+          await mycallback(found_keys);
         } catch (err) {
           console.log(err);
         }
@@ -160,9 +160,9 @@ class Registry extends ModTemplate {
 
       (p) => {
         if (peer == null) {
-          if (peer.peer.services) {
-            for (let z = 0; z < peer.peer.services.length; z++) {
-              if (peer.peer.services[z].service === "registry") {
+          if (peer.services) {
+            for (let z = 0; z < peer.services.length; z++) {
+              if (peer.services[z].service === "registry") {
                 return 1;
               }
             }

@@ -436,6 +436,7 @@ class RedSquare extends ModTemplate {
     if (this.main == null) {
       this.main = new SaitoMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
+      await this.header.initialize(this.app);
       this.menu = new SaitoMenu(this.app, this, ".saito-sidebar.left");
       this.sidebar = new RedSquareSidebar(this.app, this, ".saito-sidebar.right");
 
@@ -447,11 +448,11 @@ class RedSquare extends ModTemplate {
       //
       // chat manager can insert itself into left-sidebar if exists
       //
-      (await this.app.modules.returnModulesRespondingTo("chat-manager")).forEach((mod) => {
-        let cm = mod.respondTo("chat-manager");
+      for (const mod of await this.app.modules.returnModulesRespondingTo("chat-manager")) {
+        let cm = await mod.respondTo("chat-manager");
         cm.container = ".saito-sidebar.left";
         this.addComponent(cm);
-      });
+      }
     }
 
     await super.render();
@@ -1728,4 +1729,3 @@ console.log(rows[i].tx.msg);
 }
 
 module.exports = RedSquare;
-

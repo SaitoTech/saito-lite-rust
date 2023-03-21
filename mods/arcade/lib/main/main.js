@@ -22,12 +22,12 @@ class ArcadeMain {
     //
     // load init page
     //
-    app.connection.on("arcade-game-initialize-render-request", () => {
+    app.connection.on("arcade-game-initialize-render-request", async () => {
       document.querySelector(".arcade-central-panel").innerHTML = "";
       this.slider.hide();
 
       let initializer = new ArcadeInitializer(this.app, this.mod, ".arcade-central-panel");
-      initializer.render();
+      await initializer.render();
     });
   }
 

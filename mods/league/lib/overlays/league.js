@@ -58,9 +58,9 @@ class LeagueOverlay {
 
   attachEvents() {
     Array.from(document.querySelectorAll(".league-overlay-create-game-button")).forEach((game) => {
-      game.onclick = (e) => {
+      game.onclick = async (e) => {
         this.overlay.remove();
-        this.app.browser.logMatomoEvent("GameWizard", "LeagueOverlay", this.league.game);
+        await this.app.browser.logMatomoEvent("GameWizard", "LeagueOverlay", this.league.game);
         if (this.league.admin) {
           // private leagues get league provided
           this.app.connection.emit("arcade-launch-game-wizard", {
@@ -77,4 +77,3 @@ class LeagueOverlay {
 }
 
 module.exports = LeagueOverlay;
-

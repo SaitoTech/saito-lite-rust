@@ -171,7 +171,7 @@ class Arcade extends ModTemplate {
     let sql = `SELECT *
                FROM games
                WHERE created_at > ${cutoff}`;
-    await this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
+    await this.sendPeerDatabaseRequestWithFilter("Arcade", sql, async (res) => {
       if (res.rows) {
         for (let record of res.rows) {
           //This is the save openTX
@@ -232,21 +232,21 @@ class Arcade extends ModTemplate {
           return;
         }
 
-        this.app.browser.logMatomoEvent("PrivateInvite", "JoinGame", game.game);
+        await this.app.browser.logMatomoEvent("PrivateInvite", "JoinGame", game.game);
 
-        let newtx = arcade_self.createJoinTransaction(game);
+        let newtx = await arcade_self.createJoinTransaction(game);
 
-        arcade_self.app.network.propagateTransaction(newtx);
+        await arcade_self.app.network.propagateTransaction(newtx);
 
         arcade_self.app.connection.emit("relay-send-message", {
           recipient: game.msg.players,
           request: "arcade spv update",
-          data: newtx.transaction,
+          data: newtx.toJson(),
         });
         arcade_self.app.connection.emit("relay-send-message", {
           recipient: "PEERS",
           request: "arcade spv update",
-          data: newtx.transaction,
+          data: newtx.toJson(),
         });
 
         //Do we want to throw up an overlay between screen load and data load...
@@ -277,15 +277,16 @@ class Arcade extends ModTemplate {
     if (this.main == null) {
       this.main = new ArcadeMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
+      await this.header.initialize(this.app);
       this.addComponent(this.header);
       this.addComponent(this.main);
     }
 
-    (await this.app.modules.returnModulesRespondingTo("chat-manager")).forEach((mod) => {
-      let cm = mod.respondTo("chat-manager");
+    for (const mod of await this.app.modules.returnModulesRespondingTo("chat-manager")) {
+      let cm = await mod.respondTo("chat-manager");
       cm.container = ".saito-sidebar.left";
       this.addComponent(cm);
-    });
+    }
 
     await super.render();
   }
@@ -1785,7 +1786,7 @@ class Arcade extends ModTemplate {
       this.app.connection.emit("arcade-invite-manager-render-request");
 
       if (gameType == "private") {
-        this.showShareLink(newtx.transaction.sig);
+        this.showShareLink(newtx.signature);
       }
     }
   }

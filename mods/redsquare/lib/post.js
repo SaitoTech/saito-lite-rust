@@ -264,7 +264,7 @@ class Post {
   }
 
   addImg(img) {
-    post_self = this;
+    let post_self = this;
     this.app.browser.addElementToDom(
       `<div class="post-tweet-img-preview"><img src="${img}"
            /><i data-id="${
@@ -305,4 +305,3 @@ class Post {
 }
 
 module.exports = Post;
-

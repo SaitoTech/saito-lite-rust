@@ -191,6 +191,7 @@ class Mods {
     // include events here
     //
     this.app.connection.on("handshake_complete", (peer: Peer) => {
+      // TODO : implement this event in wasm interface
       onPeerHandshakeComplete(peer);
     });
 
@@ -215,8 +216,11 @@ class Mods {
   }
 
   async render() {
+    console.log("modules.render");
     for (let icb = 0; icb < this.mods.length; icb++) {
       if (this.mods[icb].browser_active == 1) {
+        console.log("mod.render : " + this.mods[icb].name);
+
         await this.mods[icb].render(this.app, this.mods[icb]);
       }
     }
@@ -312,10 +316,11 @@ class Mods {
     return null;
   }
 
-  returnFirstRespondTo(request) {
+  async returnFirstRespondTo(request) {
     for (let i = 0; i < this.mods.length; i++) {
-      if (this.mods[i].respondTo(request)) {
-        return this.mods[i].respondTo(request);
+      let result = await this.mods[i].respondTo(request);
+      if (result) {
+        return result;
       }
     }
     throw "Module responding to " + request + " not found";
