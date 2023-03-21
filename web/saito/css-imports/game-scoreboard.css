@@ -31,8 +31,3 @@
   border: 2px solid whitesmoke;
   padding: 0 10px;
 }
-
-.table_ctrl:hover{
-  background-color: #EEE;
-  color: whitesmoke;  
-}
