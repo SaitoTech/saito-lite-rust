@@ -19166,6 +19166,8 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
 
 	if (this.game.player == attacker) {
           this.playerPlaySpaceCombat(attacker, defender, sector);        
+	} else {
+          this.space_combat_overlay.render(attacker, defender, sector, "Space Cobat");        
 	}
 
         return 0;
@@ -26745,12 +26747,12 @@ playerDiscardActionCards(num, mycallback=null) {
   ///////////////////////////////
   returnHomeworldSectors(players = 4) {
     if (players <= 2) {
-//      return ["1_1", "4_7"];
+      return ["1_1", "4_7"];
 //
 // for testing - place factions in fighting
 // position on start.
 //
-      return ["1_1", "2_1"];
+//      return ["1_1", "2_1"];
     }
 
     if (players <= 3) {
