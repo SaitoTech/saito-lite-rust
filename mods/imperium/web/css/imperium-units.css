@@ -1,4 +1,32 @@
 
+.units-overlay {
+  height: 90vh;
+  width: 90vw;
+  max-height: 90vh;
+  max-width: 90vw;
+  display: block;
+  background: linear-gradient(rgba(0, 0, 0, 0.60), rgba(0, 0, 0, 0.60)), url(/imperium/img/backgrounds/units-background.jpg);
+  background-size: cover;
+  color: white;
+  padding: 2rem;
+  overflow-y: scroll;
+}
+
+.units-overlay .units-info .units-table .unit-table.small {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 1rem;
+  justify-items: center;
+}
+
+.units-overlay .units-info .units-table .unit-table.small .unit-element .unit-description {
+  margin-bottom: 0rem;
+  min-height: 0px;
+  font-weight: bolder;
+  text-transform: uppercase;
+  padding: 0px;
+}
+
 .production-overlay {
   height: 90vh;
   width: 109rem;

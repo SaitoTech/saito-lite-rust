@@ -1,4 +1,23 @@
 
+.status p {
+  color: white;
+}
+
+.game-overlay-button-continue, .game-overlay-cardlist-button {
+    background-color: white;
+    padding: 2rem;
+    color: #000D;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+.game-overlay-button-continue:hover, .game-overlay-cardlist-button:hover {
+    background-color: var(--saito-primary);
+    padding: 2rem;
+    color: white;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+
 .goods_box {
   background-color: #006400;
   padding: 4px;
@@ -310,21 +329,20 @@
 }
 
 .overlay_agendatitle {
-  font-size: 2em;
-  min-height: 7vh;
-  font-family: 'orbitron-medium' ariel;
-  font-weight: bold;
-  min-height: 7vh;
-  text-align: center;
-  width: 100%;
+    font-weight: bold;
+    min-height: 7vh;
+    text-align: center;
+    width: 100%;
+    margin-top: 0.5rem;
+    font-size: 2.4rem;
 }
 
 .overlay_agendacontent {
   font-family: 'orbitron-medium';
   position: absolute;
   color: white;
-  margin-top: 10px;
-  padding: 14px;
+  margin-top: 2.5remx;
+  padding: 1.4rem;
   padding-top:10px;
   font-size: 1.6em;
   line-height: 1.5em;
@@ -379,11 +397,10 @@
   float: left;
   font-size: 0.8em;
   z-index: 5;
-  border: 1px solid transparent;
+  border: 1px solid #FFF8;
 }
 
 .objectives_overlay_objectives_card:hover {
- /* transform: scale(1.2); */
   z-index: 10;
   border: 1px solid whitesmoke;
 }
