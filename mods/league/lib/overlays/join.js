@@ -10,7 +10,7 @@ class JoinLeague {
     this.mod = mod;
     this.league_id = league_id;
     this.overlay = new SaitoOverlay(app, mod, false, true);
-    this.loader = new SaitoLoader(app, mod, ".league-join-controls");
+    this.loader = new SaitoLoader(app, mod, ".league-join-info");
 
     this.app.connection.on("join-league-success", ()=>{
       console.log("Join success!");
@@ -36,14 +36,14 @@ class JoinLeague {
 
     this.attachEvents();
 
-    let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+    /*let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
 
     if (!key?.identifier){
       this.app.connection.emit("register-username-or-login");
     }else if (!key?.email){
       this.app.connection.emit("recovery-backup-overlay-render-request");
     }
-
+    */
   }
 
 
@@ -52,6 +52,11 @@ class JoinLeague {
     const league_join_btn = document.getElementById('league-join-btn');
 
     if (!league_join_btn) { return; }
+
+    document.querySelector('.saito-overlay-form-alt-opt').onclick = (e) => {
+      this.app.connection.emit("recovery-login-overlay-render-request");
+      return;
+    };
 
     league_join_btn.onclick = (e) => {
 
@@ -65,7 +70,8 @@ class JoinLeague {
       //
       // show loader
       //
-      document.querySelector(".league-join-controls").innerHTML = "";
+      document.querySelector(".league-join-controls").remove();
+      document.querySelector(".league-join-info").innerHTML = "";
       this.loader.render();
 
       let newtx = this.mod.createJoinTransaction(league_id, user_email);

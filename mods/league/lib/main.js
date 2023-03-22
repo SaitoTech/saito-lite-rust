@@ -38,10 +38,6 @@ class LeagueMain {
     let filter2 = leagues.filter(l => l.rank && l.admin != this.app.wallet.returnPublicKey());
     let filter3 = leagues.filter(l => !l.rank && l.admin != this.app.wallet.returnPublicKey());
 
-    console.log(JSON.stringify(filter1));
-    console.log(JSON.stringify(filter2));
-    console.log(JSON.stringify(filter3));
-
     if (filter1.length > 0) {
       filter1.forEach((lg) => {
         let x = new LeagueMenu(this.app, this.mod, "#leagues-for-admin" , lg);
