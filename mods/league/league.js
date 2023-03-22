@@ -526,6 +526,8 @@ class League extends ModTemplate {
     //
     let relevantLeagues = await this.getRelevantLeagues(game);
 
+    if (!relevantLeagues){ return; }
+
   //  if (this.debug){console.log(relevantLeagues, publickeys);}
 
     //
@@ -560,7 +562,7 @@ class League extends ModTemplate {
   // inserts player into public league if one exists
   //
   async receiveLaunchSinglePlayerTransaction(blk, tx, conf, app) {
-    return this.receiveAcceptTransaction(blk, tx, conf, app);
+    this.receiveAcceptTransaction(blk, tx, conf, app);
   }
 
   async receiveAcceptTransaction(blk, tx, conf, app){
@@ -572,6 +574,7 @@ class League extends ModTemplate {
     //if (this.app.BROWSER){ return; }
 
     const relevantLeagues = await this.getRelevantLeagues(txmsg.game);
+    if (!relevantLeagues) { return; }
 
     //
     // who are the players ?
@@ -629,7 +632,17 @@ class League extends ModTemplate {
 
     let league = this.returnLeague(league_id);
 
-    let localStats = (league) ? league.players.filter(p => players.includes(p.publickey)) : null;
+    let localStats = null;
+
+    if (league?.players) {
+      localStats = league.players.filter(p => players.includes(p.publickey));
+    }
+
+    if (this.mod.debug){
+      console.info("Player stats:");
+      console.info(JSON.parse(JSON.stringify(localStats)));
+      console.info(JSON.parse(JSON.stringify(sqlResults)));
+    }
 
     return localStats || sqlResults;
   }
@@ -673,7 +686,7 @@ class League extends ModTemplate {
 
     let playerStats = await this.getPlayersFromLeague(league.id, players);
 
-    if (playerStats.length !== players.length){
+    if (!playerStats || playerStats.length !== players.length){
       // skip out - not all players are league members
       return; 
     }
@@ -734,7 +747,7 @@ class League extends ModTemplate {
 
     let playerStats = await this.getPlayersFromLeague(league.id, players);
 
-    if (playerStats.length !== players.length){
+    if (!playerStats || playerStats.length !== players.length){
       // skip out - not all players are league members
       return; 
     }
@@ -771,10 +784,10 @@ class League extends ModTemplate {
     }
 
     if (!success){
-      return;
+      return 0;
     }
 
-    let sql = `UPDATE players SET ${field} = (${field} + ${amount}), ts = $ts WHERE publickey = $publickey AND league_id = $league_id`;
+    let sql = `UPDATE OR IGNORE players SET ${field} = (${field} + ${amount}), ts = $ts WHERE publickey = $publickey AND league_id = $league_id`;
     let params = {
       $ts: new Date().getTime() ,
       $publickey: publickey ,
@@ -838,7 +851,6 @@ class League extends ModTemplate {
         return;
       }
     }
-    return null;
   }
 
 
