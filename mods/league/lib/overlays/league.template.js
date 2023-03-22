@@ -1,6 +1,5 @@
 module.exports = LeagueOverlayTemplate = (app, mod, league) => {
 
-    console.log(league.game);
     let game_mod = app.modules.returnModuleByName(league.game);
 
     let html = `

@@ -1702,7 +1702,7 @@ class Browser {
               let identifier = saito_app.keychain.returnIdentifierByPublicKey(key, true);
               if (identifier !== key) {
                 el.innerText = identifier;
-                console.info('updated ' + key + " to " + identifier);
+                //console.info('updated ' + key + " to " + identifier);
               } else {
                 if (!unknown_keys.includes(key)) {
                   unknown_keys.push(key);

@@ -34,14 +34,13 @@ class LeagueMenu {
 
     try {
       document.querySelector(`#lg${this.league.id} .league-join-button`).onclick = (e) => {
-        let jlo = new JoinLeagueOverlay(app, league_self, league_id);
+        let jlo = new JoinLeagueOverlay(this.app, this.mod, this.league.id);
         jlo.render();
       }
     } catch (err) {}
 
     try {
       document.querySelector(`#lg${this.league.id} .league-view-button`).onclick = (e) => {
-        console.log("click");
         this.app.connection.emit("league-overlay-render-request", this.league.id);
       }
     } catch (err) {}

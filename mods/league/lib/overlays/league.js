@@ -8,7 +8,8 @@ class LeagueOverlay {
     this.app = app;
     this.mod = mod;
     this.overlay = new SaitoOverlay(this.app, this.mod, false);
-
+    this.league = null;
+    
     this.leaderboards = {};
 
      app.connection.on('league-overlay-render-request', (league_id) => {
@@ -70,6 +71,25 @@ class LeagueOverlay {
       };
     });
 
+
+    if (this.league.admin == this.app.wallet.returnPublicKey()){
+      let desc_div = document.querySelector(".league-overlay-description");
+      if (!desc_div) { return; }
+
+      let orig_desc = desc_div.textContent;
+
+      desc_div.contentEditable = true;
+      this.app.browser.addElementToSelector(`<i class="fas fa-pencil"></i>`, ".league-overlay-description");
+    
+      desc_div.onblur = (e) => {
+        console.log("Focus out", desc_div.textContent);
+        if (desc_div.textContent !== orig_desc){
+          console.log("Transaction sent!");
+          let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(desc_div.textContent));
+          this.app.network.propagateTransaction(newtx);
+        }
+      };
+    }
   }
 
 }

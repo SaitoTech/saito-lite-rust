@@ -260,6 +260,10 @@ class League extends ModTemplate {
         this.receiveRemoveTransaction(blk, tx, conf, app);
       }
 
+      if (txmsg.request === "league update"){
+        this.receiveUpdateTransaction(blk, tx, conf, app);
+      }
+
       if (txmsg.request === "gameover"){
         this.receiveGameoverTransaction(app, txmsg);
       }
@@ -422,6 +426,43 @@ class League extends ModTemplate {
     }
 
     return;
+  }
+
+
+  createUpdateTransaction(league_id, description){
+    let newtx = this.app.wallet.createUnsignedTransaction();
+    newtx = this.addressToAll(newtx, league_id);
+
+    newtx.msg = {
+      module:    "League",
+      request:   "league update",
+      league_id,
+      description,
+    };
+
+    return this.app.wallet.signTransaction(newtx);
+  }
+
+  async receiveUpdateTransaction(blk, tx, conf, app){
+    let txmsg = tx.returnMessage();
+
+    let league_id = txmsg.league_id;
+    let description = txmsg.description;
+
+    let league = this.returnLeague(league_id);
+    if (league){
+      league.description = description;
+    }
+
+    let sql = `UPDATE OR IGNORE leagues SET description = $description WHERE id = $id`;
+    let params = {
+      $id          :   league_id ,
+      $description :   description,
+    };
+
+    await this.app.storage.executeDatabase(sql, params, "league");
+
+    this.saveLeagues();
   }
 
   ///////////////////
@@ -992,6 +1033,12 @@ class League extends ModTemplate {
               //
               this.addLeaguePlayer(p);
             }
+
+            if (this.app.BROWSER){
+              this.app.connection.emit("leagues-render-request");
+              this.app.connection.emit("league-rankings-render-request");
+            }
+
         }
         
         if (mycallback != null) { mycallback(res); }
@@ -1004,7 +1051,6 @@ class League extends ModTemplate {
         }
     );
   }
-
 
 
   ////////////////////////////////////////////////

@@ -82,9 +82,16 @@
 }
 
 .league-overlay-description {
+  position: relative;
   font-size: 1.7rem;
   line-height: 2.3rem;
   overflow: visible;
+}
+
+.league-overlay-description i {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .league-overlay-league-body-games {
