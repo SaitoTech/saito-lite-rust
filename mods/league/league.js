@@ -679,7 +679,7 @@ class League extends ModTemplate {
       localStats = league.players.filter(p => players.includes(p.publickey));
     }
 
-    if (this.mod.debug){
+    if (this.debug){
       console.info("Player stats:");
       console.info(JSON.parse(JSON.stringify(localStats)));
       console.info(JSON.parse(JSON.stringify(sqlResults)));
@@ -978,15 +978,11 @@ class League extends ModTemplate {
     //If we have the player already, just update the stats
     for (let z = 0; z < league.players.length; z++) {
       if (league.players[z].publickey === newPlayer.publickey) {
-        console.log("BEFORE:");
-        console.log(JSON.parse(JSON.stringify(league.players[z])));
         league.players[z].score = newPlayer.score || league.players[z].score;
         league.players[z].games_started = newPlayer.games_started || league.players[z].games_started;
         league.players[z].games_won = newPlayer.games_won || league.players[z].games_won;
         league.players[z].games_tied = newPlayer.games_tied || league.players[z].games_tied;
         league.players[z].games_finished = newPlayer.games_finished || league.players[z].games_finished;
-        console.log("AFTER:");
-        console.log(JSON.parse(JSON.stringify(league.players[z])));
         return;
       }
     }

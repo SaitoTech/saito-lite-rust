@@ -9,7 +9,7 @@ class LeagueOverlay {
     this.mod = mod;
     this.overlay = new SaitoOverlay(this.app, this.mod, false);
     this.league = null;
-    
+
     this.leaderboards = {};
 
      app.connection.on('league-overlay-render-request', (league_id) => {
