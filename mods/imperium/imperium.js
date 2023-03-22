@@ -11737,9 +11737,9 @@ console.log("qe: " + qe);
     //
     // cards
     //
-    this.menu.addMenuOption("game-cards", "Info");
+    this.menu.addMenuOption("game-cards", "Cards");
     this.menu.addSubMenuOption("game-cards", {
-      text : "Strategy Cards",
+      text : "Strategy",
       id : "game-strategy-cardlist",
       class : "game-strategy-cardlist",
       callback : function(app, game_mod) {
