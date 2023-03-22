@@ -29,34 +29,38 @@ class VideoBox {
         this.retry_attempt_no = 0
 
 
-        // app.connection.on('mute', (kind, public_key) => {
-
-        //     if (public_key !== this.stream_id) return;
-        //     if (kind === "video") {
-        //         let name;
-        //         if (public_key === "local") {
-        //             let public_key = app.wallet.returnPublicKey();
-        //             name = app.keychain.returnUsername(public_key)
-        //         } else {
-        //             name = app.keychain.returnUsername(public_key);
-        //         }
-
-        //         if (name.length > 10) {
-        //             name = `${name.slice(0, 10)}...`
-        //         }
-        //         this.updateVideoMuteStatus(name);
-        //     }
-        // })
-        // app.connection.on('unmute', (kind, public_key) => {
-        //     if (public_key !== this.stream_id) return;
-        //     if (kind === "video") {
-        //         this.removeVideoMuteStatus();
-        //     }
-        // })
+        app.connection.on('toggle-peer-audio-status', ({ enabled, public_key }) => {
+            if (public_key !== this.stream_id) return;
+            const video_box = document.querySelector(`#stream${this.stream_id}`);
+            if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
+                if (!enabled) {
+                    video_box.querySelector(`#stream${this.stream_id} .video-call-info`).insertAdjacentHTML('beforeend', `<i class="fa fa-microphone-slash"> </i>`)
+                } else {
+                    let element = video_box.querySelector(`#stream${this.stream_id} .video-call-info .fa-microphone-slash`);
+                    if (element) {
+                        element.parentElement.removeChild(element);
+                    }
+                }
+            }
 
 
+        })
+        app.connection.on('toggle-peer-video-status', ({ enabled, public_key }) => {
+            if (public_key !== this.stream_id) return;
+            const video_box = document.querySelector(`#stream${this.stream_id}`);
+            if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
+                if (!enabled) {
+                    video_box.querySelector(`#stream${this.stream_id} .video-call-info`).insertAdjacentHTML('beforeend', `<i class="fas fa-video-slash"> </i>`)
+                } else {
+                    let element = video_box.querySelector(`#stream${this.stream_id} .video-call-info .fa-video-slash`);
+                    if (element) {
+                        element.parentElement.removeChild(element)
+                    }
+                }
+            }
 
 
+        })
 
 
     }
@@ -69,7 +73,8 @@ class VideoBox {
 
     render(stream, placeholder_info = null) {
 
-        if(stream){
+
+        if (stream) {
             this.stream = stream
         }
 
@@ -80,9 +85,8 @@ class VideoBox {
                 this.renderStream({ muted: true });
             } else {
                 this.renderStream({ muted: false })
-                console.log('rendering stream');
+                // console.log('rendering stream');
             }
-
 
             let name;
             if (this.stream_id === "local") {
@@ -91,17 +95,42 @@ class VideoBox {
             } else {
                 name = this.app.keychain.returnUsername(this.stream_id);
             }
-
-            if (name.length > 10) {
-                name = `${name.slice(0, 10)}...`
-            }
-
             const video_box = document.querySelector(`#stream${this.stream_id}`);
-            if (video_box.querySelector('#video-mute-message')) {
-                video_box.querySelector('#video-mute-message').innerHTML = `<p>${name}</p>`
-            } else {
-                video_box.insertAdjacentHTML('beforeend', `<div id="video-mute-message"> <p> ${name} </p></div> `);
+            if (video_box.querySelector('.video-call-info')) {
+                video_box.querySelector('.video-call-info').innerHTML = `<p>${name}</p>`
             }
+
+        
+
+
+
+            if(this.stream_id=== 'local') return;
+
+
+            // console.log(this.stream.getVideoTracks(), 'video tracky ', this.stream.getVideoTracks(), "audio tracky");
+            // if (!this.stream.getVideoTracks()[0]) {
+            //     if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
+            //         video_box.querySelector(`#stream${this.stream_id} .video-call-info`).insertAdjacentHTML('beforeend', `<i class="fas fa-video-slash"> </i>`)
+            //     }
+            // }else if(this.stream.getVideoTracks()[0] && !this.stream.getVideoTracks()[0].enabled) {
+              
+            //     if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
+            //         video_box.querySelector(`#stream${this.stream_id} .video-call-info`).insertAdjacentHTML('beforeend', `<i class="fas fa-video-slash"> </i>`)
+            //     }
+            // }
+            // if (!this.stream.getAudioTracks()[0]) {
+            //     const video_box = document.querySelector(`#stream${this.stream_id}`);
+            //     if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
+            //         video_box.querySelector(`#stream${this.stream_id} .video-call-info`).insertAdjacentHTML('beforeend', `<i class="fa fa-microphone-slash"> </i>`)
+            //     }
+            // }else if(this.stream.getAudioTracks()[0] && this.stream.getAudioTracks()[0].enabled === false ){
+            //     const video_box = document.querySelector(`#stream${this.stream_id}`);
+            //     if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
+            //         video_box.querySelector(`#stream${this.stream_id} .video-call-info`).insertAdjacentHTML('beforeend', `<i class="fa fa-microphone-slash"> </i>`)
+            //     }
+            // }
+
+
         } else {
             this.renderPlaceholder(placeholder_info);
         }
@@ -110,7 +139,7 @@ class VideoBox {
         this.attachEvents()
     }
 
-    rerender(){
+    rerender() {
         this.remove();
         this.render(this.stream)
     }
@@ -131,6 +160,7 @@ class VideoBox {
     renderPlaceholder(placeholder_info = "negotiating peer connection") {
         if (!document.querySelector(`#stream${this.stream_id}`)) {
             this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, false), this.containerClass);
+            // this.app.browser.makeDraggable(`stream${this.stream_id}`, `stream${this.stream_id}`);
         }
         this.updateConnectionMessage(placeholder_info);
     }
@@ -147,8 +177,6 @@ class VideoBox {
     removeConnectionMessage() {
         const video_box = document.querySelector(`#stream${this.stream_id}`);
 
-        
-
         if (video_box && video_box.querySelector('#connection-message')) {
             video_box.querySelectorAll('#connection-message').forEach(item => {
                 item.parentElement.removeChild(video_box.querySelector('#connection-message'));
@@ -164,69 +192,19 @@ class VideoBox {
 
     updateVideoMuteStatus(message) {
         const video_box = document.querySelector(`#stream${this.stream_id}`);
-        if (video_box.querySelector('#video-mute-message')) {
-            video_box.querySelector('#video-mute-message').innerHTML = `<p>${message}</p>`
-        } else {
-            video_box.insertAdjacentHTML('beforeend', `<div id="video-mute-message"> <p> ${message} </p></div> `);
+        if (video_box.querySelector('.video-call-info')) {
+            video_box.querySelector('.video-call-info').innerHTML = `<p>${message}</p>`
         }
     }
 
     removeVideoMuteStatus() {
         const video_box = document.querySelector(`#stream${this.stream_id}`);
-        if (video_box.querySelector('#video-mute-message')) {
-            video_box.querySelectorAll('#video-mute-message').forEach(item => {
-                item.parentElement.removeChild(video_box.querySelector('#video-mute-message'));
+        if (video_box.querySelector('.video-call-info')) {
+            video_box.querySelectorAll('.video-call-info').forEach(item => {
+                item.parentElement.removeChild(video_box.querySelector('.video-call-info'));
             })
         }
     }
-
-
-
-    // startWaitTimer(is_creator) {
-    //     this.attachEvents(this.app, this.mod)
-    //     this.is_creator = is_creator;
-
-    //     if (!is_creator) {
-    //         this.receiving_connection = true;
-    //     }
-
-    //     let peer = this.stream_id;
-    //     this.stopWaitTimer();
-
-    //     this.waitTimer = setInterval(() => {
-    //         // console.log(this.waitSeconds, is_creator)
-    //         console.log(this.waitSeconds)
-    //         this.waitSeconds += 1;
-    //         if (this.waitSeconds === 10) {
-    //             this.handleConnectionStateChange(peer, 'ten_seconds')
-    //         }
-    //         if (this.waitSeconds === 20) {
-    //             this.handleConnectionStateChange(peer, 'twenty_seconds')
-    //         }
-    //         if (this.waitSeconds === 50) {
-    //             this.stopWaitTimer();
-    //             if (is_creator) {
-    //                 this.updateReconnectionButton(true)
-    //             } else {
-    //                 this._reconnectRecipient(peer)
-    //             }
-    //         }
-    //     }, 1000)
-    // }
-
-    // checkConnectionStatus() {
-    //     let count = 0;
-    //     const interval = setInterval(() => {
-    //         count++;
-    //         if (this.is_connected) {
-    //             this.updateReconnectionButton(false);
-    //             clearInterval(interval);
-    //         } else if (count >= 60 && this.is_creator) {
-    //             this.updateReconnectionButton(true);
-    //             clearInterval(interval);
-    //         }
-    //     }, 1000);
-    // }
 
 
     stopWaitTimer() {
@@ -242,21 +220,18 @@ class VideoBox {
     remove(is_disconnection = false) {
         let videoBox = document.querySelector(`#stream${this.stream_id}`);
         if (videoBox) {
-            if(is_disconnection){
-                if(videoBox.parentElement.classList.contains('expanded-video')){
+            if (is_disconnection) {
+                if (videoBox.parentElement.classList.contains('expanded-video')) {
                     videoBox.parentElement.removeChild(videoBox);
                     this.mod.ChatManagerLarge.video_boxes['local'].video_box.containerClass = "expanded-video";
                     this.mod.ChatManagerLarge.video_boxes['local'].video_box.rerender();
                     return;
                 }
                 videoBox.parentElement.removeChild(videoBox);
-            }else {
-                console.log(videoBox, 'video box')
+            } else {
+                // console.log(videoBox, 'video box')
                 videoBox.parentElement.removeChild(videoBox);
             }
-          
-          
-      
         }
 
     }

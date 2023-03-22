@@ -36,9 +36,9 @@ class ChatManager {
 
     app.connection.on("chat-manager-and-popup-render-request", (group) => {
       if (this.render_manager_to_screen) {
-	group.unread = 0;
+        group.unread = 0;
         this.render();
-	if (!this.mod.mute) {
+        if (!this.mod.mute) {
           app.connection.emit("chat-popup-render-request", (group));
         }
       }
@@ -85,11 +85,11 @@ class ChatManager {
       // mobile devices should not force open chat for us
       //
       if (group == null) {
-        return; 
+        return;
       } else {
         if (this.popups[group.id]) {
           this.popups[group.id].remove();
-	  delete this.popups[group.id];
+          delete this.popups[group.id];
         }
       }
     });
