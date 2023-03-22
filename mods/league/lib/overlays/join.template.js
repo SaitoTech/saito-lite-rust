@@ -32,7 +32,7 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
 	  		`;
 
 
-  	if (league.rank) {
+  	if (league.rank >= 0) {
 
 	  	return html + `
 	        <p><em>Success!</em> You are currently unranked out of ${league.players.length} players.</p>  

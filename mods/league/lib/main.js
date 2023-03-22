@@ -35,8 +35,8 @@ class LeagueMain {
     }
 
     let filter1 = leagues.filter(l => l.admin == this.app.wallet.returnPublicKey());
-    let filter2 = leagues.filter(l => l.rank && l.admin != this.app.wallet.returnPublicKey());
-    let filter3 = leagues.filter(l => !l.rank && l.admin != this.app.wallet.returnPublicKey());
+    let filter2 = leagues.filter(l => l.rank >= 0 && l.admin != this.app.wallet.returnPublicKey());
+    let filter3 = leagues.filter(l => l.rank < 0 && l.admin != this.app.wallet.returnPublicKey());
 
     if (filter1.length > 0) {
       filter1.forEach((lg) => {

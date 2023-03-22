@@ -11,7 +11,7 @@ module.exports = (app, mod, league) => {
         </div>
         <div class="league-component-existing-league-controls">`;
 
-    if (!league.rank){
+    if (league.rank < 0){
      html +=`<button class="league-component-existing-league league-join-button">Join</button>`; 
     }
 
