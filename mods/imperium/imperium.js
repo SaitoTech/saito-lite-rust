@@ -6054,7 +6054,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
 
   this.importSecretObjective('cultural-diplomacy', {
       name 		: 	"Cultural Diplomacy" ,
-      text		:	"Control at least 4 cultural planets" ,
+      text		:	"Control at least 4 blue planets" ,
       type		: 	"secret" ,
       canPlayerScoreVictoryPoints	: function(imperium_self, player) {
         let cultural = 0;
@@ -7403,7 +7403,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
   	name : "Holy Planet of Ixth" ,
   	type : "Law" ,
 	elect : "planet" ,
-  	text : "Elect a cultural planet. The planet's controller gains 1 VP. Units cannot be landed, produced or placed on this planet" ,
+  	text : "Elect a blue/cultural planet. The planet's controller gains 1 VP. Units cannot be landed, produced or placed on this planet" ,
         returnAgendaOptions : function(imperium_self) {
 	  return imperium_self.returnPlanetsOnBoard(function(planet) {
 	    if (planet.type === "cultural") { return 1; } return 0; 
@@ -7468,7 +7468,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
         name : "Research Team: Biotic" ,
         type : "Law" ,
 	elect : "planet" ,
-        text : "Elect an industrial planet. The owner may exhaust this planet to ignore 1 green technology prerequisite the next time they research a technology" ,
+        text : "Elect a green/industrial planet. The owner may exhaust this planet to ignore 1 green technology prerequisite when researching a technology" ,
         returnAgendaOptions : function(imperium_self) {
           return imperium_self.returnPlanetsOnBoard(function(planet) {
             if (planet.type === "industrial") { return 1; } return 0;
@@ -7538,7 +7538,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
         name : "Research Team: Cybernetic" ,
         type : "Law" ,
 	elect : "planet" ,
-        text : "Elect an industrial planet. The owner may exhaust this planet to ignore 1 yellow technology prerequisite the next time they research a technology" ,
+        text : "Elect a green/industrial planet. The owner may exhaust this planet to ignore 1 yellow technology prerequisite the next time they research a technology" ,
         returnAgendaOptions : function(imperium_self) {
           return imperium_self.returnPlanetsOnBoard(function(planet) {
             if (planet.type === "industrial") { return 1; } return 0;
@@ -7608,7 +7608,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
         name : "Research Team: Propulsion" ,
         type : "Law" ,
 	elect : "planet" ,
-        text : "Elect an industrial planet. The owner may exhaust this planet to ignore 1 blue technology prerequisite the next time they research a technology" ,
+        text : "Elect a green/industrial planet. The owner may exhaust this planet to ignore 1 blue technology prerequisite the next time they research a technology" ,
         returnAgendaOptions : function(imperium_self) {
           return imperium_self.returnPlanetsOnBoard(function(planet) {
             if (planet.type === "industrial") { return 1; } return 0;
@@ -7677,7 +7677,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
         name : "Research Team: Warfare" ,
         type : "Law" ,
 	elect : "planet" ,
-        text : "Elect an hazardous planet. The owner may exhaust this planet to ignore 1 red technology prerequisite the next time they research a technology" ,
+        text : "Elect a red/hazardous planet. The owner may exhaust this planet to ignore 1 red technology prerequisite when researching a technology" ,
         returnAgendaOptions : function(imperium_self) {
           return imperium_self.returnPlanetsOnBoard(function(planet) {
             if (planet.type === "industrial") { return 1; } return 0;
@@ -7748,7 +7748,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
   	name : "Demilitarized Zone" ,
   	type : "Law" ,
 	elect : "planet" ,
-  	text : "Elect a cultural planet. All units are destroyed and cannot be landed, produced or placed on this planet" ,
+  	text : "Elect a blue/cultural planet. All units are destroyed and cannot be landed, produced or placed on this planet" ,
         returnAgendaOptions : function(imperium_self) {
 	  return imperium_self.returnPlanetsOnBoard(function(planet) {
 	    if (planet.type === "cultural") { return 1; } return 0; 
@@ -7803,7 +7803,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
   	name : "Core Mining" ,
   	type : "Law" ,
 	elect : "planet" ,
-  	text : "Elect a hazardous planet. Destroy half the infantry on that planet and increase its resource value by +2" ,
+  	text : "Elect a red/hazardous planet. Destroy half the infantry on that planet and increase its resource value by +2" ,
         returnAgendaOptions : function(imperium_self) {
 	  return imperium_self.returnPlanetsOnBoard(function(planet) {
 	    if (planet.type === "hazardous") { return 1; } return 0; 
@@ -8297,7 +8297,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
   this.importAgendaCard('conventions-of-war', {
   	name : "Conventions of War" ,
   	type : "Law" ,
-  	text : "FOR: cultural planets are exempt from bombardment, AGAINST: players who vote against discard all action cards" ,
+  	text : "FOR: blue/cultural planets are exempt from bombardment, AGAINST: players who vote against discard all action cards" ,
         returnAgendaOptions : function(imperium_self) {
 	  return ["for","against"];
 	},
@@ -8629,7 +8629,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
         name : "Terraforming Initiative" ,
         type : "Law" ,
         elect : "planet" ,
-        text : "Elect a hazardous planet. The resource and influence values of this planet are increased by 1 point each" ,
+        text : "Elect a red/hazardous planet. The resource and influence values of this planet are increased by 1 point each" ,
         returnAgendaOptions : function(imperium_self) {
           return imperium_self.returnPlanetsOnBoard(function(planet) {
             if (planet.type === "hazardous") { return 1; } return 0;
@@ -8685,7 +8685,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
         name : "Senate Sanctuary" ,
         type : "Law" ,
         elect : "planet" ,
-        text : "Elect a cultural planet. The influence value of this planet is increased by 2 points" ,
+        text : "Elect a blue/cultural planet. The influence value of this planet is increased by 2 points" ,
         returnAgendaOptions : function(imperium_self) {
           return imperium_self.returnPlanetsOnBoard(function(planet) {
             if (planet.type === "cultural") { return 1; } return 0;
@@ -9661,10 +9661,10 @@ console.log("qe: " + qe);
 
 
 
-    this.importActionCard('economic-initiative', {
-  	name : "Economic Initiative" ,
+    this.importActionCard('cultural-initiative', {
+  	name : "Cultural Initiative" ,
   	type : "action" ,
-  	text : "ACTION: Ready each cultural planet in your control" ,
+  	text : "ACTION: Ready each blue/cultural planet in your control" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
 	  for (let i in imperium_self.game.planets) {
@@ -9808,7 +9808,7 @@ console.log("qe: " + qe);
     this.importActionCard('industrial-initiative', {
   	name : "Industrial Initiative" ,
   	type : "action" ,
-  	text : "ACTION: Gain a trade good for each industrial planet you control" ,
+  	text : "ACTION: Gain a trade good for each green planet you control" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
 	  let trade_goods_to_gain = 0;
@@ -9965,15 +9965,15 @@ console.log("qe: " + qe);
 
 
     this.importActionCard('unstable-planet', {
-  	name : "Unstable Planet" ,
+  	name : "Hazardous Planet" ,
   	type : "action" ,
-  	text : "ACTION: Choose a hazardous planet and exhaust it. Destroy 3 infantry on that planet if they exist" ,
+  	text : "ACTION: Choose a red planet and exhaust it. Destroy 3 infantry on that planet if they exist" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
 	  if (imperium_self.game.player == action_card_player) {
 
             imperium_self.playerSelectPlanetWithFilter(
-	      "Select a hazardous planet and exhaust it. Destroy 3 infantry on that planet if they exist" ,
+	      "Select a red planet and exhaust it. Destroy 3 infantry on that planet if they exist" ,
               function(planet) {
 		planet = imperium_self.game.planets[planet];
 	        if (planet.type == "hazardous") { return 1; } return 0;
@@ -15349,7 +15349,7 @@ if (debugging == 0) {
         this.game.queue.push("playerschoosestrategycards_before");
 
         if (this.game.state.round == 1) {
-          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players must select a strategy card. If you are new to Red Imperium, consider taking Leadership, Politics, or Technology. They are simple but valuable cards!");
+          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players must select a strategy card. If this is your first game, consider taking Leadership, Politics, or Technology.");
 	} else {
           this.game.queue.push(`ACKNOWLEDGE\tNEXT: all players select their strategy card(s) for Round ${this.game.state.round}.`);
 	}

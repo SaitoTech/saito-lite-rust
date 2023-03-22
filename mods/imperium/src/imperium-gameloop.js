@@ -1637,7 +1637,7 @@ if (debugging == 0) {
         this.game.queue.push("playerschoosestrategycards_before");
 
         if (this.game.state.round == 1) {
-          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players must select a strategy card. If you are new to Red Imperium, consider taking Leadership, Politics, or Technology. They are simple but valuable cards!");
+          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players must select a strategy card. If this is your first game, consider taking Leadership, Politics, or Technology.");
 	} else {
           this.game.queue.push(`ACKNOWLEDGE\tNEXT: all players select their strategy card(s) for Round ${this.game.state.round}.`);
 	}
@@ -5454,6 +5454,8 @@ console.log("MODIFIED ROLL: " + JSON.stringify(combat_info.modified_roll));
 
 	if (this.game.player == attacker) {
           this.playerPlaySpaceCombat(attacker, defender, sector);        
+	} else {
+          this.space_combat_overlay.render(attacker, defender, sector, "Space Cobat");        
 	}
 
         return 0;

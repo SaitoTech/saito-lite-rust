@@ -1357,6 +1357,7 @@ body {
   font-family: 'orbitron-medium', helvetica, arial, courier;
   text-transform: uppercase;
   padding: 15px;
+  user-select: none;
 }
 .buildchoice {
   padding: 15px;
@@ -1365,6 +1366,7 @@ body {
   cursor: pointer;
   font-family: 'orbitron-medium', helvetica, arial, courier;
   padding: 15px;
+  user-select: none;
 }
 
 .status ul .cardchoice-card {
