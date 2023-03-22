@@ -19,8 +19,8 @@ class ChatSetting {
         this.mod = mod;
 
         app.connection.on('show-chat-setting', (room_code, to_join) => {
-            this.to_join   = to_join;
-            if(room_code){
+            this.to_join = to_join;
+            if (room_code) {
                 this.room_code = room_code
             }
 
@@ -36,11 +36,10 @@ class ChatSetting {
         this.attachEvents(this.app, this.mod);
     }
 
-    remove(){
-        if(document.querySelector('.chat-settings-container')){
+    remove() {
+        if (document.querySelector('.chat-settings-container')) {
             document.querySelector('.chat-settings-container').parentElement.removeChild(document.querySelector('.chat-settings-container'));
         }
-
     }
 
     attachEvents(app, mod) {
@@ -57,7 +56,7 @@ class ChatSetting {
 
 
         toggleVideoButton.addEventListener('click', () => {
-            
+
             if (this.videoEnabled) {
                 this.videoStream.getVideoTracks()[0].enabled = false;
                 toggleVideoButton.classList.remove('fa-video');
@@ -68,7 +67,7 @@ class ChatSetting {
                 toggleVideoButton.classList.add('fa-video');
             }
 
-        
+
             this.videoEnabled = !this.videoEnabled;
             const notification = this.videoEnabled ? 'Video enabled' : 'Video disabled';
             siteMessage(notification, 3000);
@@ -109,7 +108,7 @@ class ChatSetting {
                     this.updateAudioProgress(audioProgress);
                 }
 
-              
+
             } else {
                 iconElement.classList.remove("fa-pause");
                 iconElement.classList.add("fa-play");
@@ -121,9 +120,19 @@ class ChatSetting {
         });
 
 
-        document.getElementById('join-button').addEventListener('click',()=> {
-     this.remove();
-             this.app.connection.emit('show-chat-manager');
+        document.getElementById('join-button').addEventListener('click', () => {
+            this.audioStream.getTracks().forEach(track => {
+                track.stop();
+                console.log(track);
+                console.log('stopping audio track');
+            })
+            this.videoStream.getTracks().forEach(track => {
+                track.stop();
+                console.log(track);
+                console.log('stopping video track');
+            })
+            this.remove();
+            this.app.connection.emit('show-chat-manager');
         })
 
         this.getUserMedia(videoElement);
@@ -207,18 +216,21 @@ class ChatSetting {
 
     updateAudioProgress(audioProgress) {
         if (this.recordedAudio) {
-            this.recordedAudio.ontimeupdate = () => {
-                const currentTime = this.formatTime(this.recordedAudio.currentTime);
-                const duration = this.formatTime(this.recordedAudio.duration);
+            this.recordedAudio.addEventListener('loadedmetadata', () => {
+                this.recordedAudio.ontimeupdate = () => {
+                    const currentTime = this.formatTime(this.recordedAudio.currentTime);
+                    const duration = isNaN(this.recordedAudio.duration) || this.recordedAudio.duration === Infinity
+                    ? 'Loading...'
+                    : this.formatTime(this.recordedAudio.duration);
 
+                    audioProgress.textContent = `${currentTime} / ${duration}`;
 
-                audioProgress.textContent = `${currentTime} / ${duration}`;
-
-                // Update progress bar
-                let progressBar = document.getElementById('progress');
-                const progressPercentage = (this.recordedAudio.currentTime / this.recordedAudio.duration) * 100;
-                progressBar.style.width = `${progressPercentage}%`;
-            };
+                    // Update progress bar
+                    let progressBar = document.getElementById('progress');
+                    const progressPercentage = (this.recordedAudio.currentTime / this.recordedAudio.duration) * 100;
+                    progressBar.style.width = `${progressPercentage}%`;
+                };
+            });
         }
     }
 

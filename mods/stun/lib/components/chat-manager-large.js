@@ -90,13 +90,13 @@ class VideoChatManager {
     }
 
     attachEvents(app, mod) {
-        document.querySelector('.disconnect_btn').addEventListener('click', (e) => {
+        document.querySelector('.disconnect_btn_container').addEventListener('click', (e) => {
             this.disconnect()
 
             siteMessage("You have been disconnected", 5000);
         })
 
-        let add_users = document.querySelector('.add_users')
+        let add_users = document.querySelector('.add_users_container')
         if (add_users) {
             add_users.addEventListener('click', (e) => {
                 this.updateRoomLink();
@@ -105,10 +105,10 @@ class VideoChatManager {
             })
 
         }
-        document.querySelector('.audio_control').addEventListener('click', (e) => {
+        document.querySelector('.audio_control_container').addEventListener('click', (e) => {
             this.toggleAudio();
         })
-        document.querySelector('.video_control').addEventListener('click', (e) => {
+        document.querySelector('.video_control_container').addEventListener('click', (e) => {
             this.toggleVideo();
         })
 

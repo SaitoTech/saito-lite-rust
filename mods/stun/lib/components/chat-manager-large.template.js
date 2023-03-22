@@ -1,5 +1,5 @@
 const ChatManagerLargeTemplate = (call_type, code) => {
-  let add_user = code ? `<span>
+  let add_user = code ? `<span class="add_users_container">
   <i class=" add_users fa fa-plus" > </i>
 </span>`: ""
   return `
@@ -29,16 +29,15 @@ const ChatManagerLargeTemplate = (call_type, code) => {
         </div>  
         <div class="control-list">
       ${add_user}
-       
+      
 
-
-           <span>
+           <span class="audio_control_container">
             <i class=" audio_control fa fa-microphone" > </i>
             </span>
-            <span  style=" background-color: ${call_type === "audio" ? "grey" : "white"}">
+            <span class="video_control_container"  style=" background-color: ${call_type === "audio" ? "grey" : "white"}">
             <i  style=" cursor :${call_type === "audio" ? "none" : "pointer"}; color:${call_type === "audio" ? "black" : "green"}  " class=" video_control  fas fa-video"> </i>
             </span>
-            <span>
+            <span class="disconnect_btn_container">
             <i class="disconnect_btn  fas fa-phone"> </i>
             </span>
         </div>

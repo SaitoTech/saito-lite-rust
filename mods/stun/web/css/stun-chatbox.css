@@ -83,9 +83,9 @@
   height: 100%;
   cursor: pointer;
   transition: all 0.5s ease;
+  position: relative;
 }
-
-.stunx-chatbox .expanded-video {
+.expanded-video {
   width: 75%;
   height: 100%;
   margin-right: 10px;
@@ -259,9 +259,8 @@
   font-size: 2.8rem;
 }
 
-.video-box-container-large > #video-mute-message {
+ .video-call-info {
   color: var(--saito-white);
-  /* width: 50%; */
   line-height: 1.5;
   position: absolute;
   display: flex;
@@ -273,9 +272,18 @@
   z-index: 2;
 }
 
-.video-box-container-large > #video-mute-message > p {
+ .video-call-info > p {
   color: #ffffff69;
   font-size: 2rem;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  margin-right: 1rem;
+}
+
+ .video-call-info i {
+  font-size: 2rem;
+  margin-right: 1rem;
 }
 
 .video-box-container-large canvas {
@@ -415,7 +423,7 @@
 .image-list img {
   width: 4rem;
   height: 4rem;
-  margin-right: -1rem;
+
 }
 
 .control-list {
@@ -542,7 +550,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-right: 2rem;
+  margin-right: 7rem;
   color: var(--saito-white);
 }
 
@@ -676,6 +684,11 @@
 }
 
 @media screen and (max-width: 767px) {
+
+  .video-call-info i {
+    font-size: 1rem;
+    margin-right: .5rem;
+  }
   .chat-settings {
     flex-direction: column;
     padding: 1rem;
@@ -699,9 +712,21 @@
   .chat-settings select {
     width: 100%;
   }
-  .video-box-container-large > #video-mute-message > p {
+ .video-call-info > p {
     font-size: 1.2rem;
+    max-width: 50px;
+    margin-right: .5rem;
   }
+
+  .expanded-video {
+    width: 100%;
+    margin-right: 0;
+  }
+  .side-videos {
+    position: absolute;
+    right: 0;
+  }
+
 }
 
 @media screen and (min-width: 768px) and (max-width: 1024px) {
