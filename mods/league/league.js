@@ -855,7 +855,6 @@ class League extends ModTemplate {
 
       //if (this.debug) { console.log("New League", JSON.parse(JSON.stringify(newLeague))); }
 
-      console.log("new league : ", newLeague);
       this.leagues.push(newLeague);
 
       //if (!this.app.BROWSER){

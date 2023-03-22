@@ -183,4 +183,3 @@ class GameWizard {
 }
 
 module.exports = GameWizard;
-

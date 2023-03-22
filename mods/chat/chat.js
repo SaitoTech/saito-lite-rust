@@ -151,7 +151,7 @@ class Chat extends ModTemplate {
               text: "Chat",
               icon: "fas fa-comments",
               callback: async function (app, id) {
-                let cmo = chat_self.respondTo("chat-manager-overlay");
+                let cmo = await chat_self.respondTo("chat-manager-overlay");
                 await cmo.render();
               },
             },

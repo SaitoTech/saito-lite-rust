@@ -19,8 +19,8 @@ class ETH extends ModTemplate {
 
 
   }
-  
-  respondTo(type = "") {
+
+  async respondTo(type = "") {
     if (type == "mixin-crypto") {
       return {
         name: this.name,

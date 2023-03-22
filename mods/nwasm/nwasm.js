@@ -74,7 +74,7 @@ class Nwasm extends GameTemplate {
     }
   }
 
-  respondTo(type = "") {
+  async respondTo(type = "") {
     if (type === "library-collection") {
       return {
         module: "Nwasm",
@@ -615,5 +615,3 @@ class Nwasm extends GameTemplate {
 }
 
 module.exports = Nwasm;
-
-

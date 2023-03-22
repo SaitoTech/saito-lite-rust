@@ -1,8 +1,8 @@
 var ModTemplate = require("../../lib/templates/modtemplate");
 var saito = require("../../lib/saito/saito");
 const JSON = require("json-bigint");
-const Transaction = require("../../lib/saito/transaction");
-const Slip = require("../../lib/saito/slip");
+const Slip = require("../../lib/saito/slip").default;
+const Transaction = require("../../lib/saito/transaction").default;
 
 class Relay extends ModTemplate {
   constructor(app) {
@@ -54,11 +54,11 @@ class Relay extends ModTemplate {
       recipients.push(recipient);
     }
 
-    if (this.debug) {
-      console.log("RECIPIENTS: " + JSON.stringify(recipients));
-      console.log("MESSAGE_REQUEST: " + JSON.stringify(message_request));
-      console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
-    }
+    // if (this.debug) {
+    console.log("RECIPIENTS: " + JSON.stringify(recipients));
+    console.log("MESSAGE_REQUEST: " + JSON.stringify(message_request));
+    console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
+    // }
 
     //
     // transaction to end-user, containing msg.request / msg.data is
@@ -68,7 +68,7 @@ class Relay extends ModTemplate {
     slip.publicKey = await this.app.wallet.getPublicKey();
     tx.addFromSlip(slip);
     for (let i = 0; i < recipients.length; i++) {
-      let slip = new saito.default.slip();
+      let slip = new Slip();
       slip.publicKey = recipients[i];
       tx.addToSlip(slip);
     }
@@ -80,6 +80,7 @@ class Relay extends ModTemplate {
     // ... wrapped in transaction to relaying peer
     //
 
+    console.log("tx json : ", tx.toJson());
     let peers = await this.app.network.getPeers();
     for (let i = 0; i < peers.length; i++) {
       // if (peers[i].peer) {
@@ -89,14 +90,12 @@ class Relay extends ModTemplate {
       let peer = peers[i];
       await this.app.network.sendRequestAsTransaction(
         "relay peer message",
-        tx.transaction,
+        tx.toJson(),
         null,
         peer.peerIndex
       );
       // }
     }
-
-    return;
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {

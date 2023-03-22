@@ -15,7 +15,7 @@ class ChatManagerOverlay {
 
     this.app.browser.addElementToDom(ChatManagerOverlayTemplate(this.app, this.mod));
 
-    this.chat_manager = this.mod.respondTo("chat-manager");
+    this.chat_manager = await this.mod.respondTo("chat-manager");
 
     //
     // delete if already exists on page
@@ -81,4 +81,3 @@ class ChatManagerOverlay {
 }
 
 module.exports = ChatManagerOverlay;
-

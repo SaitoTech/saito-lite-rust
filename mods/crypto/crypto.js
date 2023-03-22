@@ -19,7 +19,7 @@ class Crypto extends ModTemplate {
     this.overlay = new CryptoSelectAmount(app, this);
   }
 
-  respondTo(type = "") {
+  async respondTo(type = "") {
     if (type == "game-menu") {
       //
       // only show if games are winable
@@ -85,4 +85,3 @@ class Crypto extends ModTemplate {
 }
 
 module.exports = Crypto;
-

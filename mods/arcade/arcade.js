@@ -354,7 +354,7 @@ class Arcade extends ModTemplate {
   //
   // flexible inter-module-communications
   //
-  respondTo(type = "") {
+  async respondTo(type = "") {
     if (type == "header-dropdown") {
       return {
         name: this.appname ? this.appname : this.name,
@@ -649,7 +649,10 @@ class Arcade extends ModTemplate {
     let { ts, name, options, players_needed, invitation_type, desired_opponent_publickey } =
       gamedata;
 
-    let accept_sig = await this.app.crypto.signMessage(`invite_game_${ts}`, this.publicKey);
+    let accept_sig = await this.app.crypto.signMessage(
+      `invite_game_${ts}`,
+      await this.app.wallet.returnPrivateKey()
+    );
 
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     if (recipient != "") {

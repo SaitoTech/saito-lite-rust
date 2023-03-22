@@ -19,6 +19,7 @@ import CustomSharedMethods from "saito-js/lib/custom/shared_methods.custom";
 import { parse } from "url";
 import Peer from "../peer";
 import Transaction from "../transaction";
+import Factory from "../factory";
 
 const JSON = require("json-bigint");
 const app = express();
@@ -145,9 +146,14 @@ export class NodeSharedMethods extends CustomSharedMethods {
     let peer = await this.app.network.getPeer(peerIndex);
     let newtx = new Transaction();
     try {
-      let data = Buffer.from(buffer).toString("utf-8");
-      let msg = JSON.parse(data);
-      newtx.msg = msg.data;
+      console.log("buffer length : " + buffer.byteLength, buffer);
+      newtx = Transaction.deserialize(buffer, new Factory()) as Transaction;
+      newtx.unpackData();
+      // let data = Buffer.from(buffer).toString("utf-8");
+      // console.log("data = ", data);
+      // let msg = JSON.parse(data);
+      // console.log("msg = ", newtx.msg);
+      // newtx.msg = msg.data;
     } catch (error) {
       console.error(error);
       newtx.msg = buffer;
@@ -217,12 +223,10 @@ class Server {
     wss.on("connection", (socket: any, request: any) => {
       let index = S.getInstance().addNewSocket(socket);
       socket.on("message", (buffer: any) => {
-        console.log("000000");
+        console.log("buffer received : " + buffer.length, buffer);
         S.getLibInstance()
           .process_msg_buffer_from_peer(new Uint8Array(buffer), index)
-          .then(() => {
-            console.log("444444");
-          });
+          .then(() => {});
       });
       socket.on("close", () => {
         S.getLibInstance().process_peer_disconnection(index);

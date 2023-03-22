@@ -130,8 +130,8 @@ class RedSquare extends ModTemplate {
   /////////////////////////////////
   // inter-module communications //
   /////////////////////////////////
-  respondTo(type = "") {
-    this_mod = this;
+  async respondTo(type = "") {
+    let this_mod = this;
     if (type === "user-menu") {
       return {
         text: "View Profile",

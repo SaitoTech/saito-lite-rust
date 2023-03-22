@@ -1,23 +1,21 @@
-const GameTemplate = require('../../lib/templates/gametemplate');
-const saito = require('../../lib/saito/saito');
-const JSON = require('json-bigint');
+const GameTemplate = require("../../lib/templates/gametemplate");
+const saito = require("../../lib/saito/saito");
+const JSON = require("json-bigint");
 
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
 class GameTestSuite extends GameTemplate {
-
   constructor(app) {
-
     super(app);
 
     this.name = "GameTestSuite";
     this.gamename = "Game Test Suite";
-    this.description = 'A test suite covering core functions for the Saito Game Engine';
+    this.description = "A test suite covering core functions for the Saito Game Engine";
 
     this.categories = "Utilities Development Demonstration";
 
-    this.card_img_dir = '/gametestsuite/img/cards';
+    this.card_img_dir = "/gametestsuite/img/cards";
 
     this.status = "Demonstration";
 
@@ -38,27 +36,22 @@ class GameTestSuite extends GameTemplate {
     this.hud.enable_mode_change = 1;
 
     return this;
-
   }
-
 
   //
   // initialize module when it starts
   //
   initializeGame(game_id) {
-
     //
     // create game if it does not exist
     //
     if (!this.game.state) {
-
       this.game.state = this.returnState(this.game.players.length);
 
       this.game.queue.push("welcome");
       this.game.queue.push("init");
       this.game.queue.push("NOTIFY\tYou are Player " + this.game.player);
       this.game.queue.push("READY");
-
     }
 
     //
@@ -72,12 +65,17 @@ class GameTestSuite extends GameTemplate {
     if (this.game.options.crypto != undefined) {
       this.game.crypto = this.game.options.crypto;
       let crypto_key = this.app.wallet.returnCryptoAddressByTicker(this.game.crypto);
-      this.addMove("CRYPTOKEY\t" + this.app.wallet.getPublicKey() + "\t" + crypto_key + "\t" + this.app.crypto.signMessage(crypto_key, this.app.wallet.returnPrivateKey()));
+      this.addMove(
+        "CRYPTOKEY\t" +
+          this.app.wallet.getPublicKey() +
+          "\t" +
+          crypto_key +
+          "\t" +
+          this.app.crypto.signMessage(crypto_key, this.app.wallet.returnPrivateKey())
+      );
       this.endTurn();
     }
-
   }
-
 
   //
   // initialize HTML and UI components
@@ -97,7 +95,7 @@ class GameTestSuite extends GameTemplate {
       text: "Game",
       id: "game-game",
       class: "game-game",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.showSubMenu("game-game");
       },
     });
@@ -106,7 +104,7 @@ class GameTestSuite extends GameTemplate {
       text: "Intro",
       id: "game-intro",
       class: "game-type",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.gameMode = 0;
         $("#main").html(game_mod.returnMainHTML());
         game_mod.addEventsToDom(app);
@@ -117,7 +115,7 @@ class GameTestSuite extends GameTemplate {
       text: "Card Game",
       id: "game-cardgame",
       class: "game-type",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.gameMode = 1;
         $("#main").html(game_mod.returnCardGameHTML());
         game_mod.updateMenuCheck();
@@ -127,7 +125,7 @@ class GameTestSuite extends GameTemplate {
       text: "Board Game",
       id: "game-boardgame",
       class: "game-type",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.gameMode = 2;
         $("#main").html(game_mod.returnBoardGameHTML());
         game_mod.updateMenuCheck();
@@ -137,20 +135,19 @@ class GameTestSuite extends GameTemplate {
       text: "HexBoard",
       id: "game-hexboard",
       class: "game-type",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.gameMode = 3;
         $("#main").html(game_mod.returnHexGameHTML());
         game_mod.updateMenuCheck();
       },
     });
 
-
     /* Simulate different numbers of players*/
     this.menu.addMenuOption({
       text: "Players",
       id: "menu-players",
       class: "menu-players",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.showSubMenu("menu-players");
       },
     });
@@ -160,7 +157,7 @@ class GameTestSuite extends GameTemplate {
         text: `${i}`,
         id: `menu-${i}-player`,
         class: "menu-num-players",
-        callback: function(app, game_mod) {
+        callback: function (app, game_mod) {
           game_mod.menu.hideSubMenus();
           game_mod.adjustPlayers(i);
         },
@@ -172,7 +169,7 @@ class GameTestSuite extends GameTemplate {
       text: "Interface",
       id: "menu-interface",
       class: "menu-interface",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.showSubMenu("menu-interface");
       },
     });
@@ -181,7 +178,7 @@ class GameTestSuite extends GameTemplate {
       text: "HUD",
       id: "menu-hud",
       class: "menu-hud",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.display_cardhud_test(game_mod.app);
       },
@@ -191,7 +188,7 @@ class GameTestSuite extends GameTemplate {
       text: "Playerbox",
       id: "menu-playerbox",
       class: "menu-playerbox",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.add_player_boxes_test(game_mod.app);
       },
@@ -201,7 +198,7 @@ class GameTestSuite extends GameTemplate {
       text: "Log",
       id: "menu-log",
       class: "menu-log",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.log.toggleLog();
       },
@@ -211,7 +208,7 @@ class GameTestSuite extends GameTemplate {
       text: "HUD",
       id: "menu-hud",
       class: "menu-hud",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.display_cardhud_test(game_mod.app);
       },
@@ -221,7 +218,7 @@ class GameTestSuite extends GameTemplate {
       text: "Board Sizer",
       id: "menu-board-sizer",
       class: "menu-board-sizer",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.display_boardsizer_test(game_mod.app);
       },
@@ -231,7 +228,7 @@ class GameTestSuite extends GameTemplate {
       text: "Card fan",
       id: "menu-fan",
       class: "menu-fan",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.display_cardfan_test(game_mod.app);
       },
@@ -241,7 +238,7 @@ class GameTestSuite extends GameTemplate {
       text: "Card box",
       id: "menu-cardbox",
       class: "menu-cardbox",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.toggle_cardbox_test(game_mod.app);
       },
@@ -251,7 +248,7 @@ class GameTestSuite extends GameTemplate {
       text: "Overlay",
       id: "menu-overlay",
       class: "menu-overlay",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.display_overlay_test(game_mod.app);
       },
@@ -261,7 +258,7 @@ class GameTestSuite extends GameTemplate {
       text: "Blocking overlay",
       id: "menu-block-overlay",
       class: "menu-overlay",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.display_blocking_overlay_test(game_mod.app);
       },
@@ -271,7 +268,7 @@ class GameTestSuite extends GameTemplate {
       text: "Scoreboard",
       id: "menu-scoreboard",
       class: "menu-scoreboard",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.display_scoreboard_test(game_mod.app);
       },
@@ -280,7 +277,7 @@ class GameTestSuite extends GameTemplate {
       text: "Game Clock",
       id: "menu-game-clock",
       class: "menu-game-clock",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.display_game_clock_test(game_mod.app);
       },
@@ -291,7 +288,7 @@ class GameTestSuite extends GameTemplate {
       text: "Web3",
       id: "menu-crypto",
       class: "menu-crypto",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.showSubMenu("menu-crypto");
       },
     });
@@ -300,7 +297,7 @@ class GameTestSuite extends GameTemplate {
       text: "Check Balance",
       id: "crypto-balance",
       class: "crypto-balance",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.check_balance_test(game_mod.app);
       },
@@ -310,7 +307,7 @@ class GameTestSuite extends GameTemplate {
       text: "Payment",
       id: "crypto-send",
       class: "crypto-send",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.send_payment_test(game_mod.app);
       },
@@ -327,7 +324,6 @@ class GameTestSuite extends GameTemplate {
     });
     */
 
-
     this.menu.render();
 
     this.log.render();
@@ -343,7 +339,6 @@ class GameTestSuite extends GameTemplate {
     // Saito stack.
     //
     try {
-
       switch (this.gameMode) {
         case 1:
           $("#main").html(this.returnCardGameHTML());
@@ -356,7 +351,6 @@ class GameTestSuite extends GameTemplate {
           break;
         default:
           $("#main").html(this.returnMainHTML());
-
       }
 
       this.addEventsToDom(this.app);
@@ -365,17 +359,14 @@ class GameTestSuite extends GameTemplate {
     }
   }
 
-
   //
   // main game queue
   //
   handleGameLoop() {
-
     ///////////
     // QUEUE //
     ///////////
     if (this.game.queue.length > 0) {
-
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
 
@@ -396,7 +387,6 @@ class GameTestSuite extends GameTemplate {
     return 1;
   }
 
-
   returnWelcomeMessage() {
     //
     // update active crypto
@@ -407,7 +397,7 @@ class GameTestSuite extends GameTemplate {
           <p>This application provides click-to-test functionality of core backend components in the Saito Game Engine. It also serves as a showcase for how to simply and easily handle common game tasks like rolling dice, dealing cards or displaying UI elements. It also provides a basic starting point for coding games!</p>
           <p>Online Docs: <a href="https://github.com/SaitoTech/saito-lite/blob/master/docs/saito-game-engine/readme.md" target="_newsaito">game engine overview</a> | <a href="https://github.com/SaitoTech/saito-lite/blob/master/docs/saito-game-engine/api.md" target="_newsaito">api details</a></p>
           <p>Please note that testing web3 cryptocurrency support requires your wallet to be configured to support those cryptocurrencies. This application was created with support for <span id="saito_crypto">${crypto}</span> as the Web3 token -- to change to another token such as DOT or WND please specify in the advanced options menu on game create. Some card-related functionality may require you to have dealt cards to players.</p>
-      </div>`
+      </div>`;
   }
 
   //
@@ -416,7 +406,6 @@ class GameTestSuite extends GameTemplate {
   // used here to allow users to select in-game web3 crypto
   //
   returnGameOptionsHTML() {
-
     let options_html = `
       <h1 class="overlay-title">Select a Web3 Crypto:</h1>
       <div class="overlay-input">
@@ -437,7 +426,6 @@ class GameTestSuite extends GameTemplate {
     return options_html;
   }
 
-
   /*
    default game state
    state is an object stored in the game (e.g. this.game.state), which is remembered between refreshes
@@ -445,7 +433,6 @@ class GameTestSuite extends GameTemplate {
    This information is "public"
   */
   returnState(numPlayers) {
-
     let state = {};
 
     state.cards_dealt_to_players = 0;
@@ -460,71 +447,67 @@ class GameTestSuite extends GameTemplate {
     return state;
   }
 
-
   //
   // default deck
   //
   returnDeck() {
-
     var deck = {};
 
-    deck['1'] = { name: "S1.png", img: "/gametestsuite/img/cards/S1.png" }
-    deck['2'] = { name: "S2.png", img: "/gametestsuite/img/cards/S2.png" }
-    deck['3'] = { name: "S3.png", img: "/gametestsuite/img/cards/S3.png" }
-    deck['4'] = { name: "S4.png", img: "/gametestsuite/img/cards/S4.png" }
-    deck['5'] = { name: "S5.png", img: "/gametestsuite/img/cards/S5.png" }
-    deck['6'] = { name: "S6.png", img: "/gametestsuite/img/cards/S6.png" }
-    deck['7'] = { name: "S7.png", img: "/gametestsuite/img/cards/S7.png" }
-    deck['8'] = { name: "S8.png", img: "/gametestsuite/img/cards/S8.png" }
-    deck['9'] = { name: "S9.png", img: "/gametestsuite/img/cards/S9.png" }
-    deck['10'] = { name: "S10.png", img: "/gametestsuite/img/cards/S10.png" }
-    deck['11'] = { name: "S11.png", img: "/gametestsuite/img/cards/S11.png" }
-    deck['12'] = { name: "S12.png", img: "/gametestsuite/img/cards/S12.png" }
-    deck['13'] = { name: "S13.png", img: "/gametestsuite/img/cards/S13.png" }
-    deck['14'] = { name: "C1.png", img: "/gametestsuite/img/cards/C1.png" }
-    deck['15'] = { name: "C2.png", img: "/gametestsuite/img/cards/C2.png" }
-    deck['16'] = { name: "C3.png", img: "/gametestsuite/img/cards/C3.png" }
-    deck['17'] = { name: "C4.png", img: "/gametestsuite/img/cards/C4.png" }
-    deck['18'] = { name: "C5.png", img: "/gametestsuite/img/cards/C5.png" }
-    deck['19'] = { name: "C6.png", img: "/gametestsuite/img/cards/C6.png" }
-    deck['20'] = { name: "C7.png", img: "/gametestsuite/img/cards/C7.png" }
-    deck['21'] = { name: "C8.png", img: "/gametestsuite/img/cards/C8.png" }
-    deck['22'] = { name: "C9.png", img: "/gametestsuite/img/cards/C9.png" }
-    deck['23'] = { name: "C10.png", img: "/gametestsuite/img/cards/C10.png" }
-    deck['24'] = { name: "C11.png", img: "/gametestsuite/img/cards/C11.png" }
-    deck['25'] = { name: "C12.png", img: "/gametestsuite/img/cards/C12.png" }
-    deck['26'] = { name: "C13.png", img: "/gametestsuite/img/cards/C13.png" }
-    deck['27'] = { name: "H1.png", img: "/gametestsuite/img/cards/H1.png" }
-    deck['28'] = { name: "H2.png", img: "/gametestsuite/img/cards/H2.png" }
-    deck['29'] = { name: "H3.png", img: "/gametestsuite/img/cards/H3.png" }
-    deck['30'] = { name: "H4.png", img: "/gametestsuite/img/cards/H4.png" }
-    deck['31'] = { name: "H5.png", img: "/gametestsuite/img/cards/H5.png" }
-    deck['32'] = { name: "H6.png", img: "/gametestsuite/img/cards/H6.png" }
-    deck['33'] = { name: "H7.png", img: "/gametestsuite/img/cards/H7.png" }
-    deck['34'] = { name: "H8.png", img: "/gametestsuite/img/cards/H8.png" }
-    deck['35'] = { name: "H9.png", img: "/gametestsuite/img/cards/H9.png" }
-    deck['36'] = { name: "H10.png", img: "/gametestsuite/img/cards/H10.png" }
-    deck['37'] = { name: "H11.png", img: "/gametestsuite/img/cards/H11.png" }
-    deck['38'] = { name: "H12.png", img: "/gametestsuite/img/cards/H12.png" }
-    deck['39'] = { name: "H13.png", img: "/gametestsuite/img/cards/H13.png" }
-    deck['40'] = { name: "D1.png", img: "/gametestsuite/img/cards/D1.png" }
-    deck['41'] = { name: "D2.png", img: "/gametestsuite/img/cards/D2.png" }
-    deck['42'] = { name: "D3.png", img: "/gametestsuite/img/cards/D3.png" }
-    deck['43'] = { name: "D4.png", img: "/gametestsuite/img/cards/D4.png" }
-    deck['44'] = { name: "D5.png", img: "/gametestsuite/img/cards/D5.png" }
-    deck['45'] = { name: "D6.png", img: "/gametestsuite/img/cards/D6.png" }
-    deck['46'] = { name: "D7.png", img: "/gametestsuite/img/cards/D7.png" }
-    deck['47'] = { name: "D8.png", img: "/gametestsuite/img/cards/D8.png" }
-    deck['48'] = { name: "D9.png", img: "/gametestsuite/img/cards/D9.png" }
-    deck['49'] = { name: "D10.png", img: "/gametestsuite/img/cards/D10.png" }
-    deck['50'] = { name: "D11.png", img: "/gametestsuite/img/cards/D11.png" }
-    deck['51'] = { name: "D12.png", img: "/gametestsuite/img/cards/D12.png" }
-    deck['52'] = { name: "D13.png", img: "/gametestsuite/img/cards/D13.png" }
+    deck["1"] = { name: "S1.png", img: "/gametestsuite/img/cards/S1.png" };
+    deck["2"] = { name: "S2.png", img: "/gametestsuite/img/cards/S2.png" };
+    deck["3"] = { name: "S3.png", img: "/gametestsuite/img/cards/S3.png" };
+    deck["4"] = { name: "S4.png", img: "/gametestsuite/img/cards/S4.png" };
+    deck["5"] = { name: "S5.png", img: "/gametestsuite/img/cards/S5.png" };
+    deck["6"] = { name: "S6.png", img: "/gametestsuite/img/cards/S6.png" };
+    deck["7"] = { name: "S7.png", img: "/gametestsuite/img/cards/S7.png" };
+    deck["8"] = { name: "S8.png", img: "/gametestsuite/img/cards/S8.png" };
+    deck["9"] = { name: "S9.png", img: "/gametestsuite/img/cards/S9.png" };
+    deck["10"] = { name: "S10.png", img: "/gametestsuite/img/cards/S10.png" };
+    deck["11"] = { name: "S11.png", img: "/gametestsuite/img/cards/S11.png" };
+    deck["12"] = { name: "S12.png", img: "/gametestsuite/img/cards/S12.png" };
+    deck["13"] = { name: "S13.png", img: "/gametestsuite/img/cards/S13.png" };
+    deck["14"] = { name: "C1.png", img: "/gametestsuite/img/cards/C1.png" };
+    deck["15"] = { name: "C2.png", img: "/gametestsuite/img/cards/C2.png" };
+    deck["16"] = { name: "C3.png", img: "/gametestsuite/img/cards/C3.png" };
+    deck["17"] = { name: "C4.png", img: "/gametestsuite/img/cards/C4.png" };
+    deck["18"] = { name: "C5.png", img: "/gametestsuite/img/cards/C5.png" };
+    deck["19"] = { name: "C6.png", img: "/gametestsuite/img/cards/C6.png" };
+    deck["20"] = { name: "C7.png", img: "/gametestsuite/img/cards/C7.png" };
+    deck["21"] = { name: "C8.png", img: "/gametestsuite/img/cards/C8.png" };
+    deck["22"] = { name: "C9.png", img: "/gametestsuite/img/cards/C9.png" };
+    deck["23"] = { name: "C10.png", img: "/gametestsuite/img/cards/C10.png" };
+    deck["24"] = { name: "C11.png", img: "/gametestsuite/img/cards/C11.png" };
+    deck["25"] = { name: "C12.png", img: "/gametestsuite/img/cards/C12.png" };
+    deck["26"] = { name: "C13.png", img: "/gametestsuite/img/cards/C13.png" };
+    deck["27"] = { name: "H1.png", img: "/gametestsuite/img/cards/H1.png" };
+    deck["28"] = { name: "H2.png", img: "/gametestsuite/img/cards/H2.png" };
+    deck["29"] = { name: "H3.png", img: "/gametestsuite/img/cards/H3.png" };
+    deck["30"] = { name: "H4.png", img: "/gametestsuite/img/cards/H4.png" };
+    deck["31"] = { name: "H5.png", img: "/gametestsuite/img/cards/H5.png" };
+    deck["32"] = { name: "H6.png", img: "/gametestsuite/img/cards/H6.png" };
+    deck["33"] = { name: "H7.png", img: "/gametestsuite/img/cards/H7.png" };
+    deck["34"] = { name: "H8.png", img: "/gametestsuite/img/cards/H8.png" };
+    deck["35"] = { name: "H9.png", img: "/gametestsuite/img/cards/H9.png" };
+    deck["36"] = { name: "H10.png", img: "/gametestsuite/img/cards/H10.png" };
+    deck["37"] = { name: "H11.png", img: "/gametestsuite/img/cards/H11.png" };
+    deck["38"] = { name: "H12.png", img: "/gametestsuite/img/cards/H12.png" };
+    deck["39"] = { name: "H13.png", img: "/gametestsuite/img/cards/H13.png" };
+    deck["40"] = { name: "D1.png", img: "/gametestsuite/img/cards/D1.png" };
+    deck["41"] = { name: "D2.png", img: "/gametestsuite/img/cards/D2.png" };
+    deck["42"] = { name: "D3.png", img: "/gametestsuite/img/cards/D3.png" };
+    deck["43"] = { name: "D4.png", img: "/gametestsuite/img/cards/D4.png" };
+    deck["44"] = { name: "D5.png", img: "/gametestsuite/img/cards/D5.png" };
+    deck["45"] = { name: "D6.png", img: "/gametestsuite/img/cards/D6.png" };
+    deck["46"] = { name: "D7.png", img: "/gametestsuite/img/cards/D7.png" };
+    deck["47"] = { name: "D8.png", img: "/gametestsuite/img/cards/D8.png" };
+    deck["48"] = { name: "D9.png", img: "/gametestsuite/img/cards/D9.png" };
+    deck["49"] = { name: "D10.png", img: "/gametestsuite/img/cards/D10.png" };
+    deck["50"] = { name: "D11.png", img: "/gametestsuite/img/cards/D11.png" };
+    deck["51"] = { name: "D12.png", img: "/gametestsuite/img/cards/D12.png" };
+    deck["52"] = { name: "D13.png", img: "/gametestsuite/img/cards/D13.png" };
 
     return deck;
-
   }
-
 
   //////////////////////////////
   // MODULE SPECIFIC FUNCTION //
@@ -536,68 +519,62 @@ class GameTestSuite extends GameTemplate {
   // game creation is cleaner and easier to see.
   //
   addEventsToDom(app) {
-
     let game_self = this;
-
 
     //
     // deal cards to players
     //
     document.getElementById("deal_cards_to_player_button").onclick = (e) => {
       game_self.deal_cards_to_player_test(game_self.app);
-    }
+    };
 
     //
     // deal cards to the table
     //
     document.getElementById("shuffle_deck_button").onclick = (e) => {
       game_self.shuffle_deck_test(game_self.app);
-    }
+    };
 
     //
     // deal cards to the table
     //
     document.getElementById("deal_cards_to_table_button").onclick = (e) => {
       game_self.deal_cards_to_table_test(game_self.app);
-    }
-
+    };
 
     document.getElementById("add_player").onclick = (e) => {
       if (game_self.game.players.length < 6) {
         game_self.adjustPlayers(game_self.game.players.length + 1);
         $("#player_count").text(`Players -- ${game_self.game.players.length}`);
       }
-    }
+    };
     document.getElementById("subtract_player").onclick = (e) => {
       if (game_self.game.players.length > 1) {
         game_self.adjustPlayers(game_self.game.players.length - 1);
         $("#player_count").text(`Players -- ${game_self.game.players.length}`);
       }
-    }
-
+    };
 
     //
     // add to menu to page
     //
     document.getElementById("add_menu_button").onclick = (e) => {
       game_self.add_menu_test(game_self.app);
-    }
+    };
 
     //
     // show non-blocking overlay
     //
     document.getElementById("display_overlay_button").onclick = (e) => {
       game_self.display_overlay_test(game_self.app);
-    }
+    };
 
     //
     // show blocking overlay
     //
     document.getElementById("display_blocking_overlay_button").onclick = (e) => {
       game_self.display_blocking_overlay_test(game_self.app);
-    }
-
-
+    };
   }
 
   ////////////////////
@@ -636,12 +613,13 @@ class GameTestSuite extends GameTemplate {
   }
 
   simultaneous_pick_test(app) {
-
     let game_self = this;
     let simultaneous_pick_card = Math.random().toString();
 
     if (game_self.game.state.simultaneous_pick_submitted) {
-      salert("All players need to click on the simultaneous pick button. The results will be printed in the console.log. The test is restricted to running a single time, to avoid players making multiple submissions before all players have contributed and triggering failures in card selection.");
+      salert(
+        "All players need to click on the simultaneous pick button. The results will be printed in the console.log. The test is restricted to running a single time, to avoid players making multiple submissions before all players have contributed and triggering failures in card selection."
+      );
       return 0;
     }
 
@@ -660,24 +638,33 @@ class GameTestSuite extends GameTemplate {
 
     `);
 
-    let hash1 = game_self.app.crypto.hash(simultaneous_pick_card);    // my card
-    let hash2 = game_self.app.crypto.hash(Math.random().toString());  // my secret
-    let hash3 = game_self.app.crypto.hash(hash2 + hash1);             // combined hash
+    let hash1 = game_self.app.crypto.hash(simultaneous_pick_card); // my card
+    let hash2 = game_self.app.crypto.hash(Math.random().toString()); // my secret
+    let hash3 = game_self.app.crypto.hash(hash2 + hash1); // combined hash
 
-    let card_sig = game_self.app.crypto.signMessage(simultaneous_pick_card, game_self.app.wallet.returnPrivateKey());
-    let hash2_sig = game_self.app.crypto.signMessage(hash2, game_self.app.wallet.returnPrivateKey());
-    let hash3_sig = game_self.app.crypto.signMessage(hash3, game_self.app.wallet.returnPrivateKey());
+    let card_sig = game_self.app.crypto.signMessage(
+      simultaneous_pick_card,
+      game_self.app.wallet.returnPrivateKey()
+    );
+    let hash2_sig = game_self.app.crypto.signMessage(
+      hash2,
+      game_self.app.wallet.returnPrivateKey()
+    );
+    let hash3_sig = game_self.app.crypto.signMessage(
+      hash3,
+      game_self.app.wallet.returnPrivateKey()
+    );
 
     game_self.game.spick_card = simultaneous_pick_card;
     game_self.game.spick_hash = hash2;
 
-    game_self.addMove("SIMULTANEOUS_PICK\t" + game_self.game.player + "\t" + hash3 + "\t" + hash3_sig);
+    game_self.addMove(
+      "SIMULTANEOUS_PICK\t" + game_self.game.player + "\t" + hash3 + "\t" + hash3_sig
+    );
     game_self.endTurn();
-
-  };
+  }
 
   consecutive_moves_test(app) {
-
     let game_self = this;
     game_self.updateLog(`
 
@@ -688,16 +675,13 @@ class GameTestSuite extends GameTemplate {
     `);
     for (let i = 0; i < game_self.game.players.length; i++) {
       game_self.addMove("NOTIFY\tPlayer " + (i + 1) + " is finished moving");
-      game_self.addMove("PLAY\t" + (i + 1))
+      game_self.addMove("PLAY\t" + (i + 1));
       game_self.addMove("NOTIFY\tPlayer " + (i + 1) + " is about to move");
     }
     game_self.endTurn();
-
   }
 
-
   simultaneous_moves_test() {
-
     let game_self = this;
 
     game_self.updateLog(`
@@ -722,11 +706,9 @@ class GameTestSuite extends GameTemplate {
     game_self.addMove("PLAY\t" + JSON.stringify(players_to_go));
     game_self.addMove("NOTIFY\tAll players will move simultaneously");
     game_self.endTurn();
-
   }
 
   display_overlay_test(app) {
-
     let overlay_html = `
       <div style="background-color:whitesmoke;width:80vw;padding:40px;font-size:1.2em;">
       Non-blocking overlays can be closed by clicking on backdrops.
@@ -735,14 +717,12 @@ class GameTestSuite extends GameTemplate {
       </div>
     `;
 
-    this.overlay.show(overlay_html, function() {
+    this.overlay.show(overlay_html, function () {
       alert("Callback Optional on Close!");
     });
-
   }
 
   display_blocking_overlay_test(app) {
-
     let game_self = this;
 
     let overlay_html = `
@@ -758,22 +738,18 @@ class GameTestSuite extends GameTemplate {
     this.overlay.blockClose();
     document.getElementById("close_overlay_button").onclick = (e) => {
       game_self.overlay.hide();
-    }
-
+    };
   }
-
 
   display_scoreboard_test(app) {
     this.scoreboard.update(`<div>Num Players: ${this.game.players.length}</div>`);
   }
-
 
   display_game_clock_test(app) {
     this.clock.render();
   }
 
   deal_cards_to_player_test(app) {
-
     let game_self = this;
 
     //
@@ -793,18 +769,17 @@ class GameTestSuite extends GameTemplate {
     //
     // SIMPLEDEAL [number_of_cards_to_deal] [index_of_deck] [JSON of deck]
     //
-    game_self.addMove("SIMPLEDEAL\t" + 3 + "\t" + 1 + "\t" + JSON.stringify(game_self.returnDeck()));
+    game_self.addMove(
+      "SIMPLEDEAL\t" + 3 + "\t" + 1 + "\t" + JSON.stringify(game_self.returnDeck())
+    );
     game_self.endTurn();
-
 
     if (this.game_cardfan_visible) {
       this.cardfan.render();
     }
-
   }
 
   deal_cards_to_table_test(app) {
-
     let game_self = this;
 
     /*game_self.updateLog(`
@@ -836,9 +811,7 @@ class GameTestSuite extends GameTemplate {
     game_self.endTurn();
   }
 
-
   shuffle_deck_test(app) {
-
     let game_self = this;
 
     game_self.updateLog(`
@@ -853,11 +826,9 @@ class GameTestSuite extends GameTemplate {
     game_self.addMove("SHUFFLE\t1");
     game_self.addMove("DECK\t1\t" + JSON.stringify(game_self.returnDeck()));
     game_self.endTurn();
-
   }
 
   receive_payment_test(app) {
-
     let game_self = this;
 
     let receiver = game_self.game.players[game_self.game.player - 1];
@@ -869,14 +840,36 @@ class GameTestSuite extends GameTemplate {
       }
     }
 
-    game_self.addMove("RECEIVE" + "\t" + sender + "\t" + receiver + "\t" + "0.0001" + "\t" + (new Date().getTime()) + "\t" + game_self.game.crypto);
-    game_self.addMove("SEND" + "\t" + sender + "\t" + receiver + "\t" + "0.0001" + "\t" + (new Date().getTime()) + "\t" + game_self.game.crypto);
+    game_self.addMove(
+      "RECEIVE" +
+        "\t" +
+        sender +
+        "\t" +
+        receiver +
+        "\t" +
+        "0.0001" +
+        "\t" +
+        new Date().getTime() +
+        "\t" +
+        game_self.game.crypto
+    );
+    game_self.addMove(
+      "SEND" +
+        "\t" +
+        sender +
+        "\t" +
+        receiver +
+        "\t" +
+        "0.0001" +
+        "\t" +
+        new Date().getTime() +
+        "\t" +
+        game_self.game.crypto
+    );
     game_self.endTurn();
-
   }
 
   send_payment_test(app) {
-
     let game_self = this;
 
     let sender = game_self.game.players[game_self.game.player - 1];
@@ -891,17 +884,19 @@ class GameTestSuite extends GameTemplate {
     let ts = new Date().getTime();
     this.rollDice();
     let uh = this.game.dice;
-    game_self.addMove(`RECEIVE\t${sender}\t${receiver}\t0.0001\t${ts}\t${uh}\t${game_self.game.crypto}`);
-    game_self.addMove(`SEND\t${sender}\t${receiver}\t0.0001\t${ts}\t${uh}\t${game_self.game.crypto}`);
+    game_self.addMove(
+      `RECEIVE\t${sender}\t${receiver}\t0.0001\t${ts}\t${uh}\t${game_self.game.crypto}`
+    );
+    game_self.addMove(
+      `SEND\t${sender}\t${receiver}\t0.0001\t${ts}\t${uh}\t${game_self.game.crypto}`
+    );
     game_self.endTurn();
-
   }
 
   /*
   Game engine command BALANCE doesn't work very well.... or at all
   */
   async check_balance_test(app) {
-
     let game_self = this;
 
     let amount = 0;
@@ -924,13 +919,10 @@ class GameTestSuite extends GameTemplate {
       game_self,
       address,
       ticker,
-      function() {
-      }
+      function () {}
     );
     game_self.updateStatus(`you have ${current_balance} ${ticker}`);
-
   }
-
 
   display_boardsizer_test(app) {
     if (this.game_boardsizer_visible == 0) {
@@ -958,11 +950,14 @@ class GameTestSuite extends GameTemplate {
     if (this.game_hud_visible == 0) {
       this.hud.render();
       if (this.game.deck[0].hand) {
-        this.updateStatusAndListCards('Here is my hand', this.game.deck[0].hand);
+        this.updateStatusAndListCards("Here is my hand", this.game.deck[0].hand);
       } else {
-        this.updateStatusWithOptions("There are no cards to display", `<ul><li id='deal' class="hudmenuitem">Deal cards</li><li id='close' class="hudmenuitem">Close hud</li></ul>`);
+        this.updateStatusWithOptions(
+          "There are no cards to display",
+          `<ul><li id="deal" class="hudmenuitem">Deal cards</li><li id="close" class="hudmenuitem">Close hud</li></ul>`
+        );
         $(".hudmenuitem").off();
-        $(".hudmenuitem").on("click", function() {
+        $(".hudmenuitem").on("click", function () {
           this.game_hud_visible = 0;
           let cid = $(this).attr("id");
           if (cid === "deal") {
@@ -990,13 +985,13 @@ class GameTestSuite extends GameTemplate {
     if (this.game_cardbox_visible == 1) {
       this.game_cardbox_visible = 0;
       this.cardbox.disable();
-      this.updateStatusAndListCards('cardbox disabled in hud');
+      this.updateStatusAndListCards("cardbox disabled in hud");
     } else {
       this.game_cardbox_visible = 1;
-      this.cardbox.addCardType("card", "select", function(c) {
+      this.cardbox.addCardType("card", "select", function (c) {
         salert(`You clicked on the ${c} card`);
       });
-      this.updateStatusAndListCards('cardbox enabled in hud');
+      this.updateStatusAndListCards("cardbox enabled in hud");
       this.cardbox.attachCardEvents();
     }
   }
@@ -1014,7 +1009,6 @@ class GameTestSuite extends GameTemplate {
     }
   }
 
-
   ///////////////////
   // MISCELLANEOUS //
   ///////////////////
@@ -1026,13 +1020,12 @@ class GameTestSuite extends GameTemplate {
   // when it loads to determine which modules support interactions with users
   // through the Arcade interface.
   //
-  respondTo(type) {
+  async respondTo(type) {
     if (type == "default-league") {
       return null;
     }
     return super.respondTo(type);
   }
-
 
   returnMainHTML() {
     return `<div class="gameboard" id="gameboard">
@@ -1075,11 +1068,11 @@ class GameTestSuite extends GameTemplate {
   //"✔"
   updateMenuCheck() {
     try {
-      Array.from(document.querySelectorAll(".game-type")).forEach(mItem => {
+      Array.from(document.querySelectorAll(".game-type")).forEach((mItem) => {
         mItem.textContent = mItem.textContent.replace("✔", "");
       });
       //menu-num-players
-      Array.from(document.querySelectorAll(".menu-num-players")).forEach(mItem => {
+      Array.from(document.querySelectorAll(".menu-num-players")).forEach((mItem) => {
         mItem.textContent = mItem.textContent.replace("✔", "");
       });
 
@@ -1100,10 +1093,8 @@ class GameTestSuite extends GameTemplate {
 
       let divname = `menu-${this.game.players.length}-player`;
       document.getElementById(divname).textContent += "✔";
-    } catch (err) {
-    }
+    } catch (err) {}
   }
-
 
   adjustPlayers(numPlayers) {
     while (numPlayers < this.game.players.length) {
@@ -1123,8 +1114,6 @@ class GameTestSuite extends GameTemplate {
       this.add_player_boxes_test(this.app);
     }
   }
-
-
 }
 
 module.exports = GameTestSuite;

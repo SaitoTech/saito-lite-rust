@@ -78,7 +78,7 @@ class Mixin extends ModTemplate {
   //
   // flexible inter-module-communications
   //
-  respondTo(type = "") {
+  async respondTo(type = "") {
     // if (type === 'saito-header') {
     //   return [{
     //     text: "Wallet",
@@ -187,8 +187,8 @@ class Mixin extends ModTemplate {
         let d = res.data;
         for (let i = 0; i < d.data.length; i++) {
           /********************************************
-             "amount":     "-1688168",
-             "asset": {
+           "amount":     "-1688168",
+           "asset": {
 	      "asset_id": "965e5c6e-434c-3fa9-b780-c50f43cd955c",
 	      "chain_id": "43d61dcd-e413-450d-80b8-101d5e903357",
 	      "icon_url": "https://images.mixin.one/0sQY63dDMkWTURkJVjowWY6Le4ICjAFuu3ANVyZA4uI3UdkbuOT5fjJUT82ArNYmZvVcxDXyNjxoOv0TAYbQTNKS=s128",
@@ -196,17 +196,17 @@ class Mixin extends ModTemplate {
 	      "symbol":   "CNB",
 	      "type":     "asset"
 	    },
-             "created_at": "2018-05-29T09:31:04.202186212Z",
-             "data":       "",
-             "snapshot_id":"529934b0-abfd-43ab-9431-1805773000a4",
-             "source":     "TRANSFER_INITIALIZED",
-             "type":       "snapshot",      // Options only for user (or App) who has access.
-             // 4 private fields that only be returend with correct permission
-             "user_id":    "06aed1e3-bd77-4a59-991a-5bb5ae6fbb09",
-             "trace_id":   "7c67e8e8-b142-488b-80a3-61d4d29c90bf",
-             "opponent_id":"a465ffdb-4441-4cb9-8b45-00cf79dfbc46",
-             "data":       "Transfer!"
-             *********************************************/
+           "created_at": "2018-05-29T09:31:04.202186212Z",
+           "data":       "",
+           "snapshot_id":"529934b0-abfd-43ab-9431-1805773000a4",
+           "source":     "TRANSFER_INITIALIZED",
+           "type":       "snapshot",      // Options only for user (or App) who has access.
+           // 4 private fields that only be returend with correct permission
+           "user_id":    "06aed1e3-bd77-4a59-991a-5bb5ae6fbb09",
+           "trace_id":   "7c67e8e8-b142-488b-80a3-61d4d29c90bf",
+           "opponent_id":"a465ffdb-4441-4cb9-8b45-00cf79dfbc46",
+           "data":       "Transfer!"
+           *********************************************/
           let contains_transfer = 0;
           for (let z = 0; z < this.deposits.length; z++) {
             if (d.data[i].trace_id === this.deposits[z].trace_id) {
@@ -246,17 +246,17 @@ class Mixin extends ModTemplate {
         let d = res.data;
         for (let i = 0; i < d.data.length; i++) {
           /********************************************
-             "type":       "address",
-             "address_id": "e1524f3c-2e4f-411f-8a06-b5e1b1601308",
-             "asset_id":   "43d61dcd-e413-450d-80b8-101d5e903357",
-             "destination":"0x86Fa049857E0209aa7D9e616F7eb3b3B78ECfdb0",
-             "tag":        "",
-             "label":      "Eth Address",
-             "fee":        "0.016",
-             "reserve":    "0",
-             "dust":       "0.0001",
-             "updated_at": "2018-07-10T03:58:17.5559296Z"
-             *********************************************/
+           "type":       "address",
+           "address_id": "e1524f3c-2e4f-411f-8a06-b5e1b1601308",
+           "asset_id":   "43d61dcd-e413-450d-80b8-101d5e903357",
+           "destination":"0x86Fa049857E0209aa7D9e616F7eb3b3B78ECfdb0",
+           "tag":        "",
+           "label":      "Eth Address",
+           "fee":        "0.016",
+           "reserve":    "0",
+           "dust":       "0.0001",
+           "updated_at": "2018-07-10T03:58:17.5559296Z"
+           *********************************************/
           let contains_address = 0;
           for (let z = 0; z < this.addresses.length; z++) {
             if (this.addresses[z].destination === d.data[i].destination) {
@@ -293,8 +293,8 @@ class Mixin extends ModTemplate {
         let d = res.data;
         for (let i = 0; i < d.data.length; i++) {
           /*******************************************
-             "amount":     "-1688168",
-             "asset": {
+           "amount":     "-1688168",
+           "asset": {
 	      "asset_id": "965e5c6e-434c-3fa9-b780-c50f43cd955c",
 	      "chain_id": "43d61dcd-e413-450d-80b8-101d5e903357",
 	      "icon_url": "https://images.mixin.one/0sQY63dDMkWTURkJVjowWY6Le4ICjAFuu3ANVyZA4uI3UdkbuOT5fjJUT82ArNYmZvVcxDXyNjxoOv0TAYbQTNKS=s128",
@@ -302,17 +302,17 @@ class Mixin extends ModTemplate {
 	      "symbol":   "CNB",
 	      "type":     "asset"
 	    },
-             "created_at": "2018-05-29T09:31:04.202186212Z",
-             "data":       "",
-             "snapshot_id":"529934b0-abfd-43ab-9431-1805773000a4",
-             "source":     "TRANSFER_INITIALIZED",
-             "type":       "snapshot",      // Options only for user (or App) who has access.
-             // 4 private fields that only be returend with correct permission
-             "user_id":    "06aed1e3-bd77-4a59-991a-5bb5ae6fbb09",
-             "trace_id":   "7c67e8e8-b142-488b-80a3-61d4d29c90bf",
-             "opponent_id":"a465ffdb-4441-4cb9-8b45-00cf79dfbc46",
-             "data":       "Transfer!"
-             *******************************************/
+           "created_at": "2018-05-29T09:31:04.202186212Z",
+           "data":       "",
+           "snapshot_id":"529934b0-abfd-43ab-9431-1805773000a4",
+           "source":     "TRANSFER_INITIALIZED",
+           "type":       "snapshot",      // Options only for user (or App) who has access.
+           // 4 private fields that only be returend with correct permission
+           "user_id":    "06aed1e3-bd77-4a59-991a-5bb5ae6fbb09",
+           "trace_id":   "7c67e8e8-b142-488b-80a3-61d4d29c90bf",
+           "opponent_id":"a465ffdb-4441-4cb9-8b45-00cf79dfbc46",
+           "data":       "Transfer!"
+           *******************************************/
         }
         if (callback) {
           callback(res.data);
@@ -364,17 +364,17 @@ class Mixin extends ModTemplate {
         console.log("WITHDRAWAL REQUEST ADDED: ");
         console.log(res.data);
         /********************************************
-           "type":       "address",
-           "address_id": "e1524f3c-2e4f-411f-8a06-b5e1b1601308",
-           "asset_id":   "43d61dcd-e413-450d-80b8-101d5e903357",
-           "destination":"0x86Fa049857E0209aa7D9e616F7eb3b3B78ECfdb0",
-           "tag":        "",
-           "label":      "Eth Address",
-           "fee":        "0.016",
-           "reserve":    "0",
-           "dust":       "0.0001",
-           "updated_at": "2018-07-10T03:58:17.5559296Z"
-           *********************************************/
+         "type":       "address",
+         "address_id": "e1524f3c-2e4f-411f-8a06-b5e1b1601308",
+         "asset_id":   "43d61dcd-e413-450d-80b8-101d5e903357",
+         "destination":"0x86Fa049857E0209aa7D9e616F7eb3b3B78ECfdb0",
+         "tag":        "",
+         "label":      "Eth Address",
+         "fee":        "0.016",
+         "reserve":    "0",
+         "dust":       "0.0001",
+         "updated_at": "2018-07-10T03:58:17.5559296Z"
+         *********************************************/
         let d = res.data;
         this.addresses.push(d.data);
         if (callback) {
@@ -922,4 +922,3 @@ class Mixin extends ModTemplate {
 }
 
 module.exports = Mixin;
-

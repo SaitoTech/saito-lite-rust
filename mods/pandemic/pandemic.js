@@ -47,9 +47,9 @@ class Pandemic extends GameTemplate {
   }
 
   // Create an exp league by default
-  respondTo(type) {
+  async respondTo(type) {
     if (type == "default-league") {
-      let obj = super.respondTo(type);
+      let obj = await super.respondTo(type);
       obj.ranking_algorithm = "EXP";
       obj.default_score = 0;
       return obj;

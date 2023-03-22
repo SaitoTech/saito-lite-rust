@@ -1,21 +1,19 @@
-const GameTemplate = require('../../lib/templates/gametemplate');
-const saito = require('../../lib/saito/saito');
-
+const GameTemplate = require("../../lib/templates/gametemplate");
+const saito = require("../../lib/saito/saito");
 
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
 class President extends GameTemplate {
-
   constructor(app) {
-
     super(app);
 
     this.app = app;
     this.name = "President";
-    this.description = 'Play cards in singles or sets in increasing value. Last player starts when all are done. The first player who gets rid of their cards is the President. The last?';
+    this.description =
+      "Play cards in singles or sets in increasing value. Last player starts when all are done. The first player who gets rid of their cards is the President. The last?";
     this.categories = "Games Cardgame";
-    this.card_img_dir = '/president/img/cards';
+    this.card_img_dir = "/president/img/cards";
 
     this.minPlayers = 2;
     this.maxPlayers = 4;
@@ -27,31 +25,24 @@ class President extends GameTemplate {
     this.hud.mode = 0;
 
     return this;
-
   }
 
-
   // Opt out of letting League create a default
-  respondTo(type) {
+  async respondTo(type) {
     if (type == "default-league") {
       return null;
     }
     return super.respondTo(type);
   }
 
-
   initializeQueue() {
-
     this.game.queue = [];
 
     this.game.queue.push("newround");
     this.game.queue.push("READY");
-
   }
 
-
   initializeHTML(app) {
-
     if (!this.browser_active) {
       return;
     }
@@ -74,42 +65,32 @@ class President extends GameTemplate {
       this.hud.card_width = 80;
     }
 
-
     this.log.render(app, this);
     this.log.attachEvents(app, this);
-
   }
 
-
   initializeGame(game_id) {
-
     //
     // initialize
     //
     if (this.game.deck.length == 0) {
-
       this.game.state = this.returnState(this.game.players.length);
       this.game.players_info = this.returnPlayers(this.game.players.length);
 
       this.updateStatus("Generating the Game");
       this.initializeQueue();
-
     }
 
     if (this.browser_active) {
       this.displayBoard();
     }
-
   }
 
-
   handleGameLoop() {
-
     ///////////
     // QUEUE //
     ///////////
     if (this.game.queue.length > 0) {
-
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
@@ -120,7 +101,6 @@ class President extends GameTemplate {
       }
 
       if (mv[0] === "play") {
-
         let player = parseInt(mv[1]);
         let cards = JSON.parse(mv[2]);
         let deck = this.returnDeck();
@@ -148,30 +128,25 @@ class President extends GameTemplate {
         this.game.queue.splice(qe, 1);
         this.displayTable();
         return 1;
-
       }
 
       if (mv[0] === "cards") {
-
         let player = parseInt(mv[1]);
         let cards_left = parseInt(mv[2]);
         this.game.players_info[player - 1].cards = cards_left;
 
         if (cards_left == 0) {
           this.game.players_info[player - 1].out = 1;
-          this.game.players_info[player - 1].rank = (this.game.state.players_out + 1);
+          this.game.players_info[player - 1].rank = this.game.state.players_out + 1;
           this.game.state.players_out++;
         }
 
         this.game.queue.splice(qe, 1);
         this.displayTable();
         return 1;
-
       }
 
-
       if (mv[0] === "turn") {
-
         let player_to_go = parseInt(mv[1]);
 
         this.displayBoard();
@@ -205,16 +180,13 @@ class President extends GameTemplate {
         }
       }
 
-
       if (mv[0] === "newround") {
         this.game.queue.splice(qe, 1);
         this.startNewRound();
         return 1;
       }
 
-
       if (mv[0] === "round") {
-
         this.game.deck[0].hand.sort();
 
         //
@@ -227,7 +199,6 @@ class President extends GameTemplate {
           }
         }
         if (has_everyone_passed == 1) {
-
           //
           // clear the table and let the last player go first
           //
@@ -237,9 +208,7 @@ class President extends GameTemplate {
           }
 
           this.game.state.first_player_in_round = this.game.state.last_player_to_play;
-
         }
-
 
         //
         // are there any players left ?
@@ -255,13 +224,12 @@ class President extends GameTemplate {
         // end of a turn, so redeal
         //
         if (players_left <= 1) {
-
           //
           // the last player out gets the last rank
           //
           for (let i = 0; i < this.game.players_info.length; i++) {
             if (this.game.players_info[i].rank == 0) {
-              this.game.players_info[i].rank = (this.game.state.players_out + 1);
+              this.game.players_info[i].rank = this.game.state.players_out + 1;
               this.game.state.players_out++;
             }
           }
@@ -283,27 +251,22 @@ class President extends GameTemplate {
           player_to_go = 1;
         }
 
-        for (let i = player_to_go + 1; i <= (player_to_go + this.game.players.length); i++) {
-          let player_to_turn = (i % this.game.players.length);
+        for (let i = player_to_go + 1; i <= player_to_go + this.game.players.length; i++) {
+          let player_to_turn = i % this.game.players.length;
           if (player_to_turn == 0) {
             player_to_turn = this.game.players.length;
           }
           this.game.queue.push("turn\t" + player_to_turn);
         }
-
       }
 
-
       if (mv[0] === "pass") {
-
         let player = parseInt(mv[1]);
         this.game.players_info[player - 1].passed = 1;
         this.game.queue.splice(qe, 1);
 
         this.updateLog(this.returnPlayerName(player) + " passes");
-
       }
-
 
       //
       // avoid infinite loops
@@ -312,19 +275,15 @@ class President extends GameTemplate {
         console.log("NOT CONTINUING");
         return 0;
       }
-
     }
     return 1;
   }
 
-
   returnPlayerName(player_num) {
-    return ("Player " + player_num);
+    return "Player " + player_num;
   }
 
-
   startNewRound() {
-
     this.updateLog("shuffling the Deck and dealing new cards...");
 
     this.resetDeck(0);
@@ -356,12 +315,12 @@ class President extends GameTemplate {
         p3c++;
       }
       this.game.queue.push("round");
-      this.game.queue.push("cards\t1\t" + (p1c));
-      this.game.queue.push("cards\t2\t" + (p2c));
-      this.game.queue.push("cards\t3\t" + (p3c));
-      this.game.queue.push("DEAL\t1\t3\t" + (p3c));
-      this.game.queue.push("DEAL\t1\t2\t" + (p2c));
-      this.game.queue.push("DEAL\t1\t1\t" + (p1c));
+      this.game.queue.push("cards\t1\t" + p1c);
+      this.game.queue.push("cards\t2\t" + p2c);
+      this.game.queue.push("cards\t3\t" + p3c);
+      this.game.queue.push("DEAL\t1\t3\t" + p3c);
+      this.game.queue.push("DEAL\t1\t2\t" + p2c);
+      this.game.queue.push("DEAL\t1\t1\t" + p1c);
       this.game.queue.push("DECKENCRYPT\t1\t3");
       this.game.queue.push("DECKENCRYPT\t1\t2");
       this.game.queue.push("DECKENCRYPT\t1\t1");
@@ -397,7 +356,7 @@ class President extends GameTemplate {
 
     for (let i = 0; i < this.game.players.length; i++) {
       if (this.game.players[i] === this.app.wallet.getPublicKey()) {
-        this.game.player = (i + 1);
+        this.game.player = i + 1;
       }
     }
 
@@ -409,12 +368,9 @@ class President extends GameTemplate {
     this.game.state.last_played = [];
     this.game.state.last_player_to_play = 0;
     this.game.state.first_player_in_round = 0;
-
   }
 
-
   playerTurn() {
-
     let president_self = this;
 
     this.displayBoard();
@@ -422,18 +378,27 @@ class President extends GameTemplate {
     if (this.game.state.last_played.length == 0) {
       this.updateStatusAndListCards("Start the Round");
     } else {
-      this.updateStatusAndListCards("Play a card or <div style='display:inline' class='pass'>pass</div>");
+      this.updateStatusAndListCards(
+        "Play a card or <div style='display:inline' class='pass'>pass</div>"
+      );
     }
 
-    $('.pass').on('click', function() {
+    $(".pass").on("click", function () {
       president_self.addMove("pass\t" + president_self.game.player);
       president_self.endTurn(1);
       return;
     });
-    this.attachCardboxEvents(function(card) {
+    this.attachCardboxEvents(function (card) {
       if (president_self.isValidPlay(this.hud.cardbox.cards)) {
-        president_self.addMove("cards\t" + president_self.game.player + "\t" + (president_self.game.deck[0].hand.length - 1));
-        president_self.addMove("play\t" + president_self.game.player + "\t" + JSON.stringify(this.hud.cardbox.cards));
+        president_self.addMove(
+          "cards\t" +
+            president_self.game.player +
+            "\t" +
+            (president_self.game.deck[0].hand.length - 1)
+        );
+        president_self.addMove(
+          "play\t" + president_self.game.player + "\t" + JSON.stringify(this.hud.cardbox.cards)
+        );
         president_self.updateLog("cards played");
         president_self.endTurn(1);
       } else {
@@ -442,17 +407,14 @@ class President extends GameTemplate {
     });
 
     this.updateLog("Starting New Round...");
-    document.querySelectorAll('.plog').forEach(el => {
+    document.querySelectorAll(".plog").forEach((el) => {
       el.innerHTML = "";
     });
 
     this.displayBoard();
-
   }
 
-
   displayBoard() {
-
     if (this.browser_active == 0) {
       return;
     }
@@ -463,12 +425,9 @@ class President extends GameTemplate {
     } catch (err) {
       console.log("err: " + err);
     }
-
   }
 
-
   returnPlayers(num_of_players) {
-
     let players_info = [];
 
     for (let i = 0; i < num_of_players; i++) {
@@ -478,14 +437,10 @@ class President extends GameTemplate {
       players_info[i].out = 0;
       players_info[i].rank = 0;
     }
-    ;
-
     return players_info;
-
   }
 
   returnState(num_of_players) {
-
     let state = {};
 
     state.round = 0;
@@ -496,85 +451,77 @@ class President extends GameTemplate {
     state.players_out = 0;
 
     return state;
-
   }
 
-
   returnCardFromDeck(idx) {
-
     let deck = this.returnDeck();
     let card = deck[idx];
 
-    return card.name.substring(0, card.name.indexOf('.'));
-
+    return card.name.substring(0, card.name.indexOf("."));
   }
 
   returnDeck() {
-
     var deck = {};
 
-    deck['01'] = { name: "C3.png" }
-    deck['02'] = { name: "H3.png" }
-    deck['03'] = { name: "D3.png" }
-    deck['04'] = { name: "S3.png" }
-    deck['05'] = { name: "C4.png" }
-    deck['06'] = { name: "H4.png" }
-    deck['07'] = { name: "D4.png" }
-    deck['08'] = { name: "S4.png" }
-    deck['09'] = { name: "C5.png" }
-    deck['10'] = { name: "H5.png" }
-    deck['11'] = { name: "D5.png" }
-    deck['12'] = { name: "S5.png" }
-    deck['13'] = { name: "C6.png" }
-    deck['14'] = { name: "H6.png" }
-    deck['15'] = { name: "D6.png" }
-    deck['16'] = { name: "S6.png" }
-    deck['17'] = { name: "C7.png" }
-    deck['18'] = { name: "H7.png" }
-    deck['19'] = { name: "D7.png" }
-    deck['20'] = { name: "S7.png" }
-    deck['21'] = { name: "C8.png" }
-    deck['22'] = { name: "H8.png" }
-    deck['23'] = { name: "D8.png" }
-    deck['24'] = { name: "S8.png" }
-    deck['25'] = { name: "C9.png" }
-    deck['26'] = { name: "H9.png" }
-    deck['27'] = { name: "D9.png" }
-    deck['28'] = { name: "S9.png" }
-    deck['29'] = { name: "C10.png" }
-    deck['30'] = { name: "H10.png" }
-    deck['31'] = { name: "D10.png" }
-    deck['32'] = { name: "S10.png" }
-    deck['33'] = { name: "C11.png" }
-    deck['34'] = { name: "H11.png" }
-    deck['35'] = { name: "D11.png" }
-    deck['36'] = { name: "S11.png" }
-    deck['37'] = { name: "C12.png" }
-    deck['38'] = { name: "H12.png" }
-    deck['39'] = { name: "D12.png" }
-    deck['40'] = { name: "S12.png" }
-    deck['41'] = { name: "C13.png" }
-    deck['42'] = { name: "H13.png" }
-    deck['43'] = { name: "D13.png" }
-    deck['44'] = { name: "S13.png" }
-    deck['45'] = { name: "C1.png" }
-    deck['46'] = { name: "H1.png" }
-    deck['47'] = { name: "D1.png" }
-    deck['48'] = { name: "S1.png" }
-    deck['49'] = { name: "C2.png" }
-    deck['50'] = { name: "H2.png" }
-    deck['51'] = { name: "D2.png" }
-    deck['52'] = { name: "S2.png" }
+    deck["01"] = { name: "C3.png" };
+    deck["02"] = { name: "H3.png" };
+    deck["03"] = { name: "D3.png" };
+    deck["04"] = { name: "S3.png" };
+    deck["05"] = { name: "C4.png" };
+    deck["06"] = { name: "H4.png" };
+    deck["07"] = { name: "D4.png" };
+    deck["08"] = { name: "S4.png" };
+    deck["09"] = { name: "C5.png" };
+    deck["10"] = { name: "H5.png" };
+    deck["11"] = { name: "D5.png" };
+    deck["12"] = { name: "S5.png" };
+    deck["13"] = { name: "C6.png" };
+    deck["14"] = { name: "H6.png" };
+    deck["15"] = { name: "D6.png" };
+    deck["16"] = { name: "S6.png" };
+    deck["17"] = { name: "C7.png" };
+    deck["18"] = { name: "H7.png" };
+    deck["19"] = { name: "D7.png" };
+    deck["20"] = { name: "S7.png" };
+    deck["21"] = { name: "C8.png" };
+    deck["22"] = { name: "H8.png" };
+    deck["23"] = { name: "D8.png" };
+    deck["24"] = { name: "S8.png" };
+    deck["25"] = { name: "C9.png" };
+    deck["26"] = { name: "H9.png" };
+    deck["27"] = { name: "D9.png" };
+    deck["28"] = { name: "S9.png" };
+    deck["29"] = { name: "C10.png" };
+    deck["30"] = { name: "H10.png" };
+    deck["31"] = { name: "D10.png" };
+    deck["32"] = { name: "S10.png" };
+    deck["33"] = { name: "C11.png" };
+    deck["34"] = { name: "H11.png" };
+    deck["35"] = { name: "D11.png" };
+    deck["36"] = { name: "S11.png" };
+    deck["37"] = { name: "C12.png" };
+    deck["38"] = { name: "H12.png" };
+    deck["39"] = { name: "D12.png" };
+    deck["40"] = { name: "S12.png" };
+    deck["41"] = { name: "C13.png" };
+    deck["42"] = { name: "H13.png" };
+    deck["43"] = { name: "D13.png" };
+    deck["44"] = { name: "S13.png" };
+    deck["45"] = { name: "C1.png" };
+    deck["46"] = { name: "H1.png" };
+    deck["47"] = { name: "D1.png" };
+    deck["48"] = { name: "S1.png" };
+    deck["49"] = { name: "C2.png" };
+    deck["50"] = { name: "H2.png" };
+    deck["51"] = { name: "D2.png" };
+    deck["52"] = { name: "S2.png" };
     //deck['53'] = { name: "J1.png" }
     //deck['54'] = { name: "J2.png" }
 
     return deck;
-
   }
 
-
   displayPlayers() {
-
     let player_box = null;
     let prank = 0;
 
@@ -582,8 +529,9 @@ class President extends GameTemplate {
       player_box = this.returnPlayersBoxArray();
       prank = this.game.players.indexOf(this.app.wallet.getPublicKey());
     } else {
-      document.querySelector('.status').innerHTML = "You are out of the game.<br />Feel free to hang out and chat.";
-      document.querySelector('.cardfan').classList.add('hidden');
+      document.querySelector(".status").innerHTML =
+        "You are out of the game.<br />Feel free to hang out and chat.";
+      document.querySelector(".cardfan").classList.add("hidden");
       player_box = this.returnViewBoxArray();
     }
 
@@ -596,18 +544,15 @@ class President extends GameTemplate {
       }
     }
 
-
     for (let i = 0; i < this.game.players.length; i++) {
-
       let seat = i - prank;
       if (seat < 0) {
-        seat += this.game.players.length
+        seat += this.game.players.length;
       }
 
       let player_box_num = player_box[seat];
       let divname = "#player-info-" + player_box_num;
       let boxobj = document.querySelector(divname);
-
 
       let newhtml = `
         <div class="player-info-hand hand tinyhand" id="player-info-hand-${i + 1}">
@@ -620,9 +565,7 @@ class President extends GameTemplate {
         newhtml += `<div><img class="card" src="${this.card_img_dir}/red_back.png">`;
         closehtml += `</div>`;
       }
-      ;
       newhtml += closehtml;
-
 
       newhtml += `
           </div>
@@ -632,30 +575,25 @@ class President extends GameTemplate {
       boxobj.querySelector(".info").innerHTML = newhtml;
 
       if (boxobj.querySelector(".plog").innerHTML == "") {
-        boxobj.querySelector(".plog").innerHTML += `<div class="player-info-log" id="player-info-log-${i + 1}"></div>`;
+        boxobj.querySelector(
+          ".plog"
+        ).innerHTML += `<div class="player-info-log" id="player-info-log-${i + 1}"></div>`;
       }
-
     }
-
-
   }
 
-
   displayTable() {
-
     if (this.browser_active == 0) {
       return;
     }
 
     let obj = document.getElementById("played_cards");
-    let html = '';
+    let html = "";
     for (let i = 0; i < this.game.state.last_played.length; i++) {
       html += this.returnCardImage(this.game.state.last_played[i], 1);
     }
     obj.innerHTML = html;
-
   }
-
 
   returnFormattedGameOptions(options) {
     let new_options = {};
@@ -668,18 +606,16 @@ class President extends GameTemplate {
   }
 
   showSplash(message) {
-    var shim = document.querySelector('.shim');
-    shim.classList.remove('hidden');
+    var shim = document.querySelector(".shim");
+    shim.classList.remove("hidden");
     shim.firstElementChild.innerHTML = message;
-    shim.addEventListener('click', (e) => {
-      shim.classList.add('hidden');
+    shim.addEventListener("click", (e) => {
+      shim.classList.add("hidden");
       shim.firstElementChild.innerHTML = "";
     });
   }
 
-
   returnCardImage(cardname, force) {
-
     let cardclass = "card";
     var c = this.game.deck[0].cards[cardname];
     if (c == undefined) {
@@ -689,38 +625,36 @@ class President extends GameTemplate {
       c = this.game.deck[0].removed[cardname];
     }
     if (c == undefined) {
-
       //
       // this is not a card, it is something like "skip turn" or cancel
       //
-      return '<div class="noncard">' + cardname + '</div>';
-
+      return '<div class="noncard">' + cardname + "</div>";
     }
 
     return `<img class="${cardclass}" src="/president/img/cards/${c.name}" />`;
-
   }
-
 
   returnCardItem(card) {
-
     if (this.interface == 1) {
       if (this.game.deck[0].cards[card] == undefined) {
-        return `<div id="${card.replace(/ /g, '')}" class="card hud-card cardbox-hud-status">${this.returnCardImage(card, 1)}</div>`;
+        return `<div id="${card.replace(
+          / /g,
+          ""
+        )}" class="card hud-card cardbox-hud-status">${this.returnCardImage(card, 1)}</div>`;
       }
-      return `<div id="${card.replace(/ /g, '')}" class="card hud-card cardbox-hud-status">${this.returnCardImage(card, 1)}</div>`;
+      return `<div id="${card.replace(
+        / /g,
+        ""
+      )}" class="card hud-card cardbox-hud-status">${this.returnCardImage(card, 1)}</div>`;
     } else {
       if (this.game.deck[0].cards[card] == undefined) {
-        return '<li class="card" id="' + card + '">' + this.game.deck[0].cards[card].name + '</li>';
+        return '<li class="card" id="' + card + '">' + this.game.deck[0].cards[card].name + "</li>";
       }
-      return '<li class="card" id="' + card + '">' + this.game.deck[0].cards[card].name + '</li>';
+      return '<li class="card" id="' + card + '">' + this.game.deck[0].cards[card].name + "</li>";
     }
-
   }
 
-
   returnPlayersBoxArray() {
-
     let player_box = [];
 
     if (this.game.players.length == 2) {
@@ -740,11 +674,9 @@ class President extends GameTemplate {
     }
 
     return player_box;
-
   }
 
   returnViewBoxArray() {
-
     let player_box = [];
 
     if (this.game.players.length == 2) {
@@ -761,12 +693,9 @@ class President extends GameTemplate {
     }
 
     return player_box;
-
   }
 
-
   isValidPlay(cards) {
-
     let hand1 = this.convertHand(cards);
     let hand2 = this.convertHand(this.game.state.last_played);
 
@@ -787,9 +716,7 @@ class President extends GameTemplate {
     } else {
       return 0;
     }
-
   }
-
 
   // is hand1 higher than hand2
   isHigher(hand1, hand2) {
@@ -804,9 +731,7 @@ class President extends GameTemplate {
     return 1;
   }
 
-
   convertHand(cards) {
-
     let deck = this.returnDeck();
 
     let x = {};
@@ -864,12 +789,9 @@ class President extends GameTemplate {
     }
 
     return x;
-
   }
 
-
   isOfAKind(hand) {
-
     if (hand.val.length == 0) {
       return 0;
     }
@@ -883,10 +805,7 @@ class President extends GameTemplate {
     }
 
     return 1;
-
   }
-
-
 }
 
 

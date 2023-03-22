@@ -18,8 +18,8 @@ class DOT extends ModTemplate {
     this.chain_id = "54c61a72-b982-4034-a556-0d99e3c21e39";
 
   }
-  
-  respondTo(type = "") {
+
+  async respondTo(type = "") {
     if (type == "mixin-crypto") {
       return {
         name: this.name,

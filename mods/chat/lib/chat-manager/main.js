@@ -54,7 +54,7 @@ class ChatManager {
       //
       if (app.browser.isMobileBrowser()) {
         let active_mod = this.app.modules.returnActiveModule();
-        if (active_mod.respondTo("arcade-games")) {
+        if (await active_mod.respondTo("arcade-games")) {
           return;
         }
       }
@@ -217,5 +217,3 @@ class ChatManager {
 }
 
 module.exports = ChatManager;
-
-

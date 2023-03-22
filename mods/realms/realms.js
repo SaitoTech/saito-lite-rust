@@ -1,13 +1,11 @@
-const GameTemplate = require('../../lib/templates/gametemplate');
-const saito = require('../../lib/saito/saito');
+const GameTemplate = require("../../lib/templates/gametemplate");
+const saito = require("../../lib/saito/saito");
 
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
 class Realms extends GameTemplate {
-
   constructor(app) {
-
     super(app);
 
     this.app = app;
@@ -17,7 +15,7 @@ class Realms extends GameTemplate {
     this.description = "Saito Realms is a card-driven enchantment battle game";
     this.categories = "Games Arcade Entertainment";
     this.type = "Cardgame";
-    this.card_img_dir = '/realm/img/cards';
+    this.card_img_dir = "/realm/img/cards";
 
     // graphics
     this.interface = 1;
@@ -26,15 +24,12 @@ class Realms extends GameTemplate {
     this.maxPlayers = 2;
 
     return this;
-
   }
-
 
   //
   // manually announce arcade banner support
   //
-  respondTo(type) {
-
+  async respondTo(type) {
     if (super.respondTo(type) != null) {
       return super.respondTo(type);
     }
@@ -44,7 +39,7 @@ class Realms extends GameTemplate {
       return {
         background: "/realm/img/arcade/arcade-banner-background.png",
         title: "Realms",
-      }
+      };
     }
 
     if (type == "arcade-create-game") {
@@ -56,16 +51,13 @@ class Realms extends GameTemplate {
         returnGameOptionsHTML: this.returnGameOptionsHTML.bind(this),
         minPlayers: this.minPlayers,
         maxPlayers: this.maxPlayers,
-      }
+      };
     }
     return null;
-
   }
 
-
-  initializeHTML(app) {
-
-    super.initializeHTML(app);
+  async initializeHTML(app) {
+    await super.initializeHTML(app);
 
     //
     // ADD MENU
@@ -75,26 +67,26 @@ class Realms extends GameTemplate {
       text: "Log",
       id: "game-log",
       class: "game-log",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.log.toggleLog();
-      }
+      },
     });
     this.menu.addSubMenuOption("game-game", {
       text: "Exit",
       id: "game-exit",
       class: "game-exit",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         window.location.href = "/arcade";
-      }
+      },
     });
     this.menu.addMenuIcon({
       text: '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
       id: "game-menu-fullscreen",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         app.browser.requestFullscreen();
-      }
+      },
     });
 
     this.menu.addChatMenu();
@@ -116,12 +108,9 @@ class Realms extends GameTemplate {
 
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
-
   }
 
-
   initializeGame(game_id) {
-
     //
     // initialize some useful variables
     //
@@ -142,7 +131,6 @@ class Realms extends GameTemplate {
     // initialize queue on new games
     //
     if (this.game.deck.length == 0) {
-
       this.game.state = this.returnState(this.game.players.length);
 
       this.game.queue.push("round");
@@ -168,7 +156,6 @@ class Realms extends GameTemplate {
       // import our decks
       this.game.queue.push("DECK\t1\t" + JSON.stringify(deck1));
       this.game.queue.push("DECK\t2\t" + JSON.stringify(deck2));
-
     }
 
     //
@@ -190,320 +177,325 @@ class Realms extends GameTemplate {
 
     try {
       this.displayBoard();
-      this.updateStatusAndListCards("Waiting for Opponent Move", this.game.deck[this.game.player - 1].hand);
-    } catch (err) {
-
-    }
+      this.updateStatusAndListCards(
+        "Waiting for Opponent Move",
+        this.game.deck[this.game.player - 1].hand
+      );
+    } catch (err) {}
   }
-
 
   ////////////////////////////////
   /// Cards and Card Functions ///
   ////////////////////////////////
   returnBlueDeck() {
-
     var deck = {};
 
-    deck['b001'] = {
+    deck["b001"] = {
       name: "b001",
       type: "creature",
       color: "blue",
-      cost: ['*', '*', '*', 'blue', 'blue'],
+      cost: ["*", "*", "*", "blue", "blue"],
       power: 4,
       toughness: 3,
-      properties: ['flying'],
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['b002'] = {
+      properties: ["flying"],
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["b002"] = {
       name: "b002",
       type: "creature",
       color: "blue",
-      cost: ['*', '*', 'blue'],
+      cost: ["*", "*", "blue"],
       power: 2,
       toughness: 1,
-      properties: ['flying'],
+      properties: ["flying"],
       img: "/realm/img/cards/sample.png",
-      onEnterBattlefield: function(game_self, player, card) {
+      onEnterBattlefield: function (game_self, player, card) {
         game_self.updateLog("UNIMPLEMENTED: when creature enters battlefield, draw card.");
         return 1;
-      }
-    }
-    deck['b003'] = {
+      },
+    };
+    deck["b003"] = {
       name: "b003",
       type: "creature",
       color: "blue",
-      cost: ['*', '*', '*', 'blue'],
+      cost: ["*", "*", "*", "blue"],
       power: 3,
       toughness: 2,
-      properties: ['flying'],
+      properties: ["flying"],
       img: "/realm/img/cards/sample.png",
-      onAttack: function(game_self, player, card) {
-        game_self.updateLog("UNIMPLEMENTED: gains flying when attacking creatures without flying until end of turn.");
+      onAttack: function (game_self, player, card) {
+        game_self.updateLog(
+          "UNIMPLEMENTED: gains flying when attacking creatures without flying until end of turn."
+        );
         return 1;
-      }
-    }
-    deck['b004'] = {
+      },
+    };
+    deck["b004"] = {
       name: "b004",
       type: "instant",
       color: "blue",
-      cost: ['*', '*', 'blue'],
+      cost: ["*", "*", "blue"],
       img: "/realm/img/cards/sample.png",
-      onInstant: function(game_self, player, card) {
-        game_self.updateLog("UNIMPLEMENTED: targetted creature gets -4/-0 until end of turn. Player may draw a card.");
+      onInstant: function (game_self, player, card) {
+        game_self.updateLog(
+          "UNIMPLEMENTED: targetted creature gets -4/-0 until end of turn. Player may draw a card."
+        );
         return 1;
-      }
-    }
-    deck['b005'] = {
+      },
+    };
+    deck["b005"] = {
       name: "b005",
       type: "sorcery",
       color: "blue",
-      cost: ['*', '*', 'blue'],
+      cost: ["*", "*", "blue"],
       img: "/realm/img/cards/sample.png",
-      onCostAdjustment: function(game_self, player, card) {
-        game_self.updateLog("UNIMPLEMENTED: card costs 1 less to cast if player controlls creature with flying.");
+      onCostAdjustment: function (game_self, player, card) {
+        game_self.updateLog(
+          "UNIMPLEMENTED: card costs 1 less to cast if player controlls creature with flying."
+        );
         return 1;
       },
-      onInstant: function(game_self, player, card) {
+      onInstant: function (game_self, player, card) {
         game_self.updateLog("UNIMPLEMENTED: draw two cards");
         return 1;
-      }
-    }
-    deck['island1'] = {
+      },
+    };
+    deck["island1"] = {
       name: "Isle",
       type: "land",
       color: "blue",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['island2'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["island2"] = {
       name: "Isle",
       type: "land",
       color: "blue",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['island3'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["island3"] = {
       name: "Isle",
       type: "land",
       color: "blue",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['island4'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["island4"] = {
       name: "Isle",
       type: "land",
       color: "blue",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['island5'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["island5"] = {
       name: "Isle",
       type: "land",
       color: "blue",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['island6'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["island6"] = {
       name: "Isle",
       type: "land",
       color: "blue",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['island7'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["island7"] = {
       name: "Isle",
       type: "land",
       color: "blue",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['island8'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["island8"] = {
       name: "Isle",
       type: "land",
       color: "blue",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['island9'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["island9"] = {
       name: "Isle",
       type: "land",
       color: "blue",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['island10'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["island10"] = {
       name: "Isle",
       type: "land",
       color: "blue",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['island11'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["island11"] = {
       name: "Isle",
       type: "land",
       color: "blue",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['island12'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["island12"] = {
       name: "Isle",
       type: "land",
       color: "blue",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['island13'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["island13"] = {
       name: "Isle",
       type: "land",
       color: "blue",
-      img: "/realm/img/cards/sample.png"
-    }
+      img: "/realm/img/cards/sample.png",
+    };
 
     return deck;
-
   }
 
   returnWhiteDeck() {
-
     var deck = {};
 
-    deck['w001'] = {
+    deck["w001"] = {
       name: "w001",
       type: "creature",
       color: "white",
-      cost: ['*', 'white'],
+      cost: ["*", "white"],
       power: 1,
       toughness: 3,
-      properties: ['flying'],
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['w002'] = {
+      properties: ["flying"],
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["w002"] = {
       name: "w002",
       type: "creature",
       color: "white",
-      cost: ['*', '*', '*', '*', 'white'],
+      cost: ["*", "*", "*", "*", "white"],
       power: 3,
       toughness: 2,
-      properties: ['flying'],
+      properties: ["flying"],
       img: "/realm/img/cards/sample.png",
-      onEnterBattlefield: function(game_self, player, card) {
+      onEnterBattlefield: function (game_self, player, card) {
         game_self.updateLog("When Dawning Angel enters battlefield, gain 4 life.");
         game_self.game.status.player[player - 1].health += 4;
         return 1;
-      }
-    }
-    deck['w003'] = {
+      },
+    };
+    deck["w003"] = {
       name: "w002",
       type: "creature",
       color: "white",
-      cost: ['*', '*', 'white'],
+      cost: ["*", "*", "white"],
       power: 3,
       toughness: 2,
       properties: [],
       img: "/realm/img/cards/sample.png",
-      onEnterBattlefield: function(game_self, player, card) {
-        game_self.updateLog("UNIMPLEMENTED: when Haazda Officer enters battlefield, target creature gains +1/+1 until end of turn");
+      onEnterBattlefield: function (game_self, player, card) {
+        game_self.updateLog(
+          "UNIMPLEMENTED: when Haazda Officer enters battlefield, target creature gains +1/+1 until end of turn"
+        );
         return 1;
-      }
-    }
-    deck['w004'] = {
+      },
+    };
+    deck["w004"] = {
       name: "w004",
       type: "creature",
       color: "white",
-      cost: ['*', '*', 'white'],
+      cost: ["*", "*", "white"],
       power: 2,
       toughness: 2,
-      properties: ['flying'],
+      properties: ["flying"],
       img: "/realm/img/cards/sample.png",
-      onAttack: function(game_self, player, card) {
-        game_self.updateLog("UNIMPLEMENTED: when attacks, target attacking creature without flying gains flying until end of turn");
+      onAttack: function (game_self, player, card) {
+        game_self.updateLog(
+          "UNIMPLEMENTED: when attacks, target attacking creature without flying gains flying until end of turn"
+        );
         return 1;
-      }
-    }
-    deck['inspired-charge'] = {
+      },
+    };
+    deck["inspired-charge"] = {
       name: "Inspired Charge",
       type: "instant",
       color: "white",
-      cost: ['*', '*', 'white'],
+      cost: ["*", "*", "white"],
       img: "/realm/img/cards/sample.png",
-      onInstant: function(game_self, player, card) {
+      onInstant: function (game_self, player, card) {
         game_self.updateLog("UNIMPLEMENTED: all controlled creatures gain +2/+1 until end of turn");
         return 1;
-      }
-    }
-    deck['plains1'] = {
+      },
+    };
+    deck["plains1"] = {
       name: "Grasslands",
       type: "land",
       color: "white",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['plains2'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["plains2"] = {
       name: "Grasslands",
       type: "land",
       color: "white",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['plains3'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["plains3"] = {
       name: "Grasslands",
       type: "land",
       color: "white",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['plains4'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["plains4"] = {
       name: "Grasslands",
       type: "land",
       color: "white",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['plains5'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["plains5"] = {
       name: "Grasslands",
       type: "land",
       color: "white",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['plains6'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["plains6"] = {
       name: "Grasslands",
       type: "land",
       color: "white",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['plains7'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["plains7"] = {
       name: "Grasslands",
       type: "land",
       color: "white",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['plains8'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["plains8"] = {
       name: "Grasslands",
       type: "land",
       color: "white",
-      img: "/realm/img/cards/white/plains.jpg"
-    }
-    deck['plains9'] = {
+      img: "/realm/img/cards/white/plains.jpg",
+    };
+    deck["plains9"] = {
       name: "Grasslands",
       type: "land",
       color: "white",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['plains10'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["plains10"] = {
       name: "Grasslands",
       type: "land",
       color: "white",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['plains11'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["plains11"] = {
       name: "Grasslands",
       type: "land",
       color: "white",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['plains12'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["plains12"] = {
       name: "Grasslands",
       type: "land",
       color: "white",
-      img: "/realm/img/cards/sample.png"
-    }
-    deck['plains13'] = {
+      img: "/realm/img/cards/sample.png",
+    };
+    deck["plains13"] = {
       name: "Grasslands",
       color: "white",
       type: "land",
-      img: "/realm/img/cards/sample.png"
-    }
+      img: "/realm/img/cards/sample.png",
+    };
 
     return deck;
-
   }
 
   importCard(key, card, player) {
-
     let game_self = this;
 
     let c = {};
@@ -547,40 +539,32 @@ class Realms extends GameTemplate {
     // add dummy events that return 0 (do nothing)
     //
     if (!c.onInstant) {
-      c.onInstant = function(game_self, player, card) {
+      c.onInstant = function (game_self, player, card) {
         return 0;
-      }
+      };
     }
-    ;
     if (!c.onEnterBattlefield) {
-      c.onEnterBattlefield = function(game_self, player, card) {
+      c.onEnterBattlefield = function (game_self, player, card) {
         return 0;
-      }
+      };
     }
-    ;
     if (!c.onCostAdjustment) {
-      c.onCostAdjustment = function(game_self, player, card) {
+      c.onCostAdjustment = function (game_self, player, card) {
         return 0;
-      }
+      };
     }
-    ;
-
-    c.returnElement = function(card) {
+    c.returnElement = function (card) {
       return game_self.returnElement(game_self, player, c.key);
-    }
+    };
 
     game_self.game.cards[c.key] = c;
-
   }
 
-
   handleGameLoop() {
-
     ///////////
     // QUEUE //
     ///////////
     if (this.game.queue.length > 0) {
-
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
@@ -600,7 +584,6 @@ class Realms extends GameTemplate {
       }
 
       if (mv[0] === "move") {
-
         let player_id = parseInt(mv[1]);
         let cardkey = mv[2];
         let source = mv[3];
@@ -621,11 +604,9 @@ class Realms extends GameTemplate {
         this.displayBoard();
 
         this.game.queue.splice(qe, 1);
-
       }
 
       if (mv[0] === "play") {
-
         let player_to_go = parseInt(mv[1]);
 
         //
@@ -633,16 +614,13 @@ class Realms extends GameTemplate {
         //
         this.displayBoard();
 
-
         //
         // do not remove until we resolve!
         //
         //this.game.queue.splice(qe, 1);
 
         return 0;
-
       }
-
 
       //
       // avoid infinite loops
@@ -651,14 +629,11 @@ class Realms extends GameTemplate {
         console.log("NOT CONTINUING");
         return 0;
       }
-
     }
     return 1;
   }
 
-
   returnState(num_of_players) {
-
     let state = {};
 
     state.players = [num_of_players];
@@ -679,30 +654,23 @@ class Realms extends GameTemplate {
     }
 
     return state;
-
   }
 
-
   returnEventObjects() {
-
     let z = [];
 
     //
     // cards on the table
     //
 
-
     //
     // playable cards in my hand
     //
 
     return z;
-
   }
 
-
   addEvents(obj) {
-
     ///////////////////////
     // game state events //
     ///////////////////////
@@ -710,21 +678,20 @@ class Realms extends GameTemplate {
     // 1 = fall through, 0 = halt game
     //
     if (obj.canEvent == null) {
-      obj.canEvent = function(his_self, faction) {
+      obj.canEvent = function (his_self, faction) {
         return 0;
-      } // 0 means cannot event
+      }; // 0 means cannot event
     }
     if (obj.onEvent == null) {
-      obj.onEvent = function(his_self, player) {
+      obj.onEvent = function (his_self, player) {
         return 1;
-      }
+      };
     }
     if (obj.handleGameLoop == null) {
-      obj.handleGameLoop = function(his_self, qe, mv) {
+      obj.handleGameLoop = function (his_self, qe, mv) {
         return 1;
-      }
+      };
     }
-
 
     //
     // functions for convenience
@@ -740,17 +707,17 @@ class Realms extends GameTemplate {
     //}
 
     return obj;
-
   }
 
-
   nonPlayerTurn() {
-    this.updateStatusAndListCards(`Opponent Turn`, this.game.deck[this.game.player - 1].hand, function() {
-    });
+    this.updateStatusAndListCards(
+      `Opponent Turn`,
+      this.game.deck[this.game.player - 1].hand,
+      function () {}
+    );
   }
 
   playerTurn() {
-
     if (this.browser_active == 0) {
       return;
     }
@@ -758,8 +725,11 @@ class Realms extends GameTemplate {
     //
     // show my hand
     //
-    this.updateStatusAndListCards(`Your Turn <span id="end-turn" class="end-turn">[ or pass ]</span>`, this.game.deck[this.game.player - 1].hand, function() {
-    });
+    this.updateStatusAndListCards(
+      `Your Turn <span id="end-turn" class="end-turn">[ or pass ]</span>`,
+      this.game.deck[this.game.player - 1].hand,
+      function () {}
+    );
 
     //
     // players may click on cards in their hand
@@ -772,19 +742,20 @@ class Realms extends GameTemplate {
     // players may also end their turn
     //
     document.getElementById("end-turn").onclick = (e) => {
-      this.updateStatusAndListCards("Opponent Turn", this.game.deck[this.game.player - 1].hand, function() {
-      });
+      this.updateStatusAndListCards(
+        "Opponent Turn",
+        this.game.deck[this.game.player - 1].hand,
+        function () {}
+      );
       this.prependMove("RESOLVE\t" + this.app.wallet.getPublicKey());
       this.endTurn();
-    }
+    };
 
     //
     // display board
     //
     this.displayBoard();
-
   }
-
 
   //
   // this moves a card from one location, such as a player's hand, to another, such as
@@ -792,11 +763,9 @@ class Realms extends GameTemplate {
   // another card.
   //
   moveCard(player, card, source, destination) {
-
     console.log(player + " -- " + card + " -- " + source + " -- " + destination);
 
     switch (source) {
-
       case "hand":
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].hand[i] == card) {
@@ -846,12 +815,10 @@ class Realms extends GameTemplate {
       default:
     }
 
-
     console.log("pushing card onto " + destination);
 
     let already_exists = 0;
     switch (destination) {
-
       case "hand":
         already_exists = 0;
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
@@ -890,7 +857,6 @@ class Realms extends GameTemplate {
 
       case "sorcery":
       case "enchantments":
-
         already_exists = 0;
         for (let i = 0; i < this.game.state.hands[player - 1].enchantments.length; i++) {
           if (this.game.state.hands[player - 1].enchantments[i] == card) {
@@ -919,12 +885,10 @@ class Realms extends GameTemplate {
   }
 
   playerPlayCardFromHand(card) {
-
     let c = this.game.cards[card];
 
     switch (c.type) {
       case "land":
-
         //
         // confirm player can place
         //
@@ -942,7 +906,6 @@ class Realms extends GameTemplate {
         break;
 
       case "creature":
-
         // move creature from hand to board
         this.moveCard(this.game.player, c.key, "hand", "creatures");
         this.addMove("move\t" + this.game.player + "\t" + c.key + "\thand\tcreatures\t0");
@@ -951,15 +914,13 @@ class Realms extends GameTemplate {
 
       case "sorcery":
       case "enchantment":
-
         // move enchantment from hand to board
         this.moveCard(this.game.player, c.key, "hand", "enchantments");
         this.addMove("move\t" + this.game.player + "\t" + c.key + "\thand\tenchantments\t0");
         this.endTurn();
         break;
 
-      case "instant" :
-
+      case "instant":
         // move instant from hand to board
         this.moveCard(this.game.player, c.key, "hand", "instant");
         this.addMove("move\t" + this.game.player + "\t" + c.key + "\thand\tinstants\t0");
@@ -971,9 +932,7 @@ class Realms extends GameTemplate {
     }
   }
 
-
   displayBoard() {
-
     let game_self = this;
     /****
      document.getElementById("p1-lands").innerHTML = "";
@@ -999,12 +958,10 @@ class Realms extends GameTemplate {
      ****/
   }
 
-
   //
   // this controls the display of the card
   //
   returnElement(game_self, player, cardkey) {
-
     let card = game_self.game.cards[cardkey];
     let tapped = "";
     if (card.tapped == 1) {
@@ -1017,9 +974,6 @@ class Realms extends GameTemplate {
       </div>
     `;
   }
-
-
 }
 
 module.exports = Realms;
-

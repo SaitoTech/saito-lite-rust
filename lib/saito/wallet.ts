@@ -56,6 +56,7 @@ export default class Wallet {
   }
 
   public async signTransaction<T extends Transaction>(tx: T): Promise<T> {
+    console.log("signing tx..");
     return (await S.getInstance().signTransaction(tx)) as T;
   }
 

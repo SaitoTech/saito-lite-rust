@@ -39,7 +39,7 @@ class Encrypt extends ModTemplate {
 
 
     app.connection.on("encrypt-key-exchange", (publickey) => {
-console.log("initiating key exchange...");
+      console.log("initiating key exchange...");
       this.initiate_key_exchange(publickey, 0);
     });
 
@@ -47,7 +47,7 @@ console.log("initiating key exchange...");
   }
 
 
-  respondTo(type){
+  async respondTo(type) {
 
     let encrypt_self = this;
 
@@ -55,15 +55,15 @@ console.log("initiating key exchange...");
       return {
         text: "Add Contact",
         icon: "far fa-id-card",
-        callback: function (app, publickey) {
-            encrypt_self.app.keychain.saveKeys();
-            encrypt_self.initiate_key_exchange(publickey, 0);
+        callback: function(app, publickey) {
+          encrypt_self.app.keychain.saveKeys();
+          encrypt_self.initiate_key_exchange(publickey, 0);
 //	    encrypt_self.app.connection.emit("stun-create-peer-connection", ([publickey]));
-	    //
-	    // TODO - remove if above works
-	    //
-            //let stun_mod = app.modules.returnModule("Stun");
-            //stun_mod.createStunConnectionWithPeers([public_key]);
+          //
+          // TODO - remove if above works
+          //
+          //let stun_mod = app.modules.returnModule("Stun");
+          //stun_mod.createStunConnectionWithPeers([public_key]);
         }
       }
     }
@@ -71,14 +71,14 @@ console.log("initiating key exchange...");
   }
 
 
-                    
-                    
-  async handlePeerTransaction(app, newtx=null, peer, mycallback) {
+  async handlePeerTransaction(app, newtx = null, peer, mycallback) {
 
-    if (newtx == null) { return; }
+    if (newtx == null) {
+      return;
+    }
     let message = newtx.returnMessage();
     let encrypt_self = this;
-                
+
     if (message.request === "diffie hellman key exchange") {
 
       let tx = new saito.default.transaction(message.data.tx);
@@ -121,7 +121,7 @@ console.log("initiating key exchange...");
       // copied from onConfirmation
       //
       let bob_publickey = Buffer.from(txmsg.bob, "hex");
-      
+
       var senderkeydata = app.keychain.returnKey(sender);
 
       if (senderkeydata == null) {
@@ -141,12 +141,11 @@ console.log("initiating key exchange...");
       //
       //
       //
-      this.sendEvent('encrypt-key-exchange-confirm', {members: [sender, app.wallet.returnPublicKey()]});
+      this.sendEvent('encrypt-key-exchange-confirm', { members: [sender, app.wallet.returnPublicKey()] });
       this.saveEncrypt();
 
     }
   }
-
 
 
   onPeerHandshakeComplete(app, peer) {
@@ -209,11 +208,11 @@ console.log("initiating key exchange...");
     }
 
     let tx = null;
-    try{
-      tx = this.app.wallet.createUnsignedTransactionWithDefaultFee(recipient, (parties_to_exchange * this.app.wallet.wallet.default_fee));  
-    } catch(err) {
-console.log("error: " + err);
-    }  
+    try {
+      tx = this.app.wallet.createUnsignedTransactionWithDefaultFee(recipient, (parties_to_exchange * this.app.wallet.wallet.default_fee));
+    } catch (err) {
+      console.log("error: " + err);
+    }
 
     //
     // we had an issue creating the transaction, try zero-fee
@@ -290,7 +289,7 @@ console.log("error: " + err);
     }
 
     this.app.keychain.updateCryptoByPublicKey(remote_address, bob_publickey.toString("hex"), bob_privatekey.toString("hex"), bob_secret.toString("hex"));
-    this.sendEvent('encrypt-key-exchange-confirm', {members: [remote_address, our_address]});
+    this.sendEvent('encrypt-key-exchange-confirm', { members: [remote_address, our_address] });
     this.saveEncrypt();
 
   }
@@ -303,7 +302,7 @@ console.log("error: " + err);
     if (conf == 0) {
 
       if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
-        encrypt_self.sendEvent('encrypt-key-exchange-confirm', {members: [tx.transaction.to[0].add, tx.transaction.from[0].add]});
+        encrypt_self.sendEvent('encrypt-key-exchange-confirm', { members: [tx.transaction.to[0].add, tx.transaction.from[0].add] });
       }
       if (tx.transaction.to[0].add === app.wallet.returnPublicKey()) {
 
@@ -334,7 +333,7 @@ console.log("error: " + err);
         if (txmsg.request == "key exchange confirm") {
 
           let bob_publickey = Buffer.from(txmsg.bob, "hex");
-          
+
           var senderkeydata = app.keychain.returnKey(sender);
           if (senderkeydata == null) {
             if (app.BROWSER == 1) {

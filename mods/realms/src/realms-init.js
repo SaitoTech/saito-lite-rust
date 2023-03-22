@@ -33,7 +33,7 @@ class Realms extends GameTemplate {
   //
   // manually announce arcade banner support
   //
-  respondTo(type) {
+  async respondTo(type) {
 
     if (super.respondTo(type) != null) {
       return super.respondTo(type);
@@ -46,7 +46,7 @@ class Realms extends GameTemplate {
 	title : "Realms" ,
       }
     }
-    
+
     if (type == "arcade-create-game") {
       return {
         slug: this.slug,
@@ -61,7 +61,7 @@ class Realms extends GameTemplate {
     return null;
 
   }
-  
+
 
   initializeHTML(app) {
 
@@ -168,17 +168,17 @@ class Realms extends GameTemplate {
     }
 
     //
-    // dynamic import 
+    // dynamic import
     //
     // all cards that may be in play are imported into this.game.cards. the import process
     // adds all necessary dummy functions and variables such that the game can check to see
     //
-    // if cards implement special abilities, they must be individually programmed to do so 
+    // if cards implement special abilities, they must be individually programmed to do so
     // when provided.
     //
     this.game.cards = {};
-    for (let key in deck1) { this.importCard(key, deck1[key], 1); }   
-    for (let key in deck2) { this.importCard(key, deck2[key], 2); }     
+    for (let key in deck1) { this.importCard(key, deck1[key], 1); }
+    for (let key in deck2) { this.importCard(key, deck2[key], 2); }
 
     try {
       this.displayBoard();
