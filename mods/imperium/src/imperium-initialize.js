@@ -109,16 +109,7 @@
       class : "game-units-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.acknowledge_overlay.render("Quick message", '/imperium/img/backgrounds/bombardment.jpg');
-//        game_mod.space_combat_overlay.render("2_1");
-//        let array_of_cards = game_mod.returnPlayerUnexhaustedPlanetCards(game_mod.game.player); // unexhausted
-//        let total_trade_goods = game_mod.game.state.players_info[game_mod.game.player-1].goods;
-//        game_mod.resource_selection_overlay.render(2, array_of_cards, total_trade_goods, (planet_id) => {
-//alert(planet_id);
-//        });
-//        game_mod.production_overlay.render();
-//overlay.show(game_mod.returnUnitsOverlay());
-//        game_mod.overlay.show(game_mod.returnUnitsOverlay());
+        game_mod.units_overlay.render();
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -130,7 +121,7 @@
 	let tech = game_mod.returnTechnology();
         let t2 = [];
         for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -151,7 +142,7 @@
 	let tech = game_mod.returnTechnology();
         let t2 = [];
         for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/background/tech-upgrades.jpg" , padding : "50px"});
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -188,7 +179,15 @@
       class : "game-action-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.returnPlayerActionCards(), {});
+	let ac = game_mod.returnActionCards();
+	let ac2 = [];
+	for (let x in ac) {
+	  if (x.indexOf("2") || x.indexOf("3") || x.indexOf("4") || x.indexOf("5")) {
+	  } else {
+	    ac2 = JSON.parse(JSON.stringify(ac[x]));   
+	  }
+	}
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac2, {});
       }
     });
 
@@ -445,8 +444,8 @@
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      //let sys = this.returnSectorAndPlanets("4_4");
-      //sys.p[0].owner = 1;
+//      let sys = this.returnSectorAndPlanets("4_4");
+//      sys.p[0].owner = 1;
 
 
       //

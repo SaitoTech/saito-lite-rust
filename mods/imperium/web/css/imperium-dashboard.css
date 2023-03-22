@@ -96,6 +96,7 @@
   margin-right: 15px;
   cursor: pointer;
   user-select: none;
+  min-width: 19rem;
 }
 
 .dash-item {
