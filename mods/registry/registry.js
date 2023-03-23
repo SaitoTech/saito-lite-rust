@@ -84,9 +84,17 @@ class Registry extends ModTemplate {
       
     });
 
-    this.app.connection.on("register-username-or-login", () => {
+    this.app.connection.on("register-username-or-login", (success_callback) => {
+      let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+      if (key?.has_registered_username){
+        return;
+      }
+
       if (!this.register_username_overlay){
         this.register_username_overlay = new RegisterUsernameOverlay(this.app, this);
+      }
+      if (success_callback){
+        this.register_username_overlay.callback = success_callback;
       }
       this.register_username_overlay.render();
     });

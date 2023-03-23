@@ -96,7 +96,7 @@ class Keychain {
     //
     // skip empty keys
     //
-    console.log("Add key: ", JSON.stringify(data));
+    //console.log("Add key: ", JSON.stringify(data));
     if (data.publickey === "") { return; }
 
     //

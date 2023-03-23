@@ -9,6 +9,7 @@ class RegisterUsername {
     this.mod = mod;
     this.overlay = new SaitoOverlay(this.app, this.mod);
     this.loader = new SaitoLoader(this.app, this.mod, ".saito-overlay-form");
+    this.callback = null;
 
     app.connection.on("update_identifier", (publickey) => {
       if (document.getElementById("register-username-template")){
@@ -24,7 +25,7 @@ class RegisterUsername {
   }
 
   render() {
-    this.overlay.show(RegisterUsernameTemplate());
+    this.overlay.show(RegisterUsernameTemplate(), this.callback);
     this.attachEvents();
   }
 
@@ -74,8 +75,6 @@ class RegisterUsername {
                     // no need for alert
                     document.querySelector(".saito-overlay-form-text").innerHTML = "registering name...";
 
-                    this.app.connection.emit("recovery-backup-overlay-render-request");
-                    
                     //
                     // mark wallet that we have registered username
                     //
