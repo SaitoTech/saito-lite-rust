@@ -23,7 +23,7 @@ class League extends ModTemplate {
     this.categories = "Arcade Gaming";
     this.overlay = null;
 
-    this.styles = ['/league/style.css'];
+    this.styles = ['/league/style.css', '/arcade/style.css'];
 
     this.leagues = [];
 
@@ -49,7 +49,7 @@ class League extends ModTemplate {
 
 
     this.icon_fa = "fas fa-user-friends";
-    this.debug = true;
+    this.debug = false;
   }
 
 
@@ -338,7 +338,7 @@ class League extends ModTemplate {
   * And we only store meta data, not full player list.
   */
   saveLeagues() {
-    this.app.options.leagues = this.leagues.filter(l => l.rank >= 0);
+    this.app.options.leagues = this.leagues.filter(l => l.rank >= 0 || l.admin === this.app.wallet.returnPublicKey());
     
 //    for (let league of this.app.options.leagues){
 //      delete league.players;
@@ -347,7 +347,7 @@ class League extends ModTemplate {
     if (this.debug){
       console.info("Save Leagues:");
       console.info(JSON.parse(JSON.stringify(this.app.options.leagues)));
-      console.info(JSON.parse(JSON.stringify(this.leagues)));
+      //console.info(JSON.parse(JSON.stringify(this.leagues)));
     }
 
     this.app.storage.saveOptions();
@@ -919,14 +919,15 @@ class League extends ModTemplate {
     //
     // default values
     //
-    newObj.id = obj.id || "";
-    newObj.game = obj.game || "Unknown";
-    newObj.name = obj.name || "Unknown";
-    newObj.admin = obj.admin || "";
-    newObj.status = obj.status || "public";
-    newObj.description = obj.description || "";
-    newObj.ranking_algorithm = obj.ranking_algorithm || "EXP";
-    newObj.default_score = obj.default_score || 0;
+    newObj.id = obj?.id || "";
+    newObj.game = obj?.game || "Unknown";
+    newObj.name = obj?.name || "Unknown";
+    newObj.admin = obj?.admin || "";
+    newObj.contact = obj?.contact || "";
+    newObj.status = obj?.status || "public";
+    newObj.description = obj?.description || "";
+    newObj.ranking_algorithm = obj?.ranking_algorithm || "EXP";
+    newObj.default_score = obj?.default_score || 0;
         
     return newObj;
   }
@@ -938,10 +939,10 @@ class League extends ModTemplate {
     if (!obj.id)                { return; }
 
     if (!this.returnLeague(obj.id)) {
-      
-      if (this.debug) { console.log("Add League with ID: " + obj.id); }
 
       let newLeague = this.validateLeague(obj);
+
+      if (this.debug) { console.log(`Add ${newLeague.game} League`); }
 
       //
       // dynamic data-storage
@@ -949,8 +950,6 @@ class League extends ModTemplate {
       newLeague.players = [];
       newLeague.rank = -1; //My rank in the league
       newLeague.numPlayers = 0;
-
-      if (this.debug) { console.log("New League", JSON.parse(JSON.stringify(newLeague))); }
 
       this.leagues.push(newLeague);
     
@@ -1092,20 +1091,19 @@ class League extends ModTemplate {
   ////////////////////////////////////////////////
   async leagueInsert(obj) {
 
-    let sql = `INSERT OR REPLACE INTO leagues (id, game, name, admin, status, description, ranking_algorithm, default_score) 
-                    VALUES ( $id, $game, $name, $admin, $status, $description, $ranking_algorithm, $default_score )`;
+    let sql = `INSERT OR REPLACE INTO leagues (id, game, name, admin, contact, status, description, ranking_algorithm, default_score) 
+                    VALUES ( $id, $game, $name, $admin, $contact, $status, $description, $ranking_algorithm, $default_score )`;
     let params = {
       $id         :   obj.id ,
       $game       :   obj.game,
       $name       :   obj.name,
       $admin      :   obj.admin,
+      $contact    :   obj.contact,
       $status     :   obj.status,
       $description        :   obj.description,
       $ranking_algorithm  :   obj.ranking_algorithm,
       $default_score      :   obj.default_score,
     };
-
-    if (this.debug) { console.info(params); }
 
     await this.app.storage.executeDatabase(sql, params, "league");
 

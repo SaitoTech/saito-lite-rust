@@ -30,6 +30,7 @@ class JoinLeague {
       return;
     }
 
+
     this.game_mod = this.app.modules.returnModuleByName(league.game);
     this.overlay.show(JoinLeagueTemplate(this.app, this.mod, league));
     this.overlay.setBackground(this.game_mod.returnArcadeImg());

@@ -23,7 +23,7 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
 		  		<div class="game-image" style="background-image: url('/${game}/img/arcade/arcade.jpg')"></div>
 		  		<div class="title-box">
 			  		<div class="title">${league.name}</div>
-			  		<div class="description">${league.status} ${league.game} League</div>
+			  		<div class="description">${league.game} League</div>
  	    		  	${app.browser.returnAddressHTML(league.admin)}
 		  		</div>
 	  		</div>
