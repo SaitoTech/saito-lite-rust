@@ -523,7 +523,7 @@ class Chat extends ModTemplate {
                 salert("Image already being sent");
                 return;
             }
-            this.inTransitImageMsgSig = tx.transaction.sig;
+            this.inTransitImageMsgSig = newtx.transaction.sig;
         }
 
         newtx.msg = {

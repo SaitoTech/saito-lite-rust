@@ -37,6 +37,10 @@
   resize: both;
 }
 
+.chat-body img {
+  max-width: 100%;
+}
+
 .chat-container img.img-prev {
   width: 100%;
 }
