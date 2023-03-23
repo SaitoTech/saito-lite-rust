@@ -9,17 +9,17 @@ class Dashboard {
     this.container = container;
   }
 
-  render(player) {
+  render(agenda_phase=0) {
 
     let myqs = this.container + " .imperium-dashboard";    
 
     if (document.querySelector(myqs)) {
-      this.app.browser.replaceElementBySelector(ImperiumDashboardTemplate(this.mod), myqs);
+      this.app.browser.replaceElementBySelector(ImperiumDashboardTemplate(this.mod, agenda_phase), myqs);
     } else {
       if (this.container == "") {
-        this.app.browser.addElementToDom(ImperiumDashboardTemplate(this.mod));
+        this.app.browser.addElementToDom(ImperiumDashboardTemplate(this.mod, agenda_phase));
       } else {
-        this.app.browser.addElementToSelector(ImperiumDashboardTemplate(this.mod), this.container);
+        this.app.browser.addElementToSelector(ImperiumDashboardTemplate(this.mod, agenda_phase), this.container);
       }
     }
 

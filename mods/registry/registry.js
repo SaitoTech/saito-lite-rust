@@ -1,7 +1,5 @@
-const path = require('path');
-const saito = require('../../lib/saito/saito');
-const ModTemplate = require('../../lib/templates/modtemplate');
-const RegistryModal = require('./lib/modal/registry-modal');
+const ModTemplate = require('./../../lib/templates/modtemplate');
+const RegisterUsernameOverlay = require("./lib/register-username");
 
 class Registry extends ModTemplate {
 
@@ -27,6 +25,9 @@ class Registry extends ModTemplate {
     //
     this.cached_keys = {};
 
+    //Set True for testing locally
+    this.local_dev = false;
+
     //
     // event listeners - 
     //
@@ -47,20 +48,23 @@ class Registry extends ModTemplate {
         if (this.app.network.peers[i].hasService("registry")) {
           this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
             Object.entries(answer).forEach(([key, value]) => {
-              this.cached_keys[key] = value;
-              
-              //
-              // We don't NEED or WANT to filter for key == wallet.returnPublicKey
-              // If the key is in our keychain, we obviously care enough that we 
-              // want to update that key in the keychain! 
-              //
+  
+              if (value !== this.app.wallet.returnPublicKey()){
+                this.cached_keys[key] = value;
+                
+                //
+                // We don't NEED or WANT to filter for key == wallet.returnPublicKey
+                // If the key is in our keychain, we obviously care enough that we 
+                // want to update that key in the keychain! 
+                //
 
-              // save if locally stored
-              if (this.app.keychain.hasPublicKey(key)) {
-                this.app.keychain.addKey({ publickey : key , identifier : value });
+                // save if locally stored
+                if (this.app.keychain.hasPublicKey(key)){
+                  this.app.keychain.addKey({ publickey : key , identifier : value });
+                }
+                
+                this.app.browser.updateAddressHTML(key, value);
               }
-              
-              this.app.browser.updateAddressHTML(key, value);
             });
           });
 
@@ -79,6 +83,14 @@ class Registry extends ModTemplate {
 
       
     });
+
+    this.app.connection.on("register-username-or-login", () => {
+      if (!this.register_username_overlay){
+        this.register_username_overlay = new RegisterUsernameOverlay(this.app, this);
+      }
+      this.register_username_overlay.render();
+    });
+
 
     return this;
   }
@@ -318,8 +330,6 @@ class Registry extends ModTemplate {
 
   respondTo(type = "") {
 
-    let registry_self = this;
-
     if (type == "saito-return-key") {
       return {
         returnKey: (data = null) => {
@@ -340,7 +350,7 @@ class Registry extends ModTemplate {
           // 
           for (let key in this.cached_keys) {
       	    if (key === data.publickey) {
-      	      if (this.cached_keys[key]) {
+      	      if (this.cached_keys[key] && key !== this.cached_keys[key]) {
       	        return { publickey : key , identifier : this.cached_keys[key] };
       	      } else {
       	        return { publickey : key };
@@ -354,54 +364,7 @@ class Registry extends ModTemplate {
       }
     }
 
-    if (type == "do-registry-prompt") {
-      return {
-        doRegistryPrompt: async () => {
-          var requested_id = await sprompt("Pick a handle or nickname. <br /><sub>Alphanumeric characters only - Do not include an @</sub.>");
-          try {
-            let success = this.tryRegisterIdentifier(requested_id);
-            if (success) {
-              return requested_id;
-            } else {
-              throw "Unknown error";
-            }
-          } catch (err) {
-            if (err.message == "Alphanumeric Characters only") {
-              salert("Alphanumeric Characters only");
-            } else {
-              throw err;
-            }
-          }
-        }
-      }
-    }
-
-    /**** part of profile now
-        if (type === 'saito-header') {
-          let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
-          let has_registered_username = false;
-          if (key) { if (key.has_registered_username) { has_registered_username = true; } }
-          if (!has_registered_username) {
-            let m = [{
-              text: "Username",
-              icon: "fa-solid fa-user",
-          rank: 80 ,
-              callback: function (app, id) {
-               let m = new RegisterUsernameModal(app, registry_self); //No callback
-               m.render();
-               return;
-              }
-            }];
-            return m;
-          }
-        }
-    ****/
-    return null;
-  }
-
-  showModal() {
-    RegistryModal.render(this.app, this);
-    RegistryModal.attachEvents(this.app, this);
+    return super.respondTo(type);
   }
 
 
@@ -493,52 +456,24 @@ class Registry extends ModTemplate {
     return false;
   }
 
-  // DEPRECATED, USE tryRegisterIdentifier()
-  registerIdentifier(identifier, domain = "@saito") {
-
-    let newtx = this.app.wallet.createUnsignedTransaction(this.publickey, 0.0, this.app.wallet.wallet.default_fee);
-    if (newtx == null) {
-      console.log("NULL TX CREATED IN REGISTRY MODULE")
-      return;
-    }
-
-    if (typeof identifier === 'string' || identifier instanceof String) {
-      var regex = /^[0-9A-Za-z]+$/;
-      if (!regex.test(identifier)) { salert("Alphanumeric Characters only"); return false; }
-
-      newtx.msg.module = "Registry";
-      //newtx.msg.request	= "register";
-      newtx.msg.identifier = identifier + domain;
-
-      newtx = this.app.wallet.signTransaction(newtx);
-      this.app.network.propagateTransaction(newtx);
-
-      // sucessful send
-      return true;
-    }
-
-  }
-
-
-  onPeerServiceUp(app, peer, service = {}) {
  
-  
+  onPeerServiceUp(app, peer, service = {}) {
+   
   }
 
 
 
   onPeerHandshakeComplete(app, peer) {
 
-    let registry_self = app.modules.returnModule("Registry");
-
-    /***** UNCOMMENT FOR LOCAL DEVELOPMENT ******
-    if (registry_self.app.options.server != undefined) {
-      registry_self.publickey = registry_self.app.wallet.returnPublicKey();
-    } else {
-      registry_self.publickey = peer.peer.publickey;
+    /***** USE VARIABLE TO TOGGLE LOCAL DEV MODE ******/
+    if (this.local_dev){
+      if (this.app.options.server != undefined) {
+        this.publickey = this.app.wallet.returnPublicKey();
+      } else {
+        this.publickey = peer.peer.publickey;
+      }
+      console.log("WE ARE NOW LOCAL SERVER");
     }
-console.log("WE ARE NOW LOCAL SERVER");
-    *******************************************/
 
   }
 
@@ -631,7 +566,8 @@ console.log("WE ARE NOW LOCAL SERVER");
                   registry_self.app.keychain.addKey(tx.transaction.to[0].add, { has_registered_username: false });
                   console.debug("verification failed for sig : ", tx);
                 }
-                registry_self.app.connection.emit("update_identifier", (tx.transaction.to[0].add));
+                registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].add, identifier);
+                registry_self.app.connection.emit("update_identifier", tx.transaction.to[0].add);
               } catch (err) {
                 console.error("ERROR verifying username registration message: ", err);
               }

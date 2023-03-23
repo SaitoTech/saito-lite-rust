@@ -8,8 +8,10 @@ const MovementOverlay = require('./lib/overlays/movement');
 const TechTreeOverlay = require('./lib/overlays/tech-tree');
 const FactionsOverlay = require('./lib/overlays/factions');
 const ProductionOverlay = require('./lib/overlays/production');
+const UnitsOverlay = require('./lib/overlays/units');
 const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
 const InfluenceSelectionOverlay = require('./lib/overlays/influence-selection');
+const SenateOverlay = require('./lib/overlays/senate');
 const SpaceCombatOverlay = require('./lib/overlays/space-combat');
 const GroundCombatOverlay = require('./lib/overlays/ground-combat');
 const BombardmentOverlay = require('./lib/overlays/bombardment');
@@ -47,7 +49,9 @@ class Imperium extends GameTemplate {
     this.strategy_card_overlay = new StrategyCardOverlay(this.app, this);
     this.combat_overlay = new CombatOverlay(this.app, this);
     this.movement_overlay = new MovementOverlay(this.app, this);
+    this.senate_overlay = new SenateOverlay(this.app, this);
     this.production_overlay = new ProductionOverlay(this.app, this);
+    this.units_overlay = new UnitsOverlay(this.app, this);
     this.tech_tree_overlay = new TechTreeOverlay(this.app, this);
     this.factions_overlay = new FactionsOverlay(this.app, this);
     this.resource_selection_overlay = new ResourceSelectionOverlay(this.app, this);
@@ -11763,16 +11767,7 @@ console.log("qe: " + qe);
       class : "game-units-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.acknowledge_overlay.render("Quick message", '/imperium/img/backgrounds/bombardment.jpg');
-//        game_mod.space_combat_overlay.render("2_1");
-//        let array_of_cards = game_mod.returnPlayerUnexhaustedPlanetCards(game_mod.game.player); // unexhausted
-//        let total_trade_goods = game_mod.game.state.players_info[game_mod.game.player-1].goods;
-//        game_mod.resource_selection_overlay.render(2, array_of_cards, total_trade_goods, (planet_id) => {
-//alert(planet_id);
-//        });
-//        game_mod.production_overlay.render();
-//overlay.show(game_mod.returnUnitsOverlay());
-//        game_mod.overlay.show(game_mod.returnUnitsOverlay());
+        game_mod.units_overlay.render();
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -11784,7 +11779,7 @@ console.log("qe: " + qe);
 	let tech = game_mod.returnTechnology();
         let t2 = [];
         for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -11805,7 +11800,7 @@ console.log("qe: " + qe);
 	let tech = game_mod.returnTechnology();
         let t2 = [];
         for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/background/tech-upgrades.jpg" , padding : "50px"});
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -11842,7 +11837,15 @@ console.log("qe: " + qe);
       class : "game-action-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.returnPlayerActionCards(), {});
+	let ac = game_mod.returnActionCards();
+	let ac2 = [];
+	for (let x in ac) {
+	  if (x.indexOf("2") || x.indexOf("3") || x.indexOf("4") || x.indexOf("5")) {
+	  } else {
+	    ac2 = JSON.parse(JSON.stringify(ac[x]));   
+	  }
+	}
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac2, {});
       }
     });
 
@@ -12099,8 +12102,8 @@ console.log("qe: " + qe);
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      //let sys = this.returnSectorAndPlanets("4_4");
-      //sys.p[0].owner = 1;
+//      let sys = this.returnSectorAndPlanets("4_4");
+//      sys.p[0].owner = 1;
 
 
       //
@@ -12741,21 +12744,6 @@ handleTechMenuItem() {
   this.tech_tree_overlay.render();
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 handleAgendasMenuItem() {
   this.overlay.show(this.returnAgendasOverlay());
 }
@@ -12763,8 +12751,6 @@ handleLawsMenuItem() {
   this.overlay.show(this.returnLawsOverlay());
 }
 handleUnitsMenuItem() {
-  this.production_overlay.render();
-return;
   this.overlay.show(this.returnUnitsOverlay());
   let imperium_self = this;
   $('#close-units-btn').on('click', function() {
@@ -26742,6 +26728,7 @@ playerDiscardActionCards(num, mycallback=null) {
   
 
 
+
   ///////////////////////////////
   // Return Starting Positions //
   ///////////////////////////////
@@ -31222,116 +31209,6 @@ returnAgendasOverlay() {
 
 
 
-returnUnitsOverlay() {
-
-  let html = `<div class="units-overlay-container" style=""><div class="unit-table">`;
-  let units = [];
-  let imperium_self = this;
-
-  //
-  // first round we show only the units you have
-  //
-  if (this.game.state.round == 1) {
-
-    let fleet = this.returnPlayerFleet(this.game.player);
-
-    if (fleet.carriers > 0) 	{ units.push("carrier"); }
-    if (fleet.cruisers > 0) 	{ units.push("cruiser"); }
-    if (fleet.destroyers > 0) 	{ units.push("destroyer"); }
-    if (fleet.dreadnaughts > 0) { units.push("dreadnaught"); }
-    if (fleet.warsuns > 0) 	{ units.push("warsun"); }
-    if (fleet.fighters > 0) 	{ units.push("fighter"); }
-    if (fleet.infantry > 0) 	{ units.push("infantry"); }
-    if (fleet.flagships > 0) 	{ units.push("flagship"); }
-    if (fleet.pds > 0) 		{ units.push("pds"); }
-    if (fleet.spacedocks > 0) 	{ }
-
-  } else {
-
-    let player = this.game.state.players_info[this.game.player-1];
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "infantry-ii")) {
-      units.push("infantry-ii");
-    } else {
-      units.push("infantry");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "fighter-ii")) {
-      units.push("fighter-ii");
-    } else {
-      units.push("fighter");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "destroyer-ii")) {
-      units.push("destroyer-ii");
-    } else {
-      units.push("destroyer");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "carrier-ii")) {
-      units.push("carrier-ii");
-    } else {
-      units.push("carrier");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "cruiser-ii")) {
-      units.push("cruiser-ii");
-    } else {
-      units.push("cruiser");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "dreadnaught-ii")) {
-      units.push("dreadnaught-ii");
-    } else {
-      units.push("dreadnaught");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "flagship-ii")) {
-      units.push("flagship-ii");
-    } else {
-      units.push("flagship");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "warsun-ii")) {
-      units.push("warsun-ii");
-    } else {
-      if (player.may_produce_warsuns == 1) {
-        units.push("warsun");
-      }
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "spacedock-ii")) {
-      units.push("spacedock-ii");
-    } else {
-      units.push("spacedock");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "pds-ii")) {
-      units.push("pds-ii");
-    } else {
-      units.push("pds");
-    }
-
-  }
-
-  for (let i = 0; i < units.length; i++) {
-    let preobj = this.units[units[i]];
-    let obj = JSON.parse(JSON.stringify(preobj));
-    obj.owner = this.game.player;
-    obj = this.upgradeUnit(obj, this.game.player);
-    html += UnitTemplate(obj);
-  }
-
-  html += `
-    </div>
-    <div id="close-units-btn" class="button" style="">CONTINUE</div>
-    </div>
-  `;
-
-  return html;
-}
-
-
 returnUnitPopup(unittype) {
 
   let html = `
@@ -32149,7 +32026,7 @@ updateSectorGraphics(sector) {
   showAgendaCard(agenda) {
     let thiscard = this.agenda_cards[agenda];
     let html = `
-      <div style="background-image: url('/imperium/img/agenda_card_template.png');width:100%;height:100%;" class="overlay_agendacard card option" id="${agenda}">
+      <div style="background-image: url('/imperium/img/agenda_card_template.png');" class="overlay_agendacard card option" id="${agenda}">
         <div class="overlay_agendatitle">${thiscard.name}</div>
         <div class="overlay_agendacontent">${thiscard.text}</div>
       </div>

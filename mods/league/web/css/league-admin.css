@@ -310,72 +310,72 @@ i.link_icon.private {
   background: #fff;
   padding: 1.5rem;
   border-radius: 1rem;
-}
-
-.league-join-btn {
-  color: #fff;
-  margin-left: 0rem;
-  width: 100%;
-  margin-bottom: 1.5rem;
-  margin-top: 0rem;
-  display: inline-block;
-  width: 20rem;
-  padding: 1.2rem !important;
-}
-
-.league-join-table {
-  color: #222;
-  width: 30rem;
-}
-
-.league-join-table .saito-table-body {
-  height: auto;
-}
-
-.league-join-table .saito-table-row {
-  grid-template-columns: 45% 55%;
-  margin-bottom: 1rem;
-  text-align: left;
-  font-size: 1.5rem;
-  font-weight: normal;
-}
-
-.league-join-table .saito-table-row div:nth-child(1) {
-  font-weight: bold;
-}
-
-
-.league-join-overlay-box img {
-  min-width: 50rem;
+  max-width: 90vw;
   width: 60rem;
-  margin-bottom: 1rem;
+  font-size: 2rem;
+
+}
+
+.league-join-overlay-box .address{
+  font-family: monospace;
+}
+
+.league-join-username{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.league-join-overlay-box .saito-overlay-form-alt-opt{
+  margin-left: unset;
+}
+
+.league-join-overlay-box .game-image{
+  background-size: cover;
+  width: 15rem;
+  height: 100%;
+  float: left;
+  margin-right: 1rem;
+}
+
+
+.league-join-overlay-box .join-overlay-header {
+  height: 10rem;
+  margin-bottom: 2rem;
 }
 
 .league-join-overlay-box .title-box {
-    color: #222;
-    text-align: center;
-    margin: 1rem 0rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .league-join-overlay-box .title-box .title {
   display: inline-block;
-  font-size: 3rem;
+  font-size: 4rem;
 }
+
+.league-join-overlay-box .description { 
+  text-transform: uppercase;
+  font-style: italic;
+ }
 
 .league-join-controls {
   text-align: center;
+  padding: 1rem;
 }
 
-.league-join-email-note {
-  font-size: 2.5rem;
-  font-style: italic;
-  color: #444;
+.league-join-info p{
+  margin-bottom: 1rem;
+  overflow: revert;
+  font-size: 2.2rem;
+}
+
+
+.league-join-controls button{
   margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.league-join-email-note a {
-  color: var(--saito-primary);
 }
 
 .league-join-controls input {
@@ -450,54 +450,6 @@ i.link_icon.private {
 }
 
 
-.game-create-new-overlay .saito-module-intro{
-  min-height: 17rem;
-}
-
-.saito-module-intro {
-  display: grid;
-  grid-template-columns: 3fr 7fr;
-  grid-gap: 1rem;
-}
-
-.saito-module-intro-image {
-  background-color: grey;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-
-.saito-module-intro-text{
-  margin: 0 1.5rem;
-}
-
-.saito-module-intro-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  position: relative;
-  white-space: nowrap;
-  margin-bottom: 0.5rem;
-  padding-top: 0.5rem;
-}
-
-.saito-module-intro-description {
-  font-size: 1.9rem;
-  line-height: 2.8rem;
-}
-
-.saito-module-intro-details{
-  font-size: 1.6rem;
-  margin: 0.4rem;
-}
-.saito-module-intro-details .detail_row{
-  margin: 0.4rem 0;
-}
-
-.arcade-game-publisher-message {
-  margin-top: 10px;
-  font-size: 1em;
-}
 
 #arcade-advance-opt {
   margin-top: 1rem;

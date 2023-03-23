@@ -273,37 +273,6 @@ class Browser {
     );
   }
 
-  //
-  // asks the user to login if they are using an anonymous account
-  //
-  requestBackup(success_callback = null, failure_callback = null, email = "", pass = "") {
-
-    let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
-    if (key.recoverable === true) { success_callback(true); return; }
-
-    let obj = {};
-    obj.success_callback = success_callback;
-    obj.failure_callback = failure_callback;
-    obj.email = email;
-    obj.pass = pass;
-    this.app.connection.emit("recovery-backup-overlay-render-request", (obj));
-
-  }
-  requestLogin(success_callback = null, failure_callback = null, email = "", pass = "") {
-    let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
-    if (key.recoverable === true) { success_callback(true); return; }
-    if (key.identifier) { success_callback(true); return; }
-    if (key.email) { success_callback(true); return; }
-
-    let obj = {};
-    obj.success_callback = success_callback;
-    obj.failure_callback = failure_callback;
-    obj.email = email;
-    obj.pass = pass;
-    this.app.connection.emit("recovery-backup-overlay-render-request", (obj));
-
-  }
-
 
   extractIdentifiers(text = "") {
     let identifiers = [];
@@ -1733,7 +1702,7 @@ class Browser {
               let identifier = saito_app.keychain.returnIdentifierByPublicKey(key, true);
               if (identifier !== key) {
                 el.innerText = identifier;
-                console.info('updated ' + key + " to " + identifier);
+                //console.info('updated ' + key + " to " + identifier);
               } else {
                 if (!unknown_keys.includes(key)) {
                   unknown_keys.push(key);

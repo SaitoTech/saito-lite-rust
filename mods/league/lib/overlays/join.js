@@ -10,7 +10,7 @@ class JoinLeague {
     this.mod = mod;
     this.league_id = league_id;
     this.overlay = new SaitoOverlay(app, mod, false, true);
-    this.loader = new SaitoLoader(app, mod, ".league-join-controls");
+    this.loader = new SaitoLoader(app, mod, ".league-join-info");
 
     this.app.connection.on("join-league-success", ()=>{
       console.log("Join success!");
@@ -30,72 +30,57 @@ class JoinLeague {
       return;
     }
 
+
     this.game_mod = this.app.modules.returnModuleByName(league.game);
     this.overlay.show(JoinLeagueTemplate(this.app, this.mod, league));
     this.overlay.setBackground(this.game_mod.returnArcadeImg());
 
     this.attachEvents();
+
+    /*let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+
+    if (!key?.identifier){
+      this.app.connection.emit("register-username-or-login");
+    }else if (!key?.email){
+      this.app.connection.emit("recovery-backup-overlay-render-request");
+    }
+    */
   }
 
 
   attachEvents() {
 
-    const league_join_form = document.getElementById('league-join-form');
+    const league_join_btn = document.getElementById('league-join-btn');
 
-    league_join_form.onsubmit = (e) => {
+    if (!league_join_btn) { return; }
 
+    document.querySelector('.saito-overlay-form-alt-opt').onclick = (e) => {
+      this.app.connection.emit("recovery-login-overlay-render-request");
+      return;
+    };
+
+    league_join_btn.onclick = (e) => {
+
+      window.history.pushState("", "", `/league/`);
       e.preventDefault();
 
-      let league_id = e.target.getAttribute("data-league-id");
-      let email = document.getElementById("saito-login-email").value;
-      let pass = document.getElementById("saito-login-password").value;
+      let league_id = e.target.getAttribute("data-id");
+      let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+      let user_email = key.email || "";
 
       //
       // show loader
       //
-      document.querySelector(".league-join-controls").innerHTML = "";
+      document.querySelector(".league-join-controls").remove();
+      document.querySelector(".league-join-info").innerHTML = "";
       this.loader.render();
 
-      //
-      // before 
-      //
-      this.app.browser.requestBackup(
+      let newtx = this.mod.createJoinTransaction(league_id, user_email);
+      this.app.network.propagateTransaction(newtx);
 
-        	//
-        	// successful login / backup
-        	//
-        	(res) => {
-
-            let co = document.querySelector(".league-join-overlay-box");
-            if (co) {
-              co.style.display = "none";
-            }
-
-            let newtx = this.mod.createJoinTransaction(league_id, {"email": email});
-            this.app.network.propagateTransaction(newtx);
-
-            this.mod.addLeaguePlayer({league_id, email, publickey: this.app.wallet.returnPublicKey()}); 
-            this.mod.saveLeagues();
-
-            console.log("Join sent!");
-            //setTimeout(function(){
-            //  window.location = window.location.origin+"/arcade";
-            //}, 1500);
-
-        	},
-
-        	//
-        	// failed login / backup
-        	//
-        	(res) => {
-        	  alert("Account Recovery required for League Membership!");
-        	}, 
-
-        	email ,
-
-        	pass ,
-
-      );
+      if (this.mod.debug){
+        console.log("Join sent! " + league_id);
+      }
 
     }  
 

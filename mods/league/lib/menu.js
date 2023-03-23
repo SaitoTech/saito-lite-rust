@@ -1,5 +1,6 @@
 const LeagueMenuTemplate = require("./menu.template");
 const InvitationLink = require("./overlays/league-invitation-link");
+const JoinLeagueOverlay = require("./overlays/join");
 
 class LeagueMenu {
 
@@ -16,7 +17,8 @@ class LeagueMenu {
     let selector = (this.container) ? `${this.container} ` : "";
     selector += `#lg${this.league.id}`;
 
-    console.log(selector);
+    console.log("Rendering League on Page: ");
+    console.log(JSON.parse(JSON.stringify(this.league)));
 
     if (document.querySelector(selector)) {
       this.app.browser.replaceElementBySelector(LeagueMenuTemplate(this.app, this.mod, this.league), selector);
@@ -32,13 +34,13 @@ class LeagueMenu {
 
     try {
       document.querySelector(`#lg${this.league.id} .league-join-button`).onclick = (e) => {
-        this.mod.sendJoinTransaction(this.league.id);
+        let jlo = new JoinLeagueOverlay(this.app, this.mod, this.league.id);
+        jlo.render();
       }
     } catch (err) {}
 
     try {
       document.querySelector(`#lg${this.league.id} .league-view-button`).onclick = (e) => {
-        console.log("click");
         this.app.connection.emit("league-overlay-render-request", this.league.id);
       }
     } catch (err) {}
