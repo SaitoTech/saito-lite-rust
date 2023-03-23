@@ -1,4 +1,49 @@
 
+.status p {
+  color: white;
+}
+
+.game-overlay-button-continue, .game-overlay-cardlist-button {
+    background-color: white;
+    padding: 2rem;
+    color: #000D;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+.game-overlay-button-continue:hover, .game-overlay-cardlist-button:hover {
+    background-color: var(--saito-primary);
+    padding: 2rem;
+    color: white;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+
+.goods_box {
+  background-color: #006400;
+  padding: 4px;
+  border: 1px solid #fff;
+  color: white;
+}
+     
+.resources_box {
+  background-color: black;
+  padding: 4px;
+  border: 1px solid #fff;
+  color: white;
+}
+     
+.influence_box {
+  background-color: goldenrod;
+  padding: 4px;
+  border: 1px solid #fff;
+  color: black;
+}   
+
+.flash-color {
+  /* override player_color when flashing */
+  filter: none !important;
+}
+
 /********************/
 /*** MOD DEFAULTS ***/
 /********************/
@@ -42,26 +87,33 @@
 }
 
 
+.sf-title {
+  font-family: 'bank-gothic';
+}
+.sf-readable {
+  font-family: 'sans-serif';
+}
+
 @font-face {
   font-family: 'bank-gothic';
-  src: url('./font/BankGothicRegular.eot');
-  src: local('BankGothicRegular'), url('./font/BankGothicRegular.woff') format('woff'), url('./font/BankGothicRegular.ttf') format('truetype');
+  src: url('/imperium/font/BankGothicRegular.eot');
+  src: local('BankGothicRegular'), url('/imperium/font/BankGothicRegular.woff') format('woff'), url('/imperium/font/BankGothicRegular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'orbitron-medium';
-  src: url('./font/orbitron-medium-webfont.eot');
-  src: local('orbitron-medium-webfont'), url('./font/orbitron-medium-webfont.woff') format('woff'), url('./font/orbitron-medium-webfont.ttf') format('truetype');
+  src: url('/imperium/font/orbitron-medium-webfont.eot');
+  src: local('orbitron-medium-webfont'), url('/imperium/font/orbitron-medium-webfont.woff') format('woff'), url('/imperium/font/orbitron-medium-webfont.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'orbitron-light';
-  src: url('./font/orbitron-light-webfont.eot');
-  src: local('orbitron-light-webfont'), url('./font/orbitron-light-webfont.woff') format('woff'), url('./font/orbitron-light-webfont.ttf') format('truetype');
+  src: url('/imperium/font/orbitron-light-webfont.eot');
+  src: local('orbitron-light-webfont'), url('/imperium/font/orbitron-light-webfont.woff') format('woff'), url('/imperium/font/orbitron-light-webfont.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -174,7 +226,7 @@
   letter-spacing: 0.1em;
 }
 .units-overlay-container {
-  background-colour: whitesmoke;
+  background-color: whitesmoke;
   width: 800px;
 }
 .units-overlay-title {
@@ -277,21 +329,20 @@
 }
 
 .overlay_agendatitle {
-  font-size: 2em;
-  min-height: 7vh;
-  font-family: 'orbitron-medium' ariel;
-  font-weight: bold;
-  min-height: 7vh;
-  text-align: center;
-  width: 100%;
+    font-weight: bold;
+    min-height: 7vh;
+    text-align: center;
+    width: 100%;
+    margin-top: 0.5rem;
+    font-size: 2.4rem;
 }
 
 .overlay_agendacontent {
   font-family: 'orbitron-medium';
   position: absolute;
   color: white;
-  margin-top: 10px;
-  padding: 14px;
+  margin-top: 2.5remx;
+  padding: 1.4rem;
   padding-top:10px;
   font-size: 1.6em;
   line-height: 1.5em;
@@ -346,11 +397,10 @@
   float: left;
   font-size: 0.8em;
   z-index: 5;
-  border: 1px solid transparent;
+  border: 1px solid #FFF8;
 }
 
 .objectives_overlay_objectives_card:hover {
- /* transform: scale(1.2); */
   z-index: 10;
   border: 1px solid whitesmoke;
 }
@@ -484,35 +534,6 @@
   text-align:center;
 }
 
-.strategy_card {
-  font-family: 'orbitron-medium';
-  position:relative;
-  float: left;
-  width: calc(42vh * 0.72110);
-  display: block;
-  height: 42vh;
-  color: white;
-  padding: 20px;
-  font-size: 1.5em;
-  line-height: 1.5em;
-  cursor: pointer;
-}
-.strategy_card_img {
-  position: absolute;
-}
-.strategy_card_text {
-  position: absolute;
-  font-size: 16px;
-  color: whitesmoke;
-  padding-top: 19%;
-  padding-left: 7%;
-  padding-right: 20%;
-  font-family: 'orbitron-light', helvetica, sans-serif;
-  line-height: 1.7em;
-  z-index: 101;
-}
-
-
 .action_card {
   padding: 25px;
   padding-top: 30px;
@@ -552,45 +573,9 @@
 }
 
 
-.overlay_strategy_container {
-  width: 86vw;
-  max-width: 80vw;
-  height: auto;
-  overflow-y: scroll;
-  max-height: 90vh;
-}
-.overlay_strategy_card_box {
-  font-family: 'orbitron-medium';
-  position:relative;
-  float: left;
-  width: calc(42vh * 0.72110);
-  display: block;
-  height: 42vh;
-  color: white;
-  margin-top: 50px;
-  padding: 20px;
-  font-size: 1.5em;
-  line-height: 1.5em;
-}
-
 .game-menu {
   font-family: 'bank-gothic', 'orbitron-medium', arial, helvetica, sans-serif;
 
-}
-.overlay_strategy_card_box_img {
-  position: absolute;
-}
-.overlay_strategy_card_text {
-  position: relative;
-  color: white;
-  padding-left: 15px;
-  padding-top: 45px;
-  top: 0px;
-  width: 100%;
-  font-family: 'orbitron-light', helvetica, sans-serif;
-  font-size: 0.7em;
-  line-height: 1.4;
-  z-index: 101;
 }
 
 .log {
@@ -639,11 +624,6 @@
   font-size: 2em;
 }
 
-.new_action_card_overlay_card_container .faction_sheet_action_card {
-  font-size: 0.7em;
-  padding-top: 13px;
-}
-
 .action_card_overlay {
   position: absolute;
   color: white;
@@ -666,58 +646,6 @@
   line-height: 1.8em;
   font-family: 'orbitron-light', helvetica, sans-serif;
   font-size: 2em;
-}
-
-.strategy_card_state {
-  width: 18vw;
-  min-height: 20px;
-  color: white;
-  font-weight: bold;
-  z-index: 100;
-  position: absolute;
-  top: 20px;
-  transform: rotate(-25deg);
-  text-align: center;
-  left: -17px;
-  background: #0008;
-  font-size:0.6em;
-}
-
-.strategy_card_state_internal {
-  color: white;
-  padding: 15px;
-  font-size: 1.2em;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-}
-
-
-.strategy_card_bonus {
-  position: relative;
-  bottom: 0px;
-  left: 75%;
-  font-size: 3em;
-  color: gold;
-  float: right;
-  width: 100%;
-}
-
-.strategy_card_bonus span {
-  position: relative;
-  right: 1.135em;
-  color: white;
-  text-shadow: 1px 1px #444;
-  background: #8888;
-}
-
-.cardbox .strategy_card_bonus {
-  right: 15px;
-  bottom: 0px;
-}
-
-.cardbox .strategy_card_bonus span {
-  right: 1em;
-  background-color: #fff0;
 }
 
 #confirm {
@@ -784,98 +712,56 @@
 
 .p1, .p1 .pc {
   color: var(--p1);
-  min-width: unset;
-  height: unset;
-  bottom: unset;
-  left: unset;
-  transform: unset;
-  translateX(-50%);
-  width: unset;
-  overflow-y: unset;
 }
 
 .p2, .p2 .pc {
   color: var(--p2);
-  min-width: unset;
-  height: unset;
-  bottom: unset;
-  left: unset;
-  transform: unset;
-  translateX(-50%);
-  width: unset;
-  overflow-y: unset;
 }
 
 .p3, .p3 .pc {
   color: var(--p3);
-  min-width: unset;
-  height: unset;
-  bottom: unset;
-  left: unset;
-  transform: unset;
-  translateX(-50%);
-  width: unset;
-  overflow-y: unset;
 }
 
 .p4, .p4 .pc {
   color: var(--p4);
-  min-width: unset;
-  height: unset;
-  bottom: unset;
-  left: unset;
-  transform: unset;
-  translateX(-50%);
-  width: unset;
-  overflow-y: unset;
 }
 
 .p5, .p5 .pc {
   color: var(--p5);
-  min-width: unset;
-  height: unset;
-  bottom: unset;
-  left: unset;
-  transform: unset;
-  translateX(-50%);
-  width: unset;
-  overflow-y: unset;
 }
 
 .p6, .p6 .pc {
   color: var(--p6);
-  min-width: unset;
-  height: unset;
-  bottom: unset;
-  left: unset;
-  transform: unset;
-  translateX(-50%);
-  width: unset;
-  overflow-y: unset;
 }
 
 .p1 .bc, .p1 .bc::before, .bc1 {
   border-color: var(--p1);
+  border: 1px solid var(--p1);
 }
 
 .p2 .bc, .p2 .bc::before, .bc2 {
   border-color: var(--p2);
+  border: 1px solid var(--p2);
 }
 
 .p3 .bc, .p3 .bc::before, .bc3 {
   border-color: var(--p3);
+  border: 1px solid var(--p3);
 }
 
 .p4 .bc, .p4 .bc::before, .bc4 {
   border-color: var(--p4);
+  border: 1px solid var(--p4);
 }
 
 .p5 .bc, .p5 .bc::before, .bc5 {
   border-color: var(--p5);
+  border: 1px solid var(--p5);
 }
 
 .p6 .bc, .p6 .bc::before, .bc6 {
   border-color: var(--p6);
+  border: 1px solid var(--p6);
 }
 
 .p1 .bk {
@@ -904,8 +790,7 @@
 
 body {
   overflow: hidden;
-  font-family: 'bank-gothic', 'orbitron-medium', arial, helvetica, sans-serif;
-  ;
+  font-family: sans-serif, 'orbitron-medium', arial, helvetica, sans-serif, 'bank-gothic';
   background: #151717;
   font-size: 13px;
   padding: 0px;
@@ -913,8 +798,8 @@ body {
 }
 
 .game_background {
-  background-image: url("/imperium/img/spacebg.png");
-  background-image: url("/imperium/img/spaceb2.png");
+  /* background-image: url("/imperium/img/spacebg.png"); */
+  background-image: url("/imperium/img/spaceb2.jpg");
   background-size: cover;
   position: absolute;
   top: -50%;
@@ -942,65 +827,6 @@ body {
   padding: 2em;
 }
 
-.faction_sheet {
-  height: calc(80vh - 6em);
-  background-color: #0008;
-  background-size: cover;
-  background-position: center;
-}
-
-.faction_sheet_buttons {
-  display: flex;
-}
-
-.faction_sheet_buttons div {
-  color: #fff;
-  margin: 1em 2em;
-  cursor: pointer;
-  font-size: 1.5em;
-}
-
-.faction_content {
-  background-color: #0008;
-  height: calc(100% - 5em);
-  margin: 0 1em;
-  color: #FFF;
-  padding: 0 1em;
-  overflow-y: auto;
-}
-
-.faction_sheet_unit_box {
-  display: flex;
-  margin-bottom: 2vh;
-  flex-wrap: wrap;
-}
-
-.faction_sheet_token_box {
-  margin: 1em auto;
-  width: 40em;
-  height: 10em;
-  display: grid;
-  grid-gap: 0 2em;
-  grid-template-columns: auto auto auto;
-  font-family: 'bank-gothic';
-  transform: scale(0.6);
-}
-.faction_sheet_token_box_title {
-  color: white;
-  font-weight: bold;
-  background-color: #555c;
-  padding: 10px;
-}
-.faction_sheet_token_box .fa-dice-d20 {
-  transform: translateX(-50%);
-}
-.faction_sheet_token_box .fa-futbol {
-  transform: translateX(-50%);
-}
-.faction_sheet_token_box .fa-space-shuttle {
-  transform: translateX(-50%);
-}
-
 .objectives_scorings {
   display: grid;
   position: absolute;
@@ -1021,68 +847,6 @@ body {
   color: #FFF;
   font-family: 'bank-gothic';
   text-shadow: 1px 1px #000;
-}
-
-.faction_sheet_active {
-  overflow-y: auto;
-  height: 100%;
-  scroll-behavior: smooth;
-}
-
-.faction_sheet_token_box div {
-  text-align: center;
-  font-size: 1.5em;
-}
-
-.faction_sheet_token_box span {
-  text-align: center;
-}
-
-.faction_sheet_action_card_box, .faction_sheet_planet_card_box, .faction_sheet_tech_box {
-  clear: both;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  margin: 1em 1em 1em 1em;
-  font-size:0.9em;
-}
-
-.faction_sheet_action_card_box, .faction_sheet_planet_card_box {
-  margin: 1em 1em 17vw 1em;
-}
-
-.faction_sheet_action_card {
-  background-image: url("/imperium/img/action_card_template.png");
-  height: 26vh;
-  width: calc(26vh * 0.72110);
-  background-size: cover;
-  margin: 1vw;
-  padding: 1vw;
-  text-align: center;
-  font-size: 0.75vw;
-  transition: all 50ms;
-  margin-bottom: -15vw;
-  border: 1px solid;
-  float: left;
-  z-index: 1;
-}
-.overlay_action_card {
-  background-image: url("/imperium/img/action_card_template.png");
-  height: 34vh;
-  width: calc(34vh * 0.72110);
-  background-size: cover;
-  margin: 1vw;
-  padding: 1vw;
-  text-align: center;
-  font-size: 1em;
-  transition: all 50ms;
-  margin-bottom: -15vw;
-  border: 1px solid;
-  float: left;
-}
-
-.faction_sheet_action_card_back {
-  background-image: url("/imperium/img/action_card_back.jpg");
 }
 
 .overlay_action_card:hover, .faction_sheet_action_card:hover, .faction_sheet_planet_card:hover, .tech_card:hover {
@@ -1272,105 +1036,6 @@ body {
   opacity: 0.55;
 }
 
-.tech_card {
-  background-image: url("/imperium/img/tech_card_template.jpg");
-  position: relative;
-  width: 340px;
-  height: 200px;
-  font-size: 2em;
-  background-size: cover;
-  margin: 1vw;
-  text-align: center;
-  font-size: 1.25vw;
-  transition: all 50ms;
-  border: 1px solid;
-  color: white;
-  z-index: 10;
-}
-
-.tech_card::before {
-  content: "";
-  width: 0;
-  height: 0;
-  border-bottom: 33px solid;
-  border-left: 100px solid transparent !important;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
-
-.faction_sheet .tech_card .tech_card_name {
-  font-size: 3em;
-}
-
-.faction_sheet .tech_card .tech_card_content {
-  font-size: 1.7em;
-}
-
-.faction_sheet .tech_card .tech_card_level {
-  font-size: 3em;
-  background-color: #444;
-  ;
-}
-
-.tech_card {
-  background-image: url("/imperium/img/tech_card_template.jpg");
-  position: relative;
-  width: 16vw;
-  height: 10vw;
-  background-size: cover;
-  margin: 1vw;
-  text-align: center;
-  font-size: 1vw;
-  transition: all 50ms;
-  border: 1px solid;
-}
-
-.tech_card::before {
-  content: "";
-  width: 0;
-  height: 0;
-  border-bottom: 33px solid;
-  border-left: 100px solid transparent !important;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
-
-.tech_card_name {
-  margin: 0 0 3px 0;
-  font-family: 'bank-gothic';
-  text-align: center;
-  padding: 1vw;
-  padding: 0.5vw;
-  background: #0009;
-  color: white;
-}
-
-.tech_card_content {
-  text-align: left;
-  padding: 1vw;
-  color: white;
-  padding: 0.75vw;
-  color: white;
-  font-family: 'orbitron-medium', 'arial';
-  line-height: 1.3em;
-}
-
-.tech_card_level {
-  font-size: 2em;
-  letter-spacing: 5px;
-  position: absolute;
-  bottom: 0;
-  left: 9px;
-}
-
-.faction_sheet_lore {
-  font-size: 1.3em;
-  line-height: 1.5em;
-  margin-bottom: 50vh;
-}
-
 .unit-display-tile {
   height: 8vw;
   width: 16vw;
@@ -1409,23 +1074,6 @@ body {
   height: 100%;
   z-index: 1;
   background: linear-gradient(150deg, #000B, #0004);
-}
-
-.hud-token-count {
-  transform: scale(0.25);
-  display: flex;
-  position: absolute;
-  top: -2em;
-  justify-content: space-around;
-  width: 100%;
-}
-
-.hud-token-count>div {
-  margin: 0px 3em;
-}
-
-.hud-token-count .pc {
-  color: var(--my-color);
 }
 
 .faction_buttons {
@@ -1603,7 +1251,7 @@ body {
   font-size: 3em;
   width: 2em;
   color: #fff;
-  margin-top:65px;
+  margin-top:6.75rem;
 }
 
 .round {
@@ -1632,6 +1280,8 @@ body {
 .round-label, .turn-label {
   font-size: 0.5em;
   text-align: center;
+  font-family: 'bank-gothic';
+  padding-top: 0.5rem;
 }
 
 .VP-track-label {
@@ -1724,6 +1374,7 @@ body {
   font-family: 'orbitron-medium', helvetica, arial, courier;
   text-transform: uppercase;
   padding: 15px;
+  user-select: none;
 }
 .buildchoice {
   padding: 15px;
@@ -1732,6 +1383,7 @@ body {
   cursor: pointer;
   font-family: 'orbitron-medium', helvetica, arial, courier;
   padding: 15px;
+  user-select: none;
 }
 
 .status ul .cardchoice-card {
@@ -1805,10 +1457,11 @@ body {
 .player_color_8 {}
 
 .player_color_box {
-  width: 25px;
-  height: 25px;
+  width: 2.5rem;
+  height: 2.5rem;
   display: inline-block;
-  margin-right: 10px;
+  margin-right: 1rem;
+  padding-top:0.5rem;
   background-color: #000;
 }
 
@@ -2046,162 +1699,6 @@ body {
 
 .bottom_right {
   transform: translate(50px, 50px);
-}
-
-.dashboard {
-  display: inline-flex;
-  position: absolute;
-  z-index: 9;
-  color: #fff;
-  background: transparent;
-  margin-top: 65px;
-  margin-left: 15em;
-}
-
-.dash-faction-agenda {
-  font-weight: bold;
-  font-size: 4em;
-  color: white;
-  background: #0004;
-  text-align: center;
-}
-.dash-faction-base {
-  background-color: #000;
-  opacity: 0.95;
-  color: white;
-  text-weight: bold;
-  margin-top: 2px;
-}
-.dash-faction-speaker {
-  height: 40px;
-  margin-top: 10px;
-}
-.speaker {
-  background-color: red;
-  color: white;
-  font-size:16px;
-  font-weight: bold;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 10px;
-}
-
-.dash-faction-status {
-  border: 1px solid #c16400;
-  background-color: green;
-  height: 10px;
-  width: 15px;
-  margin-right: 5px;
-  margin-left: 5px;
-  margin-top: 4px;
-  float: left;
-}
-
-.dash-faction-name {
-  text-align: center;
-  font-size: 0.9em;
-  text-align: center;
-  color: #fff;
-  cursor: pointer;
-}
-
-.dash-faction {
-  display: grid;
-  grid-gap: 0.2em;
-  margin-right: 15px;
-}
-
-.dash-faction-info {
-  display: grid;
-  grid-template-columns: repeat(3, 4.5em);
-  height: 4.4em;
-  padding: 0;
-}
-/***
-.dash-faction-info:hover {
-  font-weight:bold;
-  background-color: #fff3;
-}
-***/
-.dash-item {
-  width: 3em;
-  line-height: 1.9em;
-  text-align: center;
-  font-size: 1.5em;
-  text-shadow: 2px 2px #000A;
-}
-
-.dash-item .avail {
-  transform: translateY(-0.2em);
-  display: inline-block;
-  color: white;
-}
-
-.dash-item .total, .dash-item .limit {
-  transform: translateY(0.2em);
-  /* display: inline-block; */
-  display: none;
-  opacity: 0.7;
-}
-
-.dash-faction-action {
-  text-align: center;
-  font-size: large;
-  color: #fff;
-}
-
-.dash-item {
-  color: #fff;
-  position: relative;
-}
-
-.dash-item.resources {
-  background-image: url("/imperium/img/blank_resources_hex.png");
-  background-size: cover;
-  /* content: "\2B23"; */
-  /* background-color: #c16400; */
-  color: #000000;
-  font-size: 3em;
-  position: relative;
-  left: 0em;
-  z-index: 1001;
-  /* bottom: 0.66em; */
-  height: 58px;
-  width: 65px;
-}
-
-.dash-item.influence {
-  background-image: url("/imperium/img/blank_influence_hex.png");
-  background-size: cover;
-  /* content: "\2B23";
-  /* background-color: #000000; */
-  color: #c16400;
-  font-size: 3em;
-  position: relative;
-  z-index: 1002;
-  /* bottom: 0.66em; */
-  height: 58px;
-  width: 65px;
-}
-
-.dash-item.trade {
-  /* content: "\2B1F"; */
-  /* color: #ffaa00; */
-  font-size: 4em;
-  position: relative;
-  z-index: 1001;
-  height: 58px;
-  width: 65px;
-  display: flex;
-  left: 10px;
-  top: 4px;
-}
-
-.dash-item-goods {
-  position: relative;
-  top: -25px;
-  left: -40px;
-  font-size: 0.8em;
 }
 
 .fleet * {
@@ -2754,15 +2251,6 @@ input[type=range] {
 
 
 
-#
-# OVerlays
-#
-.resources_box {
- background-color:black;padding:4px;border:1px solid #fff;
-}
-.influence_box {
-  background-color:orange;padding:4px;border:1px solid #fff;
-}
 .demo_ordered_list {
   margin-left: 30px;
   font-family: courier;
@@ -2799,9 +2287,4 @@ input[type=range] {
 .how_to_play_resources_entry {
   padding-top: 20px;
 }
-
-
-
-~                             
-
 

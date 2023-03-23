@@ -676,7 +676,6 @@ class League extends ModTemplate {
 
   /////////////////////
   /////////////////////
-
   async getRelevantLeagues(game){
 
     let sql = `SELECT * FROM leagues WHERE game = $game`;
@@ -688,8 +687,6 @@ class League extends ModTemplate {
     return sqlResults || localLeagues;
   } 
 
-  /////////////////////
-  /////////////////////
 
   async getPlayersFromLeague(league_id, players){
 

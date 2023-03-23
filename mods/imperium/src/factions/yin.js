@@ -288,7 +288,6 @@ this.playDevotion = function(imperium_self, player, sector, mycallback, impulse_
     return;
   }
 
-
   let html = "<div class='sf-readable'>Do you wish to sacrifice a Destroyer or Cruiser to assign 1 hit to an enemy ship?</div><ul>";
   if (can_sacrifice_destroyer) {
       html += '<li class="textchoice" id="destroyer">sacrifice destroyer</li>';
@@ -354,35 +353,9 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
   for (let i = 0; i < sys.s.units[opponent-1].length; i++) {
 
     let unit = sys.s.units[opponent-1][i];
-
-    html += '<li class="textchoice" id="'+i+'">'+unit.name;
-
-    if (unit.capacity >= 1) {
-      let fleet = '';
-      let fighters = 0;
-      let infantry = 0;
-      for (let ii = 0; ii < unit.storage.length; ii++) {
-        if (unit.storage[ii].type == "infantry") {
-          infantry++;
-        }
-        if (sys.s.units[imperium_self.game.player-1][i].storage[ii].type == "fighter") {
-          fighters++;
-        }
-      }
-      if (infantry > 0 || fighters > 0) {
-        fleet += ' ';
-        if (infantry > 0) { fleet += infantry + "i"; }
-        if (fighters > 0) {
-          if (infantry > 0) { fleet += ", "; }
-          fleet += fighters + "f";
-        }
-        fleet += ' ';
-      }
-      html += fleet;
+    if (unit.destroyed != 1) {
+      html += '<li class="textchoice" id="'+i+'">' + imperium_self.returnShipInformation(unit) + '</li>';
     }
-
-    html += '</li>';
-
   }
   html += '</ul>';
 

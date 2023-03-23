@@ -85,7 +85,7 @@
   border: 16px solid var(--saito-skyline-grey);
   border-top: 16px solid var(--saito-red);
   border: 16px solid var(--saito-primary);
-  border-top: 16px solid var(--saito-tertiary);
+  border-top: 16px solid var(--saito-white);
 
   border-radius: 50%;
   animation: spin 1.5s linear infinite;

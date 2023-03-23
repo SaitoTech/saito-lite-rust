@@ -50,92 +50,89 @@ class Chat extends ModTemplate {
 
     onPeerServiceUp(app, peer, service = {}) {
 
-      let chat_self = this;
+        let chat_self = this;
 
-      //
-      // load private chat
-      //
-      if (service.service === "archive") {
-
- 	//
-        // load 5 saved chat messages per group
         //
-	for (let i = 0; i < this.groups.length; i++) {
+        // load private chat
+        //
+        if (service.service === "archive") {
 
-	  let group_id = this.groups[i].id;
-	  let group = this.groups[i];
+            //
+            // load 5 saved chat messages per group
+            //
+            for (let i = 0; i < this.groups.length; i++) {
 
-          this.app.storage.loadTransactions(group_id, 5, function(txs) {
-            try {        
-              for (let z = 0; z < txs.length; z++) {
-	        txs[z].decryptMessage(chat_self.app);
-	        chat_self.addTransactionToGroup(group, txs[z]);
-              }
-              chat_self.app.connection.emit("chat-manager-render-request");
-            } catch (err) {
-              log("error loading chats...: " + err);
+                let group_id = this.groups[i].id;
+                let group = this.groups[i];
+
+                this.app.storage.loadTransactions(group_id, 5, function (txs) {
+                    try {
+                        for (let z = 0; z < txs.length; z++) {
+                            txs[z].decryptMessage(chat_self.app);
+                            chat_self.addTransactionToGroup(group, txs[z]);
+                        }
+                        chat_self.app.connection.emit("chat-manager-render-request");
+                    } catch (err) {
+                        log("error loading chats...: " + err);
+                    }
+                });
             }
-          });
         }
-      }
- 
-      //
-      // load public chat
-      //
-      if (service.service === "chat") {
 
-        let newtx = this.app.wallet.createUnsignedTransaction();
-        let local_group = this.returnGroupOrCreateFromMembers([peer.returnPublicKey()], "Saito Community Chat");
+        //
+        // load public chat
+        //
+        if (service.service === "chat") {
 
-	//
-	// remove duplicate public chats caused by server update
-	//
-	for (let i = 0; i < this.groups.length; i++) {
-	  if (this.groups[i].name === local_group.name && this.groups[i] !== local_group) {
-	    if (this.groups[i].members.length == 1) {
-	      if (!this.app.network.isConnectedToPublicKey(this.groups[i].members[0])) {
-		this.app.connection.emit("chat-popup-remove-request", (this.groups[i]));
-	        this.groups.splice(i, 0);
-	      } 
-	    }
-	  }
-	}
+            let newtx = this.app.wallet.createUnsignedTransaction();
+            let local_group = this.returnGroupOrCreateFromMembers([peer.returnPublicKey()], "Saito Community Chat");
 
-        if (local_group) {
+            //
+            // remove duplicate public chats caused by server update
+            //
+            for (let i = 0; i < this.groups.length; i++) {
+                if (this.groups[i].name === local_group.name && this.groups[i] !== local_group) {
+                    if (this.groups[i].members.length == 1) {
+                        if (!this.app.network.isConnectedToPublicKey(this.groups[i].members[0])) {
+                            this.app.connection.emit("chat-popup-remove-request", (this.groups[i]));
+                            this.groups.splice(i, 0);
+                        }
+                    }
+                }
+            }
 
-          newtx.msg = {
-            request : "chat history" ,
-            group_id : local_group.id ,
-          }
-          newtx = this.app.wallet.signTransaction(newtx);
+            if (local_group) {
 
-          this.app.network.sendTransactionWithCallback(newtx, (txs) => {
+                newtx.msg = {
+                    request: "chat history",
+                    group_id: local_group.id,
+                }
+                newtx = this.app.wallet.signTransaction(newtx);
 
-	    try {
-	      for (let i = 0; i < txs.length; i++) {
-	        let newtx = new saito.default.transaction(txs[i].transaction);
-	        let txmsg = newtx.returnMessage();
-                this.addTransactionToGroup(local_group, newtx);
-	      }
-	    } catch (err) {
-	      console.log("chat history adding: " + err);
-	    }
+                this.app.network.sendTransactionWithCallback(newtx, (txs) => {
 
-            this.app.connection.emit("chat-manager-and-popup-render-request", (local_group));
+                    try {
+                        for (let i = 0; i < txs.length; i++) {
+                            let newtx = new saito.default.transaction(txs[i].transaction);
+                            let txmsg = newtx.returnMessage();
+                            this.addTransactionToGroup(local_group, newtx);
+                        }
+                    } catch (err) {
+                        console.log("chat history adding: " + err);
+                    }
 
-          });
+                    this.app.connection.emit("chat-manager-and-popup-render-request", (local_group));
+
+                });
+            }
         }
-      }
     }
 
 
     returnServices() {
-
         let services = [];
-
         // servers with chat service run plaintext community chat groups
         if (this.app.BROWSER == 0) { services.push({ service: "chat", name: "Saito Community Chat" }); }
-
         return services;
     }
 
@@ -143,7 +140,7 @@ class Chat extends ModTemplate {
 
     respondTo(type) {
 
-	let chat_self = this;
+        let chat_self = this;
 
         switch (type) {
             case 'chat-manager':
@@ -153,17 +150,17 @@ class Chat extends ModTemplate {
                 if (this.chat_manager_overlay == null) { this.chat_manager_overlay = new ChatManagerOverlay(this.app, this); }
                 return this.chat_manager_overlay;
             case 'saito-header':
-      	        if (this.app.browser.isMobileBrowser()) {
-		  return [{
-	            text: "Chat",
-        	    icon: "fas fa-comments",
-     	            callback: function (app, id) {
-	              let cmo = chat_self.respondTo("chat-manager-overlay");
-          	      cmo.render();
-        	    }
-     		  }];
-	        }
-		return null;
+                if (this.app.browser.isMobileBrowser()) {
+                    return [{
+                        text: "Chat",
+                        icon: "fas fa-comments",
+                        callback: function (app, id) {
+                            let cmo = chat_self.respondTo("chat-manager-overlay");
+                            cmo.render();
+                        }
+                    }];
+                }
+                return null;
             default:
                 return super.respondTo(type);
         }
@@ -174,8 +171,8 @@ class Chat extends ModTemplate {
 
     initialize(app) {
 
-	//
-	app.options.chat = {};
+        //
+        app.options.chat = {};
         app.storage.saveOptions();
 
 
@@ -199,16 +196,16 @@ class Chat extends ModTemplate {
             this.createChatGroup(g[i].members, g[i].name);
         }
 
-	//
-	// if I run a chat service, create it
-	//
+        //
+        // if I run a chat service, create it
+        //
         if (app.BROWSER == 0) {
-	  let group = this.createChatGroup([this.app.wallet.returnPublicKey()], "Saito Community Chat");
-	}
+            let group = this.createChatGroup([this.app.wallet.returnPublicKey()], "Saito Community Chat");
+        }
 
-	if (app.BROWSER) {
-          this.attachPostScripts();
-	}
+        if (app.BROWSER) {
+            this.attachPostScripts();
+        }
 
     }
 
@@ -230,10 +227,10 @@ class Chat extends ModTemplate {
             // Now that we have all the chat groups from our wallet + peer
             // We can load the previously messages from our local storage
             //
-	    this.communityGroup = this.createChatGroup([peer.peer.publickey], this.communityGroupName);
-	    if (this.communityGroup) {
-	      this.communityGroupHash = this.communityGroup.id; 
-	    }
+            this.communityGroup = this.createChatGroup([peer.peer.publickey], this.communityGroupName);
+            if (this.communityGroup) {
+                this.communityGroupHash = this.communityGroup.id;
+            }
 
             //this.app.connection.emit("chat-manager-render-request");
 
@@ -287,10 +284,10 @@ class Chat extends ModTemplate {
                 let group = this.returnGroupByMemberPublickey(peer.returnPublicKey());
                 if (group) {
                     let active_module = app.modules.returnActiveModule();
-		            if (active_module) {
-                      if (active_module.request_no_interrupts != true) {
-                        this.app.connection.emit('chat-popup-render-request', group);
-                      }
+                    if (active_module) {
+                        if (active_module.request_no_interrupts != true) {
+                            this.app.connection.emit('chat-popup-render-request', group);
+                        }
                     }
                 }
             } else {
@@ -348,21 +345,21 @@ class Chat extends ModTemplate {
         if (!txmsg.request) { return; }
 
 
-	if (txmsg.request === "chat history") {
+        if (txmsg.request === "chat history") {
 
-	  let group_id = txmsg.group_id;
-	  if (!group_id) { return; }
-	  let group = this.returnGroup(group_id);
-	  if (!group) { return; }
-	  let chat_msgs_to_load = group.txs;
-	  if (chat_msgs_to_load.length > 20) {
-	    chat_msgs_to_load = chat_msgs_to_load.splice(chat_msgs_to_load.length-20);
-	  }
+            let group_id = txmsg.group_id;
+            if (!group_id) { return; }
+            let group = this.returnGroup(group_id);
+            if (!group) { return; }
+            let chat_msgs_to_load = group.txs;
+            if (chat_msgs_to_load.length > 20) {
+                chat_msgs_to_load = chat_msgs_to_load.splice(chat_msgs_to_load.length - 20);
+            }
 
-	  //mycallback(group.txs);
-	  mycallback(chat_msgs_to_load);
+            //mycallback(group.txs);
+            mycallback(chat_msgs_to_load);
 
-	}
+        }
 
         if (txmsg.request === "chat message") {
 
@@ -378,41 +375,41 @@ class Chat extends ModTemplate {
             let inner_tx = new saito.default.transaction(txmsg.data);
             let inner_txmsg = inner_tx.returnMessage();
 
-	    //
-	    // if chat message broadcast is received - we are being asked to broadcast this
-	    // to a peer if the inner_tx is addressed to one of our peers.
-	    //
-	    if (inner_tx.transaction.to.length > 0) {
-	      if (inner_tx.transaction.to[0].add != this.app.wallet.returnPublicKey()) {
-console.log("INNER TRANSACTION IS NOT FOR ME");
-                if (app.BROWSER == 0) {
-                  app.network.peers.forEach(p => {
-                    if (p.peer.publickey === inner_tx.transaction.to[0].add) {
-                        p.sendTransactionWithCallback(inner_tx, () => { });
+            //
+            // if chat message broadcast is received - we are being asked to broadcast this
+            // to a peer if the inner_tx is addressed to one of our peers.
+            //
+            if (inner_tx.transaction.to.length > 0) {
+                if (inner_tx.transaction.to[0].add != this.app.wallet.returnPublicKey()) {
+                    console.log("INNER TRANSACTION IS NOT FOR ME");
+                    if (app.BROWSER == 0) {
+                        app.network.peers.forEach(p => {
+                            if (p.peer.publickey === inner_tx.transaction.to[0].add) {
+                                p.sendTransactionWithCallback(inner_tx, () => { });
+                            }
+                            return;
+                        });
+                        return;
                     }
-		    return;
-                  });
-		  return;
-                }
-	      } else {
+                } else {
 
-console.log("INNER TX IS FOR ME");
-		//
-		// broadcast to me, so send to all non-this-peers
-		//
-                if (app.BROWSER == 0) {
-                  app.network.peers.forEach(p => {
-                    if (p.peer.publickey !== peer.peer.publickey) {
-                        p.sendTransactionWithCallback(inner_tx, () => { });
+                    console.log("INNER TX IS FOR ME");
+                    //
+                    // broadcast to me, so send to all non-this-peers
+                    //
+                    if (app.BROWSER == 0) {
+                        app.network.peers.forEach(p => {
+                            if (p.peer.publickey !== peer.peer.publickey) {
+                                p.sendTransactionWithCallback(inner_tx, () => { });
+                            }
+                        });
                     }
-                  });
+
                 }
-
-	      }
-	    }
+            }
 
 
-	    // MAR 14
+            // MAR 14
             //if (!inner_txmsg?.group_id) { return; }
 
             //Chat message broadcast is the Relay to the Chat-services server
@@ -427,7 +424,7 @@ console.log("INNER TX IS FOR ME");
             //
             // servers can forward if they get chat broadcast
             //
-	    // MAR 14
+            // MAR 14
             //if (app.BROWSER == 0) {
             //    app.network.peers.forEach(p => {
             //        if (p.peer.publickey !== peer.peer.publickey) {
@@ -460,13 +457,13 @@ console.log("INNER TX IS FOR ME");
         // won't exist if encrypted
         //
         if (tx.msg.message) {
-          if (tx.msg.message.substring(0, 4) == "<img") {
-            if (this.inTransitImageMsgSig) {
-                salert("Image already being sent");
-                return;
+            if (tx.msg.message.substring(0, 4) == "<img") {
+                if (this.inTransitImageMsgSig) {
+                    salert("Image already being sent");
+                    return;
+                }
+                this.inTransitImageMsgSig = tx.transaction.sig;
             }
-            this.inTransitImageMsgSig = tx.transaction.sig;
-          }
         }
         if (app.network.peers.length > 0) {
 
@@ -488,35 +485,35 @@ console.log("INNER TX IS FOR ME");
     }
 
 
-    createChatTransaction(group_id, msg="") {
+    createChatTransaction(group_id, msg = "") {
 
         let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), 0.0, 0.0);
         if (newtx == null) { return; }
 
         let members = this.returnMembers(group_id);
         for (let i = 0; i < members.length; i++) {
-	    if (members[i] !== this.app.wallet.returnPublicKey()) {
+            if (members[i] !== this.app.wallet.returnPublicKey()) {
                 newtx.transaction.to.push(new saito.default.slip(members[i]));
-	    }
+            }
         }
 
-	//
-	// swap first two addresses so if private chat we will encrypt with proper shared-secret 
-	//
-	if (newtx.transaction.to.length > 1) {
-	  let x = newtx.transaction.to[0];
-	  newtx.transaction.to[0] = newtx.transaction.to[1];
-	  newtx.transaction.to[1] = x;
-	}
+        //
+        // swap first two addresses so if private chat we will encrypt with proper shared-secret 
+        //
+        if (newtx.transaction.to.length > 1) {
+            let x = newtx.transaction.to[0];
+            newtx.transaction.to[0] = newtx.transaction.to[1];
+            newtx.transaction.to[1] = x;
+        }
 
-console.log("FIRST RECIPIENT IS NOW: " + newtx.transaction.to[0].add);
+        console.log("FIRST RECIPIENT IS NOW: " + newtx.transaction.to[0].add);
 
         if (msg.substring(0, 4) == "<img") {
-          if (this.inTransitImageMsgSig) {
-              salert("Image already being sent");
-              return;
-          }
-          this.inTransitImageMsgSig = tx.transaction.sig;
+            if (this.inTransitImageMsgSig) {
+                salert("Image already being sent");
+                return;
+            }
+            this.inTransitImageMsgSig = tx.transaction.sig;
         }
 
         newtx.msg = {
@@ -527,19 +524,19 @@ console.log("FIRST RECIPIENT IS NOW: " + newtx.transaction.to[0].add);
             timestamp: new Date().getTime()
         };
 
-	if (members.length == 2) {
-	  //
-	  // the first recipient is ourself, so the second is the one with the shared secret
-	  //
-console.log("from us so sign and encrypt to: " + newtx.transaction.to[0].add);
-let key = this.app.keychain.returnKey(newtx.transaction.to[0].add);
-console.log("pre-encrypt in create!");
-console.log("key should be: " + key.aes_secret);
-          newtx = this.app.wallet.signAndEncryptTransaction(newtx);
-console.log("post-encrypt in create!");
-	} else {
-          newtx = this.app.wallet.signTransaction(newtx);
-	}
+        if (members.length == 2) {
+            //
+            // the first recipient is ourself, so the second is the one with the shared secret
+            //
+            console.log("from us so sign and encrypt to: " + newtx.transaction.to[0].add);
+            let key = this.app.keychain.returnKey(newtx.transaction.to[0].add);
+            console.log("pre-encrypt in create!");
+            console.log("key should be: " + key.aes_secret);
+            newtx = this.app.wallet.signAndEncryptTransaction(newtx);
+            console.log("post-encrypt in create!");
+        } else {
+            newtx = this.app.wallet.signTransaction(newtx);
+        }
         return newtx;
 
     }
@@ -566,15 +563,15 @@ console.log("post-encrypt in create!");
         //    }
         //}
 
-	//
-	// save transaction if private chat
-	//
+        //
+        // save transaction if private chat
+        //
         for (let i = 0; i < tx.transaction.to.length; i++) {
-	  if (tx.transaction.to[i].add == app.wallet.returnPublicKey()) {
-            this.app.storage.saveTransaction(tx, txmsg.group_id);
-	    break;
-	  }
-	}
+            if (tx.transaction.to[i].add == app.wallet.returnPublicKey()) {
+                this.app.storage.saveTransaction(tx, txmsg.group_id);
+                break;
+            }
+        }
 
         let group = this.returnGroup(txmsg.group_id);
 
@@ -640,18 +637,20 @@ console.log("post-encrypt in create!");
                 let msg = "";
                 for (let z = 0; z < block.length; z++) {
                     let txmsg = block[z].returnMessage();
-		    if (txmsg.message) {
+                    if (txmsg.message) {
                         if (z > 0) { msg += '<br/>'; }
                         sender = block[z].transaction.from[0].add;
-	                if (txmsg.message.indexOf('<img') != 0) {
+                        if (txmsg.message.indexOf('<img') != 0) {
                             msg += this.app.browser.sanitize(txmsg.message);
                         } else {
-		            msg += txmsg.message.substring(0, txmsg.message.indexOf('>')+1);
- 		        }
-		        ts = txmsg.timestamp;
-		    }
-		}
-                html += `${SaitoUserTemplate({ app : this.app, publickey : sender, notice : msg, fourthelem : this.app.browser.returnTime(ts) })}`;
+                            msg += txmsg.message.substring(0, txmsg.message.indexOf('>') + 1);
+                        }
+                        ts = txmsg.timestamp;
+                    }
+                }
+                msg += `<div data-id="${group_id}" class="saito-userline-reply">reply <i class="fa-solid fa-reply"></i></div>`;
+
+                html += `${SaitoUserTemplate({ app: this.app, publickey: sender, notice: msg, fourthelem: `<div class="saito-chat-line-controls">` + this.app.browser.returnTime(ts) + `</div>` })}`;
             }
         }
 
@@ -724,8 +723,8 @@ console.log("post-encrypt in create!");
     // it makes a new group
     //
     returnGroupIdFromMembers(members = null) {
-      if (members == null) { return ""; }
-      return this.app.crypto.hash(`${members.join('_')}`);
+        if (members == null) { return ""; }
+        return this.app.crypto.hash(`${members.join('_')}`);
     }
     createChatGroup(members = null, name = null) {
 
@@ -736,7 +735,7 @@ console.log("post-encrypt in create!");
         //So the David + Richard == Richard + David
         members.sort();
 
-	// be careful changing this, other components
+        // be careful changing this, other components
         let id = this.returnGroupIdFromMembers(members);
 
         for (let i = 0; i < this.groups.length; i++) {
@@ -818,9 +817,9 @@ console.log("post-encrypt in create!");
     //
     addTransactionToGroup(group, tx) {
 
-	while (group.txs.length > 200) {
-	  group.txs.shift();
-	}
+        while (group.txs.length > 200) {
+            group.txs.shift();
+        }
 
         for (let i = 0; i < group.txs.length; i++) {
             if (group.txs[i].transaction.sig === tx.transaction.sig) {
@@ -844,12 +843,12 @@ console.log("post-encrypt in create!");
     // CHAT UTILITIES //
     ///////////////////
     returnGroupOrCreateFromMembers(members = null) {
-      if (!members) { return null; }
-      let group = this.returnGroup(this.returnGroupIdFromMembers(members));
-      if (group) {
-        return group; 
-      }
-      return this.createChatGroup(members);
+        if (!members) { return null; }
+        let group = this.returnGroup(this.returnGroupIdFromMembers(members));
+        if (group) {
+            return group;
+        }
+        return this.createChatGroup(members);
     }
 
     returnGroup(group_id) {

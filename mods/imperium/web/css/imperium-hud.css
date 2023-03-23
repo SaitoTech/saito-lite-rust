@@ -1,0 +1,8 @@
+
+.status-update {
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  align-items: center;
+  font-size: 1.8rem;
+}
+

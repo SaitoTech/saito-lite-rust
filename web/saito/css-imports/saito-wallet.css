@@ -324,7 +324,7 @@
 /********    Checking balance overlay       *************/
 
 .game-crypto-transfer-manager-container {
-  background: #fff;
+  background: var(--saito-background-color);
   padding: 1rem;
   width: 60rem;
   text-align: center;
@@ -340,6 +340,11 @@
 .from_address, .to_address {
   margin-bottom: 1rem;
   font-size: 2rem;
+}
+
+.game-crypto-transfer-manager-container .balance {
+  margin-bottom: 1.1rem;
+  font-size: 3.5rem;
 }
 
 

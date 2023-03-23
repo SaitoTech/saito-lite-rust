@@ -871,12 +871,12 @@ class RedSquare extends ModTemplate {
         // add unknown children if possible
         //
         for (let i = 0; i < this.unknown_children.length; i++) {
-	  if (this.unknown_children[i].thread_id === tweet.tx.transaction.sig) {
+          if (this.unknown_children[i].thread_id === tweet.tx.transaction.sig) {
             if (this.tweets[insertion_index].addTweet(this.unknown_children[i]) == 1) {
               this.unknown_children.splice(i, 1);
               i--;
             }
-	  }
+          }
         }
 
         //
@@ -998,16 +998,6 @@ class RedSquare extends ModTemplate {
 
     if (app.BROWSER != 1) {
 
-      // required og properties for link preview
-      let og_tags = {
-        'og:exists': false,
-        'og:title': '',
-        'og:description': '',
-        'og:url': '',
-        'og:image': '',
-        'og:site_name': ''
-      };
-
       // fetch source code for link inside tweet
       // (sites which uses firewall like Cloudflare shows Cloudflare loading
       //  page when fetching page source)
@@ -1018,6 +1008,17 @@ class RedSquare extends ModTemplate {
           .then(data => {
 
             console.log("fetched link now processing...");
+
+            // required og properties for link preview
+            let og_tags = {
+              'og:exists': false,
+              'og:title': '',
+              'og:description': '',
+              'og:url': '',
+              'og:image': '',
+              'og:site_name': ''
+            };
+
 
             // prettify html - unminify html if minified
             let html = prettify(data);
@@ -1393,67 +1394,67 @@ class RedSquare extends ModTemplate {
 
     }
 
-/*****
-    //
-    // get the parent posts
-    //
-    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 1400000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 4`;
-    let params = {};
-    let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
-
-    for (let i = 0; i < rows.length; i++) {
-
-      //
-      // create the transaction
-      //
-      let tx = new saito.default.transaction();
-      tx.deserialize_from_web(this.app, rows[i].tx);
-
-let txmsg = tx.returnMessage();
-console.log("TX: ");
-console.log(rows[i].tx.msg);
-
-      tx.optional.num_replies = rows[i].num_replies;
-      tx.optional.num_retweets = rows[i].num_retweets;
-      tx.optional.num_likes = rows[i].num_likes;
-      tx.optional.flagged = rows[i].flagged;
-      let hexstring = tx.serialize_to_web(this.app);
-      hex_entries.push(hexstring);
-
-    }
-
-    //
-    // get the most engaging children
-    //
-    for (let z = 0; z < rows.length; z++) {
-
-      //
-      // fetch best child
-      //
-      let sql2 = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 1400000 AND tx_size > 1500 AND parent_id = $parent_id ORDER BY num_likes, num_replies DESC LIMIT 1`;
-      let params2 = {
-        $parent_id : rows[i].sig
-      };
-      let rows2 = await this.app.storage.queryDatabase(sql2, params2, "redsquare");
-
-      for (let ii = 0; ii < rows.length; ii++) {
-
+    /*****
         //
-        // create the transaction
+        // get the parent posts
         //
-        let tx = new saito.default.transaction();
-        tx.deserialize_from_web(this.app, rows[ii].tx);
-        tx.optional.num_replies = rows[ii].num_replies;
-        tx.optional.num_retweets = rows[ii].num_retweets;
-        tx.optional.num_likes = rows[ii].num_likes;
-        tx.optional.flagged = rows[ii].flagged;
-        let hexstring = tx.serialize_to_web(this.app);
-        hex_entries.push(hexstring);
-
-      }
-
-    }
-*****/
+        let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 1400000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 4`;
+        let params = {};
+        let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
+    
+        for (let i = 0; i < rows.length; i++) {
+    
+          //
+          // create the transaction
+          //
+          let tx = new saito.default.transaction();
+          tx.deserialize_from_web(this.app, rows[i].tx);
+    
+    let txmsg = tx.returnMessage();
+    console.log("TX: ");
+    console.log(rows[i].tx.msg);
+    
+          tx.optional.num_replies = rows[i].num_replies;
+          tx.optional.num_retweets = rows[i].num_retweets;
+          tx.optional.num_likes = rows[i].num_likes;
+          tx.optional.flagged = rows[i].flagged;
+          let hexstring = tx.serialize_to_web(this.app);
+          hex_entries.push(hexstring);
+    
+        }
+    
+        //
+        // get the most engaging children
+        //
+        for (let z = 0; z < rows.length; z++) {
+    
+          //
+          // fetch best child
+          //
+          let sql2 = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 1400000 AND tx_size > 1500 AND parent_id = $parent_id ORDER BY num_likes, num_replies DESC LIMIT 1`;
+          let params2 = {
+            $parent_id : rows[i].sig
+          };
+          let rows2 = await this.app.storage.queryDatabase(sql2, params2, "redsquare");
+    
+          for (let ii = 0; ii < rows.length; ii++) {
+    
+            //
+            // create the transaction
+            //
+            let tx = new saito.default.transaction();
+            tx.deserialize_from_web(this.app, rows[ii].tx);
+            tx.optional.num_replies = rows[ii].num_replies;
+            tx.optional.num_retweets = rows[ii].num_retweets;
+            tx.optional.num_likes = rows[ii].num_likes;
+            tx.optional.flagged = rows[ii].flagged;
+            let hexstring = tx.serialize_to_web(this.app);
+            hex_entries.push(hexstring);
+    
+          }
+    
+        }
+    *****/
 
 
 

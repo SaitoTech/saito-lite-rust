@@ -40,6 +40,8 @@ class PeerManager {
 
 
         app.connection.on('stun-event-message', (data) => {
+
+
             if (data.room_code !== this.room_code) {
                 return;
             }
@@ -48,7 +50,13 @@ class PeerManager {
                 this.createPeerConnection(data.public_key, 'offer');
             } else if (data.type === 'peer-left') {
                 this.removePeerConnection(data.public_key);
-            } else {
+            } else if (data.type === "toggle-audio") {
+                // console.log(data);
+                app.connection.emit('toggle-peer-audio-status', data)
+            } else if (data.type === "toggle-video") {
+                app.connection.emit('toggle-peer-video-status', data)
+            }
+            else {
                 let peerConnection = this.peers.get(data.public_key);
                 if (!peerConnection) {
                     this.createPeerConnection(data.public_key);
@@ -69,17 +77,6 @@ class PeerManager {
             if (this.videoEnabled === true) {
                 this.localStream.getVideoTracks()[0].enabled = false;
                 this.app.connection.emit("mute", 'video', 'local');
-                try {
-                    this.peers.forEach(value => {
-                        // for (let i in this.mod.peer_connections) {
-                        //     this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "mute", kind: 'video' }))
-                        // }
-                    })
-
-                } catch (error) {
-
-                }
-
                 this.videoEnabled = false;
                 document.querySelector('.video_control').classList.remove('fa-video')
                 document.querySelector('.video_control').classList.add('fa-video-slash')
@@ -125,84 +122,43 @@ class PeerManager {
                     this.localStream.getVideoTracks()[0].enabled = true;
                     this.app.connection.emit("unmute", 'video', 'local');
                 }
-                try {
-                    // for (let i in this.mod.peer_connections) {
-                    //     this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "unmute", kind: 'video' }))
-                    // }
-                } catch (error) {
-
-                }
                 this.videoEnabled = true;
             }
+
+            let data = {
+                room_code: this.room_code,
+                type: 'toggle-video',
+                enabled: this.videoEnabled,
+            }
+            this.app.connection.emit('stun-send-message-to-server', data);
         })
+
         app.connection.on('stun-toggle-audio', async () => {
             // if video is enabled
             if (this.audioEnabled === true) {
                 this.localStream.getAudioTracks()[0].enabled = false;
                 this.app.connection.emit("mute", 'audio', 'local');
-                try {
-                    this.peers.forEach(value => {
-                        // for (let i in this.mod.peer_connections) {
-                        //     this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "mute", kind: 'video' }))
-                        // }
-                    })
-
-                } catch (error) {
-
-                }
                 this.audioEnabled = false;
                 document.querySelector('.audio_control').classList.remove('fa-microphone')
                 document.querySelector('.audio_control').classList.add('fa-microphone-slash')
-
-
             }
-
             else {
                 this.localStream.getAudioTracks()[0].enabled = true;
                 this.audioEnabled = true;
                 document.querySelector('.audio_control').classList.add('fa-microphone')
                 document.querySelector('.audio_control').classList.remove('fa-microphone-slash')
-                // if (!this.localStream.getAudioTracks()[0]) {
-                //     // start an audio stream
-                //     let localStream = await navigator.mediaDevices.getUserMedia({ audio: true })
-                //     let track = localStream.getAudioTracks()[0];
-                //     console.log(track, "these are the tracks")
-
-                //     this.peers.forEach((peerConnection, key) => {
-                //         const audioSenders = peerConnection.getSenders().filter(sender => sender.track && sender.track.kind === 'audio');
-                //         console.log(audioSenders, 'senders');
-
-                //         if (audioSenders.length > 0) {
-                //             audioSenders.forEach(sender => {
-                //                 sender.replaceTrack(track);
-                //             })        
-                //         } else {
-                //             peerConnection.addTrack(track);
-                //         }
-                //         this.renegotiate(key);
-                //     })
-
-                //     document.querySelector('.audio_control').classList.add('fa-microphone')
-                //     this.audioEnabled = true;
-
-                // } else {
-                //     this.localStream.getAudioTracks()[0].enabled = true;
-                //     // this.app.connection.emit("unmute", 'video', 'local');
-                //     this.audioEnabled = true;
-                // }
-                // try {
-                //     // for (let i in this.mod.peer_connections) {
-                //     //     this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "unmute", kind: 'video' }))
-                //     // }
-                // } catch (error) {
-
-                // }
-                // this.videoEnabled = true;
             }
+
+            let data = {
+                room_code: this.room_code,
+                type: 'toggle-audio',
+                enabled: this.audioEnabled,
+            }
+            this.app.connection.emit('stun-send-message-to-server', data);
         })
 
         app.connection.on('show-chat-manager', async () => {
-            console.log(this, "peer")
+            // console.log(this, "peer")
             await this.showChatManager();
             if (this.to_join) {
                 this.join()
@@ -211,7 +167,6 @@ class PeerManager {
             let sound = new Audio('/videocall/audio/enter-call.mp3');
             sound.play();
         })
-
         app.connection.on('update-media-preference', (kind, state) => {
             if (kind === "audio") {
                 this.audioEnabled = state
@@ -230,7 +185,7 @@ class PeerManager {
     async showChatManager() {
         // emit events to show chatmanager;
         // get local stream;
-        console.log('video enableddd?', this.videoEnabled)
+        // console.log('video enableddd?', this.videoEnabled)
 
         this.localStream = await navigator.mediaDevices.getUserMedia({ video: this.videoEnabled, audio: true });
         this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
@@ -279,6 +234,7 @@ class PeerManager {
                     console.error('Error adding remote candidate:', error);
                 });
         }
+
     }
 
 
@@ -308,7 +264,7 @@ class PeerManager {
 
         const remoteStream = new MediaStream();
         peerConnection.addEventListener('track', (event) => {
-            console.log("trackss", event.track, "stream :", event.streams);
+            // console.log("trackss", event.track, "stream :", event.streams);
             if (event.streams.length === 0) {
                 remoteStream.addTrack(event.track);
             } else {
@@ -326,27 +282,27 @@ class PeerManager {
 
         this.localStream.getTracks().forEach((track) => {
             peerConnection.addTrack(track, this.localStream);
-            console.log('track local ', track)
+            // console.log('track local ', track)
         });
 
 
         peerConnection.addEventListener('connectionstatechange', () => {
             if (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected') {
-                
-                    setTimeout(() => {
-                        console.log('sending offer');
-                        this.reconnect(peerId, type);
-                    }, 10000);
+
+                setTimeout(() => {
+                    // console.log('sending offer');
+                    this.reconnect(peerId, type);
+                }, 10000);
 
             }
-            if(peerConnection.connectionState === "connected"){
+            if (peerConnection.connectionState === "connected") {
                 let sound = new Audio('/videocall/audio/enter-call.mp3');
                 sound.play();
             }
             // if(peerConnection.connectionState === "disconnected"){
-              
+
             // }
-          
+
 
             this.app.connection.emit('stun-update-connection-message', this.room_code, peerId, peerConnection.connectionState);
         });
@@ -377,6 +333,7 @@ class PeerManager {
 
             if (peerConnection && peerConnection.connectionState === 'connected') {
                 console.log('Reconnection successful');
+                // remove connection message
                 return;
             }
 
@@ -419,7 +376,7 @@ class PeerManager {
             return;
         }
 
-        console.log('signalling state, ', peerConnection.signalingState)
+        // console.log('signalling state, ', peerConnection.signalingState)
         if (peerConnection.signalingState !== 'stable') {
             if (retryCount < maxRetries) {
                 console.log(`Signaling state is not stable, will retry in ${retryDelay} ms (attempt ${retryCount + 1}/${maxRetries})`);
@@ -481,7 +438,7 @@ class PeerManager {
         this.app.connection.emit('stun-send-message-to-server', data);
     }
 
-    signalingChannel(event, data) {
+    sendSignalingMessage(data) {
 
     }
 }

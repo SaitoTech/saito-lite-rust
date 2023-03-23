@@ -1,5 +1,26 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const JSON = require('json-bigint');
+const RulesOverlay = require('./lib/overlays/rules');
+const FactionSheetOverlay = require('./lib/overlays/faction-sheet');
+const StrategyCardOverlay = require('./lib/overlays/strategy-card');
+const CombatOverlay = require('./lib/overlays/combat');
+const MovementOverlay = require('./lib/overlays/movement');
+const TechTreeOverlay = require('./lib/overlays/tech-tree');
+const FactionsOverlay = require('./lib/overlays/factions');
+const ProductionOverlay = require('./lib/overlays/production');
+const UnitsOverlay = require('./lib/overlays/units');
+const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
+const InfluenceSelectionOverlay = require('./lib/overlays/influence-selection');
+const SenateOverlay = require('./lib/overlays/senate');
+const SpaceCombatOverlay = require('./lib/overlays/space-combat');
+const GroundCombatOverlay = require('./lib/overlays/ground-combat');
+const BombardmentOverlay = require('./lib/overlays/bombardment');
+const AntiFighterBarrageOverlay = require('./lib/overlays/anti-fighter-barrage');
+const UnitTemplate = require('./lib/unit.template');
+const Unit = require('./lib/unit');
+const TokenBar = require('./lib/tokenbar');
+const Dashboard = require('./lib/dashboard');
+
 
 class Imperium extends GameTemplate {
   
@@ -14,14 +35,33 @@ class Imperium extends GameTemplate {
     this.categories	  = "Games Boardgame Strategy";
     this.minPlayers       = 2;
     this.maxPlayers       = 6;
-    //this.status           = "Beta";
 
     this.boardWidth   = 1900;
   
     this.rmoves           = [];
     this.totalPlayers     = 2;
 
-
+    //
+    // components and overlays
+    //
+    this.rules_overlay = new RulesOverlay(this.app, this);
+    this.faction_sheet_overlay = new FactionSheetOverlay(this.app, this);
+    this.strategy_card_overlay = new StrategyCardOverlay(this.app, this);
+    this.combat_overlay = new CombatOverlay(this.app, this);
+    this.movement_overlay = new MovementOverlay(this.app, this);
+    this.senate_overlay = new SenateOverlay(this.app, this);
+    this.production_overlay = new ProductionOverlay(this.app, this);
+    this.units_overlay = new UnitsOverlay(this.app, this);
+    this.tech_tree_overlay = new TechTreeOverlay(this.app, this);
+    this.factions_overlay = new FactionsOverlay(this.app, this);
+    this.resource_selection_overlay = new ResourceSelectionOverlay(this.app, this);
+    this.influence_selection_overlay = new InfluenceSelectionOverlay(this.app, this);
+    this.space_combat_overlay = new SpaceCombatOverlay(this.app, this);
+    this.ground_combat_overlay = new GroundCombatOverlay(this.app, this);
+    this.bombardment_overlay = new BombardmentOverlay(this.app, this);
+    this.anti_fighter_barrage_overlay = new AntiFighterBarrageOverlay(this.app, this);
+    this.dashboard = new Dashboard(this.app, this, ".dashboard");
+    this.tokenbar = new TokenBar(this.app, this, ".hud-header");
 
     //
     // specific to THIS game

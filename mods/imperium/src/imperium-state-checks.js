@@ -850,6 +850,9 @@
 
   returnShipInformation(ship) {
 
+console.log("ASKED FOR SHIP INFORMATION");
+console.log(JSON.stringify(ship));
+
     let text = ship.name;
 
     for (let i = 1; i < ship.strength; i++) {
@@ -2849,11 +2852,20 @@
     if (!sys) { return 0; }
 
     for (let i = 0; i < sys.s.units[player-1].length; i++) {
-      if (sys.s.units[player-1][i].type == unittype) { return 1; }
+      if (sys.s.units[player-1][i].type == unittype) { 
+	// as long as it isn't destroyed
+	if (sys.s.units[player-1][i].destroyed == 0 && sys.s.units[player-1][i].strength > 0) {
+	  return 1;
+	}
+      }
     }
     for (let i = 0; i < sys.p.length; i++) {
       for (let ii = 0; ii < sys.p[i].units[player-1].length; ii++) {
-        if (sys.p[i].units[player-1][ii].type == unittype) { return 1; }
+        if (sys.p[i].units[player-1][ii].type == unittype) { 
+	  if (sys.p[i].units[player-1][i].destroyed == 0 && sys.p[i].units[player-1][i].strength > 0) {
+	    return 1;
+	  }
+	}
       }
     }
     return 0;
