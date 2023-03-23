@@ -542,14 +542,13 @@
   margin-top: 4rem;
 }
 
-
 .chat-settings {
   display: flex;
   padding: 2rem;
   border-radius: 1rem;
   z-index: 40;
-
 }
+
 
 .chat-settings-preview-section {
   display: flex;
@@ -701,7 +700,7 @@
   }
 
   .chat-settings video {
-    height: 20rem;
+    height: 18rem;
   }
   .chat-settings-preview-section {
     margin-right: 0;
