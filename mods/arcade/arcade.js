@@ -365,16 +365,27 @@ class Arcade extends ModTemplate {
       }
     }
     if (type === 'saito-header') {
-      return [
-        {
+      let x = [];
+      if (!this.browser_active){
+        x.push({
+          text: "Arcade",
+          icon: "fa-solid fa-square",
+          rank: 15,
+          callback: function (app, id) {
+            window.location = "/arcade";
+          }
+        });
+      }
+ 
+      x.push({
           text: "Games",
           icon: this.icon || "fas fa-gamepad",
-	  rank: 10,
+	        rank: 10,
           callback: function (app, id) {
             app.connection.emit("arcade-launch-game-selector", {});
           }
-        }
-      ]
+        });
+      return x;
     }
     if (type === 'saito-floating-menu') {
       let x = [];

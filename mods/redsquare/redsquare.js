@@ -155,15 +155,18 @@ class RedSquare extends ModTemplate {
     }
     if (type === 'saito-header') {
       let x = [];
-      x.push({
-        text: "RedSquare",
-        icon: "fa-solid fa-square",
-        rank: 20,
-        callback: function (app, id) {
-          window.location = "/redsquare";
-        }
-      });
-      if (this.app.browser.isMobileBrowser()) {
+      if (!this.browser_active){
+        x.push({
+          text: "RedSquare",
+          icon: "fa-solid fa-square",
+          rank: 20,
+          callback: function (app, id) {
+            window.location = "/redsquare";
+          }
+        });
+      }
+      //Suggestion -- these are covered by the floating menu
+      /*if (this.app.browser.isMobileBrowser()) {
         x.push({
           text: "Notifications",
           icon: "fas fa-bell",
@@ -180,7 +183,8 @@ class RedSquare extends ModTemplate {
             window.location = "/redsquare#profile";
           }
         });
-      }
+      }*/
+
       return x;
     }
 

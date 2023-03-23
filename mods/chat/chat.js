@@ -150,7 +150,10 @@ class Chat extends ModTemplate {
                 if (this.chat_manager_overlay == null) { this.chat_manager_overlay = new ChatManagerOverlay(this.app, this); }
                 return this.chat_manager_overlay;
             case 'saito-header':
-                if (this.app.browser.isMobileBrowser()) {
+                //TODO:
+                //Since the left-sidebar chat-manager disappears at screens less than 1200px wide
+                //We need another way to display/open it...
+                if (this.app.browser.isMobileBrowser() /*|| (this.app.BROWSER && window.innerWidth < 1200)*/) {
                     return [{
                         text: "Chat",
                         icon: "fas fa-comments",
