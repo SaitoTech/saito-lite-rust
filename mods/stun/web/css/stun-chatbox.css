@@ -525,10 +525,6 @@
   background-color: #000;
   color: var(--saito-white);
   display: flex;
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch; /* Added -webkit-overflow-scrolling */
-  touch-action: auto; /* Added touch-action */
-  overscroll-behavior: contain; /* Added overscroll-behavior */
   justify-content: center;
   align-items: center;
   width: 100vw;
@@ -538,6 +534,14 @@
   color: var(--saito-white);
   top: 0;
   z-index: 200;
+}
+
+.chat-settings-wrapper {
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
 }
 
 
