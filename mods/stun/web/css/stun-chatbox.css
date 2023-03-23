@@ -526,6 +526,7 @@
   color: var(--saito-white);
   display: flex;
   overflow-y: scroll;
+  -webkit-overflow-scrolling: touch; /* Added -webkit-overflow-scrolling */
   touch-action: auto; /* Added touch-action */
   overscroll-behavior: contain; /* Added overscroll-behavior */
   justify-content: center;
@@ -538,6 +539,7 @@
   top: 0;
   z-index: 200;
 }
+
 
 .chat-settings {
   display: flex;
