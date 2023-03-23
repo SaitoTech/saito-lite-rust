@@ -205,7 +205,7 @@ class RedSquare extends ModTemplate {
 
       x.push({
         text: "Refresh",
-        icon: "fa-solid fa-refresh",
+        icon: "fa-solid fa-house",
         allowed_mods: ['redsquare'],
         disallowed_mods: ['arcade'],
         rank: 5,

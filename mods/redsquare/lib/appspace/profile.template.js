@@ -44,22 +44,25 @@ console.log(">");
 	  <div class="redsquare-appspace-profile-container">
             <div class="redsquare-appspace-profile">
 	`;
+  if (identifier) {
+    html += `
+            <div>Username:</div>
+            <div>${identifier}</div>
+            <div></div>
+    `;
+  }
 	if (email) {
 	  html += `	
             <div>Email:</div>
-	    <div>${email}</div>
-	  `;
-	}
-	if (identifier) {
-	  html += `
-            <div>Username:</div>
-            <div>${identifier}</div>
+	          <div>${email}</div>
+            <div></div>
 	  `;
 	}
 	if (publickey) {
 	  html += `
             <div>Public Key:</div>
-            <div>${publickey} <span class="copy-public-key">  <i class="fas fa-copy"></i></span></div>
+            <div>${publickey}</div>
+            <div class="copy-public-key"><i class="fas fa-copy"></i></div>
 	  `;
 	}
 
