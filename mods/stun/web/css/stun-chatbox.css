@@ -123,6 +123,7 @@
 }
 
 .stunx-chatbox .video-box-container-large {
+  border-radius: .5rem;
 }
 
 #localStream {
@@ -529,7 +530,6 @@
   overscroll-behavior: contain; /* Added overscroll-behavior */
   justify-content: center;
   align-items: center;
-  height: 100vh;
   width: 100vw;
   margin: 0;
   position: fixed;
@@ -543,6 +543,7 @@
   padding: 2rem;
   border-radius: 1rem;
   z-index: 40;
+  margin-top: 8rem;
 }
 
 .chat-settings-preview-section {
@@ -713,17 +714,23 @@
   }
  .video-call-info > p {
     font-size: 1.2rem;
-    max-width: 50px;
+    /* max-width: 50px; */
     margin-right: .5rem;
   }
 
   .expanded-video {
     width: 100%;
+
     margin-right: 0;
   }
   .side-videos {
     position: absolute;
     right: 0;
+  }
+
+
+  .side-videos .video-call-info > p{
+        max-width: 50px;
   }
 
 }
