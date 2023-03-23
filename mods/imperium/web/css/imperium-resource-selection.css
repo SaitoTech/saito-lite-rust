@@ -1,4 +1,49 @@
 
+.influence-selection-overlay {
+  display: block;
+  width: 90vw;
+  height: auto;
+  max-height: 90vh;
+  background-image: url(/imperium/img/backgrounds/space_background.jpg);
+  background-size: cover;
+  padding: 2rem;
+}
+
+.influence-selection-title {
+  font-size: 5rem;
+  color: white;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  font-family: 'bank-gothic';
+}
+
+.influence-selection-cards {
+  display: grid;
+  grid-template-columns: repeat( auto-fit, minmax(25rem, 1fr) );
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 4rem;
+  justify-content: center;
+  align-items: center;
+  justify-items: center;
+}
+
+.influence-selection-goods {
+  text-align: center;
+  width: 60rem;
+  margin-left: auto;
+  margin-right: auto;
+  height: 15rem;
+  font-size: 4rem;
+  padding-top: 5.5rem;
+  font-family: 'orbitron-medium';
+  color: white;
+  background-color: #000A;
+  border-radius: 1rem;
+  margin-top: 4rem;
+}
+
 .resource-selection-overlay {
   display: block;
   width: 90vw;
@@ -43,6 +88,7 @@
   border-radius: 1rem;
   margin-top: 4rem;
 }
+
 
 
 

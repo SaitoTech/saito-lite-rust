@@ -36,7 +36,7 @@ class InfluenceSelectionOverlay {
     //
     for (let i = 0; i < cards.length; i++) {
       this.app.browser.addElementToSelector(
-        '<div class="planet-card id="'+cards[i]+'" style="background-image: url('+this.mod.game.planets[cards[i]].img+');"></div>',
+        '<div class="planet-card planet-card-'+cards[i]+'" id="'+cards[i]+'" style="background-image: url('+this.mod.game.planets[cards[i]].img+');"></div>',
 	".influence-selection-cards"
       );
     }

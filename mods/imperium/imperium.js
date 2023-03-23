@@ -11782,6 +11782,7 @@ console.log("qe: " + qe);
         game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
       }
     });
+/****
     this.menu.addSubMenuOption("game-cards", {
       text : "Tech Tree",
       id : "game-tech-dependencies",
@@ -11791,16 +11792,19 @@ console.log("qe: " + qe);
         game_mod.handleTechMenuItem();
       }
     });
+****/
     this.menu.addSubMenuOption("game-cards", {
       text : "Tech",
       id : "game-tech-cardlist",
       class : "game-tech-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-	let tech = game_mod.returnTechnology();
-        let t2 = [];
-        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/background/tech-upgrades.jpg" , padding : "50px"});
+	game_mod.tech_tree_overlay.render();
+
+//	let tech = game_mod.returnTechnology();
+//        let t2 = [];
+//        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
+//        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/tech-upgrades.jpg" , padding : "50px"});
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -12102,8 +12106,8 @@ console.log("qe: " + qe);
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-//      let sys = this.returnSectorAndPlanets("4_4");
-//      sys.p[0].owner = 1;
+      let sys = this.returnSectorAndPlanets("4_4");
+      sys.p[0].owner = 1;
 
 
       //
@@ -13892,6 +13896,8 @@ handleSystemsMenuItem() {
 
 	    let notice = "Players still to move: <ul>";
 	    let am_i_still_to_move = 0;
+console.log("STILL TO MOVE: " + JSON.stringify(still_to_move));
+console.log("PLAYERS: " + JSON.stringify(this.game.players));
 	    for (let i = 0; i < still_to_move.length; i++) {
 	      for (let z = 0; z < this.game.players.length; z++) {
 		if (this.game.players[z] === still_to_move[i]) {
@@ -13904,7 +13910,6 @@ handleSystemsMenuItem() {
 	    if (am_i_still_to_move == 0) {
 	      this.updateStatus(notice);
 	    }
-
 
   	    if (this.game.confirms_needed <= this.game.confirms_received) {
 	      this.resetConfirmsNeeded(0);
@@ -23978,6 +23983,9 @@ playerSelectResources(cost, mycallback) {
   this.lockInterface();
 
 
+console.log("=======================");
+console.log(JSON.stringify(array_of_cards));
+
   let selectResource = (action2) => {
 
     let tmpx = action2.split("_");
@@ -23991,6 +23999,8 @@ playerSelectResources(cost, mycallback) {
       }
     }
 
+console.log("idx: " + idx);
+
     //
     // handle spending trade goods
     //
@@ -23999,7 +24009,6 @@ playerSelectResources(cost, mycallback) {
         imperium_self.addMove("expend\t" + imperium_self.game.player + "\tgoods\t1");
         total_trade_goods--;
         selected_cost += 1;
-
         if (1 == total_trade_goods) {
           $('#trade_goods').html(('' + total_trade_goods + ' trade good'));
         } else {
@@ -24011,18 +24020,16 @@ playerSelectResources(cost, mycallback) {
       array_of_cards_to_exhaust.push(array_of_cards[idx]);
       $(divid).off();
       $(divid).css('opacity', '0.2');
+console.log("AOC[idx]: " + array_of_cards[idx]);
+console.log("resources: " + imperium_self.game.planets[array_of_cards[idx]].resources);
       selected_cost += parseInt(imperium_self.game.planets[array_of_cards[idx]].resources);
     }
 
-    if (cost <= selected_cost) { 
+console.log(cost + " --- " + selected_cost);
 
-      if (!imperium_self.mayUnlockInterface()) {
-//        salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//        return;
-      }
+    if (cost <= selected_cost) { 
       imperium_self.unlockInterface();
       $('.cardchoice , .textchoice').off();
-
       mycallback(1); 
     }
   }

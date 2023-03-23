@@ -124,6 +124,7 @@
         game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
       }
     });
+/****
     this.menu.addSubMenuOption("game-cards", {
       text : "Tech Tree",
       id : "game-tech-dependencies",
@@ -133,16 +134,19 @@
         game_mod.handleTechMenuItem();
       }
     });
+****/
     this.menu.addSubMenuOption("game-cards", {
       text : "Tech",
       id : "game-tech-cardlist",
       class : "game-tech-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-	let tech = game_mod.returnTechnology();
-        let t2 = [];
-        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/background/tech-upgrades.jpg" , padding : "50px"});
+	game_mod.tech_tree_overlay.render();
+
+//	let tech = game_mod.returnTechnology();
+//        let t2 = [];
+//        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
+//        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/tech-upgrades.jpg" , padding : "50px"});
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -444,8 +448,8 @@
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-//      let sys = this.returnSectorAndPlanets("4_4");
-//      sys.p[0].owner = 1;
+      let sys = this.returnSectorAndPlanets("4_4");
+      sys.p[0].owner = 1;
 
 
       //

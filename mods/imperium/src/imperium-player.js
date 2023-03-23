@@ -4064,6 +4064,9 @@ playerSelectResources(cost, mycallback) {
   this.lockInterface();
 
 
+console.log("=======================");
+console.log(JSON.stringify(array_of_cards));
+
   let selectResource = (action2) => {
 
     let tmpx = action2.split("_");
@@ -4077,6 +4080,8 @@ playerSelectResources(cost, mycallback) {
       }
     }
 
+console.log("idx: " + idx);
+
     //
     // handle spending trade goods
     //
@@ -4085,7 +4090,6 @@ playerSelectResources(cost, mycallback) {
         imperium_self.addMove("expend\t" + imperium_self.game.player + "\tgoods\t1");
         total_trade_goods--;
         selected_cost += 1;
-
         if (1 == total_trade_goods) {
           $('#trade_goods').html(('' + total_trade_goods + ' trade good'));
         } else {
@@ -4097,18 +4101,16 @@ playerSelectResources(cost, mycallback) {
       array_of_cards_to_exhaust.push(array_of_cards[idx]);
       $(divid).off();
       $(divid).css('opacity', '0.2');
+console.log("AOC[idx]: " + array_of_cards[idx]);
+console.log("resources: " + imperium_self.game.planets[array_of_cards[idx]].resources);
       selected_cost += parseInt(imperium_self.game.planets[array_of_cards[idx]].resources);
     }
 
-    if (cost <= selected_cost) { 
+console.log(cost + " --- " + selected_cost);
 
-      if (!imperium_self.mayUnlockInterface()) {
-//        salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//        return;
-      }
+    if (cost <= selected_cost) { 
       imperium_self.unlockInterface();
       $('.cardchoice , .textchoice').off();
-
       mycallback(1); 
     }
   }

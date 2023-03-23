@@ -194,6 +194,8 @@
 
 	    let notice = "Players still to move: <ul>";
 	    let am_i_still_to_move = 0;
+console.log("STILL TO MOVE: " + JSON.stringify(still_to_move));
+console.log("PLAYERS: " + JSON.stringify(this.game.players));
 	    for (let i = 0; i < still_to_move.length; i++) {
 	      for (let z = 0; z < this.game.players.length; z++) {
 		if (this.game.players[z] === still_to_move[i]) {
@@ -206,7 +208,6 @@
 	    if (am_i_still_to_move == 0) {
 	      this.updateStatus(notice);
 	    }
-
 
   	    if (this.game.confirms_needed <= this.game.confirms_received) {
 	      this.resetConfirmsNeeded(0);

@@ -9,8 +9,26 @@ class TechTreeOverlay {
     this.overlay = new SaitoOverlay(this.app, this.mod, false);
   }
 
-  render() {
-    this.overlay.show(ImperiumTechTreeOverlayTemplate());
+  render(style=0) {
+
+    //
+    // list all tech
+    //
+    let tech = this.mod.returnTechnology();
+
+    let normal_tech = [];
+    let unit_tech = [];
+    let faction_tech = [];
+    let faction_unit = [];
+
+    for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { normal_tech.push(tech[x]); } }
+    for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { unit_tech.push(tech[x]); } }
+    for (let x in tech) { if (tech[x].type == "special" && tech[x].unit != 1) { faction_tech.push(tech[x]); } }
+    for (let x in tech) { if (tech[x].type == "special" && tech[x].unit == 1) { faction_unit.push(tech[x]); } }
+
+    this.overlay.showCardSelectionOverlay(this.app, this.mod, normal_tech, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"}); 
+
+    //this.overlay.show(ImperiumTechTreeOverlayTemplate());
     this.attachEvents();
   }
 

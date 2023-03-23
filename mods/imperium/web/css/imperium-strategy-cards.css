@@ -1,4 +1,13 @@
 
+.strategy_card_state {
+  height: 5rem;
+  padding: 1rem;
+  width: min-content;
+  z-index: 9000;
+  color: white;
+  position: relative;
+  margin-left: 0.5rem;
+}
 
 .flash-color {
   filter: none !important;

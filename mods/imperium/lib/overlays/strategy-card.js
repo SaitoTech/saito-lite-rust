@@ -44,9 +44,11 @@ class StrategyCardOverlay {
         this.app.browser.addElementToDom(strategy_card_bonus_html, document.getElementById(s));
       }
 
+
       let thiscard = this.mod.strategy_cards[s];
       for (let i = 0; i < this.mod.game.state.players_info.length; i++) {
         if (this.mod.game.state.players_info[i].strategy.includes(s)) {
+console.log("A: " + JSON.stringify(this.mod.game.state.players_info[i].strategy));
           strategy_card_state = "unplayed";
           strategy_card_player = (i+1);
           if (this.mod.game.state.players_info[i].strategy_cards_played.includes(s)) {
@@ -58,11 +60,16 @@ class StrategyCardOverlay {
       card_html = '';
       if (strategy_card_state != "not picked") {
         card_html += `
-          <div class="strategy_card_state p${strategy_card_player}">
+          <div class="strategy_card_state p${strategy_card_player} bk">
             <div class="strategy_card_state_internal bk">${strategy_card_state}</div>
           </div>
        `;
       }
+
+console.log("X: " + strategy_card_state);
+console.log("ID: " + s);
+console.log("adding: " + card_html);
+
 
       this.app.browser.addElementToDom(card_html, document.getElementById(s));
 

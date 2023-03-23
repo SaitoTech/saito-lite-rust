@@ -764,27 +764,27 @@
   border: 1px solid var(--p6);
 }
 
-.p1 .bk {
+.p1 .bk , .p1.bk {
   background-color: var(--p1);
 }
 
-.p2 .bk {
+.p2 .bk , .p2.bk {
   background-color: var(--p2);
 }
 
-.p3 .bk {
+.p3 .bk , .p3.bk {
   background-color: var(--p3);
 }
 
-.p4 .bk {
+.p4 .bk , .p4.bk {
   background-color: var(--p4);
 }
 
-.p5 .bk {
+.p5 .bk , .p5.bk {
   background-color: var(--p5);
 }
 
-.p6 .bk {
+.p6 .bk , .p6.bk {
   background-color: var(--p6);
 }
 
