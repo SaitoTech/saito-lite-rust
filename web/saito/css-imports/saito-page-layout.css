@@ -69,6 +69,11 @@
 }
 
 @media screen and (max-width: 900px) {
+  .saito-container {
+    padding: 0;
+    grid-template-columns: 1fr;
+  }
+
   .saito-main {
     min-width: 0;
     width: 100vw !important;
