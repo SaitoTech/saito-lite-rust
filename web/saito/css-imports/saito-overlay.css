@@ -23,26 +23,46 @@
     min-height: 10%;
     max-height: 100vh;
     max-width: 100vw;
+
 }
 
+.saito-overlay > div{
+    box-shadow: 3px 3px 15px 2px var(--saito-black);
+}
+
+/* Clickable container for close icon */
 .saito-overlay-closebox {
     position: absolute;
     width: 3rem;
     height: 3rem;
-    right: -1.3rem;
     border-radius: 50%;
-    top: -1.5rem;
-    background-color: var(--saito-white);
     z-index: 100;
+    top: -1.5rem;
+    right: -1.5rem;
+    display: none;
+    transition: all 0.3s;
 }
 
+
+.maximized-overlay .saito-overlay-closebox {
+    top: 1rem;
+    right: 1rem;
+}
+
+/* Close icon */
 .saito-overlay-closebox-btn {
     cursor: pointer;
     display: block;
-    height: 3.2rem;
-    width: 3.2rem;
+    height: 3rem;
+    width: 3rem;
     color: var(--saito-primary);
-    font-size: 3.1rem;
+    background-color: var(--saito-white);
+    font-size: 3rem;
+    border-radius: 50%;
+}
+
+.saito-overlay-closebox:hover{
+    transform: rotate(90deg);
 }
 
 .saito-overlay-form {

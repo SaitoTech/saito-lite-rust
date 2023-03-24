@@ -206,6 +206,7 @@ class ChatManager {
     document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
       item.onclick = (e) => {
         let gid = e.currentTarget.getAttribute("data-id");
+        this.render_popups_to_screen = 1;
         let group = cm.mod.returnGroup(gid);
         // unset manually closed to permit re-opening
         if (this.popups[gid]) { this.popups[gid].manually_closed = false; }
