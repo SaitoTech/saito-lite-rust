@@ -1807,7 +1807,8 @@ body {
 
 
 .system_summary {
-  background-image: url("/imperium/img/starscape-background4.jpg");
+  background-image: url(/imperium/img/backgrounds/space-art.jpg);
+  padding: 4rem;
   color: white;
   width: auto;
   height: auto;
@@ -1817,13 +1818,17 @@ body {
   max-height: 90vh;
   overflow-y: scroll;
 }
+.system_summary_content {
+  padding: 2rem;
+}
 .system_summary_sector {
   display: inline-block;
   width: 100%;
   text-align: center;
   font-size: 2em;
-  margin-bottom: 10px;
   font-family: 'orbitron-medium', helvetical, arial;
+  margin-bottom: 1.6rem;
+
 }
 .system_summary_units {
   width: 80%;
@@ -1837,6 +1842,18 @@ body {
 .system_summary_text {
   text-align: center;
 }
+.system_summary_planet {
+  margin-bottom:1rem;
+}
+.system_summary_planets_grid {
+  min-width: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: auto;
+  column-gap: 4rem;
+  font-size: 1.6rem;
+}
+
 .system_summary_planet_card {
   width: 200px;
   height: 280px;

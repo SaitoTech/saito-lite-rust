@@ -103,52 +103,67 @@
         //game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.stage_i_objectives, { cardlistHeight: "90vh" , cardlistWidth : "90vw" });
       }
     });
+
     this.menu.addSubMenuOption("game-cards", {
-      text : "Units",
-      id : "game-units-cardlist",
-      class : "game-units-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.units_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Upgrades",
-      id : "game-unit-cardlist",
-      class : "game-unit-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let tech = game_mod.returnTechnology();
-        let t2 = [];
-        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
-      }
-    });
-/****
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Tech Tree",
+      text : "Tech",
       id : "game-tech-dependencies",
       class : "game-tech-dependencies",
       callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.handleTechMenuItem();
+       game_mod.menu.showSubSubMenu("game-tech-dependencies");
       }
     });
-****/
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Tech",
-      id : "game-tech-cardlist",
-      class : "game-tech-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	game_mod.tech_tree_overlay.render();
+    this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : "Basic",
+        id : "game-tech-dependencies-basic",
+        class : "game-tech-dependencies-basic",
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+	  let tech = game_mod.returnTechnology();
+          let t2 = [];
+          for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
+          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
+        }
+    });
+    this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : "Units",
+        id : "game-tech-dependencies-units",
+        class : "game-tech-dependencies-units",
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+          game_mod.units_overlay.render();
+        }
+    });
+    this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : "Upgrades",
+        id : "game-tech-dependencies-upgrades",
+        class : "game-tech-dependencies-upgrades",
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+	  let tech = game_mod.returnTechnology();
+          let t2 = [];
+          for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
+          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
+        }
+    });
+    for (let i = 0; i < this.game.players.length; i++) {
+      this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : this.returnFactionNickname(i+1),
+        id : "game-faction-tech-"+(i+1),
+        class : "game-faction-tech-"+(i+1),
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+console.log("i: " + i);
+	  let faction_key = game_mod.game.state.players_info[i].faction;
+console.log("faction_key: " + faction_key);
+	  let tech = game_mod.returnTechnology();
+          let t2 = [];
+          for (let x in tech) { if (tech[x].faction == faction_key) { t2.push(tech[x]); } }
+          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
+        }
+      });
+    }
 
-//	let tech = game_mod.returnTechnology();
-//        let t2 = [];
-//        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
-//        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/tech-upgrades.jpg" , padding : "50px"});
-      }
-    });
+/****
     this.menu.addSubMenuOption("game-cards", {
       text : "Agendas",
       id : "game-agenda-cardlist",
@@ -162,6 +177,8 @@
         game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac, { columns : 3 , cardlistWidth : "90vw" , cardlistHeight : "90vh" });
       }
     });
+****/
+
     this.menu.addSubMenuOption("game-cards", {
       text : "Laws",
       id : "game-laws-cardlist",
@@ -186,11 +203,13 @@
 	let ac = game_mod.returnActionCards();
 	let ac2 = [];
 	for (let x in ac) {
-	  if (x.indexOf("2") || x.indexOf("3") || x.indexOf("4") || x.indexOf("5")) {
+console.log(JSON.stringify(x));
+	  if (x.indexOf("2") > 0 || x.indexOf("3") > 0 || x.indexOf("4") > 0 || x.indexOf("5") > 0 ) {
 	  } else {
-	    ac2 = JSON.parse(JSON.stringify(ac[x]));   
+	    ac2.push(ac[x]);
 	  }
 	}
+console.log("ACT: " + JSON.stringify(ac2));
         game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac2, {});
       }
     });

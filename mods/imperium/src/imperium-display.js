@@ -291,8 +291,13 @@ returnSectorInformationHTML(sector) {
     html += '</div>';
   }
 
+  let gridcols = '1fr';
+  for (let z = 1; z < sys.p.length; z++) {
+    gridcols += ' 1fr';
+  }
+
   html += `
-    <div class="grid-2">
+    <div class="system_summary_planets_grid" style="grid-template-columns:${gridcols}">
   `;
   for (let i = 0; i < sys.p.length; i++) {
     let planet_owner = "UNCONTROLLED";
@@ -302,16 +307,15 @@ returnSectorInformationHTML(sector) {
     html += `
       <div class="system_summary_planet">
         ${planet_owner}
-        <p style="margin-top:10px" />
-        <div style='clear:both;margin-left:10px;margin-top:6px;'>
+        <div class="system_summary_content">
           ${this.returnInfantryOnPlanet(sys.p[i])} infantry
           <br />
           ${this.returnPDSOnPlanet(sys.p[i])} PDS
           <br />
           ${this.returnSpaceDocksOnPlanet(sys.p[i])} spacedocks
         </div>
+        <div class="system_summary_planet_card" style="background-image: url('${sys.p[i].img}');"></div>
       </div>
-      <div class="system_summary_planet_card" style="background-image: url('${sys.p[i].img}');"></div>
     `;
   }
   html += `
