@@ -40,7 +40,7 @@
   letter-spacing: 0.2rem;
 }
 
-.game-acknowledge-overlay .game-acknowledge-menu ul li:hover
+.game-acknowledge-overlay .game-acknowledge-menu ul li:hover {
   background: #0005;
 }
 

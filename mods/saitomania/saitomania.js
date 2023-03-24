@@ -34,8 +34,6 @@ class SaitoMania extends OnePlayerGameTemplate {
 
   initializeGame(game_id) {
 
-    this.app.connection.emit("chat-manager-request-no-interrupts");
-
     if (!this.game.state) {
       console.log("******Generating the Game******");
       this.game.queue = [];

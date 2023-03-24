@@ -11,7 +11,7 @@ do
   if [ -d "$d"/web/css ]; then
     if [ "$1" == "dev" ] | [ "$2" == "dev" ]; then
       echo "link module css in $d"
-      find "$d"web/css/ -type f -name '*.css' 2>/dev/null | sed 's/mods//' | sed 's/web\///' | sed 's/^/@import url("/' | sed 's/$/");/' > "$d"web/style.css 
+      find "$d"web/css/ -type f -name '*.css' 2>/dev/null | sed 's/mods.*web\///' | sed 's/^/@import url(".\//' | sed 's/$/");/' > "$d"web/style.css 
     else
       echo "compile module css in $d"
       echo "/**/" > "$d"web/style.css

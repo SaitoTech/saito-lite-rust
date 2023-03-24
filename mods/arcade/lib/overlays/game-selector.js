@@ -38,7 +38,7 @@ class GameSelector {
 
     Array.from(document.querySelectorAll('.arcade-game-selector-game')).forEach(game => {
       game.onclick = (e) => {
-
+        e.stopPropagation();
         let modname = e.currentTarget.getAttribute("data-id");
         this.obj.game = modname;
         this.overlay.remove();
@@ -52,6 +52,12 @@ class GameSelector {
 
       };
     });
+
+    if (document.querySelector(".arcade-game-selector")){
+      document.querySelector(".arcade-game-selector").onclick = (e) => {
+        this.overlay.remove();
+      }
+    }
   }
 }
 

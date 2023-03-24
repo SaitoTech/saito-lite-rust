@@ -6,14 +6,6 @@
   border-radius: 0.5rem;
 }
 
-.league-join-email-note {
-  width: 50rem;
-  margin-left: auto;
-  margin-right: auto;
-  font-size: 2rem;
-  line-height: 2.8rem;
-}
-
 .league-overlay {
   padding: 2rem 1rem;
   display: flex;
@@ -50,6 +42,7 @@
 
 .league-overlay-header-title-box-desc {
   font-size: 2rem;
+  text-transform: capitalize;
 }
 
 .league-overlay-body {
@@ -68,9 +61,9 @@
   flex-grow: 1;
 }
 
-.league-overlay-description, .league-overlay-league-body-games, .league-overlay-leaderboard {
+.league-overlay-body-content > div, .league-overlay-leaderboard {
   box-shadow: var(--saito-box-shadow) var(--saito-border-color);
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: 0.5rem;
   overflow-y: auto;
 }
@@ -78,7 +71,7 @@
 .league-overlay-body-content {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 .league-overlay-header-image {
@@ -90,9 +83,16 @@
 }
 
 .league-overlay-description {
+  position: relative;
   font-size: 1.7rem;
   line-height: 2.3rem;
   overflow: visible;
+}
+
+.league-overlay-description i {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .league-overlay-league-body-games {

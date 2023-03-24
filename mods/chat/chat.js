@@ -121,7 +121,13 @@ class Chat extends ModTemplate {
                         console.log("chat history adding: " + err);
                     }
 
-                    this.app.connection.emit("chat-manager-and-popup-render-request", (local_group));
+                    if (this.app.BROWSER){
+                        let active_module = app.modules.returnActiveModule();
+                        if (app.browser.isMobileBrowser(navigator.userAgent) || window.innerWidth < 600 || active_module?.request_no_interrupts) {
+                            this.app.connection.emit("chat-manager-request-no-interrupts");
+                        }
+                        this.app.connection.emit("chat-manager-and-popup-render-request", (local_group));
+                    }
 
                 });
             }
@@ -150,7 +156,10 @@ class Chat extends ModTemplate {
                 if (this.chat_manager_overlay == null) { this.chat_manager_overlay = new ChatManagerOverlay(this.app, this); }
                 return this.chat_manager_overlay;
             case 'saito-header':
-                if (this.app.browser.isMobileBrowser()) {
+                //TODO:
+                //Since the left-sidebar chat-manager disappears at screens less than 1200px wide
+                //We need another way to display/open it...
+                if (this.app.browser.isMobileBrowser() /*|| (this.app.BROWSER && window.innerWidth < 1200)*/) {
                     return [{
                         text: "Chat",
                         icon: "fas fa-comments",
@@ -212,7 +221,9 @@ class Chat extends ModTemplate {
 
 
 
-
+    /*
+    IS this code duplicating the functionality of onPeerServiceUp????
+    */
 
     async onPeerHandshakeComplete(app, peer) {
         if (!app.BROWSER) { return; }
@@ -221,7 +232,6 @@ class Chat extends ModTemplate {
         // create mastodon server
         //
         if (peer.isMainPeer()) {
-
             //
             // We wait until we establish a peer connection to create the community chat
             // Now that we have all the chat groups from our wallet + peer
@@ -278,7 +288,7 @@ class Chat extends ModTemplate {
         //
         // See if we want to auto open a chatpopup
         // we update the group_id of our default chat every time the user opens/closes a popup
-        //
+        /*
         if (app.BROWSER) {
             if ((!app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 600)) {
                 let group = this.returnGroupByMemberPublickey(peer.returnPublicKey());
@@ -294,7 +304,7 @@ class Chat extends ModTemplate {
                 //Under mobile use, always wait for user to open chat box
                 this.mute = true;
             }
-        }
+        }*/
 
     }
 
@@ -513,7 +523,7 @@ class Chat extends ModTemplate {
                 salert("Image already being sent");
                 return;
             }
-            this.inTransitImageMsgSig = tx.transaction.sig;
+            this.inTransitImageMsgSig = newtx.transaction.sig;
         }
 
         newtx.msg = {
@@ -804,8 +814,6 @@ class Chat extends ModTemplate {
 
         this.app.options.auto_open_chat_box = group_id;
         this.app.storage.saveOptions();
-
-        this.mute = false;
 
         this.app.connection.emit("chat-popup-render-request", (group.id));
 

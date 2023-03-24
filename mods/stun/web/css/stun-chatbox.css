@@ -123,6 +123,7 @@
 }
 
 .stunx-chatbox .video-box-container-large {
+  border-radius: .5rem;
 }
 
 #localStream {
@@ -524,18 +525,21 @@
   background-color: #000;
   color: var(--saito-white);
   display: flex;
-  overflow-y: scroll;
-  touch-action: auto; /* Added touch-action */
-  overscroll-behavior: contain; /* Added overscroll-behavior */
   justify-content: center;
-  align-items: center;
-  height: 100vh;
   width: 100vw;
+  height: 100vh;
   margin: 0;
   position: fixed;
   color: var(--saito-white);
   top: 0;
   z-index: 200;
+}
+
+.chat-settings-wrapper {
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem;
+  margin-top: 4rem;
 }
 
 .chat-settings {
@@ -544,6 +548,7 @@
   border-radius: 1rem;
   z-index: 40;
 }
+
 
 .chat-settings-preview-section {
   display: flex;
@@ -691,8 +696,12 @@
   .chat-settings {
     flex-direction: column;
     padding: 1rem;
+    margin-top:0;
   }
 
+  .chat-settings video {
+    height: 18rem;
+  }
   .chat-settings-preview-section {
     margin-right: 0;
     margin-bottom: 2rem;
@@ -713,17 +722,23 @@
   }
  .video-call-info > p {
     font-size: 1.2rem;
-    max-width: 50px;
+    /* max-width: 50px; */
     margin-right: .5rem;
   }
 
   .expanded-video {
     width: 100%;
+
     margin-right: 0;
   }
   .side-videos {
     position: absolute;
     right: 0;
+  }
+
+
+  .side-videos .video-call-info > p{
+        max-width: 50px;
   }
 
 }

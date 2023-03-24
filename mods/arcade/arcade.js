@@ -8,7 +8,8 @@ const GameWizard = require("./lib/overlays/game-wizard");
 const GameSelector = require("./lib/overlays/game-selector");
 const GameScheduler = require("./lib/overlays/game-scheduler");
 const GameInvitationLink = require("./lib/overlays/game-invitation-link");
-
+const Invite = require("./lib/invite");
+const JoinGameOverlay = require("./lib/overlays/join-game");
 const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 
 class Arcade extends ModTemplate {
@@ -49,7 +50,7 @@ class Arcade extends ModTemplate {
       'arcade': 'fa-solid fa-gamepad'
     };
 
-    this.debug = false;
+    this.debug = true;
   }
 
 
@@ -210,8 +211,6 @@ class Arcade extends ModTemplate {
           }
         }
 
-        arcade_self.app.connection.emit('arcade-invite-manager-render-request');
-
         //
         // For processing direct link to game invite
         //
@@ -223,24 +222,31 @@ class Arcade extends ModTemplate {
           
           let game = arcade_self.returnGame(game_id);
 
-          if (!game || !arcade_self.isAvailableGame(game)){
+          if (!game){
             salert("Sorry, the game is no longer available");
             return;
           }
 
-          arcade_self.app.browser.logMatomoEvent("PrivateInvite", "JoinGame", game.game);
+          if (arcade_self.isAvailableGame(game)){
+            //Mark myself as an invited guest
+            game.msg.options.desired_opponent_publickey = this.app.wallet.returnPublicKey();
+            //Then we have to remove and readd the game so it goes under "mine"
+            arcade_self.removeGame(game_id);
+            arcade_self.addGame(game, "private");
+          }
 
-          let newtx = arcade_self.createJoinTransaction(game);
+          app.browser.logMatomoEvent("GameInvite", "FollowLink", game.game);
 
-          arcade_self.app.network.propagateTransaction(newtx);
+          let invite = new Invite(app, this, null, null, game);
+          let join_overlay = new JoinGameOverlay(app, this, invite.invite_data);
+          join_overlay.render();
+          window.history.pushState("", "", `/arcade/`);
 
-          arcade_self.app.connection.emit("relay-send-message", {recipient: game.msg.players, request: "arcade spv update", data: newtx.transaction });
-          arcade_self.app.connection.emit("relay-send-message", {recipient: "PEERS", request: "arcade spv update", data: newtx.transaction });
-
-          //Do we want to throw up an overlay between screen load and data load...
-          //arcade_self.overlay.remove();
-
+          app.connection.emit("register-username-or-login");
         }
+
+        app.connection.emit('arcade-invite-manager-render-request');
+
 
       }
     );
@@ -365,16 +371,27 @@ class Arcade extends ModTemplate {
       }
     }
     if (type === 'saito-header') {
-      return [
-        {
+      let x = [];
+      if (!this.browser_active){
+        x.push({
+          text: "Arcade",
+          icon: "fa-solid fa-square",
+          rank: 15,
+          callback: function (app, id) {
+            window.location = "/arcade";
+          }
+        });
+      }
+ 
+      x.push({
           text: "Games",
           icon: this.icon || "fas fa-gamepad",
-	  rank: 10,
+	        rank: 10,
           callback: function (app, id) {
             app.connection.emit("arcade-launch-game-selector", {});
           }
-        }
-      ]
+        });
+      return x;
     }
     if (type === 'saito-floating-menu') {
       let x = [];
@@ -654,10 +671,7 @@ class Arcade extends ModTemplate {
 
     let { ts, name, options, players_needed, invitation_type, desired_opponent_publickey } = gamedata;
 
-    let accept_sig = this.app.crypto.signMessage(
-      `invite_game_${ts}`,
-      this.app.wallet.returnPrivateKey()
-    );
+    let accept_sig = this.app.crypto.signMessage(`invite_game_${ts}`, this.app.wallet.returnPrivateKey());
 
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     if (recipient != "") { newtx.transaction.to.push(new saito.default.slip(sendto, 0.0)); }
@@ -985,10 +999,7 @@ class Arcade extends ModTemplate {
     newtx.msg.request = "join";
     newtx.msg.game_id = orig_tx.transaction.sig;
 
-    newtx.msg.invite_sig = this.app.crypto.signMessage(
-      "invite_game_" + orig_tx.msg.ts,
-      this.app.wallet.returnPrivateKey()
-    );
+    newtx.msg.invite_sig = this.app.crypto.signMessage("invite_game_" + orig_tx.msg.ts, this.app.wallet.returnPrivateKey());
 
     newtx = this.app.wallet.signTransaction(newtx);
 
@@ -1037,12 +1048,13 @@ class Arcade extends ModTemplate {
       // Do we have enough players?
       //
       if (game.msg.players.length >= game.msg.players_needed) {
+        //Temporarily change it....
+        game.msg.request = "accepted";
+
         //
         // First player (originator) sends the accept message
         //
-        if (game.msg.players[0] == this.app.wallet.returnPublicKey()) {
-          game.msg.players.splice(0, 1);
-          game.msg.players_sigs.splice(0, 1);
+        if (game.msg.originator == this.app.wallet.returnPublicKey()) {
           let newtx = this.createAcceptTransaction(game);
           this.app.network.propagateTransaction(newtx);
           this.app.connection.emit("relay-send-message", { recipient: "PEERS", request: "arcade spv update", data: newtx.transaction });
@@ -1074,11 +1086,6 @@ class Arcade extends ModTemplate {
     }
 
     let txmsg = orig_tx.returnMessage();
-
-    let accept_sig = this.app.crypto.signMessage("invite_game_" + txmsg.ts, this.app.wallet.returnPrivateKey());
-
-    txmsg.players.push(this.app.wallet.returnPublicKey());
-    txmsg.players_sigs.push(accept_sig);
 
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     for (let i = 0; i < txmsg.players.length; i++) {
@@ -1115,7 +1122,7 @@ class Arcade extends ModTemplate {
     let game = this.returnGame(txmsg.game_id);
   
     // Must be an available invite
-    if (!game || !this.isAvailableGame(game)){
+    if (!game || !this.isAvailableGame(game, "accepted")){
       return;
     }
 
@@ -1501,8 +1508,11 @@ class Arcade extends ModTemplate {
     return false;
   }
 
-  isAvailableGame(game_tx){
+  isAvailableGame(game_tx, additional_status = ""){
     if (game_tx.msg.request == "open" || game_tx.msg.request == "private" || game_tx.msg.request == "direct"){
+      return true;
+    }
+    if (additional_status && additional_status === game_tx.msg.request){
       return true;
     }
     if (this.debug){

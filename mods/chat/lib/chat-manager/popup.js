@@ -133,8 +133,9 @@ console.log("removing: " + popup_qs);
     //
     // scroll to bottom
     //
-    document.querySelector(".chat-body").scroll(0, 1000000000);
-
+    if (document.querySelector("." + popup_id + " .chat-body")) {
+      document.querySelector("." + popup_id + " .chat-body").scroll(0, 1000000000);
+    }
     //
     // re-render typed text
     //
@@ -210,7 +211,7 @@ console.log("removing: " + popup_qs);
       //
       document.querySelector(`${popup_qs} .chat-header .chat-container-close`).onclick = (e) => {
         this.manually_closed = true;
-        mod.mute = true;
+        app.connection.emit("chat-manager-request-no-interrupts");
         document.querySelector(`${popup_qs}`).remove();
         app.storage.saveOptions();
       }

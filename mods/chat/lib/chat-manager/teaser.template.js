@@ -17,7 +17,7 @@ module.exports = ChatTeaser = (app, publickey = "", userline = "", timestamp = 0
     <img class="saito-identicon" src="${imgsrc}">
     ${alert > 0 ? `<div class="saito-notification-counter">${alert}</div>` : ""}
   </div>
-  <div class="saito-address saito-address-long">${publickey}</div>
+  <div class="saito-address saito-address-long" data-id="${publickey}">${publickey}</div>
   <div class="saito-userline">${userline}</div>
   ${time && `<div class="saito-datetime">${time}</div>`}
   </div>

@@ -151,6 +151,7 @@
   border-radius: 0.5rem;
   padding: 0.75rem;
   width: 95%;
+  text-transform: uppercase;
 }
 
 .wallet-btn {

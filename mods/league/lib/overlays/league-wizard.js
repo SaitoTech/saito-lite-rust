@@ -38,22 +38,34 @@ class LeagueWizard {
       e.stopPropagation();
       e.preventDefault();
       
-      if (!this.validateLeagueInput()) { return; }
 
-      let title = document.getElementById("league-name").value;
-      let desc = document.getElementById("league-desc").value;
+      let title = document.getElementById("league-name")?.value;
+      let desc = document.getElementById("league-desc")?.value;
+      let contact = document.getElementById("admin-contact")?.value;
+    
+      if (!title || title === "League Name") {
+        alert("Your league must have a name");
+        return false;
+      }
+
+      if (!desc || desc === "Describe your league...") {
+        alert("Your league must have a description");
+        return false;
+      }
+
+
       //let status = document.querySelector(".league-wizard-status-select").value;
 
       //
-      let obj = {
-        game        :     this.game_mod.name ,        // game - name of game mod
-        name        :     title ,        // name - name of league
-        admin       :     this.app.wallet.returnPublicKey() ,          // admin - publickey (if exists)
-        status      :     "public" ,        // status - public or private
-        description       : desc ,     // 
-        ranking_algorithm : this.game_mod.ranking_algorithm ,         //
-        default_score     : this.game_mod.default_score           // default ranking for newbies
-      };
+      let obj = this.mod.validateLeague(this.game_mod.respondTo("default-league"));
+      obj.name = title;
+      obj.description = desc;
+      obj.admin = this.app.wallet.returnPublicKey();
+      obj.contact = contact || "";
+
+      if (obj.game === "Unknown"){
+        obj.game = this.game_mod.name;
+      }
 
       let newtx = this.mod.createCreateTransaction(obj);
       this.app.network.propagateTransaction(newtx);
@@ -66,24 +78,6 @@ class LeagueWizard {
   
   }
 
-
-  validateLeagueInput(){
-
-    let title = document.getElementById("league-name").value;
-    let desc = document.getElementById("league-desc").value;
-
-    if (!title || title === "League Name") {
-      alert("Your league must have a name");
-      return false;
-    }
-
-    if (!desc || desc === "Describe your league...") {
-      alert("Your league must have a description");
-      return false;
-    }
-
-    return true;
-  }
 
 }
 

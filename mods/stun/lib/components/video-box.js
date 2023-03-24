@@ -91,10 +91,13 @@ class VideoBox {
             let name;
             if (this.stream_id === "local") {
                 let public_key = this.app.wallet.returnPublicKey();
-                name = this.app.keychain.returnUsername(public_key)
+                name = public_key;
             } else {
-                name = this.app.keychain.returnUsername(this.stream_id);
+                // name = this.app.keychain.returnIdentifierByPublicKey(this.stream_id);
+                name = this.stream_id;
             }
+
+            name = `${name.substring(0,9)}....${name.substring(37, name.length -1)}`
             const video_box = document.querySelector(`#stream${this.stream_id}`);
             if (video_box.querySelector('.video-call-info')) {
                 video_box.querySelector('.video-call-info').innerHTML = `<p>${name}</p>`

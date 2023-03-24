@@ -122,6 +122,12 @@
     padding: 1.4rem;
 }
 
+.saito-overlay-subform.centerme{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .saito-overlay-subform-text {
     font-size: 2rem;
     flex-grow: 1;

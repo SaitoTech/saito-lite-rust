@@ -34,11 +34,12 @@ class ChatManager {
       }
     });
 
+
     app.connection.on("chat-manager-and-popup-render-request", (group) => {
       if (this.render_manager_to_screen) {
         group.unread = 0;
         this.render();
-        if (!this.mod.mute) {
+        if (this.render_popups_to_screen) {
           app.connection.emit("chat-popup-render-request", (group));
         }
       }
