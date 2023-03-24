@@ -24437,8 +24437,294 @@ playerAddInfantryToPlanets(player, total = 1, mycallback) {
 // Select Units to Move //
 //////////////////////////
 //
+// source might be sec or "invade_with_everything"
+//
+playerAutoMove(destination, source) {
+
+  let imperium_self = this;
+  let html = '';
+  let hops = 3;
+  let sectors = [];
+  let distance = [];
+  let hazards = [];
+  let hoppable = [];
+  let fighters_loaded = 0;
+  let infantry_loaded = 0;
+  let ship_status_menu_qs = "";
+
+  let obj = {};
+  obj.max_hops = 2;
+  obj.ship_move_bonus = this.game.state.players_info[this.game.player - 1].ship_move_bonus + this.game.state.players_info[this.game.player - 1].temporary_ship_move_bonus;
+  obj.fleet_move_bonus = this.game.state.players_info[this.game.player - 1].fleet_move_bonus + this.game.state.players_info[this.game.player - 1].temporary_fleet_move_bonus;
+  obj.ships_and_sectors = [];
+  obj.stuff_to_move = [];
+  obj.stuff_to_load = [];
+  obj.distance_adjustment = 0;
+
+  obj.max_hops += obj.ship_move_bonus;
+  obj.max_hops += obj.fleet_move_bonus;
+
+  let x = imperium_self.returnSectorsWithinHopDistance(destination, obj.max_hops, imperium_self.game.player);
+  sectors = x.sectors;
+  distance = x.distance;
+  hazards = x.hazards;
+  hoppable = x.hoppable;
+
+  for (let i = 0; i < distance.length; i++) {
+    if (obj.ship_move_bonus > 0) {
+      distance[i]--;
+    }
+    if (obj.fleet_move_bonus > 0) {
+      distance[i]--;
+    }
+  }
+
+  if (obj.ship_move_bonus > 0) {
+    obj.distance_adjustment += obj.ship_move_bonus;
+  }
+  if (obj.fleet_move_bonus > 0) {
+    obj.distance_adjustment += obj.fleet_move_bonus;
+  }
+
+  obj.ships_and_sectors = imperium_self.returnShipsMovableToDestinationFromSectors(destination, sectors, distance, hazards, hoppable);
+  let id = source;
+
+  //
+  // submit when done
+  //
+  for (let sec = 0; sec < obj.ships_and_sectors.length; sec++) {
+
+console.log(sec + " -- " + id);
+
+    if (sec == id || id == "invade_with_everything") {
+
+      let sys = imperium_self.returnSectorAndPlanets(obj.ships_and_sectors[sec].sector);
+
+      for (let i = 0; i < obj.ships_and_sectors[sec].ships.length; i++) {
+console.log("A 2 " + i);
+
+        let available_capacity = imperium_self.returnRemainingCapacity(obj.ships_and_sectors[sec].ships[i]);
+        let total_loaded = 0;
+
+        //
+        // load infantry
+        //
+        let infantry_available_to_move = 0;
+        for (let b = 0; b < sys.p.length; b++) {
+          let planetary_units = sys.p[b].units[imperium_self.game.player - 1];
+          for (let k = 0; available_capacity > total_loaded && k < planetary_units.length; k++) {
+            if (planetary_units[k].type == "infantry") {
+	      total_loaded++;
+              //
+              // we have to load prematurely. so JSON will be accurate when we move the ship, so player_move is 0 for load
+              //
+	      let sector = obj.ships_and_sectors[sec].sector;
+	      let planet_idx = b;
+	      let load_into_this_ship_idx = i;
+
+console.log("loading one more x");
+
+              let unitjson = imperium_self.unloadUnitFromPlanet(imperium_self.game.player, sector, planet_idx, "infantry");
+              let shipjson_preload = JSON.stringify(sys.s.units[imperium_self.game.player - 1][load_into_this_ship_idx]);
+              imperium_self.loadUnitByJSONOntoShip(imperium_self.game.player, sector, load_into_this_ship_idx, unitjson);
+
+	      k--;
+
+              let loading = {};
+              loading.sector = sector;
+              loading.source = "planet";
+              loading.source_idx = planet_idx;
+              loading.unitjson = unitjson;
+              loading.ship_idx = load_into_this_ship_idx;
+              loading.shipjson = shipjson_preload;
+              loading.i = sec;
+              loading.ii = i;
+
+              obj.stuff_to_load.push(loading);
+
+            }
+          }
+        }
+
+	let x = { i: sec, ii: i, sector: obj.ships_and_sectors[sec].sector };
+	obj.stuff_to_move.push(x);
+
+      }
+    }
+
+    imperium_self.addMove("resolve\tplay");
+    // source should be OK as moving out does not add units
+    imperium_self.addMove("space_invasion\t" + imperium_self.game.player + "\t" + destination);
+    imperium_self.addMove("check_fleet_supply\t" + imperium_self.game.player + "\t" + destination);
+
+    //
+    // now move everything
+    //
+    for (let y = 0; y < obj.stuff_to_move.length; y++) {
+
+      let this_ship_i = obj.stuff_to_move[y].i;
+      let this_ship_ii = obj.stuff_to_move[y].ii;
+      let this_ship_hazard = obj.ships_and_sectors[this_ship_i].hazards[this_ship_ii];
+
+      imperium_self.addMove("check_fleet_supply\t" + imperium_self.game.player + "\t" + obj.ships_and_sectors[obj.stuff_to_move[y].i].sector);
+      imperium_self.addMove("move\t" + imperium_self.game.player + "\t" + 1 + "\t" + obj.ships_and_sectors[obj.stuff_to_move[y].i].sector + "\t" + destination + "\t" + JSON.stringify(obj.ships_and_sectors[obj.stuff_to_move[y].i].ships[obj.stuff_to_move[y].ii]) + "\t" + this_ship_hazard);
+
+    }
+
+    for (let y = obj.stuff_to_load.length - 1; y >= 0; y--) {
+      imperium_self.addMove("load\t" + imperium_self.game.player + "\t" + 0 + "\t" + obj.stuff_to_load[y].sector + "\t" + obj.stuff_to_load[y].source + "\t" + obj.stuff_to_load[y].source_idx + "\t" + obj.stuff_to_load[y].unitjson + "\t" + obj.stuff_to_load[y].shipjson);
+    }
+  }
+
+  imperium_self.endTurn();
+  return;
+
+}
+
+
+
+//////////////////////////
+// Select Units to Move //
+//////////////////////////
+//
 // MoveShips // MoveUnits // playerMove ... (grep keywords)
 //
+playerMoveShipsMenu(destination) {
+
+  let is_there_a_choice_here = false;
+
+  let imperium_self = this;
+  let hops = 3;
+  let sectors = [];
+  let distance = [];
+  let hazards = [];
+  let hoppable = [];
+  let fighters_loaded = 0;
+  let infantry_loaded = 0;
+  let ship_status_menu_qs = "";
+
+  let obj = {};
+  obj.max_hops = 2;
+  obj.ship_move_bonus = this.game.state.players_info[this.game.player - 1].ship_move_bonus + this.game.state.players_info[this.game.player - 1].temporary_ship_move_bonus;
+  obj.fleet_move_bonus = this.game.state.players_info[this.game.player - 1].fleet_move_bonus + this.game.state.players_info[this.game.player - 1].temporary_fleet_move_bonus;
+  obj.ships_and_sectors = [];
+  obj.stuff_to_move = [];
+  obj.stuff_to_load = [];
+  obj.distance_adjustment = 0;
+
+  obj.max_hops += obj.ship_move_bonus;
+  obj.max_hops += obj.fleet_move_bonus;
+
+  let x = imperium_self.returnSectorsWithinHopDistance(destination, obj.max_hops, imperium_self.game.player);
+  sectors = x.sectors;
+  distance = x.distance;
+  hazards = x.hazards;
+  hoppable = x.hoppable;
+
+  for (let i = 0; i < distance.length; i++) {
+    if (obj.ship_move_bonus > 0) {
+      distance[i]--;
+    }
+    if (obj.fleet_move_bonus > 0) {
+      distance[i]--;
+    }
+  }
+
+  if (obj.ship_move_bonus > 0) {
+    obj.distance_adjustment += obj.ship_move_bonus;
+  }
+  if (obj.fleet_move_bonus > 0) {
+    obj.distance_adjustment += obj.fleet_move_bonus;
+  }
+
+  obj.ships_and_sectors = imperium_self.returnShipsMovableToDestinationFromSectors(destination, sectors, distance, hazards, hoppable);
+
+  let html = "<div class='sf-readable'>" + this.returnFaction(this.game.player) + ": </div><ul>";
+
+
+  for (let sec = 0; sec < obj.ships_and_sectors.length; sec++) {
+
+    let sys = imperium_self.returnSectorAndPlanets(obj.ships_and_sectors[sec].sector);
+
+    let total_capacity = 0;
+    for (let i = 0; i < obj.ships_and_sectors[sec].ships.length; i++) {
+      total_capacity += imperium_self.returnRemainingCapacity(obj.ships_and_sectors[sec].ships[i]);
+    }
+
+    console.log("SECTOR: " + obj.ships_and_sectors[sec].sector);
+    console.log("TOTAL CAPACITY: " + total_capacity);
+
+    //
+    // fighters and infantry
+    //
+    let infantry_available_to_move = 0;
+    for (let i = 0; i < sys.p.length; i++) {
+      let planetary_units = sys.p[i].units[imperium_self.game.player - 1];
+      for (let k = 0; k < planetary_units.length; k++) {
+        if (planetary_units[k].type == "infantry") {
+          infantry_available_to_move++;
+        }
+      }
+    }
+
+console.log("INFANTRY AVAILALBE TO MOVE: " + infantry_available_to_move);
+
+    let fighters_available_to_move = 0;
+    if (obj.ships_and_sectors[sec].sector === sys.s.tile) {
+      for (let ii = 0; ii < obj.ships_and_sectors[sec].ships.length; ii++) {
+        if (obj.ships_and_sectors[sec].ships[ii].type == "fighter") {
+          fighters_available_to_move++;
+        }
+      }
+    }
+        
+console.log("FIGHTERS AVAILABLE TO MOVE: " + fighters_available_to_move);
+
+    let total_units_to_move = infantry_available_to_move + fighters_available_to_move;
+
+    //
+    // force manual move if units exceed ship capacity
+    //
+    if (total_capacity >= total_units_to_move) {
+      html += `<li class="option" id="${sec}">invade from ${sys.s.name} (all units)</li>`;
+      is_there_a_choice_here = true;
+    }
+  }
+
+  html += `<li class="option" id="manually">move manually</li>`;
+  html += '</ul>';
+
+  if (!is_there_a_choice_here) { 
+    imperium_self.playerSelectUnitsToMove(destination);
+    return;
+  }
+
+  this.updateStatus(html);
+
+
+  $('.option').off();
+  $('.option').on('click', function () {
+
+    let id = $(this).attr("id");
+
+    //
+    // submit when done
+    //
+    if (id === "manually") {
+      imperium_self.playerSelectUnitsToMove(destination);
+      return;
+    }
+
+    //
+    // or automatically
+    //
+    imperium_self.playerAutoMove(destination, id);
+    return;
+
+  });
+}
+
+
 playerSelectUnitsToMove(destination) {
 
   let imperium_self = this;
@@ -24580,6 +24866,177 @@ playerSelectUnitsToMove(destination) {
     $('.option').on('click', function () {
 
       let id = $(this).attr("id");
+
+      //
+      // submit when done
+      //
+      if (id == "invade_with_everything") {
+      
+        for (let sec = 0; sec < obj.ships_and_sectors.length; sec++) {
+
+          let sys = imperium_self.returnSectorAndPlanets(obj.ships_and_sectors[sec].sector);
+
+  	  let total_capacity = 0;
+	  for (let i = 0; i < obj.ships_and_sectors[sec].ships.length; i++) {
+console.log("HERE");
+console.log(JSON.stringify(obj.ships_and_sectors[sec].ships[i]));
+	    total_capacity += imperium_self.returnRemainingCapacity(obj.ships_and_sectors[sec].ships[i]);
+	  }
+
+console.log("SECTOR: " + obj.ships_and_sectors[sec].sector);
+console.log("TOTAL CAPACITY: " + total_capacity);
+
+	  //
+	  // fighters and infantry
+	  //
+          let infantry_available_to_move = 0;
+          for (let i = 0; i < sys.p.length; i++) {
+            let planetary_units = sys.p[i].units[imperium_self.game.player - 1];
+            for (let k = 0; k < planetary_units.length; k++) {
+              if (planetary_units[k].type == "infantry") {
+                infantry_available_to_move++;
+              }
+            }
+          }
+
+console.log("INFANTRY AVAILALBE TO MOVE: " + infantry_available_to_move);
+
+
+          let fighters_available_to_move = 0;
+          if (obj.ships_and_sectors[sec].sector === sys.s.tile) {
+            for (let ii = 0; ii < obj.ships_and_sectors[sec].ships.length; ii++) {
+              if (obj.ships_and_sectors[sec].ships[ii].type == "fighter") {
+                fighters_available_to_move++;
+              }
+            }
+          }
+        
+console.log("FIGHTERS AVAILABLE TO MOVE: " + fighters_available_to_move);
+
+	  let total_units_to_move = infantry_available_to_move + fighters_available_to_move;
+
+	  //
+	  // force manual move if units exceed ship capacity
+	  //
+	  if (total_capacity < total_units_to_move) {
+	    salert("Please move manually: units available exceed ship capacity");
+	    return;
+	  }
+	}
+
+console.log("A 1");
+
+	//
+	// if we reach here, we have enough space for everything
+	//
+        for (let sec = 0; sec < obj.ships_and_sectors.length; sec++) {
+
+          let sys = imperium_self.returnSectorAndPlanets(obj.ships_and_sectors[sec].sector);
+
+	  for (let i = 0; i < obj.ships_and_sectors[sec].ships.length; i++) {
+console.log("A 2 " + i);
+
+	    let available_capacity = imperium_self.returnRemainingCapacity(obj.ships_and_sectors[sec].ships[i]);
+	    let total_loaded = 0;
+
+	    //
+	    // load infantry
+	    //
+            let infantry_available_to_move = 0;
+            for (let b = 0; b < sys.p.length; b++) {
+
+console.log("A 3 " + b);
+
+console.log("ac: " + available_capacity);
+console.log("total_loaded: " + available_capacity);
+
+              let planetary_units = sys.p[b].units[imperium_self.game.player - 1];
+              for (let k = 0; available_capacity > total_loaded && k < planetary_units.length; k++) {
+
+console.log("k: " + k + " --- " + planetary_units[k].type);
+
+                if (planetary_units[k].type == "infantry") {
+
+		  total_loaded++;
+
+console.log("loading one more... infantry");
+
+                  //
+                  // we have to load prematurely. so JSON will be accurate when we move the ship, so player_move is 0 for load
+                  //
+		  let sector = obj.ships_and_sectors[sec].sector;
+		  let planet_idx = b;
+	          let load_into_this_ship_idx = i;
+
+console.log("loading one more x");
+
+                  let unitjson = imperium_self.unloadUnitFromPlanet(imperium_self.game.player, sector, planet_idx, "infantry");
+                  let shipjson_preload = JSON.stringify(sys.s.units[imperium_self.game.player - 1][load_into_this_ship_idx]);
+                  imperium_self.loadUnitByJSONOntoShip(imperium_self.game.player, sector, load_into_this_ship_idx, unitjson);
+
+		  k--;
+
+console.log("loading one more x");
+
+                  let loading = {};
+                  loading.sector = sector;
+                  loading.source = "planet";
+                  loading.source_idx = planet_idx;
+                  loading.unitjson = unitjson;
+                  loading.ship_idx = load_into_this_ship_idx;
+                  loading.shipjson = shipjson_preload;
+                  loading.i = sec;
+                  loading.ii = i;
+
+console.log("pushing loading...");
+
+                  obj.stuff_to_load.push(loading);
+
+                }
+              }
+            }
+
+console.log("creating X");
+
+	    let x = { i: sec, ii: i, sector: obj.ships_and_sectors[sec].sector };
+	    obj.stuff_to_move.push(x);
+
+
+	  }
+	}
+
+console.log("now move stuff...");
+
+        imperium_self.addMove("resolve\tplay");
+        // source should be OK as moving out does not add units
+        imperium_self.addMove("space_invasion\t" + imperium_self.game.player + "\t" + destination);
+        imperium_self.addMove("check_fleet_supply\t" + imperium_self.game.player + "\t" + destination);
+
+	//
+	// now move everything
+	//
+        for (let y = 0; y < obj.stuff_to_move.length; y++) {
+
+          let this_ship_i = obj.stuff_to_move[y].i;
+          let this_ship_ii = obj.stuff_to_move[y].ii;
+          let this_ship_hazard = obj.ships_and_sectors[this_ship_i].hazards[this_ship_ii];
+
+          // March 23
+          imperium_self.addMove("check_fleet_supply\t" + imperium_self.game.player + "\t" + obj.ships_and_sectors[obj.stuff_to_move[y].i].sector);
+          imperium_self.addMove("move\t" + imperium_self.game.player + "\t" + 1 + "\t" + obj.ships_and_sectors[obj.stuff_to_move[y].i].sector + "\t" + destination + "\t" + JSON.stringify(obj.ships_and_sectors[obj.stuff_to_move[y].i].ships[obj.stuff_to_move[y].ii]) + "\t" + this_ship_hazard);
+
+        }
+
+        for (let y = obj.stuff_to_load.length - 1; y >= 0; y--) {
+          imperium_self.addMove("load\t" + imperium_self.game.player + "\t" + 0 + "\t" + obj.stuff_to_load[y].sector + "\t" + obj.stuff_to_load[y].source + "\t" + obj.stuff_to_load[y].source_idx + "\t" + obj.stuff_to_load[y].unitjson + "\t" + obj.stuff_to_load[y].shipjson);
+        }
+
+console.log("DONE!");
+	imperium_self.endTurn();
+	return;
+      }
+
+
 
       //
       // submit when done
@@ -25526,7 +25983,6 @@ playerPostActivateSystem(sector) {
     html += '<li class="option" id="move">move into sector</li>';
   }
 
-
   if (this.canPlayerInvadePlanet(player, sector) && this.game.tracker.invasion == 0) {
     if (sector == "new-byzantium" || sector == "4_4") {
       if ((imperium_self.game.planets['new-byzantium'].owner != -1) || (imperium_self.returnAvailableInfluence(imperium_self.game.player) + imperium_self.game.state.players_info[imperium_self.game.player - 1].goods) >= 6) {
@@ -25604,9 +26060,11 @@ playerPostActivateSystem(sector) {
       return 0;
     }
 
-    if (action2 == "move") {
-      imperium_self.playerSelectUnitsToMove(sector);
+    if (action2 === "move") {
+      imperium_self.playerMoveShipsMenu(sector);
+      return;
     }
+
     if (action2 == "produce") {
       //
       // check the fleet supply and NOTIFY users if they are about to surpass it
