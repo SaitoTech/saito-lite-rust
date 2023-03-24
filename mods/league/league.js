@@ -88,6 +88,19 @@ class League extends ModTemplate {
     });
 
     this.sortLeagues();
+  
+    if (this.app.BROWSER){
+      this.app.connection.on("add-league-identifier-to-dom", ()=>{
+        document.querySelectorAll(".saito-league").forEach(key=>{
+          if (key.dataset.id){
+            let league = this.returnLeague(key.dataset.id);
+            if (league){
+              key.innerHTML = league.name; 
+            }
+          }
+        });
+      });
+    }
   }
 
   //
