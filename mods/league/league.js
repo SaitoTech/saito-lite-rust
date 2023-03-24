@@ -49,7 +49,7 @@ class League extends ModTemplate {
 
 
     this.icon_fa = "fas fa-user-friends";
-    this.debug = true;
+    this.debug = false;
   }
 
 
@@ -246,7 +246,7 @@ class League extends ModTemplate {
       let txmsg = tx.returnMessage();
 
       if (this.debug){
-        console.log("LEAGUE onConfirmation: " + txmsg.request);  
+//        console.log("LEAGUE onConfirmation: " + txmsg.request);  
       }
       
 
