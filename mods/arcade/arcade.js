@@ -17,6 +17,11 @@ class Arcade extends ModTemplate {
   constructor(app) {
     super(app);
 
+    //
+    // DEBUGGING MODE
+    //
+    this.debug = false;
+
     this.name = "Arcade";
 
     this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
@@ -50,7 +55,6 @@ class Arcade extends ModTemplate {
       'arcade': 'fa-solid fa-gamepad'
     };
 
-    this.debug = true;
   }
 
 
