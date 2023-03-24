@@ -64,8 +64,8 @@ class GameSlider {
         }
       });
 
-      html += circles_html + '</div>';
       html += "</ul>"
+      html += circles_html + '</div>';
 
       if (document.querySelector(".game-slider")) {
         this.app.browser.replaceElementBySelector(GameSliderTemplate(html), ".game-slider");
