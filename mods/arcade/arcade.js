@@ -55,10 +55,7 @@ class Arcade extends ModTemplate {
       'arcade': 'fa-solid fa-gamepad'
     };
 
-<<<<<<< HEAD
-=======
     this.debug = false;
->>>>>>> staging
   }
 
 
