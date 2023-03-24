@@ -55,6 +55,10 @@ class Arcade extends ModTemplate {
       'arcade': 'fa-solid fa-gamepad'
     };
 
+<<<<<<< HEAD
+=======
+    this.debug = false;
+>>>>>>> staging
   }
 
 
@@ -1338,9 +1342,6 @@ class Arcade extends ModTemplate {
       
       this.app.connection.emit("relay-send-message", { recipient: "PEERS", request: "arcade spv update", data: opentx.transaction });
       this.addGame(opentx, "private");
-
-      opentx.msg.players.splice(0, 1);
-      opentx.msg.players_sigs.splice(0, 1);
 
       let newtx = this.createAcceptTransaction(opentx);
       

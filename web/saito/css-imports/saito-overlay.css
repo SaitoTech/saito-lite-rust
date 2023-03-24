@@ -26,7 +26,7 @@
 
 }
 
-.saito-overlay > div{
+.saito-overlay > div, .saito-overlay > form {
     box-shadow: 3px 3px 15px 2px var(--saito-black);
 }
 
@@ -43,6 +43,9 @@
     transition: all 0.3s;
 }
 
+.saito-overlay > .saito-overlay-closebox {
+    box-shadow: unset;
+}
 
 .maximized-overlay .saito-overlay-closebox {
     top: 1rem;
