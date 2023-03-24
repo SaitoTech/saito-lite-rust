@@ -88,6 +88,19 @@ class League extends ModTemplate {
     });
 
     this.sortLeagues();
+  
+    if (this.app.BROWSER){
+      this.app.connection.on("add-league-identifier-to-dom", ()=>{
+        document.querySelectorAll(".saito-league").forEach(key=>{
+          if (key.dataset.id){
+            let league = this.returnLeague(key.dataset.id);
+            if (league){
+              key.innerHTML = league.name; 
+            }
+          }
+        });
+      });
+    }
   }
 
   //
@@ -96,9 +109,13 @@ class League extends ModTemplate {
   sortLeagues(){
     let superArray = [];
     try{
+
       this.leagues.forEach(l => {
         let gm = this.app.modules.returnModuleByName(l.game);
-        superArray.push([l.admin, gm.categories, l]);
+        //This will filter out any games we previously deleted
+        if (gm){
+          superArray.push([l.admin, gm.categories, l]);  
+        }
       });
 
       superArray.sort((a,b) => {
@@ -174,64 +191,71 @@ class League extends ModTemplate {
         console.log("Refresh local leagues: ");
       }
 
-      //
-      // fetch updated rankings
-      //
-      let helper_array = [];
-      for (let i = 0; i < this.leagues.length; i++) {
-        //To avoid calling rending 15 times in a row, we use an array to see when
-        //the last async database query finishes and only update the UI then
-
-        if (this.leagues[i].rank >= 0){
-          helper_array.push(0);
-          
-          if (this.debug) { console.log(this.leagues[i].name); }
-
-          this.fetchLeagueLeaderboard(this.leagues[i].id, 
-            ()=>{
-              helper_array.pop();
-              if (helper_array.length == 0){
-                app.connection.emit("leagues-render-request");
-                app.connection.emit("league-rankings-render-request");   
-                //Having refreshed the data, let's make sure I save the new stats
-                this.saveLeagues();
-              } 
-            });
-        }
-      }
-
+      if (this.browser_active){
       //    
       // load any requested league we may not have in options file
       //    
-      if (this.app.browser.returnURLParameter("league_join_league")) {
-        let league_id = this.app.browser.returnURLParameter("league_join_league");
-        console.log("Joining league: ", league_id);
+        console.log("Load all leagues");
+
         this.sendPeerDatabaseRequestWithFilter(
           "League" , 
-          `SELECT * FROM leagues WHERE id = "${league_id}"` ,
+          `SELECT * FROM leagues`,
           (res) => {
              if (res?.rows) {
-              console.log(res.rows);
               for (let league of res.rows){
-                 league_self.addLeague(league);
+                //console.log(league);
+                league_self.addLeague(league);
               } 
             }
 
+            app.connection.emit("leagues-render-request");
             //
             // league join league
             //
-
-            let jlo = new JoinLeagueOverlay(app, league_self, league_id);
-            jlo.render();
-
+            if (app.browser.returnURLParameter("league_join_league")) {
+              let league_id = app.browser.returnURLParameter("league_join_league");
+              console.log("Joining league: ", league_id);
+              let jlo = new JoinLeagueOverlay(app, league_self, league_id);
+              jlo.render();
+            }
           },
           (p) => {
-  	          if (p == peer) { 
+              if (p == peer) { 
                 return 1; 
               }
- 	            return 0;
-	        }
+              return 0;
+          }
         );
+
+
+      }else{
+
+        //
+        // fetch updated rankings
+        //
+        let helper_array = [];
+        for (let i = 0; i < this.leagues.length; i++) {
+          //To avoid calling rending 15 times in a row, we use an array to see when
+          //the last async database query finishes and only update the UI then
+
+          if (this.leagues[i].rank >= 0){
+            helper_array.push(0);
+            
+            if (this.debug) { console.log(this.leagues[i].name); }
+
+            this.fetchLeagueLeaderboard(this.leagues[i].id, 
+              ()=>{
+                helper_array.pop();
+                if (helper_array.length == 0){
+                  app.connection.emit("leagues-render-request");
+                  app.connection.emit("league-rankings-render-request");   
+                  //Having refreshed the data, let's make sure I save the new stats
+                  this.saveLeagues();
+                } 
+              });
+          }
+        }
+
       }
 
     }

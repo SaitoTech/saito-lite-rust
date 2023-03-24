@@ -17,6 +17,11 @@ class Arcade extends ModTemplate {
   constructor(app) {
     super(app);
 
+    //
+    // DEBUGGING MODE
+    //
+    this.debug = false;
+
     this.name = "Arcade";
 
     this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
@@ -77,6 +82,9 @@ class Arcade extends ModTemplate {
         this.affix_callbacks_to.push(game_mod.name);
     });
 
+    this.games["mine"] = [];
+    this.games["open"] = [];
+    
     //
     // If we have a browser (are a user)
     // initialize some UI components and query the list of games to display 
@@ -1585,7 +1593,7 @@ class Arcade extends ModTemplate {
 
 
   async verifyOptions(gameType, options) {
-    if (gameType !== "single") {
+    /*if (gameType !== "single") {
       for (let key of ["mine", "open"]) {
         for (let game of this.games[key]) {
           if (this.isMyGame(game) && game.msg.players_needed > 1) {
@@ -1606,7 +1614,7 @@ class Arcade extends ModTemplate {
           }
         }
       }
-    }
+    }*/
 
     //
     // if crypto and stake selected, make sure creator has it

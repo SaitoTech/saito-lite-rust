@@ -37,6 +37,7 @@
   resize: both;
   min-width: 300px;
   min-height: 150px;
+  z-index: 5;
 }
 
 .chat-body img {
