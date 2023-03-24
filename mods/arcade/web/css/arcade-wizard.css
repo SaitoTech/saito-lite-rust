@@ -91,6 +91,9 @@
 
 .overlay-input label {
   line-height: 3rem;
+  white-space: nowrap;
+  margin-right: 1rem;
+  align-self: center;
 }
 
 .game-wizard-advanced-return-btn {

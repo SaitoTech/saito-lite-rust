@@ -39,7 +39,7 @@ class GameSlider {
       let html = '<ul class="slides">';
       let circles_html = '<div class="slides-circles">';
       this.mod.arcade_games.forEach(game_mod => {
-        gamelist.push([game_mod.categories, `<li class="slide arcade-game-slider-item-${game_mod.returnSlug()}" data-game-${game_mod.returnSlug()}>
+        gamelist.push([game_mod.categories, `<li class="slide arcade-game-slider-item-${game_mod.returnSlug()}" data-game="${game_mod.name}">
           <span class="game-slider-name">${game_mod.returnName()}</span>
           <img alt="${game_mod.returnName()}" src="${game_mod.returnArcadeBanner()}">
           </li>`]); 
@@ -89,9 +89,10 @@ class GameSlider {
             changeSlide(offset);
           });
         });
+
+        const slides = document.querySelector(".slides");
         
         const changeSlide = (offset) => {
-          const slides = document.querySelector(".slides");
           const activeSlide = slides.querySelector("[data-active-slide]");
           let newIndex = [...slides.children].indexOf(activeSlide) + offset;
           newIndex =
@@ -111,7 +112,21 @@ class GameSlider {
         };
         
         this.interval = setInterval(changeSlide.bind(null, 1), 6000);
+      
+
+      
+      slides.onclick = (e) => {
+        e.stopPropagation();
+        const activeSlide = slides.querySelector("[data-active-slide]");
+
+        let modname = activeSlide.dataset.game;
         
+        this.app.browser.logMatomoEvent("GameWizard", "GameSlider", modname);
+        this.app.connection.emit("arcade-launch-game-wizard", {game: modname});
+      };
+    
+
+
     }
 
 }
