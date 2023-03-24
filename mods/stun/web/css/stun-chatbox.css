@@ -264,11 +264,11 @@
   position: absolute;
   display: flex;
   align-items: center;
-  justify-content: center;
   left: 1rem;
   font-size: 1rem;
   bottom: 0;
   z-index: 2;
+  width: calc(100% - 1rem);
 }
 
 .video-call-info>p {
@@ -278,6 +278,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   margin-right: 1rem;
+  max-width: 90%;
 }
 
 .video-call-info i {
@@ -480,6 +481,8 @@
     flex-direction: column-reverse;
     align-items: flex-start;
     justify-content: start;
+    align-items: center;
+    gap: 2rem;
   }
   .control-panel .control-list {
     margin-bottom: 1rem;
@@ -708,11 +711,6 @@
   .chat-settings select {
     width: 100%;
   }
-  .video-call-info>p {
-    font-size: 1.2rem;
-    /* max-width: 50px; */
-    margin-right: .5rem;
-  }
   .expanded-video {
     width: 100%;
     margin-right: 0;
@@ -720,9 +718,6 @@
   .side-videos {
     position: absolute;
     right: 0;
-  }
-  .side-videos .video-call-info>p {
-    max-width: 50px;
   }
 }
 
