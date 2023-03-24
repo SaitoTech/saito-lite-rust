@@ -109,9 +109,13 @@ class League extends ModTemplate {
   sortLeagues(){
     let superArray = [];
     try{
+
       this.leagues.forEach(l => {
         let gm = this.app.modules.returnModuleByName(l.game);
-        superArray.push([l.admin, gm.categories, l]);
+        //This will filter out any games we previously deleted
+        if (gm){
+          superArray.push([l.admin, gm.categories, l]);  
+        }
       });
 
       superArray.sort((a,b) => {
