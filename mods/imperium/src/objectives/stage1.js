@@ -61,7 +61,7 @@
   this.importStageIPublicObjective('diversified-research', {
       name 	: 	"Diversified Research" ,
       img	:	"/imperium/img/victory_point_1.png" ,
-      text	:	"Research 2 technologies in two different color paths" ,
+      text	:	"Research 2 technologies in 2 color paths" ,
       canPlayerScoreVictoryPoints : function(imperium_self, player) {
 
 	let techlist = imperium_self.game.state.players_info[player-1].tech;

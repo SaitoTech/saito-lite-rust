@@ -28,10 +28,17 @@
 
 .redsquare-appspace-profile {
   display: grid;
-  grid-template-columns: max-content 1fr;
+  grid-template-columns: max-content 1fr max-content;
   gap: 1rem;
   padding: 2rem;
 }
+
+.redsquare-appspace-profile > div {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .redsquare-appspace-profile-container {
   border: 1px solid var(--saito-border-color);
   border-radius: 0.5rem;

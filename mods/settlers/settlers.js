@@ -1974,7 +1974,7 @@ class Settlers extends GameTemplate {
       let newhtml = "";
 
       let playerHTML = `
-          <div class="saito-user">
+          <div class="saito-user settlers-user saito-user-${this.game.players[i-1]}" id="saito-user-${this.game.players[i-1]}" data-id="${this.game.players[i-1]}">
             <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i-1])}"></div>
             <div class="saito-playername" data-id="${this.game.players[i-1]}">${this.game.playerNames[i-1]}</div>
             <div class="saito-userline">${this.skin.vp.name}: ${this.game.state.players[i - 1].vp}</div>

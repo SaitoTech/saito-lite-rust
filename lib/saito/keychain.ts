@@ -96,6 +96,7 @@ class Keychain {
     //
     // skip empty keys
     //
+    //console.log("Add key: ", JSON.stringify(data));
     if (data.publickey === "") { return; }
 
     //
@@ -103,8 +104,12 @@ class Keychain {
     //
     for (let i = 0; i < this.keys.length; i++) {
       if (this.keys[i].publickey === data.publickey) {
-        let newkey = {};
-        for (let key in data) { if (key !== "publickey") { this.keys[i][key] = data[key]; } }
+        for (let key in data) { 
+          if (key !== "publickey") { 
+            this.keys[i][key] = data[key]; 
+          } 
+        }
+        console.log(JSON.stringify(this.keys[i]));
         this.saveKeys();
         return;
       }

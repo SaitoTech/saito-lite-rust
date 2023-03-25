@@ -1,5 +1,5 @@
 const LeagueRankingsTemplate = require("./rankings.template");
-const LeagueOverlay = require("./overlays/league");
+//const LeagueOverlay = require("./overlays/league");
 
 class LeagueRankings {
 	
@@ -8,7 +8,8 @@ class LeagueRankings {
     this.app = app;
     this.mod = mod;
     this.container = container;
-    this.overlay = new LeagueOverlay(this.app, this.mod);
+    //Currently being defined by module
+    //this.overlay = new LeagueOverlay(this.app, this.mod);
 
     app.connection.on('league-rankings-render-request', () => {
       if (this.mod.debug) { console.log('league-rankings-render-request'); }
@@ -38,7 +39,7 @@ class LeagueRankings {
       leagues.forEach(l => {
         if (l.rank > 0) {
           html += `
-	    <div data-id="${l.id}" class="saito-table-row league-leaderboard-ranking">
+	          <div data-id="${l.id}" class="saito-table-row league-leaderboard-ranking">
               <div class="saito-table-gamename">${l.name}</div>
               <div class="saito-table-rank">${l.rank}</div>
             </div>
@@ -74,7 +75,7 @@ class LeagueRankings {
       el.onclick = (e) => {
 	      let lid = e.currentTarget.getAttribute("data-id");
         this.app.browser.logMatomoEvent("LeagueOverlay", this.app.modules.returnActiveModule().returnName(), e.currentTarget.getAttribute("data-game"));
-	      this.app.connection.emit("league-overlay-render-request", lid);
+        this.app.connection.emit("league-overlay-render-request", lid);
       }
     });
 

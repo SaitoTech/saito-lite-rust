@@ -34,11 +34,12 @@ class ChatManager {
       }
     });
 
+
     app.connection.on("chat-manager-and-popup-render-request", (group) => {
       if (this.render_manager_to_screen) {
         group.unread = 0;
         this.render();
-        if (!this.mod.mute) {
+        if (this.render_popups_to_screen) {
           app.connection.emit("chat-popup-render-request", (group));
         }
       }
@@ -205,6 +206,7 @@ class ChatManager {
     document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
       item.onclick = (e) => {
         let gid = e.currentTarget.getAttribute("data-id");
+        this.render_popups_to_screen = 1;
         let group = cm.mod.returnGroup(gid);
         // unset manually closed to permit re-opening
         if (this.popups[gid]) { this.popups[gid].manually_closed = false; }

@@ -1755,8 +1755,8 @@ if (debugging == 0) {
       if (mv[0] === "shownewobjectives") {
 
 	let game_mod = this;
-	let title = "Your Objectives";
-	let subtitle = "check objectives, strategy cards and more in the CARDS menu...";
+	let title = "Objectives";
+	let subtitle = "click on <span class='help-question'>?</span> in the Victory Points track to review objectives anytime...";
 	let cards = [];
 
         for (let i = 0; i < this.game.state.new_objectives.length; i++) {
@@ -1781,7 +1781,7 @@ if (debugging == 0) {
 	  title : title,
 	  subtitle : subtitle,
 	  columns : cards.length ,
-	  backgroundImage : "/imperium/img/starscape_background1.jpg",
+	  backgroundImage : "/imperium/img/backgrounds/objectives-background.jpg",
 	  padding: "20px",
 	  textAlign: "center",
 	  onContinue : function() {
@@ -1800,7 +1800,7 @@ if (debugging == 0) {
 	        title : "New Agendas",
 	        subtitle : "check active agendas, strategy cards and more in the CARDS menu",
 	        columns : ac.length ,
-	        backgroundImage : "/imperium/img/starscape_background1.jpg",
+	        backgroundImage : "/imperium/img/backgrounds/new-agendas-background.jpg",
 	        padding: "20px",
 	        textAlign: "center",
 	        onClose : function() {

@@ -244,7 +244,7 @@ class VideoChatManager {
         if (!this.peers.includes(peer)) {
             this.peers.push(peer);
         }
-        console.log(this.peers, 'peers ')
+        // console.log(this.peers, 'peers ')
 
         // console.log(this.mod.central, "is mod central or not")
         let room_link = this.createRoomLink();

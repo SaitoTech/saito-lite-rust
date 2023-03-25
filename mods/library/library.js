@@ -80,11 +80,11 @@ class Library extends ModTemplate {
     //
     app.connection.on("save-transaction", (tx) => {
 
-console.log("---------------------");
-console.log("---------------------");
-console.log("IN LIBRARY ON SAVE TX");
-console.log("---------------------");
-console.log("---------------------");
+//console.log("---------------------");
+//console.log("---------------------");
+//console.log("IN LIBRARY ON SAVE TX");
+//console.log("---------------------");
+//console.log("---------------------");
 
       //
       // library exists?
@@ -165,9 +165,9 @@ console.log("---------------------");
 
       if (!this.library[m.collection]) {
 
-console.log(" > ");
-console.log(" > added collection: " + m.collection);
-console.log(" > ");
+//console.log(" > ");
+//console.log(" > added collection: " + m.collection);
+//console.log(" > ");
 
 	this.library[m.collection] = {};
 	this.library[m.collection].local = [];
@@ -222,16 +222,16 @@ console.log(" > ");
             message.data = {};
             message.data.collection = m.collection
 
-console.log(" >> ");
-console.log(" >> requesting: " + m.collection);
-console.log(" >> ");
+//console.log(" >> ");
+//console.log(" >> requesting: " + m.collection);
+//console.log(" >> ");
 
         app.network.sendRequestAsTransactionWithCallback(message.request, message.data, (res) => {
-console.log("RETURNED: " + JSON.stringify(res));
+//console.log("RETURNED: " + JSON.stringify(res));
           if (res.length > 0) {
-console.log(" >>> ");
-console.log(" >>> response: " + JSON.stringify(res));
-console.log(" >>> ");
+//console.log(" >>> ");
+//console.log(" >>> response: " + JSON.stringify(res));
+//console.log(" >>> ");
 
 	    library_self.library[m.collection].peers[peer.returnPublicKey()] = res;  // res = collection
 	  }

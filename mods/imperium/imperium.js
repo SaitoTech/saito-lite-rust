@@ -6302,7 +6302,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
   this.importStageIPublicObjective('diversified-research', {
       name 	: 	"Diversified Research" ,
       img	:	"/imperium/img/victory_point_1.png" ,
-      text	:	"Research 2 technologies in two different color paths" ,
+      text	:	"Research 2 technologies in 2 color paths" ,
       canPlayerScoreVictoryPoints : function(imperium_self, player) {
 
 	let techlist = imperium_self.game.state.players_info[player-1].tech;
@@ -11700,25 +11700,6 @@ console.log("qe: " + qe);
       });
     }
 
-
-
-
-
-
-
-
-/***
-    this.menu.addSubMenuOption("game-game", {
-      text : "Save",
-      id : "game-save",
-      class : "game-save",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.addMove("SAVE");
-	game_mod.endTurn();
-      }
-    });
-***/
     this.menu.addSubMenuOption("game-game", {
       text : "Log",
       id : "game-log",
@@ -11751,77 +11732,64 @@ console.log("qe: " + qe);
 	game_mod.strategy_card_overlay.render();
       }
     });
-/***
+
     this.menu.addSubMenuOption("game-cards", {
-      text : "Objectives",
-      id : "game-objectives-cardlist",
-      class : "game-objectives-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	game_mod.handleObjectivesMenuItem();
-        //game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.stage_i_objectives, { cardlistHeight: "90vh" , cardlistWidth : "90vw" });
-      }
-    });
-***/
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Units",
-      id : "game-units-cardlist",
-      class : "game-units-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.units_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Upgrades",
-      id : "game-unit-cardlist",
-      class : "game-unit-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let tech = game_mod.returnTechnology();
-        let t2 = [];
-        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
-      }
-    });
-/****
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Tech Tree",
+      text : "Tech",
       id : "game-tech-dependencies",
       class : "game-tech-dependencies",
       callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.handleTechMenuItem();
+       game_mod.menu.showSubSubMenu("game-tech-dependencies");
       }
     });
-****/
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Tech",
-      id : "game-tech-cardlist",
-      class : "game-tech-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	game_mod.tech_tree_overlay.render();
-
-//	let tech = game_mod.returnTechnology();
-//        let t2 = [];
-//        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
-//        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/tech-upgrades.jpg" , padding : "50px"});
-      }
-    });
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Agendas",
-      id : "game-agenda-cardlist",
-      class : "game-agenda-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let ac = [];
-	for (let i = 0; i < game_mod.game.state.agendas.length; i++) {
-	  ac.push(game_mod.agenda_cards[game_mod.game.state.agendas[i]]);
+    this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : "Basic",
+        id : "game-tech-dependencies-basic",
+        class : "game-tech-dependencies-basic",
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+	  let tech = game_mod.returnTechnology();
+          let t2 = [];
+          for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
+          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
         }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac, { columns : 3 , cardlistWidth : "90vw" , cardlistHeight : "90vh" });
-      }
     });
+    this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : "Units",
+        id : "game-tech-dependencies-units",
+        class : "game-tech-dependencies-units",
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+          game_mod.units_overlay.render();
+        }
+    });
+    this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : "Upgrades",
+        id : "game-tech-dependencies-upgrades",
+        class : "game-tech-dependencies-upgrades",
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+	  let tech = game_mod.returnTechnology();
+          let t2 = [];
+          for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
+          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
+        }
+    });
+    for (let i = 0; i < this.game.players.length; i++) {
+      this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : this.returnFactionNickname(i+1),
+        id : "game-faction-tech-"+(i+1),
+        class : "game-faction-tech-"+(i+1),
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+	  let faction_key = game_mod.game.state.players_info[i].faction;
+	  let tech = game_mod.returnTechnology();
+          let t2 = [];
+          for (let x in tech) { if (tech[x].faction == faction_key) { t2.push(tech[x]); } }
+          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
+        }
+      });
+    }
+
     this.menu.addSubMenuOption("game-cards", {
       text : "Laws",
       id : "game-laws-cardlist",
@@ -11846,11 +11814,13 @@ console.log("qe: " + qe);
 	let ac = game_mod.returnActionCards();
 	let ac2 = [];
 	for (let x in ac) {
-	  if (x.indexOf("2") || x.indexOf("3") || x.indexOf("4") || x.indexOf("5")) {
+console.log(JSON.stringify(x));
+	  if (x.indexOf("2") > 0 || x.indexOf("3") > 0 || x.indexOf("4") > 0 || x.indexOf("5") > 0 ) {
 	  } else {
-	    ac2 = JSON.parse(JSON.stringify(ac[x]));   
+	    ac2.push(ac[x]);
 	  }
 	}
+console.log("ACT: " + JSON.stringify(ac2));
         game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac2, {});
       }
     });
@@ -15459,8 +15429,8 @@ if (debugging == 0) {
       if (mv[0] === "shownewobjectives") {
 
 	let game_mod = this;
-	let title = "Your Objectives";
-	let subtitle = "check objectives, strategy cards and more in the CARDS menu...";
+	let title = "Objectives";
+	let subtitle = "click on <span class='help-question'>?</span> in the Victory Points track to review objectives anytime...";
 	let cards = [];
 
         for (let i = 0; i < this.game.state.new_objectives.length; i++) {
@@ -15485,7 +15455,7 @@ if (debugging == 0) {
 	  title : title,
 	  subtitle : subtitle,
 	  columns : cards.length ,
-	  backgroundImage : "/imperium/img/starscape_background1.jpg",
+	  backgroundImage : "/imperium/img/backgrounds/objectives-background.jpg",
 	  padding: "20px",
 	  textAlign: "center",
 	  onContinue : function() {
@@ -31283,9 +31253,6 @@ try {
     pid = $(this).attr("id");
     imperium_self.overlay.show(imperium_self.returnSectorInformationHTML(pid));
   });
-  $('.VP-track-label').on('click', function (e) {
-    imperium_self.handleObjectivesMenuItem();
-  });
 } catch (err) {}
 }
 
@@ -31486,8 +31453,13 @@ returnSectorInformationHTML(sector) {
     html += '</div>';
   }
 
+  let gridcols = '1fr';
+  for (let z = 1; z < sys.p.length; z++) {
+    gridcols += ' 1fr';
+  }
+
   html += `
-    <div class="grid-2">
+    <div class="system_summary_planets_grid" style="grid-template-columns:${gridcols}">
   `;
   for (let i = 0; i < sys.p.length; i++) {
     let planet_owner = "UNCONTROLLED";
@@ -31497,16 +31469,15 @@ returnSectorInformationHTML(sector) {
     html += `
       <div class="system_summary_planet">
         ${planet_owner}
-        <p style="margin-top:10px" />
-        <div style='clear:both;margin-left:10px;margin-top:6px;'>
+        <div class="system_summary_content">
           ${this.returnInfantryOnPlanet(sys.p[i])} infantry
           <br />
           ${this.returnPDSOnPlanet(sys.p[i])} PDS
           <br />
           ${this.returnSpaceDocksOnPlanet(sys.p[i])} spacedocks
         </div>
+        <div class="system_summary_planet_card" style="background-image: url('${sys.p[i].img}');"></div>
       </div>
-      <div class="system_summary_planet_card" style="background-image: url('${sys.p[i].img}');"></div>
     `;
   }
   html += `
@@ -31918,6 +31889,12 @@ addUIEvents() {
   $('#hexGrid').draggable();
 
   document.querySelector('.leaderboardbox').addEventListener('click', (e) => {
+
+    if (e.target.id === "objectives-toggle" || e.target.id === "VP-track-label") {
+      imperium_self.handleObjectivesMenuItem();
+      return;
+    }
+
     document.querySelector('.leaderboardbox').classList.toggle('leaderboardbox-lock');
   });
 
@@ -31993,7 +31970,7 @@ updateLeaderboard() {
     document.querySelector('.round').innerHTML = this.game.state.round;
     document.querySelector('.turn').innerHTML = this.game.state.turn;
 
-    let html = '<div class="VP-track-label">Victory Points<div class="objectives-toggle">?</div></div>';
+    let html = '<div class="VP-track-label" id="VP-track-label">Victory Points<div class="objectives-toggle" id="objectives-toggle">?</div></div>';
 
     let vp_needed = 14;
     if (this.game.state.vp_target != 14 && this.game.state.vp_target > 0) { vp_needed = this.game.state.vp_target; }

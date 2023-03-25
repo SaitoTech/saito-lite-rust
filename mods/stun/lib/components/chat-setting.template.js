@@ -1,6 +1,7 @@
 module.exports = () => {
     return `
     <div class="chat-settings-container">
+    <div class="chat-settings-wrapper">
     <div class="chat-settings">
     <div class="chat-settings-preview-section">
         <h1>Welcome to Saito Video</h1>
@@ -29,6 +30,7 @@ module.exports = () => {
         <button id="join-button" class="chat-settings-join">Join Meeting</button>
     </div>
 
+</div>
 </div>
 </div>
      `;

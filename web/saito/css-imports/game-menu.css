@@ -37,6 +37,11 @@
 
 }
 
+.game-menu ul li ul .game-menu-sub-option , .game-menu ul li ul li ul .game-menu-sub-sub-option {
+  height: 50px;
+  line-height: 50px;
+}
+
 #quake-controls {
     width: 600px;
 }

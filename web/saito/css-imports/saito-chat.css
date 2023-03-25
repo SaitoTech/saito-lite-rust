@@ -35,6 +35,13 @@
   max-height: calc(99vh - var(--saito-header-height));
   overflow: hidden;
   resize: both;
+  min-width: 300px;
+  min-height: 150px;
+  z-index: 5;
+}
+
+.chat-body img {
+  max-width: 100%;
 }
 
 .chat-container img.img-prev {
