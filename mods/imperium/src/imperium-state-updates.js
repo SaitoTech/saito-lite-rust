@@ -86,7 +86,6 @@
     let sys = imperium_self.returnSectorAndPlanets(sector);
     if (sector.indexOf("_") > 0) { sector = sys.s.sector; }
 
-
     let ships_over_capacity = this.returnShipsOverCapacity(player, sector);
     let fighters_over_capacity = this.returnFightersWithoutCapacity(player, sector);
 

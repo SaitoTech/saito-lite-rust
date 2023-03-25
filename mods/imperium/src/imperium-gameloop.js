@@ -283,6 +283,41 @@ console.log("PLAYERS: " + JSON.stringify(this.game.players));
       }
 
 
+      if (mv[0] === "rearrange_tokens") {
+
+	let imperium_self = this;
+        let player = parseInt(mv[1]);
+
+  	this.game.queue.splice(qe, 1);
+
+        if (imperium_self.game.player == player) {
+          imperium_self.playerRearrangeTokens();
+        } else {
+	  imperium_self.updateStatus(imperium_self.returnFaction(player) + " is redistributing tokens...");
+	}
+
+	return 0;
+
+      }
+
+
+      if (mv[0] === "rearrange") {
+
+        let player = parseInt(mv[1]);
+        let new_ct = parseInt(mv[2]);
+        let new_st = parseInt(mv[3]);
+        let new_fs = parseInt(mv[4]);
+  	this.game.queue.splice(qe, 1);
+
+	this.game.state.players_info[player-1].command_tokens = new_ct;
+	this.game.state.players_info[player-1].strategy_tokens = new_st;
+	this.game.state.players_info[player-1].fleet_supply = new_fs;
+
+	imperium_self.updateLog(this.returnFactionNickname(player) + " redistributes tokens: " + new_ct + "/" + new_st + "/" + new_fs);
+
+	return 1;
+
+      }
 
 
       if (mv[0] === "research") {

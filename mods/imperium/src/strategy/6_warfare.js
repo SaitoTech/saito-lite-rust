@@ -17,6 +17,7 @@
             imperium_self.addMove("strategy\t"+"warfare"+"\t"+strategy_card_player+"\t2");
             imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
             imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
+            imperium_self.addMove("rearrange_tokens\t"+strategy_card_player);
             imperium_self.addMove("deactivate\t"+strategy_card_player+"\t"+sector);
             imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(strategy_card_player)+" deactivates "+sys.s.name);
             imperium_self.playerAllocateNewTokens(imperium_self.game.player, 1, 0, 3, 0);

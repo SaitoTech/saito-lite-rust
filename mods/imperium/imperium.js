@@ -5110,6 +5110,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
             imperium_self.addMove("strategy\t"+"warfare"+"\t"+strategy_card_player+"\t2");
             imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
             imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
+            imperium_self.addMove("rearrange_tokens\t"+strategy_card_player);
             imperium_self.addMove("deactivate\t"+strategy_card_player+"\t"+sector);
             imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(strategy_card_player)+" deactivates "+sys.s.name);
             imperium_self.playerAllocateNewTokens(imperium_self.game.player, 1, 0, 3, 0);
@@ -13957,6 +13958,41 @@ console.log("PLAYERS: " + JSON.stringify(this.game.players));
       }
 
 
+      if (mv[0] === "rearrange_tokens") {
+
+	let imperium_self = this;
+        let player = parseInt(mv[1]);
+
+  	this.game.queue.splice(qe, 1);
+
+        if (imperium_self.game.player == player) {
+          imperium_self.playerRearrangeTokens();
+        } else {
+	  imperium_self.updateStatus(imperium_self.returnFaction(player) + " is redistributing tokens...");
+	}
+
+	return 0;
+
+      }
+
+
+      if (mv[0] === "rearrange") {
+
+        let player = parseInt(mv[1]);
+        let new_ct = parseInt(mv[2]);
+        let new_st = parseInt(mv[3]);
+        let new_fs = parseInt(mv[4]);
+  	this.game.queue.splice(qe, 1);
+
+	this.game.state.players_info[player-1].command_tokens = new_ct;
+	this.game.state.players_info[player-1].strategy_tokens = new_st;
+	this.game.state.players_info[player-1].fleet_supply = new_fs;
+
+	imperium_self.updateLog(this.returnFactionNickname(player) + " redistributes tokens: " + new_ct + "/" + new_st + "/" + new_fs);
+
+	return 1;
+
+      }
 
 
       if (mv[0] === "research") {
@@ -15474,7 +15510,7 @@ if (debugging == 0) {
 	        title : "New Agendas",
 	        subtitle : "check active agendas, strategy cards and more in the CARDS menu",
 	        columns : ac.length ,
-	        backgroundImage : "/imperium/img/starscape_background1.jpg",
+	        backgroundImage : "/imperium/img/backgrounds/new-agendas-background.jpg",
 	        padding: "20px",
 	        textAlign: "center",
 	        onClose : function() {
@@ -20344,6 +20380,100 @@ playerTurn(stage = "main") {
   }
 }
 
+playerRearrangeTokens() {
+
+  let existing_tokens = this.game.state.players_info[this.game.player-1].strategy_tokens;
+      existing_tokens += this.game.state.players_info[this.game.player-1].command_tokens;
+      existing_tokens += this.game.state.players_info[this.game.player-1].fleet_supply;
+
+  let new_st = 0;
+  let new_ct = 0;
+  let new_fs = 0;
+
+  let imperium_self = this;
+  let html = '<div class="sf-readable">Do you wish to re-arrange your command / strategy / fleet tokens? </div><ul>';
+  html += '<li class="option" id="rearrange">rearrange tokens</li>';
+  html += '<li class="option" id="skip">no need</li>';
+  html += '</ul>';  
+
+  let updateInterface = function(updateInterface) {
+
+    let html = '';
+
+    if (existing_tokens > 0) {
+        html = '<div class="sf-readable">Tokens Remaining: '+existing_tokens+'</div><ul>';
+        html += '<li class="option" id="command">'+new_ct+' command tokens</li>';
+        html += '<li class="option" id="strategy">'+new_st+' strategy tokens</li>';
+        html += '<li class="option" id="fleet">'+new_fs+' fleet supply</li>';
+        html += '</ul>';  
+    } else {
+        html = '<div class="sf-readable">Confirm: '+new_ct+"/"+new_st+"/"+new_fs+'</div><ul>';
+        html += '<li class="option" id="confirm">yes, confirm</li>';
+        html += '<li class="option" id="redo">no, try again</li>';
+        html += '</ul>';
+    }
+
+    imperium_self.updateStatus(html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+
+      $('.option').off();
+      let action2 = $(this).attr("id");
+
+      if (action2 === "confirm"){
+	imperium_self.addMove("rearrange\t"+imperium_self.game.player+"\t"+new_ct+"\t"+new_st+"\t"+new_fs);
+	imperium_self.endTurn();
+	return;
+      }
+
+      if (action2 === "redo"){
+	existing_tokens = existing_tokens + new_ct + new_st + new_fs;
+	new_ct = 0;
+	new_st = 0;
+	new_fs = 0;
+      }
+
+      if (action2 === "command"){
+	existing_tokens--;
+	new_ct++; 
+      }
+
+      if (action2 === "strategy"){
+	existing_tokens--;
+	new_st++; 
+      }
+
+      if (action2 === "fleet"){
+	existing_tokens--;
+	new_fs++; 
+      }
+
+      updateInterface(updateInterface);
+      return;
+
+    });
+  }
+
+  this.updateStatus(html);
+
+  $('.option').off();
+  $('.option').on('click', function () {
+
+    let action2 = $(this).attr("id");
+
+    if (action2 === "rearrange") {
+      updateInterface(updateInterface);
+      return;
+    }
+
+    if (action2 === "skip") {
+      imperium_self.endTurn();
+      return;
+    }
+  });
+
+}
 
 playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
 
@@ -20530,6 +20660,9 @@ playerPlayBombardment(attacker, sector, planet_idx) {
   //
   // no bombardment of my own planets (i.e. if parlay ends invasion)
   //
+    let html = '<div class="action_card_instructions_hud">' + this.returnFaction(action_card_player) + ' has played an action card:</div>';
+    html += '<div class="action_card_name_hud">' + imperium_self.action_cards[card].name + '</div>';
+    html += '<div class="action_card_text_hud">';
   if (sys.p[planet_idx].owner == imperium_self.game.player) {
     imperium_self.endTurn();
     return 0;
@@ -30782,7 +30915,6 @@ console.log(JSON.stringify(ship));
     let imperium_self = this;
     let sys = imperium_self.returnSectorAndPlanets(sector);
     if (sector.indexOf("_") > 0) { sector = sys.s.sector; }
-
 
     let ships_over_capacity = this.returnShipsOverCapacity(player, sector);
     let fighters_over_capacity = this.returnFightersWithoutCapacity(player, sector);

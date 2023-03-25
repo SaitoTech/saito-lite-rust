@@ -453,6 +453,100 @@ playerTurn(stage = "main") {
   }
 }
 
+playerRearrangeTokens() {
+
+  let existing_tokens = this.game.state.players_info[this.game.player-1].strategy_tokens;
+      existing_tokens += this.game.state.players_info[this.game.player-1].command_tokens;
+      existing_tokens += this.game.state.players_info[this.game.player-1].fleet_supply;
+
+  let new_st = 0;
+  let new_ct = 0;
+  let new_fs = 0;
+
+  let imperium_self = this;
+  let html = '<div class="sf-readable">Do you wish to re-arrange your command / strategy / fleet tokens? </div><ul>';
+  html += '<li class="option" id="rearrange">rearrange tokens</li>';
+  html += '<li class="option" id="skip">no need</li>';
+  html += '</ul>';  
+
+  let updateInterface = function(updateInterface) {
+
+    let html = '';
+
+    if (existing_tokens > 0) {
+        html = '<div class="sf-readable">Tokens Remaining: '+existing_tokens+'</div><ul>';
+        html += '<li class="option" id="command">'+new_ct+' command tokens</li>';
+        html += '<li class="option" id="strategy">'+new_st+' strategy tokens</li>';
+        html += '<li class="option" id="fleet">'+new_fs+' fleet supply</li>';
+        html += '</ul>';  
+    } else {
+        html = '<div class="sf-readable">Confirm: '+new_ct+"/"+new_st+"/"+new_fs+'</div><ul>';
+        html += '<li class="option" id="confirm">yes, confirm</li>';
+        html += '<li class="option" id="redo">no, try again</li>';
+        html += '</ul>';
+    }
+
+    imperium_self.updateStatus(html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+
+      $('.option').off();
+      let action2 = $(this).attr("id");
+
+      if (action2 === "confirm"){
+	imperium_self.addMove("rearrange\t"+imperium_self.game.player+"\t"+new_ct+"\t"+new_st+"\t"+new_fs);
+	imperium_self.endTurn();
+	return;
+      }
+
+      if (action2 === "redo"){
+	existing_tokens = existing_tokens + new_ct + new_st + new_fs;
+	new_ct = 0;
+	new_st = 0;
+	new_fs = 0;
+      }
+
+      if (action2 === "command"){
+	existing_tokens--;
+	new_ct++; 
+      }
+
+      if (action2 === "strategy"){
+	existing_tokens--;
+	new_st++; 
+      }
+
+      if (action2 === "fleet"){
+	existing_tokens--;
+	new_fs++; 
+      }
+
+      updateInterface(updateInterface);
+      return;
+
+    });
+  }
+
+  this.updateStatus(html);
+
+  $('.option').off();
+  $('.option').on('click', function () {
+
+    let action2 = $(this).attr("id");
+
+    if (action2 === "rearrange") {
+      updateInterface(updateInterface);
+      return;
+    }
+
+    if (action2 === "skip") {
+      imperium_self.endTurn();
+      return;
+    }
+  });
+
+}
 
 playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
 
@@ -639,6 +733,9 @@ playerPlayBombardment(attacker, sector, planet_idx) {
   //
   // no bombardment of my own planets (i.e. if parlay ends invasion)
   //
+    let html = '<div class="action_card_instructions_hud">' + this.returnFaction(action_card_player) + ' has played an action card:</div>';
+    html += '<div class="action_card_name_hud">' + imperium_self.action_cards[card].name + '</div>';
+    html += '<div class="action_card_text_hud">';
   if (sys.p[planet_idx].owner == imperium_self.game.player) {
     imperium_self.endTurn();
     return 0;
