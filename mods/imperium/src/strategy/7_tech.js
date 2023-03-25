@@ -217,8 +217,8 @@
 
 
 
-    this.importActionCard('unexpected-breakthrough', {
-        name : "Unexpected Breakthrough" ,
+    this.importActionCard('breakthrough', {
+        name : "Breakthrough" ,
         type : "action" ,
         text : "Do not spend resources to research technology the next time the Technology card is played" ,
         playActionCard : function(imperium_self, player, action_card_player, card) {

@@ -26,7 +26,9 @@ class TechTreeOverlay {
     for (let x in tech) { if (tech[x].type == "special" && tech[x].unit != 1) { faction_tech.push(tech[x]); } }
     for (let x in tech) { if (tech[x].type == "special" && tech[x].unit == 1) { faction_unit.push(tech[x]); } }
 
-    this.overlay.showCardSelectionOverlay(this.app, this.mod, normal_tech, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"}); 
+    let t = normal_tech.concat(unit_tech);
+
+    this.overlay.showCardSelectionOverlay(this.app, this.mod, t, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"}); 
 
     //this.overlay.show(ImperiumTechTreeOverlayTemplate());
     this.attachEvents();
