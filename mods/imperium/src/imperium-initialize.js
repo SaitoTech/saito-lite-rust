@@ -420,8 +420,8 @@ console.log("ACT: " + JSON.stringify(ac2));
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      let sys = this.returnSectorAndPlanets("4_4");
-      sys.p[0].owner = 1;
+      //let sys = this.returnSectorAndPlanets("4_4");
+      //sys.p[0].owner = 1;
 
 
       //

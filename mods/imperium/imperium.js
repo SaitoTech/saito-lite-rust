@@ -12079,8 +12079,8 @@ console.log("ACT: " + JSON.stringify(ac2));
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      let sys = this.returnSectorAndPlanets("4_4");
-      sys.p[0].owner = 1;
+      //let sys = this.returnSectorAndPlanets("4_4");
+      //sys.p[0].owner = 1;
 
 
       //
@@ -13875,6 +13875,10 @@ console.log("PLAYERS: " + JSON.stringify(this.game.players));
 	      for (let z = 0; z < this.game.players.length; z++) {
 		if (this.game.players[z] === still_to_move[i]) {
 		  if (this.game.players[z] === this.app.wallet.returnPublicKey()) { am_i_still_to_move = 1; }
+console.log("WHO - IDX " + z);
+console.log("WHO - PLAYER " + (z+1));
+console.log("WHO: " + this.game.players[z]);
+console.log("WHO: " + this.returnFaction(z+1));
 	          notice += '<li class="option">'+this.returnFaction((z+1))+'</li>';
 		}
 	      }
@@ -27902,6 +27906,7 @@ playerDiscardActionCards(num, mycallback=null) {
   }
   returnFactionName(imperium_self, player) {
     let factions = imperium_self.returnFactions();
+console.log("return faction name of: " + player);
     return factions[imperium_self.game.state.players_info[player-1].faction].name;
   }
   returnPlayerOfFaction(faction) {
