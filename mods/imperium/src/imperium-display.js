@@ -16,9 +16,7 @@ displayBoard() {
 flashSector(sector) {
 
   if (sector.indexOf("_") > -1) { sector = this.game.board[sector].tile; }
-console.log("sector: " + sector);
 
-console.log(this.game.sectors[sector].tile);
   let tile = this.game.sectors[sector].tile;
 
   let qs = "#hex_bg_" + tile + " > img";
@@ -90,6 +88,9 @@ try {
     if (Math.abs(ypos-e.clientY) > 4) { return; }
     pid = $(this).attr("id");
     imperium_self.overlay.show(imperium_self.returnSectorInformationHTML(pid));
+  });
+  $('.VP-track-label').on('click', function (e) {
+    imperium_self.handleObjectivesMenuItem();
   });
 } catch (err) {}
 }
@@ -798,7 +799,7 @@ updateLeaderboard() {
     document.querySelector('.round').innerHTML = this.game.state.round;
     document.querySelector('.turn').innerHTML = this.game.state.turn;
 
-    let html = '<div class="VP-track-label">Victory Points</div>';
+    let html = '<div class="VP-track-label">Victory Points<div class="objectives-toggle">?</div></div>';
 
     let vp_needed = 14;
     if (this.game.state.vp_target != 14 && this.game.state.vp_target > 0) { vp_needed = this.game.state.vp_target; }

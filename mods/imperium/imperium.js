@@ -5392,8 +5392,8 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
 
 
 
-    this.importActionCard('unexpected-breakthrough', {
-        name : "Unexpected Breakthrough" ,
+    this.importActionCard('breakthrough', {
+        name : "Breakthrough" ,
         type : "action" ,
         text : "Do not spend resources to research technology the next time the Technology card is played" ,
         playActionCard : function(imperium_self, player, action_card_player, card) {
@@ -11751,6 +11751,7 @@ console.log("qe: " + qe);
 	game_mod.strategy_card_overlay.render();
       }
     });
+/***
     this.menu.addSubMenuOption("game-cards", {
       text : "Objectives",
       id : "game-objectives-cardlist",
@@ -11761,6 +11762,7 @@ console.log("qe: " + qe);
         //game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.stage_i_objectives, { cardlistHeight: "90vh" , cardlistWidth : "90vw" });
       }
     });
+***/
     this.menu.addSubMenuOption("game-cards", {
       text : "Units",
       id : "game-units-cardlist",
@@ -31208,9 +31210,7 @@ displayBoard() {
 flashSector(sector) {
 
   if (sector.indexOf("_") > -1) { sector = this.game.board[sector].tile; }
-console.log("sector: " + sector);
 
-console.log(this.game.sectors[sector].tile);
   let tile = this.game.sectors[sector].tile;
 
   let qs = "#hex_bg_" + tile + " > img";
@@ -31282,6 +31282,9 @@ try {
     if (Math.abs(ypos-e.clientY) > 4) { return; }
     pid = $(this).attr("id");
     imperium_self.overlay.show(imperium_self.returnSectorInformationHTML(pid));
+  });
+  $('.VP-track-label').on('click', function (e) {
+    imperium_self.handleObjectivesMenuItem();
   });
 } catch (err) {}
 }
@@ -31990,7 +31993,7 @@ updateLeaderboard() {
     document.querySelector('.round').innerHTML = this.game.state.round;
     document.querySelector('.turn').innerHTML = this.game.state.turn;
 
-    let html = '<div class="VP-track-label">Victory Points</div>';
+    let html = '<div class="VP-track-label">Victory Points<div class="objectives-toggle">?</div></div>';
 
     let vp_needed = 14;
     if (this.game.state.vp_target != 14 && this.game.state.vp_target > 0) { vp_needed = this.game.state.vp_target; }

@@ -93,6 +93,7 @@
 	game_mod.strategy_card_overlay.render();
       }
     });
+/***
     this.menu.addSubMenuOption("game-cards", {
       text : "Objectives",
       id : "game-objectives-cardlist",
@@ -103,6 +104,7 @@
         //game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.stage_i_objectives, { cardlistHeight: "90vh" , cardlistWidth : "90vw" });
       }
     });
+***/
     this.menu.addSubMenuOption("game-cards", {
       text : "Units",
       id : "game-units-cardlist",
