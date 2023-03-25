@@ -356,7 +356,6 @@ class Solitrio extends OnePlayerGameTemplate {
     
     $("#rowbox").addClass("nomoves");
     
-
     $("#shuffle")
       .css("color", "#000")
       .css("background", "#FFF6")

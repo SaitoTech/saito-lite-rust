@@ -200,6 +200,10 @@ console.log("PLAYERS: " + JSON.stringify(this.game.players));
 	      for (let z = 0; z < this.game.players.length; z++) {
 		if (this.game.players[z] === still_to_move[i]) {
 		  if (this.game.players[z] === this.app.wallet.returnPublicKey()) { am_i_still_to_move = 1; }
+console.log("WHO - IDX " + z);
+console.log("WHO - PLAYER " + (z+1));
+console.log("WHO: " + this.game.players[z]);
+console.log("WHO: " + this.returnFaction(z+1));
 	          notice += '<li class="option">'+this.returnFaction((z+1))+'</li>';
 		}
 	      }
