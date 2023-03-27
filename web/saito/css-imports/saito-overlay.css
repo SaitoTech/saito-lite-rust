@@ -23,14 +23,14 @@
     min-height: 10%;
     max-height: 100vh;
     max-width: 100vw;
-
 }
 
-.saito-overlay > div, .saito-overlay > form {
-    box-shadow: 3px 3px 15px 2px var(--saito-black);
+.saito-overlay>div, .saito-overlay>form {
+    box-shadow: var(--saito-box-shadow);
 }
 
 /* Clickable container for close icon */
+
 .saito-overlay-closebox {
     position: absolute;
     width: 3rem;
@@ -43,7 +43,7 @@
     transition: all 0.3s;
 }
 
-.saito-overlay > .saito-overlay-closebox {
+.saito-overlay>.saito-overlay-closebox {
     box-shadow: unset;
 }
 
@@ -53,6 +53,7 @@
 }
 
 /* Close icon */
+
 .saito-overlay-closebox-btn {
     cursor: pointer;
     display: block;
@@ -60,11 +61,11 @@
     width: 3rem;
     color: var(--saito-primary);
     background-color: var(--saito-white);
-    font-size: 3rem;
+    font-size: 3.1rem;
     border-radius: 50%;
 }
 
-.saito-overlay-closebox:hover{
+.saito-overlay-closebox:hover {
     transform: rotate(90deg);
 }
 
@@ -85,7 +86,6 @@
     background: var(--dreamscape);
     width: 100%;
     border-radius: 0.5rem;
-
 }
 
 .saito-overlay-form-header-title {
@@ -145,7 +145,7 @@
     padding: 1.4rem;
 }
 
-.saito-overlay-subform.centerme{
+.saito-overlay-subform.centerme {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -169,12 +169,12 @@
 }
 
 .saito-overlay-form-submitline {
-   display: flex;
-   flex-direction: row;
-   justify-content: flex-end;
-   flex-grow: 1;
-   align-items: center;
-   gap: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-grow: 1;
+    align-items: center;
+    gap: 1rem;
 }
 
 .saito-overlay-form textarea, .saito-overlay-form input {
@@ -183,9 +183,16 @@
 
 @media screen and (max-width: 768px) {
     .saito-overlay-form-submitline {
-        flex-direction: column;   
+        flex-direction: column;
     }
     .saito-overlay-form>button[type="button"], .saito-overlay-form-submitline>button[type="button"] {
         width: 100%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .maximized-overlay .saito-overlay-closebox {
+        top: 0.5rem;
+        right: 0.5rem;
     }
 }
