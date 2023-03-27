@@ -9,7 +9,7 @@
   padding: 0 calc((100vw - var(--saito-width)) / 2);
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: 15;
   height: var(--saito-header-height);
   border-bottom: 1px solid var(--saito-border-color);
 }
