@@ -32,6 +32,10 @@ button, .saito-button-primary, .saito-button-secondary:hover {
   color: var(--saito-font-color);
 }
 
+.arcade-central-panel .arcade-initializer {
+  height: 100vh;
+}
+
 .arcade-game-initializer-success-title {
   text-align: center;
   font-size: 3rem;
@@ -72,7 +76,7 @@ button, .saito-button-primary, .saito-button-secondary:hover {
   }
 
   .saito-container { 
-    height: unset;
+    /*height: unset;*/
    }
 
    .saito-table-row {
