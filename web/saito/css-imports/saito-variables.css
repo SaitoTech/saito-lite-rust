@@ -86,7 +86,7 @@ html[data-theme="dark"] {
   --saito-background-color: #211f25;
   --saito-background-light: #181a29;
   --saito-gray-transparent: #88888818;
-  --saito-box-shadow: 0 0 0 1px;
+  --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-arcade-header-background: transparent;
   --saito-button-background: var(--saito-primary);
   --saito-modal-background: #2e2636;
@@ -111,7 +111,7 @@ html[data-theme="arcade"] {
   --saito-background-shim: #0008;
   --saito-dark-shim: #0009;
   --saito-light-shim: #0001;
-  --saito-box-shadow: 0 0 0 1px;
+  --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-button-background: linear-gradient(45deg, #540e81, #b539e8);
   --saito-arcade-header-background: transparent;
   --saito-modal-background: var(--saito-background-light);
