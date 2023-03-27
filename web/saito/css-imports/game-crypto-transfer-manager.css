@@ -40,25 +40,38 @@ input[type="checkbox"].ignore_checkbox {
   margin: 0rem;
 }
 
-.crypto_transfer_btn:hover {
+/*.crypto_transfer_btn:hover {
     background-color: white;
     color: black;
     text-shadow: none;
-}
+}*/
 
 .crypto_transfer_btn {
-    background-color: var(--saito-button-background);
-    color: var(--saito-white);
-    margin-left: auto;
-    margin-right: auto;
-    position: relative;
-    margin-top: 1rem;
-    font-size: 2em;
-    text-transform: uppercase;
-    transition: all .2s ease-in-out;
-    cursor: pointer;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
+  background-color: var(--saito-button-background);
+  color: var(--saito-white);
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  font-size: 1.8rem;
+  text-transform: uppercase;
+  transition: all .2s ease-in-out;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  width: fit-content;
+  height: 5rem;
+  line-height: 5rem;
+  padding: 0rem;
+}
+
+.crypto_transfer_btn.secondary {
+  background: none;
+  color: var(--saito-button-background);
+  border: 1px solid var(--saito-button-background);
+}
+
+.crypto-stake-offer-btn-container {
+  display: flex;
+  flex-direction: row;
 }
 
 .crypto_amount_btn {
@@ -91,6 +104,10 @@ input[type="checkbox"].ignore_checkbox {
 
 .crypto-stake-confirm-container input {
   background: none;
+}
+
+.crypto_msg {
+  font-size: 1.6rem;
 }
 
 .amount {
