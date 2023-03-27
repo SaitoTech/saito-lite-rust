@@ -811,11 +811,11 @@ class League extends ModTemplate {
       await this.incrementPlayer(p.publickey, league.id, outcome);
       
       p.score += p.k * ( (1/winner.length) - (p.q / qsum));
-      await this.updatePlayerScore(p);
+      await this.updatePlayerScore(p, league.id);
     }
     for (let p of loser){
       p.score -= (p.k * p.q / qsum);
-      await this.updatePlayerScore(p);
+      await this.updatePlayerScore(p, league.id);
     }
 
   }
@@ -841,7 +841,7 @@ class League extends ModTemplate {
       
       player.score = Math.max(player.score, newScore)
       await this.incrementPlayer(player.publickey, league.id, "games_finished");
-      await this.updatePlayerScore(player);
+      await this.updatePlayerScore(player, league.id);
     }
 
   }
@@ -886,7 +886,7 @@ class League extends ModTemplate {
 
 
 
-  async updatePlayerScore(playerObj) {
+  async updatePlayerScore(playerObj, league_id) {
 
     let league = this.returnLeague(playerObj.league_id);
     if (league?.players){
@@ -906,7 +906,7 @@ class League extends ModTemplate {
       $score: playerObj.score,
       $ts: new Date().getTime() ,
       $publickey: playerObj.publickey,
-      $league_id: playerObj.league_id
+      $league_id: league_id
     }
 
     await this.app.storage.executeDatabase(sql, params, "league");
