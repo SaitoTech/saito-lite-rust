@@ -189,3 +189,10 @@
         width: 100%;
     }
 }
+
+@media screen and (max-width: 600px) {
+    .maximized-overlay .saito-overlay-closebox {
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+}
