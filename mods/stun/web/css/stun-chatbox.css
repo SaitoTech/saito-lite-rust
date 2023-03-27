@@ -480,8 +480,6 @@
 }
 
 @media screen and (max-height: 850px) {
-  .video-box-container-large:nth-child(2) {
-  }
 
   .control-panel {
     padding-bottom: 10rem;

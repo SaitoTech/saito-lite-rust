@@ -27,7 +27,7 @@
 }
 
 .saito-overlay > div, .saito-overlay > form {
-    box-shadow: 3px 3px 15px 2px var(--saito-black);
+    box-shadow: var(--saito-box-shadow);
 }
 
 /* Clickable container for close icon */
