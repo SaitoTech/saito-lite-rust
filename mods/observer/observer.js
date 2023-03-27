@@ -340,7 +340,7 @@ class Observer extends ModTemplate {
     newtx.game_status = txmsg.game_state.over ? "over" : "live";
     newtx.players_array = txmsg.game_state.players.join("_");
     newtx.module = txmsg.module;
-    newtx.ts = txmsg.game_state.step.ts || new Date().getTime();
+    newtx.timestamp = txmsg.game_state.step.timestamp || new Date().getTime();
     newtx.game_state = JSON.stringify(txmsg.game_state);
 
     return newtx;
@@ -356,7 +356,7 @@ class Observer extends ModTemplate {
       }
     }
 
-    msg.latest_move = msg.ts;
+    msg.latest_move = msg.timestamp;
     this.games.push(msg);
     console.log(JSON.stringify(this.games));
     this.app.connection.emit("observer-add-game-render-request", this.games);
@@ -371,7 +371,7 @@ class Observer extends ModTemplate {
       if (msg.game_id == this.games[i].game_id) {
         if (msg.step) {
           this.games[i].step = msg.step.game;
-          this.games[i].latest_move = msg.step.ts;
+          this.games[i].latest_move = msg.step.timestamp;
         }
         if (msg.request == "gameover" || msg.request == "stopgame") {
           console.log("Observer: game over");
@@ -431,7 +431,7 @@ class Observer extends ModTemplate {
         $game_id: txmsg.game_id,
         $players_array: players_array,
         $module: txmsg.module,
-        $ts: game_state.step.ts || new Date().getTime(),
+        $ts: game_state.step.timestamp || new Date().getTime(),
         $game_state: JSON.stringify(game_state),
       };
 
@@ -460,9 +460,9 @@ class Observer extends ModTemplate {
       params = {
         $step: txmsg.step?.game || 1,
         $game_id: txmsg.game_id,
-        $player: tx.transaction.from[0].add,
+        $player: tx.transaction.from[0].publicKey,
         $tx: JSON.stringify(tx.transaction),
-        $ts: txmsg.step?.ts || new Date().getTime(),
+        $ts: txmsg.step?.timestamp || new Date().getTime(),
       };
 
       await app.storage.executeDatabase(sql, params, "observer");
@@ -537,7 +537,7 @@ class Observer extends ModTemplate {
         //  }
         //}
 
-        game.ts = new Date().getTime();
+        game.timestamp = new Date().getTime();
         //this.app.keychain.addWatchedPublicKey(address_to_watch);
         this.app.storage.saveOptions();
         let slug = this.app.modules.returnModule(msgobj.module).returnSlug();
@@ -604,7 +604,8 @@ class Observer extends ModTemplate {
 
       if (
         queued_txmsg.step.game <= game_mod.game.step.game &&
-        queued_txmsg.step.game <= game_mod.game.step.players[queued_tx.transaction.from[0].add]
+        queued_txmsg.step.game <=
+          game_mod.game.step.players[queued_tx.transaction.from[0].publicKey]
       ) {
         console.log("Trimming future move to download new ones:", JSON.stringify(queued_txmsg));
         game_mod.game.future.splice(i, 1);
@@ -643,7 +644,7 @@ class Observer extends ModTemplate {
             if (
               future_tx.msg.step.game <= game_mod.game.step.game &&
               future_tx.msg.step.game <=
-                game_mod.game.step.players[future_tx.transaction.from[0].add]
+                game_mod.game.step.players[future_tx.transaction.from[0].publicKey]
             ) {
               already_contains_move = 1;
             }

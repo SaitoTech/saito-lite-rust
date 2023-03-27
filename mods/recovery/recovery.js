@@ -123,7 +123,7 @@ class Recovery extends ModTemplate {
 
               let tx = JSON.parse(res.rows[0].tx);
               let identifier = res.rows[0].identifier;
-              let newtx2 = new Transaction(tx);
+              let newtx2 = new Transaction(undefined, tx);
               let txmsg = newtx2.returnMessage();
 
               let encrypted_wallet = txmsg.wallet;
@@ -267,11 +267,11 @@ class Recovery extends ModTemplate {
       let txmsg = tx.returnMessage();
 
       if (txmsg.request == "recovery backup") {
-        this.receiveBackupTransaction(tx);
+        await this.receiveBackupTransaction(tx);
       }
 
       if (txmsg.request === "recovery recover") {
-        this.receiveRecoverTransaction(tx, mycallback);
+        await this.receiveRecoverTransaction(tx, mycallback);
         return;
       }
     } catch (err) {

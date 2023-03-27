@@ -379,13 +379,13 @@ class RedSquare extends ModTemplate {
             this.results_loaded = true;
             let x = [];
             for (let z = 0; z < txs.length; z++) {
-              if (txs[z].transaction.sig === tweet_id) {
+              if (txs[z].signature === tweet_id) {
                 let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
                 x.push(tweet);
               }
             }
             for (let z = 0; z < txs.length; z++) {
-              if (txs[z].transaction.sig !== tweet_id) {
+              if (txs[z].signature !== tweet_id) {
                 let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
                 x[0].addTweet(tweet);
               }
@@ -827,7 +827,7 @@ class RedSquare extends ModTemplate {
     //
     let tweet = new Tweet(this.app, this, "", tx);
 
-    tweet.updated_at = tx.transaction.ts;
+    tweet.updated_at = tx.transaction.timestamp;
 
     let is_notification = 0;
 
@@ -838,11 +838,11 @@ class RedSquare extends ModTemplate {
       //
       // this is a notification, so update our timestamps
       //
-      if (tx.transaction.ts > this.notifications_newest_ts) {
-        this.notifications_newest_ts = tx.transaction.ts;
+      if (tx.timestamp > this.notifications_newest_ts) {
+        this.notifications_newest_ts = tx.timestamp;
       }
-      if (tx.transaction.ts < this.notifications_oldest_ts) {
-        this.notifications_oldest_ts = tx.transaction.ts;
+      if (tx.timestamp < this.notifications_oldest_ts) {
+        this.notifications_oldest_ts = tx.timestamp;
       }
       //
       // notify of other people's actions, but not ours
@@ -862,12 +862,12 @@ class RedSquare extends ModTemplate {
 
         is_notification = 1;
         this.notifications.splice(insertion_index, 0, tweet);
-        this.notifications_sigs_hmap[tweet.tx.transaction.sig] = 1;
+        this.notifications_sigs_hmap[tweet.tx.signature] = 1;
 
         //
         // increment notifications in menu unless is our own
         //
-        if (tx.transaction.ts > this.notifications_last_viewed_ts) {
+        if (tx.timestamp > this.notifications_last_viewed_ts) {
           this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
           this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
         }
@@ -881,11 +881,11 @@ class RedSquare extends ModTemplate {
         //
         // skip out on likes but still update timestamps
         //
-        if (tx.transaction.ts > this.tweets_newest_ts) {
-          this.tweets_newest_ts = tx.transaction.ts;
+        if (tx.timestamp > this.tweets_newest_ts) {
+          this.tweets_newest_ts = tx.timestamp;
         }
-        if (tx.transaction.ts < this.notifications_oldest_ts) {
-          this.tweets_oldest_ts = tx.transaction.ts;
+        if (tx.timestamp < this.notifications_oldest_ts) {
+          this.tweets_oldest_ts = tx.timestamp;
         }
         return;
       }
@@ -909,7 +909,7 @@ class RedSquare extends ModTemplate {
       //
       // we do not have this tweet indexed, it's new
       //
-      if (!this.tweets_sigs_hmap[tweet.tx.transaction.sig]) {
+      if (!this.tweets_sigs_hmap[tweet.tx.signature]) {
         //
         // check where we insert the tweet
         //
@@ -929,7 +929,7 @@ class RedSquare extends ModTemplate {
         // add unknown children if possible
         //
         for (let i = 0; i < this.unknown_children.length; i++) {
-          if (this.unknown_children[i].thread_id === tweet.tx.transaction.sig) {
+          if (this.unknown_children[i].thread_id === tweet.tx.signature) {
             if (this.tweets[insertion_index].addTweet(this.unknown_children[i]) == 1) {
               this.unknown_children.splice(i, 1);
               i--;
@@ -941,10 +941,10 @@ class RedSquare extends ModTemplate {
         // and insert it
         //
         this.tweets.splice(insertion_index, 0, tweet);
-        this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
+        this.tweets_sigs_hmap[tweet.tx.signature] = 1;
       } else {
         for (let i = 0; i < this.tweets.length; i++) {
-          if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
+          if (this.tweets[i].tx.signature === tweet.tx.signature) {
             this.tweets[i].num_replies = tweet.num_replies;
             this.tweets[i].num_retweets = tweet.num_retweets;
             this.tweets[i].num_likes = tweet.num_likes;
@@ -959,9 +959,9 @@ class RedSquare extends ModTemplate {
       let inserted = false;
 
       for (let i = 0; i < this.tweets.length; i++) {
-        if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
+        if (this.tweets[i].tx.signature === tweet.thread_id) {
           if (this.tweets[i].addTweet(tweet) == 1) {
-            this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
+            this.tweets_sigs_hmap[tweet.tx.signature] = 1;
             inserted = true;
             break;
           }
@@ -977,11 +977,11 @@ class RedSquare extends ModTemplate {
     // this is a tweet, so update our info
     //
     if (is_notification == 0) {
-      if (tx.transaction.ts > this.tweets_newest_ts) {
-        this.tweets_newest_ts = tx.transaction.ts;
+      if (tx.timestamp > this.tweets_newest_ts) {
+        this.tweets_newest_ts = tx.timestamp;
       }
-      if (tx.transaction.ts < this.notifications_oldest_ts) {
-        this.tweets_oldest_ts = tx.transaction.ts;
+      if (tx.timestamp < this.notifications_oldest_ts) {
+        this.tweets_oldest_ts = tx.timestamp;
       }
     }
 
@@ -1002,7 +1002,7 @@ class RedSquare extends ModTemplate {
     }
 
     for (let i = 0; i < this.tweets.length; i++) {
-      if (this.tweets[i].tx.transaction.sig === tweet_sig) {
+      if (this.tweets[i].tx.signature === tweet_sig) {
         return this.tweets[i];
       }
       if (this.tweets[i].hasChildTweet(tweet_sig)) {
@@ -1104,8 +1104,8 @@ class RedSquare extends ModTemplate {
 
     let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
     for (let i = 0; i < tx.transaction.to.length; i++) {
-      if (tx.transaction.to[i].add !== app.wallet.returnPublicKey()) {
-        newtx.transaction.to.push(new saito.default.slip(tx.transaction.to[i].add, 0.0));
+      if (tx.transaction.to[i].publicKey !== app.wallet.returnPublicKey()) {
+        newtx.transaction.to.push(new saito.default.slip(tx.transaction.to[i].publicKey, 0.0));
       }
     }
 
@@ -1360,13 +1360,13 @@ class RedSquare extends ModTemplate {
 
       let params = {
         $txjson: txjson,
-        $sig: tx.transaction.sig,
+        $sig: tx.signature,
         $created_at: created_at,
         $updated_at: updated_at,
         $parent_id: tweet.parent_id,
         $type: type_of_tweet,
         $thread_id: tweet.thread_id,
-        $publickey: tx.transaction.from[0].add,
+        $publickey: tx.transaction.from[0].publicKey,
         $link: tweet.link,
         $link_properties: JSON.stringify(tweet.link_properties),
         $has_images: has_images,
@@ -1394,7 +1394,7 @@ class RedSquare extends ModTemplate {
         await app.storage.executeDatabase(sql3, params3, "redsquare");
       }
 
-      if (tweet.parent_id !== tweet.tx.transaction.sig && tweet.parent_id !== "") {
+      if (tweet.parent_id !== tweet.tx.signature && tweet.parent_id !== "") {
         let ts = new Date().getTime();
         let sql4 = "UPDATE tweets SET num_replies = num_replies + 1 WHERE sig = $sig";
         let params4 = {
@@ -1641,7 +1641,7 @@ console.log(rows[i].tx.msg);
               tx.deserialize_from_web(app, rows[i].tx);
               let txmsg = tx.returnMessage();
               let text = txmsg.data.text;
-              let publickey = tx.transaction.from[0].add;
+              let publickey = tx.transaction.from[0].publicKey;
               let user = app.keychain.returnIdentifierByPublicKey(publickey, true);
 
               redsquare_self.social.twitter_description = text;
@@ -1689,7 +1689,7 @@ console.log(rows[i].tx.msg);
                 let base64Data = img_uri.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
                 let img = Buffer.from(base64Data, "base64");
               } else {
-                let publickey = tx.transaction.from[0].add;
+                let publickey = tx.transaction.from[0].publicKey;
                 let img_uri = app.keychain.returnIdenticon(publickey, "png");
                 let base64Data = img_uri.replace(/^data:image\/png;base64,/, "");
                 let img = Buffer.from(base64Data, "base64");

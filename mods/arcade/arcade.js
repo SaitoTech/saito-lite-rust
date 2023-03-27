@@ -11,6 +11,7 @@ const GameInvitationLink = require("./lib/overlays/game-invitation-link");
 
 const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const Slip = require("../../lib/saito/slip");
+const Transaction = require("../../lib/saito/transaction");
 
 class Arcade extends ModTemplate {
   constructor(app) {
@@ -106,20 +107,23 @@ class Arcade extends ModTemplate {
               game.players.includes(this.publicKey) ||
               game.accepted.includes(this.publicKey))
           ) {
-            let game_tx = new saito.default.transaction();
+            let game_tx = new Transaction();
             if (game.over) {
               if (game.last_block > 0) {
                 return;
               }
             }
             if (game.players) {
-              game_tx.transaction.to = game.players.map((player) => new saito.default.slip(player));
-              game_tx.transaction.from = game.players.map(
-                (player) => new saito.default.slip(player)
-              );
+              game.players.forEach((player) => {
+                game_tx.addToSlip(new Slip(undefined, player));
+                game_tx.addFromSlip(new Slip(undefined, player));
+              });
+              // game_tx.transaction.from = game.players.map(
+              //   (player) => new saito.default.slip(player)
+              // );
             } else {
-              game_tx.transaction.from.push(new saito.default.slip(this.publicKey));
-              game_tx.transaction.to.push(new saito.default.slip(this.publicKey));
+              game_tx.addFromSlip(new Slip(this.publicKey));
+              game_tx.addToSlip(new Slip(this.publicKey));
             }
 
             let msg = {
@@ -135,7 +139,7 @@ class Arcade extends ModTemplate {
               //desired_opponent_publickey: desired_opponent_publickey
             };
 
-            game_tx.transaction.sig = game.id;
+            game_tx.signature = game.id;
             game_tx.msg = msg;
 
             console.log("Processing games from app.options:");
@@ -499,7 +503,7 @@ class Arcade extends ModTemplate {
     // this code doubles onConfirmation
     //
     if (message?.request === "arcade spv update") {
-      let tx = new saito.default.transaction(message.data);
+      let tx = new saito.default.transaction(undefined, message.data);
 
       let txmsg = tx.returnMessage();
 
@@ -700,7 +704,7 @@ class Arcade extends ModTemplate {
     let players_array = txmsg.players[0] + "/" + txmsg.players_sigs[0];
     let start_bid = blk != null ? blk.block.id : BigInt(1);
 
-    let created_at = parseInt(tx.transaction.ts);
+    let created_at = parseInt(tx.timestamp);
 
     let sql = `INSERT
     OR IGNORE INTO games (
@@ -727,7 +731,7 @@ class Arcade extends ModTemplate {
     $winner
     )`;
     let params = {
-      $game_id: tx.transaction.sig,
+      $game_id: tx.signature,
       $players_needed: parseInt(txmsg.players_needed),
       $players_array: players_array,
       $module: txmsg.game,
@@ -762,7 +766,7 @@ class Arcade extends ModTemplate {
     let msg = {
       request: "cancel",
       module: "Arcade",
-      game_id: orig_tx.transaction.sig,
+      game_id: orig_tx.signature,
     };
     newtx.msg = msg;
     newtx = this.app.wallet.signTransaction(newtx);
@@ -778,11 +782,11 @@ class Arcade extends ModTemplate {
       return;
     }
 
-    if (game.msg.players.includes(tx.transaction.from[0].add)) {
-      if (tx.transaction.from[0].add == game.msg.originator) {
+    if (game.msg.players.includes(tx.transaction.from[0].publicKey)) {
+      if (tx.transaction.from[0].publicKey == game.msg.originator) {
         if (this.debug) {
           console.log(
-            `Player (${tx.transaction.from[0].add}) Canceling Game invite: `,
+            `Player (${tx.transaction.from[0].publicKey}) Canceling Game invite: `,
             JSON.parse(JSON.stringify(game.msg))
           );
         }
@@ -791,12 +795,12 @@ class Arcade extends ModTemplate {
       } else {
         if (this.debug) {
           console.log(
-            `Removing Player (${tx.transaction.from[0].add}) from Game: `,
+            `Removing Player (${tx.transaction.from[0].publicKey}) from Game: `,
             JSON.parse(JSON.stringify(game.msg))
           );
         }
 
-        let p_index = game.msg.players.indexOf(tx.transaction.from[0].add);
+        let p_index = game.msg.players.indexOf(tx.transaction.from[0].publicKey);
         game.msg.players.splice(p_index, 1);
         //Make sure player_sigs array exists and add invite_sig
         if (game.msg.players_sigs && game.msg.players_sigs.length > p_index) {
@@ -855,7 +859,7 @@ class Arcade extends ModTemplate {
     let msg = {
       request: "stopgame",
       module: orig_tx.msg.game,
-      game_id: orig_tx.transaction.sig,
+      game_id: orig_tx.signature,
       reason: reason,
     };
 
@@ -930,7 +934,7 @@ class Arcade extends ModTemplate {
       //Store the results locally
       game.msg.winner = txmsg.winner;
       game.msg.method = txmsg.reason;
-      game.msg.time_finished = txmsg.ts;
+      game.msg.time_finished = txmsg.timestamp;
     } else {
       console.warn("Game not found");
     }
@@ -943,7 +947,7 @@ class Arcade extends ModTemplate {
     let params = {
       $winner: txmsg.winner || "",
       $method: txmsg.reason,
-      $ts: txmsg.ts,
+      $ts: txmsg.timestamp,
       $game_id: txmsg.game_id,
     };
     await this.app.storage.executeDatabase(sql, params, "arcade");
@@ -974,21 +978,21 @@ class Arcade extends ModTemplate {
     slip.amount = 0;
     newtx.addToSlip(slip);
 
-    newtx.msg.ts = "";
+    newtx.msg.timestamp = "";
     newtx.msg.module = txmsg.game;
     newtx.msg.request = "invite";
-    newtx.msg.game_id = orig_tx.transaction.sig;
+    newtx.msg.game_id = orig_tx.signature;
     newtx.msg.players_needed = parseInt(txmsg.players_needed);
     newtx.msg.options = txmsg.options;
     newtx.msg.accept_sig = "";
     if (orig_tx.msg.accept_sig != "") {
       newtx.msg.accept_sig = orig_tx.msg.accept_sig;
     }
-    if (orig_tx.msg.ts != "") {
-      newtx.msg.ts = orig_tx.msg.ts;
+    if (orig_tx.msg.timestamp != "") {
+      newtx.msg.timestamp = orig_tx.msg.timestamp;
     }
     newtx.msg.invite_sig = this.app.crypto.signMessage(
-      "invite_game_" + newtx.msg.ts,
+      "invite_game_" + newtx.msg.timestamp,
       this.app.wallet.returnPrivateKey()
     );
     newtx = this.app.wallet.signTransaction(newtx);
@@ -1006,7 +1010,7 @@ class Arcade extends ModTemplate {
   // the game.
   //
   async createJoinTransaction(orig_tx) {
-    if (!orig_tx || !orig_tx.transaction || !orig_tx.transaction.sig) {
+    if (!orig_tx || !orig_tx.transaction || !orig_tx.signature) {
       console.error("Invalid Game Invite TX, cannot Join");
       return;
     }
@@ -1028,7 +1032,7 @@ class Arcade extends ModTemplate {
     newtx.msg = JSON.parse(JSON.stringify(txmsg));
     newtx.msg.module = "Arcade";
     newtx.msg.request = "join";
-    newtx.msg.game_id = orig_tx.transaction.sig;
+    newtx.msg.game_id = orig_tx.signature;
 
     newtx.msg.invite_sig = await this.app.crypto.signMessage(
       "invite_game_" + orig_tx.msg.ts,
@@ -1041,7 +1045,7 @@ class Arcade extends ModTemplate {
   }
 
   async receiveJoinTransaction(tx) {
-    if (!tx || !tx.transaction || !tx.transaction.sig) {
+    if (!tx || !tx.transaction || !tx.signature) {
       return;
     }
 
@@ -1066,10 +1070,10 @@ class Arcade extends ModTemplate {
     //
     // Don't add the same player twice!
     //
-    if (!game.msg.players.includes(tx.transaction.from[0].add)) {
+    if (!game.msg.players.includes(tx.transaction.from[0].publicKey)) {
       if (this.debug) {
         console.log(
-          `Adding Player (${tx.transaction.from[0].add}) to Game: `,
+          `Adding Player (${tx.transaction.from[0].publicKey}) to Game: `,
           JSON.parse(JSON.stringify(game))
         );
       }
@@ -1077,7 +1081,7 @@ class Arcade extends ModTemplate {
       //
       // add player to game
       //
-      game.msg.players.push(tx.transaction.from[0].add);
+      game.msg.players.push(tx.transaction.from[0].publicKey);
       game.msg.players_sigs.push(txmsg.invite_sig);
 
       //Update DB
@@ -1126,7 +1130,7 @@ class Arcade extends ModTemplate {
   // signature we will auto-accept it, kicking off the game.
   //
   async createAcceptTransaction(orig_tx) {
-    if (!orig_tx || !orig_tx.transaction || !orig_tx.transaction.sig) {
+    if (!orig_tx || !orig_tx.transaction || !orig_tx.signature) {
       console.error("Invalid Game Invite TX, cannot Accept");
       return;
     }
@@ -1151,7 +1155,7 @@ class Arcade extends ModTemplate {
 
     newtx.msg = JSON.parse(JSON.stringify(txmsg));
     newtx.msg.module = "Arcade";
-    newtx.msg.game_id = orig_tx.transaction.sig;
+    newtx.msg.game_id = orig_tx.signature;
     newtx.msg.request = "accept";
 
     newtx = await this.app.wallet.signTransaction(newtx);
@@ -1161,7 +1165,7 @@ class Arcade extends ModTemplate {
 
   async receiveAcceptTransaction(tx) {
     //Must be valid tx
-    if (!tx || !tx.transaction || !tx.transaction.sig) {
+    if (!tx || !tx.transaction || !tx.signature) {
       return;
     }
 
@@ -1451,7 +1455,7 @@ class Arcade extends ModTemplate {
     //
     // Sanity check the tx and make sure we don't already have it
     //
-    if (!tx || !tx.msg || !tx.transaction || !tx.transaction.sig) {
+    if (!tx || !tx.msg || !tx.transaction || !tx.signature) {
       console.error("Invalid Game TX, won't add to list", tx);
       return false;
     }
@@ -1459,7 +1463,7 @@ class Arcade extends ModTemplate {
     //Always removeGame before calling addGame to successfully reclassify
     for (let key in this.games) {
       for (let z = 0; z < this.games[key].length; z++) {
-        if (tx.transaction.sig === this.games[key][z].transaction.sig) {
+        if (tx.signature === this.games[key][z].signature) {
           if (this.debug) {
             console.log("TX is already in Arcade list");
           }
@@ -1488,7 +1492,7 @@ class Arcade extends ModTemplate {
 
     if (this.debug) {
       console.log(
-        `Added game (${tx.transaction.sig}) to ${list}`,
+        `Added game (${tx.signature}) to ${list}`,
         JSON.parse(JSON.stringify(this.games))
       );
     }
@@ -1498,7 +1502,7 @@ class Arcade extends ModTemplate {
     for (let key in this.games) {
       this.games[key] = this.games[key].filter((game) => {
         if (game.transaction) {
-          return game.transaction.sig != game_id;
+          return game.signature != game_id;
         } else {
           return true;
         }
@@ -1548,7 +1552,7 @@ class Arcade extends ModTemplate {
 
     if (is_my_game) {
       for (let i = 0; i < this.app.options?.games?.length; i++) {
-        if (this.app.options.games[i].id === game_tx.transaction.sig) {
+        if (this.app.options.games[i].id === game_tx.signature) {
           return true;
         }
       }
@@ -1577,7 +1581,7 @@ class Arcade extends ModTemplate {
   //
   isMyGame(tx) {
     for (let i = 0; i < tx.transaction.to.length; i++) {
-      if (tx.transaction.to[i].add == this.publicKey) {
+      if (tx.transaction.to[i].publicKey == this.publicKey) {
         return true;
       }
     }
@@ -1602,7 +1606,7 @@ class Arcade extends ModTemplate {
 
   returnGame(game_id) {
     for (let key in this.games) {
-      let game = this.games[key].find((g) => g.transaction.sig == game_id);
+      let game = this.games[key].find((g) => g.signature == game_id);
       if (game) {
         if (this.debug) {
           console.log(`Game found in ${key} list`);
@@ -1692,7 +1696,7 @@ class Arcade extends ModTemplate {
 
     //Add more information about the game
     for (let key in this.games) {
-      let x = this.games[key].find((g) => g.transaction.sig === game_sig);
+      let x = this.games[key].find((g) => g.signature === game_sig);
       if (x) {
         accepted_game = x;
       }

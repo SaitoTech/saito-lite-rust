@@ -39,7 +39,7 @@ class Invite {
     if (tx) {
       let txmsg = tx.returnMessage();
 
-      this.invite_data.game_id = tx.transaction.sig;
+      this.invite_data.game_id = tx.signature;
       this.invite_data.game_name = txmsg.game;
       this.invite_data.game_status = txmsg.request;
       this.invite_data.originator = txmsg.originator;

@@ -136,24 +136,21 @@ export class NodeSharedMethods extends CustomSharedMethods {
   }
 
   async processApiCall(buffer: Uint8Array, msgIndex: number, peerIndex: bigint): Promise<void> {
-    const mycallback = (response_object) => {
-      S.getInstance().sendApiSuccess(
+    console.log("NodeMethods.processApiCall : peer= " + peerIndex);
+    const mycallback = async (response_object) => {
+      await S.getInstance().sendApiSuccess(
         msgIndex,
         Buffer.from(JSON.stringify(response_object), "utf-8"),
         peerIndex
       );
     };
     let peer = await this.app.network.getPeer(peerIndex);
+    console.log("peer : " + peerIndex, peer);
     let newtx = new Transaction();
     try {
-      console.log("buffer length : " + buffer.byteLength, buffer);
+      // console.log("buffer length : " + buffer.byteLength, buffer);
       newtx = Transaction.deserialize(buffer, new Factory()) as Transaction;
       newtx.unpackData();
-      // let data = Buffer.from(buffer).toString("utf-8");
-      // console.log("data = ", data);
-      // let msg = JSON.parse(data);
-      // console.log("msg = ", newtx.msg);
-      // newtx.msg = msg.data;
     } catch (error) {
       console.error(error);
       newtx.msg = buffer;

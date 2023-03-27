@@ -45,6 +45,7 @@ class Relay extends ModTemplate {
   // recipients and permit multi-hop transaction construction.
   //
   async sendRelayMessage(recipients, message_request, message_data) {
+    console.log("sendRelayMessage");
     //
     // recipient can be an array
     //
@@ -72,7 +73,7 @@ class Relay extends ModTemplate {
       slip.publicKey = recipients[i];
       tx.addToSlip(slip);
     }
-    tx.transaction.ts = new Date().getTime();
+    tx.timestamp = new Date().getTime();
     tx.msg.request = message_request;
     tx.msg.data = message_data;
     tx.packData();
@@ -99,36 +100,48 @@ class Relay extends ModTemplate {
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
+    console.log("relay.handlePeerTransaction : ", tx);
     if (tx == null) {
       return;
     }
     let message = tx.returnMessage();
-
+    console.log("11111111111");
     try {
       let relay_self = app.modules.returnModule("Relay");
+      console.log("2222222222222");
 
       if (message.request === "relay peer message") {
         //
         // sanity check on tx
         //
         let txjson = message.data;
-        let inner_tx = new Transaction(txjson);
-        if (inner_tx.transaction.to.length <= 0) {
+        // console.log("txjson : ", txjson);
+        let inner_tx = new Transaction(undefined, txjson);
+        if (inner_tx.transaction.to.length === 0) {
+          console.log("xxxxxxxxxx : " + inner_tx.transaction.to.length);
           return;
         }
-        if (inner_tx.transaction.to[0].add == undefined) {
+        if (inner_tx.transaction.to[0].publicKey == undefined) {
+          // console.log("tx : ", inner_tx);
+          console.log("slip : ", inner_tx.transaction.to[0]);
+
+          console.log("yyyyyyyyyyy : " + inner_tx.transaction.to[0].publicKey);
           return;
         }
+        console.log("333333333333");
 
         await inner_tx.decryptMessage(this.app);
         let inner_txmsg = inner_tx.returnMessage();
+        console.log("444444444 : ", inner_tx);
+        console.log("555555555 : ", inner_txmsg);
 
         //
         // if interior transaction is intended for me, I process regardless
         //
         if (inner_tx.isTo(await app.wallet.getPublicKey())) {
+          console.log("6666666");
           if (inner_txmsg.request === "ping") {
-            await this.sendRelayMessage(inner_tx.transaction.from[0].add, "echo", {
+            await this.sendRelayMessage(inner_tx.transaction.from[0].publicKey, "echo", {
               status: this.busy,
             });
             return;
@@ -136,12 +149,13 @@ class Relay extends ModTemplate {
 
           if (inner_txmsg.request === "echo") {
             if (inner_txmsg.data.status) {
-              app.connection.emit("relay-is-busy", inner_tx.transaction.from[0].add);
+              app.connection.emit("relay-is-busy", inner_tx.transaction.from[0].publicKey);
             } else {
-              app.connection.emit("relay-is-online", inner_tx.transaction.from[0].add);
+              app.connection.emit("relay-is-online", inner_tx.transaction.from[0].publicKey);
             }
             return;
           }
+          console.log("7777777777");
 
           await app.modules.handlePeerTransaction(inner_tx, peer, mycallback);
           return;
@@ -154,6 +168,7 @@ class Relay extends ModTemplate {
           // check to see if original tx is for a peer
           //
           let peer_found = 0;
+          console.log("88888888");
 
           let peers = await app.network.getPeers();
           for (let i = 0; i < peers.length; i++) {
@@ -161,11 +176,12 @@ class Relay extends ModTemplate {
               peer_found = 1;
 
               if (this.app.BROWSER == 0) {
+                console.log("9999999999 : " + peers[i].peerIndex);
                 await app.network.sendTransactionWithCallback(
                   inner_tx,
-                  function () {
+                  async function () {
                     if (mycallback != null) {
-                      mycallback({ err: "", success: 1 });
+                      await mycallback({ err: "", success: 1 });
                     }
                   },
                   peers[i].peerIndex
@@ -173,9 +189,11 @@ class Relay extends ModTemplate {
               }
             }
           }
+          console.log("aaaaaaaaa");
+
           if (peer_found == 0) {
             if (mycallback != null) {
-              mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
+              await mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
             }
           }
         }

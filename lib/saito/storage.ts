@@ -53,7 +53,7 @@ export default class Storage {
   //
   // check local archive if exists
   //
-  loadTransactionsFromLocal(type = "all", num = 50, mycallback) {
+  async loadTransactionsFromLocal(type = "all", num = 50, mycallback) {
     const message = "archive";
     const data: any = {};
     data.request = "load";
@@ -70,12 +70,12 @@ export default class Storage {
 
     let archive_mod = this.app.modules.returnModule("Archive");
     if (archive_mod) {
-      let res = archive_mod.handlePeerTransaction(this.app, newtx, null, (obj) => {
+      let res = await archive_mod.handlePeerTransaction(this.app, newtx, null, async (obj) => {
         let txs = [];
         if (obj) {
           if (obj.txs) {
             for (let i = 0; i < obj.txs.length; i++) {
-              let tx = new Transaction(JSON.parse(obj.txs[i].tx));
+              let tx = new Transaction(undefined, JSON.parse(obj.txs[i].tx));
               tx.optional = {};
               if (obj.txs[i].optional) {
                 try {
@@ -88,7 +88,7 @@ export default class Storage {
             }
           }
         }
-        mycallback(txs);
+        await mycallback(txs);
       });
     }
   }

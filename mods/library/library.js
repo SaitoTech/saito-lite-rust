@@ -93,7 +93,7 @@ class Library extends ModTemplate {
       let module = txmsg.module;
       let request = txmsg.request || "";
       let subrequest = txmsg.subrequest || "";
-      let sig = tx.transaction.sig;
+      let sig = tx.signature;
 
       if (this.library[module]) {
         let idx = -1;
@@ -261,7 +261,7 @@ class Library extends ModTemplate {
         return;
       }
       if (mycallback) {
-        mycallback(this.library[message.data.collection].local);
+        await mycallback(this.library[message.data.collection].local);
       }
       return;
     }
@@ -294,7 +294,7 @@ class Library extends ModTemplate {
 
     if (publickey === this.app.wallet.returnPublicKey()) {
       for (let i = 0; i < collection.local.length; i++) {
-        if (collection.local[i].sig === sig) {
+        if (collection.local[i].signature === sig) {
           idx = i;
           local = true;
           break;
@@ -316,7 +316,7 @@ class Library extends ModTemplate {
       let is_already_borrowed = 0;
       for (let i = 0; i < item.checkout.length; i++) {
         if (item.checkout[i].publickey === publickey) {
-          item.checkout[i].ts = new Date().getTime();
+          item.checkout[i].timestamp = new Date().getTime();
           is_already_borrowed = 1;
         }
       }

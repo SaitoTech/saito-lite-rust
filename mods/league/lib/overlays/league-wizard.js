@@ -71,7 +71,7 @@ class LeagueWizard {
         // and add the league
         //
         let txmsg = newtx.returnMessage();
-        txmsg.id = newtx.transaction.sig;
+        txmsg.id = newtx.signature;
         await this.mod.addLeague(txmsg);
         this.app.connection.emit("leagues-render-request");
         this.overlay.remove();
@@ -99,5 +99,3 @@ class LeagueWizard {
 }
 
 module.exports = LeagueWizard;
-
-

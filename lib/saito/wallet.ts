@@ -110,7 +110,7 @@ export default class Wallet {
         let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(to_address, amount);
         newtx = this.app.wallet.signAndEncryptTransaction(newtx);
         await this.app.network.propagateTransaction(newtx);
-        return newtx.transaction.sig;
+        return newtx.signature;
       }
 
       async receivePayment(howMuch, from, to, timestamp) {
@@ -118,18 +118,18 @@ export default class Wallet {
         const to_to = 0;
         if (to == this.app.wallet.getPublicKey()) {
           for (let i = 0; i < this.app.wallet.wallet.inputs.length; i++) {
-            if (this.app.wallet.wallet.inputs[i].amt === howMuch) {
-              if (parseInt(this.app.wallet.wallet.inputs[i].ts) >= parseInt(timestamp)) {
-                if (this.app.wallet.wallet.inputs[i].add == to) {
+            if (this.app.wallet.wallet.inputs[i].amount === howMuch) {
+              if (parseInt(this.app.wallet.wallet.inputs[i].timestamp) >= parseInt(timestamp)) {
+                if (this.app.wallet.wallet.inputs[i].publicKey == to) {
                   return true;
                 }
               }
             }
           }
           for (let i = 0; i < this.app.wallet.wallet.outputs.length; i++) {
-            if (this.app.wallet.wallet.outputs[i].amt === howMuch) {
-              if (parseInt(this.app.wallet.wallet.outputs[i].ts) >= parseInt(timestamp)) {
-                if (this.app.wallet.wallet.outputs[i].add == to) {
+            if (this.app.wallet.wallet.outputs[i].amount === howMuch) {
+              if (parseInt(this.app.wallet.wallet.outputs[i].timestamp) >= parseInt(timestamp)) {
+                if (this.app.wallet.wallet.outputs[i].publicKey == to) {
                   return true;
                 }
               }
@@ -141,9 +141,9 @@ export default class Wallet {
             for (let i = 0; i < this.app.wallet.wallet.outputs.length; i++) {
               //console.log("OUTPUT");
               //console.log(this.app.wallet.wallet.outputs[i]);
-              if (this.app.wallet.wallet.outputs[i].amt === howMuch) {
-                if (parseInt(this.app.wallet.wallet.outputs[i].ts) >= parseInt(timestamp)) {
-                  if (this.app.wallet.wallet.outputs[i].add == to) {
+              if (this.app.wallet.wallet.outputs[i].amount === howMuch) {
+                if (parseInt(this.app.wallet.wallet.outputs[i].timestamp) >= parseInt(timestamp)) {
+                  if (this.app.wallet.wallet.outputs[i].publicKey == to) {
                     return true;
                   }
                 }
@@ -300,10 +300,12 @@ export default class Wallet {
   saveWallet() {
     this.app.options.wallet = this.wallet;
     for (let i = 0; i < this.app.options.wallet.inputs.length; i++) {
-      this.app.options.wallets.inputs[i].amt = this.app.options.wallets.inputs[i].amt.toString();
+      this.app.options.wallets.inputs[i].amount =
+        this.app.options.wallets.inputs[i].amount.toString();
     }
     for (let i = 0; i < this.app.options.wallet.outputs.length; i++) {
-      this.app.options.wallets.outputs[i].amt = this.app.options.wallets.outputs[i].amt.toString();
+      this.app.options.wallets.outputs[i].amount =
+        this.app.options.wallets.outputs[i].amount.toString();
     }
     this.app.storage.saveOptions();
   }
@@ -727,7 +729,7 @@ export default class Wallet {
       ts: new Date().getTime(),
     });
     for (let i = this.wallet.preferred_txs.length - 1; i >= 0; i--) {
-      if (this.wallet.preferred_txs[i].ts < new Date().getTime() - 100000000) {
+      if (this.wallet.preferred_txs[i].timestamp < new Date().getTime() - 100000000) {
         this.wallet.preferred_txs.splice(i, 1);
       }
     }
@@ -746,7 +748,7 @@ export default class Wallet {
       ticker
     );
     for (let i = 0; i < this.wallet.preferred_txs.length; i++) {
-      if (this.wallet.preferred_txs[i].sig === sig) {
+      if (this.wallet.preferred_txs[i].signature === sig) {
         return 1;
       }
     }
@@ -762,7 +764,7 @@ export default class Wallet {
       ticker
     );
     for (let i = 0; i < this.wallet.preferred_txs.length; i++) {
-      if (this.wallet.preferred_txs[i].sig === sig) {
+      if (this.wallet.preferred_txs[i].signature === sig) {
         this.wallet.preferred_txs.splice(i, 1);
       }
     }
@@ -770,7 +772,7 @@ export default class Wallet {
 
   private isSlipInPendingTransactions(input: Slip): boolean {
     for (let i = 0; i < this.wallet.pending.length; i++) {
-      let ptx = new Transaction(JSON.parse(this.wallet.pending[i]));
+      let ptx = new Transaction(undefined, JSON.parse(this.wallet.pending[i]));
       for (let ii = 0; ii < ptx.from.length; ii++) {
         if (input.utxoKey === ptx.from[ii].utxoKey) {
           return true;

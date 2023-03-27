@@ -125,7 +125,7 @@ class Mixin extends ModTemplate {
               let d = res.data;
               // send response to browser
               if (mycallback) {
-                mycallback(d);
+                return mycallback(d);
               }
             });
           } catch (err) {

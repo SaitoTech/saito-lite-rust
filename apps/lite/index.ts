@@ -16,8 +16,9 @@ class WebMethods extends WebSharedMethods {
   }
 
   async processApiCall(buffer: Uint8Array, msgIndex: number, peerIndex: bigint): Promise<void> {
-    const mycallback = (response_object) => {
-      S.getInstance().sendApiSuccess(
+    console.log("WebMethods.processApiCall : peer= " + peerIndex);
+    const mycallback = async (response_object) => {
+      await S.getInstance().sendApiSuccess(
         msgIndex,
         Buffer.from(JSON.stringify(response_object), "utf-8"),
         peerIndex
@@ -26,9 +27,9 @@ class WebMethods extends WebSharedMethods {
     let peer = await this.app.network.getPeer(peerIndex);
     let newtx = new Transaction();
     try {
-      let data = Buffer.from(buffer).toString("utf-8");
-      let msg = JSON.parse(data);
-      newtx.msg = msg.data;
+      // console.log("buffer length : " + buffer.byteLength, buffer);
+      newtx = Transaction.deserialize(buffer, new Factory()) as Transaction;
+      newtx.unpackData();
     } catch (error) {
       console.error(error);
       newtx.msg = buffer;

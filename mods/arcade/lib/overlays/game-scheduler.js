@@ -56,7 +56,7 @@ class GameScheduler {
       //
       // create invite link from the game_sig
       //
-      mod.showShareLink(scheduler_self.invite_tx.transaction.sig);
+      mod.showShareLink(scheduler_self.invite_tx.signature);
     };
 
     //

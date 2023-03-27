@@ -74,7 +74,7 @@ class RedSquareMain {
         if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
           this.app.connection.emit("redsquare-home-tweet-append-render-request", tweet);
         } else {
-          if (tweet.tx.transaction.from[0].add === (await this.app.wallet.getPublicKey())) {
+          if (tweet.tx.transaction.from[0].publicKey === (await this.app.wallet.getPublicKey())) {
             this.app.connection.emit("redsquare-home-tweet-prepend-render-request", tweet);
           }
         }

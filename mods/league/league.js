@@ -341,7 +341,7 @@ class League extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     let obj = this.validateLeague(txmsg);
-    obj.id = tx.transaction.sig;
+    obj.id = tx.signature;
 
     await this.addLeague(obj);
   }
@@ -372,9 +372,9 @@ class League extends ModTemplate {
 
     let params = {
       league_id: txmsg.league_id,
-      publickey: tx.transaction.from[0].add,
+      publickey: tx.transaction.from[0].publicKey,
       email: txmsg.email || "",
-      ts: parseInt(tx.transaction.ts),
+      ts: parseInt(tx.timestamp),
     };
 
     await this.addLeaguePlayer(params);
@@ -404,7 +404,7 @@ class League extends ModTemplate {
                  AND publickey = $publickey`;
     let params = {
       $league: txmsg.league_id,
-      $publickey: tx.transaction.from[0].add,
+      $publickey: tx.transaction.from[0].publicKey,
     };
     await this.app.storage.executeDatabase(sql, params, "league");
   }
@@ -431,7 +431,7 @@ class League extends ModTemplate {
                   AND admin = $publickey`;
     let params1 = {
       $league_id: txmsg.league_id,
-      $publickey: tx.transaction.from[0].add,
+      $publickey: tx.transaction.from[0].publicKey,
     };
     await this.app.storage.executeDatabase(sql1, params1, "league");
 
@@ -538,8 +538,8 @@ class League extends ModTemplate {
     //
     let publickeys = [];
     for (let i = 0; i < tx.transaction.to.length; i++) {
-      if (!publickeys.includes(tx.transaction.to[i].add)) {
-        publickeys.push(tx.transaction.to[i].add);
+      if (!publickeys.includes(tx.transaction.to[i].publicKey)) {
+        publickeys.push(tx.transaction.to[i].publicKey);
       }
     }
 
@@ -1005,7 +1005,7 @@ class League extends ModTemplate {
       $league_id: obj.league_id,
       $publickey: obj.publickey,
       $score: obj.score,
-      $ts: obj.ts,
+      $ts: obj.timestamp,
     };
     await this.app.storage.executeDatabase(sql, params, "league");
     return;

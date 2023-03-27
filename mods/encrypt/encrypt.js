@@ -19,15 +19,12 @@
  where they are generally available for any Saito application to leverage.
 
  *********************************************************************************/
-var saito = require('../../lib/saito/saito');
-var ModTemplate = require('../../lib/templates/modtemplate');
-const Big = require('big.js');
-
+var saito = require("../../lib/saito/saito");
+var ModTemplate = require("../../lib/templates/modtemplate");
+const Big = require("big.js");
 
 class Encrypt extends ModTemplate {
-
   constructor(app) {
-
     super(app);
 
     this.app = app;
@@ -37,7 +34,6 @@ class Encrypt extends ModTemplate {
     this.description = "A Diffie-Hellman encryption tool for Saito";
     this.categories = "Crypto Utilities";
 
-
     app.connection.on("encrypt-key-exchange", (publickey) => {
       console.log("initiating key exchange...");
       this.initiate_key_exchange(publickey, 0);
@@ -46,33 +42,29 @@ class Encrypt extends ModTemplate {
     return this;
   }
 
-
   async respondTo(type) {
-
     let encrypt_self = this;
 
     if (type == "user-menu") {
       return {
         text: "Add Contact",
         icon: "far fa-id-card",
-        callback: function(app, publickey) {
+        callback: function (app, publickey) {
           encrypt_self.app.keychain.saveKeys();
           encrypt_self.initiate_key_exchange(publickey, 0);
-//	    encrypt_self.app.connection.emit("stun-create-peer-connection", ([publickey]));
+          //	    encrypt_self.app.connection.emit("stun-create-peer-connection", ([publickey]));
           //
           // TODO - remove if above works
           //
           //let stun_mod = app.modules.returnModule("Stun");
           //stun_mod.createStunConnectionWithPeers([public_key]);
-        }
-      }
+        },
+      };
     }
     return super.respondTo(type);
   }
 
-
   async handlePeerTransaction(app, newtx = null, peer, mycallback) {
-
     if (newtx == null) {
       return;
     }
@@ -80,13 +72,12 @@ class Encrypt extends ModTemplate {
     let encrypt_self = this;
 
     if (message.request === "diffie hellman key exchange") {
+      let tx = new saito.default.transaction(undefined, message.data.tx);
 
-      let tx = new saito.default.transaction(message.data.tx);
-
-      let sender = tx.transaction.from[0].add;
-      let receiver = tx.transaction.to[0].add;
+      let sender = tx.transaction.from[0].publicKey;
+      let receiver = tx.transaction.to[0].publicKey;
       let txmsg = tx.returnMessage();
-      let request = txmsg.request;  // "request"
+      let request = txmsg.request; // "request"
       if (app.keychain.alreadyHaveSharedSecret(sender)) {
         return;
       }
@@ -100,18 +91,15 @@ class Encrypt extends ModTemplate {
           encrypt_self.accept_key_exchange(tx, 1, peer);
         }
       }
-
     }
 
-
     if (message.request === "diffie hellman key response") {
-
       let tx = new saito.default.transaction(message.data.tx);
 
-      let sender = tx.transaction.from[0].add;
-      let receiver = tx.transaction.to[0].add;
+      let sender = tx.transaction.from[0].publicKey;
+      let receiver = tx.transaction.to[0].publicKey;
       let txmsg = tx.returnMessage();
-      let request = txmsg.request;  // "request"
+      let request = txmsg.request; // "request"
       if (app.keychain.alreadyHaveSharedSecret(sender)) {
         console.log("Already Have Shared Sectret");
         return;
@@ -136,20 +124,24 @@ class Encrypt extends ModTemplate {
       let alice = app.crypto.createDiffieHellman(alice_publickey, alice_privatekey);
       let alice_secret = app.crypto.createDiffieHellmanSecret(alice, bob_publickey);
 
-      app.keychain.updateCryptoByPublicKey(sender, alice_publickey.toString("hex"), alice_privatekey.toString("hex"), alice_secret.toString("hex"));
+      app.keychain.updateCryptoByPublicKey(
+        sender,
+        alice_publickey.toString("hex"),
+        alice_privatekey.toString("hex"),
+        alice_secret.toString("hex")
+      );
 
       //
       //
       //
-      this.sendEvent('encrypt-key-exchange-confirm', { members: [sender, app.wallet.returnPublicKey()] });
+      this.sendEvent("encrypt-key-exchange-confirm", {
+        members: [sender, await app.wallet.getPublicKey()],
+      });
       this.saveEncrypt();
-
     }
   }
 
-
   onPeerHandshakeComplete(app, peer) {
-
     if (app.BROWSER == 0) {
       return;
     }
@@ -167,7 +159,6 @@ class Encrypt extends ModTemplate {
       }
     }
 
-
     //
     // check if we have a diffie-key-exchange with peer
     //
@@ -176,15 +167,12 @@ class Encrypt extends ModTemplate {
     //	this.initiate_key_exchange(peer.peer.publickey, 1, peer);  // offchain diffie-hellman with server
     //  }
     //}
-
   }
-
 
   //
   // recipients can be a string (single address) or an array (multiple addresses)
   //
   initiate_key_exchange(recipients, offchain = 0, peer = null) {
-
     let recipient = "";
     let parties_to_exchange = 2;
 
@@ -209,7 +197,10 @@ class Encrypt extends ModTemplate {
 
     let tx = null;
     try {
-      tx = this.app.wallet.createUnsignedTransactionWithDefaultFee(recipient, (parties_to_exchange * this.app.wallet.wallet.default_fee));
+      tx = this.app.wallet.createUnsignedTransactionWithDefaultFee(
+        recipient,
+        parties_to_exchange * this.app.wallet.wallet.default_fee
+      );
     } catch (err) {
       console.log("error: " + err);
     }
@@ -249,23 +240,24 @@ class Encrypt extends ModTemplate {
       this.app.network.sendRequestAsTransaction("diffie hellman key exchange", data, peer);
     }
     this.saveEncrypt();
-
   }
 
   accept_key_exchange(tx, offchain = 0, peer = null) {
-
     let txmsg = tx.returnMessage();
 
-    let remote_address = tx.transaction.from[0].add;
-    let our_address = tx.transaction.to[0].add;
+    let remote_address = tx.transaction.from[0].publicKey;
+    let our_address = tx.transaction.to[0].publicKey;
     let alice_publickey = txmsg.alice_publickey;
 
-    let fee = tx.transaction.to[0].amt;
+    let fee = tx.transaction.to[0].amount;
 
     let bob = this.app.crypto.createDiffieHellman();
     let bob_publickey = bob.getPublicKey(null, "compressed").toString("hex");
     let bob_privatekey = bob.getPrivateKey(null, "compressed").toString("hex");
-    let bob_secret = this.app.crypto.createDiffieHellmanSecret(bob, Buffer.from(alice_publickey, "hex"));
+    let bob_secret = this.app.crypto.createDiffieHellmanSecret(
+      bob,
+      Buffer.from(alice_publickey, "hex")
+    );
 
     var newtx = this.app.wallet.createUnsignedTransaction(remote_address, 0, fee);
     if (newtx == null) {
@@ -273,10 +265,9 @@ class Encrypt extends ModTemplate {
     }
     newtx.msg.module = "Encrypt";
     newtx.msg.request = "key exchange confirm";
-    newtx.msg.tx_id = tx.transaction.id;		// reference id for parent tx
+    newtx.msg.tx_id = tx.transaction.id; // reference id for parent tx
     newtx.msg.bob = bob_publickey;
     newtx = this.app.wallet.signTransaction(newtx);
-
 
     if (offchain == 0) {
       this.app.network.propagateTransaction(newtx);
@@ -288,28 +279,30 @@ class Encrypt extends ModTemplate {
       this.app.network.sendPeerRequest("diffie hellman key response", data, peer);
     }
 
-    this.app.keychain.updateCryptoByPublicKey(remote_address, bob_publickey.toString("hex"), bob_privatekey.toString("hex"), bob_secret.toString("hex"));
-    this.sendEvent('encrypt-key-exchange-confirm', { members: [remote_address, our_address] });
+    this.app.keychain.updateCryptoByPublicKey(
+      remote_address,
+      bob_publickey.toString("hex"),
+      bob_privatekey.toString("hex"),
+      bob_secret.toString("hex")
+    );
+    this.sendEvent("encrypt-key-exchange-confirm", { members: [remote_address, our_address] });
     this.saveEncrypt();
-
   }
 
-
   onConfirmation(blk, tx, conf, app) {
-
     let encrypt_self = app.modules.returnModule("Encrypt");
 
     if (conf == 0) {
-
-      if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
-        encrypt_self.sendEvent('encrypt-key-exchange-confirm', { members: [tx.transaction.to[0].add, tx.transaction.from[0].add] });
+      if (tx.transaction.from[0].publicKey == app.wallet.returnPublicKey()) {
+        encrypt_self.sendEvent("encrypt-key-exchange-confirm", {
+          members: [tx.transaction.to[0].publicKey, tx.transaction.from[0].publicKey],
+        });
       }
-      if (tx.transaction.to[0].add === app.wallet.returnPublicKey()) {
-
-        let sender = tx.transaction.from[0].add;
-        let receiver = tx.transaction.to[0].add;
+      if (tx.transaction.to[0].publicKey === app.wallet.returnPublicKey()) {
+        let sender = tx.transaction.from[0].publicKey;
+        let receiver = tx.transaction.to[0].publicKey;
         let txmsg = tx.returnMessage();
-        let request = txmsg.request;  // "request"
+        let request = txmsg.request; // "request"
         if (app.keychain.alreadyHaveSharedSecret(sender)) {
           return;
         }
@@ -331,7 +324,6 @@ class Encrypt extends ModTemplate {
         // key confirm requests
         //
         if (txmsg.request == "key exchange confirm") {
-
           let bob_publickey = Buffer.from(txmsg.bob, "hex");
 
           var senderkeydata = app.keychain.returnKey(sender);
@@ -345,28 +337,31 @@ class Encrypt extends ModTemplate {
           let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
           let alice = app.crypto.createDiffieHellman(alice_publickey, alice_privatekey);
           let alice_secret = app.crypto.createDiffieHellmanSecret(alice, bob_publickey);
-          app.keychain.updateCryptoByPublicKey(sender, alice_publickey.toString("hex"), alice_privatekey.toString("hex"), alice_secret.toString("hex"));
+          app.keychain.updateCryptoByPublicKey(
+            sender,
+            alice_publickey.toString("hex"),
+            alice_privatekey.toString("hex"),
+            alice_secret.toString("hex")
+          );
 
           //
           //
           //
-          encrypt_self.sendEvent('encrypt-key-exchange-confirm', { members: [sender, app.wallet.returnPublicKey()] });
+          encrypt_self.sendEvent("encrypt-key-exchange-confirm", {
+            members: [sender, app.wallet.returnPublicKey()],
+          });
           encrypt_self.saveEncrypt();
-
         }
       }
     }
   }
-
 
   saveEncrypt() {
     this.app.options.encrypt = this.encrypt;
     this.app.storage.saveOptions();
   }
 
-
   loadEncrypt() {
-
     if (this.app.options.encrypt) {
       this.encrypt = this.app.options.encrypt;
     } else {
@@ -375,11 +370,7 @@ class Encrypt extends ModTemplate {
     }
 
     return this.encrypt;
-
   }
-
 }
 
-
 module.exports = Encrypt;
-

@@ -1,5 +1,6 @@
 import { Saito } from "../../apps/core";
 import Peer from "./peer";
+import Transaction from "./transaction";
 
 class Mods {
   public app: Saito;
@@ -50,7 +51,7 @@ class Mods {
     //
     // no callbacks on type=9 spv stubs
     //
-    if (tx.transaction.type == 5) {
+    if (tx.type == 5) {
       return;
     }
 
@@ -69,7 +70,12 @@ class Mods {
     }
   }
 
-  async handlePeerTransaction(tx, peer: Peer, mycallback = null) {
+  async handlePeerTransaction(
+    tx: Transaction,
+    peer: Peer,
+    mycallback: (any) => Promise<void> = null
+  ) {
+    console.log("handlePeerTransaction : " + peer.peerIndex, tx);
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {
         await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback);

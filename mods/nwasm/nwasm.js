@@ -101,11 +101,11 @@ class Nwasm extends GameTemplate {
     // this code doubles onConfirmation
     //
     if (message.request === "nwasm testing") {
-      mycallback("HPR RESPONSE FROM NWASM");
+      await mycallback("HPR RESPONSE FROM NWASM");
       return;
     }
 
-    super.handlePeerTransaction(app, tx, peer, mycallback);
+    await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   render() {
@@ -494,7 +494,7 @@ class Nwasm extends GameTemplate {
   loadSaveGame(sig) {
     for (let i = 0; i < this.active_game_saves.length; i++) {
       let newtx = this.active_game_saves[i];
-      if (sig === newtx.transaction.sig) {
+      if (sig === newtx.signature) {
         let txmsg = newtx.returnMessage();
         let byteArray = this.convertBase64ToByteArray(txmsg.data);
         this.active_game = byteArray;

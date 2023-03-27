@@ -56,6 +56,7 @@ class Browser {
         await this.setActiveTab(1);
       }
 
+      let publicKey = await this.app.wallet.getPublicKey();
       //
       // Ralph took the conch from where it lay on the polished seat and held it
       // to his lips; but then he hesitated and did not blow. He held the shell
@@ -68,7 +69,7 @@ class Browser {
         if (!document.hidden) {
           channel.postMessage({
             active: 1,
-            publickey: await this.app.wallet.getPublicKey(),
+            publickey: publicKey,
           });
         }
 
@@ -102,13 +103,13 @@ class Browser {
             if (document.hidden) {
               channel.postMessage({
                 active: 0,
-                publickey: this.app.wallet.getPublicKey(),
+                publickey: publicKey,
               });
             } else {
               this.setActiveTab(1).then(() => {
                 channel.postMessage({
                   active: 1,
-                  publickey: this.app.wallet.getPublicKey(),
+                  publickey: publicKey,
                 });
               });
             }
@@ -247,7 +248,7 @@ class Browser {
           if (!publickey || !app.crypto.isPublicKey(publickey)) {
             return;
           }
-          if (publickey !== app.wallet.getPublicKey()) {
+          if (publickey !== publicKey) {
             e.preventDefault();
             e.stopImmediatePropagation();
 
@@ -319,10 +320,10 @@ class Browser {
     return keys;
   }
 
-  returnInviteLink(email = "") {
+  async returnInviteLink(email = "") {
     let { protocol, host, port } = this.app.options.peers[0];
     let url_payload = encodeURIComponent(
-      this.app.crypto.stringToBase64(JSON.stringify(this.returnInviteObject(email)))
+      this.app.crypto.stringToBase64(JSON.stringify(await this.returnInviteObject(email)))
     );
     return `${protocol}://${host}:${port}/r?i=${url_payload}`;
   }
@@ -462,13 +463,13 @@ class Browser {
     window.addEventListener("storage", onLocalStorageEvent, false);
   }
 
-  returnInviteObject(email = "") {
+  async returnInviteObject(email = "") {
     //
     // this informaton is in the email link provided by the user
     // to their friends.
     //
     const obj = {};
-    obj.publickey = this.app.wallet.getPublicKey();
+    obj.publickey = await this.app.wallet.getPublicKey();
     obj.bundle = "";
     obj.email = email;
     if (this.app.options.bundle != "") {

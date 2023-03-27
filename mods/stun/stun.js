@@ -260,11 +260,11 @@ class Stun extends ModTemplate {
     if (app.BROWSER === 0) {
       if (txmsg.request === "stun-create-room-transaction") {
         let stun_mod = app.modules.returnModule("Stun");
-        stun_mod.receiveCreateRoomTransaction(app, tx);
+        await stun_mod.receiveCreateRoomTransaction(app, tx);
       }
       if (txmsg.request === "stun-send-message-to-server") {
         let stun_mod = app.modules.returnModule("Stun");
-        stun_mod.receiveStunMessageToServerTransaction(app, tx, peer);
+        await stun_mod.receiveStunMessageToServerTransaction(app, tx, peer);
       }
     }
 
@@ -274,7 +274,7 @@ class Stun extends ModTemplate {
         stun_mod.receiveStunMessageToPeersTransaction(app, tx);
       }
     }
-    super.handlePeerTransaction(app, tx, peer, mycallback);
+    await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   async sendCreateRoomTransaction(room_code) {

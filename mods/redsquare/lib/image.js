@@ -2,7 +2,6 @@ const SaitoImageOverlay = require("./../../../lib/saito/ui/saito-image-overlay/s
 const RedSquareImageTemplate = require("./image.template");
 
 class RedSquareImage {
-
   constructor(app, mod, container = "", tweet) {
     this.app = app;
     this.mod = mod;
@@ -13,10 +12,9 @@ class RedSquareImage {
   }
 
   render() {
-
-    let element = ".tweet-" + this.tweet.tx.transaction.sig + " > .tweet-body  .tweet-picture";
+    let element = ".tweet-" + this.tweet.tx.signature + " > .tweet-body  .tweet-picture";
     let template = RedSquareImageTemplate(this.app, this.mod, this.images);
-    let sig = this.tweet.tx.transaction.sig;
+    let sig = this.tweet.tx.signature;
 
     let expected_width = "100%";
     let expected_height = "auto";
@@ -25,13 +23,11 @@ class RedSquareImage {
     // avoid length vertical posts
     //
     for (let i = 0; i < this.images.length; i++) {
-
-      var img = new Image;
+      var img = new Image();
       let tweet = this.tweet;
 
       img.onload = function () {
-
-        let available_width_qs = ".tweet-" + tweet.tx.transaction.sig + " > .tweet-body .tweet-main";
+        let available_width_qs = ".tweet-" + tweet.tx.signature + " > .tweet-body .tweet-main";
         if (document.querySelector(available_width_qs)) {
           let obj = document.querySelector(available_width_qs);
           expected_width = parseInt(obj.getBoundingClientRect().width);
@@ -48,15 +44,11 @@ class RedSquareImage {
         let obj = document.querySelector(qs);
         if (obj) {
           obj.style.maxHeight = Math.floor(expected_height) + "px";
-          obj.style.maxWidth = expected_width + "px"; 
+          obj.style.maxWidth = expected_width + "px";
         }
       };
       img.src = this.images[0];
-
-    };
-
-
-
+    }
     if (document.querySelector(element)) {
       this.app.browser.replaceElementBySelector(template, element);
     } else {
@@ -70,23 +62,19 @@ class RedSquareImage {
     this.attachEvents();
   }
 
-
-
   attachEvents() {
-
-    let sel = ".tweet-" + this.tweet.tx.transaction.sig + " > .tweet-body .tweet-preview .tweet-picture > img";
+    let sel =
+      ".tweet-" + this.tweet.tx.signature + " > .tweet-body .tweet-preview .tweet-picture > img";
 
     if (document.querySelectorAll(sel)) {
-      document.querySelectorAll(sel).forEach(image => {
+      document.querySelectorAll(sel).forEach((image) => {
         image.onclick = (e) => {
           let image_idx = e.currentTarget.getAttribute("data-index");
           this.overlay.render(image_idx);
-        }
+        };
       });
     }
-
   }
-
 }
 
 module.exports = RedSquareImage;

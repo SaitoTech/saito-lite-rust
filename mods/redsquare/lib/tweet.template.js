@@ -4,15 +4,20 @@ module.exports = (app, mod, tweet) => {
 
   let optional = tweet.tx.optional;
   let notice = "";
-  if (tweet.notice != "") { notice = tweet.notice; }
+  if (tweet.notice != "") {
+    notice = tweet.notice;
+  }
 
   let publickey = "";
-  try { 
-    if (tweet.tx.transaction.from[0].add) { publickey = tweet.tx.transaction.from[0].add; }
-  } catch (err) {}
-;
+  try {
+    if (tweet.tx.transaction.from[0].add) {
+      publickey = tweet.tx.transaction.from[0].add;
+    }
+  } catch (err) {
+  }
+  ;
   let text = tweet.text || "";
- 
+
   if (text == "" && tweet.retweet_tx != null && tweet.retweet_tx != "" && notice == "") {
     //
     // set notice
@@ -20,14 +25,14 @@ module.exports = (app, mod, tweet) => {
     notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.transaction.from[0].add);
   }
 
-  let flagged =  optional.flagged ||  null;
-  let link_properties =  optional.link_properties ||  null;
-  let num_likes =  optional.num_likes ||  0;
-  let num_replies =  optional.num_replies ||  0;
+  let flagged = optional.flagged || null;
+  let link_properties = optional.link_properties || null;
+  let num_likes = optional.num_likes || 0;
+  let num_replies = optional.num_replies || 0;
   let num_retweets = optional.num_retweets || 0;
   let parent_id = optional.parent_id || "";
   let show_controls = tweet.show_controls;
-  let sig_class = "tweet-"+tweet.tx.transaction.sig;
+  let sig_class = "tweet-" + tweet.tx.signature;
 
   let controls = `
               <div class="tweet-controls">
@@ -49,7 +54,7 @@ module.exports = (app, mod, tweet) => {
               </div>`;
 
   let html = `
-        <div class="tweet ${sig_class}" data-id="${tweet.tx.transaction.sig}">
+        <div class="tweet ${sig_class}" data-id="${tweet.tx.signature}">
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header"></div>
           <div class="tweet-body">
@@ -64,7 +69,7 @@ module.exports = (app, mod, tweet) => {
     `;
   } else {
     html += `
-              <div class="tweet-preview tweet-preview-${tweet.tx.transaction.sig}">
+              <div class="tweet-preview tweet-preview-${tweet.tx.signature}">
               </div>
     `;
   }
@@ -77,7 +82,7 @@ module.exports = (app, mod, tweet) => {
 
   return html;
 
-}
+};
 
 
 

@@ -224,7 +224,7 @@ class Post {
         let rparent2 = rparent;
         while (this.mod.returnTweet(rparent2.parent_id)) {
           let x = this.mod.returnTweet(rparent2.parent_id);
-          let qs = ".tweet-" + x.tx.transaction.sig;
+          let qs = ".tweet-" + x.tx.signature;
           if (document.querySelector(qs)) {
             document.querySelector(qs).remove();
           }

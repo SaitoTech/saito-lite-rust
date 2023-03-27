@@ -100,7 +100,7 @@ class AppStore extends ModTemplate {
       res.err = "";
       res.rows = rows;
 
-      mycallback(res);
+      await mycallback(res);
     }
   }
 
@@ -493,7 +493,7 @@ class AppStore extends ModTemplate {
 	    <p><br /></p>
 
 	    <p>
-	    ${this.app.crypto.hash(tx.transaction.ts + "-" + tx.transaction.sig)}
+	    ${this.app.crypto.hash(tx.timestamp + "-" + tx.signature)}
 	    </p>
 
 	    <p><br /></p>
@@ -552,7 +552,7 @@ class AppStore extends ModTemplate {
       }
 
       let featured_app = 0;
-      if (tx.transaction.from[0].add == (await this.app.wallet.getPublicKey())) {
+      if (tx.transaction.from[0].publicKey == (await this.app.wallet.getPublicKey())) {
         featured_app = 1;
       }
       if (featured_app == 1) {
@@ -570,7 +570,7 @@ class AppStore extends ModTemplate {
         $version: this.app.crypto.hash(`${ts}-${sig}`),
         $image: image,
         $categories: categories,
-        $publickey: from[0].add,
+        $publickey: from[0].publicKey,
         $unixtime: ts,
         $bid: blk.block.id,
         $bsh: blk.returnHash(),
@@ -724,7 +724,7 @@ class AppStore extends ModTemplate {
       let { from, sig, ts } = tx.transaction;
       params = {
         $version: this.app.crypto.hash(`${ts}-${sig}`),
-        $publickey: from[0].add,
+        $publickey: from[0].publicKey,
         $unixtime: ts,
         $bid: blk.block.id,
         $bsh: blk.returnHash(),
@@ -749,7 +749,7 @@ class AppStore extends ModTemplate {
       //
       // send our filename back at our person of interest
       //
-      let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(from[0].add);
+      let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(from[0].publicKey);
       let msg = {
         module: "AppStore",
         request: "receive bundle",
@@ -977,7 +977,7 @@ class AppStore extends ModTemplate {
 
     let data = {};
     data.appstore = this;
-    data.bundle_appstore_publickey = tx.transaction.from[0].add;
+    data.bundle_appstore_publickey = tx.transaction.from[0].publicKey;
     data.appstore_bundle = txmsg.bundle;
 
     AppStoreBundleConfirm.render(this.app, data);

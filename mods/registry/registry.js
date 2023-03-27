@@ -421,14 +421,14 @@ class Registry extends ModTemplate {
 
       try {
         if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
-          registry_self.app.keychain.addKey(tx.transaction.to[0].add, {
+          registry_self.app.keychain.addKey(tx.transaction.to[0].publicKey, {
             identifier: identifier,
             watched: true,
             block_id: registry_self.app.blockchain.returnLatestBlockId(),
             block_hash: registry_self.app.blockchain.returnLatestBlockHash(),
             lc: 1,
           });
-          registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].add, identifier);
+          registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].publicKey, identifier);
         } else {
           console.debug("failed verifying message for username registration : ", tx);
         }
@@ -565,7 +565,7 @@ class Registry extends ModTemplate {
         ) {
           let request = txmsg.request;
           let identifier = txmsg.identifier;
-          let publickey = tx.transaction.from[0].add;
+          let publickey = tx.transaction.from[0].publicKey;
           let unixtime = new Date().getTime();
           let bid = blk.block.id;
           let bsh = blk.returnHash();
@@ -592,7 +592,7 @@ class Registry extends ModTemplate {
           // send message
           if (res == 1) {
             let newtx = registry_self.app.wallet.createUnsignedTransaction(
-              tx.transaction.from[0].add,
+              tx.transaction.from[0].publicKey,
               0,
               fee
             );
@@ -605,13 +605,13 @@ class Registry extends ModTemplate {
               "</span></p>";
             newtx.msg.identifier = identifier;
             newtx.msg.signed_message = signed_message;
-            newtx.msg.sig = sig;
+            newtx.msg.signature = sig;
 
             newtx = registry_self.app.wallet.signTransaction(newtx);
             registry_self.app.network.propagateTransaction(newtx);
           } else {
             let newtx = registry_self.app.wallet.createUnsignedTransaction(
-              tx.transaction.from[0].add,
+              tx.transaction.from[0].publicKey,
               0.0,
               fee
             );
@@ -623,7 +623,7 @@ class Registry extends ModTemplate {
               "</span>) has already been registered.</p>";
             newtx.msg.identifier = identifier;
             newtx.msg.signed_message = "";
-            newtx.msg.sig = "";
+            newtx.msg.signature = "";
 
             newtx = registry_self.app.wallet.signTransaction(newtx);
             registry_self.app.network.propagateTransaction(newtx);
@@ -634,12 +634,12 @@ class Registry extends ModTemplate {
       }
 
       if (!!txmsg && txmsg.module == "Email") {
-        if (tx.transaction.from[0].add == registry_self.publickey) {
-          if (tx.transaction.to[0].add == registry_self.app.wallet.returnPublicKey()) {
+        if (tx.transaction.from[0].publicKey == registry_self.publickey) {
+          if (tx.transaction.to[0].publicKey == registry_self.app.wallet.returnPublicKey()) {
             if (
               tx.msg.identifier != undefined &&
               tx.msg.signed_message != undefined &&
-              tx.msg.sig != undefined
+              tx.msg.signature != undefined
             ) {
               //
               // am email? for us? from the DNS registrar?
@@ -656,7 +656,7 @@ class Registry extends ModTemplate {
                     registry_self.publickey
                   )
                 ) {
-                  registry_self.app.keychain.addKey(tx.transaction.to[0].add, {
+                  registry_self.app.keychain.addKey(tx.transaction.to[0].publicKey, {
                     identifier: identifier,
                     watched: true,
                     block_id: blk.block.id,
@@ -664,12 +664,15 @@ class Registry extends ModTemplate {
                     lc: 1,
                   });
                 } else {
-                  registry_self.app.keychain.addKey(tx.transaction.to[0].add, {
+                  registry_self.app.keychain.addKey(tx.transaction.to[0].publicKey, {
                     has_registered_username: false,
                   });
                   console.debug("verification failed for sig : ", tx);
                 }
-                registry_self.app.connection.emit("update_identifier", tx.transaction.to[0].add);
+                registry_self.app.connection.emit(
+                  "update_identifier",
+                  tx.transaction.to[0].publicKey
+                );
               } catch (err) {
                 console.error("ERROR verifying username registration message: ", err);
               }
@@ -686,8 +689,8 @@ class Registry extends ModTemplate {
               // if i am server, save copy of record
               registry_self.addRecord(
                 identifier,
-                tx.transaction.to[0].add,
-                tx.transaction.ts,
+                tx.to[0].publicKey,
+                tx.timestamp,
                 blk.block.id,
                 blk.returnHash(),
                 0,

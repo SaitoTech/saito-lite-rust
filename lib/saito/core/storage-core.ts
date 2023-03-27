@@ -50,6 +50,7 @@ class StorageCore extends Storage {
   returnPath() {
     return path;
   }
+
   returnFileSystem() {
     return fs;
   }
@@ -387,8 +388,7 @@ class StorageCore extends Storage {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  resetOptions() {
-  }
+  resetOptions() {}
 
   ///////////////////////
   // saveClientOptions //

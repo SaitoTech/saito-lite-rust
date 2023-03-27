@@ -345,7 +345,7 @@ class Chat extends ModTemplate {
       }
 
       //mycallback(group.txs);
-      mycallback(chat_msgs_to_load);
+      await mycallback(chat_msgs_to_load);
     }
 
     if (txmsg.request === "chat message") {
@@ -355,7 +355,7 @@ class Chat extends ModTemplate {
       // notify sender if requested
       //
       if (mycallback) {
-        mycallback({ payload: "success", error: {} });
+        await mycallback({ payload: "success", error: {} });
       }
     } else if (txmsg.request === "chat message broadcast") {
       let inner_tx = new saito.default.transaction(txmsg.data);
@@ -366,15 +366,15 @@ class Chat extends ModTemplate {
       // to a peer if the inner_tx is addressed to one of our peers.
       //
       if (inner_tx.transaction.to.length > 0) {
-        if (inner_tx.transaction.to[0].add != this.app.wallet.returnPublicKey()) {
+        if (inner_tx.transaction.to[0].publicKey != (await this.app.wallet.getPublicKey())) {
           console.log("INNER TRANSACTION IS NOT FOR ME");
           if (app.BROWSER == 0) {
-            app.network.peers.forEach((p) => {
-              if (p.peer.publickey === inner_tx.transaction.to[0].add) {
-                p.sendTransactionWithCallback(inner_tx, () => {});
+            for (const p of app.network.peers) {
+              if (p.peer.publickey === inner_tx.transaction.to[0].publicKey) {
+                await p.sendTransactionWithCallback(inner_tx, () => {});
               }
-              return;
-            });
+              continue;
+            }
             return;
           }
         } else {
@@ -383,11 +383,11 @@ class Chat extends ModTemplate {
           // broadcast to me, so send to all non-this-peers
           //
           if (app.BROWSER == 0) {
-            app.network.peers.forEach((p) => {
+            for (const p of app.network.peers) {
               if (p.peer.publickey !== peer.peer.publickey) {
-                p.sendTransactionWithCallback(inner_tx, () => {});
+                await p.sendTransactionWithCallback(inner_tx, () => {});
               }
-            });
+            }
           }
         }
       }
@@ -420,7 +420,7 @@ class Chat extends ModTemplate {
       // notify sender if requested
       //
       if (mycallback) {
-        mycallback({ payload: "success", error: {} });
+        await mycallback({ payload: "success", error: {} });
       }
     }
   }
@@ -441,7 +441,7 @@ class Chat extends ModTemplate {
           salert("Image already being sent");
           return;
         }
-        this.inTransitImageMsgSig = tx.transaction.sig;
+        this.inTransitImageMsgSig = tx.signature;
       }
     }
     if (app.network.peers.length > 0) {
@@ -490,14 +490,14 @@ class Chat extends ModTemplate {
       newtx.transaction.to[1] = x;
     }
 
-    console.log("FIRST RECIPIENT IS NOW: " + newtx.transaction.to[0].add);
+    console.log("FIRST RECIPIENT IS NOW: " + newtx.transaction.to[0].publicKey);
 
     if (msg.substring(0, 4) == "<img") {
       if (this.inTransitImageMsgSig) {
         salert("Image already being sent");
         return;
       }
-      this.inTransitImageMsgSig = tx.transaction.sig;
+      this.inTransitImageMsgSig = tx.signature;
     }
 
     newtx.msg = {
@@ -512,8 +512,8 @@ class Chat extends ModTemplate {
       //
       // the first recipient is ourself, so the second is the one with the shared secret
       //
-      console.log("from us so sign and encrypt to: " + newtx.transaction.to[0].add);
-      let key = this.app.keychain.returnKey(newtx.transaction.to[0].add);
+      console.log("from us so sign and encrypt to: " + newtx.transaction.to[0].publicKey);
+      let key = this.app.keychain.returnKey(newtx.transaction.to[0].publicKey);
       console.log("pre-encrypt in create!");
       console.log("key should be: " + key.aes_secret);
       newtx = this.app.wallet.signAndEncryptTransaction(newtx);
@@ -529,7 +529,7 @@ class Chat extends ModTemplate {
    * So we make sure here it is actually for us (otherwise will be encrypted gobbledygook)
    */
   receiveChatTransaction(app, tx) {
-    if (this.inTransitImageMsgSig == tx.transaction.sig) {
+    if (this.inTransitImageMsgSig == tx.signature) {
       this.inTransitImageMsgSig = null;
     }
 
@@ -540,8 +540,8 @@ class Chat extends ModTemplate {
     // if to someone else and encrypted
     // (i.e. I am sending an encrypted message and not waiting for relay)
     //
-    //if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
-    //    if (app.keychain.hasSharedSecret(tx.transaction.to[0].add)) {
+    //if (tx.transaction.from[0].publicKey == app.wallet.returnPublicKey()) {
+    //    if (app.keychain.hasSharedSecret(tx.transaction.to[0].publicKey)) {
     //    }
     //}
 
@@ -549,7 +549,7 @@ class Chat extends ModTemplate {
     // save transaction if private chat
     //
     for (let i = 0; i < tx.transaction.to.length; i++) {
-      if (tx.transaction.to[i].add == app.wallet.returnPublicKey()) {
+      if (tx.transaction.to[i].publicKey == app.wallet.returnPublicKey()) {
         this.app.storage.saveTransaction(tx, txmsg.group_id);
         break;
       }
@@ -560,7 +560,7 @@ class Chat extends ModTemplate {
     if (group) {
       //Have we already inserted this message into the chat?
       for (let z = 0; z < group.txs.length; z++) {
-        if (group.txs[z].transaction.sig === tx.transaction.sig) {
+        if (group.txs[z].signature === tx.signature) {
           return;
         }
       }
@@ -574,8 +574,8 @@ class Chat extends ModTemplate {
 
       let members = [];
       for (let x = 0; x < tx.transaction.to.length; x++) {
-        if (!members.includes(tx.transaction.to[x].add)) {
-          members.push(tx.transaction.to[x].add);
+        if (!members.includes(tx.transaction.to[x].publicKey)) {
+          members.push(tx.transaction.to[x].publicKey);
         }
       }
 
@@ -622,7 +622,7 @@ class Chat extends ModTemplate {
             if (z > 0) {
               msg += "<br/>";
             }
-            sender = block[z].transaction.from[0].add;
+            sender = block[z].transaction.from[0].publicKey;
             if (txmsg.message.indexOf("<img") != 0) {
               msg += this.app.browser.sanitize(txmsg.message);
             } else {
@@ -677,7 +677,7 @@ class Chat extends ModTemplate {
           block.push(txs[i]);
         }
       }
-      last_message_sender = txs[i].transaction.from[0].add;
+      last_message_sender = txs[i].transaction.from[0].publicKey;
     }
 
     blocks.push(block);
@@ -687,7 +687,7 @@ class Chat extends ModTemplate {
   msgIsFrom(txs, publickey) {
     if (txs.transaction.from != null) {
       for (let v = 0; v < txs.transaction.from.length; v++) {
-        if (txs.transaction.from[v].add === publickey) {
+        if (txs.transaction.from[v].publicKey === publickey) {
           return true;
         }
       }
@@ -803,10 +803,10 @@ class Chat extends ModTemplate {
     }
 
     for (let i = 0; i < group.txs.length; i++) {
-      if (group.txs[i].transaction.sig === tx.transaction.sig) {
+      if (group.txs[i].signature === tx.signature) {
         return;
       }
-      if (tx.transaction.ts < group.txs[i].transaction.ts) {
+      if (tx.timestamp < group.txs[i].timestamp) {
         let pos = Math.max(0, i - 1);
         group.txs.splice(pos, 0, tx);
         return;

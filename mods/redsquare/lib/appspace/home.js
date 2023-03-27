@@ -126,8 +126,8 @@ class AppspaceHome {
       tweets[0].addTweet(tweets[z], 0);
     }
 
-    this.thread_id = tweets[0].tx.transaction.sig;
-    this.parent_id = tweets[0].tx.transaction.sig;
+    this.thread_id = tweets[0].tx.signature;
+    this.parent_id = tweets[0].tx.signature;
 
     //
     // do not compress parent
@@ -152,6 +152,3 @@ class AppspaceHome {
 }
 
 module.exports = AppspaceHome;
-
-
-

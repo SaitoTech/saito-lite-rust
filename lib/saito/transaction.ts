@@ -34,14 +34,13 @@ export default class Transaction extends SaitoTransaction {
   public work_available_to_me: bigint;
   public work_available_to_creator: bigint;
   public work_cumulative: bigint;
-  public msg: any;
   public dmsg: any;
   // public size: number;
   public is_valid: any;
 
   // public path: Array<Hop>;
 
-  constructor(data: any | undefined = undefined, jsonobj = null) {
+  constructor(data?: any, jsonobj = null) {
     super(data);
 
     /////////////////////////
@@ -64,7 +63,6 @@ export default class Transaction extends SaitoTransaction {
     // are behind the transactions.
 
     this.optional = {}; // non-signed field for users
-    this.msg = {};
     this.dmsg = "";
     // this.size = 0;
     this.is_valid = 1;
@@ -87,13 +85,15 @@ export default class Transaction extends SaitoTransaction {
         //
         for (let i = 0; i < jsonobj.from.length; i++) {
           const fslip = jsonobj.from[i];
+          console.log("jsonobj.from : ", fslip);
+
           let slip = new Slip();
           slip.publicKey = fslip.publicKey;
-          slip.amount = fslip.amt;
+          slip.amount = BigInt(fslip.amount);
           slip.type = fslip.type as SlipType;
-          slip.index = fslip.sid;
-          slip.blockId = fslip.block_id;
-          slip.txOrdinal = fslip.tx_ordinal;
+          slip.index = fslip.index;
+          slip.blockId = BigInt(fslip.blockId);
+          slip.txOrdinal = BigInt(fslip.txOrdinal);
 
           // this.transaction.from.push(
           //   new Slip(fslip.add, fslip.amt, fslip.type, fslip.sid, fslip.block_id, fslip.tx_ordinal)
@@ -101,51 +101,50 @@ export default class Transaction extends SaitoTransaction {
           this.addFromSlip(slip);
         }
         if (jsonobj.from.length > 0) {
-          console.log("important tx: " + jsonobj.from[0].add);
+          console.log("important tx: " + jsonobj.from[0].publicKey);
         }
 
         for (let i = 0; i < jsonobj.to.length; i++) {
           const fslip = jsonobj.to[i];
+          console.log("jsonobj.to : ", fslip);
           let slip = new Slip();
           slip.publicKey = fslip.publicKey;
-          slip.amount = fslip.amt;
+          slip.amount = BigInt(fslip.amount);
           slip.type = fslip.type as SlipType;
-          slip.index = fslip.sid;
-          slip.blockId = fslip.block_id;
-          slip.txOrdinal = fslip.tx_ordinal;
+          slip.index = fslip.index;
+          slip.blockId = BigInt(fslip.blockId);
+          slip.txOrdinal = BigInt(fslip.txOrdinal);
           // this.transaction.to.push(
           //   new Slip(fslip.add, fslip.amt, fslip.type, fslip.sid, fslip.block_id, fslip.tx_ordinal)
           // );
           this.addToSlip(slip);
         }
 
-        if (jsonobj.ts) {
+        if (jsonobj.timestamp) {
           this.timestamp = jsonobj.timestamp;
         }
-        if (jsonobj.sig) {
+        if (jsonobj.signature) {
           this.signature = jsonobj.signature;
         }
-        if (jsonobj.r) {
+        if (jsonobj.txs_replacements) {
           this.txs_replacements = jsonobj.txs_replacements;
         }
         if (jsonobj.type) {
           this.type = jsonobj.type;
         }
-        if (jsonobj.m) {
-          if (jsonobj.m.data) {
-            this.data = Buffer.from(jsonobj.data);
-            try {
-              const reconstruct2 = Buffer.from(this.data).toString("utf-8");
-              this.msg = JSON.parse(reconstruct2);
-            } catch (err) {
-              try {
-                const reconstruct3 = this.base64ToString(Buffer.from(this.data).toString());
-                this.msg = JSON.parse(reconstruct3);
-              } catch (err) {
-                console.log("real issues reconstructing...");
-              }
-            }
-          }
+        if (jsonobj.data) {
+          this.data = new Uint8Array(jsonobj.data);
+          // try {
+          //   const reconstruct2 = Buffer.from(this.data).toString("utf-8");
+          //   this.msg = JSON.parse(reconstruct2);
+          // } catch (err) {
+          //   try {
+          //     const reconstruct3 = this.base64ToString(Buffer.from(this.data).toString());
+          //     this.msg = JSON.parse(reconstruct3);
+          //   } catch (err) {
+          //     console.log("real issues reconstructing...");
+          //   }
+          // }
         }
 
         //
@@ -178,6 +177,7 @@ export default class Transaction extends SaitoTransaction {
     } catch (err) {
       console.log("POTENTIAL CRASH ERROR: " + err);
     }
+    this.unpackData();
 
     return this;
   }
