@@ -135,6 +135,47 @@ class Chat extends ModTemplate {
     }
 
 
+
+    async onPeerHandshakeComplete(app, peer) {
+        if (!app.BROWSER) { return; }
+        if (peer.isMainPeer()) {
+            this.communityGroup = this.createChatGroup([peer.peer.publickey], this.communityGroupName);
+            if (this.communityGroup) { this.communityGroupHash = this.communityGroup.id;}
+            this.loadChats();
+            let sql;
+            for (let i = 0; i < this.groups.length; i++) {
+                sql = `SELECT id, tx FROM txs WHERE publickey = "${this.groups[i].id}" ORDER BY ts DESC LIMIT 100`;
+                this.sendPeerDatabaseRequestWithFilter(
+                    "Archive",
+                    sql,
+
+                    (res) => {
+                        if (res?.rows) {
+                            while (res.rows.length > 0) {
+
+                                //Process the chat transaction like a new message
+
+                                let tx = new saito.default.transaction(JSON.parse(res.rows.pop().tx));
+
+                                tx.decryptMessage(app);
+
+                                this.receiveChatTransaction(app, tx);
+                            }
+
+                        }
+                    },
+
+                    (p) => {
+                        if (p.peer.publickey === peer.peer.publickey) {
+                            return 1;
+                        }
+                    }
+                );
+            }
+        }
+    }
+
+
     returnServices() {
         let services = [];
         // servers with chat service run plaintext community chat groups
@@ -220,96 +261,6 @@ class Chat extends ModTemplate {
 
 
 
-
-    /*
-    IS this code duplicating the functionality of onPeerServiceUp????
-    */
-
-    async onPeerHandshakeComplete(app, peer) {
-        if (!app.BROWSER) { return; }
-
-        //
-        // create mastodon server
-        //
-        if (peer.isMainPeer()) {
-            //
-            // We wait until we establish a peer connection to create the community chat
-            // Now that we have all the chat groups from our wallet + peer
-            // We can load the previously messages from our local storage
-            //
-            this.communityGroup = this.createChatGroup([peer.peer.publickey], this.communityGroupName);
-            if (this.communityGroup) {
-                this.communityGroupHash = this.communityGroup.id;
-            }
-
-            //this.app.connection.emit("chat-manager-render-request");
-
-
-            this.loadChats();
-
-
-            //
-            //Now we send queries to the Archive to load the last N chats per group
-            //this enables us to pick up anything new that we had previously not received
-            //
-            let sql;
-            for (let i = 0; i < this.groups.length; i++) {
-                // not a publickey but group_id gets archived as if it were one
-                sql = `SELECT id, tx FROM txs WHERE publickey = "${this.groups[i].id}" ORDER BY ts DESC LIMIT 100`;
-                this.sendPeerDatabaseRequestWithFilter(
-                    "Archive",
-                    sql,
-
-                    (res) => {
-                        if (res?.rows) {
-                            while (res.rows.length > 0) {
-
-                                //Process the chat transaction like a new message
-
-                                let tx = new saito.default.transaction(JSON.parse(res.rows.pop().tx));
-
-                                tx.decryptMessage(app);
-
-                                this.receiveChatTransaction(app, tx);
-                            }
-
-                        }
-                    },
-
-                    (p) => {
-                        if (p.peer.publickey === peer.peer.publickey) {
-                            return 1;
-                        }
-                    }
-                );
-            }
-        }
-
-        //
-        // See if we want to auto open a chatpopup
-        // we update the group_id of our default chat every time the user opens/closes a popup
-        /*
-        if (app.BROWSER) {
-            if ((!app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 600)) {
-                let group = this.returnGroupByMemberPublickey(peer.returnPublicKey());
-                if (group) {
-                    let active_module = app.modules.returnActiveModule();
-                    if (active_module) {
-                        if (active_module.request_no_interrupts != true) {
-                            this.app.connection.emit('chat-popup-render-request', group);
-                        }
-                    }
-                }
-            } else {
-                //Under mobile use, always wait for user to open chat box
-                this.mute = true;
-            }
-        }*/
-
-    }
-
-
-
     //
     // ---------- on chain messages ------------------------
     // ONLY processed if I am in the to/from of the transaction
@@ -317,23 +268,14 @@ class Chat extends ModTemplate {
     // it is mostly just a legacy safety catch for direct messaging 
     //
     onConfirmation(blk, tx, conf, app) {
-
         if (conf == 0) {
-
             tx.decryptMessage(app);
-
             let txmsg = tx.returnMessage();
-
             if (txmsg.request == "chat message") {
                 this.receiveChatTransaction(app, tx);
             }
-
         }
-
     }
-
-
-
 
 
     //
@@ -557,12 +499,22 @@ class Chat extends ModTemplate {
      */
     receiveChatTransaction(app, tx) {
 
+
         if (this.inTransitImageMsgSig == tx.transaction.sig) {
             this.inTransitImageMsgSig = null;
         }
 
+ let txmsg = "";
+
+console.log("RECEIVED");
+try {
         tx.decryptMessage(app);
-        let txmsg = tx.returnMessage();
+console.log("RECEIVED 2");
+        txmsg = tx.returnMessage();
+console.log("RECEIVED 3: " + JSON.stringify(txmsg));
+} catch (err) {
+console.log("ERROR: " + JSON.stringify(err));
+}
 
         //
         // if to someone else and encrypted 
@@ -659,7 +611,6 @@ class Chat extends ModTemplate {
                     }
                 }
                 msg += `<div data-id="${group_id}" class="saito-userline-reply">reply <i class="fa-solid fa-reply"></i></div>`;
-
                 html += `${SaitoUserTemplate({ app: this.app, publickey: sender, notice: msg, fourthelem: `<div class="saito-chat-line-controls">` + this.app.browser.returnTime(ts) + `</div>` })}`;
             }
         }
