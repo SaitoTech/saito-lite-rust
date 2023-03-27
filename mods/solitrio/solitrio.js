@@ -65,6 +65,10 @@ class Solitrio extends OnePlayerGameTemplate {
     //Reset/Increment State
     this.game.state.round++;
     this.game.state.recycles_remaining = 2;
+
+    if (this.browser_active){
+      $("#rowbox").removeClass("nomoves");
+    }
   }
 
 
