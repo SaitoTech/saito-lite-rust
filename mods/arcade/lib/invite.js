@@ -87,7 +87,7 @@ class Invite {
       }
 
       //League
-      if (txmsg.options?.league){
+      if (txmsg.options?.league_id){
         this.invite_data.game_type = "league game"; 
       }
 

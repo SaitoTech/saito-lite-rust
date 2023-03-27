@@ -32,6 +32,10 @@ button, .saito-button-primary, .saito-button-secondary:hover {
   color: var(--saito-font-color);
 }
 
+.arcade-central-panel .arcade-initializer {
+  height: 100vh;
+}
+
 .arcade-game-initializer-success-title {
   text-align: center;
   font-size: 3rem;
@@ -46,4 +50,41 @@ button, .saito-button-primary, .saito-button-secondary:hover {
 
 .arcade-central-panel h5 {
   margin: 0 0 -1rem 0;
+}
+
+
+/*************************************
+ * Override saito-page-layout 
+ * to make arcade better on mobile
+**************************************/
+@media screen and (max-width: 900px){
+  .saito-sidebar.right {
+    position: unset;
+    left: unset;
+    width: unset;
+    top: unset;
+    visibility: visible;
+    margin-top: unset;
+    height: unset;
+    grid-row: unset;
+    grid-column-start: unset;
+    padding: 1rem;
+  }
+
+  .saito-main {
+    margin: 0;
+  }
+
+  .saito-container { 
+    /*height: unset;*/
+   }
+
+   .saito-table-row {
+    padding: 1rem;
+   }
+   .saito-table-body { 
+    grid-gap: 0.8rem;
+    font-size: 1.6rem;
+  }
+
 }

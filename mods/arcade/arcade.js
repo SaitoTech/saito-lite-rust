@@ -17,6 +17,11 @@ class Arcade extends ModTemplate {
   constructor(app) {
     super(app);
 
+    //
+    // DEBUGGING MODE
+    //
+    this.debug = false;
+
     this.name = "Arcade";
 
     this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
@@ -50,7 +55,7 @@ class Arcade extends ModTemplate {
       'arcade': 'fa-solid fa-gamepad'
     };
 
-    this.debug = true;
+    this.debug = false;
   }
 
 
@@ -77,6 +82,9 @@ class Arcade extends ModTemplate {
         this.affix_callbacks_to.push(game_mod.name);
     });
 
+    this.games["mine"] = [];
+    this.games["open"] = [];
+    
     //
     // If we have a browser (are a user)
     // initialize some UI components and query the list of games to display 
@@ -1335,9 +1343,6 @@ class Arcade extends ModTemplate {
       this.app.connection.emit("relay-send-message", { recipient: "PEERS", request: "arcade spv update", data: opentx.transaction });
       this.addGame(opentx, "private");
 
-      opentx.msg.players.splice(0, 1);
-      opentx.msg.players_sigs.splice(0, 1);
-
       let newtx = this.createAcceptTransaction(opentx);
       
       this.app.network.propagateTransaction(newtx);
@@ -1588,7 +1593,7 @@ class Arcade extends ModTemplate {
 
 
   async verifyOptions(gameType, options) {
-    if (gameType !== "single") {
+    /*if (gameType !== "single") {
       for (let key of ["mine", "open"]) {
         for (let game of this.games[key]) {
           if (this.isMyGame(game) && game.msg.players_needed > 1) {
@@ -1609,7 +1614,7 @@ class Arcade extends ModTemplate {
           }
         }
       }
-    }
+    }*/
 
     //
     // if crypto and stake selected, make sure creator has it

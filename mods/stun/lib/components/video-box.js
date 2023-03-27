@@ -61,15 +61,9 @@ class VideoBox {
 
 
         })
-
-
     }
 
-
-
-    attachEvents() { }
-
-
+    attachEvents() { };
 
     render(stream, placeholder_info = null) {
 

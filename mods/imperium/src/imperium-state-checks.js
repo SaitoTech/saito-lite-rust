@@ -16,6 +16,7 @@
   }
   returnFactionName(imperium_self, player) {
     let factions = imperium_self.returnFactions();
+console.log("return faction name of: " + player);
     return factions[imperium_self.game.state.players_info[player-1].faction].name;
   }
   returnPlayerOfFaction(faction) {

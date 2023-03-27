@@ -5110,6 +5110,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
             imperium_self.addMove("strategy\t"+"warfare"+"\t"+strategy_card_player+"\t2");
             imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
             imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
+            imperium_self.addMove("rearrange_tokens\t"+strategy_card_player);
             imperium_self.addMove("deactivate\t"+strategy_card_player+"\t"+sector);
             imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(strategy_card_player)+" deactivates "+sys.s.name);
             imperium_self.playerAllocateNewTokens(imperium_self.game.player, 1, 0, 3, 0);
@@ -5392,8 +5393,8 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
 
 
 
-    this.importActionCard('unexpected-breakthrough', {
-        name : "Unexpected Breakthrough" ,
+    this.importActionCard('breakthrough', {
+        name : "Breakthrough" ,
         type : "action" ,
         text : "Do not spend resources to research technology the next time the Technology card is played" ,
         playActionCard : function(imperium_self, player, action_card_player, card) {
@@ -6302,7 +6303,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
   this.importStageIPublicObjective('diversified-research', {
       name 	: 	"Diversified Research" ,
       img	:	"/imperium/img/victory_point_1.png" ,
-      text	:	"Research 2 technologies in two different color paths" ,
+      text	:	"Research 2 technologies in 2 color paths" ,
       canPlayerScoreVictoryPoints : function(imperium_self, player) {
 
 	let techlist = imperium_self.game.state.players_info[player-1].tech;
@@ -11700,25 +11701,6 @@ console.log("qe: " + qe);
       });
     }
 
-
-
-
-
-
-
-
-/***
-    this.menu.addSubMenuOption("game-game", {
-      text : "Save",
-      id : "game-save",
-      class : "game-save",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.addMove("SAVE");
-	game_mod.endTurn();
-      }
-    });
-***/
     this.menu.addSubMenuOption("game-game", {
       text : "Log",
       id : "game-log",
@@ -11751,71 +11733,64 @@ console.log("qe: " + qe);
 	game_mod.strategy_card_overlay.render();
       }
     });
+
     this.menu.addSubMenuOption("game-cards", {
-      text : "Objectives",
-      id : "game-objectives-cardlist",
-      class : "game-objectives-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	game_mod.handleObjectivesMenuItem();
-        //game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.stage_i_objectives, { cardlistHeight: "90vh" , cardlistWidth : "90vw" });
-      }
-    });
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Units",
-      id : "game-units-cardlist",
-      class : "game-units-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.units_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Upgrades",
-      id : "game-unit-cardlist",
-      class : "game-unit-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let tech = game_mod.returnTechnology();
-        let t2 = [];
-        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
-      }
-    });
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Tech Tree",
+      text : "Tech",
       id : "game-tech-dependencies",
       class : "game-tech-dependencies",
       callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.handleTechMenuItem();
+       game_mod.menu.showSubSubMenu("game-tech-dependencies");
       }
     });
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Tech",
-      id : "game-tech-cardlist",
-      class : "game-tech-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let tech = game_mod.returnTechnology();
-        let t2 = [];
-        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/background/tech-upgrades.jpg" , padding : "50px"});
-      }
-    });
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Agendas",
-      id : "game-agenda-cardlist",
-      class : "game-agenda-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let ac = [];
-	for (let i = 0; i < game_mod.game.state.agendas.length; i++) {
-	  ac.push(game_mod.agenda_cards[game_mod.game.state.agendas[i]]);
+    this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : "Basic",
+        id : "game-tech-dependencies-basic",
+        class : "game-tech-dependencies-basic",
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+	  let tech = game_mod.returnTechnology();
+          let t2 = [];
+          for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
+          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
         }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac, { columns : 3 , cardlistWidth : "90vw" , cardlistHeight : "90vh" });
-      }
     });
+    this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : "Units",
+        id : "game-tech-dependencies-units",
+        class : "game-tech-dependencies-units",
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+          game_mod.units_overlay.render();
+        }
+    });
+    this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : "Upgrades",
+        id : "game-tech-dependencies-upgrades",
+        class : "game-tech-dependencies-upgrades",
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+	  let tech = game_mod.returnTechnology();
+          let t2 = [];
+          for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
+          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
+        }
+    });
+    for (let i = 0; i < this.game.players.length; i++) {
+      this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : this.returnFactionNickname(i+1),
+        id : "game-faction-tech-"+(i+1),
+        class : "game-faction-tech-"+(i+1),
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+	  let faction_key = game_mod.game.state.players_info[i].faction;
+	  let tech = game_mod.returnTechnology();
+          let t2 = [];
+          for (let x in tech) { if (tech[x].faction == faction_key) { t2.push(tech[x]); } }
+          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
+        }
+      });
+    }
+
     this.menu.addSubMenuOption("game-cards", {
       text : "Laws",
       id : "game-laws-cardlist",
@@ -11840,11 +11815,13 @@ console.log("qe: " + qe);
 	let ac = game_mod.returnActionCards();
 	let ac2 = [];
 	for (let x in ac) {
-	  if (x.indexOf("2") || x.indexOf("3") || x.indexOf("4") || x.indexOf("5")) {
+console.log(JSON.stringify(x));
+	  if (x.indexOf("2") > 0 || x.indexOf("3") > 0 || x.indexOf("4") > 0 || x.indexOf("5") > 0 ) {
 	  } else {
-	    ac2 = JSON.parse(JSON.stringify(ac[x]));   
+	    ac2.push(ac[x]);
 	  }
 	}
+console.log("ACT: " + JSON.stringify(ac2));
         game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac2, {});
       }
     });
@@ -12102,8 +12079,8 @@ console.log("qe: " + qe);
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-//      let sys = this.returnSectorAndPlanets("4_4");
-//      sys.p[0].owner = 1;
+      //let sys = this.returnSectorAndPlanets("4_4");
+      //sys.p[0].owner = 1;
 
 
       //
@@ -13892,10 +13869,16 @@ handleSystemsMenuItem() {
 
 	    let notice = "Players still to move: <ul>";
 	    let am_i_still_to_move = 0;
+console.log("STILL TO MOVE: " + JSON.stringify(still_to_move));
+console.log("PLAYERS: " + JSON.stringify(this.game.players));
 	    for (let i = 0; i < still_to_move.length; i++) {
 	      for (let z = 0; z < this.game.players.length; z++) {
 		if (this.game.players[z] === still_to_move[i]) {
 		  if (this.game.players[z] === this.app.wallet.returnPublicKey()) { am_i_still_to_move = 1; }
+console.log("WHO - IDX " + z);
+console.log("WHO - PLAYER " + (z+1));
+console.log("WHO: " + this.game.players[z]);
+console.log("WHO: " + this.returnFaction(z+1));
 	          notice += '<li class="option">'+this.returnFaction((z+1))+'</li>';
 		}
 	      }
@@ -13904,7 +13887,6 @@ handleSystemsMenuItem() {
 	    if (am_i_still_to_move == 0) {
 	      this.updateStatus(notice);
 	    }
-
 
   	    if (this.game.confirms_needed <= this.game.confirms_received) {
 	      this.resetConfirmsNeeded(0);
@@ -13980,6 +13962,41 @@ handleSystemsMenuItem() {
       }
 
 
+      if (mv[0] === "rearrange_tokens") {
+
+	let imperium_self = this;
+        let player = parseInt(mv[1]);
+
+  	this.game.queue.splice(qe, 1);
+
+        if (imperium_self.game.player == player) {
+          imperium_self.playerRearrangeTokens();
+        } else {
+	  imperium_self.updateStatus(imperium_self.returnFaction(player) + " is redistributing tokens...");
+	}
+
+	return 0;
+
+      }
+
+
+      if (mv[0] === "rearrange") {
+
+        let player = parseInt(mv[1]);
+        let new_ct = parseInt(mv[2]);
+        let new_st = parseInt(mv[3]);
+        let new_fs = parseInt(mv[4]);
+  	this.game.queue.splice(qe, 1);
+
+	this.game.state.players_info[player-1].command_tokens = new_ct;
+	this.game.state.players_info[player-1].strategy_tokens = new_st;
+	this.game.state.players_info[player-1].fleet_supply = new_fs;
+
+	imperium_self.updateLog(this.returnFactionNickname(player) + " redistributes tokens: " + new_ct + "/" + new_st + "/" + new_fs);
+
+	return 1;
+
+      }
 
 
       if (mv[0] === "research") {
@@ -15452,8 +15469,8 @@ if (debugging == 0) {
       if (mv[0] === "shownewobjectives") {
 
 	let game_mod = this;
-	let title = "Your Objectives";
-	let subtitle = "check objectives, strategy cards and more in the CARDS menu...";
+	let title = "Objectives";
+	let subtitle = "click on <span class='help-question'>?</span> in the Victory Points track to review objectives anytime...";
 	let cards = [];
 
         for (let i = 0; i < this.game.state.new_objectives.length; i++) {
@@ -15478,7 +15495,7 @@ if (debugging == 0) {
 	  title : title,
 	  subtitle : subtitle,
 	  columns : cards.length ,
-	  backgroundImage : "/imperium/img/starscape_background1.jpg",
+	  backgroundImage : "/imperium/img/backgrounds/objectives-background.jpg",
 	  padding: "20px",
 	  textAlign: "center",
 	  onContinue : function() {
@@ -15497,7 +15514,7 @@ if (debugging == 0) {
 	        title : "New Agendas",
 	        subtitle : "check active agendas, strategy cards and more in the CARDS menu",
 	        columns : ac.length ,
-	        backgroundImage : "/imperium/img/starscape_background1.jpg",
+	        backgroundImage : "/imperium/img/backgrounds/new-agendas-background.jpg",
 	        padding: "20px",
 	        textAlign: "center",
 	        onClose : function() {
@@ -20367,6 +20384,100 @@ playerTurn(stage = "main") {
   }
 }
 
+playerRearrangeTokens() {
+
+  let existing_tokens = this.game.state.players_info[this.game.player-1].strategy_tokens;
+      existing_tokens += this.game.state.players_info[this.game.player-1].command_tokens;
+      existing_tokens += this.game.state.players_info[this.game.player-1].fleet_supply;
+
+  let new_st = 0;
+  let new_ct = 0;
+  let new_fs = 0;
+
+  let imperium_self = this;
+  let html = '<div class="sf-readable">Do you wish to re-arrange your command / strategy / fleet tokens? </div><ul>';
+  html += '<li class="option" id="rearrange">rearrange tokens</li>';
+  html += '<li class="option" id="skip">no need</li>';
+  html += '</ul>';  
+
+  let updateInterface = function(updateInterface) {
+
+    let html = '';
+
+    if (existing_tokens > 0) {
+        html = '<div class="sf-readable">Tokens Remaining: '+existing_tokens+'</div><ul>';
+        html += '<li class="option" id="command">'+new_ct+' command tokens</li>';
+        html += '<li class="option" id="strategy">'+new_st+' strategy tokens</li>';
+        html += '<li class="option" id="fleet">'+new_fs+' fleet supply</li>';
+        html += '</ul>';  
+    } else {
+        html = '<div class="sf-readable">Confirm: '+new_ct+"/"+new_st+"/"+new_fs+'</div><ul>';
+        html += '<li class="option" id="confirm">yes, confirm</li>';
+        html += '<li class="option" id="redo">no, try again</li>';
+        html += '</ul>';
+    }
+
+    imperium_self.updateStatus(html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+
+      $('.option').off();
+      let action2 = $(this).attr("id");
+
+      if (action2 === "confirm"){
+	imperium_self.addMove("rearrange\t"+imperium_self.game.player+"\t"+new_ct+"\t"+new_st+"\t"+new_fs);
+	imperium_self.endTurn();
+	return;
+      }
+
+      if (action2 === "redo"){
+	existing_tokens = existing_tokens + new_ct + new_st + new_fs;
+	new_ct = 0;
+	new_st = 0;
+	new_fs = 0;
+      }
+
+      if (action2 === "command"){
+	existing_tokens--;
+	new_ct++; 
+      }
+
+      if (action2 === "strategy"){
+	existing_tokens--;
+	new_st++; 
+      }
+
+      if (action2 === "fleet"){
+	existing_tokens--;
+	new_fs++; 
+      }
+
+      updateInterface(updateInterface);
+      return;
+
+    });
+  }
+
+  this.updateStatus(html);
+
+  $('.option').off();
+  $('.option').on('click', function () {
+
+    let action2 = $(this).attr("id");
+
+    if (action2 === "rearrange") {
+      updateInterface(updateInterface);
+      return;
+    }
+
+    if (action2 === "skip") {
+      imperium_self.endTurn();
+      return;
+    }
+  });
+
+}
 
 playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
 
@@ -20553,6 +20664,9 @@ playerPlayBombardment(attacker, sector, planet_idx) {
   //
   // no bombardment of my own planets (i.e. if parlay ends invasion)
   //
+    let html = '<div class="action_card_instructions_hud">' + this.returnFaction(action_card_player) + ' has played an action card:</div>';
+    html += '<div class="action_card_name_hud">' + imperium_self.action_cards[card].name + '</div>';
+    html += '<div class="action_card_text_hud">';
   if (sys.p[planet_idx].owner == imperium_self.game.player) {
     imperium_self.endTurn();
     return 0;
@@ -23978,6 +24092,9 @@ playerSelectResources(cost, mycallback) {
   this.lockInterface();
 
 
+console.log("=======================");
+console.log(JSON.stringify(array_of_cards));
+
   let selectResource = (action2) => {
 
     let tmpx = action2.split("_");
@@ -23991,6 +24108,8 @@ playerSelectResources(cost, mycallback) {
       }
     }
 
+console.log("idx: " + idx);
+
     //
     // handle spending trade goods
     //
@@ -23999,7 +24118,6 @@ playerSelectResources(cost, mycallback) {
         imperium_self.addMove("expend\t" + imperium_self.game.player + "\tgoods\t1");
         total_trade_goods--;
         selected_cost += 1;
-
         if (1 == total_trade_goods) {
           $('#trade_goods').html(('' + total_trade_goods + ' trade good'));
         } else {
@@ -24011,18 +24129,16 @@ playerSelectResources(cost, mycallback) {
       array_of_cards_to_exhaust.push(array_of_cards[idx]);
       $(divid).off();
       $(divid).css('opacity', '0.2');
+console.log("AOC[idx]: " + array_of_cards[idx]);
+console.log("resources: " + imperium_self.game.planets[array_of_cards[idx]].resources);
       selected_cost += parseInt(imperium_self.game.planets[array_of_cards[idx]].resources);
     }
 
-    if (cost <= selected_cost) { 
+console.log(cost + " --- " + selected_cost);
 
-      if (!imperium_self.mayUnlockInterface()) {
-//        salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//        return;
-      }
+    if (cost <= selected_cost) { 
       imperium_self.unlockInterface();
       $('.cardchoice , .textchoice').off();
-
       mycallback(1); 
     }
   }
@@ -24430,8 +24546,294 @@ playerAddInfantryToPlanets(player, total = 1, mycallback) {
 // Select Units to Move //
 //////////////////////////
 //
+// source might be sec or "invade_with_everything"
+//
+playerAutoMove(destination, source) {
+
+  let imperium_self = this;
+  let html = '';
+  let hops = 3;
+  let sectors = [];
+  let distance = [];
+  let hazards = [];
+  let hoppable = [];
+  let fighters_loaded = 0;
+  let infantry_loaded = 0;
+  let ship_status_menu_qs = "";
+
+  let obj = {};
+  obj.max_hops = 2;
+  obj.ship_move_bonus = this.game.state.players_info[this.game.player - 1].ship_move_bonus + this.game.state.players_info[this.game.player - 1].temporary_ship_move_bonus;
+  obj.fleet_move_bonus = this.game.state.players_info[this.game.player - 1].fleet_move_bonus + this.game.state.players_info[this.game.player - 1].temporary_fleet_move_bonus;
+  obj.ships_and_sectors = [];
+  obj.stuff_to_move = [];
+  obj.stuff_to_load = [];
+  obj.distance_adjustment = 0;
+
+  obj.max_hops += obj.ship_move_bonus;
+  obj.max_hops += obj.fleet_move_bonus;
+
+  let x = imperium_self.returnSectorsWithinHopDistance(destination, obj.max_hops, imperium_self.game.player);
+  sectors = x.sectors;
+  distance = x.distance;
+  hazards = x.hazards;
+  hoppable = x.hoppable;
+
+  for (let i = 0; i < distance.length; i++) {
+    if (obj.ship_move_bonus > 0) {
+      distance[i]--;
+    }
+    if (obj.fleet_move_bonus > 0) {
+      distance[i]--;
+    }
+  }
+
+  if (obj.ship_move_bonus > 0) {
+    obj.distance_adjustment += obj.ship_move_bonus;
+  }
+  if (obj.fleet_move_bonus > 0) {
+    obj.distance_adjustment += obj.fleet_move_bonus;
+  }
+
+  obj.ships_and_sectors = imperium_self.returnShipsMovableToDestinationFromSectors(destination, sectors, distance, hazards, hoppable);
+  let id = source;
+
+  //
+  // submit when done
+  //
+  for (let sec = 0; sec < obj.ships_and_sectors.length; sec++) {
+
+console.log(sec + " -- " + id);
+
+    if (sec == id || id == "invade_with_everything") {
+
+      let sys = imperium_self.returnSectorAndPlanets(obj.ships_and_sectors[sec].sector);
+
+      for (let i = 0; i < obj.ships_and_sectors[sec].ships.length; i++) {
+console.log("A 2 " + i);
+
+        let available_capacity = imperium_self.returnRemainingCapacity(obj.ships_and_sectors[sec].ships[i]);
+        let total_loaded = 0;
+
+        //
+        // load infantry
+        //
+        let infantry_available_to_move = 0;
+        for (let b = 0; b < sys.p.length; b++) {
+          let planetary_units = sys.p[b].units[imperium_self.game.player - 1];
+          for (let k = 0; available_capacity > total_loaded && k < planetary_units.length; k++) {
+            if (planetary_units[k].type == "infantry") {
+	      total_loaded++;
+              //
+              // we have to load prematurely. so JSON will be accurate when we move the ship, so player_move is 0 for load
+              //
+	      let sector = obj.ships_and_sectors[sec].sector;
+	      let planet_idx = b;
+	      let load_into_this_ship_idx = i;
+
+console.log("loading one more x");
+
+              let unitjson = imperium_self.unloadUnitFromPlanet(imperium_self.game.player, sector, planet_idx, "infantry");
+              let shipjson_preload = JSON.stringify(sys.s.units[imperium_self.game.player - 1][load_into_this_ship_idx]);
+              imperium_self.loadUnitByJSONOntoShip(imperium_self.game.player, sector, load_into_this_ship_idx, unitjson);
+
+	      k--;
+
+              let loading = {};
+              loading.sector = sector;
+              loading.source = "planet";
+              loading.source_idx = planet_idx;
+              loading.unitjson = unitjson;
+              loading.ship_idx = load_into_this_ship_idx;
+              loading.shipjson = shipjson_preload;
+              loading.i = sec;
+              loading.ii = i;
+
+              obj.stuff_to_load.push(loading);
+
+            }
+          }
+        }
+
+	let x = { i: sec, ii: i, sector: obj.ships_and_sectors[sec].sector };
+	obj.stuff_to_move.push(x);
+
+      }
+    }
+
+    imperium_self.addMove("resolve\tplay");
+    // source should be OK as moving out does not add units
+    imperium_self.addMove("space_invasion\t" + imperium_self.game.player + "\t" + destination);
+    imperium_self.addMove("check_fleet_supply\t" + imperium_self.game.player + "\t" + destination);
+
+    //
+    // now move everything
+    //
+    for (let y = 0; y < obj.stuff_to_move.length; y++) {
+
+      let this_ship_i = obj.stuff_to_move[y].i;
+      let this_ship_ii = obj.stuff_to_move[y].ii;
+      let this_ship_hazard = obj.ships_and_sectors[this_ship_i].hazards[this_ship_ii];
+
+      imperium_self.addMove("check_fleet_supply\t" + imperium_self.game.player + "\t" + obj.ships_and_sectors[obj.stuff_to_move[y].i].sector);
+      imperium_self.addMove("move\t" + imperium_self.game.player + "\t" + 1 + "\t" + obj.ships_and_sectors[obj.stuff_to_move[y].i].sector + "\t" + destination + "\t" + JSON.stringify(obj.ships_and_sectors[obj.stuff_to_move[y].i].ships[obj.stuff_to_move[y].ii]) + "\t" + this_ship_hazard);
+
+    }
+
+    for (let y = obj.stuff_to_load.length - 1; y >= 0; y--) {
+      imperium_self.addMove("load\t" + imperium_self.game.player + "\t" + 0 + "\t" + obj.stuff_to_load[y].sector + "\t" + obj.stuff_to_load[y].source + "\t" + obj.stuff_to_load[y].source_idx + "\t" + obj.stuff_to_load[y].unitjson + "\t" + obj.stuff_to_load[y].shipjson);
+    }
+  }
+
+  imperium_self.endTurn();
+  return;
+
+}
+
+
+
+//////////////////////////
+// Select Units to Move //
+//////////////////////////
+//
 // MoveShips // MoveUnits // playerMove ... (grep keywords)
 //
+playerMoveShipsMenu(destination) {
+
+  let is_there_a_choice_here = false;
+
+  let imperium_self = this;
+  let hops = 3;
+  let sectors = [];
+  let distance = [];
+  let hazards = [];
+  let hoppable = [];
+  let fighters_loaded = 0;
+  let infantry_loaded = 0;
+  let ship_status_menu_qs = "";
+
+  let obj = {};
+  obj.max_hops = 2;
+  obj.ship_move_bonus = this.game.state.players_info[this.game.player - 1].ship_move_bonus + this.game.state.players_info[this.game.player - 1].temporary_ship_move_bonus;
+  obj.fleet_move_bonus = this.game.state.players_info[this.game.player - 1].fleet_move_bonus + this.game.state.players_info[this.game.player - 1].temporary_fleet_move_bonus;
+  obj.ships_and_sectors = [];
+  obj.stuff_to_move = [];
+  obj.stuff_to_load = [];
+  obj.distance_adjustment = 0;
+
+  obj.max_hops += obj.ship_move_bonus;
+  obj.max_hops += obj.fleet_move_bonus;
+
+  let x = imperium_self.returnSectorsWithinHopDistance(destination, obj.max_hops, imperium_self.game.player);
+  sectors = x.sectors;
+  distance = x.distance;
+  hazards = x.hazards;
+  hoppable = x.hoppable;
+
+  for (let i = 0; i < distance.length; i++) {
+    if (obj.ship_move_bonus > 0) {
+      distance[i]--;
+    }
+    if (obj.fleet_move_bonus > 0) {
+      distance[i]--;
+    }
+  }
+
+  if (obj.ship_move_bonus > 0) {
+    obj.distance_adjustment += obj.ship_move_bonus;
+  }
+  if (obj.fleet_move_bonus > 0) {
+    obj.distance_adjustment += obj.fleet_move_bonus;
+  }
+
+  obj.ships_and_sectors = imperium_self.returnShipsMovableToDestinationFromSectors(destination, sectors, distance, hazards, hoppable);
+
+  let html = "<div class='sf-readable'>" + this.returnFaction(this.game.player) + ": </div><ul>";
+
+
+  for (let sec = 0; sec < obj.ships_and_sectors.length; sec++) {
+
+    let sys = imperium_self.returnSectorAndPlanets(obj.ships_and_sectors[sec].sector);
+
+    let total_capacity = 0;
+    for (let i = 0; i < obj.ships_and_sectors[sec].ships.length; i++) {
+      total_capacity += imperium_self.returnRemainingCapacity(obj.ships_and_sectors[sec].ships[i]);
+    }
+
+    console.log("SECTOR: " + obj.ships_and_sectors[sec].sector);
+    console.log("TOTAL CAPACITY: " + total_capacity);
+
+    //
+    // fighters and infantry
+    //
+    let infantry_available_to_move = 0;
+    for (let i = 0; i < sys.p.length; i++) {
+      let planetary_units = sys.p[i].units[imperium_self.game.player - 1];
+      for (let k = 0; k < planetary_units.length; k++) {
+        if (planetary_units[k].type == "infantry") {
+          infantry_available_to_move++;
+        }
+      }
+    }
+
+console.log("INFANTRY AVAILALBE TO MOVE: " + infantry_available_to_move);
+
+    let fighters_available_to_move = 0;
+    if (obj.ships_and_sectors[sec].sector === sys.s.tile) {
+      for (let ii = 0; ii < obj.ships_and_sectors[sec].ships.length; ii++) {
+        if (obj.ships_and_sectors[sec].ships[ii].type == "fighter") {
+          fighters_available_to_move++;
+        }
+      }
+    }
+        
+console.log("FIGHTERS AVAILABLE TO MOVE: " + fighters_available_to_move);
+
+    let total_units_to_move = infantry_available_to_move + fighters_available_to_move;
+
+    //
+    // force manual move if units exceed ship capacity
+    //
+    if (total_capacity >= total_units_to_move) {
+      html += `<li class="option" id="${sec}">invade from ${sys.s.name} (all units)</li>`;
+      is_there_a_choice_here = true;
+    }
+  }
+
+  html += `<li class="option" id="manually">move manually</li>`;
+  html += '</ul>';
+
+  if (!is_there_a_choice_here) { 
+    imperium_self.playerSelectUnitsToMove(destination);
+    return;
+  }
+
+  this.updateStatus(html);
+
+
+  $('.option').off();
+  $('.option').on('click', function () {
+
+    let id = $(this).attr("id");
+
+    //
+    // submit when done
+    //
+    if (id === "manually") {
+      imperium_self.playerSelectUnitsToMove(destination);
+      return;
+    }
+
+    //
+    // or automatically
+    //
+    imperium_self.playerAutoMove(destination, id);
+    return;
+
+  });
+}
+
+
 playerSelectUnitsToMove(destination) {
 
   let imperium_self = this;
@@ -24573,6 +24975,177 @@ playerSelectUnitsToMove(destination) {
     $('.option').on('click', function () {
 
       let id = $(this).attr("id");
+
+      //
+      // submit when done
+      //
+      if (id == "invade_with_everything") {
+      
+        for (let sec = 0; sec < obj.ships_and_sectors.length; sec++) {
+
+          let sys = imperium_self.returnSectorAndPlanets(obj.ships_and_sectors[sec].sector);
+
+  	  let total_capacity = 0;
+	  for (let i = 0; i < obj.ships_and_sectors[sec].ships.length; i++) {
+console.log("HERE");
+console.log(JSON.stringify(obj.ships_and_sectors[sec].ships[i]));
+	    total_capacity += imperium_self.returnRemainingCapacity(obj.ships_and_sectors[sec].ships[i]);
+	  }
+
+console.log("SECTOR: " + obj.ships_and_sectors[sec].sector);
+console.log("TOTAL CAPACITY: " + total_capacity);
+
+	  //
+	  // fighters and infantry
+	  //
+          let infantry_available_to_move = 0;
+          for (let i = 0; i < sys.p.length; i++) {
+            let planetary_units = sys.p[i].units[imperium_self.game.player - 1];
+            for (let k = 0; k < planetary_units.length; k++) {
+              if (planetary_units[k].type == "infantry") {
+                infantry_available_to_move++;
+              }
+            }
+          }
+
+console.log("INFANTRY AVAILALBE TO MOVE: " + infantry_available_to_move);
+
+
+          let fighters_available_to_move = 0;
+          if (obj.ships_and_sectors[sec].sector === sys.s.tile) {
+            for (let ii = 0; ii < obj.ships_and_sectors[sec].ships.length; ii++) {
+              if (obj.ships_and_sectors[sec].ships[ii].type == "fighter") {
+                fighters_available_to_move++;
+              }
+            }
+          }
+        
+console.log("FIGHTERS AVAILABLE TO MOVE: " + fighters_available_to_move);
+
+	  let total_units_to_move = infantry_available_to_move + fighters_available_to_move;
+
+	  //
+	  // force manual move if units exceed ship capacity
+	  //
+	  if (total_capacity < total_units_to_move) {
+	    salert("Please move manually: units available exceed ship capacity");
+	    return;
+	  }
+	}
+
+console.log("A 1");
+
+	//
+	// if we reach here, we have enough space for everything
+	//
+        for (let sec = 0; sec < obj.ships_and_sectors.length; sec++) {
+
+          let sys = imperium_self.returnSectorAndPlanets(obj.ships_and_sectors[sec].sector);
+
+	  for (let i = 0; i < obj.ships_and_sectors[sec].ships.length; i++) {
+console.log("A 2 " + i);
+
+	    let available_capacity = imperium_self.returnRemainingCapacity(obj.ships_and_sectors[sec].ships[i]);
+	    let total_loaded = 0;
+
+	    //
+	    // load infantry
+	    //
+            let infantry_available_to_move = 0;
+            for (let b = 0; b < sys.p.length; b++) {
+
+console.log("A 3 " + b);
+
+console.log("ac: " + available_capacity);
+console.log("total_loaded: " + available_capacity);
+
+              let planetary_units = sys.p[b].units[imperium_self.game.player - 1];
+              for (let k = 0; available_capacity > total_loaded && k < planetary_units.length; k++) {
+
+console.log("k: " + k + " --- " + planetary_units[k].type);
+
+                if (planetary_units[k].type == "infantry") {
+
+		  total_loaded++;
+
+console.log("loading one more... infantry");
+
+                  //
+                  // we have to load prematurely. so JSON will be accurate when we move the ship, so player_move is 0 for load
+                  //
+		  let sector = obj.ships_and_sectors[sec].sector;
+		  let planet_idx = b;
+	          let load_into_this_ship_idx = i;
+
+console.log("loading one more x");
+
+                  let unitjson = imperium_self.unloadUnitFromPlanet(imperium_self.game.player, sector, planet_idx, "infantry");
+                  let shipjson_preload = JSON.stringify(sys.s.units[imperium_self.game.player - 1][load_into_this_ship_idx]);
+                  imperium_self.loadUnitByJSONOntoShip(imperium_self.game.player, sector, load_into_this_ship_idx, unitjson);
+
+		  k--;
+
+console.log("loading one more x");
+
+                  let loading = {};
+                  loading.sector = sector;
+                  loading.source = "planet";
+                  loading.source_idx = planet_idx;
+                  loading.unitjson = unitjson;
+                  loading.ship_idx = load_into_this_ship_idx;
+                  loading.shipjson = shipjson_preload;
+                  loading.i = sec;
+                  loading.ii = i;
+
+console.log("pushing loading...");
+
+                  obj.stuff_to_load.push(loading);
+
+                }
+              }
+            }
+
+console.log("creating X");
+
+	    let x = { i: sec, ii: i, sector: obj.ships_and_sectors[sec].sector };
+	    obj.stuff_to_move.push(x);
+
+
+	  }
+	}
+
+console.log("now move stuff...");
+
+        imperium_self.addMove("resolve\tplay");
+        // source should be OK as moving out does not add units
+        imperium_self.addMove("space_invasion\t" + imperium_self.game.player + "\t" + destination);
+        imperium_self.addMove("check_fleet_supply\t" + imperium_self.game.player + "\t" + destination);
+
+	//
+	// now move everything
+	//
+        for (let y = 0; y < obj.stuff_to_move.length; y++) {
+
+          let this_ship_i = obj.stuff_to_move[y].i;
+          let this_ship_ii = obj.stuff_to_move[y].ii;
+          let this_ship_hazard = obj.ships_and_sectors[this_ship_i].hazards[this_ship_ii];
+
+          // March 23
+          imperium_self.addMove("check_fleet_supply\t" + imperium_self.game.player + "\t" + obj.ships_and_sectors[obj.stuff_to_move[y].i].sector);
+          imperium_self.addMove("move\t" + imperium_self.game.player + "\t" + 1 + "\t" + obj.ships_and_sectors[obj.stuff_to_move[y].i].sector + "\t" + destination + "\t" + JSON.stringify(obj.ships_and_sectors[obj.stuff_to_move[y].i].ships[obj.stuff_to_move[y].ii]) + "\t" + this_ship_hazard);
+
+        }
+
+        for (let y = obj.stuff_to_load.length - 1; y >= 0; y--) {
+          imperium_self.addMove("load\t" + imperium_self.game.player + "\t" + 0 + "\t" + obj.stuff_to_load[y].sector + "\t" + obj.stuff_to_load[y].source + "\t" + obj.stuff_to_load[y].source_idx + "\t" + obj.stuff_to_load[y].unitjson + "\t" + obj.stuff_to_load[y].shipjson);
+        }
+
+console.log("DONE!");
+	imperium_self.endTurn();
+	return;
+      }
+
+
 
       //
       // submit when done
@@ -25519,7 +26092,6 @@ playerPostActivateSystem(sector) {
     html += '<li class="option" id="move">move into sector</li>';
   }
 
-
   if (this.canPlayerInvadePlanet(player, sector) && this.game.tracker.invasion == 0) {
     if (sector == "new-byzantium" || sector == "4_4") {
       if ((imperium_self.game.planets['new-byzantium'].owner != -1) || (imperium_self.returnAvailableInfluence(imperium_self.game.player) + imperium_self.game.state.players_info[imperium_self.game.player - 1].goods) >= 6) {
@@ -25597,9 +26169,11 @@ playerPostActivateSystem(sector) {
       return 0;
     }
 
-    if (action2 == "move") {
-      imperium_self.playerSelectUnitsToMove(sector);
+    if (action2 === "move") {
+      imperium_self.playerMoveShipsMenu(sector);
+      return;
     }
+
     if (action2 == "produce") {
       //
       // check the fleet supply and NOTIFY users if they are about to surpass it
@@ -27332,6 +27906,7 @@ playerDiscardActionCards(num, mycallback=null) {
   }
   returnFactionName(imperium_self, player) {
     let factions = imperium_self.returnFactions();
+console.log("return faction name of: " + player);
     return factions[imperium_self.game.state.players_info[player-1].faction].name;
   }
   returnPlayerOfFaction(faction) {
@@ -30346,7 +30921,6 @@ console.log(JSON.stringify(ship));
     let sys = imperium_self.returnSectorAndPlanets(sector);
     if (sector.indexOf("_") > 0) { sector = sys.s.sector; }
 
-
     let ships_over_capacity = this.returnShipsOverCapacity(player, sector);
     let fighters_over_capacity = this.returnFightersWithoutCapacity(player, sector);
 
@@ -30743,9 +31317,7 @@ displayBoard() {
 flashSector(sector) {
 
   if (sector.indexOf("_") > -1) { sector = this.game.board[sector].tile; }
-console.log("sector: " + sector);
 
-console.log(this.game.sectors[sector].tile);
   let tile = this.game.sectors[sector].tile;
 
   let qs = "#hex_bg_" + tile + " > img";
@@ -31018,8 +31590,13 @@ returnSectorInformationHTML(sector) {
     html += '</div>';
   }
 
+  let gridcols = '1fr';
+  for (let z = 1; z < sys.p.length; z++) {
+    gridcols += ' 1fr';
+  }
+
   html += `
-    <div class="grid-2">
+    <div class="system_summary_planets_grid" style="grid-template-columns:${gridcols}">
   `;
   for (let i = 0; i < sys.p.length; i++) {
     let planet_owner = "UNCONTROLLED";
@@ -31029,16 +31606,15 @@ returnSectorInformationHTML(sector) {
     html += `
       <div class="system_summary_planet">
         ${planet_owner}
-        <p style="margin-top:10px" />
-        <div style='clear:both;margin-left:10px;margin-top:6px;'>
+        <div class="system_summary_content">
           ${this.returnInfantryOnPlanet(sys.p[i])} infantry
           <br />
           ${this.returnPDSOnPlanet(sys.p[i])} PDS
           <br />
           ${this.returnSpaceDocksOnPlanet(sys.p[i])} spacedocks
         </div>
+        <div class="system_summary_planet_card" style="background-image: url('${sys.p[i].img}');"></div>
       </div>
-      <div class="system_summary_planet_card" style="background-image: url('${sys.p[i].img}');"></div>
     `;
   }
   html += `
@@ -31450,6 +32026,12 @@ addUIEvents() {
   $('#hexGrid').draggable();
 
   document.querySelector('.leaderboardbox').addEventListener('click', (e) => {
+
+    if (e.target.id === "objectives-toggle" || e.target.id === "VP-track-label") {
+      imperium_self.handleObjectivesMenuItem();
+      return;
+    }
+
     document.querySelector('.leaderboardbox').classList.toggle('leaderboardbox-lock');
   });
 
@@ -31525,7 +32107,7 @@ updateLeaderboard() {
     document.querySelector('.round').innerHTML = this.game.state.round;
     document.querySelector('.turn').innerHTML = this.game.state.turn;
 
-    let html = '<div class="VP-track-label">Victory Points</div>';
+    let html = '<div class="VP-track-label" id="VP-track-label">Victory Points<div class="objectives-toggle" id="objectives-toggle">?</div></div>';
 
     let vp_needed = 14;
     if (this.game.state.vp_target != 14 && this.game.state.vp_target > 0) { vp_needed = this.game.state.vp_target; }

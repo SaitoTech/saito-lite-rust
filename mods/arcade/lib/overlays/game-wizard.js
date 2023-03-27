@@ -119,7 +119,7 @@ class GameWizard {
     Array.from(document.querySelectorAll(".game-invite-btn")).forEach((gameButton) => {
       gameButton.addEventListener("click", async (e) => {
         e.stopPropagation();
-        try {
+        //try {
           let options = this.getOptions();
           let isPrivateGame = e.currentTarget.getAttribute("data-type");
 
@@ -141,9 +141,9 @@ class GameWizard {
 
           this.mod.makeGameInvite(options, isPrivateGame, this.obj);
 
-        } catch (err) {
+        /*} catch (err) {
           console.warn(err);
-        }
+        }*/
 
         this.overlay.remove();
         return false;

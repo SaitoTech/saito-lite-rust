@@ -1,4 +1,27 @@
 
+.help-question {
+    background-color: goldenrod;
+    padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+    border: 1px solid #000;
+}
+
+.objectives-toggle {
+  font-family: orbitron-medium, sans-serif;
+  float: right;
+  height: 4.5vh;
+  font-size: 3vh;
+  background-color: goldenrod;
+  width: 4rem;
+  opacity: 0.5;
+  margin: 3px;
+  padding-left: 1.4rem;
+  padding-top: 0.8vh;
+  user-select: none;
+  cursor: pointer;
+  position: relative;
+  top: -1.1rem;
+}
+
 .status p {
   color: white;
 }
@@ -81,9 +104,15 @@
 }
 .game-overlay-cardlist-title {
   font-family: 'orbitron-medium', helvetica;
+  color: #000;
+  -webkit-text-stroke: 2px #FFFD;
+  stroke: 2px #FFF8;
+  font-size: 4.5rem;
 }
 .game-overlay-cardlist-subtitle {
   font-family: 'orbitron-light', helvetica;
+  height: auto;
+  padding: 1rem;
 }
 
 
@@ -452,7 +481,7 @@
   margin-bottom: 10px;
 }
 .objectives_secret_notice {
-  position: relative;
+  position: absolute;
   bottom: 0px;
   left: 0px;
   background-color: red;
@@ -764,27 +793,27 @@
   border: 1px solid var(--p6);
 }
 
-.p1 .bk {
+.p1 .bk , .p1.bk {
   background-color: var(--p1);
 }
 
-.p2 .bk {
+.p2 .bk , .p2.bk {
   background-color: var(--p2);
 }
 
-.p3 .bk {
+.p3 .bk , .p3.bk {
   background-color: var(--p3);
 }
 
-.p4 .bk {
+.p4 .bk , .p4.bk {
   background-color: var(--p4);
 }
 
-.p5 .bk {
+.p5 .bk , .p5.bk {
   background-color: var(--p5);
 }
 
-.p6 .bk {
+.p6 .bk , .p6.bk {
   background-color: var(--p6);
 }
 
@@ -1288,6 +1317,9 @@ body {
   font-size: 1.35em;
   color: #fff;
   text-align: left;
+  padding-left: 1rem;
+  height: 3rem;
+  cursor: pointer;
 }
 
 .vp {
@@ -1807,7 +1839,8 @@ body {
 
 
 .system_summary {
-  background-image: url("/imperium/img/starscape-background4.jpg");
+  background-image: url(/imperium/img/backgrounds/space-art.jpg);
+  padding: 4rem;
   color: white;
   width: auto;
   height: auto;
@@ -1817,13 +1850,17 @@ body {
   max-height: 90vh;
   overflow-y: scroll;
 }
+.system_summary_content {
+  padding: 2rem;
+}
 .system_summary_sector {
   display: inline-block;
   width: 100%;
   text-align: center;
   font-size: 2em;
-  margin-bottom: 10px;
   font-family: 'orbitron-medium', helvetical, arial;
+  margin-bottom: 1.6rem;
+
 }
 .system_summary_units {
   width: 80%;
@@ -1837,6 +1874,18 @@ body {
 .system_summary_text {
   text-align: center;
 }
+.system_summary_planet {
+  margin-bottom:1rem;
+}
+.system_summary_planets_grid {
+  min-width: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: auto;
+  column-gap: 4rem;
+  font-size: 1.6rem;
+}
+
 .system_summary_planet_card {
   width: 200px;
   height: 280px;

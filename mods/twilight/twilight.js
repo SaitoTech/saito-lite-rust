@@ -746,13 +746,13 @@ initializeGame(game_id) {
       this.placeInfluence("saudiarabia", 3, "ussr");
       this.placeInfluence("syria", 3, "ussr");
 
-      this.placeInfluence("pakistan", 2, "ussr");
-      this.placeInfluence("india", 3, "ussr");
-      this.placeInfluence("northkorea", 3, "ussr");
+      this.placeInfluence("pakistan", 2, "us");
+      this.placeInfluence("india", 3, "us");
+      this.placeInfluence("northkorea", 7, "us");
       this.placeInfluence("vietnam", 3, "ussr");
       this.placeInfluence("afghanistan", 5, "us");
-      this.placeInfluence("burma", 2, "ussr");
-      this.placeInfluence("laos", 2, "ussr");
+      this.placeInfluence("burma", 2, "us");
+      this.placeInfluence("laos", 2, "us");
       this.placeInfluence("thailand", 4, "us");
       this.placeInfluence("malaysia", 3, "us");
       this.placeInfluence("indonesia", 3, "us");
@@ -7204,7 +7204,6 @@ playerTurnHeadlineSelected(card, player) {
           case "ussr": scoring.ussr.bg = 2; scoring.ussr.status = "Thailand"; break;
         }
 
-
         scoring.us.vp = scoring.us.total + scoring.us.bg;
         scoring.ussr.vp = scoring.ussr.total + scoring.ussr.bg;
         break;
@@ -7280,8 +7279,9 @@ playerTurnHeadlineSelected(card, player) {
       	}
 
         scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
-
 	
+console.log("PRESC: " + JSON.stringify(scoring));
+
         //
         // neighbouring countries
         //
@@ -7298,6 +7298,8 @@ playerTurnHeadlineSelected(card, player) {
             scoring.ussr.neigh.push("japan");
 	  }
 	}
+
+console.log("SCORING: " + JSON.stringify(scoring));
 
         break;
       }

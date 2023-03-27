@@ -88,6 +88,19 @@ class League extends ModTemplate {
     });
 
     this.sortLeagues();
+  
+    if (this.app.BROWSER){
+      this.app.connection.on("add-league-identifier-to-dom", ()=>{
+        document.querySelectorAll(".saito-league").forEach(key=>{
+          if (key.dataset.id){
+            let league = this.returnLeague(key.dataset.id);
+            if (league){
+              key.innerHTML = league.name; 
+            }
+          }
+        });
+      });
+    }
   }
 
   //
@@ -96,9 +109,13 @@ class League extends ModTemplate {
   sortLeagues(){
     let superArray = [];
     try{
+
       this.leagues.forEach(l => {
         let gm = this.app.modules.returnModuleByName(l.game);
-        superArray.push([l.admin, gm.categories, l]);
+        //This will filter out any games we previously deleted
+        if (gm){
+          superArray.push([l.admin, gm.categories, l]);  
+        }
       });
 
       superArray.sort((a,b) => {
@@ -174,64 +191,71 @@ class League extends ModTemplate {
         console.log("Refresh local leagues: ");
       }
 
-      //
-      // fetch updated rankings
-      //
-      let helper_array = [];
-      for (let i = 0; i < this.leagues.length; i++) {
-        //To avoid calling rending 15 times in a row, we use an array to see when
-        //the last async database query finishes and only update the UI then
-
-        if (this.leagues[i].rank >= 0){
-          helper_array.push(0);
-          
-          if (this.debug) { console.log(this.leagues[i].name); }
-
-          this.fetchLeagueLeaderboard(this.leagues[i].id, 
-            ()=>{
-              helper_array.pop();
-              if (helper_array.length == 0){
-                app.connection.emit("leagues-render-request");
-                app.connection.emit("league-rankings-render-request");   
-                //Having refreshed the data, let's make sure I save the new stats
-                this.saveLeagues();
-              } 
-            });
-        }
-      }
-
+      if (this.browser_active){
       //    
       // load any requested league we may not have in options file
       //    
-      if (this.app.browser.returnURLParameter("league_join_league")) {
-        let league_id = this.app.browser.returnURLParameter("league_join_league");
-        console.log("Joining league: ", league_id);
+        console.log("Load all leagues");
+
         this.sendPeerDatabaseRequestWithFilter(
           "League" , 
-          `SELECT * FROM leagues WHERE id = "${league_id}"` ,
+          `SELECT * FROM leagues`,
           (res) => {
              if (res?.rows) {
-              console.log(res.rows);
               for (let league of res.rows){
-                 league_self.addLeague(league);
+                //console.log(league);
+                league_self.addLeague(league);
               } 
             }
 
+            app.connection.emit("leagues-render-request");
             //
             // league join league
             //
-
-            let jlo = new JoinLeagueOverlay(app, league_self, league_id);
-            jlo.render();
-
+            if (app.browser.returnURLParameter("league_join_league")) {
+              let league_id = app.browser.returnURLParameter("league_join_league");
+              console.log("Joining league: ", league_id);
+              let jlo = new JoinLeagueOverlay(app, league_self, league_id);
+              jlo.render();
+            }
           },
           (p) => {
-  	          if (p == peer) { 
+              if (p == peer) { 
                 return 1; 
               }
- 	            return 0;
-	        }
+              return 0;
+          }
         );
+
+
+      }else{
+
+        //
+        // fetch updated rankings
+        //
+        let helper_array = [];
+        for (let i = 0; i < this.leagues.length; i++) {
+          //To avoid calling rending 15 times in a row, we use an array to see when
+          //the last async database query finishes and only update the UI then
+
+          if (this.leagues[i].rank >= 0){
+            helper_array.push(0);
+            
+            if (this.debug) { console.log(this.leagues[i].name); }
+
+            this.fetchLeagueLeaderboard(this.leagues[i].id, 
+              ()=>{
+                helper_array.pop();
+                if (helper_array.length == 0){
+                  app.connection.emit("leagues-render-request");
+                  app.connection.emit("league-rankings-render-request");   
+                  //Having refreshed the data, let's make sure I save the new stats
+                  this.saveLeagues();
+                } 
+              });
+          }
+        }
+
       }
 
     }
@@ -248,7 +272,7 @@ class League extends ModTemplate {
       let txmsg = tx.returnMessage();
 
       if (this.debug){
-        console.log("LEAGUE onConfirmation: " + txmsg.request);  
+//        console.log("LEAGUE onConfirmation: " + txmsg.request);  
       }
       
 
@@ -787,11 +811,11 @@ class League extends ModTemplate {
       await this.incrementPlayer(p.publickey, league.id, outcome);
       
       p.score += p.k * ( (1/winner.length) - (p.q / qsum));
-      await this.updatePlayerScore(p);
+      await this.updatePlayerScore(p, league.id);
     }
     for (let p of loser){
       p.score -= (p.k * p.q / qsum);
-      await this.updatePlayerScore(p);
+      await this.updatePlayerScore(p, league.id);
     }
 
   }
@@ -817,7 +841,7 @@ class League extends ModTemplate {
       
       player.score = Math.max(player.score, newScore)
       await this.incrementPlayer(player.publickey, league.id, "games_finished");
-      await this.updatePlayerScore(player);
+      await this.updatePlayerScore(player, league.id);
     }
 
   }
@@ -862,7 +886,7 @@ class League extends ModTemplate {
 
 
 
-  async updatePlayerScore(playerObj) {
+  async updatePlayerScore(playerObj, league_id) {
 
     let league = this.returnLeague(playerObj.league_id);
     if (league?.players){
@@ -882,7 +906,7 @@ class League extends ModTemplate {
       $score: playerObj.score,
       $ts: new Date().getTime() ,
       $publickey: playerObj.publickey,
-      $league_id: playerObj.league_id
+      $league_id: league_id
     }
 
     await this.app.storage.executeDatabase(sql, params, "league");
@@ -1032,9 +1056,10 @@ class League extends ModTemplate {
     //and if the scores have changed, we need to resort the players
     league.players = [];
 
+    let cutoff = new Date().getTime() - 24 * 60 * 60 * 1000;
     this.sendPeerDatabaseRequestWithFilter(
       "League" ,
-      `SELECT * FROM players WHERE league_id = '${league_id}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
+      `SELECT * FROM players WHERE league_id = '${league_id}' AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}') ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
       (res) => {
           if (res?.rows) {
 

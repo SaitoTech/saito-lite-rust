@@ -211,7 +211,6 @@ console.log("removing: " + popup_qs);
       //
       document.querySelector(`${popup_qs} .chat-header .chat-container-close`).onclick = (e) => {
         this.manually_closed = true;
-        app.connection.emit("chat-manager-request-no-interrupts");
         document.querySelector(`${popup_qs}`).remove();
         app.storage.saveOptions();
       }

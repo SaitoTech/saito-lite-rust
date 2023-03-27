@@ -194,10 +194,16 @@
 
 	    let notice = "Players still to move: <ul>";
 	    let am_i_still_to_move = 0;
+console.log("STILL TO MOVE: " + JSON.stringify(still_to_move));
+console.log("PLAYERS: " + JSON.stringify(this.game.players));
 	    for (let i = 0; i < still_to_move.length; i++) {
 	      for (let z = 0; z < this.game.players.length; z++) {
 		if (this.game.players[z] === still_to_move[i]) {
 		  if (this.game.players[z] === this.app.wallet.returnPublicKey()) { am_i_still_to_move = 1; }
+console.log("WHO - IDX " + z);
+console.log("WHO - PLAYER " + (z+1));
+console.log("WHO: " + this.game.players[z]);
+console.log("WHO: " + this.returnFaction(z+1));
 	          notice += '<li class="option">'+this.returnFaction((z+1))+'</li>';
 		}
 	      }
@@ -206,7 +212,6 @@
 	    if (am_i_still_to_move == 0) {
 	      this.updateStatus(notice);
 	    }
-
 
   	    if (this.game.confirms_needed <= this.game.confirms_received) {
 	      this.resetConfirmsNeeded(0);
@@ -282,6 +287,41 @@
       }
 
 
+      if (mv[0] === "rearrange_tokens") {
+
+	let imperium_self = this;
+        let player = parseInt(mv[1]);
+
+  	this.game.queue.splice(qe, 1);
+
+        if (imperium_self.game.player == player) {
+          imperium_self.playerRearrangeTokens();
+        } else {
+	  imperium_self.updateStatus(imperium_self.returnFaction(player) + " is redistributing tokens...");
+	}
+
+	return 0;
+
+      }
+
+
+      if (mv[0] === "rearrange") {
+
+        let player = parseInt(mv[1]);
+        let new_ct = parseInt(mv[2]);
+        let new_st = parseInt(mv[3]);
+        let new_fs = parseInt(mv[4]);
+  	this.game.queue.splice(qe, 1);
+
+	this.game.state.players_info[player-1].command_tokens = new_ct;
+	this.game.state.players_info[player-1].strategy_tokens = new_st;
+	this.game.state.players_info[player-1].fleet_supply = new_fs;
+
+	imperium_self.updateLog(this.returnFactionNickname(player) + " redistributes tokens: " + new_ct + "/" + new_st + "/" + new_fs);
+
+	return 1;
+
+      }
 
 
       if (mv[0] === "research") {
@@ -1754,8 +1794,8 @@ if (debugging == 0) {
       if (mv[0] === "shownewobjectives") {
 
 	let game_mod = this;
-	let title = "Your Objectives";
-	let subtitle = "check objectives, strategy cards and more in the CARDS menu...";
+	let title = "Objectives";
+	let subtitle = "click on <span class='help-question'>?</span> in the Victory Points track to review objectives anytime...";
 	let cards = [];
 
         for (let i = 0; i < this.game.state.new_objectives.length; i++) {
@@ -1780,7 +1820,7 @@ if (debugging == 0) {
 	  title : title,
 	  subtitle : subtitle,
 	  columns : cards.length ,
-	  backgroundImage : "/imperium/img/starscape_background1.jpg",
+	  backgroundImage : "/imperium/img/backgrounds/objectives-background.jpg",
 	  padding: "20px",
 	  textAlign: "center",
 	  onContinue : function() {
@@ -1799,7 +1839,7 @@ if (debugging == 0) {
 	        title : "New Agendas",
 	        subtitle : "check active agendas, strategy cards and more in the CARDS menu",
 	        columns : ac.length ,
-	        backgroundImage : "/imperium/img/starscape_background1.jpg",
+	        backgroundImage : "/imperium/img/backgrounds/new-agendas-background.jpg",
 	        padding: "20px",
 	        textAlign: "center",
 	        onClose : function() {
