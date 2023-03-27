@@ -74,6 +74,7 @@ mods/appstore/modules
 mods/appstore/modules/*
 mods/stunx-staging
 mods/stunx-staging/*
+mods/twilight/*
 #mods/stunx
 #mods/stunx/*
 

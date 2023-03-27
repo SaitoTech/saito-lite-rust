@@ -244,11 +244,14 @@ class VideoChatManager {
         if (!this.peers.includes(peer)) {
             this.peers.push(peer);
         }
-        // console.log(this.peers, 'peers ')
 
-        // console.log(this.mod.central, "is mod central or not")
         let room_link = this.createRoomLink();
         history.pushState(null, null, room_link);
+        
+        if(this.peers.length === 1){
+            let peer = document.querySelector(`#stream${this.peers[0]}`);
+            peer.querySelector('.video-box').click();
+        }
 
     }
 
