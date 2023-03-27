@@ -1,3 +1,4 @@
+const Scoreboard = require("./lib/scoreboard");
 const GameTemplate = require("../../lib/templates/gametemplate");
 const SettlersSkin = require("./lib/settlers.skin.js");
 const SettlersGameoptionsTemplate = require("./lib/settlers-game-options.template");
@@ -25,6 +26,8 @@ class Settlers extends GameTemplate {
     this.game_length = 20; //Estimated number of minutes to complete a game
     this.is_sleeping = true;
     this.confirm_moves = true;
+
+    this.scoreboard = new Scoreboard(this.app, this);
 
     this.grace_window = 24;
     // temp variable to help with post-splash flash
@@ -109,6 +112,7 @@ class Settlers extends GameTemplate {
 
     super.initializeHTML(app);
     
+    this.scoreboard.render();
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");
@@ -2575,20 +2579,17 @@ class Settlers extends GameTemplate {
   */
   playerPlayMove() {
     let settlers_self = this;
-    let html = "";
 
-    //console.log("RES: " + JSON.stringify(this.game.state.players[this.game.player - 1].resources));
-
-    html += "<ul>";
+    let html = "<ul>";
 
     if (settlers_self.canPlayerBankTrade()){
       html += '<li class="option" id="bank">bank</li>';  
     }
-    
 
     if (settlers_self.canPlayerPlayCard()) {
       html += `<li class="option" id="playcard">play card</li>`;
     }
+
     if (
       settlers_self.canPlayerBuildRoad(settlers_self.game.player) ||
       settlers_self.canPlayerBuildTown(settlers_self.game.player) ||
@@ -3705,6 +3706,7 @@ class Settlers extends GameTemplate {
     return "";
   }
 
+
   /*
     ****(Close) Duplicate of Blackjack****
     Need to overwrite gametemple which requires either HUD or a ID=status,
@@ -3712,6 +3714,32 @@ class Settlers extends GameTemplate {
     This function may be less than ideal, abusing the concept of status, 
     since it is mostly being used to update the DOM for user interface
   */
+  updatePlayerBox(str, hide_info = 0) {
+    try {
+      if (hide_info == 0) {
+        this.playerbox.showInfo();
+      } else {
+        this.playerbox.hideInfo();
+      }
+
+      if (this.lock_interface == 1) {
+        return;
+      }
+
+      this.game.status = str;
+
+      if (this.browser_active == 1) {
+        let status_obj = document.querySelector(".player-box.me .status");
+        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
+          status_obj.innerHTML = str;
+          $(".player-box.me .status").disableSelection();
+        }
+      }
+    } catch (err) {
+      //console.log("ERR: " + err);
+    }
+  }
+
   updateStatus(str, hide_info = 0) {
     try {
       if (hide_info == 0) {
