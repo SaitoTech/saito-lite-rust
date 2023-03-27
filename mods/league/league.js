@@ -1056,9 +1056,10 @@ class League extends ModTemplate {
     //and if the scores have changed, we need to resort the players
     league.players = [];
 
+    let cutoff = new Date().getTime() - 24 * 60 * 60 * 1000;
     this.sendPeerDatabaseRequestWithFilter(
       "League" ,
-      `SELECT * FROM players WHERE league_id = '${league_id}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
+      `SELECT * FROM players WHERE league_id = '${league_id}' AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}') ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
       (res) => {
           if (res?.rows) {
 
