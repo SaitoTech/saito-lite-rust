@@ -27,8 +27,15 @@ class CryptoSelectAmount {
 
     document.querySelector(".crypto_amount_btn").onclick = (e) => {
       let amount = document.getElementById("amount_to_stake_input").value;
+      let confirm = document.getElementById("crypto-stake-confirm-input").checked;
+        
+      if (!confirm) {
+        salert("You need to confirm");
+        return;
+      }
+
       if (callback != null) {
-	this.overlay.hide();
+	      this.overlay.hide();
         callback(amount);
       }
     };
