@@ -82,6 +82,12 @@ class JoinLeague {
         console.log("Join sent! " + league_id);
       }
 
+      let params = {
+        league_id: league_id,
+        publickey: this.app.wallet.returnPublicKey,
+      }
+      this.mod.addLeaguePlayer(params);
+
     }  
 
   }

@@ -89,18 +89,6 @@ class League extends ModTemplate {
 
     this.sortLeagues();
   
-    if (this.app.BROWSER){
-      this.app.connection.on("add-league-identifier-to-dom", ()=>{
-        document.querySelectorAll(".saito-league").forEach(key=>{
-          if (key.dataset.id){
-            let league = this.returnLeague(key.dataset.id);
-            if (league){
-              key.innerHTML = league.name; 
-            }
-          }
-        });
-      });
-    }
   }
 
   //
@@ -616,11 +604,11 @@ class League extends ModTemplate {
     //
     // fetch leagues
     //
-    let relevantLeagues = await this.getRelevantLeagues(game);
+    let relevantLeagues = await this.getRelevantLeagues(game, txmsg?.league_id);
 
     if (!relevantLeagues){ return; }
 
-  //  if (this.debug){console.log(relevantLeagues, publickeys);}
+    if (this.debug){console.log(relevantLeagues, publickeys);}
 
     //
     // update database
@@ -668,8 +656,12 @@ class League extends ModTemplate {
 
     //if (this.app.BROWSER){ return; }
 
-    const relevantLeagues = await this.getRelevantLeagues(txmsg.game);
+    const relevantLeagues = await this.getRelevantLeagues(txmsg.game, txmsg?.options?.league_id);
     if (!relevantLeagues) { return; }
+
+    console.log("League: AcceptGame");
+    console.log(txmsg?.options?.league_id);
+    console.log(JSON.parse(JSON.stringify(relevantLeagues)));
 
     //
     // who are the players ?
@@ -700,13 +692,22 @@ class League extends ModTemplate {
 
   /////////////////////
   /////////////////////
-  async getRelevantLeagues(game){
+  async getRelevantLeagues(game, target_league = ""){
 
-    let sql = `SELECT * FROM leagues WHERE game = $game`;
-    let params = { $game : game };   
+    let sql = `SELECT * FROM leagues WHERE game = $game AND (admin = "" OR id = $target)`;
+
+    let params = { $game : game, $target = target_league };   
+
     let sqlResults = await this.app.storage.queryDatabase(sql, params, "league");
 
-    let localLeagues = this.leagues.filter(l => l.game === game);
+    let localLeagues = this.leagues.filter(l => {
+      if (l.game === game){
+        if (!l.admin || l.id==target_league){
+          return true;
+        } 
+      }
+      return false;
+    });
 
     return sqlResults || localLeagues;
   } 
