@@ -218,7 +218,7 @@ class Spider extends OnePlayerGameTemplate {
     this.game.state.score = 100 * this.difficulty;
 
     //Reset/Increment State
-    this.game.state.round++;
+    this.game.state.session.round++;
     this.game.state.draws_remaining = 5;
     
     if (this.browser_active){
@@ -371,9 +371,9 @@ class Spider extends OnePlayerGameTemplate {
     <table>
     <tbody>
     <tr><th>Latest Score:</th><td>${this.game.state.score}</td></tr>
-    <tr><th>Games Played:</th><td>${this.game.state.round-1}</td></tr>
-    <tr><th>Games Won:</th><td>${this.game.state.wins}</td></tr>
-    <tr><th>Win Percentage:</th><td>${(this.game.state.round>1)? Math.round(1000* this.game.state.wins / (this.game.state.round-1))/10 : 0}%</td></tr>
+    <tr><th>Games Played:</th><td>${this.game.state.session.round-1}</td></tr>
+    <tr><th>Games Won:</th><td>${this.game.state.session.wins}</td></tr>
+    <tr><th>Win Percentage:</th><td>${(this.game.state.session.round>1)? Math.round(1000* this.game.state.session.wins / (this.game.state.session.round-1))/10 : 0}%</td></tr>
     </tbody>
     </table>
     </div>`;
@@ -840,7 +840,7 @@ class Spider extends OnePlayerGameTemplate {
       if (mv[0] === "lose"){
         this.game.queue.splice(qe, 1);
         if (this.game.state.moves > 0){
-          this.game.state.losses++;
+          this.game.state.session.losses++;
           let final_score = this.game.state.score; 
           this.game.state.scores.push(final_score);
           this.endGame([], final_score.toString());  
@@ -851,7 +851,7 @@ class Spider extends OnePlayerGameTemplate {
 
       if (mv[0] === "win"){
         this.game.queue.splice(qe, 1);
-        this.game.state.wins++;
+        this.game.state.session.wins++;
         this.animateFinalVictory();
         let final_score = this.game.state.score + 400;
         this.game.state.scores.push(final_score);

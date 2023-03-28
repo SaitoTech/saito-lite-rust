@@ -18,19 +18,7 @@ body {
 .status-header{
   height: 120px;
 }
-.rules-overlay table{
-  font-size: 1.5em;
-  margin: 0 auto;
-}
 
-.rules-overlay th{
-  text-align: right;
-}
-
-.rules-overlay td{
-  text-align: center;
-  width: 4em;
-}
 
 /*.connection_monitor {
   position: fixed;

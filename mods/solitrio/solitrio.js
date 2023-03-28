@@ -44,6 +44,8 @@ class Solitrio extends OnePlayerGameTemplate {
       this.game.queue = [];
       this.game.queue.push("round");
       this.game.queue.push("READY");
+    }else{
+      this.game.state = Object.assign(this.returnState(), this.game.state);
     }
     
     console.log(JSON.parse(JSON.stringify(this.game)));
@@ -63,7 +65,7 @@ class Solitrio extends OnePlayerGameTemplate {
     this.game.queue.push("clear_board");
 
     //Reset/Increment State
-    this.game.state.round++;
+    this.game.state.session.round++;
     this.game.state.recycles_remaining = 2;
 
     if (this.browser_active){
@@ -167,20 +169,6 @@ class Solitrio extends OnePlayerGameTemplate {
     return state;
   }
 
-
-  returnStatsHTML(){
-    let html = `<div class="rules-overlay">
-    <h1>Game Stats</h1>
-    <table>
-    <tbody>
-    <tr><th>Games Played:</th><td>${this.game.state.round-1}</td></tr>
-    <tr><th>Games Won:</th><td>${this.game.state.wins}</td></tr>
-    <tr><th>Win Percentage:</th><td>${(this.game.state.round>1)? Math.round(1000* this.game.state.wins / (this.game.state.round-1))/10 : 0}%</td></tr>
-    </tbody>
-    </table>
-    </div>`;
-    return html;
-  }
 
   async checkBoardStatus(){
     //Use recycling function to check if in winning state
@@ -532,13 +520,13 @@ class Solitrio extends OnePlayerGameTemplate {
       }
 
       if (mv[0] === "win"){
-        this.game.state.wins++;
+        this.game.state.session.wins++;
         this.newRound();
         this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${JSON.stringify([])}`);
       }
 
       if (mv[0] === "lose"){
-        this.game.state.losses++;
+        this.game.state.session.losses++;
         this.newRound();
         this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);
       }
