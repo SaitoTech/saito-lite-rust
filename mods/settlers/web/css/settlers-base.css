@@ -7,8 +7,11 @@
   #7bfb15;
   --p4-color: /*#D63;*/
   #9515fb;
-
   --text-color: #331800;
+}
+
+body {
+  user-select: none;
 }
 
 p {
@@ -1051,15 +1054,6 @@ ul.horizontal_list li.iconoption {
     color: black;
   }
 }
-
-#game-post {
-  color: grey;
-  text-decoration: line-through;
-}
-
-/*
-    Intermediate (roughly square screen size, technically landscape, but keep portrait layout)
-*/
 
 @media (max-aspect-ratio : 8/7) {
   .opponents {

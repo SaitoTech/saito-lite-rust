@@ -5,6 +5,7 @@ class SettlersSkin {
 	}
 
 	render(option = "classic"){
+
 		this.empty = false;
 		console.log("Skin Option:",option);
 		
