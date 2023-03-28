@@ -641,3 +641,61 @@
 
 
 
+
+  canPlayerBuildRoad(player) {
+    return this.doesPlayerHaveResources(player, this.skin.priceList[0]);
+  } 
+    
+  canPlayerBuildTown(player) {
+    if (this.game.state.players[player - 1].towns == 0) return false;
+    if (this.returnCitySlotsAdjacentToPlayerRoads(this.game.player).length == 0)
+      return false;
+    return this.doesPlayerHaveResources(player, this.skin.priceList[1]);
+  } 
+    
+  canPlayerBuildCity(player) {
+    let availableSlot = false;
+    for (let i of this.game.state.cities) {
+      if (i.player == player && i.level == 1) availableSlot = true;
+    }
+    if (!availableSlot) return false;
+    
+    if (this.game.state.players[player - 1].cities == 0) return false;
+    
+    return this.doesPlayerHaveResources(player, this.skin.priceList[2]);
+  } 
+
+  canPlayerBuyCard(player) {
+    //No more cards in deck (No reshuffling in this game)
+    if (this.game.deck[0].crypt.length === 0) return false;
+    return this.doesPlayerHaveResources(player, this.skin.priceList[3]);
+  }
+
+  canPlayerPlayCard() {
+    if (this.game.state.players[this.game.player - 1].devcards > 0) {
+      //not deck.length
+      if (this.game.state.canPlayCard) return true;
+    }
+    if (this.hasVPCards()) {
+      return true;
+    }
+
+    return false;
+  }
+
+  canPlayerBankTrade(){
+    let minForTrade = this.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
+
+    if (!this.game.state.canTrade){
+      return false;
+    }
+
+    for (let resource of this.skin.resourceArray()) {
+      if (this.countResource(this.game.player, resource) >= minForTrade[resource])
+        return true;
+    }
+    return false;
+  }
+
+
+

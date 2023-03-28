@@ -151,7 +151,36 @@ class Settlers extends GameTemplate {
 
 console.log("UPDATING THE HUD!");
     this.hud.render();
-    this.hud.updateStatus("UPDATING THE STATUS IN THE HUD!");
+
+    //
+    // mobile UI toggles
+    //
+    this.app.browser.prependElementToSelector('<div class="mobile"><div class="score">score</div><div class="trade">trade</div></div>', '.hud-body');
+    this.app.browser.addElementToSelector('<div class="mobile-trading-container"></div>', '.gameboard');
+    let num_playerboxes = 0;
+    let gas = ``; // grid-area-string
+    let gtr = ``;
+    document.querySelectorAll(".player-box").forEach((el) => {
+      num_playerboxes++;
+      el.style.gridArea = `area${num_playerboxes}`;
+      gas += `"area${num_playerboxes}" `;
+      gtr += `min-content `;
+      document.querySelector(".mobile-trading-container").appendChild(el);
+    });
+    document.querySelector(".mobile-trading-container").style.gridTemplateAreas = gas;
+    document.querySelector(".mobile-trading-container").style.gridTemplateColumns = "1fr";
+    document.querySelector(".mobile-trading-container").style.gridTemplateRows = gtr;
+    document.querySelector(".mobile-trading-container").style.rowGap = "2.5vh";
+    document.querySelector(".hud-body .mobile .score").onclick = (e) => {
+      document.querySelector(".mobile-trading-container").style.display = "none";
+      let s = document.querySelector(".scoreboard");
+      if (s.style.display != "block") { s.style.display = "block"; } else { s.style.display = "none"; }
+    }
+    document.querySelector(".hud-body .mobile .trade").onclick = (e) => {
+      document.querySelector(".scoreboard").style.display = "none";
+      let s = document.querySelector(".mobile-trading-container");
+      if (s.style.display != "grid") { s.style.display = "grid"; } else { s.style.display = "none"; }
+    }
 
   }
 
@@ -755,8 +784,7 @@ console.log("UPDATING THE HUD!");
           //Show all cards
           cards += `<div class="card tip"><img src="${this.skin.resourceCard(r)}">
                     <img class="icon" src="${this.skin.resourceIcon(r)}"/>
-                    
-                    </div>`; //<div class="tiptext">${r}</div>
+                    </div>`;
         }
       }
       if (deck == "cards" || cards == "") {
@@ -1168,8 +1196,7 @@ console.log("UPDATING THE HUD!");
 
   returnResourceHTML(resource){
     return `<div class="tip">
-            <img class="icon" src="${this.skin.resourceIcon(resource)}">
-            <div class="tiptext">${resource}</div>
+            <img class="icon" src="${this.skin.resourceCard(resource)}">
             </div>`;
   }
 
@@ -1227,58 +1254,6 @@ console.log("UPDATING THE HUD!");
     return true;
   }
 
-  //Maybe an extreme edge case where there is nowhere on the board to place a road
-  canPlayerBuildRoad(player) {
-    return this.doesPlayerHaveResources(player, this.skin.priceList[0]);
-  }
-
-  /*
-  Three conditions. Must have a village/settlement, and must have 3 ore and 2 wheat
-  */
-  canPlayerBuildTown(player) {
-    if (this.game.state.players[player - 1].towns == 0) return false;
-    if (this.returnCitySlotsAdjacentToPlayerRoads(this.game.player).length == 0)
-      return false;
-    return this.doesPlayerHaveResources(player, this.skin.priceList[1]);
-  }
-
-  /*
-  Three conditions. Must have a village/settlement, can't build more than 4 citiees, and must have 3 ore and 2 wheat
-  */
-  canPlayerBuildCity(player) {
-    let availableSlot = false;
-    for (let i of this.game.state.cities) {
-      if (i.player == player && i.level == 1) availableSlot = true;
-    }
-    if (!availableSlot) return false;
-
-    if (this.game.state.players[player - 1].cities == 0) return false;
-
-    return this.doesPlayerHaveResources(player, this.skin.priceList[2]);
-  }
-
-  canPlayerBuyCard(player) {
-    //No more cards in deck (No reshuffling in this game)
-    if (this.game.deck[0].crypt.length === 0) return false;
-    return this.doesPlayerHaveResources(player, this.skin.priceList[3]);
-  }
-
-  /*
-    Player must have a development card in the hand to play...
-    Any card is fine 
-  */
-  canPlayerPlayCard() {
-    if (this.game.state.players[this.game.player - 1].devcards > 0) {
-      //not deck.length
-      if (this.game.state.canPlayCard) return true;
-    }
-    if (this.hasVPCards()) {
-      return true;
-    }
-
-    return false;
-  }
-
   hasVPCards() {
     for (let i = 0; i < this.game.deck[0].hand.length; i++) {
       let cardname = this.game.deck[0].cards[this.game.deck[0].hand[i]].card;
@@ -1287,21 +1262,6 @@ console.log("UPDATING THE HUD!");
     return false;
   }
 
-
-  canPlayerBankTrade(){
-    let minForTrade = this.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
-
-    if (!this.game.state.canTrade){
-      return false;
-    }
-
-    for (let resource of this.skin.resourceArray()) {
-      if (this.countResource(this.game.player, resource) >= minForTrade[resource]) 
-        return true;
-    }
-    return false;
-  }
-    
 
   /*
     Recursively let player select two resources, then push them to game queue to share selection

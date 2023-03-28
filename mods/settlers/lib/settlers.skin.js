@@ -36,10 +36,10 @@ class SettlersSkin {
 				this.back = "/settlers/img/cards/red_back.png"; //Hidden Resource cards 
 				this.card = {name: "meditation", back: "/settlers/img/cards/red_back.png"};
 				this.deck = [{ card : "Yinyang Shi",count:14, img: "/settlers/img/cards/wizard.png", action:1},
-							 { card : "Elixir of Life" ,count:2, img : "/settlers/img/cards/potion.png" , action : 2 },
-							 { card : "Possession" , count:2, img : "/settlers/img/cards/treasure.png" , action : 3 },
-							 { card : "Pilgrimage" , count:2, img : "/settlers/img/cards/wagon.png" , action : 4},
-							 { card : "Apostles" , count:1, img : "/settlers/img/cards/drinking.png", action: 0 },
+						     { card : "Elixir of Life" ,count:2, img : "/settlers/img/cards/potion.png" , action : 2 },
+						     { card : "Possession" , count:2, img : "/settlers/img/cards/treasure.png" , action : 3 },
+						     { card : "Pilgrimage" , count:2, img : "/settlers/img/cards/wagon.png" , action : 4},
+						     { card : "Apostles" , count:1, img : "/settlers/img/cards/drinking.png", action: 0 },
 						     { card : "Armed Alcolytes" , count:1, img : "/settlers/img/cards/knight.png", action: 0 },
 						     { card : "Gift Shop" , count:1, img : "/settlers/img/cards/shop.png", action: 0 },
 						     { card : "Scriptures" , count:1, img : "/settlers/img/cards/scroll.png", action: 0 },
@@ -63,11 +63,11 @@ class SettlersSkin {
 				this.largest = {name:"Largest Army",svg:`<svg viewbox="0 0 200 200"><circle fill="gold" cx="100" cy="100" r="95" stroke="gold" stroke-width="5"/>
 		      <text x="50%" y="60%" text-anchor="middle" dominant-baseline="middle" font-size="132px" fill="saddlebrown">2</text></svg><i class="fas fa-horse-head" style="color:gold;"></i>`};
 				this.resources = [{name: "brick",count:3,ict:3,icon:"/settlers/img/icons/brick-icon.png"},
-								  {name: "wood",count:4,ict:3,icon:"/settlers/img/icons/wood-icon.png"},
-								  {name: "wheat",count:4,ict:3,icon:"/settlers/img/icons/wheat-icon.png"},
-								  {name: "wool",count:4,ict:3,icon:"/settlers/img/icons/wool-icon.png"},
-								  {name: "ore",count:3,ict:3,icon:"/settlers/img/icons/ore-icon.png"},
-								  {name: "desert",count:1,ict:1}];
+						  {name: "wood",count:4,ict:3,icon:"/settlers/img/icons/wood-icon.png"},
+						  {name: "wheat",count:4,ict:3,icon:"/settlers/img/icons/wheat-icon.png"},
+						  {name: "wool",count:4,ict:3,icon:"/settlers/img/icons/wool-icon.png"},
+						  {name: "ore",count:3,ict:3,icon:"/settlers/img/icons/ore-icon.png"},
+						  {name: "desert",count:1,ict:1}];
 
 								  //Order is IMPORTANT
 				this.priceList = [["brick","wood"],["brick","wood","wheat","wool"],["ore","ore", "ore","wheat","wheat"],["ore","wool","wheat"]];
@@ -125,10 +125,13 @@ class SettlersSkin {
 	}
 
 	resourceIcon(res){
+		//
+		// replace icons with cards universally
+		//
 		for (let i of this.resources){
 			if (i.name == res){
 				if (i.icon){
-					return i.icon;
+				  return i.icon;
 				}
 			}
 		}
