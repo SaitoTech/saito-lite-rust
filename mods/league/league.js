@@ -696,7 +696,7 @@ class League extends ModTemplate {
 
     let sql = `SELECT * FROM leagues WHERE game = $game AND (admin = "" OR id = $target)`;
 
-    let params = { $game : game, $target = target_league };   
+    let params = { $game : game, $target: target_league };   
 
     let sqlResults = await this.app.storage.queryDatabase(sql, params, "league");
 
