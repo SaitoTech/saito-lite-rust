@@ -42,6 +42,10 @@ class GameWizard {
     // Create the game wizard overlay
     //  & set a callback to remove the advanced options overlay if we change our mind about creating a game
     //
+    if (this.mod.debug){
+      console.log(JSON.parse(JSON.stringify(this.obj)));
+    }
+
     this.overlay.show(GameWizardTemplate(this.game_mod, this.obj), () => { if (this.meta_overlay) { this.meta_overlay.remove();}});
     this.overlay.setBackground(this.game_mod.returnArcadeImg());
 
