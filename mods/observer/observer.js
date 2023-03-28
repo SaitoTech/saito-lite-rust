@@ -1,10 +1,13 @@
+const Slip = require("../../lib/saito/slip").default;
+
+const Transaction = require("../../lib/saito/transaction").default;
+
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeObserver = require("./lib/appspace/arcade-observer");
 const GameObserver = require("./lib/components/game-observer");
 const GameLoader = require("./../../lib/saito/ui/game-loader/game-loader");
 const JSON = require("json-bigint");
-const Slip = require("../../lib/saito/slip");
 
 class Observer extends ModTemplate {
   constructor(app) {
@@ -227,7 +230,7 @@ class Observer extends ModTemplate {
       (res) => {
         if (res.rows) {
           res.rows.forEach((row) => {
-            let latest_tx = new saito.default.transaction(JSON.parse(row.tx));
+            let latest_tx = new saito.default.transaction(undefined, JSON.parse(row.tx));
             this.updateGameOnObserverList(latest_tx.msg);
           });
         }
@@ -302,12 +305,12 @@ class Observer extends ModTemplate {
 
       if (!message.data.tx) {
         if (message.data.transaction) {
-          tx = new saito.default.transaction(null, message.data.transaction);
+          tx = new saito.default.transaction(undefined, message.data.transaction);
         }
       }
 
       if (tx == null) {
-        tx = new saito.default.transaction(null, message.data.tx.transaction);
+        tx = new saito.default.transaction(undefined, message.data.tx.transaction);
       }
 
       let txmsg = tx.returnMessage();
@@ -460,8 +463,8 @@ class Observer extends ModTemplate {
       params = {
         $step: txmsg.step?.game || 1,
         $game_id: txmsg.game_id,
-        $player: tx.transaction.from[0].publicKey,
-        $tx: JSON.stringify(tx.transaction),
+        $player: tx.from[0].publicKey,
+        $tx: JSON.stringify(tx.toJson()),
         $ts: txmsg.step?.timestamp || new Date().getTime(),
       };
 
@@ -651,7 +654,7 @@ class Observer extends ModTemplate {
 
             if (already_contains_move == 0) {
               console.log("Add move: " + JSON.stringify(future_tx.msg));
-              game_mod.game.future.push(JSON.stringify(future_tx.transaction));
+              game_mod.game.future.push(JSON.stringify(future_tx.toJson()));
             }
           }
 
@@ -749,7 +752,7 @@ class Observer extends ModTemplate {
             let future_tx = new saito.default.transaction(JSON.parse(data[i].tx));
             future_tx.msg = future_tx.returnMessage();
             future_tx = arcade_self.app.wallet.signTransaction(future_tx);
-            first_tx.future.push(JSON.stringify(future_tx.transaction));
+            first_tx.future.push(JSON.stringify(future_tx.toJson()));
           }
 
           first_tx.observer_mode = 1;

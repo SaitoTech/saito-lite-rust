@@ -421,14 +421,14 @@ class Registry extends ModTemplate {
 
       try {
         if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
-          registry_self.app.keychain.addKey(tx.transaction.to[0].publicKey, {
+          registry_self.app.keychain.addKey(tx.to[0].publicKey, {
             identifier: identifier,
             watched: true,
             block_id: registry_self.app.blockchain.returnLatestBlockId(),
             block_hash: registry_self.app.blockchain.returnLatestBlockHash(),
             lc: 1,
           });
-          registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].publicKey, identifier);
+          registry_self.app.browser.updateAddressHTML(tx.to[0].publicKey, identifier);
         } else {
           console.debug("failed verifying message for username registration : ", tx);
         }

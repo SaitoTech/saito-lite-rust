@@ -372,7 +372,7 @@ class League extends ModTemplate {
 
     let params = {
       league_id: txmsg.league_id,
-      publickey: tx.transaction.from[0].publicKey,
+      publickey: tx.from[0].publicKey,
       email: txmsg.email || "",
       ts: parseInt(tx.timestamp),
     };
@@ -404,7 +404,7 @@ class League extends ModTemplate {
                  AND publickey = $publickey`;
     let params = {
       $league: txmsg.league_id,
-      $publickey: tx.transaction.from[0].publicKey,
+      $publickey: tx.from[0].publicKey,
     };
     await this.app.storage.executeDatabase(sql, params, "league");
   }
@@ -431,7 +431,7 @@ class League extends ModTemplate {
                   AND admin = $publickey`;
     let params1 = {
       $league_id: txmsg.league_id,
-      $publickey: tx.transaction.from[0].publicKey,
+      $publickey: tx.from[0].publicKey,
     };
     await this.app.storage.executeDatabase(sql1, params1, "league");
 
@@ -537,9 +537,9 @@ class League extends ModTemplate {
     // who are the players ?
     //
     let publickeys = [];
-    for (let i = 0; i < tx.transaction.to.length; i++) {
-      if (!publickeys.includes(tx.transaction.to[i].publicKey)) {
-        publickeys.push(tx.transaction.to[i].publicKey);
+    for (let i = 0; i < tx.to.length; i++) {
+      if (!publickeys.includes(tx.to[i].publicKey)) {
+        publickeys.push(tx.to[i].publicKey);
       }
     }
 

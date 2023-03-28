@@ -48,7 +48,7 @@ class GameScheduler {
       this.app.connection.emit("relay-send-message", {
         recipient: peers,
         request: "arcade spv update",
-        data: scheduler_self.invite_tx.transaction,
+        data: scheduler_self.invite_tx.toJson(),
       });
 
       mod.addGame(scheduler_self.invite_tx, "open");

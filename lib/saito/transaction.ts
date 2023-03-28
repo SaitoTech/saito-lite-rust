@@ -85,7 +85,6 @@ export default class Transaction extends SaitoTransaction {
         //
         for (let i = 0; i < jsonobj.from.length; i++) {
           const fslip = jsonobj.from[i];
-          console.log("jsonobj.from : ", fslip);
 
           let slip = new Slip();
           slip.publicKey = fslip.publicKey;
@@ -106,7 +105,6 @@ export default class Transaction extends SaitoTransaction {
 
         for (let i = 0; i < jsonobj.to.length; i++) {
           const fslip = jsonobj.to[i];
-          console.log("jsonobj.to : ", fslip);
           let slip = new Slip();
           slip.publicKey = fslip.publicKey;
           slip.amount = BigInt(fslip.amount);
@@ -132,8 +130,8 @@ export default class Transaction extends SaitoTransaction {
         if (jsonobj.type) {
           this.type = jsonobj.type;
         }
-        if (jsonobj.data) {
-          this.data = new Uint8Array(jsonobj.data);
+        if (jsonobj.buffer) {
+          this.data = new Uint8Array(Buffer.from(jsonobj.buffer, "base64"));
           // try {
           //   const reconstruct2 = Buffer.from(this.data).toString("utf-8");
           //   this.msg = JSON.parse(reconstruct2);

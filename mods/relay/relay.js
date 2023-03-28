@@ -1,8 +1,10 @@
+const Slip = require("../../lib/saito/slip").default;
+
+const Transaction = require("../../lib/saito/transaction").default;
+
 var ModTemplate = require("../../lib/templates/modtemplate");
 var saito = require("../../lib/saito/saito");
 const JSON = require("json-bigint");
-const Slip = require("../../lib/saito/slip").default;
-const Transaction = require("../../lib/saito/transaction").default;
 
 class Relay extends ModTemplate {
   constructor(app) {
@@ -81,7 +83,6 @@ class Relay extends ModTemplate {
     // ... wrapped in transaction to relaying peer
     //
 
-    console.log("tx json : ", tx.toJson());
     let peers = await this.app.network.getPeers();
     for (let i = 0; i < peers.length; i++) {
       // if (peers[i].peer) {
@@ -104,11 +105,9 @@ class Relay extends ModTemplate {
     if (tx == null) {
       return;
     }
-    let message = tx.returnMessage();
-    console.log("11111111111");
+    let message = tx.msg;
     try {
       let relay_self = app.modules.returnModule("Relay");
-      console.log("2222222222222");
 
       if (message.request === "relay peer message") {
         //
@@ -117,31 +116,22 @@ class Relay extends ModTemplate {
         let txjson = message.data;
         // console.log("txjson : ", txjson);
         let inner_tx = new Transaction(undefined, txjson);
-        if (inner_tx.transaction.to.length === 0) {
-          console.log("xxxxxxxxxx : " + inner_tx.transaction.to.length);
+        if (inner_tx.to.length === 0) {
           return;
         }
-        if (inner_tx.transaction.to[0].publicKey == undefined) {
-          // console.log("tx : ", inner_tx);
-          console.log("slip : ", inner_tx.transaction.to[0]);
-
-          console.log("yyyyyyyyyyy : " + inner_tx.transaction.to[0].publicKey);
+        if (inner_tx.to[0].publicKey == undefined) {
           return;
         }
-        console.log("333333333333");
 
         await inner_tx.decryptMessage(this.app);
         let inner_txmsg = inner_tx.returnMessage();
-        console.log("444444444 : ", inner_tx);
-        console.log("555555555 : ", inner_txmsg);
 
         //
         // if interior transaction is intended for me, I process regardless
         //
         if (inner_tx.isTo(await app.wallet.getPublicKey())) {
-          console.log("6666666");
           if (inner_txmsg.request === "ping") {
-            await this.sendRelayMessage(inner_tx.transaction.from[0].publicKey, "echo", {
+            await this.sendRelayMessage(inner_tx.from[0].publicKey, "echo", {
               status: this.busy,
             });
             return;
@@ -149,16 +139,14 @@ class Relay extends ModTemplate {
 
           if (inner_txmsg.request === "echo") {
             if (inner_txmsg.data.status) {
-              app.connection.emit("relay-is-busy", inner_tx.transaction.from[0].publicKey);
+              app.connection.emit("relay-is-busy", inner_tx.from[0].publicKey);
             } else {
-              app.connection.emit("relay-is-online", inner_tx.transaction.from[0].publicKey);
+              app.connection.emit("relay-is-online", inner_tx.from[0].publicKey);
             }
             return;
           }
-          console.log("7777777777");
 
           await app.modules.handlePeerTransaction(inner_tx, peer, mycallback);
-          return;
 
           //
           // otherwise relay
@@ -168,7 +156,6 @@ class Relay extends ModTemplate {
           // check to see if original tx is for a peer
           //
           let peer_found = 0;
-          console.log("88888888");
 
           let peers = await app.network.getPeers();
           for (let i = 0; i < peers.length; i++) {
@@ -176,7 +163,6 @@ class Relay extends ModTemplate {
               peer_found = 1;
 
               if (this.app.BROWSER == 0) {
-                console.log("9999999999 : " + peers[i].peerIndex);
                 await app.network.sendTransactionWithCallback(
                   inner_tx,
                   async function () {
@@ -189,7 +175,6 @@ class Relay extends ModTemplate {
               }
             }
           }
-          console.log("aaaaaaaaa");
 
           if (peer_found == 0) {
             if (mycallback != null) {

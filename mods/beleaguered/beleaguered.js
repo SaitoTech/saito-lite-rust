@@ -64,7 +64,9 @@ class Beleaguered extends OnePlayerGameTemplate {
 
   initializeHTML(app) {
     //console.trace("Initialize HTML");
-    if (!this.browser_active) { return; }
+    if (!this.browser_active) {
+      return;
+    }
 
     super.initializeHTML(app);
 
@@ -77,7 +79,7 @@ class Beleaguered extends OnePlayerGameTemplate {
       text: "Start New Game",
       id: "game-new",
       class: "game-new",
-      callback: function (app, game_mod) {
+      callback: function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.prependMove("lose");
         game_mod.endTurn();
@@ -98,7 +100,7 @@ class Beleaguered extends OnePlayerGameTemplate {
       text: "How to Play",
       id: "game-intro",
       class: "game-intro",
-      callback: function (app, game_mod) {
+      callback: function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(game_mod.returnGameRulesHTML());
       }
@@ -108,7 +110,7 @@ class Beleaguered extends OnePlayerGameTemplate {
       text: "Stats",
       id: "game-stats",
       class: "game-stats",
-      callback: function (app, game_mod) {
+      callback: function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(game_mod.returnStatsHTML());
       }
@@ -117,7 +119,6 @@ class Beleaguered extends OnePlayerGameTemplate {
     this.menu.addChatMenu();
     this.menu.render();
   }
-
 
 
   returnStatsHTML() {
@@ -138,7 +139,7 @@ class Beleaguered extends OnePlayerGameTemplate {
     if (id.length === 6) {
       return "m";
     } else {
-      return id.substring(10,11);
+      return id.substring(10, 11);
     }
   }
 
@@ -149,14 +150,14 @@ class Beleaguered extends OnePlayerGameTemplate {
   }
 
   getSlotRow(id) {
-    return parseInt(id.substring(3,4))
+    return parseInt(id.substring(3, 4))
   }
 
   attachEventsToBoard() {
     let beleaguered_self = this;
 
     $('.slot').off();
-    $('.slot').on('click', function () {
+    $('.slot').on('click', function() {
 
       let slot = $(this).attr("id");
 
@@ -189,7 +190,7 @@ class Beleaguered extends OnePlayerGameTemplate {
             if (moveToSide !== "m") {
               beleaguered_self.game.outerMost[`${moveToSide}${moveToRow}`] = beleaguered_self.game.outerMost[`${moveToSide}${moveToRow}`] + 1;
             }
-            
+
             beleaguered_self.game.outerMost[`${moveFromSide}${moveFromRow}`] = beleaguered_self.game.outerMost[`${moveFromSide}${moveFromRow}`] - 1;
 
             beleaguered_self.game.selected = "";
@@ -253,7 +254,7 @@ class Beleaguered extends OnePlayerGameTemplate {
           continue;
         }
 
-        // if another outermost card is one greater than currently checked other outermost card, 
+        // if another outermost card is one greater than currently checked other outermost card,
         // add current card to available moves
         for (let j = 0; j < outerMost.length; j++) {
           let comparedCardSide = outerMost[j][0];
@@ -327,7 +328,7 @@ class Beleaguered extends OnePlayerGameTemplate {
       }
     }
     if (index > -1) {
-      this.game.availableMoves.splice(index,1);
+      this.game.availableMoves.splice(index, 1);
     }
   }
 
@@ -397,10 +398,10 @@ class Beleaguered extends OnePlayerGameTemplate {
       this.game.outerMost = []
       for (let i = 1; i <= 4; i++) {
         for (let s = 0; s < this.sides.length; s++) {
-          for (let j = 0; j <= 17; j++) { 
+          for (let j = 0; j <= 17; j++) {
             let position = `row${i}_slot_${this.sides[s]}${j}`;
             if (this.game.board[position] === "E") {
-              this.game.outerMost[`${this.sides[s]}${i}`] = j-1;
+              this.game.outerMost[`${this.sides[s]}${i}`] = j - 1;
               j = 18; // break the innermost loop
             }
           }
@@ -420,7 +421,7 @@ class Beleaguered extends OnePlayerGameTemplate {
     return 10 * (parseInt(x) - 1) + parseInt(y) - 1;
   }
 
-  handleGameLoop(msg = null) {
+  async handleGameLoop(msg = null) {
 
     this.saveGame(this.game.id);
     ///////////
@@ -442,13 +443,13 @@ class Beleaguered extends OnePlayerGameTemplate {
       if (mv[0] === "win") {
         this.game.state.wins++;
         this.game.queue.push("round");
-        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${JSON.stringify([])}`);
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([await this.app.wallet.getPublicKey()])}\t${JSON.stringify([])}`);
       }
 
-      if (mv[0] === "lose"){
+      if (mv[0] === "lose") {
         this.game.state.losses++;
         this.game.queue.push("round");
-        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([await this.app.wallet.getPublicKey()])}`);
       }
 
       if (mv[0] === "play") {
@@ -480,7 +481,9 @@ class Beleaguered extends OnePlayerGameTemplate {
 
   displayBoard() {
 
-    if (this.browser_active == 0) { return; }
+    if (this.browser_active == 0) {
+      return;
+    }
     for (let i in this.game.board) {
       let divname = '#' + i;
       $(divname).html(this.returnCardImageHTML(this.game.board[i]));
@@ -506,8 +509,8 @@ class Beleaguered extends OnePlayerGameTemplate {
   no status atm, but this is to update the hud
   */
   displayUserInterface() {
-    let html = '<span class="hidable">Place all cards ascending by number on their suit stacks to win the game.<br>' + 
-    'Cards can be moved around on higher cards on the side stacks regardless of their suit. Any card can be placed on the empty side stack</span>';
+    let html = '<span class="hidable">Place all cards ascending by number on their suit stacks to win the game.<br>' +
+      'Cards can be moved around on higher cards on the side stacks regardless of their suit. Any card can be placed on the empty side stack</span>';
 
     this.updateStatusWithOptions(html, '');
   }
@@ -515,10 +518,10 @@ class Beleaguered extends OnePlayerGameTemplate {
 
   returnCardImageHTML(name) {
     // return '<img src="/beleaguered/img/cards/C1.png"/>'
-    if (name[0] == 'E') { 
+    if (name[0] == 'E') {
       return "";
-    } else { 
-      return '<img src="/beleaguered/img/cards/' + name + '.png" />'; 
+    } else {
+      return '<img src="/beleaguered/img/cards/' + name + '.png" />';
     }
   }
 
@@ -542,11 +545,16 @@ class Beleaguered extends OnePlayerGameTemplate {
 
   cardSuitHTML(suit) {
     switch (suit) {
-      case "D": return "&diams;"
-      case "H": return "&hearts;"
-      case "S": return "&spades;"
-      case "C": return "&clubs;"
-      default: return "";
+      case "D":
+        return "&diams;"
+      case "H":
+        return "&hearts;"
+      case "S":
+        return "&spades;"
+      case "C":
+        return "&clubs;"
+      default:
+        return "";
     }
   }
 
@@ -556,7 +564,6 @@ class Beleaguered extends OnePlayerGameTemplate {
       return 0;
     return card.substring(1);
   }
-
 
 
 }

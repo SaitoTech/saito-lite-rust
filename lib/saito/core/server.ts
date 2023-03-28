@@ -145,7 +145,6 @@ export class NodeSharedMethods extends CustomSharedMethods {
       );
     };
     let peer = await this.app.network.getPeer(peerIndex);
-    console.log("peer : " + peerIndex, peer);
     let newtx = new Transaction();
     try {
       // console.log("buffer length : " + buffer.byteLength, buffer);
@@ -220,7 +219,6 @@ class Server {
     wss.on("connection", (socket: any, request: any) => {
       let index = S.getInstance().addNewSocket(socket);
       socket.on("message", (buffer: any) => {
-        console.log("buffer received : " + buffer.length, buffer);
         S.getLibInstance()
           .process_msg_buffer_from_peer(new Uint8Array(buffer), index)
           .then(() => {});

@@ -1,3 +1,7 @@
+const Slip = require("../../lib/saito/slip").default;
+
+const Transaction = require("../../lib/saito/transaction").default;
+
 /*********************************************************************************
 
  ENCRYPT MODULE v.2
@@ -74,8 +78,8 @@ class Encrypt extends ModTemplate {
     if (message.request === "diffie hellman key exchange") {
       let tx = new saito.default.transaction(undefined, message.data.tx);
 
-      let sender = tx.transaction.from[0].publicKey;
-      let receiver = tx.transaction.to[0].publicKey;
+      let sender = tx.from[0].publicKey;
+      let receiver = tx.to[0].publicKey;
       let txmsg = tx.returnMessage();
       let request = txmsg.request; // "request"
       if (app.keychain.alreadyHaveSharedSecret(sender)) {
@@ -94,10 +98,10 @@ class Encrypt extends ModTemplate {
     }
 
     if (message.request === "diffie hellman key response") {
-      let tx = new saito.default.transaction(message.data.tx);
+      let tx = new saito.default.transaction(undefined, message.data.tx);
 
-      let sender = tx.transaction.from[0].publicKey;
-      let receiver = tx.transaction.to[0].publicKey;
+      let sender = tx.from[0].publicKey;
+      let receiver = tx.to[0].publicKey;
       let txmsg = tx.returnMessage();
       let request = txmsg.request; // "request"
       if (app.keychain.alreadyHaveSharedSecret(sender)) {
@@ -222,7 +226,9 @@ class Encrypt extends ModTemplate {
     //
     if (parties_to_exchange > 2) {
       for (let i = 1; i < parties_to_exchange; i++) {
-        tx.transaction.to.push(new saito.default.slip(recipients[i], 0.0));
+        let slip = new Slip();
+        slip.publicKey = recipients[i];
+        tx.addToSlip(slip);
       }
     }
 
@@ -245,11 +251,11 @@ class Encrypt extends ModTemplate {
   accept_key_exchange(tx, offchain = 0, peer = null) {
     let txmsg = tx.returnMessage();
 
-    let remote_address = tx.transaction.from[0].publicKey;
-    let our_address = tx.transaction.to[0].publicKey;
+    let remote_address = tx.from[0].publicKey;
+    let our_address = tx.to[0].publicKey;
     let alice_publickey = txmsg.alice_publickey;
 
-    let fee = tx.transaction.to[0].amount;
+    let fee = tx.to[0].amount;
 
     let bob = this.app.crypto.createDiffieHellman();
     let bob_publickey = bob.getPublicKey(null, "compressed").toString("hex");
@@ -265,7 +271,7 @@ class Encrypt extends ModTemplate {
     }
     newtx.msg.module = "Encrypt";
     newtx.msg.request = "key exchange confirm";
-    newtx.msg.tx_id = tx.transaction.id; // reference id for parent tx
+    newtx.msg.tx_id = tx.id; // reference id for parent tx
     newtx.msg.bob = bob_publickey;
     newtx = this.app.wallet.signTransaction(newtx);
 
@@ -289,18 +295,18 @@ class Encrypt extends ModTemplate {
     this.saveEncrypt();
   }
 
-  onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf, app) {
     let encrypt_self = app.modules.returnModule("Encrypt");
 
     if (conf == 0) {
-      if (tx.transaction.from[0].publicKey == app.wallet.returnPublicKey()) {
+      if (tx.from[0].publicKey == (await app.wallet.getPublicKey())) {
         encrypt_self.sendEvent("encrypt-key-exchange-confirm", {
-          members: [tx.transaction.to[0].publicKey, tx.transaction.from[0].publicKey],
+          members: [tx.to[0].publicKey, tx.from[0].publicKey],
         });
       }
-      if (tx.transaction.to[0].publicKey === app.wallet.returnPublicKey()) {
-        let sender = tx.transaction.from[0].publicKey;
-        let receiver = tx.transaction.to[0].publicKey;
+      if (tx.to[0].publicKey === app.wallet.returnPublicKey()) {
+        let sender = tx.from[0].publicKey;
+        let receiver = tx.to[0].publicKey;
         let txmsg = tx.returnMessage();
         let request = txmsg.request; // "request"
         if (app.keychain.alreadyHaveSharedSecret(sender)) {

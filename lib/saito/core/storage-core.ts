@@ -501,6 +501,8 @@ class StorageCore extends Storage {
           reject(err);
         }
         resolve(filename);
+      }).then((r) => {
+        return;
       });
     });
   }

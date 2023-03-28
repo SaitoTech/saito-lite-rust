@@ -574,7 +574,7 @@ class AppStore extends ModTemplate {
         $unixtime: ts,
         $bid: blk.block.id,
         $bsh: blk.returnHash(),
-        $tx: JSON.stringify(tx.transaction),
+        $tx: JSON.stringify(tx.toJson()),
         $featured: featured_app,
       };
 

@@ -91,9 +91,9 @@ async function initCLI() {
   async function addTransactionsToDatabase(blk) {
     try {
       for (let i = 0; i < blk.transactions.length; i++) {
-        if (blk.transactions[i].transaction.type >= -999) {
-          for (let ii = 0; ii < blk.transactions[i].transaction.to.length; ii++) {
-            if (blk.transactions[i].transaction.type >= -999) {
+        if (blk.transactions[i].type >= -999) {
+          for (let ii = 0; ii < blk.transactions[i].to.length; ii++) {
+            if (blk.transactions[i].type >= -999) {
               let sql = `INSERT
               OR IGNORE INTO transactions (
                                 address, 
@@ -144,14 +144,14 @@ async function initCLI() {
                 tmodule = blk.transactions[i].msg.module;
               }
               let tx_from = "";
-              if (blk.transactions[i].transaction.from.length > 0) {
-                tx_from = blk.transactions[i].transaction.from[0].publicKey;
+              if (blk.transactions[i].from.length > 0) {
+                tx_from = blk.transactions[i].from[0].publicKey;
               }
               let params = {
-                $address: blk.transactions[i].transaction.to[ii].publicKey,
-                $amt: blk.transactions[i].transaction.to[ii].amount,
+                $address: blk.transactions[i].to[ii].publicKey,
+                $amt: blk.transactions[i].to[ii].amount,
                 $bid: blk.block.id,
-                $tid: blk.transactions[i].transaction.id,
+                $tid: blk.transactions[i].id,
                 $sid: ii,
                 $bhash: blk.returnHash(),
                 $lc: 1,
@@ -161,7 +161,7 @@ async function initCLI() {
                 $block_ts: blk.timestamp,
                 $type: ttype,
                 $tx_from: tx_from,
-                $tx_to: blk.transactions[i].transaction.to[ii].publicKey,
+                $tx_to: blk.transactions[i].to[ii].publicKey,
                 $name: tname,
                 $module: tmodule,
               };

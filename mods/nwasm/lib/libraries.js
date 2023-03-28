@@ -94,7 +94,7 @@ class NwasmLibrary {
 
               if (txs.length > 0) {
                 try {
-                  let tx = new saito.default.transaction(txs[0].transaction);
+                  let tx = new saito.default.transaction(undefined, txs[0].toJson());
                   this.mod.hideLibrary();
                   lib_self.loader.overlay.hide();
                   this.mod.loadRomFile(tx);

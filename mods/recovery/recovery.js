@@ -1,8 +1,11 @@
+const Slip = require("../../lib/saito/slip").default;
+
+const Transaction = require("../../lib/saito/transaction").default;
+
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const SaitoLogin = require("./../../lib/saito/ui/modals/login/login");
 const SaitoBackup = require("./../../lib/saito/ui/modals/backup/backup");
-const Transaction = require("../../lib/saito/transaction");
 
 class Recovery extends ModTemplate {
   constructor(app) {
@@ -296,9 +299,9 @@ class Recovery extends ModTemplate {
 
   async receiveBackupTransaction(tx) {
     let txmsg = tx.returnMessage();
-    let publickey = tx.transaction.from[0].add;
+    let publickey = tx.from[0].add;
     let hash = txmsg.hash || "";
-    let txjson = JSON.stringify(tx.transaction);
+    let txjson = JSON.stringify(tx.toJson());
 
     let sql =
       "INSERT OR REPLACE INTO recovery (publickey, hash, tx) VALUES ($publickey, $hash, $tx)";

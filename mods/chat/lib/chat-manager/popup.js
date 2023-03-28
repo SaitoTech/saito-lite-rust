@@ -202,13 +202,13 @@ class ChatPopup {
       // submit
       //
       let msg_input = document.querySelector(`${popup_qs} .chat-footer .chat-input`);
-      msg_input.onkeydown = (e) => {
+      msg_input.onkeydown = async (e) => {
         if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
           e.preventDefault();
           if (msg_input.textContent == "") {
             return;
           }
-          let newtx = mod.createChatTransaction(group_id, msg_input.textContent);
+          let newtx = await mod.createChatTransaction(group_id, msg_input.textContent);
           mod.sendChatTransaction(app, newtx);
           mod.receiveChatTransaction(app, newtx);
           msg_input.textContent = "";
@@ -228,12 +228,12 @@ class ChatPopup {
       //
       // submit (button)
       //
-      document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
+      document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = async (e) => {
         e.preventDefault();
         if (msg_input.textContent == "") {
           return;
         }
-        let newtx = mod.createChatTransaction(group_id, msg_input.textContent);
+        let newtx = await mod.createChatTransaction(group_id, msg_input.textContent);
         mod.sendChatTransaction(app, newtx);
         mod.receiveChatTransaction(app, newtx);
         msg_input.textContent = "";
@@ -261,7 +261,7 @@ class ChatPopup {
           //  salert("Image too large: 220kb max");
           //} else {
 
-          let newtx = mod.createChatTransaction(group_id, img.outerHTML); // img into msg
+          let newtx = await mod.createChatTransaction(group_id, img.outerHTML); // img into msg
           newtx = app.wallet.signTransaction(newtx);
           mod.sendChatTransaction(app, newtx);
           mod.receiveChatTransaction(app, newtx);
@@ -277,4 +277,3 @@ class ChatPopup {
 }
 
 module.exports = ChatPopup;
-

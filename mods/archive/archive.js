@@ -230,9 +230,9 @@ class Archive extends ModTemplate {
       optional = tx.optional;
     }
 
-    console.log("TXS to: " + tx.transaction.to.length);
+    console.log("TXS to: " + tx.to.length);
 
-    for (let i = 0; i < tx.transaction.to.length; i++) {
+    for (let i = 0; i < tx.to.length; i++) {
       sql =
         "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
       params = {
@@ -252,7 +252,7 @@ class Archive extends ModTemplate {
     //
     // sanity check that we want to be saving this for the FROM fields
     //
-    for (let i = 0; i < tx.transaction.from.length; i++) {
+    for (let i = 0; i < tx.from.length; i++) {
       sql =
         "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
       params = {
@@ -287,17 +287,17 @@ class Archive extends ModTemplate {
       optional = tx.optional;
     }
 
-    for (let i = 0; i < tx.transaction.to.length; i++) {
+    for (let i = 0; i < tx.to.length; i++) {
       sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
       params = {
         $tx: tx.serialize_to_web(this.app),
         $sig: tx.signature,
-        $publickey: tx.transaction.to[i].publicKey,
+        $publickey: tx.to[i].publicKey,
         $optional: JSON.stringify(optional),
       };
       await this.app.storage.executeDatabase(sql, params, "archive");
     }
-    for (let i = 0; i < tx.transaction.from.length; i++) {
+    for (let i = 0; i < tx.from.length; i++) {
       sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
       params = {
         $tx: tx.serialize_to_web(this.app),

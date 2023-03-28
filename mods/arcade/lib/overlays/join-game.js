@@ -18,13 +18,13 @@ class JoinGameOverlay {
     this.overlay = new SaitoOverlay(app, mod, false, true); //No close button, auto-delete overlay
   }
 
-  render() {
+  async render() {
     let game_mod = this.app.modules.returnModuleBySlug(this.invite.game_slug);
 
-    this.overlay.show(JoinGameOverlayTemplate(this.app, this.mod, this.invite));
+    this.overlay.show(await JoinGameOverlayTemplate(this.app, this.mod, this.invite));
     this.overlay.setBackground(game_mod.returnArcadeImg());
     console.log("Render Join GAme Overlay");
-    this.app.browser.addIdentifiersToDom();
+    await this.app.browser.addIdentifiersToDom();
     this.attachEvents();
   }
 
@@ -44,12 +44,12 @@ class JoinGameOverlay {
         this.app.connection.emit("relay-send-message", {
           recipient: this.invite.players,
           request: "arcade spv update",
-          data: newtx.transaction,
+          data: newtx.toJson(),
         });
         this.app.connection.emit("relay-send-message", {
           recipient: "PEERS",
           request: "arcade spv update",
-          data: newtx.transaction,
+          data: newtx.toJson(),
         });
 
         this.overlay.remove();
@@ -122,6 +122,4 @@ class JoinGameOverlay {
   }
 }
 
-
 module.exports = JoinGameOverlay;
-

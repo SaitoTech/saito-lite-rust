@@ -540,7 +540,7 @@ class Tweet {
 
           let newtx = new saito.default.transaction(
             undefined,
-            JSON.parse(JSON.stringify(this.tx.transaction))
+            JSON.parse(JSON.stringify(this.tx.toJson()))
           );
           newtx.signature = this.app.crypto.hash(newtx.signature);
           let new_tweet = new Tweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, newtx);
@@ -575,7 +575,7 @@ class Tweet {
 
           let newtx = new saito.default.transaction(
             undefined,
-            JSON.parse(JSON.stringify(this.tx.transaction))
+            JSON.parse(JSON.stringify(this.tx.toJson()))
           );
           newtx.signature = this.app.crypto.hash(newtx.signature);
           let new_tweet = new Tweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, newtx);

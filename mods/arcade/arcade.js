@@ -1,3 +1,7 @@
+const Slip = require("../../lib/saito/slip").default;
+
+const Transaction = require("../../lib/saito/transaction").default;
+
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeMain = require("./lib/main/main");
@@ -10,8 +14,6 @@ const GameScheduler = require("./lib/overlays/game-scheduler");
 const GameInvitationLink = require("./lib/overlays/game-invitation-link");
 
 const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
-const Slip = require("../../lib/saito/slip");
-const Transaction = require("../../lib/saito/transaction");
 
 class Arcade extends ModTemplate {
   constructor(app) {
@@ -179,7 +181,7 @@ class Arcade extends ModTemplate {
       if (res.rows) {
         for (let record of res.rows) {
           //This is the save openTX
-          let game_tx = new saito.default.transaction(JSON.parse(record.tx));
+          let game_tx = new Transaction(undefined, JSON.parse(record.tx));
 
           //But we update the player list
           let player_info = record.players_array.split("_");
@@ -430,13 +432,13 @@ class Arcade extends ModTemplate {
           // and multiple attempts for general invites
           //
 
-          arcade_self.receiveOpenTransaction(tx, blk);
+          await arcade_self.receiveOpenTransaction(tx, blk);
         } else if (txmsg.module === "Arcade") {
           //
           // public & private invites processed the same way
           //
           if (txmsg.request === "open" || txmsg.request === "private") {
-            arcade_self.receiveOpenTransaction(tx, blk);
+            await arcade_self.receiveOpenTransaction(tx, blk);
           }
 
           //
@@ -452,7 +454,7 @@ class Arcade extends ModTemplate {
           // Add a player to the game invite
           //
           if (txmsg.request == "join") {
-            arcade_self.receiveJoinTransaction(tx);
+            await arcade_self.receiveJoinTransaction(tx);
           }
 
           //
@@ -466,11 +468,11 @@ class Arcade extends ModTemplate {
           // kick off game initialization
           //
           if (txmsg.request === "accept") {
-            arcade_self.receiveAcceptTransaction(tx);
+            await arcade_self.receiveAcceptTransaction(tx);
           }
         } else {
           if (txmsg.request === "stopgame") {
-            arcade_self.receiveCloseTransaction(tx);
+            await arcade_self.receiveCloseTransaction(tx);
           }
 
           if (txmsg.request === "gameover") {
@@ -503,7 +505,7 @@ class Arcade extends ModTemplate {
     // this code doubles onConfirmation
     //
     if (message?.request === "arcade spv update") {
-      let tx = new saito.default.transaction(undefined, message.data);
+      let tx = new Transaction(undefined, message.data);
 
       let txmsg = tx.returnMessage();
 
@@ -607,7 +609,7 @@ class Arcade extends ModTemplate {
         //
         let message = {};
         message.request = "arcade spv update";
-        message.data = tx.transaction;
+        message.data = tx.toJson();
 
         await this.app.network.sendRequestAsTransaction(
           message.request,
@@ -689,6 +691,7 @@ class Arcade extends ModTemplate {
   }
 
   async receiveOpenTransaction(tx, blk = null) {
+    console.log("arcade receiveOpenTransaction : ", tx);
     let txmsg = tx.returnMessage();
 
     // add to games list == open or private
@@ -737,7 +740,7 @@ class Arcade extends ModTemplate {
       $module: txmsg.game,
       $status: txmsg.request, //open, private, [direct]
       $options: options,
-      $tx: JSON.stringify(tx.transaction),
+      $tx: JSON.stringify(tx.toJson()),
       $start_bid: start_bid,
       $created_at: created_at,
       $winner: "",
@@ -782,11 +785,11 @@ class Arcade extends ModTemplate {
       return;
     }
 
-    if (game.msg.players.includes(tx.transaction.from[0].publicKey)) {
-      if (tx.transaction.from[0].publicKey == game.msg.originator) {
+    if (game.msg.players.includes(tx.from[0].publicKey)) {
+      if (tx.from[0].publicKey == game.msg.originator) {
         if (this.debug) {
           console.log(
-            `Player (${tx.transaction.from[0].publicKey}) Canceling Game invite: `,
+            `Player (${tx.from[0].publicKey}) Canceling Game invite: `,
             JSON.parse(JSON.stringify(game.msg))
           );
         }
@@ -795,12 +798,12 @@ class Arcade extends ModTemplate {
       } else {
         if (this.debug) {
           console.log(
-            `Removing Player (${tx.transaction.from[0].publicKey}) from Game: `,
+            `Removing Player (${tx.from[0].publicKey}) from Game: `,
             JSON.parse(JSON.stringify(game.msg))
           );
         }
 
-        let p_index = game.msg.players.indexOf(tx.transaction.from[0].publicKey);
+        let p_index = game.msg.players.indexOf(tx.from[0].publicKey);
         game.msg.players.splice(p_index, 1);
         //Make sure player_sigs array exists and add invite_sig
         if (game.msg.players_sigs && game.msg.players_sigs.length > p_index) {
@@ -969,7 +972,7 @@ class Arcade extends ModTemplate {
 
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     let slip = new Slip();
-    slip.publicKey = orig_tx.transaction.from[0].publicKey;
+    slip.publicKey = orig_tx.from[0].publicKey;
     slip.amount = 0;
     newtx.addToSlip(slip);
 
@@ -1070,10 +1073,10 @@ class Arcade extends ModTemplate {
     //
     // Don't add the same player twice!
     //
-    if (!game.msg.players.includes(tx.transaction.from[0].publicKey)) {
+    if (!game.msg.players.includes(tx.from[0].publicKey)) {
       if (this.debug) {
         console.log(
-          `Adding Player (${tx.transaction.from[0].publicKey}) to Game: `,
+          `Adding Player (${tx.from[0].publicKey}) to Game: `,
           JSON.parse(JSON.stringify(game))
         );
       }
@@ -1081,7 +1084,7 @@ class Arcade extends ModTemplate {
       //
       // add player to game
       //
-      game.msg.players.push(tx.transaction.from[0].publicKey);
+      game.msg.players.push(tx.from[0].publicKey);
       game.msg.players_sigs.push(txmsg.invite_sig);
 
       //Update DB

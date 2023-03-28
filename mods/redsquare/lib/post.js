@@ -162,7 +162,7 @@ class Post {
       //
       if (post_self.tweet) {
         if (post_self.tweet.tx) {
-          if (post_self.tweet.tx.transaction) {
+          if (post_self.tweet.tx.toJson()) {
             for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
               if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
                 keys.push(post_self.tweet.tx.transaction.to[i].add);

@@ -371,7 +371,7 @@ class Nwasm extends GameTemplate {
           this.app.storage.loadTransactions("Nwasm" + this.active_rom_sig, 5, function (txs) {
             try {
               for (let z = 0; z < txs.length; z++) {
-                let newtx = new saito.default.transaction(txs[z].transaction);
+                let newtx = new saito.default.transaction(undefined, txs[z].toJson());
                 nwasm_self.active_game_saves.push(newtx);
               }
             } catch (err) {
@@ -469,7 +469,7 @@ class Nwasm extends GameTemplate {
     }
     newtx = this.app.wallet.signTransaction(newtx);
     if (iobj) {
-      iobj.innerHTML = "uploading archive file: " + newtx.transaction.m.length + " bytes";
+      iobj.innerHTML = "uploading archive file: " + newtx.data.byteLength + " bytes";
     }
 
     await this.app.network.sendTransactionWithCallback(newtx, async function (res) {
@@ -512,7 +512,7 @@ class Nwasm extends GameTemplate {
         if (txs.length <= 0) {
           alert("No Saved Games Available");
         }
-        let newtx = new saito.default.transaction(txs[0].transaction);
+        let newtx = new saito.default.transaction(undefined, txs[0].toJson());
         let txmsg = newtx.returnMessage();
         let byteArray = nwasm_mod.convertBase64ToByteArray(txmsg.data);
         nwasm_mod.active_game = byteArray;

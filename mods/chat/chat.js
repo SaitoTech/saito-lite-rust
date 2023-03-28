@@ -1,3 +1,7 @@
+const Slip = require("../../lib/saito/slip").default;
+
+const Transaction = require("../../lib/saito/transaction").default;
+
 const SaitoUserTemplate = require("./../../lib/saito/ui/saito-user/saito-user.template.js");
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
@@ -77,7 +81,7 @@ class Chat extends ModTemplate {
     if (service.service === "chat") {
       let newtx = await this.app.wallet.createUnsignedTransaction();
       let local_group = await this.returnGroupOrCreateFromMembers(
-        [await peer.returnPublicKey()],
+        [peer.publicKey],
         "Saito Community Chat"
       );
 
@@ -105,7 +109,7 @@ class Chat extends ModTemplate {
         await this.app.network.sendTransactionWithCallback(newtx, (txs) => {
           try {
             for (let i = 0; i < txs.length; i++) {
-              let newtx = new saito.default.transaction(txs[i].transaction);
+              let newtx = new saito.default.transaction(undefined, txs[i].transaction);
               let txmsg = newtx.returnMessage();
               this.addTransactionToGroup(local_group, newtx);
             }
@@ -176,7 +180,7 @@ class Chat extends ModTemplate {
     let keys = app.keychain.returnKeys();
     for (let i = 0; i < keys.length; i++) {
       if (keys[i].aes_publickey) {
-        this.createChatGroup([keys[i].publickey, app.wallet.returnPublicKey()], keys[i].name);
+        this.createChatGroup([keys[i].publickey, await app.wallet.getPublicKey()], keys[i].name);
       }
     }
 
@@ -246,7 +250,7 @@ class Chat extends ModTemplate {
               while (res.rows.length > 0) {
                 //Process the chat transaction like a new message
 
-                let tx = new saito.default.transaction(JSON.parse(res.rows.pop().tx));
+                let tx = new saito.default.transaction(undefined, JSON.parse(res.rows.pop().tx));
 
                 tx.decryptMessage(app);
 
@@ -275,7 +279,7 @@ class Chat extends ModTemplate {
     //
     if (app.BROWSER) {
       if (!app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 600) {
-        let group = this.returnGroupByMemberPublickey(peer.returnPublicKey());
+        let group = this.returnGroupByMemberPublickey(peer.publicKey);
         if (group) {
           let active_module = app.modules.returnActiveModule();
           if (active_module) {
@@ -365,12 +369,12 @@ class Chat extends ModTemplate {
       // if chat message broadcast is received - we are being asked to broadcast this
       // to a peer if the inner_tx is addressed to one of our peers.
       //
-      if (inner_tx.transaction.to.length > 0) {
-        if (inner_tx.transaction.to[0].publicKey != (await this.app.wallet.getPublicKey())) {
+      if (inner_tx.to.length > 0) {
+        if (inner_tx.to[0].publicKey != (await this.app.wallet.getPublicKey())) {
           console.log("INNER TRANSACTION IS NOT FOR ME");
           if (app.BROWSER == 0) {
             for (const p of app.network.peers) {
-              if (p.peer.publickey === inner_tx.transaction.to[0].publicKey) {
+              if (p.peer.publickey === inner_tx.to[0].publicKey) {
                 await p.sendTransactionWithCallback(inner_tx, () => {});
               }
               continue;
@@ -457,16 +461,16 @@ class Chat extends ModTemplate {
       app.connection.emit("relay-send-message", {
         recipient,
         request: "chat message broadcast",
-        data: tx.transaction,
+        data: tx.toJson(),
       });
     } else {
       salert("Connection to chat server lost");
     }
   }
 
-  createChatTransaction(group_id, msg = "") {
+  async createChatTransaction(group_id, msg = "") {
     let newtx = this.app.wallet.createUnsignedTransaction(
-      this.app.wallet.returnPublicKey(),
+      await this.app.wallet.getPublicKey(),
       0.0,
       0.0
     );
@@ -476,21 +480,23 @@ class Chat extends ModTemplate {
 
     let members = this.returnMembers(group_id);
     for (let i = 0; i < members.length; i++) {
-      if (members[i] !== this.app.wallet.returnPublicKey()) {
-        newtx.transaction.to.push(new saito.default.slip(members[i]));
+      if (members[i] !== (await this.app.wallet.getPublicKey())) {
+        let slip = new Slip();
+        slip.publicKey = members[i];
+        newtx.addToSlip(slip);
       }
     }
 
     //
     // swap first two addresses so if private chat we will encrypt with proper shared-secret
     //
-    if (newtx.transaction.to.length > 1) {
-      let x = newtx.transaction.to[0];
-      newtx.transaction.to[0] = newtx.transaction.to[1];
-      newtx.transaction.to[1] = x;
+    if (newtx.to.length > 1) {
+      let x = newtx.to[0];
+      newtx.to[0] = newtx.to[1];
+      newtx.to[1] = x;
     }
 
-    console.log("FIRST RECIPIENT IS NOW: " + newtx.transaction.to[0].publicKey);
+    console.log("FIRST RECIPIENT IS NOW: " + newtx.to[0].publicKey);
 
     if (msg.substring(0, 4) == "<img") {
       if (this.inTransitImageMsgSig) {
@@ -512,8 +518,8 @@ class Chat extends ModTemplate {
       //
       // the first recipient is ourself, so the second is the one with the shared secret
       //
-      console.log("from us so sign and encrypt to: " + newtx.transaction.to[0].publicKey);
-      let key = this.app.keychain.returnKey(newtx.transaction.to[0].publicKey);
+      console.log("from us so sign and encrypt to: " + newtx.to[0].publicKey);
+      let key = this.app.keychain.returnKey(newtx.to[0].publicKey);
       console.log("pre-encrypt in create!");
       console.log("key should be: " + key.aes_secret);
       newtx = this.app.wallet.signAndEncryptTransaction(newtx);
@@ -548,8 +554,8 @@ class Chat extends ModTemplate {
     //
     // save transaction if private chat
     //
-    for (let i = 0; i < tx.transaction.to.length; i++) {
-      if (tx.transaction.to[i].publicKey == app.wallet.returnPublicKey()) {
+    for (let i = 0; i < tx.to.length; i++) {
+      if (tx.to[i].publicKey == app.wallet.returnPublicKey()) {
         this.app.storage.saveTransaction(tx, txmsg.group_id);
         break;
       }
@@ -573,9 +579,9 @@ class Chat extends ModTemplate {
       //
 
       let members = [];
-      for (let x = 0; x < tx.transaction.to.length; x++) {
-        if (!members.includes(tx.transaction.to[x].publicKey)) {
-          members.push(tx.transaction.to[x].publicKey);
+      for (let x = 0; x < tx.to.length; x++) {
+        if (!members.includes(tx.to[x].publicKey)) {
+          members.push(tx.to[x].publicKey);
         }
       }
 
@@ -935,7 +941,7 @@ class Chat extends ModTemplate {
     for (let g of this.groups) {
       if (this.app.options.chat[g.id] && g.txs.length == 0) {
         for (let stx of this.app.options.chat[g.id]) {
-          let newtx = new saito.default.transaction(stx);
+          let newtx = new saito.default.transaction(undefined, stx);
           newtx.decryptMessage(this.app);
           g.txs.push(newtx);
         }

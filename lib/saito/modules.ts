@@ -75,12 +75,11 @@ class Mods {
     peer: Peer,
     mycallback: (any) => Promise<void> = null
   ) {
-    console.log("handlePeerTransaction : " + peer.peerIndex, tx);
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {
         await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback);
       } catch (err) {
-        console.log("handlePeerTransaction Unknown Error: \n" + err);
+        console.error("handlePeerTransaction Unknown Error: ", err);
       }
     }
     return;
