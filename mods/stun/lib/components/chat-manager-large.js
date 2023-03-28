@@ -233,7 +233,22 @@ class VideoChatManager {
     disconnect() {
         this.app.connection.emit('stun-disconnect')
         this.video_boxes = {}
-        this.hide();
+        let obj = {
+            room_code: this.room_code,
+        }
+        let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
+        let url = window.location.toString();
+
+        if (url.includes('?')) {
+            let index = url.indexOf('?');
+            url = url.slice(0, index);
+        }
+
+        let myurl = new URL(url);
+        myurl = myurl.href.split('#')[0];
+        myurl = myurl.replace('redsquare', 'videocall');
+        window.location.href = myurl
+
     }
 
 

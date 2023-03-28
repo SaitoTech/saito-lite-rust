@@ -2,9 +2,8 @@ module.exports = StunAppspaceTemplate = () => {
 
   return `
       <div class="stun-appspace"> 
-
-        <card class="appear stunx-appspace-card">
-
+      <div class="stun-appspace-content">
+        <card class="appear stunx-appspace-splash">
           <div class="saito-page-header-title"> Saito Video <span class="saito-badge">α</span></div>
 
           <p>Saito lets you host your own peer-to-peer video chat!</p>
@@ -20,6 +19,9 @@ module.exports = StunAppspaceTemplate = () => {
             <span class="saito-info-text">Blockchain-mediated peer-to-peer connections can take longer to negotiate if you are on a mobile network or behind an aggressive firewall.</span>
           </div>
         </card>
+        <card class="stun-appspace-settings">
+        </card>
+        </div>
       </div>
 
     `;

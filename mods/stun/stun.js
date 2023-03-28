@@ -89,9 +89,9 @@ class Stun extends ModTemplate {
             this.sendStunMessageToServerTransaction(data)
         })
 
-        app.connection.on('stun-init-peer-manager', (room_code)=> {
-            this.peerManager = new PeerManager(app, mod, room_code);
-            this.peerManager.showSetting(false);
+        app.connection.on('stun-init-peer-manager', ()=> {
+            this.peerManager = new PeerManager(app, mod);
+            this.peerManager.showSetting();
         })
 
     }
@@ -112,8 +112,9 @@ class Stun extends ModTemplate {
                 let interval = setInterval(() => {
                     if (document.readyState === "complete") {
                         let room_code = room_obj.room_code;
-                        stun_self.peerManager = new PeerManager(app, stun_self, room_code);
-                        stun_self.peerManager.showSetting(true);
+                        // stun_self.peerManager = new PeerManager(app, stun_self, room_code);
+                        // stun_self.peerManager.showSetting(true);
+                        app.connection.emit('stun-to-join-room', true, room_code);
                         clearInterval(interval)
                   }
                 }, 500)
