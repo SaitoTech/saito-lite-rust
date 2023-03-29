@@ -841,50 +841,53 @@ console.log("UPDATING THE HUD!");
 
     let card_dir = "/settlers/img/cards/";
     for (let i = 1; i <= this.game.state.players.length; i++) {
+
       this.game.state.players[i - 1].resources.sort();
+      let num_resources = this.game.state.players[i - 1].resources.length;
+      let num_cards = this.game.state.players[i - 1].devcards;
+
       let newhtml = "";
 
       let playerHTML = `
           <div class="saito-user settlers-user saito-user-${this.game.players[i-1]}" id="saito-user-${this.game.players[i-1]}" data-id="${this.game.players[i-1]}">
             <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i-1])}"></div>
             <div class="saito-playername" data-id="${this.game.players[i-1]}">${this.game.playerNames[i-1]}</div>
-            <div class="saito-userline">${this.skin.vp.name}: ${this.game.state.players[i - 1].vp}</div>
-            ${(i==this.game.player)? `<i id="construction-costs" class="handy-help fa fa-question-circle" aria-hidden="true"></i>`: ""}
+            <div class="saito-userline">resources: ${num_resources} / cards: ${num_cards}</div>
           </div>`;
       this.playerbox.refreshTitle(playerHTML, i);
 
       //Stats
-      newhtml = `<div class="flexline">`;
-      //Victory Point Card Tokens
-      for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
-        newhtml += `<div class="token">${this.skin.vp.svg}</div>`;
-      }
-      if (this.game.state.largestArmy.player == i) {
-        newhtml += `<div class="token" title="${this.skin.largest.name}">${this.skin.largest.svg}</div>`;
-      }
-      if (this.game.state.longestRoad.player == i) {
-        newhtml += `<div class="token" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
-      }
-      newhtml += `</div>`;
+      //anewhtml = `<div class="flexline">`;
+      //Victory Point Card Tokens -- should move to VP track
+      //for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
+      //  newhtml += `<div class="token">${this.skin.vp.svg}</div>`;
+      //}
+      //if (this.game.state.largestArmy.player == i) {
+      //  newhtml += `<div class="token" title="${this.skin.largest.name}">${this.skin.largest.svg}</div>`;
+      //}
+      //if (this.game.state.longestRoad.player == i) {
+      //  newhtml += `<div class="token" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
+      //}
+      //newhtml += `</div>`;
 
-      if (this.game.state.players[i - 1].knights > 0) {
-        newhtml += `<div class="flexline2">`;
-        for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
-          newhtml += this.skin.s.img;
-        }
-        newhtml += `</div>`;
-      }
+      //if (this.game.state.players[i - 1].knights > 0) {
+      //  newhtml += `<div class="flexline2">`;
+      //  for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
+      //    newhtml += this.skin.s.img;
+      //  }
+      //  newhtml += `</div>`;
+      //}
+
       //For opponents, summarize their hands numerically
       if (this.game.player != i) {
-        newhtml += `<div class="flexline">`;
-        newhtml += `<div class="cardct">Resources: ${
-          this.game.state.players[i - 1].resources.length
-        }</div>`;
-        newhtml += `<div class="cardct">Cards: ${
-          this.game.state.players[i - 1].devcards
-        }</div>`;
-        newhtml += `</div>`;
-      
+      //  newhtml += `<div class="flexline">`;
+      //  newhtml += `<div class="cardct">Resources: ${
+      //    this.game.state.players[i - 1].resources.length
+      //  }</div>`;
+      //  newhtml += `<div class="cardct">Cards: ${
+      //    this.game.state.players[i - 1].devcards
+      //  }</div>`;
+      //  newhtml += `</div>`;
       } else {  //Is me
 
         if (!this.game.state.placedCity){
@@ -908,10 +911,10 @@ console.log("UPDATING THE HUD!");
             this.game.deck[0].hand.length > 0 &&
             this.game.state.players[i - 1].resources.length > 0
           ) {
-            newhtml += `<div class="flexline">`;
-            newhtml += `<div class="cardselector" id="resource" title="Show my resources">Resources</div>`;
-            newhtml += `<div class="cardselector" id="cards" title="Show my ${this.skin.card.name} cards">Cards</div>`;
-            newhtml += `</div>`;
+            //newhtml += `<div class="flexline">`;
+            //newhtml += `<div class="cardselector" id="resource" title="Show my resources">Resources</div>`;
+            //newhtml += `<div class="cardselector" id="cards" title="Show my ${this.skin.card.name} cards">Cards</div>`;
+            //newhtml += `</div>`;
           }  
         }
       }
