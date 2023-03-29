@@ -10,6 +10,10 @@
   --text-color: #331800;
 }
 
+.cardfan {
+  z-index: 5;
+}
+
 body {
   user-select: none;
 }
