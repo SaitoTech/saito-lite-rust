@@ -109,6 +109,11 @@
   padding: 0 0.5rem;
   transition: all 0.2s linear;
 }
+
+.tweet-text a {
+  display: inherit;
+}
+
 .tweet-preview {
   margin-top: 2rem;
 }

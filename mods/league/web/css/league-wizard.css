@@ -116,7 +116,8 @@
   display: grid;
   max-height: 80vh;
   height: min-content;
-  width: 60vw;
+  width: 80rem;
+  max-width: 75vw;
   overflow-y: auto;
   grid-template-rows: min-content auto;
   background: var(--saito-arcade-overlay-background);
@@ -329,7 +330,7 @@ input[type="text"], textarea {
 
 @media screen and (max-width: 900px) {
   .league-wizard-overlay {
-    width: 95vw;
+    max-width: 95vw;
   }
 }
 

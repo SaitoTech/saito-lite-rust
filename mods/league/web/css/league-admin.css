@@ -424,23 +424,6 @@ i.link_icon.private {
 /* league create overlay */
 
 
-.game-create-new-overlay {
-  display: grid;
-  max-height: 80vh;
-  height: min-content;
-  width: 60vw;
-  overflow-y: visible;
-  grid-template-rows: min-content auto;
-  background-color: var(--saito-white);
-  padding: 2rem;
-  border-radius: 0.5rem;
-}
-
-.game-create-new-overlay.dark {
-  background: var(--saito-dark-transparent);
-  color: var(--saito-white);
-}
-
 
 .info-item-wrapper {
   display: inline-block;

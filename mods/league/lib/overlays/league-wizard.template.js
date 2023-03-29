@@ -2,8 +2,6 @@ module.exports = LeagueWizardTemplate = (app, mod, game_mod) => {
 
   let html = `
 
-    <div class="game-create-new-overlay dark">
-
     <div class="league-wizard-overlay">
       <form>
         <div class="league-wizard-game-container">
@@ -37,9 +35,6 @@ module.exports = LeagueWizardTemplate = (app, mod, game_mod) => {
        </div>
     </form>
   </div>
-
-  </div>
-
   `;
 
   return html;

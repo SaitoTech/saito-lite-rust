@@ -75,7 +75,8 @@
 }
 
 .league-overlay-header-image {
-  background-image: url(/web/saito/img/dreamscape.png);
+  /* Fallback image, should be inserted by JS*/
+  background-image: url(/saito/img/dreamscape.png);
   background-size: cover;
   width: 11rem;
   height: 7rem;
