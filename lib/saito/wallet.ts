@@ -426,12 +426,14 @@ console.log("---------------------");
             const tmpprivkey = this.app.options.wallet.privatekey;
             const tmppubkey = this.app.options.wallet.publickey;
 
+            // save mixin
             let mixin = this.app.options.mixin;
             let crypto = this.app.options.crypto;
-            let keychain = this.app.options.keys;
 
+            // save contacts(keys)
             let keys = this.app.options.keys;
 
+            // save theme options
             let theme = this.app.options.theme;
 
             // specify before reset to avoid archives reset problem
@@ -465,10 +467,8 @@ console.log("---------------------");
             // keep mixin
             this.app.options.mixin = mixin;
             this.app.options.crypto = crypto;
-            this.app.options.keys = keychain;
 
             // keep contacts (keys)
-
             this.app.options.keys = keys;
 
             // keep theme
