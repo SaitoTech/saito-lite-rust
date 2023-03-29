@@ -10,7 +10,7 @@ module.exports = (app, mod, tx, retweet_tx, retweet_txmsg) => {
 console.log("ABOUT TO USER TEMPLATE THIS PUPPY");
 
     return `
-        <div class="tweet notification-item-${tx.transaction.sig} tweet-notif-${txsig}" data-id="${txsig}">
+        <div class="tweet notification-item-${tx.transaction.sig} tweet-notif-retweet-${txsig}" data-id="${txsig}">
           <div class="tweet-notice"></div>
           <div class="tweet-header">
             ${SaitoUserTemplate({ app : app , publickey : tx.transaction.from[0].add , notice : "<i class='fa fa-repeat fa-notification'></i> <span class='notification-type'>retweeted your tweet</span>", fourthelem : app.browser.returnTime(new Date().getTime())})}
