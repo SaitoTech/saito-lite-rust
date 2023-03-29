@@ -55,7 +55,6 @@ class Arcade extends ModTemplate {
       'arcade': 'fa-solid fa-gamepad'
     };
 
-    this.debug = false;
   }
 
 
@@ -1681,7 +1680,10 @@ class Arcade extends ModTemplate {
     // add league_id to options if this is a league game
     // 
     if (invite_obj.league) {
+      //The important piece of information
       options.league_id = invite_obj.league.id;
+      //For convenience sake when making the join overlay
+      options.league_name = invite_obj.league.name;
     }
 
     if (!players_needed) {

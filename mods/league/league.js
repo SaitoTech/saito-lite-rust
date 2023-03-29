@@ -89,18 +89,6 @@ class League extends ModTemplate {
 
     this.sortLeagues();
   
-    if (this.app.BROWSER){
-      this.app.connection.on("add-league-identifier-to-dom", ()=>{
-        document.querySelectorAll(".saito-league").forEach(key=>{
-          if (key.dataset.id){
-            let league = this.returnLeague(key.dataset.id);
-            if (league){
-              key.innerHTML = league.name; 
-            }
-          }
-        });
-      });
-    }
   }
 
   //
@@ -616,11 +604,11 @@ class League extends ModTemplate {
     //
     // fetch leagues
     //
-    let relevantLeagues = await this.getRelevantLeagues(game);
+    let relevantLeagues = await this.getRelevantLeagues(game, txmsg?.league_id);
 
     if (!relevantLeagues){ return; }
 
-  //  if (this.debug){console.log(relevantLeagues, publickeys);}
+    if (this.debug){console.log(relevantLeagues, publickeys);}
 
     //
     // update database
@@ -668,8 +656,12 @@ class League extends ModTemplate {
 
     //if (this.app.BROWSER){ return; }
 
-    const relevantLeagues = await this.getRelevantLeagues(txmsg.game);
+    const relevantLeagues = await this.getRelevantLeagues(txmsg.game, txmsg?.options?.league_id);
     if (!relevantLeagues) { return; }
+
+    console.log("League: AcceptGame");
+    console.log(txmsg?.options?.league_id);
+    console.log(JSON.parse(JSON.stringify(relevantLeagues)));
 
     //
     // who are the players ?
@@ -700,13 +692,22 @@ class League extends ModTemplate {
 
   /////////////////////
   /////////////////////
-  async getRelevantLeagues(game){
+  async getRelevantLeagues(game, target_league = ""){
 
-    let sql = `SELECT * FROM leagues WHERE game = $game`;
-    let params = { $game : game };   
+    let sql = `SELECT * FROM leagues WHERE game = $game AND (admin = "" OR id = $target)`;
+
+    let params = { $game : game, $target: target_league };   
+
     let sqlResults = await this.app.storage.queryDatabase(sql, params, "league");
 
-    let localLeagues = this.leagues.filter(l => l.game === game);
+    let localLeagues = this.leagues.filter(l => {
+      if (l.game === game){
+        if (!l.admin || l.id==target_league){
+          return true;
+        } 
+      }
+      return false;
+    });
 
     return sqlResults || localLeagues;
   } 
@@ -811,11 +812,11 @@ class League extends ModTemplate {
       await this.incrementPlayer(p.publickey, league.id, outcome);
       
       p.score += p.k * ( (1/winner.length) - (p.q / qsum));
-      await this.updatePlayerScore(p);
+      await this.updatePlayerScore(p, league.id);
     }
     for (let p of loser){
       p.score -= (p.k * p.q / qsum);
-      await this.updatePlayerScore(p);
+      await this.updatePlayerScore(p, league.id);
     }
 
   }
@@ -841,7 +842,7 @@ class League extends ModTemplate {
       
       player.score = Math.max(player.score, newScore)
       await this.incrementPlayer(player.publickey, league.id, "games_finished");
-      await this.updatePlayerScore(player);
+      await this.updatePlayerScore(player, league.id);
     }
 
   }
@@ -886,7 +887,7 @@ class League extends ModTemplate {
 
 
 
-  async updatePlayerScore(playerObj) {
+  async updatePlayerScore(playerObj, league_id) {
 
     let league = this.returnLeague(playerObj.league_id);
     if (league?.players){
@@ -906,7 +907,7 @@ class League extends ModTemplate {
       $score: playerObj.score,
       $ts: new Date().getTime() ,
       $publickey: playerObj.publickey,
-      $league_id: playerObj.league_id
+      $league_id: league_id
     }
 
     await this.app.storage.executeDatabase(sql, params, "league");
@@ -1056,9 +1057,10 @@ class League extends ModTemplate {
     //and if the scores have changed, we need to resort the players
     league.players = [];
 
+    let cutoff = new Date().getTime() - 24 * 60 * 60 * 1000;
     this.sendPeerDatabaseRequestWithFilter(
       "League" ,
-      `SELECT * FROM players WHERE league_id = '${league_id}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
+      `SELECT * FROM players WHERE league_id = '${league_id}' AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}') ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
       (res) => {
           if (res?.rows) {
 

@@ -14,11 +14,23 @@
   background-color: black;
   color: white;
   padding: 3rem;
+  justify-content:center
 }
 
-.stunx-appspace-card {
-  width: 50%;
+.stun-appspace-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+}
+
+.stunx-appspace-splah {
+  /* width: 50%; */
   margin-left: 7rem;
+}
+
+.stunx-appspace-settings {
+
 }
 
 .my-stun-container-info {
@@ -30,18 +42,18 @@
   font-size: 5rem;
 }
 
-.stunx-appspace-card > p {
+.stunx-appspace-splah > p {
   margin-bottom: 1rem;
   font-size: 2.2rem;
   line-height: 3rem;
   color: var(--saito-white);
 }
 
-.stunx-appspace-card > p span {
+.stunx-appspace-splah > p span {
   text-decoration: underline;
 }
 
-.stunx-appspace-card .saito-badge {
+.stunx-appspace-splah .saito-badge {
   color: var(--saito-white);
   background: var(--saito-primary);
   width: 5rem;
@@ -53,7 +65,7 @@
   vertical-align: super;
 }
 
-.stunx-appspace-card .saito-info-text {
+.stunx-appspace-splah .saito-info-text {
   color: rgb(195, 195, 195);
   line-height: 1.2rem;
 }
@@ -128,8 +140,14 @@
 
 /*  responsive */
 
+@media screen and (max-width: 768px) {
+  .stun-appspace-content {
+   flex-direction: column;
+   width: 95%;
+  }
+}
 @media screen and (max-width: 900px) {
-  .stunx-appspace-card {
+  .stunx-appspace-splah {
     width: 80%;
     margin-left: 2rem;
   }
@@ -138,7 +156,7 @@
   .stun-appspace {
     padding: 1rem;
   }
-  .stunx-appspace-card {
+  .stunx-appspace-splah {
     width: 100%;
     margin-left: 0;
   }

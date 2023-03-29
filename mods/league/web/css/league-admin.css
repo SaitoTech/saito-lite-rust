@@ -1,9 +1,4 @@
-body {
-  /*background-color: #343542;
-  color: #fff;*/
-  overflow-y: scroll;
-  padding-bottom: 50px;
-}
+
 
 .league-main-container {
   max-width: 94em;
@@ -72,6 +67,13 @@ body {
 
 .league-component-existing-league .para {
   margin-bottom: 5vh;
+}
+
+.league-join-info {
+  margin: 1rem;
+  border-radius: 0.5rem;
+  border: 1px dashed var(--saito-black-faded);
+  padding: 1rem;
 }
 
 .editable-content {
@@ -243,6 +245,11 @@ i.link_icon.private {
   background-color: var(--saito-black);
 }
 
+.league-join-overlay-box img {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
 
 .game_option_league_wizard{
   padding: 1em;
@@ -324,6 +331,7 @@ i.link_icon.private {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-align: center;
 }
 
 .league-join-overlay-box .saito-overlay-form-alt-opt{
@@ -363,8 +371,11 @@ i.link_icon.private {
  }
 
 .league-join-controls {
-  text-align: center;
   padding: 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
 .league-join-info p{
@@ -374,18 +385,6 @@ i.link_icon.private {
 }
 
 
-.league-join-controls button{
-  margin-top: 1.5rem;
-}
-
-.league-join-controls input {
-    text-align: center;
-    width: 90%;
-    margin-top: 0.5rem;
-    margin-bottom: 2.5rem;
-    height: 5.5rem;
-    font-size: 2.6rem;
-}
 
 
 /* LIST SELECTION MODAL */

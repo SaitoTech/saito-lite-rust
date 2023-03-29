@@ -18,19 +18,7 @@ body {
 .status-header{
   height: 120px;
 }
-.rules-overlay table{
-  font-size: 1.5em;
-  margin: 0 auto;
-}
 
-.rules-overlay th{
-  text-align: right;
-}
-
-.rules-overlay td{
-  text-align: center;
-  width: 4em;
-}
 
 /*.connection_monitor {
   position: fixed;
@@ -192,4 +180,16 @@ body {
   }
 }
 
-
+/* force landscape when on mobile */
+@media screen and (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
+  html {
+    transform: rotate(-90deg);
+    transform-origin: left top;
+    width: 100vh;
+    height: 100vw;
+    overflow-x: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
+}

@@ -7,7 +7,7 @@ class LeagueOverlay {
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
-    this.overlay = new SaitoOverlay(this.app, this.mod, false);
+    this.overlay = new SaitoOverlay(this.app, this.mod);
     this.league = null;
 
     this.leaderboards = {};
@@ -45,7 +45,7 @@ class LeagueOverlay {
 
     let obj = {game: this.league.game};
     if (this.league.admin){
-      obj["league"] = this.league.id;
+      obj["league"] = this.league.id; ///>>>>>>>>>>>>>>
     }
     this.app.connection.emit("league-overlay-games-list", obj);
 

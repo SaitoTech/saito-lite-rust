@@ -480,8 +480,6 @@
 }
 
 @media screen and (max-height: 850px) {
-  .video-box-container-large:nth-child(2) {
-  }
 
   .control-panel {
     padding-bottom: 10rem;
@@ -515,10 +513,10 @@
   color: var(--saito-white);
   display: flex;
   justify-content: center;
-  width: 100vw;
-  height: 100vh;
+  /* width: 100vw;
+  height: 100vh; */
   margin: 0;
-  position: fixed;
+  /* position: fixed; */
   color: var(--saito-white);
   top: 0;
   z-index: 200;

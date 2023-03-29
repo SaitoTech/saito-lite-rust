@@ -36,7 +36,10 @@ class PeerManager {
         this.audioEnabled = true
 
 
-        this.room_code = room_code;
+
+        this.app.connection.on('stun-peer-manager-update-room-code', (room_code)=> {
+            this.room_code = room_code
+        });
 
 
         app.connection.on('stun-event-message', (data) => {
@@ -157,13 +160,12 @@ class PeerManager {
             this.app.connection.emit('stun-send-message-to-server', data);
         })
 
-        app.connection.on('show-chat-manager', async () => {
+        app.connection.on('show-chat-manager', async (to_join) => {
             // console.log(this, "peer")
             await this.showChatManager();
-            if (this.to_join) {
+            if (to_join) {
                 this.join()
             }
-
             let sound = new Audio('/videocall/audio/enter-call.mp3');
             sound.play();
         })
@@ -176,8 +178,7 @@ class PeerManager {
         })
     }
 
-    showSetting(to_join) {
-        this.to_join = to_join
+    showSetting() {
         this.app.connection.emit('show-chat-setting', this.room_code);
     }
 

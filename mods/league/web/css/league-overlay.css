@@ -62,7 +62,7 @@
 }
 
 .league-overlay-body-content > div, .league-overlay-leaderboard {
-  box-shadow: var(--saito-box-shadow) var(--saito-border-color);
+  box-shadow: var(--saito-box-shadow);
   padding: 1.5rem;
   border-radius: 0.5rem;
   overflow-y: auto;
@@ -176,4 +176,12 @@
     max-height: unset;
     overflow-y: unset;
   }
+}
+
+@media screen and (max-width: 600px) {
+  .league-overlay-container { 
+    width: 95vw;
+    max-height: 95vh;
+  }
+
 }

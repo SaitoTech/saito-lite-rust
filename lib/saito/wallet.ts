@@ -430,6 +430,8 @@ console.log("---------------------");
             let crypto = this.app.options.crypto;
             let keychain = this.app.options.keys;
 
+            let keys = this.app.options.keys;
+
             let theme = this.app.options.theme;
 
             // specify before reset to avoid archives reset problem
@@ -464,6 +466,10 @@ console.log("---------------------");
             this.app.options.mixin = mixin;
             this.app.options.crypto = crypto;
             this.app.options.keys = keychain;
+
+            // keep contacts (keys)
+
+            this.app.options.keys = keys;
 
             // keep theme
             this.app.options.theme = theme;

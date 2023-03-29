@@ -216,3 +216,40 @@
     width: auto;
   }
 }
+
+
+/**********************************
+Useful declarations for game stats 
+**********************************/
+.solitaire-stats-overlay {
+  min-width: 600px;
+  max-width: 90vw;
+  background-color: #f5f5f5;
+  padding: 40px;
+  border-radius: 5px;
+  border: 2px solid var(--saito-black-faded);
+}
+
+.solitaire-stats-overlay hr {
+  margin: 0.5rem 0 2rem;
+  color: var(--saito-red);
+}
+
+.solitaire-stats-overlay .saito-table-row {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.solitaire-stats-overlay .saito-table-label, .solitaire-stats-overlay .saito-table-header {
+  white-space: nowrap;
+  font-weight: bold;
+  font-size: 1.6rem;
+}
+
+.solitaire-stats-overlay .saito-table-header {
+  padding: unset;
+  margin-bottom: 0.5rem;
+}
+
+.saito-table-body .saito-table-row > div:not(.saito-table-label) {
+  text-align: center;
+}

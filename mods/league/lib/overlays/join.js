@@ -10,10 +10,16 @@ class JoinLeague {
     this.mod = mod;
     this.league_id = league_id;
     this.overlay = new SaitoOverlay(app, mod, false, true);
-    this.loader = new SaitoLoader(app, mod, ".league-join-info");
+    this.loader = new SaitoLoader(app, mod, ".league-join-overlay-box");
+    this.timer = null;
 
     this.app.connection.on("join-league-success", ()=>{
-      console.log("Join success!");
+      console.log("League Join success!");
+      if (this.timer){
+        clearTimeout(this.timer);
+      }else{
+        return;
+      }
       this.loader.remove();
       this.render();
     });
@@ -32,7 +38,9 @@ class JoinLeague {
 
 
     this.game_mod = this.app.modules.returnModuleByName(league.game);
-    this.overlay.show(JoinLeagueTemplate(this.app, this.mod, league));
+    this.overlay.show(JoinLeagueTemplate(this.app, this.mod, league), ()=>{
+      this.app.connection.emit('league-overlay-render-request', this.league_id);  
+    });
     this.overlay.setBackground(this.game_mod.returnArcadeImg());
 
     this.attachEvents();
@@ -65,22 +73,36 @@ class JoinLeague {
       e.preventDefault();
 
       let league_id = e.target.getAttribute("data-id");
-      let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
-      let user_email = key.email || "";
+      //let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+      //let user_email = key.email || "";
 
       //
       // show loader
       //
+      document.querySelector(".title-box").remove();
       document.querySelector(".league-join-controls").remove();
-      document.querySelector(".league-join-info").innerHTML = "";
+      document.querySelector(".league-join-info").remove();
       this.loader.render();
 
-      let newtx = this.mod.createJoinTransaction(league_id, user_email);
+      let newtx = this.mod.createJoinTransaction(league_id/*, user_email*/);
       this.app.network.propagateTransaction(newtx);
 
       if (this.mod.debug){
         console.log("Join sent! " + league_id);
       }
+
+      let params = {
+        league_id: league_id,
+        publickey: this.app.wallet.returnPublicKey,
+      }
+      this.mod.addLeaguePlayer(params);
+
+      this.timer = setTimeout(()=> {
+        
+        this.loader.remove();
+        this.app.browser.addElementToSelector(`<div class="title-box"><div class="title">League Joined</div></div>`, ".league-join-overlay-box");
+
+      }, 2000);
 
     }  
 

@@ -233,7 +233,22 @@ class VideoChatManager {
     disconnect() {
         this.app.connection.emit('stun-disconnect')
         this.video_boxes = {}
-        this.hide();
+        let obj = {
+            room_code: this.room_code,
+        }
+        let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
+        let url = window.location.toString();
+
+        if (url.includes('?')) {
+            let index = url.indexOf('?');
+            url = url.slice(0, index);
+        }
+
+        let myurl = new URL(url);
+        myurl = myurl.href.split('#')[0];
+        myurl = myurl.replace('redsquare', 'videocall');
+        window.location.href = myurl
+
     }
 
 
@@ -244,11 +259,14 @@ class VideoChatManager {
         if (!this.peers.includes(peer)) {
             this.peers.push(peer);
         }
-        // console.log(this.peers, 'peers ')
 
-        // console.log(this.mod.central, "is mod central or not")
         let room_link = this.createRoomLink();
         history.pushState(null, null, room_link);
+        
+        if(this.peers.length === 1){
+            let peer = document.querySelector(`#stream${this.peers[0]}`);
+            peer.querySelector('.video-box').click();
+        }
 
     }
 

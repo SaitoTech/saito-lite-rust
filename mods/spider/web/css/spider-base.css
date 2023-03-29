@@ -40,6 +40,10 @@ body {
   display: grid;
 }
 
+.gameboard.selection * { 
+  cursor: none !important;
+}
+
 .game-scoreboard{
   font-size: 20px;
   height: 40px;
@@ -59,12 +63,12 @@ body {
   max-width: 1600px;
 }
 
-#helper{
+#helper, #helper:hover{
   position: absolute;
-  cursor: grabbing;
   width: min(130px, calc(10vw - 10px));
   pointer-events: none;
 }
+
 
 .card-stack{
   display: grid;
@@ -152,49 +156,55 @@ body {
   pointer-events: none;
 }
 
-.card-stack .card:last-child img{
+.card-stack .card:last-child img {
  pointer-events: unset; 
 } 
 
-.card.selected{
+.card.selected {
   filter: brightness(0.85);
 }
 
-.card.flipped{
+.card.flipped {
   grid-area: span 4;
-  cursor: grab;
 }
 
-.card.empty_slot{
+.card.empty_slot {
   grid-area: span 18;
   border: 1px var(--saito-red) dashed;
   width: 100%;
 }
 
 
-.cardFront, .cardBack{
+.cardFront, .cardBack {
   transition: transform .4s linear;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
 
-.cardFront{
+.cardFront {
   transform: rotateY(180deg);
 }
 
-.cardBack{
+.cardBack {
   transform: rotateY(0deg);
 }
 
-.flipped .cardFront, .completed_card .cardFront{
+.flipped .cardFront, .completed_card .cardFront {
   transform: rotateY(0deg);
 }
 
 
-.flipped .cardBack, .completed_card .cardBack{
+.flipped .cardBack, .completed_card .cardBack {
   transform: rotateY(-180deg);
 }
 
+.hover img.cardFront {
+  filter: brightness(0.5);
+}
+
+.hover.empty_slot {
+  background: rgba(100,100,100,0.9);
+}
 
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
