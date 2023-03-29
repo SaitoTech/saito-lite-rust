@@ -7,6 +7,9 @@
 
     let settlers_self = this;
 
+console.log("QUEUE");
+console.log(JSON.stringify(this.game.queue));
+
     ///////////
     // QUEUE //
     ///////////
@@ -648,7 +651,6 @@ console.log("running UPDATE STATUS");
           $(".option").off();
           $(".option").on("click", function () {
             let choice = $(this).attr("id");
-
             if (choice === "rolldice") {
               settlers_self.addMove("roll\t" + player);
               settlers_self.endTurn();
@@ -866,19 +868,14 @@ console.log("running UPDATE STATUS");
         return 0;
       }
 
-      //End Player's Turn
       if (mv[0] == "end_turn") {
-        //Must be calculated here because player_actions and play can cycle multiple times per turn
         this.game.state.canPlayCard = this.game.deck[0].hand.length > 0;
         this.game.state.canTrade = false;
         this.game.queue.splice(qe - 1, 2);
         this.is_sleeping = true;
-        // remove city highlighting from last roll
         for (let city of this.game.state.cities) {
           document.querySelector(`#${city.slot}`).classList.remove("producer");
         }
-
-
         let divname = `.sector_value:not(.bandit)`;
         $(divname).attr("style", "");
         $(".rolled").removeClass("rolled");

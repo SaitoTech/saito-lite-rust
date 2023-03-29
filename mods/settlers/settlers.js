@@ -1975,6 +1975,19 @@ console.log("UPDATING THE HUD!");
     } catch (err) {
       //console.log("ERR: " + err);
     }
+
+    //
+    //
+    //
+    if (this.hud.user_dragged == 0) {
+      let obj = document.querySelector(".hud");
+      if (hud) {
+        hud.style.bottom = 0;
+        hud.style.height = "auto";
+        hud.style.top = "unset";
+      }
+    }
+
   }
 
 
@@ -2043,6 +2056,9 @@ console.log("UPDATING THE HUD!");
   handleGameLoop() {
 
     let settlers_self = this;
+
+console.log("QUEUE");
+console.log(JSON.stringify(this.game.queue));
 
     ///////////
     // QUEUE //
@@ -2685,7 +2701,6 @@ console.log("running UPDATE STATUS");
           $(".option").off();
           $(".option").on("click", function () {
             let choice = $(this).attr("id");
-
             if (choice === "rolldice") {
               settlers_self.addMove("roll\t" + player);
               settlers_self.endTurn();
@@ -2903,19 +2918,14 @@ console.log("running UPDATE STATUS");
         return 0;
       }
 
-      //End Player's Turn
       if (mv[0] == "end_turn") {
-        //Must be calculated here because player_actions and play can cycle multiple times per turn
         this.game.state.canPlayCard = this.game.deck[0].hand.length > 0;
         this.game.state.canTrade = false;
         this.game.queue.splice(qe - 1, 2);
         this.is_sleeping = true;
-        // remove city highlighting from last roll
         for (let city of this.game.state.cities) {
           document.querySelector(`#${city.slot}`).classList.remove("producer");
         }
-
-
         let divname = `.sector_value:not(.bandit)`;
         $(divname).attr("style", "");
         $(".rolled").removeClass("rolled");
@@ -3246,16 +3256,20 @@ console.log("running UPDATE STATUS");
   Main function to let player carry out their turn...
   */
   playerPlayMove() {
+
     let settlers_self = this;
+    let can_do_something = false;
 
     let html = "<ul>";
 
     if (settlers_self.canPlayerBankTrade()){
       html += '<li class="option" id="bank">bank</li>';
+      can_do_something = true;
     }
 
     if (settlers_self.canPlayerPlayCard()) {
       html += `<li class="option" id="playcard">play card</li>`;
+      can_do_something = true;
     }
 
     if (
@@ -3265,12 +3279,23 @@ console.log("running UPDATE STATUS");
       settlers_self.canPlayerBuyCard(settlers_self.game.player)
     ) {
       html += `<li class="option" id="spend">spend resources</li>`;
+      can_do_something = true;
     } else {
       //html += `<li class="option noselect" id="nospend">spend resources</li>`;
     }
 
     html += `<li class="option" id="pass">pass dice</li>`;
     html += "</ul>";
+
+    //
+    // auto-end my turn if I cannot do anything
+    //
+    if (can_do_something != true) {
+      this.addMove("end_turn\t" + settlers_self.game.player);
+      this.addMove("ACKNOWLEDGE\tturn finished - dice passed\t" + settlers_self.game.player);
+      this.endTurn();
+      return;
+    }
 
     settlers_self.updateStatus(settlers_self.getLastNotice() + html);
 

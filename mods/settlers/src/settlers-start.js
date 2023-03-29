@@ -1975,6 +1975,19 @@ console.log("UPDATING THE HUD!");
     } catch (err) {
       //console.log("ERR: " + err);
     }
+
+    //
+    //
+    //
+    if (this.hud.user_dragged == 0) {
+      let obj = document.querySelector(".hud");
+      if (hud) {
+        hud.style.bottom = 0;
+        hud.style.height = "auto";
+        hud.style.top = "unset";
+      }
+    }
+
   }
 
 

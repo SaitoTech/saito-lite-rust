@@ -319,16 +319,20 @@
   Main function to let player carry out their turn...
   */
   playerPlayMove() {
+
     let settlers_self = this;
+    let can_do_something = false;
 
     let html = "<ul>";
 
     if (settlers_self.canPlayerBankTrade()){
       html += '<li class="option" id="bank">bank</li>';
+      can_do_something = true;
     }
 
     if (settlers_self.canPlayerPlayCard()) {
       html += `<li class="option" id="playcard">play card</li>`;
+      can_do_something = true;
     }
 
     if (
@@ -338,12 +342,23 @@
       settlers_self.canPlayerBuyCard(settlers_self.game.player)
     ) {
       html += `<li class="option" id="spend">spend resources</li>`;
+      can_do_something = true;
     } else {
       //html += `<li class="option noselect" id="nospend">spend resources</li>`;
     }
 
     html += `<li class="option" id="pass">pass dice</li>`;
     html += "</ul>";
+
+    //
+    // auto-end my turn if I cannot do anything
+    //
+    if (can_do_something != true) {
+      this.addMove("end_turn\t" + settlers_self.game.player);
+      this.addMove("ACKNOWLEDGE\tturn finished - dice passed\t" + settlers_self.game.player);
+      this.endTurn();
+      return;
+    }
 
     settlers_self.updateStatus(settlers_self.getLastNotice() + html);
 
