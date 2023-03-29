@@ -1,13 +1,15 @@
-
 .game-crypto-transfer-manager-container {
-  min-width:30vw;
   max-width: 95vw;
-  border-radius: 0.5rem;
-  padding: 3rem 3rem;
   text-align:center;
   color: white;
   background-color:rgba(0,0,0,0.9);
   border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  width: auto;
+  padding: 3rem;
+  min-width: 55rem;
 }
 
 .ignore {
@@ -15,51 +17,99 @@
   margin-bottom: 1.5rem;
   margin-top: 1rem;
 }
+
 input[type="checkbox"].ignore_checkbox {
   border: 1px solid white;
 }
 
 .game-crypto-transfer-manager-container .stake {
-  font-size: 2rem;
-  margin-top: 1rem;
+  background: none;
+  border: none;
+  color: var(--saito-white);
+  border-bottom: 1px solid var(--saito-white);
+  text-align: center;
+  padding: 1rem;
+  font-size: 4rem;
+  margin: auto;
+  display: inline-block;
+  width: 18rem;
 }
 
 .auth_title {
   font-size:1.7em;
-  margin-top: 0;
+  margin: 0rem;
 }
-.crypto_transfer_btn:hover {
+
+/*.crypto_transfer_btn:hover {
     background-color: white;
     color: black;
     text-shadow: none;
-}
+}*/
+
 .crypto_transfer_btn {
-    background-color: var(--saito-button-background);
-    color: var(--saito-white);
+  background-color: var(--saito-button-background);
+  color: var(--saito-white);
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  font-size: 1.8rem;
+  text-transform: uppercase;
+  transition: all .2s ease-in-out;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  width: fit-content;
+  height: 5rem;
+  line-height: 5rem;
+  padding: 0rem;
+}
+
+.crypto_transfer_btn.secondary {
+  background: none;
+  color: var(--saito-button-background);
+  border: 1px solid var(--saito-button-background);
+}
+
+.crypto-stake-offer-btn-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.crypto_amount_btn {
     margin-left: auto;
     margin-right: auto;
-    position: relative;
-    margin-top: 1rem;
-    font-size: 2em;
-    text-transform: uppercase;
-    transition: all .2s ease-in-out;
-    cursor: pointer;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
+    height: 6rem;
+    padding: 0rem;
+    width: auto;
+    line-height: 6rem;
+}
+
+.commentary {
+    font-size: 1.6rem;
+    line-height: 2.5rem;
 }
 
 .crypto_transfer_btn.hidden{
   display: none;
 }
 
-/*.crypto_transfer_btn:hover,
-.crypto_transfer_btn:active,
-.crypto_transfer_btn:focus {
-  border-color: rgb(255, 69, 95);
-  background-color: rgb(255, 69, 95);
-  text-shadow: none;
+.crypto-stake-confirm-container {
+  margin: 0rem;
+  display: flex;
+  flex-direction: row;
+  padding: 0rem;
+  gap: 1rem;
+  width: fit-content;
+  margin: auto;
 }
-*/
+
+.crypto-stake-confirm-container input {
+  background: none;
+}
+
+.crypto_msg {
+  font-size: 1.6rem;
+}
+
 .amount {
   font-size: 2.4em;
   margin: 1rem auto;
