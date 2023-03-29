@@ -48,7 +48,7 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
 		    	<div class="title">${league.name}</div>
 			</div>
 			<div class="league-join-info">
-				<div class="league-join-username">Welcome <span class="address">${name}</span>!</div>
+				<div class="league-join-username"><div>Welcome:</div><div class="address">${name}!</div></div>
 			</div>
 	  	  	<div class="league-join-controls">
 				<div class="saito-overlay-form-alt-opt">login/recover</div>
