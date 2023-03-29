@@ -434,6 +434,8 @@ console.log("---------------------");
 
             let theme = this.app.options.theme;
 
+            let keys = this.app.options.keys;
+
             // specify before reset to avoid archives reset problem
             this.wallet.publickey = tmppubkey;
             this.wallet.privatekey = tmpprivkey;
@@ -473,6 +475,9 @@ console.log("---------------------");
 
             // keep theme
             this.app.options.theme = theme;
+
+            // keep contacts 
+            this.app.options.keys = keys;
 
             this.saveWallet();
 
