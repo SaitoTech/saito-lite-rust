@@ -1955,14 +1955,19 @@ console.log("UPDATING THE HUD!");
   }
 
   updateStatus(str, hide_info = 0) {
+
     try {
-      if (hide_info == 0) {
-        this.playerbox.showInfo();
-      } else {
-        this.playerbox.hideInfo();
-      }
+//      if (hide_info == 0) {
+//        this.playerbox.showInfo();
+//      } else {
+//        this.playerbox.hideInfo();
+//      }
 
       if (this.lock_interface == 1) {
+	//
+	// 
+	//
+	this.setHudHeight();
         return;
       }
 
@@ -1983,16 +1988,21 @@ console.log("UPDATING THE HUD!");
     //
     //
     if (this.hud.user_dragged == 0) {
-      let obj = document.querySelector(".hud");
-      if (hud) {
-        hud.style.bottom = 0;
-        hud.style.height = "auto";
-        hud.style.top = "unset";
-      }
+      this.setHudHeight();
     }
-
   }
 
+  //
+  // this affixes HUD to bottom of screen...
+  //
+  setHudHeight() {
+    let hud = document.querySelector(".hud");
+    if (hud) {
+      hud.style.bottom = 0;
+      hud.style.height = "auto";
+      hud.style.top = "unset";
+    }
+  }
 
   confirmPlacement(slot, piece, callback){
     if (this.confirm_moves == 0){
@@ -2059,9 +2069,6 @@ console.log("UPDATING THE HUD!");
   handleGameLoop() {
 
     let settlers_self = this;
-
-console.log("QUEUE");
-console.log(JSON.stringify(this.game.queue));
 
     ///////////
     // QUEUE //
@@ -2306,19 +2313,18 @@ console.log(JSON.stringify(this.game.queue));
         this.game.state.canTrade = false;
         if (this.game.player == player) {
 
-          /* In initial set up, if game reloaded, the free road spaces are lost*/
-	        if (mv[2] == 1) {
-            console.log("Last Placed City: " + this.game.state.last_city);
-            let newRoads = this.hexgrid.edgesFromVertex(this.game.state.last_city.replace("city_", ""));
-            for (let road of newRoads) {
-              console.log("road: ",road);
-              this.addRoadToGameboard(road.substring(2), road[0]);
-            }
-	        }
+	if (mv[2] == 1) {
+          console.log("Last Placed City: " + this.game.state.last_city);
+          let newRoads = this.hexgrid.edgesFromVertex(this.game.state.last_city.replace("city_", ""));
+          for (let road of newRoads) {
+            console.log("road: ",road);
+            this.addRoadToGameboard(road.substring(2), road[0]);
+          }
+	}
           
-          let canbackup = parseInt(mv[3]) || 0;  
+        let canbackup = parseInt(mv[3]) || 0;  
+        this.playerBuildRoad(mv[1], canbackup);
 
-          this.playerBuildRoad(mv[1], canbackup);
         } else {
           this.updateStatus(
             `<div class="tbd">${this.game.playerNames[player-1]} is building a ${this.skin.r.name}...</div>`
@@ -3023,11 +3029,12 @@ console.log("running UPDATE STATUS");
     Everyone starts with 2 settlements and can be placed anywhere on island
     */
     if (existing_cities < 2) {
-
       if (existing_cities == 1){
         this.hud.updateStatus(`<div class="flashme tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
+	this.setHudHeight();
       }else{
         this.hud.updateStatus(`<div class="flashme tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
+	this.setHudHeight();
       }
       $(".flashme").addClass("flash");
 

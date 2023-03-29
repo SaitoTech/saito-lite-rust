@@ -7,9 +7,6 @@
 
     let settlers_self = this;
 
-console.log("QUEUE");
-console.log(JSON.stringify(this.game.queue));
-
     ///////////
     // QUEUE //
     ///////////
@@ -253,19 +250,18 @@ console.log(JSON.stringify(this.game.queue));
         this.game.state.canTrade = false;
         if (this.game.player == player) {
 
-          /* In initial set up, if game reloaded, the free road spaces are lost*/
-	        if (mv[2] == 1) {
-            console.log("Last Placed City: " + this.game.state.last_city);
-            let newRoads = this.hexgrid.edgesFromVertex(this.game.state.last_city.replace("city_", ""));
-            for (let road of newRoads) {
-              console.log("road: ",road);
-              this.addRoadToGameboard(road.substring(2), road[0]);
-            }
-	        }
+	if (mv[2] == 1) {
+          console.log("Last Placed City: " + this.game.state.last_city);
+          let newRoads = this.hexgrid.edgesFromVertex(this.game.state.last_city.replace("city_", ""));
+          for (let road of newRoads) {
+            console.log("road: ",road);
+            this.addRoadToGameboard(road.substring(2), road[0]);
+          }
+	}
           
-          let canbackup = parseInt(mv[3]) || 0;  
+        let canbackup = parseInt(mv[3]) || 0;  
+        this.playerBuildRoad(mv[1], canbackup);
 
-          this.playerBuildRoad(mv[1], canbackup);
         } else {
           this.updateStatus(
             `<div class="tbd">${this.game.playerNames[player-1]} is building a ${this.skin.r.name}...</div>`

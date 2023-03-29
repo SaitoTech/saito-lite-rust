@@ -1955,14 +1955,19 @@ console.log("UPDATING THE HUD!");
   }
 
   updateStatus(str, hide_info = 0) {
+
     try {
-      if (hide_info == 0) {
-        this.playerbox.showInfo();
-      } else {
-        this.playerbox.hideInfo();
-      }
+//      if (hide_info == 0) {
+//        this.playerbox.showInfo();
+//      } else {
+//        this.playerbox.hideInfo();
+//      }
 
       if (this.lock_interface == 1) {
+	//
+	// 
+	//
+	this.setHudHeight();
         return;
       }
 
@@ -1983,16 +1988,21 @@ console.log("UPDATING THE HUD!");
     //
     //
     if (this.hud.user_dragged == 0) {
-      let obj = document.querySelector(".hud");
-      if (hud) {
-        hud.style.bottom = 0;
-        hud.style.height = "auto";
-        hud.style.top = "unset";
-      }
+      this.setHudHeight();
     }
-
   }
 
+  //
+  // this affixes HUD to bottom of screen...
+  //
+  setHudHeight() {
+    let hud = document.querySelector(".hud");
+    if (hud) {
+      hud.style.bottom = 0;
+      hud.style.height = "auto";
+      hud.style.top = "unset";
+    }
+  }
 
   confirmPlacement(slot, piece, callback){
     if (this.confirm_moves == 0){

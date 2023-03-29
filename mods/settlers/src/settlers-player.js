@@ -83,11 +83,12 @@
     Everyone starts with 2 settlements and can be placed anywhere on island
     */
     if (existing_cities < 2) {
-
       if (existing_cities == 1){
         this.hud.updateStatus(`<div class="flashme tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
+	this.setHudHeight();
       }else{
         this.hud.updateStatus(`<div class="flashme tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
+	this.setHudHeight();
       }
       $(".flashme").addClass("flash");
 
