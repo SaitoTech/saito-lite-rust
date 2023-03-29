@@ -59,6 +59,7 @@ body {
   justify-content: space-around;
   width: 105%;
   margin: 3rem 0 0 0;
+  gap: 1rem;
 }
 
 .content>img {
