@@ -32,9 +32,14 @@ class Leaderboard {
     //
     // fetch league info if it is not already downloaded
     //
-    this.mod.fetchLeagueLeaderboard(this.league.id, (rows) => {
-      this.renderLeaderboardContents();
-    });
+    if (!this.league.updated){
+      console.log(this.league.numPlayers, this.league.players.length, "Query Server for leaderboard");
+      this.mod.fetchLeagueLeaderboard(this.league.id, (rows) => {
+        this.renderLeaderboardContents();
+        this.mod.saveLeagues();
+      });
+
+    }
   
   }
 

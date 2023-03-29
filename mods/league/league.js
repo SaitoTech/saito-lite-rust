@@ -222,6 +222,9 @@ class League extends ModTemplate {
         // fetch updated rankings
         //
         let helper_array = [];
+        
+        console.log("Only load selected leagues...");
+
         for (let i = 0; i < this.leagues.length; i++) {
           //To avoid calling rending 15 times in a row, we use an array to see when
           //the last async database query finishes and only update the UI then
@@ -235,6 +238,7 @@ class League extends ModTemplate {
               ()=>{
                 helper_array.pop();
                 if (helper_array.length == 0){
+                  console.log("Finished fetching all required leaderboards");
                   app.connection.emit("leagues-render-request");
                   app.connection.emit("league-rankings-render-request");   
                   //Having refreshed the data, let's make sure I save the new stats
@@ -336,9 +340,9 @@ class League extends ModTemplate {
       this.leagues = this.app.options.leagues;
       
       //Restore the array for players
-      //for (let league of this.leagues) {
-      //  league.players = [];
-      //}
+      for (let league of this.leagues) {
+        league.players = [];
+      }
 
       return;
     }
@@ -350,15 +354,24 @@ class League extends ModTemplate {
   * And we only store meta data, not full player list.
   */
   saveLeagues() {
-    this.app.options.leagues = this.leagues.filter(l => l.rank >= 0 || l.admin === this.app.wallet.returnPublicKey());
+    if (!this.app.BROWSER) { return; }
+
+    this.app.options.leagues = [];
     
-//    for (let league of this.app.options.leagues){
-//      delete league.players;
-//    }
+    for (let league of this.leagues){
+      if (league.rank >= 0 || league.admin === this.app.wallet.returnPublicKey()){
+        let newLeague = JSON.parse(JSON.stringify(league));
+        delete newLeague.players;
+        if (newLeague.updated){
+          delete newLeague.updated;
+        }
+        this.app.options.leagues.push(newLeague);
+      }
+    }
     
     if (this.debug){
       console.info("Save Leagues:");
-      console.info(JSON.parse(JSON.stringify(this.app.options.leagues)));
+      //console.info(JSON.parse(JSON.stringify(this.app.options.leagues)));
       //console.info(JSON.parse(JSON.stringify(this.leagues)));
     }
 
@@ -460,7 +473,6 @@ class League extends ModTemplate {
     if (this.app.wallet.returnPublicKey() === tx.transaction.from[0].add){
       this.fetchLeagueLeaderboard(txmsg.league_id, ()=>{
         this.app.connection.emit("join-league-success");
-        this.saveLeagues();
       });
        
     }
@@ -628,12 +640,12 @@ class League extends ModTemplate {
         await this.updateHighScore(publickeys, leag, txmsg);
       }
 
-      if (this.app.BROWSER){
-        this.fetchLeagueLeaderboard(leag.id, ()=>{ 
-          app.connection.emit("league-rankings-render-request");   
-          this.saveLeagues();
-        });
-      }
+      //if (this.app.BROWSER){
+        //this.fetchLeagueLeaderboard(leag.id, ()=>{ 
+      //  app.connection.emit("league-rankings-render-request");   
+      //  this.saveLeagues();
+        //});
+      //}
     }
 
   }
@@ -1030,7 +1042,6 @@ class League extends ModTemplate {
     league.players.push(newPlayer);    
 
     if (newPlayer.publickey === this.app.wallet.returnPublicKey()){
-      console.log("I am the new player!");
       if (league.rank <= 0){
         league.rank = 0;
         league.numPlayers = league.players.length;
@@ -1092,15 +1103,21 @@ class League extends ModTemplate {
             if (myPlayerStats){
              this.addLeaguePlayer(myPlayerStats); 
             }
+        }
 
-            if (this.app.BROWSER){
-              this.app.connection.emit("leagues-render-request");
-              this.app.connection.emit("league-rankings-render-request");
-            }
+        league.updated = true;
+        
+        if (mycallback != null) { 
+          mycallback(res); 
+        } else {
+
+          if (this.app.BROWSER){
+            this.saveLeagues();
+            this.app.connection.emit("leagues-render-request");
+            this.app.connection.emit("league-rankings-render-request");
+          }
 
         }
-        
-        if (mycallback != null) { mycallback(res); }
       },
       (p) => {
           if (p.hasService("league")) { 
