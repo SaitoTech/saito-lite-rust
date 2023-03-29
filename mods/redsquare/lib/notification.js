@@ -35,7 +35,7 @@ class RedSquareNotification {
       let txmsg = this.tx.returnMessage();
   
       if (txmsg.request == "like tweet") {
-        let qs = `.tweet-fav-${txmsg.data.sig}`;
+        let qs = `.tweet-notif-fav-${txmsg.data.sig}`;
         let obj = document.querySelector(qs);
         if (obj) {
           obj.innerHTML = obj.innerHTML.replace("liked ", "really liked ");

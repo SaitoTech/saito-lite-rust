@@ -6,7 +6,7 @@ module.exports = (app, mod, tx, txmsg) => {
     if (txmsg.data?.parent_id) { txsig = txmsg.data.parent_id; }
 
     return `
-        <div class="tweet notification-item-${tx.transaction.sig} tweet-notif-${txsig}" data-id="${txsig}">
+        <div class="tweet notification-item-${tx.transaction.sig} tweet-notif-reply-${txsig}" data-id="${txsig}">
           <div class="tweet-notice"></div>
           <div class="tweet-header">
           </div>

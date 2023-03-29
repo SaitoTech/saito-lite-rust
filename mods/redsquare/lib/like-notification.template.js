@@ -7,7 +7,7 @@ module.exports = (app, mod, tx) => {
     if (txmsg.data?.sig) { txsig = txmsg.data.sig; }
 
     return `
-        <div class="tweet notification-item-${tx.transaction.sig} tweet-notif-${txsig}" data-id="${txsig}">
+        <div class="tweet notification-item-${tx.transaction.sig} tweet-notif-fav-${txsig}" data-id="${txsig}">
           <div class="tweet-notice"></div>
           <div class="tweet-header">
           </div>
