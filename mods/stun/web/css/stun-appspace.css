@@ -7,14 +7,13 @@
   padding: 2rem;
   top: 0;
   display: flex;
-  /* z-index: 12; */
-  /* justify-content: center; */
   align-items: center;
   background-color: var(--saito-white);
   background-color: black;
   color: white;
   padding: 3rem;
-  justify-content:center
+  justify-content:center;
+  position: relative;
 }
 
 .stun-appspace-content {
