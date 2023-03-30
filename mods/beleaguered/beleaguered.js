@@ -57,8 +57,6 @@ class Beleaguered extends OnePlayerGameTemplate {
     //Clear board
     this.game.board = {};
 
-    //Reset/Increment State
-    this.game.state.session.round++;
   }
 
 
@@ -291,7 +289,6 @@ class Beleaguered extends OnePlayerGameTemplate {
     console.log('this.game.availableMoves');
     console.log(this.game.availableMoves);
     if (this.game.availableMoves.length === 0) {
-      this.game.state.session.round++;
       this.displayWarning("Game over", "There are no more available moves to make.", 9000);
     }
   }
@@ -426,12 +423,14 @@ class Beleaguered extends OnePlayerGameTemplate {
       }
 
       if (mv[0] === "win") {
+        this.game.state.session.round++;
         this.game.state.session.wins++;
         this.game.queue.push("round");
         this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${JSON.stringify([])}`);
       }
 
       if (mv[0] === "lose"){
+        this.game.state.session.round++;
         this.game.state.session.losses++;
         this.game.queue.push("round");
         this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);
