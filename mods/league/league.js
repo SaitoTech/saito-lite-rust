@@ -458,13 +458,12 @@ class League extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     let params = {
-      league_id: txmsg.league_id,
       publickey: tx.transaction.from[0].add,
       email: txmsg.email || "",
       ts: parseInt(tx.transaction.ts)
     };
 
-    this.addLeaguePlayer(params);
+    this.addLeaguePlayer(txmsg.league_id, params);
 
     //
     //So, when we get our join message returned to us, we will do a query to figure out our rank
@@ -693,7 +692,7 @@ class League extends ModTemplate {
     for (let leag of relevantLeagues){
       if (leag.admin === "") {
         for (let publickey of publickeys){
-    	    await this.addLeaguePlayer({ league_id: leag.id, publickey });
+    	    await this.addLeaguePlayer(leag.id, { publickey });
 
           //Update Player's game started count
           await this.incrementPlayer(publickey, leag.id, "games_started");
@@ -1013,9 +1012,9 @@ class League extends ModTemplate {
     return newObj;
   }
 
-  async addLeaguePlayer(obj) {
+  async addLeaguePlayer(league_id, obj) {
 
-    let league = this.returnLeague(obj.league_id);
+    let league = this.returnLeague(league_id);
   
     if (!league?.players) { 
       console.error("League not found"); 
@@ -1023,6 +1022,7 @@ class League extends ModTemplate {
     }
 
     let newPlayer = this.validatePlayer(obj);
+
     if (!newPlayer.score) { 
       newPlayer.score = league.default_score; 
     } 
@@ -1048,7 +1048,9 @@ class League extends ModTemplate {
       }
     }
 
-    await this.playerInsert(obj.league_id, newPlayer); 
+    console.log(JSON.parse(JSON.stringify(league)));
+
+    await this.playerInsert(league_id, newPlayer); 
 
   }
 
@@ -1095,13 +1097,13 @@ class League extends ModTemplate {
               //
               // Update player-league data in our live data structure
               //
-              this.addLeaguePlayer(p);
+              this.addLeaguePlayer(league_id, p);
             }
 
             league.numPlayers = rank;
             //Add me to bottom of list if I haven't played any games
             if (myPlayerStats){
-             this.addLeaguePlayer(myPlayerStats); 
+             this.addLeaguePlayer(league_id, myPlayerStats); 
             }
         }
 

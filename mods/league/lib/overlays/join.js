@@ -25,9 +25,8 @@ class JoinLeague {
     });
   }
 
-  async render(league_id="") {
+  async render() {
 
-    if (league_id != "") { this.league_id = league_id; }
     let league = this.mod.returnLeague(this.league_id);
 
     if (league == null) {
@@ -45,14 +44,6 @@ class JoinLeague {
 
     this.attachEvents();
 
-    /*let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
-
-    if (!key?.identifier){
-      this.app.connection.emit("register-username-or-login");
-    }else if (!key?.email){
-      this.app.connection.emit("recovery-backup-overlay-render-request");
-    }
-    */
   }
 
 
@@ -87,15 +78,14 @@ class JoinLeague {
         }
 
         let params = {
-          league_id: league_id,
-          publickey: this.app.wallet.returnPublicKey,
+          publickey: this.app.wallet.returnPublicKey(),
         }
-        this.mod.addLeaguePlayer(params);
+        this.mod.addLeaguePlayer(league_id, params);
 
         this.timer = setTimeout(()=> {
           
           this.loader.remove();
-          this.app.browser.addElementToSelector(`<div class="title-box"><div class="title">League Joined</div></div>`, ".league-join-overlay-box");
+          this.render();
 
         }, 2000);
 
@@ -107,10 +97,22 @@ class JoinLeague {
       };
 
     }else{
-      document.querySelector('.saito-overlay-form-alt-opt').onclick = (e) => {
+      document.querySelector('#gonow').onclick = (e) => {
         this.app.connection.emit('league-overlay-render-request', this.league_id);
         this.overlay.remove();
       }
+
+      let countDown = document.getElementById("countdown");
+      let timer = 5;
+      let interval = setInterval(()=>{
+        timer--;
+        countDown.innerHTML = timer;
+        if (timer === 0){
+          clearInterval(interval);
+          this.app.connection.emit('league-overlay-render-request', this.league_id);
+          this.overlay.remove();
+        }        
+      }, 1000);
     }
 
 
