@@ -48,7 +48,7 @@ class Solitrio extends OnePlayerGameTemplate {
       this.game.state = Object.assign(this.returnState(), this.game.state);
     }
     
-    console.log(JSON.parse(JSON.stringify(this.game)));
+    console.log(JSON.parse(JSON.stringify(this.game.state)));
 
     if (this.browser_active){
       $('.slot').css('min-height', $('.card').css('min-height'));  
