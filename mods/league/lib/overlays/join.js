@@ -58,53 +58,63 @@ class JoinLeague {
 
   attachEvents() {
 
+    // Phase 1
     const league_join_btn = document.getElementById('league-join-btn');
 
-    if (!league_join_btn) { return; }
+    if (league_join_btn){
+      league_join_btn.onclick = (e) => {
 
-    document.querySelector('.saito-overlay-form-alt-opt').onclick = (e) => {
-      this.app.connection.emit("recovery-login-overlay-render-request");
-      return;
-    };
+        window.history.pushState("", "", `/league/`);
+        e.preventDefault();
 
-    league_join_btn.onclick = (e) => {
+        let league_id = e.target.getAttribute("data-id");
+        //let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+        //let user_email = key.email || "";
 
-      window.history.pushState("", "", `/league/`);
-      e.preventDefault();
+        //
+        // show loader
+        //
+        document.querySelector(".title-box").remove();
+        document.querySelector(".league-join-controls").remove();
+        document.querySelector(".league-join-info").remove();
+        this.loader.render();
 
-      let league_id = e.target.getAttribute("data-id");
-      //let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
-      //let user_email = key.email || "";
+        let newtx = this.mod.createJoinTransaction(league_id/*, user_email*/);
+        this.app.network.propagateTransaction(newtx);
 
-      //
-      // show loader
-      //
-      document.querySelector(".title-box").remove();
-      document.querySelector(".league-join-controls").remove();
-      document.querySelector(".league-join-info").remove();
-      this.loader.render();
+        if (this.mod.debug){
+          console.log("Join sent! " + league_id);
+        }
 
-      let newtx = this.mod.createJoinTransaction(league_id/*, user_email*/);
-      this.app.network.propagateTransaction(newtx);
+        let params = {
+          league_id: league_id,
+          publickey: this.app.wallet.returnPublicKey,
+        }
+        this.mod.addLeaguePlayer(params);
 
-      if (this.mod.debug){
-        console.log("Join sent! " + league_id);
+        this.timer = setTimeout(()=> {
+          
+          this.loader.remove();
+          this.app.browser.addElementToSelector(`<div class="title-box"><div class="title">League Joined</div></div>`, ".league-join-overlay-box");
+
+        }, 2000);
+
+      }  
+
+      document.querySelector('.saito-overlay-form-alt-opt').onclick = (e) => {
+        this.app.connection.emit("recovery-login-overlay-render-request");
+        return;
+      };
+
+    }else{
+      document.querySelector('.saito-overlay-form-alt-opt').onclick = (e) => {
+        this.app.connection.emit('league-overlay-render-request', this.league_id);
+        this.overlay.remove();
       }
+    }
 
-      let params = {
-        league_id: league_id,
-        publickey: this.app.wallet.returnPublicKey,
-      }
-      this.mod.addLeaguePlayer(params);
 
-      this.timer = setTimeout(()=> {
-        
-        this.loader.remove();
-        this.app.browser.addElementToSelector(`<div class="title-box"><div class="title">League Joined</div></div>`, ".league-join-overlay-box");
 
-      }, 2000);
-
-    }  
 
   }
 }
