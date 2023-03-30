@@ -65,7 +65,6 @@ class Solitrio extends OnePlayerGameTemplate {
     this.game.queue.push("clear_board");
 
     //Reset/Increment State
-    this.game.state.session.round++;
     this.game.state.recycles_remaining = 2;
 
     if (this.browser_active){
@@ -520,12 +519,14 @@ class Solitrio extends OnePlayerGameTemplate {
       }
 
       if (mv[0] === "win"){
+        this.game.state.session.round++;
         this.game.state.session.wins++;
         this.newRound();
         this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${JSON.stringify([])}`);
       }
 
       if (mv[0] === "lose"){
+        this.game.state.session.round++;
         this.game.state.session.losses++;
         this.newRound();
         this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);

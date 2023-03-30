@@ -152,11 +152,13 @@ class Spider extends OnePlayerGameTemplate {
 
     let html = "";
 
-    for (let i = 0; i < this.game.state.draws_remaining; i++){
+    /*for (let i = 0; i < this.game.state.draws_remaining; i++){
       html += `<img style="bottom:${0.5*i}vh; right:${0.5*i}vh;" src="/spider/img/cards/red_back.png" />`;
-    }
-    if (!html){
-      html = "Start New Game";
+    }*/
+    if (this.game.state.draws_remaining > 0){
+      html = `<img src="/spider/img/cards/red_back.png" />`;
+    }else{
+      html = "<span>Start New Game</span>";
     }
     document.querySelector(".draw-pile").innerHTML = html;
 
@@ -218,7 +220,6 @@ class Spider extends OnePlayerGameTemplate {
     this.game.state.score = 100 * this.difficulty;
 
     //Reset/Increment State
-    this.game.state.session.round++;
     this.game.state.draws_remaining = 5;
     
     if (this.browser_active){
@@ -364,21 +365,6 @@ class Spider extends OnePlayerGameTemplate {
   }
   
 
-
-  returnStatsHTML(title = "Game Statistics"){
-    let html = `<div class="rules-overlay">
-    <h1>${title}</h1>
-    <table>
-    <tbody>
-    <tr><th>Latest Score:</th><td>${this.game.state.score}</td></tr>
-    <tr><th>Games Played:</th><td>${this.game.state.session.round-1}</td></tr>
-    <tr><th>Games Won:</th><td>${this.game.state.session.wins}</td></tr>
-    <tr><th>Win Percentage:</th><td>${(this.game.state.session.round>1)? Math.round(1000* this.game.state.session.wins / (this.game.state.session.round-1))/10 : 0}%</td></tr>
-    </tbody>
-    </table>
-    </div>`;
-    return html;
-  }
 
 
   attachEventsToBoard(){
@@ -840,6 +826,7 @@ class Spider extends OnePlayerGameTemplate {
       if (mv[0] === "lose"){
         this.game.queue.splice(qe, 1);
         if (this.game.state.moves > 0){
+          this.game.state.session.round++;
           this.game.state.session.losses++;
           let final_score = this.game.state.score; 
           this.game.state.scores.push(final_score);
@@ -851,6 +838,7 @@ class Spider extends OnePlayerGameTemplate {
 
       if (mv[0] === "win"){
         this.game.queue.splice(qe, 1);
+        this.game.state.session.round++;
         this.game.state.session.wins++;
         this.animateFinalVictory();
         let final_score = this.game.state.score + 400;

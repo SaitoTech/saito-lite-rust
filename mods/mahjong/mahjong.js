@@ -60,7 +60,6 @@ class Mahjong extends OnePlayerGameTemplate {
     this.game.board = {};
 
     //Reset/Increment State
-    this.game.state.session.round++;
     this.displayBoard();
   }
 
@@ -504,6 +503,7 @@ class Mahjong extends OnePlayerGameTemplate {
       if (mv[0] === "lose"){
         this.game.queue.splice(qe, 1);
         this.newRound();
+        this.game.state.session.round++;
         this.game.state.session.losses++;
         this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);
 
@@ -512,6 +512,7 @@ class Mahjong extends OnePlayerGameTemplate {
 
       if (mv[0] === "win"){
         this.game.queue.splice(qe, 1);
+        this.game.state.session.round++;
         this.game.state.session.wins++;
         this.displayModal("Congratulations!", "You solved the puzzle!");
         this.newRound();
