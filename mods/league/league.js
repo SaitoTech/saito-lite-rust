@@ -49,7 +49,7 @@ class League extends ModTemplate {
 
 
     this.icon_fa = "fas fa-user-friends";
-    this.debug = true;
+    this.debug = false;
   }
 
 
@@ -88,7 +88,10 @@ class League extends ModTemplate {
     });
 
     this.sortLeagues();
-  
+    //Render initial UI based on what we have saved
+    app.connection.emit("leagues-render-request");
+    app.connection.emit("league-rankings-render-request");   
+
   }
 
   //
@@ -163,7 +166,12 @@ class League extends ModTemplate {
   }
 
 
-
+  validateID(league_id){
+   if (/^[a-z0-9]*$/.test(league_id)){
+    return league_id;
+   }
+   return "";
+  }
 
   async onPeerServiceUp(app, peer, service) {
 
@@ -179,7 +187,9 @@ class League extends ModTemplate {
         console.log("Refresh local leagues: ");
       }
 
-      if (this.browser_active){
+      let league_id = this.validateID(app.browser.returnURLParameter("league_join_league"));
+
+      if (this.browser_active || league_id) {
       //    
       // load any requested league we may not have in options file
       //    
@@ -187,7 +197,7 @@ class League extends ModTemplate {
 
         this.sendPeerDatabaseRequestWithFilter(
           "League" , 
-          `SELECT * FROM leagues`,
+          `SELECT * FROM leagues WHERE status = 'public' OR id = '${league_id}'`,
           (res) => {
              if (res?.rows) {
               for (let league of res.rows){
@@ -200,8 +210,7 @@ class League extends ModTemplate {
             //
             // league join league
             //
-            if (app.browser.returnURLParameter("league_join_league")) {
-              let league_id = app.browser.returnURLParameter("league_join_league");
+            if (league_id) {
               console.log("Joining league: ", league_id);
               let jlo = new JoinLeagueOverlay(app, league_self, league_id);
               jlo.render();
@@ -216,39 +225,87 @@ class League extends ModTemplate {
         );
 
 
-      }else{
+      } 
 
         //
         // fetch updated rankings
         //
-        let helper_array = [];
         
-        console.log("Only load selected leagues...");
 
-        for (let i = 0; i < this.leagues.length; i++) {
-          //To avoid calling rending 15 times in a row, we use an array to see when
-          //the last async database query finishes and only update the UI then
+      setTimeout(()=>{
+        let league_list = this.leagues.map(x => `'${x.id}'`).join(", ");
+        //console.log(league_list);
 
-          if (this.leagues[i].rank >= 0){
-            helper_array.push(0);
-            
-            if (this.debug) { console.log(this.leagues[i].name); }
+        let league = null;
+        let rank, myPlayerStats;
+        let cutoff = new Date().getTime() - 24 * 60 * 60 * 1000;
+        this.sendPeerDatabaseRequestWithFilter(
+          "League" ,
+          `SELECT * FROM players WHERE (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}') AND league_id IN (${league_list}) ORDER BY league_id, score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
+            (res) => {
+              if (res?.rows) {
+                let league_id = 0;
 
-            this.fetchLeagueLeaderboard(this.leagues[i].id, 
-              ()=>{
-                helper_array.pop();
-                if (helper_array.length == 0){
-                  console.log("Finished fetching all required leaderboards");
-                  app.connection.emit("leagues-render-request");
-                  app.connection.emit("league-rankings-render-request");   
-                  //Having refreshed the data, let's make sure I save the new stats
-                  this.saveLeagues();
-                } 
-              });
-          }
-        }
+                for (let p of res.rows){
+                  //Next League
+                  if (p.league_id !== league_id){
+                    league_id = p.league_id;
 
-      }
+                    //Add me to bottom of list if I haven't played any games
+                    if (myPlayerStats){
+                     this.addLeaguePlayer(league_id, myPlayerStats); 
+                    }
+
+                    league = league_self.returnLeague(league_id);
+                    league.players = [];
+                    rank = 0;
+                    myPlayerStats = null;
+                    league.ts = new Date().getTime();
+                  }
+
+                  //
+                  // Count how many people are ranked above me in the leaderboard
+                  //
+                  rank++;
+                  
+                  if (p.publickey == this.app.wallet.returnPublicKey()) {
+                    if (p.games_finished > 0){
+                      league.rank = rank;  
+                    }else{
+                      league.rank = 0;
+                      myPlayerStats = p;
+                      continue;
+                    }
+                  
+                  }
+
+                  //
+                  // Update player-league data in our live data structure
+                  //
+                  this.addLeaguePlayer(league_id, p);
+                }
+
+                //Add me to bottom of list if I haven't played any games
+                if (myPlayerStats){
+                 this.addLeaguePlayer(league_id, myPlayerStats); 
+                }
+
+                league_self.leagues.forEach(l => { l.numPlayers = l.players.length; });
+                app.connection.emit("leagues-render-request");
+                app.connection.emit("league-rankings-render-request");   
+
+              }
+            },
+          (p) => {
+              if (p.hasService("league")) { 
+                return 1; 
+              }
+                return 0;
+            }
+        );
+
+      }, 2000);
+
 
     }
 
@@ -362,17 +419,14 @@ class League extends ModTemplate {
       if (league.rank >= 0 || league.admin === this.app.wallet.returnPublicKey()){
         let newLeague = JSON.parse(JSON.stringify(league));
         delete newLeague.players;
-        if (newLeague.updated){
-          delete newLeague.updated;
-        }
         this.app.options.leagues.push(newLeague);
       }
     }
     
     if (this.debug){
       console.info("Save Leagues:");
-      //console.info(JSON.parse(JSON.stringify(this.app.options.leagues)));
-      //console.info(JSON.parse(JSON.stringify(this.leagues)));
+      console.info(JSON.parse(JSON.stringify(this.app.options.leagues)));
+      console.info(JSON.parse(JSON.stringify(this.leagues)));
     }
 
     this.app.storage.saveOptions();
@@ -598,8 +652,9 @@ class League extends ModTemplate {
     //
     // small grace period
     //
+    console.log(txmsg.reason);
     if (is_gameover && (txmsg.reason == "cancellation" || txmsg.reason?.includes("Wins:") || txmsg.reason?.includes("Scores: "))) { 
-      console.log(txmsg.reason);
+      console.log("Don't process");
       return; 
     }
 
@@ -619,7 +674,7 @@ class League extends ModTemplate {
 
     if (!relevantLeagues){ return; }
 
-    if (this.debug){console.log(relevantLeagues, publickeys);}
+    //if (this.debug){console.log(relevantLeagues, publickeys);}
 
     //
     // update database
@@ -639,12 +694,12 @@ class League extends ModTemplate {
         await this.updateHighScore(publickeys, leag, txmsg);
       }
 
-      //if (this.app.BROWSER){
-        //this.fetchLeagueLeaderboard(leag.id, ()=>{ 
-      //  app.connection.emit("league-rankings-render-request");   
-      //  this.saveLeagues();
-        //});
-      //}
+      if (this.app.BROWSER){
+        this.fetchLeagueLeaderboard(leag.id, ()=>{ 
+          app.connection.emit("league-rankings-render-request");   
+          this.saveLeagues();
+        });
+      }
     }
 
   }
@@ -684,7 +739,7 @@ class League extends ModTemplate {
       }
     }
 
-    if (this.debug){console.log(relevantLeagues, publickeys);}
+    //if (this.debug){console.log(relevantLeagues, publickeys);}
 
     //
     // and insert if needed
@@ -859,6 +914,8 @@ class League extends ModTemplate {
   }
 
   async incrementPlayer(publickey, league_id, field, amount = 1){
+    if (this.app.BROWSER) { return 1; }
+    
     if (!(field === "score" || field === "games_finished" || field === "games_won" || field === "games_tied" || field === "games_started")){
       return 0;
     }
@@ -899,6 +956,7 @@ class League extends ModTemplate {
 
 
   async updatePlayerScore(playerObj, league_id) {
+    if (this.app.BROWSER) { return 1; }
 
     let league = this.returnLeague(playerObj.league_id);
     if (league?.players){
@@ -969,7 +1027,7 @@ class League extends ModTemplate {
   }
 
 
-  addLeague(obj) {
+  async addLeague(obj) {
     
     if (!obj)                   { return; }
     if (!obj.id)                { return; }
@@ -989,7 +1047,7 @@ class League extends ModTemplate {
 
       this.leagues.push(newLeague);
     
-      this.leagueInsert(newLeague);        
+      await this.leagueInsert(newLeague);        
 
     }
 
@@ -1048,7 +1106,7 @@ class League extends ModTemplate {
       }
     }
 
-    console.log(JSON.parse(JSON.stringify(league)));
+    //console.log(JSON.parse(JSON.stringify(league)));
 
     await this.playerInsert(league_id, newPlayer); 
 
@@ -1105,20 +1163,19 @@ class League extends ModTemplate {
             if (myPlayerStats){
              this.addLeaguePlayer(league_id, myPlayerStats); 
             }
+
         }
 
-        league.updated = true;
+        league.ts = new Date().getTime();
         
         if (mycallback != null) { 
           mycallback(res); 
         } else {
-
           if (this.app.BROWSER){
             this.saveLeagues();
             this.app.connection.emit("leagues-render-request");
             this.app.connection.emit("league-rankings-render-request");
           }
-
         }
       },
       (p) => {
