@@ -84,10 +84,10 @@
     */
     if (existing_cities < 2) {
       if (existing_cities == 1){
-        this.hud.updateStatus(`<div class="flashme tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
+        this.hud.updateStatus(`<div class="flashme tbd"><div class="pcb"></div>YOUR TURN: place ${this.skin.c1.name}...</div>`);
 	this.setHudHeight();
       }else{
-        this.hud.updateStatus(`<div class="flashme tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
+        this.hud.updateStatus(`<div class="flashme tbd"><div class="pcb"></div>YOUR TURN: place ${this.skin.c1.name}...</div>`);
 	this.setHudHeight();
       }
       $(".flashme").addClass("flash");
@@ -247,7 +247,7 @@
 
     if (this.game.state.placedCity) {
       this.updateStatus(
-        `<div class="tbd">YOUR TURN: place a ${this.skin.r.name}...</div>`
+        `<div class="tbd"><div class="pcb"></div>YOUR TURN: place a ${this.skin.r.name}...</div>`
       );
 
       /*Initial placing of settlements and roads, road must connect to settlement just placed

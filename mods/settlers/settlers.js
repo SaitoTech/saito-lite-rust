@@ -149,7 +149,10 @@ class Settlers extends GameTemplate {
       console.log("Intialize HTML: "+err);
     }
 
-console.log("UPDATING THE HUD!");
+
+    //
+    // add the HUD so we can leverage it
+    //
     this.hud.render();
 
     //
@@ -179,6 +182,13 @@ console.log("UPDATING THE HUD!");
     document.querySelector(".hud-body .mobile .trade").onclick = (e) => {
       document.querySelector(".scoreboard").style.display = "none";
       let s = document.querySelector(".mobile-trading-container");
+      //
+      // desktop might already have the hud visible
+      //
+      if (s.style.zIndex < 10) { 
+	this.showResourceOverlay();
+	return;
+      }
       if (s.style.display != "grid") { s.style.display = "grid"; } else { s.style.display = "none"; }
     }
 
@@ -852,7 +862,7 @@ console.log("UPDATING THE HUD!");
           <div class="saito-user settlers-user saito-user-${this.game.players[i-1]}" id="saito-user-${this.game.players[i-1]}" data-id="${this.game.players[i-1]}">
             <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i-1])}"></div>
             <div class="saito-playername" data-id="${this.game.players[i-1]}">${this.game.playerNames[i-1]}</div>
-            <div class="saito-userline">resources: ${num_resources} / cards: ${num_cards}</div>
+            <div class="saito-userline">vp: ${this.game.state.players[i-1].vp}</div>
           </div>`;
       this.playerbox.refreshTitle(playerHTML, i);
 
@@ -890,7 +900,7 @@ console.log("UPDATING THE HUD!");
       //  newhtml += `</div>`;
       } else {  //Is me
 
-        if (!this.game.state.placedCity){
+        if (!this.game.state.placedCity) {
           newhtml += `<div class="flexline">`;
           if (this.game.state.ads[i-1].offer || this.game.state.ads[i-1].ask){
             newhtml += "<span>";
@@ -902,7 +912,7 @@ console.log("UPDATING THE HUD!");
              newhtml += this.wishListToImage(this.game.state.ads[i-1].ask); 
             }
             newhtml += `</span><i id="cleartrade" class="fas fa-ban"></i>`;
-          }else{
+          } else {
             newhtml += `<span id="tradenow">Trade</span>`;
           }
           newhtml += `</div>`;
@@ -2685,7 +2695,7 @@ console.log("UPDATING THE HUD!");
             this.game.deck[0].hand.length;
 
           //Messaging to User
-          let html = `<div class="tbd">YOUR TURN:`;
+          let html = `<div class="tbd"><div class="pcb"></div>YOUR TURN:`;
           html += `<ul>`;
           html += `<li class="option flashme" id="rolldice">roll dice</li>`;
           if (settlers_self.canPlayerPlayCard()) {
@@ -3030,10 +3040,10 @@ console.log("running UPDATE STATUS");
     */
     if (existing_cities < 2) {
       if (existing_cities == 1){
-        this.hud.updateStatus(`<div class="flashme tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
+        this.hud.updateStatus(`<div class="flashme tbd"><div class="pcb"></div>YOUR TURN: place ${this.skin.c1.name}...</div>`);
 	this.setHudHeight();
       }else{
-        this.hud.updateStatus(`<div class="flashme tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
+        this.hud.updateStatus(`<div class="flashme tbd"><div class="pcb"></div>YOUR TURN: place ${this.skin.c1.name}...</div>`);
 	this.setHudHeight();
       }
       $(".flashme").addClass("flash");
@@ -3193,7 +3203,7 @@ console.log("running UPDATE STATUS");
 
     if (this.game.state.placedCity) {
       this.updateStatus(
-        `<div class="tbd">YOUR TURN: place a ${this.skin.r.name}...</div>`
+        `<div class="tbd"><div class="pcb"></div>YOUR TURN: place a ${this.skin.r.name}...</div>`
       );
 
       /*Initial placing of settlements and roads, road must connect to settlement just placed

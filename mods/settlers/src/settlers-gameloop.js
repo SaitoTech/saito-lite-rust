@@ -622,7 +622,7 @@
             this.game.deck[0].hand.length;
 
           //Messaging to User
-          let html = `<div class="tbd">YOUR TURN:`;
+          let html = `<div class="tbd"><div class="pcb"></div>YOUR TURN:`;
           html += `<ul>`;
           html += `<li class="option flashme" id="rolldice">roll dice</li>`;
           if (settlers_self.canPlayerPlayCard()) {
