@@ -12,7 +12,7 @@
   background-color: black;
   color: white;
   padding: 3rem;
-  justify-content:center;
+  justify-content: center;
   position: relative;
 }
 
@@ -28,9 +28,7 @@
   margin-left: 7rem;
 }
 
-.stunx-appspace-settings {
-
-}
+.stunx-appspace-settings {}
 
 .my-stun-container-info {
   font-size: 2rem;
@@ -41,14 +39,14 @@
   font-size: 5rem;
 }
 
-.stunx-appspace-splah > p {
+.stunx-appspace-splah>p {
   margin-bottom: 1rem;
   font-size: 2.2rem;
   line-height: 3rem;
   color: var(--saito-white);
 }
 
-.stunx-appspace-splah > p span {
+.stunx-appspace-splah>p span {
   text-decoration: underline;
 }
 
@@ -141,16 +139,18 @@
 
 @media screen and (max-width: 768px) {
   .stun-appspace-content {
-   flex-direction: column;
-   width: 95%;
+    flex-direction: column;
+    width: 95%;
   }
 }
+
 @media screen and (max-width: 900px) {
   .stunx-appspace-splah {
     width: 80%;
     margin-left: 2rem;
   }
 }
+
 @media screen and (max-width: 503px) {
   .stun-appspace {
     padding: 1rem;
