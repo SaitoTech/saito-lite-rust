@@ -37,6 +37,8 @@ class LeagueRankings {
     if (leagues.length > 0){
       let cnt = 0;
       leagues.forEach(l => {
+        if (this.mod.debug) { console.log((l.rank > 0), JSON.parse(JSON.stringify(l))); }
+
         if (l.rank > 0) {
           html += `
 	          <div data-id="${l.id}" class="saito-table-row league-leaderboard-ranking">
@@ -44,8 +46,7 @@ class LeagueRankings {
               <div class="saito-table-rank">${l.rank}</div>
             </div>
                   `;
-        
-          if (this.mod.debug) { console.log(JSON.parse(JSON.stringify(l))); }
+          
         }
       
       });

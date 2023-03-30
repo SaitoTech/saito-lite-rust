@@ -1,11 +1,8 @@
-
-
 .league-main-container {
   max-width: 94em;
   margin: 6em auto 0;
   padding: 0 2em;
 }
-
 
 .league-main-container-games {}
 
@@ -35,11 +32,11 @@
   margin-left: 2em;
 }
 
-.league-component-existing-league-box div{
+.league-component-existing-league-box div {
   min-width: 80px;
 }
 
-.league-component-existing-league-box .newline{
+.league-component-existing-league-box .newline {
   margin: 0;
   height: 0;
   width: 100%;
@@ -70,10 +67,7 @@
 }
 
 .league-join-info {
-  margin: 1rem;
-  border-radius: 0.5rem;
-  border: 1px dashed var(--saito-black-faded);
-  padding: 1rem;
+  margin: 2rem 1rem 3rem;
 }
 
 .editable-content {
@@ -99,28 +93,28 @@
   overflow: hidden;
 }
 
-.league_options_overlay{
+.league_options_overlay {
   min-width: 550px;
   max-width: 95vw;
   font-size: 1.6rem;
 }
 
-.league_options_overlay label{
+.league_options_overlay label {
   font-size: 1.8rem;
 }
 
-.league_options_overlay .overlay-title{
+.league_options_overlay .overlay-title {
   font-size: 4rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
 }
 
 /* Invitation Link Popup overlay */
+
 .invite-link {
   max-width: 90vw;
   min-width: 25vw;
   width: fit-content;
-
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -177,7 +171,6 @@
 .invite-link .social-links {
   margin-left: auto;
   display: flex;
-
   /* justify-content: space-between; */
   /* width: 50%; */
 }
@@ -207,19 +200,20 @@ i.link_icon.private {
   padding-left: 1em;
 }
 
-.league-component-admin-box-form input,
-.league-component-admin-box-form .saito-select {
+.league-component-admin-box-form input, .league-component-admin-box-form .saito-select {
   width: 75%;
   margin-bottom: 0.6em;
 }
 
-.checkrow { 
+.checkrow {
   position: relative;
 }
-.checkrow > input{
+
+.checkrow>input {
   width: fit-content;
 }
-.checkrow .secretbutton{
+
+.checkrow .secretbutton {
   width: fit-content;
   position: absolute;
   top: 0;
@@ -227,12 +221,13 @@ i.link_icon.private {
   text-decoration: underline dotted;
   cursor: pointer;
 }
-.checkrow .tip{
+
+.checkrow .tip {
   display: inline-block;
   margin-left: 2em;
 }
 
-.gridme{
+.gridme {
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
@@ -250,8 +245,7 @@ i.link_icon.private {
   margin-bottom: 1rem;
 }
 
-
-.game_option_league_wizard{
+.game_option_league_wizard {
   padding: 1em;
   font-size: 1em;
   background-color: #0009;
@@ -266,11 +260,11 @@ i.link_icon.private {
   justify-content: space-between;
 }
 
-.league_options_overlay .label i{
+.league_options_overlay .label i {
   margin: 0 5px;
 }
 
-.league_options_overlay input[type="number"]{
+.league_options_overlay input[type="number"] {
   float: right;
 }
 
@@ -284,19 +278,18 @@ i.link_icon.private {
   }
 }
 
-
-.league-main-container .saito-module{
+.league-main-container .saito-module {
   font-size: 2rem;
   background: transparent;
   display: flex;
   flex-direction: row;
-  align-items: center ;
+  align-items: center;
   justify-content: space-between;
   padding-bottom: 3rem;
   border-bottom: 1px solid;
 }
 
-.league-main-container .saito-module-action{
+.league-main-container .saito-module-action {
   color: var(--saito-white);
   background-color: var(--saito-primary);
   border-radius: 1rem;
@@ -306,10 +299,9 @@ i.link_icon.private {
   cursor: pointer;
 }
 
-.saito-module-title{
+.saito-module-title {
   font-size: 1.2em;
 }
-
 
 /* temprorarily adding css for join league overlay here */
 
@@ -320,25 +312,24 @@ i.link_icon.private {
   max-width: 90vw;
   width: 60rem;
   font-size: 2rem;
-
 }
 
-.league-join-overlay-box .address{
-  font-family: monospace;
+.league-join-overlay-box .address {
+  font-style: italic;
 }
 
-.league-join-username{
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  text-align: center;
+.league-join-username {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
 }
 
-.league-join-overlay-box .saito-overlay-form-alt-opt{
+.league-join-overlay-box .saito-overlay-form-alt-opt {
   margin-left: unset;
 }
 
-.league-join-overlay-box .game-image{
+.league-join-overlay-box .game-image {
   background-size: cover;
   width: 15rem;
   height: 100%;
@@ -346,18 +337,17 @@ i.link_icon.private {
   margin-right: 1rem;
 }
 
-
 .league-join-overlay-box .join-overlay-header {
   height: 10rem;
   margin-bottom: 2rem;
 }
 
 .league-join-overlay-box .title-box {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .league-join-overlay-box .title-box .title {
@@ -365,27 +355,24 @@ i.link_icon.private {
   font-size: 4rem;
 }
 
-.league-join-overlay-box .description { 
+.league-join-overlay-box .description {
   text-transform: uppercase;
   font-style: italic;
- }
+}
 
 .league-join-controls {
   padding: 1rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
 }
 
-.league-join-info p{
+.league-join-info p {
   margin-bottom: 1rem;
   overflow: revert;
-  font-size: 2.2rem;
+  font-size: 2rem;
 }
-
-
-
 
 /* LIST SELECTION MODAL */
 
@@ -410,7 +397,8 @@ i.link_icon.private {
 }
 
 .selection-list li .tiptext {
-  width: fit-content;;
+  width: fit-content;
+  ;
   background-color: #000a;
   color: #ffffff !important;
   min-width: 0px;
@@ -420,18 +408,13 @@ i.link_icon.private {
   right: 0;
 }
 
-
 /* league create overlay */
-
-
 
 .info-item-wrapper {
   display: inline-block;
   cursor: pointer;
   transform: translateY(56%);
 }
-
-
 
 #arcade-advance-opt {
   margin-top: 1rem;
@@ -448,7 +431,7 @@ i.link_icon.private {
   color: var(--saito-primary);
 }
 
-.saito-labeled-input{
+.saito-labeled-input {
   width: 100%;
   padding: 0 1rem;
   margin: 1rem 0;
@@ -458,15 +441,12 @@ i.link_icon.private {
   justify-content: space-evenly;
 }
 
-
 .game-help-link {
   position: absolute;
   right: 2rem;
   font-size: 2rem;
   color: #FFFD;
 }
-
-
 
 .game-wizard-advanced-return-btn {
   font-size: 1.4em;
@@ -476,8 +456,7 @@ i.link_icon.private {
   text-transform: uppercase;
 }
 
-
-.game-wizard-options form{
+.game-wizard-options form {
   display: flex;
   justify-content: space-between;
 }

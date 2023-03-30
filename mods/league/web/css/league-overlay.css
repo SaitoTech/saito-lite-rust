@@ -62,10 +62,10 @@
 }
 
 .league-overlay-body-content > div, .league-overlay-leaderboard {
-  box-shadow: var(--saito-box-shadow);
   padding: 1.5rem;
   border-radius: 0.5rem;
   overflow-y: auto;
+  box-shadow: var(--saito-form-box-shadow);
 }
 
 .league-overlay-body-content {
