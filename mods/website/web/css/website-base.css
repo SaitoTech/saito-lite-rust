@@ -16,7 +16,7 @@ nav>img {
 }
 
 body {
-  background-image: url(/web/saito/img/dreamscape.png);
+  background-image: url("/saito/img/dreamscape.png");
   background-position: cover;
   height: 100vh;
   width: 100vw;
@@ -59,6 +59,7 @@ body {
   justify-content: space-around;
   width: 105%;
   margin: 3rem 0 0 0;
+  gap: 1rem;
 }
 
 .content>img {

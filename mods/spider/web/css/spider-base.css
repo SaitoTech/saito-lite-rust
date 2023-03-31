@@ -33,7 +33,7 @@ body {
 
 .gameboard {
   position: absolute;
-  background-image: url("/spider/img/gameboard.jpg");
+  background-image: url(/saito/img/arcade/greenfelt.jpg);
   background-size: cover;
   width: 100vw;
   height: 100vh;

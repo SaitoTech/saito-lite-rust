@@ -122,6 +122,23 @@ class AppspaceHome {
 
   }
 
+  renderTweet(tweet) {
+
+    tweet.container = ".redsquare-appspace-body";
+    if (tweet.updated_at > this.mod.tweets_last_viewed_ts) {
+      this.mod.tweets_last_viewed_ts = tweet.updated_at;
+    }
+    tweet.render();
+
+    document.querySelectorAll('.fa-square').forEach(item => {
+      item.classList.remove('fa-square');
+      item.classList.add('fa-arrow-left');
+    });
+
+    this.attachEvents();
+
+  }
+
 
   renderThread(tweets=[]) {
 
@@ -146,7 +163,12 @@ class AppspaceHome {
       if (item.classList.contains('preview')) {
         item.classList.replace('preview', 'full')
       }
-    })
+    });
+
+    document.querySelectorAll('.fa-square').forEach(item => {
+      item.classList.remove('fa-square');
+      item.classList.add('fa-arrow-left');
+    });
 
 
     document.querySelector('.saito-container').scrollTo({top:0, left:0, behavior:"smooth"});
@@ -160,6 +182,15 @@ class AppspaceHome {
   attachEvents() {
 
     this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
+
+    let home_self = this;
+
+    document.querySelectorAll('.fa-arrow-left').forEach(item => {
+      item.addEventListener('click', (e) => {
+        setHash('home');
+        home_self.app.connection.emit("redsquare-home-render-request"); 
+      });
+    });
 
   }
 

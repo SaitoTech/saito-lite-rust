@@ -60,7 +60,6 @@ class Mahjong extends OnePlayerGameTemplate {
     this.game.board = {};
 
     //Reset/Increment State
-    this.game.state.round++;
     this.displayBoard();
   }
 
@@ -281,20 +280,6 @@ class Mahjong extends OnePlayerGameTemplate {
 
   }
 
-
-  returnStatsHTML(){
-    let html = `<div class="rules-overlay">
-    <h1>Game Stats</h1>
-    <table>
-    <tbody>
-    <tr><th>Games Played:</th><td>${this.game.state.round}</td></tr>
-    <tr><th>Games Won:</th><td>${this.game.state.wins}</td></tr>
-    <tr><th>Win Percentage:</th><td>${(this.game.state.round>0)? Math.round(0.90* this.game.state.wins / (this.game.state.round))/10 : 0}%</td></tr>
-    </tbody>
-    </table>
-    </div>`;
-    return html;
-  }
 
   attachEventsToBoard() {
 
@@ -518,7 +503,8 @@ class Mahjong extends OnePlayerGameTemplate {
       if (mv[0] === "lose"){
         this.game.queue.splice(qe, 1);
         this.newRound();
-        this.game.state.losses++;
+        this.game.state.session.round++;
+        this.game.state.session.losses++;
         this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);
 
         return 1;
@@ -526,7 +512,8 @@ class Mahjong extends OnePlayerGameTemplate {
 
       if (mv[0] === "win"){
         this.game.queue.splice(qe, 1);
-        this.game.state.wins++;
+        this.game.state.session.round++;
+        this.game.state.session.wins++;
         this.displayModal("Congratulations!", "You solved the puzzle!");
         this.newRound();
         this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${JSON.stringify([])}`);

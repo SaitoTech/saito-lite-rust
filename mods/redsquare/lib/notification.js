@@ -33,9 +33,10 @@ class RedSquareNotification {
 
       let html = '';
       let txmsg = this.tx.returnMessage();
+      let from = this.tx.transaction.from[0].add;
   
       if (txmsg.request == "like tweet") {
-        let qs = `.tweet-fav-${txmsg.data.sig}`;
+        let qs = `.tweet-notif-fav-${from}-${txmsg.data.sig}`;
         let obj = document.querySelector(qs);
         if (obj) {
           obj.innerHTML = obj.innerHTML.replace("liked ", "really liked ");
@@ -66,7 +67,7 @@ class RedSquareNotification {
           //
         } else {
           html = ReplyNotificationTemplate(app, mod, this.tx, txmsg);
-	  this.user.notice = "<i class='fas fa-heart fa-notification'></i> <span class='notification-type'>replies to your tweet</span>";
+	  this.user.notice = "<i class='fa-solid fa-comment-dots'></i> <span class='notification-type'>replies to your tweet</span>";
 	  this.user.fourthelem = app.browser.returnTime(new Date().getTime());
         }
       }

@@ -323,13 +323,6 @@
 
 /********    Checking balance overlay       *************/
 
-.game-crypto-transfer-manager-container {
-  background: var(--saito-background-color);
-  padding: 1rem;
-  width: 60rem;
-  text-align: center;
-  border-radius: 1rem;
-}
 
 .auth_title {
   font-size: 3.5rem;

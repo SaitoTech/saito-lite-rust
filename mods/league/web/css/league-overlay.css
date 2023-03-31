@@ -62,10 +62,10 @@
 }
 
 .league-overlay-body-content > div, .league-overlay-leaderboard {
-  box-shadow: var(--saito-box-shadow) var(--saito-border-color);
   padding: 1.5rem;
   border-radius: 0.5rem;
   overflow-y: auto;
+  box-shadow: var(--saito-form-box-shadow);
 }
 
 .league-overlay-body-content {
@@ -75,7 +75,8 @@
 }
 
 .league-overlay-header-image {
-  background-image: url(/web/saito/img/dreamscape.png);
+  /* Fallback image, should be inserted by JS*/
+  background-image: url(/saito/img/dreamscape.png);
   background-size: cover;
   width: 11rem;
   height: 7rem;

@@ -18,19 +18,7 @@ body {
 .status-header{
   height: 120px;
 }
-.rules-overlay table{
-  font-size: 1.5em;
-  margin: 0 auto;
-}
 
-.rules-overlay th{
-  text-align: right;
-}
-
-.rules-overlay td{
-  text-align: center;
-  width: 4em;
-}
 
 /*.connection_monitor {
   position: fixed;
@@ -44,7 +32,7 @@ body {
 
 .gameboard {
   position: absolute;
-  background-image: url("/solitrio/img/gameboard.jpg");
+  background-image: url(/saito/img/arcade/greenfelt.jpg);
   background-size: cover;
   width: 100vw;
   height: 100vh;

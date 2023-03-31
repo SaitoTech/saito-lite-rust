@@ -31,11 +31,7 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
   html += `
         <input type="hidden" name="game" value="${game_mod.name}" />
   `;
-  if (invite) {
-    html += `
-      ${(invite.msg.league) ? `<input type="hidden" name="league" value="${invite.msg.league}" />` : ""}
-    `;
-  }
+
   html += `
     </div>
 

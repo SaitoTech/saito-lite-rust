@@ -33,17 +33,17 @@ class Tweet {
     this.updated_at = 0;
     this.notice = "";
 
-//
-// userline will be set to this in template if not specified
-//
-// we specify it to indicate why it is showing up now!
-//
-//  let dt = app.browser.formatDate(tweet.tx.transaction.ts);
-//  let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
-//
+    //
+    // userline will be set to this in template if not specified
+    //
+    // we specify it to indicate why it is showing up now!
+    //
+    //  let dt = app.browser.formatDate(tweet.tx.transaction.ts);
+    //  let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
+    //
     this.userline = "";
-//
-//
+    //
+    //
 
 
 
@@ -119,7 +119,7 @@ class Tweet {
     //
     //
     if (this.updated_at > this.created_at) {
-      if (this.num_replies > 0) { 
+      if (this.num_replies > 0) {
         let dt = this.app.browser.formatDate(this.updated_at);
         this.userline = this.user.notice = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
       }
@@ -129,9 +129,9 @@ class Tweet {
     // if prepend = true, remove existing element
     //
     if (prepend == true) {
-      let eqs = ".tweet-"+this.tx.transaction.sig;
+      let eqs = ".tweet-" + this.tx.transaction.sig;
       if (document.querySelector(eqs)) {
-	document.querySelector(eqs).remove();
+        document.querySelector(eqs).remove();
       }
     }
 
@@ -170,22 +170,22 @@ class Tweet {
       this.retweet.notice = "retweeted by " + this.app.browser.returnAddressHTML(this.tx.transaction.from[0].add);
       this.retweet.container = ".tweet-" + this.retweet.tx.transaction.sig;
       let t = this.mod.returnTweet(this.retweet.tx.transaction.sig);
-      if (t) { 
-	t.notice = this.retweet.notice;
+      if (t) {
+        t.notice = this.retweet.notice;
         t.render(prepend);
       } else {
         this.retweet.render(prepend);
       }
       return;
     }
-         
+
 
     //
     // remove if selector does not exist
     // - if we click on a child we rerender but w/o parent just insert in container
     if (this.render_after_selector) {
       if (!document.querySelector(this.render_after_selector)) {
-	this.render_after_selector = false;
+        this.render_after_selector = false;
       }
     }
 
@@ -214,8 +214,8 @@ class Tweet {
         let y = document.querySelector(ytqs);
         if (x) {
           if (y) {
-	    y.style.width = Math.floor(x.width) + "px";
-  	    y.style.height = Math.floor((x.width / 16) * 9) + "px";
+            y.style.width = Math.floor(x.width) + "px";
+            y.style.height = Math.floor((x.width / 16) * 9) + "px";
           }
         }
       }
@@ -229,7 +229,7 @@ class Tweet {
       this.userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
       this.user.notice = this.userline;
     }
-   this.user.render();
+    this.user.render();
 
     if (this.retweet != null) {
       this.retweet.render();
@@ -370,7 +370,7 @@ class Tweet {
 
   attachEvents() {
 
-    let mod  = this.mod;
+    let mod = this.mod;
     let app = this.app;
 
     if (this.show_controls == 0) { return; }
@@ -388,7 +388,7 @@ class Tweet {
       let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-text`);
       if (!el) { return; }
       if (!this.force_long_tweet) {
-        let cobj = document.querySelector(this.container);     
+        let cobj = document.querySelector(this.container);
         if (el.clientHeight < el.scrollHeight) {
           el.classList.add("preview");
           this.is_long_tweet = true;
@@ -406,14 +406,14 @@ class Tweet {
       if (!this_tweet.dataset.hasClickEvent) {
 
         this_tweet.dataset.hasClickEvent = true;
-        this_tweet.onclick =  (e) => {
+        this_tweet.onclick = (e) => {
 
-	  //
-	  // if we have selected text, then we are trying to copy and paste and 
+          //
+          // if we have selected text, then we are trying to copy and paste and 
           // the last thing we want is for the UI to update and prevent us from
-	  // being able to use the site.
-	  //
-	  let highlightedText = "";
+          // being able to use the site.
+          //
+          let highlightedText = "";
           if (window.getSelection) {
             highlightedText = window.getSelection().toString();
           } else if (document.selection && document.selection.type != "Control") {
@@ -421,8 +421,8 @@ class Tweet {
           }
           if (highlightedText != "") {
             console.log("text highlighted: exiting");
-	    return;
-	  }
+            return;
+          }
 
           let tweet_text = document.querySelector(`.tweet-${this.tx.transaction.sig} > .tweet-body > .tweet-main > .tweet-text`);
 
@@ -433,20 +433,20 @@ class Tweet {
               this.force_long_tweet = true;
             } else {
               if (e.target.tagName != "IMG") {
-	        if (this.force_long_tweet) {
+                if (this.force_long_tweet) {
                   tweet_text.classList.remove('preview');
                   tweet_text.classList.add('full');
-	        }
+                }
                 window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
                 let sig = this.tx.transaction.sig;
                 app.connection.emit('redsquare-home-tweet-render-request', (this));
                 app.connection.emit('redsquare-home-loader-render-request');
-		mod.loadChildrenOfTweet(sig, (tweets) => {
+                mod.loadChildrenOfTweet(sig, (tweets) => {
                   app.connection.emit('redsquare-home-loader-hide-request');
-		  for (let i = 0; i < tweets.length; i++) {
+                  for (let i = 0; i < tweets.length; i++) {
                     app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
-		  }
-	        });
+                  }
+                });
               }
             }
             return;
@@ -455,17 +455,17 @@ class Tweet {
           //
           // if we are asking to see a tweet, load from parent if exists
           //
-          if (e.target.tagName != "IMG") {  
-	    window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
+          if (e.target.tagName != "IMG") {
+            window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
             let sig = this.tx.transaction.sig;
             app.connection.emit('redsquare-home-tweet-render-request', (this));
             app.connection.emit('redsquare-home-loader-render-request');
-	    mod.loadChildrenOfTweet(sig, (tweets) => {
+            mod.loadChildrenOfTweet(sig, (tweets) => {
               app.connection.emit('redsquare-home-loader-hide-request');
-	      for (let i = 0; i < tweets.length; i++) {
+              for (let i = 0; i < tweets.length; i++) {
                 app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
-	      }
-	    });
+              }
+            });
           }
         }
       }
@@ -475,10 +475,10 @@ class Tweet {
       // view preview //
       //////////////////
       document.querySelectorAll(`.tweet-${this.tx.transaction.sig} .tweet`).forEach(item => {
-        item.addEventListener('click', (e)=> {
+        item.addEventListener('click', (e) => {
           e.stopImmediatePropagation();
-          let sig =  item.getAttribute('data-id');
-          if (e.target.tagName != "IMG" && sig) {  
+          let sig = item.getAttribute('data-id');
+          if (e.target.tagName != "IMG" && sig) {
             window.location.href = `/redsquare/?tweet_id=${sig}`
           }
         });
@@ -499,7 +499,7 @@ class Tweet {
           let post = new Post(this.app, this.mod, this);
           post.parent_id = tweet_sig;
           post.thread_id = this.thread_id;
-	  if (this.thread_id == "") { post.thread_id = tweet_sig; }
+          if (this.thread_id == "") { post.thread_id = tweet_sig; }
           post.source = 'Reply';
           post.render();
           this.app.browser.prependElementToSelector(`<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`, ".tweet-overlay");
@@ -547,13 +547,13 @@ class Tweet {
       // like //
       //////////
       const heartIcon = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-like-button .heart-icon`);
-      heartIcon.onclick =  (e) => {
+      heartIcon.onclick = (e) => {
         if (heartIcon.classList.contains("liked")) {
           heartIcon.classList.remove("liked");
-          setTimeout(()=> {
+          setTimeout(() => {
             heartIcon.classList.add("liked");
           })
-        }else {
+        } else {
           heartIcon.classList.add("liked");
         }
 
@@ -651,13 +651,13 @@ class Tweet {
     //
     // make this UNKNOWN tweet our critical child if we do not have any critical children
     //
-    if (this.critical_child == null) { 
+    if (this.critical_child == null) {
       this.critical_child = tweet;
       if (tweet.created_at > this.updated_at) {
-        this.updated_at = tweet.created_at; 
+        this.updated_at = tweet.created_at;
         let dt = this.app.browser.formatDate(this.updated_at);
         this.user.notice = this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
-	this.user.render();
+        this.user.render();
       }
 
     }
@@ -673,8 +673,8 @@ class Tweet {
           this.critical_child = this.unknown_children[i];
           this.updated_at = this.critical_child.updated_at;
 
-	  let dt = app.browser.formatDate(this.updated_at);
-	  if (this.userline == "") { this.user.notice = this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; }
+          let dt = app.browser.formatDate(this.updated_at);
+          if (this.userline == "") { this.user.notice = this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; }
         }
         this.unknown_children[i].parent_tweet = tweet;
 
@@ -686,7 +686,7 @@ class Tweet {
         //
         // and delete from unknown children
         //
-	this.removeUnknownChild(this.unknown_children[i]);
+        this.removeUnknownChild(this.unknown_children[i]);
       }
     }
 
@@ -708,8 +708,8 @@ class Tweet {
       if (this.isCriticalChild(tweet) || tweet.tx.transaction.ts > this.updated_at && this.critical_child == null) {
         this.critical_child = tweet;
         if (tweet.created_at > this.updated_at) { this.updated_at = tweet.created_at; }
-	let dt = app.browser.formatDate(this.updated_at);
-	if (this.userline == "") { this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; this.user.notice = this.userline; }
+        let dt = app.browser.formatDate(this.updated_at);
+        if (this.userline == "") { this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; this.user.notice = this.userline; }
       }
 
       //
@@ -718,7 +718,7 @@ class Tweet {
       if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
         this.children.unshift(tweet);
         this.children_sigs_hmap[tweet.tx.transaction.sig] == 1;
-	this.removeUnknownChild(tweet);
+        this.removeUnknownChild(tweet);
         return 1;
       } else {
         tweet.parent_tweet = this;
@@ -739,7 +739,7 @@ class Tweet {
       if (this.isCriticalChild(tweet)) {
         this.critical_child = tweet;
         if (tweet.created_at > this.updated_at) { this.updated_at = tweet.created_at; }
-	let dt = app.browser.formatDate(this.updated_at);
+        let dt = app.browser.formatDate(this.updated_at);
         if (this.userline == "") { this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; this.user.notice = this.userline; }
       }
 
@@ -751,8 +751,8 @@ class Tweet {
             this.children_sigs_hmap[tweet.tx.transaction.sig] = 1;
             this.updated_at = tweet.updated_at;
             if (tweet.created_at > this.updated_at) { this.updated_at = tweet.created_at; }
-	    let dt = app.browser.formatDate(this.updated_at);
-	    if (this.userline == "") { this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; this.user.notice = this.userline; }
+            let dt = app.browser.formatDate(this.updated_at);
+            if (this.userline == "") { this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; this.user.notice = this.userline; }
             return 1;
           }
         }
@@ -777,18 +777,18 @@ class Tweet {
   // query children  //
   /////////////////////
   hasChildTweet(tweet_sig) {
-    if (this.tx.transaction.sig == tweet_sig) { 
-      return 1; 
+    if (this.tx.transaction.sig == tweet_sig) {
+      return 1;
     }
     for (let i = 0; i < this.children.length; i++) {
-      if (this.children[i].hasChildTweet(tweet_sig)) { 
-	return 1;
+      if (this.children[i].hasChildTweet(tweet_sig)) {
+        return 1;
       }
     }
     return 0;
   }
   returnChildTweet(tweet_sig) {
-    if (this.tx.transaction.sig == tweet_sig) { 
+    if (this.tx.transaction.sig == tweet_sig) {
       return this;
     }
     for (let i = 0; i < this.children.length; i++) {
@@ -802,10 +802,10 @@ class Tweet {
   removeUnknownChild(tweet) {
     if (this.unknown_children_sigs_hmap[tweet.tx.transaction.sig] == 1) {
       for (let i = 0; i < this.unknown_children.length; i++) {
-	if (this.unknown_children[i].tx.transaction.sig === tweet.tx.transaction.sig) {
-	  this.unknown_children.splice(i, 0);
-	  delete this.unknown_children_sigs_hmap[tweet.tx.transaction.sig];
-	}	
+        if (this.unknown_children[i].tx.transaction.sig === tweet.tx.transaction.sig) {
+          this.unknown_children.splice(i, 0);
+          delete this.unknown_children_sigs_hmap[tweet.tx.transaction.sig];
+        }
       }
     }
   }
@@ -857,7 +857,7 @@ class Tweet {
           videoId = urlParams.get('v');
         }
 
-	if (videoId != null && videoId != "null") {
+        if (videoId != null && videoId != "null") {
           this.youtube_id = videoId;
         }
         return this;
