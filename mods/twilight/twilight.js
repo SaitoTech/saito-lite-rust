@@ -3,8 +3,8 @@ const TwilightRules = require('./lib/twilight-game-rules.template');
 const TwilightOptions = require('./lib/twilight-game-options.template');
 const TwilightSingularOption = require('./lib/twilight-singular-game-options.template');
 
-const showCardOverlay = require('./lib/overlays/show-card');
-const showWarOverlay = require('./lib/overlays/show-war');
+const ShowCardOverlay = require('./lib/overlays/show-card');
+const ShowWarOverlay = require('./lib/overlays/show-war');
 
 const JSON = require('json-bigint');
 
