@@ -3,6 +3,9 @@ const TwilightRules = require('./lib/twilight-game-rules.template');
 const TwilightOptions = require('./lib/twilight-game-options.template');
 const TwilightSingularOption = require('./lib/twilight-singular-game-options.template');
 
+const showCardOverlay = require('./lib/overlays/show-card');
+const showWarOverlay = require('./lib/overlays/show-war');
+
 const JSON = require('json-bigint');
 
 
@@ -72,48 +75,10 @@ class Twilight extends GameTemplate {
     this.playerRoles = ["observer", "ussr", "us"];
     this.region_key = { "asia": "Asia", "seasia": "Southeast Asia", "europe":"Europe", "africa":"Africa", "mideast":"Middle East", "camerica": "Central America", "samerica":"South America"};
     this.grace_window = 25;
+  
+    this.showCardOverlay = new ShowCardOverlay(app, this);
+    this.showWarOverlay = new ShowWarOverlay(app, this);
   }
-
-
-
-  showCardOverlay(cards, title = ""){
-    let html = `
-      <div class="ts-overlay">
-      <h1>${title}</h1>
-      <div class="ts-body">
-      <div class="cardlist-container">${this.returnCardList(cards)}</div>`;
-      if (cards.length == 0) { 
-        html = `<div style="text-align:center; margin: auto;">
-                There are no cards to display
-                </div>`;
-      }
-      html += "</div></div>";
-      this.overlay.show(html);
-  }
-
-
-  showWarOverlay(card, winner, roll, modifications, player = ""){
-    let html = `
-    <div class="ts-overlay">
-    <h1>${this.cardToText(card, true)}</h1>
-    <div class="waroverlay-body">
-    <div class="cardlist-container">
-      <div class="card card-hud">${this.returnCardImage(card)}</div>
-    </div>
-    <div class="warstats">
-      <div class="winner">${winner}</div>
-      <div>Roll: ${roll}</div>
-      <div>Mod: -${(modifications)?modifications:""}</div>
-      <div>Modified Roll: ${roll-modifications}</div>
-    `;
-    if (player){
-      html += `<div>Sponsor: ` + player.toUpperCase() + "</div>";
-    }  
-    html += `</div></div>`;
-
-    this.overlay.show(html);
-  }
-
 
   showScoreOverlay(card, point_obj){
    let html = `
@@ -506,7 +471,10 @@ class Twilight extends GameTemplate {
       class: "game-cards-hand",
       callback: function(app,game_mod){
         game_mod.menu.hideSubMenus();
-        game_mod.showCardOverlay(game_mod.game.deck[0].hand, "My Hand");
+
+        game_mod.showCardOverlay.cards = game_mod.game.deck[0].hand;
+        game_mod.showCardOverlay.title = "My Hand";
+        game_mod.showCardOverlay.render();
       }
     });
     this.menu.addSubMenuOption("game-cards",{
@@ -515,7 +483,10 @@ class Twilight extends GameTemplate {
       class: "game-cards-discards",
       callback: function(app,game_mod){
         game_mod.menu.hideSubMenus();
-        game_mod.showCardOverlay(Object.keys(game_mod.game.deck[0].discards), "Discards");
+
+        game_mod.showCardOverlay.cards = Object.keys(game_mod.game.deck[0].discards);
+        game_mod.showCardOverlay.title = "Discards";
+        game_mod.showCardOverlay.render();
       }
     });
     this.menu.addSubMenuOption("game-cards",{
@@ -524,7 +495,10 @@ class Twilight extends GameTemplate {
       class: "game-cards-removed",
       callback: function(app,game_mod){
         game_mod.menu.hideSubMenus();
-        game_mod.showCardOverlay(Object.keys(game_mod.game.deck[0].removed), "Removed Cards");
+        
+        game_mod.showCardOverlay.cards = Object.keys(game_mod.game.deck[0].removed);
+        game_mod.showCardOverlay.title = "Removed Cards";
+        game_mod.showCardOverlay.render();
       }
     });
     this.menu.addSubMenuOption("game-cards",{
@@ -533,7 +507,10 @@ class Twilight extends GameTemplate {
       class: "game-cards-unplayed",
       callback: function(app,game_mod){
         game_mod.menu.hideSubMenus();
-        game_mod.showCardOverlay(Object.keys(game_mod.returnUnplayedCards()), "Unplayed Cards");
+        
+        game_mod.showCardOverlay.cards = Object.keys(game_mod.returnUnplayedCards());
+        game_mod.showCardOverlay.title = "Unplayed Cards";
+        game_mod.showCardOverlay.render();
       }
     });
 
@@ -3079,7 +3056,9 @@ try {
         let cards_to_reveal = mv[2].split(" ");
         let title = (whosehand == 1)? "USSR Hand" : "US Hand";
         if (this.game.player != whosehand){
-          this.showCardOverlay(cards_to_reveal, title);
+          this.showCardOverlay.cards = cards_to_reveal;
+          this.showCardOverlay.title = title;
+          this.showCardOverlay.render();
         }
       }
 
@@ -3115,7 +3094,14 @@ try {
     //twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
     if (mv[0] === "war"){
       let sponsor = mv[5] || "";
-      this.showWarOverlay(mv[1],mv[2],parseInt(mv[3]),parseInt(mv[4]),sponsor);
+
+      this.showWarOverlay.card = mv[1];
+      this.showWarOverlay.winner = mv[2];
+      this.showWarOverlay.roll = parseInt(mv[3]);
+      this.showWarOverlay.modifications = parseInt(mv[4]); 
+      this.showWarOverlay.player = sponsor;
+      this.showWarOverlay.render();
+
       this.game.queue.splice(qe, 1);
       return 1;
     }
@@ -8699,7 +8685,12 @@ console.log("SCORING: " + JSON.stringify(scoring));
       }
         this.game.state.milops_ussr += 2;
         this.updateMilitaryOperations();
-        this.showWarOverlay(card, winner, roll, modifications);
+
+        this.showWarOverlay.card = card;
+        this.showWarOverlay.winner = winner;
+        this.showWarOverlay.roll = roll;
+        this.showWarOverlay.modifications = modifications;
+        this.showWarOverlay.render();
 
       return 1;
     }
@@ -10875,7 +10866,13 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
       this.game.state.milops_ussr += 2;
       this.updateMilitaryOperations();
-      this.showWarOverlay(card, winner, roll, modifications);
+
+      this.showWarOverlay.card = card;
+      this.showWarOverlay.winner = winner;
+      this.showWarOverlay.roll = roll;
+      this.showWarOverlay.modifications = modifications;
+      this.showWarOverlay.render();
+
       return 1;
 
     }
