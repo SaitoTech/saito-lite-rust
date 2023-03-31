@@ -18,7 +18,7 @@ body {
 .gameboard{
   /* Default fill the background with image */
   position: absolute;
-  background-image: url("/poker/img/gameboard.jpg");
+  background-image: url(/saito/img/arcade/greenfelt.jpg);
   background-size: cover;
   width: 100vw;
   height: 100vh;

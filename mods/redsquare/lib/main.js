@@ -45,7 +45,7 @@ class RedSquareMain {
     this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
       this.renderAppspaceComponent("home");
       document.querySelector('.saito-container').scrollTo({top:0, left:0, behavior:"smooth"});
-      this.components["home"].appendTweet(tweet);
+      this.components["home"].renderTweet(tweet);
     });
     this.app.connection.on("redsquare-home-tweet-append-render-request", (tweet) => {
       this.components["home"].appendTweet(tweet);

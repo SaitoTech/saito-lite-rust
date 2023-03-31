@@ -317,7 +317,7 @@ class Arcade extends ModTemplate {
 
     if (qs == ".redsquare-sidebar") {
       if (!this.renderIntos[qs]) {
-        this.styles = ['/arcade/css/arcade-overlays.css', '/arcade/css/arcade-game-selector-overlay.css', '/arcade/css/arcade-invites.css'];
+        this.styles = ['/arcade/style.css'];
         this.renderIntos[qs] = [];
         let obj = new InviteManager(this.app, this, ".redsquare-sidebar");
         obj.type = "short";
@@ -328,7 +328,7 @@ class Arcade extends ModTemplate {
 
     if (qs == ".arcade-invites-box") {
       if (!this.renderIntos[qs]) {
-        this.styles = ['/arcade/css/arcade-overlays.css', '/arcade/css/arcade-invites.css'];
+        this.styles = ['/arcade/style.css'];
         this.renderIntos[qs] = [];
         let obj = new InviteManager(this.app, this, ".arcade-invites-box");
         obj.type = "long";
@@ -339,7 +339,7 @@ class Arcade extends ModTemplate {
 
     if (qs == ".league-overlay-games-list") {
       if (!this.renderIntos[qs]) {
-        this.styles = ['/arcade/css/arcade-overlays.css', '/arcade/css/arcade-invites.css'];
+        this.styles = ['/arcade/style.css'];
         this.renderIntos[qs] = [];
         let obj = new GameManager(this.app, this, ".league-overlay-games-list");
         this.renderIntos[qs].push(obj);

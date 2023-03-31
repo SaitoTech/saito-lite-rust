@@ -51,7 +51,6 @@ module.exports = (app, mod) => {
 
 <body style="opacity: 0; transition: opacity 1s;">
 
-<div class="saito-loader"></div>
 
 </body>
 <script id="saito" type="text/javascript" src="/redsquare/tweets.js?x=${new Date().getTime()}"></script>
