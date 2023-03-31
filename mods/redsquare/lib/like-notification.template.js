@@ -13,13 +13,6 @@ module.exports = (app, mod, tx) => {
           <div class="tweet-notice"></div>
           <div class="tweet-header">
           </div>
-          <div class="tweet-body">
-            <div class="tweet-sidebar">
-            </div>
-            <div class="tweet-main">
-              <div class="notification-tweet" id="tweet-${tx.transaction.sig}" data-id="${tx.transaction.sig}">${tweet_to_show}</div>
-            </div>
-          </div>
         </div>
     `;
 

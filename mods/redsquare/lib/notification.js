@@ -67,7 +67,7 @@ class RedSquareNotification {
           //
         } else {
           html = ReplyNotificationTemplate(app, mod, this.tx, txmsg);
-	  this.user.notice = "<i class='fas fa-heart fa-notification'></i> <span class='notification-type'>replies to your tweet</span>";
+	  this.user.notice = "<i class='fa-solid fa-comment-dots'></i> <span class='notification-type'>replies to your tweet</span>";
 	  this.user.fourthelem = app.browser.returnTime(new Date().getTime());
         }
       }
