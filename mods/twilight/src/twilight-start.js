@@ -4591,6 +4591,9 @@ playerTurnHeadlineSelected(card, player) {
     if (twilight_self.game.player == 0) { return; } //just in case
 
     if (twilight_self.game.player == 1) {
+      twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis\t0");
+      twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_cancelled\t1");
+      twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_removal_country\tcuba");
       twilight_self.removeInfluence("cuba", 2, "ussr");
       twilight_self.addMove("remove\tussr\tussr\tcuba\t2");
       twilight_self.addMove("unlimit\tcmc");
@@ -4611,6 +4614,9 @@ playerTurnHeadlineSelected(card, player) {
       twilight_self.updateStatusWithOptions('Select country from which to remove influence:',html,false);
       twilight_self.attachCardboxEvents(function(action2) {
     
+        twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis\t0");
+        twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_cancelled\t1");
+        twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_removal_country\tcuba");
         twilight_self.removeInfluence(action2, 2, "us");
         twilight_self.addMove(`remove\tus\tus\t${action2}\t2`);
         twilight_self.addMove("unlimit\tcmc");
@@ -5285,6 +5291,9 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
                     //
                     let removeinf = await sconfirm("You are placing 1 influence in "+twilight_self.countries[countryname].name+". Once this is done, do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
                     if (removeinf) {
+      		      twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis\t0");
+      		      twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_cancelled\t1");
+    		      twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_removal_country\t"+countryname);
                       twilight_self.removeInfluence(countryname, 2, "us");
                       twilight_self.addMove(`remove\tus\tus\t${countryname}\t2`);
                       twilight_self.addMove("unlimit\tcmc");
@@ -5341,6 +5350,9 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
                     //
                     let removeinf = await sconfirm("You are placing 1 influence in "+twilight_self.countries[countryname].name+". Once this is done, do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
                     if (removeinf) {
+      		        twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis\t0");
+      		        twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_cancelled\t1");
+    		        twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_removal_country\t"+countryname);
                         twilight_self.removeInfluence("cuba", 2, "ussr");
                         twilight_self.addMove("remove\tussr\tussr\tcuba\t2");
                         twilight_self.addMove("unlimit\tcmc");
