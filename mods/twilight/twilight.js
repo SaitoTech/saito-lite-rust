@@ -1797,7 +1797,13 @@ console.log("LATEST MOVE: " + mv);
 
     if (mv[0] == "unlimit") {
       if (mv[1] == "china") { this.game.state.events_china_card_in_play = 0; }
-      if (mv[1] == "cmc") { this.game.state.events.cubanmissilecrisis = 0; }
+      if (mv[1] == "cmc") { 
+	this.game.state.events.cubanmissilecrisis = 0; 
+	this.game.state.events.cubanmissilecrisis_cancelled = 1; 
+	if (mv[2]) {
+	  this.game.state.events.cubanmissilecrisis_removal_country = mv[2]; 
+	}
+      }
       if (mv[1] == "coups") { this.game.state.limit_coups = 0; }
       if (mv[1] == "spacerace") { this.game.state.limit_spacerace = 0; }
       if (mv[1] == "realignments") { this.game.state.limit_realignments = 0; }
@@ -4596,7 +4602,7 @@ playerTurnHeadlineSelected(card, player) {
       twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_removal_country\tcuba");
       twilight_self.removeInfluence("cuba", 2, "ussr");
       twilight_self.addMove("remove\tussr\tussr\tcuba\t2");
-      twilight_self.addMove("unlimit\tcmc");
+      twilight_self.addMove("unlimit\tcmc\tcuba");
       twilight_self.addMove("NOTIFY\tUSSR has cancelled the Cuban Missile Crisis");
       twilight_self.game.state.events.cubanmissilecrisis = 0;
       twilight_self.game.state.events.cubanmissilecrisis_removal_country = "cuba";
@@ -4616,10 +4622,10 @@ playerTurnHeadlineSelected(card, player) {
     
         twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis\t0");
         twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_cancelled\t1");
-        twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_removal_country\tcuba");
+        twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_removal_country\t"+action2);
         twilight_self.removeInfluence(action2, 2, "us");
         twilight_self.addMove(`remove\tus\tus\t${action2}\t2`);
-        twilight_self.addMove("unlimit\tcmc");
+        twilight_self.addMove("unlimit\tcmc\t"+action2);
         twilight_self.addMove("NOTIFY\tUS has cancelled the Cuban Missile Crisis");
         twilight_self.endTurn();
 
@@ -5296,7 +5302,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     		      twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_removal_country\t"+countryname);
                       twilight_self.removeInfluence(countryname, 2, "us");
                       twilight_self.addMove(`remove\tus\tus\t${countryname}\t2`);
-                      twilight_self.addMove("unlimit\tcmc");
+                      twilight_self.addMove("unlimit\tcmc\t"+countryname);
                       twilight_self.addMove("NOTIFY\tUS has cancelled the Cuban Missile Crisis");
 	              twilight_self.game.state.events.cubanmissilecrisis = 0; //for immediate effect
 	              twilight_self.game.state.events.cubanmissilecrisis_cancelled = 1; //for immediate effect
@@ -5355,7 +5361,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     		        twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_removal_country\t"+countryname);
                         twilight_self.removeInfluence("cuba", 2, "ussr");
                         twilight_self.addMove("remove\tussr\tussr\tcuba\t2");
-                        twilight_self.addMove("unlimit\tcmc");
+                        twilight_self.addMove("unlimit\tcmc\t"+countryname);
                         twilight_self.addMove("NOTIFY\tUSSR has cancelled the Cuban Missile Crisis");
                         twilight_self.game.state.events.cubanmissilecrisis = 0; //for immediate effect
 	                twilight_self.game.state.events.cubanmissilecrisis_cancelled = 1; //for immediate effect
