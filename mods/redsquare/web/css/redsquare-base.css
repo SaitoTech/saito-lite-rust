@@ -151,7 +151,7 @@
 
 .redsquare-home .saito-user>.saito-identicon-box {
   position: relative;
-  z-index: 5px;
+  z-index: 5;
 }
 
 /* copied from youtube css to make sure the videos don't load enormous */
