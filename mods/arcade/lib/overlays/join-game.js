@@ -34,12 +34,12 @@ class JoinGameOverlay {
         //
         // Create Transaction
         //
-        let newtx = this.mod.createJoinTransaction(this.invite.tx);
+        let newtx = await this.mod.createJoinTransaction(this.invite.tx);
 
         //
         // send it on-chain and off-chain
         //
-        this.app.network.propagateTransaction(newtx);
+        await this.app.network.propagateTransaction(newtx);
 
         this.app.connection.emit("relay-send-message", {
           recipient: this.invite.players,

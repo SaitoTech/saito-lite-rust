@@ -111,12 +111,12 @@ class ExplorerCore extends ModTemplate {
     </div>';
   }
 
-  returnIndexMain() {
+  async returnIndexMain() {
     return (
       '<div class="explorer-main"> \
         <div class="block-table"> \
           <div class="explorer-data"><h4>Server Address:</h4></div> <div class="address">' +
-      this.app.wallet.getPublicKey() +
+      (await this.app.wallet.getPublicKey()) +
       '</div> \
           <div class="explorer-data"><h4>Balance:</h4> </div><div>' +
       this.app.wallet.getBalance() +

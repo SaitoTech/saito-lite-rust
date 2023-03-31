@@ -64,15 +64,15 @@ class NwasmLibrary {
 
     if (obj) {
       if (status !== "available") {
-        obj.onclick = (e) => {
-          if (publickey === this.app.wallet.returnPublicKey()) {
+        obj.onclick = async (e) => {
+          if (publickey === (await this.app.wallet.getPublicKey())) {
             alert("Your title is out on loan. Please try again in a few hours.");
           } else {
             alert("This title is not available for play currently.");
           }
         };
       } else {
-        obj.onclick = (e) => {
+        obj.onclick = async (e) => {
           //
           // show loader
           //
@@ -84,28 +84,33 @@ class NwasmLibrary {
           let sig = obj.getAttribute("id");
           let publickey = obj.getAttribute("data-id");
 
-          if (publickey === this.app.wallet.returnPublicKey()) {
+          if (publickey === (await this.app.wallet.getPublicKey())) {
             let library_mod = this.app.modules.returnModule("Library");
-            library_mod.checkout("Nwasm", sig, this.app.wallet.returnPublicKey(), function (txs) {
-              if (txs == null) {
-                alert("Cannot checkout item...");
-                return;
-              }
-
-              if (txs.length > 0) {
-                try {
-                  let tx = new saito.default.transaction(undefined, txs[0].toJson());
-                  this.mod.hideLibrary();
-                  lib_self.loader.overlay.hide();
-                  this.mod.loadRomFile(tx);
-                } catch (err) {
-                  console.log("Error downloading and decrypting: " + err);
+            library_mod.checkout(
+              "Nwasm",
+              sig,
+              await this.app.wallet.getPublicKey(),
+              function (txs) {
+                if (txs == null) {
+                  alert("Cannot checkout item...");
+                  return;
                 }
-              } else {
-                console.log("ERROR TXS LIBRARY: " + JSON.stringify(txs));
-                alert("Error - is network down?");
+
+                if (txs.length > 0) {
+                  try {
+                    let tx = new saito.default.transaction(undefined, txs[0].toJson());
+                    this.mod.hideLibrary();
+                    lib_self.loader.overlay.hide();
+                    this.mod.loadRomFile(tx);
+                  } catch (err) {
+                    console.log("Error downloading and decrypting: " + err);
+                  }
+                } else {
+                  console.log("ERROR TXS LIBRARY: " + JSON.stringify(txs));
+                  alert("Error - is network down?");
+                }
               }
-            });
+            );
           } else {
             let nwasm_mod = this.mod;
             let message = {};
@@ -115,21 +120,21 @@ class NwasmLibrary {
             message.data.signature = sig;
 
             let peer = null;
-            for (let i = 0; i < this.app.network.peers.length; i++) {
+            let peers = await this.app.network.getPeers();
+            for (let i = 0; i < peers.length; i++) {
               //
               // libraries organized by publickey
               //
-              if (this.app.network.peers[i].returnPublicKey() === publickey) {
-                let peer = this.app.network.peers[i];
-                i = this.app.network.peers.length + 100; // buffer against connect/disconnect
+              if (peers[i].publicKey === publickey) {
+                i = peers.length + 100; // buffer against connect/disconnect
               }
             }
 
             alert("fetching...");
-            this.app.network.sendRequestAsTransactionWithCallback(
+            await this.app.network.sendRequestAsTransactionWithCallback(
               message.request,
               message.data,
-              function (res) {},
+              null,
               peer
             );
           }
@@ -138,7 +143,7 @@ class NwasmLibrary {
     }
   }
 
-  render() {
+  async render() {
     let library_mod = this.app.modules.returnModule("Library");
     if (!library_mod) {
       return;
@@ -171,12 +176,13 @@ class NwasmLibrary {
     }
 
     try {
+      let publicKey = await this.app.wallet.getPublicKey();
       for (let key in library_mod.library) {
         let collection = library_mod.library[key];
 
         if (collection.local) {
           for (let i = 0; i < collection.local.length; i++) {
-            this.renderItemInLibrary(collection.local[i], this.app.wallet.returnPublicKey());
+            this.renderItemInLibrary(collection.local[i], publicKey);
           }
         }
 

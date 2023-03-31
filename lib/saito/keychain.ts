@@ -431,11 +431,11 @@ class Keychain {
   //   return x;
   // }
 
-  // addWatchedPublicKey(publickey = "") {
-  //   this.addKey(publickey, { watched: true });
-  //   this.saveKeys();
-  //   this.app.network.updatePeersWithWatchedPublicKeys();
-  // }
+  addWatchedPublicKey(publickey = "") {
+    this.addKey(publickey, { watched: true });
+    this.saveKeys();
+    this.app.network.updatePeersWithWatchedPublicKeys();
+  }
 
   updateCryptoByPublicKey(publickey, aes_publickey = "", aes_privatekey = "", shared_secret = "") {
     console.log("updating crypto for: " + publickey);

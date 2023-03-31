@@ -31,7 +31,6 @@ class Settlers extends GameTemplate {
     this.currently_active_player = 0;
   }
 
-
   /*
   Advanced Game options for Arcade
   */
@@ -39,25 +38,23 @@ class Settlers extends GameTemplate {
     return SettlersGameoptionsTemplate(this.app, this);
   }
 
-
-  returnTradeHelpOverlay(){
+  returnTradeHelpOverlay() {
     return SettlersTradeHelpOverlayTemplate(this.app, this);
   }
 
-  returnWelcomeOverlay(){
-   let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay">
+  returnWelcomeOverlay() {
+    let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay">
 	         <img src="/settlers/img/welcome.jpg" style="width:100%;height:100%" />
                </div>`;
     return html;
   }
-
 
   /*
   Make Overlay of game introduction/Rules
   */
   returnGameRulesHTML() {
     let skin = this.skin;
-    if (!skin || skin.empty){
+    if (!skin || skin.empty) {
       skin = new SettlersSkin();
       skin.render();
     }
@@ -97,18 +94,20 @@ class Settlers extends GameTemplate {
   </div>
    `;
 
-   return overlay_html;
+    return overlay_html;
   }
 
-  initializeHTML(app) {
-
-    if (!this.browser_active) { return; }
+  async initializeHTML(app) {
+    if (!this.browser_active) {
+      return;
+    }
 
     //Prevent this function from running twice as saito-lite is configured to run it twice
-    if (this.initialize_game_run) {return;} 
+    if (this.initialize_game_run) {
+      return;
+    }
 
-    super.initializeHTML(app);
-    
+    await super.initializeHTML(app);
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");
@@ -131,7 +130,7 @@ class Settlers extends GameTemplate {
         game_mod.overlay.show(game_mod.returnStatsOverlay());
       },
     });
-    
+
     this.menu.addSubMenuOption("game-info", {
       text: "Log",
       id: "game-log",
@@ -142,12 +141,11 @@ class Settlers extends GameTemplate {
       },
     });
 
-
     this.menu.addChatMenu();
     /*
     if (this.game.player > 0){
       this.menu.addMenuOption("game-trade", "Trade");
-      
+
       this.menu.addSubMenuOption("game-trade", {
         text: "Make Offer",
         id: "game-offer",
@@ -192,10 +190,10 @@ class Settlers extends GameTemplate {
       });
     }*/
     this.menu.render();
-    
-    try{
+
+    try {
       document.getElementById("game-post").remove();
-    }catch(err){
+    } catch (err) {
       console.error(err);
     }
 
@@ -204,11 +202,10 @@ class Settlers extends GameTemplate {
     this.hexgrid.render(".gameboard");
 
     try {
-
       this.skin.render(this.game.options.theme);
 
       this.cardbox.render();
-      this.cardbox.addCardType("handy-help","",null);
+      this.cardbox.addCardType("handy-help", "", null);
       this.cardbox.makeDraggable();
 
       this.playerbox.render();
@@ -217,7 +214,7 @@ class Settlers extends GameTemplate {
       this.playerbox.addClass("me", this.game.player);
 
       for (let i = 1; i <= this.game.players.length; i++) {
-        this.playerbox.addClass(`c${this.game.colors[i-1]}`, i);
+        this.playerbox.addClass(`c${this.game.colors[i - 1]}`, i);
         if (i != this.game.player) {
           this.playerbox.addClass("notme", i);
         }
@@ -231,11 +228,7 @@ class Settlers extends GameTemplate {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.hammer.render(this.app, this);
-        this.hammer.attachEvents(
-          this.app,
-          this,
-          "#game-hexgrid"
-        );
+        this.hammer.attachEvents(this.app, this, "#game-hexgrid");
       } else {
         this.sizer.render();
         this.sizer.attachEvents("#game-hexgrid");
@@ -248,16 +241,13 @@ class Settlers extends GameTemplate {
       this.addPortsToGameboard();
 
       this.displayBoard();
-   
-      if (this.game.state.placedCity == null){
-        $(".dark").css("backgroundColor","unset");  
+
+      if (this.game.state.placedCity == null) {
+        $(".dark").css("backgroundColor", "unset");
       }
-      
-
     } catch (err) {
-      console.log("Intialize HTML: "+err);
+      console.log("Intialize HTML: " + err);
     }
-
   }
 
   initializeGame(game_id) {
@@ -270,8 +260,10 @@ class Settlers extends GameTemplate {
       //Randomly assign colors
       let colors = [1, 2, 3, 4];
       this.game.colors = [];
-      for (let i = 0; i < this.game.players.length; i++){
-        this.game.colors = this.game.colors.concat(colors.splice(this.rollDice(colors.length)-1,1));
+      for (let i = 0; i < this.game.players.length; i++) {
+        this.game.colors = this.game.colors.concat(
+          colors.splice(this.rollDice(colors.length) - 1, 1)
+        );
       }
       console.log("Colors: " + JSON.stringify(this.game.colors));
 
@@ -306,80 +298,87 @@ class Settlers extends GameTemplate {
       this.game.queue.push(`POOLDEAL\t3\t18\t2`);
       this.game.queue.push(`POOLDEAL\t2\t19\t1`);
 
-      this.game.queue.push(`DECKANDENCRYPT\t3\t${numPlay}\t${JSON.stringify(this.returnDiceTokens())}`);
-      this.game.queue.push(`DECKANDENCRYPT\t2\t${numPlay}\t${JSON.stringify(this.skin.returnHexes())}`);
+      this.game.queue.push(
+        `DECKANDENCRYPT\t3\t${numPlay}\t${JSON.stringify(this.returnDiceTokens())}`
+      );
+      this.game.queue.push(
+        `DECKANDENCRYPT\t2\t${numPlay}\t${JSON.stringify(this.skin.returnHexes())}`
+      );
 
       //Development Cards
-      this.game.queue.push(`DECKANDENCRYPT\t1\t${numPlay}\t${JSON.stringify(this.skin.returnDeck())}`);
-    
+      this.game.queue.push(
+        `DECKANDENCRYPT\t1\t${numPlay}\t${JSON.stringify(this.skin.returnDeck())}`
+      );
     }
 
     this.game.playerNames = [];
     this.game.players.forEach((playerKey, i) => {
-      
       let name = this.app.keychain.returnUsername(playerKey);
-      if (name.includes("...")){
-        name = `Player ${i+1}`;
+      if (name.includes("...")) {
+        name = `Player ${i + 1}`;
       }
-      if (name.includes("@")){
+      if (name.includes("@")) {
         name = name.substring(0, name.indexOf("@"));
       }
       console.log(playerKey, i, name);
       this.game.playerNames.push(name);
     });
 
-
-    if (this.game.players.length > 2){
+    if (this.game.players.length > 2) {
       this.grace_window = this.game.players.length * 12;
     }
   }
 
-  returnStatsOverlay(){
+  returnStatsOverlay() {
     let html = `<div class="rules-overlay saitoa">
                 <div class="h1">Game Statistics</div>`;
 
     //Fucking Dice
     html += `<table class="stats-table"><caption>Dice Rolls</caption><thead><tr><th>Rolls: </th>`;
-    for (let i = 2; i <= 12; i++){
+    for (let i = 2; i <= 12; i++) {
       html += `<th>${i}</th>`;
     }
     html += `</tr></thead><tbody><tr><th>Freq: </th>`;
-    for (let i = 2; i <= 12; i++){
+    for (let i = 2; i <= 12; i++) {
       html += `<td>${this.game.stats.dice[i]}</td>`;
     }
     html += `</tr></tbody></table>`;
-   
+
     //Production Log
     html += `<table class="stats-table"><caption>Resources Produced</caption><thead><tr><th></th>`;
-    for (let r in this.game.stats.production){
-      html += `<th>${this.returnResourceHTML(r)}</th>`; 
+    for (let r in this.game.stats.production) {
+      html += `<th>${this.returnResourceHTML(r)}</th>`;
     }
     html += `<th>Sum</th></tr></thead><tbody>`;
 
-    for (let j = 0; j < this.game.players.length; j++){
+    for (let j = 0; j < this.game.players.length; j++) {
       let count = 0;
-      html += `<tr><th>${this.game.playerNames[j]}</th>`;  
-      for (let r in this.game.stats.production){
-        html += `<td>${this.game.stats.production[r][j]}</td>`; 
-        count += this.game.stats.production[r][j]
+      html += `<tr><th>${this.game.playerNames[j]}</th>`;
+      for (let r in this.game.stats.production) {
+        html += `<td>${this.game.stats.production[r][j]}</td>`;
+        count += this.game.stats.production[r][j];
       }
       html += `<td>${count}</td></tr>`;
     }
     html += `<tr><th>Total:</th>`;
-    for (let r in this.game.stats.production){
+    for (let r in this.game.stats.production) {
       let count = 0;
-      for (let j = 0; j < this.game.players.length; j++){
+      for (let j = 0; j < this.game.players.length; j++) {
         count += this.game.stats.production[r][j];
       }
       html += `<td>${count}</td>`;
-    }      
+    }
     html += `</tr>`;
     html += `</tbody></table>`;
-    
+
     //VP Race
     html += `<table class="stats-table"><caption>VP Race</caption><thead><tr><th></th>`;
-    html += `<th><div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c1.svg}<div class="tiptext">${this.skin.c1.name}</div></div></th>`;
-    html += `<th><div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c2.svg}<div class="tiptext">${this.skin.c2.name}</div></div></th>`;
+    html += `<th><div class="tip token p${this.game.colors[this.game.player - 1]}">${
+      this.skin.c1.svg
+    }<div class="tiptext">${this.skin.c1.name}</div></div></th>`;
+    html += `<th><div class="tip token p${this.game.colors[this.game.player - 1]}">${
+      this.skin.c2.svg
+    }<div class="tiptext">${this.skin.c2.name}</div></div></th>`;
     html += `<th><div class="tip token">${this.skin.vp.svg}<div class="tiptext">${this.skin.vp.name}</div></div></th>`;
     html += `<th><div class="tip token">${this.skin.largest.svg}<div class="tiptext">${this.skin.largest.name}</div></div></th>`;
     html += `<th><div class="tip token">${this.skin.longest.svg}<div class="tiptext">${this.skin.longest.name}</div></div></th>`;
@@ -387,25 +386,25 @@ class Settlers extends GameTemplate {
     //Sort players by VP
     let ranking_scores = [this.game.state.players[0].vp];
     let ranking_players = [0];
-    for (let i = 1; i < this.game.state.players.length; i++){
+    for (let i = 1; i < this.game.state.players.length; i++) {
       let j = 0;
-      for (; j < ranking_scores.length; j++){
-        if (this.game.state.players[i].vp > ranking_scores[j]){
-          break; 
+      for (; j < ranking_scores.length; j++) {
+        if (this.game.state.players[i].vp > ranking_scores[j]) {
+          break;
         }
       }
-      ranking_scores.splice(j,0,this.game.state.players[i].vp);
-      ranking_players.splice(j,0,i);
+      ranking_scores.splice(j, 0, this.game.state.players[i].vp);
+      ranking_players.splice(j, 0, i);
     }
-    for (let i = 0; i < ranking_scores.length; i++){
+    for (let i = 0; i < ranking_scores.length; i++) {
       let player = ranking_players[i];
       let numVil = 0;
       let numCity = 0;
       for (let j = 0; j < this.game.state.cities.length; j++) {
         if (this.game.state.cities[j].player === player + 1) {
-          if (this.game.state.cities[j].level == 1){
+          if (this.game.state.cities[j].level == 1) {
             numVil++;
-          }else{
+          } else {
             numCity++;
           }
         }
@@ -415,32 +414,39 @@ class Settlers extends GameTemplate {
                 <td>${numVil}</td>
                 <td>${numCity}</td>
                 <td>${this.game.state.players[player].vpc}</td>
-                <td>${(this.game.state.largestArmy.player == player + 1)?this.game.state.largestArmy.size:""}</td>
-                <td>${(this.game.state.longestRoad.player == player + 1)?this.game.state.longestRoad.size:""}</td>
+                <td>${
+                  this.game.state.largestArmy.player == player + 1
+                    ? this.game.state.largestArmy.size
+                    : ""
+                }</td>
+                <td>${
+                  this.game.state.longestRoad.player == player + 1
+                    ? this.game.state.longestRoad.size
+                    : ""
+                }</td>
                 <td>${ranking_scores[i]}</td></tr>`;
     }
-    
 
     html += `</tbody></table>`;
 
-    return html+"</div>";
+    return html + "</div>";
   }
 
   /*
   We want to track some statistics
   */
-  returnInitStats(){
+  returnInitStats() {
     let stats = {};
     stats.dice = {};
     stats.production = {};
-    for (let i = 2; i <=12 ; i++){
-      stats.dice[i]=0;
+    for (let i = 2; i <= 12; i++) {
+      stats.dice[i] = 0;
     }
 
-    for (let r of this.skin.resourceArray()){
+    for (let r of this.skin.resourceArray()) {
       let array = new Array(this.game.players.length);
       array.fill(0);
-      stats.production[r] = array; 
+      stats.production[r] = array;
     }
     return stats;
   }
@@ -453,7 +459,7 @@ class Settlers extends GameTemplate {
     state.hexes = {};
     state.roads = [];
     state.cities = [];
-    state.longestRoad = { size: 0, player: 0, path:[] };
+    state.longestRoad = { size: 0, player: 0, path: [] };
     state.largestArmy = { size: 0, player: 0 };
     state.players = [];
     state.ads = [];
@@ -483,14 +489,12 @@ class Settlers extends GameTemplate {
    * Commands: init, generate_map, winner
    */
   handleGameLoop() {
-
     let settlers_self = this;
 
     ///////////
     // QUEUE //
     ///////////
     if (this.game.queue.length > 0) {
-
       //Before popping, so if display players adds a win command, we will catch it.
       try {
         this.displayPlayers(); //Is it enough to update the player huds each iteration, board doesn't get redrawn at all?
@@ -498,25 +502,26 @@ class Settlers extends GameTemplate {
         //console.log("Attempting to access DOM elements which haven't been created yet");
         console.log(e);
       }
-      
+
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
 
       //console.log("QUEUE: " + this.game.queue);
       //console.log(JSON.parse(JSON.stringify(this.game.state)));
-      
+
       /* Game Setup */
 
       if (mv[0] == "init") {
-        this.game.queue.splice(qe, 1);   
+        this.game.queue.splice(qe, 1);
         this.game.state.placedCity = null; //We are in game play mode, not initial set up
-        this.game.state.lastroll = [0,0];
+        this.game.state.lastroll = [0, 0];
         this.game.queue.push("round");
-        $(".dark").css("background-color","unset");
+        $(".dark").css("background-color", "unset");
         return 1;
       }
 
-      if (mv[0] == "round"){ // no splice, we want to bounce off this
+      if (mv[0] == "round") {
+        // no splice, we want to bounce off this
         for (let i = this.game.players.length; i > 0; i--) {
           //count backwards so it goes P1, P2, P3,
           this.game.queue.push(`play\t${i}`);
@@ -529,14 +534,13 @@ class Settlers extends GameTemplate {
         this.game.queue.splice(qe, 1);
         this.generateMap();
         this.addPortsToGameboard();
-        if (this.browser_active && this.game.player == 0){
+        if (this.browser_active && this.game.player == 0) {
           this.displayBoard();
         }
         return 1;
       }
 
       if (mv[0] == "winner") {
-        
         let winner = parseInt(mv[1]);
         this.game.queue = [];
 
@@ -546,9 +550,9 @@ class Settlers extends GameTemplate {
 
         this.overlay.show(this.returnStatsOverlay());
         $(".rules-overlay h1").text(`Game Over: ${this.game.playerNames[winner]} wins!`);
-        
-        this.endGame(this.game.players[winner]); 
-        
+
+        this.endGame(this.game.players[winner]);
+
         return 0;
       }
 
@@ -557,24 +561,24 @@ class Settlers extends GameTemplate {
       if (mv[0] == "buy_card") {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
-        
-        this.updateLog(`${this.game.playerNames[player-1]} bought a ${this.skin.card.name} card`);
+
+        this.updateLog(`${this.game.playerNames[player - 1]} bought a ${this.skin.card.name} card`);
         this.game.state.canTrade = false;
 
         //this player will update their devcard count on next turn
         if (player != this.game.player) {
           this.game.state.players[player - 1].devcards++; //Add card for display
-        }else{
+        } else {
           this.boughtCard = true; //So we display dev cards on next refresh
-        
-          let lastcard = this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
-      
+
+          let lastcard =
+            this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
+
           let html = `<span class="tip">${lastcard.card}
                         <div class="tiptext">${this.skin.rules[lastcard.action]}</div>
                       </span>`;
-        
-          this.updateStatus(`<div class="persistent"><span>You bought a ${html}</span></div>`);
 
+          this.updateStatus(`<div class="persistent"><span>You bought a ${html}</span></div>`);
         }
         return 1;
       }
@@ -590,7 +594,7 @@ class Settlers extends GameTemplate {
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
 
         this.updateLog(
-          `${this.game.playerNames[player-1]} played ${cardname} to gain 1 victory point`
+          `${this.game.playerNames[player - 1]} played ${cardname} to gain 1 victory point`
         );
         return 1;
       }
@@ -602,7 +606,7 @@ class Settlers extends GameTemplate {
         this.game.queue.splice(qe, 1);
 
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
-        this.updateLog(`${this.game.playerNames[player-1]} played ${cardname}`);
+        this.updateLog(`${this.game.playerNames[player - 1]} played ${cardname}`);
         return 1;
       }
 
@@ -612,7 +616,7 @@ class Settlers extends GameTemplate {
         let cardname = mv[2];
         this.game.queue.splice(qe, 1);
 
-        this.updateLog(`${this.game.playerNames[player-1]} played a ${cardname}!`);
+        this.updateLog(`${this.game.playerNames[player - 1]} played a ${cardname}!`);
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
         //Update Army!
         this.game.state.players[player - 1].knights++;
@@ -623,7 +627,9 @@ class Settlers extends GameTemplate {
           this.playBandit();
         } else {
           this.updateStatus(
-            `<div class="tbd">Waiting for ${this.game.playerNames[player-1]} to move the ${this.skin.b.name}...</div>`
+            `<div class="tbd">Waiting for ${this.game.playerNames[player - 1]} to move the ${
+              this.skin.b.name
+            }...</div>`
           );
         }
         return 0;
@@ -642,7 +648,7 @@ class Settlers extends GameTemplate {
         }
 
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
-        this.updateLog(`${this.game.playerNames[player-1]} played ${cardname}.`);
+        this.updateLog(`${this.game.playerNames[player - 1]} played ${cardname}.`);
         return 1;
       }
 
@@ -664,8 +670,11 @@ class Settlers extends GameTemplate {
                 j--;
               }
             }
-            if (am_i_a_victim && this.game.player == i+1){
-              this.displayModal(cardname,`${this.game.playerNames[player-1]} stole all your ${resource}`);
+            if (am_i_a_victim && this.game.player == i + 1) {
+              this.displayModal(
+                cardname,
+                `${this.game.playerNames[player - 1]} stole all your ${resource}`
+              );
             }
           }
         }
@@ -675,16 +684,18 @@ class Settlers extends GameTemplate {
 
         this.game.state.players[player - 1].devcards--; //Remove card (for display)
         this.updateLog(
-          `${this.game.playerNames[player-1]} played ${cardname} for ${resource}, collecting ${lootCt}.`
+          `${
+            this.game.playerNames[player - 1]
+          } played ${cardname} for ${resource}, collecting ${lootCt}.`
         );
         return 1;
       }
 
       /* Building Actions */
-      if (mv[0] == "undo_build"){
-        this.game.queue.splice(qe,1);
+      if (mv[0] == "undo_build") {
+        this.game.queue.splice(qe, 1);
         let last_mv = this.game.queue.pop();
-        while (last_mv.split("\t")[0] == "spend_resource"){
+        while (last_mv.split("\t")[0] == "spend_resource") {
           console.log(last_mv);
           last_mv = this.game.queue.pop();
         }
@@ -697,22 +708,21 @@ class Settlers extends GameTemplate {
         let player = parseInt(mv[1]);
         let resource = mv[2]; //string name: "ore", "brick", etc
 
-        let target =
-          this.game.state.players[player - 1].resources.indexOf(resource);
+        let target = this.game.state.players[player - 1].resources.indexOf(resource);
         if (target >= 0) {
           this.game.state.players[player - 1].resources.splice(target, 1);
         } else {
-          console.log(
-            "Resource not found...",
-            resource,
-            this.game.state.players[player - 1]
-          );
+          console.log("Resource not found...", resource, this.game.state.players[player - 1]);
         }
         this.game.queue.splice(qe, 1);
 
-        if (this.game.player === player){
-          if (this.game.state.ads[this.game.player-1].offer){
-            if(this.game.state.ads[this.game.player-1].offer[resource] && this.countResource(player, resource) < this.game.state.ads[this.game.player-1].offer[resource])
+        if (this.game.player === player) {
+          if (this.game.state.ads[this.game.player - 1].offer) {
+            if (
+              this.game.state.ads[this.game.player - 1].offer[resource] &&
+              this.countResource(player, resource) <
+                this.game.state.ads[this.game.player - 1].offer[resource]
+            )
               this.addMove("clear_advert\t" + player);
           }
           this.endTurn();
@@ -722,29 +732,31 @@ class Settlers extends GameTemplate {
 
       // Build a road, let player pick where to build a road
       if (mv[0] == "player_build_road") {
-
         let player = parseInt(mv[1]);
 
         this.game.queue.splice(qe, 1);
         this.game.state.canTrade = false;
         if (this.game.player == player) {
-
           /* In initial set up, if game reloaded, the free road spaces are lost*/
-	        if (mv[2] == 1) {
+          if (mv[2] == 1) {
             console.log("Last Placed City: " + this.game.state.last_city);
-            let newRoads = this.hexgrid.edgesFromVertex(this.game.state.last_city.replace("city_", ""));
+            let newRoads = this.hexgrid.edgesFromVertex(
+              this.game.state.last_city.replace("city_", "")
+            );
             for (let road of newRoads) {
-              console.log("road: ",road);
+              console.log("road: ", road);
               this.addRoadToGameboard(road.substring(2), road[0]);
             }
-	        }
-          
-          let canbackup = parseInt(mv[3]) || 0;  
+          }
+
+          let canbackup = parseInt(mv[3]) || 0;
 
           this.playerBuildRoad(mv[1], canbackup);
         } else {
           this.updateStatus(
-            `<div class="tbd">${this.game.playerNames[player-1]} is building a ${this.skin.r.name}...</div>`
+            `<div class="tbd">${this.game.playerNames[player - 1]} is building a ${
+              this.skin.r.name
+            }...</div>`
           );
         }
         return 0;
@@ -757,9 +769,9 @@ class Settlers extends GameTemplate {
         this.game.queue.splice(qe, 1);
 
         this.buildRoad(player, slot);
-        this.updateLog(`${this.game.playerNames[player-1]} built a ${this.skin.r.name}`);
-        if (this.checkLongestRoad(player)){
-          console.log("Longest Road:",this.game.state.longestRoad.path);
+        this.updateLog(`${this.game.playerNames[player - 1]} built a ${this.skin.r.name}`);
+        if (this.checkLongestRoad(player)) {
+          console.log("Longest Road:", this.game.state.longestRoad.path);
         }
         return 1;
       }
@@ -767,7 +779,6 @@ class Settlers extends GameTemplate {
       // Build a town
       // Let player make selection, other players wait
       if (mv[0] == "player_build_city") {
-
         let player = parseInt(mv[1]);
 
         this.currently_active_player = player;
@@ -777,10 +788,12 @@ class Settlers extends GameTemplate {
 
         //For the beginning of the game only...
         if (this.game.state.welcome == 0 && this.browser_active) {
-  	    try {
-          this.overlay.show(this.returnWelcomeOverlay());
-          document.querySelector(".welcome_overlay").onclick = () => { this.overlay.hide(); };
-  	    } catch (err) {}
+          try {
+            this.overlay.show(this.returnWelcomeOverlay());
+            document.querySelector(".welcome_overlay").onclick = () => {
+              this.overlay.hide();
+            };
+          } catch (err) {}
           this.game.state.welcome = 1;
         }
 
@@ -788,7 +801,9 @@ class Settlers extends GameTemplate {
           this.playerBuildCity(mv[1], parseInt(mv[2]));
         } else {
           this.updateStatus(
-            `<div class="tbd">${this.game.playerNames[player-1]} is building a ${this.skin.c1.name}...</div>`
+            `<div class="tbd">${this.game.playerNames[player - 1]} is building a ${
+              this.skin.c1.name
+            }...</div>`
           );
         }
 
@@ -801,13 +816,14 @@ class Settlers extends GameTemplate {
         let city = mv[2];
         this.game.queue.splice(qe, 1);
 
-        let logMsg = `${this.game.playerNames[player-1]} starts with `;
+        let logMsg = `${this.game.playerNames[player - 1]} starts with `;
         for (let hextile of this.hexgrid.hexesFromVertex(city)) {
           let bounty = this.game.state.hexes[hextile].resource;
-          if (bounty !== this.skin.nullResource()){ //DESERT ATTACK
+          if (bounty !== this.skin.nullResource()) {
+            //DESERT ATTACK
             logMsg += bounty + ", ";
             this.game.state.players[player - 1].resources.push(bounty);
-            this.game.stats.production[bounty][player-1]++; //Initial starting stats  
+            this.game.stats.production[bounty][player - 1]++; //Initial starting stats
           }
         }
         logMsg = logMsg.substring(0, logMsg.length - 2) + ".";
@@ -825,48 +841,53 @@ class Settlers extends GameTemplate {
         if (this.game.player != player) {
           this.buildCity(player, slot);
         } else {
-	        this.game.state.last_city = slot;
-	      }
+          this.game.state.last_city = slot;
+        }
 
-        this.updateLog(`${this.game.playerNames[player-1]} built a ${this.skin.c1.name}`);
+        this.updateLog(`${this.game.playerNames[player - 1]} built a ${this.skin.c1.name}`);
 
         //Check for edge case where the new city splits a (longest) road
         let adj_road_owners = {};
         let newRoads = this.hexgrid.edgesFromVertex(slot.replace("city_", ""));
         let bisect = -1;
-        for (let road of newRoads){
+        for (let road of newRoads) {
           //Check if adjacent edge is a built road and if so, who owns it
-          for (let i = 0; i < this.game.state.roads.length; i++){
-            if (this.game.state.roads[i].slot == "road_"+road){
-              if (!adj_road_owners[this.game.state.roads[i].player]){
+          for (let i = 0; i < this.game.state.roads.length; i++) {
+            if (this.game.state.roads[i].slot == "road_" + road) {
+              if (!adj_road_owners[this.game.state.roads[i].player]) {
                 adj_road_owners[this.game.state.roads[i].player] = 0;
               }
               adj_road_owners[this.game.state.roads[i].player]++;
             }
           }
           //Check if adjacent edge is part of longest road path (alternate method)
-          if (this.game.state.longestRoad.path.includes(road)){
+          if (this.game.state.longestRoad.path.includes(road)) {
             bisect++;
           }
         }
-        if (bisect == 1){
-          for (let owner in adj_road_owners){
+        if (bisect == 1) {
+          for (let owner in adj_road_owners) {
             //If new town borders a road of the player with the longest road, recheck board to find longest road
-            if (adj_road_owners[owner] > 1 && owner != player && owner == this.game.state.longestRoad.player){
-              this.updateLog(`New ${this.skin.c1.name} bisects longest road, recalculating next longest road`);
+            if (
+              adj_road_owners[owner] > 1 &&
+              owner != player &&
+              owner == this.game.state.longestRoad.player
+            ) {
+              this.updateLog(
+                `New ${this.skin.c1.name} bisects longest road, recalculating next longest road`
+              );
               this.game.state.longestRoad.player = 0; //unset longest road
               //Check the person who had the longest road first so they have priority (in event of ties)
               this.checkLongestRoad(owner);
               //Check everyone else if they have a longer road now
-              for (let i = 1; i <= this.game.players.length; i++){
-                if (i !== owner){
-                  this.checkLongestRoad(i);  
+              for (let i = 1; i <= this.game.players.length; i++) {
+                if (i !== owner) {
+                  this.checkLongestRoad(i);
                 }
-              }  
+              }
             }
           }
         }
-
 
         return 1;
       }
@@ -881,7 +902,9 @@ class Settlers extends GameTemplate {
           this.playerUpgradeCity(player, 1);
         } else {
           this.updateStatus(
-            `<div class="tbd">${this.game.playerNames[player-1]} is upgrading to a ${this.skin.c2.name}...</div>`
+            `<div class="tbd">${this.game.playerNames[player - 1]} is upgrading to a ${
+              this.skin.c2.name
+            }...</div>`
           );
         }
 
@@ -897,7 +920,9 @@ class Settlers extends GameTemplate {
         this.game.queue.splice(qe, 1);
 
         this.updateLog(
-          `${this.game.playerNames[player-1]} upgraded a ${this.skin.c1.name} to a ${this.skin.c2.name}`
+          `${this.game.playerNames[player - 1]} upgraded a ${this.skin.c1.name} to a ${
+            this.skin.c2.name
+          }`
         );
         for (let i = 0; i < this.game.state.cities.length; i++) {
           if (this.game.state.cities[i].slot === slot) {
@@ -907,7 +932,7 @@ class Settlers extends GameTemplate {
             this.game.state.players[player - 1].towns++;
             let divname = "#" + slot;
             $(divname).html(this.skin.c2.svg);
-            $(divname).addClass(`p${this.game.colors[player-1]}`);
+            $(divname).addClass(`p${this.game.colors[player - 1]}`);
             return 1;
           }
         }
@@ -927,21 +952,19 @@ class Settlers extends GameTemplate {
         let stuff_in_return = JSON.parse(mv[3]);
         this.game.queue.splice(qe, 1);
 
-        this.game.state.ads[offering_player-1].offer = stuff_on_offer;
-        this.game.state.ads[offering_player-1].ask = stuff_in_return;
-        this.game.state.ads[offering_player-1].ad = true;
+        this.game.state.ads[offering_player - 1].offer = stuff_on_offer;
+        this.game.state.ads[offering_player - 1].ask = stuff_in_return;
+        this.game.state.ads[offering_player - 1].ad = true;
         this.displayPlayers();
-
       }
 
       if (mv[0] == "clear_advert") {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
 
-        this.game.state.ads[player-1].offer = null;
-        this.game.state.ads[player-1].ask = null;
-        this.displayPlayers(); 
-
+        this.game.state.ads[player - 1].offer = null;
+        this.game.state.ads[player - 1].ask = null;
+        this.displayPlayers();
       }
       //
       // Player A has offered another player a trade
@@ -954,16 +977,18 @@ class Settlers extends GameTemplate {
         this.game.queue.splice(qe, 1);
 
         if (this.game.player == receiving_player) {
-          this.game.state.ads[offering_player-1].offer = stuff_on_offer;
-          this.game.state.ads[offering_player-1].ask = stuff_in_return;
-          this.game.state.ads[offering_player-1].ad = false;
-          this.displayPlayers(); 
-        } 
-        
-        this.updateLog(`${this.game.playerNames[offering_player-1]} sent a trade offer to ${this.game.playerNames[receiving_player-1]}.`);
+          this.game.state.ads[offering_player - 1].offer = stuff_on_offer;
+          this.game.state.ads[offering_player - 1].ask = stuff_in_return;
+          this.game.state.ads[offering_player - 1].ad = false;
+          this.displayPlayers();
+        }
+
+        this.updateLog(
+          `${this.game.playerNames[offering_player - 1]} sent a trade offer to ${
+            this.game.playerNames[receiving_player - 1]
+          }.`
+        );
       }
-
-
 
       /*
         * Because we add and subtract resources through different methods, there is a lag in the UI where it looks like you only gained,
@@ -980,20 +1005,23 @@ class Settlers extends GameTemplate {
         // let offering player know
         if (this.game.player == offering_player) {
           this.updateStatus(
-            `<div class='persistent'>${this.game.playerNames[accepting_player-1]} accepted your offer</div>`
+            `<div class="persistent">${
+              this.game.playerNames[accepting_player - 1]
+            } accepted your offer</div>`
           );
         }
         if (this.game.player == accepting_player) {
           this.updateStatus(
-            `<div class='persistent'>You completed a trade with ${this.game.playerNames[offering_player-1]}.</div>`
+            `<div class="persistent">You completed a trade with ${
+              this.game.playerNames[offering_player - 1]
+            }.</div>`
           );
         }
-        if (
-          this.game.player !== accepting_player &&
-          this.game.player !== offering_player
-        ) {
+        if (this.game.player !== accepting_player && this.game.player !== offering_player) {
           this.updateStatus(
-            `<div class="persistent">${this.game.playerNames[offering_player-1]} and ${this.game.playerNames[accepting_player-1]} completed a trade.</div>`
+            `<div class="persistent">${this.game.playerNames[offering_player - 1]} and ${
+              this.game.playerNames[accepting_player - 1]
+            } completed a trade.</div>`
           );
         }
 
@@ -1002,23 +1030,21 @@ class Settlers extends GameTemplate {
           //i is resource name, offer[i]
           for (let j = 0; j < tradeOut[i]; j++) {
             //Ignores zeros
-            this.game.queue.push(
-              "spend_resource\t" + offering_player + "\t" + i
-            ); //Just easier to do this in the queue
+            this.game.queue.push("spend_resource\t" + offering_player + "\t" + i); //Just easier to do this in the queue
             this.game.state.players[accepting_player - 1].resources.push(i);
           }
         }
         for (let i in tradeIn) {
           //i is resource name, offer[i]
           for (let j = 0; j < tradeIn[i]; j++) {
-            this.game.queue.push(
-              "spend_resource\t" + accepting_player + "\t" + i
-            ); //Just easier to do this in the queue
+            this.game.queue.push("spend_resource\t" + accepting_player + "\t" + i); //Just easier to do this in the queue
             this.game.state.players[offering_player - 1].resources.push(i);
           }
         }
         this.updateLog(
-          `${this.game.playerNames[offering_player-1]} and ${this.game.playerNames[accepting_player-1]} completed a trade.`
+          `${this.game.playerNames[offering_player - 1]} and ${
+            this.game.playerNames[accepting_player - 1]
+          } completed a trade.`
         );
 
         console.log(JSON.parse(JSON.stringify(this.game.state.ads)));
@@ -1031,17 +1057,19 @@ class Settlers extends GameTemplate {
 
         this.game.confirms_needed[refusing_player - 1] = 0; //Manually resolve
         if (this.game.player == offering_player) {
-          this.updateStatus(
-            "<div class='persistent'>Your offer has been rejected</div>"
-          );
+          this.updateStatus("<div class='persistent'>Your offer has been rejected</div>");
         }
         if (this.game.player == refusing_player) {
           this.updateStatus(
-            `<div class='persistent'>You reject ${this.game.playerNames[offering_player-1]}'s trade.</div>`
+            `<div class="persistent">You reject ${
+              this.game.playerNames[offering_player - 1]
+            }'s trade.</div>`
           );
         }
         this.updateLog(
-          `${this.game.playerNames[refusing_player-1]} turned down a trade offer from ${this.game.playerNames[offering_player-1]}.`
+          `${this.game.playerNames[refusing_player - 1]} turned down a trade offer from ${
+            this.game.playerNames[offering_player - 1]
+          }.`
         );
 
         console.log(JSON.parse(JSON.stringify(this.game.state.ads)));
@@ -1060,24 +1088,22 @@ class Settlers extends GameTemplate {
 
         // let offering player know
         if (this.game.player == player) {
-          this.updateStatus(
-            "<div class='persistent'>Your trade is completed</div>"
-          );
+          this.updateStatus("<div class='persistent'>Your trade is completed</div>");
         } else {
           this.updateStatus(
-            `<div class='persistent'>${this.game.playerNames[player-1]} traded with the bank</div>`
+            `<div class="persistent">${
+              this.game.playerNames[player - 1]
+            } traded with the bank</div>`
           );
         }
         for (let i = 0; i < outCount; i++) {
-          this.game.queue.push(
-            "spend_resource\t" + player + "\t" + outResource
-          );
+          this.game.queue.push("spend_resource\t" + player + "\t" + outResource);
         }
         for (let j = 0; j < inCount; j++) {
           //Should always be 1
           this.game.state.players[player - 1].resources.push(inResource);
         }
-        this.updateLog(`${this.game.playerNames[player-1]} traded with the bank.`);
+        this.updateLog(`${this.game.playerNames[player - 1]} traded with the bank.`);
 
         return 1;
       }
@@ -1094,13 +1120,11 @@ class Settlers extends GameTemplate {
         this.game.state.playerTurn = player;
 
         if (this.game.player == player) {
-
           /*
           We put a lag in passing the length of the hand to the state.devcards
-          so that we can know that the last card in the hand is "new" and unable to be played until their next turn 
+          so that we can know that the last card in the hand is "new" and unable to be played until their next turn
           */
-          this.game.state.players[player - 1].devcards =
-            this.game.deck[0].hand.length;
+          this.game.state.players[player - 1].devcards = this.game.deck[0].hand.length;
 
           //Messaging to User
           let html = `<div class="tbd">YOUR TURN:`;
@@ -1114,13 +1138,13 @@ class Settlers extends GameTemplate {
 
           this.updateStatus(html);
 
-	        //
+          //
           // Flash to be like "hey it's your move"
-	        //
-          if (this.is_sleeping){
-	          this.currently_active_player = player;
+          //
+          if (this.is_sleeping) {
+            this.currently_active_player = player;
             $(".flashme").addClass("flash");
-            this.is_sleeping = false; //If player plays a knight first, we don't need to flash again when we bounce back to this state  
+            this.is_sleeping = false; //If player plays a knight first, we don't need to flash again when we bounce back to this state
           }
 
           //Or, choose menu option
@@ -1138,7 +1162,7 @@ class Settlers extends GameTemplate {
           });
         } else {
           this.updateStatus(
-            `<div class="tbd">${this.game.playerNames[player-1]} rolling dice...</div>`
+            `<div class="tbd">${this.game.playerNames[player - 1]} rolling dice...</div>`
           );
         }
         //this.game.queue.splice(qe, 1);
@@ -1151,13 +1175,12 @@ class Settlers extends GameTemplate {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe - 1, 2);
 
-        
         // everyone rolls the dice
         let d1 = this.rollDice(6);
         let d2 = this.rollDice(6);
         this.game.state.lastroll = [d1, d2];
         let roll = d1 + d2;
-        this.updateLog(`${this.game.playerNames[player-1]} rolled: ${roll}`);
+        this.updateLog(`${this.game.playerNames[player - 1]} rolled: ${roll}`);
         this.game.stats.dice[roll]++; //Keep count of the rolls
 
         // board animation
@@ -1181,12 +1204,8 @@ class Settlers extends GameTemplate {
 
           if (playersToDiscard.length > 0) {
             this.resetConfirmsNeeded(playersToDiscard);
-            this.game.queue.push(
-              "NOTIFY\tAll players have finished discarding"
-            );
-            this.game.queue.push(
-              "discard\t" + JSON.stringify(playersToDiscard)
-            ); //One queue move all the players
+            this.game.queue.push("NOTIFY\tAll players have finished discarding");
+            this.game.queue.push("discard\t" + JSON.stringify(playersToDiscard)); //One queue move all the players
           }
         } else {
           this.game.queue.push(`collect_harvest\t${roll}`);
@@ -1194,7 +1213,7 @@ class Settlers extends GameTemplate {
         return 1;
       }
 
-      if (mv[0] == "enable_trading"){
+      if (mv[0] == "enable_trading") {
         this.game.queue.splice(qe, 1);
         this.game.state.canTrade = true; //Toggles false when the player builds or buys
         return 1;
@@ -1223,7 +1242,7 @@ class Settlers extends GameTemplate {
         let amIPlaying = false;
         for (let i of playersToGo) {
           if (this.game.confirms_needed[i - 1] == 1) {
-            discardString += `${this.game.playerNames[i-1]}, `;
+            discardString += `${this.game.playerNames[i - 1]}, `;
             confirmsNeeded++;
             if (this.game.player == parseInt(i)) {
               this.addMove("RESOLVE\t" + this.app.wallet.returnPublicKey());
@@ -1235,15 +1254,11 @@ class Settlers extends GameTemplate {
         }
 
         discardString = this.prettifyList(discardString);
-        
-        this.game.queue.push(
-          `NOTIFY\t${discardString} must discard half their hand.`
-        );
+
+        this.game.queue.push(`NOTIFY\t${discardString} must discard half their hand.`);
 
         if (!amIPlaying) {
-          this.updateStatus(
-            `Waiting for ${discardString} to discard half their hand.`
-          );
+          this.updateStatus(`Waiting for ${discardString} to discard half their hand.`);
         }
 
         if (confirmsNeeded == 0) {
@@ -1263,7 +1278,9 @@ class Settlers extends GameTemplate {
           this.playBandit();
         } else {
           this.updateStatus(
-            `<div class="tbd">Waiting for ${this.game.playerNames[player-1]} to move the ${this.skin.b.name}...</div>`
+            `<div class="tbd">Waiting for ${this.game.playerNames[player - 1]} to move the ${
+              this.skin.b.name
+            }...</div>`
           );
         }
         return 0;
@@ -1286,18 +1303,18 @@ class Settlers extends GameTemplate {
           this.game.state.hexes[h].robber = h === hexId;
         }
         let hexName =
-          this.game.state.hexes[hexId].value +
-          "->" +
-          this.game.state.hexes[hexId].resource;
+          this.game.state.hexes[hexId].value + "->" + this.game.state.hexes[hexId].resource;
         this.updateLog(
-          `${this.game.playerNames[player-1]} moved the ${this.skin.b.name} to ${hexName}`
+          `${this.game.playerNames[player - 1]} moved the ${this.skin.b.name} to ${hexName}`
         );
 
         if (this.game.player === player) {
           this.moveBandit(player, hexId);
         } else {
           this.updateStatus(
-            `<div class="tbd">Waiting for ${this.game.playerNames[player-1]} to choose the ${this.skin.b.name}'s victim...</div>`
+            `<div class="tbd">Waiting for ${this.game.playerNames[player - 1]} to choose the ${
+              this.skin.b.name
+            }'s victim...</div>`
           );
         }
 
@@ -1311,20 +1328,29 @@ class Settlers extends GameTemplate {
         let loot = mv[3];
         this.game.queue.splice(qe, 1);
 
-        if (victim > 0 && loot != "nothing") { //victim 0 means nobody
+        if (victim > 0 && loot != "nothing") {
+          //victim 0 means nobody
           this.game.queue.push("spend_resource\t" + victim + "\t" + loot);
           this.game.state.players[thief - 1].resources.push(loot);
         }
- 
-        if (this.game.player === thief){
-          this.updateStatus(`<div class="persistent">You stole: ${(loot == "nothing")?"nothing":this.returnResourceHTML(loot)}</div>`);
+
+        if (this.game.player === thief) {
+          this.updateStatus(
+            `<div class="persistent">You stole: ${
+              loot == "nothing" ? "nothing" : this.returnResourceHTML(loot)
+            }</div>`
+          );
         }
-        if (this.game.player === victim){
-          this.updateStatus(`<div class="persistent">${this.game.playerNames[thief-1]} stole ${(loot == "nothing")?"nothing":this.returnResourceHTML(loot)} from you</div>`);
+        if (this.game.player === victim) {
+          this.updateStatus(
+            `<div class="persistent">${this.game.playerNames[thief - 1]} stole ${
+              loot == "nothing" ? "nothing" : this.returnResourceHTML(loot)
+            } from you</div>`
+          );
         }
-        
-        let victim_name = (victim>0)? `${this.game.playerNames[victim-1]}` : "nobody";
-        this.updateLog(`${this.game.playerNames[thief-1]} stole ${loot} from ${victim_name}`);
+
+        let victim_name = victim > 0 ? `${this.game.playerNames[victim - 1]}` : "nobody";
+        this.updateLog(`${this.game.playerNames[thief - 1]} stole ${loot} from ${victim_name}`);
         return 1;
       }
 
@@ -1338,9 +1364,9 @@ class Settlers extends GameTemplate {
           this.playerPlayMove();
         } else {
           this.updateStatus(
-              this.getLastNotice() +
-                `<div class="tbd">${this.game.playerNames[player-1]} is taking their turn.</div>`
-            );
+            this.getLastNotice() +
+              `<div class="tbd">${this.game.playerNames[player - 1]} is taking their turn.</div>`
+          );
         }
         return 0;
       }
@@ -1356,7 +1382,6 @@ class Settlers extends GameTemplate {
         for (let city of this.game.state.cities) {
           document.querySelector(`#${city.slot}`).classList.remove("producer");
         }
-
 
         let divname = `.sector_value:not(.bandit)`;
         $(divname).attr("style", "");
@@ -1384,16 +1409,16 @@ class Settlers extends GameTemplate {
           //Highlight cities which produce resources
           document.querySelector(`#${city.slot}`).classList.add("producer");
           let resource = this.game.state.hexes[neighboringHex].resource;
-          logMsg += `${this.game.playerNames[player-1]} gains ${resource}`;
+          logMsg += `${this.game.playerNames[player - 1]} gains ${resource}`;
           if (this.game.player == player) {
             notice += this.returnResourceHTML(resource);
           }
           this.game.state.players[player - 1].resources.push(resource);
-          this.game.stats.production[resource][player-1]++;
+          this.game.stats.production[resource][player - 1]++;
           //Double Resources for Upgraded City
           if (city.level == 2) {
             this.game.state.players[player - 1].resources.push(resource);
-            this.game.stats.production[resource][player-1]++;
+            this.game.stats.production[resource][player - 1]++;
             logMsg += " x2";
             if (this.game.player == player) {
               notice += this.returnResourceHTML(resource);
@@ -1417,7 +1442,7 @@ class Settlers extends GameTemplate {
   }
 
   /*
-  Used to help with settlement placement, 
+  Used to help with settlement placement,
   returns list of all available vertices adjacent to the edges owned by a given player
   */
   returnCitySlotsAdjacentToPlayerRoads(player) {
@@ -1475,9 +1500,7 @@ class Settlers extends GameTemplate {
       $(".sector_value").removeClass("rhover");
       let slot = $(this).attr("id");
 
-      settlers_self.addMove(
-        `move_bandit\t${settlers_self.game.player}\t${slot}`
-      );
+      settlers_self.addMove(`move_bandit\t${settlers_self.game.player}\t${slot}`);
       settlers_self.endTurn();
     });
     $(".bandit").removeClass("rhover");
@@ -1493,20 +1516,17 @@ class Settlers extends GameTemplate {
     for (let city of this.game.state.cities) {
       if (city.neighbours.includes(hexId)) {
         if (city.player != player)
-          if (!thievingTargets.includes(city.player))
-            thievingTargets.push(city.player);
+          if (!thievingTargets.includes(city.player)) thievingTargets.push(city.player);
       }
     }
     if (thievingTargets.length > 0) {
       let robPlayer = (victim) => {
-        let potentialLoot =
-            settlers_self.game.state.players[victim - 1].resources;
-          if (potentialLoot.length > 0) {
-            let loot =
-              potentialLoot[Math.floor(Math.random() * potentialLoot.length)];
-            settlers_self.addMove(`steal_card\t${player}\t${victim}\t${loot}`);
-          } else settlers_self.addMove(`steal_card\t${player}\t${victim}\tnothing`);
-          settlers_self.endTurn();
+        let potentialLoot = settlers_self.game.state.players[victim - 1].resources;
+        if (potentialLoot.length > 0) {
+          let loot = potentialLoot[Math.floor(Math.random() * potentialLoot.length)];
+          settlers_self.addMove(`steal_card\t${player}\t${victim}\t${loot}`);
+        } else settlers_self.addMove(`steal_card\t${player}\t${victim}\tnothing`);
+        settlers_self.endTurn();
       };
 
       if (thievingTargets.length > 1) {
@@ -1550,25 +1570,21 @@ class Settlers extends GameTemplate {
     let cardsToDiscard = [];
 
     for (let resource of this.skin.resourceArray()) {
-      let temp = settlers_self.countResource(
-        settlers_self.game.player,
-        resource
-      );
+      let temp = settlers_self.countResource(settlers_self.game.player, resource);
       if (temp > 0) my_resources[resource] = temp;
     }
 
     //Player recursively selects all the resources they want to get rid of
     let discardFunction = function (settlers_self) {
-      let html = `<div class='tbd'>Select Cards to Discard (Must get rid of ${
+      let html = `<div class="tbd">Select Cards to Discard (Must get rid of ${
         targetCt - cardsToDiscard.length
       }): <i id="reset" class="fas fa-undo"></i><ul>`;
       for (let i in my_resources) {
-        if (my_resources[i] > 0)
-          html += `<li id="${i}" class="option">${i}:`;
-          for (let j = 0; j < my_resources[i]; j++){
-            html += `<img class="icon" src="${settlers_self.skin.resourceIcon(i)}">`;
-          }
-          html += `</li>`;
+        if (my_resources[i] > 0) html += `<li id="${i}" class="option">${i}:`;
+        for (let j = 0; j < my_resources[i]; j++) {
+          html += `<img class="icon" src="${settlers_self.skin.resourceIcon(i)}">`;
+        }
+        html += `</li>`;
       }
       html += "</ul>";
       html += "</div>";
@@ -1591,10 +1607,10 @@ class Settlers extends GameTemplate {
       });
 
       $("#reset").off();
-      $("#reset").on("click", function(){
+      $("#reset").on("click", function () {
         $(".option").off();
         //Reset Moves and reload interface/function
-        settlers_self.moves=["RESOLVE\t" + settlers_self.app.wallet.returnPublicKey()];
+        settlers_self.moves = ["RESOLVE\t" + settlers_self.app.wallet.returnPublicKey()];
         settlers_self.chooseCardsToDiscard();
       });
     };
@@ -1641,46 +1657,44 @@ class Settlers extends GameTemplate {
     Use road id + adjacent vertices for internal logic
   */
   addPortsToGameboard() {
-
-    if (Object.keys(this.game.state.ports).length == 9){
+    if (Object.keys(this.game.state.ports).length == 9) {
       //Just read the port information and call the function
-      for (let p in this.game.state.ports){
+      for (let p in this.game.state.ports) {
         let hex = p.substr(2);
         let dir = p[0];
         this.addPortToGameboard(hex, this.game.state.ports[p], dir);
       }
-    }else{
+    } else {
       //Define the ports
       let resources = this.skin.resourceArray();
       let randomRoll = this.rollDice(2);
       let hexes, angles;
-      if (randomRoll == 1){
-         hexes = ["1_1", "3_5", "5_4", "4_2"];
-         angles = [6, 3, 3, 5]; 
-      }else{
-         hexes = ["1_2", "2_1",  "5_3", "5_5"];
-         angles = [1, 5,  4, 2];
+      if (randomRoll == 1) {
+        hexes = ["1_1", "3_5", "5_4", "4_2"];
+        angles = [6, 3, 3, 5];
+      } else {
+        hexes = ["1_2", "2_1", "5_3", "5_5"];
+        angles = [1, 5, 4, 2];
       }
 
-      for (let i = 0; i < hexes.length; i ++){
+      for (let i = 0; i < hexes.length; i++) {
         this.addPortToGameboard(hexes[i], "any", angles[i]);
       }
 
       //Now do resource ports
-      if (randomRoll == 1){
-         hexes = ["1_2", "2_1", "5_3", "5_5", "2_4"];
-         angles = [1, 5, 4, 2, 1];
-      }else{
-         hexes = ["1_1", "3_5", "5_4", "4_2", "2_4"];
-         angles = [6, 3, 3, 5, 1]; 
+      if (randomRoll == 1) {
+        hexes = ["1_2", "2_1", "5_3", "5_5", "2_4"];
+        angles = [1, 5, 4, 2, 1];
+      } else {
+        hexes = ["1_1", "3_5", "5_4", "4_2", "2_4"];
+        angles = [6, 3, 3, 5, 1];
       }
 
       for (let i = 0; i < 5; i++) {
-        let r = resources.splice(this.rollDice(resources.length)-1,1);
+        let r = resources.splice(this.rollDice(resources.length) - 1, 1);
         this.addPortToGameboard(hexes[i], r, angles[i]);
       }
     }
-    
   }
 
   addPortToGameboard(hex, port, direction) {
@@ -1688,15 +1702,15 @@ class Settlers extends GameTemplate {
 
     this.game.state.ports[direction + "_" + hex] = port;
 
-    if (!this.browser_active){return;}
+    if (!this.browser_active) {
+      return;
+    }
 
     let selector = "hex_bg_" + hex;
     let hexobj = document.getElementById(selector);
     if (!document.getElementById(port_id)) {
       let port_html = `<div class="port port${direction}" id="${port_id}">
-                        <div class="ship hexTileCenter">${this.skin.portIcon(
-                          port
-                        )}</div>
+                        <div class="ship hexTileCenter">${this.skin.portIcon(port)}</div>
                         <div class="harbor lharbor"></div>
                         <div class="harbor rharbor"></div>
                         </div>`;
@@ -1707,7 +1721,7 @@ class Settlers extends GameTemplate {
   }
 
   /*
-  Creates DOM stuctures to hold cities, 
+  Creates DOM stuctures to hold cities,
   addCityToGameboard calculates where to (absolutely) position them
   */
   addCitiesToGameboard() {
@@ -1756,7 +1770,6 @@ class Settlers extends GameTemplate {
     }
   }
 
- 
   addRoadToGameboard(hex, road_component) {
     let selector = "hex_bg_" + hex;
     let hexobj = document.getElementById(selector);
@@ -1807,8 +1820,7 @@ class Settlers extends GameTemplate {
         neighbours: [],
         robber: false,
       };
-      if (resourceName == this.skin.nullResource())
-        this.game.state.hexes[hex].robber = true;
+      if (resourceName == this.skin.nullResource()) this.game.state.hexes[hex].robber = true;
       if (token) this.addSectorValueToGameboard(hex, token);
     }
   }
@@ -1824,16 +1836,10 @@ class Settlers extends GameTemplate {
     */
     for (let i in this.game.state.hexes) {
       let divname = "#hex_bg_" + i;
-      $(divname).html(
-        `<img class="hex_img2" src="${this.game.state.hexes[i].img}">`
-      );
+      $(divname).html(`<img class="hex_img2" src="${this.game.state.hexes[i].img}">`);
       if (this.game.state.hexes[i].resource != this.skin.nullResource()) {
-        let svid = this.addSectorValueToGameboard(
-          i,
-          this.game.state.hexes[i].value
-        );
-        if (this.game.state.hexes[i].robber)
-          document.getElementById(svid).classList.add("bandit");
+        let svid = this.addSectorValueToGameboard(i, this.game.state.hexes[i].value);
+        if (this.game.state.hexes[i].robber) document.getElementById(svid).classList.add("bandit");
       }
     }
 
@@ -1842,7 +1848,7 @@ class Settlers extends GameTemplate {
     */
     for (let i in this.game.state.cities) {
       let divname = "#" + this.game.state.cities[i].slot;
-      let classname = "p" + this.game.colors[this.game.state.cities[i].player-1];
+      let classname = "p" + this.game.colors[this.game.state.cities[i].player - 1];
       $(divname).addClass(classname);
       $(divname).removeClass("empty");
 
@@ -1877,7 +1883,7 @@ class Settlers extends GameTemplate {
 
   /*
   Work in Progress
-  Check the score everytime we update players, which is with each cycle of game queue, 
+  Check the score everytime we update players, which is with each cycle of game queue,
   so should catch victory condition
   */
   updateScore() {
@@ -1912,7 +1918,6 @@ class Settlers extends GameTemplate {
     }
   }
 
-  
   /*
     @param {string} deck -- the name of the deck to render (resource || cards), if empty defaults to resource, if no resources, tries dev cards
   */
@@ -1943,11 +1948,11 @@ class Settlers extends GameTemplate {
       }
       this.cardfan.render(cards);
 
-      if (usingDev){
+      if (usingDev) {
         this.cardfan.addClass("staggered-hand");
         this.cardfan.removeClass("bighand");
-      }else{
-        this.cardfan.addClass("bighand");  
+      } else {
+        this.cardfan.addClass("bighand");
         this.cardfan.removeClass("staggered-hand");
       }
     } catch (err) {
@@ -1956,19 +1961,19 @@ class Settlers extends GameTemplate {
   }
 
   // Only for the game Observer
-  showPlayerResources(){
+  showPlayerResources() {
     $(".player-box-graphic .hand").remove();
-    for (let i = 0; i < this.game.players.length; i++){
+    for (let i = 0; i < this.game.players.length; i++) {
       let hand = `<div class="hand">`;
-      for (let r of this.game.state.players[i].resources){
-        hand +=`<div class="card">
+      for (let r of this.game.state.players[i].resources) {
+        hand += `<div class="card">
                   <img src="${this.skin.resourceCard(r)}">
                   <img class="icon" src="${this.skin.resourceIcon(r)}"/>
                 </div>`;
       }
       hand += "</div>";
 
-      this.playerbox.appendGraphic(hand, i+1);
+      this.playerbox.appendGraphic(hand, i + 1);
     }
   }
 
@@ -1976,10 +1981,11 @@ class Settlers extends GameTemplate {
     Refresh the Playerboxes with formatted information on the players
   */
   displayPlayers() {
-
     this.updateScore();
 
-    if (!this.browser_active){ return; }
+    if (!this.browser_active) {
+      return;
+    }
 
     let card_dir = "/settlers/img/cards/";
     for (let i = 1; i <= this.game.state.players.length; i++) {
@@ -1988,10 +1994,18 @@ class Settlers extends GameTemplate {
 
       let playerHTML = `
           <div class="saito-user">
-            <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i-1])}"></div>
-            <div class="saito-address">${this.game.playerNames[i-1]}</div>
-            <div class="saito-userline">${this.skin.vp.name}: ${this.game.state.players[i - 1].vp}</div>
-            ${(i==this.game.player)? `<i id="construction-costs" class="handy-help fa fa-question-circle" aria-hidden="true"></i>`: ""}
+            <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(
+              this.game.players[i - 1]
+            )}"></div>
+            <div class="saito-address">${this.game.playerNames[i - 1]}</div>
+            <div class="saito-userline">${this.skin.vp.name}: ${
+        this.game.state.players[i - 1].vp
+      }</div>
+            ${
+              i == this.game.player
+                ? `<i id="construction-costs" class="handy-help fa fa-question-circle" aria-hidden="true"></i>`
+                : ""
+            }
           </div>`;
       this.playerbox.refreshTitle(playerHTML, i);
 
@@ -2022,26 +2036,24 @@ class Settlers extends GameTemplate {
         newhtml += `<div class="cardct">Resources: ${
           this.game.state.players[i - 1].resources.length
         }</div>`;
-        newhtml += `<div class="cardct">Cards: ${
-          this.game.state.players[i - 1].devcards
-        }</div>`;
+        newhtml += `<div class="cardct">Cards: ${this.game.state.players[i - 1].devcards}</div>`;
         newhtml += `</div>`;
-      
-      } else {  //Is me
+      } else {
+        //Is me
 
-        if (!this.game.state.placedCity){
+        if (!this.game.state.placedCity) {
           newhtml += `<div class="flexline">`;
-          if (this.game.state.ads[i-1].offer || this.game.state.ads[i-1].ask){
+          if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
             newhtml += "<span>";
-            if (this.game.state.ads[i-1].offer){
-              newhtml += this.wishListToImage(this.game.state.ads[i-1].offer);
+            if (this.game.state.ads[i - 1].offer) {
+              newhtml += this.wishListToImage(this.game.state.ads[i - 1].offer);
             }
             newhtml += `<i class="fas fa-long-arrow-alt-right"></i>`;
-            if (this.game.state.ads[i-1].ask){
-             newhtml += this.wishListToImage(this.game.state.ads[i-1].ask); 
+            if (this.game.state.ads[i - 1].ask) {
+              newhtml += this.wishListToImage(this.game.state.ads[i - 1].ask);
             }
             newhtml += `</span><i id="cleartrade" class="fas fa-ban"></i>`;
-          }else{
+          } else {
             newhtml += `<span id="tradenow">Trade</span>`;
           }
           newhtml += `</div>`;
@@ -2054,20 +2066,19 @@ class Settlers extends GameTemplate {
             newhtml += `<div class="cardselector" id="resource" title="Show my resources">Resources</div>`;
             newhtml += `<div class="cardselector" id="cards" title="Show my ${this.skin.card.name} cards">Cards</div>`;
             newhtml += `</div>`;
-          }  
+          }
         }
       }
 
       this.playerbox.refreshInfo(newhtml, i);
       $(".player-box-info").disableSelection();
-     
+
       //Other player ads... in LOG
       if (this.game.player != i) {
-        if (this.game.state.ads[i-1].offer || this.game.state.ads[i-1].ask){
-
-          if (this.game.state.ads[i-1].ad){
-            let offer = this.wishListToImage(this.game.state.ads[i-1].offer);
-            let ask = this.wishListToImage(this.game.state.ads[i-1].ask);
+        if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
+          if (this.game.state.ads[i - 1].ad) {
+            let offer = this.wishListToImage(this.game.state.ads[i - 1].offer);
+            let ask = this.wishListToImage(this.game.state.ads[i - 1].ask);
             let id = `trade_${i}`;
             let html = `<div class="trade flexline" id="${id}">`;
             if (ask) {
@@ -2081,35 +2092,41 @@ class Settlers extends GameTemplate {
             $(id).off();
             $(id).on("click", function () {
               //  Launch overlay window for private trade
-              settlers_self.showTradeOverlay(i, settlers_self.game.state.ads[i-1].ask, settlers_self.game.state.ads[i-1].offer);
-            });                  
-          }else{
-            this.renderTradeOfferInPlayerBox(i, this.game.state.ads[i-1].offer, this.game.state.ads[i-1].ask);
+              settlers_self.showTradeOverlay(
+                i,
+                settlers_self.game.state.ads[i - 1].ask,
+                settlers_self.game.state.ads[i - 1].offer
+              );
+            });
+          } else {
+            this.renderTradeOfferInPlayerBox(
+              i,
+              this.game.state.ads[i - 1].offer,
+              this.game.state.ads[i - 1].ask
+            );
           }
-        }else{
+        } else {
           this.playerbox.refreshLog("", i);
         }
-      } 
+      }
     }
 
-    if (this.game.player == 0){ 
+    if (this.game.player == 0) {
       this.showPlayerResources();
-      return; 
+      return;
     }
 
-      
-    let settlers_self = this;  
-    $('#cleartrade').off();
-    $('#cleartrade').on("click", function(){ 
+    let settlers_self = this;
+    $("#cleartrade").off();
+    $("#cleartrade").on("click", function () {
       settlers_self.clearAdvert();
     });
     $("#tradenow").off();
-    $("#tradenow").on("click", function(){
+    $("#tradenow").on("click", function () {
       settlers_self.showResourceOverlay();
     });
 
     this.cardbox.attachCardEvents();
-
 
     //Show player cards and add events (Doesn't need to be in for loop!)
     if (this.boughtCard) {
@@ -2121,19 +2138,18 @@ class Settlers extends GameTemplate {
     this.addEventsToHand();
   }
 
-
-  renderTradeOfferInPlayerBox(offering_player, stuff_on_offer, stuff_in_return){
+  renderTradeOfferInPlayerBox(offering_player, stuff_on_offer, stuff_in_return) {
     let settlers_self = this;
 
     let can_accept = true;
-    for (let r in stuff_in_return){
-      if (this.countResource(this.game.player,r) < stuff_in_return[r]){
+    for (let r in stuff_in_return) {
+      if (this.countResource(this.game.player, r) < stuff_in_return[r]) {
         can_accept = false;
       }
     }
 
-    if (!can_accept){
-      this.game.state.ads[offering_player-1].ad = true;
+    if (!can_accept) {
+      this.game.state.ads[offering_player - 1].ad = true;
       this.addMove(`reject_offer\t${this.game.player}\t${offering_player}`);
       this.endTurn();
       return;
@@ -2145,19 +2161,18 @@ class Settlers extends GameTemplate {
 
     let html = `<div class="pbtrade">
                   <div class="flexline">Offers <span class="tip highlight">${offer}</span> for <span class="tip highlight">${ask}</span></div>`;
-    
-    if (this.game.state.canTrade){
+
+    if (this.game.state.canTrade) {
       html += `<ul class="flexline">
                 <li class="pboption" id="accept">✔</li>
                 <li class="pboption" id="reject">✘</li>
-              </ul>`;  
+              </ul>`;
     }
     html += "</div>";
 
     this.playerbox.refreshLog(html, offering_player);
- 
-    let selector =
-      "#player-box-" + this.playerbox.playerBox(offering_player);
+
+    let selector = "#player-box-" + this.playerbox.playerBox(offering_player);
 
     $(`${selector} .pboption`).off();
     $(`${selector} .pboption`).on("click", function () {
@@ -2166,26 +2181,27 @@ class Settlers extends GameTemplate {
       //
       let choice = $(this).attr("id");
       if (choice == "accept") {
-        settlers_self.game.state.ads[offering_player-1].offer = null;
-        settlers_self.game.state.ads[offering_player-1].ask = null;
+        settlers_self.game.state.ads[offering_player - 1].offer = null;
+        settlers_self.game.state.ads[offering_player - 1].ask = null;
         settlers_self.addMove(`clear_advert\t${settlers_self.game.player}`);
         settlers_self.addMove(
           "accept_offer\t" +
-            settlers_self.game.player + "\t" +
-            offering_player + "\t" +
-            JSON.stringify(stuff_on_offer) + "\t" +
+            settlers_self.game.player +
+            "\t" +
+            offering_player +
+            "\t" +
+            JSON.stringify(stuff_on_offer) +
+            "\t" +
             JSON.stringify(stuff_in_return)
         );
         settlers_self.endTurn();
       }
       if (choice == "reject") {
-        settlers_self.game.state.ads[offering_player-1].ad = true;
+        settlers_self.game.state.ads[offering_player - 1].ad = true;
         settlers_self.addMove(`reject_offer\t${settlers_self.game.player}\t${offering_player}`);
         settlers_self.endTurn();
       }
     });
-
-  
   }
 
   //Allow this player to click buttons to display resource or dev cards in their cardfan
@@ -2198,18 +2214,18 @@ class Settlers extends GameTemplate {
     });
   }
 
-  removeEvents(){
+  removeEvents() {
     //console.trace("remove events");
     this.displayBoard();
     $(".cardselector").off();
     $(".trade").off();
   }
+
   /*
     Functions for Player interacting with the board
   */
 
   playerBuildCity(player, canBackUp = 0) {
-
     let settlers_self = this;
     let existing_cities = 0;
     for (let i = 0; i < this.game.state.cities.length; i++) {
@@ -2223,59 +2239,56 @@ class Settlers extends GameTemplate {
     Everyone starts with 2 settlements and can be placed anywhere on island
     */
     if (existing_cities < 2) {
-
-      if (existing_cities == 1){
-        this.updateStatus(`<div class="flashme tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
-      }else{
-        this.updateStatus(`<div class="flashme tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
+      if (existing_cities == 1) {
+        this.updateStatus(
+          `<div class="flashme tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`
+        );
+      } else {
+        this.updateStatus(
+          `<div class="flashme tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`
+        );
       }
       $(".flashme").addClass("flash");
-
 
       $(".city.empty").addClass("chover");
       //$('.city').css('z-index', 9999999);
       $(".city.empty").off();
-        
+
       $(".city.empty").on("mousedown", function (e) {
         xpos = e.clientX;
         ypos = e.clientY;
       });
       //Create as menu on the game board to input word from a tile in horizontal or vertical direction
       $(".city.empty").on("mouseup", function (e) {
-          if (Math.abs(xpos - e.clientX) > 4) {
-            return;
-          }
-          if (Math.abs(ypos - e.clientY) > 4) {
-            return;
-          }
-          $(".city.empty").css("background-color", "");   
-          //Confirm this move
-          let slot = $(this).attr("id");
-          settlers_self.confirmPlacement(slot, settlers_self.skin.c1.name, ()=>{
-            $(".city.empty").removeClass("chover");
-            $(".city.empty").off();
-              settlers_self.game.state.placedCity = slot;
-              settlers_self.buildCity(settlers_self.game.player, slot);
-              if (existing_cities == 1)
-                settlers_self.addMove(
-                  `secondcity\t${settlers_self.game.player}\t${slot.replace(
-                    "city_",
-                    ""
-                  )}`
-                );
-              settlers_self.addMove(
-                `build_city\t${settlers_self.game.player}\t${slot}`
-              );
-              settlers_self.endTurn();
-          });
-        
+        if (Math.abs(xpos - e.clientX) > 4) {
+          return;
+        }
+        if (Math.abs(ypos - e.clientY) > 4) {
+          return;
+        }
+        $(".city.empty").css("background-color", "");
+        //Confirm this move
+        let slot = $(this).attr("id");
+        settlers_self.confirmPlacement(slot, settlers_self.skin.c1.name, () => {
+          $(".city.empty").removeClass("chover");
+          $(".city.empty").off();
+          settlers_self.game.state.placedCity = slot;
+          settlers_self.buildCity(settlers_self.game.player, slot);
+          if (existing_cities == 1)
+            settlers_self.addMove(
+              `secondcity\t${settlers_self.game.player}\t${slot.replace("city_", "")}`
+            );
+          settlers_self.addMove(`build_city\t${settlers_self.game.player}\t${slot}`);
+          settlers_self.endTurn();
+        });
       });
-      
     } else {
       /* During game, must build roads to open up board for new settlements*/
-      if (canBackUp){
-        this.updateStatus(`<div class="tbd">You may build a ${this.skin.c1.name}...</div><ul><li class="undo">don't build ${this.skin.c1.name}</li></ul>`);
-        $(".undo").on("click",function(){
+      if (canBackUp) {
+        this.updateStatus(
+          `<div class="tbd">You may build a ${this.skin.c1.name}...</div><ul><li class="undo">don't build ${this.skin.c1.name}</li></ul>`
+        );
+        $(".undo").on("click", function () {
           //Make sure the confirm popup goes away
           $(".action").off();
           $(".popup-confirm-menu").remove();
@@ -2285,45 +2298,43 @@ class Settlers extends GameTemplate {
           settlers_self.addMove("undo_build");
           settlers_self.endTurn();
         });
-      }else{
-        this.updateStatus(`<div class="tbd">You may build a ${this.skin.c1.name}...</div>`);  
+      } else {
+        this.updateStatus(`<div class="tbd">You may build a ${this.skin.c1.name}...</div>`);
       }
-      
+
       let building_options = this.returnCitySlotsAdjacentToPlayerRoads(this.game.player);
       for (let i = 0; i < building_options.length; i++) {
         console.log(building_options[i]);
         let divname = "#" + building_options[i];
         $(divname).addClass("rhover");
       }
-        
-        $(".rhover").off();
-        $(".rhover").on("mousedown", function (e) {
-          xpos = e.clientX;
-          ypos = e.clientY;
-        });
 
-        $(".rhover").on("mouseup", function (e) {
-          if (Math.abs(xpos - e.clientX) > 4) {
-            return;
-          }
-          if (Math.abs(ypos - e.clientY) > 4) {
-            return;
-          }
-  
-          let slot = $(this).attr("id");
-          settlers_self.confirmPlacement(slot, settlers_self.skin.c1.name, ()=>{
-            $(".rhover").off();
-            $(".rhover").removeClass("rhover");
+      $(".rhover").off();
+      $(".rhover").on("mousedown", function (e) {
+        xpos = e.clientX;
+        ypos = e.clientY;
+      });
 
-            settlers_self.buildCity(settlers_self.game.player, slot);
-            settlers_self.addMove(`build_city\t${settlers_self.game.player}\t${slot}`);
-            settlers_self.endTurn();
-          })
+      $(".rhover").on("mouseup", function (e) {
+        if (Math.abs(xpos - e.clientX) > 4) {
+          return;
+        }
+        if (Math.abs(ypos - e.clientY) > 4) {
+          return;
+        }
+
+        let slot = $(this).attr("id");
+        settlers_self.confirmPlacement(slot, settlers_self.skin.c1.name, () => {
+          $(".rhover").off();
+          $(".rhover").removeClass("rhover");
+
+          settlers_self.buildCity(settlers_self.game.player, slot);
+          settlers_self.addMove(`build_city\t${settlers_self.game.player}\t${slot}`);
+          settlers_self.endTurn();
         });
-      
+      });
     }
   }
-
 
   buildCity(player, slot) {
     // remove adjacent slots
@@ -2337,7 +2348,7 @@ class Settlers extends GameTemplate {
 
     //Put City on GUI Board
     let divname = "#" + slot;
-    let classname = "p" + this.game.colors[player-1];
+    let classname = "p" + this.game.colors[player - 1];
 
     $(divname).addClass(classname);
     $(divname).removeClass("empty");
@@ -2351,23 +2362,23 @@ class Settlers extends GameTemplate {
         //console.log("Add ghost road from city");
         this.addRoadToGameboard(road.substring(2), road[0]);
       }
-    }else{
-      //Check if new city blocks other players from expanding their roads    
+    } else {
+      //Check if new city blocks other players from expanding their roads
       for (let road of newRoads) {
         //console.log("road: ",road);
-        for (let i = 0; i < this.game.state.roads.length; i++){
-          if (this.game.state.roads[i].slot == "road_"+road){
+        for (let i = 0; i < this.game.state.roads.length; i++) {
+          if (this.game.state.roads[i].slot == "road_" + road) {
             //console.log("exists");
-            if (this.game.state.roads[i].player == this.game.player){
+            if (this.game.state.roads[i].player == this.game.player) {
               //console.log("is mine");
               blocks_me = true;
             }
-           break;
+            break;
           }
         }
       }
     }
-    
+
     //Save City to Internal Game Logic
     //Stop if we already saved the Village
     for (let i = 0; i < this.game.state.cities.length; i++) {
@@ -2383,9 +2394,7 @@ class Settlers extends GameTemplate {
       let porttowns = this.hexgrid.verticesFromEdge(p);
       for (let t of porttowns) {
         if ("city_" + t == slot) {
-          this.game.state.players[player - 1].ports.push(
-            this.game.state.ports[p]
-          );
+          this.game.state.players[player - 1].ports.push(this.game.state.ports[p]);
           //console.log(`Player ${player} has a ${this.game.state.ports[p]} port`);
         }
       }
@@ -2399,19 +2408,19 @@ class Settlers extends GameTemplate {
       neighbours: neighbours,
       level: 1,
     });
-  
-    if (blocks_me){
+
+    if (blocks_me) {
       console.log("undo ghost roads");
       this.displayBoard();
     }
-
   }
 
   playerUpgradeCity(player, canBackUp = 0) {
-    
-    if (canBackUp){
-      this.updateStatus(`<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div><ul><li class="undo">don't build ${this.skin.c2.name}</li></ul>`);
-      $(".undo").on("click",function(){
+    if (canBackUp) {
+      this.updateStatus(
+        `<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div><ul><li class="undo">don't build ${this.skin.c2.name}</li></ul>`
+      );
+      $(".undo").on("click", function () {
         //Make sure the confirm popup goes away
         $(".action").off();
         $(".popup-confirm-menu").remove();
@@ -2422,8 +2431,10 @@ class Settlers extends GameTemplate {
         settlers_self.addMove("undo_build");
         settlers_self.endTurn();
       });
-    }else{
-      this.updateStatus(`<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div>`);  
+    } else {
+      this.updateStatus(
+        `<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div>`
+      );
     }
 
     let settlers_self = this;
@@ -2448,9 +2459,7 @@ class Settlers extends GameTemplate {
           slot == settlers_self.game.state.cities[i].slot &&
           settlers_self.game.state.cities[i].level == 1
         ) {
-          settlers_self.addMove(
-            `upgrade_city\t${settlers_self.game.player}\t${slot}`
-          );
+          settlers_self.addMove(`upgrade_city\t${settlers_self.game.player}\t${slot}`);
           settlers_self.endTurn();
           return;
         }
@@ -2461,47 +2470,43 @@ class Settlers extends GameTemplate {
   }
 
   /*
-    Allows player to click a road 
+    Allows player to click a road
   */
   playerBuildRoad(player, canBackUp = false) {
- 
-   let settlers_self = this;
+    let settlers_self = this;
 
     if (this.game.state.placedCity) {
-      this.updateStatus(
-        `<div class="tbd">YOUR TURN: place a ${this.skin.r.name}...</div>`
-      );
+      this.updateStatus(`<div class="tbd">YOUR TURN: place a ${this.skin.r.name}...</div>`);
 
       /*Initial placing of settlements and roads, road must connect to settlement just placed
         Use a "new" class tag to restrict scope
         This is literally just a fix for the second road in the initial placement
       */
-      let newRoads = this.hexgrid.edgesFromVertex(
-        this.game.state.placedCity.replace("city_", "")
-      );
+      let newRoads = this.hexgrid.edgesFromVertex(this.game.state.placedCity.replace("city_", ""));
       for (let road of newRoads) {
         $(`#road_${road}`).addClass("new");
       }
       $(".road.new").addClass("rhover");
 
-      
       $(".road.new").off();
       $(".road.new").on("click", function () {
         let slot = $(this).attr("id");
-        settlers_self.confirmPlacement(slot, settlers_self.skin.r.name, ()=>{
+        settlers_self.confirmPlacement(slot, settlers_self.skin.r.name, () => {
           $(".road.new").off();
           $(".road.new").removeAttr("style");
           $(".rhover").removeClass("rhover");
           $(".road.new").removeClass("new");
-        
+
           settlers_self.addMove(`build_road\t${settlers_self.game.player}\t${slot}`);
           settlers_self.endTurn();
         });
       });
     } else {
-      if (canBackUp){
-        this.updateStatus(`<div class="tbd">You may build a ${this.skin.r.name}...</div><ul><li class="undo">don't build ${this.skin.r.name}</li></ul>`);
-        $(".undo").on("click",function(){
+      if (canBackUp) {
+        this.updateStatus(
+          `<div class="tbd">You may build a ${this.skin.r.name}...</div><ul><li class="undo">don't build ${this.skin.r.name}</li></ul>`
+        );
+        $(".undo").on("click", function () {
           //Make sure the confirm popup goes away
           $(".action").off();
           $(".undo").off();
@@ -2513,18 +2518,17 @@ class Settlers extends GameTemplate {
           settlers_self.addMove(`undo_build`);
           settlers_self.endTurn();
         });
-
-      } else{
+      } else {
         this.updateStatus(`<div class="tbd">You may build a ${this.skin.r.name}...</div>`);
       }
 
       /*Normal game play, can play road anywhere empty connected to my possessions*/
       $(".road.empty").addClass("rhover");
-      
+
       $(".road.empty").off();
       $(".road.empty").on("click", function () {
         let slot = $(this).attr("id");
-        settlers_self.confirmPlacement(slot, settlers_self.skin.r.name, ()=>{
+        settlers_self.confirmPlacement(slot, settlers_self.skin.r.name, () => {
           $(".road.empty").off();
           $(".rhover").removeClass("rhover");
           $(".road.empty").removeAttr("style");
@@ -2540,7 +2544,7 @@ class Settlers extends GameTemplate {
   */
   buildRoad(player, slot) {
     let divname = "#" + slot;
-    let owner = "p" + this.game.colors[player-1];
+    let owner = "p" + this.game.colors[player - 1];
 
     //Check if road exists in DOM and update status
     if (!document.querySelector(divname)) {
@@ -2556,20 +2560,22 @@ class Settlers extends GameTemplate {
       for (let road of this.hexgrid.adjacentEdges(slot.replace("road_", ""))) {
         //console.log("road: ",road);
         let v2 = this.hexgrid.verticesFromEdge(road);
-        let intersection = v2.filter(function(n){return v1.indexOf(n) !== -1;});
+        let intersection = v2.filter(function (n) {
+          return v1.indexOf(n) !== -1;
+        });
         //console.log(v1, v2, intersection);
         let block_me = false;
         for (let i = 0; i < this.game.state.cities.length; i++) {
-          if (this.game.state.cities[i].slot == "city_"+intersection[0]) {
-            if(this.game.state.cities[i].player !== this.game.player){
+          if (this.game.state.cities[i].slot == "city_" + intersection[0]) {
+            if (this.game.state.cities[i].player !== this.game.player) {
               block_me = true;
             }
             break;
           }
         }
-        if (!block_me){
+        if (!block_me) {
           //console.log("city_"+intersection[0]+" clear, Add ghost road from road");
-          this.addRoadToGameboard(road.substring(2), road[0]);  
+          this.addRoadToGameboard(road.substring(2), road[0]);
         }
       }
     }
@@ -2594,10 +2600,9 @@ class Settlers extends GameTemplate {
 
     html += "<ul>";
 
-    if (settlers_self.canPlayerBankTrade()){
-      html += '<li class="option" id="bank">bank</li>';  
+    if (settlers_self.canPlayerBankTrade()) {
+      html += '<li class="option" id="bank">bank</li>';
     }
-    
 
     if (settlers_self.canPlayerPlayCard()) {
       html += `<li class="option" id="playcard">play card</li>`;
@@ -2629,7 +2634,7 @@ class Settlers extends GameTemplate {
         settlers_self.endTurn();
         return;
       }
-      if (id === "bank"){
+      if (id === "bank") {
         settlers_self.bankTrade();
         return;
       }
@@ -2649,8 +2654,7 @@ class Settlers extends GameTemplate {
     });
   }
 
-
-  returnResourceHTML(resource){
+  returnResourceHTML(resource) {
     return `<div class="tip">
             <img class="icon" src="${this.skin.resourceIcon(resource)}">
             <div class="tiptext">${resource}</div>
@@ -2675,32 +2679,41 @@ class Settlers extends GameTemplate {
   Overwrite standard card imaging function to hijack the game-cardbox and have it show
   building costs "help" card
   */
-  returnCardImage(card){
-    if (card == "construction-costs"){
+  returnCardImage(card) {
+    if (card == "construction-costs") {
       let html = `<div class="construction-costs saitoa">
               <div class="h2">Building Costs</div>
               <div class="table">
-              <div class="tip token p${this.game.colors[this.game.player-1]}"><svg viewbox="0 0 200 200"><polygon points="0,175 175,0, 200,25 25,200"/></svg>
+              <div class="tip token p${
+                this.game.colors[this.game.player - 1]
+              }"><svg viewbox="0 0 200 200"><polygon points="0,175 175,0, 200,25 25,200"/></svg>
                 <div class="tiptext">${this.skin.r.name}: Longest road worth 2 VP</div></div>
                   <div class="cost">${this.visualizeCost(0)}</div>
-                <div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c1.svg}<div class="tiptext">${this.skin.c1.name}: 1 VP</div></div>
+                <div class="tip token p${this.game.colors[this.game.player - 1]}">${
+        this.skin.c1.svg
+      }<div class="tiptext">${this.skin.c1.name}: 1 VP</div></div>
                     <div class="cost">${this.visualizeCost(1)}</div>
-                    <div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c2.svg}<div class="tiptext">${this.skin.c2.name}: 2 VP</div></div>
+                    <div class="tip token p${this.game.colors[this.game.player - 1]}">${
+        this.skin.c2.svg
+      }<div class="tiptext">${this.skin.c2.name}: 2 VP</div></div>
                     <div class="cost">${this.visualizeCost(2)}</div>
                 <div class="tip token"><svg viewbox="0 0 200 200"><polygon points="25,0 175,0, 175,200 25,200"/>
                 <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="132px" fill="red">?</text></svg>
-                <div class="tiptext">${this.skin.card.name} card: Largest army worth 2 VP</div></div><div class="cost">${this.visualizeCost(3)}</div>
+                <div class="tiptext">${
+                  this.skin.card.name
+                } card: Largest army worth 2 VP</div></div><div class="cost">${this.visualizeCost(
+        3
+      )}</div>
               </div>
-              <div class="message">The first player to reach ${this.game.options.game_length} VP wins!</div>
+              <div class="message">The first player to reach ${
+                this.game.options.game_length
+              } VP wins!</div>
               </div>`;
       return html;
-    }else{
+    } else {
       return "";
     }
   }
-
-
-
 
   /*
   Maybe an intermediate interface for building (like Trading)
@@ -2714,16 +2727,16 @@ class Settlers extends GameTemplate {
 
     if (settlers_self.canPlayerBuildRoad(settlers_self.game.player)) {
       html += `<li class="option" id="0">build ${this.skin.r.name} </li>`;
-    } 
+    }
     if (settlers_self.canPlayerBuildTown(settlers_self.game.player)) {
       html += `<li class="option" id="1">build ${this.skin.c1.name}</li>`;
-    } 
+    }
     if (settlers_self.canPlayerBuildCity(settlers_self.game.player)) {
       html += `<li class="option" id="2">build ${this.skin.c2.name}</li>`;
-    } 
+    }
     if (settlers_self.canPlayerBuyCard(settlers_self.game.player)) {
       html += `<li class="option" id="3">buy ${this.skin.card.name} card</li>`;
-    } 
+    }
     html += `<li class="option" id="cancel">go back</li>`;
     html += "</ul>";
 
@@ -2738,23 +2751,20 @@ class Settlers extends GameTemplate {
         return;
       }
       if (id === "0") {
-        settlers_self.addMove(
-          `player_build_road\t${settlers_self.game.player}\t0\t1`);
+        settlers_self.addMove(`player_build_road\t${settlers_self.game.player}\t0\t1`);
       }
       if (id === "1") {
         settlers_self.addMove(`player_build_city\t${settlers_self.game.player}\t1`);
       }
       if (id === "2") {
-        settlers_self.addMove(
-          "player_upgrade_city\t" + settlers_self.game.player
-        );
+        settlers_self.addMove("player_upgrade_city\t" + settlers_self.game.player);
       }
       if (id === "3") {
         //have everyone update game state
-        settlers_self.addMove("buy_card\t" + settlers_self.game.player); 
+        settlers_self.addMove("buy_card\t" + settlers_self.game.player);
         // Deck #1 = deck[0] = devcard deck
         //get card from deck
-        settlers_self.addMove("SAFEDEAL\t1\t" + settlers_self.game.player + "\t1"); 
+        settlers_self.addMove("SAFEDEAL\t1\t" + settlers_self.game.player + "\t1");
       }
       let purchase = parseInt(id);
       if (purchase >= 0 && purchase <= 3) {
@@ -2764,7 +2774,6 @@ class Settlers extends GameTemplate {
           settlers_self.prependMove(
             "spend_resource\t" + settlers_self.game.player + "\t" + resource
           );
-
         }
         settlers_self.endTurn();
       } else {
@@ -2803,7 +2812,7 @@ class Settlers extends GameTemplate {
 
     html += `<li class="option" id="cancel">go back</li>`;
     html += "</ul></div>";
-    this.updateStatus(html, 0);  
+    this.updateStatus(html, 0);
 
     $(".option").off();
     $(".option").on("click", function () {
@@ -2817,8 +2826,7 @@ class Settlers extends GameTemplate {
         return;
       }
 
-      let cardobj =
-        settlers_self.game.deck[0].cards[settlers_self.game.deck[0].hand[card]];
+      let cardobj = settlers_self.game.deck[0].cards[settlers_self.game.deck[0].hand[card]];
 
       //Callback seems to get lost somewhere
       //cardobj.callback(settlers_self.game.player);
@@ -2826,16 +2834,11 @@ class Settlers extends GameTemplate {
       switch (cardobj.action) {
         case 1: //Soldier/Knight
           settlers_self.game.state.canPlayCard = false; //No more cards this turn
-          settlers_self.addMove(
-            `play_knight\t${settlers_self.game.player}\t${cardobj.card}`
-          );
+          settlers_self.addMove(`play_knight\t${settlers_self.game.player}\t${cardobj.card}`);
           settlers_self.endTurn();
           break;
         case 2:
-          settlers_self.playYearOfPlenty(
-            settlers_self.game.player,
-            cardobj.card
-          );
+          settlers_self.playYearOfPlenty(settlers_self.game.player, cardobj.card);
           settlers_self.game.state.canPlayCard = false; //No more cards this turn
           break;
         case 3:
@@ -2844,22 +2847,14 @@ class Settlers extends GameTemplate {
           break;
         case 4:
           settlers_self.game.state.canPlayCard = false; //No more cards this turn
-          settlers_self.addMove(
-            "player_build_road\t" + settlers_self.game.player
-          );
-          settlers_self.addMove(
-            "player_build_road\t" + settlers_self.game.player
-          );
-          settlers_self.addMove(
-            `road_building\t${settlers_self.game.player}\t${cardobj.card}`
-          );
+          settlers_self.addMove("player_build_road\t" + settlers_self.game.player);
+          settlers_self.addMove("player_build_road\t" + settlers_self.game.player);
+          settlers_self.addMove(`road_building\t${settlers_self.game.player}\t${cardobj.card}`);
           settlers_self.endTurn();
           break;
         default:
           //victory point
-          settlers_self.addMove(
-            `vp\t${settlers_self.game.player}\t${cardobj.card}`
-          );
+          settlers_self.addMove(`vp\t${settlers_self.game.player}\t${cardobj.card}`);
           settlers_self.endTurn();
       }
       settlers_self.removeCardFromHand(settlers_self.game.deck[0].hand[card]);
@@ -2890,8 +2885,7 @@ class Settlers extends GameTemplate {
   */
   canPlayerBuildTown(player) {
     if (this.game.state.players[player - 1].towns == 0) return false;
-    if (this.returnCitySlotsAdjacentToPlayerRoads(this.game.player).length == 0)
-      return false;
+    if (this.returnCitySlotsAdjacentToPlayerRoads(this.game.player).length == 0) return false;
     return this.doesPlayerHaveResources(player, this.skin.priceList[1]);
   }
 
@@ -2918,7 +2912,7 @@ class Settlers extends GameTemplate {
 
   /*
     Player must have a development card in the hand to play...
-    Any card is fine 
+    Any card is fine
   */
   canPlayerPlayCard() {
     if (this.game.state.players[this.game.player - 1].devcards > 0) {
@@ -2940,21 +2934,18 @@ class Settlers extends GameTemplate {
     return false;
   }
 
-
-  canPlayerBankTrade(){
+  canPlayerBankTrade() {
     let minForTrade = this.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
 
-    if (!this.game.state.canTrade){
+    if (!this.game.state.canTrade) {
       return false;
     }
 
     for (let resource of this.skin.resourceArray()) {
-      if (this.countResource(this.game.player, resource) >= minForTrade[resource]) 
-        return true;
+      if (this.countResource(this.game.player, resource) >= minForTrade[resource]) return true;
     }
     return false;
   }
-    
 
   /*
     Recursively let player select two resources, then push them to game queue to share selection
@@ -2969,9 +2960,11 @@ class Settlers extends GameTemplate {
 
     //Player recursively selects all the resources they want to get rid of
     let gainResource = function (settlers_self) {
-      let html = `<div class='tbd'>Select Resources (Can get ${remaining}): <ul class="horizontal_list">`;
+      let html = `<div class="tbd">Select Resources (Can get ${remaining}): <ul class="horizontal_list">`;
       for (let i of resourceList) {
-        html += `<li id="${i}" class="iconoption option">${settlers_self.returnResourceHTML(i)}</li>`;
+        html += `<li id="${i}" class="iconoption option">${settlers_self.returnResourceHTML(
+          i
+        )}</li>`;
       }
       html += "</ul>";
       html += "</div>";
@@ -2985,9 +2978,7 @@ class Settlers extends GameTemplate {
         remaining--;
         if (remaining <= 0) {
           settlers_self.addMove(
-            `year_of_plenty\t${player}\t${cardname}\t${JSON.stringify(
-              cardsToGain
-            )}`
+            `year_of_plenty\t${player}\t${cardname}\t${JSON.stringify(cardsToGain)}`
           );
           settlers_self.endTurn();
           return 0;
@@ -3009,7 +3000,7 @@ class Settlers extends GameTemplate {
     let resourceList = this.skin.resourceArray();
 
     //Player recursively selects all the resources they want to get rid of
-    let html = `<div class='tbd'>Select Desired Resource: <ul class="horizontal_list">`;
+    let html = `<div class="tbd">Select Desired Resource: <ul class="horizontal_list">`;
     for (let i of resourceList) {
       html += `<li id="${i}" class="iconoption option">${settlers_self.returnResourceHTML(i)}</li>`;
     }
@@ -3036,26 +3027,20 @@ class Settlers extends GameTemplate {
       //Someone already has it
       if (this.game.state.largestArmy.player != player) {
         //Only care if a diffeent player
-        if (
-          this.game.state.players[player - 1].knights >
-          this.game.state.largestArmy.size
-        ) {
+        if (this.game.state.players[player - 1].knights > this.game.state.largestArmy.size) {
           this.game.state.largestArmy.player = player;
-          this.game.state.largestArmy.size =
-            this.game.state.players[player - 1].knights;
+          this.game.state.largestArmy.size = this.game.state.players[player - 1].knights;
           vpChange = true;
         }
       } else {
         //Increase army size
-        this.game.state.largestArmy.size =
-          this.game.state.players[player - 1].knights;
+        this.game.state.largestArmy.size = this.game.state.players[player - 1].knights;
       }
     } else {
       //Open to claim
       if (this.game.state.players[player - 1].knights >= 3) {
         this.game.state.largestArmy.player = player;
-        this.game.state.largestArmy.size =
-          this.game.state.players[player - 1].knights;
+        this.game.state.largestArmy.size = this.game.state.players[player - 1].knights;
         vpChange = true;
       }
     }
@@ -3069,8 +3054,7 @@ class Settlers extends GameTemplate {
   isCityAt(slot) {
     if (!slot.includes("city_")) slot = "city_" + slot;
 
-    for (let city of this.game.state.cities)
-      if (city.slot == slot) return city.player;
+    for (let city of this.game.state.cities) if (city.slot == slot) return city.player;
     return 0;
   }
 
@@ -3089,8 +3073,7 @@ class Settlers extends GameTemplate {
         potTemp,
         verts = [];
       //Look in both directions
-      if (currentPath.length === 1)
-        verts = settlers_self.hexgrid.verticesFromEdge(currentPath[0]);
+      if (currentPath.length === 1) verts = settlers_self.hexgrid.verticesFromEdge(currentPath[0]);
       else
         verts.push(
           settlers_self.hexgrid.directedEdge(
@@ -3120,8 +3103,7 @@ class Settlers extends GameTemplate {
     //Determine which roads belong to player
     let playerSegments = [];
     for (let road of this.game.state.roads) {
-      if (road.player == player)
-        playerSegments.push(road.slot.replace("road_", ""));
+      if (road.player == player) playerSegments.push(road.slot.replace("road_", ""));
     }
     //Starting with each, find maximal continguous path
     let longest = [];
@@ -3143,7 +3125,9 @@ class Settlers extends GameTemplate {
             this.highlightRoad(
               player,
               longest,
-              `claimed the ${this.skin.longest.name} from ${this.game.playerNames[this.game.state.longestRoad.player-1]} with ${longest.length} segments!`
+              `claimed the ${this.skin.longest.name} from ${
+                this.game.playerNames[this.game.state.longestRoad.player - 1]
+              } with ${longest.length} segments!`
             );
             this.game.state.longestRoad.player = player;
             this.game.state.longestRoad.size = longest.length;
@@ -3153,7 +3137,9 @@ class Settlers extends GameTemplate {
             this.game.state.longestRoad.size = longest.length;
             this.game.state.longestRoad.path = longest;
             this.updateLog(
-              `${this.game.playerNames[player-1]} extended the ${this.skin.longest.name} to ${longest.length} segments.`
+              `${this.game.playerNames[player - 1]} extended the ${this.skin.longest.name} to ${
+                longest.length
+              } segments.`
             );
           }
           return 1;
@@ -3176,8 +3162,7 @@ class Settlers extends GameTemplate {
 
   countResource(player, resource) {
     let ct = 0;
-    for (let i of this.game.state.players[player - 1].resources)
-      if (i == resource) ct++;
+    for (let i of this.game.state.players[player - 1].resources) if (i == resource) ct++;
     return ct;
   }
 
@@ -3206,12 +3191,13 @@ class Settlers extends GameTemplate {
     let offer = "";
     for (let resource in stuff) {
       for (let i = 0; i < stuff[resource]; i++) {
-        offer += `<img class="icon" src="${this.skin.resourceIcon(resource)}"/><div class="tiptext">${resource}</div>`;
+        offer += `<img class="icon" src="${this.skin.resourceIcon(
+          resource
+        )}"/><div class="tiptext">${resource}</div>`;
       }
     }
     return offer;
   }
-
 
   /*
   Short circuit the simultaneous moves from an open offer trade to give player control of the game again
@@ -3234,8 +3220,6 @@ class Settlers extends GameTemplate {
     this.endTurn();
   }
 
-
-
   /*<><><><><><><>
   Broadcast offer to trade to all players
   This just makes an advertisement accessible through game menu to any player at any time (even if not eligible to trade)
@@ -3255,10 +3239,7 @@ class Settlers extends GameTemplate {
 
     //Convert the players array of resources into a compact object {wheat:1, wood:2,...}
     for (let resource of resources) {
-      let temp = settlers_self.countResource(
-        settlers_self.game.player,
-        resource
-      );
+      let temp = settlers_self.countResource(settlers_self.game.player, resource);
       if (temp > 0) my_resources[resource] = temp;
     }
 
@@ -3268,21 +3249,25 @@ class Settlers extends GameTemplate {
 
       let html = `
           <div class="trade_overlay saitoa" id="trade_overlay">
-            <div class="h1 trade_overlay_title">Trade with ${settlers_self.game.playerNames[tradeType-1]}</div>
+            <div class="h1 trade_overlay_title">Trade with ${
+              settlers_self.game.playerNames[tradeType - 1]
+            }</div>
             <div class="h2">You will accept</div>
             <div class="trade_overlay_offers">`;
-      for (let i = 0; i < resList.length; i++){
+      for (let i = 0; i < resList.length; i++) {
         resource_cnt += receiving[resList[i]];
         html += `<div id="want_${i}" class="trade_area select">
                   <div>${resList[i]}</div>
                   <div class="offer_icons" id="want_${resList[i]}">`;
-        if (receiving[resList[i]]>0){
-          html += `<img id="${resList[i]}" class="icon receive" src="${settlers_self.skin.resourceIcon(resList[i])}"/>`;
+        if (receiving[resList[i]] > 0) {
+          html += `<img id="${
+            resList[i]
+          }" class="icon receive" src="${settlers_self.skin.resourceIcon(resList[i])}"/>`;
         }
-        if (receiving[resList[i]]>1){
+        if (receiving[resList[i]] > 1) {
           html += `<div class="icon_multiplier">x${receiving[resList[i]]}</div>`;
         }
-         html +=  `</div></div>`;
+        html += `</div></div>`;
       }
 
       html += `</div>
@@ -3292,25 +3277,31 @@ class Settlers extends GameTemplate {
       for (let i = 0; i < resList.length; i++) {
         resource_cnt += offering[resList[i]];
         console.log(resList[i], offering[resList[i]], myRes[resList[i]]);
-        if (offering[resList[i]] > (myRes[resList[i]] || 0)){
+        if (offering[resList[i]] > (myRes[resList[i]] || 0)) {
           can_afford = false;
         }
-        html += `<div id="offer_${i}" class="trade_area ${(myRes[resList[i]])?"select":"noselect"}">
+        html += `<div id="offer_${i}" class="trade_area ${
+          myRes[resList[i]] ? "select" : "noselect"
+        }">
                  <div class="tip"><span>${resList[i]}</span>
-                 <div class="tiptext">${(myRes[resList[i]])?myRes[resList[i]]:0} total</div></div>
+                 <div class="tiptext">${myRes[resList[i]] ? myRes[resList[i]] : 0} total</div></div>
                  <div class="offer_icons" id="offer_${resList[i]}">`;
-          if (offering[resList[i]]>0){
-            html += `<img id="${resList[i]}" class="icon offer" src="${settlers_self.skin.resourceIcon(resList[i])}"/>`;
-          }
-          if (offering[resList[i]]>1){
-            html += `<div class="icon_multiplier">x${offering[resList[i]]}</div>`;
-          }
-          html += `</div></div>`;
+        if (offering[resList[i]] > 0) {
+          html += `<img id="${
+            resList[i]
+          }" class="icon offer" src="${settlers_self.skin.resourceIcon(resList[i])}"/>`;
+        }
+        if (offering[resList[i]] > 1) {
+          html += `<div class="icon_multiplier">x${offering[resList[i]]}</div>`;
+        }
+        html += `</div></div>`;
       }
 
       html += `</div><div class="trade_overlay_buttons">
             <div class="trade_overlay_button saito-button-primary trade_overlay_reset_button">Reset</div>
-            <div class="trade_overlay_button saito-button-primary trade_overlay_broadcast_button${(can_afford && resource_cnt>0)?"":" noselect"}">Submit Offer</div>
+            <div class="trade_overlay_button saito-button-primary trade_overlay_broadcast_button${
+              can_afford && resource_cnt > 0 ? "" : " noselect"
+            }">Submit Offer</div>
           </div></div>`;
 
       settlers_self.overlay.closebox = true;
@@ -3332,11 +3323,11 @@ class Settlers extends GameTemplate {
         updateOverlay(settlers_self, resList, myRes, offering, receiving);
       });
       $(".icon").off();
-      $(".icon").on("click", function(e){
+      $(".icon").on("click", function (e) {
         let res = $(this).attr("id");
-        if ($(this).hasClass("offer")){
+        if ($(this).hasClass("offer")) {
           offering[res]--;
-        }else{
+        } else {
           receiving[res]--;
         }
         e.stopPropagation();
@@ -3354,12 +3345,15 @@ class Settlers extends GameTemplate {
       });
       $(".trade_overlay_broadcast_button").off();
       $(".trade_overlay_broadcast_button").on("click", function () {
-        if ($(this).hasClass("noselect")) { return; }
+        if ($(this).hasClass("noselect")) {
+          return;
+        }
         settlers_self.addMove(`clear_advert\t${settlers_self.game.player}`);
         settlers_self.addMove(
-            `offer\t${settlers_self.game.player}\t
+          `offer\t${settlers_self.game.player}\t
             ${tradeType}\t${JSON.stringify(offering)}\t
-            ${JSON.stringify(receiving)}`);
+            ${JSON.stringify(receiving)}`
+        );
         settlers_self.overlay.hide();
         settlers_self.overlay.closebox = false;
         settlers_self.endTurn();
@@ -3367,13 +3361,7 @@ class Settlers extends GameTemplate {
     };
 
     //Start the display and selection process
-    updateOverlay(
-      settlers_self,
-      resources,
-      my_resources,
-      offer_resources,
-      receive_resources
-    );
+    updateOverlay(settlers_self, resources, my_resources, offer_resources, receive_resources);
   }
 
   /*
@@ -3386,10 +3374,7 @@ class Settlers extends GameTemplate {
 
     //Convert the players array of resources into a compact object {wheat:1, wood:2,...}
     for (let resource of resources) {
-      let temp = settlers_self.countResource(
-        settlers_self.game.player,
-        resource
-      );
+      let temp = settlers_self.countResource(settlers_self.game.player, resource);
       if (temp > 0) myRes[resource] = temp;
     }
 
@@ -3411,7 +3396,9 @@ class Settlers extends GameTemplate {
       if (myRes[resources[i]])
         html += `<div id="offer_${i}" class="trade_area select tip"><img class="icon" src="${this.skin.resourceIcon(
           resources[i]
-        )}"/><div class="tiptext">You have ${myRes[resources[i]]} ${resources[i]} available</div></div>`;
+        )}"/><div class="tiptext">You have ${myRes[resources[i]]} ${
+          resources[i]
+        } available</div></div>`;
       else
         html += `<div id="offer_${i}" class="trade_area noselect tip"><img class="icon" src="${this.skin.resourceIcon(
           resources[i]
@@ -3428,9 +3415,9 @@ class Settlers extends GameTemplate {
 
     $(".trade_area.select").on("click", function () {
       $(this).toggleClass("selected");
-      if (document.querySelector(".trade_area.selected")){
+      if (document.querySelector(".trade_area.selected")) {
         $(".trade_overlay_broadcast_button").removeClass("noselect");
-      }else{
+      } else {
         $(".trade_overlay_broadcast_button").addClass("noselect");
       }
     });
@@ -3440,7 +3427,7 @@ class Settlers extends GameTemplate {
     });
 
     $(".trade_overlay_broadcast_button").on("click", function () {
-      if ($(this).hasClass("noselect")){
+      if ($(this).hasClass("noselect")) {
         return;
       }
       let offering = {};
@@ -3476,12 +3463,10 @@ class Settlers extends GameTemplate {
       });
       settlers_self.overlay.hide();
       settlers_self.overlay.closebox = false;
-
     });
   }
 
-
-  /* 
+  /*
   Create an object saying what the exchange rate for each resource is
   */
   analyzePorts() {
@@ -3509,8 +3494,7 @@ class Settlers extends GameTemplate {
     return tradeCost;
   }
 
-
-  /* 
+  /*
   Interface to Trade with the bank
   */
   bankTrade() {
@@ -3519,10 +3503,7 @@ class Settlers extends GameTemplate {
     let minForTrade = this.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
 
     for (let resource of this.skin.resourceArray()) {
-      let temp = settlers_self.countResource(
-        settlers_self.game.player,
-        resource
-      );
+      let temp = settlers_self.countResource(settlers_self.game.player, resource);
       if (temp >= minForTrade[resource]) my_resources[resource] = temp;
     }
 
@@ -3530,7 +3511,7 @@ class Settlers extends GameTemplate {
       let html = "<div class='tbd'>Select Resource to Trade: <ul class='bank'>";
       for (let i in my_resources) {
         html += `<li id="${i}" class="option">`;
-        for (let j = 0; j<minForTrade[i]; j++){
+        for (let j = 0; j < minForTrade[i]; j++) {
           html += `<img class="icon" src="${settlers_self.skin.resourceIcon(i)}"/>`;
         }
         //`${i} (${minForTrade[i]}/${my_resources[i]})</li>`;
@@ -3552,7 +3533,9 @@ class Settlers extends GameTemplate {
         //Picked something to give, now pick something to get
         html = "<div class='tbd'>Select Desired Resource: <ul class='bank horizontal_list'>";
         for (let i of settlers_self.skin.resourceArray()) {
-          html += `<li id="${i}" class="iconoption option tip"><img class="icon" src="${settlers_self.skin.resourceIcon(i)}">
+          html += `<li id="${i}" class="iconoption option tip"><img class="icon" src="${settlers_self.skin.resourceIcon(
+            i
+          )}">
             <div class="tiptext">${i}</div></li>`;
         }
         html += '<li id="cancel" class="option">cancel trade</li>';
@@ -3600,11 +3583,11 @@ class Settlers extends GameTemplate {
         });
       });
     } else {
-      let ackhtml = `<div class='tbd'>You don't have enough resources to trade with the bank</div> 
+      let ackhtml = `<div class="tbd">You don't have enough resources to trade with the bank</div> 
                     <ul><li class="option" id="okay">okay</li></ul>`;
-      settlers_self.updateStatus(ackhtml,1);
+      settlers_self.updateStatus(ackhtml, 1);
       $(".option").off();
-      $(".option").on("click",function(){
+      $(".option").on("click", function () {
         settlers_self.playerPlayMove();
         return;
       });
@@ -3616,11 +3599,12 @@ class Settlers extends GameTemplate {
    * Game animations
    *
    ***********/
+
   /*
   Briefly animate the longest road and update log if there is a change in ownership
   */
   highlightRoad(player, road, msg) {
-    this.updateLog(`${this.game.playerNames[player-1]} ${msg}`);
+    this.updateLog(`${this.game.playerNames[player - 1]} ${msg}`);
     for (let segment of road) {
       let selector = "#road_" + segment;
       let div = document.querySelector(selector);
@@ -3668,9 +3652,10 @@ class Settlers extends GameTemplate {
   animateDiceRoll(roll) {
     //console.log("Dice Animated: " + roll);
     $(".rolled").removeClass("rolled");
-    $(".sector_value:not(.bandit)").attr("style","");
+    $(".sector_value:not(.bandit)").attr("style", "");
     let divname = ".sv" + roll + ":not(.bandit)";
-    $(divname).addClass("rolled")
+    $(divname)
+      .addClass("rolled")
       .css("color", "#000")
       .css("background", "#FFF6")
       .delay(600)
@@ -3697,14 +3682,14 @@ class Settlers extends GameTemplate {
       .queue(function () {
         $(this).css("color", "#000").css("background", "#FFF6").dequeue();
       });
-      /*.delay(800)
-      .queue(function () {
-        $(this).removeAttr("style").dequeue();
-      });*/
+    /*.delay(800)
+    .queue(function () {
+      $(this).removeAttr("style").dequeue();
+    });*/
   }
 
   /*
-  So we sometimes want a status update message to persist through the next update status 
+  So we sometimes want a status update message to persist through the next update status
   (so player has a chance to read it if we are rapidly knocking moves of the queue)
   Important messages are marked with "persistent"
   */
@@ -3722,10 +3707,10 @@ class Settlers extends GameTemplate {
     ****(Close) Duplicate of Blackjack****
     Need to overwrite gametemple which requires either HUD or a ID=status,
     PlayerBox Model uses a .status class ....
-    This function may be less than ideal, abusing the concept of status, 
+    This function may be less than ideal, abusing the concept of status,
     since it is mostly being used to update the DOM for user interface
   */
-  updateStatus(str, hide_info = 0) {
+  async updateStatus(str, hide_info = 0) {
     try {
       if (hide_info == 0) {
         this.playerbox.showInfo();
@@ -3741,7 +3726,7 @@ class Settlers extends GameTemplate {
 
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".status");
-        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
+        if (this.game.players.includes(await this.app.wallet.getPublicKey())) {
           status_obj.innerHTML = str;
           $(".status").disableSelection();
         }
@@ -3751,9 +3736,8 @@ class Settlers extends GameTemplate {
     }
   }
 
-
-  confirmPlacement(slot, piece, callback){
-    if (this.confirm_moves == 0){
+  confirmPlacement(slot, piece, callback) {
+    if (this.confirm_moves == 0) {
       callback();
       return;
     }
@@ -3770,37 +3754,35 @@ class Settlers extends GameTemplate {
 
     let left = $(`#${slot}`).offset().left + 50;
     let top = $(`#${slot}`).offset().top + 20;
-          
+
     $(".popup-confirm-menu").remove();
     $("body").append(html);
     $(".popup-confirm-menu").css({
       position: "absolute",
-          top: top,
-          left: left,
-      });
+      top: top,
+      left: left,
+    });
 
     $(".action").off();
     $(".action").on("click", function () {
-      $("#"+slot).css("background-color", "");
+      $("#" + slot).css("background-color", "");
       let confirmation = $(this).attr("id");
-      
+
       $(".action").off();
       $(".popup-confirm-menu").remove();
-      if (confirmation == "confirm"){
+      if (confirmation == "confirm") {
         callback();
       }
     });
 
-    $('input:checkbox').change(function() {
-      if ($(this).is(':checked')) {
+    $("input:checkbox").change(function () {
+      if ($(this).is(":checked")) {
         settlers_self.confirm_moves = 0;
-      }else{
+      } else {
         settlers_self.confirm_moves = 1;
       }
     });
   }
-
-
 }
 
 module.exports = Settlers;

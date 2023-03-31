@@ -1,13 +1,11 @@
-const GameTemplate = require('../../lib/templates/gametemplate');
+const GameTemplate = require("../../lib/templates/gametemplate");
 const GameRulesTemplate = require("./lib/game-rules.template");
 const GameOptionsTemplate = require("./lib/game-options.template");
-
 
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
 class Jaipur extends GameTemplate {
-
   constructor(app) {
     super(app);
 
@@ -30,9 +28,7 @@ class Jaipur extends GameTemplate {
     this.card_img_dir = `/${this.slug}/img/cards/`;
     this.token_img_dir = `/${this.slug}/img/tokens/`;
     this.categories = "Games Cardgame Tactical";
-
   }
-
 
   returnWelcomeOverlay() {
     let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay">
@@ -41,9 +37,7 @@ class Jaipur extends GameTemplate {
     return html;
   }
 
-
-  initializeHTML(app) {
-
+  async initializeHTML(app) {
     if (this.browser_active == 0) {
       return;
     }
@@ -56,9 +50,9 @@ class Jaipur extends GameTemplate {
     s.rel = "stylesheet";
     s.type = "text/css";
     s.href = `/${this.name.toLowerCase()}/style.css`;
-    document.querySelector('head').appendChild(s);
+    document.querySelector("head").appendChild(s);
 
-    super.initializeHTML(app);
+    await super.initializeHTML(app);
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");
@@ -67,10 +61,10 @@ class Jaipur extends GameTemplate {
       text: "How to Play",
       id: "game-rules",
       class: "game-rules",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(game_mod.returnGameRulesHTML());
-      }
+      },
     });
 
     this.menu.addChatMenu();
@@ -83,15 +77,12 @@ class Jaipur extends GameTemplate {
 
     this.hud.card_width = 120;
     this.hud.render();
-
   }
-
 
   ////////////////
   // initialize //
   ////////////////
   initializeGame(game_id) {
-
     if (this.game.status != "") {
       this.updateStatus(this.game.status);
     }
@@ -111,9 +102,10 @@ class Jaipur extends GameTemplate {
       console.log("---------------------------");
       console.log("\n\n\n\n");
 
-      this.updateStatus("<div class='status-message' id='status-message'>Generating the Game</div>");
+      this.updateStatus(
+        "<div class='status-message' id='status-message'>Generating the Game</div>"
+      );
       this.initializeQueue();
-
     }
 
     if (this.browser_active) {
@@ -122,12 +114,9 @@ class Jaipur extends GameTemplate {
       this.updateMarket();
       this.updatePlayers();
     }
-
   }
 
-
   initializeQueue(first_player = 1) {
-
     Object.assign(this.game.state, this.returnState());
 
     this.game.queue = [];
@@ -146,15 +135,12 @@ class Jaipur extends GameTemplate {
     this.game.queue.push("marketdeal");
     this.game.queue.push("POOLDEAL\t1\t2\t1");
     this.game.queue.push("SIMPLEDEAL\t5\t1\t" + JSON.stringify(this.returnCards()));
-
   }
-
 
   //
   // Core Game Logic
   //
   handleGameLoop() {
-
     let we_self = this;
 
     this.saveGame(this.game.id);
@@ -162,7 +148,6 @@ class Jaipur extends GameTemplate {
     // QUEUE //
     ///////////
     if (this.game.queue.length > 0) {
-
       if (this.browser_active) {
         this.updatePlayers();
       }
@@ -225,7 +210,10 @@ class Jaipur extends GameTemplate {
           this.game.state.market.push(this.game.deck[0].cards[card].type);
 
           if (this.browser_active) {
-            $(this.cardToHTML(this.game.deck[0].cards[card].type)).hide().appendTo(".market").fadeIn("slow");
+            $(this.cardToHTML(this.game.deck[0].cards[card].type))
+              .hide()
+              .appendTo(".market")
+              .fadeIn("slow");
           }
         }
 
@@ -244,7 +232,7 @@ class Jaipur extends GameTemplate {
             while (this.game.deck[i].hand.length > 0) {
               let token = this.game.deck[i].hand.pop();
               console.log(`Deck ${i}, value: ${this.game.deck[i].cards[token]}`);
-              tokens.push({ "type": i, "value": this.game.deck[i].cards[token] });
+              tokens.push({ type: i, value: this.game.deck[i].cards[token] });
             }
           }
           this.game.state.mybonustokens = tokens;
@@ -270,11 +258,11 @@ class Jaipur extends GameTemplate {
       if (mv[0] == "endround") {
         let winner = 0;
 
-        let myscore = (this.game.state.herd > this.game.state.enemyherd) ? 5 : 0;
+        let myscore = this.game.state.herd > this.game.state.enemyherd ? 5 : 0;
         myscore += this.game.state.vp[this.game.player - 1];
         myscore += this.reduceScore(this.game.state.mybonustokens);
 
-        let opponent_score = (this.game.state.enemyherd > this.game.state.herd) ? 5 : 0;
+        let opponent_score = this.game.state.enemyherd > this.game.state.herd ? 5 : 0;
         opponent_score += this.game.state.vp[2 - this.game.player];
         opponent_score += this.reduceScore(this.game.state.enemytokens);
 
@@ -295,12 +283,15 @@ class Jaipur extends GameTemplate {
           }
         }
         if (!winner) {
-          this.updateLog(`Both players have ${this.game.state.mybonustokens.length} bonus tokens, checking second tiebreaker...`);
-          winner = (this.game.state.goodtokens[0].length > this.game.state.goodtokens[1].length) ? 1 : 2;
+          this.updateLog(
+            `Both players have ${this.game.state.mybonustokens.length} bonus tokens, checking second tiebreaker...`
+          );
+          winner =
+            this.game.state.goodtokens[0].length > this.game.state.goodtokens[1].length ? 1 : 2;
           method = "good token count";
         }
 
-        let my_name = (this.game.player == winner) ? "You win" : "Your opponent wins";
+        let my_name = this.game.player == winner ? "You win" : "Your opponent wins";
         this.updateLog(`${my_name} the round by ${method}`);
 
         if (this.game.state[`winner${winner}`]) {
@@ -312,11 +303,9 @@ class Jaipur extends GameTemplate {
           this.initializeQueue(3 - winner);
         }
 
-
         this.game.queue.push(`ACKNOWLEDGE\t${my_name} the round by ${method}`);
 
         return 1;
-
       }
 
       if (mv[0] == "turn") {
@@ -331,8 +320,7 @@ class Jaipur extends GameTemplate {
             document.querySelector(".welcome_overlay").onclick = () => {
               this.overlay.hide();
             };
-          } catch (err) {
-          }
+          } catch (err) {}
           this.game.state.welcome = 1;
         }
 
@@ -345,7 +333,6 @@ class Jaipur extends GameTemplate {
           return 1;
         }
 
-
         let player = parseInt(mv[1]);
         $(".player-box").removeClass("active");
         this.playerbox.addClass("active", player);
@@ -353,7 +340,6 @@ class Jaipur extends GameTemplate {
         if (this.game.player == player) {
           this.playerTurn();
         } else {
-
           this.updateStatusWithCards(`Waiting for opponent to play`);
         }
         return 0;
@@ -386,20 +372,20 @@ class Jaipur extends GameTemplate {
           this.moveGameElement(moving_card, dest, { resize: 1 }, () => {
             this.restartQueue();
           });
-
         } else {
           this.game.state.enemyhand++;
 
           this.moveGameElement(moving_card, "#purchase_zone", { insert: 1 }, async () => {
-            $("#purchase_zone").children().fadeOut(1000, function() {
-              $(this).remove();
-            });
+            $("#purchase_zone")
+              .children()
+              .fadeOut(1000, function () {
+                $(this).remove();
+              });
             await this.restartQueue();
           });
-
         }
 
-        let my_name = (this.game.player == player) ? "You" : "Your opponent";
+        let my_name = this.game.player == player ? "You" : "Your opponent";
         this.updateLog(`${my_name} took a ${card} from the market.`);
 
         this.game.queue.push("marketdeal");
@@ -421,7 +407,7 @@ class Jaipur extends GameTemplate {
         let destination = "#player-box-7 .player-box-tokens";
 
         if (this.game.player == player) {
-          this.game.state.hand = this.game.state.hand.filter(c => c !== card);
+          this.game.state.hand = this.game.state.hand.filter((c) => c !== card);
         } else {
           this.game.state.enemyhand -= count;
           destination = "#player-box-4 .player-box-tokens";
@@ -434,14 +420,19 @@ class Jaipur extends GameTemplate {
             good_token++;
             let profit = this.game.state.tokens[card].pop();
             this.game.state.vp[player - 1] += profit;
-            this.game.state.goodtokens[player - 1].push({ "type": card, "value": profit });
+            this.game.state.goodtokens[player - 1].push({ type: card, value: profit });
 
             this.animationSequence.push({
               callback: this.moveGameElement,
-              params: [this.copyGameElement($(`.bonus_tokens .tip.${card} .token`)[num_tokens - i]), destination, { insert: 1 }, () => {
-                this.updateTokens();
-                this.restartQueue();
-              }]
+              params: [
+                this.copyGameElement($(`.bonus_tokens .tip.${card} .token`)[num_tokens - i]),
+                destination,
+                { insert: 1 },
+                () => {
+                  this.updateTokens();
+                  this.restartQueue();
+                },
+              ],
             });
           }
         }
@@ -455,16 +446,26 @@ class Jaipur extends GameTemplate {
           }
           this.animationSequence.push({
             callback: this.moveGameElement,
-            params: [this.copyGameElement($(`.bonus_tokens .tip.bonus${bonus_deck + 1} .token`).last()[0]), destination, { insert: 1 }, () => {
-              this.updateTokens();
-              this.restartQueue();
-            }]
+            params: [
+              this.copyGameElement($(`.bonus_tokens .tip.bonus${bonus_deck + 1} .token`).last()[0]),
+              destination,
+              { insert: 1 },
+              () => {
+                this.updateTokens();
+                this.restartQueue();
+              },
+            ],
           });
-
         }
 
-        let my_name = (this.game.player == player) ? "You" : "Your opponent";
-        this.updateLog(`${my_name} sold ${count} ${card}${(count > 1) ? "s" : ""}, gaining ${good_token} goods token${(good_token > 1) ? "s" : ""}${(bonus_deck > 0) ? " and a bonus token" : ""}.`);
+        let my_name = this.game.player == player ? "You" : "Your opponent";
+        this.updateLog(
+          `${my_name} sold ${count} ${card}${
+            count > 1 ? "s" : ""
+          }, gaining ${good_token} goods token${good_token > 1 ? "s" : ""}${
+            bonus_deck > 0 ? " and a bonus token" : ""
+          }.`
+        );
 
         this.runAnimationQueue();
         return 0;
@@ -493,15 +494,17 @@ class Jaipur extends GameTemplate {
             }
           }
 
-//          this.moveGameElement(moving_card, "#purchase_zone", {insert: 1}, ()=>{
-//            $("#purchase_zone").children().fadeOut(1000, function(){ $(this).remove(); });
-//            this.restartQueue();
-//          });
+          //          this.moveGameElement(moving_card, "#purchase_zone", {insert: 1}, ()=>{
+          //            $("#purchase_zone").children().fadeOut(1000, function(){ $(this).remove(); });
+          //            this.restartQueue();
+          //          });
 
-          $(`.market .card[data-id="${from_market[i]}"]`).first().attr("data-id", "").fadeOut("slow", function() {
-            $(this).remove();
-          });
-
+          $(`.market .card[data-id="${from_market[i]}"]`)
+            .first()
+            .attr("data-id", "")
+            .fadeOut("slow", function () {
+              $(this).remove();
+            });
         }
 
         for (let i = 0; i < to_market.length; i++) {
@@ -529,12 +532,11 @@ class Jaipur extends GameTemplate {
           $(this.cardToHTML(to_market[i])).hide().appendTo(".market").fadeIn("slow");
         }
 
-        let my_name = (this.game.player == player) ? "You" : "Your opponent";
+        let my_name = this.game.player == player ? "You" : "Your opponent";
         this.updateLog(`${my_name} traded ${to_market} for ${from_market}.`);
 
         console.log(JSON.stringify(this.game.state.hand), JSON.stringify(this.game.state.market));
       }
-
 
       if (mv[0] == "camels") {
         let player = parseInt(mv[1]);
@@ -542,7 +544,7 @@ class Jaipur extends GameTemplate {
         this.game.queue.splice(qe, 2);
         this.game.queue.push("turn\t" + (3 - player));
 
-        this.game.state.market = this.game.state.market.filter(card => card !== "camel");
+        this.game.state.market = this.game.state.market.filter((card) => card !== "camel");
 
         let numCamels = 5 - this.game.state.market.length;
 
@@ -557,10 +559,15 @@ class Jaipur extends GameTemplate {
           destination = "#player-box-4 .camel_train";
         }
 
-        Array.from(document.querySelectorAll(`.market .card[data-id="camel"]`)).forEach(card => {
-          this.moveGameElement(this.copyGameElement(card), destination, { insert: 1, resize: 1 }, () => {
-            this.restartQueue();
-          });
+        Array.from(document.querySelectorAll(`.market .card[data-id="camel"]`)).forEach((card) => {
+          this.moveGameElement(
+            this.copyGameElement(card),
+            destination,
+            { insert: 1, resize: 1 },
+            () => {
+              this.restartQueue();
+            }
+          );
         });
 
         this.game.queue.push("marketdeal");
@@ -573,9 +580,7 @@ class Jaipur extends GameTemplate {
     } // if cards in queue
 
     return 0;
-
   }
-
 
   gameOver() {
     if (this.game.deck[0].crypt.length == 0) {
@@ -589,24 +594,21 @@ class Jaipur extends GameTemplate {
       }
     }
 
-    return (emptyCt >= 3);
+    return emptyCt >= 3;
   }
 
   playerTurn() {
-
     let html = `Select a card in the market to buy, in your hand to sell, or <span id="trade" class="link">click here to trade</span>`;
 
     this.updateStatusWithCards(html);
     this.attachGameEvents();
-
   }
 
   attachGameEvents() {
     let game_self = this;
 
-
     //Buy
-    $(".market .card").on("click", function() {
+    $(".market .card").on("click", function () {
       $(".market .card").off();
       let card = $(this).attr("data-id");
       if (card == "camel") {
@@ -623,7 +625,7 @@ class Jaipur extends GameTemplate {
     });
 
     //Sell
-    $(".rack .card_count").on("click", function() {
+    $(".rack .card_count").on("click", function () {
       $(".rack .card_count").off();
       let card = $(this).attr("data-id");
       let count = $(this).attr("data-cnt");
@@ -632,23 +634,25 @@ class Jaipur extends GameTemplate {
       if (expensive.includes(card) && count < 2) {
         salert(`You have to have at least 2 ${card} in order to make a sale`);
       } else {
-        game_self.moveGameElement(game_self.copyGameElement(`.hud-card[data-id="${card}"]`), ".invisible_item", {}, (item) => {
-          $(item).remove();
-        });
+        game_self.moveGameElement(
+          game_self.copyGameElement(`.hud-card[data-id="${card}"]`),
+          ".invisible_item",
+          {},
+          (item) => {
+            $(item).remove();
+          }
+        );
         game_self.addMove(`sell\t${game_self.game.player}\t${card}\t${count}`);
         game_self.endTurn();
       }
     });
 
-
     //Trade
     $("#trade").off();
-    $("#trade").on("click", function() {
+    $("#trade").on("click", function () {
       game_self.pickMany();
     });
-
   }
-
 
   pickMany() {
     //Let's first organize the resources
@@ -679,7 +683,6 @@ class Jaipur extends GameTemplate {
     let updateOverlay = () => {
       //Refresh available supply
 
-
       let html = `<div class="trade_overlay" id="trade_overlay">
                   <div class="grid_display">
                     <div class="market_overlay">
@@ -701,16 +704,28 @@ class Jaipur extends GameTemplate {
       html += `</div></div> <div class="hand_overlay">
                         <div class="h2">Cards in Hand:</div>
                         <div class="card_group">`;
-      let handCount = game_self.game.state.hand.length + to_take.length - to_give.filter(c => {
-        return c !== "camel"
-      }).length
-      console.log(JSON.parse(JSON.stringify(game_self.game.state.hand)), game_self.game.state.hand.length);
+      let handCount =
+        game_self.game.state.hand.length +
+        to_take.length -
+        to_give.filter((c) => {
+          return c !== "camel";
+        }).length;
+      console.log(
+        JSON.parse(JSON.stringify(game_self.game.state.hand)),
+        game_self.game.state.hand.length
+      );
       console.log(JSON.parse(JSON.stringify(to_take)), to_take.length);
-      console.log(JSON.parse(JSON.stringify(to_give)), to_give.filter(c => {
-        return c !== "camel"
-      }).length);
+      console.log(
+        JSON.parse(JSON.stringify(to_give)),
+        to_give.filter((c) => {
+          return c !== "camel";
+        }).length
+      );
       for (let r in hand) {
-        if (to_take.includes(r) || (r == "camel" && handCount >= 7 && to_give.length >= to_take.length)) {
+        if (
+          to_take.includes(r) ||
+          (r == "camel" && handCount >= 7 && to_give.length >= to_take.length)
+        ) {
           html += game_self.cardWithCountToHTML(r, -hand[r]);
         } else {
           html += game_self.cardWithCountToHTML(r, hand[r]);
@@ -771,16 +786,24 @@ class Jaipur extends GameTemplate {
         updateOverlay();
       });
 
-
       if (to_give.length === to_take.length && to_give.length > 1) {
-        if (game_self.game.state.hand.length + to_take.length - to_give.filter(c => {
-          return c !== "camel"
-        }).length <= 7) {
+        if (
+          game_self.game.state.hand.length +
+            to_take.length -
+            to_give.filter((c) => {
+              return c !== "camel";
+            }).length <=
+          7
+        ) {
           let submit = document.getElementById("trade_btn");
           submit.classList.remove("disabled");
           submit.onclick = () => {
             game_self.overlay.remove();
-            game_self.addMove(`trade\t${game_self.game.player}\t${JSON.stringify(to_take)}\t${JSON.stringify(to_give)}`);
+            game_self.addMove(
+              `trade\t${game_self.game.player}\t${JSON.stringify(to_take)}\t${JSON.stringify(
+                to_give
+              )}`
+            );
             game_self.endTurn();
           };
         }
@@ -790,12 +813,10 @@ class Jaipur extends GameTemplate {
         game_self.overlay.remove();
         game_self.playerTurn();
       });
-
     };
 
     updateOverlay();
   }
-
 
   cardToHTML(card) {
     if (card) {
@@ -803,19 +824,23 @@ class Jaipur extends GameTemplate {
     } else {
       return "";
     }
-
   }
 
   cardWithCountToHTML(card, amt) {
     if (amt !== 0) {
-      return `<div class="hud-card card_count${(amt < 0) ? " disabled" : ""}" data-id="${card}" data-cnt="${amt}" style="background-image:url('${this.card_img_dir}${card}.png');">${Math.abs(amt)}</div>`;
+      return `<div class="hud-card card_count${
+        amt < 0 ? " disabled" : ""
+      }" data-id="${card}" data-cnt="${amt}" style="background-image:url('${
+        this.card_img_dir
+      }${card}.png');">${Math.abs(amt)}</div>`;
     } else {
       return "";
     }
   }
 
   camelHTML(herd1, herd2) {
-    let camel_bonus = (herd1 > herd2) ? `<img class="camel_bonus" src="${this.token_img_dir}camel_token.png" />` : "";
+    let camel_bonus =
+      herd1 > herd2 ? `<img class="camel_bonus" src="${this.token_img_dir}camel_token.png" />` : "";
     if (herd1 > 0) {
       return `<div class="camel_train"><div class="card_count" style="background-image: url('${this.card_img_dir}camel.png');">${herd1}</div>${camel_bonus}</div>`;
     } else {
@@ -828,27 +853,34 @@ class Jaipur extends GameTemplate {
 
     if (this.game.state.goodtokens[player - 1].length > 0) {
       for (let token of this.game.state.goodtokens[player - 1]) {
-        html += `<div class="token" style="background-image:url('${this.token_img_dir}${token.type}_token.png');">${token.value}</div>`
+        html += `<div class="token" style="background-image:url('${this.token_img_dir}${token.type}_token.png');">${token.value}</div>`;
       }
     }
 
     if (this.game.player == player) {
       for (let j = 1; j <= 3; j++) {
         for (let i = 0; i < this.game.deck[j].hand.length; i++) {
-          html += `<div class="token" style='background-image:url("${this.token_img_dir}${j + 2}_card_token.png");'>${this.game.deck[j].cards[this.game.deck[j].hand[i]]}</div>`;
+          html += `<div class="token" style='background-image:url("${this.token_img_dir}${
+            j + 2
+          }_card_token.png");'>${this.game.deck[j].cards[this.game.deck[j].hand[i]]}</div>`;
         }
       }
       for (let bt of this.game.state.mybonustokens) {
-        html += `<div class="token" style='background-image:url("${this.token_img_dir}${bt.type + 2}_card_token.png");'>${bt.value}</div>`;
+        html += `<div class="token" style='background-image:url("${this.token_img_dir}${
+          bt.type + 2
+        }_card_token.png");'>${bt.value}</div>`;
       }
     } else {
       for (let bt of this.game.state.enemybonus) {
-        html += `<div class="token" style='background-image:url("${this.token_img_dir}${bt + 1}_card_token.png");'></div>`;
+        html += `<div class="token" style='background-image:url("${this.token_img_dir}${
+          bt + 1
+        }_card_token.png");'></div>`;
       }
       for (let bt of this.game.state.enemytokens) {
-        html += `<div class="token" style='background-image:url("${this.token_img_dir}${bt.type + 2}_card_token.png");'>${bt.value}</div>`;
+        html += `<div class="token" style='background-image:url("${this.token_img_dir}${
+          bt.type + 2
+        }_card_token.png");'>${bt.value}</div>`;
       }
-
     }
 
     return html + "</div>";
@@ -873,17 +905,21 @@ class Jaipur extends GameTemplate {
   }
 
   updatePlayers() {
-
     let crown = `<i class="fas fa-crown"></i>`;
 
-    this.playerbox.refreshGraphic(this.camelHTML(this.game.state.herd, this.game.state.enemyherd), this.game.player);
-    this.playerbox.refreshGraphic(this.camelHTML(this.game.state.enemyherd, this.game.state.herd), 3 - this.game.player);
+    this.playerbox.refreshGraphic(
+      this.camelHTML(this.game.state.herd, this.game.state.enemyherd),
+      this.game.player
+    );
+    this.playerbox.refreshGraphic(
+      this.camelHTML(this.game.state.enemyherd, this.game.state.herd),
+      3 - this.game.player
+    );
 
-    let my_score = (this.game.state.herd > this.game.state.enemyherd) ? 5 : 0;
+    let my_score = this.game.state.herd > this.game.state.enemyherd ? 5 : 0;
     my_score += this.game.state.vp[this.game.player - 1];
     my_score += this.calculateBonus();
     my_score += this.reduceScore(this.game.state.mybonustokens);
-
 
     html = `<div class="score tip">Me: ${my_score}</div>`;
     if (this.game.state[`winner${this.game.player}`]) {
@@ -893,12 +929,14 @@ class Jaipur extends GameTemplate {
     this.playerbox.refreshInfo(html);
     this.playerbox.refreshLog(this.bonusTokensToHTML(this.game.player));
 
-    let enemy_score = (this.game.state.herd < this.game.state.enemyherd) ? 5 : 0;
+    let enemy_score = this.game.state.herd < this.game.state.enemyherd ? 5 : 0;
     enemy_score += this.game.state.vp[2 - this.game.player];
     enemy_score += this.reduceScore(this.game.state.enemytokens);
 
-
-    let bonus_text = (this.game.state.enemybonus.length > 0) ? `*<div class="tiptext">Score does not include ${this.game.state.enemybonus.length} bonus token(s).</div>` : "";
+    let bonus_text =
+      this.game.state.enemybonus.length > 0
+        ? `*<div class="tiptext">Score does not include ${this.game.state.enemybonus.length} bonus token(s).</div>`
+        : "";
     html = `<div class="score tip">Opponent: ${enemy_score}${bonus_text}, ${this.game.state.enemyhand} cards</div>`;
 
     if (this.game.state[`winner${3 - this.game.player}`]) {
@@ -910,14 +948,13 @@ class Jaipur extends GameTemplate {
     this.playerbox.refreshLog(this.bonusTokensToHTML(3 - this.game.player), 3 - this.game.player);
   }
 
-
   updateStatusWithCards(status) {
     if (this.game.player == 0) {
       this.updateStatus(`<div class="hud-status-update-message">${status}</div>`);
       return;
     }
 
-    $(".animated_elem").fadeOut(1000, function() {
+    $(".animated_elem").fadeOut(1000, function () {
       $(this).remove();
     });
 
@@ -928,7 +965,6 @@ class Jaipur extends GameTemplate {
       }
       available_resources[card]++;
     }
-
 
     try {
       let card_html = "";
@@ -951,7 +987,6 @@ class Jaipur extends GameTemplate {
   }
 
   updateTokens() {
-
     let html = `<div class="bonus_tokens">`;
     for (let token in this.game.state.tokens) {
       if (this.game.state.tokens[token].length > 0) {
@@ -960,7 +995,9 @@ class Jaipur extends GameTemplate {
           let value = this.game.state.tokens[token][i];
           html += `<div class="token" style="background-image:url('${this.token_img_dir}${token}_token.png');">${value}</div>`;
         }
-        html += `<div class="tiptext">${this.game.state.tokens[token].length + 1} ${token} token(s) left</div>
+        html += `<div class="tiptext">${
+          this.game.state.tokens[token].length + 1
+        } ${token} token(s) left</div>
               </div>`;
       } else {
         html += `<img class="token empty" src="${this.token_img_dir}${token}_token.png"/>`;
@@ -972,7 +1009,9 @@ class Jaipur extends GameTemplate {
         for (let j = 0; j < this.game.deck[i - 2].crypt.length; j++) {
           html += `<div class="token" style='background-image:url("${this.token_img_dir}${i}_card_token.png");'></div>`;
         }
-        html += `<div class="tiptext">${this.game.deck[i - 2].crypt.length} ${i} bonus token(s) left</div>
+        html += `<div class="tiptext">${
+          this.game.deck[i - 2].crypt.length
+        } ${i} bonus token(s) left</div>
                 </div>`;
       } else {
         html += `<img class="token empty" src="${this.token_img_dir}${i}_card_token.png"/>`;
@@ -983,9 +1022,7 @@ class Jaipur extends GameTemplate {
     this.app.browser.replaceElementBySelector(html, ".bonus_tokens");
   }
 
-
   updateMarket() {
-
     /*
     <div id="discard">${this.cardToHTML(this.game.state.last_discard)}</div>
       <div id="draw" class="tip card_count">
@@ -1004,12 +1041,10 @@ class Jaipur extends GameTemplate {
     this.app.browser.replaceElementBySelector(html, ".market");
   }
 
-
   ////////////////////
   // Core Game Data //
   ////////////////////
   returnState() {
-
     let state = {};
     state.market = ["camel", "camel", "camel"];
     state.hand = [];
@@ -1033,13 +1068,9 @@ class Jaipur extends GameTemplate {
     };
 
     return state;
-
-
   }
 
-
   returnCards() {
-
     var deck = {};
 
     let definition = { diamond: 6, gold: 6, silver: 6, cloth: 8, spice: 8, leather: 10, camel: 8 };
@@ -1050,9 +1081,7 @@ class Jaipur extends GameTemplate {
     }
 
     return deck;
-
   }
-
 
   returnBonusTiles(set) {
     let start = 1;
@@ -1083,8 +1112,6 @@ class Jaipur extends GameTemplate {
   returnGameOptionsHTML() {
     return GameOptionsTemplate(this.app, this);
   }
-
-
 } // end Jaipur class
 
 module.exports = Jaipur;

@@ -367,7 +367,7 @@ class Quake3 extends GameTemplate {
     }
   }
 
-  initializeHTML(app) {
+  async initializeHTML(app) {
     if (this.browser_active != 1) {
       return;
     }
@@ -375,7 +375,7 @@ class Quake3 extends GameTemplate {
       return;
     }
 
-    super.initializeHTML(app);
+    await super.initializeHTML(app);
 
     //
     // ADD MENU

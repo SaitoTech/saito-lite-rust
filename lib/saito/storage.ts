@@ -59,7 +59,7 @@ export default class Storage {
     data.request = "load";
     data.type = type;
     data.num = num;
-    data.publickey = this.app.wallet.getPublicKey();
+    data.publickey = await this.app.wallet.getPublicKey();
 
     console.log("archive load!");
 

@@ -13,6 +13,7 @@ class WebMethods extends WebSharedMethods {
 
   constructor(app: Saito) {
     super();
+    this.app = app;
   }
 
   async processApiCall(buffer: Uint8Array, msgIndex: number, peerIndex: bigint): Promise<void> {

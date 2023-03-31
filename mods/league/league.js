@@ -745,12 +745,12 @@ class League extends ModTemplate {
     }
 
     let sql = `UPDATE players
-               SET ${field} = (${field} + ${amount}),
-                   ts       = $ts
+               SET ${field}  = (${field} + ${amount}),
+                   timestamp = $timestamp
                WHERE publickey = $publickey
                  AND league_id = $league_id`;
     let params = {
-      $ts: new Date().getTime(),
+      $timestamp: new Date().getTime(),
       $publickey: publickey,
       $league_id: league_id,
     };
@@ -776,13 +776,13 @@ class League extends ModTemplate {
     }
 
     let sql = `UPDATE players
-               SET score = $score,
-                   ts    = $ts
+               SET score     = $score,
+                   timestamp = $timestamp
                WHERE publickey = $publickey
                  AND league_id = $league_id`;
     let params = {
       $score: playerObj.score,
-      $ts: new Date().getTime(),
+      $timestamp: new Date().getTime(),
       $publickey: playerObj.publickey,
       $league_id: playerObj.league_id,
     };
@@ -994,18 +994,18 @@ class League extends ModTemplate {
 
   async playerInsert(obj) {
     let sql = `INSERT
-    OR IGNORE INTO players (league_id, publickey, score, ts) 
+    OR IGNORE INTO players (league_id, publickey, score, timestamp) 
                                 VALUES (
     $league_id,
     $publickey,
     $score,
-    $ts
+    $timestamp
     )`;
     let params = {
       $league_id: obj.league_id,
       $publickey: obj.publickey,
       $score: obj.score,
-      $ts: obj.timestamp,
+      $timestamp: obj.timestamp,
     };
     await this.app.storage.executeDatabase(sql, params, "league");
     return;
@@ -1014,7 +1014,7 @@ class League extends ModTemplate {
   async pruneOldPlayers() {
     let sql = `DELETE
                FROM players
-               WHERE ts < ?`;
+               WHERE timestamp < ?`;
     let cutoff = new Date().getTime() - this.inactive_player_cutoff;
     await this.app.storage.executeDatabase(sql, [cutoff], "league");
   }

@@ -80,14 +80,14 @@ class GameTestSuite extends GameTemplate {
   //
   // initialize HTML and UI components
   //
-  initializeHTML(app) {
+  async initializeHTML(app) {
     //Game initialization begins from the Arcade.
     //So, it is best to prevent any HTML/DOM manipulation until in the right page
     if (!this.browser_active) {
       return;
     }
 
-    super.initializeHTML(app);
+    await super.initializeHTML(app);
 
     //Put functionality into the menu
 
@@ -1117,5 +1117,3 @@ class GameTestSuite extends GameTemplate {
 }
 
 module.exports = GameTestSuite;
-
-

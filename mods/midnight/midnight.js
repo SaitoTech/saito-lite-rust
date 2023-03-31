@@ -1,7 +1,7 @@
 var saito = require("../../lib/saito/saito");
 var GameTemplate = require("../../lib/templates/gametemplate");
 const JSON = require("json-bigint");
-const MidnightGameRulesTemplate = require('./lib/midnight-game-rules.template');
+const MidnightGameRulesTemplate = require("./lib/midnight-game-rules.template");
 const MidnightBook = require("./lib/midnight-book");
 
 //////////////////
@@ -19,7 +19,6 @@ class Midnight extends GameTemplate {
     this.maxPlayers = 1;
     this.minPlayers = 1;
     this.app = app;
-
   }
 
   /* Opt out of letting League create a default*/
@@ -34,9 +33,7 @@ class Midnight extends GameTemplate {
     return MidnightGameRulesTemplate(this.app, this);
   }
 
-
-  initializeHTML(app) {
-
+  async initializeHTML(app) {
     if (!this.browser_active) {
       return;
     }
@@ -50,7 +47,7 @@ class Midnight extends GameTemplate {
     }
 
     // Override the game template initializeHTML function
-    super.initializeHTML(app);
+    await super.initializeHTML(app);
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");
@@ -59,43 +56,43 @@ class Midnight extends GameTemplate {
       text: "Restart",
       id: "game-restart",
       class: "game-restart",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.game.state = null;
         game_mod.initializeGame();
         game_mod.startQueue();
-      }
+      },
     });
     this.menu.addSubMenuOption("game-game", {
       text: "Go back",
       id: "game-backup",
       class: "game-backup",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.game.queue = [`page\t${game_mod.game.state.lastpage}`];
         game_mod.startQueue();
-      }
+      },
     });
 
     this.menu.addSubMenuOption("game-game", {
       text: "Skip to Page",
       id: "game-skip",
       class: "game-skip",
-      callback: async function(app, game_mod) {
+      callback: async function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         let page_num = await sprompt("Skip to which page");
         if (page_num) {
           game_mod.game.queue = [`page\t${page_num.padStart(3, "0")}`];
           game_mod.endTurn();
         }
-      }
+      },
     });
     this.menu.addSubMenuOption("game-info", {
       text: "How to Play",
       id: "game-intro",
       class: "game-intro",
-      callback: function(app, game_mod) {
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(game_mod.returnGameRulesHTML());
-      }
+      },
     });
 
     // Add Chat Features to Menu
@@ -105,11 +102,9 @@ class Midnight extends GameTemplate {
     this.menu.render();
 
     this.playerbox.render();
-
   }
 
   initializeGame(game_id) {
-
     if (!this.game.state) {
       this.updateStatus("Generating the Game");
       this.game.queue = [];
@@ -129,7 +124,6 @@ class Midnight extends GameTemplate {
       this.skills = this.returnSkills();
       this.displayPlayer();
     }
-
   }
 
   displayPlayer() {
@@ -174,7 +168,7 @@ class Midnight extends GameTemplate {
     $(".food").off();
     $(".food").on("click", () => {
       midnight_self.eatProvision();
-      ``
+      ``;
     });
 
     $(".potion").off();
@@ -201,12 +195,11 @@ class Midnight extends GameTemplate {
       this.game.state.provisions--;
       this.game.state.stamina = Math.min(this.game.state.stamina + 4, this.game.state.max_stamina);
       if (this.game.state.provisions == 0) {
-        this.game.state.inventory = this.game.state.inventory.filter(f => f !== "provisions");
+        this.game.state.inventory = this.game.state.inventory.filter((f) => f !== "provisions");
       }
       this.displayPlayer();
     }
   }
-
 
   handleGameLoop(msg = null) {
     let midnight_self = this;
@@ -229,7 +222,6 @@ class Midnight extends GameTemplate {
         this.game.state.potion = this.potions[mv[1]];
         return 1;
       }
-
 
       if (mv[0] === "initialize_player") {
         this.game.queue.splice(qe, 1);
@@ -288,7 +280,7 @@ class Midnight extends GameTemplate {
 
       if (mv[0] === "skill") {
         this.game.queue.splice(qe, 1);
-        this.checkSkill(mv[1], mv[2])
+        this.checkSkill(mv[1], mv[2]);
         return 0;
       }
 
@@ -327,7 +319,10 @@ class Midnight extends GameTemplate {
         this.game.state[field] = Math.max(0, this.game.state[field]);
         //Don't go above max (if there is)
         if (this.game.state[`max_${field}`]) {
-          this.game.state[field] = Math.min(this.game.state[field], this.game.state[`max_${field}`]);
+          this.game.state[field] = Math.min(
+            this.game.state[field],
+            this.game.state[`max_${field}`]
+          );
         }
 
         this.displayPlayer();
@@ -346,7 +341,7 @@ class Midnight extends GameTemplate {
         if (mv[1] == "gain") {
           this.game.state.inventory.push(mv[2]);
         } else {
-          this.game.state.inventory = this.game.state.inventory.filter(e => e !== mv[2]);
+          this.game.state.inventory = this.game.state.inventory.filter((e) => e !== mv[2]);
         }
 
         this.displayPlayer();
@@ -387,7 +382,6 @@ class Midnight extends GameTemplate {
         this.selectItem(mv[1], true);
         return 0;
       }
-
     } // if cards in queue
     return 1;
   }
@@ -403,7 +397,7 @@ class Midnight extends GameTemplate {
     html += `</div>`;
     this.updateStatus(html);
 
-    $(".potion").on("click", function() {
+    $(".potion").on("click", function () {
       let choice = $(this).attr("id");
       midnight_self.addMove(`potion\t${choice}`);
       midnight_self.endTurn();
@@ -422,11 +416,11 @@ class Midnight extends GameTemplate {
             <button class="button" id="confirm_btn">CONFIRM</button>`;
     this.updateStatus(html);
     let skills = [];
-    $(".special_skills div").on("click", function() {
+    $(".special_skills div").on("click", function () {
       let choice = $(this).attr("id");
       if ($(this).hasClass("selected")) {
         $(this).removeClass("selected");
-        skills = skills.filter(i => i !== choice);
+        skills = skills.filter((i) => i !== choice);
       } else {
         $(this).addClass("selected");
         skills.push(choice);
@@ -436,7 +430,7 @@ class Midnight extends GameTemplate {
         }
       }
     });
-    $("#confirm_btn").on("click", function() {
+    $("#confirm_btn").on("click", function () {
       if (skills.length === 3) {
         midnight_self.game.state.special_skills = skills;
         midnight_self.endTurn();
@@ -470,14 +464,20 @@ class Midnight extends GameTemplate {
         }
 
         if (page_obj.choices[i].inventory) {
-          page_obj.choices[i].skipme = !this.game.state.inventory.includes(page_obj.choices[i].inventory);
+          page_obj.choices[i].skipme = !this.game.state.inventory.includes(
+            page_obj.choices[i].inventory
+          );
         }
 
         if (page_obj.choices[i].skill) {
           if (page_obj.choices[i].skipme) {
-            page_obj.choices[i].skipme = page_obj.choices[i].skipme && !this.game.state.special_skills.includes(page_obj.choices[i].skill);
+            page_obj.choices[i].skipme =
+              page_obj.choices[i].skipme &&
+              !this.game.state.special_skills.includes(page_obj.choices[i].skill);
           } else {
-            page_obj.choices[i].skipme = !this.game.state.special_skills.includes(page_obj.choices[i].skill);
+            page_obj.choices[i].skipme = !this.game.state.special_skills.includes(
+              page_obj.choices[i].skill
+            );
           }
         }
 
@@ -510,7 +510,7 @@ class Midnight extends GameTemplate {
    */
   showPage(page_num) {
     let midnight_self = this;
-    let html = "";//book[page].text;
+    let html = ""; //book[page].text;
 
     let page = this.book[page_num];
     if (!page) {
@@ -554,24 +554,23 @@ class Midnight extends GameTemplate {
       html += `<ul class="choicelist">`;
       html += `<li class="textchoice">You have ran out of STAMINA and your adventure ends here.</li>`;
       html += "</ul>";
-
     } else {
       if (choices?.length > 0) {
-
         html += `<ul class="choicelist">`;
         for (let i = 0; i < choices.length; i++) {
-          let classname = (choices[i].skipme) ? "nonchoice" : "textchoice";
+          let classname = choices[i].skipme ? "nonchoice" : "textchoice";
           html += `<li class="${classname}" id="${i}">${choices[i].option}</li>`;
         }
         html += "</ul>";
       }
-
     }
 
-    this.updateStatus(`<div class="page_number">${page_num}</div><div class="story">${page.text}</div>${html}`);
+    this.updateStatus(
+      `<div class="page_number">${page_num}</div><div class="story">${page.text}</div>${html}`
+    );
 
     $(".textchoice").off();
-    $(".textchoice").on("click", function() {
+    $(".textchoice").on("click", function () {
       $(".textchoice").off();
       let action = $(this).attr("id");
       if (action && page.choices[action].command) {
@@ -588,7 +587,9 @@ class Midnight extends GameTemplate {
     let page = this.book[this.game.state.currentpage];
     let roll = this.rollDice(6) + this.rollDice(6) + modifier;
     let success = roll <= this.game.state.skill;
-    let html = `<div class="result">You roll a ${roll}${(modifier) ? ` (including ${modifier} roll modifier)` : ""}, `;
+    let html = `<div class="result">You roll a ${roll}${
+      modifier ? ` (including ${modifier} roll modifier)` : ""
+    }, `;
     if (success) {
       html += `Success!</div>`;
     } else {
@@ -596,7 +597,6 @@ class Midnight extends GameTemplate {
     }
 
     let choices = this.filterChoices(page);
-
 
     if (choices?.length > 0) {
       html += `<ul class="choicelist">`;
@@ -608,16 +608,19 @@ class Midnight extends GameTemplate {
         if (!success && choices[i].failure) {
           message = choices[i].failure;
         }
-        html += `<li class="${(choices[i].skipme) ? "nonchoice" : "textchoice"}" id="${i}">${message}</li>`;
+        html += `<li class="${
+          choices[i].skipme ? "nonchoice" : "textchoice"
+        }" id="${i}">${message}</li>`;
       }
       html += "</ul>";
     }
 
-
-    this.updateStatus(`<div class="page_number">${this.game.state.currentpage}</div><div class="story">${page.text}</div>${html}`);
+    this.updateStatus(
+      `<div class="page_number">${this.game.state.currentpage}</div><div class="story">${page.text}</div>${html}`
+    );
 
     $(".textchoice").off();
-    $(".textchoice").on("click", function() {
+    $(".textchoice").on("click", function () {
       $(".textchoice").off();
       let action = $(this).attr("id");
 
@@ -632,18 +635,15 @@ class Midnight extends GameTemplate {
         } else {
           return;
         }
-
       } else {
         midnight_self.addMove(page.choices[action].command);
       }
 
       midnight_self.endTurn();
     });
-
   }
 
   checkStamina(num_die, next_page) {
-
     let midnight_self = this;
 
     let page = this.book[this.game.state.currentpage];
@@ -662,22 +662,27 @@ class Midnight extends GameTemplate {
     let choicesHTML = `<ul class="choicelist">`;
     if (success) {
       this.game.state.stamina--;
-      choicesHTML += `<li class="${(this.game.state.stamina > 0) ? "textchoice" : "nonchoice"}">Success! You only lose 1 STAMINA point</li>`;
+      choicesHTML += `<li class="${
+        this.game.state.stamina > 0 ? "textchoice" : "nonchoice"
+      }">Success! You only lose 1 STAMINA point</li>`;
     } else {
       this.game.state.stamina -= 4;
       this.game.satte.skill--;
-      choicesHTML += `<li class="${(this.game.state.stamina > 0) ? "textchoice" : "nonchoice"}">Failure! You lose 4 STAMINA points and 1 SKILL point</li>`;
+      choicesHTML += `<li class="${
+        this.game.state.stamina > 0 ? "textchoice" : "nonchoice"
+      }">Failure! You lose 4 STAMINA points and 1 SKILL point</li>`;
     }
 
-    this.updateStatus(`<div class="page_number">${this.game.state.currentpage}</div><div class="story">${page.text}</div>${html}${choicesHTML}`);
+    this.updateStatus(
+      `<div class="page_number">${this.game.state.currentpage}</div><div class="story">${page.text}</div>${html}${choicesHTML}`
+    );
     this.displayPlayer();
 
     $(".textchoice").off();
-    $(".textchoice").on("click", function() {
+    $(".textchoice").on("click", function () {
       midnight_self.addMOve(`page\t${next_page}`);
       midnight_self.endTurn();
     });
-
   }
 
   roll2Move(stat, victory_page, failure_page, modifier = 0) {
@@ -685,7 +690,9 @@ class Midnight extends GameTemplate {
     let page = this.book[this.game.state.currentpage];
     let roll = this.rollDice(6) + this.rollDice(6) + parseInt(modifier);
 
-    let html = `<div class="result">You rolled a ${roll} ${(modifier) ? `(Includes modifier of ${modifier}) ` : ""}versus your ${stat.toUpperCase()} of ${this.game.state[stat]}</div>`;
+    let html = `<div class="result">You rolled a ${roll} ${
+      modifier ? `(Includes modifier of ${modifier}) ` : ""
+    }versus your ${stat.toUpperCase()} of ${this.game.state[stat]}</div>`;
 
     let choices = `<ul class="choicelist">`;
     if (roll <= this.game.state[stat]) {
@@ -699,11 +706,13 @@ class Midnight extends GameTemplate {
       this.game.state.luck--;
     }
 
-    this.updateStatus(`<div class="page_number">${this.game.state.currentpage}</div><div class="story">${page.text}</div>${html}${choices}`);
+    this.updateStatus(
+      `<div class="page_number">${this.game.state.currentpage}</div><div class="story">${page.text}</div>${html}${choices}`
+    );
     this.displayPlayer();
 
     $(".textchoice").off();
-    $(".textchoice").on("click", function() {
+    $(".textchoice").on("click", function () {
       $(".textchoice").off();
       let action = $(this).attr("id");
       midnight_self.addMove(`page\t${action}`);
@@ -780,14 +789,18 @@ class Midnight extends GameTemplate {
       }
 
       update();
-    }
+    };
 
     const update = () => {
       this.displayPlayer();
-      this.updateStatus(`<div class="page_number">${this.game.state.currentpage}</div><div class="story">${this.book[this.game.state.currentpage].text}</div>${combatHTML}${choicesHTML}`);
+      this.updateStatus(
+        `<div class="page_number">${this.game.state.currentpage}</div><div class="story">${
+          this.book[this.game.state.currentpage].text
+        }</div>${combatHTML}${choicesHTML}`
+      );
 
       $(".textchoice").off();
-      $(".textchoice").on("click", function() {
+      $(".textchoice").on("click", function () {
         $(".textchoice").off();
         let action = $(this).attr("id");
         if (action == "death") {
@@ -801,10 +814,9 @@ class Midnight extends GameTemplate {
           combat(parseInt(action));
         }
       });
-    }
+    };
 
     combat(params.first);
-
   }
 
   handleCombat(params) {
@@ -834,7 +846,7 @@ class Midnight extends GameTemplate {
     }
 
     const queueNextMonster = () => {
-      let next = (Array.isArray(enemies)) ? enemies.shift() : enemies;
+      let next = Array.isArray(enemies) ? enemies.shift() : enemies;
       if (this.enemies[next]) {
         this.game.state.currentEnemy = JSON.parse(JSON.stringify(this.enemies[next]));
         enemy = this.game.state.currentEnemy;
@@ -843,7 +855,7 @@ class Midnight extends GameTemplate {
       }
       combatHTML = `<div class="result">You are fighting a <span class="bold">${enemy.name}</span>, Skill: ${enemy.skill}, Stamina: ${enemy.stamina}</div>`;
       combat();
-    }
+    };
 
     const combat = () => {
       let myRoll = this.rollDice(6) + this.rollDice(6);
@@ -853,7 +865,9 @@ class Midnight extends GameTemplate {
 
       combatHTML += `<div class="result">
                        <div class="player_skills">
-                         <div>Your attack: ${myAttack}${(attack_modifier) ? ` (includes ${attack_modifier} modifier)` : ""}</div>
+                         <div>Your attack: ${myAttack}${
+        attack_modifier ? ` (includes ${attack_modifier} modifier)` : ""
+      }</div>
                          <div>Their attack: ${enemyAttack}</div>
                        </div>`;
       if (myAttack >= enemyAttack) {
@@ -886,21 +900,18 @@ class Midnight extends GameTemplate {
       }
       combatHTML += "</div>";
 
-
       choicesHTML = `<ul class="choicelist">`;
       if (this.game.state.stamina <= 0) {
         choicesHTML += `<li class="textchoice" id="death">You have died, CONFIRM</li>`;
       } else if (enemy.stamina <= 0 && params.victory) {
         choicesHTML += `<li class="textchoice" id="win">You have defeated ${enemy.name}, CONTINUE</li>`;
       } else {
-
         if (params?.victory?.limit && rounds >= params.victory.limit) {
           choicesHTML += `<li class="textchoice" id="timeout">${params.victory.message}</li>`;
         } else {
           if (params?.defend?.limit && defends >= params.defend.limit) {
             choicesHTML += `<li class="textchoice" id="defend">${params.defend.message}</li>`;
           } else {
-
             if (params?.attack?.limit && attacks >= params.attack.limit) {
               choicesHTML += `<li class="textchoice" id="attack">${params.attack.message}</li>`;
               if (!params.attack.optional) {
@@ -922,7 +933,7 @@ class Midnight extends GameTemplate {
       }
 
       update();
-    }
+    };
 
     const luck = () => {
       let luck_roll = this.rollDice(6) + this.rollDice(6);
@@ -954,18 +965,21 @@ class Midnight extends GameTemplate {
         return;
       }
       update();
-    }
+    };
 
     const update = () => {
       this.displayPlayer();
-      this.updateStatus(`<div class="page_number">${this.game.state.currentpage}</div><div class="story">${this.book[this.game.state.currentpage].text}</div>${combatHTML}${choicesHTML}`);
+      this.updateStatus(
+        `<div class="page_number">${this.game.state.currentpage}</div><div class="story">${
+          this.book[this.game.state.currentpage].text
+        }</div>${combatHTML}${choicesHTML}`
+      );
 
       $(".textchoice").off();
-      $(".textchoice").on("click", function() {
+      $(".textchoice").on("click", function () {
         $(".textchoice").off();
         let action = $(this).attr("id");
         if (action == "death") {
-
         }
         if (action == "win") {
           if (Array.isArray(enemies) && enemies.length > 0) {
@@ -998,8 +1012,7 @@ class Midnight extends GameTemplate {
           midnight_self.endTurn();
         }
       });
-
-    }
+    };
 
     if (params.enemy) {
       queueNextMonster();
@@ -1008,7 +1021,6 @@ class Midnight extends GameTemplate {
       combatHTML = `<div class="result">You are still fighting a <span class="bold">${enemy.name}</span>, Skill: ${enemy.skill}, Stamina: ${enemy.stamina}</div>`;
       combat();
     }
-
   }
 
   /*
@@ -1027,7 +1039,6 @@ class Midnight extends GameTemplate {
     choicesHTML += `<li class="textchoice" id="continue">move on</li>`;
     choicesHTML += `</ul>`;
 
-
     const evaluateDamage = () => {
       this.displayPlayer();
       if (midnight_self.game.state.stamina <= 0) {
@@ -1036,22 +1047,29 @@ class Midnight extends GameTemplate {
         choicesHTML = `<ul class="choicelist"><li class="textchoice" id="success">${success_message}</li></ul>`;
       }
 
-      this.updateStatus(`<div class="page_number">${this.game.state.currentpage}</div><div class="story">${this.book[this.game.state.currentpage].text}</div>${html}${choicesHTML}`);
+      this.updateStatus(
+        `<div class="page_number">${this.game.state.currentpage}</div><div class="story">${
+          this.book[this.game.state.currentpage].text
+        }</div>${html}${choicesHTML}`
+      );
       $(".textchoice").off();
-      $(".textchoice").on("click", function() {
+      $(".textchoice").on("click", function () {
         let action = $(this).attr("id");
         if (action == "success") {
-
           midnight_self.addMove(`page\t${victory_page}`);
           midnight_self.endTurn();
         }
       });
     };
 
-    this.updateStatus(`<div class="page_number">${this.game.state.currentpage}</div><div class="story">${this.book[this.game.state.currentpage].text}</div>${html}${choicesHTML}`);
+    this.updateStatus(
+      `<div class="page_number">${this.game.state.currentpage}</div><div class="story">${
+        this.book[this.game.state.currentpage].text
+      }</div>${html}${choicesHTML}`
+    );
 
     $(".textchoice").off();
-    $(".textchoice").on("click", function() {
+    $(".textchoice").on("click", function () {
       $(".textchoice").off();
       let action = $(this).attr("id");
       if (action == "luck") {
@@ -1069,7 +1087,6 @@ class Midnight extends GameTemplate {
     });
   }
 
-
   bribeNPC(victory_page, failure_page) {
     let midnight_self = this;
     let choicesHTML = `<ul class="choicelist"><li class="textchoice" id="1">1 gold piece</li>`;
@@ -1078,10 +1095,14 @@ class Midnight extends GameTemplate {
     }
     choicesHTML += "</ul>";
 
-    this.updateStatus(`<div class="page_number">${this.game.state.currentpage}</div><div class="story">${this.book[this.game.state.currentpage].text}</div>${choicesHTML}`);
+    this.updateStatus(
+      `<div class="page_number">${this.game.state.currentpage}</div><div class="story">${
+        this.book[this.game.state.currentpage].text
+      }</div>${choicesHTML}`
+    );
 
     $(".textchoice").off();
-    $(".textchoice").on("click", function() {
+    $(".textchoice").on("click", function () {
       $(".textchoice").off();
       let bribe = parseInt($(this).attr("id"));
       midnight_self.game.state.gold -= bribe;
@@ -1097,7 +1118,6 @@ class Midnight extends GameTemplate {
     });
   }
 
-
   selectItem(next_page, weapon_filter = false) {
     let midnight_self = this;
     let choicesHTML = `<div class="result">Select an item from your inventory: </div><div class="special_skills">`;
@@ -1107,24 +1127,29 @@ class Midnight extends GameTemplate {
         choicesHTML += `<div id="${s}">${this.inventory[s].icon} : ${this.inventory[s].name}</div>`;
       }
     }
-    choicesHTML += `</div>`
+    choicesHTML += `</div>`;
 
-    this.updateStatus(`<div class="page_number">${this.game.state.currentpage}</div><div class="story">${this.book[this.game.state.currentpage].text}</div>${choicesHTML}`);
+    this.updateStatus(
+      `<div class="page_number">${this.game.state.currentpage}</div><div class="story">${
+        this.book[this.game.state.currentpage].text
+      }</div>${choicesHTML}`
+    );
 
     $(".special_skills div").off();
-    $(".special_skills div").on("click", function() {
+    $(".special_skills div").on("click", function () {
       $(".special_skills div").off();
       let item = $(this).attr("id");
       if (item == "provisions") {
         midnight_self.game.state.provisions--;
       } else {
-        midnight_self.game.state.inventory = midnight_self.game.state.inventory.filter(f => f !== item);
+        midnight_self.game.state.inventory = midnight_self.game.state.inventory.filter(
+          (f) => f !== item
+        );
       }
       midnight_self.addMove(`page\t${next_page}`);
       midnight_self.endTurn();
     });
   }
-
 
   hasWeapon() {
     for (let item of this.game.state.inventory) {
@@ -1139,7 +1164,7 @@ class Midnight extends GameTemplate {
   returnState() {
     let state = {};
     state.max_skill = this.rollDice(6) + 6;
-    state.skill = state.max_skill
+    state.skill = state.max_skill;
     state.max_stamina = this.rollDice(6) + this.rollDice(6) + 12;
     state.stamina = state.max_stamina;
     state.max_luck = this.rollDice(6) + 6;
@@ -1163,7 +1188,7 @@ class Midnight extends GameTemplate {
 
   returnPotions() {
     const usePotion = (potion, mod = 0) => {
-      this.game.state.inventory = this.game.state.inventory.filter(f => f !== "potion");
+      this.game.state.inventory = this.game.state.inventory.filter((f) => f !== "potion");
       this.game.state[`max_${potion}`] += mod;
       this.game.state[potion] = this.game.state[`max_${potion}`];
       this.displayPlayer();
@@ -1174,23 +1199,23 @@ class Midnight extends GameTemplate {
     potions["skill"] = {
       name: "Potion of Skill",
       desc: "restore SKILL to initial level",
-      event: function() {
+      event: function () {
         usePotion("skill");
-      }
+      },
     };
     potions["stamina"] = {
       name: "Potion of Stamina",
       desc: "restore STAMINA to initial level",
-      event: function() {
+      event: function () {
         usePotion("stamina");
-      }
+      },
     };
     potions["luck"] = {
       name: "Potion of Fortune",
       desc: "restore LUCK to initial level + 1",
-      event: function() {
+      event: function () {
         usePotion("luck", 1);
-      }
+      },
     };
 
     return potions;
@@ -1202,7 +1227,7 @@ class Midnight extends GameTemplate {
       name: "Short Sword",
       weapon: true,
       icon: `<i class="fas fa-sword"></i>`,
-    }
+    };
     inventory["provisions"] = {
       name: "Provisions",
       icon: `<i class="fas fa-pizza-slice food"></i>`,
@@ -1268,12 +1293,12 @@ class Midnight extends GameTemplate {
       name: "Lock-picks",
       skill: "lock",
       icon: `<i class="fas fa-tools"></i>`,
-    }
+    };
     inventory["rags"] = {
       name: "Rags wrapped around your feet",
       skill: "sneak",
       icon: `<i class="fas fa-socks"></i>`,
-    }
+    };
     inventory["wire"] = {
       name: "Heavy wire",
       icon: `<i class="fas fa-rainbow"></i>`,
@@ -1287,7 +1312,7 @@ class Midnight extends GameTemplate {
       name: "Heavy Chain",
       weapon: true,
       icon: `<i class="fas fa-link"></i>`,
-    }
+    };
     return inventory;
   }
 
@@ -1323,7 +1348,6 @@ class Midnight extends GameTemplate {
     };
     return skills;
   }
-
 
   returnEnemy() {
     let enemy = {};
@@ -1433,7 +1457,7 @@ class Midnight extends GameTemplate {
       name: "Posessor Spirit",
       skill: 10,
       stamina: 10,
-      curse: { "luck": -1 },
+      curse: { luck: -1 },
     };
     enemy["dog"] = {
       name: "Dog",
@@ -1518,7 +1542,6 @@ class Midnight extends GameTemplate {
 
     return enemy;
   }
-
 }
 
 module.exports = Midnight;

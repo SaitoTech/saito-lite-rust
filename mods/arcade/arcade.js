@@ -518,7 +518,7 @@ class Arcade extends ModTemplate {
       //
 
       if (app.BROWSER == 0 && app.SPVMODE == 0) {
-        console.log("notify peers?");
+        console.log("notify peers?", tx);
         await this.notifyPeers(tx);
       }
 
@@ -602,8 +602,10 @@ class Arcade extends ModTemplate {
       return;
     }
     let peers = await this.app.network.getPeers();
-    for (let i = 0; i < peers.length; i++) {
-      if (peers[i].synctype == "lite") {
+    console.log("1111111");
+    for (let peer of peers) {
+      console.log("sync type : " + peer.peerIndex + " -> " + peer.synctype);
+      if (peer.synctype == "lite") {
         //
         // fwd tx to peer
         //
@@ -611,14 +613,18 @@ class Arcade extends ModTemplate {
         message.request = "arcade spv update";
         message.data = tx.toJson();
 
+        console.log("notifying peer : " + peer.peerIndex);
         await this.app.network.sendRequestAsTransaction(
           message.request,
           message.data,
           null,
-          peers[i].peerIndex
+          peer.peerIndex
         );
+        console.log("22222");
       }
+      console.log("333333");
     }
+    console.log("44444444");
   }
 
   ///////////////////////
@@ -652,11 +658,11 @@ class Arcade extends ModTemplate {
       moduletype = "ArcadeInvite";
     }
 
-    let { ts, name, options, players_needed, invitation_type, desired_opponent_publickey } =
+    let { timestamp, name, options, players_needed, invitation_type, desired_opponent_publickey } =
       gamedata;
 
     let accept_sig = await this.app.crypto.signMessage(
-      `invite_game_${ts}`,
+      `invite_game_${timestamp}`,
       await this.app.wallet.returnPrivateKey()
     );
 
@@ -664,12 +670,12 @@ class Arcade extends ModTemplate {
     if (recipient != "") {
       let slip = new Slip();
       slip.publicKey = sendto;
-      slip.amount = 0;
+      slip.amount = BigInt(0);
       newtx.addToSlip(slip);
     }
 
     newtx.msg = {
-      ts: ts,
+      timestamp: timestamp,
       module: moduletype,
       request: invitation_type,
       game: name,
@@ -758,12 +764,12 @@ class Arcade extends ModTemplate {
     for (let player of orig_tx.msg.players) {
       let slip = new Slip();
       slip.publicKey = player;
-      slip.amount = 0;
+      slip.amount = BigInt(0);
       newtx.addToSlip(slip);
     }
     let slip = new Slip();
     slip.publicKey = this.publicKey;
-    slip.amount = 0;
+    slip.amount = BigInt(0);
     newtx.addToSlip(slip);
 
     let msg = {
@@ -851,12 +857,12 @@ class Arcade extends ModTemplate {
     for (let player of orig_tx.msg.players) {
       let slip = new Slip();
       slip.publicKey = player;
-      slip.amount = 0;
+      slip.amount = BigInt(0);
       newtx.addToSlip(slip);
     }
     let slip = new Slip();
     slip.publicKey = this.publicKey;
-    slip.amount = 0;
+    slip.amount = BigInt(0);
     newtx.addToSlip(slip);
 
     let msg = {
@@ -945,12 +951,12 @@ class Arcade extends ModTemplate {
     let sql = `UPDATE games
                SET winner        = $winner,
                    method        = $method,
-                   time_finished = $ts
+                   time_finished = $timestamp
                WHERE game_id = $game_id`;
     let params = {
       $winner: txmsg.winner || "",
       $method: txmsg.reason,
-      $ts: txmsg.timestamp,
+      $timestamp: txmsg.timestamp,
       $game_id: txmsg.game_id,
     };
     await this.app.storage.executeDatabase(sql, params, "arcade");
@@ -973,12 +979,12 @@ class Arcade extends ModTemplate {
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     let slip = new Slip();
     slip.publicKey = orig_tx.from[0].publicKey;
-    slip.amount = 0;
+    slip.amount = BigInt(0);
     newtx.addToSlip(slip);
 
     slip = new Slip();
     slip.publicKey = this.publicKey;
-    slip.amount = 0;
+    slip.amount = BigInt(0);
     newtx.addToSlip(slip);
 
     newtx.msg.timestamp = "";
@@ -1024,12 +1030,12 @@ class Arcade extends ModTemplate {
     for (let player of txmsg.players) {
       let slip = new Slip();
       slip.publicKey = player;
-      slip.amount = 0;
+      slip.amount = BigInt(0);
       newtx.addToSlip(slip);
     }
     let slip = new Slip();
     slip.publicKey = this.publicKey;
-    slip.amount = 0;
+    slip.amount = BigInt(0);
     newtx.addToSlip(slip);
 
     newtx.msg = JSON.parse(JSON.stringify(txmsg));
@@ -1038,7 +1044,7 @@ class Arcade extends ModTemplate {
     newtx.msg.game_id = orig_tx.signature;
 
     newtx.msg.invite_sig = await this.app.crypto.signMessage(
-      "invite_game_" + orig_tx.msg.ts,
+      "invite_game_" + orig_tx.msg.timestamp,
       await this.app.wallet.returnPrivateKey()
     );
 
@@ -1141,7 +1147,7 @@ class Arcade extends ModTemplate {
     let txmsg = orig_tx.msg;
 
     let accept_sig = await this.app.crypto.signMessage(
-      "invite_game_" + txmsg.ts,
+      "invite_game_" + txmsg.timestamp,
       await this.app.wallet.returnPrivateKey()
     );
 
@@ -1152,7 +1158,7 @@ class Arcade extends ModTemplate {
     for (let i = 0; i < txmsg.players.length; i++) {
       let slip = new Slip();
       slip.publicKey = txmsg.players[i];
-      slip.amount = 0;
+      slip.amount = BigInt(0);
       newtx.addToSlip(slip);
     }
 
@@ -1286,7 +1292,7 @@ class Arcade extends ModTemplate {
   //
   /*
   createChallengeTransaction(gameData) {
-    let ts = new Date().getTime();
+    let timestamp = new Date().getTime();
     let accept_sig = this.app.crypto.signMessage(
       `invite_game_${ts}`,
       this.app.wallet.returnPrivateKey()
@@ -1299,7 +1305,7 @@ class Arcade extends ModTemplate {
     }
 
     tx.msg = {
-      ts: ts,
+      timestamp: timestamp,
       module: "Arcade",
       request: "challenge",
       game: gameData.game,

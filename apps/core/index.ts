@@ -59,7 +59,7 @@ class Saito {
     this.storage = new Storage(this);
     this.wallet = new Wallet(this);
     this.keychain = new Keychain(this);
-    this.network = new Network();
+    this.network = new Network(this);
     // this.networkApi = new NetworkAPI(this);
     this.blockchain = new Blockchain();
   }

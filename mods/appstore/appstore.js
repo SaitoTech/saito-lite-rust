@@ -583,7 +583,7 @@ class AppStore extends ModTemplate {
           await this.app.storage.executeDatabase(sql, params, "appstore");
         } catch (err) {}
 
-        if (this.featured_apps.includes(name) && tx.isFrom(this.app.wallet.getPublicKey())) {
+        if (this.featured_apps.includes(name) && tx.isFrom(await this.app.wallet.getPublicKey())) {
           sql = "UPDATE modules SET featured = 0 WHERE name = $name";
           params = { $name: name };
           await this.app.storage.executeDatabase(sql, params, "appstore");

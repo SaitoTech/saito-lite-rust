@@ -112,13 +112,13 @@ class Nwasm extends GameTemplate {
     this.library_ui.render();
   }
 
-  initializeHTML(app) {
+  async initializeHTML(app) {
     let game_mod = this;
     if (!this.browser_active) {
       return;
     }
 
-    super.initializeHTML(app);
+    await super.initializeHTML(app);
 
     //
     // ADD MENU

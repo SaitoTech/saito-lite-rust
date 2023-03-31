@@ -27,7 +27,7 @@ class Tweet {
     this.parent_id = "";
     this.thread_id = "";
     this.youtube_id = null;
-    this.created_at = this.tx.transaction.ts;
+    this.created_at = this.tx.timestamp;
     this.updated_at = 0;
     this.notice = "";
 
@@ -252,7 +252,7 @@ class Tweet {
     // render user
     //
     if (this.userline == "") {
-      let dt = this.app.browser.formatDate(this.tx.transaction.ts);
+      let dt = this.app.browser.formatDate(this.tx.timestamp);
       this.userline =
         "posted on " +
         dt.month +

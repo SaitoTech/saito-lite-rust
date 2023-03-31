@@ -42,12 +42,12 @@ class President extends GameTemplate {
     this.game.queue.push("READY");
   }
 
-  initializeHTML(app) {
+  async initializeHTML(app) {
     if (!this.browser_active) {
       return;
     }
 
-    super.initializeHTML(app);
+    await super.initializeHTML(app);
 
     //
     // add card events -- text shown and callback run if there
@@ -370,10 +370,10 @@ class President extends GameTemplate {
     this.game.state.first_player_in_round = 0;
   }
 
-  playerTurn() {
+  async playerTurn() {
     let president_self = this;
 
-    this.displayBoard();
+    await this.displayBoard();
 
     if (this.game.state.last_played.length == 0) {
       this.updateStatusAndListCards("Start the Round");
@@ -411,16 +411,16 @@ class President extends GameTemplate {
       el.innerHTML = "";
     });
 
-    this.displayBoard();
+    await this.displayBoard();
   }
 
-  displayBoard() {
+  async displayBoard() {
     if (this.browser_active == 0) {
       return;
     }
 
     try {
-      this.displayPlayers();
+      await this.displayPlayers();
       this.displayTable();
     } catch (err) {
       console.log("err: " + err);
@@ -521,13 +521,13 @@ class President extends GameTemplate {
     return deck;
   }
 
-  displayPlayers() {
+  async displayPlayers() {
     let player_box = null;
     let prank = 0;
 
-    if (this.game.players.includes(this.app.wallet.getPublicKey())) {
+    if (this.game.players.includes(await this.app.wallet.getPublicKey())) {
       player_box = this.returnPlayersBoxArray();
-      prank = this.game.players.indexOf(this.app.wallet.getPublicKey());
+      prank = this.game.players.indexOf(await this.app.wallet.getPublicKey());
     } else {
       document.querySelector(".status").innerHTML =
         "You are out of the game.<br />Feel free to hang out and chat.";
@@ -808,6 +808,4 @@ class President extends GameTemplate {
   }
 }
 
-
 module.exports = President;
-

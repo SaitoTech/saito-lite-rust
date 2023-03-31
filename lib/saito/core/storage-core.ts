@@ -477,7 +477,7 @@ class StorageCore extends Storage {
    * TODO: uses a callback and should be moved to await / async promise
    **/
   async returnBlockFilenameByHash(block_hash: string, mycallback) {
-    const sql = "SELECT id, ts, block_id FROM blocks WHERE hash = $block_hash";
+    const sql = "SELECT id, timestamp, block_id FROM blocks WHERE hash = $block_hash";
     const params = { $block_hash: block_hash };
 
     try {
@@ -486,7 +486,7 @@ class StorageCore extends Storage {
         mycallback(null, "Block not found on this server");
         return;
       }
-      const filename = `${row.ts}-${block_hash}.blk`;
+      const filename = `${row.timestamp}-${block_hash}.blk`;
       mycallback(filename, null);
     } catch (err) {
       console.log("ERROR getting block filename in storage: " + err);

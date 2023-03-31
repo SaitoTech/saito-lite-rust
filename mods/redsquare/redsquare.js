@@ -1314,8 +1314,8 @@ class RedSquare extends ModTemplate {
         type_of_tweet = 4; // images
       }
 
-      let created_at = tx.transaction.ts;
-      let updated_at = tx.transaction.ts;
+      let created_at = tx.timestamp;
+      let updated_at = tx.timestamp;
 
       //
       // insert the basic information

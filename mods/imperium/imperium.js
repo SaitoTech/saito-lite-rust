@@ -13606,14 +13606,14 @@ class Imperium extends GameTemplate {
     });
   } // end initializeGameObjects
 
-  initializeHTML(app) {
+  async initializeHTML(app) {
     if (!this.browser_active) {
       return;
     }
 
     let imperium_self = this;
 
-    super.initializeHTML(app);
+    await super.initializeHTML(app);
 
     try {
       $(".content").css("visibility", "visible");
@@ -14308,42 +14308,42 @@ class Imperium extends GameTemplate {
           <div class="hexIn" id="hexIn_' +
             i +
             '"> \
-        <div class="hexLink" id="hexLink_' +
+      <div class="hexLink" id="hexLink_' +
             i +
             '"> \
-        <div class="hexInfo" id="hex_info_' +
+      <div class="hexInfo" id="hex_info_' +
             i +
             '"></div> \
-          <div class="hex_bg" id="hex_bg_' +
+        <div class="hex_bg" id="hex_bg_' +
             i +
             '"> \
-            <img class="hex_img sector_graphics_background ' +
+          <img class="hex_img sector_graphics_background ' +
             this.game.board[i].tile +
             '" id="hex_img_' +
             i +
             '" src="" /> \
-            <img src="/imperium/img/frame/border_full_white.png" id="hex_img_faction_border_' +
+          <img src="/imperium/img/frame/border_full_white.png" id="hex_img_faction_border_' +
             i +
             '" class="faction_border" /> \
-            <img src="/imperium/img/frame/border_full_yellow.png" id="hex_img_hazard_border_' +
+          <img src="/imperium/img/frame/border_full_yellow.png" id="hex_img_hazard_border_' +
             i +
             '" class="hazard_border" /> \
-            <div class="hex_activated" id="hex_activated_' +
+          <div class="hex_activated" id="hex_activated_' +
             i +
             '"> \
-          </div> \
-            <div class="hex_space" id="hex_space_' +
+        </div> \
+          <div class="hex_space" id="hex_space_' +
             i +
             '"> \
-          </div> \
-            <div class="hex_ground" id="hex_ground_' +
+        </div> \
+          <div class="hex_ground" id="hex_ground_' +
             i +
             '"> \
-          </div> \
-          </div> \
+        </div> \
         </div> \
       </div> \
-    '
+    </div> \
+  '
         );
 
         // insert planet

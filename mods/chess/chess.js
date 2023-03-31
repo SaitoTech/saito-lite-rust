@@ -6,7 +6,7 @@ const ChessSingularGameOptions = require("./lib/chess-singular-game-options.temp
 const chess = require("./lib/chess.js");
 const chessboard = require("./lib/chessboard");
 
-var this_chess = null;
+let this_chess = null;
 
 class Chessgame extends GameTemplate {
   constructor(app) {
@@ -36,11 +36,11 @@ class Chessgame extends GameTemplate {
     return this;
   }
 
-  initializeHTML(app) {
+  async initializeHTML(app) {
     if (!this.browser_active) {
       return;
     }
-    super.initializeHTML(app);
+    await super.initializeHTML(app);
 
     //
     // ADD MENU
@@ -125,7 +125,7 @@ class Chessgame extends GameTemplate {
             if (game_mod.game.draw_offered == 0) {
               game_mod.updateStatusMessage("Draw offer sent; " + game_mod.status);
               game_mod.game.draw_offered = -1;
-              var data = { draw: "offer" };
+              const data = { draw: "offer" };
               game_mod.endTurn(data);
               return;
             }
@@ -141,7 +141,7 @@ class Chessgame extends GameTemplate {
       callback: async function (app, game_mod) {
         let c = await sconfirm("Do you really want to resign?");
         if (c) {
-          game_mod.resignGame(game_mod.game.id, "resignation");
+          await game_mod.resignGame(game_mod.game.id, "resignation");
           return;
         }
       },
@@ -191,9 +191,12 @@ class Chessgame extends GameTemplate {
     }
   }
 
-  switchColors() {
+  async switchColors() {
     // observer skips
-    if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) {
+    if (
+      this.game.player === 0 ||
+      !this.game.players.includes(await this.app.wallet.getPublicKey())
+    ) {
       return 1;
     }
 
@@ -216,7 +219,7 @@ class Chessgame extends GameTemplate {
     }
     //Fix game.player so that it corresponds to the indices of game.players[]
     for (let i = 0; i < this.game.players.length; i++) {
-      if (this.game.players[i] === this.app.wallet.returnPublicKey()) {
+      if (this.game.players[i] === (await this.app.wallet.getPublicKey())) {
         this.game.player = i + 1;
       }
     }
@@ -238,7 +241,7 @@ class Chessgame extends GameTemplate {
     if (this.game.initializing == 1) {
       this.game.queue.push("READY");
       //Check colors
-      this.switchColors();
+      await this.switchColors();
     }
 
     if (!this.browser_active) {
@@ -282,7 +285,7 @@ class Chessgame extends GameTemplate {
   ////////////////
   // handleGame //
   ////////////////
-  handleGameLoop(msg = {}) {
+  async handleGameLoop(msg = {}) {
     msg = {};
     if (this.game.queue.length > 0) {
       msg.extra = JSON.parse(
@@ -316,7 +319,7 @@ class Chessgame extends GameTemplate {
     if (data.draw) {
       if (data.draw === "accept") {
         console.log("Ending game");
-        this.endGame(this.game.players, "draw");
+        await this.endGame(this.game.players, "draw");
         return;
       } else {
         //(data.draw == "offer")
@@ -347,7 +350,7 @@ class Chessgame extends GameTemplate {
 
       //Check for draw according to game engine
       if (this.engine.in_draw() === true) {
-        this.endGame(this.game.players, "draw");
+        await this.endGame(this.game.players, "draw");
         return 0;
       }
 
@@ -356,7 +359,7 @@ class Chessgame extends GameTemplate {
       if (msg.extra.target == this.game.player) {
         //I announce that I am in checkmate to end the game
         if (this.engine.in_checkmate() === true) {
-          this.resignGame(this.game.id, "checkmate");
+          await this.resignGame(this.game.id, "checkmate");
           return 0;
         }
 
@@ -383,7 +386,7 @@ class Chessgame extends GameTemplate {
     }
   }
 
-  endTurn(data) {
+  async endTurn(data) {
     let extra = {};
 
     extra.target = this.returnNextPlayer(this.game.player);
@@ -392,7 +395,7 @@ class Chessgame extends GameTemplate {
     let data_to_send = this.app.crypto.stringToBase64(JSON.stringify(extra));
     this.game.turn = [data_to_send];
     this.moves = [];
-    this.sendMessage("game", extra);
+    await this.sendMessage("game", extra);
   }
 
   attachGameEvents() {
@@ -408,7 +411,7 @@ class Chessgame extends GameTemplate {
       resign_icon.onclick = async () => {
         let c = await sconfirm("Do you really want to resign?");
         if (c) {
-          this.resignGame(this.game.id, "resignation");
+          await this.resignGame(this.game.id, "resignation");
           return;
         }
       };
@@ -425,7 +428,7 @@ class Chessgame extends GameTemplate {
               this.updateStatusMessage("Draw offer sent; " + this.status);
               this.game.draw_offered = -1; //Offer already sent
               var data = { draw: "offer" };
-              this.endTurn(data);
+              await this.endTurn(data);
               return;
             }
           } else {
@@ -434,7 +437,7 @@ class Chessgame extends GameTemplate {
               this.updateStatusMessage("Draw offer accepted!");
               this.game.draw_offered = -1; //Offer already sent
               var data = { draw: "accept" };
-              this.endTurn(data);
+              await this.endTurn(data);
               return;
             }
           }
@@ -484,9 +487,9 @@ class Chessgame extends GameTemplate {
 
     //Otherwise build up default status messaging...
 
-    var status = "";
+    let status = "";
 
-    var moveColor = "White";
+    let moveColor = "White";
     let bgColor = "#fff";
     if (this.engine.turn() === "b") {
       moveColor = "Black";
@@ -615,7 +618,7 @@ class Chessgame extends GameTemplate {
       this_chess.checkPromotion(source, target, piece.charAt(0));
     } else {
       // see if the move is legal
-      var move = this_chess.engine.move({
+      const move = this_chess.engine.move({
         from: source,
         to: target,
         promotion: "q", // NOTE: always promote to a queen for example simplicity
@@ -629,7 +632,7 @@ class Chessgame extends GameTemplate {
       this_chess.game.move += " - " + move.san;
 
       this_chess.confirmPlacement(() => {
-        var data = {};
+        const data = {};
         data.position = this_chess.engine.fen();
         data.move = this_chess.game.move;
         this_chess.endTurn(data);
@@ -637,8 +640,8 @@ class Chessgame extends GameTemplate {
     }
   }
 
-  promoteAfterDrop(source, target, piece) {
-    var move = this_chess.engine.move({
+  async promoteAfterDrop(source, target, piece) {
+    const move = this_chess.engine.move({
       from: source,
       to: target,
       promotion: piece,
@@ -647,10 +650,10 @@ class Chessgame extends GameTemplate {
     // legal move - make it
     this_chess.game.move += `${this_chess.pieces(move.piece)} - ${move.san}`;
 
-    var data = {};
+    const data = {};
     data.position = this.engine.fen();
     data.move = this.game.move;
-    this.endTurn(data);
+    await this.endTurn(data);
     this_chess.updateStatusMessage("Pawn promoted to " + this_chess.pieces(piece) + ".");
   }
 
@@ -689,7 +692,7 @@ class Chessgame extends GameTemplate {
     }
 
     $(".action").off();
-    $(".action").on("click", function () {
+    $(".action").on("click", async function () {
       let confirmation = $(this).attr("id");
 
       $(".action").off();
@@ -697,14 +700,14 @@ class Chessgame extends GameTemplate {
       if (confirmation == "cancel") {
         this_chess.setBoard(this_chess.game.position);
       } else {
-        this_chess.promoteAfterDrop(source, target, confirmation);
+        await this_chess.promoteAfterDrop(source, target, confirmation);
       }
     });
   }
 
   onMouseoverSquare(square, piece) {
     // get list of possible moves for this square
-    var moves = this_chess.engine.moves({
+    const moves = this_chess.engine.moves({
       square: square,
       verbose: true,
     });
@@ -718,7 +721,7 @@ class Chessgame extends GameTemplate {
     this_chess.greySquare(square);
 
     // highlight the possible squares for this piece
-    for (var i = 0; i < moves.length; i++) {
+    for (let i = 0; i < moves.length; i++) {
       this_chess.greySquare(moves[i].to);
     }
   }
@@ -733,9 +736,9 @@ class Chessgame extends GameTemplate {
   }
 
   greySquare(square) {
-    var squareEl = document.querySelector(`#board .square-${square}`);
+    const squareEl = document.querySelector(`#board .square-${square}`);
 
-    var background = "#c5e8a2";
+    let background = "#c5e8a2";
     if (squareEl.classList.contains("black-3c85d") === true) {
       background = "#769656";
     }
@@ -846,7 +849,7 @@ class Chessgame extends GameTemplate {
     afen = afen.split(" ")[0];
     let WH = ["Q", "R", "R", "B", "B", "N", "N", "P", "P", "P", "P", "P", "P", "P", "P"];
     let BL = ["q", "r", "r", "b", "b", "n", "n", "p", "p", "p", "p", "p", "p", "p", "p"];
-    for (var i = 0; i < afen.length; i++) {
+    for (let i = 0; i < afen.length; i++) {
       if (WH.indexOf(afen[i]) >= 0) {
         WH.splice(WH.indexOf(afen[i]), 1);
       }

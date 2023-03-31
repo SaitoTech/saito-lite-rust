@@ -45,7 +45,7 @@ class Registry extends ModTemplate {
       let myKey = await this.app.wallet.getPublicKey();
       for (let i = 0; i < peers.length; i++) {
         let peer = peers[i];
-        if (this.app.network.peers[i].hasService("registry")) {
+        if (peer.hasService("registry")) {
           this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
             Object.entries(answer).forEach(([key, value]) => {
               this.cached_keys[key] = value;

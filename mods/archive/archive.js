@@ -234,13 +234,13 @@ class Archive extends ModTemplate {
 
     for (let i = 0; i < tx.to.length; i++) {
       sql =
-        "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
+        "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $timestamp, $preserve, $type)";
       params = {
         $sig: tx.signature,
         $publickey: tx.to[i].publicKey,
         $tx: tx.serialize_to_web(this.app),
         $optional: JSON.stringify(optional),
-        $ts: tx.timestamp,
+        $timestamp: tx.timestamp,
         $preserve: 0,
         $type: msgtype,
       };
@@ -254,13 +254,13 @@ class Archive extends ModTemplate {
     //
     for (let i = 0; i < tx.from.length; i++) {
       sql =
-        "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
+        "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $timestamp, $preserve, $type)";
       params = {
         $sig: tx.signature,
         $publickey: tx.from[i].publicKey,
         $tx: tx.serialize_to_web(this.app),
         $optional: JSON.stringify(optional),
-        $ts: tx.timestamp,
+        $timestamp: tx.timestamp,
         $preserve: 0,
         $type: msgtype,
       };
@@ -314,9 +314,9 @@ class Archive extends ModTemplate {
     this.last_clean_on = Date.now();
 
     let ts = new Date().getTime() - 100000000;
-    let sql = "DELETE FROM txs WHERE ts < $ts AND type = $type AND preserve = 0";
+    let sql = "DELETE FROM txs WHERE timestamp < $timestamp AND type = $type AND preserve = 0";
     let params = {
-      $ts: ts,
+      $timestamp: timestamp,
       $type: "Chat",
     };
     await this.app.storage.executeDatabase(sql, params, "archive");
@@ -329,13 +329,13 @@ class Archive extends ModTemplate {
     let optional = tx.optional ? tx.optional : {};
 
     let sql =
-      "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
+      "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, timestamp, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $timestamp, $preserve, $type)";
     let params = {
       $sig: tx.signature,
       $publickey: key,
       $tx: tx.serialize_to_web(this.app),
       $optional: optional,
-      $ts: tx.timestamp,
+      $timestamp: tx.timestamp,
       $preserve: 0,
       $type: type,
     };

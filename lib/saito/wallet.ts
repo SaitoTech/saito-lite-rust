@@ -98,8 +98,8 @@ export default class Wallet {
         return parseFloat(await this.app.wallet.getBalance());
       }
 
-      returnAddress() {
-        return this.app.wallet.getPublicKey();
+      async returnAddress() {
+        return await this.app.wallet.getPublicKey();
       }
 
       returnPrivateKey() {
@@ -116,7 +116,7 @@ export default class Wallet {
       async receivePayment(howMuch, from, to, timestamp) {
         const from_from = 0;
         const to_to = 0;
-        if (to == this.app.wallet.getPublicKey()) {
+        if (to == (await this.app.wallet.getPublicKey())) {
           for (let i = 0; i < this.app.wallet.wallet.inputs.length; i++) {
             if (this.app.wallet.wallet.inputs[i].amount === howMuch) {
               if (parseInt(this.app.wallet.wallet.inputs[i].timestamp) >= parseInt(timestamp)) {
@@ -137,7 +137,7 @@ export default class Wallet {
           }
           return false;
         } else {
-          if (from == this.app.wallet.getPublicKey()) {
+          if (from == (await this.app.wallet.getPublicKey())) {
             for (let i = 0; i < this.app.wallet.wallet.outputs.length; i++) {
               //console.log("OUTPUT");
               //console.log(this.app.wallet.wallet.outputs[i]);

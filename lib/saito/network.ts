@@ -1,9 +1,15 @@
 import Transaction from "./transaction";
 import Peer from "./peer";
 import S from "saito-js/saito";
+import { Saito } from "../../apps/core";
 
 export default class Network {
   callbacks = [];
+  app: Saito;
+
+  constructor(app: Saito) {
+    this.app = app;
+  }
 
   initialize() {
     console.debug("[DEBUG] initialize network");
@@ -112,4 +118,19 @@ export default class Network {
   }
 
   returnPeersWithService() {}
+
+  updatePeersWithWatchedPublicKeys() {}
+
+  public async propagateServices(peerIndex: bigint) {
+    let my_services = [];
+    for (let i = 0; i < this.app.modules.mods.length; i++) {
+      let modservices = this.app.modules.mods[i].returnServices();
+      if (modservices.length > 0) {
+        for (let k = 0; k < modservices.length; k++) {
+          my_services.push(modservices[k]);
+        }
+      }
+    }
+    return S.getInstance().propagateServices(peerIndex, my_services);
+  }
 }

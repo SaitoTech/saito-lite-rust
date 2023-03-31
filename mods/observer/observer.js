@@ -416,7 +416,7 @@ class Observer extends ModTemplate {
                   players_array ,
                   module ,
                   step ,
-                  ts ,
+      timestamp ,
                   game_state
          ) VALUES (
       $game_id,
@@ -424,7 +424,7 @@ class Observer extends ModTemplate {
       $players_array,
       $module,
       0 ,
-      $ts ,
+      $timestamp ,
       $game_state
       )`;
 
@@ -434,7 +434,7 @@ class Observer extends ModTemplate {
         $game_id: txmsg.game_id,
         $players_array: players_array,
         $module: txmsg.module,
-        $ts: game_state.step.timestamp || new Date().getTime(),
+        $timestamp: game_state.step.timestamp || new Date().getTime(),
         $game_state: JSON.stringify(game_state),
       };
 
@@ -451,13 +451,13 @@ class Observer extends ModTemplate {
                   game_id ,
                   player ,
                   tx ,
-                  ts
+      timestamp
          ) VALUES (
       $step,
       $game_id,
       $player,
       $tx ,
-      $ts
+      $timestamp
       )`;
 
       params = {
@@ -465,19 +465,19 @@ class Observer extends ModTemplate {
         $game_id: txmsg.game_id,
         $player: tx.from[0].publicKey,
         $tx: JSON.stringify(tx.toJson()),
-        $ts: txmsg.step?.timestamp || new Date().getTime(),
+        $timestamp: txmsg.step?.timestamp || new Date().getTime(),
       };
 
       await app.storage.executeDatabase(sql, params, "observer");
 
       /*
-        let sql2 = `UPDATE obgames SET step = $step, ts = $ts WHERE game_id = $game_id`;
+        let sql2 = `UPDATE obgames SET step = $step, ts = $timestamp WHERE game_id = $game_id`;
         //console.log(sql2);
         //console.log(params);
         params = {
           $step: txmsg.step?.game || 1,
           $game_id: txmsg.game_id,
-          $ts: new Date().getTime(),
+          $timestamp: new Date().getTime(),
         }
         await app.storage.executeDatabase(sql2, params, "observer");
       */
@@ -571,7 +571,7 @@ class Observer extends ModTemplate {
     for (let p of addesses_to_watch) {
       let slip = new Slip();
       slip.publicKey = p;
-      slip.amount = 0;
+      slip.amount = BigInt(0);
       tx.addToSlip(slip);
     }
 
