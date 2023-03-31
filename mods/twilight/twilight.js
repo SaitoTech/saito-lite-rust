@@ -3,9 +3,6 @@ const TwilightRules = require('./lib/twilight-game-rules.template');
 const TwilightOptions = require('./lib/twilight-game-options.template');
 const TwilightSingularOption = require('./lib/twilight-singular-game-options.template');
 
-const ShowCardOverlay = require('./lib/overlays/show-card');
-const ShowWarOverlay = require('./lib/overlays/show-war');
-
 const JSON = require('json-bigint');
 
 
@@ -24,6 +21,7 @@ var original_selected_card = null;
 
 /*
   TODO: fix how card discarding is processed. Currently, processed three times in a row
+  NOTE - (from david) - this may be suitable for game-engine level work, since .deck.discards exists and is manipulated there
   1) in mv[0] === "event"
   2) in mv[0] === "discard"
   AND
@@ -31,7 +29,6 @@ var original_selected_card = null;
   Every selection of a card on your turn (regardless of whether played for ops or event, yours or opponents) will
   add (2) and (3) to the moves. Except 3 is resolve\tplay, so that isn't exactly a duplication since resolve checks for a card 
   (not the key word play) 
-
 */
 
 
@@ -59,7 +56,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     // newbie mode
     this.confirm_moves = 0;
@@ -75,10 +72,45 @@ class Twilight extends GameTemplate {
     this.playerRoles = ["observer", "ussr", "us"];
     this.region_key = { "asia": "Asia", "seasia": "Southeast Asia", "europe":"Europe", "africa":"Africa", "mideast":"Middle East", "camerica": "Central America", "samerica":"South America"};
     this.grace_window = 25;
-  
-    this.showCardOverlay = new ShowCardOverlay(app, this);
-    this.showWarOverlay = new ShowWarOverlay(app, this);
   }
+
+  showCardOverlay(cards, title = ""){
+    let html = `
+      <div class="ts-overlay">
+      <h1>${title}</h1>
+      <div class="ts-body">
+      <div class="cardlist-container">${this.returnCardList(cards)}</div>`;
+      if (cards.length == 0) { 
+        html = `<div style="text-align:center; margin: auto;">
+                There are no cards to display
+                </div>`;
+      }
+      html += "</div></div>";
+      this.overlay.show(html);
+  }
+
+  showWarOverlay(card, winner, roll, modifications, player = ""){
+    let html = `
+    <div class="ts-overlay">
+    <h1>${this.cardToText(card, true)}</h1>
+    <div class="waroverlay-body">
+    <div class="cardlist-container">
+      <div class="card card-hud">${this.returnCardImage(card)}</div>
+    </div>
+    <div class="warstats">
+      <div class="winner">${winner}</div>
+      <div>Roll: ${roll}</div>
+      <div>Mod: -${(modifications)?modifications:""}</div>
+      <div>Modified Roll: ${roll-modifications}</div>
+    `;
+    if (player){
+      html += `<div>Sponsor: ` + player.toUpperCase() + "</div>";
+    }  
+    html += `</div></div>`;
+
+    this.overlay.show(html);
+  }
+
 
   showScoreOverlay(card, point_obj){
    let html = `
@@ -311,7 +343,6 @@ class Twilight extends GameTemplate {
   }
 
 
-  /* Mostly deprecated, but potential useful logic for adding game clock to menu */
   handleDisplayMenu() {
 
     let twilight_self = this;
@@ -471,10 +502,7 @@ class Twilight extends GameTemplate {
       class: "game-cards-hand",
       callback: function(app,game_mod){
         game_mod.menu.hideSubMenus();
-
-        game_mod.showCardOverlay.cards = game_mod.game.deck[0].hand;
-        game_mod.showCardOverlay.title = "My Hand";
-        game_mod.showCardOverlay.render();
+        game_mod.showCardOverlay(game_mod.game.deck[0].hand, "My Hand");
       }
     });
     this.menu.addSubMenuOption("game-cards",{
@@ -483,10 +511,7 @@ class Twilight extends GameTemplate {
       class: "game-cards-discards",
       callback: function(app,game_mod){
         game_mod.menu.hideSubMenus();
-
-        game_mod.showCardOverlay.cards = Object.keys(game_mod.game.deck[0].discards);
-        game_mod.showCardOverlay.title = "Discards";
-        game_mod.showCardOverlay.render();
+        game_mod.showCardOverlay(Object.keys(game_mod.game.deck[0].discards), "Discards");
       }
     });
     this.menu.addSubMenuOption("game-cards",{
@@ -495,10 +520,7 @@ class Twilight extends GameTemplate {
       class: "game-cards-removed",
       callback: function(app,game_mod){
         game_mod.menu.hideSubMenus();
-        
-        game_mod.showCardOverlay.cards = Object.keys(game_mod.game.deck[0].removed);
-        game_mod.showCardOverlay.title = "Removed Cards";
-        game_mod.showCardOverlay.render();
+        game_mod.showCardOverlay(Object.keys(game_mod.game.deck[0].removed), "Removed Cards");
       }
     });
     this.menu.addSubMenuOption("game-cards",{
@@ -507,10 +529,7 @@ class Twilight extends GameTemplate {
       class: "game-cards-unplayed",
       callback: function(app,game_mod){
         game_mod.menu.hideSubMenus();
-        
-        game_mod.showCardOverlay.cards = Object.keys(game_mod.returnUnplayedCards());
-        game_mod.showCardOverlay.title = "Unplayed Cards";
-        game_mod.showCardOverlay.render();
+        game_mod.showCardOverlay(Object.keys(game_mod.returnUnplayedCards()), "Unplayed Cards");
       }
     });
 
@@ -737,8 +756,6 @@ initializeGame(game_id) {
       this.placeInfluence("japan", 4, "us");
       this.placeInfluence("southkorea", 3, "us");
       this.placeInfluence("taiwan", 3, "us");
-
-
 
       this.game.options.deck = "endofhistory";
       let a = this.returnEarlyWarCards();
@@ -2545,7 +2562,7 @@ console.log("LATEST MOVE: " + mv);
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["abmtreaty", "aldrichames", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["abmtreaty", "cubanmissile", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["che", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
         }
@@ -2998,6 +3015,8 @@ try {
       //
       // back button functions again
       this.game.state.back_button_cancelled = 0;
+      this.game.state.events.cubanmissilecrisis_cancelled = 0;
+      this.game.state.events.cubanmissilecrisis_removal_country = "";
 
       //
       // NORAD -- NEEDS TESTING
@@ -3056,9 +3075,7 @@ try {
         let cards_to_reveal = mv[2].split(" ");
         let title = (whosehand == 1)? "USSR Hand" : "US Hand";
         if (this.game.player != whosehand){
-          this.showCardOverlay.cards = cards_to_reveal;
-          this.showCardOverlay.title = title;
-          this.showCardOverlay.render();
+          this.showCardOverlay(cards_to_reveal, title);
         }
       }
 
@@ -3094,14 +3111,7 @@ try {
     //twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
     if (mv[0] === "war"){
       let sponsor = mv[5] || "";
-
-      this.showWarOverlay.card = mv[1];
-      this.showWarOverlay.winner = mv[2];
-      this.showWarOverlay.roll = parseInt(mv[3]);
-      this.showWarOverlay.modifications = parseInt(mv[4]); 
-      this.showWarOverlay.player = sponsor;
-      this.showWarOverlay.render();
-
+      this.showWarOverlay(mv[1],mv[2],parseInt(mv[3]),parseInt(mv[4]),sponsor);
       this.game.queue.splice(qe, 1);
       return 1;
     }
@@ -3962,13 +3972,6 @@ playerTurnHeadlineSelected(card, player) {
       if (twilight_self.game.deck[0].cards[card]?.scoring == 1) {
         let status_header = `Playing ${twilight_self.game.deck[0].cards[card].name}:`;
         let html = `<ul><li class="card" id="event">score region</li></ul>`;
-
-        // true means we want to include the back button in our functionality
-        /*if (this.game.state.back_button_cancelled == 1) {
-          html = twilight_self.formatStatusHeader(status_header, html, false);
-        } else {
-          html = twilight_self.formatStatusHeader(status_header, html, true);
-        }*/
         twilight_self.updateStatusWithOptions(status_header, html, (this.game.state.back_button_cancelled != 1));
       } else {
 
@@ -4583,6 +4586,7 @@ playerTurnHeadlineSelected(card, player) {
   Apparently, we want to give the player ample opportunities to make this move
   */
   cancelCubanMissileCrisis(){
+
     let twilight_self = this;
     if (twilight_self.game.player == 0) { return; } //just in case
 
@@ -4591,6 +4595,9 @@ playerTurnHeadlineSelected(card, player) {
       twilight_self.addMove("remove\tussr\tussr\tcuba\t2");
       twilight_self.addMove("unlimit\tcmc");
       twilight_self.addMove("NOTIFY\tUSSR has cancelled the Cuban Missile Crisis");
+      twilight_self.game.state.events.cubanmissilecrisis = 0;
+      twilight_self.game.state.events.cubanmissilecrisis_removal_country = "cuba";
+      twilight_self.game.state.events.cubanmissilecrisis_cancelled = 1;
       twilight_self.endTurn();
     } else {
       let html = "<ul>";
@@ -4609,6 +4616,12 @@ playerTurnHeadlineSelected(card, player) {
         twilight_self.addMove("unlimit\tcmc");
         twilight_self.addMove("NOTIFY\tUS has cancelled the Cuban Missile Crisis");
         twilight_self.endTurn();
+
+        twilight_self.game.state.events.cubanmissilecrisis = 0;
+        twilight_self.game.state.events.cubanmissilecrisis_removal_country = action2;
+        twilight_self.game.state.events.cubanmissilecrisis_cancelled = 1;
+
+
       });
 
     }
@@ -4616,34 +4629,68 @@ playerTurnHeadlineSelected(card, player) {
 
   
   revertTurn() {
+
     let twilight_self = this;
+
+console.log("REVERTING TURN: ");
+console.log("CMC 1: " + twilight_self.game.state.events.cubanmissilecrisis_cancelled);
+console.log("CMC 2: " + twilight_self.game.state.events.cubanmissilecrisis_removal_country);
+
+    if (twilight_self.game.state.events.cubanmissilecrisis_cancelled == 1) {
+      if (twilight_self.game.state.events.cubanmissilecrisis_removal_country != "") {
+	//
+	// we have removed 2 influence from this country, so re-add it
+	//
+	if (twilight_self.game.state.events.cubanmissilecrisis_removal_country === "cuba") {
+          this.placeInfluence("cuba", 2, "ussr");
+	}
+	if (twilight_self.game.state.events.cubanmissilecrisis_removal_country === "westgermany") {
+          this.placeInfluence("westgermany", 2, "us");
+	}
+	if (twilight_self.game.state.events.cubanmissilecrisis_removal_country === "turkey") {
+          this.placeInfluence("turkey", 2, "us");
+	}
+      }
+
+      twilight_self.game.state.events.cubanmissilecrisis = 1;
+      twilight_self.game.state.events.cubanmissilecrisis_cancelled = 0;
+      twilight_self.game.state.events.cubanmissilecrisis_removal_country = "";
+    }
+
+    //
+    // revert game board state AFTER CMC
+    //
     let unintervention = (twilight_self.game.state.events.unintervention);
     if (start_turn_game_state == null || start_turn_game_state == undefined) {} else {
       twilight_self.game.state = start_turn_game_state;
     }
+
     for (let i = twilight_self.game.queue.length-1; i >= 0; i--) {
       let tmpar = twilight_self.game.queue[i].split("\t");
+
+console.log("REVERTING: " + twilight_self.game.queue[i]);
+
       if (tmpar[0] === "discard") {
       	if (tmpar[1] === "ussr" && twilight_self.game.player == 1) {
-	        if (tmpar[2] != "ops") {
-	          twilight_self.addCardToHand(tmpar[2]);
-	        }
-	      }
+          if (tmpar[2] != "ops") {
+            twilight_self.addCardToHand(tmpar[2]);
+          }
+        }
       	if (tmpar[1] === "us" && twilight_self.game.player == 2) {
       	  if (tmpar[2] != "ops") {
       	    twilight_self.addCardToHand(tmpar[2]);
       	  }
       	}
-       if (unintervention && tmpar[2] !== "unintervention"){
-        twilight_self.game.state.events.unintervention = 1;
-       }
-       twilight_self.updateLog(`${tmpar[1].toUpperCase()} second-guesses themselves and takes back their ${twilight_self.cardToText(tmpar[2])}...`);
+        if (unintervention && tmpar[2] !== "unintervention"){
+         twilight_self.game.state.events.unintervention = 1;
+        }
+        twilight_self.updateLog(`${tmpar[1].toUpperCase()} second-guesses themselves and takes back their ${twilight_self.cardToText(tmpar[2])}...`);
       }
       if (tmpar[0] === "play") {
         twilight_self.displayBoard();
-	      return 1;
+        return 1;
       } else {
-	      twilight_self.game.queue.splice(i, 1);
+        twilight_self.game.queue.splice(i, 1);
       }
     }
     twilight_self.displayBoard();
@@ -5242,7 +5289,9 @@ playerTurnHeadlineSelected(card, player) {
                       twilight_self.addMove(`remove\tus\tus\t${countryname}\t2`);
                       twilight_self.addMove("unlimit\tcmc");
                       twilight_self.addMove("NOTIFY\tUS has cancelled the Cuban Missile Crisis");
-	                  	twilight_self.game.state.events.cubanmissilecrisis = 0; //for immediate effect
+	              twilight_self.game.state.events.cubanmissilecrisis = 0; //for immediate effect
+	              twilight_self.game.state.events.cubanmissilecrisis_cancelled = 1; //for immediate effect
+	              twilight_self.game.state.events.cubanmissilecrisis_removal_country = countryname;
                     }
                     
                   }
@@ -5290,17 +5339,16 @@ playerTurnHeadlineSelected(card, player) {
                     //
                     // allow player to remove CMC
                     //
-                    
-
-                      let removeinf = await sconfirm("You are placing 1 influence in "+twilight_self.countries[countryname].name+". Once this is done, do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
-                      if (removeinf) {
+                    let removeinf = await sconfirm("You are placing 1 influence in "+twilight_self.countries[countryname].name+". Once this is done, do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
+                    if (removeinf) {
                         twilight_self.removeInfluence("cuba", 2, "ussr");
                         twilight_self.addMove("remove\tussr\tussr\tcuba\t2");
                         twilight_self.addMove("unlimit\tcmc");
                         twilight_self.addMove("NOTIFY\tUSSR has cancelled the Cuban Missile Crisis");
                         twilight_self.game.state.events.cubanmissilecrisis = 0; //for immediate effect
-                      }
-                    
+	                twilight_self.game.state.events.cubanmissilecrisis_cancelled = 1; //for immediate effect
+	                twilight_self.game.state.events.cubanmissilecrisis_removal_country = countryname;
+                    }
                   }
                 }
               }
@@ -5930,6 +5978,9 @@ playerTurnHeadlineSelected(card, player) {
     this.game.state.events.deathsquads = 0;
     this.game.state.events.missileenvy = 0;
     this.game.state.events.cubanmissilecrisis = 0;
+    this.game.state.events.cubanmissilecrisis_cancelled = 0;
+    this.game.state.events.cubanmissilecrisis_removal_country = "";
+
     this.game.state.events.nuclearsubs = 0;
     this.game.state.events.saltnegotiations = 0;
     this.game.state.events.northseaoil_bonus = 0;
@@ -8685,12 +8736,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
       }
         this.game.state.milops_ussr += 2;
         this.updateMilitaryOperations();
-
-        this.showWarOverlay.card = card;
-        this.showWarOverlay.winner = winner;
-        this.showWarOverlay.roll = roll;
-        this.showWarOverlay.modifications = modifications;
-        this.showWarOverlay.render();
+        this.showWarOverlay(card, winner, roll, modifications);
 
       return 1;
     }
@@ -10866,13 +10912,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
       this.game.state.milops_ussr += 2;
       this.updateMilitaryOperations();
-
-      this.showWarOverlay.card = card;
-      this.showWarOverlay.winner = winner;
-      this.showWarOverlay.roll = roll;
-      this.showWarOverlay.modifications = modifications;
-      this.showWarOverlay.render();
-
+      this.showWarOverlay(card, winner, roll, modifications);
       return 1;
 
     }
