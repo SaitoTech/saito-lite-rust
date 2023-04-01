@@ -1,5 +1,13 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
+const DebateOverlay = require('./lib/ui/overlays/debate');
+const TreatiseOverlay = require('./lib/ui/overlays/treatise');
+const FactionOverlay = require('./lib/ui/overlays/faction');
+const ReligiousOverlay = require('./lib/ui/overlays/religious');
+const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
+const ThesesOverlay = require('./lib/ui/overlays/theses');
 const JSON = require('json-bigint');
+
+
 
 //////////////////
 // CONSTRUCTOR  //
@@ -20,6 +28,16 @@ class HereIStand extends GameTemplate {
     this.categories      = "Games Boardgame Strategy";
 
     this.interface = 1; // graphical interface
+
+    //
+    // ui components
+    //
+    this.debate_overlay = new DebateOverlay(this.app, this);      // theological debates
+    this.treatise_overlay = new TreatiseOverlay(this.app, this);  // publish treatise
+    this.religious_overlay = new ReligiousOverlay(this.app, this);  // religious conflict sheet
+    this.faction_overlay = new FactionOverlay(this.app, this);  // faction sheet
+    this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
+    this.theses_overlay = new ThesesOverlay(this.app, this);  // 95 theses
 
     //
     // this sets the ratio used for determining

@@ -1,0 +1,11 @@
+
+.diet-overlay {
+    background-image: url(/his/img/backgrounds/diet_of_worms.jpeg);
+    background-size: cover;
+    max-height: 90vh;
+    max-width: 90vw;
+    width: 90vw;
+    height: auto;
+    min-height: 622px;
+}
+

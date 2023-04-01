@@ -1,5 +1,13 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
+const DebateOverlay = require('./lib/ui/overlays/debate');
+const TreatiseOverlay = require('./lib/ui/overlays/treatise');
+const FactionOverlay = require('./lib/ui/overlays/faction');
+const ReligiousOverlay = require('./lib/ui/overlays/religious');
+const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
+const ThesesOverlay = require('./lib/ui/overlays/theses');
 const JSON = require('json-bigint');
+
+
 
 //////////////////
 // CONSTRUCTOR  //
@@ -20,6 +28,16 @@ class HereIStand extends GameTemplate {
     this.categories      = "Games Boardgame Strategy";
 
     this.interface = 1; // graphical interface
+
+    //
+    // ui components
+    //
+    this.debate_overlay = new DebateOverlay(this.app, this);      // theological debates
+    this.treatise_overlay = new TreatiseOverlay(this.app, this);  // publish treatise
+    this.religious_overlay = new ReligiousOverlay(this.app, this);  // religious conflict sheet
+    this.faction_overlay = new FactionOverlay(this.app, this);  // faction sheet
+    this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
+    this.theses_overlay = new ThesesOverlay(this.app, this);  // 95 theses
 
     //
     // this sets the ratio used for determining
@@ -1703,7 +1721,6 @@ Habsburg conquistadores:
 
 console.log("PLAYERS INFO: " + JSON.stringify(this.game.state.players_info));
 
-
 console.log("\n\n\n\n");
 console.log("---------------------------");
 console.log("---------------------------");
@@ -1720,16 +1737,11 @@ console.log("\n\n\n\n");
       // Game Queue
       //
       this.game.queue.push("round");
-
       this.game.queue.push("READY");
       this.game.queue.push("DECK\t1\t"+JSON.stringify(this.deck));
-
       this.game.queue.push("init");
 
     }
-
-
-console.log("INIT GAME SPACES!");
 
     //
     // attach events to spaces
@@ -1739,21 +1751,15 @@ console.log("INIT GAME SPACES!");
       this.spaces[key] = this.importSpace(this.game.spaces[key], key);
     }
 
-console.log("DONE INIT GAME SPACES!");
-
     //
     // add initial units
     //
     if (first_time_running == 1) {
 
-console.log("is first tiem running: " + this.game.state.scenario);
-
       //
-      // add some units
+      // 1517 scenario
       //
       if (this.game.state.scenario == "1517") {
-
-console.log("adding stuff!");
 
 	// OTTOMAN
         this.addArmyLeader("ottoman", "istanbul", "suleiman");
@@ -1849,7 +1855,9 @@ console.log("adding stuff!");
 	this.addDebater("protestant", "carlstadt-debater");
       }
 
-      
+      //
+      // 1532 scenario
+      //
       if (this.game.state.scenario === "1532") {
 
       }
@@ -1875,7 +1883,6 @@ console.log("adding stuff!");
 
     super.initializeHTML(app);
 
-
     let game_mod = this;
 
     //
@@ -1896,17 +1903,6 @@ console.log("adding stuff!");
     } catch (err) {}
 
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addMenuOption("game-info", "Info");
-
-    this.menu.addSubMenuOption("game-info", {
-      text : "Log",
-      id : "game-log",
-      class : "game-log",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
-      }
-    });
     let initial_confirm_moves = "Newbie Mode"; 
     if (this.confirm_moves == 1) {
       initial_confirm_moves = "Expert Mode"; 
@@ -1928,6 +1924,17 @@ console.log("adding stuff!");
 	}
       }
     });
+
+    this.menu.addMenuOption("game-info", "Info");
+    this.menu.addSubMenuOption("game-info", {
+      text : "Log",
+      id : "game-log",
+      class : "game-log",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.log.toggleLog();
+      }
+    });
     this.menu.addSubMenuOption("game-info", {
       text : "Stats",
       id : "game-stats",
@@ -1945,7 +1952,7 @@ console.log("adding stuff!");
       class : "game-religious-conflict",
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
-        game_mod.displayReligiousConflictSheet();
+        game_mod.religious_overlay.render();
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -1979,11 +1986,43 @@ console.log("adding stuff!");
     this.menu.addMenuOption("game-factions", "Factions");
     
     this.menu.addSubMenuOption("game-factions", {
+      text : "Theological Debate",
+      id : "game-debate",
+      class : "game-debate",
+      callback : function(app, game_mod) {
+        game_mod.debate_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
+      text : "Publish Treatise",
+      id : "game-treatise",
+      class : "game-treatise",
+      callback : function(app, game_mod) {
+        game_mod.treatise_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
+      text : "95 Theses",
+      id : "game-95-theses",
+      class : "game-95-theses",
+      callback : function(app, game_mod) {
+        game_mod.theses_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
+      text : "Diet of Worms",
+      id : "game-diet-of-worms",
+      class : "game-diet-of-worms",
+      callback : function(app, game_mod) {
+        game_mod.diet_of_worms_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
       text : "Hapsburgs",
       id : "game-hapsburgs",
       class : "game-hapsburgs",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("hapsburg"); 
+        game_mod.faction_overlay.render("hapsburg");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -1991,7 +2030,7 @@ console.log("adding stuff!");
       id : "game-england",
       class : "game-england",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("england"); 
+        game_mod.faction_overlay.render("england");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -1999,7 +2038,7 @@ console.log("adding stuff!");
       id : "game-france",
       class : "game-france",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("france");
+        game_mod.faction_overlay.render("france");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -2007,7 +2046,7 @@ console.log("adding stuff!");
       id : "game-ottoman",
       class : "game-ottoman",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("ottoman");
+        game_mod.faction_overlay.render("ottoman");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -2015,7 +2054,7 @@ console.log("adding stuff!");
       id : "game-protestants",
       class : "game-protestants",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("protestant");
+        game_mod.faction_overlay.render("protestant");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -2023,7 +2062,7 @@ console.log("adding stuff!");
       id : "game-papacy",
       class : "game-papacy",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("papacy");
+        game_mod.faction_overlay.render("papacy");
       }
     });
 
@@ -9980,220 +10019,6 @@ HACK
     state.events.wartburg = 0;
 
     return state;
-
-  }
-
-
-  returnReligiousConflictChart() {
-
-    let chart = {};
-
-    chart['s0'] = {
-      top: "475px",
-      left: "64px",
-    }
-    chart['s1'] = {
-      top: "475px",
-      left: "140px",
-    }
-    chart['s2'] = {
-      top: "475px",
-      left: "216px",
-    }
-    chart['s3'] = {
-      top: "475px",
-      left: "292px",
-    }
-    chart['s4'] = {
-      top: "475px",
-      left: "368px",
-    }
-    chart['s5'] = {
-      top: "475px",
-      left: "444px",
-    }
-    chart['s6'] = {
-      top: "475px",
-      left: "520px",
-    }
-    chart['s7'] = {
-      top: "475px",
-      left: "596px",
-    }
-    chart['s8'] = {
-      top: "475px",
-      left: "672px",
-    }
-    chart['s9'] = {
-      top: "475px",
-      left: "748px",
-    }
-    chart['s10'] = {
-      top: "475px",
-      left: "824px",
-    }
-    chart['s11'] = {
-      top: "475px",
-      left: "900px",
-    }
-    chart['s12'] = {
-      top: "475px",
-      left: "976px",
-    }
-    chart['s13'] = {
-      top: "558px",
-      left: "64px",
-    }
-    chart['s14'] = {
-      top: "558px",
-      left: "140px",
-    }
-    chart['s15'] = {
-      top: "558px",
-      left: "216px",
-    }
-    chart['s16'] = {
-      top: "558px",
-      left: "292px",
-    }
-    chart['s17'] = {
-      top: "558px",
-      left: "368px",
-    }
-    chart['s18'] = {
-      top: "558px",
-      left: "444px",
-    }
-    chart['s19'] = {
-      top: "558px",
-      left: "520px",
-    }
-    chart['s20'] = {
-      top: "558px",
-      left: "596px",
-    }
-    chart['s21'] = {
-      top: "558px",
-      left: "672px",
-    }
-    chart['s22'] = {
-      top: "558px",
-      left: "748px",
-    }
-    chart['s23'] = {
-      top: "558px",
-      left: "824px",
-    }
-    chart['s24'] = {
-      top: "558px",
-      left: "900px",
-    }
-    chart['s25'] = {
-      top: "558px",
-      left: "976px",
-    }
-    chart['s26'] = {
-      top: "643px",
-      left: "64px",
-    }
-    chart['s27'] = {
-      top: "643px",
-      left: "140px",
-    }
-    chart['s28'] = {
-      top: "643px",
-      left: "216px",
-    }
-    chart['s29'] = {
-      top: "643px",
-      left: "292px",
-    }
-    chart['s30'] = {
-      top: "643px",
-      left: "368px",
-    }
-    chart['s31'] = {
-      top: "643px",
-      left: "444px",
-    }
-    chart['s32'] = {
-      top: "643px",
-      left: "520px",
-    }
-    chart['s33'] = {
-      top: "643px",
-      left: "596px",
-    }
-    chart['s34'] = {
-      top: "643px",
-      left: "672px",
-    }
-    chart['s35'] = {
-      top: "643px",
-      left: "748px",
-    }
-    chart['s36'] = {
-      top: "643px",
-      left: "824px",
-    }
-    chart['s37'] = {
-      top: "643px",
-      left: "900px",
-    }
-    chart['s38'] = {
-      top: "643px",
-      left: "976px",
-    }
-    chart['s39'] = {
-      top: "475px",
-      left: "64px",
-    }
-    chart['s40'] = {
-      top: "726px",
-      left: "140px",
-    }
-    chart['s41'] = {
-      top: "726px",
-      left: "216px",
-    }
-    chart['s42'] = {
-      top: "726px",
-      left: "292px",
-    }
-    chart['s43'] = {
-      top: "726px",
-      left: "368px",
-    }
-    chart['s44'] = {
-      top: "726px",
-      left: "444px",
-    }
-    chart['s45'] = {
-      top: "726px",
-      left: "520px",
-    }
-    chart['s46'] = {
-      top: "726px",
-      left: "596px",
-    }
-    chart['s47'] = {
-      top: "726px",
-      left: "672px",
-    }
-    chart['s48'] = {
-      top: "726px",
-      left: "672px",
-    }
-    chart['s49'] = {
-      top: "726px",
-      left: "748px",
-    }
-    chart['s50'] = {
-      top: "726px",
-      left: "824px",
-    }
-
-    return chart;
 
   }
 
@@ -19259,9 +19084,6 @@ return;
 
 
 
-
-
-
   displayDebaters() {
 
     let html = `<div class="personage_overlay" id="personage_overlay">`;
@@ -19367,17 +19189,7 @@ return;
   }
 
   displayTheologicalDebate() {
-
-    let html = `
-      <div class="theological_debate_sheet" id="theological_debate_sheet">
-	<div class=".status"></div>
-	<div class="attacker_debater"></div>
-	<div class="defender_debater"></div>
-      </div>
-    `;
-
-    this.overlay.showOverlay(this.app, this, html);
-
+    this.debate_overlay.render();
   }
 
 
@@ -19470,120 +19282,10 @@ return;
 
 
   displayFactionSheet(faction) {
-
-    this.overlay.showOverlay(this.app, this, this.factions[faction].returnFactionSheet(faction));
-    let controlled_keys = 0;
-    
-    for (let key in this.game.spaces) {
-      if (this.game.spaces[key].type === "key") {
-        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
-          controlled_keys++;
-	}
-      }
-    }
-    let keyboxen = '';
- 
-    // ENGLAND
-    if (this.factions[faction].key === "england") {
-      let total_keys = 9;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = this.factions[faction].marital_status; i < 7; i++) {
-          keyboxen += `<div class="faction_sheet_keytile england_marital_status${i+1}" id="england_marital_status_keytile${i+1}"></div>`;
-      }
-      for (let i = 1; i <= 9; i++) {
-        if (i > (9-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // FRANCE
-    if (this.factions[faction].key === "france") {
-      let total_keys = 11;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 0; i < 7; i++) {
-          keyboxen += `<div class="faction_sheet_keytile france_chateaux_status${i+1}" id="france_chateaux_status_keytile${i+1}"></div>`;
-      }
-      for (let i = 1; i <= 11; i++) {
-        if (i > (11-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // OTTOMAN
-    if (this.factions[faction].key === "ottoman") {
-      let total_keys = 11;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 0; i <= 10; i++) {
-          keyboxen += `<div class="faction_sheet_keytile ottoman_piracy_status${i}" id="ottoman_piracy_status_keytile${i}"></div>`;
-      }
-      for (let i = 1; i <= 11; i++) {
-        if (i > (11-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // PAPACY
-    if (this.factions[faction].key === "papacy") {
-      let total_keys = 7;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 0; i < 12; i++) {
-          keyboxen += `<div class="faction_sheet_keytile papacy_construction_status${i+1}" id="papacy_construction_status_keytile${i+1}"></div>`;
-      }
-      for (let i = 1; i <= 7; i++) {
-        if (i >= (7-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // PROTESTANTS
-    if (this.factions[faction].key === "protestant") {
-
-      let total_keys = 11;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 0; i <= 6; i++) {
-	  let box_inserts = "";
-	  if (this.game.state.translations['new']['german'] == i) {
-            box_inserts += `<div class="new_testament_german_tile" id="new_testament_german_tile"></div>`;
-	  }
-	  if (this.game.state.translations['new']['french'] == i) {
-            box_inserts += `<div class="new_testament_french_tile" id="new_testament_french_tile"></div>`;
-	  }
-	  if (this.game.state.translations['new']['english'] == i) {
-            box_inserts += `<div class="new_testament_english_tile" id="new_testament_english_tile"></div>`;
-	  }
-          keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}">${box_inserts}</div>`;
-      }
-      for (let i = 1; i <= 11; i++) {
-        if (i > (11-remaining_keys)) {
-	  let box_inserts = "";
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // HAPSBURG
-    if (this.factions[faction].key === "hapsburg") {
-      let total_keys = 14;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 1; i <= 14; i++) {
-	if (this.game.state.translations['german']['full'] == i) {
-          box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
-	}
-	if (this.game.state.translations['french']['full'] == i) {
-          box_inserts += `<div class="bible_french_tile" id="bible_french_tile"></div>`;
-	}
-	if (this.game.state.translations['english']['full'] == i) {
-          box_inserts += `<div class="bible_english_tile" id="bible_english_tile"></div>`;
-	}
-        if (i > (14-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    document.getElementById("faction_sheet").innerHTML = keyboxen;
+    this.faction_overlay.render(faction);
   }
 
   returnFactionSheetKeys() {
-    
   }
 
   displayBoard() {
