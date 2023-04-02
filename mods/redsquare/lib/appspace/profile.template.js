@@ -62,7 +62,7 @@ console.log(">");
 	  html += `
             <div>Public Key:</div>
             <div>${publickey}</div>
-            <div class="copy-public-key"><i class="fas fa-copy"></i></div>
+            <div class="copy-public-key"><i class="fas fa-copy" style="cursor:pointer;"></i></div>
 	  `;
 	}
 
