@@ -857,7 +857,6 @@
 
     if (!this.game.spaces[key]) { return; }
 
-    let obj = document.getElementById(key);
     let space = this.game.spaces[key];
     let tile = this.returnSpaceTile(space);
 
@@ -897,19 +896,22 @@
     //
     if (tile === "") { show_tile = 0; }
 
-    if (show_tile === 1) {
-      obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
-      obj.innerHTML += this.returnArmies(space);
-      obj.innerHTML += this.returnNavies(space);
-      obj.innerHTML += this.returnMercenaries(space);
-      obj.innerHTML += this.returnPersonages(space);
-    }
+    let t = "."+key;
+    document.querySelectorAll(t).forEach((obj) => {
 
+      if (show_tile === 1) {
+        obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
+        obj.innerHTML += this.returnArmies(space);
+        obj.innerHTML += this.returnNavies(space);
+        obj.innerHTML += this.returnMercenaries(space);
+        obj.innerHTML += this.returnPersonages(space);
+      }
 
-    // add unrest if needed
-    if (this.isSpaceInUnrest(space)) {
-      obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
-    }
+      if (this.isSpaceInUnrest(space)) {
+        obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
+      }
+
+    });
 
   }
 
@@ -971,7 +973,12 @@
 
   displayVictoryTrack() {
 
+console.log("into calculate victory points...");
+
     let factions_and_scores = this.calculateVictoryPoints();
+
+console.log("F&S: ");
+console.log(JSON.stringify(factions_and_scores));
 
     let x = this.returnVictoryPointTrack();
 

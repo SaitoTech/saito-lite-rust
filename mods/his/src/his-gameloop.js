@@ -21,15 +21,9 @@
 console.log("QUEUE: " + JSON.stringify(this.game.queue));
 console.log("MOVE: " + mv[0]);
 
-        //
-        // round
-        // init
 	//
-        if (mv[0] == "init") {
-          this.game.queue.splice(qe, 1);
-	  return 1;
-        }
-
+	// entry point for every round in the game
+	//
         if (mv[0] === "round") {
 
 	  this.game.state.round++;
@@ -52,7 +46,9 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  if (this.game.state.round == 1) {
 
+  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
   	    this.game.queue.push("diet_of_worms");
+  	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    //
 	    // cards dealt before diet of worms
 	    //
@@ -74,9 +70,29 @@ console.log("MOVE: " + mv[0]);
           return 1;
         }
 
+        if (mv[0] == "init") {
+          this.game.queue.splice(qe, 1);
+	  return 1;
+        }
+
 	if (mv[0] === "halt") {
 	  return 0;
 	}
+
+	if (mv[0] === "show_overlay") {
+	  if (mv[1] === "theses") { this.theses_overlay.render(); }
+	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.render(); }
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+	if (mv[0] === "hide_overlay") {
+	  if (mv[1] === "theses") { this.theses_overlay.hide(); }
+	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.hide(); }
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+
+
 
 
 	if (mv[0] === "build") {
@@ -1408,15 +1424,14 @@ console.log(JSON.stringify(mv));
 	//
 	if (mv[0] === "counter_or_acknowledge") {
 
-//	  if (this.game.state.skip_counter_or_acknowledge == 1) {
-//            this.addMove("RESOLVE\t"+this.app.wallet.returnPublicKey());
-//	    this.endTurn();
-//	    return;
-// 	  }
+	  if (this.game.state.skip_counter_or_acknowledge == 1) {
+            this.game.queue.splice(qe, 1);
+	    return 1;
+ 	  }
 
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
 	    this.updateStatus("acknowledged");
-	    return;
+	    return 0;
 	  }
 
 	  let msg = mv[1];
@@ -4033,12 +4048,12 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  //
 	  let new_cards = this.returnNewCardsForThisTurn(this.game.state.round);
 
-console.log("==============");
-console.log("CARDS IN DECK:");
-console.log("==============");
-for (let key in new_cards) {
-  console.log(key);
-}
+//console.log("==============");
+//console.log("CARDS IN DECK:");
+//console.log("==============");
+//for (let key in new_cards) {
+//  console.log(key);
+//}
 
 	  
 	  //

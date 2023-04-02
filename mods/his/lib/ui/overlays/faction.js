@@ -6,10 +6,14 @@ class FactionOverlay {
     constructor(app, mod){
         this.app = app;
         this.mod = mod;
+	this.visible = false;
         this.overlay = new SaitoOverlay(app, mod);
     }
     
     render(faction="") {
+
+      this.visible = true;
+
       let f = this.mod.factions[faction];
       this.overlay.show(FactionTemplate(f));
 

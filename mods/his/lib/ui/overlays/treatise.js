@@ -6,6 +6,7 @@ class TreatiseOverlay {
     constructor(app, mod){
         this.app = app;
         this.mod = mod;
+	this.visible = false;
         this.overlay = new SaitoOverlay(app, mod);
     }
     
