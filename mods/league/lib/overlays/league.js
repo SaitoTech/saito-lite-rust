@@ -1,6 +1,7 @@
 const LeagueOverlayTemplate = require("./league.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 const Leaderboard = require("./../leaderboard");
+const LeagueWelcomeTemplate = require("./league-welcome.template");
 
 class LeagueOverlay {
 
@@ -90,8 +91,26 @@ class LeagueOverlay {
         }
       };
     }
-  }
 
+    if (document.querySelector(".alert_email")) {
+      document.querySelector(".alert_email").onclick = () => {
+        this.app.connection.emit("recovery-backup-overlay-render-request");
+      }
+    }
+    if (document.querySelector(".alert_identifier")) {
+      document.querySelector(".alert_identifier").onclick = () => {
+        this.app.connection.emit("register-username-or-login");
+      }
+    }
+
+    if (document.querySelector(".alert_admin")) {
+      document.querySelector(".alert_admin").onclick = () => {
+        let msg_overlay = new SaitoOverlay(this.app, this.mod);
+        msg_overlay.show(LeagueWelcomeTemplate());
+      }
+    }
+  }
+//<i class="fa-solid fa-triangle-exclamation"></i>
 }
 
 module.exports = LeagueOverlay;

@@ -2,6 +2,8 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
 
     let game_mod = app.modules.returnModuleByName(league.game);
 
+    let key = app.keychain.returnKey(app.wallet.returnPublicKey());
+
     let html = `
     <div class="league-overlay-container">
         <div class="league-overlay">
@@ -16,8 +18,11 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
             <div class="league-overlay-body">
                 <div class="league-overlay-body-content">`;
     if (league.admin){
-        html +=  `<div class="saito-user" id="saito-user-${league.admin}" data-id="${league.admin}">
-                    <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(league.admin)}" data-id="${league.admin}"></div>
+        html +=  `<div class="saito-user${(league.unverified)?" alert_admin":""}" id="saito-user-${league.admin}" data-id="${league.admin}">`;
+        if (league.unverified){
+            html += `<i class="fas fa-exclamation-circle"></i>`;
+        }                    
+        html +=   `<div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(league.admin)}" data-id="${league.admin}"></div>
                     ${app.browser.returnAddressHTML(league.admin)}
                     <div class="saito-userline" data-id="${league.admin}">${league.contact}</div>
                   </div>`;
@@ -28,7 +33,7 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
                       <div class="league-overlay-games-list league_recent_games"></div>
                   </div>
               </div>
-                <div class="league-overlay-leaderboard"></div>
+                <div class="league-overlay-leaderboard${(key.email)?"":" alert_email"}${(key.identifier)?"":" alert_identifier"}">${(key.email && key.identifier)?"":`<i class="fas fa-exclamation-triangle"></i>`}</div>
             </div>
             <div class="league-overlay-controls">
               <button class="league-overlay-create-game-button saito-button saito-button-primary">create game</button>

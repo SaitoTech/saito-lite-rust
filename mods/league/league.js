@@ -1076,6 +1076,7 @@ class League extends ModTemplate {
     newObj.games_finished = obj.games_finished || 0;
     newObj.games_won      = obj.games_won || 0;
     newObj.games_tied     = obj.games_tied || 0; 
+    newObj.email          = obj.email || "";
 
     return newObj;
   }
@@ -1114,6 +1115,11 @@ class League extends ModTemplate {
         league.rank = 0;
         league.numPlayers = league.players.length;
       }
+
+      if (league.admin && !newPlayer.email){
+        league.unverified = true;
+      }
+
     }
 
     //console.log(JSON.parse(JSON.stringify(league)));

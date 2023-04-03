@@ -155,12 +155,43 @@
     text-shadow: 0px 0px 3px var(--saito-white);
 }
 
+
 .league_recent_game div{
   align-self: center;
 }
 
 .league-overlay-leaderboard{
   min-width: min(40rem, 100%);
+}
+
+
+.alert_email, .alert_identifier, .alert_admin {
+  position: relative;
+  box-shadow: 0px 0px 10px var(--saito-red) !important;
+  cursor: pointer;
+}
+
+.alert_email .league-leaderboard, .alert_identifier .league-leaderboard {
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.alert_email i, .alert_identifier i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--saito-red);
+  font-size: 6.4rem;
+}
+
+.alert_admin i {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  color: var(--saito-secondary);
+  font-size: 5rem;
 }
 
 @media screen and (max-width: 1000px) {
@@ -181,8 +212,35 @@
 
 @media screen and (max-width: 600px) {
   .league-overlay-container { 
-    width: 95vw;
-    max-height: 95vh;
+    width: calc(100vw - 2px)
+    max-height: 98vh;
   }
+
+}
+
+
+.contactAdminWarning {
+  min-width: 60rem;
+  max-width: 90%;
+  min-height: 20rem;
+  max-height: 90%;
+  padding: 1rem;
+  background: var(--saito-background-light);
+  font-size: 2rem;
+}
+
+.contactAdminWarning > * {
+  margin: 1rem;
+}
+
+.contactAdminWarning > div:first-child {
+  font-size: 3.2rem;
+  text-align: center;
+}
+
+.contactAdminWarning i {
+  float: left;
+  font-size: 6.4rem;
+  color: var(--saito-secondary);
 
 }
