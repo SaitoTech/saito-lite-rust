@@ -181,6 +181,7 @@ body {
 }
 
 /* force landscape when on mobile */
+/*
 @media screen and (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
   html {
     transform: rotate(-90deg);
@@ -192,4 +193,15 @@ body {
     top: 100%;
     left: 0;
   }
+
+  body {
+    width: 100vh;
+    height: 100vw;
+  }
+
+  .gameboard {
+    width: 100vh;
+    height: 100vw;
+  }
 }
+*/

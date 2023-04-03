@@ -140,6 +140,9 @@
   .redsquare-appspace-header .redsquare-page-header-title {
     display: none;
   }
+  .redsquare-appspace-header .redsquare-page-header-title.tweetmode {
+    display: block;
+  }
   .redsquare-appspace-body {
     margin-top: -1rem;
   }
