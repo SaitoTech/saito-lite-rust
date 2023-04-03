@@ -92,6 +92,14 @@ class League extends ModTemplate {
     app.connection.emit("leagues-render-request");
     app.connection.emit("league-rankings-render-request");   
 
+    if (app.browser.returnURLParameter("view_game")){
+      let game = app.browser.returnURLParameter("view_game");
+      game = game.substring(0,1).toUpperCase() +  game.substring(1).toLowerCase();
+      let leaderboard_id = app.crypto.hash(game);
+      console.log("ID: " + leaderboard_id, game);      
+      app.connection.emit("league-overlay-render-request", leaderboard_id);
+    }
+
   }
 
   //
@@ -1036,7 +1044,9 @@ class League extends ModTemplate {
 
       let newLeague = this.validateLeague(obj);
 
-      if (this.debug) { console.log(`Add ${newLeague.game} League`); }
+      //if (this.debug) { 
+        console.log(`Add ${newLeague.game} League, ${newLeague.id}`); 
+     // }
 
       //
       // dynamic data-storage
