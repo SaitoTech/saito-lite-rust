@@ -3,6 +3,7 @@ const DebateOverlay = require('./lib/ui/overlays/debate');
 const TreatiseOverlay = require('./lib/ui/overlays/treatise');
 const FactionOverlay = require('./lib/ui/overlays/faction');
 const ReligiousOverlay = require('./lib/ui/overlays/religious');
+const ReformationOverlay = require('./lib/ui/overlays/reformation');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const JSON = require('json-bigint');
@@ -38,6 +39,7 @@ class HereIStand extends GameTemplate {
     this.faction_overlay = new FactionOverlay(this.app, this);  // faction sheet
     this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
     this.theses_overlay = new ThesesOverlay(this.app, this);  // 95 theses
+    this.reformation_overlay = new ReformationOverlay(this.app, this);  // reformations and counter-reformations
 
     //
     // this sets the ratio used for determining

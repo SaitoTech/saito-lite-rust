@@ -132,6 +132,14 @@
       }
     });
     this.menu.addSubMenuOption("game-factions", {
+      text : "Reformations",
+      id : "game-diet-of-reformations",
+      class : "game-diet-of-reformations",
+      callback : function(app, game_mod) {
+        game_mod.reformation_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
       text : "Diet of Worms",
       id : "game-diet-of-worms",
       class : "game-diet-of-worms",
