@@ -130,7 +130,6 @@ body {
   border-radius: 5px;
   border: 1px solid whitesmoke;
   font-size: min(2vw, 32px);
-  line-height: 3vw;
   margin: 0 6px 6px;
   cursor: pointer;
   background-color: black;

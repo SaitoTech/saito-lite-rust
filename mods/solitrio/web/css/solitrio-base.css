@@ -95,7 +95,7 @@ body {
   max-width: min(90vw,160vh);
   grid-gap: min(5px,1vh);
   height: fit-content;
-  transition: filter 2s;
+  transition: filter 1s;
 }
 
 .rowbox.nomoves{
@@ -119,7 +119,7 @@ body {
   filter: unset;
 }
 
-.slot img {
+.slot img, .animated_elem img {
  width: 100%;
  transition: transform 1s;
 }
