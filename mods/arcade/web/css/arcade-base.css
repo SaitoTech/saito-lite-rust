@@ -44,7 +44,6 @@ button, .saito-button-primary, .saito-button-secondary:hover {
 
 .arcade-game-initializer-success-button {
   margin-left: 50%;
-  transform: translateX(-50%);
   margin-top: 3rem;
 }
 
