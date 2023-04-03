@@ -156,6 +156,7 @@ class AppspaceHome {
         if (window.holder.querySelector('.redsquare-appspace-body')) {
           document.querySelector('.redsquare-home').querySelector('.redsquare-appspace-body').remove();
           document.querySelector('.redsquare-home').append(window.holder.querySelector('.redsquare-appspace-body'));
+          document.querySelector('.redsquare-home').append(document.querySelector('#redsquare-intersection'));
           document.querySelector('.tweet-' + sig).scrollIntoView(); 
         }
       });
