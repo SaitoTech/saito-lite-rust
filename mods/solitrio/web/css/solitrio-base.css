@@ -181,6 +181,7 @@ body {
 }
 
 /* force landscape when on mobile */
+/*
 @media screen and (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
   html {
     transform: rotate(-90deg);
@@ -203,3 +204,4 @@ body {
     height: 100vw;
   }
 }
+*/
