@@ -192,4 +192,14 @@ body {
     top: 100%;
     left: 0;
   }
+
+  body {
+    width: 100vh;
+    height: 100vw;
+  }
+
+  .gameboard {
+    width: 100vh;
+    height: 100vw;
+  }
 }
