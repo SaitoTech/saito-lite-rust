@@ -93,6 +93,7 @@ class Solitrio extends OnePlayerGameTemplate {
         game_mod.menu.hideSubMenus();
         game_mod.prependMove("lose");
         game_mod.endTurn();
+        game_mod.clearTable();
       }
     });
     this.menu.addSubMenuOption("game-game", {
@@ -184,6 +185,7 @@ class Solitrio extends OnePlayerGameTemplate {
         let go = await sconfirm("No more moves. Start new Game?");
         if (go){
           this.endTurn();
+          this.clearTable();
         }else{
           this.moves.shift();
         }
@@ -229,7 +231,7 @@ class Solitrio extends OnePlayerGameTemplate {
         solitrio_self.game.board[slot] = JSON.parse(x);
         
         solitrio_self.untoggleCard(card);
-     
+
         solitrio_self.moveGameElement(solitrio_self.copyGameElement(`#${card} img`), `#${slot}`, 
           { resize: 1, insert: 1, 
             callback: ()=>{            
@@ -245,7 +247,7 @@ class Solitrio extends OnePlayerGameTemplate {
             solitrio_self.checkBoardStatus();
             
           });
-        
+                
         } else {
           //solitrio_self.displayWarning("Invalid Move", "There is nowhere to move that card");
           //salert("<p>Sorry, You can't move that card anywhere");
@@ -477,6 +479,22 @@ class Solitrio extends OnePlayerGameTemplate {
     $(divname).css('opacity', '0.0'); 
   }
 
+
+  async clearTable(){
+    $('.menu_option').off();
+    $('.slot').off();
+
+    for (let i = 1; i <= 4; i++){
+      for (let j = 1; j <= 10; j++){
+        let divname = `row${i}_slot${j}`;
+        this.hideCard(divname);
+        await this.timeout(15);
+      }
+    }
+
+  }
+
+
   /* Copy hand into board*/
   handToBoard(){
     let indexCt = 0;
@@ -679,6 +697,7 @@ no status atm, but this is to update the hud
         }else{
           solitrio_self.prependMove(last_move);
           solitrio_self.prependMove("lose");
+          solitrio_self.clearTable();
         }
         solitrio_self.endTurn();
         return;
