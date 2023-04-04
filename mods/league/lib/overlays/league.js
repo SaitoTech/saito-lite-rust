@@ -57,9 +57,8 @@ class LeagueOverlay {
 
   attachEvents() {
 
-    Array.from(document.querySelectorAll('.league-overlay-create-game-button')).forEach(game => {
-      game.onclick = (e) => {
-	
+    if (document.getElementById("league-overlay-create-game-button")){
+      document.getElementById("league-overlay-create-game-button").onclick = (e) => {
         this.overlay.remove();
         this.app.browser.logMatomoEvent("GameWizard", "LeagueOverlay", this.league.game);
       	if (this.league.admin) {
@@ -70,7 +69,7 @@ class LeagueOverlay {
           this.app.connection.emit("arcade-launch-game-wizard", ({ game: this.league.game }));
       	}
       };
-    });
+    }
 
 
     if (this.league.admin == this.app.wallet.returnPublicKey()){
@@ -103,12 +102,29 @@ class LeagueOverlay {
       }
     }
 
-    if (document.querySelector(".alert_admin")) {
-      document.querySelector(".alert_admin").onclick = () => {
-        let msg_overlay = new SaitoOverlay(this.app, this.mod);
-        msg_overlay.show(LeagueWelcomeTemplate());
+    Array.from(document.querySelectorAll(".menu-icon")).forEach(item => {
+      item.onclick = (e) => {
+        let nav = e.currentTarget.id;
+        console.log(nav);
+        $(".active-tab").removeClass("active-tab");
+        $(".league-overlay-body-content > div").addClass("hidden");
+        switch (nav){
+        case "home":
+          $(".league-overlay-description").removeClass("hidden");
+          break;
+        case "contact":
+          $("#admin_details").removeClass("hidden");
+          $("#admin_note").removeClass("hidden");
+          break;
+        case "games":
+          $(".league-overlay-league-body-games").removeClass("hidden");
+          break;
+        }
+
+        e.currentTarget.classList.add("active-tab");
       }
-    }
+    })
+
   }
 //<i class="fa-solid fa-triangle-exclamation"></i>
 }

@@ -28,12 +28,63 @@
   display: flex;
   flex-direction: row;
   justify-content: end;
+  margin: auto;
+}
+
+.league-overlay-controls i {
+  font-size: 32px;
+  margin: auto 1rem;
+  border-radius: 10px;
+  width: 60px;
+  padding: 1rem;
+}
+
+.league-overlay-controls i.saito-button-primary {
+  font-weight: 900;
+  min-width: unset;
 }
 
 .league-overlay-header {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  flex-wrap: wrap;
+  row-gap: 1.5rem;
+}
+
+.league-overlay-header-title-box {
+  flex: 1;
+  min-width: fit-content;
+}
+
+.menu-icon{
+  width: 10rem;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.menu-icon i.notification{
+  position: absolute;
+  top: 19%;
+  left: 43%;
+  font-size: 16px;
+  color: var(--saito-red);
+  width: unset;
+  padding: unset;
+  margin: unset;
+}
+
+.league-overlay-body-content .hidden { 
+  display:none;
+ }
+
+.league-overlay-controls:hover .menu-icon.active-tab {
+  background: unset;
+}
+
+.menu-icon:hover, .menu-icon.active-tab, .league-overlay-controls .menu-icon.active-tab:hover {
+  background: var(--saito-primary);
 }
 
 .league-overlay-header-title-box-title {
@@ -220,12 +271,13 @@
 
 
 .contactAdminWarning {
-  min-width: 60rem;
+  /*min-width: 60rem;
   max-width: 90%;
+  background: var(--saito-background-light); 
   min-height: 20rem;
   max-height: 90%;
   padding: 1rem;
-  background: var(--saito-background-light);
+  */
   font-size: 2rem;
 }
 
@@ -241,6 +293,6 @@
 .contactAdminWarning i {
   float: left;
   font-size: 6.4rem;
-  color: var(--saito-secondary);
+  color: var(--saito-primary);
 
 }

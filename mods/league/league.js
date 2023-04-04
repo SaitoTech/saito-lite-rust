@@ -1116,7 +1116,7 @@ class League extends ModTemplate {
         league.numPlayers = league.players.length;
       }
 
-      if (league.admin && !newPlayer.email){
+      if (league.admin && !newPlayer.email && league.admin !== this.app.wallet.returnPublicKey()){
         league.unverified = true;
       }
 
