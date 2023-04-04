@@ -1086,6 +1086,7 @@ class League extends ModTemplate {
     newObj.games_won      = obj.games_won || 0;
     newObj.games_tied     = obj.games_tied || 0; 
     newObj.email          = obj.email || "";
+    newObj.ts             = obj.ts || 0;
 
     return newObj;
   }

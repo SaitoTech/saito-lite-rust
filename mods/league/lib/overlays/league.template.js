@@ -4,6 +4,8 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
 
     let key = app.keychain.returnKey(app.wallet.returnPublicKey());
 
+    let newPlayer = league.admin && !key.email;
+
     let html = `
     <div class="league-overlay-container">
         <div class="league-overlay">
@@ -19,30 +21,42 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
                     <div id="games" class="menu-icon"><i class="fas fa-history"></i><div class="menu-text">Activity</div></div>
                     ${(league.admin === app.wallet.returnPublicKey()) 
                         ? `<div id="players" class="menu-icon"><i class="fas fa-users-cog"></i><div class="menu-text">Manage</div></div>`
-                        : `<div id="contact" class="menu-icon"><i class="fas fa-comment-alt"></i><div class="menu-text">Contact</div>${(league.unverified)?`<i class="fas fa-exclamation-triangle notification"></i>`:""}</div>`}`
+                        : `<div id="contact" class="menu-icon"><i class="fas fa-comment-alt"></i><div class="menu-text">Contact</div></div>`}`
                     :""}
                     <!--div class="menu-icon"><i id="league-overlay-create-game-button" class="fas fa-gamepad saito-button-primary"></i><div class="menu-text">Create Game</div></div-->
                 </div>
             </div>
             <div class="league-overlay-body">
                 <div class="league-overlay-body-content">`;
+
+    html +=      `<div class="league-overlay-description">${league.description}</div>
+                  <div class="league-overlay-league-body-games ${(league.admin)?"hidden":""}">
+                      <div class="league-overlay-games-list league_recent_games"></div>
+                  </div>`;
+
     if (league.admin){
+        
+        html +=  `<div id="admin_details" class="saito-user hidden" id="saito-user-${league.admin}" data-id="${league.admin}">
+                    <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(league.admin)}" data-id="${league.admin}"></div>
+                    ${app.browser.returnAddressHTML(league.admin)}
+                    <div id="admin_contact" class="saito-userline" data-id="${league.admin}">${league.contact}</div>
+                  </div>`;
         if (league.admin == app.wallet.returnPublicKey()){
-            html +=  `<div id="admin_details" class="saito-user hidden" id="saito-user-${league.admin}" data-id="${league.admin}">
-                        <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(league.admin)}" data-id="${league.admin}"></div>
-                        ${app.browser.returnAddressHTML(league.admin)}
-                        <div id="admin_contact" class="saito-userline" data-id="${league.admin}">${league.contact}</div>
-                      </div>`;
             html += `<div id="admin-widget" class="admin-widget hidden"></div>`;
         
         }else{
-            if (league.unverified){
+            if (newPlayer || league.unverified){ 
                 html += `<div id="admin_note" class="contactAdminWarning">
-                        <div>Thank you for joining the league</div>
-                        <i class="fas fa-exclamation-circle"></i>
-                        <div>You should reach out to the league administrator and provide them with an external way of contacting you about upcoming matches. 
-                        If you don't do so, they may remove you from the league.</div>
-                      </div>`;
+                            <div>Warning</div>`;
+                if (newPlayer){
+                    html += `<div class="error_line"><i class="fas fa-exclamation-circle"></i><span>Your account is at risk. <span class="backup_account attention">Enable login</span></span></div>`;
+                }
+                if (league.unverified){
+                    html += `<div class="error_line"><i class="fas fa-exclamation-circle"></i><span>You need to <span class="contact_admin attention">message the admin</span></span></div>`;   
+                }
+                            
+
+                html +=   `</div>`;
             }else{
                 html += `<div id="admin_note" class="hidden">
                         <div>Feel free to reach out to the admin if there are any questions or concerns regarding the league.</div>
@@ -52,15 +66,11 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
                   
     }     
 
-    html +=      `<div class="league-overlay-description">${league.description}</div>
-                  <div class="league-overlay-league-body-games ${(league.admin)?"hidden":""}">
-                      <div class="league-overlay-games-list league_recent_games"></div>
-                  </div>
-              </div>
-                <div class="league-overlay-leaderboard${(key.email || !league.admin)?"":" alert_email"}${(key.identifier || !league.admin)?"":" alert_identifier"}">${((key.email && key.identifier) || !league.admin)?"":`<i class="fas fa-exclamation-triangle"></i>`}</div>
+    html +=  `</div>
+                <div class="league-overlay-leaderboard"></div>
             </div>
-            <div class="league-overlay-controls">
-              <button id="league-overlay-create-game-button" class="saito-button saito-button-primary${(league.unverified)?" disabled":""}">create game</button>
+            <div class="league-overlay-controls${(newPlayer)? " hidden":""}">
+              <button id="league-overlay-create-game-button" class="saito-button saito-button-primary">create game</button>
             </div>
         </div>
     </div>

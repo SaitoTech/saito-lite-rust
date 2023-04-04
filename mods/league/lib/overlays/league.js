@@ -108,14 +108,19 @@ class LeagueOverlay {
 
     }
 
-    if (document.querySelector(".alert_email")) {
-      document.querySelector(".alert_email").onclick = () => {
-        this.app.connection.emit("recovery-backup-overlay-render-request");
+    if (document.querySelector(".backup_account")) {
+      document.querySelector(".backup_account").onclick = () => {
+        this.app.connection.emit("recovery-backup-overlay-render-request", ()=>{
+          this.render();
+        });
       }
     }
-    if (document.querySelector(".alert_identifier")) {
-      document.querySelector(".alert_identifier").onclick = () => {
-        this.app.connection.emit("register-username-or-login", {msg: "Registering a username is free and makes it easier to compete with other players on the leaderboards"});
+
+    if (document.querySelector(".contact_admin")) {
+      document.querySelector(".contact_admin").onclick = () => {
+        $(".league-overlay-body-content > div").addClass("hidden");
+        $("#admin_details").removeClass("hidden");
+        $("#admin_note").removeClass("hidden");
       }
     }
 
@@ -159,7 +164,7 @@ class LeagueOverlay {
           <div>Score</div>
           <div>Games Completed</div>
           <div>Games Started</div>
-          <div>Last Game</div>
+          <div>Last Activity</div>
           <div>Email</div>
           <div>Remove</div>
         </div>
@@ -173,12 +178,15 @@ class LeagueOverlay {
 
     let html = "";
     for (let player of this.league.players) {
+      let datetime = this.app.browser.formatDate(player.ts);
+      console.log(player.ts);
+      console.log(datetime);
       html += `<div class="saito-table-row">
         <div>${this.app.browser.returnAddressHTML(player.publickey)}</div>
         <div>${Math.round(player.score)}</div>
         <div>${Math.round(player.games_finished)}</div>
         <div>${Math.round(player.games_started)}</div>
-        <div>${this.app.browser.formatDate(player.ts)}</div>
+        <div>${datetime.day} ${datetime.month} ${datetime.year}</div>
         <div class="email_field" data-id="${player.publickey}" contenteditable="true">${player.email}</div>
         <div><i class="fas fa-ban"></i></div>
       </div> `;

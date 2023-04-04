@@ -75,7 +75,7 @@
   margin: unset;
 }
 
-.league-overlay-body-content .hidden { 
+.league-overlay .hidden { 
   display:none;
  }
 
@@ -117,6 +117,7 @@
   border-radius: 0.5rem;
   overflow-y: auto;
   box-shadow: var(--saito-form-box-shadow);
+  flex: 1;
 }
 
 .league-overlay-body-content {
@@ -141,10 +142,26 @@
   overflow: visible;
 }
 
-.league-overlay-description i {
+.league-overlay-description i, #admin_contact i {
   position: absolute;
   top: 0;
   right: 0;
+}
+
+#admin_details{
+  flex: unset;
+}
+
+span.attention { 
+  text-decoration: underline dashed 1px;
+  cursor: pointer;
+}
+
+#admin_contact {
+  min-width: 10rem;
+  height: fit-content;
+  min-height: 2rem;
+  position: relative;
 }
 
 .league-overlay-league-body-games {
@@ -236,6 +253,7 @@
   font-size: 6.4rem;
 }
 
+
 @media screen and (max-width: 1000px) {
   .league-overlay-body {
     display: flex;
@@ -274,6 +292,7 @@
   padding: 1rem;
   */
   font-size: 2rem;
+  min-height: 25rem;
 }
 
 .contactAdminWarning > * {
@@ -282,12 +301,18 @@
 
 .contactAdminWarning > div:first-child {
   font-size: 3.2rem;
-  text-align: center;
+  justify-content: center;
 }
 
-.contactAdminWarning i {
-  float: left;
-  font-size: 6.4rem;
-  color: var(--saito-primary);
+.contactAdminWarning > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 
+
+.contactAdminWarning i {
+  font-size: 3rem;
+  color: var(--saito-primary);
+  margin: 1rem;
 }
