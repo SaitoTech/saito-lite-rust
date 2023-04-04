@@ -6,10 +6,13 @@ class ReligiousOverlay {
   constructor(app, mod){
     this.app = app;
     this.mod = mod;
+    this.visible = false;
     this.overlay = new SaitoOverlay(app, mod);
   }
     
   render() {
+
+    this.visible = true;
 
     //
     // show overlay

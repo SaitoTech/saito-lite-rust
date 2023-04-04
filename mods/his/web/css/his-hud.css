@@ -17,6 +17,10 @@
   min-height: 50px;
   background-color: whitesmoke;
 }
+.status-header {
+  background-color: whitesmoke;
+}
+
 .hud-body .status ul {
   width: 100%;
   background-color: whitesmoke;

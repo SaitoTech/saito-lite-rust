@@ -741,7 +741,13 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
   }
 
 
-
+  countSpacesWithFilter(filter_func) {
+    let count = 0;
+    for (let key in this.game.spaces) {
+      if (filter_func(this.game.spaces[key]) == 1) { count++; }
+    }
+    return count;
+  }
 
   playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
 
@@ -752,12 +758,15 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     html += '<ul>';
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
-        html += '<li class="option" id="' + key + '">' + key + '</li>';
+        html += '<li class="option .'+key+'" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
-	  document.getElementById(key).onclick = (e) => {
-	    $('.option').off();
-	    mycallback(key);
-	  }
+	  let t = "."+key;
+	  document.querySelectorAll(t).forEach((el) => {
+	    el.onclick = (e) => {
+	      $('.option').off();
+	      mycallback(key);
+	    }
+	  });
 	}
       }
     }

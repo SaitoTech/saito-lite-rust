@@ -9,3 +9,8 @@
     min-height: 622px;
 }
 
+.diet-overlay .cardlist .card {
+   height: 30rem;
+   width: auto;
+}
+

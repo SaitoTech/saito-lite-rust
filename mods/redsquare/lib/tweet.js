@@ -114,6 +114,7 @@ class Tweet {
 
     let myqs = `.tweet-${this.tx.transaction.sig}`;
     let replace_existing_element = true;
+    let replace_nothing = false;
 
     //
     //
@@ -138,7 +139,7 @@ class Tweet {
     //
     // retweets displayed in container even if master exists elsewhere on page
     //
-    if (this.is_retweet) {
+    if (this.is_retweet || this.render_solo) {
       myqs = this.container;
       replace_existing_element = true;
     } else {

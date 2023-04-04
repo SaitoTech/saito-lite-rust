@@ -1,18 +1,21 @@
-const TreatiseTemplate = require('./treatise.template');
+const ReformationTemplate = require('./reformation.template');
 const SaitoOverlay = require("./../../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
-class TreatiseOverlay {
+class ReformationOverlay {
 
     constructor(app, mod){
         this.app = app;
         this.mod = mod;
-	this.visible = false;
         this.overlay = new SaitoOverlay(app, mod);
     }
-    
+
+    hide() {
+	this.overlay.hide();
+    } 
+   
     render() {
-        this.overlay.show(TreatiseTemplate());
-        this.attachEvents();
+	this.visible = true;
+        this.overlay.show(ReformationTemplate());
     }
 
     attachEvents(){
@@ -20,5 +23,5 @@ class TreatiseOverlay {
 
 }
 
-module.exports = TreatiseOverlay;
+module.exports = ReformationOverlay;
 

@@ -106,6 +106,7 @@
 .stunx-chatbox .side-videos {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
   width: 25%;
   height: 100%;
 }
