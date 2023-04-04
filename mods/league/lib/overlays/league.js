@@ -85,28 +85,51 @@ class LeagueOverlay {
         console.log("Focus out", desc_div.textContent);
         if (desc_div.textContent !== orig_desc){
           console.log("Transaction sent!");
-          let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(desc_div.textContent));
+          let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(desc_div.textContent), "description");
           this.app.network.propagateTransaction(newtx);
         }
       };
+
+      let contact = document.querySelector("#admin_contact");
+      if (contact){
+        let orig_contact = contact.textContent;
+        contact.contentEditable = true;
+        this.app.browser.addElementToSelector(`<i class="fas fa-pencil"></i>`, "#admin_contact");
+        
+        contact.onblur = (e) => {
+          console.log("Focus out", contact.textContent);
+          if (contact.textContent !== orig_contact){
+            console.log("Transaction sent!");
+            let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(contact.textContent, "contact"));
+            this.app.network.propagateTransaction(newtx);
+          }  
+        }    
+      }
+
     }
 
-    if (document.querySelector(".alert_email")) {
-      document.querySelector(".alert_email").onclick = () => {
-        this.app.connection.emit("recovery-backup-overlay-render-request");
+    if (document.querySelector(".backup_account")) {
+      document.querySelector(".backup_account").onclick = () => {
+        this.app.connection.emit("recovery-backup-overlay-render-request", ()=>{
+          this.render();
+        });
       }
     }
-    if (document.querySelector(".alert_identifier")) {
-      document.querySelector(".alert_identifier").onclick = () => {
-        this.app.connection.emit("register-username-or-login", {msg: "Registering a username is free and makes it easier to compete with other players on the leaderboards"});
+
+    if (document.querySelector(".contact_admin")) {
+      document.querySelector(".contact_admin").onclick = () => {
+        $(".league-overlay-body-content > div").addClass("hidden");
+        $("#admin_details").removeClass("hidden");
+        $("#admin_note").removeClass("hidden");
       }
     }
 
     Array.from(document.querySelectorAll(".menu-icon")).forEach(item => {
       item.onclick = (e) => {
         let nav = e.currentTarget.id;
-        console.log(nav);
+
         $(".active-tab").removeClass("active-tab");
+        $(".league-overlay-leaderboard").removeClass("hidden");
         $(".league-overlay-body-content > div").addClass("hidden");
         switch (nav){
         case "home":
@@ -119,6 +142,11 @@ class LeagueOverlay {
         case "games":
           $(".league-overlay-league-body-games").removeClass("hidden");
           break;
+        case "players":
+          $("#admin-widget").removeClass("hidden");
+          $("#admin_details").removeClass("hidden");
+          $(".league-overlay-leaderboard").addClass("hidden");
+          this.loadPlayersUI();
         }
 
         e.currentTarget.classList.add("active-tab");
@@ -126,7 +154,46 @@ class LeagueOverlay {
     })
 
   }
-//<i class="fa-solid fa-triangle-exclamation"></i>
+
+  loadPlayersUI(){
+
+    this.app.browser.replaceElementById(`<div id="admin-widget" class="admin-widget">
+      <div class="saito-table">
+        <div class="saito-table-header">
+          <div>Player</div>
+          <div>Score</div>
+          <div>Games Completed</div>
+          <div>Games Started</div>
+          <div>Last Activity</div>
+          <div>Email</div>
+          <div>Remove</div>
+        </div>
+        <div class="saito-table-body"></div>
+        </div>
+        </div>`, "admin-widget");
+  
+    console.log(JSON.parse(JSON.stringify(this.league)));
+
+    if (!this.league) { return; }
+
+    let html = "";
+    for (let player of this.league.players) {
+      let datetime = this.app.browser.formatDate(player.ts);
+      console.log(player.ts);
+      console.log(datetime);
+      html += `<div class="saito-table-row">
+        <div>${this.app.browser.returnAddressHTML(player.publickey)}</div>
+        <div>${Math.round(player.score)}</div>
+        <div>${Math.round(player.games_finished)}</div>
+        <div>${Math.round(player.games_started)}</div>
+        <div>${datetime.day} ${datetime.month} ${datetime.year}</div>
+        <div class="email_field" data-id="${player.publickey}" contenteditable="true">${player.email}</div>
+        <div><i class="fas fa-ban"></i></div>
+      </div> `;
+    }
+
+    this.app.browser.addElementToSelector(html, "#admin-widget .saito-table-body");
+  }
 }
 
 module.exports = LeagueOverlay;

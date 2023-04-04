@@ -77,9 +77,9 @@
   margin: unset;
 }
 
-.league-overlay-body-content .hidden {
-  display: none;
-}
+.league-overlay .hidden { 
+  display:none;
+ }
 
 .league-overlay-controls:hover .menu-icon.active-tab {
   background: unset;
@@ -128,6 +128,7 @@
   border-radius: 0.5rem;
   overflow-y: auto;
   box-shadow: var(--saito-form-box-shadow);
+  flex: 1;
 }
 
 .league-overlay-body-content {
@@ -152,10 +153,26 @@
   overflow: visible;
 }
 
-.league-overlay-description i {
+.league-overlay-description i, #admin_contact i {
   position: absolute;
   top: 0;
   right: 0;
+}
+
+#admin_details{
+  flex: unset;
+}
+
+span.attention { 
+  text-decoration: underline dashed 1px;
+  cursor: pointer;
+}
+
+#admin_contact {
+  min-width: 10rem;
+  height: fit-content;
+  min-height: 2rem;
+  position: relative;
 }
 
 .league-overlay-league-body-games {
@@ -245,6 +262,7 @@
   font-size: 6.4rem;
 }
 
+
 @media screen and (max-width: 1000px) {
   .league-overlay-body {
     display: flex;
@@ -263,9 +281,15 @@
 
 @media screen and (max-width: 600px) {
   .league-overlay-container {
-    width: calc(100vw - 2px) max-height: 98vh;
+    width: calc(100vw - 2px);
+    max-height: 98vh;
   }
 }
+
+.admin-widget .saito-table-header, .admin-widget .saito-table-row {
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+}
+
 
 .contactAdminWarning {
   /*min-width: 60rem;
@@ -276,6 +300,7 @@
   padding: 1rem;
   */
   font-size: 2rem;
+  min-height: 25rem;
 }
 
 .contactAdminWarning>* {
@@ -284,11 +309,18 @@
 
 .contactAdminWarning>div:first-child {
   font-size: 3.2rem;
-  text-align: center;
+  justify-content: center;
 }
 
+.contactAdminWarning > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+
 .contactAdminWarning i {
-  float: left;
-  font-size: 6.4rem;
+  font-size: 3rem;
   color: var(--saito-primary);
+  margin: 1rem;
 }
