@@ -12059,7 +12059,7 @@ class HereIStand extends GameTemplate {
   //
   // Core Game Logic
   //
-  handleGameLoop() {
+  async handleGameLoop() {
     let his_self = this;
 
     ///////////
@@ -17278,7 +17278,7 @@ class HereIStand extends GameTemplate {
       // objects and cards can add commands
       //
       for (let i in z) {
-        if (!z[i].handleGameLoop(this, qe, mv)) {
+        if (!(await z[i].handleGameLoop(this, qe, mv))) {
           return 0;
         }
       }
@@ -22720,5 +22720,3 @@ class HereIStand extends GameTemplate {
 } // end and export
 
 module.exports = HereIStand;
-
-

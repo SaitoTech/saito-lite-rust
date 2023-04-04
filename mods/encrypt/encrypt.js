@@ -203,7 +203,7 @@ class Encrypt extends ModTemplate {
     try {
       tx = this.app.wallet.createUnsignedTransactionWithDefaultFee(
         recipient,
-        parties_to_exchange * this.app.wallet.wallet.default_fee
+        BigInt(parties_to_exchange * this.app.wallet.wallet.default_fee)
       );
     } catch (err) {
       console.log("error: " + err);

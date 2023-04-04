@@ -2,6 +2,7 @@ import { randomBytes } from "crypto";
 import Saito from "saito-js/saito";
 import node_cryptojs from "node-cryptojs-aes";
 import crypto from "crypto-browserify";
+import * as Base58 from "base-58";
 
 const CryptoJS = node_cryptojs.CryptoJS;
 const JsonFormatter = node_cryptojs.JsonFormatter;
@@ -115,5 +116,49 @@ export default class Crypto {
   generateRandomNumber() {
     const randomNumber = randomBytes(32);
     return randomNumber.toString("hex");
+  }
+
+  ///////////////////////////////////
+  // ELLIPTICAL CURVE CRYPTOGRAPHY //
+  ///////////////////////////////////
+  /**
+   * Compresses public key
+   *
+   * @param {string} pubkey
+   * @returns {string} compressed publickey
+   */
+  compressPublicKey(pubkey) {
+    // prettier-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return this.toBase58(secp256k1.publicKeyConvert(Buffer.from(pubkey, "hex"), true).toString("hex"));
+  }
+
+  /**
+   * Converts base58 string to hex string
+   *
+   * @param {string} t string to convertches
+   * @returns {string} converted string
+   */
+  fromBase58(t: string): string {
+    return Buffer.from(Base58.decode(t)).toString("hex");
+  }
+
+  /**
+   * Converts hex string to base58 string
+   *
+   * @param {string} t string to convert
+   * @returns {string} converted string
+   */
+  toBase58(t: string): string {
+    return Base58.encode(Buffer.from(t, "hex"));
+  }
+
+  stringToBase64(str: string): string {
+    return Buffer.from(str, "utf-8").toString("base64");
+  }
+
+  base64ToString(str: string): string {
+    return Buffer.from(str, "base64").toString("utf-8");
   }
 }

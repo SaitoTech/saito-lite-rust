@@ -41,7 +41,7 @@ class GameTestSuite extends GameTemplate {
   //
   // initialize module when it starts
   //
-  initializeGame(game_id) {
+  async initializeGame(game_id) {
     //
     // create game if it does not exist
     //
@@ -64,16 +64,16 @@ class GameTestSuite extends GameTemplate {
     //
     if (this.game.options.crypto != undefined) {
       this.game.crypto = this.game.options.crypto;
-      let crypto_key = this.app.wallet.returnCryptoAddressByTicker(this.game.crypto);
+      let crypto_key = await this.app.wallet.returnCryptoAddressByTicker(this.game.crypto);
       this.addMove(
         "CRYPTOKEY\t" +
-          this.app.wallet.getPublicKey() +
+          (await this.app.wallet.getPublicKey()) +
           "\t" +
           crypto_key +
           "\t" +
-          this.app.crypto.signMessage(crypto_key, this.app.wallet.returnPrivateKey())
+          (await this.app.crypto.signMessage(crypto_key, await this.app.wallet.returnPrivateKey()))
       );
-      this.endTurn();
+      await this.endTurn();
     }
   }
 
@@ -324,7 +324,7 @@ class GameTestSuite extends GameTemplate {
     });
     */
 
-    this.menu.render();
+    await this.menu.render();
 
     this.log.render();
 
@@ -524,33 +524,33 @@ class GameTestSuite extends GameTemplate {
     //
     // deal cards to players
     //
-    document.getElementById("deal_cards_to_player_button").onclick = (e) => {
-      game_self.deal_cards_to_player_test(game_self.app);
+    document.getElementById("deal_cards_to_player_button").onclick = async (e) => {
+      await game_self.deal_cards_to_player_test(game_self.app);
     };
 
     //
     // deal cards to the table
     //
-    document.getElementById("shuffle_deck_button").onclick = (e) => {
-      game_self.shuffle_deck_test(game_self.app);
+    document.getElementById("shuffle_deck_button").onclick = async (e) => {
+      await game_self.shuffle_deck_test(game_self.app);
     };
 
     //
     // deal cards to the table
     //
-    document.getElementById("deal_cards_to_table_button").onclick = (e) => {
-      game_self.deal_cards_to_table_test(game_self.app);
+    document.getElementById("deal_cards_to_table_button").onclick = async (e) => {
+      await game_self.deal_cards_to_table_test(game_self.app);
     };
 
-    document.getElementById("add_player").onclick = (e) => {
+    document.getElementById("add_player").onclick = async (e) => {
       if (game_self.game.players.length < 6) {
-        game_self.adjustPlayers(game_self.game.players.length + 1);
+        await game_self.adjustPlayers(game_self.game.players.length + 1);
         $("#player_count").text(`Players -- ${game_self.game.players.length}`);
       }
     };
-    document.getElementById("subtract_player").onclick = (e) => {
+    document.getElementById("subtract_player").onclick = async (e) => {
       if (game_self.game.players.length > 1) {
-        game_self.adjustPlayers(game_self.game.players.length - 1);
+        await game_self.adjustPlayers(game_self.game.players.length - 1);
         $("#player_count").text(`Players -- ${game_self.game.players.length}`);
       }
     };
@@ -558,8 +558,8 @@ class GameTestSuite extends GameTemplate {
     //
     // add to menu to page
     //
-    document.getElementById("add_menu_button").onclick = (e) => {
-      game_self.add_menu_test(game_self.app);
+    document.getElementById("add_menu_button").onclick = async (e) => {
+      await game_self.add_menu_test(game_self.app);
     };
 
     //
@@ -586,9 +586,9 @@ class GameTestSuite extends GameTemplate {
   // that we are testing. This code exists as a reference for third-party
   // developers. Questions and feedback are welcome, as are contributions.
   //
-  add_player_boxes_test(app) {
+  async add_player_boxes_test(app) {
     if (this.game_playerboxes_visible == 0) {
-      this.playerbox.render();
+      await this.playerbox.render();
       this.playerbox.addClassAll("poker-seat-", true); //Have to manually add a class for positioning
 
       this.game_playerboxes_visible = 1;
@@ -598,21 +598,21 @@ class GameTestSuite extends GameTemplate {
     }
   }
 
-  insecure_dice_roll_test(app) {
+  async insecure_dice_roll_test(app) {
     // individual machines can do this, but to keep dice rolls in sync wrap rolls in
     // a function that can be called simultaneously on both machines on the queue...
     // this.diceRoll(6);
     this.addMove("LOGDICE");
-    this.endTurn();
+    await this.endTurn();
   }
 
-  secure_dice_roll_test(app) {
+  async secure_dice_roll_test(app) {
     this.addMove("LOGDICE");
     this.requestSecureRoll();
-    this.endTurn();
+    await this.endTurn();
   }
 
-  simultaneous_pick_test(app) {
+  async simultaneous_pick_test(app) {
     let game_self = this;
     let simultaneous_pick_card = Math.random().toString();
 
@@ -661,10 +661,10 @@ class GameTestSuite extends GameTemplate {
     game_self.addMove(
       "SIMULTANEOUS_PICK\t" + game_self.game.player + "\t" + hash3 + "\t" + hash3_sig
     );
-    game_self.endTurn();
+    await game_self.endTurn();
   }
 
-  consecutive_moves_test(app) {
+  async consecutive_moves_test(app) {
     let game_self = this;
     game_self.updateLog(`
 
@@ -678,10 +678,10 @@ class GameTestSuite extends GameTemplate {
       game_self.addMove("PLAY\t" + (i + 1));
       game_self.addMove("NOTIFY\tPlayer " + (i + 1) + " is about to move");
     }
-    game_self.endTurn();
+    await game_self.endTurn();
   }
 
-  simultaneous_moves_test() {
+  async simultaneous_moves_test() {
     let game_self = this;
 
     game_self.updateLog(`
@@ -705,7 +705,7 @@ class GameTestSuite extends GameTemplate {
     game_self.addMove("NOTIFY\tAll players have finished moving");
     game_self.addMove("PLAY\t" + JSON.stringify(players_to_go));
     game_self.addMove("NOTIFY\tAll players will move simultaneously");
-    game_self.endTurn();
+    await game_self.endTurn();
   }
 
   display_overlay_test(app) {
@@ -749,7 +749,7 @@ class GameTestSuite extends GameTemplate {
     this.clock.render();
   }
 
-  deal_cards_to_player_test(app) {
+  async deal_cards_to_player_test(app) {
     let game_self = this;
 
     //
@@ -772,14 +772,14 @@ class GameTestSuite extends GameTemplate {
     game_self.addMove(
       "SIMPLEDEAL\t" + 3 + "\t" + 1 + "\t" + JSON.stringify(game_self.returnDeck())
     );
-    game_self.endTurn();
+    await game_self.endTurn();
 
     if (this.game_cardfan_visible) {
       this.cardfan.render();
     }
   }
 
-  deal_cards_to_table_test(app) {
+  async deal_cards_to_table_test(app) {
     let game_self = this;
 
     /*game_self.updateLog(`
@@ -808,10 +808,10 @@ class GameTestSuite extends GameTemplate {
     game_self.addMove("LOGPOOL\t1");
     game_self.addMove("POOLDEAL\t3\t1\t1"); // deal 3 cards from deck-1 to pool-1
     game_self.addMove("POOL\t1"); // create pool with index 1 (pool-1)
-    game_self.endTurn();
+    await game_self.endTurn();
   }
 
-  shuffle_deck_test(app) {
+  async shuffle_deck_test(app) {
     let game_self = this;
 
     game_self.updateLog(`
@@ -825,10 +825,10 @@ class GameTestSuite extends GameTemplate {
     game_self.addMove("NOTIFY\tDeck 1 shuffle complete");
     game_self.addMove("SHUFFLE\t1");
     game_self.addMove("DECK\t1\t" + JSON.stringify(game_self.returnDeck()));
-    game_self.endTurn();
+    await game_self.endTurn();
   }
 
-  receive_payment_test(app) {
+  async receive_payment_test(app) {
     let game_self = this;
 
     let receiver = game_self.game.players[game_self.game.player - 1];
@@ -866,10 +866,10 @@ class GameTestSuite extends GameTemplate {
         "\t" +
         game_self.game.crypto
     );
-    game_self.endTurn();
+    await game_self.endTurn();
   }
 
-  send_payment_test(app) {
+  async send_payment_test(app) {
     let game_self = this;
 
     let sender = game_self.game.players[game_self.game.player - 1];
@@ -890,7 +890,7 @@ class GameTestSuite extends GameTemplate {
     game_self.addMove(
       `SEND\t${sender}\t${receiver}\t0.0001\t${ts}\t${uh}\t${game_self.game.crypto}`
     );
-    game_self.endTurn();
+    await game_self.endTurn();
   }
 
   /*
@@ -957,11 +957,11 @@ class GameTestSuite extends GameTemplate {
           `<ul><li id="deal" class="hudmenuitem">Deal cards</li><li id="close" class="hudmenuitem">Close hud</li></ul>`
         );
         $(".hudmenuitem").off();
-        $(".hudmenuitem").on("click", function () {
+        $(".hudmenuitem").on("click", async function () {
           this.game_hud_visible = 0;
           let cid = $(this).attr("id");
           if (cid === "deal") {
-            game_self.deal_cards_to_player_test(game_self.app);
+            await game_self.deal_cards_to_player_test(game_self.app);
             game_self.display_cardhud_test(game_self.app);
             return;
           }
@@ -996,9 +996,9 @@ class GameTestSuite extends GameTemplate {
     }
   }
 
-  add_menu_test(app) {
+  async add_menu_test(app) {
     if (this.game_menu_visible == 0) {
-      this.menu.render(this.app, this);
+      await this.menu.render(this.app, this);
       this.menu.attachEvents(this.app, this);
       this.game_menu_visible = 1;
       this.updateLog("Show Menu");
@@ -1096,7 +1096,7 @@ class GameTestSuite extends GameTemplate {
     } catch (err) {}
   }
 
-  adjustPlayers(numPlayers) {
+  async adjustPlayers(numPlayers) {
     while (numPlayers < this.game.players.length) {
       this.removePlayer(this.game.players.pop());
     }
@@ -1111,7 +1111,7 @@ class GameTestSuite extends GameTemplate {
         box.remove();
       }
       this.game_playerboxes_visible = 0;
-      this.add_player_boxes_test(this.app);
+      await this.add_player_boxes_test(this.app);
     }
   }
 }

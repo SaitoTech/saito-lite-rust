@@ -405,7 +405,7 @@ alert("removing unit not implement for sea");
 	  if (this.game.player === p) {
 	    this.playerPlayCard(card, p, faction);
 	  }
-	  
+
 	  return 0;
 
 	}
@@ -423,7 +423,7 @@ alert("removing unit not implement for sea");
 	  if (this.game.player === p) {
 	    this.playerPlayOps(card, faction, opsnum);
 	  }
-	  
+
 	  return 0;
 
 	}
@@ -777,7 +777,7 @@ alert("removing unit not implement for sea");
 	  let player = this.returnPlayerOfFaction(faction);
 
 console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
-	  
+
 	  for (let i = this.game.queue.length-1; i >= 0; i--) {
 	    let lmv = this.game.queue[i].split("\t");
 	    //
@@ -796,7 +796,7 @@ console.log("this player is fortifying space!");
 	  } else {
 	    this.updateStatus(this.returnFactionName(faction) + " handling retreat into fortification");
 	  }
-	
+
           return 0;
 
 	}
@@ -903,7 +903,7 @@ console.log(JSON.stringify(mv));
 	  this.displayNavalSpace(source_spacekey);
 	  this.displaySpace(destination_spacekey);
 	  this.displayNavalSpace(destination_spacekey);
-	  
+
 	  return 1;
 
 	}
@@ -1117,11 +1117,11 @@ console.log(JSON.stringify(mv));
 
 	  if (attacker === "ottoman" && attacker_includes_cavalry) {
 	    this.updateLog("Ottoman +1 cavalry bonus");
-	    hits_on++; 
+	    hits_on++;
 	  }
 	  if (defender === "ottoman" && defender_has_cavalry) {
 	    this.updateLog("Ottoman -1 cavalry bonus");
-	    hits_on--; 
+	    hits_on--;
 	  }
 	  if (defender_highest_battle_rating > 0) {
 	    this.updateLog(this.returnFactionName(defender) + " gains " + defender_highest_battle_rating + " bonus from formation leader");
@@ -1158,7 +1158,7 @@ console.log(JSON.stringify(mv));
 		  this.game.queue.splice(i, 1); // remove 1 at i
 		  i--; // queue is 1 shorter
 		}
-	      } 
+	      }
 	    }
 
 
@@ -1262,7 +1262,7 @@ console.log(JSON.stringify(mv));
 	        if (lmv[3] !== defender) {
 		  this.game.queue.splice(i, 1); // remove 1 at i
 		  i--; // queue is 1 shorter
-	        } 
+	        }
 	      }
 	    }
 
@@ -1293,8 +1293,8 @@ console.log(JSON.stringify(mv));
           this.updateStatusAndListCards("Pick your Card for the Diet of Worms", this.game.deck[0].fhand[0]);
           this.attachCardboxEvents(function(card) {
 
-            game_self.updateStatus("You picked: " + game_self.deck[card].name); 
- 
+            game_self.updateStatus("You picked: " + game_self.deck[card].name);
+
             let hash1 = game_self.app.crypto.hash(card);    // my card
             let hash2 = game_self.app.crypto.hash(Math.random().toString());  // my secret
             let hash3 = game_self.app.crypto.hash(hash2 + hash1);             // combined hash
@@ -1332,24 +1332,24 @@ console.log(JSON.stringify(mv));
 	  this.game.queue.push("discard\tpapacy\t"+this.game.state.sp[papacy-1]);
 
 	  //
-	  // 3. roll protestant dice: The Protestant player adds 4 to the CP value of his card. 
-	  // This total represents the number of dice he now rolls. Each roll of a “5” or a “6” 
+	  // 3. roll protestant dice: The Protestant player adds 4 to the CP value of his card.
+	  // This total represents the number of dice he now rolls. Each roll of a “5” or a “6”
 	  // is considered to be a hit.
 	  //
-	  // 4. roll papal and Hapsburg dice: The Papal player rolls a num- ber of dice equal to 
+	  // 4. roll papal and Hapsburg dice: The Papal player rolls a num- ber of dice equal to
 	  // the CP value of his card. The Hapsburg player does the same. Each roll of a “5” or a
 	  // “6” is considered to be a hit. These two powers combine their hits into a Catholic total.
-	  // 
-	  // 5. protestant victory: If the number of Protestant hits exceeds the number of Catholic 
-	  // hits, the Protestant power flips a number of spaces equal to the number of extra hits he 
-	  // rolled to Protestant influence. All spaces flipped must be in the German language zone. 
-	  // Spaces flipped must be adjacent to another Protestant space; spaces that were just 
+	  //
+	  // 5. protestant victory: If the number of Protestant hits exceeds the number of Catholic
+	  // hits, the Protestant power flips a number of spaces equal to the number of extra hits he
+	  // rolled to Protestant influence. All spaces flipped must be in the German language zone.
+	  // Spaces flipped must be adjacent to another Protestant space; spaces that were just
 	  // flipped in this step can be used as the required adjacent Protestant space.
 	  //
 	  // 6. Catholic Victory: If the number of Catholic hits exceeds the number of Protestant hits,
-	  // the Papacy flips a number of spaces equal to the number of extra hits he rolled to Catholic 
-	  // influence. All spaces flipped must be in the German language zone. Spaces flipped must be 
-	  // adjacent to another Catholic space; spaces that were just flipped in this step can be used 
+	  // the Papacy flips a number of spaces equal to the number of extra hits he rolled to Catholic
+	  // influence. All spaces flipped must be in the German language zone. Spaces flipped must be
+	  // adjacent to another Catholic space; spaces that were just flipped in this step can be used
 	  // as the required adjacent Catholic space.
 	  //
 
@@ -1427,7 +1427,7 @@ console.log(JSON.stringify(mv));
 	  //
 	  // this is run when players have the opportunity to counter
 	  // or intercede in a move made by another player. we cannot
-	  // automatically handle without leaking information about 
+	  // automatically handle without leaking information about
 	  // game state, so we let players determine themselves how to
 	  // handle. if they are able to, they can respond. if not they
 	  // click acknowledge and the msg counts as notification of an
@@ -1539,8 +1539,8 @@ console.log(JSON.stringify(mv));
 
 
 	  //
-	  // this is run when a naval battle starts. players have by now 
-	  // interceded or played cards that allow them to respond to the 
+	  // this is run when a naval battle starts. players have by now
+	  // interceded or played cards that allow them to respond to the
 	  // movement, including retreat into a fortress if available. as
 	  // such, this handles the conflict.
 	  //
@@ -1555,7 +1555,7 @@ console.log(JSON.stringify(mv));
 	  // ok -- who the hell is here?
 	  //
 	  // an ally of a major power can intercept and fight together, complicating
-	  // how hits are assigned. so we need to know which factions are actually on 
+	  // how hits are assigned. so we need to know which factions are actually on
 	  // which sides. additionally, formations can include units from allied minor
 	  // powers.
 	  //
@@ -1582,28 +1582,28 @@ console.log(JSON.stringify(mv));
 	      let ap = his_self.game.state.players_info[attacker_player-1];
 	      if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
-	      if (p.tmp_roll_modifiers.length > 0) { 
+	      if (p.tmp_roll_modifiers.length > 0) {
 		for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
-	          ap.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
-	        } 
-	      } 
+	          ap.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]);
+	        }
+	      }
 	    }
 	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
 	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
 	      let dp = his_self.game.state.players_info[defender_player-1];
 	      if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
-	      if (p.tmp_roll_modifiers.length > 0) { 
+	      if (p.tmp_roll_modifiers.length > 0) {
 		for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
-	          dp.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
-	        } 
-	      } 
+	          dp.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]);
+	        }
+	      }
 	    }
           }
 
 	  //
 	  // we now have a mapping of all factions to the two main factions that
-	  // will make any strategic decisions for hits assignment, etc. and any 
+	  // will make any strategic decisions for hits assignment, etc. and any
 	  // bonuses that affect combat will have been copied over to those players
 	  //
 
@@ -1636,7 +1636,7 @@ console.log(JSON.stringify(mv));
 	      if (calculate_highest_battle_ranking(f) > defender_highest_battle_ranking) {
 		defender_highest_battle_ranking = calculate_highest_battle_ranking(f);
 	      }
-	    }  
+	    }
 	  }
 	  if (attacker_player.tmp_roll_bonus) {
   	    attacker_rolls += parseInt(attacker_player.tmp_roll_bonus);
@@ -1680,10 +1680,10 @@ console.log(JSON.stringify(mv));
           }
 
 	  //
-	  // things get messy and conditional now, because Professional Rowers may 
+	  // things get messy and conditional now, because Professional Rowers may
 	  // be played to modify dice rolls.
 	  //
-	  // we handle this by saving the "state" of the battle and pushing 
+	  // we handle this by saving the "state" of the battle and pushing
 	  // execution back to the game queue.
 	  //
 
@@ -1720,7 +1720,7 @@ console.log(JSON.stringify(mv));
 	  this.game.state.field_battle = {};
 
 	  //
-	  // calculate rolls 
+	  // calculate rolls
 	  //
           let calculate_rolls = function(faction) {
 	    let rolls = 0;
@@ -1746,8 +1746,8 @@ console.log(JSON.stringify(mv));
 
 
 	  //
-	  // this is run when a field battle starts. players have by now 
-	  // interceded or played cards that allow them to respond to the 
+	  // this is run when a field battle starts. players have by now
+	  // interceded or played cards that allow them to respond to the
 	  // movement, including retreat into a fortress if available. as
 	  // such, this handles the conflict.
 	  //
@@ -1758,7 +1758,7 @@ console.log(JSON.stringify(mv));
 
 
 	  //
-	  // the first thing we check is whether the land units that control the space have 
+	  // the first thing we check is whether the land units that control the space have
 	  // withdrawn into fortifications, as if that is the case then land battle is avoided
 	  //
 	  if (space.besieged == 2) {
@@ -1773,7 +1773,7 @@ console.log(JSON.stringify(mv));
 	  // otherwise -- who the hell is here?
 	  //
 	  // an ally of a major power can intercept and fight together, complicating
-	  // how hits are assigned. so we need to know which factions are actually on 
+	  // how hits are assigned. so we need to know which factions are actually on
 	  // which sides. additionally, formations can include units from allied minor
 	  // powers.
 	  //
@@ -1800,28 +1800,28 @@ console.log(JSON.stringify(mv));
 	      let ap = his_self.game.state.players_info[attacker_player-1];
 	      if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
-	      if (p.tmp_roll_modifiers.length > 0) { 
+	      if (p.tmp_roll_modifiers.length > 0) {
 		for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
-	          ap.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
-	        } 
-	      } 
+	          ap.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]);
+	        }
+	      }
 	    }
 	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
 	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
 	      let dp = his_self.game.state.players_info[defender_player-1];
 	      if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
-	      if (p.tmp_roll_modifiers.length > 0) { 
+	      if (p.tmp_roll_modifiers.length > 0) {
 		for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
-	          dp.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
-	        } 
-	      } 
+	          dp.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]);
+	        }
+	      }
 	    }
           }
 
 	  //
 	  // we now have a mapping of all factions to the two main factions that
-	  // will make any strategic decisions for hits assignment, etc. and any 
+	  // will make any strategic decisions for hits assignment, etc. and any
 	  // bonuses that affect combat will have been copied over to those players
 	  //
 
@@ -1846,7 +1846,7 @@ console.log(JSON.stringify(mv));
 	      if (calculate_highest_battle_ranking(f) > defender_highest_battle_ranking) {
 		defender_highest_battle_ranking = calculate_highest_battle_ranking(f);
 	      }
-	    }  
+	    }
 	  }
 	  let attacker_units = attacker_rolls;
 	  let defender_units = defender_rolls-1;
@@ -1859,7 +1859,7 @@ console.log(JSON.stringify(mv));
 	  }
 
 	  //
-	  // logic forks depending on if any of the players can "go first". in order to 
+	  // logic forks depending on if any of the players can "go first". in order to
 	  // simplify our implementation we are going to roll the dice now and then apply
 	  // the hits either simultaneously or in sequence so that we don't need to re-
 	  // implement the above.
@@ -1893,11 +1893,11 @@ console.log(JSON.stringify(mv));
           }
 
 	  //
-	  // things get messy and conditional now, because Ottomans may play 
+	  // things get messy and conditional now, because Ottomans may play
 	  // Janissaries and Suprise Attack may change the order in which players
 	  // remove units (and hits!) in the resolution of the battle.
 	  //
-	  // we handle this by saving the "state" of the battle and pushing 
+	  // we handle this by saving the "state" of the battle and pushing
 	  // execution back to the game queue.
 	  //
 
@@ -1922,7 +1922,7 @@ console.log(JSON.stringify(mv));
 	  //
 	  if (attacker_player.tmp_rolls_first == 1 && defender_player.tmp_rolls_first != 1) {
 	    let attacker_hits = his_self.game.state.field_battle.attacker_hits;
-	    
+
 	    his_self.game.queue.push(`field_battle_continue\t${mv[1]}`);
 	    if (faction_map["ottoman"] === attacker_faction) {
 	      his_self.updateLog("Attacker hits assigned first...");
@@ -2004,7 +2004,7 @@ console.log(JSON.stringify(mv));
 	    // max hits to assign are the faction land units
 	    //
 	    for (let f in faction_map) {
-	      if (faction_map[f] === faction) { 
+	      if (faction_map[f] === faction) {
 	    	max_possible_hits_assignable += his_self.returnFactionLandUnitsInSpace(f, space);
 	      }
 	    }
@@ -2024,7 +2024,7 @@ console.log(JSON.stringify(mv));
 	      //
 	      let number_of_targets = 0;
 	      for (let f in faction_map) {
-	        if (faction_map[f] === faction) { 
+	        if (faction_map[f] === faction) {
 		  if (his_self.returnFactionLandUnitsInSpace(f, space) > 0) {
 		    number_of_targets++;
 		  }
@@ -2037,7 +2037,7 @@ console.log(JSON.stringify(mv));
 		// assign hits to allies
 		//
 	        for (let f in faction_map) {
-	          if (faction_map[f] === faction) { 
+	          if (faction_map[f] === faction) {
 		    if (his_self.returnFactionLandUnitsInSpace(f, space) > 0) {
 	 	      for (let zzz = 0; zzz < 3; zzz++) {
 
@@ -2064,7 +2064,7 @@ console.log(JSON.stringify(mv));
 	        //
 	        number_of_targets = 0;
 	        for (let f in faction_map) {
-	          if (faction_map[f] === faction) { 
+	          if (faction_map[f] === faction) {
 		    if (his_self.returnFactionLandUnitsInSpace(f, space) > 0) {
 		      number_of_targets++;
 		    }
@@ -2081,12 +2081,12 @@ console.log(JSON.stringify(mv));
 		let targets = [];
 	        for (let f in faction_map) { targets.push(f); }
 		targets.sort();
-		
+
 		for (let i = hits_to_assign; i > 0; i--) {
 		  let selected_target = his_self.rollDice(targets.length);
 		  let selected_faction = targets[selected_target-1];
 		  his_self.updateLog("Random Target: " + selected_faction);
-		
+
 		  //
 		  // again, survival of the fittest
 		  //
@@ -2473,7 +2473,7 @@ console.log("d");
 	    // max hits to assign are the faction land units
 	    //
 	    for (let f in faction_map) {
-	      if (faction_map[f] === faction) { 
+	      if (faction_map[f] === faction) {
 	    	max_possible_hits_assignable += his_self.returnFactionSeaUnitsInSpace(f, space);
 	      }
 	    }
@@ -2493,7 +2493,7 @@ console.log("d");
 	      //
 	      let number_of_targets = 0;
 	      for (let f in faction_map) {
-	        if (faction_map[f] === faction) { 
+	        if (faction_map[f] === faction) {
 		  if (his_self.returnFactionSeaUnitsInSpace(f, space) > 0) {
 		    number_of_targets++;
 		  }
@@ -2506,7 +2506,7 @@ console.log("d");
 		// assign hits to allies
 		//
 	        for (let f in faction_map) {
-	          if (faction_map[f] === faction) { 
+	          if (faction_map[f] === faction) {
 		    if (his_self.returnFactionSeaUnitsInSpace(f, space) > 0) {
 	 	      for (let zzz = 0; zzz < 2; zzz++) {
 
@@ -2532,7 +2532,7 @@ console.log("d");
 	        //
 	        number_of_targets = 0;
 	        for (let f in faction_map) {
-	          if (faction_map[f] === faction) { 
+	          if (faction_map[f] === faction) {
 		    if (his_self.returnFactionSeaUnitsInSpace(f, space) > 0) {
 		      number_of_targets++;
 		    }
@@ -2549,12 +2549,12 @@ console.log("d");
 		let targets = [];
 	        for (let f in faction_map) { targets.push(f); }
 		targets.sort();
-		
+
 		for (let i = hits_to_assign; i > 0; i--) {
 		  let selected_target = his_self.rollDice(targets.length);
 		  let selected_faction = targets[selected_target-1];
 		  his_self.updateLog("Random Target: " + selected_faction);
-		
+
 		  //
 		  // again, survival of the fittest
 		  //
@@ -2732,7 +2732,7 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	  this.game.state.assault = {};
 
 	  //
-	  // calculate rolls 
+	  // calculate rolls
 	  //
           let calculate_units = function(faction) {
 	    let num = 0;
@@ -2757,8 +2757,8 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
           }
 
 	  //
-	  // this is run when a field battle starts. players have by now 
-	  // interceded or played cards that allow them to respond to the 
+	  // this is run when a field battle starts. players have by now
+	  // interceded or played cards that allow them to respond to the
 	  // movement, including retreat into a fortress if available. as
 	  // such, this handles the conflict.
 	  //
@@ -2771,7 +2771,7 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	  // otherwise -- who the hell is here?
 	  //
 	  // an ally of a major power can intercept and fight together, complicating
-	  // how hits are assigned. so we need to know which factions are actually on 
+	  // how hits are assigned. so we need to know which factions are actually on
 	  // which sides. additionally, formations can include units from allied minor
 	  // powers.
 	  //
@@ -2797,28 +2797,28 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	      let ap = his_self.game.state.players_info[attacker_player-1];
 	      if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
-	      if (p.tmp_roll_modifiers.length > 0) { 
+	      if (p.tmp_roll_modifiers.length > 0) {
 		for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
-	          ap.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
-	        } 
-	      } 
+	          ap.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]);
+	        }
+	      }
 	    }
 	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
 	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
 	      let dp = his_self.game.state.players_info[defender_player-1];
 	      if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
-	      if (p.tmp_roll_modifiers.length > 0) { 
+	      if (p.tmp_roll_modifiers.length > 0) {
 		for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
-	          dp.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
-	        } 
-	      } 
+	          dp.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]);
+	        }
+	      }
 	    }
           }
 
 	  //
 	  // we now have a mapping of all factions to the two main factions that
-	  // will make any strategic decisions for hits assignment, etc. and any 
+	  // will make any strategic decisions for hits assignment, etc. and any
 	  // bonuses that affect combat will have been copied over to those players
 	  //
 
@@ -2845,7 +2845,7 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	      if (calculate_highest_battle_ranking(f) > defender_highest_battle_ranking) {
 		defender_highest_battle_ranking = calculate_highest_battle_ranking(f);
 	      }
-	    }  
+	    }
 	  }
 
 	  //
@@ -2871,7 +2871,7 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	  }
 
 	  //
-	  // logic forks depending on if any of the players can "go first". in order to 
+	  // logic forks depending on if any of the players can "go first". in order to
 	  // simplify our implementation we are going to roll the dice now and then apply
 	  // the hits either simultaneously or in sequence so that we don't need to re-
 	  // implement the above.
@@ -2905,11 +2905,11 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
           }
 
 	  //
-	  // things get messy and conditional now, because Ottomans may play 
+	  // things get messy and conditional now, because Ottomans may play
 	  // Janissaries and Suprise Attack may change the order in which players
 	  // remove units (and hits!) in the resolution of the battle.
 	  //
-	  // we handle this by saving the "state" of the battle and pushing 
+	  // we handle this by saving the "state" of the battle and pushing
 	  // execution back to the game queue.
 	  //
 
@@ -2982,7 +2982,7 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	    // max hits to assign are the faction land units
 	    //
 	    for (let f in faction_map) {
-	      if (faction_map[f] === faction) { 
+	      if (faction_map[f] === faction) {
 	    	max_possible_hits_assignable += his_self.returnFactionLandUnitsInSpace(f, space);
 	      }
 	    }
@@ -3002,7 +3002,7 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	      //
 	      let number_of_targets = 0;
 	      for (let f in faction_map) {
-	        if (faction_map[f] === faction) { 
+	        if (faction_map[f] === faction) {
 		  if (his_self.returnFactionLandUnitsInSpace(f, space) > 0) {
 		    number_of_targets++;
 		  }
@@ -3012,7 +3012,7 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	      while (hits_to_assign >= number_of_targets && hits_to_assign > 0 && number_of_targets > 0) {
 
 	        for (let f in faction_map) {
-	          if (faction_map[f] === faction) { 
+	          if (faction_map[f] === faction) {
 		    if (his_self.returnFactionLandUnitsInSpace(f, space) > 0) {
 	 	      for (let zzz = 0; zzz < 3; zzz++) {
 
@@ -3042,7 +3042,7 @@ console.log("removing which unit: " + cannon_fodder + " from " + f);
 	        //
 	        number_of_targets = 0;
 	        for (let f in faction_map) {
-	          if (faction_map[f] === faction) { 
+	          if (faction_map[f] === faction) {
 		    if (his_self.returnFactionLandUnitsInSpace(f, space) > 0) {
 		      number_of_targets++;
 		    }
@@ -3061,12 +3061,12 @@ console.log("removing secondarily!");
 		let targets = [];
 	        for (let f in faction_map) { targets.push(f); }
 		targets.sort();
-		
+
 		for (let i = hits_to_assign; i > 0; i--) {
 		  let selected_target = his_self.rollDice(targets.length);
 		  let selected_faction = targets[selected_target-1];
 		  his_self.updateLog("Random Target: " + selected_faction);
-		
+
 		  //
 		  // again, survival of the fittest
 		  //
@@ -3495,7 +3495,7 @@ console.log("space: " + spacekey);
 	      }
 	    }
 	  }
-	  
+
 
 	  //
 	  // defender chosen randomly from uncommitted too
@@ -3542,7 +3542,7 @@ console.log("space: " + spacekey);
 	      }
 	    }
 	  }
-	  
+
 	  this.game.queue.splice(qe, 1);
 
 	}
@@ -3588,7 +3588,7 @@ console.log("space: " + spacekey);
 	      ad++;
 	    }
 	  }
-	  
+
 	  //
 	  // defender chosen randomly from type committed / uncommitted
 	  //
@@ -3621,7 +3621,7 @@ console.log("space: " + spacekey);
 	    }
 	  }
 
-	  
+
 	  this.game.queue.splice(qe, 1);
 
 	  return 1;
@@ -3686,7 +3686,7 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 	  this.displayTheologicalDebate();
 	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.defender_debater, false);
-	  
+
 
 	  //
 	  // some wrangling lets defender switch up if Protestant
@@ -3707,7 +3707,7 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 	    this.updateLog(defender + " rolls " + x);
 	    if (x >= 5) { defender_hits++; }
 	  }
-	
+
 	  if (attacker_hits == defender_hits) {
 
 	    //
@@ -4040,7 +4040,7 @@ for (let key in new_cards) {
   console.log(key);
 }
 
-	  
+
 	  //
 	  // re-add discards
 	  //
@@ -4084,10 +4084,10 @@ console.log("----------------------------");
 
 
 	  //
-	  // "The Protestant army leader Maurice of Saxony is placed 
-	  // on the map at the start of Turn 6. Maurice is the only 
+	  // "The Protestant army leader Maurice of Saxony is placed
+	  // on the map at the start of Turn 6. Maurice is the only
 	  // army leader that doesn’t either start the game on the map
-	  // or enter via a Mandatory Event. Place Maurice in any 
+	  // or enter via a Mandatory Event. Place Maurice in any
 	  // electorate under Protestant political control."
 	  //
 //
@@ -4111,16 +4111,16 @@ console.log("----------------------------");
 	  }
 
 	  //
-	  // "Naval leaders eliminated from play are also brought back 
-	  // during the Card Draw Phase. Place them in a friendly port 
-	  // if possible. If no friendly port exists, they remain on 
-	  // the Turn Track for another turn. Naval units eliminated in 
-	  // a previous turn are also returned to each power’s pool of 
+	  // "Naval leaders eliminated from play are also brought back
+	  // during the Card Draw Phase. Place them in a friendly port
+	  // if possible. If no friendly port exists, they remain on
+	  // the Turn Track for another turn. Naval units eliminated in
+	  // a previous turn are also returned to each power’s pool of
 	  // units available to be constructed at this time."
 	  //
     	  //this.game.queue.push("restore\tnaval_leaders");
 
-	 
+
 	  this.game.queue.splice(qe, 1);
           return 1;
 
@@ -4344,7 +4344,7 @@ console.log("----------------------------");
 	  this.game.state.active_faction = faction;
 
 	  // skip factions not-in-play
-	  if (player == -1) { 
+	  if (player == -1) {
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
@@ -4383,8 +4383,8 @@ console.log("----------------------------");
           this.displayBoard();
 
 	  // no-one controls this faction, so skip
-	  if (player_turn === -1) { 
-	    return 1; 
+	  if (player_turn === -1) {
+	    return 1;
 	  }
 
 	  // let the player who controls play turn
@@ -4606,7 +4606,7 @@ alert("ASSAULT UNIMPLEMENTED");
 	      }
 	    }
 	  }
-	  
+
 	  this.game.queue.splice(qe, 1);
 	  return 1;
 
@@ -4687,7 +4687,7 @@ alert("ASSAULT UNIMPLEMENTED");
 	    }
 	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
 	      p_neighbours++;
-	    }  
+	    }
 	  }
 
 	  //
@@ -4789,7 +4789,7 @@ this.updateLog("Catholics: " + c_rolls);
 	    }
 	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
 	      p_neighbours++;
-	    }  
+	    }
 	  }
 
 	  //
@@ -4870,7 +4870,7 @@ this.updateLog("Catholics: " + c_rolls);
 	// objects and cards can add commands
 	//
         for (let i in z) {
-          if (!z[i].handleGameLoop(this, qe, mv)) { return 0; }
+          if (!await z[i].handleGameLoop(this, qe, mv)) { return 0; }
         }
 
 

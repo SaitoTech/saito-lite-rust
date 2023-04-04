@@ -201,7 +201,7 @@ class Midnight extends GameTemplate {
     }
   }
 
-  handleGameLoop(msg = null) {
+  async handleGameLoop(msg = null) {
     let midnight_self = this;
     this.displayPlayer();
     ///////////
@@ -232,7 +232,7 @@ class Midnight extends GameTemplate {
       if (mv[0] === "restart") {
         this.game.queue = [];
         this.game.state = null;
-        this.initializeGame();
+        await this.initializeGame();
         return 1;
       }
 

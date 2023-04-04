@@ -125,8 +125,8 @@ class Blackjack extends GameTableTemplate {
     this.displayBoard();
   }
 
-  initializeGame() {
-    super.initializeGame();
+  async initializeGame() {
+    await super.initializeGame();
 
     //
     // initialize

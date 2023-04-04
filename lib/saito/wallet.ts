@@ -107,7 +107,10 @@ export default class Wallet {
       }
 
       async sendPayment(amount, to_address, unique_hash = "") {
-        let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(to_address, amount);
+        let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(
+          to_address,
+          BigInt(amount)
+        );
         newtx = this.app.wallet.signAndEncryptTransaction(newtx);
         await this.app.network.propagateTransaction(newtx);
         return newtx.signature;
@@ -414,7 +417,7 @@ export default class Wallet {
     }
   }
 
-  returnCryptoAddressByTicker(ticker = "SAITO") {
+  async returnCryptoAddressByTicker(ticker = "SAITO") {
     try {
       if (ticker === "SAITO") {
         return this.getPublicKey();
