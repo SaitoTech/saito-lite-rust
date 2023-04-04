@@ -52,8 +52,6 @@ class Storage {
     data.num = num;
     data.publickey = this.app.wallet.returnPublicKey();
 
-console.log("about to send req w. callback: " + type);
-
     this.app.network.sendRequestWithCallback(message, data, function (obj) {
       let txs = [];
       if (obj) {

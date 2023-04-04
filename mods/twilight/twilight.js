@@ -1600,7 +1600,7 @@ console.log("LATEST MOVE: " + mv);
           //
           let cards_discarded = 0;
 
-	        twilight_self.attachCardboxEvents(function(action2) {
+          twilight_self.attachCardboxEvents(function(action2) {
 
             if (action2 == "finished") {
 

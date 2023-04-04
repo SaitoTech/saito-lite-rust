@@ -94,6 +94,7 @@ video {
 }
 
 .close-scanner {
+  z-index: 1000;
   border: 3px solid var(--saito-primary);
   width: 5rem;
   height: 5rem;
