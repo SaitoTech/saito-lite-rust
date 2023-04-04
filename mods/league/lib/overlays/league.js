@@ -1,6 +1,7 @@
 const LeagueOverlayTemplate = require("./league.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 const Leaderboard = require("./../leaderboard");
+const LeagueWelcomeTemplate = require("./league-welcome.template");
 
 class LeagueOverlay {
 
@@ -56,9 +57,8 @@ class LeagueOverlay {
 
   attachEvents() {
 
-    Array.from(document.querySelectorAll('.league-overlay-create-game-button')).forEach(game => {
-      game.onclick = (e) => {
-	
+    if (document.getElementById("league-overlay-create-game-button")){
+      document.getElementById("league-overlay-create-game-button").onclick = (e) => {
         this.overlay.remove();
         this.app.browser.logMatomoEvent("GameWizard", "LeagueOverlay", this.league.game);
       	if (this.league.admin) {
@@ -69,7 +69,7 @@ class LeagueOverlay {
           this.app.connection.emit("arcade-launch-game-wizard", ({ game: this.league.game }));
       	}
       };
-    });
+    }
 
 
     if (this.league.admin == this.app.wallet.returnPublicKey()){
@@ -90,8 +90,43 @@ class LeagueOverlay {
         }
       };
     }
-  }
 
+    if (document.querySelector(".alert_email")) {
+      document.querySelector(".alert_email").onclick = () => {
+        this.app.connection.emit("recovery-backup-overlay-render-request");
+      }
+    }
+    if (document.querySelector(".alert_identifier")) {
+      document.querySelector(".alert_identifier").onclick = () => {
+        this.app.connection.emit("register-username-or-login", {msg: "Registering a username is free and makes it easier to compete with other players on the leaderboards"});
+      }
+    }
+
+    Array.from(document.querySelectorAll(".menu-icon")).forEach(item => {
+      item.onclick = (e) => {
+        let nav = e.currentTarget.id;
+        console.log(nav);
+        $(".active-tab").removeClass("active-tab");
+        $(".league-overlay-body-content > div").addClass("hidden");
+        switch (nav){
+        case "home":
+          $(".league-overlay-description").removeClass("hidden");
+          break;
+        case "contact":
+          $("#admin_details").removeClass("hidden");
+          $("#admin_note").removeClass("hidden");
+          break;
+        case "games":
+          $(".league-overlay-league-body-games").removeClass("hidden");
+          break;
+        }
+
+        e.currentTarget.classList.add("active-tab");
+      }
+    })
+
+  }
+//<i class="fa-solid fa-triangle-exclamation"></i>
 }
 
 module.exports = LeagueOverlay;

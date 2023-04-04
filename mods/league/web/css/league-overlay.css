@@ -28,12 +28,63 @@
   display: flex;
   flex-direction: row;
   justify-content: end;
+  margin: auto;
+}
+
+.league-overlay-controls i {
+  font-size: 32px;
+  margin: auto 1rem;
+  border-radius: 10px;
+  width: 60px;
+  padding: 1rem;
+}
+
+.league-overlay-controls i.saito-button-primary {
+  font-weight: 900;
+  min-width: unset;
 }
 
 .league-overlay-header {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  flex-wrap: wrap;
+  row-gap: 1.5rem;
+}
+
+.league-overlay-header-title-box {
+  flex: 1;
+  min-width: fit-content;
+}
+
+.menu-icon{
+  width: 10rem;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.menu-icon i.notification{
+  position: absolute;
+  top: 19%;
+  left: 43%;
+  font-size: 16px;
+  color: var(--saito-red);
+  width: unset;
+  padding: unset;
+  margin: unset;
+}
+
+.league-overlay-body-content .hidden { 
+  display:none;
+ }
+
+.league-overlay-controls:hover .menu-icon.active-tab {
+  background: unset;
+}
+
+.menu-icon:hover, .menu-icon.active-tab, .league-overlay-controls .menu-icon.active-tab:hover {
+  background: var(--saito-primary);
 }
 
 .league-overlay-header-title-box-title {
@@ -155,12 +206,43 @@
     text-shadow: 0px 0px 3px var(--saito-white);
 }
 
+
 .league_recent_game div{
   align-self: center;
 }
 
 .league-overlay-leaderboard{
   min-width: min(40rem, 100%);
+}
+
+
+.alert_email, .alert_identifier, .alert_admin {
+  position: relative;
+  box-shadow: 0px 0px 10px var(--saito-red) !important;
+  cursor: pointer;
+}
+
+.alert_email .league-leaderboard, .alert_identifier .league-leaderboard {
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.alert_email i, .alert_identifier i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--saito-red);
+  font-size: 6.4rem;
+}
+
+.alert_admin i {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  color: var(--saito-secondary);
+  font-size: 5rem;
 }
 
 @media screen and (max-width: 1000px) {
@@ -181,8 +263,36 @@
 
 @media screen and (max-width: 600px) {
   .league-overlay-container { 
-    width: 95vw;
-    max-height: 95vh;
+    width: calc(100vw - 2px)
+    max-height: 98vh;
   }
+
+}
+
+
+.contactAdminWarning {
+  /*min-width: 60rem;
+  max-width: 90%;
+  background: var(--saito-background-light); 
+  min-height: 20rem;
+  max-height: 90%;
+  padding: 1rem;
+  */
+  font-size: 2rem;
+}
+
+.contactAdminWarning > * {
+  margin: 1rem;
+}
+
+.contactAdminWarning > div:first-child {
+  font-size: 3.2rem;
+  text-align: center;
+}
+
+.contactAdminWarning i {
+  float: left;
+  font-size: 6.4rem;
+  color: var(--saito-primary);
 
 }
