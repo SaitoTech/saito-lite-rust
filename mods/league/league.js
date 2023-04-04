@@ -800,7 +800,7 @@ class League extends ModTemplate {
 
     let sql2 = `SELECT * FROM players WHERE league_id = ? AND publickey IN (`;
     for (let pk of players) { sql2 += `'${pk}', `; }
-    sql2 = sql2.substr(0, sql2.length - 2) + `)`;
+    sql2 = sql2.substring(0, sql2.length - 2) + `)`;
 
     let sqlResults = await this.app.storage.queryDatabase(sql2, [league_id], "league");
 
@@ -812,7 +812,8 @@ class League extends ModTemplate {
       localStats = league.players.filter(p => players.includes(p.publickey));
     }
 
-    return localStats || sqlResults;
+    // should we look to ts value for which is the newest reault
+    return sqlResults || localStats;
   }
 
   /////////////////////
