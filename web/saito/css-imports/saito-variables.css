@@ -75,7 +75,7 @@ font imports
 
 html[data-theme="dark"] {
   --saito-primary: #e05b08;
-  --saito-secondary: #c16a00;
+  --saito-secondary: #c17a00;
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
   --saito-font-color-light: #aaa;
@@ -99,7 +99,7 @@ html[data-theme="arcade"] {
   --saito-arcade-background: linear-gradient(-45deg, #0f0020 50%, #08000b 100%);
   --saito-primary: #639;
   /* --dreamscape: #84a; */
-  --saito-secondary: #060606;
+  --saito-secondary: #85b;
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
   --saito-font-color-light: #aaa;

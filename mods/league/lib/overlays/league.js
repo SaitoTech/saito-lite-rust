@@ -1,6 +1,7 @@
 const LeagueOverlayTemplate = require("./league.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 const Leaderboard = require("./../leaderboard");
+const LeagueWelcomeTemplate = require("./league-welcome.template");
 
 class LeagueOverlay {
 
@@ -56,9 +57,8 @@ class LeagueOverlay {
 
   attachEvents() {
 
-    Array.from(document.querySelectorAll('.league-overlay-create-game-button')).forEach(game => {
-      game.onclick = (e) => {
-	
+    if (document.getElementById("league-overlay-create-game-button")){
+      document.getElementById("league-overlay-create-game-button").onclick = (e) => {
         this.overlay.remove();
         this.app.browser.logMatomoEvent("GameWizard", "LeagueOverlay", this.league.game);
       	if (this.league.admin) {
@@ -69,7 +69,7 @@ class LeagueOverlay {
           this.app.connection.emit("arcade-launch-game-wizard", ({ game: this.league.game }));
       	}
       };
-    });
+    }
 
 
     if (this.league.admin == this.app.wallet.returnPublicKey()){
@@ -85,13 +85,115 @@ class LeagueOverlay {
         console.log("Focus out", desc_div.textContent);
         if (desc_div.textContent !== orig_desc){
           console.log("Transaction sent!");
-          let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(desc_div.textContent));
+          let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(desc_div.textContent), "description");
           this.app.network.propagateTransaction(newtx);
         }
       };
+
+      let contact = document.querySelector("#admin_contact");
+      if (contact){
+        let orig_contact = contact.textContent;
+        contact.contentEditable = true;
+        this.app.browser.addElementToSelector(`<i class="fas fa-pencil"></i>`, "#admin_contact");
+        
+        contact.onblur = (e) => {
+          console.log("Focus out", contact.textContent);
+          if (contact.textContent !== orig_contact){
+            console.log("Transaction sent!");
+            let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(contact.textContent, "contact"));
+            this.app.network.propagateTransaction(newtx);
+          }  
+        }    
+      }
+
     }
+
+    if (document.querySelector(".backup_account")) {
+      document.querySelector(".backup_account").onclick = () => {
+        this.app.connection.emit("recovery-backup-overlay-render-request", ()=>{
+          this.render();
+        });
+      }
+    }
+
+    if (document.querySelector(".contact_admin")) {
+      document.querySelector(".contact_admin").onclick = () => {
+        $(".league-overlay-body-content > div").addClass("hidden");
+        $("#admin_details").removeClass("hidden");
+        $("#admin_note").removeClass("hidden");
+      }
+    }
+
+    Array.from(document.querySelectorAll(".menu-icon")).forEach(item => {
+      item.onclick = (e) => {
+        let nav = e.currentTarget.id;
+
+        $(".active-tab").removeClass("active-tab");
+        $(".league-overlay-leaderboard").removeClass("hidden");
+        $(".league-overlay-body-content > div").addClass("hidden");
+        switch (nav){
+        case "home":
+          $(".league-overlay-description").removeClass("hidden");
+          break;
+        case "contact":
+          $("#admin_details").removeClass("hidden");
+          $("#admin_note").removeClass("hidden");
+          break;
+        case "games":
+          $(".league-overlay-league-body-games").removeClass("hidden");
+          break;
+        case "players":
+          $("#admin-widget").removeClass("hidden");
+          $("#admin_details").removeClass("hidden");
+          $(".league-overlay-leaderboard").addClass("hidden");
+          this.loadPlayersUI();
+        }
+
+        e.currentTarget.classList.add("active-tab");
+      }
+    })
+
   }
 
+  loadPlayersUI(){
+
+    this.app.browser.replaceElementById(`<div id="admin-widget" class="admin-widget">
+      <div class="saito-table">
+        <div class="saito-table-header">
+          <div>Player</div>
+          <div>Score</div>
+          <div>Games Completed</div>
+          <div>Games Started</div>
+          <div>Last Activity</div>
+          <div>Email</div>
+          <div>Remove</div>
+        </div>
+        <div class="saito-table-body"></div>
+        </div>
+        </div>`, "admin-widget");
+  
+    console.log(JSON.parse(JSON.stringify(this.league)));
+
+    if (!this.league) { return; }
+
+    let html = "";
+    for (let player of this.league.players) {
+      let datetime = this.app.browser.formatDate(player.ts);
+      console.log(player.ts);
+      console.log(datetime);
+      html += `<div class="saito-table-row">
+        <div>${this.app.browser.returnAddressHTML(player.publickey)}</div>
+        <div>${Math.round(player.score)}</div>
+        <div>${Math.round(player.games_finished)}</div>
+        <div>${Math.round(player.games_started)}</div>
+        <div>${datetime.day} ${datetime.month} ${datetime.year}</div>
+        <div class="email_field" data-id="${player.publickey}" contenteditable="true">${player.email}</div>
+        <div><i class="fas fa-ban"></i></div>
+      </div> `;
+    }
+
+    this.app.browser.addElementToSelector(html, "#admin-widget .saito-table-body");
+  }
 }
 
 module.exports = LeagueOverlay;

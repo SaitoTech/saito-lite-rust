@@ -91,8 +91,6 @@ class QRScanner extends ModTemplate {
     });
   }
 
-
-
   startQRDecoderInitializationLoop() {
 
     x = this.attemptQRDecode();
@@ -141,6 +139,9 @@ class QRScanner extends ModTemplate {
     if (mycallback) { this.scanner_callback = mycallback; }
 
     el.innerHTML = this.returnScannerHTML();
+    document.querySelector('.close-scanner').onclick = () => {
+      window.location.reload();
+    };
 
     let scanner_self = this;
 
@@ -150,7 +151,6 @@ class QRScanner extends ModTemplate {
     );
 
   }
-
 
   startQRDecoder() {
 
@@ -179,14 +179,6 @@ class QRScanner extends ModTemplate {
 
     `;
   }
-
-
-
-
-
-
-
-
 
   async start(video, canvas) {
 
@@ -268,6 +260,8 @@ class QRScanner extends ModTemplate {
   // Else, the message is broadcast for other modules to utilize
   //
   handleDecodedMessage(msg) {
+
+console.log("MESSAGE: " + msg);
 
     if (this.scanner_callback != null) {
       this.decoder.terminate();

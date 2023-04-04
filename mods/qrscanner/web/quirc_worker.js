@@ -30,6 +30,7 @@ self.onmessage = function(msg) {
 self.decoded = function(i, version, ecc_level, mask, data_type, payload, payload_len) {
   console.log("decoded something");
   var payload_string = String.fromCharCode.apply(null, new Uint8Array(Module.HEAPU8.buffer, payload, payload_len));
+console.log("PS: " + payload_string);
   postMessage({ i: i, version: version, ecc_level: ecc_level, mask: mask, data_type: data_type, payload: payload, payload_len: payload_len, payload_string: payload_string });
 }
 

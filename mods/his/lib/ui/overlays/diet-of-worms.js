@@ -18,6 +18,15 @@ class DietOfWormsOverlay {
     render() {
 	this.visible = true;
         this.overlay.show(DietOfWormsTemplate());
+
+	//
+	// my cards
+	//
+	let cardlist = this.mod.returnCardList(this.mod.game.deck[0].fhand[0]);
+console.log("render cardlist: " + cardlist);
+	this.app.browser.addElementToSelector(cardlist, ".diet-overlay .cardlist");
+	
+
         this.attachEvents();
     }
 
