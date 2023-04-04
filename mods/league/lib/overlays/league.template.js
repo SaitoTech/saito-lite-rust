@@ -45,7 +45,7 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
     }     
 
     html +=      `<div class="league-overlay-description">${league.description}</div>
-                  <div class="league-overlay-league-body-games ${(league.admin)?"":"hidden"}">
+                  <div class="league-overlay-league-body-games ${(league.admin)?"hidden":""}">
                       <div class="league-overlay-games-list league_recent_games"></div>
                   </div>
               </div>
