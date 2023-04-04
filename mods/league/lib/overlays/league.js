@@ -98,7 +98,7 @@ class LeagueOverlay {
     }
     if (document.querySelector(".alert_identifier")) {
       document.querySelector(".alert_identifier").onclick = () => {
-        this.app.connection.emit("register-username-or-login");
+        this.app.connection.emit("register-username-or-login", {msg: "Registering a username is free and makes it easier to compete with other players on the leaderboards"});
       }
     }
 
