@@ -542,7 +542,7 @@ class League extends ModTemplate {
   }
 
 
-  createUpdateTransaction(league_id, description){
+  createUpdateTransaction(league_id, new_data, field = "description"){
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx = this.addressToAll(newtx, league_id);
 
@@ -550,7 +550,8 @@ class League extends ModTemplate {
       module:    "League",
       request:   "league update",
       league_id,
-      description,
+      new_data,
+      field,
     };
 
     return this.app.wallet.signTransaction(newtx);
@@ -560,18 +561,26 @@ class League extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     let league_id = txmsg.league_id;
-    let description = txmsg.description;
+    let new_data = txmsg.new_data;
+    let field = txmsg.field;
 
+    if (field !== "description" && field !== "contact"){
+      console.error("League Update Error: Unknown SQL field");
+      return;
+    }
+    
     let league = this.returnLeague(league_id);
     if (league){
-      league.description = description;
+      league[field] = new_data;
     }
 
-    let sql = `UPDATE OR IGNORE leagues SET description = $description WHERE id = $id`;
+    let sql = `UPDATE OR IGNORE leagues SET ${field} = $data WHERE id = $id`;
     let params = {
-      $id          :   league_id ,
-      $description :   description,
+      $id   :   league_id ,
+      $data :   new_data,
     };
+
+    console.log(sql, params);
 
     await this.app.storage.executeDatabase(sql, params, "league");
 

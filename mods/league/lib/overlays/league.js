@@ -85,10 +85,27 @@ class LeagueOverlay {
         console.log("Focus out", desc_div.textContent);
         if (desc_div.textContent !== orig_desc){
           console.log("Transaction sent!");
-          let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(desc_div.textContent));
+          let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(desc_div.textContent), "description");
           this.app.network.propagateTransaction(newtx);
         }
       };
+
+      let contact = document.querySelector("#admin_contact");
+      if (contact){
+        let orig_contact = contact.textContent;
+        contact.contentEditable = true;
+        this.app.browser.addElementToSelector(`<i class="fas fa-pencil"></i>`, "#admin_contact");
+        
+        contact.onblur = (e) => {
+          console.log("Focus out", contact.textContent);
+          if (contact.textContent !== orig_contact){
+            console.log("Transaction sent!");
+            let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(contact.textContent, "contact"));
+            this.app.network.propagateTransaction(newtx);
+          }  
+        }    
+      }
+
     }
 
     if (document.querySelector(".alert_email")) {
@@ -105,8 +122,9 @@ class LeagueOverlay {
     Array.from(document.querySelectorAll(".menu-icon")).forEach(item => {
       item.onclick = (e) => {
         let nav = e.currentTarget.id;
-        console.log(nav);
+
         $(".active-tab").removeClass("active-tab");
+        $(".league-overlay-leaderboard").removeClass("hidden");
         $(".league-overlay-body-content > div").addClass("hidden");
         switch (nav){
         case "home":
@@ -119,6 +137,11 @@ class LeagueOverlay {
         case "games":
           $(".league-overlay-league-body-games").removeClass("hidden");
           break;
+        case "players":
+          $("#admin-widget").removeClass("hidden");
+          $("#admin_details").removeClass("hidden");
+          $(".league-overlay-leaderboard").addClass("hidden");
+          this.loadPlayersUI();
         }
 
         e.currentTarget.classList.add("active-tab");
@@ -126,7 +149,43 @@ class LeagueOverlay {
     })
 
   }
-//<i class="fa-solid fa-triangle-exclamation"></i>
+
+  loadPlayersUI(){
+
+    this.app.browser.replaceElementById(`<div id="admin-widget" class="admin-widget">
+      <div class="saito-table">
+        <div class="saito-table-header">
+          <div>Player</div>
+          <div>Score</div>
+          <div>Games Completed</div>
+          <div>Games Started</div>
+          <div>Last Game</div>
+          <div>Email</div>
+          <div>Remove</div>
+        </div>
+        <div class="saito-table-body"></div>
+        </div>
+        </div>`, "admin-widget");
+  
+    console.log(JSON.parse(JSON.stringify(this.league)));
+
+    if (!this.league) { return; }
+
+    let html = "";
+    for (let player of this.league.players) {
+      html += `<div class="saito-table-row">
+        <div>${this.app.browser.returnAddressHTML(player.publickey)}</div>
+        <div>${Math.round(player.score)}</div>
+        <div>${Math.round(player.games_finished)}</div>
+        <div>${Math.round(player.games_started)}</div>
+        <div>${this.app.browser.formatDate(player.ts)}</div>
+        <div class="email_field" data-id="${player.publickey}" contenteditable="true">${player.email}</div>
+        <div><i class="fas fa-ban"></i></div>
+      </div> `;
+    }
+
+    this.app.browser.addElementToSelector(html, "#admin-widget .saito-table-body");
+  }
 }
 
 module.exports = LeagueOverlay;
