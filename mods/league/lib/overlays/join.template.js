@@ -55,10 +55,10 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
 		    	<div class="title">${league.name}</div>
 			</div>
 			<div class="league-join-info">
-				<p>Click below to join this ${league.game} league as <span class="address">"${name}"</span>. If you already have an account on Saito, please login before joining. You can register a name later.</p>
+				<p>Click below to join this ${league.game} league as <span class="address">"${name}"</span>. If you already have an account, please login before joining.</p>
 			</div>
 	  	  	<div class="league-join-controls">
-				<div class="saito-overlay-form-alt-opt">Saito login</div>
+				<div class="saito-overlay-form-alt-opt">or login to account</div>
 	        	<button type="button" class="saito-button-primary fat" id="league-join-btn" data-id="${league.id}">JOIN LEAGUE</button>    
 	      	</div>
 	    </div>

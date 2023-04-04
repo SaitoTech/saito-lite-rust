@@ -84,7 +84,7 @@ class Registry extends ModTemplate {
       
     });
 
-    this.app.connection.on("register-username-or-login", (success_callback) => {
+    this.app.connection.on("register-username-or-login", (obj) => {
       let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
       if (key?.has_registered_username){
         return;
@@ -93,10 +93,10 @@ class Registry extends ModTemplate {
       if (!this.register_username_overlay){
         this.register_username_overlay = new RegisterUsernameOverlay(this.app, this);
       }
-      if (success_callback){
-        this.register_username_overlay.callback = success_callback;
+      if (obj?.success_callback){
+        this.register_username_overlay.callback = obj.success_callback;
       }
-      this.register_username_overlay.render();
+      this.register_username_overlay.render(obj?.msg);
     });
 
 
