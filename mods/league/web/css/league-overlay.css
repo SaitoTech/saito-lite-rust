@@ -32,11 +32,13 @@
 }
 
 .league-overlay-controls i {
-  font-size: 32px;
-  margin: auto 1rem;
-  border-radius: 10px;
-  width: 60px;
-  padding: 1rem;
+  font-size: 2rem;
+  border-radius: 0.5rem;
+  height: 5rem;
+  width: 5rem;
+  border: 1px solid var(--saito-border-color);
+  line-height: 5rem;
+  text-align: center;
 }
 
 .league-overlay-controls i.saito-button-primary {
@@ -57,14 +59,14 @@
   min-width: fit-content;
 }
 
-.menu-icon{
+.menu-icon {
   width: 10rem;
   text-align: center;
   cursor: pointer;
   position: relative;
 }
 
-.menu-icon i.notification{
+.menu-icon i.notification {
   position: absolute;
   top: 19%;
   left: 43%;
@@ -75,16 +77,25 @@
   margin: unset;
 }
 
-.league-overlay-body-content .hidden { 
-  display:none;
- }
+.league-overlay-body-content .hidden {
+  display: none;
+}
 
 .league-overlay-controls:hover .menu-icon.active-tab {
   background: unset;
 }
 
-.menu-icon:hover, .menu-icon.active-tab, .league-overlay-controls .menu-icon.active-tab:hover {
-  background: var(--saito-primary);
+.menu-icon:hover i, .menu-icon.active-tab i, .league-overlay-controls .menu-icon.active-tab:hover i {
+  border-color: var(--saito-primary);
+  color: var(--saito-primary);
+}
+
+.league-overlay-controls .menu-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  justify-content: space-between;
 }
 
 .league-overlay-header-title-box-title {
@@ -112,7 +123,7 @@
   flex-grow: 1;
 }
 
-.league-overlay-body-content > div, .league-overlay-leaderboard {
+.league-overlay-body-content>div, .league-overlay-leaderboard {
   padding: 1.5rem;
   border-radius: 0.5rem;
   overflow-y: auto;
@@ -184,41 +195,39 @@
   overflow-y: scroll;
 }
 
-.league_recent_player{
+.league_recent_player {
   position: relative;
   overflow: visible;
   width: 3.5rem;
   height: 3.5rem;
 }
 
-.league_recent_player.winner::before{
-    content: "♕";
-    display: inline-block;
-    font-style: normal;
-    font-variant: normal;
-    text-rendering: auto;
-    position: absolute;
-    top: -1.1rem;
-    right: -1rem;
-    font-size: 30px;
-    font-weight: 900;
-    color: var(--saito-red);
-    text-shadow: 0px 0px 3px var(--saito-white);
+.league_recent_player.winner::before {
+  content: "♕";
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  position: absolute;
+  top: -1.1rem;
+  right: -1rem;
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--saito-red);
+  text-shadow: 0px 0px 3px var(--saito-white);
 }
 
-
-.league_recent_game div{
+.league_recent_game div {
   align-self: center;
 }
 
-.league-overlay-leaderboard{
+.league-overlay-leaderboard {
   min-width: min(40rem, 100%);
 }
 
-
 .alert_email, .alert_identifier {
   position: relative;
-  box-shadow: 0px 0px 10px var(--saito-red) !important;
+  box-shadow: 0px 0px 10px var(--saito-secondary) !important;
   cursor: pointer;
 }
 
@@ -232,7 +241,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: var(--saito-red);
+  color: var(--saito-secondary);
   font-size: 6.4rem;
 }
 
@@ -253,13 +262,10 @@
 }
 
 @media screen and (max-width: 600px) {
-  .league-overlay-container { 
-    width: calc(100vw - 2px)
-    max-height: 98vh;
+  .league-overlay-container {
+    width: calc(100vw - 2px) max-height: 98vh;
   }
-
 }
-
 
 .contactAdminWarning {
   /*min-width: 60rem;
@@ -272,11 +278,11 @@
   font-size: 2rem;
 }
 
-.contactAdminWarning > * {
+.contactAdminWarning>* {
   margin: 1rem;
 }
 
-.contactAdminWarning > div:first-child {
+.contactAdminWarning>div:first-child {
   font-size: 3.2rem;
   text-align: center;
 }
@@ -285,5 +291,4 @@
   float: left;
   font-size: 6.4rem;
   color: var(--saito-primary);
-
 }
