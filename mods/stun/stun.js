@@ -89,9 +89,13 @@ class Stun extends ModTemplate {
             this.sendStunMessageToServerTransaction(data)
         })
 
-        app.connection.on('stun-init-peer-manager', ()=> {
-            this.peerManager = new PeerManager(app, mod);
-            this.peerManager.showSetting();
+        app.connection.on('stun-init-peer-manager', (ui_type)=> {
+            this.peerManager = new PeerManager(app, mod, ui_type);
+
+            if(ui_type === "large"){
+                this.peerManager.showSetting();
+            }
+          
         })
 
     }
@@ -182,23 +186,45 @@ class Stun extends ModTemplate {
             this.styles = [`/${this.returnSlug()}/css/style.css`,];
             super.render(this.app, this);
             return {
-                id: "game-chat",
-                text: "Chat",
+                id: "game-video-chat",
+                text: "Video Chat",
                 submenus: [
                     {
-                        text: "Video Chat",
-                        id: "game-video-chat",
-                        class: "game-video-chat",
+                        text: "Start call",
+                        id: "group-video-chat",
+                        class: "group-video-chat",
                         callback: function (app, game_mod) {
-                            if (game_mod.game.player.length > 1) {
-                                app.connection.emit('game-start-video-call', [...game_mod.game.players]);
-                            } else {
-                                //Open a modal to invite someone to a video chat
+                            console.log(app)
+                            if (game_mod.game.players.length > 1) {
+                                // app.connection.emit('game-start-video-call', [...game_mod.game.players]);
+                                console.log('initing peer manager');
+                                // init peer manager
+                                app.connection.emit('stun-init-peer-manager', "small");
+                                // create a room 
+                                let room_code = app.crypto.generateRandomNumber().substring(0, 6);
 
-                            }
+                                let stun_mod = app.modules.returnModule('Stun');
+                                stun_mod.sendCreateRoomTransaction(room_code);
+                                app.connection.emit('stun-peer-manager-update-room-code', room_code);
 
+                                // show-small-chat-manager
+                                stun_mod.ChatManagerSmall.render()
+                                // app.connection.emit('join-meeting', thi.to_join_room);
+                  
+                            } 
                         },
-                    }
+                    },
+                    // game_mod.game.player.map(player => (
+                    //     {
+                    //         text: `Player ${player}`,
+                    //         id: `${player}-video-chat`,
+                    //         class: `${player}-video-chat`,
+                    //         callback: function (app, game_mod) {
+                    //              //
+    
+                    //         },
+                    //     }
+                    // )),
                 ],
             };
 

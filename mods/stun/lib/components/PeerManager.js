@@ -2,9 +2,10 @@ const ChatManagerLarge = require("./chat-manager-large")
 
 
 class PeerManager {
-    constructor(app, mod, room_code) {
+    constructor(app, mod, ui_type) {
         this.app = app;
         this.mod = mod
+        this.ui_type = ui_type;
         this.peers = new Map();
         this.servers = [
             {
