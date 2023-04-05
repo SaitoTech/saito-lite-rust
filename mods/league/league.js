@@ -689,7 +689,7 @@ class League extends ModTemplate {
     //
     let relevantLeagues = await this.getRelevantLeagues(game, txmsg?.league_id);
 
-    if (!relevantLeagues){ return; }
+    if (!relevantLeagues){ console.log("No relevant league"); return; }
 
     //if (this.debug){console.log(relevantLeagues, publickeys);}
 
@@ -712,8 +712,11 @@ class League extends ModTemplate {
       }
 
       if (this.app.BROWSER){
+        //console.log("Update league rankings on game over");
+        //console.log(JSON.parse(JSON.stringify(leag.players)));
         this.fetchLeagueLeaderboard(leag.id, ()=>{ 
-          app.connection.emit("league-rankings-render-request");   
+          app.connection.emit("league-rankings-render-request");
+          //console.log("Records checked");
           this.saveLeagues();
         });
       }
@@ -812,7 +815,11 @@ class League extends ModTemplate {
       localStats = league.players.filter(p => players.includes(p.publickey));
     }
 
+    //console.log("SQL:", sqlResults);
+    //console.log("Local:", localStats);
+
     // should we look to ts value for which is the newest reault
+    // Only matters on server nodes where we would have both
     return sqlResults || localStats;
   }
 
@@ -1134,8 +1141,9 @@ class League extends ModTemplate {
     }
 
     //console.log(JSON.parse(JSON.stringify(league)));
-
-    await this.playerInsert(league_id, newPlayer); 
+    if (this.app.BROWSER == 0){
+      await this.playerInsert(league_id, newPlayer);   
+    }
 
   }
 
@@ -1251,6 +1259,9 @@ class League extends ModTemplate {
           $score: obj.score,
           $ts: new Date().getTime(),
         };
+
+    console.log("Insert player:", params);
+
     await this.app.storage.executeDatabase(sql, params, "league");
 	  return;
   }
