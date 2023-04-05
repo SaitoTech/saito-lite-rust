@@ -194,23 +194,8 @@ class Stun extends ModTemplate {
                         id: "group-video-chat",
                         class: "group-video-chat",
                         callback: function (app, game_mod) {
-                            console.log(app)
                             if (game_mod.game.players.length > 1) {
-                                // app.connection.emit('game-start-video-call', [...game_mod.game.players]);
-                                console.log('initing peer manager');
-                                // init peer manager
-                                app.connection.emit('stun-init-peer-manager', "small");
-                                // create a room 
-                                let room_code = app.crypto.generateRandomNumber().substring(0, 6);
-
-                                let stun_mod = app.modules.returnModule('Stun');
-                                stun_mod.sendCreateRoomTransaction(room_code);
-                                app.connection.emit('stun-peer-manager-update-room-code', room_code);
-
-                                // show-small-chat-manager
-                                stun_mod.ChatManagerSmall.render()
-                                // app.connection.emit('join-meeting', thi.to_join_room);
-                  
+                                app.connection.emit('game-menu-start-video-call', [...game_mod.game.players]);
                             } 
                         },
                     },
@@ -302,9 +287,10 @@ class Stun extends ModTemplate {
 
 
     async handlePeerTransaction(app, tx = null, peer, mycallback) {
-
+     
         if (tx == null) { return; }
         let txmsg = tx.returnMessage();
+        console.log(txmsg, txmsg.request)
 
         if (app.BROWSER === 0) {
             if (txmsg.request === "stun-create-room-transaction") {
@@ -315,15 +301,20 @@ class Stun extends ModTemplate {
             if (txmsg.request === "stun-send-message-to-server") {
                 let stun_mod = app.modules.returnModule('Stun');
                 stun_mod.receiveStunMessageToServerTransaction(app, tx, peer);
-
             }
-
         }
 
         if (app.BROWSER === 1) {
+            console.log(txmsg, txmsg.request);
             if (txmsg.request === "stun-send-message-to-peers") {
                 let stun_mod = app.modules.returnModule('Stun');
                 stun_mod.receiveStunMessageToPeersTransaction(app, tx);
+
+            }
+            if (txmsg.request === "stun-send-game-call-message") {
+                console.log('receiving');
+                let stun_mod = app.modules.returnModule('Stun');
+                stun_mod.receiveGameCallMessageToPeers(app, tx);
 
             }
 
@@ -417,6 +408,10 @@ class Stun extends ModTemplate {
     }
 
 
+
+   
+
+
     sendStunMessageToPeersTransaction(_data, recipients) {
         // send data to the peers in the room
         let request = "stun-send-message-to-peers"
@@ -436,6 +431,31 @@ class Stun extends ModTemplate {
         let data = tx.msg.data;
         app.connection.emit('stun-event-message', data);
 
+    }
+
+
+
+    sendGameCallMessageToPeers(app, room_code, recipients){
+        // 
+        let request = "stun-send-game-call-message"
+
+        let data = {
+            recipient:recipients,
+            request,
+            data:{
+               room_code: room_code
+            }
+        }
+        console.log('sending to', recipients)
+        this.app.connection.emit('relay-send-message', data);
+
+    }
+
+    receiveGameCallMessageToPeers(app, tx) {
+        let txmsg = tx.returnMessage();
+        let data = tx.msg.data;
+        console.log(data, 'data');
+        // app.connection.emit('stun-event-message', data);
     }
 
 
