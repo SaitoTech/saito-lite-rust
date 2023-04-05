@@ -179,7 +179,7 @@ class Stun extends ModTemplate {
             }];
         }
         if (type == "game-menu") {
-            this.styles = [`/${this.returnSlug()}/css/style.css`,];
+            this.styles = [`/${this.returnSlug()}/style.css`,];
             super.render(this.app, this);
             return {
                 id: "game-chat",
