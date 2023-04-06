@@ -28,7 +28,7 @@
   display: flex;
   flex-direction: row;
   justify-content: end;
-  margin: auto;
+  /*margin: auto;*/
 }
 
 .league-overlay-controls i {
@@ -123,7 +123,7 @@
   flex-grow: 1;
 }
 
-.league-overlay-body-content>div, .league-overlay-leaderboard {
+.league-overlay-content-box {
   padding: 1.5rem;
   border-radius: 0.5rem;
   overflow-y: auto;

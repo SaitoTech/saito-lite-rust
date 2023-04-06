@@ -1047,7 +1047,11 @@ class League extends ModTemplate {
     newObj.description = obj?.description || "";
     newObj.ranking_algorithm = obj?.ranking_algorithm || "EXP";
     newObj.default_score = obj?.default_score || 0;
-        
+    newObj.welcome = (newObj.admin) 
+        ? `Welcome to ${newObj.name}! Please make sure the admin has your email address or social media handle as well as your Saito address so they can contact you with arranged matches. 
+            If you do not provide this information, you will be removed from the league. You should also make sure your Saito wallet is backed up so you can login to play games from any device.`
+        : "";
+
     return newObj;
   }
 
