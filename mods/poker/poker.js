@@ -2044,8 +2044,8 @@ class Poker extends GameTableTemplate {
     }
   }
 
-  processResignation(resigning_player, txmsg) {
-    super.processResignation(resigning_player, txmsg);
+  async processResignation(resigning_player, txmsg) {
+    await super.processResignation(resigning_player, txmsg);
 
     if (!txmsg.loser) {
       return;
@@ -2066,11 +2066,11 @@ class Poker extends GameTableTemplate {
 
     if (this.game.target == txmsg.loser) {
       this.game.state.plays_since_last_raise--;
-      this.startQueue();
+      await this.startQueue();
     }
   }
 
-  endTurn(nextTarget = 0) {
+  async endTurn(nextTarget = 0) {
     if (this.browser_active) {
       this.updateStatus("Waiting for information from peers....");
     }
@@ -2087,7 +2087,7 @@ class Poker extends GameTableTemplate {
     }
     this.game.turn = this.moves;
     this.moves = [];
-    this.sendMessage("game", extra);
+    await this.sendMessage("game", extra);
   }
 
   /* Functions to analyze hands and compare them*/

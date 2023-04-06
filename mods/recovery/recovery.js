@@ -299,7 +299,7 @@ class Recovery extends ModTemplate {
 
   async receiveBackupTransaction(tx) {
     let txmsg = tx.returnMessage();
-    let publickey = tx.from[0].add;
+    let publickey = tx.from[0].publicKey;
     let hash = txmsg.hash || "";
     let txjson = JSON.stringify(tx.toJson());
 
@@ -338,7 +338,7 @@ class Recovery extends ModTemplate {
     }
 
     let txmsg = tx.returnMessage();
-    let publickey = tx.transaction.from[0].add;
+    let publickey = tx.from[0].publicKey;
     let hash = txmsg.hash || "";
 
     let sql = "SELECT * FROM recovery WHERE hash = $hash";

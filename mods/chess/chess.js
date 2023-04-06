@@ -166,15 +166,15 @@ class Chessgame extends GameTemplate {
       },
     });
 
-    this.menu.addChatMenu();
-    this.menu.render();
+    await this.menu.addChatMenu();
+    await this.menu.render();
 
     this.log.render();
 
     //Plug Opponent Information into the Controls
     if (this.game.player) {
       let opponent = this.game.opponents[0];
-
+      console.log("bbbb : ", this.game);
       let identicon = this.app.keychain.returnIdenticon(opponent);
       identicon = identicon ? `<img class="player-identicon" src="${identicon}">` : "";
 

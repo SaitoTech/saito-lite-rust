@@ -19,10 +19,10 @@ export default class Wallet {
     preferred_crypto: "SAITO",
     preferred_txs: [],
 
-    inputs: new Array<Slip>(), // slips available
-    outputs: new Array<Slip>(), // slips spenr
-    spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
-    pending: [], // slips pending broadcast
+    // inputs: new Array<Slip>(), // slips available
+    // outputs: new Array<Slip>(), // slips spenr
+    // spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
+    // pending: [], // slips pending broadcast
     default_fee: 2,
     version: 4.685,
   };
@@ -204,10 +204,10 @@ export default class Wallet {
             this.app.options.games = [];
 
             // delete inputs and outputs
-            this.app.options.wallet.inputs = [];
-            this.app.options.wallet.outputs = [];
-            this.app.options.wallet.spends = [];
-            this.app.options.wallet.pending = [];
+            // this.app.options.wallet.inputs = [];
+            // this.app.options.wallet.outputs = [];
+            // this.app.options.wallet.spends = [];
+            // this.app.options.wallet.pending = [];
             this.app.options.wallet.balance = "0.0";
             this.app.options.wallet.version = this.wallet.version;
 
@@ -226,9 +226,9 @@ export default class Wallet {
             //
             this.app.options.wallet.version = this.wallet.version;
 
-            this.app.options.wallet.inputs = [];
-            this.app.options.wallet.outputs = [];
-            this.app.options.wallet.pending = [];
+            // this.app.options.wallet.inputs = [];
+            // this.app.options.wallet.outputs = [];
+            // this.app.options.wallet.pending = [];
             this.app.options.wallet.balance = "0.0";
 
             this.app.storage.saveOptions();
@@ -281,10 +281,10 @@ export default class Wallet {
       this.app.options.keys = [];
     }
 
-    this.wallet.inputs = [];
-    this.wallet.outputs = [];
-    this.wallet.spends = [];
-    this.wallet.pending = [];
+    // this.wallet.inputs = [];
+    // this.wallet.outputs = [];
+    // this.wallet.spends = [];
+    // this.wallet.pending = [];
 
     this.saveWallet();
 
@@ -301,15 +301,15 @@ export default class Wallet {
    * Saves the current wallet state to local storage.
    */
   saveWallet() {
-    this.app.options.wallet = this.wallet;
-    for (let i = 0; i < this.app.options.wallet.inputs.length; i++) {
-      this.app.options.wallets.inputs[i].amount =
-        this.app.options.wallets.inputs[i].amount.toString();
-    }
-    for (let i = 0; i < this.app.options.wallet.outputs.length; i++) {
-      this.app.options.wallets.outputs[i].amount =
-        this.app.options.wallets.outputs[i].amount.toString();
-    }
+    // this.app.options.wallet = this.wallet;
+    // for (let i = 0; i < this.app.options.wallet.inputs.length; i++) {
+    //   this.app.options.wallets.inputs[i].amount =
+    //     this.app.options.wallets.inputs[i].amount.toString();
+    // }
+    // for (let i = 0; i < this.app.options.wallet.outputs.length; i++) {
+    //   this.app.options.wallets.outputs[i].amount =
+    //     this.app.options.wallets.outputs[i].amount.toString();
+    // }
     this.app.storage.saveOptions();
   }
 
@@ -773,9 +773,10 @@ export default class Wallet {
     }
   }
 
-  private isSlipInPendingTransactions(input: Slip): boolean {
-    for (let i = 0; i < this.wallet.pending.length; i++) {
-      let ptx = new Transaction(undefined, JSON.parse(this.wallet.pending[i]));
+  private async isSlipInPendingTransactions(input: Slip): Promise<boolean> {
+    let pending = await this.getPendingTransactions();
+    for (let i = 0; i < pending.length; i++) {
+      let ptx = pending[i];
       for (let ii = 0; ii < ptx.from.length; ii++) {
         if (input.utxoKey === ptx.from[ii].utxoKey) {
           return true;

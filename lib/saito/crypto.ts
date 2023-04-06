@@ -161,4 +161,59 @@ export default class Crypto {
   base64ToString(str: string): string {
     return Buffer.from(str, "base64").toString("utf-8");
   }
+
+  stringToHex(str) {
+    return Buffer.from(str, "utf-8").toString("hex");
+  }
+
+  hexToString(hex) {
+    return Buffer.from(hex, "hex").toString("utf-8");
+  }
+
+  //////////////////////////
+  // XOR - used in gaming //
+  //////////////////////////
+  //
+  // XOR encrypt and decrypt code taken from
+  //
+  // https://www.npmjs.com/package/bitwise-xor
+  //
+  // this needs to be replaced by a more secure commutive encryption algorithm
+  //
+  xor(a, b) {
+    let i;
+    if (!Buffer.isBuffer(a)) a = new Buffer(a);
+    if (!Buffer.isBuffer(b)) b = new Buffer(b);
+    const res = [];
+    if (a.length > b.length) {
+      for (i = 0; i < b.length; i++) {
+        res.push(a[i] ^ b[i]);
+      }
+    } else {
+      for (i = 0; i < a.length; i++) {
+        res.push(a[i] ^ b[i]);
+      }
+    }
+    return new Buffer(res);
+  }
+
+  //
+  // TODO - don't pad key this way as it creates attack vectors
+  //
+  encodeXOR(plaintext, key) {
+    while (plaintext.length > key.length) {
+      key = key + key;
+    }
+    return this.xor(Buffer.from(plaintext, "hex"), Buffer.from(key, "hex")).toString("hex");
+  }
+
+  //
+  // TODO - don't pad key this way as it creates attack vectors
+  //
+  decodeXOR(str, key) {
+    while (str.length > key.length) {
+      key = key + key;
+    }
+    return this.xor(Buffer.from(str, "hex"), Buffer.from(key, "hex")).toString("hex");
+  }
 }

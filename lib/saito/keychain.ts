@@ -346,6 +346,7 @@ class Keychain {
       size: 420, // 420px square
       format: img_format, // use SVG instead of PNG
     };
+    console.log("aaaaaaaaaaaaaaa : ", publickey);
     const data = new Identicon(this.app.crypto.hash(publickey), options).toString();
     return "data:image/" + img_format + "+xml;base64," + data;
   }

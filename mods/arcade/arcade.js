@@ -33,7 +33,7 @@ class Arcade extends ModTemplate {
       We store the original transactions (from createOpenTransaction/joinOpenTransaction) in this.games,
       but because it is an object in memory, we will update the player list as players join.
       When the game kicks off, we update the server side sql so that anyone else joining the network won't get confused
-      the tx.transaction.sig becomes the game_id.
+      the tx.sig becomes the game_id.
     */
     this.games = {};
 
@@ -117,15 +117,23 @@ class Arcade extends ModTemplate {
             }
             if (game.players) {
               game.players.forEach((player) => {
-                game_tx.addToSlip(new Slip(undefined, player));
-                game_tx.addFromSlip(new Slip(undefined, player));
+                let slip = new Slip();
+                slip.publicKey = player;
+                game_tx.addToSlip(slip);
+                slip = new Slip();
+                slip.publicKey = player;
+                game_tx.addFromSlip(slip);
               });
-              // game_tx.transaction.from = game.players.map(
+              // game_tx.from = game.players.map(
               //   (player) => new saito.default.slip(player)
               // );
             } else {
-              game_tx.addFromSlip(new Slip(this.publicKey));
-              game_tx.addToSlip(new Slip(this.publicKey));
+              let slip = new Slip();
+              slip.publicKey = this.publicKey;
+              game_tx.addFromSlip(slip);
+              slip = new Slip();
+              slip.publicKey = this.publicKey;
+              game_tx.addToSlip(slip);
             }
 
             let msg = {
@@ -508,9 +516,9 @@ class Arcade extends ModTemplate {
       let tx = new Transaction(undefined, message.data);
 
       let txmsg = tx.returnMessage();
-
+      console.log("txmsg 7777 : ", txmsg);
       if (this.debug) {
-        console.log("Arcade HPT embedded txmsg:", JSON.parse(JSON.stringify(txmsg)));
+        console.log("Arcade HPT embedded txmsg:", txmsg);
       }
 
       //

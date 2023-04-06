@@ -26,6 +26,8 @@ export default class Storage {
         return;
       }
     }
+
+    console.log("saving options");
     try {
       if (typeof Storage !== "undefined") {
         localStorage.setItem("options", JSON.stringify(this.app.options));
@@ -106,7 +108,7 @@ export default class Storage {
       const data = localStorage.getItem("options");
       if (data != "null" && data != null) {
         this.app.options = JSON.parse(data);
-        console.log("loaded from local storage", this.app.options);
+        // console.log("loaded from local storage", this.app.options);
       } else {
         try {
           console.log("fetching options from server...");

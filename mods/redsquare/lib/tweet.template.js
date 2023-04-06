@@ -1,7 +1,6 @@
 //const SaitoUser = require('./../../../lib/saito/ui/templates/saito-user.template');
 
 module.exports = (app, mod, tweet) => {
-
   let optional = tweet.tx.optional;
   let notice = "";
   if (tweet.notice != "") {
@@ -10,19 +9,17 @@ module.exports = (app, mod, tweet) => {
 
   let publickey = "";
   try {
-    if (tweet.tx.transaction.from[0].add) {
-      publickey = tweet.tx.transaction.from[0].add;
+    if (tweet.tx.from[0].publicKey) {
+      publickey = tweet.tx.from[0].publicKey;
     }
-  } catch (err) {
-  }
-  ;
+  } catch (err) {}
   let text = tweet.text || "";
 
   if (text == "" && tweet.retweet_tx != null && tweet.retweet_tx != "" && notice == "") {
     //
     // set notice
     //
-    notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.transaction.from[0].add);
+    notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.from[0].publicKey);
   }
 
   let flagged = optional.flagged || null;
@@ -74,15 +71,11 @@ module.exports = (app, mod, tweet) => {
     `;
   }
   html += `
-              ${(show_controls) ? controls : ``}
+              ${show_controls ? controls : ``}
             </div>
           </div>
         </div>
   `;
 
   return html;
-
 };
-
-
-

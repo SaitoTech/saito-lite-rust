@@ -138,9 +138,9 @@ class Post {
       identifiers = post_self.app.browser.extractIdentifiers(text);
 
       if (this.tweet != null) {
-        for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
-          if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
-            keys.push(this.tweet.tx.transaction.to[i].add);
+        for (let i = 0; i < this.tweet.tx.to.length; i++) {
+          if (!keys.includes(this.tweet.tx.to[i].publicKey)) {
+            keys.push(this.tweet.tx.to[i].publicKey);
           }
         }
       }
@@ -163,9 +163,9 @@ class Post {
       if (post_self.tweet) {
         if (post_self.tweet.tx) {
           if (post_self.tweet.tx.toJson()) {
-            for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
-              if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
-                keys.push(post_self.tweet.tx.transaction.to[i].add);
+            for (let i = 0; i < post_self.tweet.tx.to.length; i++) {
+              if (!keys.includes(post_self.tweet.tx.to[i].publicKey)) {
+                keys.push(post_self.tweet.tx.to[i].publicKey);
               }
             }
           }
@@ -173,9 +173,9 @@ class Post {
       }
 
       if (this.tweet != null) {
-        for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
-          if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
-            keys.push(this.tweet.tx.transaction.to[i].add);
+        for (let i = 0; i < this.tweet.tx.to.length; i++) {
+          if (!keys.includes(this.tweet.tx.to[i].publicKey)) {
+            keys.push(this.tweet.tx.to[i].publicKey);
           }
         }
       }

@@ -1361,8 +1361,8 @@ class Blackjack extends GameTableTemplate {
     return 0;
   }
 
-  processResignation(resigning_player, txmsg) {
-    super.processResignation(resigning_player, txmsg);
+  async processResignation(resigning_player, txmsg) {
+    await super.processResignation(resigning_player, txmsg);
 
     if (!txmsg.loser) {
       return;
