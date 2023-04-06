@@ -2,9 +2,10 @@ const ChatManagerLarge = require("./chat-manager-large")
 
 
 class PeerManager {
-    constructor(app, mod, room_code) {
+    constructor(app, mod, ui_type = "large") {
         this.app = app;
         this.mod = mod
+        this.ui_type = ui_type;
         this.peers = new Map();
         this.servers = [
             {
@@ -160,11 +161,20 @@ class PeerManager {
             this.app.connection.emit('stun-send-message-to-server', data);
         })
 
-        app.connection.on('show-chat-manager', async (to_join) => {
+        app.connection.on('show-chat-manager-large', async (to_join) => {
             // console.log(this, "peer")
-            await this.showChatManager();
+            await this.showChatManagerLarge();
             if (to_join) {
                 this.join()
+            }
+            let sound = new Audio('/videocall/audio/enter-call.mp3');
+            sound.play();
+        })
+        app.connection.on('show-chat-manager-small', async (to_join) => {
+            // console.log(this, "peer")
+            await this.showChatManagerSmall();
+            if (to_join) {
+                this.join();
             }
             let sound = new Audio('/videocall/audio/enter-call.mp3');
             sound.play();
@@ -183,20 +193,27 @@ class PeerManager {
     }
 
 
-    async showChatManager() {
+    async showChatManagerLarge() {
         // emit events to show chatmanager;
         // get local stream;
-        // console.log('video enableddd?', this.videoEnabled)
 
         this.localStream = await navigator.mediaDevices.getUserMedia({ video: this.videoEnabled, audio: true });
         this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
         // this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
 
-        this.app.connection.emit('show-video-chat-request', this.app, this.mod, 'video', this.room_code, this.videoEnabled, this.audioEnabled);
-
+        this.app.connection.emit('show-video-chat-large-request', this.app, this.mod, 'video', this.room_code, this.videoEnabled, this.audioEnabled);
         this.app.connection.emit('stun-remove-loader')
-        this.app.connection.emit('render-local-stream-request', this.localStream, 'video');
+        this.app.connection.emit('render-local-stream-large-request', this.localStream, 'video');
         this.app.connection.emit('remove-overlay-request');
+    }
+    async showChatManagerSmall() {
+        // emit events to show chatmanager;
+        // get local stream;
+        this.videoEnabled = false;
+        this.localStream = await navigator.mediaDevices.getUserMedia({ video: this.videoEnabled, audio: true });
+        this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
+        this.app.connection.emit('show-video-chat-small-request', this.app, this.mod, 'video', this.room_code, this.videoEnabled, this.audioEnabled);
+        this.app.connection.emit('render-local-stream-small-request', this.localStream);
     }
 
     handleSignalingMessage(peerConnection, data) {
@@ -274,8 +291,12 @@ class PeerManager {
                 });
             }
 
-
-            this.app.connection.emit('add-remote-stream-request', peerId, remoteStream, peerConnection)
+            if(this.ui_type === "large"){
+                this.app.connection.emit('add-remote-stream-large-request', peerId, remoteStream, peerConnection)
+            }else if(this.ui_type === "small"){
+                this.app.connection.emit('add-remote-stream-small-request', peerId, remoteStream, peerConnection)
+            }
+        
 
         });
 
@@ -364,7 +385,14 @@ class PeerManager {
 
         let sound = new Audio('/videocall/audio/end-call.mp3');
         sound.play();
-        this.app.connection.emit('video-box-remove', peerId, 'disconnection');
+        if(this.ui_type === "large"){
+            this.app.connection.emit('video-box-remove', peerId, 'disconnection');
+        }else if(this.ui_type === "small"){
+            console.log('peer left')
+            this.app.connection.emit('audio-box-remove', peerId);
+           
+        }
+     
 
     }
 
@@ -417,19 +445,22 @@ class PeerManager {
 
     join() {
         console.log('joining mesh network');
-
         this.app.connection.emit('stun-send-message-to-server', { type: 'peer-joined', room_code: this.room_code });
     }
 
     leave() {
         this.localStream.getTracks().forEach(track => {
             track.stop();
-            console.log(track);
+            // console.log(track);
             console.log('stopping track');
         })
         this.peers.forEach((peerConnections, key) => {
             peerConnections.close();
         })
+
+        this.peers = new Map();
+
+      
 
         let data = {
             room_code: this.room_code,
@@ -437,6 +468,7 @@ class PeerManager {
         }
 
         this.app.connection.emit('stun-send-message-to-server', data);
+        
     }
 
     sendSignalingMessage(data) {

@@ -689,7 +689,7 @@ class League extends ModTemplate {
     //
     let relevantLeagues = await this.getRelevantLeagues(game, txmsg?.league_id);
 
-    if (!relevantLeagues){ return; }
+    if (!relevantLeagues){ console.log("No relevant league"); return; }
 
     //if (this.debug){console.log(relevantLeagues, publickeys);}
 
@@ -712,8 +712,11 @@ class League extends ModTemplate {
       }
 
       if (this.app.BROWSER){
+        //console.log("Update league rankings on game over");
+        //console.log(JSON.parse(JSON.stringify(leag.players)));
         this.fetchLeagueLeaderboard(leag.id, ()=>{ 
-          app.connection.emit("league-rankings-render-request");   
+          app.connection.emit("league-rankings-render-request");
+          //console.log("Records checked");
           this.saveLeagues();
         });
       }
@@ -800,7 +803,7 @@ class League extends ModTemplate {
 
     let sql2 = `SELECT * FROM players WHERE league_id = ? AND publickey IN (`;
     for (let pk of players) { sql2 += `'${pk}', `; }
-    sql2 = sql2.substr(0, sql2.length - 2) + `)`;
+    sql2 = sql2.substring(0, sql2.length - 2) + `)`;
 
     let sqlResults = await this.app.storage.queryDatabase(sql2, [league_id], "league");
 
@@ -812,7 +815,12 @@ class League extends ModTemplate {
       localStats = league.players.filter(p => players.includes(p.publickey));
     }
 
-    return localStats || sqlResults;
+    //console.log("SQL:", sqlResults);
+    //console.log("Local:", localStats);
+
+    // should we look to ts value for which is the newest reault
+    // Only matters on server nodes where we would have both
+    return sqlResults || localStats;
   }
 
   /////////////////////
@@ -1039,7 +1047,11 @@ class League extends ModTemplate {
     newObj.description = obj?.description || "";
     newObj.ranking_algorithm = obj?.ranking_algorithm || "EXP";
     newObj.default_score = obj?.default_score || 0;
-        
+    newObj.welcome = (newObj.admin) 
+        ? `Welcome to ${newObj.name}! Please make sure the admin has your email address or social media handle as well as your Saito address so they can contact you with arranged matches. 
+            If you do not provide this information, you will be removed from the league. You should also make sure your Saito wallet is backed up so you can login to play games from any device.`
+        : "";
+
     return newObj;
   }
 
@@ -1133,8 +1145,9 @@ class League extends ModTemplate {
     }
 
     //console.log(JSON.parse(JSON.stringify(league)));
-
-    await this.playerInsert(league_id, newPlayer); 
+    if (this.app.BROWSER == 0){
+      await this.playerInsert(league_id, newPlayer);   
+    }
 
   }
 
@@ -1250,6 +1263,9 @@ class League extends ModTemplate {
           $score: obj.score,
           $ts: new Date().getTime(),
         };
+
+    console.log("Insert player:", params);
+
     await this.app.storage.executeDatabase(sql, params, "league");
 	  return;
   }

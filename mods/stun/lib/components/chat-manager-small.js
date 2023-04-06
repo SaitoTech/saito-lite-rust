@@ -1,6 +1,7 @@
 const VideoBox = require('./video-box');
 const ChatManagerSmallTemplate = require('./chat-manager-small.template');
-const ChatManagerSmallTemplateGeneric = require('./chat-manager-small-template-generic');
+const ChatManagerSmallExtensionTemplate = require('./chat-manager-small-extension.template');
+const AudioBox = require('./audio-box');
 
 
 
@@ -10,28 +11,29 @@ class ChatManagerSmall {
     localStream;
     my_pc = [];
     video_boxes = {}
+    audio_boxes = {}
     videoEnabled = true;
     audioEnabled = true;
+    mod = "audio"
 
 
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
-        this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type) => {
-            if (ui_type !== "small") return
-            console.log('showing')
-            this.ui_type = ui_type
-            this.call_type = call_type
+        this.app.connection.on('show-video-chat-small-request', (app, mod, call_type = "Video", room_code, videoEnabled, audioEnabled) => {
+            this.videoEnabled = videoEnabled
+            this.audioEnabled = audioEnabled;
+            this.call_type = "vido"
+            this.room_code = room_code
             this.show(app, mod);
+            // this.updateRoomLink();
         })
-        this.app.connection.on('render-local-stream-request', (localStream, ui_type) => {
-            if (ui_type !== "small") return
-            console.log('rendering local strem')
-            this.renderLocalStream(localStream)
+        this.app.connection.on('render-local-stream-small-request', (localStream) => {
+            console.log('rendering local stream');
+            this.addLocalStream(localStream)
         })
-        this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, ui_type) => {
-            if (ui_type !== "small") return
-            this.addRemoteStream(peer, remoteStream, pc)
+        this.app.connection.on('add-remote-stream-small-request', (peer, remoteStream, pc) => {
+            this.addRemoteStream(peer, remoteStream, pc);
         });
         this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type, call_type) => {
             console.log('ui_type ', ui_type);
@@ -43,101 +45,132 @@ class ChatManagerSmall {
             if (ui_type !== "small") return
             this.updateConnectionState(peer, state, call_type)
         })
+
+        this.app.connection.on('audio-box-remove', (peer_id, disconnection) => {
+            if (this.audio_boxes[peer_id].audio_box) {
+                if (this.audio_boxes[peer_id].audio_box.remove) {
+                    this.audio_boxes[peer_id].audio_box.remove()
+                    delete this.audio_boxes[peer_id];
+                    this.updateImages();
+                }
+            }
+        })
     }
 
     render() {
-        // this.app.browser.addElementToDom(ChatManagerSmallTemplate(), document.getElementById('content__'));
         if (document.querySelector("#game-video-chat ul")) {
             this.app.browser.addElementToSelector(ChatManagerSmallTemplate(this.call_type), "#game-video-chat ul");
-        } else {
-            this.app.browser.addElementToSelector(ChatManagerSmallTemplateGeneric(this.call_type), "");
-            // this.p
-
         }
+        this.app.browser.addElementToDom(ChatManagerSmallExtensionTemplate());
+
+    this.app.browser.makeDraggable("video-call-component");
 
     }
 
     attachEvents(app, mod) {
-        app.browser.makeDraggable("small-video-chatbox", null, true);
+        const videoCallComponent = document.getElementById('video-call-component');
+        const expandBtn = document.getElementById('expand-btn');
+        expandBtn.addEventListener('click', () => {
+            videoCallComponent.classList.toggle('expanded');
+            if (videoCallComponent.classList.contains('expanded')) {
+                // setAutoCollapse();
+            }
+        });
 
-        document.querySelector('.disconnect_btn').onclick = (e) => {
+        // function setAutoCollapse() {
+        //     setTimeout(() => {
+        //         // videoCallComponent.classList.remove('expanded');
+        //     }, 3000);
+        // }
+        document.querySelector('#disconnect-btn-extension').onclick = () => {
             this.disconnect();
-            // siteMessage("You have been disconnected", 5000);
+        }
+        document.querySelector('#disconnect-btn-menu').onclick = () => {
+            this.disconnect();
         }
 
-        document.querySelector('.audio_control').onclick = (e) => {
-            this.toggleAudio();
-        }
-        document.querySelector('.video_control').onclick = (e) => {
-            this.toggleVideo();
-        }
+        document.querySelectorAll('.audio_control').forEach(item => {
+            item.onclick = () => {
+                this.toggleAudio()
+            }
+        })
+
+
     }
 
     show(app, mod) {
-        if (!document.querySelector('.small-video-chatbox')) {
+        if (!document.querySelector('.video-call-component')) {
             this.render();
             this.attachEvents(app, mod);
         }
     }
 
+
     hide() {
         console.log('hiding')
+        document.querySelector('.video-call-component').parentElement.removeChild(document.querySelector('.video-call-component'));
         document.querySelectorAll('.video-chat-manager').forEach(item => {
-            item.parentElement.removeChild(document.querySelector('.video-chat-manager'));
+            item.parentElement.removeChild(item);
         })
 
 
-        document.querySelectorAll('.video-box-container').forEach(box => {
-            box.parentElement.removeChild(box)
-        })
-
-        document.querySelector("#small-video-chatbox").parentElement.removeChild(document.querySelector("#small-video-chatbox"))
+        document.querySelector('.join-group-video-chat').style.display = "block"
 
     }
 
     disconnect() {
-        let stun_mod = this.app.modules.returnModule("Stun");
-        console.log("peer connections ", stun_mod.peer_connections);
-        stun_mod.closeMediaConnections()
-        this.localStream.getTracks().forEach(track => {
-            track.stop();
-            console.log(track);
-            console.log('stopping track');
-        })
-
-        if (this.timer_interval) {
-            clearInterval(this.timer_interval)
-        }
-
-        this.video_boxes = {};
-
+        this.app.connection.emit('stun-disconnect')
+        this.video_boxes = {}
+        this.audio_boxes = {}
         this.hide();
+
+    }
+
+
+    addLocalStream(stream) {
+        this.localStream = stream
     }
 
     addRemoteStream(peer, remoteStream, pc) {
-        this.video_boxes[peer].video_box.addStream(remoteStream);
-        this.video_boxes[peer].peer_connection = pc;
+        this.createAudioBox(peer, "video-call-component")
+        this.audio_boxes[peer].audio_box.render(remoteStream)
+        this.updateImages()
 
+        let audio_box = document.querySelector(`#audiostream${peer}`)
+        this.analyzeAudio(remoteStream, audio_box)
     }
 
-    renderLocalStream(localStream) {
-        const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type);
-        // videoBox.render(localStream, 'local', 'small-wrapper');
-        this.video_boxes['local'] = { video_box: videoBox, peer_connection: null }
-        this.localStream = localStream;
-        this.addImages()
+    createAudioBox(peer, container) {
+        if (!this.audio_boxes[peer]) {
+            const audioBox = new AudioBox(this.app, this.mod, this.room_code, peer, container);
+            this.audio_boxes[peer] = { audio_box: audioBox }
+        }
     }
 
+    updateImages() {
+        let images = ``;
+        let count = 0
+        console.log(this.audio_boxes)
+        for (let i in this.audio_boxes) {
+            if (i === "local") {
+                let publickey = this.app.wallet.returnPublicKey()
+                let imgsrc = this.app.keychain.returnIdenticon(publickey);
+                if (!document.querySelector(`#audiostream${publickey}`).querySelector(`#image${publickey}`)) {
+                    document.querySelector(`#audiostream${publickey}`).insertAdjacentHTML('beforeend', `<img id ="image${publickey}" class="saito-identicon" src="${imgsrc}"/>`,)
+                }
+            } else {
+                let imgsrc = this.app.keychain.returnIdenticon(i);
+                if (!document.querySelector(`#audiostream${i}`).querySelector(`#image${i}`)) {
+                    document.querySelector(`#audiostream${i}`).insertAdjacentHTML('beforeend', `<img id ="image${i}" class="saito-identicon" src="${imgsrc}"/>`,)
+                }
+            }
+            count++;
 
-
-    renderRemoteStreamPlaceholder(peer, ui_type, call_type) {
-
-        // if (!this.video_boxes[peer]) {
-        const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type);
-        this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
-        // }
-        this.video_boxes[peer].video_box.render(null, peer, null);
+        }
+        // document.querySelector('.stunx-chatbox .image-list').innerHTML = images;
+        // document.querySelector('.stunx-chatbox .users-on-call-count').innerHTML = count
     }
+
 
 
     updateConnectionState(peer, state) {
@@ -179,15 +212,20 @@ class ChatManagerSmall {
         if (this.audioEnabled === true) {
             this.localStream.getAudioTracks()[0].enabled = false;
             this.audioEnabled = false
-            document.querySelector('.audio_control').classList.remove('fa-microphone')
-            document.querySelector('.audio_control').classList.add('fa-microphone-slash')
+            document.querySelectorAll('.audio_control').forEach(item => {
+                item.classList.remove('fa-microphone');
+                item.classList.add('fa-microphone-slash');
+            })
+
         } else {
-
             this.localStream.getAudioTracks()[0].enabled = true;
-
             this.audioEnabled = true;
-            document.querySelector('.audio_control').classList.remove('fa-microphone-slash')
-            document.querySelector('.audio_control').classList.add('fa-microphone')
+
+            document.querySelectorAll('.audio_control').forEach(item => {
+                item.classList.remove('fa-microphone-slash');
+                item.classList.add('fa-microphone');
+            })
+
         }
 
     }
@@ -270,6 +308,37 @@ class ChatManagerSmall {
         document.querySelector('.users-on-call-count').innerHTML = count
     }
 
+
+
+    analyzeAudio(stream, audio) {
+        const audioContext = new AudioContext();
+        const source = audioContext.createMediaStreamSource(stream);
+        const analyser = audioContext.createAnalyser();
+        source.connect(analyser);
+        analyser.fftSize = 512;
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+      
+        let speaking = false;
+        const threshold = 20;
+      
+        function update() {
+          analyser.getByteFrequencyData(dataArray);
+          const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+      
+          if (average > threshold && !speaking) {
+            audio.classList.add('speaking');
+            speaking = true;
+          } else if (average <= threshold && speaking) {
+            audio.classList.remove('speaking');
+            speaking = false;
+          }
+      
+          requestAnimationFrame(update);
+        }
+      
+        update();
+      }
 
 
 

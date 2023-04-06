@@ -1,6 +1,7 @@
 const LeagueMenuTemplate = require("./menu.template");
 const InvitationLink = require("./overlays/league-invitation-link");
 const JoinLeagueOverlay = require("./overlays/join");
+const LeagueEditor = require("./overlays/editor");
 
 class LeagueMenu {
 
@@ -36,6 +37,13 @@ class LeagueMenu {
       document.querySelector(`#lg${this.league.id} .league-join-button`).onclick = (e) => {
         let jlo = new JoinLeagueOverlay(this.app, this.mod, this.league.id);
         jlo.render();
+      }
+    } catch (err) {}
+
+    try {
+      document.querySelector(`#lg${this.league.id} .league-edit-button`).onclick = (e) => {
+        let le = new LeagueEditor(this.app, this.mod, this.league.id);
+        le.render();
       }
     } catch (err) {}
 

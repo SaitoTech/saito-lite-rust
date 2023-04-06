@@ -38,7 +38,7 @@ class ChatSetting {
                 console.log('stopping video track');
             })
             this.remove();
-            this.app.connection.emit('show-chat-manager', to_join);
+            this.app.connection.emit('show-chat-manager-large', to_join);
         })
 
     }

@@ -51,13 +51,13 @@ button, .saito-button-primary, .saito-button-secondary:hover {
   margin: 0 0 -1rem 0;
 }
 
-
 /*************************************
  * Override saito-page-layout 
  * to make arcade better on mobile
 **************************************/
-@media screen and (max-width: 900px){
-  .saito-sidebar.right {
+
+@media screen and (max-width: 900px) {
+  .arcade-container .saito-sidebar.right {
     position: unset;
     left: unset;
     width: unset;
@@ -69,21 +69,14 @@ button, .saito-button-primary, .saito-button-secondary:hover {
     grid-column-start: unset;
     padding: 1rem;
   }
-
-  .saito-main {
+  .arcade-container .saito-main {
     margin: 0;
   }
-
-  .saito-container { 
-    /*height: unset;*/
-   }
-
-   .saito-table-row {
+  .arcade-container .saito-sidebar.right .saito-table-row {
     padding: 1rem;
-   }
-   .saito-table-body { 
+  }
+  .arcade-container .saito-sidebar.right .saito-table-body {
     grid-gap: 0.8rem;
     font-size: 1.6rem;
   }
-
 }

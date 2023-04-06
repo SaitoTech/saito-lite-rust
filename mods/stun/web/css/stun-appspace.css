@@ -7,6 +7,7 @@
   padding: 2rem;
   top: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   background-color: var(--saito-white);
   background-color: black;
@@ -21,6 +22,8 @@
   justify-content: center;
   align-items: center;
   width: 80%;
+  max-width: 1028px;
+  gap: 5rem;
 }
 
 .stunx-appspace-splah {
@@ -31,7 +34,8 @@
 .stunx-appspace-settings {}
 
 .my-stun-container-info {
-  font-size: 2rem;
+  display: none;
+  font-size: 1.75rem;
 }
 
 .saito-page-header-title {
@@ -81,7 +85,8 @@
 }
 
 .stunx-appspace-create {
-  /* margin-bottom: 1rem; */
+  width: 100%;
+  ;
 }
 
 .stunx-appspace-create p {
@@ -123,6 +128,10 @@
   outline: none;
 }
 
+.stunx-appspace-splash p {
+  color: white;
+}
+
 .stunx-appspace-join .saito-button-secondary {
   position: absolute;
   height: 50%;
@@ -135,12 +144,43 @@
   border: 1px solid var(--saito-primary);
 }
 
+.stun-appspace-navigation {
+  width: 80%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: end;
+  padding: 5rem;
+  gap: 3rem;
+}
+
+.stun-appspace-navigation div a {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  font-size: 2rem;
+}
+
+.stun-appspace-navigation div a:hover i::before {
+  content: "\f08e";
+}
+
 /*  responsive */
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1028px) {
+  .stun-appspace-content {
+    width: 95%;
+    gap: 1rem;
+  }
+}
+
+@media screen and (max-width: 900px) {
   .stun-appspace-content {
     flex-direction: column;
     width: 95%;
+  }
+  .stunx-appspace-splash {
+    padding: 0 5rem;
   }
 }
 
@@ -151,13 +191,16 @@
   }
 }
 
-@media screen and (max-width: 503px) {
-  .stun-appspace {
+@media screen and (max-width: 580px) {
+  .stun-appspace, .chat-settings-wrapper {
     padding: 1rem;
+    margin: 0;
   }
-  .stunx-appspace-splah {
+  #createRoom {
     width: 100%;
-    margin-left: 0;
+  }
+  .stunx-appspace-splash {
+    padding: 0;
   }
 }
 

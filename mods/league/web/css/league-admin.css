@@ -305,7 +305,7 @@ i.link_icon.private {
 
 /* temprorarily adding css for join league overlay here */
 
-.league-join-overlay-box {
+.league-join-overlay-box, .league-edit-overlay-box {
   background: #fff;
   padding: 1.5rem;
   border-radius: 1rem;
@@ -373,6 +373,17 @@ i.link_icon.private {
   overflow: revert;
   font-size: 2rem;
   line-height: 3rem;
+}
+
+
+.league-edit-overlay-box .label {
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.league-edit-overlay-box .box {
+  border: 1px solid black;
+  margin-bottom: 1rem;
 }
 
 /* LIST SELECTION MODAL */

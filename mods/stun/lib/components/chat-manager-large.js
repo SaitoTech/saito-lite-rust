@@ -25,7 +25,7 @@ class VideoChatManager {
         this.mod = mod;
         this.effectsMenu = new Effects(app, mod)
 
-        this.app.connection.on('show-video-chat-request', (app, mod, call_type = "Video", room_code, videoEnabled, audioEnabled) => {
+        this.app.connection.on('show-video-chat-large-request', (app, mod, call_type = "Video", room_code, videoEnabled, audioEnabled) => {
             this.videoEnabled = videoEnabled
             this.audioEnabled = audioEnabled;
             this.call_type = "video"
@@ -35,11 +35,11 @@ class VideoChatManager {
         })
 
 
-        this.app.connection.on('render-local-stream-request', (localStream) => {
+        this.app.connection.on('render-local-stream-large-request', (localStream) => {
 
             this.renderLocalStream(localStream);
         })
-        this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc) => {
+        this.app.connection.on('add-remote-stream-large-request', (peer, remoteStream, pc) => {
             this.addRemoteStream(peer, remoteStream, pc)
         });
 
@@ -72,10 +72,8 @@ class VideoChatManager {
                     this.video_boxes[peer_id].video_box.remove(disconnection)
                     delete this.video_boxes[peer_id];
                     this.updateImages();
-                }
-              
+                } 
             }
-
         })
 
 
