@@ -104,29 +104,6 @@ class VideoBox {
             if(this.stream_id=== 'local') return;
 
 
-            // console.log(this.stream.getVideoTracks(), 'video tracky ', this.stream.getVideoTracks(), "audio tracky");
-            // if (!this.stream.getVideoTracks()[0]) {
-            //     if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
-            //         video_box.querySelector(`#stream${this.stream_id} .video-call-info`).insertAdjacentHTML('beforeend', `<i class="fas fa-video-slash"> </i>`)
-            //     }
-            // }else if(this.stream.getVideoTracks()[0] && !this.stream.getVideoTracks()[0].enabled) {
-              
-            //     if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
-            //         video_box.querySelector(`#stream${this.stream_id} .video-call-info`).insertAdjacentHTML('beforeend', `<i class="fas fa-video-slash"> </i>`)
-            //     }
-            // }
-            // if (!this.stream.getAudioTracks()[0]) {
-            //     const video_box = document.querySelector(`#stream${this.stream_id}`);
-            //     if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
-            //         video_box.querySelector(`#stream${this.stream_id} .video-call-info`).insertAdjacentHTML('beforeend', `<i class="fa fa-microphone-slash"> </i>`)
-            //     }
-            // }else if(this.stream.getAudioTracks()[0] && this.stream.getAudioTracks()[0].enabled === false ){
-            //     const video_box = document.querySelector(`#stream${this.stream_id}`);
-            //     if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
-            //         video_box.querySelector(`#stream${this.stream_id} .video-call-info`).insertAdjacentHTML('beforeend', `<i class="fa fa-microphone-slash"> </i>`)
-            //     }
-            // }
-
 
         } else {
             this.renderPlaceholder(placeholder_info);

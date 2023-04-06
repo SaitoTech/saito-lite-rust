@@ -15,22 +15,60 @@ class StunxGameMenu {
       console.log('initing peer manager');
       // init peer manager
       app.connection.emit('stun-init-peer-manager', "small");
+
       // create a room 
       let room_code = app.crypto.generateRandomNumber().substring(0, 6);
 
+      mod.updateGameRoomCode(room_code);
+
       let stun_mod = app.modules.returnModule('Stun');
       stun_mod.sendCreateRoomTransaction(room_code);
+
       app.connection.emit('stun-peer-manager-update-room-code', room_code);
 
-      // show-small-chat-manager
-      stun_mod.ChatManagerSmall.render();
 
       // send the information to the other peers and ask them to join the call
-       recipients = recipients.filter(player => {
+      recipients = recipients.filter(player => {
         return player !== app.wallet.returnPublicKey()
       })
-      stun_mod.sendGameCallMessageToPeers(app, room_code, recipients);
-      // app.connection.emit('join-meeting', thi.to_join_room);
+
+      // show-small-chat-manager
+      app.connection.emit('show-chat-manager-small', false);
+
+      // change ui from start to join
+      document.querySelector('#start-group-video-chat').style.display = "none"
+      // document.querySelector('#join-group-video-chat').style.display = "block"
+
+
+      
+      let data = {
+        type: 'connection-request',
+        room_code,
+        sender: app.wallet.returnPublicKey()
+      }
+
+      stun_mod.sendGameCallMessageToPeers(app, data, recipients);
+
+    })
+    
+    app.connection.on('game-menu-join-video-call', (data) => {
+      console.log('initing peer manager', data);
+      mod.updateGameRoomCode(data.room_code);
+
+      // init peer manager
+      app.connection.emit('stun-init-peer-manager', "small");
+
+
+      let stun_mod = app.modules.returnModule('Stun');
+      app.connection.emit('stun-peer-manager-update-room-code', data.room_code);
+
+      // send the information to the other peers and ask them to join the call
+      // show-small-chat-manager
+      app.connection.emit('show-chat-manager-small', true);
+
+      document.querySelector('#start-group-video-chat').style.display = "none"
+      document.querySelector('#join-group-video-chat').style.display = "none"
+
     })
 
   }

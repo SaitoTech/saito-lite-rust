@@ -89,20 +89,22 @@ class Stun extends ModTemplate {
             this.sendStunMessageToServerTransaction(data)
         })
 
-        app.connection.on('stun-init-peer-manager', (ui_type)=> {
-            this.peerManager = new PeerManager(app, mod, ui_type);
-
-            if(ui_type === "large"){
+        app.connection.on('stun-init-peer-manager', (ui_type) => {
+            if(!this.peerManager){
+                this.peerManager = new PeerManager(app, mod, ui_type);
+            }
+        
+            if (ui_type === "large") {
                 this.peerManager.showSetting();
             }
-          
+
         })
 
     }
 
 
     onPeerHandshakeComplete(app, peer) {
-        if(app.BROWSER !==1 ){
+        if (app.BROWSER !== 1) {
             return;
         }
         if (!this.video_chat_loaded) {
@@ -120,7 +122,7 @@ class Stun extends ModTemplate {
                         // stun_self.peerManager.showSetting(true);
                         app.connection.emit('stun-to-join-room', true, room_code);
                         clearInterval(interval)
-                  }
+                    }
                 }, 500)
 
             }
@@ -183,7 +185,7 @@ class Stun extends ModTemplate {
             }];
         }
         if (type == "game-menu") {
-            this.styles = [`/${this.returnSlug()}/css/style.css`,];
+            // this.styles = [`/${this.returnSlug()}/css/style.css`,];
             super.render(this.app, this);
             return {
                 id: "game-video-chat",
@@ -191,12 +193,24 @@ class Stun extends ModTemplate {
                 submenus: [
                     {
                         text: "Start call",
-                        id: "group-video-chat",
-                        class: "group-video-chat",
+                        id: "start-group-video-chat",
+                        class: "start-group-video-chat",
                         callback: function (app, game_mod) {
                             if (game_mod.game.players.length > 1) {
+                                let stun_self = app.modules.returnModule("Stun");
+                                stun_self.attachStyleSheets();
                                 app.connection.emit('game-menu-start-video-call', [...game_mod.game.players]);
-                            } 
+                            }
+                        },
+                    },
+                    {
+                        text: "Join call",
+                        id: "join-group-video-chat",
+                        class: "join-group-video-chat",
+                        callback: function (app, game_mod) {
+                            let stun_self = app.modules.returnModule("Stun");
+                            app.connection.emit('game-menu-join-video-call', { room_code: stun_self.game_room_code});
+
                         },
                     },
                     // game_mod.game.player.map(player => (
@@ -206,7 +220,7 @@ class Stun extends ModTemplate {
                     //         class: `${player}-video-chat`,
                     //         callback: function (app, game_mod) {
                     //              //
-    
+
                     //         },
                     //     }
                     // )),
@@ -287,10 +301,9 @@ class Stun extends ModTemplate {
 
 
     async handlePeerTransaction(app, tx = null, peer, mycallback) {
-     
+
         if (tx == null) { return; }
         let txmsg = tx.returnMessage();
-        console.log(txmsg, txmsg.request)
 
         if (app.BROWSER === 0) {
             if (txmsg.request === "stun-create-room-transaction") {
@@ -305,7 +318,6 @@ class Stun extends ModTemplate {
         }
 
         if (app.BROWSER === 1) {
-            console.log(txmsg, txmsg.request);
             if (txmsg.request === "stun-send-message-to-peers") {
                 let stun_mod = app.modules.returnModule('Stun');
                 stun_mod.receiveStunMessageToPeersTransaction(app, tx);
@@ -409,7 +421,7 @@ class Stun extends ModTemplate {
 
 
 
-   
+
 
 
     sendStunMessageToPeersTransaction(_data, recipients) {
@@ -435,26 +447,77 @@ class Stun extends ModTemplate {
 
 
 
-    sendGameCallMessageToPeers(app, room_code, recipients){
+    sendGameCallMessageToPeers(app, _data, recipients) {
         // 
         let request = "stun-send-game-call-message"
 
         let data = {
-            recipient:recipients,
+            recipient: recipients,
             request,
-            data:{
-               room_code: room_code
-            }
+            data: _data
         }
         console.log('sending to', recipients)
         this.app.connection.emit('relay-send-message', data);
 
     }
 
-    receiveGameCallMessageToPeers(app, tx) {
+    async receiveGameCallMessageToPeers(app, tx) {
         let txmsg = tx.returnMessage();
         let data = tx.msg.data;
         console.log(data, 'data');
+
+
+        switch (data.type) {
+            case "connection-request":
+                let result = await sconfirm("Accept in game call");
+                if (result === true) {
+                    // connect
+                    // send to sender and inform
+                    let _data = {
+                        type: "connection-accepted",
+                        room_code: data.room_code,
+                        sender: app.wallet.returnPublicKey()
+                    }
+
+                    this.sendGameCallMessageToPeers(app, _data, [data.sender])
+
+                    // join room
+                    app.connection.emit('game-menu-join-video-call', { room_code: data.room_code });
+
+                } else if (result == false) {
+                    //send to sender to stop connection
+                    let _data = {
+                        type: "connection-rejected",
+                        room_code: data.room_code,
+                        sender: app.wallet.returnPublicKey()
+                    }
+                    this.sendGameCallMessageToPeers(app, _data, [data.sender])
+                }
+
+                console.log(result);
+
+                break;
+
+            case "connection-accepted":
+
+                console.log('connection accepted')
+                salert(`Call accepted by ${data.sender}`)
+                break;
+            case "connection-rejected":
+                console.log('connection rejected');
+                salert(`Call rejected by ${data.sender}`);
+                break;
+
+            default:
+                break;
+        }
+
+
+
+
+
+
+        // 
         // app.connection.emit('stun-event-message', data);
     }
 
@@ -484,6 +547,10 @@ class Stun extends ModTemplate {
             let public_keys = this.rooms.get(room_code).filter(p => p !== public_key);
             this.rooms.set(room_code, public_keys);
         }
+    }
+
+    updateGameRoomCode(room_code){
+        this.game_room_code = room_code;
     }
 
 
