@@ -72,42 +72,6 @@ class LeagueOverlay {
     }
 
 
-    if (this.league.admin == this.app.wallet.returnPublicKey()){
-      let desc_div = document.querySelector(".league-overlay-description");
-      if (!desc_div) { return; }
-
-      let orig_desc = desc_div.textContent;
-
-      desc_div.contentEditable = true;
-      this.app.browser.addElementToSelector(`<i class="fas fa-pencil"></i>`, ".league-overlay-description");
-    
-      desc_div.onblur = (e) => {
-        console.log("Focus out", desc_div.textContent);
-        if (desc_div.textContent !== orig_desc){
-          console.log("Transaction sent!");
-          let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(desc_div.textContent), "description");
-          this.app.network.propagateTransaction(newtx);
-        }
-      };
-
-      let contact = document.querySelector("#admin_contact");
-      if (contact){
-        let orig_contact = contact.textContent;
-        contact.contentEditable = true;
-        this.app.browser.addElementToSelector(`<i class="fas fa-pencil"></i>`, "#admin_contact");
-        
-        contact.onblur = (e) => {
-          console.log("Focus out", contact.textContent);
-          if (contact.textContent !== orig_contact){
-            console.log("Transaction sent!");
-            let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(contact.textContent, "contact"));
-            this.app.network.propagateTransaction(newtx);
-          }  
-        }    
-      }
-
-    }
-
     if (document.querySelector(".backup_account")) {
       document.querySelector(".backup_account").onclick = () => {
         this.app.connection.emit("recovery-backup-overlay-render-request", ()=>{
@@ -118,46 +82,46 @@ class LeagueOverlay {
 
     if (document.querySelector(".contact_admin")) {
       document.querySelector(".contact_admin").onclick = () => {
-        $(".league-overlay-body-content > div").addClass("hidden");
         $("#admin_details").removeClass("hidden");
-        $("#admin_note").removeClass("hidden");
       }
     }
 
-    Array.from(document.querySelectorAll(".menu-icon")).forEach(item => {
-      item.onclick = (e) => {
-        let nav = e.currentTarget.id;
+    if (!document.querySelector(".contactAdminWarning")){
+      Array.from(document.querySelectorAll(".menu-icon")).forEach(item => {
+        item.onclick = (e) => {
+          let nav = e.currentTarget.id;
 
-        $(".active-tab").removeClass("active-tab");
-        $(".league-overlay-leaderboard").removeClass("hidden");
-        $(".league-overlay-body-content > div").addClass("hidden");
-        switch (nav){
-        case "home":
-          $(".league-overlay-description").removeClass("hidden");
-          break;
-        case "contact":
-          $("#admin_details").removeClass("hidden");
-          $("#admin_note").removeClass("hidden");
-          break;
-        case "games":
-          $(".league-overlay-league-body-games").removeClass("hidden");
-          break;
-        case "players":
-          $("#admin-widget").removeClass("hidden");
-          $("#admin_details").removeClass("hidden");
-          $(".league-overlay-leaderboard").addClass("hidden");
-          this.loadPlayersUI();
+          $(".active-tab").removeClass("active-tab");
+          $(".league-overlay-leaderboard").removeClass("hidden");
+          $(".league-overlay-body-content > .league-overlay-content-box").addClass("hidden");
+          switch (nav){
+          case "home":
+            $(".league-overlay-description").removeClass("hidden");
+            break;
+          case "contact":
+            $("#admin_details").removeClass("hidden");
+            $("#admin_note").removeClass("hidden");
+            break;
+          case "games":
+            $(".league-overlay-league-body-games").removeClass("hidden");
+            break;
+          case "players":
+            $("#admin-widget").removeClass("hidden");
+            $("#admin_details").removeClass("hidden");
+            $(".league-overlay-leaderboard").addClass("hidden");
+            this.loadPlayersUI();
+          }
+
+          e.currentTarget.classList.add("active-tab");
         }
-
-        e.currentTarget.classList.add("active-tab");
-      }
-    })
+      });
+    }
 
   }
 
   loadPlayersUI(){
 
-    this.app.browser.replaceElementById(`<div id="admin-widget" class="admin-widget">
+    this.app.browser.replaceElementById(`<div id="admin-widget" class="admin-widget league-overlay-content-box">
       <div class="saito-table">
         <div class="saito-table-header">
           <div>Player</div>
