@@ -48,7 +48,7 @@ class StunAppspace {
 
     this.attachEvents(this.app, this.mod);
     // create peer manager and initialize , send an event to stun to initialize
-    this.app.connection.emit('stun-init-peer-manager', this.to_join_room);
+    this.app.connection.emit('stun-init-peer-manager',"large");
   }
 
   attachEvents(app, mod) {
