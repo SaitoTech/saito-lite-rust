@@ -58,6 +58,7 @@
 
 .status-header {
   background-color: whitesmoke;
+  border-radius: unset;
 }
 
 /* General overlays */

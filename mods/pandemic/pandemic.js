@@ -132,9 +132,6 @@ class Pandemic extends GameTemplate {
     super.initializeHTML(app);
 
     
-    //Dynamically update index.html 
-    //$('head').append(`<link rel="stylesheet" type="text/css" href="/${this.name.toLowerCase()}/style.css" />`);
-
     if (!this.skin){
       switch(this.game.options.theme){
         case "classic": this.skin = new PandemicOriginalSkin(this.app, this); break;
