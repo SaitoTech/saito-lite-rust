@@ -53,7 +53,17 @@ module.exports = (app, mod) => {
 
 
 </body>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.js?x=${new Date().getTime()}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.0.js?x=${new Date().getTime()}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.1.js?x=${new Date().getTime()}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.2.js?x=${new Date().getTime()}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.3.js?x=${new Date().getTime()}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.4.js?x=${new Date().getTime()}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.5.js?x=${new Date().getTime()}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.6.js?x=${new Date().getTime()}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.7.js?x=${new Date().getTime()}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.8.js?x=${new Date().getTime()}"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.9.js?x=${new Date().getTime()}"></script>
+
 <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
 <style></style>
 </html>
