@@ -88,7 +88,7 @@ class GameWizard {
       advancedOptionsToggle.onclick = (e) => {
 
         //Requery advancedOptions on the click so it can dynamically update based on # of players
-        let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary small">Accept</div>`;
+        let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary">Accept</div>`;
         let advancedOptionsHTML = this.game_mod.returnGameOptionsHTML();
         if (!advancedOptionsHTML.includes(accept_button)) {
           advancedOptionsHTML += accept_button;

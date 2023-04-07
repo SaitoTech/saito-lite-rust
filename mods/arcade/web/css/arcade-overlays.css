@@ -115,9 +115,9 @@
 }
 
 .arcade_game_overlay_loader {
-    min-width: 32vw;
+    width: min(36rem, 100vw);
     background: var(--saito-arcade-background);
-    padding: 6vw 15vh;
+    padding: 6vh 10vw;
 }
 
 .arcade_game_overlay_loader .arcade-game-initializer-success-title,  
@@ -130,7 +130,7 @@
 
 .arcade_game_overlay_loader .arcade-game-initializer-success-button{
     font-size: 1.8rem;
-    margin: 1rem;
+    margin: 1rem auto;
     width: -webkit-fill-available;
 }
 

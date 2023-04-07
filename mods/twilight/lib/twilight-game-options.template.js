@@ -75,7 +75,7 @@ module.exports = () => {
               <option value="enable" >enable</option>
               <option value="disable" selected>disable</option>
             </select>
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary small">Accept</div>
+            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary">Accept</div>
   </div>
 
             <div id="game-wizard-advanced-box" class="game-wizard-advanced-box" >

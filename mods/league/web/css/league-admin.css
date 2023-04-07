@@ -460,13 +460,13 @@ i.link_icon.private {
   color: #FFFD;
 }
 
-.game-wizard-advanced-return-btn {
+/*.game-wizard-advanced-return-btn {
   font-size: 1.4em;
   margin-top: 20px;
   padding: 16px 30px 12px;
   text-align: center;
   text-transform: uppercase;
-}
+}*/
 
 .game-wizard-options form {
   display: flex;
