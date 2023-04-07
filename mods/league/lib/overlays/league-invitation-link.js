@@ -9,7 +9,7 @@ class InvitationLink {
         this.league = league;
 
         let inviteLink = window.location.href;
-        if (inviteLink.includes("arcade")) { inviteLink = inviteLink.replace("arcade", "league"); }
+        if (inviteLink.includes("league")) { inviteLink = inviteLink.replace("league", "arcade"); }
         if (!inviteLink.includes("#")) { inviteLink += "#"; }
         if (inviteLink.includes("?")) { inviteLink = inviteLink.replace("#", "&league_join_league=" + this.league.id); } 
  	else { inviteLink = inviteLink.replace("#", "?league_join_league=" + this.league.id); }

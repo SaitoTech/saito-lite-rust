@@ -306,7 +306,7 @@ i.link_icon.private {
 /* temprorarily adding css for join league overlay here */
 
 .league-join-overlay-box, .league-edit-overlay-box {
-  background: #fff;
+  background: var(--saito-background-color);
   padding: 1.5rem;
   border-radius: 1rem;
   max-width: 90vw;
