@@ -17,10 +17,19 @@ class LeagueEditor {
       salert(`League not found`);
       return;
     }
-    if (this.league.admin !== this.app.wallet.returnPublicKey()){
-      salert("Unauthorized access!");
-      return;
+    if (this.league.admin){
+      if (this.league.admin !== this.app.wallet.returnPublicKey()){
+        salert("Unauthorized access!");
+        return;
+      }
+    }else{
+      let pw = await sprompt("Enter Password");
+      if (this.app.crypto.hash(pw) !== "e7f69c3b4e30697e68ac57b83088f41ec47de914ad84def95c4f4b25516c39ef"){
+        salert("Unauthorized access!");
+        return; 
+      }
     }
+    
 
     this.overlay.show(LeagueEditorTemplate(this.app, this.mod, this.league), ()=>{
       this.submitChanges();  
