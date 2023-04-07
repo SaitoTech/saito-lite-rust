@@ -31,6 +31,9 @@ const ChatManagerLargeTemplate = (call_type, code) => {
       ${add_user}
       
 
+           <span class="chat_control_container">
+           <i class="chat_control fa-regular fa-comments"></i>
+            </span>
            <span class="audio_control_container">
             <i class=" audio_control fa fa-microphone" > </i>
             </span>

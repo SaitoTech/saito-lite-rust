@@ -25,7 +25,7 @@
   height: 66rem;
   width: 44rem;
   border-radius: 0.5rem;
-  z-index: 9;
+  z-index: 2000;
   position: fixed;
   bottom: 0px;
   right: 0px;
@@ -37,7 +37,6 @@
   resize: both;
   min-width: 300px;
   min-height: 150px;
-  z-index: 10;
 }
 
 .chat-body img {

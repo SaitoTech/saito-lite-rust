@@ -32,11 +32,13 @@ class VideoChatManager {
             this.room_code = room_code
             this.show(app, mod);
             this.updateRoomLink();
+
+            // create chat group
+            this.createRoomTextChat();
         })
 
 
         this.app.connection.on('render-local-stream-large-request', (localStream) => {
-
             this.renderLocalStream(localStream);
         })
         this.app.connection.on('add-remote-stream-large-request', (peer, remoteStream, pc) => {
@@ -68,13 +70,14 @@ class VideoChatManager {
 
         this.app.connection.on('video-box-remove', (peer_id, disconnection) => {
             if (this.video_boxes[peer_id].video_box) {
-                if(this.video_boxes[peer_id].video_box.remove){
+                if (this.video_boxes[peer_id].video_box.remove) {
                     this.video_boxes[peer_id].video_box.remove(disconnection)
                     delete this.video_boxes[peer_id];
                     this.updateImages();
-                } 
+                }
             }
         })
+
 
 
 
@@ -86,6 +89,29 @@ class VideoChatManager {
         this.isActive = true;
 
     }
+
+    createRoomTextChat() {
+        let chat_mod = this.app.modules.returnModule('Chat');
+        console.log(chat_mod, 'chat-mod', this.app);
+        let chat_manager = chat_mod.respondTo('chat-manager');
+        let my_pub_key = this.app.wallet.returnPublicKey();
+
+        chat_mod.groups.push({
+            id: this.room_code,
+            members: [this.app.network.peers[0].peer.publickey],
+            name: `Chat ${this.room_code}`,
+            txs: [],
+            unread: 0
+        })
+        let chat_group = chat_mod.returnGroup(this.room_code);
+
+        this.chat_group = chat_group;
+
+
+
+
+    }
+
 
     attachEvents(app, mod) {
         document.querySelector('.disconnect_btn_container').addEventListener('click', (e) => {
@@ -103,6 +129,19 @@ class VideoChatManager {
             })
 
         }
+
+
+        document.querySelector('.chat_control').addEventListener('click', (e) => {
+            let chat_mod = this.app.modules.returnModule('Chat');
+
+            if(chat_mod.chat_manager.popups[this.room_code]){
+                console.log(chat_mod.chat_manager.popups[this.room_code])
+                chat_mod.chat_manager.popups[this.room_code].manually_closed = false;
+            }
+        
+            this.app.connection.emit('chat-popup-render-request', this.chat_group);
+            // document.querySelector(`.chat-popup-${this.room_code}`).style.zIndex = 2000;
+        })
         document.querySelector('.audio_control_container').addEventListener('click', (e) => {
             this.toggleAudio();
         })
@@ -260,8 +299,8 @@ class VideoChatManager {
 
         let room_link = this.createRoomLink();
         history.pushState(null, null, room_link);
-        
-        if(this.peers.length === 1){
+
+        if (this.peers.length === 1) {
             let peer = document.querySelector(`#stream${this.peers[0]}`);
             peer.querySelector('.video-box').click();
         }

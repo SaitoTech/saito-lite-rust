@@ -50,6 +50,7 @@ class Chat extends ModTemplate {
 
     onPeerServiceUp(app, peer, service = {}) {
 
+
         let chat_self = this;
 
         //
@@ -87,6 +88,8 @@ class Chat extends ModTemplate {
             let newtx = this.app.wallet.createUnsignedTransaction();
             let local_group = this.returnGroupOrCreateFromMembers([peer.returnPublicKey()], "Saito Community Chat");
 
+
+
             //
             // remove duplicate public chats caused by server update
             //
@@ -121,7 +124,7 @@ class Chat extends ModTemplate {
                         console.log("chat history adding: " + err);
                     }
 
-                    if (this.app.BROWSER){
+                    if (this.app.BROWSER) {
                         let active_module = app.modules.returnActiveModule();
                         if (app.browser.isMobileBrowser(navigator.userAgent) || window.innerWidth < 600 || active_module?.request_no_interrupts) {
                             this.app.connection.emit("chat-manager-request-no-interrupts");
@@ -140,7 +143,7 @@ class Chat extends ModTemplate {
         if (!app.BROWSER) { return; }
         if (peer.isMainPeer()) {
             this.communityGroup = this.createChatGroup([peer.peer.publickey], this.communityGroupName);
-            if (this.communityGroup) { this.communityGroupHash = this.communityGroup.id;}
+            if (this.communityGroup) { this.communityGroupHash = this.communityGroup.id; }
             this.loadChats();
             let sql;
             for (let i = 0; i < this.groups.length; i++) {
@@ -314,7 +317,7 @@ class Chat extends ModTemplate {
         }
 
         if (txmsg.request === "chat message") {
-
+           
             this.receiveChatTransaction(app, tx);
 
             //
@@ -323,7 +326,7 @@ class Chat extends ModTemplate {
             if (mycallback) { mycallback({ "payload": "success", "error": {} }); }
 
         } else if (txmsg.request === "chat message broadcast") {
-
+         
             let inner_tx = new saito.default.transaction(txmsg.data);
             let inner_txmsg = inner_tx.returnMessage();
 
@@ -443,6 +446,7 @@ class Chat extends ModTemplate {
         if (newtx == null) { return; }
 
         let members = this.returnMembers(group_id);
+
         for (let i = 0; i < members.length; i++) {
             if (members[i] !== this.app.wallet.returnPublicKey()) {
                 newtx.transaction.to.push(new saito.default.slip(members[i]));
@@ -504,17 +508,17 @@ class Chat extends ModTemplate {
             this.inTransitImageMsgSig = null;
         }
 
- let txmsg = "";
+        let txmsg = "";
 
-console.log("RECEIVED");
-try {
-        tx.decryptMessage(app);
-console.log("RECEIVED 2");
-        txmsg = tx.returnMessage();
-console.log("RECEIVED 3: " + JSON.stringify(txmsg));
-} catch (err) {
-console.log("ERROR: " + JSON.stringify(err));
-}
+        console.log("RECEIVED");
+        try {
+            tx.decryptMessage(app);
+            console.log("RECEIVED 2");
+            txmsg = tx.returnMessage();
+            console.log("RECEIVED 3: " + JSON.stringify(txmsg));
+        } catch (err) {
+            console.log("ERROR: " + JSON.stringify(err));
+        }
 
         //
         // if to someone else and encrypted 
@@ -536,6 +540,7 @@ console.log("ERROR: " + JSON.stringify(err));
         }
 
         let group = this.returnGroup(txmsg.group_id);
+
 
         if (group) {
 
@@ -687,6 +692,8 @@ console.log("ERROR: " + JSON.stringify(err));
         if (members == null) { return ""; }
         return this.app.crypto.hash(`${members.join('_')}`);
     }
+
+
     createChatGroup(members = null, name = null) {
 
         if (!members) {
