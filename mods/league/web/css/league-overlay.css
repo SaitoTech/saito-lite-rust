@@ -288,8 +288,17 @@ span.attention {
 
 .admin-widget .saito-table-header, .admin-widget .saito-table-row {
   grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  justify-items: center;
+  align-items: center;
 }
 
+.admin-widget .saito-table-row > div {
+  width: 100%;
+}
+
+.email_field {
+  border: 1px solid;
+}
 
 .contactAdminWarning {
   /*min-width: 60rem;

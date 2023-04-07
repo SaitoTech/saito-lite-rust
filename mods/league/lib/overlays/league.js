@@ -157,6 +157,21 @@ class LeagueOverlay {
     }
 
     this.app.browser.addElementToSelector(html, "#admin-widget .saito-table-body");
+
+    Array.from(document.querySelectorAll(".email_field")).forEach(player_contact => {
+      player_contact.onblur = (e) => {
+
+        let newtx = this.mod.createUpdatePlayerTransaction(this.league.id, e.currentTarget.dataset.id, sanitize(player_contact.textContent), "email");
+        this.app.network.propagateTransaction(newtx);
+
+        for (let i = 0; i < this.league.players.length; i++){
+          if (this.league.players[i].publickey === e.currentTarget.dataset.id){
+            this.league.players[i].email = sanitize(player_contact.textContent);
+          }
+        }
+      }
+    });
+
   }
 }
 

@@ -67,7 +67,7 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
     }     
 
     html +=  `
-            <div class="league-overlay-controls${(newPlayer)? " hidden":""}">
+            <div class="league-overlay-controls${(newPlayer || league.unverified)? " hidden":""}">
               <button id="league-overlay-create-game-button" class="saito-button saito-button-primary">create game</button>
             </div>
 

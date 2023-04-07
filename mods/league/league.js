@@ -329,7 +329,7 @@ class League extends ModTemplate {
       let txmsg = tx.returnMessage();
 
       if (this.debug){
-//        console.log("LEAGUE onConfirmation: " + txmsg.request);  
+        console.log("LEAGUE onConfirmation: " + txmsg.request);  
       }
       
 
@@ -350,6 +350,10 @@ class League extends ModTemplate {
 
       if (txmsg.request === "league update"){
         await this.receiveUpdateTransaction(blk, tx, conf, app);
+      }
+
+      if (txmsg.request === "league update player"){
+        await this.receiveUpdatePlayerTransaction(blk, tx, conf, app);
       }
 
       if (txmsg.request === "gameover"){
@@ -580,11 +584,59 @@ class League extends ModTemplate {
       $data :   new_data,
     };
 
-    console.log(sql, params);
+    await this.app.storage.executeDatabase(sql, params, "league");
+
+  }
+
+
+  createUpdatePlayerTransaction(league_id, publickey, new_data, field = "email"){
+    let newtx = this.app.wallet.createUnsignedTransaction();
+
+    newtx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+    newtx.transaction.to.push(new saito.default.slip(publickey, 0.0));
+
+    newtx.msg = {
+      module:    "League",
+      request:   "league update player",
+      league_id,
+      publickey,
+      new_data,
+      field,
+    };
+
+    return this.app.wallet.signTransaction(newtx);
+  }
+
+  async receiveUpdatePlayerTransaction(blk, tx, conf, app){
+
+    let txmsg = tx.returnMessage();
+
+    let league_id = txmsg.league_id;
+    let publickey = txmsg.publickey;
+    let new_data = txmsg.new_data;
+    let field = txmsg.field;
+
+    if (field !== "email"){
+      console.error("League Update Error: Unknown SQL field");
+      return;
+    }
+    
+    let league = this.returnLeague(league_id);
+    if (league){
+      league[field] = new_data;
+    }
+
+    let sql = `UPDATE OR IGNORE players SET ${field} = $data WHERE league_id = $league_id AND publickey = $publickey`;
+    let params = {
+      $data :   new_data,
+      $league_id   :   league_id ,
+      $publickey : publickey,
+    };
 
     await this.app.storage.executeDatabase(sql, params, "league");
 
   }
+
 
   ///////////////////
   // quit a league //
@@ -669,7 +721,6 @@ class League extends ModTemplate {
     //
     // small grace period
     //
-    console.log(txmsg.reason);
     if (is_gameover && (txmsg.reason == "cancellation" || txmsg.reason?.includes("Wins:") || txmsg.reason?.includes("Scores: "))) { 
       console.log("Don't process");
       return; 
@@ -1138,13 +1189,13 @@ class League extends ModTemplate {
         league.numPlayers = league.players.length;
       }
 
-      if (league.admin && !newPlayer.email && league.admin !== this.app.wallet.returnPublicKey()){
-        league.unverified = true;
+      if (league.admin && league.admin !== this.app.wallet.returnPublicKey()){
+        league.unverified = newPlayer.email == "";
       }
 
     }
 
-    //console.log(JSON.parse(JSON.stringify(league)));
+    //
     if (this.app.BROWSER == 0){
       await this.playerInsert(league_id, newPlayer);   
     }
