@@ -29,6 +29,9 @@ class LeagueMain {
     }
 
     let leagues = this.mod.leagues.filter(l => l.admin);
+    if (this.app.browser.returnURLParameter("show_all_leagues")){
+      leagues = this.mod.leagues;
+    }
 
     if (this.mod.debug){
       console.log(JSON.parse(JSON.stringify(leagues)));  

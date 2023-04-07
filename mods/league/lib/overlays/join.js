@@ -17,6 +17,7 @@ class JoinLeague {
       console.log("League Join success!");
       if (this.timer){
         clearTimeout(this.timer);
+        this.timer = null;
       }else{
         return;
       }
@@ -35,6 +36,10 @@ class JoinLeague {
       return;
     }
 
+    if (league.rank >= 0){
+      this.app.connection.emit('league-overlay-render-request', league_id);
+      return;
+    }
 
     this.game_mod = this.app.modules.returnModuleByName(league.game);
     this.overlay.show(JoinLeagueTemplate(this.app, this.mod, league), ()=>{
@@ -86,7 +91,8 @@ class JoinLeague {
           
           this.loader.remove();
           this.render();
-
+          this.timer = null;
+          
         }, 2000);
 
       }  

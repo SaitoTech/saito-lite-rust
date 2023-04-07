@@ -2,6 +2,8 @@
   max-width: 94em;
   margin: 6em auto 0;
   padding: 0 2em;
+  height: calc(100vh - var(--saito-header-height));
+  overflow: auto;
 }
 
 .league-main-container-games {}
