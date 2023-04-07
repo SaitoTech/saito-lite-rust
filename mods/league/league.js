@@ -197,20 +197,27 @@ class League extends ModTemplate {
 
       let league_id = this.validateID(app.browser.returnURLParameter("league_join_league"));
 
+      let sql;
+      
       if (this.browser_active || league_id) {
+        console.log("Load all leagues");
+        sql = `SELECT * FROM leagues WHERE status = 'public' OR id = '${league_id}'`;
+      }else{
+        console.log("Load my leagues");
+        let league_list = this.leagues.map(x => `'${x.id}'`).join(", ");
+        sql = `SELECT * FROM leagues WHERE id IN (${league_list})`;
+      }
       //    
       // load any requested league we may not have in options file
+      // or refresh any league data that has changed
       //    
-        console.log("Load all leagues");
-
         this.sendPeerDatabaseRequestWithFilter(
           "League" , 
-          `SELECT * FROM leagues WHERE status = 'public' OR id = '${league_id}'`,
+          sql,
           (res) => {
              if (res?.rows) {
               for (let league of res.rows){
-                //console.log(league);
-                league_self.addLeague(league);
+                league_self.updateLeague(league);
               } 
             }
 
@@ -232,8 +239,6 @@ class League extends ModTemplate {
           }
         );
 
-
-      } 
 
         //
         // fetch updated rankings
@@ -1135,7 +1140,19 @@ class League extends ModTemplate {
 
   }
 
+  updateLeague(obj) { 
+    if (!obj)                   { return; }
+    if (!obj.id)                { return; }
+    let oldLeague = this.returnLeague(obj.id);
 
+    if (!oldLeague) {
+      this.addLeague(obj)
+      return;
+    }
+
+    oldLeague = Object.assign(oldLeague, this.validateLeague(obj));
+
+  }
 
 
   validatePlayer(obj){
