@@ -1484,9 +1484,10 @@ class RedSquare extends ModTemplate {
         }
       }
     } catch (err) {
-      console.error("ERROR 285029: error saving block to disk ", err);
+      console.error("ERROR 2832329: error tweet cache to disk. ", err);
     }
     return "";
+  
 
   }
 
