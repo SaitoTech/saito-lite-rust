@@ -1,4 +1,7 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
+const UserMenu = require("./../../lib/saito/ui/modals/user-menu/user-menu");
+const MyUserMenu = require("./../../lib/saito/ui/modals/my-user-menu/my-user-menu");
+
 
 const HeaderDropdownTemplate = (dropdownmods) => {
   html = dropdownmods.map(mod => {
@@ -58,27 +61,6 @@ class QRScanner extends ModTemplate {
 
   }
 
-  respondTo(type = "") {
-
-    let scanner_self = this;
-
-    /*** moved to wallet bar ***
-    if (type === 'saito-header') {
-      return [
-        {
-          text: "Scan",
-          icon: this.icon || "fas fa-expand",
-    rank: 30 ,
-          callback: function (app, id) {
-            app.connection.emit("scanner-start-scanner", {});
-          }
-        }
-      ];
-    }
-    ***/
-    return null;
-  }
-
   initialize(app) {
     super.initialize(app);
     if (app.BROWSER == 1) { this.attachStyleSheets(); }
@@ -106,6 +88,9 @@ class QRScanner extends ModTemplate {
 
   }
 
+  //
+  // turns BODY into the scanner
+  //
   startScanner(mycallback = null) {
 
     if (this.app.BROWSER == 0) { return; }
@@ -129,6 +114,9 @@ class QRScanner extends ModTemplate {
 
   }
 
+  //
+  // turns submitted EL into the scanner
+  //
   startEmbeddedScanner(el, mycallback = null) {
 
     if (this.app.BROWSER == 0) { return; }
@@ -152,18 +140,6 @@ class QRScanner extends ModTemplate {
 
   }
 
-  startQRDecoder() {
-
-    x = this.attemptQRDecode();
-
-    if (x == 1) {
-    } else {
-      setTimeout(() => {
-        this.startQRDecoder();
-      }, 100);
-    }
-
-  }
 
   returnScannerHTML() {
     return `
@@ -246,7 +222,6 @@ class QRScanner extends ModTemplate {
       if (qrid != this.last_scanned_raw || this.last_scanned_at < right_now - this.debounce_timeout) {
         this.last_scanned_raw = qrid;
         this.last_scanned_at = right_now;
-
         this.handleDecodedMessage(qrid);
       } else if (qrid == this.last_scanned_raw) {
         this.last_scanned_at = right_now;
@@ -263,27 +238,65 @@ class QRScanner extends ModTemplate {
 
 console.log("MESSAGE: " + msg);
 
+    //
+    // remove scanline
+    //
+    if (document.querySelector(".scanline")) {
+      document.querySelector(".scanline").remove();
+    }
+
+    //
+    // we know what we want to do (callback provided)
+    //
     if (this.scanner_callback != null) {
       this.decoder.terminate();
       this.scanner_callback(msg);
       return;
     }
 
-    if (this.app.crypto.isPublicKey(msg)) {
-
-      // let encrypt_mod = this.app.modules.returnModule('Encrypt');
-      // this.initializing_key = true;
-      // encrypt_mod.initiate_key_exchange(msg);
-
-      // // need to add chat while this is happening
-      // // window.location.assign('/chat');
-      // alert(`Initiating Key Exchange with ${msg}`);
-
+    //
+    // or this is a URL
+    //
+    if (this.app.browser.isValidUrl(msg)) {
       this.decoder.terminate();
-
-    } else {
-      this.sendEvent('qrcode', msg);
+      let c = confirm("Visit: " + msg + "?");
+      if (c) {
+	window.location = msg;
+	return;	
+      }     
     }
+
+    //
+    // or this is a publickey
+    //
+    if (this.app.crypto.isPublicKey(msg)) {
+      this.decoder.terminate();
+      if (this.app.wallet.returnPublicKey() === msg) {
+          let myUserMenu = new MyUserMenu(this.app, msg);
+          myUserMenu.render(this.app);
+    	  return;
+      } else {
+          let userMenu = new UserMenu(this.app, msg);
+          userMenu.render(this.app);
+  	  return;
+      }
+    }
+
+    //
+    // non-SAITO publickey?
+    //
+    if (this.app.wallet.returnPreferredCryptoTicker() !== "SAITO") {
+      if (!msg.match(/^\S*$/)) {
+        if (msg.match(/[0-9a-f]+/i)) {
+          let userMenu = new UserMenu(this.app, msg);
+          userMenu.render(this.app);
+          return;
+        }
+      }
+    }
+
+    this.sendEvent('qrcode', msg);
+
   }
 
   decodeFromFile(f) {
@@ -306,16 +319,6 @@ console.log("MESSAGE: " + msg);
   handleError(error) {
     console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
   }
-
-  receiveEvent(type, data) {
-    if (type === "encrypt-key-exchange-confirm") {
-      if (document.getElementById('qr-canvas') && this.initializing_key) {
-        window.location.assign('/chat');
-      }
-    }
-  }
-
-
 
 }
 

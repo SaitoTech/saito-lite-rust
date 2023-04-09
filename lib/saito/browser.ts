@@ -12,7 +12,6 @@ const UserMenu = require("./ui/modals/user-menu/user-menu");
 const MyUserMenu = require("./ui/modals/my-user-menu/my-user-menu");
 
 
-
 class Browser {
   public app: any;
   public browser_active: any;
@@ -1767,6 +1766,21 @@ class Browser {
       console.debug(this.app.options);
     }
   }
+
+  isValidUrl(urlString) {
+    try {
+      var inputElement = document.createElement('input');
+      inputElement.type = 'url';
+      inputElement.value = urlString;
+
+      if (!inputElement.checkValidity()) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (err) {}
+    return false;
+  } 
 
 }
 export default Browser;
