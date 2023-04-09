@@ -1607,7 +1607,7 @@ class Browser {
           document.querySelector("#promptval").focus();
           document.querySelector("#promptval").select();
           setTimeout(() => {
-            document.querySelector("#alert-box").style.top = "0";
+            document.querySelector("#saito-alert-box").style.top = "0";
           }, 100);
           document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
             if (event.keyCode === 13) {
