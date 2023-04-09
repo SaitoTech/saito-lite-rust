@@ -299,7 +299,6 @@ class Chat extends ModTemplate {
 
         if (!txmsg.request) { return; }
 
-
         if (txmsg.request === "chat history") {
 
             let group_id = txmsg.group_id;
@@ -336,7 +335,6 @@ class Chat extends ModTemplate {
             //
             if (inner_tx.transaction.to.length > 0) {
                 if (inner_tx.transaction.to[0].add != this.app.wallet.returnPublicKey()) {
-                    console.log("INNER TRANSACTION IS NOT FOR ME");
                     if (app.BROWSER == 0) {
                         app.network.peers.forEach(p => {
                             if (p.peer.publickey === inner_tx.transaction.to[0].add) {
@@ -348,7 +346,6 @@ class Chat extends ModTemplate {
                     }
                 } else {
 
-                    console.log("INNER TX IS FOR ME");
                     //
                     // broadcast to me, so send to all non-this-peers
                     //
@@ -462,8 +459,6 @@ class Chat extends ModTemplate {
             newtx.transaction.to[1] = x;
         }
 
-        console.log("FIRST RECIPIENT IS NOW: " + newtx.transaction.to[0].add);
-
         if (msg.substring(0, 4) == "<img") {
             if (this.inTransitImageMsgSig) {
                 salert("Image already being sent");
@@ -484,12 +479,8 @@ class Chat extends ModTemplate {
             //
             // the first recipient is ourself, so the second is the one with the shared secret
             //
-            console.log("from us so sign and encrypt to: " + newtx.transaction.to[0].add);
             let key = this.app.keychain.returnKey(newtx.transaction.to[0].add);
-            console.log("pre-encrypt in create!");
-            console.log("key should be: " + key.aes_secret);
             newtx = this.app.wallet.signAndEncryptTransaction(newtx);
-            console.log("post-encrypt in create!");
         } else {
             newtx = this.app.wallet.signTransaction(newtx);
         }
@@ -510,12 +501,9 @@ class Chat extends ModTemplate {
 
         let txmsg = "";
 
-        console.log("RECEIVED");
         try {
             tx.decryptMessage(app);
-            console.log("RECEIVED 2");
             txmsg = tx.returnMessage();
-            console.log("RECEIVED 3: " + JSON.stringify(txmsg));
         } catch (err) {
             console.log("ERROR: " + JSON.stringify(err));
         }

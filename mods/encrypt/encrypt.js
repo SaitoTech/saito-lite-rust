@@ -302,6 +302,8 @@ console.log("error: " + err);
 
     if (conf == 0) {
 
+console.log("ENCRYPT ONCONF");
+
       if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
         encrypt_self.sendEvent('encrypt-key-exchange-confirm', {members: [tx.transaction.to[0].add, tx.transaction.from[0].add]});
       }

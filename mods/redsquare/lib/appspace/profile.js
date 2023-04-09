@@ -75,6 +75,7 @@ class AppspaceProfile {
 	// try to initiate key exchange
 	//
         if (!key.aes_secret) {
+console.log("ENCRYPT KEY EXCHANGE IN PROFILE");
 	  this.app.connection.emit("encrypt-key-exchange", (publickey));
 	}
 
