@@ -244,8 +244,9 @@ class Browser {
           e.target?.classList?.contains("saito-identicon") || e.target?.classList?.contains("saito-address")
         ) {
 
+          let disable_click = e.target.getAttribute("data-disable");
           let publickey = e.target.getAttribute("data-id");
-          if (!publickey || !app.crypto.isPublicKey(publickey)) {
+          if (!publickey || !app.crypto.isPublicKey(publickey) || disable_click === "true") {
             return;
           }
           if (publickey !== app.wallet.returnPublicKey()) {
