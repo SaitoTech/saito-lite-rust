@@ -7,10 +7,42 @@
     width: 90vw;
     height: auto;
     min-height: 622px;
+    text-align: center;
+}
+
+.diet-overlay .help {
+    background: #0009;
+    width: max-content;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 2.4rem;
+    padding: 0.75rem;
+    max-width: 100%;
+    padding: 2rem;
+    line-height: 3.4rem;
+}
+
+.diet-overlay .status {
+    position: relative;
+    padding-top: 24rem;
+}
+
+.diet-overlay .cardlist {
+    height: 100%;
+    display: inline-block;
+    position: absolute;
+    width: max-content;
+    clear: both;
+    transform: translate(-50%);
 }
 
 .diet-overlay .cardlist .card {
-   height: 30rem;
-   width: auto;
+    height: 20rem;
+    width: calc(20rem/1.4);
+    float: left;
+    margin-right: 1rem;
+    position: relative;
+    left: 0;
 }
 

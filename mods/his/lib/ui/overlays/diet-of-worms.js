@@ -22,7 +22,13 @@ class DietOfWormsOverlay {
 	//
 	// my cards
 	//
+console.log("DHECK: " + JSON.stringify(this.mod.game.deck[0]));
 	let cardlist = this.mod.returnCardList(this.mod.game.deck[0].fhand[0]);
+	for (let i = 0; i < cardlist.length; i++) {
+	  if (this.mod.game.deck[0].cards[cardlist[i]].type === "mandatory") {
+
+	  }
+	}
 console.log("render cardlist: " + cardlist);
 	this.app.browser.addElementToSelector(cardlist, ".diet-overlay .cardlist");
 	
