@@ -50,13 +50,13 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
             if (newPlayer || league.unverified){ 
                 html += `<div id="admin_welcome" class="league-overlay-content-box">${league.welcome}</div>`;
 
-                html += `<div id="admin_note" class="contactAdminWarning">
+                html += `<div id="admin_note" class="contactAdminWarning league-overlay-content-box">
                             <div>Warning</div>`;
                 if (newPlayer){
-                    html += `<div class="error_line"><i class="fas fa-exclamation-circle"></i><span>Your account is at risk. <span class="backup_account attention">Enable login</span></span></div>`;
+                    html += `<div class="error_line"><i class="fas fa-exclamation-triangle"></i><span>Your account is at risk. <span class="backup_account attention">Enable login</span></span></div>`;
                 }
                 if (league.unverified){
-                    html += `<div class="error_line"><i class="fas fa-exclamation-circle"></i><span>You need to <span class="contact_admin attention">message the admin</span></span></div>`;   
+                    html += `<div class="error_line"><i class="fas fa-exclamation-triangle"></i><span>You need to <span class="contact_admin attention">message the admin</span></span></div>`;   
                 }
                             
 

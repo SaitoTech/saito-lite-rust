@@ -127,7 +127,7 @@
   padding: 1.5rem;
   border-radius: 0.5rem;
   overflow-y: auto;
-  box-shadow: var(--saito-form-box-shadow);
+  border: 1px solid var(--saito-border-color);
   flex: 1;
 }
 
@@ -309,7 +309,16 @@ span.attention {
   padding: 1rem;
   */
   font-size: 2rem;
-  min-height: 25rem;
+  min-height: 40rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.error_line {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
 }
 
 .contactAdminWarning>* {
@@ -317,19 +326,19 @@ span.attention {
 }
 
 .contactAdminWarning>div:first-child {
-  font-size: 3.2rem;
+  font-size: 5rem;
   justify-content: center;
 }
 
 .contactAdminWarning > div {
   display: flex;
   flex-direction: row;
+  gap: 1rem;
   align-items: center;
 }
 
 
 .contactAdminWarning i {
-  font-size: 3rem;
-  color: var(--saito-primary);
-  margin: 1rem;
+  font-size: 5rem;
+  color: var(--saito-secondary);
 }
