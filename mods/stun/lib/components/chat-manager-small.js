@@ -29,7 +29,6 @@ class ChatManagerSmall {
             // this.updateRoomLink();
         })
         this.app.connection.on('render-local-stream-small-request', (localStream) => {
-            console.log('rendering local stream');
             this.addLocalStream(localStream)
         })
         this.app.connection.on('add-remote-stream-small-request', (peer, remoteStream, pc) => {
@@ -132,18 +131,18 @@ class ChatManagerSmall {
     }
 
     addRemoteStream(peer, remoteStream, pc) {
-        this.createAudioBox(peer, "video-call-component")
+        this.createAudioBox(peer, remoteStream, pc, "video-call-component")
         this.audio_boxes[peer].audio_box.render(remoteStream)
-        this.updateImages()
-
+        this.updateImages();
+        
         let audio_box = document.querySelector(`#audiostream${peer}`)
         this.analyzeAudio(remoteStream, audio_box)
     }
 
-    createAudioBox(peer, container) {
+    createAudioBox(peer,remoteStream, pc, container) {
         if (!this.audio_boxes[peer]) {
             const audioBox = new AudioBox(this.app, this.mod, this.room_code, peer, container);
-            this.audio_boxes[peer] = { audio_box: audioBox }
+            this.audio_boxes[peer] = { audio_box: audioBox, remote_stream: remoteStream, pc: pc }
         }
     }
 

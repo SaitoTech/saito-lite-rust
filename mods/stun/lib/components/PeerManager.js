@@ -292,9 +292,9 @@ class PeerManager {
             }
 
             if(this.ui_type === "large"){
-                this.app.connection.emit('add-remote-stream-large-request', peerId, remoteStream, peerConnection)
+                this.app.connection.emit('add-remote-stream-large-request', peerId, remoteStream, peerConnection);
             }else if(this.ui_type === "small"){
-                this.app.connection.emit('add-remote-stream-small-request', peerId, remoteStream, peerConnection)
+                this.app.connection.emit('add-remote-stream-small-request', peerId, remoteStream, peerConnection);
             }
         
 
@@ -340,7 +340,6 @@ class PeerManager {
         const retryDelay = 10000;
 
         const attemptReconnect = (currentRetry) => {
-
             const peerConnection = this.peers.get(peerId);
             if (currentRetry === maxRetries) {
                 if (peerConnection && peerConnection.connectionState !== 'connected') {
@@ -349,8 +348,6 @@ class PeerManager {
                 }
                 return;
             }
-
-
 
 
             if (peerConnection && peerConnection.connectionState === 'connected') {
@@ -473,6 +470,10 @@ class PeerManager {
 
     sendSignalingMessage(data) {
 
+    }
+
+    switchUIType(type){ 
+        
     }
 }
 

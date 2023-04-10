@@ -13,6 +13,10 @@
   transition: all 0.2s;
 }
 
+.stunx-chatbox ~ .chat-container {
+  z-index: 100;
+}
+
 .stunx-chatbox.minimize:hover {
   cursor: pointer;
 }

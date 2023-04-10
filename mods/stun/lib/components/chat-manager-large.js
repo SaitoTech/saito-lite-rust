@@ -108,8 +108,6 @@ class VideoChatManager {
         this.chat_group = chat_group;
 
 
-
-
     }
 
 

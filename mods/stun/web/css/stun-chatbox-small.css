@@ -92,6 +92,7 @@
 }
 
 
+
 .audio-box.speaking {
     border-color: var(--saito-secondary);
     animation: speaker-pulse .1s infinite;
@@ -107,6 +108,8 @@
         border-color: var(--saito-primary);
       }
   }
+
+
 
   
 
