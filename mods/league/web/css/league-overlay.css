@@ -28,7 +28,7 @@
   display: flex;
   flex-direction: row;
   justify-content: end;
-  /*margin: auto;*/
+  width: 100%;
 }
 
 .league-overlay-controls i {
@@ -50,7 +50,6 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  flex-wrap: wrap;
   row-gap: 1.5rem;
 }
 
@@ -77,9 +76,9 @@
   margin: unset;
 }
 
-.league-overlay .hidden { 
-  display:none;
- }
+.league-overlay .hidden {
+  display: none;
+}
 
 .league-overlay-controls:hover .menu-icon.active-tab {
   background: unset;
@@ -142,6 +141,7 @@
   background-image: url(/saito/img/dreamscape.png);
   background-size: cover;
   width: 11rem;
+  min-width: 11rem;
   height: 7rem;
   margin-right: 1rem;
 }
@@ -159,11 +159,11 @@
   right: 0;
 }
 
-#admin_details{
+#admin_details {
   flex: unset;
 }
 
-span.attention { 
+span.attention {
   text-decoration: underline dashed 1px;
   cursor: pointer;
 }
@@ -263,36 +263,13 @@ span.attention {
 }
 
 
-@media screen and (max-width: 1000px) {
-  .league-overlay-body {
-    display: flex;
-    flex-direction: column;
-    row-gap: 2rem;
-    max-height: calc(95vh - 22rem);
-    overflow-y: auto;
-    margin: 0 !important;
-    padding: 1px 1rem;
-  }
-  .league-overlay-body>div {
-    max-height: unset;
-    overflow-y: unset;
-  }
-}
-
-@media screen and (max-width: 600px) {
-  .league-overlay-container {
-    width: calc(100vw - 2px);
-    max-height: 98vh;
-  }
-}
-
 .admin-widget .saito-table-header, .admin-widget .saito-table-row {
   grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
   justify-items: center;
   align-items: center;
 }
 
-.admin-widget .saito-table-row > div {
+.admin-widget .saito-table-row>div {
   width: 100%;
 }
 
@@ -330,15 +307,57 @@ span.attention {
   justify-content: center;
 }
 
-.contactAdminWarning > div {
+.contactAdminWarning>div {
   display: flex;
   flex-direction: row;
   gap: 1rem;
   align-items: center;
 }
 
-
 .contactAdminWarning i {
   font-size: 5rem;
   color: var(--saito-secondary);
+}
+
+
+@media screen and (max-width: 1000px) {
+  .league-overlay-body {
+    display: flex;
+    flex-direction: column;
+    row-gap: 2rem;
+    max-height: calc(95vh - 30rem);
+    overflow-y: auto;
+    margin: 0 !important;
+    padding: 1px 1rem;
+  }
+  .league-overlay-body>div {
+    max-height: unset;
+    overflow-y: unset;
+  }
+  .league-overlay-header {
+    flex-direction: column;
+  }
+  .league-overlay-controls {
+    justify-content: start;
+    padding: 1rem 0 0;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .league-overlay-container {
+    width: calc(100vw - 2px);
+    max-height: 98vh;
+  }
+  .contactAdminWarning {
+    min-height: 0;
+  }
+  .league-overlay-controls {
+    justify-content: center;
+  }
+  .league-overlay-header-image {
+    margin: 0;
+    width: 100%;
+    background-position: center center;
+    height: 15rem;
+}
 }
