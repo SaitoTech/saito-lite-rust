@@ -1,4 +1,4 @@
-.video-call-component {
+.chat-manager-small {
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -32,7 +32,7 @@
 }
 
 
-.video-call-component.expanded .icon-btn {
+.chat-manager-small.expanded .icon-btn {
    display: block;
 }
 
@@ -69,21 +69,21 @@
 .icon-peer {
     border-radius: 0;
 }
-.video-call-component.expanded .icon-btn {
+.chat-manager-small.expanded .icon-btn {
     display: inline-flex;
 }
 
 /* Add smooth transition effects for the buttons */
-.video-call-component .icon-btn {
+.chat-manager-small .icon-btn {
     transition: transform 0.5s, opacity 0.5s;
 }
 
-.video-call-component.expanded .icon-btn {
+.chat-manager-small.expanded .icon-btn {
     transform: translateY(0);
     opacity: 1;
 }
 
-#disconnect-btn-extension {
+.disconnect-btn{
     background-color: var(--saito-primary);
 }
 
