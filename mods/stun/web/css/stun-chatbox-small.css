@@ -93,18 +93,18 @@
 
 
 .audio-box.speaking {
-    border-color: lime;
-    animation: pulse .1s infinite;
+    border-color: var(--saito-secondary);
+    animation: speaker-pulse .1s infinite;
   }
 
-  @keyframes pulse {
+  @keyframes speaker-pulse {
     0%, 100% {
-        box-shadow: 0 0 20px 10px lime;
-        border-color: lime;
+        box-shadow: 0 0 20px 10px var(--saito-secondary);
+        border-color: var(--saito-secondary);
       }
       50% {
-        box-shadow: 0 0 20px 10px rgba(0, 255, 0, 0.5);
-        border-color: rgba(0, 255, 0, 0.5);
+        box-shadow: 0 0 20px 10px var(--saito-primary);
+        border-color: var(--saito-primary);
       }
   }
 
