@@ -92,6 +92,10 @@ class VideoChatManager {
 
     createRoomTextChat() {
         let chat_mod = this.app.modules.returnModule('Chat');
+        if (!chat_mod){
+            console.warn("Chat not installed");
+            return;
+        }
         console.log(chat_mod, 'chat-mod', this.app);
         let chat_manager = chat_mod.respondTo('chat-manager');
         let my_pub_key = this.app.wallet.returnPublicKey();
