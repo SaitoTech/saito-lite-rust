@@ -100,6 +100,6 @@ mods/redsquare/web/tweets.js
 mods/mailrelay/lib/template-credentials.js
 mods/tutorial4/web/txid
 mods/redsquare/web/tweets.js
-most/redsquare/web/tweets*
+mods/redsquare/web/tweets*
 
 extras/shashmap/build
