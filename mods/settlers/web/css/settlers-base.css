@@ -1052,10 +1052,6 @@ ul.horizontal_list li.iconoption {
   }
 }
 
-#game-post {
-  color: grey;
-  text-decoration: line-through;
-}
 
 /*
     Intermediate (roughly square screen size, technically landscape, but keep portrait layout)
