@@ -22,8 +22,8 @@
 
 .chat-container {
   margin-right: 1rem;
-  height: 66rem;
-  width: 44rem;
+  height: 50rem;
+  width: 36rem;
   border-radius: 0.5rem;
   z-index: 2000;
   position: fixed;
