@@ -4,8 +4,6 @@
   background-color: var(--saito-background-color);
   padding: 1rem;
   border-radius: 0.5rem;
-  overflow-y: scroll;
-  max-height: 94vh;
 }
 
 .tweet-overlay-content {
