@@ -749,7 +749,7 @@ initializeGame(game_id) {
 
         steamSelf.addMove(`discard\t${steamSelf.game.player}\t${card}`);
 
-        steamSelf.moveGameElement(this.copyGameElement(this), `#discards`, {insert: 1, resize: 1}, ()=>{
+        steamSelf.moveGameElement(steamSelf.copyGameElement(this), `#discards`, {insert: 1, resize: 1}, ()=>{
           console.log("Sending move to discard card");
           steamSelf.endTurn();
         });
