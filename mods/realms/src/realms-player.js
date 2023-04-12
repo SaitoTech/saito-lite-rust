@@ -1,8 +1,11 @@
 
 
   nonPlayerTurn() {
+    if (this.browser_active == 0) { return; }
+
     this.updateStatusAndListCards(`Opponent Turn`, this.game.deck[this.game.player-1].hand, function() {});
   }
+
   playerTurn() {
 
     if (this.browser_active == 0) { return; }
@@ -10,7 +13,7 @@
     //
     // show my hand
     //
-    this.updateStatusAndListCards(`Your Turn <span id="end-turn" class="end-turn">[ or pass ]</span>`, this.game.deck[this.game.player-1].hand, function() {});
+    this.updateStatusAndListCards(`Your Turn <span id="end-turn" class="end-turn">[ or pass ]</span>`, this.game.deck[this.game.player-1].hand);
 
     //
     // players may click on cards in their hand
@@ -43,7 +46,7 @@
   //
   moveCard(player, card, source, destination) {
 
-console.log(player + " -- " + card + " -- " + source + " -- " + destination);
+		console.log(player + " -- " + card + " -- " + source + " -- " + destination);
 
     switch(source) {
 
@@ -97,7 +100,7 @@ console.log(player + " -- " + card + " -- " + source + " -- " + destination);
     }
 
 
-console.log("pushing card onto " + destination);
+		console.log("pushing card onto " + destination);
 
     let already_exists = 0;
     switch(destination) {

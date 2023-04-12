@@ -1,16 +1,16 @@
 
-  returnState(num_of_players) {
+  returnState() {
 
     let state = {};
 
-    state.players = [num_of_players];
-    for (let i = 0; i < num_of_players; i++) {
+    state.players = [2];
+    for (let i = 0; i < 2; i++) {
       state.players[i] = {};
       state.players[i].health = 20;
     }
 
-    state.hands = [num_of_players];
-    for (let i = 0; i < num_of_players; i++) {
+    state.hands = [2];
+    for (let i = 0; i < 2; i++) {
       state.hands[i] = {};
       state.hands[i].cards = {};
       state.hands[i].lands = [];
