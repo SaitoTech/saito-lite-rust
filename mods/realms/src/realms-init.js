@@ -17,7 +17,7 @@ class Realms extends GameTemplate {
     this.description 	= "Saito Realms is a card-driven enchantment battle game";
     this.categories 	= "Games Arcade Entertainment";
     this.type     	= "Cardgame";
-    this.card_img_dir 	= '/realm/img/cards';
+    this.card_img_dir 	= '/realms/img/cards';
 
     // graphics
     this.interface = 1;
@@ -30,36 +30,8 @@ class Realms extends GameTemplate {
   }
 
 
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    // barge haulers on the volga
-    if (type == "arcade-carousel") {
-      return {
-        background : "/realm/img/arcade/arcade-banner-background.png" ,
-	title : "Realms" ,
-      }
-    }
-    
-    if (type == "arcade-create-game") {
-      return {
-        slug: this.slug,
-        title: this.name,
-        description: this.description,
-        publisher_message: this.publisher_message,
-        returnGameOptionsHTML: this.returnGameOptionsHTML.bind(this),
-        minPlayers: this.minPlayers,
-        maxPlayers: this.maxPlayers,
-      }
-    }
-    return null;
-
+  respondTo(type) {  
+    return super.respondTo(type);
   }
   
 
@@ -71,42 +43,15 @@ class Realms extends GameTemplate {
     // ADD MENU
     //
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addSubMenuOption("game-game", {
-      text : "Log",
-      id : "game-log",
-      class : "game-log",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
-      }
-    });
-    this.menu.addSubMenuOption("game-game", {
-      text : "Exit",
-      id : "game-exit",
-      class : "game-exit",
-      callback : function(app, game_mod) {
-        window.location.href = "/arcade";
-      }
-    });
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      }
-    });
+    this.menu.addMenuOption("game-info", "Info");
 
     this.menu.addChatMenu();
 
     this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
 
     this.log.render(app, this);
-    this.log.attachEvents(app, this);
 
     this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
 
     //
     // add card events -- text shown and callback run if there
@@ -115,7 +60,6 @@ class Realms extends GameTemplate {
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
 
     this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
 
   }
 
@@ -125,8 +69,7 @@ class Realms extends GameTemplate {
     //
     // initialize some useful variables
     //
-    if (this.game.status != "") { this.updateStatus(this.game.status); }
-    if (this.game.dice == "") { this.initializeDice(); }
+    if (this.game.status) { this.updateStatus(this.game.status); }
 
     //
     // import player cards
@@ -139,14 +82,13 @@ class Realms extends GameTemplate {
     //
     if (this.game.deck.length == 0) {
 
-      this.game.state = this.returnState(this.game.players.length);
+      this.game.state = this.returnState();
 
       this.game.queue.push("round");
-      this.game.queue.push("PLAY\t2");
-      this.game.queue.push("PLAY\t1");
       this.game.queue.push("READY");
 
-      this.game.queue.push("DEAL\t1\t1\t7");
+      //First player to go, doesn't get to draw an 8th card at the beginning of their turn
+      this.game.queue.push("DEAL\t1\t1\t6");
       this.game.queue.push("DEAL\t2\t2\t7");
 
       // encrypt and shuffle player-2 deck

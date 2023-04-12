@@ -20,3 +20,6 @@ body {
   grid-template-columns: 1fr 1fr;
 }
 
+img.cardimg {
+  width: 100%;
+}
