@@ -86,9 +86,10 @@ class Stun extends ModTemplate {
             this.sendStunMessageToServerTransaction(data)
         })
 
-        app.connection.on('stun-init-peer-manager', (ui_type) => {
+        app.connection.on('stun-init-peer-manager', (ui_type, config) => {
+            console.log('config', config)
             if(!this.peerManager){
-                this.peerManager = new PeerManager(app, mod, ui_type);
+                this.peerManager = new PeerManager(app, mod, ui_type, config);
             }
         
             if (ui_type === "large") {
@@ -498,7 +499,6 @@ class Stun extends ModTemplate {
                 break;
 
             case "connection-accepted":
-
                 console.log('connection accepted')
                 salert(`Call accepted by ${data.sender}`)
                 break;

@@ -18,6 +18,7 @@ class SaitoMania extends OnePlayerGameTemplate {
     this.categories      = "Games Arcadegame One-player";
     this.request_no_interrupts = true; // don't popup chat
     this.app = app;
+    this.statistical_unit = "game";
   }
 
 

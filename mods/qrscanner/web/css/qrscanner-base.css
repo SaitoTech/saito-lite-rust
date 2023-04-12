@@ -2,6 +2,19 @@
   display: block;
 }
 
+.qrscanner-container {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  z-index: 16;
+}
+
 .video-container {
   background-color: black;
   position: absolute;
@@ -44,11 +57,11 @@ video {
 }
 
 .qr-target {
-  position: absolute;
-  left: 10vw;
-  top: 10vw;
-  width: 80vw;
-  height: 80vw;
+  position: relative;
+  width: min(80vw, 80vh);
+  height: min(80vw, 80vh);
+  max-width: 500px;
+  max-height: 500px;
   z-index: 999999;
 }
 
@@ -96,19 +109,17 @@ video {
 .close-scanner {
   z-index: 1000;
   border: 3px solid var(--saito-primary);
-  width: 5rem;
-  height: 5rem;
-  position: absolute;
-  bottom: 2rem;
-  right: 50%;
-  transform: translateX(10px);
-  z-index: 9;
+  width: 6rem;
+  height: 6rem;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   color: var(--saito-primary);
+  font-size: 4rem;
+  cursor: pointer;
+  background-color: var(--saito-gray);
 }
 
 @keyframes scanning {

@@ -93,10 +93,13 @@ class VideoBox {
 
             //name = `${name.substring(0,9)}....${name.substring(37, name.length -1)}`
             const video_box = document.querySelector(`#stream${this.stream_id}`);
-            if (video_box.querySelector('.video-call-info')) {
-                video_box.querySelector('.video-call-info').innerHTML = `<p class="saito-address" data-id="${name}" >${name}</p>`
+            if(video_box){
+                if (video_box.querySelector('.video-call-info')) {
+                    video_box.querySelector('.video-call-info').innerHTML = `<p class="saito-address" data-id="${name}" >${name}</p>`
+                }
+    
             }
-
+         
         
 
 
