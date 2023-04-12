@@ -295,6 +295,7 @@ console.log("removing: " + popup_qs);
         let newtx = mod.createChatTransaction(group_id, img.outerHTML); // img into msg
         newtx = app.wallet.signTransaction(newtx);
         mod.sendChatTransaction(app, newtx);
+        document.getElementById(input_id).innerHTML = ""; //clear the input div off of the image after sending chat transaction
         mod.receiveChatTransaction(app, newtx);
 
         //}
