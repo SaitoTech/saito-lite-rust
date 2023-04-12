@@ -76,6 +76,7 @@ body {
   justify-items: center;
   align-content: center;
   min-height: 150px;
+  min-width: 300px;
 }
 
 .status{
@@ -114,7 +115,7 @@ body {
 }
 
 #self{
-  bottom: 5px;
+  bottom: 15px;
 }
 
 #opponent{
