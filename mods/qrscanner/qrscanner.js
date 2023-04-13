@@ -274,7 +274,7 @@ class QRScanner extends ModTemplate {
         this.stop();
       	window.location = msg;
       	return;	
-      }     
+      }
     }
 
     //
