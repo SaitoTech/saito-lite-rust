@@ -136,18 +136,10 @@ console.log("this.options.transfers_outbound length: " + this.options.transfers_
     return 0;
   }
 
-
 }
 
 
 
-
-
-/**
- * Abstract method which should get balance from underlying crypto endpoint
- * @abstract
- * @return {Number}
- */
 MixinModule.prototype.renderModalSelectCrypto = function(app, mod, cryptomod) {
   return `
     <div class="mixin_crypto_overlay" id="mixin_crypto_overlay">
@@ -190,6 +182,7 @@ MixinModule.prototype.attachEventsModalSelectCrypto = function(app, mod, cryptom
  * @return {Number}
  */
 MixinModule.prototype.returnBalance = async function() {
+console.log("mixin prototype returnBalance");
   return this.balance;
 };
 

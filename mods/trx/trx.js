@@ -21,8 +21,14 @@ class TRX extends ModTemplate {
 
   }
 
-  returnBalance(){
+  async returnBalance(){
+
+console.log("in returnBalance in TRX mod");
+    let mixin_mod = this.app.modules.returnModule("Mixin");
+console.log("asset_id: " + this.asset_id);
+    mixin_mod.checkBalance(this.asset_id);
     return this.balance;
+
   }
   
   respondTo(type = "") {

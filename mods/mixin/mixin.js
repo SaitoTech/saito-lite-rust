@@ -59,10 +59,6 @@ class Mixin extends ModTemplate {
 
   
   canRenderInto(qs) {
-//
-// FEB 16
-//    
-//    if (qs === ".saito-main") { return true; }
     return false;
   }
 
@@ -503,6 +499,9 @@ console.log(res.data);
 
 
   checkBalance(asset_id, callback=null) {
+
+console.log("running check balance!");
+
     //
     // CHECK BALANCE
     //
@@ -519,6 +518,9 @@ console.log(res.data);
 	  let d = res.data.data;
 	  for (let i = 0; i < this.mods.length; i++) {
 	    if (this.mods[i].asset_id === asset_id) {
+
+console.log("FOUND ASSET ID MOD: " + this.mods[i].ticker);
+
 	      let initial_balance = this.mods[i].balance;
 	      let initial_address = this.mods[i].destination;
 
@@ -932,7 +934,6 @@ console.log(res.data);
   }
 
   save() {
-console.log("SAVING IN MIXIN: " + JSON.stringify(this.mixin));
     this.app.options.mixin = this.mixin;
     this.app.storage.saveOptions();
   }
