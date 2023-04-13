@@ -4,13 +4,19 @@
   font-size: 3rem;
 }
 .stunx-chatbox {
-  top: 0 !important;
-  left: 0 !important;
+  top: 0;
+  left: 0;
   width: 100vw;
   background-color: var(--saito-white) fff;
   position: fixed;
-  z-index: 20;
+  z-index: 100;
   transition: all 0.2s;
+  height: 100vh;
+  width: 100vw;
+}
+
+.stunx-chatbox ~ .chat-container {
+  z-index: 100;
 }
 
 .stunx-chatbox.minimize:hover {
@@ -19,8 +25,8 @@
 
 .stunx-chatbox .minimizer {
   position: absolute;
-  right: 3rem;
-  top: 0rem;
+  right: 2rem;
+  top: 1rem;
   z-index: 2;
 }
 
@@ -39,9 +45,21 @@
 }
 
 .minimize {
-  animation-name: minimize;
+  width: 20vw;
+  height: 30vh;
+  /* animation-name: minimize;
   animation-duration: 1s;
-  animation-fill-mode: forwards;
+  animation-fill-mode: forwards; */
+}
+
+.stunx-chatbox.minimize .minimizer {
+  bottom: 1rem;
+}
+.stunx-chatbox.minimize .minimizer i {
+  font-size: 2rem;
+}
+.stunx-chatbox.minimize .footer {
+  display: none;
 }
 
 .stunx-chatbox .minimizer i:hover {
@@ -51,8 +69,8 @@
 }
 
 .stunx-chatbox main {
-  width: 100vw;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
 }
 
 .stunx-chatbox .heading {
@@ -62,7 +80,7 @@
 .stunx-chatbox .large-wrapper {
   grid-gap: 1rem;
   /* padding: 1rem; */
-  height: 80vh;
+  height: 80%;
   background: black;
 }
 
@@ -78,6 +96,15 @@
   transition: all 0.5s ease;
   position: relative;
   padding: 1rem;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
+  grid-gap: 1rem;
+  height: 100%;
+  width: 100%;
+  background: black;
 }
 
 .expanded-video {
@@ -118,7 +145,7 @@
 }
 
 .stunx-chatbox .video-box-container-large {
-  border-radius: .5rem;
+  border-radius: 0.5rem;
 }
 
 #localStream {
@@ -206,7 +233,7 @@
   border: none;
 }
 
-.video-box-container-large>#connection-message {
+.video-box-container-large > #connection-message {
   color: var(--saito-white);
   width: 50%;
   line-height: 1.5;
@@ -247,7 +274,7 @@
   border: 1px solid transparent;
 }
 
-.video-box-container-large>#connection-message>p {
+.video-box-container-large > #connection-message > p {
   color: var(--saito-white);
   font-size: 2.8rem;
 }
@@ -265,7 +292,7 @@
   width: calc(100% - 1rem);
 }
 
-.video-call-info>p {
+.video-call-info > p {
   color: #ffffff69;
   font-size: 2rem;
   white-space: nowrap;
@@ -425,7 +452,7 @@
 }
 
 .control-list span {
-  margin-right: 1rem;
+  margin-right: 2rem;
   border-radius: 50%;
   padding: 1rem;
   width: 5rem;
@@ -434,7 +461,17 @@
   justify-content: center;
   align-items: center;
   background-color: var(--saito-white);
+  position: relative;
 }
+
+.control-list span label {
+  position: absolute;
+  color:white;
+  bottom: -2.5rem;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
 
 .control-list i {
   color: green;
@@ -458,10 +495,7 @@
 
 @media screen and (max-width: 900px) {
   .stunx-chatbox .large-wrapper {
-    /* display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
-    grid-auto-rows: 1fr; */
+
     grid-gap: 1rem;
     padding: 1rem;
     height: 70%;
@@ -479,12 +513,13 @@
     gap: 2rem;
   }
   .control-panel .control-list {
-    margin-bottom: 1rem;
+    margin-bottom: 1.7rem;
   }
 }
 
 @media screen and (max-height: 850px) {
-  .video-box-container-large:nth-child(2) {}
+  .video-box-container-large:nth-child(2) {
+  }
   .control-panel {
     padding-bottom: 10rem;
   }
@@ -678,7 +713,7 @@
 @media screen and (max-width: 767px) {
   .video-call-info i {
     font-size: 1rem;
-    margin-right: .5rem;
+    margin-right: 0.5rem;
   }
   .chat-settings {
     flex-direction: column;
@@ -695,14 +730,20 @@
   .chat-settings-preview {
     width: 100%;
   }
-  .video-box-container-large>#connection-message {
+  .video-box-container-large > #connection-message {
     width: 100%;
   }
-  .video-box-container-large>#connection-message p {
+  .video-box-container-large > #connection-message p {
     font-size: 1rem;
   }
   .chat-settings select {
     width: 100%;
+  }
+  .gallery {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
   }
   .expanded-video {
     width: 100%;

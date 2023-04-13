@@ -188,7 +188,7 @@ class Chat extends ModTemplate {
 
 
 
-    respondTo(type) {
+    respondTo(type, obj) {
 
         let chat_self = this;
 
@@ -214,6 +214,31 @@ class Chat extends ModTemplate {
                     }];
                 }
                 return null;
+            case 'user-menu':
+
+                if (obj !== undefined && obj["publickey"] !== undefined) {
+                    let publickey = obj.publickey;
+                    let key_exists = chat_self.app.keychain.hasPublicKey(publickey);
+
+                    if (!key_exists)                
+                        return null;
+                }
+
+                return {
+                    text: "Chat",
+                    icon: "far fa-comment-dots",
+                    callback: function (app, publickey) {
+                        let group = chat_self.returnGroupByMemberPublickey(publickey);
+
+                        if (chat_self.chat_manager == null) { 
+                            chat_self.chat_manager = new ChatManager(chat_self.app, chat_self); 
+                        }
+
+                        chat_self.chat_manager.render_manager_to_screen = 1;
+                        chat_self.chat_manager.render_popups_to_screen = 1;
+                        chat_self.app.connection.emit("chat-popup-render-request", group);
+                    }
+                }
             default:
                 return super.respondTo(type);
         }
