@@ -879,6 +879,10 @@ class Arcade extends ModTemplate {
       console.log("Game not found");
       return;
     }
+    if (game.msg.request == "over"){
+      console.log("Game already over, ignore status change request");
+      return;
+    }
 
     //Move game to different list
     this.removeGame(game_id);
@@ -896,10 +900,12 @@ class Arcade extends ModTemplate {
   // GAMEOVER //
   //////////////
 
+
+/*
+  Note to self -- need to fix DB storage of winner since we are ambiguous as to whether it is a string or array
+*/
   async receiveGameoverTransaction(tx) {
     let txmsg = tx.returnMessage();
-
-    await this.changeGameStatus(txmsg.game_id, "over");
 
     let game = this.returnGame(txmsg.game_id);
     if (game?.msg) {
@@ -908,8 +914,10 @@ class Arcade extends ModTemplate {
       game.msg.method = txmsg.reason;
       game.msg.time_finished = txmsg.ts;
     } else {
-      console.warn("Game not found");
+      console.warn("Game not found, arcade can't process gameover tx");
     }
+
+    await this.changeGameStatus(txmsg.game_id, "over");
 
     let sql = `UPDATE games SET winner = $winner, method = $method, time_finished = $ts WHERE game_id = $game_id`;
     let params = {
@@ -919,6 +927,9 @@ class Arcade extends ModTemplate {
       $game_id: txmsg.game_id,
     };
     await this.app.storage.executeDatabase(sql, params, "arcade");
+    if (this.debug){
+      console.log("Winner updated in arcade");  
+    }
   }
 
   async receiveCloseTransaction(tx) {
