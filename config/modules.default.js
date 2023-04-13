@@ -9,7 +9,7 @@ module.exports = {
     'explorer/explorer.js',
 //    'myqrcode/myqrcode.js',
     'poker/poker.js',
-    'post/post.js',
+    // 'post/post.js',
     'qrscanner/qrscanner.js',
     'relay/relay.js',
     'redsquare/redsquare.js',
