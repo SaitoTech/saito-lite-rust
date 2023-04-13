@@ -47,11 +47,20 @@ console.log("initiating key exchange...");
   }
 
 
-  respondTo(type){
+  respondTo(type, obj){
 
     let encrypt_self = this;
 
     if (type == "user-menu") {
+
+      if (obj !== undefined && obj["publickey"] !== undefined) {
+        let publickey = obj.publickey;
+        let key_exists = encrypt_self.app.keychain.hasPublicKey(publickey);
+
+        if (key_exists)                
+         return null;
+      }
+
       return {
         text: "Add Contact",
         icon: "far fa-id-card",
