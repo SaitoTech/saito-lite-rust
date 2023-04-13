@@ -269,7 +269,7 @@ class QRScanner extends ModTemplate {
     //
     if (this.app.browser.isValidUrl(msg)) {
       this.stop();
-      let c = await sconfirm("Visit: " + msg + "?");
+      let c = confirm("Visit: " + msg + "?");
       if (c) {
         this.stop();
       	window.location = msg;
