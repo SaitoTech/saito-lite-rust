@@ -301,6 +301,7 @@ console.log("MESSAGE: " + msg);
       if (!msg.match(/^\S*$/)) {
         if (msg.match(/[0-9a-f]+/i)) {
           this.stop();
+      let c = sconfirm("Non-Saito Publickey: " + msg + "?");
           let userMenu = new UserMenu(this.app, msg);
           userMenu.render(this.app);
           return;
