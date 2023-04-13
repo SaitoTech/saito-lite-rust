@@ -69,22 +69,13 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
           <div class="saito-multi-select_btn saito-select">
            <div class="saito-multi-select_btn_options saito-slct">
       `;
-    if (invite_obj.league) {
-      if (publickey) {
-        html += ` 
-              <button type="button" class="saito-multi-btn  game-invite-btn" data-type="open">next...</button>
-         `;
-      } else {
-        html += `
-              <button type="button" class="saito-multi-btn  game-invite-btn" data-type="private">create private league invite</button>
-         `;
-      }
+    if (publickey) {
+      html += `<button type="button" class="saito-multi-btn  game-invite-btn" data-type="direct">next...</button>`;
     } else {
-      if (publickey) {
-        html += `
-              <button type="button" class="saito-multi-btn game-invite-btn" data-type="direct">next...</button>
-       `;
+      if (invite_obj.league) {
+        html += `<button type="button" class="saito-multi-btn  game-invite-btn" data-type="private">create private league invite</button>`;
       } else {
+      
         html += `
               <button type="button" class="saito-multi-btn  game-invite-btn" data-type="open">create public invite</button>
               <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">create private invite</button>
