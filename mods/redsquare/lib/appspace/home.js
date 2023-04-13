@@ -136,6 +136,8 @@ class AppspaceHome {
     if(thread) {
       window.holder.appendChild(thread);
       this.app.browser.addElementAfterSelector(`<div id="redsquare-appspace-tweet-body" class="redsquare-appspace-body"></div>`, ".redsquare-appspace-header");
+    } else {
+      document.querySelector(".saito-main").innerHTML = `<div id="redsquare-appspace-tweet-body" class="redsquare-appspace-body"></div>`;
     }
 
     tweet.container = ".redsquare-appspace-body";
