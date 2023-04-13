@@ -79,7 +79,7 @@ class InviteManager {
 					}
 				}
 
-				for (let i = 0; i < this.mod.games[list].length; i++) {
+				for (let i = 0; i < this.mod.games[list].length && i < 5; i++) {
 					let newInvite = new Invite(
 						this.app,
 						this.mod,
