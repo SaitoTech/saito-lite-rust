@@ -118,7 +118,8 @@ class Post {
 
 
       //don't send empty posts
-      if (post_self.images.length == 0 && text.trim().length == 0) {
+      if (post_self.images.length == 0 && text.trim().length == 0 && post_self.source != "Retweet") {
+        siteMessage('Post Empty', 1000)
         return;
       }
 
