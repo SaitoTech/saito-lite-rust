@@ -144,26 +144,33 @@ class AppspaceHome {
     }
     //tweet.render_solo = true;
     tweet.render();
-    document.querySelector('.tweet-' + sig).scrollIntoView(); 
 
-    document.querySelectorAll('.redsquare-page-header-title').forEach(el => {
-      el.outerHTML = `<div id="redsquare-page-header-title" class="redsquare-page-header-title tweetmode"><i class="redsquare-redsquare fa-solid fa-arrow-left"></i> RED SQUARE</div>`;
-    });
+    //
+    // guarding against notifications tweet rendering issues
+    //
+    try {
 
-    document.querySelectorAll('.redsquare-page-header-title').forEach(el => {
-      el.addEventListener('click', (e) => {
-        setHash('home');
-        el.outerHTML = `<div id="redsquare-page-header-title" class="redsquare-page-header-title"><i class="redsquare-redsquare fa-solid fa-square"></i> RED SQUARE</div>`;
-        if (window.holder.querySelector('.redsquare-appspace-body')) {
-          document.querySelector('.redsquare-home').querySelector('.redsquare-appspace-body').remove();
-          document.querySelector('.redsquare-home').append(window.holder.querySelector('.redsquare-appspace-body'));
-          document.querySelector('.redsquare-home').append(document.querySelector('#redsquare-intersection'));
-          document.querySelector('.tweet-' + sig).scrollIntoView(); 
-          this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
-        }
+      document.querySelector('.tweet-' + sig).scrollIntoView(); 
+
+      document.querySelectorAll('.redsquare-page-header-title').forEach(el => {
+        el.outerHTML = `<div id="redsquare-page-header-title" class="redsquare-page-header-title tweetmode"><i class="redsquare-redsquare fa-solid fa-arrow-left"></i> RED SQUARE</div>`;
       });
-    });
 
+      document.querySelectorAll('.redsquare-page-header-title').forEach(el => {
+        el.addEventListener('click', (e) => {
+          setHash('home');
+           el.outerHTML = `<div id="redsquare-page-header-title" class="redsquare-page-header-title"><i class="redsquare-redsquare fa-solid fa-square"></i> RED SQUARE</div>`;
+          if (window.holder.querySelector('.redsquare-appspace-body')) {
+            document.querySelector('.redsquare-home').querySelector('.redsquare-appspace-body').remove();
+            document.querySelector('.redsquare-home').append(window.holder.querySelector('.redsquare-appspace-body'));
+            document.querySelector('.redsquare-home').append(document.querySelector('#redsquare-intersection'));
+            document.querySelector('.tweet-' + sig).scrollIntoView(); 
+            this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
+          }
+        });
+      });
+
+    } catch (err) {}
 
   }
 

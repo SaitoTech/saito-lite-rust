@@ -21,9 +21,9 @@ class Mixin extends ModTemplate {
 
     super(app);
 
-    this.name = "Crypto Wallet";
-    this.slug = "wallet";
-    this.appname = "Crypto";
+    this.name = "Mixin";
+    this.slug = "Mixin";
+    this.appname = "Mixin";
     this.description = "Adding support for Web3 Crypto transfers on Saito";
     this.categories = "Finance Utilities";
     this.icon = "fas fa-wallet";
@@ -150,6 +150,8 @@ class Mixin extends ModTemplate {
 
     this.app.modules.respondTo("mixin-crypto").forEach(module => {
       let crypto_module = new MixinModule(this.app, module.ticker, mixin_self, module.asset_id);
+      if (module.returnBalance) { crypto_module.returnBalance = module.returnBalance; }
+
       crypto_module.installModule(mixin_self.app);
       this.mods.push(crypto_module);
       this.app.modules.mods.push(crypto_module);
@@ -259,7 +261,6 @@ class Mixin extends ModTemplate {
     try {
       this.request(appId, sessionId, privateKey, method, uri).then(
         (res) => {
-console.log(res.data);
 	  let d = res.data;
 	  for (let i = 0; i < d.data.length; i++) {
 	    	/********************************************
@@ -305,7 +306,6 @@ console.log(res.data);
     try {
       this.request(appId, sessionId, privateKey, method, uri).then(
         (res) => {
-console.log(res.data);
 	  let d = res.data;
 	  for (let i = 0; i < d.data.length; i++) {
 	    /*******************************************
@@ -414,8 +414,6 @@ console.log(res.data);
     try {
       this.request(appId, sessionId, privateKey, method, uri, body).then(
         (res) => {
-console.log("WITHDRAWAL REQUEST SUBMITTED: ");
-console.log(res.data);
 	  let d = res.data;
 	  this.withdrawals.push(d.data);
 	  if (callback) { callback(res.data); }
@@ -442,13 +440,10 @@ console.log(res.data);
       trace_id		: getUuid(unique_hash) ,
       pin 		: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey) ,
     };
-console.log("AAAA 3");
 
     try {
       this.request(appId, sessionId, privateKey, method, uri, body).then(
         (res) => {
-console.log("WITHDRAWAL REQUEST SUBMITTED: ");
-console.log(res.data);
 	  let d = res.data;
 	  this.withdrawals.push(d.data);
 	  if (callback) { callback(res.data); }
@@ -500,8 +495,6 @@ console.log(res.data);
 
   checkBalance(asset_id, callback=null) {
 
-console.log("running check balance!");
-
     //
     // CHECK BALANCE
     //
@@ -519,12 +512,11 @@ console.log("running check balance!");
 	  for (let i = 0; i < this.mods.length; i++) {
 	    if (this.mods[i].asset_id === asset_id) {
 
-console.log("FOUND ASSET ID MOD: " + this.mods[i].ticker);
-
 	      let initial_balance = this.mods[i].balance;
 	      let initial_address = this.mods[i].destination;
 
 	      this.mods[i].balance = d.balance;
+  	      this.mods[i].balance_timestamp_last_fetched = new Date().getTime();
               this.mods[i].icon_url = d.icon_url;
 	      this.mods[i].deposit_entries  = d.deposit_entries;
 
