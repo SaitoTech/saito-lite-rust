@@ -123,34 +123,31 @@ class GameWizard {
     Array.from(document.querySelectorAll(".game-invite-btn")).forEach((gameButton) => {
       gameButton.addEventListener("click", async (e) => {
         e.stopPropagation();
-        //try {
-          let options = this.getOptions();
-          let isPrivateGame = e.currentTarget.getAttribute("data-type");
 
-          let c = await this.mod.verifyOptions(isPrivateGame, options);
+          let options = this.getOptions();
+          let gameType = e.currentTarget.getAttribute("data-type");
+
+          let c = await this.mod.verifyOptions(gameType, options);
           if (!c) {
             this.overlay.remove();
             return;
           }
 
-          if (isPrivateGame == "private") {
+          this.overlay.remove();
+
+          if (gameType == "private") {
             this.app.browser.logMatomoEvent("GameWizard", "CreatePrivateInvite", options.game);
-          } else if (isPrivateGame == "single") {
+          } else if (gameType == "single") {
             this.app.browser.logMatomoEvent("GameWizard", "PlaySinglePlayerGame", options.game);
-          } else if (isPrivateGame == "direct") {
+            this.mod.makeGameInvite(options, "private", this.obj);
+            return;
+          } else if (gameType == "direct") {
             this.app.browser.logMatomoEvent("GameWizard", "CreateDirectInvite", options.game);
           } else {
             this.app.browser.logMatomoEvent("GameWizard", "CreateOpenInvite", options.game);
           }
 
-          this.mod.makeGameInvite(options, isPrivateGame, this.obj);
-
-        /*} catch (err) {
-          console.warn(err);
-        }*/
-
-        this.overlay.remove();
-        return false;
+          this.mod.makeGameInvite(options, gameType, this.obj);
 
       });
     });

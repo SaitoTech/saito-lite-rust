@@ -194,6 +194,10 @@ Scrollbars
   max-width: 99%;
 }
 
+.saito-address.treated {
+  cursor: pointer;
+}
+
 .tip:hover .tiptext {
   visibility: visible;
 }
