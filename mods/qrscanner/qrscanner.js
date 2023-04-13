@@ -78,9 +78,9 @@ class QRScanner extends ModTemplate {
     x = this.attemptQRDecode();
 
     if (x == 1) {
-      console.log("working...");
+      //console.log("working...");
     } else {
-      console.log("wait 100....");
+      //console.log("wait 100....");
       setTimeout(() => {
         this.startQRDecoderInitializationLoop();
       }, 100);
@@ -166,7 +166,9 @@ class QRScanner extends ModTemplate {
 
     this.canvas_context = this.canvas.getContext("2d");
     this.decoder = new Worker('/qrscanner/quirc_worker.js');
-    this.decoder.onmessage = (msg) => { this.onDecoderMessage(msg) };
+    this.decoder.onmessage = (msg) => { 
+      this.onDecoderMessage(msg) 
+    };
 
     try {
       let stream = await navigator.mediaDevices.getUserMedia(this.constraints);
@@ -232,7 +234,8 @@ class QRScanner extends ModTemplate {
         this.last_scanned_raw = qrid;
         this.last_scanned_at = right_now;
         this.handleDecodedMessage(qrid);
-      } else if (qrid == this.last_scanned_raw) {
+        return;
+      } else if (qrid === this.last_scanned_raw) {
         this.last_scanned_at = right_now;
       }
     }
@@ -244,8 +247,6 @@ class QRScanner extends ModTemplate {
   // Else, the message is broadcast for other modules to utilize
   //
   handleDecodedMessage(msg) {
-
-console.log("MESSAGE: " + msg);
 
     //
     // remove scanline
@@ -259,7 +260,6 @@ console.log("MESSAGE: " + msg);
     //
     if (this.scanner_callback != null) {
       this.stop();
-      //this.decoder.terminate();
       this.scanner_callback(msg);
       return;
     }
@@ -268,8 +268,8 @@ console.log("MESSAGE: " + msg);
     // or this is a URL
     //
     if (this.app.browser.isValidUrl(msg)) {
-      this.decoder.terminate();
-      let c = sconfirm("Visit: " + msg + "?");
+      this.stop();
+      let c = await sconfirm("Visit: " + msg + "?");
       if (c) {
         this.stop();
       	window.location = msg;
@@ -282,7 +282,6 @@ console.log("MESSAGE: " + msg);
     //
     if (this.app.crypto.isPublicKey(msg)) {
       this.stop();
-      //this.decoder.terminate();
       if (this.app.wallet.returnPublicKey() === msg) {
           let myUserMenu = new MyUserMenu(this.app, msg);
           myUserMenu.render(this.app);
@@ -297,15 +296,12 @@ console.log("MESSAGE: " + msg);
     //
     // non-SAITO publickey?
     //
-    if (this.app.wallet.returnPreferredCryptoTicker() !== "SAITO") {
-      if (!msg.match(/^\S*$/)) {
-        if (msg.match(/[0-9a-f]+/i)) {
-          this.stop();
-      let c = sconfirm("Non-Saito Publickey: " + msg + "?");
-          let userMenu = new UserMenu(this.app, msg);
-          userMenu.render(this.app);
-          return;
-        }
+    if (!msg.match(/^\S*$/)) {
+      if (msg.match(/[0-9a-zA-Z]+/i)) {
+        this.stop();
+        let userMenu = new UserMenu(this.app, msg);
+        userMenu.render(this.app);
+        return;
       }
     }
 

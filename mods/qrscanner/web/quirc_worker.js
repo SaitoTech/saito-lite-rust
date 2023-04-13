@@ -21,7 +21,7 @@ importScripts('/qrscanner/quirc.js');
 
 self.onmessage = function(msg) {
   quirc_process_image_data(msg.data);
-  postMessage('done');
+  self.postMessage('done');
 }
 
 // Receives a bunch of raw data from the decoder,
@@ -31,8 +31,10 @@ self.decoded = function(i, version, ecc_level, mask, data_type, payload, payload
   console.log("decoded something");
   var payload_string = String.fromCharCode.apply(null, new Uint8Array(Module.HEAPU8.buffer, payload, payload_len));
 console.log("PS: " + payload_string);
+console.log(JSON.stringify({ i: i, version: version, ecc_level: ecc_level, mask: mask, data_type: data_type, payload: payload, payload_len: payload_len, payload_string: payload_string }));
   postMessage({ i: i, version: version, ecc_level: ecc_level, mask: mask, data_type: data_type, payload: payload, payload_len: payload_len, payload_string: payload_string });
 }
+
 
 // Receives a simple string with an error
 self.decode_error = function(errstr) {
@@ -66,4 +68,7 @@ console.log("in quirc_process_image_data...");
 
   // Note that "decoded" and/or "decode_error" will be called from within
   var a = Module._xprocess();
+
 }
+
+

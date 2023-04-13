@@ -93,13 +93,6 @@ class MixinModule extends CryptoModule {
 
     let trace_id = getUuid(unique_hash);
 
-//console.log("checking to see if we have received payment with unique_hash: " + unique_hash);
-//console.log("checking to see if we have received payment with trace_id: " + trace_id);
-//console.log("deposits complete: " + JSON.stringify(this.mixin.deposits));
-//console.log("this.mixin.deposits length: " + this.mixin.deposits.length);
-//console.log("this.options.transfers_inbound length: " + this.options.transfers_inbound.length);
-//console.log("this.options.transfers_outbound length: " + this.options.transfers_outbound.length);
-
     for (let i = 0; i < this.mixin.deposits.length; i++) {
       if (
         this.mixin.deposits[i].trace_id === trace_id
@@ -232,7 +225,6 @@ MixinModule.prototype.sendPayment = function(amount="", recipient="", unique_has
   if (withdrawal_address_exists === 1) {
 
     this.mixin.sendWithdrawalRequest(this.asset_id, withdrawal_address_id, destination, amount, unique_hash, function(d) {
-console.log("sent withdrawal request and received: " + JSON.stringify(d));
     });
     this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, unique_hash);
     return unique_hash;
@@ -246,22 +238,15 @@ console.log("sent withdrawal request and received: " + JSON.stringify(d));
 
     this.mixin.createWithdrawalAddress(mm_self.asset_id, destination, "", "", (d) => {
 
-//console.log("In the catch function in create Withdrawal Address in mixinmodule.");
-//console.log("d: " + JSON.stringify(d));
-
       let asset_id = d.data.asset_id;
       let withdrawal_address_id = d.data.address_id;
 
-//console.log("we have created a withdrawal address with " + mm_self.asset_id + " -- " + withdrawal_address_id + " -- " + destination);
-
       mm_self.mixin.sendWithdrawalRequest(mm_self.asset_id, withdrawal_address_id, destination, amount, unique_hash, (d) => {
-//console.log("sent withdrawal request and received: " + JSON.stringify(d));
       });
       mm_self.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, unique_hash);
 
     });
 
-//console.log("and returning unique hash");
     return unique_hash;
 
   }
