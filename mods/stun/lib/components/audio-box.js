@@ -16,9 +16,7 @@ class AudioBox {
         this.stream = null
     }
 
-
     render(stream) {
-
         if (!document.querySelector(`#audiostream${this.stream_id}`)) {
             this.app.browser.addElementToClass(AudioBoxTemplate(this.stream_id), this.container);
         }
@@ -26,16 +24,13 @@ class AudioBox {
         console.log(stream, 'stream')
         const audio_box = document.querySelector(`#audiostream${this.stream_id}`);
         audio_box.firstElementChild.srcObject = this.stream;
-
-        console.log(this);
+        // console.log(this);
     }
 
-    remove(){
-
-            let audio_box = document.querySelector(`#audiostream${this.stream_id}`);
-            audio_box.parentElement.removeChild(audio_box)
+    remove() {
+        let audio_box = document.querySelector(`#audiostream${this.stream_id}`);
+        audio_box.parentElement.removeChild(audio_box)
     }
-            
 }
 
 

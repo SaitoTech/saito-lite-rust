@@ -46,7 +46,6 @@ class Arcade extends ModTemplate {
     this.styles = ['/arcade/style.css'];
 
     this.affix_callbacks_to = [];
-    this.old_game_removal_delay = 2000000;
     this.services = [{ service: "arcade", domain: "saito" }];
 
     this.theme_options = {
@@ -169,12 +168,12 @@ class Arcade extends ModTemplate {
     if (!app.BROWSER) { return; }
     let arcade_self = this;
 
-    let cutoff = new Date().getTime() - this.old_game_removal_delay;
+    let cutoff = new Date().getTime() - 600000000;
 
     //
     // load open games from server
     //  ( status = "open" OR status = "private" ) AND
-    let sql = `SELECT * FROM games WHERE created_at > ${cutoff}`;
+    let sql = `SELECT * FROM games WHERE created_at > ${cutoff} AND status != 'close'`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql,
       (res) => {
         if (res.rows) {

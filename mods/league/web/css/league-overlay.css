@@ -262,7 +262,6 @@ span.attention {
   font-size: 6.4rem;
 }
 
-
 .admin-widget .saito-table-header, .admin-widget .saito-table-row {
   grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
   justify-items: center;
@@ -319,7 +318,6 @@ span.attention {
   color: var(--saito-secondary);
 }
 
-
 @media screen and (max-width: 1000px) {
   .league-overlay-body {
     display: flex;
@@ -359,5 +357,5 @@ span.attention {
     width: 100%;
     background-position: center center;
     height: 15rem;
-}
+  }
 }

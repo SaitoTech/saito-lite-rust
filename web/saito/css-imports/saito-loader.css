@@ -12,7 +12,7 @@
     background-attachment: fixed;
     background-position: center;
     animation-duration: 2s;
-    animation-name: pulse;
+    animation-name: loader-pulse;
     animation-iteration-count: infinite;
     position: relative;
     width: 70px;
@@ -24,7 +24,7 @@
     transform-origin: 50%, 50%;
 }
 
-@keyframes pulse {
+@keyframes loader-pulse {
     0% {
         transform: translate(-50%, -50%) scale(0.2);
         border-radius: 50%;

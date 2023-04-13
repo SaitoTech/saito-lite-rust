@@ -27,6 +27,7 @@
   transition: all 0.2s;
   background-color: var(--saito-gray-transparent);
 }
+
 .arcade-game-playerbox.available_slot {
   cursor: pointer;
 }
@@ -35,7 +36,6 @@
   opacity: 0.6;
   filter: grayscale(0.7);
 }
-
 
 .arcade-game-overlay .saito-table-row.arcade-game-player-row {
   display: grid;
@@ -115,23 +115,31 @@
 }
 
 .arcade_game_overlay_loader {
-    width: min(36rem, 100vw);
-    background: var(--saito-arcade-background);
-    padding: 6vh 10vw;
+  width: min(75rem, 100vw);
+  background: var(--saito-arcade-background);
+  padding: 10rem;
 }
 
-.arcade_game_overlay_loader .arcade-game-initializer-success-title,  
-.arcade_game_overlay_loader .game-loader-title {
+.arcade_game_overlay_loader .arcade-game-initializer-success-title, .arcade_game_overlay_loader .game-loader-title {
   font-size: 2.5rem;
   text-align: center;
-  margin-top: 0rem;
+  margin: 0;
 }
 
+.arcade_game_overlay_loader .arcade-game-initializer-success-button {
+  font-size: 1.8rem;
+  width: 70%;
+  margin: 0;
+}
 
-.arcade_game_overlay_loader .arcade-game-initializer-success-button{
-    font-size: 1.8rem;
-    margin: 1rem auto;
-    width: -webkit-fill-available;
+.arcade_game_overlay_loader .arcade-initializer {
+  text-align: center;
+  min-width: 18rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 5rem;
+  align-items: center;
 }
 
 @media screen and (max-width: 1000px) {
@@ -139,7 +147,7 @@
     width: 90vw;
     min-width: 60rem;
   }
-  .arcade-game-controls .saito-button{
+  .arcade-game-controls .saito-button {
     min-width: 18rem;
   }
 }
@@ -174,5 +182,4 @@
   .arcade-game-overlay-header-image {
     display: none;
   }
- 
 }

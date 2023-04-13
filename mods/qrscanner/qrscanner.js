@@ -100,9 +100,12 @@ class QRScanner extends ModTemplate {
     this.scanner_callback = null;
     if (mycallback) { this.scanner_callback = mycallback; }
 
-    document.body.innerHTML = this.returnScannerHTML();
+    this.app.browser.addElementToDom(this.returnScannerHTML());
+    //document.body.innerHTML = this.returnScannerHTML();
     document.querySelector('.close-scanner').onclick = () => {
-      window.location.reload();
+      //window.location.reload();
+      document.querySelector(".qrscanner-container").remove();
+      this.stop();
     };
 
     let scanner_self = this;
@@ -177,8 +180,14 @@ class QRScanner extends ModTemplate {
 
   stop() {
     this.decoder.terminate();
-    if (this.video)
+    if (this.video){
       this.video.srcObject.getTracks().forEach(track => track.stop());
+    }
+    if (document.querySelector(".qrscanner-container")){
+      document.querySelector(".qrscanner-container").remove();  
+    }
+    
+
   }
 
   render() {
@@ -249,7 +258,8 @@ console.log("MESSAGE: " + msg);
     // we know what we want to do (callback provided)
     //
     if (this.scanner_callback != null) {
-      this.decoder.terminate();
+      this.stop();
+      //this.decoder.terminate();
       this.scanner_callback(msg);
       return;
     }
@@ -259,10 +269,11 @@ console.log("MESSAGE: " + msg);
     //
     if (this.app.browser.isValidUrl(msg)) {
       this.decoder.terminate();
-      let c = confirm("Visit: " + msg + "?");
+      let c = sconfirm("Visit: " + msg + "?");
       if (c) {
-	window.location = msg;
-	return;	
+        this.stop();
+      	window.location = msg;
+      	return;	
       }     
     }
 
@@ -270,7 +281,8 @@ console.log("MESSAGE: " + msg);
     // or this is a publickey
     //
     if (this.app.crypto.isPublicKey(msg)) {
-      this.decoder.terminate();
+      this.stop();
+      //this.decoder.terminate();
       if (this.app.wallet.returnPublicKey() === msg) {
           let myUserMenu = new MyUserMenu(this.app, msg);
           myUserMenu.render(this.app);
@@ -288,6 +300,7 @@ console.log("MESSAGE: " + msg);
     if (this.app.wallet.returnPreferredCryptoTicker() !== "SAITO") {
       if (!msg.match(/^\S*$/)) {
         if (msg.match(/[0-9a-f]+/i)) {
+          this.stop();
           let userMenu = new UserMenu(this.app, msg);
           userMenu.render(this.app);
           return;

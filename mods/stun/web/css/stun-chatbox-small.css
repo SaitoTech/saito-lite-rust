@@ -1,4 +1,4 @@
-.video-call-component {
+.chat-manager-small {
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -32,7 +32,7 @@
 }
 
 
-.video-call-component.expanded .icon-btn {
+.chat-manager-small.expanded .icon-btn {
    display: block;
 }
 
@@ -69,21 +69,21 @@
 .icon-peer {
     border-radius: 0;
 }
-.video-call-component.expanded .icon-btn {
+.chat-manager-small.expanded .icon-btn {
     display: inline-flex;
 }
 
 /* Add smooth transition effects for the buttons */
-.video-call-component .icon-btn {
+.chat-manager-small .icon-btn {
     transition: transform 0.5s, opacity 0.5s;
 }
 
-.video-call-component.expanded .icon-btn {
+.chat-manager-small.expanded .icon-btn {
     transform: translateY(0);
     opacity: 1;
 }
 
-#disconnect-btn-extension {
+.disconnect-btn{
     background-color: var(--saito-primary);
 }
 
@@ -92,21 +92,24 @@
 }
 
 
+
 .audio-box.speaking {
-    border-color: lime;
-    animation: pulse .1s infinite;
+    border-color: var(--saito-secondary);
+    animation: speaker-pulse .1s infinite;
   }
 
-  @keyframes pulse {
+  @keyframes speaker-pulse {
     0%, 100% {
-        box-shadow: 0 0 20px 10px lime;
-        border-color: lime;
+        box-shadow: 0 0 20px 10px var(--saito-secondary);
+        border-color: var(--saito-secondary);
       }
       50% {
-        box-shadow: 0 0 20px 10px rgba(0, 255, 0, 0.5);
-        border-color: rgba(0, 255, 0, 0.5);
+        box-shadow: 0 0 20px 10px var(--saito-primary);
+        border-color: var(--saito-primary);
       }
   }
+
+
 
   
 
