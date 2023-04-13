@@ -176,7 +176,7 @@ class Arcade extends ModTemplate {
     //
     // load open games from server
     //  ( status = "open" OR status = "private" ) AND
-    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND status = 'over')`;
+    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND status = 'over') ORDER BY created_at DESC`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
       if (res.rows) {
         for (let record of res.rows) {
@@ -320,7 +320,7 @@ class Arcade extends ModTemplate {
         this.styles = ["/arcade/style.css"];
         this.renderIntos[qs] = [];
         let obj = new InviteManager(this.app, this, ".redsquare-sidebar");
-        //obj.lists = ["mine", "open"];
+        obj.lists = ["mine", "open"];
         obj.type = "short";
         this.renderIntos[qs].push(obj);
         this.attachStyleSheets();
