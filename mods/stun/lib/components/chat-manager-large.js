@@ -343,7 +343,7 @@ class VideoChatManager {
     this.video_boxes["local"].video_box.render(localStream, "large-wrapper");
     this.localStream = localStream;
     this.updateImages();
-    this.analyzeAudio(localStream, 'local');
+    // this.analyzeAudio(localStream, 'local');
     // segmentBackground(document.querySelector('#streamlocal video'), document.querySelector('#streamlocal canvas'), 1);
     // applyBlur(7);
   }
@@ -499,11 +499,28 @@ class VideoChatManager {
         if (average > threshold && !speaking) {
             // video_box.classList.add('speaking');
             let video_container = document.querySelector(`#stream${peer}`);
+
+            document.querySelectorAll('.video-box-container-large').forEach(item => {
+              // console.log(item.id, `stream${peer}`)
+
+              if(item.id === `stream${peer}`){
+                item.classList.add('speaker');
+              }else {
+                item.classList.remove('speaker');
+              }
+            })
+
+            setTimeout(()=> {
+              if(speaking) return;
+              document.querySelectorAll('.video-box-container-large').forEach(item => {
+                item.classList.remove('speaker');
+            });
+            },3000)
+
            let video_box =  video_container.querySelector(".video-box");
             video_box.click();
             speaking = true;
         } else if (average <= threshold && speaking) {
-            // video_box.classList.remove('speaking');
             speaking = false;
         }
 
