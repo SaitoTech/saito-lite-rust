@@ -119,7 +119,7 @@
   opacity: 0;
   animation: fade-in 0.5s ease-in;
   animation-fill-mode: forwards;
-  border: 2px solid var(--saito-primary);
+  border: 2px solid var(--saito-border-color-dark);
 }
 
 @keyframes fade-in {
@@ -141,7 +141,7 @@
 
 .side-videos .video-box-container-large {
   height: 30%;
-  border: 2px solid var(--saito-secondary);
+  border:  2px solid var(--saito-border-color-dark);
 }
 
 .stunx-chatbox .video-box-container-large {
@@ -464,6 +464,9 @@
   position: relative;
 }
 
+.speaker {
+  border: 1px solid var(--saito-primary) !important;
+}
 .control-list span label {
   position: absolute;
   color:white;

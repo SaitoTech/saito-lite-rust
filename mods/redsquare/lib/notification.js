@@ -109,26 +109,28 @@ class RedSquareNotification {
     if (obj) {
       obj.onclick = (e) => {
         let sig = e.currentTarget.getAttribute("data-id");
-	let tweet = this.mod.returnTweet(sig);
-	if (tweet) {
+      	let tweet = this.mod.returnTweet(sig);
+        
+      	if (tweet) {
           app.connection.emit('redsquare-home-tweet-render-request', (tweet));
           app.connection.emit('redsquare-home-loader-render-request');
           mod.loadChildrenOfTweet(sig, (tweets) => {
             app.connection.emit('redsquare-home-loader-hide-request');
-	    for (let i = 0; i < tweets.length; i++) {
+      	    for (let i = 0; i < tweets.length; i++) {
               app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
-	    }
+      	    }
           });
-	} else {
+      	} else {
           mod.loadTweetWithSig(sig, (tweet) => {
             app.connection.emit('redsquare-home-tweet-render-request', (tweet));
             mod.loadChildrenOfTweet(tweet.tx.transaction.sig, (tweets) => {
-	      for (let i = 0; i < tweets.length; i++) {
+              for (let i = 0; i < tweets.length; i++) {
                 app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
               }
             });
           });
-	}
+      	}
+      
       }
     }
   }
