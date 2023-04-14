@@ -22,7 +22,7 @@ class Warehouse extends ModTemplate {
 
   async addTransactionsToDatabase(blk) {
     try {
-      console.log("adding block to warehous : " + blk.returnHash());
+      console.log("adding block to warehouse : " + blk.returnHash());
       for (let i = 0; i < blk.transactions.length; i++) {
         if (blk.transactions[i].transaction.type >= -999) {
           for (let ii = 0; ii < blk.transactions[i].transaction.to.length; ii++) {
