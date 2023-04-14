@@ -280,10 +280,10 @@ class RedSquare extends ModTemplate {
     //
     // fetch content from local archive
     //
-    this.tweets_last_viewed_ts = new Date().getTime();
-    app.storage.loadTransactionsFromLocal("RedSquare", (50 * 1), (txs) => {
-      for (let i = 0; i < txs.length; i++) { this.addTweet(tx); }
-    });
+//    this.tweets_last_viewed_ts = new Date().getTime();
+//    app.storage.loadTransactionsFromLocal("RedSquare", (50 * 1), (txs) => {
+//      for (let i = 0; i < txs.length; i++) { this.addTweet(tx); }
+//    });
 
 
     //
@@ -346,7 +346,7 @@ class RedSquare extends ModTemplate {
             app.connection.emit("redsquare-notifications-render-request");
           }
         });
-      }, 1500);
+      }, 3500);
 
     }
 
@@ -374,8 +374,8 @@ class RedSquare extends ModTemplate {
       if (tweet_id != "") {
         let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}' ORDER BY created_at DESC`;
         this.loadTweetsFromPeer(peer, sql, (txs) => {
-          this.results_loaded = true;
           let x = [];
+          this.results_loaded = true;
           for (let z = 0; z < txs.length; z++) {
             if (txs[z].transaction.sig === tweet_id) {
               let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
@@ -492,6 +492,7 @@ class RedSquare extends ModTemplate {
         this.addTweet(newtx, true, true); // prepend and render ?
       }
       this.app.connection.emit("redsquare-home-render-request");
+
     } catch (err) {
       console.log("error in initial redsquare post fetch: " + err);
     }
@@ -655,6 +656,7 @@ class RedSquare extends ModTemplate {
     for (let i = 0; i < this.peers_for_notifications.length; i++) {
       let peer = this.peers_for_notifications[i];
       this.loadNotificationsFromPeer(peer, this.increment_for_notifications, () => {
+alert("loading more notifications...");
         if (this.notifications.length > pre_existing_notifications) { loaded_notifications = true; }
         let hash = app.browser.returnHashAndParameters();
         if (hash) {
@@ -863,10 +865,10 @@ class RedSquare extends ModTemplate {
         if (prepend == false) {
           for (let i = 0; i < this.tweets.length; i++) {
             if (this.tweets[i].updated_at > tweet.updated_at) {
-              //insertion_index++;
+              insertion_index++;
               break;
             } else {
-              insertion_index++;
+              //insertion_index++;
             }
           }
         }
@@ -1378,7 +1380,7 @@ class RedSquare extends ModTemplate {
 
     let hex_entries = [];
 
-    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 AND moderated IS NOT 1) AND (((num_replies > 0 OR num_likes > 0) AND parent_id IS NOT "") OR (parent_id IS "")) AND (sig IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10)) OR (thread_id IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10))  ORDER BY created_at ASC LIMIT 20`;
+    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 AND moderated IS NOT 1) AND (((num_replies > 0 OR num_likes > 0) AND parent_id IS NOT "") OR (parent_id IS "")) AND (sig IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10)) OR (thread_id IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10)) ORDER BY created_at ASC LIMIT 20`;
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 

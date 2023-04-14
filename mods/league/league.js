@@ -200,10 +200,8 @@ class League extends ModTemplate {
       let sql;
       
       if (this.browser_active || league_id) {
-        console.log("Load all leagues");
         sql = `SELECT * FROM leagues WHERE status = 'public' OR id = '${league_id}'`;
-      }else{
-        console.log("Load my leagues");
+      } else {
         let league_list = this.leagues.map(x => `'${x.id}'`).join(", ");
         sql = `SELECT * FROM leagues WHERE id IN (${league_list})`;
       }
@@ -1122,8 +1120,8 @@ class League extends ModTemplate {
       let newLeague = this.validateLeague(obj);
 
       //if (this.debug) { 
-        console.log(`Add ${newLeague.game} League, ${newLeague.id}`); 
-     // }
+      //console.log(`Add ${newLeague.game} League, ${newLeague.id}`); 
+      //}
 
       //
       // dynamic data-storage

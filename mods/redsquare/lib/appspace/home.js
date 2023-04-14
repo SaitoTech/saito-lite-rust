@@ -72,6 +72,7 @@ class AppspaceHome {
       this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
     }
 
+
     //
     // loop and render tweets
     //
