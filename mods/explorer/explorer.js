@@ -31,6 +31,11 @@ class ExplorerCore extends ModTemplate {
       return;
     });
 
+    expressapp.get("/explorer/css/explorer-base.css", function (req, res) {
+      res.sendFile(__dirname + "/web/css/explorer-base.css");
+      return;
+    });
+
     expressapp.get("/explorer/utils.js", function (req, res) {
       res.sendFile(__dirname + "/web/utils.js");
       return;
