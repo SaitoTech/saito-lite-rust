@@ -1,7 +1,7 @@
 const MixinAppspaceTemplate = require('./main.template.js');
-const MixinDeposit = require('./mixin-deposit');
-const MixinWithdraw = require('./mixin-withdraw.js');
-const MixinHistory = require('./mixin-history');
+const Deposit = require('./../../../../lib/saito/ui/saito-crypto/deposit');
+const Withdraw = require('./../../../../lib/saito/ui/saito-crypto/withdraw.js');
+const History = require('./../../../../lib/saito/ui/saito-crypto/history');
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class MixinAppspace {
@@ -10,7 +10,6 @@ class MixinAppspace {
     this.app = app;
     this.mod = mod;
     this.container = container || ".saito-main";
-    this.history_overlay = new SaitoOverlay(app, mod, true, true); 
   }
 
   render() {
@@ -63,7 +62,7 @@ class MixinAppspace {
         let balance = event.target.getAttribute("data-balance");
         let sender = event.target.getAttribute("data-sender");
 
-        let mixin_withdraw = new MixinWithdraw(app, mod);
+        let mixin_withdraw = new Withdraw(app, mod);
 
         mixin_withdraw.deposit_ticker = ticker;
         mixin_withdraw.withdraw_balance = balance;
@@ -80,7 +79,7 @@ class MixinAppspace {
           let confs = event.target.getAttribute("data-confs");
           let ticker = event.target.getAttribute("data-ticker");
 
-          let mixin_deposit = new MixinDeposit(app, mod);
+          let mixin_deposit = new Deposit(app, mod);
           mixin_deposit.address = address;
           mixin_deposit.confs = confs;
           mixin_deposit.ticker = ticker;
@@ -97,7 +96,7 @@ class MixinAppspace {
         let ticker = event.target.getAttribute("data-ticker");
         let his_exists = false;
 
-        let mixin_his = new MixinHistory(app, mod);
+        let mixin_his = new History(app, mod);
         mixin_his.his_asset_id = his_asset_id;
         mixin_his.ticker = ticker;
         mixin_his.his_exists = his_exists;
