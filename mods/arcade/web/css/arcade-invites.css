@@ -15,6 +15,10 @@
     margin-bottom: -1rem;
 }
 
+.saito-module-holder {
+    margin: 0 0 0 auto;
+}
+
 .saito-game-identicons {
     min-width: min-content;
     backdrop-filter: blur(1px);

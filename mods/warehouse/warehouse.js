@@ -22,7 +22,7 @@ class Warehouse extends ModTemplate {
 
   async addTransactionsToDatabase(blk) {
     try {
-      console.log("adding block to warehous : " + blk.returnHash());
+      console.log("adding block to warehouse : " + blk.returnHash());
       for (let i = 0; i < blk.transactions.length; i++) {
         if (blk.transactions[i].transaction.type >= -999) {
           for (let ii = 0; ii < blk.transactions[i].transaction.to.length; ii++) {
@@ -66,13 +66,17 @@ class Warehouse extends ModTemplate {
               let tname = "";
               let tmodule = "";
               if (blk.transactions[i].msg.type) {
-                ttype = blk.transactions[i].msg.type;
+                ttype = blk.transactions[i].type;
               }
               if (blk.transactions[i].msg.name) {
                 tname = blk.transactions[i].msg.name;
+              
               }
+
               if (blk.transactions[i].msg.module) {
                 tmodule = blk.transactions[i].msg.module;
+              } else if (Object.keys(blk.transactions[i].msg).length == 308) {
+                tmodule = "Encrypted";
               }
               let tx_from = "";
               if (blk.transactions[i].transaction.from.length > 0){
