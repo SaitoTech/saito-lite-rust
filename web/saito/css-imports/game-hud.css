@@ -92,7 +92,7 @@ ul li a {
   background-color: whitesmoke;
 }
 
-.status-header > #status-content, .status-message > #status-content{
+.status-header > #status-content, .status-message > #status-content , .hud-body .status .status-message {
   position: absolute;
   width: 94%;
   top: 50%;
