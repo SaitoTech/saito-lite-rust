@@ -72,12 +72,10 @@ class Warehouse extends ModTemplate {
                 tname = blk.transactions[i].msg.name;
               
               }
-              console.info(Object.keys(blk.transactions[i].msg).length);
-              console.info(blk.transactions[i].msg);
 
               if (blk.transactions[i].msg.module) {
                 tmodule = blk.transactions[i].msg.module;
-              } else if (Object.keys(blk.transactions[i].msg).length = 308) {
+              } else if (Object.keys(blk.transactions[i].msg).length == 308) {
                 tmodule = "Encrypted";
               }
               let tx_from = "";
