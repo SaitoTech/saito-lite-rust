@@ -78,9 +78,7 @@ class QRScanner extends ModTemplate {
     x = this.attemptQRDecode();
 
     if (x == 1) {
-      //console.log("working...");
     } else {
-      //console.log("wait 100....");
       setTimeout(() => {
         this.startQRDecoderInitializationLoop();
       }, 100);
