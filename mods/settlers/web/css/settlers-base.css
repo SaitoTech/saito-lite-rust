@@ -202,6 +202,10 @@ body {
   background-color: unset;
 }
 
+.player-box .plog {
+  display: none;
+}
+
 .plog .status-header {
   background-color: unset;
   box-shadow: unset;
