@@ -497,6 +497,7 @@
     $(".option").off();
     $(".option").on("click", function () {
       let card = $(this).attr("id"); //this is either "cancel" or the card's deck index (i.e. "11")
+      let cardobj = settlers_self.game.deck[0].cards[settlers_self.game.deck[0].hand[card]];
 
       //Allow a player not to play their dev card
       if (card == "cancel") {

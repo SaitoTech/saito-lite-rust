@@ -1,13 +1,19 @@
 :root {
-  --p1-color: /*#e44;*/
-  #fb2215;
-  --p2-color: /*#049;*/
-  #15eefb;
-  --p3-color: /*#094;*/
-  #7bfb15;
-  --p4-color: /*#D63;*/
-  #9515fb;
+  --p1-color: #b3031f;
+  --p2-color: #004193;
+  --p3-color: #00833a;
+  --p4-color: #8a6200;
   --text-color: #331800;
+}
+
+
+.mobile-log-tab {
+  background-color: #d3c38df5;
+  color: #424143;
+}
+
+.player-box {
+  min-height: 0vh;
 }
 
 .cardfan {
@@ -150,10 +156,14 @@ dt {
 .gameboard.dark {
   background-color: #369;
 }
+
 /*Richard background*/
-.gameboard {
+body {
   background: linear-gradient(-75deg, #369, #58b, #58b, #369);
   background-size: 100% 100%;
+}
+/* background moved to body so board is resizable */
+.gameboard {
   width: 100vw;
   height: 100vh;
   transition: background 2s;
@@ -214,6 +224,10 @@ dt {
 .status-message ul li:hover, .status ul li:hover, .cardselector:hover {
   color: black;
   background-color: #e7e7e7;
+}
+
+.status-message {
+  box-shadow: unset !important;
 }
 
 /*
@@ -279,11 +293,11 @@ dt {
   z-index: 1000;
 }
 
-.chover:hover, .producer.chover polygon:hover, .city.chover:hover {
+.chover:hover, .city.chover:hover {
   /*fill: whitesmoke;
   stroke: whitesmoke;*/
   background-color: whitesmoke;
-  cursor: crosshair;
+  cursor: pointer;
   border-color: whitesmoke;
 }
 
@@ -497,17 +511,6 @@ dt {
 .player-box .saito-identicon{
   width: 100%;
   height: unset;
-}
-
-/*.producer polygon{
-  fill: white;
-}
-
-.producer line{
-  stroke: white;
-}*/
-.producer {
-  box-shadow: 0 0 10px 5px;
 }
 
 .popup-confirm-menu .confirm_check {
@@ -940,12 +943,12 @@ ul.horizontal_list li.iconoption {
 
 
 .player-notice {
-  margin-bottom: 0.5em;
   line-height: 1.25em;
   display: flex;
   flex-direction: row;
   align-items: center;
   flex-wrap: wrap;
+  font-weight: 800;
 }
 
 .player-notice + .tbd {
@@ -1124,3 +1127,13 @@ ul.horizontal_list li.iconoption {
 .game-menu-sub-option, .game-menu-sub-sub-option{
   background-color: #d3c38dee;
 }
+
+
+
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .gameboard{
+    transform: scale(0.6);
+  }
+}
+

@@ -869,9 +869,6 @@ console.log("running UPDATE STATUS");
         this.game.state.canTrade = false;
         this.game.queue.splice(qe - 1, 2);
         this.is_sleeping = true;
-        for (let city of this.game.state.cities) {
-          document.querySelector(`#${city.slot}`).classList.remove("producer");
-        }
         let divname = `.sector_value:not(.bandit)`;
         $(divname).attr("style", "");
         $(".rolled").removeClass("rolled");

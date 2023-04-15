@@ -154,6 +154,15 @@ class Settlers extends GameTemplate {
     // add the HUD so we can leverage it
     //
     this.hud.render();
+  
+    //
+    // tweak - make hud draggable by body
+    //
+    document.querySelector(".hud-header").style.display = "none";
+    this.app.browser.makeDraggable("hud-body", "hud-body", dockable = true, null);
+    
+      
+ 
 
     //
     // mobile UI toggles
@@ -174,9 +183,17 @@ class Settlers extends GameTemplate {
     document.querySelector(".mobile-trading-container").style.gridTemplateColumns = "1fr";
     document.querySelector(".mobile-trading-container").style.gridTemplateRows = gtr;
     document.querySelector(".mobile-trading-container").style.rowGap = "2.5vh";
+
     document.querySelector(".hud-body .mobile .score").onclick = (e) => {
-      document.querySelector(".mobile-trading-container").style.display = "none";
       let s = document.querySelector(".scoreboard");
+      //
+      // desktop show the stats menu - which has the score
+      //
+      if (s.style.zIndex < 10) {
+        this.stats_overlay.render();
+        return;
+      }
+      document.querySelector(".mobile-trading-container").style.display = "none";
       if (s.style.display != "block") { s.style.display = "block"; } else { s.style.display = "none"; }
     }
     document.querySelector(".hud-body .mobile .trade").onclick = (e) => {
@@ -314,8 +331,6 @@ class Settlers extends GameTemplate {
           this.game.state.hexes[neighboringHex].value == value &&
           !this.game.state.hexes[neighboringHex].robber
         ) {
-          //Highlight cities which produce resources
-          document.querySelector(`#${city.slot}`).classList.add("producer");
           let resource = this.game.state.hexes[neighboringHex].resource;
           logMsg += `${this.game.playerNames[player-1]} gains ${resource}`;
           if (this.game.player == player) {
@@ -843,6 +858,9 @@ class Settlers extends GameTemplate {
   /*
     Refresh the Playerboxes with formatted information on the players
   */
+  /*
+    Refresh the Playerboxes with formatted information on the players
+  */
   displayPlayers() {
 
     this.updateScore();
@@ -851,21 +869,23 @@ class Settlers extends GameTemplate {
 
     let card_dir = "/settlers/img/cards/";
     for (let i = 1; i <= this.game.state.players.length; i++) {
-
+    
       this.game.state.players[i - 1].resources.sort();
       let num_resources = this.game.state.players[i - 1].resources.length;
       let num_cards = this.game.state.players[i - 1].devcards;
-
+      let userline = "your active trade offers";
+      if (i != this.game.player) { userline = "player active trade offers"; }
+    
       let newhtml = "";
 
       let playerHTML = `
           <div class="saito-user settlers-user saito-user-${this.game.players[i-1]}" id="saito-user-${this.game.players[i-1]}" data-id="${this.game.players[i-1]}">
             <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i-1])}"></div>
             <div class="saito-playername" data-id="${this.game.players[i-1]}">${this.game.playerNames[i-1]}</div>
-            <div class="saito-userline">vp: ${this.game.state.players[i-1].vp}</div>
+            <div class="saito-userline">${userline}</div>
           </div>`;
       this.playerbox.refreshTitle(playerHTML, i);
-
+    
       //Stats
       //anewhtml = `<div class="flexline">`;
       //Victory Point Card Tokens -- should move to VP track
@@ -913,7 +933,7 @@ class Settlers extends GameTemplate {
             }
             newhtml += `</span><i id="cleartrade" class="fas fa-ban"></i>`;
           } else {
-            newhtml += `<span id="tradenow">Trade</span>`;
+            //newhtml += `<span id="tradenow">Trade</span>`;
           }
           newhtml += `</div>`;
           //Interactive controls to toggle between "decks"
@@ -974,10 +994,14 @@ class Settlers extends GameTemplate {
     $('#cleartrade').on("click", function(){ 
       settlers_self.clearAdvert();
     });
-    $("#tradenow").off();
-    $("#tradenow").on("click", function(){
+    $(".player-box.me").off();
+    $(".player-box.me").on("click", function(){
       settlers_self.showResourceOverlay();
     });
+    //$("#tradenow").off();
+    //$("#tradenow").on("click", function(){
+    //  settlers_self.showResourceOverlay();
+    //});
 
     this.cardbox.attachCardEvents();
 
@@ -2942,9 +2966,6 @@ console.log("running UPDATE STATUS");
         this.game.state.canTrade = false;
         this.game.queue.splice(qe - 1, 2);
         this.is_sleeping = true;
-        for (let city of this.game.state.cities) {
-          document.querySelector(`#${city.slot}`).classList.remove("producer");
-        }
         let divname = `.sector_value:not(.bandit)`;
         $(divname).attr("style", "");
         $(".rolled").removeClass("rolled");
@@ -3453,6 +3474,7 @@ console.log("running UPDATE STATUS");
     $(".option").off();
     $(".option").on("click", function () {
       let card = $(this).attr("id"); //this is either "cancel" or the card's deck index (i.e. "11")
+      let cardobj = settlers_self.game.deck[0].cards[settlers_self.game.deck[0].hand[card]];
 
       //Allow a player not to play their dev card
       if (card == "cancel") {
