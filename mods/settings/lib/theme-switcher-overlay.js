@@ -28,7 +28,7 @@ class ThemeSwitcherOverlay {
         let theme = e.currentTarget.getAttribute('data-theme');
         if (theme != null) {
           this_self.app.browser.switchTheme(theme);
-          this_self.overlay.hide();
+          this_self.overlay.remove();
         }
       });
 

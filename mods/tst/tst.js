@@ -1,4 +1,6 @@
 const CryptoModule = require("../../lib/templates/cryptomodule");
+const WarningTemplate = require("./lib/ui/overlays/warning.template.js");
+
 
 class TST extends CryptoModule {
 
@@ -64,62 +66,17 @@ class TST extends CryptoModule {
    //
    async receivePayment(amount="", sender="", receiver="", timestamp, unique_hash="") {
      if (Math.random() > 0.5) {
-       console.log("received payment...");
        return 1;
      }
-console.log("not received payment...");
      return 0;
    }
 
 
 
   renderModalSelectCrypto(app, mod, cryptomod) {
-    return `
-      <div id="dot-warning" class="dot-warning">
-        <div id="dot-warning-header" class="dot-warning-header">Welcome to Kusama!</div>
-        <div id="dot-warning-body" class="dot-warning-body">
-TST is a non-existent crypto. This is a test module.
-
-<p style="margin-bottom:20px"></p>
-
-This shows how to make the Select Crypto module show up.
-
-        </div>
-        <div id="dot-warning-confirm" class="dot-warning-confirm button">Backup and Continue</div>
-      </div>
-      <style>
-.dot-warning {
-  background-image: url(/saito/img/dreamscape.png);
-  background-size: cover;
-  width: 80vw;
-  max-height: 80vh;
-  max-width: 750px;
-  padding: 30px;
-}
-.dot-warning-header {
-  font-size: 4em;
-  text-transform: uppercase;
-  font-weight: bold;
-  padding: 5px;
-}
-.dot-warning-body {
-  max-width: 650px;
-  font-size: 1.25em;
-  padding: 20px;
-  background: #0005;
-}
-.dot-warning-confirm {
-  max-width: 275px;
-  font-size: 1.2em;
-  margin-top: 20px;
-  text-align: center;
-  background: whitesmoke;
-  color: var(--saito-red);
-  border: 1px solid var(--saito-red);
-}
-      </style>
-    `;
+    return WarningTemplate(this.returnAddress());
   }
+
   attachEventsModalSelectCrypto(app, mod, cryptomod) {
     try {
       let dotgo = document.getElementById("dot-warning-confirm");

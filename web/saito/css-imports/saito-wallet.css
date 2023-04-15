@@ -292,7 +292,8 @@
 }
 
 .deposit {
-  color: #14b214;
+  color: #005900;
+  font-weight: 800;
 }
 
 .withdrawal {
@@ -301,10 +302,6 @@
 
 #mixin-balance-container .mixin-item {
   width: calc(100% * (1/4));
-}
-
-.mixin-his-created-at {
-  font-size: 1.15rem;
 }
 
 .mixin-balances_deposit, .mixin-balances_withdraw, .mixin-balance-history {
@@ -323,13 +320,6 @@
 
 /********    Checking balance overlay       *************/
 
-.game-crypto-transfer-manager-container {
-  background: var(--saito-background-color);
-  padding: 1rem;
-  width: 60rem;
-  text-align: center;
-  border-radius: 1rem;
-}
 
 .auth_title {
   font-size: 3.5rem;

@@ -11,6 +11,7 @@
 }
 
 .gameboard {
+  /*Note, todo: swap to smaller image &&& update all board coordinates :(  */
   background-image: url("/scotland/img/gameboard-large.jpg");
   width: 5135px;
   height: 3829px;
@@ -58,6 +59,12 @@
   min-height: 50px;
   /*background-color: whitesmoke;*/
 }
+
+.status-message { 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+ }
 
 .player_pawn{
   position: absolute;

@@ -19,7 +19,7 @@ body {
 
 
 /* Undo HUD styling for Acknowledge */
- .status-header,  .status-text-menu,  .status-text-menu ul,  .status-text-menu ul li,  .textchoice{
+ .status-header, .status-message, .status-text-menu,  .status-text-menu ul,  .status-text-menu ul li,  .textchoice{
   background: unset;
 }
  .textchoice:hover{
@@ -468,7 +468,9 @@ thead,  tfoot{
 .hud-status-update-message, .subrack {
   width: 100%;
 }
-
+.hud-status-update-message {
+  padding: 5px;
+}
 
 /*Rearrange HUD/Playerbox elements for portrait layout  */
 @media  (orientation: portrait){

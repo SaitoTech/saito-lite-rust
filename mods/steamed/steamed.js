@@ -297,7 +297,7 @@ initializeGame(game_id) {
           message = message.substring(0, message.length-2);
           this.updateLog(message + " are discarded from the offers.");
           Array.from(document.querySelectorAll(".offer img")).forEach(async c => {
-            this.animationSequence.push({callback: this.moveGameElement, params: [this.copyGameElement(c), "#discards", {}, ()=>{this.finishAnimation();}]});
+            this.animationSequence.push({callback: this.moveGameElement, params: [this.copyGameElement(c), "#discards", {resize: 1}, ()=>{this.finishAnimation();}]});
           });
           this.runAnimationQueue(250);
         }else{
@@ -431,9 +431,9 @@ initializeGame(game_id) {
         children[i].id = `c${i}`; 
         console.log(JSON.stringify(children[i]));
         if (i < gold){
-          this.animationSequence.unshift({callback: this.moveGameElement, params: [this.copyGameElement(`#c${i}`), destination, {}, ()=>{console.log("Discard2"); this.finishAnimation();}]});            
+          this.animationSequence.unshift({callback: this.moveGameElement, params: [this.copyGameElement(`#c${i}`), destination, {resize: 1}, ()=>{console.log("Discard2"); this.finishAnimation();}]});            
         }else{
-          this.animationSequence.unshift({callback: this.moveGameElement, params: [this.copyGameElement(`#c${i}`), `#discards`, {}, ()=>{console.log("Discard1"); this.finishAnimation();}]});            
+          this.animationSequence.unshift({callback: this.moveGameElement, params: [this.copyGameElement(`#c${i}`), `#discards`, {resize: 1}, ()=>{console.log("Discard1"); this.finishAnimation();}]});            
         }
       }
 
@@ -747,9 +747,12 @@ initializeGame(game_id) {
         steamSelf.removeEvents();
         let card = $(this).attr("data-id");
 
+        let card_pos = parseInt($(this).attr("id").substring(1));
+        steamSelf.game.state.hand.splice(card_pos, 1);
+
         steamSelf.addMove(`discard\t${steamSelf.game.player}\t${card}`);
 
-        steamSelf.moveGameElement(this.copyGameElement(this), `#discards`, {insert: 1, resize: 1}, ()=>{
+        steamSelf.moveGameElement(steamSelf.copyGameElement(this), `#discards`, {insert: 1, resize: 1}, ()=>{
           console.log("Sending move to discard card");
           steamSelf.endTurn();
         });
@@ -976,7 +979,7 @@ initializeGame(game_id) {
 
     var deck = {};
 
-    let definition = { cement: 16, coal: 18, coke: 14, cotton: 10, iron: 12, lightbulb: 6, pottery: 8};
+    let definition = { coal: 18, cement: 16, coke: 14, iron: 12, cotton: 10, pottery: 8 /*lightbulb: 6,*/ };
     for (let res in definition){
       for (let i = 0; i < definition[res]; i++){
         deck[`${res}${i}`] = { type: res };

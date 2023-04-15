@@ -16,7 +16,7 @@ module.exports = (app, mod, invite) => {
     for (let i = 0; i < invite.players.length; i++) {
       html += `
 
-          <div class="tip">
+          <div>
             <img class="saito-module-identicon saito-identicon" id-${invite.players[i]}" src="${app.keychain.returnIdenticon(invite.players[i])}">
           </div>
 
@@ -27,7 +27,7 @@ module.exports = (app, mod, invite) => {
     for (let i = 0; i < invite.desired_opponent_publickeys.length; i++) {
       html += `
 
-          <div class="tip requested_player">
+          <div class="requested_player">
             <img class="saito-module-identicon saito-identicon" id-${invite.desired_opponent_publickeys[i]}" src="${app.keychain.returnIdenticon(invite.desired_opponent_publickeys[i])}">
           </div>
 

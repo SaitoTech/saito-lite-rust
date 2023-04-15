@@ -184,28 +184,41 @@ try {
       publickey = this.transaction.to[0].add;
     }
 
-    //
-    // regenerate shared secret, because we can't decrypt this
-    //
-    let key = app.keychain.returnKey(publickey);
-    if (key != null) { if (key.aes_secret) {
-      app.connection.emit("encrypt-key-exchange", (publickey));
-      return;
-    } }
+
+console.log("decrypt message 1!");
 
     //
     // now we can try to decryp
     //
-try {
-    if (this.msg === null) {
-      this.dmsg = "";
-    } else {
-      const parsed_msg = this.msg;
-      this.dmsg = app.keychain.decryptMessage(publickey, parsed_msg);
+    try {
+      if (this.msg === null) {
+console.log("decrypt message 2!");
+        this.dmsg = "";
+      } else {
+console.log("decrypt message 3!");
+        const parsed_msg = this.msg;
+console.log("decrypt message 4!");
+        this.dmsg = app.keychain.decryptMessage(publickey, parsed_msg);
+console.log("decrypt message 5!");
+      }
+
+    } catch (e) {
+
+      console.error("ERROR: " + e);
+
+      //
+      // regenerate shared secret, because we can't decrypt this
+      //
+      let key = app.keychain.returnKey(publickey);
+      if (key != null) {
+        if (key.aes_secret) {
+          console.log("TRYING TO RE-GENERATE AES SECRET");
+          app.connection.emit("encrypt-key-exchange", (publickey));
+          return;
+        }
+      }
     }
-} catch (e) {
-  console.error("ERROR: " + e);
-}
+
     return;
   }
 

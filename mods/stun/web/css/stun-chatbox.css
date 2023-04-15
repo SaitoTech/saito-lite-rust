@@ -1,12 +1,22 @@
-
+.saito-overlay-closebox-btn {
+  width: 3rem;
+  height: 3rem;
+  font-size: 3rem;
+}
 .stunx-chatbox {
-  top: 0 !important;
-  left: 0 !important;
+  top: 0;
+  left: 0;
   width: 100vw;
   background-color: var(--saito-white) fff;
   position: fixed;
-  z-index: 20;
+  z-index: 100;
   transition: all 0.2s;
+  height: 100vh;
+  width: 100vw;
+}
+
+.stunx-chatbox ~ .chat-container {
+  z-index: 100;
 }
 
 .stunx-chatbox.minimize:hover {
@@ -15,8 +25,8 @@
 
 .stunx-chatbox .minimizer {
   position: absolute;
-  right: 3rem;
-  top: 0rem;
+  right: 2rem;
+  top: 1rem;
   z-index: 2;
 }
 
@@ -35,9 +45,21 @@
 }
 
 .minimize {
-  animation-name: minimize;
+  width: 20vw;
+  height: 30vh;
+  /* animation-name: minimize;
   animation-duration: 1s;
-  animation-fill-mode: forwards;
+  animation-fill-mode: forwards; */
+}
+
+.stunx-chatbox.minimize .minimizer {
+  bottom: 1rem;
+}
+.stunx-chatbox.minimize .minimizer i {
+  font-size: 2rem;
+}
+.stunx-chatbox.minimize .footer {
+  display: none;
 }
 
 .stunx-chatbox .minimizer i:hover {
@@ -47,8 +69,8 @@
 }
 
 .stunx-chatbox main {
-  width: 100vw;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
 }
 
 .stunx-chatbox .heading {
@@ -58,7 +80,7 @@
 .stunx-chatbox .large-wrapper {
   grid-gap: 1rem;
   /* padding: 1rem; */
-  height: 80vh;
+  height: 80%;
   background: black;
 }
 
@@ -73,7 +95,18 @@
   cursor: pointer;
   transition: all 0.5s ease;
   position: relative;
+  padding: 1rem;
 }
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
+  grid-gap: 1rem;
+  height: 100%;
+  width: 100%;
+  background: black;
+}
+
 .expanded-video {
   width: 75%;
   height: 100%;
@@ -86,7 +119,7 @@
   opacity: 0;
   animation: fade-in 0.5s ease-in;
   animation-fill-mode: forwards;
-  border: 2px solid var(--saito-primary);
+  border: 2px solid var(--saito-border-color-dark);
 }
 
 @keyframes fade-in {
@@ -101,18 +134,18 @@
 .stunx-chatbox .side-videos {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
   width: 25%;
   height: 100%;
 }
 
 .side-videos .video-box-container-large {
   height: 30%;
-
-  border: 2px solid var(--saito-secondary);
+  border:  2px solid var(--saito-border-color-dark);
 }
 
 .stunx-chatbox .video-box-container-large {
-  border-radius: .5rem;
+  border-radius: 0.5rem;
 }
 
 #localStream {
@@ -156,7 +189,6 @@
   0% {
     transform: rotate(0deg);
   }
-
   100% {
     transform: rotate(360deg);
   }
@@ -166,21 +198,19 @@
   0% {
     transform: scale(0.97);
   }
-
   50% {
     transform: scale(1);
   }
-
   75% {
     transform: scale(0.97);
   }
-
   100% {
     transform: scale(0.97);
   }
 }
 
 /*  video box */
+
 .video-box-container-large {
   background-color: black;
   display: flex;
@@ -243,34 +273,36 @@
   cursor: pointer;
   border: 1px solid transparent;
 }
+
 .video-box-container-large > #connection-message > p {
   color: var(--saito-white);
   font-size: 2.8rem;
 }
 
- .video-call-info {
+.video-call-info {
   color: var(--saito-white);
   line-height: 1.5;
   position: absolute;
   display: flex;
   align-items: center;
-  justify-content: center;
   left: 1rem;
   font-size: 1rem;
   bottom: 0;
   z-index: 2;
+  width: calc(100% - 1rem);
 }
 
- .video-call-info > p {
+.video-call-info > p {
   color: #ffffff69;
   font-size: 2rem;
-  white-space: nowrap; 
-  overflow: hidden; 
-  text-overflow: ellipsis; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   margin-right: 1rem;
+  max-width: 90%;
 }
 
- .video-call-info i {
+.video-call-info i {
   font-size: 2rem;
   margin-right: 1rem;
 }
@@ -314,6 +346,7 @@
 }
 
 /*  Add users */
+
 .add-users-container {
   min-width: 0;
   width: 50rem;
@@ -339,15 +372,16 @@
 .add-users-code-container i {
   cursor: pointer;
 }
+
 .add-users-footer-text {
   margin-top: 1rem;
   font-size: 1.4rem;
 }
+
 @keyframes lds-dual-ring {
   0% {
     transform: rotate(0deg);
   }
-
   100% {
     transform: rotate(360deg);
   }
@@ -357,15 +391,12 @@
   0% {
     transform: scale(0.97);
   }
-
   50% {
     transform: scale(1);
   }
-
   75% {
     transform: scale(0.97);
   }
-
   100% {
     transform: scale(0.97);
   }
@@ -390,10 +421,11 @@
   color: var(--saito-white);
   margin-right: 1rem;
 }
+
 .timer .counter {
   font-size: 2rem;
-  margin-bottom: 0.5rem;
 }
+
 .timer .counter span {
   color: orangered;
   font-size: 2rem;
@@ -402,6 +434,7 @@
 .users-on-call {
   display: flex;
   align-items: center;
+  gap: 1rem;
 }
 
 .users-on-call .image-list {
@@ -412,7 +445,6 @@
 .image-list img {
   width: 4rem;
   height: 4rem;
-
 }
 
 .control-list {
@@ -420,7 +452,7 @@
 }
 
 .control-list span {
-  margin-right: 1rem;
+  margin-right: 2rem;
   border-radius: 50%;
   padding: 1rem;
   width: 5rem;
@@ -429,7 +461,20 @@
   justify-content: center;
   align-items: center;
   background-color: var(--saito-white);
+  position: relative;
 }
+
+.speaker {
+  border: 1px solid var(--saito-primary) !important;
+}
+.control-list span label {
+  position: absolute;
+  color:white;
+  bottom: -2.5rem;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
 
 .control-list i {
   color: green;
@@ -453,55 +498,46 @@
 
 @media screen and (max-width: 900px) {
   .stunx-chatbox .large-wrapper {
-    /* display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
-    grid-auto-rows: 1fr; */
+
     grid-gap: 1rem;
     padding: 1rem;
     height: 70%;
     background: black;
   }
-
   .stunx-chatbox .footer {
     height: 30%;
   }
-
   .control-panel {
     padding-bottom: 5rem;
     flex-direction: column-reverse;
     align-items: flex-start;
     justify-content: start;
+    align-items: center;
+    gap: 2rem;
   }
-
   .control-panel .control-list {
-    margin-bottom: 1rem;
+    margin-bottom: 1.7rem;
   }
 }
 
 @media screen and (max-height: 850px) {
   .video-box-container-large:nth-child(2) {
   }
-
   .control-panel {
     padding-bottom: 10rem;
   }
-
   .control-panel span {
     width: 4rem;
     height: 4rem;
   }
-
   .control-panel .timer {
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
   }
-
   .control-panel .timer .counter {
     margin-left: 1rem;
   }
-
   .control-panel .timer .counter span {
     color: orangered;
     font-size: 2rem;
@@ -515,10 +551,10 @@
   color: var(--saito-white);
   display: flex;
   justify-content: center;
-  width: 100vw;
-  height: 100vh;
+  /* width: 100vw;
+  height: 100vh; */
   margin: 0;
-  position: fixed;
+  /* position: fixed; */
   color: var(--saito-white);
   top: 0;
   z-index: 200;
@@ -538,12 +574,10 @@
   z-index: 40;
 }
 
-
 .chat-settings-preview-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-right: 7rem;
   color: var(--saito-white);
 }
 
@@ -559,13 +593,16 @@
   justify-content: center;
   color: var(--saito-white);
 }
+
 .chat-settings-join-section h2 {
   margin-bottom: 1.5rem;
 }
+
 .chat-settings-join-section p {
   margin-bottom: 1.5rem;
   color: var(--saito-white);
 }
+
 .chat-settings-test-mic {
   margin-top: 1rem;
 }
@@ -677,17 +714,15 @@
 }
 
 @media screen and (max-width: 767px) {
-
   .video-call-info i {
     font-size: 1rem;
-    margin-right: .5rem;
+    margin-right: 0.5rem;
   }
   .chat-settings {
     flex-direction: column;
     padding: 1rem;
-    margin-top:0;
+    margin-top: 0;
   }
-
   .chat-settings video {
     height: 18rem;
   }
@@ -695,7 +730,6 @@
     margin-right: 0;
     margin-bottom: 2rem;
   }
-
   .chat-settings-preview {
     width: 100%;
   }
@@ -705,42 +739,32 @@
   .video-box-container-large > #connection-message p {
     font-size: 1rem;
   }
-
   .chat-settings select {
     width: 100%;
   }
- .video-call-info > p {
-    font-size: 1.2rem;
-    /* max-width: 50px; */
-    margin-right: .5rem;
+  .gallery {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
   }
-
   .expanded-video {
     width: 100%;
-
     margin-right: 0;
   }
   .side-videos {
     position: absolute;
     right: 0;
   }
-
-
-  .side-videos .video-call-info > p{
-        max-width: 50px;
-  }
-
 }
 
 @media screen and (min-width: 768px) and (max-width: 1024px) {
   .chat-settings {
     padding: 1rem;
   }
-
   .chat-settings-preview {
     width: 40rem;
   }
-
   .chat-settings select {
     width: 40rem;
   }

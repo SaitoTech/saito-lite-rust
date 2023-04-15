@@ -5,7 +5,6 @@
 
     super.initializeHTML(app);
 
-
     let game_mod = this;
 
     //
@@ -26,17 +25,6 @@
     } catch (err) {}
 
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addMenuOption("game-info", "Info");
-
-    this.menu.addSubMenuOption("game-info", {
-      text : "Log",
-      id : "game-log",
-      class : "game-log",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
-      }
-    });
     let initial_confirm_moves = "Newbie Mode"; 
     if (this.confirm_moves == 1) {
       initial_confirm_moves = "Expert Mode"; 
@@ -58,6 +46,17 @@
 	}
       }
     });
+
+    this.menu.addMenuOption("game-info", "Info");
+    this.menu.addSubMenuOption("game-info", {
+      text : "Log",
+      id : "game-log",
+      class : "game-log",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.log.toggleLog();
+      }
+    });
     this.menu.addSubMenuOption("game-info", {
       text : "Stats",
       id : "game-stats",
@@ -75,7 +74,7 @@
       class : "game-religious-conflict",
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
-        game_mod.displayReligiousConflictSheet();
+        game_mod.religious_overlay.render();
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -109,11 +108,51 @@
     this.menu.addMenuOption("game-factions", "Factions");
     
     this.menu.addSubMenuOption("game-factions", {
+      text : "Theological Debate",
+      id : "game-debate",
+      class : "game-debate",
+      callback : function(app, game_mod) {
+        game_mod.debate_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
+      text : "Publish Treatise",
+      id : "game-treatise",
+      class : "game-treatise",
+      callback : function(app, game_mod) {
+        game_mod.treatise_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
+      text : "95 Theses",
+      id : "game-95-theses",
+      class : "game-95-theses",
+      callback : function(app, game_mod) {
+        game_mod.theses_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
+      text : "Reformations",
+      id : "game-diet-of-reformations",
+      class : "game-diet-of-reformations",
+      callback : function(app, game_mod) {
+        game_mod.reformation_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
+      text : "Diet of Worms",
+      id : "game-diet-of-worms",
+      class : "game-diet-of-worms",
+      callback : function(app, game_mod) {
+        game_mod.diet_of_worms_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
       text : "Hapsburgs",
       id : "game-hapsburgs",
       class : "game-hapsburgs",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("hapsburg"); 
+        game_mod.faction_overlay.render("hapsburg");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -121,7 +160,7 @@
       id : "game-england",
       class : "game-england",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("england"); 
+        game_mod.faction_overlay.render("england");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -129,7 +168,7 @@
       id : "game-france",
       class : "game-france",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("france");
+        game_mod.faction_overlay.render("france");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -137,7 +176,7 @@
       id : "game-ottoman",
       class : "game-ottoman",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("ottoman");
+        game_mod.faction_overlay.render("ottoman");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -145,7 +184,7 @@
       id : "game-protestants",
       class : "game-protestants",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("protestant");
+        game_mod.faction_overlay.render("protestant");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -153,7 +192,7 @@
       id : "game-papacy",
       class : "game-papacy",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("papacy");
+        game_mod.faction_overlay.render("papacy");
       }
     });
 

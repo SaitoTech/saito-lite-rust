@@ -18,8 +18,7 @@ class ChatSetting {
         this.app = app;
         this.mod = mod;
 
-        app.connection.on('show-chat-setting', (room_code, to_join) => {
-            this.to_join = to_join;
+        app.connection.on('show-chat-setting', (room_code) => {
             if (room_code) {
                 this.room_code = room_code
             }
@@ -27,12 +26,27 @@ class ChatSetting {
             this.render();
         })
 
+        app.connection.on('join-meeting', (to_join)=> {
+            this.audioStream.getTracks().forEach(track => {
+                track.stop();
+                console.log(track);
+                console.log('stopping audio track');
+            })
+            this.videoStream.getTracks().forEach(track => {
+                track.stop();
+                console.log(track);
+                console.log('stopping video track');
+            })
+            this.remove();
+            this.app.connection.emit('show-chat-manager-large', to_join);
+        })
+
     }
 
 
 
     render() {
-        this.app.browser.addElementToDom(ChatSettingTemplate(this.app, this.mod));
+        this.app.browser.addElementToClass(ChatSettingTemplate(this.app, this.mod), 'stun-appspace-settings');
         this.attachEvents(this.app, this.mod);
     }
 
@@ -121,18 +135,7 @@ class ChatSetting {
 
 
         document.getElementById('join-button').addEventListener('click', () => {
-            this.audioStream.getTracks().forEach(track => {
-                track.stop();
-                console.log(track);
-                console.log('stopping audio track');
-            })
-            this.videoStream.getTracks().forEach(track => {
-                track.stop();
-                console.log(track);
-                console.log('stopping video track');
-            })
-            this.remove();
-            this.app.connection.emit('show-chat-manager');
+         
         })
 
         this.getUserMedia(videoElement);

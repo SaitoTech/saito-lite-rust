@@ -1,5 +1,14 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
+const DebateOverlay = require('./lib/ui/overlays/debate');
+const TreatiseOverlay = require('./lib/ui/overlays/treatise');
+const FactionOverlay = require('./lib/ui/overlays/faction');
+const ReligiousOverlay = require('./lib/ui/overlays/religious');
+const ReformationOverlay = require('./lib/ui/overlays/reformation');
+const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
+const ThesesOverlay = require('./lib/ui/overlays/theses');
 const JSON = require('json-bigint');
+
+
 
 //////////////////
 // CONSTRUCTOR  //
@@ -20,6 +29,17 @@ class HereIStand extends GameTemplate {
     this.categories      = "Games Boardgame Strategy";
 
     this.interface = 1; // graphical interface
+
+    //
+    // ui components
+    //
+    this.debate_overlay = new DebateOverlay(this.app, this);      // theological debates
+    this.treatise_overlay = new TreatiseOverlay(this.app, this);  // publish treatise
+    this.religious_overlay = new ReligiousOverlay(this.app, this);  // religious conflict sheet
+    this.faction_overlay = new FactionOverlay(this.app, this);  // faction sheet
+    this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
+    this.theses_overlay = new ThesesOverlay(this.app, this);  // 95 theses
+    this.reformation_overlay = new ReformationOverlay(this.app, this);  // reformations and counter-reformations
 
     //
     // this sets the ratio used for determining
@@ -1703,7 +1723,6 @@ Habsburg conquistadores:
 
 console.log("PLAYERS INFO: " + JSON.stringify(this.game.state.players_info));
 
-
 console.log("\n\n\n\n");
 console.log("---------------------------");
 console.log("---------------------------");
@@ -1720,16 +1739,11 @@ console.log("\n\n\n\n");
       // Game Queue
       //
       this.game.queue.push("round");
-
       this.game.queue.push("READY");
       this.game.queue.push("DECK\t1\t"+JSON.stringify(this.deck));
-
       this.game.queue.push("init");
 
     }
-
-
-console.log("INIT GAME SPACES!");
 
     //
     // attach events to spaces
@@ -1739,21 +1753,15 @@ console.log("INIT GAME SPACES!");
       this.spaces[key] = this.importSpace(this.game.spaces[key], key);
     }
 
-console.log("DONE INIT GAME SPACES!");
-
     //
     // add initial units
     //
     if (first_time_running == 1) {
 
-console.log("is first tiem running: " + this.game.state.scenario);
-
       //
-      // add some units
+      // 1517 scenario
       //
       if (this.game.state.scenario == "1517") {
-
-console.log("adding stuff!");
 
 	// OTTOMAN
         this.addArmyLeader("ottoman", "istanbul", "suleiman");
@@ -1849,7 +1857,9 @@ console.log("adding stuff!");
 	this.addDebater("protestant", "carlstadt-debater");
       }
 
-      
+      //
+      // 1532 scenario
+      //
       if (this.game.state.scenario === "1532") {
 
       }
@@ -1875,7 +1885,6 @@ console.log("adding stuff!");
 
     super.initializeHTML(app);
 
-
     let game_mod = this;
 
     //
@@ -1896,17 +1905,6 @@ console.log("adding stuff!");
     } catch (err) {}
 
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addMenuOption("game-info", "Info");
-
-    this.menu.addSubMenuOption("game-info", {
-      text : "Log",
-      id : "game-log",
-      class : "game-log",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
-      }
-    });
     let initial_confirm_moves = "Newbie Mode"; 
     if (this.confirm_moves == 1) {
       initial_confirm_moves = "Expert Mode"; 
@@ -1928,6 +1926,17 @@ console.log("adding stuff!");
 	}
       }
     });
+
+    this.menu.addMenuOption("game-info", "Info");
+    this.menu.addSubMenuOption("game-info", {
+      text : "Log",
+      id : "game-log",
+      class : "game-log",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.log.toggleLog();
+      }
+    });
     this.menu.addSubMenuOption("game-info", {
       text : "Stats",
       id : "game-stats",
@@ -1945,7 +1954,7 @@ console.log("adding stuff!");
       class : "game-religious-conflict",
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
-        game_mod.displayReligiousConflictSheet();
+        game_mod.religious_overlay.render();
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -1979,11 +1988,51 @@ console.log("adding stuff!");
     this.menu.addMenuOption("game-factions", "Factions");
     
     this.menu.addSubMenuOption("game-factions", {
+      text : "Theological Debate",
+      id : "game-debate",
+      class : "game-debate",
+      callback : function(app, game_mod) {
+        game_mod.debate_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
+      text : "Publish Treatise",
+      id : "game-treatise",
+      class : "game-treatise",
+      callback : function(app, game_mod) {
+        game_mod.treatise_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
+      text : "95 Theses",
+      id : "game-95-theses",
+      class : "game-95-theses",
+      callback : function(app, game_mod) {
+        game_mod.theses_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
+      text : "Reformations",
+      id : "game-diet-of-reformations",
+      class : "game-diet-of-reformations",
+      callback : function(app, game_mod) {
+        game_mod.reformation_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
+      text : "Diet of Worms",
+      id : "game-diet-of-worms",
+      class : "game-diet-of-worms",
+      callback : function(app, game_mod) {
+        game_mod.diet_of_worms_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
       text : "Hapsburgs",
       id : "game-hapsburgs",
       class : "game-hapsburgs",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("hapsburg"); 
+        game_mod.faction_overlay.render("hapsburg");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -1991,7 +2040,7 @@ console.log("adding stuff!");
       id : "game-england",
       class : "game-england",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("england"); 
+        game_mod.faction_overlay.render("england");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -1999,7 +2048,7 @@ console.log("adding stuff!");
       id : "game-france",
       class : "game-france",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("france");
+        game_mod.faction_overlay.render("france");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -2007,7 +2056,7 @@ console.log("adding stuff!");
       id : "game-ottoman",
       class : "game-ottoman",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("ottoman");
+        game_mod.faction_overlay.render("ottoman");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -2015,7 +2064,7 @@ console.log("adding stuff!");
       id : "game-protestants",
       class : "game-protestants",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("protestant");
+        game_mod.faction_overlay.render("protestant");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -2023,7 +2072,7 @@ console.log("adding stuff!");
       id : "game-papacy",
       class : "game-papacy",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("papacy");
+        game_mod.faction_overlay.render("papacy");
       }
     });
 
@@ -3405,15 +3454,16 @@ alert("Not Implemented");
 	his_self.game.state.tmp_catholic_reformation_bonus = 0;
 	his_self.game.state.tmp_reformations_this_turn = [];
 
+	his_self.game.queue.push("hide_overlay\ttheses");
+        his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation!");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("protestant_reformation\t"+player);
-	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
-        his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation.!");
+	his_self.game.queue.push("show_overlay\ttheses");
         his_self.convertSpace("protestant", "wittenberg");
         his_self.addUnit("protestant", "wittenberg", "regular");
         his_self.addUnit("protestant", "wittenberg", "regular");
@@ -3431,7 +3481,25 @@ alert("Not Implemented");
 	  if (mv[2]) { language_zone = mv[2]; }
           his_self.game.queue.splice(qe, 1);
 
+	  let target_spaces = his_self.countSpacesWithFilter(
+	    function(space) {
+	      if (
+	        space.religion === "protestant" &&
+	        (space.language === language_zone || language_zone == "all") &&
+	        !his_self.game.state.tmp_counter_reformations_this_turn.includes(space.key) &&
+	        his_self.isSpaceAdjacentToReligion(space, "catholic")
+	      ) {
+	        return 1;
+	      }
+	      return 0;
+	    }
+	  );
+
+console.log("TARGET SPACES: " + target_spaces);
+
 	  if (his_self.game.player == player) {
+	    if (target_spaces > 0) {
+
             his_self.playerSelectSpaceWithFilter(
 
 	      "Select Counter-Reformation Attempt",
@@ -3462,9 +3530,15 @@ alert("Not Implemented");
 		his_self.endTurn();
 	      },
 
-	      null
+	      null, // cancel func
+
+	      1     // permit board clicks
 
 	    );
+	    } else {
+	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
+	      his_self.endTurn();
+	    }
 	  }
 
           return 0;
@@ -3478,7 +3552,23 @@ alert("Not Implemented");
 	  if (mv[2]) { language_zone = mv[2]; }
           his_self.game.queue.splice(qe, 1);
 
+	  let target_spaces = his_self.countSpacesWithFilter(
+	    function(space) {
+	      if (
+		space.religion === "catholic" &&
+		!his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
+		(space.language === language_zone || language_zone == "all") &&
+		his_self.isSpaceAdjacentToReligion(space, "protestant")
+	      ) {
+	        return 1;
+	      }
+	      return 0;
+	    }
+	  );
+
 	  if (his_self.game.player == player) {
+	    if (target_spaces > 0) {
+
             his_self.playerSelectSpaceWithFilter(
 
 	      "Select Reformation Attempt",
@@ -3509,9 +3599,15 @@ alert("Not Implemented");
 		his_self.endTurn();
 	      },
 
-	      null
+	      null ,
+
+	      1     // permit board clicks
 
 	    );
+	    } else {
+	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
+	      his_self.endTurn();
+	    }
 	  }
 
           return 0;
@@ -9686,6 +9782,9 @@ HACK
 
     for (let i = 0; i < this.game.state.players_info.length; i++) {
       for (let ii = 0; ii < this.game.state.players_info[i].factions.length; ii++) {
+
+console.log(i + " -- " + ii);
+
         factions[this.game.state.players_info[i].factions[ii]] = {
 	  faction : this.game.state.players_info[i].factions[ii] ,
 	  vp_base : 0 ,
@@ -9699,6 +9798,7 @@ HACK
 	};
       }
     }
+console.log("calculating vp...");
     //
     // let factions calculate their VP
     //
@@ -9709,6 +9809,7 @@ HACK
       factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
     }
 
+console.log("calculating vp... 2");
 
     //
     // calculate keys controlled
@@ -9719,6 +9820,7 @@ HACK
 	factions[f].religious = this.returnNumberOfSpacesControlledByProtestants();
       }
     }
+console.log("calculating vp... 3");
 
     //
     // military victory
@@ -9747,12 +9849,14 @@ HACK
         factions['england'].details = "military victory";
       }
     }
+console.log("calculating vp... 4");
     if (factions['papacy']) {
       if (factions['papacy'].keys >= this.game.state.autowin_papacy_keys_controlled) {
         factions['papacy'].victory = 1;
         factions['papacy'].details = "military victory";
       }
     }
+console.log("calculating vp... 5");
 
     //
     // religious victory
@@ -9980,220 +10084,6 @@ HACK
     state.events.wartburg = 0;
 
     return state;
-
-  }
-
-
-  returnReligiousConflictChart() {
-
-    let chart = {};
-
-    chart['s0'] = {
-      top: "475px",
-      left: "64px",
-    }
-    chart['s1'] = {
-      top: "475px",
-      left: "140px",
-    }
-    chart['s2'] = {
-      top: "475px",
-      left: "216px",
-    }
-    chart['s3'] = {
-      top: "475px",
-      left: "292px",
-    }
-    chart['s4'] = {
-      top: "475px",
-      left: "368px",
-    }
-    chart['s5'] = {
-      top: "475px",
-      left: "444px",
-    }
-    chart['s6'] = {
-      top: "475px",
-      left: "520px",
-    }
-    chart['s7'] = {
-      top: "475px",
-      left: "596px",
-    }
-    chart['s8'] = {
-      top: "475px",
-      left: "672px",
-    }
-    chart['s9'] = {
-      top: "475px",
-      left: "748px",
-    }
-    chart['s10'] = {
-      top: "475px",
-      left: "824px",
-    }
-    chart['s11'] = {
-      top: "475px",
-      left: "900px",
-    }
-    chart['s12'] = {
-      top: "475px",
-      left: "976px",
-    }
-    chart['s13'] = {
-      top: "558px",
-      left: "64px",
-    }
-    chart['s14'] = {
-      top: "558px",
-      left: "140px",
-    }
-    chart['s15'] = {
-      top: "558px",
-      left: "216px",
-    }
-    chart['s16'] = {
-      top: "558px",
-      left: "292px",
-    }
-    chart['s17'] = {
-      top: "558px",
-      left: "368px",
-    }
-    chart['s18'] = {
-      top: "558px",
-      left: "444px",
-    }
-    chart['s19'] = {
-      top: "558px",
-      left: "520px",
-    }
-    chart['s20'] = {
-      top: "558px",
-      left: "596px",
-    }
-    chart['s21'] = {
-      top: "558px",
-      left: "672px",
-    }
-    chart['s22'] = {
-      top: "558px",
-      left: "748px",
-    }
-    chart['s23'] = {
-      top: "558px",
-      left: "824px",
-    }
-    chart['s24'] = {
-      top: "558px",
-      left: "900px",
-    }
-    chart['s25'] = {
-      top: "558px",
-      left: "976px",
-    }
-    chart['s26'] = {
-      top: "643px",
-      left: "64px",
-    }
-    chart['s27'] = {
-      top: "643px",
-      left: "140px",
-    }
-    chart['s28'] = {
-      top: "643px",
-      left: "216px",
-    }
-    chart['s29'] = {
-      top: "643px",
-      left: "292px",
-    }
-    chart['s30'] = {
-      top: "643px",
-      left: "368px",
-    }
-    chart['s31'] = {
-      top: "643px",
-      left: "444px",
-    }
-    chart['s32'] = {
-      top: "643px",
-      left: "520px",
-    }
-    chart['s33'] = {
-      top: "643px",
-      left: "596px",
-    }
-    chart['s34'] = {
-      top: "643px",
-      left: "672px",
-    }
-    chart['s35'] = {
-      top: "643px",
-      left: "748px",
-    }
-    chart['s36'] = {
-      top: "643px",
-      left: "824px",
-    }
-    chart['s37'] = {
-      top: "643px",
-      left: "900px",
-    }
-    chart['s38'] = {
-      top: "643px",
-      left: "976px",
-    }
-    chart['s39'] = {
-      top: "475px",
-      left: "64px",
-    }
-    chart['s40'] = {
-      top: "726px",
-      left: "140px",
-    }
-    chart['s41'] = {
-      top: "726px",
-      left: "216px",
-    }
-    chart['s42'] = {
-      top: "726px",
-      left: "292px",
-    }
-    chart['s43'] = {
-      top: "726px",
-      left: "368px",
-    }
-    chart['s44'] = {
-      top: "726px",
-      left: "444px",
-    }
-    chart['s45'] = {
-      top: "726px",
-      left: "520px",
-    }
-    chart['s46'] = {
-      top: "726px",
-      left: "596px",
-    }
-    chart['s47'] = {
-      top: "726px",
-      left: "672px",
-    }
-    chart['s48'] = {
-      top: "726px",
-      left: "672px",
-    }
-    chart['s49'] = {
-      top: "726px",
-      left: "748px",
-    }
-    chart['s50'] = {
-      top: "726px",
-      left: "824px",
-    }
-
-    return chart;
 
   }
 
@@ -10886,15 +10776,9 @@ HACK
 console.log("QUEUE: " + JSON.stringify(this.game.queue));
 console.log("MOVE: " + mv[0]);
 
-        //
-        // round
-        // init
 	//
-        if (mv[0] == "init") {
-          this.game.queue.splice(qe, 1);
-	  return 1;
-        }
-
+	// entry point for every round in the game
+	//
         if (mv[0] === "round") {
 
 	  this.game.state.round++;
@@ -10917,13 +10801,15 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  if (this.game.state.round == 1) {
 
+  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
   	    this.game.queue.push("diet_of_worms");
+  	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    //
 	    // cards dealt before diet of worms
 	    //
 	    this.game.queue.push("card_draw_phase");
-	    this.updateLog("Luther's 95 Theses!");
-	    this.game.queue.push("event\t1\t008");
+//	    this.updateLog("Luther's 95 Theses!");
+//	    this.game.queue.push("event\t1\t008");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -10939,9 +10825,29 @@ console.log("MOVE: " + mv[0]);
           return 1;
         }
 
+        if (mv[0] == "init") {
+          this.game.queue.splice(qe, 1);
+	  return 1;
+        }
+
 	if (mv[0] === "halt") {
 	  return 0;
 	}
+
+	if (mv[0] === "show_overlay") {
+	  if (mv[1] === "theses") { this.theses_overlay.render(); }
+	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.render(); }
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+	if (mv[0] === "hide_overlay") {
+	  if (mv[1] === "theses") { this.theses_overlay.hide(); }
+	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.hide(); }
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+
+
 
 
 	if (mv[0] === "build") {
@@ -12273,15 +12179,14 @@ console.log(JSON.stringify(mv));
 	//
 	if (mv[0] === "counter_or_acknowledge") {
 
-//	  if (this.game.state.skip_counter_or_acknowledge == 1) {
-//            this.addMove("RESOLVE\t"+this.app.wallet.returnPublicKey());
-//	    this.endTurn();
-//	    return;
-// 	  }
+	  if (this.game.state.skip_counter_or_acknowledge == 1) {
+            this.game.queue.splice(qe, 1);
+	    return 1;
+ 	  }
 
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
 	    this.updateStatus("acknowledged");
-	    return;
+	    return 0;
 	  }
 
 	  let msg = mv[1];
@@ -14898,12 +14803,12 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  //
 	  let new_cards = this.returnNewCardsForThisTurn(this.game.state.round);
 
-console.log("==============");
-console.log("CARDS IN DECK:");
-console.log("==============");
-for (let key in new_cards) {
-  console.log(key);
-}
+//console.log("==============");
+//console.log("CARDS IN DECK:");
+//console.log("==============");
+//for (let key in new_cards) {
+//  console.log(key);
+//}
 
 	  
 	  //
@@ -16496,7 +16401,13 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
   }
 
 
-
+  countSpacesWithFilter(filter_func) {
+    let count = 0;
+    for (let key in this.game.spaces) {
+      if (filter_func(this.game.spaces[key]) == 1) { count++; }
+    }
+    return count;
+  }
 
   playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
 
@@ -16507,12 +16418,15 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     html += '<ul>';
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
-        html += '<li class="option" id="' + key + '">' + key + '</li>';
+        html += '<li class="option .'+key+'" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
-	  document.getElementById(key).onclick = (e) => {
-	    $('.option').off();
-	    mycallback(key);
-	  }
+	  let t = "."+key;
+	  document.querySelectorAll(t).forEach((el) => {
+	    el.onclick = (e) => {
+	      $('.option').off();
+	      mycallback(key);
+	    }
+	  });
 	}
       }
     }
@@ -19259,9 +19173,6 @@ return;
 
 
 
-
-
-
   displayDebaters() {
 
     let html = `<div class="personage_overlay" id="personage_overlay">`;
@@ -19367,17 +19278,7 @@ return;
   }
 
   displayTheologicalDebate() {
-
-    let html = `
-      <div class="theological_debate_sheet" id="theological_debate_sheet">
-	<div class=".status"></div>
-	<div class="attacker_debater"></div>
-	<div class="defender_debater"></div>
-      </div>
-    `;
-
-    this.overlay.showOverlay(this.app, this, html);
-
+    this.debate_overlay.render();
   }
 
 
@@ -19470,120 +19371,10 @@ return;
 
 
   displayFactionSheet(faction) {
-
-    this.overlay.showOverlay(this.app, this, this.factions[faction].returnFactionSheet(faction));
-    let controlled_keys = 0;
-    
-    for (let key in this.game.spaces) {
-      if (this.game.spaces[key].type === "key") {
-        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
-          controlled_keys++;
-	}
-      }
-    }
-    let keyboxen = '';
- 
-    // ENGLAND
-    if (this.factions[faction].key === "england") {
-      let total_keys = 9;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = this.factions[faction].marital_status; i < 7; i++) {
-          keyboxen += `<div class="faction_sheet_keytile england_marital_status${i+1}" id="england_marital_status_keytile${i+1}"></div>`;
-      }
-      for (let i = 1; i <= 9; i++) {
-        if (i > (9-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // FRANCE
-    if (this.factions[faction].key === "france") {
-      let total_keys = 11;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 0; i < 7; i++) {
-          keyboxen += `<div class="faction_sheet_keytile france_chateaux_status${i+1}" id="france_chateaux_status_keytile${i+1}"></div>`;
-      }
-      for (let i = 1; i <= 11; i++) {
-        if (i > (11-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // OTTOMAN
-    if (this.factions[faction].key === "ottoman") {
-      let total_keys = 11;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 0; i <= 10; i++) {
-          keyboxen += `<div class="faction_sheet_keytile ottoman_piracy_status${i}" id="ottoman_piracy_status_keytile${i}"></div>`;
-      }
-      for (let i = 1; i <= 11; i++) {
-        if (i > (11-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // PAPACY
-    if (this.factions[faction].key === "papacy") {
-      let total_keys = 7;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 0; i < 12; i++) {
-          keyboxen += `<div class="faction_sheet_keytile papacy_construction_status${i+1}" id="papacy_construction_status_keytile${i+1}"></div>`;
-      }
-      for (let i = 1; i <= 7; i++) {
-        if (i >= (7-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // PROTESTANTS
-    if (this.factions[faction].key === "protestant") {
-
-      let total_keys = 11;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 0; i <= 6; i++) {
-	  let box_inserts = "";
-	  if (this.game.state.translations['new']['german'] == i) {
-            box_inserts += `<div class="new_testament_german_tile" id="new_testament_german_tile"></div>`;
-	  }
-	  if (this.game.state.translations['new']['french'] == i) {
-            box_inserts += `<div class="new_testament_french_tile" id="new_testament_french_tile"></div>`;
-	  }
-	  if (this.game.state.translations['new']['english'] == i) {
-            box_inserts += `<div class="new_testament_english_tile" id="new_testament_english_tile"></div>`;
-	  }
-          keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}">${box_inserts}</div>`;
-      }
-      for (let i = 1; i <= 11; i++) {
-        if (i > (11-remaining_keys)) {
-	  let box_inserts = "";
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // HAPSBURG
-    if (this.factions[faction].key === "hapsburg") {
-      let total_keys = 14;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 1; i <= 14; i++) {
-	if (this.game.state.translations['german']['full'] == i) {
-          box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
-	}
-	if (this.game.state.translations['french']['full'] == i) {
-          box_inserts += `<div class="bible_french_tile" id="bible_french_tile"></div>`;
-	}
-	if (this.game.state.translations['english']['full'] == i) {
-          box_inserts += `<div class="bible_english_tile" id="bible_english_tile"></div>`;
-	}
-        if (i > (14-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    document.getElementById("faction_sheet").innerHTML = keyboxen;
+    this.faction_overlay.render(faction);
   }
 
   returnFactionSheetKeys() {
-    
   }
 
   displayBoard() {
@@ -20240,7 +20031,6 @@ return;
 
     if (!this.game.spaces[key]) { return; }
 
-    let obj = document.getElementById(key);
     let space = this.game.spaces[key];
     let tile = this.returnSpaceTile(space);
 
@@ -20280,19 +20070,22 @@ return;
     //
     if (tile === "") { show_tile = 0; }
 
-    if (show_tile === 1) {
-      obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
-      obj.innerHTML += this.returnArmies(space);
-      obj.innerHTML += this.returnNavies(space);
-      obj.innerHTML += this.returnMercenaries(space);
-      obj.innerHTML += this.returnPersonages(space);
-    }
+    let t = "."+key;
+    document.querySelectorAll(t).forEach((obj) => {
 
+      if (show_tile === 1) {
+        obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
+        obj.innerHTML += this.returnArmies(space);
+        obj.innerHTML += this.returnNavies(space);
+        obj.innerHTML += this.returnMercenaries(space);
+        obj.innerHTML += this.returnPersonages(space);
+      }
 
-    // add unrest if needed
-    if (this.isSpaceInUnrest(space)) {
-      obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
-    }
+      if (this.isSpaceInUnrest(space)) {
+        obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
+      }
+
+    });
 
   }
 
@@ -20354,7 +20147,12 @@ return;
 
   displayVictoryTrack() {
 
+console.log("into calculate victory points...");
+
     let factions_and_scores = this.calculateVictoryPoints();
+
+console.log("F&S: ");
+console.log(JSON.stringify(factions_and_scores));
 
     let x = this.returnVictoryPointTrack();
 

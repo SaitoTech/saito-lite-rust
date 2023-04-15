@@ -1,0 +1,24 @@
+
+.theses-overlay {
+    height: 90vh;
+    width: 90vw;
+    overflow: hidden;
+}
+
+.theses-overlay .status {
+    position: fixed;
+    transform: translate(-50%, 20%);
+    left: 25%;
+    mind-width: auto;
+    height: 8rem;
+    background-color: whitesmoke;
+    z-index: 10;
+    border-radius: 1rem;
+}
+
+.theses-overlay .gameboard {
+    position: relative;
+    transform: translate(-50%, -18%) scaleX(0.7) scaleY(0.7);
+    left: 30%;
+}
+

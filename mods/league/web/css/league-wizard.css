@@ -72,7 +72,7 @@
   margin-top: 0.5rem;
 }
 
-.game-wizard-advanced-return-btn {
+/*.game-wizard-advanced-return-btn {
   font-size: 1.5rem;
   padding: 1rem 1.5rem;
   text-align: center;
@@ -85,7 +85,7 @@
 .game-wizard-advanced-return-btn:hover {
   color: black;
   background-color: white;
-}
+}*/
 
 /* Game Advanced Options Styling*/
 
@@ -116,7 +116,8 @@
   display: grid;
   max-height: 80vh;
   height: min-content;
-  width: 60vw;
+  width: 80rem;
+  max-width: 75vw;
   overflow-y: auto;
   grid-template-rows: min-content auto;
   background: var(--saito-arcade-overlay-background);
@@ -329,18 +330,18 @@ input[type="text"], textarea {
 
 @media screen and (max-width: 900px) {
   .league-wizard-overlay {
-    width: 95vw;
+    max-width: 95vw;
   }
 }
 
 @media screen and (max-width: 768px) {
-  #game-wizard-advanced-return-btn {
+  /*#game-wizard-advanced-return-btn {
       position: absolute;
       bottom: -2rem;
       left: 50%;
       transform: translateX(-51%);
       z-index: 2;
-  }
+  }*/
 
   .game-wizard-advanced-box {
     padding: 0px !important ;

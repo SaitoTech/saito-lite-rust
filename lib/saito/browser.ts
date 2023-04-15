@@ -12,7 +12,6 @@ const UserMenu = require("./ui/modals/user-menu/user-menu");
 const MyUserMenu = require("./ui/modals/my-user-menu/my-user-menu");
 
 
-
 class Browser {
   public app: any;
   public browser_active: any;
@@ -245,8 +244,9 @@ class Browser {
           e.target?.classList?.contains("saito-identicon") || e.target?.classList?.contains("saito-address")
         ) {
 
+          let disable_click = e.target.getAttribute("data-disable");
           let publickey = e.target.getAttribute("data-id");
-          if (!publickey || !app.crypto.isPublicKey(publickey)) {
+          if (!publickey || !app.crypto.isPublicKey(publickey) || disable_click === "true") {
             return;
           }
           if (publickey !== app.wallet.returnPublicKey()) {
@@ -1608,7 +1608,7 @@ class Browser {
           document.querySelector("#promptval").focus();
           document.querySelector("#promptval").select();
           setTimeout(() => {
-            document.querySelector("#alert-box").style.top = "0";
+            document.querySelector("#saito-alert-box").style.top = "0";
           }, 100);
           document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
             if (event.keyCode === 13) {
@@ -1767,6 +1767,21 @@ class Browser {
       console.debug(this.app.options);
     }
   }
+
+  isValidUrl(urlString) {
+    try {
+      var inputElement = document.createElement('input');
+      inputElement.type = 'url';
+      inputElement.value = urlString;
+
+      if (!inputElement.checkValidity()) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (err) {}
+    return false;
+  } 
 
 }
 export default Browser;

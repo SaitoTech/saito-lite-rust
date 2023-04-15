@@ -44,7 +44,7 @@ class RedSquareMenu {
   attachEvents() {
 
     document.querySelector(".redsquare-menu-home").onclick = (e) => {
-      setHash('home')
+      setHash('home');
       this.app.connection.emit("redsquare-home-render-request");
     }
 

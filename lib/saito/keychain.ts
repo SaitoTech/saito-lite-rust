@@ -479,6 +479,10 @@ class Keychain {
     if (publickey == "") { return; }
     this.addKey(publickey, { aes_publickey : aes_publickey , aes_privatekey : aes_privatekey , aes_secret : shared_secret});
     this.saveKeys();
+
+console.log("SAVED CRYPTO AES: " + publickey);
+console.log(JSON.stringify(this.returnKey(publickey)));
+
     return true;
   }
 

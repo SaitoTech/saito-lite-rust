@@ -24,8 +24,8 @@ class RegisterUsername {
 
   }
 
-  render() {
-    this.overlay.show(RegisterUsernameTemplate(), this.callback);
+  render(msg = "") {
+    this.overlay.show(RegisterUsernameTemplate(msg), this.callback);
     this.attachEvents();
   }
 

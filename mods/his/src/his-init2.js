@@ -14,7 +14,6 @@
 
 console.log("PLAYERS INFO: " + JSON.stringify(this.game.state.players_info));
 
-
 console.log("\n\n\n\n");
 console.log("---------------------------");
 console.log("---------------------------");
@@ -31,16 +30,11 @@ console.log("\n\n\n\n");
       // Game Queue
       //
       this.game.queue.push("round");
-
       this.game.queue.push("READY");
       this.game.queue.push("DECK\t1\t"+JSON.stringify(this.deck));
-
       this.game.queue.push("init");
 
     }
-
-
-console.log("INIT GAME SPACES!");
 
     //
     // attach events to spaces
@@ -50,21 +44,15 @@ console.log("INIT GAME SPACES!");
       this.spaces[key] = this.importSpace(this.game.spaces[key], key);
     }
 
-console.log("DONE INIT GAME SPACES!");
-
     //
     // add initial units
     //
     if (first_time_running == 1) {
 
-console.log("is first tiem running: " + this.game.state.scenario);
-
       //
-      // add some units
+      // 1517 scenario
       //
       if (this.game.state.scenario == "1517") {
-
-console.log("adding stuff!");
 
 	// OTTOMAN
         this.addArmyLeader("ottoman", "istanbul", "suleiman");
@@ -160,7 +148,9 @@ console.log("adding stuff!");
 	this.addDebater("protestant", "carlstadt-debater");
       }
 
-      
+      //
+      // 1532 scenario
+      //
       if (this.game.state.scenario === "1532") {
 
       }

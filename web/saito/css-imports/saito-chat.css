@@ -22,10 +22,10 @@
 
 .chat-container {
   margin-right: 1rem;
-  height: 66rem;
-  width: 44rem;
+  height: 50rem;
+  width: 36rem;
   border-radius: 0.5rem;
-  z-index: 9;
+  z-index: 15;
   position: fixed;
   bottom: 0px;
   right: 0px;
@@ -37,7 +37,6 @@
   resize: both;
   min-width: 300px;
   min-height: 150px;
-  z-index: 5;
 }
 
 .chat-body img {

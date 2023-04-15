@@ -47,11 +47,20 @@ console.log("initiating key exchange...");
   }
 
 
-  respondTo(type){
+  respondTo(type, obj){
 
     let encrypt_self = this;
 
     if (type == "user-menu") {
+
+      if (obj !== undefined && obj["publickey"] !== undefined) {
+        let publickey = obj.publickey;
+        let key_exists = encrypt_self.app.keychain.hasPublicKey(publickey);
+
+        if (key_exists)                
+         return null;
+      }
+
       return {
         text: "Add Contact",
         icon: "far fa-id-card",
@@ -301,6 +310,8 @@ console.log("error: " + err);
     let encrypt_self = app.modules.returnModule("Encrypt");
 
     if (conf == 0) {
+
+console.log("ENCRYPT ONCONF");
 
       if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
         encrypt_self.sendEvent('encrypt-key-exchange-confirm', {members: [tx.transaction.to[0].add, tx.transaction.from[0].add]});

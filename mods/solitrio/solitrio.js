@@ -44,9 +44,11 @@ class Solitrio extends OnePlayerGameTemplate {
       this.game.queue = [];
       this.game.queue.push("round");
       this.game.queue.push("READY");
+    }else{
+      this.game.state = Object.assign(this.returnState(), this.game.state);
     }
     
-    console.log(JSON.parse(JSON.stringify(this.game)));
+    console.log(JSON.parse(JSON.stringify(this.game.state)));
 
     if (this.browser_active){
       $('.slot').css('min-height', $('.card').css('min-height'));  
@@ -63,8 +65,11 @@ class Solitrio extends OnePlayerGameTemplate {
     this.game.queue.push("clear_board");
 
     //Reset/Increment State
-    this.game.state.round++;
     this.game.state.recycles_remaining = 2;
+
+    if (this.browser_active){
+      $("#rowbox").removeClass("nomoves");
+    }
   }
 
 
@@ -88,6 +93,7 @@ class Solitrio extends OnePlayerGameTemplate {
         game_mod.menu.hideSubMenus();
         game_mod.prependMove("lose");
         game_mod.endTurn();
+        game_mod.clearTable();
       }
     });
     this.menu.addSubMenuOption("game-game", {
@@ -164,20 +170,6 @@ class Solitrio extends OnePlayerGameTemplate {
   }
 
 
-  returnStatsHTML(){
-    let html = `<div class="rules-overlay">
-    <h1>Game Stats</h1>
-    <table>
-    <tbody>
-    <tr><th>Games Played:</th><td>${this.game.state.round-1}</td></tr>
-    <tr><th>Games Won:</th><td>${this.game.state.wins}</td></tr>
-    <tr><th>Win Percentage:</th><td>${(this.game.state.round>1)? Math.round(1000* this.game.state.wins / (this.game.state.round-1))/10 : 0}%</td></tr>
-    </tbody>
-    </table>
-    </div>`;
-    return html;
-  }
-
   async checkBoardStatus(){
     //Use recycling function to check if in winning state
     this.displayUserInterface();
@@ -193,6 +185,7 @@ class Solitrio extends OnePlayerGameTemplate {
         let go = await sconfirm("No more moves. Start new Game?");
         if (go){
           this.endTurn();
+          this.clearTable();
         }else{
           this.moves.shift();
         }
@@ -238,7 +231,7 @@ class Solitrio extends OnePlayerGameTemplate {
         solitrio_self.game.board[slot] = JSON.parse(x);
         
         solitrio_self.untoggleCard(card);
-     
+
         solitrio_self.moveGameElement(solitrio_self.copyGameElement(`#${card} img`), `#${slot}`, 
           { resize: 1, insert: 1, 
             callback: ()=>{            
@@ -254,7 +247,7 @@ class Solitrio extends OnePlayerGameTemplate {
             solitrio_self.checkBoardStatus();
             
           });
-        
+                
         } else {
           //solitrio_self.displayWarning("Invalid Move", "There is nowhere to move that card");
           //salert("<p>Sorry, You can't move that card anywhere");
@@ -486,6 +479,22 @@ class Solitrio extends OnePlayerGameTemplate {
     $(divname).css('opacity', '0.0'); 
   }
 
+
+  async clearTable(){
+    $('.menu_option').off();
+    $('.slot').off();
+
+    for (let i = 1; i <= 4; i++){
+      for (let j = 1; j <= 10; j++){
+        let divname = `row${i}_slot${j}`;
+        this.hideCard(divname);
+        await this.timeout(15);
+      }
+    }
+
+  }
+
+
   /* Copy hand into board*/
   handToBoard(){
     let indexCt = 0;
@@ -528,13 +537,15 @@ class Solitrio extends OnePlayerGameTemplate {
       }
 
       if (mv[0] === "win"){
-        this.game.state.wins++;
+        this.game.state.session.round++;
+        this.game.state.session.wins++;
         this.newRound();
         this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${JSON.stringify([])}`);
       }
 
       if (mv[0] === "lose"){
-        this.game.state.losses++;
+        this.game.state.session.round++;
+        this.game.state.session.losses++;
         this.newRound();
         this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);
       }
@@ -686,6 +697,7 @@ no status atm, but this is to update the hud
         }else{
           solitrio_self.prependMove(last_move);
           solitrio_self.prependMove("lose");
+          solitrio_self.clearTable();
         }
         solitrio_self.endTurn();
         return;

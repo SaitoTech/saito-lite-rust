@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.833,
+    version: 4.861,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -426,10 +426,14 @@ console.log("---------------------");
             const tmpprivkey = this.app.options.wallet.privatekey;
             const tmppubkey = this.app.options.wallet.publickey;
 
+            // save mixin
             let mixin = this.app.options.mixin;
             let crypto = this.app.options.crypto;
-            let keychain = this.app.options.keys;
 
+            // save contacts(keys)
+            let keys = this.app.options.keys;
+
+            // save theme options
             let theme = this.app.options.theme;
 
             // specify before reset to avoid archives reset problem
@@ -463,7 +467,9 @@ console.log("---------------------");
             // keep mixin
             this.app.options.mixin = mixin;
             this.app.options.crypto = crypto;
-            this.app.options.keys = keychain;
+
+            // keep contacts (keys)
+            this.app.options.keys = keys;
 
             // keep theme
             this.app.options.theme = theme;
@@ -1040,6 +1046,16 @@ console.log("---------------------");
       }
     }
   }
+  returnPreferredCryptoAddress() {
+    try {
+      const pc = this.returnPreferredCrypto();
+      if (pc != null && pc != undefined) {
+        return pc.returnAddress();
+      }
+    } catch (err) {
+      return "";
+    }
+  }
   returnPreferredCryptoTicker() {
     try {
       const pc = this.returnPreferredCrypto();
@@ -1084,6 +1100,7 @@ console.log("---------------------");
     }
     return returnObj;
   }
+
   /*** courtesy function to simplify balance checks for a single address w/ ticker ***/
   async checkBalance(address, ticker) {
     const robj = await this.returnPreferredCryptoBalances([address], null, ticker);
@@ -1120,7 +1137,6 @@ console.log("---------------------");
   ) {
     console.log("IN SEND PAYMENT IN WALLET!");
 
-    console.log("wallet sendPayment");
     // validate inputs
     if (senders.length != receivers.length || senders.length != amounts.length) {
       console.log("Lengths of senders, receivers, and amounts must be the same");

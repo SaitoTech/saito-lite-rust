@@ -76,42 +76,33 @@ ul li a {
 }
 
 
-/*** Legacy Text prompt in hud > hud-body > status ***/
-.status-message {
+/*** .status-message: Legacy Text prompt in hud > hud-body > status ***/
+/*** .status-header: Text prompt in hud > hud-body > status ***/
+.status-header, .status-message {
   position: relative; /* To make back-button work */
   width: 500px;
   max-width: 100%;
+  min-height: 40px;
   margin-left: auto;
   margin-right: auto;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  margin-bottom: 10px;
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
+  font-size: 1.6rem;
   border-radius: 0.5rem;
   background-color: whitesmoke;
-  margin-bottom: 10px;
-  font-size: 1.6rem;
 }
 
-
-/*** Text prompt in hud > hud-body > status ***/
-.status-header {
-  width: 500px;
-  max-width: 100%;
-  min-height: 40px;
-  margin-bottom: 10px;
-  box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
-  position: relative;
-  font-size: 16px;
-  border-radius: 0.5rem;
-}
-
-.status-header > #status-content, .status-message > #status-content{
+.status-header > #status-content, .status-message > #status-content {
   position: absolute;
   width: 94%;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
   line-height: 1em;
+}
+
+.hud-body .status .status-message {
+  padding-top: 10px;
 }
 
 .status-header i {

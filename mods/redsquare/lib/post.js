@@ -17,8 +17,8 @@ class Post {
 
     if (tweet != null) {
       if (tweet.parent_id) {
-	this.parent_id = tweet.parent_id;
-	if (tweet.thread_id) { this.thread_id = tweet.thread_id; } else { this.thread_id = this.parent_id; }
+        this.parent_id = tweet.parent_id;
+        if (tweet.thread_id) { this.thread_id = tweet.thread_id; } else { this.thread_id = this.parent_id; }
       }
     }
 
@@ -61,8 +61,8 @@ class Post {
         console.log(err);
       }
     });
-  
-    this.attachEvents(); 
+
+    this.attachEvents();
   }
 
   attachEvents() {
@@ -89,15 +89,23 @@ class Post {
     }
 
 
-    document.getElementById('post-tweet-img-icon').addEventListener('click', function(e) {
+    document.getElementById('post-tweet-img-icon').addEventListener('click', function (e) {
       document.querySelector("#hidden_file_element_tweet-overlay").click();
       return;
     });
 
-    
+
     if (typeof document.querySelector(".my-form") != "undefined" && document.querySelector(".my-form")) {
       document.querySelector(".my-form").style.display = "none";
     }
+
+    document.querySelector('.post-tweet-textarea').addEventListener('keydown', (e) => {
+      if (e.keyCode === 13 && e.ctrlKey) {
+        document.getElementById('post-tweet-button').click(); 
+        e.preventDefault();
+      }
+    
+    });
 
     document.getElementById('post-tweet-button').addEventListener('click', (e) => {
 
@@ -107,6 +115,14 @@ class Post {
       let source = document.getElementById("source").value;
       let keys = []
       let identifiers = []
+
+
+      //don't send empty posts
+      if (post_self.images.length == 0 && text.trim().length == 0 && post_self.source != "Retweet") {
+        siteMessage('Post Empty', 1000)
+        return;
+      }
+
 
       //
       // extract keys from text AND then tweet
@@ -127,7 +143,7 @@ class Post {
       //
       for (let i = 0; i < identifiers.length; i++) {
         let key = this.app.keychain.returnPublicKeyByIdentifier(identifiers[i]);
-	if (key) {
+        if (key) {
           if (!keys.includes(key)) {
             keys.push(key);
           }
@@ -142,11 +158,11 @@ class Post {
         if (post_self.tweet.tx) {
           if (post_self.tweet.tx.transaction) {
             for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
-	      if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
-	        keys.push(post_self.tweet.tx.transaction.to[i].add);
-	      }
-	    }
-	  }
+              if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
+                keys.push(post_self.tweet.tx.transaction.to[i].add);
+              }
+            }
+          }
         }
       }
 
@@ -198,44 +214,44 @@ class Post {
       if (rparent) {
 
         //
-	// loop to remove anything we will hide
-	//
+        // loop to remove anything we will hide
+        //
         let rparent2 = rparent;
-	while (this.mod.returnTweet(rparent2.parent_id)) {
-	  let x = this.mod.returnTweet(rparent2.parent_id);
-	  let qs = '.tweet-'+x.tx.transaction.sig;
-	  if (document.querySelector(qs)) {
-	    document.querySelector(qs).remove();
-	  }
-	  rparent2 = x;
-	}
+        while (this.mod.returnTweet(rparent2.parent_id)) {
+          let x = this.mod.returnTweet(rparent2.parent_id);
+          let qs = '.tweet-' + x.tx.transaction.sig;
+          if (document.querySelector(qs)) {
+            document.querySelector(qs).remove();
+          }
+          rparent2 = x;
+        }
 
         rparent.addTweet(tweet);
-	this.mod.addTweet(tweet.tx);
-	rparent.updated_at = new Date().getTime();
-	rparent.critical_child = tweet;
-	if (tweet.retweet_tx) {
-	  rparent.tx.optional.num_retweets++;
-	} else {
-	  rparent.tx.optional.num_replies++;
-	}
+        this.mod.addTweet(tweet.tx);
+        rparent.updated_at = new Date().getTime();
+        rparent.critical_child = tweet;
+        if (tweet.retweet_tx) {
+          rparent.tx.optional.num_retweets++;
+        } else {
+          rparent.tx.optional.num_replies++;
+        }
         this.app.connection.emit("redsquare-home-tweet-and-critical-child-prepend-render-request", (rparent));
       } else {
-	this.mod.addTweet(tweet.tx);
+        this.mod.addTweet(tweet.tx);
         this.app.connection.emit("redsquare-home-tweet-prepend-render-request", (tweet));
       }
 
       setTimeout(() => {
-       if (post_self.render_after_submit == 1) {
-	  //
-	  // scroll to top
-	  //
+        if (post_self.render_after_submit == 1) {
+          //
+          // scroll to top
+          //
           document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
         }
         post_self.overlay.hide();
       }, 500);
     });
- 
+
   }
 
   addImg(img) {
@@ -244,12 +260,12 @@ class Post {
            /><i data-id="${this.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
            </div>`, document.getElementById("post-tweet-img-preview-container"));
     this.images.push(img);
-    
+
     // attach img preview event
     // event added here because img-prievew is added dynamically 
     let sel = ".post-tweet-img-preview-close";
-    document.querySelectorAll(sel).forEach(elem => { 
-      elem.addEventListener('click', function(e){
+    document.querySelectorAll(sel).forEach(elem => {
+      elem.addEventListener('click', function (e) {
         e.preventDefault();
         e.stopImmediatePropagation();
 

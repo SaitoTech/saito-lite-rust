@@ -20,10 +20,17 @@ class Leaderboard {
       return;
     }
 
+    let title = "Games";
+    let gm = this.app.modules.returnModuleByName(this.league.game);
+    if (gm){
+      title = gm.statistical_unit + "s";
+    }
+
+
     if (document.querySelector(".league-leaderboard")) {
-      this.app.browser.replaceElementBySelector(LeaderboardTemplate(this.app, this.mod), ".league-leaderboard");
+      this.app.browser.replaceElementBySelector(LeaderboardTemplate(title), ".league-leaderboard");
     } else {
-      this.app.browser.addElementToSelectorOrDom(LeaderboardTemplate(this.app, this.mod), this.container);
+      this.app.browser.addElementToSelectorOrDom(LeaderboardTemplate(title), this.container);
     }  
 
     //
@@ -32,9 +39,14 @@ class Leaderboard {
     //
     // fetch league info if it is not already downloaded
     //
-    this.mod.fetchLeagueLeaderboard(this.league.id, (rows) => {
-      this.renderLeaderboardContents();
-    });
+    if (this.league.players.length == 0 || !this.league.ts || this.league.ts + 900000 < new Date().getTime()){
+      console.log(this.league.numPlayers, this.league.players.length, "Query Server for leaderboard");
+      this.mod.fetchLeagueLeaderboard(this.league.id, (rows) => {
+        this.renderLeaderboardContents();
+        this.mod.saveLeagues();
+      });
+
+    }
   
   }
 
