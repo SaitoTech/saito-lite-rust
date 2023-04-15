@@ -874,7 +874,7 @@ class Settlers extends GameTemplate {
       let num_resources = this.game.state.players[i - 1].resources.length;
       let num_cards = this.game.state.players[i - 1].devcards;
       let userline = "your active trade offers";
-      if (i != this.game.player) { userline = "player active trade offers"; }
+      if (i != this.game.player) { userline = "their active trade offers"; }
     
       let newhtml = "";
 
