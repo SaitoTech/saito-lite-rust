@@ -3455,7 +3455,7 @@ alert("Not Implemented");
 	his_self.game.state.tmp_reformations_this_turn = [];
 
 	his_self.game.queue.push("hide_overlay\ttheses");
-        his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation!");
+        his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation has begun!");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("protestant_reformation\t"+player);
@@ -3495,7 +3495,6 @@ alert("Not Implemented");
 	    }
 	  );
 
-console.log("TARGET SPACES: " + target_spaces);
 
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
@@ -3539,6 +3538,8 @@ console.log("TARGET SPACES: " + target_spaces);
 	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
 	      his_self.endTurn();
 	    }
+	  } else {
+	    his_self.updateStatus("Protestant Reformation in Process");
 	  }
 
           return 0;
@@ -3571,7 +3572,7 @@ console.log("TARGET SPACES: " + target_spaces);
 
             his_self.playerSelectSpaceWithFilter(
 
-	      "Select Reformation Attempt",
+	      "Select Reformation Target",
 
 	      //
 	      // catholic spaces adjacent to protestant 
@@ -16465,6 +16466,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 	  document.querySelectorAll(t).forEach((el) => {
 	    el.onclick = (e) => {
 	      $('.option').off();
+	      $('.space').off();
+	      $('.hextile').off();
 	      mycallback(key);
 	    }
 	  });
@@ -16480,6 +16483,11 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     $('.option').off();
     $('.option').on('click', function () {
+
+      $('.option').off();
+      $('.space').off();
+      $('.hextile').off();
+
       let action = $(this).attr("id");
       if (action == "cancel") {
         cancel_func();
