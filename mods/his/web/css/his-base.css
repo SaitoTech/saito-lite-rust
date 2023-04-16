@@ -1,4 +1,8 @@
 
+.hud-body .status .status-message {
+  padding-top: 15px;
+}
+
 img {
   width: unset;
 }
