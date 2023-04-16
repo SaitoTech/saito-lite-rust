@@ -194,7 +194,6 @@ class PeerManager {
             this.removeChatManagerSmall(false);
             // render large ui
 
-
             this.showChatManagerLarge();
             setTimeout(()=> {
                 app.connection.emit('stun-toggle-video');
