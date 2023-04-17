@@ -1,4 +1,10 @@
 
+
+.status-header, .status-message {
+  box-shadow: none;
+  background-color: transparent;
+}
+
 .hud-body {
   height: auto;
   width: auto;

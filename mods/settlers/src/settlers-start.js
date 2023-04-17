@@ -44,6 +44,31 @@ class Settlers extends GameTemplate {
   }
 
 
+
+ 
+  //
+  // OVERRIDE THIS FUNCTINO FROM THE PARENT GAME LIBRARY TO CHANGE THE ACKNOWLEDGE TEXT TO CONTINUE
+  //
+  playerAcknowledgeNotice(msg, mycallback) {
+    let html = `<ul><li class="textchoice acknowledge" id="confirmit">continue...</li></ul>`;
+    try {
+      this.updateStatusWithOptions(msg, html);
+      this.attachCardboxEvents();
+      document.querySelectorAll(".acknowledge").forEach((el) => { 
+        el.onclick = (e) => {
+          // if player clicks multiple times, don't want callback executed multiple times
+          document.querySelectorAll(".acknowledge").forEach((el) => { el.onclick = null; });
+          mycallback();
+        };
+      });
+    } catch (err) {
+      console.error("Error with ACKWNOLEDGE notice!: " + err);
+    }
+    return 0;
+  }
+
+
+
   initializeHTML(app) {
 
     if (!this.browser_active) { return; }
@@ -56,9 +81,7 @@ class Settlers extends GameTemplate {
     this.scoreboard.render();
 
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addMenuOption("game-info", "Info");
-
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text: "How to Play",
       id: "game-help",
       class: "game-help",
@@ -67,7 +90,7 @@ class Settlers extends GameTemplate {
         game_mod.rules_overlay.render();
       },
     });
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text: "Stats",
       id: "game-stats",
       class: "game-stats",
@@ -76,8 +99,7 @@ class Settlers extends GameTemplate {
         game_mod.stats_overlay.render();
       },
     });
-    
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text: "Log",
       id: "game-log",
       class: "game-log",
