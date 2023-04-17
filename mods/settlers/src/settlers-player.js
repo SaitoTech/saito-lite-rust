@@ -21,14 +21,14 @@
 
     //Player recursively selects all the resources they want to get rid of
     let discardFunction = function (settlers_self) {
-      let html = `<div class='tbd'>Select Cards to Discard (Must get rid of ${
+      let html = `<div class='tbd discard-select'>Select Cards to Discard (Must get rid of ${
         targetCt - cardsToDiscard.length
       }): <i id="reset" class="fas fa-undo"></i><ul>`;
       for (let i in my_resources) {
         if (my_resources[i] > 0)
-          html += `<li id="${i}" class="option">${i}:`;
+          html += `<li id="${i}" class="option">`;
           for (let j = 0; j < my_resources[i]; j++){
-            html += `<img class="icon" src="${settlers_self.skin.resourceIcon(i)}">`;
+            html += `<img class="icon" src="${settlers_self.skin.resourceCard(i)}">`;
           }
           html += `</li>`;
       }
