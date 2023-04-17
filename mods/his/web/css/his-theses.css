@@ -6,15 +6,20 @@
 }
 
 .theses-overlay .status {
-    position: fixed;
-    transform: translate(-50%, 20%);
-    left: 22%;
-    mind-width: auto;
+    position:relative;
     height: auto;
     min-height: 10.4rem;
+    width: max-content;
+    max-width: 30rem;
     background-color: whitesmoke;
     z-index: 10;
     border-radius: 1rem;
+    top: 0px;
+    left: 0px;
+    white-space: nowrap;
+    float: left;
+    margin-left: 1rem;
+    margin-top: 1rem;
 }
 
 .theses-overlay .status .status-header {
