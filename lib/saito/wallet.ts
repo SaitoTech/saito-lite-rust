@@ -1046,6 +1046,16 @@ console.log("---------------------");
       }
     }
   }
+  returnPreferredCryptoAddress() {
+    try {
+      const pc = this.returnPreferredCrypto();
+      if (pc != null && pc != undefined) {
+        return pc.returnAddress();
+      }
+    } catch (err) {
+      return "";
+    }
+  }
   returnPreferredCryptoTicker() {
     try {
       const pc = this.returnPreferredCrypto();
@@ -1090,6 +1100,7 @@ console.log("---------------------");
     }
     return returnObj;
   }
+
   /*** courtesy function to simplify balance checks for a single address w/ ticker ***/
   async checkBalance(address, ticker) {
     const robj = await this.returnPreferredCryptoBalances([address], null, ticker);
@@ -1126,7 +1137,6 @@ console.log("---------------------");
   ) {
     console.log("IN SEND PAYMENT IN WALLET!");
 
-    console.log("wallet sendPayment");
     // validate inputs
     if (senders.length != receivers.length || senders.length != amounts.length) {
       console.log("Lengths of senders, receivers, and amounts must be the same");
