@@ -43,7 +43,7 @@ class JoinGameOverlay {
           //
           this.app.network.propagateTransaction(newtx);
 
-          this.app.connection.emit("relay-send-message", {recipient: this.invite.players, request: "arcade spv update", data: newtx.transaction });
+          //this.app.connection.emit("relay-send-message", {recipient: this.invite.players, request: "arcade spv update", data: newtx.transaction });
           this.app.connection.emit("relay-send-message", {recipient: "PEERS", request: "arcade spv update", data: newtx.transaction });
 
           this.overlay.remove();

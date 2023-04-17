@@ -320,7 +320,6 @@ class Arcade extends ModTemplate {
         this.styles = ["/arcade/style.css"];
         this.renderIntos[qs] = [];
         let obj = new InviteManager(this.app, this, ".redsquare-sidebar");
-        obj.lists = ["mine", "open"];
         obj.type = "short";
         this.renderIntos[qs].push(obj);
         this.attachStyleSheets();
@@ -518,15 +517,6 @@ class Arcade extends ModTemplate {
         console.log("Arcade HPT embedded txmsg:", JSON.parse(JSON.stringify(txmsg)));
       }
 
-      //
-      // only servers notify lite-clients
-      //
-
-      if (app.BROWSER == 0 && app.SPVMODE == 0) {
-        console.log("notify peers?");
-        this.notifyPeers(tx);
-      }
-
       if (txmsg.module === "Arcade") {
         //
         // public & private invites processed the same way
@@ -591,6 +581,16 @@ class Arcade extends ModTemplate {
           }
         }
       }
+
+      //
+      // only servers notify lite-clients
+      //
+      if (app.BROWSER == 0 && app.SPVMODE == 0) {
+        console.log("notify peers?");
+        this.notifyPeers(tx);
+      }
+
+
     }
 
     super.handlePeerTransaction(app, newtx, peer, mycallback);
@@ -808,6 +808,7 @@ class Arcade extends ModTemplate {
       request: "arcade spv update",
       data: close_tx.transaction,
     });
+    
     this.app.connection.emit("relay-send-message", {
       recipient: "PEERS",
       request: "arcade spv update",
@@ -1093,12 +1094,13 @@ class Arcade extends ModTemplate {
             request: "arcade spv update",
             data: newtx.transaction,
           });
+          /*
           this.app.connection.emit("relay-send-message", {
             recipient: game.msg.players,
             request: "arcade spv update",
             data: newtx.transaction,
           });
-
+          */
           //Start Spinner
           this.app.connection.emit("arcade-game-initialize-render-request");
           return;

@@ -1,8 +1,8 @@
 module.exports = (app, mod, invite) => {
 
-    
-    let datetime = app.browser.formatDate(invite.time_finished);
-    let date = datetime.month + ' ' + datetime.day + ', ' + datetime.year; 
+    let time = invite.time_finished || invite.time_created;
+    let datetime = app.browser.formatDate(time);
+    let date = (invite.time_finished) ? datetime.month + ' ' + datetime.day + ', ' + datetime.year : datetime.hours + ":" + datetime.minutes; 
 
     let players_html = `<div class="league_recent_players_list">`;
     // render players who have joined
@@ -16,7 +16,7 @@ module.exports = (app, mod, invite) => {
 
     return `
         <div class="saito-table-row league_recent_game" id="saito-game-${invite.game_id}">
-          <div class="league_recent_date">${date}</div>${players_html}<div class="league_recent_cause">${invite.method?invite.method:""}</div>
+          <div class="league_recent_date">${date}</div>${players_html}<div class="league_recent_cause">${invite.method?invite.method: invite?.step || 0}</div>
         </div>
     `;;
 

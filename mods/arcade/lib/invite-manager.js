@@ -15,7 +15,7 @@ class InviteManager {
 		// For filtering which games get displayed
 		// We may want to only display one type of game invite, so overwrite this before render()
 		this.list = "all";
-		this.lists = ["mine", "open", "active", "over"];
+		this.lists = ["mine", "open"];
 
 		this.loader_overlay = new SaitoOverlay(app, mod, false, true);
 
