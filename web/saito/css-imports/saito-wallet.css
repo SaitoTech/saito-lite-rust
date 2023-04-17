@@ -268,9 +268,8 @@
   padding: 1rem 0rem;
   border-radius: 0.5rem;
   text-align: center;
-  background: var(--saito-white);
-  color: var(--saito-gray-mid);
-  border: 1px solid var(--saito-font-color);
+  background: var(--dreamscape);
+  color: var(--saito-white);
 }
 
 .mixin-items-container .saito-table-header {
