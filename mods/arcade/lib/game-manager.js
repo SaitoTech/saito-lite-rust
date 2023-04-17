@@ -11,7 +11,7 @@ class GameManager {
 		this.filter = null;
 		// For filtering which games get displayed
 		// We may want to only display one type of game invite, so overwrite this before render()
-		this.lists = ["over"];
+		this.lists = ["active", "over"];
 
 		app.connection.on("league-overlay-games-list", (filter) => {
 			this.filter = filter;
@@ -69,6 +69,24 @@ class GameManager {
 				});
 
 				if (gameList.length > 0) {
+					if (list == "active") {
+						let html = 	`<div class="saito-table-header">
+						            	<div>Time Started</div>
+						            	<div>Players</div>
+						            	<div>Game Moves</div>
+						          	</div>`;
+
+						this.app.browser.addElementToSelector(html, target);
+					} else if (list == "over") {
+						let html = 	`<div class="saito-table-header">
+						            	<div>Time Finished</div>
+						            	<div>Players</div>
+						            	<div>Game ending</div>
+						          	</div>`;
+
+						this.app.browser.addElementToSelector(html, target);
+					}
+
 					for (let i = 0; i < gameList.length; i++) {
 						let newInvite = new Invite(this.app, this.mod, target, this.type, gameList[i]);
 						newInvite.render();

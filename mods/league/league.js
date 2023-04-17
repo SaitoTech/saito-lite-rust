@@ -200,8 +200,10 @@ class League extends ModTemplate {
       let sql;
       
       if (this.browser_active || league_id) {
+        if (this.debug) { console.log("Load all leagues"); }
         sql = `SELECT * FROM leagues WHERE status = 'public' OR id = '${league_id}'`;
-      } else {
+      }else{
+        if (this.debug) { console.log("Load my leagues"); }
         let league_list = this.leagues.map(x => `'${x.id}'`).join(", ");
         sql = `SELECT * FROM leagues WHERE id IN (${league_list})`;
       }
