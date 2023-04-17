@@ -19,7 +19,7 @@ class Arcade extends ModTemplate {
     //
     // DEBUGGING MODE
     //
-    this.debug = true;
+    this.debug = false;
 
     this.name = "Arcade";
 
@@ -429,11 +429,11 @@ class Arcade extends ModTemplate {
 
     try {
       if (conf == 0) {
-        if (this.debug) {
-          console.log("ON CONFIRMATION:", JSON.parse(JSON.stringify(txmsg)));
-        }
-
         if (txmsg.module === "Arcade") {
+          if (this.debug) {
+            console.log("ON CONFIRMATION:", JSON.parse(JSON.stringify(txmsg)));
+          }
+
           //
           // public & private invites processed the same way
           //
@@ -513,11 +513,11 @@ class Arcade extends ModTemplate {
 
       let txmsg = tx.returnMessage();
 
-      if (this.debug) {
-        console.log("Arcade HPT embedded txmsg:", JSON.parse(JSON.stringify(txmsg)));
-      }
-
       if (txmsg.module === "Arcade") {
+        if (this.debug) {
+          console.log("Arcade HPT embedded txmsg:", JSON.parse(JSON.stringify(txmsg)));
+        }
+
         //
         // public & private invites processed the same way
         //
@@ -808,7 +808,7 @@ class Arcade extends ModTemplate {
       request: "arcade spv update",
       data: close_tx.transaction,
     });
-    
+
     this.app.connection.emit("relay-send-message", {
       recipient: "PEERS",
       request: "arcade spv update",
@@ -944,10 +944,6 @@ class Arcade extends ModTemplate {
     if (game?.msg) {
       game.msg.step = txmsg.step.game;
       game.msg.ts = txmsg.step.ts;
-    }
-
-    if (this.app.BROWSER) {
-      this.app.connection.emit("arcade-invite-manager-render-request");
     }
 
     let sql = `UPDATE games SET step = $step WHERE game_id = $game_id`;
