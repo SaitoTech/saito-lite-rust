@@ -78,9 +78,9 @@ class QRScanner extends ModTemplate {
     x = this.attemptQRDecode();
 
     if (x == 1) {
-      console.log("working...");
+      //console.log("working...");
     } else {
-      console.log("wait 100....");
+      //console.log("wait 100....");
       setTimeout(() => {
         this.startQRDecoderInitializationLoop();
       }, 100);
@@ -245,7 +245,7 @@ class QRScanner extends ModTemplate {
   //
   handleDecodedMessage(msg) {
 
-console.log("MESSAGE: " + msg);
+//console.log("MESSAGE: " + msg);
 
     //
     // remove scanline
@@ -331,7 +331,7 @@ console.log("MESSAGE: " + msg);
   }
 
   handleError(error) {
-    console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+    //console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
   }
 
 }

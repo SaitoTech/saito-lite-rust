@@ -28,20 +28,20 @@ self.onmessage = function(msg) {
 // posts the message back to listeners.  Note that
 // the payload is turned into a string here.
 self.decoded = function(i, version, ecc_level, mask, data_type, payload, payload_len) {
-  console.log("decoded something");
+  //console.log("decoded something");
   var payload_string = String.fromCharCode.apply(null, new Uint8Array(Module.HEAPU8.buffer, payload, payload_len));
-console.log("PS: " + payload_string);
+//console.log("PS: " + payload_string);
   postMessage({ i: i, version: version, ecc_level: ecc_level, mask: mask, data_type: data_type, payload: payload, payload_len: payload_len, payload_string: payload_string });
 }
 
 // Receives a simple string with an error
 self.decode_error = function(errstr) {
-  console.log("decode error: " + errstr);
+  //console.log("decode error: " + errstr);
 }
 
 function quirc_process_image_data(img_data) {
 
-console.log("in quirc_process_image_data...");
+//console.log("in quirc_process_image_data...");
 
   if (!image) {
     width = img_data.width;
@@ -49,7 +49,7 @@ console.log("in quirc_process_image_data...");
     try {
       image = Module._xsetup(width, height);
     } catch (err) {
-      console.log("skipping... looks like not ready yet...");
+      //console.log("skipping... looks like not ready yet...");
       return;
     }
   }
