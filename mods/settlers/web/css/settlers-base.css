@@ -48,10 +48,6 @@ p {
 }
 
 
-.status-text-menu ul li, .status ul li{
-  border-color: var(--text-color);
-}
-
 .tip {
   width: unset;
 }
@@ -172,6 +168,7 @@ body {
 
 
 #game-hexgrid {
+  transform-origin: center;
   z-index: 2;
   width: 1000px;
   padding: 10% 5% 15%;
@@ -188,6 +185,7 @@ body {
   background-color: #444E;
   z-index: 3;
   max-width: 25vw;
+  padding: 1rem 2rem !important;
 }
 
 .game_board_sizer {
@@ -225,7 +223,7 @@ body {
   background-color: #e7e7e7;
 }
 
-.status-message ul li:hover, .status ul li:hover, .cardselector:hover {
+.cardselector:hover {
   color: black;
   background-color: #e7e7e7;
 }
@@ -615,13 +613,12 @@ input[type="checkbox"] {
  * ********/
 
 .trade_overlay {
-  padding: 25px;
+  padding: 2rem 5rem !important;
   font-size: 1.25em;
   min-width: 50vw;
-  /*width: 500px;*/
   max-width: 80vw;
   max-height: 70vh;
-  /*overflow-y: scroll;*/
+
 }
 
 .trade_overlay > div {
@@ -751,7 +748,9 @@ ul.horizontal_list li.iconoption {
   margin: 0;
   width: 20%;
   height: 3em;
-  border-top: unset;
+  border: unset;
+  background: unset;
+  min-width: 20%;
 }
 
 
@@ -967,7 +966,7 @@ ul.horizontal_list li.iconoption {
 .player-box.notme, .opponents {
   position: absolute;
   height: fit-content;
-  top: 50px;
+  top: 76px;
   right: 40px;
 }
 
@@ -998,6 +997,7 @@ ul.horizontal_list li.iconoption {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  padding: 2rem 5rem !important;
 }
 
  /* Hide scrollbar for Chrome, Safari and Opera */
@@ -1061,7 +1061,7 @@ ul.horizontal_list li.iconoption {
 
 @keyframes flash {
   50% {
-    background-color: white;
+    background-color: #b4a09073;
     color: black;
   }
 }
@@ -1096,8 +1096,8 @@ ul.horizontal_list li.iconoption {
 @media screen and (orientation: landscape) and (min-width: 1000px) {
   .player-box.me {
     max-height: unset;
-    left: 10px;
-    top: 56px;
+    left: 20px;
+    top: 76px;
     bottom: unset;
   }
 }
