@@ -3455,7 +3455,7 @@ alert("Not Implemented");
 	his_self.game.state.tmp_reformations_this_turn = [];
 
 	his_self.game.queue.push("hide_overlay\ttheses");
-        his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation!");
+        his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation has begun!");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("protestant_reformation\t"+player);
@@ -3495,7 +3495,6 @@ alert("Not Implemented");
 	    }
 	  );
 
-console.log("TARGET SPACES: " + target_spaces);
 
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
@@ -3539,6 +3538,8 @@ console.log("TARGET SPACES: " + target_spaces);
 	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
 	      his_self.endTurn();
 	    }
+	  } else {
+	    his_self.updateStatus("Protestant Reformation in Process");
 	  }
 
           return 0;
@@ -3571,7 +3572,7 @@ console.log("TARGET SPACES: " + target_spaces);
 
             his_self.playerSelectSpaceWithFilter(
 
-	      "Select Reformation Attempt",
+	      "Select Reformation Target",
 
 	      //
 	      // catholic spaces adjacent to protestant 
@@ -10808,8 +10809,8 @@ console.log("MOVE: " + mv[0]);
 	    // cards dealt before diet of worms
 	    //
 	    this.game.queue.push("card_draw_phase");
-//	    this.updateLog("Luther's 95 Theses!");
-//	    this.game.queue.push("event\t1\t008");
+	    this.updateLog("Luther's 95 Theses!");
+	    this.game.queue.push("event\t1\t008");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -10918,7 +10919,6 @@ console.log("MOVE: " + mv[0]);
 	      this.removeUnit(faction, spacekey, unit_type);
 	    }
 	    if (land_or_sea === "sea") {
-alert("removing unit not implement for sea");
 	      this.removeUnit(faction, unit_type, spacekey);
 	    }
 	  }
@@ -12061,7 +12061,15 @@ console.log(JSON.stringify(mv));
 
           game_self.game.queue.push("resolve_diet_of_worms");
 
-          this.updateStatusAndListCards("Pick your Card for the Diet of Worms", this.game.deck[0].fhand[0]);
+          //
+          // remove mandatory events from both hands
+	  //
+	  let x = [];
+	  for (let i = 0; i < this.game.deck[0].fhand[0].length; i++) {
+	    if (this.game.deck[0].cards[this.game.deck[0].fhand[0][i]].type === "mandatory") {} else { x.push(this.game.deck[0].fhand[0][i]); }
+	  }
+
+          this.updateStatusAndListCards("Pick your Card for the Diet of Worms", x);
           this.attachCardboxEvents(function(card) {
 
             game_self.updateStatus("You picked: " + game_self.deck[card].name); 
@@ -12092,9 +12100,19 @@ console.log(JSON.stringify(mv));
 
 	  let protestant = this.returnPlayerOfFaction("protestant");
 	  let papacy = this.returnPlayerOfFaction("papacy");
+	  let protestant_arolls = [];
+	  let papacy_arolls = [];
 
 	  let protestant_card = this.game.deck[0].cards[this.game.state.sp[protestant-1]];
 	  let papacy_card = this.game.deck[0].cards[this.game.state.sp[papacy-1]];
+
+	  //
+	  // show card in overlay
+	  //
+console.log("Protestant Card is: " +this.game.state.sp[protestant-1]);
+	  this.diet_of_worms_overlay.addCardToCardfan(this.game.state.sp[protestant-1], "protestant");
+	  this.diet_of_worms_overlay.addCardToCardfan(this.game.state.sp[papacy-1], "catholic");
+
 
 	  //
 	  // discard the selected cards
@@ -12129,6 +12147,7 @@ console.log(JSON.stringify(mv));
 
 	  for (let i = 0; i < protestant_rolls; i++) {
 	    let x = this.rollDice(6);
+	    protestant_arolls.push(x);
 	    this.updateLog("Protestants roll: " + x);
 	    if (x >= 5) { protestant_hits++; }
 	  }
@@ -12138,6 +12157,7 @@ console.log(JSON.stringify(mv));
 
 	  for (let i = 0; i < papacy_rolls; i++) {
 	    let x = this.rollDice(6);
+	    papacy_arolls.push(x);
 	    this.updateLog("Papacy rolls: " + x);
 	    if (x >= 5) { papacy_hits++; }
 	  }
@@ -12150,22 +12170,44 @@ console.log(JSON.stringify(mv));
 	  //
 	  for (let i = 0; i < 2; i++) {
 	    let x = this.rollDice(6);
+	    papacy_arolls.push(x);
 	    this.updateLog("Hapsburg rolls: " + x);
 	    if (x >= 5) { papacy_hits++; }
 	  }
 
 
 	  if (protestant_hits > papacy_hits) {
+
+	    //
+            // report results
+            //
+	    this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "protestant" , difference : (protestant_hits - papacy_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
+  	    this.game.queue.push("hide_overlay\ttheses");
 	    for (let i = papacy_hits; i < protestant_hits; i++) {
 	      this.game.queue.push("select_for_protestant_conversion\tprotestant\tgerman");
 	    }
+  	    this.game.queue.push("show_overlay\ttheses");
+  	    this.game.queue.push("ACKNOWLEDGE\tProtestants win Diet of Worms");
+
 	  } else {
 	    if (protestant_hits < papacy_hits) {
+  	      //
+              // report results
+              //
+	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "papacy" , difference : (papacy_hits - protestant_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
+  	      this.game.queue.push("hide_overlay\ttheses");
 	      for (let i = protestant_hits; i < papacy_hits; i++) {
 	        this.game.queue.push("select_for_catholic_conversion\tpapacy\tgerman");
 	      }
+  	      this.game.queue.push("show_overlay\ttheses");
+  	      this.game.queue.push("ACKNOWLEDGE\tPapacy wins Diet of Worms");
 	    } else {
+  	      //
+              // report results
+              //
 	      this.updateLog("Diet of Worms ends in tie.");
+	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "none" , difference : 0 , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
+
 	    }
 	  }
 
@@ -14938,8 +14980,8 @@ console.log("----------------------------");
 
 	  if (this.game.player == p2) {
             let fhand_idx = this.returnFactionHandIdx(p2, faction_giving);
-	    let roll = this.rollDice(this.game.deck[0].fhands[fhand_idx].length) - 1;
-	    let card = this.game.deck[0].fhands[fhand_idx][roll];
+	    let roll = this.rollDice(this.game.deck[0].fhand[fhand_idx].length) - 1;
+	    let card = this.game.deck[0].fhand[fhand_idx][roll];
 	    this.addMove("give_card\t"+faction_taking+"\t"+faction_giving+"\t"+card);
 	    this.endTurn();
 	  } else {
@@ -14966,12 +15008,12 @@ console.log("----------------------------");
 
 	  if (this.game.player == p2) {
             let fhand_idx = this.returnFactionHandIdx(p2, faction_giving);
-	    this.game.deck[0].fhands[fhand_idx].push(card);
+	    this.game.deck[0].fhand[fhand_idx].push(card);
 	  }
 
 	  if (this.game.player == p1) {
             let fhand_idx = this.returnFactionHandIdx(p2, faction_taking);
-	    this.game.deck[0].fhands[fhand_idx].push(card);
+	    this.game.deck[0].fhand[fhand_idx].push(card);
 	  }
 
 	  this.game.queue.splice(qe, 1);
@@ -15050,9 +15092,9 @@ console.log("----------------------------");
 	  //
 	  if (this.game.player === player_of_faction) {
             let fhand_idx = this.returnFactionHandIdx(player_of_faction, faction);
-	    for (let i = 0; i < this.game.deck[0].fhands[fhand_idx].length; i++) {
-	      if (this.game.deck[0].fhands[fhand_idx][i] === card) {
-		this.game.deck[0].fhands[fhand_idx].splice(i, 1);
+	    for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
+	      if (this.game.deck[0].fhand[fhand_idx][i] === card) {
+		this.game.deck[0].fhand[fhand_idx].splice(i, 1);
 	      }
 	    }
 	  }
@@ -15076,7 +15118,7 @@ console.log("----------------------------");
 	    if (this.game.player === player_of_faction) {
 
               let fhand_idx = this.returnFactionHandIdx(player_of_faction, faction);
-	      let num_cards = this.game.deck[0].fhands[fhand_idx].length;
+	      let num_cards = this.game.deck[0].fhand[fhand_idx].length;
 	      let discards = [];
 
 	      // cannot discard more than maximum
@@ -16424,6 +16466,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 	  document.querySelectorAll(t).forEach((el) => {
 	    el.onclick = (e) => {
 	      $('.option').off();
+	      $('.space').off();
+	      $('.hextile').off();
 	      mycallback(key);
 	    }
 	  });
@@ -16439,6 +16483,11 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     $('.option').off();
     $('.option').on('click', function () {
+
+      $('.option').off();
+      $('.space').off();
+      $('.hextile').off();
+
       let action = $(this).attr("id");
       if (action == "cancel") {
         cancel_func();

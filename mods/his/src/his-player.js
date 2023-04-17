@@ -764,6 +764,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 	  document.querySelectorAll(t).forEach((el) => {
 	    el.onclick = (e) => {
 	      $('.option').off();
+	      $('.space').off();
+	      $('.hextile').off();
 	      mycallback(key);
 	    }
 	  });
@@ -779,6 +781,11 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     $('.option').off();
     $('.option').on('click', function () {
+
+      $('.option').off();
+      $('.space').off();
+      $('.hextile').off();
+
       let action = $(this).attr("id");
       if (action == "cancel") {
         cancel_func();

@@ -188,7 +188,7 @@ class Stun extends ModTemplate {
 
             super.render(this.app, this);
             return {
-                id: "game-video-chat",
+                id: "game-chat",
                 text: "Video Chat",
                 submenus: [
                     {
