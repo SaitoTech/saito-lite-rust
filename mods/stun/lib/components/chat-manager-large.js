@@ -20,6 +20,8 @@ class VideoChatManager {
   remote_container = "side-videos";
   display_mode = "speaker";
   remote_streams = new Map();
+  current_speaker = null
+  speaker_candidate = null
 
   constructor(app, mod) {
     this.app = app;
@@ -343,7 +345,7 @@ class VideoChatManager {
     this.video_boxes["local"].video_box.render(localStream, "large-wrapper");
     this.localStream = localStream;
     this.updateImages();
-    // this.analyzeAudio(localStream, 'local');
+    this.analyzeAudio(localStream, 'local');
     // segmentBackground(document.querySelector('#streamlocal video'), document.querySelector('#streamlocal canvas'), 1);
     // applyBlur(7);
   }
@@ -492,34 +494,41 @@ class VideoChatManager {
     let speaking = false;
     const threshold = 20;
 
+
     function update() {
         analyser.getByteFrequencyData(dataArray);
         const average = dataArray.reduce((a, b) => a + b) / bufferLength;
 
         if (average > threshold && !speaking) {
-            // video_box.classList.add('speaking');
             let video_container = document.querySelector(`#stream${peer}`);
 
-            document.querySelectorAll('.video-box-container-large').forEach(item => {
-              // console.log(item.id, `stream${peer}`)
-
-              if(item.id === `stream${peer}`){
-                item.classList.add('speaker');
-              }else {
-                item.classList.remove('speaker');
-              }
-            })
-
-            setTimeout(()=> {
-              if(speaking) return;
-              document.querySelectorAll('.video-box-container-large').forEach(item => {
-                item.classList.remove('speaker');
-            });
-            },3000)
+            // setTimeout(()=> {
+            //   if(speaking) return;
+            //   document.querySelectorAll('.video-box-container-large').forEach(item => {
+            //     item.classList.remove('speaker');
+            // });
+            // },3000)
 
            let video_box =  video_container.querySelector(".video-box");
-            video_box.click();
-            speaking = true;
+           this.current_speaker = peer;
+            let speaker_candidate = peer;
+           
+
+            setTimeout(()=> {
+              if(speaker_candidate === this.current_speaker){
+                document.querySelectorAll('.video-box-container-large').forEach(item => {
+                  // console.log(item.id, `stream${peer}`)
+                  if(item.id === `stream${peer}`){
+                    item.classList.add('speaker');
+                  }else {
+                    item.classList.remove('speaker');
+                  }
+                })
+                speaking = true;
+                video_box.click();
+              }
+            }, 3000)
+        
         } else if (average <= threshold && speaking) {
             speaking = false;
         }

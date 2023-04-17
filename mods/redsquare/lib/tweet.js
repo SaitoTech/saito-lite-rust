@@ -207,6 +207,10 @@ class Tweet {
       }
     }
 
+    if (!this.container || this.container == "") {
+      this.container = ".redsquare-appspace-body";
+    }
+
     if (replace_existing_element && document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {

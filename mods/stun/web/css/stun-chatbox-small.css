@@ -92,6 +92,12 @@
 }
 
 
+.audio-box {
+    display: inline-block !important;
+    height: 100%;
+    width: 100%;
+}
+
 
 .audio-box.speaking {
     border-color: var(--saito-secondary);
