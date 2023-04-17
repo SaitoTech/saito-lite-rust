@@ -1,7 +1,7 @@
 const MixinAppspaceTemplate = require('./main.template.js');
-const Deposit = require('./../../../../lib/saito/ui/saito-crypto/deposit');
-const Withdraw = require('./../../../../lib/saito/ui/saito-crypto/withdraw.js');
-const History = require('./../../../../lib/saito/ui/saito-crypto/history');
+const Deposit = require('./../../../../lib/saito/ui/saito-crypto/overlays/deposit');
+const Withdraw = require('./../../../../lib/saito/ui/saito-crypto/overlays/withdraw');
+const History = require('./../../../../lib/saito/ui/saito-crypto/overlays/history');
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class MixinAppspace {

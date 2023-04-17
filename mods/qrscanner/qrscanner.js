@@ -268,7 +268,7 @@ console.log("MESSAGE: " + msg);
     // or this is a URL
     //
     if (this.app.browser.isValidUrl(msg)) {
-      this.decoder.terminate();
+      //this.decoder.terminate();
       let c = sconfirm("Visit: " + msg + "?");
       if (c) {
         this.stop();
@@ -297,14 +297,15 @@ console.log("MESSAGE: " + msg);
     //
     // non-SAITO publickey?
     //
-    if (this.app.wallet.returnPreferredCryptoTicker() !== "SAITO") {
-      if (!msg.match(/^\S*$/)) {
-        if (msg.match(/[0-9a-f]+/i)) {
-          this.stop();
-          let userMenu = new UserMenu(this.app, msg);
-          userMenu.render(this.app);
-          return;
-        }
+    if (!msg.match(/\s/gi)) {
+      if (msg.match(/[0-9a-zA-Z]+/i)) {
+        this.stop();
+
+        let obj = {};
+        obj.address = msg;
+        this.app.connection.emit('saito-crypto-withdraw-render-request', obj);
+
+        return;
       }
     }
 

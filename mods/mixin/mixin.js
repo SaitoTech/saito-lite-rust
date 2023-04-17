@@ -11,9 +11,9 @@ const { sharedKey: sharedKey } = require('curve25519-js');
 const LittleEndian = require('int64-buffer');
 const JSON = require("json-bigint");
 const MixinAppspaceSidebar = require('./lib/appspace-sidebar/main');
-const Deposit = require('./../../lib/saito/ui/saito-crypto/deposit');
-const Withdraw = require('./../../lib/saito/ui/saito-crypto/withdraw.js');
-const History = require('./../../lib/saito/ui/saito-crypto/history');
+const Deposit = require('./../../lib/saito/ui/saito-crypto/overlays/deposit');
+const Withdraw = require('./../../lib/saito/ui/saito-crypto/overlays/withdraw.js');
+const History = require('./../../lib/saito/ui/saito-crypto/overlays/history');
 
 class Mixin extends ModTemplate {
 
