@@ -62,12 +62,11 @@ class MixinAppspace {
         let balance = event.target.getAttribute("data-balance");
         let sender = event.target.getAttribute("data-sender");
 
-        let mixin_withdraw = new Withdraw(app, mod);
+        let withdraw = new Withdraw(app, mod);
 
-        mixin_withdraw.deposit_ticker = ticker;
-        mixin_withdraw.withdraw_balance = balance;
-        mixin_withdraw.render();
-
+        withdraw.ticker = ticker;
+        withdraw.amount = amount;
+        app.connection.emit('saito-crypto-withdraw-render-request', obj);
 
       });
     });
@@ -79,11 +78,11 @@ class MixinAppspace {
           let confs = event.target.getAttribute("data-confs");
           let ticker = event.target.getAttribute("data-ticker");
 
-          let mixin_deposit = new Deposit(app, mod);
-          mixin_deposit.address = address;
-          mixin_deposit.confs = confs;
-          mixin_deposit.ticker = ticker;
-          mixin_deposit.render();
+          let deposit = new Deposit(app, mod);
+          deposit.address = address;
+          deposit.confs = confs;
+          deposit.ticker = ticker;
+          app.connection.emit('saito-crypto-deposit-render-request', obj);
       });
     })
 
@@ -91,16 +90,11 @@ class MixinAppspace {
     const history = document.querySelectorAll('.mixin-balance-history');
     history.forEach(function(el) {
       el.addEventListener('click', function (event) {
-
-        let his_asset_id = event.target.getAttribute("data-assetid");
         let ticker = event.target.getAttribute("data-ticker");
-        let his_exists = false;
 
-        let mixin_his = new History(app, mod);
-        mixin_his.his_asset_id = his_asset_id;
-        mixin_his.ticker = ticker;
-        mixin_his.his_exists = his_exists;
-        mixin_his.render();
+        let history = new History(app, mod);
+        history.ticker = ticker;
+        app.connection.emit('saito-crypto-history-render-request', obj);
       });
     })
 
