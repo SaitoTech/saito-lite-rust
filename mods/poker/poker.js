@@ -463,6 +463,7 @@ console.log("SETTLE? " + this.settleNow);
         this.displayPlayers(true); //to update chips before game_over
         this.game.queue = [];
         this.game.crypto = null;
+	this.settleDebt();
         this.endGame(this.game.players[parseInt(mv[1])], "elimination"); 
         return 0;
       }
