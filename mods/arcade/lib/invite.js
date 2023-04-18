@@ -88,6 +88,22 @@ class Invite {
 
       //Custom Game
 
+      let defaultOptions = game_mod.returnDefaultGameOptions();
+      let defaultKeys = Object.keys(defaultOptions);
+      let inviteKeys = Object.keys(txmsg.options);
+      if (defaultKeys.length == inviteKeys.length){
+        for (const key of defaultKeys){
+          if (defaultOptions[key] !== txmsg.options[key] && !key.includes("game-wizard-players")){
+            console.log(key, defaultOptions[key], txmsg.options[key]);
+            this.invite_data.game_type = "custom game";
+            break;
+          }
+        }
+      }else{
+        this.invite_data.game_type = "custom game";
+      }
+
+
       //Crypto Game
       if (txmsg.options?.crypto) {
         this.invite_data.game_type = `${txmsg.options.crypto} game`;
