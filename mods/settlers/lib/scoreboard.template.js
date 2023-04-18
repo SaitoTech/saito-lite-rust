@@ -1,13 +1,12 @@
 module.exports = SettlersScoreboardTemplate = (scoreboard) => {
 
-
   let html = '';
   html += `
     <div class="scoreboard">
     <div class="VP-track-label" id="VP-track-label">Victory Points</div>
   `;
 
-  for (let j = 8; j >= 0; j--) {
+  for (let j = scoreboard.mod.game.options.game_length; j >= 0; j--) {
     html += '<div class="vp ' + j + '-points"><div class="player-vp-background">' + j + '</div>';
     html += '<div class="vp-players">'
     for (let i = 0; i < scoreboard.mod.game.state.players.length; i++) {

@@ -32,6 +32,7 @@ class Invite {
       game_type: "standard game",
       winner: "",
       method: "",
+      time_created: 0,
       time_finished: 0,
     };
 
@@ -48,12 +49,14 @@ class Invite {
       this.invite_data.originator = txmsg.originator;
       this.invite_data.players = txmsg.players;
       this.invite_data.players_needed = txmsg.players_needed;
+      this.invite_data.time_created = tx.transaction.ts;
 
       if (txmsg.winner) { this.invite_data.winner = txmsg.winner; }
       if (txmsg.method) { this.invite_data.method = txmsg.method; }
       if (txmsg.time_finished) { this.invite_data.time_finished = txmsg.time_finished; }
       if (txmsg.step) {this.invite_data.step = txmsg.step; }
       if (txmsg.ts) {this.invite_data.ts = txmsg.ts; }
+
 
       //We still don't know the exact data structures for specified invite(s)
       //But it isn't going to be a single string pushed into an array!
@@ -84,6 +87,22 @@ class Invite {
       //
 
       //Custom Game
+
+      let defaultOptions = game_mod.returnDefaultGameOptions();
+      let defaultKeys = Object.keys(defaultOptions);
+      let inviteKeys = Object.keys(txmsg.options);
+      if (defaultKeys.length == inviteKeys.length){
+        for (const key of defaultKeys){
+          if (defaultOptions[key] !== txmsg.options[key] && !key.includes("game-wizard-players")){
+            console.log(key, defaultOptions[key], txmsg.options[key]);
+            this.invite_data.game_type = "custom game";
+            break;
+          }
+        }
+      }else{
+        this.invite_data.game_type = "custom game";
+      }
+
 
       //Crypto Game
       if (txmsg.options?.crypto) {

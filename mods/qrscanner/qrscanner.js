@@ -269,7 +269,6 @@ class QRScanner extends ModTemplate {
       this.stop();
       let c = confirm("Visit: " + msg + "?");
       if (c) {
-        this.stop();
       	window.location = msg;
       	return;	
       }
@@ -294,11 +293,14 @@ class QRScanner extends ModTemplate {
     //
     // non-SAITO publickey?
     //
-    if (!msg.match(/^\S*$/)) {
+    if (!msg.match(/\s/gi)) {
       if (msg.match(/[0-9a-zA-Z]+/i)) {
         this.stop();
-        let userMenu = new UserMenu(this.app, msg);
-        userMenu.render(this.app);
+
+        let obj = {};
+        obj.address = msg;
+        this.app.connection.emit('saito-crypto-withdraw-render-request', obj);
+
         return;
       }
     }
@@ -325,7 +327,7 @@ class QRScanner extends ModTemplate {
   }
 
   handleError(error) {
-    console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+    //console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
   }
 
 }

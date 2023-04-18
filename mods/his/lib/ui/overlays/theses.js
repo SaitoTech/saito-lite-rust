@@ -22,6 +22,7 @@ class ThesesOverlay {
 	let dw = document.querySelector(".theses-overlay");
 	let gb = document.querySelector(".gameboard");
 	let gb2 = gb.cloneNode(true);
+	gb2.classList.add("gameboard-clone");
 
 	gb2.style.position = "";
 	gb2.style.transformOrigin = "";
@@ -30,6 +31,9 @@ class ThesesOverlay {
 	gb2.style.right = "";
 
 	dw.appendChild(gb2);
+
+        $('.gameboard-clone').draggable({});
+
         this.attachEvents();
     }
 

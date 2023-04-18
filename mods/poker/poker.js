@@ -58,7 +58,6 @@ class Poker extends GameTableTemplate {
 
     this.updateHTML = "";
 
-//    this.useGraphics = true;
     this.useGraphics = false;
 
   }
@@ -246,6 +245,7 @@ class Poker extends GameTableTemplate {
     if (this.game.options.stake)         { this.game.stake = this.game.options.stake; }
     if (this.game.options.blind_mod)     { this.game.blind_mod = this.game.options.blind_mode; }
 
+    this.settleNow                      = true;
     this.game.state.round		= 1;
     this.game.state.big_blind		= this.fts(((this.stf(this.game.stake) * 2) / this.stf(this.game.chips)));
     this.game.state.small_blind		= this.fts((this.stf(this.game.stake) / this.stf(this.game.chips)));
@@ -279,8 +279,11 @@ class Poker extends GameTableTemplate {
     // initializeGameStake will use this info
     //
     this.game.crypto 		= (this.game.options.crypto)? this.game.options.crypto: "CHIPS";
-    this.game.stake 		=  (this.game.options.stake) ? parseFloat(this.game.options.stake) : 100;
-    this.settleNow 		= (this.game.options.settle_by_round == 1);
+    this.game.stake 		= (this.game.options.stake) ? parseFloat(this.game.options.stake) : 100;
+    // force settlement unless set to false
+    this.settleNow 		= true;
+
+alert("settling now? " + this.settleNow);
 
     //
     // initialize game state
@@ -311,7 +314,10 @@ class Poker extends GameTableTemplate {
   //
   needToSettleDebt(){
 
+console.log("NTSD: 1");
+
     if (!this.game.crypto || this.settleNow) { return false; }
+console.log("NTSD: 2");
 
     if (this.toLeave.length > 0){
       return true;
@@ -321,6 +327,7 @@ class Poker extends GameTableTemplate {
         return true;
       }
     }
+console.log("NTSD: 3");
 
     return false;
   }
@@ -329,6 +336,9 @@ class Poker extends GameTableTemplate {
   // adds settlement instructions to queue for processing
   //
   settleDebt(){
+
+console.log("SETTLE: " + JSON.stringify(this.game.state.debt));
+
     for (let i = 0; i < this.game.state.debt.length; i++){
       //Player i+1 owes money
       if (this.game.state.debt[i] > 0){
@@ -337,7 +347,6 @@ class Poker extends GameTableTemplate {
           if (this.game.state.debt[j] < 0){
             let amount_to_send = Math.min(this.stf(this.game.state.debt[j]),this.stf(this.game.state.debt[i]));
             if (amount_to_send > 0){
-              this.settleNow = true;
               this.game.state.debt[i] = this.subtractFromString(this.game.state.debt[i], this.fts(amount_to_send));
               this.game.state.debt[j] = this.addToString(this.game.state.debt[j], this.fts(amount_to_send));
               let ts = new Date().getTime();
@@ -367,9 +376,14 @@ class Poker extends GameTableTemplate {
     this.game.queue.push("checkplayers");     
     this.game.queue.push("PLAYERS");
 
-    if (this.needToSettleDebt()){ this.settleDebt(); }
+    if (this.needToSettleDebt()) {
+      this.settleDebt(); 
+    }
 
-    if (this.game.crypto && this.settleNow) {
+console.log("CRYPTO: " + this.game.crypto);
+console.log("SETTLE? " + this.settleNow);
+
+    if (this.game.crypto != "" && this.game.crypto != "CHIPS" && this.settleNow == true) {
 
       msg += " and settling bets...";
 
@@ -449,6 +463,7 @@ class Poker extends GameTableTemplate {
         this.displayPlayers(true); //to update chips before game_over
         this.game.queue = [];
         this.game.crypto = null;
+	this.settleDebt();
         this.endGame(this.game.players[parseInt(mv[1])], "elimination"); 
         return 0;
       }

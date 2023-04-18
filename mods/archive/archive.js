@@ -6,12 +6,16 @@ const JSON = require("json-bigint");
 // HOW THE ARCHIVE SAVES TXS
 //
 // modules call ---> app.storage.saveTransaction()
-//    ---> submits TX to peers via "archive save"
-//    ---> saves to DB with ID or TYPE
+//    ---> saveTransaction() submits TX to peers via "archive save"
+//    ---> peers receive by handlePeerTransaction();
+//    ---> peers save to DB with ID or TYPE
 //
 class Archive extends ModTemplate {
+
   constructor(app) {
+
     super(app);
+
     this.name = "Archive";
     this.description = "Supports the saving and serving of network transactions";
     this.categories = "Utilities Core";
@@ -47,13 +51,12 @@ class Archive extends ModTemplate {
     //
     // by default we just save everything that is an application
     //
-    // *** only if we turn on the listeners, no? ***
-    //
     if (conf == 0) {
       if (tx.msg.module != "") {
         this.saveTransaction(tx);
       }
     }
+
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {

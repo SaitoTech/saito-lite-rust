@@ -5,10 +5,12 @@ class StunxGameMenu {
     this.mod = mod;
     this.config = {
       name: "game",
-      container: "#game-video-chat ul",
+      container: "#game-chat ul",
+      stream_container: 'chat-manager-small-audio-container',
       onHide: () => {
         document.querySelector(".join-group-video-chat").style.display = "block";
       },
+      showMain: false
     };
 
 
