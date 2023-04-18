@@ -51,11 +51,12 @@
   flex-direction: column;
   align-items: center;
   z-index: 9999999;
+  width: 20rem;
+  gap: 1rem;
 }
 
 .popup-confirm-menu div{
-  background-color: whitesmoke;
-  margin-bottom: 10px;
+  background-color: #efefef;
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
   padding: 5px;
   width: 100%;
@@ -72,9 +73,7 @@
 .popup-confirm-menu .action{
   border: 1px black solid;
   cursor: pointer;
-  min-height: 6rem;
-  padding-left: 1rem;
-  padding-top: 2rem;
+  padding: 2rem;
 }
 .popup-confirm-menu .action:hover{
   background-color: lightgrey;
