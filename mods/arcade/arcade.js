@@ -53,7 +53,7 @@ class Arcade extends ModTemplate {
       arcade: "fa-solid fa-gamepad",
     };
 
-    this.debug = false;
+    this.debug = true;
   }
 
   /////////////////////////////
@@ -916,6 +916,7 @@ class Arcade extends ModTemplate {
   }
 
   async changeGameStatus(game_id, newStatus) {
+    console.log("changeGameStatus : ", arguments);
     let game = this.returnGame(game_id);
 
     if (!game) {
@@ -1185,12 +1186,12 @@ class Arcade extends ModTemplate {
     if (!tx || !tx.transaction || !tx.signature) {
       return;
     }
-
     let txmsg = tx.returnMessage();
 
     // Must have game module installed
     // We call the game-initialization function directly on gamemod further down
     let gamemod = this.app.modules.returnModule(txmsg.game);
+    console.log("arcade.receiveAcceptTransaction");
 
     // I guess this safety catch should be further up the processing chain, like we shouldn't even display an invite/join a game we don't have installed
     if (!gamemod) {
@@ -1202,12 +1203,14 @@ class Arcade extends ModTemplate {
 
     // Must be an available invite
     if (!game || !this.isAvailableGame(game)) {
+      console.error("game : " + txmsg.game_id + " not found. or not available", game);
       return;
     }
 
     // do not re-accept game already in my local storage (a consequence of game initialization)
     for (let i = 0; i < this.app?.options?.games?.length; i++) {
       if (this.app.options.games[i].id == txmsg.game_id) {
+        console.log("game is already in local storage", this.app.options.games);
         return;
       }
     }
@@ -1664,21 +1667,13 @@ class Arcade extends ModTemplate {
             let c = await sconfirm(
               `You already have a ${game.msg.game} game open, are you sure you want to create a new game invite?`
             );
-            if (!c) {
-              return false;
-            } else {
-              return true;
-            }
+            return !!c;
           }
           if (game.msg.game === options.game) {
             let c = await sconfirm(
               `There is an open invite for ${game.msg.game}, are you sure you want to create a new invite?`
             );
-            if (!c) {
-              return false;
-            } else {
-              return true;
-            }
+            return !!c;
           }
         }
       }

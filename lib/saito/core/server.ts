@@ -156,6 +156,10 @@ export class NodeSharedMethods extends CustomSharedMethods {
     }
     await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
   }
+
+  sendInterfaceEvent(event: string, peerIndex: bigint) {
+    this.app.connection.emit(event, peerIndex);
+  }
 }
 
 /**

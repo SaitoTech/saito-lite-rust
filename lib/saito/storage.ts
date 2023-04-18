@@ -27,30 +27,32 @@ export default class Storage {
       }
     }
 
-    console.log("saving options");
+    console.log("saving options : ", this.app.options);
     try {
       if (typeof Storage !== "undefined") {
         localStorage.setItem("options", JSON.stringify(this.app.options));
+      } else {
+        console.error("xxxxxxxxxxxxxxxxxxxxxxxxxx");
       }
     } catch (err) {
       console.log(err);
     }
   }
 
-  getOptions() {
-    if (this.app.BROWSER == 1) {
-      if (this.active_tab == 0) {
-        return;
-      }
-    }
-    try {
-      if (typeof Storage !== "undefined") {
-        return localStorage.getItem("options");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }
+  // getOptions() {
+  //   if (this.app.BROWSER == 1) {
+  //     if (this.active_tab == 0) {
+  //       return;
+  //     }
+  //   }
+  //   try {
+  //     if (typeof Storage !== "undefined") {
+  //       return localStorage.getItem("options");
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
 
   //
   // check local archive if exists
@@ -108,12 +110,13 @@ export default class Storage {
       const data = localStorage.getItem("options");
       if (data != "null" && data != null) {
         this.app.options = JSON.parse(data);
-        // console.log("loaded from local storage", this.app.options);
+        console.log("loaded from local storage", this.app.options);
       } else {
         try {
           console.log("fetching options from server...");
           const response = await fetch(`/options`);
           this.app.options = await response.json();
+          this.app.options = JSON.parse(JSON.stringify(this.app.options));
           console.log("options loaded : ", this.app.options);
           this.saveOptions();
         } catch (err) {

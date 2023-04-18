@@ -515,6 +515,7 @@ class StorageCore extends Storage {
    */
   async executeDatabase(sql, params, database, mycallback = null) {
     try {
+      console.log("executeDatabase : " + sql);
       const db = await this.returnDatabaseByName(database);
       if (mycallback == null) {
         return await db.run(sql, params);
@@ -529,6 +530,7 @@ class StorageCore extends Storage {
 
   async queryDatabase(sql, params, database) {
     try {
+      console.log("queryDatabase : " + sql);
       const db = await this.returnDatabaseByName(database);
       const rows = await db.all(sql, params);
       if (rows == undefined) {

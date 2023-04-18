@@ -16,7 +16,6 @@ const SaitoLoader = require("./../../lib/saito/ui/saito-loader/saito-loader");
 const ModTemplate = require("../../lib/templates/modtemplate");
 
 class Giphy extends ModTemplate {
-
   constructor(app, mod, input_id, parent_callback = null) {
     super(app);
     this.app = app;
@@ -28,18 +27,13 @@ class Giphy extends ModTemplate {
     this.overlay = new SaitoOverlay(app, mod);
     this.loader = new SaitoLoader(app, mod);
     this.auth = null;
-
-    this.initialize(app);
-
   }
 
-
-  initialize(app) {
-    super.initialize(app);
+  async initialize(app) {
+    await super.initialize(app);
   }
 
-  render() {
-
+  async render() {
     let app = this.app;
     let mod = this.mod;
 
@@ -47,7 +41,10 @@ class Giphy extends ModTemplate {
     //let input = document.querySelector(`.saito-emoji-container > #${this.input_id}`);
     //this.parentElement = input.parentElement;
     if (document.querySelector(".saito-gif-icon-container")) {
-      this.app.browser.addElementToElement(`<div class="saito-gif"><i class="fa-solid fa-video"></i></div>`, document.querySelector(".saito-gif-icon-container"));
+      this.app.browser.addElementToElement(
+        `<div class="saito-gif"><i class="fa-solid fa-video"></i></div>`,
+        document.querySelector(".saito-gif-icon-container")
+      );
     }
 
     if (!document.getElementById("giphy-styles")) {
@@ -61,7 +58,7 @@ class Giphy extends ModTemplate {
 
     if (!this.auth) {
       let saitogif_self = this;
-      app.network.sendRequestAsTransactionWithCallback("get giphy auth", {}, function(res) {
+      await app.network.sendRequestAsTransaction("get giphy auth", {}, function (res) {
         //console.log(res);
         saitogif_self.auth = res;
         saitogif_self.attachEvents(res);
@@ -69,20 +66,22 @@ class Giphy extends ModTemplate {
     } else {
       this.attachEvents(this.auth);
     }
-
   }
 
-  toDataURL = url => fetch(url)
-    .then(response => response.blob())
-    .then(blob => new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    }));
+  toDataURL = (url) =>
+    fetch(url)
+      .then((response) => response.blob())
+      .then(
+        (blob) =>
+          new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          })
+      );
 
   attachEvents(auth) {
-
     let app = this.app;
     let mod = this.mod;
 
@@ -93,15 +92,13 @@ class Giphy extends ModTemplate {
 
     let gf = new GiphyFetch(auth);
 
-
     if (selectorWidth > 525) {
-      selectorWidth = 500 + ((window.innerWidth - 500) / 2);
+      selectorWidth = 500 + (window.innerWidth - 500) / 2;
     }
     if (selectorWidth > 750) {
       selectorWidth = 750;
     }
     selectorColumns = Math.floor(selectorWidth / 150);
-
 
     gif_icon.onclick = (e) => {
       this.overlay.show(saitoGifTemplate(app, mod));
@@ -123,13 +120,12 @@ class Giphy extends ModTemplate {
           columns: selectorColumns,
           gutter: 2,
           onGifClick,
-          key: 34
+          key: 34,
         },
         document.querySelector(".saito-gif-content")
       );
 
       this.loader.remove();
-
 
       let gif_search_icon = document.querySelector(".saito-gif-search i");
       let gif_input_search = document.querySelector(".saito-gif-search input");
@@ -141,13 +137,11 @@ class Giphy extends ModTemplate {
         this.loader.render(app, mod, "saito-gif-content");
 
         let onGifClick = (gif, e) => {
-
           e.preventDefault();
           this.parent_callback(gif.images.original.url);
           //document.getElementById(self.input_id).value += `${gif.embed_url} \n `;
           self.overlay.remove();
         };
-
 
         renderGrid(
           {
@@ -159,7 +153,7 @@ class Giphy extends ModTemplate {
             columns: selectorColumns,
             gutter: 2,
             onGifClick,
-            key: value
+            key: value,
           },
           document.querySelector(".saito-gif-content")
         );
@@ -167,7 +161,6 @@ class Giphy extends ModTemplate {
       };
     };
   }
-
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
     if (tx == null) {
@@ -186,7 +179,6 @@ class Giphy extends ModTemplate {
       }
     }
   }
-
 }
 
 module.exports = Giphy;

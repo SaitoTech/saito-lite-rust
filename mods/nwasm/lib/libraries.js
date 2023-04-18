@@ -131,11 +131,11 @@ class NwasmLibrary {
             }
 
             alert("fetching...");
-            await this.app.network.sendRequestAsTransactionWithCallback(
+            await this.app.network.sendRequestAsTransaction(
               message.request,
               message.data,
               null,
-              peer
+              peer.peerIndex
             );
           }
         };

@@ -73,6 +73,8 @@ class Post {
               post_self.addImg(img);
             }
           );
+          await post_self.gif.initialize(this.app);
+
           await post_self.gif.render(this.app, this.mod);
         }
       } catch (err) {

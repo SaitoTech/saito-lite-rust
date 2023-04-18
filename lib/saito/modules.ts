@@ -195,18 +195,20 @@ class Mods {
     //
     // include events here
     //
-    this.app.connection.on("handshake_complete", (peer: Peer) => {
-      // TODO : implement this event in wasm interface
+    this.app.connection.on("handshake_complete", async (peerIndex: bigint) => {
+      let peer = await this.app.network.getPeer(peerIndex);
       onPeerHandshakeComplete(peer);
     });
 
     const onConnectionUnstable = this.onConnectionUnstable.bind(this);
-    this.app.connection.on("connection_dropped", (peer: Peer) => {
+    this.app.connection.on("peer_disconnect", async (peerIndex: bigint) => {
       console.log("connection dropped -- triggering on connection unstable");
+      let peer = await this.app.network.getPeer(peerIndex);
       onConnectionUnstable(peer);
     });
 
-    this.app.connection.on("connection_up", (peer) => {
+    this.app.connection.on("peer_connect", async (peerIndex: bigint) => {
+      let peer = await this.app.network.getPeer(peerIndex);
       this.onConnectionStable(peer);
     });
 

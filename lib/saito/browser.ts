@@ -117,10 +117,11 @@ class Browser {
           false
         );
 
-        window.addEventListener("storage", (e) => {
+        window.addEventListener("storage", async (e) => {
           if (this.active_tab == 0) {
             console.log("LOAD OPTIONS IN BROWSER");
-            this.app.storage.loadOptions();
+            await this.app.storage.loadOptions();
+            console.log("options loaded...");
           }
         });
       } catch (err) {
@@ -221,12 +222,12 @@ class Browser {
       //
       // Add Connection Monitors
       //
-      this.app.connection.on("connection_up", function (peer) {
+      this.app.connection.on("peer_connect", function (peer) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         siteMessage("Websocket Connection Established", 1000);
       });
-      this.app.connection.on("connection_down", function (peer) {
+      this.app.connection.on("peer_disconnect", function (peer) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         siteMessage("Websocket Connection Lost");
