@@ -58,7 +58,6 @@ class Poker extends GameTableTemplate {
 
     this.updateHTML = "";
 
-//    this.useGraphics = true;
     this.useGraphics = false;
 
   }
@@ -282,6 +281,8 @@ class Poker extends GameTableTemplate {
     this.game.stake 		=  (this.game.options.stake) ? parseFloat(this.game.options.stake) : 100;
     this.settleNow 		= (this.game.options.settle_by_round == 1);
 
+alert("settling now? " + this.settleNow);
+
     //
     // initialize game state
     //
@@ -329,6 +330,9 @@ class Poker extends GameTableTemplate {
   // adds settlement instructions to queue for processing
   //
   settleDebt(){
+
+console.log("SETTLE: " + JSON.stringify(this.game.state.debt));
+
     for (let i = 0; i < this.game.state.debt.length; i++){
       //Player i+1 owes money
       if (this.game.state.debt[i] > 0){
@@ -368,6 +372,9 @@ class Poker extends GameTableTemplate {
     this.game.queue.push("PLAYERS");
 
     if (this.needToSettleDebt()){ this.settleDebt(); }
+
+console.log("CRYPTO: " + this.game.crypto);
+console.log("SETTLE? " + this.settleNow);
 
     if (this.game.crypto && this.settleNow) {
 
