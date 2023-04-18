@@ -37,18 +37,16 @@
         game_mod.menu.hideSubMenus();
 	if (game_mod.confirm_moves == 0) {
 	  game_mod.confirm_moves = 1;
-          game_mod.saveGamePreference('twilight_expert_mode', 0);
+          game_mod.saveGamePreference('his_expert_mode', 0);
 	  window.location.reload();	
 	} else {
 	  game_mod.confirm_moves = 0;
-          game_mod.saveGamePreference('twilight_expert_mode', 1);
+          game_mod.saveGamePreference('his_expert_mode', 1);
 	  window.location.reload();	
 	}
       }
     });
-
-    this.menu.addMenuOption("game-info", "Info");
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -57,7 +55,7 @@
         game_mod.log.toggleLog();
       }
     });
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text : "Stats",
       id : "game-stats",
       class : "game-stats",

@@ -375,7 +375,7 @@
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', function() {
+    $(".option").on('click', () => {
 
       let id = $(this).attr('id');
       $(".option").off();
@@ -407,7 +407,7 @@
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', function() {
+    $(".option").on('click', () => {
 
       let id = $(this).attr('id');
       $(".option").off();
@@ -1184,7 +1184,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       this.updateStatusWithOptions(msg, opt);
 
       $(".option").off();
-      $(".option").on('click', function() {
+      $(".option").on('click', () => {
 
         let id = $(this).attr('id');
         $(".option").off();
@@ -2659,7 +2659,7 @@ return;
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
-    $('.option').on('click', function () {
+    $('.option').on('click', () => {
 
       let language_zone = $(this).attr("id");
 
@@ -2676,7 +2676,7 @@ return;
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
-      $('.option').on('click', function () {
+      $('.option').on('click', () => {
 
         let committed = $(this).attr("id");
 
@@ -2684,13 +2684,13 @@ return;
 
         if (faction === "papacy") {
 	  his_self.addMove("theological_debate");
-          this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
-          this.addMove("RESETCONFIRMSNEEDED\tall");
+          his_self.addMove("counter_or_acknowledge\t" + his_self.returnFactionName(faction) + " calls a theological debate\tdebate");
+          his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	  his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
         } else {
     	  his_self.addMove("theological_debate");
-          this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
-          this.addMove("RESETCONFIRMSNEEDED\tall");
+          his_self.addMove("counter_or_acknowledge\t" + his_self.returnFactionName(faction) + " calls a theological debate\tdebate");
+          his_self.addMove("RESETCONFIRMSNEEDED\tall");
     	  his_self.addMove("pre_theological_debate\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
         }
         his_self.endTurn();
