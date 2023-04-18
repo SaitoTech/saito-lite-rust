@@ -5,8 +5,14 @@
   background-color: transparent;
 }
 
+.hud-long {
+  max-height: unset;
+  bottom: 10px;
+  z-index: 9 !important;
+}
+
 .hud-body {
-  height: auto;
+  height: 30rem;
   width: auto;
   background-color: rgba(211, 195, 141, 0.96);
   border: 5px solid #424143;
@@ -17,7 +23,7 @@
   border-image-width: 2.1rem;
   border-image-repeat: stretch;
   border-style: solid;
-  border-image-outset: 10px;
+  border-image-outset: 10px;;
 }
 
 .hud-header {
@@ -29,6 +35,21 @@
   height: auto;
 }
 
+.status ul {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-height: 23rem;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none; 
+}
+
+.status ul::-webkit-scrollbar {
+  display: none;
+}
+
 
 .hud-body .status .tbd ul li , .hud-body .status ul li {
   min-height: 4.4rem;
@@ -36,15 +57,38 @@
   padding: 1rem;
 }
 
+/*
 .hud-body .status .tbd ul li:nth-child(1) , .hud-body .status ul li:nth-child(1) {
   border-top: 0px;
 }
+*/
 
 .hud-body .status .tbd , .hud-body .status .player-notice {
   min-width: 80%;
   font-size: 1.8rem;
   padding: 1rem;
   justify-content: center;
+}
+
+
+
+.status-text-menu ul li, .status ul li{
+  border-color: var(--text-color);
+  border: 3px solid;
+  margin: 5px 0;
+  min-width: 25rem;
+  padding: 0;
+  border-radius: 10px;
+  background-color: #ab815f73;
+}
+
+.status-message ul li:hover, .status ul li:hover {
+  background-color: #ab815faa;
+}
+
+.iconoption {
+  border: unset;
+  margin: 2px;
 }
 
 
@@ -146,7 +190,7 @@
     background-color: black;
     height: 100%;
     width: 100%;
-    z-index: 10; // only 10 on mobile, 0 on desktop
+    z-index: 10; 
     top: 0;
     left: 0;
     padding-top: 6vh;
