@@ -364,6 +364,7 @@ console.log("SETTLE: " + JSON.stringify(this.game.state.debt));
 
   
   settleLastRound() {
+    
     /*
     We want these at the end of the queue so they get processed first, but if 
     any players got removed, there will be some issues....
