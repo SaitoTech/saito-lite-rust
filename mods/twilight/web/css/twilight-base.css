@@ -77,7 +77,7 @@
     background-color: transparent;
     border: 0px;
     box-shadow: none;
-    overflow-y: scroll;
+    overflow-y: auto;
     justify-content: center;
 }
 
