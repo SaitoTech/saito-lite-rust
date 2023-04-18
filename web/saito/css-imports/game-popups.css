@@ -72,6 +72,9 @@
 .popup-confirm-menu .action{
   border: 1px black solid;
   cursor: pointer;
+  min-height: 6rem;
+  padding-left: 1rem;
+  padding-top: 2rem;
 }
 .popup-confirm-menu .action:hover{
   background-color: lightgrey;

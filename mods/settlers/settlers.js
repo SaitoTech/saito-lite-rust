@@ -2080,10 +2080,9 @@ class Settlers extends GameTemplate {
           <div class="popup-confirm-menu">
             <div class="popup-prompt">Place ${piece} here?</div>
             <div class="action" id="confirm">yes</div>
-            <div class="action" id="cancel">no</div>
-            <div class="action" id="stopasking">don't ask again</div>
-<!--            <div class="confirm_check"><input type="checkbox" name="dontshowme" value="true"/> don't ask again </div>
--->
+<!--            <div class="action" id="cancel">no</div> -->
+            <div class="action" id="stopasking">yes, stop asking</div>
+<!--            <div class="confirm_check"><input type="checkbox" name="dontshowme" value="true"/> don't ask again </div>-->
           </div>`;
 
     let left = $(`#${slot}`).offset().left + 50;
