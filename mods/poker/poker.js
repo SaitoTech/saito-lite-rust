@@ -131,10 +131,9 @@ class Poker extends GameTableTemplate {
     // ADD MENU
     //
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addMenuOption("game-info", "Info");
 
-    this.menu.addSubMenuOption("game-info", {
-      text: "Rules",
+    this.menu.addSubMenuOption("game-game", {
+      text: "How to Play",
       id: "game-rules",
       class: "game-rules",
       callback: function (app, game_mod) {
@@ -142,22 +141,22 @@ class Poker extends GameTableTemplate {
         game_mod.overlay.show(game_mod.returnGameRulesHTML());
       },
     });
-    this.menu.addSubMenuOption("game-info", {
-      text: "Log",
-      id: "game-log",
-      class: "game-log",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
-      },
-    });
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text: "Stats",
       id: "game-stats",
       class: "game-stats",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.handleStatsMenu();
+      },
+    });
+    this.menu.addSubMenuOption("game-game", {
+      text: "Log",
+      id: "game-log",
+      class: "game-log",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.log.toggleLog();
       },
     });
 
@@ -282,8 +281,6 @@ class Poker extends GameTableTemplate {
     this.game.stake 		= (this.game.options.stake) ? parseFloat(this.game.options.stake) : 100;
     // force settlement unless set to false
     this.settleNow 		= true;
-
-alert("settling now? " + this.settleNow);
 
     //
     // initialize game state
@@ -1205,7 +1202,7 @@ console.log("amount to call: " + amount_to_call);
       return;
     }
     if (this.game.player == 0 ){
-      salert("How the fuck did we call player turn??");
+      salert("How the fuck did we call player-zero turn??");
       return;
     }
 
