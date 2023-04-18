@@ -131,6 +131,7 @@ class Settlers extends GameTemplate {
 
       for (let i = 1; i <= this.game.players.length; i++) {
         this.playerbox.addClass(`c${this.game.colors[i-1]}`, i);
+        this.playerbox.addClass("saitoa");
         if (i != this.game.player) {
           this.playerbox.addClass("notme", i);
         }
