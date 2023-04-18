@@ -1022,6 +1022,10 @@ ul.horizontal_list li.iconoption {
   border: 2px solid black;
 }
 
+.welcome_overlay {
+  padding: 0 !important;
+}
+
 .stats-table {
   font-size: 1.25em;
   width: 100%;

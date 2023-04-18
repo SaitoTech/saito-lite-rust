@@ -36,10 +36,19 @@
 
 .status ul {
   position: absolute;
-  top: 50px;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
+  max-height: 23rem;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none; 
 }
+
+.status ul::-webkit-scrollbar {
+  display: none;
+}
+
 
 .hud-body .status .tbd ul li , .hud-body .status ul li {
   min-height: 4.4rem;
