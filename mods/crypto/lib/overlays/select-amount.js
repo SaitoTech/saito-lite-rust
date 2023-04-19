@@ -6,7 +6,7 @@ class CryptoSelectAmount {
   constructor(app, mod, mycallback=null) {
     this.app = app;
     this.mod = mod;
-    this.overlay = new SaitoOverlay(app, mod);
+    this.overlay = new SaitoOverlay(app, mod, false, true);
     this.callback = mycallback;
   }
 

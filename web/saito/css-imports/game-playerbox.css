@@ -24,7 +24,12 @@
   font-size: min(1.2em,2.5vh);
   padding: 0.5em;
   position: absolute;
+/*  filter: grayscale(1) opacity(0.5);*/
 }
+
+/*.player-box.player-box-active {
+  filter: none;
+}*/
 
 .player-box .plog.status {
   padding-bottom: 0;

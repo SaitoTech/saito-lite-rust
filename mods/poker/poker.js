@@ -283,8 +283,6 @@ class Poker extends GameTableTemplate {
     // force settlement unless set to false
     this.settleNow 		= true;
 
-alert("settling now? " + this.settleNow);
-
     //
     // initialize game state
     //
@@ -1531,16 +1529,19 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
         }
       }
 
-      let elem;
+      // let elem;
     
-      elem = document.querySelector(`#player-box-head-${this.playerbox.playerBox(this.game.state.button_player)}`);
-      if (elem){
-        let newButton = this.app.browser.makeElement("div","dealerbutton","dealerbutton");
-        newButton.classList.add("dealer");
-        newButton.textContent = "⬤";
-        elem.firstChild.after(newButton);
-        this.app.browser.addToolTip(newButton, "Dealer");  
-      }
+      // elem = document.querySelector(`#player-box-head-${this.playerbox.playerBox(this.game.state.button_player)}`);
+      // if (elem){
+      //   let newButton = this.app.browser.makeElement("div","dealerbutton","dealerbutton");
+      //   newButton.classList.add("dealer");
+      //   newButton.textContent = "⬤";
+      //   elem.firstChild.after(newButton);
+      //   this.app.browser.addToolTip(newButton, "Dealer");  
+      // }
+
+
+      document.querySelector(`#player-box-head-${this.playerbox.playerBox(this.game.state.button_player)}`).innerHTML += "<span>(Dealer)</span>";
     } catch (err) {
       console.log("error displaying player box",err);
     }

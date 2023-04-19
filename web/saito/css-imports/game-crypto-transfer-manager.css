@@ -74,9 +74,14 @@ input[type="checkbox"].ignore_checkbox {
     margin-left: auto;
     margin-right: auto;
     height: 6rem;
-    padding: 0rem;
+    padding: 0rem !important;
     width: auto;
     line-height: 6rem;
+}
+
+.crypto_amount_btn:hover, .crypto_transfer_btn:hover {
+  background-color: var(--saito-button-background) !important;
+  color: var(--saito-white) !important;
 }
 
 .commentary {
