@@ -37,6 +37,9 @@ class RedSquareAppspaceNotifications {
       this.render();
     }
 
+    console.log("notifications list /////////");
+    console.log(this.mod.notifications);
+
     for (let i = 0; i < this.mod.notifications.length; i++) {
       let notification = new Notification(this.app, this.mod, this.mod.notifications[i].tx);
       notification.render(".redsquare-notifications");

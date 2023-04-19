@@ -63,8 +63,8 @@ class RedSquare extends ModTemplate {
     //
     // is this a notification?
     //
-    this.notifications_last_viewed_ts = 0;
-    this.notifications_number_unviewed = 0;
+    //this.notifications_last_viewed_ts = 0;
+    //this.notifications_number_unviewed = 0;
     this.ntfs = []; // notifications, the notifications panel is attached under the full name by subcomponent
     this.ntfs_num = 0;
     this.max_ntfs_num = 50
@@ -74,14 +74,14 @@ class RedSquare extends ModTemplate {
     // used to fetch more content
     //
     this.increment_for_tweets = 0; // start a 0
-    this.increment_for_notifications = 1;
+    //this.increment_for_notifications = 1;
     this.results_per_page = 10;
     this.results_loaded = false;
     //
     // tracking timestamps of notifications and tweets (potentially useful)
     //
-    this.notifications_newest_ts = 0;
-    this.notifications_oldest_ts = new Date().getTime();
+    //this.notifications_newest_ts = 0;
+    //this.notifications_oldest_ts = new Date().getTime();
     this.tweets_newest_ts = 0;
     this.tweets_oldest_ts = new Date().getTime();
 
@@ -224,10 +224,10 @@ class RedSquare extends ModTemplate {
         callback: function (app, id) {
           setHash('notifications')
           app.connection.emit("redsquare-notifications-render-request");
-          this.notifications_number_unviewed = 0;
-          this.notifications_last_viewed_ts = new Date().getTime();
+          //this.notifications_number_unviewed = 0;
+          //this.notifications_last_viewed_ts = new Date().getTime();
           this.save();
-          this.incrementNotifications("notifications", this.notifications_number_unviewed);
+          //this.incrementNotifications("notifications", this.notifications_number_unviewed);
         }
       });
 
@@ -332,7 +332,8 @@ class RedSquare extends ModTemplate {
 
 
 
-    //
+    //    this.user.notice = "<i class='fa-solid fa-comment-dots'></i> <span class='notification-type'>replies to your tweet</span>";
+          //this.user.fourthelem = app.browser.returnTime(new Date().getTime());
     // archive -- load our own tweets
     //
     if (service.service === "archive") {
@@ -341,6 +342,10 @@ class RedSquare extends ModTemplate {
       //
       setTimeout(() => {
         this.loadNotificationsFromPeer(peer, 1, function (res) {
+
+          console.log("notifications reloaded /////////////////////");
+          console.log(res);
+
           let hash = app.browser.returnHashAndParameters();
           if (hash.hash === "notifications") {
             app.connection.emit("redsquare-notifications-render-request");
@@ -648,29 +653,29 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  loadMoreNotifications() {
+//   loadMoreNotifications() {
 
-    this.increment_for_notifications++;
-    let pre_existing_notifications = this.notifications.length;
-    let loaded_notifications = false;
-    for (let i = 0; i < this.peers_for_notifications.length; i++) {
-      let peer = this.peers_for_notifications[i];
-      this.loadNotificationsFromPeer(peer, this.increment_for_notifications, () => {
-alert("loading more notifications...");
-        if (this.notifications.length > pre_existing_notifications) { loaded_notifications = true; }
-        let hash = app.browser.returnHashAndParameters();
-        if (hash) {
-          if (hash.hash === "notifications") {
-            this.app.connection.emit("redsquare-home-notifications-render-request");
-          }
-        }
-      });
-    }
-    if (this.notifications.length <= pre_existing_tweets_on_page && loaded_notifications == false) {
-      this.loadMoreNotifications();
-      return;
-    }
-  }
+//     this.increment_for_notifications++;
+//     let pre_existing_notifications = this.notifications.length;
+//     let loaded_notifications = false;
+//     for (let i = 0; i < this.peers_for_notifications.length; i++) {
+//       let peer = this.peers_for_notifications[i];
+//       this.loadNotificationsFromPeer(peer, this.increment_for_notifications, () => {
+// alert("loading more notifications...");
+//         if (this.notifications.length > pre_existing_notifications) { loaded_notifications = true; }
+//         let hash = app.browser.returnHashAndParameters();
+//         if (hash) {
+//           if (hash.hash === "notifications") {
+//             this.app.connection.emit("redsquare-home-notifications-render-request");
+//           }
+//         }
+//       });
+//     }
+//     if (this.notifications.length <= pre_existing_tweets_on_page && loaded_notifications == false) {
+//       this.loadMoreNotifications();
+//       return;
+//     }
+//   }
   loadNotificationsFromPeer(peer, increment = 1, post_load_callback = null) {
 
     this.app.storage.loadTransactionsFromPeer("RedSquare", (10 * increment), peer, (txs) => {
@@ -782,12 +787,15 @@ alert("loading more notifications...");
       //
       // this is a notification, so update our timestamps
       //
-      if (tx.transaction.ts > this.notifications_newest_ts) {
-        this.notifications_newest_ts = tx.transaction.ts;
-      }
-      if (tx.transaction.ts < this.notifications_oldest_ts) {
-        this.notifications_oldest_ts = tx.transaction.ts;
-      }
+      
+      // if (tx.transaction.ts > this.notifications_newest_ts) {
+      //   this.notifications_newest_ts = tx.transaction.ts;
+      // }
+      // if (tx.transaction.ts < this.notifications_oldest_ts) {
+      //   this.notifications_oldest_ts = tx.transaction.ts;
+      // }
+
+
       //
       // notify of other people's actions, but not ours
       //
@@ -812,10 +820,11 @@ alert("loading more notifications...");
         //
         // increment notifications in menu unless is our own
         //
-        if (tx.transaction.ts > this.notifications_last_viewed_ts) {
-          this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
-          this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
-        }
+       
+        // if (tx.transaction.ts > this.notifications_last_viewed_ts) {
+        //   this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
+        //   this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
+        // }
 
       }
 
@@ -830,9 +839,9 @@ alert("loading more notifications...");
         if (tx.transaction.ts > this.tweets_newest_ts) {
           this.tweets_newest_ts = tx.transaction.ts;
         }
-        if (tx.transaction.ts < this.notifications_oldest_ts) {
-          this.tweets_oldest_ts = tx.transaction.ts;
-        }
+        // if (tx.transaction.ts < this.notifications_oldest_ts) {
+        //   this.tweets_oldest_ts = tx.transaction.ts;
+        // }
         return;
       }
     }
@@ -933,9 +942,9 @@ alert("loading more notifications...");
       if (tx.transaction.ts > this.tweets_newest_ts) {
         this.tweets_newest_ts = tx.transaction.ts;
       }
-      if (tx.transaction.ts < this.notifications_oldest_ts) {
-        this.tweets_oldest_ts = tx.transaction.ts;
-      }
+      // if (tx.transaction.ts < this.notifications_oldest_ts) {
+      //   this.tweets_oldest_ts = tx.transaction.ts;
+      // }
     }
 
     //
@@ -1556,19 +1565,19 @@ alert("loading more notifications...");
 
     if (this.app.options.redsquare) {
       this.redsquare = this.app.options.redsquare;
-      this.notifications_last_viewed_ts = this.redsquare.notifications_last_viewed_ts;
-      this.notifications_number_unviewed = this.redsquare.notifications_number_unviewed;
+      // this.notifications_last_viewed_ts = this.redsquare.notifications_last_viewed_ts;
+      // this.notifications_number_unviewed = this.redsquare.notifications_number_unviewed;
     } else {
       this.redsquare = {};
-      this.notifications_last_viewed_ts = new Date().getTime();
-      this.notifications_number_unviewed = 0;
+      // this.notifications_last_viewed_ts = new Date().getTime();
+      // this.notifications_number_unviewed = 0;
       this.save();
     }
   }
 
   save() {
-    this.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
-    this.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
+    // this.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
+    // this.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
     this.app.options.redsquare = this.redsquare;
     this.app.storage.saveOptions();
   }
