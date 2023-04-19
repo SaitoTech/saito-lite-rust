@@ -192,8 +192,10 @@ function copy_lite_mods_to_bundler_directory {
   do
     if [[ $PMOD == 1 ]]; then
       if ! [[ $line == *"//"* ]]; then
-        SUBSTRING=$(echo $line| cut -d"'" -f 2)
-        SUBSTRING2=$(echo $SUBSTRING| cut -d"/" -f 1)
+        #SUBSTRING=$(echo $line| cut -d".*/" -f 2)
+        #SUBSTRING2=$(echo $SUBSTRING| cut -d".js" -f 1)
+        SUBSTRING=$(echo $line | sed 's/.*\///')
+        SUBSTRING2=$(echo $SUBSTRING | sed 's/.js.*//')
         if ! [[ $SUBSTRING2 == *"]"* ]]; then
           if ! [[ $SUBSTRING2 == *"}"* ]]; then
             ARRAY_OF_MODS+=($SUBSTRING2)
@@ -205,6 +207,8 @@ function copy_lite_mods_to_bundler_directory {
       PMOD=1
     fi
   done < $input
+
+  #echo "Modules: $ARRAY_OF_MODS";
 
   for i in "${ARRAY_OF_MODS[@]}"; do
     echo "installing mod for lite-client bundling: $i";
