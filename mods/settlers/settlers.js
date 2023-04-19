@@ -7,7 +7,7 @@ const SettlersStats = require("./lib/overlays/stats");
 const SettlersGameOptionsTemplate = require("./lib/settlers-game-options.template");
 const SettlersTradeHelpOverlayTemplate = require("./lib/settlers-trade-help-overlay.template");
 
-const SettlersGameloop = require("./lib/src/settlers-gameloop.js");
+const SettlersGameLoop = require("./lib/src/settlers-gameloop.js");
 const SettlersPlayer = require("./lib/src/settlers-player");
 const SettlersState = require("./lib/src/settlers-state");
 const SettlersActions = require("./lib/src/settlers-actions");
@@ -344,6 +344,6 @@ returnTradeHelpOverlay(){
 
 }
 
-Settlers.importFunctions(SettlersInit, SettlersGameloop, SettlersPlayer, SettlersState, SettlersActions);
+Settlers.importFunctions(SettlersInit, SettlersGameLoop, SettlersPlayer, SettlersState, SettlersActions);
 
 module.exports = Settlers;
