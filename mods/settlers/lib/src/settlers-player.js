@@ -720,3 +720,5 @@
   }
 
 }
+
+module.exports = SettlersPlayer;

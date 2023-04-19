@@ -2,6 +2,8 @@
     Functions for handling the game loop
   */
 
+const { ModuleResolutionKind } = require("typescript");
+
     class SettlersGameloop {
 
   /*
@@ -885,3 +887,5 @@ console.log("running UPDATE STATUS");
 
 
 }
+
+module.exports = SettlersGameloop;

@@ -783,3 +783,5 @@ class SettlersState {
     }
 
 }
+
+module.exports = SettlersState;

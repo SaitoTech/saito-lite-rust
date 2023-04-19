@@ -10,7 +10,7 @@ const SettlersTradeHelpOverlayTemplate = require("./lib/settlers-trade-help-over
 const SettlersGameloop = require("./lib/src/settlers-gameloop.js");
 const SettlersPlayer = require("./lib/src/settlers-player");
 const SettlersState = require("./lib/src/settlers-state");
-const SettlersActions = require("./lib/src/setterls-actions");
+const SettlersActions = require("./lib/src/settlers-actions");
 const SettlersInit = require("./lib/src/settlers-init");
 
 //////////////////
@@ -330,6 +330,15 @@ returnDiceTokens() {
       dice.push({ value: i + 5 });
   }
   return dice;
+}
+
+
+returnGameOptionsHTML() {
+  return SettlersGameOptionsTemplate(this.app, this);
+}
+
+returnTradeHelpOverlay(){
+  return SettlersTradeHelpOverlayTemplate(this.app, this);
 }
 
 
