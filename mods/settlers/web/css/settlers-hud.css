@@ -137,6 +137,11 @@
   top: -0.75rem;
 }
 
+
+.status-header > #status-content, .status-message > #status-content, .status {
+  font-size: 2rem;
+}
+
 @media only screen and (max-width: 700px) and (orientation: portrait) {
   body .player-box {
     height: auto !important;
