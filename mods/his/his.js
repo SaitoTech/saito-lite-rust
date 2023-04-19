@@ -3449,6 +3449,13 @@ alert("Not Implemented");
 	// set player to protestant
 	player = his_self.returnPlayerOfFaction("protestant");
 
+	let players_to_go = [];
+	for (let i = 1; i < his_self.game.players.length; i++) {
+	  if (i != his_self.returnPlayerOfFaction("protestants")) {
+	    players_to_go.push(i);
+	  }
+	}
+
 	// protestant gets 2 roll bonus at start
 	his_self.game.state.tmp_protestant_reformation_bonus = 2;
 	his_self.game.state.tmp_catholic_reformation_bonus = 0;
@@ -3463,6 +3470,7 @@ alert("Not Implemented");
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+	his_self.game.queue.push("STATUS\t<div class='message'>Protestants selecting reformation targets...</div></div>\t"+JSON.stringify(players_to_go));
 	his_self.game.queue.push("show_overlay\ttheses");
         his_self.convertSpace("protestant", "wittenberg");
         his_self.addUnit("protestant", "wittenberg", "regular");
