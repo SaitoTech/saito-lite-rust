@@ -159,6 +159,48 @@ class Poker extends GameTableTemplate {
         game_mod.log.toggleLog();
       },
     });
+    //
+    // this is almost unmodified code from the /lib/template/gametabletemplate.js file that 
+    // provides a way to exit an ongoing game. it removes the player from the deal flow but
+    // keeps them in the game. we are adding the instruction as a separate menu option to 
+    // try and simplify the UI. but the original UI is still here, just toggled-off with 
+    // display:none to allow for rapid experimentation.
+    //
+    this.menu.addSubMenuOption("game-game", {
+      text: "Leave Table",
+      id: "game-leave",
+      class: "game-leave",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.displayWarning("Leave game", "You won't be dealt into the next hand");
+        game_mod.willleave = true;
+        //game_mod.scoreboard.update(
+        //  game_mod.scoreFrame + `<div id="cancel" class="table_ctrl">CANCEL</div>`,
+        //  game_mod.controller.bind(game_mod)
+        //);
+        game_mod.sendMetaMessage("LEAVE");
+      },
+    });
+    this.menu.addSubMenuOption("game-game", {
+      text: "Exit",
+      id: "game-exit",
+      class: "game-exit",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        let c = confirm("Exit the Game?");
+        if (c) {
+	  if (game_mod.game.state.passed[game_mod.game.player] != 1) {
+	    game_mod.addMove("fold\t" + game_mod.game.player);
+	    game_mod.endTurn();
+            game_mod.willleave = true;
+            game_mod.sendMetaMessage("LEAVE");
+	  }
+	  window.location = "/arcade";
+        }
+      },
+    });
+
+
 
     this.menu.addChatMenu();
     this.menu.render();
@@ -170,10 +212,11 @@ class Poker extends GameTableTemplate {
     this.playerbox.addStatus(); //enable update Status to display in playerbox
 
     try{
-      document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
-      if (this.game.state.button_player <= this.game.players.length && this.game.state.button_player > 0){
-        document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
-      }
+      // removed
+      //document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
+      //if (this.game.state.button_player <= this.game.players.length && this.game.state.button_player > 0){
+      //  document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
+      //}
     } catch(err) {
       console.log("Error initializing scoreboard",err);
     }
@@ -226,6 +269,15 @@ class Poker extends GameTableTemplate {
         }
       }
     }
+
+
+    //
+    // gametabletemplate adds a scoreboard DIV that shows HIDE / LEAVE / JOIN instructions
+    // which we are going to hide to prevent UI / UX clutter, but leave functional so as to
+    // enable faster experimentation.
+    //
+    if (document.querySelector(".game-scoreboard")) { document.querySelector(".game-scoreboard").style.display = "none"; }
+
   }
 
 
@@ -414,8 +466,8 @@ console.log("SETTLE? " + this.settleNow);
  
     try {   
       if (this.browser_active){
-        document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
-        document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
+        //document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
+        //document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
       }
     } catch (err) {}
 
