@@ -65,7 +65,8 @@
           `${this.game.playerNames[winner]} is ${this.skin.winState} of Saitoa! The game is over.`
         );
 
-        this.overlay.show(this.returnStatsOverlay());
+        //this.overlay.show(this.returnStatsOverlay());
+        game_mod.stats_overlay.render();
         $(".rules-overlay h1").text(`Game Over: ${this.game.playerNames[winner]} wins!`);
         
         this.endGame(this.game.players[winner]); 
