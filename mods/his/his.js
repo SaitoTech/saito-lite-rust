@@ -1917,18 +1917,16 @@ console.log("\n\n\n\n");
         game_mod.menu.hideSubMenus();
 	if (game_mod.confirm_moves == 0) {
 	  game_mod.confirm_moves = 1;
-          game_mod.saveGamePreference('twilight_expert_mode', 0);
+          game_mod.saveGamePreference('his_expert_mode', 0);
 	  window.location.reload();	
 	} else {
 	  game_mod.confirm_moves = 0;
-          game_mod.saveGamePreference('twilight_expert_mode', 1);
+          game_mod.saveGamePreference('his_expert_mode', 1);
 	  window.location.reload();	
 	}
       }
     });
-
-    this.menu.addMenuOption("game-info", "Info");
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -1937,7 +1935,7 @@ console.log("\n\n\n\n");
         game_mod.log.toggleLog();
       }
     });
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text : "Stats",
       id : "game-stats",
       class : "game-stats",
@@ -3617,6 +3615,8 @@ alert("Not Implemented");
 	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
 	      his_self.endTurn();
 	    }
+	  } else {
+	    his_self.updateStatus("Protestant Reformation...");
 	  }
 
           return 0;
@@ -12215,6 +12215,7 @@ console.log("Protestant Card is: " +this.game.state.sp[protestant-1]);
               //
 	      this.updateLog("Diet of Worms ends in tie.");
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "none" , difference : 0 , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
+  	      this.game.queue.push("ACKNOWLEDGE\tDiet of Worms ends in a Stalemate");
 
 	    }
 	  }
@@ -16085,7 +16086,7 @@ this.updateLog("Catholics: " + c_rolls);
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', function() {
+    $(".option").on('click', () => {
 
       let id = $(this).attr('id');
       $(".option").off();
@@ -16117,7 +16118,7 @@ this.updateLog("Catholics: " + c_rolls);
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', function() {
+    $(".option").on('click', () => {
 
       let id = $(this).attr('id');
       $(".option").off();
@@ -16894,7 +16895,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       this.updateStatusWithOptions(msg, opt);
 
       $(".option").off();
-      $(".option").on('click', function() {
+      $(".option").on('click', () => {
 
         let id = $(this).attr('id');
         $(".option").off();
@@ -18369,7 +18370,7 @@ return;
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
-    $('.option').on('click', function () {
+    $('.option').on('click', () => {
 
       let language_zone = $(this).attr("id");
 
@@ -18386,7 +18387,7 @@ return;
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
-      $('.option').on('click', function () {
+      $('.option').on('click', () => {
 
         let committed = $(this).attr("id");
 
@@ -18394,13 +18395,13 @@ return;
 
         if (faction === "papacy") {
 	  his_self.addMove("theological_debate");
-          this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
-          this.addMove("RESETCONFIRMSNEEDED\tall");
+          his_self.addMove("counter_or_acknowledge\t" + his_self.returnFactionName(faction) + " calls a theological debate\tdebate");
+          his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	  his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
         } else {
     	  his_self.addMove("theological_debate");
-          this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
-          this.addMove("RESETCONFIRMSNEEDED\tall");
+          his_self.addMove("counter_or_acknowledge\t" + his_self.returnFactionName(faction) + " calls a theological debate\tdebate");
+          his_self.addMove("RESETCONFIRMSNEEDED\tall");
     	  his_self.addMove("pre_theological_debate\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
         }
         his_self.endTurn();

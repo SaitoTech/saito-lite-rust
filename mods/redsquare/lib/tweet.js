@@ -207,6 +207,10 @@ class Tweet {
       }
     }
 
+    if (!this.container || this.container == "") {
+      this.container = ".redsquare-appspace-body";
+    }
+
     if (replace_existing_element && document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
@@ -430,7 +434,6 @@ class Tweet {
       let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-text`);
       if (!el) { return; }
       if (!this.force_long_tweet) {
-        let cobj = document.querySelector(this.container);
         if (el.clientHeight < el.scrollHeight) {
           el.classList.add("preview");
           this.is_long_tweet = true;

@@ -1451,6 +1451,7 @@ console.log("Protestant Card is: " +this.game.state.sp[protestant-1]);
               //
 	      this.updateLog("Diet of Worms ends in tie.");
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "none" , difference : 0 , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
+  	      this.game.queue.push("ACKNOWLEDGE\tDiet of Worms ends in a Stalemate");
 
 	    }
 	  }

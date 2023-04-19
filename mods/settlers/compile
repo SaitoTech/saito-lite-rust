@@ -1,0 +1,12 @@
+
+
+#
+# class constructor
+#
+cat ./src/settlers-start.js > ./settlers.js
+cat ./src/settlers-gameloop.js >> ./settlers.js
+cat ./src/settlers-player.js >> ./settlers.js
+cat ./src/settlers-end.js >> ./settlers.js
+
+npm run compile
+

@@ -58,7 +58,6 @@ class Poker extends GameTableTemplate {
 
     this.updateHTML = "";
 
-//    this.useGraphics = true;
     this.useGraphics = false;
 
   }
@@ -132,10 +131,9 @@ class Poker extends GameTableTemplate {
     // ADD MENU
     //
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addMenuOption("game-info", "Info");
 
-    this.menu.addSubMenuOption("game-info", {
-      text: "Rules",
+    this.menu.addSubMenuOption("game-game", {
+      text: "How to Play",
       id: "game-rules",
       class: "game-rules",
       callback: function (app, game_mod) {
@@ -143,16 +141,7 @@ class Poker extends GameTableTemplate {
         game_mod.overlay.show(game_mod.returnGameRulesHTML());
       },
     });
-    this.menu.addSubMenuOption("game-info", {
-      text: "Log",
-      id: "game-log",
-      class: "game-log",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
-      },
-    });
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text: "Stats",
       id: "game-stats",
       class: "game-stats",
@@ -161,6 +150,57 @@ class Poker extends GameTableTemplate {
         game_mod.handleStatsMenu();
       },
     });
+    this.menu.addSubMenuOption("game-game", {
+      text: "Log",
+      id: "game-log",
+      class: "game-log",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.log.toggleLog();
+      },
+    });
+    //
+    // this is almost unmodified code from the /lib/template/gametabletemplate.js file that 
+    // provides a way to exit an ongoing game. it removes the player from the deal flow but
+    // keeps them in the game. we are adding the instruction as a separate menu option to 
+    // try and simplify the UI. but the original UI is still here, just toggled-off with 
+    // display:none to allow for rapid experimentation.
+    //
+    this.menu.addSubMenuOption("game-game", {
+      text: "Leave Table",
+      id: "game-leave",
+      class: "game-leave",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.displayWarning("Leave game", "You won't be dealt into the next hand");
+        game_mod.willleave = true;
+        //game_mod.scoreboard.update(
+        //  game_mod.scoreFrame + `<div id="cancel" class="table_ctrl">CANCEL</div>`,
+        //  game_mod.controller.bind(game_mod)
+        //);
+        game_mod.sendMetaMessage("LEAVE");
+      },
+    });
+    this.menu.addSubMenuOption("game-game", {
+      text: "Exit",
+      id: "game-exit",
+      class: "game-exit",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        let c = confirm("Exit the Game?");
+        if (c) {
+	  if (game_mod.game.state.passed[game_mod.game.player] != 1) {
+	    game_mod.addMove("fold\t" + game_mod.game.player);
+	    game_mod.endTurn();
+            game_mod.willleave = true;
+            game_mod.sendMetaMessage("LEAVE");
+	  }
+	  window.location = "/arcade";
+        }
+      },
+    });
+
+
 
     this.menu.addChatMenu();
     this.menu.render();
@@ -172,10 +212,11 @@ class Poker extends GameTableTemplate {
     this.playerbox.addStatus(); //enable update Status to display in playerbox
 
     try{
-      document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
-      if (this.game.state.button_player <= this.game.players.length && this.game.state.button_player > 0){
-        document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
-      }
+      // removed
+      //document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
+      //if (this.game.state.button_player <= this.game.players.length && this.game.state.button_player > 0){
+      //  document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
+      //}
     } catch(err) {
       console.log("Error initializing scoreboard",err);
     }
@@ -228,6 +269,15 @@ class Poker extends GameTableTemplate {
         }
       }
     }
+
+
+    //
+    // gametabletemplate adds a scoreboard DIV that shows HIDE / LEAVE / JOIN instructions
+    // which we are going to hide to prevent UI / UX clutter, but leave functional so as to
+    // enable faster experimentation.
+    //
+    if (document.querySelector(".game-scoreboard")) { document.querySelector(".game-scoreboard").style.display = "none"; }
+
   }
 
 
@@ -246,6 +296,7 @@ class Poker extends GameTableTemplate {
     if (this.game.options.stake)         { this.game.stake = this.game.options.stake; }
     if (this.game.options.blind_mod)     { this.game.blind_mod = this.game.options.blind_mode; }
 
+    this.settleNow                      = true;
     this.game.state.round		= 1;
     this.game.state.big_blind		= this.fts(((this.stf(this.game.stake) * 2) / this.stf(this.game.chips)));
     this.game.state.small_blind		= this.fts((this.stf(this.game.stake) / this.stf(this.game.chips)));
@@ -279,8 +330,9 @@ class Poker extends GameTableTemplate {
     // initializeGameStake will use this info
     //
     this.game.crypto 		= (this.game.options.crypto)? this.game.options.crypto: "CHIPS";
-    this.game.stake 		=  (this.game.options.stake) ? parseFloat(this.game.options.stake) : 100;
-    this.settleNow 		= (this.game.options.settle_by_round == 1);
+    this.game.stake 		= (this.game.options.stake) ? parseFloat(this.game.options.stake) : 100;
+    // force settlement unless set to false
+    this.settleNow 		= true;
 
     //
     // initialize game state
@@ -311,7 +363,10 @@ class Poker extends GameTableTemplate {
   //
   needToSettleDebt(){
 
+console.log("NTSD: 1");
+
     if (!this.game.crypto || this.settleNow) { return false; }
+console.log("NTSD: 2");
 
     if (this.toLeave.length > 0){
       return true;
@@ -321,6 +376,7 @@ class Poker extends GameTableTemplate {
         return true;
       }
     }
+console.log("NTSD: 3");
 
     return false;
   }
@@ -329,6 +385,9 @@ class Poker extends GameTableTemplate {
   // adds settlement instructions to queue for processing
   //
   settleDebt(){
+
+console.log("SETTLE: " + JSON.stringify(this.game.state.debt));
+
     for (let i = 0; i < this.game.state.debt.length; i++){
       //Player i+1 owes money
       if (this.game.state.debt[i] > 0){
@@ -337,7 +396,6 @@ class Poker extends GameTableTemplate {
           if (this.game.state.debt[j] < 0){
             let amount_to_send = Math.min(this.stf(this.game.state.debt[j]),this.stf(this.game.state.debt[i]));
             if (amount_to_send > 0){
-              this.settleNow = true;
               this.game.state.debt[i] = this.subtractFromString(this.game.state.debt[i], this.fts(amount_to_send));
               this.game.state.debt[j] = this.addToString(this.game.state.debt[j], this.fts(amount_to_send));
               let ts = new Date().getTime();
@@ -367,9 +425,14 @@ class Poker extends GameTableTemplate {
     this.game.queue.push("checkplayers");     
     this.game.queue.push("PLAYERS");
 
-    if (this.needToSettleDebt()){ this.settleDebt(); }
+    if (this.needToSettleDebt()) {
+      this.settleDebt(); 
+    }
 
-    if (this.game.crypto && this.settleNow) {
+console.log("CRYPTO: " + this.game.crypto);
+console.log("SETTLE? " + this.settleNow);
+
+    if (this.game.crypto != "" && this.game.crypto != "CHIPS" && this.settleNow == true) {
 
       msg += " and settling bets...";
 
@@ -403,8 +466,8 @@ class Poker extends GameTableTemplate {
  
     try {   
       if (this.browser_active){
-        document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
-        document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
+        //document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
+        //document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
       }
     } catch (err) {}
 
@@ -449,6 +512,7 @@ class Poker extends GameTableTemplate {
         this.displayPlayers(true); //to update chips before game_over
         this.game.queue = [];
         this.game.crypto = null;
+	this.settleDebt();
         this.endGame(this.game.players[parseInt(mv[1])], "elimination"); 
         return 0;
       }
@@ -1190,7 +1254,7 @@ console.log("amount to call: " + amount_to_call);
       return;
     }
     if (this.game.player == 0 ){
-      salert("How the fuck did we call player turn??");
+      salert("How the fuck did we call player-zero turn??");
       return;
     }
 

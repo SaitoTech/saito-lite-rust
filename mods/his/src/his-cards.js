@@ -1395,6 +1395,8 @@ alert("Not Implemented");
 	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
 	      his_self.endTurn();
 	    }
+	  } else {
+	    his_self.updateStatus("Protestant Reformation...");
 	  }
 
           return 0;

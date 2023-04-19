@@ -40,12 +40,13 @@ class Leaderboard {
     // fetch league info if it is not already downloaded
     //
     if (this.league.players.length == 0 || !this.league.ts || this.league.ts + 900000 < new Date().getTime()){
-      console.log(this.league.numPlayers, this.league.players.length, "Query Server for leaderboard");
+      if (this.mod.debug){
+        console.log(this.league.numPlayers, this.league.players.length, "Query Server for leaderboard");  
+      }
       this.mod.fetchLeagueLeaderboard(this.league.id, (rows) => {
         this.renderLeaderboardContents();
         this.mod.saveLeagues();
       });
-
     }
   
   }

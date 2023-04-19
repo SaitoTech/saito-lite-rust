@@ -76,17 +76,17 @@ class Twilight extends GameTemplate {
 
   showCardOverlay(cards, title = ""){
     let html = `
-      <div class="ts-overlay">
-      <h1>${title}</h1>
-      <div class="ts-body">
-      <div class="cardlist-container">${this.returnCardList(cards)}</div>`;
-      if (cards.length == 0) { 
-        html = `<div style="text-align:center; margin: auto;">
-                There are no cards to display
-                </div>`;
-      }
-      html += "</div></div>";
-      this.overlay.show(html);
+      <div class="transparent-card-overlay hide-scrollbar">
+        ${this.returnCardList(cards)}
+      </div>
+    `;
+
+    if (cards.length == 0) { 
+      html = `<div style="text-align:center; margin: auto;">
+              There are no cards to display
+              </div>`;
+    }
+    this.overlay.show(html);
   }
 
   showWarOverlay(card, winner, roll, modifications, player = ""){

@@ -79,12 +79,12 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	`;
 
 	html += formatOptions(invite.game_mod.returnShortGameOptionsArray(invite.options));
-	if (invite.time_finished){
+	if (invite.time_finished) {
     let datetime = app.browser.formatDate(invite.time_finished);
-		html += `<div class="saito-table-row">
-                <div class="arcade-game-options-key">Finished at</div>
-								<div class="arcade-game-options-value">${datetime.hours}:${datetime.minutes}, ${datetime.month} ${datetime.day}</div>
-						</div>`;
+    html += addTimeStamp("finished at", datetime);
+	} else if (invite.time_created) {
+		let datetime = app.browser.formatDate(invite.time_created);
+    html += addTimeStamp("created at", datetime);
 	}
 
 	html += `
@@ -144,3 +144,11 @@ const formatOptions = (sgoa) => {
 
 	return html;
 };
+
+const addTimeStamp = (label, datetime) => {
+	return 	`<div class="saito-table-row">
+              <div class="arcade-game-options-key">${label}</div>
+							<div class="arcade-game-options-value">${datetime.hours}:${datetime.minutes}, ${datetime.month} ${datetime.day}</div>
+					</div>`;
+
+}
