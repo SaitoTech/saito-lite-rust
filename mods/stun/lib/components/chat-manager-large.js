@@ -18,7 +18,7 @@ class VideoChatManager {
   mode = ""; // full, addon
   local_container = "expanded-video";
   remote_container = "side-videos";
-  display_mode = "speaker";
+  display_mode = "focus";
   remote_streams = new Map();
   current_speaker = null
   speaker_candidate = null
@@ -216,7 +216,7 @@ class VideoChatManager {
     }
 
     document.querySelector(".large-wrapper").addEventListener("click", (e) => {
-      if(this.display_mode !== "speaker"){
+      if (this.display_mode == "gallery") {
         return;
       }
       if (e.target.classList.contains("video-box")) {
@@ -227,16 +227,20 @@ class VideoChatManager {
           // console.log("already expanded");
           return;
         } else {
-          let id = document
-            .querySelector(`.${this.local_container}`)
-            .querySelector(".video-box").id;
-          this.video_boxes[id].video_box.containerClass = this.remote_container;
-          this.video_boxes[id].video_box.rerender();
-          this.video_boxes[stream_id].video_box.containerClass = this.local_container;
-          this.video_boxes[stream_id].video_box.rerender();
+          this.flipDisplay(stream_id);
         }
       }
     });
+  }
+
+  flipDisplay(stream_id) {
+    let id = document
+      .querySelector(`.${this.local_container}`)
+      .querySelector(".video-box").id;
+    this.video_boxes[id].video_box.containerClass = this.remote_container;
+    this.video_boxes[id].video_box.rerender();
+    this.video_boxes[stream_id].video_box.containerClass = this.local_container;
+    this.video_boxes[stream_id].video_box.rerender();
   }
 
   createRoomLink() {
@@ -353,7 +357,7 @@ class VideoChatManager {
   renderRemoteStreamPlaceholder(peer, placeholder_info, is_creator) {
     this.createVideoBox(peer);
     this.video_boxes[peer].video_box.render(null, placeholder_info);
-  
+
   }
 
   createVideoBox(peer, container = this.remote_container) {
@@ -376,7 +380,7 @@ class VideoChatManager {
   }
 
   toggleVideo() {
-  
+
     this.app.connection.emit("stun-toggle-video");
   }
 
@@ -447,15 +451,23 @@ class VideoChatManager {
     </div>
     `;
 
-    for (let i in this.video_boxes) {
-      if (i === "local") {
-        this.video_boxes[i].video_box.containerClass = this.local_container;
-        this.video_boxes[i].video_box.render(this.localStream);
-      } else {
-        this.video_boxes[i].video_box.containerClass = this.remote_container;
-        this.video_boxes[i].video_box.render(this.remote_streams.get(i));
-      }
-    }
+    this.setDisplayContainers();
+  }
+
+  switchDisplayToFocus() {
+    this.display_mode = "focus";
+    this.local_container = "expanded-video";
+    this.remote_container = "side-videos";
+
+    document.querySelector(".video-container-large").innerHTML = `
+    <div class="expanded-video">
+
+    </div>
+    <div class="side-videos">
+    </div>
+    `;
+
+    this.setDisplayContainers();
   }
 
   switchDisplayToSpeaker() {
@@ -471,6 +483,10 @@ class VideoChatManager {
     </div>
     `;
 
+    this.setDisplayContainers();
+  }
+
+  setDisplayContainers() {
     for (let i in this.video_boxes) {
       if (i === "local") {
         this.video_boxes[i].video_box.containerClass = this.local_container;
@@ -496,49 +512,53 @@ class VideoChatManager {
 
 
     function update() {
-        analyser.getByteFrequencyData(dataArray);
-        const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+      analyser.getByteFrequencyData(dataArray);
+      const average = dataArray.reduce((a, b) => a + b) / bufferLength;
 
-        if (average > threshold && !speaking) {
-            let video_container = document.querySelector(`#stream${peer}`);
+      if (average > threshold && !speaking) {
+        let video_container = document.querySelector(`#stream${peer}`);
 
-            // setTimeout(()=> {
-            //   if(speaking) return;
-            //   document.querySelectorAll('.video-box-container-large').forEach(item => {
-            //     item.classList.remove('speaker');
-            // });
-            // },3000)
+        // setTimeout(()=> {
+        //   if(speaking) return;
+        //   document.querySelectorAll('.video-box-container-large').forEach(item => {
+        //     item.classList.remove('speaker');
+        // });
+        // },3000)
 
-           let video_box =  video_container.querySelector(".video-box");
-           this.current_speaker = peer;
-            let speaker_candidate = peer;
-           
+        let video_box = video_container.querySelector(".video-box");
+        this.current_speaker = peer;
+        let speaker_candidate = peer;
 
-            setTimeout(()=> {
-              if(speaker_candidate === this.current_speaker){
-                document.querySelectorAll('.video-box-container-large').forEach(item => {
-                  // console.log(item.id, `stream${peer}`)
-                  if(item.id === `stream${peer}`){
-                    item.classList.add('speaker');
-                  }else {
-                    item.classList.remove('speaker');
-                  }
-                })
-                speaking = true;
-                video_box.click();
+
+        setTimeout(() => {
+          if (speaker_candidate === this.current_speaker) {
+            document.querySelectorAll('.video-box-container-large').forEach(item => {
+              // console.log(item.id, `stream${peer}`)
+
+              if (item.id === `stream${peer}`) {
+                if (this.display_mode == "speaker") {
+                  this.flipDisplay(item.id);
+                } 
+                item.classList.add('speaker');
+              } else {
+                item.classList.remove('speaker');
               }
-            }, 3000)
-        
-        } else if (average <= threshold && speaking) {
-            speaking = false;
-        }
+            })
+            speaking = true;
+          }
+        }, 10000)
 
-        requestAnimationFrame(update);
+      } else if (average <= threshold && speaking) {
+        speaking = false;
+      }
+
+      requestAnimationFrame(update);
     }
 
     update();
-}
+  }
 
 }
 
 module.exports = VideoChatManager;
+
