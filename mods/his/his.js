@@ -12111,13 +12111,19 @@ console.log(JSON.stringify(mv));
 	  let protestant_arolls = [];
 	  let papacy_arolls = [];
 
+	  let all_players_but_protestant = [];
+	  let all_players_but_papacy = [];
+          for (let i = 1; i <= this.game.players.length; i++) {
+	    if (i != protestant) { all_players_but_protestant.push(i); }
+	    if (i != papacy) { all_players_but_papacy.push(i); }
+	  }
+
 	  let protestant_card = this.game.deck[0].cards[this.game.state.sp[protestant-1]];
 	  let papacy_card = this.game.deck[0].cards[this.game.state.sp[papacy-1]];
 
 	  //
 	  // show card in overlay
 	  //
-console.log("Protestant Card is: " +this.game.state.sp[protestant-1]);
 	  this.diet_of_worms_overlay.addCardToCardfan(this.game.state.sp[protestant-1], "protestant");
 	  this.diet_of_worms_overlay.addCardToCardfan(this.game.state.sp[papacy-1], "catholic");
 
@@ -12194,6 +12200,7 @@ console.log("Protestant Card is: " +this.game.state.sp[protestant-1]);
 	    for (let i = papacy_hits; i < protestant_hits; i++) {
 	      this.game.queue.push("select_for_protestant_conversion\tprotestant\tgerman");
 	    }
+  	    this.game.queue.push("STATUS\t<div class='message'>Protestants selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_protestants));
   	    this.game.queue.push("show_overlay\ttheses");
   	    this.game.queue.push("ACKNOWLEDGE\tProtestants win Diet of Worms");
 
@@ -12207,6 +12214,7 @@ console.log("Protestant Card is: " +this.game.state.sp[protestant-1]);
 	      for (let i = protestant_hits; i < papacy_hits; i++) {
 	        this.game.queue.push("select_for_catholic_conversion\tpapacy\tgerman");
 	      }
+  	      this.game.queue.push("STATUS\t<div class='message'>Papacy selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_papacy));
   	      this.game.queue.push("show_overlay\ttheses");
   	      this.game.queue.push("ACKNOWLEDGE\tPapacy wins Diet of Worms");
 	    } else {
@@ -15266,7 +15274,9 @@ console.log("----------------------------");
                 his_self.endTurn();
               },
 
-              null
+              null,
+
+	      true
 
             );
           }
@@ -15306,7 +15316,9 @@ console.log("----------------------------");
                 his_self.endTurn();
               },
 
-              null
+              null,
+
+	      true
 
             );
           }
