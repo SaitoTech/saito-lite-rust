@@ -657,7 +657,7 @@ class RedSquare extends ModTemplate {
       let peer = this.peers_for_notifications[i];
       this.loadNotificationsFromPeer(peer, this.increment_for_notifications, () => {
         if (this.notifications.length > pre_existing_notifications) { loaded_notifications = true; }
-        let hash = app.browser.returnHashAndParameters();
+        let hash = this.app.browser.returnHashAndParameters();
         if (hash) {
           if (hash.hash === "notifications") {
             this.app.connection.emit("redsquare-home-notifications-render-request");
