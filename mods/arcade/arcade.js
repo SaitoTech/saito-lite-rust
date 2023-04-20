@@ -952,6 +952,15 @@ class Arcade extends ModTemplate {
       $game_id: txmsg.game_id,
     };
     await this.app.storage.executeDatabase(sql, params, "arcade");
+
+    //Observer stuff
+    //if (!this.app.BROWSER) {
+
+      //And make sure archive saves all the tx's under the game id
+      console.log(txmsg.module+"_"+txmsg.game_id);
+      //this.app.storage.saveTransactionByKey(txmsg.game_id, tx);
+      this.app.storage.saveTransaction(tx, txmsg.module+"_"+txmsg.game_id);
+    //}
   }
 
   ////////////
@@ -1759,6 +1768,133 @@ class Arcade extends ModTemplate {
       }
     }
   }
+
+  ///////////////////////////////////////////////////////////////////////////
+  ////////////////////   GAME OBSERVER STUFF  ///////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////
+  observeGame(game_id, watch_live = false) {
+    let game_tx = this.returnGame(game_id);
+
+    if (!game_tx) {
+      return;
+    }
+
+    let game_msg = game_tx.returnMessage();
+
+    let game_mod = this.app.modules.returnModule(game_msg.game);
+
+    this.app.connection.emit("arcade-game-initialize-render-request");
+    
+    //We want to send a message to the players to add us to the game.accept list so they route their game moves to us as well
+    game_msg.game_id = game_id;
+    this.sendFollowTx(game_msg);
+
+    if (!this.app.options.games) {
+      this.app.options.games = [];
+    }
+
+    if (!game_mod.doesGameExistLocally(game_id)){
+      console.log("Initialize game");
+      game_mod.initializeObserverMode(game_tx);
+    }else{
+      console.log("Game already exists");
+      game_mod.loadGame(game_id);
+    }
+
+    game_mod.game.halted = 1; // Default to paused
+   
+    this.observerDownloadNextMoves(game_mod, ()=> {
+      if (watch_live) {
+        game_mod.game.halted = 0;
+        game_mod.game.live = 1;
+      }
+
+      this.app.connection.emit("arcade-game-ready-render-request", {id: game_id, name: game_msg.game, slug: game_mod.returnSlug()});
+    });
+    
+  }
+
+  sendFollowTx(game) {
+    let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    tx.msg = {
+      module: game.game,
+      game_id: game.game_id,
+      request: "follow game",
+      my_key: this.app.wallet.returnPublicKey(),
+    };
+
+    for (let p of game.players) {
+      tx.transaction.to.push(new saito.default.slip(p, 0.0));
+    }
+
+    tx = this.app.wallet.signTransaction(tx);
+
+    //Only looking for this in handlePeerRequest, pure off-chain
+    //this.app.network.propagateTransaction(tx);
+
+    //
+    // relay too
+    //
+    this.app.connection.emit("relay-send-message", {
+      recipient: game.players,
+      request: "game relay update",
+      data: tx.transaction,
+    });
+  }
+
+
+  async observerDownloadNextMoves(game_mod, mycallback = null) {
+
+    // purge old transactions
+    for (let i = game_mod.game.future.length - 1; i >= 0; i--) {
+      let queued_tx = new saito.default.transaction(JSON.parse(game_mod.game.future[i]));
+      let queued_txmsg = queued_tx.returnMessage();
+
+      if (
+        queued_txmsg.step.game <= game_mod.game.step.game &&
+        queued_txmsg.step.game <= game_mod.game.step.players[queued_tx.transaction.from[0].add]
+      ) {
+        console.log("Trimming future move to download new ones:", JSON.stringify(queued_txmsg));
+        game_mod.game.future.splice(i, 1);
+      }
+    }
+
+    console.log(`${game_mod.name}_${game_mod.game.id} from ${game_mod.game.originator}`);
+    //this.app.storage.loadTransactionsByKeys([game_mod.game.id], game_mod.name, 100, callback);
+
+    let sql = `SELECT * FROM txs WHERE type = '${game_mod.name}_${game_mod.game.id}' AND publickey = '${game_mod.game.originator}' ORDER BY id ASC`;
+    this.sendPeerDatabaseRequestWithFilter("Archive", sql, (res) => {
+      if (res.rows) {
+        console.log("sql rows: " + res.rows.length);
+
+        for (let record of res.rows) {
+          let future_tx = new saito.default.transaction();
+          future_tx.deserialize_from_web(this.app, record.tx);
+          let game_move = future_tx.returnMessage();
+          let loaded_step = game_move.step.game;
+
+          console.log(loaded_step, game_move);
+
+          if (loaded_step > game_mod.game.step.game ||
+            loaded_step > game_mod.game.step.players[future_tx.transaction.from[0].add]) 
+          {
+            console.log("Add move: " + JSON.stringify(game_move));
+            game_mod.addFutureMove(future_tx);
+          }
+        }
+
+        game_mod.saveGame(game_mod.game.id);
+
+        if (mycallback) {
+          mycallback(game_mod);
+        }
+      }
+    });
+
+  }
+
+
+
 }
 
 module.exports = Arcade;

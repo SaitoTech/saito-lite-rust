@@ -27,7 +27,7 @@
             twilight_self.placeInfluence("southafrica", 1, "ussr");
             twilight_self.addMove("place\tussr\tussr\tsouthafrica\t1");
 
-              twilight_self.updateStatus("<div class='status-message' id='status-message'>Place two influence in a neighboring country</div>");
+              twilight_self.updateStatusHeader("Place two influence in neighboring country");
               let neighbors = ["angola", "botswana"];
     
               for (var i of neighbors) {

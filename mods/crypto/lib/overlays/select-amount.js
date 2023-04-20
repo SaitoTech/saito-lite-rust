@@ -35,7 +35,7 @@ class CryptoSelectAmount {
       }
 
       if (callback != null) {
-	      this.overlay.hide();
+        this.overlay.hide();
         callback(amount);
       }
     };

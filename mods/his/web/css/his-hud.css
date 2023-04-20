@@ -13,9 +13,8 @@
   padding: 15px;
   background-color: whitesmoke;
 }
-.status-message {
-  min-height: 50px;
-  background-color: whitesmoke;
+.status-header .status-message {
+  box-shadow: none;
 }
 .status-header {
   background-color: whitesmoke;

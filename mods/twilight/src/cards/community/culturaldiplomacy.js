@@ -8,7 +8,7 @@
 
         twilight_self.addMove("resolve\tculturaldiplomacy");
 
-        this.updateStatus("<div class='status-message' id='status-message'>Place one influence two hops away from a country in which you have existing influence. You cannot break control with this influence.</div>");
+        this.updateStatusHeader("Place one influence two hops away from a country in which you have existing influence. You cannot break control with this influence.");
 
         for (var i in this.countries) {
 

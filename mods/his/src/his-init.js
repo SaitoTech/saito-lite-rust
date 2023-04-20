@@ -6,6 +6,7 @@ const ReligiousOverlay = require('./lib/ui/overlays/religious');
 const ReformationOverlay = require('./lib/ui/overlays/reformation');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
+const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
 const JSON = require('json-bigint');
 
 
@@ -40,6 +41,7 @@ class HereIStand extends GameTemplate {
     this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
     this.theses_overlay = new ThesesOverlay(this.app, this);  // 95 theses
     this.reformation_overlay = new ReformationOverlay(this.app, this);  // reformations and counter-reformations
+    this.language_zone_overlay = new LanguageZoneOverlay(this.app, this);  // language zone selection
 
     //
     // this sets the ratio used for determining

@@ -314,9 +314,9 @@ class Storage {
     //    data.request = "save";
     //    data.tx = tx;
     //    data.type = txmsg.module;
-    console.log("=============");
-    console.log("SAVING THE TX");
-    console.log("=============");
+    //console.log("=============");
+    //console.log("SAVING THE TX");
+    //console.log("=============");
     this.app.connection.emit("save-transaction", tx);
   }
   saveTransactionByKey(key, tx) {

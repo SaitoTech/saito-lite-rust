@@ -1,10 +1,10 @@
 const ChatManagerLargeTemplate = (call_type, room_code, mode) => {
   let add_user =
     room_code && mode === "full"
-      ? `<span class="add_users_container">
-      <label>Invite </label>
-  <i class=" add_users fa fa-plus" > </i>
-</span>`
+      ? `<div class="add_users_container">
+           <label>Invite </label>
+           <i class=" add_users fa fa-plus" > </i>
+         </div>`
       : "";
 
   let chat_control =
@@ -40,6 +40,7 @@ const ChatManagerLargeTemplate = (call_type, room_code, mode) => {
             </div>
             <p > <span class="users-on-call-count">1</span> on call </p>
         </div>
+        ${add_user}
     </div>
 
    <div class="control-list">
@@ -47,19 +48,18 @@ const ChatManagerLargeTemplate = (call_type, room_code, mode) => {
    <label>Display</label>
    <i class="fa-solid fa-display"></i>
     </span>
-          ${add_user}
-          ${chat_control}    
+          
+          ${chat_control}  
+          <span class="spacer"></span>  
            <span class="audio-control">
            <label>Microphone </label>
             <i class=" fa fa-microphone" > </i>
             </span>
-            <span class="video-control"  style=" background-color: ${
-              call_type === "audio" ? "grey" : "white"
-            }">
+            <span class="video-control"  style=" background-color: ${call_type === "audio" ? "grey" : "white"
+    }">
             <label>Camera </label>
-            <i  style=" cursor :${call_type === "audio" ? "none" : "pointer"}; color:${
-    call_type === "audio" ? "black" : "green"
-  }" class="  fas fa-video"> </i>
+            <i  style=" cursor :${call_type === "audio" ? "none" : "pointer"}; color:${call_type === "audio" ? "black" : "green"
+    }" class="  fas fa-video"> </i>
             </span>
             <span class="disconnect-control">
             <label>Disconnect </label>

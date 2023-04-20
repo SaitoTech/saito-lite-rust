@@ -79,6 +79,8 @@ class RedSquareMain {
     this.app.connection.on("redsquare-notifications-render-request", () => {
       this.renderAppspaceComponent("notifications");
       this.components["notifications"].renderNotifications();
+      // and load more notifications
+      this.mod.loadMoreNotifications();
     });
 
     this.app.connection.on("redsquare-component-render-request", (obj) => {

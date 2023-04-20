@@ -6,6 +6,7 @@ const ReligiousOverlay = require('./lib/ui/overlays/religious');
 const ReformationOverlay = require('./lib/ui/overlays/reformation');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
+const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
 const JSON = require('json-bigint');
 
 
@@ -40,6 +41,7 @@ class HereIStand extends GameTemplate {
     this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
     this.theses_overlay = new ThesesOverlay(this.app, this);  // 95 theses
     this.reformation_overlay = new ReformationOverlay(this.app, this);  // reformations and counter-reformations
+    this.language_zone_overlay = new LanguageZoneOverlay(this.app, this);  // language zone selection
 
     //
     // this sets the ratio used for determining
@@ -3447,6 +3449,13 @@ alert("Not Implemented");
 	// set player to protestant
 	player = his_self.returnPlayerOfFaction("protestant");
 
+	let players_to_go = [];
+	for (let i = 1; i < his_self.game.players.length; i++) {
+	  if (i != his_self.returnPlayerOfFaction("protestants")) {
+	    players_to_go.push(i);
+	  }
+	}
+
 	// protestant gets 2 roll bonus at start
 	his_self.game.state.tmp_protestant_reformation_bonus = 2;
 	his_self.game.state.tmp_catholic_reformation_bonus = 0;
@@ -3461,6 +3470,7 @@ alert("Not Implemented");
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
+	his_self.game.queue.push("STATUS\t<div class='message'>Protestants selecting reformation targets...</div></div>\t"+JSON.stringify(players_to_go));
 	his_self.game.queue.push("show_overlay\ttheses");
         his_self.convertSpace("protestant", "wittenberg");
         his_self.addUnit("protestant", "wittenberg", "regular");
@@ -12103,13 +12113,19 @@ console.log(JSON.stringify(mv));
 	  let protestant_arolls = [];
 	  let papacy_arolls = [];
 
+	  let all_players_but_protestant = [];
+	  let all_players_but_papacy = [];
+          for (let i = 1; i <= this.game.players.length; i++) {
+	    if (i != protestant) { all_players_but_protestant.push(i); }
+	    if (i != papacy) { all_players_but_papacy.push(i); }
+	  }
+
 	  let protestant_card = this.game.deck[0].cards[this.game.state.sp[protestant-1]];
 	  let papacy_card = this.game.deck[0].cards[this.game.state.sp[papacy-1]];
 
 	  //
 	  // show card in overlay
 	  //
-console.log("Protestant Card is: " +this.game.state.sp[protestant-1]);
 	  this.diet_of_worms_overlay.addCardToCardfan(this.game.state.sp[protestant-1], "protestant");
 	  this.diet_of_worms_overlay.addCardToCardfan(this.game.state.sp[papacy-1], "catholic");
 
@@ -12186,6 +12202,7 @@ console.log("Protestant Card is: " +this.game.state.sp[protestant-1]);
 	    for (let i = papacy_hits; i < protestant_hits; i++) {
 	      this.game.queue.push("select_for_protestant_conversion\tprotestant\tgerman");
 	    }
+  	    this.game.queue.push("STATUS\t<div class='message'>Protestants selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_protestants));
   	    this.game.queue.push("show_overlay\ttheses");
   	    this.game.queue.push("ACKNOWLEDGE\tProtestants win Diet of Worms");
 
@@ -12199,6 +12216,7 @@ console.log("Protestant Card is: " +this.game.state.sp[protestant-1]);
 	      for (let i = protestant_hits; i < papacy_hits; i++) {
 	        this.game.queue.push("select_for_catholic_conversion\tpapacy\tgerman");
 	      }
+  	      this.game.queue.push("STATUS\t<div class='message'>Papacy selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_papacy));
   	      this.game.queue.push("show_overlay\ttheses");
   	      this.game.queue.push("ACKNOWLEDGE\tPapacy wins Diet of Worms");
 	    } else {
@@ -15258,7 +15276,9 @@ console.log("----------------------------");
                 his_self.endTurn();
               },
 
-              null
+              null,
+
+	      true
 
             );
           }
@@ -15298,7 +15318,9 @@ console.log("----------------------------");
                 his_self.endTurn();
               },
 
-              null
+              null,
+
+	      true
 
             );
           }
@@ -16887,9 +16909,10 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       this.updateStatusWithOptions(msg, opt);
 
       $(".option").off();
-      $(".option").on('click', () => {
+      $(".option").on('click', function() {
 
         let id = $(this).attr('id');
+
         $(".option").off();
 
 	source_spacekey = id;
@@ -16917,7 +16940,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
           function(destination_spacekey) {
 
-            let space = his_self.spaces[id];
+            let space = his_self.spaces[source_spacekey];
 
             let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface) { 
 
@@ -17656,10 +17679,7 @@ console.log("units length: " + space.units[defender].length);
 
       his_self.updateStatusWithOptions(`Select Destination:`, html);
       his_self.attachCardboxEvents(function(destination) {
-
-	alert(user_choice + " -- " + destination);
         his_self.endTurn();
-
       });
     });
 
@@ -18217,22 +18237,22 @@ return;
     let html = '<ul>';
 
     if (his_self.game.state.translations['new']['german'] < 6) {
-      html += '<li class="option" style="" id="1">German (new testament)</li>';
+      html += '<li class="option german" style="" id="1">German (new testament)</li>';
     }
     if (his_self.game.state.translations['new']['french'] < 6) {
-      html += '<li class="option" style="" id="2">French (new testament)</li>';
+      html += '<li class="option french" style="" id="2">French (new testament)</li>';
     }
     if (his_self.game.state.translations['new']['english'] < 6) {
-      html += '<li class="option" style="" id="3">English (new testament)</li>';
+      html += '<li class="option english" style="" id="3">English (new testament)</li>';
     }
     if (his_self.game.state.translations['full']['german'] < 10) {
-      html += '<li class="option" style="" id="4">German (full bible)</li>';
+      html += '<li class="option german" style="" id="4">German (full bible)</li>';
     }
     if (his_self.game.state.translations['full']['french'] < 10) {
-      html += '<li class="option" style="" id="5">French (full bible)</li>';
+      html += '<li class="option french" style="" id="5">French (full bible)</li>';
     }
     if (his_self.game.state.translations['full']['english'] < 10) {
-      html += '<li class="option" style="" id="6">English (full bible)</li>';
+      html += '<li class="option english" style="" id="6">English (full bible)</li>';
     }
     html += '</ul>';
 
@@ -18276,24 +18296,32 @@ return;
 
       let msg = "Select Language Zone for Reformation Attempts:";
       let html = '<ul>';
-          html += '<li class="option" style="" id="german">German</li>';
-          html += '<li class="option" style="" id="english">English</li>';
-          html += '<li class="option" style="" id="french">French</li>';
-          html += '<li class="option" style="" id="spanish">Spanish</li>';
-          html += '<li class="option" style="" id="italian">Italian</li>';
+          html += '<li class="option german" style="" id="german">German</li>';
+          html += '<li class="option english" style="" id="english">English</li>';
+          html += '<li class="option french" style="" id="french">French</li>';
+          html += '<li class="option spanish" style="" id="spanish">Spanish</li>';
+          html += '<li class="option italian" style="" id="italian">Italian</li>';
           html += '</ul>';
+
+      //
+      // show visual language zone selector
+      //
+      his_self.language_zone_overlay.render();
 
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
       $('.option').on('click', function () {
+
+        his_self.language_zone_overlay.hide();
+
         let id = $(this).attr("id");
 
 	if (id === "german" && his_self.isDebaterAvailable("carlstadt-debater")) {
 
           let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
           let html = '<ul>';
-            html += '<li class="option" style="" id="yes">Yes, Commit Carlstadt</li>';
+          html += '<li class="option" style="" id="yes">Yes, Commit Carlstadt</li>';
           html += '<li class="option" style="" id="no">No</li>';
           html += '</ul>';
 
@@ -18349,21 +18377,27 @@ return;
     let html = '<ul>';
 
     if (his_self.returnDebatersInLanguageZone("german", "protestant")) { 
-        html += '<li class="option" style="" id="german">German</li>';
+        html += '<li class="option german" style="" id="german">German</li>';
     }
     if (his_self.returnDebatersInLanguageZone("french", "france")) { 
-        html += '<li class="option" style="" id="french">French</li>';
+        html += '<li class="option french" style="" id="french">French</li>';
     }
     if (his_self.returnDebatersInLanguageZone("english", "france")) { 
-        html += '<li class="option" style="" id="english">English</li>';
+        html += '<li class="option english" style="" id="english">English</li>';
     }
         html += '</ul>';
+
+    //
+    // show visual language zone selector
+    //
+    his_self.language_zone_overlay.render();
 
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', () => {
 
+      his_self.language_zone_overlay.hide();
       let language_zone = $(this).attr("id");
 
       let msg = "Against Comitted or Uncommited Debater?";
@@ -18423,17 +18457,25 @@ return;
 
     let msg = "Select Language Zone for Reformation Attempts:";
     let html = '<ul>';
-        html += '<li class="option" style="" id="german">German</li>';
-        html += '<li class="option" style="" id="english">English</li>';
-        html += '<li class="option" style="" id="french">French</li>';
-        html += '<li class="option" style="" id="spanish">Spanish</li>';
-        html += '<li class="option" style="" id="italian">Italian</li>';
+        html += '<li class="option german" style="" id="german">German</li>';
+        html += '<li class="option english" style="" id="english">English</li>';
+        html += '<li class="option french" style="" id="french">French</li>';
+        html += '<li class="option spanish" style="" id="spanish">Spanish</li>';
+        html += '<li class="option italian" style="" id="italian">Italian</li>';
         html += '</ul>';
+
+    //
+    // show visual language zone selector
+    //
+    his_self.language_zone_overlay.render();
 
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', function () {
+
+      his_self.language_zone_overlay.hide();
+
       let id = $(this).attr("id");
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
@@ -19226,12 +19268,13 @@ return;
   displayDebaters() {
 
     let html = `<div class="personage_overlay" id="personage_overlay">`;
+
     for (let i = 0; i < this.game.state.debaters.length; i++) {
-      html += `	<div class="personage_tile personage_tile${i}" data-id="${this.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${this.game.state.debaters[i].img}')"></div>`;
+      html += `<div class="personage_tile personage_tile${i}" data-id="${this.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${this.game.state.debaters[i].img}')"></div>`;
     }
     html += `</div>`;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       let tile_f = "/his/img/tiles/debaters/" + this.game.state.debaters[i].img;
@@ -19258,7 +19301,7 @@ return;
     }
     html += `</div>`;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     for (let i = 0; i < this.game.state.explorers.length; i++) {
       let tile_f = "/his/img/tiles/explorers/" + this.game.state.explorers[i].img;
@@ -19286,7 +19329,7 @@ return;
     }
     html += `</div>`;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     for (let i = 0; i < this.game.state.conquistadors.length; i++) {
       let tile_f = "/his/img/tiles/conquistadors/" + this.game.state.conquistadors[i].img;
@@ -19355,7 +19398,7 @@ return;
       </div>
     `;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     //
     // list all debaters
