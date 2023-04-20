@@ -682,7 +682,7 @@ initializeGame(game_id) {
     console.log("DECK: " + this.game.options.deck);
     console.log("\n\n\n\n");
 
-    this.updateStatus("<div class='status-message' id='status-message'>Generating the Game</div>");
+    this.updateStatusHeader("Generating the Game");
 
     this.game.queue.push("round");
     if (this.game.options.usbonus != undefined) {
@@ -1059,7 +1059,7 @@ try {
       if (this.game.winner == 2) { winner = "us"; }
       let gid = $('#sage_game_id').attr("class");
       if (gid === this.game.id) {
-        this.updateStatus("<div class='status-message' id='status-message'><span>Game Over:</span> "+winner.toUpperCase() + "</span> <span>wins</span></div>");
+        this.updateStatusHeader("Game Over: "+winner.toUpperCase() + " wins");
       }
 
       return 0;
@@ -1438,7 +1438,7 @@ console.log("LATEST MOVE: " + mv);
               twilight_self.attachCardboxEvents(function(action2) {
                 if (action2 == "skipche") {
                   twilight_self.endTurn();
-                  twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Che coups...</div>");
+                  twilight_self.updateStatusHeader("Skipping Che coups...");
                 }
               });
 
@@ -1452,7 +1452,7 @@ console.log("LATEST MOVE: " + mv);
               });
             }else{
 
-              twilight_self.updateStatus(`<div class='status-message' id='status-message'>Waiting for USSR to play second ${twilight_self.cardToText("che")} coup</div>`);
+              twilight_self.updateStatusHeader(`Waiting for USSR to play second ${twilight_self.cardToText("che")} coup`);
               twilight_self.attachCardboxEvents();
               return 0;
             }
@@ -1716,7 +1716,7 @@ console.log("LATEST MOVE: " + mv);
 
         let countries_to_double = Math.min(2, potCountries.length);
 
-        this.updateStatus("<div class='status-message' id='status-message'>Select "+countries_to_double+" countries in South America to double USSR influence</div>");
+        this.updateStatusHeader("Select "+countries_to_double+" countries in South America to double USSR influence");
 
         //
         // double influence in two countries
@@ -1747,7 +1747,7 @@ console.log("LATEST MOVE: " + mv);
         });
         
       }else{
-        this.updateStatus(`USSR is deciding which country to double their influence`);
+        this.updateStatusHeader(`USSR is deciding which country to double their influence`);
       }
       return 0;
     }
@@ -1780,7 +1780,7 @@ console.log("LATEST MOVE: " + mv);
 
         });
       }else{
-        this.updateStatus("US determining whether to take extra turn");
+        this.updateStatusHeader("US determining whether to take extra turn");
       }
       shd_continue = 0;
     }
@@ -1894,7 +1894,7 @@ console.log("LATEST MOVE: " + mv);
             twilight_self.endTurn();
           });
         }else{
-          this.updateStatus(`<div class='status-message' id='status-message'>${this.cardToText("aldrichames")}: USSR choosing card to discard</div>`);
+          this.updateStatusHeader(`${this.cardToText("aldrichames")}: USSR choosing card to discard`);
         }
 
         return 0;
@@ -1919,7 +1919,7 @@ console.log("LATEST MOVE: " + mv);
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
-        let placetxt = `<div class="status-message" id="status-message">${this.cardToText("cambridge")}: ${player.toUpperCase()} place 1 OP in`;
+        let placetxt = `${this.cardToText("cambridge")}: ${player.toUpperCase()} place 1 OP in`;
         for (let i = 1; i < mv.length; i++) {
           placetxt += " ";
           placetxt += this.cardToText(mv[i], true); //FIX Names
@@ -1939,8 +1939,7 @@ console.log("LATEST MOVE: " + mv);
           twilight_self.addMove("place\tussr\tussr\t"+countryname+"\t1");
           twilight_self.endTurn();
         });
-        placetxt += '</div>';
-        twilight_self.updateStatus(placetxt);
+        twilight_self.updateStatusHeader(placetxt);
 
       }
       this.game.queue.splice(qe, 1);
@@ -1964,7 +1963,7 @@ console.log("LATEST MOVE: " + mv);
         twilight_self.attachCardboxEvents(function(action2) {
 
           if (action2 == "skiptear") {
-            twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Tear Down this Wall...</div>");
+            twilight_self.updateStatusHeader("Skipping Tear Down this Wall...");
             twilight_self.addMove("resolve\tteardownthiswall");
             twilight_self.endTurn();
           }
@@ -1990,7 +1989,7 @@ console.log("LATEST MOVE: " + mv);
 
         });
       }else{
-          this.updateStatus("<div class='status-message' id='status-message'>US playing Tear Down This Wall</div>");     
+          this.updateStatusHeader("US playing Tear Down This Wall");     
       }
         shd_continue = 0;
       }
@@ -2013,7 +2012,7 @@ console.log("LATEST MOVE: " + mv);
         this.endTurn();
       }
 
-      this.updateStatus("<div class='status-message' id='status-message'>"+player.toUpperCase() + " is fetching new cards</div>");
+      this.updateStatusHeader(player.toUpperCase() + " is fetching new cards");
       return 0;
     }
 
@@ -2100,7 +2099,7 @@ console.log("LATEST MOVE: " + mv);
               this.game.queue.push("DEAL\t1\t2\t"+player2_cards);
               this.game.queue.push("DEAL\t1\t1\t"+player1_cards);
             }
-            this.updateStatus("<div class='status-message' id='status-message'>Dealing remaining cards from draw deck before reshuffling...</div>");
+            this.updateStatusHeader("Dealing remaining cards from draw deck before reshuffling...");
             this.updateLog(`Dealing ${cards_available} remaining cards from draw deck before reshuffling...`);
 
           }
@@ -2709,7 +2708,7 @@ try {
               }
             }
         
-            this.updateStatus("<div class='status-message' id='status-message'>Place your NORAD bonus: (1 OP)</div>");
+            this.updateStatusHeader("Place your NORAD bonus: (1 OP)");
 
             $(".westerneurope").off();
             $(".westerneurope").on('click', function() {
@@ -2725,7 +2724,7 @@ try {
             });
 
           }else{
-            this.updateStatus("<div class='status-message' id='status-message'>NORAD triggers: US places 1 influence in country with US influence</div>");
+            this.updateStatusHeader("NORAD triggers: US places 1 influence in country with US influence");
           }
           return 0;
         }
@@ -2793,7 +2792,7 @@ try {
 
           });
         }else{
-          this.updateStatus("<div class='status-message' id='status-message'>US is deciding whether to take extra turn</div>");
+          this.updateStatusHeader("US is deciding whether to take extra turn");
         }
 
         return 0;
@@ -2809,7 +2808,7 @@ try {
         let bonus_player = (this.game.state.eagle_has_landed == "us") ? 2 : 1;
     
         if (this.game.player != bonus_player) {
-          this.updateStatus('<div class="status-message" id="status-message">' + this.game.state.eagle_has_landed.toUpperCase() + " is deciding whether to discard a card</div>");
+          this.updateStatusHeader(this.game.state.eagle_has_landed.toUpperCase() + " is deciding whether to discard a card");
           return 0;
         }
 
@@ -2847,7 +2846,7 @@ try {
             } else {
               $(`#${action2}.card`).hide(); 
               twilight_self.hideCard();
-              twilight_self.updateStatus("<div class='status-message' id='status-message'>Discarding...</div>");
+              twilight_self.updateStatusHeader("Discarding...");
               twilight_self.removeCardFromHand(action2);
               twilight_self.addMove("discard\t"+twilight_self.game.state.eagle_has_landed+"\t"+action2);
               twilight_self.addMove("NOTIFY\t"+twilight_self.game.state.eagle_has_landed.toUpperCase()+` discards ${twilight_self.cardToText(action2)}`);
@@ -2872,7 +2871,7 @@ try {
         let bonus_player = (this.game.state.space_station == "us") ? 2 : 1;
 
         if (this.game.player != bonus_player) {
-          this.updateStatus(this.game.state.space_station.toUpperCase() + " is deciding whether to take extra turn");
+          this.updateStatusHeader(this.game.state.space_station.toUpperCase() + " is deciding whether to take extra turn");
           return 0;
         }
 
@@ -2916,7 +2915,7 @@ try {
         return 0; //Stop running through the queue
       }
 
-      this.updateStatus("<div class='status-message' id='status-message'>Preparing for round " + this.game.state.round+"</div>");
+      this.updateStatusHeader("Preparing for round " + this.game.state.round);
 
       let rounds_in_turn = 6;
       if (this.game.state.round > 3) { rounds_in_turn = 7; }
@@ -3045,7 +3044,7 @@ try {
               }
             }
                   
-            this.updateStatus("<div class='status-message' id='status-message'>US place NORAD bonus: (1 OP)</div>");
+            this.updateStatusHeader("US place NORAD bonus: (1 OP)");
 
             $(".westerneurope").off();
             $(".westerneurope").on('click', function() {
@@ -3060,7 +3059,7 @@ try {
               });
             });
           }else{
-            this.updateStatus("<div class='status-message' id='status-message'>NORAD triggers: US places 1 influence in country with US influence</div>");  
+            this.updateStatusHeader("NORAD triggers: US places 1 influence in country with US influence");  
           }
           return 0;
         } 
@@ -3261,17 +3260,17 @@ try {
           this.addMove("discard\tussr\t"+my_card);
           this.endTurn();
         }
-        this.updateStatus(`<div class='status-message' id='status-message'>${this.cardToText("defectors")} cancels USSR headline. Moving into first turn...</div>`);
+        this.updateStatusHeader(`>${this.cardToText("defectors")} cancels USSR headline. Moving into first turn...`);
 
       } else {
         let statusMsg = "";
         if (this.game.state.player_to_go == 1){
-          statusMsg = `<div class='status-message' id='status-message'>USSR headlines ${this.cardToText(ussrcard)}. US headlines ${this.cardToText(uscard)}</div>`;
- 
+          statusMsg = `USSR headlines ${this.cardToText(ussrcard)}. US headlines ${this.cardToText(uscard)}`; 
+
           this.updateLog(`USSR headlines ${this.cardToText(ussrcard)}.`);
           this.updateLog(`US headlines ${this.cardToText(uscard)}`);
         }else{
-          statusMsg = `<div class='status-message' id='status-message'>US headlines ${this.cardToText(uscard)}. USSR headlines ${this.cardToText(ussrcard)}</div>`;
+          statusMsg = `US headlines ${this.cardToText(uscard)}. USSR headlines ${this.cardToText(ussrcard)}`;
           this.updateLog(`US headlines ${this.cardToText(uscard)}.`);
           this.updateLog(`USSR headlines ${this.cardToText(ussrcard)}`);
         }
@@ -3283,7 +3282,7 @@ try {
           this.removeCardFromHand(my_card);
           this.endTurn();
         }
-        this.updateStatus(statusMsg);  
+        this.updateStatusHeader(statusMsg);  
       }
       return 0;
     }
@@ -3299,11 +3298,11 @@ try {
       let card_player = (this.game.state.player_to_go == 2)? "us" : "ussr";
       let statusMsg = "";
       if (this.game.state.player_to_go == 1){
-        statusMsg = `<div class='status-message' id='status-message'>Resolving USSR headline: ${this.cardToText(ussrcard)}</div>`;
+        statusMsg = `Resolving USSR headline: ${this.cardToText(ussrcard)}`;
       } else {
-        statusMsg = `<div class='status-message' id='status-message'>Resolving US headline: ${this.cardToText(uscard)}</div>`;
+        statusMsg = `Resolving US headline: ${this.cardToText(uscard)}`;
       }
-      
+
       if (this.game.state.player_to_go == this.game.player) {
         this.addMove("resolve\theadline");
         this.addMove("clear\theadline");
@@ -3311,7 +3310,7 @@ try {
         this.removeCardFromHand(my_card);
         this.endTurn();
       }
-      this.updateStatus(statusMsg);
+      this.updateStatusHeader(statusMsg);
       return 0;
     }
 
@@ -3411,7 +3410,7 @@ playerTurnHeadlineSelected(card, player) {
     $('.card').off();
     twilight_self.hideCard();
     twilight_self.endTurn();
-    twilight_self.updateStatus("<div class='status-message' id='status-message'>simultaneous blind pick... encrypting selected card</div>");
+    twilight_self.updateStatusHeader("simultaneous blind pick... encrypting selected card");
 
     return;
 
@@ -3514,7 +3513,7 @@ playerTurnHeadlineSelected(card, player) {
 
           twilight_self.attachCardboxEvents(function (action2) {
             if (action2 === "select") {
-              twilight_self.updateStatus();
+              twilight_self.updateStatusHeader();
               twilight_self.playerTurn();
               return;
             }
@@ -3788,7 +3787,6 @@ playerTurnHeadlineSelected(card, player) {
         // do we have any cards to play?
         //
         if (cards_available > 0 && scoring_cards_available <= moves_remaining) {
-          //this.updateStatus("<div class='status-message' id='status-message'>" + user_message + '</div>');
           playable_cards = [];
           for (i = 0; i < this.game.deck[0].hand.length; i++) {
             if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
@@ -3856,7 +3854,7 @@ playerTurnHeadlineSelected(card, player) {
       this.addMove("resolve\tplay");
       this.addMove(`NOTIFY\t${player.toUpperCase()} skipping turn... no cards left to play`);
       this.endTurn();
-      this.updateStatus("<div class='status-message' id='status-message'>Skipping turn... no cards left to play</div>");
+      this.updateStatusHeader("Skipping turn... no cards left to play");
       return;
     }
 
@@ -4211,7 +4209,7 @@ playerTurnHeadlineSelected(card, player) {
           return;
         }
 
-        twilight_self.updateStatus("");
+        twilight_self.updateStatusHeader("");
 
       });
 
@@ -4324,8 +4322,8 @@ playerTurnHeadlineSelected(card, player) {
         if (action2 == "place") {
 
           let j = ops;
-          let html = twilight_self.formatStatusHeader("Place " + j + " influence", true)
-          twilight_self.updateStatus(html);
+          let html = "Place " + j + " influence";
+          twilight_self.updateStatusHeader(html, true);
           twilight_self.prePlayerPlaceInfluence(player);
           if (j == 1) {
             twilight_self.uneventOpponentControlledCountries(player, card);
@@ -4348,8 +4346,8 @@ playerTurnHeadlineSelected(card, player) {
               twilight_self.uneventOpponentControlledCountries(player, card);
             }
 
-            let html = twilight_self.formatStatusHeader("Place " + j + " influence", true)
-            twilight_self.updateStatus(html);
+            let html = "Place " + j + " influence";
+            twilight_self.updateStatusHeader(html, true);
 
             if (j <= 0) {
               if (twilight_self.isRegionBonus(card) == 1) {
@@ -4401,8 +4399,8 @@ playerTurnHeadlineSelected(card, player) {
             }
           }
 
-          let html = twilight_self.formatStatusHeader("Pick a country to coup", true);
-          twilight_self.updateStatus(html);
+          let html = "Pick a country to coup");
+          twilight_self.updateStatusHeader(html, true);
           twilight_self.playerCoupCountry(player, ops, card);
 
         }
@@ -4509,7 +4507,6 @@ playerTurnHeadlineSelected(card, player) {
 
               if (alignment_rolls <= 0) {
                 if (twilight_self.isRegionBonus(card) == 1) {
-                  //twilight_self.updateStatus("<div class='status-message' id='status-message'>Realign with bonus OP</div>");
                   twilight_self.limitToRegionBonus(); //Turn off click events outside of regional bonus
                   twilight_self.endRegionBonus(); //Toggle flags about aplicability of regional bonuses
                   alignment_rolls++;
@@ -5829,7 +5826,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     if (this.game.player == 0){
       console.log("Observer submitting moves, something went wrong: ", JSON.stringify(this.moves));
     }
-    this.updateStatus("<div class='status-message' id='status-message'>Submitting moves... awaiting response from peers...</div>");
+    this.updateStatusHeader("Submitting moves... awaiting response from peers...");
 
     //
     // remove events from board to prevent "Doug Corley" gameplay
@@ -6897,7 +6894,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       // https://boardgamegeek.com/thread/1136951/red-scarepurge-and-vietnam-revolts
       if (card != "") { if (this.returnOpsOfCard(card) == 1 && this.game.state.events.redscare_player1 >= 1) { return 0; } }
 
-      this.updateStatus("<div class='status-message' id='status-message'>Extra 1 OP Available for Southeast Asia</div>");
+      this.updateStatusHeader("Extra 1 OP Available for Southeast Asia");
       this.game.state.events.region_bonus = "seasia";
       return 1;
     }
@@ -6907,7 +6904,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     //
     if (this.game.state.events.china_card_in_play == 1 && this.game.state.events.china_card_eligible == 1) {
 
-      this.updateStatus("<div class='status-message' id='status-message'>Extra 1 OP Available for Asia</div>");
+      this.updateStatusHeader("Extra 1 OP Available for Asia");
       this.game.state.events.region_bonus = "asia";
       return 1;
     }
@@ -8555,12 +8552,9 @@ console.log("SCORING: " + JSON.stringify(scoring));
   playEvent(player, card) {
 
     if (this.game.deck[0].cards[card] != undefined) {
-      this.updateStatus(`<div class='status-message' id='status-message'>${player.toUpperCase()} triggers ${this.cardToText(card)}</div>`);
+      this.updateStatusHeader(`${player.toUpperCase()} triggers ${this.cardToText(card)}`);
       this.attachCardboxEvents();
     } else {
-      //
-      // event already run - sync loading error
-      //
       console.log("sync loading error -- playEvent on card: " + card);
       return 1;
     }

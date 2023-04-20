@@ -15,7 +15,7 @@
 
       this.removeInfluence("egypt", influence_to_remove, "us");
       this.placeInfluence("egypt", 2, "ussr");
-      this.updateStatus("<div class='status-message' id='status-message'>Nasser - Soviets add two influence in Egypt. US loses half (rounded-up) of all influence in Egypt.</div>");
+      this.updateStatusHeader("Nasser - Soviets add two influence in Egypt. US loses half (rounded-up) of all influence in Egypt.");
       
       if (!i_played_the_card){
         if (player == "ussr"){

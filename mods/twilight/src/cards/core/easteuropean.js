@@ -38,8 +38,8 @@
           twilight_self.endTurn();
         } else {
 
-          twilight_self.updateStatus("<div class='status-message' id='status-message'>Remove "+ops_to_purge+" from 3 countries in Eastern Europe</div>");
-          
+          twilight_self.updateStatusHeader("Remove "+ops_to_purge+" from 3 countries in Eastern Europe");          
+
           for (let c of options_purge) {
             $("#"+c).addClass("westerneurope");
             this.countries[c].place = 1;
