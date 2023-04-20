@@ -545,7 +545,7 @@
     width: 4rem;
     height: 4rem;
   }
-  .control-panel .timer {
+  .control-panel .timer {git push --set-upstream origin stun-updates
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
