@@ -21,7 +21,7 @@
 
         var ops_to_place = Math.min(7, countries_where_i_can_place);
         
-        this.updateStatus("<div class='status-message' id='status-message'>Place 1 influence in each of "+ops_to_place+" non USSR-controlled countries in Western Europe</div>");
+        this.updateStatusHeader("Place 1 influence in each of "+ops_to_place+" non USSR-controlled countries in Western Europe");
 
         twilight_self.addMove("resolve\tmarshall");
         
@@ -34,7 +34,7 @@
             twilight_self.placeInfluence(c, 1, "us"); 
             twilight_self.countries[c].place = 0;
             ops_to_place--;
-            twilight_self.updateStatus("<div class='status-message' id='status-message'>Place 1 influence in each of "+ops_to_place+" non USSR-controlled countries in Western Europe</div>");
+            twilight_self.updateStatusHeader("Place 1 influence in each of "+ops_to_place+" non USSR-controlled countries in Western Europe");
             if (ops_to_place <= 0) {
               twilight_self.playerFinishedPlacingInfluence();
               twilight_self.endTurn();

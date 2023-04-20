@@ -17,7 +17,7 @@
       if (player === "ussr" && this.game.player == 1) { my_go = 1; }
       if (player === "us" && this.game.player == 2) { my_go = 1; }
       if (my_go == 0) {
-        this.updateStatus("<div class='status-message' id='status-message'>Opponent is playing INF Treaty</div>");
+        this.updateStatus("Opponent playing INF Treaty");
         return 0;
       }
 
