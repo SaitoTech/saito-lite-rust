@@ -18,6 +18,10 @@ class LeagueOverlay {
       this.league = this.mod.returnLeague(league_id);
       this.render();
     });
+     app.connection.on("league-overlay-remove-request", ()=> {
+      this.overlay.remove();
+     });
+
 
   }
 
