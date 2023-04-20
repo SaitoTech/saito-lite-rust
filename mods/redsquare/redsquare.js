@@ -665,10 +665,6 @@ class RedSquare extends ModTemplate {
         }
       });
     }
-    if (this.notifications.length <= pre_existing_tweets_on_page && loaded_notifications == false) {
-      this.loadMoreNotifications();
-      return;
-    }
   }
   loadNotificationsFromPeer(peer, increment = 1, post_load_callback = null) {
 
