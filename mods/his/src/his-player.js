@@ -2512,22 +2512,22 @@ return;
     let html = '<ul>';
 
     if (his_self.game.state.translations['new']['german'] < 6) {
-      html += '<li class="option" style="" id="1">German (new testament)</li>';
+      html += '<li class="option german" style="" id="1">German (new testament)</li>';
     }
     if (his_self.game.state.translations['new']['french'] < 6) {
-      html += '<li class="option" style="" id="2">French (new testament)</li>';
+      html += '<li class="option french" style="" id="2">French (new testament)</li>';
     }
     if (his_self.game.state.translations['new']['english'] < 6) {
-      html += '<li class="option" style="" id="3">English (new testament)</li>';
+      html += '<li class="option english" style="" id="3">English (new testament)</li>';
     }
     if (his_self.game.state.translations['full']['german'] < 10) {
-      html += '<li class="option" style="" id="4">German (full bible)</li>';
+      html += '<li class="option german" style="" id="4">German (full bible)</li>';
     }
     if (his_self.game.state.translations['full']['french'] < 10) {
-      html += '<li class="option" style="" id="5">French (full bible)</li>';
+      html += '<li class="option french" style="" id="5">French (full bible)</li>';
     }
     if (his_self.game.state.translations['full']['english'] < 10) {
-      html += '<li class="option" style="" id="6">English (full bible)</li>';
+      html += '<li class="option english" style="" id="6">English (full bible)</li>';
     }
     html += '</ul>';
 
@@ -2571,24 +2571,32 @@ return;
 
       let msg = "Select Language Zone for Reformation Attempts:";
       let html = '<ul>';
-          html += '<li class="option" style="" id="german">German</li>';
-          html += '<li class="option" style="" id="english">English</li>';
-          html += '<li class="option" style="" id="french">French</li>';
-          html += '<li class="option" style="" id="spanish">Spanish</li>';
-          html += '<li class="option" style="" id="italian">Italian</li>';
+          html += '<li class="option german" style="" id="german">German</li>';
+          html += '<li class="option english" style="" id="english">English</li>';
+          html += '<li class="option french" style="" id="french">French</li>';
+          html += '<li class="option spanish" style="" id="spanish">Spanish</li>';
+          html += '<li class="option italian" style="" id="italian">Italian</li>';
           html += '</ul>';
+
+      //
+      // show visual language zone selector
+      //
+      his_self.language_zone_overlay.render();
 
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
       $('.option').on('click', function () {
+
+        his_self.language_zone_overlay.hide();
+
         let id = $(this).attr("id");
 
 	if (id === "german" && his_self.isDebaterAvailable("carlstadt-debater")) {
 
           let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
           let html = '<ul>';
-            html += '<li class="option" style="" id="yes">Yes, Commit Carlstadt</li>';
+          html += '<li class="option" style="" id="yes">Yes, Commit Carlstadt</li>';
           html += '<li class="option" style="" id="no">No</li>';
           html += '</ul>';
 
@@ -2644,21 +2652,27 @@ return;
     let html = '<ul>';
 
     if (his_self.returnDebatersInLanguageZone("german", "protestant")) { 
-        html += '<li class="option" style="" id="german">German</li>';
+        html += '<li class="option german" style="" id="german">German</li>';
     }
     if (his_self.returnDebatersInLanguageZone("french", "france")) { 
-        html += '<li class="option" style="" id="french">French</li>';
+        html += '<li class="option french" style="" id="french">French</li>';
     }
     if (his_self.returnDebatersInLanguageZone("english", "france")) { 
-        html += '<li class="option" style="" id="english">English</li>';
+        html += '<li class="option english" style="" id="english">English</li>';
     }
         html += '</ul>';
+
+    //
+    // show visual language zone selector
+    //
+    his_self.language_zone_overlay.render();
 
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', () => {
 
+      his_self.language_zone_overlay.hide();
       let language_zone = $(this).attr("id");
 
       let msg = "Against Comitted or Uncommited Debater?";
@@ -2718,17 +2732,25 @@ return;
 
     let msg = "Select Language Zone for Reformation Attempts:";
     let html = '<ul>';
-        html += '<li class="option" style="" id="german">German</li>';
-        html += '<li class="option" style="" id="english">English</li>';
-        html += '<li class="option" style="" id="french">French</li>';
-        html += '<li class="option" style="" id="spanish">Spanish</li>';
-        html += '<li class="option" style="" id="italian">Italian</li>';
+        html += '<li class="option german" style="" id="german">German</li>';
+        html += '<li class="option english" style="" id="english">English</li>';
+        html += '<li class="option french" style="" id="french">French</li>';
+        html += '<li class="option spanish" style="" id="spanish">Spanish</li>';
+        html += '<li class="option italian" style="" id="italian">Italian</li>';
         html += '</ul>';
+
+    //
+    // show visual language zone selector
+    //
+    his_self.language_zone_overlay.render();
 
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', function () {
+
+      his_self.language_zone_overlay.hide();
+
       let id = $(this).attr("id");
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
