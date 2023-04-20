@@ -220,7 +220,7 @@ class Archive extends ModTemplate {
   }
 
   async saveTransaction(tx = null, msgtype = "") {
-    console.log("IN SAVE TRANSACTION IN ARCHIVE>JS");
+    //console.log("IN SAVE TRANSACTION IN ARCHIVE>JS");
 
     if (tx == null) {
       return;
@@ -233,7 +233,7 @@ class Archive extends ModTemplate {
       optional = tx.optional;
     }
 
-    console.log("TXS to: " + tx.transaction.to.length);
+    //console.log("TXS to: " + tx.transaction.to.length);
 
     for (let i = 0; i < tx.transaction.to.length; i++) {
       sql =
