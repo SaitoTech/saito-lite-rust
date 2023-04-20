@@ -499,6 +499,7 @@ class VideoChatManager {
   }
 
   analyzeAudio(stream, peer) {
+    let video_chat_self = this;
     const audioContext = new AudioContext();
     const source = audioContext.createMediaStreamSource(stream);
     const analyser = audioContext.createAnalyser();
@@ -536,17 +537,17 @@ class VideoChatManager {
               // console.log(item.id, `stream${peer}`)
 
               if (item.id === `stream${peer}`) {
-                if (this.display_mode == "speaker") {
-                  this.flipDisplay(item.id);
-                } 
                 item.classList.add('speaker');
+                if (video_chat_self.display_mode == "speaker") {
+                  video_chat_self.flipDisplay(peer);
+                } 
               } else {
                 item.classList.remove('speaker');
               }
             })
             speaking = true;
           }
-        }, 10000)
+        }, 5000)
 
       } else if (average <= threshold && speaking) {
         speaking = false;
