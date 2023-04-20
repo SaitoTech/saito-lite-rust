@@ -88,10 +88,10 @@ class Stun extends ModTemplate {
 
         app.connection.on('stun-init-peer-manager', (ui_type, config) => {
             console.log('config', config)
-            if(!this.peerManager){
+            if (!this.peerManager) {
                 this.peerManager = new PeerManager(app, mod, ui_type, config);
             }
-        
+
             if (ui_type === "large") {
                 this.peerManager.showSetting();
             }
@@ -209,7 +209,7 @@ class Stun extends ModTemplate {
                         class: "join-group-video-chat",
                         callback: function (app, game_mod) {
                             let stun_self = app.modules.returnModule("Stun");
-                            app.connection.emit('game-menu-join-video-call', { room_code: stun_self.game_room_code});
+                            app.connection.emit('game-menu-join-video-call', { room_code: stun_self.game_room_code });
 
                         },
                     },
@@ -548,7 +548,7 @@ class Stun extends ModTemplate {
         }
     }
 
-    updateGameRoomCode(room_code){
+    updateGameRoomCode(room_code) {
         this.game_room_code = room_code;
     }
 
