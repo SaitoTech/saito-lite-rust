@@ -1,3 +1,8 @@
+  /*
+    Functions for player actions
+  */
+
+    class SettlersPlayer {
 
 
   playerChooseCardsToDiscard() {
@@ -714,5 +719,6 @@
     return false;
   }
 
+}
 
-
+module.exports = SettlersPlayer;
