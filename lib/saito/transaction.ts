@@ -55,6 +55,9 @@ export default class Transaction extends SaitoTransaction {
     this.dmsg = "";
     // this.size = 0;
     this.is_valid = 1;
+    if (this.timestamp === 0) {
+      this.timestamp = new Date().getTime();
+    }
     // this.path = new Array<Hop>();
 
     try {
@@ -202,6 +205,7 @@ export default class Transaction extends SaitoTransaction {
     with_staking_subsidy: bigint
   ) {
     const transaction = new Transaction();
+    transaction.timestamp = new Date().getTime();
 
     let output_payment = BigInt(0);
     if (output_slip_to_rebroadcast.amount > with_fee) {

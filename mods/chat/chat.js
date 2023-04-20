@@ -241,7 +241,7 @@ class Chat extends ModTemplate {
                FROM txs
                WHERE publickey = "${this.groups[i].id}"
                ORDER BY ts DESC LIMIT 100`;
-        this.sendPeerDatabaseRequestWithFilter(
+        await this.sendPeerDatabaseRequestWithFilter(
           "Archive",
           sql,
 

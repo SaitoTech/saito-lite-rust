@@ -196,18 +196,20 @@ class Mods {
     // include events here
     //
     this.app.connection.on("handshake_complete", async (peerIndex: bigint) => {
-      let peer = await this.app.network.getPeer(peerIndex);
+      let peer = await this.app.network.getPeer(BigInt(peerIndex));
       onPeerHandshakeComplete(peer);
     });
 
     const onConnectionUnstable = this.onConnectionUnstable.bind(this);
     this.app.connection.on("peer_disconnect", async (peerIndex: bigint) => {
-      console.log("connection dropped -- triggering on connection unstable");
-      let peer = await this.app.network.getPeer(peerIndex);
-      onConnectionUnstable(peer);
+      console.log("connection dropped -- triggering on connection unstable : " + peerIndex);
+      // // todo : clone peer before disconnection and send with event
+      // let peer = await this.app.network.getPeer(BigInt(peerIndex));
+      // onConnectionUnstable(peer);
     });
 
     this.app.connection.on("peer_connect", async (peerIndex: bigint) => {
+      console.log("peer_connect received for : " + peerIndex);
       let peer = await this.app.network.getPeer(peerIndex);
       this.onConnectionStable(peer);
     });

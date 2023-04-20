@@ -1,7 +1,7 @@
 import SaitoPeer from "saito-js/lib/peer";
 
 export default class Peer extends SaitoPeer {
-  constructor(data: any) {
-    super(data);
+  constructor(data: any, peerIndex?: bigint) {
+    super(data, peerIndex);
   }
 }

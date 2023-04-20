@@ -68,6 +68,7 @@ export default class Storage {
     console.log("archive load!");
 
     let newtx = new Transaction();
+    newtx.timestamp = new Date().getTime();
     newtx.msg.request = message;
     newtx.msg.data = data;
     // newtx.presign(this.app);

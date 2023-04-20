@@ -101,7 +101,7 @@ class Relay extends ModTemplate {
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
-    console.log("relay.handlePeerTransaction : ", tx);
+    // console.log("relay.handlePeerTransaction : ", tx);
     if (tx == null) {
       return;
     }

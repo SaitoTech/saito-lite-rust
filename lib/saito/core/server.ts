@@ -136,8 +136,11 @@ export class NodeSharedMethods extends CustomSharedMethods {
   }
 
   async processApiCall(buffer: Uint8Array, msgIndex: number, peerIndex: bigint): Promise<void> {
-    console.log("NodeMethods.processApiCall : peer= " + peerIndex);
+    console.log(
+      "NodeMethods.processApiCall : peer= " + peerIndex + " with size : " + buffer.byteLength
+    );
     const mycallback = async (response_object) => {
+      console.log("response_object ", response_object);
       await S.getInstance().sendApiSuccess(
         msgIndex,
         Buffer.from(JSON.stringify(response_object), "utf-8"),

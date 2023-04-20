@@ -1,6 +1,7 @@
 const ModTemplate = require("../../lib/templates/modtemplate");
 const saito = require("../../lib/saito/saito");
 const JSON = require("json-bigint");
+const Transaction = require("../../lib/saito/transaction");
 
 //
 // HOW THE ARCHIVE SAVES TXS
@@ -86,7 +87,7 @@ class Archive extends ModTemplate {
     // saves TX embedded in data
     //
     if (req.request === "archive save") {
-      let newtx = new saito.default.transaction();
+      let newtx = new Transaction();
       newtx.deserialize_from_web(app, req.data);
       let txmsg = newtx.returnMessage();
 

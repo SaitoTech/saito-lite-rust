@@ -675,6 +675,8 @@ class Arcade extends ModTemplate {
     );
 
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    console.log("newtx timestamp : " + newtx.timestamp);
+    console.log("gamedata : ", gamedata);
     if (recipient != "") {
       let slip = new Slip();
       slip.publicKey = sendto;
@@ -721,7 +723,15 @@ class Arcade extends ModTemplate {
     let players_array = txmsg.players[0] + "/" + txmsg.players_sigs[0];
     let start_bid = blk != null ? blk.block.id : BigInt(1);
 
-    let created_at = parseInt(tx.timestamp);
+    let created_at = tx.timestamp;
+    console.log(
+      "game tx timestamp : " +
+        created_at +
+        " vs now : " +
+        new Date().getTime() +
+        " vs now local : " +
+        Date.now()
+    );
 
     let sql = `INSERT
     OR IGNORE INTO games (
@@ -996,7 +1006,7 @@ class Arcade extends ModTemplate {
     slip.amount = BigInt(0);
     newtx.addToSlip(slip);
 
-    newtx.msg.timestamp = "";
+    newtx.msg.timestamp = new Date().getTime();
     newtx.msg.module = txmsg.game;
     newtx.msg.request = "invite";
     newtx.msg.game_id = orig_tx.signature;
