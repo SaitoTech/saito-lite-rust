@@ -7,7 +7,7 @@
 
 .theses-overlay .status {
     position: relative;
-    height: auto;
+    height: 4rem;
     min-height: 0;
     width: max-content;
     max-width: 35rem;

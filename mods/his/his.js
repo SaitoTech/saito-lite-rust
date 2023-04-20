@@ -16907,9 +16907,10 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       this.updateStatusWithOptions(msg, opt);
 
       $(".option").off();
-      $(".option").on('click', () => {
+      $(".option").on('click', function() {
 
         let id = $(this).attr('id');
+
         $(".option").off();
 
 	source_spacekey = id;
@@ -16937,7 +16938,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
           function(destination_spacekey) {
 
-            let space = his_self.spaces[id];
+            let space = his_self.spaces[source_spacekey];
 
             let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface) { 
 
@@ -17676,10 +17677,7 @@ console.log("units length: " + space.units[defender].length);
 
       his_self.updateStatusWithOptions(`Select Destination:`, html);
       his_self.attachCardboxEvents(function(destination) {
-
-	alert(user_choice + " -- " + destination);
         his_self.endTurn();
-
       });
     });
 
@@ -19246,12 +19244,15 @@ return;
   displayDebaters() {
 
     let html = `<div class="personage_overlay" id="personage_overlay">`;
+
+console.log("D: " + JSON.stringify(this.game.state.debaters));
+
     for (let i = 0; i < this.game.state.debaters.length; i++) {
-      html += `	<div class="personage_tile personage_tile${i}" data-id="${this.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${this.game.state.debaters[i].img}')"></div>`;
+      html += `<div class="personage_tile personage_tile${i}" data-id="${this.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${this.game.state.debaters[i].img}')"></div>`;
     }
     html += `</div>`;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       let tile_f = "/his/img/tiles/debaters/" + this.game.state.debaters[i].img;
@@ -19278,7 +19279,7 @@ return;
     }
     html += `</div>`;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     for (let i = 0; i < this.game.state.explorers.length; i++) {
       let tile_f = "/his/img/tiles/explorers/" + this.game.state.explorers[i].img;
@@ -19306,7 +19307,7 @@ return;
     }
     html += `</div>`;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     for (let i = 0; i < this.game.state.conquistadors.length; i++) {
       let tile_f = "/his/img/tiles/conquistadors/" + this.game.state.conquistadors[i].img;
@@ -19375,7 +19376,7 @@ return;
       </div>
     `;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     //
     // list all debaters

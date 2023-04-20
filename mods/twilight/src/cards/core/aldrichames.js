@@ -8,7 +8,7 @@
 
       if (this.game.player == 2) {
 
-        this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Aldrich Ames</div>");
+        this.updateStatusHeader("USSR is playing Aldrich Ames<");
 
         this.addMove("resolve\taldrichames");
 

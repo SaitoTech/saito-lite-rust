@@ -93,6 +93,24 @@ class JoinGameOverlay {
     }
 
 
+    if (document.getElementById("arcade-game-controls-watch-game")) {
+      document.getElementById("arcade-game-controls-watch-game").onclick = (e) => {
+        this.app.connection.emit("league-overlay-remove-request");
+        this.mod.observeGame(this.invite.game_id);
+        this.overlay.remove();
+        this.app.browser.logMatomoEvent("GameInvite", "WatchGame", this.invite.game_mod.name);
+      }
+    }
+
+    if (document.getElementById("arcade-game-controls-review-game")) {
+      document.getElementById("arcade-game-controls-review-game").onclick = (e) => {
+        this.app.connection.emit("league-overlay-remove-request");
+        this.mod.observeGame(this.invite.game_id);
+        this.overlay.remove();
+        this.app.browser.logMatomoEvent("GameInvite", "ReviewGame", this.invite.game_mod.name);
+      }
+    }
+
     Array.from(document.querySelectorAll(".available_slot")).forEach((emptySlot) => {
       emptySlot.onclick = () => {
         this.mod.showShareLink(this.invite.game_id);  

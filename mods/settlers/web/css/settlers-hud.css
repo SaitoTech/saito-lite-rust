@@ -1,5 +1,3 @@
-
-
 .status-header, .status-message {
   box-shadow: none;
   background-color: transparent;
@@ -16,14 +14,15 @@
   width: auto;
   background-color: rgba(211, 195, 141, 0.96);
   border: 5px solid #424143;
-  background-color: /*#edddb8;*/ #d3c38df5;
+  background-color: #d3c38df5;
   padding: 1rem;
   border-image: url(/settlers/img/border.png);
   border-image-slice: 51;
   border-image-width: 2.1rem;
   border-image-repeat: stretch;
   border-style: solid;
-  border-image-outset: 10px;;
+  border-image-outset: 10px;
+  ;
 }
 
 .hud-header {
@@ -43,15 +42,14 @@
   max-height: 23rem;
   overflow-y: auto;
   -ms-overflow-style: none;
-  scrollbar-width: none; 
+  scrollbar-width: none;
 }
 
 .status ul::-webkit-scrollbar {
   display: none;
 }
 
-
-.hud-body .status .tbd ul li , .hud-body .status ul li {
+.hud-body .status .tbd ul li, .hud-body .status ul li {
   min-height: 4.4rem;
   font-size: 2.3rem;
   padding: 1rem;
@@ -63,16 +61,14 @@
 }
 */
 
-.hud-body .status .tbd , .hud-body .status .player-notice {
+.hud-body .status .tbd, .hud-body .status .player-notice {
   min-width: 80%;
   font-size: 1.8rem;
   padding: 1rem;
   justify-content: center;
 }
 
-
-
-.status-text-menu ul li, .status ul li{
+.status-text-menu ul li, .status ul li {
   border-color: var(--text-color);
   border: 3px solid;
   margin: 5px 0;
@@ -91,17 +87,17 @@
   margin: 2px;
 }
 
-
 .discard-select ul li {
   display: inline;
   border: 0px;
 }
 
-.discard-select ul li .icon , .player-notice .tip .icon {
+.discard-select ul li .icon, .player-notice .tip .icon {
   height: 4rem;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
 }
+
 .player-notice .tip .icon {
   height: 4rem;
   margin-left: 0.5rem;
@@ -113,37 +109,40 @@
 }
 
 .hud-body .mobile .score {
-    position: absolute;
-    top: 0rem;
-    font-size: 1.7rem;
-    right: 0rem;
-    cursor: pointer;
-    border-bottom: 1px dashed #0008;
+  position: absolute;
+  top: 0rem;
+  font-size: 1.7rem;
+  right: 0rem;
+  cursor: pointer;
+  border-bottom: 1px dashed #0008;
 }
 
 .hud-body .mobile .trade {
-    position: absolute;
-    top: 0rem;
-    font-size: 1.7rem;
-    left: 0rem;
-    cursor: pointer;
-    border-bottom: 1px dashed #0008;
+  position: absolute;
+  top: 0rem;
+  font-size: 1.7rem;
+  left: 0rem;
+  cursor: pointer;
+  border-bottom: 1px dashed #0008;
 }
 
 .mobile-trading-container {
-    z-index: 0;
+  z-index: 0;
 }
 
-  .hud-body .mobile {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    top: -0.75rem;
-  }
- 
+.hud-body .mobile {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  top: -0.75rem;
+}
+
+
+.status-header > #status-content, .status-message > #status-content, .status {
+  font-size: 2rem;
+}
 
 @media only screen and (max-width: 700px) and (orientation: portrait) {
-
   body .player-box {
     height: auto !important;
     width: 100% !important;
@@ -155,8 +154,7 @@
     margin-right: 5vw;
     margin-top: 5vw;
   }
-
-  body .player-box.notme, .opponents , body .player-box.me {
+  body .player-box.notme, .opponents, body .player-box.me {
     position: unset;
     top: unset;
     bottom: unset;
@@ -164,7 +162,6 @@
     height: auto;
     max-height: unset;
   }
-
   .scoreboard {
     display: none;
     position: absolute;
@@ -182,15 +179,14 @@
     padding-right: 5vw !important;
     z-index: 5;
   }
-
   .mobile-trading-container {
     display: none;
-    /* grid-template-areas: 'areaOne areaTwo'; // set in code */ 
+    /* grid-template-areas: 'areaOne areaTwo'; // set in code */
     position: absolute;
     background-color: black;
     height: 100%;
     width: 100%;
-    z-index: 10; 
+    z-index: 10;
     top: 0;
     left: 0;
     padding-top: 6vh;
@@ -199,10 +195,4 @@
     max-height: 120vh;
     padding-bottom: 40vh;
   }
-
-
 }
-
-
-
-

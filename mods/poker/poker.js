@@ -440,7 +440,6 @@ console.log("SETTLE? " + this.settleNow);
         this.game.queue.push(this.settlement[i]);
       }
 
-      this.settleNow = (this.game.options.settle_by_round == 1);
     } else {
       msg += "...";
     }

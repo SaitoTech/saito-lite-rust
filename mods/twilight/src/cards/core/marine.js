@@ -45,7 +45,7 @@
 
         let ops_to_purge = Math.min(2, ops_available);
 
-        this.updateStatus("<div class='status-message' id='status-message'>Remove</span> <span>"+ops_to_purge+" </span>US influence from the Middle East</div>");
+        this.updateStatusHeader("Remove"+ops_to_purge+" US influence from the Middle East");
         
         $(".easterneurope").off();
         $(".easterneurope").on('click', function() {
@@ -63,8 +63,8 @@
               twilight_self.endTurn();
             }
           }
-          twilight_self.updateStatus("<div class='status-message' id='status-message'>Remove</span> <span>"+ops_to_purge+" </span>US influence from the Middle East</div>");
-        
+          twilight_self.updateStatusHeader("Remove "+ops_to_purge+" US influence from the Middle East");        
+
         });
 
       }

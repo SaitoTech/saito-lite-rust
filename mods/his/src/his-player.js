@@ -1184,9 +1184,10 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       this.updateStatusWithOptions(msg, opt);
 
       $(".option").off();
-      $(".option").on('click', () => {
+      $(".option").on('click', function() {
 
         let id = $(this).attr('id');
+
         $(".option").off();
 
 	source_spacekey = id;
@@ -1214,7 +1215,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
           function(destination_spacekey) {
 
-            let space = his_self.spaces[id];
+            let space = his_self.spaces[source_spacekey];
 
             let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface) { 
 
@@ -1953,10 +1954,7 @@ console.log("units length: " + space.units[defender].length);
 
       his_self.updateStatusWithOptions(`Select Destination:`, html);
       his_self.attachCardboxEvents(function(destination) {
-
-	alert(user_choice + " -- " + destination);
         his_self.endTurn();
-
       });
     });
 
