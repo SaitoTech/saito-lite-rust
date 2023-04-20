@@ -801,9 +801,11 @@ class League extends ModTemplate {
     const relevantLeagues = await this.getRelevantLeagues(txmsg.game, txmsg?.options?.league_id);
     if (!relevantLeagues) { return; }
 
-    console.log("League: AcceptGame");
-    console.log(txmsg?.options?.league_id);
-    console.log(JSON.parse(JSON.stringify(relevantLeagues)));
+    if (this.debug){
+      console.log("League: AcceptGame");
+      console.log(txmsg?.options?.league_id);
+      console.log(JSON.parse(JSON.stringify(relevantLeagues)));
+    }
 
     //
     // who are the players ?

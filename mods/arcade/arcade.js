@@ -958,6 +958,7 @@ class Arcade extends ModTemplate {
 
       //And make sure archive saves all the tx's under the game id
       console.log(txmsg.module+"_"+txmsg.game_id);
+      //this.app.storage.saveTransactionByKey(txmsg.game_id, tx);
       this.app.storage.saveTransaction(tx, txmsg.module+"_"+txmsg.game_id);
     //}
   }
@@ -1785,6 +1786,7 @@ class Arcade extends ModTemplate {
     this.app.connection.emit("arcade-game-initialize-render-request");
     
     //We want to send a message to the players to add us to the game.accept list so they route their game moves to us as well
+    game_msg.game_id = game_id;
     this.sendFollowTx(game_msg);
 
     if (!this.app.options.games) {
@@ -1792,18 +1794,21 @@ class Arcade extends ModTemplate {
     }
 
     if (!game_mod.doesGameExistLocally(game_id)){
+      console.log("Initialize game");
       game_mod.initializeObserverMode(game_tx);
+    }else{
+      console.log("Game already exists");
+      game_mod.loadGame(game_id);
     }
-
-    game_mod.loadGame(game_id);
 
     game_mod.game.halted = 1; // Default to paused
-    if (watch_live) {
-      game_mod.game.halted = 0;
-      game_mod.game.live = 1;
-    }
    
     this.observerDownloadNextMoves(game_mod, ()=> {
+      if (watch_live) {
+        game_mod.game.halted = 0;
+        game_mod.game.live = 1;
+      }
+
       this.app.connection.emit("arcade-game-ready-render-request", {id: game_id, name: game_msg.game, slug: game_mod.returnSlug()});
     });
     
@@ -1812,13 +1817,11 @@ class Arcade extends ModTemplate {
   sendFollowTx(game) {
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     tx.msg = {
-      module: game.module,
+      module: game.game,
       game_id: game.game_id,
       request: "follow game",
       my_key: this.app.wallet.returnPublicKey(),
     };
-
-    console.log("Send Follow:", JSON.parse(JSON.stringify(game)));
 
     for (let p of game.players) {
       tx.transaction.to.push(new saito.default.slip(p, 0.0));
@@ -1826,7 +1829,8 @@ class Arcade extends ModTemplate {
 
     tx = this.app.wallet.signTransaction(tx);
 
-    this.app.network.propagateTransaction(tx);
+    //Only looking for this in handlePeerRequest, pure off-chain
+    //this.app.network.propagateTransaction(tx);
 
     //
     // relay too
@@ -1855,149 +1859,41 @@ class Arcade extends ModTemplate {
       }
     }
 
-    console.log(
-      ` NEXT MOVES: /arcade/observer_multi/${game_mod.game.id}/${game_mod.game.step.game}`
-    );
-    console.log(`${game_mod.name}_${game_mod.game.id}`);
-    this.app.storage.loadTransactionsByKeys(game_mod.game.players, `${game_mod.name}_${game_mod.game.id}`, 100, 
-      (txs)=> {
-        console.log("txs length: " + txs.length);
+    console.log(`${game_mod.name}_${game_mod.game.id} from ${game_mod.game.originator}`);
+    //this.app.storage.loadTransactionsByKeys([game_mod.game.id], game_mod.name, 100, callback);
 
-        for (let i = 0; i < txs.length; i++) {
-          console.log(txs[i]);
-          let future_tx = txs[i];
-          future_tx.msg = future_tx.returnMessage();
-          console.log(future_tx.msg);
+    let sql = `SELECT * FROM txs WHERE type = '${game_mod.name}_${game_mod.game.id}' AND publickey = '${game_mod.game.originator}' ORDER BY id ASC`;
+    this.sendPeerDatabaseRequestWithFilter("Archive", sql, (res) => {
+      if (res.rows) {
+        console.log("sql rows: " + res.rows.length);
 
-          future_tx = this.app.wallet.signTransaction(future_tx);
+        for (let record of res.rows) {
+          let future_tx = new saito.default.transaction();
+          future_tx.deserialize_from_web(this.app, record.tx);
+          let game_move = future_tx.returnMessage();
+          let loaded_step = game_move.step.game;
 
-          let already_contains_move = 0;
-          console.log(
-            "steps comparison: " +
-              future_tx.msg.step.game +
-              " -- vs -- " +
-              game_mod.game.step.game
-          );
+          console.log(loaded_step, game_move);
 
-          if (
-            future_tx.msg.step.game <= game_mod.game.step.game &&
-            future_tx.msg.step.game <=
-              game_mod.game.step.players[future_tx.transaction.from[0].add]
-          ) {
-            already_contains_move = 1;
-          }
-
-          if (already_contains_move == 0) {
-            console.log("Add move: " + JSON.stringify(future_tx.msg));
-            game_mod.game.future.push(JSON.stringify(future_tx.transaction));
+          if (loaded_step > game_mod.game.step.game ||
+            loaded_step > game_mod.game.step.players[future_tx.transaction.from[0].add]) 
+          {
+            console.log("Add move: " + JSON.stringify(game_move));
+            game_mod.addFutureMove(future_tx);
           }
         }
 
-        game_mod.saveFutureMoves(game_mod.game.id);
         game_mod.saveGame(game_mod.game.id);
 
-        if (mycallback != null) {
+        if (mycallback) {
           mycallback(game_mod);
         }
       }
-    );
-
-  }
-
-  async initializeObserverModePreviousStep(game_mod, starting_move, callback = null) {
-    let arcade_self = this;
-    let first_tx = null;
-
-    console.log(`FETCHING: /arcade/observer_prev/${game_mod.game.id}/${starting_move}`);
-
-    fetch(`/arcade/observer_prev/${game_mod.game.id}/${starting_move}`).then((response) => {
-      response.json().then((data) => {
-        if (!data.length) {
-          salert("At beginning game state");
-          arcade_self.controls.hideLastMoveButton();
-          return;
-        }
-        console.log(data[0]);
-        first_tx = JSON.parse(data[0].game_state);
-
-        console.log("UPDATED GAME TxStep to: " + JSON.stringify(first_tx.step));
-        //console.log("UPDATED GAME QUEUE to: " + JSON.stringify(first_tx.queue));
-
-        //
-        // single transaction
-        //
-        //let future_tx = new saito.default.transaction(JSON.parse(data[1].tx));
-        //future_tx.msg = future_tx.returnMessage();
-        //future_tx = arcade_self.app.wallet.signTransaction(future_tx);
-        //first_tx.future = first_tx.future || [];
-        //first_tx.future.push(JSON.stringify(future_tx.transaction));
-
-        //let idx = -1;
-        //for (let i = 0; i < arcade_self.app.options.games.length; i++) {
-        //  if (arcade_self.app.options.games[i].id === first_tx.id) {
-        //    idx = i;
-        //  }
-        //}
-        //if (idx == -1) {
-        //  arcade_self.app.options.games.push(first_tx);
-        //} else {
-        //  arcade_self.app.options.games[idx] = first_tx;
-        //}
-
-        //arcade_self.app.storage.saveOptions();
-        //let game_mod = arcade_self.app.modules.returnActiveModule();
-        game_mod.game = first_tx;
-        game_mod.saveGame(game_mod.game.id);
-
-        if (callback) {
-          callback(game_mod);
-        } else {
-          game_mod.initialize_game_run = 0;
-          game_mod.initializeGameFeeder(game_mod.game.id);
-          arcade_self.controls.updateStep(game_mod.game.step.game);
-        }
-      });
     });
+
   }
 
 
-  webServer(app, expressapp, express) {
-    super.webServer(app, expressapp, express);
-
-    const fs = app.storage.returnFileSystem();
-    const path = require("path");
-
-    if (fs != null) {
-      //InitializeObserverMode, downloadNextMoves
-
-      //InitializeObserverModePreviousStep
-      expressapp.get("/arcade/observer_prev/:game_id/:current_move", async (req, res) => {
-        let sql, params;
-
-        if (req.params.current_move == 0 || req.params.current_move === "undefined") {
-          sql = "SELECT * FROM obgames WHERE game_id = $game_id";
-          params = { $game_id: req.params.game_id };
-        } else {
-          sql =
-            "SELECT * FROM gamestate WHERE game_id = $game_id AND step <= $step ORDER BY step DESC LIMIT 1";
-          params = { $game_id: req.params.game_id, $step: req.params.current_move };
-        }
-
-        console.log(sql);
-        let games = await app.storage.queryDatabase(sql, params, "observer");
-
-        res.setHeader("Content-type", "text/html");
-        res.charset = "UTF-8";
-
-        if (games.length > 0) {
-          res.send(JSON.stringify(games));
-        } else {
-          res.send("{}");
-        }
-        return;
-      });
-    }
-  }
 
 }
 

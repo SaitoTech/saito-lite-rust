@@ -15,6 +15,13 @@ html, body {
     padding-top: 1rem;
 }
 
+.observer-mode #board {
+    transform: rotate(90deg);
+}
+
+.observer-mode .notation-322f9, .observer-mode .piece-417db {
+    transform: rotate(-90deg);
+}
 
 body {
     font-family: arial, helvetica, sans-serif;
