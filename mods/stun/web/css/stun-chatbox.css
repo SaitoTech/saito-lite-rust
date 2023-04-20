@@ -3,6 +3,7 @@
   height: 3rem;
   font-size: 3rem;
 }
+
 .stunx-chatbox {
   top: 0;
   left: 0;
@@ -15,11 +16,9 @@
   width: 100vw;
 }
 
-.stunx-chatbox ~ .chat-container {
+.stunx-chatbox~.chat-container {
   z-index: 100;
 }
-
-
 
 .stunx-chatbox.minimize:hover {
   cursor: pointer;
@@ -55,12 +54,14 @@
 }
 
 .stunx-chatbox.minimize .minimizer {
-    bottom: 1rem;
+  bottom: 1rem;
 }
-.stunx-chatbox.minimize .minimizer i{
-    font-size: 2rem;
+
+.stunx-chatbox.minimize .minimizer i {
+  font-size: 2rem;
 }
-.stunx-chatbox.minimize .footer{
+
+.stunx-chatbox.minimize .footer {
   display: none;
 }
 
@@ -71,8 +72,8 @@
 }
 
 .stunx-chatbox main {
-height: 100%;
-width: 100%;
+  height: 100%;
+  width: 100%;
 }
 
 .stunx-chatbox .heading {
@@ -100,6 +101,15 @@ width: 100%;
   padding: 1rem;
 }
 
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
+  grid-gap: 1rem;
+  height: 100%;
+  width: 100%;
+  background: black;
+}
+
 .expanded-video {
   width: 75%;
   height: 100%;
@@ -112,7 +122,7 @@ width: 100%;
   opacity: 0;
   animation: fade-in 0.5s ease-in;
   animation-fill-mode: forwards;
-  border: 2px solid var(--saito-primary);
+  border: 2px solid var(--saito-border-color-dark);
 }
 
 @keyframes fade-in {
@@ -134,11 +144,11 @@ width: 100%;
 
 .side-videos .video-box-container-large {
   height: 30%;
-  border: 2px solid var(--saito-secondary);
+  border: 2px solid var(--saito-border-color-dark);
 }
 
 .stunx-chatbox .video-box-container-large {
-  border-radius: .5rem;
+  border-radius: 0.5rem;
 }
 
 #localStream {
@@ -444,8 +454,8 @@ width: 100%;
   display: flex;
 }
 
-.control-list span {
-  margin-right: 1rem;
+.control-list span, .add_users_container {
+  margin-right: 2rem;
   border-radius: 50%;
   padding: 1rem;
   width: 5rem;
@@ -454,16 +464,33 @@ width: 100%;
   justify-content: center;
   align-items: center;
   background-color: var(--saito-white);
+  position: relative;
 }
 
-.control-list i {
+.control-list .spacer {
+  opacity: 0;
+}
+
+.speaker {
+  border: 1px solid var(--saito-primary) !important;
+}
+
+.control-list span label, .add_users_container label {
+  position: absolute;
+  color: white;
+  bottom: -2.5rem;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.control-list i, .add_users_container i {
   color: green;
   cursor: pointer;
   transition: all 0.2s;
   font-size: 2rem;
 }
 
-.control-list i:hover {
+.control-list i:hover, .add_users_container i:hover {
   transform: scale(1.2);
 }
 
@@ -478,12 +505,8 @@ width: 100%;
 
 @media screen and (max-width: 900px) {
   .stunx-chatbox .large-wrapper {
-    /* display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
-    grid-auto-rows: 1fr; */
     grid-gap: 1rem;
-    padding: 1rem;
+    padding: 0;
     height: 70%;
     background: black;
   }
@@ -492,14 +515,24 @@ width: 100%;
   }
   .control-panel {
     padding-bottom: 5rem;
-    flex-direction: column-reverse;
+    flex-direction: column;
     align-items: flex-start;
     justify-content: start;
     align-items: center;
-    gap: 2rem;
+    gap: 3rem;
   }
   .control-panel .control-list {
-    margin-bottom: 1rem;
+    margin-bottom: 1.7rem;
+    gap: 1.5rem;
+  }
+  .control-list span {
+    margin: 0;
+  }
+  .control-list .spacer {
+    display: none;
+  }
+  .add_users_container label {
+    display: none;
   }
 }
 
@@ -698,7 +731,7 @@ width: 100%;
 @media screen and (max-width: 767px) {
   .video-call-info i {
     font-size: 1rem;
-    margin-right: .5rem;
+    margin-right: 0.5rem;
   }
   .chat-settings {
     flex-direction: column;
@@ -723,6 +756,12 @@ width: 100%;
   }
   .chat-settings select {
     width: 100%;
+  }
+  .gallery {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
   }
   .expanded-video {
     width: 100%;

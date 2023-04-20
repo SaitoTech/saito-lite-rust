@@ -200,10 +200,10 @@ class League extends ModTemplate {
       let sql;
       
       if (this.browser_active || league_id) {
-        console.log("Load all leagues");
+        if (this.debug) { console.log("Load all leagues"); }
         sql = `SELECT * FROM leagues WHERE status = 'public' OR id = '${league_id}'`;
       }else{
-        console.log("Load my leagues");
+        if (this.debug) { console.log("Load my leagues"); }
         let league_list = this.leagues.map(x => `'${x.id}'`).join(", ");
         sql = `SELECT * FROM leagues WHERE id IN (${league_list})`;
       }
@@ -801,9 +801,11 @@ class League extends ModTemplate {
     const relevantLeagues = await this.getRelevantLeagues(txmsg.game, txmsg?.options?.league_id);
     if (!relevantLeagues) { return; }
 
-    console.log("League: AcceptGame");
-    console.log(txmsg?.options?.league_id);
-    console.log(JSON.parse(JSON.stringify(relevantLeagues)));
+    if (this.debug){
+      console.log("League: AcceptGame");
+      console.log(txmsg?.options?.league_id);
+      console.log(JSON.parse(JSON.stringify(relevantLeagues)));
+    }
 
     //
     // who are the players ?
@@ -1122,8 +1124,8 @@ class League extends ModTemplate {
       let newLeague = this.validateLeague(obj);
 
       //if (this.debug) { 
-        console.log(`Add ${newLeague.game} League, ${newLeague.id}`); 
-     // }
+      //console.log(`Add ${newLeague.game} League, ${newLeague.id}`); 
+      //}
 
       //
       // dynamic data-storage

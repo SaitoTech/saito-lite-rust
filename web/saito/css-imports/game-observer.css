@@ -2,13 +2,14 @@
 .game-observer-hud{
   position: absolute;
   display: block;
-  top: 10vh;
-  left: 10vw;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
   /*height: 20vh;*/
-  width: 50vw;
+  width: 450px;
   background-color: #444;
   color: #ccc;
-  font-size: 4vh;
+  font-size: max(4vh, 16px);
   text-align: center;
   padding: 0.25em 0;
   z-index: 99999999;
@@ -36,6 +37,10 @@
   display: none;
 }
 
+
+#obstatus {
+  font-size: max(2.5vh, 14px);
+}
 
 .game-observer-controls {
   height: 10vh;

@@ -67,6 +67,29 @@
   padding: 0.5em 2.5em;
 }
 
+
+.transparent-card-overlay {
+    width: 85vw;
+    height: 80vh;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 200px);
+    grid-gap: 1rem;
+    background-color: transparent;
+    border: 0px;
+    box-shadow: none;
+    overflow-y: auto;
+    justify-content: center;
+}
+
+.transparent-card-overlay .card {
+    background-image: url(/twilight/img/Base.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 200px;
+    max-width: 200px;
+    height: 280px;
+}
+
 .ts-overlay h1 {
   text-align: center;
 }

@@ -268,9 +268,8 @@
   padding: 1rem 0rem;
   border-radius: 0.5rem;
   text-align: center;
-  background: var(--saito-white);
-  color: var(--saito-gray-mid);
-  border: 1px solid var(--saito-font-color);
+  background: var(--dreamscape);
+  color: var(--saito-white);
 }
 
 .mixin-items-container .saito-table-header {
@@ -348,7 +347,8 @@
   background: var(--saito-light-shim);
   padding-right: 0.5rem;
   border-radius: 0.5rem;
-  //border: 1px solid var(--saito-font-color-light);
+  background: var(--saito-background-light);
+  border: 1px solid var(--saito-font-color);
 }
 
 .token-dropdown img { 
@@ -365,6 +365,7 @@
   border: none;
   background: none;
   font-size: 1.6rem;
+  color: var(--saito-font-color);
 }
 
 .withdraw-address-cont {
@@ -376,14 +377,16 @@
   background: var(--saito-light-shim);
   color: var(--saito-gray-mid);
   font-size: 1.6rem;
+  background: var(--saito-background-light);
+  border: 1px solid var(--saito-font-color);
 }
 
 .withdraw-options-cont {
   position: absolute;
   right: 1rem;
-  top: 50%;
+  top: 45%;
   transform: translateY(-50%);
-  color: var(--saito-gray-mid);
+  color: var(--saito-font-color);
   cursor: pointer;
 }
 

@@ -16,7 +16,7 @@
       }
 
       if (this.game.state.events.cubanmissilecrisis == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>USSR is under Cuban Missile Crisis and cannot coup. Skipping Ortega coup.</div>");
+        this.updateStatusHeader("USSR is under Cuban Missile Crisis and cannot coup. Skipping Ortega coup.");
         this.updateLog("USSR is under Cuban Missile Crisis and cannot coup. Skipping Ortega coup.");
         return 1;
       }
@@ -33,7 +33,7 @@
         //To Skip the Coup
         twilight_self.attachCardboxEvents(function(action2) {
           if (action2 == "skiportega") {
-            twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Ortega coup...</div>");
+            twilight_self.updateStatusHeader("Skipping Ortega coup...");
             twilight_self.addMove("resolve\tortega");
             twilight_self.endTurn();
           }

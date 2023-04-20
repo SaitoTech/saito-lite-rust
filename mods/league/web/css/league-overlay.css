@@ -182,10 +182,11 @@ span.attention {
   flex-grow: 1;
 }
 
-.league_recent_game {
+.league_recent_game, .game-manager .saito-table-header {
   display: grid;
-  grid-template-columns: auto 25rem auto;
+  grid-template-columns: repeat(3, auto);
   grid-gap: 1rem;
+  text-align: center;
 }
 
 .league_recent_player {
@@ -201,6 +202,7 @@ span.attention {
   display: flex;
   flex-direction: row;
   column-gap: 1rem;
+  margin: auto;
 }
 
 .league_recent_players_list_item {
@@ -332,12 +334,8 @@ span.attention {
     max-height: unset;
     overflow-y: unset;
   }
-  .league-overlay-header {
-    flex-direction: column;
-  }
-  .league-overlay-controls {
-    justify-content: start;
-    padding: 1rem 0 0;
+  .league-overlay-body .league-overlay-controls {
+    justify-content: center;
   }
 }
 
@@ -349,9 +347,19 @@ span.attention {
   .contactAdminWarning {
     min-height: 0;
   }
+
   .league-overlay-controls {
     justify-content: center;
   }
+  
+  .league-overlay-controls button {
+    flex: 1;
+  }
+
+  .league-overlay-header {
+    flex-direction: column;
+  }
+
   .league-overlay-header-image {
     margin: 0;
     width: 100%;

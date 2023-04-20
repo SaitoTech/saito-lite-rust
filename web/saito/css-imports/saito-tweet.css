@@ -350,6 +350,10 @@
   .tweet-notice .saito-address {
     max-width: 70%;
   }
+
+  .tweet-overlay .tweet-main {
+    max-height: calc(90vh - 40rem);
+  }
 }
 
 @media screen and (max-width: 529px) {

@@ -194,6 +194,10 @@ Scrollbars
   max-width: 99%;
 }
 
+.saito-address.treated {
+  cursor: pointer;
+}
+
 .tip:hover .tiptext {
   visibility: visible;
 }
@@ -236,6 +240,22 @@ Scrollbars
   font-size: 2rem;
   color: var(--saito-white);
 }
+
+/* ----------------------------------------------------------------
+ Scrollbars 
+----------------------------------------------------------------- */
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
 
 /* ----------------------------------------------------------------
 Media Queries

@@ -194,7 +194,6 @@ class PeerManager {
             this.removeChatManagerSmall(false);
             // render large ui
 
-
             this.showChatManagerLarge();
             setTimeout(()=> {
                 app.connection.emit('stun-toggle-video');
@@ -334,7 +333,7 @@ class PeerManager {
             this.remoteStreams.set(peerId, {remoteStream, peerConnection});
             console.log(this.remoteStreams, 'remote stream new')
             if (this.ui_type === "large") {
-                this.app.connection.emit('add-remote-stream-large-request', peerId, remoteStream, peerConnection);
+                this.app.connection.emit('render-remote-stream-large-request', peerId, remoteStream, peerConnection);
             } else if (this.ui_type === "small") {
                 this.app.connection.emit('add-remote-stream-small-request', peerId, remoteStream, peerConnection);
             }
@@ -527,7 +526,7 @@ class PeerManager {
             console.log(property, 'property', key, 'key')
             // console.log(stream, 'stream')
             if (this.ui_type === "large") {
-                this.app.connection.emit('add-remote-stream-large-request', key, property.remoteStream, property.peerConnection);
+                this.app.connection.emit('render-remote-stream-large-request', key, property.remoteStream, property.peerConnection);
             } else if (this.ui_type === "small") {
                 this.app.connection.emit('add-remote-stream-small-request', key, property.remoteStream, property.peerConnection);
             }

@@ -16,7 +16,7 @@
 
         twilight_self.addMove("resolve\toas");
 
-        this.updateStatus("<div class='status-message' id='status-message'>US places two influence in Central or South America</div>");
+        this.updateStatusHeader("US places two influence in Central or South America");
         for (var i in this.countries) {
           if (this.countries[i].region == "samerica" || this.countries[i].region == "camerica"){
             this.countries[i].place = 1;

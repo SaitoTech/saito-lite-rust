@@ -115,6 +115,23 @@ class Tweet {
     let myqs = `.tweet-${this.tx.transaction.sig}`;
     let replace_existing_element = true;
     let replace_nothing = false;
+    let has_reply = false;
+    let has_reply_disconnected = false;
+
+    //
+    // we might be re-rendering when critical child is on screen, so check if the
+    // class exists and flag if so
+    //
+    if (document.querySelector(myqs)) {
+      let obj = document.querySelector(myqs);
+      if (obj.classList.contains("has-reply")) {
+        has_reply = true;
+      }
+      if (obj.classList.contains("has-reply-disconnected")) {
+        has_reply_disconnected = true;
+      }
+    }
+
 
     //
     //
@@ -190,6 +207,10 @@ class Tweet {
       }
     }
 
+    if (!this.container || this.container == "") {
+      this.container = ".redsquare-appspace-body";
+    }
+
     if (replace_existing_element && document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
@@ -203,6 +224,23 @@ class Tweet {
         }
       }
     }
+
+    //
+    // has-reply and has-reply-disconnected
+    //
+    if (has_reply) {
+      let obj = document.querySelector(myqs);
+      if (obj) {
+        obj.classList.add("has-reply");
+      }
+    }
+    if (has_reply_disconnected) {
+      let obj = document.querySelector(myqs);
+      if (obj) {
+        obj.classList.add("has-reply-disconnected");
+      }
+    }
+
 
     //
     // modify width of any iframe
@@ -221,6 +259,7 @@ class Tweet {
         }
       }
     }
+
 
     //
     // render user
@@ -378,6 +417,12 @@ class Tweet {
 
     try {
 
+      //
+      // tweet does not exist? exit
+      //
+      let this_tweet = document.querySelector(`.tweet-${this.tx.transaction.sig}`);
+      if (!this_tweet) { return; }
+
       /////////////////////////////
       // Expand / Contract Tweet //
       /////////////////////////////
@@ -389,7 +434,6 @@ class Tweet {
       let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-text`);
       if (!el) { return; }
       if (!this.force_long_tweet) {
-        let cobj = document.querySelector(this.container);
         if (el.clientHeight < el.scrollHeight) {
           el.classList.add("preview");
           this.is_long_tweet = true;
@@ -403,7 +447,6 @@ class Tweet {
       /////////////////
       // view thread //
       /////////////////
-      let this_tweet = document.querySelector(`.tweet-${this.tx.transaction.sig}`);
       if (!this_tweet.dataset.hasClickEvent) {
 
         this_tweet.dataset.hasClickEvent = true;
@@ -641,6 +684,7 @@ class Tweet {
 
   addTweet(tweet, levels_deep = 0) {
 
+
     //
     // this means we know the comment is supposed to be somewhere in this thread/parent
     // but its own parent doesn't yet exist, so we are simply going to store it here
@@ -655,7 +699,10 @@ class Tweet {
     if (this.critical_child == null) {
       this.critical_child = tweet;
       if (tweet.created_at > this.updated_at) {
-        this.updated_at = tweet.created_at;
+	//
+	// April 14, 2023 - do not show critical children unless 2nd level
+	//
+        //this.updated_at = tweet.created_at;
         let dt = this.app.browser.formatDate(this.updated_at);
         this.user.notice = this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
         this.user.render();
@@ -672,7 +719,13 @@ class Tweet {
       if (this.unknown_children[i].parent_id === tweet.tx.transaction.sig) {
         if (this.isCriticalChild(this.unknown_children[i])) {
           this.critical_child = this.unknown_children[i];
-          this.updated_at = this.critical_child.updated_at;
+	  //
+	  // April 14, 2023 - do not show critical children unless 2nd level
+	  // - since we are adding a child, we do a levels check on OURSELVERS
+	  //
+	  if (levels_deep == 0) {
+            this.updated_at = this.critical_child.updated_at;
+	  }
 
           let dt = app.browser.formatDate(this.updated_at);
           if (this.userline == "") { this.user.notice = this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; }
@@ -708,7 +761,13 @@ class Tweet {
       //
       if (this.isCriticalChild(tweet) || tweet.tx.transaction.ts > this.updated_at && this.critical_child == null) {
         this.critical_child = tweet;
-        if (tweet.created_at > this.updated_at) { this.updated_at = tweet.created_at; }
+	//
+	// April 14, 2023 - do not show critical children unless 2nd level
+	// - since we are adding a child, we do a levels check on OURSELVERS
+	//
+	if (levels_deep == 0) {
+          if (tweet.created_at > this.updated_at) { this.updated_at = tweet.created_at; }
+	}
         let dt = app.browser.formatDate(this.updated_at);
         if (this.userline == "") { this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; this.user.notice = this.userline; }
       }
@@ -739,7 +798,13 @@ class Tweet {
       //
       if (this.isCriticalChild(tweet)) {
         this.critical_child = tweet;
-        if (tweet.created_at > this.updated_at) { this.updated_at = tweet.created_at; }
+	//
+	// April 14, 2023 - do not show critical children unless 2nd level
+	// - since we are adding a child, we do a levels check on OURSELVERS
+	//
+	if (levels_deep == 0) {
+          if (tweet.created_at > this.updated_at) { this.updated_at = tweet.created_at; }
+	}
         let dt = app.browser.formatDate(this.updated_at);
         if (this.userline == "") { this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; this.user.notice = this.userline; }
       }
@@ -750,8 +815,14 @@ class Tweet {
           if (this.children[i].addTweet(tweet, (levels_deep + 1))) {
             this.removeUnknownChild(tweet);
             this.children_sigs_hmap[tweet.tx.transaction.sig] = 1;
-            this.updated_at = tweet.updated_at;
-            if (tweet.created_at > this.updated_at) { this.updated_at = tweet.created_at; }
+	    //
+	    // April 14, 2023 - do not show critical children unless 2nd level
+	    // - since we are adding a child, we do a levels check on OURSELVERS
+	    //
+	    if (levels_deep == 0) {
+              this.updated_at = tweet.updated_at;
+              if (tweet.created_at > this.updated_at) { this.updated_at = tweet.created_at; }
+	    }
             let dt = app.browser.formatDate(this.updated_at);
             if (this.userline == "") { this.userline = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes; this.user.notice = this.userline; }
             return 1;

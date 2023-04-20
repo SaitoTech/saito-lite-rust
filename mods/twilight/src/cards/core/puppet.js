@@ -13,7 +13,7 @@
 
         twilight_self.addMove("resolve\tpuppet");
 
-        this.updateStatus("<div class='status-message' id='status-message'>US place three influence in countries without any influence</div>");
+        this.updateStatusHeader("US place three influence in countries without any influence");
 
         for (var i in this.countries) {
 

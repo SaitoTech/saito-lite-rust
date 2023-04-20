@@ -1,14 +1,16 @@
 const ChatManagerLargeTemplate = (call_type, room_code, mode) => {
   let add_user =
     room_code && mode === "full"
-      ? `<span class="add_users_container">
-  <i class=" add_users fa fa-plus" > </i>
-</span>`
+      ? `<div class="add_users_container">
+           <label>Invite </label>
+           <i class=" add_users fa fa-plus" > </i>
+         </div>`
       : "";
 
   let chat_control =
     mode === "full"
       ? `    <span class="chat_control_container">
+      <label>Chat </label>
   <i class="chat_control fa-regular fa-comments"></i>
 </span>`
       : "";
@@ -29,31 +31,38 @@ const ChatManagerLargeTemplate = (call_type, room_code, mode) => {
         <section class="footer">
 
         <div class="control-panel">
-           <div class="timer"  style="opacity: ${mode === "full" ? 1: 0}" >
+           <div class="timer"  style="opacity: ${mode === "full" ? 1 : 0}" >
         <p class="counter"> 00.00 </p>
 
-        <div class="users-on-call"  style="opacity: ${mode === "full" ? 1: 0}" >
+        <div class="users-on-call"  style="opacity: ${mode === "full" ? 1 : 0}" >
             <div class="image-list">
                 
             </div>
             <p > <span class="users-on-call-count">1</span> on call </p>
         </div>
+        ${add_user}
     </div>
 
    <div class="control-list">
-          ${add_user}
-          ${chat_control}    
+   <span class="display-control">
+   <label>Display</label>
+   <i class="fa-solid fa-display"></i>
+    </span>
+          
+          ${chat_control}  
+          <span class="spacer"></span>  
            <span class="audio-control">
+           <label>Microphone </label>
             <i class=" fa fa-microphone" > </i>
             </span>
-            <span class="video-control"  style=" background-color: ${
-              call_type === "audio" ? "grey" : "white"
-            }">
-            <i  style=" cursor :${call_type === "audio" ? "none" : "pointer"}; color:${
-    call_type === "audio" ? "black" : "green"
-  }" class="  fas fa-video"> </i>
+            <span class="video-control"  style=" background-color: ${call_type === "audio" ? "grey" : "white"
+    }">
+            <label>Camera </label>
+            <i  style=" cursor :${call_type === "audio" ? "none" : "pointer"}; color:${call_type === "audio" ? "black" : "green"
+    }" class="  fas fa-video"> </i>
             </span>
             <span class="disconnect-control">
+            <label>Disconnect </label>
             <i class="disconnect_btn  fas fa-phone"> </i>
             </span>
         </div>

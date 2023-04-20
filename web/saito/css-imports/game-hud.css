@@ -92,13 +92,17 @@ ul li a {
   background-color: whitesmoke;
 }
 
-.status-header > #status-content, .status-message > #status-content{
+.status-header > #status-content, .status-message > #status-content {
   position: absolute;
   width: 94%;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
   line-height: 1em;
+}
+
+.hud-body .status .status-message {
+  padding-top: 10px;
 }
 
 .status-header i {

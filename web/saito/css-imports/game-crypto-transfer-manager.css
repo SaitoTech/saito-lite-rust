@@ -20,6 +20,8 @@
 
 input[type="checkbox"].ignore_checkbox {
   border: 1px solid white;
+  vertical-align: bottom;
+  position: relative;
 }
 
 .game-crypto-transfer-manager-container .stake {
@@ -40,12 +42,6 @@ input[type="checkbox"].ignore_checkbox {
   margin: 0rem;
 }
 
-/*.crypto_transfer_btn:hover {
-    background-color: white;
-    color: black;
-    text-shadow: none;
-}*/
-
 .crypto_transfer_btn {
   background-color: var(--saito-button-background);
   color: var(--saito-white);
@@ -58,7 +54,7 @@ input[type="checkbox"].ignore_checkbox {
   cursor: pointer;
   border-radius: 0.5rem;
   width: fit-content;
-  height: 5rem;
+  height: 7rem;
   line-height: 5rem;
   padding: 0rem;
 }
@@ -128,25 +124,33 @@ input[type="checkbox"].ignore_checkbox {
   overflow: hidden;
 }
 .game-crypto-transfer-manager-container .spinner {
-  margin-bottom: 30px;
+  margin-bottom: 2rem;
+  max-width: 10rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 10rem;
 }
 
 .transfer-details {
-  display: flex;
+  display: block;
   align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 3rem;
 }
-.transfer-details .send_to {
-  display: inline;
+.transfer-details .send_to . transfer-details .send_from {
+  display: block;
   font-size: 1em;
   margin-bottom: 0;
   padding-right: 4px;
 }
 .transfer-details .from_address,
 .transfer-details .to_address {
-  display: inline-block;
+  clear: both;
+  display: block;
   font-weight: bold;
   font-size: 1em;
-  max-width: 120px;
+  max-width: 220px;
   text-overflow: ellipsis;
   overflow: hidden;
   margin-bottom: 0;

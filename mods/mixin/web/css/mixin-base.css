@@ -234,3 +234,9 @@
     top: 50%;
     transform: translateY(-10%);
   }
+
+
+  .mixin-overlay-history {
+    max-height: 80vh;
+    overflow-y: scroll;
+  }

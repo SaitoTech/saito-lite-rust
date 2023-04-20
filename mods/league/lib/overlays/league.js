@@ -18,6 +18,10 @@ class LeagueOverlay {
       this.league = this.mod.returnLeague(league_id);
       this.render();
     });
+     app.connection.on("league-overlay-remove-request", ()=> {
+      this.overlay.remove();
+     });
+
 
   }
 
@@ -82,7 +86,7 @@ class LeagueOverlay {
 
     if (document.querySelector(".contact_admin")) {
       document.querySelector(".contact_admin").onclick = () => {
-        $("#admin_details").removeClass("hidden");
+        document.querySelector("#admin_details").classList.remove("hidden");
       }
     }
 
@@ -91,28 +95,33 @@ class LeagueOverlay {
         item.onclick = (e) => {
           let nav = e.currentTarget.id;
 
-          $(".active-tab").removeClass("active-tab");
-          $(".league-overlay-leaderboard").removeClass("hidden");
-          $(".league-overlay-body-content > .league-overlay-content-box").addClass("hidden");
-          switch (nav){
-          case "home":
-            $(".league-overlay-description").removeClass("hidden");
-            break;
-          case "contact":
-            $("#admin_details").removeClass("hidden");
-            $("#admin_note").removeClass("hidden");
-            break;
-          case "games":
-            $(".league-overlay-league-body-games").removeClass("hidden");
-            break;
-          case "players":
-            $("#admin-widget").removeClass("hidden");
-            $("#admin_details").removeClass("hidden");
-            $(".league-overlay-leaderboard").addClass("hidden");
-            this.loadPlayersUI();
-          }
+          try{
 
-          e.currentTarget.classList.add("active-tab");
+            document.querySelector(".active-tab").classList.remove("active-tab");
+            document.querySelector(".league-overlay-leaderboard").classList.remove("hidden");
+            Array.from(document.querySelectorAll(".league-overlay-body-content > .league-overlay-content-box")).forEach(div => div.classList.add("hidden"));
+
+            switch (nav){
+            case "home":
+              document.querySelector(".league-overlay-description").classList.remove("hidden");
+              break;
+            case "contact":
+              document.querySelector("#admin_details").classList.remove("hidden");
+              document.querySelector("#admin_note").classList.remove("hidden");
+              break;
+            case "games":
+              document.querySelector(".league-overlay-league-body-games").classList.remove("hidden");
+              break;
+            case "players":
+              document.querySelector("#admin-widget").classList.remove("hidden");
+              document.querySelector("#admin_details").classList.remove("hidden");
+              document.querySelector(".league-overlay-leaderboard").classList.remove("hidden");
+              this.loadPlayersUI();
+            }
+          }catch(err){
+            console.error("dom selection in league overlay", err);
+          }
+        e.currentTarget.classList.add("active-tab");
         }
       });
     }
