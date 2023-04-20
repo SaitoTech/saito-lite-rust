@@ -103,3 +103,8 @@ mods/redsquare/web/tweets.js
 mods/redsquare/web/tweets*
 
 extras/shashmap/build
+
+# Ignore vim files:
+*~
+*.swp
+*.swo
