@@ -4399,7 +4399,7 @@ playerTurnHeadlineSelected(card, player) {
             }
           }
 
-          let html = "Pick a country to coup");
+          let html = "Pick a country to coup";
           twilight_self.updateStatusHeader(html, true);
           twilight_self.playerCoupCountry(player, ops, card);
 

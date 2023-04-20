@@ -185,8 +185,29 @@ function reset_persistent {
 function copy_lite_mods_to_bundler_directory {
 
 
+  PMOD=0
+  declare -a ARRAY_OF_MODS
 
-  readarray -t ARRAY_OF_MODS < <( cat ./config/modules.config.js | sed -n '/lite:/,/]/p' | grep '.js' | grep -v // | sed 's/.*\///' | sed 's/.js.*//' )
+  input="./config/modules.config.js"
+  while IFS= read -r line
+  do
+    if [[ $PMOD == 1 ]]; then
+      if ! [[ $line == *"//"* ]]; then
+        #SUBSTRING=$(echo $line| cut -d".*/" -f 2)
+        #SUBSTRING2=$(echo $SUBSTRING| cut -d".js" -f 1)
+        SUBSTRING=$(echo $line | sed 's/.*\///')
+        SUBSTRING2=$(echo $SUBSTRING | sed 's/.js.*//')
+        if ! [[ $SUBSTRING2 == *"]"* ]]; then
+          if ! [[ $SUBSTRING2 == *"}"* ]]; then
+            ARRAY_OF_MODS+=($SUBSTRING2)
+          fi
+        fi
+      fi
+    fi
+    if [[ $line == *"lite"* ]]; then
+      PMOD=1
+    fi
+  done < $input
 
   #printf '%s\n' "${ARRAY_OF_MODS[@]}"
 
