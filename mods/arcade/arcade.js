@@ -957,7 +957,7 @@ class Arcade extends ModTemplate {
     //if (!this.app.BROWSER) {
 
       //And make sure archive saves all the tx's under the game id
-      console.log(txmsg.module+"_"+txmsg.game_id);
+
       //this.app.storage.saveTransactionByKey(txmsg.game_id, tx);
       this.app.storage.saveTransaction(tx, txmsg.module+"_"+txmsg.game_id);
     //}

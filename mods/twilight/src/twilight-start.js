@@ -65,7 +65,7 @@ class Twilight extends GameTemplate {
     
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 2;
-    //this.hud.draggable = 0;
+
     this.hud.mode = 0;  // long-horizontal
     this.hud.enable_mode_change = 1;
     this.hud.card_width = 120;
