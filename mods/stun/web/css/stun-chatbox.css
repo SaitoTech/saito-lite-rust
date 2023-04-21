@@ -472,7 +472,7 @@
 }
 
 .speaker {
-  border: 1px solid var(--saito-primary) !important;
+  border: 3px solid var(--saito-primary) !important;
 }
 
 .control-list span label, .add_users_container label {
