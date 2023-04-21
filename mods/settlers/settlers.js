@@ -164,7 +164,7 @@ class Settlers extends GameTemplate {
     // tweak - make hud draggable by body
     //
     document.querySelector(".hud-header").style.display = "none";
-    this.app.browser.makeDraggable("hud", "hud", true);
+    //this.app.browser.makeDraggable("hud", "hud", true);
       
  
 
