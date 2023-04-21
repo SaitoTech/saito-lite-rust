@@ -371,9 +371,6 @@
     $(".option").off();
     $(".option").on("click", function () {
       let id = $(this).attr("id");
-      /*
-      Player should be able to continue to take actions until they end their turn
-      */
       if (id === "pass") {
         settlers_self.addMove("end_turn\t" + settlers_self.game.player);
         settlers_self.endTurn();
