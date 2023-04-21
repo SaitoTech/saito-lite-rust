@@ -153,7 +153,7 @@ class Realms extends GameTemplate {
 							• Flip one creature.
 							• Chose one creature, it will not flip during its Master's unflip phase.`,
 			lore: "You'll see whatever I choose to show you. Don't get your hopes up.",
-			img: this.card_img_dir + "/sample.png",
+			img: this.card_img_dir + "/025_unguided_spirit.png",
     }
 
 	  deck['b002'] = { 
@@ -164,7 +164,7 @@ class Realms extends GameTemplate {
 			text: `Each player picks a non-domain permanent under their command. 
 				Every other non-domain permanent must return to their Master's hand. After they do, 
 				you may draw a card for each opponent that had more cards in their hand than you do.`,
-			img: this.card_img_dir + "/sample.png",
+			img: this.card_img_dir + "/024_big_wave.png",
 		}
 
 	  deck['b003'] 	= { 
@@ -174,7 +174,7 @@ class Realms extends GameTemplate {
 			cost: ['*','blue'],
 			text: `Send back a creature of your choosing to its Master's hand. If its Soul value is 3 or less, you get Foresight 1. 
 			(Check the first card on your compendium. You may shuffle that card to the bottom of your compendium)`,
-			img: this.card_img_dir + "/sample.png",
+			img: this.card_img_dir + "/026_fake_destiny.png",
 	  }
 
 	  deck['b004'] 	= { 
@@ -189,7 +189,7 @@ class Realms extends GameTemplate {
 			Every time you conjure a spell pick one of the following:
 			• Return a spell outside of your command to its Master's hand.
 			• Return a non-domain permanent to its Master's hand.`	,
-			img: this.card_img_dir + "/sample.png",
+			img: this.card_img_dir + "/027_luminous_being.png",
 	  }
 
 	  deck['b005'] 	= { 
@@ -200,7 +200,7 @@ class Realms extends GameTemplate {
 			text: "Chose a creature, for the rest of the turn it becomes a 5/5 wisdom ghost.",
 			lore: `“A simple trade. Our brains for your brawn.”
 							-Ancestral Hive Mind`,
-			img: this.card_img_dir + "/sample.png",
+			img: this.card_img_dir + "/028_symbiotic_possesion.png",
 	  }
 
 	  deck['b006'] 	= { 
@@ -214,7 +214,7 @@ class Realms extends GameTemplate {
 			text: `Blaze
 						 Flight`,
 			lore: `"With the dragons gone, Lakeshire's hippogriffs eagerly reclaimed their perches atop the valley's mountain peaks."`,
-			img: this.card_img_dir + "/sample.png",
+			img: this.card_img_dir + "/029_lakeshire_hippogriff.png",
 	   }
 
 	  deck['b007'] 	= { 
@@ -227,66 +227,15 @@ class Realms extends GameTemplate {
 			text: `When Deformed Scarecrow is killed, search through your compendium for another Deformed Scarecrow, 
 				put it on your hand after showing it to your opponent and then reshuffle the deck.`,
 			lore: `"Anything, or anybody, can be replaced."`,
-			img: this.card_img_dir + "/sample.png",
+			img: this.card_img_dir + "/030_deformed_scarecrow.png",
 	  }
 
-	  /*  deck['b003'] 	= { 
-		name: "b003",
-		type: "creature"	,
-		color: "blue",
-		cost: ['*','*','*','blue'],
-		power: 3	,
-		toughness: 2,
-		properties: ['flying']	,
-		img: this.card_img_dir + "/sample.png"		,
-	    }
-
-	    deck['b004'] 	= { 
-		name: "b004",
-		type: "instant",
-		color: "blue",
-		cost: ['*','*','blue']	,
-		img: this.card_img_dir + "/sample.png",
-	    }
-	    deck['b005'] 		= { 
-		name: "b005",
-		type: "sorcery",
-		color: "blue",
-		cost: ['*','*','blue']	,
-		img: this.card_img_dir + "/sample.png",
-		onCostAdjustment: function(game_self, player, card) {
-		  game_self.updateLog("UNIMPLEMENTED: card costs 1 less to cast if player controlls creature with flying.");
-		  return 1;
-		}	,
-		onInstant: function(game_self, player, card) {
-		  game_self.updateLog("UNIMPLEMENTED: draw two cards");
-		  return 1;
-		}
-	    } 
-	    deck['island1'] 		= { 
-		name: "Isle",
-		type: "land",
-		color: "blue",
-		img: this.card_img_dir + "/sample.png"
-	    }
-	    deck['island2'] 		= { 
-		name: "Isle",
-		type: "land",
-		color: "blue",
-		img: this.card_img_dir + "/sample.png"
-	    }
-	    deck['island3'] 		= { 
-		name: "Isle",
-		type: "land",
-		color: "blue",
-		img: this.card_img_dir + "/sample.png"
-	    } */
 
     deck['island'] 		= { 
 			name: "Island",
 			type: "land",
 			color: "blue",
-			img: this.card_img_dir + "/032_waterfall_ruin.png"
+			img: this.card_img_dir + "/033_island.png"
     }
 
     deck['wr'] 		= { 
@@ -313,7 +262,7 @@ class Realms extends GameTemplate {
 			toughness: 2,
 			text: `Drain- As Shellring Vindicator joins the fray, bring back a creature with a Soul value of 2 or less from the crypt into the fray. 
 			As long as Shellring Vindicator is fielded, that creature cannot attack or block.`	,
-			img: this.card_img_dir + "/sample.png"
+			img: this.card_img_dir + "/016_shellring_vindicator.png"
     }
 
     deck['w002'] 	= { 
@@ -326,7 +275,7 @@ class Realms extends GameTemplate {
 			properties: ['flying'],
 			text: `Flight - Once a turn, when a creature with 2 or higher Strentgh joins the fray under your command you may draw a card.`,
 			lore: `"Hope descended on lily-white wings, just as the prophet foretold."`,
-			img: this.card_img_dir + "/sample.png",
+			img: this.card_img_dir + "/017_triumphant_hippogriff.png",
     }
 
 	  deck['w003'] 	= { 
@@ -339,7 +288,7 @@ class Realms extends GameTemplate {
 			text: "As the Shellring Guard enters the fray, give a +1/+1 counter to a creature of your choosing.",
 			lore: `"Scuffle breaks out? Blow the whistle. Garbage fire? Blow the whistle. Undead come crawling out from the grave? Blow that godsdamned whistle."
 				-Lieutenant Felk`,
-			img: this.card_img_dir + "/sample.png",	
+			img: this.card_img_dir + "/018_shellring_guard.png",	
     }
 
 		deck['w004'] 	= { 
@@ -351,7 +300,7 @@ class Realms extends GameTemplate {
 			toughness: 2,
 			text: "Lookout - 4 'white': Add a +1/+1 counter to Shellring Official.",
 			lore: `"You'll never wear the crown, heretic. Not on my watch."`,
-			img: this.card_img_dir + "/sample.png",	
+			img: this.card_img_dir + "/019_shellring_official.png",	
     }
 
     deck['w005'] 	= { 
@@ -363,7 +312,7 @@ class Realms extends GameTemplate {
 			toughness: 3,
 			text: "When Mastodon Rider joins the fray or is killed, chose a creature or vessel under your command to give a +1/+1 counter to.",
 			lore: `"Find me a bigger horse." -Pickler the Troll King`,
-			img: this.card_img_dir + "/sample.png",
+			img: this.card_img_dir + "/020_mastodon_rider.png",
     }
 
     deck['w006'] 	= { 
@@ -376,7 +325,7 @@ class Realms extends GameTemplate {
 			properties: ['flying'],
 			text: "Flight - When Haven Judicator joins the fray, you recover 1 life and may draw a card.",
 			lore: `"To serve the righteous, and cleanse the rest." -Judicator's Oath`,
-			img: this.card_img_dir + "/sample.png",
+			img: this.card_img_dir + "/021_haven_judicator.png",
     }
 
    deck['w007'] 	= { 
@@ -386,7 +335,7 @@ class Realms extends GameTemplate {
 			cost: ['*','*','*','white'],
 			text: "Choose an attacking creature and destroy it.",
 			lore: `"It would take more than a few sips of water to quench Nero's thirst for revenge."`,
-			img: this.card_img_dir + "/sample.png",
+			img: this.card_img_dir + "/022_burned_walker.png",
     }
 
    deck['w008'] 	= { 
@@ -399,47 +348,24 @@ class Realms extends GameTemplate {
 			properties: ['flip'],
 			text: "Order, Flip: Flip a creature.",
 			lore: `"You'd offer me your soul? But there's hardly any left." -Fanpetal, faerie courtesan`,
-			img: this.card_img_dir + "/sample.png",
+			img: this.card_img_dir + "/023_trickster_spirit.png",
     }
-
-  /*  deck['w004'] 	= { 
-	name: "w004", 
-	type: "creature",
-	color: "white",
-	cost: ['*','*','white']	,
-	power: 2,
-	toughness: 2,
-	properties: ['flying']	,
-	img: this.card_img_dir + "/sample.png",
-    } */
 
    
     deck['Steppe'] 		= { 
 			name: "Steppe",
 			type: "land",
 			color: "white",
-			img: this.card_img_dir + "/sample.png",
+			img: this.card_img_dir + "/035_steppe.png",
     }
 
     deck['Waterfall Ruin'] 		= { 
 			name: "Waterfall Ruin",
 			type: "land",
 			color: ["white", "blue"],
-			img: this.card_img_dir + "/sample.png",
+			img: this.card_img_dir + "/032_waterfall_ruin.png",
     }
 
-  /*  deck['plains3'] 		= { 
-	name: "Grasslands",
-	type: "land",
-	color: "white",
-	img: this.card_img_dir + "/sample.png"
-    }
-    deck['plains4'] 		= { 
-	name: "Grasslands",
-	type: "land",
-	color: "white",
-	img: this.card_img_dir + "/sample.png"
- */
     return deck;
 
   }
@@ -1116,7 +1042,7 @@ deck['c001'] 	= {
 	break;
 
       default:
-	console.log("unsupported card type");
+	console.log("unsupported card type: " + c.type);
     }
   }
 
