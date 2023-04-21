@@ -628,8 +628,8 @@ class Chat extends ModTemplate {
                         ts = txmsg.timestamp;
                     }
                 }
-                msg += `<div data-id="${group_id}" class="saito-userline-reply">reply <i class="fa-solid fa-reply"></i></div>`;
-                html += `${SaitoUserTemplate({ app: this.app, publickey: sender, notice: msg, fourthelem: `<div class="saito-chat-line-controls">` + this.app.browser.returnTime(ts) + `</div>` })}`;
+                const replyButton = `<div data-id="${group_id}" class="saito-userline-reply">reply <i class="fa-solid fa-reply"></i></div>`;
+                html += `${SaitoUserTemplate({ app: this.app, publickey: sender, notice: msg, fourthelem: `<div class="saito-chat-line-controls"><span class="saito-chat-line-timestamp">` + this.app.browser.returnTime(ts) + `</span>${replyButton}</div>` })}`;
             }
         }
 
