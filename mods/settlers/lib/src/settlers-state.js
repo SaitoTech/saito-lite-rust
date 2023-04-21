@@ -475,6 +475,7 @@ class SettlersState {
         // and render to screen
         //
         this.scoreboard.render();
+        this.scoreboard.lock();
 
     }
 

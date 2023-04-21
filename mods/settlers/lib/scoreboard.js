@@ -19,7 +19,6 @@ class SettlersScoreboard {
     }
 
     this.attachEvents();
-
   }
 
   attachEvents() {
@@ -32,6 +31,17 @@ class SettlersScoreboard {
       }
     }
 
+  }
+
+  lock(){
+    try {
+      document.querySelector(".scoreboard").classList.add("scoreboard-lock");
+      setTimeout(function() {
+        document.querySelector(".scoreboard").classList.remove("scoreboard-lock");
+      }, 1500);
+    } catch(err) {
+      console.log(err);
+    }
   }
 
 }
