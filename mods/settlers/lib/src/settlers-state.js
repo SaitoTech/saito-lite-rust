@@ -462,6 +462,15 @@ class SettlersState {
             //Count (played) Victory Points
             score += this.game.state.players[i].vpc;
 
+
+            //
+            // and render to screen
+            //
+            if (this.game.state.players[i].vp < score) {
+                this.scoreboard.render();
+                this.scoreboard.lock();
+            }
+
             //Save Score
             this.game.state.players[i].vp = score;
 
@@ -470,12 +479,6 @@ class SettlersState {
                 this.game.queue.push(`winner\t${i}`);
             }
         }
-
-        //
-        // and render to screen
-        //
-        this.scoreboard.render();
-        this.scoreboard.lock();
 
     }
 
