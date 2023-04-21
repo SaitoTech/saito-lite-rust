@@ -80,6 +80,7 @@ class Jaipur extends GameTemplate {
     this.playerbox.addClassAll("poker-seat-",true);
     
     this.hud.card_width = 120;
+    this.hud.draggable_whole = false;
     this.hud.render();
 
 }

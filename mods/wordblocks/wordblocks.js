@@ -85,6 +85,7 @@ class Wordblocks extends GameTemplate {
     this.menu.render();
 
     this.hud.auto_sizing = 0; //turn off default sizing
+    this.hud.draggable_whole = false;
     this.hud.render();
 
     this.log.render();

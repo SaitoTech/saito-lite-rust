@@ -267,6 +267,7 @@ class Pandemic extends GameTemplate {
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
     this.cardbox.addCardType("handy-help", "", function(){});
     
+    this.hud.draggable_whole = false;
     this.hud.render();
 
     if (this.game.players_info && this.game.player > 0){
