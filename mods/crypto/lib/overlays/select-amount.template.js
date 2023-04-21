@@ -7,7 +7,7 @@ module.exports = (app, mod) => {
 
       <h2 class="auth_title">Amount to Stake?</h2>
       
-      <input id="amount_to_stake_input" class="stake amount_to_stake" value="0.0" />
+      <input autocomplete="off" id="amount_to_stake_input" class="stake amount_to_stake" value="0.0" />
       
       <div class="crypto-stake-confirm-container">
         <input type="checkbox" checked name="crypto-stake-confirm-input" id="crypto-stake-confirm-input">

@@ -2,12 +2,13 @@
   displayDebaters() {
 
     let html = `<div class="personage_overlay" id="personage_overlay">`;
+
     for (let i = 0; i < this.game.state.debaters.length; i++) {
-      html += `	<div class="personage_tile personage_tile${i}" data-id="${this.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${this.game.state.debaters[i].img}')"></div>`;
+      html += `<div class="personage_tile personage_tile${i}" data-id="${this.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${this.game.state.debaters[i].img}')"></div>`;
     }
     html += `</div>`;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       let tile_f = "/his/img/tiles/debaters/" + this.game.state.debaters[i].img;
@@ -34,7 +35,7 @@
     }
     html += `</div>`;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     for (let i = 0; i < this.game.state.explorers.length; i++) {
       let tile_f = "/his/img/tiles/explorers/" + this.game.state.explorers[i].img;
@@ -62,7 +63,7 @@
     }
     html += `</div>`;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     for (let i = 0; i < this.game.state.conquistadors.length; i++) {
       let tile_f = "/his/img/tiles/conquistadors/" + this.game.state.conquistadors[i].img;
@@ -131,7 +132,7 @@
       </div>
     `;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     //
     // list all debaters

@@ -769,7 +769,7 @@ class SettlersGameloop {
 
         if (!amIPlaying) {
           this.updateStatus(
-            `Waiting for ${discardString} to discard half their hand.`
+            `waiting for ${discardString} to discard`
           );
         }
 
@@ -790,7 +790,7 @@ class SettlersGameloop {
           this.playBandit();
         } else {
           this.updateStatus(
-            `<div class="tbd">Waiting for ${this.game.playerNames[player - 1]} to move the ${this.skin.b.name}...</div>`
+            `<div class="tbd">${this.game.playerNames[player - 1]} moving the ${this.skin.b.name}...</div>`
           );
         }
         return 0;

@@ -1,11 +1,11 @@
 
-.theses-overlay {
+.language-zone-overlay {
     height: 90vh;
     width: 90vw;
     overflow: hidden;
 }
 
-.theses-overlay .status {
+.language-zone-overlay .status {
     position: relative;
     height: 4rem;
     min-height: 0;
@@ -24,38 +24,18 @@
     padding-right: 0.5rem;
 }
 
-.theses-overlay .status .status-header {
+.language-zone-overlay .status .status-header {
    box-shadow: none;
    margin-bottom: 0px;
-}
-
-.theses-overlay .status .message {
     padding: 1rem;
     margin-bottom: 0px;
     box-shadow: none;
 }
 
-.theses-overlay .status ul {
+.language-zone-overlay .status .status-text-menu {
+    background-color: whitesmoke;
     margin-top: 1rem;
-    background-color: whitesmoke;
     border-radius: 0.5rem;
 }
-
-.theses-overlay .status ul .option {
-    padding: 15px;
-}
-
-.theses-overlay .gameboard {
-    position: relative;
-    transform: translate(-50%, -18%) scaleX(0.7) scaleY(0.7);
-    left: 30%;
-}
-
-.theses-overlay .status .status-text-menu ul .textchoice {
-    background-color: whitesmoke;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-}
-
 
 

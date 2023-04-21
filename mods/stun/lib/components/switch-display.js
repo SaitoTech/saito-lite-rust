@@ -17,6 +17,10 @@ class SwitchDisplay {
   }
 
   attachEvents() {
+    document.querySelector("#switch-to-focus").onclick = async (e) => {
+      this.chatManager.switchDisplayToFocus();
+      this.saitoOverlay.hide();
+    };
     document.querySelector("#switch-to-gallery").onclick = async (e) => {
       this.chatManager.switchDisplayToGallery();
       this.saitoOverlay.hide();
