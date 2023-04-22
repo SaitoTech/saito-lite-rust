@@ -1,30 +1,6 @@
 
   displayDebaters() {
-
-    let html = `<div class="personage_overlay" id="personage_overlay">`;
-
-    for (let i = 0; i < this.game.state.debaters.length; i++) {
-      html += `<div class="personage_tile personage_tile${i}" data-id="${this.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${this.game.state.debaters[i].img}')"></div>`;
-    }
-    html += `</div>`;
-
-    this.overlay.showOverlay(html);
-
-    for (let i = 0; i < this.game.state.debaters.length; i++) {
-      let tile_f = "/his/img/tiles/debaters/" + this.game.state.debaters[i].img;
-      let tile_b = tile_f.replace('.svg', '_back.svg');
-      if (this.game.state.debaters[i].committed == 1) {
-	let x = tile_f;
-	tile_f = tile_b;
-	tile_b = x;
-      }
-      let divsq = `.personage_tile${i}`;
-      $(divsq).mouseover(function() {
-	$(this).css('background-image', `url('${tile_b}')`);
-      }).mouseout(function() {
-	$(this).css('background-image', `url('${tile_f}')`);
-      });
-    }
+    this.debaters_overlay.render();
   }
 
   displayExplorers() {

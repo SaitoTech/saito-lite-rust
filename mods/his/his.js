@@ -6,6 +6,7 @@ const ReligiousOverlay = require('./lib/ui/overlays/religious');
 const ReformationOverlay = require('./lib/ui/overlays/reformation');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
+const DebatersOverlay = require('./lib/ui/overlays/debaters');
 const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
 const JSON = require('json-bigint');
 
@@ -42,6 +43,7 @@ class HereIStand extends GameTemplate {
     this.theses_overlay = new ThesesOverlay(this.app, this);  // 95 theses
     this.reformation_overlay = new ReformationOverlay(this.app, this);  // reformations and counter-reformations
     this.language_zone_overlay = new LanguageZoneOverlay(this.app, this);  // language zone selection
+    this.debaters_overlay = new DebatersOverlay(this.app, this);  // language zone selection
 
     //
     // this sets the ratio used for determining
@@ -15908,6 +15910,8 @@ this.updateLog("Catholics: " + c_rolls);
     this.game.state.tmp_papacy_may_specify_debater = 0;
     this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
 
+    this.deactivateDebaters();
+
     for (let s in this.game.spaces) {
       if (this.game.spaces[s].besieged == 2) {
 	this.game.spaces[s].besieged = 1;
@@ -18920,6 +18924,7 @@ return;
     if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
     if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.active == null)		{ obj.active = 0; } // if bonus is active for debaters
     if (obj.besieged == null)           { obj.besieged = false; }
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.loaned == null)             { obj.loaned = false; }
@@ -19232,11 +19237,40 @@ return;
     return 0;
   }
 
-  commitDebater(faction, debater) {
+  deactivateDebaters() {
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      this.game.state.debaters[i].active = 0;
+    }
+  }
+
+  canPlayerCommitDebater(faction, debater) {
+    let already_committed = false;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].key == debater) {
+
+	let is_mine = false;
+
+	if (this.game.state.debaters[i].owner === "papacy" && faction === "papacy") {
+	  is_mine = true;
+	}
+	if (this.game.state.debaters[i].owner !== "papacy" && faction === "protestant") {
+	  is_mine = true;
+	}
+
+	if (is_mine == true) {
+	  if (this.game.state.debaters[i].active == 1) { already_comitted = true; }
+        }
+      }
+    }
+    return !already_committed;
+  }
+
+  commitDebater(faction, debater, activate=1) {
     let his_self = this;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {
 	this.game.state.debaters[i].committed = 1;
+	this.game.state.debaters[i].active = activate; // if the bonus is active
 	this.debaters[debater].onCommitted(his_self, this.game.state.debaters[i].owner);
       }
     }
@@ -19266,31 +19300,7 @@ return;
 
 
   displayDebaters() {
-
-    let html = `<div class="personage_overlay" id="personage_overlay">`;
-
-    for (let i = 0; i < this.game.state.debaters.length; i++) {
-      html += `<div class="personage_tile personage_tile${i}" data-id="${this.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${this.game.state.debaters[i].img}')"></div>`;
-    }
-    html += `</div>`;
-
-    this.overlay.showOverlay(html);
-
-    for (let i = 0; i < this.game.state.debaters.length; i++) {
-      let tile_f = "/his/img/tiles/debaters/" + this.game.state.debaters[i].img;
-      let tile_b = tile_f.replace('.svg', '_back.svg');
-      if (this.game.state.debaters[i].committed == 1) {
-	let x = tile_f;
-	tile_f = tile_b;
-	tile_b = x;
-      }
-      let divsq = `.personage_tile${i}`;
-      $(divsq).mouseover(function() {
-	$(this).css('background-image', `url('${tile_b}')`);
-      }).mouseout(function() {
-	$(this).css('background-image', `url('${tile_f}')`);
-      });
-    }
+    this.debaters_overlay.render();
   }
 
   displayExplorers() {

@@ -1,0 +1,17 @@
+
+.debaters-tile {
+  height: 20rem;
+  width: 20rem;
+  background-size: cover;
+}
+
+.debaters-overlay {
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(20rem, 1fr) );
+    align-content: start;
+    min-width: 90vw;
+    max-width: 91vw;
+    min-height: 80vh;
+    max-height: 90vh;
+}
+

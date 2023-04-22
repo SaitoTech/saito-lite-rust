@@ -221,7 +221,9 @@ img {
   top: 15px;
   left: 20px;
 }
-
+.debater-commited {
+  opacity: 0.4;
+}
 .hextile {
   position: absolute;
   z-index: 10;

@@ -183,6 +183,8 @@
     this.game.state.tmp_papacy_may_specify_debater = 0;
     this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
 
+    this.deactivateDebaters();
+
     for (let s in this.game.spaces) {
       if (this.game.spaces[s].besieged == 2) {
 	this.game.spaces[s].besieged = 1;
