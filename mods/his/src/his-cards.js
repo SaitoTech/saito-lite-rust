@@ -1229,7 +1229,7 @@ alert("Not Implemented");
 
 	let players_to_go = [];
 	for (let i = 1; i < his_self.game.players.length; i++) {
-	  if (i != his_self.returnPlayerOfFaction("protestants")) {
+	  if (i != his_self.returnPlayerOfFaction("protestant")) {
 	    players_to_go.push(i);
 	  }
 	}

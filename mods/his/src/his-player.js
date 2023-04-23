@@ -1907,6 +1907,8 @@ console.log("units length: " + space.units[defender].length);
   }
 
 
+
+
   canPlayerNavalTransport(his_self, player, faction, ops) {
     if (ops < 2) { return 0; }
     let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
@@ -2732,7 +2734,7 @@ return;
   }
   async playerBurnBooks(his_self, player, faction) {
 
-    let msg = "Select Language Zone for Reformation Attempts:";
+    let msg = "Select Language Zone for Counter-Reformation Attempts:";
     let html = '<ul>';
         html += '<li class="option german" style="" id="german">German</li>';
         html += '<li class="option english" style="" id="english">English</li>';

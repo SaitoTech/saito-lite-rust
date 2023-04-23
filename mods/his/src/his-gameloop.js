@@ -1436,7 +1436,7 @@ console.log(JSON.stringify(mv));
 	    for (let i = papacy_hits; i < protestant_hits; i++) {
 	      this.game.queue.push("select_for_protestant_conversion\tprotestant\tgerman");
 	    }
-  	    this.game.queue.push("STATUS\t<div class='message'>Protestants selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_protestants));
+  	    this.game.queue.push("STATUS\t<div class='message'>Protestants selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_protestant));
   	    this.game.queue.push("show_overlay\ttheses");
   	    this.game.queue.push("ACKNOWLEDGE\tProtestants win Diet of Worms");
 
@@ -1479,9 +1479,17 @@ console.log(JSON.stringify(mv));
 	    return 1;
  	  }
 
+	  //
+	  // return 1
+	  //
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+	    let ack = 1;
+	    for (let i = 0; i < this.game.confirms_needed.length; i++) {
+	      if (this.game.confirms_needed[i] == 1) { ack = 0; }
+	    }
+	    if (ack == 1) { this.game.queue.splice(qe, 1);}
 	    this.updateStatus("acknowledged");
-	    return 0;
+	    return ack;
 	  }
 
 	  let msg = mv[1];
@@ -1527,6 +1535,8 @@ console.log(JSON.stringify(mv));
 
             let action2 = $(this).attr("id");
 
+alert("H: " + action2);
+
 	    //
 	    // this ensures we clear regardless of choice
 	    //
@@ -1536,8 +1546,11 @@ console.log(JSON.stringify(mv));
             // events in play
             //
             if (attach_menu_events == 1) {
+alert("H2: " + action2);
               for (let i = 0; i < menu_triggers.length; i++) {
+alert("H3: " + action2 + " -- " + menu_triggers[i]);
                 if (action2 == menu_triggers[i]) {
+alert("H4: " + action2);
                   $(this).remove();
                   z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
                   return;
