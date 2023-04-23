@@ -4793,22 +4793,23 @@ alert("ASSAULT UNIMPLEMENTED");
 	  c_rolls += c_neighbours;
 	  c_rolls += c_bonus;
 
-this.updateLog("Total Rolls: ");
-this.updateLog("Protestants: " + p_rolls);
+	  let pdice = [];
+	  let cdice = [];
 
 	  for (let i = 0; i < p_rolls; i++) {
 	    let x = this.rollDice(6);
-	    this.updateLog("Protestants roll: " + x, 1);
 	    if (x > p_high) { p_high = x; }
+	    pdice.push(x);
 	  }
-
-this.updateLog("Catholics: " + c_rolls);
 
 	  for (let i = 0; i < c_rolls; i++) {
 	    let x = this.rollDice(6);
-	    this.updateLog("Catholics roll: " + x, 1);
 	    if (x > c_high) { c_high = x; }
+	    cdice.push(x);
 	  }
+
+this.updateLog("Protestants: " + JSON.stringify(pdice));
+this.updateLog("Catholics: " + JSON.stringify(cdice));
 
 	  //
 	  // do protestants win?
@@ -4816,6 +4817,10 @@ this.updateLog("Catholics: " + c_rolls);
 	  if (p_high > c_high) { protestants_win = 1; }
 	  if (p_high == c_high && ties_resolve === "protestant") { protestants_win = 1; }
 
+	  //
+	  //
+	  //
+	  this.reformation_overlay.render();
 
 	  //
 	  // handle victory
@@ -4909,28 +4914,37 @@ console.log("FIX: not yet handling catholic land units");
 	  if (c_rolls == 0) { c_rolls = 1; }
 	  if (p_rolls == 0) { p_rolls = 1; }
 
-this.updateLog("Total Rolls: ");
-this.updateLog("Protestants: " + p_rolls);
+	  let pdice = [];
+	  let cdice = [];
 
 	  for (let i = 0; i < p_rolls; i++) {
 	    let x = this.rollDice(6);
-	    this.updateLog("Protestants roll: " + x, 1);
+	    pdice.push(x);
 	    if (x > p_high) { p_high = x; }
 	  }
 
-this.updateLog("Catholics: " + c_rolls);
-
 	  for (let i = 0; i < c_rolls; i++) {
 	    let x = this.rollDice(6);
-	    this.updateLog("Catholics roll: " + x, 1);
+	    cdice.push(x);
 	    if (x > c_high) { c_high = x; }
 	  }
+
+this.updateLog("Total Rolls: ");
+this.updateLog("Protestants: " + JSON.stringify(pdice));
+this.updateLog("Catholics: " + JSON.stringify(cdice));
+
 
 	  //
 	  // do protestants win?
 	  //
 	  if (p_high < c_high) { catholics_win = 1; }
 	  if (p_high == c_high && ties_resolve === "catholics") { catholics_win = 1; }
+
+
+	  //
+	  //
+	  //
+	  this.reformation_overlay.render();
 
 
 	  //

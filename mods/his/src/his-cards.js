@@ -1321,11 +1321,11 @@ alert("Not Implemented");
 
 	    );
 	    } else {
-	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
+	      his_self.addMove("counter_or_acknowledge\tCatholic Counter-Reformation - no valid targets");
 	      his_self.endTurn();
 	    }
 	  } else {
-	    his_self.updateStatus("Protestant Reformation in Process");
+	    his_self.updateStatus("Catholic Counter-Reformation in Process");
 	  }
 
           return 0;

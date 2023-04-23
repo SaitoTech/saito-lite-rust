@@ -1,4 +1,9 @@
-  
+
+.reformation-overlay {
+	background-image: url(/his/img/backgrounds/reformation.jpg);
+        background-size: contain;
+}
+
 .reformation-overlay .title {
 	color: white;
 	font-size: 2.5rem;
@@ -18,15 +23,21 @@
 	justify-content: space-evenly;
 }
 
-.protestant , .papacy {
+.reformation-overlay .protestant , .reformation-overlay .papacy {
 	display: grid;
 	justify-items: right;
 	background: #0005;
 	border: 1px solid black;
         height: min-content;
+        margin-left: unset;
+        margin-right: unset;
+        margin-top: unset;
+        width: unset;
+        color: whitesmoke;
+        letter-spacing: 0.05rem;
 }
 
-.protestant .title , .papacy .title {
+.reformation-overlay .protestant .title , .reformation-overlay .papacy .title {
 	background: #0005;
 	font-size: 25;
 	text-align: center;
