@@ -52,7 +52,7 @@ class ChatManager {
     //
     // handle requests to re-render chat popups
     //
-    app.connection.on("chat-popup-render-request", (group = null) => {
+    app.connection.on("chat-popup-render-request", (group = null, target_selector = null) => {
 
       //
       // mobile devices should not force open chat for us
@@ -73,7 +73,7 @@ class ChatManager {
             this.popups[group.id] = new ChatPopup(this.app, this.mod, "");
             this.popups[group.id].group = group;
           }
-          this.popups[group.id].render();
+          this.popups[group.id].render(target_selector);
         }
       }
     });

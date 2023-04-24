@@ -29,7 +29,7 @@ console.log("removing: " + popup_qs);
 
   }
 
-  render() {
+  render(target_selector="") {
 
     //
     // exit if group unset
@@ -101,7 +101,7 @@ console.log("removing: " + popup_qs);
       obj.style.width = this.width + "px";
       obj.style.height = this.height + "px";
     } else {
-      this.app.browser.addElementToDom(ChatPopupTemplate(this.app, this.mod, this.group));
+      this.app.browser.addElementToSelectorOrDom(ChatPopupTemplate(this.app, this.mod, this.group), target_selector);
     }
 
     //
