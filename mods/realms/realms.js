@@ -15,6 +15,8 @@ class Realms extends GameTemplate {
 		this.categories 	 = "Games Cardgame Strategy Deckbuilding";
 		this.card_img_dir = "/realms/img/cards";
 
+		this.card_height_ratio = 1.39;
+
 		// graphics
 		this.interface = 1;
 
@@ -52,6 +54,9 @@ class Realms extends GameTemplate {
 		this.cardbox.addCardType("card", "select", this.cardbox_callback);
 
 		this.hud.render(app, this);
+
+
+		this.buildSampleBoard();
 	}
 
 	initializeGame(game_id) {
@@ -65,8 +70,8 @@ class Realms extends GameTemplate {
 		//
 		// import player cards
 		//
-		let deck1 = this.returnWhiteDeck();
-		let deck2 = this.returnBlueDeck();
+		let deck1 = this.returnWhitishDeck();
+		let deck2 = this.returnBluishDeck();
 
 		//
 		// initialize queue on new games
@@ -98,6 +103,10 @@ class Realms extends GameTemplate {
 			this.game.queue.push("DECK\t2\t" + JSON.stringify(deck2));
 		}
 
+		if (!this.game.board){
+			this.game.board = {};
+		}
+
 		//
 		// dynamic import
 		//
@@ -107,30 +116,27 @@ class Realms extends GameTemplate {
 		// if cards implement special abilities, they must be individually programmed to do so
 		// when provided.
 		//
-		this.game.cards = {};
-		for (let key in deck1) {
-			this.importCard(key, deck1[key], 1);
-		}
-		for (let key in deck2) {
-			this.importCard(key, deck2[key], 2);
+		let deck = this.returnCards();
+		this.card_library = {};
+		for (let key in deck) {
+			this.importCard(key, deck[key]);
 		}
 
 		try {
 			this.displayBoard();
 			this.updateStatusAndListCards(
-				"Waiting for Opponent Move",
+				"Initializing game",
 				this.game.deck[this.game.player - 1].hand
 			);
 		} catch (err) {}
 	}
 
 
-	importCard(key, card, player) {
+	importCard(key, card) {
 		let game_self = this;
 
 		let c = {
 			key,
-			player,
 			name: "Unnamed",
 			color: "*",
 			cost: [],
@@ -138,7 +144,6 @@ class Realms extends GameTemplate {
 			toughness: 0,
 			text: "This card has not provided text",
 			img: "/img/cards/sample.png",
-			tapped: 0,
 		};
 
 		c = Object.assign(c, card);
@@ -162,11 +167,7 @@ class Realms extends GameTemplate {
 			};
 		}
 
-		c.returnElement = function (card) {
-			return game_self.returnElement(game_self, player, c.key);
-		};
-
-		game_self.game.cards[c.key] = c;
+		game_self.card_library[c.key] = c;
 	}
 
 	handleGameLoop() {
@@ -253,75 +254,22 @@ class Realms extends GameTemplate {
 			state.hands[i].creatures = [];
 			state.hands[i].enchantments = [];
 			state.hands[i].graveyard = [];
-			state.hands[i].exhiled = [];
+			state.hands[i].exiled = [];
 		}
 
 		return state;
 	}
 
-	returnEventObjects() {
-		let z = [];
 
-		//
-		// cards on the table
-		//
-
-		//
-		// playable cards in my hand
-		//
-
-		return z;
-	}
-
-	addEvents(obj) {
-		///////////////////////
-		// game state events //
-		///////////////////////
-		//
-		// 1 = fall through, 0 = halt game
-		//
-		if (obj.canEvent == null) {
-			obj.canEvent = function (his_self, faction) {
-				return 0;
-			}; // 0 means cannot event
-		}
-		if (obj.onEvent == null) {
-			obj.onEvent = function (his_self, player) {
-				return 1;
-			};
-		}
-		if (obj.handleGameLoop == null) {
-			obj.handleGameLoop = function (his_self, qe, mv) {
-				return 1;
-			};
-		}
-
-		//
-		// functions for convenience
-		//
-		//if (obj.menuOptionTriggers == null) {
-		//  obj.menuOptionTriggers = function(his_self, stage, player, faction) { return 0; }
-		//}
-		//if (obj.menuOption == null) {
-		//  obj.menuOption = function(his_self, stage, player, faction) { return 0; }
-		//}
-		//if (obj.menuOptionActivated == null) {
-		//  obj.menuOptionActivated = function(his_self, stage, player, faction) { return 0; }
-		//}
-
-		return obj;
-	}
-
+	
 	nonPlayerTurn() {
 		if (this.browser_active == 0) {
 			return;
 		}
 
-		this.updateStatusAndListCards(
-			`Opponent Turn`,
-			this.game.deck[this.game.player - 1].hand,
-			function () {}
-		);
+		this.updateStatusAndListCards(`Opponent Turn`, this.game.deck[this.game.player - 1].hand);
+		this.attachCardboxEvents();
+
 	}
 
 	playerTurn() {
@@ -491,7 +439,7 @@ class Realms extends GameTemplate {
 	}
 
 	playerPlayCardFromHand(card) {
-		let c = this.game.cards[card];
+		let c = this.card_library[card];
 
 		switch (c.type) {
 			case "land":
@@ -542,18 +490,22 @@ class Realms extends GameTemplate {
 		let game_self = this;
 	}
 
+
+	buildSampleBoard(){
+
+	}
+
+
 	//
 	// this controls the display of the card
 	//
-	returnElement(game_self, player, cardkey) {
-		let card = game_self.game.cards[cardkey];
+	cardToHTML(cardkey) {
+		let card = this.card_library[cardkey];
 		let tapped = "";
-		if (card.tapped == 1) {
-			tapped = " tapped";
-		}
+		let player = "";
 
 		return `
-      <div class="card ${tapped}" id="p${player}-${cardkey}">
+      <div class="card showcard ${tapped}" id="p${player}-${cardkey}" data-id="${cardkey}">
         <img src="${card.img}" class="card-image" />
       </div>
     `;
