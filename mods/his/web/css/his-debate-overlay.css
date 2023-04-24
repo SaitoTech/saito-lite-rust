@@ -48,6 +48,7 @@
     width: 240px;
     height: 140px;
     display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(65px, 1fr) );
 }
 .calvinist_debaters {
     left: 305px;
@@ -56,6 +57,7 @@
     width: 240px;
     height: 140px;
     display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(65px, 1fr) );
 }
 .anglican_debaters {
     left: 542px;
@@ -64,6 +66,7 @@
     width: 240px;
     height: 140px;
     display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(65px, 1fr) );
 }
 .papal_debaters {
     left: 195px;
@@ -73,5 +76,6 @@
     width: 490px;
     height: 140px;
     display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(65px, 1fr) );
 }
 

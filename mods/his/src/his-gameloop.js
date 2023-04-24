@@ -3841,6 +3841,8 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 	    }
 	  }
 
+	  his_self.faction_overlay.render("protestant");
+
 	  return 1;
         }
 
@@ -3867,8 +3869,9 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 	    this.updateLog("Papacy progresses with construction of St. Peter's Basilica");
 	    this.game.state.saint_peters_cathedral['state'] += 1;
 	    this.game.state.saint_peters_cathedral['vp'] += 1;
-	    this.game.state.saint_peters_cathedral['state'] = 0;
 	  }
+
+	  his_self.faction_overlay.render("papacy");
 
 	  return 1;
 

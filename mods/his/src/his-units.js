@@ -335,12 +335,12 @@
 
   canPlayerCommitDebater(faction, debater) {
 
-    if (faction !== "protestants" && faction !== "papacy") { return false; }
+    if (faction !== "protestant" && faction !== "papacy") { return false; }
 
     let already_committed = false;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "papacy" && faction === "papacy") { return false; }
-      if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "protestants" && faction !== "papacy") { return false; }
+      if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "protestant" && faction !== "papacy") { return false; }
       if (this.game.state.debaters[i].key == debater) {
 
 	let is_mine = false;

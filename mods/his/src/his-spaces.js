@@ -894,7 +894,6 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 
   }
 
-HACK
   returnNumberOfElectoratesControlledByCatholics() {
     let controlled_keys = 0;
     if (this.game.spaces['augsburg'].religion === "catholic") { controlled_keys++; }

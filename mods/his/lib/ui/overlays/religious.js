@@ -12,6 +12,7 @@ class ReligiousOverlay {
     
   render() {
 
+    let his_self = this.mod;
     this.visible = true;
 
     //
@@ -24,8 +25,8 @@ class ReligiousOverlay {
     //
     let num_protestant_spaces = 0;
     let rcc = this.returnReligiousConflictChart();
-    for (let key in this.game.spaces) {
-      if (this.game.spaces[key].religion === "protestant") {
+    for (let key in his_self.game.spaces) {
+      if (his_self.game.spaces[key].religion === "protestant") {
         num_protestant_spaces++;
       } 
     } 
@@ -35,20 +36,21 @@ class ReligiousOverlay {
     //
     // list all debaters
     //
-    for (let i = 0; i < this.game.state.debaters.length; i++) {
-      let d = this.game.state.debaters[i];
-      let dtile = `<img class="debater_tile" id="${i}" src="/his/img/tiles/debaters/${d.img}" />`;
+    for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+      let d = his_self.game.state.debaters[i];
+console.log(JSON.stringify(d));
+      let dtile = `<img class="rdebater_tile" id="${i}" src="/his/img/tiles/debaters/${d.img}" />`;
       if (d.owner === "papacy") {
-        this.app.browser.addElementToSelector(dtile, '.papal_debaters');
+        his_self.app.browser.addElementToSelector(dtile, '.papal_debaters');
       }
       if (d.owner === "england") {
-        this.app.browser.addElementToSelector(dtile, '.anglican_debaters');
+        his_self.app.browser.addElementToSelector(dtile, '.anglican_debaters');
       }
       if (d.owner === "hapsburg") {
-        this.app.browser.addElementToSelector(dtile, '.calvinist_debaters');
+        his_self.app.browser.addElementToSelector(dtile, '.calvinist_debaters');
       }
       if (d.owner === "protestant") {
-        this.app.browser.addElementToSelector(dtile, '.protestant_debaters');
+        his_self.app.browser.addElementToSelector(dtile, '.protestant_debaters');
       }
     }
 

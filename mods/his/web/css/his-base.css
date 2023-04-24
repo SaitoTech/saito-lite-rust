@@ -215,12 +215,6 @@ img {
   top: 10px;
   left: 0px;
 }
-.debater_tile {
-  z-index: 30;
-  position: absolute;
-  top: 15px;
-  left: 20px;
-}
 .debater-commited {
   opacity: 0.4;
 }

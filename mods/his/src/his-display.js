@@ -950,12 +950,7 @@
 
   displayVictoryTrack() {
 
-console.log("into calculate victory points...");
-
     let factions_and_scores = this.calculateVictoryPoints();
-
-console.log("F&S: ");
-console.log(JSON.stringify(factions_and_scores));
 
     let x = this.returnVictoryPointTrack();
 

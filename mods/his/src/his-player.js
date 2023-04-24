@@ -1910,6 +1910,10 @@ console.log("units length: " + space.units[defender].length);
 
 
   canPlayerNavalTransport(his_self, player, faction, ops) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     if (ops < 2) { return 0; }
     let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_with_infantry.length; i++) {
@@ -2093,6 +2097,10 @@ console.log("units length: " + space.units[defender].length);
 
 
   canPlayerNavalMove(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     if (his_self.doesFactionHaveNavalUnitsOnBoard(faction)) { return 1; }
     return 0;
   }
@@ -2250,6 +2258,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   }
 
   canPlayerMoveFormationInClear(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
     if (spaces_with_units.length > 0) { 
       return 1;
@@ -2258,6 +2270,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   }
 
   canPlayerBuyMercenary(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     return 1;
   }
   playerBuyMercenary(his_self, player, faction) {
@@ -2280,6 +2296,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   }
 
   canPlayerRaiseRegular(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     return 1;
   }
   async playerRaiseRegular(his_self, player, faction) {
@@ -2302,6 +2322,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   }
 
   canPlayerBuildNavalSquadron(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     return 1;
   }
   async playerBuildNavalSquadron(his_self, player, faction) {
@@ -2325,6 +2349,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   }
 
   canPlayerAssault(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
@@ -2357,8 +2385,12 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
     );
   }
+
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
-console.log("CPCUS: " + faction);
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_in_unrest.length; i++) {
@@ -2427,6 +2459,10 @@ console.log("CS: " + JSON.stringify(conquerable_spaces));
     return 0;
   }
   canPlayerExplore(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     if (this.game.state.players_info[player-1].has_explored == 0) { return 1; }
     return 0;
   }
@@ -2436,6 +2472,10 @@ console.log("10");
 return;
   }
   canPlayerColonize(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     if (this.game.state.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
@@ -2445,6 +2485,10 @@ console.log("11");
 return;
   }
   canPlayerConquer(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     if (this.game.state.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
@@ -2454,6 +2498,10 @@ console.log("12");
 return;
   }
   canPlayerInitiatePiracyInASea(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     if (faction === "ottoman" && his_self.game.events.ottoman_piracy_enabled == 1) { return 1; }
     return 0;
   }
@@ -2462,6 +2510,10 @@ console.log("13");
 return;
   }
   canPlayerRaiseCavalry(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     return 1;
   }
   async playerRaiseCavalry(his_self, player, faction) {
@@ -2544,7 +2596,7 @@ return;
 
       if (id == 1 || id == 4) {
 	his_self.addMove("translation\tgerman"); 
-	his_self.addMove("counter_or_acknowledge\tProtestants Translate in Germany Language Zone\ttranslation_german_language_zone\tgerman\t"+faction);
+	his_self.addMove("counter_or_acknowledge\tProtestants Translate in German Language Zone\ttranslation_german_language_zone\tgerman\t"+faction);
       }
       if (id == 2 || id == 5) { 
 	his_self.addMove("translation\tfrench"); 
