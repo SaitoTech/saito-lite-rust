@@ -78,6 +78,33 @@ class ChatManager {
       }
     });
 
+    app.connection.on("chat-popup-render-into-request", (group = null, target_selector = null) => {
+
+      //
+      // mobile devices should not force open chat for us
+      //
+      if (app.browser.isMobileBrowser()) {
+        let active_mod = this.app.modules.returnActiveModule();
+        if (active_mod.respondTo("arcade-games")) {
+          return;
+        }
+      }
+
+      if (group == null) {
+        let group = this.mod.returnCommunityChat();
+        if (group != null) { this.app.connection.emit("chat-popup-render-into-request", (group, target_selector)); }
+      } else {
+        if (this.render_popups_to_screen) {
+          if (!this.popups[group.id]) {
+            this.popups[group.id] = new ChatPopup(this.app, this.mod, "");
+            this.popups[group.id].group = group;
+          }
+          this.popups[group.id].renderIntoDom(target_selector);
+        }
+      }
+    });
+
+
     //
     // handle requests to re-render chat popups
     //

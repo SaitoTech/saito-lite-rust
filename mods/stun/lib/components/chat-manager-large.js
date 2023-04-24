@@ -142,7 +142,7 @@ class VideoChatManager {
           chat_mod.chat_manager.popups[this.room_code].manually_closed = false;
         }
 
-        this.app.connection.emit("chat-popup-render-request", this.chat_group);
+        this.app.connection.emit("chat-popup-render-into-request", this.chat_group, ".side-videos");
         // document.querySelector(`.chat-popup-${this.room_code}`).style.zIndex = 2000;
       });
     }

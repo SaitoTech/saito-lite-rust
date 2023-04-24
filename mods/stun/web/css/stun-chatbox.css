@@ -784,3 +784,34 @@
     width: 40rem;
   }
 }
+
+/* --chat in video calls -- */
+
+.stunx-chatbox.minimize .chat-static {
+  display: none;
+}
+
+.stunx-chatbox .chat-static {
+  color: var(--saito-white);
+}
+
+.stunx-chatbox .saito-address {
+  color: var(--saito-grey);
+}
+
+.stunx-chatbox .saito-user:hover .saito-userline-reply {
+  background-color: var(--saito-black);
+}
+
+.stunx-chatbox .saito-user:hover .saito-userline-reply i {
+  border: 1px solid var(--saito-grey);
+}
+
+.stunx-chatbox .chat-footer {
+  width: 25%;
+  margin: 0 0 0.5rem;
+}
+
+.stunx-chatbox .chat-input {
+  background: unset;
+}

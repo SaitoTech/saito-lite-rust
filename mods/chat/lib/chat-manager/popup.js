@@ -24,7 +24,7 @@ class ChatPopup {
   remove() {
 
     let popup_qs = ".chat-popup-" + this.group.id;
-console.log("removing: " + popup_qs);
+    console.log("removing: " + popup_qs);
     document.querySelector(popup_qs).remove();
 
   }
@@ -80,7 +80,12 @@ console.log("removing: " + popup_qs);
     });
 
     if (document.querySelector(popup_qs)) {
-      am_i_on_page = 1;
+      if (document.querySelector(popup_qs).classList.contains('chat-static')) {
+        this.renderIntoDom("");
+        return;
+      } else {
+        am_i_on_page = 1;
+      }
     }
 
 
@@ -152,6 +157,83 @@ console.log("removing: " + popup_qs);
 
   }
 
+  renderIntoDom(target_selector) {
+
+    //
+    // exit if group unset
+    //
+    if (this.group == null) { return; }
+
+    //
+    // exit if manually minimized
+    //
+    if (this.manually_closed) { return; }
+
+    //
+    // our query selector
+    //
+    let popup_qs = ".chat-popup-" + this.group.id;
+    let popup_id = "chat-popup-" + this.group.id;
+    let header_id = "chat-header-" + this.group.id;
+    let input_id = "chat-input-" + this.group.id;
+
+    let existing_input = "";
+
+    if (document.getElementById(input_id)) {
+      existing_input = document.getElementById(input_id).innerHTML;
+    }
+
+    //
+    if (this.emoji == null) {
+      this.emoji = new SaitoEmoji(this.app, this.mod, input_id);
+    }
+
+    //
+    // calculate some values to determine position on screen...
+    //
+    let am_i_on_page = 0;
+
+    if (document.querySelector(popup_qs)) {
+      am_i_on_page = 1;
+    }
+
+
+    //
+    // insert or replace popup on page
+    //
+    if (am_i_on_page == 1) {
+      let obj = document.querySelector(popup_qs);
+      this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group, true), popup_qs);
+    } else {
+      this.app.browser.addElementToSelector(ChatPopupTemplate(this.app, this.mod, this.group, true), target_selector);
+    }
+    //
+    // emojis
+    //
+    this.emoji.render();
+
+    //
+    // scroll to bottom
+    //
+    if (document.querySelector("." + popup_id + " .chat-body")) {
+      document.querySelector("." + popup_id + " .chat-body").scroll(0, 1000000000);
+    }
+    //
+    // re-render typed text
+    //
+    if (existing_input != "") {
+      document.getElementById(input_id).innerHTML = existing_input;
+      existing_input = "";
+    }
+
+
+    //
+    // attach events
+    //
+    this.attachEvents();
+
+  }
+
   insertBackgroundTab(app, mod, gid) {
     let tabContainer = document.querySelector(".chat-group-tabs");
     if (tabContainer) {
@@ -181,18 +263,18 @@ console.log("removing: " + popup_qs);
       var clicked = el;
       el.addEventListener('click', (e) => {
         let quote = "<blockquote>";
-        if  (el.parentElement.previousElementSibling.innerText.length > 25) {
-          quote += "..." + el.parentElement.previousElementSibling.innerText.slice(-25) + "<br/><em>"; 
+        if (el.parentElement.previousElementSibling.innerText.length > 25) {
+          quote += "..." + el.parentElement.previousElementSibling.innerText.slice(-25) + "<br/><em>";
         } else {
-          quote += el.parentElement.previousElementSibling.innerText + "<br/><em>"; 
+          quote += el.parentElement.previousElementSibling.innerText + "<br/><em>";
         }
-        if (el.parentElement.innerText.slice(0,-6).length > 60) {
-          quote += el.parentElement.innerText.slice(0,-6).substring(0,60) + "...</em></blockquote><br/>";
+        if (el.parentElement.innerText.slice(0, -6).length > 60) {
+          quote += el.parentElement.innerText.slice(0, -6).substring(0, 60) + "...</em></blockquote><br/>";
         } else {
-          quote += el.parentElement.innerText.slice(0,-6) + "</em></blockquote><br/>";
+          quote += el.parentElement.innerText.slice(0, -6) + "</em></blockquote><br/>";
         }
         let chat_input = el.parentElement.parentElement.parentElement.nextElementSibling.querySelector('.chat-input');
-        chat_input.innerHTML = quote.replaceAll('\n','<br/>');
+        chat_input.innerHTML = quote.replaceAll('\n', '<br/>');
         chat_input.focus();
         const range = document.createRange();
         var sel = window.getSelection()
@@ -254,7 +336,7 @@ console.log("removing: " + popup_qs);
       }
       msg_input.onpaste = (e) => {
         var el = e.target;
-        setTimeout(function() {
+        setTimeout(function () {
           el.innerHTML = el.innerHTML;
         }, 0)
       }
