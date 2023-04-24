@@ -1,5 +1,5 @@
 
-.theological_debate_sheet {
+.theological-debate-overlay {
   background-image: url("/his/img/backgrounds/theological-debate2.jpg");
   background-size: cover;
   width: 80vw;
@@ -8,14 +8,34 @@
 
   overflow-y: auto;
 }
-.theological_debate_sheet .status {
+
+.theological-debate-overlay .title {
+    position: absolute;
+    height: auto;
+    width: 100%;
+    background-color: #0005;
+    z-index: 10;
+    border-radius: 1rem;
+    top: 0px;
+    left: 0px;
+    float: left;
+    text-align: center;
+    color: white;
+    font-size: 2.4rem;
+    padding: 1rem;
+    line-height: 3.6rem;
+}
+
+.theological-debate-overlay .status {
     margin-left: auto;
     margin-right: auto;
     width: 50%;
     background-color: whitesmoke;
-    height: 80px;
+    height: auto;
     margin-top: 4rem;
     border-radius: 1rem;
+    clear: both;
+    margin-top: 10rem;
 }
 
 .attacker_debater {

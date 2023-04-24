@@ -181,7 +181,7 @@ console.log("calculating vp... 2");
     for (let f in factions) {
       factions[f].keys = this.returnNumberOfKeysControlledByFaction(f);
       if (f === "protestant") {
-	factions[f].religious = this.returnNumberOfSpacesControlledByProtestants();
+	factions[f].religious = this.returnNumberOfProtestantSpacesInLanguageZone();
       }
     }
 console.log("calculating vp... 3");
