@@ -85,6 +85,7 @@ class Wordblocks extends GameTemplate {
     this.menu.render();
 
     this.hud.auto_sizing = 0; //turn off default sizing
+    this.hud.draggable_whole = false;
     this.hud.render();
 
     this.log.render();
@@ -198,7 +199,7 @@ class Wordblocks extends GameTemplate {
     //
     // deal cards
     //
-    if (this.game.deck.length == 0 && this.game.step.game == 1) {
+    if (this.game.deck.length == 0 && this.game.step.game == 0) {
       this.updateStatus("Generating the Game");
       this.game.queue = [];
       this.game.queue.push("READY");

@@ -15,7 +15,7 @@ class LanguageZoneOverlay {
 	this.overlay.hide();
     } 
    
-    render() {
+    render(mycallback=null) {
 	this.visible = true;
         this.overlay.show(LanguageZoneTemplate());
         this.attachEvents(mycallback);
@@ -29,21 +29,18 @@ class LanguageZoneOverlay {
 	if (!obj) { return; }
 
 	if (obj.querySelector(".english")) {
-alert("A");
   	    obj.querySelector(".english").click = (e) => {
 	        lzo.hide();
 		if (mycallback) { mycallback("english"); }
             }
         }
 	if (obj.querySelector(".french")) {
-alert("A");
   	    obj.querySelector(".french").click = (e) => {
 	        lzo.hide();
 		if (mycallback) { mycallback("french"); }
             }
         }
 	if (obj.querySelector(".german")) {
-alert("A");
   	    obj.querySelector(".german").click = (e) => {
 	        lzo.hide();
 		if (mycallback) { mycallback("germany"); }
@@ -51,14 +48,12 @@ alert("A");
         }
 	if (obj.querySelector(".italian")) {
   	    obj.querySelector(".italian").click = (e) => {
-alert("A");
 	        lzo.hide();
 		if (mycallback) { mycallback("italian"); }
             }
         }
 	if (obj.querySelector(".spanish")) {
   	    obj.querySelector(".spanish").click = (e) => {
-alert("A");
 	        lzo.hide();
 		if (mycallback) { mycallback("spanish"); }
             }

@@ -14,6 +14,7 @@
     if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
     if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.active == null)		{ obj.active = 0; } // if bonus is active for debaters
     if (obj.besieged == null)           { obj.besieged = false; }
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.loaned == null)             { obj.loaned = false; }
@@ -326,11 +327,45 @@
     return 0;
   }
 
-  commitDebater(faction, debater) {
+  deactivateDebaters() {
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      this.game.state.debaters[i].active = 0;
+    }
+  }
+
+  canPlayerCommitDebater(faction, debater) {
+
+    if (faction !== "protestant" && faction !== "papacy") { return false; }
+
+    let already_committed = false;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "papacy" && faction === "papacy") { return false; }
+      if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "protestant" && faction !== "papacy") { return false; }
+      if (this.game.state.debaters[i].key == debater) {
+
+	let is_mine = false;
+
+	if (this.game.state.debaters[i].owner === "papacy" && faction === "papacy") {
+	  is_mine = true;
+	}
+	if (this.game.state.debaters[i].owner !== "papacy" && faction === "protestant") {
+	  is_mine = true;
+	}
+
+	if (is_mine == true) {
+	  if (this.game.state.debaters[i].active == 1) { already_comitted = true; }
+        }
+      }
+    }
+    return !already_committed;
+  }
+
+  commitDebater(faction, debater, activate=1) {
     let his_self = this;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {
 	this.game.state.debaters[i].committed = 1;
+	this.game.state.debaters[i].active = activate; // if the bonus is active
 	this.debaters[debater].onCommitted(his_self, this.game.state.debaters[i].owner);
       }
     }

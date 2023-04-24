@@ -182,9 +182,9 @@ console.log("removing: " + popup_qs);
       el.addEventListener('click', (e) => {
         let quote = "<blockquote>";
         if  (el.parentElement.previousElementSibling.innerText.length > 25) {
-          quote += el.parentElement.previousElementSibling.innerText.substring(0,25) + "...:<br/><em>"; 
+          quote += "..." + el.parentElement.previousElementSibling.innerText.slice(-25) + "<br/><em>"; 
         } else {
-          quote += el.parentElement.previousElementSibling.innerText + ":<br/><em>"; 
+          quote += el.parentElement.previousElementSibling.innerText + "<br/><em>"; 
         }
         if (el.parentElement.innerText.slice(0,-6).length > 60) {
           quote += el.parentElement.innerText.slice(0,-6).substring(0,60) + "...</em></blockquote><br/>";

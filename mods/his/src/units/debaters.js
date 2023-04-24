@@ -15,13 +15,13 @@
         if (menu == "translation_german_language_zone") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'Martin Luther', html : `<li class="option" id="martin_luther">Martin Luther +1 Bonus CP</li>` };
+            return { faction : extra , event : 'martin_luther', html : `<li class="option" id="martin_luther">Martin Luther +1 Bonus CP</li>` };
           }
         } 
         return {};
       },  
       menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "translation_german_language_zone") {
+        if (menu == "translation_german_language_zone" && his_self.canPlayerCommitDebater(faction, "luther-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
             if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
@@ -56,13 +56,13 @@
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'Ulrich Zwingli', html : `<li class="option" id="ulrich_zwingli">Ulrich Zwingli +1 Roll</li>` };
+            return { faction : extra , event : 'ulrich_zwingli', html : `<li class="option" id="ulrich_zwingli">Ulrich Zwingli +1 Roll</li>` };
           }
         } 
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-        if (menu == "protestant_reformation") {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater(faction, "zwingly-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player && ["zurich","basel","innsbruck","strasburg","besancon","geneva","trent","salzburg","augsburg"].includes(spacekey)) { 
            return 1;
@@ -99,13 +99,13 @@
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'Martin Bucer', html : `<li class="option" id="martin_bucer">Martin Bucer +1 Roll</li>` };
+            return { faction : extra , event : 'martin_bucer', html : `<li class="option" id="martin_bucer">Martin Bucer +1 Roll</li>` };
           }
         } 
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-        if (menu == "protestant_reformation") {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater(faction, "bucer-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player && ["basel","innsbruck","strasburg","besancon","geneva","trent","salzburg","augsburg"].includes(spacekey)) { 
            return 1;
@@ -145,7 +145,7 @@
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "debate") {
+        if (menu == "debate" && his_self.canPlayerCommitDebater(faction, "bullinger-debater")) {
 	  if (his_self.game.state.theological_debate.round === 2) {
             if (faction === "protestant") {
               return 1;
@@ -195,13 +195,13 @@
         if (menu == "translation_german_language_zone") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'Melanchthon', html : `<li class="option" id="melanchthon">Melanchthon +1 Bonus CP</li>` };
+            return { faction : extra , event : 'melanchthon', html : `<li class="option" id="melanchthon">Melanchthon +1 Bonus CP</li>` };
           }
         } 
         return {};
       },  
       menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "translation_german_language_zone") {
+        if (menu == "translation_german_language_zone"  && his_self.canPlayerCommitDebater(faction, "melanchthon-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
             if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
@@ -237,13 +237,13 @@
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'Johannes Oekolampadius', html : `<li class="option" id="oekolampadius">Johannes Oekolampadius +1 Bonus</li>` };
+            return { faction : extra , event : 'oekolampadius', html : `<li class="option" id="oekolampadius">Johannes Oekolampadius +1 Bonus</li>` };
           }
         } 
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-        if (menu == "protestant_reformation") {
+        if (menu == "protestant_reformation"  && his_self.canPlayerCommitDebater(faction, "oekolampadius-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player && ["basel","zurich","innsbruck","strasburg","besancon","geneva","turin","grenoble","lyon","dijon","metz"].includes(spacekey)) { 
            return 1;
@@ -458,13 +458,13 @@
         if (menu == "translation_french_language_zone") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'Olivetan', html : `<li class="option" id="olivetan">Olivetan +1 Bonus CP</li>` };
+            return { faction : extra , event : 'olivetan', html : `<li class="option" id="olivetan">Olivetan +1 Bonus CP</li>` };
           }
         } 
         return {};
       },  
       menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "translation_french_language_zone") {
+        if (menu == "translation_french_language_zone"  && his_self.canPlayerCommitDebater(faction, "olivetan-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
             if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
@@ -527,13 +527,13 @@
         if (menu == "translation_english_language_zone") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'Tyndale', html : `<li class="option" id="tyndale">William Tyndale +1 Bonus CP</li>` };
+            return { faction : extra , event : 'tyndale', html : `<li class="option" id="tyndale">William Tyndale +1 Bonus CP</li>` };
           }
         } 
         return {};
       },  
       menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "translation_english_language_zone") {
+        if (menu == "translation_english_language_zone"  && his_self.canPlayerCommitDebater(faction, "tyndalex-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
             if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&

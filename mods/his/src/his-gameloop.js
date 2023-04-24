@@ -1436,7 +1436,7 @@ console.log(JSON.stringify(mv));
 	    for (let i = papacy_hits; i < protestant_hits; i++) {
 	      this.game.queue.push("select_for_protestant_conversion\tprotestant\tgerman");
 	    }
-  	    this.game.queue.push("STATUS\t<div class='message'>Protestants selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_protestants));
+  	    this.game.queue.push("STATUS\t<div class='message'>Protestants selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_protestant));
   	    this.game.queue.push("show_overlay\ttheses");
   	    this.game.queue.push("ACKNOWLEDGE\tProtestants win Diet of Worms");
 
@@ -1479,9 +1479,17 @@ console.log(JSON.stringify(mv));
 	    return 1;
  	  }
 
+	  //
+	  // return 1
+	  //
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+	    let ack = 1;
+	    for (let i = 0; i < this.game.confirms_needed.length; i++) {
+	      if (this.game.confirms_needed[i] == 1) { ack = 0; }
+	    }
+	    if (ack == 1) { this.game.queue.splice(qe, 1);}
 	    this.updateStatus("acknowledged");
-	    return 0;
+	    return ack;
 	  }
 
 	  let msg = mv[1];
@@ -1527,6 +1535,8 @@ console.log(JSON.stringify(mv));
 
             let action2 = $(this).attr("id");
 
+alert("H: " + action2);
+
 	    //
 	    // this ensures we clear regardless of choice
 	    //
@@ -1536,8 +1546,11 @@ console.log(JSON.stringify(mv));
             // events in play
             //
             if (attach_menu_events == 1) {
+alert("H2: " + action2);
               for (let i = 0; i < menu_triggers.length; i++) {
+alert("H3: " + action2 + " -- " + menu_triggers[i]);
                 if (action2 == menu_triggers[i]) {
+alert("H4: " + action2);
                   $(this).remove();
                   z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
                   return;
@@ -3828,6 +3841,8 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 	    }
 	  }
 
+	  his_self.faction_overlay.render("protestant");
+
 	  return 1;
         }
 
@@ -3854,8 +3869,9 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 	    this.updateLog("Papacy progresses with construction of St. Peter's Basilica");
 	    this.game.state.saint_peters_cathedral['state'] += 1;
 	    this.game.state.saint_peters_cathedral['vp'] += 1;
-	    this.game.state.saint_peters_cathedral['state'] = 0;
 	  }
+
+	  his_self.faction_overlay.render("papacy");
 
 	  return 1;
 
@@ -4743,6 +4759,9 @@ alert("ASSAULT UNIMPLEMENTED");
 	  let p_high = 0;
 	  let c_high = 0;
 
+	  let p_roll_desc = [];
+	  let c_roll_desc = [];
+
 	  let protestants_win = 0;
 
 	  let ties_resolve = "protestant";
@@ -4752,9 +4771,11 @@ alert("ASSAULT UNIMPLEMENTED");
 	  //
 	  for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
 	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
+	      c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
 	      c_neighbours++;
 	    }
 	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
+	      p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
 	      p_neighbours++;
 	    }  
 	  }
@@ -4769,6 +4790,12 @@ alert("ASSAULT UNIMPLEMENTED");
 	  //
 	  // temporary bonuses
 	  //
+	  for (let i = 0; i < this.game.state.tmp_protestant_reformation_bonus; i++) {
+	    p_roll_desc.push({ name : "Bonus" , desc : "protestant bonus roll"});
+	  }
+	  for (let i = 0; i < this.game.state.tmp_catholic_reformation_bonus; i++) {
+	    p_roll_desc.push({ name : "Bonus" , desc : "catholic bonus roll"});
+	  }
 	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
 	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
 
@@ -4780,22 +4807,23 @@ alert("ASSAULT UNIMPLEMENTED");
 	  c_rolls += c_neighbours;
 	  c_rolls += c_bonus;
 
-this.updateLog("Total Rolls: ");
-this.updateLog("Protestants: " + p_rolls);
+	  let pdice = [];
+	  let cdice = [];
 
 	  for (let i = 0; i < p_rolls; i++) {
 	    let x = this.rollDice(6);
-	    this.updateLog("Protestants roll: " + x, 1);
 	    if (x > p_high) { p_high = x; }
+	    pdice.push(x);
 	  }
-
-this.updateLog("Catholics: " + c_rolls);
 
 	  for (let i = 0; i < c_rolls; i++) {
 	    let x = this.rollDice(6);
-	    this.updateLog("Catholics roll: " + x, 1);
 	    if (x > c_high) { c_high = x; }
+	    cdice.push(x);
 	  }
+
+this.updateLog("Protestants: " + JSON.stringify(pdice));
+this.updateLog("Catholics: " + JSON.stringify(cdice));
 
 	  //
 	  // do protestants win?
@@ -4803,6 +4831,18 @@ this.updateLog("Catholics: " + c_rolls);
 	  if (p_high > c_high) { protestants_win = 1; }
 	  if (p_high == c_high && ties_resolve === "protestant") { protestants_win = 1; }
 
+	  //
+	  //
+	  //
+	  let obj = {};
+	  obj.pdice = pdice;
+	  obj.cdice = cdice;
+	  obj.p_roll_desc = p_roll_desc;
+	  obj.c_roll_desc = c_roll_desc;
+	  obj.p_high = p_high;
+	  obj.c_high = c_high;
+          obj.protestants_win = protestants_win;
+	  this.reformation_overlay.render(obj);
 
 	  //
 	  // handle victory
@@ -4896,28 +4936,37 @@ console.log("FIX: not yet handling catholic land units");
 	  if (c_rolls == 0) { c_rolls = 1; }
 	  if (p_rolls == 0) { p_rolls = 1; }
 
-this.updateLog("Total Rolls: ");
-this.updateLog("Protestants: " + p_rolls);
+	  let pdice = [];
+	  let cdice = [];
 
 	  for (let i = 0; i < p_rolls; i++) {
 	    let x = this.rollDice(6);
-	    this.updateLog("Protestants roll: " + x, 1);
+	    pdice.push(x);
 	    if (x > p_high) { p_high = x; }
 	  }
 
-this.updateLog("Catholics: " + c_rolls);
-
 	  for (let i = 0; i < c_rolls; i++) {
 	    let x = this.rollDice(6);
-	    this.updateLog("Catholics roll: " + x, 1);
+	    cdice.push(x);
 	    if (x > c_high) { c_high = x; }
 	  }
+
+this.updateLog("Total Rolls: ");
+this.updateLog("Protestants: " + JSON.stringify(pdice));
+this.updateLog("Catholics: " + JSON.stringify(cdice));
+
 
 	  //
 	  // do protestants win?
 	  //
 	  if (p_high < c_high) { catholics_win = 1; }
 	  if (p_high == c_high && ties_resolve === "catholics") { catholics_win = 1; }
+
+
+	  //
+	  //
+	  //
+	  this.reformation_overlay.render();
 
 
 	  //

@@ -1,4 +1,17 @@
 
+.saint_peters_tile {
+  background-image: url("/his/img/tiles/papacy/StPetersCP.svg");
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+}
+.papacy_keytile {
+  background-image: url("/his/img/tiles/papacy/Papacy_key.svg");
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+}
+
 .new_testament_german_tile {
   background-image: url("/his/img/factions/NewTestament_German.svg");
   background-size: cover;
@@ -90,7 +103,8 @@
 .faction_sheet {
   width: 1240px;
   height: 800px;
-  background-size: cover;
+  background-image: url(/his/img/factions/protestant.png);
+  background-size: contain;
 }
 
 .faction_sheet_keytile {

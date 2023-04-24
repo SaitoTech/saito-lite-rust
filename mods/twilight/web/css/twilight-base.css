@@ -74,6 +74,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, 200px);
     grid-gap: 1rem;
+    align-content: start;
     background-color: transparent;
     border: 0px;
     box-shadow: none;

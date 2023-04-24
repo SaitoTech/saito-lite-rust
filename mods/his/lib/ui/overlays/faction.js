@@ -12,6 +12,8 @@ class FactionOverlay {
     
     render(faction="") {
 
+      let his_self = this.mod;
+
       this.visible = true;
 
       let f = this.mod.factions[faction];
@@ -20,29 +22,29 @@ class FactionOverlay {
       let controlled_keys = 0;
       let keyboxen = '';
 
-      for (let key in this.game.spaces) {
-        if (this.game.spaces[key].type === "key") {
-          if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
+      for (let key in his_self.game.spaces) {
+        if (his_self.game.spaces[key].type === "key") {
+          if (his_self.game.spaces[key].political === his_self.factions[faction].key || (his_self.game.spaces[key].political === "" && his_self.game.spaces[key].home === his_self.factions[faction].key)) {
             controlled_keys++;
           }
         }
       }
 
       // ENGLAND
-      if (this.factions[faction].key === "england") {
+      if (his_self.factions[faction].key === "england") {
         let total_keys = 9;
         let remaining_keys = total_keys - controlled_keys;
-        for (let i = this.factions[faction].marital_status; i < 7; i++) {
+        for (let i = his_self.factions[faction].marital_status; i < 7; i++) {
             keyboxen += `<div class="faction_sheet_keytile england_marital_status${i+1}" id="england_marital_status_keytile${i+1}"></div>`;
         }
         for (let i = 1; i <= 9; i++) {
           if (i > (9-remaining_keys)) {
-            keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+            keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
           }
         }
       }
       // FRANCE
-      if (this.factions[faction].key === "france") {
+      if (his_self.factions[faction].key === "france") {
         let total_keys = 11;
         let remaining_keys = total_keys - controlled_keys;
         for (let i = 0; i < 7; i++) {
@@ -50,12 +52,12 @@ class FactionOverlay {
         }
         for (let i = 1; i <= 11; i++) {
           if (i > (11-remaining_keys)) {
-            keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+            keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
           }
         }
       }
       // OTTOMAN
-      if (this.factions[faction].key === "ottoman") {
+      if (his_self.factions[faction].key === "ottoman") {
         let total_keys = 11;
         let remaining_keys = total_keys - controlled_keys;
         for (let i = 0; i <= 10; i++) {
@@ -63,37 +65,41 @@ class FactionOverlay {
         }
         for (let i = 1; i <= 11; i++) {
           if (i > (11-remaining_keys)) {
-            keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+            keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
           }
         }
       }
       // PAPACY
-      if (this.factions[faction].key === "papacy") {
+      if (his_self.factions[faction].key === "papacy") {
         let total_keys = 7;
+	controlled_keys = his_self.returnNumberOfKeysControlledByFaction("papacy");
+
         let remaining_keys = total_keys - controlled_keys;
         for (let i = 0; i < 12; i++) {
-          keyboxen += `<div class="faction_sheet_keytile papacy_construction_status${i+1}" id="papacy_construction_status_keytile${i+1}"></div>`;
+	  if (his_self.game.state.saint_peters_cathedral['state'] == i) {
+            keyboxen += `<div class="faction_sheet_keytile papacy_construction_status${i+1} saint_peters_tile" id="papacy_construction_status_keytile${i+1}"></div>`;
+          }
         }
         for (let i = 1; i <= 7; i++) {
-          if (i >= (7-remaining_keys)) {
-            keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+          if (i == controlled_keys) {
+            keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i} papacy_keytile" id="faction_sheet_keytile${i}"></div>`;
           }
         }
       }
       // PROTESTANTS
-      if (this.factions[faction].key === "protestant") {
+      if (his_self.factions[faction].key === "protestant") {
 
         let total_keys = 11;
         let remaining_keys = total_keys - controlled_keys;
         for (let i = 0; i <= 6; i++) {
           let box_inserts = "";
-          if (this.game.state.translations['new']['german'] == i) {
+          if (his_self.game.state.translations['new']['german'] == i) {
             box_inserts += `<div class="new_testament_german_tile" id="new_testament_german_tile"></div>`;
           }
-          if (this.game.state.translations['new']['french'] == i) {
+          if (his_self.game.state.translations['new']['french'] == i) {
             box_inserts += `<div class="new_testament_french_tile" id="new_testament_french_tile"></div>`;
           }
-          if (this.game.state.translations['new']['english'] == i) {
+          if (his_self.game.state.translations['new']['english'] == i) {
             box_inserts += `<div class="new_testament_english_tile" id="new_testament_english_tile"></div>`;
           }
           keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}">${box_inserts}</div>`;
@@ -101,30 +107,30 @@ class FactionOverlay {
         for (let i = 1; i <= 11; i++) {
           if (i > (11-remaining_keys)) {
             let box_inserts = "";
-            keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+            keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
           }
         }
       }
       // HAPSBURG
-      if (this.factions[faction].key === "hapsburg") {
+      if (his_self.factions[faction].key === "hapsburg") {
         let total_keys = 14;
         let remaining_keys = total_keys - controlled_keys;
         for (let i = 1; i <= 14; i++) {
-          if (this.game.state.translations['german']['full'] == i) {
+          if (his_self.game.state.translations['german']['full'] == i) {
             box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
           }
-          if (this.game.state.translations['french']['full'] == i) {
+          if (his_self.game.state.translations['french']['full'] == i) {
             box_inserts += `<div class="bible_french_tile" id="bible_french_tile"></div>`;
           }
-          if (this.game.state.translations['english']['full'] == i) {
+          if (his_self.game.state.translations['english']['full'] == i) {
             box_inserts += `<div class="bible_english_tile" id="bible_english_tile"></div>`;
           }
           if (i > (14-remaining_keys)) {
-            keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+            keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
           }
         }
       }
-      document.getElementById("faction_sheet").innerHTML = keyboxen;
+      this.app.browser.addElementToSelector(keyboxen, ".faction_sheet");
 
       this.attachEvents();
 

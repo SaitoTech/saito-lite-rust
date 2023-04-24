@@ -1229,7 +1229,7 @@ alert("Not Implemented");
 
 	let players_to_go = [];
 	for (let i = 1; i < his_self.game.players.length; i++) {
-	  if (i != his_self.returnPlayerOfFaction("protestants")) {
+	  if (i != his_self.returnPlayerOfFaction("protestant")) {
 	    players_to_go.push(i);
 	  }
 	}
@@ -1321,11 +1321,11 @@ alert("Not Implemented");
 
 	    );
 	    } else {
-	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
+	      his_self.addMove("counter_or_acknowledge\tCatholic Counter-Reformation - no valid targets");
 	      his_self.endTurn();
 	    }
 	  } else {
-	    his_self.updateStatus("Protestant Reformation in Process");
+	    his_self.updateStatus("Catholic Counter-Reformation in Process");
 	  }
 
           return 0;
