@@ -6,27 +6,9 @@ module.exports = () => {
 	<div class="reformation-box">
 	  <div class="protestant">
 	    <div class="title">Protestants</div>
-            <div class="reform-box-description">Strasbourg <div class="adjacency">Adjacency</div></div>
-            <div class="reform-roll">5</div>
-            <div class="reform-box-description">Leipzig <div class="adjacency">Adjacency</div></div>
-            <div class="reform-roll">5</div>
-            <div class="reform-box-description">Kessel <div class="adjacency">Adjacency</div></div>
-	    <div class="reform-roll">5</div>
-	    <div class="reform-box-description">Kessel <div class="adjacency">Adjacency</div></div>
-	    <div class="reform-roll">5</div>
-	    <div class="reform-box-description">Kessel <div class="adjacency">Adjacency</div></div>
-	    <div class="reform-roll">5</div>
-	    <div class="reform-box-description">Kessel <div class="adjacency">Adjacency</div></div>
-	    <div class="reform-roll">5</div>	               
 	  </div>
 	  <div class="papacy">	    
             <div class="title">Papacy</div>
-              <div class="reform-box-description">Kessel <div class="adjacency">Adjacency</div></div>
-	      <div class="reform-roll">5</div>
-              <div class="reform-box-description">Strasbourg <div class="adjacency">Adjacency</div></div>
-	      <div class="reform-roll">5</div>
-              <div class="reform-box-description">Leipzig <div class="adjacency">Adjacency</div></div>
-	      <div class="reform-roll">5</div>
             </div>
           </div>
         </div>

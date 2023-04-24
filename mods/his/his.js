@@ -15524,6 +15524,9 @@ alert("ASSAULT UNIMPLEMENTED");
 	  let p_high = 0;
 	  let c_high = 0;
 
+	  let p_roll_desc = [];
+	  let c_roll_desc = [];
+
 	  let protestants_win = 0;
 
 	  let ties_resolve = "protestant";
@@ -15533,9 +15536,11 @@ alert("ASSAULT UNIMPLEMENTED");
 	  //
 	  for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
 	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
+	      c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
 	      c_neighbours++;
 	    }
 	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
+	      p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
 	      p_neighbours++;
 	    }  
 	  }
@@ -15550,6 +15555,12 @@ alert("ASSAULT UNIMPLEMENTED");
 	  //
 	  // temporary bonuses
 	  //
+	  for (let i = 0; i < this.game.state.tmp_protestant_reformation_bonus; i++) {
+	    p_roll_desc.push({ name : "Bonus" , desc : "protestant bonus roll"});
+	  }
+	  for (let i = 0; i < this.game.state.tmp_catholic_reformation_bonus; i++) {
+	    p_roll_desc.push({ name : "Bonus" , desc : "catholic bonus roll"});
+	  }
 	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
 	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
 
@@ -15588,7 +15599,15 @@ this.updateLog("Catholics: " + JSON.stringify(cdice));
 	  //
 	  //
 	  //
-	  this.reformation_overlay.render();
+	  let obj = {};
+	  obj.pdice = pdice;
+	  obj.cdice = cdice;
+	  obj.p_roll_desc = p_roll_desc;
+	  obj.c_roll_desc = c_roll_desc;
+	  obj.p_high = p_high;
+	  obj.c_high = c_high;
+          obj.protestants_win = protestants_win;
+	  this.reformation_overlay.render(obj);
 
 	  //
 	  // handle victory
