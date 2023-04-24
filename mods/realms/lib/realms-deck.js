@@ -2,7 +2,11 @@ class RealmsDeck {
 	////////////////////////////////
 	/// Cards and Card Functions ///
 	////////////////////////////////
-	returnBlueDeck() {
+
+	/*
+	Master list / definition of all legal cards that may appear in the game
+	*/
+	returnCards() {
 		var deck = {};
 
 		deck["b001"] = {
@@ -101,18 +105,12 @@ class RealmsDeck {
 			img: this.card_img_dir + "/033_island.png",
 		};
 
-		deck["wr"] = {
+		deck["waterfall"] = {
 			name: "Waterfall Ruin",
 			type: "land",
 			color: ["blue", "white"],
 			img: this.card_img_dir + "/032_waterfall_ruin.png",
 		};
-
-		return deck;
-	}
-
-	returnWhiteDeck() {
-		var deck = {};
 
 		deck["w001"] = {
 			name: "Shellring Vindicator",
@@ -212,19 +210,74 @@ class RealmsDeck {
 			img: this.card_img_dir + "/023_trickster_spirit.png",
 		};
 
-		deck["Steppe"] = {
+		deck["steppe"] = {
 			name: "Steppe",
 			type: "land",
 			color: "white",
 			img: this.card_img_dir + "/035_steppe.png",
 		};
 
-		deck["Waterfall Ruin"] = {
-			name: "Waterfall Ruin",
-			type: "land",
-			color: ["white", "blue"],
-			img: this.card_img_dir + "/032_waterfall_ruin.png",
-		};
+		return deck;
+	}
+
+	returnBluishDeck() {
+		var deck = [];
+
+		for (let i = 0; i < 8; i++){
+			deck.push("island");
+			deck.push("waterfall");
+		}
+		for (let i = 0; i < 4; i++){
+			deck.push("steppe");
+			deck.push("b001");
+			deck.push("b002");
+			deck.push("b003");
+			deck.push("b004");
+			deck.push("b005");
+			deck.push("b006");
+			deck.push("b007");
+		}
+		for (let i = 0; i < 2; i++){
+			deck.push("w001");
+			deck.push("w002");
+			deck.push("w003");
+			deck.push("w004");
+			deck.push("w005");
+			deck.push("w006");
+			deck.push("w007");
+		}
+		return deck;
+
+	}
+
+	returnWhitishDeck() {
+		var deck = {};
+
+		let index = 1;
+
+		for (let i = 0; i < 8; i++){
+			deck[index++] = "steppe";
+			deck[index++] = "waterfall";
+		}
+		for (let i = 0; i < 4; i++){
+			deck[index++] = "island";
+			deck[index++] = "w001";
+			deck[index++] = "w002";
+			deck[index++] = "w003";
+			deck[index++] = "w004";
+			deck[index++] = "w005";
+			deck[index++] = "w006";
+			deck[index++] = "w007";
+		}
+		for (let i = 0; i < 2; i++){
+			deck[index++] = "b001";
+			deck[index++] = "b002";
+			deck[index++] = "b003";
+			deck[index++] = "b004";
+			deck[index++] = "b005";
+			deck[index++] = "b006";
+			deck[index++] = "b007";
+		}
 
 		return deck;
 	}
