@@ -1,6 +1,20 @@
 module.exports = SettlersScoreboardTemplate = (scoreboard) => {
 
-  let html = '';
+  let html = `
+    <div id="build-info" class="saito-button" style="
+    position: absolute;
+    z-index: 10;
+    left: 0px;
+    bottom: 50vh;
+    width: 13rem;
+    height: 6rem;
+    background: var(--saito-button-background);
+    color: var(--saito-profile-background);
+    line-height: 6rem;
+    text-align: center;
+    cursor: pointer;
+">Build Info</div>
+  `;
   html += `
     <div class="scoreboard">
     <div class="VP-track-label" id="VP-track-label">Victory Points</div>
