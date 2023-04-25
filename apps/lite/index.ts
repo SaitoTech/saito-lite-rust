@@ -7,6 +7,8 @@ import S from "saito-js/saito";
 import WebSharedMethods from "saito-js/lib/custom/shared_methods.web";
 import Transaction from "../../lib/saito/transaction";
 import Factory from "../../lib/saito/factory";
+import Wallet from "../../lib/saito/wallet";
+import Blockchain from "../../lib/saito/blockchain";
 
 class WebMethods extends WebSharedMethods {
   app: Saito;
@@ -73,7 +75,9 @@ async function init() {
     new WebMethods(saito),
     new Factory()
   );
-
+  saito.wallet = (await S.getInstance().getWallet()) as Wallet;
+  saito.wallet.app = saito;
+  saito.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
   saito.BROWSER = 1;
   saito.SPVMODE = 1;
   await saito.init();

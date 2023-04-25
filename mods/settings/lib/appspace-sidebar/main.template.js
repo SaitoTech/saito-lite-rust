@@ -1,12 +1,11 @@
 module.exports = SettingsAppspaceSidebarTemplate = (app, mod) => {
-
   return `
   <div class="settings-appspace-sidebar">
     <div class="settings-appspace-versions-container">
     <h6>Version</h6>
     <div class="settings-appspace-versions">
       <p>Code Version:</p>
-      <p>${app.wallet.wallet.version}</p>
+      <p>${app.wallet.version}</p>
       <p>Wallet Version:</p>
       <p>${app.options.wallet.version}</p>
     </div>
@@ -46,6 +45,4 @@ module.exports = SettingsAppspaceSidebarTemplate = (app, mod) => {
   </div>
 </div>
   `;
-
-}
-
+};

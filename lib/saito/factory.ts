@@ -3,6 +3,8 @@ import Block from "./block";
 import Peer from "./peer";
 import Slip from "./slip";
 import Transaction from "./transaction";
+import Wallet from "./wallet";
+import Blockchain from "./blockchain";
 
 export default class Factory extends SaitoFactory {
   constructor() {
@@ -23,5 +25,11 @@ export default class Factory extends SaitoFactory {
 
   public createPeer(data?: any): Peer {
     return new Peer(data);
+  }
+  public createWallet(data: any): Wallet {
+    return new Wallet(data);
+  }
+  public createBlockchain(data: any): Blockchain {
+    return new Blockchain(data);
   }
 }

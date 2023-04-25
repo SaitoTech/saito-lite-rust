@@ -57,11 +57,11 @@ class Saito {
     this.connection = new Connection();
     this.browser = new Browser(this);
     this.storage = new Storage(this);
-    this.wallet = new Wallet(this);
+    // this.wallet = new Wallet(undefined,this);
     this.keychain = new Keychain(this);
     this.network = new Network(this);
     // this.networkApi = new NetworkAPI(this);
-    this.blockchain = new Blockchain();
+    // this.blockchain = new Blockchain(undefined);
   }
 
   async init() {

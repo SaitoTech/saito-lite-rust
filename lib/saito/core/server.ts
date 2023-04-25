@@ -15,7 +15,7 @@ import path from "path";
 import bodyParser from "body-parser";
 import { WebSocket } from "ws";
 import process from "process";
-import CustomSharedMethods from "saito-js/lib/custom/shared_methods.custom";
+import CustomSharedMethods from "saito-js/lib/custom/custom_shared_methods";
 import { parse } from "url";
 import Peer from "../peer";
 import Transaction from "../transaction";
@@ -166,12 +166,10 @@ export class NodeSharedMethods extends CustomSharedMethods {
     this.app.connection.emit(event, peerIndex);
   }
 
-  async saveWallet(wallet: Wallet): void {
+  async saveWallet(wallet: Wallet): Promise<void> {
     this.app.options.wallet.publicKey = await wallet.getPublicKey();
     this.app.options.wallet.privateKey = await wallet.getPrivateKey();
     this.app.options.wallet.balance = await wallet.getBalance();
-
-    throw new Error("Method not implemented.");
   }
 
   loadWallet(wallet: Wallet): void {

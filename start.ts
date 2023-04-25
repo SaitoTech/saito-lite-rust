@@ -11,15 +11,20 @@ import process from "process";
 import { WebSocket, WebSocketServer } from "ws";
 import configs from "./config/configs.json";
 import Factory from "./lib/saito/factory";
+import Wallet from "./lib/saito/wallet";
+import Blockchain from "./lib/saito/blockchain";
 
 async function initSaito() {
   const app = new Saito({
-    mod_paths: mods_config.core
+    mod_paths: mods_config.core,
   });
   await initS(configs, new NodeSharedMethods(app), new Factory()).then(() => {
-    console.log("zzzzzzzzzzzzzzz");
+    console.log("saito wasm lib initialized");
   });
 
+  app.wallet = (await S.getInstance().getWallet()) as Wallet;
+  app.wallet.app = app;
+  app.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
   app.server = new Server(app);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -99,12 +104,12 @@ async function initSaito() {
   /////////////////////
   // Cntl-C to Close //
   /////////////////////
-  process.on("SIGTERM", function() {
+  process.on("SIGTERM", function () {
     shutdownSaito();
     console.log("Network Shutdown");
     process.exit(0);
   });
-  process.on("SIGINT", function() {
+  process.on("SIGINT", function () {
     shutdownSaito();
     console.log("Network Shutdown");
     process.exit(0);

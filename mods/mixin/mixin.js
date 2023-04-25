@@ -616,7 +616,7 @@ class Mixin extends ModTemplate {
     // case we need to update the balance and then emit an event
     // to trigger UI re-render, including address
     //
-    let pc = mixin_self.app.wallet.wallet.preferred_crypto;
+    let pc = mixin_self.app.wallet.preferred_crypto;
     for (let i = 0; i < mixin_self.mods.length; i++) {
       if (mixin_self.mods[i].name === pc) {
         mixin_self.checkBalance(mixin_self.mods[i].asset_id, () => {

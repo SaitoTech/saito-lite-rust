@@ -179,8 +179,8 @@ class SettingsAppspace {
           if (privatekey != "") {
             publickey = app.crypto.returnPublicKey(privatekey);
 
-            app.wallet.wallet.privatekey = privatekey;
-            app.wallet.wallet.publickey = publickey;
+            await app.wallet.setPrivateKey(privatekey);
+            await app.wallet.setPublicKey(publickey);
             app.wallet.wallet.inputs = [];
             app.wallet.wallet.outputs = [];
             app.wallet.wallet.spends = [];

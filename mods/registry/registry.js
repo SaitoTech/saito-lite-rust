@@ -466,7 +466,7 @@ class Registry extends ModTemplate {
     let newtx = this.app.wallet.createUnsignedTransaction(
       registry_self.publickey,
       0.0,
-      this.app.wallet.wallet.default_fee
+      this.app.wallet.default_fee
     );
     if (!newtx) {
       console.log("NULL TX CREATED IN REGISTRY MODULE");
@@ -498,7 +498,7 @@ class Registry extends ModTemplate {
     let newtx = await this.app.wallet.createUnsignedTransaction(
       this.publickey,
       0.0,
-      this.app.wallet.wallet.default_fee
+      this.app.wallet.default_fee
     );
     if (newtx == null) {
       console.log("NULL TX CREATED IN REGISTRY MODULE");
