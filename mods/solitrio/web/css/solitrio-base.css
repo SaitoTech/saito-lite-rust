@@ -146,7 +146,7 @@ body {
 
 }
 
-/*@media screen and (orientation: portrait) and (max-width: 600px) {
+@media screen and (orientation: portrait) and (max-width: 600px) {
   .gameboard{
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
@@ -154,7 +154,6 @@ body {
   }
   .logobox{
     order: 2;
-    /*grid-row: 2 / 2;*
     max-width: unset;
     margin: 5px auto;
     font-size: 18px;
@@ -173,9 +172,10 @@ body {
     max-width: 100vw;
     order: 1;
   }
-}*/
+}
 
-/* force landscape when on mobile */
+/* force landscape when on mobile 
+This works for display, but it screws up the animations!!!!
 
 @media screen and (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
   html {
@@ -199,6 +199,6 @@ body {
   .hidable{
     display: none;
   }
-
+*/
 
 }

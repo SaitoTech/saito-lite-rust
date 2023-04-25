@@ -28,7 +28,9 @@ class ArcadeMain {
     app.connection.on("arcade-game-initialize-render-request", () => {
       document.querySelector(".arcade-central-panel").innerHTML = "";
       this.slider.hide();
-      
+      if (document.getElementById("saito-container")) {
+        document.getElementById("saito-container").scrollTop = 0;
+      }
       let initializer = new ArcadeInitializer(this.app, this.mod, ".arcade-central-panel");
       initializer.render();
     });

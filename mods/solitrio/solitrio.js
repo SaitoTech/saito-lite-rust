@@ -159,7 +159,7 @@ class Solitrio extends OnePlayerGameTemplate {
     this.menu.render();
 
     if (this.app.browser.isMobileBrowser()){
-      this.app.browser.requestFullscreen();
+      setTimeout(this.app.browser.requestFullscreen, 700);
     }
 
   }
