@@ -616,7 +616,8 @@ input[type="checkbox"] {
   padding: 2rem 5rem !important;
   font-size: 1.25em;
   min-width: 50vw;
-
+  max-width: 80vw;
+  max-height: 70vh;
 }
 
 .trade_overlay > div {
@@ -1117,12 +1118,6 @@ ul.horizontal_list li.iconoption {
   border-image-outset: 10px;
   color: var(--text-color);
   /*background-blend-mode: darken;*/
-  width: 75vw;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  max-height:95vh;
-  overflow-y: scroll;
 }
 
 
