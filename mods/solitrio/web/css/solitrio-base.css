@@ -5,11 +5,6 @@ body {
   margin: 0px;
 }
 
-.main {
-  margin: 0 0 0 0 ;
-  padding: 0 0 0 0 ;
-}
-
 
 .rules-overlay ul{
   margin-left: 25px;
@@ -34,8 +29,8 @@ body {
   position: absolute;
   background-image: url(/saito/img/arcade/greenfelt.jpg);
   background-size: cover;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: grid;
   grid-template-columns: minmax(20%,max-content) 1fr;
 }
@@ -92,7 +87,7 @@ body {
   display: grid;
   grid-template-columns: repeat(10,1fr);
   grid-template-rows: 1fr 1fr 1fr 1fr;
-  max-width: min(90vw,160vh);
+  max-width: 100%;/*min(90vw,160vh);*/
   grid-gap: min(5px,1vh);
   height: fit-content;
   transition: filter 1s;
@@ -151,7 +146,7 @@ body {
 
 }
 
-@media screen and (orientation: portrait) and (max-width: 600px) {
+/*@media screen and (orientation: portrait) and (max-width: 600px) {
   .gameboard{
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
@@ -159,7 +154,7 @@ body {
   }
   .logobox{
     order: 2;
-    /*grid-row: 2 / 2;*/
+    /*grid-row: 2 / 2;*
     max-width: unset;
     margin: 5px auto;
     font-size: 18px;
@@ -178,30 +173,32 @@ body {
     max-width: 100vw;
     order: 1;
   }
-}
+}*/
 
 /* force landscape when on mobile */
-/*
+
 @media screen and (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
   html {
     transform: rotate(-90deg);
     transform-origin: left top;
     width: 100vh;
     height: 100vw;
-    overflow-x: hidden;
     position: absolute;
     top: 100%;
     left: 0;
   }
 
-  body {
+  body, .gameboard {
     width: 100vh;
     height: 100vw;
   }
 
-  .gameboard {
-    width: 100vh;
-    height: 100vw;
+  .logobox img{
+    display: none;
   }
+  .hidable{
+    display: none;
+  }
+
+
 }
-*/

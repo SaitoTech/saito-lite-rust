@@ -199,7 +199,9 @@ class Arcade extends ModTemplate {
           //
           //Game Meta Data stored directly in DB
           //
-          game_tx.msg.winner = JSON.parse(record.winner);
+          if (record.winner){
+            game_tx.msg.winner = JSON.parse(record.winner);  
+          }
 
           game_tx.msg.method = record.method;
           game_tx.msg.time_finished = record.time_finished;
