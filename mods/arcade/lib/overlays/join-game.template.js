@@ -86,6 +86,18 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 		let datetime = app.browser.formatDate(invite.time_created);
     html += addTimeStamp("created at", datetime);
 	}
+	if (invite?.step >= 0){
+		html += `<div class="saito-table-row">
+              <div class="arcade-game-options-key">game moves</div>
+							<div class="arcade-game-options-value">${invite.step}</div>
+					</div>`
+	}
+	if (invite?.method){
+		html += `<div class="saito-table-row">
+              <div class="arcade-game-options-key">game ending</div>
+							<div class="arcade-game-options-value">${invite.method}</div>
+					</div>`
+	}
 
 	html += `
 			  </div>
@@ -148,7 +160,7 @@ const formatOptions = (sgoa) => {
 const addTimeStamp = (label, datetime) => {
 	return 	`<div class="saito-table-row">
               <div class="arcade-game-options-key">${label}</div>
-							<div class="arcade-game-options-value">${datetime.hours}:${datetime.minutes}, ${datetime.month} ${datetime.day}</div>
+							<div class="arcade-game-options-value">${datetime.hours}:${datetime.minutes}, ${datetime.day} ${datetime.month}</div>
 					</div>`;
 
 }
