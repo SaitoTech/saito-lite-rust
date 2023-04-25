@@ -1,7 +1,8 @@
 import Saito from "saito-js/saito";
+import SaitoBlockchain from "saito-js/lib/blockchain";
 import Block from "./block";
 
-export default class Blockchain {
+export default class Blockchain extends SaitoBlockchain {
   public async getBlock(blockHash: string): Promise<Block> {
     let block = await Saito.getInstance().getBlock(blockHash);
 

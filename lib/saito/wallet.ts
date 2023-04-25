@@ -6,34 +6,35 @@ import Transaction from "./transaction";
 import Slip from "./slip";
 import { Saito } from "../../apps/core";
 import S from "saito-js/saito";
+import SaitoWallet from "saito-js/lib/wallet";
 
 const CryptoModule = require("../templates/cryptomodule");
 
-export default class Wallet {
+export default class Wallet extends SaitoWallet {
   public app: Saito;
-  public wallet = {
-    balance: "0",
-    publickey: "",
-    privatekey: "",
+  // public wallet = {
+  // balance: "0",
+  // publickey: "",
+  // privatekey: "",
 
-    preferred_crypto: "SAITO",
-    preferred_txs: [],
+  preferred_crypto = "SAITO";
+  preferred_txs = [];
 
-    // inputs: new Array<Slip>(), // slips available
-    // outputs: new Array<Slip>(), // slips spenr
-    // spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
-    // pending: [], // slips pending broadcast
-    default_fee: 2,
-    version: 4.685,
-  };
-  public inputs_hmap: Map<string, boolean>;
-  public inputs_hmap_counter: number;
-  public inputs_hmap_counter_limit: number;
-  public outputs_hmap: Map<string, boolean>;
-  public outputs_hmap_counter: number;
-  public outputs_hmap_counter_limit: number;
-  public outputs_prune_limit: number;
-  public recreate_pending_transactions: any;
+  // inputs: new Array<Slip>(), // slips available
+  // outputs: new Array<Slip>(), // slips spenr
+  // spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
+  // pending: [], // slips pending broadcast
+  default_fee = 2;
+  version = 4.685;
+  // };
+  // public inputs_hmap: Map<string, boolean>;
+  // public inputs_hmap_counter: number;
+  // public inputs_hmap_counter_limit: number;
+  // public outputs_hmap: Map<string, boolean>;
+  // public outputs_hmap_counter: number;
+  // public outputs_hmap_counter_limit: number;
+  // public outputs_prune_limit: number;
+  // public recreate_pending_transactions: any;
   public saitoCrypto: any;
 
   public async createUnsignedTransactionWithDefaultFee(
@@ -60,17 +61,17 @@ export default class Wallet {
     return (await S.getInstance().signTransaction(tx)) as T;
   }
 
-  public async getPublicKey(): Promise<string> {
-    return S.getInstance().getPublicKey();
-  }
-
-  public async returnPrivateKey(): Promise<string> {
-    return S.getInstance().getPrivateKey();
-  }
-
-  public async getPendingTransactions(): Promise<Array<Transaction>> {
-    return S.getInstance().getPendingTransactions();
-  }
+  // public async getPublicKey(): Promise<string> {
+  //   return S.getInstance().getPublicKey();
+  // }
+  //
+  // public async returnPrivateKey(): Promise<string> {
+  //   return S.getInstance().getPrivateKey();
+  // }
+  //
+  // public async getPendingTransactions(): Promise<Array<Transaction>> {
+  //   return S.getInstance().getPendingTransactions();
+  // }
 
   public async signAndEncryptTransaction(tx: Transaction) {
     return S.getInstance().signAndEncryptTransaction(tx);
@@ -168,6 +169,10 @@ export default class Wallet {
       }
     }
 
+    //
+    // this.wallet.publickey = await S.getInstance().getPublicKey();
+    // this.wallet.privatekey = await S.getInstance().getPrivateKey();
+
     this.saitoCrypto = new SaitoCrypto(this.app);
 
     if (this.wallet.privatekey === "") {
@@ -209,13 +214,13 @@ export default class Wallet {
             // this.app.options.wallet.spends = [];
             // this.app.options.wallet.pending = [];
             this.app.options.wallet.balance = "0.0";
-            this.app.options.wallet.version = this.wallet.version;
+            this.app.options.wallet.version = this.version;
 
             // keep mixin
             this.app.options.mixin = mixin;
             this.app.options.crypto = crypto;
 
-            this.saveWallet();
+            await this.saveWallet();
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
@@ -224,12 +229,12 @@ export default class Wallet {
             //
             // purge old slips
             //
-            this.app.options.wallet.version = this.wallet.version;
+            this.app.options.wallet.version = this.version;
 
             // this.app.options.wallet.inputs = [];
             // this.app.options.wallet.outputs = [];
             // this.app.options.wallet.pending = [];
-            this.app.options.wallet.balance = "0.0";
+            // this.app.options.wallet.balance = "0.0";
 
             this.app.storage.saveOptions();
           }
@@ -246,21 +251,22 @@ export default class Wallet {
     }
   }
 
-  constructor(app: Saito) {
+  constructor(wallet: any, app: Saito) {
+    super(wallet);
     this.app = app;
 
-    this.inputs_hmap = new Map<string, boolean>();
-
-    this.inputs_hmap_counter = 0;
-    this.inputs_hmap_counter_limit = 10000;
-    this.outputs_hmap = new Map<string, boolean>();
-    this.outputs_hmap_counter = 0;
-    this.outputs_hmap_counter_limit = 10000;
-    this.outputs_prune_limit = 100;
+    // this.inputs_hmap = new Map<string, boolean>();
+    //
+    // this.inputs_hmap_counter = 0;
+    // this.inputs_hmap_counter_limit = 10000;
+    // this.outputs_hmap = new Map<string, boolean>();
+    // this.outputs_hmap_counter = 0;
+    // this.outputs_hmap_counter_limit = 10000;
+    // this.outputs_prune_limit = 100;
 
     this.saitoCrypto = null;
 
-    this.recreate_pending_transactions = 0;
+    // this.recreate_pending_transactions = 0;
   }
 
   //
@@ -269,8 +275,9 @@ export default class Wallet {
    * the new wallet to local storage.
    */
   async resetWallet() {
-    this.wallet.privatekey = this.app.crypto.generateKeys();
-    this.wallet.publickey = this.app.crypto.generatePublicKey(this.wallet.privatekey);
+    await S.getInstance().resetWallet();
+    this.wallet.privatekey = await S.getInstance().getPrivateKey();
+    this.wallet.publickey = await S.getInstance().getPublicKey();
 
     if (this.app.options.blockchain != undefined) {
       this.app.blockchain.resetBlockchain();
@@ -286,7 +293,7 @@ export default class Wallet {
     // this.wallet.spends = [];
     // this.wallet.pending = [];
 
-    this.saveWallet();
+    await this.saveWallet();
 
     this.app.options.invites = [];
     this.app.options.games = [];
@@ -300,7 +307,15 @@ export default class Wallet {
   /**
    * Saves the current wallet state to local storage.
    */
-  saveWallet() {
+  async saveWallet() {
+    if (!this.app.options.wallet) {
+      this.app.options.wallet = {};
+    }
+    this.app.options.wallet.preferred_crypto = this.preferred_crypto;
+    this.app.options.wallet.preferred_txs = this.preferred_txs;
+    this.app.options.wallet.version = this.version;
+    this.app.options.wallet.default_fee = this.default_fee;
+
     // this.app.options.wallet = this.wallet;
     // for (let i = 0; i < this.app.options.wallet.inputs.length; i++) {
     //   this.app.options.wallets.inputs[i].amount =
@@ -310,6 +325,8 @@ export default class Wallet {
     //   this.app.options.wallets.outputs[i].amount =
     //     this.app.options.wallets.outputs[i].amount.toString();
     // }
+    let wallet = await S.getInstance().getWallet();
+    await wallet.save();
     this.app.storage.saveOptions();
   }
 
@@ -349,7 +366,7 @@ export default class Wallet {
     throw "Module Not Found: " + ticker;
   }
 
-  setPreferredCrypto(ticker, show_overlay = 0) {
+  async setPreferredCrypto(ticker, show_overlay = 0) {
     let can_we_do_this = 0;
     const mods = this.returnInstalledCryptos();
     let cryptomod = null;
@@ -375,7 +392,7 @@ export default class Wallet {
       this.wallet.preferred_crypto = ticker;
       console.log("Activating cryptomod: " + cryptomod.ticker);
       cryptomod.activate();
-      this.saveWallet();
+      await this.saveWallet();
       console.log("emitting set preferred crypto event");
       this.app.connection.emit("set_preferred_crypto", ticker);
     }
@@ -393,12 +410,12 @@ export default class Wallet {
     return;
   }
 
-  returnPreferredCrypto() {
+  async returnPreferredCrypto() {
     try {
       return this.returnCryptoModuleByTicker(this.wallet.preferred_crypto);
     } catch (err) {
       if (err.startsWith("Module Not Found:")) {
-        this.setPreferredCrypto("SAITO");
+        await this.setPreferredCrypto("SAITO");
         return this.returnCryptoModuleByTicker(this.wallet.preferred_crypto);
       } else {
         throw err;
@@ -406,9 +423,9 @@ export default class Wallet {
     }
   }
 
-  returnPreferredCryptoTicker() {
+  async returnPreferredCryptoTicker() {
     try {
-      const pc = this.returnPreferredCrypto();
+      const pc = await this.returnPreferredCrypto();
       if (pc != null && pc != undefined) {
         return pc.ticker;
       }
@@ -464,7 +481,7 @@ export default class Wallet {
   }
 
   async returnPreferredCryptoBalance() {
-    const cryptomod = this.returnPreferredCrypto();
+    const cryptomod = await this.returnPreferredCrypto();
     return await this.checkBalance(cryptomod.returnAddress(), cryptomod.ticker);
   }
 
@@ -518,16 +535,22 @@ export default class Wallet {
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
         console.log(
-          "senders and returnAddress: " + senders[i] + " -- " + cryptomod.returnAddress()
+          "senders and returnAddress: " + senders[i] + " -- " + (await cryptomod.returnAddress())
         );
 
         //
         // DEBUGGING - sender is address to which we send the crypto
         // 	     - not our own publickey
         //
-        if (senders[i] === cryptomod.returnAddress()) {
+        if (senders[i] === (await cryptomod.returnAddress())) {
           // Need to save before we await, otherwise there is a race condition
-          this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
+          await this.savePreferredCryptoTransaction(
+            senders,
+            receivers,
+            amounts,
+            unique_hash,
+            ticker
+          );
           try {
             let unique_tx_hash = this.generatePreferredCryptoTransactionHash(
               senders,
@@ -696,7 +719,7 @@ export default class Wallet {
         }
       }
     };
-    poll_check_payment_function();
+    await poll_check_payment_function();
     //});
   }
 
@@ -719,7 +742,7 @@ export default class Wallet {
     );
   }
 
-  savePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {
+  async savePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {
     let sig = this.generatePreferredCryptoTransactionHash(
       senders,
       receivers,
@@ -737,7 +760,7 @@ export default class Wallet {
       }
     }
 
-    this.saveWallet();
+    await this.saveWallet();
 
     return 1;
   }

@@ -20,6 +20,8 @@ import { parse } from "url";
 import Peer from "../peer";
 import Transaction from "../transaction";
 import Factory from "../factory";
+import Wallet from "../wallet";
+import Blockchain from "../blockchain";
 
 const JSON = require("json-bigint");
 const app = express();
@@ -162,6 +164,26 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
   sendInterfaceEvent(event: string, peerIndex: bigint) {
     this.app.connection.emit(event, peerIndex);
+  }
+
+  async saveWallet(wallet: Wallet): void {
+    this.app.options.wallet.publicKey = await wallet.getPublicKey();
+    this.app.options.wallet.privateKey = await wallet.getPrivateKey();
+    this.app.options.wallet.balance = await wallet.getBalance();
+
+    throw new Error("Method not implemented.");
+  }
+
+  loadWallet(wallet: Wallet): void {
+    throw new Error("Method not implemented.");
+  }
+
+  saveBlockchain(blockchain: Blockchain): void {
+    throw new Error("Method not implemented.");
+  }
+
+  loadBlockchain(blockchain: Blockchain): void {
+    throw new Error("Method not implemented.");
   }
 }
 

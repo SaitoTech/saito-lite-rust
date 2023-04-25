@@ -135,7 +135,7 @@ class Recovery extends ModTemplate {
                 decryption_secret
               );
               this.app.wallet.wallet = JSON.parse(decrypted_wallet);
-              this.app.wallet.saveWallet();
+              await this.app.wallet.saveWallet();
               this.app.keychain.addKey(await this.app.wallet.getPublicKey(), {
                 identifier: identifier,
               });

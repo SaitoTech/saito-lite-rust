@@ -139,18 +139,18 @@ class Mixin extends ModTemplate {
   async loadCryptos() {
     let mixin_self = this;
 
-    (await this.app.modules.respondTo("mixin-crypto")).forEach((module) => {
+    for (const module of await this.app.modules.respondTo("mixin-crypto")) {
       let crypto_module = new MixinModule(this.app, module.ticker, mixin_self, module.asset_id);
       crypto_module.installModule(mixin_self.app);
       this.mods.push(crypto_module);
       this.app.modules.mods.push(crypto_module);
-      let pc = this.app.wallet.returnPreferredCryptoTicker();
+      let pc = await this.app.wallet.returnPreferredCryptoTicker();
       if (mixin_self.mixin.user_id !== "" || (pc !== "SAITO" && pc !== "")) {
         this.checkBalance(crypto_module.asset_id, function (res) {});
         this.fetchAddresses(crypto_module.asset_id, function (res) {});
         this.fetchDeposits(crypto_module.asset_id, crypto_module.ticker, function (res) {});
       }
-    });
+    }
   }
 
   ///////////
