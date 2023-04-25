@@ -25,7 +25,7 @@ export default class Wallet extends SaitoWallet {
   // spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
   // pending: [], // slips pending broadcast
   default_fee = 2;
-  version = 4.685;
+  version = 4.686;
   // };
   // public inputs_hmap: Map<string, boolean>;
   // public inputs_hmap_counter: number;
@@ -85,9 +85,8 @@ export default class Wallet extends SaitoWallet {
   }
 
   async initialize() {
-    //
+    console.log("wallet.initialize");
     // add ghost crypto module so Saito interface available
-    //
     class SaitoCrypto extends CryptoModule {
       constructor(app) {
         super(app, "SAITO");
@@ -104,7 +103,7 @@ export default class Wallet extends SaitoWallet {
       }
 
       returnPrivateKey() {
-        return this.app.wallet.returnPrivateKey();
+        return this.app.wallet.getPrivateKey();
       }
 
       async sendPayment(amount, to_address, unique_hash = "") {
@@ -176,6 +175,9 @@ export default class Wallet extends SaitoWallet {
     this.saitoCrypto = new SaitoCrypto(this.app);
     let privateKey = await this.getPrivateKey();
     let publicKey = await this.getPublicKey();
+    console.log("public key = " + publicKey);
+    console.log("private key = " + privateKey);
+
     if (privateKey === "") {
       if (this.app.options.wallet != null) {
         /////////////
@@ -284,8 +286,13 @@ export default class Wallet extends SaitoWallet {
    * the new wallet to local storage.
    */
   async resetWallet() {
+    console.log("resetting wallet");
     // await S.getInstance().resetWallet();
     await this.reset();
+    // let privateKey = S.getInstance().generatePrivateKey();
+    // let publicKey = S.getInstance().generatePublicKey(privateKey);
+    // await this.setPrivateKey(privateKey);
+    // await this.setPublicKey(publicKey);
     // this.wallet.privatekey = await S.getInstance().getPrivateKey();
     // this.wallet.publickey = await S.getInstance().getPublicKey();
 
@@ -318,6 +325,7 @@ export default class Wallet extends SaitoWallet {
    * Saves the current wallet state to local storage.
    */
   async saveWallet() {
+    console.log("saving wallet...");
     if (!this.app.options.wallet) {
       this.app.options.wallet = {};
     }
@@ -337,7 +345,7 @@ export default class Wallet extends SaitoWallet {
     // }
     // let wallet = await S.getInstance().getWallet();
     // await wallet.save();
-    await this.wallet.save();
+    await this.save();
     this.app.storage.saveOptions();
   }
 
@@ -849,13 +857,17 @@ export default class Wallet extends SaitoWallet {
   }
 
   async restoreWallet(file) {
+    console.log("restoring wallet...");
     let wallet_reader = new FileReader();
     wallet_reader.readAsBinaryString(file);
-    wallet_reader.onloadend = () => {
+    wallet_reader.onloadend = async () => {
       let decryption_secret = "";
       let decrypted_wallet = wallet_reader.result.toString();
       try {
         let wobj = JSON.parse(decrypted_wallet);
+        await this.reset();
+        await this.setPublicKey(wobj.wallet.publicKey);
+        await this.setPrivateKey(wobj.wallet.privateKey);
         wobj.wallet.version = this.version;
         wobj.wallet.inputs = [];
         wobj.wallet.outputs = [];

@@ -610,7 +610,6 @@ class Arcade extends ModTemplate {
       return;
     }
     let peers = await this.app.network.getPeers();
-    console.log("1111111");
     for (let peer of peers) {
       console.log("sync type : " + peer.peerIndex + " -> " + peer.synctype);
       if (peer.synctype == "lite") {
@@ -628,11 +627,8 @@ class Arcade extends ModTemplate {
           null,
           peer.peerIndex
         );
-        console.log("22222");
       }
-      console.log("333333");
     }
-    console.log("44444444");
   }
 
   ///////////////////////
@@ -671,7 +667,7 @@ class Arcade extends ModTemplate {
 
     let accept_sig = await this.app.crypto.signMessage(
       `invite_game_${timestamp}`,
-      await this.app.wallet.returnPrivateKey()
+      await this.app.wallet.getPrivateKey()
     );
 
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
@@ -1021,9 +1017,9 @@ class Arcade extends ModTemplate {
     }
     newtx.msg.invite_sig = this.app.crypto.signMessage(
       "invite_game_" + newtx.msg.timestamp,
-      this.app.wallet.returnPrivateKey()
+      await this.app.wallet.getPrivateKey()
     );
-    newtx = this.app.wallet.signTransaction(newtx);
+    newtx = await this.app.wallet.signTransaction(newtx);
 
     return newtx;
   }
@@ -1064,7 +1060,7 @@ class Arcade extends ModTemplate {
 
     newtx.msg.invite_sig = await this.app.crypto.signMessage(
       "invite_game_" + orig_tx.msg.timestamp,
-      await this.app.wallet.returnPrivateKey()
+      await this.app.wallet.getPrivateKey()
     );
 
     newtx = await this.app.wallet.signTransaction(newtx);
@@ -1167,7 +1163,7 @@ class Arcade extends ModTemplate {
 
     let accept_sig = await this.app.crypto.signMessage(
       "invite_game_" + txmsg.timestamp,
-      await this.app.wallet.returnPrivateKey()
+      await this.app.wallet.getPrivateKey()
     );
 
     txmsg.players.push(this.publicKey);

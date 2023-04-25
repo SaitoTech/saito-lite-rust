@@ -45,6 +45,20 @@ class WebMethods extends WebSharedMethods {
   sendInterfaceEvent(event: string, peerIndex: bigint) {
     this.app.connection.emit(event, peerIndex);
   }
+  async saveWallet() {
+    this.app.options.wallet.publicKey = await this.app.wallet.getPublicKey();
+    this.app.options.wallet.privateKey = await this.app.wallet.getPrivateKey();
+    this.app.options.wallet.balance = await this.app.wallet.getBalance();
+  }
+  async loadWallet() {
+    throw new Error("Method not implemented.");
+  }
+  async saveBlockchain() {
+    throw new Error("Method not implemented.");
+  }
+  async loadBlockchain() {
+    throw new Error("Method not implemented.");
+  }
 }
 
 async function init() {
@@ -54,26 +68,9 @@ async function init() {
 
   await initSaito(
     saito.options,
-    // {
-    //   server: {
-    //     host: "",
-    //     port: 0,
-    //     protocol: "",
-    //     endpoint: {
-    //       host: "",
-    //       port: 0,
-    //       protocol: "",
-    //     },
-    //     verification_threads: 0,
-    //     channel_size: 0,
-    //     stat_timer_in_ms: 0,
-    //     thread_sleep_time_in_ms: 0,
-    //     block_fetch_batch_size: 0,
-    //   },
-    //   peers: [],
-    // },
     new WebMethods(saito),
-    new Factory()
+    new Factory(),
+    saito.options.wallet?.privateKey || ""
   );
   saito.wallet = (await S.getInstance().getWallet()) as Wallet;
   saito.wallet.app = saito;

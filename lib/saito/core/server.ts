@@ -166,21 +166,21 @@ export class NodeSharedMethods extends CustomSharedMethods {
     this.app.connection.emit(event, peerIndex);
   }
 
-  async saveWallet(wallet: Wallet): Promise<void> {
-    this.app.options.wallet.publicKey = await wallet.getPublicKey();
-    this.app.options.wallet.privateKey = await wallet.getPrivateKey();
-    this.app.options.wallet.balance = await wallet.getBalance();
+  async saveWallet(): Promise<void> {
+    this.app.options.wallet.publicKey = await this.app.wallet.getPublicKey();
+    this.app.options.wallet.privateKey = await this.app.wallet.getPrivateKey();
+    this.app.options.wallet.balance = await this.app.wallet.getBalance();
   }
 
-  loadWallet(wallet: Wallet): void {
+  loadWallet(): void {
     throw new Error("Method not implemented.");
   }
 
-  saveBlockchain(blockchain: Blockchain): void {
+  saveBlockchain(): void {
     throw new Error("Method not implemented.");
   }
 
-  loadBlockchain(blockchain: Blockchain): void {
+  loadBlockchain(): void {
     throw new Error("Method not implemented.");
   }
 }

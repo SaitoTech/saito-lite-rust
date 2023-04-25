@@ -95,10 +95,7 @@ export default class Network {
     return S.getInstance().sendTransactionWithCallback(transaction, callback, peerIndex);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public close() {
-    throw new Error("not implemented");
-  }
+  public close() {}
 
   addStunPeer() {
     throw new Error("not implemented");

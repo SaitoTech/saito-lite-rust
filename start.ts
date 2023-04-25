@@ -18,14 +18,7 @@ async function initSaito() {
   const app = new Saito({
     mod_paths: mods_config.core,
   });
-  await initS(configs, new NodeSharedMethods(app), new Factory()).then(() => {
-    console.log("saito wasm lib initialized");
-  });
 
-  app.wallet = (await S.getInstance().getWallet()) as Wallet;
-  app.wallet.app = app;
-  app.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
-  app.server = new Server(app);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   app.storage = new StorageCore(app);
@@ -39,6 +32,21 @@ async function initSaito() {
   global.__webdir = __dirname + "/lib/saito/web/";
 
   await app.storage.initialize();
+
+  await initS(
+    configs,
+    new NodeSharedMethods(app),
+    new Factory(),
+    app.options.wallet?.privateKey || ""
+  ).then(() => {
+    console.log("saito wasm lib initialized");
+  });
+
+  app.wallet = (await S.getInstance().getWallet()) as Wallet;
+  app.wallet.app = app;
+  app.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
+  app.server = new Server(app);
+
   await app.init();
 
   const { protocol, host, port } = app.options.server;

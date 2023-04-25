@@ -71,7 +71,7 @@ class GameTestSuite extends GameTemplate {
           "\t" +
           crypto_key +
           "\t" +
-          (await this.app.crypto.signMessage(crypto_key, await this.app.wallet.returnPrivateKey()))
+          (await this.app.crypto.signMessage(crypto_key, await this.app.wallet.getPrivateKey()))
       );
       await this.endTurn();
     }
@@ -644,15 +644,15 @@ class GameTestSuite extends GameTemplate {
 
     let card_sig = game_self.app.crypto.signMessage(
       simultaneous_pick_card,
-      game_self.app.wallet.returnPrivateKey()
+      await game_self.app.wallet.getPrivateKey()
     );
     let hash2_sig = game_self.app.crypto.signMessage(
       hash2,
-      game_self.app.wallet.returnPrivateKey()
+      await game_self.app.wallet.getPrivateKey()
     );
     let hash3_sig = game_self.app.crypto.signMessage(
       hash3,
-      game_self.app.wallet.returnPrivateKey()
+      await game_self.app.wallet.getPrivateKey()
     );
 
     game_self.game.spick_card = simultaneous_pick_card;
