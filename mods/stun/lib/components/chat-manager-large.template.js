@@ -16,7 +16,7 @@ const ChatManagerLargeTemplate = (call_type, room_code, mode) => {
       : "";
 
   return `
-    <div class="stunx-chatbox" id="stunx-chatbox">
+    <div class="stun-chatbox" id="stun-chatbox">
       <main>
         <section class="large-wrapper">
         <div class="video-container-large">
