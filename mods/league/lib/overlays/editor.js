@@ -73,7 +73,8 @@ class LeagueEditor {
       if (description.textContent !== this.league.description){
         let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(description.textContent), "description");
         this.app.network.propagateTransaction(newtx);
-        this.league.description = sanitize(description.textContent);
+//        this.league.description = sanitize(description.textContent);
+        this.league.description = description.textContent;
       }
     }
 
