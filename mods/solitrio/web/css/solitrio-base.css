@@ -87,7 +87,7 @@ body {
   display: grid;
   grid-template-columns: repeat(10,1fr);
   grid-template-rows: 1fr 1fr 1fr 1fr;
-  max-width: 100%;/*min(90vw,160vh);*/
+  max-width: min(90vw,160vh);
   grid-gap: min(5px,1vh);
   height: fit-content;
   transition: filter 1s;
@@ -127,9 +127,10 @@ body {
 @media screen and (orientation: landscape) and (max-height: 600px) {
   .logobox{
     order: 1;
-    margin-top: 50vh;
-    transform: translateY(-50%);
+    margin-top: 40px;
     max-width: 150px;
+    max-height: 100vh;
+    height: fit-content;
   }
   .logobox img{
     display: none;
