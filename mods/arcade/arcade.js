@@ -246,6 +246,7 @@ class Arcade extends ModTemplate {
         }
 
         if (arcade_self.isAvailableGame(game)) {
+          console.log("Make it my game");
           //Mark myself as an invited guest
           game.msg.options.desired_opponent_publickey = this.app.wallet.returnPublicKey();
           //Then we have to remove and readd the game so it goes under "mine"
@@ -1780,10 +1781,11 @@ class Arcade extends ModTemplate {
   ///////////////////////////////////////////////////////////////////////////
   ////////////////////   GAME OBSERVER STUFF  ///////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
-  observeGame(game_id, watch_live = false) {
+  observeGame(game_id, watch_live = 0) {
     let game_tx = this.returnGame(game_id);
 
     if (!game_tx) {
+      console.warn("Game not found!");
       return;
     }
 
@@ -1814,7 +1816,8 @@ class Arcade extends ModTemplate {
     this.observerDownloadNextMoves(game_mod, ()=> {
       if (watch_live) {
         game_mod.game.halted = 0;
-        game_mod.game.live = 1;
+        game_mod.game.live = watch_live;
+        game_mod.saveGame(game_id);
       }
 
       this.app.connection.emit("arcade-game-ready-render-request", {id: game_id, name: game_msg.game, slug: game_mod.returnSlug()});
