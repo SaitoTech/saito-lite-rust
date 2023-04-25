@@ -386,6 +386,8 @@ i.link_icon.private {
 .league-edit-overlay-box .box {
   border: 1px solid black;
   margin-bottom: 1rem;
+  height: 70vh;
+  width: 70vw;
 }
 
 /* LIST SELECTION MODAL */
