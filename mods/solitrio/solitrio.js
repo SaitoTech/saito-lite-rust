@@ -567,7 +567,7 @@ class Solitrio extends OnePlayerGameTemplate {
           this.handToBoard();        
           this.displayBoard(50);
           this.displayUserInterface();  
-
+          this.checkBoardStatus();
         }        
         return 0;
       }
