@@ -142,8 +142,17 @@ class VideoChatManager {
           chat_mod.chat_manager.popups[this.room_code].manually_closed = false;
         }
 
-        this.app.connection.emit("chat-popup-render-into-request", this.chat_group, ".side-videos");
-        // document.querySelector(`.chat-popup-${this.room_code}`).style.zIndex = 2000;
+        let chat_target_element = ".stun-chatbox .side-videos";
+        if (!document.querySelector(chat_target_element)) {
+          chat_target_element = ".stun-chatbox .gallery";
+        }
+       
+        if(document.querySelector(chat_target_element)) {
+          this.app.connection.emit("chat-popup-render-into-request", this.chat_group, chat_target_element);
+          // document.querySelector(`.chat-popup-${this.room_code}`).style.zIndex = 2000; 
+        } else {
+          this.app.connection.emit("chat-popup-render-request", this.chat_group);
+        }
       });
     }
 
@@ -176,16 +185,16 @@ class VideoChatManager {
       };
     });
 
-    document.querySelector(".stunx-chatbox .minimizer").addEventListener("click", (e) => {
+    document.querySelector(".stun-chatbox .minimizer").addEventListener("click", (e) => {
       // fas fa-expand"
-      let icon = document.querySelector(".stunx-chatbox .minimizer i");
+      let icon = document.querySelector(".stun-chatbox .minimizer i");
       if (icon.classList.contains("fa-caret-down")) {
-        let chat_box = document.querySelector(".stunx-chatbox");
+        let chat_box = document.querySelector(".stun-chatbox");
         chat_box.classList.add("minimize");
         icon.classList.remove("fa-caret-down");
         icon.classList.add("fa-expand");
       } else {
-        let chat_box = document.querySelector(".stunx-chatbox");
+        let chat_box = document.querySelector(".stun-chatbox");
         chat_box.classList.remove("minimize");
         icon.classList.remove("fa-expand");
         icon.classList.add("fa-caret-down");
@@ -279,7 +288,7 @@ class VideoChatManager {
   }
 
   show(app, mod) {
-    if (!document.querySelector(".stunx-chatbox")) {
+    if (!document.querySelector(".stun-chatbox")) {
       this.render();
       this.attachEvents(app, mod);
     }
@@ -288,14 +297,14 @@ class VideoChatManager {
     history.pushState(null, null, room_link);
     this.isActive = true;
 
-    this.app.browser.makeDraggable("stunx-chatbox");
-    this.app.browser.makeDraggable("stunx-chatbox");
+    this.app.browser.makeDraggable("stun-chatbox");
+    this.app.browser.makeDraggable("stun-chatbox");
   }
 
   hide() {
     document
-      .querySelector("#stunx-chatbox")
-      .parentElement.removeChild(document.querySelector("#stunx-chatbox"));
+      .querySelector("#stun-chatbox")
+      .parentElement.removeChild(document.querySelector("#stun-chatbox"));
     let stun_mod = this.app.modules.returnModule("Stun");
     this.isActive = false;
     stun_mod.renderInto(this.mod.renderedInto);
@@ -398,15 +407,15 @@ class VideoChatManager {
       }
       count++;
     }
-    document.querySelector(".stunx-chatbox .image-list").innerHTML = images;
-    document.querySelector(".stunx-chatbox .users-on-call-count").innerHTML = count;
+    document.querySelector(".stun-chatbox .image-list").innerHTML = images;
+    document.querySelector(".stun-chatbox .users-on-call-count").innerHTML = count;
   }
 
   startTimer() {
     if (this.timer_interval) {
       return;
     }
-    let timerElement = document.querySelector(".stunx-chatbox .counter");
+    let timerElement = document.querySelector(".stun-chatbox .counter");
     let seconds = 0;
 
     const timer = () => {

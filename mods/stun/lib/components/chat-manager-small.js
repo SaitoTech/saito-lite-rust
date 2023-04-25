@@ -210,8 +210,8 @@ class ChatManagerSmall {
       }
       count++;
     }
-    // document.querySelector('.stunx-chatbox .image-list').innerHTML = images;
-    // document.querySelector('.stunx-chatbox .users-on-call-count').innerHTML = count
+    // document.querySelector('.stun-chatbox .image-list').innerHTML = images;
+    // document.querySelector('.stun-chatbox .users-on-call-count').innerHTML = count
   }
 
   updateConnectionState(peer, state) {
