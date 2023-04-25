@@ -1873,18 +1873,16 @@ class Arcade extends ModTemplate {
           let game_move = future_tx.returnMessage();
           let loaded_step = game_move.step.game;
 
-          console.log(loaded_step, game_move);
-
           if (loaded_step > game_mod.game.step.game ||
             loaded_step > game_mod.game.step.players[future_tx.transaction.from[0].add]) 
           {
             console.log("Add move: " + JSON.stringify(game_move));
-            game_mod.addFutureMove(future_tx);
+            game_mod.addFutureMove(future_tx); //This will save future moves (so saveGame below doesn't overwrite them)
           }
         }
 
         game_mod.saveGame(game_mod.game.id);
-
+        
         if (mycallback) {
           mycallback(game_mod);
         }
