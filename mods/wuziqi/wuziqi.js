@@ -76,6 +76,7 @@ class Wuziqi extends GameTemplate {
 
 
         //Player Boxes
+        this.playerbox.show_observer_box = false;
         this.playerbox.render();
         if (this.game.player == 0){
             this.playerbox.addClass("me",1);
@@ -138,7 +139,7 @@ class Wuziqi extends GameTemplate {
 
     // Create the game board data structure
     generateBoard(x) {
-        console.log("Generate board for " + x);
+        //console.log("Generate board for " + x);
         // Set the board size (always a square of side length set by the user.)
         var cells = x * x;
         // Clear the board
@@ -215,8 +216,8 @@ class Wuziqi extends GameTemplate {
 
     // Iterate through the board object to draw each cell in the DOM
     drawBoard(board) {
-        console.log("DRAWING BOARD!");
-        console.log(board);
+        //console.log("DRAWING BOARD!");
+        //console.log(board);
         boardElement = document.querySelector('.board');
         // Clear the board
         boardElement.innerHTML = "";

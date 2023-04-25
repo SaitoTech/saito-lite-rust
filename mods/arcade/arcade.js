@@ -170,16 +170,17 @@ class Arcade extends ModTemplate {
     }
     let arcade_self = this;
 
-    let cutoff1 = new Date().getTime() - 2000000;
+    let cutoff1 = new Date().getTime() - 4800000;
     let cutoff2 = new Date().getTime() - 600000000;
 
     //
     // load open games from server
     //  ( status = "open" OR status = "private" ) AND
-    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND status = 'over') ORDER BY created_at DESC`;
+    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND status = 'over') ORDER BY created_at ASC`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
       if (res.rows) {
         for (let record of res.rows) {
+          console.log(JSON.parse(JSON.stringify(record)));
           //This is the save openTX
           let game_tx = new saito.default.transaction(JSON.parse(record.tx));
 
@@ -198,7 +199,8 @@ class Arcade extends ModTemplate {
           //
           //Game Meta Data stored directly in DB
           //
-          game_tx.msg.winner = record.winner;
+          game_tx.msg.winner = JSON.parse(record.winner);
+
           game_tx.msg.method = record.method;
           game_tx.msg.time_finished = record.time_finished;
           if (record?.step){
@@ -207,9 +209,9 @@ class Arcade extends ModTemplate {
             game_tx.msg.ts = step?.ts;          
           }
 
-          if (arcade_self.debug) {
+          //if (arcade_self.debug) {
             console.log("Load DB Game: " + record.status, game_tx.returnMessage());
-          }
+          //}
           if (record.time_finished) {
             if (record.status !== "over" && record.status !== "close") {
               console.log("Game status mismatch");
@@ -586,7 +588,7 @@ class Arcade extends ModTemplate {
       // only servers notify lite-clients
       //
       if (app.BROWSER == 0 && app.SPVMODE == 0) {
-        console.log("notify peers?");
+        console.log("notify peers?" );
         this.notifyPeers(tx);
       }
 
@@ -909,9 +911,13 @@ class Arcade extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     let game = this.returnGame(txmsg.game_id);
+
+    let winner = txmsg.winner || null;
+    console.log("Winner:", winner);
+
     if (game?.msg) {
       //Store the results locally
-      game.msg.winner = txmsg.winner;
+      game.msg.winner = winner;
       game.msg.method = txmsg.reason;
       game.msg.time_finished = txmsg.ts;
     } else {
@@ -922,15 +928,15 @@ class Arcade extends ModTemplate {
 
     let sql = `UPDATE games SET winner = $winner, method = $method, time_finished = $ts WHERE game_id = $game_id`;
     let params = {
-      $winner: txmsg.winner || "",
+      $winner: JSON.stringify(winner),
       $method: txmsg.reason,
       $ts: txmsg.ts,
       $game_id: txmsg.game_id,
     };
     await this.app.storage.executeDatabase(sql, params, "arcade");
-    if (this.debug){
+    //if (this.debug){
       console.log("Winner updated in arcade");  
-    }
+   // }
   }
 
   async receiveCloseTransaction(tx) {
@@ -1873,18 +1879,16 @@ class Arcade extends ModTemplate {
           let game_move = future_tx.returnMessage();
           let loaded_step = game_move.step.game;
 
-          console.log(loaded_step, game_move);
-
           if (loaded_step > game_mod.game.step.game ||
             loaded_step > game_mod.game.step.players[future_tx.transaction.from[0].add]) 
           {
             console.log("Add move: " + JSON.stringify(game_move));
-            game_mod.addFutureMove(future_tx);
+            game_mod.addFutureMove(future_tx); //This will save future moves (so saveGame below doesn't overwrite them)
           }
         }
 
         game_mod.saveGame(game_mod.game.id);
-
+        
         if (mycallback) {
           mycallback(game_mod);
         }
