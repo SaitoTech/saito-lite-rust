@@ -1,6 +1,6 @@
 module.exports = SettlersScoreboardTemplate = (scoreboard) => {
 
-  let html = ``;
+  let html = '';
   html += `
     <div class="scoreboard">
     <div class="VP-track-label" id="VP-track-label">Victory Points</div>

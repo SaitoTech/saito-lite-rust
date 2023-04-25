@@ -19,6 +19,7 @@ class SettlersScoreboard {
     }
 
     this.attachEvents();
+    
   }
 
   attachEvents() {
@@ -47,6 +48,4 @@ class SettlersScoreboard {
 }
 
 module.exports = SettlersScoreboard;
-
-
 
