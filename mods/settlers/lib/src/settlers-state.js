@@ -440,7 +440,7 @@ class SettlersState {
     so should catch victory condition
     */
     updateScore() {
-
+        let track_vp = [];
         for (let i = 0; i < this.game.state.players.length; i++) {
             let score = 0;
             //Count towns and cities
@@ -462,14 +462,10 @@ class SettlersState {
             //Count (played) Victory Points
             score += this.game.state.players[i].vpc;
 
-
             //
             // and render to screen
             //
-            if (this.game.state.players[i].vp < score) {
-                this.scoreboard.render();
-                this.scoreboard.lock();
-            }
+            track_vp.push(this.game.state.players[i].vp);
 
             //Save Score
             this.game.state.players[i].vp = score;
@@ -477,6 +473,13 @@ class SettlersState {
             //Check for winner
             if (score >= this.game.options.game_length) {
                 this.game.queue.push(`winner\t${i}`);
+            }
+        }
+
+        for (let i = 0; i < this.game.state.players.length; i++) {
+            if (this.game.state.players[i].vp > track_vp[i]) {
+                this.scoreboard.render();
+                this.scoreboard.lock();
             }
         }
 
