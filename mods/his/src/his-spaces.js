@@ -942,7 +942,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     let catholic_spaces = 0;
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].religion === "catholic") {
-	if (zone == "" || this.game.spaces[key].language == language) {
+	if (language == "" || this.game.spaces[key].language == language) {
 	  catholic_spaces++;
 	}
       }
@@ -954,7 +954,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     let protestant_spaces = 0;
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].religion === "protestant") {
-	if (zone == "" || this.game.spaces[key].language == language) {
+	if (language == "" || this.game.spaces[key].language == language) {
 	  protestant_spaces++;
 	}
       }

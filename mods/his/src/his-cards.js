@@ -1554,9 +1554,7 @@ alert("Not Implemented");
 
 	let papacy = his_self.returnPlayerOfFaction("papacy");
 	if (his_self.game.player === papacy) {
-
 	  his_self.game.state.events.papacy_may_found_jesuit_universities = 1;
-
 	  return 0;
 	}
 
