@@ -4,18 +4,14 @@ const SaitoLoader = require('../../../../lib/saito/ui/saito-loader/saito-loader.
 
 class StunAppspace {
 
-
-
-
   constructor(app, mod, container = "") {
     this.app = app;
     this.mod = mod;
     this.container = container;
     this.overlay = new SaitoOverlay(app, mod);
     this.loader = new SaitoLoader(app, mod);
-    // app.connection.on('join-room-with-code', (code) => {
-    //   this.joinVideoInvite(app, mod, code)
-    // })
+    this.to_join_room = false;
+
 
     app.connection.on('stun-create-conference-call', (code) => {
       this.createConferenceCall(app, mod, code)
@@ -32,9 +28,18 @@ class StunAppspace {
       this.loader.remove()
     })
 
+    app.connection.on('stun-to-join-room', (state, room_code) => {
+      this.to_join_room = state;
+      this.room_code = room_code
+      document.querySelector('#createRoom').textContent = "Join Meeting";
+    })
+
   }
 
   render() {
+    if (document.querySelector('.stun-appspace')) {
+      return;
+    }
     if (this.container === ".saito-overlay") {
       this.overlay.show(StunAppspaceTemplate(this.app, this.mod))
     } else if (this.container === "body") {
@@ -42,6 +47,8 @@ class StunAppspace {
     }
 
     this.attachEvents(this.app, this.mod);
+    // create peer manager and initialize , send an event to stun to initialize
+    this.app.connection.emit('stun-init-peer-manager',"large");
   }
 
   attachEvents(app, mod) {
@@ -54,40 +61,34 @@ class StunAppspace {
         stun_mod.addListeners(listeners);
       }
 
+
       if (e.target.id === "createRoom") {
-        this.createRoom();
+        if (this.to_join_room) {
+          this.joinRoom(this.room_code)
+        } else {
+          this.createRoom();
+        }
+
       }
     })
 
   }
 
+
   async createRoom() {
-    // get local stream;
-    const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-
-    // create a room code, and update the server about a new room, then add the my public key into that room
     let room_code = this.app.crypto.generateRandomNumber().substring(0, 6);
-
-    // create peer manager and initialize , send an event to stun to initialize
-    this.app.connection.emit('stun-init-peer-manager', localStream, room_code);
-
     this.mod.sendCreateRoomTransaction(room_code);
+    this.app.connection.emit('stun-peer-manager-update-room-code', room_code);
+    this.app.connection.emit('join-meeting', this.to_join_room);
   }
 
+  async joinRoom(room_code) {
+    this.app.connection.emit('stun-peer-manager-update-room-code', room_code);
+    this.app.connection.emit('join-meeting', this.to_join_room);
+  }
 
   async createConferenceCall(app, mod, room_code) {
-    // console.log('creating conference call');
 
-    // const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    // mod.setLocalStream(localStream);
-    // let my_public_key = this.app.wallet.returnPublicKey();
-    // mod.central = true;
-    // this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code, my_public_key);
-    // this.app.connection.emit('stun-remove-loader')
-    // this.app.connection.emit('render-local-stream-request', localStream, 'large', 'video');
-    // this.app.connection.emit('remove-overlay-request');
-    // siteMessage("You are the only participant in this room", 3000);
-    // return;
   }
 
 }

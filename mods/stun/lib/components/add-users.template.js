@@ -18,7 +18,7 @@ module.exports = AddUsersTemplate;
 
 // <main>
 // <section class="footer">
-//   <i class="audio_control fa fa-microphone" aria-hidden="true"></i>
+//   <i class="audio-control fa fa-microphone" aria-hidden="true"></i>
 //   <i class="video_control fas fa-video" aria-hidden="true"></i>
 //   <button class="disconnect_btn ">Disconnect</div>
 // </section>

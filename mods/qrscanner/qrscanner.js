@@ -1,18 +1,23 @@
-const ModTemplate = require("../../lib/templates/modtemplate");
+const ModTemplate = require('../../lib/templates/modtemplate');
+const UserMenu = require("./../../lib/saito/ui/modals/user-menu/user-menu");
+const MyUserMenu = require("./../../lib/saito/ui/modals/my-user-menu/my-user-menu");
+
 
 const HeaderDropdownTemplate = (dropdownmods) => {
-  html = dropdownmods.map((mod) => {
+  html = dropdownmods.map(mod => {
     if (mod.returnLink() != null) {
       return `<a href="${mod.returnLink()}"><li>${mod.name}</li></a>`;
     }
-  });
+  })
   return `
   <div id="modules-dropdown" class="header-dropdown">
     <ul>${html}</ul>
   </div>`;
-};
+}
+
 
 class QRScanner extends ModTemplate {
+
   constructor(app) {
     super(app);
 
@@ -24,17 +29,17 @@ class QRScanner extends ModTemplate {
     this.canvas_context = null;
     this.isStreamInit = false;
 
-    this.styles = ["/qrscanner/style.css"];
+    this.styles = ['/qrscanner/style.css'];
     this.scanner_callback = null;
 
-    this.description = "Helper module with QR code scanning functionality.";
+    this.description = "Helper module with QR code scanning functionality."
     this.categories = "Dev Data Utilities";
 
     this.constraints = {
       audio: false,
       video: {
-        facingMode: "environment",
-      },
+        facingMode: 'environment'
+      }
     };
 
     // quirc wasm version
@@ -45,7 +50,7 @@ class QRScanner extends ModTemplate {
     // In milliseconds
     this.debounce_timeout = 750;
 
-    this.events = ["encrypt-key-exchange-confirm"];
+    this.events = ['encrypt-key-exchange-confirm'];
 
     //
     // and scan when asked
@@ -53,114 +58,89 @@ class QRScanner extends ModTemplate {
     this.app.connection.on("scanner-start-scanner", () => {
       this.startScanner();
     });
-  }
 
-  async crespondTo(type = "") {
-    let scanner_self = this;
-
-    /*** moved to wallet bar ***
-     if (type === 'saito-header') {
-      return [
-        {
-          text: "Scan",
-          icon: this.icon || "fas fa-expand",
-    rank: 30 ,
-          callback: function (app, id) {
-            app.connection.emit("scanner-start-scanner", {});
-          }
-        }
-      ];
-    }
-     ***/
-    return null;
   }
 
   initialize(app) {
     super.initialize(app);
-    if (app.BROWSER == 1) {
-      this.attachStyleSheets();
-    }
+    if (app.BROWSER == 1) { this.attachStyleSheets(); }
   }
 
   attachEvents(app) {
     let scanner_self = this;
-    document.querySelector(".launch-scanner").addEventListener("click", function (e) {
+    document.querySelector('.launch-scanner').addEventListener('click', function (e) {
       scanner_self.startScanner();
     });
   }
 
   startQRDecoderInitializationLoop() {
+
     x = this.attemptQRDecode();
 
     if (x == 1) {
-      console.log("working...");
     } else {
-      console.log("wait 100....");
       setTimeout(() => {
         this.startQRDecoderInitializationLoop();
       }, 100);
     }
+
   }
 
+  //
+  // turns BODY into the scanner
+  //
   startScanner(mycallback = null) {
-    if (this.app.BROWSER == 0) {
-      return;
-    }
-    if (!document) {
-      return;
-    }
-    if (document.querySelector(".qrscanner-container")) {
-      return;
-    }
+
+    if (this.app.BROWSER == 0) { return; }
+    if (!document) { return; }
+    if (document.querySelector('.qrscanner-container')) { return; }
 
     this.scanner_callback = null;
-    if (mycallback) {
-      this.scanner_callback = mycallback;
-    }
+    if (mycallback) { this.scanner_callback = mycallback; }
 
-    document.body.innerHTML = this.returnScannerHTML();
-    document.querySelector(".close-scanner").onclick = () => {
+    this.app.browser.addElementToDom(this.returnScannerHTML());
+    //document.body.innerHTML = this.returnScannerHTML();
+    document.querySelector('.close-scanner').onclick = () => {
+      //window.location.reload();
+      document.querySelector(".qrscanner-container").remove();
+      this.stop();
+    };
+
+    let scanner_self = this;
+
+    scanner_self.start(
+      document.getElementById("qr-video"),
+      document.getElementById("qr-canvas")
+    );
+
+  }
+
+  //
+  // turns submitted EL into the scanner
+  //
+  startEmbeddedScanner(el, mycallback = null) {
+
+    if (this.app.BROWSER == 0) { return; }
+    if (!document) { return; }
+    if (document.querySelector('.qrscanner-container')) { return; }
+
+    this.scanner_callback = null;
+    if (mycallback) { this.scanner_callback = mycallback; }
+
+    el.innerHTML = this.returnScannerHTML();
+    document.querySelector('.close-scanner').onclick = () => {
       window.location.reload();
     };
 
     let scanner_self = this;
 
-    scanner_self.start(document.getElementById("qr-video"), document.getElementById("qr-canvas"));
+    scanner_self.start(
+      document.getElementById("qr-video"),
+      document.getElementById("qr-canvas")
+    );
+
   }
 
-  startEmbeddedScanner(el, mycallback = null) {
-    if (this.app.BROWSER == 0) {
-      return;
-    }
-    if (!document) {
-      return;
-    }
-    if (document.querySelector(".qrscanner-container")) {
-      return;
-    }
-
-    this.scanner_callback = null;
-    if (mycallback) {
-      this.scanner_callback = mycallback;
-    }
-
-    el.innerHTML = this.returnScannerHTML();
-
-    let scanner_self = this;
-
-    scanner_self.start(document.getElementById("qr-video"), document.getElementById("qr-canvas"));
-  }
-
-  startQRDecoder() {
-    x = this.attemptQRDecode();
-
-    if (x == 1) {
-    } else {
-      setTimeout(() => {
-        this.startQRDecoder();
-      }, 100);
-    }
-  }
 
   returnScannerHTML() {
     return `
@@ -178,13 +158,14 @@ class QRScanner extends ModTemplate {
   }
 
   async start(video, canvas) {
-    this.video = video;
+
+    this.video = video
     this.canvas = canvas;
 
     this.canvas_context = this.canvas.getContext("2d");
-    this.decoder = new Worker("/qrscanner/quirc_worker.js");
-    this.decoder.onmessage = (msg) => {
-      this.onDecoderMessage(msg);
+    this.decoder = new Worker('/qrscanner/quirc_worker.js');
+    this.decoder.onmessage = (msg) => { 
+      this.onDecoderMessage(msg) 
     };
 
     try {
@@ -196,12 +177,22 @@ class QRScanner extends ModTemplate {
     this.startQRDecoderInitializationLoop();
   }
 
+
   stop() {
     this.decoder.terminate();
-    if (this.video) this.video.srcObject.getTracks().forEach((track) => track.stop());
+    if (this.video){
+      this.video.srcObject.getTracks().forEach(track => track.stop());
+    }
+    if (document.querySelector(".qrscanner-container")){
+      document.querySelector(".qrscanner-container").remove();  
+    }
+    
+
   }
 
-  render() {}
+  render() {
+  }
+
 
   //
   // main loop sending messages to quirc_worker to detect qrcodes on the page
@@ -226,31 +217,27 @@ class QRScanner extends ModTemplate {
     } else {
       return 0;
     }
+    return 0;
   }
 
   //
-  // worker passes back a message either containing decoded data,
+  // worker passes back a message either containing decoded data, 
   // or it attempts t
   //
   onDecoderMessage(msg) {
-    if (msg.data != "done") {
-      var qrid = msg.data["payload_string"];
+    if (msg.data != 'done') {
+      var qrid = msg.data['payload_string'];
       let right_now = Date.now();
-      if (
-        qrid != this.last_scanned_raw ||
-        this.last_scanned_at < right_now - this.debounce_timeout
-      ) {
+      if (qrid != this.last_scanned_raw || this.last_scanned_at < right_now - this.debounce_timeout) {
         this.last_scanned_raw = qrid;
         this.last_scanned_at = right_now;
-
         this.handleDecodedMessage(qrid);
-      } else if (qrid == this.last_scanned_raw) {
+        return;
+      } else if (qrid === this.last_scanned_raw) {
         this.last_scanned_at = right_now;
       }
     }
-    setTimeout(() => {
-      this.attemptQRDecode();
-    }, 0);
+    setTimeout(() => { this.attemptQRDecode() }, 0);
   }
 
   //
@@ -258,25 +245,68 @@ class QRScanner extends ModTemplate {
   // Else, the message is broadcast for other modules to utilize
   //
   handleDecodedMessage(msg) {
+
+    //
+    // remove scanline
+    //
+    if (document.querySelector(".scanline")) {
+      document.querySelector(".scanline").remove();
+    }
+
+    //
+    // we know what we want to do (callback provided)
+    //
     if (this.scanner_callback != null) {
-      this.decoder.terminate();
+      this.stop();
       this.scanner_callback(msg);
       return;
     }
 
-    if (this.app.crypto.isPublicKey(msg)) {
-      // let encrypt_mod = this.app.modules.returnModule('Encrypt');
-      // this.initializing_key = true;
-      // encrypt_mod.initiate_key_exchange(msg);
-
-      // // need to add chat while this is happening
-      // // window.location.assign('/chat');
-      // alert(`Initiating Key Exchange with ${msg}`);
-
-      this.decoder.terminate();
-    } else {
-      this.sendEvent("qrcode", msg);
+    //
+    // or this is a URL
+    //
+    if (this.app.browser.isValidUrl(msg)) {
+      this.stop();
+      let c = confirm("Visit: " + msg + "?");
+      if (c) {
+      	window.location = msg;
+      	return;	
+      }
     }
+
+    //
+    // or this is a publickey
+    //
+    if (this.app.crypto.isPublicKey(msg)) {
+      this.stop();
+      if (this.app.wallet.returnPublicKey() === msg) {
+          let myUserMenu = new MyUserMenu(this.app, msg);
+          myUserMenu.render(this.app);
+    	  return;
+      } else {
+          let userMenu = new UserMenu(this.app, msg);
+          userMenu.render(this.app);
+  	  return;
+      }
+    }
+
+    //
+    // non-SAITO publickey?
+    //
+    if (!msg.match(/\s/gi)) {
+      if (msg.match(/[0-9a-zA-Z]+/i)) {
+        this.stop();
+
+        let obj = {};
+        obj.address = msg;
+        this.app.connection.emit('saito-crypto-withdraw-render-request', obj);
+
+        return;
+      }
+    }
+
+    this.sendEvent('qrcode', msg);
+
   }
 
   decodeFromFile(f) {
@@ -297,16 +327,9 @@ class QRScanner extends ModTemplate {
   }
 
   handleError(error) {
-    console.log("navigator.MediaDevices.getUserMedia error: ", error.message, error.name);
+    //console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
   }
 
-  receiveEvent(type, data) {
-    if (type === "encrypt-key-exchange-confirm") {
-      if (document.getElementById("qr-canvas") && this.initializing_key) {
-        window.location.assign("/chat");
-      }
-    }
-  }
 }
 
 module.exports = QRScanner;

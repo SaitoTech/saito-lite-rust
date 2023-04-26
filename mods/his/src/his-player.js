@@ -183,6 +183,8 @@
     this.game.state.tmp_papacy_may_specify_debater = 0;
     this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
 
+    this.deactivateDebaters();
+
     for (let s in this.game.spaces) {
       if (this.game.spaces[s].besieged == 2) {
 	this.game.spaces[s].besieged = 1;
@@ -375,7 +377,7 @@
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', function() {
+    $(".option").on('click', () => {
 
       let id = $(this).attr('id');
       $(".option").off();
@@ -407,7 +409,7 @@
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
-    $(".option").on('click', function() {
+    $(".option").on('click', () => {
 
       let id = $(this).attr('id');
       $(".option").off();
@@ -741,7 +743,13 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
   }
 
 
-
+  countSpacesWithFilter(filter_func) {
+    let count = 0;
+    for (let key in this.game.spaces) {
+      if (filter_func(this.game.spaces[key]) == 1) { count++; }
+    }
+    return count;
+  }
 
   playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
 
@@ -752,12 +760,17 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     html += '<ul>';
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
-        html += '<li class="option" id="' + key + '">' + key + '</li>';
+        html += '<li class="option .'+key+'" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
-	  document.getElementById(key).onclick = (e) => {
-	    $('.option').off();
-	    mycallback(key);
-	  }
+	  let t = "."+key;
+	  document.querySelectorAll(t).forEach((el) => {
+	    el.onclick = (e) => {
+	      $('.option').off();
+	      $('.space').off();
+	      $('.hextile').off();
+	      mycallback(key);
+	    }
+	  });
 	}
       }
     }
@@ -770,6 +783,11 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     $('.option').off();
     $('.option').on('click', function () {
+
+      $('.option').off();
+      $('.space').off();
+      $('.hextile').off();
+
       let action = $(this).attr("id");
       if (action == "cancel") {
         cancel_func();
@@ -1171,6 +1189,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       $(".option").on('click', function() {
 
         let id = $(this).attr('id');
+
         $(".option").off();
 
 	source_spacekey = id;
@@ -1198,7 +1217,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
           function(destination_spacekey) {
 
-            let space = his_self.spaces[id];
+            let space = his_self.spaces[source_spacekey];
 
             let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface) { 
 
@@ -1888,7 +1907,13 @@ console.log("units length: " + space.units[defender].length);
   }
 
 
+
+
   canPlayerNavalTransport(his_self, player, faction, ops) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     if (ops < 2) { return 0; }
     let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_with_infantry.length; i++) {
@@ -1937,10 +1962,7 @@ console.log("units length: " + space.units[defender].length);
 
       his_self.updateStatusWithOptions(`Select Destination:`, html);
       his_self.attachCardboxEvents(function(destination) {
-
-	alert(user_choice + " -- " + destination);
         his_self.endTurn();
-
       });
     });
 
@@ -2075,6 +2097,10 @@ console.log("units length: " + space.units[defender].length);
 
 
   canPlayerNavalMove(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     if (his_self.doesFactionHaveNavalUnitsOnBoard(faction)) { return 1; }
     return 0;
   }
@@ -2232,6 +2258,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   }
 
   canPlayerMoveFormationInClear(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
     if (spaces_with_units.length > 0) { 
       return 1;
@@ -2240,6 +2270,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   }
 
   canPlayerBuyMercenary(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     return 1;
   }
   playerBuyMercenary(his_self, player, faction) {
@@ -2262,6 +2296,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   }
 
   canPlayerRaiseRegular(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     return 1;
   }
   async playerRaiseRegular(his_self, player, faction) {
@@ -2284,6 +2322,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   }
 
   canPlayerBuildNavalSquadron(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     return 1;
   }
   async playerBuildNavalSquadron(his_self, player, faction) {
@@ -2307,6 +2349,10 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   }
 
   canPlayerAssault(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
@@ -2339,8 +2385,12 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
     );
   }
+
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
-console.log("CPCUS: " + faction);
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_in_unrest.length; i++) {
@@ -2409,6 +2459,10 @@ console.log("CS: " + JSON.stringify(conquerable_spaces));
     return 0;
   }
   canPlayerExplore(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     if (this.game.state.players_info[player-1].has_explored == 0) { return 1; }
     return 0;
   }
@@ -2418,6 +2472,10 @@ console.log("10");
 return;
   }
   canPlayerColonize(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     if (this.game.state.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
@@ -2427,6 +2485,10 @@ console.log("11");
 return;
   }
   canPlayerConquer(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     if (this.game.state.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
@@ -2436,6 +2498,10 @@ console.log("12");
 return;
   }
   canPlayerInitiatePiracyInASea(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     if (faction === "ottoman" && his_self.game.events.ottoman_piracy_enabled == 1) { return 1; }
     return 0;
   }
@@ -2444,6 +2510,10 @@ console.log("13");
 return;
   }
   canPlayerRaiseCavalry(his_self, player, faction) {
+
+    // no for protestants early-game
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+
     return 1;
   }
   async playerRaiseCavalry(his_self, player, faction) {
@@ -2498,22 +2568,22 @@ return;
     let html = '<ul>';
 
     if (his_self.game.state.translations['new']['german'] < 6) {
-      html += '<li class="option" style="" id="1">German (new testament)</li>';
+      html += '<li class="option german" style="" id="1">German (new testament)</li>';
     }
     if (his_self.game.state.translations['new']['french'] < 6) {
-      html += '<li class="option" style="" id="2">French (new testament)</li>';
+      html += '<li class="option french" style="" id="2">French (new testament)</li>';
     }
     if (his_self.game.state.translations['new']['english'] < 6) {
-      html += '<li class="option" style="" id="3">English (new testament)</li>';
+      html += '<li class="option english" style="" id="3">English (new testament)</li>';
     }
     if (his_self.game.state.translations['full']['german'] < 10) {
-      html += '<li class="option" style="" id="4">German (full bible)</li>';
+      html += '<li class="option german" style="" id="4">German (full bible)</li>';
     }
     if (his_self.game.state.translations['full']['french'] < 10) {
-      html += '<li class="option" style="" id="5">French (full bible)</li>';
+      html += '<li class="option french" style="" id="5">French (full bible)</li>';
     }
     if (his_self.game.state.translations['full']['english'] < 10) {
-      html += '<li class="option" style="" id="6">English (full bible)</li>';
+      html += '<li class="option english" style="" id="6">English (full bible)</li>';
     }
     html += '</ul>';
 
@@ -2526,7 +2596,7 @@ return;
 
       if (id == 1 || id == 4) {
 	his_self.addMove("translation\tgerman"); 
-	his_self.addMove("counter_or_acknowledge\tProtestants Translate in Germany Language Zone\ttranslation_german_language_zone\tgerman\t"+faction);
+	his_self.addMove("counter_or_acknowledge\tProtestants Translate in German Language Zone\ttranslation_german_language_zone\tgerman\t"+faction);
       }
       if (id == 2 || id == 5) { 
 	his_self.addMove("translation\tfrench"); 
@@ -2557,24 +2627,32 @@ return;
 
       let msg = "Select Language Zone for Reformation Attempts:";
       let html = '<ul>';
-          html += '<li class="option" style="" id="german">German</li>';
-          html += '<li class="option" style="" id="english">English</li>';
-          html += '<li class="option" style="" id="french">French</li>';
-          html += '<li class="option" style="" id="spanish">Spanish</li>';
-          html += '<li class="option" style="" id="italian">Italian</li>';
+          html += '<li class="option german" style="" id="german">German</li>';
+          html += '<li class="option english" style="" id="english">English</li>';
+          html += '<li class="option french" style="" id="french">French</li>';
+          html += '<li class="option spanish" style="" id="spanish">Spanish</li>';
+          html += '<li class="option italian" style="" id="italian">Italian</li>';
           html += '</ul>';
+
+      //
+      // show visual language zone selector
+      //
+      his_self.language_zone_overlay.render();
 
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
       $('.option').on('click', function () {
+
+        his_self.language_zone_overlay.hide();
+
         let id = $(this).attr("id");
 
 	if (id === "german" && his_self.isDebaterAvailable("carlstadt-debater")) {
 
           let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
           let html = '<ul>';
-            html += '<li class="option" style="" id="yes">Yes, Commit Carlstadt</li>';
+          html += '<li class="option" style="" id="yes">Yes, Commit Carlstadt</li>';
           html += '<li class="option" style="" id="no">No</li>';
           html += '</ul>';
 
@@ -2630,21 +2708,27 @@ return;
     let html = '<ul>';
 
     if (his_self.returnDebatersInLanguageZone("german", "protestant")) { 
-        html += '<li class="option" style="" id="german">German</li>';
+        html += '<li class="option german" style="" id="german">German</li>';
     }
     if (his_self.returnDebatersInLanguageZone("french", "france")) { 
-        html += '<li class="option" style="" id="french">French</li>';
+        html += '<li class="option french" style="" id="french">French</li>';
     }
     if (his_self.returnDebatersInLanguageZone("english", "france")) { 
-        html += '<li class="option" style="" id="english">English</li>';
+        html += '<li class="option english" style="" id="english">English</li>';
     }
         html += '</ul>';
+
+    //
+    // show visual language zone selector
+    //
+    his_self.language_zone_overlay.render();
 
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
-    $('.option').on('click', function () {
+    $('.option').on('click', () => {
 
+      his_self.language_zone_overlay.hide();
       let language_zone = $(this).attr("id");
 
       let msg = "Against Comitted or Uncommited Debater?";
@@ -2660,7 +2744,7 @@ return;
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
-      $('.option').on('click', function () {
+      $('.option').on('click', () => {
 
         let committed = $(this).attr("id");
 
@@ -2668,13 +2752,13 @@ return;
 
         if (faction === "papacy") {
 	  his_self.addMove("theological_debate");
-          this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
-          this.addMove("RESETCONFIRMSNEEDED\tall");
+          his_self.addMove("counter_or_acknowledge\t" + his_self.returnFactionName(faction) + " calls a theological debate\tdebate");
+          his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	  his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
         } else {
     	  his_self.addMove("theological_debate");
-          this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
-          this.addMove("RESETCONFIRMSNEEDED\tall");
+          his_self.addMove("counter_or_acknowledge\t" + his_self.returnFactionName(faction) + " calls a theological debate\tdebate");
+          his_self.addMove("RESETCONFIRMSNEEDED\tall");
     	  his_self.addMove("pre_theological_debate\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
         }
         his_self.endTurn();
@@ -2702,19 +2786,27 @@ return;
   }
   async playerBurnBooks(his_self, player, faction) {
 
-    let msg = "Select Language Zone for Reformation Attempts:";
+    let msg = "Select Language Zone for Counter-Reformation Attempts:";
     let html = '<ul>';
-        html += '<li class="option" style="" id="german">German</li>';
-        html += '<li class="option" style="" id="english">English</li>';
-        html += '<li class="option" style="" id="french">French</li>';
-        html += '<li class="option" style="" id="spanish">Spanish</li>';
-        html += '<li class="option" style="" id="italian">Italian</li>';
+        html += '<li class="option german" style="" id="german">German</li>';
+        html += '<li class="option english" style="" id="english">English</li>';
+        html += '<li class="option french" style="" id="french">French</li>';
+        html += '<li class="option spanish" style="" id="spanish">Spanish</li>';
+        html += '<li class="option italian" style="" id="italian">Italian</li>';
         html += '</ul>';
+
+    //
+    // show visual language zone selector
+    //
+    his_self.language_zone_overlay.render();
 
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', function () {
+
+      his_self.language_zone_overlay.hide();
+
       let id = $(this).attr("id");
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);

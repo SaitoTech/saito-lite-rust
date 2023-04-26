@@ -1,0 +1,81 @@
+
+.diet-overlay {
+    background-image: url(/his/img/backgrounds/diet_of_worms.jpeg);
+    background-size: cover;
+    max-height: 90vh;
+    max-width: 90vw;
+    width: 90vw;
+    height: auto;
+    min-height: 622px;
+    text-align: center;
+}
+
+.diet-overlay .help {
+    background: #0009;
+    width: max-content;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 2.4rem;
+    padding: 0.75rem;
+    max-width: 100%;
+    padding: 2rem;
+    line-height: 3.4rem;
+}
+
+.cardfans {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    justify-content: space-evenly;
+}
+
+.protestant {
+    height: 100%;
+    width: auto;
+    margin-left: 25%;
+    margin-right: auto;
+    margin-top: 16%;
+}
+
+.catholic {
+    height: 100%;
+    width: auto;
+    margin-left: 25%;
+    margin-right: auto;
+    margin-top: 16%;
+}
+
+/*
+.catholic>.card:nth-child(1) {
+  transform: rotate(-10deg);
+  z-index: 30;
+}
+*/
+.catholic>.card:nth-child(2) {
+  transform: rotate(10deg);
+  z-index: 29;
+}
+
+.diet_of_worms_end {
+  cursor: pointer;
+  border-bottom: 2px dashed white;
+}
+
+.cardfans .protestant .card , .cardfans .catholic .card {
+  height: 100% !important;
+  width: 100% !important;
+  float: left;
+  z-index: 30;
+}
+
+.protestant .card .cardimg , .catholic .card .cardimg {
+    margin-top: 20%;
+    height: 60%;
+    width: auto;
+}
+
+
+

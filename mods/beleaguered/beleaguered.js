@@ -13,7 +13,7 @@ class Beleaguered extends OnePlayerGameTemplate {
     this.slug = "beleaguered";
     this.description = "Stack all cards by suit from aces to kings to win this game";
     this.categories = "Games Cardgame One-player";
-    this.publisher_message = "Community-created game";
+    this.publisher_message = "developed by Pawel (twitter: @PawelPawlak14). Feel free to pm me with any suggestions/feedback";
 
     this.app = app;
     this.status = "Beta";
@@ -53,8 +53,6 @@ class Beleaguered extends OnePlayerGameTemplate {
     //Clear board
     this.game.board = {};
 
-    //Reset/Increment State
-    this.game.state.round++;
   }
 
   async initializeHTML(app) {
@@ -115,23 +113,7 @@ class Beleaguered extends OnePlayerGameTemplate {
     this.menu.render();
   }
 
-  returnStatsHTML() {
-    let html = `<div class="rules-overlay">
-    <h1>Game Stats</h1>
-    <table>
-    <tbody>
-    <tr><th>Games Played:</th><td>${this.game.state.round - 1}</td></tr>
-    <tr><th>Games Won:</th><td>${this.game.state.wins}</td></tr>
-    <tr><th>Win Percentage:</th><td>${
-      this.game.state.round > 1
-        ? Math.round((1000 * this.game.state.wins) / (this.game.state.round - 1)) / 10
-        : 0
-    }%</td></tr>
-    </tbody>
-    </table>
-    </div>`;
-    return html;
-  }
+
 
   getSlotSide(id) {
     if (id.length === 6) {
@@ -310,7 +292,6 @@ class Beleaguered extends OnePlayerGameTemplate {
     console.log("this.game.availableMoves");
     console.log(this.game.availableMoves);
     if (this.game.availableMoves.length === 0) {
-      this.game.state.round = this.game.state.round + 1;
       this.displayWarning("Game over", "There are no more available moves to make.", 9000);
     }
   }
@@ -444,7 +425,8 @@ class Beleaguered extends OnePlayerGameTemplate {
       }
 
       if (mv[0] === "win") {
-        this.game.state.wins++;
+        this.game.state.session.round++;
+        this.game.state.session.wins++;
         this.game.queue.push("round");
         this.game.queue.push(
           `ROUNDOVER\t${JSON.stringify([await this.app.wallet.getPublicKey()])}\t${JSON.stringify(
@@ -453,8 +435,9 @@ class Beleaguered extends OnePlayerGameTemplate {
         );
       }
 
-      if (mv[0] === "lose") {
-        this.game.state.losses++;
+      if (mv[0] === "lose"){
+        this.game.state.session.round++;
+        this.game.state.session.losses++;
         this.game.queue.push("round");
         this.game.queue.push(
           `ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([

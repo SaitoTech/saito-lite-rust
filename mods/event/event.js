@@ -1,7 +1,9 @@
-const InviteTemplate = require("./../../lib/templates/invitetemplate");
-const EventInvite = require("./lib/invite/main");
+const InviteTemplate = require('./../../lib/templates/invitetemplate');
+const EventInvite = require('./lib/invite/main');
+
 
 class Event extends InviteTemplate {
+
   constructor(app) {
     super(app);
 
@@ -14,23 +16,26 @@ class Event extends InviteTemplate {
     this.icon = "fas fa-envelope-open-text";
     this.invites = [];
     this.scripts = [];
-    this.styles = ["/invites/css/appspace.css"];
+    this.styles = ['/invites/style.css'];
 
     return this;
+
   }
 
   initialize(app) {
     super.initialize(app);
   }
 
-  async respondTo(type) {
-    if (type == "invite") {
-      await super.render(this.app, this); // for scripts + styles
+  respondTo(type) {
+
+    if (type == 'invite') {
+      super.render(this.app, this); // for scripts + styles
       return new EventInvite(this.app, this);
     }
 
     return null;
   }
+
 }
 
 module.exports = Event;

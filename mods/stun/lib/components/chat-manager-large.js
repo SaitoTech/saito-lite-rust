@@ -1,5 +1,7 @@
 const VideoBox = require("./video-box");
 const ChatManagerLargeTemplate = require("./chat-manager-large.template");
+const ChatManagerSmallExtensionTemplate = require("./chat-manager-small-extension.template");
+const SwitchDisplay = require("./switch-display");
 const ChatInvitationOverlay = require("../overlays/chat-invitation-link");
 const Effects = require("../overlays/effects");
 
@@ -13,28 +15,47 @@ class VideoChatManager {
   audioEnabled = true;
   isActive = false;
   central;
+  mode = ""; // full, addon
+  local_container = "expanded-video";
+  remote_container = "side-videos";
+  display_mode = "focus";
+  remote_streams = new Map();
+  current_speaker = null
+  speaker_candidate = null
 
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
+    this.config;
+    this.switchDisplay = new SwitchDisplay(app, mod, this);
+
     this.effectsMenu = new Effects(app, mod);
 
     this.app.connection.on(
-      "show-video-chat-request",
-      (app, mod, call_type = "Video", room_code) => {
+      "show-video-chat-large-request",
+      (app, mod, call_type = "Video", room_code, videoEnabled, audioEnabled, config = null) => {
+        this.videoEnabled = videoEnabled;
+        this.audioEnabled = audioEnabled;
         this.call_type = "video";
         this.room_code = room_code;
+        this.config = config;
+        if (this.config === null) {
+          this.mode = "full";
+        }
         this.show(app, mod);
         this.updateRoomLink();
+
+        // create chat group
+        this.createRoomTextChat();
       }
     );
 
-    this.app.connection.on("render-local-stream-request", (localStream) => {
-      if (!this.isActive) return;
+    this.app.connection.on("render-local-stream-large-request", (localStream) => {
+      this.localStream = localStream;
       this.renderLocalStream(localStream);
     });
-    this.app.connection.on("add-remote-stream-request", (peer, remoteStream, pc) => {
-      if (!this.isActive) return;
+    this.app.connection.on("render-remote-stream-large-request", (peer, remoteStream, pc) => {
+      this.remote_streams.set(peer, remoteStream);
       this.addRemoteStream(peer, remoteStream, pc);
     });
 
@@ -42,8 +63,13 @@ class VideoChatManager {
       if (room_code !== this.room_code) {
         return;
       }
+      let my_pub_key = this.app.wallet.returnPublicKey();
+      let container;
+      if (peer_id === my_pub_key) {
+        container = this.local_container;
+      }
 
-      this.createVideoBox(peer_id);
+      this.createVideoBox(peer_id, container);
       if (status === "connecting") {
         this.video_boxes[peer_id].video_box.renderPlaceholder("connecting");
       } else if (status === "connected") {
@@ -55,60 +81,166 @@ class VideoChatManager {
       }
     });
 
-    this.app.connection.on("video-box-remove", (peer_id) => {
-      this.video_boxes[peer_id].video_box.remove();
-      delete this.video_boxes[peer_id];
-      this.updateImages();
+    this.app.connection.on("video-box-remove", (peer_id, disconnection) => {
+      if (this.video_boxes[peer_id].video_box) {
+        if (this.video_boxes[peer_id].video_box.remove) {
+          this.video_boxes[peer_id].video_box.remove(disconnection);
+          delete this.video_boxes[peer_id];
+          this.updateImages();
+        }
+      }
     });
   }
 
   render() {
     this.app.browser.addElementToDom(
-      ChatManagerLargeTemplate(this.call_type, this.room_code),
+      ChatManagerLargeTemplate(this.call_type, this.room_code, this.mode),
       document.getElementById("content__")
     );
     this.isActive = true;
+
+    if (this.config) {
+      this.app.browser.addElementToSelector(
+        ChatManagerSmallExtensionTemplate(),
+        this.config.container
+      );
+    }
+  }
+
+  createRoomTextChat() {
+    let chat_mod = this.app.modules.returnModule("Chat");
+    let chat_manager = chat_mod.respondTo("chat-manager");
+    let my_pub_key = this.app.wallet.returnPublicKey();
+
+    chat_mod.groups.push({
+      id: this.room_code,
+      members: [this.app.network.peers[0].peer.publickey],
+      name: `Chat ${this.room_code}`,
+      txs: [],
+      unread: 0,
+    });
+    let chat_group = chat_mod.returnGroup(this.room_code);
+
+    this.chat_group = chat_group;
   }
 
   attachEvents(app, mod) {
-    document.querySelector(".disconnect_btn").addEventListener("click", async (e) => {
-      await this.disconnect();
+    if (this.mode === "full") {
+      let add_users = document.querySelector(".add_users_container");
+      if (add_users) {
+        add_users.addEventListener("click", (e) => {
+          this.updateRoomLink();
+          this.chatInvitationOverlay.render();
+        });
+      }
 
-      siteMessage("You have been disconnected", 5000);
-    });
+      document.querySelector(".chat_control").addEventListener("click", (e) => {
+        let chat_mod = this.app.modules.returnModule("Chat");
 
-    let add_users = document.querySelector(".add_users");
-    if (add_users) {
-      add_users.addEventListener("click", async (e) => {
-        this.updateRoomLink();
-        await this.chatInvitationOverlay.render();
+        if (chat_mod.chat_manager.popups[this.room_code]) {
+          // console.log(chat_mod.chat_manager.popups[this.room_code]);
+          chat_mod.chat_manager.popups[this.room_code].manually_closed = false;
+        }
+
+        this.app.connection.emit("chat-popup-render-request", this.chat_group);
+        // document.querySelector(`.chat-popup-${this.room_code}`).style.zIndex = 2000;
       });
     }
-    document.querySelector(".audio_control").addEventListener("click", (e) => {
-      this.toggleAudio();
-    });
-    document.querySelector(".video_control").addEventListener("click", (e) => {
-      this.toggleVideo();
-    });
 
     if (document.querySelector(".effects-control")) {
-      document.querySelector(".effects-control").addEventListener("click", async (e) => {
-        await this.effectsMenu.render();
+      document.querySelector(".effects-control").addEventListener("click", (e) => {
+        this.effectsMenu.render();
       });
     }
 
-    document.querySelector(".stunx-chatbox .minimizer").addEventListener("click", (e) => {
-      let chat_box = document.querySelector(".stunx-chatbox");
-      chat_box.classList.add("minimize");
+    document.querySelectorAll(".disconnect-control").forEach((item) => {
+      item.addEventListener("click", (e) => {
+        this.disconnect();
+        siteMessage("You have been disconnected", 5000);
+      });
     });
 
-    document.querySelector(".large-wrapper").addEventListener("click", (e) => {
-      let chat_box = document.querySelector(".stunx-chatbox");
-      console.log("clicking stunx", e.target.classList, e.target);
-      if (chat_box.classList.contains("minimize")) {
+    document.querySelectorAll(".audio-control").forEach((item) => {
+      item.onclick = () => {
+        this.toggleAudio();
+      };
+    });
+    document.querySelectorAll(".display-control").forEach((item) => {
+      item.onclick = () => {
+        this.switchDisplay.render();
+      };
+    });
+    document.querySelectorAll(".video-control").forEach((item) => {
+      item.onclick = () => {
+        this.toggleVideo();
+      };
+    });
+
+    document.querySelector(".stunx-chatbox .minimizer").addEventListener("click", (e) => {
+      // fas fa-expand"
+      let icon = document.querySelector(".stunx-chatbox .minimizer i");
+      if (icon.classList.contains("fa-caret-down")) {
+        let chat_box = document.querySelector(".stunx-chatbox");
+        chat_box.classList.add("minimize");
+        icon.classList.remove("fa-caret-down");
+        icon.classList.add("fa-expand");
+      } else {
+        let chat_box = document.querySelector(".stunx-chatbox");
         chat_box.classList.remove("minimize");
+        icon.classList.remove("fa-expand");
+        icon.classList.add("fa-caret-down");
       }
     });
+
+    if (this.videoEnabled === true) {
+      document.querySelectorAll(".video-control i").forEach((item) => {
+        item.classList.remove("fa-video-slash");
+        item.classList.add("fa-video");
+      });
+    } else {
+      document.querySelectorAll(".video-control i").forEach((item) => {
+        item.classList.remove("fa-video");
+        item.classList.add("fa-video-slash");
+      });
+    }
+    if (this.audioEnabled === true) {
+      document.querySelectorAll(".audio-control i").forEach((item) => {
+        item.classList.remove("fa-microphone-slash");
+        item.classList.add("fa-microphone");
+      });
+    } else {
+      document.querySelectorAll(".audio-control i").forEach((item) => {
+        item.classList.add("fa-microphone-slash");
+        item.classList.classList.remove("fa-microphone");
+      });
+    }
+
+    document.querySelector(".large-wrapper").addEventListener("click", (e) => {
+      if (this.display_mode == "gallery") {
+        return;
+      }
+      if (e.target.classList.contains("video-box")) {
+        let stream_id = e.target.id;
+        // console.log(e.target, stream_id);
+        // console.log("praent element ", e.target.parentElement.parentElement);
+        if (e.target.parentElement.parentElement.classList.contains(this.local_container)) {
+          // console.log("already expanded");
+          return;
+        } else {
+          this.flipDisplay(stream_id);
+        }
+      }
+    });
+  }
+
+  flipDisplay(stream_id) {
+    let id = document
+      .querySelector(`.${this.local_container}`)
+      .querySelector(".video-box").id;
+    this.video_boxes[id].video_box.containerClass = this.remote_container;
+    this.video_boxes[id].video_box.rerender();
+    this.video_boxes[stream_id].video_box.containerClass = this.local_container;
+    this.video_boxes[stream_id].video_box.rerender();
   }
 
   createRoomLink() {
@@ -152,28 +284,45 @@ class VideoChatManager {
       this.attachEvents(app, mod);
     }
 
-    if (this.mod.central === true) {
-      let room_link = this.createRoomLink();
-      history.pushState(null, null, room_link);
-    }
-
+    let room_link = this.createRoomLink();
+    history.pushState(null, null, room_link);
     this.isActive = true;
+
+    this.app.browser.makeDraggable("stunx-chatbox");
+    this.app.browser.makeDraggable("stunx-chatbox");
   }
 
-  async hide() {
-    console.log("hiding");
+  hide() {
     document
       .querySelector("#stunx-chatbox")
       .parentElement.removeChild(document.querySelector("#stunx-chatbox"));
     let stun_mod = this.app.modules.returnModule("Stun");
     this.isActive = false;
-    await stun_mod.renderInto(this.mod.renderedInto);
+    stun_mod.renderInto(this.mod.renderedInto);
+
+    if (this.config) {
+      this.config.onHide();
+    }
   }
 
-  async disconnect() {
+  disconnect() {
     this.app.connection.emit("stun-disconnect");
     this.video_boxes = {};
-    await this.hide();
+    let obj = {
+      room_code: this.room_code,
+    };
+    let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
+    let url = window.location.toString();
+
+    if (url.includes("?")) {
+      let index = url.indexOf("?");
+      url = url.slice(0, index);
+    }
+
+    let myurl = new URL(url);
+    myurl = myurl.href.split("#")[0];
+    myurl = myurl.replace("redsquare", "videocall");
+    window.location.href = myurl;
   }
 
   addRemoteStream(peer, remoteStream, pc) {
@@ -182,29 +331,36 @@ class VideoChatManager {
     if (!this.peers.includes(peer)) {
       this.peers.push(peer);
     }
-    console.log(this.peers, "peers ");
 
-    // console.log(this.mod.central, "is mod central or not")
     let room_link = this.createRoomLink();
     history.pushState(null, null, room_link);
+
+    if (this.peers.length === 1) {
+      let peer = document.querySelector(`#stream${this.peers[0]}`);
+      peer.querySelector(".video-box").click();
+    }
+
+    let video_box = document.querySelector(`#stream${peer}`);
+    this.analyzeAudio(remoteStream, peer);
   }
 
   renderLocalStream(localStream) {
-    this.createVideoBox("local");
+    this.createVideoBox("local", this.local_container);
     this.video_boxes["local"].video_box.render(localStream, "large-wrapper");
     this.localStream = localStream;
     this.updateImages();
+    this.analyzeAudio(localStream, 'local');
     // segmentBackground(document.querySelector('#streamlocal video'), document.querySelector('#streamlocal canvas'), 1);
     // applyBlur(7);
   }
 
   renderRemoteStreamPlaceholder(peer, placeholder_info, is_creator) {
-    this.createVideoBox(peer, placeholder_info);
+    this.createVideoBox(peer);
     this.video_boxes[peer].video_box.render(null, placeholder_info);
-    console.log("is creator ", is_creator);
+
   }
 
-  createVideoBox(peer) {
+  createVideoBox(peer, container = this.remote_container) {
     if (!this.video_boxes[peer]) {
       const videoBox = new VideoBox(
         this.app,
@@ -213,35 +369,18 @@ class VideoChatManager {
         this.central,
         this.room_code,
         peer,
-        "large-wrapper"
+        container
       );
       this.video_boxes[peer] = { video_box: videoBox };
     }
   }
 
   toggleAudio() {
-    console.log("toggling audio");
-    if (this.audioEnabled === true) {
-      this.localStream.getAudioTracks()[0].enabled = false;
-      for (let i in this.mod.peer_connections) {
-        this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "mute", kind: "audio" }));
-      }
-      this.audioEnabled = false;
-      document.querySelector(".audio_control").classList.remove("fa-microphone");
-      document.querySelector(".audio_control").classList.add("fa-microphone-slash");
-    } else {
-      this.localStream.getAudioTracks()[0].enabled = true;
-      for (let i in this.mod.peer_connections) {
-        this.mod.peer_connections[i].dc.send(JSON.stringify({ event: "unmute", kind: "audio" }));
-      }
-      this.audioEnabled = true;
-      document.querySelector(".audio_control").classList.remove("fa-microphone-slash");
-      document.querySelector(".audio_control").classList.add("fa-microphone");
-    }
+    this.app.connection.emit("stun-toggle-audio");
   }
 
   toggleVideo() {
-    console.log("toggling video");
+
     this.app.connection.emit("stun-toggle-video");
   }
 
@@ -300,6 +439,127 @@ class VideoChatManager {
     clearInterval(this.timer_interval);
     this.timer_interval = null;
   }
+
+  switchDisplayToGallery() {
+    this.display_mode = "gallery";
+    this.local_container = "gallery";
+    this.remote_container = "gallery";
+
+    document.querySelector(".video-container-large").innerHTML = `
+    <div class="gallery">
+
+    </div>
+    `;
+
+    this.setDisplayContainers();
+  }
+
+  switchDisplayToFocus() {
+    this.display_mode = "focus";
+    this.local_container = "expanded-video";
+    this.remote_container = "side-videos";
+
+    document.querySelector(".video-container-large").innerHTML = `
+    <div class="expanded-video">
+
+    </div>
+    <div class="side-videos">
+    </div>
+    `;
+
+    this.setDisplayContainers();
+  }
+
+  switchDisplayToSpeaker() {
+    this.display_mode = "speaker";
+    this.local_container = "expanded-video";
+    this.remote_container = "side-videos";
+
+    document.querySelector(".video-container-large").innerHTML = `
+    <div class="expanded-video">
+
+    </div>
+    <div class="side-videos">
+    </div>
+    `;
+
+    this.setDisplayContainers();
+  }
+
+  setDisplayContainers() {
+    for (let i in this.video_boxes) {
+      if (i === "local") {
+        this.video_boxes[i].video_box.containerClass = this.local_container;
+        this.video_boxes[i].video_box.render(this.localStream);
+      } else {
+        this.video_boxes[i].video_box.containerClass = this.remote_container;
+        this.video_boxes[i].video_box.render(this.remote_streams.get(i));
+      }
+    }
+  }
+
+  analyzeAudio(stream, peer) {
+    let video_chat_self = this;
+    const audioContext = new AudioContext();
+    const source = audioContext.createMediaStreamSource(stream);
+    const analyser = audioContext.createAnalyser();
+    source.connect(analyser);
+    analyser.fftSize = 512;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    let speaking = false;
+    const threshold = 20;
+
+
+    function update() {
+      analyser.getByteFrequencyData(dataArray);
+      const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+
+      if (average > threshold && !speaking) {
+        let video_container = document.querySelector(`#stream${peer}`);
+
+        // setTimeout(()=> {
+        //   if(speaking) return;
+        //   document.querySelectorAll('.video-box-container-large').forEach(item => {
+        //     item.classList.remove('speaker');
+        // });
+        // },3000)
+
+        let video_box = video_container.querySelector(".video-box");
+        this.current_speaker = peer;
+        let speaker_candidate = peer;
+
+
+        setTimeout(() => {
+          if (speaker_candidate === this.current_speaker) {
+            document.querySelectorAll('.video-box-container-large').forEach(item => {
+              // console.log(item.id, `stream${peer}`)
+
+              if (item.id === `stream${peer}`) {
+                item.classList.add('speaker');
+                if (video_chat_self.display_mode == "speaker") {
+                  video_chat_self.flipDisplay(peer);
+                } 
+              } else {
+                item.classList.remove('speaker');
+              }
+            })
+            speaking = true;
+          }
+        }, 5000)
+
+      } else if (average <= threshold && speaking) {
+        speaking = false;
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    update();
+  }
+
 }
 
 module.exports = VideoChatManager;
+

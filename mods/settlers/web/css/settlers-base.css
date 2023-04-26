@@ -1,23 +1,52 @@
 :root {
-  --p1-color: /*#e44;*/
-  #fb2215;
-  --p2-color: /*#049;*/
-  #15eefb;
-  --p3-color: /*#094;*/
-  #7bfb15;
-  --p4-color: /*#D63;*/
-  #9515fb;
-
+  --p1-color: #b3031f;
+  --p2-color: #004193;
+  --p3-color: #00833a;
+  --p4-color: #8a6200;
   --text-color: #331800;
+}
+
+
+.mobile-log-tab {
+  background-color: #d3c38df5;
+  color: #424143;
+}
+
+.player-box {
+  min-height: 0vh;
+}
+
+.cardfan {
+  z-index: 5;
+}
+
+body {
+  user-select: none;
 }
 
 p {
   overflow: unset;
 }
 
-.status-text-menu ul li, .status ul li{
-  border-color: var(--text-color);
+
+.settlers-user {
+  display: grid;
+  column-gap: 1rem;
+  cursor: pointer;
+  grid-template-columns: min-content 1fr min-content;
+  grid-template-rows: min-content 1fr;
+  justify-items: start;
+  width: 100%;
+  position: relative;
 }
+.settlers-userline > .saito-userline {
+  grid-column-start: 2;
+  grid-column-end: span 1;
+  grid-row-start: 2;
+  grid-row-end: span 1;
+  font-size: 1.4rem;
+}
+
 
 .tip {
   width: unset;
@@ -61,7 +90,7 @@ p {
 
 .construction-costs.saitoa{
   min-width: unset;
-  padding: ;
+  padding: 1rem;
 }
 
 .construction-costs .table {
@@ -123,10 +152,14 @@ dt {
 .gameboard.dark {
   background-color: #369;
 }
+
 /*Richard background*/
-.gameboard {
+body {
   background: linear-gradient(-75deg, #369, #58b, #58b, #369);
   background-size: 100% 100%;
+}
+/* background moved to body so board is resizable */
+.gameboard {
   width: 100vw;
   height: 100vh;
   transition: background 2s;
@@ -135,6 +168,7 @@ dt {
 
 
 #game-hexgrid {
+  transform-origin: center;
   z-index: 2;
   width: 1000px;
   padding: 10% 5% 15%;
@@ -151,10 +185,7 @@ dt {
   background-color: #444E;
   z-index: 3;
   max-width: 25vw;
-}
-
-.player-info-name {
-  font-weight: lighter;
+  padding: 1rem 2rem !important;
 }
 
 .game_board_sizer {
@@ -167,6 +198,10 @@ dt {
 
 .plog .status-text-menu ul, .plog .status-text-menu ul li {
   background-color: unset;
+}
+
+.player-box .plog {
+  display: none;
 }
 
 .plog .status-header {
@@ -188,9 +223,13 @@ dt {
   background-color: #e7e7e7;
 }
 
-.status-message ul li:hover, .status ul li:hover, .cardselector:hover {
+.cardselector:hover {
   color: black;
   background-color: #e7e7e7;
+}
+
+.status-message {
+  box-shadow: unset !important;
 }
 
 /*
@@ -256,11 +295,11 @@ dt {
   z-index: 1000;
 }
 
-.chover:hover, .producer.chover polygon:hover, .city.chover:hover {
+.chover:hover, .city.chover:hover {
   /*fill: whitesmoke;
   stroke: whitesmoke;*/
   background-color: whitesmoke;
-  cursor: crosshair;
+  cursor: pointer;
   border-color: whitesmoke;
 }
 
@@ -476,17 +515,6 @@ dt {
   height: unset;
 }
 
-/*.producer polygon{
-  fill: white;
-}
-
-.producer line{
-  stroke: white;
-}*/
-.producer {
-  box-shadow: 0 0 10px 5px;
-}
-
 .popup-confirm-menu .confirm_check {
   border: 1px gray solid;
   display: flex;
@@ -585,13 +613,12 @@ input[type="checkbox"] {
  * ********/
 
 .trade_overlay {
-  padding: 25px;
+  padding: 2rem 5rem !important;
   font-size: 1.25em;
   min-width: 50vw;
-  /*width: 500px;*/
   max-width: 80vw;
   max-height: 70vh;
-  /*overflow-y: scroll;*/
+
 }
 
 .trade_overlay > div {
@@ -721,7 +748,9 @@ ul.horizontal_list li.iconoption {
   margin: 0;
   width: 20%;
   height: 3em;
-  border-top: unset;
+  border: unset;
+  background: unset;
+  min-width: 20%;
 }
 
 
@@ -917,12 +946,12 @@ ul.horizontal_list li.iconoption {
 
 
 .player-notice {
-  margin-bottom: 0.5em;
   line-height: 1.25em;
   display: flex;
   flex-direction: row;
   align-items: center;
   flex-wrap: wrap;
+  font-weight: 800;
 }
 
 .player-notice + .tbd {
@@ -937,7 +966,7 @@ ul.horizontal_list li.iconoption {
 .player-box.notme, .opponents {
   position: absolute;
   height: fit-content;
-  top: 50px;
+  top: 76px;
   right: 40px;
 }
 
@@ -968,6 +997,7 @@ ul.horizontal_list li.iconoption {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  padding: 2rem 5rem !important;
 }
 
  /* Hide scrollbar for Chrome, Safari and Opera */
@@ -990,6 +1020,10 @@ ul.horizontal_list li.iconoption {
   max-width: 100%;
   margin: 0 auto;
   border: 2px solid black;
+}
+
+.welcome_overlay {
+  padding: 0 !important;
 }
 
 .stats-table {
@@ -1031,19 +1065,10 @@ ul.horizontal_list li.iconoption {
 
 @keyframes flash {
   50% {
-    background-color: white;
+    background-color: #b4a09073;
     color: black;
   }
 }
-
-#game-post {
-  color: grey;
-  text-decoration: line-through;
-}
-
-/*
-    Intermediate (roughly square screen size, technically landscape, but keep portrait layout)
-*/
 
 @media (max-aspect-ratio : 8/7) {
   .opponents {
@@ -1075,8 +1100,8 @@ ul.horizontal_list li.iconoption {
 @media screen and (orientation: landscape) and (min-width: 1000px) {
   .player-box.me {
     max-height: unset;
-    left: 10px;
-    top: 56px;
+    left: 20px;
+    top: 76px;
     bottom: unset;
   }
 }
@@ -1110,3 +1135,13 @@ ul.horizontal_list li.iconoption {
 .game-menu-sub-option, .game-menu-sub-sub-option{
   background-color: #d3c38dee;
 }
+
+
+
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .gameboard{
+    transform: scale(0.6);
+  }
+}
+

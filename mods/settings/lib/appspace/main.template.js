@@ -1,12 +1,14 @@
 module.exports = SettingsAppspaceTemplate = (app) => {
 
   let key = app.keychain.returnKey({ publickey : app.wallet.returnPublicKey()});
-  let identifier_registered = "";
-  if (key != null) { identifier_registered = key.identifier || ""; }
-  if (identifier_registered == "") {
-    identifier_registered = `
-    <span id="register-identifier-btn" style="cursor:pointer" class="register-identifier-btn settings-appspace-link">Register a username</span>
-    `;
+  let identifier_registered = key?.identifier || "";
+
+  if (!identifier_registered) {
+    if (key.has_registered_username){
+      identifier_registered = `<span class="register-identifier-btn settings-appspace-link">Registering...</span>`;  
+    }else{
+      identifier_registered = `<span id="register-identifier-btn" class="register-identifier-btn settings-appspace-link">Register a username</span>`;  
+    }
   }
 
   let modules_html = "Wallet Outdated - module selection not supported";

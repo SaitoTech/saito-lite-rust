@@ -1,0 +1,90 @@
+
+.reformation-overlay {
+	background-image: url(/his/img/backgrounds/reformation.jpg);
+        background-size: contain;
+        max-width: 90vw;
+        max-height: 90vh;
+}
+
+.reformation-overlay .title {
+	color: white;
+	font-size: 2.5rem;
+	padding: 1rem;
+	text-transform: capitalize;
+	background: #0005;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+.reformation-box {
+	display: grid;
+	grid-template-columns: 65rem 65rem;
+	padding: 4rem;
+	justify-items: center;
+	justify-content: space-evenly;
+}
+
+.reformation-overlay .protestant , .reformation-overlay .papacy {
+	display: grid;
+	justify-items: right;
+	background: #0005;
+	border: 1px solid black;
+        height: min-content;
+        margin-left: unset;
+        margin-right: unset;
+        margin-top: unset;
+        width: unset;
+        color: whitesmoke;
+        letter-spacing: 0.05rem;
+}
+
+.reformation-overlay .protestant .title , .reformation-overlay .papacy .title {
+	background: #0005;
+	font-size: 25;
+	text-align: center;
+	border: 1px solid black;
+	grid-column: 1 / span 2;
+	grid-row: 1;
+	width: 50rem;
+	max-height: 6rem;
+	min-height: 6rem;
+}
+
+.reform-box-description {
+	width: 20rem;
+	height: 5rem;
+	padding: 0.75rem;
+	font-size: 2rem;
+	grid-column: 1;
+	margin-right: 22rem;
+}
+
+.reform-roll {
+	display: grid;
+	grid-template-columns: 6rem 6rem;
+	background: #0005;
+	width: 6rem;
+	height: 6rem;
+	border: 1px solid black;
+	margin-bottom: 0rem;
+	min-height: 0px;
+	font-weight: bolder;
+	text-transform: uppercase;
+	font-size: 3.5rem;
+	text-align: center;
+	padding-top: 1rem;
+	grid-column: 2;
+}
+
+.reform-roll.hit {
+        background-color: goldenrod;
+        color: black;
+}
+
+
+.adjacency {
+	position: relative;
+	font-size: 1.5rem;
+}
+

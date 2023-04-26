@@ -2,7 +2,7 @@
     padding: 2rem;
     background-image: linear-gradient(to bottom right, #EA4843, #f78754);
     color: #fff;
-    background-image: url(/web/saito/img/dreamscape.png);
+    background-image: url(/saito/img/dreamscape.png);
     background-position: 0em;
     background-size: 120% 100%;
     color: white;
@@ -132,7 +132,7 @@
     padding: 2rem;
     background-image: linear-gradient(to bottom right, #EA4843, #f78754);
     color: #fff;
-    background-image: url(/web/saito/img/dreamscape.png);
+    background-image: url(/saito/img/dreamscape.png);
     background-position: 0em;
     background-size: 120% 100%;
     color: white;
@@ -233,4 +233,10 @@
     transition: all 0.2s ease-in-out;
     top: 50%;
     transform: translateY(-10%);
+  }
+
+
+  .mixin-overlay-history {
+    max-height: 80vh;
+    overflow-y: scroll;
   }

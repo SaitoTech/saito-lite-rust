@@ -1,0 +1,101 @@
+
+.theological-debate-overlay {
+  background-image: url("/his/img/backgrounds/theological-debate2.jpg");
+  background-size: cover;
+  width: 80vw;
+  min-height: 800px;
+  height: auto;
+
+  overflow-y: auto;
+}
+
+.theological-debate-overlay .title {
+    position: absolute;
+    height: auto;
+    width: 100%;
+    background-color: #0005;
+    z-index: 10;
+    border-radius: 1rem;
+    top: 0px;
+    left: 0px;
+    float: left;
+    text-align: center;
+    color: white;
+    font-size: 2.4rem;
+    padding: 1rem;
+    line-height: 3.6rem;
+}
+
+.theological-debate-overlay .status {
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    background-color: whitesmoke;
+    height: auto;
+    margin-top: 4rem;
+    border-radius: 1rem;
+    clear: both;
+    margin-top: 10rem;
+}
+
+.attacker_debater {
+    height: 300px;
+    width: 300px;
+    position: absolute;
+    left: 10vw;
+    bottom: 0px;
+    left: 0px;
+    /* background-image: url("/his/img/tiles/debaters/AleanderDebater.svg"); */
+    background-size: cover;
+}
+
+.defender_debater {
+    height: 300px;
+    width: 300px;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    /* background-image: url("/his/img/tiles/debaters/AleanderDebater.svg"); */
+    background-size: cover;
+}
+
+
+
+.protestant_debaters {
+    left: 68px;
+    top: 295px;
+    position: absolute;
+    width: 240px;
+    height: 140px;
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(65px, 1fr) );
+}
+.calvinist_debaters {
+    left: 305px;
+    top: 295px;
+    position: absolute;
+    width: 240px;
+    height: 140px;
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(65px, 1fr) );
+}
+.anglican_debaters {
+    left: 542px;
+    top: 295px;
+    position: absolute;
+    width: 240px;
+    height: 140px;
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(65px, 1fr) );
+}
+.papal_debaters {
+    left: 195px;
+    top: 120px;
+    position: absolute;
+    border: 1px solid black;
+    width: 490px;
+    height: 140px;
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(65px, 1fr) );
+}
+

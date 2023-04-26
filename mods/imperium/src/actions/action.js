@@ -600,10 +600,10 @@ console.log("qe: " + qe);
 
 
 
-    this.importActionCard('economic-initiative', {
-  	name : "Economic Initiative" ,
+    this.importActionCard('cultural-initiative', {
+  	name : "Cultural Initiative" ,
   	type : "action" ,
-  	text : "ACTION: Ready each cultural planet in your control" ,
+  	text : "ACTION: Ready each blue/cultural planet in your control" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
 	  for (let i in imperium_self.game.planets) {
@@ -747,7 +747,7 @@ console.log("qe: " + qe);
     this.importActionCard('industrial-initiative', {
   	name : "Industrial Initiative" ,
   	type : "action" ,
-  	text : "ACTION: Gain a trade good for each industrial planet you control" ,
+  	text : "ACTION: Gain a trade good for each green planet you control" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
 	  let trade_goods_to_gain = 0;
@@ -904,15 +904,15 @@ console.log("qe: " + qe);
 
 
     this.importActionCard('unstable-planet', {
-  	name : "Unstable Planet" ,
+  	name : "Hazardous Planet" ,
   	type : "action" ,
-  	text : "ACTION: Choose a hazardous planet and exhaust it. Destroy 3 infantry on that planet if they exist" ,
+  	text : "ACTION: Choose a red planet and exhaust it. Destroy 3 infantry on that planet if they exist" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
 	  if (imperium_self.game.player == action_card_player) {
 
             imperium_self.playerSelectPlanetWithFilter(
-	      "Select a hazardous planet and exhaust it. Destroy 3 infantry on that planet if they exist" ,
+	      "Select a red planet and exhaust it. Destroy 3 infantry on that planet if they exist" ,
               function(planet) {
 		planet = imperium_self.game.planets[planet];
 	        if (planet.type == "hazardous") { return 1; } return 0;

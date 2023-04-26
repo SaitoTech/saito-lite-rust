@@ -1,0 +1,8 @@
+
+.rdebater_tile {
+  z-index: 30;
+  position: relative;
+  float: left;
+  width: 65px;
+}
+

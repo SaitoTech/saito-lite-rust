@@ -197,6 +197,7 @@ class Scotland extends GameTemplate {
 
     this.log.render();
 
+    this.hud.draggable_whole = false;
     this.hud.render();
 
     let hh = document.querySelector(".hud-header");

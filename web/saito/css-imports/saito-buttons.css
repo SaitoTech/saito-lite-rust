@@ -33,10 +33,15 @@ button,
   background: var(--saito-background-color);
 }
 
-.saito-button-primary:hover {
+.saito-button-primary:hover, .saito-button-primary.disabled {
   background: var(--saito-background-color);
   color: var(--saito-primary);
   border: 1px solid var(--saito-primary);
+}
+
+.saito-button-primary.disabled {
+  cursor: unset;
+  pointer-events: none;
 }
 
 .saito-button-secondary:hover {

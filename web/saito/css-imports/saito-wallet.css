@@ -268,9 +268,8 @@
   padding: 1rem 0rem;
   border-radius: 0.5rem;
   text-align: center;
-  background: var(--saito-white);
-  color: var(--saito-gray-mid);
-  border: 1px solid var(--saito-font-color);
+  background: var(--dreamscape);
+  color: var(--saito-white);
 }
 
 .mixin-items-container .saito-table-header {
@@ -292,7 +291,8 @@
 }
 
 .deposit {
-  color: #14b214;
+  color: #005900;
+  font-weight: 800;
 }
 
 .withdrawal {
@@ -301,10 +301,6 @@
 
 #mixin-balance-container .mixin-item {
   width: calc(100% * (1/4));
-}
-
-.mixin-his-created-at {
-  font-size: 1.15rem;
 }
 
 .mixin-balances_deposit, .mixin-balances_withdraw, .mixin-balance-history {
@@ -323,13 +319,6 @@
 
 /********    Checking balance overlay       *************/
 
-.game-crypto-transfer-manager-container {
-  background: #fff;
-  padding: 1rem;
-  width: 60rem;
-  text-align: center;
-  border-radius: 1rem;
-}
 
 .auth_title {
   font-size: 3.5rem;
@@ -340,6 +329,11 @@
 .from_address, .to_address {
   margin-bottom: 1rem;
   font-size: 2rem;
+}
+
+.game-crypto-transfer-manager-container .balance {
+  margin-bottom: 1.1rem;
+  font-size: 3.5rem;
 }
 
 
@@ -353,7 +347,8 @@
   background: var(--saito-light-shim);
   padding-right: 0.5rem;
   border-radius: 0.5rem;
-  //border: 1px solid var(--saito-font-color-light);
+  background: var(--saito-background-light);
+  border: 1px solid var(--saito-font-color);
 }
 
 .token-dropdown img { 
@@ -370,6 +365,7 @@
   border: none;
   background: none;
   font-size: 1.6rem;
+  color: var(--saito-font-color);
 }
 
 .withdraw-address-cont {
@@ -381,14 +377,16 @@
   background: var(--saito-light-shim);
   color: var(--saito-gray-mid);
   font-size: 1.6rem;
+  background: var(--saito-background-light);
+  border: 1px solid var(--saito-font-color);
 }
 
 .withdraw-options-cont {
   position: absolute;
   right: 1rem;
-  top: 50%;
+  top: 45%;
   transform: translateY(-50%);
-  color: var(--saito-gray-mid);
+  color: var(--saito-font-color);
   cursor: pointer;
 }
 

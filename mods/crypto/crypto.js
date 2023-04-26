@@ -64,8 +64,10 @@ class Crypto extends ModTemplate {
     return super.respondTo(type);
   }
 
+
   async enableCrypto(game_mod, game_id, ticker, amount) {
-    if (game_mod.game.crypto != "") {
+
+    if (game_mod.game.crypto != "" && game_mod.game.crypto != "CHIPS") {
       alert("Exiting: crypto already enabled for this game!");
       return;
     }

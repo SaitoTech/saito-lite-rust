@@ -10,16 +10,16 @@
   <title>404 | Saito</title>
 
   <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2" />
-  <link rel="stylesheet" href="/saito/style.css">
+
 </head>
 
 <body>
   <style>
     body {
       color: #fefefe;
-      font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+      font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB", sans-serif;
       text-align: center;
-      background: var(--dreamscape);
+      background: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
     }
 
     .logo {
@@ -37,15 +37,25 @@
       color: #fefefe;
       text-decoration: none;
     }
+
+    .fourohfour {
+      display: flex;
+      flex-direction: column;
+      justify-content: start;
+      height: 100%;
+      gap: 2rem;
+  }
+
+  
   </style>
-  <div style="display: grid">
-    <a href="/" style="margin: auto">
+  <div class="fourohfour">
+    <a href="/">
       <img class="logo" src="/saito/img/logo.svg">
     </a>
     <h1>404</h1>
     <h2>We don't know how you got here - but hope that Saito is just what you are looking for.</h2>
   </div>
-  <script src="/saito/saito.js" id="saito"></script>
+ 
 
 </body>
 

@@ -1,3 +1,7 @@
+.redsquare-home {
+  margin: -2.5rem 0 0 0;
+}
+
 .redsquare-appspace-profile-follow-btn {
   position: relative;
   float: right;
@@ -13,6 +17,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin: 2.3rem 0 0 0;
+}
+
+.redsquare-appspace-header .redsquare-page-header-title {
+  display: none;
+}
+
+.redsquare-appspace-header .redsquare-page-header-title.tweetmode {
+  display: block;
 }
 
 .redsquare-redsquare::before {
@@ -28,14 +41,22 @@
 
 .redsquare-appspace-profile {
   display: grid;
-  grid-template-columns: max-content 1fr;
+  grid-template-columns: max-content 1fr max-content;
   gap: 1rem;
   padding: 2rem;
 }
+
+.redsquare-appspace-profile>div {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .redsquare-appspace-profile-container {
   border: 1px solid var(--saito-border-color);
   border-radius: 0.5rem;
 }
+
 .redsquare-actions-buttons {
   position: relative;
   display: flex;
@@ -58,7 +79,6 @@
   flex-direction: column;
   row-gap: 2rem;
 }
-
 
 .redsquare-profile .redsquare-appspace-body {
   display: flex;
@@ -98,7 +118,6 @@
   margin-top: 3rem;
 }
 
-
 @media screen and (max-width: 900px) {
   .redsquare-page-header-title {
     font-size: 2rem;
@@ -131,61 +150,12 @@
   div#redsquare-profile {
     display: none;
   }
-  .redsquare-appspace-header .redsquare-page-header-title {
-    display: none;
-  }
-  .redsquare-appspace-body {
-    margin-top: -1rem;
-  }
   .post-tweet {
     display: inline-block;
   }
 }
 
-.tweet-like-button .heart-icon {
-  background: url("/redsquare/images/heart.png");
-  cursor: pointer;
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  background-size: cover;
-  /* margin-right: .5rem; */
-}
-
-.tweet-like-button .heart-icon.liked {
-  animation: like-anim 0.7s steps(28) forwards;
-}
-
-@keyframes like-anim {
-  to {
-    background-position: right;
-  }
-}
-
-.tweet-like-button .heart-bg {
-  background: rgba(255, 192, 200, 0);
-  border-radius: 50%;
-  width: 60px;
-  display: flex;
-  margin-left: -8px;
-  align-items: center;
-  justify-content: center;
-  transition: all 100ms ease;
-}
-
-.tweet-like-button .heart-bg:hover {
-  background: rgba(255, 192, 200, 0.7);
-}
-
-.tweet-like-button {
-  display: flex;
-  align-items: center;
-}
-
-.tweet-like-button .likes-amount {
-  font-size: 20px;
-  font-family: "Roboto", sans-serif;
-  color: #888;
-  font-weight: 900;
-  margin-left: 6px;
+.redsquare-home .saito-user>.saito-identicon-box {
+  position: relative;
+  z-index: 5;
 }

@@ -10,6 +10,49 @@ displayBoard() {
 }
 
 
+//
+// flash a sector
+//
+flashSector(sector) {
+
+  if (sector.indexOf("_") > -1) { sector = this.game.board[sector].tile; }
+
+  let tile = this.game.sectors[sector].tile;
+
+  let qs = "#hex_bg_" + tile + " > img";
+
+  $(qs).addClass("flash-color")
+      .delay(500)
+      .queue(function () {
+        $(this).removeClass("flash-color").dequeue();
+      })          
+      .delay(500)
+      .queue(function () {
+        $(this).addClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).removeClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).addClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).removeClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).addClass("flash-color").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).removeClass("flash-color").dequeue();
+      });
+
+}
+
 
 
 
@@ -197,165 +240,6 @@ buy command tokens and vote on laws.
   return html;
 }
 
-returnMovementOverlay() {
-  let imperium_self = this;
-  let html = `
-
-    <div class="how_to_play_overlay" id="how_to_play_overlay">
-
-<h2>Moving Ships:</h2>
-
-<p style="margin-top:15px"></p>
-
-Each ship can move a maximum number of hexes per turn. The INFO > UNITS 
-menu will show you how many hexes.
-
-<p style="margin-top:15px"></p>
-
-To move a ship, activate the destination sector. You will be able to 
-to select the ships you wish to move.
-
-<p style="margin-top:15px"></p>
-
-Some tech upgrades and action cards can increase movement distance. You 
-can also <b>upgrade</b> units to increase combat and movement.
-
-
-<h2 style="margin-top:30px">Carrying Units:</h2>
-
-<p style="margin-top:15px"></p>
-
-Some units like the CARRIER have the capacity to carry planet-based 
-units like INFANTRY. You need these units to invade and controls
-planets..
-
-<p style="margin-top:15px"></p>
-
-Capacity of each ship can be found in the INFO > UNITS menu.
-
-</div>
-
-    </div>
-  `;
-
-  return html;
-}
-
-returnCombatOverlay() {
-  let imperium_self = this;
-  let html = `
-
-    <div class="how_to_play_overlay" id="how_to_play_overlay">
-
-<h2>Space Battles:</h2>
-
-<p style="margin-top:15px"></p>
-
-The strength of each ship in combat can be found on the INFO > UNITS
-menu. This is the number which must be rolled on a 10-sided dice to
-secure a hit in combat.
-
-<p style="margin-top:15px"></p>
-
-In combat both players fire all available units, and both players then
-take damage. Combat ends when one player is destroyed or retreats from
-the battle.
-
-<p style="margin-top:15px"></p>
-
-Space battles are automated. If you have action cards that will
-modify combat or allow you to avoid damage you will have the option to 
-play them during your turn.
-
-<p style="margin-top:15px"></p>
-
-The order of combat:
-
-<p style="margin-top:15px"></p>
-
-<div style="padding-left:30px;font-family:'orbitron-medium', helvetica, arial;line-height:2em;">
-  <ol class="demo_ordered_list" style="font-family: 'orbitron-medium', helvetica, arial">
-    <li>PDS combat (optional)</li>
-    <li>Anti-fighter barrage</li>
-    <li>Space Combat</li>
-  </ol>
-</div>
-
-<h2 style="clear:both;margin-top:35px;">Ground Combat:</h2>
-
-<div style="padding-left: 30px">
-
-Ground combat works like space combat. The sequence of events:
-
-<p style="margin-top:15px"></p>
-
-<div style="padding-left:30px;font-family:'orbitron-medium', helvetica, arial;line-height:2em;">
-  <ol class="demo_ordered_list" style="font-family: 'orbitron-medium', helvetica, arial">
-    <li>Bombardment (optional)</li>
-    <li>Landing of Infantry</li>
-    <li>Ground Combat</li>
-  </ol>
-</div>
-
-<p style="margin-top:15px"></p>
-
-Ground combat ends when one player's infantry are totally destroyed. The 
-winner holds the planet, regardless of who controls the sector in space.
-
-</div>
-
-    </div>
-  `;
-
-  return html;
-}
-
-returnFactionOverlay() {
-  let imperium_self = this;
-  let html = `
-
-    <div class="how_to_play_overlay" id="how_to_play_overlay">
-
-<h2 style="clear:both;margin-top:35px;">Faction Abilities:</h2>
-
-<div style="padding-left: 30px">
-
-<img src="/imperium/img/factions/faction_dashboard.png" class="demo_planet_card" />
-
-<p></p>
-
-The faction dashboard shows the total influence and resources controlled by 
-every faction. The third hex is the number of trade goods held by each 
-faction. Trade goods may be spent 1-for-1 in lieu of resources or influence.
-
-<p></p>
-
-<div style="padding-left:30px;padding-right:30px;">
-<div class="how_to_play_resources_entry">
-<b>TRADE GOODS:</b>
-<p></p>
-can be used instead of resources or influence.
-</div>
-
-<div class="how_to_play_resources_entry">
-<b>COMMODITIES:</b>
-<p></p>
-turn into trade goods when you trade them away
-</div>
-</div>
-
-<p style="margin-top:15px"></p>
-
-Learn more about the factions in the game by clicking on their faction 
-dashboard. Each faction has unique faction abilities that can change the 
-game radically. Learn your opponent's weaknesses and strengths.
-
-    </div>
-  `;
-
-  return html;
-}
-
 
 
 
@@ -374,12 +258,6 @@ returnNewSecretObjectiveOverlay(card) {
       </div></div>
     </div>
   `;
-  return html;
-}
-
-
-returnTechOverlay() {
-  let html = '<div class="tech_overlay overlay" id="tech_overlay"><img src="/imperium/img/tech_tree.png" style="height:90vh;width:auto"></div>';
   return html;
 }
 
@@ -411,8 +289,13 @@ returnSectorInformationHTML(sector) {
     html += '</div>';
   }
 
+  let gridcols = '1fr';
+  for (let z = 1; z < sys.p.length; z++) {
+    gridcols += ' 1fr';
+  }
+
   html += `
-    <div class="grid-2">
+    <div class="system_summary_planets_grid" style="grid-template-columns:${gridcols}">
   `;
   for (let i = 0; i < sys.p.length; i++) {
     let planet_owner = "UNCONTROLLED";
@@ -422,16 +305,15 @@ returnSectorInformationHTML(sector) {
     html += `
       <div class="system_summary_planet">
         ${planet_owner}
-        <p style="margin-top:10px" />
-        <div style='clear:both;margin-left:10px;margin-top:6px;'>
+        <div class="system_summary_content">
           ${this.returnInfantryOnPlanet(sys.p[i])} infantry
           <br />
           ${this.returnPDSOnPlanet(sys.p[i])} PDS
           <br />
           ${this.returnSpaceDocksOnPlanet(sys.p[i])} spacedocks
         </div>
+        <div class="system_summary_planet_card" style="background-image: url('${sys.p[i].img}');"></div>
       </div>
-      <div class="system_summary_planet_card" style="background-image: url('${sys.p[i].img}');"></div>
     `;
   }
   html += `
@@ -551,64 +433,6 @@ returnPlanetInformationHTML(planet) {
 
 }
 
-returnFactionDashboard(agenda_phase=0) {
-
-  let html = '';
-  for (let i = 0; i < this.game.state.players_info.length; i++) {
-
-    html += `
-
-    <div data-id="${(i+1)}" class="dash-faction p${i+1}">
-     <div data-id="${(i+1)}" class="dash-faction-name bk"></div>
-    `;
-
-    if (agenda_phase == 1) {
-    html += `
-      <div data-id="${(i+1)}" class="dash-faction-agenda">
-        <div data-id="${(i+1)}" class="dash-item-agenda-influence agenda-influence">
-          <span data-id="${(i+1)}" class="avail">${this.game.state.votes_available[i]}</span>
-        </div>
-      </div>
-    `;
-    } else {
-    html += `
-      <div data-id="${(i+1)}" class="dash-faction-info">
-        <div data-id="${(i+1)}" class="dash-item tooltip dash-item-resources resources">
-          <span data-id="${(i+1)}" class="avail"></span>
-          <span data-id="${(i+1)}" class="total"></span>
-        </div>
-
-        <div data-id="${(i+1)}" class="dash-item tooltip dash-item-influence influence">
-          <span data-id="${(i+1)}" class="avail"></span>
-          <span data-id="${(i+1)}" class="total"></span>
-        </div>
-
-        <div data-id="${(i+1)}" class="dash-item tooltip dash-item-trade trade">
-          <i data-id="${(i+1)}" class="fas fa-database pc white-stroke"></i>
-          <div data-id="${(i+1)}" id="dash-item-goods" class="dash-item-goods">
-            ${this.game.state.players_info[i].goods}
-          </div>
-        </div>
-      </div>
-    `;
-    }
-    html += `
-      <div data-id="${(i+1)}" class="dash-faction-base">
-	<div data-id="${(i+1)}" class="dash-faction-status-${(i+1)} dash-faction-status"></div>
-	commodities : <span data-id="${(i+1)}" class="dash-item-commodities">${this.game.state.players_info[i].commodities}</span> / <span data-id="${(i+1)}" class="dash-item-commodity-limit">${this.game.state.players_info[i].commodity_limit}</span>
-      </div>
-
-      <div data-id="${(i+1)}" class="dash-faction-speaker`;
-      if (this.game.state.speaker == (i+1)) {  html += ' speaker">speaker'; } else { html += '">'; }
-      html += `</div>
-    </div>
-    `;
-
-  }
-  return html;
-
-}
-
 
 returnLawsOverlay() {
 
@@ -660,127 +484,6 @@ returnAgendasOverlay() {
 
 
 
-returnUnitsOverlay() {
-
-  let html = `<div class="units-overlay-container" style="">`;
-  let units = [];
-  let imperium_self = this;
-
-  if (this.game.state.round == 1) {
-    html += `
-      <div style="width:100%;text-align:center"><div class="units-overlay-text" style="line-height: 1.4em; font-size: 1.8em; margin-top: 50px; margin-bottom: 30px; padding: 20px;">
-        units <b>COST</b> resources to produce
-<p style="margin-top:10px"></p>
-        ships <b>MOVE</b> a maximum number of hexes
-<p style="margin-top:10px"></p>
-	some <b>CARRY</b> infantry or fighters
-<p style="margin-top:10px"></p>
-	lower <b>COMBAT</b> scores hit more often
-
-      </div></div>
-      <div class="unit-table">
-    `;
-
-    let fleet = this.returnPlayerFleet(this.game.player);
-
-    if (fleet.carriers > 0) 	{ units.push("carrier"); }
-    if (fleet.cruisers > 0) 	{ units.push("cruiser"); }
-    if (fleet.destroyers > 0) 	{ units.push("destroyer"); }
-    if (fleet.dreadnaughts > 0) { units.push("dreadnaught"); }
-    if (fleet.warsuns > 0) 	{ units.push("warsun"); }
-    if (fleet.fighters > 0) 	{ units.push("fighter"); }
-    if (fleet.infantry > 0) 	{ units.push("infantry"); }
-    if (fleet.flagships > 0) 	{ units.push("flagship"); }
-    if (fleet.pds > 0) 		{ units.push("pds"); }
-    if (fleet.spacedocks > 0) 	{ }
-
-  } else {
-    let player = this.game.state.players_info[this.game.player-1];
-
-    html += `
-      <div style="width:100%;text-align:center"><div class="units-overlay-title">Your Units</div></div>
-      <div style="width:100%;text-align:center"><div class="units-overlay-text">check available upgrades in your faction overlay...</div></div>
-      <div class="unit-table">
-    `;
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "infantry-ii")) {
-      units.push("infantry-ii");
-    } else {
-      units.push("infantry");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "fighter-ii")) {
-      units.push("fighter-ii");
-    } else {
-      units.push("fighter");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "destroyer-ii")) {
-      units.push("destroyer-ii");
-    } else {
-      units.push("destroyer");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "carrier-ii")) {
-      units.push("carrier-ii");
-    } else {
-      units.push("carrier");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "cruiser-ii")) {
-      units.push("cruiser-ii");
-    } else {
-      units.push("cruiser");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "dreadnaught-ii")) {
-      units.push("dreadnaught-ii");
-    } else {
-      units.push("dreadnaught");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "flagship-ii")) {
-      units.push("flagship-ii");
-    } else {
-      units.push("flagship");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "warsun-ii")) {
-      units.push("warsun-ii");
-    } else {
-      if (player.may_produce_warsuns == 1) {
-        units.push("warsun");
-      }
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "spacedock-ii")) {
-      units.push("spacedock-ii");
-    } else {
-      units.push("spacedock");
-    }
-
-    if (imperium_self.doesPlayerHaveTech(this.game.player, "pds-ii")) {
-      units.push("pds-ii");
-    } else {
-      units.push("pds");
-    }
-
-  }
-
-  for (let i = 0; i < units.length; i++) {
-    html += this.returnUnitTableEntry(units[i]);
-  }
-
-  html += `
-
-    <div id="close-units-btn" class="button" style="">CONTINUE</div>
-
-  `;
-
-  return html;
-}
-
-
 returnUnitPopup(unittype) {
 
   let html = `
@@ -825,45 +528,6 @@ returnUnitPopupEntry(unittype) {
   return html;
 
 }
-
-returnUnitTableEntry(unittype) {
-
-  let preobj = this.units[unittype];
-  let obj = JSON.parse(JSON.stringify(preobj));
-
-  obj.owner = this.game.player;
-  obj = this.upgradeUnit(obj, this.game.player);
-
-  if (!obj) { return ""; }
-
-  let html = `
-      <div class="unit-element">
-        <div class="unit-box-ship unit-box-ship-${unittype}"></div>
-        <div class="unit-box">
-	  <div class="unit-box-num">${obj.cost}</div>
-	  <div class="unit-box-desc">cost</div>
-	</div>
-        <div class="unit-box">
-	  <div class="unit-box-num">${obj.move}</div>
-	  <div class="unit-box-desc">move</div>
-	</div>
-        <div class="unit-box">
-	  <div class="unit-box-num">${obj.combat}</div>
-	  <div class="unit-box-desc">combat</div>
-	</div>
-        <div class="unit-box">
-	  <div class="unit-box-num">${obj.capacity}</div>
-	  <div class="unit-box-desc">carry</div>
-	</div>
-        <div class="unit-description">${obj.description}.</div>
-      </div>
-    `;
-
-  return html;
-
-}
-
-
 
 returnNewActionCardsOverlay(cards) {
 
@@ -993,7 +657,7 @@ displayFactionDashboard(agenda_phase=0) {
 
   try {
 
-    document.querySelector('.dashboard').innerHTML = this.returnFactionDashboard(agenda_phase);
+    this.dashboard.render(agenda_phase);
 
     let pl = "";
     let fo = "";
@@ -1020,7 +684,7 @@ displayFactionDashboard(agenda_phase=0) {
       } catch (err) {}
 
       document.querySelector(fo).onclick = (e) => {
-        imperium_self.displayFactionSheet((i+1));
+        imperium_self.faction_sheet_overlay.render((i+1));
       }
 
     }
@@ -1051,510 +715,6 @@ console.log("ERROR: " + err);
 }
 
 
-displayFactionSheet(player) {
-
-  let imperium_self = this;
-  let html = imperium_self.returnFactionSheet2(imperium_self, player);
-  imperium_self.overlay.show(html);
-
-
-}
-
-returnFactionSheet2(imperium_self, player=null) {
-
-  if (!player) { player = imperium_self.game.player; }
-  let player_class = "";
-  let border_color = "";
-  let factions = imperium_self.returnFactions();
-  let this_faction = factions[imperium_self.game.state.players_info[player-1].faction];
-
-  let flagship_name = "Flagship";
-  let flagship_text = "This flagship has no special abilities.";
-
-  if (player != null) { player_class = "p"+player; border_color = "bc"+player;  }
-
-  let html = `
-
-<div style="" class="faction_sheet_container p1 bc1">
-    <div id="faction_main" class="faction_main">
-      <div id="faction_sheet_empire_title" class="faction_sheet_empire_title">
-	<div class="faction_sheet_empire_title_name">${this_faction.name}</div>
-
-        <div class="faction_sheet_token_box" id="faction_sheet_token_box">
-          <div class="faction_sheet_token_box_title">Command</div>
-          <div class="faction_sheet_token_box_title">Strategy</div>
-          <div class="faction_sheet_token_box_title">Fleet</div>
-          <div>
-            <span class="fa-stack fa-3x">
-            <span class="fa fa-stack-1x">
-            <span class="token_count commend_token_count">
-            ${imperium_self.game.state.players_info[player - 1].command_tokens}
-            </span>
-            </span>
-            </span>
-          </div>
-          <div>
-            <span class="fa-stack fa-3x">
-            <span class="fa fa-stack-1x">
-            <span class="token_count strategy_token_count">
-            ${this.game.state.players_info[player - 1].strategy_tokens}
-            </span>
-            </span>
-            </span>
-          </div>
-          <div>
-            <span class="fa-stack fa-3x">
-            <span class="fa fa-stack-1x">
-            <span class="token_count fleet_supply_count">
-            ${this.game.state.players_info[player - 1].fleet_supply}
-            </span>
-            </span>
-            </span>
-          </div>
-        </div>
-
-
-
-     </div>
-`;
-    //
-    // ACTION CARDS
-    //
-    let ac = imperium_self.returnPlayerActionCards(imperium_self.game.player);
-    if (ac.length > 0) {
-      html += `
-      <div class="faction_sheet_action_card_box" id="faction_sheet_action_card_box">
-      `;
-      if (imperium_self.game.player == player) {
-
-        for (let i = 0; i < ac.length; i++) {
-          html += `
-            <div class="faction_sheet_action_card bc">
-              <div class="action_card_name">${imperium_self.action_cards[ac[i]].name}</div>
-              <div class="action_card_content">${imperium_self.action_cards[ac[i]].text}</div>
-            </div>
-          `;
-        }
-
-      } else {
-
-        let acih = imperium_self.game.state.players_info[player-1].action_cards_in_hand;
-        for (let i = 0; i < acih; i++) {
-          html += `
-            <div class="faction_sheet_action_card faction_sheet_action_card_back bc">
-            </div>
-          `;
-        }
-      }
-      html += `</div>`;
-    }
-
-     //
-     // tech
-     //
-     html += `
-      <div class="faction_sheet_tech_box" id="faction_sheet_tech_box">
-    `;
-    //
-    // tech we have
-    //
-    for (let i = 0; i < imperium_self.game.state.players_info[player-1].tech.length; i++) {
-      let techname = imperium_self.game.state.players_info[player-1].tech[i];
-      let tech = imperium_self.tech[techname];
-      if (tech.type != "ability") {
-        html += tech.returnCardImage();
-      }
-    }
-    html += `</div>`;
-
-
-    //
-    // PLANET CARDS
-    //
-    html += `
-      <div class="faction_sheet_planet_card_box" id="faction_sheet_planet_card_box">
-    `;
-
-    let pc = imperium_self.returnPlayerPlanetCards(player);
-    for (let b = 0; b < pc.length; b++) {
-      let exhausted = "";
-      if (this.game.planets[pc[b]].exhausted == 1) { exhausted = "exhausted"; }
-      html += `<div class="faction_sheet_planet_card bc ${exhausted}" id="${pc[b]}" style="background-image: url(${this.game.planets[pc[b]].img});"></div>`
-    }
-    html += `
-      </div>
-
-
-    </div>
-
-    <div id="faction_sidebar" class="faction_sidebar">
-      <div id="faction_abilities_container" class="faction_abilities_container">	
-`;
-
-    for (let i = 0; i < imperium_self.game.state.players_info[player-1].tech.length; i++) {
-      let tech = imperium_self.tech[imperium_self.game.state.players_info[player-1].tech[i]];
-      if (tech.type == "ability") {
-console.log("HERE: " + tech.key);
-        if (tech.key.indexOf("flagship") == -1) {
-          html += `
-            <div id="faction_ability_${i}" class="faction_ability">
-	       <div class="faction_ability_title">${tech.name}</div>	
-	       <div class="faction_ability_text">	${tech.text}</div>
- 	    </div>
-          `;
-	} else {
-	  flagship_name = tech.name;
-	  flagship_text = tech.text;
-	}
-      }
-    }
-
-    for (let i = 0; i < this_faction.promissary_notes.length; i++) {
-
-      let pm = this_faction.promissary_notes[i];
-
-console.log("OUR PROMISSARY NOTE: " + JSON.stringify(pm));
-      if (pm.indexOf(this_faction.id) == 0) {
-	let p = imperium_self.promissary_notes[pm];
-	html += `
-          <div id="faction_ability_${pm.key}" class="faction_ability">
-	     <div class="faction_ability_title">${p.name} - Promissary</div>	
-             <div class="faction_ability_text">${p.text}</div>
-          </div>
-	`;
-      };
-    }
-
-    html += `
-       </div>
-        <div id="faction_flagship_container" class="faction_flagship_container">
-	     <div class="faction_flagship_image"></div>
-	     <div class="faction_flagship_text_container">
-	       <div class="faction_flagship_title">${flagship_name}</div>	
-	       <div class="faction_flagship_text">${flagship_text}</div>
-             </div>
-        </div>
-
-
-	<div id="faction_tech_container" class="faction_tech_container">
-`
-
-    //
-    // faction tech we do not have... yet
-    //
-    for (i in imperium_self.tech) {
-      let tech = imperium_self.tech[i];
-      if (tech.type == "special") {
-        if (!imperium_self.game.state.players_info[player-1].tech.includes(i)) {
-          if (imperium_self.game.state.players_info[player-1].faction == tech.faction) {
-            let unmodded = tech.returnCardImage();
-            html += unmodded.replace(/card_nonopaque/g, 'card_opaque');
-          }
-        }
-      }
-    }
-
-
-html += `
-	</div>
-
-</div>
-<style>
-#faction_main {
-  min-height: 100vh;
-  grid-column: 1 / 2;
-}
-#faction_sidebar {
-  min-height: 100vh;
-  grid-column: 2;
-  width: 25rem;
-}
-
-.faction_sheet_token_box {
-  width: 40em;
-  height: 10em;
-  display: grid;
-  grid-gap: 0 2em;
-  grid-template-columns: auto auto auto;
-  font-family: 'bank-gothic';
-  transform: scale(1);
-  font-size: 0.4rem;
-  margin: 0.5rem;
-}
-
-.faction_sheet_empire_title {
-  color: white;
-  font-size: 2rem;
-  font-weight: bold;
-  letter-spacing: 0.2rem;
-  background: linear-gradient(90deg, #000D, #0000);
-  margin-left: 0rem;
-  margin-right: 1rem;
-  padding: 0.25rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-
-.faction_sheet_empire_title_name {
-  color: white;
-  padding-left: 0.75rem;
-}
-
-.faction_sheet_container {
-  overflow-y:scroll;
-  width:90vw;
-  height:90vh;
-  background-image:url('/imperium/img/factions/faction3.jpg');
-  background-size:cover;
-  display: grid;
-  grid-template-columns: 1fr min-content;
-  position: relative;
-  padding: 1rem;
-}
-.fa-stack {
-  height: 1em;
-  line-height: 1.5em;
-}
-.faction_abilities_container {
-  background-color: #0008;
-  color: white;
-  padding: 1rem;
-  font-size: 1rem;
-  line-height: 1.5rem;
-}
-.faction_ability:nth-child(n+2) {
-  margin-top: 1rem;
-}
-.faction_ability_title {
-  font-weight: bold;
-  border-bottom:1px solid #fff;
-  margin-bottom: 0.5rem;
-}
-.faction_ability_text {
-  font-weight: normal;
-  font-family: 'orbitron-medium', helvetica, sans-serif;
-}
-.faction_flagship_image {
-  background-image: url('/imperium/img/ships/flagship_100x200.png');
-  min-width: 160px;
-  min-height: 80px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-.faction_flagship_text_container {
-}
-.faction_flagship_title {
-  font-weight: bold;
-  border-bottom:1px solid #fff;
-  margin-bottom: 0.5rem;
-}
-.faction_flagship_text {
-  font-weight: normal;
-  font-family: 'orbitron-medium', helvetica, sans-serif;
-}
-.faction_flagship_container {
-  background-color: #0008;
-  color: white;
-  padding: 1rem;
-  max-width: 100%;
-  font-size: 1rem;
-  line-height: 1.5rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-.faction_tech_container {
-  max-width: 100%;
-  font-size: 1rem;
-  line-height: 1.5rem;
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-.faction_tech_container.tech_card {
-  margin-left: 0.25rem;
-  margin-right: 0.25rem;
-}
-
-
-.faciton_sheet_empire_title {
-  color: white;
-  font-size: 2rem;
-  font-weight: bold;
-  letter-spacing: 0.2rem;
-  background-color: #0005;
-}
-.faction_sheet_planet_card_box {
-  margin: 1em 1em 17em 1em;
-}
-
-</style>
-</div>
-
-  `;
-
-  return html;
-
-}
-
-
-/******* DEPRECATED *** July 10 **********
-returnFactionSheet(imperium_self, player=null) {
-
-  if (!player) { player = imperium_self.game.player; }
-  let player_class = "";
-  let border_color = "";
-  if (player != null) { player_class = "p"+player; border_color = "bc"+player;  }
-
-  let html = `
-      <div class="faction_sheet_container ${player_class} ${border_color}" style="overflow-y:scroll;padding:15px;;width:90vw;height:90vh;background-image:url('/imperium/img/factions/${imperium_self.game.state.players_info[player-1].faction}.jpg');background-size:cover;">
-        <div class="faction_sheet_token_box" id="faction_sheet_token_box">
-          <div class="faction_sheet_token_box_title">Command</div>
-          <div class="faction_sheet_token_box_title">Strategy</div>
-          <div class="faction_sheet_token_box_title">Fleet</div>
-          <div>	
-            <span class="fa-stack fa-3x">
-            <i class="fas fa-dice-d20 fa-stack-2x pc white-stroke"></i>
-            <span class="fa fa-stack-1x">
-            <span class="token_count commend_token_count">
-            ${imperium_self.game.state.players_info[player - 1].command_tokens}
-            </span>
-            </span>
-            </span>
-          </div>
-          <div>
-            <span class="fa-stack fa-3x">
-            <i class="far fa-futbol fa-stack-2x pc white-stroke"></i>
-            <span class="fa fa-stack-1x">
-            <span class="token_count strategy_token_count">
-            ${this.game.state.players_info[player - 1].strategy_tokens}
-            </span>
-            </span>
-            </span>
-          </div>
-          <div>
-            <span class="fa-stack fa-3x">
-            <i class="fas fa-space-shuttle fa-stack-2x pc white-stroke"></i>
-            <span class="fa fa-stack-1x">
-            <span class="token_count fleet_supply_count">
-            ${this.game.state.players_info[player - 1].fleet_supply}
-            </span>
-            </span>
-            </span>
-          </div>
-        </div>
-        <div class="faction_sheet_active">
-   `;
-
-
-
-    //
-    // FACTION ABILITIES
-    //
-    html += `
-      <div class="faction_sheet_tech_box" id="faction_sheet_abilities_box">
-    `;
-    for (let i = 0; i < imperium_self.game.state.players_info[player-1].tech.length; i++) {
-      let tech = imperium_self.tech[imperium_self.game.state.players_info[player-1].tech[i]];
-      if (tech.type == "ability") {
-	let unmodded = tech.returnCardImage();
-	html += unmodded.replace(/card_nonopaque/g, 'bc');
-      }
-    }
-    html += `</div>`;
-
-    
-     //
-     // tech
-     //
-     html += `
-      <div class="faction_sheet_tech_box" id="faction_sheet_tech_box">
-    `;
-    //
-    // tech we have
-    //
-    for (let i = 0; i < imperium_self.game.state.players_info[player-1].tech.length; i++) {
-      let techname = imperium_self.game.state.players_info[player-1].tech[i];
-      let tech = imperium_self.tech[techname];
-      if (tech.type != "ability") {
-	html += tech.returnCardImage();
-      }
-    }
-    //
-    // faction tech we do not have... yet
-    //
-    for (i in imperium_self.tech) {
-      let tech = imperium_self.tech[i];
-      if (tech.type == "special") {
-	if (!imperium_self.game.state.players_info[player-1].tech.includes(i)) {
- 	  if (imperium_self.game.state.players_info[player-1].faction == tech.faction) {
-	    let unmodded = tech.returnCardImage();
-	    html += unmodded.replace(/card_nonopaque/g, 'card_opaque');
-	  }
-	}
-      }
-    }
-    html += `</div>`;
-
-
-
-
-
-    //
-    // ACTION CARDS
-    //
-    let ac = imperium_self.returnPlayerActionCards(imperium_self.game.player);
-    if (ac.length > 0) {
-      html += `
-      <div class="faction_sheet_action_card_box" id="faction_sheet_action_card_box">
-      `;
-      if (imperium_self.game.player == player) {
-
-	for (let i = 0; i < ac.length; i++) {
-          html += `
-            <div class="faction_sheet_action_card bc">
-              <div class="action_card_name">${imperium_self.action_cards[ac[i]].name}</div>
-              <div class="action_card_content">${imperium_self.action_cards[ac[i]].text}</div>
-            </div> 
-	  `;
-	}
-
-      } else {
-
-	let acih = imperium_self.game.state.players_info[player-1].action_cards_in_hand;
-	for (let i = 0; i < acih; i++) {
-          html += `
-            <div class="faction_sheet_action_card faction_sheet_action_card_back bc">
-            </div> 
-	  `;
-	}
-      }
-      html += `</div>`;
-    }
-
-    //
-    // PLANET CARDS
-    //
-    html += `
-      <div class="faction_sheet_planet_card_box" id="faction_sheet_planet_card_box">
-    `;
-  
-    let pc = imperium_self.returnPlayerPlanetCards(player);
-    for (let b = 0; b < pc.length; b++) {
-      let exhausted = "";
-      if (this.game.planets[pc[b]].exhausted == 1) { exhausted = "exhausted"; }
-      html += `<div class="faction_sheet_planet_card bc ${exhausted}" id="${pc[b]}" style="background-image: url(${this.game.planets[pc[b]].img});"></div>`
-    }
-    html += `
-      </div>
-    `;
-
-  return html;
-}
-***************************************************/
-
-
-
 
 addUIEvents() {
 
@@ -1565,61 +725,25 @@ addUIEvents() {
   $('#hexGrid').draggable();
 
   document.querySelector('.leaderboardbox').addEventListener('click', (e) => {
+
+    if (e.target.id === "objectives-toggle" || e.target.id === "VP-track-label") {
+      imperium_self.handleObjectivesMenuItem();
+      return;
+    }
+
     document.querySelector('.leaderboardbox').classList.toggle('leaderboardbox-lock');
   });
 
   //set player highlight color
   document.documentElement.style.setProperty('--my-color', `var(--p${this.game.player})`);
   this.displayFactionDashboard();
-  var html = this.returnTokenDisplay(); 
-  document.querySelector('.hud-header').append(this.app.browser.htmlToElement(html));
+  this.tokenbar.render(this.game.player);
 
 }
 
 
 
 
-returnTokenDisplay(player=null) {
-
-  if (player == null) { player = this.game.player; }
-
-  let html = `
-    <div class="hud-token-count">
-      <div>	
-        <span class="fa-stack fa-3x">
-        <i class="fas fa-dice-d20 fa-stack-2x pc white-stroke"></i>
-        <span class="fa fa-stack-1x">
-        <div id="token_display_command_token_count" class="token_count command_token_count">
-        ${this.game.state.players_info[player-1].command_tokens}
-        </div>
-        </span>
-        </span>
-      </div>
-      <div>
-        <span class="fa-stack fa-3x">
-        <i class="far fa-futbol fa-stack-2x pc white-stroke"></i>
-        <span class="fa fa-stack-1x">
-        <div id="token_display_strategy_token_count" class="token_count strategy_token_count">
-        ${this.game.state.players_info[player-1].strategy_tokens}
-        </div>
-        </span>
-        </span>
-      </div>
-      <div>
-        <span class="fa-stack fa-3x">
-        <i class="fas fa-space-shuttle fa-stack-2x pc white-stroke"></i>
-        <span class="fa fa-stack-1x">
-        <div id="token_display_fleet_supply_count" class="token_count fleet_supply_count">
-        ${this.game.state.players_info[player-1].fleet_supply}
-        </div>
-        </span>
-        </span>
-      </div>
-    </div>`;
-
-  return html;
-
-}
 
 
 showSector(pid) {
@@ -1652,15 +776,10 @@ hideSector(pid) {
 updateTokenDisplay() {
 
   let imperium_self = this;
-
-  try {
-    $('#token_display_command_token_count').html(imperium_self.game.state.players_info[imperium_self.game.player-1].command_tokens);
-    $('#token_display_strategy_token_count').html(imperium_self.game.state.players_info[imperium_self.game.player-1].strategy_tokens);
-    $('#token_display_fleet_supply_count').html(imperium_self.game.state.players_info[imperium_self.game.player-1].fleet_supply_tokens);
-  } catch (err) {
-  }
+  this.tokenbar.render(this.game.player);
 
 }
+
 updateLeaderboard() {
 
   if (this.browser_active == 0) { return; }
@@ -1687,7 +806,7 @@ updateLeaderboard() {
     document.querySelector('.round').innerHTML = this.game.state.round;
     document.querySelector('.turn').innerHTML = this.game.state.turn;
 
-    let html = '<div class="VP-track-label">Victory Points</div>';
+    let html = '<div class="VP-track-label" id="VP-track-label">Victory Points<div class="objectives-toggle" id="objectives-toggle">?</div></div>';
 
     let vp_needed = 14;
     if (this.game.state.vp_target != 14 && this.game.state.vp_target > 0) { vp_needed = this.game.state.vp_target; }
@@ -2188,7 +1307,7 @@ updateSectorGraphics(sector) {
   showAgendaCard(agenda) {
     let thiscard = this.agenda_cards[agenda];
     let html = `
-      <div style="background-image: url('/imperium/img/agenda_card_template.png');width:100%;height:100%;" class="overlay_agendacard card option" id="${agenda}">
+      <div style="background-image: url('/imperium/img/agenda_card_template.png');" class="overlay_agendacard card option" id="${agenda}">
         <div class="overlay_agendatitle">${thiscard.name}</div>
         <div class="overlay_agendacontent">${thiscard.text}</div>
       </div>

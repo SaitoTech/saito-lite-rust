@@ -71,6 +71,7 @@ li.slide {
     opacity: 0;
     transition: opacity var(--transition-delay);
     transition-delay: var(--transition-delay);
+    cursor: pointer;
 }
 
 .slide>img {

@@ -1,5 +1,7 @@
 const LeagueMenuTemplate = require("./menu.template");
 const InvitationLink = require("./overlays/league-invitation-link");
+const JoinLeagueOverlay = require("./overlays/join");
+const LeagueEditor = require("./overlays/editor");
 
 class LeagueMenu {
 
@@ -13,11 +15,16 @@ class LeagueMenu {
   }
 
   render() {
+    let selector = (this.container) ? `${this.container} ` : "";
+    selector += `#lg${this.league.id}`;
 
-    if (!document.getElementById(this.league.id)) {
-      this.app.browser.addElementToId(LeagueMenuTemplate(this.app, this.mod, this.league));
+    console.log("Rendering League on Page: ");
+    console.log(JSON.parse(JSON.stringify(this.league)));
+
+    if (document.querySelector(selector)) {
+      this.app.browser.replaceElementBySelector(LeagueMenuTemplate(this.app, this.mod, this.league), selector);
     } else {
-      this.app.browser.replaceElementById(LeagueMenuTemplate(this.app, this.mod, this.league));
+      this.app.browser.addElementToSelector(LeagueMenuTemplate(this.app, this.mod, this.league), this.container);
     }
 
     this.attachEvents();
@@ -27,33 +34,41 @@ class LeagueMenu {
   attachEvents() {
 
     try {
-      document.querySelector(".league-join-button").onclick = (e) => {
-        this.mod.sendJoinTransaction(this.league.id);
+      document.querySelector(`#lg${this.league.id} .league-join-button`).onclick = (e) => {
+        let jlo = new JoinLeagueOverlay(this.app, this.mod, this.league.id);
+        jlo.render();
       }
     } catch (err) {}
 
     try {
-      document.querySelector(".league-view-button").onclick = (e) => {
-        this.app.connection.emit("view-league-details", this.league.id);
+      document.querySelector(`#lg${this.league.id} .league-edit-button`).onclick = (e) => {
+        let le = new LeagueEditor(this.app, this.mod, this.league.id);
+        le.render();
       }
     } catch (err) {}
 
     try {
-      document.querySelector(".league-invite-button").onclick = (e) => {
+      document.querySelector(`#lg${this.league.id} .league-view-button`).onclick = (e) => {
+        this.app.connection.emit("league-overlay-render-request", this.league.id);
+      }
+    } catch (err) {}
+
+    try {
+      document.querySelector(`#lg${this.league.id} .league-invite-button`).onclick = (e) => {
         this.invitation_link = new InvitationLink(this.app, this.mod, this.league);
         this.invitation_link.render();
       }
     } catch (err) {}
 
     try {
-      document.querySelector(".league-delete-button").onclick = async (e) => {
+      document.querySelector(`#lg${this.league.id} .league-delete-button`).onclick = async (e) => {
         let confirm = await sconfirm("Are you sure you want to delete this league?");
         if (confirm) { 
-	  let newtx = this.mod.createRemoveTransaction(this.league.id); 
-	  this.app.network.propagateTransaction(newtx);
-	  this.removeLeague(this.league.id);
-	  this.app.connection.emit("leagues-render-request");
-	}
+      	  let newtx = this.mod.createRemoveTransaction(this.league.id); 
+      	  this.app.network.propagateTransaction(newtx);
+      	  this.mod.removeLeague(this.league.id);
+      	  this.app.connection.emit("leagues-render-request");
+      	}
       }
     } catch (err) {}
 

@@ -146,6 +146,9 @@
 
     for (let i = 0; i < this.game.state.players_info.length; i++) {
       for (let ii = 0; ii < this.game.state.players_info[i].factions.length; ii++) {
+
+console.log(i + " -- " + ii);
+
         factions[this.game.state.players_info[i].factions[ii]] = {
 	  faction : this.game.state.players_info[i].factions[ii] ,
 	  vp_base : 0 ,
@@ -159,6 +162,7 @@
 	};
       }
     }
+console.log("calculating vp...");
     //
     // let factions calculate their VP
     //
@@ -169,6 +173,7 @@
       factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
     }
 
+console.log("calculating vp... 2");
 
     //
     // calculate keys controlled
@@ -176,9 +181,10 @@
     for (let f in factions) {
       factions[f].keys = this.returnNumberOfKeysControlledByFaction(f);
       if (f === "protestant") {
-	factions[f].religious = this.returnNumberOfSpacesControlledByProtestants();
+	factions[f].religious = this.returnNumberOfProtestantSpacesInLanguageZone();
       }
     }
+console.log("calculating vp... 3");
 
     //
     // military victory
@@ -207,12 +213,14 @@
         factions['england'].details = "military victory";
       }
     }
+console.log("calculating vp... 4");
     if (factions['papacy']) {
       if (factions['papacy'].keys >= this.game.state.autowin_papacy_keys_controlled) {
         factions['papacy'].victory = 1;
         factions['papacy'].details = "military victory";
       }
     }
+console.log("calculating vp... 5");
 
     //
     // religious victory
@@ -440,220 +448,6 @@
     state.events.wartburg = 0;
 
     return state;
-
-  }
-
-
-  returnReligiousConflictChart() {
-
-    let chart = {};
-
-    chart['s0'] = {
-      top: "475px",
-      left: "64px",
-    }
-    chart['s1'] = {
-      top: "475px",
-      left: "140px",
-    }
-    chart['s2'] = {
-      top: "475px",
-      left: "216px",
-    }
-    chart['s3'] = {
-      top: "475px",
-      left: "292px",
-    }
-    chart['s4'] = {
-      top: "475px",
-      left: "368px",
-    }
-    chart['s5'] = {
-      top: "475px",
-      left: "444px",
-    }
-    chart['s6'] = {
-      top: "475px",
-      left: "520px",
-    }
-    chart['s7'] = {
-      top: "475px",
-      left: "596px",
-    }
-    chart['s8'] = {
-      top: "475px",
-      left: "672px",
-    }
-    chart['s9'] = {
-      top: "475px",
-      left: "748px",
-    }
-    chart['s10'] = {
-      top: "475px",
-      left: "824px",
-    }
-    chart['s11'] = {
-      top: "475px",
-      left: "900px",
-    }
-    chart['s12'] = {
-      top: "475px",
-      left: "976px",
-    }
-    chart['s13'] = {
-      top: "558px",
-      left: "64px",
-    }
-    chart['s14'] = {
-      top: "558px",
-      left: "140px",
-    }
-    chart['s15'] = {
-      top: "558px",
-      left: "216px",
-    }
-    chart['s16'] = {
-      top: "558px",
-      left: "292px",
-    }
-    chart['s17'] = {
-      top: "558px",
-      left: "368px",
-    }
-    chart['s18'] = {
-      top: "558px",
-      left: "444px",
-    }
-    chart['s19'] = {
-      top: "558px",
-      left: "520px",
-    }
-    chart['s20'] = {
-      top: "558px",
-      left: "596px",
-    }
-    chart['s21'] = {
-      top: "558px",
-      left: "672px",
-    }
-    chart['s22'] = {
-      top: "558px",
-      left: "748px",
-    }
-    chart['s23'] = {
-      top: "558px",
-      left: "824px",
-    }
-    chart['s24'] = {
-      top: "558px",
-      left: "900px",
-    }
-    chart['s25'] = {
-      top: "558px",
-      left: "976px",
-    }
-    chart['s26'] = {
-      top: "643px",
-      left: "64px",
-    }
-    chart['s27'] = {
-      top: "643px",
-      left: "140px",
-    }
-    chart['s28'] = {
-      top: "643px",
-      left: "216px",
-    }
-    chart['s29'] = {
-      top: "643px",
-      left: "292px",
-    }
-    chart['s30'] = {
-      top: "643px",
-      left: "368px",
-    }
-    chart['s31'] = {
-      top: "643px",
-      left: "444px",
-    }
-    chart['s32'] = {
-      top: "643px",
-      left: "520px",
-    }
-    chart['s33'] = {
-      top: "643px",
-      left: "596px",
-    }
-    chart['s34'] = {
-      top: "643px",
-      left: "672px",
-    }
-    chart['s35'] = {
-      top: "643px",
-      left: "748px",
-    }
-    chart['s36'] = {
-      top: "643px",
-      left: "824px",
-    }
-    chart['s37'] = {
-      top: "643px",
-      left: "900px",
-    }
-    chart['s38'] = {
-      top: "643px",
-      left: "976px",
-    }
-    chart['s39'] = {
-      top: "475px",
-      left: "64px",
-    }
-    chart['s40'] = {
-      top: "726px",
-      left: "140px",
-    }
-    chart['s41'] = {
-      top: "726px",
-      left: "216px",
-    }
-    chart['s42'] = {
-      top: "726px",
-      left: "292px",
-    }
-    chart['s43'] = {
-      top: "726px",
-      left: "368px",
-    }
-    chart['s44'] = {
-      top: "726px",
-      left: "444px",
-    }
-    chart['s45'] = {
-      top: "726px",
-      left: "520px",
-    }
-    chart['s46'] = {
-      top: "726px",
-      left: "596px",
-    }
-    chart['s47'] = {
-      top: "726px",
-      left: "672px",
-    }
-    chart['s48'] = {
-      top: "726px",
-      left: "672px",
-    }
-    chart['s49'] = {
-      top: "726px",
-      left: "748px",
-    }
-    chart['s50'] = {
-      top: "726px",
-      left: "824px",
-    }
-
-    return chart;
 
   }
 

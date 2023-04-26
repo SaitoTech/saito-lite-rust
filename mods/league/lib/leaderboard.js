@@ -20,10 +20,17 @@ class Leaderboard {
       return;
     }
 
+    let title = "Games";
+    let gm = this.app.modules.returnModuleByName(this.league.game);
+    if (gm){
+      title = gm.statistical_unit + "s";
+    }
+
+
     if (document.querySelector(".league-leaderboard")) {
-      this.app.browser.replaceElementBySelector(LeaderboardTemplate(this.app, this.mod), ".league-leaderboard");
+      this.app.browser.replaceElementBySelector(LeaderboardTemplate(title), ".league-leaderboard");
     } else {
-      this.app.browser.addElementToSelectorOrDom(LeaderboardTemplate(this.app, this.mod), this.container);
+      this.app.browser.addElementToSelectorOrDom(LeaderboardTemplate(title), this.container);
     }  
 
     //
@@ -32,9 +39,15 @@ class Leaderboard {
     //
     // fetch league info if it is not already downloaded
     //
-    this.mod.fetchLeagueLeaderboard(this.league.id, (rows) => {
-      this.renderLeaderboardContents();
-    });
+    if (this.league.players.length == 0 || !this.league.ts || this.league.ts + 900000 < new Date().getTime()){
+      if (this.mod.debug){
+        console.log(this.league.numPlayers, this.league.players.length, "Query Server for leaderboard");  
+      }
+      this.mod.fetchLeagueLeaderboard(this.league.id, (rows) => {
+        this.renderLeaderboardContents();
+        this.mod.saveLeagues();
+      });
+    }
   
   }
 
@@ -58,7 +71,7 @@ class Leaderboard {
       html += `
         <div class="saito-table-row${(publickey == this.app.wallet.returnPublicKey())?" my-leaderboard-position":""}">
           <div class="center-align">${i+1}</div>
-          <div class="saito-address saito-address-${publickey}" data-id="${publickey}">${publickey}</div>
+          ${this.app.browser.returnAddressHTML(publickey)}
           <div class="right-align">${Math.round(player.score)}</div>
           <div class="right-align">${Math.round(player.games_finished)}</div>
         </div>
@@ -69,7 +82,6 @@ class Leaderboard {
       this.app.browser.addElementToSelector(html, ".league-leaderboard .saito-table-body");
     }
     
-    this.app.browser.addIdentifiersToDom();
     let myListing = document.querySelector('.my-leaderboard-position');
     if (myListing) {
       myListing.scrollIntoView();

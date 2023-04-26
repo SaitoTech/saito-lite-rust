@@ -2,13 +2,13 @@
     if (card == "eurocommunism") {
 
       if (this.game.player == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>Eurocommunism: US is removing 4 USSR influence from Western Europe (max 2 per country)</div>");
+        this.updateStatusHeader("Eurocommunism: US is removing 4 USSR influence from Western Europe (max 2 per country)");
         return 0;
 
       }
       if (this.game.player == 2) {
 
-        this.updateStatus("<div class='status-message' id='status-message'>Remove 4 USSR influence from Western Europe (max 2 per country)</div>");
+        this.updateStatusHeader("Remove 4 USSR influence from Western Europe (max 2 per country)");
 
         let twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -31,7 +31,7 @@
         }
         if (available_targets < 4) {
           ops_to_purge = available_targets;
-          this.updateStatus("<div class='status-message' id='status-message'>Remove " + ops_to_purge + " USSR influence from Western Europe (max 2 per country)</div>");
+          this.updateStatusHeader("Remove " + ops_to_purge + " USSR influence from Western Europe (max 2 per country)");
         }
 
 

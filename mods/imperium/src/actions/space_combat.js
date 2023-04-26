@@ -1,6 +1,4 @@
 
-
-
     this.importActionCard('intercept', {
   	name : "Intercept" ,
   	type : "retreat" ,
@@ -12,10 +10,6 @@
 
         }
     });
-
-
-
-
 
     this.importActionCard('courageous-to-the-end', {
   	name : "Courageous to the End" ,
@@ -162,8 +156,6 @@
 	  return 1;
 	}
     });
-
-
 
     this.importActionCard('emergency-repairs', {
   	name : "Emergency Repairs" ,

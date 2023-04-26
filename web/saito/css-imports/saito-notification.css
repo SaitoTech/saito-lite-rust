@@ -29,3 +29,11 @@
   font-size: 1.8rem;
 }
 
+.redsquare-notifications .tweet .tweet-header {
+  padding: 2rem 0rem;
+}
+
+.redsquare-notifications .tweet .tweet-body {
+  min-height: 5rem;
+  overflow-y: hidden;
+}

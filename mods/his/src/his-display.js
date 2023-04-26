@@ -1,32 +1,6 @@
 
-
-
-
   displayDebaters() {
-
-    let html = `<div class="personage_overlay" id="personage_overlay">`;
-    for (let i = 0; i < this.game.state.debaters.length; i++) {
-      html += `	<div class="personage_tile personage_tile${i}" data-id="${this.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${this.game.state.debaters[i].img}')"></div>`;
-    }
-    html += `</div>`;
-
-    this.overlay.showOverlay(this.app, this, html);
-
-    for (let i = 0; i < this.game.state.debaters.length; i++) {
-      let tile_f = "/his/img/tiles/debaters/" + this.game.state.debaters[i].img;
-      let tile_b = tile_f.replace('.svg', '_back.svg');
-      if (this.game.state.debaters[i].committed == 1) {
-	let x = tile_f;
-	tile_f = tile_b;
-	tile_b = x;
-      }
-      let divsq = `.personage_tile${i}`;
-      $(divsq).mouseover(function() {
-	$(this).css('background-image', `url('${tile_b}')`);
-      }).mouseout(function() {
-	$(this).css('background-image', `url('${tile_f}')`);
-      });
-    }
+    this.debaters_overlay.render();
   }
 
   displayExplorers() {
@@ -37,7 +11,7 @@
     }
     html += `</div>`;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     for (let i = 0; i < this.game.state.explorers.length; i++) {
       let tile_f = "/his/img/tiles/explorers/" + this.game.state.explorers[i].img;
@@ -65,7 +39,7 @@
     }
     html += `</div>`;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     for (let i = 0; i < this.game.state.conquistadors.length; i++) {
       let tile_f = "/his/img/tiles/conquistadors/" + this.game.state.conquistadors[i].img;
@@ -106,18 +80,8 @@
     }
   }
 
-  displayTheologicalDebate() {
-
-    let html = `
-      <div class="theological_debate_sheet" id="theological_debate_sheet">
-	<div class=".status"></div>
-	<div class="attacker_debater"></div>
-	<div class="defender_debater"></div>
-      </div>
-    `;
-
-    this.overlay.showOverlay(this.app, this, html);
-
+  displayTheologicalDebate(res) {
+    this.debate_overlay.render(res);
   }
 
 
@@ -144,7 +108,7 @@
       </div>
     `;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.showOverlay(html);
 
     //
     // list all debaters
@@ -210,120 +174,10 @@
 
 
   displayFactionSheet(faction) {
-
-    this.overlay.showOverlay(this.app, this, this.factions[faction].returnFactionSheet(faction));
-    let controlled_keys = 0;
-    
-    for (let key in this.game.spaces) {
-      if (this.game.spaces[key].type === "key") {
-        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
-          controlled_keys++;
-	}
-      }
-    }
-    let keyboxen = '';
- 
-    // ENGLAND
-    if (this.factions[faction].key === "england") {
-      let total_keys = 9;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = this.factions[faction].marital_status; i < 7; i++) {
-          keyboxen += `<div class="faction_sheet_keytile england_marital_status${i+1}" id="england_marital_status_keytile${i+1}"></div>`;
-      }
-      for (let i = 1; i <= 9; i++) {
-        if (i > (9-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // FRANCE
-    if (this.factions[faction].key === "france") {
-      let total_keys = 11;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 0; i < 7; i++) {
-          keyboxen += `<div class="faction_sheet_keytile france_chateaux_status${i+1}" id="france_chateaux_status_keytile${i+1}"></div>`;
-      }
-      for (let i = 1; i <= 11; i++) {
-        if (i > (11-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // OTTOMAN
-    if (this.factions[faction].key === "ottoman") {
-      let total_keys = 11;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 0; i <= 10; i++) {
-          keyboxen += `<div class="faction_sheet_keytile ottoman_piracy_status${i}" id="ottoman_piracy_status_keytile${i}"></div>`;
-      }
-      for (let i = 1; i <= 11; i++) {
-        if (i > (11-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // PAPACY
-    if (this.factions[faction].key === "papacy") {
-      let total_keys = 7;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 0; i < 12; i++) {
-          keyboxen += `<div class="faction_sheet_keytile papacy_construction_status${i+1}" id="papacy_construction_status_keytile${i+1}"></div>`;
-      }
-      for (let i = 1; i <= 7; i++) {
-        if (i >= (7-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // PROTESTANTS
-    if (this.factions[faction].key === "protestant") {
-
-      let total_keys = 11;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 0; i <= 6; i++) {
-	  let box_inserts = "";
-	  if (this.game.state.translations['new']['german'] == i) {
-            box_inserts += `<div class="new_testament_german_tile" id="new_testament_german_tile"></div>`;
-	  }
-	  if (this.game.state.translations['new']['french'] == i) {
-            box_inserts += `<div class="new_testament_french_tile" id="new_testament_french_tile"></div>`;
-	  }
-	  if (this.game.state.translations['new']['english'] == i) {
-            box_inserts += `<div class="new_testament_english_tile" id="new_testament_english_tile"></div>`;
-	  }
-          keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}">${box_inserts}</div>`;
-      }
-      for (let i = 1; i <= 11; i++) {
-        if (i > (11-remaining_keys)) {
-	  let box_inserts = "";
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    // HAPSBURG
-    if (this.factions[faction].key === "hapsburg") {
-      let total_keys = 14;
-      let remaining_keys = total_keys - controlled_keys;
-      for (let i = 1; i <= 14; i++) {
-	if (this.game.state.translations['german']['full'] == i) {
-          box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
-	}
-	if (this.game.state.translations['french']['full'] == i) {
-          box_inserts += `<div class="bible_french_tile" id="bible_french_tile"></div>`;
-	}
-	if (this.game.state.translations['english']['full'] == i) {
-          box_inserts += `<div class="bible_english_tile" id="bible_english_tile"></div>`;
-	}
-        if (i > (14-remaining_keys)) {
-          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
-        }
-      }
-    }
-    document.getElementById("faction_sheet").innerHTML = keyboxen;
+    this.faction_overlay.render(faction);
   }
 
   returnFactionSheetKeys() {
-    
   }
 
   displayBoard() {
@@ -980,7 +834,6 @@
 
     if (!this.game.spaces[key]) { return; }
 
-    let obj = document.getElementById(key);
     let space = this.game.spaces[key];
     let tile = this.returnSpaceTile(space);
 
@@ -1020,19 +873,22 @@
     //
     if (tile === "") { show_tile = 0; }
 
-    if (show_tile === 1) {
-      obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
-      obj.innerHTML += this.returnArmies(space);
-      obj.innerHTML += this.returnNavies(space);
-      obj.innerHTML += this.returnMercenaries(space);
-      obj.innerHTML += this.returnPersonages(space);
-    }
+    let t = "."+key;
+    document.querySelectorAll(t).forEach((obj) => {
 
+      if (show_tile === 1) {
+        obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
+        obj.innerHTML += this.returnArmies(space);
+        obj.innerHTML += this.returnNavies(space);
+        obj.innerHTML += this.returnMercenaries(space);
+        obj.innerHTML += this.returnPersonages(space);
+      }
 
-    // add unrest if needed
-    if (this.isSpaceInUnrest(space)) {
-      obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
-    }
+      if (this.isSpaceInUnrest(space)) {
+        obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
+      }
+
+    });
 
   }
 

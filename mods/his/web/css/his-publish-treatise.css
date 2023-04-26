@@ -1,0 +1,9 @@
+
+.treatise-overlay {
+  background-image: url("/his/img/backgrounds/theological-debate.jpg");
+  background-size: cover;
+  width: 80vw;
+  min-height: 800px;
+  height: auto;
+}
+

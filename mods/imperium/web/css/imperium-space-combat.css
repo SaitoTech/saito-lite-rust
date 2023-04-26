@@ -1,0 +1,86 @@
+
+.space-combat-overlay {
+  background: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/imperium/img/backgrounds/space_battle.jpg);
+  background-size: cover;
+  width: 90vw;
+  height: 90vh;
+  padding: 2rem;
+  margin-top: auto;
+  overflow-y: scroll;
+}
+
+.space-combat-ui {
+  margin-top:6rem;
+  padding: 2rem;
+}
+
+.space-combat-units {
+  display: grid;
+  grid-template-columns: 32rem 1fr 32rem;
+}
+
+.space-combat-title {
+  color: white;
+  text-align: center;
+  font-size: 4rem;
+  font-family: 'orbitron-medium';
+}
+
+.space-combat-subtitle {
+  color: white;
+  text-align: center;
+  font-size: 2rem;
+  font-family: 'orbitron-medium';
+  border-bottom: 3px solid #0004
+  padding-bottom: 1rem;
+}
+
+.space-combat-menu div {
+  font-size: 2rem;
+  color: white;
+  text-align: center;
+  padding-top: 2rem;
+  font-style: italic;
+}
+
+.space-combat-ui .space-combat-menu ul li {
+  width: 100%;
+  line-height: 3.5rem;
+  border-top: 1px solid var(--saito-skyline-grey);
+  cursor: pointer;
+  border-color: #555;
+  text-decoration: none;
+  color: #fffD;
+  text-align: center;
+  list-style: none;
+  padding-top: 2rem;
+  font-weight: bolder;
+  font-family: 'orbitron-medium';
+  font-size: 2rem;
+  letter-spacing: 0.2rem;
+}
+
+.space-combat-ui .space-combat-menu ul li:hover {
+  background: #0005;
+}
+
+.space-combat-defender .unit-table .unit-element .unit-box-ship {
+  transform: rotate(180deg);
+}
+
+.space-combat-defender .unit-table.small .unit-element , .space-combat-attacker .unit-table.small .unit-element {
+  clear: both;
+  width: 32rem;
+  max-width: 32rem;
+}
+
+.space-combat-defender-name , .space-combat-attacker-name {
+  font-size: 2rem;
+  color: white;
+  font-family: 'bank-gothic';
+  text-align: center;
+  background-color: #0005;
+  padding: 1rem;
+  border-radius: 1rem;
+}
+

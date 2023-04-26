@@ -16,7 +16,7 @@ class GameSelector {
     this_self = this;
 
     this.app.connection.on("arcade-launch-game-selector", (obj = {}) => {
-
+    
       mod.styles = ['/arcade/css/arcade-game-selector-overlay.css',
         '/arcade/css/arcade-overlays.css'];
       mod.attachStyleSheets();
@@ -37,21 +37,27 @@ class GameSelector {
   attachEvents() {
 
     Array.from(document.querySelectorAll('.arcade-game-selector-game')).forEach(game => {
-      game.onclick = async (e) => {
-
+      game.onclick = (e) => {
+        e.stopPropagation();
         let modname = e.currentTarget.getAttribute("data-id");
         this.obj.game = modname;
         this.overlay.remove();
 
-        if (this.obj.callback != null) {
-          this.obj.callback(this.obj);
-        } else {
-          await this.app.browser.logMatomoEvent("GameWizard", "GameSelector", modname);
-          this.app.connection.emit("arcade-launch-game-wizard", (this.obj));
-        }
+      	if (this.obj.callback != null) {
+      	  this.obj.callback(this.obj);
+      	} else {
+          this.app.browser.logMatomoEvent("GameWizard", "GameSelector", modname);
+          this.app.connection.emit("arcade-launch-game-wizard", this.obj);
+      	}
 
       };
     });
+
+    if (document.querySelector(".arcade-game-selector")){
+      document.querySelector(".arcade-game-selector").onclick = (e) => {
+        this.overlay.remove();
+      }
+    }
   }
 }
 

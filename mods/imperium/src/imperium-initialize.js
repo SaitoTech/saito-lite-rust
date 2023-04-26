@@ -1,5 +1,4 @@
-
-
+  
   } // end initializeGameObjects
 
 
@@ -22,19 +21,28 @@
     //
 
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addMenuOption("game-info", "Info");
 
     this.menu.addSubMenuOption("game-game", {
-      text : "Save",
-      id : "game-save",
-      class : "game-save",
+      text : "Factions",
+      id : "game-factions",
+      class : "game-factions",
       callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.addMove("SAVE");
-	game_mod.endTurn();
+         game_mod.menu.showSubSubMenu("game-factions");
       }
     });
-    this.menu.addSubMenuOption("game-info", {
+    for (let i = 0; i < this.game.players.length; i++) {
+      this.menu.addSubMenuOption("game-factions", {
+        text : this.returnFactionNickname(i+1),
+        id : "game-faction-"+(i+1),
+        class : "game-faction-"+(i+1),
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+          game_mod.faction_sheet_overlay.render((i+1));
+        }
+      });
+    }
+
+    this.menu.addSubMenuOption("game-game", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -43,104 +51,87 @@
         game_mod.log.toggleLog();
       }
     });
-
-
-
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text : "Rules",
       id : "game-rules",
       class : "game-rules",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-
-        let html = `
-        <div class="game-overlay-menu" id="game-overlay-menu">
-          <div>Game Rules:</div>
-            <ul style="font-family: 'orbitron-medium', helvetica">
-              <li class="menu-item" id="basic">Basic Rules</li>
-              <li class="menu-item" id="movement">Moving Units</li>
-              <li class="menu-item" id="production">Producing Units</li>
-              <li class="menu-item" id="combat">Combat</li>
-              <li class="menu-item" id="factions">Factions</li>
-            </ul>
-          </div>
-        `;
-
-        game_mod.overlay.show(html);
-
-        $('.menu-item').on('click', function() {
-
-          let player_action = $(this).attr("id");
-
-          switch (player_action) {
-            case "basic":
-	      game_mod.handleHowToPlayMenuItem();
-              break;
-            case "movement":
-              game_mod.overlay.show(game_mod.returnUnitsOverlay());
-              break;
-            case "production":
-	      game_mod.overlay.show('<div style="margin-left:auto;margin-right:auto;width:auto;height:90vh"><img src="/imperium/img/tutorials/production.png" style="width:auto; height:90vh;" /></div>');
-              break;
-            case "combat":
-	      game_mod.handleCombatMenuItem();
-              break;
-            case "factions":
-	      game_mod.handleFactionMenuItem();
-              break;
-            default:
-              break;
-          }
-        });
+	game_mod.rules_overlay.render();
       }
     });
 
-
-
     //
-    // factions
+    // cards
     //
-    this.menu.addMenuOption("game-factions", "Factions");
-
-    for (let i = 0; i < this.game.players.length; i++) {
-      this.menu.addSubMenuOption("game-factions", {
-        text : this.returnFactionNickname(i+1),
-        id : "game-faction-"+(i+1),
-        class : "game-faction-"+(i+1),
-        callback : function(app, game_mod) {
-          game_mod.menu.hideSubMenus();
-          game_mod.displayFactionSheet((i+1));
-        }
-      });
-    }
-
-
-
-
     this.menu.addMenuOption("game-cards", "Cards");
-
     this.menu.addSubMenuOption("game-cards", {
       text : "Strategy",
       id : "game-strategy-cardlist",
       class : "game-strategy-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-	game_mod.handleStrategyMenuItem();
+	game_mod.strategy_card_overlay.render();
       }
     });
+
     this.menu.addSubMenuOption("game-cards", {
-      text : "Agendas",
-      id : "game-agenda-cardlist",
-      class : "game-agenda-cardlist",
+      text : "Tech",
+      id : "game-tech-dependencies",
+      class : "game-tech-dependencies",
       callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let ac = [];
-	for (let i = 0; i < game_mod.game.state.agendas.length; i++) {
-	  ac.push(game_mod.agenda_cards[game_mod.game.state.agendas[i]]);
-        }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac, { columns : 3 , cardlistWidth : "90vw" , cardlistHeight : "90vh" });
+       game_mod.menu.showSubSubMenu("game-tech-dependencies");
       }
     });
+    this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : "Basic",
+        id : "game-tech-dependencies-basic",
+        class : "game-tech-dependencies-basic",
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+	  let tech = game_mod.returnTechnology();
+          let t2 = [];
+          for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
+          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
+        }
+    });
+    this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : "Units",
+        id : "game-tech-dependencies-units",
+        class : "game-tech-dependencies-units",
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+          game_mod.units_overlay.render();
+        }
+    });
+    this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : "Upgrades",
+        id : "game-tech-dependencies-upgrades",
+        class : "game-tech-dependencies-upgrades",
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+	  let tech = game_mod.returnTechnology();
+          let t2 = [];
+          for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
+          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
+        }
+    });
+    for (let i = 0; i < this.game.players.length; i++) {
+      this.menu.addSubMenuOption("game-tech-dependencies", {
+        text : this.returnFactionNickname(i+1),
+        id : "game-faction-tech-"+(i+1),
+        class : "game-faction-tech-"+(i+1),
+        callback : function(app, game_mod) {
+          game_mod.menu.hideSubMenus();
+	  let faction_key = game_mod.game.state.players_info[i].faction;
+	  let tech = game_mod.returnTechnology();
+          let t2 = [];
+          for (let x in tech) { if (tech[x].faction == faction_key) { t2.push(tech[x]); } }
+          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
+        }
+      });
+    }
+
     this.menu.addSubMenuOption("game-cards", {
       text : "Laws",
       id : "game-laws-cardlist",
@@ -154,74 +145,25 @@
         game_mod.overlay.show(game_mod.returnLawsOverlay());
       }
     });
+
+
     this.menu.addSubMenuOption("game-cards", {
-      text : "Objectives",
-      id : "game-objectives-cardlist",
-      class : "game-objectives-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	game_mod.handleObjectivesMenuItem();
-        //game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.stage_i_objectives, { cardlistHeight: "90vh" , cardlistWidth : "90vw" });
-      }
-    });
-
-
-
-
-
-
-
-    this.menu.addMenuOption("game-reference", "Reference");
-
-    this.menu.addSubMenuOption("game-reference", {
       text : "Action",
       id : "game-action-cardlist",
       class : "game-action-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.returnPlayerActionCards(), {});
-      }
-    });
-    this.menu.addSubMenuOption("game-reference", {
-      text : "Tech",
-      id : "game-tech-cardlist",
-      class : "game-tech-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let tech = game_mod.returnTechnology();
-        let t2 = [];
-        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
-      }
-    });
-    this.menu.addSubMenuOption("game-reference", {
-      text : "Units",
-      id : "game-units-cardlist",
-      class : "game-units-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(game_mod.returnUnitsOverlay());
-      }
-    });
-    this.menu.addSubMenuOption("game-reference", {
-      text : "Upgrades",
-      id : "game-unit-cardlist",
-      class : "game-unit-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let tech = game_mod.returnTechnology();
-        let t2 = [];
-        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
-      }
-    });
-    this.menu.addSubMenuOption("game-reference", {
-      text : "Tech Tree",
-      id : "game-tech-dependencies",
-      class : "game-tech-dependencies",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.handleTechMenuItem();
+	let ac = game_mod.returnActionCards();
+	let ac2 = [];
+	for (let x in ac) {
+console.log(JSON.stringify(x));
+	  if (x.indexOf("2") > 0 || x.indexOf("3") > 0 || x.indexOf("4") > 0 || x.indexOf("5") > 0 ) {
+	  } else {
+	    ac2.push(ac[x]);
+	  }
+	}
+console.log("ACT: " + JSON.stringify(ac2));
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac2, {});
       }
     });
 
@@ -246,25 +188,25 @@
     if (this.browser_active == 0) { return; }
 
 
-    await this.menu.render();
+    this.menu.render();
 
     this.hud.auto_sizing = 0;
-      await this.hud.render();
+    this.hud.render();
 
-      await this.log.render();
+    this.log.render();
 
-      await this.cardbox.render();
+    this.cardbox.render();
 
     try {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
 
-        await this.hammer.render(this.app, this);
+        this.hammer.render(this.app, this);
         this.hammer.attachEvents(this.app, this, '#hexGrid');
 
       } else {
 
-        await this.sizer.render();
+        this.sizer.render();
         this.sizer.attachEvents('#hexGrid'); // gameboard is hexgrid
 
       }
@@ -279,7 +221,7 @@
 
 
 
-
+  
   async initializeGame(game_id) {
 
     //
@@ -291,11 +233,11 @@
     this.loadGame(game_id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-
+  
     //
     // specify players
     //
-    this.totalPlayers = this.game.players.length;
+    this.totalPlayers = this.game.players.length;  
 
 
     //
@@ -331,8 +273,6 @@
     if (this.game.board == null) {
 
       is_this_a_new_game = 1;
-
-
 
       //
       // players first
@@ -371,10 +311,10 @@
       this.game.strategy_cards = [];
       for (let i in this.strategy_cards) {
         this.game.strategy_cards.push(i);
-        this.game.state.strategy_cards_bonus.push(0);
+        this.game.state.strategy_cards_bonus.push(0); 
       }
-
-
+ 
+ 
       //
       // remove tiles in 3 player game
       //
@@ -447,20 +387,20 @@
         delete this.game.board["7_3"];
         delete this.game.board["7_4"];
       }
-
-
+  
+  
       //
       // add other planet tiles
       //
       let tmp_sys = JSON.parse(JSON.stringify(this.returnSectors()));
       let seltil = [];
-
-
+  
+  
       //
       // empty space in board center
       //
       this.game.board["4_4"].tile = "new-byzantium";
-
+ 
       for (let i in this.game.board) {
         if (i != "4_4" && !hwsectors.includes(i)) {
           let oksel = 0;
@@ -476,7 +416,7 @@
           }
         }
       }
-
+ 
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
@@ -491,16 +431,16 @@
         this.game.state.players_info[i].homeworld = hwsectors[i];
         this.game.board[hwsectors[i]].tile = this.factions[this.game.state.players_info[i].faction].homeworld;
       }
-
+  
 
 
       //
       // add starting units to player homewords
       //
       for (let i = 0; i < this.totalPlayers; i++) {
-
-        let sys = this.returnSectorAndPlanets(hwsectors[i]);
-
+  
+        let sys = this.returnSectorAndPlanets(hwsectors[i]); 
+  
         let strongest_planet = 0;
         let strongest_planet_resources = 0;
         for (z = 0; z < sys.p.length; z++) {
@@ -543,7 +483,7 @@
 
 
         this.saveSystemAndPlanets(sys);
-
+  
       }
 
 
@@ -574,7 +514,7 @@
         }
 
         this.game.queue.push("turn");
-        this.game.queue.push("newround");
+        this.game.queue.push("newround"); 
         //
         // add cards to deck and shuffle as needed
         //
@@ -593,13 +533,13 @@
         this.game.queue.push("POOL\t2");   // stage i objectives
         this.game.queue.push("POOL\t1");   // agenda cards
         this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnStrategyCards()));
-        this.game.queue.push("DECK\t2\t"+JSON.stringify(this.returnActionCards()));
+        this.game.queue.push("DECK\t2\t"+JSON.stringify(this.returnActionCards()));	
         this.game.queue.push("DECK\t3\t"+JSON.stringify(this.returnAgendaCards()));
         this.game.queue.push("DECK\t4\t"+JSON.stringify(my_stage1_objectives));
         this.game.queue.push("DECK\t5\t"+JSON.stringify(my_stage2_objectives));
         this.game.queue.push("DECK\t6\t"+JSON.stringify(my_secret_objectives));
 //        this.game.queue.push("preloader");
-
+  
       }
     }
 
@@ -652,7 +592,7 @@
       this.saveSystemAndPlanets(sys);
     }
 
-    let tmps3 = this.returnSectorAndPlanets("2_1");
+    let tmps3 = this.returnSectorAndPlanets("2_1"); 
 
     //
     // initialize laws
@@ -678,7 +618,7 @@
     // display board
     //
     for (let i in this.game.board) {
-
+  
       // add html to index
       let boardslot = "#" + i;
 
@@ -703,21 +643,21 @@ try {
           </div> \
         '
       );
-
+  
       // insert planet
       let planet_div = "#hex_img_"+i;
       $(planet_div).attr("src", this.game.sectors[this.game.board[i].tile].img);
 
       // add planet info
-
+  
       this.updateSectorGraphics(i);
 } catch (err) {}
-
+        
     }
-
-
+  
+  
     this.updateLeaderboard();
-
+  
 
     //
     // prevent hangs
@@ -726,45 +666,45 @@ try {
 
 
     //
-    // add events to board
+    // add events to board 
     //
     try {
       this.addEventsToBoard();
       this.addUIEvents();
     } catch (err) {
-
+     
     }
 
 
   }
-
+  
   async preloadImages() {
 
-    var allImages = [	"img/starscape_background1.jpg",
-                        "img/ships/carrier_100x200.png",
-                     	"img/ships/destroyer_100x200.png",
-                     	"img/ships/dreadnaught_100x200.png",
-                     	"img/ships/fighter_100x200.png",
-                     	"img/ships/pds_100x200.png",
-                     	"img/ships/spacedock_100x200.png",
-                     	"img/ships/cruiser_100x200.png",
-                     	"img/strategy/BUILD.png",
-                     	"img/strategy/DIPLOMACY.png",
-                     	"img/strategy/EMPIRE.png",
+    var allImages = [	"img/starscape_background1.jpg", 
+                        "img/ships/carrier_100x200.png", 
+                     	"img/ships/destroyer_100x200.png", 
+                     	"img/ships/dreadnaught_100x200.png", 
+                     	"img/ships/fighter_100x200.png", 
+                     	"img/ships/pds_100x200.png", 
+                     	"img/ships/spacedock_100x200.png", 
+                     	"img/ships/cruiser_100x200.png", 
+                     	"img/strategy/BUILD.png", 
+                     	"img/strategy/DIPLOMACY.png", 
+                     	"img/strategy/EMPIRE.png", 
                      	"img/strategy/INITIATIVE.png",
-                     	"img/strategy/MILITARY.png",
-                     	"img/strategy/POLITICS.png",
-                     	"img/strategy/TECH.png",
-                     	"img/strategy/TRADE.png",
-			"img/influence/5.png",
-			"img/influence/8.png",
-			"img/influence/2.png",
-			"img/influence/1.png",
-			"img/influence/7.png",
-			"img/influence/0.png",
-			"img/influence/9.png",
+                     	"img/strategy/MILITARY.png", 
+                     	"img/strategy/POLITICS.png", 
+                     	"img/strategy/TECH.png", 
+                     	"img/strategy/TRADE.png", 
+			"img/influence/5.png", 
+			"img/influence/8.png", 
+			"img/influence/2.png", 
+			"img/influence/1.png", 
+			"img/influence/7.png", 
+			"img/influence/0.png", 
+			"img/influence/9.png", 
 			"img/influence/4.png",
-			"img/influence/3.png",
+			"img/influence/3.png", 
 			"img/influence/6.png",
 			"img/agenda_card_template.png",
 			"img/card_template.jpg",
@@ -777,7 +717,7 @@ try {
 			"img/units/cruiser.png",
 			"img/units/infantry.png",
 			"img/units/pds.png",
-			"img/units/carrier.png",
+			"img/units/carrier.png", 
 			"img/units/destroyer.png",
 "img/action_card_back.jpg",
 "img/arcade/arcade-banner-background.png",

@@ -1,0 +1,46 @@
+
+.acknowledge-overlay {
+  background: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/imperium/img/backgrounds/bombardment.jpg);
+  background-size: cover;
+  width: 90vw;
+  height: 90vh;
+  padding: 2rem;
+  margin-top: auto;
+  overflow-y: scroll;
+}
+
+.acknowledge-menu {
+  margin-top:20vh;
+  padding: 2rem;
+}
+
+.acknowledge-notice {
+  color: white;
+  font-size: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: max-content;
+  max-width: 80rem;
+}
+
+.acknowledge-overlay .acknowledge-menu ul li {
+  width: 100%;
+  line-height: 3.5rem;
+  border-top: 1px solid var(--saito-skyline-grey);
+  cursor: pointer;
+  border-color: #555;
+  text-decoration: none;
+  color: #fffD;
+  text-align: center;
+  list-style: none;
+  padding-top: 2rem;
+  font-weight: bolder;
+  font-family: 'orbitron-medium';
+  font-size: 2rem;
+  letter-spacing: 0.2rem;
+}
+
+.acknowledge-overlay .acknowledge-menu ul li:hover
+  background: #0005;
+}
+

@@ -30,7 +30,6 @@
 
 #advanced-options-overlay-container {
   color: var(--saito-font-color-dark-modal);
-  background: var(--saito-arcade-background-color);
   border-radius: 0.5rem;
   width: min-content;
   min-height: 15rem;
@@ -43,6 +42,8 @@
   max-height: 95vh;
   overflow-y: auto;
   overflow-x: hidden;
+  background: var(--saito-arcade-overlay-background);
+  min-width: 40rem;
 }
 
 .overlay-title {
@@ -70,7 +71,7 @@
 
 #advanced-options-overlay-container .options_notice {
   margin-bottom: 1.2rem;
-  color: var(--saito-background-color);
+  color: var(--saito-font-color-dark-modal);
   font-style: italic;
   text-align: center;
 }
@@ -90,10 +91,15 @@
 
 .overlay-input label {
   line-height: 3rem;
+  white-space: nowrap;
+  margin-right: 1rem;
+  align-self: center;
 }
 
-.game-wizard-advanced-return-btn {
-  font-size: 1.5rem;
+/* Get hyperspecific so default button css can be overridden*/
+#advanced-options-overlay-container .button.game-wizard-advanced-return-btn {
+  font-size: 1.8rem;
+  height: 4.8rem;
   padding: 1rem;
   text-align: center;
   text-transform: uppercase;
@@ -101,7 +107,7 @@
   margin: 0;
 }
 
-.game-wizard-advanced-return-btn:hover {
+#advanced-options-overlay-container .button.game-wizard-advanced-return-btn:hover {
   color: black;
   background-color: white;
 }
@@ -198,7 +204,7 @@
   border-left: 3px solid var(--saito-primary);
 }
 
-.arcade-wizard-game-controls .settings>div:first-of-type {
+.arcade-wizard-game-controls .settings>div.overlay-input {
   position: relative;
   display: flex;
   width: 20em;
@@ -218,7 +224,7 @@
   row-gap: 1rem;
 }
 
-.arcade-wizard-game-controls .settings>div:first-of-type::after {
+.arcade-wizard-game-controls .settings>div.overlay-input::after {
   content: "\25BC";
   position: absolute;
   top: 0;
@@ -355,6 +361,7 @@
 
 .game-invite-btn {
   min-width: 25rem;
+  height: 4.8rem;
 }
 
 .twilight-advanced-options-container {
@@ -412,5 +419,9 @@
   }
   .arcade-wizard-overlay {
     font-size: 1.8rem;
+  }
+
+  .arcade-wizard-game-invite button {
+    width: 100%;
   }
 }

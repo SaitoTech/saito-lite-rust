@@ -86,7 +86,6 @@
     let sys = imperium_self.returnSectorAndPlanets(sector);
     if (sector.indexOf("_") > 0) { sector = sys.s.sector; }
 
-
     let ships_over_capacity = this.returnShipsOverCapacity(player, sector);
     let fighters_over_capacity = this.returnFightersWithoutCapacity(player, sector);
 
@@ -296,7 +295,7 @@
     // in space
     //
     let unit_length = sys.s.units[player-1].length;
-    for (let z = 0; z < unit_length; z++) {
+    for (let z = unit_length-1; z >= 0; z--) {
       if (sys.s.units[player-1][z] == null) {
 	sys.s.units[player-1].splice(z, 1);
       } else {

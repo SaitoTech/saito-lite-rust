@@ -18,19 +18,7 @@ body {
 .status-header{
   height: 120px;
 }
-.rules-overlay table{
-  font-size: 1.5em;
-  margin: 0 auto;
-}
 
-.rules-overlay th{
-  text-align: right;
-}
-
-.rules-overlay td{
-  text-align: center;
-  width: 4em;
-}
 
 /*.connection_monitor {
   position: fixed;
@@ -44,7 +32,7 @@ body {
 
 .gameboard {
   position: absolute;
-  background-image: url("/solitrio/img/gameboard.jpg");
+  background-image: url(/saito/img/arcade/greenfelt.jpg);
   background-size: cover;
   width: 100vw;
   height: 100vh;
@@ -107,7 +95,7 @@ body {
   max-width: min(90vw,160vh);
   grid-gap: min(5px,1vh);
   height: fit-content;
-  transition: filter 2s;
+  transition: filter 1s;
 }
 
 .rowbox.nomoves{
@@ -131,7 +119,7 @@ body {
   filter: unset;
 }
 
-.slot img {
+.slot img, .animated_elem img {
  width: 100%;
  transition: transform 1s;
 }
@@ -192,4 +180,28 @@ body {
   }
 }
 
+/* force landscape when on mobile */
+/*
+@media screen and (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
+  html {
+    transform: rotate(-90deg);
+    transform-origin: left top;
+    width: 100vh;
+    height: 100vw;
+    overflow-x: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
 
+  body {
+    width: 100vh;
+    height: 100vw;
+  }
+
+  .gameboard {
+    width: 100vh;
+    height: 100vw;
+  }
+}
+*/

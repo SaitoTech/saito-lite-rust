@@ -9,7 +9,7 @@
   padding: 0 calc((100vw - var(--saito-width)) / 2);
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: 15;
   height: var(--saito-header-height);
   border-bottom: 1px solid var(--saito-border-color);
 }
@@ -83,7 +83,7 @@
   opacity: 0;
   z-index: 20;
   width: 20rem;
-  height: 100vh;
+  height: calc(100vh - var(--saito-header-height) + 3px);
   overflow: auto;
 }
 
@@ -151,6 +151,7 @@
   border-radius: 0.5rem;
   padding: 0.75rem;
   width: 95%;
+  text-transform: uppercase;
 }
 
 .wallet-btn {
@@ -261,7 +262,6 @@
   text-overflow: ellipsis;
 }
 
-
 /*
   Floating menu
 */
@@ -337,12 +337,11 @@
   flex-direction: column;
   gap: 2rem;
   align-items: center;
-  margin-bottom: 2rem;  
+  margin-bottom: 2rem;
   z-index: 2;
   opacity: 1;
   position: relative;
 }
-
 
 @media screen and (max-width: 1600px) {
   #saito-header {
@@ -356,6 +355,21 @@
   }
 }
 
+@media screen and (max-width: 1200px) {
+  .saito-floating-plus-btn {
+    display: block;
+  }
+  .saito-floating-container {
+    right: 35.5rem;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .saito-floating-container {
+    right: 2.5rem;
+  }
+}
+
 @media screen and (max-width: 768px) {
   .saito-header-hamburger-contents {
     width: 80vw;
@@ -364,13 +378,8 @@
   .slidein-panel {
     width: 80vw;
   }
-
   .external-links {
     padding-bottom: 10rem;
-  }
-
-  .saito-floating-plus-btn {
-    display: block;
   }
 }
 
@@ -392,6 +401,7 @@
     max-width: 12rem;
   }
 }
+
 @media screen and (max-width: 420px) {
   #header-username {
     font-size: 1.5rem;

@@ -111,6 +111,13 @@ p.small {
   font-size: 1.3rem;
 }
 
+blockquote {
+  border-color: var(--saito-primary);
+  border-width: 0 0 0 2px;
+  border-style: solid;
+  padding: 0 0 0 0.5rem;
+}
+
 /* ----------------------------------------------------------------
 QR Code
 -----------------------------------------------------------------*/
@@ -177,12 +184,18 @@ Scrollbars
   opacity: 0.66;
 }
 
-/* Also in saito-user.css */
+
 .saito-address {
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
   display: inline-block !important;
   width: inherit;
+  max-width: 99%;
+}
+
+.saito-address.treated {
+  cursor: pointer;
 }
 
 .tip:hover .tiptext {
@@ -229,15 +242,28 @@ Scrollbars
 }
 
 /* ----------------------------------------------------------------
+ Scrollbars 
+----------------------------------------------------------------- */
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+
+/* ----------------------------------------------------------------
 Media Queries
 -----------------------------------------------------------------*/
 
 @media screen and (max-width: 768px) {
   body {
     font-size: 1.45rem;
-  }
-  .saito-container {
-    padding: 0 1rem;
   }
   h1 {
     font-size: 4.5rem;

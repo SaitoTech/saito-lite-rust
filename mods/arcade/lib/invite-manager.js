@@ -12,15 +12,13 @@ class InviteManager {
 		this.name = "InviteManager";
 		this.type = "short";
 
-    	// For filtering which games get displayed
+		// For filtering which games get displayed
 		// We may want to only display one type of game invite, so overwrite this before render()
 		this.list = "all";
-		this.lists = ["mine","open","active"];
-		
+		this.lists = ["mine", "open"];
 
 		this.loader_overlay = new SaitoOverlay(app, mod, false, true);
-		
-		
+
 		//
 		// handle requests to re-render invite manager
 		//
@@ -52,7 +50,10 @@ class InviteManager {
 		if (document.querySelector(target)) {
 			this.app.browser.replaceElementBySelector(InviteManagerTemplate(this.app, this.mod), target);
 		} else {
-			this.app.browser.addElementToSelectorOrDom(InviteManagerTemplate(this.app, this.mod), this.container);
+			this.app.browser.addElementToSelectorOrDom(
+				InviteManagerTemplate(this.app, this.mod),
+				this.container
+			);
 		}
 
 		for (let list of this.lists) {
@@ -64,18 +65,21 @@ class InviteManager {
 				if (this.mod.games[list].length > 0) {
 					if (list === "mine") {
 						this.app.browser.addElementToSelector(`<h5>My Games</h5>`, target);
-					}else if (list == "open"){
+					} else if (list == "open") {
 						this.app.browser.addElementToSelector(`<h5>Open Invites</h5>`, target);
-					}else if (list == "active"){
+					} else if (list == "active") {
 						this.app.browser.addElementToSelector(`<h5>Active Matches</h5>`, target);
-					}else if (list == "over"){
+					} else if (list == "over") {
 						this.app.browser.addElementToSelector(`<h5>Recent Matches</h5>`, target);
-					}else{
-						this.app.browser.addElementToSelector(`<h5>${list.charAt(0).toUpperCase() + list.slice(1)} Games</h5>`, target);
+					} else {
+						this.app.browser.addElementToSelector(
+							`<h5>${list.charAt(0).toUpperCase() + list.slice(1)} Games</h5>`,
+							target
+						);
 					}
 				}
 
-				for (let i = 0; i < this.mod.games[list].length; i++) {
+				for (let i = 0; i < this.mod.games[list].length && i < 5; i++) {
 					let newInvite = new Invite(
 						this.app,
 						this.mod,
