@@ -237,11 +237,11 @@ export default class Transaction extends SaitoTransaction {
     if (output_slip_to_rebroadcast.type === SlipType.ATR) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      transaction.transaction.m = transaction_to_rebroadcast.transaction.m;
+      transaction.data = transaction_to_rebroadcast.data;
     } else {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      transaction.transaction.m = transaction_to_rebroadcast.serialize(app);
+      transaction.data = transaction_to_rebroadcast.serialize(app);
     }
 
     transaction.addToSlip(output);
@@ -319,5 +319,8 @@ export default class Transaction extends SaitoTransaction {
       type: this.type,
       m: this.data,
     };
+  }
+  public serialize(): Uint8Array {
+    return this.tx.serialize();
   }
 }

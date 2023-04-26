@@ -165,7 +165,7 @@ class Browser {
             if (available_cryptos[i].ticker) {
               if (available_cryptos[i].ticker.toLowerCase() === pair[1].toLowerCase()) {
                 preferred_crypto_found = 1;
-                this.app.wallet.setPreferredCrypto(available_cryptos[i].ticker);
+                await this.app.wallet.setPreferredCrypto(available_cryptos[i].ticker);
               }
             }
           }
@@ -242,7 +242,6 @@ class Browser {
           e.target?.classList?.contains("saito-identicon") ||
           e.target?.classList?.contains("saito-address")
         ) {
-
           let disable_click = e.target.getAttribute("data-disable");
           let publickey = e.target.getAttribute("data-id");
           if (!publickey || !app.crypto.isPublicKey(publickey) || disable_click === "true") {
@@ -269,7 +268,6 @@ class Browser {
     );
   }
 
-
   extractIdentifiers(text = "") {
     let identifiers = [];
 
@@ -287,9 +285,7 @@ class Browser {
     }
 
     return identifiers;
-
   }
-
 
   extractKeys(text = "") {
     let keys = [];
@@ -525,9 +521,9 @@ class Browser {
   }
 
   // https://github.com/sindresorhus/screenfull.js
-  requestFullscreen() {
+  async requestFullscreen() {
     if (screenfull.isEnabled) {
-      screenfull.toggle();
+      await screenfull.toggle();
     }
   }
 
@@ -1193,10 +1189,11 @@ class Browser {
     }
   }
 
-
-
   returnAddressHTML(key) {
-    return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(key, true)}</div>`;
+    return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(
+      key,
+      true
+    )}</div>`;
   }
 
   updateAddressHTML(key, id) {
@@ -1205,14 +1202,13 @@ class Browser {
     }
     try {
       Array.from(document.querySelectorAll(`.saito-address[data-id='${key}']`)).forEach(
-        add => (add.innerHTML = id)
+        (add) => (add.innerHTML = id)
       );
     } catch (err) {
       console.error(err);
     }
 
     this.app.connection.emit("update-username-in-game");
-
   }
 
   async logMatomoEvent(category, action, name, value) {
@@ -1416,8 +1412,6 @@ class Browser {
       return text;
     }
   }
-
-
 
   async resizeImg(img, targetSize = 512, maxDimensions = { w: 1920, h: 1024 }) {
     let self = this;
@@ -1664,7 +1658,7 @@ class Browser {
       if (nodeList[i].files) {
         this.treatFiles(nodeList[i]);
       }
-    });
+    }
   }
 
   treatIdentifiers(nodeList) {
@@ -1673,10 +1667,10 @@ class Browser {
     function treat(nodes) {
       nodes.forEach((el) => {
         if (el.classList) {
-          if (el.classList.contains('saito-address') && !el.classList.contains('treated')) {
-            el.classList.add('treated');
+          if (el.classList.contains("saito-address") && !el.classList.contains("treated")) {
+            el.classList.add("treated");
             let key = el.dataset?.id;
-            if (key && saito_app.crypto.isPublicKey(key)){
+            if (key && saito_app.crypto.isPublicKey(key)) {
               let identifier = saito_app.keychain.returnIdentifierByPublicKey(key, true);
               if (identifier !== key) {
                 el.innerText = identifier;
@@ -1748,8 +1742,8 @@ class Browser {
 
   isValidUrl(urlString) {
     try {
-      var inputElement = document.createElement('input');
-      inputElement.type = 'url';
+      var inputElement = document.createElement("input");
+      inputElement.type = "url";
       inputElement.value = urlString;
 
       if (!inputElement.checkValidity()) {
@@ -1760,7 +1754,6 @@ class Browser {
     } catch (err) {}
     return false;
   }
-
 }
 
 export default Browser;

@@ -11,9 +11,7 @@ const JSON = require("json-bigint");
 //    ---> peers save to DB with ID or TYPE
 //
 class Archive extends ModTemplate {
-
   constructor(app) {
-
     super(app);
 
     this.name = "Archive";
@@ -56,7 +54,6 @@ class Archive extends ModTemplate {
         this.saveTransaction(tx);
       }
     }
-
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
@@ -235,15 +232,15 @@ class Archive extends ModTemplate {
 
     //console.log("TXS to: " + tx.transaction.to.length);
 
-    for (let i = 0; i < tx.transaction.to.length; i++) {
+    for (let i = 0; i < tx.to.length; i++) {
       sql =
         "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
       params = {
-        $sig: tx.transaction.sig,
-        $publickey: tx.transaction.to[i].add,
-        $tx: tx.serialize_to_web(this.app),
+        $sig: tx.signature,
+        $publickey: tx.to[i].publicKey,
+        $tx: tx.serialize(),
         $optional: JSON.stringify(optional),
-        $ts: tx.transaction.ts,
+        $ts: tx.timestamp,
         $preserve: 0,
         $type: msgtype,
       };
@@ -259,11 +256,11 @@ class Archive extends ModTemplate {
       sql =
         "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
       params = {
-        $sig: tx.transaction.sig,
-        $publickey: tx.transaction.from[i].add,
-        $tx: tx.serialize_to_web(this.app),
+        $sig: tx.signature,
+        $publickey: tx.from[i].publicKey,
+        $tx: tx.serialize(),
         $optional: JSON.stringify(optional),
-        $ts: tx.transaction.ts,
+        $ts: tx.timestamp,
         $preserve: 0,
         $type: msgtype,
       };
@@ -293,9 +290,9 @@ class Archive extends ModTemplate {
     for (let i = 0; i < tx.transaction.to.length; i++) {
       sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
       params = {
-        $tx: tx.serialize_to_web(this.app),
-        $sig: tx.transaction.sig,
-        $publickey: tx.transaction.to[i].add,
+        $tx: tx.serialize(),
+        $sig: tx.signature,
+        $publickey: tx.to[i].publicKey,
         $optional: JSON.stringify(optional),
       };
       await this.app.storage.executeDatabase(sql, params, "archive");
@@ -303,9 +300,9 @@ class Archive extends ModTemplate {
     for (let i = 0; i < tx.transaction.from.length; i++) {
       sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
       params = {
-        $tx: tx.serialize_to_web(this.app),
-        $sig: tx.transaction.sig,
-        $publickey: tx.transaction.from[i].add,
+        $tx: tx.serialize(),
+        $sig: tx.signature,
+        $publickey: tx.from[i].publicKey,
         $optional: JSON.stringify(optional),
       };
       await this.app.storage.executeDatabase(sql, params, "archive");
@@ -334,11 +331,11 @@ class Archive extends ModTemplate {
     let sql =
       "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
     let params = {
-      $sig: tx.transaction.sig,
+      $sig: tx.signature,
       $publickey: key,
-      $tx: tx.serialize_to_web(this.app),
+      $tx: tx.serialize(),
       $optional: optional,
-      $ts: tx.transaction.ts,
+      $ts: tx.timestamp,
       $preserve: 0,
       $type: type,
     };
@@ -365,14 +362,14 @@ class Archive extends ModTemplate {
     //
     if (
       this.app.crypto.verifyMessage(
-        "delete_" + tx.transaction.sig,
+        "delete_" + tx.signature,
         authorizing_sig,
         authorizing_publickey
       )
     ) {
       let sql = "DELETE FROM txs WHERE publickey = $publickey AND sig = $sig";
       let params = {
-        $sig: tx.transaction.sig,
+        $sig: tx.signature,
         $publickey: authorizing_publickey,
       };
 
