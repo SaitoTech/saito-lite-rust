@@ -999,7 +999,10 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
   async playerPlayOps(card, faction, ops=null) {
 
-console.log("in PPO");
+    //
+    // discard the card
+    //
+    this.addMove("discard\t"+faction+"\t"+card);
 
     let his_self = this;
     let menu = this.returnActionMenuOptions(this.game.player);
@@ -1010,8 +1013,6 @@ console.log("in PPO");
 
 
     if (this.game.state.activated_powers[faction].length > 0) {
-
-console.log("AAA AP");
 
       let html = `<ul>`;
       html    += `<li class="card" id="${faction}">${faction}</li>`;
@@ -2754,12 +2755,12 @@ return;
 	  his_self.addMove("theological_debate");
           his_self.addMove("counter_or_acknowledge\t" + his_self.returnFactionName(faction) + " calls a theological debate\tdebate");
           his_self.addMove("RESETCONFIRMSNEEDED\tall");
-	  his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
+	  his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
         } else {
     	  his_self.addMove("theological_debate");
           his_self.addMove("counter_or_acknowledge\t" + his_self.returnFactionName(faction) + " calls a theological debate\tdebate");
           his_self.addMove("RESETCONFIRMSNEEDED\tall");
-    	  his_self.addMove("pre_theological_debate\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
+    	  his_self.addMove("pick_first_round_debaters\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
         }
         his_self.endTurn();
 

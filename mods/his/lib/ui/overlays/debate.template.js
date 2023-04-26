@@ -1,14 +1,17 @@
 module.exports = (res) => {
 
-  let attacker = res.attacker;
-  let defender = res.defender;
-  let adice = res.adice;
-  let ddice = res.ddice;
-  let round = res.round;
+
+  let p1 = `${res.attacker_faction} will roll ${res.attacker_debater_power} + ${res.attacker_debater_bonus}`;
+  let p2 = `${res.defender_faction} will roll ${res.defender_debater_power} + ${res.defender_debater_bonus}`;
+  let p3 = `${res.attacker_faction} rolls ${JSON.stringify(res.adice)}`;
+  let p4 = `${res.defender_faction} rolls ${JSON.stringify(res.ddice)}`;
+
+  let title = `ROUND ${res.round}<p></p>${p1}<p></p>${p2}<p></p>( hits on 5 and 6 )`;
+  if (res.adice.length) { title = `ROUND ${res.round}<p></p>${p3}<p></p>${p4}`; }
 
   let html = `
      <div class="theological-debate-overlay" id="theological-debate-overlay">
-        <div class="title">ROUND ${round}<p></p>${attacker} rolls ${res.attacker_debater_power}+${res.attacker_debater_bonus} => ${JSON.stringify(adice)}<p></p>${res.defender} rolls ${res.defender_debater_power}+${res.defender_debater_bonus} => ${JSON.stringify(ddice)}<p></p>( hits on 5 or 6 )</div>
+        <div class="title">${title}</div>
         <div class="status">${res.status}</div>
         <div class="attacker_debater"></div>
         <div class="defender_debater"></div>

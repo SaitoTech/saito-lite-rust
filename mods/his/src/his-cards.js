@@ -986,7 +986,7 @@ alert("Not Implemented");
         	  his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
         	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	          his_self.addMove("SETVAR\tstate\ttheological_debate\tselected_papal_debater\t"+selected_papal_debater);
-	          his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted");
+	          his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted");
 		  his_self.endTurn();
 		});
 	
@@ -1010,7 +1010,7 @@ alert("Not Implemented");
         	  his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
         	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	          his_self.addMove("SETVAR\tstate\ttheological_debate\tprohibited_protestant_debater\t"+prohibited_protestant_debater);
-	          his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted");
+	          his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted");
 		  his_self.endTurn();
 		});
 	
