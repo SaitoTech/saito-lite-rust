@@ -472,7 +472,7 @@ class Nwasm extends GameTemplate {
       iobj.innerHTML = "uploading archive file: " + newtx.data.byteLength + " bytes";
     }
 
-    await this.app.network.sendTransactionWithCallback(newtx, async function (res) {
+    this.app.network.sendTransactionWithCallback(newtx, async function (res) {
       if (iobj) {
         iobj.innerHTML = "archive upload completed...";
       }

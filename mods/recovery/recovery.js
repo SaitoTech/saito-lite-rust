@@ -102,7 +102,7 @@ class Recovery extends ModTemplate {
         let peers = this.app.network.returnPeersWithService("recovery");
 
         if (peers.length > 0) {
-          await this.app.network.sendTransactionWithCallback(
+          this.app.network.sendTransactionWithCallback(
             newtx,
             async (res) => {
               if (!res) {

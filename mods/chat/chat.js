@@ -106,7 +106,7 @@ class Chat extends ModTemplate {
         };
         newtx = await this.app.wallet.signTransaction(newtx);
 
-        await this.app.network.sendTransactionWithCallback(newtx, (txs) => {
+        this.app.network.sendTransactionWithCallback(newtx, (txs) => {
           try {
             for (let i = 0; i < txs.length; i++) {
               let newtx = new saito.default.transaction(undefined, txs[i].transaction);
@@ -375,7 +375,7 @@ class Chat extends ModTemplate {
           if (app.BROWSER == 0) {
             for (const p of app.network.peers) {
               if (p.peer.publickey === inner_tx.to[0].publicKey) {
-                await p.sendTransactionWithCallback(inner_tx, () => {});
+                p.sendTransactionWithCallback(inner_tx, () => {});
               }
               continue;
             }
@@ -389,7 +389,7 @@ class Chat extends ModTemplate {
           if (app.BROWSER == 0) {
             for (const p of app.network.peers) {
               if (p.peer.publickey !== peer.peer.publickey) {
-                await p.sendTransactionWithCallback(inner_tx, () => {});
+                p.sendTransactionWithCallback(inner_tx, () => {});
               }
             }
           }

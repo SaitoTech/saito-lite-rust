@@ -529,6 +529,7 @@ class Arcade extends ModTemplate {
         console.log("notify peers?", tx);
         await this.notifyPeers(tx);
       }
+      console.log("111111111 : " + txmsg.module);
 
       if (txmsg.module === "ArcadeInvite") {
         //
@@ -538,6 +539,7 @@ class Arcade extends ModTemplate {
 
         await this.receiveOpenTransaction(tx);
       } else if (txmsg.module === "Arcade") {
+        console.log("222222222");
         //
         // public & private invites processed the same way
         //
@@ -589,6 +591,7 @@ class Arcade extends ModTemplate {
         }
         */
       } else {
+        console.log("3333333333");
         if (txmsg.request === "stopgame") {
           await this.receiveCloseTransaction(tx);
         }
@@ -621,12 +624,11 @@ class Arcade extends ModTemplate {
         message.data = tx.toJson();
 
         console.log("notifying peer : " + peer.peerIndex);
-        await this.app.network.sendRequestAsTransaction(
-          message.request,
-          message.data,
-          null,
-          peer.peerIndex
-        );
+        this.app.network
+          .sendRequestAsTransaction(message.request, message.data, null, peer.peerIndex)
+          .then(() => {
+            console.log("peer notified : " + peer.peerIndex);
+          });
       }
     }
   }

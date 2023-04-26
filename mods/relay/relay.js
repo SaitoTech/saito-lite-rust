@@ -101,7 +101,7 @@ class Relay extends ModTemplate {
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
-    // console.log("relay.handlePeerTransaction : ", tx);
+    console.log("relay.handlePeerTransaction : ", tx);
     if (tx == null) {
       return;
     }
@@ -114,7 +114,7 @@ class Relay extends ModTemplate {
         // sanity check on tx
         //
         let txjson = message.data;
-        // console.log("txjson : ", txjson);
+        console.log("txjson : ", txjson);
         let inner_tx = new Transaction(undefined, txjson);
         if (inner_tx.to.length === 0) {
           return;
@@ -126,6 +126,7 @@ class Relay extends ModTemplate {
         await inner_tx.decryptMessage(this.app);
         let inner_txmsg = inner_tx.returnMessage();
 
+        console.log("inner txmsg : ", inner_txmsg);
         //
         // if interior transaction is intended for me, I process regardless
         //
@@ -148,13 +149,9 @@ class Relay extends ModTemplate {
 
           await app.modules.handlePeerTransaction(inner_tx, peer, mycallback);
 
-          //
           // otherwise relay
-          //
         } else {
-          //
           // check to see if original tx is for a peer
-          //
           let peer_found = 0;
 
           let peers = await app.network.getPeers();
@@ -163,7 +160,7 @@ class Relay extends ModTemplate {
               peer_found = 1;
 
               if (this.app.BROWSER == 0) {
-                await app.network.sendTransactionWithCallback(
+                app.network.sendTransactionWithCallback(
                   inner_tx,
                   async function () {
                     if (mycallback != null) {
