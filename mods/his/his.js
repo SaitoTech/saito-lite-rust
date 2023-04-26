@@ -14310,9 +14310,6 @@ console.log("space: " + spacekey);
 	  let committed = this.game.state.theological_debate.committed;
 	  this.game.state.theological_debate.round++;
 
-console.log("A: " + attacker);
-console.log("D: " + defender);
-
 	  let x = 0;
 
 	  //
@@ -14329,8 +14326,6 @@ console.log("D: " + defender);
 	      }
 	    }
 	  }
-
-console.log("ad and cd: " + ad + "/" + cd);
 
 	  //
 	  // defender chosen randomly from type committed / uncommitted
@@ -14630,12 +14625,12 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 	  this.game.state.theological_debate.defender_debater_bonus = defender_debater_bonus;
 
 	  if (attacker_hits == defender_hits) {
-	    res.status = "Tie - Second Round";
+	    this.game.state.theological_debate.status = "Tie - Second Round";
 	  } else {
 	    if (attacker_hits > defender_hits) {
-	      res.status = attacker_faction + " Wins";
+	      this.game.state.theological_debate.status = this.game.state.theological_debate.attacker_faction + " Wins";
 	    } else {
-	      res.status = defender_faction + " Wins";
+	      this.game.state.theological_debate.status = this.game.state.theological_debate.defender_faction + " Wins";
 	    }
 	  }
 
@@ -14678,7 +14673,7 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 	      let total_spaces_in_zone = this.returnNumberOfProtestantSpacesInLanguageZone(language_zone);
 	      if (attacker === "papacy") { total_spaces_in_zone = this.returnNumberOfCatholicSpacesInLanguageZone(language_zone); }
 
-	      this.updateLog(attacker_faction + ` Wins - Convert ${total_spaces_to_covert} Spaces}`);
+	      this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
 	      for (let i = total_spaces_to_convert; i >= 1; i--) {
 	        if (i > total_spaces_in_zone) {
 		  if (attacker === "papacy") {
@@ -14695,7 +14690,7 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 		}
 	      }
 	      this.game.queue.push("hide_overlay\ttheological_debate");
-	      this.game.queue.push("counter_or_acknowledge\t"+attacker_faction + ` Wins - Convert ${total_spaces_to_covert} Spaces}`);
+	      this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
               this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("show_overlay\ttheological_debate");
 	    } else {
@@ -14706,7 +14701,7 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 	      let total_spaces_in_zone = this.returnNumberOfProtestantSpacesInLanguageZone(language_zone);
 	      if (defender === "papacy") { total_spaces_in_zone = this.returnNumberOfCatholicSpacesInLanguageZone(language_zone); }
 
-	      this.updateLog(defender_faction +" Wins");
+	      this.updateLog(this.game.state.theological_debate.defender_faction +" Wins");
 	      for (let i = total_spaces_to_convert; i >= 1; i--) {
 	        if (i > total_spaces_in_zone) {
 		  if (defender === "papacy") {
@@ -14723,7 +14718,7 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 		}
 	      }
 	      this.game.queue.push("hide_overlay\ttheological_debate");
-	      this.game.queue.push("counter_or_acknowledge\t"+defender_faction + ` Wins - Convert ${total_spaces_to_covert} Spaces}`);
+	      this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
               this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("show_overlay\ttheological_debate");
 	    }
