@@ -1,5 +1,5 @@
 const LeagueMenuTemplate = require("./menu.template");
-const InvitationLink = require("./overlays/league-invitation-link");
+const InvitationLink = require("./../../../lib/saito/ui/modals/saito-link/saito-link");
 const JoinLeagueOverlay = require("./overlays/join");
 const LeagueEditor = require("./overlays/editor");
 
@@ -55,7 +55,13 @@ class LeagueMenu {
 
     try {
       document.querySelector(`#lg${this.league.id} .league-invite-button`).onclick = (e) => {
-        this.invitation_link = new InvitationLink(this.app, this.mod, this.league);
+        let data = {
+          game: this.league.game,
+          league_id: this.league.id,
+          name: "League", 
+          path: "/arcade/",
+        }
+        this.invitation_link = new InvitationLink(this.app, this.mod, data);
         this.invitation_link.render();
       }
     } catch (err) {}

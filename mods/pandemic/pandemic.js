@@ -26,6 +26,7 @@ class Pandemic extends GameTemplate {
 
     this.outbreaks = [];
     this.maxHandSize = 7;
+    this.can_bet = 0;
 
     this.interface = 1; // default to graphics (as opposed to text interface)
 

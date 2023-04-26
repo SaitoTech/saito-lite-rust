@@ -19,6 +19,7 @@ class JoinLeague {
         clearTimeout(this.timer);
         this.timer = null;
       }else{
+        //We have already faked success, so just stop here
         return;
       }
       this.loader.remove();
@@ -35,9 +36,11 @@ class JoinLeague {
       console.log("League id: " + this.league_id);
       return;
     }
+    this.overlay.remove();
 
     if (league.rank >= 0){
-      this.app.connection.emit('league-overlay-render-request', league_id);
+      console.log("Don't join, I am a member");
+      this.app.connection.emit('league-overlay-render-request', this.league_id);
       return;
     }
 
@@ -88,7 +91,7 @@ class JoinLeague {
         this.mod.addLeaguePlayer(league_id, params);
 
         this.timer = setTimeout(()=> {
-          
+          console.log("Time out");
           this.loader.remove();
           this.render();
           this.timer = null;
@@ -109,11 +112,12 @@ class JoinLeague {
       }
 
       let countDown = document.getElementById("countdown");
-      let timer = 5;
+      let timer = 9;
       let interval = setInterval(()=>{
         timer--;
         countDown.innerHTML = timer;
         if (timer === 0){
+          console.log("Timer expired");
           clearInterval(interval);
           this.app.connection.emit('league-overlay-render-request', this.league_id);
           this.overlay.remove();

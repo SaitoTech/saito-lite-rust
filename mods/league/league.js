@@ -5,7 +5,6 @@ const LeagueLeaderboard = require("./lib/leaderboard");
 const LeagueMain = require('./lib/main');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
-const InvitationLink = require("./lib/overlays/league-invitation-link");
 const JoinLeagueOverlay = require('./lib/overlays/join');
 
 //Trial -- So that we can display league results in game page
@@ -195,7 +194,7 @@ class League extends ModTemplate {
         console.log("Refresh local leagues: ");
       }
 
-      let league_id = this.validateID(app.browser.returnURLParameter("league_join_league"));
+      let league_id = this.validateID(app.browser.returnURLParameter("league_id"));
 
       let sql;
       
@@ -225,6 +224,7 @@ class League extends ModTemplate {
             //
             // league join league
             //
+
             if (league_id) {
               console.log("Joining league: ", league_id);
               let jlo = new JoinLeagueOverlay(app, league_self, league_id);
