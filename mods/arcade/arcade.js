@@ -7,7 +7,7 @@ const GameManager = require("./lib/game-manager");
 const GameWizard = require("./lib/overlays/game-wizard");
 const GameSelector = require("./lib/overlays/game-selector");
 const GameScheduler = require("./lib/overlays/game-scheduler");
-const GameInvitationLink = require("./lib/overlays/game-invitation-link");
+const GameInvitationLink = require("./../../lib/saito/ui/modals/saito-link/saito-link");
 const Invite = require("./lib/invite");
 const JoinGameOverlay = require("./lib/overlays/join-game");
 const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
@@ -1686,22 +1686,10 @@ class Arcade extends ModTemplate {
 
     if (accepted_game) {
       data.game = accepted_game.msg.game;
+      data.game_id = game_sig;
     } else {
       return;
     }
-
-    //Create invite link from the game_sig
-    let inviteLink = window.location.href;
-    if (!inviteLink.includes("#")) {
-      inviteLink += "#";
-    }
-    if (inviteLink.includes("?")) {
-      inviteLink = inviteLink.replace("#", "&game_id=" + game_sig);
-    } else {
-      inviteLink = inviteLink.replace("#", "?game_id=" + game_sig);
-    }
-
-    data.invite_link = inviteLink;
 
     let game_invitation_link = new GameInvitationLink(this.app, this, data);
     game_invitation_link.render();
