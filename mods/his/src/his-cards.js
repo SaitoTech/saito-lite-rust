@@ -1603,8 +1603,8 @@ alert("Not Implemented");
 	his_self.game.state.leaders['luther'] = 0;
 	his_self.game.state.leaders['calvin'] = 1;
 
-	let x = his_self.returnSpaceOfPersonage("luther-reformer");
-	let y = his_self.returnIndexOfPersonageInSpace("luther-reformer");
+	let x = his_self.returnSpaceOfPersonage("protestant", "luther-reformer");
+	let y = his_self.returnIndexOfPersonageInSpace("protestant", "luther-reformer", x);
 
 	if (y > -1) {
 	  his_self.game.spaces[x].units["protestant"].splice(y, 1);

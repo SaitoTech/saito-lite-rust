@@ -2647,7 +2647,8 @@ return;
 	his_self.addMove("translation\tenglish"); 
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in English Language Zone\ttranslation_english_language_zone\tenglish\t"+faction);
       }
-      his_self.addMove("RESETCONFIRMSNEEDED\tall");
+      // we only ask for our own CONFIRMS
+      his_self.addMove("RESETCONFIRMSNEEDED\t"+this.game.player);
       his_self.endTurn();
 
     });
@@ -2689,7 +2690,7 @@ return;
 
         let id = $(this).attr("id");
 
-	if (id === "german" && his_self.isDebaterAvailable("carlstadt-debater")) {
+	if (id === "german" && his_self.canPlayerCommitDebater("protestant", "carlstadt-debater") && his_self.game.player === his_self.returnPlayerOfFaction("protestant")) {
 
           let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
           let html = '<ul>';
@@ -2847,8 +2848,42 @@ return;
     $('.option').on('click', function () {
 
       his_self.language_zone_overlay.hide();
-
       let id = $(this).attr("id");
+
+      if ((his_self.canPlayerCommitDebater("papacy", "cajetan-debater") || his_self.canPlayerCommitDebater("papacy", "caraffa")) && his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
+
+        let msg = "Commit Debater for Burn Books +1 Attempt:";
+        let html = '<ul>';
+	if (his_self.canPlayerCommitDebater("papacy", "cajetan-debater")) {
+          html += '<li class="option" style="" id="cajetan">Yes, Commit Cajetan</li>';
+	}
+	if (his_self.canPlayerCommitDebater("papacy", "caraffa-debater")) {
+          html += '<li class="option" style="" id="caraffa">Yes, Commit Caraffa</li>';
+        }
+        html += '<li class="option" style="" id="no">No</li>';
+	html += '</ul>';
+
+        his_self.updateStatusWithOptions(msg, html);
+
+        $('.option').off();
+        $('.option').on('click', function () {
+          let id2 = $(this).attr("id");
+
+	  if (id2 === "cajetan" || id2 === "caraffa") {
+	    if (id2 === "cajetan") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
+	    if (id2 === "caraffa") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
+            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+	  }
+          his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+          his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+	  his_self.endTurn();
+
+	  return 0;
+	});
+
+	return 0;
+      }
+
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
       his_self.endTurn();

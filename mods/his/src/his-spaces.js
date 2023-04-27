@@ -179,8 +179,9 @@
     return "";
   }
 
-  returnIndexOfPersonageInSpace(faction, personage, spacekey) {
+  returnIndexOfPersonageInSpace(faction, personage, spacekey="") {
     if (spacekey === "") { return -1; }
+    if (!this.game.spaces[spacekey]) { return -1; }
     for (let i = 0; i < this.game.spaces[spacekey].units[faction].length; i++) {
       if (this.game.spaces[spacekey].units[faction][i].type === personage) {
         return i;

@@ -146,6 +146,12 @@ console.log("\n\n\n\n");
 	this.addDebater("protestant", "melanchthon-debater");
 	this.addDebater("protestant", "bucer-debater");
 	this.addDebater("protestant", "carlstadt-debater");
+
+	// HACK
+	this.addDebater("protestant", "bullinger-debater");
+	this.addDebater("protestant", "oekolampadius-debater");
+	this.addDebater("protestant", "zwingly-debater");
+
       }
 
       //

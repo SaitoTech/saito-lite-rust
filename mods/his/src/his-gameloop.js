@@ -52,7 +52,7 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    this.game.queue.push("card_draw_phase");
 	    //this.updateLog("Luther's 95 Theses!");
-	    this.game.queue.push("event\t1\t008");
+	    //this.game.queue.push("event\t1\t008");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -346,10 +346,10 @@ console.log("MOVE: " + mv[0]);
     	  //
     	  // IS_TESTING -- TEMPORARY
     	  //
-    	  this.addDebater("papacy", "bucer");
-    	  this.addDebater("hapsburg", "aleander");
-    	  this.addDebater("england", "bullinger");
-    	  this.addDebater("protestant", "campeggio");
+    	  this.addDebater("papacy", "bucer-debater");
+    	  this.addDebater("protestant", "aleander-debater");
+    	  this.addDebater("protestant", "bullinger-debater");
+    	  this.addDebater("protestant", "campeggio-debater");
 
 
     	  this.activateMinorPower("papacy", "venice");
@@ -1472,6 +1472,28 @@ console.log(JSON.stringify(mv));
 	// this does not auto-remove, it needs to be preceded by a RESETCONFIRMSNEEDED
 	// for however many people need to have the opportunity to counter or acknowledge.
 	//
+	if (mv[0] === "insert_before_counter_or_acknowledge") {
+
+          this.game.queue.splice(qe, 1);
+
+	  let insert = "";
+	  for (let i = 1; i < mv.length; i++) {
+	    if (i > 1) { insert += "\t"; }
+	    insert += mv[i];
+	  }
+
+	  for (let i = this.game.queue.length-1; i >= 0; i--) {
+	    let lqe = this.game.queue[i];
+	    let lmv = lqe.split("\t");
+	    if (lmv[0] === "counter_or_acknowledge") {
+	      this.game.queue.splice(i, 0, insert);
+	      i = 0;
+	    } 
+	  }
+	  
+	  return 1;
+
+        }
 	if (mv[0] === "counter_or_acknowledge") {
 
 	  if (this.game.state.skip_counter_or_acknowledge == 1) {
@@ -1551,6 +1573,8 @@ console.log("CONFIRMS NEEDED? " + JSON.stringify(this.game.confirms_needed));
               for (let i = 0; i < menu_triggers.length; i++) {
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
+console.log("at STAGE");
+console.log("TRIGGERING " + menu_index[i]);
                   z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
                   return;
                 }
@@ -3948,9 +3972,11 @@ console.log("purging naval units and capturing leader");
 
         if (mv[0] === "translation") {
 
-	  this.game.queue.splice(qe, 1);
+console.log("TRANSLATION!");
 
 	  let zone = mv[1];
+
+	  this.game.queue.splice(qe, 1);
 
 	  if (zone === "german") {
 	    if (this.game.state.translations['new']['german'] >= 6) {

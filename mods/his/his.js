@@ -908,14 +908,59 @@ Habsburg conquistadores:
         return 0;
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu == "martin_luther") {
-          his_self.addMove("translation\tgerman");
-          his_self.addMove("commit\tprotestant\tluther-debater");
+        if (menu == "translation_german_language_zone") {
+          his_self.prependMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tluther-debater");
+          his_self.prependMove("insert_before_counter_or_acknowledge\ttranslation\tgerman");
           his_self.endTurn();
         } 
         return 0; 
       },
-   });
+    });
+    this.importDebater('melanchthon-debater', {
+      type		:	"melanchthon-debater" ,
+      name		: 	"Philip Melanchthon",
+      img		:	"MelanchthonDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	3 ,
+      ability		:	"Bonus CP for translation in German zone" ,
+      committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "translation_german_language_zone") {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (p === his_self.game.player) {
+            return { faction : extra , event : 'melanchthon', html : `<li class="option" id="melanchthon">Melanchthon +1 Bonus CP</li>` };
+          }
+        } 
+        return {};
+      },  
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "translation_german_language_zone"  && his_self.canPlayerCommitDebater("protestant", "melanchthon-debater")) {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (p === his_self.game.player) {
+            if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
+              his_self.game.state.players_info[player-1].tmp_debaters_committed_translation == 0 && 
+              his_self.game.state.players_info[player-1].tmp_debaters_committed_counter_reformation == 0) {
+                return 1;
+            }
+          }
+        }
+        return 0;
+      },  
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "translation_german_language_zone") {
+          his_self.prependMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tmelanchthon-debater");
+          his_self.prependMove("insert_before_counter_or_acknowledge\ttranslation\tgerman");
+          his_self.endTurn();
+        } 
+        return 0; 
+      },
+    });
+
+
+
+
+
 
     this.importDebater('zwingli-debater', {
       type		:	"zwingli-debater" ,
@@ -1002,102 +1047,6 @@ Habsburg conquistadores:
         return 1;
       }
     });
-
-    this.importDebater('bullinger-debater', {
-      type		:	"bullinger-debater" ,
-      name		: 	"Heinrich Bullinger",
-      img		:	"BullingerDebater.svg",
-      language_zone	:	"german" ,
-      faction		:	"protestant" ,
-      power		:	2 ,
-      ability		:	"Insert in 2nd round of debate in any Language Zone" ,
-      committed		: 	0,
-      menuOption  :       function(his_self, menu, player) {
-        if (menu === "debate") {
-          return { faction : "protestant" , event : 'substitute_bullinger', html : `<li class="option" id="substitute_bullinger">substitute Bullinger</li>` };
-        }
-        return {};
-      },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "debate" && his_self.canPlayerCommitDebater("protestant", "bullinger-debater")) {
-	  if (his_self.game.state.theological_debate.round === 2) {
-            if (faction === "protestant") {
-              return 1;
-            }
-          }
-        }
-        return 0;
-      },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu === "debate") {
-	  if (his_self.game.state.theological_debate.attacker === "papacy") {
-            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tdefender_debater\tbullinger-debater");
-	  } else {
-            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tattacker_debater\tbullinger-debater");
-	  }
-          his_seld.endTurn();
-        }
-        return 0;
-      },
-
-    });
-
-    this.importDebater('carlstadt-debater', {
-      type		:	"carlstadt-debater" ,
-      name		: 	"Andreas Carlstadt",
-      img		:	"CarlstadtDebater.svg",
-      language_zone	:	"german" ,
-      faction		:	"protestant" ,
-      power		:	1 ,
-      ability		:	"Target 3 German spaces with Treatise, unrest if fails" ,
-      committed		: 	0,
-      //
-      // implemented in his-player, since provides +1 bonus target
-      //
-    });
-
-    this.importDebater('melanchthon-debater', {
-      type		:	"melanchthon-debater" ,
-      name		: 	"Philip Melanchthon",
-      img		:	"MelanchthonDebater.svg",
-      language_zone	:	"german" ,
-      faction		:	"protestant" ,
-      power		:	3 ,
-      ability		:	"Bonus CP for translation in German zone" ,
-      committed		: 	0,
-      menuOption  :       function(his_self, menu, player, extra) {
-        if (menu == "translation_german_language_zone") {
-	  let p = his_self.returnPlayerOfFaction("protestant");
-	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'melanchthon', html : `<li class="option" id="melanchthon">Melanchthon +1 Bonus CP</li>` };
-          }
-        } 
-        return {};
-      },  
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "translation_german_language_zone"  && his_self.canPlayerCommitDebater("protestant", "melanchthon-debater")) {
-	  let p = his_self.returnPlayerOfFaction("protestant");
-	  if (p === his_self.game.player) {
-            if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
-              his_self.game.state.players_info[player-1].tmp_debaters_committed_translation == 0 && 
-              his_self.game.state.players_info[player-1].tmp_debaters_committed_counter_reformation == 0) {
-                return 1;
-            }
-          }
-        }
-        return 0;
-      },  
-      menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu == "melanchthon") {
-          his_self.addMove("translation\tgerman");
-          his_self.addMove("commit\tprotestant\tmelanchthon-debater");
-          his_self.endTurn();
-          his_self.updateStatus("acknowledge");
-        } 
-        return 0; 
-      },
-    });
-
     this.importDebater('oekolampadius-debater', {
       type		:	"oekolampadius-debater" ,
       name		: 	"Johannes Oekolampadius",
@@ -1146,9 +1095,100 @@ Habsburg conquistadores:
 
 
 
+    this.importDebater('bullinger-debater', {
+      type		:	"bullinger-debater" ,
+      name		: 	"Heinrich Bullinger",
+      img		:	"BullingerDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"Insert in 2nd round of debate in any Language Zone" ,
+      committed		: 	0,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu === "debate") {
+          return { faction : "protestant" , event : 'substitute_bullinger', html : `<li class="option" id="substitute_bullinger">substitute Bullinger</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "debate" && his_self.canPlayerCommitDebater("protestant", "bullinger-debater")) {
+	  if (his_self.game.state.theological_debate.round === 2) {
+            if (faction === "protestant") {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu === "debate") {
+	  if (his_self.game.state.theological_debate.attacker === "papacy") {
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tdefender_debater\tbullinger-debater");
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tdefender_debater_power\t2");
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tdefender_debater_bonus\t2");
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tround2_defender_debater\tbullinger-debater");
+	  } else {
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tattacker_debater\tbullinger-debater");
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tdefender_debater_power\t2");
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tround2_attacker_debater\tbullinger-debater");
+	  }
+          his_self.endTurn();
+        }
+        return 0;
+      },
+
+    });
+
+
+    this.importDebater('carlstadt-debater', {
+      type		:	"carlstadt-debater" ,
+      name		: 	"Andreas Carlstadt",
+      img		:	"CarlstadtDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	1 ,
+      ability		:	"Target 3 German spaces with Treatise, unrest if fails" ,
+      committed		: 	0,
+      //
+      // implemented in his-player, since provides +1 bonus target for publish treastise in German zone
+      //
+    });
+
+
+
+
+
     ////////////
     // PAPACY //
     ////////////
+    this.importDebater('cajetan-debater', {
+      type		:	"cajetan-debater" ,
+      name		: 	"Thomas Cajetan",
+      img		:	"CajetanDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	1 ,
+      ability		:	"Target 3 spaces with burn books" ,
+      committed		: 	0,
+      //
+      // ability implemented in his-player.js burnBooks
+      //
+    });
+    this.importDebater('caraffa-debater', {
+      type		:	"caraffa-debater" ,
+      name		: 	"Carlo Caraffa",
+      img		:	"CaraffaDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"Target 3 spaces in any zone with burn books" ,
+      committed		: 	0,
+      //
+      // ability implemented in his-player.js burnBooks
+      //
+    });
+
+
     this.importDebater('eck-debater', {
       type		:	"eck-debater" ,
       name		: 	"Johann Eck",
@@ -1171,17 +1211,6 @@ Habsburg conquistadores:
       committed		: 	0,
     });
 
-    this.importDebater('cajetan-debater', {
-      type		:	"cajetan-debater" ,
-      name		: 	"Thomas Cajetan",
-      img		:	"CajetanDebater.svg",
-      language_zone	:	"any" ,
-      faction		:	"papacy" ,
-      power		:	1 ,
-      ability		:	"Target 3 spaces with burn books" ,
-      committed		: 	0,
-    });
-
     this.importDebater('campeggio-debater', {
       type		:	"campeggio-debater" ,
       name		: 	"Lorenzo Campeggio",
@@ -1193,6 +1222,10 @@ Habsburg conquistadores:
       committed		: 	0,
     });
 
+
+
+
+
     this.importDebater('canisius-debater', {
       type		:	"canisius-debater" ,
       name		: 	"Peter Canisius",
@@ -1201,17 +1234,6 @@ Habsburg conquistadores:
       faction		:	"papacy" ,
       power		:	3 ,
       ability		:	"+1 die for Counter-Reformation attempts within 2 spaces of Regensburg" ,
-      committed		: 	0,
-    });
-
-    this.importDebater('caraffa-debater', {
-      type		:	"caraffa-debater" ,
-      name		: 	"Carlo Caraffa",
-      img		:	"CaraffaDebater.svg",
-      language_zone	:	"any" ,
-      faction		:	"papacy" ,
-      power		:	2 ,
-      ability		:	"Target 2 spaces in any zone with burn books" ,
       committed		: 	0,
     });
 
@@ -1859,6 +1881,12 @@ console.log("\n\n\n\n");
 	this.addDebater("protestant", "melanchthon-debater");
 	this.addDebater("protestant", "bucer-debater");
 	this.addDebater("protestant", "carlstadt-debater");
+
+	// HACK
+	this.addDebater("protestant", "bullinger-debater");
+	this.addDebater("protestant", "oekolampadius-debater");
+	this.addDebater("protestant", "zwingly-debater");
+
       }
 
       //
@@ -3827,8 +3855,8 @@ alert("Not Implemented");
 	his_self.game.state.leaders['luther'] = 0;
 	his_self.game.state.leaders['calvin'] = 1;
 
-	let x = his_self.returnSpaceOfPersonage("luther-reformer");
-	let y = his_self.returnIndexOfPersonageInSpace("luther-reformer");
+	let x = his_self.returnSpaceOfPersonage("protestant", "luther-reformer");
+	let y = his_self.returnIndexOfPersonageInSpace("protestant", "luther-reformer", x);
 
 	if (y > -1) {
 	  his_self.game.spaces[x].units["protestant"].splice(y, 1);
@@ -6987,8 +7015,9 @@ alert("NOT IMPLEMENTED");
     return "";
   }
 
-  returnIndexOfPersonageInSpace(faction, personage, spacekey) {
+  returnIndexOfPersonageInSpace(faction, personage, spacekey="") {
     if (spacekey === "") { return -1; }
+    if (!this.game.spaces[spacekey]) { return -1; }
     for (let i = 0; i < this.game.spaces[spacekey].units[faction].length; i++) {
       if (this.game.spaces[spacekey].units[faction][i].type === personage) {
         return i;
@@ -10852,7 +10881,7 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    this.game.queue.push("card_draw_phase");
 	    //this.updateLog("Luther's 95 Theses!");
-	    this.game.queue.push("event\t1\t008");
+	    //this.game.queue.push("event\t1\t008");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -11146,10 +11175,10 @@ console.log("MOVE: " + mv[0]);
     	  //
     	  // IS_TESTING -- TEMPORARY
     	  //
-    	  this.addDebater("papacy", "bucer");
-    	  this.addDebater("hapsburg", "aleander");
-    	  this.addDebater("england", "bullinger");
-    	  this.addDebater("protestant", "campeggio");
+    	  this.addDebater("papacy", "bucer-debater");
+    	  this.addDebater("protestant", "aleander-debater");
+    	  this.addDebater("protestant", "bullinger-debater");
+    	  this.addDebater("protestant", "campeggio-debater");
 
 
     	  this.activateMinorPower("papacy", "venice");
@@ -12272,6 +12301,28 @@ console.log(JSON.stringify(mv));
 	// this does not auto-remove, it needs to be preceded by a RESETCONFIRMSNEEDED
 	// for however many people need to have the opportunity to counter or acknowledge.
 	//
+	if (mv[0] === "insert_before_counter_or_acknowledge") {
+
+          this.game.queue.splice(qe, 1);
+
+	  let insert = "";
+	  for (let i = 1; i < mv.length; i++) {
+	    if (i > 1) { insert += "\t"; }
+	    insert += mv[i];
+	  }
+
+	  for (let i = this.game.queue.length-1; i >= 0; i--) {
+	    let lqe = this.game.queue[i];
+	    let lmv = lqe.split("\t");
+	    if (lmv[0] === "counter_or_acknowledge") {
+	      this.game.queue.splice(i, 0, insert);
+	      i = 0;
+	    } 
+	  }
+	  
+	  return 1;
+
+        }
 	if (mv[0] === "counter_or_acknowledge") {
 
 	  if (this.game.state.skip_counter_or_acknowledge == 1) {
@@ -12351,6 +12402,8 @@ console.log("CONFIRMS NEEDED? " + JSON.stringify(this.game.confirms_needed));
               for (let i = 0; i < menu_triggers.length; i++) {
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
+console.log("at STAGE");
+console.log("TRIGGERING " + menu_index[i]);
                   z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
                   return;
                 }
@@ -14748,9 +14801,11 @@ console.log("purging naval units and capturing leader");
 
         if (mv[0] === "translation") {
 
-	  this.game.queue.splice(qe, 1);
+console.log("TRANSLATION!");
 
 	  let zone = mv[1];
+
+	  this.game.queue.splice(qe, 1);
 
 	  if (zone === "german") {
 	    if (this.game.state.translations['new']['german'] >= 6) {
@@ -18602,7 +18657,8 @@ return;
 	his_self.addMove("translation\tenglish"); 
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in English Language Zone\ttranslation_english_language_zone\tenglish\t"+faction);
       }
-      his_self.addMove("RESETCONFIRMSNEEDED\tall");
+      // we only ask for our own CONFIRMS
+      his_self.addMove("RESETCONFIRMSNEEDED\t"+this.game.player);
       his_self.endTurn();
 
     });
@@ -18644,7 +18700,7 @@ return;
 
         let id = $(this).attr("id");
 
-	if (id === "german" && his_self.isDebaterAvailable("carlstadt-debater")) {
+	if (id === "german" && his_self.canPlayerCommitDebater("protestant", "carlstadt-debater") && his_self.game.player === his_self.returnPlayerOfFaction("protestant")) {
 
           let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
           let html = '<ul>';
@@ -18802,8 +18858,42 @@ return;
     $('.option').on('click', function () {
 
       his_self.language_zone_overlay.hide();
-
       let id = $(this).attr("id");
+
+      if ((his_self.canPlayerCommitDebater("papacy", "cajetan-debater") || his_self.canPlayerCommitDebater("papacy", "caraffa")) && his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
+
+        let msg = "Commit Debater for Burn Books +1 Attempt:";
+        let html = '<ul>';
+	if (his_self.canPlayerCommitDebater("papacy", "cajetan-debater")) {
+          html += '<li class="option" style="" id="cajetan">Yes, Commit Cajetan</li>';
+	}
+	if (his_self.canPlayerCommitDebater("papacy", "caraffa-debater")) {
+          html += '<li class="option" style="" id="caraffa">Yes, Commit Caraffa</li>';
+        }
+        html += '<li class="option" style="" id="no">No</li>';
+	html += '</ul>';
+
+        his_self.updateStatusWithOptions(msg, html);
+
+        $('.option').off();
+        $('.option').on('click', function () {
+          let id2 = $(this).attr("id");
+
+	  if (id2 === "cajetan" || id2 === "caraffa") {
+	    if (id2 === "cajetan") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
+	    if (id2 === "caraffa") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
+            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+	  }
+          his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+          his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+	  his_self.endTurn();
+
+	  return 0;
+	});
+
+	return 0;
+      }
+
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
       his_self.endTurn();
