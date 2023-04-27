@@ -170,13 +170,13 @@ class Arcade extends ModTemplate {
     }
     let arcade_self = this;
 
-    let cutoff1 = new Date().getTime() - 4800000;
+    let cutoff1 = new Date().getTime() - 3500000;
     let cutoff2 = new Date().getTime() - 600000000;
 
     //
     // load open games from server
     //  ( status = "open" OR status = "private" ) AND
-    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND status = 'over') ORDER BY created_at ASC`;
+    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND (status = 'over' OR status = 'active')) ORDER BY created_at ASC`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
       if (res.rows) {
         for (let record of res.rows) {
@@ -203,7 +203,8 @@ class Arcade extends ModTemplate {
             try {
               game_tx.msg.winner = JSON.parse(record.winner);
             }catch(err){
-              console.log(err, record.winner);
+              console.log("Non-JSON DB entry:", record.winner);
+              game_tx.msg.winner = [record.winner];
             }
           }
 
