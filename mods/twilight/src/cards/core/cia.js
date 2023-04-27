@@ -17,7 +17,7 @@
             revealed += ", "; 
             keys += " ";
           }
-          revealed += this.game.deck[0].cards[this.game.deck[0].hand[i]].name;
+          revealed += this.cardToText(this.game.deck[0].hand[i]);
           keys += this.game.deck[0].hand[i];
         }
 

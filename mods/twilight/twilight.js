@@ -623,17 +623,20 @@ class Twilight extends GameTemplate {
 
     } catch (err) {}
 
-    this.hud.render();
+    if (this.game.player > 0){
+      this.hud.render();  
 
-    /* Attach classes to hud to visualize player roles */
-    //this.game.player == 1 --> ussr, == 2 --> usa
-    let hh = document.querySelector(".hud-header");
-    if (hh){
-      switch(this.game.player){
-        case 1: hh.classList.add("soviet"); break;
-        case 2: hh.classList.add("american"); break;
-        default:
-      }  
+      /* Attach classes to hud to visualize player roles */
+      //this.game.player == 1 --> ussr, == 2 --> usa
+      let hh = document.querySelector(".hud-header");
+      if (hh){
+        switch(this.game.player){
+          case 1: hh.classList.add("soviet"); break;
+          case 2: hh.classList.add("american"); break;
+          default:
+        }  
+      }
+    
     }
 
   }
@@ -2982,9 +2985,9 @@ try {
 
     if (mv[0] === "play") {
 
-      if (this.game.player == 0) {
-        this.game.queue.push("OBSERVER_CHECKPOINT");
-      }
+      //if (this.game.player == 0) {
+      //  this.game.queue.push("OBSERVER_CHECKPOINT");
+      //}
 
       //
       // copy for reversion
@@ -9414,7 +9417,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
             revealed += ", "; 
             keys += " ";
           }
-          revealed += this.game.deck[0].cards[this.game.deck[0].hand[i]].name;
+          revealed += this.cardToText(this.game.deck[0].hand[i]);
           keys += this.game.deck[0].hand[i];
         }
 
