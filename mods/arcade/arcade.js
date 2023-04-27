@@ -200,11 +200,11 @@ class Arcade extends ModTemplate {
           //Game Meta Data stored directly in DB
           //
           if (record.winner){
+            game_tx.msg.winner = [record.winner];
             try {
               game_tx.msg.winner = JSON.parse(record.winner);
-            }catch(err){
-              console.log("Non-JSON DB entry:", record.winner);
-              game_tx.msg.winner = [record.winner];
+            } catch(err) {
+              //console.log("Non-JSON DB entry:", record.winner);              
             }
           }
 
