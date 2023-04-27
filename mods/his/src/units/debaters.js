@@ -371,6 +371,9 @@
       power		:	4 ,
       ability		:	"Found Jesuit University for only 2 CP" ,
       committed		: 	0,
+      //
+      // implemented in his-player -- foundJesuitUniversityWithLoyola
+      //
     });
 
     this.importDebater('pole-debater', {
@@ -393,6 +396,9 @@
       power		:	1 ,
       ability		:	"1 CP to Saint Peters with Burn Books" ,
       committed		: 	0,
+      //
+      // implemented in his_player
+      //
     });
 
 

@@ -1221,44 +1221,6 @@ Habsburg conquistadores:
       ability		:	"Roll die after debate loss; if 5 or 6 result is ignored" ,
       committed		: 	0,
     });
-
-
-
-
-
-    this.importDebater('canisius-debater', {
-      type		:	"canisius-debater" ,
-      name		: 	"Peter Canisius",
-      img		:	"CanisiusDebater.svg",
-      language_zone	:	"any" ,
-      faction		:	"papacy" ,
-      power		:	3 ,
-      ability		:	"+1 die for Counter-Reformation attempts within 2 spaces of Regensburg" ,
-      committed		: 	0,
-    });
-
-    this.importDebater('contarini-debater', {
-      type		:	"contarini-debater" ,
-      name		: 	"Gasparo Contarini",
-      img		:	"ContariniDebater.svg",
-      language_zone	:	"any" ,
-      faction		:	"papacy" ,
-      power		:	2 ,
-      ability		:	"+1 die for Counter-Reformations within 2 spaces of Charles V" ,
-      committed		: 	0,
-    });
-
-    this.importDebater('faber-debater', {
-      type		:	"faber-debater" ,
-      name		: 	"Peter Faber",
-      img		:	"FaberDebater.svg",
-      language_zone	:	"any" ,
-      faction		:	"papacy" ,
-      power		:	3 ,
-      ability		:	"+2 die for Counter-Reformations against an Electorate" ,
-      committed		: 	0,
-    });
-
     this.importDebater('gardiner-debater', {
       type		:	"gardiner-debater" ,
       name		: 	"Stephen Gardiner",
@@ -1270,6 +1232,10 @@ Habsburg conquistadores:
       committed		: 	0,
     });
 
+
+
+
+
     this.importDebater('loyola-debater', {
       type		:	"loyola-debater" ,
       name		: 	"Ignatius Loyola",
@@ -1279,6 +1245,9 @@ Habsburg conquistadores:
       power		:	4 ,
       ability		:	"Found Jesuit University for only 2 CP" ,
       committed		: 	0,
+      //
+      // implemented in his-player -- foundJesuitUniversityWithLoyola
+      //
     });
 
     this.importDebater('pole-debater', {
@@ -1301,7 +1270,172 @@ Habsburg conquistadores:
       power		:	1 ,
       ability		:	"1 CP to Saint Peters with Burn Books" ,
       committed		: 	0,
+      //
+      // implemented in his_player
+      //
     });
+
+
+
+
+
+
+    this.importDebater('canisius-debater', {
+      type		:	"canisius-debater" ,
+      name		: 	"Peter Canisius",
+      img		:	"CanisiusDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die for Counter-Reformation attempts within 2 spaces of Regensburg" ,
+      committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "catholic_counter_reformation") {
+          let p = his_self.returnPlayerOfFaction("papacy");
+          if (p === his_self.game.player) {
+            return { faction : extra , event : 'peter_canisius', html : `<li class="option" id="peter_canisius">Peter Canisius +1 Roll</li>` };
+          }
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "catholic_counter_reformation" && his_self.canPlayerCommitDebater("papacy", "canisius-debater")) {
+          let p = his_self.returnPlayerOfFaction("papacy");
+          if (p === his_self.game.player && ["regensburg","prague","vienna","linz","graz","salzburg","innsbruck","augsburg","worms","nuremberg","leipzig","mainz","kassal"].includes(spacekey)) {
+           return 1;
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "catholic_counter_reformation") {
+          his_self.addMove("peter_canisius");
+          his_self.endTurn();
+        }
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] === "peter_canisius") {
+          his_self.game.queue.splice(qe, 1);
+          his_self.game.state.tmp_catholic_counter_reformation_bonus++;
+        }
+        return 1;
+      }
+    });
+
+
+
+
+
+    this.importDebater('contarini-debater', {
+      type		:	"contarini-debater" ,
+      name		: 	"Gasparo Contarini",
+      img		:	"ContariniDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"+1 die for Counter-Reformations within 2 spaces of Charles V" ,
+      committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "catholic_counter_reformation") {
+          let p = his_self.returnPlayerOfFaction("papacy");
+          if (p === his_self.game.player) {
+            return { faction : extra , event : 'peter_canisius', html : `<li class="option" id="gasparo_contarini">Gasparo Contarini +1 Roll</li>` };
+          }
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "catholic_counter_reformation" && his_self.canPlayerCommitDebater("papacy", "contarini-debater")) {
+          let p = his_self.returnPlayerOfFaction("papacy");
+          if (p === his_self.game.player) {
+	    let cx = his_self.returnSpaceOfPersonage("hapsburg", "charles-v");
+	    if (his_self.spaces[cx]) {
+	      let targets = [];
+	      targets.push(cs);
+
+	      for (let i = 0; i < his_self.spaces[cx].neighbours.length; i++) {
+
+		let x = his_self.spaces[cs].neighbours[i];
+		if (!targets.includes(x)) { targets.push(x); }
+
+	        for (let ii = 0; ii < his_self.spaces[x].neighbours.length; ii++) {
+		  let y = his_self.spaces[x].neighbours[ii];
+		  if (!targets.includes(y)) { targets.push(y); }
+		}
+	      }
+	    }
+	    if (targets.includes(spacekey)) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "catholic_counter_reformation") {
+          his_self.addMove("gasparo_contarini");
+          his_self.endTurn();
+        }
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] === "gasparo_contarini") {
+          his_self.game.queue.splice(qe, 1);
+          his_self.game.state.tmp_catholic_counter_reformation_bonus++;
+        }
+        return 1;
+      }
+    });
+
+    this.importDebater('faber-debater', {
+      type		:	"faber-debater" ,
+      name		: 	"Peter Faber",
+      img		:	"FaberDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+2 die for Counter-Reformations against an Electorate" ,
+      committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "catholic_counter_reformation") {
+          let p = his_self.returnPlayerOfFaction("papacy");
+          if (p === his_self.game.player) {
+            return { faction : extra , event : 'peter_faber', html : `<li class="option" id="peter_faber">Peter Faber +1 Roll</li>` };
+          }
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "catholic_counter_reformation" && his_self.canPlayerCommitDebater("papacy", "faber-debater")) {
+          let p = his_self.returnPlayerOfFaction("papacy");
+          if (p === his_self.game.player) {
+	    if (["augsburg","trier","cologne","wittenberg","mainz","brandenburg"].includes(spacekey)) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "catholic_counter_reformation") {
+          his_self.addMove("peter_faber");
+          his_self.endTurn();
+        }
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "peter_faber") {
+          his_self.game.queue.splice(qe, 1);
+          his_self.game.state.tmp_catholic_counter_reformation_bonus++;
+        }
+        return 1;
+      }
+    });
+
+
+
+
 
 
     ////////////
@@ -1886,6 +2020,13 @@ console.log("\n\n\n\n");
 	this.addDebater("protestant", "bullinger-debater");
 	this.addDebater("protestant", "oekolampadius-debater");
 	this.addDebater("protestant", "zwingly-debater");
+	this.addDebater("papacy", "caraffa-debater");
+	this.addDebater("papacy", "gardiner-debater");
+	this.addDebater("papacy", "loyola-debater");
+	this.addDebater("papacy", "pole-debater");
+	this.addDebater("papacy", "canisius-debater");
+	this.addDebater("papacy", "contarini-debater");
+	this.addDebater("papacy", "faber-debater");
 
       }
 
@@ -14856,7 +14997,10 @@ console.log("TRANSLATION!");
 	  if (this.game.state.saint_peters_cathedral['vp'] < 5) {
 	    this.updateLog("Papacy progresses with construction of St. Peter's Basilica");
 	    this.game.state.saint_peters_cathedral['state'] += 1;
-	    this.game.state.saint_peters_cathedral['vp'] += 1;
+	    if (this.game.state.saint_peters_cathedral['state'] >= 5) {
+	      this.game.state.saint_peters_cathedral['state'] = 0;
+	      this.game.state.saint_peters_cathedral['vp'] += 1;
+	    }
 	  }
 
 	  his_self.faction_overlay.render("papacy");
@@ -16677,6 +16821,16 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       check : this.canPlayerBurnBooks,
       fnct : this.playerBurnBooks,
     });
+    // Loyola reduces Jesuit University Cost
+    if (this.canPlayerCommitDebater("papacy", "loyola-debater")) {
+      menu.push({
+        factions : ['papacy'],
+        cost : [2],
+        name : "Found Jesuit University w/ Loyola",
+        check : this.canPlayerFoundJesuitUniversity,
+        fnct : this.playerFoundJesuitUniversityWithLoyola,
+      });
+    }
     menu.push({
       factions : ['papacy'],
       cost : [3],
@@ -17083,23 +17237,16 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       });
     } else {
 
-console.log("AAA AP");
-
       //
       // duplicates code above
       //
       let html = `<ul>`;
       for (let i = 0; i < menu.length; i++) {
-
-console.log("menu: " + menu[i].name);
-console.log("faction is: " + faction);
-
         if (menu[i].check(this, this.game.player, faction)) {
-console.log("returned 1 for " + menu[i].name);
           for (let z = 0; z < menu[i].factions.length; z++) {
             if (menu[i].factions[z] === faction) {
   	      if (menu[i].cost[z] <= ops) {
-                html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+                html += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
               }
 	      z = menu[i].factions.length+1;
             }
@@ -18860,15 +19007,18 @@ return;
       his_self.language_zone_overlay.hide();
       let id = $(this).attr("id");
 
-      if ((his_self.canPlayerCommitDebater("papacy", "cajetan-debater") || his_self.canPlayerCommitDebater("papacy", "caraffa")) && his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
+      if ((his_self.canPlayerCommitDebater("papacy", "cajetan-debater") || his_self.canPlayerCommitDebater("papacy", "tetzel-debater") || his_self.canPlayerCommitDebater("papacy", "caraffa")) && his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
 
-        let msg = "Commit Debater for Burn Books +1 Attempt:";
+        let msg = "Commit Debater for Burn Books Bonus:";
         let html = '<ul>';
+	if (his_self.canPlayerCommitDebater("papacy", "tetzel-debater")) {
+          html += '<li class="option" style="" id="tetzel">+1 to Saint Peters</li>';
+	}
 	if (his_self.canPlayerCommitDebater("papacy", "cajetan-debater")) {
-          html += '<li class="option" style="" id="cajetan">Yes, Commit Cajetan</li>';
+          html += '<li class="option" style="" id="cajetan">Cajetan +1 Attempt</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "caraffa-debater")) {
-          html += '<li class="option" style="" id="caraffa">Yes, Commit Caraffa</li>';
+          html += '<li class="option" style="" id="caraffa">Caraffa +1 Attempt</li>';
         }
         html += '<li class="option" style="" id="no">No</li>';
 	html += '</ul>';
@@ -18878,6 +19028,10 @@ return;
         $('.option').off();
         $('.option').on('click', function () {
           let id2 = $(this).attr("id");
+
+	  if (id2 === "tetzel") {
+            his_self.addMove("build_saint_peters");
+	  }
 
 	  if (id2 === "cajetan" || id2 === "caraffa") {
 	    if (id2 === "cajetan") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
@@ -18904,6 +19058,11 @@ return;
   canPlayerFoundJesuitUniversity(his_self, player, faction) {
     if (faction === "papacy" && his_self.game.state.events.papacy_may_found_jesuit_universities == 1) { return 1; }
     return 0;
+  }
+  async playerFoundJesuitUniversityWithLoyola(his_self, player, faction) {
+    this.addMove("NOTIFY\tPapacy commits Loyola to lower cost of Jesuit University");
+    this.addMove("commit\tpapacy\tloyola-debater");
+    return this.playerFoundJesuitUniversity(his_self, player, faction);
   }
   async playerFoundJesuitUniversity(his_self, player, faction) {
 

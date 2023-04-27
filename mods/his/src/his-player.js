@@ -667,6 +667,16 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       check : this.canPlayerBurnBooks,
       fnct : this.playerBurnBooks,
     });
+    // Loyola reduces Jesuit University Cost
+    if (this.canPlayerCommitDebater("papacy", "loyola-debater")) {
+      menu.push({
+        factions : ['papacy'],
+        cost : [2],
+        name : "Found Jesuit University w/ Loyola",
+        check : this.canPlayerFoundJesuitUniversity,
+        fnct : this.playerFoundJesuitUniversityWithLoyola,
+      });
+    }
     menu.push({
       factions : ['papacy'],
       cost : [3],
@@ -1073,23 +1083,16 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       });
     } else {
 
-console.log("AAA AP");
-
       //
       // duplicates code above
       //
       let html = `<ul>`;
       for (let i = 0; i < menu.length; i++) {
-
-console.log("menu: " + menu[i].name);
-console.log("faction is: " + faction);
-
         if (menu[i].check(this, this.game.player, faction)) {
-console.log("returned 1 for " + menu[i].name);
           for (let z = 0; z < menu[i].factions.length; z++) {
             if (menu[i].factions[z] === faction) {
   	      if (menu[i].cost[z] <= ops) {
-                html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+                html += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
               }
 	      z = menu[i].factions.length+1;
             }
@@ -2850,15 +2853,18 @@ return;
       his_self.language_zone_overlay.hide();
       let id = $(this).attr("id");
 
-      if ((his_self.canPlayerCommitDebater("papacy", "cajetan-debater") || his_self.canPlayerCommitDebater("papacy", "caraffa")) && his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
+      if ((his_self.canPlayerCommitDebater("papacy", "cajetan-debater") || his_self.canPlayerCommitDebater("papacy", "tetzel-debater") || his_self.canPlayerCommitDebater("papacy", "caraffa")) && his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
 
-        let msg = "Commit Debater for Burn Books +1 Attempt:";
+        let msg = "Commit Debater for Burn Books Bonus:";
         let html = '<ul>';
+	if (his_self.canPlayerCommitDebater("papacy", "tetzel-debater")) {
+          html += '<li class="option" style="" id="tetzel">+1 to Saint Peters</li>';
+	}
 	if (his_self.canPlayerCommitDebater("papacy", "cajetan-debater")) {
-          html += '<li class="option" style="" id="cajetan">Yes, Commit Cajetan</li>';
+          html += '<li class="option" style="" id="cajetan">Cajetan +1 Attempt</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "caraffa-debater")) {
-          html += '<li class="option" style="" id="caraffa">Yes, Commit Caraffa</li>';
+          html += '<li class="option" style="" id="caraffa">Caraffa +1 Attempt</li>';
         }
         html += '<li class="option" style="" id="no">No</li>';
 	html += '</ul>';
@@ -2868,6 +2874,10 @@ return;
         $('.option').off();
         $('.option').on('click', function () {
           let id2 = $(this).attr("id");
+
+	  if (id2 === "tetzel") {
+            his_self.addMove("build_saint_peters");
+	  }
 
 	  if (id2 === "cajetan" || id2 === "caraffa") {
 	    if (id2 === "cajetan") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
@@ -2894,6 +2904,11 @@ return;
   canPlayerFoundJesuitUniversity(his_self, player, faction) {
     if (faction === "papacy" && his_self.game.state.events.papacy_may_found_jesuit_universities == 1) { return 1; }
     return 0;
+  }
+  async playerFoundJesuitUniversityWithLoyola(his_self, player, faction) {
+    this.addMove("NOTIFY\tPapacy commits Loyola to lower cost of Jesuit University");
+    this.addMove("commit\tpapacy\tloyola-debater");
+    return this.playerFoundJesuitUniversity(his_self, player, faction);
   }
   async playerFoundJesuitUniversity(his_self, player, faction) {
 

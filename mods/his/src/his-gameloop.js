@@ -4027,7 +4027,10 @@ console.log("TRANSLATION!");
 	  if (this.game.state.saint_peters_cathedral['vp'] < 5) {
 	    this.updateLog("Papacy progresses with construction of St. Peter's Basilica");
 	    this.game.state.saint_peters_cathedral['state'] += 1;
-	    this.game.state.saint_peters_cathedral['vp'] += 1;
+	    if (this.game.state.saint_peters_cathedral['state'] >= 5) {
+	      this.game.state.saint_peters_cathedral['state'] = 0;
+	      this.game.state.saint_peters_cathedral['vp'] += 1;
+	    }
 	  }
 
 	  his_self.faction_overlay.render("papacy");
