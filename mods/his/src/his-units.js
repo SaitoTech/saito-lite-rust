@@ -307,7 +307,8 @@
 
   }
 
-  isActive(debater) {
+  isActive(debater) { return this.isDebaterActive(debater); }
+  isDebaterActive(debater) {
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {
 	if (this.game.state.debaters[i].active == 1) { return 1; }
@@ -334,37 +335,17 @@
     return 0;
   }
 
+  deactivateDebater(debater) {
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].key === debater) {
+        this.game.state.debaters[i].active = 0;
+      }
+    }
+  }
   deactivateDebaters() {
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       this.game.state.debaters[i].active = 0;
     }
-  }
-
-  canPlayerCommitDebater(faction, debater) {
-
-    if (faction !== "protestant" && faction !== "papacy") { return false; }
-
-    let already_committed = false;
-    for (let i = 0; i < this.game.state.debaters.length; i++) {
-      if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "papacy" && faction === "papacy") { return false; }
-      if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "protestant" && faction !== "papacy") { return false; }
-      if (this.game.state.debaters[i].key == debater) {
-
-	let is_mine = false;
-
-	if (this.game.state.debaters[i].owner === "papacy" && faction === "papacy") {
-	  is_mine = true;
-	}
-	if (this.game.state.debaters[i].owner !== "papacy" && faction === "protestant") {
-	  is_mine = true;
-	}
-
-	if (is_mine == true) {
-	  if (this.game.state.debaters[i].active == 1) { already_comitted = true; }
-        }
-      }
-    }
-    return !already_committed;
   }
 
   commitDebater(faction, debater, activate=1) {

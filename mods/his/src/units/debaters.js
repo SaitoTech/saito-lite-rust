@@ -21,7 +21,7 @@
         return {};
       },  
       menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "translation_german_language_zone" && his_self.canPlayerCommitDebater(faction, "luther-debater")) {
+        if (menu == "translation_german_language_zone" && his_self.canPlayerCommitDebater("protestant", "luther-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
             if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
@@ -62,7 +62,7 @@
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater(faction, "zwingly-debater")) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "zwingly-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player && ["zurich","basel","innsbruck","strasburg","besancon","geneva","trent","salzburg","augsburg"].includes(spacekey)) { 
            return 1;
@@ -105,7 +105,7 @@
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater(faction, "bucer-debater")) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "bucer-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player && ["basel","innsbruck","strasburg","besancon","geneva","trent","salzburg","augsburg"].includes(spacekey)) { 
            return 1;
@@ -145,7 +145,7 @@
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "debate" && his_self.canPlayerCommitDebater(faction, "bullinger-debater")) {
+        if (menu == "debate" && his_self.canPlayerCommitDebater("protestant", "bullinger-debater")) {
 	  if (his_self.game.state.theological_debate.round === 2) {
             if (faction === "protestant") {
               return 1;
@@ -201,7 +201,7 @@
         return {};
       },  
       menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "translation_german_language_zone"  && his_self.canPlayerCommitDebater(faction, "melanchthon-debater")) {
+        if (menu == "translation_german_language_zone"  && his_self.canPlayerCommitDebater("protestant", "melanchthon-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
             if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
@@ -243,7 +243,7 @@
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-        if (menu == "protestant_reformation"  && his_self.canPlayerCommitDebater(faction, "oekolampadius-debater")) {
+        if (menu == "protestant_reformation"  && his_self.canPlayerCommitDebater("protestant", "oekolampadius-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player && ["basel","zurich","innsbruck","strasburg","besancon","geneva","turin","grenoble","lyon","dijon","metz"].includes(spacekey)) { 
            return 1;
@@ -417,7 +417,7 @@
       name		: 	"John Calvin",
       img		:	"CalvinDebater.svg",
       language_zone	:	"french" ,
-      faction		:	"france" ,
+      faction		:	"protestant" ,
       power		:	4 ,
       ability		:	"Target 3 French-speaking spaces with a treatise" ,
       committed		: 	0,
@@ -428,7 +428,7 @@
      name		: 	"Nicolas Cop",
       img		:	"CopDebater.svg",
       language_zone	:	"french" ,
-      faction		:	"france" ,
+      faction		:	"protestant" ,
       power		:	2 ,
       ability		:	"+1 die for Reformation attempts within 2 spaces of Paris" ,
       committed		: 	0,
@@ -439,7 +439,7 @@
       name		: 	"William Farel",
       img		:	"FarelDebater.svg",
       language_zone	:	"french" ,
-      faction		:	"france" ,
+      faction		:	"protestante" ,
       power		:	2 ,
       ability		:	"+1 die for Reformation attempts within 2 spaces of Geneva" ,
       committed		: 	0,
@@ -450,7 +450,7 @@
       name		: 	"Pierre Robert Olivetan",
       img		:	"OlivetanDebater.svg",
       language_zone	:	"french" ,
-      faction		:	"france" ,
+      faction		:	"protestant" ,
       power		:	1 ,
       ability		:	"Bonus CP for translation in French Zone" ,
       committed		: 	0,
@@ -464,7 +464,7 @@
         return {};
       },  
       menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "translation_french_language_zone"  && his_self.canPlayerCommitDebater(faction, "olivetan-debater")) {
+        if (menu == "translation_french_language_zone"  && his_self.canPlayerCommitDebater("protestant", "olivetan-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
             if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
@@ -497,7 +497,7 @@
       name		: 	"Thomas Cranmer",
       img		:	"CranmerDebater.svg",
       language_zone	:	"english" ,
-      faction		:	"england" ,
+      faction		:	"protestant" ,
       power		:	2 ,
       ability		:	"+1 die for Reformation within 2 spaces of London" ,
       committed		: 	0,
@@ -508,7 +508,7 @@
       name		: 	"George Wishart",
       img		:	"WishartDebater.svg",
       language_zone	:	"english" ,
-      faction		:	"england" ,
+      faction		:	"protestant" ,
       power		:	1 ,
       ability		:	"+1 die for Reformation attempts in Scotland" ,
       committed		: 	0,
@@ -519,7 +519,7 @@
       name		: 	"William Tyndale",
       img		:	"TyndaleDebater.svg",
       language_zone	:	"english" ,
-      faction		:	"england" ,
+      faction		:	"protestant" ,
       power		:	2 ,
       ability		:	"Bonus CP for translation in English zone" ,
       committed		: 	0,
@@ -533,7 +533,7 @@
         return {};
       },  
       menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "translation_english_language_zone"  && his_self.canPlayerCommitDebater(faction, "tyndalex-debater")) {
+        if (menu == "translation_english_language_zone"  && his_self.canPlayerCommitDebater("protestant", "tyndalex-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
             if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
@@ -561,7 +561,7 @@
       name		: 	"Hugh Latimer",
       img		:	"LatimerDebater.svg",
       language_zone	:	"english" ,
-      faction		:	"england" ,
+      faction		:	"protestant" ,
       power		:	1 ,
       ability		:	"+1 die for Reformation attempts in England" ,
       committed		: 	0,
@@ -572,7 +572,7 @@
       name		: 	"John Knox",
       img		:	"KnoxDebater.svg",
       language_zone	:	"english" ,
-      faction		:	"england" ,
+      faction		:	"protestant" ,
       power		:	3 ,
       ability		:	"+1 die for Reformation Attempts in England or Scotland" ,
       committed		: 	0,
@@ -583,7 +583,7 @@
       name		: 	"Myles Coverdale",
       img		:	"CoverdaleDebater.svg",
       language_zone	:	"english" ,
-      faction		:	"england" ,
+      faction		:	"protestant" ,
       power		:	2 ,
       ability		:	"Bonus CP for translation in English zone" ,
       committed		: 	0,

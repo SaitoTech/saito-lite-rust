@@ -1975,6 +1975,46 @@ console.log("units length: " + space.units[defender].length);
     return;
   }
 
+  // 1 = yes, 0 = no / maybe
+  canPlayerPlayCard(faction, card) {
+    let player = this.returnPlayerOfFaction(faction);
+    if (this.game.player == player) { 
+      let faction_hand_idx = this.returnFactionHandIdx(player, faction);
+      for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length; i++) {
+        let c = this.game.deck[0].fhand[faction_hand_idx][i];
+  	if (c === card) { return 1; }
+      }
+    }
+    return 0;
+  }
+
+  canPlayerCommitDebater(faction, debater) {
+  
+    if (faction !== "protestant" && faction !== "papacy") { return false; }
+      
+    let already_committed = false;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "papacy" && faction === "papacy") { return false; }
+      if (this.game.state.debaters[i].active == 1 && this.game.state.debaters[i].faction === "protestant" && faction !== "papacy") { return false; }
+      if (this.game.state.debaters[i].key == debater) {
+    
+        let is_mine = false;
+
+        if (this.game.state.debaters[i].owner === "papacy" && faction === "papacy") {
+          is_mine = true;               
+        }
+        if (this.game.state.debaters[i].owner !== "papacy" && faction === "protestant") {
+          is_mine = true;
+        }
+    
+        if (is_mine == true) {
+          if (this.game.state.debaters[i].active == 1) { already_comitted = true; }
+        }
+      }
+    }
+    return !already_committed;
+  } 
+    
 
   canPlayerMoveFormationOverPass(his_self, player, faction) {
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
@@ -2753,12 +2793,12 @@ return;
 
         if (faction === "papacy") {
 	  his_self.addMove("theological_debate");
-          his_self.addMove("counter_or_acknowledge\t" + his_self.returnFactionName(faction) + " calls a theological debate\tdebate");
+          his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
           his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	  his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
         } else {
     	  his_self.addMove("theological_debate");
-          his_self.addMove("counter_or_acknowledge\t" + his_self.returnFactionName(faction) + " calls a theological debate\tdebate");
+          his_self.addMove("counter_or_acknowledge\tProtestants call a theological debate\tdebate");
           his_self.addMove("RESETCONFIRMSNEEDED\tall");
     	  his_self.addMove("pick_first_round_debaters\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
         }

@@ -3451,10 +3451,6 @@ console.log("purging naval units and capturing leader");
 
         if (mv[0] === "player_evaluate_post_naval_battle_retreat") {
 
-console.log("PLAYER EVALUATE POST FIELD BATTLE RETREAT!");
-console.log("loser: " + loser);
-console.log("space: " + spacekey);
-
           this.game.queue.splice(qe, 1);
 
           let loser = mv[1];
@@ -3478,10 +3474,6 @@ console.log("space: " + spacekey);
 
 
         if (mv[0] === "player_evaluate_post_field_battle_retreat") {
-
-console.log("PLAYER EVALUATE POST FIELD BATTLE RETREAT!");
-console.log("loser: " + loser);
-console.log("space: " + spacekey);
 
           this.game.queue.splice(qe, 1);
 
@@ -3596,21 +3588,14 @@ console.log("space: " + spacekey);
 	    }
 	  }
 
-
-console.log("defender is chosen as: " + this.game.state.theological_debate.defender_debater);
-
-
 	  //
 	  // attacker chosen from uncommitted
 	  //
 	  let tad = 0;
 	  if (ad != 0) {
-console.log("ad is: " + ad);
 	    x = this.rollDice(ad) - 1;
-console.log("ROLL 1: " + x);
 	    for (let i = 0; i < this.game.state.debaters.length; i++) {
 	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
-console.log("checking : " + this.game.state.debaters[i].type + " ----> " + ad);
 	        if (x === tad) {
 		  this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
 		  this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
@@ -3620,7 +3605,6 @@ console.log("checking : " + this.game.state.debaters[i].type + " ----> " + ad);
 	    }
 	  } else {
 	    x = this.rollDice(cd) - 1;
-console.log("ROLL 2: " + x);
 	    for (let i = 0; i < this.game.state.debaters.length; i++) {
 	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 1) {
 	        if (x === tad) {
@@ -3632,7 +3616,6 @@ console.log("ROLL 2: " + x);
 	    }
 	  }
 	  
-console.log("attacker is chosen as: " + this.game.state.theological_attacker_debater);
           this.game.state.theological_debate.round2_attacker_debater = this.game.state.theological_debate.attacker_debater;
           this.game.state.theological_debate.round2_defender_debater = this.game.state.theological_debate.defender_debater;
 
@@ -3642,9 +3625,6 @@ console.log("attacker is chosen as: " + this.game.state.theological_attacker_deb
 	  this.displayTheologicalDebate(this.game.state.theological_debate);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.defender_debater, false);
-
-console.log("NA: " +  this.game.state.theological_debate.attacker_debater);
-console.log("ND: " +  this.game.state.theological_debate.defender_debater);
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -3801,10 +3781,6 @@ console.log("ND: " +  this.game.state.theological_debate.defender_debater);
 	      }
 	    }
 	  }
-
-console.log(JSON.stringify(this.game.state.theological_debate));
-console.log("ATTACKERS IS: " + this.game.state.theological_debate.attacker_debater);
-console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debater);
 
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.defender_debater) {
