@@ -141,7 +141,10 @@ class Chat extends ModTemplate {
       this.loadChats();
       let sql;
       for (let i = 0; i < this.groups.length; i++) {
-        sql = `SELECT id, tx FROM txs WHERE publickey = "${this.groups[i].id}" ORDER BY ts DESC LIMIT 100`;
+        sql = `SELECT id, tx
+               FROM txs
+               WHERE publickey = "${this.groups[i].id}"
+               ORDER BY ts DESC LIMIT 100`;
         this.sendPeerDatabaseRequestWithFilter(
           "Archive",
           sql,
@@ -179,7 +182,7 @@ class Chat extends ModTemplate {
     return services;
   }
 
-  respondTo(type, obj) {
+  async respondTo(type, obj) {
     let chat_self = this;
 
     switch (type) {
@@ -204,9 +207,9 @@ class Chat extends ModTemplate {
             {
               text: "Chat",
               icon: "fas fa-comments",
-              callback: function (app, id) {
-                let cmo = chat_self.respondTo("chat-manager-overlay");
-                cmo.render();
+              callback: async function (app, id) {
+                let cmo = await chat_self.respondTo("chat-manager-overlay");
+                await cmo.render();
               },
             },
           ];

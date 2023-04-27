@@ -13,7 +13,8 @@ class Beleaguered extends OnePlayerGameTemplate {
     this.slug = "beleaguered";
     this.description = "Stack all cards by suit from aces to kings to win this game";
     this.categories = "Games Cardgame One-player";
-    this.publisher_message = "developed by Pawel (twitter: @PawelPawlak14). Feel free to pm me with any suggestions/feedback";
+    this.publisher_message =
+      "developed by Pawel (twitter: @PawelPawlak14). Feel free to pm me with any suggestions/feedback";
 
     this.app = app;
     this.status = "Beta";
@@ -52,7 +53,6 @@ class Beleaguered extends OnePlayerGameTemplate {
 
     //Clear board
     this.game.board = {};
-
   }
 
   async initializeHTML(app) {
@@ -109,11 +109,9 @@ class Beleaguered extends OnePlayerGameTemplate {
       },
     });
 
-    this.menu.addChatMenu();
+    await this.menu.addChatMenu();
     this.menu.render();
   }
-
-
 
   getSlotSide(id) {
     if (id.length === 6) {
@@ -435,7 +433,7 @@ class Beleaguered extends OnePlayerGameTemplate {
         );
       }
 
-      if (mv[0] === "lose"){
+      if (mv[0] === "lose") {
         this.game.state.session.round++;
         this.game.state.session.losses++;
         this.game.queue.push("round");

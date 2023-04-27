@@ -679,8 +679,8 @@ class GameTestSuite extends GameTemplate {
   // when it loads to determine which modules support interactions with users
   // through the Arcade interface.
   //
-  respondTo(type) {
-    if (super.respondTo(type) != null) {
+  async respondTo(type) {
+    if ((await super.respondTo(type)) != null) {
       return super.respondTo(type);
     }
 

@@ -155,12 +155,12 @@ class Library extends ModTemplate {
   //
   // check which modules / libraries we care about
   //
-  initialize(app) {
+  async initialize(app) {
     //
     // modules tell us which content to monitor from peers, and which we
     // index ourselves
     //
-    app.modules.getRespondTos("library-collection").forEach((m) => {
+    (await app.modules.getRespondTos("library-collection")).forEach((m) => {
       this.monitor.push(m);
 
       if (!this.library[m.collection]) {
@@ -235,7 +235,7 @@ class Library extends ModTemplate {
               //console.log(" >>> response: " + JSON.stringify(res));
               //console.log(" >>> ");
 
-              library_self.library[m.collection].peers[peer.returnPublicKey()] = res; // res = collection
+              library_self.library[m.collection].peers[peer.publicKey] = res; // res = collection
             }
           },
           peer
@@ -266,7 +266,7 @@ class Library extends ModTemplate {
       return;
     }
 
-    super.handlePeerTransaction(app, tx, peer, mycallback);
+    await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   load() {
@@ -283,7 +283,7 @@ class Library extends ModTemplate {
     this.app.storage.saveOptions();
   }
 
-  checkout(key, sig, publickey, mycallback) {
+  async checkout(key, sig, publickey, mycallback) {
     if (!this.library[key]) {
       return;
     }
@@ -292,7 +292,7 @@ class Library extends ModTemplate {
     let local = false;
     let idx = -1;
 
-    if (publickey === this.app.wallet.returnPublicKey()) {
+    if (publickey === (await this.app.wallet.getPublicKey())) {
       for (let i = 0; i < collection.local.length; i++) {
         if (collection.local[i].sig === sig) {
           idx = i;
@@ -364,7 +364,7 @@ class Library extends ModTemplate {
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
         item.available--;
         this.save();
-        this.app.storage.loadTransactionBySig(sig, mycallback);
+        await this.app.storage.loadTransactionBySig(sig, mycallback);
       }
     }
   }

@@ -5,25 +5,25 @@
  Extends the generic web3 crypto module to add auto-support for cryptos that are
  supported by the Mixin module.
 
-   returnAddress()
-   returnPrivateKey()
-   async returnBalance(address = "")
-   async sendPayment(amount="", recipient="", unique_hash="")
-   async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
+ returnAddress()
+ returnPrivateKey()
+ async returnBalance(address = "")
+ async sendPayment(amount="", recipient="", unique_hash="")
+ async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
 
 
  TODO:
 
  we currently SEND the payments but do not record if the payment has been a success
  so there are failure modes if the effort to send has been unsuccessful. the same
- trace_id will be sent with each request so we should not have multiple payments 
+ trace_id will be sent with each request so we should not have multiple payments
  through.
 
 
 
-**********************************************************************************/
-const CryptoModule = require('./../../../lib/templates/cryptomodule');
-const getUuid = require('uuid-by-string');
+ **********************************************************************************/
+const CryptoModule = require("./../../../lib/templates/cryptomodule");
+const getUuid = require("uuid-by-string");
 
 class MixinModule extends CryptoModule {
 
@@ -63,30 +63,30 @@ class MixinModule extends CryptoModule {
 
   installModule() {
     if (this.mixin) {
-      if (this.app.wallet.wallet.preferred_crypto !== "SAITO" && this.app.wallet.wallet.preferred_crypto !== "") {
+      if (this.app.wallet.preferred_crypto !== "SAITO" && this.app.wallet.preferred_crypto !== "") {
         if (this.mixin.account_created == 0) {
 
-	  //
-	  // not every crypto should trigger account creation
-	  //
-	  let c = this.app.modules.returnModule(this.app.wallet.wallet.preferred_crypto);
-          if (!c.asset_id) { return; }
-	  this.mixin.createAccount();
+          //
+          // not every crypto should trigger account creation
+          //
+          let c = this.app.modules.returnModule(this.app.wallet.preferred_crypto);
+          if (!c.asset_id) {
+            return;
+          }
+          this.mixin.createAccount();
         }
       }
     }
   }
 
   activate() {
-    if (this.mixin.account_created == 0) { 
+    if (this.mixin.account_created == 0) {
       if (this.mixin.mixin.session_id === "") {
         this.mixin.createAccount();
       }
     }
     super.activate();
   }
-
-
 
 
   hasReceivedPayment(amount, sender, receiver, timestamp, unique_hash) {
@@ -97,8 +97,8 @@ class MixinModule extends CryptoModule {
       if (
         this.mixin.deposits[i].trace_id === trace_id
       ) {
-	  return 1; 
-	}
+        return 1;
+      }
     }
 
     for (let i = 0; i < this.options.transfers_inbound.length; i++) {
@@ -112,6 +112,7 @@ class MixinModule extends CryptoModule {
     return 0;
 
   }
+
   hasSentPayment(amount, sender, receiver, timestamp, unique_hash) {
     for (let i = 0; i < this.options.transfers_outbound.length; i++) {
       if (
@@ -125,7 +126,6 @@ class MixinModule extends CryptoModule {
   }
 
 }
-
 
 
 MixinModule.prototype.renderModalSelectCrypto = function(app, mod, cryptomod) {
@@ -146,22 +146,19 @@ MixinModule.prototype.renderModalSelectCrypto = function(app, mod, cryptomod) {
 
     </div>
   `;
-}
-
+};
 
 
 MixinModule.prototype.attachEventsModalSelectCrypto = function(app, mod, cryptomod) {
   let ab = document.querySelector(".mixin_risk_acknowledge");
   ab.onclick = (e) => {
-    cryptomod.modal_overlay.hide(function(){
-      setTimeout(function(){
-        document.querySelector('#settings-dropdown').classList.add("show-right-sidebar");
+    cryptomod.modal_overlay.hide(function() {
+      setTimeout(function() {
+        document.querySelector("#settings-dropdown").classList.add("show-right-sidebar");
       }, 500);
     });
-  }
-}
-
-
+  };
+};
 
 
 /**
@@ -188,7 +185,7 @@ MixinModule.prototype.returnBalance = async function() {
  * @abstract
  * @return {Number}
  */
-MixinModule.prototype.sendPayment = function(amount="", recipient="", unique_hash="") {
+MixinModule.prototype.sendPayment = function(amount = "", recipient = "", unique_hash = "") {
 
   let r = recipient.split("|");
   let ts = new Date().getTime();
@@ -199,7 +196,8 @@ MixinModule.prototype.sendPayment = function(amount="", recipient="", unique_has
   if (r.length >= 2) {
     if (r[2] === "mixin") {
       let opponent_address_id = r[1];
-      let trace_id = this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash, function() {});
+      let trace_id = this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash, function() {
+      });
       this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, trace_id);
       return;
     }
@@ -213,8 +211,8 @@ MixinModule.prototype.sendPayment = function(amount="", recipient="", unique_has
   let withdrawal_address_id = "";
 
   for (let i = 0; i < this.mixin.addresses.length; i++) {
-    if (this.mixin.addresses[i].destination === destination) { 
-      withdrawal_address_exists = 1; 
+    if (this.mixin.addresses[i].destination === destination) {
+      withdrawal_address_exists = 1;
       withdrawal_address_id = this.mixin.addresses[i].address_id;
     }
   }
@@ -229,11 +227,11 @@ MixinModule.prototype.sendPayment = function(amount="", recipient="", unique_has
     this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, unique_hash);
     return unique_hash;
 
-  //
-  // create withdrawal address and save
-  //
+    //
+    // create withdrawal address and save
+    //
   } else {
-  
+
     let mm_self = this;
 
     this.mixin.createWithdrawalAddress(mm_self.asset_id, destination, "", "", (d) => {
@@ -282,7 +280,7 @@ MixinModule.prototype.returnPrivateKey = function() {
  * @param {timestamp} to - timestamp after which the transaction was sent
  * @return {Boolean}
  */
-MixinModule.prototype.receivePayment = function(amount="", sender="", recipient="", timestamp=0, unique_hash="") {
+MixinModule.prototype.receivePayment = function(amount = "", sender = "", recipient = "", timestamp = 0, unique_hash = "") {
 
   //
   // mixin transfers will be registered with a specific TRACE_ID
@@ -295,8 +293,11 @@ MixinModule.prototype.receivePayment = function(amount="", sender="", recipient=
   //
   // the mixin module might have a record of this already stored locally
   //
-  if (this.hasReceivedPayment(amount, sender, recipient, timestamp, unique_hash) == 1) { return 1; }
-  this.mixin.fetchDeposits(this.asset_id, this.ticker, (d) => {});
+  if (this.hasReceivedPayment(amount, sender, recipient, timestamp, unique_hash) == 1) {
+    return 1;
+  }
+  this.mixin.fetchDeposits(this.asset_id, this.ticker, (d) => {
+  });
   return 0;
 
 };

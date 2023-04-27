@@ -144,7 +144,7 @@ class League extends ModTemplate {
   //////////////////////////
   // Rendering Components //
   //////////////////////////
-  render() {
+  async render() {
     let app = this.app;
     let mod = this.mod;
 
@@ -153,7 +153,7 @@ class League extends ModTemplate {
     this.addComponent(this.main);
     this.addComponent(this.header);
 
-    super.render(app, this);
+    await super.render(app, this);
   }
 
   canRenderInto(qs) {
@@ -166,7 +166,7 @@ class League extends ModTemplate {
     return false;
   }
 
-  renderInto(qs) {
+  async renderInto(qs) {
     if (qs == ".redsquare-sidebar" || qs == ".arcade-leagues") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
@@ -174,9 +174,9 @@ class League extends ModTemplate {
       }
       this.styles = ["/league/style.css", "/arcade/style.css"];
       this.attachStyleSheets();
-      this.renderIntos[qs].forEach((comp) => {
-        comp.render();
-      });
+      for (const comp of this.renderIntos[qs]) {
+        await comp.render();
+      }
     }
   }
 
@@ -207,13 +207,18 @@ class League extends ModTemplate {
         if (this.debug) {
           console.log("Load all leagues");
         }
-        sql = `SELECT * FROM leagues WHERE status = 'public' OR id = '${league_id}'`;
+        sql = `SELECT *
+               FROM leagues
+               WHERE status = 'public'
+                  OR id = '${league_id}'`;
       } else {
         if (this.debug) {
           console.log("Load my leagues");
         }
         let league_list = this.leagues.map((x) => `'${x.id}'`).join(", ");
-        sql = `SELECT * FROM leagues WHERE id IN (${league_list})`;
+        sql = `SELECT *
+               FROM leagues
+               WHERE id IN (${league_list})`;
       }
       //
       // load any requested league we may not have in options file
@@ -260,7 +265,11 @@ class League extends ModTemplate {
         let cutoff = new Date().getTime() - 24 * 60 * 60 * 1000;
         this.sendPeerDatabaseRequestWithFilter(
           "League",
-          `SELECT * FROM players WHERE (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}') AND league_id IN (${league_list}) ORDER BY league_id, score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
+          `SELECT *
+           FROM players
+           WHERE (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}')
+             AND league_id IN (${league_list})
+           ORDER BY league_id, score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
           (res) => {
             if (res?.rows) {
               let league_id = 0;
@@ -287,7 +296,7 @@ class League extends ModTemplate {
                 //
                 rank++;
 
-                if (p.publickey == this.app.wallet.returnPublicKey()) {
+                if (p.publickey == this.publicKey) {
                   if (p.games_finished > 0) {
                     league.rank = rank;
                   } else {
@@ -438,7 +447,7 @@ class League extends ModTemplate {
     this.app.options.leagues = [];
 
     for (let league of this.leagues) {
-      if (league.rank >= 0 || league.admin === this.app.wallet.returnPublicKey()) {
+      if (league.rank >= 0 || league.admin === this.publicKey) {
         let newLeague = JSON.parse(JSON.stringify(league));
         delete newLeague.players;
         this.app.options.leagues.push(newLeague);
@@ -457,12 +466,12 @@ class League extends ModTemplate {
   /////////////////////
   // create a league //
   /////////////////////
-  createCreateTransaction(obj = null) {
+  async createCreateTransaction(obj = null) {
     if (obj == null) {
       return null;
     }
 
-    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     newtx.msg = this.validateLeague(obj);
     newtx.msg.module = "League";
     newtx.msg.request = "league create";
@@ -576,7 +585,9 @@ class League extends ModTemplate {
       league[field] = new_data;
     }
 
-    let sql = `UPDATE OR IGNORE leagues SET ${field} = $data WHERE id = $id`;
+    let sql = `UPDATE OR IGNORE leagues
+               SET ${field} = $data
+               WHERE id = $id`;
     let params = {
       $id: league_id,
       $data: new_data,
@@ -621,7 +632,10 @@ class League extends ModTemplate {
       league[field] = new_data;
     }
 
-    let sql = `UPDATE OR IGNORE players SET ${field} = $data WHERE league_id = $league_id AND publickey = $publickey`;
+    let sql = `UPDATE OR IGNORE players
+               SET ${field} = $data
+               WHERE league_id = $league_id
+                 AND publickey = $publickey`;
     let params = {
       $data: new_data,
       $league_id: league_id,
@@ -648,7 +662,10 @@ class League extends ModTemplate {
 
   async receiveQuitTransaction(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
-    let sql = `DELETE FROM players WHERE league_id=$league AND publickey=$publickey`;
+    let sql = `DELETE
+               FROM players
+               WHERE league_id = $league
+                 AND publickey = $publickey`;
     let params = {
       $league: txmsg.league_id,
       $publickey: tx.transaction.from[0].add,
@@ -671,16 +688,22 @@ class League extends ModTemplate {
 
     return this.app.wallet.signTransaction(newtx);
   }
+
   async receiveRemoveTransaction(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
-    let sql1 = `DELETE FROM leagues WHERE id=$league_id AND admin=$publickey`;
+    let sql1 = `DELETE
+                FROM leagues
+                WHERE id = $league_id
+                  AND admin = $publickey`;
     let params1 = {
       $league_id: txmsg.league_id,
       $publickey: tx.transaction.from[0].add,
     };
     this.app.storage.executeDatabase(sql1, params1, "league");
 
-    let sql2 = `DELETE FROM players WHERE league_id='$league_id'`;
+    let sql2 = `DELETE
+                FROM players
+                WHERE league_id = '$league_id'`;
     let params2 = { $league_id: txmsg.league_id };
     this.app.storage.executeDatabase(sql2, params2, "league");
 
@@ -827,7 +850,10 @@ class League extends ModTemplate {
   /////////////////////
   /////////////////////
   async getRelevantLeagues(game, target_league = "") {
-    let sql = `SELECT * FROM leagues WHERE game = $game AND (admin = "" OR id = $target)`;
+    let sql = `SELECT *
+               FROM leagues
+               WHERE game = $game
+                 AND (admin = "" OR id = $target)`;
 
     let params = { $game: game, $target: target_league };
 
@@ -846,7 +872,10 @@ class League extends ModTemplate {
   }
 
   async getPlayersFromLeague(league_id, players) {
-    let sql2 = `SELECT * FROM players WHERE league_id = ? AND publickey IN (`;
+    let sql2 = `SELECT *
+                FROM players
+                WHERE league_id = ?
+                  AND publickey IN (`;
     for (let pk of players) {
       sql2 += `'${pk}', `;
     }
@@ -1020,7 +1049,10 @@ class League extends ModTemplate {
       return 0;
     }
 
-    let sql = `UPDATE OR IGNORE players SET ${field} = (${field} + ${amount}), ts = $ts WHERE publickey = $publickey AND league_id = $league_id`;
+    let sql = `UPDATE OR IGNORE players
+               SET ${field} = (${field} + ${amount}), ts = $ts
+               WHERE publickey = $publickey
+                 AND league_id = $league_id`;
     let params = {
       $ts: new Date().getTime(),
       $publickey: publickey,
@@ -1051,7 +1083,11 @@ class League extends ModTemplate {
       }
     }
 
-    let sql = `UPDATE players SET score = $score, ts = $ts WHERE publickey = $publickey AND league_id = $league_id`;
+    let sql = `UPDATE players
+               SET score = $score,
+                   ts    = $ts
+               WHERE publickey = $publickey
+                 AND league_id = $league_id`;
     let params = {
       $score: playerObj.score,
       $ts: new Date().getTime(),
@@ -1235,7 +1271,11 @@ class League extends ModTemplate {
     let cutoff = new Date().getTime() - 24 * 60 * 60 * 1000;
     this.sendPeerDatabaseRequestWithFilter(
       "League",
-      `SELECT * FROM players WHERE league_id = '${league_id}' AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}') ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
+      `SELECT *
+       FROM players
+       WHERE league_id = '${league_id}'
+         AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}')
+       ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
       (res) => {
         if (res?.rows) {
           for (let p of res.rows) {
@@ -1292,8 +1332,19 @@ class League extends ModTemplate {
   // convenience functions for database inserts //
   ////////////////////////////////////////////////
   async leagueInsert(obj) {
-    let sql = `INSERT OR REPLACE INTO leagues (id, game, name, admin, contact, status, description, ranking_algorithm, default_score) 
-                    VALUES ( $id, $game, $name, $admin, $contact, $status, $description, $ranking_algorithm, $default_score )`;
+    let sql = `INSERT
+    OR REPLACE INTO leagues (id, game, name, admin, contact, status, description, ranking_algorithm, default_score) 
+                    VALUES (
+    $id,
+    $game,
+    $name,
+    $admin,
+    $contact,
+    $status,
+    $description,
+    $ranking_algorithm,
+    $default_score
+    )`;
     let params = {
       $id: obj.id,
       $game: obj.game,
@@ -1312,8 +1363,14 @@ class League extends ModTemplate {
   }
 
   async playerInsert(league_id, obj) {
-    let sql = `INSERT OR IGNORE INTO players (league_id, publickey, score, ts) 
-                                VALUES ( $league_id, $publickey, $score, $ts)`;
+    let sql = `INSERT
+    OR IGNORE INTO players (league_id, publickey, score, ts) 
+                                VALUES (
+    $league_id,
+    $publickey,
+    $score,
+    $ts
+    )`;
     let params = {
       $league_id: league_id,
       $publickey: obj.publickey,
@@ -1328,7 +1385,9 @@ class League extends ModTemplate {
   }
 
   async pruneOldPlayers() {
-    let sql = `DELETE FROM players WHERE ts < ?`;
+    let sql = `DELETE
+               FROM players
+               WHERE ts < ?`;
     let cutoff = new Date().getTime() - this.inactive_player_cutoff;
     await this.app.storage.executeDatabase(sql, [cutoff], "league");
   }

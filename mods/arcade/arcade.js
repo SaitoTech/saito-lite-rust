@@ -189,7 +189,11 @@ class Arcade extends ModTemplate {
     //
     // load open games from server
     //  ( status = "open" OR status = "private" ) AND
-    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND status = 'over') ORDER BY created_at DESC`;
+    let sql = `SELECT *
+               FROM games
+               WHERE created_at > ${cutoff1}
+                  OR (created_at > ${cutoff2} AND status = 'over')
+               ORDER BY created_at DESC`;
     await this.sendPeerDatabaseRequestWithFilter("Arcade", sql, async (res) => {
       if (res.rows) {
         for (let record of res.rows) {
@@ -971,7 +975,11 @@ class Arcade extends ModTemplate {
 
     await this.changeGameStatus(txmsg.game_id, "over");
 
-    let sql = `UPDATE games SET winner = $winner, method = $method, time_finished = $ts WHERE game_id = $game_id`;
+    let sql = `UPDATE games
+               SET winner        = $winner,
+                   method        = $method,
+                   time_finished = $ts
+               WHERE game_id = $game_id`;
     let params = {
       $winner: txmsg.winner || "",
       $method: txmsg.reason,
@@ -997,7 +1005,9 @@ class Arcade extends ModTemplate {
       game.msg.ts = txmsg.step.ts;
     }
 
-    let sql = `UPDATE games SET step = $step WHERE game_id = $game_id`;
+    let sql = `UPDATE games
+               SET step = $step
+               WHERE game_id = $game_id`;
     let params = {
       $step: JSON.stringify(txmsg.step),
       $game_id: txmsg.game_id,
@@ -1010,7 +1020,7 @@ class Arcade extends ModTemplate {
     //And make sure archive saves all the tx's under the game id
 
     //this.app.storage.saveTransactionByKey(txmsg.game_id, tx);
-    this.app.storage.saveTransaction(tx, txmsg.module + "_" + txmsg.game_id);
+    await this.app.storage.saveTransaction(tx, txmsg.module + "_" + txmsg.game_id);
     //}
   }
 
@@ -1933,7 +1943,11 @@ class Arcade extends ModTemplate {
     console.log(`${game_mod.name}_${game_mod.game.id} from ${game_mod.game.originator}`);
     //this.app.storage.loadTransactionsByKeys([game_mod.game.id], game_mod.name, 100, callback);
 
-    let sql = `SELECT * FROM txs WHERE type = '${game_mod.name}_${game_mod.game.id}' AND publickey = '${game_mod.game.originator}' ORDER BY id ASC`;
+    let sql = `SELECT *
+               FROM txs
+               WHERE type = '${game_mod.name}_${game_mod.game.id}'
+                 AND publickey = '${game_mod.game.originator}'
+               ORDER BY id ASC`;
     this.sendPeerDatabaseRequestWithFilter("Archive", sql, async (res) => {
       if (res.rows) {
         console.log("sql rows: " + res.rows.length);

@@ -108,7 +108,7 @@ class Scotland extends GameTemplate {
   }
 
   // Opt out of letting League create a default
-  respondTo(type) {
+  async respondTo(type) {
     if (type == "default-league") {
       return null;
     }

@@ -29,7 +29,7 @@ class Blackjack extends GameTableTemplate {
     return this;
   }
 
-  initializeHTML(app) {
+  async initializeHTML(app) {
     if (!this.browser_active) {
       return;
     }
@@ -76,7 +76,7 @@ class Blackjack extends GameTableTemplate {
     });
      ****/
 
-    this.menu.addChatMenu();
+    await this.menu.addChatMenu();
     this.menu.render();
 
     this.log.render();

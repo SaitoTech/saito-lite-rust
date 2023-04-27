@@ -67,7 +67,7 @@ class Jaipur extends GameTemplate {
       },
     });
 
-    this.menu.addChatMenu();
+    await this.menu.addChatMenu();
     this.menu.render();
 
     this.log.render();

@@ -140,7 +140,9 @@ class Registry extends ModTemplate {
     }
 
     const where_statement = `identifier in (${missing_keys.join(",")})`;
-    const sql = `select * from records where ${where_statement}`;
+    const sql = `select *
+                 from records
+                 where ${where_statement}`;
 
     this.sendPeerDatabaseRequestWithFilter(
       "Registry",
@@ -219,7 +221,9 @@ class Registry extends ModTemplate {
     }
 
     const where_statement = `publickey in (${missing_keys.join(",")})`;
-    const sql = `select * from records where ${where_statement}`;
+    const sql = `select *
+                 from records
+                 where ${where_statement}`;
 
     this.sendPeerDatabaseRequestWithFilter(
       "Registry",
@@ -320,7 +324,7 @@ class Registry extends ModTemplate {
     );
   }
 
-  respondTo(type = "") {
+  async respondTo(type = "") {
     if (type == "saito-return-key") {
       return {
         returnKey: (data = null) => {
@@ -633,27 +637,24 @@ class Registry extends ModTemplate {
     signer = "",
     lc = 1
   ) {
-    let sql = `INSERT INTO records (
-        identifier, 
-        publickey, 
-        unixtime, 
-        bid, 
-        bsh, 
-        lock_block, 
-        sig,
-        signer, 
-        lc
-      ) VALUES (
-        $identifier, 
-        $publickey,
-        $unixtime, 
-        $bid, 
-        $bsh, 
-        $lock_block, 
-        $sig, 
-        $signer, 
-        $lc
-      )`;
+    let sql = `INSERT INTO records (identifier,
+                                    publickey,
+                                    unixtime,
+                                    bid,
+                                    bsh,
+                                    lock_block,
+                                    sig,
+                                    signer,
+                                    lc)
+               VALUES ($identifier,
+                       $publickey,
+                       $unixtime,
+                       $bid,
+                       $bsh,
+                       $lock_block,
+                       $sig,
+                       $signer,
+                       $lc)`;
     let params = {
       $identifier: identifier,
       $publickey: publickey,
