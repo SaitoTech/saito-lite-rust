@@ -1,11 +1,17 @@
 
-module.exports = (app, mod, group) => {
+module.exports = (app, mod, group, isStatic=false) => {
 
   if (!group) { return ""; }
   if (!group.name) { group.name = ""; }
 
+  let class_name = "chat-container";
+
+  if (isStatic) {
+    class_name = "chat-static";
+  }
+
   let html = `
-      <div class="chat-container chat-popup chat-popup-${group.id}" id="chat-popup-${group.id}">
+      <div class="${class_name} chat-popup chat-popup-${group.id}" id="chat-popup-${group.id}">
 
         <div class="chat-header" id="chat-header-${group.id}">
           <i  class="far fa-comment-dots"></i>

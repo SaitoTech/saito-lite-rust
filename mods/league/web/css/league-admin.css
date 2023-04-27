@@ -377,6 +377,9 @@ i.link_icon.private {
   line-height: 3rem;
 }
 
+league-edit-overlay-box {
+  width: 70vw;
+}
 
 .league-edit-overlay-box .label {
   font-weight: bold;
@@ -384,8 +387,13 @@ i.link_icon.private {
 }
 
 .league-edit-overlay-box .box {
-  border: 1px solid black;
+  border: 1px solid var(--saito-border-color);
+  padding: 1rem;
   margin-bottom: 1rem;
+  height: 70vh;
+  width: 70vw;
+  max-height: 70vh;
+  overflow: auto;
 }
 
 /* LIST SELECTION MODAL */

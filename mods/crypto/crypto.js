@@ -33,9 +33,7 @@ class Crypto extends ModTemplate {
       // only show if games are winable
       //
       let gm = this.app.modules.returnActiveModule();
-      if (gm.winable == 0) { return null; }
-      if (gm.cooperative == 1) { return null; }
-      if (gm.losable == 0) { return null; }
+      if (!gm.can_bet) { return null; }
 
       let ac = this.app.wallet.returnActivatedCryptos();
       let cm = this;

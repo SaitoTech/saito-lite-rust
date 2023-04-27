@@ -91,6 +91,7 @@ class Invite {
       let defaultOptions = game_mod.returnDefaultGameOptions();
       let defaultKeys = Object.keys(defaultOptions);
       let inviteKeys = Object.keys(txmsg.options);
+
       if (defaultKeys.length == inviteKeys.length){
         for (const key of defaultKeys){
           if (defaultOptions[key] !== txmsg.options[key] && !key.includes("game-wizard-players")){
@@ -103,6 +104,10 @@ class Invite {
         this.invite_data.game_type = "custom game";
       }
 
+      if (this.invite_data.game_type == "custom game") {
+        console.log("Arcade invite sanity check:");
+        console.log(JSON.stringify(defaultOptions), JSON.stringify(txmsg.options));
+      }
 
       //Crypto Game
       if (txmsg.options?.crypto) {

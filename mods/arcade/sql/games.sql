@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS games (
   created_at INTEGER,
   time_finished INTEGER DEFAULT 0,
   step INTEGER DEFAULT 0,
-  winner TEXT,
+  winner TEXT DEFAULT NULL,
   method VARCHAR(100) DEFAULT "",
   UNIQUE (game_id),
   PRIMARY KEY (id ASC)

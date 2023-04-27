@@ -17,6 +17,11 @@ class WelcomeOverlay {
   }
 
   attachEvents() {
+    try {
+      document.querySelector(".welcome_overlay").onclick = () => { this.overlay.hide(); };
+    } catch (err) {
+      console.log(err);
+    }
   }
 
 }

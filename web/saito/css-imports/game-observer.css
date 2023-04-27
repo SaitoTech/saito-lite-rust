@@ -5,21 +5,18 @@
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
-  /*height: 20vh;*/
   width: 450px;
-  background-color: #444;
-  color: #ccc;
-  font-size: max(4vh, 16px);
+  height: 180px;
+  background-color: #111D;
+  color: ghostwhite;
+  font-size: max(3vh, 16px);
   text-align: center;
-  padding: 0.25em 0;
+  padding: 0.5em;
   z-index: 99999999;
+  border-radius: 15px;
+  border: 2px solid #AAA;
 }
 
-.game-observer-hud > div{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-}
 
 .game-observer-hud .status{
   height: fit-content;
@@ -40,10 +37,11 @@
 
 #obstatus {
   font-size: max(2.5vh, 14px);
+  height: 40px;
 }
 
 .game-observer-controls {
-  height: 10vh;
+  height: 70px;
   width: 100%;
   cursor: pointer;
   opacity: 0.8;
@@ -58,5 +56,8 @@
   animation: flashme 1s infinite cubic-bezier(0.4, 0, 1, 1);
 }
 
+.unavailable {
+  color: #444;
+}
 
 

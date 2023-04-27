@@ -158,7 +158,6 @@ class Solitrio extends OnePlayerGameTemplate {
     this.menu.addChatMenu();
     this.menu.render();
 
-
   }
 
 
@@ -568,7 +567,7 @@ class Solitrio extends OnePlayerGameTemplate {
           this.handToBoard();        
           this.displayBoard(50);
           this.displayUserInterface();  
-
+          this.checkBoardStatus();
         }        
         return 0;
       }

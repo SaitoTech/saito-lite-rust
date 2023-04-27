@@ -1,5 +1,5 @@
 var saito = require("../../lib/saito/saito");
-var GameTemplate = require("../../lib/templates/gametemplate");
+const OnePlayerGameTemplate = require('../../lib/templates/oneplayergametemplate');
 const JSON = require("json-bigint");
 const MidnightGameRulesTemplate = require('./lib/midnight-game-rules.template');
 const MidnightBook = require("./lib/midnight-book");
@@ -7,7 +7,7 @@ const MidnightBook = require("./lib/midnight-book");
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
-class Midnight extends GameTemplate {
+class Midnight extends OnePlayerGameTemplate {
   constructor(app) {
     super(app);
 
@@ -16,8 +16,6 @@ class Midnight extends GameTemplate {
 
     this.description = "Experimental Interactive Fiction demo";
     this.categories = "Games Roleplaying One-player";
-    this.maxPlayers = 1;
-    this.minPlayers = 1;
     this.app = app;
 
   }

@@ -132,7 +132,7 @@ class VideoBox {
 
   renderPlaceholder(placeholder_info = "negotiating peer connection") {
     if (!document.querySelector(`#stream${this.stream_id}`)) {
-      this.app.browser.addElementToClass(
+      this.app.browser.prependElementToClass(
         videoBoxTemplate(this.stream_id, false),
         this.containerClass
       );

@@ -9,14 +9,22 @@ body {
   height: 100vh;
 }
 
-.gameboard {
-  position: absolute;
+.main { 
   background-image: url(/saito/img/arcade/greenfelt.jpg);
   background-size: cover;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
 }
 
+.gameboard {
+  position: absolute;
+  width: 100vw;
+  height: calc(100vh - 300px);
+  display: grid;
+  top: 45px;
+  grid-template-rows: 1fr 1fr;
+}
+
+img.cardimg {
+  width: 100%;
+}
