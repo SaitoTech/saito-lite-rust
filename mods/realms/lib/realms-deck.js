@@ -11,7 +11,7 @@ class RealmsDeck {
 
 		deck["b001"] = {
 			name: "Unguided Spirit",
-			type: "Creature - Spirit",
+			type: "creature",
 			color: "blue",
 			cost: ["*", "*", "*", "blue"],
 			power: 3,
@@ -37,7 +37,7 @@ class RealmsDeck {
 
 		deck["b003"] = {
 			name: "Fake Destiny",
-			type: "Instant",
+			type: "instant",
 			color: "blue",
 			cost: ["*", "blue"],
 			text: `Send back a creature of your choosing to its Master's hand. If its Soul value is 3 or less, you get Foresight 1. 
@@ -47,7 +47,7 @@ class RealmsDeck {
 
 		deck["b004"] = {
 			name: "Luminous Being",
-			type: "Creature - Horror",
+			type: "creature",
 			color: "blue",
 			cost: ["*", "*", "*", "*", "*", "blue", "blue"],
 			power: 7,
@@ -62,7 +62,7 @@ class RealmsDeck {
 
 		deck["b005"] = {
 			name: "Symbiotic Possesion",
-			type: "Instant",
+			type: "instant",
 			color: "blue",
 			cost: ["*", "*", "blue"],
 			text: "Chose a creature, for the rest of the turn it becomes a 5/5 wisdom ghost.",
@@ -73,7 +73,7 @@ class RealmsDeck {
 
 		deck["b006"] = {
 			name: "Lakeshire Hippogriff",
-			type: "Creature - Hippogriff",
+			type: "creature",
 			color: "blue",
 			cost: ["*", "*", "*", "*", "*", "blue"],
 			power: 3,
@@ -87,7 +87,7 @@ class RealmsDeck {
 
 		deck["b007"] = {
 			name: "Deformed Scarecrow",
-			type: "Creature - Zombie Horror",
+			type: "creature",
 			color: "blue",
 			cost: ["*", "*", "blue"],
 			power: 2,
@@ -114,7 +114,7 @@ class RealmsDeck {
 
 		deck["w001"] = {
 			name: "Shellring Vindicator",
-			type: "Creature - Human Rogue",
+			type: "creature",
 			color: "white",
 			cost: ["*", "*", "*", "white"],
 			power: 3,
@@ -126,7 +126,7 @@ class RealmsDeck {
 
 		deck["w002"] = {
 			name: "Triumphant Hippogriff",
-			type: "Creature - Hippogriff",
+			type: "creature",
 			color: "white",
 			cost: ["*", "*", "*", "white"],
 			power: 2,
@@ -139,7 +139,7 @@ class RealmsDeck {
 
 		deck["w003"] = {
 			name: "Shellring Guard",
-			type: "Creature - Human",
+			type: "creature",
 			color: "white",
 			cost: ["*", "*", "white"],
 			power: 1,
@@ -152,7 +152,7 @@ class RealmsDeck {
 
 		deck["w004"] = {
 			name: "Shellring Official",
-			type: "Creature - Human",
+			type: "creature",
 			color: "white",
 			cost: ["*", "white"],
 			power: 1,
@@ -164,7 +164,7 @@ class RealmsDeck {
 
 		deck["w005"] = {
 			name: "Mastodon Rider",
-			type: "Creature - Human",
+			type: "creature",
 			color: "white",
 			cost: ["*", "*", "*", "*", "white"],
 			power: 2,
@@ -176,7 +176,7 @@ class RealmsDeck {
 
 		deck["w006"] = {
 			name: "Haven Judicator",
-			type: "Creature - Angel",
+			type: "creature",
 			color: "white",
 			cost: ["*", "*", "white"],
 			power: 3,
@@ -189,7 +189,7 @@ class RealmsDeck {
 
 		deck["w007"] = {
 			name: "Burned Walker",
-			type: "Instant",
+			type: "instant",
 			color: "white",
 			cost: ["*", "*", "*", "white"],
 			text: "Choose an attacking creature and destroy it.",
@@ -199,7 +199,7 @@ class RealmsDeck {
 
 		deck["w008"] = {
 			name: "Trickster Spirit",
-			type: "Creature - Spirit",
+			type: "creature",
 			color: "white",
 			cost: ["*", "*", "*", "*", "*", "white"],
 			power: 2,
@@ -217,8 +217,29 @@ class RealmsDeck {
 			img: this.card_img_dir + "/035_steppe.png",
 		};
 
+
+		deck['c001'] = {
+			name: "Hollow Battlegear", 
+			type: "artifact",
+			color: "Colorless",
+			cost: ['*','*','*'],
+			power: 4,
+			toughness: 3,
+			properties: ['wariness'],
+			text: `Wariness - Recruit 1 (Flip as many creatures as you like, each must at leas posses more than 1 in strength: 
+				This Vessel turns into a Relic creature until end of turn.)`,
+			lore: `"Make the wyrm hurt like hell if he swallows me."-Lydda Nightblade, to the royal armorer`,
+			img: this.card_img_dir + "/031_hollow_battlegear.png",
+	    };
+
+
 		return deck;
 	}
+
+	/*
+	In the following two functions, I define deck as a array and as an object to demonstrate that they are treated equivalently by the game engine
+	So, for any game where are deck does not consist of completely unique cards (like a jokerless poker deck) we can use an intermediary card_library with access codes
+	*/
 
 	returnBluishDeck() {
 		var deck = [];
@@ -246,6 +267,7 @@ class RealmsDeck {
 			deck.push("w006");
 			deck.push("w007");
 		}
+		deck.push("c001");
 		return deck;
 
 	}
@@ -278,7 +300,7 @@ class RealmsDeck {
 			deck[index++] = "b006";
 			deck[index++] = "b007";
 		}
-
+		deck[index++] = "c001";
 		return deck;
 	}
 	/*
@@ -438,7 +460,7 @@ returnGreenDeck() {
 
     deck['g004'] 	= { 
 	name: "Forest Dreamcatcher",
-	type: "Enchatment",
+	type: "Enchantment",
 	color: "green"	,
 	cost: ['*','*','*','*','*','red']	,
 	text: "At the start of the batlte, during your turn, pick one of the following —
@@ -517,26 +539,6 @@ returnGreenDeck() {
 
   }
 
- returnColorLessDeck() {
-
-    var deck = {};
- 
-deck['c001'] 	= {
-	name: "Hollow Battlegear", 
-	type: "Artifact - Vehicle",
-	color: "Colorless"	,
-	cost: ['*','*','*'] 	,
-	power: 4	,
-	toughness: 3,
-	properties: ['Wariness']
-	text: ""Wariness - Recruit 1 (Flip as many creatures as you like, each must at leas posses more than 1 in strength: 
-		This Vessel turns into a Relic creature until end of turn.)"	,
-	lore: ""Make the wyrm hurt like hell if he swallows me."-Lydda Nightblade, to the royal armorer"	,
-	img: this.card_img_dir + "/sample.png",
-    }
-
-	return deck;
-}
 */
 }
 
