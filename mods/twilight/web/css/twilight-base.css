@@ -271,8 +271,7 @@ body {
   display: grid;
   width: 100vw;
   height: 100vh;
-  overflow: auto;
-
+  /*overflow: auto; We don't want scroll bars showing up*/
   margin-top: unset;
 }
 
