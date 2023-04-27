@@ -1,0 +1,116 @@
+.build-overlay {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  posiiton: relative;
+  gap: 3rem;
+  padding: 3rem;
+}
+
+.build-overlay-title {
+  text-align: center;
+  font-size: 3rem;
+}
+
+.items-container {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  font-size: 1.7rem;
+  overflow:hidden auto;
+  posiiton: relative;
+  margin-bottom: 0rem;
+  position: relative;
+  padding: 3rem
+}
+
+
+.item-row {
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+  position: relative;
+  transition: all 0.1s ease-in-out;
+}
+
+.item-row:hover::after {
+  content: "Build";
+  width: 100%;
+  height: 13rem;
+  border: 1px solid #331800;
+  position: absolute;
+  background: #ab815f;
+  cursor: pointer;
+  line-height: 13rem;
+  border-radius: 0.5rem;
+  opacity: 0.9;
+  z-index: 2;
+  white-space: pre;
+  word-wrap: break-word;
+  font-size: 2.5rem;
+}
+
+.item-development-card:hover::after {
+  content: "Buy development card";
+}
+
+.item-row.disabled .item-img{
+  filter:grayscale(1);
+}
+
+.item-row.disabled:hover::after {
+  content: "Not enough resources";
+  cursor: not-allowed;
+}
+
+.item-column.item-goods {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  width: 8rem;
+}
+
+.cards-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.cards-container img {
+  height: 13rem;
+}
+
+.item-img {
+  height: 8rem;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.item-road  .item-img {
+  margin-left: 1rem!important;
+  height: 6rem !important;
+}
+
+.card-disabled {
+  opacity: 0.5;
+}
+
+@media screen and (max-width: 768px) {
+  .cards-container {
+    gap: 0rem;
+    
+  }
+  
+  .item-row {
+    gap: 5rem;
+  }
+  
+  .cards-container img{
+    margin-left: -4rem;
+  }
+}

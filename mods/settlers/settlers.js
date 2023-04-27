@@ -12,6 +12,7 @@ const SettlersPlayer = require("./lib/src/settlers-player");
 const SettlersState = require("./lib/src/settlers-state");
 const SettlersActions = require("./lib/src/settlers-actions");
 const SettlersInit = require("./lib/src/settlers-init");
+const BuildOverlay = require("./lib/overlays/build");
 
 //////////////////
 // CONSTRUCTOR  //
@@ -46,6 +47,7 @@ class Settlers extends GameTemplate {
     this.grace_window = 24;
     // temp variable to help with post-splash flash
     this.currently_active_player = 0;
+    this.build = new BuildOverlay(this.app, this);
   }
 
        
