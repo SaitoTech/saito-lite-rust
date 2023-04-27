@@ -417,8 +417,11 @@ alert("Not Implemented");
 	    his_self.endTurn();
 
 	  }
+
+	  return 0;
         }
-	return 0;
+
+	return 1;	
       }
     }
     deck['209'] = { 

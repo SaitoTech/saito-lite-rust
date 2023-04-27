@@ -174,6 +174,8 @@
   //
   resetPlayerTurn(player_num) {
 
+console.log("RESET PLAYER TURN");
+
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
     this.game.state.tmp_protestant_reformation_bonus = 0;
@@ -2692,6 +2694,34 @@ return;
         his_self.language_zone_overlay.hide();
 
         let id = $(this).attr("id");
+
+	if (id === "french" && his_self.canPlayerCommitDebater("protestant", "calvin-debater") && his_self.game.player === his_self.returnPlayerOfFaction("protestant")) {
+
+          let msg = "Use Calvin Debater Bonus +1 Attempt:";
+          let html = '<ul>';
+          html += '<li class="option" style="" id="yes">Yes, Commit Calvin</li>';
+          html += '<li class="option" style="" id="no">No</li>';
+          html += '</ul>';
+
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+            let id = $(this).attr("id");
+
+	    if (id === "yes") {
+	      his_self.addMove("protestant_reformation\t"+player+"\tfrench");
+	    }
+	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
+	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
+	    his_self.endTurn();
+
+	    return 0;
+	  });
+
+	  return 0;
+        }
+
 
 	if (id === "german" && his_self.canPlayerCommitDebater("protestant", "carlstadt-debater") && his_self.game.player === his_self.returnPlayerOfFaction("protestant")) {
 

@@ -107,7 +107,7 @@
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "zwingly-debater")) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "zwingli-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player && ["zurich","basel","innsbruck","strasburg","besancon","geneva","trent","salzburg","augsburg"].includes(spacekey)) { 
            return 1;
@@ -116,7 +116,7 @@
         return 0;
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu == "ulrich_zwingli") {
+        if (menu == "protestant_reformation") {
           his_self.addMove("ulrich_zwingli");
           his_self.endTurn();
         } 
@@ -124,6 +124,7 @@
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] == "ulrich_zwingli") {
+	  his_self.commitDebater("protestant", "zwingli-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
 	}
@@ -152,14 +153,14 @@
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "bucer-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
-	  if (p === his_self.game.player && ["basel","innsbruck","strasburg","besancon","geneva","trent","salzburg","augsburg"].includes(spacekey)) { 
+	  if (p === his_self.game.player && ["strasburg","zurich","basel","geneva","dijon","besancon","stdizier","metz","liege","trier","mainz","nuremberg","worms","augsburg"].includes(spacekey)) { 
            return 1;
           }
         }
         return 0;
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu == "martin_bucer") {
+        if (menu == "protestant_reformation") {
           his_self.addMove("martin_bucer");
           his_self.endTurn();
         } 
@@ -167,6 +168,7 @@
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] == "martin_bucer") {
+	  his_self.commitDebater("protestant", "bucer-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
 	}
@@ -201,7 +203,7 @@
         return 0;
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu == "oekolampadius") {
+        if (menu == "protestant_reformation") {
           his_self.addMove("oekolampadius");
           his_self.endTurn();
         } 
@@ -209,6 +211,7 @@
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] == "oekolampdius") {
+	  his_self.commitDebater("protestant", "oekolampdius-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
 	}
@@ -324,6 +327,22 @@
       power		:	3 ,
       ability		:	"+1 die in Debate Attacks" ,
       committed		: 	0,
+      //
+      // implemented in his-gameloop in debate logic
+      //
+    });
+    this.importDebater('gardiner-debater', {
+      type		:	"gardiner-debater" ,
+      name		: 	"Stephen Gardiner",
+      img		:	"GardinerDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die in debate in English zone if attacker" ,
+      committed		: 	0,
+      //
+      // implemented in his-gameloop in debate logic
+      //
     });
 
     this.importDebater('aleander-debater', {
@@ -335,6 +354,9 @@
       power		:	2 ,
       ability		:	"If concludes debate, winner flips an extra space" ,
       committed		: 	0,
+      //
+      // implemented in his-gameloop in debate logic - note, can benefit protestants too
+      //
     });
 
     this.importDebater('campeggio-debater', {
@@ -346,16 +368,9 @@
       power		:	2 ,
       ability		:	"Roll die after debate loss; if 5 or 6 result is ignored" ,
       committed		: 	0,
-    });
-    this.importDebater('gardiner-debater', {
-      type		:	"gardiner-debater" ,
-      name		: 	"Stephen Gardiner",
-      img		:	"GardinerDebater.svg",
-      language_zone	:	"any" ,
-      faction		:	"papacy" ,
-      power		:	3 ,
-      ability		:	"+1 die in debate in English zone if attacker" ,
-      committed		: 	0,
+      //
+      // implemented in his-gameloop in debate logic
+      //
     });
 
 
@@ -442,6 +457,7 @@
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] === "peter_canisius") {
+	  his_self.commitDebater("papacy", "canisius-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_catholic_counter_reformation_bonus++;
         }
@@ -507,6 +523,7 @@
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] === "gasparo_contarini") {
+	  his_self.commitDebater("papacy", "contarini-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_catholic_counter_reformation_bonus++;
         }
@@ -552,6 +569,7 @@
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] == "peter_faber") {
+	  his_self.commitDebater("papacy", "faber-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_catholic_counter_reformation_bonus++;
         }
@@ -567,7 +585,6 @@
     ////////////
     // FRENCH //
     ////////////
-
     this.importDebater('calvin-debater', {
       type		:	"calvin-debater" ,
       name		: 	"John Calvin",
@@ -577,6 +594,9 @@
       power		:	4 ,
       ability		:	"Target 3 French-speaking spaces with a treatise" ,
       committed		: 	0,
+      //
+      // implemented in his-player
+      //
     });
 
     this.importDebater('cop-debater', {
@@ -588,6 +608,39 @@
       power		:	2 ,
       ability		:	"+1 die for Reformation attempts within 2 spaces of Paris" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "protestant_reformation") {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player) {
+            return { faction : extra , event : 'nicholas_cop', html : `<li class="option" id="nicholas_cop">Nicholas Cop +1 Roll</li>` };
+          }
+        } 
+        return {};
+      },  
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "cop-debater")) {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player && ["paris","stdizier","dijon","orleans","rouen","boulogne","stquentin","calais","brussels","metz","besancon","lyon","tours","nantes"].includes(spacekey)) {
+           return 1;
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "protestant_reformation") {
+          his_self.addMove("nicholas_cop");
+          his_self.endTurn();
+        }
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "nicholas_cop") {
+          his_self.commitDebater("protestant", "cop-debater");
+          his_self.game.queue.splice(qe, 1);
+          his_self.game.state.tmp_protestant_reformation_bonus++;
+        }
+        return 1;
+      }
     });
 
     this.importDebater('farel-debater', {
@@ -595,10 +648,44 @@
       name		: 	"William Farel",
       img		:	"FarelDebater.svg",
       language_zone	:	"french" ,
-      faction		:	"protestante" ,
+      faction		:	"protestant" ,
       power		:	2 ,
       ability		:	"+1 die for Reformation attempts within 2 spaces of Geneva" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "protestant_reformation") {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player) {
+            return { faction : extra , event : 'william_farel', html : `<li class="option" id="william_farel">William Farel +1 Roll</li>` };
+          }
+        } 
+        return {};
+      },  
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "farel-debater")) {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player && ["geneva","besancon","basel","strasburg","zurich","metz","dijon","lyon","orleans","limoges","avignon","grenoble","turin","milan","pavia","genoa"].includes(spacekey)) {
+           return 1;
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "protestant_reformation") {
+          his_self.addMove("william_farel");
+          his_self.endTurn();
+        }
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "william_farel") {
+          his_self.commitDebater("protestant", "farel-debater");
+          his_self.game.queue.splice(qe, 1);
+          his_self.game.state.tmp_protestant_reformation_bonus++;
+        }
+        return 1;
+      }
+
     });
 
     this.importDebater('olivetan-debater', {
@@ -633,9 +720,9 @@
         return 0;
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu == "olivetan") {
-          his_self.addMove("translation\tfrench");
-          his_self.addMove("commit\tprotestant\tolivetan-debater");
+        if (menu == "translation_french_language_zone") {
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tolivetan-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tfrench");
           his_self.endTurn();
           his_self.updateStatus("acknowledge");
         } 
@@ -644,10 +731,12 @@
     });
 
 
+
+
+
     /////////////
     // ENGLISH //
     /////////////
-
     this.importDebater('cranmer-debater', {
       type		:	"cranmer-debater" ,
       name		: 	"Thomas Cranmer",
@@ -657,6 +746,39 @@
       power		:	2 ,
       ability		:	"+1 die for Reformation within 2 spaces of London" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "protestant_reformation") {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (p === his_self.game.player) {
+            return { faction : extra , event : 'thomas_cranmer', html : `<li class="option" id="thomas_cranmer">Thomas Cranmer +1 Roll</li>` };
+          }
+        } 
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "cranmer-debater")) {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (p === his_self.game.player && ["london","portsmouth","norwich","plymouth","bristol","wales","shrewsbury","carlisle","york","lincoln"].includes(spacekey)) { 
+           return 1;
+          }
+        }
+        return 0;
+      },  
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "protestant_reformation") {
+          his_self.addMove("thomas_cranmer");
+          his_self.endTurn();
+        } 
+        return 0; 
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "thomas_cranmer") {
+	  his_self.commitDebater("protestant", "cranmer-debater");
+	  his_self.game.queue.splice(qe, 1);
+	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	}
+        return 1;
+      }
     });
 
     this.importDebater('wishart-debater', {
@@ -668,48 +790,39 @@
       power		:	1 ,
       ability		:	"+1 die for Reformation attempts in Scotland" ,
       committed		: 	0,
-    });
-
-    this.importDebater('tyndalex-debater', {
-      type		:	"tyndale-debater" ,
-      name		: 	"William Tyndale",
-      img		:	"TyndaleDebater.svg",
-      language_zone	:	"english" ,
-      faction		:	"protestant" ,
-      power		:	2 ,
-      ability		:	"Bonus CP for translation in English zone" ,
-      committed		: 	0,
       menuOption  :       function(his_self, menu, player, extra) {
-        if (menu == "translation_english_language_zone") {
+        if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'tyndale', html : `<li class="option" id="tyndale">William Tyndale +1 Bonus CP</li>` };
+            return { faction : extra , event : 'george_wishart', html : `<li class="option" id="george_wishart">George Wishart +1 Roll</li>` };
           }
         } 
         return {};
-      },  
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "translation_english_language_zone"  && his_self.canPlayerCommitDebater("protestant", "tyndalex-debater")) {
+      },
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "wishart-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
-	  if (p === his_self.game.player) {
-            if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
-              his_self.game.state.players_info[player-1].tmp_debaters_committed_translation == 0 && 
-              his_self.game.state.players_info[player-1].tmp_debaters_committed_counter_reformation == 0) {
-                return 1;
-            }
+	  if (p === his_self.game.player && ["stirling","glasgow","edinburgh"].includes(spacekey)) { 
+           return 1;
           }
         }
         return 0;
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu == "tyndale") {
-          his_self.addMove("translation\tenglish");
-          his_self.addMove("commit\tprotestant\ttyndale-debater");
+        if (menu == "protestant_reformation") {
+          his_self.addMove("george_wishart");
           his_self.endTurn();
-          his_self.updateStatus("acknowledge");
         } 
         return 0; 
       },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "george_wishart") {
+	  his_self.commitDebater("protestant", "wishart-debater");
+	  his_self.game.queue.splice(qe, 1);
+	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	}
+        return 1;
+      }
     });
 
     this.importDebater('latimer-debater', {
@@ -721,6 +834,39 @@
       power		:	1 ,
       ability		:	"+1 die for Reformation attempts in England" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "protestant_reformation") {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (p === his_self.game.player) {
+            return { faction : extra , event : 'hugh_latimer', html : `<li class="option" id="hugh_latimer">Hugh Latimer +1 Roll</li>` };
+          }
+        } 
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "latimer-debater")) {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (p === his_self.game.player && ["carlisle","berwick","york","lincoln","shrewsbury","wales","bristol","plymouth","portsmouth","london","norwich"].includes(spacekey)) { 
+           return 1;
+          }
+        }
+        return 0;
+      },  
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "protestant_reformation") {
+          his_self.addMove("hugh_latimer");
+          his_self.endTurn();
+        } 
+        return 0; 
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "hugh_latimer") {
+	  his_self.commitDebater("protestant", "latimer-debater");
+	  his_self.game.queue.splice(qe, 1);
+	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	}
+        return 1;
+      }
     });
 
     this.importDebater('knox-debater', {
@@ -732,6 +878,81 @@
       power		:	3 ,
       ability		:	"+1 die for Reformation Attempts in England or Scotland" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "protestant_reformation") {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (p === his_self.game.player) {
+            return { faction : extra , event : 'john_knox', html : `<li class="option" id="john_knox">John Knox +1 Roll</li>` };
+          }
+        } 
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "knox-debater")) {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (p === his_self.game.player && ["carlisle","berwick","york","lincoln","shrewsbury","wales","bristol","plymouth","portsmouth","london","norwich","glasgow","edinburgh","stirling"].includes(spacekey)) { 
+           return 1;
+          }
+        }
+        return 0;
+      },  
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "protestant_reformation") {
+          his_self.addMove("john_knox");
+          his_self.endTurn();
+        } 
+        return 0; 
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "john_knox") {
+	  his_self.commitDebater("protestant", "knox-debater");
+	  his_self.game.queue.splice(qe, 1);
+	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	}
+        return 1;
+      }
+    });
+
+
+    this.importDebater('tyndale-debater', {
+      type		:	"tyndale-debater" ,
+      name		: 	"William Tyndale",
+      img		:	"TyndaleDebater.svg",
+      language_zone	:	"english" ,
+      faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"Bonus CP for translation in English zone" ,
+      committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "translation_english_language_zone") {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player) {
+            return { faction : extra , event : 'william_tyndale', html : `<li class="option" id="william_tyndale">William Tyndale +1 Bonus CP</li>` };
+          }
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "translation_english_language_zone"  && his_self.canPlayerCommitDebater("protestant", "tyndale-debater")) {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player) {
+            if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
+              his_self.game.state.players_info[player-1].tmp_debaters_committed_translation == 0 &&
+              his_self.game.state.players_info[player-1].tmp_debaters_committed_counter_reformation == 0) {
+                return 1;
+            }
+          }
+        }
+        return 0;
+      }, 
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "translation_english_language_zone") {
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\ttyndale-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tenglish");
+          his_self.endTurn();
+        }
+        return 0;
+      },
     });
 
     this.importDebater('coverdale-debater', {
@@ -743,5 +964,35 @@
       power		:	2 ,
       ability		:	"Bonus CP for translation in English zone" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "translation_english_language_zone") {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player) {
+            return { faction : extra , event : 'myles_coverdale', html : `<li class="option" id="myles_coverdale">Myles Coverdale +1 Bonus CP</li>` };
+          }
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "translation_english_language_zone"  && his_self.canPlayerCommitDebater("protestant", "coverdale-debater")) {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player) {
+            if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
+              his_self.game.state.players_info[player-1].tmp_debaters_committed_translation == 0 &&
+              his_self.game.state.players_info[player-1].tmp_debaters_committed_counter_reformation == 0) {
+                return 1;
+            }
+          }
+        }
+        return 0;
+      }, 
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "translation_english_language_zone") {
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tcoverdale-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tenglish");
+          his_self.endTurn();
+        }
+        return 0;
+      },
     });
 

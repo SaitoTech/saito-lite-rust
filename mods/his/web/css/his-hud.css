@@ -23,6 +23,7 @@
 .hud-body .status ul {
   width: 100%;
   background-color: whitesmoke;
+  overflow-y: auto;
 }
 .hud-body .status ul li , .hud-body .status .status-text-menu li {
   cursor: pointer;

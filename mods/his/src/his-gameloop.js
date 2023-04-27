@@ -838,8 +838,8 @@ console.log("this player is fortifying space!");
 	    if (player_of_faction != attacking_player && player_of_faction > 0) {
   	      if (io[i] !== attacker) {
 console.log("considering retreat options for " + io[i]);
-	        for (let z = 0; z < neighbours.length; z++) {
-	          let fluis = this.canFactionRetreatToSpace(io[i], neighbours[z], attacker_comes_from_this_spacekey);
+	        for (let zz = 0; zz < neighbours.length; zz++) {
+	          let fluis = this.canFactionRetreatToSpace(io[i], neighbours[zz], attacker_comes_from_this_spacekey);
 console.log("possible? " + fluis);
 	          if (fluis > 0) {
 	            this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]);
@@ -847,11 +847,11 @@ console.log("possible? " + fluis);
 	        }
 	      }
 	    }
-	    for (let z = 0; z < this.game.state.activated_powers[io[i]].length; z++) {
-	      let ap = this.game.state.activated_powers[io[i]][z];
+	    for (let zz = 0; zz < this.game.state.activated_powers[io[i]].length; zz++) {
+	      let ap = this.game.state.activated_powers[io[i]][zz];
 	      if (ap != attacker) {
 console.log("considering retreat options for " + ap);
-	        let fluis = this.canFactionRetreatToSpace(ap, neighbours[z], attacker_comes_from_this_spacekey);
+	        let fluis = this.canFactionRetreatToSpace(ap, neighbours[zz], attacker_comes_from_this_spacekey);
 console.log("possible? " + fluis);
 	        if (fluis > 0) {
 	          this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+ap);
@@ -991,21 +991,21 @@ console.log(JSON.stringify(mv));
 	    let player_of_faction = this.returnPlayerOfFaction(io[i]);
 	    if (player_of_faction != attacking_player && player_of_faction != 0) {
   	      if (io[i] !== faction) {
-	        for (let z = 0; z < neighbours.length; z++) {
-	          let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[z]);
+	        for (let zz = 0; zz < neighbours.length; zz++) {
+	          let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[zz]);
 	          if (fluis > 0) {
-	            this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[z]);
+	            this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[zz]);
 	          }
 	        }
 	      }
 	    }
 
-	    for (let z = 0; z < this.game.state.activated_powers[io[i]].length; z++) {
-	      let ap = this.game.state.activated_powers[io[i]][z];
+	    for (let zz = 0; zz < this.game.state.activated_powers[io[i]].length; zz++) {
+	      let ap = this.game.state.activated_powers[io[i]][zz];
 	      if (ap != faction) {
-	        let fluis = this.returnFactionLandUnitsInSpace(ap, neighbours[z]);
+	        let fluis = this.returnFactionLandUnitsInSpace(ap, neighbours[zz]);
 	        if (fluis > 0) {
-	          this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"0"+"\t"+ap+"\t"+neighbours[z]);
+	          this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"0"+"\t"+ap+"\t"+neighbours[zz]);
 	        }
 	      }
 	    }
@@ -1041,10 +1041,10 @@ console.log(JSON.stringify(mv));
 	      let player_of_faction = this.returnPlayerOfFaction(io[i]);
 	      if (player_of_faction != attacking_player && player_of_faction != 0) {
   	        if (io[i] !== faction) {
-	          for (let z = 0; z < neighbours.length; z++) {
-	            let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[z]);
+	          for (let zz = 0; zz < neighbours.length; zz++) {
+	            let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[zz]);
 	            if (fluis > 0) {
-	              this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"\t"+io[i]+"\t"+neighbours[z]);
+	              this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"\t"+io[i]+"\t"+neighbours[zz]);
 	            }
 	          }
 	        }
@@ -3816,6 +3816,7 @@ console.log("purging naval units and capturing leader");
 	    }
 	  }
 
+
 	  //
 	  // some wrangling lets defender switch up if Protestant
 	  //
@@ -3825,6 +3826,21 @@ console.log("purging naval units and capturing leader");
 	  let defender_rolls = this.game.state.debaters[defender_idx].power + 1 + was_defender_uncommitted;
 	  let defender_debater_power = this.game.state.debaters[defender_idx].power;
 	  let defender_debater_bonus = 1 + was_defender_uncommitted;
+
+
+	  //
+	  // eck-debator bonus
+	  //
+	  if (attacker === "papacy" && this.game.state.theological_debate.attacker_debater === "eck-debater") {
+	    attacker_rolls++;  
+	  }
+	  //
+	  // gardiner-debater bonus
+	  //
+	  if (attacker === "papacy" && this.game.state.theological_debate.attacker_debater === "gardiner-debater" && this.game.state.theological_debate.language_zone === "english") {
+	    attacker_rolls++;
+	  }
+
 
 	  let attacker_hits = 0;
 	  let defender_hits = 0;
@@ -3895,6 +3911,17 @@ console.log("purging naval units and capturing leader");
 	    }
 
 	  } else {
+
+	    let bonus_conversions = 0;
+
+	    //
+	    // if aleander is in play, flip extra space
+	    //
+	    if (this.game.state.theological_debate.attacker_debater === "aleander-debater" || this.game.state.theological_debate.defender_debater === "aleander-debater") {
+	      bonus_conversions = 1;
+	    }
+
+
 	    if (attacker_hits > defender_hits) {
 
 	      let total_spaces_to_convert = attacker_hits - defender_hits;
@@ -3902,14 +3929,28 @@ console.log("purging naval units and capturing leader");
 	      if (total_spaces_to_convert > total_spaces_overall) { total_spaces_to_convert = total_spaces_overall; }
 	      let total_spaces_in_zone = this.returnNumberOfProtestantSpacesInLanguageZone(language_zone);
 	      if (attacker === "papacy") { total_spaces_in_zone = this.returnNumberOfCatholicSpacesInLanguageZone(language_zone); }
-	     	     
-	      if (total_spaces_to_convert == 1) {
-	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert} Space}`);
-	      } else {
-	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
+	     
+	      //
+	      // if campeggio is the debater, we have 1/3 chance of ignoring result
+	      //
+	      if (this.game.state.theological_debate.defender_debater === "campeggio-debater") {
+		let roll = this.rollDice(6);
+	        if (roll >= 5) {
+	          this.updateLog("Campeggio rolls: " + roll + " debate loss discarded");
+		  total_spaces_to_convert = 0;
+		  bonus_conversions = 0;
+	        } else {
+	          this.updateLog("Campeggio rolls: " + roll + " debate loss sustained");
+	 	}
 	      }
 
-	      for (let i = total_spaces_to_convert; i >= 1; i--) {
+	      if (total_spaces_to_convert == 1) {
+	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space}`);
+	      } else {
+	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces}`);
+	      }
+
+	      for (let i = total_spaces_to_convert+bonus_conversions; i >= 1; i--) {
 	        if (i > total_spaces_in_zone) {
 		  if (attacker === "papacy") {
 		    this.game.queue.push("select_for_catholic_conversion\tpapacy");
@@ -3935,6 +3976,21 @@ console.log("purging naval units and capturing leader");
 	      if (total_spaces_to_convert > total_spaces_overall) { total_spaces_to_convert = total_spaces_overall; }
 	      let total_spaces_in_zone = this.returnNumberOfProtestantSpacesInLanguageZone(language_zone);
 	      if (defender === "papacy") { total_spaces_in_zone = this.returnNumberOfCatholicSpacesInLanguageZone(language_zone); }
+
+	      //
+	      // if campeggio is the debater, we have 1/3 chance of ignoring result
+	      //
+	      if (this.game.state.theological_debate.attacker_debater === "campeggio-debater") {
+		let roll = this.rollDice(6);
+	        if (roll >= 5) {
+	          this.updateLog("Campeggio rolls: " + roll + " debate loss discarded");
+		  total_spaces_to_convert = 0;
+		  bonus_conversions = 0;
+	        } else {
+	          this.updateLog("Campeggio rolls: " + roll + " debate loss sustained");
+	 	}
+	      }
+
 
 	      if (total_spaces_to_convert == 1) {
 	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Space}`);
@@ -3971,8 +4027,6 @@ console.log("purging naval units and capturing leader");
 
 
         if (mv[0] === "translation") {
-
-console.log("TRANSLATION!");
 
 	  let zone = mv[1];
 
@@ -4961,6 +5015,8 @@ console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
 	    ties_resolve = "catholic";
  	  }
 
+console.log("STATE: " + this.game.state.tmp_protestant_reformation_bonus);
+
 	  //
 	  // temporary bonuses
 	  //
@@ -4968,7 +5024,7 @@ console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
 	    p_roll_desc.push({ name : "Bonus" , desc : "protestant bonus roll"});
 	  }
 	  for (let i = 0; i < this.game.state.tmp_catholic_reformation_bonus; i++) {
-	    p_roll_desc.push({ name : "Bonus" , desc : "catholic bonus roll"});
+	    c_roll_desc.push({ name : "Bonus" , desc : "catholic bonus roll"});
 	  }
 	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
 	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
@@ -4980,6 +5036,8 @@ console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
 	  p_rolls += p_bonus;
 	  c_rolls += c_neighbours;
 	  c_rolls += c_bonus;
+
+console.log("PROLLS: " + p_rolls + " -- " + p_bonus);
 
 	  let pdice = [];
 	  let cdice = [];
@@ -5164,6 +5222,7 @@ this.updateLog("Catholics: " + JSON.stringify(cdice));
 	// objects and cards can add commands
 	//
         for (let i in z) {
+console.log("OBJ: " + i + " -- " + z[i].name);
           if (!z[i].handleGameLoop(this, qe, mv)) { return 0; }
         }
 

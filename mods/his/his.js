@@ -981,7 +981,7 @@ Habsburg conquistadores:
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "zwingly-debater")) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "zwingli-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player && ["zurich","basel","innsbruck","strasburg","besancon","geneva","trent","salzburg","augsburg"].includes(spacekey)) { 
            return 1;
@@ -990,7 +990,7 @@ Habsburg conquistadores:
         return 0;
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu == "ulrich_zwingli") {
+        if (menu == "protestant_reformation") {
           his_self.addMove("ulrich_zwingli");
           his_self.endTurn();
         } 
@@ -998,6 +998,7 @@ Habsburg conquistadores:
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] == "ulrich_zwingli") {
+	  his_self.commitDebater("protestant", "zwingli-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
 	}
@@ -1026,14 +1027,14 @@ Habsburg conquistadores:
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "bucer-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
-	  if (p === his_self.game.player && ["basel","innsbruck","strasburg","besancon","geneva","trent","salzburg","augsburg"].includes(spacekey)) { 
+	  if (p === his_self.game.player && ["strasburg","zurich","basel","geneva","dijon","besancon","stdizier","metz","liege","trier","mainz","nuremberg","worms","augsburg"].includes(spacekey)) { 
            return 1;
           }
         }
         return 0;
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu == "martin_bucer") {
+        if (menu == "protestant_reformation") {
           his_self.addMove("martin_bucer");
           his_self.endTurn();
         } 
@@ -1041,6 +1042,7 @@ Habsburg conquistadores:
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] == "martin_bucer") {
+	  his_self.commitDebater("protestant", "bucer-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
 	}
@@ -1075,7 +1077,7 @@ Habsburg conquistadores:
         return 0;
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu == "oekolampadius") {
+        if (menu == "protestant_reformation") {
           his_self.addMove("oekolampadius");
           his_self.endTurn();
         } 
@@ -1083,6 +1085,7 @@ Habsburg conquistadores:
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] == "oekolampdius") {
+	  his_self.commitDebater("protestant", "oekolampdius-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
 	}
@@ -1198,6 +1201,22 @@ Habsburg conquistadores:
       power		:	3 ,
       ability		:	"+1 die in Debate Attacks" ,
       committed		: 	0,
+      //
+      // implemented in his-gameloop in debate logic
+      //
+    });
+    this.importDebater('gardiner-debater', {
+      type		:	"gardiner-debater" ,
+      name		: 	"Stephen Gardiner",
+      img		:	"GardinerDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die in debate in English zone if attacker" ,
+      committed		: 	0,
+      //
+      // implemented in his-gameloop in debate logic
+      //
     });
 
     this.importDebater('aleander-debater', {
@@ -1209,6 +1228,9 @@ Habsburg conquistadores:
       power		:	2 ,
       ability		:	"If concludes debate, winner flips an extra space" ,
       committed		: 	0,
+      //
+      // implemented in his-gameloop in debate logic - note, can benefit protestants too
+      //
     });
 
     this.importDebater('campeggio-debater', {
@@ -1220,16 +1242,9 @@ Habsburg conquistadores:
       power		:	2 ,
       ability		:	"Roll die after debate loss; if 5 or 6 result is ignored" ,
       committed		: 	0,
-    });
-    this.importDebater('gardiner-debater', {
-      type		:	"gardiner-debater" ,
-      name		: 	"Stephen Gardiner",
-      img		:	"GardinerDebater.svg",
-      language_zone	:	"any" ,
-      faction		:	"papacy" ,
-      power		:	3 ,
-      ability		:	"+1 die in debate in English zone if attacker" ,
-      committed		: 	0,
+      //
+      // implemented in his-gameloop in debate logic
+      //
     });
 
 
@@ -1316,6 +1331,7 @@ Habsburg conquistadores:
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] === "peter_canisius") {
+	  his_self.commitDebater("papacy", "canisius-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_catholic_counter_reformation_bonus++;
         }
@@ -1381,6 +1397,7 @@ Habsburg conquistadores:
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] === "gasparo_contarini") {
+	  his_self.commitDebater("papacy", "contarini-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_catholic_counter_reformation_bonus++;
         }
@@ -1426,6 +1443,7 @@ Habsburg conquistadores:
       },
       handleGameLoop : function(his_self, qe, mv) {
         if (mv[0] == "peter_faber") {
+	  his_self.commitDebater("papacy", "faber-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_catholic_counter_reformation_bonus++;
         }
@@ -1441,7 +1459,6 @@ Habsburg conquistadores:
     ////////////
     // FRENCH //
     ////////////
-
     this.importDebater('calvin-debater', {
       type		:	"calvin-debater" ,
       name		: 	"John Calvin",
@@ -1451,6 +1468,9 @@ Habsburg conquistadores:
       power		:	4 ,
       ability		:	"Target 3 French-speaking spaces with a treatise" ,
       committed		: 	0,
+      //
+      // implemented in his-player
+      //
     });
 
     this.importDebater('cop-debater', {
@@ -1462,6 +1482,39 @@ Habsburg conquistadores:
       power		:	2 ,
       ability		:	"+1 die for Reformation attempts within 2 spaces of Paris" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "protestant_reformation") {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player) {
+            return { faction : extra , event : 'nicholas_cop', html : `<li class="option" id="nicholas_cop">Nicholas Cop +1 Roll</li>` };
+          }
+        } 
+        return {};
+      },  
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "cop-debater")) {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player && ["paris","stdizier","dijon","orleans","rouen","boulogne","stquentin","calais","brussels","metz","besancon","lyon","tours","nantes"].includes(spacekey)) {
+           return 1;
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "protestant_reformation") {
+          his_self.addMove("nicholas_cop");
+          his_self.endTurn();
+        }
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "nicholas_cop") {
+          his_self.commitDebater("protestant", "cop-debater");
+          his_self.game.queue.splice(qe, 1);
+          his_self.game.state.tmp_protestant_reformation_bonus++;
+        }
+        return 1;
+      }
     });
 
     this.importDebater('farel-debater', {
@@ -1469,10 +1522,44 @@ Habsburg conquistadores:
       name		: 	"William Farel",
       img		:	"FarelDebater.svg",
       language_zone	:	"french" ,
-      faction		:	"protestante" ,
+      faction		:	"protestant" ,
       power		:	2 ,
       ability		:	"+1 die for Reformation attempts within 2 spaces of Geneva" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "protestant_reformation") {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player) {
+            return { faction : extra , event : 'william_farel', html : `<li class="option" id="william_farel">William Farel +1 Roll</li>` };
+          }
+        } 
+        return {};
+      },  
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "farel-debater")) {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player && ["geneva","besancon","basel","strasburg","zurich","metz","dijon","lyon","orleans","limoges","avignon","grenoble","turin","milan","pavia","genoa"].includes(spacekey)) {
+           return 1;
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "protestant_reformation") {
+          his_self.addMove("william_farel");
+          his_self.endTurn();
+        }
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "william_farel") {
+          his_self.commitDebater("protestant", "farel-debater");
+          his_self.game.queue.splice(qe, 1);
+          his_self.game.state.tmp_protestant_reformation_bonus++;
+        }
+        return 1;
+      }
+
     });
 
     this.importDebater('olivetan-debater', {
@@ -1507,9 +1594,9 @@ Habsburg conquistadores:
         return 0;
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu == "olivetan") {
-          his_self.addMove("translation\tfrench");
-          his_self.addMove("commit\tprotestant\tolivetan-debater");
+        if (menu == "translation_french_language_zone") {
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tolivetan-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tfrench");
           his_self.endTurn();
           his_self.updateStatus("acknowledge");
         } 
@@ -1518,10 +1605,12 @@ Habsburg conquistadores:
     });
 
 
+
+
+
     /////////////
     // ENGLISH //
     /////////////
-
     this.importDebater('cranmer-debater', {
       type		:	"cranmer-debater" ,
       name		: 	"Thomas Cranmer",
@@ -1531,6 +1620,39 @@ Habsburg conquistadores:
       power		:	2 ,
       ability		:	"+1 die for Reformation within 2 spaces of London" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "protestant_reformation") {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (p === his_self.game.player) {
+            return { faction : extra , event : 'thomas_cranmer', html : `<li class="option" id="thomas_cranmer">Thomas Cranmer +1 Roll</li>` };
+          }
+        } 
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "cranmer-debater")) {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (p === his_self.game.player && ["london","portsmouth","norwich","plymouth","bristol","wales","shrewsbury","carlisle","york","lincoln"].includes(spacekey)) { 
+           return 1;
+          }
+        }
+        return 0;
+      },  
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "protestant_reformation") {
+          his_self.addMove("thomas_cranmer");
+          his_self.endTurn();
+        } 
+        return 0; 
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "thomas_cranmer") {
+	  his_self.commitDebater("protestant", "cranmer-debater");
+	  his_self.game.queue.splice(qe, 1);
+	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	}
+        return 1;
+      }
     });
 
     this.importDebater('wishart-debater', {
@@ -1542,48 +1664,39 @@ Habsburg conquistadores:
       power		:	1 ,
       ability		:	"+1 die for Reformation attempts in Scotland" ,
       committed		: 	0,
-    });
-
-    this.importDebater('tyndalex-debater', {
-      type		:	"tyndale-debater" ,
-      name		: 	"William Tyndale",
-      img		:	"TyndaleDebater.svg",
-      language_zone	:	"english" ,
-      faction		:	"protestant" ,
-      power		:	2 ,
-      ability		:	"Bonus CP for translation in English zone" ,
-      committed		: 	0,
       menuOption  :       function(his_self, menu, player, extra) {
-        if (menu == "translation_english_language_zone") {
+        if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'tyndale', html : `<li class="option" id="tyndale">William Tyndale +1 Bonus CP</li>` };
+            return { faction : extra , event : 'george_wishart', html : `<li class="option" id="george_wishart">George Wishart +1 Roll</li>` };
           }
         } 
         return {};
-      },  
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "translation_english_language_zone"  && his_self.canPlayerCommitDebater("protestant", "tyndalex-debater")) {
+      },
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "wishart-debater")) {
 	  let p = his_self.returnPlayerOfFaction("protestant");
-	  if (p === his_self.game.player) {
-            if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
-              his_self.game.state.players_info[player-1].tmp_debaters_committed_translation == 0 && 
-              his_self.game.state.players_info[player-1].tmp_debaters_committed_counter_reformation == 0) {
-                return 1;
-            }
+	  if (p === his_self.game.player && ["stirling","glasgow","edinburgh"].includes(spacekey)) { 
+           return 1;
           }
         }
         return 0;
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu == "tyndale") {
-          his_self.addMove("translation\tenglish");
-          his_self.addMove("commit\tprotestant\ttyndale-debater");
+        if (menu == "protestant_reformation") {
+          his_self.addMove("george_wishart");
           his_self.endTurn();
-          his_self.updateStatus("acknowledge");
         } 
         return 0; 
       },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "george_wishart") {
+	  his_self.commitDebater("protestant", "wishart-debater");
+	  his_self.game.queue.splice(qe, 1);
+	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	}
+        return 1;
+      }
     });
 
     this.importDebater('latimer-debater', {
@@ -1595,6 +1708,39 @@ Habsburg conquistadores:
       power		:	1 ,
       ability		:	"+1 die for Reformation attempts in England" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "protestant_reformation") {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (p === his_self.game.player) {
+            return { faction : extra , event : 'hugh_latimer', html : `<li class="option" id="hugh_latimer">Hugh Latimer +1 Roll</li>` };
+          }
+        } 
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "latimer-debater")) {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (p === his_self.game.player && ["carlisle","berwick","york","lincoln","shrewsbury","wales","bristol","plymouth","portsmouth","london","norwich"].includes(spacekey)) { 
+           return 1;
+          }
+        }
+        return 0;
+      },  
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "protestant_reformation") {
+          his_self.addMove("hugh_latimer");
+          his_self.endTurn();
+        } 
+        return 0; 
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "hugh_latimer") {
+	  his_self.commitDebater("protestant", "latimer-debater");
+	  his_self.game.queue.splice(qe, 1);
+	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	}
+        return 1;
+      }
     });
 
     this.importDebater('knox-debater', {
@@ -1606,6 +1752,81 @@ Habsburg conquistadores:
       power		:	3 ,
       ability		:	"+1 die for Reformation Attempts in England or Scotland" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "protestant_reformation") {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (p === his_self.game.player) {
+            return { faction : extra , event : 'john_knox', html : `<li class="option" id="john_knox">John Knox +1 Roll</li>` };
+          }
+        } 
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, spacekey) {
+        if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "knox-debater")) {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (p === his_self.game.player && ["carlisle","berwick","york","lincoln","shrewsbury","wales","bristol","plymouth","portsmouth","london","norwich","glasgow","edinburgh","stirling"].includes(spacekey)) { 
+           return 1;
+          }
+        }
+        return 0;
+      },  
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "protestant_reformation") {
+          his_self.addMove("john_knox");
+          his_self.endTurn();
+        } 
+        return 0; 
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "john_knox") {
+	  his_self.commitDebater("protestant", "knox-debater");
+	  his_self.game.queue.splice(qe, 1);
+	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	}
+        return 1;
+      }
+    });
+
+
+    this.importDebater('tyndale-debater', {
+      type		:	"tyndale-debater" ,
+      name		: 	"William Tyndale",
+      img		:	"TyndaleDebater.svg",
+      language_zone	:	"english" ,
+      faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"Bonus CP for translation in English zone" ,
+      committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "translation_english_language_zone") {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player) {
+            return { faction : extra , event : 'william_tyndale', html : `<li class="option" id="william_tyndale">William Tyndale +1 Bonus CP</li>` };
+          }
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "translation_english_language_zone"  && his_self.canPlayerCommitDebater("protestant", "tyndale-debater")) {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player) {
+            if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
+              his_self.game.state.players_info[player-1].tmp_debaters_committed_translation == 0 &&
+              his_self.game.state.players_info[player-1].tmp_debaters_committed_counter_reformation == 0) {
+                return 1;
+            }
+          }
+        }
+        return 0;
+      }, 
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "translation_english_language_zone") {
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\ttyndale-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tenglish");
+          his_self.endTurn();
+        }
+        return 0;
+      },
     });
 
     this.importDebater('coverdale-debater', {
@@ -1617,6 +1838,36 @@ Habsburg conquistadores:
       power		:	2 ,
       ability		:	"Bonus CP for translation in English zone" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "translation_english_language_zone") {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player) {
+            return { faction : extra , event : 'myles_coverdale', html : `<li class="option" id="myles_coverdale">Myles Coverdale +1 Bonus CP</li>` };
+          }
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "translation_english_language_zone"  && his_self.canPlayerCommitDebater("protestant", "coverdale-debater")) {
+          let p = his_self.returnPlayerOfFaction("protestant");
+          if (p === his_self.game.player) {
+            if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
+              his_self.game.state.players_info[player-1].tmp_debaters_committed_translation == 0 &&
+              his_self.game.state.players_info[player-1].tmp_debaters_committed_counter_reformation == 0) {
+                return 1;
+            }
+          }
+        }
+        return 0;
+      }, 
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "translation_english_language_zone") {
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tcoverdale-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tenglish");
+          his_self.endTurn();
+        }
+        return 0;
+      },
     });
 
 
@@ -2016,10 +2267,12 @@ console.log("\n\n\n\n");
 	this.addDebater("protestant", "bucer-debater");
 	this.addDebater("protestant", "carlstadt-debater");
 
+	this.game.spaces['worms'].religion = "protestant";
+
 	// HACK
 	this.addDebater("protestant", "bullinger-debater");
 	this.addDebater("protestant", "oekolampadius-debater");
-	this.addDebater("protestant", "zwingly-debater");
+	this.addDebater("protestant", "zwingli-debater");
 	this.addDebater("papacy", "caraffa-debater");
 	this.addDebater("papacy", "gardiner-debater");
 	this.addDebater("papacy", "loyola-debater");
@@ -2810,8 +3063,11 @@ alert("Not Implemented");
 	    his_self.endTurn();
 
 	  }
+
+	  return 0;
         }
-	return 0;
+
+	return 1;	
       }
     }
     deck['209'] = { 
@@ -10904,11 +11160,18 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     //
     // debaters have bonuses which modify gameplay
     //
+console.log("how many debaters? " + this.game.state.debaters.length);
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       let d = this.game.state.debaters[i];
-      let key = this.game.state.debaters[i].key;
+      let key = d.key;
+console.log("debaters key: " + key);
+console.log(JSON.stringify(this.debaters[key]));
       z.push(this.debaters[key]);
     }
+
+for (let i in z) {
+  console.log("c: " + i);
+}
 
     return z;
 
@@ -11808,8 +12071,8 @@ console.log("this player is fortifying space!");
 	    if (player_of_faction != attacking_player && player_of_faction > 0) {
   	      if (io[i] !== attacker) {
 console.log("considering retreat options for " + io[i]);
-	        for (let z = 0; z < neighbours.length; z++) {
-	          let fluis = this.canFactionRetreatToSpace(io[i], neighbours[z], attacker_comes_from_this_spacekey);
+	        for (let zz = 0; zz < neighbours.length; zz++) {
+	          let fluis = this.canFactionRetreatToSpace(io[i], neighbours[zz], attacker_comes_from_this_spacekey);
 console.log("possible? " + fluis);
 	          if (fluis > 0) {
 	            this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]);
@@ -11817,11 +12080,11 @@ console.log("possible? " + fluis);
 	        }
 	      }
 	    }
-	    for (let z = 0; z < this.game.state.activated_powers[io[i]].length; z++) {
-	      let ap = this.game.state.activated_powers[io[i]][z];
+	    for (let zz = 0; zz < this.game.state.activated_powers[io[i]].length; zz++) {
+	      let ap = this.game.state.activated_powers[io[i]][zz];
 	      if (ap != attacker) {
 console.log("considering retreat options for " + ap);
-	        let fluis = this.canFactionRetreatToSpace(ap, neighbours[z], attacker_comes_from_this_spacekey);
+	        let fluis = this.canFactionRetreatToSpace(ap, neighbours[zz], attacker_comes_from_this_spacekey);
 console.log("possible? " + fluis);
 	        if (fluis > 0) {
 	          this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+ap);
@@ -11961,21 +12224,21 @@ console.log(JSON.stringify(mv));
 	    let player_of_faction = this.returnPlayerOfFaction(io[i]);
 	    if (player_of_faction != attacking_player && player_of_faction != 0) {
   	      if (io[i] !== faction) {
-	        for (let z = 0; z < neighbours.length; z++) {
-	          let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[z]);
+	        for (let zz = 0; zz < neighbours.length; zz++) {
+	          let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[zz]);
 	          if (fluis > 0) {
-	            this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[z]);
+	            this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[zz]);
 	          }
 	        }
 	      }
 	    }
 
-	    for (let z = 0; z < this.game.state.activated_powers[io[i]].length; z++) {
-	      let ap = this.game.state.activated_powers[io[i]][z];
+	    for (let zz = 0; zz < this.game.state.activated_powers[io[i]].length; zz++) {
+	      let ap = this.game.state.activated_powers[io[i]][zz];
 	      if (ap != faction) {
-	        let fluis = this.returnFactionLandUnitsInSpace(ap, neighbours[z]);
+	        let fluis = this.returnFactionLandUnitsInSpace(ap, neighbours[zz]);
 	        if (fluis > 0) {
-	          this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"0"+"\t"+ap+"\t"+neighbours[z]);
+	          this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"0"+"\t"+ap+"\t"+neighbours[zz]);
 	        }
 	      }
 	    }
@@ -12011,10 +12274,10 @@ console.log(JSON.stringify(mv));
 	      let player_of_faction = this.returnPlayerOfFaction(io[i]);
 	      if (player_of_faction != attacking_player && player_of_faction != 0) {
   	        if (io[i] !== faction) {
-	          for (let z = 0; z < neighbours.length; z++) {
-	            let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[z]);
+	          for (let zz = 0; zz < neighbours.length; zz++) {
+	            let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[zz]);
 	            if (fluis > 0) {
-	              this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"\t"+io[i]+"\t"+neighbours[z]);
+	              this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"\t"+io[i]+"\t"+neighbours[zz]);
 	            }
 	          }
 	        }
@@ -14786,6 +15049,7 @@ console.log("purging naval units and capturing leader");
 	    }
 	  }
 
+
 	  //
 	  // some wrangling lets defender switch up if Protestant
 	  //
@@ -14795,6 +15059,21 @@ console.log("purging naval units and capturing leader");
 	  let defender_rolls = this.game.state.debaters[defender_idx].power + 1 + was_defender_uncommitted;
 	  let defender_debater_power = this.game.state.debaters[defender_idx].power;
 	  let defender_debater_bonus = 1 + was_defender_uncommitted;
+
+
+	  //
+	  // eck-debator bonus
+	  //
+	  if (attacker === "papacy" && this.game.state.theological_debate.attacker_debater === "eck-debater") {
+	    attacker_rolls++;  
+	  }
+	  //
+	  // gardiner-debater bonus
+	  //
+	  if (attacker === "papacy" && this.game.state.theological_debate.attacker_debater === "gardiner-debater" && this.game.state.theological_debate.language_zone === "english") {
+	    attacker_rolls++;
+	  }
+
 
 	  let attacker_hits = 0;
 	  let defender_hits = 0;
@@ -14865,6 +15144,17 @@ console.log("purging naval units and capturing leader");
 	    }
 
 	  } else {
+
+	    let bonus_conversions = 0;
+
+	    //
+	    // if aleander is in play, flip extra space
+	    //
+	    if (this.game.state.theological_debate.attacker_debater === "aleander-debater" || this.game.state.theological_debate.defender_debater === "aleander-debater") {
+	      bonus_conversions = 1;
+	    }
+
+
 	    if (attacker_hits > defender_hits) {
 
 	      let total_spaces_to_convert = attacker_hits - defender_hits;
@@ -14872,14 +15162,28 @@ console.log("purging naval units and capturing leader");
 	      if (total_spaces_to_convert > total_spaces_overall) { total_spaces_to_convert = total_spaces_overall; }
 	      let total_spaces_in_zone = this.returnNumberOfProtestantSpacesInLanguageZone(language_zone);
 	      if (attacker === "papacy") { total_spaces_in_zone = this.returnNumberOfCatholicSpacesInLanguageZone(language_zone); }
-	     	     
-	      if (total_spaces_to_convert == 1) {
-	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert} Space}`);
-	      } else {
-	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
+	     
+	      //
+	      // if campeggio is the debater, we have 1/3 chance of ignoring result
+	      //
+	      if (this.game.state.theological_debate.defender_debater === "campeggio-debater") {
+		let roll = this.rollDice(6);
+	        if (roll >= 5) {
+	          this.updateLog("Campeggio rolls: " + roll + " debate loss discarded");
+		  total_spaces_to_convert = 0;
+		  bonus_conversions = 0;
+	        } else {
+	          this.updateLog("Campeggio rolls: " + roll + " debate loss sustained");
+	 	}
 	      }
 
-	      for (let i = total_spaces_to_convert; i >= 1; i--) {
+	      if (total_spaces_to_convert == 1) {
+	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Space}`);
+	      } else {
+	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces}`);
+	      }
+
+	      for (let i = total_spaces_to_convert+bonus_conversions; i >= 1; i--) {
 	        if (i > total_spaces_in_zone) {
 		  if (attacker === "papacy") {
 		    this.game.queue.push("select_for_catholic_conversion\tpapacy");
@@ -14905,6 +15209,21 @@ console.log("purging naval units and capturing leader");
 	      if (total_spaces_to_convert > total_spaces_overall) { total_spaces_to_convert = total_spaces_overall; }
 	      let total_spaces_in_zone = this.returnNumberOfProtestantSpacesInLanguageZone(language_zone);
 	      if (defender === "papacy") { total_spaces_in_zone = this.returnNumberOfCatholicSpacesInLanguageZone(language_zone); }
+
+	      //
+	      // if campeggio is the debater, we have 1/3 chance of ignoring result
+	      //
+	      if (this.game.state.theological_debate.attacker_debater === "campeggio-debater") {
+		let roll = this.rollDice(6);
+	        if (roll >= 5) {
+	          this.updateLog("Campeggio rolls: " + roll + " debate loss discarded");
+		  total_spaces_to_convert = 0;
+		  bonus_conversions = 0;
+	        } else {
+	          this.updateLog("Campeggio rolls: " + roll + " debate loss sustained");
+	 	}
+	      }
+
 
 	      if (total_spaces_to_convert == 1) {
 	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Space}`);
@@ -14941,8 +15260,6 @@ console.log("purging naval units and capturing leader");
 
 
         if (mv[0] === "translation") {
-
-console.log("TRANSLATION!");
 
 	  let zone = mv[1];
 
@@ -15931,6 +16248,8 @@ console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
 	    ties_resolve = "catholic";
  	  }
 
+console.log("STATE: " + this.game.state.tmp_protestant_reformation_bonus);
+
 	  //
 	  // temporary bonuses
 	  //
@@ -15938,7 +16257,7 @@ console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
 	    p_roll_desc.push({ name : "Bonus" , desc : "protestant bonus roll"});
 	  }
 	  for (let i = 0; i < this.game.state.tmp_catholic_reformation_bonus; i++) {
-	    p_roll_desc.push({ name : "Bonus" , desc : "catholic bonus roll"});
+	    c_roll_desc.push({ name : "Bonus" , desc : "catholic bonus roll"});
 	  }
 	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
 	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
@@ -15950,6 +16269,8 @@ console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
 	  p_rolls += p_bonus;
 	  c_rolls += c_neighbours;
 	  c_rolls += c_bonus;
+
+console.log("PROLLS: " + p_rolls + " -- " + p_bonus);
 
 	  let pdice = [];
 	  let cdice = [];
@@ -16134,6 +16455,7 @@ this.updateLog("Catholics: " + JSON.stringify(cdice));
 	// objects and cards can add commands
 	//
         for (let i in z) {
+console.log("OBJ: " + i + " -- " + z[i].name);
           if (!z[i].handleGameLoop(this, qe, mv)) { return 0; }
         }
 
@@ -16327,6 +16649,8 @@ this.updateLog("Catholics: " + JSON.stringify(cdice));
   // runs each new turn
   //
   resetPlayerTurn(player_num) {
+
+console.log("RESET PLAYER TURN");
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
@@ -18846,6 +19170,34 @@ return;
         his_self.language_zone_overlay.hide();
 
         let id = $(this).attr("id");
+
+	if (id === "french" && his_self.canPlayerCommitDebater("protestant", "calvin-debater") && his_self.game.player === his_self.returnPlayerOfFaction("protestant")) {
+
+          let msg = "Use Calvin Debater Bonus +1 Attempt:";
+          let html = '<ul>';
+          html += '<li class="option" style="" id="yes">Yes, Commit Calvin</li>';
+          html += '<li class="option" style="" id="no">No</li>';
+          html += '</ul>';
+
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+            let id = $(this).attr("id");
+
+	    if (id === "yes") {
+	      his_self.addMove("protestant_reformation\t"+player+"\tfrench");
+	    }
+	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
+	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
+	    his_self.endTurn();
+
+	    return 0;
+	  });
+
+	  return 0;
+        }
+
 
 	if (id === "german" && his_self.canPlayerCommitDebater("protestant", "carlstadt-debater") && his_self.game.player === his_self.returnPlayerOfFaction("protestant")) {
 

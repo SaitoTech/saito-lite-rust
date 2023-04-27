@@ -27,11 +27,18 @@
     //
     // debaters have bonuses which modify gameplay
     //
+console.log("how many debaters? " + this.game.state.debaters.length);
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       let d = this.game.state.debaters[i];
-      let key = this.game.state.debaters[i].key;
+      let key = d.key;
+console.log("debaters key: " + key);
+console.log(JSON.stringify(this.debaters[key]));
       z.push(this.debaters[key]);
     }
+
+for (let i in z) {
+  console.log("c: " + i);
+}
 
     return z;
 
