@@ -180,7 +180,7 @@ class Arcade extends ModTemplate {
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
       if (res.rows) {
         for (let record of res.rows) {
-          console.log(JSON.parse(JSON.stringify(record)));
+          //console.log(JSON.parse(JSON.stringify(record)));
           //This is the save openTX
           let game_tx = new saito.default.transaction(JSON.parse(record.tx));
 
@@ -200,7 +200,11 @@ class Arcade extends ModTemplate {
           //Game Meta Data stored directly in DB
           //
           if (record.winner){
-            game_tx.msg.winner = JSON.parse(record.winner);  
+            try {
+              game_tx.msg.winner = JSON.parse(record.winner);
+            }catch(err){
+              console.log(err, record.winner);
+            }
           }
 
           game_tx.msg.method = record.method;
@@ -211,9 +215,9 @@ class Arcade extends ModTemplate {
             game_tx.msg.ts = step?.ts;          
           }
 
-          //if (arcade_self.debug) {
+          if (arcade_self.debug) {
             console.log("Load DB Game: " + record.status, game_tx.returnMessage());
-          //}
+          }
           if (record.time_finished) {
             if (record.status !== "over" && record.status !== "close") {
               console.log("Game status mismatch");
