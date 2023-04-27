@@ -347,9 +347,6 @@
         settlers_self.canPlayerBuyCard(settlers_self.game.player)
       ) {
 
-        this.build.render();
-        settlers_self.playerBuildEvents();
-
         html += `<li class="option" id="spend">spend resources</li>`;
         can_do_something = true;
       } else {
