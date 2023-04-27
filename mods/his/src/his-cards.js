@@ -1269,7 +1269,9 @@ alert("Not Implemented");
 
 	// protestant gets 2 roll bonus at start
 	his_self.game.state.tmp_protestant_reformation_bonus = 2;
+	his_self.game.state.tmp_protestant_reformation_bonus_spaces = [];
 	his_self.game.state.tmp_catholic_reformation_bonus = 0;
+	his_self.game.state.tmp_catholic_reformation_bonus_spaces = [];
 	his_self.game.state.tmp_reformations_this_turn = [];
 
 	his_self.game.queue.push("hide_overlay\ttheses");

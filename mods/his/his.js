@@ -1001,6 +1001,7 @@ Habsburg conquistadores:
 	  his_self.commitDebater("protestant", "zwingli-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	  his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["zurich","basel","innsbruck","strasburg","besancon","geneva","trent","salzburg","augsburg"];
 	}
         return 1;
       }
@@ -1045,6 +1046,7 @@ Habsburg conquistadores:
 	  his_self.commitDebater("protestant", "bucer-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
+          his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["strasburg","zurich","basel","geneva","dijon","besancon","stdizier","metz","liege","trier","mainz","nuremberg","worms","augsburg"];
 	}
         return 1;
       }
@@ -1088,6 +1090,7 @@ Habsburg conquistadores:
 	  his_self.commitDebater("protestant", "oekolampdius-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
+          his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["basel","zurich","innsbruck","strasburg","besancon","geneva","turin","grenoble","lyon","dijon","metz"];
 	}
         return 1;
       }
@@ -1334,6 +1337,7 @@ Habsburg conquistadores:
 	  his_self.commitDebater("papacy", "canisius-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_catholic_counter_reformation_bonus++;
+	  his_self.game.state.tmp_catholic_counter_reformation_bonus_spaces = ["regensburg","prague","vienna","linz","graz","salzburg","innsbruck","augsburg","worms","nuremberg","leipzig","mainz","kassal"];
         }
         return 1;
       }
@@ -1400,6 +1404,25 @@ Habsburg conquistadores:
 	  his_self.commitDebater("papacy", "contarini-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_catholic_counter_reformation_bonus++;
+
+          let cx = his_self.returnSpaceOfPersonage("hapsburg", "charles-v");
+          if (his_self.spaces[cx]) {
+            let targets = [];
+            targets.push(cs);
+
+            for (let i = 0; i < his_self.spaces[cx].neighbours.length; i++) {
+
+              let x = his_self.spaces[cs].neighbours[i];
+              if (!targets.includes(x)) { targets.push(x); }
+
+              for (let ii = 0; ii < his_self.spaces[x].neighbours.length; ii++) {
+                let y = his_self.spaces[x].neighbours[ii];
+                if (!targets.includes(y)) { targets.push(y); }
+              }
+            }
+          }
+
+          his_self.game.state.tmp_catholic_counter_reformation_bonus_spaces = targets;
         }
         return 1;
       }
@@ -1446,6 +1469,7 @@ Habsburg conquistadores:
 	  his_self.commitDebater("papacy", "faber-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_catholic_counter_reformation_bonus++;
+	  his_self.game.state.tmp_catholic_counter_reformation_bonus_spaces = ["augsburg","trier","cologne","wittenberg","mainz","brandenburg"];
         }
         return 1;
       }
@@ -1512,6 +1536,7 @@ Habsburg conquistadores:
           his_self.commitDebater("protestant", "cop-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_protestant_reformation_bonus++;
+          his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["paris","stdizier","dijon","orleans","rouen","boulogne","stquentin","calais","brussels","metz","besancon","lyon","tours","nantes"];
         }
         return 1;
       }
@@ -1556,6 +1581,7 @@ Habsburg conquistadores:
           his_self.commitDebater("protestant", "farel-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_protestant_reformation_bonus++;
+          his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["geneva","besancon","basel","strasburg","zurich","metz","dijon","lyon","orleans","limoges","avignon","grenoble","turin","milan","pavia","genoa"];
         }
         return 1;
       }
@@ -1650,6 +1676,7 @@ Habsburg conquistadores:
 	  his_self.commitDebater("protestant", "cranmer-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	  his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["london","portsmouth","norwich","plymouth","bristol","wales","shrewsbury","carlisle","york","lincoln"];
 	}
         return 1;
       }
@@ -1694,6 +1721,7 @@ Habsburg conquistadores:
 	  his_self.commitDebater("protestant", "wishart-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	  his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["stirling","glasgow","edinburgh"];
 	}
         return 1;
       }
@@ -1738,6 +1766,7 @@ Habsburg conquistadores:
 	  his_self.commitDebater("protestant", "latimer-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	  his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["carlisle","berwick","york","lincoln","shrewsbury","wales","bristol","plymouth","portsmouth","london","norwich"];
 	}
         return 1;
       }
@@ -1782,6 +1811,7 @@ Habsburg conquistadores:
 	  his_self.commitDebater("protestant", "knox-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	  his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["carlisle","berwick","york","lincoln","shrewsbury","wales","bristol","plymouth","portsmouth","london","norwich","glasgow","edinburgh","stirling"];
 	}
         return 1;
       }
@@ -3915,7 +3945,9 @@ alert("Not Implemented");
 
 	// protestant gets 2 roll bonus at start
 	his_self.game.state.tmp_protestant_reformation_bonus = 2;
+	his_self.game.state.tmp_protestant_reformation_bonus_spaces = [];
 	his_self.game.state.tmp_catholic_reformation_bonus = 0;
+	his_self.game.state.tmp_catholic_reformation_bonus_spaces = [];
 	his_self.game.state.tmp_reformations_this_turn = [];
 
 	his_self.game.queue.push("hide_overlay\ttheses");
@@ -10494,7 +10526,9 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     state.tmp_protestant_reformation_bonus = 0;
     state.tmp_catholic_reformation_bonus = 0;
     state.tmp_protestant_counter_reformation_bonus = 0;
+    state.tmp_protestant_reformation_bonus_spaces = [];
     state.tmp_catholic_counter_reformation_bonus = 0;
+    state.tmp_catholic_counter_reformation_bonus_spaces = [];
     state.tmp_papacy_may_specify_debater = 0;
     state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
 
@@ -11239,7 +11273,6 @@ for (let i in z) {
   handleGameLoop() {
 
     let his_self = this;
-
 
     ///////////
     // QUEUE //
@@ -14830,6 +14863,7 @@ console.log("purging naval units and capturing leader");
 	        if (x === dd) {
 		  this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
 		  this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+	          this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
 		}
 	        dd++;
 	      }
@@ -14839,6 +14873,7 @@ console.log("purging naval units and capturing leader");
 		  this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
 		  this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
 		  this.game.state.theological_debate.defender_debater_bonus++;
+	          this.game.state.theological_debate.defender_debater_entered_uncommitted = 1;
 		}
 	        dd++;
 	      }
@@ -14856,6 +14891,7 @@ console.log("purging naval units and capturing leader");
 	        if (x === tad) {
 		  this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
 		  this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
+	          this.game.state.theological_debate.attacker_debater_entered_uncommitted = 1;
 		}
 	        tad++;
 	      }
@@ -14867,6 +14903,7 @@ console.log("purging naval units and capturing leader");
 	        if (x === tad) {
 		  this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
 		  this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
+	          this.game.state.theological_debate.attacker_debater_entered_uncommitted = 0;
 		}
 	        tad++;
 	      }
@@ -14911,6 +14948,8 @@ console.log("purging naval units and capturing leader");
 	  this.game.state.theological_debate.round2_defender_debater = "";
 	  this.game.state.theological_debate.attacker_debater = "";
 	  this.game.state.theological_debate.defender_debater = "";
+	  this.game.state.theological_debate.attacker_debater_entered_uncommitted = 0;
+	  this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
 	  this.game.state.theological_debate.attacker_debater_power = 0;
 	  this.game.state.theological_debate.defender_debater_power = 0;
 	  this.game.state.theological_debate.attacker_debater_bonus = 3;
@@ -14940,6 +14979,7 @@ console.log("purging naval units and capturing leader");
 	      if (x === ad) {
 		this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
 		this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
+	        this.game.state.theological_debate.attacker_debater_entered_uncommitted = 1;
 	      }
 	      ad++;
 	    }
@@ -14969,6 +15009,7 @@ console.log("purging naval units and capturing leader");
 	        if (x === dd) {
 		  this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
 		  this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+	          this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
 	        }
 	        dd++;
 	      }
@@ -14977,6 +15018,7 @@ console.log("purging naval units and capturing leader");
 	        if (x === dd) {
 		  this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
 		  this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+	          this.game.state.theological_debate.defender_debater_entered_uncommitted = 1;
 	          this.game.state.theological_debate.defender_debater_bonus++;
 		}
 	        dd++;
@@ -15064,13 +15106,13 @@ console.log("purging naval units and capturing leader");
 	  //
 	  // eck-debator bonus
 	  //
-	  if (attacker === "papacy" && this.game.state.theological_debate.attacker_debater === "eck-debater") {
-	    attacker_rolls++;  
+	  if (attacker === "papacy" && this.game.state.theological_debate.attacker_debater === "eck-debater" && this.game.state.theological_debate.attacker_debater_entered_uncommitted == 1) {
+	    attacker_rolls++;
 	  }
 	  //
 	  // gardiner-debater bonus
 	  //
-	  if (attacker === "papacy" && this.game.state.theological_debate.attacker_debater === "gardiner-debater" && this.game.state.theological_debate.language_zone === "english") {
+	  if (attacker === "papacy" && this.game.state.theological_debate.attacker_debater === "gardiner-debater" && this.game.state.theological_debate.language_zone === "english" && this.game.state.theological_debate.defender_debater_entered_uncommitted == 1) {
 	    attacker_rolls++;
 	  }
 
@@ -15150,7 +15192,7 @@ console.log("purging naval units and capturing leader");
 	    //
 	    // if aleander is in play, flip extra space
 	    //
-	    if (this.game.state.theological_debate.attacker_debater === "aleander-debater" || this.game.state.theological_debate.defender_debater === "aleander-debater") {
+	    if ((this.game.state.theological_debate.attacker_debater === "aleander-debater" && this.game.state.theological_debate.attacker_debater_entered_uncommitted == 1) || (this.game.state.theological_debate.defender_debater === "aleander-debater" && this.game.state.theological_debate.defender_debater_entered_uncommitted == 1)) {
 	      bonus_conversions = 1;
 	    }
 
@@ -15166,7 +15208,8 @@ console.log("purging naval units and capturing leader");
 	      //
 	      // if campeggio is the debater, we have 1/3 chance of ignoring result
 	      //
-	      if (this.game.state.theological_debate.defender_debater === "campeggio-debater") {
+
+	      if (this.game.state.theological_debate.defender_debater === "campeggio-debater" && this.game.state.theological_debate.defender_debater_entered_uncommitted == 1) {
 		let roll = this.rollDice(6);
 	        if (roll >= 5) {
 	          this.updateLog("Campeggio rolls: " + roll + " debate loss discarded");
@@ -15213,7 +15256,7 @@ console.log("purging naval units and capturing leader");
 	      //
 	      // if campeggio is the debater, we have 1/3 chance of ignoring result
 	      //
-	      if (this.game.state.theological_debate.attacker_debater === "campeggio-debater") {
+	      if (this.game.state.theological_debate.attacker_debater === "campeggio-debater" && this.game.state.theological_debate.attacker_debater_entered_uncommitted == 1) {
 		let roll = this.rollDice(6);
 	        if (roll >= 5) {
 	          this.updateLog("Campeggio rolls: " + roll + " debate loss discarded");
@@ -16248,11 +16291,22 @@ console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
 	    ties_resolve = "catholic";
  	  }
 
-console.log("STATE: " + this.game.state.tmp_protestant_reformation_bonus);
-
 	  //
 	  // temporary bonuses
 	  //
+	  if (this.game.state.tmp_protestant_reformation_bonus_spaces.length > 0) {
+	    if (!this.game.state.tmp_protestant_reformation_bonus_spaces.includes(space)) {
+	      this.game.state.tmp_protestant_reformation_bonus--;
+	      if (this.game.state.tmp_protestant_reformation_bonus < 0) { this.game.state.tmp_protestant_reformation_bonus = 0; }
+	    }
+	  }
+	  if (this.game.state.tmp_catholic_counter_reformation_bonus_spaces.length > 0) {
+	    if (!this.game.state.tmp_catholic_counter_reformation_bonus_spaces.includes(space)) {
+	      this.game.state.tmp_catholic_counter_reformation_bonus--;
+	      if (this.game.state.tmp_catholic_counter_reformation_bonus < 0) { this.game.state.tmp_catholic_counter_reformation_bonus = 0; }
+	    }
+	  }
+
 	  for (let i = 0; i < this.game.state.tmp_protestant_reformation_bonus; i++) {
 	    p_roll_desc.push({ name : "Bonus" , desc : "protestant bonus roll"});
 	  }
@@ -16261,6 +16315,7 @@ console.log("STATE: " + this.game.state.tmp_protestant_reformation_bonus);
 	  }
 	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
 	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
+
 
 	  //
 	  // calculate total rolls

@@ -7,7 +7,6 @@
 
     let his_self = this;
 
-
     ///////////
     // QUEUE //
     ///////////
@@ -3597,6 +3596,7 @@ console.log("purging naval units and capturing leader");
 	        if (x === dd) {
 		  this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
 		  this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+	          this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
 		}
 	        dd++;
 	      }
@@ -3606,6 +3606,7 @@ console.log("purging naval units and capturing leader");
 		  this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
 		  this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
 		  this.game.state.theological_debate.defender_debater_bonus++;
+	          this.game.state.theological_debate.defender_debater_entered_uncommitted = 1;
 		}
 	        dd++;
 	      }
@@ -3623,6 +3624,7 @@ console.log("purging naval units and capturing leader");
 	        if (x === tad) {
 		  this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
 		  this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
+	          this.game.state.theological_debate.attacker_debater_entered_uncommitted = 1;
 		}
 	        tad++;
 	      }
@@ -3634,6 +3636,7 @@ console.log("purging naval units and capturing leader");
 	        if (x === tad) {
 		  this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
 		  this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
+	          this.game.state.theological_debate.attacker_debater_entered_uncommitted = 0;
 		}
 	        tad++;
 	      }
@@ -3678,6 +3681,8 @@ console.log("purging naval units and capturing leader");
 	  this.game.state.theological_debate.round2_defender_debater = "";
 	  this.game.state.theological_debate.attacker_debater = "";
 	  this.game.state.theological_debate.defender_debater = "";
+	  this.game.state.theological_debate.attacker_debater_entered_uncommitted = 0;
+	  this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
 	  this.game.state.theological_debate.attacker_debater_power = 0;
 	  this.game.state.theological_debate.defender_debater_power = 0;
 	  this.game.state.theological_debate.attacker_debater_bonus = 3;
@@ -3707,6 +3712,7 @@ console.log("purging naval units and capturing leader");
 	      if (x === ad) {
 		this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type;
 		this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
+	        this.game.state.theological_debate.attacker_debater_entered_uncommitted = 1;
 	      }
 	      ad++;
 	    }
@@ -3736,6 +3742,7 @@ console.log("purging naval units and capturing leader");
 	        if (x === dd) {
 		  this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
 		  this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+	          this.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
 	        }
 	        dd++;
 	      }
@@ -3744,6 +3751,7 @@ console.log("purging naval units and capturing leader");
 	        if (x === dd) {
 		  this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type;
 		  this.game.state.theological_debate.defender_debater_power = this.game.state.debaters[i].power;
+	          this.game.state.theological_debate.defender_debater_entered_uncommitted = 1;
 	          this.game.state.theological_debate.defender_debater_bonus++;
 		}
 	        dd++;
@@ -3831,13 +3839,13 @@ console.log("purging naval units and capturing leader");
 	  //
 	  // eck-debator bonus
 	  //
-	  if (attacker === "papacy" && this.game.state.theological_debate.attacker_debater === "eck-debater") {
-	    attacker_rolls++;  
+	  if (attacker === "papacy" && this.game.state.theological_debate.attacker_debater === "eck-debater" && this.game.state.theological_debate.attacker_debater_entered_uncommitted == 1) {
+	    attacker_rolls++;
 	  }
 	  //
 	  // gardiner-debater bonus
 	  //
-	  if (attacker === "papacy" && this.game.state.theological_debate.attacker_debater === "gardiner-debater" && this.game.state.theological_debate.language_zone === "english") {
+	  if (attacker === "papacy" && this.game.state.theological_debate.attacker_debater === "gardiner-debater" && this.game.state.theological_debate.language_zone === "english" && this.game.state.theological_debate.defender_debater_entered_uncommitted == 1) {
 	    attacker_rolls++;
 	  }
 
@@ -3917,7 +3925,7 @@ console.log("purging naval units and capturing leader");
 	    //
 	    // if aleander is in play, flip extra space
 	    //
-	    if (this.game.state.theological_debate.attacker_debater === "aleander-debater" || this.game.state.theological_debate.defender_debater === "aleander-debater") {
+	    if ((this.game.state.theological_debate.attacker_debater === "aleander-debater" && this.game.state.theological_debate.attacker_debater_entered_uncommitted == 1) || (this.game.state.theological_debate.defender_debater === "aleander-debater" && this.game.state.theological_debate.defender_debater_entered_uncommitted == 1)) {
 	      bonus_conversions = 1;
 	    }
 
@@ -3933,7 +3941,8 @@ console.log("purging naval units and capturing leader");
 	      //
 	      // if campeggio is the debater, we have 1/3 chance of ignoring result
 	      //
-	      if (this.game.state.theological_debate.defender_debater === "campeggio-debater") {
+
+	      if (this.game.state.theological_debate.defender_debater === "campeggio-debater" && this.game.state.theological_debate.defender_debater_entered_uncommitted == 1) {
 		let roll = this.rollDice(6);
 	        if (roll >= 5) {
 	          this.updateLog("Campeggio rolls: " + roll + " debate loss discarded");
@@ -3980,7 +3989,7 @@ console.log("purging naval units and capturing leader");
 	      //
 	      // if campeggio is the debater, we have 1/3 chance of ignoring result
 	      //
-	      if (this.game.state.theological_debate.attacker_debater === "campeggio-debater") {
+	      if (this.game.state.theological_debate.attacker_debater === "campeggio-debater" && this.game.state.theological_debate.attacker_debater_entered_uncommitted == 1) {
 		let roll = this.rollDice(6);
 	        if (roll >= 5) {
 	          this.updateLog("Campeggio rolls: " + roll + " debate loss discarded");
@@ -5015,11 +5024,22 @@ console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
 	    ties_resolve = "catholic";
  	  }
 
-console.log("STATE: " + this.game.state.tmp_protestant_reformation_bonus);
-
 	  //
 	  // temporary bonuses
 	  //
+	  if (this.game.state.tmp_protestant_reformation_bonus_spaces.length > 0) {
+	    if (!this.game.state.tmp_protestant_reformation_bonus_spaces.includes(space)) {
+	      this.game.state.tmp_protestant_reformation_bonus--;
+	      if (this.game.state.tmp_protestant_reformation_bonus < 0) { this.game.state.tmp_protestant_reformation_bonus = 0; }
+	    }
+	  }
+	  if (this.game.state.tmp_catholic_counter_reformation_bonus_spaces.length > 0) {
+	    if (!this.game.state.tmp_catholic_counter_reformation_bonus_spaces.includes(space)) {
+	      this.game.state.tmp_catholic_counter_reformation_bonus--;
+	      if (this.game.state.tmp_catholic_counter_reformation_bonus < 0) { this.game.state.tmp_catholic_counter_reformation_bonus = 0; }
+	    }
+	  }
+
 	  for (let i = 0; i < this.game.state.tmp_protestant_reformation_bonus; i++) {
 	    p_roll_desc.push({ name : "Bonus" , desc : "protestant bonus roll"});
 	  }
@@ -5028,6 +5048,7 @@ console.log("STATE: " + this.game.state.tmp_protestant_reformation_bonus);
 	  }
 	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
 	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
+
 
 	  //
 	  // calculate total rolls

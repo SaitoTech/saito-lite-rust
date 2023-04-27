@@ -127,6 +127,7 @@
 	  his_self.commitDebater("protestant", "zwingli-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	  his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["zurich","basel","innsbruck","strasburg","besancon","geneva","trent","salzburg","augsburg"];
 	}
         return 1;
       }
@@ -171,6 +172,7 @@
 	  his_self.commitDebater("protestant", "bucer-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
+          his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["strasburg","zurich","basel","geneva","dijon","besancon","stdizier","metz","liege","trier","mainz","nuremberg","worms","augsburg"];
 	}
         return 1;
       }
@@ -214,6 +216,7 @@
 	  his_self.commitDebater("protestant", "oekolampdius-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
+          his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["basel","zurich","innsbruck","strasburg","besancon","geneva","turin","grenoble","lyon","dijon","metz"];
 	}
         return 1;
       }
@@ -460,6 +463,7 @@
 	  his_self.commitDebater("papacy", "canisius-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_catholic_counter_reformation_bonus++;
+	  his_self.game.state.tmp_catholic_counter_reformation_bonus_spaces = ["regensburg","prague","vienna","linz","graz","salzburg","innsbruck","augsburg","worms","nuremberg","leipzig","mainz","kassal"];
         }
         return 1;
       }
@@ -526,6 +530,25 @@
 	  his_self.commitDebater("papacy", "contarini-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_catholic_counter_reformation_bonus++;
+
+          let cx = his_self.returnSpaceOfPersonage("hapsburg", "charles-v");
+          if (his_self.spaces[cx]) {
+            let targets = [];
+            targets.push(cs);
+
+            for (let i = 0; i < his_self.spaces[cx].neighbours.length; i++) {
+
+              let x = his_self.spaces[cs].neighbours[i];
+              if (!targets.includes(x)) { targets.push(x); }
+
+              for (let ii = 0; ii < his_self.spaces[x].neighbours.length; ii++) {
+                let y = his_self.spaces[x].neighbours[ii];
+                if (!targets.includes(y)) { targets.push(y); }
+              }
+            }
+          }
+
+          his_self.game.state.tmp_catholic_counter_reformation_bonus_spaces = targets;
         }
         return 1;
       }
@@ -572,6 +595,7 @@
 	  his_self.commitDebater("papacy", "faber-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_catholic_counter_reformation_bonus++;
+	  his_self.game.state.tmp_catholic_counter_reformation_bonus_spaces = ["augsburg","trier","cologne","wittenberg","mainz","brandenburg"];
         }
         return 1;
       }
@@ -638,6 +662,7 @@
           his_self.commitDebater("protestant", "cop-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_protestant_reformation_bonus++;
+          his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["paris","stdizier","dijon","orleans","rouen","boulogne","stquentin","calais","brussels","metz","besancon","lyon","tours","nantes"];
         }
         return 1;
       }
@@ -682,6 +707,7 @@
           his_self.commitDebater("protestant", "farel-debater");
           his_self.game.queue.splice(qe, 1);
           his_self.game.state.tmp_protestant_reformation_bonus++;
+          his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["geneva","besancon","basel","strasburg","zurich","metz","dijon","lyon","orleans","limoges","avignon","grenoble","turin","milan","pavia","genoa"];
         }
         return 1;
       }
@@ -776,6 +802,7 @@
 	  his_self.commitDebater("protestant", "cranmer-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	  his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["london","portsmouth","norwich","plymouth","bristol","wales","shrewsbury","carlisle","york","lincoln"];
 	}
         return 1;
       }
@@ -820,6 +847,7 @@
 	  his_self.commitDebater("protestant", "wishart-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	  his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["stirling","glasgow","edinburgh"];
 	}
         return 1;
       }
@@ -864,6 +892,7 @@
 	  his_self.commitDebater("protestant", "latimer-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	  his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["carlisle","berwick","york","lincoln","shrewsbury","wales","bristol","plymouth","portsmouth","london","norwich"];
 	}
         return 1;
       }
@@ -908,6 +937,7 @@
 	  his_self.commitDebater("protestant", "knox-debater");
 	  his_self.game.queue.splice(qe, 1);
 	  his_self.game.state.tmp_protestant_reformation_bonus++;
+	  his_self.game.state.tmp_protestant_reformation_bonus_spaces = ["carlisle","berwick","york","lincoln","shrewsbury","wales","bristol","plymouth","portsmouth","london","norwich","glasgow","edinburgh","stirling"];
 	}
         return 1;
       }
