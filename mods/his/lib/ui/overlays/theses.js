@@ -22,15 +22,20 @@ class ThesesOverlay {
 	let dw = document.querySelector(".theses-overlay");
 	let gb = document.querySelector(".gameboard");
 	let gb2 = gb.cloneNode(true);
+	gb2.removeAttribute("id");
+        gb2.removeAttribute("style");
 	gb2.classList.add("gameboard-clone");
 
-	gb2.style.position = "";
-	gb2.style.transformOrigin = "";
-	gb2.style.transform = "";
-	gb2.style.left = "";
-	gb2.style.right = "";
-
 	dw.appendChild(gb2);
+
+	let obj = document.querySelector(".gameboard-clone");
+	obj.style.position = "";
+	obj.style.transformOrigin = "";
+	obj.style.transform = "";
+	obj.style.top = "0px !important";
+	obj.style.bottom = "";
+	obj.style.left = "0px !important";
+	obj.style.right = "";
 
         $('.gameboard-clone').draggable({});
 

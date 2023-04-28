@@ -47,8 +47,7 @@
 
 .theses-overlay .gameboard {
     position: relative;
-    transform: translate(-50%, -18%) scaleX(0.7) scaleY(0.7);
-    left: 30%;
+    transform: translate(-42%, -20%) scaleX(0.7) scaleY(0.7);
 }
 
 .theses-overlay .status .status-text-menu ul .textchoice {

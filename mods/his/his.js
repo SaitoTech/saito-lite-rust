@@ -2620,17 +2620,19 @@ console.log("\n\n\n\n");
     try {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(this.app, this, '.gameboard');
+        //this.hammer.render(this.app, this);
+        //this.hammer.attachEvents(this.app, this, '.gameboard');
       } else {
 	let his_self = this;
         this.sizer.render();
-        this.sizer.attachEvents('.gameboard');
-        $('#gameboard').draggable({
-	  stop : function(event, ui) {
-	    his_self.saveGamePreference((his_self.returnSlug()+"-board-offset"), ui.offset);
-	  }
-	});
+        this.sizer.attachEvents('#gameboard');
+/*** sizer makes draggable 
+        //$('#gameboard').draggable({
+	//  stop : function(event, ui) {
+	//    his_self.saveGamePreference((his_self.returnSlug()+"-board-offset"), ui.offset);
+	//  }
+	//});
+***/
       }
 
     } catch (err) {}
@@ -12691,10 +12693,7 @@ console.log(JSON.stringify(mv));
 	    this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "protestant" , difference : (protestant_hits - papacy_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
   	    this.game.queue.push("hide_overlay\ttheses");
 	    let total_conversion_attempts = protestant_hits - papacy_hits;
-console.log("tca: " + total_conversion_attempts);
-console.log("ncs: " + this.returnNumberOfCatholicSpacesInLanguageZone());
-	    for (let i = 1; 1 <= total_conversion_attempts && i <= this.returnNumberOfCatholicSpacesInLanguageZone(); i++) {
-console.log("i: " + i);
+	    for (let i = 1; i <= total_conversion_attempts && i <= this.returnNumberOfCatholicSpacesInLanguageZone(); i++) {
 	      this.game.queue.push("select_for_protestant_conversion\tprotestant\tgerman");
 	    }
   	    this.game.queue.push("STATUS\t<div class='message'>Protestants selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_protestant));
@@ -16506,7 +16505,6 @@ this.updateLog("Catholics: " + JSON.stringify(cdice));
 	// objects and cards can add commands
 	//
         for (let i in z) {
-console.log("OBJ: " + i + " -- " + z[i].name);
           if (!z[i].handleGameLoop(this, qe, mv)) { return 0; }
         }
 
