@@ -4330,12 +4330,12 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  //
 	  let new_cards = this.returnNewCardsForThisTurn(this.game.state.round);
 
-console.log("==============");
-console.log("CARDS IN DECK:");
-console.log("==============");
-for (let key in new_cards) {
-  console.log(key);
-}
+//console.log("==============");
+//console.log("CARDS IN DECK:");
+//console.log("==============");
+//for (let key in new_cards) {
+//  console.log(key);
+//}
 
 	  
 	  //
@@ -4364,11 +4364,12 @@ for (let key in new_cards) {
 	  delete deck_to_deal['007'];
 	  delete deck_to_deal['008'];
 
+	  for (let key in deck_to_deal) { reshuffle_cards[key] = deck_to_deal[key]; }
+
 console.log("----------------------------");
 console.log("---SHUFFLING IN DISCARDS ---");
 console.log("----------------------------");
-
-	  for (let key in new_cards) { reshuffle_cards[key] = deck_to_deal[key]; }
+console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
     	  this.game.queue.push("restore_home_cards_to_deck");
     	  this.game.queue.push("DECK\t1\t"+JSON.stringify(reshuffle_cards));

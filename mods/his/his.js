@@ -2440,47 +2440,6 @@ console.log("\n\n\n\n");
     });
 
     this.menu.addMenuOption("game-factions", "Factions");
-    
-    this.menu.addSubMenuOption("game-factions", {
-      text : "Theological Debate",
-      id : "game-debate",
-      class : "game-debate",
-      callback : function(app, game_mod) {
-        game_mod.debate_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
-      text : "Publish Treatise",
-      id : "game-treatise",
-      class : "game-treatise",
-      callback : function(app, game_mod) {
-        game_mod.treatise_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
-      text : "95 Theses",
-      id : "game-95-theses",
-      class : "game-95-theses",
-      callback : function(app, game_mod) {
-        game_mod.theses_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
-      text : "Reformations",
-      id : "game-diet-of-reformations",
-      class : "game-diet-of-reformations",
-      callback : function(app, game_mod) {
-        game_mod.reformation_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
-      text : "Diet of Worms",
-      id : "game-diet-of-worms",
-      class : "game-diet-of-worms",
-      callback : function(app, game_mod) {
-        game_mod.diet_of_worms_overlay.render();
-      }
-    });
     this.menu.addSubMenuOption("game-factions", {
       text : "Hapsburgs",
       id : "game-hapsburgs",
@@ -15594,12 +15553,12 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  //
 	  let new_cards = this.returnNewCardsForThisTurn(this.game.state.round);
 
-console.log("==============");
-console.log("CARDS IN DECK:");
-console.log("==============");
-for (let key in new_cards) {
-  console.log(key);
-}
+//console.log("==============");
+//console.log("CARDS IN DECK:");
+//console.log("==============");
+//for (let key in new_cards) {
+//  console.log(key);
+//}
 
 	  
 	  //
@@ -15628,11 +15587,12 @@ for (let key in new_cards) {
 	  delete deck_to_deal['007'];
 	  delete deck_to_deal['008'];
 
+	  for (let key in deck_to_deal) { reshuffle_cards[key] = deck_to_deal[key]; }
+
 console.log("----------------------------");
 console.log("---SHUFFLING IN DISCARDS ---");
 console.log("----------------------------");
-
-	  for (let key in new_cards) { reshuffle_cards[key] = deck_to_deal[key]; }
+console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
     	  this.game.queue.push("restore_home_cards_to_deck");
     	  this.game.queue.push("DECK\t1\t"+JSON.stringify(reshuffle_cards));

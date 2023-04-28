@@ -104,47 +104,6 @@
     });
 
     this.menu.addMenuOption("game-factions", "Factions");
-    
-    this.menu.addSubMenuOption("game-factions", {
-      text : "Theological Debate",
-      id : "game-debate",
-      class : "game-debate",
-      callback : function(app, game_mod) {
-        game_mod.debate_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
-      text : "Publish Treatise",
-      id : "game-treatise",
-      class : "game-treatise",
-      callback : function(app, game_mod) {
-        game_mod.treatise_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
-      text : "95 Theses",
-      id : "game-95-theses",
-      class : "game-95-theses",
-      callback : function(app, game_mod) {
-        game_mod.theses_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
-      text : "Reformations",
-      id : "game-diet-of-reformations",
-      class : "game-diet-of-reformations",
-      callback : function(app, game_mod) {
-        game_mod.reformation_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
-      text : "Diet of Worms",
-      id : "game-diet-of-worms",
-      class : "game-diet-of-worms",
-      callback : function(app, game_mod) {
-        game_mod.diet_of_worms_overlay.render();
-      }
-    });
     this.menu.addSubMenuOption("game-factions", {
       text : "Hapsburgs",
       id : "game-hapsburgs",
