@@ -170,17 +170,17 @@ class Arcade extends ModTemplate {
     }
     let arcade_self = this;
 
-    let cutoff1 = new Date().getTime() - 4800000;
+    let cutoff1 = new Date().getTime() - 3500000;
     let cutoff2 = new Date().getTime() - 600000000;
 
     //
     // load open games from server
     //  ( status = "open" OR status = "private" ) AND
-    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND status = 'over') ORDER BY created_at ASC`;
+    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND (status = 'over' OR status = 'active')) ORDER BY created_at ASC`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
       if (res.rows) {
         for (let record of res.rows) {
-          console.log(JSON.parse(JSON.stringify(record)));
+          //console.log(JSON.parse(JSON.stringify(record)));
           //This is the save openTX
           let game_tx = new saito.default.transaction(JSON.parse(record.tx));
 
@@ -200,7 +200,12 @@ class Arcade extends ModTemplate {
           //Game Meta Data stored directly in DB
           //
           if (record.winner){
-            game_tx.msg.winner = JSON.parse(record.winner);  
+            game_tx.msg.winner = [record.winner];
+            try {
+              game_tx.msg.winner = JSON.parse(record.winner);
+            } catch(err) {
+              //console.log("Non-JSON DB entry:", record.winner);              
+            }
           }
 
           game_tx.msg.method = record.method;
@@ -211,9 +216,9 @@ class Arcade extends ModTemplate {
             game_tx.msg.ts = step?.ts;          
           }
 
-          //if (arcade_self.debug) {
+          if (arcade_self.debug) {
             console.log("Load DB Game: " + record.status, game_tx.returnMessage());
-          //}
+          }
           if (record.time_finished) {
             if (record.status !== "over" && record.status !== "close") {
               console.log("Game status mismatch");
@@ -1802,7 +1807,7 @@ class Arcade extends ModTemplate {
     game_mod.game.halted = 1; // Default to paused
    
     this.observerDownloadNextMoves(game_mod, ()=> {
-      if (watch_live) {
+      if (watch_live > 0) {
         game_mod.game.halted = 0;
         game_mod.game.live = watch_live;
         game_mod.saveGame(game_id);

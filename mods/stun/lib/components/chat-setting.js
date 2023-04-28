@@ -1,3 +1,5 @@
+
+
 const ChatSettingTemplate = require("./chat-setting.template");
 
 class ChatSetting {
@@ -76,6 +78,7 @@ class ChatSetting {
     );
 
     toggleVideoButton.addEventListener("click", () => {
+      if(!this.videoStream) return;
       if (this.videoEnabled) {
         this.videoStream.getVideoTracks()[0].enabled = false;
         toggleVideoButton.classList.remove("fa-video");
@@ -140,14 +143,25 @@ class ChatSetting {
   async getUserMedia(videoElement) {
     try {
       this.audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      this.videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
-
-      videoElement.srcObject = this.videoStream;
-      this.loadMediaDevices();
     } catch (error) {
       console.error("Error accessing media devices.", error);
-      salert("Error access media devices, please check your permissions")
+      salert("Error access media devices, please check your permissions");
     }
+
+    
+    try {
+      this.videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      videoElement.srcObject = this.videoStream;
+      this.videoEnabled = true
+      this.app.connection.emit("update-media-preference", "video", this.videoEnabled);
+    } catch (error) {
+      this.videoStream = null;
+      this.videoEnabled = false
+      this.app.connection.emit("update-media-preference", "video", this.videoEnabled);
+      salert("Error access camera, using audio only mode ");
+    }
+
+    this.loadMediaDevices();
   }
 
   async loadMediaDevices() {
@@ -172,6 +186,7 @@ class ChatSetting {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
     if (kind === "video") {
+      if(!this.videoStream ) return
       this.videoStream.getVideoTracks()[0].stop();
       this.videoStream = stream;
       videoElement.srcObject = this.videoStream;
@@ -237,3 +252,4 @@ class ChatSetting {
 }
 
 module.exports = ChatSetting;
+
