@@ -1430,8 +1430,8 @@ console.log(JSON.stringify(mv));
             //
 	    this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "protestant" , difference : (protestant_hits - papacy_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
   	    this.game.queue.push("hide_overlay\ttheses");
-	    let total_conversion_attempts = papacy_hits - protestant_hits;
-	    for (let i = 1; 1 <= total_conversion_attempts && i <= this.returnNumberOfCatholicSpacesInLanguageZone(); i++) {
+	    let total_conversion_attempts = protestant_hits - papacy_hits;
+	    for (let i = 1; i <= total_conversion_attempts && i <= this.returnNumberOfCatholicSpacesInLanguageZone(); i++) {
 	      this.game.queue.push("select_for_protestant_conversion\tprotestant\tgerman");
 	    }
   	    this.game.queue.push("STATUS\t<div class='message'>Protestants selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_protestant));
@@ -1445,7 +1445,7 @@ console.log(JSON.stringify(mv));
               //
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "papacy" , difference : (papacy_hits - protestant_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
   	      this.game.queue.push("hide_overlay\ttheses");
-	      let total_conversion_attempts = protestant_hits - papacy_hits;
+	      let total_conversion_attempts = papacy_hits - protestant_hits;
 	      for (let i = 1; i < total_conversion_attempts && i <= this.returnNumberOfProtestantSpacesInLanguageZone(); i++) {
 	        this.game.queue.push("select_for_catholic_conversion\tpapacy\tgerman");
 	      }
@@ -5243,7 +5243,6 @@ this.updateLog("Catholics: " + JSON.stringify(cdice));
 	// objects and cards can add commands
 	//
         for (let i in z) {
-console.log("OBJ: " + i + " -- " + z[i].name);
           if (!z[i].handleGameLoop(this, qe, mv)) { return 0; }
         }
 

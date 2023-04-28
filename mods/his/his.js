@@ -11194,18 +11194,11 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     //
     // debaters have bonuses which modify gameplay
     //
-console.log("how many debaters? " + this.game.state.debaters.length);
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       let d = this.game.state.debaters[i];
       let key = d.key;
-console.log("debaters key: " + key);
-console.log(JSON.stringify(this.debaters[key]));
       z.push(this.debaters[key]);
     }
-
-for (let i in z) {
-  console.log("c: " + i);
-}
 
     return z;
 
@@ -12697,8 +12690,11 @@ console.log(JSON.stringify(mv));
             //
 	    this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "protestant" , difference : (protestant_hits - papacy_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
   	    this.game.queue.push("hide_overlay\ttheses");
-	    let total_conversion_attempts = papacy_hits - protestant_hits;
+	    let total_conversion_attempts = protestant_hits - papacy_hits;
+console.log("tca: " + total_conversion_attempts);
+console.log("ncs: " + this.returnNumberOfCatholicSpacesInLanguageZone());
 	    for (let i = 1; 1 <= total_conversion_attempts && i <= this.returnNumberOfCatholicSpacesInLanguageZone(); i++) {
+console.log("i: " + i);
 	      this.game.queue.push("select_for_protestant_conversion\tprotestant\tgerman");
 	    }
   	    this.game.queue.push("STATUS\t<div class='message'>Protestants selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_protestant));
@@ -12712,7 +12708,7 @@ console.log(JSON.stringify(mv));
               //
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "papacy" , difference : (papacy_hits - protestant_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
   	      this.game.queue.push("hide_overlay\ttheses");
-	      let total_conversion_attempts = protestant_hits - papacy_hits;
+	      let total_conversion_attempts = papacy_hits - protestant_hits;
 	      for (let i = 1; i < total_conversion_attempts && i <= this.returnNumberOfProtestantSpacesInLanguageZone(); i++) {
 	        this.game.queue.push("select_for_catholic_conversion\tpapacy\tgerman");
 	      }
