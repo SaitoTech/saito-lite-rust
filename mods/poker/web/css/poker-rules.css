@@ -1,0 +1,31 @@
+.poker-rules-overlay {
+    border: solid 0.5rem #fff;
+    min-width: 95rem;
+    max-width: 80vw;
+    background-image: url(/saito/img/arcade/greenfelt.jpg);
+    background-size: cover;
+    padding: 2rem;
+    border-radius: 5rem;
+}
+div.h2 {
+    font-size: 4rem;
+    margin: 1rem;
+    color: white;
+    padding: 0rem 3.2rem;
+    font-weight: bolder;
+}
+.poker-modal-table {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-items: center;
+    padding: 0rem 0rem 2rem 0rem;
+}
+img.mcard {
+    width: 7rem;
+    padding: 0.5rem 0rem;
+}
+.poker-box-description {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+}
