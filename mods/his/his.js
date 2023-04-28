@@ -18914,13 +18914,14 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Port for Naval Squadron",
 
       function(space) {
+        if (space.ports.length === 0) { return 0; }
         if (space.owner === faction) { return 1; }
         if (space.home === faction) { return 1; }
 	return 0;
       },
 
       function(destination_spacekey) {
-	his_self.addMove("build\tsea\t"+faction+"\t"+"squadron"+"\t"+destination_spacekey);
+	his_self.addMove("build\tland\t"+faction+"\t"+"squadron"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },
 
