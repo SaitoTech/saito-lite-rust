@@ -1302,6 +1302,15 @@ console.log(JSON.stringify(mv));
 
           game_self.game.queue.push("resolve_diet_of_worms");
 
+	  //
+	  // flip hapsburg card from deck if 2-player game
+	  //
+	  if (game_self.game.players.length == 2) {
+	    // hapsburg card goes to pool
+            game_self.game.queue.push("POOLDEAL\t1\t1\t1"); // deck 1
+            game_self.game.queue.push("POOL\t1"); // deck 1
+	  }
+
           //
           // remove mandatory events from both hands
 	  //
@@ -1353,12 +1362,18 @@ console.log(JSON.stringify(mv));
 
 	  let protestant_card = this.game.deck[0].cards[this.game.state.sp[protestant-1]];
 	  let papacy_card = this.game.deck[0].cards[this.game.state.sp[papacy-1]];
+	  let hapsburg_card = this.game.pool[0].hand[0];
+
+console.log("X: " + JSON.stringify(this.game.pool[0].hand));
+console.log("POOL: " + hapsburg_card);
+
 
 	  //
 	  // show card in overlay
 	  //
 	  this.diet_of_worms_overlay.addCardToCardfan(this.game.state.sp[protestant-1], "protestant");
 	  this.diet_of_worms_overlay.addCardToCardfan(this.game.state.sp[papacy-1], "catholic");
+	  this.diet_of_worms_overlay.addCardToCardfan(hapsburg_card, "catholic");
 
 
 	  //
@@ -1366,6 +1381,7 @@ console.log(JSON.stringify(mv));
 	  //
 	  this.game.queue.push("discard\tprotestant\t"+this.game.state.sp[protestant-1]);
 	  this.game.queue.push("discard\tpapacy\t"+this.game.state.sp[papacy-1]);
+	  this.game.queue.push("discard\tall\t"+hapsburg_card);
 
 	  //
 	  // 3. roll protestant dice: The Protestant player adds 4 to the CP value of his card. 
@@ -4248,7 +4264,6 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
     	    this.game.queue.push("DECK\t2\t"+JSON.stringify(new_cards));
             this.game.queue.push("DECKBACKUP\t2");
 	  }
-
 
 	  //
 	  // The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase
