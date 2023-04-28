@@ -1807,7 +1807,7 @@ class Arcade extends ModTemplate {
     game_mod.game.halted = 1; // Default to paused
    
     this.observerDownloadNextMoves(game_mod, ()=> {
-      if (watch_live) {
+      if (watch_live > 0) {
         game_mod.game.halted = 0;
         game_mod.game.live = watch_live;
         game_mod.saveGame(game_id);
