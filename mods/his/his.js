@@ -11310,15 +11310,15 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  if (this.game.state.round == 1) {
 
-  	    //this.game.queue.push("hide_overlay\tdiet_of_worms");
-  	    //this.game.queue.push("diet_of_worms");
-  	    //this.game.queue.push("show_overlay\tdiet_of_worms");
+  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+  	    this.game.queue.push("diet_of_worms");
+  	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    //
 	    // cards dealt before diet of worms
 	    //
 	    this.game.queue.push("card_draw_phase");
-	    //this.updateLog("Luther's 95 Theses!");
-	    //this.game.queue.push("event\t1\t008");
+	    this.updateLog("Luther's 95 Theses!");
+	    this.game.queue.push("event\t1\t008");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -17308,6 +17308,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 	  let t = "."+key;
 	  document.querySelectorAll(t).forEach((el) => {
 	    el.onclick = (e) => {
+	      el.onclick = () => {};
 	      $('.option').off();
 	      $('.space').off();
 	      $('.hextile').off();
@@ -17326,6 +17327,20 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     $('.option').off();
     $('.option').on('click', function () {
+
+      //
+      // and remove on-board clickability
+      //
+      if (board_clickable) {
+        for (let key in his_self.game.spaces) {
+          if (filter_func(his_self.game.spaces[key]) == 1) {
+	    let t = "."+key;
+	    document.querySelectorAll(t).forEach((el) => {
+	      el.onclick = (e) => {};
+	    });
+	  }
+	}
+      }
 
       $('.option').off();
       $('.space').off();

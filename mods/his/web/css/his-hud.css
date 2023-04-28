@@ -8,6 +8,7 @@
 }
 ,hud-body {
   overflow: scroll;
+  min-height: 20rem;
 }
 .hud-body .status .message {
   padding: 15px;

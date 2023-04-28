@@ -777,6 +777,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 	  let t = "."+key;
 	  document.querySelectorAll(t).forEach((el) => {
 	    el.onclick = (e) => {
+	      el.onclick = () => {};
 	      $('.option').off();
 	      $('.space').off();
 	      $('.hextile').off();
@@ -795,6 +796,20 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     $('.option').off();
     $('.option').on('click', function () {
+
+      //
+      // and remove on-board clickability
+      //
+      if (board_clickable) {
+        for (let key in his_self.game.spaces) {
+          if (filter_func(his_self.game.spaces[key]) == 1) {
+	    let t = "."+key;
+	    document.querySelectorAll(t).forEach((el) => {
+	      el.onclick = (e) => {};
+	    });
+	  }
+	}
+      }
 
       $('.option').off();
       $('.space').off();
