@@ -183,7 +183,7 @@ export default class Transaction extends SaitoTransaction {
             this.dmsg = app.keychain.decryptMessage(this.from[0].publicKey, parsed_msg);
           }
         } catch (e) {
-          console.error("ERROR: " + e);
+          console.error(e);
         }
         return;
       }
@@ -319,8 +319,5 @@ export default class Transaction extends SaitoTransaction {
       type: this.type,
       m: this.data,
     };
-  }
-  public serialize(): Uint8Array {
-    return this.tx.serialize();
   }
 }

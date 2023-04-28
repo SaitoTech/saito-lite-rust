@@ -79,10 +79,10 @@ class Encrypt extends ModTemplate {
     let encrypt_self = this;
 
     if (message.request === "diffie hellman key exchange") {
-      let tx = new saito.default.transaction(message.data.tx);
+      let tx = new saito.default.transaction(undefined, message.data.tx);
 
-      let sender = tx.transaction.from[0].add;
-      let receiver = tx.transaction.to[0].add;
+      let sender = tx.from[0].publicKey;
+      let receiver = tx.to[0].publicKey;
       let txmsg = tx.returnMessage();
       let request = txmsg.request; // "request"
       if (app.keychain.alreadyHaveSharedSecret(sender)) {
@@ -101,10 +101,10 @@ class Encrypt extends ModTemplate {
     }
 
     if (message.request === "diffie hellman key response") {
-      let tx = new saito.default.transaction(message.data.tx);
+      let tx = new saito.default.transaction(undefined, message.data.tx);
 
-      let sender = tx.transaction.from[0].add;
-      let receiver = tx.transaction.to[0].add;
+      let sender = tx.from[0].publicKey;
+      let receiver = tx.to[0].publicKey;
       let txmsg = tx.returnMessage();
       let request = txmsg.request; // "request"
       if (app.keychain.alreadyHaveSharedSecret(sender)) {
@@ -233,8 +233,7 @@ class Encrypt extends ModTemplate {
       }
     }
 
-    tx = this.app.wallet.signTransaction(tx);
-
+    await tx.sign();
     //
     //
     //
@@ -249,14 +248,14 @@ class Encrypt extends ModTemplate {
     this.saveEncrypt();
   }
 
-  accept_key_exchange(tx, offchain = 0, peer = null) {
+  async accept_key_exchange(tx, offchain = 0, peer = null) {
     let txmsg = tx.returnMessage();
 
-    let remote_address = tx.transaction.from[0].add;
-    let our_address = tx.transaction.to[0].add;
+    let remote_address = tx.from[0].publicKey;
+    let our_address = tx.to[0].publicKey;
     let alice_publickey = txmsg.alice_publickey;
 
-    let fee = tx.transaction.to[0].amt;
+    let fee = tx.to[0].amount;
 
     let bob = this.app.crypto.createDiffieHellman();
     let bob_publickey = bob.getPublicKey(null, "compressed").toString("hex");
@@ -266,7 +265,7 @@ class Encrypt extends ModTemplate {
       Buffer.from(alice_publickey, "hex")
     );
 
-    var newtx = this.app.wallet.createUnsignedTransaction(remote_address, 0, fee);
+    var newtx = await this.app.wallet.createUnsignedTransaction(remote_address, 0, fee);
     if (newtx == null) {
       return;
     }
@@ -274,10 +273,10 @@ class Encrypt extends ModTemplate {
     newtx.msg.request = "key exchange confirm";
     newtx.msg.tx_id = tx.transaction.id; // reference id for parent tx
     newtx.msg.bob = bob_publickey;
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     if (offchain == 0) {
-      this.app.network.propagateTransaction(newtx);
+      await this.app.network.propagateTransaction(newtx);
     } else {
       let data = {};
       data.module = "Encrypt";
@@ -302,14 +301,14 @@ class Encrypt extends ModTemplate {
     if (conf == 0) {
       console.log("ENCRYPT ONCONF");
 
-      if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
+      if (tx.from[0].publicKey === this.publicKey) {
         encrypt_self.sendEvent("encrypt-key-exchange-confirm", {
-          members: [tx.transaction.to[0].add, tx.transaction.from[0].add],
+          members: [tx.to[0].publicKey, tx.from[0].publicKey],
         });
       }
-      if (tx.transaction.to[0].add === app.wallet.returnPublicKey()) {
-        let sender = tx.transaction.from[0].add;
-        let receiver = tx.transaction.to[0].add;
+      if (tx.to[0].publicKey === this.publicKey) {
+        let sender = tx.from[0].publicKey;
+        let receiver = tx.to[0].publicKey;
         let txmsg = tx.returnMessage();
         let request = txmsg.request; // "request"
         if (app.keychain.alreadyHaveSharedSecret(sender)) {
@@ -320,10 +319,10 @@ class Encrypt extends ModTemplate {
         // key exchange requests
         //
         if (txmsg.request == "key exchange request") {
-          if (sender == app.wallet.returnPublicKey()) {
+          if (sender == this.publicKey) {
             console.log("\n\n\nYou have sent an encrypted channel request to " + receiver);
           }
-          if (receiver == app.wallet.returnPublicKey()) {
+          if (receiver == this.publicKey) {
             console.log("\n\n\nYou have accepted an encrypted channel request from " + receiver);
             encrypt_self.accept_key_exchange(tx);
           }
@@ -357,7 +356,7 @@ class Encrypt extends ModTemplate {
           //
           //
           encrypt_self.sendEvent("encrypt-key-exchange-confirm", {
-            members: [sender, app.wallet.returnPublicKey()],
+            members: [sender, this.publicKey],
           });
           encrypt_self.saveEncrypt();
         }

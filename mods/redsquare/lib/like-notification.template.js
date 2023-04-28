@@ -2,7 +2,7 @@ module.exports = (app, mod, tx) => {
   let txmsg = tx.returnMessage();
   let txsig = "";
   let tweet_to_show = "";
-  let from = tx.transaction.from[0].add;
+  let from = tx.from[0].publicKey;
 
   if (txmsg.data?.sig) {
     txsig = txmsg.data.sig;

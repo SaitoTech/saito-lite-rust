@@ -460,14 +460,14 @@ class Nwasm extends GameTemplate {
       iobj.innerHTML = "bundling ROM into archive file...";
     }
 
-    let newtx = this.app.wallet.createUnsignedTransaction();
+    let newtx = await this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
 
     document.querySelector(".loader").classList.add("steptwo");
     if (iobj) {
       iobj.innerHTML = "cryptographically signing archive file...";
     }
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
     if (iobj) {
       iobj.innerHTML = "uploading archive file: " + newtx.data.byteLength + " bytes";
     }
@@ -529,7 +529,7 @@ class Nwasm extends GameTemplate {
     let base64data = this.convertByteArrayToBase64(data);
     let screenshot = await this.app.browser.resizeImg(this.active_game_img);
 
-    let newtx = this.app.wallet.createUnsignedTransaction();
+    let newtx = await this.app.wallet.createUnsignedTransaction();
 
     this.stopPlaying();
 
@@ -543,8 +543,8 @@ class Nwasm extends GameTemplate {
     };
 
     newtx.msg = obj;
-    newtx = this.app.wallet.signTransaction(newtx);
-    this.app.storage.saveTransaction(newtx, "Nwasm-" + this.active_rom_sig);
+    await newtx.sign();
+    await this.app.storage.saveTransaction(newtx, "Nwasm-" + this.active_rom_sig);
     this.active_game_saves.push(newtx);
   }
 

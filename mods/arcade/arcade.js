@@ -701,7 +701,7 @@ class Arcade extends ModTemplate {
       );
     }
 
-    newtx = await this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     return newtx;
   }
@@ -796,7 +796,7 @@ class Arcade extends ModTemplate {
       game_id: orig_tx.signature,
     };
     newtx.msg = msg;
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     return newtx;
   }
@@ -884,15 +884,13 @@ class Arcade extends ModTemplate {
     slip.amount = BigInt(0);
     newtx.addToSlip(slip);
 
-    let msg = {
+    newtx.msg = {
       request: "stopgame",
       module: orig_tx.msg.game,
       game_id: orig_tx.signature,
       reason: reason,
     };
-
-    newtx.msg = msg;
-    newtx = await this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     console.info(
       `Send ${reason == "cancellation" ? "close" : "quit"} message from Arcade to ${
@@ -1061,7 +1059,7 @@ class Arcade extends ModTemplate {
       "invite_game_" + newtx.msg.timestamp,
       await this.app.wallet.getPrivateKey()
     );
-    newtx = await this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     return newtx;
   }
@@ -1105,7 +1103,7 @@ class Arcade extends ModTemplate {
       await this.app.wallet.getPrivateKey()
     );
 
-    newtx = await this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     return newtx;
   }
@@ -1183,7 +1181,6 @@ class Arcade extends ModTemplate {
           */
           //Start Spinner
           this.app.connection.emit("arcade-game-initialize-render-request");
-          return;
         }
       }
     }
@@ -1205,7 +1202,7 @@ class Arcade extends ModTemplate {
 
     let txmsg = orig_tx.msg;
 
-    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     for (let i = 0; i < txmsg.players.length; i++) {
       let slip = new Slip();
       slip.publicKey = txmsg.players[i];
@@ -1218,7 +1215,7 @@ class Arcade extends ModTemplate {
     newtx.msg.game_id = orig_tx.signature;
     newtx.msg.request = "accept";
 
-    newtx = await this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     return newtx;
   }
@@ -1437,7 +1434,7 @@ class Arcade extends ModTemplate {
   // single player game
   //
   async launchSinglePlayerGame(gameobj) {
-    let opentx = await this.createOpenTransaction(gameobj, this.app.wallet.returnPublicKey());
+    let opentx = await this.createOpenTransaction(gameobj, this.publicKey);
 
     this.app.connection.emit("relay-send-message", {
       recipient: "PEERS",
@@ -1446,7 +1443,7 @@ class Arcade extends ModTemplate {
     });
     this.addGame(opentx, "private");
 
-    let newtx = this.createAcceptTransaction(opentx);
+    let newtx = await this.createAcceptTransaction(opentx);
 
     await this.app.network.propagateTransaction(newtx);
     this.app.connection.emit("relay-send-message", {
@@ -1928,7 +1925,7 @@ class Arcade extends ModTemplate {
   async observerDownloadNextMoves(game_mod, mycallback = null) {
     // purge old transactions
     for (let i = game_mod.game.future.length - 1; i >= 0; i--) {
-      let queued_tx = new Transaction(JSON.parse(game_mod.game.future[i]));
+      let queued_tx = new Transaction(undefined, JSON.parse(game_mod.game.future[i]));
       let queued_txmsg = queued_tx.returnMessage();
 
       if (

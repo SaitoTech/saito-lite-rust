@@ -2,6 +2,7 @@ const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const SaitoLogin = require("./lib/login");
 const SaitoBackup = require("./lib/backup");
+const Slip = require("../../lib/saito/slip");
 
 class Recovery extends ModTemplate {
   constructor(app) {
@@ -167,13 +168,13 @@ class Recovery extends ModTemplate {
     };
 
     newtx.transaction.to.push(new saito.default.slip(this.publicKey, 0.0));
-
-    return this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
+    return newtx;
   }
 
   async receiveBackupTransaction(tx) {
     let txmsg = tx.returnMessage();
-    let publickey = tx.transaction.from[0].add;
+    let publickey = tx.from[0].publicKey;
     let hash = txmsg.hash || "";
     let txjson = JSON.stringify(tx.transaction);
 
@@ -201,10 +202,12 @@ class Recovery extends ModTemplate {
       request: "recovery recover",
       hash: retrieval_hash,
     };
+    let slip = new Slip();
+    slip.publicKey = this.publicKey;
+    newtx.addToSlip(slip);
 
-    newtx.transaction.to.push(new saito.default.slip(this.publicKey, 0.0));
-
-    return this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
+    return newtx;
   }
 
   //
@@ -219,7 +222,7 @@ class Recovery extends ModTemplate {
     }
 
     let txmsg = tx.returnMessage();
-    let publickey = tx.transaction.from[0].add;
+    let publickey = tx.from[0].publicKey;
     let hash = txmsg.hash || "";
 
     let sql = "SELECT * FROM recovery WHERE hash = $hash";
@@ -282,7 +285,7 @@ class Recovery extends ModTemplate {
 
           let tx = JSON.parse(res.rows[0].tx);
           let identifier = res.rows[0].identifier;
-          let newtx2 = new saito.default.transaction(tx);
+          let newtx2 = new saito.default.transaction(undefined, tx);
           let txmsg = newtx2.returnMessage();
 
           let encrypted_wallet = txmsg.wallet;

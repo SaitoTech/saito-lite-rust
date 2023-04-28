@@ -14,7 +14,7 @@ module.exports = AppstoreAppDetails = {
     // data is module = dm
     let dm = data;
 
-    document.querySelector(".appstore-install-confirm-button").onclick = () => {
+    document.querySelector(".appstore-install-confirm-button").onclick = async () => {
       //remove close event on shim until finished.
       document.querySelector(".saito-overlay-closebox-btn").remove();
       document.querySelector(".saito-overlay-closebox").remove();
@@ -67,7 +67,7 @@ module.exports = AppstoreAppDetails = {
       //
       if (have_specified_appstore) {
         if (app.network.hasPeer(app.options.appstore.default)) {
-          var newtx = app.wallet.createUnsignedTransactionWithDefaultFee(
+          var newtx = await app.wallet.createUnsignedTransactionWithDefaultFee(
             app.options.appstore.default,
             BigInt(0)
           );
@@ -78,8 +78,8 @@ module.exports = AppstoreAppDetails = {
           newtx.msg.module = "AppStore";
           newtx.msg.request = "request bundle";
           newtx.msg.list = module_list;
-          newtx = app.wallet.signTransaction(newtx);
-          app.network.propagateTransaction(newtx);
+          await newtx.sign();
+          await app.network.propagateTransaction(newtx);
 
           document.querySelector(".appstore-overlay").innerHTML = `
             <div class="appstore-bundler-install-notice">
@@ -109,14 +109,14 @@ module.exports = AppstoreAppDetails = {
             mod.overlay.hide();
           };
 
-          document.getElementById("appstore-compile-btn").onclick = (e) => {
+          document.getElementById("appstore-compile-btn").onclick = async (e) => {
             document.querySelector(".appstore-bundler-install-notice").innerHTML = "Please wait...";
 
             app.options.appstore = {};
             app.options.appstore.default = app.network.peers[0].peer.publickey;
             app.storage.saveOptions();
 
-            var newtx = app.wallet.createUnsignedTransactionWithDefaultFee(
+            var newtx = await app.wallet.createUnsignedTransactionWithDefaultFee(
               app.options.appstore.default,
               BigInt(0)
             );
@@ -126,8 +126,8 @@ module.exports = AppstoreAppDetails = {
             newtx.msg.module = "AppStore";
             newtx.msg.request = "request bundle";
             newtx.msg.list = module_list;
-            newtx = app.wallet.signTransaction(newtx);
-            app.network.propagateTransaction(newtx);
+            await newtx.sign();
+            await app.network.propagateTransaction(newtx);
 
             document.querySelector(".appstore-overlay").innerHTML = `
                <div class="appstore-bundler-install-notice">
@@ -154,12 +154,12 @@ module.exports = AppstoreAppDetails = {
           mod.overlay.hide();
         };
 
-        document.getElementById("appstore-compile-btn").onclick = (e) => {
+        document.getElementById("appstore-compile-btn").onclick = async (e) => {
           app.options.appstore = {};
           app.options.appstore.default = app.network.peers[0].peer.publickey;
           app.storage.saveOptions();
 
-          var newtx = app.wallet.createUnsignedTransactionWithDefaultFee(
+          var newtx = await app.wallet.createUnsignedTransactionWithDefaultFee(
             app.options.appstore.default,
             BigInt(0)
           );
@@ -169,8 +169,8 @@ module.exports = AppstoreAppDetails = {
           newtx.msg.module = "AppStore";
           newtx.msg.request = "request bundle";
           newtx.msg.list = module_list;
-          newtx = app.wallet.signTransaction(newtx);
-          app.network.propagateTransaction(newtx);
+          await newtx.sign();
+          await app.network.propagateTransaction(newtx);
 
           document.querySelector(".appstore-overlay").innerHTML = `
              <div class="appstore-bundler-install-notice">
@@ -183,4 +183,3 @@ module.exports = AppstoreAppDetails = {
     };
   },
 };
-

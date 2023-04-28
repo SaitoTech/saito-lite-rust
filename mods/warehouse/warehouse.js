@@ -27,7 +27,8 @@ class Warehouse extends ModTemplate {
       for (let i = 0; i < blk.transactions.length; i++) {
         if (blk.transactions[i].type >= -999) {
           for (let ii = 0; ii < blk.transactions[i].to.length; ii++) {
-            let sql = `INSERT OR IGNORE INTO transactions (
+            let sql = `INSERT
+            OR IGNORE INTO transactions (
                                 address, 
                                 amt, 
                                 bid, 
@@ -46,23 +47,23 @@ class Warehouse extends ModTemplate {
                                 module
                                 )
                              VALUES (
-                                $address, 
-                                $amt, 
-                                $bid, 
-                                $tid, 
-                                $sid, 
-                                $bhash, 
-                                $lc, 
-                                $rebroadcast,
-                                $sig,
-                                $ts,
-                                $block_ts,
-                                $type,
-                                $tx_from,
-                                $tx_to,
-                                $name,
-                                $module
-                                )`;
+            $address,
+            $amt,
+            $bid,
+            $tid,
+            $sid,
+            $bhash,
+            $lc,
+            $rebroadcast,
+            $sig,
+            $ts,
+            $block_ts,
+            $type,
+            $tx_from,
+            $tx_to,
+            $name,
+            $module
+            )`;
             let ttype = 0;
             let tname = "";
             let tmodule = "";
@@ -79,8 +80,8 @@ class Warehouse extends ModTemplate {
               tmodule = "Encrypted";
             }
             let tx_from = "";
-            if (blk.transactions[i].transaction.from.length > 0) {
-              tx_from = blk.transactions[i].transaction.from[0].add;
+            if (blk.transactions[i].from.length > 0) {
+              tx_from = blk.transactions[i].from[0].publicKey;
             }
             let params = {
               $address: blk.transactions[i].to[ii].publicKey,

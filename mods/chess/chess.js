@@ -18,9 +18,7 @@ class Chessgame extends GameTemplate {
     this.board = null;
     this.engine = null;
     this_chess = this;
-    app.wallet.getPublicKey().then((key) => {
-      this.publickey = key;
-    });
+
     this.icon = "fa-sharp fa-solid fa-chess";
 
     this.minPlayers = 2;
@@ -33,7 +31,6 @@ class Chessgame extends GameTemplate {
 
     this.player_roles = ["Observer", "White", "Black"];
     this.app = app;
-    return this;
   }
 
   async initializeHTML(app) {
@@ -99,7 +96,6 @@ class Chessgame extends GameTemplate {
             game_mod.game.draw_offered = -1; //Offer already sent
             var data = { draw: "offer" };
             game_mod.endTurn(data);
-            return;
           }
         } else {
           let c = await sconfirm("Accept offer to end the game in a draw?");
@@ -108,7 +104,6 @@ class Chessgame extends GameTemplate {
             game_mod.game.draw_offered = -1; //Offer already sent
             var data = { draw: "accept" };
             game_mod.endTurn(data);
-            return;
           }
         }
       },
@@ -127,7 +122,6 @@ class Chessgame extends GameTemplate {
               game_mod.game.draw_offered = -1;
               const data = { draw: "offer" };
               game_mod.endTurn(data);
-              return;
             }
           }
         }
@@ -142,7 +136,6 @@ class Chessgame extends GameTemplate {
         let c = await sconfirm("Do you really want to resign?");
         if (c) {
           await game_mod.resignGame(game_mod.game.id, "resignation");
-          return;
         }
       },
     });
@@ -193,10 +186,7 @@ class Chessgame extends GameTemplate {
 
   async switchColors() {
     // observer skips
-    if (
-      this.game.player === 0 ||
-      !this.game.players.includes(await this.app.wallet.getPublicKey())
-    ) {
+    if (this.game.player === 0 || !this.game.players.includes(this.publicKey)) {
       return 1;
     }
 
@@ -301,11 +291,9 @@ class Chessgame extends GameTemplate {
 
     if (msg.extra == undefined) {
       console.log("NO MESSAGE DEFINED!");
-      return;
     }
     if (msg.extra.data == undefined) {
       console.log("NO MESSAGE RECEIVED!");
-      return;
     }
 
     //
@@ -429,7 +417,6 @@ class Chessgame extends GameTemplate {
               this.game.draw_offered = -1; //Offer already sent
               var data = { draw: "offer" };
               await this.endTurn(data);
-              return;
             }
           } else {
             let c = await sconfirm("Accept offer to end the game in a draw?");
@@ -438,7 +425,6 @@ class Chessgame extends GameTemplate {
               this.game.draw_offered = -1; //Offer already sent
               var data = { draw: "accept" };
               await this.endTurn(data);
-              return;
             }
           }
         };

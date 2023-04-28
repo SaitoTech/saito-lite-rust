@@ -25,7 +25,7 @@ export default class Wallet extends SaitoWallet {
   // spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
   // pending: [], // slips pending broadcast
   default_fee = 2;
-  version = 4.686;
+  version = 4.687;
   // };
   // public inputs_hmap: Map<string, boolean>;
   // public inputs_hmap_counter: number;
@@ -56,10 +56,11 @@ export default class Wallet extends SaitoWallet {
     return S.getInstance().createTransaction(publicKey, amount, fee, force_merge);
   }
 
-  public async signTransaction<T extends Transaction>(tx: T): Promise<T> {
-    console.log("signing tx..");
-    return (await S.getInstance().signTransaction(tx)) as T;
-  }
+  // public async signTransaction<T extends Transaction>(tx: T): Promise<T> {
+  //   console.log("signing tx..");
+  //
+  //   return (await S.getInstance().signTransaction(tx)) as T;
+  // }
 
   // public async getPublicKey(): Promise<string> {
   //   return S.getInstance().getPublicKey();
@@ -73,10 +74,6 @@ export default class Wallet extends SaitoWallet {
   //   return S.getInstance().getPendingTransactions();
   // }
 
-  public async signAndEncryptTransaction(tx: Transaction) {
-    return S.getInstance().signAndEncryptTransaction(tx);
-  }
-
   public async getBalance(ticker = "SAITO"): Promise<bigint> {
     if (ticker === "SAITO") {
       return this.wallet.get_balance();
@@ -86,6 +83,7 @@ export default class Wallet extends SaitoWallet {
 
   async initialize() {
     console.log("wallet.initialize");
+
     // add ghost crypto module so Saito interface available
     class SaitoCrypto extends CryptoModule {
       constructor(app) {
@@ -107,11 +105,12 @@ export default class Wallet extends SaitoWallet {
       }
 
       async sendPayment(amount, to_address, unique_hash = "") {
-        let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(
+        let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
           to_address,
           BigInt(amount)
         );
-        newtx = this.app.wallet.signAndEncryptTransaction(newtx);
+        newtx.signAndEncrypt();
+        // newtx = this.app.wallet.signAndEncryptTransaction(newtx);
         await this.app.network.propagateTransaction(newtx);
         return newtx.signature;
       }

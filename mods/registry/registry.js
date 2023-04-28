@@ -13,8 +13,8 @@ class Registry extends ModTemplate {
 
     //
     // master DNS publickey for this module
-    //
-    this.publickey = "zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK";
+    // TODO : rename to avoid conflict with super.publicKey
+    this.registry_publickey = "zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK";
 
     //
     // we could save the cached keys here instead of inserting them
@@ -30,7 +30,7 @@ class Registry extends ModTemplate {
     //
     // event listeners -
     //
-    this.app.connection.on("registry-fetch-identifiers-and-update-dom", (keys) => {
+    this.app.connection.on("registry-fetch-identifiers-and-update-dom", async (keys) => {
       let unidentified_keys = [];
 
       for (let i = 0; i < keys.length; i++) {
@@ -40,13 +40,13 @@ class Registry extends ModTemplate {
           unidentified_keys.push(keys[i]);
         }
       }
-
-      for (let i = 0; i < this.app.network.peers.length; i++) {
-        let peer = this.app.network.peers[i];
-        if (this.app.network.peers[i].hasService("registry")) {
+      let peers = await this.app.network.getPeers();
+      for (let i = 0; i < peers.length; i++) {
+        let peer = peers[i];
+        if (peer.hasService("registry")) {
           this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
             Object.entries(answer).forEach(([key, value]) => {
-              if (value !== this.app.wallet.returnPublicKey()) {
+              if (value !== this.publicKey) {
                 this.cached_keys[key] = value;
 
                 //
@@ -79,7 +79,7 @@ class Registry extends ModTemplate {
     });
 
     this.app.connection.on("register-username-or-login", (obj) => {
-      let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+      let key = this.app.keychain.returnKey(this.publicKey);
       if (key?.has_registered_username) {
         return;
       }
@@ -108,7 +108,7 @@ class Registry extends ModTemplate {
     // registering domains should report they run the registry module.
     //
     if (this.app.BROWSER == 0) {
-      //if (this.publickey == this.app.wallet.returnPublicKey()) {
+      //if (this.registry_publickey == this.app.wallet.returnPublicKey()) {
       services.push({ service: "registry", domain: "saito" });
     }
     return services;
@@ -381,7 +381,13 @@ class Registry extends ModTemplate {
       let sig = tx.msg.sig;
 
       try {
-        if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
+        if (
+          registry_self.app.crypto.verifyMessage(
+            signed_message,
+            sig,
+            registry_self.registry_publickey
+          )
+        ) {
           registry_self.app.keychain.addKey(tx.transaction.to[0].add, {
             identifier: identifier,
             watched: true,
@@ -416,14 +422,14 @@ class Registry extends ModTemplate {
     }
   }
 
-  tryRegisterIdentifier(identifier, domain = "@saito") {
+  async tryRegisterIdentifier(identifier, domain = "@saito") {
     let registry_self = this.app.modules.returnModule("Registry");
 
     //console.log("REGISTERING TO WHICH MODULE: " + this.name);
     //console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
     //console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
 
-    let newtx = this.app.wallet.createUnsignedTransaction(
+    let newtx = await this.app.wallet.createUnsignedTransaction(
       registry_self.publickey,
       0.0,
       this.app.wallet.wallet.default_fee
@@ -442,15 +448,14 @@ class Registry extends ModTemplate {
       //newtx.msg.request	= "register";
       newtx.msg.identifier = identifier + domain;
 
-      newtx = this.app.wallet.signTransaction(newtx);
-      this.app.network.propagateTransaction(newtx);
+      await newtx.sign();
+      await this.app.network.propagateTransaction(newtx);
 
       // sucessful send
       return true;
     } else {
       throw TypeError("identifier must be a string");
     }
-    return false;
   }
 
   onPeerServiceUp(app, peer, service = {}) {}
@@ -480,11 +485,11 @@ class Registry extends ModTemplate {
         //
         if (
           tx.isTo(registry_self.publickey) &&
-          app.wallet.returnPublicKey() === registry_self.publickey
+          this.publicKey === registry_self.registry_publickey
         ) {
           let request = txmsg.request;
           let identifier = txmsg.identifier;
-          let publickey = tx.transaction.from[0].add;
+          let publickey = tx.from[0].publicKey;
           let unixtime = new Date().getTime();
           let bid = blk.block.id;
           let bsh = blk.returnHash();
@@ -510,7 +515,7 @@ class Registry extends ModTemplate {
 
           // send message
           if (res == 1) {
-            let newtx = registry_self.app.wallet.createUnsignedTransaction(
+            let newtx = await registry_self.app.wallet.createUnsignedTransaction(
               tx.transaction.from[0].add,
               0,
               fee
@@ -526,10 +531,10 @@ class Registry extends ModTemplate {
             newtx.msg.signed_message = signed_message;
             newtx.msg.sig = sig;
 
-            newtx = registry_self.app.wallet.signTransaction(newtx);
-            registry_self.app.network.propagateTransaction(newtx);
+            await newtx.sign();
+            await registry_self.app.network.propagateTransaction(newtx);
           } else {
-            let newtx = registry_self.app.wallet.createUnsignedTransaction(
+            let newtx = await registry_self.app.wallet.createUnsignedTransaction(
               tx.transaction.from[0].add,
               0.0,
               fee
@@ -544,8 +549,8 @@ class Registry extends ModTemplate {
             newtx.msg.signed_message = "";
             newtx.msg.sig = "";
 
-            newtx = registry_self.app.wallet.signTransaction(newtx);
-            registry_self.app.network.propagateTransaction(newtx);
+            await newtx.sign();
+            await registry_self.app.network.propagateTransaction(newtx);
           }
 
           return;
@@ -553,8 +558,8 @@ class Registry extends ModTemplate {
       }
 
       if (!!txmsg && txmsg.module == "Email") {
-        if (tx.transaction.from[0].add == registry_self.publickey) {
-          if (tx.transaction.to[0].add == registry_self.app.wallet.returnPublicKey()) {
+        if (tx.from[0].publicKey == registry_self.publickey) {
+          if (tx.to[0].publicKey == this.publicKey) {
             if (
               tx.msg.identifier != undefined &&
               tx.msg.signed_message != undefined &&

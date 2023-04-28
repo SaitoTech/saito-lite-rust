@@ -61,12 +61,12 @@ class RedSquareMain {
         this.components["home"].prependTweetWithCriticalChild(tweet);
       }
     );
-    this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {
+    this.app.connection.on("redsquare-tweet-added-render-request", async (tweet) => {
       if (this.render_component === "home") {
         if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
           this.app.connection.emit("redsquare-home-tweet-append-render-request", tweet);
         } else {
-          if (tweet.tx.transaction.from[0].add === this.app.wallet.returnPublicKey()) {
+          if (tweet.tx.from[0].publicKey === (await this.app.wallet.getPublicKey())) {
             this.app.connection.emit("redsquare-home-tweet-prepend-render-request", tweet);
           }
         }

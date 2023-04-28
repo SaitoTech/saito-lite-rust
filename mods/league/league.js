@@ -476,9 +476,9 @@ class League extends ModTemplate {
     newtx.msg.module = "League";
     newtx.msg.request = "league create";
 
-    newtx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
-
-    return this.app.wallet.signTransaction(newtx);
+    newtx.transaction.to.push(new saito.default.slip(this.publicKey, 0.0));
+    await newtx.sign();
+    return newtx;
   }
 
   async receiveCreateTransaction(blk, tx, conf, app) {
@@ -488,8 +488,6 @@ class League extends ModTemplate {
     obj.id = tx.signature;
 
     await this.addLeague(obj);
-
-    return;
   }
 
   addressToAll(tx, league_id) {
@@ -512,8 +510,8 @@ class League extends ModTemplate {
   ///////////////////
   // join a league //
   ///////////////////
-  createJoinTransaction(league_id = "", email = "") {
-    let newtx = this.app.wallet.createUnsignedTransaction();
+  async createJoinTransaction(league_id = "", email = "") {
+    let newtx = await this.app.wallet.createUnsignedTransaction();
     newtx = this.addressToAll(newtx, league_id);
 
     newtx.msg = {
@@ -525,8 +523,8 @@ class League extends ModTemplate {
     if (email) {
       newtx.msg.email = email;
     }
-
-    return this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
+    return newtx;
   }
 
   async receiveJoinTransaction(blk, tx, conf, app) {
@@ -553,8 +551,8 @@ class League extends ModTemplate {
     return;
   }
 
-  createUpdateTransaction(league_id, new_data, field = "description") {
-    let newtx = this.app.wallet.createUnsignedTransaction();
+  async createUpdateTransaction(league_id, new_data, field = "description") {
+    let newtx = await this.app.wallet.createUnsignedTransaction();
     newtx = this.addressToAll(newtx, league_id);
 
     newtx.msg = {
@@ -564,8 +562,8 @@ class League extends ModTemplate {
       new_data,
       field,
     };
-
-    return this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
+    return newtx;
   }
 
   async receiveUpdateTransaction(blk, tx, conf, app) {
@@ -596,8 +594,8 @@ class League extends ModTemplate {
     await this.app.storage.executeDatabase(sql, params, "league");
   }
 
-  createUpdatePlayerTransaction(league_id, publickey, new_data, field = "email") {
-    let newtx = this.app.wallet.createUnsignedTransaction();
+  async createUpdatePlayerTransaction(league_id, publickey, new_data, field = "email") {
+    let newtx = await this.app.wallet.createUnsignedTransaction();
 
     newtx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
     newtx.transaction.to.push(new saito.default.slip(publickey, 0.0));
@@ -610,8 +608,8 @@ class League extends ModTemplate {
       new_data,
       field,
     };
-
-    return this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
+    return newtx;
   }
 
   async receiveUpdatePlayerTransaction(blk, tx, conf, app) {
@@ -648,8 +646,8 @@ class League extends ModTemplate {
   ///////////////////
   // quit a league //
   ///////////////////
-  createQuitTransaction(publickey, league_id) {
-    let newtx = this.app.wallet.createUnsignedTransaction();
+  async createQuitTransaction(publickey, league_id) {
+    let newtx = await this.app.wallet.createUnsignedTransaction();
     newtx = this.addressToAll(newtx, league_id);
 
     newtx.msg = {
@@ -657,7 +655,8 @@ class League extends ModTemplate {
       league_id: league_id,
       request: "league quit",
     };
-    return this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
+    return newtx;
   }
 
   async receiveQuitTransaction(blk, tx, conf, app) {
@@ -670,14 +669,14 @@ class League extends ModTemplate {
       $league: txmsg.league_id,
       $publickey: tx.transaction.from[0].add,
     };
-    this.app.storage.executeDatabase(sql, params, "league");
+    await this.app.storage.executeDatabase(sql, params, "league");
   }
 
   /////////////////////
   // remove a league //
   /////////////////////
-  createRemoveTransaction(league_id) {
-    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+  async createRemoveTransaction(league_id) {
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     newtx = this.addressToAll(newtx, league_id);
 
     newtx.msg = {
@@ -685,8 +684,8 @@ class League extends ModTemplate {
       request: "league remove",
       league: league_id,
     };
-
-    return this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
+    return newtx;
   }
 
   async receiveRemoveTransaction(blk, tx, conf, app) {
@@ -699,13 +698,13 @@ class League extends ModTemplate {
       $league_id: txmsg.league_id,
       $publickey: tx.transaction.from[0].add,
     };
-    this.app.storage.executeDatabase(sql1, params1, "league");
+    await this.app.storage.executeDatabase(sql1, params1, "league");
 
     let sql2 = `DELETE
                 FROM players
                 WHERE league_id = '$league_id'`;
     let params2 = { $league_id: txmsg.league_id };
-    this.app.storage.executeDatabase(sql2, params2, "league");
+    await this.app.storage.executeDatabase(sql2, params2, "league");
 
     this.removeLeague(txmsg.league_id);
   }
@@ -714,7 +713,7 @@ class League extends ModTemplate {
   // roundover transaction //
   ///////////////////////////
   async receiveRoundoverTransaction(app, txmsg) {
-    this.receiveGameoverTransaction(app, txmsg, false);
+    await this.receiveGameoverTransaction(app, txmsg, false);
   }
 
   //////////////////////////
@@ -797,7 +796,7 @@ class League extends ModTemplate {
   // inserts player into public league if one exists
   //
   async receiveLaunchSinglePlayerTransaction(blk, tx, conf, app) {
-    this.receiveAcceptTransaction(blk, tx, conf, app);
+    await this.receiveAcceptTransaction(blk, tx, conf, app);
   }
 
   async receiveAcceptTransaction(blk, tx, conf, app) {

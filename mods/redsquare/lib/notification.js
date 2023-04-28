@@ -36,7 +36,7 @@ class RedSquareNotification {
     } else {
       let html = "";
       let txmsg = this.tx.returnMessage();
-      let from = this.tx.transaction.from[0].add;
+      let from = this.tx.from[0].publicKey;
 
       if (txmsg.request == "like tweet") {
         let qs = `.tweet-notif-fav-${from}-${txmsg.data.sig}`;

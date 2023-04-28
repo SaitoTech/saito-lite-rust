@@ -29,7 +29,7 @@ class AppStore extends ModTemplate {
       "Hearts",
       "Settlers",
       "President",
-      "Scotland",
+      "Scotland"
     ];
     this.header = null;
     this.icon = "fas fa-window-restore";
@@ -91,7 +91,7 @@ class AppStore extends ModTemplate {
         "SELECT name, description, version, categories, publickey, unixtime, bid, bsh FROM modules WHERE description LIKE $squery1 OR name = $squery2";
       let params = {
         $squery1: squery1,
-        $squery2: squery2,
+        $squery2: squery2
       };
 
       let rows = await this.app.storage.queryDatabase(sql, params, "appstore");
@@ -149,10 +149,10 @@ class AppStore extends ModTemplate {
           let output = fs.createWriteStream(mod_path);
 
           var archive = archiver("zip", {
-            zlib: { level: 9 }, // Sets the compression level.
+            zlib: { level: 9 } // Sets the compression level.
           });
 
-          archive.on("error", function (err) {
+          archive.on("error", function(err) {
             throw err;
           });
 
@@ -174,7 +174,7 @@ class AppStore extends ModTemplate {
 
           // listen for all archive data to be written
           // 'close' event is fired only when a file descriptor is involved
-          output.on("close", function () {
+          output.on("close", function() {
             let mod_zip_filename = path.basename(this.path);
             let mod_path = path.resolve(__dirname, `mods/${mod_zip_filename}`);
             let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
@@ -193,10 +193,10 @@ class AppStore extends ModTemplate {
                 module: "AppStore",
                 request: "submit module",
                 module_zip: zip,
-                name: dir,
+                name: dir
               };
 
-              newtx = app.wallet.signTransaction(newtx);
+              await newtx.sign();
               app.network.propagateTransaction(newtx);
             } else {
               ////console.log("ZIP TOO BIG: " + dir);
@@ -226,7 +226,7 @@ class AppStore extends ModTemplate {
             if (tx.isFrom(await app.wallet.getPublicKey())) {
               try {
                 document.querySelector(".appstore-loading-text").innerHTML =
-                  'Your application is being broadcast to the network. <p></p>Your AppStore should receive it within <span class="time_remaining">45</span> seconds.';
+                  "Your application is being broadcast to the network. <p></p>Your AppStore should receive it within <span class=\"time_remaining\">45</span> seconds.";
                 let appstore_mod = app.modules.returnModule("AppStore");
                 appstore_mod.time_remaining = 45;
                 appstore_mod.bundling_timer = setInterval(() => {
@@ -246,14 +246,15 @@ class AppStore extends ModTemplate {
                     }
                   }
                 }, 1000);
-              } catch (err) {}
+              } catch (err) {
+              }
             }
             break;
           case "request bundle":
             if (tx.isFrom(await app.wallet.getPublicKey())) {
               try {
                 document.querySelector(".appstore-loading-text").innerHTML =
-                  'Your application is being processed by the network. Your upgrade should be complete within about <span class="time_remaining">120</span> seconds.';
+                  "Your application is being processed by the network. Your upgrade should be complete within about <span class=\"time_remaining\">120</span> seconds.";
                 let appstore_mod = app.modules.returnModule("AppStore");
                 appstore_mod.time_remaining = 120;
                 appstore_mod.bundling_timer = setInterval(() => {
@@ -271,7 +272,8 @@ class AppStore extends ModTemplate {
                     }
                   }
                 }, 1000);
-              } catch (err) {}
+              } catch (err) {
+              }
             }
             if (!tx.isTo(await app.wallet.getPublicKey())) {
               return;
@@ -444,7 +446,7 @@ class AppStore extends ModTemplate {
                 if (char == "`") {
                   return "";
                 }
-                if (char == "\\" || char == "'" || char == '"' || char == ";") {
+                if (char == "\\" || char == "'" || char == "\"" || char == ";") {
                   return "";
                 }
                 if (!/[a-zA-Z0-9_-]/.test(char)) {
@@ -503,7 +505,7 @@ class AppStore extends ModTemplate {
 	    </p>
 
         `;
-          newtx = this.app.wallet.signTransaction(newtx);
+          await newtx.sign();
           let emailmod = this.app.modules.returnModule("Email");
           if (emailmod) {
             emailmod.addEmail(newtx);
@@ -575,13 +577,14 @@ class AppStore extends ModTemplate {
         $bid: blk.block.id,
         $bsh: blk.returnHash(),
         $tx: JSON.stringify(tx.toJson()),
-        $featured: featured_app,
+        $featured: featured_app
       };
 
       if (name != "unknown") {
         try {
           await this.app.storage.executeDatabase(sql, params, "appstore");
-        } catch (err) {}
+        } catch (err) {
+        }
 
         if (this.featured_apps.includes(name) && tx.isFrom(await this.app.wallet.getPublicKey())) {
           sql = "UPDATE modules SET featured = 0 WHERE name = $name";
@@ -591,7 +594,7 @@ class AppStore extends ModTemplate {
           sql = "UPDATE modules SET featured = 1 WHERE name = $name AND version = $version";
           params = {
             $name: name,
-            $version: this.app.crypto.hash(`${ts}-${sig}`),
+            $version: this.app.crypto.hash(`${ts}-${sig}`)
           };
           await this.app.storage.executeDatabase(sql, params, "appstore");
 
@@ -665,7 +668,7 @@ class AppStore extends ModTemplate {
           modules_selected.push({
             name: rows[i].name,
             description: rows[i].description,
-            zip: module_zip,
+            zip: module_zip
           });
         }
       }
@@ -688,7 +691,7 @@ class AppStore extends ModTemplate {
           modules_selected.push({
             name: rows[i].name,
             description: rows[i].description,
-            zip: module_zip,
+            zip: module_zip
           });
         }
       }
@@ -729,7 +732,7 @@ class AppStore extends ModTemplate {
         $bid: blk.block.id,
         $bsh: blk.returnHash(),
         $name: bundle_filename,
-        $script: bundle_binary,
+        $script: bundle_binary
       };
 
       await this.app.storage.executeDatabase(sql, params, "appstore");
@@ -753,10 +756,10 @@ class AppStore extends ModTemplate {
       let msg = {
         module: "AppStore",
         request: "receive bundle",
-        bundle: online_version,
+        bundle: online_version
       };
       newtx.msg = msg;
-      newtx = await this.app.wallet.signTransaction(newtx);
+      await newtx.sign();
       await this.app.network.propagateTransaction(newtx);
 
       ////console.log("FINISHED MAKING BUNDLE!");
@@ -817,14 +820,14 @@ class AppStore extends ModTemplate {
         "mkdir  " + __dirname + "/../../bundler/" + newappdir + "/dist" + "\n";
 
       fs.writeFileSync(path.resolve(__dirname, bash_script_create), bash_script_create_dirs, {
-        encoding: "binary",
+        encoding: "binary"
       });
       try {
         let cwdir = __dirname;
         let createdir_command = "sh " + bash_script_create;
         const { stdout, stderr } = await exec(createdir_command, {
           cwd: cwdir,
-          maxBuffer: 4096 * 2048,
+          maxBuffer: 4096 * 2048
         });
       } catch (err) {
         //console.log(err);
@@ -924,7 +927,7 @@ class AppStore extends ModTemplate {
       bash_script_content += bash_script_delete;
 
       fs.writeFileSync(path.resolve(__dirname, bash_script), bash_script_content, {
-        encoding: "binary",
+        encoding: "binary"
       });
       try {
         let cwdir = __dirname;
@@ -947,17 +950,17 @@ class AppStore extends ModTemplate {
 
       if (fs) {
         bundle_bin = fs.readFileSync(path.resolve(__dirname, `./bundler/dist/${bundle_filename}`), {
-          encoding: "binary",
+          encoding: "binary"
         });
       }
       newtx.msg = { module: "AppStore", request: "add bundle", bundle: bundle_bin };
-      newtx = await this.app.wallet.signTransaction(newtx);
+      await newtx.sign();
       await this.app.network.propagateTransaction(newtx);
 
       //
       // cleanup
       //
-      await fs.rmdir(path.resolve(__dirname, `../../bundler/${newappdir}/`), function () {
+      await fs.rmdir(path.resolve(__dirname, `../../bundler/${newappdir}/`), function() {
         ////console.log("Appstore Compilation Files Removed!");
       });
 
@@ -996,7 +999,7 @@ class AppStore extends ModTemplate {
 
         let sql = "SELECT script FROM bundles WHERE name = $scriptname";
         let params = {
-          $scriptname: scriptname,
+          $scriptname: scriptname
         };
         let rows = await app.storage.queryDatabase(sql, params, "appstore");
 
@@ -1008,7 +1011,7 @@ class AppStore extends ModTemplate {
             console.info("### write from line 944 of appstore.");
             res.writeHead(200, {
               "Content-Type": "text/javascript",
-              "Content-Transfer-Encoding": "utf8",
+              "Content-Transfer-Encoding": "utf8"
             });
             const src = fs.createReadStream(filename, { encoding: "utf8" });
             src.pipe(res);
@@ -1063,9 +1066,9 @@ class AppStore extends ModTemplate {
     newtx.msg = {
       module: "AppStore",
       request: "submit module",
-      module_zip: zip,
+      module_zip: zip
     };
-    newtx = await app.wallet.signTransaction(newtx);
+    await newtx.sign();
     await app.network.propagateTransaction(newtx);
     return newtx;
   }
@@ -1083,7 +1086,7 @@ class AppStore extends ModTemplate {
     //
     let where_clause = "";
     if (search_options.category != "" && search_options.category != undefined) {
-      where_clause = ' WHERE categories LIKE "%' + search_options.category.replace(/\W/, "") + '%"';
+      where_clause = " WHERE categories LIKE \"%" + search_options.category.replace(/\W/, "") + "%\"";
     }
     if (search_options.search != "" && search_options.search != undefined) {
       if (where_clause == "") {
@@ -1092,13 +1095,13 @@ class AppStore extends ModTemplate {
         where_clause += " AND ";
       }
       where_clause +=
-        ' (name LIKE "%' +
+        " (name LIKE \"%" +
         search_options.search.replace(/\W/, "") +
-        '%" OR description LIKE "%' +
+        "%\" OR description LIKE \"%" +
         search_options.search.replace(/\W/, "") +
-        '%" OR version LIKE "%' +
+        "%\" OR version LIKE \"%" +
         search_options.search +
-        '%")';
+        "%\")";
     }
     if (search_options.version != "" && search_options.version != undefined) {
       if (where_clause == "") {
@@ -1106,7 +1109,7 @@ class AppStore extends ModTemplate {
       } else {
         where_clause += " AND ";
       }
-      where_clause += ' version = "' + search_options.version + '"';
+      where_clause += " version = \"" + search_options.version + "\"";
     }
     let featured = 0;
     if (search_options.featured == 1) {

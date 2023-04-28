@@ -1070,8 +1070,8 @@ class Stun extends ModTemplate {
   //     }
   // }
 
-  sendDataChannelOfferTransaction(offer_creator, offers) {
-    let newtx = this.app.wallet.createUnsignedTransaction();
+  async sendDataChannelOfferTransaction(offer_creator, offers) {
+    let newtx = await this.app.wallet.createUnsignedTransaction();
     console.log("broadcasting offers");
     for (let i = 0; i < offers.length; i++) {
       newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
@@ -1083,8 +1083,8 @@ class Stun extends ModTemplate {
       offer_creator,
       offers,
     };
-    newtx = this.app.wallet.signTransaction(newtx);
-    this.app.network.propagateTransaction(newtx);
+    await newtx.sign();
+    await this.app.network.propagateTransaction(newtx);
   }
 
   acceptMediaChannelOfferAndBroadcastAnswer(app, offer_creator, offer) {
@@ -1099,8 +1099,8 @@ class Stun extends ModTemplate {
     this.acceptDataChannelConnectionOffer(app, offer_creator, offer);
   }
 
-  sendDataChannelAnswerTransaction(answer_creator, offer_creator, reply) {
-    let newtx = this.app.wallet.createUnsignedTransaction();
+  async sendDataChannelAnswerTransaction(answer_creator, offer_creator, reply) {
+    let newtx = await this.app.wallet.createUnsignedTransaction();
     console.log("broadcasting answer to ", offer_creator);
     newtx.transaction.to.push(new saito.default.slip(offer_creator));
     newtx.msg.module = "Stun";
@@ -1110,9 +1110,9 @@ class Stun extends ModTemplate {
       offer_creator,
       reply: reply,
     };
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
     console.log(this.app.network);
-    this.app.network.propagateTransaction(newtx);
+    await this.app.network.propagateTransaction(newtx);
   }
 
   receiveDataChannelOfferTransaction(app, tx, conf, blk) {

@@ -130,4 +130,86 @@ export default class Storage {
   async queryDatabase(sql, params, database) {}
 
   async executeDatabase(sql, params, database, mycallback = null) {}
+
+  /**
+   * FUNCTIONS OVERWRITTEN BY STORAGE-CORE WHICH HANDLES ITS OWN DATA STORAGE IN ./core/storage-core.js
+   **/
+  updateTransaction(tx) {
+    const txmsg = tx.returnMessage();
+    const message = "archive";
+    const data: any = {};
+    data.request = "update";
+    data.tx = tx;
+    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+  }
+
+  async incrementTransactionOptionalValue(sig, optional_key) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "increment_optional_value";
+    data.sig = sig;
+    data.publickey = await this.app.wallet.getPublicKey();
+    data.optional_key = optional_key;
+    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+  }
+
+  async updateTransactionOptionalValue(sig, optional_key, optional_value) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "update_optional_value";
+    data.sig = sig;
+    data.publickey = await this.app.wallet.getPublicKey();
+    data.optional_value = optional_value;
+    data.optional_key = optional_key;
+    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+  }
+
+  async updateTransactionOptional(sig, optional) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "update_optional";
+    data.sig = sig;
+    data.publickey = await this.app.wallet.getPublicKey();
+    data.optional = optional;
+    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+  }
+
+  async saveTransaction(tx: Transaction, type = null) {
+    let newtx = await this.app.wallet.createUnsignedTransaction(
+      await this.app.wallet.getPublicKey()
+    );
+    newtx.msg = {
+      request: "archive save",
+      data: tx.serialize(),
+    };
+    if (type != null) {
+      newtx.msg.type = type;
+    }
+    await newtx.sign();
+    this.app.network.sendTransactionWithCallback(newtx, function (res) {});
+
+    //    const txmsg = tx.returnMessage();
+    //    const message = "archive";
+    //    const data: any = {};
+    //    data.request = "save";
+    //    data.tx = tx;
+    //    data.type = txmsg.module;
+    //console.log("=============");
+    //console.log("SAVING THE TX");
+    //console.log("=============");
+    this.app.connection.emit("save-transaction", tx);
+  }
+
+  saveTransactionByKey(key, tx) {
+    const txmsg = tx.returnMessage();
+    const message = "archive";
+    const data: any = {};
+    data.request = "save_key";
+    data.tx = tx;
+    data.key = key;
+    data.type = txmsg.module;
+    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+
+    this.app.connection.emit("save-transaction", tx);
+  }
 }

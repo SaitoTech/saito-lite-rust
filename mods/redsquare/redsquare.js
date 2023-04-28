@@ -1076,7 +1076,7 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  sendLikeTransaction(app, mod, data, tx = null) {
+  async sendLikeTransaction(app, mod, data, tx = null) {
     let redsquare_self = this;
 
     let obj = {
@@ -1088,16 +1088,16 @@ class RedSquare extends ModTemplate {
       obj.data[key] = data[key];
     }
 
-    let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
-    for (let i = 0; i < tx.transaction.to.length; i++) {
-      if (tx.transaction.to[i].add !== app.wallet.returnPublicKey()) {
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
+    for (let i = 0; i < tx.to.length; i++) {
+      if (tx.to[i].publicKey !== this.publicKey) {
         newtx.transaction.to.push(new saito.default.slip(tx.transaction.to[i].add, 0.0));
       }
     }
 
     newtx.msg = obj;
-    newtx = redsquare_self.app.wallet.signTransaction(newtx);
-    redsquare_self.app.network.propagateTransaction(newtx);
+    await newtx.sign();
+    await redsquare_self.app.network.propagateTransaction(newtx);
     return newtx;
   }
 
@@ -1168,7 +1168,7 @@ class RedSquare extends ModTemplate {
     return;
   }
 
-  sendTweetTransaction(app, mod, data, keys = []) {
+  async sendTweetTransaction(app, mod, data, keys = []) {
     let redsquare_self = this;
 
     let obj = {
@@ -1180,15 +1180,15 @@ class RedSquare extends ModTemplate {
       obj.data[key] = data[key];
     }
 
-    let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
     for (let i = 0; i < keys.length; i++) {
       if (keys[i] !== app.wallet.returnPublicKey()) {
         newtx.transaction.to.push(new saito.default.slip(keys[i]));
       }
     }
-    newtx = redsquare_self.app.wallet.signTransaction(newtx);
-    redsquare_self.app.network.propagateTransaction(newtx);
+    await newtx.sign();
+    await redsquare_self.app.network.propagateTransaction(newtx);
     return newtx;
   }
 
@@ -1526,7 +1526,7 @@ class RedSquare extends ModTemplate {
     return "";
   }
 
-  sendFlagTransaction(app, mod, data) {
+  async sendFlagTransaction(app, mod, data) {
     let redsquare_self = this;
 
     let obj = {
@@ -1538,10 +1538,10 @@ class RedSquare extends ModTemplate {
       obj.data[key] = data[key];
     }
 
-    let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
-    newtx = redsquare_self.app.wallet.signTransaction(newtx);
-    redsquare_self.app.network.propagateTransaction(newtx);
+    await newtx.sign();
+    await redsquare_self.app.network.propagateTransaction(newtx);
 
     return newtx;
   }
@@ -1571,9 +1571,7 @@ class RedSquare extends ModTemplate {
     //
     // update cache
     //
-    this.updateTweetsCacheForBrowsers();
-
-    return;
+    await this.updateTweetsCacheForBrowsers();
   }
 
   /////////////////////////////////////
@@ -1627,7 +1625,7 @@ class RedSquare extends ModTemplate {
               tx.deserialize_from_web(app, rows[i].tx);
               let txmsg = tx.returnMessage();
               let text = txmsg.data.text;
-              let publickey = tx.transaction.from[0].add;
+              let publickey = tx.from[0].publicKey;
               let user = app.keychain.returnIdentifierByPublicKey(publickey, true);
 
               redsquare_self.social.twitter_description = text;
@@ -1675,7 +1673,7 @@ class RedSquare extends ModTemplate {
                 let base64Data = img_uri.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
                 let img = Buffer.from(base64Data, "base64");
               } else {
-                let publickey = tx.transaction.from[0].add;
+                let publickey = tx.from[0].publicKey;
                 let img_uri = app.keychain.returnIdenticon(publickey, "png");
                 let base64Data = img_uri.replace(/^data:image\/png;base64,/, "");
                 let img = Buffer.from(base64Data, "base64");

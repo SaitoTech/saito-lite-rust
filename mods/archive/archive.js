@@ -1,6 +1,7 @@
 const ModTemplate = require("../../lib/templates/modtemplate");
 const saito = require("../../lib/saito/saito");
 const JSON = require("json-bigint");
+const Transaction = require("../../lib/saito/transaction").default;
 
 //
 // HOW THE ARCHIVE SAVES TXS
@@ -26,11 +27,11 @@ class Archive extends ModTemplate {
     this.last_clean_on = Date.now();
     this.cleaning_period_in_ms = 1000000;
 
-    app.connection.on("archive-save-transaction", (data) => {
+    app.connection.on("archive-save-transaction", async (data) => {
       if (data.key) {
-        this.saveTransactionByKey(data.key, data.tx, data?.type);
+        await this.saveTransactionByKey(data.key, data.tx, data?.type);
       } else {
-        this.saveTransaction(data.tx, data?.type);
+        await this.saveTransaction(data.tx, data?.type);
       }
     });
   }
@@ -43,7 +44,7 @@ class Archive extends ModTemplate {
     return services;
   }
 
-  onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
 
     //
@@ -51,7 +52,7 @@ class Archive extends ModTemplate {
     //
     if (conf == 0) {
       if (tx.msg.module != "") {
-        this.saveTransaction(tx);
+        await this.saveTransaction(tx);
       }
     }
   }
@@ -69,8 +70,8 @@ class Archive extends ModTemplate {
       return;
     }
 
-    var txs;
-    var response = {};
+    let txs;
+    const response = {};
 
     //
     // saves TX containing archive insert instruction
@@ -80,14 +81,13 @@ class Archive extends ModTemplate {
       if (req.type) {
         type = req.type;
       }
-      this.saveTransaction(tx, type);
+      await this.saveTransaction(tx, type);
     }
     //
     // saves TX embedded in data
     //
     if (req.request === "archive save") {
-      let newtx = new saito.default.transaction();
-      newtx.deserialize_from_web(app, req.data);
+      let newtx = Transaction.deserialize(req.data);
       let txmsg = newtx.returnMessage();
 
       try {
@@ -99,7 +99,7 @@ class Archive extends ModTemplate {
           type = req.type;
         }
 
-        this.saveTransaction(newtx, type);
+        await this.saveTransaction(newtx, type);
       } catch (err) {}
 
       mycallback(true);
@@ -107,25 +107,25 @@ class Archive extends ModTemplate {
     }
     if (req.request === "archive") {
       if (req.data.request === "delete") {
-        this.deleteTransaction(req.data.tx, req.data.publickey, req.data.sig);
+        await this.deleteTransaction(req.data.tx, req.data.publickey, req.data.sig);
       }
       if (req.data.request === "save") {
-        this.saveTransaction(req.data.tx, req.data.type);
+        await this.saveTransaction(req.data.tx, req.data.type);
       }
       if (req.data.request === "update") {
-        this.updateTransaction(req.data.tx);
+        await this.updateTransaction(req.data.tx);
       }
       if (req.data.request === "save_key") {
         if (!req.data.key) {
           return;
         }
-        this.saveTransactionByKey(req.data.key, req.data.tx, req.data.type);
+        await this.saveTransactionByKey(req.data.key, req.data.tx, req.data.type);
       }
       if (req.data.request === "update_optional") {
         if (!req.data.optional) {
           return;
         }
-        this.updateTransactionOptional(req.data.sig, req.data.publickey, req.data.optional);
+        await this.updateTransactionOptional(req.data.sig, req.data.publickey, req.data.optional);
       }
       if (req.data.request === "update_optional_value") {
         if (!req.data.optional) {
@@ -440,14 +440,17 @@ class Archive extends ModTemplate {
       });
 
       if (type === "all") {
-        sql = `SELECT * FROM txs WHERE publickey IN ( ${where_statement_array.join(
-          ","
-        )} ) ORDER BY id DESC LIMIT $num`;
+        sql = `SELECT *
+               FROM txs
+               WHERE publickey IN (${where_statement_array.join(",")})
+               ORDER BY id DESC LIMIT $num`;
         params = Object.assign(params, { $num: num });
       } else {
-        sql = `SELECT * FROM txs WHERE publickey IN ( ${where_statement_array.join(
-          ","
-        )} ) AND type = $type ORDER BY id DESC LIMIT $num`;
+        sql = `SELECT *
+               FROM txs
+               WHERE publickey IN (${where_statement_array.join(",")})
+                 AND type = $type
+               ORDER BY id DESC LIMIT $num`;
         params = Object.assign(params, { $type: type, $num: num });
       }
 
@@ -474,7 +477,9 @@ class Archive extends ModTemplate {
     let where_statement_array = [];
 
     try {
-      sql = `SELECT * FROM txs WHERE sig = $sig`;
+      sql = `SELECT *
+             FROM txs
+             WHERE sig = $sig`;
       params = Object.assign(params, { $sig: sig });
       let rows = await this.app.storage.queryDatabase(sql, params, "archive");
       let txs = [];

@@ -43,7 +43,7 @@ class GameScheduler {
       let peers = [];
       let p = await app.network.getPeers();
       for (let i = 0; i < p.length; i++) {
-        peers.push(await p[i].getPublicKey());
+        peers.push(p[i].publicKey);
       }
       this.app.connection.emit("relay-send-message", {
         recipient: peers,

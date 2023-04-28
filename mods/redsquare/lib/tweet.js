@@ -369,7 +369,7 @@ class Tweet {
     //
     if (this.children.length > 0) {
       if (
-        this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add ||
+        this.children[0].tx.from[0].publicKey === this.tx.from[0].publicKey ||
         this.children.length == 1
       ) {
         if (this.children[0].children.length > 0) {
@@ -597,7 +597,10 @@ class Tweet {
             ".tweet-overlay"
           );
 
-          let newtx = new saito.default.transaction(JSON.parse(JSON.stringify(this.tx.toJson())));
+          let newtx = new saito.default.transaction(
+            undefined,
+            JSON.parse(JSON.stringify(this.tx.toJson()))
+          );
           newtx.signature = this.app.crypto.hash(newtx.signature);
           let new_tweet = new Tweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, newtx);
           new_tweet.show_controls = 0;
@@ -629,7 +632,10 @@ class Tweet {
             ".tweet-overlay"
           );
 
-          let newtx = new saito.default.transaction(JSON.parse(JSON.stringify(this.tx.toJson())));
+          let newtx = new saito.default.transaction(
+            undefined,
+            JSON.parse(JSON.stringify(this.tx.toJson()))
+          );
           newtx.signature = this.app.crypto.hash(newtx.signature);
           let new_tweet = new Tweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, newtx);
           new_tweet.show_controls = 0;
@@ -978,6 +984,7 @@ class Tweet {
     }
     return 0;
   }
+
   returnChildTweet(tweet_sig) {
     if (this.tx.signature == tweet_sig) {
       return this;
@@ -1085,6 +1092,7 @@ class Tweet {
       }
     } catch (err) {}
   }
+
   renderRetweets() {
     // some edge cases where tweet won't have rendered
     try {
@@ -1098,6 +1106,7 @@ class Tweet {
       }
     } catch (err) {}
   }
+
   renderReplies() {
     // some edge cases where tweet won't have rendered
     try {
