@@ -47,13 +47,31 @@
 
 .theses-overlay .gameboard {
     position: relative;
-    transform: translate(-42%, -20%) scaleX(0.7) scaleY(0.7);
 }
 
 .theses-overlay .status .status-text-menu ul .textchoice {
     background-color: whitesmoke;
     padding: 1.5rem;
     border-radius: 0.5rem;
+}
+
+.zoom-german {
+    transform: translate(-42%, -20%) scaleX(0.7) scaleY(0.7);
+}
+.zoom-english {
+    transform: translate(-24%, -15%) scaleX(0.7) scaleY(0.7);
+}
+.zoom-french {
+    transform: translate(-32%, -35%) scaleX(0.6) scaleY(0.6);
+}
+.zoom-spanish {
+    transform: translate(-29%, -53%) scaleX(0.6) scaleY(0.6);
+}
+.zoom-italian {
+    transform: translate(-49%, -44%) scaleX(0.6) scaleY(0.6);
+}
+.zoom-ottoman {
+    transform: translate(-60%, -46%) scaleX(0.6) scaleY(0.6);
 }
 
 

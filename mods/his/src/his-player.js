@@ -2459,24 +2459,22 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
 	for (let z = 0; z < neighbours.length; z++) {
 	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) {
-	    console.log("SPACE IS: " + neighbours[z]);
+	    console.log("1 SPACE IS: " + neighbours[z]);
 	    return 1;
 	  } 
 	}
 	if (his_self.returnFactionLandUnitsInSpace(faction, spaces_in_unrest[i]) > 0) {
-	  console.log("SPACE IS: " + spaces_in_unrest[i]);
+	  console.log("2 SPACE IS: " + spaces_in_unrest[i]);
 	  return 1;
 	} 
       }
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
-console.log("checking: " + conquerable_spaces[i]);
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) { 
-	console.log("SPACE IS: " + conquerable_spaces[i]);
+	console.log("3 SPACE IS: " + conquerable_spaces[i]);
 	return 1;
       } 
     }
-console.log("return ZERO");
     return 0;
   }
   async playerControlUnfortifiedSpace(his_self, player, faction) {
@@ -2498,8 +2496,6 @@ console.log("return ZERO");
 	i--;
       }
     }
-
-console.log("CS: " + JSON.stringify(conquerable_spaces));
 
     his_self.playerSelectSpaceWithFilter(
 

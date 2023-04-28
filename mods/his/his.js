@@ -4962,7 +4962,6 @@ alert("Not Implemented");
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "event") {
-alert("Wartburg Triggers");
         }
         return 0;
       },
@@ -7280,6 +7279,9 @@ alert("NOT IMPLEMENTED");
 
   isSpaceControlled(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    // home spaces that have not fallen to another power.
+    if (space.home === faction && space.political == "") { return true; }
 
     // home spaces that have not fallen to another power.
     if (space.home === faction && space.political == faction) { return true; }
@@ -12684,12 +12686,7 @@ console.log(JSON.stringify(mv));
 	    if (x >= 5) { papacy_hits++; }
 	  }
 
-
 	  if (protestant_hits > papacy_hits) {
-
-	    //
-            // report results
-            //
 	    this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "protestant" , difference : (protestant_hits - papacy_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
   	    this.game.queue.push("hide_overlay\ttheses");
 	    let total_conversion_attempts = protestant_hits - papacy_hits;
@@ -12702,13 +12699,10 @@ console.log(JSON.stringify(mv));
 
 	  } else {
 	    if (protestant_hits < papacy_hits) {
-  	      //
-              // report results
-              //
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "papacy" , difference : (papacy_hits - protestant_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
   	      this.game.queue.push("hide_overlay\ttheses");
 	      let total_conversion_attempts = papacy_hits - protestant_hits;
-	      for (let i = 1; i < total_conversion_attempts && i <= this.returnNumberOfProtestantSpacesInLanguageZone(); i++) {
+	      for (let i = 1; i <= total_conversion_attempts && i <= this.returnNumberOfProtestantSpacesInLanguageZone(); i++) {
 	        this.game.queue.push("select_for_catholic_conversion\tpapacy\tgerman");
 	      }
   	      this.game.queue.push("STATUS\t<div class='message'>Papacy selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_papacy));
@@ -12721,7 +12715,6 @@ console.log(JSON.stringify(mv));
 	      this.updateLog("Diet of Worms ends in tie.");
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "none" , difference : 0 , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
   	      this.game.queue.push("ACKNOWLEDGE\tDiet of Worms ends in a Stalemate");
-
 	    }
 	  }
 
@@ -18984,24 +18977,22 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
 	for (let z = 0; z < neighbours.length; z++) {
 	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) {
-	    console.log("SPACE IS: " + neighbours[z]);
+	    console.log("1 SPACE IS: " + neighbours[z]);
 	    return 1;
 	  } 
 	}
 	if (his_self.returnFactionLandUnitsInSpace(faction, spaces_in_unrest[i]) > 0) {
-	  console.log("SPACE IS: " + spaces_in_unrest[i]);
+	  console.log("2 SPACE IS: " + spaces_in_unrest[i]);
 	  return 1;
 	} 
       }
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
-console.log("checking: " + conquerable_spaces[i]);
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) { 
-	console.log("SPACE IS: " + conquerable_spaces[i]);
+	console.log("3 SPACE IS: " + conquerable_spaces[i]);
 	return 1;
       } 
     }
-console.log("return ZERO");
     return 0;
   }
   async playerControlUnfortifiedSpace(his_self, player, faction) {
@@ -19023,8 +19014,6 @@ console.log("return ZERO");
 	i--;
       }
     }
-
-console.log("CS: " + JSON.stringify(conquerable_spaces));
 
     his_self.playerSelectSpaceWithFilter(
 

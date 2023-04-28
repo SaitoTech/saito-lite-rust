@@ -15,6 +15,9 @@
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
     // home spaces that have not fallen to another power.
+    if (space.home === faction && space.political == "") { return true; }
+
+    // home spaces that have not fallen to another power.
     if (space.home === faction && space.political == faction) { return true; }
 
     // independent (gray) spaces seized by the power.

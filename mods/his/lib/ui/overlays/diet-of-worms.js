@@ -60,6 +60,8 @@ class DietOfWormsOverlay {
 
     showResults(obj) {
 
+      let his_self = this.mod;
+
       this.mod.hud.zIndex = 10;
       if (document.querySelector(".hud")) {
 	document.querySelector(".hud").style.zIndex = 10;
@@ -115,10 +117,17 @@ class DietOfWormsOverlay {
       document.querySelector(".diet-overlay .help").innerHTML = html;
       $(".diet_of_worms_end").off();
       $(".diet_of_worms_end").on("click", () => {
+
+console.log("QUEUE: " + JSON.stringify(his_self.game.queue));
+
+	let lqe = his_self.game.queue[his_self.game.queue.length-1];
+	let mv = lqe.split("\t");
+	if (mv[0] === "ACKNOWLEDGE") { 
+	  his_self.game.queue.splice(his_self.game.queue.length-1, 1);
+	  his_self.restartQueue();
+	}
 	this.overlay.remove();
       });
-
-
     }
 
 }

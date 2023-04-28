@@ -1422,12 +1422,7 @@ console.log(JSON.stringify(mv));
 	    if (x >= 5) { papacy_hits++; }
 	  }
 
-
 	  if (protestant_hits > papacy_hits) {
-
-	    //
-            // report results
-            //
 	    this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "protestant" , difference : (protestant_hits - papacy_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
   	    this.game.queue.push("hide_overlay\ttheses");
 	    let total_conversion_attempts = protestant_hits - papacy_hits;
@@ -1440,13 +1435,10 @@ console.log(JSON.stringify(mv));
 
 	  } else {
 	    if (protestant_hits < papacy_hits) {
-  	      //
-              // report results
-              //
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "papacy" , difference : (papacy_hits - protestant_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
   	      this.game.queue.push("hide_overlay\ttheses");
 	      let total_conversion_attempts = papacy_hits - protestant_hits;
-	      for (let i = 1; i < total_conversion_attempts && i <= this.returnNumberOfProtestantSpacesInLanguageZone(); i++) {
+	      for (let i = 1; i <= total_conversion_attempts && i <= this.returnNumberOfProtestantSpacesInLanguageZone(); i++) {
 	        this.game.queue.push("select_for_catholic_conversion\tpapacy\tgerman");
 	      }
   	      this.game.queue.push("STATUS\t<div class='message'>Papacy selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_papacy));
@@ -1459,7 +1451,6 @@ console.log(JSON.stringify(mv));
 	      this.updateLog("Diet of Worms ends in tie.");
 	      this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "none" , difference : 0 , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
   	      this.game.queue.push("ACKNOWLEDGE\tDiet of Worms ends in a Stalemate");
-
 	    }
 	  }
 

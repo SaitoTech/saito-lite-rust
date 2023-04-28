@@ -2284,7 +2284,6 @@ alert("Not Implemented");
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "event") {
-alert("Wartburg Triggers");
         }
         return 0;
       },
