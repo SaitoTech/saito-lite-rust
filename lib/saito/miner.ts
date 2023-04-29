@@ -60,6 +60,7 @@ class Miner {
     }
 
     this.mining_active = true;
+console.log("start mining...");
     this.mining_timer = setInterval(async () => {
       await this.mine();
     }, this.mining_speed);

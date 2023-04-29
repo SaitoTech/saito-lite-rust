@@ -417,8 +417,11 @@ alert("Not Implemented");
 	    his_self.endTurn();
 
 	  }
+
+	  return 0;
         }
-	return 0;
+
+	return 1;	
       }
     }
     deck['209'] = { 
@@ -1266,7 +1269,9 @@ alert("Not Implemented");
 
 	// protestant gets 2 roll bonus at start
 	his_self.game.state.tmp_protestant_reformation_bonus = 2;
+	his_self.game.state.tmp_protestant_reformation_bonus_spaces = [];
 	his_self.game.state.tmp_catholic_reformation_bonus = 0;
+	his_self.game.state.tmp_catholic_reformation_bonus_spaces = [];
 	his_self.game.state.tmp_reformations_this_turn = [];
 
 	his_self.game.queue.push("hide_overlay\ttheses");
@@ -1603,8 +1608,8 @@ alert("Not Implemented");
 	his_self.game.state.leaders['luther'] = 0;
 	his_self.game.state.leaders['calvin'] = 1;
 
-	let x = his_self.returnSpaceOfPersonage("luther-reformer");
-	let y = his_self.returnIndexOfPersonageInSpace("luther-reformer");
+	let x = his_self.returnSpaceOfPersonage("protestant", "luther-reformer");
+	let y = his_self.returnIndexOfPersonageInSpace("protestant", "luther-reformer", x);
 
 	if (y > -1) {
 	  his_self.game.spaces[x].units["protestant"].splice(y, 1);
@@ -2279,7 +2284,6 @@ alert("Not Implemented");
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "event") {
-alert("Wartburg Triggers");
         }
         return 0;
       },

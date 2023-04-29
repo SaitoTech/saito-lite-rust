@@ -5,7 +5,6 @@ module.exports = (players=2) => {
     help = 'Protestants pick a card and +4 its value. Papacy and Hapsburgs each pick cards and combine their values. Both sides roll requisite number of dice. Hits on 5 or 6. Winner converts spaces equal to difference in hits.';
   }
   
-
   let html = `
       <div class="diet-overlay" id="diet-overlay">
 	<div class="help">${help}</div>

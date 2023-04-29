@@ -6,7 +6,7 @@ class ReformationOverlay {
     constructor(app, mod){
         this.app = app;
         this.mod = mod;
-        this.overlay = new SaitoOverlay(app, mod);
+        this.overlay = new SaitoOverlay(app, mod, false);
     }
 
     hide() {
