@@ -250,12 +250,12 @@ class Mempool {
 
     // stop if inadequate golden ticket support?
     if (!does_chain_meet_golden_ticket_requirements) {
-      console.log(
-        "ERROR 850293: we do not have enough golden ticket support, waiting before bundling..."
-      );
+      console.log("ERROR 850293: we do not have enough golden ticket support, waiting before bundling...");
       this.app.miner.startMining();
       return;
     }
+
+console.log("enough mining support... continuing");
 
     // stop if already bundling?
     if (this.bundling_active === true) {
@@ -278,15 +278,9 @@ class Mempool {
 
     // create block
     try {
-      // create the block
       const block = new Block(this.app);
       const previous_block_hash = this.app.blockring.returnLatestBlockHash();
-
-      // generate and sign
-      console.log("blockring reports PBH: " + previous_block_hash);
       await block.generate(previous_block_hash);
-
-      // and add to mempool
       await this.addBlock(block);
     } catch (err) {
       console.error("ERROR 781029: unexpected problem bundling block in mempool: ", err);
@@ -294,6 +288,7 @@ class Mempool {
 
     // reset
     this.bundling_active = false;
+
   }
 
   canBundleBlock(): boolean {

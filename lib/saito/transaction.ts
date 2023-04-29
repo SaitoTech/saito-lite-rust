@@ -124,7 +124,6 @@ try {
               const reconstruct3 = this.base64ToString(Buffer.from(this.transaction.m).toString());
               this.msg = JSON.parse(reconstruct3);
 	    } catch (err) {
-	      //console.log("real issues reconstructing...");
 	    }
 	  }
         }
@@ -185,21 +184,15 @@ try {
     }
 
 
-console.log("decrypt message 1!");
-
     //
     // now we can try to decryp
     //
     try {
       if (this.msg === null) {
-console.log("decrypt message 2!");
         this.dmsg = "";
       } else {
-console.log("decrypt message 3!");
         const parsed_msg = this.msg;
-console.log("decrypt message 4!");
         this.dmsg = app.keychain.decryptMessage(publickey, parsed_msg);
-console.log("decrypt message 5!");
       }
 
     } catch (e) {
@@ -212,7 +205,6 @@ console.log("decrypt message 5!");
       let key = app.keychain.returnKey(publickey);
       if (key != null) {
         if (key.aes_secret) {
-          console.log("TRYING TO RE-GENERATE AES SECRET");
           app.connection.emit("encrypt-key-exchange", (publickey));
           return;
         }
@@ -305,9 +297,7 @@ console.log("decrypt message 5!");
         }
       }
     } catch (err) {
-      //console.log("buffer length = " + this.transaction.m.byteLength);
-      //console.error("error trying to parse this.msg: ", err);
-      //console.error("error trying to parse the message as JSON, tx : ", this.transaction.sig);
+      console.error("error trying to parse the message as JSON, tx : ", this.transaction.sig);
     }
   }
 
@@ -489,11 +479,7 @@ console.log("decrypt message 5!");
         const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
         this.msg = JSON.parse(reconstruct);
       } catch (err) {
-        //console.log(
-        //  `buffer length = ${this.transaction.m.byteLength} type = ${typeof this.transaction.m}`
-        //);
         console.error("error parsing return message", err);
-        //console.log("here: " + JSON.stringify(this.msg));
       }
     }
     return this.msg;
@@ -642,10 +628,6 @@ console.log("decrypt message 5!");
    * @param app
    */
   serialize(app: Saito): Uint8Array {
-
-    //
-    //console.log("tx.serialize", this.transaction);
-    //
 
     const inputs_len = app.binary.u32AsBytes(this.transaction.from.length);
     const outputs_len = app.binary.u32AsBytes(this.transaction.to.length);
@@ -1001,7 +983,6 @@ console.log("decrypt message 5!");
   }
 
   validateRoutingPath(app: Saito): boolean {
-    // console.log("JS needs to validate routing paths still...");
 
     if (!this.path) {
       return true;
