@@ -281,7 +281,9 @@ console.log("enough mining support... continuing");
       const block = new Block(this.app);
       const previous_block_hash = this.app.blockring.returnLatestBlockHash();
       await block.generate(previous_block_hash);
+console.log("about to add new block...");
       await this.addBlock(block);
+console.log("done adding new block...");
     } catch (err) {
       console.error("ERROR 781029: unexpected problem bundling block in mempool: ", err);
     }
