@@ -435,9 +435,12 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     // or -- failing that -- whichever faction is recorded as occupying the space.
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let f in space.units) {
+console.log("we have found: " + f);
       let luis = this.returnFactionLandUnitsInSpace(f, space);
       if (luis > 0) {
-        if (!this.areAllies(attacker_faction, f)) {
+console.log("this faction has units!");
+        if (!this.areAllies(attacker_faction, f) && f !== attacker_faction) {
+console.log("this faction is not an ally to " + attacker_faction + " --- " + this.areAllies(attacker_faction, f));
 	  return f;
 	}
       }
@@ -898,6 +901,26 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 
   }
 
+  returnNumberOfCatholicElectorates() {
+    let controlled_keys = 0;
+    if (!this.isSpaceControlled('augsburg', "protestant")) { controlled_keys++; }
+    if (!this.isSpaceControlled('mainz', "protestant")) { controlled_keys++; }
+    if (!this.isSpaceControlled('trier', "protestant")) { controlled_keys++; }
+    if (!this.isSpaceControlled('cologne', "protestant")) { controlled_keys++; }
+    if (!this.isSpaceControlled('wittenberg', "protestant")) { controlled_keys++; }
+    if (!this.isSpaceControlled('brandenburg', "protestant")) { controlled_keys++; }
+    return controlled_keys;
+  }
+  returnNumberOfProtestantElectorates() {
+    let controlled_keys = 0;
+    if (this.isSpaceControlled('augsburg', "protestant")) { controlled_keys++; }
+    if (this.isSpaceControlled('mainz', "protestant")) { controlled_keys++; }
+    if (this.isSpaceControlled('trier', "protestant")) { controlled_keys++; }
+    if (this.isSpaceControlled('cologne', "protestant")) { controlled_keys++; }
+    if (this.isSpaceControlled('wittenberg', "protestant")) { controlled_keys++; }
+    if (this.isSpaceControlled('brandenburg', "protestant")) { controlled_keys++; }
+    return controlled_keys;
+  }
   returnNumberOfElectoratesControlledByCatholics() {
     let controlled_keys = 0;
     if (this.game.spaces['augsburg'].religion === "catholic") { controlled_keys++; }

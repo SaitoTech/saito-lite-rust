@@ -43,15 +43,15 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  if (this.game.state.round == 1) {
 
-  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-  	    this.game.queue.push("diet_of_worms");
-  	    this.game.queue.push("show_overlay\tdiet_of_worms");
+//  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+//  	    this.game.queue.push("diet_of_worms");
+//  	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    //
 	    // cards dealt before diet of worms
 	    //
 	    this.game.queue.push("card_draw_phase");
-	    this.updateLog("Luther's 95 Theses!");
-	    this.game.queue.push("event\t1\t008");
+//	    this.updateLog("Luther's 95 Theses!");
+//	    this.game.queue.push("event\t1\t008");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -660,7 +660,11 @@ return 0; }
 	  //
 	  for (f in this.factions) {
 
+console.log("CHECK 1: " + f + " -- " + attacker);
+
 	    if (f !== attacker && this.isSpaceControlled(spacekey, f)) {
+
+console.log("CHECK 1: " + f + " -- " + attacker);
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
@@ -711,13 +715,31 @@ return 0; }
 	          } else {
 
 		    //
-		    // major power - some player decides
+		    // major or independent power - some player decides
 		    //
 		    let cp = this.returnPlayerOfFaction(f);
 		    if (cp != 0) {
 		      this.game.queue.push("player_evaluate_fortification"+"\t"+attacker+"\t"+cp+"\t"+f+"\t"+spacekey);
-		    }
+		    } else {
 
+	              //
+		      // independent key
+	              //
+	              // non-player controlled, minor power or independent, so auto-handle
+	              //
+	              // If there are 4 or fewer land units in a space, they will always withdraw into
+	              // the fortifications and try to withstand a siege if their space is entered.
+	              // if there are 5 or more land units,they will hold their ground and fight a field
+	              // battle. If they lose that field battle, do not retreat their units from the
+	              // space as usual. Instead, they retain up to 4 units which withdraw into the
+	              // fortifications; all other land units in excess of 4 are eliminated.
+	              //
+	              // fortify everything
+	              //
+	              for (let i = 0; i < space.units[faction].length; i++) {
+	                his_self.game.queue.push("fortify_unit\t"+spacekey+"\t"+faction+"\t"+JSON.stringify(space.units[faction][i]));
+	              }
+		    }
 	          }
 	        }
 	      }
@@ -735,6 +757,51 @@ return 0; }
 
 	}
 
+        if (mv[0] === "post_field_battle_player_evaluate_fortification") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let attacker = mv[1];
+	  let player = parseInt(mv[2]);
+	  let faction = mv[3];
+	  let spacekey = mv[4];
+
+	  if (this.game.player == player) {
+	    this.playerEvaluateFortification(attacker, faction, spacekey);
+	  } else {
+	    if (this.isPlayerControlledFaction(faction)) {
+console.log("3. PLAYER IS CONTROLLED as: " + player);
+	      this.updateStatus(faction + " considering fortification");
+	      this.updateLog(faction + " evaluating retreat into fortification");
+	    } else {
+console.log("4. PLAYER IS DEFINED as: " + player);
+	      //
+	      // non-player controlled, minor power or independent, so auto-handle
+	      //
+	      // If there are 4 or fewer land units in a space, they will always withdraw into 
+	      // the fortifications and try to withstand a siege if their space is entered.
+	      // if there are 5 or more land units,they will hold their ground and fight a field 
+	      // battle. If they lose that field battle, do not retreat their units from the 
+	      // space as usual. Instead, they retain up to 4 units which withdraw into the 
+	      // fortifications; all other land units in excess of 4 are eliminated.
+      	      //
+      	      // this only runs after we have had a battle, so we fortify everything if we still
+	      // exist. HACK
+      	      //
+	      //
+	      // fortify everything
+	      //
+	      for (let i = 0; i < space.units[faction].length; i++) {
+	        his_self.game.queue.push("fortify_unit\t"+spacekey+"\t"+faction+"\t"+JSON.stringify(space.units[faction][i]));
+	      }
+	      return 1;
+	    }
+	  }
+	
+          return 0;
+
+	}
+
         if (mv[0] === "player_evaluate_fortification") {
 
 	  this.game.queue.splice(qe, 1);
@@ -747,13 +814,39 @@ return 0; }
 	  if (this.game.player == player) {
 	    this.playerEvaluateFortification(attacker, faction, spacekey);
 	  } else {
-	    this.updateStatus(faction + " considering fortification");
-	    this.updateLog(faction + " evaluating retreat into fortification");
+	    if (this.isPlayerControlledFaction(faction)) {
+console.log("3. PLAYER IS CONTROLLED as: " + player);
+	      this.updateStatus(faction + " considering fortification");
+	      this.updateLog(faction + " evaluating retreat into fortification");
+	    } else {
+console.log("4. PLAYER IS DEFINED as: " + player);
+	      //
+	      // non-player controlled, minor power or independent, so auto-handle
+	      //
+	      // If there are 4 or fewer land units in a space, they will always withdraw into 
+	      // the fortifications and try to withstand a siege if their space is entered.
+	      // if there are 5 or more land units,they will hold their ground and fight a field 
+	      // battle. If they lose that field battle, do not retreat their units from the 
+	      // space as usual. Instead, they retain up to 4 units which withdraw into the 
+	      // fortifications; all other land units in excess of 4 are eliminated.
+      	      //
+      	      // this only runs after we have had a battle, so we fortify everything if we still
+	      // exist. HACK
+      	      //
+	      //
+	      // fortify everything
+	      //
+	      for (let i = 0; i < space.units[faction].length; i++) {
+	        his_self.game.queue.push("fortify_unit\t"+spacekey+"\t"+faction+"\t"+JSON.stringify(space.units[faction][i]));
+	      }
+	      return 1;
+	    }
 	  }
+	
+          return 0;
 
-	  return 0;
+	}
 
-        }
 
 
 	if (mv[0] === "fortify_unit") {
@@ -803,10 +896,36 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 	  }
 
 	  if (this.game.player === player) {
-console.log("this player is fortifying space!");
+console.log("0. this player is fortifying space: " + faction + " / " + attacker + " / " + spacekey);
 	    this.playerFortifySpace(faction, attacker, spacekey);
 	  } else {
-	    this.updateStatus(this.returnFactionName(faction) + " handling retreat into fortification");
+	    if (this.isPlayerControlledFaction(faction)) {
+console.log("1. PLAYER IS CONTROLLED as: " + player);
+	      this.updateStatus(this.returnFactionName(faction) + " handling retreat into fortification");
+	    } else {
+console.log("2. PLAYER IS DEFINED as: " + player);
+	      //
+	      // non-player controlled, minor power or independent, so auto-handle
+	      //
+	      // If there are 4 or fewer land units in a space, they will always withdraw into 
+	      // the fortifications and try to withstand a siege if their space is entered.
+	      // if there are 5 or more land units,they will hold their ground and fight a field 
+	      // battle. If they lose that field battle, do not retreat their units from the 
+	      // space as usual. Instead, they retain up to 4 units which withdraw into the 
+	      // fortifications; all other land units in excess of 4 are eliminated.
+      	      //
+	      if (space.units[faction].length <= 4) {
+		// fortify everything
+		for (let i = 0; i < space.units[faction].length; i++) {
+		  his_self.game.queue.push("fortify_unit\t"+spacekey+"\t"+faction+"\t"+JSON.stringify(space.units[faction][i]));
+		}
+	      } else {
+		//
+		// go into field battle
+		//
+	      }
+	      return 1;
+	    }
 	  }
 	
           return 0;
@@ -1687,24 +1806,28 @@ console.log("TRIGGERING " + menu_index[i]);
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
 	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker)-1];
 	      let ap = his_self.game.state.players_info[attacker_player-1];
-	      if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
-	      if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
-	      if (p.tmp_roll_modifiers.length > 0) { 
-		for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
-	          ap.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
-	        } 
+	      if (p && ap) {
+	        if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
+	        if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
+	        if (p.tmp_roll_modifiers.length > 0) { 
+	  	  for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
+	            ap.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
+	          } 
+		}
 	      } 
 	    }
 	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
 	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
 	      let dp = his_self.game.state.players_info[defender_player-1];
-	      if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
-	      if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
-	      if (p.tmp_roll_modifiers.length > 0) { 
-		for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
-	          dp.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
+	      if (p && dp) {
+	        if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
+	        if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
+	        if (p.tmp_roll_modifiers.length > 0) { 
+	    	  for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
+	            dp.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
+	          } 
 	        } 
-	      } 
+	      }
 	    }
           }
 
@@ -1727,7 +1850,6 @@ console.log("TRIGGERING " + menu_index[i]);
 
 	  let attacker_highest_battle_ranking = 0;
 	  let defender_highest_battle_ranking = 0;
-
 
 	  for (let f in faction_map) {
 	    if (faction_map[f] === attacker_faction) {
@@ -1886,6 +2008,7 @@ console.log("TRIGGERING " + menu_index[i]);
 	  //
 	  let attacker_faction = attacker;
 	  let defender_faction = his_self.returnDefenderFaction(attacker_faction, space);
+console.log("we have found the defender faction: " + defender_faction);
 
  	  let attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
  	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
@@ -1905,22 +2028,26 @@ console.log("TRIGGERING " + menu_index[i]);
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
 	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker)-1];
 	      let ap = his_self.game.state.players_info[attacker_player-1];
-	      if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
-	      if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
-	      if (p.tmp_roll_modifiers.length > 0) { 
-		for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
-	          ap.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
+	      if (p && ap) {
+	        if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
+	        if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
+	        if (p.tmp_roll_modifiers.length > 0) { 
+	  	  for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
+	            ap.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
+	          } 
 	        } 
 	      } 
 	    }
 	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
 	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
 	      let dp = his_self.game.state.players_info[defender_player-1];
-	      if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
-	      if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
-	      if (p.tmp_roll_modifiers.length > 0) { 
-		for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
-	          dp.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
+	      if (p && dp) {
+	        if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
+	        if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
+	        if (p.tmp_roll_modifiers.length > 0) { 
+	  	  for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
+	            dp.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
+	          } 
 	        } 
 	      } 
 	    }
@@ -2022,6 +2149,8 @@ console.log("TRIGGERING " + menu_index[i]);
 	  his_self.game.state.field_battle.defender_faction = defender_faction;
 	  his_self.game.state.field_battle.faction_map = faction_map;
 
+console.log("committed defender faction as: " + defender_faction);
+
 	  //
 	  // ottomans may play Janissaries, and some players may attack before each other, so
 	  // we take conditional action and move to COUNTER_OR_ACKNOWLEDGE based on the details
@@ -2076,14 +2205,16 @@ console.log("TRIGGERING " + menu_index[i]);
           let modify_rolls = function(player, roll_array) {
 	    let modified_rolls = [];
             for (let i = 0; i < roll_array.length; i++) {
-              if (player.tmp_roll_modifiers.length > i) {
-                let modded_roll = roll_array[i] + player.tmp_roll_modifiers[i];
-                if (modded_roll >= 5) {
-                  modified_rolls.push(modded_roll);
-                }
-              } else {
-                if (roll_array[i] >= 5) {
-                  modified_rolls.push(roll_array[i]);
+	      if (player.tmp_roll_modifiers) {
+                if (player.tmp_roll_modifiers.length > i) {
+                  let modded_roll = roll_array[i] + player.tmp_roll_modifiers[i];
+                  if (modded_roll >= 5) {
+                    modified_rolls.push(modded_roll);
+                  }
+                } else {
+                  if (roll_array[i] >= 5) {
+                    modified_rolls.push(roll_array[i]);
+                  }
                 }
               }
             }
@@ -2116,13 +2247,9 @@ console.log("TRIGGERING " + menu_index[i]);
 	      }
 	    }
 
-	    //
-	    //
-	    //
 	    if (max_possible_hits_assignable < hits_to_assign) {
 	      hits_to_assign = max_possible_hits_assignable;
 	    }
-
 
 	    while (are_hits_all_assigned == 0 && hits_to_assign > 0) {
 
@@ -2227,6 +2354,8 @@ console.log("TRIGGERING " + menu_index[i]);
 	    }
 	  }
 
+console.log("FIELD BATTLE INFO: " + JSON.stringify(his_self.game.state.field_battle));
+
 	  let faction_map = his_self.game.state.field_battle.faction_map;
 	  let attacker_faction = his_self.game.state.field_battle.attacker_faction;
 	  let defender_faction = his_self.game.state.field_battle.defender_faction;
@@ -2238,6 +2367,9 @@ console.log("TRIGGERING " + menu_index[i]);
 	  let defender_rolls   = his_self.game.state.field_battle.defender_rolls;
 	  let attacker_units   = his_self.game.state.field_battle.attacker_units;
 	  let defender_units   = his_self.game.state.field_battle.defender_units;
+
+	  if (his_self.returnPlayerOfFaction(attacker_faction) == 0) { attacker_player = {}; }
+	  if (his_self.returnPlayerOfFaction(defender_faction) == 0) { defender_player = {}; }
 
 	  let winner	       = defender_faction;
 	  let attacker_hits    = 0;
@@ -2339,8 +2471,11 @@ console.log("d");
 	  //
 	  // who won?
 	  //
+console.log("attacher hits: " + attacker_hits);
+console.log("defender hits: " + defender_hits);
 	  if (attacker_hits > defender_hits) {
 	    winner = attacker_faction;
+console.log("winner set to attacker_faction: " + winner);
 	  }
 
 	  //
@@ -2351,7 +2486,6 @@ console.log("d");
 
           his_self.game.state.field_battle.attacker_land_units_remaining = attacker_land_units_remaining;
           his_self.game.state.field_battle.defender_land_units_remaining = defender_land_units_remaining;
-
 
 	  if (attacker_land_units_remaining == 0 && defender_land_units_remaining == 0) {
 	    if (attacker_rolls > defender_rolls) {
@@ -2436,7 +2570,7 @@ console.log("d");
                 }
               }
             }
-            this.game.queue.push("player_evaluate_fortification\t"+attacker_faction+"\t"+his_self.returnPlayerOfFaction(defender_faction)+"\t"+defender_faction+"\t"+space.key);
+            this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+attacker_faction+"\t"+his_self.returnPlayerOfFaction(defender_faction)+"\t"+defender_faction+"\t"+space.key);
           }
 
           //
