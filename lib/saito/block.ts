@@ -307,7 +307,6 @@ class Block {
   }
 
   async generateConsensusValues() {
-    // console.log("generating consensus values for block : ", this.hash);
     // this is the number of blocks we will recurse backwards to issue the
     // staker payout. if this permits strings of blocks that are less than
     // the theoretical maximum number of golden-ticket free blocks that can
@@ -834,16 +833,11 @@ class Block {
     // object, so we can hot-swap using pass-by-reference. these
     // modifications change the mempool in real-time.
     //
-    console.log("-----------------------------------");
-    console.log("how many gts to check? " + this.app.mempool.mempool.golden_tickets.length);
     for (let i = 0; i < this.app.mempool.mempool.golden_tickets.length; i++) {
-      console.log("checking GT: " + i);
       const gt = this.app.goldenticket.deserializeFromTransaction(
         this.app.mempool.mempool.golden_tickets[i]
       );
-      console.log("comparing " + gt.target_hash + " -- " + previous_block_hash);
       if (gt.target_hash === previous_block_hash) {
-        console.log("ADDING GT TX TO BLOCK");
         this.transactions.unshift(this.app.mempool.mempool.golden_tickets[i]);
         this.has_golden_ticket = true;
         this.app.mempool.mempool.golden_tickets.splice(i, 1);
@@ -1087,7 +1081,6 @@ class Block {
           this.txs_hmap.set(this.transactions[i].transaction.from[ii].add, 1);
         }
         for (let ii = 0; ii < this.transactions[i].transaction.to.length; ii++) {
-          // console.log("setting txhmap for " + this.transactions[i].transaction.to[ii].add);
           this.txs_hmap.set(this.transactions[i].transaction.to[ii].add, 1);
         }
       }
@@ -1113,7 +1106,6 @@ class Block {
 
   hasKeylistTransactions(keylist: string[]): boolean {
     if (!this.txs_hmap_generated) {
-      console.log("generating tx hashmap for " + JSON.stringify(keylist));
       this.generateTransactionsHashmap();
     }
     for (let i = 0; i < keylist.length; i++) {
@@ -1127,12 +1119,9 @@ class Block {
   onChainReorganization(lc: boolean) {
     const block_id = this.returnId();
     for (let i = 0; i < this.transactions.length; i++) {
-      // console.log("tx ocr " + i);
       this.transactions[i].onChainReorganization(this.app, lc, block_id);
     }
-    // console.log("done tx ocr 1");
     this.lc = lc;
-    // console.log("done tx ocr 2");
   }
 
   asReadableString() {
@@ -1236,7 +1225,6 @@ console.log("TX CAUSING ERROR: " + JSON.stringify(this.transactions[this.callbac
   }
 
   generateMerkleRoot(): string {
-    // console.log("generating merkle root of block : " + this.hash);
     //
     // if we are lite-client and have been given a block without transactions
     // we accept the merkle root since it is what has been provided. users who
@@ -1245,7 +1233,6 @@ console.log("TX CAUSING ERROR: " + JSON.stringify(this.transactions[this.callbac
     // as in any other blockchains/SPV/MR implementation.
     //
     if (this.transactions.length === 0 && (this.app.BROWSER === 1 || this.app.SPVMODE === 1)) {
-      console.log("returning block's merkle without calculating");
       return this.block.merkle;
     }
 
@@ -1403,7 +1390,7 @@ console.log("TX CAUSING ERROR: " + JSON.stringify(this.transactions[this.callbac
     const block_creator = this.block.creator;
     const block_signature = this.block.signature;
 
-    console.log(`block.serialize : tx count = ${this.transactions.length} for ${this.hash}`);
+    console.log("start of block serialize...");
     let transactions_length = this.app.binary.u32AsBytes(this.transactions.length);
 
     const id = this.app.binary.u64AsBytes(this.block.id);
@@ -1508,7 +1495,6 @@ console.log("TX CAUSING ERROR: " + JSON.stringify(this.transactions[this.callbac
     }
 
     if (this.block_type === BlockType.Ghost) {
-      console.log("block validates as true since it is a ghost block");
       return true;
     }
 
@@ -1535,11 +1521,6 @@ console.log("TX CAUSING ERROR: " + JSON.stringify(this.transactions[this.callbac
       this.returnHash() === this.app.blockchain.blockchain.genesis_block_hash ||
       this.app.blockchain.blockchain.genesis_block_hash === ""
     ) {
-      console.log(
-        "DEBUG SERVER CRASH: saved genesis_block_hash is: " +
-          this.app.blockchain.blockchain.genesis_block_hash
-      );
-      console.log(`approving ${this.returnHash()} as genesis block`);
       return true;
     }
 
@@ -1587,7 +1568,6 @@ console.log("TX CAUSING ERROR: " + JSON.stringify(this.transactions[this.callbac
       // treasury
       //
       if (this.returnTreasury() !== previous_block.returnTreasury() + cv.nolan_falling_off_chain) {
-        console.log("ERROR 123243: treasury is not calculated properly");
         return false;
       }
 
@@ -1607,7 +1587,6 @@ console.log("TX CAUSING ERROR: " + JSON.stringify(this.transactions[this.callbac
         adjusted_staking_treasury = adjusted_staking_treasury + cv_st;
       }
       if (this.returnStakingTreasury().toString() !== adjusted_staking_treasury.toString()) {
-        console.log("ERROR 820391: staking treasury does not validate");
         return false;
       }
 
@@ -1669,23 +1648,6 @@ console.log("TX CAUSING ERROR: " + JSON.stringify(this.transactions[this.callbac
           return false;
         }
 
-        // const solution = this.app.goldenticket.generateSolution(
-        //   previous_block.returnHash(),
-        //   gt.target_hash,
-        //   gt.random_bytes,
-        //   gt.creator
-        // );
-        // if (
-        //   !this.app.goldenticket.isValidSolution(
-        //     solution,
-        //     previous_block.returnDifficulty()
-        //   )
-        // ) {
-        //   console.log(
-        //     "ERROR 801923: golden ticket included in block is invalid"
-        //   );
-        //   return false;
-        // }
       }
     } else {
       //
@@ -1711,9 +1673,7 @@ console.log("TX CAUSING ERROR: " + JSON.stringify(this.transactions[this.callbac
       return false;
     }
     if (cv.total_rebroadcast_nolan !== this.total_rebroadcast_nolan) {
-      console.log(
-        `ERROR 294018: rebroadcast nolan amount incorrect: ${cv.total_rebroadcast_nolan} - ${this.total_rebroadcast_nolan}`
-      );
+      console.log(`ERROR 294018: rebroadcast nolan amount incorrect: ${cv.total_rebroadcast_nolan} - ${this.total_rebroadcast_nolan}`);
       return false;
     }
     if (cv.rebroadcast_hash !== this.rebroadcast_hash) {
@@ -1724,9 +1684,7 @@ console.log("TX CAUSING ERROR: " + JSON.stringify(this.transactions[this.callbac
     let generated_merkle_root = this.generateMerkleRoot();
     // validate merkle root
     if (this.block.merkle !== generated_merkle_root) {
-      console.log(
-        `merkle root : ${this.block.merkle} is different from expected : ${generated_merkle_root}`
-      );
+      console.log(`merkle root : ${this.block.merkle} is different from expected : ${generated_merkle_root}`);
       return false;
     }
 
@@ -1765,13 +1723,6 @@ console.log("TX CAUSING ERROR: " + JSON.stringify(this.transactions[this.callbac
       if (hash1 !== hash2) {
         console.error(
           `ERROR 892032: block ${this.hash} fee transaction doesn't match cv fee transaction`
-        );
-        console.log("expected: ", cv.fee_transaction);
-        console.log("actual: ", fee_transaction);
-        console.log(
-          `gt count = ${cv.gt_num} gt index = ${
-            cv.gt_idx
-          } has gt = ${this.hasGoldenTicket()} index from block = ${this.golden_ticket_idx}`
         );
         return false;
       }
