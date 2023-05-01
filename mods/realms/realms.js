@@ -50,6 +50,7 @@ class Realms extends GameTemplate {
 		//
 		// add card events -- text shown and callback run if there
 		//
+		this.cardbox.skip_card_prompt = 0;
 		this.cardbox.addCardType("showcard", "", null);
 		this.cardbox.addCardType("card", "select", this.cardbox_callback);
 
@@ -80,7 +81,11 @@ class Realms extends GameTemplate {
 			this.game.state = this.returnState();
 
 			this.game.queue.push("round");
+			//this.game.queue.push("PLAY\t2");
+			//this.game.queue.push("DEAL\t2\t2\t1");
+			//this.game.queue.push("PLAY\t1");
 			this.game.queue.push("READY");
+
 
 			//First player to go, doesn't get to draw an 8th card at the beginning of their turn
 			this.game.queue.push("DEAL\t1\t1\t6");
@@ -192,47 +197,69 @@ class Realms extends GameTemplate {
 				this.game.queue.push("DEAL\t1\t1\t1");
 			}
 
-			if (mv[0] === "move") {
+			if (mv[0] === "summon") {
 				let player_id = parseInt(mv[1]);
 				let cardkey = mv[2];
-				let source = mv[3];
-				let destination = mv[4];
-				let sending_player_also = 1;
-				if (mv[5] == 0) {
-					sending_player_also = 0;
-				}
 
-				if (sending_player_also == 0) {
-					if (this.game.player != player_id) {
-						this.moveCard(player_id, cardkey, source, destination);
-					}
-				} else {
-					this.moveCard(player_id, cardkey, source, destination);
-				}
+				if (this.game.player !== player_id){
+					let id = this.insertCardSlot(player_id, "#summoning_stack");
+					this.game.state.summoning_stack.push({player: player_id, key: cardkey, card: this.card_library[cardkey], uuid: id});
+					this.addCard(cardkey, id);					
 
-				this.displayBoard();
+					//To Do: add a step for opponent to Counter/Acknowledge summoned card
+					//Shortcut to accept
+					this.addMove("accept");
+					setTimeout(()=> {this.endTurn();}, 2000);
+					
+				}
 
 				this.game.queue.splice(qe, 1);
+				return 0;
 			}
 
-			/*if (mv[0] === "play") {
+			if (mv[0] === "accept") {
+				this.game.queue.splice(qe, 1);
 
-        let player_to_go = parseInt(mv[1]);
+				for (let summoned_card of this.game.state.summoning_stack) {
+					this.game.queue.push(`resolve_card\t${summoned_card.player}\t${summoned_card.key}`);
+				}
 
-      	//
-      	// update board
-      	//
-        this.displayBoard();
-        this.playerTurn();
+			}
 
-      	//
-      	// do not remove until we resolve!
-      	//
-        //this.game.queue.splice(qe, 1);
+			if (mv[0] === "resolve_card") {
+				let player = parseInt(mv[1]);
+				let card_key = mv[2];
 
-        return 0;
+				//Insert code to do stuff based on the card definition
 
-      }*/
+				this.game.queue.splice(qe, 1);
+
+				let card = this.game.state.summoning_stack.pop();
+				if (card.key !== card_key) {
+					console.log("Desyncronized stacks! " + card_key);
+					console.log(JSON.parse(JSON.stringify(card)));
+				}
+
+				//lands: [], 				creatures: [], 				artifacts: [],				graveyard: [],
+
+				
+				if (["land", "creature", "artifact"].includes(card.type)) {
+					//Move permanents onto board
+					if (card.type == "creature"){
+						card.tapped = true;
+					}
+
+					this.game.state.players[player - 1][card.type].push(card);
+					
+				} //else {
+					//Discard non-permanents
+					this.game.state.players[player - 1]["graveyard"].push(card);
+					this.moveCard(card.uuid, ".graveyard");
+				//}
+
+				
+			}
+
 		}
 		return 1;
 	}
@@ -242,20 +269,17 @@ class Realms extends GameTemplate {
 
 		state.players = [2];
 		for (let i = 0; i < 2; i++) {
-			state.players[i] = {};
-			state.players[i].health = 20;
+			state.players[i] = {
+				health: 20,
+				mana: 0, 
+				land: [],
+				creature: [],
+				artifact: [],
+				graveyard: [],
+			};
 		}
 
-		state.hands = [2];
-		for (let i = 0; i < 2; i++) {
-			state.hands[i] = {};
-			state.hands[i].cards = {};
-			state.hands[i].lands = [];
-			state.hands[i].creatures = [];
-			state.hands[i].enchantments = [];
-			state.hands[i].graveyard = [];
-			state.hands[i].exiled = [];
-		}
+		state.summoning_stack = [];
 
 		return state;
 	}
@@ -305,189 +329,104 @@ class Realms extends GameTemplate {
 			this.endTurn();
 		};
 
-		//
-		// display board
-		//
-		this.displayBoard();
 	}
 
-	//
-	// this moves a card from one location, such as a player's hand, to another, such as
-	// the discard or remove pile, or a location on the table, such as affixing it to
-	// another card.
-	//
-	moveCard(player, card, source, destination) {
-		console.log(player + " -- " + card + " -- " + source + " -- " + destination);
 
-		switch (source) {
-			case "hand":
-				for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-					if (this.game.deck[0].hand[i] == card) {
-						this.game.deck[0].hand.splice(i, 1);
-						break;
-					}
+	insertCardSlot(player, destination) {
+		let base_id = `p${player}-card-`;
+
+		let max = 0;
+		let existing_cards = document.getElementsByClassName("cardslot");
+		for (let div of existing_cards){
+			if (div.id.includes(base_id)){
+				let temp = parseInt(div.id.replace(base_id, ""));
+				if (temp > max) {
+					max = temp;
 				}
-				break;
-
-			case "lands":
-				for (let i = 0; i < this.game.state.hands[player - 1].lands.length; i++) {
-					if (this.game.state.hands[player - 1].lands[i] == card) {
-						this.game.state.hands[player - 1].lands.splice(i, 1);
-						break;
-					}
-				}
-				break;
-
-			case "creatures":
-				for (let i = 0; i < this.game.state.hands[player - 1].creatures.length; i++) {
-					if (this.game.state.hands[player - 1].creatures[i] == card) {
-						this.game.state.hands[player - 1].creatures.splice(i, 1);
-						break;
-					}
-				}
-				break;
-
-			case "sorcery":
-			case "enchantments":
-				for (let i = 0; i < this.game.state.hands[player - 1].enchantments.length; i++) {
-					if (this.game.state.hands[player - 1].enchantments[i] == card) {
-						this.game.state.hands[player - 1].enchantments.splice(i, 1);
-						break;
-					}
-				}
-				break;
-
-			case "graveyard":
-				for (let i = 0; i < this.game.state.hands[player - 1].graveyard.length; i++) {
-					if (this.game.state.hands[player - 1].graveyard[i] == card) {
-						this.game.state.hands[player - 1].graveyard.splice(i, 1);
-						break;
-					}
-				}
-				break;
-
-			default:
+			}
 		}
+		max++;
 
-		console.log("pushing card onto " + destination);
+		base_id += max;
 
-		let already_exists = 0;
-		switch (destination) {
-			case "hand":
-				already_exists = 0;
-				for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-					if (this.game.deck[0].hand[i] == card) {
-						already_exists = 1;
-					}
-				}
-				if (already_exists == 0) {
-					this.game.deck[0].hand.push(card);
-				}
-				break;
-
-			case "lands":
-				already_exists = 0;
-				for (let i = 0; i < this.game.state.hands[player - 1].lands.length; i++) {
-					if (this.game.state.hands[player - 1].lands[i] == card) {
-						already_exists = 1;
-					}
-				}
-				if (already_exists == 0) {
-					this.game.state.hands[player - 1].lands.push(card);
-				}
-				break;
-
-			case "creatures":
-				already_exists = 0;
-				for (let i = 0; i < this.game.state.hands[player - 1].creatures.length; i++) {
-					if (this.game.state.hands[player - 1].creatures[i] == card) {
-						already_exists = 1;
-					}
-				}
-				if (already_exists == 0) {
-					this.game.state.hands[player - 1].creatures.push(card);
-				}
-				break;
-
-			case "sorcery":
-			case "enchantments":
-				already_exists = 0;
-				for (let i = 0; i < this.game.state.hands[player - 1].enchantments.length; i++) {
-					if (this.game.state.hands[player - 1].enchantments[i] == card) {
-						already_exists = 1;
-					}
-				}
-				if (already_exists == 0) {
-					this.game.state.hands[player - 1].enchantments.push(card);
-				}
-				break;
-
-			case "graveyard":
-				already_exists = 0;
-				for (let i = 0; i < this.game.state.hands[player - 1].graveyard.length; i++) {
-					if (this.game.state.hands[player - 1].graveyard[i] == card) {
-						already_exists = 1;
-					}
-				}
-				if (already_exists == 0) {
-					this.game.state.hands[player - 1].graveyard.push(card);
-				}
-				break;
-
-			default:
-		}
+		this.app.browser.addElementToSelector(`<div class="cardslot" id="${base_id}"></div>`, destination);
+		
+		return base_id;
 	}
 
-	playerPlayCardFromHand(card) {
+	moveCard(source_id, destination) {
+		
+		console.log("Card at: ", source_id);
+		console.log("Move card to: ", destination);
+
+
+		this.moveGameElement(this.copyGameElement(`#${source_id} img`), 
+													destination, 
+													{insert: 1, resize: 1},
+													()=> { 
+														$(".animated_elem").remove(); 
+														$("#"+source_id).remove(); 
+														if (destination === ".graveyard") {
+															$(".graveyard").children().fadeOut();
+														}
+													}
+													);
+	
+	}
+
+	addCard(card_id, destination) {
+		console.log("Adding opponent's card to:", destination);
+
+		let destObj = document.getElementById(destination) || document.querySelector(destination);
+
+		this.moveGameElement(this.createGameElement(`<img src="${this.card_library[card_id].img}" id="${card_id}" class="cardimg" />`, ".opponent_hand", ".status-cardbox .hud-card"), 
+				destObj, {resize: 1, insert: 1}, ()=> { $(".animated_elem").remove();});	
+
+		//"#summoning_stack > div:last-child"
+	}
+
+
+	playerPlayCardFromHand(card_index) {
+		let card = this.game.deck[this.game.player - 1].cards[card_index];
+
 		let c = this.card_library[card];
 
-		switch (c.type) {
-			case "land":
-				//
-				// confirm player can place
-				//
-				if (this.game.state.has_placed_land == 1) {
-					alert("You may only play one land per turn.");
-					break;
-				} else {
-					this.game.state.has_placed_land = 1;
-				}
+		console.log(c);
 
-				// move land from hand to board
-				this.moveCard(this.game.player, c.key, "hand", "lands");
-				this.addMove("move\t" + this.game.player + "\t" + c.key + "\thand\tlands\t0");
-				this.endTurn();
-				break;
-
-			case "creature":
-				// move creature from hand to board
-				this.moveCard(this.game.player, c.key, "hand", "creatures");
-				this.addMove("move\t" + this.game.player + "\t" + c.key + "\thand\tcreatures\t0");
-				this.endTurn();
-				break;
-
-			case "sorcery":
-			case "enchantment":
-				// move enchantment from hand to board
-				this.moveCard(this.game.player, c.key, "hand", "enchantments");
-				this.addMove("move\t" + this.game.player + "\t" + c.key + "\thand\tenchantments\t0");
-				this.endTurn();
-				break;
-
-			case "instant":
-				// move instant from hand to board
-				this.moveCard(this.game.player, c.key, "hand", "instant");
-				this.addMove("move\t" + this.game.player + "\t" + c.key + "\thand\tinstants\t0");
-				this.endTurn();
-				break;
-
-			default:
-				console.log("unsupported card type: " + c.type);
+		if (c.type == "land") {
+			if (this.game.state.has_placed_land) {
+				salert("You may only play one land per turn.");
+				return;
+			} else {
+				this.game.state.has_placed_land = 1;
+			}
 		}
+
+		//To do -- insert test for mana pool
+
+
+		let ui_id = this.insertCardSlot(this.game.player, "#summoning_stack");
+		for (let i = 0; i < this.game.deck[this.game.player-1].hand.length; i++){
+			if (this.game.deck[this.game.player-1].hand[i] == card_index){
+				this.game.deck[this.game.player-1].hand.splice(i,1);
+				this.game.state.summoning_stack.push({player: this.game.player, key: card, card: c, uuid: ui_id});
+			}
+		}
+
+		this.addMove(`summon\t${this.game.player}\t${card}`);
+
+		this.moveCard(card_index, ui_id);
+		this.endTurn();
 	}
 
 	displayBoard() {
 		let game_self = this;
+
+		$("#summoning_stack").html("");
+		for (let summoned_card of this.game.state.summoning_stack){
+			this.app.browser.addElementToSelector(this.cardToHTML(summoned_card.key, summoned_card.uuid), "#summoning_stack");
+		}
+
 	}
 
 
@@ -499,14 +438,12 @@ class Realms extends GameTemplate {
 	//
 	// this controls the display of the card
 	//
-	cardToHTML(cardkey) {
+	cardToHTML(cardkey, uuid, tapped = false) {
 		let card = this.card_library[cardkey];
-		let tapped = "";
-		let player = "";
-
+		
 		return `
-      <div class="card showcard ${tapped}" id="p${player}-${cardkey}" data-id="${cardkey}">
-        <img src="${card.img}" class="card-image" />
+      <div class="cardslot ${(tapped)?"tapped":""}" id="${uuid}">
+        <img src="${card.img}" class="cardimg" id="${cardkey}"/>
       </div>
     `;
 	}
