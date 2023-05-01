@@ -44,12 +44,26 @@ class FieldBattleOverlay {
       this.updateInstructions("Field Battle Underway");
     }
 
-    render(res={}) {
+    renderPreFieldBattle(res={}) {
+      this.render(res, 1);
+      let obj = document.querySelector(".field-battle-overlay");
+      obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
+      obj.style.backgroundSize = "contain";
+      this.updateInstructions("Anticipating a Field Battle");
+    }
+
+    assignHits(res) {
+      this.updateInstructions("Both Sides Assigning Hits");
+
+    }
+
+    render(res={}, pre_battle = 0) {
 
 	this.visible = true;
         this.overlay.show(FieldBattleTemplate());
 
-console.log(JSON.stringify(res));
+	if (pre_battle == 1) { res.attacker_modified_rolls = res.attacker_results; }
+	if (pre_battle == 1) { res.defender_modified_rolls = res.defender_results }
 
 	if (res.attacker_modified_rolls) {
 	  for (let i = 0; i < res.attacker_modified_rolls.length; i++) {
@@ -59,6 +73,7 @@ console.log(JSON.stringify(res));
 	    let faction_name = res.attacker_units_faction[i];
 	    let rrclass = "";
 	    if (roll >= 5) { rrclass = "hit"; }
+	    if (pre_battle) { roll = "?"; rrclass = ""; }
 
             let html = `
               <div class="field-battle-unit">${unit_type}<div class="field-battle-desc">${faction_name}</div></div>
@@ -76,6 +91,7 @@ console.log(JSON.stringify(res));
 	    let faction_name = res.defender_units_faction[i];
 	    let rrclass = "";
 	    if (roll >= 5) { rrclass = "hit"; }
+	    if (pre_battle) { roll = "?"; rrclass = ""; }
 
             let html = `
               <div class="field-battle-unit">${unit_type}<div class="field-battle-desc">${faction_name}</div></div>
