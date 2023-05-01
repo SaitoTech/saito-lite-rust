@@ -261,8 +261,9 @@ class PeerManager {
     handleSignalingMessage(peerConnection, data) {
         const { type, sdp, candidate, targetPeerId, public_key } = data;
         if (type === 'renegotiate-offer' || type === 'offer') {
+            if(peerConnection.remoteDescription !== null || peerConnection.connectionState === "stable") return;
+            console.log(peerConnection, 'remote description offer')
             peerConnection.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }))
-
                 .then(() => {
 
                     return peerConnection.createAnswer();
@@ -282,18 +283,26 @@ class PeerManager {
                 .catch((error) => {
                     console.error('Error handling offer:', error);
                 });
+                this.peers.set(data.public_key, peerConnection)
         } else if (type === 'renegotiate-answer' || type === 'answer') {
+            console.log(peerConnection.remoteDescription, 'remote description answer')
+            if(peerConnection.remoteDescription !== null || peerConnection.connectionState === "stable") return;
             peerConnection.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp })).then(answer => {
 
             }).catch((error) => {
                 console.error('Error handling answer:', error);
             });
+            this.peers.set(data.public_key, peerConnection)
         } else if (type === 'candidate') {
+            if(peerConnection.remoteDescription === null) return;
             peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
                 .catch((error) => {
                     console.error('Error adding remote candidate:', error);
                 });
         }
+
+
+    
 
     }
 

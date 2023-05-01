@@ -49,7 +49,7 @@ body {
   align-items: center;
   flex-direction: column;
   text-align: center;
-  background: #8888;
+  background: #0008;
   padding: 0 3rem;
 }
 
@@ -57,7 +57,7 @@ body {
   text-align: center;
   display: flex;
   justify-content: space-around;
-  width: 105%;
+  width: 100%;
   margin: 3rem 0 0 0;
   gap: 1rem;
 }
@@ -116,6 +116,10 @@ video {
   .content > h1 {
     font-size: 2rem;
   }
+
+  .links a button {
+    width: 75vw;
+}
   
 }
 /* 
