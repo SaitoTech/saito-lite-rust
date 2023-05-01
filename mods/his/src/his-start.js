@@ -65,7 +65,15 @@
       }
     });
     this.menu.addMenuOption("game-cards", "Cards");
-    
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Field Battle",
+      id : "game-field-battle",
+      class : "game-field_battle",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.field_battle_overlay.renderFortification();
+      }
+    });
     this.menu.addSubMenuOption("game-cards", {
       text : "Religion",
       id : "game-religious-conflict",
