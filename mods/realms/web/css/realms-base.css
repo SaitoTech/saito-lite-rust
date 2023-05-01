@@ -45,13 +45,20 @@ img.cardimg {
   left: 0;
 }
 
+.graveyard {
+  position: absolute;
+  top: 50vh;
+  right: 0;
+  width: 25px; 
+}
+
 .realm-card-tray {
   display: flex;
   align-items: flex-start;
   justify-content: space-around;
 }
 
-.realm-card-tray .card {
+.realm-card-tray .cardslot {
   width: 120px;
 }
 

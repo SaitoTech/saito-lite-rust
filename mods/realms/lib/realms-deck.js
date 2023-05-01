@@ -239,10 +239,11 @@ class RealmsDeck {
 	/*
 	In the following two functions, I define deck as a array and as an object to demonstrate that they are treated equivalently by the game engine
 	So, for any game where are deck does not consist of completely unique cards (like a jokerless poker deck) we can use an intermediary card_library with access codes
+	However, there is a problem in that the card codes get used as ids in game-hud and cardbox, which makes css selection a bit problematic
 	*/
 
 	returnBluishDeck() {
-		var deck = [];
+	/*var deck = [];
 
 		for (let i = 0; i < 8; i++){
 			deck.push("island");
@@ -268,6 +269,35 @@ class RealmsDeck {
 			deck.push("w007");
 		}
 		deck.push("c001");
+	*/
+		var deck = {};
+
+		let index = 1;
+		for (let i = 0; i < 8; i++){
+			deck[`i${index++}`] = "island";
+			deck[`i${index++}`] = "waterfall";
+		}
+		for (let i = 0; i < 4; i++){
+			deck[`i${index++}`] = "steppe";
+			deck[`i${index++}`] = "b001";
+			deck[`i${index++}`] = "b002";
+			deck[`i${index++}`] = "b003";
+			deck[`i${index++}`] = "b004";
+			deck[`i${index++}`] = "b005";
+			deck[`i${index++}`] = "b006";
+			deck[`i${index++}`] = "b007";
+		}
+		for (let i = 0; i < 2; i++){
+			deck[`i${index++}`] = "w001";
+			deck[`i${index++}`] = "w002";
+			deck[`i${index++}`] = "w003";
+			deck[`i${index++}`] = "w004";
+			deck[`i${index++}`] = "w005";
+			deck[`i${index++}`] = "w006";
+			deck[`i${index++}`] = "w007";
+		}
+		deck[`i${index++}`] = "c001";
+
 		return deck;
 
 	}
@@ -278,29 +308,29 @@ class RealmsDeck {
 		let index = 1;
 
 		for (let i = 0; i < 8; i++){
-			deck[index++] = "steppe";
-			deck[index++] = "waterfall";
+			deck[`i${index++}`] = "steppe";
+			deck[`i${index++}`] = "waterfall";
 		}
 		for (let i = 0; i < 4; i++){
-			deck[index++] = "island";
-			deck[index++] = "w001";
-			deck[index++] = "w002";
-			deck[index++] = "w003";
-			deck[index++] = "w004";
-			deck[index++] = "w005";
-			deck[index++] = "w006";
-			deck[index++] = "w007";
+			deck[`i${index++}`] = "island";
+			deck[`i${index++}`] = "w001";
+			deck[`i${index++}`] = "w002";
+			deck[`i${index++}`] = "w003";
+			deck[`i${index++}`] = "w004";
+			deck[`i${index++}`] = "w005";
+			deck[`i${index++}`] = "w006";
+			deck[`i${index++}`] = "w007";
 		}
 		for (let i = 0; i < 2; i++){
-			deck[index++] = "b001";
-			deck[index++] = "b002";
-			deck[index++] = "b003";
-			deck[index++] = "b004";
-			deck[index++] = "b005";
-			deck[index++] = "b006";
-			deck[index++] = "b007";
+			deck[`i${index++}`] = "b001";
+			deck[`i${index++}`] = "b002";
+			deck[`i${index++}`] = "b003";
+			deck[`i${index++}`] = "b004";
+			deck[`i${index++}`] = "b005";
+			deck[`i${index++}`] = "b006";
+			deck[`i${index++}`] = "b007";
 		}
-		deck[index++] = "c001";
+		deck[`i${index++}`] = "c001";
 		return deck;
 	}
 	/*
