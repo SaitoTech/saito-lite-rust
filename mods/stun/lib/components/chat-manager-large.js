@@ -20,8 +20,8 @@ class VideoChatManager {
   remote_container = "side-videos";
   display_mode = "focus";
   remote_streams = new Map();
-  current_speaker = null
-  speaker_candidate = null
+  current_speaker = null;
+  speaker_candidate = null;
 
   constructor(app, mod) {
     this.app = app;
@@ -234,9 +234,7 @@ class VideoChatManager {
   }
 
   flipDisplay(stream_id) {
-    let id = document
-      .querySelector(`.${this.local_container}`)
-      .querySelector(".video-box").id;
+    let id = document.querySelector(`.${this.local_container}`).querySelector(".video-box").id;
     this.video_boxes[id].video_box.containerClass = this.remote_container;
     this.video_boxes[id].video_box.rerender();
     this.video_boxes[stream_id].video_box.containerClass = this.local_container;
@@ -349,7 +347,7 @@ class VideoChatManager {
     this.video_boxes["local"].video_box.render(localStream, "large-wrapper");
     this.localStream = localStream;
     this.updateImages();
-    this.analyzeAudio(localStream, 'local');
+    this.analyzeAudio(localStream, "local");
     // segmentBackground(document.querySelector('#streamlocal video'), document.querySelector('#streamlocal canvas'), 1);
     // applyBlur(7);
   }
@@ -357,7 +355,6 @@ class VideoChatManager {
   renderRemoteStreamPlaceholder(peer, placeholder_info, is_creator) {
     this.createVideoBox(peer);
     this.video_boxes[peer].video_box.render(null, placeholder_info);
-
   }
 
   createVideoBox(peer, container = this.remote_container) {
@@ -380,7 +377,6 @@ class VideoChatManager {
   }
 
   toggleVideo() {
-
     this.app.connection.emit("stun-toggle-video");
   }
 
@@ -511,7 +507,6 @@ class VideoChatManager {
     let speaking = false;
     const threshold = 20;
 
-
     function update() {
       analyser.getByteFrequencyData(dataArray);
       const average = dataArray.reduce((a, b) => a + b) / bufferLength;
@@ -530,25 +525,23 @@ class VideoChatManager {
         this.current_speaker = peer;
         let speaker_candidate = peer;
 
-
         setTimeout(() => {
           if (speaker_candidate === this.current_speaker) {
-            document.querySelectorAll('.video-box-container-large').forEach(item => {
+            document.querySelectorAll(".video-box-container-large").forEach((item) => {
               // console.log(item.id, `stream${peer}`)
 
               if (item.id === `stream${peer}`) {
-                item.classList.add('speaker');
+                item.classList.add("speaker");
                 if (video_chat_self.display_mode == "speaker") {
                   video_chat_self.flipDisplay(peer);
-                } 
+                }
               } else {
-                item.classList.remove('speaker');
+                item.classList.remove("speaker");
               }
-            })
+            });
             speaking = true;
           }
-        }, 5000)
-
+        }, 5000);
       } else if (average <= threshold && speaking) {
         speaking = false;
       }
@@ -558,8 +551,6 @@ class VideoChatManager {
 
     update();
   }
-
 }
 
 module.exports = VideoChatManager;
-
