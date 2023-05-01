@@ -938,14 +938,28 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     return controlled_keys;
   }
 
-  returnNumberOfSpacesControlledByProtestants() {
-    let controlled_spaces = 0;
+  returnNumberOfCatholicSpacesInLanguageZone(language="") {  
+    let catholic_spaces = 0;
     for (let key in this.game.spaces) {
-      if (this.game.spaces[key].religion === "protestant") {
-	controlled_spaces++;
+      if (this.game.spaces[key].religion === "catholic") {
+	if (language == "" || this.game.spaces[key].language == language) {
+	  catholic_spaces++;
+	}
       }
     }
-    return controlled_spaces;
+    return catholic_spaces;
+  }
+
+  returnNumberOfProtestantSpacesInLanguageZone(language="") {  
+    let protestant_spaces = 0;
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].religion === "protestant") {
+	if (language == "" || this.game.spaces[key].language == language) {
+	  protestant_spaces++;
+	}
+      }
+    }
+    return protestant_spaces;
   }
 
 

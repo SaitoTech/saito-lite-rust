@@ -1,3 +1,5 @@
+
+
 const ChatManagerLarge = require("./chat-manager-large")
 
 
@@ -37,7 +39,7 @@ class PeerManager {
                 credential: "somepassword",
             }
         ];
-        this.videoEnabled = true;
+        this.videoEnabled = false;
         this.audioEnabled = true
 
 
@@ -80,6 +82,7 @@ class PeerManager {
         })
 
         app.connection.on('stun-toggle-video', async () => {
+            if(!this.localStream.getVideoTracks()[0]) return;
             if (this.videoEnabled === true) {
                 this.localStream.getVideoTracks()[0].enabled = false;
                 this.app.connection.emit("mute", 'video', 'local');

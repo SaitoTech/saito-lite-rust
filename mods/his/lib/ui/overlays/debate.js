@@ -15,9 +15,10 @@ class DebateOverlay {
 	this.overlay.hide();
     }
    
-    render() {
+    render(res=null) {
+	if (res == null) { return; }
 	this.visible = true;
-        this.overlay.show(DebateTemplate());
+        this.overlay.show(DebateTemplate(res));
         this.attachEvents();
     }
 

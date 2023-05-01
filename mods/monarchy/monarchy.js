@@ -153,8 +153,9 @@ class Monarchy extends GameTemplate {
       console.log("ERROR with Mobile: " + err);
     }
 
-    
-    this.hud.render();
+    if (this.game.player > 0){
+      this.hud.render();  
+    }
 
 }
 
@@ -355,7 +356,7 @@ initializeGame(game_id) {
         if (this.game.player == player){
           this.playerTurn();
         }else{
-          if (this.game.state.players[this.game.player-1].turns > 2){
+          if (this.game.state.players[this.game.player-1]?.turns > 2){
             this.hideBank();            
           }
           
@@ -1437,6 +1438,7 @@ initializeGame(game_id) {
     $(".animation_helper.done").remove();
     $(".animated_elem.done").remove();
 
+    if (this.game.player == 0) { return; }
 
     try{
       let html = `<div id="drawpile" class="cardpile">
@@ -1474,7 +1476,6 @@ initializeGame(game_id) {
       }
     }catch(err){
       console.error(err);
-      console.log(JSON.parse(JSON.stringify(this.game.deck[this.game.player-1])));
     }
   }
 
@@ -1528,6 +1529,7 @@ initializeGame(game_id) {
 
   //Utilities
   hasActionCard(){
+    if (this.game.player === 0) { return; }
     let pi = this.game.player-1;
     for (let c of this.game.deck[pi].hand){
       let cardname = this.game.deck[pi].cards[c];
@@ -1539,6 +1541,7 @@ initializeGame(game_id) {
   }
 
   hasCardInHand(cardvalue){
+    if (this.game.player === 0) { return; }
     let pi = this.game.player-1;
     for (let c of this.game.deck[pi].hand){
       console.log(cardvalue, this.game.deck[pi].cards[c]);
@@ -1550,7 +1553,7 @@ initializeGame(game_id) {
   }
 
    countMoney(){
-
+    if (this.game.player === 0) { return; }
     let bank = this.game.state.coins;
     let pi = this.game.player-1;
     for (let c of this.game.deck[pi].hand){
@@ -1567,6 +1570,7 @@ initializeGame(game_id) {
   }
 
   async spendMoney(price){
+    if (this.game.player === 0) { return; }
     let pi = this.game.player-1;
     let used = [];
     let available_money = this.sortHand(Array.from(this.game.deck[pi].hand));

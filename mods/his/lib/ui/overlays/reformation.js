@@ -15,7 +15,7 @@ class ReformationOverlay {
    
     render(res=null) {
 	this.visible = true;
-        this.overlay.show(ReformationTemplate());
+        this.overlay.show(ReformationTemplate(res.name));
 	this.overlay.setBackgroundColor("#000"); // black background
 
 	if (res == null) { return; } 

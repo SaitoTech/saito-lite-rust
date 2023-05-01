@@ -62,7 +62,7 @@
   bottom: 0;
   left: -158px;
   width: 200px;
-  transition: all 500ms;
+  transition: all 500ms ease-in-out;
   z-index: 9;
 }
 

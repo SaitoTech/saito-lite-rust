@@ -7,7 +7,7 @@ const GameManager = require("./lib/game-manager");
 const GameWizard = require("./lib/overlays/game-wizard");
 const GameSelector = require("./lib/overlays/game-selector");
 const GameScheduler = require("./lib/overlays/game-scheduler");
-const GameInvitationLink = require("./lib/overlays/game-invitation-link");
+const GameInvitationLink = require("./../../lib/saito/ui/modals/saito-link/saito-link");
 const Invite = require("./lib/invite");
 const JoinGameOverlay = require("./lib/overlays/join-game");
 const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
@@ -170,17 +170,17 @@ class Arcade extends ModTemplate {
     }
     let arcade_self = this;
 
-    let cutoff1 = new Date().getTime() - 4800000;
+    let cutoff1 = new Date().getTime() - 3500000;
     let cutoff2 = new Date().getTime() - 600000000;
 
     //
     // load open games from server
     //  ( status = "open" OR status = "private" ) AND
-    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND status = 'over') ORDER BY created_at ASC`;
+    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND (status = 'over' OR status = 'active')) ORDER BY created_at ASC`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
       if (res.rows) {
         for (let record of res.rows) {
-          console.log(JSON.parse(JSON.stringify(record)));
+          //console.log(JSON.parse(JSON.stringify(record)));
           //This is the save openTX
           let game_tx = new saito.default.transaction(JSON.parse(record.tx));
 
@@ -200,7 +200,12 @@ class Arcade extends ModTemplate {
           //Game Meta Data stored directly in DB
           //
           if (record.winner){
-            game_tx.msg.winner = JSON.parse(record.winner);  
+            game_tx.msg.winner = [record.winner];
+            try {
+              game_tx.msg.winner = JSON.parse(record.winner);
+            } catch(err) {
+              //console.log("Non-JSON DB entry:", record.winner);              
+            }
           }
 
           game_tx.msg.method = record.method;
@@ -211,9 +216,9 @@ class Arcade extends ModTemplate {
             game_tx.msg.ts = step?.ts;          
           }
 
-          //if (arcade_self.debug) {
+          if (arcade_self.debug) {
             console.log("Load DB Game: " + record.status, game_tx.returnMessage());
-          //}
+          }
           if (record.time_finished) {
             if (record.status !== "over" && record.status !== "close") {
               console.log("Game status mismatch");
@@ -246,6 +251,7 @@ class Arcade extends ModTemplate {
         }
 
         if (arcade_self.isAvailableGame(game)) {
+          console.log("Make it my game");
           //Mark myself as an invited guest
           game.msg.options.desired_opponent_publickey = this.app.wallet.returnPublicKey();
           //Then we have to remove and readd the game so it goes under "mine"
@@ -1685,22 +1691,10 @@ class Arcade extends ModTemplate {
 
     if (accepted_game) {
       data.game = accepted_game.msg.game;
+      data.game_id = game_sig;
     } else {
       return;
     }
-
-    //Create invite link from the game_sig
-    let inviteLink = window.location.href;
-    if (!inviteLink.includes("#")) {
-      inviteLink += "#";
-    }
-    if (inviteLink.includes("?")) {
-      inviteLink = inviteLink.replace("#", "&game_id=" + game_sig);
-    } else {
-      inviteLink = inviteLink.replace("#", "?game_id=" + game_sig);
-    }
-
-    data.invite_link = inviteLink;
 
     let game_invitation_link = new GameInvitationLink(this.app, this, data);
     game_invitation_link.render();
@@ -1780,10 +1774,11 @@ class Arcade extends ModTemplate {
   ///////////////////////////////////////////////////////////////////////////
   ////////////////////   GAME OBSERVER STUFF  ///////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
-  observeGame(game_id, watch_live = false) {
+  observeGame(game_id, watch_live = 0) {
     let game_tx = this.returnGame(game_id);
 
     if (!game_tx) {
+      console.warn("Game not found!");
       return;
     }
 
@@ -1812,9 +1807,10 @@ class Arcade extends ModTemplate {
     game_mod.game.halted = 1; // Default to paused
    
     this.observerDownloadNextMoves(game_mod, ()=> {
-      if (watch_live) {
+      if (watch_live > 0) {
         game_mod.game.halted = 0;
-        game_mod.game.live = 1;
+        game_mod.game.live = watch_live;
+        game_mod.saveGame(game_id);
       }
 
       this.app.connection.emit("arcade-game-ready-render-request", {id: game_id, name: game_msg.game, slug: game_mod.returnSlug()});
