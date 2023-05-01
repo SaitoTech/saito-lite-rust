@@ -123,11 +123,11 @@ class Keychain {
     // submit JSON parsed object after unencryption
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey == publickey) {
-        if (this.keys[x].aes_secret != "") {
+        if (this.keys[x].aes_secret) {
           const tmpmsg = this.app.crypto.aesDecrypt(encrypted_msg, this.keys[x].aes_secret);
-          if (tmpmsg != null) {
+          if (tmpmsg) {
             const tmpx = JSON.parse(tmpmsg);
-            if (tmpx.module != null) {
+            if (tmpx.module) {
               return tmpx;
             }
           }

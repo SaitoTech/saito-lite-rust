@@ -37,7 +37,7 @@ class Blackjack extends GameTableTemplate {
       return;
     }
 
-    super.initializeHTML(app);
+    await super.initializeHTML(app);
 
     //
     // ADD MENU
@@ -77,15 +77,15 @@ class Blackjack extends GameTableTemplate {
      ****/
 
     await this.menu.addChatMenu();
-    this.menu.render();
+    await this.menu.render();
 
     this.log.render();
 
-    this.playerbox.render();
+    await this.playerbox.render();
     this.playerbox.addClassAll("poker-seat-", true);
     this.playerbox.addGraphicClass("hand");
     this.playerbox.addGraphicClass("tinyhand");
-    this.playerbox.addStatus(); //enable update Status to display in playerbox
+    await this.playerbox.addStatus(); //enable update Status to display in playerbox
     this.updateStatus("Waiting for other players to sit down to start playing");
   }
 

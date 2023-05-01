@@ -189,36 +189,36 @@ class GameTestSuite extends GameTemplate {
     //
     // add player boxes button
     //
-    document.getElementById("add_player_boxes_button").onclick = (e) => {
-      game_self.add_player_boxes_test(game_self.app);
+    document.getElementById("add_player_boxes_button").onclick = async (e) => {
+      await game_self.add_player_boxes_test(game_self.app);
     };
 
     //
     // secure dice roll
     //
-    document.getElementById("secure_dice_roll_button").onclick = (e) => {
-      game_self.secure_dice_roll_test(game_self.app);
+    document.getElementById("secure_dice_roll_button").onclick = async (e) => {
+      await game_self.secure_dice_roll_test(game_self.app);
     };
 
     //
     // simultaneous pick
     //
-    document.getElementById("simultaneous_pick_button").onclick = (e) => {
-      game_self.simultaneous_pick_test(game_self.app);
+    document.getElementById("simultaneous_pick_button").onclick = async (e) => {
+      await game_self.simultaneous_pick_test(game_self.app);
     };
 
     //
     // consecutive moves
     //
-    document.getElementById("consecutive_moves_button").onclick = (e) => {
-      game_self.consecutive_moves_test(game_self.app);
+    document.getElementById("consecutive_moves_button").onclick = async (e) => {
+      await game_self.consecutive_moves_test(game_self.app);
     };
 
     //
     // simultaneous moves
     //
-    document.getElementById("simultaneous_moves_button").onclick = (e) => {
-      game_self.simultaneous_moves_test(game_self.app);
+    document.getElementById("simultaneous_moves_button").onclick = async (e) => {
+      await game_self.simultaneous_moves_test(game_self.app);
     };
 
     //
@@ -238,36 +238,36 @@ class GameTestSuite extends GameTemplate {
     //
     // deal cards to players
     //
-    document.getElementById("deal_cards_to_player_button").onclick = (e) => {
-      game_self.deal_cards_to_player(game_self.app);
+    document.getElementById("deal_cards_to_player_button").onclick = async (e) => {
+      await game_self.deal_cards_to_player(game_self.app);
     };
 
     //
     // deal cards to the table
     //
-    document.getElementById("deal_cards_to_table_button").onclick = (e) => {
-      game_self.deal_cards_to_table_test(game_self.app);
+    document.getElementById("deal_cards_to_table_button").onclick = async (e) => {
+      await game_self.deal_cards_to_table_test(game_self.app);
     };
 
     //
     // request transfer from first opponent
     //
-    document.getElementById("receive_payment_button").onclick = (e) => {
-      game_self.receive_payment_test(game_self.app);
+    document.getElementById("receive_payment_button").onclick = async (e) => {
+      await game_self.receive_payment_test(game_self.app);
     };
 
     //
     // make transfer to first opponent
     //
-    document.getElementById("send_payment_button").onclick = (e) => {
-      game_self.send_payment_test(game_self.app);
+    document.getElementById("send_payment_button").onclick = async (e) => {
+      await game_self.send_payment_test(game_self.app);
     };
 
     //
     // check balance
     //
-    document.getElementById("check_balance_button").onclick = (e) => {
-      game_self.check_balance_test(game_self.app);
+    document.getElementById("check_balance_button").onclick = async (e) => {
+      await game_self.check_balance_test(game_self.app);
     };
 
     //
@@ -306,8 +306,8 @@ class GameTestSuite extends GameTemplate {
     //
     // add to menu to page
     //
-    document.getElementById("add_menu_button").onclick = (e) => {
-      game_self.add_menu_test(game_self.app);
+    document.getElementById("add_menu_button").onclick = async (e) => {
+      await game_self.add_menu_test(game_self.app);
     };
   }
 
@@ -320,18 +320,18 @@ class GameTestSuite extends GameTemplate {
   // that we are testing. This code exists as a reference for third-party
   // developers. Questions and feedback are welcome, as are contributions.
   //
-  add_player_boxes_test(app) {
-    this.playerbox.render(app, this);
-    this.playerbox.attachEvents(app, this);
+  async add_player_boxes_test(app) {
+    await this.playerbox.render(app, this);
+    await this.playerbox.attachEvents(app, this);
     for (let i = 0; i < this.game.players.length; i++) {
-      this.playerbox.refreshName(i + 1);
+      await this.playerbox.refreshName(i + 1);
       this.playerbox.refreshCards(i + 3);
     }
   }
 
-  secure_dice_roll_test(app) {
+  async secure_dice_roll_test(app) {
     this.requestSecureRoll();
-    this.endTurn();
+    await this.endTurn();
   }
 
   async simultaneous_pick_test(app) {
@@ -385,7 +385,7 @@ class GameTestSuite extends GameTemplate {
     await game_self.endTurn();
   }
 
-  simultaneous_moves_test() {
+  async simultaneous_moves_test() {
     let game_self = this;
 
     game_self.updateLog(`
@@ -409,7 +409,7 @@ class GameTestSuite extends GameTemplate {
     game_self.addMove("NOTIFY\tAll players have finished moving");
     game_self.addMove("PLAY\t" + JSON.stringify(players_to_go));
     game_self.addMove("NOTIFY\tAll players will move simultaneously");
-    game_self.endTurn();
+    await game_self.endTurn();
   }
 
   display_overlay_test(app) {
@@ -445,7 +445,7 @@ class GameTestSuite extends GameTemplate {
     };
   }
 
-  deal_cards_to_player(app) {
+  async deal_cards_to_player(app) {
     let game_self = this;
 
     //
@@ -468,10 +468,10 @@ class GameTestSuite extends GameTemplate {
     game_self.addMove(
       "SIMPLEDEAL\t" + 3 + "\t" + 1 + "\t" + JSON.stringify(game_self.returnDeck())
     );
-    game_self.endTurn();
+    await game_self.endTurn();
   }
 
-  deal_cards_to_table(app) {
+  async deal_cards_to_table(app) {
     let game_self = this;
 
     game_self.updateLog(`
@@ -495,10 +495,10 @@ class GameTestSuite extends GameTemplate {
       game_self.addMove("DECKXOR\t1\t" + i);
     }
     game_self.addMove("DECK\t1\t" + JSON.stringify(game_self.returnDeck())); // create deck with index 1 (deck-1)
-    game_self.endTurn();
+    await game_self.endTurn();
   }
 
-  receive_payment_test(app) {
+  async receive_payment_test(app) {
     let game_self = this;
 
     let receiver = game_self.game.players[game_self.game.player - 1];
@@ -536,10 +536,10 @@ class GameTestSuite extends GameTemplate {
         "\t" +
         game_self.game.crypto
     );
-    game_self.endTurn();
+    await game_self.endTurn();
   }
 
-  send_payment_test(app) {
+  async send_payment_test(app) {
     let game_self = this;
 
     let sender = game_self.game.players[game_self.game.player - 1];
@@ -577,10 +577,10 @@ class GameTestSuite extends GameTemplate {
         "\t" +
         game_self.game.crypto
     );
-    game_self.endTurn();
+    await game_self.endTurn();
   }
 
-  check_balance_test(app) {
+  async check_balance_test(app) {
     let game_self = this;
 
     let amount = 0;
@@ -597,7 +597,7 @@ class GameTestSuite extends GameTemplate {
     } else {
       game_self.addMove("BALANCE" + "\t" + amount + "\t" + address);
     }
-    game_self.endTurn();
+    await game_self.endTurn();
   }
 
   display_cardfan_test(app) {
@@ -638,7 +638,7 @@ class GameTestSuite extends GameTemplate {
     }
   }
 
-  add_menu_test(app) {
+  async add_menu_test(app) {
     this.menu.addMenuOption({
       text: "Game",
       id: "game-game",
@@ -664,7 +664,7 @@ class GameTestSuite extends GameTemplate {
         window.location.href = "/arcade";
       },
     });
-    this.menu.render(this.app, this);
+    await this.menu.render(this.app, this);
     this.menu.attachEvents(this.app, this);
   }
 

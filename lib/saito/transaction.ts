@@ -270,16 +270,10 @@ export default class Transaction extends SaitoTransaction {
 
     try {
       if (this.data && this.data.byteLength > 0) {
-        console.log("A");
         const reconstruct = Buffer.from(this.data).toString("utf-8");
-        //const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
-        console.log("B - " + reconstruct);
         this.msg = JSON.parse(reconstruct);
-        console.log("C");
       } else {
-        console.log("D");
         this.msg = {};
-        console.log("E");
       }
     } catch (err) {
       // TODO : handle this without printing an error
@@ -296,7 +290,6 @@ export default class Transaction extends SaitoTransaction {
         console.log("here: " + JSON.stringify(this.msg));
       }
     }
-    console.log("RETURN ON FAILURE");
     return this.msg;
   }
 
