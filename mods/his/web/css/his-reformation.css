@@ -1,35 +1,42 @@
 
-.reformation-overlay {
-	background-image: url(/his/img/backgrounds/reformation.jpg);
-        background-size: cover;
-        max-width: 90vw;
-        max-height: 90vh;
+.field-battle-overlay {
+    background-image: url(/his/img/backgrounds/field_battle.jpg);
+    background-size: cover;
+    max-height: 90vh;
+    max-width: 90vw;
+    width: 90vw;
+    height: auto;
+    min-height: 622px;
+    text-align: center;
 }
 
-.reformation-overlay .title {
-	color: white;
-	font-size: 2.5rem;
-	padding: 1rem;
-	text-transform: capitalize;
-	background: #0005;
-	margin-left: auto;
-	margin-right: auto;
-	text-align: center;
+.field-battle-overlay .help {
+    background: #0009;
+    width: 100%;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 2.4rem;
+    padding: 0.75rem;
+    max-width: 100%;
+    padding: 1rem;
+    line-height: 3.4rem;
 }
 
-.reformation-box {
-	display: grid;
-	grid-template-columns: 65rem 65rem;
-	padding: 4rem;
-	justify-items: center;
-	justify-content: space-evenly;
+
+.field-battle-grid {
+        display: grid;
+        grid-template-columns: 50vw 50vw;
+        padding: 4rem;
+        justify-items: center;
+        justify-content: space-evenly;
 }
 
-.reformation-overlay .protestant , .reformation-overlay .papacy {
-	display: grid;
-	justify-items: right;
-	background: #0005;
-	border: 1px solid black;
+.field-battle-grid .attacker .field-battle-row, .field-battle-grid .defender .field-battle-row {
+        display: grid;
+        justify-items: right;
+        background: #0005;
+        border: 1px solid black;
         height: min-content;
         margin-left: unset;
         margin-right: unset;
@@ -39,52 +46,54 @@
         letter-spacing: 0.05rem;
 }
 
-.reformation-overlay .protestant .title , .reformation-overlay .papacy .title {
-	background: #0005;
-	font-size: 25;
-	text-align: center;
-	border: 1px solid black;
-	grid-column: 1 / span 2;
-	grid-row: 1;
-	width: 50rem;
-	max-height: 6rem;
-	min-height: 6rem;
+.field-battle-grid .attacker .title , .field-battle-grid .defender .title {
+        background: #0005;
+        font-size: 25;
+        text-align: center;
+        border: 1px solid black;
+        grid-column: 1 / span 2;
+        grid-row: 1;
+        padding: 1rem;
 }
 
-.reform-box-description {
-	width: 20rem;
-	height: 5rem;
-	padding: 0.75rem;
-	font-size: 2rem;
-	grid-column: 1;
-	margin-right: 22rem;
+.field-battle-unit {
+    width: 80%;
+    height: 5rem;
+    padding: 0.75rem;
+    font-size: 2rem;
+    grid-column: 1;
+    margin-left: 2rem;
+    margin-right: 4vw;
+    text-align: left;
 }
 
-.reform-roll {
-	display: grid;
-	grid-template-columns: 6rem 6rem;
-	background: #0005;
-	width: 6rem;
-	height: 6rem;
-	border: 1px solid black;
-	margin-bottom: 0rem;
-	min-height: 0px;
-	font-weight: bolder;
-	text-transform: uppercase;
-	font-size: 3.5rem;
-	text-align: center;
-	padding-top: 1rem;
-	grid-column: 2;
+.field-battle-desc {
+        position: relative;
+        font-size: 1.5rem;
 }
 
-.reform-roll.hit {
+.field-battle-roll {
+        display: grid;
+        grid-template-columns: 6rem 6rem;
+        background: #0005;
+        width: 6rem;
+        height: 6rem;
+        border: 1px solid black;
+        margin-bottom: 0rem;
+        min-height: 0px;
+        font-weight: bolder;
+        text-transform: uppercase;
+        font-size: 3.5rem;
+        text-align: center;
+        padding-top: 1rem;
+        grid-column: 2;
+}
+
+.field-battle-roll.hit {
         background-color: goldenrod;
         color: black;
 }
 
-
-.adjacency {
-	position: relative;
-	font-size: 1.5rem;
+.attacker, .defender {
+	width: 35vw;
 }
-
