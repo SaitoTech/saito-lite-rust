@@ -96,8 +96,8 @@ class Registry extends ModTemplate {
     return this;
   }
 
-  initialize(app) {
-    super.initialize(app);
+  async initialize(app) {
+    await super.initialize(app);
   }
 
   returnServices() {
@@ -404,7 +404,7 @@ class Registry extends ModTemplate {
       }
     }
 
-    super.handlePeerTransaction(app, tx, peer, mycallback);
+    await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   notifyPeers(app, tx) {
@@ -610,7 +610,7 @@ class Registry extends ModTemplate {
               let sig = tx.msg.sig;
 
               // if i am server, save copy of record
-              registry_self.addRecord(
+              await registry_self.addRecord(
                 identifier,
                 tx.transaction.to[0].add,
                 tx.timestamp,

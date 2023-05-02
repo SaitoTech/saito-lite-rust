@@ -34,9 +34,9 @@ class Encrypt extends ModTemplate {
     this.description = "A Diffie-Hellman encryption tool for Saito";
     this.categories = "Crypto Utilities";
 
-    app.connection.on("encrypt-key-exchange", (publickey) => {
+    app.connection.on("encrypt-key-exchange", async (publickey) => {
       console.log("initiating key exchange...");
-      this.initiate_key_exchange(publickey, 0);
+      await this.initiate_key_exchange(publickey, 0);
     });
 
     return this;
@@ -95,7 +95,7 @@ class Encrypt extends ModTemplate {
       if (txmsg.request == "key exchange request") {
         if (receiver == app.wallet.returnPublicKey()) {
           console.log("\n\n\nYou have accepted an encrypted channel request from " + receiver);
-          encrypt_self.accept_key_exchange(tx, 1, peer);
+          await encrypt_self.accept_key_exchange(tx, 1, peer);
         }
       }
     }
@@ -148,7 +148,7 @@ class Encrypt extends ModTemplate {
     }
   }
 
-  onPeerHandshakeComplete(app, peer) {
+  async onPeerHandshakeComplete(app, peer) {
     if (app.BROWSER == 0) {
       return;
     }
@@ -159,7 +159,7 @@ class Encrypt extends ModTemplate {
     if (this.encrypt) {
       if (this.encrypt.pending) {
         for (let i = 0; i < this.encrypt.pending.length; i++) {
-          this.initiate_key_exchange(this.encrypt.pending[i]);
+          await this.initiate_key_exchange(this.encrypt.pending[i]);
         }
         this.encrypt.pending = [];
         this.saveEncrypt();
@@ -243,7 +243,7 @@ class Encrypt extends ModTemplate {
       let data = {};
       data.module = "Encrypt";
       data.tx = tx;
-      this.app.network.sendRequestAsTransaction("diffie hellman key exchange", data, peer);
+      await this.app.network.sendRequestAsTransaction("diffie hellman key exchange", data, peer);
     }
     this.saveEncrypt();
   }
@@ -295,7 +295,7 @@ class Encrypt extends ModTemplate {
     this.saveEncrypt();
   }
 
-  onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf, app) {
     let encrypt_self = app.modules.returnModule("Encrypt");
 
     if (conf == 0) {
@@ -324,7 +324,7 @@ class Encrypt extends ModTemplate {
           }
           if (receiver == this.publicKey) {
             console.log("\n\n\nYou have accepted an encrypted channel request from " + receiver);
-            encrypt_self.accept_key_exchange(tx);
+            await encrypt_self.accept_key_exchange(tx);
           }
         }
 

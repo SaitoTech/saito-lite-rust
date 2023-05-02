@@ -223,7 +223,7 @@ class AppStore extends ModTemplate {
         switch (txmsg.request) {
           case "submit module":
             await this.submitModule(blk, tx);
-            if (tx.isFrom(await app.wallet.getPublicKey())) {
+            if (tx.isFrom(this.publicKey)) {
               try {
                 document.querySelector(".appstore-loading-text").innerHTML =
                   "Your application is being broadcast to the network. <p></p>Your AppStore should receive it within <span class=\"time_remaining\">45</span> seconds.";
@@ -251,7 +251,7 @@ class AppStore extends ModTemplate {
             }
             break;
           case "request bundle":
-            if (tx.isFrom(await app.wallet.getPublicKey())) {
+            if (tx.isFrom(this.publicKey)) {
               try {
                 document.querySelector(".appstore-loading-text").innerHTML =
                   "Your application is being processed by the network. Your upgrade should be complete within about <span class=\"time_remaining\">120</span> seconds.";
@@ -275,7 +275,7 @@ class AppStore extends ModTemplate {
               } catch (err) {
               }
             }
-            if (!tx.isTo(await app.wallet.getPublicKey())) {
+            if (!tx.isTo(this.publicKey)) {
               return;
             }
             await this.requestBundle(blk, tx);
@@ -283,8 +283,8 @@ class AppStore extends ModTemplate {
           case "receive bundle":
             ////console.log("##### - RECEIVE BUNDLE 1");
             if (
-              tx.isTo(await app.wallet.getPublicKey()) &&
-              !tx.isFrom(await app.wallet.getPublicKey())
+              tx.isTo(this.publicKey) &&
+              !tx.isFrom(this.publicKey)
             ) {
               ////console.log("##### BUNDLE RECEIVED #####");
               if (app.options.appstore) {
@@ -482,8 +482,8 @@ class AppStore extends ModTemplate {
         ////console.log("we are browser submit module...");
         //console.log(`hash: ${this.app.crypto.hash(tx.transaction.ts + "-" + tx.transaction.sig)}`);
 
-        if (tx.isFrom(this.app.wallet.getPublicKey())) {
-          let newtx = this.app.wallet.createUnsignedTransaction();
+        if (tx.isFrom(this.publicKey)) {
+          let newtx = await this.app.wallet.createUnsignedTransaction();
           newtx.msg.module = "Email";
           newtx.msg.title = "Saito Application Published";
           newtx.msg.message = `
@@ -554,7 +554,7 @@ class AppStore extends ModTemplate {
       }
 
       let featured_app = 0;
-      if (tx.transaction.from[0].publicKey == (await this.app.wallet.getPublicKey())) {
+      if (tx.from[0].publicKey == this.publicKey) {
         featured_app = 1;
       }
       if (featured_app == 1) {
@@ -586,7 +586,7 @@ class AppStore extends ModTemplate {
         } catch (err) {
         }
 
-        if (this.featured_apps.includes(name) && tx.isFrom(await this.app.wallet.getPublicKey())) {
+        if (this.featured_apps.includes(name) && tx.isFrom(this.publicKey)) {
           sql = "UPDATE modules SET featured = 0 WHERE name = $name";
           params = { $name: name };
           await this.app.storage.executeDatabase(sql, params, "appstore");

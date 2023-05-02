@@ -131,7 +131,7 @@ class Archive extends ModTemplate {
         if (!req.data.optional) {
           return;
         }
-        this.updateTransactionOptionalValue(
+        await this.updateTransactionOptionalValue(
           req.data.sig,
           req.data.publickey,
           req.data.optional_key,
@@ -142,7 +142,7 @@ class Archive extends ModTemplate {
         if (!req.data.optional) {
           return;
         }
-        this.incrementTransactionOptionalValue(
+        await this.incrementTransactionOptionalValue(
           req.data.sig,
           req.data.publickey,
           req.data.optional_key
@@ -196,7 +196,7 @@ class Archive extends ModTemplate {
       }
     }
 
-    super.handlePeerTransaction(app, tx, peer, mycallback);
+    await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   async updateTransactionOptional(sig = "", publickey = "", optional = "") {
@@ -419,7 +419,7 @@ class Archive extends ModTemplate {
       params = { $publickey: publickey, $type: type };
     }
 
-    this.app.storage.executeDatabase(sql, params, "archive");
+    await this.app.storage.executeDatabase(sql, params, "archive");
     return;
   }
 

@@ -121,10 +121,10 @@ class ExplorerCore extends ModTemplate {
       '<div class="explorer-main"> \
         <div class="block-table"> \
           <div class="explorer-data"><h4>Server Address:</h4></div> <div class="address">' +
-      (await this.app.wallet.getPublicKey()) +
+      this.publicKey +
       '</div> \
           <div class="explorer-data"><h4>Balance:</h4> </div><div>' +
-      this.app.wallet.getBalance() +
+      (await this.app.wallet.getBalance()) +
       '</div> \
           <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">' +
       this.app.mempool.mempool.transactions.length +

@@ -62,11 +62,11 @@ class AppStoreAppspace {
       };
     };
 
-    document.getElementById("appstore-publish-form").onsubmit = (e) => {
+    document.getElementById("appstore-publish-form").onsubmit = async (e) => {
       e.preventDefault();
 
       if (mod.data.publish.zip) {
-        mod.sendSubmitModuleTransaction(app, mod, mod.data);
+        await mod.sendSubmitModuleTransaction(app, mod, mod.data);
         mod.uploading_application_id = app.crypto.hash(newtx.timestamp + "-" + newtx.signature);
 
         AppStorePublishSuccess.render(app, mod);

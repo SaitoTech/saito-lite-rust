@@ -224,7 +224,7 @@ class League extends ModTemplate {
       // load any requested league we may not have in options file
       // or refresh any league data that has changed
       //
-      this.sendPeerDatabaseRequestWithFilter(
+      await this.sendPeerDatabaseRequestWithFilter(
         "League",
         sql,
         (res) => {
@@ -536,14 +536,14 @@ class League extends ModTemplate {
       ts: parseInt(tx.timestamp),
     };
 
-    this.addLeaguePlayer(txmsg.league_id, params);
+    await this.addLeaguePlayer(txmsg.league_id, params);
 
     //
     //So, when we get our join message returned to us, we will do a query to figure out our rank
     //save the info locally, and emit an event to update as a success
     //
     if (this.app.wallet.returnPublicKey() === tx.transaction.from[0].add) {
-      this.fetchLeagueLeaderboard(txmsg.league_id, () => {
+      await this.fetchLeagueLeaderboard(txmsg.league_id, () => {
         this.app.connection.emit("join-league-success");
       });
     }
@@ -780,7 +780,7 @@ class League extends ModTemplate {
       if (this.app.BROWSER) {
         //console.log("Update league rankings on game over");
         //console.log(JSON.parse(JSON.stringify(leag.players)));
-        this.fetchLeagueLeaderboard(leag.id, () => {
+        await this.fetchLeagueLeaderboard(leag.id, () => {
           app.connection.emit("league-rankings-render-request");
           //console.log("Records checked");
           this.saveLeagues();
@@ -1174,7 +1174,7 @@ class League extends ModTemplate {
     }
   }
 
-  updateLeague(obj) {
+  async updateLeague(obj) {
     if (!obj) {
       return;
     }
@@ -1184,7 +1184,7 @@ class League extends ModTemplate {
     let oldLeague = this.returnLeague(obj.id);
 
     if (!oldLeague) {
-      this.addLeague(obj);
+      await this.addLeague(obj);
       return;
     }
 
@@ -1253,7 +1253,7 @@ class League extends ModTemplate {
     }
   }
 
-  fetchLeagueLeaderboard(league_id, mycallback = null) {
+  async fetchLeagueLeaderboard(league_id, mycallback = null) {
     let league = this.returnLeague(league_id);
     let rank = 0;
     let myPlayerStats = null;
@@ -1268,14 +1268,14 @@ class League extends ModTemplate {
     league.players = [];
 
     let cutoff = new Date().getTime() - 24 * 60 * 60 * 1000;
-    this.sendPeerDatabaseRequestWithFilter(
+    await this.sendPeerDatabaseRequestWithFilter(
       "League",
       `SELECT *
        FROM players
        WHERE league_id = '${league_id}'
          AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}')
        ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
-      (res) => {
+      async (res) => {
         if (res?.rows) {
           for (let p of res.rows) {
             //
@@ -1296,13 +1296,13 @@ class League extends ModTemplate {
             //
             // Update player-league data in our live data structure
             //
-            this.addLeaguePlayer(league_id, p);
+            await this.addLeaguePlayer(league_id, p);
           }
 
           league.numPlayers = rank;
           //Add me to bottom of list if I haven't played any games
           if (myPlayerStats) {
-            this.addLeaguePlayer(league_id, myPlayerStats);
+            await this.addLeaguePlayer(league_id, myPlayerStats);
           }
         }
 

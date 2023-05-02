@@ -58,7 +58,7 @@ class Chat extends ModTemplate {
         let group_id = this.groups[i].id;
         let group = this.groups[i];
 
-        this.app.storage.loadTransactions(group_id, 5, function (txs) {
+        await this.app.storage.loadTransactions(group_id, 5, function (txs) {
           try {
             for (let z = 0; z < txs.length; z++) {
               txs[z].decryptMessage(chat_self.app);
@@ -76,7 +76,7 @@ class Chat extends ModTemplate {
     // load public chat
     //
     if (service.service === "chat") {
-      let newtx = this.app.wallet.createUnsignedTransaction();
+      let newtx = await this.app.wallet.createUnsignedTransaction();
       let local_group = this.returnGroupOrCreateFromMembers(
         [peer.returnPublicKey()],
         "Saito Community Chat"
@@ -103,7 +103,7 @@ class Chat extends ModTemplate {
         };
         await newtx.sign();
 
-        this.app.network.sendTransactionWithCallback(newtx, (txs) => {
+        await this.app.network.sendTransactionWithCallback(newtx, (txs) => {
           try {
             for (let i = 0; i < txs.length; i++) {
               let newtx = new Transaction(undefined, txs[i].toJson());
@@ -145,14 +145,14 @@ class Chat extends ModTemplate {
       if (this.communityGroup) {
         this.communityGroupHash = this.communityGroup.id;
       }
-      this.loadChats();
+      await this.loadChats();
       let sql;
       for (let i = 0; i < this.groups.length; i++) {
         sql = `SELECT id, tx
                FROM txs
                WHERE publickey = "${this.groups[i].id}"
                ORDER BY ts DESC LIMIT 100`;
-        this.sendPeerDatabaseRequestWithFilter(
+        await this.sendPeerDatabaseRequestWithFilter(
           "Archive",
           sql,
 
@@ -436,17 +436,17 @@ class Chat extends ModTemplate {
     if (peers.length > 0) {
       let recipient = peers[0].publicKey;
       for (let i = 0; i < peers.length; i++) {
-        if (app.network.getPeers()[i].hasService("chat")) {
-          recipient = app.network.peers[i].peer.publickey;
+        if (peers[i].hasService("chat")) {
+          recipient = peers[i].publicKey;
           break;
         }
       }
 
-      app.network.propagateTransaction(tx);
+      await app.network.propagateTransaction(tx);
       app.connection.emit("relay-send-message", {
         recipient,
         request: "chat message broadcast",
-        data: tx.transaction,
+        data: tx.toJson(),
       });
     } else {
       salert("Connection to chat server lost");
@@ -540,7 +540,7 @@ class Chat extends ModTemplate {
     // save transaction if private chat
     //
     for (let i = 0; i < tx.transaction.to.length; i++) {
-      if (tx.to[i].publicKey == (await app.wallet.getPublicKey())) {
+      if (tx.to[i].publicKey == this.publicKey) {
         await this.app.storage.saveTransaction(tx, txmsg.group_id);
         break;
       }
@@ -558,7 +558,7 @@ class Chat extends ModTemplate {
       this.addTransactionToGroup(group, tx);
 
       app.connection.emit("chat-popup-render-request", group);
-    } else if (tx.isTo(await app.wallet.getPublicKey())) {
+    } else if (tx.isTo(this.publicKey)) {
       //
       // no match on groups -- direct message to me
       //

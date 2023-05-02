@@ -71,7 +71,6 @@ class Arcade extends ModTemplate {
   async initialize(app) {
     await super.initialize(app);
 
-    this.publicKey = await app.wallet.getPublicKey();
     //
     // compile list of arcade games
     //
@@ -1878,7 +1877,7 @@ class Arcade extends ModTemplate {
 
     game_mod.game.halted = 1; // Default to paused
 
-    this.observerDownloadNextMoves(game_mod, () => {
+    await this.observerDownloadNextMoves(game_mod, () => {
       if (watch_live) {
         game_mod.game.halted = 0;
         game_mod.game.live = 1;
@@ -1945,7 +1944,7 @@ class Arcade extends ModTemplate {
                WHERE type = '${game_mod.name}_${game_mod.game.id}'
                  AND publickey = '${game_mod.game.originator}'
                ORDER BY id ASC`;
-    this.sendPeerDatabaseRequestWithFilter("Archive", sql, async (res) => {
+    await this.sendPeerDatabaseRequestWithFilter("Archive", sql, async (res) => {
       if (res.rows) {
         console.log("sql rows: " + res.rows.length);
 

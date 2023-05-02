@@ -68,11 +68,11 @@ class Jaipur extends GameTemplate {
     });
 
     await this.menu.addChatMenu();
-    this.menu.render();
+    await this.menu.render();
 
     this.log.render();
 
-    this.playerbox.render();
+    await this.playerbox.render();
     this.playerbox.addClassAll("poker-seat-", true);
 
     this.hud.card_width = 120;
@@ -83,7 +83,7 @@ class Jaipur extends GameTemplate {
   ////////////////
   // initialize //
   ////////////////
-  initializeGame(game_id) {
+  async initializeGame(game_id) {
     if (this.game.status != "") {
       this.updateStatus(this.game.status);
     }
@@ -113,7 +113,7 @@ class Jaipur extends GameTemplate {
       $(".jaipur_board").attr("style", "");
       this.updateTokens();
       this.updateMarket();
-      this.updatePlayers();
+      await this.updatePlayers();
     }
   }
 
@@ -141,7 +141,7 @@ class Jaipur extends GameTemplate {
   //
   // Core Game Logic
   //
-  handleGameLoop() {
+  async handleGameLoop() {
     let we_self = this;
 
     this.saveGame(this.game.id);
@@ -150,7 +150,7 @@ class Jaipur extends GameTemplate {
     ///////////
     if (this.game.queue.length > 0) {
       if (this.browser_active) {
-        this.updatePlayers();
+        await this.updatePlayers();
       }
 
       let qe = this.game.queue.length - 1;
@@ -178,7 +178,7 @@ class Jaipur extends GameTemplate {
           $(".jaipur_board").attr("style", "");
           this.updateTokens();
           this.updateMarket();
-          this.updatePlayers();
+          await this.updatePlayers();
         }
       }
 
@@ -188,7 +188,7 @@ class Jaipur extends GameTemplate {
 
         if (this.game.player == player) {
           this.addMove(`my_camels\t${player}\t${this.game.state.herd}`);
-          this.endTurn();
+          await this.endTurn();
         }
         return 0;
       }
@@ -238,7 +238,7 @@ class Jaipur extends GameTemplate {
           }
           this.game.state.mybonustokens = tokens;
           this.addMove(`mybonus\t${player}\t${JSON.stringify(tokens)}`);
-          this.endTurn();
+          await this.endTurn();
         }
         return 0;
       }
@@ -296,11 +296,11 @@ class Jaipur extends GameTemplate {
         this.updateLog(`${my_name} the round by ${method}`);
 
         if (this.game.state[`winner${winner}`]) {
-          this.endGame(this.game.players[winner - 1], "excellence");
+          await this.endGame(this.game.players[winner - 1], "excellence");
           return 0;
         } else {
           this.game.state[`winner${winner}`] = 1;
-          this.updatePlayers();
+          await this.updatePlayers();
           this.initializeQueue(3 - winner);
         }
 
@@ -336,7 +336,7 @@ class Jaipur extends GameTemplate {
 
         let player = parseInt(mv[1]);
         $(".player-box").removeClass("active");
-        this.playerbox.addClass("active", player);
+        await this.playerbox.addClass("active", player);
 
         if (this.game.player == player) {
           this.playerTurn();
@@ -367,7 +367,7 @@ class Jaipur extends GameTemplate {
 
           let dest = document.querySelector(`#status .hud-card[data-id="${card}"]`);
           if (!dest) {
-            this.hud.insertCard(`<div id="slot00" class="card hud-card"></div>`);
+            await this.hud.insertCard(`<div id="slot00" class="card hud-card"></div>`);
             dest = "#slot00";
           }
           this.moveGameElement(moving_card, dest, { resize: 1 }, () => {
@@ -468,7 +468,7 @@ class Jaipur extends GameTemplate {
           }.`
         );
 
-        this.runAnimationQueue();
+        await this.runAnimationQueue();
         return 0;
       }
 
@@ -609,16 +609,16 @@ class Jaipur extends GameTemplate {
     let game_self = this;
 
     //Buy
-    $(".market .card").on("click", function () {
+    $(".market .card").on("click", async function () {
       $(".market .card").off();
       let card = $(this).attr("data-id");
       if (card == "camel") {
         game_self.addMove(`camels\t${game_self.game.player}`);
-        game_self.endTurn();
+        await game_self.endTurn();
       } else {
         if (game_self.game.state.hand.length < 7) {
           game_self.addMove(`take\t${game_self.game.player}\t${card}`);
-          game_self.endTurn();
+          await game_self.endTurn();
         } else {
           salert("Your hand is already full, trade or sell cards!");
         }
@@ -626,7 +626,7 @@ class Jaipur extends GameTemplate {
     });
 
     //Sell
-    $(".rack .card_count").on("click", function () {
+    $(".rack .card_count").on("click", async function () {
       $(".rack .card_count").off();
       let card = $(this).attr("data-id");
       let count = $(this).attr("data-cnt");
@@ -644,7 +644,7 @@ class Jaipur extends GameTemplate {
           }
         );
         game_self.addMove(`sell\t${game_self.game.player}\t${card}\t${count}`);
-        game_self.endTurn();
+        await game_self.endTurn();
       }
     });
 
@@ -798,14 +798,14 @@ class Jaipur extends GameTemplate {
         ) {
           let submit = document.getElementById("trade_btn");
           submit.classList.remove("disabled");
-          submit.onclick = () => {
+          submit.onclick = async () => {
             game_self.overlay.remove();
             game_self.addMove(
               `trade\t${game_self.game.player}\t${JSON.stringify(to_take)}\t${JSON.stringify(
                 to_give
               )}`
             );
-            game_self.endTurn();
+            await game_self.endTurn();
           };
         }
       }
@@ -905,14 +905,14 @@ class Jaipur extends GameTemplate {
     return bonus;
   }
 
-  updatePlayers() {
+  async updatePlayers() {
     let crown = `<i class="fas fa-crown"></i>`;
 
-    this.playerbox.refreshGraphic(
+    await this.playerbox.refreshGraphic(
       this.camelHTML(this.game.state.herd, this.game.state.enemyherd),
       this.game.player
     );
-    this.playerbox.refreshGraphic(
+    await this.playerbox.refreshGraphic(
       this.camelHTML(this.game.state.enemyherd, this.game.state.herd),
       3 - this.game.player
     );
@@ -922,13 +922,13 @@ class Jaipur extends GameTemplate {
     my_score += this.calculateBonus();
     my_score += this.reduceScore(this.game.state.mybonustokens);
 
-    html = `<div class="score tip">Me: ${my_score}</div>`;
+    let html = `<div class="score tip">Me: ${my_score}</div>`;
     if (this.game.state[`winner${this.game.player}`]) {
       html = crown + html;
     }
 
-    this.playerbox.refreshInfo(html);
-    this.playerbox.refreshLog(this.bonusTokensToHTML(this.game.player));
+    await this.playerbox.refreshInfo(html);
+    await this.playerbox.refreshLog(this.bonusTokensToHTML(this.game.player));
 
     let enemy_score = this.game.state.herd < this.game.state.enemyherd ? 5 : 0;
     enemy_score += this.game.state.vp[2 - this.game.player];
@@ -944,9 +944,12 @@ class Jaipur extends GameTemplate {
       html = crown + html;
     }
 
-    this.playerbox.refreshInfo(html, 3 - this.game.player);
+    await this.playerbox.refreshInfo(html, 3 - this.game.player);
 
-    this.playerbox.refreshLog(this.bonusTokensToHTML(3 - this.game.player), 3 - this.game.player);
+    await this.playerbox.refreshLog(
+      this.bonusTokensToHTML(3 - this.game.player),
+      3 - this.game.player
+    );
   }
 
   updateStatusWithCards(status) {
@@ -1116,6 +1119,3 @@ class Jaipur extends GameTemplate {
 } // end Jaipur class
 
 module.exports = Jaipur;
-
-
-
