@@ -89,9 +89,13 @@ console.log("start mining...");
             this.difficulty
           )
         ) {
+console.log("# 1");
           const transaction = this.app.wallet.createUnsignedTransaction();
+console.log("# 2");
           transaction.transaction.type = TransactionType.GoldenTicket;
+console.log("# 3");
           transaction.transaction.m = this.app.goldenticket.serialize(this.target, random_hash);
+console.log("# 4");
           transaction.sign(this.app);
 console.log("#");
 console.log("# Found GT");
