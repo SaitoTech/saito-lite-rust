@@ -308,29 +308,29 @@ class RealmsDeck {
 		let index = 1;
 
 		for (let i = 0; i < 8; i++){
-			deck[`i${index++}`] = "steppe";
-			deck[`i${index++}`] = "waterfall";
+			deck[`j${index++}`] = "steppe";
+			deck[`j${index++}`] = "waterfall";
 		}
 		for (let i = 0; i < 4; i++){
-			deck[`i${index++}`] = "island";
-			deck[`i${index++}`] = "w001";
-			deck[`i${index++}`] = "w002";
-			deck[`i${index++}`] = "w003";
-			deck[`i${index++}`] = "w004";
-			deck[`i${index++}`] = "w005";
-			deck[`i${index++}`] = "w006";
-			deck[`i${index++}`] = "w007";
+			deck[`j${index++}`] = "island";
+			deck[`j${index++}`] = "w001";
+			deck[`j${index++}`] = "w002";
+			deck[`j${index++}`] = "w003";
+			deck[`j${index++}`] = "w004";
+			deck[`j${index++}`] = "w005";
+			deck[`j${index++}`] = "w006";
+			deck[`j${index++}`] = "w007";
 		}
 		for (let i = 0; i < 2; i++){
-			deck[`i${index++}`] = "b001";
-			deck[`i${index++}`] = "b002";
-			deck[`i${index++}`] = "b003";
-			deck[`i${index++}`] = "b004";
-			deck[`i${index++}`] = "b005";
-			deck[`i${index++}`] = "b006";
-			deck[`i${index++}`] = "b007";
+			deck[`j${index++}`] = "b001";
+			deck[`j${index++}`] = "b002";
+			deck[`j${index++}`] = "b003";
+			deck[`j${index++}`] = "b004";
+			deck[`j${index++}`] = "b005";
+			deck[`j${index++}`] = "b006";
+			deck[`j${index++}`] = "b007";
 		}
-		deck[`i${index++}`] = "c001";
+		deck[`j${index++}`] = "c001";
 		return deck;
 	}
 	/*

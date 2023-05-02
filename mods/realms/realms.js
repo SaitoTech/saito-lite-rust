@@ -201,8 +201,11 @@ class Realms extends GameTemplate {
 				let player_id = parseInt(mv[1]);
 				let cardkey = mv[2];
 
+				console.log(cardkey);
+				console.log(JSON.parse(JSON.stringify(this.card_library[cardkey])));
+
 				if (this.game.player !== player_id){
-					let id = this.insertCardSlot(player_id, "#summoning_stack");
+					let id = this.insertCardSlot(player_id, cardkey, "#summoning_stack");
 					this.game.state.summoning_stack.push({player: player_id, key: cardkey, card: this.card_library[cardkey], uuid: id});
 					this.addCard(cardkey, id);					
 
@@ -234,28 +237,32 @@ class Realms extends GameTemplate {
 
 				this.game.queue.splice(qe, 1);
 
-				let card = this.game.state.summoning_stack.pop();
-				if (card.key !== card_key) {
+				let summoned_card = this.game.state.summoning_stack.pop();
+				if (summoned_card.key !== card_key) {
 					console.log("Desyncronized stacks! " + card_key);
-					console.log(JSON.parse(JSON.stringify(card)));
+					console.log(JSON.parse(JSON.stringify(summoned_card)));
 				}
 
 				//lands: [], 				creatures: [], 				artifacts: [],				graveyard: [],
 
-				
-				if (["land", "creature", "artifact"].includes(card.type)) {
-					//Move permanents onto board
-					if (card.type == "creature"){
-						card.tapped = true;
-					}
+				console.log("Resolve card: ", summoned_card.card.type);
 
-					this.game.state.players[player - 1][card.type].push(card);
+				if (["land", "creature", "artifact"].includes(summoned_card.card.type)) {
+					//Move permanents onto board
+					if (summoned_card.card.type == "creature"){
+						summoned_card.tapped = true;
+					}
+				
+					this.game.state.players[player - 1][summoned_card.card.type].push(summoned_card);
+					let field = (this.game.player == player) ? "#me" : "#opponent";
+
+					this.moveCard(summoned_card.uuid, this.insertCardSlot(player, summoned_card.key, field));
 					
-				} //else {
+				} else {
 					//Discard non-permanents
-					this.game.state.players[player - 1]["graveyard"].push(card);
-					this.moveCard(card.uuid, ".graveyard");
-				//}
+					this.game.state.players[player - 1]["graveyard"].push(summoned_card);
+					this.moveCard(summoned_card.uuid, ".graveyard");
+				}
 
 				
 			}
@@ -320,6 +327,7 @@ class Realms extends GameTemplate {
 		// players may also end their turn
 		//
 		document.getElementById("end-turn").onclick = (e) => {
+			this.game.state.has_placed_land = 0;
 			this.updateStatusAndListCards(
 				"Opponent Turn",
 				this.game.deck[this.game.player - 1].hand,
@@ -331,14 +339,21 @@ class Realms extends GameTemplate {
 
 	}
 
+	findStack(card_index, player, destination){
+		return this.insertCardSlot(player, card_index, destination);
+	}
 
-	insertCardSlot(player, destination) {
+	insertCardSlot(player, cardkey, destination) {
 		let base_id = `p${player}-card-`;
 
 		let max = 0;
-		let existing_cards = document.getElementsByClassName("cardslot");
+		let existing_cards = document.querySelectorAll(destination + " .cardslot");
 		for (let div of existing_cards){
 			if (div.id.includes(base_id)){
+				if (div.dataset.card == cardkey){
+					console.log("Card slot already exists: " + div.id);
+					return div.id;
+				}
 				let temp = parseInt(div.id.replace(base_id, ""));
 				if (temp > max) {
 					max = temp;
@@ -349,25 +364,36 @@ class Realms extends GameTemplate {
 
 		base_id += max;
 
-		this.app.browser.addElementToSelector(`<div class="cardslot" id="${base_id}"></div>`, destination);
+		this.app.browser.addElementToSelector(`<div class="cardslot" id="${base_id}" data-card="${cardkey}"></div>`, destination);
 		
 		return base_id;
 	}
 
-	moveCard(source_id, destination) {
+	moveCard(source_id, destination, copy = false) {
 		
 		console.log("Card at: ", source_id);
 		console.log("Move card to: ", destination);
+		
+		if (!document.querySelector(destination)) {
+			destination = document.getElementById(destination);
+		}
 
-
-		this.moveGameElement(this.copyGameElement(`#${source_id} img`), 
+		this.moveGameElement(this.selectGameElement(`#${source_id} img`), 
 													destination, 
 													{insert: 1, resize: 1},
 													()=> { 
 														$(".animated_elem").remove(); 
-														$("#"+source_id).remove(); 
+														//$("#"+source_id).remove(); 
 														if (destination === ".graveyard") {
 															$(".graveyard").children().fadeOut();
+														}
+
+														if (destination?.children?.length > 1) {
+															let offset = 0;
+															for (let child of destination.children){
+																child.style.top = offset + "px";
+																offset += 10;
+															}
 														}
 													}
 													);
@@ -391,8 +417,6 @@ class Realms extends GameTemplate {
 
 		let c = this.card_library[card];
 
-		console.log(c);
-
 		if (c.type == "land") {
 			if (this.game.state.has_placed_land) {
 				salert("You may only play one land per turn.");
@@ -405,7 +429,7 @@ class Realms extends GameTemplate {
 		//To do -- insert test for mana pool
 
 
-		let ui_id = this.insertCardSlot(this.game.player, "#summoning_stack");
+		let ui_id = this.insertCardSlot(this.game.player, card, "#summoning_stack");
 		for (let i = 0; i < this.game.deck[this.game.player-1].hand.length; i++){
 			if (this.game.deck[this.game.player-1].hand[i] == card_index){
 				this.game.deck[this.game.player-1].hand.splice(i,1);
@@ -427,6 +451,22 @@ class Realms extends GameTemplate {
 			this.app.browser.addElementToSelector(this.cardToHTML(summoned_card.key, summoned_card.uuid), "#summoning_stack");
 		}
 
+		let permanents = ["land", "creature", "artifact"];
+		$("#me").html("");
+		for (let field of permanents){
+			for (let summoned_card of this.game.state.players[this.game.player-1][field]){
+				this.app.browser.addElementToSelector(this.cardToHTML(summoned_card.key, summoned_card.uuid), "#me");
+			}
+		}
+
+		$("#opponent").html("");
+		for (let field of permanents){
+			for (let summoned_card of this.game.state.players[2-this.game.player][field]){
+				this.app.browser.addElementToSelector(this.cardToHTML(summoned_card.key, summoned_card.uuid), "#opponent");
+			}
+		}
+
+
 	}
 
 
@@ -442,7 +482,7 @@ class Realms extends GameTemplate {
 		let card = this.card_library[cardkey];
 		
 		return `
-      <div class="cardslot ${(tapped)?"tapped":""}" id="${uuid}">
+      <div class="cardslot ${(tapped)?"tapped":""}" id="${uuid}" data-card="${cardkey}">
         <img src="${card.img}" class="cardimg" id="${cardkey}"/>
       </div>
     `;

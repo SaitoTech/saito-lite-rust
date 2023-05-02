@@ -23,7 +23,7 @@ body {
   height: calc(100vh - 300px);
   display: grid;
   top: 45px;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr 180px 1fr;
 }
 
 img.cardimg {
@@ -55,7 +55,8 @@ img.cardimg {
 .realm-card-tray {
   display: flex;
   align-items: flex-start;
-  justify-content: space-around;
+  justify-content: center;
+  column-gap: 15px;
 }
 
 .realm-card-tray .cardslot {
