@@ -105,7 +105,6 @@ class Warehouse extends ModTemplate {
           }
         }
       }
-      return;
     } catch (err) {
       console.error(err);
     }

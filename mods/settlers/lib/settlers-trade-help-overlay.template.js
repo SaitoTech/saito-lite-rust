@@ -1,5 +1,4 @@
 module.exports = (app, mod) => {
-
   let html = `<div class="rules-overlay saitoa">
               <div class="h1">Trading</div>
               <p>There are several mechanisms in the game to initiate trades, but two things should be noted. First, you are not technically allowed to initiate trades unless it is your turn, or at the very most, you may propose a trade to the player who turn it is. Secondly, double click anyone's name to open a chat window with them. This is a social game, and you can do all the wheeling and dealing you want simply by talking to the other players.</p>
@@ -36,6 +35,5 @@ module.exports = (app, mod) => {
               </div>`;
 
   return html;
-
-}
+};
 

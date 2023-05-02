@@ -1,15 +1,13 @@
 const SettlersScoreboardTemplate = require("./scoreboard.template");
 
 class SettlersScoreboard {
-
-  constructor(app, mod, unit="", container="") {
+  constructor(app, mod, unit = "", container = "") {
     this.app = app;
     this.mod = mod;
     this.container = container;
   }
 
   render() {
- 
     let myqs = this.container + " .scoreboard";
 
     if (document.querySelector(myqs)) {
@@ -19,21 +17,17 @@ class SettlersScoreboard {
     }
 
     this.attachEvents();
-
   }
 
   attachEvents() {
-
     document.querySelector(".scoreboard").onclick = (e) => {
       if (document.querySelector(".scoreboard").classList.contains("scoreboard-lock")) {
-	document.querySelector(".scoreboard").classList.remove("scoreboard-lock");
+        document.querySelector(".scoreboard").classList.remove("scoreboard-lock");
       } else {
-	document.querySelector(".scoreboard").classList.add("scoreboard-lock");
+        document.querySelector(".scoreboard").classList.add("scoreboard-lock");
       }
-    }
-
+    };
   }
-
 }
 
 module.exports = SettlersScoreboard;

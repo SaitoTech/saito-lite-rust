@@ -217,4 +217,37 @@ export default class Crypto {
     }
     return this.xor(Buffer.from(str, "hex"), Buffer.from(key, "hex")).toString("hex");
   }
+
+  /**
+   * returns true if this is an AES encrypted message as opposed to
+   * a plaintext-containing javascript object.
+   **/
+  isAesEncrypted(msg) {
+    try {
+      let msg2 = JSON.parse(msg);
+      if (msg2.ct) {
+        return true;
+      }
+    } catch (err) {
+      return false;
+    }
+    return false;
+  }
+
+  //////////////////////////
+  // Faster Serialization //
+  //////////////////////////
+  //
+  // Yes, this isn't a cryptographic function, but we can put it here
+  // until it makes sense to create a dedicated helper class.
+  //
+  fastSerialize(jsobj) {
+    return JSON.stringify(jsobj);
+    //    return stringify(jsobj);
+  }
+
+  convertStringToDecimalPrecision(stringx, p = 8) {
+    stringx = parseFloat(stringx);
+    return stringx.toFixed(p).replace(/0+$/, "").replace(/\.$/, ".0").replace(/\.0$/, "");
+  }
 }

@@ -59,10 +59,10 @@ class Wuziqi extends GameTemplate {
     });
 
     // Add Chat Features to Menu
-    this.menu.addChatMenu(this.game.sides);
+    await this.menu.addChatMenu(this.game.sides);
 
     // Render menu and attach events
-    this.menu.render();
+    await this.menu.render();
 
     // Initialize our game
     this.game.score = [0, 0];
@@ -76,22 +76,22 @@ class Wuziqi extends GameTemplate {
     }
 
     //Player Boxes
-    this.playerbox.render();
+    await this.playerbox.render();
     if (this.game.player == 0) {
-      this.playerbox.addClass("me", 1);
-      this.playerbox.addClass("notme", 2);
+      await this.playerbox.addClass("me", 1);
+      await this.playerbox.addClass("notme", 2);
     } else {
-      this.playerbox.addClass("me", this.game.player);
-      this.playerbox.addClass("notme", 3 - this.game.player);
+      await this.playerbox.addClass("me", this.game.player);
+      await this.playerbox.addClass("notme", 3 - this.game.player);
     }
-    this.playerbox.makeDraggable(); //I think we still want to be able to move them
+    await this.playerbox.makeDraggable(); //I think we still want to be able to move them
 
     // Render board and set up values.
     try {
       // Check if anyone has played yet (black goes first)
       let blackplayedyet = this.serializeBoard(this.game.board).indexOf("B");
       this.drawBoard(this.game.board);
-      this.updateScore();
+      await this.updateScore();
 
       // If no one has played set up the board
       if (blackplayedyet < 0) {
@@ -126,7 +126,6 @@ class Wuziqi extends GameTemplate {
     if (this.game.initializing) {
       // Send 'let's get started' message.
       this.game.queue.push("READY");
-      return;
     }
   }
 
@@ -170,7 +169,7 @@ class Wuziqi extends GameTemplate {
   /* Though unnecessary to loop through two players, it is important to remember that players are numbered (1, 2, 3),
       but data structures for player properties are typically 0-indexed arrays
   */
-  updateScore() {
+  async updateScore() {
     let roundsToWin = Math.ceil(this.game.options.best_of / 2);
     for (let i = 0; i < this.game.players.length; i++) {
       //this.playerbox.refreshName(i);
@@ -181,7 +180,7 @@ class Wuziqi extends GameTemplate {
       for (let j = 0; j < roundsToWin - this.game.score[i]; j++) {
         scoreHTML += `<img class="piece opaque30" src="img/${this.game.sides[i]}piece.png">`;
       }
-      this.playerbox.refreshInfo(scoreHTML, i + 1);
+      await this.playerbox.refreshInfo(scoreHTML, i + 1);
     }
   }
 
@@ -371,7 +370,7 @@ class Wuziqi extends GameTemplate {
 
         // Update my scores
         this.game.score[winner - 1]++;
-        this.updateScore();
+        await this.updateScore();
 
         // If this round win, wins the game - let the winner know.
         if (2 * this.game.score[winner - 1] > this.game.options.best_of) {

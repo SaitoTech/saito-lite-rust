@@ -56,9 +56,9 @@ class Midnight extends GameTemplate {
       text: "Restart",
       id: "game-restart",
       class: "game-restart",
-      callback: function (app, game_mod) {
+      callback: async function (app, game_mod) {
         game_mod.game.state = null;
-        game_mod.initializeGame();
+        await game_mod.initializeGame();
         game_mod.startQueue();
       },
     });
