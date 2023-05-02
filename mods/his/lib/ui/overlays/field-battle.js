@@ -52,9 +52,12 @@ class FieldBattleOverlay {
       this.updateInstructions("Anticipating a Field Battle");
     }
 
-    assignHits(res) {
-      this.updateInstructions("Both Sides Assigning Hits");
-
+    assignHits(res, faction="") {
+      if (faction != "") {
+        this.updateInstructions(this.mod.returnFactionName(faction) + " Assigning Hits");
+      } else {
+        this.updateInstructions("Assigning Hits");
+      }
     }
 
     render(res={}, pre_battle = 0) {
@@ -64,6 +67,9 @@ class FieldBattleOverlay {
 
 	if (pre_battle == 1) { res.attacker_modified_rolls = res.attacker_results; }
 	if (pre_battle == 1) { res.defender_modified_rolls = res.defender_results }
+
+	document.querySelector(".field-battle-grid .attacker .title").innerHTML = res.attacker_faction + " / attacker";
+	document.querySelector(".field-battle-grid .defender .title").innerHTML = res.defender_faction + " / defender";
 
 	if (res.attacker_modified_rolls) {
 	  for (let i = 0; i < res.attacker_modified_rolls.length; i++) {
