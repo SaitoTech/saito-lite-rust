@@ -82,10 +82,8 @@ class FieldBattleOverlay {
 	    if (pre_battle) { roll = "?"; rrclass = ""; }
 
             let html = `
-              <div class="field-battle-row">
               	<div class="field-battle-unit">${unit_type}<div class="field-battle-desc">${faction_name}</div></div>
               	<div class="field-battle-roll ${rrclass}">${roll}</div>
-              </div>
             `;
             this.app.browser.addElementToSelector(html, ".field-battle-grid .attacker");
 	  }
@@ -102,10 +100,8 @@ class FieldBattleOverlay {
 	    if (pre_battle) { roll = "?"; rrclass = ""; }
 
             let html = `
-              <div class="field-battle-row">
               	<div class="field-battle-unit">${unit_type}<div class="field-battle-desc">${faction_name}</div></div>
               	<div class="field-battle-roll ${rrclass}">${roll}</div>
-              </div>
             `;
             this.app.browser.addElementToSelector(html, ".field-battle-grid .defender");
 	  }
