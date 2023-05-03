@@ -76,7 +76,6 @@ class Wuziqi extends GameTemplate {
 
 
         //Player Boxes
-        this.playerbox.show_observer_box = false;
         this.playerbox.render();
         if (this.game.player == 0){
             this.playerbox.addClass("me",1);
