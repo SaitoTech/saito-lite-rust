@@ -317,6 +317,8 @@ class Poker extends GameTableTemplate {
     //
     this.displayBoard();
 
+    super.initializeGameStake(crypto, stake);
+
   }
 
   

@@ -1263,6 +1263,9 @@ console.log("LATEST MOVE: " + mv);
         //
         // card is discarded, nothing happens
         //
+	this.game.queue.splice(qe, 1);
+	return 1;
+
       } else {
         if (mv[1] == "us") {
           this.game.state.vp -= this.game.state.wargames_concession;
@@ -1282,8 +1285,6 @@ console.log("LATEST MOVE: " + mv);
           }
 	  return 0;
         }
-
-
 
         if (this.game.state.vp > 0) {
           this.endGame(this.game.players[1],"Wargames");
