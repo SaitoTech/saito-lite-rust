@@ -308,6 +308,14 @@ body {
   border: 3px dotted purple;
 }
 
+.city img, .village img {
+    transform: scale(1.4);
+    margin: 0 0 3rem;
+    position: relative;
+    top: -4px;
+}
+
+
 .rhover:hover, .city.empty.rhover:hover {
   border: 1px solid white;
   background-color: whitesmoke;
@@ -448,7 +456,7 @@ body {
   z-index: 12;
   font-size: 2em;
   text-align: center;
-  border-radius: 10px;
+  border-radius: 50%;
 }
 
 .city>svg, .city>img {
@@ -458,6 +466,13 @@ body {
   left: 0px;
   padding: 0px;
 }
+
+.city img, .village img {
+  transform: scale(1.4);
+  position: relative;
+  top: -4px;
+}
+
 
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
 
