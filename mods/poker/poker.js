@@ -118,8 +118,6 @@ class Poker extends GameTableTemplate {
   }
 
 
-
-
   initializeHTML(app) {
 
     if (!this.browser_active) { return; }
@@ -159,35 +157,24 @@ class Poker extends GameTableTemplate {
         game_mod.log.toggleLog();
       },
     });
-    //
-    // this is almost unmodified code from the /lib/template/gametabletemplate.js file that 
-    // provides a way to exit an ongoing game. it removes the player from the deal flow but
-    // keeps them in the game. we are adding the instruction as a separate menu option to 
-    // try and simplify the UI. but the original UI is still here, just toggled-off with 
-    // display:none to allow for rapid experimentation.
-    //
-    this.menu.addSubMenuOption("game-game", {
-      text: "Leave Table",
-      id: "game-leave",
-      class: "game-leave",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.displayWarning("Leave game", "You won't be dealt into the next hand");
-        game_mod.willleave = true;
-        //game_mod.scoreboard.update(
-        //  game_mod.scoreFrame + `<div id="cancel" class="table_ctrl">CANCEL</div>`,
-        //  game_mod.controller.bind(game_mod)
-        //);
-        game_mod.sendMetaMessage("LEAVE");
-      },
-    });
-    this.menu.addSubMenuOption("game-game", {
+
+    // <<<<<<<<<<<<<<<<<<<<<<< Hello Game Developer >>>>>>>>>>>>>>>>>>>>  ****
+    //                                                                    ****
+    // This code gets overwriten by the game-menu                         **** 
+    //                                                                    ****
+    // The correct way to change the behavior of game-exit is to redefine ****
+    //                                                                    ****
+    //             game_mod.exitGame();                                   ****
+    //                                                                    ****
+    // in this file
+    // ================================================================== ****
+    /*this.menu.addSubMenuOption("game-game", {
       text: "Exit",
       id: "game-exit",
       class: "game-exit",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        let c = confirm("Exit the Game?");
+        let c = confirm("Forfeit the Game?");
         if (c) {
 	  if (game_mod.game.state.passed[game_mod.game.player] != 1) {
 	    game_mod.addMove("fold\t" + game_mod.game.player);
@@ -195,10 +182,11 @@ class Poker extends GameTableTemplate {
             game_mod.willleave = true;
             game_mod.sendMetaMessage("LEAVE");
 	  }
+    //We don't want to hardcode redirections! 
 	  window.location = "/arcade";
         }
       },
-    });
+    });*/
 
 
 
@@ -421,11 +409,9 @@ console.log("SETTLE: " + JSON.stringify(this.game.state.debt));
     */
     let msg = "Clearing the table";
     this.game.queue.push("newround");   
-    //Have to do twice because want to add players before checking for end of game condition,
-    //but if too many players want to join they may want to take the seat of an eliminated player
+
     this.game.queue.push("PLAYERS");
     this.game.queue.push("checkplayers");     
-    this.game.queue.push("PLAYERS");
 
     if (this.needToSettleDebt()) {
       this.settleDebt(); 
@@ -513,7 +499,7 @@ console.log("SETTLE? " + this.settleNow);
         this.displayPlayers(true); //to update chips before game_over
         this.game.queue = [];
         this.game.crypto = null;
-	this.settleDebt();
+        this.settleDebt();
         this.endGame(this.game.players[parseInt(mv[1])], "elimination"); 
         return 0;
       }
@@ -594,7 +580,7 @@ console.log("SETTLE? " + this.settleNow);
          }
      
         //Catch that only one player is standing at the start of the new round
-        if (alive_players == 1) {
+        if (alive_players + this.toJoin.length == 1) {
           this.game.queue = [];
           this.game.queue.push("winner\t" + winner);
           return 1;
