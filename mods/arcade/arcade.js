@@ -19,7 +19,7 @@ class Arcade extends ModTemplate {
     //
     // DEBUGGING MODE
     //
-    this.debug = false;
+    this.debug = true;
 
     this.name = "Arcade";
 
@@ -143,9 +143,13 @@ class Arcade extends ModTemplate {
               players: game.players,
               players_sigs: [], //Only used to verify cryptology when initializing the game
               originator: game.originator,
+              //winner: game.winner,
+              step: game?.step?.game, 
+              ts: game?.step?.ts,
             };
 
             game_tx.transaction.sig = game.id;
+            game_tx.transaction.ts = game.ts;
             game_tx.msg = msg;
 
             console.log("Processing games from app.options:");
@@ -186,7 +190,8 @@ class Arcade extends ModTemplate {
           //console.log(JSON.parse(JSON.stringify(record)));
           //This is the save openTX
           let game_tx = new saito.default.transaction(JSON.parse(record.tx));
-
+          game_tx.transaction.ts = record.created_at;
+          
           //But we update the player list
           let player_info = record.players_array.split("_");
           for (let pi of player_info) {
@@ -1515,7 +1520,7 @@ class Arcade extends ModTemplate {
       }
       
       this.games[key] = this.games[key].filter((game) => {
-        return game.msg?.ts > cutoff;
+        return game.transaction?.ts > cutoff;
       });
     }
   }

@@ -130,7 +130,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 				html += `<div id="arcade-game-controls-join-game" class="saito-button saito-button-primary">join game</div>`;
 			}
 		}
-	} else if (invite.game_mod.enable_observer > 1 && invite.?step > 0) {
+	} else if (invite.game_mod.enable_observer > 1 && invite?.step > 0) {
 		//Observer mode -- finished
 		html += `<div id="arcade-game-controls-review-game" class="saito-button saito-button-primary">review game</div>`;
 	}
