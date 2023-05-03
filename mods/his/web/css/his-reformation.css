@@ -19,13 +19,13 @@
 
 .reformation-box {
 	display: grid;
-	grid-template-columns: 50vw 50vw;
+	grid-template-columns: 65rem 65rem;
 	padding: 4rem;
 	justify-items: center;
 	justify-content: space-evenly;
 }
 
-.reformation-overlay .protestant .reformation-row, .reformation-overlay .papacy .reformation-row {
+.reformation-overlay .protestant, .reformation-overlay .papacy {
 	display: grid;
 	justify-items: right;
 	background: #0005;
@@ -46,17 +46,19 @@
 	border: 1px solid black;
 	grid-column: 1 / span 2;
 	grid-row: 1;
+	width: 50rem;
 	max-height: 6rem;
 	min-height: 6rem;
+	
 }
 
 .reform-box-description {
-	width: 80%;
+	width: 20rem;
 	height: 5rem;
 	padding: 0.75rem;
 	font-size: 2rem;
 	grid-column: 1;
-	margin-right: 4vw;
+	margin-right: 22rem;
 }
 
 .reform-roll {
@@ -81,11 +83,7 @@
         color: black;
 }
 
-
 .adjacency {
 	position: relative;
 	font-size: 1.5rem;
-}
-.protestant, .papacy {
-	width: 35vw;
 }
