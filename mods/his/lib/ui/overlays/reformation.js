@@ -6,7 +6,7 @@ class ReformationOverlay {
     constructor(app, mod){
         this.app = app;
         this.mod = mod;
-        this.overlay = new SaitoOverlay(app, mod);
+        this.overlay = new SaitoOverlay(app, mod, false);
     }
 
     hide() {
@@ -15,7 +15,7 @@ class ReformationOverlay {
    
     render(res=null) {
 	this.visible = true;
-        this.overlay.show(ReformationTemplate());
+        this.overlay.show(ReformationTemplate(res.name));
 	this.overlay.setBackgroundColor("#000"); // black background
 
 	if (res == null) { return; } 

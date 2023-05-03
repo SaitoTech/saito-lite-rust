@@ -623,17 +623,20 @@ class Twilight extends GameTemplate {
 
     } catch (err) {}
 
-    this.hud.render();
+    if (this.game.player > 0){
+      this.hud.render();  
 
-    /* Attach classes to hud to visualize player roles */
-    //this.game.player == 1 --> ussr, == 2 --> usa
-    let hh = document.querySelector(".hud-header");
-    if (hh){
-      switch(this.game.player){
-        case 1: hh.classList.add("soviet"); break;
-        case 2: hh.classList.add("american"); break;
-        default:
-      }  
+      /* Attach classes to hud to visualize player roles */
+      //this.game.player == 1 --> ussr, == 2 --> usa
+      let hh = document.querySelector(".hud-header");
+      if (hh){
+        switch(this.game.player){
+          case 1: hh.classList.add("soviet"); break;
+          case 2: hh.classList.add("american"); break;
+          default:
+        }  
+      }
+    
     }
 
   }
@@ -1260,6 +1263,9 @@ console.log("LATEST MOVE: " + mv);
         //
         // card is discarded, nothing happens
         //
+	this.game.queue.splice(qe, 1);
+	return 1;
+
       } else {
         if (mv[1] == "us") {
           this.game.state.vp -= this.game.state.wargames_concession;
@@ -1279,8 +1285,6 @@ console.log("LATEST MOVE: " + mv);
           }
 	  return 0;
         }
-
-
 
         if (this.game.state.vp > 0) {
           this.endGame(this.game.players[1],"Wargames");
@@ -2567,7 +2571,7 @@ console.log("LATEST MOVE: " + mv);
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["abmtreaty", "cubanmissile", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["wargames", "starwars", "naziscientist", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["che", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
         }
@@ -2982,9 +2986,9 @@ try {
 
     if (mv[0] === "play") {
 
-      if (this.game.player == 0) {
-        this.game.queue.push("OBSERVER_CHECKPOINT");
-      }
+      //if (this.game.player == 0) {
+      //  this.game.queue.push("OBSERVER_CHECKPOINT");
+      //}
 
       //
       // copy for reversion
@@ -6203,51 +6207,51 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     state.ar_ps[7]      = { top : 208 , left : 1740 };
 
     state.vp_ps     = [];
-    state.vp_ps[0]  = { top : 2460, left : 3040 };
-    state.vp_ps[1]  = { top : 2460, left : 3300 };
-    state.vp_ps[2]  = { top : 2460, left : 3435 };
-    state.vp_ps[3]  = { top : 2460, left : 3570 };
-    state.vp_ps[4]  = { top : 2460, left : 3705 };
-    state.vp_ps[5]  = { top : 2460, left : 3840 };
-    state.vp_ps[6]  = { top : 2460, left : 3975 };
-    state.vp_ps[7]  = { top : 2460, left : 4110 };
+    state.vp_ps[0]  = { top : 2466, left : 3108 };
+    state.vp_ps[1]  = { top : 2466, left : 3304 };
+    state.vp_ps[2]  = { top : 2466, left : 3440 };
+    state.vp_ps[3]  = { top : 2466, left : 3572 };
+    state.vp_ps[4]  = { top : 2466, left : 3708 };
+    state.vp_ps[5]  = { top : 2466, left : 3840 };
+    state.vp_ps[6]  = { top : 2466, left : 3972 };
+    state.vp_ps[7]  = { top : 2466, left : 4108 };
 
-    state.vp_ps[8]  = { top : 2600, left : 3035 };
-    state.vp_ps[9]  = { top : 2600, left : 3170 };
-    state.vp_ps[10]  = { top : 2600, left : 3305 };
-    state.vp_ps[11]  = { top : 2600, left : 3435 };
-    state.vp_ps[12]  = { top : 2600, left : 3570 };
-    state.vp_ps[13]  = { top : 2600, left : 3705 };
-    state.vp_ps[14]  = { top : 2600, left : 3840 };
-    state.vp_ps[15]  = { top : 2600, left : 3975 };
-    state.vp_ps[16]  = { top : 2600, left : 4110 };
+    state.vp_ps[8]  = { top : 2608, left : 3036 };
+    state.vp_ps[9]  = { top : 2608, left : 3172 };
+    state.vp_ps[10]  = { top : 2608, left : 3304 };
+    state.vp_ps[11]  = { top : 2608, left : 3440 };
+    state.vp_ps[12]  = { top : 2608, left : 3572 };
+    state.vp_ps[13]  = { top : 2608, left : 3708 };
+    state.vp_ps[14]  = { top : 2608, left : 3840 };
+    state.vp_ps[15]  = { top : 2608, left : 3972 };
+    state.vp_ps[16]  = { top : 2608, left : 4108 };
 
-    state.vp_ps[17]  = { top : 2740, left : 3035 };
-    state.vp_ps[18]  = { top : 2740, left : 3170 };
-    state.vp_ps[19]  = { top : 2740, left : 3305 };
-    state.vp_ps[20]  = { top : 2740, left : 3570 };
-    state.vp_ps[21]  = { top : 2740, left : 3840 };
-    state.vp_ps[22]  = { top : 2740, left : 3975 };
-    state.vp_ps[23]  = { top : 2740, left : 4110 };
+    state.vp_ps[17]  = { top : 2748, left : 3036 };
+    state.vp_ps[18]  = { top : 2748, left : 3172 };
+    state.vp_ps[19]  = { top : 2748, left : 3304 };
+    state.vp_ps[20]  = { top : 2748, left : 3572 };
+    state.vp_ps[21]  = { top : 2748, left : 3840 };
+    state.vp_ps[22]  = { top : 2748, left : 3972 };
+    state.vp_ps[23]  = { top : 2748, left : 4108 };
 
-    state.vp_ps[24]  = { top : 2880, left : 3035 };
-    state.vp_ps[25]  = { top : 2880, left : 3170 };
-    state.vp_ps[26]  = { top : 2880, left : 3305 };
-    state.vp_ps[27]  = { top : 2880, left : 3435 };
-    state.vp_ps[28]  = { top : 2880, left : 3570 };
-    state.vp_ps[29]  = { top : 2880, left : 3705 };
-    state.vp_ps[30]  = { top : 2880, left : 3840 };
-    state.vp_ps[31]  = { top : 2880, left : 3975 };
-    state.vp_ps[32]  = { top : 2880, left : 4110 };
+    state.vp_ps[24]  = { top : 2888, left : 3036 };
+    state.vp_ps[25]  = { top : 2888, left : 3172 };
+    state.vp_ps[26]  = { top : 2888, left : 3304 };
+    state.vp_ps[27]  = { top : 2888, left : 3440 };
+    state.vp_ps[28]  = { top : 2888, left : 3572 };
+    state.vp_ps[29]  = { top : 2888, left : 3708 };
+    state.vp_ps[30]  = { top : 2888, left : 3840 };
+    state.vp_ps[31]  = { top : 2888, left : 3972 };
+    state.vp_ps[32]  = { top : 2888, left : 4108 };
 
-    state.vp_ps[33]  = { top : 3025, left : 3035 };
-    state.vp_ps[34]  = { top : 3025, left : 3170 };
-    state.vp_ps[35]  = { top : 3025, left : 3305 };
-    state.vp_ps[36]  = { top : 3025, left : 3435 };
-    state.vp_ps[37]  = { top : 3025, left : 3570 };
-    state.vp_ps[38]  = { top : 3025, left : 3705 };
-    state.vp_ps[39]  = { top : 3025, left : 3840 };
-    state.vp_ps[40]  = { top : 3025, left : 3975 };
+    state.vp_ps[33]  = { top : 3030, left : 3036 };
+    state.vp_ps[34]  = { top : 3030, left : 3172 };
+    state.vp_ps[35]  = { top : 3030, left : 3304 };
+    state.vp_ps[36]  = { top : 3030, left : 3440 };
+    state.vp_ps[37]  = { top : 3030, left : 3572 };
+    state.vp_ps[38]  = { top : 3030, left : 3708 };
+    state.vp_ps[39]  = { top : 3030, left : 3840 };
+    state.vp_ps[40]  = { top : 3030, left : 4042 };
 
     state.space_race_ps = [];
     state.space_race_ps[0] = { top : 510 , left : 3465 }
@@ -6274,11 +6278,11 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     state.defcon = 5;
 
     state.defcon_ps    = [];
-    state.defcon_ps[0] = { top : 2585, left : 1520 };
-    state.defcon_ps[1] = { top : 2585, left : 1675 };
-    state.defcon_ps[2] = { top : 2585, left : 1830 };
-    state.defcon_ps[3] = { top : 2585, left : 1985 };
-    state.defcon_ps[4] = { top : 2585, left : 2140 };
+    state.defcon_ps[0] = { top : 2592, left : 1526 };
+    state.defcon_ps[1] = { top : 2592, left : 1682 };
+    state.defcon_ps[2] = { top : 2592, left : 1838 };
+    state.defcon_ps[3] = { top : 2592, left : 1994 };
+    state.defcon_ps[4] = { top : 2592, left : 2150 };
 
     state.round_ps    = [];
     state.round_ps[0] = { top : 150, left : 3473 };
@@ -6418,80 +6422,80 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     countries['sweden'] = { top : 410, left : 2234 , us : 0 , ussr : 0 , control : 4 , bg : 0 , neighbours : [ 'finland','denmark','norway' ] , region : "europe" , name : "Sweden" };
 
     // MIDDLE EAST
-    countries['libya'] = { top : 1490, left : 2290, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'egypt','tunisia' ] , region : "mideast" , name : "Libya" };
+    countries['libya'] = { top : 1490, left : 2292, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'egypt','tunisia' ] , region : "mideast" , name : "Libya" };    countries['egypt'] = { top : 1510, left : 2520, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'libya','sudan','israel' ], region : "mideast"  , name : "Egypt"};
     countries['egypt'] = { top : 1510, left : 2520, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'libya','sudan','israel' ], region : "mideast"  , name : "Egypt"};
-    countries['lebanon'] = { top : 1205, left : 2660, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'syria','jordan','israel' ], region : "mideast"  , name : "Lebanon"};
-    countries['syria'] = { top : 1205, left : 2870, us : 0 , ussr : 1 , control : 2 , bg : 0 , neighbours : [ 'lebanon','turkey','israel' ], region : "mideast"  , name : "Syria"};
-    countries['israel'] = { top : 1350, left : 2620, us : 1 , ussr : 0 , control : 4 , bg : 1 , neighbours : [ 'egypt','jordan','lebanon','syria' ], region : "mideast" , name : "Israel" };
-    countries['iraq'] = { top : 1350, left : 2870, us : 0 , ussr : 1 , control : 3 , bg : 1 , neighbours : [ 'jordan','iran','gulfstates','saudiarabia' ], region : "mideast" , name : "Iraq" };
-    countries['iran'] = { top : 1350, left : 3082, us : 1 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'iraq','afghanistan','pakistan' ], region : "mideast" , name : "Iran" };
-    countries['jordan'] = { top : 1500, left : 2760, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'israel','lebanon','iraq','saudiarabia' ], region : "mideast" , name : "Jordan" };
-    countries['gulfstates'] = { top : 1500, left : 3010, us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'iraq','saudiarabia' ], region : "mideast" , name : "Gulf States" };
-    countries['saudiarabia'] = { top : 1650, left : 2950, us : 0 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'jordan','iraq','gulfstates' ], region : "mideast" , name : "Saudi Arabia" };
+    countries['lebanon'] = { top : 1206, left : 2660, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'syria','jordan','israel' ], region : "mideast"  , name : "Lebanon"};
+    countries['syria'] = { top : 1202, left : 2876, us : 0 , ussr : 1 , control : 2 , bg : 0 , neighbours : [ 'lebanon','turkey','israel' ], region : "mideast"  , name : "Syria"};
+    countries['israel'] = { top : 1356, left : 2624, us : 1 , ussr : 0 , control : 4 , bg : 1 , neighbours : [ 'egypt','jordan','lebanon','syria' ], region : "mideast" , name : "Israel" };
+    countries['iraq'] = { top : 1356, left : 2874, us : 0 , ussr : 1 , control : 3 , bg : 1 , neighbours : [ 'jordan','iran','gulfstates','saudiarabia' ], region : "mideast" , name : "Iraq" };
+    countries['iran'] = { top : 1356, left : 3090, us : 1 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'iraq','afghanistan','pakistan' ], region : "mideast" , name : "Iran" };
+    countries['jordan'] = { top : 1508, left : 2766, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'israel','lebanon','iraq','saudiarabia' ], region : "mideast" , name : "Jordan" };
+    countries['gulfstates'] = { top : 1504, left : 3014, us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'iraq','saudiarabia' ], region : "mideast" , name : "Gulf States" };
+    countries['saudiarabia'] = { top : 1654, left : 2952, us : 0 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'jordan','iraq','gulfstates' ], region : "mideast" , name : "Saudi Arabia" };
 
 
     // ASIA
-    countries['afghanistan'] = { top : 1250, left : 3345, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'iran','pakistan' ], region : "asia" , name : "Afghanistan" };
-    countries['pakistan'] = { top : 1450, left : 3345, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'iran','afghanistan','india' ], region : "asia" , name : "Pakistan"}
-    countries['india'] = { top : 1552, left : 3585, us : 0 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'pakistan','burma' ], region : "asia" , name : "India"};
-    countries['burma'] = { top : 1580, left : 3855, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'india','laos' ], region : "seasia" , name : "Burma"};
-    countries['laos'] = { top : 1600, left : 4070, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'burma','thailand','vietnam' ], region : "seasia" , name : "Laos"};
-    countries['thailand'] = { top : 1769, left : 3980, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'laos','vietnam','malaysia' ], region : "seasia" , name : "Thailand"};
-    countries['vietnam'] = { top : 1760, left : 4200, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'laos','thailand' ], region : "seasia" , name : "Vietnam"};
-    countries['malaysia'] = { top : 1990, left : 4080, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'thailand','australia','indonesia' ], region : "seasia" , name : "Malaysia"};
-    countries['australia'] = { top : 2442, left : 4450, us : 4 , ussr : 0 , control : 4 , bg : 0 , neighbours : [ 'malaysia' ], region : "asia" , name : "Australia" };
-    countries['indonesia'] = { top : 2176, left : 4450, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'malaysia','philippines' ], region : "seasia" , name : "Indonesia"};
-    countries['philippines'] = { top : 1755, left : 4530, us : 1 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'indonesia','japan' ], region : "seasia" , name : "Philippines"};
-    countries['taiwan'] = { top : 1525, left : 4435, us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'japan','southkorea' ], region : "asia" , name : "Taiwan"};
-    countries['japan'] = { top : 1348, left : 4705, us : 1 , ussr : 0 , control : 4 , bg : 1 , neighbours : [ 'philippines','taiwan','southkorea' ], region : "asia" , name : "Japan"};
-    countries['southkorea'] = { top : 1200, left : 4530, us : 1 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'japan','taiwan','northkorea' ], region : "asia" , name : "South Korea"};
-    countries['northkorea'] = { top : 1050, left : 4480, us : 0 , ussr : 3 , control : 3 , bg : 1 , neighbours : [ 'southkorea' ], region : "asia" , name : "North Korea"};
+    countries['afghanistan'] = { top : 1256, left : 3346, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'iran','pakistan' ], region : "asia" , name : "Afghanistan" };
+    countries['pakistan'] = { top : 1452, left : 3342, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'iran','afghanistan','india' ], region : "asia" , name : "Pakistan"}
+    countries['india'] = { top : 1554, left : 3592, us : 0 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'pakistan','burma' ], region : "asia" , name : "India"};
+    countries['burma'] = { top : 1584, left : 3862, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'india','laos' ], region : "seasia" , name : "Burma"};
+    countries['laos'] = { top : 1606, left : 4076, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'burma','thailand','vietnam' ], region : "seasia" , name : "Laos"};
+    countries['thailand'] = { top : 1760, left : 3986, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'laos','vietnam','malaysia' ], region : "seasia" , name : "Thailand"};
+    countries['vietnam'] = { top : 1762, left : 4206, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'laos','thailand' ], region : "seasia" , name : "Vietnam"};
+    countries['malaysia'] = { top : 1994, left : 4086, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'thailand','australia','indonesia' ], region : "seasia" , name : "Malaysia"};
+    countries['australia'] = { top : 2444, left : 4454, us : 4 , ussr : 0 , control : 4 , bg : 0 , neighbours : [ 'malaysia' ], region : "asia" , name : "Australia" };
+    countries['indonesia'] = { top : 2178, left : 4450, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'malaysia','philippines' ], region : "seasia" , name : "Indonesia"};
+    countries['philippines'] = { top : 1756, left : 4532, us : 1 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'indonesia','japan' ], region : "seasia" , name : "Philippines"};
+    countries['taiwan'] = { top : 1526, left : 4438, us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'japan','southkorea' ], region : "asia" , name : "Taiwan"};
+    countries['japan'] = { top : 1348, left : 4706, us : 1 , ussr : 0 , control : 4 , bg : 1 , neighbours : [ 'philippines','taiwan','southkorea' ], region : "asia" , name : "Japan"};
+    countries['southkorea'] = { top : 1204, left : 4532, us : 1 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'japan','taiwan','northkorea' ], region : "asia" , name : "South Korea"};
+    countries['northkorea'] = { top : 1052, left : 4486, us : 0 , ussr : 3 , control : 3 , bg : 1 , neighbours : [ 'southkorea' ], region : "asia" , name : "North Korea"};
 
 
 
     // CENTRAL AMERICA
-    countries['mexico'] = { top : 1370, left : 175, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'guatemala' ], region : "camerica" , name : "Mexico"};
-    countries['guatemala'] = { top : 1526, left : 360, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'mexico','elsalvador','honduras' ], region : "camerica" , name : "Guatemala"};
-    countries['elsalvador'] = { top : 1690, left : 295, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'honduras','guatemala' ], region : "camerica" , name : "El Salvador"};
-    countries['honduras'] = { top : 1675, left : 515, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'nicaragua','costarica','guatemala','elsalvador' ], region : "camerica" , name : "Honduras"};
-    countries['nicaragua'] = { top : 1675, left : 735, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'costarica','honduras','cuba' ], region : "camerica" , name : "Nicaragua"};
-    countries['costarica'] = { top : 1830, left : 495, us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'honduras', 'panama','nicaragua' ], region : "camerica" , name : "Costa Rica"};
-    countries['panama'] = { top : 1830, left : 738, us : 1 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'colombia','costarica' ], region : "camerica" , name : "Panama"};
-    countries['cuba'] = { top : 1480, left : 750, us : 0 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'haiti','nicaragua' ], region : "camerica" , name : "Cuba"};
+    countries['mexico'] = { top : 1370, left : 178, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'guatemala' ], region : "camerica" , name : "Mexico"};
+    countries['guatemala'] = { top : 1528, left : 368, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'mexico','elsalvador','honduras' ], region : "camerica" , name : "Guatemala"};
+    countries['elsalvador'] = { top : 1690, left : 296, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'honduras','guatemala' ], region : "camerica" , name : "El Salvador"};
+    countries['honduras'] = { top : 1678, left : 518, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'nicaragua','costarica','guatemala','elsalvador' ], region : "camerica" , name : "Honduras"};
+    countries['nicaragua'] = { top : 1678, left : 740, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'costarica','honduras','cuba' ], region : "camerica" , name : "Nicaragua"};
+    countries['costarica'] = { top : 1832, left : 498, us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'honduras', 'panama','nicaragua' ], region : "camerica" , name : "Costa Rica"};
+    countries['panama'] = { top : 1828, left : 744, us : 1 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'colombia','costarica' ], region : "camerica" , name : "Panama"};
+    countries['cuba'] = { top : 1482, left : 754, us : 0 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'haiti','nicaragua' ], region : "camerica" , name : "Cuba"};
     countries['haiti'] = { top : 1620, left : 970, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'cuba','dominicanrepublic' ], region : "camerica" , name : "Haiti"};
-    countries['dominicanrepublic'] = { top : 1620, left : 1180, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'haiti' ], region : "camerica" , name : "Dominican Republic"};
+    countries['dominicanrepublic'] = { top : 1618, left : 1186, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'haiti' ], region : "camerica" , name : "Dominican Republic"};
 
     // SOUTH AMERICA
-    countries['venezuela'] = { top : 1850, left : 1000, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'colombia','brazil' ], region : "samerica" , name : "Venezuela"};
-    countries['colombia'] = { top : 2010, left : 878, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'panama','venezuela','ecuador' ], region : "samerica" , name : "Colombia"};
-    countries['ecuador'] = { top : 2075, left : 650, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'peru','colombia' ], region : "samerica" , name : "Ecuador"};
-    countries['peru'] = { top : 2244, left : 780, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'ecuador','chile','bolivia' ], region : "samerica" , name : "Peru"};
-    countries['chile'] = { top : 2570, left : 885, us : 0 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'peru','argentina' ], region : "samerica" , name : "Chile"};
-    countries['bolivia'] = { top : 2385, left : 1005, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'paraguay','peru' ], region : "samerica" , name : "Bolivia"};
-    countries['argentina'] = { top : 2860, left : 955, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'chile','uruguay','paraguay' ], region : "samerica" , name : "Argentina"};
-    countries['paraguay'] = { top : 2550, left : 1130, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'uruguay','argentina','bolivia' ], region : "samerica" , name : "Paraguay"};
-    countries['uruguay'] = { top : 2740, left : 1200, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'argentina','paraguay','brazil' ], region : "samerica" , name : "Uruguay"};
-    countries['brazil'] = { top : 2230, left : 1385, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'uruguay','venezuela' ], region : "samerica" , name : "Brazil"};
+    countries['venezuela'] = { top : 1850, left : 1006, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'colombia','brazil' ], region : "samerica" , name : "Venezuela"};
+    countries['colombia'] = { top : 2012, left : 886, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'panama','venezuela','ecuador' ], region : "samerica" , name : "Colombia"};
+    countries['ecuador'] = { top : 2080, left : 654, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'peru','colombia' ], region : "samerica" , name : "Ecuador"};
+    countries['peru'] = { top : 2248, left : 780, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'ecuador','chile','bolivia' ], region : "samerica" , name : "Peru"};
+    countries['chile'] = { top : 2570, left : 888, us : 0 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'peru','argentina' ], region : "samerica" , name : "Chile"};
+    countries['bolivia'] = { top : 2386, left : 1010, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'paraguay','peru' ], region : "samerica" , name : "Bolivia"};
+    countries['argentina'] = { top : 2862, left : 962, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'chile','uruguay','paraguay' ], region : "samerica" , name : "Argentina"};
+    countries['paraguay'] = { top : 2552, left : 1136, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'uruguay','argentina','bolivia' ], region : "samerica" , name : "Paraguay"};
+    countries['uruguay'] = { top : 2742, left : 1206, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'argentina','paraguay','brazil' ], region : "samerica" , name : "Uruguay"};
+    countries['brazil'] = { top : 2232, left : 1390, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'uruguay','venezuela' ], region : "samerica" , name : "Brazil"};
 
     // AFRICA
-    countries['morocco'] = { top : 1400, left : 1710, us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'westafricanstates','algeria','spain' ], region : "africa" , name : "Morocco"};
-    countries['algeria'] = { top : 1330, left : 1935, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'tunisia','morocco','france','saharanstates' ], region : "africa" , name : "Algeria"};
-    countries['tunisia'] = { top : 1310, left : 2160, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'libya','algeria' ], region : "africa" , name : "Tunisia"};
-    countries['westafricanstates'] = { top : 1595, left : 1690, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'ivorycoast','morocco' ], region : "africa" , name : "West African States"};
-    countries['saharanstates'] = { top : 1650, left : 2025, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'algeria','nigeria' ], region : "africa" , name : "Saharan States"};
-    countries['sudan'] = { top : 1690, left : 2550, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'egypt','ethiopia' ], region : "africa" , name : "Sudan"};
-    countries['ivorycoast'] = { top : 1885, left : 1835, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'nigeria','westafricanstates' ], region : "africa" , name : "Ivory Coast"};
-    countries['nigeria'] = { top : 1859, left : 2110, us : 0 , ussr : 0 , control : 1 , bg : 1 , neighbours : [ 'ivorycoast','cameroon','saharanstates' ], region : "africa" , name : "Nigeria"};
-    countries['ethiopia'] = { top : 1845, left : 2710, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'sudan','somalia' ], region : "africa" , name : "Ethiopia"};
-    countries['somalia'] = { top : 1910, left : 2955, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'ethiopia','kenya' ], region : "africa" , name : "Somalia"};
-    countries['cameroon'] = { top : 2035, left : 2210, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'zaire','nigeria' ], region : "africa" , name : "Cameroon"};
-    countries['zaire'] = { top : 2110, left : 2470, us : 0 , ussr : 0 , control : 1 , bg : 1 , neighbours : [ 'angola','zimbabwe','cameroon' ], region : "africa" , name : "Zaire"};
-    countries['kenya'] = { top : 2045, left : 2735, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'seafricanstates','somalia' ], region : "africa" , name : "Kenya"};
-    countries['angola'] = { top : 2290, left : 2280, us : 0 , ussr : 0 , control : 1 , bg : 1 , neighbours : [ 'southafrica','botswana','zaire' ], region : "africa" , name : "Angola"};
-    countries['seafricanstates'] = { top : 2250, left : 2760, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'zimbabwe','kenya' ], region : "africa" , name : "Southeast African States"};
-    countries['zimbabwe'] = { top : 2365, left : 2545, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'seafricanstates','botswana','zaire' ], region : "africa" , name : "Zimbabwe"};
-    countries['botswana'] = { top : 2520, left : 2475, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'southafrica','angola','zimbabwe' ], region : "africa" , name : "Botswana"};
-    countries['southafrica'] = { top : 2690, left : 2370, us : 1 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'angola','botswana' ], region : "africa" , name : "South Africa"};
+    countries['morocco'] = { top : 1400, left : 1718, us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'westafricanstates','algeria','spain' ], region : "africa" , name : "Morocco"};
+    countries['algeria'] = { top : 1332, left : 1938, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'tunisia','morocco','france','saharanstates' ], region : "africa" , name : "Algeria"};
+    countries['tunisia'] = { top : 1314, left : 2166, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'libya','algeria' ], region : "africa" , name : "Tunisia"};
+    countries['westafricanstates'] = { top : 1596, left : 1696, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'ivorycoast','morocco' ], region : "africa" , name : "West African States"};
+    countries['saharanstates'] = { top : 1650, left : 2028, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'algeria','nigeria' ], region : "africa" , name : "Saharan States"};
+    countries['sudan'] = { top : 1690, left : 2556, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'egypt','ethiopia' ], region : "africa" , name : "Sudan"};
+    countries['ivorycoast'] = { top : 1886, left : 1838, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'nigeria','westafricanstates' ], region : "africa" , name : "Ivory Coast"};
+    countries['nigeria'] = { top : 1862, left : 2114, us : 0 , ussr : 0 , control : 1 , bg : 1 , neighbours : [ 'ivorycoast','cameroon','saharanstates' ], region : "africa" , name : "Nigeria"};
+    countries['ethiopia'] = { top : 1846, left : 2714, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'sudan','somalia' ], region : "africa" , name : "Ethiopia"};
+    countries['somalia'] = { top : 1914, left : 2956, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'ethiopia','kenya' ], region : "africa" , name : "Somalia"};
+    countries['cameroon'] = { top : 2036, left : 2214, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'zaire','nigeria' ], region : "africa" , name : "Cameroon"};
+    countries['zaire'] = { top : 2110, left : 2474, us : 0 , ussr : 0 , control : 1 , bg : 1 , neighbours : [ 'angola','zimbabwe','cameroon' ], region : "africa" , name : "Zaire"};
+    countries['kenya'] = { top : 2046, left : 2738, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'seafricanstates','somalia' ], region : "africa" , name : "Kenya"};
+    countries['angola'] = { top : 2290, left : 2282, us : 0 , ussr : 0 , control : 1 , bg : 1 , neighbours : [ 'southafrica','botswana','zaire' ], region : "africa" , name : "Angola"};
+    countries['seafricanstates'] = { top : 2250, left : 2766, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'zimbabwe','kenya' ], region : "africa" , name : "Southeast African States"};
+    countries['zimbabwe'] = { top : 2364, left : 2550, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'seafricanstates','botswana','zaire' ], region : "africa" , name : "Zimbabwe"};
+    countries['botswana'] = { top : 2524, left : 2478, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'southafrica','angola','zimbabwe' ], region : "africa" , name : "Botswana"};
+    countries['southafrica'] = { top : 2690, left : 2374, us : 1 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'angola','botswana' ], region : "africa" , name : "South Africa"};
 
     for (var i in countries) { countries[i].place = 0; }
 
@@ -9414,7 +9418,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
             revealed += ", "; 
             keys += " ";
           }
-          revealed += this.game.deck[0].cards[this.game.deck[0].hand[i]].name;
+          revealed += this.cardToText(this.game.deck[0].hand[i]);
           keys += this.game.deck[0].hand[i];
         }
 

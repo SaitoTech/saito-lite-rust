@@ -170,6 +170,9 @@ img {
   background-color: yellow;
   background-size: contain;
 }
+.religious_conflict_sheet_tile:hover {
+  opacity: 0.2;
+}
 
 .gameboard {
   background-image: url("/his/img/gameboard-large.png");

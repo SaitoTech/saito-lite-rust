@@ -312,7 +312,7 @@ i.link_icon.private {
   padding: 1.5rem;
   border-radius: 1rem;
   max-width: 90vw;
-  width: 60rem;
+  min-width: 60rem;
   font-size: 2rem;
 }
 

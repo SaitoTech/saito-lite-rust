@@ -146,9 +146,6 @@
 
     for (let i = 0; i < this.game.state.players_info.length; i++) {
       for (let ii = 0; ii < this.game.state.players_info[i].factions.length; ii++) {
-
-console.log(i + " -- " + ii);
-
         factions[this.game.state.players_info[i].factions[ii]] = {
 	  faction : this.game.state.players_info[i].factions[ii] ,
 	  vp_base : 0 ,
@@ -162,7 +159,6 @@ console.log(i + " -- " + ii);
 	};
       }
     }
-console.log("calculating vp...");
     //
     // let factions calculate their VP
     //
@@ -173,18 +169,15 @@ console.log("calculating vp...");
       factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
     }
 
-console.log("calculating vp... 2");
-
     //
     // calculate keys controlled
     //
     for (let f in factions) {
       factions[f].keys = this.returnNumberOfKeysControlledByFaction(f);
       if (f === "protestant") {
-	factions[f].religious = this.returnNumberOfSpacesControlledByProtestants();
+	factions[f].religious = this.returnNumberOfProtestantSpacesInLanguageZone();
       }
     }
-console.log("calculating vp... 3");
 
     //
     // military victory
@@ -213,14 +206,12 @@ console.log("calculating vp... 3");
         factions['england'].details = "military victory";
       }
     }
-console.log("calculating vp... 4");
     if (factions['papacy']) {
       if (factions['papacy'].keys >= this.game.state.autowin_papacy_keys_controlled) {
         factions['papacy'].victory = 1;
         factions['papacy'].details = "military victory";
       }
     }
-console.log("calculating vp... 5");
 
     //
     // religious victory
@@ -387,7 +378,9 @@ console.log("calculating vp... 5");
     state.tmp_protestant_reformation_bonus = 0;
     state.tmp_catholic_reformation_bonus = 0;
     state.tmp_protestant_counter_reformation_bonus = 0;
+    state.tmp_protestant_reformation_bonus_spaces = [];
     state.tmp_catholic_counter_reformation_bonus = 0;
+    state.tmp_catholic_counter_reformation_bonus_spaces = [];
     state.tmp_papacy_may_specify_debater = 0;
     state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
 

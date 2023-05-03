@@ -24,6 +24,9 @@ class InviteManager {
 		//
 		app.connection.on("arcade-invite-manager-render-request", () => {
 			if (!this.mod.is_game_initializing) {
+				
+				this.mod.purgeOldGames();
+
 				this.render();
 			}
 		});

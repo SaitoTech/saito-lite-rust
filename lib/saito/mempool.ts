@@ -250,14 +250,12 @@ class Mempool {
 
     // stop if inadequate golden ticket support?
     if (!does_chain_meet_golden_ticket_requirements) {
-      console.log(
-        "ERROR 850293: we do not have enough golden ticket support, waiting before bundling..."
-      );
-      if (!this.app.miner.isMining()) {
-        this.app.miner.startMining();
-      }
+      console.log("ERROR 850293: we do not have enough golden ticket support, waiting before bundling...");
+      this.app.miner.startMining();
       return;
     }
+
+console.log("enough mining support... continuing");
 
     // stop if already bundling?
     if (this.bundling_active === true) {
@@ -280,22 +278,19 @@ class Mempool {
 
     // create block
     try {
-      // create the block
       const block = new Block(this.app);
       const previous_block_hash = this.app.blockring.returnLatestBlockHash();
-
-      // generate and sign
-      console.log("blockring reports PBH: " + previous_block_hash);
       await block.generate(previous_block_hash);
-
-      // and add to mempool
+console.log("about to add new block...");
       await this.addBlock(block);
+console.log("done adding new block...");
     } catch (err) {
       console.error("ERROR 781029: unexpected problem bundling block in mempool: ", err);
     }
 
     // reset
     this.bundling_active = false;
+
   }
 
   canBundleBlock(): boolean {
@@ -450,6 +445,7 @@ class Mempool {
 
   containsValidGoldenTicket(target_hash: string): boolean {
     if (this.mempool.golden_tickets.length > 0) {
+console.log(" mempool contains valid golden ticket... ");
       for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
         const gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
         if (gt.target_hash === target_hash) {
@@ -457,7 +453,13 @@ class Mempool {
         }
       }
     }
+    //
+    // TEST - empty golden tickets array in case this is the cause of the bug where
+    // the server just hangs producing a block.
+    //
+    this.mempool.golden_tickets = [];
     return false;
+
   }
 
   async initialize() {
