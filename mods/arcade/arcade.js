@@ -48,6 +48,9 @@ class Arcade extends ModTemplate {
     this.affix_callbacks_to = [];
     this.services = [{ service: "arcade", domain: "saito" }];
 
+    this.invite_cutoff  = 3500000;
+    this.game_cutoff    = 600000000;
+
     this.theme_options = {
       lite: "fa-solid fa-sun",
       dark: "fa-solid fa-moon",
@@ -170,8 +173,8 @@ class Arcade extends ModTemplate {
     }
     let arcade_self = this;
 
-    let cutoff1 = new Date().getTime() - 3500000;
-    let cutoff2 = new Date().getTime() - 600000000;
+    let cutoff1 = new Date().getTime() - this.invite_cutoff;
+    let cutoff2 = new Date().getTime() - this.game_cutoff; 
 
     //
     // load open games from server
@@ -1502,6 +1505,21 @@ class Arcade extends ModTemplate {
       });
     }
   }
+
+  purgeOldGames(){
+    let now = new Date().getTime();
+    for (let key in this.games) {
+      let cutoff = now - this.invite_cutoff;
+      if (key == "active" || key == "over"){
+        cutoff = now - this.game_cutoff;
+      }
+      
+      this.games[key] = this.games[key].filter((game) => {
+        return game.msg?.ts > cutoff;
+      });
+    }
+  }
+
 
   purgeBadGamesFromWallet() {
     if (this.app.options.games) {

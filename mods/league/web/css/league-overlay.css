@@ -184,7 +184,7 @@ span.attention {
 
 .league_recent_game, .game-manager .saito-table-header {
   display: grid;
-  grid-template-columns: repeat(3, auto);
+  grid-template-columns: repeat(3, 1fr);
   grid-gap: 1rem;
   text-align: center;
 }
