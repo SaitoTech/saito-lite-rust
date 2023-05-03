@@ -390,9 +390,11 @@ class Stun extends ModTemplate {
 
     // onchain
     let newtx = this.app.wallet.createUnsignedTransaction();
-    recipients.forEach((recipient) => {
-      newtx.transaction.to.push(new saito.default.slip(recipient));
-    });
+    if (recipients) {
+      recipients.forEach((recipient) => {
+        newtx.transaction.to.push(new saito.default.slip(recipient));
+      });
+    }
     newtx.msg.module = "Stun";
     newtx.msg.request = request;
     newtx.msg.data = _data;

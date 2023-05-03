@@ -46,6 +46,8 @@ class Settlers extends GameTemplate {
     this.grace_window = 24;
     // temp variable to help with post-splash flash
     this.currently_active_player = 0;
+
+    this.enable_observer = false;
   }
 
        

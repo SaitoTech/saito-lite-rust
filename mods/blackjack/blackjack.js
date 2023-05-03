@@ -41,7 +41,6 @@ class Blackjack extends GameTableTemplate {
     //
     // ADD MENU
     //
-    this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");
 
     this.menu.addSubMenuOption("game-info", {
@@ -88,14 +87,6 @@ class Blackjack extends GameTableTemplate {
     this.updateStatus("Waiting for other players to sit down to start playing");
   }
 
-  /* Opt out of letting League create a default*/
-  respondTo(type){
-    //if (type == "default-league") {
-    //  return null;
-    //}
-    return super.respondTo(type);
-  }
-
 
 
   //
@@ -117,7 +108,7 @@ class Blackjack extends GameTableTemplate {
       this.game.state.player[i].split = [];
     }
 
-console.log("PLAYER STATE: " + JSON.stringify(this.game.state.player));
+    console.log("PLAYER STATE: " + JSON.stringify(this.game.state.player));
 
     this.game.state.round = 1;
 
@@ -305,7 +296,6 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state.player));
     //but if too many players want to join they may want to take the seat of an eliminated player
     this.game.queue.push("PLAYERS");
     this.game.queue.push("checkplayers");     
-    this.game.queue.push("PLAYERS");
 
     if (this.game.crypto) {
       msg += (this.game.crypto)? " and settling bets..." : "...";

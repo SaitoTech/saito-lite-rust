@@ -1263,6 +1263,9 @@ console.log("LATEST MOVE: " + mv);
         //
         // card is discarded, nothing happens
         //
+	this.game.queue.splice(qe, 1);
+	return 1;
+
       } else {
         if (mv[1] == "us") {
           this.game.state.vp -= this.game.state.wargames_concession;
@@ -1282,8 +1285,6 @@ console.log("LATEST MOVE: " + mv);
           }
 	  return 0;
         }
-
-
 
         if (this.game.state.vp > 0) {
           this.endGame(this.game.players[1],"Wargames");
@@ -2570,7 +2571,7 @@ console.log("LATEST MOVE: " + mv);
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["abmtreaty", "cubanmissile", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["wargames", "starwars", "naziscientist", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["che", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
         }
