@@ -242,6 +242,7 @@ span.attention {
 
 .league-overlay-leaderboard {
   min-width: min(40rem, 100%);
+  padding-top: 0px; // keeps scrolled content from showing above sticky header
 }
 
 .alert_email, .alert_identifier {
