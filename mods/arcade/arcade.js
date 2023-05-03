@@ -19,7 +19,7 @@ class Arcade extends ModTemplate {
     //
     // DEBUGGING MODE
     //
-    this.debug = true;
+    this.debug = false;
 
     this.name = "Arcade";
 
