@@ -49,8 +49,21 @@ class Crypto extends ModTemplate {
           callback : async (app, game_mod) => {
 	    this.attachStyleSheets();
 	    this.ticker = ac[i].ticker;
-	    this.overlay.render((amount) => {
+	    this.overlay.render(async (amount) => {
               game_mod.menu.hideSubMenus();
+
+    	      let ticker = ac[i].ticker;
+	      let cryptomod = game_mod.app.wallet.returnCryptoModuleByTicker(ticker);
+	      let current_balance = await cryptomod.returnBalance();
+
+	      //
+	      // if proposing, you should be ready
+	      //
+	      if (Number(current_balance) < Number(amount)) {
+		alert("You do not have this amount of "+ticker+" available yourself. Please deposit before inviting others to a peer-to-peer crypto game.");
+		return;
+	      }
+
       	      cm.enableCrypto(game_mod, game_mod.game.id, ac[i].ticker, amount);
 	    });
           }
