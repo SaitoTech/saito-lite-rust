@@ -1129,24 +1129,23 @@ ul.horizontal_list li.iconoption {
 
 .saitoa, .player-box {
   border: 5px solid #424143;
-  background-color: /*#edddb8;*/
-  #d3c38df5;
+  background-color: #d3c38df5;
   padding: 1rem;
-  /*background-image: url(/settlers/img/bkg.png);*/
   border-image: url(/settlers/img/border.png);
   border-image-slice: 51;
   border-image-width: 21px;
   border-image-repeat: stretch;
   border-style: solid;
-  border-image-outset: 10px;
+  border-image-outset: 7px;
   color: var(--text-color);
-  /*background-blend-mode: darken;*/
 }
 
+/*
 .saitoa {
   min-width: min(500px, 95vw);
   min-height: min(225px, 80vw);
 }
+*/
 
 .game-menu {
   background-color: #d3c38df5;

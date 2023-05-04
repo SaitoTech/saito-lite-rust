@@ -159,6 +159,7 @@ class Settlers extends GameTemplate {
     // add the HUD so we can leverage it
     //
     this.hud.render();
+    document.querySelector('#hud')?.classList.add('saitoa');
   
 
 

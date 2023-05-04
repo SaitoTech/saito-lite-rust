@@ -347,7 +347,7 @@
       settlers_self.canPlayerBuildCity(settlers_self.game.player) ||
       settlers_self.canPlayerBuyCard(settlers_self.game.player)
     ) {
-      html += `<li class="option" id="spend">spend resources</li>`;
+      html += `<li class="option" id="spend">spend</li>`;
       can_do_something = true;
     } else {
       //html += `<li class="option noselect" id="nospend">spend resources</li>`;
