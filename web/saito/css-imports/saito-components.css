@@ -1,14 +1,15 @@
-.saito-notification-counter {
-  position: absolute;
-  top: -0.5rem;
-  right: 0;
-  font-size: 1.25rem;
-  line-height: 2rem;
-  text-align: center;
+/*  alert  */
+
+.saito-notification-dot {
   width: 2rem;
   height: 2rem;
   border-radius: 0.5rem;
-  color: var(--saito-white);
   background-color: var(--saito-primary);
-  overflow: auto;
+  color: var(--saito-background-color);
+  position: absolute;
+  bottom: 2.5rem;
+  left: 3.5rem;
+  text-align: center;
+  line-height: 2.2rem;
 }
+

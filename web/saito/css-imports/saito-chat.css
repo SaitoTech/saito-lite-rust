@@ -1,5 +1,6 @@
 .chat-manager {
   margin: 0 0 0 1.5rem;
+  max-height: 25vh;
 }
 
 .chat-manager .saito-userline {
@@ -25,7 +26,7 @@
   height: 50rem;
   width: 36rem;
   border-radius: 0.5rem;
-  z-index: 15;
+  z-index: 14; /* So weird, at 15 it blocks the z-index 20 slide in menu*/
   position: fixed;
   bottom: 0px;
   right: 0px;
