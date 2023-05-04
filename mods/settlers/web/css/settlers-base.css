@@ -6,7 +6,6 @@
   --text-color: #331800;
 }
 
-
 .mobile-log-tab {
   background-color: #d3c38df5;
   color: #424143;
@@ -28,7 +27,6 @@ p {
   overflow: unset;
 }
 
-
 .settlers-user {
   display: grid;
   column-gap: 1rem;
@@ -39,7 +37,8 @@ p {
   width: 100%;
   position: relative;
 }
-.settlers-userline > .saito-userline {
+
+.settlers-userline>.saito-userline {
   grid-column-start: 2;
   grid-column-end: span 1;
   grid-row-start: 2;
@@ -47,11 +46,9 @@ p {
   font-size: 1.4rem;
 }
 
-
 .tip {
   width: unset;
 }
-
 
 .tip .tiptext {
   min-width: 100px;
@@ -70,7 +67,7 @@ p {
   padding: 5px;
 }
 
-#cleartrade{
+#cleartrade {
   cursor: pointer;
   font-size: 20px;
 }
@@ -88,7 +85,7 @@ p {
   text-align: center;
 }
 
-.construction-costs.saitoa{
+.construction-costs.saitoa {
   min-width: unset;
   padding: 1rem;
 }
@@ -145,7 +142,7 @@ dt {
   margin-bottom: 0.5em;
 }
 
-.saito-address{
+.saito-address {
   color: unset;
 }
 
@@ -154,18 +151,20 @@ dt {
 }
 
 /*Richard background*/
+
 body {
   background: linear-gradient(-75deg, #369, #58b, #58b, #369);
   background-size: 100% 100%;
 }
+
 /* background moved to body so board is resizable */
+
 .gameboard {
   width: 100vw;
   height: 100vh;
   transition: background 2s;
   background-blend-mode: multiply;
 }
-
 
 #game-hexgrid {
   transform-origin: center;
@@ -179,7 +178,6 @@ body {
   cursor: grab;
   background-color: rgba(200, 200, 240, 0.1);
 }
-
 
 .player-box {
   background-color: #444E;
@@ -309,12 +307,11 @@ body {
 }
 
 .city img, .village img {
-    transform: scale(1.4);
-    margin: 0 0 3rem;
-    position: relative;
-    top: -4px;
+  transform: scale(1.4);
+  margin: 0 0 3rem;
+  position: relative;
+  top: -4px;
 }
-
 
 .rhover:hover, .city.empty.rhover:hover {
   border: 1px solid white;
@@ -407,10 +404,10 @@ body {
 }
 
 .road5 {
-    transform: rotate(90deg);
-    left: -34%;
-    top: 43%;
-    width: 62%;
+  transform: rotate(90deg);
+  left: -34%;
+  top: 43%;
+  width: 62%;
 }
 
 .road6 {
@@ -473,7 +470,6 @@ body {
   top: -4px;
 }
 
-
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
 
 .p1 {
@@ -492,7 +488,7 @@ body {
   background-color: var(--p4-color);
 }
 
-.saito-userline{
+.saito-userline {
   width: 100%;
 }
 
@@ -512,20 +508,23 @@ body {
   background-color: var(--p4-color);
 }*/
 
-.player-box.c1 .saito-identicon-box{
+.player-box.c1 .saito-identicon-box {
   border: 5px solid var(--p1-color);
 }
-.player-box.c2 .saito-identicon-box{
+
+.player-box.c2 .saito-identicon-box {
   border: 5px solid var(--p2-color);
 }
-.player-box.c3 .saito-identicon-box{
+
+.player-box.c3 .saito-identicon-box {
   border: 5px solid var(--p3-color);
 }
-.player-box.c4 .saito-identicon-box{
+
+.player-box.c4 .saito-identicon-box {
   border: 5px solid var(--p4-color);
 }
 
-.player-box .saito-identicon{
+.player-box .saito-identicon {
   width: 100%;
   height: unset;
 }
@@ -594,10 +593,15 @@ input[type="checkbox"] {
 }
 
 .bandit {
-  background-color: black;
-  color: darkgray;
-  border-color: black;
-  box-shadow: 0 0 25px 45px rgba(0, 0, 0, 0.75);
+  color: #FFF9;
+  background-image: url(/settlers/img/icons/bandit.png);
+  background-size: cover;
+  overflow: visible;
+  border: none;
+  width: 50%;
+  height: 40%;
+  box-shadow: 0 0 32px 32px #000b;
+  background-color: #000b;
 }
 
 .city.p1 {
@@ -620,7 +624,6 @@ input[type="checkbox"] {
   color: var(--p4-color);
 }
 
-
 /*********
  * 
  * Trading overlays
@@ -633,10 +636,9 @@ input[type="checkbox"] {
   min-width: 50vw;
   max-width: 80vw;
   max-height: 70vh;
-
 }
 
-.trade_overlay > div {
+.trade_overlay>div {
   width: 100%;
 }
 
@@ -680,53 +682,56 @@ input[type="checkbox"] {
 }
 
 /* Disable trade submit button in overlays */
+
 .trade_overlay_button.noselect {
   background-color: lightgrey;
   border: unset;
   color: unset;
   cursor: unset;
 }
+
 /*.trade_overlay_button.noselect:hover {
   background-color: lightgrey;
   color: unset;
 }*/
 
-/* Disable resource selection in trade overlays */ 
+/* Disable resource selection in trade overlays */
+
 .noselect .icon {
   filter: grayscale(100%) brightness(0.55);
   cursor: default;
 }
-
 
 .option.noselect {
   font-style: italic;
   color: lightgrey;
 }
 
-
 /* TradeOverlay --> specify numbers */
+
 .trade_area {
   height: 72px;
 }
 
-.trade_area > div:first-child{
+.trade_area>div:first-child {
   text-transform: uppercase;
   text-align: center;
 }
 
-.trade_area.select > div:first-child{
+.trade_area.select>div:first-child {
   cursor: pointer;
 }
 
-.trade_overlay .trade_area .icon:hover{
+.trade_overlay .trade_area .icon:hover {
   border-color: grey;
   filter: grayscale(50%);
 }
 
-.offer_icons{
+.offer_icons {
   position: relative;
 }
-.icon_multiplier{
+
+.icon_multiplier {
   position: absolute;
   bottom: 0;
   right: 2px;
@@ -745,7 +750,6 @@ input[type="checkbox"] {
 /*.tbd .icon{
   height: 1.25em;
 }*/
-
 
 .horizontal_list {
   display: flex;
@@ -767,7 +771,6 @@ ul.horizontal_list li.iconoption {
   background: unset;
   min-width: 20%;
 }
-
 
 .status-message {
   width: unset;
@@ -959,7 +962,6 @@ ul.horizontal_list li.iconoption {
   border-radius: 5px;
 }
 
-
 .player-notice {
   line-height: 1.25em;
   display: flex;
@@ -969,12 +971,12 @@ ul.horizontal_list li.iconoption {
   font-weight: 800;
 }
 
-.player-notice + .tbd {
+.player-notice+.tbd {
   border-top: 1px dashed var(--text-color);
   padding-top: 0.5em;
 }
 
-.tbd ul{
+.tbd ul {
   margin-top: 0.5em;
 }
 
@@ -1015,16 +1017,20 @@ ul.horizontal_list li.iconoption {
   padding: 2rem 5rem !important;
 }
 
- /* Hide scrollbar for Chrome, Safari and Opera */
+/* Hide scrollbar for Chrome, Safari and Opera */
+
 .rules-overlay::-webkit-scrollbar {
   display: none;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
+
 .rules-overlay {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-} 
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
 
 .rules-overlay h2 {
   margin-top: 1em;
@@ -1085,7 +1091,7 @@ ul.horizontal_list li.iconoption {
   }
 }
 
-@media (max-aspect-ratio : 8/7) {
+@media (max-aspect-ratio: 8/7) {
   .opponents {
     width: 75vw;
     top: unset;
@@ -1123,7 +1129,8 @@ ul.horizontal_list li.iconoption {
 
 .saitoa, .player-box {
   border: 5px solid #424143;
-  background-color: /*#edddb8;*/ #d3c38df5;
+  background-color: /*#edddb8;*/
+  #d3c38df5;
   padding: 1rem;
   /*background-image: url(/settlers/img/bkg.png);*/
   border-image: url(/settlers/img/border.png);
@@ -1136,9 +1143,8 @@ ul.horizontal_list li.iconoption {
   /*background-blend-mode: darken;*/
 }
 
-
 .saitoa {
-  min-width: min(500px,95vw);
+  min-width: min(500px, 95vw);
   min-height: min(225px, 80vw);
 }
 
@@ -1147,16 +1153,12 @@ ul.horizontal_list li.iconoption {
   color: var(--text-color);
 }
 
-.game-menu-sub-option, .game-menu-sub-sub-option{
+.game-menu-sub-option, .game-menu-sub-sub-option {
   background-color: #d3c38dee;
 }
 
-
-
-
 @media screen and (orientation: portrait) and (max-width: 600px) {
-  .gameboard{
+  .gameboard {
     transform: scale(0.6);
   }
 }
-

@@ -1838,6 +1838,9 @@ console.log("LATEST MOVE: " + mv);
         if (this.game.player == 2 && mv[2] == "us")   {
           roll = this.rollDice(6);
         }
+        if (this.game.player == 0) {
+          roll = this.rollDice(6); 
+        }
       }
       this.game.queue.splice(qe, 1);
     }
