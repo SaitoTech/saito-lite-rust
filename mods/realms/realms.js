@@ -81,14 +81,14 @@ class Realms extends GameTemplate {
 			this.game.state = this.returnState();
 
 			this.game.queue.push("round");
-			//this.game.queue.push("PLAY\t2");
-			//this.game.queue.push("DEAL\t2\t2\t1");
-			//this.game.queue.push("PLAY\t1");
+			this.game.queue.push("PLAY\t2");
+			this.game.queue.push("DEAL\t2\t2\t1");
+			this.game.queue.push("PLAY\t1");
 			this.game.queue.push("READY");
 
 
 			//First player to go, doesn't get to draw an 8th card at the beginning of their turn
-			this.game.queue.push("DEAL\t1\t1\t6");
+			this.game.queue.push("DEAL\t1\t1\t7");
 			this.game.queue.push("DEAL\t2\t2\t7");
 
 			// encrypt and shuffle player-2 deck
@@ -324,6 +324,11 @@ class Realms extends GameTemplate {
 		});
 
 		//
+		// players may interact with cards on the board
+		//
+		
+
+		//
 		// players may also end their turn
 		//
 		document.getElementById("end-turn").onclick = (e) => {
@@ -347,13 +352,16 @@ class Realms extends GameTemplate {
 		let base_id = `p${player}-card-`;
 
 		let max = 0;
-		let existing_cards = document.querySelectorAll(destination + " .cardslot");
+
+		let div = document.querySelector(destination + ` .cardslot[data-card="${cardkey}"]`);
+		if (div) {
+			console.log("Card slot already exists: " + div.id);
+			return div.id;
+		}
+
+		let existing_cards = document.querySelectorAll(".cardslot");
 		for (let div of existing_cards){
 			if (div.id.includes(base_id)){
-				if (div.dataset.card == cardkey){
-					console.log("Card slot already exists: " + div.id);
-					return div.id;
-				}
 				let temp = parseInt(div.id.replace(base_id, ""));
 				if (temp > max) {
 					max = temp;
@@ -383,7 +391,7 @@ class Realms extends GameTemplate {
 													{insert: 1, resize: 1},
 													()=> { 
 														$(".animated_elem").remove(); 
-														//$("#"+source_id).remove(); 
+														$("#"+source_id).remove(); 
 														if (destination === ".graveyard") {
 															$(".graveyard").children().fadeOut();
 														}
@@ -392,7 +400,7 @@ class Realms extends GameTemplate {
 															let offset = 0;
 															for (let child of destination.children){
 																child.style.top = offset + "px";
-																offset += 10;
+																offset += 25;
 															}
 														}
 													}
@@ -405,7 +413,7 @@ class Realms extends GameTemplate {
 
 		let destObj = document.getElementById(destination) || document.querySelector(destination);
 
-		this.moveGameElement(this.createGameElement(`<img src="${this.card_library[card_id].img}" id="${card_id}" class="cardimg" />`, ".opponent_hand", ".status-cardbox .hud-card"), 
+		this.moveGameElement(this.createGameElement(this.cardToHTML(this.card_library[card_id]), ".opponent_hand", ".status-cardbox .hud-card"), 
 				destObj, {resize: 1, insert: 1}, ()=> { $(".animated_elem").remove();});	
 
 		//"#summoning_stack > div:last-child"
@@ -443,26 +451,47 @@ class Realms extends GameTemplate {
 		this.endTurn();
 	}
 
+	addCardToCardSlot(card_meta_obj) {
+
+    let obj = document.getElementById(card_meta_obj.uuid);
+    if (obj) {
+      this.app.browser.addElementToDom(this.cardToHTML(card_meta_obj.card, card_meta_obj.tapped), obj);
+    	
+			if (obj?.children?.length > 1) {
+				let offset = 0;
+				for (let child of obj.children){
+					child.style.top = offset + "px";
+					offset += 25;
+				}
+			}
+
+    }
+
+	}
+
 	displayBoard() {
 		let game_self = this;
-
+		
 		$("#summoning_stack").html("");
 		for (let summoned_card of this.game.state.summoning_stack){
-			this.app.browser.addElementToSelector(this.cardToHTML(summoned_card.key, summoned_card.uuid), "#summoning_stack");
+			summoned_card.uuid = this.insertCardSlot(this.game.player, summoned_card.key, "#summoning_stack");
+			this.addCardToCardSlot(summoned_card);
 		}
 
 		let permanents = ["land", "creature", "artifact"];
 		$("#me").html("");
 		for (let field of permanents){
 			for (let summoned_card of this.game.state.players[this.game.player-1][field]){
-				this.app.browser.addElementToSelector(this.cardToHTML(summoned_card.key, summoned_card.uuid), "#me");
+				summoned_card.uuid = this.insertCardSlot(this.game.player, summoned_card.key, "#me");
+				this.addCardToCardSlot(summoned_card);
 			}
 		}
 
 		$("#opponent").html("");
 		for (let field of permanents){
 			for (let summoned_card of this.game.state.players[2-this.game.player][field]){
-				this.app.browser.addElementToSelector(this.cardToHTML(summoned_card.key, summoned_card.uuid), "#opponent");
+				summoned_card.uuid = this.insertCardSlot(this.game.player, summoned_card.key, "#opponent");
+				this.addCardToCardSlot(summoned_card);
 			}
 		}
 
@@ -478,13 +507,9 @@ class Realms extends GameTemplate {
 	//
 	// this controls the display of the card
 	//
-	cardToHTML(cardkey, uuid, tapped = false) {
-		let card = this.card_library[cardkey];
-		
+	cardToHTML(card, tapped = false) {
 		return `
-      <div class="cardslot ${(tapped)?"tapped":""}" id="${uuid}" data-card="${cardkey}">
-        <img src="${card.img}" class="cardimg" id="${cardkey}"/>
-      </div>
+      <img src="${card.img}" class="cardimg${(tapped)?" tapped":""}" id="${card.key}"/>
     `;
 	}
 }

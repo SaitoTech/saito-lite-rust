@@ -30,6 +30,10 @@ img.cardimg {
   width: 100%;
 }
 
+.cardslot img.cardimg {
+  position: absolute;
+}
+
 .end-turn {
   cursor: pointer;
   text-decoration: underline;
@@ -61,6 +65,7 @@ img.cardimg {
 
 .realm-card-tray .cardslot {
   width: 120px;
+  position: relative;
 }
 
 .hud-card, .showcard{
