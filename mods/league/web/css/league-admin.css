@@ -379,6 +379,8 @@ i.link_icon.private {
 
 league-edit-overlay-box {
   width: 70vw;
+  max-height: 95vh;
+  overflow-y: auto;
 }
 
 .league-edit-overlay-box .label {
@@ -390,10 +392,14 @@ league-edit-overlay-box {
   border: 1px solid var(--saito-border-color);
   padding: 1rem;
   margin-bottom: 1rem;
-  height: 70vh;
+  min-height: 25vh;
   width: 70vw;
   max-height: 70vh;
   overflow: auto;
+}
+
+.league-edit-overlay-box .box.contact {
+  min-height: 8rem;
 }
 
 /* LIST SELECTION MODAL */
