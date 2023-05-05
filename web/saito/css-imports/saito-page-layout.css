@@ -23,8 +23,10 @@
   top: calc(var(--saito-header-height) + 1rem);
 }
 
+/* Perhaps we should select for saito-menu  */
 .saito-sidebar > div:not(:last-child) {
   margin-bottom: 2rem;
+  max-height: calc(75vh - var(--saito-header-height));
 }
 
 .saito-sidebar-container {

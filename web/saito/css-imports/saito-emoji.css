@@ -13,7 +13,7 @@
 }
 */
 emoji-picker {
-  position: fixed;
+  position: absolute;
   height: 40rem;
   bottom: 7rem;
   width: 30rem;

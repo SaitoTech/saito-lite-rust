@@ -234,15 +234,6 @@ class ChatPopup {
 
   }
 
-  insertBackgroundTab(app, mod, gid) {
-    let tabContainer = document.querySelector(".chat-group-tabs");
-    if (tabContainer) {
-      tabContainer.classList.add("show-multi");
-    }
-
-    let group = mod.returnGroup(gid);
-    this.attachEvents(app, mod);
-  }
 
   attachEvents() {
 

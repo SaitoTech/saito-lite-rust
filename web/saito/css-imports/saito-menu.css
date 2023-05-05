@@ -74,21 +74,6 @@
 
 
 
-/*  alert  */
-
-.saito-notification-dot {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.5rem;
-  background-color: var(--saito-primary);
-  color: var(--saito-background-color);
-  position: absolute;
-  bottom: 2.5rem;
-  left: 3.5rem;
-  text-align: center;
-  line-height: 2.2rem;
-}
-
 .saito-menu>ul>li>i+span {
   margin-left: 3.8rem;
 }
