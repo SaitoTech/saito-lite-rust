@@ -1,5 +1,4 @@
 .chat-manager {
-  margin: 0 0 0 1.5rem;
   max-height: 25vh;
 }
 
@@ -15,9 +14,11 @@
 }
 
 .chat-manager .saito-user {
+  padding-left: 1.5rem;
   column-gap: 2rem;
   margin-bottom: 0.5rem;
 }
+
 
 /*  Chat / Popup  */
 
