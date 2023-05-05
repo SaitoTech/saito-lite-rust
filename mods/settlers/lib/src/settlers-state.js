@@ -578,37 +578,37 @@ class SettlersState {
             this.playerbox.refreshTitle(playerHTML, i);
 
             //Stats
-            //anewhtml = `<div class="flexline">`;
+            newhtml = `<div class="flexline">`;
             //Victory Point Card Tokens -- should move to VP track
-            //for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
-            //  newhtml += `<div class="token">${this.skin.vp.svg}</div>`;
-            //}
-            //if (this.game.state.largestArmy.player == i) {
-            //  newhtml += `<div class="token" title="${this.skin.largest.name}">${this.skin.largest.svg}</div>`;
-            //}
-            //if (this.game.state.longestRoad.player == i) {
-            //  newhtml += `<div class="token" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
-            //}
-            //newhtml += `</div>`;
+            for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
+              newhtml += `<div class="token">${this.skin.vp.svg}</div>`;
+            }
+            if (this.game.state.largestArmy.player == i) {
+              newhtml += `<div class="token" title="${this.skin.largest.name}">${this.skin.largest.svg}</div>`;
+            }
+            if (this.game.state.longestRoad.player == i) {
+              newhtml += `<div class="token" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
+            }
+            newhtml += `</div>`;
 
-            //if (this.game.state.players[i - 1].knights > 0) {
-            //  newhtml += `<div class="flexline2">`;
-            //  for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
-            //    newhtml += this.skin.s.img;
-            //  }
-            //  newhtml += `</div>`;
-            //}
+            if (this.game.state.players[i - 1].knights > 0) {
+              newhtml += `<div class="flexline2">`;
+              for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
+                newhtml += this.skin.s.img;
+              }
+              newhtml += `</div>`;
+            }
 
             //For opponents, summarize their hands numerically
             if (this.game.player != i) {
-                //  newhtml += `<div class="flexline">`;
-                //  newhtml += `<div class="cardct">Resources: ${
-                //    this.game.state.players[i - 1].resources.length
-                //  }</div>`;
-                //  newhtml += `<div class="cardct">Cards: ${
-                //    this.game.state.players[i - 1].devcards
-                //  }</div>`;
-                //  newhtml += `</div>`;
+                  newhtml += `<div class="flexline">`;
+                  newhtml += `<div class="cardct">Resources: ${
+                    this.game.state.players[i - 1].resources.length
+                  }</div>`;
+                  newhtml += `<div class="cardct">Cards: ${
+                    this.game.state.players[i - 1].devcards
+                  }</div>`;
+                  newhtml += `</div>`;
             } else {  //Is me
 
                 if (!this.game.state.placedCity) {

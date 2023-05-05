@@ -1,8 +1,8 @@
-module.exports = () => {
+module.exports = (title) => {
 
   let html = `
       <div class="reformation-overlay" id="reformation-overlay">
-        <div class="title">reformation in strasbourg</div>
+        <div class="title">reformation in ${title}</div>
 	<div class="reformation-box">
 	  <div class="protestant">
 	    <div class="title">Protestants</div>

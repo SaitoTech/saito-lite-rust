@@ -29,7 +29,7 @@
     //
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       let d = this.game.state.debaters[i];
-      let key = this.game.state.debaters[i].key;
+      let key = d.key;
       z.push(this.debaters[key]);
     }
 

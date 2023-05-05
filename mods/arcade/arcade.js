@@ -48,6 +48,9 @@ class Arcade extends ModTemplate {
     this.affix_callbacks_to = [];
     this.services = [{ service: "arcade", domain: "saito" }];
 
+    this.invite_cutoff  = 3500000;
+    this.game_cutoff    = 600000000;
+
     this.theme_options = {
       lite: "fa-solid fa-sun",
       dark: "fa-solid fa-moon",
@@ -140,9 +143,13 @@ class Arcade extends ModTemplate {
               players: game.players,
               players_sigs: [], //Only used to verify cryptology when initializing the game
               originator: game.originator,
+              //winner: game.winner,
+              step: game?.step?.game, 
+              ts: game?.step?.ts,
             };
 
             game_tx.transaction.sig = game.id;
+            game_tx.transaction.ts = game.ts;
             game_tx.msg = msg;
 
             console.log("Processing games from app.options:");
@@ -170,20 +177,21 @@ class Arcade extends ModTemplate {
     }
     let arcade_self = this;
 
-    let cutoff1 = new Date().getTime() - 4800000;
-    let cutoff2 = new Date().getTime() - 600000000;
+    let cutoff1 = new Date().getTime() - this.invite_cutoff;
+    let cutoff2 = new Date().getTime() - this.game_cutoff; 
 
     //
     // load open games from server
     //  ( status = "open" OR status = "private" ) AND
-    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND status = 'over') ORDER BY created_at ASC`;
+    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND (status = 'over' OR status = 'active')) ORDER BY created_at ASC`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
       if (res.rows) {
         for (let record of res.rows) {
-          console.log(JSON.parse(JSON.stringify(record)));
+          //console.log(JSON.parse(JSON.stringify(record)));
           //This is the save openTX
           let game_tx = new saito.default.transaction(JSON.parse(record.tx));
-
+          game_tx.transaction.ts = record.created_at;
+          
           //But we update the player list
           let player_info = record.players_array.split("_");
           for (let pi of player_info) {
@@ -200,7 +208,12 @@ class Arcade extends ModTemplate {
           //Game Meta Data stored directly in DB
           //
           if (record.winner){
-            game_tx.msg.winner = JSON.parse(record.winner);  
+            game_tx.msg.winner = [record.winner];
+            try {
+              game_tx.msg.winner = JSON.parse(record.winner);
+            } catch(err) {
+              //console.log("Non-JSON DB entry:", record.winner);              
+            }
           }
 
           game_tx.msg.method = record.method;
@@ -211,9 +224,9 @@ class Arcade extends ModTemplate {
             game_tx.msg.ts = step?.ts;          
           }
 
-          //if (arcade_self.debug) {
+          if (arcade_self.debug) {
             console.log("Load DB Game: " + record.status, game_tx.returnMessage());
-          //}
+          }
           if (record.time_finished) {
             if (record.status !== "over" && record.status !== "close") {
               console.log("Game status mismatch");
@@ -1498,6 +1511,21 @@ class Arcade extends ModTemplate {
     }
   }
 
+  purgeOldGames(){
+    let now = new Date().getTime();
+    for (let key in this.games) {
+      let cutoff = now - this.invite_cutoff;
+      if (key == "active" || key == "over"){
+        cutoff = now - this.game_cutoff;
+      }
+      
+      this.games[key] = this.games[key].filter((game) => {
+        return game.transaction?.ts > cutoff;
+      });
+    }
+  }
+
+
   purgeBadGamesFromWallet() {
     if (this.app.options.games) {
       for (let i = this.app.options.games.length - 1; i >= 0; i--) {
@@ -1802,7 +1830,7 @@ class Arcade extends ModTemplate {
     game_mod.game.halted = 1; // Default to paused
    
     this.observerDownloadNextMoves(game_mod, ()=> {
-      if (watch_live) {
+      if (watch_live > 0) {
         game_mod.game.halted = 0;
         game_mod.game.live = watch_live;
         game_mod.saveGame(game_id);

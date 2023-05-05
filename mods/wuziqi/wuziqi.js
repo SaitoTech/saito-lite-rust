@@ -76,7 +76,6 @@ class Wuziqi extends GameTemplate {
 
 
         //Player Boxes
-        this.playerbox.show_observer_box = false;
         this.playerbox.render();
         if (this.game.player == 0){
             this.playerbox.addClass("me",1);
@@ -407,10 +406,11 @@ class Wuziqi extends GameTemplate {
                 // And check if it won the game (this will just update winners in data structure)
                 let winner = this.findWinner(cell);
 
-            
+                if (this.game.player !== player){
+                    this.animatePlay(cell);                
+                }           
+                
                 if (this.game.player !== player && this.game.player !== 0){
-                    this.animatePlay(cell);
-
                     //Let player make their move
                     this.addEvents(this.game.board);
                     this.updateStatus("Your move");

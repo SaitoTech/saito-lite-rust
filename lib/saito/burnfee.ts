@@ -19,8 +19,11 @@ class BurnFee {
     if (elapsed_time == 0) {
       elapsed_time = 1;
     }
-    if (elapsed_time >= 2 * this.heartbeat) {
+    if (elapsed_time >= (2 * this.heartbeat)) {
       return BigInt(0);
+    }
+    if (elapsed_time <= this.heartbeat) {
+      return BigInt(1);
     }
 
     // convert to float for division

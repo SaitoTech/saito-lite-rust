@@ -12,6 +12,7 @@ body {
 .main { 
   background-image: url(/saito/img/arcade/greenfelt.jpg);
   background-size: cover;
+  position: fixed;
   width: 100vw;
   height: 100vh;
 }
@@ -27,4 +28,40 @@ body {
 
 img.cardimg {
   width: 100%;
+}
+
+.end-turn {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.end-turn:hover {
+  font-weight: bold;
+}
+
+.opponent_hand {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.graveyard {
+  position: absolute;
+  top: 50vh;
+  right: 0;
+  width: 25px; 
+}
+
+.realm-card-tray {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+}
+
+.realm-card-tray .cardslot {
+  width: 120px;
+}
+
+.hud-card, .showcard{
+  cursor: pointer;
 }

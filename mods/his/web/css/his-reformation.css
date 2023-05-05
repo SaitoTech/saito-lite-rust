@@ -1,7 +1,7 @@
 
 .reformation-overlay {
 	background-image: url(/his/img/backgrounds/reformation.jpg);
-        background-size: contain;
+        background-size: cover;
         max-width: 90vw;
         max-height: 90vh;
 }

@@ -60,6 +60,8 @@ class DietOfWormsOverlay {
 
     showResults(obj) {
 
+      let his_self = this.mod;
+
       this.mod.hud.zIndex = 10;
       if (document.querySelector(".hud")) {
 	document.querySelector(".hud").style.zIndex = 10;
@@ -105,20 +107,26 @@ class DietOfWormsOverlay {
 	if (winner === "papacy") {
 	  html += 'Papacy may convert '+difference+' '+spaces+' (<span class="diet_of_worms_end"> click here </span>)';
 	} else {
-	  html += 'Diet of Worms ends inconclusively (<span class="diet_of_worms_end"> click here </span>)';
+	  html += 'Diet of Worms ends inconclusively (<span class="diet_of_worms_noskip"> click here </span>)';
 	}
       }
 
-      //
-      //
-      //
       document.querySelector(".diet-overlay .help").innerHTML = html;
-      $(".diet_of_worms_end").off();
-      $(".diet_of_worms_end").on("click", () => {
+      $(".diet_of_worms_noskip").off();
+      $(".diet_of_worms_noskip").on("click", () => {
 	this.overlay.remove();
       });
 
-
+      $(".diet_of_worms_end").off();
+      $(".diet_of_worms_end").on("click", () => {
+	let lqe = his_self.game.queue[his_self.game.queue.length-1];
+	let mv = lqe.split("\t");
+	if (mv[0] === "ACKNOWLEDGE") { 
+	  his_self.game.queue.splice(his_self.game.queue.length-1, 1);
+	  his_self.restartQueue();
+	}
+	this.overlay.remove();
+      });
     }
 
 }

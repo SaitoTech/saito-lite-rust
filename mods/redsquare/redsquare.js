@@ -1633,7 +1633,7 @@ class RedSquare extends ModTemplate {
               tx.deserialize_from_web(redsquare_self.app, rows[i].tx);
               //console.info(rows[i]);
               txmsg = tx.returnMessage();
-              console.info(txmsg);
+              //console.info(txmsg);
               if (typeof txmsg.data.images != "undefined") {
                 let img_uri = txmsg.data?.images[0];
                 let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
@@ -1652,7 +1652,7 @@ class RedSquare extends ModTemplate {
                 img_type = 'image/svg';
               }
 
-              console.info('### write from 1229 of redsquare.js');
+              console.info('### write from 1651 of redsquare.js (request Open Graph Image)');
               res.writeHead(200, {
                 'Content-Type': img_type,
                 'Content-Length': img.length

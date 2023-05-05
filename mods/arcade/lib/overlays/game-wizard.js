@@ -156,16 +156,18 @@ class GameWizard {
   getOptions() {
     let options = {};
     document.querySelectorAll("#advanced-options-overlay-container input, #advanced-options-overlay-container select, .arcade-wizard-overlay input, .arcade-wizard-overlay select").forEach((element) => {
-      if (element.type == "checkbox") {
-        if (element.checked) {
-          options[element.name] = 1;
-        }
-      } else if (element.type == "radio") {
-        if (element.checked) {
+      if (element.name){
+        if (element.type == "checkbox") {
+          if (element.checked) {
+            options[element.name] = 1;
+          }
+        } else if (element.type == "radio") {
+          if (element.checked) {
+            options[element.name] = element.value;
+          }
+        } else {
           options[element.name] = element.value;
         }
-      } else {
-        options[element.name] = element.value;
       }
     });
 

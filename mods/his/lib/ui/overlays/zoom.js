@@ -15,8 +15,7 @@ class ThesesOverlay {
 	this.overlay.hide();
     } 
    
-    render(language_zone="german") {
-
+    render() {
 	this.visible = true;
         this.overlay.show(ThesesTemplate());
 
@@ -27,11 +26,8 @@ class ThesesOverlay {
         gb2.removeAttribute("style");
 	gb2.classList.add("gameboard-clone");
 
-	if (language_zone == "german") { gb2.classList.add("zoom-german"); }
-
 	dw.appendChild(gb2);
 
-/****
 	let obj = document.querySelector(".gameboard-clone");
 	obj.style.position = "";
 	obj.style.transformOrigin = "";
@@ -40,7 +36,6 @@ class ThesesOverlay {
 	obj.style.bottom = "";
 	obj.style.left = "0px !important";
 	obj.style.right = "";
-****/
 
         $('.gameboard-clone').draggable({});
 

@@ -60,6 +60,7 @@ class Miner {
     }
 
     this.mining_active = true;
+console.log("start mining...");
     this.mining_timer = setInterval(async () => {
       await this.mine();
     }, this.mining_speed);
@@ -88,10 +89,17 @@ class Miner {
             this.difficulty
           )
         ) {
+console.log("# 1");
           const transaction = this.app.wallet.createUnsignedTransaction();
+console.log("# 2");
           transaction.transaction.type = TransactionType.GoldenTicket;
+console.log("# 3");
           transaction.transaction.m = this.app.goldenticket.serialize(this.target, random_hash);
+console.log("# 4");
           transaction.sign(this.app);
+console.log("#");
+console.log("# Found GT");
+console.log("#");
           this.app.network.propagateTransaction(transaction);
           this.stopMining();
           return;

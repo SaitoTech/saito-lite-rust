@@ -52,12 +52,15 @@ class Settlers extends GameTemplate {
     this.grace_window = 24;
     // temp variable to help with post-splash flash
     this.currently_active_player = 0;
+
     this.build = new BuildOverlay(this.app, this);
     this.bank = new BankOverlay(this.app, this);
     this.dev_card = new DevCardOverlay(this.app, this);
     this.year_of_plenty = new YearOfPlentyOverlay(this.app, this);
     this.discard = new DiscardOverlay(this.app, this);
     this.monopoly = new MonopolyOverlay(this.app, this);
+
+    this.enable_observer = false;
   }
 
        
@@ -169,6 +172,7 @@ class Settlers extends GameTemplate {
     // add the HUD so we can leverage it
     //
     this.hud.render();
+    document.querySelector('#hud')?.classList.add('saitoa');
   
 
 

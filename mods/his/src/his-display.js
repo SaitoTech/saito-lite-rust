@@ -80,8 +80,8 @@
     }
   }
 
-  displayTheologicalDebate() {
-    this.debate_overlay.render();
+  displayTheologicalDebate(res) {
+    this.debate_overlay.render(res);
   }
 
 

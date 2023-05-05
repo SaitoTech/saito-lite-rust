@@ -408,7 +408,7 @@ alert("Not Implemented");
 
 	  if (player == his_self.game.player) {
 
-            let fhand_idx = his_self.returnFactionHandIdx(player, faction);
+            let fhand_idx = his_self.returnFactionHandIdx(player, extra);
 	    let card = his_self.game.deck[0].cards[his_self.game.deck[0].hand[his_self.game.deck[0].hand[fhand_idx].length-1]];
 	    let ops = card.ops;
 
@@ -417,8 +417,11 @@ alert("Not Implemented");
 	    his_self.endTurn();
 
 	  }
+
+	  return 0;
         }
-	return 0;
+
+	return 1;	
       }
     }
     deck['209'] = { 
@@ -711,7 +714,7 @@ alert("Not Implemented");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "field_battle_hits_assignment") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('001')) {
@@ -721,7 +724,7 @@ alert("Not Implemented");
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
+      menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "field_battle_hits_assignment") {
           his_self.addMove("janissaries");
 	  his_self.endTurn();
@@ -986,7 +989,7 @@ alert("Not Implemented");
         	  his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
         	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	          his_self.addMove("SETVAR\tstate\ttheological_debate\tselected_papal_debater\t"+selected_papal_debater);
-	          his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted");
+	          his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted");
 		  his_self.endTurn();
 		});
 	
@@ -1010,7 +1013,7 @@ alert("Not Implemented");
         	  his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
         	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	          his_self.addMove("SETVAR\tstate\ttheological_debate\tprohibited_protestant_debater\t"+prohibited_protestant_debater);
-	          his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted");
+	          his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted");
 		  his_self.endTurn();
 		});
 	
@@ -1100,20 +1103,20 @@ alert("Not Implemented");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "debate") {
 	  if (his_self.game.state.leaders.luther == 1) {
-	    if (faction === "protestant") {
-	      return 1;
+	    if (player === his_self.returnPlayerOfFaction("protestant")) {
+	      if (his_self.canPlayerPlayCard("protestant", "007")) { return 1; }
 	    }
 	  }
 	}
 	return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
+      menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu === "debate") {
 	  his_self.addMove("here_i_stand_response");
-	  his_seld.endTurn();
+	  his_self.endTurn();
         }
         return 0;
       },
@@ -1161,45 +1164,75 @@ alert("Not Implemented");
 
 	    his_self.updateLog("Luther accepts the Debate Challenge - Here I Stand");
 
+
 	    //
-	    // existing protestant debater is committed
+	    // existing protestant debater is committed, but de-activated (bonus does not apply)
 	    //
 	    for (let i = 0; i < his_self.game.state.debaters.length; i++) {
 	      let d = his_self.game.state.debaters[i];
-	      if (this.game.state.theological_debate.attacker === "papacy") {
-	        if (this.game.state.theological_debate.round == 1) {
+	      if (his_self.game.state.theological_debate.attacker === "papacy") {
+	        if (his_self.game.state.theological_debate.round == 1) {
 	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_defender_debater) {
 	  	    his_self.commitDebater(d.key);
+	  	    his_self.deactivateDebater(d.key);
 	          }
 	        } else {
 	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_defender_debater) {
 		    his_self.commitDebater(d.key);
+	  	    his_self.deactivateDebater(d.key);
 	          }
 	        }
 	      } else {
-	        if (this.game.state.theological_debate.round == 1) {
+	        if (his_self.game.state.theological_debate.round == 1) {
 	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_attacker_debater) {
 		    his_self.commitDebater(d.key);
+	  	    his_self.deactivateDebater(d.key);
 	          }
 	        } else {
 	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_attacker_debater) {
 		    his_self.commitDebater(d.key);
+	  	    his_self.deactivateDebater(d.key);
 	          }
 	        }
 	      }
 	    }
 
+
+	    let is_luther_committed = 0;
+	    for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+	      if (his_self.game.state.debaters[i].key === "luther-debater") {
+		if (his_self.game.state.debaters[i].committed == 1) { is_luther_commited = 1; }
+	      }
+	    }
+
+
 	    if (his_self.game.state.theological_debate.attacker === "papacy") {
 	      if (his_self.game.state.theological_debate.round == 1) {
                 his_self.game.state.theological_debate.round1_defender_debater = "luther-debater";
+                his_self.game.state.theological_debate.defender_debater = "luther-debater";
+                his_self.game.state.theological_debate.defender_debater_power = 4;
+                his_self.game.state.theological_debate.defender_debater_bonus = 1;
+		if (is_luther_committed == 0) {
+                  his_self.game.state.theological_debate.defender_debater_bonus++;
+		}
 	      } else {
                 his_self.game.state.theological_debate.round2_defender_debater = "luther-debater";
+                his_self.game.state.theological_debate.defender_debater = "luther-debater";
+                his_self.game.state.theological_debate.defender_debater_power = 4;
+                his_self.game.state.theological_debate.defender_debater_bonus = 1;
+		if (is_luther_committed == 0) {
+                  his_self.game.state.theological_debate.defender_debater_bonus++;
+		}
 	      }
 	    } else {
 	      if (his_self.game.state.theological_debate.round == 1) {
                 his_self.game.state.theological_debate.round1_attacker_debater = "luther-debater";
+                his_self.game.state.theological_debate.attacker_debater = "luther-debater";
+                his_self.game.state.theological_debate.defender_debater_power = 4;
 	      } else {
                 his_self.game.state.theological_debate.round2_attacker_debater = "luther-debater";
+                his_self.game.state.theological_debate.attacker_debater = "luther-debater";
+                his_self.game.state.theological_debate.defender_debater_power = 4;
 	      }
 	    }
 	  }
@@ -1236,7 +1269,9 @@ alert("Not Implemented");
 
 	// protestant gets 2 roll bonus at start
 	his_self.game.state.tmp_protestant_reformation_bonus = 2;
+	his_self.game.state.tmp_protestant_reformation_bonus_spaces = [];
 	his_self.game.state.tmp_catholic_reformation_bonus = 0;
+	his_self.game.state.tmp_catholic_reformation_bonus_spaces = [];
 	his_self.game.state.tmp_reformations_this_turn = [];
 
 	his_self.game.queue.push("hide_overlay\ttheses");
@@ -1554,9 +1589,7 @@ alert("Not Implemented");
 
 	let papacy = his_self.returnPlayerOfFaction("papacy");
 	if (his_self.game.player === papacy) {
-
 	  his_self.game.state.events.papacy_may_found_jesuit_universities = 1;
-
 	  return 0;
 	}
 
@@ -1575,8 +1608,8 @@ alert("Not Implemented");
 	his_self.game.state.leaders['luther'] = 0;
 	his_self.game.state.leaders['calvin'] = 1;
 
-	let x = his_self.returnSpaceOfPersonage("luther-reformer");
-	let y = his_self.returnIndexOfPersonageInSpace("luther-reformer");
+	let x = his_self.returnSpaceOfPersonage("protestant", "luther-reformer");
+	let y = his_self.returnIndexOfPersonageInSpace("protestant", "luther-reformer", x);
 
 	if (y > -1) {
 	  his_self.game.spaces[x].units["protestant"].splice(y, 1);
@@ -1704,7 +1737,7 @@ alert("Not Implemented");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('024')) {
@@ -1714,7 +1747,7 @@ alert("Not Implemented");
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
+      menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
           player = his_self.returnPlayerOfFaction(faction);
 	  player.tmp_roll_bonus = 2;
@@ -1742,7 +1775,7 @@ alert("Not Implemented");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('025')) {
@@ -1752,7 +1785,7 @@ alert("Not Implemented");
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
+      menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
           player = his_self.returnPlayerOfFaction(faction);
 	  player.tmp_roll_bonus = 2;
@@ -1783,7 +1816,7 @@ alert("Not Implemented");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('026')) {
@@ -1793,7 +1826,7 @@ alert("Not Implemented");
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
+      menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
 	  alet("Mercenaries Bribed...");
 
@@ -1825,7 +1858,7 @@ alert("Not Implemented");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "assault") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('027')) {
@@ -1835,7 +1868,7 @@ alert("Not Implemented");
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
+      menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "assault") {
 	  alet("Mercenaries Grow Restless...");
 
@@ -1867,7 +1900,7 @@ alert("Not Implemented");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "assault" && his_self.game.player === his_self.game.state.active_player) {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('028')) {
@@ -1877,7 +1910,7 @@ alert("Not Implemented");
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
+      menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "assault") {
           player = his_self.returnPlayerOfFaction(faction);
 	  if (his_self.game.state.active_player === player) {
@@ -1907,7 +1940,7 @@ alert("Not Implemented");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "assault") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('029')) {
@@ -1917,7 +1950,7 @@ alert("Not Implemented");
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
+      menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "assault") {
           player = his_self.returnPlayerOfFaction(faction);
 	  if (his_self.game.state.active_player === player) {
@@ -1947,7 +1980,7 @@ alert("Not Implemented");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('30')) {
@@ -1957,7 +1990,7 @@ alert("Not Implemented");
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
+      menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
 	  alert("tercois is complicated...");
         }
@@ -1979,7 +2012,7 @@ alert("Not Implemented");
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      menuOption  :       function(his_self, menu, player, faction) {
+      menuOption  :       function(his_self, menu, player, extra) {
         if (menu == "move") {
 	  let f = "";
 
@@ -1994,7 +2027,7 @@ alert("Not Implemented");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "move") {
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('032')) {
@@ -2004,7 +2037,7 @@ alert("Not Implemented");
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
+      menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "move") {
           his_self.endTurn();
           his_self.updateLog("looks like someone got gout");
@@ -2034,7 +2067,7 @@ alert("Not Implemented");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('033')) {
@@ -2044,7 +2077,7 @@ alert("Not Implemented");
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
+      menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
 	  if (faction == "ottoman" || faction == "france") {
 	  } else {
@@ -2140,7 +2173,7 @@ alert("Not Implemented");
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      menuOption  :       function(his_self, menu, player, faction) {
+      menuOption  :       function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
 	  let f = "";
 
@@ -2155,7 +2188,7 @@ alert("Not Implemented");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('036')) {
@@ -2165,7 +2198,7 @@ alert("Not Implemented");
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
+      menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
 	  if (faction == "ottoman" || faction == "france") {
 	  } else {
@@ -2249,13 +2282,12 @@ alert("Not Implemented");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "event") {
-alert("Wartburg Triggers");
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
+      menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu == "event") {
           his_self.addMove("wartburg");
 	  his_self.endTurn();
