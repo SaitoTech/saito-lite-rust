@@ -53,8 +53,6 @@ class ChatManager {
         }
       }
 
-      console.log("chat-popup-render-request", this.render_popups_to_screen, this.render_manager_to_screen);
-
       if (!group) {
         group = this.mod.returnCommunityChat();
       } 
@@ -129,7 +127,7 @@ class ChatManager {
       if (this.mod.debug) {
         console.log("open-chat-with");
       }
-      
+
       if (!data) {
         let group = this.mod.returnCommunityChat();
         if (this.popups[group.id]) { this.popups[group.id].manually_closed = false; }

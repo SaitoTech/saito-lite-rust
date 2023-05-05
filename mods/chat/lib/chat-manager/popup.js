@@ -302,7 +302,6 @@ class ChatPopup {
       // focus on text input
       //
       if (!mod.isOtherInputActive()) {
-        console.log("No other input active");
         document.getElementById(input_id).focus();
         document.execCommand('selectAll', false, null);
         document.getSelection().collapseToEnd();

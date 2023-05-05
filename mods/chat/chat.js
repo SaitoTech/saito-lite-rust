@@ -27,7 +27,7 @@ class Chat extends ModTemplate {
         this.communityGroupHash = "";
         this.communityGroupMessages = [];
 
-        this.debug = true;
+        this.debug = false;
 
         this.chat_manager = null;
 
@@ -206,7 +206,7 @@ class Chat extends ModTemplate {
                 //TODO:
                 //Since the left-sidebar chat-manager disappears at screens less than 1200px wide
                 //We need another way to display/open it...
-                if (this.app.browser.isMobileBrowser() /*|| (this.app.BROWSER && window.innerWidth < 1200)*/) {
+                if (this.app.browser.isMobileBrowser() || (this.app.BROWSER && window.innerWidth < 600)) {
                     return [{
                         text: "Chat",
                         icon: "fas fa-comments",
@@ -223,25 +223,24 @@ class Chat extends ModTemplate {
                     let publickey = obj.publickey;
                     let key_exists = chat_self.app.keychain.hasPublicKey(publickey);
 
-                    if (!key_exists)                
-                        return null;
-                }
+                    if (key_exists && publickey !== chat_self.app.wallet.returnPublicKey()){
 
-                return {
-                    text: "Chat",
-                    icon: "far fa-comment-dots",
-                    callback: function (app, publickey) {
-                        let group = chat_self.returnGroupByMemberPublickey(publickey);
-
-                        if (chat_self.chat_manager == null) { 
-                            chat_self.chat_manager = new ChatManager(chat_self.app, chat_self); 
-                        }
-
-                        chat_self.chat_manager.render_manager_to_screen = 1;
-                        chat_self.chat_manager.render_popups_to_screen = 1;
-                        chat_self.app.connection.emit("chat-popup-render-request", group);
+                        return {
+                            text: "Chat",
+                            icon: "far fa-comment-dots",
+                            callback: function (app, publickey) {
+                                if (chat_self.chat_manager == null) { 
+                                    chat_self.chat_manager = new ChatManager(chat_self.app, chat_self); 
+                                }
+                                
+                                chat_self.chat_manager.render_popups_to_screen = 1;
+                                chat_self.app.connection.emit("open-chat-with", {key: publickey});
+                            }
+                        };
                     }
                 }
+
+                return null;
             default:
                 return super.respondTo(type);
         }
@@ -871,22 +870,6 @@ class Chat extends ModTemplate {
         return this.groups[0];
     }
 
-    returnDefaultChat() {
-        for (let i = 0; i < this.groups.length; i++) {
-            if (this.app.options.peers.length > 0) {
-                if (this.groups[i].members[0] === this.app.options.peers[0].publickey) {
-                    return this.groups[i];
-                }
-            }
-            if (this.app.network.peers.length > 0) {
-                if (this.groups[i].members[0] === this.app.network.peers[0].peer.publickey) {
-                    return this.groups[i];
-                }
-            }
-        }
-        return this.groups[0];
-    }
-
     //
     // Maybe needs improvement, but simple test to not rip away
     // focus from a ChatPopup if rendering a new Chatpopup
@@ -902,8 +885,6 @@ class Chat extends ModTemplate {
         if (!ae) {
             return 0;
         }
-
-        console.log(ae,ae.tagName);
 
         if (ae.tagName.toLowerCase() == "input" || ae.tagName.toLowerCase() == "textarea") {
             return 1;
