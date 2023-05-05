@@ -179,7 +179,6 @@
   padding: 0.5rem;
   display: flex;
   flex-flow: row;
-  grid-gap: 1rem;
   align-items: end;
   z-index: 2;
 }
@@ -203,13 +202,13 @@
   word-break: break-word;
 }
 
-.chat-footer i {
+.chat-footer > i {
   color: var(--saito-primary);
   cursor: pointer;
   z-index: 2;
   transition: all 0.2s;
   font-size: 2rem;
-  margin-bottom: 0.8rem;
+  padding: 0.8rem;
 }
 
 .chat-footer i:hover {
@@ -240,11 +239,6 @@
   border-bottom-right-radius: 0 !important;
 }
 
-.chat-footer .saito-emoji {
-  position: absolute;
-  top: 1.25rem;
-  right: 4rem;
-}
 
 /* Mobile Overlay */
 
