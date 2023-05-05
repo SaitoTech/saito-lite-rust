@@ -11,9 +11,9 @@ const { sharedKey: sharedKey } = require('curve25519-js');
 const LittleEndian = require('int64-buffer');
 const JSON = require("json-bigint");
 const MixinAppspaceSidebar = require('./lib/appspace-sidebar/main');
-const Deposit = require('./../../lib/saito/ui/saito-crypto/overlays/deposit');
-const Withdraw = require('./../../lib/saito/ui/saito-crypto/overlays/withdraw.js');
-const History = require('./../../lib/saito/ui/saito-crypto/overlays/history');
+//const Deposit = require('./../../lib/saito/ui/saito-crypto/overlays/deposit');
+//const Withdraw = require('./../../lib/saito/ui/saito-crypto/overlays/withdraw.js');
+//const History = require('./../../lib/saito/ui/saito-crypto/overlays/history');
 
 class Mixin extends ModTemplate {
 
@@ -65,12 +65,10 @@ class Mixin extends ModTemplate {
   renderInto(qs) {
     if (qs == ".saito-header") {
       if (!this.renderIntos[qs]) {
-
         this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new Deposit(this.app, this));
-        this.renderIntos[qs].push(new Withdraw(this.app, this));
-        this.renderIntos[qs].push(new History(this.app, this));
-      
+        //this.renderIntos[qs].push(new Deposit(this.app, this));
+        //this.renderIntos[qs].push(new Withdraw(this.app, this));
+        //this.renderIntos[qs].push(new History(this.app, this));
         this.attachStyleSheets();
       }
     }

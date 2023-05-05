@@ -1677,6 +1677,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
     let his_self = this;
     let retreat_destination = "";
+    let space_name = this.game.spaces[spacekey].name;
 
     let onFinishSelect = function(his_self, destination_spacekey) {
       if (is_attacker_loser) {
@@ -1693,7 +1694,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
       let html = "<ul>";
       for (let i = 0; i < space.neighbours.length; i++) {
-console.log(defender + " -- " + attacker + " -- " + attacker_comes_from_this_spacekey + " -- " + is_attacker_loser + " -- " + attacker_comes_from_this_spacekey);
 	if (is_attacker_loser) {
           if (his_self.canFactionRetreatToSpace(attacker, space.neighbours[i], attacker_comes_from_this_spacekey)) {
             html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
@@ -1716,13 +1716,18 @@ console.log(defender + " -- " + attacker + " -- " + attacker_comes_from_this_spa
 
     };
 
+    
 
     let html = `<ul>`;
     html    += `<li class="card" id="retreat">retreat</li>`;
-    html    += `<li class="card" id="skip">do not retreat</li>`;
+    if (is_attacker_loser) { 
+      html    += `<li class="card" id="skip">sacrifice forces</li>`;
+    } else {
+      html    += `<li class="card" id="skip">do not retreat</li>`;
+    }
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`Retreat from ${spacekey}?`, html);
+    this.updateStatusWithOptions(`Retreat from ${space_name}?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "retreat") {
 	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
@@ -2631,7 +2636,7 @@ return;
   }
   async playerTranslateScripture(his_self, player, faction) {
 
-    let msg = "Work on Translation?";
+    let msg = "Select Work to Translate:";
     let html = '<ul>';
 
     if (his_self.game.state.translations['new']['german'] < 6) {
@@ -2643,16 +2648,21 @@ return;
     if (his_self.game.state.translations['new']['english'] < 6) {
       html += '<li class="option english" style="" id="3">English (new testament)</li>';
     }
-    if (his_self.game.state.translations['full']['german'] < 10) {
+    if (his_self.game.state.translations['full']['german'] < 10 && his_self.game.state.translations['new']['german'] >= 6) {
       html += '<li class="option german" style="" id="4">German (full bible)</li>';
     }
-    if (his_self.game.state.translations['full']['french'] < 10) {
+    if (his_self.game.state.translations['full']['french'] < 10 && his_self.game.state.translations['new']['french'] >= 6) {
       html += '<li class="option french" style="" id="5">French (full bible)</li>';
     }
-    if (his_self.game.state.translations['full']['english'] < 10) {
+    if (his_self.game.state.translations['full']['english'] < 10 && his_self.game.state.translations['new']['english'] >= 6) {
       html += '<li class="option english" style="" id="6">English (full bible)</li>';
     }
     html += '</ul>';
+
+    //
+    // show visual language zone selector
+    //
+    his_self.language_zone_overlay.render();
 
     his_self.updateStatusWithOptions(msg, html);
 
@@ -2660,6 +2670,7 @@ return;
     $('.option').on('click', function () {
 
       let id = parseInt($(this).attr("id"));
+      his_self.language_zone_overlay.hide();
 
       if (id == 1 || id == 4) {
 	his_self.addMove("translation\tgerman"); 
@@ -2674,7 +2685,7 @@ return;
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in English Language Zone\ttranslation_english_language_zone\tenglish\t"+faction);
       }
       // we only ask for our own CONFIRMS
-      his_self.addMove("RESETCONFIRMSNEEDED\t"+this.game.player);
+      his_self.addMove("RESETCONFIRMSNEEDED\t"+his_self.game.player);
       his_self.endTurn();
 
     });
