@@ -234,15 +234,6 @@ class ChatPopup {
 
   }
 
-  insertBackgroundTab(app, mod, gid) {
-    let tabContainer = document.querySelector(".chat-group-tabs");
-    if (tabContainer) {
-      tabContainer.classList.add("show-multi");
-    }
-
-    let group = mod.returnGroup(gid);
-    this.attachEvents(app, mod);
-  }
 
   attachEvents() {
 
@@ -311,6 +302,7 @@ class ChatPopup {
       // focus on text input
       //
       if (!mod.isOtherInputActive()) {
+        console.log("No other input active");
         document.getElementById(input_id).focus();
         document.execCommand('selectAll', false, null);
         document.getSelection().collapseToEnd();

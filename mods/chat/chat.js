@@ -50,12 +50,12 @@ class Chat extends ModTemplate {
 
         let chat_self = this;
 
-        if (this.debug) { console.log("Chat: onPeerServiceUp",service.service); }
 
         //
         // load private chat
         //
         if (service.service === "archive") {
+            if (this.debug) { console.log("Chat: onPeerServiceUp",service.service); }
 
             //
             // load 5 saved chat messages per group
@@ -83,6 +83,7 @@ class Chat extends ModTemplate {
         // load public chat
         //
         if (service.service === "chat") {
+            if (this.debug) { console.log("Chat: onPeerServiceUp",service.service); }
 
             let newtx = this.app.wallet.createUnsignedTransaction();
             let local_group = this.returnGroupOrCreateFromMembers([peer.returnPublicKey()], "Saito Community Chat");
@@ -902,7 +903,17 @@ class Chat extends ModTemplate {
             return 0;
         }
 
+        console.log(ae,ae.tagName);
+
         if (ae.tagName.toLowerCase() == "input" || ae.tagName.toLowerCase() == "textarea") {
+            return 1;
+        }
+
+        if (ae.className == "chat-input") {
+            return 1;
+        }
+
+        if (document.querySelector("emoji-picker")) {
             return 1;
         }
 
