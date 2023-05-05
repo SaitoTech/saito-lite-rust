@@ -11862,8 +11862,6 @@ return 0; }
 	                this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
 	                this.game.queue.splice(lqe, 0, "fortification_check\t"+faction+"\t"+destination+"\t"+source);
 		      }
-                      this.game.queue.splice(lqe, 0, "RESETCONFIRMSNEEDED\tall");
-	    	      this.game.queue.splice(lqe, 0, "counter_or_acknowledge\tField Battle is about to begin in "+destination + "\tfield_battle");
 	              this.game.queue.splice(lqe, 0, "field_battle\t"+space.key+"\t"+faction);
 	            }
 	          }
@@ -11907,21 +11905,14 @@ return 0; }
 	  // have 4 or less land units
 	  //
 	  for (f in this.factions) {
-
-console.log("CHECK 1: " + f + " -- " + attacker);
-
 	    if (f !== attacker && this.isSpaceControlled(spacekey, f)) {
-
-console.log("CHECK 1: " + f + " -- " + attacker);
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
 	      if (fluis == 0) {
-
 		//
 		// no troops - skip
 		//
-
 	      } else {
 
 	        if (fluis > 4) {
@@ -12020,13 +12011,11 @@ console.log("CHECK 1: " + f + " -- " + attacker);
 	    this.playerEvaluateFortification(attacker, faction, spacekey);
 	  } else {
 	    if (this.isPlayerControlledFaction(faction)) {
-console.log("3. PLAYER IS CONTROLLED as: " + player);
 	      this.field_battle_overlay.renderFortification(this.game.state.field_battle);
 	      this.field_battle_overlay.updateinstructions(faction + " considering fortification");
 	      this.updateStatus(faction + " considering fortification");
 	      this.updateLog(faction + " evaluating retreat into fortification");
 	    } else {
-console.log("4. PLAYER IS DEFINED as: " + player);
 
 	      //
 	      // non-player controlled, minor power or independent, so auto-handle
@@ -12068,11 +12057,9 @@ console.log("4. PLAYER IS DEFINED as: " + player);
 	    this.playerEvaluateFortification(attacker, faction, spacekey);
 	  } else {
 	    if (this.isPlayerControlledFaction(faction)) {
-console.log("3. PLAYER IS CONTROLLED as: " + player);
 	      this.updateStatus(faction + " considering fortification");
 	      this.updateLog(faction + " evaluating retreat into fortification");
 	    } else {
-console.log("4. PLAYER IS DEFINED as: " + player);
 	      //
 	      // non-player controlled, minor power or independent, so auto-handle
 	      //
@@ -13433,6 +13420,7 @@ console.log("TRIGGERING " + menu_index[i]);
 	  //
 	  // save battle state
 	  //
+          his_self.game.state.field_battle.spacekey = mv[1];
 	  his_self.game.state.field_battle.attacker_units = attacker_units;
 	  his_self.game.state.field_battle.defender_units = defender_units;
 	  his_self.game.state.field_battle.attacker_units_faction = attacker_units_faction;
@@ -13481,7 +13469,13 @@ console.log("TRIGGERING " + menu_index[i]);
 	    his_self.game.queue.push("field_battle_assign_hits\t"+his_self.game.state.field_battle.defender_faction);
 	  }
 
-	  his_self.game.queue.push("counter_or_acknowledge\tField Battle Underway\tpre_field_battle_hits_assignment");
+
+	  //
+	  // this should stop execution while we are looking at the pre-field battle overlay
+	  //
+	  his_self.game.queue.push("field_battle_assign_hits_render");
+	  his_self.game.queue.push("counter_or_acknowledge\tField Battle is about to begin in "+space.name + "\tpre_field_battle_hits_assignment");
+          his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
 
           his_self.field_battle_overlay.renderPreFieldBattle(his_self.game.state.field_battle);
@@ -13649,17 +13643,46 @@ console.log("TRIGGERING " + menu_index[i]);
 	  if (player == this.game.player) {
             his_self.field_battle_overlay.renderFieldBattle(his_self.game.state.field_battle);
             his_self.field_battle_overlay.assignHits(his_self.game.state.field_battle, faction);
+            his_self.field_battle_overlay.updateInstructions("Assign Your Hits");
 	  } else {
             his_self.field_battle_overlay.renderFieldBattle(his_self.game.state.field_battle);
             his_self.field_battle_overlay.updateInstructions(this.returnFactionName(faction) + " Assigning Hits");
 	  }
 
-alert("Player Assigning Hits");
 	  return 0;
 
 	}
 
+	if (mv[0] === "field_battle_assign_hits_render") {
+          this.game.queue.splice(qe, 1);
+          this.field_battle_overlay.render(his_self.game.state.field_battle);
+	  return 1;
+	}
 
+
+ 	if (mv[0] === "field_battle_destroy_unit") {
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let unit_type = mv[3];
+
+          this.game.queue.splice(qe, 1);
+	  
+	  let space = this.game.spaces[spacekey];
+	  let unit_destroyed = false;
+
+console.log(JSON.stringify(space.units[faction]));
+
+	  for (let i = 0; i < space.units[faction].length && unit_destroyed == false; i++) {
+	    if (space.units[faction][i].type === unit_type) {
+	      space.units[faction].splice(i, 0);
+	      unit_destroyed = true;
+	    }
+	  }
+
+	  return 1;
+
+	}
 
 
 	if (mv[0] === "field_battle_continue") {
@@ -13753,7 +13776,7 @@ alert("Player Assigning Hits");
                   this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+f+"\t"+space.key);
                 }
 	        if (can_faction_retreat == 0) {
-                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
+                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
 	        }
               }
             }
@@ -13762,7 +13785,7 @@ alert("Player Assigning Hits");
 
             for (let f in his_self.game.state.field_battle.faction_map) {
               let can_faction_retreat = 0;
-              if (faction_map[f] === his_self.game.state.field_battle.defender_faction) {
+              if (his_self.game.state.field_battle.faction_map[f] === his_self.game.state.field_battle.defender_faction) {
                 for (let z = 0; z < space.neighbours.length; z++) {
                   let fluis = this.canFactionRetreatToSpace(f, space.neighbours[z], his_self.game.state.attacker_comes_from_this_spacekey);
                   if (fluis > 0) {
@@ -13775,7 +13798,7 @@ alert("Player Assigning Hits");
                 }
               }
             }
-            this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.attacker_faction+"\t"+his_self.returnPlayerOfFaction(defender_faction)+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
+            this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.attacker_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.defender_faction)+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
           }
 
           //

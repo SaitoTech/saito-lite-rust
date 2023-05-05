@@ -96,3 +96,11 @@
 .attacker, .defender {
 	width: 35vw;
 }
+
+.hits-assignable-hover-effect:hover {
+  background: #FFFA;
+  color: black;
+}
+
+
+
