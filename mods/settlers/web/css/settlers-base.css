@@ -1143,6 +1143,13 @@ ul.horizontal_list li.iconoption {
   color: var(--text-color);
 }
 
+/*
+.saitoa {
+  min-width: min(500px, 95vw);
+  min-height: min(225px, 80vw);
+}
+*/
+
 .game-menu {
   background-color: #d3c38df5;
   color: var(--text-color);
