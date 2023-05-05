@@ -126,6 +126,10 @@ class ChatManager {
 
       this.render_popups_to_screen = 1;
 
+      if (this.mod.debug) {
+        console.log("open-chat-with");
+      }
+      
       if (!data) {
         let group = this.mod.returnCommunityChat();
         if (this.popups[group.id]) { this.popups[group.id].manually_closed = false; }
