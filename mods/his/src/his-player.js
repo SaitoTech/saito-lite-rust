@@ -1673,13 +1673,17 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
   }
 
-  playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey="", defender) {
+  playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey="", defender, is_attacker_loser=false) {
 
     let his_self = this;
     let retreat_destination = "";
 
     let onFinishSelect = function(his_self, destination_spacekey) {
-      his_self.addMove("retreat"+"\t"+defender+"\t"+spacekey+"\t"+"\t"+destination_spacekey);
+      if (is_attacker_loser) {
+        his_self.addMove("retreat"+"\t"+attacker+"\t"+spacekey+"\t"+destination_spacekey);
+      } else {
+        his_self.addMove("retreat"+"\t"+defender+"\t"+spacekey+"\t"+destination_spacekey);
+      }
       his_self.endTurn();
     };
 
@@ -1689,8 +1693,15 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
       let html = "<ul>";
       for (let i = 0; i < space.neighbours.length; i++) {
-        if (this.canFactionRetreatToSpace(defender, space.neighbours[i], attacker_comes_from_this_spacekey)) {
-          html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
+console.log(defender + " -- " + attacker + " -- " + attacker_comes_from_this_spacekey + " -- " + is_attacker_loser + " -- " + attacker_comes_from_this_spacekey);
+	if (is_attacker_loser) {
+          if (his_self.canFactionRetreatToSpace(attacker, space.neighbours[i], attacker_comes_from_this_spacekey)) {
+            html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
+	  }
+	} else {
+          if (his_self.canFactionRetreatToSpace(defender, space.neighbours[i], attacker_comes_from_this_spacekey)) {
+            html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
+	  }
 	}
       }
       html += "</ul>";
@@ -1702,8 +1713,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
         let id = $(this).attr("id");
         onFinishSelect(his_self, id);
       });
-
-      selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
 
     };
 
