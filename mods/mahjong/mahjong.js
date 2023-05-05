@@ -170,16 +170,16 @@ class Mahjong extends OnePlayerGameTemplate {
 
  
   makeInvisible(divname) {
-    let noShadowBox = 'none';
-    this.applyShadowBox(divname, noShadowBox);
+    //let noShadowBox = 'none';
+    //this.applyShadowBox(divname, noShadowBox);
     $(`#${divname}`).addClass("invisible");
     $(`#${divname}`).removeClass("selected");
   }
 
   makeVisible(divname) {
     $(`#${divname}`).removeClass("invisible");
-    let boxShadow = '12px 10px 12px 1px #000000';
-    this.applyShadowBox(divname, boxShadow);
+    //let boxShadow = '12px 10px 12px 1px #000000';
+    //this.applyShadowBox(divname, boxShadow);
   }
 
 
@@ -210,12 +210,12 @@ class Mahjong extends OnePlayerGameTemplate {
     $(`#${divname}`).removeClass("selected");
   }
 
-  applyShadowBox(divname, property) {
+  /*applyShadowBox(divname, property) {
     let boxShadowProperties = ['box-shadow', '-moz-box-shadow', '-webkit-box-shadow', '-o-box-shadow'];
     for (let i = 0; i < boxShadowProperties.length; i++) {
       $(`#${divname}`).css(boxShadowProperties[i],property);
     }
-  }
+  }*/
 
   returnCardImageHTML(name) {
     if (name[0] === 'E') { return ""; }

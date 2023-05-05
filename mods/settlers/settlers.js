@@ -46,6 +46,8 @@ class Settlers extends GameTemplate {
     this.grace_window = 24;
     // temp variable to help with post-splash flash
     this.currently_active_player = 0;
+
+    this.enable_observer = false;
   }
 
        
@@ -157,6 +159,7 @@ class Settlers extends GameTemplate {
     // add the HUD so we can leverage it
     //
     this.hud.render();
+    document.querySelector('#hud')?.classList.add('saitoa');
   
 
 

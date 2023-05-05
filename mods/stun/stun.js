@@ -408,7 +408,10 @@ class Stun extends ModTemplate {
     };
 
     this.app.connection.emit("relay-send-message", data);
-    this.app.network.propagateTransaction(newtx);
+    setTimeout(()=> {
+      this.app.network.propagateTransaction(newtx);
+    },2000)
+   
   }
 
   receiveStunMessageToPeersTransaction(app, tx) {

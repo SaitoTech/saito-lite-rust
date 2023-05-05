@@ -13,16 +13,8 @@
   height: 30rem;
   width: auto;
   background-color: rgba(211, 195, 141, 0.96);
-  border: 5px solid #424143;
   background-color: #d3c38df5;
   padding: 1rem;
-  border-image: url(/settlers/img/border.png);
-  border-image-slice: 51;
-  border-image-width: 2.1rem;
-  border-image-repeat: stretch;
-  border-style: solid;
-  border-image-outset: 10px;
-  ;
 }
 
 .hud-header {
