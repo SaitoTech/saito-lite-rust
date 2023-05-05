@@ -80,6 +80,10 @@ console.log("MOVE: " + mv[0]);
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.render(); }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.render(); }
+	  if (mv[1] === "field_battle") {
+	    if (mv[2] === "post_field_battle_attackers_win") { this.field_battle_overlay.attackersWin(); }
+	    if (mv[2] === "post_field_battle_defenders_win") { this.field_battle_overlay.defendersWin(); }
+	  }
           this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -87,6 +91,7 @@ console.log("MOVE: " + mv[0]);
 	  if (mv[1] === "theses") { this.theses_overlay.hide(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.hide(); }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.hide(); }
+	  if (mv[1] === "field_battle") { this.field_battle_overlay.hide(); }
           this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -2514,6 +2519,8 @@ console.log(JSON.stringify(space.units[faction]));
           //
           if (winner === his_self.game.state.field_battle.defender_faction) {
 
+	    this.game.queue.push("show_overlay\tfield_battle\tpost_field_battle_defenders_win");
+
             for (let f in his_self.game.state.field_battle.faction_map) {
               let can_faction_retreat = 0;
               if (his_self.game.state.field_battle.faction_map[f] === his_self.game.state.field_battle.attacker_faction) {
@@ -2534,6 +2541,8 @@ console.log(JSON.stringify(space.units[faction]));
             }
           }
           if (winner === his_self.game.state.field_battle.attacker_faction) {
+
+	    this.game.queue.push("show_overlay\tfield_battle\tpost_field_battle_attackers_win");
 
             for (let f in his_self.game.state.field_battle.faction_map) {
               let can_faction_retreat = 0;

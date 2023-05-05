@@ -16,7 +16,6 @@ class FieldBattleOverlay {
     }
  
     pullHudOverOverlay() {
-
       //
       // pull GAME HUD over overlay
       //
@@ -25,7 +24,16 @@ class FieldBattleOverlay {
         document.querySelector(".hud").style.zIndex = overlay_zindex+1;
         this.mod.hud.zIndex = overlay_zindex+1;
       }
-
+    }
+    pushHudUnderOverlay() {
+      //
+      // push GAME HUD under overlay
+      //
+      let overlay_zindex = parseInt(this.overlay.zIndex);
+      if (document.querySelector(".hud")) {
+        document.querySelector(".hud").style.zIndex = overlay_zindex-2;
+        this.mod.hud.zIndex = overlay_zindex-2;
+      }
     }
 
     renderFortification(res={}) {
@@ -99,6 +107,7 @@ class FieldBattleOverlay {
     }
 
     attackersWin(res) {
+      this.pushHudUnderOverlay();
       this.render(res, 1);
       let obj = document.querySelector(".field-battle-overlay");
       obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
@@ -107,6 +116,7 @@ class FieldBattleOverlay {
     }
 
     defendersWin(res) {
+      this.pushHudUnderOverlay();
       this.render(res, 1);
       let obj = document.querySelector(".field-battle-overlay");
       obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
