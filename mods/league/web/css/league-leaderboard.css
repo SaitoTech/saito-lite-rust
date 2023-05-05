@@ -9,7 +9,12 @@
   text-transform: capitalize;
 }
 
-
+.saito-table-header { 
+  position: sticky;
+  top: -1px;
+  background: #3a393c;
+  z-index: 3;
+}
 
 .my-leaderboard-position{
   border: 1px solid var(--saito-primary);
@@ -23,3 +28,6 @@
   content: "\22B3";
   font-size: 1.5rem;
 }
+
+
+

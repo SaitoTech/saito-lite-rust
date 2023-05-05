@@ -317,6 +317,8 @@ class Poker extends GameTableTemplate {
     //
     this.displayBoard();
 
+    super.initializeGameStake(crypto, stake);
+
   }
 
   
@@ -1912,6 +1914,7 @@ console.log("> > > > > " + this.game.state.player_credit[player-1]);
 
     if (score1.hand_description == "royal flush" &&  score2.hand_description == "royal flush") {
       for (let i = 0; i < score1.cards_to_score.length; i++) {
+	// first card will be aces, so we only need to compare the first entry
         if (this.returnHigherCard(score1.cards_to_score[i], score2.cards_to_score[i]) == score1.cards_to_score[i]) {
           return 1;
         } else {

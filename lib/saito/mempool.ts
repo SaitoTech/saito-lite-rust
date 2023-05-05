@@ -445,6 +445,7 @@ console.log("done adding new block...");
 
   containsValidGoldenTicket(target_hash: string): boolean {
     if (this.mempool.golden_tickets.length > 0) {
+console.log(" mempool contains valid golden ticket... ");
       for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
         const gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
         if (gt.target_hash === target_hash) {
@@ -452,7 +453,13 @@ console.log("done adding new block...");
         }
       }
     }
+    //
+    // TEST - empty golden tickets array in case this is the cause of the bug where
+    // the server just hangs producing a block.
+    //
+    this.mempool.golden_tickets = [];
     return false;
+
   }
 
   async initialize() {
