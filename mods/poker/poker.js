@@ -932,7 +932,6 @@ console.log("WINNER CREDIT: " + this.game.state.player_credit[winners[i]]);
 
         // update logs and splash!
         let winner_html = `<div class="h2">` + winnerStr;
-
         if (winners.length == 1) {
           winner_html += " takes the pot!</div>";
         } else {
@@ -940,9 +939,15 @@ console.log("WINNER CREDIT: " + this.game.state.player_credit[winners[i]]);
         }
 
         winlist.forEach((pl) => {
-          this.updateLog(`${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description} <br>${ this.toHuman(pl.player_hand.cards_to_score)}`);
-          updateHTML = this.handToHTML(pl.player_hand.cards_to_score) + updateHTML;
-          updateHTML = `<div class="h3">${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description}</div>${updateHTML}`;
+          
+         
+          this.updateLog(`${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description} <br> ${ this.toHuman(pl.player_hand.cards_to_score)}`);
+
+          let player_hand = this.game.state.player_cards[pl.player].slice(0, 2);
+          updateHTML = `<div class="htmlCards">` + this.handToHTML(player_hand) + this.handToHTML(pl.player_hand.cards_to_score) + `</div>` + updateHTML;
+         
+
+          updateHTML = `<div class="h3">${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description}</div>${updateHTML}`;      
         });
 
         this.updateHTML = updateHTML;
