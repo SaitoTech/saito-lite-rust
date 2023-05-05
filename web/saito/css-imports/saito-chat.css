@@ -14,11 +14,14 @@
 }
 
 .chat-manager .saito-user {
+  padding: 0.5rem;
   padding-left: 1.5rem;
-  column-gap: 2rem;
-  margin-bottom: 0.5rem;
 }
 
+.chat-manager .saito-user:hover, .chat-manager .saito-user:hover .saito-address {
+  background-color: var(--saito-primary);
+  color: var(--saito-background-color);
+}
 
 /*  Chat / Popup  */
 
