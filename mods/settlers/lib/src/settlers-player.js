@@ -398,6 +398,18 @@
 
       });
 
+    if (
+      settlers_self.canPlayerBuildRoad(settlers_self.game.player) ||
+      settlers_self.canPlayerBuildTown(settlers_self.game.player) ||
+      settlers_self.canPlayerBuildCity(settlers_self.game.player) ||
+      settlers_self.canPlayerBuyCard(settlers_self.game.player)
+    ) {
+      html += `<li class="option" id="spend">spend</li>`;
+      can_do_something = true;
+    } else {
+      //html += `<li class="option noselect" id="nospend">spend resources</li>`;
+    }
+
     }
 
 
@@ -717,111 +729,6 @@
         });
       }
     }
-
-
-    /*                      
-    Interface to Trade with the bank
-    */        
-    // playerTradeWithBank() {
-    //   let settlers_self = this;
-    //   let my_resources = {}; 
-    //   let minForTrade = this.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
-                  
-    //   for (let resource of this.skin.resourceArray()) {
-    //     let temp = settlers_self.countResource(
-    //       settlers_self.game.player,
-    //       resource
-    //     );      
-    //     if (temp >= minForTrade[resource]) my_resources[resource] = temp;
-    //   }           
-                
-    //   if (Object.keys(my_resources).length > 0) {
-    //     let html = "<div class='tbd'>Select Resource to Trade: <ul class='bank'>";
-    //     for (let i in my_resources) {
-    //       html += `<li id="${i}" class="option">`;
-    //       for (let j = 0; j<minForTrade[i]; j++){
-    //         html += `<img class="icon" src="${settlers_self.skin.resourceIcon(i)}"/>`;
-    //       }   
-    //       //`${i} (${minForTrade[i]}/${my_resources[i]})</li>`;
-    //     }   
-    //     html += '<li id="cancel" class="option">cancel trade</li>';
-    //     html += "</ul>";
-    //     html += "</div>";
-      
-    //     settlers_self.updateStatus(html, 1);
-                      
-    //     $(".option").off();
-    //     $(".option").on("click", function () {
-    //       let res = $(this).attr("id");
-    //       if (res == "cancel") {
-    //         settlers_self.endTurn();
-    //         return;
-    //       }
-    
-    //       //Picked something to give, now pick something to get
-    //       html = "<div class='tbd'>Select Desired Resource: <ul class='bank horizontal_list'>";
-    //       for (let i of settlers_self.skin.resourceArray()) {
-    //         html += `<li id="${i}" class="iconoption option tip"><img class="icon" src="${settlers_self.skin.resourceIcon(i)}">
-    //           <div class="tiptext">${i}</div></li>`;
-    //       }
-    //       html += '<li id="cancel" class="option">cancel trade</li>';
-    //       html += "</ul>";
-    //       html += "</div>";
-    //       settlers_self.updateStatus(html, 1);
-
-    //       $(".option").off();
-    //       $(".option").on("click", function () {
-    //         let newRes = $(this).attr("id");
-    //         if (newRes == "cancel") {
-    //           settlers_self.endTurn();
-    //           return;
-    //         }
-
-    //         if (newRes == res) {
-    //           html = `<div class="tbd">Are you sure you want to discard ${
-    //             minForTrade[res] - 1
-    //           } ${res}s??
-    //                         <ul><li id="yes" class="option">Yes, Do it!</li>
-    //                         <li id="no" class="option">No way!</li></ul></div>`;
-    //           settlers_self.updateStatus(html, 1);
-    //           $(".option").off();
-    //           $(".option").on("click", function () {
-    //             let choice = $(this).attr("id");
-    //             if (choice == "yes") {
-    //               settlers_self.addMove(
-    //                 `bank\t${settlers_self.game.player}\t${minForTrade[res]}\t${res}\t1\t${newRes}`
-    //               );
-    //               settlers_self.endTurn();
-    //               return;
-    //             } else {
-    //               settlers_self.endTurn();
-    //               return;
-    //             }
-    //           });
-    //           return;
-    //         }
-
-    //         //Set up Trade
-    //         settlers_self.addMove(
-    //           `bank\t${settlers_self.game.player}\t${minForTrade[res]}\t${res}\t1\t${newRes}`
-    //         );
-    //         settlers_self.endTurn();
-    //         return;
-    //       });
-    //     });
-    //   } else {
-    //     let ackhtml = `<div class='tbd'>You don't have enough resources to trade with the bank</div>
-    //                   <ul><li class="option" id="okay">okay</li></ul>`;
-    //     settlers_self.updateStatus(ackhtml,1);
-    //     $(".option").off();
-    //     $(".option").on("click",function(){
-    //       settlers_self.playerPlayMove();
-    //       return;
-    //     });
-    //   }
-    // }
-
-
 
 
     canPlayerBuildRoad(player) {
