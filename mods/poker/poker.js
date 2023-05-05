@@ -943,12 +943,9 @@ console.log("WINNER CREDIT: " + this.game.state.player_credit[winners[i]]);
          
           this.updateLog(`${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description} <br> ${ this.toHuman(pl.player_hand.cards_to_score)}`);
 
-          if (pl.player == this.game.player) {
-            let player_hand = this.game.state.player_cards[this.game.player].slice(0, 2);
-            updateHTML = `<div class="htmlCards">` + this.handToHTML(player_hand) + this.handToHTML(pl.player_hand.cards_to_score) + `</div>` + updateHTML;
-          } else {
-            updateHTML = this.handToHTML(pl.player_hand.cards_to_score) + updateHTML;
-          }
+          let player_hand = this.game.state.player_cards[pl.player].slice(0, 2);
+          updateHTML = `<div class="htmlCards">` + this.handToHTML(player_hand) + this.handToHTML(pl.player_hand.cards_to_score) + `</div>` + updateHTML;
+         
 
           updateHTML = `<div class="h3">${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description}</div>${updateHTML}`;      
         });
