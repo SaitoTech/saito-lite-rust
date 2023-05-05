@@ -1,4 +1,3 @@
-
 .field-battle-overlay {
     background-image: url(/his/img/backgrounds/field_battle.jpg);
     background-size: cover;
@@ -26,13 +25,13 @@
 
 .field-battle-grid {
         display: grid;
-        grid-template-columns: 65rem 65rem;
-	padding: 4rem;
+        grid-template-columns: 50vw 50vw;
+        padding: 4rem;
         justify-items: center;
         justify-content: space-evenly;
 }
 
-.field-battle-grid .attacker, .field-battle-grid .defender {
+.field-battle-grid .attacker .field-battle-row, .field-battle-grid .defender .field-battle-row {
         display: grid;
         justify-items: right;
         background: #0005;
@@ -53,18 +52,17 @@
         border: 1px solid black;
         grid-column: 1 / span 2;
         grid-row: 1;
-	width: 50rem;
         padding: 1rem;
 }
 
 .field-battle-unit {
-    width: 20rem;
+    width: 80%;
     height: 5rem;
     padding: 0.75rem;
     font-size: 2rem;
     grid-column: 1;
     margin-left: 2rem;
-    margin-right: auto;
+    margin-right: 4vw;
     text-align: left;
 }
 
