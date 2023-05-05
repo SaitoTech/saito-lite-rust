@@ -116,6 +116,7 @@
 
 .shim-notice  .htmlCards{
   display: flex;
+  margin-right: 3rem;
 }
 
 .shim-notice .card {

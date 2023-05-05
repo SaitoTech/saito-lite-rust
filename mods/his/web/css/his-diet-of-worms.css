@@ -48,12 +48,6 @@
     margin-top: 16%;
 }
 
-/*
-.catholic>.card:nth-child(1) {
-  transform: rotate(-10deg);
-  z-index: 30;
-}
-*/
 .catholic>.card:nth-child(2) {
   transform: rotate(10deg);
   z-index: 29;

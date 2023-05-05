@@ -4,6 +4,8 @@
     border-radius: 0.5rem;
     background-color: var(--saito-background-color);
     position: relative;
+    width: 76.8rem;
+    height: 87.4rem;
     max-width: 100vw;
     max-height: 95vh;
     overflow-y: auto;

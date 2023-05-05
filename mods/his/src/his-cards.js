@@ -702,7 +702,7 @@ alert("Not Implemented");
       faction : "ottoman" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
-        if (menu == "field_battle_hits_assignment") {
+        if (menu == "pre_field_battle_hits_assignment") {
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('001')) {
@@ -715,7 +715,7 @@ alert("Not Implemented");
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
-        if (menu == "field_battle_hits_assignment") {
+        if (menu == "pre_field_battle_hits_assignment") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('001')) {
               return 1;
@@ -725,7 +725,7 @@ alert("Not Implemented");
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, extra) {
-        if (menu == "field_battle_hits_assignment") {
+        if (menu == "pre_field_battle_hits_assignment") {
           his_self.addMove("janissaries");
 	  his_self.endTurn();
 	  his_self.updateStatus("acknowledge");

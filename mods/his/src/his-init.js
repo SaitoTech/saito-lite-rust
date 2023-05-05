@@ -5,6 +5,7 @@ const FactionOverlay = require('./lib/ui/overlays/faction');
 const ReligiousOverlay = require('./lib/ui/overlays/religious');
 const ReformationOverlay = require('./lib/ui/overlays/reformation');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
+const FieldBattleOverlay = require('./lib/ui/overlays/field-battle');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const DebatersOverlay = require('./lib/ui/overlays/debaters');
 const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
@@ -44,6 +45,7 @@ class HereIStand extends GameTemplate {
     this.reformation_overlay = new ReformationOverlay(this.app, this);  // reformations and counter-reformations
     this.language_zone_overlay = new LanguageZoneOverlay(this.app, this);  // language zone selection
     this.debaters_overlay = new DebatersOverlay(this.app, this);  // language zone selection
+    this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
 
     //
     // this sets the ratio used for determining

@@ -15,7 +15,6 @@ class ChatManager {
     //
     // some apps may want chat manager quietly in background
     //
-    this.rendered = 0;
     this.render_manager_to_screen = 1;
     this.render_popups_to_screen = 1;
 
@@ -34,20 +33,10 @@ class ChatManager {
       }
     });
 
-
-    app.connection.on("chat-manager-and-popup-render-request", (group) => {
-      if (this.render_manager_to_screen) {
-        group.unread = 0;
-        this.render();
-        if (this.render_popups_to_screen) {
-          app.connection.emit("chat-popup-render-request", (group));
-        }
-      }
-    });
-
     app.connection.on("chat-manager-request-no-interrupts", () => {
       this.render_popups_to_screen = 0;
     });
+
 
     //
     // handle requests to re-render chat popups
@@ -64,16 +53,21 @@ class ChatManager {
         }
       }
 
-      if (group == null) {
-        let group = this.mod.returnCommunityChat();
-        if (group != null) { this.app.connection.emit("chat-popup-render-request", (group)); }
-      } else {
+      if (!group) {
+        group = this.mod.returnCommunityChat();
+      } 
+
+      if (group) {
         if (this.render_popups_to_screen) {
           if (!this.popups[group.id]) {
             this.popups[group.id] = new ChatPopup(this.app, this.mod, "");
             this.popups[group.id].group = group;
           }
           this.popups[group.id].render();
+        }
+
+        if (this.render_manager_to_screen) {
+          this.render();
         }
       }
     });
@@ -123,16 +117,15 @@ class ChatManager {
     });
 
 
+    // This is a short cut for any other UI components to trigger the chat-popup window
+    // (in the absence of a proper chat-manager listing the groups/contacts)
 
     app.connection.on("open-chat-with", (data = null) => {
 
       this.render_popups_to_screen = 1;
 
-      //
-      // mobile devices should not force open chat for us
-      //
-      if (app.browser.isMobileBrowser()) {
-        return;
+      if (this.mod.debug) {
+        console.log("open-chat-with");
       }
 
       if (!data) {
@@ -185,8 +178,6 @@ class ChatManager {
     //
     for (let group of this.mod.groups) {
 
-      if (!group.unread) { group.unread = 0; }
-
       // {
       //   id: id,
       //   members: members,
@@ -217,7 +208,6 @@ class ChatManager {
       }
     }
 
-    this.rendered = 1;
     this.attachEvents();
 
   }

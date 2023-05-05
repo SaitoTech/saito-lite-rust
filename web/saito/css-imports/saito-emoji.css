@@ -1,19 +1,6 @@
-/*.saito-emoji-container {
-  position: relative;
-  z-index: 2000;
-}
 
-.saito-emoji {
-  position: absolute;
-  right: 0.75rem;
-  bottom: 0.4rem;
-  font-size: 2rem;
-  color: var(--saito-primary);
-  cursor: pointer;
-}
-*/
 emoji-picker {
-  position: fixed;
+  position: absolute;
   height: 40rem;
   bottom: 7rem;
   width: 30rem;
@@ -25,4 +12,16 @@ emoji-picker {
 
 .saito-emoji-container {
   width: 100%;
+  position: relative;
+}
+
+.saito-emoji {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 0.8rem 0.5rem;
+  color: var(--saito-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 2rem;
 }
