@@ -506,6 +506,8 @@ class SettlersState {
                 usingDev = true;
                 for (let x = 0; x < this.game.deck[0].hand.length; x++) {
                     let card = this.game.deck[0].cards[this.game.deck[0].hand[x]];
+                    console.log("card ////////////////");
+                    console.log(card);
                     cards += `<div class="card tip"><img src="${card.img}">
                     <div class="cardtitle">${card.card}</div>
                     <div class="cardrules">${this.skin.rules[card.action]}</div>

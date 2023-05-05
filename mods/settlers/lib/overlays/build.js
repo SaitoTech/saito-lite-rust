@@ -42,7 +42,7 @@ class BuildOverlay {
   }
 
   returnCardImg(resource, disabled = false){
-    return `<img class="${disabled ? `card-disabled` : ``}" src="/settlers/img/cards/${resource}.png">`;
+    return `<img class="${disabled ? `settlers-card-disabled` : ``}" src="/settlers/img/cards/${resource}.png">`;
   }
 
 }
