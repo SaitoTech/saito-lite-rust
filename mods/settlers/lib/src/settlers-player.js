@@ -382,8 +382,7 @@
           return;
         }
         if (id === "playcard") {
-          // alert("i am here inside player");
-          // settlers_self.dev_card.render();
+          settlers_self.dev_card.render();
           //settlers_self.playerPlayCard();
           return;
         }
