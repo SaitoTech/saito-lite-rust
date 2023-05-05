@@ -44,16 +44,16 @@
 }
 
 .build-overlay .settlers-item-row::after {
-   transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
   content: "Build";
   width: 100%;
   height:13rem;
-  border:1px solid #331800;
+  border:5px solid #331800;
   position: absolute;
   background: #ab815f;
   cursor: pointer;
   line-height: 13rem;
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   opacity: 0;
   z-index: 2;
   white-space: pre;

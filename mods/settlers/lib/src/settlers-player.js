@@ -137,7 +137,7 @@
       } else {
         /* During game, must build roads to open up board for new settlements*/
         if (canBackUp){
-          this.updateStatus(`<div class="tbd">You may build a ${this.skin.c1.name}...</div><ul><li class="undo">don't build ${this.skin.c1.name}</li></ul>`);
+          this.updateStatus(`<div class="tbd">You may build a ${this.skin.c1.name}...</div><ul><li class="undo">cancel</li></ul>`);
           $(".undo").on("click",function(){
             //Make sure the confirm popup goes away
             $(".action").off();
@@ -192,7 +192,7 @@
     playerUpgradeCity(player, canBackUp = 0) {
 
       if (canBackUp){
-        this.updateStatus(`<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div><ul><li class="undo">don't build ${this.skin.c2.name}</li></ul>`);
+        this.updateStatus(`<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div><ul><li class="undo">cancel</li></ul>`);
         $(".undo").on("click",function(){
           //Make sure the confirm popup goes away
           $(".action").off();
@@ -281,7 +281,7 @@
         });
       } else {
         if (canBackUp){
-          this.updateStatus(`<div class="tbd">You may build a ${this.skin.r.name}...</div><ul><li class="undo">don't build ${this.skin.r.name}</li></ul>`);
+          this.updateStatus(`<div class="tbd">You may build a ${this.skin.r.name}...</div><ul><li class="undo">cancel</li></ul>`);
           $(".undo").on("click",function(){
             //Make sure the confirm popup goes away
             $(".action").off();
@@ -347,10 +347,10 @@
         settlers_self.canPlayerBuyCard(settlers_self.game.player)
       ) {
 
-        html += `<li class="option" id="spend">spend resources</li>`;
+        html += `<li class="option" id="spend">spend</li>`;
         can_do_something = true;
       } else {
-        //html += `<li class="option noselect" id="nospend">spend resources</li>`;
+        //html += `<li class="option noselect" id="nospend">spend</li>`;
       }
 
       html += `<li class="option" id="pass">pass dice</li>`;
@@ -382,8 +382,7 @@
           return;
         }
         if (id === "playcard") {
-          // alert("i am here inside player");
-          // settlers_self.dev_card.render();
+          settlers_self.dev_card.render();
           //settlers_self.playerPlayCard();
           return;
         }
@@ -407,7 +406,7 @@
       html += `<li class="option" id="spend">spend</li>`;
       can_do_something = true;
     } else {
-      //html += `<li class="option noselect" id="nospend">spend resources</li>`;
+      //html += `<li class="option noselect" id="nospend">spend</li>`;
     }
 
     }
