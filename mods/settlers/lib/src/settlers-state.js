@@ -584,20 +584,21 @@ class SettlersState {
               newhtml += `<div class="token">${this.skin.vp.svg}</div>`;
             }
             if (this.game.state.largestArmy.player == i) {
-              newhtml += `<div class="token" title="${this.skin.largest.name}">${this.skin.largest.svg}</div>`;
+                newhtml += `<div class="token army largest" title="${this.skin.largest.name}">`;
+            } else {
+                newhtml += `<div class="token army" title="${this.skin.largest.name}">`;
             }
+            for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
+              newhtml += this.skin.s.img;
+            }
+            newhtml += `</div>`;
+             
             if (this.game.state.longestRoad.player == i) {
-              newhtml += `<div class="token" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
+              newhtml += `<div class="token longest-road" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
             }
             newhtml += `</div>`;
 
-            if (this.game.state.players[i - 1].knights > 0) {
-              newhtml += `<div class="flexline2">`;
-              for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
-                newhtml += this.skin.s.img;
-              }
-              newhtml += `</div>`;
-            }
+         
 
             //For opponents, summarize their hands numerically
             if (this.game.player != i) {

@@ -1164,3 +1164,27 @@ ul.horizontal_list li.iconoption {
     transform: scale(0.6);
   }
 }
+
+
+.player-box-info .army img {
+  width: 4rem;
+  margin: 0 0 0 -2rem;
+}
+
+.player-box-info .army {
+  display: flex;
+  flex-direction: row;
+  padding: 0 0 0 2rem;
+}
+
+.longest-road img {
+  width: 3rem;
+}
+
+.token img {
+  transition: all ease-in-out 300ms;
+}
+
+.token img:hover {
+  transform: scale(3);
+}
