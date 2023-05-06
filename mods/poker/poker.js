@@ -199,19 +199,7 @@ class Poker extends GameTableTemplate {
     this.playerbox.addClassAll("poker-seat-", true);
     this.playerbox.addStatus(); //enable update Status to display in playerbox
 
-    try{
-      // removed
-      //document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
-      //if (this.game.state.button_player <= this.game.players.length && this.game.state.button_player > 0){
-      //  document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
-      //}
-    } catch(err) {
-      console.log("Error initializing scoreboard",err);
-    }
-
-
     if (this.game?.options?.crypto){
-
       if (this.game.options.crypto == "TRX"){
         try{
           if (!document.querySelector(".crypto_logo")){
@@ -257,7 +245,6 @@ class Poker extends GameTableTemplate {
         }
       }
     }
-
 
     //
     // gametabletemplate adds a scoreboard DIV that shows HIDE / LEAVE / JOIN instructions
@@ -352,12 +339,7 @@ class Poker extends GameTableTemplate {
   // returns "true" or "false" based on need to settle
   //
   needToSettleDebt(){
-
-console.log("NTSD: 1");
-
     if (!this.game.crypto || this.settleNow) { return false; }
-console.log("NTSD: 2");
-
     if (this.toLeave.length > 0){
       return true;
     }
@@ -366,8 +348,6 @@ console.log("NTSD: 2");
         return true;
       }
     }
-console.log("NTSD: 3");
-
     return false;
   }
 
@@ -375,13 +355,8 @@ console.log("NTSD: 3");
   // adds settlement instructions to queue for processing
   //
   settleDebt(){
-
-console.log("SETTLE: " + JSON.stringify(this.game.state.debt));
-
     for (let i = 0; i < this.game.state.debt.length; i++){
-      //Player i+1 owes money
       if (this.game.state.debt[i] > 0){
-        //But to whom
         for (let j = 0; j < this.game.state.debt.length; j++){
           if (this.game.state.debt[j] < 0){
             let amount_to_send = Math.min(this.stf(this.game.state.debt[j]),this.stf(this.game.state.debt[i]));
@@ -417,27 +392,18 @@ console.log("SETTLE: " + JSON.stringify(this.game.state.debt));
       this.settleDebt(); 
     }
 
-console.log("CRYPTO: " + this.game.crypto);
-console.log("SETTLE? " + this.settleNow);
-
     if (this.game.crypto != "" && this.game.crypto != "CHIPS" && this.settleNow == true) {
-
       msg += " and settling bets...";
-
       for (let i = 0; i < this.settlement.length; i++) {
         this.game.queue.push(this.settlement[i]);
       }
-
     } else {
       msg += "...";
     }
 
     this.cardfan.hide();
-
     this.updateStatus(msg);
-   
     this.settlement = [];
-
 
   }
 
@@ -451,29 +417,17 @@ console.log("SETTLE? " + this.settleNow);
       this.updateLog(`Player ${(i + 1)}${i+1 == this.game.state.button_player ? " (dealer)":""}: ${this.game.state.player_names[i]} (${this.formatWager(this.game.state.player_credit[i], true)})`);
     }
  
-    try {   
-      if (this.browser_active){
-        //document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
-        //document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
-      }
-    } catch (err) {}
-
     this.initializeQueue();
 
   }
 
-   /*
-  Called by initializeGame 
-  */
   initializeQueue() {
 
     this.game.queue = [];
 
     this.game.queue.push("ante");
     this.game.queue.push("READY");
-    this.game.queue.push("POOL\t1"); // CREATE or RESET pool for cards on table
-
-    //Deal two cards to everyone
+    this.game.queue.push("POOL\t1");
     this.game.queue.push(`SIMPLEDEAL\t2\t1\t`+ JSON.stringify(this.returnDeck()));
   }
 
@@ -492,9 +446,6 @@ console.log("SETTLE? " + this.settleNow);
         this.updatePot(); //to update pot  
       }
 
-      console.log("QUEUE: " + JSON.stringify(this.game.queue));
-      //this.outputState();
-
       if (mv[0] === "winner") {
         this.displayPlayers(true); //to update chips before game_over
         this.game.queue = [];
@@ -509,7 +460,6 @@ console.log("SETTLE? " + this.settleNow);
         this.game.state.round++;
 
         //Shift dealer, small blind, and big blind
-
         this.game.state.button_player--; //dealer
         if (this.game.state.button_player < 1) {
           this.game.state.button_player = this.game.players.length;
