@@ -352,6 +352,9 @@ console.log("---------------------");
       async returnBalance() {
         return parseFloat(this.app.wallet.returnBalance());
       }
+      returnHistory(mycallback=null, order="DESC", limit=20) {
+	return [];
+      }
       returnAddress() {
         return this.app.wallet.returnPublicKey();
       }
