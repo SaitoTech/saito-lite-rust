@@ -315,14 +315,9 @@
   color: var(--saito-font-color-heavy);
 }
 
-/********************************************************/
-
-/********    Checking balance overlay       *************/
-
 
 .auth_title {
   font-size: 3.5rem;
-  margin-bottom: 1rem;
 }
 
 
