@@ -130,16 +130,17 @@ webpack({
       {
         test: /\.tsx?$/,
         loader: "ts-loader",
-        exclude: [
-          {
-            and: [path.resolve(__dirname,"node_modules")],
-            // TODO : remove ts loadup entirely
-            // not: [path.resolve(__dirname,"node_modules/saito-js")]
-          }
-        ],
-        resolve: {
-          fullySpecified:false
-        }
+        exclude: /(node_modules)/
+        // exclude: [
+        //   {
+        //     and: [path.resolve(__dirname,"node_modules")],
+        //     // TODO : remove ts loadup entirely
+        //     // not: [path.resolve(__dirname,"node_modules/saito-js")]
+        //   }
+        // ],
+        // resolve: {
+        //   fullySpecified:false
+        // }
         // options:{
         //   allowTsInNodeModules: true
         // }
@@ -160,17 +161,17 @@ webpack({
           },
         ],
         // exclude: /(node_modules)/,
-        resolve: {
-          fullySpecified:false
-        }
+        // resolve: {
+        //   fullySpecified:false
+        // }
       },
       {
         test: /\.mjs$/,
         exclude: /(node_modules)/,
         type: "javascript/auto",
-        resolve: {
-          fullySpecified:false
-        }
+        // resolve: {
+        //   fullySpecified:false
+        // }
       },
       {
         test: /html$/,

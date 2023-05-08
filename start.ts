@@ -1,14 +1,9 @@
-// import "source-map-support/register";
-
 import Server, { NodeSharedMethods } from "./lib/saito/core/server";
 import StorageCore from "./lib/saito/core/storage-core";
 import { Saito } from "./apps/core";
-import SharedMethods from "saito-js/shared_methods";
 import S, { initialize as initS } from "saito-js/index.node";
 import mods_config from "./config/modules.config";
-import fs from "fs";
 import process from "process";
-import { WebSocket, WebSocketServer } from "ws";
 import configs from "./config/configs.json";
 import Factory from "./lib/saito/factory";
 import Wallet from "./lib/saito/wallet";
