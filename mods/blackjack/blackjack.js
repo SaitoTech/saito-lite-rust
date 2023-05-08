@@ -62,17 +62,6 @@ class Blackjack extends GameTableTemplate {
       }
     });
 
-/***
-    this.menu.addSubMenuOption("game-info", {
-      text : "Stats",
-      id : "game-stats",
-      class : "game-stats",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.handleStatsMenu();
-      }
-    });
-****/
 
     this.menu.addChatMenu();
     this.menu.render();
@@ -600,6 +589,8 @@ class Blackjack extends GameTableTemplate {
 
         if (!doINeedToBet){
           this.updateStatus(`Waiting for ${statusMsg} to place their bets.`);
+        } else {
+alert("I SHOULD BET!");
         }
 
         if (betsNeeded == 0){
@@ -787,14 +778,15 @@ class Blackjack extends GameTableTemplate {
   }
 
   selectWager(){
+
     let blackjack_self = this;
-        
+
     //Should be tied to the stake, 1%, 5%, 10%, 20%
     
     let fractions = [0.01, 0.05, 0.1];
     let myCredit = this.game.state.player[blackjack_self.game.player-1].credit
 
-    let html = `<div class="status-info">Select a wager: (credit: ${this.app.crypto.convertStringToDecimalPrecision(myCredit)})</div>`;
+    let html = `<div class="status-info">select wager: (credit: ${this.app.crypto.convertStringToDecimalPrecision(myCredit)})</div>`;
     html += '<ul>';
     for (let i = 0; i < fractions.length; i++){
       if (fractions[i]*this.game.stake<myCredit)
@@ -806,7 +798,12 @@ class Blackjack extends GameTableTemplate {
     }
     html += '</ul>';
 
-    this.updateStatus(this.getLastNotice()+html, 1);
+console.log("UPDATING TO: " + html);
+
+    this.updateStatus(this.getLastNotice()+html, 0);
+
+alert("done updating status!");
+
     this.lockInterface();
     try {
       $('.menu_option').off();
@@ -847,7 +844,7 @@ class Blackjack extends GameTableTemplate {
       html += "</ul>";      
     }
    
-    this.updateStatus(html, 1);
+    this.updateStatus(html, 0);
     this.lockInterface();
 
     
@@ -912,7 +909,9 @@ class Blackjack extends GameTableTemplate {
         let newhtml = '';
         let player_hand_shown = 0;
 
+        this.refreshPlayerLog("", i+1);
         this.playerbox.refreshName(i+1);
+	let seat = this.playerbox.playerBox(i+1);
 
         if (this.game.state.player[i].wager>0 && this.game.state.dealer !== (i+1)){
           newhtml = `<div class="chips">${(this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].credit-this.game.state.player[i].wager))} ${this.game.crypto || "SAITO"}, Bet: ${this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].wager)}</div>`;
@@ -920,13 +919,17 @@ class Blackjack extends GameTableTemplate {
           newhtml = `<div class="chips">${this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].credit)} ${this.game.crypto || "SAITO"}</div>`;
         }
         
-        if (this.game.state.dealer == (i+1)) {
-          newhtml += `<div class="player-notice dealer">DEALER</div>`;  
-        }else{
-          newhtml += `<div class="player-notice">Player ${i+1}</div>`;  
-        }
-        //
-        this.playerbox.refreshInfo(newhtml, (i+1));
+	let qs = `#player-box-head-${seat} .saito-user .saito-userline`;
+	let obj = document.querySelector(qs);
+
+	if (obj) {
+          if (this.game.state.dealer == (i+1)) {
+            obj.innerHTML = `dealer`;  
+          }else{
+            obj.innerHTML = `normal`;  
+          }
+	}
+
         newhtml = "";
 
         //Check for backup hands
@@ -946,24 +949,23 @@ class Blackjack extends GameTableTemplate {
         }
 
         if (this.game.player !== i+1 && this.game.state.player[i].total!==0){
-          this.playerbox.refreshLog(newhtml+`<div class="status-info">Hand Score: ${(this.game.state.player[i].total>0) ? this.game.state.player[i].total : "Bust"}</div>`,i+1);  
+          this.refreshPlayerLog(newhtml+`<div class="status-info">Hand Score: ${(this.game.state.player[i].total>0) ? this.game.state.player[i].total : "Bust"}</div>`,i+1);  
         }
         
 
+/***
         //Make Image Content       
         if (this.game.state.player[i].hand && this.game.player !== i+1) {
             newhtml = "";
-
             for (let y = this.game.state.player[i].hand.length; y< 2; y++){
               newhtml += `<img class="card" src="${this.card_img_dir}/red_back.png">`;
             }      
             for (let c of this.game.state.player[i].hand) { // show all visible cards
               newhtml += `<img class="card" src="${this.card_img_dir}/${c}.png">`;
             }
-                    
-            this.playerbox.refreshGraphic(newhtml, (i+1));
+            this.refreshPlayerLog(newhtml, (i+1));
         }
-          
+***/      
         
       }
     } catch (err) {
@@ -985,21 +987,19 @@ class Blackjack extends GameTableTemplate {
       this.cardfan.render(cardhtml);
 
       //Add split hands
-      if (this.game.state.player[this.game.player-1].split.length>0){
+      if (this.game.state.player[this.game.player-1].split.length > 0) {
         let newhtml = "";
         for (let z = 0; z<this.game.state.player[this.game.player-1].split.length; z++){
           let ts = this.scoreArrayOfCards(this.game.state.player[this.game.player-1].split[z]);
-        
           newhtml += (ts>0)? `<span>Score: ${ts}</span>` : `<span>Bust</span>`;
-          
           newhtml += `<div class="splithand">`;
           newhtml += this.handToHTML(this.game.state.player[this.game.player-1].split[z]);
           newhtml += "</div>";
-       }
-       this.playerbox.refreshGraphic(newhtml);
-       $("#player-box-graphic-1").removeClass("hidden-playerbox-element");
-      }else{
-        $("#player-box-graphic-1").addClass("hidden-playerbox-element");
+        }
+       this.refreshPlayerLog(newhtml, this.game.player);
+//       $("#player-box-graphic-1").removeClass("hidden-playerbox-element");
+      } else {
+//        $("#player-box-graphic-1").addClass("hidden-playerbox-element");
       }
     } catch (err) {
      console.error("Display Hand err: " + err);
@@ -1345,11 +1345,17 @@ class Blackjack extends GameTableTemplate {
     since it is mostly being used to update the DOM for user interface
   */
   updateStatus(str, hide_info=0) {
-    
+
+    if (str.indexOf('<') == -1) {
+      str = `<div style="padding-top:2rem">${str}</div>`;
+    }
+  
     try {
       if (hide_info == 0) {
+console.log("show!");
         this.playerbox.showInfo();
       } else {
+console.log("hide!");
         this.playerbox.hideInfo();
       }
 
@@ -1359,10 +1365,16 @@ class Blackjack extends GameTableTemplate {
     
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".status");
-        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
+        let seat = this.playerbox.playerBox(this.game.player);
+        if (status_obj) {
+console.log("directly add to status");
           status_obj.innerHTML = str;
+        } else {
+console.log("indirectly add to status");
+          this.app.browser.addElementToSelector(`<div class="status">${str}</div>`, `#player-box-body-${seat}`);
         }
       }
+
     } catch (err) { 
       console.error("ERR: " + err);
     }
@@ -1380,6 +1392,40 @@ class Blackjack extends GameTableTemplate {
 
 
 
+
+  refreshPlayerStack(player) {
+        
+    if (!this.browser_active) { return; }
+
+    let html = "";
+    let innerhtml = "";
+    let balance = this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[player-1].credit);
+
+    if (this.game.state.player.length >= player) {
+      innerhtml = `<div class="saito-balance" style="float:right">${balance}</div>`;
+    }
+          
+    let seat = this.playerbox.playerBox(player);
+    let qs = `#player-box-body-${seat} .menu-player-upper`;
+    if (document.querySelector(qs)) {
+      document.querySelector(qs).innerHTML = innerhtml;
+    } else {
+      let qs = `#player-box-body-${seat}`;
+      if (document.querySelector(qs)) {
+        document.querySelector(qs).innerHTML = `<div class="menu-player-upper">${innerhtml}</div>`;
+      } 
+    } 
+
+  }
+
+  refreshPlayerLog(html, player) {
+console.log("RPLP: " + player);
+console.log("RPL: " + html);
+
+    if (html.indexOf("menu-player-upper") == -1) { html = '<div class="menu-player-upper"></div>' + html; }
+    this.playerbox.refreshLog(html, player);
+    this.refreshPlayerStack(player, false);
+  }
 
 }
 

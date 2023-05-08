@@ -1131,25 +1131,21 @@ class Poker extends GameTableTemplate {
           if (raise_portion > 0) {
             this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}to ${this.formatWager(this.game.state.player_pot[player - 1])}`);
             if (this.game.player !== player && this.browser_active) {
-alert("inserting raises into player log...");
 	      this.refreshPlayerLog(`<div class="plog-update">raises ${this.formatWager(raise_portion)}</div>`, player);
 	    }
           } else {
             this.updateLog(`${this.game.state.player_names[player - 1]} calls ${this.formatWager(call_portion)}`);
             if (this.game.player !== player && this.browser_active) {
-alert("inserting raises into player log...");
               this.refreshPlayerLog(`<div class="plog-update">calls ${this.formatWager(call_portion)}</div>`, player);
             }
           }
         } else {
           this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}to ${this.formatWager(this.game.state.player_pot[player - 1])}`);
           if (this.game.player !== player && this.browser_active) {
-alert("inserting raises into player log...");
 	    this.refreshPlayerLog(`<div class="plog-update">raises ${this.formatWager(raise)}</div>`, player);
 	  }
         }
         this.game.queue.splice(qe, 1);
-alert("done nserting and update stack...");
         this.refreshPlayerStack(player, true); //Here we don't want to hide cards
 
         return 1;
@@ -1661,12 +1657,6 @@ alert("TESTING");
         document.querySelector(qs).innerHTML = `<div class="menu-player-upper">${innerhtml}</div>`;
       }
     }
-
-
-    let qs2 = `#player-box-body-${seat}`;
-let obj = document.querySelector(qs2);
-console.log("AFTER REFRESH STACK: " + JSON.stringify(obj.innerHTML));
-
 
 /*******
 ******** Graphics Removed
