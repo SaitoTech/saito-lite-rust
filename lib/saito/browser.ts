@@ -655,6 +655,18 @@ console.log("fetching id: " + qrid);
     }
   }
 
+  replaceElementContentBySelector(html, selector="") {
+    if (selector === "") {
+      console.warn("no selector provided to replace, so adding direct to DOM");
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.querySelector(selector);
+      if (obj) {
+        obj.innerHTML = html;
+      }
+    }
+  }
+
   addElementToSelectorOrDom(html, selector = "") {
     if (selector === "") {
       console.warn("no selector provided to add to, so adding direct to DOM");
