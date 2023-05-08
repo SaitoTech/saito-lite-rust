@@ -9,6 +9,35 @@ body {
   height: 100vh;
 }
 
+.status ul .menu-option {
+  text-tranform: unset;
+}
+
+.poker-seat-1 {
+  height: 28rem;
+  min-height: 28rem;
+}
+
+
+.player-box-graphic.hand {
+  position: absolute;
+}
+
+.player-box.hide-scrollbar {
+  overflow: unset;
+  min-height: unset;
+}
+
+.player-box-body .status {
+    font-size: 1.7rem;
+    line-height: 2.2rem;
+}
+
+.player-box-body .status .status-header .status-message {
+  box-shadow: none;
+}
+
+
 .menu-player-upper {
   font-size: 1.4rem;
   font-weight: bolder;

@@ -259,6 +259,8 @@ class Browser {
           e.target?.classList?.contains("saito-identicon") || e.target?.classList?.contains("saito-address")
         ) {
 
+console.log("clicking on identicon...");
+
           let disable_click = e.target.getAttribute("data-disable");
           let publickey = e.target.getAttribute("data-id");
           if (!publickey || !app.crypto.isPublicKey(publickey) || disable_click === "true") {
