@@ -10,6 +10,9 @@ const linkifyHtml = require("markdown-linkify");
 const emoji = require("node-emoji");
 const UserMenu = require("./ui/modals/user-menu/user-menu");
 const MyUserMenu = require("./ui/modals/my-user-menu/my-user-menu");
+const Deposit = require('./ui/saito-crypto/overlays/deposit');
+const Withdraw = require('./ui/saito-crypto/overlays/withdraw');
+const History = require('./ui/saito-crypto/overlays/history');
 
 
 class Browser {
@@ -38,6 +41,7 @@ class Browser {
     this.protocol = "";
 
     this.identifiers_added_to_dom = false;
+
 
     //
     // tells us the browser window is visible, as opposed to
@@ -198,6 +202,17 @@ class Browser {
           this.app.modules.mods[i].handleUrlParams(urlParams);
         }
       }
+
+
+      //
+      // crypto overlays, add so events will listen. this assumes
+      // games do not have saito-header installed.
+      //
+      this.deposit_overlay = new Deposit(this.app, this.app.modules.returnActiveModule());
+      this.withdrawal_overlay = new Withdraw(this.app, this.app.modules.returnActiveModule());
+      this.history_overlay = new History(this.app, this.app.modules.returnActiveModule());
+
+
 
       //
       // check if we are already open in another tab -
@@ -523,9 +538,11 @@ class Browser {
   //////////////////////////////////
   // Browser and Helper Functions //
   //////////////////////////////////
-  generateQRCode(data) {
+  generateQRCode(data, qrid="qrcode") {
     const QRCode = require("./../helpers/qrcode");
-    return new QRCode(document.getElementById("qrcode"), data);
+console.log("fetching id: " + qrid);
+    let obj = document.getElementById(qrid);
+    return new QRCode(obj, data);
   }
 
   isElementVisible(elem = null) {

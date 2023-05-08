@@ -1,0 +1,39 @@
+.saito-crypto-deposit-container {
+	padding: 3rem;
+    background: var(--saito-background-color);
+    color: var(--saito-font-color);
+}
+
+.saito-crypto-deposit-container {
+	    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    text-align: center;
+    align-items: center;
+}
+
+.saito-crypto-deposit-container .profile-public-key {
+    width: 95%;
+}
+
+.saito-crypto-deposit-container .pubkey-containter {
+    width: 30rem;
+}
+
+.saito-crypto-deposit-container .balance-amount {
+    margin-right: 0rem;
+}
+
+#deposit-qrcode img {
+	height: auto;
+	max-width: 20rem;
+	width: 20vh;
+	border: 2px solid var(--saito-black);
+	padding: 0.5rem;
+	border-radius: 0.5rem;
+	background: var(--saito-white);
+}
+
+.deposit-ticker {
+	font-size: 3rem;
+}

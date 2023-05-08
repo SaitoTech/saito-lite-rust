@@ -5,6 +5,7 @@ const FactionOverlay = require('./lib/ui/overlays/faction');
 const ReligiousOverlay = require('./lib/ui/overlays/religious');
 const ReformationOverlay = require('./lib/ui/overlays/reformation');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
+const FieldBattleOverlay = require('./lib/ui/overlays/field-battle');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const DebatersOverlay = require('./lib/ui/overlays/debaters');
 const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
@@ -44,6 +45,7 @@ class HereIStand extends GameTemplate {
     this.reformation_overlay = new ReformationOverlay(this.app, this);  // reformations and counter-reformations
     this.language_zone_overlay = new LanguageZoneOverlay(this.app, this);  // language zone selection
     this.debaters_overlay = new DebatersOverlay(this.app, this);  // language zone selection
+    this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
 
     //
     // this sets the ratio used for determining
@@ -2393,7 +2395,15 @@ console.log("\n\n\n\n");
       }
     });
     this.menu.addMenuOption("game-cards", "Cards");
-    
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Field Battle",
+      id : "game-field-battle",
+      class : "game-field_battle",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.field_battle_overlay.renderFortification();
+      }
+    });
     this.menu.addSubMenuOption("game-cards", {
       text : "Religion",
       id : "game-religious-conflict",
@@ -3331,7 +3341,7 @@ alert("Not Implemented");
       faction : "ottoman" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
-        if (menu == "field_battle_hits_assignment") {
+        if (menu == "pre_field_battle_hits_assignment") {
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('001')) {
@@ -3344,7 +3354,7 @@ alert("Not Implemented");
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
-        if (menu == "field_battle_hits_assignment") {
+        if (menu == "pre_field_battle_hits_assignment") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('001')) {
               return 1;
@@ -3354,7 +3364,7 @@ alert("Not Implemented");
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, extra) {
-        if (menu == "field_battle_hits_assignment") {
+        if (menu == "pre_field_battle_hits_assignment") {
           his_self.addMove("janissaries");
 	  his_self.endTurn();
 	  his_self.updateStatus("acknowledge");
@@ -11318,6 +11328,10 @@ console.log("MOVE: " + mv[0]);
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.render(); }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.render(); }
+	  if (mv[1] === "field_battle") {
+	    if (mv[2] === "post_field_battle_attackers_win") { this.field_battle_overlay.attackersWin(); }
+	    if (mv[2] === "post_field_battle_defenders_win") { this.field_battle_overlay.defendersWin(); }
+	  }
           this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -11325,6 +11339,7 @@ console.log("MOVE: " + mv[0]);
 	  if (mv[1] === "theses") { this.theses_overlay.hide(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.hide(); }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.hide(); }
+	  if (mv[1] === "field_battle") { this.field_battle_overlay.hide(); }
           this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -11852,8 +11867,6 @@ return 0; }
 	                this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
 	                this.game.queue.splice(lqe, 0, "fortification_check\t"+faction+"\t"+destination+"\t"+source);
 		      }
-                      this.game.queue.splice(lqe, 0, "RESETCONFIRMSNEEDED\tall");
-	    	      this.game.queue.splice(lqe, 0, "counter_or_acknowledge\tField Battle is about to begin in "+destination + "\tfield_battle");
 	              this.game.queue.splice(lqe, 0, "field_battle\t"+space.key+"\t"+faction);
 	            }
 	          }
@@ -11897,21 +11910,14 @@ return 0; }
 	  // have 4 or less land units
 	  //
 	  for (f in this.factions) {
-
-console.log("CHECK 1: " + f + " -- " + attacker);
-
 	    if (f !== attacker && this.isSpaceControlled(spacekey, f)) {
-
-console.log("CHECK 1: " + f + " -- " + attacker);
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
 	      if (fluis == 0) {
-
 		//
 		// no troops - skip
 		//
-
 	      } else {
 
 	        if (fluis > 4) {
@@ -12003,16 +12009,19 @@ console.log("CHECK 1: " + f + " -- " + attacker);
 	  let player = parseInt(mv[2]);
 	  let faction = mv[3];
 	  let spacekey = mv[4];
+          let space = this.game.spaces[spacekey];
 
 	  if (this.game.player == player) {
+	    this.field_battle_overlay.renderFortification(this.game.state.field_battle);
 	    this.playerEvaluateFortification(attacker, faction, spacekey);
 	  } else {
 	    if (this.isPlayerControlledFaction(faction)) {
-console.log("3. PLAYER IS CONTROLLED as: " + player);
+	      this.field_battle_overlay.renderFortification(this.game.state.field_battle);
+	      this.field_battle_overlay.updateinstructions(faction + " considering fortification");
 	      this.updateStatus(faction + " considering fortification");
 	      this.updateLog(faction + " evaluating retreat into fortification");
 	    } else {
-console.log("4. PLAYER IS DEFINED as: " + player);
+
 	      //
 	      // non-player controlled, minor power or independent, so auto-handle
 	      //
@@ -12053,11 +12062,9 @@ console.log("4. PLAYER IS DEFINED as: " + player);
 	    this.playerEvaluateFortification(attacker, faction, spacekey);
 	  } else {
 	    if (this.isPlayerControlledFaction(faction)) {
-console.log("3. PLAYER IS CONTROLLED as: " + player);
 	      this.updateStatus(faction + " considering fortification");
 	      this.updateLog(faction + " evaluating retreat into fortification");
 	    } else {
-console.log("4. PLAYER IS DEFINED as: " + player);
 	      //
 	      // non-player controlled, minor power or independent, so auto-handle
 	      //
@@ -12283,19 +12290,18 @@ console.log(JSON.stringify(mv));
 
 	  this.game.queue.splice(qe, 1);
 
-	  let defender = mv[1];
+	  let faction = mv[1];
 	  let from = mv[2];
 	  let to = mv[3];
 
 	  let source = this.game.spaces[from];
 	  let destination = this.game.spaces[to];
 
-	  for (let i = 0; i < source.units[defender].length; i++) {
-	    to.units[defender].push(source.units[defender][i]);
+	  for (let i = 0; i < source.units[faction].length; i++) {
+	    destination.units[faction].push(source.units[faction][i]);
 	  }
 
-	  source.units[defender] = [];
-
+	  source.units[faction] = [];
 	  this.displaySpace(from);
 	  this.displaySpace(to);
 
@@ -12421,10 +12427,6 @@ console.log(JSON.stringify(mv));
 	}
 
 
-
-
-
-
         if (mv[0] === "player_evaluate_naval_interception_opportunity") {
 
 	  this.game.queue.splice(qe, 1);
@@ -12445,6 +12447,7 @@ console.log(JSON.stringify(mv));
 	  return 0;
 
 	}
+
 
         if (mv[0] === "intercept") {
 
@@ -12864,8 +12867,6 @@ console.log("POOL: " + hapsburg_card);
 	    return 1;
  	  }
 
-console.log("CONFIRMS NEEDED? " + JSON.stringify(this.game.confirms_needed));
-
 	  //
 	  // return 1
 	  //
@@ -13001,7 +13002,6 @@ console.log("TRIGGERING " + menu_index[i]);
 	    return highest_battle_ranking;
           }
 
-
 	  //
 	  // this is run when a naval battle starts. players have by now 
 	  // interceded or played cards that allow them to respond to the 
@@ -13042,7 +13042,9 @@ console.log("TRIGGERING " + menu_index[i]);
 	  //
           for (let f in space.units) {
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker)-1];
+	      let fp = his_self.returnPlayerOfFaction(f);
+	      let p = {};
+	      if (fp > 0) { p = his_self.game.state.players_info[fp-1]; }
 	      let ap = his_self.game.state.players_info[attacker_player-1];
 	      if (p && ap) {
 	        if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
@@ -13054,8 +13056,10 @@ console.log("TRIGGERING " + menu_index[i]);
 		}
 	      } 
 	    }
-	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+	    if (f !== defender_faction && faction_map[f] === defender_faction) {
+	      let fp = his_self.returnPlayerOfFaction(f);
+	      let p = {};
+	      if (fp > 0) { let p = his_self.game.state.players_info[fp-1]; }
 	      let dp = his_self.game.state.players_info[defender_player-1];
 	      if (p && dp) {
 	        if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
@@ -13112,8 +13116,6 @@ console.log("TRIGGERING " + menu_index[i]);
             defender_rolls += parseInt(defender_player.tmp_roll_bonus);
 	  }
 
-
-
 	  //
 	  // "professional rowers" may be played after dice are rolled, so we roll the dice
 	  // now and break ("naval_battle_continued" afterwards...
@@ -13154,7 +13156,6 @@ console.log("TRIGGERING " + menu_index[i]);
 	  // execution back to the game queue.
 	  //
 
-
 	  //
 	  // save battle state
 	  //
@@ -13168,7 +13169,7 @@ console.log("TRIGGERING " + menu_index[i]);
 	  his_self.game.state.naval_battle.defender_faction = defender_faction;
 	  his_self.game.state.naval_battle.faction_map = faction_map;
 
-	  his_self.game.queue.push(`field_battle_continue\t${mv[1]}`);
+	  his_self.game.queue.push(`naval_battle_continue\t${mv[1]}`);
 	  his_self.game.queue.push(`counter_or_acknowledge\tNaval Battle Hits Assigmentt\tnaval_battle_hits_assignment`);
 	  his_self.game.queue.push(`RESETCONFIRMSNEEDED\tall`);
 
@@ -13184,6 +13185,9 @@ console.log("TRIGGERING " + menu_index[i]);
 
           this.game.queue.splice(qe, 1);
 
+	  //
+	  // we will create this object dynamically
+	  //
 	  this.game.state.field_battle = {};
 
 	  //
@@ -13191,10 +13195,14 @@ console.log("TRIGGERING " + menu_index[i]);
 	  //
           let calculate_rolls = function(faction) {
 	    let rolls = 0;
+	    let units = [];
             for (let i = 0; i < space.units[faction].length; i++) {
-	      if (space.units[faction][i].personage == false) { rolls++; }
+	      if (space.units[faction][i].personage == false) {
+	        rolls++;
+		units.push(space.units[faction][i].type);
+	      }
 	    }
-	    return rolls;
+	    return { rolls : rolls , units : units };
           }
 	  //
 	  // calculate highest battle ranking
@@ -13210,13 +13218,29 @@ console.log("TRIGGERING " + menu_index[i]);
 	    }
 	    return highest_battle_ranking;
           }
-
+          let modify_rolls = function(player, roll_array) {
+	    let modified_rolls = [];
+            for (let i = 0; i < roll_array.length; i++) {
+              if (player.tmp_roll_modifiers.length > i) {
+                let modded_roll = roll_array[i] + player.tmp_roll_modifiers[i];
+                if (modded_roll >= 5) {
+                  modified_rolls.push(modded_roll);
+                }
+              } else {
+                if (roll_array[i] >= 5) {
+                  modified_rolls.push(roll_array[i]);
+                }
+              }
+            }
+	    return modified_rolls;
+          }
 
 	  //
 	  // this is run when a field battle starts. players have by now 
 	  // interceded or played cards that allow them to respond to the 
 	  // movement, including retreat into a fortress if available. as
-	  // such, this handles the conflict.
+	  // such, the rest of this function moves to to handle the on-the-
+	  // ground conflict.
 	  //
 	  let his_self = this;
 	  let space = this.game.spaces[mv[1]];
@@ -13246,11 +13270,9 @@ console.log("TRIGGERING " + menu_index[i]);
 	  //
 	  let attacker_faction = attacker;
 	  let defender_faction = his_self.returnDefenderFaction(attacker_faction, space);
-console.log("we have found the defender faction: " + defender_faction);
 
  	  let attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
  	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
-
 
 	  //
 	  // map every faction in space to attacker or defender
@@ -13296,32 +13318,46 @@ console.log("we have found the defender faction: " + defender_faction);
 	  // will make any strategic decisions for hits assignment, etc. and any 
 	  // bonuses that affect combat will have been copied over to those players
 	  //
-
+	  // we can how start building the field_battle object, which will contain
+	  // the information, die rolls, modified die rolls, needed to carry out the 
+	  // conflict.
 	  //
 	  // calculate the total rolls each faction gets to make. the defender starts
 	  // with +1 roll bonus because they have control over the space.
 	  //
 	  let attacker_rolls = 0;
 	  let defender_rolls = 1;
+	  let attacker_units = [];
+	  let defender_units = ['control'];
+	  let attacker_units_faction = [];
+	  let defender_units_faction = [defender_faction];
 	  let attacker_highest_battle_ranking = 0;
 	  let defender_highest_battle_ranking = 0;
 
 	  for (let f in faction_map) {
 	    if (faction_map[f] === attacker_faction) {
-	      attacker_rolls += calculate_rolls(f);
+
+	      let x = calculate_rolls(f);
+	      attacker_rolls += x.rolls;
+	      attacker_units.push(...x.units);
+	      for (let i = 0; i < x.rolls; i++) { attacker_units_faction.push(f); }
+
 	      if (calculate_highest_battle_ranking(f) > attacker_highest_battle_ranking) {
 		attacker_highest_battle_ranking = calculate_highest_battle_ranking(f);
 	      }
 	    }
 	    if (faction_map[f] === defender_faction) {
-	      defender_rolls += calculate_rolls(f);
+
+	      let x = calculate_rolls(f);
+	      defender_rolls += x.rolls;
+	      defender_units.push(...x.units);
+	      for (let i = 0; i < x.rolls; i++) { defender_units_faction.push(f); }
+
 	      if (calculate_highest_battle_ranking(f) > defender_highest_battle_ranking) {
 		defender_highest_battle_ranking = calculate_highest_battle_ranking(f);
 	      }
 	    }  
 	  }
-	  let attacker_units = attacker_rolls;
-	  let defender_units = defender_rolls-1;
 
 	  if (attacker_player.tmp_roll_bonus) {
   	    attacker_rolls += parseInt(attacker_player.tmp_roll_bonus);
@@ -13353,76 +13389,102 @@ console.log("we have found the defender faction: " + defender_faction);
 	  }
 
 	  //
-	  // PRINT OUT INFO TO LOG
+	  // modify rolls as needed
 	  //
-	  this.updateLog("Attackers: " + attacker_rolls + " in total rolls");
-	  for (let i = 0; i < attacker_results.length; i++) {
-	    this.updateLog(" ... rolls: " + attacker_results[i]);
-          }
-	  this.updateLog("Defenders: " + defender_rolls + " in total rolls");
-	  for (let i = 0; i < defender_results.length; i++) {
-	    this.updateLog(" ... rolls: " + defender_results[i]);
-          }
+	  let attacker_modified_rolls = attacker_results;
+	  let defender_modified_rolls = attacker_results;
+  	  if (his_self.game.state.field_battle.attacker_player > 0) {
+	    attacker_modified_rolls = modify_rolls(his_self.game.players_info[his_self.game.state.field_battle.attacker_player-1], attacker_results);
+	  } 
+  	  if (his_self.game.state.field_battle.defender_player > 0) {
+ 	    defender_modified_rolls = modify_rolls(his_self.game.players_info[his_self.game.state.field_battle.defender_player-1], defender_results);
+	  }
+
+	  for (let i = 0; i < attacker_modified_rolls; i++) {
+	    if (attacker_modified_rolls[i] >= 5) { attacker_hits++; }
+	  }
+	  for (let i = 0; i < defender_modified_rolls; i++) {
+	    if (defender_modified_rolls[i] >= 5) { defender_hits++; }
+	  }
 
 	  //
-	  // things get messy and conditional now, because Ottomans may play 
+	  // we have now rolled all of the dice that we need to roll at this stage
+	  // and the results have been pushed into the field_battle object. but there
+	  // is still the possibility that someone might want to intervene...
+	  //
+	  // things get extra messy and conditional now, because Ottomans may play 
 	  // Janissaries and Suprise Attack may change the order in which players
 	  // remove units (and hits!) in the resolution of the battle.
 	  //
 	  // we handle this by saving the "state" of the battle and pushing 
-	  // execution back to the game queue.
+	  // execution back to the game queue via counter/acknowledge. those independent
+	  // functions can then manipulate the field_battle object directly before
+	  // permitting it to fall-through..
 	  //
-
 
 	  //
 	  // save battle state
 	  //
+          his_self.game.state.field_battle.spacekey = mv[1];
 	  his_self.game.state.field_battle.attacker_units = attacker_units;
 	  his_self.game.state.field_battle.defender_units = defender_units;
+	  his_self.game.state.field_battle.attacker_units_faction = attacker_units_faction;
+	  his_self.game.state.field_battle.defender_units_faction = defender_units_faction;
 	  his_self.game.state.field_battle.attacker_rolls = attacker_rolls;
 	  his_self.game.state.field_battle.defender_rolls = defender_rolls;
+	  his_self.game.state.field_battle.attacker_modified_rolls = attacker_modified_rolls;
+	  his_self.game.state.field_battle.defender_modified_rolls = defender_modified_rolls;
+	  his_self.game.state.field_battle.attacker_hits = attacker_hits;
+	  his_self.game.state.field_battle.defender_hits = defender_hits;
 	  his_self.game.state.field_battle.attacker_results = attacker_results;
 	  his_self.game.state.field_battle.defender_results = defender_results;
 	  his_self.game.state.field_battle.attacker_faction = attacker_faction;
 	  his_self.game.state.field_battle.defender_faction = defender_faction;
+	  his_self.game.state.field_battle.attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
+	  his_self.game.state.field_battle.defender_player = his_self.returnPlayerOfFaction(defender_faction);
+	  his_self.game.state.field_battle.attacker_hits_first = 0;
+	  his_self.game.state.field_battle.defender_hits_first = 0;
 	  his_self.game.state.field_battle.faction_map = faction_map;
 
-console.log("committed defender faction as: " + defender_faction);
+	  let ap = {};
+	  let dp = {};
+
+	  if (attacker_player > 0) { ap = this.game.state.players_info[attacker_player-1]; }
+	  if (defender_player > 0) { dp = this.game.state.players_info[defender_player-1]; }
 
 	  //
 	  // ottomans may play Janissaries, and some players may attack before each other, so
 	  // we take conditional action and move to COUNTER_OR_ACKNOWLEDGE based on the details
-	  // of how the battle should execute.
+	  // of how the battle should execute. the most important division is if one player
+	  // "goes first" in which case they knock away from potential hits from the other 
+	  // side.
 	  //
-	  if (attacker_player.tmp_rolls_first == 1 && defender_player.tmp_rolls_first != 1) {
-	    let attacker_hits = his_self.game.state.field_battle.attacker_hits;
-	    
-	    his_self.game.queue.push(`field_battle_continue\t${mv[1]}`);
-	    if (faction_map["ottoman"] === attacker_faction) {
-	      his_self.updateLog("Attacker hits assigned first...");
-	      his_self.game.queue.push(`counter_or_acknowledge\tAttacker hits assigned first\tfield_battle_hits_assignment`);
-	      his_self.game.queue.push(`RESETCONFIRMSNEEDED\tall`);
-	    }
-	  //
-	  // defender goes first
-	  //
-	  } else if (attacker_player.tmp_rolls_first != 1 && defender_player.tmp_rolls_first == 1) {
-	    let defender_hits = his_self.game.state.field_battle.defender_hits;
-	    his_self.game.queue.push(`field_battle_continue\t${mv[1]}`);
-	    if (faction_map["ottoman"] === defender_faction) {
-	      his_self.updateLog("Defender hits assigned first...");
-	      his_self.game.queue.push(`counter_or_acknowledge\tDefender hits assigned first\tfield_battle_hits_assignment`);
-	      his_self.game.queue.push(`RESETCONFIRMSNEEDED\tall`);
-	    }
+	  his_self.game.queue.push(`field_battle_continue\t${mv[1]}`);
+
+	  if (ap.tmp_roll_first == 1 && dp.tmp_roll_first != 1) {
+	    his_self.game.state.field_battle.attacker_hits_first = 1;
+	    his_self.game.queue.push("field_battle_assign_hits\t"+his_self.game.state.field_battle.defender_faction);
+	    his_self.game.queue.push("field_battle_assign_hits\t"+his_self.game.state.field_battle.attacker_faction);
+	  } else if (ap.tmp_roll_first != 1 && dp.tmp_roll_first == 1) {
+	    his_self.game.state.field_battle.defender_hits_first = 1;
+	    his_self.game.queue.push("field_battle_assign_hits\t"+his_self.game.state.field_battle.attacker_faction);
+	    his_self.game.queue.push("field_battle_assign_hits\t"+his_self.game.state.field_battle.defender_faction);
 	  } else {
-	    let attacker_hits = his_self.game.state.field_battle.attacker_hits;
-	    let defender_hits = his_self.game.state.field_battle.defender_hits;
-	    his_self.game.queue.push(`field_battle_continue\t${mv[1]}`);
-	    if (faction_map["ottoman"] === defender_faction || faction_map["ottoman"] === attacker_faction) {
-	      his_self.game.queue.push(`counter_or_acknowledge\tall assigned simultaneously\tfield_battle_pre_hits_assignment`);
-	      his_self.game.queue.push(`RESETCONFIRMSNEEDED\tall`);
-	    }
+	    his_self.game.queue.push("field_battle_assign_hits\t"+his_self.game.state.field_battle.attacker_faction);
+	    his_self.game.queue.push("field_battle_assign_hits\t"+his_self.game.state.field_battle.defender_faction);
 	  }
+
+
+	  //
+	  // this should stop execution while we are looking at the pre-field battle overlay
+	  //
+	  his_self.game.queue.push("field_battle_assign_hits_render");
+	  his_self.game.queue.push("counter_or_acknowledge\tField Battle is about to begin in "+space.name + "\tpre_field_battle_hits_assignment");
+          his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+
+
+          his_self.field_battle_overlay.renderPreFieldBattle(his_self.game.state.field_battle);
+          his_self.field_battle_overlay.pullHudOverOverlay();
 
 	  return 1;
 
@@ -13430,43 +13492,19 @@ console.log("committed defender faction as: " + defender_faction);
 
 
 
-	if (mv[0] === "field_battle_continue") {
+        if (mv[0] === "field_battle_assign_hits") {
+
+	  let his_self = this;
+	  let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
 
           this.game.queue.splice(qe, 1);
 
-	  let his_self = this;
-	  let space = this.game.spaces[mv[1]];
 
 	  //
-	  // calculate hits
+	  // we auto-assign the hits to independent, non-player controlled units
+	  // this function handles that.
 	  //
-          let modify_rolls = function(player, roll_array) {
-	    let modified_rolls = [];
-            for (let i = 0; i < roll_array.length; i++) {
-	      if (player.tmp_roll_modifiers) {
-                if (player.tmp_roll_modifiers.length > i) {
-                  let modded_roll = roll_array[i] + player.tmp_roll_modifiers[i];
-                  if (modded_roll >= 5) {
-                    modified_rolls.push(modded_roll);
-                  }
-                } else {
-                  if (roll_array[i] >= 5) {
-                    modified_rolls.push(roll_array[i]);
-                  }
-                }
-              }
-            }
-	    return modified_rolls;
-          }
-          let calculate_hits = function(player, roll_array) {
-            let hits = 0;
-            for (let i = 0; i < roll_array.length; i++) {
-              if (roll_array[i] >= 5) {
-                hits++;
-              }
-            }
-            return hits;
-          }
 	  let assign_hits = function(faction, hits) {
 
 	    //
@@ -13475,11 +13513,12 @@ console.log("committed defender faction as: " + defender_faction);
 	    let are_hits_all_assigned = 0;
 	    let hits_to_assign = hits;
 	    let max_possible_hits_assignable = 0;
+	    let faction_map = his_self.game.state.field_battle.faction_map;
 
 	    //
 	    // max hits to assign are the faction land units
 	    //
-	    for (let f in faction_map) {
+	    for (let f in his_self.game.state.faction_map) {
 	      if (faction_map[f] === faction) { 
 	    	max_possible_hits_assignable += his_self.returnFactionLandUnitsInSpace(f, space);
 	      }
@@ -13592,168 +13631,126 @@ console.log("committed defender faction as: " + defender_faction);
 	    }
 	  }
 
-console.log("FIELD BATTLE INFO: " + JSON.stringify(his_self.game.state.field_battle));
-
-	  let faction_map = his_self.game.state.field_battle.faction_map;
-	  let attacker_faction = his_self.game.state.field_battle.attacker_faction;
-	  let defender_faction = his_self.game.state.field_battle.defender_faction;
-          let attacker_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
-          let defender_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
-	  let attacker_results = his_self.game.state.field_battle.attacker_results;
-	  let defender_results = his_self.game.state.field_battle.defender_results;
-	  let attacker_rolls   = his_self.game.state.field_battle.attacker_rolls;
-	  let defender_rolls   = his_self.game.state.field_battle.defender_rolls;
-	  let attacker_units   = his_self.game.state.field_battle.attacker_units;
-	  let defender_units   = his_self.game.state.field_battle.defender_units;
-
-	  if (his_self.returnPlayerOfFaction(attacker_faction) == 0) { attacker_player = {}; }
-	  if (his_self.returnPlayerOfFaction(defender_faction) == 0) { defender_player = {}; }
-
-	  let winner	       = defender_faction;
-	  let attacker_hits    = 0;
-	  let defender_hits    = 0;
 
 	  //
-	  // attacker goes first
+	  // auto-assign hits to independent entities
 	  //
-          if (attacker_player.tmp_rolls_first == 1 && defender_player.tmp_rolls_first != 1) {
-
-	    //
- 	    // assign attacker hits
-	    //
-console.log("a");
-	    his_self.game.state.field_battle.attacker_modified_rolls = modify_rolls(attacker_player, attacker_results);
-console.log("a");
-	    attacker_hits = calculate_hits(attacker_player, his_self.game.state.field_battle.attacker_modified_rolls);
-	    assign_hits(defender_player, attacker_hits);
-
-	    for (let i = 0; i < attacker_hits; i++) {
-	      if (defender_results.length > 0) {
-		defender_rolls.splice(defender_rolls.length-1, 1);
-		defender_results.splice(defender_rolls.length-1, 1);
-	      }
+	  if (player == 0) {
+	    if (faction === this.game.state.field_battle.attacker_faction) {
+	      assign_hits(faction, this.game.state.field_battle.defender_hits);
+	    } else {
+	      assign_hits(faction, this.game.state.field_battle.attacker_hits);
 	    }
+	    return 1;
+	  }
 
-	    //
-	    // assign defender hits
-	    //
-	    his_self.game.state.field_battle.defender_modified_rolls = modify_rolls(defender_player, defender_results);
-	    defender_hits = calculate_hits(defender_player, his_self.game.state.field_battle.defender_modified_rolls);
-	    assign_hits(attacker_player, defender_hits);
 
-	    his_self.game.state.field_battle.attacker_hits = attacker_hits;
-	    his_self.game.state.field_battle.defender_hits = defender_hits;
+	  if (player == this.game.player) {
+            his_self.field_battle_overlay.renderFieldBattle(his_self.game.state.field_battle);
+            his_self.field_battle_overlay.assignHits(his_self.game.state.field_battle, faction);
+            his_self.field_battle_overlay.updateInstructions("Assign Your Hits");
+	  } else {
+            his_self.field_battle_overlay.renderFieldBattle(his_self.game.state.field_battle);
+            his_self.field_battle_overlay.updateInstructions(this.returnFactionName(faction) + " Assigning Hits");
+	  }
 
-          //
-          // defender goes first
-          //
-          } else if (attacker_player.tmp_rolls_first != 1 && defender_player.tmp_rolls_first == 1) {
+	  return 0;
 
-	    //
- 	    // assign defender hits
-	    //
-	    his_self.game.state.field_battle.defender_modified_rolls = modify_rolls(defender_player, defender_results);
-	    defender_hits = calculate_hits(defender_player, his_self.game.state.field_battle.defender_modified_rolls);
-	    assign_hits(attacker_player, defender_hits);
+	}
 
-	    for (let i = 0; i < defender_hits; i++) {
-	      if (attacker_results.length > 0) {
-		attacker_rolls.splice(attacker_rolls.length-1, 1);
-		attacker_results.splice(attacker_rolls.length-1, 1);
-	      }
+	if (mv[0] === "field_battle_assign_hits_render") {
+          this.game.queue.splice(qe, 1);
+          this.field_battle_overlay.render(his_self.game.state.field_battle);
+	  return 1;
+	}
+
+
+ 	if (mv[0] === "field_battle_destroy_unit") {
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let unit_type = mv[3];
+
+          this.game.queue.splice(qe, 1);
+	  
+	  let space = this.game.spaces[spacekey];
+	  let unit_destroyed = false;
+
+console.log(JSON.stringify(space.units[faction]));
+
+	  for (let i = 0; i < space.units[faction].length && unit_destroyed == false; i++) {
+	    if (space.units[faction][i].type === unit_type) {
+	      space.units[faction].splice(i, 0);
+	      unit_destroyed = true;
 	    }
+	  }
 
-	    //
-	    // check if we can continue
-	    //
+	  return 1;
 
-	    //
-	    // assign attacker hits
-	    //
-console.log("ab");
-	    his_self.game.state.field_battle.attacker_modified_rolls = modify_rolls(attacker_player, attacker_results);
-console.log("ab");
-	    attacker_hits = calculate_hits(attacker_player, his_self.game.state.field_battle.attacker_modified_rolls);
-	    assign_hits(defender_player, attacker_hits);
+	}
 
-	    his_self.game.state.field_battle.attacker_hits = attacker_hits;
-	    his_self.game.state.field_battle.defender_hits = defender_hits;
 
-          } else {
+	if (mv[0] === "field_battle_continue") {
 
-	    //
-	    // assign hits simultaneously
-	    //
-console.log("ac");
-	    his_self.game.state.field_battle.attacker_modified_rolls = modify_rolls(attacker_player, attacker_results);
-console.log("ac");
-	    his_self.game.state.field_battle.defender_modified_rolls = modify_rolls(defender_player, defender_results);
-	    attacker_hits = calculate_hits(attacker_player, attacker_results);
-	    defender_hits = calculate_hits(defender_player, defender_results);
-	    assign_hits(defender_player, attacker_hits);
-	    assign_hits(attacker_player, defender_hits);
+          this.game.queue.splice(qe, 1);
 
-	    his_self.game.state.field_battle.attacker_hits = attacker_hits;
-	    his_self.game.state.field_battle.defender_hits = defender_hits;
+	  let his_self = this;
+	  let space = this.game.spaces[mv[1]];
+	  
 
-          }
-
-console.log("d");
+	  //
+	  // hits assignment happens here
+	  //
 	  his_self.updateLog("Attacker Modified: " + JSON.stringify(his_self.game.state.field_battle.attacker_modified_rolls));
-console.log("d");
 	  his_self.updateLog("Defender Modified: " + JSON.stringify(his_self.game.state.field_battle.defender_modified_rolls));
-console.log("d");
-	  his_self.updateLog("Attacker Hits: " + attacker_hits);
-	  his_self.updateLog("Defender Hits: " + defender_hits);
+	  his_self.updateLog("Attacker Hits: " + his_self.game.state.field_battle.attacker_hits);
+	  his_self.updateLog("Defender Hits: " + his_self.game.state.field_battle.defender_hits);
+
+	  this.field_battle_overlay.renderFieldBattle(this.game.state.field_battle);
 
 	  //
-	  // who won?
+	  // who won ?
 	  //
-console.log("attacher hits: " + attacker_hits);
-console.log("defender hits: " + defender_hits);
-	  if (attacker_hits > defender_hits) {
-	    winner = attacker_faction;
-console.log("winner set to attacker_faction: " + winner);
+	  let winner = his_self.game.state.field_battle.defender_faction;
+	  if (his_self.game.state.field_battle.attacker_hits > his_self.game.state.field_battle.defender_hits) {
+	    winner = his_self.game.state.field_battle.attacker_faction;
 	  }
 
 	  //
 	  // calculate units remaining
 	  //
-	  let attacker_land_units_remaining = attacker_units - defender_hits;
-	  let defender_land_units_remaining = defender_units - attacker_hits;
+          his_self.game.state.field_battle.attacker_land_units_remaining = his_self.game.state.field_battle.attacker_units.length - his_self.game.state.field_battle.defender_hits;
+	  his_self.game.state.field_battle.defender_land_units_remaining = his_self.game.state.field_battle.defender_units.length - his_self.game.state.field_battle.attacker_hits;
 
-          his_self.game.state.field_battle.attacker_land_units_remaining = attacker_land_units_remaining;
-          his_self.game.state.field_battle.defender_land_units_remaining = defender_land_units_remaining;
-
-	  if (attacker_land_units_remaining == 0 && defender_land_units_remaining == 0) {
-	    if (attacker_rolls > defender_rolls) {
+	  if (his_self.game.state.field_battle.attacker_land_units_remaining == 0 && his_self.game.state.field_battle.defender_land_units_remaining == 0) {
+	    if (his_self.game.state.field_battle.attacker_rolls > his_self.game.state.field_battle.defender_rolls) {
 	      his_self.updateLog("Attacker adds 1 regular");
-	      his_self.addRegular(attacker_faction, space);
+	      his_self.addRegular(his_self.game.state.field_battle.attacker_faction, space);
 	    } else {
 	      his_self.updateLog("Defender adds 1 regular");
-	      his_self.addRegular(defender_faction, space);
+	      his_self.addRegular(his_self.game.state.field_battle.defender_faction, space);
 	    }
 	  }
 
 	  //
 	  // capture stranded leaders
 	  //
-	  if (attacker_land_units_remaining == 0) {
-	    for (let f in faction_map) {
-	      if (faction_map[f] === attacker_faction) {
+	  if (his_self.game.state.field_battle.attacker_land_units_remaining == 0) {
+	    for (let f in his_self.game.state.field_battle.faction_map) {
+	      if (his_self.game.state.field_battle.faction_map[f] === his_self.game.state.field_battle.attacker_faction) {
 	        for (let i = 0; i < space.units[f].length; i++) {
-	          his_self.captureLeader(defender_faction, attacker_faction, mv[1], space.units[f][i]);
+	          his_self.captureLeader(his_self.game.state.field_battle.defender_faction, his_self.game.state.field_battle.attacker_faction, mv[1], space.units[f][i]);
 		  space.units[f].splice(i, 1);
 		  i--;
 		}
 	      }
 	    }
 	  }
-	  if (defender_land_units_remaining == 0) {
-	    for (let f in faction_map) {
-	      if (faction_map[f] === defender_faction) {
+	  if (his_self.game.state.field_battle.defender_land_units_remaining == 0) {
+	    for (let f in his_self.game.state.field_battle.faction_map) {
+	      if (his_self.game.state.field_battle.faction_map[f] === his_self.game.state.field_battle.defender_faction) {
 	        for (let i = 0; i < space.units[f].length; i++) {
-	          his_self.captureLeader(attacker_faction, defender_faction, mv[1], space.units[f][i]);
+	          his_self.captureLeader(his_self.game.state.field_battle.attacker_faction, his_self.game.state.field_battle.defender_faction, mv[1], space.units[f][i]);
 		  space.units[f].splice(i, 1);
 		  i--;
 		}
@@ -13762,40 +13759,42 @@ console.log("winner set to attacker_faction: " + winner);
 	  }
 
 	  this.updateLog("Winner: "+this.returnFactionName(winner));
-
-	  this.updateLog("Attacker Units Remaining: "+attacker_land_units_remaining);
-	  this.updateLog("Defender Units Remaining: "+defender_land_units_remaining);
+	  this.updateLog("Attacker Units Remaining: "+his_self.game.state.field_battle.attacker_land_units_remaining);
+	  this.updateLog("Defender Units Remaining: "+his_self.game.state.field_battle.efender_land_units_remaining);
 
           //
           // conduct retreats
           //
-          if (winner === defender_faction) {
+          if (winner === his_self.game.state.field_battle.defender_faction) {
 
-            for (let f in faction_map) {
+	    this.game.queue.push("show_overlay\tfield_battle\tpost_field_battle_defenders_win");
+
+            for (let f in his_self.game.state.field_battle.faction_map) {
               let can_faction_retreat = 0;
-              if (faction_map[f] === attacker_faction) {
+              if (his_self.game.state.field_battle.faction_map[f] === his_self.game.state.field_battle.attacker_faction) {
                 for (let z = 0; z < space.neighbours.length; z++) {
                   let fluis = this.canFactionRetreatToSpace(f, space.neighbours[z], "");
                   if (fluis > 0) {
                     can_faction_retreat = 1;
                   }
                 }
-
                 if (can_faction_retreat == 1) {
-                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
-                  this.game.queue.push("player_evaluate_post_field_battle_retreat\t"+f+"\t"+space.key);
+                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
+                  this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+f+"\t"+space.key);
                 }
 	        if (can_faction_retreat == 0) {
-                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
+                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
 	        }
               }
             }
           }
-          if (winner === attacker_faction) {
+          if (winner === his_self.game.state.field_battle.attacker_faction) {
 
-            for (let f in faction_map) {
+	    this.game.queue.push("show_overlay\tfield_battle\tpost_field_battle_attackers_win");
+
+            for (let f in his_self.game.state.field_battle.faction_map) {
               let can_faction_retreat = 0;
-              if (faction_map[f] === defender_faction) {
+              if (his_self.game.state.field_battle.faction_map[f] === his_self.game.state.field_battle.defender_faction) {
                 for (let z = 0; z < space.neighbours.length; z++) {
                   let fluis = this.canFactionRetreatToSpace(f, space.neighbours[z], his_self.game.state.attacker_comes_from_this_spacekey);
                   if (fluis > 0) {
@@ -13803,18 +13802,25 @@ console.log("winner set to attacker_faction: " + winner);
                   }
                 }
                 if (can_faction_retreat == 1) {
-                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+attacker_faction+"\t"+space.key);
-                  this.game.queue.push("player_evaluate_post_field_battle_retreat\t"+f+"\t"+space.key);
+                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+                  this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+f+"\t"+space.key);
                 }
               }
             }
-            this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+attacker_faction+"\t"+his_self.returnPlayerOfFaction(defender_faction)+"\t"+defender_faction+"\t"+space.key);
+            this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.attacker_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.defender_faction)+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
           }
 
           //
           // redisplay
           //
           his_self.displaySpace(space.key);
+
+	  //
+	  // show field battle overlay
+	  //
+          his_self.field_battle_overlay.renderPostFieldBattle(his_self.game.state.field_battle);
+          his_self.field_battle_overlay.pullHudOverOverlay();
+
 
           return 1;
 
@@ -14741,47 +14747,8 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
           // conduct retreats
           //
           if (defender_land_units_remaining < attacker_land_units_remaining) {
-
-/****
-            for (let f in faction_map) {
-              let can_faction_retreat = 0;
-              if (faction_map[f] === attacker_faction) {
-                for (let z = 0; z < space.neighbours.length; z++) {
-                  let fluis = this.canFactionRetreatToSpace(f, space.neighbours[z], "");
-                  if (fluis > 0) {
-                    can_faction_retreat = 1;
-                  }
-                }
-                if (can_faction_retreat == 1) {
-                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
-                  this.game.queue.push("player_evaluate_post_field_battle_retreat\t"+f+"\t"+space.key);
-                }
-	        if (can_faction_retreat == 0) {
-                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
-	        }
-              }
-            }
-****/
           }
           if (winner === attacker_faction) {
-/****
-            for (let f in faction_map) {
-              let can_faction_retreat = 0;
-              if (faction_map[f] === defender_faction) {
-                for (let z = 0; z < space.neighbours.length; z++) {
-                  let fluis = this.canFactionRetreatToSpace(f, space.neighbours[z], his_self.game.state.attacker_comes_from_this_spacekey);
-                  if (fluis > 0) {
-                    can_faction_retreat = 1;
-                  }
-                }
-                if (can_faction_retreat == 1) {
-                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+attacker_faction+"\t"+space.key);
-                  this.game.queue.push("player_evaluate_post_field_battle_retreat\t"+f+"\t"+space.key);
-                }
-              }
-            }
-            this.game.queue.push("player_evaluate_fortification\t"+attacker_faction+"\t"+his_self.returnPlayerOfFaction(defender_faction)+"\t"+defender_faction+"\t"+space.key);
-****/
           }
 
           //
@@ -14875,7 +14842,7 @@ console.log("purging naval units and capturing leader");
         }
 
 
-        if (mv[0] === "player_evaluate_post_field_battle_retreat") {
+        if (mv[0] === "post_field_battle_player_evaluate_retreat") {
 
           this.game.queue.splice(qe, 1);
 
@@ -14896,12 +14863,13 @@ console.log("purging naval units and capturing leader");
           let attacker_land_units_remaining = his_self.game.state.field_battle.attacker_land_units_remaining;
           let defender_land_units_remaining = his_self.game.state.field_battle.defender_land_units_remaining;
 
-
           //
           // fortification has already happened. if the loser is the attacker, they have to retreat
           //
           if (this.game.player == this.returnPlayerOfFaction(loser)) {
-            this.playerEvaluateRetreatOpportunity(attacker_faction, spacekey, "", defender_faction);
+	    let is_attacker_loser = false;
+	    if (loser === attacker_faction) { is_attacker_loser = true; }
+            this.playerEvaluateRetreatOpportunity(attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey, defender_faction, is_attacker_loser);
           } else {
             this.updateStatus(this.returnFactionName(loser) + " considering post-battle retreat");
           }
@@ -16642,6 +16610,8 @@ this.updateLog("Catholics: " + JSON.stringify(cdice));
 
 
 
+
+
   returnPlayers(num = 0) {
 
     var players = [];
@@ -18315,13 +18285,18 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
   }
 
-  playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey="", defender) {
+  playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey="", defender, is_attacker_loser=false) {
 
     let his_self = this;
     let retreat_destination = "";
+    let space_name = this.game.spaces[spacekey].name;
 
     let onFinishSelect = function(his_self, destination_spacekey) {
-      his_self.addMove("retreat"+"\t"+defender+"\t"+spacekey+"\t"+"\t"+destination_spacekey);
+      if (is_attacker_loser) {
+        his_self.addMove("retreat"+"\t"+attacker+"\t"+spacekey+"\t"+destination_spacekey);
+      } else {
+        his_self.addMove("retreat"+"\t"+defender+"\t"+spacekey+"\t"+destination_spacekey);
+      }
       his_self.endTurn();
     };
 
@@ -18331,8 +18306,14 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
       let html = "<ul>";
       for (let i = 0; i < space.neighbours.length; i++) {
-        if (this.canFactionRetreatToSpace(defender, space.neighbours[i], attacker_comes_from_this_spacekey)) {
-          html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
+	if (is_attacker_loser) {
+          if (his_self.canFactionRetreatToSpace(attacker, space.neighbours[i], attacker_comes_from_this_spacekey)) {
+            html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
+	  }
+	} else {
+          if (his_self.canFactionRetreatToSpace(defender, space.neighbours[i], attacker_comes_from_this_spacekey)) {
+            html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
+	  }
 	}
       }
       html += "</ul>";
@@ -18345,17 +18326,20 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
         onFinishSelect(his_self, id);
       });
 
-      selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
-
     };
 
+    
 
     let html = `<ul>`;
     html    += `<li class="card" id="retreat">retreat</li>`;
-    html    += `<li class="card" id="skip">do not retreat</li>`;
+    if (is_attacker_loser) { 
+      html    += `<li class="card" id="skip">sacrifice forces</li>`;
+    } else {
+      html    += `<li class="card" id="skip">do not retreat</li>`;
+    }
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`Retreat from ${spacekey}?`, html);
+    this.updateStatusWithOptions(`Retreat from ${space_name}?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "retreat") {
 	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
@@ -19264,7 +19248,7 @@ return;
   }
   async playerTranslateScripture(his_self, player, faction) {
 
-    let msg = "Work on Translation?";
+    let msg = "Select Work to Translate:";
     let html = '<ul>';
 
     if (his_self.game.state.translations['new']['german'] < 6) {
@@ -19276,16 +19260,21 @@ return;
     if (his_self.game.state.translations['new']['english'] < 6) {
       html += '<li class="option english" style="" id="3">English (new testament)</li>';
     }
-    if (his_self.game.state.translations['full']['german'] < 10) {
+    if (his_self.game.state.translations['full']['german'] < 10 && his_self.game.state.translations['new']['german'] >= 6) {
       html += '<li class="option german" style="" id="4">German (full bible)</li>';
     }
-    if (his_self.game.state.translations['full']['french'] < 10) {
+    if (his_self.game.state.translations['full']['french'] < 10 && his_self.game.state.translations['new']['french'] >= 6) {
       html += '<li class="option french" style="" id="5">French (full bible)</li>';
     }
-    if (his_self.game.state.translations['full']['english'] < 10) {
+    if (his_self.game.state.translations['full']['english'] < 10 && his_self.game.state.translations['new']['english'] >= 6) {
       html += '<li class="option english" style="" id="6">English (full bible)</li>';
     }
     html += '</ul>';
+
+    //
+    // show visual language zone selector
+    //
+    his_self.language_zone_overlay.render();
 
     his_self.updateStatusWithOptions(msg, html);
 
@@ -19293,6 +19282,7 @@ return;
     $('.option').on('click', function () {
 
       let id = parseInt($(this).attr("id"));
+      his_self.language_zone_overlay.hide();
 
       if (id == 1 || id == 4) {
 	his_self.addMove("translation\tgerman"); 
@@ -19307,7 +19297,7 @@ return;
 	his_self.addMove("counter_or_acknowledge\tProtestants Translate in English Language Zone\ttranslation_english_language_zone\tenglish\t"+faction);
       }
       // we only ask for our own CONFIRMS
-      his_self.addMove("RESETCONFIRMSNEEDED\t"+this.game.player);
+      his_self.addMove("RESETCONFIRMSNEEDED\t"+his_self.game.player);
       his_self.endTurn();
 
     });

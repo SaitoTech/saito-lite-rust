@@ -12,6 +12,12 @@ const SettlersPlayer = require("./lib/src/settlers-player");
 const SettlersState = require("./lib/src/settlers-state");
 const SettlersActions = require("./lib/src/settlers-actions");
 const SettlersInit = require("./lib/src/settlers-init");
+const BuildOverlay = require("./lib/overlays/build");
+const BankOverlay = require("./lib/overlays/bank");
+const DevCardOverlay = require("./lib/overlays/dev-card");
+const YearOfPlentyOverlay = require("./lib/overlays/year-of-plenty");
+const DiscardOverlay = require("./lib/overlays/discard");
+const MonopolyOverlay = require("./lib/overlays/monopoly");
 
 //////////////////
 // CONSTRUCTOR  //
@@ -46,6 +52,13 @@ class Settlers extends GameTemplate {
     this.grace_window = 24;
     // temp variable to help with post-splash flash
     this.currently_active_player = 0;
+
+    this.build = new BuildOverlay(this.app, this);
+    this.bank = new BankOverlay(this.app, this);
+    this.dev_card = new DevCardOverlay(this.app, this);
+    this.year_of_plenty = new YearOfPlentyOverlay(this.app, this);
+    this.discard = new DiscardOverlay(this.app, this);
+    this.monopoly = new MonopolyOverlay(this.app, this);
 
     this.enable_observer = false;
   }
@@ -158,7 +171,10 @@ class Settlers extends GameTemplate {
     //
     // add the HUD so we can leverage it
     //
+    this.hud.minWidth = 600;
+    this.hud.maxWidth = 1;
     this.hud.render();
+    document.querySelector('#hud')?.classList.add('saitoa');
   
 
 

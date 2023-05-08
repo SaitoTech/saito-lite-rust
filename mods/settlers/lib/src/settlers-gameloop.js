@@ -634,7 +634,7 @@ class SettlersGameloop {
           html += `<ul>`;
           html += `<li class="option flashme" id="rolldice">roll dice</li>`;
           if (settlers_self.canPlayerPlayCard()) {
-            html += `<li class="option" id="knight">play card</li>`;
+            html += `<li class="option" id="playcard">play card</li>`;
           }
           html += `</ul>`;
           html += `</div>`;
@@ -659,8 +659,9 @@ class SettlersGameloop {
               settlers_self.addMove("roll\t" + player);
               settlers_self.endTurn();
             }
-            if (choice === "knight") {
-              settlers_self.playerPlayCard();
+            if (choice === "playcard") {
+                settlers_self.dev_card.render();
+ //             settlers_self.playerPlayCard();
             }
           });
         } else {
@@ -754,7 +755,11 @@ class SettlersGameloop {
             confirmsNeeded++;
             if (this.game.player == parseInt(i)) {
               this.addMove("RESOLVE\t" + this.app.wallet.returnPublicKey());
-              this.playerChooseCardsToDiscard();
+              
+              this.discard.discardString = this.prettifyList(discardString);
+              this.discard.render();
+              //this.playerChooseCardsToDiscard();
+
               //return 0;
               amIPlaying = true;
             }
@@ -767,11 +772,11 @@ class SettlersGameloop {
           `NOTIFY\t${discardString} must discard half their hand.`
         );
 
-        if (!amIPlaying) {
-          this.updateStatus(
-            `waiting for ${discardString} to discard`
-          );
-        }
+        // if (!amIPlaying) {
+        //   this.updateStatus(
+        //     `waiting for ${discardString} to discard`
+        //   );
+        // }
 
         if (confirmsNeeded == 0) {
           this.game.queue.splice(qe, 1);

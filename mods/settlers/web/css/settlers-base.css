@@ -470,6 +470,10 @@ body {
   top: -4px;
 }
 
+.player-box-info {
+  padding: 0;
+}
+
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
 
 .p1 {
@@ -886,6 +890,7 @@ ul.horizontal_list li.iconoption {
 
 .cardct {
   width: fit-content;
+  font-size: 1.6rem;
 }
 
 .cardselector {
@@ -900,7 +905,6 @@ ul.horizontal_list li.iconoption {
 
 .token {
   margin: min(3px, 1vh);
-  width: 1.2em;
   background-color: unset;
 }
 
@@ -1040,7 +1044,6 @@ ul.horizontal_list li.iconoption {
 .rules-overlay img {
   max-width: 100%;
   margin: 0 auto;
-  border: 2px solid black;
 }
 
 .welcome_overlay {
@@ -1056,11 +1059,11 @@ ul.horizontal_list li.iconoption {
 
 .stats-table caption {
   font-size: 1.5em;
-  font-weight: bold;
 }
 
 .stats-table td, .stats-table th {
   width: 2em;
+  padding: 3px;
 }
 
 .stats-table th:first-child {
@@ -1070,7 +1073,6 @@ ul.horizontal_list li.iconoption {
 
 .stats-table .icon, .stats-table .token {
   width: 50px;
-  height: 50px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -1129,24 +1131,23 @@ ul.horizontal_list li.iconoption {
 
 .saitoa, .player-box {
   border: 5px solid #424143;
-  background-color: /*#edddb8;*/
-  #d3c38df5;
+  background-color: #d3c38df5;
   padding: 1rem;
-  /*background-image: url(/settlers/img/bkg.png);*/
   border-image: url(/settlers/img/border.png);
   border-image-slice: 51;
   border-image-width: 21px;
   border-image-repeat: stretch;
   border-style: solid;
-  border-image-outset: 10px;
+  border-image-outset: 7px;
   color: var(--text-color);
-  /*background-blend-mode: darken;*/
 }
 
+/*
 .saitoa {
   min-width: min(500px, 95vw);
   min-height: min(225px, 80vw);
 }
+*/
 
 .game-menu {
   background-color: #d3c38df5;
@@ -1161,4 +1162,30 @@ ul.horizontal_list li.iconoption {
   .gameboard {
     transform: scale(0.6);
   }
+}
+
+.player-box-info .army img {
+  width: 4rem;
+  margin: 0 0 0 -2rem;
+}
+
+.player-box-info .army {
+  display: flex;
+  flex-direction: row;
+  padding: 0 0 0 2rem;
+}
+
+.longest-road img {
+  width: 5rem;
+}
+
+.player-box .token img {
+  transition: all ease-in-out 300ms;
+  border-radius: 50%;
+  border: 2px solid #fff8;
+  background-color: #d3c38df5;
+}
+
+.player-box  .token img:hover {
+  transform: scale(3);
 }

@@ -13,7 +13,7 @@
 .saito-table-header { 
   position: sticky;
   top: 0px;
-  background: #3a393c;
+  background: var(--saito-background-light);
   z-index: 3;
 }
 

@@ -53,15 +53,13 @@ class SettlersSkin {
 				//this.c2 = {name: "city", svg:`<svg viewbox="0 0 200 200"><polygon points="0,100 100,100, 100,50 150,0 200,50 200,200 0,200"/></svg>`};
 				this.c1 = {name: "village", svg:`<img src="/settlers/img/icons/village.png"/>`};
 				this.c2 = {name: "city", svg:`<img src="/settlers/img/icons/city.png"/>`};
-				this.r = {name: "road"};
-				this.b = {name: "bandit"};
-				this.s = {name: "knight", img:`<i class="fas fa-horse-head"></i>`};
+				this.r = {name: "road", svg:`<img src="/settlers/img/icons/road.png"/>`};
+				this.b = {name: "bandit", svg:`<img src="/settlers/img/icons/bandit.png"/>`};
+				this.s = {name: "knight", img:`<img src="/settlers/img/icons/knight.png"/>`};
 				this.t = {name: "bank"};
 				this.vp = {name: "VP", svg:`<svg viewbox="0 0 200 200"><circle fill="gold" cx="100" cy="100" r="95" stroke="goldenrod" stroke-width="5"/> <text x="50%" y="60%" text-anchor="middle" dominant-baseline="middle" font-size="132px" fill="saddlebrown">1</text></svg>`};
-				this.longest = {name: "Longest Road",svg:`<svg viewbox="0 0 200 200"><circle fill="gold" cx="100" cy="100" r="95" stroke="goldenrod" stroke-width="5"/>
-		      						<text x="50%" y="60%" text-anchor="middle" dominant-baseline="middle" font-size="132px" fill="saddlebrown">2</text></svg><i class="fas fa-road" style="color:goldenrod;"></i>`};
-				this.largest = {name:"Largest Army",svg:`<svg viewbox="0 0 200 200"><circle fill="gold" cx="100" cy="100" r="95" stroke="gold" stroke-width="5"/>
-		      <text x="50%" y="60%" text-anchor="middle" dominant-baseline="middle" font-size="132px" fill="saddlebrown">2</text></svg><i class="fas fa-horse-head" style="color:gold;"></i>`};
+				this.longest = {name: "Longest Road", svg:`<img src="/settlers/img/icons/road.png"/>`};
+				this.largest = {name:"Largest Army", img:`<img src="/settlers/img/icons/knight.png"/>`};
 				this.resources = [{name: "brick",count:3,ict:3,icon:"/settlers/img/icons/brick-icon.png"},
 						  {name: "wood",count:4,ict:3,icon:"/settlers/img/icons/wood-icon.png"},
 						  {name: "wheat",count:4,ict:3,icon:"/settlers/img/icons/wheat-icon.png"},

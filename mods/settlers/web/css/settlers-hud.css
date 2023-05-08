@@ -10,19 +10,10 @@
 }
 
 .hud-body {
-  height: 30rem;
+  height: 12rem;
   width: auto;
-  background-color: rgba(211, 195, 141, 0.96);
-  border: 5px solid #424143;
   background-color: #d3c38df5;
-  padding: 1rem;
-  border-image: url(/settlers/img/border.png);
-  border-image-slice: 51;
-  border-image-width: 2.1rem;
-  border-image-repeat: stretch;
-  border-style: solid;
-  border-image-outset: 10px;
-  ;
+  padding: 0.5rem 1rem;
 }
 
 .hud-header {
@@ -39,10 +30,8 @@
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  max-height: 23rem;
-  overflow-y: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  display: flex;
+  gap: 1rem;
 }
 
 .status ul::-webkit-scrollbar {
@@ -50,9 +39,7 @@
 }
 
 .hud-body .status .tbd ul li, .hud-body .status ul li {
-  min-height: 4.4rem;
-  font-size: 2.3rem;
-  padding: 1rem;
+  font-size: 1.8rem;
 }
 
 /*
@@ -64,15 +51,14 @@
 .hud-body .status .tbd, .hud-body .status .player-notice {
   min-width: 80%;
   font-size: 1.8rem;
-  padding: 1rem;
+  padding: 0 1rem 1rem;
   justify-content: center;
 }
 
 .status-text-menu ul li, .status ul li {
   border-color: var(--text-color);
   border: 3px solid;
-  margin: 5px 0;
-  min-width: 25rem;
+  min-width: 12rem;
   padding: 0;
   border-radius: 10px;
   background-color: #ab815f73;
