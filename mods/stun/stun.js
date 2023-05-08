@@ -153,7 +153,7 @@ class Stun extends ModTemplate {
     }
   }
 
-  respondTo(type) {
+  respondTo(type, obj) {
     if (type === "invite") {
       // this.styles = [`/stun/style.css`,];
       super.render(this.app, this);
@@ -218,18 +218,23 @@ class Stun extends ModTemplate {
     }
 
     if (type === "user-menu") {
-      this.styles = [`/${this.returnSlug()}/style.css`];
-      this.attachStyleSheets();
-      super.render(this.app, this);
-      return [
-        {
-          text: "Video/Audio Call",
-          icon: "fas fa-video",
-          callback: function (app, public_key) {
-            app.connection.emit("game-start-video-call", public_key);
-          },
-        },
-      ];
+      if (obj?.publickey) {
+        if (obj.publickey !== this.app.wallet.returnPublicKey()){
+
+          this.styles = [`/${this.returnSlug()}/style.css`];
+          this.attachStyleSheets();
+          super.render(this.app, this);
+          return [
+            {
+              text: "Video/Audio Call",
+              icon: "fas fa-video",
+              callback: function (app, public_key) {
+                app.connection.emit("game-start-video-call", public_key);
+              },
+            },
+          ];
+        }
+      }
     }
 
     if (type === "saito-header") {

@@ -53,7 +53,7 @@ class InviteManager {
 		if (document.querySelector(target)) {
 			this.app.browser.replaceElementBySelector(InviteManagerTemplate(this.app, this.mod), target);
 		} else {
-			this.app.browser.addElementToSelectorOrDom(
+			this.app.browser.addElementToSelector(
 				InviteManagerTemplate(this.app, this.mod),
 				this.container
 			);

@@ -39,7 +39,7 @@ class RedSquareLink {
       if (document.querySelector(qs)) {
         this.app.browser.replaceElementBySelector(RedSquareLinkTemplate(this), qs);
       } else {
-        this.app.browser.addElementToSelectorOrDom(RedSquareLinkTemplate(this), this.container);
+        this.app.browser.addElementToSelector(RedSquareLinkTemplate(this), this.container);
       }
 
       this.attachEvents();

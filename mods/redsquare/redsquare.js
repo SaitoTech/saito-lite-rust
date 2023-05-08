@@ -142,14 +142,19 @@ class RedSquare extends ModTemplate {
   /////////////////////////////////
   // inter-module communications //
   /////////////////////////////////
-  respondTo(type = "") {
+  respondTo(type = "", obj) {
     this_mod = this;
     if (type === 'user-menu') {
       return {
-        text: "View Profile",
+        text: `View ${(obj?.publickey && obj.publickey === this.app.wallet.returnPublicKey())?"My ":""}Profile`,
         icon: "fa-regular fa-user",
         callback: function (app, publickey) {
-          app.connection.emit('redsquare-profile-render-request', publickey);
+          if (app.modules.returnActiveModule().returnName() == "Red Square"){
+            app.connection.emit('redsquare-profile-render-request', publickey);
+          }else{
+            window.location = `/redsquare/?user_id=${publickey}`;
+          }
+          
         }
       }
     }
@@ -450,6 +455,7 @@ class RedSquare extends ModTemplate {
       this.app.modules.returnModulesRespondingTo("chat-manager").forEach((mod) => {
         let cm = mod.respondTo("chat-manager");
         cm.container = ".saito-sidebar.left";
+        cm.render_manager_to_screen = 1;
         this.addComponent(cm);
       });
 

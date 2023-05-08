@@ -53,12 +53,10 @@ console.log("initiating key exchange...");
 
     if (type == "user-menu") {
 
-      if (obj !== undefined && obj["publickey"] !== undefined) {
-        let publickey = obj.publickey;
-        let key_exists = encrypt_self.app.keychain.hasPublicKey(publickey);
-
-        if (key_exists)                
-         return null;
+      if (obj?.publickey) {
+        if (encrypt_self.app.keychain.hasPublicKey(obj.publickey)){
+          return null; 
+        }
       }
 
       return {
