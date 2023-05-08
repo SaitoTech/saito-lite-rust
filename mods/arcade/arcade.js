@@ -310,6 +310,7 @@ class Arcade extends ModTemplate {
     this.app.modules.returnModulesRespondingTo("chat-manager").forEach((mod) => {
       let cm = mod.respondTo("chat-manager");
       cm.container = ".saito-sidebar.left";
+      cm.render_manager_to_screen = 1;
       this.addComponent(cm);
     });
 

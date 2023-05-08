@@ -22,7 +22,7 @@ class AppspaceProfile {
     if (document.querySelector(".redsquare-profile")) {
       this.app.browser.replaceElementBySelector(AppspaceProfileTemplate(this.app, publickey), ".redsquare-profile");
     } else {
-      this.app.browser.addElementToSelectorOrDom(AppspaceProfileTemplate(this.app, publickey), this.container);
+      this.app.browser.addElementToSelector(AppspaceProfileTemplate(this.app, publickey), this.container);
     }
 
     let sql = `SELECT * FROM tweets WHERE publickey = '${publickey}' ORDER BY created_at DESC;`;

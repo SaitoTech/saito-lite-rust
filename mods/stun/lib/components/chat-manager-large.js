@@ -109,19 +109,24 @@ class VideoChatManager {
 
   createRoomTextChat() {
     let chat_mod = this.app.modules.returnModule("Chat");
-    let chat_manager = chat_mod.respondTo("chat-manager");
-    let my_pub_key = this.app.wallet.returnPublicKey();
-
-    chat_mod.groups.push({
+    let cm = chat_mod.respondTo("chat-manager");
+    
+    this.chat_group = {
       id: this.room_code,
       members: [this.app.network.peers[0].peer.publickey],
       name: `Chat ${this.room_code}`,
       txs: [],
       unread: 0,
-    });
-    let chat_group = chat_mod.returnGroup(this.room_code);
+    };
 
-    this.chat_group = chat_group;
+    chat_mod.groups.push(this.chat_group);
+    
+    cm.render_popups_to_screen = 0;
+    this.app.connection.emit("chat-popup-render-request", this.chat_group, `.stun-chatbox .${this.remote_container}`);
+    cm.render_popups_to_screen = 1;
+    //You should be able to just create a Chat Group, but we are duplicating the public chat server
+    //so we need this hacky work around
+    //this.chat_group = chat_mod.createChatGroup([this.app.network.peers[0].peer.publickey], `Chat ${this.room_code}`);
   }
 
   attachEvents(app, mod) {
@@ -135,24 +140,14 @@ class VideoChatManager {
       }
 
       document.querySelector(".chat_control").addEventListener("click", (e) => {
-        let chat_mod = this.app.modules.returnModule("Chat");
+        //let chat_target_element = `.stun-chatbox .${this.remote_container}`;
 
-        if (chat_mod.chat_manager.popups[this.room_code]) {
-          // console.log(chat_mod.chat_manager.popups[this.room_code]);
-          chat_mod.chat_manager.popups[this.room_code].manually_closed = false;
-        }
-
-        let chat_target_element = ".stun-chatbox .side-videos";
-        if (!document.querySelector(chat_target_element)) {
-          chat_target_element = ".stun-chatbox .gallery";
-        }
-       
-        if(document.querySelector(chat_target_element)) {
-          this.app.connection.emit("chat-popup-render-into-request", this.chat_group, chat_target_element);
-          // document.querySelector(`.chat-popup-${this.room_code}`).style.zIndex = 2000; 
-        } else {
+        if (document.querySelector(".chat-static")){
+          document.querySelector(".chat-static").remove();
+        }else{
           this.app.connection.emit("chat-popup-render-request", this.chat_group);
         }
+        
       });
     }
 
@@ -220,7 +215,7 @@ class VideoChatManager {
     } else {
       document.querySelectorAll(".audio-control i").forEach((item) => {
         item.classList.add("fa-microphone-slash");
-        item.classList.classList.remove("fa-microphone");
+        item.classList.remove("fa-microphone");
       });
     }
 

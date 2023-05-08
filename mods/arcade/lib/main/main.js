@@ -44,7 +44,7 @@ class ArcadeMain {
     if (document.querySelector(".saito-container")) {
       this.app.browser.replaceElementBySelector(ArcadeMainTemplate(), ".saito-container");
     } else {
-      this.app.browser.addElementToSelectorOrDom(ArcadeMainTemplate(), this.container);
+      this.app.browser.addElementToSelector(ArcadeMainTemplate(), this.container);
     }
 
     this.sidebar.render();

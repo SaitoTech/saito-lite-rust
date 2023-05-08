@@ -18,7 +18,7 @@ class RedSquareMenu {
     if (document.querySelector(".redsquare-menu")) {
       this.app.browser.replaceElementBySelector(RedSquareMenuTemplate(this.app, this.mod), ".redsquare-menu");
     } else {
-      this.app.browser.addElementToSelectorOrDom(RedSquareMenuTemplate(this.app, this.mod), this.container);
+      this.app.browser.addElementToSelector(RedSquareMenuTemplate(this.app, this.mod), this.container);
     }
 
     //

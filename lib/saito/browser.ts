@@ -644,6 +644,9 @@ class Browser {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.addElementToElement(html, container);
+      }else{
+        console.info(`${selector} not found, adding direct to DOM`);
+        this.app.browser.addElementToDom(html);
       }
     }
   }
