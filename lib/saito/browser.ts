@@ -249,22 +249,20 @@ class Browser {
           if (!publickey || !app.crypto.isPublicKey(publickey) || disable_click === "true") {
             return;
           }
-          if (publickey !== app.wallet.returnPublicKey()) {
 
-            e.preventDefault();
-            e.stopImmediatePropagation();
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+//          if (publickey !== app.wallet.returnPublicKey()) {
 
             let userMenu = new UserMenu(app, publickey);
             userMenu.render(app);
 
-          } else {
-
-            e.preventDefault();
-            e.stopImmediatePropagation();
-
-            let myUserMenu = new MyUserMenu(app, publickey);
-            myUserMenu.render(app);
-          }
+//          } else {
+//
+//            let myUserMenu = new MyUserMenu(app, publickey);
+//            myUserMenu.render(app);
+//          }
         }
       },
       {
