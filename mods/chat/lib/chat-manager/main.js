@@ -141,8 +141,6 @@ class ChatManager {
       return;
     }
 
-    console.log("Rendering chat manager " + this.container);
-
     //
     // replace element or insert into page
     //

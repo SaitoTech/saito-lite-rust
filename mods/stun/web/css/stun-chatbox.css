@@ -29,6 +29,7 @@
   right: 2rem;
   top: 1rem;
   z-index: 2;
+  cursor: pointer;
 }
 
 .stun-chatbox .minimizer i {
@@ -65,10 +66,9 @@
   display: none;
 }
 
-.stun-chatbox .minimizer i:hover {
+.stun-chatbox .minimizer:hover i {
   color: var(--saito-primary);
-  transform: scale(1.1);
-  cursor: pointer;
+  transform: scale(1.2);
 }
 
 .stun-chatbox main {
@@ -483,14 +483,17 @@
   font-size: 1.2rem;
 }
 
-.control-list i, .add_users_container i {
+.icon_click_area i {
   color: green;
-  cursor: pointer;
   transition: all 0.2s;
   font-size: 2rem;
 }
 
-.control-list i:hover, .add_users_container i:hover {
+.icon_click_area {
+  cursor: pointer;
+}
+
+.icon_click_area:hover i {
   transform: scale(1.2);
 }
 
@@ -632,10 +635,6 @@
   margin-top: 1rem;
 }
 
-.chat-settings-toggle-icon {
-  margin-right: 1rem;
-  color: var(--saito-primary);
-}
 
 .chat-settings h1 {
   color: var(--saito-white);
@@ -663,18 +662,22 @@
 }
 
 .chat-settings-toggle-icons {
-  color: var(--saito-white);
-  font-size: 1.5rem;
-  margin-left: 0.5rem;
   cursor: pointer;
   position: absolute;
-  bottom: 3rem;
+  bottom: 2rem;
 }
 
 .chat-settings-toggle-icon {
+  color: var(--saito-primary);
+  width: 5rem;
+  text-align: center;
   font-size: 3rem;
-  margin-left: 0.5rem;
+  padding: 0.25rem;
   cursor: pointer;
+}
+
+.chat-settings-toggle-icon:hover {
+  color: var(--saito-secondary);
 }
 
 .chat-settings select {
