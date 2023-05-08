@@ -41,7 +41,7 @@ class ChatManager {
     //
     // handle requests to re-render chat popups
     //
-    app.connection.on("chat-popup-render-request", (group = null, target_selector = null) => {
+    app.connection.on("chat-popup-render-request", (group = null) => {
 
       //
       // mobile devices should not force open chat for us
@@ -54,22 +54,18 @@ class ChatManager {
       }
 
 
-      //console.log("Group: ", group, "Target: ",target_selector);
-
       if (!group) {
         group = this.mod.returnCommunityChat();
       } 
 
       if (group) {
         if (!this.popups[group.id]) {
-          this.popups[group.id] = new ChatPopup(this.app, this.mod, target_selector);
+          this.popups[group.id] = new ChatPopup(this.app, this.mod);
           this.popups[group.id].group = group;
         }
 
         if (this.render_popups_to_screen) {
-          if (target_selector) {
-            this.popups[group.id].container = target_selector;  
-          }
+          this.popups[group.id].container = group?.target_container || "";  
           this.popups[group.id].render();
         }
 

@@ -41,8 +41,6 @@ class ChatPopup {
     //
     if (this.manually_closed) { return; }
 
-    console.log("Target container: " + this.container);
-
     //
     // our query selector
     //
@@ -133,55 +131,6 @@ class ChatPopup {
       
     }
 
-    //
-    // emojis
-    //
-    this.emoji.render();
-
-    //
-    // scroll to bottom
-    //
-    if (document.querySelector("." + popup_id + " .chat-body")) {
-      document.querySelector("." + popup_id + " .chat-body").scroll(0, 1000000000);
-    }
-    //
-    // re-render typed text
-    //
-    if (existing_input != "") {
-      document.getElementById(input_id).innerHTML = existing_input;
-      existing_input = "";
-    }
-
-
-    //
-    // attach events
-    //
-    this.attachEvents();
-
-  }
-
-  renderIntoDom(target_selector) {
-
-
-    //
-    // calculate some values to determine position on screen...
-    //
-    let am_i_on_page = 0;
-
-    if (document.querySelector(popup_qs)) {
-      am_i_on_page = 1;
-    }
-
-
-    //
-    // insert or replace popup on page
-    //
-    if (am_i_on_page == 1) {
-      let obj = document.querySelector(popup_qs);
-      this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group, true), popup_qs);
-    } else {
-      this.app.browser.addElementToSelector(ChatPopupTemplate(this.app, this.mod, this.group, true), target_selector);
-    }
     //
     // emojis
     //

@@ -117,13 +117,11 @@ class VideoChatManager {
       name: `Chat ${this.room_code}`,
       txs: [],
       unread: 0,
+      target_container: `.stun-chatbox .${this.remote_container}`,
     };
 
     chat_mod.groups.push(this.chat_group);
     
-    cm.render_popups_to_screen = 0;
-    this.app.connection.emit("chat-popup-render-request", this.chat_group, `.stun-chatbox .${this.remote_container}`);
-    cm.render_popups_to_screen = 1;
     //You should be able to just create a Chat Group, but we are duplicating the public chat server
     //so we need this hacky work around
     //this.chat_group = chat_mod.createChatGroup([this.app.network.peers[0].peer.publickey], `Chat ${this.room_code}`);
@@ -143,7 +141,8 @@ class VideoChatManager {
         //let chat_target_element = `.stun-chatbox .${this.remote_container}`;
 
         if (document.querySelector(".chat-static")){
-          document.querySelector(".chat-static").remove();
+          //document.querySelector(".chat-static").remove();
+          this.app.connection.emit("chat-popup-remove-request", this.chat_group);
         }else{
           this.app.connection.emit("chat-popup-render-request", this.chat_group);
         }
@@ -500,6 +499,7 @@ class VideoChatManager {
         this.video_boxes[i].video_box.render(this.remote_streams.get(i));
       }
     }
+    this.chat_group.target_container = `.stun-chatbox .${this.remote_container}`;
   }
 
   analyzeAudio(stream, peer) {
