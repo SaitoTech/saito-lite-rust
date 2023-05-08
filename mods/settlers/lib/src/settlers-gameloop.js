@@ -660,7 +660,7 @@ class SettlersGameloop {
               settlers_self.endTurn();
             }
             if (choice === "playcard") {
-                 settlers_self.dev_card.render();
+                settlers_self.dev_card.render();
  //             settlers_self.playerPlayCard();
             }
           });

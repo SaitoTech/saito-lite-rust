@@ -905,7 +905,6 @@ ul.horizontal_list li.iconoption {
 
 .token {
   margin: min(3px, 1vh);
-  width: 1.2em;
   background-color: unset;
 }
 
@@ -1163,4 +1162,30 @@ ul.horizontal_list li.iconoption {
   .gameboard {
     transform: scale(0.6);
   }
+}
+
+.player-box-info .army img {
+  width: 4rem;
+  margin: 0 0 0 -2rem;
+}
+
+.player-box-info .army {
+  display: flex;
+  flex-direction: row;
+  padding: 0 0 0 2rem;
+}
+
+.longest-road img {
+  width: 5rem;
+}
+
+.player-box .token img {
+  transition: all ease-in-out 300ms;
+  border-radius: 50%;
+  border: 2px solid #fff8;
+  background-color: #d3c38df5;
+}
+
+.player-box  .token img:hover {
+  transform: scale(3);
 }
