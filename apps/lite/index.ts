@@ -45,17 +45,21 @@ class WebMethods extends WebSharedMethods {
   sendInterfaceEvent(event: string, peerIndex: bigint) {
     this.app.connection.emit(event, peerIndex);
   }
+
   async saveWallet() {
     this.app.options.wallet.publicKey = await this.app.wallet.getPublicKey();
     this.app.options.wallet.privateKey = await this.app.wallet.getPrivateKey();
     this.app.options.wallet.balance = await this.app.wallet.getBalance();
   }
+
   async loadWallet() {
     throw new Error("Method not implemented.");
   }
+
   async saveBlockchain() {
     throw new Error("Method not implemented.");
   }
+
   async loadBlockchain() {
     throw new Error("Method not implemented.");
   }

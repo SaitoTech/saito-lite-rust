@@ -130,7 +130,19 @@ webpack({
       {
         test: /\.tsx?$/,
         loader: "ts-loader",
-        exclude: /(node_modules)/
+        exclude: [
+          {
+            and: [path.resolve(__dirname,"node_modules")],
+            // TODO : remove ts loadup entirely
+            // not: [path.resolve(__dirname,"node_modules/saito-js")]
+          }
+        ],
+        resolve: {
+          fullySpecified:false
+        }
+        // options:{
+        //   allowTsInNodeModules: true
+        // }
       },
       // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
       {
@@ -145,14 +157,20 @@ webpack({
               cacheCompression: false,
               cacheDirectory: true,
             }
-          }
+          },
         ],
-        exclude: /(node_modules)/
+        // exclude: /(node_modules)/,
+        resolve: {
+          fullySpecified:false
+        }
       },
       {
         test: /\.mjs$/,
         exclude: /(node_modules)/,
-        type: "javascript/auto"
+        type: "javascript/auto",
+        resolve: {
+          fullySpecified:false
+        }
       },
       {
         test: /html$/,
