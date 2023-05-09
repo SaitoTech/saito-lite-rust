@@ -157,7 +157,8 @@ body {
 }
 
 .flip-card , .card {
-  width: 11vw;
+  width: 10vw;
+  max-width: 120px;
 }
 
 .flip-card .card {
@@ -211,6 +212,8 @@ body {
     max-width: max-content;
     display: block;
     margin: 0 auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
 }
 
 .pot-counter{
