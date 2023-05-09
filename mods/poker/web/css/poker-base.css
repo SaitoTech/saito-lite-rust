@@ -198,19 +198,19 @@ body {
 }
 
 .pot {
-  position: absolute;
-  background-color: #0007;
-  font-size: 3rem;
-  top: 22vh;
-  left: 50%;
-  height: 5.5rem;
-  min-width: 20vw;
-  width: 20vw;
-  margin-left: -10vw;
-  text-align: center;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  border-radius: 0.5rem;
+    position: relative;
+    background-color: #0007;
+    font-size: 3rem;
+    top: 22vh;
+    height: 5.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-radius: 0.5rem;
+    width: max-content;
+    min-width: max-content;
+    max-width: max-content;
+    display: block;
+    margin: 0 auto;
 }
 
 .pot-counter{
@@ -307,7 +307,7 @@ body {
 @media screen and (max-width: 1200px) {
 
   .flip-card , .card {
-    width: 14vw;
+    width: 13vw;
   }
 
 }
@@ -315,7 +315,7 @@ body {
 @media screen and (max-width: 800px) {
 
   .flip-card , .card {
-    width: 16vw;
+    width: 15vw;
   }
 
 }

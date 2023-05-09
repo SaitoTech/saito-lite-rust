@@ -107,10 +107,12 @@ class Poker extends GameTableTemplate {
   formatWager(x, includeTicker=true) {
     let numChips = x.toString();
     if (includeTicker) {
+      let chips = "CHIPS";
       if (numChips === "1" || this.stf(numChips) == 1) {
 	if (this.game.crypto === "CHIPS") { chips = "CHIP"; }
+        else { chips = this.game.crypto; }
       }
-      return `${this.app.crypto.convertStringToDecimalPrecision(numChips)} ${this.game.crypto}`;
+      return `${this.app.crypto.convertStringToDecimalPrecision(numChips)} ${chips}`;
     } else {
       return `${this.app.crypto.convertStringToDecimalPrecision(numChips)}`;
     }
@@ -982,7 +984,7 @@ class Poker extends GameTableTemplate {
 	  this.game.state.player_credit[bbpi] = this.subtractFromString(this.game.state.player_credit[bbpi], this.game.state.big_blind);
         }
 
-        this.refreshPlayerLog(`<div class="plog-update">committed: ${this.formatWager(this.game.state.big_blind)}</div>`,this.game.state.big_blind_player);
+//        this.refreshPlayerLog(`<div class="plog-update">committed: ${this.formatWager(this.game.state.big_blind)}</div>`,this.game.state.big_blind_player);
 
 
         //
@@ -1005,7 +1007,7 @@ class Poker extends GameTableTemplate {
 
         this.outputState();
 
-        this.refreshPlayerLog(`<div class="plog-update">committed: ${this.formatWager(this.game.state.small_blind)}</div>`,this.game.state.small_blind_player);
+//        this.refreshPlayerLog(`<div class="plog-update">committed: ${this.formatWager(this.game.state.small_blind)}</div>`,this.game.state.small_blind_player);
         this.displayPlayers(true);        //Update Chip stacks after betting
         this.game.queue.push("round");    //Start
         this.game.queue.push("announce"); //Print Hole cards to Log
@@ -1241,7 +1243,7 @@ class Poker extends GameTableTemplate {
     html += '<li class="menu_option" id="fold">fold</li>';
     
     if (this.stf(match_required) > 0) {
-      html += `<li class="menu_option" id="call">call (${this.formatWager(match_required)})</li>`;
+      html += `<li class="menu_option" id="call">call - ${this.formatWager(match_required)}</li>`;
     } else { // we don't NEED to match
       html += '<li class="menu_option" id="check">check</li>';
     }
@@ -1650,7 +1652,6 @@ class Poker extends GameTableTemplate {
     } else {
       let qs = `#player-box-body-${seat}`;
       if (document.querySelector(qs)) {
-alert("TESTING");
         document.querySelector(qs).innerHTML = `<div class="menu-player-upper">${innerhtml}</div>`;
       }
     }
