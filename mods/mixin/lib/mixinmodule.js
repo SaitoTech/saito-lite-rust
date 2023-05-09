@@ -128,8 +128,6 @@ class MixinModule extends CryptoModule {
 
 
   returnHistory(records, callback) {
-    console.log("callback inside MixinModule ///////////////////");
-    console.log(callback);
     this.mixin.fetchSnapshots(this.asset_id, records, callback);
   }  
 
