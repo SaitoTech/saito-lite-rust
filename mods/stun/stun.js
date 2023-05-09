@@ -70,7 +70,7 @@ class Stun extends ModTemplate {
       },
     ];
 
-    this.styles = ["/saito/saito.css", "/videocall/style.css"];
+    this.styles = ["/videocall/style.css"];
 
     app.connection.on("stun-send-message-to-server", (data) => {
       this.sendStunMessageToServerTransaction(data);
@@ -154,27 +154,33 @@ class Stun extends ModTemplate {
   }
 
   respondTo(type, obj) {
+    let stun_self = this;
+
     if (type === "invite") {
-      // this.styles = [`/stun/style.css`,];
+      stun_self.attachStyleSheets();
       super.render(this.app, this);
       return new StunxInvite(this.app, this);
     }
     if (type === "saito-header") {
+      stun_self.attachStyleSheets();
+      super.render(this.app, this);
+
       return [
         {
           text: "Video Call",
           icon: this.icon,
+          allowed_mods: ["redsquare", "arcade"],
           callback: function (app, id) {
-            let stun_self = app.modules.returnModule("Stun");
             stun_self.renderInto(".saito-overlay");
           },
         },
       ];
     }
     if (type == "game-menu") {
-      // this.styles = [`/${this.returnSlug()}/css/style.css`,];
 
+      stun_self.attachStyleSheets();
       super.render(this.app, this);
+
       return {
         id: "game-chat",
         text: "Video Chat",
@@ -185,8 +191,6 @@ class Stun extends ModTemplate {
             class: "start-group-video-chat",
             callback: function (app, game_mod) {
               if (game_mod.game.players.length > 1) {
-                let stun_self = app.modules.returnModule("Stun");
-                stun_self.attachStyleSheets();
                 app.connection.emit("game-menu-start-video-call", [...game_mod.game.players]);
               }
             },
@@ -196,7 +200,6 @@ class Stun extends ModTemplate {
             id: "join-group-video-chat",
             class: "join-group-video-chat",
             callback: function (app, game_mod) {
-              let stun_self = app.modules.returnModule("Stun");
               app.connection.emit("game-menu-join-video-call", {
                 room_code: stun_self.game_room_code,
               });
@@ -218,10 +221,13 @@ class Stun extends ModTemplate {
     }
 
     if (type === "user-menu") {
+
+      stun_self.attachStyleSheets();
+      super.render(this.app, this);
+
       if (obj?.publickey) {
         if (obj.publickey !== this.app.wallet.returnPublicKey()){
 
-          this.styles = [`/${this.returnSlug()}/style.css`];
           this.attachStyleSheets();
           super.render(this.app, this);
           return [
@@ -229,7 +235,13 @@ class Stun extends ModTemplate {
               text: "Video/Audio Call",
               icon: "fas fa-video",
               callback: function (app, public_key) {
-                app.connection.emit("game-start-video-call", public_key);
+                stun_self.renderInto(".saito-overlay");
+                salert("You still need to send an invitation link to the call (after you start it)");
+                /*
+                  We should have a general function to launch the chat-manager with an invitation system
+                  like the in-game start-video-call but without all the DOM manipulations on game-menu
+                */
+                //app.connection.emit("game-menu-start-video-call", [app.wallet.returnPublicKey(), public_key]);
               },
             },
           ];
@@ -237,20 +249,6 @@ class Stun extends ModTemplate {
       }
     }
 
-    if (type === "saito-header") {
-      let m = [
-        {
-          text: "Video Call",
-          icon: this.icon,
-          allowed_mods: ["redsquare", "arcade"],
-          callback: function (app, id) {
-            let pub_key = app.wallet.returnPublicKey();
-            app.connection.emit("game-start-video-call", pub_key);
-          },
-        },
-      ];
-      return m;
-    }
     return null;
   }
 

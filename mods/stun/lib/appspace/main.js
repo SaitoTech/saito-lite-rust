@@ -41,7 +41,8 @@ class StunAppspace {
       return;
     }
     if (this.container === ".saito-overlay") {
-      this.overlay.show(StunAppspaceTemplate(this.app, this.mod))
+      //Should add callback to "hang up the call" if we close the overlay
+      this.overlay.show(StunAppspaceTemplate(this.app, this.mod), () => {this.app.connection.emit("cancel-meeting");});
     } else if (this.container === "body") {
       this.app.browser.addElementToDom(StunAppspaceTemplate(this.app, this.mod))
     }
