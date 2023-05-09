@@ -454,6 +454,7 @@ body {
   font-size: 2em;
   text-align: center;
   border-radius: 50%;
+  scale: 1.6;
 }
 
 .city>svg, .city>img {
