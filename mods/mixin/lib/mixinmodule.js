@@ -11,6 +11,7 @@
    async returnBalance(address = "")
    async sendPayment(amount="", recipient="", unique_hash="")
    async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
+   returnHistory(page=1, records=20, callback())
 
 
  TODO:
@@ -126,9 +127,11 @@ class MixinModule extends CryptoModule {
   }
 
 
-  returnHistory(mycallback=null, order="DESC", limit=20) {
-    this.mixin.fetchSnapshots(this.asset_id, order, limit, mycallback);
-  }
+  returnHistory(records, callback) {
+    console.log("callback inside MixinModule ///////////////////");
+    console.log(callback);
+    this.mixin.fetchSnapshots(this.asset_id, records, callback);
+  }  
 
 
 }
