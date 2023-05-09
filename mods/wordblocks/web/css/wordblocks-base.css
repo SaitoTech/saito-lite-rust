@@ -17,6 +17,21 @@ body {
   scrollbar-shadow-color: #868686;
 }
 
+.pboxlog {
+    margin-top: 1rem;
+}
+.pboxinfo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 1px 0;
+    margin-top: 1rem;
+}
+
+.player-box-head .saito-user .saito-address {
+  color: white;
+}
 
 /* Undo HUD styling for Acknowledge */
  .status-header, .status-message, .status-text-menu,  .status-text-menu ul,  .status-text-menu ul li,  .textchoice{

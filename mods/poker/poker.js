@@ -1627,11 +1627,8 @@ class Poker extends GameTableTemplate {
   }
 
   refreshPlayerLog(html, player) {
-console.log("ASKING TO REFRESH LOG WITH: " + html);
     if (html.indexOf("menu-player-upper") == -1) { html = '<div class="menu-player-upper"></div>' + html; }
-console.log("MODDED TO: " + html);
     this.playerbox.refreshLog(html, player);
-console.log("REFRESHING LOG w: " + html);
     this.refreshPlayerStack(player, false);
   }
   refreshPlayerStack(player, includeCards = true){

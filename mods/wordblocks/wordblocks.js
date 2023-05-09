@@ -87,7 +87,6 @@ class Wordblocks extends GameTemplate {
     this.hud.auto_sizing = 0; //turn off default sizing
     this.hud.draggable_whole = false;
     this.hud.render();
-
     this.log.render();
 
     try {
@@ -99,15 +98,15 @@ class Wordblocks extends GameTemplate {
       let compact_html = "";
 
       for (let i = 1; i <= this.game.players.length; i++) {
-        this.playerbox.refreshName(i);
+        this.refreshPlayerName(i);
         let score = this.getPlayerScore(i);
-        this.playerbox.refreshInfo(`<span>Player ${i}:</span> <span class="playerscore" id="score_${i}">${score}</span>`, i);
+        this.refreshPlayerInfo(`<span>Score:</span> <span class="playerscore" id="score_${i}">${score}</span>`, i);
 
         compact_html += `<div class="score"><img class="player-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i-1])}"/> : ${score} </div>`;
 
         let lastMove = this.getLastMove(i);
         let html = `<div class="lastmove" id="lastmove_${i}"><span>Last:</span><span class="playedword" style="text-decoration:none">${lastMove.word}</span> <span class="wordscore">${lastMove.score}</span></div>`;
-        this.playerbox.refreshLog(html, i);
+        this.refreshPlayerLog(html, i);
       }
       
       this.scoreboard.update(compact_html);
@@ -305,6 +304,7 @@ class Wordblocks extends GameTemplate {
       this.stopClock();
       this.updateStatusWithTiles(`Waiting for ${this.game.playerNames[this.game.target-1]} to move.`);
     }
+    this.updateActivePlayerUserline(this.game.target);
 
     if (this.game.players.length > 2){
       this.grace_window = this.game.players.length * 8;
@@ -604,7 +604,7 @@ class Wordblocks extends GameTemplate {
       $("#skipturn").off();
       $("#skipturn").on("click",function(){
         wordblocks_self.clearBoard();
-        wordblocks_self.addMove("turn\t" + wordblocks_self.game.player + "\t");
+        wordblocks_self.addMove("discard_tiles\t" + wordblocks_self.game.player + "\t");
         wordblocks_self.endTurn();
       });
 
@@ -1093,7 +1093,7 @@ class Wordblocks extends GameTemplate {
   discardAndDrawTiles(tiles) {
     salert("Tossed: " + tiles);
     this.removeTilesFromHand(tiles);
-    this.addMove("turn\t" + this.game.player + "\t" + tiles);
+    this.addMove("discard_tiles\t" + this.game.player + "\t" + tiles);
     this.drawTiles();
     this.endTurn();
   }
@@ -2119,11 +2119,8 @@ class Wordblocks extends GameTemplate {
     }
 
     ///////////
-    // QUEUE // Possibilities: gameover, endgame, place, turn
+    // QUEUE // Possibilities: gameover, endgame, place, discard_tiles
     ///////////
-
-    console.log(JSON.stringify(this.game.queue));
-
     if (this.game.queue.length > 0) {
       
       let qe = this.game.queue.length - 1;
@@ -2220,7 +2217,7 @@ class Wordblocks extends GameTemplate {
 
         //Update Specific Playerbox
         let html = `<div class="lastmove" id="lastmove_${player}"><span>Last:</span><span class="playedword">${expanded}</span> <span class="wordscore">${score}</span></div>`;
-        this.playerbox.refreshLog(html, player);
+        this.refreshPlayerLog(html, player);
 
         if (this.game.over == 1 || this.game.queue.includes("gameover")) {
           return 1;
@@ -2236,6 +2233,9 @@ class Wordblocks extends GameTemplate {
           this.stopClock(); //Make sure clock didn't start again on browser refresh
           this.updateStatusWithTiles(`${this.game.playerNames[this.game.target-1]}'s turn`);
         }
+
+	this.updateActivePlayerUserline(this.game.target);
+
         $(".player-box").removeClass("active");
         this.playerbox.addClass("active", this.game.target);
         this.playerbox.alertNextPlayer(this.game.target, 'flash');
@@ -2246,8 +2246,8 @@ class Wordblocks extends GameTemplate {
         return 1; 
       }
 
-      //Actually tile discarding action
-      if (mv[0] === "turn") {
+      if (mv[0] === "discard_tiles") {
+
         if (!this.browser_active){
           return 0;
         }
@@ -2274,7 +2274,7 @@ class Wordblocks extends GameTemplate {
         }
         html += `<span class="wordscore">0</span></div>`;
 
-        this.playerbox.refreshLog(html, player);
+        this.refreshPlayerLog(html, player);
 
         //Code to keep the discard and redraws in the game log history
         wordblocks_self.last_played_word[player - 1] = {
@@ -2331,8 +2331,8 @@ class Wordblocks extends GameTemplate {
     }
 
     this.game.score[player - 1] = this.getPlayerScore(player) + score;
-    this.playerbox.refreshInfo(
-      `<span>Player ${player}:</span> <span class="playerscore" id="score_${player}">${this.game.score[player - 1]
+    this.refreshPlayerInfo(
+      `<span>Score:</span> <span class="playerscore" id="score_${player}">${this.game.score[player - 1]
       }</span>`,
       player
     );
@@ -2381,7 +2381,7 @@ class Wordblocks extends GameTemplate {
         salert("Turn ended automatically");
         this.clearBoard();
         this.removeEvents();
-        this.addMove("turn\t" + this.game.player + "\t");
+        this.addMove("discard_tiles\t" + this.game.player + "\t");
         this.endTurn();
       }
       this.clock.displayTime(time_on_clock);
@@ -2408,7 +2408,117 @@ class Wordblocks extends GameTemplate {
       await new Promise(resolve => setTimeout(resolve, 250));
     }
   } 
-  
+
+  updateActivePlayerUserline(active_player) {
+
+console.log("active player is: " + active_player);
+
+    //
+    // update userline
+    //
+    for (let i = 0; i < this.game.players.length; i++) {
+      if ((i+1) == active_player) {
+console.log("NOW PLAYING REQUEST!");
+	this.refreshPlayerUserline((i+1), "now playing");
+      } else {
+        this.refreshPlayerUserline((i+1)); // their name
+      }
+
+      let seat = this.playerbox.playerBox(i+1);
+      let sq = `#player-box-head-${seat} .saito-user .saito-userline`;
+      let obj = document.querySelector(sq);
+      if (obj) {
+console.log("updating seat to waiting!");
+        if (obj.innerHTML === "") { 
+console.log("SUBMITTING UPDATE to waiting!");
+	  this.refreshPlayerUserline((i+1), "waiting");
+        }
+      }
+    }
+
+  }
+
+  refreshPlayerUserline(player, userline="") {
+
+    if (!this.game.userlines) { this.game.userlines = []; for (let i = 0; i < this.game.players.length; i++) { this.game.userlines.push({ userline : "" }); } }
+
+console.log("updating "+player+" with userline: " + userline);
+
+    let seat = this.playerbox.playerBox(player);
+    if (userline == "") {
+      let publickey = this.game.players[player-1];
+console.log("publickey is: " + publickey);
+      let name = this.app.keychain.returnUsername(publickey);
+      if (name.includes("...")) { name = `Player ${player}`; }
+      if (name.includes("@")){ name = name.substring(0, name.indexOf("@")); }
+      if (name !== `Player ${player}`) { userline = `Player ${player}`; }
+    }
+
+console.log("userline is now: " + userline);
+console.log("seat is now: " + seat);
+
+    let sq = `#player-box-head-${seat} .saito-user .saito-userline`;
+    let obj = document.querySelector(sq);
+    if (obj) { obj.innerHTML = userline; 
+
+console.log("updated innerHTML: " + obj.innerHTML);
+
+}
+    this.game.userlines[player-1].userline = userline;
+
+  }
+
+  refreshPlayerName(player) {
+    this.playerbox.refreshName(player);
+    for (let i = 0; i < this.game.players.length; i++) {
+      this.refreshPlayerUserline((i+1), this.game.userlines[i].userline);
+    }
+  }
+  refreshPlayerLog(html, player) {
+
+    if (!this.game.state) {
+      this.game.state = {};
+      this.game.state.players = [];
+      for (let i = 0; i < this.game.players.length; i++) { this.game.state.players.push({ info : "" , log: "" }); }
+    }
+
+    this.game.state.players[player-1].log = html;
+
+    let newhtml = `
+      <div class="pboxinfo">
+	${this.game.state.players[player-1].info}
+      </div>
+      <div class="pboxlog">
+	${this.game.state.players[player-1].log}
+      </div>
+    `;
+
+    this.playerbox.refreshLog(newhtml, player);
+
+  }
+  refreshPlayerInfo(html, player) {
+
+    if (!this.game.state) {
+      this.game.state = {};
+      this.game.state.players = [];
+      for (let i = 0; i < this.game.players.length; i++) { this.game.state.players.push({ info : "" , log: "" }); }
+    }
+
+    this.game.state.players[player-1].info = html;
+
+    let newhtml = `
+      <div class="pboxinfo">
+	${this.game.state.players[player-1].info}
+      </div>
+      <div class="pboxlog">
+	${this.game.state.players[player-1].log}
+      </div>
+    `;
+
+    this.playerbox.refreshInfo(newhtml, player);
+
+  } 
+ 
 }
 
 module.exports = Wordblocks;
