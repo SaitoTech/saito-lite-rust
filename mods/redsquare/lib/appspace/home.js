@@ -42,7 +42,7 @@ class AppspaceHome {
       this.app.browser.replaceElementBySelector(AppspaceHomeTemplate(), ".redsquare-home");
     } else {
       this.container.innerHTML = "";
-      this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
+      this.app.browser.addElementToSelector(AppspaceHomeTemplate(), this.container);
     }
 
   }
@@ -54,7 +54,7 @@ class AppspaceHome {
     //
     if (!document.querySelector(".redsquare-home")) {
       this.container.innerHTML = "";
-      this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
+      this.app.browser.addElementToSelector(AppspaceHomeTemplate(), this.container);
     }
 
     this.loader.render();
@@ -69,7 +69,7 @@ class AppspaceHome {
     //
     if (!document.querySelector(".redsquare-home")) {
       this.container.innerHTML = "";
-      this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
+      this.app.browser.addElementToSelector(AppspaceHomeTemplate(), this.container);
     }
 
 

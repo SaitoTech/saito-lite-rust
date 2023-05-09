@@ -244,22 +244,25 @@ class Mods {
     });
   }
 
-  returnModulesRespondingTo(request) {
+  //Update 8 May 2023 -- Daniel
+  //User-menu expanding functionality for an optional obj with request to pass parameters
+
+  returnModulesRespondingTo(request, obj = null) {
     return this.mods.filter((mod) => {
-      return mod.respondTo(request) != null;
+      return mod.respondTo(request, obj) != null;
     });
   }
 
-  respondTo(request) {
+  respondTo(request, obj = null) {
     return this.mods.filter((mod) => {
-      return mod.respondTo(request) != null;
+      return mod.respondTo(request, obj) != null;
     });
   }
 
-  getRespondTos(request) {
+  getRespondTos(request, obj = null) {
     const compliantInterfaces = [];
     this.mods.forEach((mod) => {
-      const itnerface = mod.respondTo(request);
+      const itnerface = mod.respondTo(request, obj);
       if (itnerface != null) {
         if (Object.keys(itnerface)) {
           compliantInterfaces.push({ ...itnerface, modname: mod.returnName() });

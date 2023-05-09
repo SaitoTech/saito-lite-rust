@@ -92,7 +92,7 @@ class FieldBattleOverlay {
 	  el.remove();
 
 	  this.mod.addMove("field_battle_destroy_unit\t" + faction + "\t" + spacekey + "\t" + unit_type);
-	  if (hits_assigned == hits_assigned || hit_assigned >= hits_assignable) {
+	  if (hits_assigned == hits_to_assign || hit_assigned >= hits_assignable) {
             document.querySelectorAll(".hits-assignable").forEach((el) => { el.onclick = (e) => {}; });
 	    this.mod.endTurn();
 	  }
@@ -112,7 +112,7 @@ class FieldBattleOverlay {
       let obj = document.querySelector(".field-battle-overlay");
       obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
       obj.style.backgroundSize = "contain";
-      this.updateInstructions("Attackers Win: Defenders Besieged");
+      this.updateInstructions("Attackers Win");
     }
 
     defendersWin(res) {
@@ -121,7 +121,7 @@ class FieldBattleOverlay {
       let obj = document.querySelector(".field-battle-overlay");
       obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
       obj.style.backgroundSize = "contain";
-      this.updateInstructions("Defenders Win: Attackers must Retreat");
+      this.updateInstructions("Defenders Win");
     }
 
 

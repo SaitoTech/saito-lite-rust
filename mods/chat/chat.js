@@ -218,12 +218,9 @@ class Chat extends ModTemplate {
                 }
                 return null;
             case 'user-menu':
-
-                if (obj !== undefined && obj["publickey"] !== undefined) {
-                    let publickey = obj.publickey;
-                    let key_exists = chat_self.app.keychain.hasPublicKey(publickey);
-
-                    if (key_exists && publickey !== chat_self.app.wallet.returnPublicKey()){
+                if (obj?.publickey) {
+                    if (chat_self.app.keychain.hasPublicKey(obj.publickey) && 
+                        obj.publickey !== chat_self.app.wallet.returnPublicKey()){
 
                         return {
                             text: "Chat",

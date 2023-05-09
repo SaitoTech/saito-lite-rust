@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.899,
+    version: 4.901,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -351,6 +351,9 @@ console.log("---------------------");
       }
       async returnBalance() {
         return parseFloat(this.app.wallet.returnBalance());
+      }
+      returnHistory(mycallback=null, order="DESC", limit=20) {
+	return [];
       }
       returnAddress() {
         return this.app.wallet.returnPublicKey();

@@ -310,6 +310,7 @@ class Arcade extends ModTemplate {
     this.app.modules.returnModulesRespondingTo("chat-manager").forEach((mod) => {
       let cm = mod.respondTo("chat-manager");
       cm.container = ".saito-sidebar.left";
+      cm.render_manager_to_screen = 1;
       this.addComponent(cm);
     });
 
@@ -375,7 +376,7 @@ class Arcade extends ModTemplate {
   //
   // flexible inter-module-communications
   //
-  respondTo(type = "") {
+  respondTo(type = "", obj) {
     if (type == "header-dropdown") {
       return {
         name: this.appname ? this.appname : this.name,
@@ -385,13 +386,15 @@ class Arcade extends ModTemplate {
       };
     }
     if (type === "user-menu") {
-      return {
-        text: "Challenge to Game",
-        icon: "fas fa-gamepad",
-        callback: function (app, publickey) {
-          app.connection.emit("arcade-launch-game-selector", { publickey });
-        },
-      };
+      if (obj?.publickey && obj.publickey !== this.app.wallet.returnPublicKey()){
+        return {
+          text: "Challenge to Game",
+          icon: "fas fa-gamepad",
+          callback: function (app, publickey) {
+            app.connection.emit("arcade-launch-game-selector", { publickey });
+          },
+        };
+      }
     }
     if (type === "saito-header") {
       let x = [];

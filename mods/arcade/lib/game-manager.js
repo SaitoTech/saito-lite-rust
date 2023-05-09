@@ -28,7 +28,7 @@ class GameManager {
 		if (document.querySelector(target)) {
 			this.app.browser.replaceElementBySelector(`<div class="game-manager"></div>`, target);
 		} else {
-			this.app.browser.addElementToSelectorOrDom(
+			this.app.browser.addElementToSelector(
 				`<div class="game-manager"></div>`,
 				this.container
 			);

@@ -15,7 +15,7 @@ class ChatManager {
     //
     // some apps may want chat manager quietly in background
     //
-    this.render_manager_to_screen = 1;
+    this.render_manager_to_screen = 0;
     this.render_popups_to_screen = 1;
 
 
@@ -53,47 +53,24 @@ class ChatManager {
         }
       }
 
+
       if (!group) {
         group = this.mod.returnCommunityChat();
       } 
 
       if (group) {
+        if (!this.popups[group.id]) {
+          this.popups[group.id] = new ChatPopup(this.app, this.mod);
+          this.popups[group.id].group = group;
+        }
+
         if (this.render_popups_to_screen) {
-          if (!this.popups[group.id]) {
-            this.popups[group.id] = new ChatPopup(this.app, this.mod, "");
-            this.popups[group.id].group = group;
-          }
+          this.popups[group.id].container = group?.target_container || "";  
           this.popups[group.id].render();
         }
 
         if (this.render_manager_to_screen) {
           this.render();
-        }
-      }
-    });
-
-    app.connection.on("chat-popup-render-into-request", (group = null, target_selector = null) => {
-
-      //
-      // mobile devices should not force open chat for us
-      //
-      if (app.browser.isMobileBrowser()) {
-        let active_mod = this.app.modules.returnActiveModule();
-        if (active_mod.respondTo("arcade-games")) {
-          return;
-        }
-      }
-
-      if (group == null) {
-        let group = this.mod.returnCommunityChat();
-        if (group != null) { this.app.connection.emit("chat-popup-render-into-request", (group, target_selector)); }
-      } else {
-        if (this.render_popups_to_screen) {
-          if (!this.popups[group.id]) {
-            this.popups[group.id] = new ChatPopup(this.app, this.mod, "");
-            this.popups[group.id].group = group;
-          }
-          this.popups[group.id].renderIntoDom(target_selector);
         }
       }
     });

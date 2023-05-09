@@ -80,133 +80,57 @@ class ChatPopup {
     });
 
     if (document.querySelector(popup_qs)) {
-      if (document.querySelector(popup_qs).classList.contains('chat-static')) {
-        this.renderIntoDom("");
-        return;
-      } else {
         am_i_on_page = 1;
+    }
+
+
+    //
+    // insert or replace popup on page
+    //
+    if (am_i_on_page == 1) {
+      this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group, this.container), popup_qs);
+      
+      if (!this.container){
+        let obj = document.querySelector(popup_qs);
+        var rect = obj.getBoundingClientRect();
+        this.x_pos = rect.left;
+        this.y_pos = rect.top;
+        this.width = rect.width;
+        this.height = rect.height;
+        obj = document.querySelector(popup_qs);
+        obj.style.left = this.x_pos + "px";
+        obj.style.top = this.y_pos + "px";
+        obj.style.width = this.width + "px";
+        obj.style.height = this.height + "px";
       }
-    }
-
-
-    //
-    // insert or replace popup on page
-    //
-    if (am_i_on_page == 1) {
-      let obj = document.querySelector(popup_qs);
-      var rect = obj.getBoundingClientRect();
-      this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group), popup_qs);
-      this.x_pos = rect.left;
-      this.y_pos = rect.top;
-      this.width = rect.width;
-      this.height = rect.height;
-      obj = document.querySelector(popup_qs);
-      obj.style.left = this.x_pos + "px";
-      obj.style.top = this.y_pos + "px";
-      obj.style.width = this.width + "px";
-      obj.style.height = this.height + "px";
     } else {
-      this.app.browser.addElementToDom(ChatPopupTemplate(this.app, this.mod, this.group));
+      this.app.browser.addElementToSelectorOrDom(ChatPopupTemplate(this.app, this.mod, this.group, this.container), this.container);
     }
 
-    //
-    // now set left-position of popup
-    //
-    if (popups_on_page >= 1 && am_i_on_page == 0 && this.manually_moved == false) {
-      this.x_pos = x_offset - x_range - 30;
-      if (this.x_pos < 0) { this.x_pos = 0; }
-      let obj = document.querySelector(popup_qs);
-      obj.style.left = this.x_pos + "px";
+    if (!this.container){
+      //
+      // now set left-position of popup
+      //
+      if (popups_on_page >= 1 && am_i_on_page == 0 && this.manually_moved == false) {
+        this.x_pos = x_offset - x_range - 30;
+        if (this.x_pos < 0) { this.x_pos = 0; }
+        let obj = document.querySelector(popup_qs);
+        obj.style.left = this.x_pos + "px";
+      }
+
+      //
+      // make draggable
+      //
+      this.app.browser.makeDraggable(popup_id, header_id, true, () => {
+        let obj = document.querySelector(popup_qs);
+        var rect = obj.getBoundingClientRect();
+        this.x_pos = rect.left;
+        this.y_pos = rect.top;
+        this.manually_moved = true;
+      });
+      
     }
 
-    //
-    // make draggable
-    //
-    this.app.browser.makeDraggable(popup_id, header_id, true, () => {
-      let obj = document.querySelector(popup_qs);
-      var rect = obj.getBoundingClientRect();
-      this.x_pos = rect.left;
-      this.y_pos = rect.top;
-      this.manually_moved = true;
-    });
-
-    //
-    // emojis
-    //
-    this.emoji.render();
-
-    //
-    // scroll to bottom
-    //
-    if (document.querySelector("." + popup_id + " .chat-body")) {
-      document.querySelector("." + popup_id + " .chat-body").scroll(0, 1000000000);
-    }
-    //
-    // re-render typed text
-    //
-    if (existing_input != "") {
-      document.getElementById(input_id).innerHTML = existing_input;
-      existing_input = "";
-    }
-
-
-    //
-    // attach events
-    //
-    this.attachEvents();
-
-  }
-
-  renderIntoDom(target_selector) {
-
-    //
-    // exit if group unset
-    //
-    if (this.group == null) { return; }
-
-    //
-    // exit if manually minimized
-    //
-    if (this.manually_closed) { return; }
-
-    //
-    // our query selector
-    //
-    let popup_qs = ".chat-popup-" + this.group.id;
-    let popup_id = "chat-popup-" + this.group.id;
-    let header_id = "chat-header-" + this.group.id;
-    let input_id = "chat-input-" + this.group.id;
-
-    let existing_input = "";
-
-    if (document.getElementById(input_id)) {
-      existing_input = document.getElementById(input_id).innerHTML;
-    }
-
-    //
-    if (this.emoji == null) {
-      this.emoji = new SaitoEmoji(this.app, this.mod, input_id);
-    }
-
-    //
-    // calculate some values to determine position on screen...
-    //
-    let am_i_on_page = 0;
-
-    if (document.querySelector(popup_qs)) {
-      am_i_on_page = 1;
-    }
-
-
-    //
-    // insert or replace popup on page
-    //
-    if (am_i_on_page == 1) {
-      let obj = document.querySelector(popup_qs);
-      this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group, true), popup_qs);
-    } else {
-      this.app.browser.addElementToSelector(ChatPopupTemplate(this.app, this.mod, this.group, true), target_selector);
-    }
     //
     // emojis
     //

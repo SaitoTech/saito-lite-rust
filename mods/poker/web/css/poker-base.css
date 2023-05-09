@@ -9,6 +9,38 @@ body {
   height: 100vh;
 }
 
+
+.player-box-body .status .status-header .status-message {
+  box-shadow: none;
+}
+
+.saito-balance {
+    float: right;
+    margin-top: 0.2rem;
+}
+
+.player-box-body .status {
+    width: 100%;
+    padding: 0rem;
+    margin-top: 0.5rem;
+    line-height: 2.3rem;
+    font-size: 1.8rem;
+}
+
+.player-box .status-header .status-message {
+    background: unset;
+}
+.player-box .status-text-menu ul li:hover, .player-box .textchoice:hover {
+  background-color: whitesmoke;
+}
+.player-box .status-text-menu, .player-box .status-text-menu ul {
+    background: unset;
+}
+
+.player-box-head .saito-user>.saito-address , .player-box-head .saito-user>.saito-userline {
+  color: white;
+}
+
 .cardfan {
   max-height: 20vh;
   max-width: 20vw;
@@ -34,6 +66,8 @@ body {
 
 .player-box{
   max-width: 250px;
+  border: 1px solid #FFF3;
+  min-height: unset;
 }
 
 .player-box-graphic{
@@ -123,7 +157,8 @@ body {
 }
 
 .flip-card , .card {
-  width: 11vw;
+  width: 10vw;
+  max-width: 120px;
 }
 
 .flip-card .card {
@@ -164,19 +199,21 @@ body {
 }
 
 .pot {
-  position: absolute;
-  background-color: #0007;
-  font-size: 3rem;
-  top: 22vh;
-  left: 50%;
-  height: 5.5rem;
-  min-width: 20vw;
-  width: 20vw;
-  margin-left: -10vw;
-  text-align: center;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  border-radius: 0.5rem;
+    position: relative;
+    background-color: #0007;
+    font-size: 3rem;
+    top: 22vh;
+    height: 5.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-radius: 0.5rem;
+    width: max-content;
+    min-width: max-content;
+    max-width: max-content;
+    display: block;
+    margin: 0 auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
 }
 
 .pot-counter{
@@ -198,11 +235,21 @@ body {
   text-align: center;
   font-size: max(1em,2.5vh);
   overflow: hidden;
+  position: relative;
+  top: -1.8rem;
+  font-size: 1.5rem;
+  float: right;
 }
 
 .plog-update{
   text-align: center;
-  font-size: 1.2em;
+  padding-top: 1.5rem;
+  padding-bottom: 0.8rem;
+  font-size: 1.8rem;
+}
+
+.plog ul {
+  margin-top: 0.5rem;
 }
 
 .suit {
@@ -223,12 +270,15 @@ body {
 
 
 /*Playerbox text menu prompt*/
-.menu-player {
-  font-size: 0.8em;
-  font-weight: bolder;
-  margin-top: 0.5vh;
-  margin-bottom: 0.5vh;
+.menu-player-upper {
+    font-size: 1.4rem;
+    font-weight: bolder;
+    width: 100%;
+    margin-top: -1.8rem;
+    position: absolute;
+    padding-right: 1.8rem;
 }
+
 
 /* Player Markers */
 .dealerbutton{
@@ -260,7 +310,7 @@ body {
 @media screen and (max-width: 1200px) {
 
   .flip-card , .card {
-    width: 14vw;
+    width: 13vw;
   }
 
 }
@@ -268,7 +318,7 @@ body {
 @media screen and (max-width: 800px) {
 
   .flip-card , .card {
-    width: 16vw;
+    width: 15vw;
   }
 
 }

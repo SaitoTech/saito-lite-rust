@@ -12,13 +12,13 @@ const ChatManagerSmallTemplateGeneric = (call_type) => {
                   </div>
               </div>  
               <div class="control-list">
-                 <span>
+                 <span class="icon_click_area">
                   <i class="audio-control fa fa-microphone" > </i>
                   </span>
-                  <span  style=" background-color: ${call_type === "audio" ?  "grey" : "white"}">
+                  <span class="icon_click_area" style=" background-color: ${call_type === "audio" ?  "grey" : "white"}">
                   <i  style=" cursor :${call_type === "audio" ? "none" : "pointer" }; color:${call_type === "audio" ? "black" : "green" }  " class=" video_control  fas fa-video"> </i>
                   </span>
-                  <span>
+                  <span class="icon_click_area">
                   <i class="disconnect_btn  fas fa-phone"> </i>
                   </span>
               </div>

@@ -128,7 +128,7 @@ class RedSquareMain {
     if (document.querySelector(".saito-container")) {
       this.app.browser.replaceElementBySelector(RedSquareMainTemplate(), ".saito-container");
     } else {
-      this.app.browser.addElementToSelectorOrDom(RedSquareMainTemplate(), this.container);
+      this.app.browser.addElementToSelector(RedSquareMainTemplate(), this.container);
     }
 
     this.attachEvents();

@@ -17,7 +17,7 @@ class RedSquareSidebar {
     if (document.querySelector(".redsquare-sidebar")) {
       this.app.browser.replaceElementBySelector(RedSquareSidebarTemplate(), ".redsquare-sidebar");
     } else {
-      this.app.browser.addElementToSelectorOrDom(RedSquareSidebarTemplate(), this.container);
+      this.app.browser.addElementToSelector(RedSquareSidebarTemplate(), this.container);
     }
 
     //

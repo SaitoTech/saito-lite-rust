@@ -10,6 +10,9 @@ const linkifyHtml = require("markdown-linkify");
 const emoji = require("node-emoji");
 const UserMenu = require("./ui/modals/user-menu/user-menu");
 const MyUserMenu = require("./ui/modals/my-user-menu/my-user-menu");
+const Deposit = require('./ui/saito-crypto/overlays/deposit');
+const Withdraw = require('./ui/saito-crypto/overlays/withdraw');
+const History = require('./ui/saito-crypto/overlays/history');
 
 
 class Browser {
@@ -38,6 +41,7 @@ class Browser {
     this.protocol = "";
 
     this.identifiers_added_to_dom = false;
+
 
     //
     // tells us the browser window is visible, as opposed to
@@ -199,6 +203,17 @@ class Browser {
         }
       }
 
+
+      //
+      // crypto overlays, add so events will listen. this assumes
+      // games do not have saito-header installed.
+      //
+      this.deposit_overlay = new Deposit(this.app, this.app.modules.returnActiveModule());
+      this.withdrawal_overlay = new Withdraw(this.app, this.app.modules.returnActiveModule());
+      this.history_overlay = new History(this.app, this.app.modules.returnActiveModule());
+
+
+
       //
       // check if we are already open in another tab -
       // gracefully return out after warning user.
@@ -244,27 +259,27 @@ class Browser {
           e.target?.classList?.contains("saito-identicon") || e.target?.classList?.contains("saito-address")
         ) {
 
+console.log("clicking on identicon...");
+
           let disable_click = e.target.getAttribute("data-disable");
           let publickey = e.target.getAttribute("data-id");
           if (!publickey || !app.crypto.isPublicKey(publickey) || disable_click === "true") {
             return;
           }
-          if (publickey !== app.wallet.returnPublicKey()) {
 
-            e.preventDefault();
-            e.stopImmediatePropagation();
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+//          if (publickey !== app.wallet.returnPublicKey()) {
 
             let userMenu = new UserMenu(app, publickey);
             userMenu.render(app);
 
-          } else {
-
-            e.preventDefault();
-            e.stopImmediatePropagation();
-
-            let myUserMenu = new MyUserMenu(app, publickey);
-            myUserMenu.render(app);
-          }
+//          } else {
+//
+//            let myUserMenu = new MyUserMenu(app, publickey);
+//            myUserMenu.render(app);
+//          }
         }
       },
       {
@@ -525,9 +540,11 @@ class Browser {
   //////////////////////////////////
   // Browser and Helper Functions //
   //////////////////////////////////
-  generateQRCode(data) {
+  generateQRCode(data, qrid="qrcode") {
     const QRCode = require("./../helpers/qrcode");
-    return new QRCode(document.getElementById("qrcode"), data);
+console.log("fetching id: " + qrid);
+    let obj = document.getElementById(qrid);
+    return new QRCode(obj, data);
   }
 
   isElementVisible(elem = null) {
@@ -638,6 +655,18 @@ class Browser {
     }
   }
 
+  replaceElementContentBySelector(html, selector="") {
+    if (selector === "") {
+      console.warn("no selector provided to replace, so adding direct to DOM");
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.querySelector(selector);
+      if (obj) {
+        obj.innerHTML = html;
+      }
+    }
+  }
+
   addElementToSelectorOrDom(html, selector = "") {
     if (selector === "") {
       console.warn("no selector provided to add to, so adding direct to DOM");
@@ -646,6 +675,9 @@ class Browser {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.addElementToElement(html, container);
+      }else{
+        console.info(`${selector} not found, adding direct to DOM`);
+        this.app.browser.addElementToDom(html);
       }
     }
   }

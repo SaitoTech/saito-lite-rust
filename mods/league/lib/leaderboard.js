@@ -30,7 +30,7 @@ class Leaderboard {
     if (document.querySelector(".league-leaderboard")) {
       this.app.browser.replaceElementBySelector(LeaderboardTemplate(title), ".league-leaderboard");
     } else {
-      this.app.browser.addElementToSelectorOrDom(LeaderboardTemplate(title), this.container);
+      this.app.browser.addElementToSelector(LeaderboardTemplate(title), this.container);
     }  
 
     //

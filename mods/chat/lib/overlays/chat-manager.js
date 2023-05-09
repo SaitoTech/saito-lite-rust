@@ -1,5 +1,7 @@
 const ChatManagerOverlayTemplate = require('./chat-manager.template');
 
+//Floating Chat Manager for mobile
+
 class ChatManagerOverlay {
 
   constructor(app, mod) {

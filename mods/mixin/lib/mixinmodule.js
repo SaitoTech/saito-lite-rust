@@ -7,9 +7,11 @@
 
    returnAddress()
    returnPrivateKey()
+   returnHistory(mycallback, order="DESC", limit=20);
    async returnBalance(address = "")
    async sendPayment(amount="", recipient="", unique_hash="")
    async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
+   returnHistory(page=1, records=20, callback())
 
 
  TODO:
@@ -123,6 +125,12 @@ class MixinModule extends CryptoModule {
     }
     return 0;
   }
+
+
+  returnHistory(records, callback) {
+    this.mixin.fetchSnapshots(this.asset_id, records, callback);
+  }  
+
 
 }
 
