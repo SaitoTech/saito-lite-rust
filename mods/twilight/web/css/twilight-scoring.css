@@ -9,6 +9,10 @@
     column-gap: 2rem;
     padding: 2rem;
     align-items: center;
+    width: 90vw;
+    height: 80vh;
+    justify-content: space-evenly;
+    justify-items: center;
 }
 
 .scoring-overlay .card {
@@ -59,12 +63,12 @@
     background-position-y: bottom;
     background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/africa-scoring-bg.png);
 }
-.southamerica-scoring {
+.samerica-scoring {
     background-size: cover;
     background-position-y: bottom;
     background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/southamerica-scoring-bg.png);
 }
-.centralamerica-scoring {
+.camerica-scoring {
     background-size: cover;
     background-position-y: bottom;
     background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/centralamerica-scoring-bg.png);
@@ -76,6 +80,7 @@
     border-radius: 0.5rem;
     height: auto;
     padding: 2rem;
+    max-width: 90%;
 }
 .scoring-result-title {
     text-align: center;
