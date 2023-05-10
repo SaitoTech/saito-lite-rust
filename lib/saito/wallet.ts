@@ -23,6 +23,7 @@ export default class Wallet {
 
     preferred_crypto: "SAITO",
     preferred_txs: [],
+    cryptos: {},
 
     inputs: new Array<Slip>(), // slips available
     outputs: new Array<Slip>(), // slips spenr
@@ -960,7 +961,6 @@ console.log("---------------------");
   /////////////////////////
   // WEB3 CRYPTO MODULES //
   /////////////////////////
-
   returnInstalledCryptos() {
     const cryptoModules = this.app.modules.returnModulesBySubType(CryptoModule);
     if (this.saitoCrypto !== null) {
@@ -1096,12 +1096,32 @@ console.log("---------------------");
     }
     const balances = await Promise.all(balancePromises);
     for (let i = 0; i < addresses.length; i++) {
+      this.savePreferredCryptoBalance(ticker, addresses[i], balances[i]);
       returnObj.push({ address: addresses[i], balance: balances[i] });
     }
     if (mycallback != null) {
       mycallback(returnObj);
     }
     return returnObj;
+  }
+
+  savePreferredCryptoBalance(ticker, address, balance) {
+
+    //
+    // if this is my address...
+    //
+    let cryptomods = this.returnInstalledCryptos();
+    for (let i = 0; i < cryptomods.length; i++) {
+      if (cryptomods[i].ticker === ticker) {
+        if (cryptomods[i].returnAddress() === address) {
+            //
+            // cache the results, so i know if payments are new
+            //
+	    this.app.wallet.wallet.cryptos[ticker] = { address : address, balance : balance };	   
+        }
+      }
+    }
+
   }
 
   /*** courtesy function to simplify balance checks for a single address w/ ticker ***/
@@ -1111,6 +1131,7 @@ console.log("---------------------");
       return 0;
     }
     if (robj[0].balance) {
+      this.savePreferredCryptoBalance(ticker, address, robj[0].balance);
       return robj[0].balance;
     }
     return 0;
