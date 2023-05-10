@@ -14,6 +14,15 @@ class ScoringOverlay {
 
         this.overlay.show(ScoringTemplate(region, obj));
 
+	let cardimg = this.mod.returnCardImage(region);
+	let qs = '.scoring-overlay .card';
+	let qobj = document.querySelector(qs);
+
+	if (qobj) {
+	  qobj.innerHTML = "";
+	  this.app.browser.addElementToSelector(cardimg, qs);
+	}
+
         for (let i = 0; i < obj.bonus.length; i++) {
 
 	  let name = obj.bonus[i].name;
