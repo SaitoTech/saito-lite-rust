@@ -1,10 +1,8 @@
-  /*
-    Functions for player actions
-  */
+/*
+  Functions for player actions
+*/
 
-    class SettlersPlayer {
-
-
+class SettlersPlayer {
   playerChooseCardsToDiscard() {
     let settlers_self = this;
 
@@ -17,25 +15,21 @@
     let cardsToDiscard = [];
 
     for (let resource of this.skin.resourceArray()) {
-      let temp = settlers_self.countResource(
-        settlers_self.game.player,
-        resource
-      );
+      let temp = settlers_self.countResource(settlers_self.game.player, resource);
       if (temp > 0) my_resources[resource] = temp;
     }
 
     //Player recursively selects all the resources they want to get rid of
     let discardFunction = function (settlers_self) {
-      let html = `<div class='tbd discard-select'>Select Cards to Discard (Must get rid of ${
+      let html = `<div class="tbd discard-select">Select Cards to Discard (Must get rid of ${
         targetCt - cardsToDiscard.length
       }): <i id="reset" class="fas fa-undo"></i><ul>`;
       for (let i in my_resources) {
-        if (my_resources[i] > 0)
-          html += `<li id="${i}" class="option">`;
-          for (let j = 0; j < my_resources[i]; j++){
-            html += `<img class="icon" src="${settlers_self.skin.resourceCard(i)}">`;
-          }
-          html += `</li>`;
+        if (my_resources[i] > 0) html += `<li id="${i}" class="option">`;
+        for (let j = 0; j < my_resources[i]; j++) {
+          html += `<img class="icon" src="${settlers_self.skin.resourceCard(i)}">`;
+        }
+        html += `</li>`;
       }
       html += "</ul>";
       html += "</div>";
@@ -58,10 +52,10 @@
       });
 
       $("#reset").off();
-      $("#reset").on("click", function(){
+      $("#reset").on("click", async function () {
         $(".option").off();
         //Reset Moves and reload interface/function
-        settlers_self.moves=["RESOLVE\t" + settlers_self.app.wallet.returnPublicKey()];
+        settlers_self.moves = ["RESOLVE\t" + (await settlers_self.app.wallet.getPublicKey())];
         settlers_self.chooseCardsToDiscard();
       });
     };
@@ -69,12 +63,7 @@
     discardFunction(settlers_self);
   }
 
-
-
-
-
   playerBuildCity(player, canBackUp = 0) {
-
     let settlers_self = this;
     let existing_cities = 0;
     for (let i = 0; i < this.game.state.cities.length; i++) {
@@ -88,12 +77,16 @@
     Everyone starts with 2 settlements and can be placed anywhere on island
     */
     if (existing_cities < 2) {
-      if (existing_cities == 1){
-        this.hud.updateStatus(`<div class="flashme tbd"><div class="pcb"></div>YOUR TURN: place ${this.skin.c1.name}...</div>`);
-	this.setHudHeight();
-      }else{
-        this.hud.updateStatus(`<div class="flashme tbd"><div class="pcb"></div>YOUR TURN: place ${this.skin.c1.name}...</div>`);
-	this.setHudHeight();
+      if (existing_cities == 1) {
+        this.hud.updateStatus(
+          `<div class="flashme tbd"><div class="pcb"></div>YOUR TURN: place ${this.skin.c1.name}...</div>`
+        );
+        this.setHudHeight();
+      } else {
+        this.hud.updateStatus(
+          `<div class="flashme tbd"><div class="pcb"></div>YOUR TURN: place ${this.skin.c1.name}...</div>`
+        );
+        this.setHudHeight();
       }
       $(".flashme").addClass("flash");
 
@@ -107,40 +100,35 @@
       });
       //Create as menu on the game board to input word from a tile in horizontal or vertical direction
       $(".city.empty").on("mouseup", function (e) {
-          if (Math.abs(xpos - e.clientX) > 4) {
-            return;
-          }
-          if (Math.abs(ypos - e.clientY) > 4) {
-            return;
-          }
-          $(".city.empty").css("background-color", "");
-          //Confirm this move
-          let slot = $(this).attr("id");
-          settlers_self.confirmPlacement(slot, settlers_self.skin.c1.name, ()=>{
-            $(".city.empty").removeClass("chover");
-            $(".city.empty").off();
-              settlers_self.game.state.placedCity = slot;
-              settlers_self.buildCity(settlers_self.game.player, slot);
-              if (existing_cities == 1)
-                settlers_self.addMove(
-                  `secondcity\t${settlers_self.game.player}\t${slot.replace(
-                    "city_",
-                    ""
-                  )}`
-                );
-              settlers_self.addMove(
-                `build_city\t${settlers_self.game.player}\t${slot}`
-              );
-              settlers_self.endTurn();
-          });
-
+        if (Math.abs(xpos - e.clientX) > 4) {
+          return;
+        }
+        if (Math.abs(ypos - e.clientY) > 4) {
+          return;
+        }
+        $(".city.empty").css("background-color", "");
+        //Confirm this move
+        let slot = $(this).attr("id");
+        settlers_self.confirmPlacement(slot, settlers_self.skin.c1.name, () => {
+          $(".city.empty").removeClass("chover");
+          $(".city.empty").off();
+          settlers_self.game.state.placedCity = slot;
+          settlers_self.buildCity(settlers_self.game.player, slot);
+          if (existing_cities == 1)
+            settlers_self.addMove(
+              `secondcity\t${settlers_self.game.player}\t${slot.replace("city_", "")}`
+            );
+          settlers_self.addMove(`build_city\t${settlers_self.game.player}\t${slot}`);
+          settlers_self.endTurn();
+        });
       });
-
     } else {
       /* During game, must build roads to open up board for new settlements*/
-      if (canBackUp){
-        this.updateStatus(`<div class="tbd">You may build a ${this.skin.c1.name}...</div><ul><li class="undo">don't build ${this.skin.c1.name}</li></ul>`);
-        $(".undo").on("click",function(){
+      if (canBackUp) {
+        this.updateStatus(
+          `<div class="tbd">You may build a ${this.skin.c1.name}...</div><ul><li class="undo">don't build ${this.skin.c1.name}</li></ul>`
+        );
+        $(".undo").on("click", function () {
           //Make sure the confirm popup goes away
           $(".action").off();
           $(".popup-confirm-menu").remove();
@@ -150,7 +138,7 @@
           settlers_self.addMove("undo_build");
           settlers_self.endTurn();
         });
-      }else{
+      } else {
         this.updateStatus(`<div class="tbd">You may build a ${this.skin.c1.name}...</div>`);
       }
 
@@ -161,41 +149,39 @@
         $(divname).addClass("rhover");
       }
 
-        $(".rhover").off();
-        $(".rhover").on("mousedown", function (e) {
-          xpos = e.clientX;
-          ypos = e.clientY;
+      $(".rhover").off();
+      $(".rhover").on("mousedown", function (e) {
+        xpos = e.clientX;
+        ypos = e.clientY;
+      });
+
+      $(".rhover").on("mouseup", function (e) {
+        if (Math.abs(xpos - e.clientX) > 4) {
+          return;
+        }
+        if (Math.abs(ypos - e.clientY) > 4) {
+          return;
+        }
+
+        let slot = $(this).attr("id");
+        settlers_self.confirmPlacement(slot, settlers_self.skin.c1.name, () => {
+          $(".rhover").off();
+          $(".rhover").removeClass("rhover");
+
+          settlers_self.buildCity(settlers_self.game.player, slot);
+          settlers_self.addMove(`build_city\t${settlers_self.game.player}\t${slot}`);
+          settlers_self.endTurn();
         });
-
-        $(".rhover").on("mouseup", function (e) {
-          if (Math.abs(xpos - e.clientX) > 4) {
-            return;
-          }
-          if (Math.abs(ypos - e.clientY) > 4) {
-            return;
-          }
-
-          let slot = $(this).attr("id");
-          settlers_self.confirmPlacement(slot, settlers_self.skin.c1.name, ()=>{
-            $(".rhover").off();
-            $(".rhover").removeClass("rhover");
-
-            settlers_self.buildCity(settlers_self.game.player, slot);
-            settlers_self.addMove(`build_city\t${settlers_self.game.player}\t${slot}`);
-            settlers_self.endTurn();
-          })
-        });
-
+      });
     }
   }
 
-
-
   playerUpgradeCity(player, canBackUp = 0) {
-
-    if (canBackUp){
-      this.updateStatus(`<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div><ul><li class="undo">don't build ${this.skin.c2.name}</li></ul>`);
-      $(".undo").on("click",function(){
+    if (canBackUp) {
+      this.updateStatus(
+        `<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div><ul><li class="undo">don't build ${this.skin.c2.name}</li></ul>`
+      );
+      $(".undo").on("click", function () {
         //Make sure the confirm popup goes away
         $(".action").off();
         $(".popup-confirm-menu").remove();
@@ -206,8 +192,10 @@
         settlers_self.addMove("undo_build");
         settlers_self.endTurn();
       });
-    }else{
-      this.updateStatus(`<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div>`);
+    } else {
+      this.updateStatus(
+        `<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div>`
+      );
     }
 
     let settlers_self = this;
@@ -232,9 +220,7 @@
           slot == settlers_self.game.state.cities[i].slot &&
           settlers_self.game.state.cities[i].level == 1
         ) {
-          settlers_self.addMove(
-            `upgrade_city\t${settlers_self.game.player}\t${slot}`
-          );
+          settlers_self.addMove(`upgrade_city\t${settlers_self.game.player}\t${slot}`);
           settlers_self.endTurn();
           return;
         }
@@ -244,11 +230,8 @@
     });
   }
 
-
-
   playerBuildRoad(player, canBackUp = false) {
-
-   let settlers_self = this;
+    let settlers_self = this;
 
     if (this.game.state.placedCity) {
       this.updateStatus(
@@ -259,19 +242,16 @@
         Use a "new" class tag to restrict scope
         This is literally just a fix for the second road in the initial placement
       */
-      let newRoads = this.hexgrid.edgesFromVertex(
-        this.game.state.placedCity.replace("city_", "")
-      );
+      let newRoads = this.hexgrid.edgesFromVertex(this.game.state.placedCity.replace("city_", ""));
       for (let road of newRoads) {
         $(`#road_${road}`).addClass("new");
       }
       $(".road.new").addClass("rhover");
 
-
       $(".road.new").off();
       $(".road.new").on("click", function () {
         let slot = $(this).attr("id");
-        settlers_self.confirmPlacement(slot, settlers_self.skin.r.name, ()=>{
+        settlers_self.confirmPlacement(slot, settlers_self.skin.r.name, () => {
           $(".road.new").off();
           $(".road.new").removeAttr("style");
           $(".rhover").removeClass("rhover");
@@ -282,9 +262,11 @@
         });
       });
     } else {
-      if (canBackUp){
-        this.updateStatus(`<div class="tbd">You may build a ${this.skin.r.name}...</div><ul><li class="undo">don't build ${this.skin.r.name}</li></ul>`);
-        $(".undo").on("click",function(){
+      if (canBackUp) {
+        this.updateStatus(
+          `<div class="tbd">You may build a ${this.skin.r.name}...</div><ul><li class="undo">don't build ${this.skin.r.name}</li></ul>`
+        );
+        $(".undo").on("click", function () {
           //Make sure the confirm popup goes away
           $(".action").off();
           $(".undo").off();
@@ -296,11 +278,9 @@
           settlers_self.addMove(`undo_build`);
           settlers_self.endTurn();
         });
-
-      } else{
+      } else {
         this.updateStatus(`<div class="tbd">You may build a ${this.skin.r.name}...</div>`);
       }
-
 
       /*Normal game play, can play road anywhere empty connected to my possessions*/
       $(".road.empty").addClass("rhover");
@@ -308,7 +288,7 @@
       $(".road.empty").off();
       $(".road.empty").on("click", function () {
         let slot = $(this).attr("id");
-        settlers_self.confirmPlacement(slot, settlers_self.skin.r.name, ()=>{
+        settlers_self.confirmPlacement(slot, settlers_self.skin.r.name, () => {
           $(".road.empty").off();
           $(".rhover").removeClass("rhover");
           $(".road.empty").removeAttr("style");
@@ -319,19 +299,16 @@
     }
   }
 
-
-
   /*
   Main function to let player carry out their turn...
   */
   playerPlayMove() {
-
     let settlers_self = this;
     let can_do_something = false;
 
     let html = "<ul>";
 
-    if (settlers_self.canPlayerBankTrade()){
+    if (settlers_self.canPlayerBankTrade()) {
       html += '<li class="option" id="bank">bank</li>';
       can_do_something = true;
     }
@@ -376,7 +353,7 @@
         settlers_self.endTurn();
         return;
       }
-      if (id === "bank"){
+      if (id === "bank") {
         settlers_self.playerTradeWithBank();
         return;
       }
@@ -391,13 +368,8 @@
       if (id == "nospend") {
         //Show a tool tip to remind players of what resources they need to build what
       }
-
     });
-
   }
-
-
-
 
   playerBuild() {
     let settlers_self = this;
@@ -429,16 +401,13 @@
         return;
       }
       if (id === "0") {
-        settlers_self.addMove(
-          `player_build_road\t${settlers_self.game.player}\t0\t1`);
+        settlers_self.addMove(`player_build_road\t${settlers_self.game.player}\t0\t1`);
       }
       if (id === "1") {
         settlers_self.addMove(`player_build_city\t${settlers_self.game.player}\t1`);
       }
       if (id === "2") {
-        settlers_self.addMove(
-          "player_upgrade_city\t" + settlers_self.game.player
-        );
+        settlers_self.addMove("player_upgrade_city\t" + settlers_self.game.player);
       }
       if (id === "3") {
         //have everyone update game state
@@ -455,7 +424,6 @@
           settlers_self.prependMove(
             "spend_resource\t" + settlers_self.game.player + "\t" + resource
           );
-
         }
         settlers_self.endTurn();
       } else {
@@ -509,22 +477,17 @@
         return;
       }
 
-     //Callback seems to get lost somewhere
+      //Callback seems to get lost somewhere
       //cardobj.callback(settlers_self.game.player);
       //Fallback code, old school switch
       switch (cardobj.action) {
         case 1: //Soldier/Knight
           settlers_self.game.state.canPlayCard = false; //No more cards this turn
-          settlers_self.addMove(
-            `play_knight\t${settlers_self.game.player}\t${cardobj.card}`
-          );
+          settlers_self.addMove(`play_knight\t${settlers_self.game.player}\t${cardobj.card}`);
           settlers_self.endTurn();
           break;
         case 2:
-          settlers_self.playYearOfPlenty(
-            settlers_self.game.player,
-            cardobj.card
-          );
+          settlers_self.playYearOfPlenty(settlers_self.game.player, cardobj.card);
           settlers_self.game.state.canPlayCard = false; //No more cards this turn
           break;
         case 3:
@@ -533,60 +496,48 @@
           break;
         case 4:
           settlers_self.game.state.canPlayCard = false; //No more cards this turn
-          settlers_self.addMove(
-            "player_build_road\t" + settlers_self.game.player
-          );
-          settlers_self.addMove(
-            "player_build_road\t" + settlers_self.game.player
-          );
-          settlers_self.addMove(
-            `road_building\t${settlers_self.game.player}\t${cardobj.card}`
-          );
+          settlers_self.addMove("player_build_road\t" + settlers_self.game.player);
+          settlers_self.addMove("player_build_road\t" + settlers_self.game.player);
+          settlers_self.addMove(`road_building\t${settlers_self.game.player}\t${cardobj.card}`);
           settlers_self.endTurn();
           break;
         default:
           //victory point
-          settlers_self.addMove(
-            `vp\t${settlers_self.game.player}\t${cardobj.card}`
-          );
+          settlers_self.addMove(`vp\t${settlers_self.game.player}\t${cardobj.card}`);
           settlers_self.endTurn();
       }
       settlers_self.removeCardFromHand(settlers_self.game.deck[0].hand[card]);
     });
   }
 
-
-  /*                      
+  /*
   Interface to Trade with the bank
-  */        
+  */
   playerTradeWithBank() {
     let settlers_self = this;
-    let my_resources = {}; 
+    let my_resources = {};
     let minForTrade = this.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
-                
+
     for (let resource of this.skin.resourceArray()) {
-      let temp = settlers_self.countResource(
-        settlers_self.game.player,
-        resource
-      );      
+      let temp = settlers_self.countResource(settlers_self.game.player, resource);
       if (temp >= minForTrade[resource]) my_resources[resource] = temp;
-    }           
-              
+    }
+
     if (Object.keys(my_resources).length > 0) {
       let html = "<div class='tbd'>Select Resource to Trade: <ul class='bank'>";
       for (let i in my_resources) {
         html += `<li id="${i}" class="option">`;
-        for (let j = 0; j<minForTrade[i]; j++){
+        for (let j = 0; j < minForTrade[i]; j++) {
           html += `<img class="icon" src="${settlers_self.skin.resourceIcon(i)}"/>`;
-        }   
+        }
         //`${i} (${minForTrade[i]}/${my_resources[i]})</li>`;
-      }   
+      }
       html += '<li id="cancel" class="option">cancel trade</li>';
       html += "</ul>";
       html += "</div>";
-    
+
       settlers_self.updateStatus(html, 1);
-                    
+
       $(".option").off();
       $(".option").on("click", function () {
         let res = $(this).attr("id");
@@ -594,11 +545,13 @@
           settlers_self.endTurn();
           return;
         }
-  
+
         //Picked something to give, now pick something to get
         html = "<div class='tbd'>Select Desired Resource: <ul class='bank horizontal_list'>";
         for (let i of settlers_self.skin.resourceArray()) {
-          html += `<li id="${i}" class="iconoption option tip"><img class="icon" src="${settlers_self.skin.resourceIcon(i)}">
+          html += `<li id="${i}" class="iconoption option tip"><img class="icon" src="${settlers_self.skin.resourceIcon(
+            i
+          )}">
             <div class="tiptext">${i}</div></li>`;
         }
         html += '<li id="cancel" class="option">cancel trade</li>';
@@ -647,42 +600,38 @@
         });
       });
     } else {
-      let ackhtml = `<div class='tbd'>You don't have enough resources to trade with the bank</div>
+      let ackhtml = `<div class="tbd">You don't have enough resources to trade with the bank</div>
                     <ul><li class="option" id="okay">okay</li></ul>`;
-      settlers_self.updateStatus(ackhtml,1);
+      settlers_self.updateStatus(ackhtml, 1);
       $(".option").off();
-      $(".option").on("click",function(){
+      $(".option").on("click", function () {
         settlers_self.playerPlayMove();
         return;
       });
     }
   }
 
-
-
-
   canPlayerBuildRoad(player) {
     return this.doesPlayerHaveResources(player, this.skin.priceList[0]);
-  } 
-    
+  }
+
   canPlayerBuildTown(player) {
     if (this.game.state.players[player - 1].towns == 0) return false;
-    if (this.returnCitySlotsAdjacentToPlayerRoads(this.game.player).length == 0)
-      return false;
+    if (this.returnCitySlotsAdjacentToPlayerRoads(this.game.player).length == 0) return false;
     return this.doesPlayerHaveResources(player, this.skin.priceList[1]);
-  } 
-    
+  }
+
   canPlayerBuildCity(player) {
     let availableSlot = false;
     for (let i of this.game.state.cities) {
       if (i.player == player && i.level == 1) availableSlot = true;
     }
     if (!availableSlot) return false;
-    
+
     if (this.game.state.players[player - 1].cities == 0) return false;
-    
+
     return this.doesPlayerHaveResources(player, this.skin.priceList[2]);
-  } 
+  }
 
   canPlayerBuyCard(player) {
     //No more cards in deck (No reshuffling in this game)
@@ -702,20 +651,18 @@
     return false;
   }
 
-  canPlayerBankTrade(){
+  canPlayerBankTrade() {
     let minForTrade = this.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
 
-    if (!this.game.state.canTrade){
+    if (!this.game.state.canTrade) {
       return false;
     }
 
     for (let resource of this.skin.resourceArray()) {
-      if (this.countResource(this.game.player, resource) >= minForTrade[resource])
-        return true;
+      if (this.countResource(this.game.player, resource) >= minForTrade[resource]) return true;
     }
     return false;
   }
-
 }
 
 module.exports = SettlersPlayer;
