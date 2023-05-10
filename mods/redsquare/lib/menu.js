@@ -72,8 +72,8 @@ class RedSquareMenu {
     document.querySelector(".redsquare-menu-profile").onclick = async(e) => {
       setHash('profile');
       console.log(this.app.wallet)
-      let public_key = await this.app.wallet.returnAddress()
-      this.app.connection.emit("redsquare-profile-render-request", public_key);
+      // let public_key = await this.app.wallet.getPublicKey()
+      this.app.connection.emit("redsquare-profile-render-request", this.app.wallet.publicKey);
     }
 
     //    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
