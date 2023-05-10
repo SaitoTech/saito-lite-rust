@@ -26,7 +26,8 @@
 }
 
 .saito-overlay>div, .saito-overlay>form {
-    box-shadow: var(--saito-box-shadow);
+    /* This is much too broad and adds all kinds of issues in a variety of places.
+    box-shadow: var(--saito-box-shadow); */
 }
 
 /* Clickable container for close icon */
