@@ -267,7 +267,7 @@ class League extends ModTemplate {
           "League",
           `SELECT *
            FROM players
-           WHERE (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}')
+           WHERE (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.publicKey}')
              AND league_id IN (${league_list})
            ORDER BY league_id, score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
           (res) => {
@@ -491,7 +491,7 @@ class League extends ModTemplate {
   }
 
   addressToAll(tx, league_id) {
-    tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+    tx.transaction.to.push(new saito.default.slip(this.app.wallet.publicKey, 0.0));
 
     let league = this.returnLeague(league_id);
     if (!league?.admin) {
@@ -542,7 +542,7 @@ class League extends ModTemplate {
     //So, when we get our join message returned to us, we will do a query to figure out our rank
     //save the info locally, and emit an event to update as a success
     //
-    if (this.app.wallet.returnPublicKey() === tx.transaction.from[0].add) {
+    if (this.app.wallet.publicKey === tx.transaction.from[0].add) {
       await this.fetchLeagueLeaderboard(txmsg.league_id, () => {
         this.app.connection.emit("join-league-success");
       });
@@ -597,7 +597,7 @@ class League extends ModTemplate {
   async createUpdatePlayerTransaction(league_id, publickey, new_data, field = "email") {
     let newtx = await this.app.wallet.createUnsignedTransaction();
 
-    newtx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+    newtx.transaction.to.push(new saito.default.slip(this.app.wallet.publicKey, 0.0));
     newtx.transaction.to.push(new saito.default.slip(publickey, 0.0));
 
     newtx.msg = {
@@ -1236,13 +1236,13 @@ class League extends ModTemplate {
 
     league.players.push(newPlayer);
 
-    if (newPlayer.publickey === this.app.wallet.returnPublicKey()) {
+    if (newPlayer.publickey === this.app.wallet.publicKey) {
       if (league.rank <= 0) {
         league.rank = 0;
         league.numPlayers = league.players.length;
       }
 
-      if (league.admin && league.admin !== this.app.wallet.returnPublicKey()) {
+      if (league.admin && league.admin !== this.app.wallet.publicKey) {
         league.unverified = newPlayer.email == "";
       }
     }
@@ -1273,7 +1273,7 @@ class League extends ModTemplate {
       `SELECT *
        FROM players
        WHERE league_id = '${league_id}'
-         AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}')
+         AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.publicKey}')
        ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
       async (res) => {
         if (res?.rows) {
@@ -1283,7 +1283,7 @@ class League extends ModTemplate {
             //
             rank++;
 
-            if (p.publickey == this.app.wallet.returnPublicKey()) {
+            if (p.publickey == this.app.wallet.publicKey) {
               if (p.games_finished > 0) {
                 league.rank = rank;
               } else {

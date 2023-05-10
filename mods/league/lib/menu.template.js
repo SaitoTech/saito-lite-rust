@@ -21,7 +21,7 @@ module.exports = (app, mod, league) => {
       html += `<button class="league-component-existing-league league-edit-button">Edit</button>`;
     }
 
-    if (app.wallet.returnPublicKey() == league.admin) { 
+    if (app.wallet.publicKey == league.admin) { 
       html += `<button class="league-component-existing-league league-edit-button">Edit</button>`;
       html += `<button class="league-component-existing-league league-invite-button">Invite</button>`;
       html += `<button class="league-component-existing-league league-delete-button">Delete</button>`;

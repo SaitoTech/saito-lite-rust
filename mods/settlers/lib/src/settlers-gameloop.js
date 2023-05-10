@@ -753,7 +753,7 @@ class SettlersGameloop {
             discardString += `${this.game.playerNames[i - 1]}, `;
             confirmsNeeded++;
             if (this.game.player == parseInt(i)) {
-              this.addMove("RESOLVE\t" + this.app.wallet.returnPublicKey());
+              this.addMove("RESOLVE\t" + this.app.wallet.publicKey);
               this.playerChooseCardsToDiscard();
               //return 0;
               amIPlaying = true;

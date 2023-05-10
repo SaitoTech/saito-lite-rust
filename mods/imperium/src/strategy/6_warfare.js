@@ -15,7 +15,7 @@
 
             imperium_self.addMove("resolve\tstrategy");
             imperium_self.addMove("strategy\t"+"warfare"+"\t"+strategy_card_player+"\t2");
-            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
+            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.publicKey);
             imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
             imperium_self.addMove("rearrange_tokens\t"+strategy_card_player);
             imperium_self.addMove("deactivate\t"+strategy_card_player+"\t"+sector);
@@ -35,8 +35,8 @@
 	  //
 	  if (imperium_self.game.state.players_info[player-1].strategy_tokens == 0 || (imperium_self.returnAvailableResources(player) == 0 && imperium_self.game.state.players_info[player-1].goods == 0 && imperium_self.game.state.players_info[player-1].sarween_tools != 1)) {
 	    imperium_self.updateLog(imperium_self.returnFactionName(imperium_self, player) + " unable to play Warfare secondary"); 
-            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.publicKey);
+            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
             imperium_self.endTurn();
 	    return 0;
 	  }
@@ -70,8 +70,8 @@
               imperium_self.playerProduceUnits(imperium_self.game.state.players_info[imperium_self.game.player-1].homeworld, 0, 0, 2, 1); // final is warfare card
             }
             if (id == "no") {
-              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.publicKey);
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
               imperium_self.endTurn();
               return 0;
             }

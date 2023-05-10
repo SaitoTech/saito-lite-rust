@@ -27,7 +27,7 @@ class Post {
 
     this.render_after_submit = 1;
     this.file_event_added = false;
-    this.publickey = app.wallet.returnPublicKey();
+    this.publickey = app.wallet.publicKey;
     this.source = "Tweet";
 
     let userline = "create a text-tweet or drag-and-drop images...";

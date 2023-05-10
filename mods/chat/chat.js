@@ -455,7 +455,7 @@ class Chat extends ModTemplate {
 
   async createChatTransaction(group_id, msg = "") {
     let newtx = this.app.wallet.createUnsignedTransaction(
-      this.app.wallet.returnPublicKey(),
+      this.app.wallet.publicKey,
       0.0,
       0.0
     );
@@ -466,7 +466,7 @@ class Chat extends ModTemplate {
     let members = this.returnMembers(group_id);
 
     for (let i = 0; i < members.length; i++) {
-      if (members[i] !== this.app.wallet.returnPublicKey()) {
+      if (members[i] !== this.app.wallet.publicKey) {
         newtx.transaction.to.push(new saito.default.slip(members[i]));
       }
     }
@@ -531,7 +531,7 @@ class Chat extends ModTemplate {
     // if to someone else and encrypted
     // (i.e. I am sending an encrypted message and not waiting for relay)
     //
-    //if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
+    //if (tx.transaction.from[0].add == app.wallet.publicKey) {
     //    if (app.keychain.hasSharedSecret(tx.transaction.to[0].add)) {
     //    }
     //}
@@ -725,7 +725,7 @@ class Chat extends ModTemplate {
     if (name == null) {
       name = "";
       for (let i = 0; i < members.length; i++) {
-        if (members[i] != this.app.wallet.returnPublicKey()) {
+        if (members[i] != this.app.wallet.publicKey) {
           name += members[i] + ", ";
         }
       }

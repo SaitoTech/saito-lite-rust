@@ -1,6 +1,6 @@
 module.exports = SettingsAppspaceTemplate = (app) => {
 
-  let key = app.keychain.returnKey({ publickey : app.wallet.returnPublicKey()});
+  let key = app.keychain.returnKey({ publickey : app.wallet.publicKey});
   let identifier_registered = key?.identifier || "";
 
   if (!identifier_registered) {
@@ -55,7 +55,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   app.modules.mods.forEach(mod => {
     if (mod.name == 'Balance') {
       balance_link = `
-        <a target="_blank" href="${window.location.origin + "/balance?address=" + app.wallet.returnPublicKey()}">Check Recorded Balance</a>
+        <a target="_blank" href="${window.location.origin + "/balance?address=" + app.wallet.publicKey}">Check Recorded Balance</a>
       `;
     }
   });
@@ -86,8 +86,8 @@ module.exports = SettingsAppspaceTemplate = (app) => {
             <div>${identifier_registered}</div>
       
             <div>Public Key:</div>
-            <div class="pubkey-containter" data-id="${app.wallet.returnPublicKey()}">
-              <span class="profile-public-key">${app.wallet.returnPublicKey()}</span><i class="fas fa-copy" id="copy-public-key"></i>
+            <div class="pubkey-containter" data-id="${app.wallet.publicKey}">
+              <span class="profile-public-key">${app.wallet.publicKey}</span><i class="fas fa-copy" id="copy-public-key"></i>
             </div>
       
             <div>Private Key:</div>

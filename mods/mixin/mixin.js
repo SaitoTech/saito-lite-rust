@@ -663,7 +663,7 @@ class Mixin extends ModTemplate {
     let uri = "/users";
     let body = {
       session_secret: user_public_key,
-      full_name: `Saito User ${this.app.wallet.returnPublicKey()}`,
+      full_name: `Saito User ${this.app.wallet.publicKey}`,
     };
 
     this.mixin.publickey = original_user_public_key;
@@ -713,7 +713,7 @@ class Mixin extends ModTemplate {
       let privateKey = m.privateKey;
 
       let data = {
-        saito_publickey: mixin_self.app.wallet.returnPublicKey(),
+        saito_publickey: mixin_self.app.wallet.publicKey,
         mixin_publickey: user_public_key,
       };
 

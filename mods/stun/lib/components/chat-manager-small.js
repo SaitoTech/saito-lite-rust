@@ -185,7 +185,7 @@ class ChatManagerSmall {
     console.log(this.audio_boxes);
     for (let i in this.audio_boxes) {
       if (i === "local") {
-        let publickey = this.app.wallet.returnPublicKey();
+        let publickey = this.app.wallet.publicKey;
         let imgsrc = this.app.keychain.returnIdenticon(publickey);
         if (
           !document.querySelector(`#audiostream${publickey}`).querySelector(`#image${publickey}`)
@@ -318,7 +318,7 @@ class ChatManagerSmall {
     console.log("video boxe3s ", this.video_boxes);
     for (let i in this.video_boxes) {
       if (i === "local") {
-        let publickey = this.app.wallet.returnPublicKey();
+        let publickey = this.app.wallet.publicKey;
         let imgsrc = this.app.keychain.returnIdenticon(publickey);
         images += `<img data-id="${publickey}" src="${imgsrc}"/>`;
       } else {

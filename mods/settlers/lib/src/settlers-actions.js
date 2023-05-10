@@ -884,7 +884,7 @@ buildCity(player, slot) {
 
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".player-box.me .status");
-        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
+        if (this.game.players.includes(this.app.wallet.publicKey)) {
           status_obj.innerHTML = str;
           $(".player-box.me .status").disableSelection();
         }
@@ -915,7 +915,7 @@ buildCity(player, slot) {
 
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".hud-body .status");
-        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
+        if (this.game.players.includes(this.app.wallet.publicKey)) {
           status_obj.innerHTML = str;
           $(".status").disableSelection();
         }

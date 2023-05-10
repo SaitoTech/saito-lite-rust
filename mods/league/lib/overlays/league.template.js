@@ -2,9 +2,9 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
 
     let game_mod = app.modules.returnModuleByName(league.game);
 
-    let key = app.keychain.returnKey(app.wallet.returnPublicKey());
+    let key = app.keychain.returnKey(app.wallet.publicKey);
 
-    let newPlayer = league.admin && !key.email && league.admin !== app.wallet.returnPublicKey();
+    let newPlayer = league.admin && !key.email && league.admin !== app.wallet.publicKey;
 
     let html = `
     <div class="league-overlay-container">
@@ -21,7 +21,7 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
                     
     if (league.admin){
 
-        html +=  (league.admin === app.wallet.returnPublicKey()) 
+        html +=  (league.admin === app.wallet.publicKey) 
                         ? `<div id="players" class="menu-icon"><i class="fas fa-users-cog"></i><div class="menu-text">Manage</div></div>`
                         : `<div id="contact" class="menu-icon"><i class="fas fa-comment-alt"></i><div class="menu-text">Contact</div></div>`;
     }
@@ -37,7 +37,7 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
 
     if (league.admin){
         
-        if (league.admin == app.wallet.returnPublicKey()){
+        if (league.admin == app.wallet.publicKey){
             html += `<div id="admin-widget" class="admin-widget league-overlay-content-box hidden"></div>`;
         }else{
             html +=  

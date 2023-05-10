@@ -38,7 +38,7 @@ class StunxGameMenu {
 
       // send the information to the other peers and ask them to join the call
       recipients = recipients.filter((player) => {
-        return player !== app.wallet.returnPublicKey();
+        return player !== app.wallet.publicKey;
       });
 
       // show-small-chat-manager
@@ -50,7 +50,7 @@ class StunxGameMenu {
       let data = {
         type: "connection-request",
         room_code,
-        sender: app.wallet.returnPublicKey(),
+        sender: app.wallet.publicKey,
       };
 
       stun_mod.sendGameCallMessageToPeers(app, data, recipients);

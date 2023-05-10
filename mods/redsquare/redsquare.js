@@ -1001,7 +1001,7 @@ class RedSquare extends ModTemplate {
   }
 
   //   addNotification(app, mod, tx) {
-  //     if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
+  //     if (tx.transaction.from[0].add === app.wallet.publicKey) {
   //       return;
   //     }
   //     if (tx.timestamp > this.notifications_last_viewed_ts) {
@@ -1110,7 +1110,7 @@ class RedSquare extends ModTemplate {
       //
       // save my likes
       //
-      if (tx.isTo(app.wallet.returnPublicKey())) {
+      if (tx.isTo(app.wallet.publicKey)) {
         await this.app.storage.saveTransaction(tx);
 
         //
@@ -1132,7 +1132,7 @@ class RedSquare extends ModTemplate {
           tx.optional.num_likes++;
           await this.app.storage.updateTransactionOptional(
             txmsg.data.sig,
-            app.wallet.returnPublicKey(),
+            app.wallet.publicKey,
             tx.optional
           );
           tweet.renderLikes();
@@ -1184,7 +1184,7 @@ class RedSquare extends ModTemplate {
     let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
     for (let i = 0; i < keys.length; i++) {
-      if (keys[i] !== app.wallet.returnPublicKey()) {
+      if (keys[i] !== app.wallet.publicKey) {
         newtx.transaction.to.push(new saito.default.slip(keys[i]));
       }
     }
@@ -1205,7 +1205,7 @@ class RedSquare extends ModTemplate {
         //
         // save tweets addressed to me
         //
-        if (tx.isTo(app.wallet.returnPublicKey())) {
+        if (tx.isTo(app.wallet.publicKey)) {
           await this.app.storage.saveTransaction(tx);
 
           //
@@ -1226,7 +1226,7 @@ class RedSquare extends ModTemplate {
               tx.optional.num_replies++;
               await this.app.storage.updateTransactionOptional(
                 txmsg.data.parent_id,
-                app.wallet.returnPublicKey(),
+                app.wallet.publicKey,
                 tweet.tx.optional
               );
               tweet.renderReplies();
@@ -1262,7 +1262,7 @@ class RedSquare extends ModTemplate {
                 tx.optional.num_retweets++;
                 await this.app.storage.updateTransactionOptional(
                   rtxsig,
-                  app.wallet.returnPublicKey(),
+                  app.wallet.publicKey,
                   tx.optional
                 );
                 tweet2.renderRetweets();

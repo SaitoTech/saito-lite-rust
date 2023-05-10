@@ -540,14 +540,14 @@ class Solitrio extends OnePlayerGameTemplate {
         this.game.state.session.round++;
         this.game.state.session.wins++;
         this.newRound();
-        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${JSON.stringify([])}`);
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.publicKey])}\t${JSON.stringify([])}`);
       }
 
       if (mv[0] === "lose"){
         this.game.state.session.round++;
         this.game.state.session.losses++;
         this.newRound();
-        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.publicKey])}`);
       }
 
       if (mv[0] === "clear_board"){

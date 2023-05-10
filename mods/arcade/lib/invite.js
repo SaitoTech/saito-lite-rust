@@ -74,7 +74,7 @@ class Invite {
         }
 
         //Invitation / Challenge ?
-        if (app.wallet.returnPublicKey() == txmsg.options.desired_opponent_publickey) {
+        if (app.wallet.publicKey == txmsg.options.desired_opponent_publickey) {
           this.invite_data.game_type = "direct invite";
         }
       }

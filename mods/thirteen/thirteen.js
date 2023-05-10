@@ -369,7 +369,7 @@ class Thirteen extends GameTemplate {
         }
         //Fix game.player so that it corresponds to the indices of game.players[]
         for (let i = 0; i < this.game.players.length; i++) {
-          if (this.game.players[i] === this.app.wallet.returnPublicKey()) {
+          if (this.game.players[i] === this.app.wallet.publicKey) {
             this.game.player = i + 1;
           }
         }

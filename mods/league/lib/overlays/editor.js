@@ -18,7 +18,7 @@ class LeagueEditor {
       return;
     }
     if (this.league.admin){
-      if (this.league.admin !== this.app.wallet.returnPublicKey()){
+      if (this.league.admin !== this.app.wallet.publicKey){
         salert("Unauthorized access!");
         return;
       }

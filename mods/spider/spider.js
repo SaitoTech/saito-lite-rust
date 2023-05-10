@@ -858,7 +858,7 @@ class Spider extends OnePlayerGameTemplate {
         this.animateFinalVictory();
         let final_score = this.game.state.score + 400;
         this.game.state.scores.push(final_score);
-        this.endGame(this.app.wallet.returnPublicKey(), final_score.toString());
+        this.endGame(this.app.wallet.publicKey, final_score.toString());
         this.overlay.show(this.returnStatsHTML("Winner!"), ()=>{
           this.newRound();
           $(".completed_card").remove();

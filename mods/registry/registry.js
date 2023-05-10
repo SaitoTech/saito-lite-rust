@@ -108,7 +108,7 @@ class Registry extends ModTemplate {
     // registering domains should report they run the registry module.
     //
     if (this.app.BROWSER == 0) {
-      //if (this.registry_publickey == this.app.wallet.returnPublicKey()) {
+      //if (this.registry_publickey == this.app.wallet.publicKey) {
       services.push({ service: "registry", domain: "saito" });
     }
     return services;
@@ -464,7 +464,7 @@ class Registry extends ModTemplate {
     /***** USE VARIABLE TO TOGGLE LOCAL DEV MODE ******/
     if (this.local_dev) {
       if (this.app.options.server != undefined) {
-        this.publickey = this.app.wallet.returnPublicKey();
+        this.publickey = this.app.wallet.publicKey;
       } else {
         this.publickey = peer.peer.publickey;
       }
@@ -601,7 +601,7 @@ class Registry extends ModTemplate {
               }
             }
           } else {
-            if (registry_self.app.wallet.returnPublicKey() != registry_self.publickey) {
+            if (registry_self.app.wallet.publicKey != registry_self.publickey) {
               //
               // am email? for us? from the DNS registrar?
               //

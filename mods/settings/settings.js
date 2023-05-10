@@ -33,9 +33,9 @@ class Settings extends ModTemplate {
     // it will deactivate the button so you cannot reregister
     //
     this.app.connection.on("update_identifier", (publickey) => {
-      if (publickey === app.wallet.returnPublicKey()) {
+      if (publickey === app.wallet.publicKey) {
         if (document.getElementById("register-identifier-btn")) {
-          let username = app.keychain.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
+          let username = app.keychain.returnIdentifierByPublicKey(app.wallet.publicKey);
           document.getElementById("register-identifier-btn").innerHTML = username;
           document.getElementById("register-identifier-btn").onclick = null;
         }

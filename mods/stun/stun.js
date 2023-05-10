@@ -239,7 +239,7 @@ class Stun extends ModTemplate {
           icon: this.icon,
           allowed_mods: ["redsquare", "arcade"],
           callback: function (app, id) {
-            let pub_key = app.wallet.returnPublicKey();
+            let pub_key = app.wallet.publicKey;
             app.connection.emit("game-start-video-call", pub_key);
           },
         },
@@ -433,7 +433,7 @@ class Stun extends ModTemplate {
           let _data = {
             type: "connection-accepted",
             room_code: data.room_code,
-            sender: app.wallet.returnPublicKey(),
+            sender: app.wallet.publicKey,
           };
 
           this.sendGameCallMessageToPeers(app, _data, [data.sender]);
@@ -445,7 +445,7 @@ class Stun extends ModTemplate {
           let _data = {
             type: "connection-rejected",
             room_code: data.room_code,
-            sender: app.wallet.returnPublicKey(),
+            sender: app.wallet.publicKey,
           };
           this.sendGameCallMessageToPeers(app, _data, [data.sender]);
         }
