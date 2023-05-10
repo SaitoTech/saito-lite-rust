@@ -117,50 +117,7 @@ class Twilight extends GameTemplate {
 
 
   showScoreOverlay(card, point_obj){
-   this.scoring_overlay.render(card, point_obj);
-   return;
-   let html = `
-    <div class="ts-overlay">
-      <h1>${this.cardToText(card, true)}</h1>
-      <div class="waroverlay-body">
-        <div class="cardlist-container">
-          <div class="card card-hud">${this.returnCardImage(card)}</div>
-        </div>
-        <div class="warstats us">
-          <div class="winner">US: ${point_obj.us.vp}</div>
-          <div>${(point_obj.us.status)?point_obj.us.status:""}</div>
-          <div>Battlegrounds: ${point_obj.us.bg}</div>
-          <div>Total Countries: ${point_obj.us.total}</div>
-        `;
-        if (point_obj.us.neigh?.length > 0){
-          html += `<div>Neighbors: `;
-          for (let i of point_obj.us.neigh){
-            html += this.countries[i].name + " ";
-          }
-          html += "</div>";
-        }
-        html += `</div>`;
-    html += 
-    ` <div class="warstats ussr">
-        <div class="winner">USSR:  ${point_obj.ussr.vp}</div>
-        <div>${(point_obj.ussr.status)?point_obj.ussr.status:""}</div>
-        <div>Battlegrounds: ${point_obj.ussr.bg}</div>
-        <div>Total Countries: ${point_obj.ussr.total}</div>
-    `; 
-    if (point_obj.ussr.neigh?.length > 0){
-      html += `<div>Neighbors: `;
-      for (let i of point_obj.ussr.neigh){
-        html += this.countries[i].name + " ";
-      }
-      html += "</div>";
-    }
-    if (point_obj.shuttle){
-      html += "<div>USSR loses one battleground from " + this.cardToText("shuttle") + "</div>";
-    }
-    html += `</div>`;
-
-    html += `</div>`;
-    this.overlay.show(html); 
+    this.scoring_overlay.render(card, point_obj);
   }
 
   handleExportMenu() {
@@ -1014,9 +971,6 @@ try {
       let region = this.id;
       let scoring = twilight_self.calculateScoring(region, 1);
 
-twilight_self.scoring_overlay.render(region, scoring);
-return;
-
       let total_vp = scoring.us.vp - scoring.ussr.vp;
       let vp_color = "white";
 
@@ -1031,6 +985,10 @@ return;
     }).mouseout(function() {
       let region = this.id;
       $(`.display_card#${region}`).hide();
+    }).click(function() {
+      let region = this.id;
+      let scoring = twilight_self.calculateScoring(region, 1);
+      twilight_self.scoring_overlay.render(region, scoring);
     })
 
   } catch (err) {}
@@ -6523,6 +6481,14 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
   }
 
 
+  returnAllCards() {
+    let x = this.returnEarlyWarCards();
+    let y = this.returnMidWarCards();
+    let z = this.returnLateWarCards();
+    x = Object.assign(x, y);
+    x = Object.assign(x, z);
+    return x;
+  }
 
   returnEarlyWarCards() {
 
@@ -8395,6 +8361,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
     var c = this.game.deck[0].cards[cardname];
     if (c == undefined) { c = this.game.deck[0].discards[cardname]; }
     if (c == undefined) { c = this.game.deck[0].removed[cardname]; }
+    if (c == undefined) { let x = this.returnAllCards(); c = x[cardname]; }
     if (c == undefined) {
 
       //
