@@ -190,15 +190,15 @@ class Poker extends GameTableTemplate {
       text: "Exit",
       id: "game-exit",
       class: "game-exit",
-      callback: function (app, game_mod) {
+      callback: async function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         let c = confirm("Exit the Game?");
         if (c) {
           if (game_mod.game.state.passed[game_mod.game.player] != 1) {
             game_mod.addMove("fold\t" + game_mod.game.player);
-            game_mod.endTurn();
+            await game_mod.endTurn();
             game_mod.willleave = true;
-            game_mod.sendMetaMessage("LEAVE");
+            await game_mod.sendMetaMessage("LEAVE");
           }
           window.location = "/arcade";
         }
@@ -432,7 +432,7 @@ class Poker extends GameTableTemplate {
     }
   }
 
-  settleLastRound() {
+  async settleLastRound() {
     /*
     We want these at the end of the queue so they get processed first, but if
     any players got removed, there will be some issues....
@@ -464,7 +464,7 @@ class Poker extends GameTableTemplate {
 
     this.cardfan.hide();
 
-    this.updateStatus(msg);
+    await this.updateStatus(msg);
 
     this.settlement = [];
   }
@@ -656,9 +656,9 @@ class Poker extends GameTableTemplate {
           //Save game with fewer players
           this.saveGame(this.game.id);
           //Reload game to rebuild the html
-          setTimeout(() => {
+          setTimeout(async () => {
             this.initialize_game_run = 0;
-            this.initializeGameFeeder(this.game.id);
+            await this.initializeGameFeeder(this.game.id);
           }, 1000);
           return 0;
         }
@@ -748,7 +748,7 @@ class Poker extends GameTableTemplate {
 
           // if everyone has folded - start a new round
           console.log("everyone has folded... start next round");
-          this.settleLastRound();
+          await this.settleLastRound();
           await this.clearTable();
           this.game.queue.push(
             `ROUNDOVER\t${JSON.stringify([this.game.players[player_left_idx]])}`
@@ -824,9 +824,11 @@ class Poker extends GameTableTemplate {
             await this.playerTurn();
           } else {
             if (this.game.state.passed[this.game.player - 1]) {
-              this.updateStatus("Waiting for next round");
+              await this.updateStatus("Waiting for next round");
             } else {
-              this.updateStatus("Waiting for " + this.game.state.player_names[player_to_go - 1]);
+              await this.updateStatus(
+                "Waiting for " + this.game.state.player_names[player_to_go - 1]
+              );
             }
           }
           return 0;
@@ -935,12 +937,12 @@ class Poker extends GameTableTemplate {
         let winners = [];
         let winner_keys = [];
 
-        var updateHTML = "";
-        var winlist = [];
+        let updateHTML = "";
+        let winlist = [];
 
         //Sort hands from low to high
         console.log(JSON.parse(JSON.stringify(this.game.state.player_cards)));
-        for (var key in this.game.state.player_cards) {
+        for (let key in this.game.state.player_cards) {
           let deck = this.game.state.player_cards[key];
 
           if (winlist.length == 0) {
@@ -1123,17 +1125,20 @@ class Poker extends GameTableTemplate {
 
         if (this.browser_active) {
           this.overlay.closebox = true;
-          this.overlay.show(`<div class="shim-notice">${winner_html}${updateHTML}</div>`, () => {
-            this.overlay.closebox = false;
-            this.clearTable();
-            this.restartQueue();
-          });
+          this.overlay.show(
+            `<div class="shim-notice">${winner_html}${updateHTML}</div>`,
+            async () => {
+              this.overlay.closebox = false;
+              await this.clearTable();
+              await this.restartQueue();
+            }
+          );
           this.app.browser.makeDraggable(`saito-overlay${this.overlay.ordinal}`);
           $(".shim-notice").disableSelection();
 
           this.game.halted = 1;
         }
-        this.settleLastRound();
+        await this.settleLastRound();
         this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winner_keys)}`);
 
         return 0;
@@ -1440,6 +1445,7 @@ class Poker extends GameTableTemplate {
 
   async playerTurn() {
     if (this.browser_active == 0) {
+      console.log("7777777777777777");
       return;
     }
     if (this.game.player == 0) {
@@ -1471,6 +1477,7 @@ class Poker extends GameTableTemplate {
     );
 
     if (this.stf(match_required) === 0 && this.game.state.all_in) {
+      console.log("666666666666666666");
       await poker_self.endTurn();
       return;
     }
@@ -1511,7 +1518,7 @@ class Poker extends GameTableTemplate {
     if (!can_call) {
       console.error("Auto fold... this should never arise");
       this.outputState();
-      this.updateStatus("You can only fold...");
+      await this.updateStatus("You can only fold...");
       this.addMove("fold\t" + poker_self.game.player);
       await this.endTurn();
       return;
@@ -1548,10 +1555,13 @@ class Poker extends GameTableTemplate {
     }
     html += "</ul>";
 
-    this.updateStatus(html, 1);
+    await this.updateStatus(html, 1);
 
+    console.log("1111111111111");
     $(".menu_option").off();
-    $(".menu_option").on("click", function () {
+    console.log("2222222222222");
+    $(".menu_option").on("click", async function () {
+      console.log("3333333333333");
       let choice = $(this).attr("id");
 
       if (choice === "raise") {
@@ -1600,24 +1610,25 @@ class Poker extends GameTableTemplate {
         }
 
         html += "</ul>";
-        poker_self.updateStatus(html);
+        await poker_self.updateStatus(html);
 
         $(".menu_option").off();
-        $(".menu_option").on("click", function () {
+        $(".menu_option").on("click", async function () {
+          console.log("44444444444444444");
           let raise = $(this).attr("id");
 
           if (raise === "0") {
-            poker_self.playerTurn();
+            await poker_self.playerTurn();
           } else {
             console.log("Player choice: " + raise);
             poker_self.addMove(`raise\t${poker_self.game.player}\t${raise}`);
-            poker_self.endTurn();
+            await poker_self.endTurn();
           }
         });
       } else {
         console.log("Player choice: " + choice);
         poker_self.addMove(`${choice}\t${poker_self.game.player}`);
-        poker_self.endTurn();
+        await poker_self.endTurn();
       }
     });
   }
@@ -1700,7 +1711,7 @@ class Poker extends GameTableTemplate {
   /* TO-DO rectify poker decks across games!*/
 
   returnDeck() {
-    var deck = {};
+    const deck = {};
 
     deck["1"] = { name: "S1.png" };
     deck["2"] = { name: "S2.png" };
@@ -2115,7 +2126,7 @@ class Poker extends GameTableTemplate {
 
   async endTurn(nextTarget = 0) {
     if (this.browser_active) {
-      this.updateStatus("Waiting for information from peers....");
+      await this.updateStatus("Waiting for information from peers....");
     }
 
     try {
@@ -2546,13 +2557,13 @@ class Poker extends GameTableTemplate {
     // remove triples and pairs that are four-of-a-kind
     //
     for (let i = 0; i < four_of_a_kind.length; i++) {
-      for (var z = 0; z < three_of_a_kind.length; z++) {
+      for (let z = 0; z < three_of_a_kind.length; z++) {
         if (three_of_a_kind[z] === four_of_a_kind[i]) {
           three_of_a_kind.splice(z, 1);
         }
       }
 
-      for (var z = 0; z < pairs.length; z++) {
+      for (let z = 0; z < pairs.length; z++) {
         if (pairs[z] === four_of_a_kind[i]) {
           pairs.splice(z, 1);
         }
@@ -2563,7 +2574,7 @@ class Poker extends GameTableTemplate {
     // remove pairs that are also threes
     //
     for (let i = 0; i < three_of_a_kind.length; i++) {
-      for (var z = 0; z < pairs.length; z++) {
+      for (let z = 0; z < pairs.length; z++) {
         if (pairs[z] === three_of_a_kind[i]) {
           pairs.splice(z, 1);
         }
@@ -3283,7 +3294,7 @@ class Poker extends GameTableTemplate {
   }
 
   toHuman(hand) {
-    var humanHand = " <span class='htmlhand'>";
+    let humanHand = " <span class='htmlhand'>";
     hand.forEach((h) => {
       h = h.replace("H", "<span style='color:red'><span class='suit'>&hearts;</span>");
       h = h.replace("D", "<span style='color:red'><span class='suit'>&diams;</span>");
