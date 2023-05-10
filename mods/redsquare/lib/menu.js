@@ -69,9 +69,11 @@ class RedSquareMenu {
       this.incrementNotifications("notifications", this.notifications_number_unviewed);
     }
 
-    document.querySelector(".redsquare-menu-profile").onclick = (e) => {
+    document.querySelector(".redsquare-menu-profile").onclick = async(e) => {
       setHash('profile');
-      this.app.connection.emit("redsquare-profile-render-request", this.app.wallet.returnPublicKey());
+      console.log(this.app.wallet)
+      let public_key = await this.app.wallet.returnAddress()
+      this.app.connection.emit("redsquare-profile-render-request", public_key);
     }
 
     //    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
