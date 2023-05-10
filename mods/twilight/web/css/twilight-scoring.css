@@ -4,11 +4,11 @@
     margin: 3em 1em;
     width: min(750px, 90vw);
     min-height: 50vh;
-    padding: 10px 0;
-    border: 5px solid blue;
-    border-right: 5px solid red;
-    border-bottom: 5px solid red;
-    border-radius: 5px;
+    padding: 1rem 0;
+    border: 0.5rem solid blue;
+    border-right: 0.5rem solid red;
+    border-bottom: 0.5rem solid red;
+    border-radius: 0.5rem;
     column-gap: 2rem;
     padding: 2rem;
 }
@@ -72,7 +72,7 @@
     background-color: #0009;
     justify-items: center;
     width: 54rem;
-    border-radius: 5rem;
+    border-radius: 0.5rem;
     height: 76vh;
 }
 .scoring-result-title {
@@ -82,7 +82,7 @@
     font-size: 5rem;
     background-color: #0009;
     width: 100%;
-    border-radius: 5rem 5rem 0rem 0rem;
+    border-radius: 0.5rem 0.5rem 0rem 0rem;
     text-shadow: 0.125rem 0.125rem 1rem red;
 }
 .scoring-text {
