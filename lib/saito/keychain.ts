@@ -52,16 +52,18 @@ class Keychain {
       k.aes_secret = tk.aes_secret;
       k.data = tk.data;
 
-      for (let m = 0; m < tk.identifiers.length; m++) {
-        k.identifiers[m] = tk.identifiers[m];
-        if (m == 0) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          k.name = tk.identifiers[m];
+      if (tk.identifiers) {
+        for (let m = 0; m < tk.identifiers.length; m++) {
+          k.identifiers[m] = tk.identifiers[m];
+          if (m == 0) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            k.name = tk.identifiers[m];
+          }
         }
-      }
-      for (let m = 0; m < tk.tags.length; m++) {
-        k.tags[m] = tk.tags[m];
+        for (let m = 0; m < tk.tags.length; m++) {
+          k.tags[m] = tk.tags[m];
+        } 
       }
       this.keys.push(k);
     }
