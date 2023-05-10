@@ -117,7 +117,7 @@ class Twilight extends GameTemplate {
 
 
   showScoreOverlay(card, point_obj){
-   this.scoring_overlay(card, point_obj);
+   this.scoring_overlay.render(card, point_obj);
    return;
    let html = `
     <div class="ts-overlay">
