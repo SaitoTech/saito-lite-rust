@@ -316,7 +316,7 @@ body {
 .rhover:hover, .city.empty.rhover:hover {
   border: 1px solid white;
   background-color: whitesmoke;
-  cursor: crosshair;
+  cursor: pointer;
 }
 
 .ship {
@@ -585,9 +585,9 @@ input[type="checkbox"] {
   font-weight: bold;
   border: 2px solid #fff;
   border-radius: 50%;
-  width: 2em;
-  height: 2em;
-  line-height: 2em;
+  width: 3em;
+  height: 3em;
+  line-height: 3em;
   text-align: center;
   background: #6664;
   color: white;
