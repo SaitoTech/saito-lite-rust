@@ -24,10 +24,8 @@ class Chat extends ModTemplate {
 
         this.communityGroup = null;
         this.communityGroupName = "Saito Community Chat";
-        this.communityGroupHash = "";
-        this.communityGroupMessages = [];
 
-        this.debug = false;
+        this.debug = true;
 
         this.chat_manager = null;
 
@@ -59,6 +57,8 @@ class Chat extends ModTemplate {
 
             //
             // load 5 saved chat messages per group
+            // storage.loadTransactions filters by my public key to the chats need to be addressed to/from me
+            // to get loaded
             //
             for (let i = 0; i < this.groups.length; i++) {
 
@@ -66,12 +66,17 @@ class Chat extends ModTemplate {
                 let group = this.groups[i];
 
                 this.app.storage.loadTransactions(group_id, 5, function (txs) {
+                    if (this.debug){ console.log("Chat PSuP Archive callback:" + txs.length); }
+                    
                     try {
                         for (let z = 0; z < txs.length; z++) {
-                            txs[z].decryptMessage(chat_self.app);
                             chat_self.addTransactionToGroup(group, txs[z]);
                         }
-                        chat_self.app.connection.emit("chat-manager-render-request");
+
+                        if (app.BROWSER){
+                            chat_self.app.connection.emit("chat-manager-render-request");    
+                        }
+                        
                     } catch (err) {
                         log("error loading chats...: " + err);
                     }
@@ -85,26 +90,27 @@ class Chat extends ModTemplate {
         if (service.service === "chat") {
             if (this.debug) { console.log("Chat: onPeerServiceUp",service.service); }
 
-            let newtx = this.app.wallet.createUnsignedTransaction();
-            let local_group = this.returnGroupOrCreateFromMembers([peer.returnPublicKey()], "Saito Community Chat");
+            let local_group = this.returnGroupOrCreateFromMembers([peer.returnPublicKey()], "Saito Community ChatPSU");
 
+            if (local_group) {
 
+                if (this.debug) { console.log(JSON.parse(JSON.stringify(local_group))); }
 
-            //
-            // remove duplicate public chats caused by server update
-            //
-            for (let i = 0; i < this.groups.length; i++) {
-                if (this.groups[i].name === local_group.name && this.groups[i] !== local_group) {
-                    if (this.groups[i].members.length == 1) {
-                        if (!this.app.network.isConnectedToPublicKey(this.groups[i].members[0])) {
-                            this.app.connection.emit("chat-popup-remove-request", (this.groups[i]));
-                            this.groups.splice(i, 0);
+                //
+                // remove duplicate public chats caused by server update
+                //
+                for (let i = 0; i < this.groups.length; i++) {
+                    if (this.groups[i].name === local_group.name && this.groups[i] !== local_group) {
+                        if (this.groups[i].members.length == 1) {
+                            if (!this.app.network.isConnectedToPublicKey(this.groups[i].members[0])) {
+                                this.app.connection.emit("chat-popup-remove-request", (this.groups[i]));
+                                this.groups.splice(i, 0);
+                            }
                         }
                     }
                 }
-            }
 
-            if (local_group) {
+                let newtx = this.app.wallet.createUnsignedTransaction();
 
                 newtx.msg = {
                     request: "chat history",
@@ -113,6 +119,10 @@ class Chat extends ModTemplate {
                 newtx = this.app.wallet.signTransaction(newtx);
 
                 this.app.network.sendTransactionWithCallback(newtx, (txs) => {
+
+                    if (this.debug) {
+                        console.log("chat history callback: " + txs.length);
+                    }
 
                     try {
                         for (let i = 0; i < txs.length; i++) {
@@ -143,29 +153,41 @@ class Chat extends ModTemplate {
         if (!app.BROWSER) { return; }
         if (peer.isMainPeer()) {
 
-            if (this.debug) { console.log("Chat: onPeerHandshakeComplete"); }
-
             this.communityGroup = this.createChatGroup([peer.peer.publickey], this.communityGroupName);
-            if (this.communityGroup) { this.communityGroupHash = this.communityGroup.id; }
-            this.loadChats();
+            let chat_self = this;
+
+            if (this.debug) { 
+                console.log("Chat: onPeerHandshakeComplete"); 
+                console.log(JSON.parse(JSON.stringify(this.communityGroup)));
+            }
+
+
+            //If we locally cache chat transactions
+            //this.loadChats();
+            
             let sql;
             for (let i = 0; i < this.groups.length; i++) {
-                sql = `SELECT id, tx FROM txs WHERE publickey = "${this.groups[i].id}" ORDER BY ts DESC LIMIT 100`;
+                sql = `SELECT tx FROM txs WHERE type = "${this.groups[i].id}" ORDER BY ts DESC LIMIT 100`;
+                console.log(sql);
                 this.sendPeerDatabaseRequestWithFilter(
                     "Archive",
                     sql,
 
                     (res) => {
                         if (res?.rows) {
+                            if (this.debug){
+                                console.log("Archive TXs:" + res.rows.length);
+                            }
                             while (res.rows.length > 0) {
 
                                 //Process the chat transaction like a new message
+                                let temp = res.rows.pop();
+                                let tx = new saito.default.transaction();
+                                tx.deserialize_from_web(app, temp.tx);
+                                
+                                chat_self.addTransactionToGroup(chat_self.groups[i], tx);
 
-                                let tx = new saito.default.transaction(JSON.parse(res.rows.pop().tx));
-
-                                tx.decryptMessage(app);
-
-                                this.receiveChatTransaction(app, tx);
+                                //this.receiveChatTransaction(app, tx);
                             }
 
                         }
@@ -298,6 +320,7 @@ class Chat extends ModTemplate {
     onConfirmation(blk, tx, conf, app) {
 
         if (conf == 0) {
+            
             tx.decryptMessage(app);
             let txmsg = tx.returnMessage();
 
@@ -338,17 +361,15 @@ class Chat extends ModTemplate {
 
         if (txmsg.request === "chat history") {
 
-            let group_id = txmsg.group_id;
-            if (!group_id) { return; }
-            let group = this.returnGroup(group_id);
-            if (!group) { return; }
-            let chat_msgs_to_load = group.txs;
-            if (chat_msgs_to_load.length > 20) {
-                chat_msgs_to_load = chat_msgs_to_load.splice(chat_msgs_to_load.length - 20);
-            }
+            console.log(JSON.parse(JSON.stringify(txmsg)));
 
-            //mycallback(group.txs);
-            mycallback(chat_msgs_to_load);
+            let group = this.returnGroup(txmsg?.group_id);
+
+            if (!group) { return; }
+
+            //Just process the most recent 50 (if event that any)
+            //Without altering the array!
+            mycallback(group.txs.slice(-50));
 
         }
 
@@ -517,6 +538,8 @@ class Chat extends ModTemplate {
             // the first recipient is ourself, so the second is the one with the shared secret
             //
             let key = this.app.keychain.returnKey(newtx.transaction.to[0].add);
+            console.log(newtx.transaction.to[0].add);
+            console.log(key);
             newtx = this.app.wallet.signAndEncryptTransaction(newtx);
         } else {
             newtx = this.app.wallet.signTransaction(newtx);
@@ -545,6 +568,12 @@ class Chat extends ModTemplate {
             console.log("ERROR: " + JSON.stringify(err));
         }
 
+        if (this.debug){
+            console.log("Receive Chat Transaction:");
+            console.log(JSON.parse(JSON.stringify(tx)));
+            console.log(JSON.parse(JSON.stringify(txmsg)));
+        }
+
         //
         // if to someone else and encrypted 
         // (i.e. I am sending an encrypted message and not waiting for relay)
@@ -557,15 +586,19 @@ class Chat extends ModTemplate {
         //
         // save transaction if private chat
         //
-        for (let i = 0; i < tx.transaction.to.length; i++) {
-            if (tx.transaction.to[i].add == app.wallet.returnPublicKey()) {
-                this.app.storage.saveTransaction(tx, txmsg.group_id);
-                break;
+        if (this.app.BROWSER){
+            for (let i = 0; i < tx.transaction.to.length; i++) {
+                if (tx.transaction.to[i].add == app.wallet.returnPublicKey()) {
+                    if (this.debug) {
+                        console.log("Should save TX in Archive");
+                    }
+                    this.app.storage.saveTransaction(tx, txmsg.group_id);
+                    break;
+                }
             }
         }
 
         let group = this.returnGroup(txmsg.group_id);
-
 
         if (group) {
 
@@ -648,7 +681,7 @@ class Chat extends ModTemplate {
         group.unread = 0;
 
         //Save to Wallet Here
-        this.saveChat(group);
+        //this.saveChat(group);
 
         return html;
 
@@ -667,7 +700,8 @@ class Chat extends ModTemplate {
         let last_message_sender = "";
 
         for (let i = 0; i < txs.length; i++) {
-
+            txs[i].decryptMessage(this.app);
+            
             //First transaction -- start first block
             if (last_message_sender == "") {
                 block.push(txs[i]);
@@ -777,27 +811,34 @@ class Chat extends ModTemplate {
     //
     addTransactionToGroup(group, tx) {
 
+        if (this.debug) {
+            console.log("Adding TX to group: ", group, tx.returnMessage());
+        }
+
         while (group.txs.length > 200) {
             group.txs.shift();
         }
 
         for (let i = 0; i < group.txs.length; i++) {
             if (group.txs[i].transaction.sig === tx.transaction.sig) {
+                console.log("duplicate");
                 return;
             }
             if (tx.transaction.ts < group.txs[i].transaction.ts) {
+                console.log("previous");
                 let pos = Math.max(0, i - 1);
                 group.txs.splice(pos, 0, tx);
                 return;
             }
         }
 
+
         group.txs.push(tx);
     
         group.unread++;
 
         if (this.debug) {
-            console.log(`New Chat message: ${group.unread} unread`);
+            console.log(`new: ${group.unread} unread`);
         }
 
     }
@@ -911,7 +952,6 @@ class Chat extends ModTemplate {
             if (this.app.options.chat[g.id] && g.txs.length == 0) {
                 for (let stx of this.app.options.chat[g.id]) {
                     let newtx = new saito.default.transaction(stx);
-                    newtx.decryptMessage(this.app);
                     g.txs.push(newtx);
                 }
                 //this.printGroup(g);

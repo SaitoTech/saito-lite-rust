@@ -167,6 +167,7 @@ class ChatManager {
 
       if (group.txs.length > 0) {
         let tx = group.txs[group.txs.length - 1];
+        tx.decryptMessage(this.app);
         let txmsg = tx.returnMessage();
         last_msg = this.app.browser.stripHtml(txmsg.message);
         last_ts = txmsg.timestamp;
