@@ -2,6 +2,7 @@ const GameTemplate = require('../../lib/templates/gametemplate');
 const TwilightRules = require('./lib/twilight-game-rules.template');
 const TwilightOptions = require('./lib/twilight-game-options.template');
 const TwilightSingularOption = require('./lib/twilight-singular-game-options.template');
+const ScoringOverlay = require('./lib/overlays/scoring');
 
 const JSON = require('json-bigint');
 
@@ -58,6 +59,9 @@ class Twilight extends GameTemplate {
     this.cards    	 = [];
     this.is_testing 	 = 0;
 
+    // ui components
+    this.scoring_overlay = new ScoringOverlay(this.app, this);
+
     // newbie mode
     this.confirm_moves = 0;
 
@@ -113,6 +117,8 @@ class Twilight extends GameTemplate {
 
 
   showScoreOverlay(card, point_obj){
+   this.scoring_overlay(card, point_obj);
+   return;
    let html = `
     <div class="ts-overlay">
       <h1>${this.cardToText(card, true)}</h1>
@@ -1007,6 +1013,10 @@ try {
 
       let region = this.id;
       let scoring = twilight_self.calculateScoring(region, 1);
+
+twilight_self.scoring_overlay.render(region, scoring);
+return;
+
       let total_vp = scoring.us.vp - scoring.ussr.vp;
       let vp_color = "white";
 
@@ -7169,6 +7179,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     var scoring = {
       us: {total: 0, bg: 0, vp: 0},
       ussr: {total: 0, bg: 0, vp: 0},
+      bonus: [],
     }
 
     let bg_countries = [];
@@ -7207,16 +7218,36 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         scoring.us.neigh = [];
         scoring.ussr.neigh = [];
 
-        if (this.isControlled("us", "finland") == 1) { scoring.us.vp++; scoring.us.neigh.push("finland");}
-        if (this.isControlled("us", "romania") == 1) { scoring.us.vp++; scoring.us.neigh.push("romania");}
-        if (this.isControlled("us", "poland") == 1) { scoring.us.vp++; scoring.us.neigh.push("poland"); }
-        if (this.isControlled("ussr", "canada") == 1) { scoring.ussr.vp++; scoring.ussr.neigh.push("canada");}
+        if (this.isControlled("us", "finland") == 1) { 
+	  scoring.us.vp++; 
+	  scoring.us.neigh.push("finland");
+	  scoring.bonus.push({ side : "us" , name : "Adjacency" , desc : "US +1 for Finland" , icon : "/twilight/img/adjacency.png" });
+	}
+        if (this.isControlled("us", "romania") == 1) { 
+	  scoring.us.vp++; 
+	  scoring.us.neigh.push("romania");
+	  scoring.bonus.push({ side : "us" , name : "Adjacency" , desc : "US +1 for Romania" , icon : "/twilight/img/adjacency.png" });
+	}
+        if (this.isControlled("us", "poland") == 1) { 
+	  scoring.us.vp++; 
+	  scoring.us.neigh.push("poland"); 
+	  scoring.bonus.push({ side : "us" , name : "Adjacency" , desc : "US +1 for Poland" , icon : "/twilight/img/adjacency.png" });
+	}
+        if (this.isControlled("ussr", "canada") == 1) { 
+	  scoring.ussr.vp++; 
+	  scoring.ussr.neigh.push("canada");
+	  scoring.bonus.push({ side : "ussr" , name : "Adjacency" , desc : "USSR +1 for Canada" , icon : "/twilight/img/adjacency.png" });
+	}
 
         //
         // GOUZENKO AFFAIR -- early war optional
         //
         if (this.game.state.events.optional.gouzenkoaffair == 1) {
-          if (this.isControlled("us", "canada") == 1) { vp_us++; scoring.us.neigh.push("canada");}
+          if (this.isControlled("us", "canada") == 1) { 
+	    vp_us++;
+	    scoring.us.neigh.push("canada");
+	    scoring.bonus.push({ side : "us" , name : "Gouzenko Affair" , desc : "US +1 for Canada-USSR adjacency" , icon : "/twilight/img/adjacency.png"});
+	  }
         }
 
         break;
@@ -7240,6 +7271,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
             scoring.shuttle = 1;
             this.game.state.events.shuttlediplomacy = 0;
       	    this.game.deck[0].discards['shuttle'] = this.game.deck[0].cards['shuttle'];
+	    scoring.bonus.push({ side : "us" , name : "Shuttle Diplomacy" , desc : "USSR -1 battleground country" , icon : "/twilight/img/Event73.png" });
           }
         }
 
@@ -7291,8 +7323,16 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         scoring.us.neigh = [];
         scoring.ussr.neigh = [];
 
-        if (this.isControlled("ussr", "mexico") == 1) { scoring.ussr.vp++; scoring.ussr.neigh.push("mexico");}
-        if (this.isControlled("ussr", "cuba") == 1) { scoring.ussr.vp++; scoring.ussr.neigh.push("cuba");}
+        if (this.isControlled("ussr", "mexico") == 1) {
+	  scoring.ussr.vp++;
+	  scoring.ussr.neigh.push("mexico");
+	  scoring.bonus.push({ side : "ussr" , name : "Adjacency" , desc : "USSR +1 for Mexico" , icon : "/twilight/img/adjacency.png" });
+	}
+        if (this.isControlled("ussr", "cuba") == 1) {
+	  scoring.ussr.vp++;
+	  scoring.ussr.neigh.push("cuba");
+	  scoring.bonus.push({ side : "ussr" , name : "Adjacency" , desc : "USSR +1 for Cuba" , icon : "/twilight/img/adjacency.png" });
+	}
 
         break;
 
@@ -7315,6 +7355,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         if (this.game.state.events.formosan == 1 && this.isControlled("us", "taiwan") == 1) {
           bg_countries.push("taiwan");
           scoring.us.bg++;
+	  scoring.bonus.push({ side : "us" , name : "Formosan Resolution" , desc : "US +1 battleground country" , icon : "/twilight/img/Event35.svg" });
         }
         
         scoring_range = {presence: 3, domination: 7, control: 9};
@@ -7326,6 +7367,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
           if (scoring.ussr.bg > 0) {
             scoring.ussr.bg--;
             scoring.ussr.total--;
+	    scoring.bonus.push({ side : "us" , name : "Shuttle Diplomacy" , desc : "USSR -1 battleground country" , icon : "/twilight/img/Event73.png" });
           }
 
           scoring.shuttle = 1;
@@ -7347,14 +7389,23 @@ console.log("PRESC: " + JSON.stringify(scoring));
         scoring.us.neigh = [];
         scoring.ussr.neigh = [];
 
-        if (this.isControlled("us", "afghanistan") == 1) { scoring.us.vp++; scoring.us.neigh.push("afghanistan");}
-        if (this.isControlled("us", "northkorea") == 1) { scoring.us.vp++; scoring.us.neigh.push("northkorea");}
+        if (this.isControlled("us", "afghanistan") == 1) {
+	  scoring.us.vp++;
+	  scoring.us.neigh.push("afghanistan");
+	  scoring.bonus.push({ side : "us" , name : "Adjacency" , desc : "US +1 for Afghanistan" , icon : "/twilight/img/adjacency.png" });
+	}
+        if (this.isControlled("us", "northkorea") == 1) {
+	  scoring.us.vp++;
+	  scoring.us.neigh.push("northkorea");
+	  scoring.bonus.push({ side : "us" , name : "Adjacency" , desc : "US +1 for North Korea" , icon : "/twilight/img/adjacency.png" });
+	}
         if (this.isControlled("ussr", "japan") == 1) { 
           if (this.game.state.events.shuttlediplomacy == 1) {
             this.updateLog("USSR loses Japan/US-adjacency with Shuttle Diplomacy");
   	  } else {
   	    scoring.ussr.vp++; 
             scoring.ussr.neigh.push("japan");
+	    scoring.bonus.push({ side : "ussr" , name : "Adjacency" , desc : "USSR +1 for Japan" , icon : "/twilight/img/adjacency.png" });
 	  }
 	}
 
@@ -8806,6 +8857,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
 
     if (card == "asia") {
+
       let vp_adjustment = this.calculateScoring("asia");
       this.showScoreOverlay(card, vp_adjustment);
       let total_vp = vp_adjustment.us.vp - vp_adjustment.ussr.vp;
