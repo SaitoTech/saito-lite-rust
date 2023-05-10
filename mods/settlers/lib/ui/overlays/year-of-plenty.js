@@ -1,5 +1,5 @@
 const YearOfPlentyOverlayTemplate = require("./year-of-plenty.template");
-const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("./../../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class YearOfPlentyOverlay {
 

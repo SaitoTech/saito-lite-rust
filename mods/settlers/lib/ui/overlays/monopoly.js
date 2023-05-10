@@ -1,5 +1,5 @@
 const MonopolyOverlayTemplate = require("./monopoly.template");
-const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("./../../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class MonopolyOverlay {
 

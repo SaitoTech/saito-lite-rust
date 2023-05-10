@@ -1,5 +1,5 @@
 const DevCardOverlayTemplate = require("./dev-card.template");
-const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("./../../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class DevCardOverlay {
 
