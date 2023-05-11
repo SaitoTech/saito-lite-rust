@@ -104,11 +104,11 @@ class SettlersState {
     playBandit() {
         this.updateStatus("Move the bandit...");
         let settlers_self = this;
-        $(".sector_value").addClass("rhover");
-        $(".sector_value").off();
-        $(".sector_value").on("click", function () {
-            $(".sector_value").off();
-            $(".sector_value").removeClass("rhover");
+        $(".sector-container").addClass("rhover");
+        $(".sector-container").off();
+        $(".sector-container").on("click", function () {
+            $(".sector-container").off();
+            $(".sector-container").removeClass("rhover");
             let slot = $(this).attr("id");
 
             settlers_self.addMove(
@@ -198,7 +198,11 @@ class SettlersState {
             temp.classList.add("sv" + sector_value);
         } else {
             //Create Sector_value
-            let sector_value_html = `<div class="sector_value hexTileCenter sv${sector_value}" id="${svid}">${sector_value}</div>`;
+            let sector_value_html = `
+                <div class="sector-container sc${sector_value}" id="${svid}">
+                    <div class="sector_value hexTileCenter sv${sector_value}" id="${svid}">${sector_value}</div>
+                </div>
+            `;
             let sector_value_obj = this.app.browser.htmlToElement(sector_value_html);
             if (hexobj) {
                 hexobj.after(sector_value_obj);

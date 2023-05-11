@@ -132,6 +132,7 @@ p {
   right: -12.5%;
 }
 
+
 .hex_bg img {
   left: -12.5%;
   right: -12.5%;
@@ -313,7 +314,14 @@ body {
   top: -4px;
 }
 
-.rhover:hover, .city.empty.rhover:hover {
+
+.sector-container.rhover:hover .sector_value {
+  border: 1px solid white;
+  background-color: whitesmoke;
+  cursor: pointer;
+}
+
+.city.empty.rhover:hover {
   border: 1px solid white;
   background-color: whitesmoke;
   cursor: pointer;
@@ -578,16 +586,28 @@ input[type="checkbox"] {
   left: -18%;
 }
 
+.sector-container {
+  position: absolute;
+  border-radius: 50%;
+  width: 12em;
+  height: 12em;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  cursor: pointer;
+}
+
 .sector_value {
   position: absolute;
   font-size: 2.5em;
   z-index: 15;
   font-weight: bold;
   border: 2px solid #fff;
-  border-radius: 50%;
-  width: 3em;
-  height: 3em;
-  line-height: 3em;
+  border-radius: 50%;  
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
   text-align: center;
   background: #6664;
   color: white;

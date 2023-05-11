@@ -388,7 +388,6 @@
         }
         if (id == "spend") {
           settlers_self.build.render();
-          settlers_self.playerBuildEvents();
           return;
         }
         if (id == "nospend") {
@@ -410,130 +409,6 @@
     }
 
     }
-
-
-    playerBuildEvents(){
-      let settlers_self = this;
-
-      document.querySelectorAll(".settlers-item-row").forEach(function(item, key) {
-        item.onclick = (e) => {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-
-            settlers_self.build.overlay.hide();
-
-            let id = e.target.getAttribute("id");
-            let disabled = e.target.classList.contains("settlers-row-disabled");
-
-            console.log("check id of option ////");
-            console.log(id);
-
-            // settlers_self.updateStatus('<div class="tbd">broadcasting choice</div>'); //If visible, something terrible has gone wrong 
-
-            if (!disabled) {
-              if (id === "0") {
-                settlers_self.addMove(
-                  `player_build_road\t${settlers_self.game.player}\t0\t1`);
-              }
-              if (id === "1") {
-                settlers_self.addMove(`player_build_city\t${settlers_self.game.player}\t1`);
-              }
-              if (id === "2") {
-                settlers_self.addMove(
-                  "player_upgrade_city\t" + settlers_self.game.player
-                );
-              }
-              if (id === "3") {
-                //have everyone update game state
-                settlers_self.addMove("buy_card\t" + settlers_self.game.player);
-                // Deck #1 = deck[0] = devcard deck
-                //get card from deck
-                settlers_self.addMove("SAFEDEAL\t1\t" + settlers_self.game.player + "\t1");
-              }
-              let purchase = parseInt(id);
-              if (purchase >= 0 && purchase <= 3) {
-                let cost = settlers_self.skin.priceList[parseInt(id)];
-                for (let resource of cost) {
-                  //Put the spends on the front of the move, so we can maybe cancel the building action
-                  settlers_self.prependMove(
-                    "spend_resource\t" + settlers_self.game.player + "\t" + resource
-                  );
-
-                }
-                settlers_self.endTurn();
-              } else {
-                //console.log("Unexpected selection for player move:",id);
-              }
-            }
-        };
-      }); 
-    }
-
-
-    // playerBuild() {
-    //   let settlers_self = this;
-    //   let html = "<ul>";
-
-    //   if (settlers_self.canPlayerBuildRoad(settlers_self.game.player)) {
-    //     html += `<li class="option" id="0">build ${this.skin.r.name} </li>`;
-    //   }
-    //   if (settlers_self.canPlayerBuildTown(settlers_self.game.player)) {
-    //     html += `<li class="option" id="1">build ${this.skin.c1.name}</li>`;
-    //   }
-    //   if (settlers_self.canPlayerBuildCity(settlers_self.game.player)) {
-    //     html += `<li class="option" id="2">build ${this.skin.c2.name}</li>`;
-    //   }
-    //   if (settlers_self.canPlayerBuyCard(settlers_self.game.player)) {
-    //     html += `<li class="option" id="3">buy ${this.skin.card.name} card</li>`;
-    //   }
-    //   html += `<li class="option" id="cancel">go back</li>`;
-    //   html += "</ul>";
-
-    //   settlers_self.updateStatus(html);
-
-    //   $(".option").off();
-    //   $(".option").on("click", function () {
-    //     let id = $(this).attr("id");
-    //     settlers_self.updateStatus('<div class="tbd">broadcasting choice</div>'); //If visible, something terrible has gone wrong
-    //     if (id === "cancel") {
-    //       settlers_self.playerPlayMove();
-    //       return;
-    //     }
-    //     if (id === "0") {
-    //       settlers_self.addMove(
-    //         `player_build_road\t${settlers_self.game.player}\t0\t1`);
-    //     }
-    //     if (id === "1") {
-    //       settlers_self.addMove(`player_build_city\t${settlers_self.game.player}\t1`);
-    //     }
-    //     if (id === "2") {
-    //       settlers_self.addMove(
-    //         "player_upgrade_city\t" + settlers_self.game.player
-    //       );
-    //     }
-    //     if (id === "3") {
-    //       //have everyone update game state
-    //       settlers_self.addMove("buy_card\t" + settlers_self.game.player);
-    //       // Deck #1 = deck[0] = devcard deck
-    //       //get card from deck
-    //       settlers_self.addMove("SAFEDEAL\t1\t" + settlers_self.game.player + "\t1");
-    //     }
-    //     let purchase = parseInt(id);
-    //     if (purchase >= 0 && purchase <= 3) {
-    //       let cost = settlers_self.skin.priceList[parseInt(id)];
-    //       for (let resource of cost) {
-    //         //Put the spends on the front of the move, so we can maybe cancel the building action
-    //         settlers_self.prependMove(
-    //           "spend_resource\t" + settlers_self.game.player + "\t" + resource
-    //         );
-
-    //       }
-    //       settlers_self.endTurn();
-    //     } else {
-    //       //console.log("Unexpected selection for player move:",id);
-    //     }
-    //   });
-    // }
 
     playerPlayCard() {
       let settlers_self = this;
