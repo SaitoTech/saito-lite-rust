@@ -82,7 +82,7 @@ class ChatPopup {
         am_i_on_page = 1;
     }
 
-    console.log("Rendering Chat popup", this.container);
+    //console.log("Rendering Chat popup", this.container);
     //
     // insert or replace popup on page
     //
@@ -127,12 +127,13 @@ class ChatPopup {
     // emojis
     //
     this.emoji.render();
-
+    console.log("rendered chat popup");
     //
     // scroll to bottom
     //
-    if (document.querySelector("#" + popup_id + " .chat-body")) {
-      document.querySelector("#" + popup_id + " .chat-body").scroll(0, 1000000000);
+    if (document.querySelector(popup_qs + " .chat-body")) {
+      console.log("Scroll to bottom");
+      document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
     }
     //
     // re-render typed text
