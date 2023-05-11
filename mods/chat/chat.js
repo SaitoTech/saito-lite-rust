@@ -984,8 +984,10 @@ class Chat extends ModTemplate {
         for (let g of this.groups){
             console.log("Fetch", g);
             localforage.getItem(`chat_${g.id}`, function(error, value){
-                g = Object.assign(g, value);
-                console.log(value);
+                if (value){
+                    g = Object.assign(g, value);
+                    console.log(value);
+                }
             });
         }
     }
