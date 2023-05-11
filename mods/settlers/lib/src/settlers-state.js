@@ -564,70 +564,70 @@ class SettlersState {
             this.game.state.players[i - 1].resources.sort();
             let num_resources = this.game.state.players[i - 1].resources.length;
             let num_cards = this.game.state.players[i - 1].devcards;
-            let userline = "your active trade offers";
-            if (i != this.game.player) { userline = "their active trade offers"; }
-
-            let newhtml = "";
+//            let trade_offers_line = `<div class="trade-offers">your active trade offers</div>`;
+//            if (i != this.game.player) { trade_offers_line = `<div class="trade-offers">their active trade offers</div>`; }
+	    let userline = "";
+                userline += `<div class="flexliane">`;
+                userline += `<div class="cardct">resources: ${this.game.state.players[i - 1].resources.length}</div>`;
+                userline += `</div>`;
 
             let playerHTML = `
           <div class="saito-user settlers-user saito-user-${this.game.players[i - 1]}" id="saito-user-${this.game.players[i - 1]}" data-id="${this.game.players[i - 1]}">
             <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i - 1])}"></div>
-            <div class="saito-playername" data-id="${this.game.players[i - 1]}">${this.game.playerNames[i - 1]}</div>
+            <div class="saito-address saito-playername" data-id="${this.game.players[i - 1]}">${this.game.playerNames[i - 1]}</div>
             <div class="saito-userline">${userline}</div>
           </div>`;
-            this.playerbox.refreshTitle(playerHTML, i);
 
+            this.playerbox.refreshTitle(playerHTML, i);
+//            this.playerbox.refreshLog(trade_offers_line, i);
+
+/*******
             //Stats
-            newhtml = `<div class="flexline">`;
+            let statshtml = `<div class="flexline">`;
             //Victory Point Card Tokens -- should move to VP track
             for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
-              newhtml += `<div class="token">${this.skin.vp.svg}</div>`;
+              statshtml += `<div class="token">${this.skin.vp.svg}</div>`;
             }
             if (this.game.state.largestArmy.player == i) {
-                newhtml += `<div class="token army largest" title="${this.skin.largest.name}">`;
+                statshtml += `<div class="token army largest" title="${this.skin.largest.name}">`;
             } else {
-                newhtml += `<div class="token army" title="${this.skin.largest.name}">`;
+                statshtml += `<div class="token army" title="${this.skin.largest.name}">`;
             }
             for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
-              newhtml += this.skin.s.img;
+              statshtml += this.skin.s.img;
             }
-            newhtml += `</div>`;
+            statshtml += `</div>`;
              
             if (this.game.state.longestRoad.player == i) {
-              newhtml += `<div class="token longest-road" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
+              statshtml += `<div class="token longest-road" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
             }
-            newhtml += `</div>`;
+            statshtml += `</div>`;
 
-         
-
+	    let reshtml = "";
             //For opponents, summarize their hands numerically
             if (this.game.player != i) {
-                  newhtml += `<div class="flexline">`;
-                  newhtml += `<div class="cardct">Resources: ${
-                    this.game.state.players[i - 1].resources.length
-                  }</div>`;
-                  newhtml += `<div class="cardct">Cards: ${
-                    this.game.state.players[i - 1].devcards
-                  }</div>`;
-                  newhtml += `</div>`;
-            } else {  //Is me
+                  reshtml += `<div class="flexliane">`;
+                  reshtml += `<div class="cardct">res: ${this.game.state.players[i - 1].resources.length}</div>`;
+                  reshtml += `<div class="cardct">cards: ${this.game.state.players[i - 1].devcards}</div>`;
+                  reshtml += `</div>`;
+            } else {
 
                 if (!this.game.state.placedCity) {
-                    newhtml += `<div class="flexline">`;
+                    reshtml += `<div class="flexline">`;
                     if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
-                        newhtml += "<span>";
+                        reshtml += "<span>";
                         if (this.game.state.ads[i - 1].offer) {
-                            newhtml += this.wishListToImage(this.game.state.ads[i - 1].offer);
+                            reshtml += this.wishListToImage(this.game.state.ads[i - 1].offer);
                         }
-                        newhtml += `<i class="fas fa-long-arrow-alt-right"></i>`;
+                        reshtml += `<i class="fas fa-long-arrow-alt-right"></i>`;
                         if (this.game.state.ads[i - 1].ask) {
-                            newhtml += this.wishListToImage(this.game.state.ads[i - 1].ask);
+                            reshtml += this.wishListToImage(this.game.state.ads[i - 1].ask);
                         }
-                        newhtml += `</span><i id="cleartrade" class="fas fa-ban"></i>`;
+                        reshtml += `</span><i id="cleartrade" class="fas fa-ban"></i>`;
                     } else {
                         //newhtml += `<span id="tradenow">Trade</span>`;
                     }
-                    newhtml += `</div>`;
+                    reshtml += `</div>`;
                     //Interactive controls to toggle between "decks"
                     if (
                         this.game.deck[0].hand.length > 0 &&
@@ -640,8 +640,9 @@ class SettlersState {
                     }
                 }
             }
+****/
 
-            this.playerbox.refreshInfo(newhtml, i);
+//            this.playerbox.refreshInfo(newhtml, i);
             $(".player-box-info").disableSelection();
 
             //Other player ads... in LOG

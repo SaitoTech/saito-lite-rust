@@ -319,46 +319,46 @@ class Settlers extends GameTemplate {
         state.players[i].ports = [];
     }
     return state;
-}
-
-initializeStats() {
-  let stats = {};
-  stats.dice = {};
-  stats.production = {};
-  for (let i = 2; i <= 12; i++) {
-      stats.dice[i] = 0;
   }
 
-  for (let r of this.skin.resourceArray()) {
+  initializeStats() {
+    let stats = {};
+    stats.dice = {};
+    stats.production = {};
+    for (let i = 2; i <= 12; i++) {
+      stats.dice[i] = 0;
+    }
+
+    for (let r of this.skin.resourceArray()) {
       let array = new Array(this.game.players.length);
       array.fill(0);
       stats.production[r] = array;
+    }
+    return stats;
   }
-  return stats;
-}
 
 
-returnDiceTokens() {
-  let dice = [];
-  dice.push({ value: 2 });
-  dice.push({ value: 12 });
-  for (let i = 3; i < 7; i++) {
-      dice.push({ value: i });
-      dice.push({ value: i });
-      dice.push({ value: i + 5 });
-      dice.push({ value: i + 5 });
+  returnDiceTokens() {
+    let dice = [];
+    dice.push({ value: 2 });
+    dice.push({ value: 12 });
+    for (let i = 3; i < 7; i++) {
+        dice.push({ value: i });
+        dice.push({ value: i });
+        dice.push({ value: i + 5 });
+        dice.push({ value: i + 5 });
+    }
+    return dice;
   }
-  return dice;
-}
 
 
-returnGameOptionsHTML() {
-  return SettlersGameOptionsTemplate(this.app, this);
-}
+  returnGameOptionsHTML() {
+    return SettlersGameOptionsTemplate(this.app, this);
+  }
 
-returnTradeHelpOverlay(){
-  return SettlersTradeHelpOverlayTemplate(this.app, this);
-}
+  returnTradeHelpOverlay(){
+    return SettlersTradeHelpOverlayTemplate(this.app, this);
+  }
 
 
 }
