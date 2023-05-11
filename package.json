@@ -56,6 +56,7 @@
     "json-tree-viewer": "0.0.2",
     "jsstore": "4.0.0",
     "jszip": "^3.5.0",
+    "localforage": "^1.10.0",
     "markdown-linkify": "^1.0.3",
     "marked": "^4.2.4",
     "mixin-node-sdk": "^3.0.5",

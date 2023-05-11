@@ -814,7 +814,7 @@ console.log("---------------------");
     this.saveWallet();
 
     // let modules purge stuff
-    this.app.modules.onWalletReset();
+    //this.app.modules.onWalletReset();
 
     this.app.options.invites = [];
     this.app.options.games = [];
@@ -822,7 +822,7 @@ console.log("---------------------");
     this.app.storage.saveOptions();
 
     if (this.app.browser.browser_active == 1) {
-      //window.location.reload();
+      window.location.reload();
     }
   }
 

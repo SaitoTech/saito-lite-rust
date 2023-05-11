@@ -139,21 +139,9 @@ class SettingsAppspace {
       
             confirmation = await sconfirm('This will reset/nuke your account, do you wish to proceed?');
             if (confirmation) {
-
-	      app.options.keys = [];
-	      app.options.groups = [];
+      	      app.options.keys = [];
+      	      app.options.groups = [];
               app.wallet.resetWallet();
-              app.modules.returnModule('Arcade').onResetWallet();
-              app.storage.resetOptions();
-      
-              mod.emails.inbox = [];
-              mod.emails.sent = [];
-              mod.emails.trash = [];
-      
-              mod.render(app, mod);
-              mod.attachEvents(app, mod);
-      
-              app.blockchain.resetBlockchain();
             }
       };
 

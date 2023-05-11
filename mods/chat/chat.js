@@ -5,7 +5,8 @@ const ChatManager = require('./lib/chat-manager/main');
 const ChatManagerOverlay = require('./lib/overlays/chat-manager');
 const ChatPopup = require("./lib/chat-manager/popup");
 const JSON = require('json-bigint');
-const JsStore = require("jsstore");
+//const JsStore = require("jsstore");
+const localforage = require("localforage");
 
 class Chat extends ModTemplate {
 
@@ -19,6 +20,26 @@ class Chat extends ModTemplate {
 
         this.groups = [];
 
+        /*
+         Array of: 
+         {
+            id: id,
+            members: members, //Array of publickeys
+            name: name,
+            unread: 0, //Number of new messages
+            txs: [],
+            // Processed TX:
+            {
+                sig = "string"
+                ts = number
+                from = "string" //Assuming only one sender
+                msg = ""
+            }
+
+
+        }
+        */
+
         this.inTransitImageMsgSig = null;
 
         this.added_identifiers_post_load = 0;
@@ -26,7 +47,7 @@ class Chat extends ModTemplate {
         this.communityGroup = null;
         this.communityGroupName = "Saito Community Chat";
 
-        this.debug = true;
+        this.debug = false;
 
         this.chat_manager = null;
 
@@ -77,50 +98,9 @@ class Chat extends ModTemplate {
         //Add script for emoji to work
         if (app.BROWSER) {
             this.attachPostScripts();
-            this.loadChats();
+            this.loadChatGroups();
         }
 
-/*        if (app.BROWSER){
-            const request = window.indexedDB.open("saito-chat-db", 6);
-            request.onerror = (event) => {
-                salert("IndexedDB Error: " + event.target.error);
-            }
-            request.onsuccess = (event) => {
-                this.db = event.target.result;
-
-                let transaction = this.db.transaction("chat-history");
-                let ostore = transaction.objectStore("chat-history");
-                let query = ostore.getAll();                 
-                query.onsuccess = () => {
-                    console.log("Query IndexedDB");
-                    query.result.forEach(obj => {
-                        this.addTransactionToGroup(this.returnGroup(obj.group_id), obj.tx);
-                    });
-                    this.groups.forEach((group) => {
-                        group.unread = 0;
-                    });
-                }
-
-            }
-            request.onupgradeneeded = (event) => {
-                this.db = event.target.result;
-
-                if (this.db.objectStoreNames.contains('chat-history')){
-                    this.db.deleteObjectStore("chat-history");
-                }
-                const objectStore = this.db.createObjectStore('chat-history', {autoIncrement: true});   
-                
-                if (objectStore.indexNames.contains("group_id")){
-                    objectStore.deleteIndex("group_id");
-                }
-                objectStore.createIndex("group_id", "group_id", {unique: false} );
-                if (objectStore.indexNames.contains("tx")){
-                    objectStore.deleteIndex("tx");
-                }
-                //objectStore.createIndex("tx", "tx");
-            }
-        }
-*/
 
 
     }
@@ -149,12 +129,16 @@ class Chat extends ModTemplate {
                 let group_id = this.groups[i].id;
                 let group = this.groups[i];
 
-                this.app.storage.loadTransactions(group_id, 5, function (txs) {
-                    if (this.debug){ console.log("Chat PSuP Archive callback:" + txs.length); }
+                this.app.storage.loadTransactions(group_id, 25, function (txs) {
+                    if (chat_self.debug){ console.log("Chat PSuP Archive callback:" + txs.length); }
                     
                     try {
-                        for (let z = 0; z < txs.length; z++) {
-                            chat_self.addTransactionToGroup(group, txs[z]);
+                        //Note loadTransactions returns them in reverse order....
+                        //Now addTransactionToGroup will sort them, but this will be more efficient
+                        while (txs.length > 0){
+                            let tx = txs.pop();
+                            tx.decryptMessage(chat_self.app);
+                            chat_self.addTransactionToGroup(group, tx);
                         }
 
                         if (app.BROWSER){
@@ -202,20 +186,33 @@ class Chat extends ModTemplate {
                 }
                 newtx = this.app.wallet.signTransaction(newtx);
 
+                
+                if (this.app.BROWSER) {
+
+                    localforage.getItem(`chat_${local_group.id}`, function(error, value){
+                        console.log("Loaded public chat locally");
+                        local_group = Object.assign(local_group, value);
+                        console.log(value);
+                    });
+                }
+
+
                 this.app.network.sendTransactionWithCallback(newtx, (txs) => {
 
                     if (this.debug) {
                         console.log("chat history callback: " + txs.length);
                     }
-
-                    try {
-                        for (let i = 0; i < txs.length; i++) {
-                            let newtx = new saito.default.transaction(txs[i].transaction);
-                            let txmsg = newtx.returnMessage();
-                            this.addTransactionToGroup(local_group, newtx);
+                    // These are no longer proper transactions!!!!
+                    
+                    if (local_group.txs.length > 0){
+                        let most_recent_ts = local_group.txs[local_group.txs.length -1].ts;
+                        for (let i = 0; i < txs.length; i++){
+                            if (txs[i].ts > most_recent_ts){
+                                local_group.txs.push(txs[i]);
+                            }
                         }
-                    } catch (err) {
-                        console.log("chat history adding: " + err);
+                    }else{
+                        local_group.txs = txs;                        
                     }
 
                     if (this.app.BROWSER) {
@@ -266,7 +263,7 @@ class Chat extends ModTemplate {
                                 let temp = res.rows.pop();
                                 let tx = new saito.default.transaction();
                                 tx.deserialize_from_web(app, temp.tx);
-                                
+                                tx.decryptMessage(chat_self.app);
                                 chat_self.addTransactionToGroup(chat_self.groups[i], tx);
 
                             }
@@ -361,6 +358,7 @@ class Chat extends ModTemplate {
         if (conf == 0) {
             
             tx.decryptMessage(app);
+
             let txmsg = tx.returnMessage();
 
             if (this.debug) {
@@ -593,7 +591,6 @@ class Chat extends ModTemplate {
      */
     receiveChatTransaction(app, tx) {
 
-
         if (this.inTransitImageMsgSig == tx.transaction.sig) {
             this.inTransitImageMsgSig = null;
         }
@@ -630,10 +627,10 @@ class Chat extends ModTemplate {
                 for (let i = 0; i < tx.transaction.to.length; i++) {
                     if (tx.transaction.to[i].add == app.wallet.returnPublicKey()) {
                         if (this.debug) {
-                            console.log("Should save TX in Archive");
+                            console.log("Should save TX in Archive or locally");
                         }
                         this.app.storage.saveTransaction(tx, txmsg.group_id);
-                        this.saveChatTx(tx, txmsg.group_id);
+                        //this.saveChatTx(tx, txmsg.group_id);
                         break;
                     }
                 }    
@@ -642,42 +639,40 @@ class Chat extends ModTemplate {
 
         let group = this.returnGroup(txmsg.group_id);
 
-        if (group) {
+        if (!group) {
+            if (!tx.isTo(app.wallet.returnPublicKey())) {
+                if (this.debug) { console.log("Chat message not for me"); }
+                return;
+            }else{
 
-            //Have we already inserted this message into the chat?
-            for (let z = 0; z < group.txs.length; z++) {
-                if (group.txs[z].transaction.sig === tx.transaction.sig) {
-                    return;
+                //
+                // no match on groups, but direct message to me
+                //
+
+                let members = [];
+                for (let x = 0; x < tx.transaction.to.length; x++) {
+                    if (!members.includes(tx.transaction.to[x].add)) {
+                        members.push(tx.transaction.to[x].add);
+                    }
                 }
+
+                group = this.returnOrCreateChatGroupFromMembers(members);
+
+                if (this.debug) { console.log("creating new chat group from direct message:", JSON.parse(JSON.stringify(group))); }
             }
-            this.addTransactionToGroup(group, tx);
-
-            app.connection.emit('chat-popup-render-request', group);
-
-        } else if (tx.isTo(app.wallet.returnPublicKey())) {
-            //
-            // no match on groups -- direct message to me
-            //
-
-            let members = [];
-            for (let x = 0; x < tx.transaction.to.length; x++) {
-                if (!members.includes(tx.transaction.to[x].add)) {
-                    members.push(tx.transaction.to[x].add);
-                }
-            }
-
-            let proper_group = this.returnOrCreateChatGroupFromMembers(members);
-
-            this.addTransactionToGroup(proper_group, tx);
-
-            if (this.debug) { console.log("emitting render request to new group: " + proper_group.id); }
-
-            app.connection.emit('chat-popup-render-request', proper_group);
-
-        } else {
-            if (this.debug) { console.log("Chat message not for me"); }
         }
 
+
+        //Have we already inserted this message into the chat?
+        for (let z = 0; z < group.txs.length; z++) {
+            if (group.txs[z].sig === tx.transaction.sig) {
+                if (this.debug){ console.log("Duplicate received message"); }
+                return;
+            }
+        }
+            
+        this.addTransactionToGroup(group, tx);
+        app.connection.emit('chat-popup-render-request', group);
     }
 
 
@@ -703,17 +698,15 @@ class Chat extends ModTemplate {
                 let sender = "";
                 let msg = "";
                 for (let z = 0; z < block.length; z++) {
-                    let txmsg = block[z].returnMessage();
-                    if (txmsg.message) {
-                        if (z > 0) { msg += '<br/>'; }
-                        sender = block[z].transaction.from[0].add;
-                        if (txmsg.message.indexOf('<img') != 0) {
-                            msg += this.app.browser.sanitize(txmsg.message);
-                        } else {
-                            msg += txmsg.message.substring(0, txmsg.message.indexOf('>') + 1);
-                        }
-                        ts = txmsg.timestamp;
+                    if (z > 0) { msg += '<br/>'; }
+                    sender = block[z].from[0];
+                    if (block[z].msg.indexOf('<img') != 0) {
+                        msg += this.app.browser.sanitize(block[z].msg);
+                    } else {
+                        msg += block[z].msg.substring(0, block[z].msg.indexOf('>') + 1);
                     }
+                    ts = ts || block[z].ts;
+
                 }
                 const replyButton = `<div data-id="${group_id}" class="saito-userline-reply">reply <i class="fa-solid fa-reply"></i></div>`;
                 html += `${SaitoUserTemplate({ app: this.app, publickey: sender, notice: msg, fourthelem: `<div class="saito-chat-line-controls"><span class="saito-chat-line-timestamp">` + this.app.browser.returnTime(ts) + `</span>${replyButton}</div>` })}`;
@@ -722,8 +715,6 @@ class Chat extends ModTemplate {
 
         group.unread = 0;
 
-        //Save to Wallet Here
-        //this.saveChat(group);
 
         return html;
 
@@ -733,56 +724,30 @@ class Chat extends ModTemplate {
 
         let blocks = [];
         let block = [];
-        let txs = [];
-        if (group) {
-            if (group.txs) {
-                txs = group.txs;
-            }
-        }
         let last_message_sender = "";
 
-        for (let i = 0; i < txs.length; i++) {
-            txs[i].decryptMessage(this.app);
+        for (let minimized_tx of group?.txs) {
 
             //First transaction -- start first block
             if (last_message_sender == "") {
-                block.push(txs[i]);
+                block.push(minimized_tx);
             } else {
                 //Same Sender -- keep building block
-                if (this.msgIsFrom(txs[i], last_message_sender)) {
-                    block.push(txs[i]);
+                if (minimized_tx.from.includes(last_message_sender)) {
+                    block.push(minimized_tx);
                 } else {
                     //Start new block
                     blocks.push(block);
                     block = [];
-                    block.push(txs[i]);
+                    block.push(minimized_tx);
                 }
             }
-            last_message_sender = txs[i].transaction.from[0].add;
+            last_message_sender = minimized_tx.from[0];
         }
 
         blocks.push(block);
         return blocks;
-
     }
-
-    msgIsFrom(txs, publickey) {
-        if (txs.transaction.from != null) {
-            for (let v = 0; v < txs.transaction.from.length; v++) {
-                if (txs.transaction.from[v].add === publickey) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
-
-
-    ///////////////////
-    // CHAT SPECIFIC //
-    ///////////////////
 
 
     //
@@ -791,34 +756,67 @@ class Chat extends ModTemplate {
     addTransactionToGroup(group, tx) {
 
         if (this.debug) {
-            console.log("Adding TX to group: ", group, tx);
+            console.log("Adding Chat TX to group: ", tx);
         }
 
+        //Limit live memory
         while (group.txs.length > 200) {
             group.txs.shift();
         }
 
+        let content = tx.returnMessage()?.message;
+        if (!content) { 
+            console.warn("Not a chat message?");
+            return; 
+        }
+        let new_message = {
+            sig: tx.transaction.sig,
+            ts: tx.transaction.ts,
+            from: [],
+            msg: content,
+        }
+
+        //Keep the from array just in case....
+        for (let sender of tx.transaction.from) {
+            if (!new_message.from.includes(sender.add)) {
+                new_message.from.push(sender.add);
+            }
+        }
+
         for (let i = 0; i < group.txs.length; i++) {
-            if (group.txs[i].transaction.sig === tx.transaction.sig) {
+            if (group.txs[i].sig === tx.transaction.sig) {
                 console.log("duplicate");
                 return;
             }
-            if (tx.transaction.ts < group.txs[i].transaction.ts) {
-                console.log("previous");
-                let pos = Math.max(0, i - 1);
-                group.txs.splice(pos, 0, tx);
+            if (tx.transaction.ts < group.txs[i].ts) {
+                console.log("out of order " + i);
+                group.txs.splice(i, 0, new_message);
+
+                group.unread++;
+
+                if (this.debug) {
+                    console.log(`new msg: ${group.unread} unread`);
+                    console.log(JSON.parse(JSON.stringify(new_message)));
+                }
+
                 return;
             }
         }
 
 
-        group.txs.push(tx);
+        group.txs.push(new_message);
     
         group.unread++;
 
         if (this.debug) {
-            console.log(`new: ${group.unread} unread`);
+            console.log(`new msg: ${group.unread} unread`);
+            console.log(JSON.parse(JSON.stringify(new_message)));
         }
+
+        //Save to IndexedDB Here
+
+        this.saveChatGroup(group);
+
 
     }
 
@@ -977,8 +975,29 @@ class Chat extends ModTemplate {
     ///////////////////
     // LOCAL STORAGE //
     ///////////////////
+    loadChatGroups(){
+        if (!this.app.BROWSER) { return; }
+        
+        console.log("Reading local DB");
+        for (let g of this.groups){
+            console.log("Fetch", g);
+            localforage.getItem(`chat_${g.id}`, function(error, value){
+                g = Object.assign(g, value);
+                console.log(value);
+            });
+        }
+    }
 
-    async loadChats() {
+    saveChatGroup(group){
+        if (!this.app.BROWSER) { return; }
+
+        localforage.setItem(`chat_${group.id}`, group).then(function(){
+            console.log("Saved chat history for " + group.id);
+        });
+    }
+
+    async loadChatTxs() {
+       /*
        this.db_connection = new JsStore.Connection(new Worker("/saito/lib/jsstore/jsstore.worker.js"));
     
         let tbl = {
@@ -1027,12 +1046,13 @@ class Chat extends ModTemplate {
         });
 
         this.app.connection.emit("chat-manager-render-request");
+        */
     }
 
 
     async saveChatTx(tx, group_id){
 
-        datas = {
+        /*datas = {
             group_id,
             transaction: tx.serialize_to_web(this.app),
         };
@@ -1052,59 +1072,18 @@ class Chat extends ModTemplate {
         }catch(err){
 
         }
-
-/*        if (!this.db){
-            console.warn("No database");
-            return;
-        }
-        console.log("Saving Chat");
-        const transaction = this.db.transaction("chat-history", "readwrite");
-
-        //: tx.serialize_to_web(this.app)
-        let msg = {group_id, tx};
-        console.log(msg);
-        const objectStore = transaction.objectStore("chat-history");
-        const request = objectStore.add(msg);
-
-        request.onsuccess = () => {
-            console.log("Tx successfully saved");
-        }
-        request.onerror = () => {
-            console.log(request.error);
-        }
-*/
+        */
     }
-
-    ///////////////////
-    // CHAT DEBUGGING //
-    ///////////////////
-    //
-    // I'm a lazy man who stores the popup module in the group, 
-    // but the popup module includes a reference to this,
-    // so attempting to print (with any JSON operation) is an 
-    // exercise in infinite recursion, but we do sometimes want 
-    // to inspect the group for debugging purposes
-    //
-    printGroup(group) {
-        const filtered = Object.keys(group)
-            .filter(key => key !== "popup")
-            .reduce((obj, key) => {
-                obj[key] = group[key];
-                return obj;
-            }, {});
-        console.log(JSON.parse(JSON.stringify(filtered)));
-    }
-
 
     onWalletReset(){
         console.log("Wallet reset");
-        this.db_connection.dropDb().then(function() {
+        /*this.db_connection.dropDb().then(function() {
             console.log('Db deleted successfully');
             window.location.reload();
         }).catch(function(error) {
             console.log(error);
         });;
-
+        */
     }
 
 }

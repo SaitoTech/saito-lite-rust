@@ -167,10 +167,8 @@ class ChatManager {
 
       if (group.txs.length > 0) {
         let tx = group.txs[group.txs.length - 1];
-        tx.decryptMessage(this.app);
-        let txmsg = tx.returnMessage();
-        last_msg = this.app.browser.stripHtml(txmsg.message);
-        last_ts = txmsg.timestamp;
+        last_msg = (tx.msg.indexOf('<img') == 0) ? "image" : this.app.browser.sanitize(tx.msg);
+        last_ts = tx.ts;
       }
 
       let html = ChatTeaser(this.app, group.name, last_msg, last_ts, group.id, group.unread);

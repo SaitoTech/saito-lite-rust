@@ -23,7 +23,7 @@ class ChatPopup {
 
   remove() {
 
-    let popup_qs = ".chat-popup-" + this.group.id;
+    let popup_qs = "#chat-popup-" + this.group.id;
     console.log("removing: " + popup_qs);
     document.querySelector(popup_qs).remove();
 
