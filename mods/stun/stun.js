@@ -39,6 +39,7 @@ class Stun extends ModTemplate {
     this.current_step = 0;
     this.gotten_keys = false;
     this.commands = [];
+    this.request_no_interrupts = true;
     this.rooms = new Map();
     this.chatSetting = new ChatSetting(app, mod);
     // this.receiving_from = {}

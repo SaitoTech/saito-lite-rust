@@ -158,17 +158,17 @@ class Chat extends ModTemplate {
         if (service.service === "chat") {
             if (this.debug) { console.log("Chat: onPeerServiceUp",service.service); }
 
-            let local_group = this.returnOrCreateChatGroupFromMembers([peer.returnPublicKey()], "Saito Community ChatPSU");
+            this.communityGroup = this.returnOrCreateChatGroupFromMembers([peer.returnPublicKey()], this.communityGroupName);
 
-            if (local_group) {
+            if (this.communityGroup) {
 
-                if (this.debug) { console.log(JSON.parse(JSON.stringify(local_group))); }
+                if (this.debug) { console.log(JSON.parse(JSON.stringify(this.communityGroup))); }
 
                 //
                 // remove duplicate public chats caused by server update
                 //
                 for (let i = 0; i < this.groups.length; i++) {
-                    if (this.groups[i].name === local_group.name && this.groups[i] !== local_group) {
+                    if (this.groups[i].name === this.communityGroup.name && this.groups[i] !== this.communityGroup) {
                         if (this.groups[i].members.length == 1) {
                             if (!this.app.network.isConnectedToPublicKey(this.groups[i].members[0])) {
                                 this.app.connection.emit("chat-popup-remove-request", (this.groups[i]));
@@ -182,16 +182,16 @@ class Chat extends ModTemplate {
 
                 newtx.msg = {
                     request: "chat history",
-                    group_id: local_group.id,
+                    group_id: this.communityGroup.id,
                 }
                 newtx = this.app.wallet.signTransaction(newtx);
 
                 
                 if (this.app.BROWSER) {
 
-                    localforage.getItem(`chat_${local_group.id}`, function(error, value){
+                    localforage.getItem(`chat_${this.communityGroup.id}`, function(error, value){
                         console.log("Loaded public chat locally");
-                        local_group = Object.assign(local_group, value);
+                        this.communityGroup = Object.assign(this.communityGroup, value);
                         console.log(value);
                     });
                 }
@@ -204,15 +204,15 @@ class Chat extends ModTemplate {
                     }
                     // These are no longer proper transactions!!!!
                     
-                    if (local_group.txs.length > 0){
-                        let most_recent_ts = local_group.txs[local_group.txs.length -1].ts;
+                    if (this.communityGroup.txs.length > 0){
+                        let most_recent_ts = this.communityGroup.txs[this.communityGroup.txs.length -1].ts;
                         for (let i = 0; i < txs.length; i++){
                             if (txs[i].ts > most_recent_ts){
-                                local_group.txs.push(txs[i]);
+                                this.communityGroup.txs.push(txs[i]);
                             }
                         }
                     }else{
-                        local_group.txs = txs;                        
+                        this.communityGroup.txs = txs;                        
                     }
 
                     if (this.app.BROWSER) {
@@ -220,7 +220,7 @@ class Chat extends ModTemplate {
                         if (app.browser.isMobileBrowser(navigator.userAgent) || window.innerWidth < 600 || active_module?.request_no_interrupts) {
                             this.app.connection.emit("chat-manager-request-no-interrupts");
                         }
-                        this.app.connection.emit("chat-popup-render-request", (local_group));
+                        this.app.connection.emit("chat-popup-render-request");
                     }
 
                 });
@@ -231,7 +231,7 @@ class Chat extends ModTemplate {
 
 
     async onPeerHandshakeComplete(app, peer) {
-        return;
+        /*
         if (!app.BROWSER) { return; }
         if (peer.isMainPeer()) {
 
@@ -278,7 +278,7 @@ class Chat extends ModTemplate {
                     }
                 );
             }
-        }
+        }*/
     }
 
 
