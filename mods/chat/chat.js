@@ -191,8 +191,10 @@ class Chat extends ModTemplate {
 
                     localforage.getItem(`chat_${this.communityGroup.id}`, function(error, value){
                         console.log("Loaded public chat locally");
-                        this.communityGroup = Object.assign(this.communityGroup, value);
-                        console.log(value);
+                        if (value){
+                            this.communityGroup = Object.assign(this.communityGroup, value);
+                            console.log(value);
+                        }
                     });
                 }
 
