@@ -9,6 +9,64 @@ body {
   height: 100vh;
 }
 
+.status ul .menu-option {
+  text-tranform: unset;
+}
+
+.poker-seat-1 {
+  height: 28rem;
+  min-height: 28rem;
+}
+
+
+.player-box-graphic.hand {
+  position: absolute;
+}
+
+.player-box.hide-scrollbar {
+  overflow: unset;
+  min-height: unset;
+}
+
+.player-box-body .status {
+    font-size: 1.7rem;
+    line-height: 2.2rem;
+}
+
+.player-box-body .status .status-header .status-message {
+  box-shadow: none;
+}
+
+
+.menu-player-upper {
+  font-size: 1.4rem;
+  font-weight: bolder;
+  width: 100%;
+  margin-top: -1.8rem;
+  position: absolute;
+  padding-right: 1.8rem;
+}
+
+.player-box-head .saito-user>.saito-address , .player-box-head .saito-user>.saito-userline {
+  color: white;
+}
+
+.player-box-body .chips {
+    font-size: 1.4rem;
+    font-weight: bolder;
+    width: 100%;
+    margin-top: -1.8rem;
+    position: absolute;
+    padding-right: 1.8rem;
+}
+
+.status-info {
+    font-size: 1.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+
 
 .gameboard{
   /* Default fill the background with image */
@@ -40,17 +98,6 @@ body {
 }
 
 
-.player-notice {
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-  font-weight: bold;
-  background-color: #0002;
-  padding: 5px;
-  max-width: 75%;
-  min-width: fit-content;
-}
-
 .splithand{
   display: flex;
   flex-direction: row;
@@ -60,11 +107,6 @@ body {
 
 .plog .htmlCards .card{
   width: 20px;
-}
-.dealer {
-  background-color: #0004;
-  border-top: 1px solid #efefef;
-  border-bottom: 1px solid #efefef;
 }
 
 .justify{

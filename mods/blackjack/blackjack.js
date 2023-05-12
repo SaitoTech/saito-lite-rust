@@ -32,6 +32,9 @@ class Blackjack extends GameTableTemplate {
   }
 
 
+
+
+
   initializeHTML(app) {
     if (!this.browser_active) { return; }
     if (this.initialize_game_run) { return; }
@@ -41,10 +44,8 @@ class Blackjack extends GameTableTemplate {
     //
     // ADD MENU
     //
-    this.menu.addMenuOption("game-info", "Info");
-
-    this.menu.addSubMenuOption("game-info", {
-      text : "Help",
+    this.menu.addSubMenuOption("game-game", {
+      text : "Rules",
       id : "game-intro",
       class : "game-intro",
       callback : function(app, game_mod) {
@@ -52,7 +53,7 @@ class Blackjack extends GameTableTemplate {
         game_mod.overlay.show(game_mod.returnGameRulesHTML());
       }
     });
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -62,17 +63,6 @@ class Blackjack extends GameTableTemplate {
       }
     });
 
-/***
-    this.menu.addSubMenuOption("game-info", {
-      text : "Stats",
-      id : "game-stats",
-      class : "game-stats",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.handleStatsMenu();
-      }
-    });
-****/
 
     this.menu.addChatMenu();
     this.menu.render();
@@ -84,7 +74,7 @@ class Blackjack extends GameTableTemplate {
     this.playerbox.addGraphicClass("hand");   
     this.playerbox.addGraphicClass("tinyhand");   
     this.playerbox.addStatus(); //enable update Status to display in playerbox
-    this.updateStatus("Waiting for other players to sit down to start playing");
+    this.updateStatus("waiting for other players");
   }
 
 
@@ -106,9 +96,8 @@ class Blackjack extends GameTableTemplate {
       this.game.state.player[i].total = 0;
       this.game.state.player[i].winner = null;
       this.game.state.player[i].split = [];
+      this.game.state.player[i].cardshtml = "";
     }
-
-    console.log("PLAYER STATE: " + JSON.stringify(this.game.state.player));
 
     this.game.state.round = 1;
 
@@ -299,14 +288,10 @@ class Blackjack extends GameTableTemplate {
 
     if (this.game.crypto) {
       msg += (this.game.crypto)? " and settling bets..." : "...";
-
-      console.log("PROCESSING THE SETTLEMENT NOW!");
-      console.log(JSON.stringify(this.settlement));
       for (let i = 0; i < this.settlement.length; i++) {
         this.game.queue.push(this.settlement[i]);
       }
     }
-    console.log("new queue: " + JSON.stringify(this.game.queue));    
 
     this.updateStatus(msg);
     this.cardfan.hide();
@@ -343,7 +328,6 @@ class Blackjack extends GameTableTemplate {
     // QUEUE //
     ///////////
     if (this.game.queue.length > 0) {
-      //console.log(JSON.stringify(this.game.queue));
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
@@ -368,7 +352,6 @@ class Blackjack extends GameTableTemplate {
             for (let i = this.game.state.player.length - 1; i >=0 ; i--){
               if (this.game.state.player[i].credit<=0){
                   removal = true;
-                  console.log(`*** Removing Player ${i+1}`);
                   this.removePlayerFromState(i);  //Remove player from game state
                   this.removePlayer(this.game.players[i]); //Remove player in gamemodule
                 }      
@@ -417,7 +400,7 @@ class Blackjack extends GameTableTemplate {
         if (player == this.game.player) {    
           this.playerTurn();
         } else {
-          this.updateStatus(this.getLastNotice(true)+`<div>Waiting for ${(player===this.game.state.dealer)?"the dealer":`Player ${player}`} (${this.game.state.player[player-1].name})</div>`);
+          this.updateStatus(this.getLastNotice(true)+`<div style="padding-top:2rem">waiting for ${(player===this.game.state.dealer)?"the dealer":`Player ${player}`} (${this.game.state.player[player-1].name})</div>`);
         }
         return 0;
       }
@@ -586,7 +569,7 @@ class Blackjack extends GameTableTemplate {
             betsNeeded++;
             if (this.game.player == parseInt(i)) { //If >2 players, this gets called repeatedly....
               this.addMove("RESOLVE\t"+this.app.wallet.returnPublicKey());
-              this.selectWager();
+              this.playerSelectWager();
               doINeedToBet = true;
             }
           }
@@ -599,7 +582,8 @@ class Blackjack extends GameTableTemplate {
         }
 
         if (!doINeedToBet){
-          this.updateStatus(`Waiting for ${statusMsg} to place their bets.`);
+          this.updateStatus(`waiting for ${statusMsg}`);
+        } else {
         }
 
         if (betsNeeded == 0){
@@ -621,7 +605,7 @@ class Blackjack extends GameTableTemplate {
           } 
           this.endTurn();       
         } else {
-          this.updateStatus("Waiting for dealer");
+          this.updateStatus("waiting for dealer");
         }
         return 0;
       }
@@ -786,19 +770,24 @@ class Blackjack extends GameTableTemplate {
     else return false;
   }
 
-  selectWager(){
+
+
+
+
+
+  playerSelectWager(){
+
     let blackjack_self = this;
-        
+
     //Should be tied to the stake, 1%, 5%, 10%, 20%
     
     let fractions = [0.01, 0.05, 0.1];
     let myCredit = this.game.state.player[blackjack_self.game.player-1].credit
 
-    let html = `<div class="status-info">Select a wager: (credit: ${this.app.crypto.convertStringToDecimalPrecision(myCredit)})</div>`;
-    html += '<ul>';
+    let html = '<ul>';
     for (let i = 0; i < fractions.length; i++){
       if (fractions[i]*this.game.stake<myCredit)
-        html += `<li class="menu_option" id="${fractions[i]*this.game.stake}">${fractions[i]*this.game.stake} ${this.game.crypto}</li>`;
+        html += `<li class="menu_option" id="${fractions[i]*this.game.stake}">stake ${fractions[i]*this.game.stake} ${this.game.crypto}</li>`;
     }
     //Add an all-in option when almost out of credit
     if (fractions.slice(-1)*this.game.stake > myCredit) {
@@ -806,7 +795,8 @@ class Blackjack extends GameTableTemplate {
     }
     html += '</ul>';
 
-    this.updateStatus(this.getLastNotice()+html, 1);
+    this.updateStatus(this.getLastNotice()+html, 0);
+
     this.lockInterface();
     try {
       $('.menu_option').off();
@@ -830,10 +820,10 @@ class Blackjack extends GameTableTemplate {
     if (!this.areThereAnyBets() && this.game.player == this.game.state.dealer){  
       //Check if Dealer need to play -- blackjacks too!
       html = this.getLastNotice();
-      html += `<div class="menu-player">There is no one left to play against</div>`;
+      html += `<div class="menu-player">no players remain</div>`;
       html += `<ul><li class="menu_option" id="stand">end round</li></ul>`;
     }else{ //Let Player or Dealer make choice
-      html = `<div class="menu-player">You have ${this.game.state.player[this.game.player-1].total}, your move:</div><ul>`;
+      html = `<ul>`;
       html += `<li class="menu_option" id="stand" title="end your turn">stand</li>`;
       if (this.game.state.player[this.game.player-1].total<21){
         html += `<li class="menu_option" id="hit" title="get another card">hit</li>`;  
@@ -847,7 +837,7 @@ class Blackjack extends GameTableTemplate {
       html += "</ul>";      
     }
    
-    this.updateStatus(html, 1);
+    this.updateStatus(html, 0);
     this.lockInterface();
 
     
@@ -912,21 +902,27 @@ class Blackjack extends GameTableTemplate {
         let newhtml = '';
         let player_hand_shown = 0;
 
+        this.refreshPlayerLog("", i+1);
         this.playerbox.refreshName(i+1);
+	let seat = this.playerbox.playerBox(i+1);
 
         if (this.game.state.player[i].wager>0 && this.game.state.dealer !== (i+1)){
           newhtml = `<div class="chips">${(this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].credit-this.game.state.player[i].wager))} ${this.game.crypto || "SAITO"}, Bet: ${this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].wager)}</div>`;
         } else {
           newhtml = `<div class="chips">${this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].credit)} ${this.game.crypto || "SAITO"}</div>`;
         }
-        
-        if (this.game.state.dealer == (i+1)) {
-          newhtml += `<div class="player-notice dealer">DEALER</div>`;  
-        }else{
-          newhtml += `<div class="player-notice">Player ${i+1}</div>`;  
-        }
-        //
-        this.playerbox.refreshInfo(newhtml, (i+1));
+
+	let qs = `#player-box-head-${seat} .saito-user .saito-userline`;
+	let obj = document.querySelector(qs);
+
+	if (obj) {
+          if (this.game.state.dealer == (i+1)) {
+            obj.innerHTML = `dealer`;  
+          }else{
+            obj.innerHTML = `normal`;  
+          }
+	}
+
         newhtml = "";
 
         //Check for backup hands
@@ -946,24 +942,22 @@ class Blackjack extends GameTableTemplate {
         }
 
         if (this.game.player !== i+1 && this.game.state.player[i].total!==0){
-          this.playerbox.refreshLog(newhtml+`<div class="status-info">Hand Score: ${(this.game.state.player[i].total>0) ? this.game.state.player[i].total : "Bust"}</div>`,i+1);  
+          this.refreshPlayerLog(newhtml+`<div class="status-info">Hand Score: ${(this.game.state.player[i].total>0) ? this.game.state.player[i].total : "Bust"}</div>`,i+1);  
         }
-        
+
 
         //Make Image Content       
         if (this.game.state.player[i].hand && this.game.player !== i+1) {
             newhtml = "";
-
             for (let y = this.game.state.player[i].hand.length; y< 2; y++){
               newhtml += `<img class="card" src="${this.card_img_dir}/red_back.png">`;
             }      
             for (let c of this.game.state.player[i].hand) { // show all visible cards
               newhtml += `<img class="card" src="${this.card_img_dir}/${c}.png">`;
             }
-                    
-            this.playerbox.refreshGraphic(newhtml, (i+1));
+            this.refreshPlayerCards(newhtml, (i+1));
         }
-          
+
         
       }
     } catch (err) {
@@ -985,21 +979,19 @@ class Blackjack extends GameTableTemplate {
       this.cardfan.render(cardhtml);
 
       //Add split hands
-      if (this.game.state.player[this.game.player-1].split.length>0){
+      if (this.game.state.player[this.game.player-1].split.length > 0) {
         let newhtml = "";
         for (let z = 0; z<this.game.state.player[this.game.player-1].split.length; z++){
           let ts = this.scoreArrayOfCards(this.game.state.player[this.game.player-1].split[z]);
-        
           newhtml += (ts>0)? `<span>Score: ${ts}</span>` : `<span>Bust</span>`;
-          
           newhtml += `<div class="splithand">`;
           newhtml += this.handToHTML(this.game.state.player[this.game.player-1].split[z]);
           newhtml += "</div>";
-       }
-       this.playerbox.refreshGraphic(newhtml);
-       $("#player-box-graphic-1").removeClass("hidden-playerbox-element");
-      }else{
-        $("#player-box-graphic-1").addClass("hidden-playerbox-element");
+        }
+       this.refreshPlayerLog(newhtml, this.game.player);
+//       $("#player-box-graphic-1").removeClass("hidden-playerbox-element");
+      } else {
+//        $("#player-box-graphic-1").addClass("hidden-playerbox-element");
       }
     } catch (err) {
      console.error("Display Hand err: " + err);
@@ -1238,7 +1230,7 @@ class Blackjack extends GameTableTemplate {
   
     let dealerLog = "";
     if (dealerEarnings>0){
-      dealerLog = `Dealer wins ${dealerEarnings.toFixed(this.decimal_precision)} for the round.`;
+      dealerLog = `Dealer wins ${this.formatWager(dealerEarnings.toFixed(this.decimal_precision))}`;
     }else if (dealerEarnings<0){
       dealerLog = `Dealer pays out ${Math.abs(dealerEarnings).toFixed(this.decimal_precision)} for the round.`;
     }else{
@@ -1345,7 +1337,11 @@ class Blackjack extends GameTableTemplate {
     since it is mostly being used to update the DOM for user interface
   */
   updateStatus(str, hide_info=0) {
-    
+
+    if (str.indexOf('<') == -1) {
+      str = `<div style="padding-top:2rem">${str}</div>`;
+    }
+  
     try {
       if (hide_info == 0) {
         this.playerbox.showInfo();
@@ -1359,10 +1355,14 @@ class Blackjack extends GameTableTemplate {
     
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".status");
-        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
+        let seat = this.playerbox.playerBox(this.game.player);
+        if (status_obj) {
           status_obj.innerHTML = str;
+        } else {
+          this.app.browser.addElementToSelector(`<div class="status">${str}</div>`, `#player-box-body-${seat}`);
         }
       }
+
     } catch (err) { 
       console.error("ERR: " + err);
     }
@@ -1378,6 +1378,127 @@ class Blackjack extends GameTableTemplate {
     return "";
   }
 
+
+
+
+  refreshPlayerStack(player) {
+        
+    if (!this.browser_active) { return; }
+
+    let html = "";
+    let innerhtml = "";
+    let balance = this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[player-1].credit);
+
+    if (this.game.state.player.length >= player) {
+      innerhtml = `<div class="saito-balance" style="float:right">${this.formatWager(balance)}</div>`;
+    }
+          
+    let seat = this.playerbox.playerBox(player);
+    let qs = `#player-box-body-${seat} .menu-player-upper`;
+    if (document.querySelector(qs)) {
+      document.querySelector(qs).innerHTML = innerhtml;
+    } else {
+      let qs = `#player-box-body-${seat}`;
+      if (document.querySelector(qs)) {
+        document.querySelector(qs).innerHTML = `<div class="menu-player-upper">${innerhtml}</div>`;
+      } 
+    } 
+
+  }
+
+  refreshPlayerCards(html, player) {
+
+    if (!this.browser_active) { return; }
+    if (!this.game.state.player) {
+      return;
+    }
+    if (this.game.state.player.length < player) { return; }
+
+    this.game.state.player[player-1].cardshtml = html;
+
+    let seat = this.playerbox.playerBox(player);
+    // no need for P1/seat to show cards as cardfan exists
+    if (seat == 1) { return; }
+
+    let qs = `#player-box-graphic-${seat}`;
+    if (document.querySelector(qs)) {
+      document.querySelector(qs).innerHTML = html;
+    } else {
+      let qs = `#player-box-body-${seat}`;
+      if (document.querySelector(qs)) {
+        document.querySelector(qs).innerHTML = `<div class="player-box-graphic hand tinyhand" id="player-box-graphic-${seat}">${html}</div>`;
+      } 
+    } 
+  }
+
+  refreshPlayerLog(html, player) {
+    if (html.indexOf("menu-player-upper") == -1) { html = '<div class="menu-player-upper"></div>' + html; }
+    this.playerbox.refreshLog(html, player);
+    this.refreshPlayerStack(player, false);
+    if (this.game.state.player) {
+      if (this.game.state.player.length >= player) {
+        this.refreshPlayerCards(this.game.state.player[player-1].cardshtml, player);
+      }
+    }
+  }
+
+
+  formatWager(x, includeTicker=true) {  
+    let numChips = x.toString();        
+    numChips = numChips.replace(/^([\d,]+)$|^([\d,]+)\.0*$|^([\d,]+\.[0-9]*?)0*$/, "$1$2$3");
+    if (includeTicker) {
+      let chips = "CHIPS";
+      if (numChips === "1" || this.stf(numChips) == 1) {
+        if (this.game.crypto === "CHIPS") { chips = "CHIP"; }
+      }
+      if (this.game.crypto !== "" && this.game.crypto !== 'undefined' && this.game.crypto !== "CHIPS") {
+        return `${this.app.crypto.convertStringToDecimalPrecision(numChips)} ${this.game.crypto}`;
+      } else {
+        return `${this.app.crypto.convertStringToDecimalPrecision(numChips)} ${chips}`;
+      }
+    } else {
+      return `${this.app.crypto.convertStringToDecimalPrecision(numChips)}`;
+    }
+  } 
+
+
+  //
+  // float to string
+  //
+  fts(val) {
+    try { if (val.toFixed(8) ) { val = val.toFixed(8); } } catch (err) {}
+    return this.app.crypto.convertStringToDecimalPrecision(val);
+  }
+
+  //
+  // string to float
+  //
+  stf(val) {
+    if (!isNaN(val) && val.toString().indexOf('.') != -1) {
+      return parseFloat(parseFloat(val).toFixed(8));
+    }
+    val = parseFloat(val);
+    val = parseFloat(val.toFixed(8));
+    return val;
+  }
+
+  //
+  // add to string
+  //
+  addToString(x, add_me) {
+    let y = this.stf(x) + this.stf(add_me)
+    y = this.fts(y);
+    return this.app.crypto.convertStringToDecimalPrecision(y, 8);
+  }
+
+  //
+  // subtract from string
+  //
+  subtractFromString(x, subtract_me) {
+    let y = this.stf(x) - this.stf(subtract_me)
+    if (y < 0) { y = 0; }
+    return this.app.crypto.convertStringToDecimalPrecision(y, 8);
+  }
 
 
 

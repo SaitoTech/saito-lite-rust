@@ -107,10 +107,12 @@ class Poker extends GameTableTemplate {
   formatWager(x, includeTicker=true) {
     let numChips = x.toString();
     if (includeTicker) {
+      let chips = "CHIPS";
       if (numChips === "1" || this.stf(numChips) == 1) {
 	if (this.game.crypto === "CHIPS") { chips = "CHIP"; }
+        else { chips = this.game.crypto; }
       }
-      return `${this.app.crypto.convertStringToDecimalPrecision(numChips)} ${this.game.crypto}`;
+      return `${this.app.crypto.convertStringToDecimalPrecision(numChips)} ${chips}`;
     } else {
       return `${this.app.crypto.convertStringToDecimalPrecision(numChips)}`;
     }
@@ -593,16 +595,12 @@ class Poker extends GameTableTemplate {
         //
         let active_players = 0;
         let player_left_idx = 0;
-console.log("passed array: " + JSON.stringify(this.game.state.passed));
         for (let i = 0; i < this.game.state.passed.length; i++) {
           if (this.game.state.passed[i] == 0) {
             active_players++;
             player_left_idx = i;
           }
         }
-
-console.log("players total: " + this.game.players.length);
-console.log("active players: " + active_players);
 
         /***********************/
         /*PLAYER WINS HAND HERE*/
@@ -646,7 +644,6 @@ console.log("active players: " + active_players);
           }
 
           // if everyone has folded - start a new round
-          console.log("everyone has folded... start next round");
           this.settleLastRound();
           this.clearTable();
           this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.game.players[player_left_idx]])}`);
@@ -654,13 +651,11 @@ console.log("active players: " + active_players);
           return 1;
         }
         this.game.state.plays_since_last_raise++;
-        console.log("PLAYS SINCE LAST RAISE: "+this.game.state.plays_since_last_raise);
         
         // Is this the end of betting?
         if (this.game.state.plays_since_last_raise > this.game.players.length) {
           //Is this the end of the hand?
           if (this.game.state.flipped == 5) {
-            console.log("GO TO SHOWDOWN");
             $(".player-box.active").removeClass("active");
 
             this.game.queue = [];
@@ -680,7 +675,6 @@ console.log("active players: " + active_players);
             }
             return 0;
           } else {
-            console.log("REVEAL MORE CARD[S]");
             let cards_to_flip =  (this.game.state.flipped == 0)? 3: 1;
 
             this.game.state.flipped += cards_to_flip;
@@ -695,21 +689,18 @@ console.log("active players: " + active_players);
         }
       
         if (this.game.state.passed[player_to_go - 1] == 1) {
-          console.log("THIS PLAYER ALREADY PASSED " + player_to_go);
           //
           // we auto-clear without need for player to broadcast
           //
           this.game.queue.splice(qe, 1);
           return 1;
         } else if (this.stf(this.game.state.player_credit[player_to_go - 1]) == 0){
-          console.log("THIS PLAYER IS ALL IN " + player_to_go);
           //
           // we auto-clear without need for player to broadcast
           //
           this.game.queue.splice(qe, 1);
           return 1;
         }else{
-          console.log("GET ACTION " + player_to_go);
           if (this.browser_active){
             $(".player-box.active").removeClass("active");
             this.playerbox.addClass("active", player_to_go);  
@@ -719,9 +710,9 @@ console.log("active players: " + active_players);
             this.playerTurn();
           } else {
             if (this.game.state.passed[this.game.player-1]){
-              this.updateStatus("Waiting for next round");
+              this.updateStatus("waiting for next round");
             }else{
-              this.updateStatus("Waiting for " + this.game.state.player_names[player_to_go - 1]);  
+              this.updateStatus("waiting for " + this.game.state.player_names[player_to_go - 1]);  
             }
           }
           return 0;   
@@ -821,7 +812,6 @@ console.log("active players: " + active_players);
         var winlist = [];
 
         //Sort hands from low to high
-        console.log(JSON.parse(JSON.stringify(this.game.state.player_cards)));
         for (var key in this.game.state.player_cards) {
           let deck = this.game.state.player_cards[key];
 
@@ -846,7 +836,6 @@ console.log("active players: " + active_players);
               player_hand: score,
             });
           }
-          console.log("*** Low-high ranking: " + JSON.stringify(winlist));
         }
 
         // Populate winners with winning players
@@ -860,7 +849,6 @@ console.log("active players: " + active_players);
           }
         }
 
-        console.log(" * Winners (0-index): " + JSON.stringify(winners));
         // split winnings among winners ***TO DO: examine possibility of fractional chips
         let pot_size = Math.floor(this.stf(this.game.state.pot) / winners.length);
         let winnerStr = "";
@@ -869,14 +857,7 @@ console.log("active players: " + active_players);
           this.game.stats[this.game.players[winners[i]]].handsWon++;
           winnerStr += this.game.state.player_names[winners[i]] + ", ";
           //Award in game winnings
-
-console.log("POT SIZE: " + pot_size);
-console.log("POT SIZE: " + this.fts(pot_size));
-
-console.log("WINNER CREDIT: " + this.game.state.player_credit[winners[i]]);
 	  this.game.state.player_credit[winners[i]] = this.addToString(this.game.state.player_credit[winners[i]], this.fts(pot_size));
-console.log("WINNER CREDIT: " + this.game.state.player_credit[winners[i]]);
-
         }
         winnerStr = this.prettifyList(winnerStr); //works with one player
 
@@ -915,9 +896,6 @@ console.log("WINNER CREDIT: " + this.game.state.player_credit[winners[i]]);
                 if (!winners.includes(ii) && this.stf(this.game.state.player_pot[ii]) > 0) {
                   let amount_to_send = this.stf(this.game.state.player_pot[ii]) / winners.length;
                   amount_to_send = amount_to_send.toFixed(8);
-
-console.log("AMOUNT TO SEND: " + amount_to_send);
-
                   if (this.settleNow){
                     // do not reformat -- adding whitespace screws with API
                     let ts = new Date().getTime();
@@ -961,9 +939,6 @@ console.log("AMOUNT TO SEND: " + amount_to_send);
             }
           }
         }
-
-console.log("HERE AT END OF TURN");
-console.log(JSON.stringify(this.game.state));
 
         if (this.browser_active){
           this.overlay.closebox = true;
@@ -1009,7 +984,9 @@ console.log(JSON.stringify(this.game.state));
 	  this.game.state.player_credit[bbpi] = this.subtractFromString(this.game.state.player_credit[bbpi], this.game.state.big_blind);
         }
 
-        this.playerbox.refreshLog(`<div class="plog-update">Big Blind: ${this.formatWager(this.game.state.big_blind)}</div>`,this.game.state.big_blind_player);
+//        this.refreshPlayerLog(`<div class="plog-update">committed: ${this.formatWager(this.game.state.big_blind)}</div>`,this.game.state.big_blind_player);
+
+
         //
         // Small Blind
         //
@@ -1030,7 +1007,7 @@ console.log(JSON.stringify(this.game.state));
 
         this.outputState();
 
-        this.playerbox.refreshLog(`<div class="plog-update">Small Blind: ${this.formatWager(this.game.state.small_blind)}</div>`,this.game.state.small_blind_player);
+//        this.refreshPlayerLog(`<div class="plog-update">committed: ${this.formatWager(this.game.state.small_blind)}</div>`,this.game.state.small_blind_player);
         this.displayPlayers(true);        //Update Chip stacks after betting
         this.game.queue.push("round");    //Start
         this.game.queue.push("announce"); //Print Hole cards to Log
@@ -1064,11 +1041,8 @@ console.log(JSON.stringify(this.game.state));
 
         let amount_to_call = this.stf(this.subtractFromString(this.game.state.required_pot, this.game.state.player_pot[player - 1]));
 
-console.log("amount to call: " + amount_to_call);
-
         if (amount_to_call <= 0) {
           console.error("Zero/Negative Call");
-          console.log(mv);
           this.outputState();
         }
 
@@ -1083,12 +1057,14 @@ console.log("amount to call: " + amount_to_call);
 
         this.refreshPlayerStack(player, true); //Here we don't want to hide cards
         
-        if (this.game.player !== player) {this.playerbox.refreshLog(`<div class="plog-update">calls</div>`, player);}
+        if (this.browser_active == 1 && this.game.player !== player) {
+	  this.refreshPlayerLog(`<div class="plog-update">calls</div>`, player);
+	}
 
         if (this.game.state.player_credit[player-1] === 0){
           this.game.state.all_in = true;
           this.updateLog(this.game.state.player_names[player - 1] + " goes all in to call");
-        }else{
+        } else{
           this.updateLog(this.game.state.player_names[player - 1] + " calls");
         }
         
@@ -1100,8 +1076,7 @@ console.log("amount to call: " + amount_to_call);
 
         if (this.browser_active){
           if (this.game.player !== player) {
-            this.refreshPlayerStack(player, false); //Here we want to hide cards
-            this.playerbox.refreshLog(`<div class="plog-update">folds</div>`, player);
+            this.refreshPlayerLog(`<div class="plog-update">folds</div>`, player);
           }else{
             this.displayHand();
           } 
@@ -1119,7 +1094,7 @@ console.log("amount to call: " + amount_to_call);
         this.game.queue.splice(qe, 1);
         this.updateLog(this.game.state.player_names[player - 1] + " checks.");
         if (this.game.player !== player && this.browser_active) {
-          this.playerbox.refreshLog(`<div class="plog-update">checks</div>`, player);
+          this.refreshPlayerLog(`<div class="plog-update">checks</div>`, player);
         }
         return 1;
       }
@@ -1130,10 +1105,6 @@ console.log("amount to call: " + amount_to_call);
         let raise = parseFloat(mv[2]); // raise is a float now
         let call_portion = this.stf(this.subtractFromString(this.game.state.required_pot, this.game.state.player_pot[player - 1]));
         let raise_portion = raise - call_portion;
-
-        console.log("raise is: " + raise);
-        console.log("raise portion: "  + raise_portion);
-        console.log("call portion: "  + call_portion);  
 
         if (raise_portion <= 0){
           salert("Insufficient raise");
@@ -1149,24 +1120,34 @@ console.log("amount to call: " + amount_to_call);
         this.game.state.last_raise = this.fts(raise_portion);
 	this.game.state.required_pot = this.addToString(this.game.state.required_pot, this.fts(raise_portion));
 
+
         let raise_message = `raises ${this.formatWager(raise_portion)} `;
         if (this.stf(this.game.state.player_credit[player-1]) === 0){
           this.game.state.all_in = 1;
           raise_message = `goes all in `;
+          if (this.game.player !== player && this.browser_active) {
+            this.refreshPlayerLog(`<div class="plog-update">all in!</div>`, player);
+          }
         }      
         if (call_portion > 0) {  
           if (raise_portion > 0) {
             this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}to ${this.formatWager(this.game.state.player_pot[player - 1])}`);
-            if (this.game.player !== player && this.browser_active) {this.playerbox.refreshLog(`<div class="plog-update">raises ${this.formatWager(raise_portion)}</div>`, player);}
+            if (this.game.player !== player && this.browser_active) {
+	      this.refreshPlayerLog(`<div class="plog-update">raises ${this.formatWager(raise_portion)}</div>`, player);
+	    }
           } else {
             this.updateLog(`${this.game.state.player_names[player - 1]} calls ${this.formatWager(call_portion)}`);
+            if (this.game.player !== player && this.browser_active) {
+              this.refreshPlayerLog(`<div class="plog-update">calls ${this.formatWager(call_portion)}</div>`, player);
+            }
           }
         } else {
           this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}to ${this.formatWager(this.game.state.player_pot[player - 1])}`);
-          if (this.game.player !== player && this.browser_active) {this.playerbox.refreshLog(`<div class="plog-update">raises ${this.formatWager(raise)}</div>`, player);}
+          if (this.game.player !== player && this.browser_active) {
+	    this.refreshPlayerLog(`<div class="plog-update">raises ${this.formatWager(raise)}</div>`, player);
+	  }
         }
         this.game.queue.splice(qe, 1);
-
         this.refreshPlayerStack(player, true); //Here we don't want to hide cards
 
         return 1;
@@ -1176,11 +1157,9 @@ console.log("amount to call: " + amount_to_call);
       // avoid infinite loops
       //
       if (shd_continue == 0) {
-        console.log("NOT CONTINUING");
         return 0;
       }
     }else{
-      console.log("QUEUE EMPTY!");
     }
     return 1;
   }
@@ -1200,9 +1179,9 @@ console.log("amount to call: " + amount_to_call);
       return;
     }
 
-console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
-
     let poker_self = this;
+    let seat = this.playerbox.playerBox(this.game.player);
+    let balance_html = "";
     let html = "";
     let mobileToggle = (window.matchMedia("(orientation: landscape)").matches && window.innerHeight <= 600);
 
@@ -1212,10 +1191,6 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
     if (!poker_self.moves.includes("resolve\tturn")) {
       poker_self.addMove("resolve\tturn");
     }
-
-    console.log("required pot: " + this.game.state.required_pot);
-    console.log("player pot: " + this.game.state.player_pot[this.game.player-1]);
-    console.log("all in: "+this.game.state.all_in);
 
     let match_required = this.subtractFromString(this.game.state.required_pot, this.game.state.player_pot[this.game.player - 1]);
 
@@ -1249,11 +1224,8 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
         } 
       }
     });
-        
-    //console.log(match_required,this.game.state.last_raise,smallest_stack);
 
     if (!can_call) {
-      console.error("Auto fold... this should never arise");
       this.outputState();
       this.updateStatus("You can only fold...");
       this.addMove("fold\t" + poker_self.game.player);
@@ -1261,24 +1233,17 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
       return;
     }
 
-    html += '<div class="menu-player" style="text-align:left;width:100%">';
- 
+    balance_html = `<div class="menu-player-upper">
+               <div style="float:right;" class="saito-balance">${this.formatWager(this.game.state.player_credit[this.game.player - 1])}</div>
+             </div>`;
+    this.app.browser.replaceElementBySelector(balance_html, `.player-box-body-${seat} .menu-player-upper`);
 
-    if (this.game.state.flipped == 0 && this.game.player == this.game.state.big_blind_player) {
-      html += "big blind:";
-    }else if (this.game.state.flipped == 0 && this.game.player == this.game.state.small_blind_player) {
-      html += "small blind:";
-    }else{
-      html += "your move:";
-    }
-    
-    html += `<div style="float:right;" class="saito-balance">${this.formatWager(this.game.state.player_credit[this.game.player - 1])}</div></div>`;
-    html += "<ul>";
 
+    html  = "<ul>";
     html += '<li class="menu_option" id="fold">fold</li>';
     
     if (this.stf(match_required) > 0) {
-      html += `<li class="menu_option" id="call">call (${this.formatWager(match_required)})</li>`;
+      html += `<li class="menu_option" id="call">call - ${this.formatWager(match_required)}</li>`;
     } else { // we don't NEED to match
       html += '<li class="menu_option" id="check">check</li>';
     }
@@ -1287,7 +1252,7 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
       }
     html += "</ul>";
 
-    this.updateStatus(html, 1);
+    this.updateStatus(html);
 
     $(".menu_option").off();
     $(".menu_option").on("click", function () {
@@ -1300,9 +1265,8 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
 
         html = `<div class="menu-player">`;
         if (poker_self.stf(match_required) > 0) {
-          html += `Match ${poker_self.formatWager(match_required)} and raise: `;
+          html += `match ${poker_self.formatWager(match_required)} and raise `;
         } else {
-          html += "Please select an option below: ";
         }
         html += `</div><ul><li class="menu_option" id="0">${(mobileToggle)? "nope":"cancel raise"}</li>`;
         let max_raise = Math.min(poker_self.stf(credit_remaining), poker_self.stf(smallest_stack));
@@ -1311,11 +1275,7 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
 
           let this_raise = poker_self.stf(poker_self.game.state.last_raise) + (i * poker_self.stf(poker_self.game.state.last_raise));
 
-          console.log("this raise: " + this_raise);
-          console.log("id is: " + (this_raise + poker_self.stf(match_required)));
-
           if (max_raise > this_raise) {
-          console.log("this raise 2: " + this_raise);
             html += `<li class="menu_option" id="${this_raise + poker_self.stf(match_required)}">${(mobileToggle)? " ":"raise "}${poker_self.formatWager(this_raise)}</li>`;
           } else {
             i = 6; //Stop for-loop
@@ -1336,13 +1296,11 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
           if (raise === "0") {
             poker_self.playerTurn();
           } else {
-            console.log("Player choice: "+raise);
             poker_self.addMove(`raise\t${poker_self.game.player}\t${raise}`);
             poker_self.endTurn();
           }
         });
       }else{
-        console.log("Player choice: "+choice);
         poker_self.addMove(`${choice}\t${poker_self.game.player}`);
         poker_self.endTurn();
       }
@@ -1514,23 +1472,50 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
     }
     try {
       for (let i = 1; i <= this.game.players.length; i++) {
+
+	let seat = this.playerbox.playerBox(i);
+
         this.playerbox.refreshName(i);
         this.refreshPlayerStack(i, true);  
         if (!preserveLog){
-          this.playerbox.refreshLog("", i);
+          this.refreshPlayerLog("", i);
         }
+
+	let userline_updated = false;
+
+	if (i == this.game.state.button_player) {
+	  let qs = `#player-box-head-${seat} .saito-user .saito-userline`;
+	  let obj = document.querySelector(qs);
+	  if (obj) {
+ 	    obj.innerHTML = "dealer";
+	  }
+	  userline_updated = true;
+	}
+
+	if (i == this.game.state.small_blind_player) {
+	  let qs = `#player-box-head-${seat} .saito-user .saito-userline`;
+	  let obj = document.querySelector(qs);
+	  if (obj) { 
+	    obj.innerHTML = "small blind";
+	  }
+	  userline_updated = true;
+	}
+
+	if (i == this.game.state.big_blind_player) {
+	  let qs = `#player-box-head-${seat} .saito-user .saito-userline`;
+	  let obj = document.querySelector(qs);
+	  if (obj) { obj.innerHTML = "big blind"; }
+	  userline_updated = true;
+	}
+
+	if (userline_updated == false) {
+	  let qs = `#player-box-head-${seat} .saito-user .saito-userline`;
+	  let obj = document.querySelector(qs);
+	  if (obj) { obj.innerHTML = "out of position"; }
+	  userline_updated = true;
+	}
       }
 
-      let elem;
-    
-      elem = document.querySelector(`#player-box-head-${this.playerbox.playerBox(this.game.state.button_player)}`);
-      if (elem){
-        let newButton = this.app.browser.makeElement("div","dealerbutton","dealerbutton");
-        newButton.classList.add("dealer");
-        newButton.textContent = "⬤";
-        elem.firstChild.after(newButton);
-        this.app.browser.addToolTip(newButton, "Dealer");  
-      }
     } catch (err) {
       console.log("error displaying player box",err);
     }
@@ -1559,7 +1544,6 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
   updatePot() {
 
       let poker_self = this;
-console.log("update pot...: " + this.game.state.pot);
       let html = `<div class="pot-counter">${this.formatWager(this.game.state.pot, true)}</div>`;
 
       if (this.useGraphics){
@@ -1644,27 +1628,38 @@ console.log("update pot...: " + this.game.state.pot);
 
   }
 
+  refreshPlayerLog(html, player) {
+    if (html.indexOf("menu-player-upper") == -1) { html = '<div class="menu-player-upper"></div>' + html; }
+    this.playerbox.refreshLog(html, player);
+    this.refreshPlayerStack(player, false);
+  }
   refreshPlayerStack(player, includeCards = true){
-    if (!this.browser_active){
-      return;
-    }
-    console.log("Drawing player stack");
 
-console.log("> > >");
-console.log("> > > > > " + player);
-console.log("> > > > > " + this.game.state.player_credit[player-1]);
+    if (!this.browser_active) { return; }
 
     let html = "";
+    let innerhtml = "";
     if (this.stf(this.game.state.player_credit[player-1]) === 0 && this.game.state.all_in){
-        html = `<div class="player-info-chips">All in!</div>`;
+      innerhtml = `<div class="saito-balance" style="float:right">All in!</div>`;
     } else {
-        html = `<div class="player-info-chips">${this.formatWager(this.game.state.player_credit[player-1], true)}</div>`;
+      innerhtml = `<div class="saito-balance" style="float:right">${this.formatWager(this.game.state.player_credit[player-1], true)}</div>`;
     }
 
-    this.playerbox.refreshInfo(html, player);
-   
-    if (this.useGraphics){
-      //Draw literal stack
+    let seat = this.playerbox.playerBox(player);
+    let qs = `#player-box-body-${seat} .menu-player-upper`;
+    if (document.querySelector(qs)) {
+      document.querySelector(qs).innerHTML = innerhtml;
+    } else {
+      let qs = `#player-box-body-${seat}`;
+      if (document.querySelector(qs)) {
+        document.querySelector(qs).innerHTML = `<div class="menu-player-upper">${innerhtml}</div>`;
+      }
+    }
+
+/*******
+******** Graphics Removed
+********
+    if (this.useGraphics) {
       html = this.returnPlayerStackHTML(player, this.game.state.player_credit[player - 1]);
       html = html.substring(0,html.length - 6); //remove final </div> tag
       let bonusExplainer = `<div>${this.formatWager(this.game.state.player_credit[player - 1], true)}</div>`;
@@ -1690,10 +1685,12 @@ console.log("> > > > > " + this.game.state.player_credit[player-1]);
         }else{
           this.playerbox.refreshGraphic(newhtml, player);
         }
-        
       }
     }
-    
+*********
+*********
+********/
+
   }
   
   returnPlayerStackHTML(player,numChips){
@@ -1800,8 +1797,7 @@ console.log("> > > > > " + this.game.state.player_credit[player-1]);
 
     if (this.browser_active){
       if (this.app.wallet.returnPublicKey() !== resigning_player) {
-        this.refreshPlayerStack(txmsg.loser, false); //Here we want to hide cards
-        this.playerbox.refreshLog(`<div class="plog-update">leaves the table</div>`, txmsg.loser);
+        this.refreshPlayerLog(`<div class="plog-update">leaves the table</div>`, txmsg.loser);
       } 
     }
 
@@ -1819,7 +1815,7 @@ console.log("> > > > > " + this.game.state.player_credit[player-1]);
 
   endTurn(nextTarget = 0) {
     if (this.browser_active){
-      this.updateStatus("Waiting for information from peers....");  
+      this.updateStatus("waiting for information from peers...");  
     }
 
     try {
@@ -2695,7 +2691,6 @@ console.log("> > > > > " + this.game.state.player_credit[player-1]);
     for (let i = 0; i < val.length; i++) {
       if (noval.includes(suite[i] + val[i])) {
         //if the case id not in the exclude list
-        //console.log("you are barred from the pub");
       } else {
         if (val[i] == 1) {
           //if the candidate is an ace
@@ -2866,8 +2861,6 @@ console.log("> > > > > " + this.game.state.player_credit[player-1]);
   cardToHuman(card) {
     
     if (!this.game.deck[0].cards[card]){
-      console.log("Deck error: " + card);
-      console.log(JSON.parse(JSON.stringify(this.game.deck[0])));
       return "";
     }
     let h = this.game.deck[0].cards[card].name;
@@ -3020,6 +3013,11 @@ console.log("> > > > > " + this.game.state.player_credit[player-1]);
   }
 
   updateStatus(str, hide_info = 0) {
+
+    if (str.indexOf('<') == -1) {
+      str = `<div style="padding-top:2rem">${str}</div>`;
+    }
+
     this.game.status = str;
     if (!this.browser_active){return;}
     if (this.lock_interface == 1) { return; }
@@ -3031,11 +3029,13 @@ console.log("> > > > > " + this.game.state.player_credit[player-1]);
           this.playerbox.hideInfo();
         }
         
-        console.log("STATUS UPDATE: ", str);
         let status_obj = document.querySelector(".status");
+	let seat = this.playerbox.playerBox(this.game.player);
         if (status_obj) {
           status_obj.innerHTML = str;
-        }
+        } else {
+	  this.app.browser.addElementToSelector(`<div class="status">${str}</div>`, `#player-box-body-${seat}`);
+	}
       
       } catch (err) { 
         console.log("ERR: " + err);
@@ -3048,7 +3048,6 @@ console.log("> > > > > " + this.game.state.player_credit[player-1]);
 
 
   handleStatsMenu() {
-    console.log(JSON.parse(JSON.stringify(this.game.stats)));
     
     let stats = ["handsPlayed", "handsWon","handsFolded"];
     let html = `

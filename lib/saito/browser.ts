@@ -259,6 +259,8 @@ class Browser {
           e.target?.classList?.contains("saito-identicon") || e.target?.classList?.contains("saito-address")
         ) {
 
+console.log("clicking on identicon...");
+
           let disable_click = e.target.getAttribute("data-disable");
           let publickey = e.target.getAttribute("data-id");
           if (!publickey || !app.crypto.isPublicKey(publickey) || disable_click === "true") {
@@ -540,7 +542,6 @@ class Browser {
   //////////////////////////////////
   generateQRCode(data, qrid="qrcode") {
     const QRCode = require("./../helpers/qrcode");
-console.log("fetching id: " + qrid);
     let obj = document.getElementById(qrid);
     return new QRCode(obj, data);
   }
@@ -649,6 +650,18 @@ console.log("fetching id: " + qrid);
       let obj = document.querySelector(selector);
       if (obj) {
         obj.outerHTML = html;
+      }
+    }
+  }
+
+  replaceElementContentBySelector(html, selector="") {
+    if (selector === "") {
+      console.warn("no selector provided to replace, so adding direct to DOM");
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.querySelector(selector);
+      if (obj) {
+        obj.innerHTML = html;
       }
     }
   }
