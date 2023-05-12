@@ -30,13 +30,12 @@ class Chat extends ModTemplate {
             txs: [],
             // Processed TX:
             {
-                sig = "string"
+                sig = "string" //To helpfully prevent duplicates??
                 ts = number
                 from = "string" //Assuming only one sender
-                msg = ""
+                msg = "" // raw message
             }
-
-
+            last_update
         }
         */
 
@@ -47,11 +46,13 @@ class Chat extends ModTemplate {
         this.communityGroup = null;
         this.communityGroupName = "Saito Community Chat";
 
-        this.debug = false;
+        this.debug = true;
 
         this.chat_manager = null;
 
         this.chat_manager_overlay = null;
+
+        this.loading = true;
 
         this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
             this.returnOrCreateChatGroupFromMembers(data?.members);
@@ -69,6 +70,16 @@ class Chat extends ModTemplate {
     initialize(app) {
 
         super.initialize(app);
+
+        //Enforce compliance with wallet indexing
+        if (!app.options?.chat || !Array.isArray(app.options.chat)){
+            app.options.chat = [];
+        }
+
+        if (app.BROWSER){
+            this.loadChatGroups();    
+        }
+        
 
         //
         // create chatgroups from keychain -- friends only
@@ -92,13 +103,13 @@ class Chat extends ModTemplate {
         // if I run a chat service, create it
         //
         if (app.BROWSER == 0) {
-            this.returnOrCreateChatGroupFromMembers([this.app.wallet.returnPublicKey()], "Saito Community Chat");
+            this.communityGroup = this.returnOrCreateChatGroupFromMembers([this.app.wallet.returnPublicKey()], "Saito Community Chat");
+            this.communityGroup.members = [this.app.wallet.returnPublicKey()];
         }
 
         //Add script for emoji to work
         if (app.BROWSER) {
             this.attachPostScripts();
-            this.loadChatGroups();
         }
 
 
@@ -119,36 +130,73 @@ class Chat extends ModTemplate {
         if (service.service === "archive") {
             if (this.debug) { console.log("Chat: onPeerServiceUp",service.service); }
 
-            //
-            // load 5 saved chat messages per group
-            // storage.loadTransactions filters by my public key to the chats need to be addressed to/from me
-            // to get loaded
-            //
-            for (let i = 0; i < this.groups.length; i++) {
+            this.loading = this.groups.length;
 
-                let group_id = this.groups[i].id;
-                let group = this.groups[i];
+            for (let group of this.groups) {
 
-                this.app.storage.loadTransactions(group_id, 25, function (txs) {
-                    if (chat_self.debug){ console.log("Chat PSuP Archive callback:" + txs.length); }
-                    
-                    try {
-                        //Note loadTransactions returns them in reverse order....
-                        //Now addTransactionToGroup will sort them, but this will be more efficient
-                        while (txs.length > 0){
-                            let tx = txs.pop();
-                            tx.decryptMessage(chat_self.app);
-                            chat_self.addTransactionToGroup(group, tx);
+                //Let's not hit the Archive for community chat since that is seperately queried on service.service == chat
+                if (group.name !== this.communityGroupName){
+
+                    // Mods should not be directly querying the archive module (or should they)
+                    // But I need a finer grained query than the app.storage API currently supports
+                    // TODO FIX THIS
+
+                    let sql = `SELECT tx FROM txs WHERE type = "${group.id}" AND ts > ${group.last_update} ORDER BY ts DESC LIMIT 100`;
+
+                    this.sendPeerDatabaseRequestWithFilter(
+                        "Archive",
+                        sql,
+
+                        (res) => {
+                            chat_self.loading--;
+                            if (res?.rows) {
+                                if (chat_self.debug){
+                                    console.log("Archive TXs:" + res.rows.length);
+                                }
+                                while (res.rows.length > 0) {
+
+                                    //Process the chat transaction like a new message
+                                    let temp = res.rows.pop();
+                                    let tx = new saito.default.transaction();
+                                    tx.deserialize_from_web(app, temp.tx);
+                                    tx.decryptMessage(chat_self.app);
+                                    chat_self.addTransactionToGroup(group, tx);
+
+                                }
+                            }
+                        },
+                        (p) => {
+                            if (p == peer) { 
+                                return 1; 
+                            }
+                            return 0;
                         }
+                    );
 
-                        if (app.BROWSER){
-                            chat_self.app.connection.emit("chat-manager-render-request");    
-                        }
+
+                    /*
+                    this.app.storage.loadTransactions(group_id, 25, function (txs) {
+                        if (chat_self.debug){ console.log("Chat PSuP Archive callback:" + txs.length); }
                         
-                    } catch (err) {
-                        console.log("error loading chats...: " + err);
-                    }
-                });
+                        try {
+                            //Note loadTransactions returns them in reverse order....
+                            //Now addTransactionToGroup will sort them, but this will be more efficient
+                            while (txs.length > 0){
+                                let tx = txs.pop();
+                                tx.decryptMessage(chat_self.app);
+                                chat_self.addTransactionToGroup(group, tx);
+                            }
+
+                            if (app.BROWSER){
+                                chat_self.app.connection.emit("chat-manager-render-request");    
+                            }
+                            
+                        } catch (err) {
+                            console.log("error loading chats...: " + err);
+                        }
+                    });
+                    */
+                }
             }
         }
 
@@ -159,6 +207,7 @@ class Chat extends ModTemplate {
             if (this.debug) { console.log("Chat: onPeerServiceUp",service.service); }
 
             this.communityGroup = this.returnOrCreateChatGroupFromMembers([peer.returnPublicKey()], this.communityGroupName);
+            this.communityGroup.members = [peer.returnPublicKey()];
 
             if (this.communityGroup) {
 
@@ -183,24 +232,13 @@ class Chat extends ModTemplate {
                 newtx.msg = {
                     request: "chat history",
                     group_id: this.communityGroup.id,
+                    ts: this.communityGroup.last_update,
                 }
+
                 newtx = this.app.wallet.signTransaction(newtx);
 
-                
-                if (this.app.BROWSER) {
-
-                    localforage.getItem(`chat_${this.communityGroup.id}`, function(error, value){
-                        console.log("Loaded public chat locally");
-                        if (value){
-                            this.communityGroup = Object.assign(this.communityGroup, value);
-                            console.log(value);
-                        }
-                    });
-                }
-
-
                 this.app.network.sendTransactionWithCallback(newtx, (txs) => {
-
+                    this.loading--;
                     if (this.debug) {
                         console.log("chat history callback: " + txs.length);
                     }
@@ -230,58 +268,6 @@ class Chat extends ModTemplate {
         }
     }
 
-
-
-    async onPeerHandshakeComplete(app, peer) {
-        /*
-        if (!app.BROWSER) { return; }
-        if (peer.isMainPeer()) {
-
-            this.communityGroup = this.returnOrCreateChatGroupFromMembers([peer.peer.publickey], this.communityGroupName);
-            let chat_self = this;
-
-            if (this.debug) { 
-                console.log("Chat: onPeerHandshakeComplete"); 
-                console.log(JSON.parse(JSON.stringify(this.communityGroup)));
-            }
-
-
-            let sql;
-            for (let i = 0; i < this.groups.length; i++) {
-                sql = `SELECT tx FROM txs WHERE type = "${this.groups[i].id}" ORDER BY ts DESC LIMIT 20`;
-                console.log(sql);
-                this.sendPeerDatabaseRequestWithFilter(
-                    "Archive",
-                    sql,
-
-                    (res) => {
-                        if (res?.rows) {
-                            if (this.debug){
-                                console.log("Archive TXs:" + res.rows.length);
-                            }
-                            while (res.rows.length > 0) {
-
-                                //Process the chat transaction like a new message
-                                let temp = res.rows.pop();
-                                let tx = new saito.default.transaction();
-                                tx.deserialize_from_web(app, temp.tx);
-                                tx.decryptMessage(chat_self.app);
-                                chat_self.addTransactionToGroup(chat_self.groups[i], tx);
-
-                            }
-
-                        }
-                    },
-
-                    (p) => {
-                        if (p.peer.publickey === peer.peer.publickey) {
-                            return 1;
-                        }
-                    }
-                );
-            }
-        }*/
-    }
 
 
     returnServices() {
@@ -408,7 +394,9 @@ class Chat extends ModTemplate {
 
             //Just process the most recent 50 (if event that any)
             //Without altering the array!
-            mycallback(group.txs.slice(-50));
+            //mycallback(group.txs.slice(-50));
+
+            mycallback(group.txs.filter(t => t.ts > txmsg.ts));
 
         }
 
@@ -456,31 +444,6 @@ class Chat extends ModTemplate {
 
                 }
             }
-
-
-            // MAR 14
-            //if (!inner_txmsg?.group_id) { return; }
-
-            //Chat message broadcast is the Relay to the Chat-services server
-            //that handles Community chat and will forward the message as a "chat message"
-            //Without relay + handlePeerTransaction, we do not receive community chat messages
-
-            //Tell Archive to save a copy of this TX
-            //app.connection.emit("archive-save-transaction", { key: inner_txmsg.group_id, type: "Chat", inner_tx });
-
-            //
-            // Forward to all my peers (but not me again) with new request & same data 
-            //
-            // servers can forward if they get chat broadcast
-            //
-            // MAR 14
-            //if (app.BROWSER == 0) {
-            //    app.network.peers.forEach(p => {
-            //        if (p.peer.publickey !== peer.peer.publickey) {
-            //            p.sendTransactionWithCallback(inner_tx, () => { });
-            //        }
-            //    });
-            //}
 
             //
             // notify sender if requested
@@ -700,7 +663,7 @@ class Chat extends ModTemplate {
                 let sender = "";
                 let msg = "";
                 for (let z = 0; z < block.length; z++) {
-                    if (z > 0) { msg += '<br/>'; }
+                    if (z > 0) { msg += '<br>'; }
                     sender = block[z].from[0];
                     if (block[z].msg.indexOf('<img') != 0) {
                         msg += this.app.browser.sanitize(block[z].msg);
@@ -797,7 +760,6 @@ class Chat extends ModTemplate {
                 group.unread++;
 
                 if (this.debug) {
-                    console.log(`new msg: ${group.unread} unread`);
                     console.log(JSON.parse(JSON.stringify(new_message)));
                 }
 
@@ -810,15 +772,17 @@ class Chat extends ModTemplate {
     
         group.unread++;
 
+        group.last_update = tx.transaction.ts;
+
         if (this.debug) {
             console.log(`new msg: ${group.unread} unread`);
             console.log(JSON.parse(JSON.stringify(new_message)));
         }
 
         //Save to IndexedDB Here
-
-        this.saveChatGroup(group);
-
+        if (this.loading <= 0){
+            this.saveChatGroup(group);            
+        }
 
     }
 
@@ -843,11 +807,16 @@ class Chat extends ModTemplate {
             return null;
         }
 
-        //So the David + Richard == Richard + David
+        //So David + Richard == Richard + David
         members.sort();
 
         // be careful changing this, other components
         let id = this.createGroupIdFromMembers(members);
+
+        //This might keep persistence across server resets
+        if (name === this.communityGroupName) {
+            id = this.app.crypto.hash(this.communityGroupName);
+        }
 
         for (let i = 0; i < this.groups.length; i++) {
             if (this.groups[i].id == id) {
@@ -875,6 +844,7 @@ class Chat extends ModTemplate {
             name: name,
             txs: [],
             unread: 0,
+            last_update: 0,
         }
 
         //Prepend the community chat
@@ -882,6 +852,12 @@ class Chat extends ModTemplate {
             this.groups.unshift(newGroup);
         } else {
             this.groups.push(newGroup);
+        }
+
+        //Save group in app.options
+        if (!this.app.options.chat.includes(id)){
+            this.app.options.chat.push(id);
+            this.app.storage.saveOptions();
         }
 
         this.app.connection.emit("chat-manager-render-request");
@@ -980,12 +956,13 @@ class Chat extends ModTemplate {
     loadChatGroups(){
         if (!this.app.BROWSER) { return; }
         
+        let chat_self = this;
         console.log("Reading local DB");
-        for (let g of this.groups){
-            console.log("Fetch", g);
-            localforage.getItem(`chat_${g.id}`, function(error, value){
+        for (let g_id of this.app.options.chat){
+            console.log("Fetch", g_id);
+            localforage.getItem(`chat_${g_id}`, function(error, value){
                 if (value){
-                    g = Object.assign(g, value);
+                    chat_self.groups.push(value);
                     console.log(value);
                 }
             });
@@ -999,6 +976,15 @@ class Chat extends ModTemplate {
             console.log("Saved chat history for " + group.id);
         });
     }
+
+    /****************************
+        
+    DO NOT DELETE
+
+    These are working bits of code that we need to implement in storage/Archive later
+
+    *****************************/
+
 
     async loadChatTxs() {
        /*
