@@ -46,7 +46,7 @@ class Chat extends ModTemplate {
         this.communityGroup = null;
         this.communityGroupName = "Saito Community Chat";
 
-        this.debug = true;
+        this.debug = false;
 
         this.chat_manager = null;
 
