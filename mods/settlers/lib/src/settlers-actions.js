@@ -426,8 +426,11 @@ buildCity(player, slot) {
 
   countResource(player, resource) {
     let ct = 0;
-    for (let i of this.game.state.players[player - 1].resources)
-      if (i == resource) ct++;
+    for (let i of this.game.state.players[player - 1].resources) {
+      if (i == resource) {
+	ct++;
+      }
+    }
     return ct;
   }
 
@@ -495,7 +498,11 @@ buildCity(player, slot) {
   showTradeOverlay(tradeType = -1, i_should_give, i_should_accept) {
 
     let settlers_self = this;
-    settlers_self.trade_overlay.render();
+    //
+console.log("UPDATE TRADE OBJECT WITH GIVE AND ACCEPT VALUES");
+console.log(JSON.stringify(i_should_give));
+console.log(JSON.stringify(i_should_accept));
+    settlers_self.trade_overlay.render(tradeType);
 return;
 
     let my_resources = {};

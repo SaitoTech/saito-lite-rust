@@ -8,13 +8,30 @@ class TradeOverlay {
     this.mod = mod;
     this.overlay = new SaitoOverlay(this.app, this.mod, false);
 
+    this.tradeType = -1; // trade with everyone, or playerNum
     this.get  = [];
     this.give = [];
 
   }
 
-  render(reset=true) {
+  render(tradeType=-1, reset=true) {
 
+    this.tradeType = tradeType;    
+
+    let resources = this.mod.skin.resourceArray();
+console.log("RESOURCES: " + JSON.stringify(resources));
+console.log("MINE: " + this.mod.countResource(this.mod.game.player, "wood"));
+
+    //
+    // we use numeric values to simplify hte refactor, so we don't need to change every
+    // part of the game logic. we should really just refer to resources by name consistently
+    // throughout.
+    //
+    // brick
+    // wood
+    // wheat
+    // wool
+    // ore
     if (reset == true) { 
       this.get = [3,0,0,0,0];
       this.give = [0,0,0,0,0];
@@ -36,37 +53,73 @@ class TradeOverlay {
         let temp = item.split("_");
         let resInd = parseInt(temp[1]);
 
+	let resname = "brick";
+	if (resInd == 1) { resname = "wood"; }
+	if (resInd == 2) { resname = "wheat"; }
+	if (resInd == 3) { resname = "wool"; }
+	if (resInd == 4) { resname = "ore"; }
+
         if (temp[0] == "want") {
-          this.get[temp[1]]++;
+          trade_overlay.get[temp[1]]++;
         } else {
-          this.give[temp[1]]++;
+	  //
+	  // cannot offer more than you have
+	  //
+	  if (trade_overlay.give[temp[1]] >= settlers_self.countResource(settlers_self.game.player, resname)) {
+	    trade_overlay.render(trade_overlay.tradeType, false);
+	    return;
+	  }
+          trade_overlay.give[temp[1]]++;
         } 
 
-        trade_overlay.render(false);
+        trade_overlay.render(trade_overlay.tradeType, false);
 
     });
 
     $(".trade_overlay_reset_button").off();
     $(".trade_overlay_reset_button").on("click", function () {
 	// render with implicit "reset=true"
-        trade_overlay.render();
+        trade_overlay.render(trade_overlay.tradeType);
     });
 
     $(".trade_overlay_broadcast_button").off();
     $(".trade_overlay_broadcast_button").on("click", function () {
 
-alert("OK TRADING");
+      let offering = [];
+      let receiving = [];
 
+      // brick
+      // wood
+      // wheat
+      // wool
+      // ore
+      for (let i = 0; i < trade_overlay.give.length; i++) {
+	for (let k = 0; k < trade_overlay.give[i]; k++) {
+	  if (i == 0) { offering.push("brick"); }
+	  if (i == 1) { offering.push("wood"); }
+	  if (i == 2) { offering.push("wheat"); }
+	  if (i == 3) { offering.push("wool"); }
+	  if (i == 4) { offering.push("ore"); }
+        }
+      }
+      for (let i = 0; i < trade_overlay.get.length; i++) {
+	for (let k = 0; k < trade_overlay.get[i]; k++) {
+	  if (i == 0) { receiving.push("brick"); }
+	  if (i == 1) { receiving.push("wood"); }
+	  if (i == 2) { receiving.push("wheat"); }
+	  if (i == 3) { receiving.push("wool"); }
+	  if (i == 4) { receiving.push("ore"); }
+        }
+      }
 
-//        if ($(this).hasClass("noselect")) { return; }
-//        settlers_self.addMove(`clear_advert\t${settlers_self.game.player}`);
-//        settlers_self.addMove(
-//            `offer\t${settlers_self.game.player}\t
-//            ${tradeType}\t${JSON.stringify(offering)}\t
-//            ${JSON.stringify(receiving)}`);
-////        settlers_self.overlay.hide();
-//        settlers_self.overlay.closebox = false;
-//        settlers_self.endTurn();
+      settlers_self.addMove(`clear_advert\t${settlers_self.game.player}`);
+      settlers_self.addMove(
+        `offer\t${settlers_self.game.player}\t
+         ${trade_overlay.tradeType}\t${JSON.stringify(offering)}\t
+         ${JSON.stringify(receiving)}`
+      );
+      settlers_self.endTurn();
+      trade_overlay.overlay.hide();
 
     });
 

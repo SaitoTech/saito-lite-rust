@@ -712,30 +712,6 @@ input[type="checkbox"] {
   color: lightgrey;
 }
 
-/* TradeOverlay --> specify numbers */
-
-.trade_area {
-  height: 72px;
-}
-
-.trade_area>div:first-child {
-  text-transform: uppercase;
-  text-align: center;
-}
-
-.trade_area.select>div:first-child {
-  cursor: pointer;
-}
-
-.trade_overlay .trade_area .icon:hover {
-  border-color: grey;
-  filter: grayscale(50%);
-}
-
-.offer_icons {
-  position: relative;
-}
-
 .icon_multiplier {
   position: absolute;
   bottom: 0;
