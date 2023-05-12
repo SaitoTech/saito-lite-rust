@@ -1,0 +1,35 @@
+
+.trade-area {
+  height: 25vh;
+  width: calc(25vh * 0.72);
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  position: relative;
+}
+
+.brick {
+  background-image: url(/settlers/img/cards/brick.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.wool {
+  background-image: url(/settlers/img/cards/wool.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.wheat {
+  background-image: url(/settlers/img/cards/wheat.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.ore {
+  background-image: url(/settlers/img/cards/ore.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.wood {
+  background-image: url(/settlers/img/cards/wood.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+

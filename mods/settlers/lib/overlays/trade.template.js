@@ -1,4 +1,4 @@
-module.exports = TradeOverlayTemplate = (app, mod, build) => {
+module.exports = TradeOverlayTemplate = (tobj) => {
 
   return `
     <div class="saitoa trade-overlay">
@@ -7,20 +7,20 @@ module.exports = TradeOverlayTemplate = (app, mod, build) => {
 
       <div class="h2">You Want:</div>
       <div class="trade_overlay_offers">
-	<div id="want_0" class="trade_area select card"><img src="/settlers/img/cards/brick.png" /></div>
-	<div id="want_1"  class="trade_area select card"><img src="/settlers/img/cards/wood.png" /></div>
-	<div id="want_2" class="trade_area select card"><img src="/settlers/img/cards/wheat.png" /></div>
-	<div id="want_3"  class="trade_area select card"><img src="/settlers/img/cards/wool.png" /></div>
-	<div id="want_4"   class="trade_area select card"><img src="/settlers/img/cards/ore.png" /></div>
+	<div id="want_0" class="trade_area select card brick">${(tobj.get[0] > 0) ? tobj.get[0] : ''}</div>
+	<div id="want_1" class="trade_area select card wood">${(tobj.get[1] > 0) ? tobj.get[0] : ''}</div>
+	<div id="want_2" class="trade_area select card wheat">${(tobj.get[2] > 0) ? tobj.get[0] : ''}</div>
+	<div id="want_3" class="trade_area select card wool">${(tobj.get[3] > 0) ? tobj.get[0] : ''}</div>
+	<div id="want_4" class="trade_area select card ore">${(tobj.get[4] > 0) ? tobj.get[0] : ''}</div>
       </div>
 
       <div class="h2">You Offer:</div>
       <div class="trade_overlay_offers">
-	<div id="offer_0" class="trade_area select card"><img src="/settlers/img/cards/brick.png" /></div>
-	<div id="offer_1"  class="trade_area select card"><img src="/settlers/img/cards/wood.png" /></div>
-	<div id="offer_2" class="trade_area select card"><img src="/settlers/img/cards/wheat.png" /></div>
-	<div id="offer_3"  class="trade_area select card"><img src="/settlers/img/cards/wool.png" /></div>
-	<div id="offer_4"   class="trade_area select card"><img src="/settlers/img/cards/ore.png" /></div>
+	<div id="offer_0" class="trade_area select card brick">${(tobj.get[0] > 0) ? tobj.get[0] : ''}</div>
+	<div id="offer_1" class="trade_area select card wood">${(tobj.get[1] > 0) ? tobj.get[0] : ''}</div>
+	<div id="offer_2" class="trade_area select card wheat">${(tobj.get[2] > 0) ? tobj.get[0] : ''}</div>
+	<div id="offer_3" class="trade_area select card wool">${(tobj.get[3] > 0) ? tobj.get[0] : ''}</div>
+	<div id="offer_4" class="trade_area select card ore">${(tobj.get[4] > 0) ? tobj.get[0] : ''}</div>
       </div>
 
       <div class="trade_overlay_buttons">

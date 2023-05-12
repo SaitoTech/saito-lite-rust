@@ -495,6 +495,8 @@ buildCity(player, slot) {
   showTradeOverlay(tradeType = -1, i_should_give, i_should_accept) {
 
     let settlers_self = this;
+    settlers_self.trade_overlay.render();
+return;
 
     let my_resources = {};
     let resources = settlers_self.skin.resourceArray();
