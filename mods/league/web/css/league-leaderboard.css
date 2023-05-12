@@ -12,8 +12,8 @@
 
 .saito-table-header { 
   position: sticky;
-  top: 0px;
-  background: var(--saito-background-light);
+  top: -1px;
+  background: var(--saito-gray-mid);
   z-index: 3;
 }
 
