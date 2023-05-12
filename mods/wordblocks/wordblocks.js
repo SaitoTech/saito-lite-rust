@@ -198,7 +198,7 @@ class Wordblocks extends GameTemplate {
     // deal cards
     //
     if (this.game.deck.length == 0 && this.game.step.game == 0) {
-      this.updateStatus("Generating the Game");
+      await this.updateStatus("Generating the Game");
       this.game.queue = [];
       this.game.queue.push("READY");
       for (let i = this.game.players.length; i > 0; i--) {

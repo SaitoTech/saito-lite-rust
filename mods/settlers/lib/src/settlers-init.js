@@ -1,9 +1,8 @@
+/*
+  Functions for initialization
+*/
 
-  /*
-    Functions for initialization
-  */
-
-    class SettlersInit {
+class SettlersInit {
   //
   // OVERRIDE THIS FUNCTION FROM THE PARENT GAME LIBRARY TO CHANGE THE ACKNOWLEDGE TEXT TO CONTINUE
   //
@@ -12,11 +11,13 @@
     try {
       this.updateStatusWithOptions(msg, html);
       this.attachCardboxEvents();
-      document.querySelectorAll(".acknowledge").forEach((el) => { 
-        el.onclick = (e) => {
+      document.querySelectorAll(".acknowledge").forEach((el) => {
+        el.onclick = async (e) => {
           // if player clicks multiple times, don't want callback executed multiple times
-          document.querySelectorAll(".acknowledge").forEach((el) => { el.onclick = null; });
-          mycallback();
+          document.querySelectorAll(".acknowledge").forEach((el) => {
+            el.onclick = null;
+          });
+          await mycallback();
         };
       });
     } catch (err) {
@@ -24,8 +25,6 @@
     }
     return 0;
   }
-
-
 }
 
 module.exports = SettlersInit;
