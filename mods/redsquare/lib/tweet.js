@@ -7,22 +7,31 @@ const Post = require("./post");
 const JSON = require("json-bigint");
 
 class Tweet {
-  constructor(app, mod, container = "", tx = null) {
+   constructor(app, mod, container = "", tx = null) {
     this.app = app;
     this.mod = mod;
     this.container = container;
     this.name = "Tweet";
+    this.init(app, mod, tx)
+  }
 
-    this.tx = tx;
-
+  async init(app, mod, tx){
+    console.log(tx, 'transaction')
+    this.tx =  await tx;
+    
+    console.log(this.tx, 'transaction')
+    // this.tx = tx;
     if (!this.tx.optional) {
       this.tx.optional = {};
       this.tx.optional.num_replies = 0;
       this.tx.optional.num_retweets = 0;
       this.tx.optional.num_likes = 0;
     }
-    let txmsg = tx.returnMessage();
 
+    return;
+    // let tx = this.tx
+    console.log(tx, 'transactional')
+    let txmsg = await tx.returnMessage()
     this.text = "";
     this.parent_id = "";
     this.thread_id = "";

@@ -71,6 +71,7 @@ export default class Network {
   }
 
   public async propagateTransaction(tx: Transaction) {
+    console.log(tx, 'transaction in network');
     return S.getInstance().propagateTransaction(tx);
   }
 

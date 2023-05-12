@@ -130,8 +130,9 @@ class Post {
       }
     });
 
-    document.getElementById("post-tweet-button").addEventListener("click", (e) => {
+    document.getElementById("post-tweet-button").addEventListener("click", async(e) => {
       let text = document.getElementById("post-tweet-textarea").value;
+   
       let parent_id = document.getElementById("parent_id").value;
       let thread_id = document.getElementById("thread_id").value;
       let source = document.getElementById("source").value;
@@ -152,6 +153,8 @@ class Post {
       // extract keys from text AND then tweet
       //
       keys = post_self.app.browser.extractKeys(text);
+
+      console.log(text, keys, 'extracted keys and text')
       identifiers = post_self.app.browser.extractIdentifiers(text);
 
       if (this.tweet != null) {
@@ -220,7 +223,10 @@ class Post {
         data["images"] = post_self.images;
       }
 
-      let newtx = post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
+
+      console.log(keys, 'keys')
+
+      let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
       //
       // move to the top
