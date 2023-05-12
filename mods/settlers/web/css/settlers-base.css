@@ -316,7 +316,7 @@ body {
 .rhover:hover, .city.empty.rhover:hover {
   border: 1px solid white;
   background-color: whitesmoke;
-  cursor: crosshair;
+  cursor: pointer;
 }
 
 .ship {

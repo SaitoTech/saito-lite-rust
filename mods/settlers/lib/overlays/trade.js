@@ -33,7 +33,7 @@ console.log("MINE: " + this.mod.countResource(this.mod.game.player, "wood"));
     // wool
     // ore
     if (reset == true) { 
-      this.get = [3,0,0,0,0];
+      this.get = [0,0,0,0,0];
       this.give = [0,0,0,0,0];
     }
 
@@ -85,8 +85,8 @@ console.log("MINE: " + this.mod.countResource(this.mod.game.player, "wood"));
     $(".trade_overlay_broadcast_button").off();
     $(".trade_overlay_broadcast_button").on("click", function () {
 
-      let offering = [];
-      let receiving = [];
+      let offering = {};
+      let receiving = {};
 
       // brick
       // wood
@@ -94,30 +94,28 @@ console.log("MINE: " + this.mod.countResource(this.mod.game.player, "wood"));
       // wool
       // ore
       for (let i = 0; i < trade_overlay.give.length; i++) {
-	for (let k = 0; k < trade_overlay.give[i]; k++) {
-	  if (i == 0) { offering.push("brick"); }
-	  if (i == 1) { offering.push("wood"); }
-	  if (i == 2) { offering.push("wheat"); }
-	  if (i == 3) { offering.push("wool"); }
-	  if (i == 4) { offering.push("ore"); }
+	if (trade_overlay.give[i] > 0) {
+	  if (i == 0) { offering["brick"] = trade_overlay.give[i]; }
+	  if (i == 1) { offering["wood"]  = trade_overlay.give[i]; }
+	  if (i == 2) { offering["wheat"] = trade_overlay.give[i]; }
+	  if (i == 3) { offering["wool"]  = trade_overlay.give[i]; }
+	  if (i == 4) { offering["ore"]   = trade_overlay.give[i]; }
         }
       }
       for (let i = 0; i < trade_overlay.get.length; i++) {
-	for (let k = 0; k < trade_overlay.get[i]; k++) {
-	  if (i == 0) { receiving.push("brick"); }
-	  if (i == 1) { receiving.push("wood"); }
-	  if (i == 2) { receiving.push("wheat"); }
-	  if (i == 3) { receiving.push("wool"); }
-	  if (i == 4) { receiving.push("ore"); }
+	if (trade_overlay.get[i] > 0) {
+	  if (i == 0) { receiving["brick"] = trade_overlay.get[i]; }
+	  if (i == 1) { receiving["wood"]  = trade_overlay.get[i]; }
+	  if (i == 2) { receiving["wheat"] = trade_overlay.get[i]; }
+	  if (i == 3) { receiving["wool"]  = trade_overlay.get[i]; }
+	  if (i == 4) { receiving["ore"]   = trade_overlay.get[i]; }
         }
       }
 
+alert(JSON.stringify(trade_overlay.give) + " - " + JSON.stringify(trade_overlay.get));
+
       settlers_self.addMove(`clear_advert\t${settlers_self.game.player}`);
-      settlers_self.addMove(
-        `offer\t${settlers_self.game.player}\t
-         ${trade_overlay.tradeType}\t${JSON.stringify(offering)}\t
-         ${JSON.stringify(receiving)}`
-      );
+      settlers_self.addMove(`offer\t${settlers_self.game.player}\t${trade_overlay.tradeType}\t${JSON.stringify(offering)}\t${JSON.stringify(receiving)}`);
       settlers_self.endTurn();
       trade_overlay.overlay.hide();
 
