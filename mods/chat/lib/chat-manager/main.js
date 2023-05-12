@@ -10,7 +10,6 @@ class ChatManager {
     this.app = app;
     this.mod = mod;
     this.container = container || ".chat-manager";
-    this.name = "ChatManager";
 
     //
     // some apps may want chat manager quietly in background
@@ -59,6 +58,8 @@ class ChatManager {
       } 
 
       if (group) {
+        console.log("Chat popup");
+        console.log(JSON.parse(JSON.stringify(group)));
         if (!this.popups[group.id]) {
           this.popups[group.id] = new ChatPopup(this.app, this.mod);
           this.popups[group.id].group = group;

@@ -46,7 +46,7 @@ class Chat extends ModTemplate {
         this.communityGroup = null;
         this.communityGroupName = "Saito Community Chat";
 
-        this.debug = false;
+        this.debug = true;
 
         this.chat_manager = null;
 
@@ -123,7 +123,6 @@ class Chat extends ModTemplate {
 
         let chat_self = this;
 
-
         //
         // load private chat
         //
@@ -149,10 +148,12 @@ class Chat extends ModTemplate {
 
                         (res) => {
                             chat_self.loading--;
+
                             if (res?.rows) {
                                 if (chat_self.debug){
-                                    console.log("Archive TXs:" + res.rows.length);
+                                    console.log(group.id + " Archive TXs:" + res.rows.length);
                                 }
+
                                 while (res.rows.length > 0) {
 
                                     //Process the chat transaction like a new message
@@ -186,10 +187,6 @@ class Chat extends ModTemplate {
                                 tx.decryptMessage(chat_self.app);
                                 chat_self.addTransactionToGroup(group, tx);
                             }
-
-                            if (app.BROWSER){
-                                chat_self.app.connection.emit("chat-manager-render-request");    
-                            }
                             
                         } catch (err) {
                             console.log("error loading chats...: " + err);
@@ -210,8 +207,6 @@ class Chat extends ModTemplate {
             this.communityGroup.members = [peer.returnPublicKey()];
 
             if (this.communityGroup) {
-
-                if (this.debug) { console.log(JSON.parse(JSON.stringify(this.communityGroup))); }
 
                 //
                 // remove duplicate public chats caused by server update
@@ -243,7 +238,7 @@ class Chat extends ModTemplate {
                         console.log("chat history callback: " + txs.length);
                     }
                     // These are no longer proper transactions!!!!
-                    
+
                     if (this.communityGroup.txs.length > 0){
                         let most_recent_ts = this.communityGroup.txs[this.communityGroup.txs.length -1].ts;
                         for (let i = 0; i < txs.length; i++){
@@ -279,7 +274,7 @@ class Chat extends ModTemplate {
 
 
 
-    respondTo(type, obj) {
+    respondTo(type, obj = null) {
 
         let chat_self = this;
 
@@ -396,7 +391,9 @@ class Chat extends ModTemplate {
             //Without altering the array!
             //mycallback(group.txs.slice(-50));
 
-            mycallback(group.txs.filter(t => t.ts > txmsg.ts));
+            if (mycallback) {
+                mycallback(group.txs.filter(t => t.ts > txmsg.ts));    
+            }
 
         }
 
@@ -750,16 +747,15 @@ class Chat extends ModTemplate {
 
         for (let i = 0; i < group.txs.length; i++) {
             if (group.txs[i].sig === tx.transaction.sig) {
-                console.log("duplicate");
+                if (this.debug) { console.log("duplicate"); }
                 return;
             }
             if (tx.transaction.ts < group.txs[i].ts) {
-                console.log("out of order " + i);
                 group.txs.splice(i, 0, new_message);
-
                 group.unread++;
 
                 if (this.debug) {
+                    console.log("out of order " + i);
                     console.log(JSON.parse(JSON.stringify(new_message)));
                 }
 
@@ -782,6 +778,8 @@ class Chat extends ModTemplate {
         //Save to IndexedDB Here
         if (this.loading <= 0){
             this.saveChatGroup(group);            
+        }else{
+            console.warn(`Not saving because in loading mode (${this.loading})`);
         }
 
     }
@@ -837,6 +835,8 @@ class Chat extends ModTemplate {
                 name = name.substring(0, name.length - 2);
             }
         }
+
+        if (this.debug) { console.log("Creating new chat group " + id); }
 
         let newGroup = {
             id: id,
@@ -957,13 +957,25 @@ class Chat extends ModTemplate {
         if (!this.app.BROWSER) { return; }
         
         let chat_self = this;
-        console.log("Reading local DB");
+        //console.log("Reading local DB");
         for (let g_id of this.app.options.chat){
-            console.log("Fetch", g_id);
+            //console.log("Fetch", g_id);
             localforage.getItem(`chat_${g_id}`, function(error, value){
+
+                //Because this is async, the initialize function may have created an
+                //empty default group
+
                 if (value){
-                    chat_self.groups.push(value);
-                    console.log(value);
+                    let currentGroup = chat_self.returnGroup(g_id);
+                    if (currentGroup){
+                        value.members = currentGroup.members;
+                        currentGroup = Object.assign(currentGroup, value);
+                    }else{
+                        chat_self.groups.push(value);    
+                    }
+                    
+                    chat_self.app.connection.emit("chat-manager-render-request");
+                    //console.log(value);
                 }
             });
         }
@@ -974,6 +986,7 @@ class Chat extends ModTemplate {
 
         localforage.setItem(`chat_${group.id}`, group).then(function(){
             console.log("Saved chat history for " + group.id);
+            console.log(JSON.parse(JSON.stringify(group)));
         });
     }
 
