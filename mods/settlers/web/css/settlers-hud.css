@@ -64,6 +64,17 @@
   background-color: #ab815f73;
 }
 
+.status-text-menu ul li.resolve, .status ul li.resolve {
+  width: max-content;
+  border: none;
+  background: none; 
+}
+
+.status-text-menu ul li.steal-player-choice {
+  width: max-content;
+  padding: 0.2rem 0.7rem;
+}
+
 .status-message ul li:hover, .status ul li:hover {
   background-color: #ab815faa;
 }
