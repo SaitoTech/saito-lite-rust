@@ -104,11 +104,11 @@ class SettlersState {
     playBandit() {
         this.updateStatus("Move the bandit...");
         let settlers_self = this;
-        $(".sector_value").addClass("rhover");
-        $(".sector_value").off();
-        $(".sector_value").on("click", function () {
-            $(".sector_value").off();
-            $(".sector_value").removeClass("rhover");
+        $(".sector-container").addClass("rhover");
+        $(".sector-container").off();
+        $(".sector-container").on("click", function () {
+            $(".sector-container").off();
+            $(".sector-container").removeClass("rhover");
             let slot = $(this).attr("id");
 
             settlers_self.addMove(
@@ -146,10 +146,11 @@ class SettlersState {
             };
 
             if (thievingTargets.length > 1) {
-                let html = '<div class="tbd">Steal from which Player: <ul>';
+                let html = '<div class="status-header"><span id="status-content">Steal from which Player:</span></div>';
+                html +=  `<div class="status-text-menu"> <ul>`;
                 for (let i = 0; i < this.game.players.length; i++) {
                     if (thievingTargets.includes(i + 1)) {
-                        html += `<li class="option" id="${i + 1}">${settlers_self.game.playerNames[i]} (${settlers_self.game.state.players[i].resources.length
+                        html += `<li class="textchoice steal-player-choice" id="${i + 1}">${settlers_self.game.playerNames[i]} (${settlers_self.game.state.players[i].resources.length
                             } cards)</li>`;
                     }
                 }
@@ -157,9 +158,9 @@ class SettlersState {
                 this.updateStatus(html, 1);
 
                 //Select a player to steal from
-                $(".option").off();
-                $(".option").on("click", function () {
-                    $(".option").off();
+                $(".textchoice").off();
+                $(".textchoice").on("click", function () {
+                    $(".textchoice").off();
                     let victim = $(this).attr("id");
                     robPlayer(victim);
                 });
@@ -198,7 +199,11 @@ class SettlersState {
             temp.classList.add("sv" + sector_value);
         } else {
             //Create Sector_value
-            let sector_value_html = `<div class="sector_value hexTileCenter sv${sector_value}" id="${svid}">${sector_value}</div>`;
+            let sector_value_html = `
+                <div class="sector-container sc${sector_value}" id="${svid}">
+                    <div class="sector_value hexTileCenter sv${sector_value}" id="${svid}">${sector_value}</div>
+                </div>
+            `;
             let sector_value_obj = this.app.browser.htmlToElement(sector_value_html);
             if (hexobj) {
                 hexobj.after(sector_value_obj);

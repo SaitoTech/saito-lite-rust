@@ -274,7 +274,6 @@ class Arcade extends ModTemplate {
         join_overlay.render();
         window.history.pushState("", "", `/arcade/`);
 
-        app.connection.emit("register-username-or-login");
       }
 
       app.connection.emit("arcade-invite-manager-render-request");

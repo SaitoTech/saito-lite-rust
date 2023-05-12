@@ -10,7 +10,6 @@ class ChatManager {
     this.app = app;
     this.mod = mod;
     this.container = container || ".chat-manager";
-    this.name = "ChatManager";
 
     //
     // some apps may want chat manager quietly in background
@@ -18,11 +17,12 @@ class ChatManager {
     this.render_manager_to_screen = 0;
     this.render_popups_to_screen = 1;
 
-
     //
     // track popups
     //
     this.popups = {};
+
+    this.timers = {};
 
     //
     // handle requests to re-render chat manager
@@ -59,6 +59,8 @@ class ChatManager {
       } 
 
       if (group) {
+        //console.log("Chat popup");
+        //console.log(JSON.parse(JSON.stringify(group)));
         if (!this.popups[group.id]) {
           this.popups[group.id] = new ChatPopup(this.app, this.mod);
           this.popups[group.id].group = group;
@@ -115,10 +117,10 @@ class ChatManager {
       let group;
 
       if (Array.isArray(data.key)) {
-        group = this.mod.createChatGroup(data.key, data.name);
+        group = this.mod.returnOrCreateChatGroupFromMembers(data.key, data.name);
       } else {
         let name = data.name || app.keychain.returnUsername(data.key);
-        group = this.mod.createChatGroup([app.wallet.returnPublicKey(), data.key], name);
+        group = this.mod.returnOrCreateChatGroupFromMembers([app.wallet.returnPublicKey(), data.key], name);
       }
 
       //
@@ -128,6 +130,21 @@ class ChatManager {
 
       app.connection.emit('chat-popup-render-request', group);
     });
+
+    /*app.connection.on("relay-is-online", (pkey)=>{
+      let group = this.mod.returnGroupByMemberPublickey(pkey);
+      let cm_handle = document.querySelector(`.chat-manager #saito-user-${group.id}`);
+      if (cm_handle){
+        cm_handle.classList.add("online");
+        if (this.timers[group.id]){
+          clearTimeout(this.timers[group.id]);
+        }
+        this.timers[group.id] = setTimeout(()=>{
+          cm_handle.classList.remove("online");
+        }, 90000)
+      }
+    });
+    */
 
   }
 
@@ -155,21 +172,24 @@ class ChatManager {
     //
     for (let group of this.mod.groups) {
 
-      // {
-      //   id: id,
-      //   members: members,
-      //   name: name,
-      //   txs: [],
-      // }
+      /*if (group.members.length == 2){
+        console.log(JSON.parse(JSON.stringify(group.members)));
+        for (let member of group.members){
+          if (member != this.app.wallet.returnPublicKey()){
+            console.log("Send Ping to " + member);
+            this.app.connection.emit("relay-send-message", {recipient: [member], request: "ping", data: {}});
+          }
+        }
+      }*/
+      
 
       let last_msg = "new chat";
       let last_ts = new Date().getTime();
 
       if (group.txs.length > 0) {
         let tx = group.txs[group.txs.length - 1];
-        let txmsg = tx.returnMessage();
-        last_msg = this.app.browser.stripHtml(txmsg.message);
-        last_ts = txmsg.timestamp;
+        last_msg = (tx.msg.indexOf('<img') == 0) ? "image" : this.app.browser.sanitize(tx.msg);
+        last_ts = tx.ts;
       }
 
       let html = ChatTeaser(this.app, group.name, last_msg, last_ts, group.id, group.unread);

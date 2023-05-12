@@ -13,7 +13,7 @@ class SettlersGameloop {
   handleGameLoop() {
 
     let settlers_self = this;
-
+    
     ///////////
     // QUEUE //
     ///////////

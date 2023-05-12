@@ -791,6 +791,7 @@ console.log("---------------------");
    * the new wallet to local storage.
    */
   async resetWallet() {
+    //console.log("Reset Wallet");
     this.wallet.privatekey = this.app.crypto.generateKeys();
     this.wallet.publickey = this.app.crypto.returnPublicKey(this.wallet.privatekey);
 
@@ -812,9 +813,13 @@ console.log("---------------------");
 
     this.saveWallet();
 
+    // let modules purge stuff
+    //this.app.modules.onWalletReset();
+
     this.app.options.invites = [];
     this.app.options.games = [];
     this.app.options.leagues = [];
+    this.app.options.chat = [];
     this.app.storage.saveOptions();
 
     if (this.app.browser.browser_active == 1) {

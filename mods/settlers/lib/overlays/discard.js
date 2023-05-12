@@ -16,6 +16,12 @@ class DiscardOverlay {
 
   render() {
 
+    this.my_resources = {};
+    this.cardsToDiscard = [];
+    this.discardString = null;
+    this.targetCt = null;
+    this.player = null;
+
     this.player = this.mod.game.player;
     let cardCt = this.mod.game.state.players[this.mod.game.player - 1].resources.length;
     if (cardCt <= 7) return;
