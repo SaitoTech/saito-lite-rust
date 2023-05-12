@@ -132,6 +132,7 @@ p {
   right: -12.5%;
 }
 
+
 .hex_bg img {
   left: -12.5%;
   right: -12.5%;
@@ -313,10 +314,12 @@ body {
   top: -4px;
 }
 
+
+
 .rhover:hover, .city.empty.rhover:hover {
   border: 1px solid white;
   background-color: whitesmoke;
-  cursor: crosshair;
+  cursor: pointer;
 }
 
 .ship {
@@ -548,7 +551,7 @@ input[type="checkbox"] {
 
 .city1 {
   top: -10%;
-  left: 50%;
+  left: 55%;
   transform: translate(-50%);
 }
 
@@ -578,13 +581,37 @@ input[type="checkbox"] {
   left: -18%;
 }
 
+.sector-container {
+  position: absolute;
+  border-radius: 50%;
+  width: 12em;
+  height: 12em;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  cursor: pointer;
+}
+
+.sector-container.rhover:hover {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.sector-container.rhover:hover .sector_value {
+  border: 1px solid white;
+  background-color: whitesmoke;
+  cursor: pointer;
+}
+
 .sector_value {
   position: absolute;
   font-size: 2.5em;
   z-index: 15;
   font-weight: bold;
   border: 2px solid #fff;
-  border-radius: 50%;
+  border-radius: 50%;  
   width: 2em;
   height: 2em;
   line-height: 2em;
@@ -712,30 +739,6 @@ input[type="checkbox"] {
   color: lightgrey;
 }
 
-/* TradeOverlay --> specify numbers */
-
-.trade_area {
-  height: 72px;
-}
-
-.trade_area>div:first-child {
-  text-transform: uppercase;
-  text-align: center;
-}
-
-.trade_area.select>div:first-child {
-  cursor: pointer;
-}
-
-.trade_overlay .trade_area .icon:hover {
-  border-color: grey;
-  filter: grayscale(50%);
-}
-
-.offer_icons {
-  position: relative;
-}
-
 .icon_multiplier {
   position: absolute;
   bottom: 0;
@@ -810,6 +813,8 @@ ul.horizontal_list li.iconoption {
   top: 5vh;
   left: 1vw;*/
 }
+
+
 
 /* Dice display (position handled by playerbox-graphic) */
 
@@ -891,7 +896,7 @@ ul.horizontal_list li.iconoption {
 
 .cardct {
   width: fit-content;
-  font-size: 1.6rem;
+  font-size: 1.35rem;
 }
 
 .cardselector {
@@ -992,6 +997,7 @@ ul.horizontal_list li.iconoption {
   right: 40px;
 }
 
+
 .opponents>.player-box {
   position: relative;
   right: unset;
@@ -1004,6 +1010,26 @@ ul.horizontal_list li.iconoption {
   top: unset;
   bottom: 1px;
 }
+
+.mobile-trading-container .player-box.notme:nth-child(0) {
+  top: 76px;
+  right: 40px;
+}
+
+.mobile-trading-container .player-box.notme:nth-child(1) {
+  top: auto;
+  bottom: 76px;
+  left: 40px;
+  right: auto;
+}
+
+
+.mobile-trading-container .player-box.notme:nth-child(2) {
+  top: auto;
+  bottom: 76px;
+  right: 40px;
+}
+
 
 .player-box-graphic .hand {
   position: absolute;

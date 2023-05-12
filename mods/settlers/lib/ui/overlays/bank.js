@@ -14,6 +14,12 @@ class BankOverlay {
   }
 
   render() {
+
+    this.selected_resource = null;
+    this.desired_resource = null;
+    this.my_resources = {};
+    this.minForTrade = null
+    
     this.minForTrade = this.mod.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
                 
     for (let resource of this.mod.skin.resourceArray()) {

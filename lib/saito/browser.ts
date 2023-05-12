@@ -542,7 +542,6 @@ console.log("clicking on identicon...");
   //////////////////////////////////
   generateQRCode(data, qrid="qrcode") {
     const QRCode = require("./../helpers/qrcode");
-console.log("fetching id: " + qrid);
     let obj = document.getElementById(qrid);
     return new QRCode(obj, data);
   }

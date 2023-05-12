@@ -14,9 +14,6 @@ class BuildOverlay {
     this.attachEvents();
   }
 
-  attachEvents() {
-  }
-
   checkAndReturnResource(resource, resource_count){
     let track_resource = [];
     let player = this.mod.game.player;
@@ -43,6 +40,58 @@ class BuildOverlay {
 
   returnCardImg(resource, disabled = false){
     return `<img class="${disabled ? `settlers-card-disabled` : ``}" src="/settlers/img/cards/${resource}.png">`;
+  }
+
+  attachEvents() {
+    this_self = this;
+
+    document.querySelectorAll(".settlers-item-row").forEach(function(item, key) {
+      item.onclick = (e) => {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+          this_self.overlay.hide();
+
+          let id = e.currentTarget.getAttribute("id");
+          let disabled = e.currentTarget.classList.contains("settlers-row-disabled");
+
+          if (!disabled) {
+            if (id === "0") {
+              this_self.mod.addMove(
+                `player_build_road\t${this_self.mod.game.player}\t0\t1`);
+            }
+            if (id === "1") {
+              this_self.mod.addMove(`player_build_city\t${this_self.mod.game.player}\t1`);
+            }
+            if (id === "2") {
+              this_self.mod.addMove(
+                "player_upgrade_city\t" + this_self.mod.game.player
+              );
+            }
+            if (id === "3") {
+              //have everyone update game state
+              this_self.mod.addMove("buy_card\t" + this_self.mod.game.player);
+              // Deck #1 = deck[0] = devcard deck
+              //get card from deck
+              this_self.mod.addMove("SAFEDEAL\t1\t" + this_self.mod.game.player + "\t1");
+            }
+            let purchase = parseInt(id);
+            if (purchase >= 0 && purchase <= 3) {
+              let cost = this_self.mod.skin.priceList[parseInt(id)];
+              for (let resource of cost) {
+                //Put the spends on the front of the move, so we can maybe cancel the building action
+                this_self.mod.prependMove(
+                  "spend_resource\t" + this_self.mod.game.player + "\t" + resource
+                );
+
+              }
+              this_self.mod.endTurn();
+            } else {
+              //console.log("Unexpected selection for player move:",id);
+            }
+          }
+      };
+    }); 
   }
 
 }

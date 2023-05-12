@@ -448,6 +448,8 @@
 .image-list img {
   width: 4rem;
   height: 4rem;
+  margin-right: 1rem;
+
 }
 
 .control-list {

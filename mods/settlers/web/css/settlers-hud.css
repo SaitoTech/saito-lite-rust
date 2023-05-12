@@ -64,6 +64,17 @@
   background-color: #ab815f73;
 }
 
+.status-text-menu ul li.resolve, .status ul li.resolve {
+  width: max-content;
+  border: none;
+  background: none; 
+}
+
+.status-text-menu ul li.steal-player-choice {
+  width: max-content;
+  padding: 0.2rem 0.7rem;
+}
+
 .status-message ul li:hover, .status ul li:hover {
   background-color: #ab815faa;
 }
@@ -78,7 +89,7 @@
   border: 0px;
 }
 
-.discard-select ul li .icon, .player-notice .tip .icon {
+.discard-select ul li .icon, .player-notice .tip .icon , .permanent .tip .icon {
   height: 4rem;
   margin-left: 0.5rem;
   margin-right: 0.5rem;

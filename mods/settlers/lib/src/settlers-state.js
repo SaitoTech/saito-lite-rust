@@ -104,11 +104,11 @@ class SettlersState {
     playBandit() {
         this.updateStatus("Move the bandit...");
         let settlers_self = this;
-        $(".sector_value").addClass("rhover");
-        $(".sector_value").off();
-        $(".sector_value").on("click", function () {
-            $(".sector_value").off();
-            $(".sector_value").removeClass("rhover");
+        $(".sector-container").addClass("rhover");
+        $(".sector-container").off();
+        $(".sector-container").on("click", function () {
+            $(".sector-container").off();
+            $(".sector-container").removeClass("rhover");
             let slot = $(this).attr("id");
 
             settlers_self.addMove(
@@ -146,10 +146,11 @@ class SettlersState {
             };
 
             if (thievingTargets.length > 1) {
-                let html = '<div class="tbd">Steal from which Player: <ul>';
+                let html = '<div class="status-header"><span id="status-content">Steal from which Player:</span></div>';
+                html +=  `<div class="status-text-menu"> <ul>`;
                 for (let i = 0; i < this.game.players.length; i++) {
                     if (thievingTargets.includes(i + 1)) {
-                        html += `<li class="option" id="${i + 1}">${settlers_self.game.playerNames[i]} (${settlers_self.game.state.players[i].resources.length
+                        html += `<li class="textchoice steal-player-choice" id="${i + 1}">${settlers_self.game.playerNames[i]} (${settlers_self.game.state.players[i].resources.length
                             } cards)</li>`;
                     }
                 }
@@ -157,9 +158,9 @@ class SettlersState {
                 this.updateStatus(html, 1);
 
                 //Select a player to steal from
-                $(".option").off();
-                $(".option").on("click", function () {
-                    $(".option").off();
+                $(".textchoice").off();
+                $(".textchoice").on("click", function () {
+                    $(".textchoice").off();
                     let victim = $(this).attr("id");
                     robPlayer(victim);
                 });
@@ -198,7 +199,11 @@ class SettlersState {
             temp.classList.add("sv" + sector_value);
         } else {
             //Create Sector_value
-            let sector_value_html = `<div class="sector_value hexTileCenter sv${sector_value}" id="${svid}">${sector_value}</div>`;
+            let sector_value_html = `
+                <div class="sector-container sc${sector_value}" id="${svid}">
+                    <div class="sector_value hexTileCenter sv${sector_value}" id="${svid}">${sector_value}</div>
+                </div>
+            `;
             let sector_value_obj = this.app.browser.htmlToElement(sector_value_html);
             if (hexobj) {
                 hexobj.after(sector_value_obj);
@@ -561,73 +566,110 @@ class SettlersState {
         let card_dir = "/settlers/img/cards/";
         for (let i = 1; i <= this.game.state.players.length; i++) {
 
+	    //
+	    // TOP - player info
+	    //
             this.game.state.players[i - 1].resources.sort();
             let num_resources = this.game.state.players[i - 1].resources.length;
             let num_cards = this.game.state.players[i - 1].devcards;
-            let userline = "your active trade offers";
-            if (i != this.game.player) { userline = "their active trade offers"; }
-
-            let newhtml = "";
+	    let userline = "";
+                userline += `<div class="flexliane">`;
+                userline += `<div class="cardct">resources: ${this.game.state.players[i - 1].resources.length}</div>`;
+                userline += `</div>`;
 
             let playerHTML = `
-          <div class="saito-user settlers-user saito-user-${this.game.players[i - 1]}" id="saito-user-${this.game.players[i - 1]}" data-id="${this.game.players[i - 1]}">
-            <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i - 1])}"></div>
-            <div class="saito-playername" data-id="${this.game.players[i - 1]}">${this.game.playerNames[i - 1]}</div>
-            <div class="saito-userline">${userline}</div>
-          </div>`;
+              <div class="saito-user settlers-user saito-user-${this.game.players[i - 1]}" id="saito-user-${this.game.players[i - 1]}" data-id="${this.game.players[i - 1]}">
+                <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i - 1])}"></div>
+                <div class="saito-address saito-playername" data-id="${this.game.players[i - 1]}">${this.game.playerNames[i - 1]}</div>
+                <div class="saito-userline">${userline}</div>
+              </div>
+	    `;
+
             this.playerbox.refreshTitle(playerHTML, i);
 
+
+console.log(JSON.stringify(this.game.state.ads));
+
+	    //
+	    // TOP - trade offers
+	    //
+            let reshtml  = "";
+                reshtml += `<div class="flexline">`;
+            if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
+              reshtml += "<span>";
+              if (this.game.state.ads[i - 1].offer) { reshtml += this.wishListToImage(this.game.state.ads[i - 1].offer); }
+              reshtml += `<i class="fas fa-long-arrow-alt-right"></i>`;
+              if (this.game.state.ads[i - 1].ask) { reshtml += this.wishListToImage(this.game.state.ads[i - 1].ask); }
+              reshtml += `</span><i id="cleartrade" class="fas fa-ban"></i>`;
+            } else {
+              //reshtml += `<span id="tradenow">Trade</span>`;
+            }
+            reshtml += `</div>`;
+
+console.log("updating LOG with trading info for player : " + i + " - " + reshtml);
+
+            this.playerbox.refreshLog(reshtml, i);
+
+
+
+/******* 
+ *
+ * we removed this stuff because the shift to having the playerbox display trade information
+ * removed the critical need for it, and because the playerbox refactor then removed the number
+ * of DIVs in which things could be separately-put.
+ *
+ * we should review which bits of information we want to bring back, and where they should be
+ * put. not everything belongs in the playerbox. and if the playerbox is being complicated it
+ * should be rendered into playerbox-head or playerbox-body as a single unit. but this is UI/UX
+ * work that will take thought and care rather than a pure implementation fix, so its being 
+ * skipped right now.
+ *
             //Stats
-            newhtml = `<div class="flexline">`;
+            let statshtml = `<div class="flexline">`;
             //Victory Point Card Tokens -- should move to VP track
             for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
-              newhtml += `<div class="token">${this.skin.vp.svg}</div>`;
+              statshtml += `<div class="token">${this.skin.vp.svg}</div>`;
             }
             if (this.game.state.largestArmy.player == i) {
-                newhtml += `<div class="token army largest" title="${this.skin.largest.name}">`;
+                statshtml += `<div class="token army largest" title="${this.skin.largest.name}">`;
             } else {
-                newhtml += `<div class="token army" title="${this.skin.largest.name}">`;
+                statshtml += `<div class="token army" title="${this.skin.largest.name}">`;
             }
             for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
-              newhtml += this.skin.s.img;
+              statshtml += this.skin.s.img;
             }
-            newhtml += `</div>`;
+            statshtml += `</div>`;
              
             if (this.game.state.longestRoad.player == i) {
-              newhtml += `<div class="token longest-road" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
+              statshtml += `<div class="token longest-road" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
             }
-            newhtml += `</div>`;
+            statshtml += `</div>`;
 
-         
-
+	    let reshtml = "";
             //For opponents, summarize their hands numerically
             if (this.game.player != i) {
-                  newhtml += `<div class="flexline">`;
-                  newhtml += `<div class="cardct">Resources: ${
-                    this.game.state.players[i - 1].resources.length
-                  }</div>`;
-                  newhtml += `<div class="cardct">Cards: ${
-                    this.game.state.players[i - 1].devcards
-                  }</div>`;
-                  newhtml += `</div>`;
-            } else {  //Is me
+                  reshtml += `<div class="flexliane">`;
+                  reshtml += `<div class="cardct">res: ${this.game.state.players[i - 1].resources.length}</div>`;
+                  reshtml += `<div class="cardct">cards: ${this.game.state.players[i - 1].devcards}</div>`;
+                  reshtml += `</div>`;
+            } else {
 
                 if (!this.game.state.placedCity) {
-                    newhtml += `<div class="flexline">`;
+                    reshtml += `<div class="flexline">`;
                     if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
-                        newhtml += "<span>";
+                        reshtml += "<span>";
                         if (this.game.state.ads[i - 1].offer) {
-                            newhtml += this.wishListToImage(this.game.state.ads[i - 1].offer);
+                            reshtml += this.wishListToImage(this.game.state.ads[i - 1].offer);
                         }
-                        newhtml += `<i class="fas fa-long-arrow-alt-right"></i>`;
+                        reshtml += `<i class="fas fa-long-arrow-alt-right"></i>`;
                         if (this.game.state.ads[i - 1].ask) {
-                            newhtml += this.wishListToImage(this.game.state.ads[i - 1].ask);
+                            reshtml += this.wishListToImage(this.game.state.ads[i - 1].ask);
                         }
-                        newhtml += `</span><i id="cleartrade" class="fas fa-ban"></i>`;
+                        reshtml += `</span><i id="cleartrade" class="fas fa-ban"></i>`;
                     } else {
                         //newhtml += `<span id="tradenow">Trade</span>`;
                     }
-                    newhtml += `</div>`;
+                    reshtml += `</div>`;
                     //Interactive controls to toggle between "decks"
                     if (
                         this.game.deck[0].hand.length > 0 &&
@@ -640,8 +682,9 @@ class SettlersState {
                     }
                 }
             }
+****/
 
-            this.playerbox.refreshInfo(newhtml, i);
+//            this.playerbox.refreshInfo(newhtml, i);
             $(".player-box-info").disableSelection();
 
             //Other player ads... in LOG

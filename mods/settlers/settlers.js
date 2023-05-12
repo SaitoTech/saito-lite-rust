@@ -13,6 +13,7 @@ const SettlersState = require("./lib/src/settlers-state");
 const SettlersActions = require("./lib/src/settlers-actions");
 const SettlersInit = require("./lib/src/settlers-init");
 
+const TradeOverlay = require("./lib/ui/overlays/trade");
 const BuildOverlay = require("./lib/ui/overlays/build");
 const BankOverlay = require("./lib/ui/overlays/bank");
 const DevCardOverlay = require("./lib/ui/overlays/dev-card");
@@ -49,6 +50,7 @@ class Settlers extends GameTemplate {
     this.rules_overlay = new SettlersRules(this.app, this);
     this.welcome_overlay = new SettlersWelcome(this.app, this);
     this.stats_overlay = new SettlersStats(this.app, this);
+    this.trade_overlay = new TradeOverlay(this.app, this);
 
     this.grace_window = 24;
     // temp variable to help with post-splash flash
@@ -320,46 +322,46 @@ class Settlers extends GameTemplate {
         state.players[i].ports = [];
     }
     return state;
-}
-
-initializeStats() {
-  let stats = {};
-  stats.dice = {};
-  stats.production = {};
-  for (let i = 2; i <= 12; i++) {
-      stats.dice[i] = 0;
   }
 
-  for (let r of this.skin.resourceArray()) {
+  initializeStats() {
+    let stats = {};
+    stats.dice = {};
+    stats.production = {};
+    for (let i = 2; i <= 12; i++) {
+      stats.dice[i] = 0;
+    }
+
+    for (let r of this.skin.resourceArray()) {
       let array = new Array(this.game.players.length);
       array.fill(0);
       stats.production[r] = array;
+    }
+    return stats;
   }
-  return stats;
-}
 
 
-returnDiceTokens() {
-  let dice = [];
-  dice.push({ value: 2 });
-  dice.push({ value: 12 });
-  for (let i = 3; i < 7; i++) {
-      dice.push({ value: i });
-      dice.push({ value: i });
-      dice.push({ value: i + 5 });
-      dice.push({ value: i + 5 });
+  returnDiceTokens() {
+    let dice = [];
+    dice.push({ value: 2 });
+    dice.push({ value: 12 });
+    for (let i = 3; i < 7; i++) {
+        dice.push({ value: i });
+        dice.push({ value: i });
+        dice.push({ value: i + 5 });
+        dice.push({ value: i + 5 });
+    }
+    return dice;
   }
-  return dice;
-}
 
 
-returnGameOptionsHTML() {
-  return SettlersGameOptionsTemplate(this.app, this);
-}
+  returnGameOptionsHTML() {
+    return SettlersGameOptionsTemplate(this.app, this);
+  }
 
-returnTradeHelpOverlay(){
-  return SettlersTradeHelpOverlayTemplate(this.app, this);
-}
+  returnTradeHelpOverlay(){
+    return SettlersTradeHelpOverlayTemplate(this.app, this);
+  }
 
 
 }
