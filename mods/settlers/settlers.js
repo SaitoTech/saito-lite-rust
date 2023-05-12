@@ -12,6 +12,7 @@ const SettlersPlayer = require("./lib/src/settlers-player");
 const SettlersState = require("./lib/src/settlers-state");
 const SettlersActions = require("./lib/src/settlers-actions");
 const SettlersInit = require("./lib/src/settlers-init");
+const TradeOverlay = require("./lib/overlays/trade");
 const BuildOverlay = require("./lib/overlays/build");
 const BankOverlay = require("./lib/overlays/bank");
 const DevCardOverlay = require("./lib/overlays/dev-card");
@@ -48,6 +49,7 @@ class Settlers extends GameTemplate {
     this.rules_overlay = new SettlersRules(this.app, this);
     this.welcome_overlay = new SettlersWelcome(this.app, this);
     this.stats_overlay = new SettlersStats(this.app, this);
+    this.trade_overlay = new TradeOverlay(this.app, this);
 
     this.grace_window = 24;
     // temp variable to help with post-splash flash
