@@ -146,10 +146,11 @@ class SettlersState {
             };
 
             if (thievingTargets.length > 1) {
-                let html = '<div class="tbd">Steal from which Player: <ul>';
+                let html = '<div class="status-header"><span id="status-content">Steal from which Player:</span></div>';
+                html +=  `<div class="status-text-menu"> <ul>`;
                 for (let i = 0; i < this.game.players.length; i++) {
                     if (thievingTargets.includes(i + 1)) {
-                        html += `<li class="option" id="${i + 1}">${settlers_self.game.playerNames[i]} (${settlers_self.game.state.players[i].resources.length
+                        html += `<li class="textchoice steal-player-choice" id="${i + 1}">${settlers_self.game.playerNames[i]} (${settlers_self.game.state.players[i].resources.length
                             } cards)</li>`;
                     }
                 }
@@ -157,9 +158,9 @@ class SettlersState {
                 this.updateStatus(html, 1);
 
                 //Select a player to steal from
-                $(".option").off();
-                $(".option").on("click", function () {
-                    $(".option").off();
+                $(".textchoice").off();
+                $(".textchoice").on("click", function () {
+                    $(".textchoice").off();
                     let victim = $(this).attr("id");
                     robPlayer(victim);
                 });
