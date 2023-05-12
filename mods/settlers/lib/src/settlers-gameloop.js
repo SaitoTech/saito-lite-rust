@@ -13,11 +13,7 @@ class SettlersGameloop {
   handleGameLoop() {
 
     let settlers_self = this;
-
-
-    console.log("this.game.players //////////////");
-    console.log(this.game);
-
+    
     ///////////
     // QUEUE //
     ///////////
