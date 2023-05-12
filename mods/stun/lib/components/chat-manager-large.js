@@ -124,7 +124,7 @@ class VideoChatManager {
     
     //You should be able to just create a Chat Group, but we are duplicating the public chat server
     //so we need this hacky work around
-    //this.chat_group = chat_mod.createChatGroup([this.app.network.peers[0].peer.publickey], `Chat ${this.room_code}`);
+    //this.chat_group = chat_mod.returnOrCreateChatGroupFromMembers([this.app.network.peers[0].peer.publickey], `Chat ${this.room_code}`);
   }
 
   attachEvents(app, mod) {

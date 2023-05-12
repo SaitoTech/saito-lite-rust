@@ -21,6 +21,7 @@ module.exports = ChatTeaser = (app, publickey = "", userline = "", timestamp = 0
     <div class="saito-userline">${userline}</div>
     ${time && `<div class="saito-datetime">${time}</div>`}
     ${alert > 0 ? `<div class="saito-notification-dot">${alert}</div>` : ""}
+    <div class="online-status-indicator"></div>
   </div>
   `;
 

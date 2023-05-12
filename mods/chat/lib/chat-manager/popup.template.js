@@ -11,7 +11,7 @@ module.exports = (app, mod, group, isStatic=false) => {
   }
 
   let html = `
-      <div class="${class_name} chat-popup chat-popup-${group.id}" id="chat-popup-${group.id}">
+      <div class="${class_name} chat-popup" id="chat-popup-${group.id}">
 
         <div class="chat-header" id="chat-header-${group.id}">
           <i  class="far fa-comment-dots"></i>
