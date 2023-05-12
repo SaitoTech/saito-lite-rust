@@ -791,7 +791,7 @@ console.log("---------------------");
    * the new wallet to local storage.
    */
   async resetWallet() {
-    console.log("Reset Wallet");
+    //console.log("Reset Wallet");
     this.wallet.privatekey = this.app.crypto.generateKeys();
     this.wallet.publickey = this.app.crypto.returnPublicKey(this.wallet.privatekey);
 

@@ -46,7 +46,7 @@ class Chat extends ModTemplate {
         this.communityGroup = null;
         this.communityGroupName = "Saito Community Chat";
 
-        this.debug = true;
+        this.debug = false;
 
         this.chat_manager = null;
 
@@ -381,7 +381,7 @@ class Chat extends ModTemplate {
 
         if (txmsg.request === "chat history") {
 
-            console.log(JSON.parse(JSON.stringify(txmsg)));
+            //console.log(JSON.parse(JSON.stringify(txmsg)));
 
             let group = this.returnGroup(txmsg?.group_id);
 
@@ -983,10 +983,12 @@ class Chat extends ModTemplate {
 
     saveChatGroup(group){
         if (!this.app.BROWSER) { return; }
-
+        let chat_self = this;
         localforage.setItem(`chat_${group.id}`, group).then(function(){
-            console.log("Saved chat history for " + group.id);
-            console.log(JSON.parse(JSON.stringify(group)));
+            if (chat_self.debug){
+                console.log("Saved chat history for " + group.id);
+                console.log(JSON.parse(JSON.stringify(group)));           
+            }
         });
     }
 

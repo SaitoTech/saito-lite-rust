@@ -13,3 +13,17 @@
   line-height: 2.2rem;
 }
 
+.online-status-indicator:after {
+  position: absolute;
+  display: none;
+  content: "";
+  border-radius: 100%;
+  width: 1rem;
+  height: 1rem;
+  background-color: var(--saito-primary);
+}
+
+.online .online-status-indicator {
+  display: block;
+
+}

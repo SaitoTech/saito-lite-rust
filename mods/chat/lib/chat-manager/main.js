@@ -17,11 +17,12 @@ class ChatManager {
     this.render_manager_to_screen = 0;
     this.render_popups_to_screen = 1;
 
-
     //
     // track popups
     //
     this.popups = {};
+
+    this.timers = {};
 
     //
     // handle requests to re-render chat manager
@@ -58,8 +59,8 @@ class ChatManager {
       } 
 
       if (group) {
-        console.log("Chat popup");
-        console.log(JSON.parse(JSON.stringify(group)));
+        //console.log("Chat popup");
+        //console.log(JSON.parse(JSON.stringify(group)));
         if (!this.popups[group.id]) {
           this.popups[group.id] = new ChatPopup(this.app, this.mod);
           this.popups[group.id].group = group;
@@ -130,6 +131,21 @@ class ChatManager {
       app.connection.emit('chat-popup-render-request', group);
     });
 
+    /*app.connection.on("relay-is-online", (pkey)=>{
+      let group = this.mod.returnGroupByMemberPublickey(pkey);
+      let cm_handle = document.querySelector(`.chat-manager #saito-user-${group.id}`);
+      if (cm_handle){
+        cm_handle.classList.add("online");
+        if (this.timers[group.id]){
+          clearTimeout(this.timers[group.id]);
+        }
+        this.timers[group.id] = setTimeout(()=>{
+          cm_handle.classList.remove("online");
+        }, 90000)
+      }
+    });
+    */
+
   }
 
 
@@ -156,12 +172,16 @@ class ChatManager {
     //
     for (let group of this.mod.groups) {
 
-      // {
-      //   id: id,
-      //   members: members,
-      //   name: name,
-      //   txs: [],
-      // }
+      /*if (group.members.length == 2){
+        console.log(JSON.parse(JSON.stringify(group.members)));
+        for (let member of group.members){
+          if (member != this.app.wallet.returnPublicKey()){
+            console.log("Send Ping to " + member);
+            this.app.connection.emit("relay-send-message", {recipient: [member], request: "ping", data: {}});
+          }
+        }
+      }*/
+      
 
       let last_msg = "new chat";
       let last_ts = new Date().getTime();
