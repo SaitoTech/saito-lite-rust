@@ -78,7 +78,7 @@
   border: 0px;
 }
 
-.discard-select ul li .icon, .player-notice .tip .icon {
+.discard-select ul li .icon, .player-notice .tip .icon , .permanent .tip .icon {
   height: 4rem;
   margin-left: 0.5rem;
   margin-right: 0.5rem;

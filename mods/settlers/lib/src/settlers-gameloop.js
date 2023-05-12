@@ -849,7 +849,7 @@ class SettlersGameloop {
         }
 
         if (this.game.player === thief) {
-          this.updateStatus(`<div class="persistent">You stole: ${(loot == "nothing") ? "nothing" : this.returnResourceHTML(loot)}</div>`);
+          this.updateStatus(`<div class="persistent">You stole ${(loot == "nothing") ? "nothing" : this.returnResourceHTML(loot)}</div>`);
         }
         if (this.game.player === victim) {
           this.updateStatus(`<div class="persistent">${this.game.playerNames[thief - 1]} stole ${(loot == "nothing") ? "nothing" : this.returnResourceHTML(loot)} from you</div>`);
