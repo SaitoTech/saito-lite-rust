@@ -31,6 +31,10 @@ module.exports = (region, sobj) => {
   ussrc = ussrc.replace("0 battlegrounds and ", "");
   usc = usc.replace("controls 0 battlegrounds for None", "has No Presence");
   ussrc = ussrc.replace("controls 0 battlegrounds for None", "has No Presence");
+  usc = usc.replace(" for Thailand", "");
+  ussrc = ussrc.replace(" for Thailand", "");
+  usc = usc.replace(" for undefined", "");
+  ussrc = ussrc.replace(" for undefined", "");
 
 
   let html = `
