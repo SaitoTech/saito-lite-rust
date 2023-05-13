@@ -2542,7 +2542,7 @@ console.log("LATEST MOVE: " + mv);
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["wargames", "starwars", "naziscientist", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["wargames", "starwars", "europe", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["che", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
         }
@@ -7257,12 +7257,12 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
           }
         }
         switch (this.whoControls("thailand")){
-          case "us": scoring.us.bg = 2; scoring.us.status = "Thailand"; break;
-          case "ussr": scoring.ussr.bg = 2; scoring.ussr.status = "Thailand"; break;
+          case "us": scoring.us.total++; scoring.us.bg = 1; scoring.us.status = "Thailand"; scoring.us.vp++; break;
+          case "ussr": scoring.ussr.total++; scoring.ussr.bg = 1; scoring.ussr.status = "Thailand"; scoring.ussr.cp++; break;
         }
 
-        scoring.us.vp = scoring.us.total + scoring.us.bg;
-        scoring.ussr.vp = scoring.ussr.total + scoring.ussr.bg;
+        scoring.us.vp += scoring.us.total;
+        scoring.ussr.vp += scoring.ussr.total;
         break;
 
 
