@@ -60,6 +60,11 @@ class SettlersGameloop {
         if (this.browser_active && this.game.player == 0) {
           this.displayBoard();
         }
+	//
+	// we should not be running this ahead of READY
+	// because it creates information in generateMap
+	// that disappears, 
+	this.saveGame();
         return 1;
       }
 
@@ -475,14 +480,19 @@ class SettlersGameloop {
       //
       if (mv[0] === "offer") {
 
-alert("received offer!");
-
         let offering_player = parseInt(mv[1]);
         let receiving_player = parseInt(mv[2]);
         let stuff_on_offer = JSON.parse(mv[3]);
         let stuff_in_return = JSON.parse(mv[4]);
         this.game.queue.splice(qe, 1);
- 
+
+	if (stuff_on_offer == null) { return; } 
+	if (stuff_in_return == null) { return; } 
+
+console.log("RECEIVED OFFER: ");
+console.log("RECEIVED OFFER: " + JSON.stringify(stuff_on_offer));
+console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
+
         if (this.game.player == receiving_player) {
           this.game.state.ads[offering_player - 1].offer = stuff_on_offer;
           this.game.state.ads[offering_player - 1].ask = stuff_in_return;
@@ -496,6 +506,7 @@ alert("received offer!");
           this.updateLog(`${this.game.playerNames[offering_player - 1]} sent a public trade offer.`);
 	}
 
+	this.displayPlayers();
       }
 
 

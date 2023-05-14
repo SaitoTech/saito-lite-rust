@@ -19,8 +19,6 @@ class TradeOverlay {
     this.tradeType = tradeType;    
 
     let resources = this.mod.skin.resourceArray();
-console.log("RESOURCES: " + JSON.stringify(resources));
-console.log("MINE: " + this.mod.countResource(this.mod.game.player, "wood"));
 
     //
     // we use numeric values to simplify hte refactor, so we don't need to change every
@@ -111,8 +109,6 @@ console.log("MINE: " + this.mod.countResource(this.mod.game.player, "wood"));
 	  if (i == 4) { receiving["ore"]   = trade_overlay.get[i]; }
         }
       }
-
-alert(JSON.stringify(trade_overlay.give) + " - " + JSON.stringify(trade_overlay.get));
 
       settlers_self.addMove(`clear_advert\t${settlers_self.game.player}`);
       settlers_self.addMove(`offer\t${settlers_self.game.player}\t${trade_overlay.tradeType}\t${JSON.stringify(offering)}\t${JSON.stringify(receiving)}`);

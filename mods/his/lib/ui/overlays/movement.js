@@ -16,6 +16,11 @@ class MovementOverlay {
     let source = mobj.source;
     let destination = mobj.destination;
 
+
+    let from = this.mod.game.spaces[source].name;
+    let to = "";
+    if (destination === "") { destination = "?"; } else { to = this.mod.game.spaces[destination].name; }
+
     //
     // regular to move
     // regular already moved
@@ -119,6 +124,8 @@ class MovementOverlay {
       cam_idx : cam ,
       commanders : commanders ,
       units_to_move : units_to_move ,
+      from : from ,
+      to : to ,
     };
 
     this.overlay.show(MovementOverlayTemplate(obj));
