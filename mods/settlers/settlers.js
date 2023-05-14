@@ -270,9 +270,8 @@ class Settlers extends GameTemplate {
       }
 
       this.game.queue.push("READY");
-      //Board
+      // this is BAD -- do we force a save here in generate map so as not to lose POOL data
       this.game.queue.push("generate_map");
-
       this.game.queue.push(`POOLDEAL\t3\t18\t2`);
       this.game.queue.push(`POOLDEAL\t2\t19\t1`);
 

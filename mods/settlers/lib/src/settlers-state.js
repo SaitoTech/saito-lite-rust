@@ -354,7 +354,6 @@ class SettlersState {
         let tileCt = 0;
         let tokenCt = 0;
         let tile, resourceName, token;
-        console.log(this.game.pool, this.game.deck);
         for (let hex of this.hexgrid.hexes) {
             tile = this.game.pool[0].hand[tileCt++];
             resourceName = this.game.deck[1].cards[tile].resource;

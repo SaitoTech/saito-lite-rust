@@ -983,8 +983,12 @@ ul.horizontal_list li.iconoption {
 
 .player-notice+.tbd {
   border-top: 1px dashed var(--text-color);
-  padding-top: 0.5em;
+  padding-top: 1rem;
 }
+.hud-body .status .player-notice+.tbd {
+  padding-top: 1rem;
+}
+
 
 .tbd ul {
   margin-top: 0.5em;

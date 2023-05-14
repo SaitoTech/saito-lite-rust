@@ -4,35 +4,24 @@
     height: 80vh;
     background-image: url(/his/img/backgrounds/Jozef-Brandt-Pospolite-ruszenie-u-brodu.jpeg);
     background-size: cover;
+    display: grid;
+    grid-template-rows: min-content 1fr min-content;
 }
 
 .movement-header {
     background: #0009;
     width: 100%;
     color: white;
-    margin-left: auto;
-    margin-right: auto;
     font-size: 2.4rem;
     max-width: 100%;
     padding: 1rem;
     line-height: 3.4rem;
     text-align: center;
-}
-
-.movement-description {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    justify-items: center;
-    justify-content: space-evenly;
-    width: max-content;
-    min-height: 5rem;
-    font-size: 5rem;
-    text-transform: uppercase;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 3rem;
-    margin-bottom: 4rem;
+    margin-bottom: 3rem;
 }
+
 .movement-from {
     background-color: black;
     padding-left: 1rem;
@@ -41,27 +30,33 @@
     -webkit-text-stroke: 1px goldenrod;
     color: white;
     border: 2px solid goldenrod;
+    width: max-content;
+    white-space: nowrap;
+    display: inline-block;
+    cursor: pointer;
 }
 .movement-to {
     background-color: goldenrod;
     padding-left: 1rem;
     padding-right: 1rem;
     border-radius: 0.5rem;
-    -webkit-text-stroke: 1px #000;
-    color: white;
+    color: black;
     border: 2px solid black;
-}
-
-.movement-direction {
-    font-size: 5rem;
-    font-weight: bold;
+    width: max-content;
+    white-space: nowrap;
+    display: inline-block;
+    cursor: pointer;
 }
 
 .movement-table {
     display: grid;
-    grid-template-columns: min-content min-content min-content min-content;
-    justify-content: space-evenly;
+    grid-template-columns: repeat(4, 1fr);
+    justify-content: space-around;
     justify-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: min-content;
+    align-items:center;
 }
 
 .movement-unit {
@@ -69,6 +64,9 @@
     height: 30rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
+    padding: rem;
+    margin-left: 3rem;
+    margin-right: 3rem;
 }
 
 .movement-unit .unit-img {
@@ -109,8 +107,8 @@
 }
 
 .unit-img {
-    height: 20rem;
-    width: 20rem;
+    height: 15rem;
+    width: 15rem;
 }
 .unit-desc {
     text-align: center;
@@ -155,6 +153,7 @@
   margin-left: auto;
   margin-right: auto;
   width: max-content;
+  margin-bottom:5rem;
 }
 
 .movement-submit-button {
