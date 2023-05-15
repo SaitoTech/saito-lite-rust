@@ -9,13 +9,21 @@ class MovementOverlay {
     this.overlay = new SaitoOverlay(this.app, this.mod, false);
   }
 
+  hide() {
+    this.overlay.hide();
+    return;
+  }
+
   render(mobj, units_to_move = null, selectUnitsInterface = null, selectDestinationInterface = null) {
 
     let space = mobj.space;
     let faction = mobj.faction;
     let source = mobj.source;
     let destination = mobj.destination;
+    let max_formation_size = this.mod.returnMaxFormationSize(units_to_move);
 
+    let units = space.units[faction];
+    
 
     let from = this.mod.game.spaces[source].name;
     let to = "";
@@ -126,16 +134,16 @@ class MovementOverlay {
       units_to_move : units_to_move ,
       from : from ,
       to : to ,
+      max_formation_size : max_formation_size ,
     };
 
     this.overlay.show(MovementOverlayTemplate(obj));
+
     this.attachEvents(obj);
 
   }
 
   attachEvents(obj) {
-
-console.log(JSON.stringify(obj));
 
     let qs = "";
     let el;

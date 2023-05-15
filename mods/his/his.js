@@ -17850,6 +17850,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
             return 0;
           },
 
+
           function(destination_spacekey) {
 
             let space = his_self.spaces[source_spacekey];
@@ -17908,16 +17909,28 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
                 let id = $(this).attr("id");
 
                 if (id === "end") {
-		  his_self.selectDestinationInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+		  his_self.movement_overlay.hide();
+		  selectDestinationInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
                   return;
                 }
 
+		//
+		// check for max formation size
+		//
+		let unitno = 0;
+		for (let i = 0; i < units_to_move.length; i++) {
+		  if (space.units[faction][units_to_move[i]].command_value == 0) { unitno++; }
+		  if (unitno >= max_formation_size) { 
+		    alert("Maximum Formation Size: " + max_formation_size);
+		    return;
+		  }
+		}
+
+
 	        if (units_to_move.includes(id)) {
-console.log("THIS IS ALREADY MOVED!");
 	          let idx = units_to_move.indexOf(id);
 	          if (idx > -1) {
   		    units_to_move.splice(idx, 1);
-console.log("SPLICED IT OUT!");
 	          }
 	        } else {
 	          if (!units_to_move.includes(parseInt(id))) {
@@ -17939,7 +17952,6 @@ console.log("SPLICED IT OUT!");
             selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
           }
         );
-	his_self.updateLog("IMPLEMENTED -- MOVEMENT IN SPRING DEPLOYMENT");
       });
     }
   }
@@ -18080,9 +18092,23 @@ console.log("SPLICED IT OUT!");
             let id = $(this).attr("id");
 
 	    if (id === "end") {
+	      his_self.movement_overlay.hide();
 	      selectDestinationInterface(his_self, units_to_move);
 	      return;
 	    }
+
+	    //
+	    // check for max formation size
+	    //
+	    let unitno = 0;
+	    for (let i = 0; i < units_to_move.length; i++) {
+	      if (space.units[faction][units_to_move[i]].command_value == 0) { unitno++; }
+	      if (unitno >= max_formation_size) { 
+	        alert("Maximum Formation Size: " + max_formation_size);
+	        return;
+	      }
+	    }
+
 
 	    if (units_to_move.includes(id)) {
 	      let idx = units_to_move.indexOf(id);
