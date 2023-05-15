@@ -267,11 +267,10 @@ class PeerManager {
   handleSignalingMessage(data) {
     const { type, sdp, candidate, targetPeerId, public_key } = data;
     if (type === "renegotiate-offer" || type === "offer") {
-      if (
-        (this.getPeerConnection(public_key).connectionState === "connected",
-        this.getPeerConnection(public_key).remoteDescription !== null)
-      )
+      if ( this.getPeerConnection(public_key).connectionState === "connected" || this.getPeerConnection(public_key).remoteDescription !== null){
         return;
+      }
+   
       console.log(this.getPeerConnection(public_key), "remote description offer");
       this.getPeerConnection(public_key)
         .setRemoteDescription(new RTCSessionDescription({ type: "offer", sdp }))
