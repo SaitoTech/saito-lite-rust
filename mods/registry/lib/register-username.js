@@ -11,7 +11,7 @@ class RegisterUsername {
     this.loader = new SaitoLoader(this.app, this.mod, ".saito-overlay-form");
     this.callback = null;
 
-    app.connection.on("update_identifier", (publickey) => {
+    /*app.connection.on("update_identifier", (publickey) => {
       if (document.getElementById("register-username-template")){
         if (publickey === app.wallet.returnPublicKey()) {    
           if (app.keychain.returnIdentifierByPublicKey(publickey, true) !== publickey){
@@ -20,12 +20,12 @@ class RegisterUsername {
           }
         }
       }
-    });
-
+    });*/
+    
   }
 
   render(msg = "") {
-    this.overlay.show(RegisterUsernameTemplate(msg), this.callback);
+    this.overlay.show(RegisterUsernameTemplate(msg));
     this.attachEvents();
   }
 
@@ -48,7 +48,8 @@ class RegisterUsername {
         }
 
         try {
-      	  document.querySelector(".saito-overlay-form-text").innerHTML = "checking for availability...";
+          document.querySelector(".saito-overlay-form-header-title").innerHTML = "Registering name...";
+      	  document.querySelector(".saito-overlay-form-text").remove();
       	  document.querySelector(".saito-overlay-form-input").remove();
       	  document.querySelector(".saito-overlay-form-submitline").remove();
       	} catch (err) {console.log(err);}
@@ -72,9 +73,6 @@ class RegisterUsername {
                 try {
                   let register_success = this.mod.tryRegisterIdentifier(identifier);
                   if (register_success) {
-                    // no need for alert
-                    document.querySelector(".saito-overlay-form-text").innerHTML = "registering name...";
-
                     //
                     // mark wallet that we have registered username
                     //
@@ -82,6 +80,14 @@ class RegisterUsername {
 
                     // Change Saito-header / Settings page
                     this.app.connection.emit("update_identifier", this.app.wallet.returnPublicKey());
+
+                    //Fake responsiveness
+                    setTimeout(()=>{
+                      this.overlay.remove();
+                      if (this.callback) {
+                        this.callback(identifier);
+                      }
+                    }, 2000);
 
                   } else {
                     salert("Error 411413: Error Registering Username");

@@ -5,7 +5,7 @@ module.exports = BackupTemplate = (identifier, newIdentifier) => {
     if (identifier.indexOf("@saito") == -1) { 
       txt = "<span style='color:var(--saito-secondary);'>"+identifier+"@saito</span>"; 
     } else {
-      txt = "<span style='color:var(--saito-secondary);'>"+identifier+"</span>"; 
+      txt = "<span class='pending_registration' style='color:var(--saito-secondary);'>"+identifier+"</span>"; 
     }
   }
   let intro = "";
@@ -16,7 +16,7 @@ module.exports = BackupTemplate = (identifier, newIdentifier) => {
     <form id="backup-template">
       <div class="saito-overlay-form">
         <div class="saito-overlay-form-header">
-          <div class="saito-overlay-form-header-title">Account Recovery</div>
+          <div class="saito-overlay-form-header-title">Account Recovery Setup</div>
         </div>
         <div class="saito-overlay-form-text">${intro}Protect ${txt} by adding remote login. Your email / password will be used for wallet encryption and not shared publicly</div>
         <div class="saito-overlay-subform">

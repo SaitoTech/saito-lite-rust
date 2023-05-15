@@ -78,8 +78,8 @@ class LeagueOverlay {
 
     if (document.querySelector(".backup_account")) {
       document.querySelector(".backup_account").onclick = () => {
-        this.app.connection.emit("recovery-backup-overlay-render-request", ()=>{
-          this.render();
+        this.app.connection.emit("recovery-backup-overlay-render-request", {
+          success_callback: ()=>{ this.render(); }
         });
       }
     }
