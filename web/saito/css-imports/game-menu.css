@@ -40,6 +40,7 @@
 .game-menu ul li ul .game-menu-sub-option , .game-menu ul li ul li ul .game-menu-sub-sub-option {
   height: 50px;
   line-height: 50px;
+  min-width: 20rem;
 }
 
 .game-menu .game-menu-sub-options:before{
@@ -126,8 +127,8 @@
     height: 60px;
     width: 80px;
     margin: 0.5rem;
-    line-height: 6rem;
-    border-radius: 2rem;
+    line-height: 62px;
+    border-radius: 0.5rem;
   }
 
   .game-menu-sub-options {
