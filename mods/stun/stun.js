@@ -71,7 +71,7 @@ class Stun extends ModTemplate {
       },
     ];
 
-    this.styles = ["/videocall/style.css"];
+    this.styles = ["/saito/saito.css", "/videocall/style.css"];
 
     app.connection.on("stun-send-message-to-server", (data) => {
       this.sendStunMessageToServerTransaction(data);
@@ -178,7 +178,6 @@ class Stun extends ModTemplate {
       ];
     }
     if (type == "game-menu") {
-
       stun_self.attachStyleSheets();
       super.render(this.app, this);
 
@@ -222,9 +221,6 @@ class Stun extends ModTemplate {
     }
 
     if (type === "user-menu") {
-
-      stun_self.attachStyleSheets();
-      super.render(this.app, this);
 
       if (obj?.publickey) {
         if (obj.publickey !== this.app.wallet.returnPublicKey()){
