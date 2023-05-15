@@ -6,7 +6,7 @@
   width: auto;
   height: 40px;
   border: 1px solid #444;
-  border-radius: 5px;
+  border-radius: 0.5rem;
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
   border-bottom: 1px solid var(--saito-skyline-grey);
   margin: 1px 1px 3px 3px;
@@ -40,49 +40,17 @@
 .game-menu ul li ul .game-menu-sub-option , .game-menu ul li ul li ul .game-menu-sub-sub-option {
   height: 50px;
   line-height: 50px;
+  min-width: 20rem;
 }
 
-#quake-controls {
-    width: 600px;
-}
-
-#table-div {
-    overflow-y:scroll;
-    height: 500px;
-    display: block;
-    font-size: 18px;
-}
-
-#screen-cover {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    z-index: -100;
-    background-color: rgba(50, 50, 50, 1%);
-    backdrop-filter: blur(1.5px);
-}
-
-#cover-content {
-    margin-top: 50%;
-    margin-bottom: 50%;
-    background-image: linear-gradient(rgba(250, 250, 250, 0%), rgba(250, 250, 250, 100%), rgba(250, 250, 250, 0%));
-}
-
-#controls-bottom {
-    //position: absolute;
-    //bottom: 0;
-}
-
-.game-menu .game-menu-sub-options:before{
+/*.game-menu .game-menu-sub-options:before{
  content: "";
  position: absolute;
  top: 0px;
  bottom: -20px;
  left: -5px;
  right: -5px;
-}
+}*/
 
 .game-menu ul .game-menu-icon {
   width: 40px;
@@ -100,13 +68,18 @@
 }
 .game-menu-sub-options, .game-menu-sub-sub-options{
   display:none;
-  position: relative;
+  position: absolute;
+  top: 100%;
 }
 
 .game-menu-sub-sub-options{
   position: relative;
   left: 100%;
   top: -100%;
+}
+
+.game-menu-option {
+  position: relative;
 }
 
 .game-menu-option:hover {
@@ -128,37 +101,100 @@
   font-weight: bold;
 }
 
-.game-menu-mobile-toggle {
+.game-menu .game-menu-mobile-toggle {
   display: none;
 }
-
 
 .game-menu .notification::after{
   content: "◉";
   color: var(--saito-primary);
+  margin-left: 1rem;
 }
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
-  .game-menu > ul li{
-    display: none;
+  .game-menu {
+    width: unset;
+    height: unset;
+    border: unset;
+    box-shadow: unset;
+    background-color: unset;
   }
+
+  .game-menu > ul { 
+    flex-direction: column;
+   }
+
+  .game-menu > ul li, .game-menu > ul li.game-menu-icon{
+    display: none;
+    background-color: whitesmoke;
+    box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
+    background-color: #f5f5f5ee;
+    height: 60px;
+    width: 80px;
+    margin: 0.5rem;
+    line-height: 62px;
+    border-radius: 0.5rem;
+  }
+
+  .game-menu-sub-options {
+    left: 100%;
+    top: -100%;
+  }
+
+  .game-menu-sub-option {
+    min-width: fit-content;
+    white-space: nowrap;
+  }
+
   .game-menu.mobile-visible > ul li{
     display: list-item;
   }
-  .game-menu > ul li:last-of-type{
+  .game-menu > ul li.game-menu-mobile-toggle{
     display: list-item;
   }
 }
 
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
-  .game-menu > ul li{
-    display: none;
+
+  .game-menu {
+    width: unset;
+    height: unset;
+    border: unset;
+    box-shadow: unset;
+    background-color: unset;
   }
+
+  .game-menu > ul { 
+    flex-direction: column;
+   }
+
+  .game-menu > ul li, .game-menu > ul li.game-menu-icon{
+    display: none;
+    background-color: whitesmoke;
+    box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
+    background-color: #f5f5f5ee;
+    height: 60px;
+    width: 80px;
+    margin: 0.5rem;
+    line-height: 6rem;
+    border-radius: 0.5rem;
+  }
+
+  .game-menu-sub-options {
+    left: 100%;
+    top: -100%;
+    margin: 8px 0 0 0;
+  }
+
+  .game-menu-sub-option {
+    min-width: fit-content;
+  }
+
   .game-menu.mobile-visible > ul li{
     display: list-item;
   }
-  .game-menu > ul li:last-of-type{
+  .game-menu > ul li.game-menu-mobile-toggle{
     display: list-item;
   }
 }

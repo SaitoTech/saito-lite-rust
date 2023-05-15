@@ -278,6 +278,13 @@ class Mahjong extends OnePlayerGameTemplate {
     //
     this.displayBoard();
 
+    if (app.browser.isMobileBrowser(navigator.userAgent)) {
+      this.hammer.render(this.app, this);
+      this.hammer.attachEvents(this.app, this, "#mahj-rowbox");
+    }else{
+      this.sizer.render();
+      this.sizer.attachEvents("#mahj-rowbox");
+    }
   }
 
 

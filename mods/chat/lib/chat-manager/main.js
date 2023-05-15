@@ -46,12 +46,12 @@ class ChatManager {
       //
       // mobile devices should not force open chat for us
       //
-      if (app.browser.isMobileBrowser()) {
-        let active_mod = this.app.modules.returnActiveModule();
-        if (active_mod.respondTo("arcade-games")) {
-          return;
-        }
-      }
+      //if (app.browser.isMobileBrowser()) {
+      //  let active_mod = this.app.modules.returnActiveModule();
+      //  if (active_mod.respondTo("arcade-games")) {
+      //    return;
+      //  }
+      //}
 
 
       if (!group) {
