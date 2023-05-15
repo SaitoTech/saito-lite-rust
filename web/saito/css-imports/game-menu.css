@@ -178,6 +178,7 @@
   .game-menu-sub-options {
     left: 100%;
     top: -100%;
+    margin: 8px 0 0 0;
   }
 
   .game-menu-sub-option {
