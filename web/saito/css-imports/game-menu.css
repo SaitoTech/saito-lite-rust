@@ -6,7 +6,7 @@
   width: auto;
   height: 40px;
   border: 1px solid #444;
-  border-radius: 5px;
+  border-radius: 0.5rem;
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
   border-bottom: 1px solid var(--saito-skyline-grey);
   margin: 1px 1px 3px 3px;
@@ -178,7 +178,7 @@
     width: 80px;
     margin: 0.5rem;
     line-height: 6rem;
-    border-radius: 2rem;
+    border-radius: 0.5rem;
   }
 
   .game-menu-sub-options {
