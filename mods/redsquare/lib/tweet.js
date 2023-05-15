@@ -12,14 +12,7 @@ class Tweet {
     this.mod = mod;
     this.container = container;
     this.name = "Tweet";
-    this.init(app, mod, tx)
-  }
-
-  async init(app, mod, tx){
-    console.log(tx, 'transaction')
-    this.tx =  await tx;
-    
-    console.log(this.tx, 'transaction')
+    this.tx = tx;
     // this.tx = tx;
     if (!this.tx.optional) {
       this.tx.optional = {};
@@ -28,10 +21,6 @@ class Tweet {
       this.tx.optional.num_likes = 0;
     }
 
-    return;
-    // let tx = this.tx
-    console.log(tx, 'transactional')
-    let txmsg = await tx.returnMessage()
     this.text = "";
     this.parent_id = "";
     this.thread_id = "";
@@ -40,24 +29,14 @@ class Tweet {
     this.updated_at = 0;
     this.notice = "";
 
-    //
-    // userline will be set to this in template if not specified
-    //
-    // we specify it to indicate why it is showing up now!
-    //
-    //  let dt = app.browser.formatDate(tweet.tx.timestamp);
-    //  let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
-    //
-    this.userline = "";
-    //
-    //
-
     this.user = new SaitoUser(
       app,
       mod,
       `.tweet-${this.tx.signature} > .tweet-header`,
       this.tx.from[0].publicKey
     );
+
+    console.log(this.user, 'user')
 
     this.children = [];
     this.children_sigs_hmap = {};
@@ -77,6 +56,27 @@ class Tweet {
     this.force_long_tweet = false;
     this.is_long_tweet = false;
     this.is_retweet = false;
+
+    this.init(app, mod)
+  }
+
+  async init(app, mod){
+  
+    // let tx = this.tx
+    let txmsg = await this.tx.returnMessage()
+
+    //
+    // userline will be set to this in template if not specified
+    //
+    // we specify it to indicate why it is showing up now!
+    //
+    //  let dt = app.browser.formatDate(tweet.tx.timestamp);
+    //  let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
+    //
+    this.userline = "";
+    //
+    //
+   
     try {
       this.setKeys(txmsg.data);
     } catch (err) {
@@ -87,7 +87,6 @@ class Tweet {
     } catch (err) {
       console.log("ERROR 2: " + err);
     }
-
     this.generateTweetProperties(app, mod, 1);
 
     //

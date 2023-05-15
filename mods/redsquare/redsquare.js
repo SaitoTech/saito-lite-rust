@@ -273,7 +273,7 @@ class RedSquare extends ModTemplate {
     // prefer at the top of their feed for more rapid page load.
     //
     if (app.BROWSER == 0) {
-      await this.updateTweetsCacheForBrowsers();
+      // await this.updateTweetsCacheForBrowsers();
     }
   }
 
@@ -476,9 +476,11 @@ class RedSquare extends ModTemplate {
         return;
       }
       for (let z = 0; z < tweets.length; z++) {
-        let newtx = Transaction.deserialize(tweets[z], new Factory());
+        let newtx =  Transaction.deserialize(tweets[z], new Factory());
 
-        // newtx.deserialize_from_web(this.app, tweets[z]);
+        console.log(newtx, 'transaction')
+
+        // newtx.deserialize(this.app, tweets[z]);
         await this.addTweet(newtx, true, true); // prepend and render ?
       }
       this.app.connection.emit("redsquare-home-render-request");
@@ -492,6 +494,7 @@ class RedSquare extends ModTemplate {
   ///////////////////////
   async onConfirmation(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
+    
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
@@ -738,7 +741,7 @@ class RedSquare extends ModTemplate {
           }
           res.rows.forEach((row) => {
             let tx = Transaction.deserialize(row.tx, new Factory());
-            // tx.deserialize_from_web(this.app, row.tx);
+            // tx.deserialize(this.app, row.tx);
             if (!tx.optional) {
               tx.optional = {};
             }
@@ -1089,10 +1092,10 @@ class RedSquare extends ModTemplate {
       obj.data[key] = data[key];
     }
 
-    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction(app.wallet.publicKey);
     for (let i = 0; i < tx.to.length; i++) {
       if (tx.to[i].publicKey !== this.publicKey) {
-        newtx.transaction.to.push(new saito.default.slip(tx.transaction.to[i].add, 0.0));
+        newtx.addToSlip(new saito.default.slip(tx.transaction.to[i].add, 0.0));
       }
     }
 
@@ -1181,16 +1184,24 @@ class RedSquare extends ModTemplate {
       obj.data[key] = data[key];
     }
 
-    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
-    newtx.msg = obj;
-    for (let i = 0; i < keys.length; i++) {
-      if (keys[i] !== app.wallet.publicKey) {
-        newtx.transaction.to.push(new saito.default.slip(keys[i]));
+    try {
+      let newtx = await redsquare_self.app.wallet.createUnsignedTransaction(app.wallet.publicKey);
+      newtx.msg = obj;
+      for (let i = 0; i < keys.length; i++) {
+        if (keys[i] !== app.wallet.publicKey) {
+          console.log(newtx.transaction, 'transaction')
+          newtx.addToSlip(new saito.default.slip(keys[i]))
+          // newtx.transaction.to.push(new saito.default.slip(keys[i]));
+        }
       }
+      await newtx.sign();
+      // console.log(newtx.transaction)
+      await redsquare_self.app.network.propagateTransaction(newtx);
+      return newtx;
+    } catch (error) {
+      console.log('error sending tweet tx', error)
     }
-    await newtx.sign();
-    await redsquare_self.app.network.propagateTransaction(newtx);
-    return newtx;
+
   }
 
   async receiveTweetTransaction(blk, tx, conf, app) {
@@ -1243,8 +1254,9 @@ class RedSquare extends ModTemplate {
           //
           if (txmsg.data?.retweet_tx) {
             if (txmsg.data?.retweet_tx) {
-              let rtx = new saito.default.transaction();
-              rtx.deserialize_from_web(this.app, txmsg.data.retweet_tx);
+              // let rtx = new saito.default.transaction();
+              let rtx = Transaction.deserialize(txmsg.data.retweet_tx, new Factory());
+              // Transaction.deserialize(this.app, txmsg.data.retweet_tx);
               let rtxsig = rtxobj.sig;
 
               if (this.tweets_sigs_hmap[rtxsig]) {
@@ -1429,8 +1441,8 @@ class RedSquare extends ModTemplate {
       //
       // create the transaction
       //
-      let tx = new saito.default.transaction();
-      tx.deserialize_from_web(this.app, rows[i].tx);
+      let tx = Transaction.deserialize(rows[i].tx, new Factory());
+      // tx.deserialize(this.app, rows[i].tx);
       tx.optional.num_replies = rows[i].num_replies;
       tx.optional.num_retweets = rows[i].num_retweets;
       tx.optional.num_likes = rows[i].num_likes;
@@ -1453,7 +1465,7 @@ class RedSquare extends ModTemplate {
           // create the transaction
           //
           let tx = new saito.default.transaction();
-          tx.deserialize_from_web(this.app, rows[i].tx);
+          tx.deserialize(this.app, rows[i].tx);
 
     let txmsg = tx.returnMessage();
     console.log("TX: ");
@@ -1488,7 +1500,7 @@ class RedSquare extends ModTemplate {
             // create the transaction
             //
             let tx = new saito.default.transaction();
-            tx.deserialize_from_web(this.app, rows[ii].tx);
+            tx.deserialize(this.app, rows[ii].tx);
             tx.optional.num_replies = rows[ii].num_replies;
             tx.optional.num_retweets = rows[ii].num_retweets;
             tx.optional.num_likes = rows[ii].num_likes;
@@ -1539,7 +1551,7 @@ class RedSquare extends ModTemplate {
       obj.data[key] = data[key];
     }
 
-    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction(app.wallet.publicKey);
     newtx.msg = obj;
     await newtx.sign();
     await redsquare_self.app.network.propagateTransaction(newtx);
@@ -1623,7 +1635,7 @@ class RedSquare extends ModTemplate {
 
             for (let i = 0; i < rows.length; i++) {
               let tx = new saito.default.transaction();
-              tx.deserialize_from_web(app, rows[i].tx);
+              tx.deserialize(app, rows[i].tx);
               let txmsg = tx.returnMessage();
               let text = txmsg.data.text;
               let publickey = tx.from[0].publicKey;
@@ -1664,7 +1676,7 @@ class RedSquare extends ModTemplate {
             console.info(rows.length);
             for (let i = 0; i < rows.length; i++) {
               let tx = new saito.default.transaction();
-              tx.deserialize_from_web(redsquare_self.app, rows[i].tx);
+              tx.deserialize(redsquare_self.app, rows[i].tx);
               //console.info(rows[i]);
               let txmsg = tx.returnMessage();
               console.info(txmsg);
