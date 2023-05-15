@@ -12,13 +12,14 @@ const SettlersPlayer = require("./lib/src/settlers-player");
 const SettlersState = require("./lib/src/settlers-state");
 const SettlersActions = require("./lib/src/settlers-actions");
 const SettlersInit = require("./lib/src/settlers-init");
-const TradeOverlay = require("./lib/overlays/trade");
-const BuildOverlay = require("./lib/overlays/build");
-const BankOverlay = require("./lib/overlays/bank");
-const DevCardOverlay = require("./lib/overlays/dev-card");
-const YearOfPlentyOverlay = require("./lib/overlays/year-of-plenty");
-const DiscardOverlay = require("./lib/overlays/discard");
-const MonopolyOverlay = require("./lib/overlays/monopoly");
+
+const TradeOverlay = require("./lib/ui/overlays/trade");
+const BuildOverlay = require("./lib/ui/overlays/build");
+const BankOverlay = require("./lib/ui/overlays/bank");
+const DevCardOverlay = require("./lib/ui/overlays/dev-card");
+const YearOfPlentyOverlay = require("./lib/ui/overlays/year-of-plenty");
+const DiscardOverlay = require("./lib/ui/overlays/discard");
+const MonopolyOverlay = require("./lib/ui/overlays/monopoly");
 
 //////////////////
 // CONSTRUCTOR  //
