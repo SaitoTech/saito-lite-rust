@@ -43,14 +43,14 @@
   min-width: 20rem;
 }
 
-.game-menu .game-menu-sub-options:before{
+/*.game-menu .game-menu-sub-options:before{
  content: "";
  position: absolute;
  top: 0px;
  bottom: -20px;
  left: -5px;
  right: -5px;
-}
+}*/
 
 .game-menu ul .game-menu-icon {
   width: 40px;
@@ -68,13 +68,18 @@
 }
 .game-menu-sub-options, .game-menu-sub-sub-options{
   display:none;
-  position: relative;
+  position: absolute;
+  top: 100%;
 }
 
 .game-menu-sub-sub-options{
   position: relative;
   left: 100%;
   top: -100%;
+}
+
+.game-menu-option {
+  position: relative;
 }
 
 .game-menu-option:hover {
@@ -96,14 +101,14 @@
   font-weight: bold;
 }
 
-.game-menu-mobile-toggle {
+.game-menu .game-menu-mobile-toggle {
   display: none;
 }
-
 
 .game-menu .notification::after{
   content: "◉";
   color: var(--saito-primary);
+  margin-left: 1rem;
 }
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
@@ -138,6 +143,7 @@
 
   .game-menu-sub-option {
     min-width: fit-content;
+    white-space: nowrap;
   }
 
   .game-menu.mobile-visible > ul li{
