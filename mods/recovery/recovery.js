@@ -101,23 +101,7 @@ class Recovery extends ModTemplate {
       let unknown_user = this.app.keychain.returnIdentifierByPublicKey(this.app.wallet.returnPublicKey(), true) === this.app.wallet.returnPublicKey();
 
     	if (unknown_user) {
-	      x.push({
-            text: "Login",
-            icon: "fa fa-sign-in",
-            //allowed_mods: ["redsquare"], //Why restrict it??
-            callback: function (app) {
-	             app.connection.emit("recovery-login-overlay-render-request");
-            }
-    	  });
       } else {
-	      x.push({
-            text: "Backup",
-            icon: "fa-sharp fa-solid fa-cloud-arrow-up",
-            rank: 130,
-            callback: function (app) {
-      	      app.connection.emit("recovery-backup-overlay-render-request");
-            }
-	      });
       }
 
       return x;

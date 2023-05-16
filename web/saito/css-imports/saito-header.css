@@ -18,7 +18,6 @@
   display: flex;
   align-items: center;
   margin-left: auto;
-  margin-right: 2rem;
 }
 
 .saito-header-logo {
@@ -332,6 +331,23 @@
   gap: 1rem;
 }
 
+.saito-floating-menu-mask {
+  width: 100%;
+  height: 100%;
+  background: var(--saito-background-color);
+  position: absolute;
+  top: 0rem;
+  left: 0rem;
+  z-index: -1;
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.saito-floating-menu-mask.show {
+  z-index: 2;
+  opacity: 0.9;
+}
+
 .saito-floating-container {
   display: inline-block;
   height: max-content;
@@ -339,7 +355,7 @@
   position: fixed;
   bottom: 2.5rem;
   right: 2.5rem;
-  z-index: 2;
+  z-index: 3;
 }
 
 .saito-floating-item-container {
