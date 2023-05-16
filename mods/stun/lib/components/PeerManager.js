@@ -49,10 +49,10 @@ class PeerManager {
       }
 
       if (data.type === "peer-joined") {
-        let peerConnection = this.peers.get(data.public_key);
-        if(!peerConnection){
+        // let peerConnection = this.peers.get(data.public_key);
+        // if(!peerConnection){
           this.createPeerConnection(data.public_key, "offer");
-        }
+        // }
       } else if (data.type === "peer-left") {
         this.removePeerConnection(data.public_key);
       } else if (data.type === "toggle-audio") {
