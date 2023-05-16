@@ -1,5 +1,5 @@
 const SettlersRulesOverlayTemplate = require("./rules.template");
-const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("./../../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class RulesOverlay {
 

@@ -23,13 +23,14 @@ export default class Wallet {
 
     preferred_crypto: "SAITO",
     preferred_txs: [],
+    cryptos: {},
 
     inputs: new Array<Slip>(), // slips available
     outputs: new Array<Slip>(), // slips spenr
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.901,
+    version: 4.906,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -791,6 +792,7 @@ console.log("---------------------");
    * the new wallet to local storage.
    */
   async resetWallet() {
+    //console.log("Reset Wallet");
     this.wallet.privatekey = this.app.crypto.generateKeys();
     this.wallet.publickey = this.app.crypto.returnPublicKey(this.wallet.privatekey);
 
@@ -812,9 +814,13 @@ console.log("---------------------");
 
     this.saveWallet();
 
+    // let modules purge stuff
+    //this.app.modules.onWalletReset();
+
     this.app.options.invites = [];
     this.app.options.games = [];
     this.app.options.leagues = [];
+    this.app.options.chat = [];
     this.app.storage.saveOptions();
 
     if (this.app.browser.browser_active == 1) {
@@ -960,7 +966,6 @@ console.log("---------------------");
   /////////////////////////
   // WEB3 CRYPTO MODULES //
   /////////////////////////
-
   returnInstalledCryptos() {
     const cryptoModules = this.app.modules.returnModulesBySubType(CryptoModule);
     if (this.saitoCrypto !== null) {
@@ -1096,12 +1101,32 @@ console.log("---------------------");
     }
     const balances = await Promise.all(balancePromises);
     for (let i = 0; i < addresses.length; i++) {
+      this.savePreferredCryptoBalance(ticker, addresses[i], balances[i]);
       returnObj.push({ address: addresses[i], balance: balances[i] });
     }
     if (mycallback != null) {
       mycallback(returnObj);
     }
     return returnObj;
+  }
+
+  savePreferredCryptoBalance(ticker, address, balance) {
+
+    //
+    // if this is my address...
+    //
+    let cryptomods = this.returnInstalledCryptos();
+    for (let i = 0; i < cryptomods.length; i++) {
+      if (cryptomods[i].ticker === ticker) {
+        if (cryptomods[i].returnAddress() === address) {
+            //
+            // cache the results, so i know if payments are new
+            //
+	    this.app.wallet.wallet.cryptos[ticker] = { address : address, balance : balance };	   
+        }
+      }
+    }
+
   }
 
   /*** courtesy function to simplify balance checks for a single address w/ ticker ***/
@@ -1111,6 +1136,7 @@ console.log("---------------------");
       return 0;
     }
     if (robj[0].balance) {
+      this.savePreferredCryptoBalance(ticker, address, robj[0].balance);
       return robj[0].balance;
     }
     return 0;

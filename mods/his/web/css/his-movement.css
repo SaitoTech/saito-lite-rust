@@ -1,0 +1,193 @@
+
+.movement-overlay {
+    width: 90vw;
+    height: 80vh;
+    background-image: url(/his/img/backgrounds/Jozef-Brandt-Pospolite-ruszenie-u-brodu.jpeg);
+    background-size: cover;
+    display: grid;
+    grid-template-rows: min-content 1fr min-content;
+}
+
+.movement-header {
+    background: #0009;
+    width: 100%;
+    color: white;
+    font-size: 2.4rem;
+    max-width: 100%;
+    padding: 1rem;
+    line-height: 3.4rem;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 3rem;
+}
+
+.movement-from {
+    background-color: black;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 0.5rem;
+    -webkit-text-stroke: 1px goldenrod;
+    color: white;
+    border: 2px solid goldenrod;
+    width: max-content;
+    white-space: nowrap;
+    display: inline-block;
+    cursor: pointer;
+}
+.movement-to {
+    background-color: goldenrod;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 0.5rem;
+    color: black;
+    border: 2px solid black;
+    width: max-content;
+    white-space: nowrap;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.movement-table {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    justify-content: space-around;
+    justify-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: min-content;
+    align-items:center;
+}
+
+.movement-unit {
+    width: min-content;
+    height: 30rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: rem;
+    margin-left: 3rem;
+    margin-right: 3rem;
+}
+
+.movement-unit .unit-img {
+    grid-row: 1;
+    grid-column: 1 / span-2;
+}
+.movement-unit .unit-desc {
+    grid-row: 2;
+    grid-column: 1 / span-2;
+}
+.movement-unit .unit-available {
+    grid-row: 3;
+    grid-column: 1;
+    -webkit-text-stroke: 1px goldenrod;
+    color: white;
+    border: 2px solid goldenrod;
+}
+.movement-unit .unit-moving {
+    grid-row: 3;
+    grid-column: 2;
+    background-color: goldenrod;
+    -webkit-text-stroke: 1px #000;
+    color: white;
+    border: 2px solid black;
+}
+
+.unit-img.regular {
+  background-image: url('/his/img/tiles/venice/VeniceReg-1.svg');
+  background-size: cover;
+}
+.unit-img.mercenary {
+  background-image: url('/his/img/tiles/england/EnglandMerc-1.svg');
+  background-size: cover;
+}
+.unit-img.cavalry {
+  background-image: url('/his/img/tiles/ottoman/OttomanCav-1.svg');
+  background-size: cover;
+}
+
+.unit-img {
+    height: 15rem;
+    width: 15rem;
+}
+.unit-desc {
+    text-align: center;
+    width: 100%;
+    height: 3rem;
+    font-size: 2rem;
+    font-weight: bold;
+    background: #0008;
+    padding-top: 0.25rem;
+    color: white;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.unit-available {
+    background-color: #0008;
+    border-radius: 0.5rem;
+    font-size: 5rem;
+    width: 7rem;
+    height: 6.5rem;
+    color: white;
+    text-align: center;
+    margin-top: 1rem;
+    justify-self: center;
+    cursor: pointer;
+}
+.unit-moving {
+    background-color: #0008;
+    border-radius: 0.5rem;
+    font-size: 5rem;
+    width: 7rem;
+    height: 6.5rem;
+    color: white;
+    text-align: center;
+    margin-top: 1rem;
+    justify-self: center;
+    cursor: pointer;
+}
+
+.movement-controls {
+  margin-top: 3rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: max-content;
+  margin-bottom:5rem;
+}
+
+.movement-submit-button {
+    border: 1px solid black;
+    width: max-content;
+    padding: 1rem 1.5rem;
+    font-size: 2rem;
+    border-radius: 0.5rem;
+    background-color: whitesmoke;
+    cursor: pointer;   
+}
+.movement-submit-button:hover {
+    border: 1px solid white;
+    color: white;
+    background: #000;
+}
+
+.movement-commanders {
+    width: 10rem;
+    height: 100%;
+}
+
+.movement-commander {
+    background-image: url('/his/img/tiles/army/Henry_VIII.svg');
+    -webkit-text-stroke: 1px goldenrod;
+    color: white;
+    border: 2px solid goldenrod;
+    display: block;
+    width: 9rem;
+    height: 9rem;
+    margin-bottom: 1rem;
+}
+
+.movement-commander.dispatched {
+    border: 2px solid red;
+}
+

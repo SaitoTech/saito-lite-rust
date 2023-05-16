@@ -1,5 +1,5 @@
 const RobUserOverlayTemplate = require("./rob-user.template");
-const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("./../../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class RobUserOverlay {
 

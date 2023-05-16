@@ -1240,7 +1240,35 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
             let space = his_self.spaces[source_spacekey];
 
-            let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface) { 
+	    //
+	    // spring deployment doesn't have this, so we wrap the sending/end-move
+	    // action in this dummy function so that the same UI can be used for 
+	    // multiple movement options, with the normal one including intervention
+	    // checks etc.
+	    //
+	    let selectDestinationInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
+
+	      // MOVE THE UNITS
+              units_to_move.sort();
+
+              for (let i = 0; i < units_to_move.length; i++) {
+                his_self.addMove("move\t"+faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
+              }
+              his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
+              his_self.endTurn();
+              return;
+
+	    };
+
+            let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) { 
+
+	      let mobj = {
+		space : space ,
+		faction : faction ,
+		source : source_spacekey ,
+		destination : destination_spacekey ,
+ 	      }
+   	      his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
 
 	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
 	      let msg = "Max Formation Size: " + max_formation_size + " units";
@@ -1249,7 +1277,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
               for (let i = 0; i < space.units[faction].length; i++) {
                 if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
                   if (units_to_move.includes(parseInt(i))) {
-                    html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+                    html += `<li class="option" style="font-weight:bold" id="${i}">* ${space.units[faction][i].name} *</li>`;
                   } else {
                     html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
                   }
@@ -1266,33 +1294,35 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
                 let id = $(this).attr("id");
 
                 if (id === "end") {
-		  // MOVE THE UNITS
-                  units_to_move.sort();
-                  //units_to_move.reverse();
-
-                  for (let i = 0; i < units_to_move.length; i++) {
-                    his_self.addMove("move\t"+faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
-                  }
-                  his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
-                  //his_self.addMove("RESETCONFIRMSNEEDED\tall");
-                  his_self.endTurn();
+		  his_self.selectDestinationInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
                   return;
-
                 }
 
-                if (units_to_move.includes(id)) {
-                  let idx = units_to_move.indexOf(id);
-                  if (idx > -1) {
-                    units_to_move.splice(idx, 1);
-                  }
-                } else {
-                  units_to_move.push(parseInt(id));
-                  selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
-                }
+	        if (units_to_move.includes(id)) {
+console.log("THIS IS ALREADY MOVED!");
+	          let idx = units_to_move.indexOf(id);
+	          if (idx > -1) {
+  		    units_to_move.splice(idx, 1);
+console.log("SPLICED IT OUT!");
+	          }
+	        } else {
+	          if (!units_to_move.includes(parseInt(id))) {
+	            units_to_move.push(parseInt(id));
+	          } else {
+		    for (let i = 0; i < units_to_move.length; i++) {
+		      if (units_to_move[i] === parseInt(id)) {
+		        units_to_move.splice(i, 1);
+		        break;
+		      }
+		    }
+	          }
+	        }
+
+                selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 
               });
             }
-            selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
+            selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
           }
         );
 	his_self.updateLog("IMPLEMENTED -- MOVEMENT IN SPRING DEPLOYMENT");
@@ -1405,13 +1435,21 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
 	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
+	  let mobj = {
+	    space : space ,
+	    faction : faction ,
+   	    source : spacekey ,
+	    destination : "" ,
+ 	  }
+   	  his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
+
 	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
 	  let msg = "Max Formation Size: " + max_formation_size + " units";
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
 	      if (units_to_move.includes(parseInt(i))) {
-	        html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	        html += `<li class="option" style="font-weight:bold" id="${i}">*${space.units[faction][i].name}*</li>`;
 	      } else {
 	        html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
 	      }

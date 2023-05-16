@@ -45,6 +45,26 @@ class ChatSetting {
       this.remove();
       this.app.connection.emit("show-chat-manager-large", to_join);
     });
+  
+    app.connection.on("cancel-meeting", ()=>{
+      if (this.audioStream) {
+        this.audioStream.getTracks().forEach((track) => {
+          track.stop();
+          console.log(track);
+          console.log("stopping audio track");
+        });
+      }
+
+      if (this.videoStream) {
+        this.videoStream.getTracks().forEach((track) => {
+          track.stop();
+          console.log(track);
+          console.log("stopping video track");
+        });
+      }
+
+      this.remove();
+    });
   }
 
   render() {

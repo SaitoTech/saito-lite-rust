@@ -26,6 +26,11 @@
 
 .redsquare-appspace-header .redsquare-page-header-title.tweetmode {
   display: block;
+  cursor: pointer;
+}
+
+.redsquare-appspace-header .redsquare-page-header-title.tweetmode:hover{
+  font-weight: bold;
 }
 
 .redsquare-redsquare::before {

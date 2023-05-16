@@ -36,11 +36,9 @@ class Recovery extends ModTemplate {
     });
 
 
-    app.connection.on("recovery-backup-overlay-render-request", (success_callback = null) => {
+    app.connection.on("recovery-backup-overlay-render-request", (obj = {}) => {
 
       console.debug("Received recovery-backup-overlay-render-request");
-      this.backup_overlay.success_callback = success_callback;
-
       //
       //If we already have the email/password, just send the backup
       //
@@ -49,13 +47,21 @@ class Recovery extends ModTemplate {
         if (key.wallet_decryption_secret && key.wallet_retrieval_hash) {
           let newtx = this.createBackupTransaction(key.wallet_decryption_secret, key.wallet_retrieval_hash);
           this.app.network.propagateTransaction(newtx);
+          if (obj?.success_callback){
+            obj.success_callback();
+          }
           return;
         }
       }
 
+      //Read optional parameters
+      this.backup_overlay.success_callback = obj?.success_callback;
+      this.backup_overlay.desired_identifier = obj?.desired_identifier;
+
       //
       // Otherwise, call up the modal to query them from the user
       //
+
       this.backup_overlay.render();
       
     });

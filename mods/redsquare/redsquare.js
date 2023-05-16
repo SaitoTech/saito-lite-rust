@@ -147,7 +147,7 @@ class RedSquare extends ModTemplate {
     if (type === 'user-menu') {
       return {
         text: `View ${(obj?.publickey && obj.publickey === this.app.wallet.returnPublicKey())?"My ":""}Profile`,
-        icon: "fa-regular fa-user",
+        icon: "fa fa-user",
         callback: function (app, publickey) {
           if (app.modules.returnActiveModule().returnName() == "Red Square"){
             app.connection.emit('redsquare-profile-render-request', publickey);

@@ -169,10 +169,12 @@ try {
 
   decryptMessage(app: Saito) {
 
+    const parsed_msg = this.returnMessage();
+
     //
     // skip decrypting un-encrypted messages
     //
-    if (!app.crypto.isAesEncrypted(this.msg)) {
+    if (!app.crypto.isAesEncrypted(parsed_msg)) {
       return;
     }
 
@@ -188,16 +190,15 @@ try {
     // now we can try to decryp
     //
     try {
-      if (this.msg === null) {
+      if (!parsed_msg) {
         this.dmsg = "";
       } else {
-        const parsed_msg = this.msg;
         this.dmsg = app.keychain.decryptMessage(publickey, parsed_msg);
       }
 
     } catch (e) {
 
-      console.error("ERROR: " + e);
+      console.error("DECRYPTION ERROR: " + e);
 
       //
       // regenerate shared secret, because we can't decrypt this
@@ -482,6 +483,7 @@ try {
         console.error("error parsing return message", err);
       }
     }
+
     return this.msg;
   }
 

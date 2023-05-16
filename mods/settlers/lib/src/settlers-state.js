@@ -354,7 +354,6 @@ class SettlersState {
         let tileCt = 0;
         let tokenCt = 0;
         let tile, resourceName, token;
-        console.log(this.game.pool, this.game.deck);
         for (let hex of this.hexgrid.hexes) {
             tile = this.game.pool[0].hand[tileCt++];
             resourceName = this.game.deck[1].cards[tile].resource;
@@ -566,27 +565,94 @@ class SettlersState {
         let card_dir = "/settlers/img/cards/";
         for (let i = 1; i <= this.game.state.players.length; i++) {
 
+        //
+        // player vp achievements
+        //
+
+        let statshtml = `<div class="achievements">`;
+        //Victory Point Card Tokens -- should move to VP track
+        statshtml += `<div class="victory_point_cards">`;
+        for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
+          statshtml += `${this.skin.vp.img}`;
+        }
+        statshtml += `</div>`
+        if (this.game.state.largestArmy.player == i) {
+            statshtml += `<div class="token army largest" title="${this.skin.largest.name}">`;
+        } else {
+            statshtml += `<div class="token army" title="${this.skin.largest.name}">`;
+        }
+        for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
+          statshtml += this.skin.s.img;
+        }
+        statshtml += `</div>`;
+         
+        if (this.game.state.longestRoad.player == i) {
+          statshtml += `<div class="token longest-road" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
+        }
+        statshtml += `</div>`;
+
+	    //
+	    // TOP - player info
+	    //
             this.game.state.players[i - 1].resources.sort();
             let num_resources = this.game.state.players[i - 1].resources.length;
             let num_cards = this.game.state.players[i - 1].devcards;
-//            let trade_offers_line = `<div class="trade-offers">your active trade offers</div>`;
-//            if (i != this.game.player) { trade_offers_line = `<div class="trade-offers">their active trade offers</div>`; }
 	    let userline = "";
-                userline += `<div class="flexliane">`;
-                userline += `<div class="cardct">resources: ${this.game.state.players[i - 1].resources.length}</div>`;
-                userline += `</div>`;
+                userline += `<div class="flexline">`;
+                userline += `
+                <div class="cardct">
+                   resources: ${this.game.state.players[i - 1].resources.length}, 
+                   cards: ${this.game.state.players[i - 1].devcards}
+                </div>`;
+                userline += `${statshtml}</div>`;
 
             let playerHTML = `
-          <div class="saito-user settlers-user saito-user-${this.game.players[i - 1]}" id="saito-user-${this.game.players[i - 1]}" data-id="${this.game.players[i - 1]}">
-            <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i - 1])}"></div>
-            <div class="saito-address saito-playername" data-id="${this.game.players[i - 1]}">${this.game.playerNames[i - 1]}</div>
-            <div class="saito-userline">${userline}</div>
-          </div>`;
+              <div class="saito-user settlers-user saito-user-${this.game.players[i - 1]}" id="saito-user-${this.game.players[i - 1]}" data-id="${this.game.players[i - 1]}">
+                <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i - 1])}"></div>
+                <div class="saito-address saito-playername" data-id="${this.game.players[i - 1]}">${this.game.playerNames[i - 1]}</div>
+                <div class="saito-userline">${userline}</div>
+              </div>
+	    `;
 
             this.playerbox.refreshTitle(playerHTML, i);
-//            this.playerbox.refreshLog(trade_offers_line, i);
 
-/*******
+
+console.log(JSON.stringify(this.game.state.ads));
+
+	    //
+	    // TOP - trade offers
+	    //
+            let reshtml  = "";
+                reshtml += `<div class="flexline">`;
+            if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
+              reshtml += "<span>";
+              if (this.game.state.ads[i - 1].offer) { reshtml += this.wishListToImage(this.game.state.ads[i - 1].offer); }
+              reshtml += `<i class="fas fa-long-arrow-alt-right"></i>`;
+              if (this.game.state.ads[i - 1].ask) { reshtml += this.wishListToImage(this.game.state.ads[i - 1].ask); }
+              reshtml += `</span><i id="cleartrade" class="fas fa-ban"></i>`;
+            } else {
+              //reshtml += `<span id="tradenow">Trade</span>`;
+            }
+            reshtml += `</div>`;
+
+console.log("updating LOG with trading info for player : " + i + " - " + reshtml);
+
+            this.playerbox.refreshLog(reshtml, i);
+
+
+
+/******* 
+ *
+ * we removed this stuff because the shift to having the playerbox display trade information
+ * removed the critical need for it, and because the playerbox refactor then removed the number
+ * of DIVs in which things could be separately-put.
+ *
+ * we should review which bits of information we want to bring back, and where they should be
+ * put. not everything belongs in the playerbox. and if the playerbox is being complicated it
+ * should be rendered into playerbox-head or playerbox-body as a single unit. but this is UI/UX
+ * work that will take thought and care rather than a pure implementation fix, so its being 
+ * skipped right now.
+ *
             //Stats
             let statshtml = `<div class="flexline">`;
             //Victory Point Card Tokens -- should move to VP track
@@ -611,7 +677,7 @@ class SettlersState {
 	    let reshtml = "";
             //For opponents, summarize their hands numerically
             if (this.game.player != i) {
-                  reshtml += `<div class="flexliane">`;
+                  reshtml += `<div class="flexline">`;
                   reshtml += `<div class="cardct">res: ${this.game.state.players[i - 1].resources.length}</div>`;
                   reshtml += `<div class="cardct">cards: ${this.game.state.players[i - 1].devcards}</div>`;
                   reshtml += `</div>`;

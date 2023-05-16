@@ -1,5 +1,5 @@
 const BankOverlayTemplate = require("./bank.template");
-const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("./../../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class BankOverlay {
 

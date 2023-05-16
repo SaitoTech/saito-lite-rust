@@ -11,7 +11,7 @@ class ChatPopup {
     this.container = container;
     this.emoji = null;
     this.manually_closed = false;
-    this.manually_moved = false;
+
     this.group = null;
 
     this.x_pos = 0;
@@ -23,8 +23,7 @@ class ChatPopup {
 
   remove() {
 
-    let popup_qs = ".chat-popup-" + this.group.id;
-    console.log("removing: " + popup_qs);
+    let popup_qs = "#chat-popup-" + this.group.id;
     document.querySelector(popup_qs).remove();
 
   }
@@ -44,9 +43,8 @@ class ChatPopup {
     //
     // our query selector
     //
-    let popup_qs = ".chat-popup-" + this.group.id;
     let popup_id = "chat-popup-" + this.group.id;
-    let header_id = "chat-header-" + this.group.id;
+    let popup_qs = "#" + popup_id;
     let input_id = "chat-input-" + this.group.id;
 
     let existing_input = "";
@@ -66,14 +64,12 @@ class ChatPopup {
     // calculate some values to determine position on screen...
     //
     let x_offset = 1000000;
-    let x_range = 440;
     let popups_on_page = 0;
     let am_i_on_page = 0;
 
-    document.querySelectorAll(".chat-popup").forEach((el) => {
+    document.querySelectorAll(".chat-container").forEach((el) => {
       popups_on_page++;
       var rect = el.getBoundingClientRect();
-      x_range = rect.right - rect.left;
       if (rect.left < x_offset) {
         x_offset = rect.left;
       }
@@ -83,20 +79,23 @@ class ChatPopup {
         am_i_on_page = 1;
     }
 
-
+    //console.log("Rendering Chat popup", this.container);
     //
     // insert or replace popup on page
     //
     if (am_i_on_page == 1) {
+
+      let obj = document.querySelector(popup_qs);
+      var rect = obj.getBoundingClientRect();
+      this.x_pos = rect.left;
+      this.y_pos = rect.top;
+      this.width = rect.width;
+      this.height = rect.height;
+
       this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group, this.container), popup_qs);
       
+      //Don't reset any user dragging/resizing
       if (!this.container){
-        let obj = document.querySelector(popup_qs);
-        var rect = obj.getBoundingClientRect();
-        this.x_pos = rect.left;
-        this.y_pos = rect.top;
-        this.width = rect.width;
-        this.height = rect.height;
         obj = document.querySelector(popup_qs);
         obj.style.left = this.x_pos + "px";
         obj.style.top = this.y_pos + "px";
@@ -105,31 +104,20 @@ class ChatPopup {
       }
     } else {
       this.app.browser.addElementToSelectorOrDom(ChatPopupTemplate(this.app, this.mod, this.group, this.container), this.container);
-    }
 
-    if (!this.container){
       //
       // now set left-position of popup
       //
-      if (popups_on_page >= 1 && am_i_on_page == 0 && this.manually_moved == false) {
-        this.x_pos = x_offset - x_range - 30;
-        if (this.x_pos < 0) { this.x_pos = 0; }
+      if (!this.container && popups_on_page > 0){
+        console.log("Reposition secondary popup");
         let obj = document.querySelector(popup_qs);
+        this.x_pos = x_offset - obj.getBoundingClientRect().width - 10;
+        if (this.x_pos < 0) { this.x_pos = 0; }
         obj.style.left = this.x_pos + "px";
       }
 
-      //
-      // make draggable
-      //
-      this.app.browser.makeDraggable(popup_id, header_id, true, () => {
-        let obj = document.querySelector(popup_qs);
-        var rect = obj.getBoundingClientRect();
-        this.x_pos = rect.left;
-        this.y_pos = rect.top;
-        this.manually_moved = true;
-      });
-      
     }
+
 
     //
     // emojis
@@ -139,8 +127,8 @@ class ChatPopup {
     //
     // scroll to bottom
     //
-    if (document.querySelector("." + popup_id + " .chat-body")) {
-      document.querySelector("." + popup_id + " .chat-body").scroll(0, 1000000000);
+    if (document.querySelector(popup_qs + " .chat-body")) {
+      document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
     }
     //
     // re-render typed text
@@ -165,12 +153,29 @@ class ChatPopup {
     let mod = this.mod;
     let group_id = this.group.id;
     let input_id = "chat-input-" + this.group.id;
+    let header_id = "chat-header-" + this.group.id;
 
     //
     // our query selector
     //
-    let popup_qs = ".chat-popup-" + this.group.id;
     let popup_id = "chat-popup-" + this.group.id;
+    let popup_qs = "#chat-popup-" + this.group.id;
+    
+
+    if (document.querySelector(".chat-container"+popup_qs)){
+
+      //
+      // make draggable
+      //
+      this.app.browser.makeDraggable(popup_id, header_id, true, () => {
+        let obj = document.querySelector(popup_qs);
+        var rect = obj.getBoundingClientRect();
+        this.x_pos = rect.left;
+        this.y_pos = rect.top;
+        this.manually_moved = true;
+      });
+
+    }
 
     // add reply functionality
 

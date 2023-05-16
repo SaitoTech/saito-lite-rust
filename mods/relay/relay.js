@@ -127,11 +127,13 @@ class Relay extends ModTemplate {
                 if (inner_tx.isTo(app.wallet.returnPublicKey())) {
 
                     if (inner_txmsg.request === "ping") {
+                        console.log("Respond to ping");
                         this.sendRelayMessage(inner_tx.transaction.from[0].add, "echo", { status: this.busy });
                         return;
                     }
 
                     if (inner_txmsg.request === "echo") {
+                        console.log("Received echo");
                         if (inner_txmsg.data.status) {
                             app.connection.emit("relay-is-busy", inner_tx.transaction.from[0].add);
                         } else {

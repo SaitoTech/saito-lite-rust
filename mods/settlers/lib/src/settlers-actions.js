@@ -177,7 +177,7 @@ buildCity(player, slot) {
               <div class="message">The first player to reach ${this.game.options.game_length} VP wins!</div>
               </div>`;
       return html;
-    }else{
+    } else {
       return "";
     }
   }
@@ -426,8 +426,11 @@ buildCity(player, slot) {
 
   countResource(player, resource) {
     let ct = 0;
-    for (let i of this.game.state.players[player - 1].resources)
-      if (i == resource) ct++;
+    for (let i of this.game.state.players[player - 1].resources) {
+      if (i == resource) {
+	ct++;
+      }
+    }
     return ct;
   }
 
@@ -493,7 +496,14 @@ buildCity(player, slot) {
   @param tradeType (integer) the player number of the targeted player, 0 for all players, -1 for advertisement
   */
   showTradeOverlay(tradeType = -1, i_should_give, i_should_accept) {
+
     let settlers_self = this;
+    //
+console.log("UPDATE TRADE OBJECT WITH GIVE AND ACCEPT VALUES");
+console.log(JSON.stringify(i_should_give));
+console.log(JSON.stringify(i_should_accept));
+    settlers_self.trade_overlay.render(tradeType);
+return;
 
     let my_resources = {};
     let resources = settlers_self.skin.resourceArray();
@@ -630,6 +640,11 @@ buildCity(player, slot) {
   Alternate UI for advertizing your wants and needs
   */
   showResourceOverlay() {
+
+this.trade_overlay.render();
+return;
+
+
     let settlers_self = this;
     let myRes = {};
     let resources = settlers_self.skin.resourceArray();
@@ -644,10 +659,7 @@ buildCity(player, slot) {
     }
 
     let html = `<div class="trade_overlay saitoa" id="trade_overlay">
-            <div>
-              <div class="h1 trade_overlay_title">Advertise Trade</div>
-              <p>You may share information about your resources with the other players, telling them which resources you may be interested in trading. It will be up to them to initiate a trade offer on their. This should facilitate trading without interrupting game play.</p>
-            </div>
+            <div class="h1 trade_overlay_title">Resource Trades</div>
             <div class="h2">You Want:</div>
             <div class="trade_overlay_offers">`;
     for (let i = 0; i < resources.length; i++)

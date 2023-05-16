@@ -111,6 +111,24 @@
   pointer-events: auto;
 }
 
+.saito-header-backdrop {
+  display: none;
+  pointer-events: none;
+  position: fixed;
+  top: var(--saito-header-height);
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - var(--saito-header-height));
+  opacity: 0;
+  overflow: hidden;
+  z-index: 19;
+}
+
+.saito-header-backdrop.menu-visible {
+  display: block;
+  pointer-events: auto;
+}
+
 .header-wallet {
   display: flex;
   flex-direction: column;

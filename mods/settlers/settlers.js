@@ -1,23 +1,25 @@
-const Scoreboard = require("./lib/scoreboard");
 const GameTemplate = require("../../lib/templates/gametemplate");
-const SettlersSkin = require("./lib/settlers.skin.js");
-const SettlersRules = require("./lib/overlays/rules");
-const SettlersWelcome = require("./lib/overlays/welcome");
-const SettlersStats = require("./lib/overlays/stats");
-const SettlersGameOptionsTemplate = require("./lib/settlers-game-options.template");
-const SettlersTradeHelpOverlayTemplate = require("./lib/settlers-trade-help-overlay.template");
+const Scoreboard = require("./lib/ui/scoreboard");
+const SettlersSkin = require("./lib/ui/settlers.skin.js");
+const SettlersRules = require("./lib/ui/overlays/rules");
+const SettlersWelcome = require("./lib/ui/overlays/welcome");
+const SettlersStats = require("./lib/ui/overlays/stats");
+const SettlersGameOptionsTemplate = require("./lib/ui/settlers-game-options.template");
+const SettlersTradeHelpOverlayTemplate = require("./lib/ui/settlers-trade-help-overlay.template");
 
 const SettlersGameLoop = require("./lib/src/settlers-gameloop.js");
 const SettlersPlayer = require("./lib/src/settlers-player");
 const SettlersState = require("./lib/src/settlers-state");
 const SettlersActions = require("./lib/src/settlers-actions");
 const SettlersInit = require("./lib/src/settlers-init");
-const BuildOverlay = require("./lib/overlays/build");
-const BankOverlay = require("./lib/overlays/bank");
-const DevCardOverlay = require("./lib/overlays/dev-card");
-const YearOfPlentyOverlay = require("./lib/overlays/year-of-plenty");
-const DiscardOverlay = require("./lib/overlays/discard");
-const MonopolyOverlay = require("./lib/overlays/monopoly");
+
+const TradeOverlay = require("./lib/ui/overlays/trade");
+const BuildOverlay = require("./lib/ui/overlays/build");
+const BankOverlay = require("./lib/ui/overlays/bank");
+const DevCardOverlay = require("./lib/ui/overlays/dev-card");
+const YearOfPlentyOverlay = require("./lib/ui/overlays/year-of-plenty");
+const DiscardOverlay = require("./lib/ui/overlays/discard");
+const MonopolyOverlay = require("./lib/ui/overlays/monopoly");
 
 //////////////////
 // CONSTRUCTOR  //
@@ -48,6 +50,7 @@ class Settlers extends GameTemplate {
     this.rules_overlay = new SettlersRules(this.app, this);
     this.welcome_overlay = new SettlersWelcome(this.app, this);
     this.stats_overlay = new SettlersStats(this.app, this);
+    this.trade_overlay = new TradeOverlay(this.app, this);
 
     this.grace_window = 24;
     // temp variable to help with post-splash flash
@@ -268,9 +271,8 @@ class Settlers extends GameTemplate {
       }
 
       this.game.queue.push("READY");
-      //Board
+      // this is BAD -- do we force a save here in generate map so as not to lose POOL data
       this.game.queue.push("generate_map");
-
       this.game.queue.push(`POOLDEAL\t3\t18\t2`);
       this.game.queue.push(`POOLDEAL\t2\t19\t1`);
 
