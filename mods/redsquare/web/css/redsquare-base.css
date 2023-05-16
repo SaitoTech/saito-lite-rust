@@ -9,7 +9,7 @@
 }
 
 .redsquare-page-header-title {
-  color: var(--saito-red);
+  color: var(--saito-white);
   font-size: 2.5rem;
   padding: 1px;
   text-transform: uppercase;
@@ -17,7 +17,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin: 2.3rem 0 0 0;
+  margin: 1rem 0 0 0;
 }
 
 .redsquare-appspace-header .redsquare-page-header-title {
@@ -31,6 +31,10 @@
 .redsquare-redsquare::before {
   -webkit-text-stroke: var(--saito-red) 1px;
   color: transparent;
+}
+
+.redsquare-page-header-title i::before {
+  -webkit-text-stroke: var(--saito-white) 1px;
 }
 
 .redsquare-profile {

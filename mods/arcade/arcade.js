@@ -420,15 +420,7 @@ class Arcade extends ModTemplate {
     }
     if (type === "saito-floating-menu") {
       let x = [];
-      x.push({
-        text: "Create Game",
-        icon: this.icon || "fas fa-gamepad",
-        rank: 30,
-        callback: function (app, id) {
-          app.connection.emit("arcade-launch-game-selector", {});
-        },
-      });
-
+    
       return x;
     }
 

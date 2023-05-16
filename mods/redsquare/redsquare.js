@@ -170,14 +170,18 @@ class RedSquare extends ModTemplate {
           }
         });
       }
-      //Suggestion -- these are covered by the floating menu
-      /*if (this.app.browser.isMobileBrowser()) {
+
+      if (this.app.browser.isMobileBrowser()) {
         x.push({
           text: "Notifications",
           icon: "fas fa-bell",
           rank: 23,
           callback: function (app, id) {
-            window.location = "/redsquare#notifications";
+            if (app.modules.returnActiveModule().returnName() == "Red Square"){
+              document.querySelector(".redsquare-menu-notifications").click();
+            }else{
+              window.location = "/redsquare#notifications";
+            }
           }
         });
         x.push({
@@ -185,10 +189,14 @@ class RedSquare extends ModTemplate {
           icon: "fas fa-user",
           rank: 26,
           callback: function (app, id) {
-            window.location = "/redsquare#profile";
+            if (app.modules.returnActiveModule().returnName() == "Red Square"){
+              document.querySelector(".redsquare-menu-profile").click();
+            }else{
+              window.location = "/redsquare#profile";
+            }
           }
         });
-      }*/
+      }
 
       return x;
     }
@@ -207,48 +215,6 @@ class RedSquare extends ModTemplate {
           post.render();
         }
       });
-
-      x.push({
-        text: "Refresh",
-        icon: "fa-solid fa-house",
-        allowed_mods: ['redsquare'],
-        disallowed_mods: ['arcade'],
-        rank: 5,
-        callback: function (app, id) {
-          setHash('home')
-          app.connection.emit("redsquare-home-render-request");
-        }
-      });
-
-      x.push({
-        text: "Notificationas",
-        icon: "fa-solid fa-bell",
-        allowed_mods: ['redsquare'],
-        disallowed_mods: ['arcade'],
-        rank: 5,
-        callback: function (app, id) {
-          setHash('notifications')
-          app.connection.emit("redsquare-notifications-render-request");
-          this.notifications_number_unviewed = 0;
-          this.notifications_last_viewed_ts = new Date().getTime();
-          this.save();
-          this.incrementNotifications("notifications", this.notifications_number_unviewed);
-        }
-      });
-
-      x.push({
-        text: "Profile",
-        icon: "fa-solid fa-user",
-        allowed_mods: ['redsquare'],
-        disallowed_mods: ['arcade'],
-        rank: 5,
-        callback: function (app, id) {
-          app.connection.emit("redsquare-profile-render-request");
-        }
-      });
-
-
-
 
       return x;
     }
