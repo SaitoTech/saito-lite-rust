@@ -49,7 +49,10 @@ class PeerManager {
       }
 
       if (data.type === "peer-joined") {
-        this.createPeerConnection(data.public_key, "offer");
+        let peerConnection = this.peers.get(data.public_key);
+        if(!peerConnection){
+          this.createPeerConnection(data.public_key, "offer");
+        }
       } else if (data.type === "peer-left") {
         this.removePeerConnection(data.public_key);
       } else if (data.type === "toggle-audio") {
@@ -59,7 +62,6 @@ class PeerManager {
         app.connection.emit("toggle-peer-video-status", data);
       } else {
         let peerConnection = this.peers.get(data.public_key);
-
         console.log("peers consoled", peerConnection);
         if (!peerConnection) {
           this.createPeerConnection(data.public_key);
@@ -326,6 +328,7 @@ class PeerManager {
   }
 
   createPeerConnection(peerId, type) {
+    // check if peer connection already exists
     const peerConnection = new RTCPeerConnection({
       iceServers: this.servers,
     });
