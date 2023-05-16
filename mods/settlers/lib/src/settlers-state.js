@@ -573,7 +573,7 @@ class SettlersState {
         //Victory Point Card Tokens -- should move to VP track
         statshtml += `<div class="victory_point_cards">`;
         for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
-          statshtml += `${this.skin.vp.img}`;
+          statshtml += `<div class="victory_point_card">${this.skin.vp.img}</div>`;
         }
         statshtml += `</div>`
         if (this.game.state.largestArmy.player == i) {
