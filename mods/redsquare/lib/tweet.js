@@ -83,7 +83,7 @@ class Tweet {
       console.log("ERROR 1: " + err);
     }
     try {
-      this.setKeys(tx.optional);
+      this.setKeys(this.tx.optional);
     } catch (err) {
       console.log("ERROR 2: " + err);
     }
