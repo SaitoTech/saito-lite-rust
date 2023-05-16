@@ -30,6 +30,7 @@ class VideoChatManager {
     this.switchDisplay = new SwitchDisplay(app, mod, this);
 
     this.effectsMenu = new Effects(app, mod);
+    this.users_on_call = 0;
 
     this.app.connection.on(
       "show-video-chat-large-request",
@@ -133,7 +134,7 @@ class VideoChatManager {
       if (add_users) {
         add_users.addEventListener("click", (e) => {
           this.updateRoomLink();
-          this.chatInvitationOverlay.render();
+          this.copyInviteLink();
         });
       }
 
@@ -267,7 +268,7 @@ class VideoChatManager {
   updateRoomLink() {
     const room_link = this.createRoomLink();
     this.room_link = room_link;
-    this.chatInvitationOverlay = new ChatInvitationOverlay(this.app, this.mod, this.room_link);
+
     if (document.querySelector(".add-users-code-container span")) {
       document.querySelector(".add-users-code-container span").textContent = this.room_link.slice(
         0,
@@ -275,6 +276,11 @@ class VideoChatManager {
       );
     }
     // return public_keys;
+  }
+
+  copyInviteLink() {
+    navigator.clipboard.writeText(this.room_link);
+    siteMessage('Invite link copied to clipboard', 5000);
   }
 
   removePeer(peer) {
@@ -403,6 +409,13 @@ class VideoChatManager {
     }
     document.querySelector(".stun-chatbox .image-list").innerHTML = images;
     document.querySelector(".stun-chatbox .users-on-call-count").innerHTML = count;
+    this.users_on_call = count;
+
+    /* automatically copy invite link to clipboard for first user */
+    if (this.users_on_call == 1) {
+      this.copyInviteLink();
+    }
+
   }
 
   startTimer() {
