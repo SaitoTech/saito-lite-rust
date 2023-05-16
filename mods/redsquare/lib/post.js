@@ -65,6 +65,12 @@ class Post {
     this.attachEvents();
   }
 
+  triggerClick(querySelector) {
+    if (typeof document.querySelector(querySelector) != "undefined") {
+      document.querySelector(querySelector).click();
+    }
+  }
+
   attachEvents() {
 
     let post_self = this;
