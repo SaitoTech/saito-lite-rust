@@ -209,10 +209,23 @@ class RedSquare extends ModTemplate {
         icon: "fa-solid fa-pen",
         allowed_mods: ['redsquare'],
         disallowed_mods: ['arcade'],
+        rank: 10,
+        callback: function (app, id) {
+          let post = new Post(app, this_mod);
+          post.render();
+        }
+      });
+
+      x.push({
+        text: "Tweet Image",
+        icon: "fa fa-camera",
+        allowed_mods: ['redsquare'],
+        disallowed_mods: ['arcade'],
         rank: 20,
         callback: function (app, id) {
           let post = new Post(app, this_mod);
           post.render();
+          post.triggerClick("#hidden_file_element_tweet-overlay");
         }
       });
 
