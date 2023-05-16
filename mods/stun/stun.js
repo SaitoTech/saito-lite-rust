@@ -409,7 +409,7 @@ class Stun extends ModTemplate {
 
     this.app.connection.emit("relay-send-message", data);
     setTimeout(()=> {
-      this.app.network.propagateTransaction(newtx);
+      // this.app.network.propagateTransaction(newtx);
     },2000)
    
   }
