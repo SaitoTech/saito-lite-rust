@@ -83,54 +83,18 @@ div.h3{
 /*********************/
 @media screen and (orientation:portrait) and (max-width: 400px) {
 
-  .hud-card {
-    /*width: calc(18vw * 0.811);
-    height: 18vw;*/
-  }
 
   .hud-long .status-cardbox {
     grid-template-columns: repeat( auto-fit, minmax(18vw, 1fr) );
-  }
-
-  .game-menu ul li {
-    max-width: 75px;
-    font-size: 1.3rem;
   }
 
 }
 
 @media screen and (orientation:portrait) and (min-width: 400px) and (max-width: 600px) {
 
-  .hud-card {
-    /*width: calc(13vw * 0.811);
-    height: 13vw;*/
-  }
   .hud-long .status-cardbox {
     grid-template-columns: repeat( auto-fit, minmax(15vw, 1fr) );
   }
-  .game-menu ul li {
-    max-width: 100px;
-    width: 100px;
-    font-size: 1.4rem;
-
-  }
-}
-
-@media screen and (orientation:portrait) and (min-width: 600px) {
-
-  .hud-card {
-    /*width: calc(10vw * 0.811);
-    height: 10vw;*/
-  }
-  .status-cardbox {
-    /*grid-template-columns: repeat( auto-fit, minmax(11vw, 1fr) );*/
-    /*grid-template-rows: repeat(auto-fit, 14vw);*/
-  }
-  .game-menu ul li {
-    max-width: 125px;
-    font-size: 1.5rem;
-  }
-
 }
 
 
@@ -146,3 +110,9 @@ div.h3{
 }
 
 
+@media screen and (max-width: 768px) {
+  .chat-container {
+    max-height: 50vh;
+    height: 300px;
+  }
+}

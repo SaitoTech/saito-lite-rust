@@ -32,22 +32,25 @@ body {
 
 .slot {
   position: relative;
-  width: min(5.5vw, 8.5vh);
-  height: min(7.5vw, 11.4vh);
+  width: 80px; /*min(5.5vw, 8.5vh);*/
+  height: 106px; /*min(7.5vw, 11.4vh);*/
   opacity: 1;
-  border-radius: min(0.6vh, 0.6vw);
-  
+  border: 1px solid;
+  border-radius: 8px; /*min(0.6vh, 0.6vw);*/
+  border-top-left-radius: 4px;
+
   transform: rotate3d(20, -5, 1, 21deg); 
   /*transform: rotate3d(30, -10, 3, 30deg);*/
   
   /*box-shadow: 6px 5px 12px 1px #000000*/
-  filter: drop-shadow(4px 5px 3px black);
+  filter: drop-shadow(4px 6px 1px black);
 }
 
 .slot.invisible{
   opacity: 0;
   pointer-events: none;
-  box-shadow: none;
+  filter: none;
+  border: none;
 }
 
 .slot.selected{
@@ -112,19 +115,15 @@ body {
   background-size: cover;
   width: 100vw;
   height: 100vh;
-  display: grid;
-  grid-template-columns: minmax(20%,max-content) 1fr;
+  /*display: grid;
+  grid-template-columns: minmax(20%,max-content) 1fr;*/
 }
 
 .logobox {
-position: relative;
-    margin-top: 50px;
-    font-size: 20px;
-    order: 1;
-    max-width: 200px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 80px;
+  position: absolute;
+  font-size: 20px;
+  max-width: 200px;
+  margin: 80px 20px;
 }
 .logobox div{
   border-radius: 5px;
@@ -142,17 +141,17 @@ position: relative;
 
 
 .mahj-rowbox {
-  order: 2;
-  margin-top: 25px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 25px;
+  margin: 80px;
+  padding: 15px;
+  padding-left: 70px;
   display: grid;
-  grid-template-columns: repeat(14, 1fr) !important;
-  grid-template-rows: repeat(21, min(7vw, 10.8vh));
-  max-width: min(90vw,120vh);
+  grid-template-columns: repeat(14, 80px) !important;
+  grid-template-rows: repeat(21, 100px/*min(7vw, 10.8vh)*/);
+  width: 1200px;
+  height: 825px;
+  /*max-width: min(90vw,120vh);*/
   /*grid-gap: min(0px,1vh);*/
-  height: fit-content;
+  /*height: fit-content;*/
   row-gap: 1px;
 }
 
@@ -198,42 +197,63 @@ position: relative;
 div[id^="row9"], div[id^="row10"], div[id^="row11"], div[id^="row12"], div[id^="row13"], div[id^="row14"] {
   z-index: 2;
   position: relative;
-  top: -711%;  
+  top: -713%;  
 }
 div[id^="row9"]{
-  left: -12%;
+  left: -14%;
 }
-div[id^="row10"], div[id^="row15"]{
-  left: -18%;
-
+div[id^="row10"]{
+  left: -19%;
+}
+div[id^="row15"]{
+  left: -26%;
 } 
-div[id^="row11"], div[id^="row16"], div[id^="row19"]{
-  left: -22%;
-} div[id^="row12"], div[id^="row17"], div[id^="row20"]{
-  left: -28%;
-} div[id^="row13"], div[id^="row18"]{
+div[id^="row11"] {
+  left: -24%;
+} 
+div[id^="row16"]{
+  left: -31%;
+}
+ div[id^="row19"]{
+  left: -38%;
+}
+
+div[id^="row12"] {
+  left: -29%;
+} 
+ div[id^="row17"]{ 
+  left: -36%;
+ }
+div[id^="row20"]{
+  left: -42%;
+}
+div[id^="row13"]{
   left: -34%;
-} div[id^="row14"] {
+} 
+div[id^="row18"]{
+  left: -40%;
+ }
+div[id^="row14"] {
   left: -39%;
 }
 
 div[id^="row15"], div[id^="row16"], div[id^="row17"], div[id^="row18"] {
   z-index: 4;
   position: relative;
-  top: -1216%;
+  top: -1224%;
 }
 
 div[id^="row19"], div[id^="row20"] {
   z-index: 6;
   position: relative;
-  top: -1524%;
+  top: -1533%;
 }
 
 div[id^="row21"] {
   z-index: 8;
   position: relative;
-  top: -1676%;
-  left: -30%;
+  top: -1690%;
+  left: -47%;
 }
 
 

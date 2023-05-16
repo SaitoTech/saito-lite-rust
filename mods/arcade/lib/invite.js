@@ -105,8 +105,8 @@ class Invite {
       }
 
       if (this.invite_data.game_type == "custom game") {
-        console.log("Arcade invite sanity check:");
-        console.log(JSON.stringify(defaultOptions), JSON.stringify(txmsg.options));
+        //console.log("Arcade invite sanity check:");
+        //console.log(JSON.stringify(defaultOptions), JSON.stringify(txmsg.options));
       }
 
       //Crypto Game
