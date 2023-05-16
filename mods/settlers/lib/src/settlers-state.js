@@ -565,6 +565,32 @@ class SettlersState {
         let card_dir = "/settlers/img/cards/";
         for (let i = 1; i <= this.game.state.players.length; i++) {
 
+        //
+        // player vp achievements
+        //
+
+        let statshtml = `<div class="achievements">`;
+        //Victory Point Card Tokens -- should move to VP track
+        statshtml += `<div class="victory_point_cards">`;
+        for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
+          statshtml += `${this.skin.vp.img}`;
+        }
+        statshtml += `</div>`
+        if (this.game.state.largestArmy.player == i) {
+            statshtml += `<div class="token army largest" title="${this.skin.largest.name}">`;
+        } else {
+            statshtml += `<div class="token army" title="${this.skin.largest.name}">`;
+        }
+        for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
+          statshtml += this.skin.s.img;
+        }
+        statshtml += `</div>`;
+         
+        if (this.game.state.longestRoad.player == i) {
+          statshtml += `<div class="token longest-road" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
+        }
+        statshtml += `</div>`;
+
 	    //
 	    // TOP - player info
 	    //
@@ -572,9 +598,13 @@ class SettlersState {
             let num_resources = this.game.state.players[i - 1].resources.length;
             let num_cards = this.game.state.players[i - 1].devcards;
 	    let userline = "";
-                userline += `<div class="flexliane">`;
-                userline += `<div class="cardct">resources: ${this.game.state.players[i - 1].resources.length}</div>`;
-                userline += `</div>`;
+                userline += `<div class="flexline">`;
+                userline += `
+                <div class="cardct">
+                   resources: ${this.game.state.players[i - 1].resources.length}, 
+                   cards: ${this.game.state.players[i - 1].devcards}
+                </div>`;
+                userline += `${statshtml}</div>`;
 
             let playerHTML = `
               <div class="saito-user settlers-user saito-user-${this.game.players[i - 1]}" id="saito-user-${this.game.players[i - 1]}" data-id="${this.game.players[i - 1]}">
@@ -647,7 +677,7 @@ console.log("updating LOG with trading info for player : " + i + " - " + reshtml
 	    let reshtml = "";
             //For opponents, summarize their hands numerically
             if (this.game.player != i) {
-                  reshtml += `<div class="flexliane">`;
+                  reshtml += `<div class="flexline">`;
                   reshtml += `<div class="cardct">res: ${this.game.state.players[i - 1].resources.length}</div>`;
                   reshtml += `<div class="cardct">cards: ${this.game.state.players[i - 1].devcards}</div>`;
                   reshtml += `</div>`;

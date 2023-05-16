@@ -173,7 +173,7 @@ body {
   width: 1000px;
   padding: 10% 5% 15%;
   /*Creates space for board overflow*/
-  padding: 100px 35px 150px;
+  padding: 150px 135px 350px;
   box-sizing: content-box;
   border-radius: 400px;
   cursor: grab;
@@ -472,6 +472,11 @@ body {
   transform: scale(1.4);
   position: relative;
   top: -4px;
+}
+
+.player-box {
+  width: 45rem;
+  max-width: 80vw;
 }
 
 .player-box-info {
@@ -1195,28 +1200,44 @@ ul.horizontal_list li.iconoption {
   }
 }
 
-.player-box-info .army img {
+
+.achievements {
+  position: absolute;
+  top: 0rem;
+  right: 0rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.achievements .army img {
   width: 4rem;
   margin: 0 0 0 -2rem;
 }
 
-.player-box-info .army {
+.achievements .army {
   display: flex;
   flex-direction: row;
   padding: 0 0 0 2rem;
 }
 
-.longest-road img {
-  width: 5rem;
+.achievements .longest-road img {
+  width: 4rem;
 }
 
-.player-box .token img {
+.achievements .victory_point_cards img {
+  height: 4rem;
+  margin: 3px 0;
+}
+
+
+.achievements .token img, .achievements .token svg {
   transition: all ease-in-out 300ms;
   border-radius: 50%;
   border: 2px solid #fff8;
-  background-color: #d3c38df5;
+  background-color: #456;
 }
 
-.player-box  .token img:hover {
-  transform: scale(3);
+.achievements .token img:hover, .achievements .token svg:hover {
+  transform: scale(1.8);
 }
