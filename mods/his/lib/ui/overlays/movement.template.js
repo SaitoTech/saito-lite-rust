@@ -23,6 +23,8 @@ module.exports = MovementOverlayTemplate = (obj) => {
     obj.source_mercenaries_unmoved = obj.source_mercenaries_total - obj.source_regulars_moved;
     obj.source_cavalry_unmoved = obj.source_cavalry_total - obj.source_regulars_moved;
 
+    if (obj.to === "") { obj.to = "?"; }
+
     let html = '';
     html += `
     <div class="movement-overlay">

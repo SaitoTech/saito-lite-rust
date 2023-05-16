@@ -6,6 +6,7 @@
     background-size: cover;
     display: grid;
     grid-template-rows: min-content 1fr min-content;
+    user-select: none;
 }
 
 .movement-header {
@@ -94,15 +95,15 @@
 }
 
 .unit-img.regular {
-  background-image: url('/his/img/tiles/venice/VeniceReg-1.svg');
+  background-image: url('/his/img/tiles/abstract/regular.svg');
   background-size: cover;
 }
 .unit-img.mercenary {
-  background-image: url('/his/img/tiles/england/EnglandMerc-1.svg');
+  background-image: url('/his/img/tiles/abstract/mercenary.svg');
   background-size: cover;
 }
 .unit-img.cavalry {
-  background-image: url('/his/img/tiles/ottoman/OttomanCav-1.svg');
+  background-image: url('/his/img/tiles/abstract/cavalry.svg');
   background-size: cover;
 }
 
@@ -159,11 +160,13 @@
 .movement-submit-button {
     border: 1px solid black;
     width: max-content;
-    padding: 1rem 1.5rem;
+    padding: 1rem 3rem;
     font-size: 2rem;
     border-radius: 0.5rem;
     background-color: whitesmoke;
-    cursor: pointer;   
+    cursor: pointer;
+    height: 7rem;
+    padding-top: 2rem;
 }
 .movement-submit-button:hover {
     border: 1px solid white;

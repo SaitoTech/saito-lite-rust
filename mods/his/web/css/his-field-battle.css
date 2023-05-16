@@ -46,6 +46,7 @@
 }
 
 .field-battle-grid .attacker .title , .field-battle-grid .defender .title {
+        color: whitesmoke;
         background: #0005;
         font-size: 25;
         text-align: center;

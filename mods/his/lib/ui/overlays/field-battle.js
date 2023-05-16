@@ -135,8 +135,8 @@ class FieldBattleOverlay {
 	if (pre_battle == 1) { res.attacker_modified_rolls = res.attacker_results; }
 	if (pre_battle == 1) { res.defender_modified_rolls = res.defender_results }
 
-	document.querySelector(".field-battle-grid .attacker .title").innerHTML = res.attacker_faction + " / attacker";
-	document.querySelector(".field-battle-grid .defender .title").innerHTML = res.defender_faction + " / defender";
+	document.querySelector(".field-battle-grid .attacker .title").innerHTML = res.attacker_faction + " (attacker)";
+	document.querySelector(".field-battle-grid .defender .title").innerHTML = res.defender_faction + " (defender)";
 
 	if (res.attacker_modified_rolls) {
 	  for (let i = 0; i < res.attacker_modified_rolls.length; i++) {
@@ -151,7 +151,7 @@ class FieldBattleOverlay {
 
             let html = `
               <div class="field-battle-row ${assignable}" data-unit-type="${unit_type}" data-faction="${faction_name}">
-              	<div class="field-battle-unit">${unit_type}<div class="field-battle-desc">${unit_type}</div></div>
+              	<div class="field-battle-unit">${unit_type}<div class="field-battle-desc">${faction_name}</div></div>
               	<div class="field-battle-roll ${rrclass}">${roll}</div>
               </div>
             `;
