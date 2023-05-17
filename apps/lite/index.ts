@@ -85,6 +85,6 @@ async function init() {
 }
 
 // init();
-window.onload = function () {
-  init();
+window.onload = async function() {
+  return init();
 };
