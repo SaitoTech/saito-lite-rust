@@ -616,9 +616,6 @@ class SettlersState {
 
             this.playerbox.refreshTitle(playerHTML, i);
 
-
-console.log(JSON.stringify(this.game.state.ads));
-
 	    //
 	    // TOP - trade offers
 	    //
@@ -634,8 +631,8 @@ console.log(JSON.stringify(this.game.state.ads));
               //reshtml += `<span id="tradenow">Trade</span>`;
             }
             reshtml += `</div>`;
-
-console.log("updating LOG with trading info for player : " + i + " - " + reshtml);
+	    // flexline has border bottom, so hide if unneeded
+	    if (reshtml === '<div class="flexline"></div>') { reshtml = ""; }
 
             this.playerbox.refreshLog(reshtml, i);
 
