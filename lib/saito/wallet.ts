@@ -76,7 +76,7 @@ export default class Wallet extends SaitoWallet {
 
   public async getBalance(ticker = "SAITO"): Promise<bigint> {
     if (ticker === "SAITO") {
-      return this.wallet.get_balance();
+      return this.instance.get_balance();
     }
     return BigInt(0);
   }
@@ -201,7 +201,7 @@ export default class Wallet extends SaitoWallet {
 
             // reset and save
             await this.app.storage.resetOptions();
-            await this.wallet.reset();
+            await this.instance.reset();
             this.app.storage.saveOptions();
 
             // re-specify after reset
@@ -251,7 +251,7 @@ export default class Wallet extends SaitoWallet {
           }
         }
 
-        this.wallet = Object.assign(this.wallet, this.app.options.wallet);
+        this.instance = Object.assign(this.instance, this.app.options.wallet);
       }
     }
     ////////////////

@@ -349,7 +349,7 @@ class Mods {
     return null;
   }
 
-  async onPeerHandshakeComplete(peer) {
+  async onPeerHandshakeComplete(peer: Peer) {
     //
     // all modules learn about the peer connecting
     //
@@ -359,8 +359,8 @@ class Mods {
     //
     // then they learn about any services now-available
     //
-    for (let i = 0; i < peer.peer.services.length; i++) {
-      await this.onPeerServiceUp(peer, peer.peer.services[i]);
+    for (let i = 0; i < peer.services.length; i++) {
+      await this.onPeerServiceUp(peer, peer.services[i]);
     }
   }
 
