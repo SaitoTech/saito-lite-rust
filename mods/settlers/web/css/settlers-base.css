@@ -173,7 +173,7 @@ body {
   width: 1000px;
   padding: 10% 5% 15%;
   /*Creates space for board overflow*/
-  padding: 100px 35px 150px;
+  padding: 150px 135px 350px;
   box-sizing: content-box;
   border-radius: 400px;
   cursor: grab;
@@ -450,8 +450,8 @@ body {
 .city {
   position: absolute;
   display: block;
-  width: 30%;
-  height: 25%;
+  width: 28%;
+  height: 23%;
   background-color: transparent;
   z-index: 12;
   font-size: 2em;
@@ -472,6 +472,11 @@ body {
   transform: scale(1.4);
   position: relative;
   top: -4px;
+}
+
+.player-box {
+  width: 45rem;
+  max-width: 80vw;
 }
 
 .player-box-info {
@@ -557,12 +562,12 @@ input[type="checkbox"] {
 
 .city2 {
   top: 15%;
-  right: -18%;
+  right: -17%;
 }
 
 .city3 {
   bottom: 15%;
-  right: -18%;
+  right: -17%;
 }
 
 .city4 {
@@ -573,12 +578,12 @@ input[type="checkbox"] {
 
 .city5 {
   bottom: 15%;
-  left: -18%;
+  left: -17%;
 }
 
 .city6 {
   top: 15%;
-  left: -18%;
+  left: -17%;
 }
 
 .sector-container {
@@ -634,6 +639,10 @@ input[type="checkbox"] {
   height: 40%;
   box-shadow: 0 0 32px 32px #000b;
   background-color: #000b;
+}
+
+.bandit .hexTileCenter {
+  opacity: 0.5;
 }
 
 .city.p1 {
@@ -1077,6 +1086,11 @@ ul.horizontal_list li.iconoption {
   margin: 0 auto;
 }
 
+.vp-table img {
+  max-height: 4rem;
+}
+
+
 .welcome_overlay {
   padding: 0 !important;
 }
@@ -1195,28 +1209,77 @@ ul.horizontal_list li.iconoption {
   }
 }
 
-.player-box-info .army img {
+
+.achievements {
+  position: absolute;
+  top: 0rem;
+  right: 0rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.achievements .army img {
   width: 4rem;
   margin: 0 0 0 -2rem;
 }
 
-.player-box-info .army {
+.achievements .army {
   display: flex;
   flex-direction: row;
   padding: 0 0 0 2rem;
 }
 
-.longest-road img {
-  width: 5rem;
+.achievements .longest-road img {
+  width: 4rem;
 }
 
-.player-box .token img {
+.victory_point_cards {
+  display: flex;
+  gap: 1rem;
+  flex-direction: row;
+  margin: 0 1rem 0 0;
+}
+
+.achievements .victory_point_cards img {
+  height: 4rem;
+  margin: 3px -3rem;
+  display: block;
+  transform: rotate(-5deg);
+}
+
+.achievements .token img, .achievements .token svg {
   transition: all ease-in-out 300ms;
   border-radius: 50%;
   border: 2px solid #fff8;
-  background-color: #d3c38df5;
+  background-color: #456;
 }
 
-.player-box  .token img:hover {
-  transform: scale(3);
+.achievements .token img:hover, .achievements .token svg:hover {
+  transform: scale(1.8);
+}
+
+.token.largest.army, .longest-road, .victory_point_card {
+  position: relative;
+}
+
+.token.largest.army::after, .longest-road::after, .victory_point_card::after {
+  content: "2";
+  position: absolute;
+  width: 3rem;
+  line-height: 3rem;
+  font-size: 1.5rem;
+  color: #fff;
+  text-align: center;
+  margin: 0.5rem;
+  background-color: #ffa400cc;
+  border-radius: 50%;
+  font-weight: bold;
+  right: -1rem;
+  top: -1rem;
+}
+
+.victory_point_card::after {
+  top: -0.7rem;
+  content: "1";
 }

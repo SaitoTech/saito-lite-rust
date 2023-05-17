@@ -49,7 +49,10 @@ class PeerManager {
       }
 
       if (data.type === "peer-joined") {
-        this.createPeerConnection(data.public_key, "offer");
+        let peerConnection = this.peers.get(data.public_key);
+        if(!peerConnection){
+          this.createPeerConnection(data.public_key, "offer");
+        }
       } else if (data.type === "peer-left") {
         this.removePeerConnection(data.public_key);
       } else if (data.type === "toggle-audio") {
@@ -59,7 +62,6 @@ class PeerManager {
         app.connection.emit("toggle-peer-video-status", data);
       } else {
         let peerConnection = this.peers.get(data.public_key);
-
         console.log("peers consoled", peerConnection);
         if (!peerConnection) {
           this.createPeerConnection(data.public_key);
@@ -267,10 +269,14 @@ class PeerManager {
   handleSignalingMessage(data) {
     const { type, sdp, candidate, targetPeerId, public_key } = data;
     if (type === "renegotiate-offer" || type === "offer") {
-      if ( this.getPeerConnection(public_key).connectionState === "connected" || this.getPeerConnection(public_key).remoteDescription !== null || this.getPeerConnection(public_key).connectionState === "stable"){
+      if (
+        this.getPeerConnection(public_key).connectionState === "connected" ||
+        this.getPeerConnection(public_key).remoteDescription !== null ||
+        this.getPeerConnection(public_key).connectionState === "stable"
+      ) {
         return;
       }
-   
+
       console.log(this.getPeerConnection(public_key), "remote description offer");
       this.getPeerConnection(public_key)
         .setRemoteDescription(new RTCSessionDescription({ type: "offer", sdp }))
@@ -299,7 +305,11 @@ class PeerManager {
         this.getPeerConnection(public_key).connectionState,
         "remote description answer"
       );
-      if (this.getPeerConnection(public_key).connectionState === "connected" || this.getPeerConnection(public_key).signalingState === "stable") return;
+      if (
+        this.getPeerConnection(public_key).connectionState === "connected" ||
+        this.getPeerConnection(public_key).signalingState === "stable"
+      )
+        return;
       this.getPeerConnection(public_key)
         .setRemoteDescription(new RTCSessionDescription({ type: "answer", sdp }))
         .then((answer) => {})
@@ -318,6 +328,7 @@ class PeerManager {
   }
 
   createPeerConnection(peerId, type) {
+    // check if peer connection already exists
     const peerConnection = new RTCPeerConnection({
       iceServers: this.servers,
     });

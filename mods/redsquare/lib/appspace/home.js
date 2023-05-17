@@ -44,7 +44,6 @@ class AppspaceHome {
       this.container.innerHTML = "";
       this.app.browser.addElementToSelector(AppspaceHomeTemplate(), this.container);
     }
-
   }
 
   renderLoader() {
@@ -125,7 +124,7 @@ class AppspaceHome {
   }
 
   renderTweet(tweet) {
-
+    this_self = this;
     let sig = tweet.tx.transaction.sig;
 
     //hide current tweet thread and replace with single tweet
@@ -155,21 +154,27 @@ class AppspaceHome {
 
       document.querySelector('.tweet-' + sig).scrollIntoView(); 
 
-      document.querySelectorAll('.redsquare-page-header-title').forEach(el => {
-        el.outerHTML = `<div id="redsquare-page-header-title" class="redsquare-page-header-title tweetmode"><i class="redsquare-redsquare fa-solid fa-arrow-left"></i> RED SQUARE</div>`;
-      });
+      let html = `<div id="redsquare-page-header-title" class="redsquare-page-header-title tweetmode">
+                  <i class="redsquare-redsquare fa-solid fa-arrow-left"></i> RED SQUARE
+                </div>`;
+      this_self.mod.header.updateHeaderLogo(html, function() {
+        console.log("replaced logo with back btn");
 
-      document.querySelectorAll('.redsquare-page-header-title').forEach(el => {
-        el.addEventListener('click', (e) => {
-          setHash('home');
-           el.outerHTML = `<div id="redsquare-page-header-title" class="redsquare-page-header-title"><i class="redsquare-redsquare fa-solid fa-square"></i> RED SQUARE</div>`;
-          if (window.holder.querySelector('.redsquare-appspace-body')) {
-            document.querySelector('.redsquare-home').querySelector('.redsquare-appspace-body').remove();
-            document.querySelector('.redsquare-home').append(window.holder.querySelector('.redsquare-appspace-body'));
-            document.querySelector('.redsquare-home').append(document.querySelector('#redsquare-intersection'));
-            document.querySelector('.tweet-' + sig).scrollIntoView(); 
-            this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
-          }
+        document.querySelectorAll('.redsquare-page-header-title').forEach(el => {
+          el.addEventListener('click', (e) => {
+            setHash('home');
+
+             this_self.mod.header.undoUpdateHeaderLogo();
+
+            if (window.holder.querySelector('.redsquare-appspace-body')) {
+              document.querySelector('.redsquare-home').querySelector('.redsquare-appspace-body').remove();
+              document.querySelector('.redsquare-home').append(window.holder.querySelector('.redsquare-appspace-body'));
+              document.querySelector('.redsquare-home').append(document.querySelector('#redsquare-intersection'));
+              document.querySelector('.tweet-' + sig).scrollIntoView(); 
+              this_self.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
+            }
+
+          });
         });
       });
 
