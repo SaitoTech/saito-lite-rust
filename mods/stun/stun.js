@@ -320,8 +320,9 @@ class Stun extends ModTemplate {
       public_key: this.publicKey,
       room_code,
     };
-    let request = "stun command transmission request";
-    let server = this.app.network.peers[0];
+    let request = "stun-create-room-transaction";
+    let peers = await this.app.network.getPeers();
+    let server = peers[0];
 
     // offchain data
     let data = {
@@ -329,7 +330,13 @@ class Stun extends ModTemplate {
       data: _data,
     };
 
-    server.sendRequestAsTransaction("stun-create-room-transaction", data);
+    this.app.connection.emit("relay-send-message", {
+      recipient:server.publicKey,
+      request,
+      data
+    });
+
+    // server.sendRequestAsTransaction("stun-create-room-transaction", data);
   }
 
   // server receives this
@@ -345,24 +352,35 @@ class Stun extends ModTemplate {
 
   async sendStunMessageToServerTransaction(_data) {
     let request = "stun-send-message-to-server";
-    let server = this.app.network.peers[0];
+    let peers = await this.app.network.getPeers();
+    let server = peers[0]
+
+    console.log('server public key', server, server.publicKey)
 
     // offchain data
     let data = {
       request,
       data: _data,
     };
-    await server.sendRequestAsTransaction("stun-send-message-to-server", data);
+
+    this.app.connection.emit("relay-send-message", {
+      recipient:server.publicKey,
+      request,
+      data
+    });
+    // await server.sendRequestAsTransaction("stun-send-message-to-server", data);
   }
 
   // server receives this
   async receiveStunMessageToServerTransaction(app, tx, peer) {
+
+    console.log('peer.peer', peer, peer.peer.public_key)
     let txmsg = tx.returnMessage();
     let stun_mod = app.modules.returnModule("Stun");
 
     let room_code = txmsg.data.data.room_code;
     let type = txmsg.data.data.type;
-    let public_key = peer.peer.publickey;
+    let public_key = peer.peer.public_key;
 
     if (type === "peer-joined") {
       this.addKeyToRoom(room_code, public_key);

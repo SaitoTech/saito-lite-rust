@@ -107,14 +107,15 @@ class VideoChatManager {
     }
   }
 
-  createRoomTextChat() {
+ async createRoomTextChat() {
     let chat_mod = this.app.modules.returnModule("Chat");
     let chat_manager = chat_mod.respondTo("chat-manager");
     let my_pub_key = this.app.wallet.publicKey;
+    let peers = await this.app.network.getPeers();
 
     chat_mod.groups.push({
       id: this.room_code,
-      members: [this.app.network.peers[0].peer.publickey],
+      members: [peers[0].publicKey],
       name: `Chat ${this.room_code}`,
       txs: [],
       unread: 0,

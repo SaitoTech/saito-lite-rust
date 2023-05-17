@@ -441,6 +441,7 @@ class Arcade extends ModTemplate {
   ////////////////////////////////////////////////////
 
   async onConfirmation(blk, tx, conf, app) {
+    console.log('handling on confirmation')
     let txmsg = tx.returnMessage();
     let arcade_self = app.modules.returnModule("Arcade");
 
@@ -513,6 +514,7 @@ class Arcade extends ModTemplate {
   // handles off-chain transactions
   //
   async handlePeerTransaction(app, newtx = null, peer, mycallback = null) {
+    console.log('handling peer transacrtins')
     if (newtx == null) {
       return;
     }
