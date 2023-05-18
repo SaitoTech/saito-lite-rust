@@ -250,4 +250,27 @@ export default class Crypto {
     stringx = parseFloat(stringx);
     return stringx.toFixed(p).replace(/0+$/, "").replace(/\.$/, ".0").replace(/\.0$/, "");
   }
+
+  /**
+ * Checks if a publickey passed into a function
+ * fits the criteria for a publickey
+ * @param {string} publickey
+ * @returns {boolean} does publickey fit the criteria?
+ */
+  isPublicKey(publickey: string) {
+    if (publickey.length == 44 || publickey.length == 45) {
+      if (publickey.indexOf("@") <= 0) {
+        if (this.isBase58(publickey)) {
+          return 1;
+        }
+      }
+    }
+    return 0;
+  }
+
+
+  isBase58(t: string) {
+    return /^[A-HJ-NP-Za-km-z1-9]*$/.test(t);
+  }
+
 }
