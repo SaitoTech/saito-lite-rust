@@ -63,7 +63,7 @@ class VideoChatManager {
       if (room_code !== this.room_code) {
         return;
       }
-      let my_pub_key = this.app.wallet.publicKey;
+      let my_pub_key = this.app.wallet.returnPublicKey();
       let container;
       if (peer_id === my_pub_key) {
         container = this.local_container;
@@ -107,15 +107,14 @@ class VideoChatManager {
     }
   }
 
- async createRoomTextChat() {
+  createRoomTextChat() {
     let chat_mod = this.app.modules.returnModule("Chat");
     let chat_manager = chat_mod.respondTo("chat-manager");
-    let my_pub_key = this.app.wallet.publicKey;
-    let peers = await this.app.network.getPeers();
+    let my_pub_key = this.app.wallet.returnPublicKey();
 
     chat_mod.groups.push({
       id: this.room_code,
-      members: [peers[0].publicKey],
+      members: [this.app.network.peers[0].peer.publickey],
       name: `Chat ${this.room_code}`,
       txs: [],
       unread: 0,
@@ -390,7 +389,7 @@ class VideoChatManager {
     let count = 0;
     for (let i in this.video_boxes) {
       if (i === "local") {
-        let publickey = this.app.wallet.publicKey;
+        let publickey = this.app.wallet.returnPublicKey();
         let imgsrc = this.app.keychain.returnIdenticon(publickey);
         images += `<img data-id="${publickey}" src="${imgsrc}"/>`;
       } else {

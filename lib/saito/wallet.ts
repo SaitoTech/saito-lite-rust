@@ -12,7 +12,6 @@ const CryptoModule = require("../templates/cryptomodule");
 
 export default class Wallet extends SaitoWallet {
   public app: Saito;
-  publicKey;
   // public wallet = {
   // balance: "0",
   // publickey: "",
@@ -63,10 +62,10 @@ export default class Wallet extends SaitoWallet {
   //   return (await S.getInstance().signTransaction(tx)) as T;
   // }
 
-  // public async returnPublicKey(): Promise<string> {
+  // public async getPublicKey(): Promise<string> {
   //   return S.getInstance().getPublicKey();
   // }
-  
+  //
   // public async returnPrivateKey(): Promise<string> {
   //   return S.getInstance().getPrivateKey();
   // }
@@ -175,7 +174,6 @@ export default class Wallet extends SaitoWallet {
     this.saitoCrypto = new SaitoCrypto(this.app);
     let privateKey = await this.getPrivateKey();
     let publicKey = await this.getPublicKey();
-    this.publicKey = publicKey
     console.log("public key = " + publicKey);
     console.log("private key = " + privateKey);
 

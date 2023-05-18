@@ -266,11 +266,6 @@ class Browser {
         capture: true,
       }
     );
-    window.setHash = function (hash) {
-      window.history.pushState("", "", `/redsquare/#${hash}`);
-    }
-
-    
   }
 
   extractIdentifiers(text = "") {
@@ -1200,8 +1195,6 @@ class Browser {
       true
     )}</div>`;
   }
-
-
 
   updateAddressHTML(key, id) {
     if (!id) {
