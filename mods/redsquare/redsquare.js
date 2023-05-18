@@ -12,7 +12,7 @@ const prettify = require("html-prettify");
 const redsquareHome = require("./index");
 const Post = require("./lib/post");
 const Transaction = require("../../lib/saito/transaction");
-const Factory = require("../../lib/saito/factory");
+const Factory = require("../../lib/saito/factory").default;
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {			// renders main tweets
@@ -273,7 +273,7 @@ class RedSquare extends ModTemplate {
     // prefer at the top of their feed for more rapid page load.
     //
     if (app.BROWSER == 0) {
-      await this.updateTweetsCacheForBrowsers();
+      // await this.updateTweetsCacheForBrowsers();
     }
   }
 
