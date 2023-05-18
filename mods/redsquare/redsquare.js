@@ -15,6 +15,8 @@ const Transaction = require("../../lib/saito/transaction").default;
 const Factory = require("../../lib/saito/factory").default;
 const Slip = require("../../lib/saito/slip").default;
 
+
+
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {			// renders main tweets
  * lib/main.js:    this.app.connection.on("redsquare-home-loader-render-request", () => {		// renders loader (home)
@@ -274,7 +276,7 @@ class RedSquare extends ModTemplate {
     // prefer at the top of their feed for more rapid page load.
     //
     if (app.BROWSER == 0) {
-      await this.updateTweetsCacheForBrowsers();
+      // await this.updateTweetsCacheForBrowsers();
     }
   }
 
