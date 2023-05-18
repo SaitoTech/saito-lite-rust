@@ -77,7 +77,7 @@ class Stun extends ModTemplate {
     });
 
     app.connection.on("stun-init-peer-manager", (ui_type, config) => {
-      console.log("config", config);
+      // console.log("config", config);
       if (!this.peerManager) {
         this.peerManager = new PeerManager(app, mod, ui_type, config);
       }
@@ -305,7 +305,7 @@ class Stun extends ModTemplate {
         stun_mod.receiveStunMessageToPeersTransaction(app, tx);
       }
       if (txmsg.request === "stun-send-game-call-message") {
-        console.log("receiving");
+        // console.log("receiving");
         let stun_mod = app.modules.returnModule("Stun");
         await stun_mod.receiveGameCallMessageToPeers(app, tx);
       }
@@ -355,7 +355,7 @@ class Stun extends ModTemplate {
     let peers = await this.app.network.getPeers();
     let server = peers[0]
 
-    console.log('server public key', server, server.publicKey)
+    // console.log('server public key', server, server.publicKey)
 
     // offchain data
     let data = {
@@ -374,7 +374,7 @@ class Stun extends ModTemplate {
   // server receives this
   async receiveStunMessageToServerTransaction(app, tx, peer) {
 
-    console.log('peer.peer', peer, peer.peer.public_key)
+    // console.log('peer.peer', peer, peer.peer.public_key)
     let txmsg = tx.returnMessage();
     let stun_mod = app.modules.returnModule("Stun");
 
@@ -433,14 +433,14 @@ class Stun extends ModTemplate {
       request,
       data: _data,
     };
-    console.log("sending to", recipients);
+    // console.log("sending to", recipients);
     this.app.connection.emit("relay-send-message", data);
   }
 
   async receiveGameCallMessageToPeers(app, tx) {
     let txmsg = tx.returnMessage();
     let data = tx.msg.data;
-    console.log(data, "data");
+    // console.log(data, "data");
 
     switch (data.type) {
       case "connection-request":
@@ -468,7 +468,7 @@ class Stun extends ModTemplate {
           this.sendGameCallMessageToPeers(app, _data, [data.sender]);
         }
 
-        console.log(result);
+        // console.log(result);
 
         break;
 

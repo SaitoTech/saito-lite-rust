@@ -1370,43 +1370,45 @@ class RedSquare extends ModTemplate {
       //
       // insert the basic information
       //
-      let sql = `INSERT INTO tweets (tx,
-                                     sig,
-                                     created_at,
-                                     updated_at,
-                                     parent_id,
-                                     thread_id,
-                                     type,
-                                     publickey,
-                                     link,
-                                     link_properties,
-                                     num_replies,
-                                     num_retweets,
-                                     num_likes,
-                                     has_images,
-                                     tx_size)
-                 VALUES ($txjson,
-                         $sig,
-                         $created_at,
-                         $updated_at,
-                         $parent_id,
-                         $thread_id,
-                         $type,
-                         $publickey,
-                         $link,
-                         $link_properties,
-                         0,
-                         0,
-                         0,
-                         $has_images,
-                         $tx_size)`;
-
+      let sql = `INSERT INTO tweets (
+        tx,
+        sig,
+      created_at,
+      updated_at,
+      parent_id,
+      thread_id,
+        type,
+        publickey,
+        link,
+      link_properties,
+      num_replies,
+      num_retweets,
+      num_likes,
+        has_images,
+        tx_size
+      ) VALUES (
+        $txjson,
+        $sig,
+      $created_at,
+      $updated_at,
+      $parent_id,
+      $thread_id,
+      $type,
+        $publickey,
+      $link,
+      $link_properties,
+      0,
+      0,
+      0,
+        $has_images,
+        $tx_size
+      )`;
       let has_images = 0;
       if (typeof tweet.images != "undefined") {
         has_images = 1;
       }
       let txjson = tx.serialize(this.app);
-      console.log('json for transaction', txjson)
+      console.log("json for transaction", txjson);
       let tx_size = txjson.length;
 
       let params = {
@@ -1473,19 +1475,7 @@ class RedSquare extends ModTemplate {
   async updateTweetsCacheForBrowsers() {
     let hex_entries = [];
 
-    let sql = `SELECT *
-               FROM tweets
-               WHERE (flagged IS NOT 1 AND moderated IS NOT 1)
-                 AND (((num_replies > 0 OR num_likes > 0) AND parent_id IS NOT "") OR (parent_id IS ""))
-                 AND (sig IN (SELECT sig
-                              FROM tweets
-                              WHERE parent_id = ""
-                                AND flagged IS NOT 1
-                                AND moderated IS NOT 1
-                                AND tx_size < 10000000
-                              ORDER BY updated_at DESC LIMIT 10)
-                   ) OR (thread_id IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10))
-               ORDER BY created_at ASC LIMIT 20`;
+    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 AND moderated IS NOT 1) AND (((num_replies > 0 OR num_likes > 0) AND parent_id IS NOT "") OR (parent_id IS "")) AND (sig IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10)) OR (thread_id IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10)) ORDER BY created_at ASC LIMIT 20`;
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 
@@ -1493,9 +1483,7 @@ class RedSquare extends ModTemplate {
       //
       // create the transaction
       //
-      console.log("factoryy", Factory);
       let tx = Transaction.deserialize(rows[i].tx, new Factory());
-      // tx.deserialize(this.app, rows[i].tx);
       tx.optional.num_replies = rows[i].num_replies;
       tx.optional.num_retweets = rows[i].num_retweets;
       tx.optional.num_likes = rows[i].num_likes;

@@ -3,7 +3,7 @@ const ChatManagerLarge = require("./chat-manager-large")
 
 class PeerManager {
     constructor(app, mod, ui_type = "large", config) {
-        console.log(config, 'config')
+        // console.log(config, 'config')
         this.app = app;
         this.mod = mod
         this.ui_type = ui_type;
@@ -237,7 +237,7 @@ class PeerManager {
         this.localStream = await navigator.mediaDevices.getUserMedia({ video: this.videoEnabled, audio: true });
         this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
         // this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
-        console.log(this.config)
+        // console.log(this.config)
         this.app.connection.emit('show-video-chat-large-request', this.app, this.mod, 'video', this.room_code, this.videoEnabled, this.audioEnabled, this.config);
         this.app.connection.emit('stun-remove-loader')
         this.app.connection.emit('render-local-stream-large-request', this.localStream, 'video');
@@ -430,7 +430,7 @@ class PeerManager {
         if (this.ui_type === "large") {
             this.app.connection.emit('video-box-remove', peerId, 'disconnection');
         } else if (this.ui_type === "small") {
-            console.log('peer left')
+            // console.log('peer left')
             this.app.connection.emit('audio-box-remove', peerId);
 
         }
@@ -527,7 +527,7 @@ class PeerManager {
     renderRemoteStreams(){
         // loop over remote stream
         this.remoteStreams.forEach((property, key) => {
-            console.log(property, 'property', key, 'key')
+            // console.log(property, 'property', key, 'key')
             // console.log(stream, 'stream')
             if (this.ui_type === "large") {
                 this.app.connection.emit('render-remote-stream-large-request', key, property.remoteStream, property.peerConnection);
