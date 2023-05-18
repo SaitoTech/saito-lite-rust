@@ -77,7 +77,7 @@ class Stun extends ModTemplate {
     });
 
     app.connection.on("stun-init-peer-manager", (ui_type, config) => {
-      console.log("config", config);
+      // console.log("config", config);
       if (!this.peerManager) {
         this.peerManager = new PeerManager(app, mod, ui_type, config);
       }
@@ -239,7 +239,7 @@ class Stun extends ModTemplate {
           icon: this.icon,
           allowed_mods: ["redsquare", "arcade"],
           callback: function (app, id) {
-            let pub_key = app.wallet.returnPublicKey();
+            let pub_key = app.wallet.publicKey;
             app.connection.emit("game-start-video-call", pub_key);
           },
         },
@@ -305,7 +305,7 @@ class Stun extends ModTemplate {
         stun_mod.receiveStunMessageToPeersTransaction(app, tx);
       }
       if (txmsg.request === "stun-send-game-call-message") {
-        console.log("receiving");
+        // console.log("receiving");
         let stun_mod = app.modules.returnModule("Stun");
         await stun_mod.receiveGameCallMessageToPeers(app, tx);
       }
@@ -320,8 +320,9 @@ class Stun extends ModTemplate {
       public_key: this.publicKey,
       room_code,
     };
-    let request = "stun command transmission request";
-    let server = this.app.network.peers[0];
+    let request = "stun-create-room-transaction";
+    let peers = await this.app.network.getPeers();
+    let server = peers[0];
 
     // offchain data
     let data = {
@@ -329,7 +330,13 @@ class Stun extends ModTemplate {
       data: _data,
     };
 
-    server.sendRequestAsTransaction("stun-create-room-transaction", data);
+    this.app.connection.emit("relay-send-message", {
+      recipient:server.publicKey,
+      request,
+      data
+    });
+
+    // server.sendRequestAsTransaction("stun-create-room-transaction", data);
   }
 
   // server receives this
@@ -345,24 +352,35 @@ class Stun extends ModTemplate {
 
   async sendStunMessageToServerTransaction(_data) {
     let request = "stun-send-message-to-server";
-    let server = this.app.network.peers[0];
+    let peers = await this.app.network.getPeers();
+    let server = peers[0]
+
+    // console.log('server public key', server, server.publicKey)
 
     // offchain data
     let data = {
       request,
       data: _data,
     };
-    await server.sendRequestAsTransaction("stun-send-message-to-server", data);
+
+    this.app.connection.emit("relay-send-message", {
+      recipient:server.publicKey,
+      request,
+      data
+    });
+    // await server.sendRequestAsTransaction("stun-send-message-to-server", data);
   }
 
   // server receives this
   async receiveStunMessageToServerTransaction(app, tx, peer) {
+
+    // console.log('peer.peer', peer, peer.peer.public_key)
     let txmsg = tx.returnMessage();
     let stun_mod = app.modules.returnModule("Stun");
 
     let room_code = txmsg.data.data.room_code;
     let type = txmsg.data.data.type;
-    let public_key = peer.peer.publickey;
+    let public_key = peer.peer.public_key;
 
     if (type === "peer-joined") {
       this.addKeyToRoom(room_code, public_key);
@@ -415,14 +433,14 @@ class Stun extends ModTemplate {
       request,
       data: _data,
     };
-    console.log("sending to", recipients);
+    // console.log("sending to", recipients);
     this.app.connection.emit("relay-send-message", data);
   }
 
   async receiveGameCallMessageToPeers(app, tx) {
     let txmsg = tx.returnMessage();
     let data = tx.msg.data;
-    console.log(data, "data");
+    // console.log(data, "data");
 
     switch (data.type) {
       case "connection-request":
@@ -433,7 +451,7 @@ class Stun extends ModTemplate {
           let _data = {
             type: "connection-accepted",
             room_code: data.room_code,
-            sender: app.wallet.returnPublicKey(),
+            sender: app.wallet.publicKey,
           };
 
           this.sendGameCallMessageToPeers(app, _data, [data.sender]);
@@ -445,12 +463,12 @@ class Stun extends ModTemplate {
           let _data = {
             type: "connection-rejected",
             room_code: data.room_code,
-            sender: app.wallet.returnPublicKey(),
+            sender: app.wallet.publicKey,
           };
           this.sendGameCallMessageToPeers(app, _data, [data.sender]);
         }
 
-        console.log(result);
+        // console.log(result);
 
         break;
 
