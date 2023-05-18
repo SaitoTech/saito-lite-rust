@@ -400,7 +400,7 @@ body {
   position: absolute;
   display: block;
   width: 65%;
-  height: 10%;
+  height: 14%;
   background-color: transparent;
   z-index: 10;
   border-radius: 10px;
@@ -410,18 +410,18 @@ body {
   transform: rotate(90deg);
   left: -34%;
   top: 43%;
-  width: 62%;
+  width: 63%;
 }
 
 .road6 {
   transform: rotate(-30deg);
-  top: 9%;
+  top: 7%;
   left: -9%;
 }
 
 .road1 {
   transform: rotate(30deg);
-  right: -4%;
+  right: -8%;
   top: 7%;
   width: 62%;
 }
