@@ -42,10 +42,10 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
     html += `</tbody></table>`;
 
     //VP Race
-    html += `<table class="stats-table"><caption>Victory Points</caption><thead><tr><th></th>`;
+    html += `<table class="stats-table vp-table"><caption>Victory Points</caption><thead><tr><th></th>`;
     html += `<th><div class="tip token p${stats.mod.game.colors[stats.mod.game.player-1]}">${stats.mod.skin.c1.svg}<div class="tiptext">${stats.mod.skin.c1.name}</div></div></th>`;
     html += `<th><div class="tip token p${stats.mod.game.colors[stats.mod.game.player-1]}">${stats.mod.skin.c2.svg}<div class="tiptext">${stats.mod.skin.c2.name}</div></div></th>`;
-    html += `<th><div class="tip token">${stats.mod.skin.vp.svg}<div class="tiptext">${stats.mod.skin.vp.name}</div></div></th>`;
+    html += `<th><div class="tip token">${stats.mod.skin.vp.img}<div class="tiptext">${stats.mod.skin.vp.name}</div></div></th>`;
     html += `<th><div class="tip token">${stats.mod.skin.largest.img}<div class="tiptext">${stats.mod.skin.largest.name}</div></div></th>`;
     html += `<th><div class="tip token">${stats.mod.skin.longest.svg}<div class="tiptext">${stats.mod.skin.longest.name}</div></div></th>`;
     html += `<th>Total</th></tr></thead><tbody>`;
