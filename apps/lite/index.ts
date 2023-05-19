@@ -63,6 +63,10 @@ class WebMethods extends WebSharedMethods {
   async loadBlockchain() {
     throw new Error("Method not implemented.");
   }
+
+  getMyServices() {
+    return this.app.network.getServices();
+  }
 }
 
 async function init() {
@@ -85,6 +89,6 @@ async function init() {
 }
 
 // init();
-window.onload = function () {
-  init();
+window.onload = async function () {
+  await init();
 };

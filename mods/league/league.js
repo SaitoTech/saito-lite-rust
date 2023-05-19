@@ -7,6 +7,7 @@ const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const InvitationLink = require("./lib/overlays/league-invitation-link");
 const JoinLeagueOverlay = require("./lib/overlays/join");
+const PeerService = require("saito-js/lib/peer_service").default;
 
 //Trial -- So that we can display league results in game page
 const LeagueOverlay = require("./lib/overlays/league");
@@ -57,7 +58,7 @@ class League extends ModTemplate {
     if (this.app.BROWSER) {
       return [];
     }
-    return [{ service: "league", domain: "saito" }];
+    return [new PeerService(null, "league", "", "saito")];
   }
 
   async initialize(app) {

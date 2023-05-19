@@ -1,3 +1,5 @@
+const PeerService = require("saito-js/lib/peer_service").default;
+
 const ModTemplate = require("../../lib/templates/modtemplate");
 const saito = require("../../lib/saito/saito");
 const JSON = require("json-bigint");
@@ -39,7 +41,7 @@ class Archive extends ModTemplate {
   returnServices() {
     let services = [];
     if (this.app.BROWSER == 0) {
-      services.push({ service: "archive" });
+      services.push(new PeerService(null, "archive"));
     }
     return services;
   }

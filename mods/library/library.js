@@ -1,5 +1,6 @@
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
+const PeerService = require("saito-js/lib/peer_service").default;
 
 //
 // Library module is used to index material that I have saved in my own transaction
@@ -195,7 +196,7 @@ class Library extends ModTemplate {
   returnServices() {
     let services = [];
     if (this.app.BROWSER == 0) {
-      services.push({ service: "library", name: "Multimedia Library" });
+      services.push(new PeerService(null, "library", "Multimedia Library"));
     }
     return services;
   }

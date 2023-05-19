@@ -183,6 +183,10 @@ export class NodeSharedMethods extends CustomSharedMethods {
   loadBlockchain(): void {
     throw new Error("Method not implemented.");
   }
+
+  getMyServices() {
+    return this.app.network.getServices();
+  }
 }
 
 /**

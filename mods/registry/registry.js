@@ -1,5 +1,6 @@
 const ModTemplate = require("./../../lib/templates/modtemplate");
 const RegisterUsernameOverlay = require("./lib/register-username");
+const PeerService = require("saito-js/lib/peer_service").default;
 
 class Registry extends ModTemplate {
   constructor(app) {
@@ -109,7 +110,7 @@ class Registry extends ModTemplate {
     //
     if (this.app.BROWSER == 0) {
       //if (this.registry_publickey == this.app.wallet.returnPublicKey()) {
-      services.push({ service: "registry", domain: "saito" });
+      services.push(new PeerService(null, "registry", "saito"));
     }
     return services;
   }

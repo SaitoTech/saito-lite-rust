@@ -6,6 +6,7 @@ const ChatManagerOverlay = require("./lib/overlays/chat-manager");
 const ChatPopup = require("./lib/chat-manager/popup");
 const JSON = require("json-bigint");
 const Transaction = require("../../lib/saito/transaction");
+const PeerService = require("saito-js/lib/peer_service").default;
 
 class Chat extends ModTemplate {
   constructor(app) {
@@ -181,7 +182,7 @@ class Chat extends ModTemplate {
     let services = [];
     // servers with chat service run plaintext community chat groups
     if (this.app.BROWSER == 0) {
-      services.push({ service: "chat", name: "Saito Community Chat" });
+      services.push(new PeerService(null, "chat", "Saito Community Chat"));
     }
     return services;
   }
