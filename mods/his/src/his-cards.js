@@ -1492,7 +1492,9 @@ alert("Not Implemented");
 	let papacy = his_self.returnPlayerOfFaction("papacy");
 
 	// deal extra card if player is england
-	if (player === his_self.returnPlayerOfFaction("england")) {
+	let player = his_self.returnPlayerOfFaction("england");
+
+	if (player == his_self.game.player) {
 	  let faction_hand_idx = his_self.returnFactionHandIdx(player, "england");   
  	  his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.state.players_info[player-1].factions[faction_hand_idx]);
 	  his_self.game.queue.push(`DEAL\t1\t${player}\t1`);

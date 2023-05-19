@@ -174,8 +174,6 @@
   //
   resetPlayerTurn(player_num) {
 
-console.log("RESET PLAYER TURN");
-
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
     this.game.state.tmp_protestant_reformation_bonus = 0;

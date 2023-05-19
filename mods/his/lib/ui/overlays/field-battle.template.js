@@ -7,10 +7,10 @@ module.exports = (players=2) => {
 	<div class="help">${help}</div>
 	<div class="field-battle-grid">
 	  <div class="attacker">
-	    <div class="title">Attacker</div>
+	    <div class="title">attacker</div>
 	  </div>
 	  <div class="defender">
-	    <div class="title">Defender</div>
+	    <div class="title">defender</div>
 	  </div>
 	</div>
 	</div>
