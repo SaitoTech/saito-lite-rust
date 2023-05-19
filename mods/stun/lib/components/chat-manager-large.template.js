@@ -52,17 +52,17 @@ const ChatManagerLargeTemplate = (call_type, room_code, mode) => {
           ${chat_control}  
           <span class="spacer"></span>  
            <span class="audio-control icon_click_area">
-           <label>Microphone </label>
+           <label>Audio </label>
             <i class=" fa fa-microphone" > </i>
             </span>
             <span class="video-control icon_click_area"  style=" background-color: ${call_type === "audio" ? "grey" : "white"
     }">
-            <label>Camera </label>
+            <label>Video </label>
             <i  style=" cursor :${call_type === "audio" ? "none" : "pointer"}; color:${call_type === "audio" ? "black" : "green"
     }" class="  fas fa-video"> </i>
             </span>
             <span class="disconnect-control icon_click_area">
-            <label>Disconnect </label>
+            <label>End </label>
             <i class="disconnect_btn  fas fa-phone"> </i>
             </span>
         </div>
