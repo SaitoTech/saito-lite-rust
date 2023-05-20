@@ -41,7 +41,7 @@ class FieldBattleOverlay {
       let obj = document.querySelector(".field-battle-overlay");
       obj.style.backgroundImage = "url(/his/img/backgrounds/fortification.png)";
       obj.style.backgroundSize = "contain";
-      this.updateInstructions("A Field Battle is about to Begin -- Fortification?");
+      this.updateInstructions("A Field Battle imminent in "+ this.mod.game.spaces[res.spacekey].name+": Fortification?");
     }
   
     renderPostFieldBattle(res={}) {
@@ -49,7 +49,7 @@ class FieldBattleOverlay {
       let obj = document.querySelector(".field-battle-overlay");
       obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
       obj.style.backgroundSize = "contain";
-      this.updateInstructions("Field Battle Completed");
+      this.updateInstructions("Field Battle over in " + this.mod.game.spaces[res.spacekey].name);
     }
 
     renderFieldBattle(res={}) {
@@ -57,7 +57,7 @@ class FieldBattleOverlay {
       let obj = document.querySelector(".field-battle-overlay");
       obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
       obj.style.backgroundSize = "contain";
-      this.updateInstructions("Field Battle Underway");
+      this.updateInstructions("Field Battle in " + this.mod.game.spaces[res.spacekey].name);
     }
 
     renderPreFieldBattle(res={}) {
@@ -65,7 +65,7 @@ class FieldBattleOverlay {
       let obj = document.querySelector(".field-battle-overlay");
       obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
       obj.style.backgroundSize = "contain";
-      this.updateInstructions("Anticipating a Field Battle");
+      this.updateInstructions("Field Battle imminent in " + this.mod.game.spaces[res.spacekey].name);
     }
 
     assignHits(res={}, faction="") {
@@ -75,15 +75,27 @@ class FieldBattleOverlay {
       let hits_to_assign = res.attacker_hits;
       if (faction === res.attacker_faction) { hits_to_assign = res.defender_hits; }
 
+      this.updateInstructions(`Assign <span class="hits_to_assign">${hits_to_assign}</span> Hits`);
+      this.mod.updateStatus(`Assign <span class="hits_to_assign">${hits_to_assign}</span> Hits`);
+
       document.querySelectorAll(".not-assignable").forEach((el) => {
 	el.remove();
       });
       document.querySelectorAll(".hits-assignable").forEach((el) => {
+
+	let factionspace = el.querySelector(".field-battle-desc");
+	if (factionspace) { factionspace.innerHTML = "click to assign hit"; }
 	el.classList.add("hits-assignable-hover-effect");
+
         hits_assignable++;
 	el.onclick = (e) => {
 
 	  hits_assigned++;
+	  let hits_left = hits_to_assign - hits_assigned;
+
+	  document.querySelectorAll("hits_to_assign").forEach((el) => {
+	    el.innerHTML = hits_left;
+	  });
 
 	  let unit_type = el.getAttribute("data-unit-type");
 	  let faction = el.getAttribute("data-faction");
@@ -92,7 +104,7 @@ class FieldBattleOverlay {
 	  el.remove();
 
 	  this.mod.addMove("field_battle_destroy_unit\t" + faction + "\t" + spacekey + "\t" + unit_type);
-	  if (hits_assigned == hits_to_assign || hit_assigned >= hits_assignable) {
+	  if (hits_assigned == hits_to_assign || hits_assigned >= hits_assignable) {
             document.querySelectorAll(".hits-assignable").forEach((el) => { el.onclick = (e) => {}; });
 	    this.mod.endTurn();
 	  }
@@ -108,20 +120,20 @@ class FieldBattleOverlay {
 
     attackersWin(res) {
       this.pushHudUnderOverlay();
-      this.render(res, 1);
+      this.render(res, 0);
       let obj = document.querySelector(".field-battle-overlay");
       obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
       obj.style.backgroundSize = "contain";
-      this.updateInstructions("Attackers Win");
+      this.updateInstructions("Attackers Win - Close to Continue");
     }
 
     defendersWin(res) {
       this.pushHudUnderOverlay();
-      this.render(res, 1);
+      this.render(res, 0);
       let obj = document.querySelector(".field-battle-overlay");
       obj.style.backgroundImage = "url(/his/img/backgrounds/field_battle.jpg)";
       obj.style.backgroundSize = "contain";
-      this.updateInstructions("Defenders Win");
+      this.updateInstructions("Defenders Win - Close to Continue");
     }
 
 
@@ -129,53 +141,86 @@ class FieldBattleOverlay {
 
     render(res={}, pre_battle = 0) {
 
+	let am_i_attacker = false;
+	let am_i_defender = false;
+
+	if (this.mod.returnPlayerFactions(this.mod.game.player).includes(res.attacker_faction)) { am_i_attacker = true; }
+	if (this.mod.returnPlayerFactions(this.mod.game.player).includes(res.defender_faction)) { am_i_defender = true; }
+
+console.log("am i attacker: " + am_i_attacker);
+console.log("am i defender: " + am_i_defender);
+console.log(JSON.stringify(res));
+
 	this.visible = true;
         this.overlay.show(FieldBattleTemplate());
 
 	if (pre_battle == 1) { res.attacker_modified_rolls = res.attacker_results; }
 	if (pre_battle == 1) { res.defender_modified_rolls = res.defender_results }
 
-	document.querySelector(".field-battle-grid .attacker .title").innerHTML = res.attacker_faction + " (attacker)";
-	document.querySelector(".field-battle-grid .defender .title").innerHTML = res.defender_faction + " (defender)";
+//	document.querySelector(".field-battle-grid .attacker .title").innerHTML = res.attacker_faction + " (attacker)";
+//	document.querySelector(".field-battle-grid .defender .title").innerHTML = res.defender_faction + " (defender)";
 
 	if (res.attacker_modified_rolls) {
 	  for (let i = 0; i < res.attacker_modified_rolls.length; i++) {
 
-	    let roll = res.attacker_modified_rolls[i];
-	    let unit_type = res.attacker_units[i];
-	    let faction_name = res.attacker_units_faction[i];
-	    let assignable = " not-assignable"; if (["regular","mercenary","squadron","cavalry","corsair"].includes(unit_type)) { assignable = " hits-assignable"; }
-	    let rrclass = "";
-	    if (roll >= 5) { rrclass = "hit"; }
-	    if (pre_battle) { roll = "?"; rrclass = ""; }
+	      let roll = res.attacker_modified_rolls[i];
+	      let unit_type = res.attacker_units[i];
+	      let faction_name = res.attacker_units_faction[i];
+	      let assignable = "";
+	      if (am_i_attacker) { assignable = " not-assignable"; }
+	      if (["regular","mercenary","squadron","cavalry","corsair"].includes(unit_type)) {
+		if (am_i_attacker) {
+	          assignable = " hits-assignable";
+	        }
+	      }
+	      if (res.attacker_units_destroyed.includes(i)) { assignable = "destroyed"; faction_name = "destroyed"; }
+	      let rrclass = "";
+	      if (roll >= 5) { rrclass = "hit"; }
+	      if (pre_battle) { roll = "?"; rrclass = ""; }
 
-            let html = `
-              <div class="field-battle-row ${assignable}" data-unit-type="${unit_type}" data-faction="${faction_name}">
-              	<div class="field-battle-unit">${unit_type}<div class="field-battle-desc">${faction_name}</div></div>
-              	<div class="field-battle-roll ${rrclass}">${roll}</div>
-              </div>
-            `;
-            this.app.browser.addElementToSelector(html, ".field-battle-grid .attacker");
+              let html = `
+                <div class="field-battle-row ${assignable}" data-unit-type="${unit_type}" data-faction="${faction_name}">
+                	<div class="field-battle-unit">${unit_type}<div class="field-battle-desc">${faction_name}</div></div>
+                	<div class="field-battle-roll ${rrclass}">${roll}</div>
+                </div>
+              `;
+              this.app.browser.addElementToSelector(html, ".field-battle-grid .attacker");
+
 	  }
 	}
  
 	if (res.defender_modified_rolls) {
 	  for (let i = 0; i < res.defender_modified_rolls.length; i++) {
 
-	    let roll = res.defender_modified_rolls[i];
-	    let unit_type = res.defender_units[i];
-	    let faction_name = res.defender_units_faction[i];
-	    let rrclass = "";
-	    if (roll >= 5) { rrclass = "hit"; }
-	    if (pre_battle) { roll = "?"; rrclass = ""; }
+console.log("def mod rolls: " + i);
 
-            let html = `
-              <div class="field-battle-row">
-              	<div class="field-battle-unit">${unit_type}<div class="field-battle-desc">${faction_name}</div></div>
-              	<div class="field-battle-roll ${rrclass}">${roll}</div>
-              </div>
-            `;
-            this.app.browser.addElementToSelector(html, ".field-battle-grid .defender");
+	      let roll = res.defender_modified_rolls[i];
+	      let unit_type = res.defender_units[i];
+	      let faction_name = res.defender_units_faction[i];
+	      let rrclass = "";
+	      let assignable = "";
+	      if (am_i_defender) { assignable = " not-assignable"; }	      
+	      if (["regular","mercenary","squadron","cavalry","corsair"].includes(unit_type)) {
+		if (am_i_defender) {
+		  assignable = " hits-assignable";
+	        }
+	      }
+	      if (res.defender_units_destroyed.includes(i)) { assignable = "destroyed"; faction_name = "destroyed"; }
+	      if (roll >= 5) { rrclass = "hit"; }
+	      if (pre_battle) { roll = "?"; rrclass = ""; }
+
+console.log("def mod rolls 2: " + i);
+
+              let html = `
+                <div class="field-battle-row ${assignable}" data-unit-type="${unit_type}" data-faction="${faction_name}">
+                	<div class="field-battle-unit">${unit_type}<div class="field-battle-desc">${faction_name}</div></div>
+                	<div class="field-battle-roll ${rrclass}">${roll}</div>
+                </div>
+              `;
+console.log("def mod rolls 3: " + i);
+              this.app.browser.addElementToSelector(html, ".field-battle-grid .defender");
+console.log("def mod rolls 4: " + i);
+
 	  }
 	}
  

@@ -2,10 +2,16 @@
   if (card == "defectors") {
 
       if (this.game.state.headline == 0) {
+
+	if (player == "us"){
+          this.game.queue.push(`ACKNOWLEDGE\tUS events Defectors`);
+	  return 1;
+        }
+
         this.game.state.vp += 1;
         this.updateLog(`US gains 1 VP from ${this.cardToText("defectors")}`);
         this.updateVictoryPoints();
-      }else{
+      } else {
 
       //
       // Defectors can be PULLED in the headline phase by 5 Year Plan or Grain Sales, in which

@@ -45,6 +45,18 @@
         letter-spacing: 0.05rem;
 }
 
+.field-battle-grid .attacker .field-battle-row.hits-assignable-hover-effect, .field-battle-grid .defender .field-battle-row.hits-assignable-hover-effect {
+    background-color: #FFFC;
+    color: black;
+    grid-template-columns: 1fr min-content;
+}
+.field-battle-grid .attacker .field-battle-row.destroyed , .field-battle-grid .defender .field-battle-row.destroyed {
+    background-color: #000A;
+    color: #AAA;
+    grid-template-columns: 1fr min-content;
+}
+
+
 .field-battle-grid .attacker .title , .field-battle-grid .defender .title {
         color: whitesmoke;
         background: #0005;
@@ -62,9 +74,10 @@
     padding: 0.75rem;
     font-size: 2rem;
     grid-column: 1;
-    margin-left: 2rem;
+    margin-left: 0rem;
     margin-right: 4vw;
     text-align: left;
+    justify-self: left;
 }
 
 .field-battle-desc {
@@ -99,8 +112,7 @@
 }
 
 .hits-assignable-hover-effect:hover {
-  background: #FFFA;
-  color: black;
+  font-weight: bold;
 }
 
 
