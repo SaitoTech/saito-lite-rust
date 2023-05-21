@@ -112,7 +112,11 @@ class FieldBattleOverlay {
 	}
       });
       if (faction != "") {
-        this.updateInstructions(this.mod.returnFactionName(faction) + " Assigning Hits");
+	if (this.mod.game.player == this.mod.returnPlayerOfFaction(faction)) {
+          this.mod.updateStatus(`Assign <span class="hits_to_assign">${hits_to_assign}</span> Hits`);
+	} else {
+          this.updateInstructions(this.mod.returnFactionName(faction) + " Assigning Hits");
+	}
       } else {
         this.updateInstructions("Assigning Hits");
       }
