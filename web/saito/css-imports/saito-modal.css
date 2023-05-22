@@ -301,3 +301,13 @@ This alows for a header with a header with title to be added without extra CSS
   }
 }
 
+
+@media only screen and (max-width: 786px) {
+  .saito-modal-menu-option>i {
+    font-size: 2rem;
+  }
+
+  .saito-modal-menu-option>div {
+    font-size: 1.5rem;
+  }
+}

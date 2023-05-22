@@ -71,8 +71,8 @@
 
 @media screen and (max-width: 500px) {
   .arcade-game-selector-game {
-    width: 18rem;
-    height: 12rem;
+    width: 14rem;
+    height: 9rem;
   }
   .arcade-game-selector-game-title {
     padding: 0.8rem;
