@@ -11,7 +11,6 @@ class Chat extends ModTemplate {
   constructor(app) {
     super(app);
 
-
     this.app = app;
 
     this.name = "Chat";
@@ -54,7 +53,7 @@ class Chat extends ModTemplate {
     // load private chat
     //
 
-    console.log('chat peer service up')
+    console.log("chat peer service up", service);
     if (service.service === "archive") {
       //
       // load 5 saved chat messages per group

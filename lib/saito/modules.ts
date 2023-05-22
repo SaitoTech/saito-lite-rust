@@ -361,10 +361,10 @@ class Mods {
     // then they learn about any services now-available
     //
 
-    console.log('peer services', peer);
-    if(peer.services.length === 0){
+    console.log('peer services', peer.services);
+    if (peer.services.length === 0) {
       await this.onPeerServiceUp(peer, peer.services[0]);
-    }else {
+    } else {
       for (let i = 0; i < peer.services.length; i++) {
         await this.onPeerServiceUp(peer, peer.services[i]);
       }

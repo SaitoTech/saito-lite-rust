@@ -95,7 +95,7 @@ export default class Network {
     return S.getInstance().sendTransactionWithCallback(transaction, callback, peerIndex);
   }
 
-  public close() {}
+  public close() { }
 
   addStunPeer() {
     throw new Error("not implemented");
@@ -114,20 +114,20 @@ export default class Network {
     return S.getInstance().sendRequest(message, data, callback, peerIndex);
   }
 
-  returnPeersWithService() {}
+  returnPeersWithService() { }
 
-  updatePeersWithWatchedPublicKeys() {}
+  updatePeersWithWatchedPublicKeys() { }
 
-  public async propagateServices(peerIndex: bigint) {
-    let my_services = [];
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      let modservices = this.app.modules.mods[i].returnServices();
-      if (modservices.length > 0) {
-        for (let k = 0; k < modservices.length; k++) {
-          my_services.push(modservices[k]);
-        }
-      }
-    }
-    return S.getInstance().propagateServices(peerIndex, my_services);
-  }
+  // public async propagateServices(peerIndex: bigint) {
+  //   let my_services = [];
+  //   for (let i = 0; i < this.app.modules.mods.length; i++) {
+  //     let modservices = this.app.modules.mods[i].returnServices();
+  //     if (modservices.length > 0) {
+  //       for (let k = 0; k < modservices.length; k++) {
+  //         my_services.push(modservices[k]);
+  //       }
+  //     }
+  //   }
+  //   return S.getInstance().propagateServices(peerIndex, my_services);
+  // }
 }
