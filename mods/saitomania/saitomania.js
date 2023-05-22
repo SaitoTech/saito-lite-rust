@@ -42,6 +42,10 @@ class SaitoMania extends OnePlayerGameTemplate {
       this.game.queue.push("READY");
       this.game.state = {
         scores: [],
+        lifetime: {
+          round: 0,
+          high_score: 0,
+        },
       };
     }
     
@@ -132,7 +136,11 @@ class SaitoMania extends OnePlayerGameTemplate {
       let score = log_msg.replace("SAITOMANIA:","");
       console.log("Game over, final score:" + score);
       this.game.state.scores.push(score);
-      this.endGame([], score);
+      this.game.state.lifetime.round++;
+      this.game.state.lifetime.high_score = Math.max(score, this.game.state.lifetime.high_score);
+      //this.endGame([], score);
+      this.addMove(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${score}\t${JSON.stringify([])}`);
+      this.endTurn();
       return 1;
     }
     return 0;

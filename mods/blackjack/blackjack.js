@@ -1250,10 +1250,10 @@ class Blackjack extends GameTableTemplate {
     this.settleLastRound();
 
     if (winners.length > 0){
-      this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winners)}\t${JSON.stringify([this.game.players[this.game.state.dealer-1]])}`);  
+      this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winners)}\troundover\t${JSON.stringify([this.game.players[this.game.state.dealer-1]])}`);  
     }
     if (losers.length > 0){
-     this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.game.players[this.game.state.dealer-1]])}\t${JSON.stringify(losers)}`);   
+     this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.game.players[this.game.state.dealer-1]])}\troundover\t${JSON.stringify(losers)}`);   
     }
 
     if (this.settlement.length > 0){
