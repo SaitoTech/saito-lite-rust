@@ -1,4 +1,5 @@
 const Slip = require("../../lib/saito/slip").default;
+const PeerService = require("saito-js/lib/peer_service").default;
 
 const Transaction = require("../../lib/saito/transaction").default;
 
@@ -38,7 +39,7 @@ class Relay extends ModTemplate {
 
   returnServices() {
     let services = [];
-    services.push({ service: "relay" });
+    services.push(new PeerService(null, "relay"));
     return services;
   }
 

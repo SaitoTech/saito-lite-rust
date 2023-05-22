@@ -1,8 +1,7 @@
-import Block from "./../block";
 import { Saito } from "../../../apps/core";
 import express from "express";
 import { Server as Ser } from "http";
-import S, { initialize as initS } from "saito-js/index.node";
+import S from "saito-js/index.node";
 
 // const io          = require('socket.io')(webserver, {
 //   cors: {
@@ -20,8 +19,7 @@ import { parse } from "url";
 import Peer from "../peer";
 import Transaction from "../transaction";
 import Factory from "../factory";
-import Wallet from "../wallet";
-import Blockchain from "../blockchain";
+import PeerServiceList from "saito-js/lib/peer_service_list";
 
 const JSON = require("json-bigint");
 const app = express();
@@ -182,6 +180,13 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
   loadBlockchain(): void {
     throw new Error("Method not implemented.");
+  }
+
+  getMyServices() {
+    let list = new PeerServiceList();
+    let result = this.app.network.getServices();
+    result.forEach((s) => list.push(s));
+    return list;
   }
 }
 

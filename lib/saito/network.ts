@@ -2,6 +2,7 @@ import Transaction from "./transaction";
 import Peer from "./peer";
 import S from "saito-js/saito";
 import { Saito } from "../../apps/core";
+import PeerService from "saito-js/lib/peer_service";
 
 export default class Network {
   callbacks = [];
@@ -118,16 +119,26 @@ export default class Network {
 
   updatePeersWithWatchedPublicKeys() {}
 
-  public async propagateServices(peerIndex: bigint) {
+  // public async propagateServices(peerIndex: bigint) {
+  //   let my_services = [];
+  //   for (let i = 0; i < this.app.modules.mods.length; i++) {
+  //     let modservices = this.app.modules.mods[i].returnServices();
+  //     for (let k = 0; k < modservices.length; k++) {
+  //       my_services.push(modservices[k]);
+  //     }
+  //   }
+  //   return S.getInstance().propagateServices(peerIndex, my_services);
+  // }
+
+  public getServices(): PeerService[] {
     let my_services = [];
     for (let i = 0; i < this.app.modules.mods.length; i++) {
-      let modservices = this.app.modules.mods[i].returnServices();
-      if (modservices.length > 0) {
-        for (let k = 0; k < modservices.length; k++) {
-          my_services.push(modservices[k]);
-        }
+      let module = this.app.modules.mods[i];
+      let modservices: PeerService[] = module.returnServices();
+      for (let k = 0; k < modservices.length; k++) {
+        my_services.push(modservices[k]);
       }
     }
-    return S.getInstance().propagateServices(peerIndex, my_services);
+    return my_services;
   }
 }
