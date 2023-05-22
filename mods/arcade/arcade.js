@@ -420,7 +420,18 @@ class Arcade extends ModTemplate {
     }
     if (type === "saito-floating-menu") {
       let x = [];
-    
+      
+      x.push({
+        text: "Games",
+        icon: this.icon || "fas fa-gamepad",
+        disallowed_mods: ["redsquare"],
+        rank: 10,
+        callback: function (app, id) {
+          app.connection.emit("arcade-launch-game-selector", {});
+        },
+      });
+      return x;
+
       return x;
     }
 
@@ -1778,7 +1789,18 @@ class Arcade extends ModTemplate {
 
       if (gameType == "direct") {
         this.app.connection.emit("arcade-launch-game-scheduler", newtx);
-        this.app.connection.emit("relay-send-message", {recipient: options.desired_opponent_publickey, request: "arcade spv update", data: newtx.transaction});
+        this.app.connection.emit("relay-send-message", {recipient: options.desired_opponent_publickey, request: "arcade spv update", data: newtx.transaction});      
+        return;
+      }
+
+      if (gameType == "open") {
+        if (this.app.browser.isMobileBrowser(navigator.userAgent) && 
+          this.app.modules.returnActiveModule().returnName() == "Red Square"){
+          salert("Game invite created. Redirecting to arcade...")
+          setTimeout(function(){
+            window.location.href = "/arcade";
+          }, 2000)
+        }
         return;
       }
 

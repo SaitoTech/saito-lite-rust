@@ -4,7 +4,7 @@
   row-gap: 3rem;
   width: 95vw;
   height: 80vh;
-  max-height: 80%;
+  max-height: 80vh;
   overflow: auto;
   background: var(--saito-background-color);
   color: var(--saito-font-color);

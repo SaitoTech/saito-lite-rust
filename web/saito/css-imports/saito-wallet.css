@@ -305,6 +305,8 @@
   padding: 2rem 0rem 1.3rem 0rem;
 }
 
+
+
 #pagination-numbers {
     display: flex;
     gap: 2rem;
@@ -333,9 +335,17 @@
 }
 
 .pagination-button:hover {
-
   transition: all 0.2s ease-in-out;
   transform: scale(1.5);
+}
+
+
+.pagination-container.disabled .pagination-button {
+  color: #9f9b9b;
+}
+
+.pagination-container.disabled .pagination-button:hover {
+  transform: scale(1);
 }
 
 
