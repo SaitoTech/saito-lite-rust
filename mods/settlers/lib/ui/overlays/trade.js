@@ -44,35 +44,78 @@ class TradeOverlay {
     let trade_overlay = this;
     let settlers_self = this.mod;
 
-    $(".trade_area.card").off();
-    $(".trade_area.card").on("click", function () {
 
-        let item = $(this).attr("id");
+    document.querySelectorAll(".trade_count_up").forEach(function(arrow, k){
+      arrow.addEventListener("click", function(e){
+        let arrow = e.currentTarget;
+        let count_div = arrow.nextElementSibling;
+        let new_count = Number(count_div.getAttribute("data-count")) + 1;
+
+        let item = arrow.parentElement.getAttribute("id");
         let temp = item.split("_");
         let resInd = parseInt(temp[1]);
 
-	let resname = "brick";
-	if (resInd == 1) { resname = "wood"; }
-	if (resInd == 2) { resname = "wheat"; }
-	if (resInd == 3) { resname = "wool"; }
-	if (resInd == 4) { resname = "ore"; }
+        let resname = "brick";
+        if (resInd == 1) { resname = "wood"; }
+        if (resInd == 2) { resname = "wheat"; }
+        if (resInd == 3) { resname = "wool"; }
+        if (resInd == 4) { resname = "ore"; }
 
         if (temp[0] == "want") {
           trade_overlay.get[temp[1]]++;
+          count_div.setAttribute("data-count", new_count);
+          count_div.innerHTML = new_count;
         } else {
-	  //
-	  // cannot offer more than you have
-	  //
-	  if (trade_overlay.give[temp[1]] >= settlers_self.countResource(settlers_self.game.player, resname)) {
-	    trade_overlay.render(trade_overlay.tradeType, false);
-	    return;
-	  }
-          trade_overlay.give[temp[1]]++;
-        } 
+          //
+          // cannot offer more than you have
+          //
+          if (trade_overlay.give[temp[1]] >= settlers_self.countResource(settlers_self.game.player, resname)) {
+            salert("Not more "+ resname +" to trade");
+            return;
+          } else {
+            count_div.setAttribute("data-count", new_count);
+            count_div.innerHTML = new_count;
+            trade_overlay.give[temp[1]]++;
+          }
+        }
 
-        trade_overlay.render(trade_overlay.tradeType, false);
-
+      });
     });
+
+
+    document.querySelectorAll(".trade_count_down").forEach(function(arrow, k){
+      arrow.addEventListener("click", function(e){
+          let arrow = e.currentTarget;
+          let count_div = arrow.previousElementSibling;
+          let new_count = Number(count_div.getAttribute("data-count")) - 1;
+
+          let item = arrow.parentElement.getAttribute("id");
+          let temp = item.split("_");
+          let resInd = parseInt(temp[1]);
+
+          let resname = "brick";
+          if (resInd == 1) { resname = "wood"; }
+          if (resInd == 2) { resname = "wheat"; }
+          if (resInd == 3) { resname = "wool"; }
+          if (resInd == 4) { resname = "ore"; }
+
+          if (!new_count >= 0) {
+            if (temp[0] == "want") {
+              trade_overlay.get[temp[1]]--;
+            } else {
+              trade_overlay.give[temp[1]]--;
+            }
+
+            count_div.setAttribute("data-count", new_count);
+            count_div.innerHTML = new_count;
+          
+            if (new_count == 0) {
+              count_div.innerHTML = "";
+            } 
+          }
+      });  
+    });
+
 
     $(".trade_overlay_reset_button").off();
     $(".trade_overlay_reset_button").on("click", function () {
