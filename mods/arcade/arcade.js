@@ -1,4 +1,5 @@
 const Slip = require("../../lib/saito/slip").default;
+const PeerService = require("saito-js/lib/peer_service").default;
 
 const Transaction = require("../../lib/saito/transaction").default;
 
@@ -51,7 +52,7 @@ class Arcade extends ModTemplate {
     this.styles = ["/arcade/style.css"];
 
     this.affix_callbacks_to = [];
-    this.services = [{ service: "arcade", domain: "saito" }];
+    this.services = [new PeerService(null, "arcade", "", "saito")];
 
     this.theme_options = {
       lite: "fa-solid fa-sun",

@@ -196,6 +196,7 @@ class Mods {
     // include events here
     //
     this.app.connection.on("handshake_complete", async (peerIndex: bigint) => {
+      // await this.app.network.propagateServices(peerIndex);
       let peer = await this.app.network.getPeer(BigInt(peerIndex));
       console.log('handhske complete')
       onPeerHandshakeComplete(peer);
@@ -350,7 +351,7 @@ class Mods {
     return null;
   }
 
-  async onPeerHandshakeComplete(peer) {
+  async onPeerHandshakeComplete(peer: Peer) {
     //
     // all modules learn about the peer connecting
     //
@@ -360,14 +361,8 @@ class Mods {
     //
     // then they learn about any services now-available
     //
-
-    console.log('peer services', peer.services);
-    if (peer.services.length === 0) {
-      await this.onPeerServiceUp(peer, peer.services[0]);
-    } else {
-      for (let i = 0; i < peer.services.length; i++) {
-        await this.onPeerServiceUp(peer, peer.services[i]);
-      }
+    for (let i = 0; i < peer.services.length; i++) {
+      await this.onPeerServiceUp(peer, peer.services[i]);
     }
 
   }

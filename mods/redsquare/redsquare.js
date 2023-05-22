@@ -13,7 +13,7 @@ const redsquareHome = require("./index");
 const Post = require("./lib/post");
 const Transaction = require("../../lib/saito/transaction").default;
 const Factory = require("../../lib/saito/factory").default;
-const Slip = require("../../lib/saito/slip").default;
+const PeerService = require("saito-js/lib/peer_service").default;
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {			// renders main tweets
@@ -126,7 +126,7 @@ class RedSquare extends ModTemplate {
 
   returnServices() {
     let services = [];
-    services.push({ service: "redsquare", name: "RedSquare Tweet Archive" });
+    services.push(new PeerService(null, "redsquare", "RedSquare Tweet Archive"));
     return services;
   }
 
