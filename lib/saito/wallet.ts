@@ -54,6 +54,9 @@ export default class Wallet extends SaitoWallet {
     fee = BigInt(0),
     force_merge = false
   ): Promise<Transaction> {
+    if (publicKey == "") {
+      publicKey = await this.getPublicKey();
+    }
     return S.getInstance().createTransaction(publicKey, amount, fee, force_merge);
   }
 

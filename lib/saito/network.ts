@@ -130,15 +130,15 @@ export default class Network {
   //   return S.getInstance().propagateServices(peerIndex, my_services);
   // }
 
-  public getServices() {
+  public getServices(): PeerService[] {
     let my_services = [];
     for (let i = 0; i < this.app.modules.mods.length; i++) {
-      let modservices: PeerService[] = this.app.modules.mods[i].returnServices();
+      let module = this.app.modules.mods[i];
+      let modservices: PeerService[] = module.returnServices();
       for (let k = 0; k < modservices.length; k++) {
         my_services.push(modservices[k]);
       }
     }
-    console.log("my services : ", my_services);
     return my_services;
   }
 }

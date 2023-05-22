@@ -9,6 +9,7 @@ import Transaction from "../../lib/saito/transaction";
 import Factory from "../../lib/saito/factory";
 import Wallet from "../../lib/saito/wallet";
 import Blockchain from "../../lib/saito/blockchain";
+import PeerServiceList from "saito-js/lib/peer_service_list";
 
 class WebMethods extends WebSharedMethods {
   app: Saito;
@@ -65,7 +66,10 @@ class WebMethods extends WebSharedMethods {
   }
 
   getMyServices() {
-    return this.app.network.getServices();
+    let list = new PeerServiceList();
+    let result = this.app.network.getServices();
+    result.forEach((s) => list.push(s));
+    return list;
   }
 }
 
