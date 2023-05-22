@@ -13513,7 +13513,6 @@ console.log("POOL: " + hapsburg_card);
 	  //
 	  let assign_hits = function(faction, hits) {
 
-alert("assigning "+hits+" hits to: " + faction);
 	    //
 	    // hits are spread out over units
 	    //
@@ -13685,6 +13684,16 @@ alert("Units Destroyed Requires Check");
             his_self.field_battle_overlay.updateInstructions("Independent Hits Assigned");
 
 	    return 1;
+	  }
+
+	  //
+	  // no hits assignment if no hits
+	  //
+	  //
+	  if (faction === this.game.state.field_battle.attacker_faction) {
+	    if (this.game.state.field_battle.defender_hits == 0) { return 1; }
+	  } else {
+	    if (this.game.state.field_battle.attacker_hits == 0) { return 1; }
 	  }
 
 
