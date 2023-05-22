@@ -646,7 +646,7 @@ class Poker extends GameTableTemplate {
           // if everyone has folded - start a new round
           this.settleLastRound();
           this.clearTable();
-          this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.game.players[player_left_idx]])}`);
+          this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.game.players[player_left_idx]])}\tfold`);
 
           return 1;
         }
@@ -953,7 +953,7 @@ class Poker extends GameTableTemplate {
           this.game.halted = 1;
         }
         this.settleLastRound();
-        this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winner_keys)}`);
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winner_keys)}\tbesthand`);
 
         return 0;
 
