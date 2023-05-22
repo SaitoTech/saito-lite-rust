@@ -5,11 +5,14 @@ const ChatManager = require("./lib/chat-manager/main");
 const ChatManagerOverlay = require("./lib/overlays/chat-manager");
 const ChatPopup = require("./lib/chat-manager/popup");
 const JSON = require("json-bigint");
-const Transaction = require("../../lib/saito/transaction");
+const Transaction = require("../../lib/saito/transaction").default;
 
 class Chat extends ModTemplate {
   constructor(app) {
     super(app);
+
+
+    this.app = app;
 
     this.name = "Chat";
 
@@ -34,10 +37,10 @@ class Chat extends ModTemplate {
 
     this.chat_manager_overlay = null;
 
-    this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
-      this.createChatGroup(data?.members);
-      this.app.connection.emit("chat-manager-render-request");
-    });
+    //    app.connection.on("encrypt-key-exchange-confirm", (data) => {
+    //   this.createChatGroup(data?.members);
+    //    app.connection.emit("chat-manager-render-request");
+    // });
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
 
@@ -50,6 +53,8 @@ class Chat extends ModTemplate {
     //
     // load private chat
     //
+
+    console.log('chat peer service up')
     if (service.service === "archive") {
       //
       // load 5 saved chat messages per group
