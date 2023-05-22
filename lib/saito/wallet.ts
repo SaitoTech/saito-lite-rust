@@ -123,7 +123,7 @@ export default class Wallet extends SaitoWallet {
         const from_from = 0;
         const to_to = 0;
         if (to == (await this.app.wallet.getPublicKey())) {
-          for (let i = 0; i < this.app.wallet.wallet.inputs.length; i++) {
+          for (let i = 0; i < this.app.wallet.instance.inputs.length; i++) {
             if (this.app.wallet.instance.inputs[i].amount === howMuch) {
               if (parseInt(this.app.wallet.instance.inputs[i].timestamp) >= parseInt(timestamp)) {
                 if (this.app.wallet.instance.inputs[i].publicKey == to) {
