@@ -426,14 +426,14 @@ class Beleaguered extends OnePlayerGameTemplate {
         this.game.state.session.round++;
         this.game.state.session.wins++;
         this.game.queue.push("round");
-        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${JSON.stringify([])}`);
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\troundover\t${JSON.stringify([])}`);
       }
 
       if (mv[0] === "lose"){
         this.game.state.session.round++;
         this.game.state.session.losses++;
         this.game.queue.push("round");
-        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\troundover\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);
       }
 
       if (mv[0] === "play") {
