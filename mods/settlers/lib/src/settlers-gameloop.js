@@ -75,7 +75,7 @@ class SettlersGameloop {
         this.game.queue = [];
 
         this.updateLog(
-          `${this.game.playerNames[winner]} is ${this.skin.winState} of Saitoa! The game is over.`
+          `${this.game.playerNames[winner]} is ${this.winState} of Saitoa! The game is over.`
         );
 
         //this.overlay.show(this.returnStatsOverlay());
@@ -93,7 +93,7 @@ class SettlersGameloop {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
 
-        this.updateLog(`${this.game.playerNames[player - 1]} bought a ${this.skin.card.name} card`);
+        this.updateLog(`${this.game.playerNames[player - 1]} bought a ${this.card.name} card`);
         this.game.state.canTrade = false;
 
         //this player will update their devcard count on next turn
@@ -105,7 +105,7 @@ class SettlersGameloop {
           let lastcard = this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
 
           let html = `<span class="tip">${lastcard.card}
-                        <div class="tiptext">${this.skin.rules[lastcard.action]}</div>
+                        <div class="tiptext">${this.rules[lastcard.action]}</div>
                       </span>`;
 
           this.updateStatus(`<div class="persistent"><span>You bought a ${html}</span></div>`);
@@ -158,7 +158,7 @@ class SettlersGameloop {
           this.playBandit();
         } else {
           this.updateStatus(
-            `<div class="tbd">Waiting for ${this.game.playerNames[player - 1]} to move the ${this.skin.b.name}...</div>`
+            `<div class="tbd">Waiting for ${this.game.playerNames[player - 1]} to move the ${this.b.name}...</div>`
           );
         }
         return 0;
@@ -283,7 +283,7 @@ class SettlersGameloop {
 
         } else {
           this.updateStatus(
-            `<div class="tbd">${this.game.playerNames[player - 1]} is building a ${this.skin.r.name}...</div>`
+            `<div class="tbd">${this.game.playerNames[player - 1]} is building a ${this.r.name}...</div>`
           );
         }
         return 0;
@@ -296,7 +296,7 @@ class SettlersGameloop {
         this.game.queue.splice(qe, 1);
 
         this.buildRoad(player, slot);
-        this.updateLog(`${this.game.playerNames[player - 1]} built a ${this.skin.r.name}`);
+        this.updateLog(`${this.game.playerNames[player - 1]} built a ${this.r.name}`);
         if (this.checkLongestRoad(player)) {
           console.log("Longest Road:", this.game.state.longestRoad.path);
         }
@@ -326,7 +326,7 @@ class SettlersGameloop {
           this.playerBuildCity(mv[1], parseInt(mv[2]));
         } else {
           this.updateStatus(
-            `<div class="tbd">${this.game.playerNames[player - 1]} is building a ${this.skin.c1.name}...</div>`
+            `<div class="tbd">${this.game.playerNames[player - 1]} is building a ${this.c1.name}...</div>`
           );
         }
 
@@ -342,7 +342,7 @@ class SettlersGameloop {
         let logMsg = `${this.game.playerNames[player - 1]} starts with `;
         for (let hextile of this.hexgrid.hexesFromVertex(city)) {
           let bounty = this.game.state.hexes[hextile].resource;
-          if (bounty !== this.skin.nullResource()) { //DESERT ATTACK
+          if (bounty !== this.returnNullResource()) { //DESERT ATTACK
             logMsg += bounty + ", ";
             this.game.state.players[player - 1].resources.push(bounty);
             this.game.stats.production[bounty][player - 1]++; //Initial starting stats  
@@ -366,7 +366,7 @@ class SettlersGameloop {
           this.game.state.last_city = slot;
         }
 
-        this.updateLog(`${this.game.playerNames[player - 1]} built a ${this.skin.c1.name}`);
+        this.updateLog(`${this.game.playerNames[player - 1]} built a ${this.c1.name}`);
 
         //Check for edge case where the new city splits a (longest) road
         let adj_road_owners = {};
@@ -391,7 +391,7 @@ class SettlersGameloop {
           for (let owner in adj_road_owners) {
             //If new town borders a road of the player with the longest road, recheck board to find longest road
             if (adj_road_owners[owner] > 1 && owner != player && owner == this.game.state.longestRoad.player) {
-              this.updateLog(`New ${this.skin.c1.name} bisects longest road, recalculating next longest road`);
+              this.updateLog(`New ${this.c1.name} bisects longest road, recalculating next longest road`);
               this.game.state.longestRoad.player = 0; //unset longest road
               //Check the person who had the longest road first so they have priority (in event of ties)
               this.checkLongestRoad(owner);
@@ -419,7 +419,7 @@ class SettlersGameloop {
           this.playerUpgradeCity(player, 1);
         } else {
           this.updateStatus(
-            `<div class="tbd">${this.game.playerNames[player - 1]} is upgrading to a ${this.skin.c2.name}...</div>`
+            `<div class="tbd">${this.game.playerNames[player - 1]} is upgrading to a ${this.c2.name}...</div>`
           );
         }
 
@@ -435,7 +435,7 @@ class SettlersGameloop {
         this.game.queue.splice(qe, 1);
 
         this.updateLog(
-          `${this.game.playerNames[player - 1]} upgraded a ${this.skin.c1.name} to a ${this.skin.c2.name}`
+          `${this.game.playerNames[player - 1]} upgraded a ${this.c1.name} to a ${this.c2.name}`
         );
         for (let i = 0; i < this.game.state.cities.length; i++) {
           if (this.game.state.cities[i].slot === slot) {
@@ -444,7 +444,7 @@ class SettlersGameloop {
             this.game.state.players[player - 1].cities--;
             this.game.state.players[player - 1].towns++;
             let divname = "#" + slot;
-            $(divname).html(this.skin.c2.svg);
+            $(divname).html(this.c2.svg);
             $(divname).addClass(`p${this.game.colors[player - 1]}`);
             return 1;
           }
@@ -842,7 +842,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
           this.playBandit();
         } else {
           this.updateStatus(
-            `<div class="tbd">${this.game.playerNames[player - 1]} moving the ${this.skin.b.name}...</div>`
+            `<div class="tbd">${this.game.playerNames[player - 1]} moving the ${this.b.name}...</div>`
           );
         }
         return 0;
@@ -869,14 +869,14 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
           "->" +
           this.game.state.hexes[hexId].resource;
         this.updateLog(
-          `${this.game.playerNames[player - 1]} moved the ${this.skin.b.name} to ${hexName}`
+          `${this.game.playerNames[player - 1]} moved the ${this.b.name} to ${hexName}`
         );
 
         if (this.game.player === player) {
           this.moveBandit(player, hexId);
         } else {
           this.updateStatus(
-            `<div class="tbd">Waiting for ${this.game.playerNames[player - 1]} to choose the ${this.skin.b.name}'s victim...</div>`
+            `<div class="tbd">Waiting for ${this.game.playerNames[player - 1]} to choose the ${this.b.name}'s victim...</div>`
           );
         }
 

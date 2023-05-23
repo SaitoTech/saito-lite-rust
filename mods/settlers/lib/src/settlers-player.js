@@ -17,7 +17,7 @@
       let my_resources = {};
       let cardsToDiscard = [];
 
-      for (let resource of this.skin.resourceArray()) {
+      for (let resource of this.returnResources()) {
         let temp = settlers_self.countResource(
           settlers_self.game.player,
           resource
@@ -34,7 +34,7 @@
           if (my_resources[i] > 0)
             html += `<li id="${i}" class="option">`;
             for (let j = 0; j < my_resources[i]; j++){
-              html += `<img class="icon" src="${settlers_self.skin.resourceCard(i)}">`;
+              html += `<img class="icon" src="${settlers_self.returnCardImage(i)}">`;
             }
             html += `</li>`;
         }
@@ -87,10 +87,10 @@
       */
       if (existing_cities < 2) {
         if (existing_cities == 1){
-          this.hud.updateStatus(`<div class="flashme tbd"><div class="pcb"></div>YOUR TURN: place ${this.skin.c1.name}...</div>`);
+          this.hud.updateStatus(`<div class="flashme tbd"><div class="pcb"></div>YOUR TURN: place ${this.c1.name}...</div>`);
   	this.setHudHeight();
         }else{
-          this.hud.updateStatus(`<div class="flashme tbd"><div class="pcb"></div>YOUR TURN: place ${this.skin.c1.name}...</div>`);
+          this.hud.updateStatus(`<div class="flashme tbd"><div class="pcb"></div>YOUR TURN: place ${this.c1.name}...</div>`);
   	this.setHudHeight();
         }
         $(".flashme").addClass("flash");
@@ -114,7 +114,7 @@
             $(".city.empty").css("background-color", "");
             //Confirm this move
             let slot = $(this).attr("id");
-            settlers_self.confirmPlacement(slot, settlers_self.skin.c1.name, ()=>{
+            settlers_self.confirmPlacement(slot, settlers_self.c1.name, ()=>{
               $(".city.empty").removeClass("chover");
               $(".city.empty").off();
                 settlers_self.game.state.placedCity = slot;
@@ -137,7 +137,7 @@
       } else {
         /* During game, must build roads to open up board for new settlements*/
         if (canBackUp){
-          this.updateStatus(`<div class="tbd">You may build a ${this.skin.c1.name}...</div><ul><li class="undo">cancel</li></ul>`);
+          this.updateStatus(`<div class="tbd">You may build a ${this.c1.name}...</div><ul><li class="undo">cancel</li></ul>`);
           $(".undo").on("click",function(){
             //Make sure the confirm popup goes away
             $(".action").off();
@@ -149,7 +149,7 @@
             settlers_self.endTurn();
           });
         }else{
-          this.updateStatus(`<div class="tbd">You may build a ${this.skin.c1.name}...</div>`);
+          this.updateStatus(`<div class="tbd">You may build a ${this.c1.name}...</div>`);
         }
 
         let building_options = this.returnCitySlotsAdjacentToPlayerRoads(this.game.player);
@@ -174,7 +174,7 @@
             }
 
             let slot = $(this).attr("id");
-            settlers_self.confirmPlacement(slot, settlers_self.skin.c1.name, ()=>{
+            settlers_self.confirmPlacement(slot, settlers_self.c1.name, ()=>{
               $(".rhover").off();
               $(".rhover").removeClass("rhover");
 
@@ -192,7 +192,7 @@
     playerUpgradeCity(player, canBackUp = 0) {
 
       if (canBackUp){
-        this.updateStatus(`<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div><ul><li class="undo">cancel</li></ul>`);
+        this.updateStatus(`<div class="tbd">Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...</div><ul><li class="undo">cancel</li></ul>`);
         $(".undo").on("click",function(){
           //Make sure the confirm popup goes away
           $(".action").off();
@@ -205,7 +205,7 @@
           settlers_self.endTurn();
         });
       }else{
-        this.updateStatus(`<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div>`);
+        this.updateStatus(`<div class="tbd">Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...</div>`);
       }
 
       let settlers_self = this;
@@ -250,7 +250,7 @@
 
       if (this.game.state.placedCity) {
         this.updateStatus(
-          `<div class="tbd"><div class="pcb"></div>YOUR TURN: place a ${this.skin.r.name}...</div>`
+          `<div class="tbd"><div class="pcb"></div>YOUR TURN: place a ${this.r.name}...</div>`
         );
 
         /*Initial placing of settlements and roads, road must connect to settlement just placed
@@ -269,7 +269,7 @@
         $(".road.new").off();
         $(".road.new").on("click", function () {
           let slot = $(this).attr("id");
-          settlers_self.confirmPlacement(slot, settlers_self.skin.r.name, ()=>{
+          settlers_self.confirmPlacement(slot, settlers_self.r.name, ()=>{
             $(".road.new").off();
             $(".road.new").removeAttr("style");
             $(".rhover").removeClass("rhover");
@@ -281,7 +281,7 @@
         });
       } else {
         if (canBackUp){
-          this.updateStatus(`<div class="tbd">You may build a ${this.skin.r.name}...</div><ul><li class="undo">cancel</li></ul>`);
+          this.updateStatus(`<div class="tbd">You may build a ${this.r.name}...</div><ul><li class="undo">cancel</li></ul>`);
           $(".undo").on("click",function(){
             //Make sure the confirm popup goes away
             $(".action").off();
@@ -296,7 +296,7 @@
           });
 
         } else{
-          this.updateStatus(`<div class="tbd">You may build a ${this.skin.r.name}...</div>`);
+          this.updateStatus(`<div class="tbd">You may build a ${this.r.name}...</div>`);
         }
 
 
@@ -306,7 +306,7 @@
         $(".road.empty").off();
         $(".road.empty").on("click", function () {
           let slot = $(this).attr("id");
-          settlers_self.confirmPlacement(slot, settlers_self.skin.r.name, ()=>{
+          settlers_self.confirmPlacement(slot, settlers_self.r.name, ()=>{
             $(".road.empty").off();
             $(".rhover").removeClass("rhover");
             $(".road.empty").removeAttr("style");
@@ -422,18 +422,18 @@
       //Show all old cards
       for (let i = 0; i < limit; i++) {
         let card = this.game.deck[0].cards[this.game.deck[0].hand[i]];
-        if (this.game.state.canPlayCard || !this.skin.isActionCard(card.card)) {
+        if (this.game.state.canPlayCard || !this.isActionCard(card.card)) {
           html += `<li class="option tip" id="${i}">${card.card}
-                    <div class="tiptext">${this.skin.rules[card.action]}</div>
+                    <div class="tiptext">${this.rules[card.action]}</div>
                    </li>`;
         }
       }
       //Show New VP as well
       for (let i = Math.max(limit, 0); i < this.game.deck[0].hand.length; i++) {
         let card = this.game.deck[0].cards[this.game.deck[0].hand[i]];
-        if (!this.skin.isActionCard(card.card)) {
+        if (!this.isActionCard(card.card)) {
           html += `<li class="option tip" id="${i}">${card.card}
-                   <div class="tiptext">${this.skin.rules[card.action]}</div>
+                   <div class="tiptext">${this.rules[card.action]}</div>
                    </li>`;
         }
       }
@@ -510,7 +510,7 @@
       let my_resources = {}; 
       let minForTrade = this.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
                   
-      for (let resource of this.skin.resourceArray()) {
+      for (let resource of this.returnResources()) {
         let temp = settlers_self.countResource(
           settlers_self.game.player,
           resource
@@ -523,7 +523,7 @@
         for (let i in my_resources) {
           html += `<li id="${i}" class="option">`;
           for (let j = 0; j<minForTrade[i]; j++){
-            html += `<img class="icon" src="${settlers_self.skin.resourceIcon(i)}"/>`;
+            html += `<img class="icon" src="${settlers_self.returnCardImage(i)}"/>`;
           }   
           //`${i} (${minForTrade[i]}/${my_resources[i]})</li>`;
         }   
@@ -543,8 +543,8 @@
     
           //Picked something to give, now pick something to get
           html = "<div class='tbd'>Select Desired Resource: <ul class='bank horizontal_list'>";
-          for (let i of settlers_self.skin.resourceArray()) {
-            html += `<li id="${i}" class="iconoption option tip"><img class="icon" src="${settlers_self.skin.resourceIcon(i)}">
+          for (let i of settlers_self.returnResources()) {
+            html += `<li id="${i}" class="iconoption option tip"><img class="icon" src="${settlers_self.retrnCardImage(i)}">
               <div class="tiptext">${i}</div></li>`;
           }
           html += '<li id="cancel" class="option">cancel trade</li>';
@@ -606,14 +606,14 @@
 
 
     canPlayerBuildRoad(player) {
-      return this.doesPlayerHaveResources(player, this.skin.priceList[0]);
+      return this.doesPlayerHaveResources(player, this.priceList[0]);
     } 
       
     canPlayerBuildTown(player) {
       if (this.game.state.players[player - 1].towns == 0) return false;
       if (this.returnCitySlotsAdjacentToPlayerRoads(this.game.player).length == 0)
         return false;
-      return this.doesPlayerHaveResources(player, this.skin.priceList[1]);
+      return this.doesPlayerHaveResources(player, this.priceList[1]);
     } 
       
     canPlayerBuildCity(player) {
@@ -625,13 +625,13 @@
       
       if (this.game.state.players[player - 1].cities == 0) return false;
       
-      return this.doesPlayerHaveResources(player, this.skin.priceList[2]);
+      return this.doesPlayerHaveResources(player, this.priceList[2]);
     } 
 
     canPlayerBuyCard(player) {
       //No more cards in deck (No reshuffling in this game)
       if (this.game.deck[0].crypt.length === 0) return false;
-      return this.doesPlayerHaveResources(player, this.skin.priceList[3]);
+      return this.doesPlayerHaveResources(player, this.priceList[3]);
     }
 
     canPlayerPlayCard() {
@@ -653,7 +653,7 @@
         return false;
       }
 
-      for (let resource of this.skin.resourceArray()) {
+      for (let resource of this.returnResources()) {
         if (this.countResource(this.game.player, resource) >= minForTrade[resource])
           return true;
       }

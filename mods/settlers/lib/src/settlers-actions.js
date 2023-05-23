@@ -22,7 +22,7 @@ buildCity(player, slot) {
 
     $(divname).addClass(classname);
     $(divname).removeClass("empty");
-    $(divname).html(this.skin.c1.svg);
+    $(divname).html(this.c1.svg);
 
     let blocks_me = false;
     let newRoads = this.hexgrid.edgesFromVertex(slot.replace("city_", ""));
@@ -139,46 +139,19 @@ buildCity(player, slot) {
 
   returnResourceHTML(resource){
     return `<div class="tip">
-            <img class="icon" src="${this.skin.resourceCard(resource)}">
+            <img class="icon" src="${this.returnCardImage(resource)}">
             </div>`;
   }
 
   visualizeCost(purchase) {
     let html = "";
     if (purchase < 0 || purchase > 3) return "";
-    let cost = this.skin.priceList[purchase];
+    let cost = this.priceList[purchase];
     for (let resource of cost) {
-      //html += `<img class="icon" src="${this.skin.resourceIcon(resource)}">`;
+      //html += `<img class="icon" src="${this.returnCardImage(resource)}">`;
       html += this.returnResourceHTML(resource);
     }
     return html;
-  }
-
-  /*
-  Overwrite standard card imaging function to hijack the game-cardbox and have it show
-  building costs "help" card
-  */
-  returnCardImage(card){
-    if (card == "construction-costs"){
-      let html = `<div class="construction-costs saitoa">
-              <div class="h2">Building Costs</div>
-              <div class="table">
-              <div class="tip token p${this.game.colors[this.game.player-1]}"><svg viewbox="0 0 200 200"><polygon points="0,175 175,0, 200,25 25,200"/></svg>
-              </div>
-                  <div class="cost">${this.visualizeCost(0)}</div>
-                <div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c1.svg}</div>
-                    <div class="cost">${this.visualizeCost(1)}</div>
-                    <div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c2.svg}</div>
-                    <div class="cost">${this.visualizeCost(2)}</div>
-                <div class="tip token"><svg viewbox="0 0 200 200"><polygon points="25,0 175,0, 175,200 25,200"/>
-                <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="132px" fill="red">?</text></svg>
-              </div>
-              <div class="message">The first player to reach ${this.game.options.game_length} VP wins!</div>
-              </div>`;
-      return html;
-    } else {
-      return "";
-    }
   }
 
 
@@ -199,7 +172,7 @@ buildCity(player, slot) {
   hasVPCards() {
     for (let i = 0; i < this.game.deck[0].hand.length; i++) {
       let cardname = this.game.deck[0].cards[this.game.deck[0].hand[i]].card;
-      if (!this.skin.isActionCard(cardname)) return true;
+      if (!this.isActionCard(cardname)) { return true; }
     }
     return false;
   }
@@ -213,7 +186,7 @@ buildCity(player, slot) {
     //Pick something to get
     let settlers_self = this;
     let remaining = 2;
-    let resourceList = this.skin.resourceArray();
+    let resourceList = this.returnResources();
     let cardsToGain = [];
 
     //Player recursively selects all the resources they want to get rid of
@@ -255,7 +228,7 @@ buildCity(player, slot) {
     if (this.game.player != player) return;
     //Pick something to get
     let settlers_self = this;
-    let resourceList = this.skin.resourceArray();
+    let resourceList = this.returnResources();
 
     //Player recursively selects all the resources they want to get rid of
     let html = `<div class='tbd'>Select Desired Resource: <ul class="horizontal_list">`;
@@ -392,7 +365,7 @@ buildCity(player, slot) {
             this.highlightRoad(
               player,
               longest,
-              `claimed the ${this.skin.longest.name} from ${this.game.playerNames[this.game.state.longestRoad.player-1]} with ${longest.length} segments!`
+              `claimed the ${this.longest.name} from ${this.game.playerNames[this.game.state.longestRoad.player-1]} with ${longest.length} segments!`
             );
             this.game.state.longestRoad.player = player;
             this.game.state.longestRoad.size = longest.length;
@@ -402,7 +375,7 @@ buildCity(player, slot) {
             this.game.state.longestRoad.size = longest.length;
             this.game.state.longestRoad.path = longest;
             this.updateLog(
-              `${this.game.playerNames[player-1]} extended the ${this.skin.longest.name} to ${longest.length} segments.`
+              `${this.game.playerNames[player-1]} extended the ${this.longest.name} to ${longest.length} segments.`
             );
           }
           return 1;
@@ -412,7 +385,7 @@ buildCity(player, slot) {
         this.highlightRoad(
           player,
           longest,
-          `claimed the ${this.skin.longest.name} with ${longest.length} segments.`
+          `claimed the ${this.longest.name} with ${longest.length} segments.`
         );
         this.game.state.longestRoad.player = player;
         this.game.state.longestRoad.size = longest.length;
@@ -458,7 +431,7 @@ buildCity(player, slot) {
     let offer = "";
     for (let resource in stuff) {
       for (let i = 0; i < stuff[resource]; i++) {
-        offer += `<img class="icon" src="${this.skin.resourceIcon(resource)}"/>`;
+        offer += `<img class="icon" src="${this.returnCardImage(resource)}"/>`;
       }
     }
     return offer;
@@ -527,7 +500,7 @@ buildCity(player, slot) {
   Create an object saying what the exchange rate for each resource is
   */
   analyzePorts() {
-    let resources = this.skin.resourceArray();
+    let resources = this.returnResources();
     let tradeCost = {};
     let minForTrade = 4;
     //console.log(this.game.state.players[this.game.player-1].ports);
@@ -753,9 +726,7 @@ buildCity(player, slot) {
           <div class="popup-confirm-menu">
             <div class="popup-prompt">Place ${piece} here?</div>
             <div class="action" id="confirm">yes</div>
-<!--            <div class="action" id="cancel">no</div> -->
             <div class="action" id="stopasking">yes, stop asking</div>
-<!--            <div class="confirm_check"><input type="checkbox" name="dontshowme" value="true"/> don't ask again </div>-->
           </div>`;
 
     let left = $(`#${slot}`).offset().left + 50;

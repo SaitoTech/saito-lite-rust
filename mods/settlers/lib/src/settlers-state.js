@@ -230,7 +230,7 @@ class SettlersState {
             }
         } else {
             //Define the ports
-            let resources = this.skin.resourceArray();
+            let resources = this.returnResources();
             let randomRoll = this.rollDice(2);
             let hexes, angles;
             if (randomRoll == 1) {
@@ -273,9 +273,7 @@ class SettlersState {
         let hexobj = document.getElementById(selector);
         if (!document.getElementById(port_id)) {
             let port_html = `<div class="port port${direction}" id="${port_id}">
-                        <div class="ship hexTileCenter">${this.skin.portIcon(
-                port
-            )}</div>
+                        <div class="ship hexTileCenter">${this.returnPortIcon(port)}</div>
                         <div class="harbor lharbor"></div>
                         <div class="harbor rharbor"></div>
                         </div>`;
@@ -364,7 +362,7 @@ console.log("POOL 1");
             tile = this.game.pool[0].hand[tileCt++];
             resourceName = this.game.deck[1].cards[tile].resource;
 console.log("res: " + resourceName);
-            if (resourceName != this.skin.nullResource()) {
+            if (resourceName != this.returnNullResource()) {
                 let temp = this.game.pool[1].hand[tokenCt++];
                 token = this.game.deck[2].cards[temp].value;
             } else {
@@ -377,7 +375,7 @@ console.log("res: " + resourceName);
                 neighbours: [],
                 robber: false,
             };
-            if (resourceName == this.skin.nullResource())
+            if (resourceName == this.returnNullResource())
                 this.game.state.hexes[hex].robber = true;
             if (token) this.addSectorValueToGameboard(hex, token);
         }
@@ -398,7 +396,7 @@ console.log("DONE GENERATING MAP");
             $(divname).html(
                 `<img class="hex_img2" src="${this.game.state.hexes[i].img}">`
             );
-            if (this.game.state.hexes[i].resource != this.skin.nullResource()) {
+            if (this.game.state.hexes[i].resource != this.returnNullResource()) {
                 let svid = this.addSectorValueToGameboard(
                     i,
                     this.game.state.hexes[i].value
@@ -418,10 +416,10 @@ console.log("DONE GENERATING MAP");
             $(divname).removeClass("empty");
 
             if (this.game.state.cities[i].level == 1) {
-                $(divname).html(this.skin.c1.svg);
+                $(divname).html(this.c1.svg);
             } else {
                 /* == 2*/
-                $(divname).html(this.skin.c2.svg);
+                $(divname).html(this.c2.svg);
             }
             $(divname).addClass(classname);
 
@@ -508,8 +506,8 @@ console.log("DONE GENERATING MAP");
             if (deck == "resource" || deck == "") {
                 for (let r of this.game.state.players[this.game.player - 1].resources) {
                     //Show all cards
-                    cards += `<div class="card tip"><img src="${this.skin.resourceCard(r)}">
-                    <img class="icon" src="${this.skin.resourceIcon(r)}"/>
+                    cards += `<div class="card tip"><img src="${this.returnCardImage(r)}">
+                    <img class="icon" src="${this.returnCardImage(r)}"/>
                     </div>`;
                 }
             }
@@ -522,8 +520,8 @@ console.log("DONE GENERATING MAP");
                     console.log(card);
                     cards += `<div class="card tip"><img src="${card.img}">
                     <div class="cardtitle">${card.card}</div>
-                    <div class="cardrules">${this.skin.rules[card.action]}</div>
-                    <div class="tiptext">${card.card}: ${this.skin.rules[card.action]}</div>
+                    <div class="cardrules">${this.rules[card.action]}</div>
+                    <div class="tiptext">${card.card}: ${this.rules[card.action]}</div>
                     </div>`;
                 }
             }
@@ -548,8 +546,8 @@ console.log("DONE GENERATING MAP");
             let hand = `<div class="hand">`;
             for (let r of this.game.state.players[i].resources) {
                 hand += `<div class="card">
-                  <img src="${this.skin.resourceCard(r)}">
-                  <img class="icon" src="${this.skin.resourceIcon(r)}"/>
+                  <img src="${this.returnCardImage(r)}">
+                  <img class="icon" src="${this.returnCardImage(r)}"/>
                 </div>`;
             }
             hand += "</div>";
@@ -581,21 +579,21 @@ console.log("DONE GENERATING MAP");
         //Victory Point Card Tokens -- should move to VP track
         statshtml += `<div class="victory_point_cards">`;
         for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
-          statshtml += `<div class="victory_point_card">${this.skin.vp.img}</div>`;
+          statshtml += `<div class="victory_point_card">${this.vp.img}</div>`;
         }
         statshtml += `</div>`
         if (this.game.state.largestArmy.player == i) {
-            statshtml += `<div class="token army largest" title="${this.skin.largest.name}">`;
+            statshtml += `<div class="token army largest" title="${this.largest.name}">`;
         } else {
-            statshtml += `<div class="token army" title="${this.skin.largest.name}">`;
+            statshtml += `<div class="token army" title="${this.largest.name}">`;
         }
         for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
-          statshtml += this.skin.s.img;
+          statshtml += this.s.img;
         }
         statshtml += `</div>`;
          
         if (this.game.state.longestRoad.player == i) {
-          statshtml += `<div class="token longest-road" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
+          statshtml += `<div class="token longest-road" title="${this.longest.name}">${this.longest.svg}</div>`;
         }
         statshtml += `</div>`;
 
@@ -662,20 +660,20 @@ console.log("DONE GENERATING MAP");
             let statshtml = `<div class="flexline">`;
             //Victory Point Card Tokens -- should move to VP track
             for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
-              statshtml += `<div class="token">${this.skin.vp.svg}</div>`;
+              statshtml += `<div class="token">${this.vp.svg}</div>`;
             }
             if (this.game.state.largestArmy.player == i) {
-                statshtml += `<div class="token army largest" title="${this.skin.largest.name}">`;
+                statshtml += `<div class="token army largest" title="${this.largest.name}">`;
             } else {
-                statshtml += `<div class="token army" title="${this.skin.largest.name}">`;
+                statshtml += `<div class="token army" title="${this.largest.name}">`;
             }
             for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
-              statshtml += this.skin.s.img;
+              statshtml += this.s.img;
             }
             statshtml += `</div>`;
              
             if (this.game.state.longestRoad.player == i) {
-              statshtml += `<div class="token longest-road" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
+              statshtml += `<div class="token longest-road" title="${this.longest.name}">${this.longest.svg}</div>`;
             }
             statshtml += `</div>`;
 
@@ -711,7 +709,7 @@ console.log("DONE GENERATING MAP");
                     ) {
                         //newhtml += `<div class="flexline">`;
                         //newhtml += `<div class="cardselector" id="resource" title="Show my resources">Resources</div>`;
-                        //newhtml += `<div class="cardselector" id="cards" title="Show my ${this.skin.card.name} cards">Cards</div>`;
+                        //newhtml += `<div class="cardselector" id="cards" title="Show my ${this.card.name} cards">Cards</div>`;
                         //newhtml += `</div>`;
                     }
                 }

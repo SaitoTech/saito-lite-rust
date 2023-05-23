@@ -1,6 +1,5 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
 const Scoreboard = require("./lib/ui/scoreboard");
-const SettlersSkin = require("./lib/ui/settlers.skin.js");
 const SettlersRules = require("./lib/ui/overlays/rules");
 const SettlersWelcome = require("./lib/ui/overlays/welcome");
 const SettlersStats = require("./lib/ui/overlays/stats");
@@ -12,6 +11,7 @@ const SettlersPlayer = require("./lib/src/settlers-player");
 const SettlersState = require("./lib/src/settlers-state");
 const SettlersActions = require("./lib/src/settlers-actions");
 const SettlersInit = require("./lib/src/settlers-init");
+const SettlersResources = require("./lib/src/settlers-resources");
 
 const TradeOverlay = require("./lib/ui/overlays/trade");
 const BuildOverlay = require("./lib/ui/overlays/build");
@@ -36,8 +36,6 @@ class Settlers extends GameTemplate {
     this.description = `Explore the island of Saitoa, collect resources, and build your way to dominance.`;
     this.categories = "Games Boardgame Strategy";
 
-    this.skin = new SettlersSkin();
-
     this.cardbox.a_prompt = 0;
     this.minPlayers = 2;
     this.maxPlayers = 4;
@@ -45,7 +43,9 @@ class Settlers extends GameTemplate {
     this.is_sleeping = true;
     this.confirm_moves = true;
 
+    //
     // UI components
+    //
     this.scoreboard = new Scoreboard(this.app, this);
     this.rules_overlay = new SettlersRules(this.app, this);
     this.welcome_overlay = new SettlersWelcome(this.app, this);
@@ -53,7 +53,9 @@ class Settlers extends GameTemplate {
     this.trade_overlay = new TradeOverlay(this.app, this);
 
     this.grace_window = 24;
-    // temp variable to help with post-splash flash
+    //
+    // temp var to help w/ post-splash flash
+    //
     this.currently_active_player = 0;
 
     this.build = new BuildOverlay(this.app, this);
@@ -117,7 +119,7 @@ class Settlers extends GameTemplate {
 
     try {
 
-      this.skin.render(this.game.options.theme);
+      this.initializeTheme(this.game.options.theme);
 
       this.cardbox.render();
       this.cardbox.addCardType("handy-help","",null);
@@ -248,7 +250,8 @@ class Settlers extends GameTemplate {
         this.game.colors = this.game.colors.concat(colors.splice(this.rollDice(colors.length)-1,1));
       }
 
-      this.skin.render(this.game.options.theme);
+      this.initializeTheme(this.game.options.theme);
+
       this.game.stats = this.initializeStats();
 
       console.log("---------------------------");
@@ -277,10 +280,9 @@ class Settlers extends GameTemplate {
       this.game.queue.push(`POOLDEAL\t2\t19\t1`);
 
       this.game.queue.push(`DECKANDENCRYPT\t3\t${numPlay}\t${JSON.stringify(this.returnDiceTokens())}`);
-      this.game.queue.push(`DECKANDENCRYPT\t2\t${numPlay}\t${JSON.stringify(this.skin.returnHexes())}`);
+      this.game.queue.push(`DECKANDENCRYPT\t2\t${numPlay}\t${JSON.stringify(this.returnHexes())}`);
 
-      //Development Cards
-      this.game.queue.push(`DECKANDENCRYPT\t1\t${numPlay}\t${JSON.stringify(this.skin.returnDeck())}`);
+      this.game.queue.push(`DECKANDENCRYPT\t1\t${numPlay}\t${JSON.stringify(this.returnDevelopmentCards())}`);
     
     }
 
@@ -331,7 +333,7 @@ class Settlers extends GameTemplate {
       stats.dice[i] = 0;
     }
 
-    for (let r of this.skin.resourceArray()) {
+    for (let r of this.returnResources()) {
       let array = new Array(this.game.players.length);
       array.fill(0);
       stats.production[r] = array;
@@ -365,6 +367,6 @@ class Settlers extends GameTemplate {
 
 }
 
-Settlers.importFunctions(SettlersInit, SettlersGameLoop, SettlersPlayer, SettlersState, SettlersActions);
+Settlers.importFunctions(SettlersInit, SettlersGameLoop, SettlersPlayer, SettlersState, SettlersActions, SettlersResources);
 
 module.exports = Settlers;
