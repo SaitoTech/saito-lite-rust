@@ -75,7 +75,7 @@ class Settlers extends GameTemplate {
     if (!this.browser_active) { return; }
 
     //Prevent this function from running twice as saito-lite is configured to run it twice
-    if (this.initialize_game_run) {return;} 
+    if (this.initialize_game_run) { return; }
 
     super.initializeHTML(app);
     
@@ -114,7 +114,6 @@ class Settlers extends GameTemplate {
 
     this.menu.render();
     this.log.render();
-
     this.hexgrid.render(".gameboard");
 
     try {
@@ -157,7 +156,7 @@ class Settlers extends GameTemplate {
 
       //
       // Preliminary DOM set up, adding elements to display
-      console.log(this.game.state);
+      //
       this.addCitiesToGameboard();
       this.addPortsToGameboard();
 
@@ -166,7 +165,6 @@ class Settlers extends GameTemplate {
       if (this.game.state.placedCity == null){
         $(".dark").css("backgroundColor","unset");  
       }
-      
 
     } catch (err) {
       console.log("Intialize HTML: "+err);
@@ -187,8 +185,6 @@ class Settlers extends GameTemplate {
     // tweak - make hud draggable by body
     //
     document.querySelector(".hud-header").style.display = "none";
-    //this.app.browser.makeDraggable("hud", "hud", true);
-      
  
 
     //
@@ -339,20 +335,6 @@ class Settlers extends GameTemplate {
       stats.production[r] = array;
     }
     return stats;
-  }
-
-
-  returnDiceTokens() {
-    let dice = [];
-    dice.push({ value: 2 });
-    dice.push({ value: 12 });
-    for (let i = 3; i < 7; i++) {
-        dice.push({ value: i });
-        dice.push({ value: i });
-        dice.push({ value: i + 5 });
-        dice.push({ value: i + 5 });
-    }
-    return dice;
   }
 
 

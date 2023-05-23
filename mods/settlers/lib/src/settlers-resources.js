@@ -130,55 +130,26 @@ class SettlersResources {
 
 
 
-/****
-
-	resourceObject(){
-		let newObj = {};
-		for (let i of this.resources){
-			newObj[i.name] = 0;
-		}
-		return newObj;	
-	}
-
-	resourceCard(res){
-		for (let i of this.resources){
-			if (i.name == res){
-				if (i.card)
-					return i.card;
-				else return `${this.cardDir}${res}.png`;
-			}
-
-		}
-		return null;	
-	}
-
-	resourceIcon(res){
-		//
-		// replace icons with cards universally
-		//
-		for (let i of this.resources){
-			if (i.name == res){
-				if (i.icon){
-				  return i.icon;
-				}
-			}
-		}
-		return res;
-	}
-***/
-
-	/*If we have port graphics, name them like the regular icon graphics*/
-	
-	/*
-		Return the name of the "desert" (i.e. the singular, non-producing tile)
-	*/
-///settlers/img/sectors/${this.game.state.hexes[i].resource}${x}.png">`
-
 	randomizeTileImage(resObj){
 		let tileDir = "/settlers/img/sectors/";
 		let x = Math.ceil(Math.random()*resObj.ict); 
 		return tileDir+resObj.name+x+".png";
 	}
+
+
+
+  	returnDiceTokens() {
+    		let dice = [];
+    		dice.push({ value: 2 });
+    		dice.push({ value: 12 });
+    		for (let i = 3; i < 7; i++) {
+    		    dice.push({ value: i });
+    		    dice.push({ value: i });
+    		    dice.push({ value: i + 5 });
+    		    dice.push({ value: i + 5 });
+    		}
+    		return dice;
+  	}
 
 }
 
