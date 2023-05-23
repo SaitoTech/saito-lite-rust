@@ -85,7 +85,7 @@ html[data-theme="dark"] {
   --saito-border-color-dark: #666;
   --saito-border: 1px solid #c5c5c5bb;
   --saito-background-color: #211f25;
-  --saito-background-light: #3338;
+  --saito-background-light: #333;
   --saito-gray-transparent: #88888818;
   --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);

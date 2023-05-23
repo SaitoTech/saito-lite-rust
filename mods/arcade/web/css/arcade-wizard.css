@@ -43,11 +43,15 @@
   overflow-y: auto;
   overflow-x: hidden;
   background: var(--saito-arcade-overlay-background);
-  min-width: 40rem;
+  min-width: min(40rem, 100vw);
 }
 
 .overlay-title {
-  min-width: 40rem;
+  width: 100%;
+}
+
+#advanced-options-overlay-container > * {
+  max-width: 100%;
 }
 
 #advanced-options-overlay-container .overlay-title {
