@@ -10,7 +10,7 @@ class SettlersState {
     //
     collectHarvest(value) {
         let logMsg = "";
-        let notice = "you have a poor harvest...";
+        let notice = " a poor harvest...";
         for (let city of this.game.state.cities) {
             let player = city.player;
 
