@@ -3,6 +3,7 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const SaitoLogin = require("./lib/login");
 const SaitoBackup = require("./lib/backup");
 const Slip = require("../../lib/saito/slip");
+const PeerService = require("saito-js/lib/peer_service").default;
 
 class Recovery extends ModTemplate {
   constructor(app) {
@@ -84,7 +85,7 @@ class Recovery extends ModTemplate {
   returnServices() {
     let services = [];
     if (this.app.BROWSER == 0) {
-      services.push({ service: "recovery" });
+      services.push(new PeerService(null, "recovery"));
     }
     return services;
   }
