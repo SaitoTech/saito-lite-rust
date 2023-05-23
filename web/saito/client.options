@@ -1,0 +1,15 @@
+{
+  "keys": [],
+  "peers": [
+    {
+      "host": "localhost",
+      "port": 12101,
+      "protocol": "http",
+      "publickey": "",
+      "synctype": "lite"
+    }
+  ],
+  "dns": [],
+  "blockchain": {},
+  "wallet": {}
+}

@@ -240,14 +240,14 @@ class ChatPopup {
       // submit
       //
       let msg_input = document.querySelector(`${popup_qs} .chat-footer .chat-input`);
-      msg_input.onkeydown = (e) => {
+      msg_input.onkeydown = async (e) => {
         if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
           e.preventDefault();
           if (msg_input.innerHTML == "") {
             return;
           }
-          let newtx = mod.createChatTransaction(group_id, msg_input.innerHTML);
-          mod.sendChatTransaction(app, newtx);
+          let newtx = await mod.createChatTransaction(group_id, msg_input.innerHTML);
+          await mod.sendChatTransaction(app, newtx);
           mod.receiveChatTransaction(app, newtx);
           msg_input.textContent = "";
           msg_input.innerHTML = "";
