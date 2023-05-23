@@ -64,7 +64,8 @@ class SettlersGameloop {
 	// we should not be running this ahead of READY
 	// because it creates information in generateMap
 	// that disappears, 
-	this.saveGame();
+	//
+	this.saveGame(this.game.id);
         return 1;
       }
 
