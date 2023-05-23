@@ -164,15 +164,14 @@ buildCity(player, slot) {
               <div class="h2">Building Costs</div>
               <div class="table">
               <div class="tip token p${this.game.colors[this.game.player-1]}"><svg viewbox="0 0 200 200"><polygon points="0,175 175,0, 200,25 25,200"/></svg>
-                <div class="tiptext">${this.skin.r.name}: Longest road worth 2 VP</div></div>
+              </div>
                   <div class="cost">${this.visualizeCost(0)}</div>
-                <div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c1.svg}<div class="tiptext">${this.skin.c1.name}: 1 VP</div></div>
+                <div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c1.svg}</div>
                     <div class="cost">${this.visualizeCost(1)}</div>
-                    <div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c2.svg}<div class="tiptext">${this.skin.c2.name}: 2 VP</div></div>
+                    <div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c2.svg}</div>
                     <div class="cost">${this.visualizeCost(2)}</div>
                 <div class="tip token"><svg viewbox="0 0 200 200"><polygon points="25,0 175,0, 175,200 25,200"/>
                 <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="132px" fill="red">?</text></svg>
-                <div class="tiptext">${this.skin.card.name} card: Largest army worth 2 VP</div></div><div class="cost">${this.visualizeCost(3)}</div>
               </div>
               <div class="message">The first player to reach ${this.game.options.game_length} VP wins!</div>
               </div>`;
@@ -459,7 +458,7 @@ buildCity(player, slot) {
     let offer = "";
     for (let resource in stuff) {
       for (let i = 0; i < stuff[resource]; i++) {
-        offer += `<img class="icon" src="${this.skin.resourceIcon(resource)}"/><div class="tiptext">${resource}</div>`;
+        offer += `<img class="icon" src="${this.skin.resourceIcon(resource)}"/>`;
       }
     }
     return offer;
@@ -495,16 +494,26 @@ buildCity(player, slot) {
   and there is no game mechanic to go directly into accepting or rejecting the trade
   @param tradeType (integer) the player number of the targeted player, 0 for all players, -1 for advertisement
   */
-  showTradeOverlay(tradeType = -1, i_should_give, i_should_accept) {
+  showTradeOverlay(tradeType = -1, i_should_give = null, i_should_accept = null, offering_player = null) {
 
     let settlers_self = this;
     //
 console.log("UPDATE TRADE OBJECT WITH GIVE AND ACCEPT VALUES");
 console.log(JSON.stringify(i_should_give));
 console.log(JSON.stringify(i_should_accept));
-    settlers_self.trade_overlay.render(tradeType);
+    if (i_should_accept) { 
+      settlers_self.trade_overlay.get = i_should_accept;
+    }
+    if (i_should_give) { 
+      settlers_self.trade_overlay.give = i_should_give;
+    }
+    if (offering_player) {
+      settlers_self.trade_overlay.offering_player = offering_player;
+    }
+    settlers_self.trade_overlay.render(tradeType, false); // don't reset, we want to start with this trade
 return;
 
+/***
     let my_resources = {};
     let resources = settlers_self.skin.resourceArray();
     let offer_resources = settlers_self.skin.resourceObject();
@@ -556,8 +565,8 @@ return;
           can_afford = false;
         }
         html += `<div id="offer_${i}" class="trade_area ${(myRes[resList[i]])?"select":"noselect"}">
-                 <div class="tip"><span>${resList[i]}</span>
-                 <div class="tiptext">${(myRes[resList[i]])?myRes[resList[i]]:0} total</div></div>
+                   <div class="tip"><span>${resList[i]}</span>
+                 </div>
                  <div class="offer_icons" id="offer_${resList[i]}">`;
           if (offering[resList[i]]>0){
             html += `<img id="${resList[i]}" class="icon offer" src="${settlers_self.skin.resourceIcon(resList[i])}"/>`;
@@ -634,6 +643,8 @@ return;
       offer_resources,
       receive_resources
     );
+***/
+
   }
 
   /*
@@ -665,7 +676,7 @@ return;
     for (let i = 0; i < resources.length; i++)
       html += `<div id="want_${i}" class="trade_area select tip"><img class="icon" src="${this.skin.resourceIcon(
         resources[i]
-      )}"/><div class="tiptext">${resources[i]}</div></div>`;
+      )}"/></div>`;
 
     html += `</div><div class="h2">You Offer:</div><div class="trade_overlay_offers">`;
 
@@ -673,11 +684,11 @@ return;
       if (myRes[resources[i]])
         html += `<div id="offer_${i}" class="trade_area select tip"><img class="icon" src="${this.skin.resourceIcon(
           resources[i]
-        )}"/><div class="tiptext">You have ${myRes[resources[i]]} ${resources[i]} available</div></div>`;
+        )}"/></div>`;
       else
         html += `<div id="offer_${i}" class="trade_area noselect tip"><img class="icon" src="${this.skin.resourceIcon(
           resources[i]
-        )}"/><div class="tiptext">You have no ${resources[i]} to offer</div></div>`;
+        )}"/></div>`;
     }
 
     html += `</div><div class="trade_overlay_buttons">

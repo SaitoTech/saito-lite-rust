@@ -244,13 +244,14 @@ class SettlersGameloop {
         }
         this.game.queue.splice(qe, 1);
 
-        if (this.game.player === player) {
-          if (this.game.state.ads[this.game.player - 1].offer) {
-            if (this.game.state.ads[this.game.player - 1].offer[resource] && this.countResource(player, resource) < this.game.state.ads[this.game.player - 1].offer[resource])
-              this.addMove("clear_advert\t" + player);
-          }
-          this.endTurn();
-        }
+//        if (this.game.player === player) {
+//          if (this.game.state.ads[this.game.player - 1].offer) {
+//            if (this.game.state.ads[this.game.player - 1].offer[resource] && this.countResource(player, resource) < this.game.state.ads[this.game.player - 1].offer[resource]) {
+//              this.addMove("clear_advert\t" + player);
+//	      }
+//          }
+//          this.endTurn();
+//        }
         return 0;
       }
 
@@ -467,8 +468,12 @@ class SettlersGameloop {
       }
 
       if (mv[0] == "clear_advert") {
+
+
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
+
+console.log("CLEAR ADVERT for player:" + player);
 
         this.game.state.ads[player - 1].offer = null;
         this.game.state.ads[player - 1].ask = null;
@@ -507,6 +512,12 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 	}
 
 	this.displayPlayers();
+
+	//
+	// TESTING
+	//
+	return 1;
+
       }
 
 
@@ -568,6 +579,12 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         );
 
         console.log(JSON.parse(JSON.stringify(this.game.state.ads)));
+
+	//
+	// TESTING
+	//
+	return 1;
+
       }
 
       if (mv[0] === "reject_offer") {
@@ -591,6 +608,12 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         );
 
         console.log(JSON.parse(JSON.stringify(this.game.state.ads)));
+
+	//
+	// TESTING
+	//
+	return 1;
+
       }
 
       /*

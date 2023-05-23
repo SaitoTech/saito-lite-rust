@@ -1,9 +1,9 @@
 module.exports = TradeOverlayTemplate = (tobj) => {
 
+      // <div class="h1 trade_overlay_title">Offer Trade</div>
   return `
     <div class="saitoa trade-overlay">
 
-      <div class="h1 trade_overlay_title">Offer Trade</div>
 
       <div class="h2">You Want:</div>
       <div class="trade_overlay_offers">
@@ -64,11 +64,13 @@ module.exports = TradeOverlayTemplate = (tobj) => {
       </div>
 
       <div class="trade_overlay_buttons">
-        <div class="trade_overlay_button saito-button-primary trade_overlay_reset_button">Reset</div>
         <div class="trade_overlay_button saito-button-primary trade_overlay_broadcast_button noselect">Broadcast Offer</div>
       </div>
 
     </div>
   `;
+
+  // removed for now
+  //<div class="trade_overlay_button saito-button-primary trade_overlay_reset_button">Reset</div>
 
 }

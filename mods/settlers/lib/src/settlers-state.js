@@ -733,7 +733,7 @@ class SettlersState {
                         $(id).off();
                         $(id).on("click", function () {
                             //  Launch overlay window for private trade
-                            settlers_self.showTradeOverlay(i, settlers_self.game.state.ads[i - 1].ask, settlers_self.game.state.ads[i - 1].offer);
+                            settlers_self.showTradeOverlay(i, settlers_self.game.state.ads[i - 1].ask, settlers_self.game.state.ads[i - 1].offer, i);
                         });
                     } else {
                         this.renderTradeOfferInPlayerBox(i, this.game.state.ads[i - 1].offer, this.game.state.ads[i - 1].ask);

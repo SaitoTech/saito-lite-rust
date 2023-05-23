@@ -11,12 +11,16 @@ class TradeOverlay {
     this.tradeType = -1; // trade with everyone, or playerNum
     this.get  = [];
     this.give = [];
+    this.offering_player = 0;
+    this.accepting_trade = 0;
 
   }
+
 
   render(tradeType=-1, reset=true) {
 
     this.tradeType = tradeType;    
+    this.accepting_trade = 0;
 
     let resources = this.mod.skin.resourceArray();
 
@@ -33,9 +37,40 @@ class TradeOverlay {
     if (reset == true) { 
       this.get = [0,0,0,0,0];
       this.give = [0,0,0,0,0];
+    } else {
+
+      // get / give could be
+      if (this.get["brick"] || this.get["wood"] || this.get["wheat"] || this.get["wool"] || this.get["ore"]) {
+	let x = [0,0,0,0,0];
+	if (this.get["brick"]) { x[0] = this.get["brick"]; }
+	if (this.get["wood"])  { x[1] = this.get["wood"]; }
+	if (this.get["wheat"]) { x[2] = this.get["wheat"]; }
+	if (this.get["wool"])  { x[3] = this.get["wool"]; }
+	if (this.get["ore"])   { x[4] = this.get["ore"]; }
+        this.get = x;
+        this.accepting_trade = 1;
+      }
+      if (this.give["brick"] || this.give["wood"] || this.give["wheat"] || this.give["wool"] || this.give["ore"]) {
+	let x = [0,0,0,0,0];
+	if (this.give["brick"]) { x[0] = this.give["brick"]; }
+	if (this.give["wood"])  { x[1] = this.give["wood"]; }
+	if (this.give["wheat"]) { x[2] = this.give["wheat"]; }
+	if (this.give["wool"])  { x[3] = this.give["wool"]; }
+	if (this.give["ore"])   { x[4] = this.give["ore"]; }
+        this.give = x;
+        this.accepting_trade = 1;
+      }
     }
 
+console.log(JSON.stringify(this.give));
+console.log(JSON.stringify(this.get));
+
     this.overlay.show(TradeOverlayTemplate(this));
+
+    if (this.accepting_trade == 1) {
+      document.querySelector(".trade_overlay_button.saito-button-primary").innerHTML = "Accept Trade";
+    }
+
     this.attachEvents();
   }
 
@@ -47,6 +82,9 @@ class TradeOverlay {
 
     document.querySelectorAll(".trade_count_up").forEach(function(arrow, k){
       arrow.addEventListener("click", function(e){
+
+        settlers_self.accepting_trade = 0;
+
         let arrow = e.currentTarget;
         let count_div = arrow.nextElementSibling;
         let new_count = Number(count_div.getAttribute("data-count")) + 1;
@@ -85,6 +123,9 @@ class TradeOverlay {
 
     document.querySelectorAll(".trade_count_down").forEach(function(arrow, k){
       arrow.addEventListener("click", function(e){
+
+          settlers_self.accepting_trade = 0;
+
           let arrow = e.currentTarget;
           let count_div = arrow.previousElementSibling;
           let new_count = Number(count_div.getAttribute("data-count")) - 1;
@@ -153,10 +194,17 @@ class TradeOverlay {
         }
       }
 
-      settlers_self.addMove(`clear_advert\t${settlers_self.game.player}`);
-      settlers_self.addMove(`offer\t${settlers_self.game.player}\t${trade_overlay.tradeType}\t${JSON.stringify(offering)}\t${JSON.stringify(receiving)}`);
-      settlers_self.endTurn();
-      trade_overlay.overlay.hide();
+      if (settlers_self.accepting_trade == 0) {
+alert("making offer");
+        settlers_self.addMove(`offer\t${settlers_self.game.player}\t${trade_overlay.tradeType}\t${JSON.stringify(offering)}\t${JSON.stringify(receiving)}`);
+        settlers_self.endTurn();
+        trade_overlay.overlay.hide();
+      } else {
+alert("accepting offer");
+        settlers_self.addMove(`accept_offer\t${trade_overlay.offering_player}\t${settlers_self.game.player}\t${JSON.stringify(offering)}\t${JSON.stringify(receiving)}`);
+        settlers_self.endTurn();
+        trade_overlay.overlay.hide();
+      }
 
     });
 
