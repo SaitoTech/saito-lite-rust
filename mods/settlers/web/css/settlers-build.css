@@ -47,39 +47,6 @@
   position: relative;
 }
 
-/*.build-overlay .settlers-item-row .settlers-cards-container::after {
-  transition: all 0.2s ease-in-out;
-  content: "Build";
-  width: 100%;
-  height: 13rem;
-  border: 5px solid #331800;
-  position: absolute;
-  background: #ab815f;
-  cursor: pointer;
-  line-height: 13rem;
-  font-size: 2.5rem;
-  border-radius: 1rem;
-  opacity: 0;
-  z-index: 2;
-  white-space: pre;
-  word-wrap: break-word;
-}
-
-.settlers-item-row.item-development-card .settlers-cards-container::after {
-  content: "Buy development card";
-}
-
-.settlers-item-row.settlers-row-disabled .settlers-cards-container::after {
-  content: "Insufficent resources"!important;
-  cursor: not-allowed;
-}
-
-
-.build-overlay .settlers-item-row:hover .settlers-cards-container::after {
-  opacity: 1;
-}*/
-
-
 .build-overlay .settlers-item-row {
   transition: all 0.2s ease-in-out;
   border: 5px solid transparent;
