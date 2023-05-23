@@ -726,23 +726,21 @@ class Chat extends ModTemplate {
     let blocks = [];
     let block = [];
     let last_message_sender = "";
+    let last_message_ts = 0;
 
     for (let minimized_tx of group?.txs) {
-      //First transaction -- start first block
-      if (last_message_sender == "") {
+      //Same Sender -- keep building block 
+      if (minimized_tx.from.includes(last_message_sender) && (minimized_tx.ts - last_message_ts) < 300000) {
         block.push(minimized_tx);
       } else {
-        //Same Sender -- keep building block
-        if (minimized_tx.from.includes(last_message_sender)) {
-          block.push(minimized_tx);
-        } else {
-          //Start new block
-          blocks.push(block);
-          block = [];
-          block.push(minimized_tx);
-        }
+        //Start new block
+        blocks.push(block);
+        block = [];
+        block.push(minimized_tx);
       }
+    
       last_message_sender = minimized_tx.from[0];
+      last_message_ts = minimized_tx.ts;
     }
 
     blocks.push(block);
