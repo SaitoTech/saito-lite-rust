@@ -158,7 +158,6 @@ class AppspaceHome {
                   <i class="redsquare-redsquare fa-solid fa-arrow-left"></i> RED SQUARE
                 </div>`;
       this_self.mod.header.updateHeaderLogo(html, function() {
-        console.log("replaced logo with back btn");
 
         document.querySelectorAll('.redsquare-page-header-title').forEach(el => {
           el.addEventListener('click', (e) => {

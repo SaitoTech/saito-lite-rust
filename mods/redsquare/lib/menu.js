@@ -42,8 +42,9 @@ class RedSquareMenu {
 
 
   attachEvents() {
-
+    this_self = this;
     document.querySelector(".redsquare-menu-home").onclick = (e) => {
+      this_self.mod.header.undoUpdateHeaderLogo();
       setHash('home');
       this.app.connection.emit("redsquare-home-render-request");
     }
