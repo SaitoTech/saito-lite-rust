@@ -155,7 +155,7 @@ class SettlersGameloop {
 
         //Move Bandit
         if (this.game.player == player) {
-          this.playBandit();
+          this.playerPlayBandit();
         } else {
           this.updateStatus(
             `<div class="tbd">Waiting for ${this.game.playerNames[player - 1]} to move the ${this.b.name}...</div>`
@@ -839,7 +839,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 
         //Move Bandit
         if (this.game.player == player) {
-          this.playBandit();
+          this.playerPlayBandit();
         } else {
           this.updateStatus(
             `<div class="tbd">${this.game.playerNames[player - 1]} moving the ${this.b.name}...</div>`
@@ -873,7 +873,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         );
 
         if (this.game.player === player) {
-          this.moveBandit(player, hexId);
+          this.playerMoveBandit(player, hexId);
         } else {
           this.updateStatus(
             `<div class="tbd">Waiting for ${this.game.playerNames[player - 1]} to choose the ${this.b.name}'s victim...</div>`

@@ -1,9 +1,5 @@
-/*
-  Functions for basic display
-*/
 
 class SettlersState {
-
 
     //
     // Award resources for dice roll
@@ -100,86 +96,6 @@ class SettlersState {
         return adjacent;
     }
 
-    //
-    // when 7 is rolled or Soldier Played
-    // Select the target spot
-    //
-    playBandit() {
-        this.updateStatus("Move the bandit...");
-        let settlers_self = this;
-        $(".sector-container").addClass("rhover");
-        $(".sector-container").off();
-        $(".sector-container").on("click", function () {
-            $(".sector-container").off();
-            $(".sector-container").removeClass("rhover");
-            let slot = $(this).attr("id");
-
-            settlers_self.addMove(
-                `move_bandit\t${settlers_self.game.player}\t${slot}`
-            );
-            settlers_self.endTurn();
-        });
-        $(".bandit").removeClass("rhover");
-        $(".bandit").off(); //Don't select bandit tile
-    }
-
-    //Select the person to steal from
-    moveBandit(player, hexId) {
-        let settlers_self = this;
-        //Find adjacent cities and launch into stealing mechanism
-        let thievingTargets = [];
-
-        for (let city of this.game.state.cities) {
-            if (city.neighbours.includes(hexId)) {
-                if (city.player != player)
-                    if (!thievingTargets.includes(city.player))
-                        thievingTargets.push(city.player);
-            }
-        }
-        if (thievingTargets.length > 0) {
-            let robPlayer = (victim) => {
-                let potentialLoot =
-                    settlers_self.game.state.players[victim - 1].resources;
-                if (potentialLoot.length > 0) {
-                    let loot =
-                        potentialLoot[Math.floor(Math.random() * potentialLoot.length)];
-                    settlers_self.addMove(`steal_card\t${player}\t${victim}\t${loot}`);
-                } else settlers_self.addMove(`steal_card\t${player}\t${victim}\tnothing`);
-                settlers_self.endTurn();
-            };
-
-            if (thievingTargets.length > 1) {
-                let html = '<div class="status-header"><span id="status-content">Steal from which Player:</span></div>';
-                html +=  `<div class="status-text-menu"> <ul>`;
-                for (let i = 0; i < this.game.players.length; i++) {
-                    if (thievingTargets.includes(i + 1)) {
-                        html += `<li class="textchoice steal-player-choice" id="${i + 1}">${settlers_self.game.playerNames[i]} (${settlers_self.game.state.players[i].resources.length
-                            } cards)</li>`;
-                    }
-                }
-                html += "</ul></div>";
-                this.updateStatus(html, 1);
-
-                //Select a player to steal from
-                $(".textchoice").off();
-                $(".textchoice").on("click", function () {
-                    $(".textchoice").off();
-                    let victim = $(this).attr("id");
-                    robPlayer(victim);
-                });
-            } else {
-                robPlayer(thievingTargets[0]);
-            }
-        } else {
-            //No one to steal from
-            settlers_self.addMove(`steal_card\t${player}\t0\tnothing`);
-            settlers_self.endTurn();
-        }
-    }
-
-    /*
-    Functions to generate and display the game
-    */
 
     /*
       Set everything to zero by default
@@ -641,82 +557,6 @@ console.log("DONE GENERATING MAP");
 	    if (reshtml === '<div class="flexline"></div>') { reshtml = ""; }
 
             this.playerbox.refreshLog(reshtml, i);
-
-
-
-/******* 
- *
- * we removed this stuff because the shift to having the playerbox display trade information
- * removed the critical need for it, and because the playerbox refactor then removed the number
- * of DIVs in which things could be separately-put.
- *
- * we should review which bits of information we want to bring back, and where they should be
- * put. not everything belongs in the playerbox. and if the playerbox is being complicated it
- * should be rendered into playerbox-head or playerbox-body as a single unit. but this is UI/UX
- * work that will take thought and care rather than a pure implementation fix, so its being 
- * skipped right now.
- *
-            //Stats
-            let statshtml = `<div class="flexline">`;
-            //Victory Point Card Tokens -- should move to VP track
-            for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
-              statshtml += `<div class="token">${this.vp.svg}</div>`;
-            }
-            if (this.game.state.largestArmy.player == i) {
-                statshtml += `<div class="token army largest" title="${this.largest.name}">`;
-            } else {
-                statshtml += `<div class="token army" title="${this.largest.name}">`;
-            }
-            for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
-              statshtml += this.s.img;
-            }
-            statshtml += `</div>`;
-             
-            if (this.game.state.longestRoad.player == i) {
-              statshtml += `<div class="token longest-road" title="${this.longest.name}">${this.longest.svg}</div>`;
-            }
-            statshtml += `</div>`;
-
-	    let reshtml = "";
-            //For opponents, summarize their hands numerically
-            if (this.game.player != i) {
-                  reshtml += `<div class="flexline">`;
-                  reshtml += `<div class="cardct">res: ${this.game.state.players[i - 1].resources.length}</div>`;
-                  reshtml += `<div class="cardct">cards: ${this.game.state.players[i - 1].devcards}</div>`;
-                  reshtml += `</div>`;
-            } else {
-
-                if (!this.game.state.placedCity) {
-                    reshtml += `<div class="flexline">`;
-                    if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
-                        reshtml += "<span>";
-                        if (this.game.state.ads[i - 1].offer) {
-                            reshtml += this.wishListToImage(this.game.state.ads[i - 1].offer);
-                        }
-                        reshtml += `<i class="fas fa-long-arrow-alt-right"></i>`;
-                        if (this.game.state.ads[i - 1].ask) {
-                            reshtml += this.wishListToImage(this.game.state.ads[i - 1].ask);
-                        }
-                        reshtml += `</span><i id="cleartrade" class="fas fa-ban"></i>`;
-                    } else {
-                        //newhtml += `<span id="tradenow">Trade</span>`;
-                    }
-                    reshtml += `</div>`;
-                    //Interactive controls to toggle between "decks"
-                    if (
-                        this.game.deck[0].hand.length > 0 &&
-                        this.game.state.players[i - 1].resources.length > 0
-                    ) {
-                        //newhtml += `<div class="flexline">`;
-                        //newhtml += `<div class="cardselector" id="resource" title="Show my resources">Resources</div>`;
-                        //newhtml += `<div class="cardselector" id="cards" title="Show my ${this.card.name} cards">Cards</div>`;
-                        //newhtml += `</div>`;
-                    }
-                }
-            }
-****/
-
-//            this.playerbox.refreshInfo(newhtml, i);
             $(".player-box-info").disableSelection();
 
             //Other player ads... in LOG
