@@ -17,7 +17,7 @@ module.exports = (region, sobj) => {
   if (sobj.us.vp < sobj.ussr.vp) { results_text = `USSR wins +${sobj.ussr.vp-sobj.us.vp} VP`; winner_css = "winner-ussr"; }
   if (sobj.bonus.length > 0) {
     bonus_events = `
-      <div class="scoring-bonus-title">Bonus Points</div>  
+      <div class="scoring-bonus-title"></div>  
       <div class="scoring-event-grid"></div>
     `;
   }

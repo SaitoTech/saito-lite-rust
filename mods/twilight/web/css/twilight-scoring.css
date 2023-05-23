@@ -118,6 +118,14 @@
     grid-row: 1;
     padding: 0rem 3rem;
 }
+.scoring-event {
+  text-align: center;
+}
+.scoring-event-name {
+  color: whitesmoke;
+  margin-bottom: 1.5rem;
+}
+
 .img.scoring-event-icon {
     width: 10rem;
     padding: 1rem;

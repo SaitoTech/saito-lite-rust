@@ -2542,7 +2542,7 @@ console.log("LATEST MOVE: " + mv);
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["wargames", "starwars", "europe", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["shuttle", "starwars", "europe", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["che", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
         }
@@ -7229,6 +7229,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         // Shuttle Diplomacy
         //
         if (this.game.state.events.shuttlediplomacy == 1) {
+	  scoring.bonus.push({ side : "us" , name : "Shuttle Diplomacy" , desc : "USSR -1 battleground" , icon : "/twilight/img/Event73.png" });
           if (scoring.ussr.bg > 0) {
             scoring.ussr.bg--;
             scoring.ussr.total--;
@@ -7237,7 +7238,6 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
             scoring.shuttle = 1;
             this.game.state.events.shuttlediplomacy = 0;
       	    this.game.deck[0].discards['shuttle'] = this.game.deck[0].cards['shuttle'];
-	    scoring.bonus.push({ side : "us" , name : "Shuttle Diplomacy" , desc : "USSR -1 battleground country" , icon : "/twilight/img/Event73.png" });
           }
         }
 
@@ -7330,10 +7330,10 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         // Shuttle Diplomacy //
         ///////////////////////
         if (this.game.state.events.shuttlediplomacy == 1) {
+	  scoring.bonus.push({ side : "us" , name : "Shuttle Diplomacy" , desc : "USSR -1 battleground" , icon : "/twilight/img/Event73.png" });
           if (scoring.ussr.bg > 0) {
             scoring.ussr.bg--;
             scoring.ussr.total--;
-	    scoring.bonus.push({ side : "us" , name : "Shuttle Diplomacy" , desc : "USSR -1 battleground country" , icon : "/twilight/img/Event73.png" });
           }
 
           scoring.shuttle = 1;
