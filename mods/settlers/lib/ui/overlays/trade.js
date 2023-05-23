@@ -84,6 +84,7 @@ console.log(JSON.stringify(this.get));
       arrow.addEventListener("click", function(e){
 
         settlers_self.accepting_trade = 0;
+        document.querySelector(".trade_overlay_button.saito-button-primary").innerHTML = "Broadcast Offer";
 
         let arrow = e.currentTarget;
         let count_div = arrow.nextElementSibling;
@@ -125,6 +126,7 @@ console.log(JSON.stringify(this.get));
       arrow.addEventListener("click", function(e){
 
           settlers_self.accepting_trade = 0;
+          document.querySelector(".trade_overlay_button.saito-button-primary").innerHTML = "Broadcast Offer";
 
           let arrow = e.currentTarget;
           let count_div = arrow.previousElementSibling;
@@ -195,12 +197,11 @@ console.log(JSON.stringify(this.get));
       }
 
       if (settlers_self.accepting_trade == 0) {
-alert("making offer");
         settlers_self.addMove(`offer\t${settlers_self.game.player}\t${trade_overlay.tradeType}\t${JSON.stringify(offering)}\t${JSON.stringify(receiving)}`);
         settlers_self.endTurn();
         trade_overlay.overlay.hide();
       } else {
-alert("accepting offer");
+        settlers_self.addMove(`clear_advert\t${trade_overlay.offering_player}`);
         settlers_self.addMove(`accept_offer\t${trade_overlay.offering_player}\t${settlers_self.game.player}\t${JSON.stringify(offering)}\t${JSON.stringify(receiving)}`);
         settlers_self.endTurn();
         trade_overlay.overlay.hide();

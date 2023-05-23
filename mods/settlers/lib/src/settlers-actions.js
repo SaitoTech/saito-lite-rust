@@ -497,10 +497,7 @@ buildCity(player, slot) {
   showTradeOverlay(tradeType = -1, i_should_give = null, i_should_accept = null, offering_player = null) {
 
     let settlers_self = this;
-    //
-console.log("UPDATE TRADE OBJECT WITH GIVE AND ACCEPT VALUES");
-console.log(JSON.stringify(i_should_give));
-console.log(JSON.stringify(i_should_accept));
+
     if (i_should_accept) { 
       settlers_self.trade_overlay.get = i_should_accept;
     }
@@ -511,139 +508,7 @@ console.log(JSON.stringify(i_should_accept));
       settlers_self.trade_overlay.offering_player = offering_player;
     }
     settlers_self.trade_overlay.render(tradeType, false); // don't reset, we want to start with this trade
-return;
-
-/***
-    let my_resources = {};
-    let resources = settlers_self.skin.resourceArray();
-    let offer_resources = settlers_self.skin.resourceObject();
-    let receive_resources = settlers_self.skin.resourceObject();
-
-    offer_resources = Object.assign(offer_resources, i_should_give);
-    receive_resources = Object.assign(receive_resources, i_should_accept);
-
-    //Convert the players array of resources into a compact object {wheat:1, wood:2,...}
-    for (let resource of resources) {
-      let temp = settlers_self.countResource(
-        settlers_self.game.player,
-        resource
-      );
-      if (temp > 0) my_resources[resource] = temp;
-    }
-
-    let updateOverlay = function (settlers_self, resList, myRes, offering, receiving) {
-      let resource_cnt = 0;
-      let can_afford = true;
-
-      let html = `
-          <div class="trade_overlay saitoa" id="trade_overlay">
-            <div class="h1 trade_overlay_title">Trade with ${settlers_self.game.playerNames[tradeType-1]}</div>
-            <div class="h2">You will accept</div>
-            <div class="trade_overlay_offers">`;
-      for (let i = 0; i < resList.length; i++){
-        resource_cnt += receiving[resList[i]];
-        html += `<div id="want_${i}" class="trade_area select">
-                  <div>${resList[i]}</div>
-                  <div class="offer_icons" id="want_${resList[i]}">`;
-        if (receiving[resList[i]]>0){
-          html += `<img id="${resList[i]}" class="icon receive" src="${settlers_self.skin.resourceIcon(resList[i])}"/>`;
-        }
-        if (receiving[resList[i]]>1){
-          html += `<div class="icon_multiplier">x${receiving[resList[i]]}</div>`;
-        }
-         html +=  `</div></div>`;
-      }
-
-      html += `</div>
-            <div class="h2">You will give</div>
-            <div class="trade_overlay_offers">`;
-
-      for (let i = 0; i < resList.length; i++) {
-        resource_cnt += offering[resList[i]];
-        console.log(resList[i], offering[resList[i]], myRes[resList[i]]);
-        if (offering[resList[i]] > (myRes[resList[i]] || 0)){
-          can_afford = false;
-        }
-        html += `<div id="offer_${i}" class="trade_area ${(myRes[resList[i]])?"select":"noselect"}">
-                   <div class="tip"><span>${resList[i]}</span>
-                 </div>
-                 <div class="offer_icons" id="offer_${resList[i]}">`;
-          if (offering[resList[i]]>0){
-            html += `<img id="${resList[i]}" class="icon offer" src="${settlers_self.skin.resourceIcon(resList[i])}"/>`;
-          }
-          if (offering[resList[i]]>1){
-            html += `<div class="icon_multiplier">x${offering[resList[i]]}</div>`;
-          }
-          html += `</div></div>`;
-      }
-
-      html += `</div><div class="trade_overlay_buttons">
-            <div class="trade_overlay_button saito-button-primary trade_overlay_reset_button">Reset</div>
-            <div class="trade_overlay_button saito-button-primary trade_overlay_broadcast_button${(can_afford && resource_cnt>0)?"":" noselect"}">Submit Offer</div>
-          </div></div>`;
-
-      settlers_self.overlay.closebox = true;
-      settlers_self.overlay.show(html);
-      $(".trade_area.select > div:first-child").off();
-      $(".trade_area.select > div:first-child").on("click", function () {
-        //Update Offer
-        let item = $(this).parent().attr("id");
-        let temp = item.split("_");
-        let resInd = parseInt(temp[1]);
-        if (temp[0] == "want") {
-          receiving[resList[resInd]]++;
-        } else {
-          if (offering[resList[resInd]] < myRes[resList[resInd]]) {
-            offering[resList[resInd]]++;
-          }
-        }
-        ///Update DOM
-        updateOverlay(settlers_self, resList, myRes, offering, receiving);
-      });
-      $(".icon").off();
-      $(".icon").on("click", function(e){
-        let res = $(this).attr("id");
-        if ($(this).hasClass("offer")){
-          offering[res]--;
-        }else{
-          receiving[res]--;
-        }
-        e.stopPropagation();
-        updateOverlay(settlers_self, resList, myRes, offering, receiving);
-      });
-      $(".trade_overlay_reset_button").off();
-      $(".trade_overlay_reset_button").on("click", function () {
-        updateOverlay(
-          settlers_self,
-          resList,
-          myRes,
-          settlers_self.skin.resourceObject(),
-          settlers_self.skin.resourceObject()
-        );
-      });
-      $(".trade_overlay_broadcast_button").off();
-      $(".trade_overlay_broadcast_button").on("click", function () {
-        if ($(this).hasClass("noselect")) { return; }
-        settlers_self.addMove(`clear_advert\t${settlers_self.game.player}`);
-        settlers_self.addMove(
-            `offer\t${settlers_self.game.player}\t
-            ${tradeType}\t${JSON.stringify(offering)}\t
-            ${JSON.stringify(receiving)}`);
-        settlers_self.overlay.hide();
-        settlers_self.overlay.closebox = false;
-        settlers_self.endTurn();
-      });
-    };
-
-    //Start the display and selection process
-    updateOverlay(
-      settlers_self,
-      resources,
-      my_resources,
-      offer_resources,
-      receive_resources
-    );
-***/
+    return;
 
   }
 
@@ -652,105 +517,9 @@ return;
   */
   showResourceOverlay() {
 
-this.trade_overlay.render();
-return;
+    this.trade_overlay.render();
+    return;
 
-
-    let settlers_self = this;
-    let myRes = {};
-    let resources = settlers_self.skin.resourceArray();
-
-    //Convert the players array of resources into a compact object {wheat:1, wood:2,...}
-    for (let resource of resources) {
-      let temp = settlers_self.countResource(
-        settlers_self.game.player,
-        resource
-      );
-      if (temp > 0) myRes[resource] = temp;
-    }
-
-    let html = `<div class="trade_overlay saitoa" id="trade_overlay">
-            <div class="h1 trade_overlay_title">Resource Trades</div>
-            <div class="h2">You Want:</div>
-            <div class="trade_overlay_offers">`;
-    for (let i = 0; i < resources.length; i++)
-      html += `<div id="want_${i}" class="trade_area select tip"><img class="icon" src="${this.skin.resourceIcon(
-        resources[i]
-      )}"/></div>`;
-
-    html += `</div><div class="h2">You Offer:</div><div class="trade_overlay_offers">`;
-
-    for (let i = 0; i < resources.length; i++) {
-      if (myRes[resources[i]])
-        html += `<div id="offer_${i}" class="trade_area select tip"><img class="icon" src="${this.skin.resourceIcon(
-          resources[i]
-        )}"/></div>`;
-      else
-        html += `<div id="offer_${i}" class="trade_area noselect tip"><img class="icon" src="${this.skin.resourceIcon(
-          resources[i]
-        )}"/></div>`;
-    }
-
-    html += `</div><div class="trade_overlay_buttons">
-            <div class="trade_overlay_button saito-button-primary trade_overlay_reset_button">Reset</div>
-            <div class="trade_overlay_button saito-button-primary trade_overlay_broadcast_button noselect">Broadcast Offer</div>
-          </div></div>`;
-
-    this.overlay.closebox = true;
-    this.overlay.show(html);
-
-    $(".trade_area.select").on("click", function () {
-      $(this).toggleClass("selected");
-      if (document.querySelector(".trade_area.selected")){
-        $(".trade_overlay_broadcast_button").removeClass("noselect");
-      }else{
-        $(".trade_overlay_broadcast_button").addClass("noselect");
-      }
-    });
-
-    $(".trade_overlay_reset_button").on("click", function () {
-      $(".trade_area.select").removeClass("selected");
-    });
-
-    $(".trade_overlay_broadcast_button").on("click", function () {
-      if ($(this).hasClass("noselect")){
-        return;
-      }
-      let offering = {};
-      let receiving = {};
-      let divs = document.querySelectorAll(".selected");
-      for (let i = 0; i < divs.length; i++) {
-        let id = divs[i].id;
-        let temp = id.split("_");
-        let resInd = parseInt(temp[1]);
-        //console.log(id,resources[resInd]);
-        if (temp[0] == "want") {
-          receiving[resources[resInd]] = 1;
-        } else {
-          offering[resources[resInd]] = 1;
-        }
-      }
-      /*
-          //Lazy way
-          settlers_self.addMove(`advertisement\t${settlers_self.game.player}\t${JSON.stringify(offering)}\t${JSON.stringify(receiving)}`);
-          settlers_self.endTurn();
-          settlers_self.overlay.hide();
-          */
-      //Old way
-      let old_turn = settlers_self.game.turn;
-      //console.log(settlers_self.game.turn);
-      let cmd = `advertisement\t${settlers_self.game.player}\t${JSON.stringify(
-        offering
-      )}\t${JSON.stringify(receiving)}`;
-      settlers_self.game.turn = [];
-      settlers_self.game.turn.push(cmd);
-      settlers_self.sendMessage("game", {}, function () {
-        settlers_self.game.turn = old_turn;
-      });
-      settlers_self.overlay.hide();
-      settlers_self.overlay.closebox = false;
-
-    });
   }
 
 
@@ -968,10 +737,15 @@ return;
   }
 
   confirmPlacement(slot, piece, callback){
+
+    let cm = this.loadGamePreference("settlers_confirm_moves");
+    if (cm != null) { this.confirm_moves = cm; }
+
     if (this.confirm_moves == 0){
       callback();
       return;
     }
+
 
     $(`#${slot}`).css("background-color", "yellow");
     let settlers_self = this;
@@ -1004,6 +778,7 @@ return;
       $(".popup-confirm-menu").remove();
       if (confirmation == "stopasking"){
         settlers_self.confirm_moves = 0;
+	settlers_self.saveGamePreference("settlers_confirm_moves", 0);
         callback();
       }
       if (confirmation == "confirm"){
@@ -1014,8 +789,10 @@ return;
     $('input:checkbox').change(function() {
       if ($(this).is(':checked')) {
         settlers_self.confirm_moves = 0;
+	settlers_self.saveGamePreference("settlers_confirm_moves", 0);
       }else{
         settlers_self.confirm_moves = 1;
+	settlers_self.saveGamePreference("settlers_confirm_moves", 1);
       }
     });
   }

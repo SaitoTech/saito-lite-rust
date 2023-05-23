@@ -10,7 +10,7 @@ class SettlersState {
     //
     collectHarvest(value) {
         let logMsg = "";
-        let notice = "";
+        let notice = "you have a poor harvest...";
         for (let city of this.game.state.cities) {
             let player = city.player;
 
@@ -43,7 +43,7 @@ class SettlersState {
         if (logMsg) {
             this.updateLog(logMsg);
         } else {
-            this.updateLog("No one collects any resources.");
+            this.updateLog("no-one collects any resources.");
         }
         if (notice) {
             this.updateStatus(

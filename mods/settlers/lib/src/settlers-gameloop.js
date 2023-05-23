@@ -252,7 +252,11 @@ class SettlersGameloop {
 //          }
 //          this.endTurn();
 //        }
-        return 0;
+
+//
+// TESTING
+//
+        return 1;
       }
 
       // Build a road, let player pick where to build a road
