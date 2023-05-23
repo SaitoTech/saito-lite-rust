@@ -1,4 +1,11 @@
-
+//
+// This file contains the general game state (resources, cards, decks, etc. and the functions 
+// that act upon them.
+//
+// It does not include functions that expose game-control to players (settlers-players) or 
+// functions that manipulate game state.
+//
+//
 class SettlersState {
 
     //

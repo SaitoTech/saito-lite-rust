@@ -245,18 +245,6 @@ class SettlersGameloop {
         }
         this.game.queue.splice(qe, 1);
 
-//        if (this.game.player === player) {
-//          if (this.game.state.ads[this.game.player - 1].offer) {
-//            if (this.game.state.ads[this.game.player - 1].offer[resource] && this.countResource(player, resource) < this.game.state.ads[this.game.player - 1].offer[resource]) {
-//              this.addMove("clear_advert\t" + player);
-//	      }
-//          }
-//          this.endTurn();
-//        }
-
-//
-// TESTING
-//
         return 1;
       }
 
@@ -323,7 +311,7 @@ class SettlersGameloop {
         }
 
         if (this.game.player == player) {
-          this.playerBuildCity(mv[1], parseInt(mv[2]));
+          this.playerBuildTown(mv[1], parseInt(mv[2]));
         } else {
           this.updateStatus(
             `<div class="tbd">${this.game.playerNames[player - 1]} is building a ${this.c1.name}...</div>`
@@ -409,8 +397,10 @@ class SettlersGameloop {
         return 1;
       }
 
+      //
       // Upgrade town to city
       // pause game for player to chose
+      //
       if (mv[0] == "player_upgrade_city") {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
@@ -518,9 +508,6 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 
 	this.displayPlayers();
 
-	//
-	// TESTING
-	//
 	return 1;
 
       }
@@ -585,9 +572,6 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 
         console.log(JSON.parse(JSON.stringify(this.game.state.ads)));
 
-	//
-	// TESTING
-	//
 	return 1;
 
       }
@@ -614,9 +598,6 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 
         console.log(JSON.parse(JSON.stringify(this.game.state.ads)));
 
-	//
-	// TESTING
-	//
 	return 1;
 
       }
@@ -805,9 +786,6 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
               
               this.discard.discardString = this.prettifyList(discardString);
               this.discard.render();
-              //this.playerChooseCardsToDiscard();
-
-              //return 0;
               amIPlaying = true;
             }
           }

@@ -10,7 +10,6 @@ const SettlersGameLoop = require("./lib/src/settlers-gameloop.js");
 const SettlersPlayer = require("./lib/src/settlers-player");
 const SettlersState = require("./lib/src/settlers-state");
 const SettlersActions = require("./lib/src/settlers-actions");
-const SettlersInit = require("./lib/src/settlers-init");
 const SettlersResources = require("./lib/src/settlers-resources");
 
 const TradeOverlay = require("./lib/ui/overlays/trade");
@@ -57,6 +56,8 @@ class Settlers extends GameTemplate {
     // temp var to help w/ post-splash flash
     //
     this.currently_active_player = 0;
+
+    this.acknowledge_text = "continue..."; // not "i understand..."
 
     this.build = new BuildOverlay(this.app, this);
     this.bank = new BankOverlay(this.app, this);
@@ -349,6 +350,6 @@ class Settlers extends GameTemplate {
 
 }
 
-Settlers.importFunctions(SettlersInit, SettlersGameLoop, SettlersPlayer, SettlersState, SettlersActions, SettlersResources);
+Settlers.importFunctions(SettlersGameLoop, SettlersPlayer, SettlersState, SettlersActions, SettlersResources);
 
 module.exports = Settlers;

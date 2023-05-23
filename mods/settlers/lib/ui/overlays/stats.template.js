@@ -14,12 +14,16 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
     }
     html += `</tr></tbody></table>`;
 
+    //
     //Production Log
-    html += `<table class="stats-table"><caption>Resources Produced</caption><thead><tr><th></th>`;
-    for (let r in stats.mod.game.stats.production){
-      html += `<th>${stats.mod.returnResourceHTML(r)}</th>`;
-    }
-    html += `<th>Sum</th></tr></thead><tbody>`;
+    //
+    html += `<table class="stats-table">`;
+    html += `<caption>Resources Produced</caption><thead><tr><th></th>`;
+    //for (let r in stats.mod.game.stats.production){
+    //  html += `<th>${stats.mod.returnResourceHTML(r)}</th>`;
+    //}
+    //html += `<th>Sum</th></tr></thead>`;
+    html += `<tbody>`;
 
     for (let j = 0; j < stats.mod.game.players.length; j++){
       let count = 0;
@@ -43,11 +47,11 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
 
     //VP Race
     html += `<table class="stats-table vp-table"><caption>Victory Points</caption><thead><tr><th></th>`;
-    html += `<th><div class="tip token p${stats.mod.game.colors[stats.mod.game.player-1]}">${stats.mod.skin.c1.svg}<div class="tiptext">${stats.mod.skin.c1.name}</div></div></th>`;
-    html += `<th><div class="tip token p${stats.mod.game.colors[stats.mod.game.player-1]}">${stats.mod.skin.c2.svg}<div class="tiptext">${stats.mod.skin.c2.name}</div></div></th>`;
-    html += `<th><div class="tip token">${stats.mod.skin.vp.img}<div class="tiptext">${stats.mod.skin.vp.name}</div></div></th>`;
-    html += `<th><div class="tip token">${stats.mod.skin.largest.img}<div class="tiptext">${stats.mod.skin.largest.name}</div></div></th>`;
-    html += `<th><div class="tip token">${stats.mod.skin.longest.svg}<div class="tiptext">${stats.mod.skin.longest.name}</div></div></th>`;
+    html += `<th><div class="tip token p${stats.mod.game.colors[stats.mod.game.player-1]}">${stats.mod.c1.svg}<div class="tiptext">${stats.mod.c1.name}</div></div></th>`;
+    html += `<th><div class="tip token p${stats.mod.game.colors[stats.mod.game.player-1]}">${stats.mod.c2.svg}<div class="tiptext">${stats.mod.c2.name}</div></div></th>`;
+    html += `<th><div class="tip token">${stats.mod.vp.img}<div class="tiptext">${stats.mod.vp.name}</div></div></th>`;
+    html += `<th><div class="tip token">${stats.mod.largest.img}<div class="tiptext">${stats.mod.largest.name}</div></div></th>`;
+    html += `<th><div class="tip token">${stats.mod.longest.svg}<div class="tiptext">${stats.mod.longest.name}</div></div></th>`;
     html += `<th>Total</th></tr></thead><tbody>`;
     //Sort players by VP
     let ranking_scores = [stats.mod.game.state.players[0].vp];

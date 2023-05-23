@@ -59,6 +59,16 @@ class SettlersResources {
 		return newArray;
 	}
 
+
+	//
+	// this should be returnCardImage, and the other function should be renamed somehow -- return resource image?
+	//
+  	returnResourceHTML(resource){
+    		return `<div><img class="icon" src="${this.returnCardImage(resource)}" /></div>`;
+  	}
+
+
+
 	returnCardImage(res) {
 		for (let i of this.resources){
 			if (i.name == res){
@@ -72,6 +82,7 @@ class SettlersResources {
 		}
 		return null;	
 	}
+
 
 	returnHexes() {
 		let hexes = [];

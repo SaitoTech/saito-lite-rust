@@ -1,77 +1,17 @@
 
 
-  /*
-    Functions for player actions
-  */
-
   class SettlersPlayer {
 
-    playerChooseCardsToDiscard() {
-      let settlers_self = this;
 
-      let player = this.game.player;
-      let cardCt = this.game.state.players[this.game.player - 1].resources.length;
-      if (cardCt <= 7) return;
 
-      let targetCt = Math.floor(cardCt / 2);
-      let my_resources = {};
-      let cardsToDiscard = [];
-
-      for (let resource of this.returnResources()) {
-        let temp = settlers_self.countResource(
-          settlers_self.game.player,
-          resource
-        );
-        if (temp > 0) my_resources[resource] = temp;
-      }
-
-      //Player recursively selects all the resources they want to get rid of
-      let discardFunction = function (settlers_self) {
-        let html = `<div class='tbd discard-select'>Select Cards to Discard (Must get rid of ${
-          targetCt - cardsToDiscard.length
-        }): <i id="reset" class="fas fa-undo"></i><ul>`;
-        for (let i in my_resources) {
-          if (my_resources[i] > 0)
-            html += `<li id="${i}" class="option">`;
-            for (let j = 0; j < my_resources[i]; j++){
-              html += `<img class="icon" src="${settlers_self.returnCardImage(i)}">`;
-            }
-            html += `</li>`;
-        }
-        html += "</ul>";
-        html += "</div>";
-
-        settlers_self.updateStatus(html, 1);
-
-        $(".option").off();
-        $(".option").on("click", function () {
-          $(".option").off();
-          let res = $(this).attr("id");
-          cardsToDiscard.push(res); //Add it to recycling bin
-          my_resources[res]--; //Subtract it from display
-          settlers_self.addMove("spend_resource\t" + player + "\t" + res);
-          if (cardsToDiscard.length >= targetCt) {
-            settlers_self.endTurn();
-            return 0;
-          } else {
-            discardFunction(settlers_self);
-          }
-        });
-
-        $("#reset").off();
-        $("#reset").on("click", function(){
-          $(".option").off();
-          //Reset Moves and reload interface/function
-          settlers_self.moves=["RESOLVE\t" + settlers_self.app.wallet.returnPublicKey()];
-          settlers_self.chooseCardsToDiscard();
-        });
-      };
-
-      discardFunction(settlers_self);
+    canPlayerBuildTown(player) {
+      if (this.game.state.players[player - 1].towns == 0) return false;
+      if (this.returnCitySlotsAdjacentToPlayerRoads(this.game.player).length == 0)
+        return false;
+      return this.doesPlayerHaveResources(player, this.priceList[1]);
     }
-
-
-    playerBuildCity(player, canBackUp = 0) {
+ 
+    playerBuildTown(player, canBackUp = 0) {
 
       let settlers_self = this;
       let existing_cities = 0;
@@ -188,61 +128,10 @@
     }
 
 
-
-    playerUpgradeCity(player, canBackUp = 0) {
-
-      if (canBackUp){
-        this.updateStatus(`<div class="tbd">Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...</div><ul><li class="undo">cancel</li></ul>`);
-        $(".undo").on("click",function(){
-          //Make sure the confirm popup goes away
-          $(".action").off();
-          $(".popup-confirm-menu").remove();
-          //Disable board event selection
-          $(".chover").off();
-          $(".chover").removeClass("chover");
-
-          settlers_self.addMove("undo_build");
-          settlers_self.endTurn();
-        });
-      }else{
-        this.updateStatus(`<div class="tbd">Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...</div>`);
-      }
-
-      let settlers_self = this;
-      //let selector = `.city.p${this.game.colors[player-1]}`;
-      //Manually go through available player's cities because DOM doesn't have convenient selector
-      for (let c of settlers_self.game.state.cities) {
-        if (c.level === 1 && c.player === player) {
-          $("#" + c.slot).addClass("chover");
-        }
-      }
-
-      //$(selector).addClass('chover');
-      $(".chover").off();
-      $(".chover").on("click", function () {
-        $(".chover").off();
-        $(".chover").removeClass("chover");
-
-        let slot = $(this).attr("id");
-
-        for (let i = 0; i < settlers_self.game.state.cities.length; i++) {
-          if (
-            slot == settlers_self.game.state.cities[i].slot &&
-            settlers_self.game.state.cities[i].level == 1
-          ) {
-            settlers_self.addMove(
-              `upgrade_city\t${settlers_self.game.player}\t${slot}`
-            );
-            settlers_self.endTurn();
-            return;
-          }
-        }
-        //Something went wrong, try again
-        settlers_self.playerUpgradeCity(player);
-      });
-    }
-
-
+    canPlayerBuildRoad(player) {
+      return this.doesPlayerHaveResources(player, this.priceList[0]);
+    } 
+      
 
     playerBuildRoad(player, canBackUp = false) {
 
@@ -319,18 +208,84 @@
 
 
 
+    canPlayerBuildCity(player) {
+      let availableSlot = false;
+      for (let i of this.game.state.cities) {
+        if (i.player == player && i.level == 1) availableSlot = true;
+      }
+      if (!availableSlot) return false;
+      if (this.game.state.players[player - 1].cities == 0) return false;
+      return this.doesPlayerHaveResources(player, this.priceList[2]);
+    } 
+
+
+    playerBuildCity(player, canBackUp = 0) {
+
+      if (canBackUp){
+        this.updateStatus(`<div class="tbd">Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...</div><ul><li class="undo">cancel</li></ul>`);
+        $(".undo").on("click",function(){
+          //Make sure the confirm popup goes away
+          $(".action").off();
+          $(".popup-confirm-menu").remove();
+          //Disable board event selection
+          $(".chover").off();
+          $(".chover").removeClass("chover");
+
+          settlers_self.addMove("undo_build");
+          settlers_self.endTurn();
+        });
+      }else{
+        this.updateStatus(`<div class="tbd">Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...</div>`);
+      }
+
+      let settlers_self = this;
+      //let selector = `.city.p${this.game.colors[player-1]}`;
+      //Manually go through available player's cities because DOM doesn't have convenient selector
+      for (let c of settlers_self.game.state.cities) {
+        if (c.level === 1 && c.player === player) {
+          $("#" + c.slot).addClass("chover");
+        }
+      }
+
+      //$(selector).addClass('chover');
+      $(".chover").off();
+      $(".chover").on("click", function () {
+        $(".chover").off();
+        $(".chover").removeClass("chover");
+
+        let slot = $(this).attr("id");
+
+        for (let i = 0; i < settlers_self.game.state.cities.length; i++) {
+          if (
+            slot == settlers_self.game.state.cities[i].slot &&
+            settlers_self.game.state.cities[i].level == 1
+          ) {
+            settlers_self.addMove(
+              `upgrade_city\t${settlers_self.game.player}\t${slot}`
+            );
+            settlers_self.endTurn();
+            return;
+          }
+        }
+        //Something went wrong, try again
+        settlers_self.playerUpgradeCity(player);
+      });
+    }
+
+
+
+
     /*
     Main function to let player carry out their turn...
     */
     playerPlayMove() {
 
-      
       let settlers_self = this;
       let can_do_something = false;
 
       let html = "<ul>";
 
-      if (settlers_self.canPlayerBankTrade()){
+      if (settlers_self.canPlayerTradeWithBank()){
         html += '<li class="option" id="bank">bank</li>';
         can_do_something = true;
       }
@@ -346,7 +301,6 @@
         settlers_self.canPlayerBuildCity(settlers_self.game.player) ||
         settlers_self.canPlayerBuyCard(settlers_self.game.player)
       ) {
-
         html += `<li class="option" id="spend">spend</li>`;
         can_do_something = true;
       } else {
@@ -502,9 +456,20 @@
     }
 
 
-        /*                      
-    Interface to Trade with the bank
-    */        
+    canPlayerTradeWithBank(){
+      let minForTrade = this.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
+
+      if (!this.game.state.canTrade){
+        return false;
+      }
+
+      for (let resource of this.returnResources()) {
+        if (this.countResource(this.game.player, resource) >= minForTrade[resource])
+          return true;
+      }
+      return false;
+    }
+
     playerTradeWithBank() {
       let settlers_self = this;
       let my_resources = {}; 
@@ -605,29 +570,7 @@
     }
 
 
-    canPlayerBuildRoad(player) {
-      return this.doesPlayerHaveResources(player, this.priceList[0]);
-    } 
       
-    canPlayerBuildTown(player) {
-      if (this.game.state.players[player - 1].towns == 0) return false;
-      if (this.returnCitySlotsAdjacentToPlayerRoads(this.game.player).length == 0)
-        return false;
-      return this.doesPlayerHaveResources(player, this.priceList[1]);
-    } 
-      
-    canPlayerBuildCity(player) {
-      let availableSlot = false;
-      for (let i of this.game.state.cities) {
-        if (i.player == player && i.level == 1) availableSlot = true;
-      }
-      if (!availableSlot) return false;
-      
-      if (this.game.state.players[player - 1].cities == 0) return false;
-      
-      return this.doesPlayerHaveResources(player, this.priceList[2]);
-    } 
-
     canPlayerBuyCard(player) {
       //No more cards in deck (No reshuffling in this game)
       if (this.game.deck[0].crypt.length === 0) return false;
@@ -643,20 +586,6 @@
         return true;
       }
 
-      return false;
-    }
-
-    canPlayerBankTrade(){
-      let minForTrade = this.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
-
-      if (!this.game.state.canTrade){
-        return false;
-      }
-
-      for (let resource of this.returnResources()) {
-        if (this.countResource(this.game.player, resource) >= minForTrade[resource])
-          return true;
-      }
       return false;
     }
 

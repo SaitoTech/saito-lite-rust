@@ -1,12 +1,9 @@
 
-  /*
-    Functions for basic actions
-  */
-
-    class SettlersActions {
+class SettlersActions {
 
 
-buildCity(player, slot) {
+  buildCity(player, slot) {
+
     // remove adjacent slots
     let ad = this.returnAdjacentCitySlots(slot);
     for (let i = 0; i < ad.length; i++) {
@@ -134,24 +131,6 @@ buildCity(player, slot) {
       }
     }
     this.game.state.roads.push({ player: player, slot: slot });
-  }
-
-
-  returnResourceHTML(resource){
-    return `<div class="tip">
-            <img class="icon" src="${this.returnCardImage(resource)}">
-            </div>`;
-  }
-
-  visualizeCost(purchase) {
-    let html = "";
-    if (purchase < 0 || purchase > 3) return "";
-    let cost = this.priceList[purchase];
-    for (let resource of cost) {
-      //html += `<img class="icon" src="${this.returnCardImage(resource)}">`;
-      html += this.returnResourceHTML(resource);
-    }
-    return html;
   }
 
 
