@@ -10,7 +10,8 @@ class SettlersState {
     //
     collectHarvest(value) {
         let logMsg = "";
-        let notice = " a poor harvest...";
+        let notice = "";
+        let poor_harvest = true;
         for (let city of this.game.state.cities) {
             let player = city.player;
 
@@ -22,7 +23,8 @@ class SettlersState {
                     let resource = this.game.state.hexes[neighboringHex].resource;
                     logMsg += `${this.game.playerNames[player - 1]} gains ${resource}`;
                     if (this.game.player == player) {
-                        notice += this.returnResourceHTML(resource);
+                      notice += this.returnResourceHTML(resource);
+        	      poor_harvest = false;
                     }
                     this.game.state.players[player - 1].resources.push(resource);
                     this.game.stats.production[resource][player - 1]++;
@@ -39,6 +41,7 @@ class SettlersState {
                 }
             }
         }
+        if (poor_harvest == true) { notice = " a poor harvest"; } 
         logMsg = logMsg.substr(0, logMsg.length - 2);
         if (logMsg) {
             this.updateLog(logMsg);
@@ -352,6 +355,7 @@ class SettlersState {
     */
     generateMap() {
 console.log("GENERATING MAP");
+console.log(JSON.stringify(this.game.deck));
         let tileCt = 0;
         let tokenCt = 0;
         let tile, resourceName, token;
@@ -359,6 +363,7 @@ console.log("POOL 1");
         for (let hex of this.hexgrid.hexes) {
             tile = this.game.pool[0].hand[tileCt++];
             resourceName = this.game.deck[1].cards[tile].resource;
+console.log("res: " + resourceName);
             if (resourceName != this.skin.nullResource()) {
                 let temp = this.game.pool[1].hand[tokenCt++];
                 token = this.game.deck[2].cards[temp].value;
