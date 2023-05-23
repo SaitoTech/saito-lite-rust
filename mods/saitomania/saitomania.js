@@ -40,6 +40,7 @@ class SaitoMania extends OnePlayerGameTemplate {
       this.game.queue = [];
       this.game.queue.push("play");
       this.game.queue.push("READY");
+
       this.game.state = {
         scores: [],
         lifetime: {
@@ -47,6 +48,10 @@ class SaitoMania extends OnePlayerGameTemplate {
           high_score: 0,
         },
       };
+
+      if (this.loadGamePreference(this.name+"_stats")) {
+        this.game.state.lifetime = this.loadGamePreference(this.name+"_stats");
+      }
     }
     
     console.log(JSON.parse(JSON.stringify(this.game)));

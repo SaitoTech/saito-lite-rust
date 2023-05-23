@@ -30,7 +30,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.913,
+    version: 4.914,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -440,16 +440,18 @@ console.log("---------------------");
             // save theme options
             let theme = this.app.options.theme;
 
+            // keep user's game preferences
+            let gameprefs = this.app.options.gameprefs;
+
             // specify before reset to avoid archives reset problem
             this.wallet.publickey = tmppubkey;
             this.wallet.privatekey = tmpprivkey;
 
-            // let modules purge stuff
+            // let modules purge stuff (not implementer)
             this.app.modules.onWalletReset();
 
             // reset and save
             await this.app.storage.resetOptions();
-            this.app.storage.saveOptions();
 
             // re-specify after reset
             this.wallet.publickey = tmppubkey;
@@ -459,6 +461,7 @@ console.log("---------------------");
 
             // reset games
             this.app.options.games = [];
+            this.app.options.gameprefs = gameprefs;
 
             // delete inputs and outputs
             this.app.options.wallet.inputs = [];
@@ -792,7 +795,6 @@ console.log("---------------------");
    * the new wallet to local storage.
    */
   async resetWallet() {
-    //console.log("Reset Wallet");
     this.wallet.privatekey = this.app.crypto.generateKeys();
     this.wallet.publickey = this.app.crypto.returnPublicKey(this.wallet.privatekey);
 
@@ -800,30 +802,30 @@ console.log("---------------------");
       this.app.blockchain.resetBlockchain();
     }
 
-    // 
-    // keep keychain info now
-    // 
-    //if (this.app.options.keys != undefined) {
-    //  this.app.options.keys = [];
-    //}
-
     this.wallet.inputs = [];
     this.wallet.outputs = [];
     this.wallet.spends = [];
     this.wallet.pending = [];
+    //Do we need to set wallet.balance or wallet.version?
 
-    this.saveWallet();
+    // let modules purge stuff (not implementer)
+    this.app.modules.onWalletReset();
 
-    // let modules purge stuff
-    //this.app.modules.onWalletReset();
+    // reset and save
+    await this.app.storage.resetOptions();
 
     this.app.options.invites = [];
     this.app.options.games = [];
     this.app.options.leagues = [];
     this.app.options.chat = [];
-    this.app.storage.saveOptions();
+
+    //Should we initialize arrays/objects for mixin, crypto, keys, theme ?
+
+    //Put this wallet info in app.options and save
+    this.saveWallet();
 
     if (this.app.browser.browser_active == 1) {
+      console.log("Reload");
       window.location.reload();
     }
   }
