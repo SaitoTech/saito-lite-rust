@@ -5,11 +5,10 @@ const ChatManager = require("./lib/chat-manager/main");
 const ChatManagerOverlay = require("./lib/overlays/chat-manager");
 const ChatPopup = require("./lib/chat-manager/popup");
 const JSON = require("json-bigint");
-//const JsStore = require("jsstore");
-const localforage = require("localforage");
+const PeerService = require("saito-js/lib/peer_service").default;
 const Slip = require("../../lib/saito/slip").default;
 const Transaction = require("../../lib/saito/transaction").default;
-
+const localforage = require("localforage");
 class Chat extends ModTemplate {
   constructor(app) {
     super(app);
@@ -53,6 +52,8 @@ class Chat extends ModTemplate {
     this.chat_manager_overlay = null;
 
     this.loading = true;
+
+    this.publicKey = app.wallet.publicKey;
 
     this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
       this.returnOrCreateChatGroupFromMembers(data?.members);
@@ -114,7 +115,7 @@ class Chat extends ModTemplate {
     }
   }
 
-  onPeerServiceUp(app, peer, service = {}) {
+  async onPeerServiceUp(app, peer, service = {}) {
     let chat_self = this;
 
     console.log("peer service up", peer, service);
@@ -199,10 +200,10 @@ class Chat extends ModTemplate {
       }
 
       this.communityGroup = this.returnOrCreateChatGroupFromMembers(
-        [peer.returnPublicKey()],
+        [peer.instance.public_key],
         this.communityGroupName
       );
-      this.communityGroup.members = [peer.returnPublicKey()];
+      this.communityGroup.members = [peer.instance.public_key];
 
       if (this.communityGroup) {
         //
@@ -222,7 +223,7 @@ class Chat extends ModTemplate {
           }
         }
 
-        let newtx = this.app.wallet.createUnsignedTransaction();
+        let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
         newtx.msg = {
           request: "chat history",
@@ -230,7 +231,7 @@ class Chat extends ModTemplate {
           ts: this.communityGroup.last_update,
         };
 
-        newtx = this.app.wallet.signTransaction(newtx);
+        await newtx.sign();
 
         this.app.network.sendTransactionWithCallback(newtx, (txs) => {
           this.loading--;
@@ -270,7 +271,7 @@ class Chat extends ModTemplate {
     let services = [];
     // servers with chat service run plaintext community chat groups
     if (this.app.BROWSER == 0) {
-      services.push({ service: "chat", name: "Saito Community Chat" });
+      services.push(new PeerService(null, "chat", "Saito Community Chat"));
     }
     return services;
   }
@@ -372,6 +373,8 @@ class Chat extends ModTemplate {
     tx.decryptMessage(app); //In case forwarding private messages
     let txmsg = tx.returnMessage();
 
+    console.log("transaction message for handling peer ", this.publicKey);
+
     if (!txmsg.request) {
       return;
     }
@@ -409,20 +412,43 @@ class Chat extends ModTemplate {
       }
     } else if (txmsg.request === "chat message broadcast") {
       let inner_tx = new Transaction(undefined, txmsg.data);
+
+      console.log(inner_tx, "inner transaction", txmsg);
+
       let inner_txmsg = inner_tx.returnMessage();
 
       //
       // if chat message broadcast is received - we are being asked to broadcast this
       // to a peer if the inner_tx is addressed to one of our peers.
       //
+
+      console.log("inner tx", inner_tx);
+
       if (inner_tx.transaction.to.length > 0) {
         if (inner_tx.transaction.to[0].publicKey != this.app.wallet.publicKey) {
           if (app.BROWSER == 0) {
-            app.network.peers.forEach((p) => {
-              if (p.peer.publickey === inner_tx.transaction.to[0].publicKey) {
-                p.sendTransactionWithCallback(inner_tx, () => {});
+            let peers = await app.network.getPeers();
+            console.log("sending to peers ", peers, inner_tx.to);
+            peers.forEach((p) => {
+              console.log("peer instance ", p.instance.public_key);
+              if (p.instance.public_key !== inner_tx.to[0].publicKey) {
+                app.connection.emit("relay-send-message", {
+                  recipient: p.instance.public_key,
+                  request: "chat message",
+                  data: inner_tx.msg,
+                });
+                p.sendTransactionWithCallback();
               }
-              return;
+              console.log("public keys , ", p.instance.public_key, this.publicKey);
+              // if (p.public_key !== this.publicKey) {
+              //   p.sendTransactionWithCallback(inner_tx, () => {});
+              // }
+
+              // app.connection.emit("relay-send-message", {
+              //   recipient: p.instance.public_key,
+              //   request: "chat message",
+              //   data: inner_tx.toJson(),
+              // });
             });
             return;
           }
@@ -431,8 +457,10 @@ class Chat extends ModTemplate {
           // broadcast to me, so send to all non-this-peers
           //
           if (app.BROWSER == 0) {
-            app.network.peers.forEach((p) => {
-              if (p.peer.publickey !== peer.peer.publickey) {
+            console.log("sending tx to myself");
+            let peers = await app.network.getPeers();
+            peers.forEach((p) => {
+              if (p.public_key !== peer.publicKey()) {
                 p.sendTransactionWithCallback(inner_tx, () => {});
               }
             });
@@ -455,7 +483,7 @@ class Chat extends ModTemplate {
    * We send messages on chain to their target and to the chat-services node via Relay
    *
    */
-  sendChatTransaction(app, tx) {
+  async sendChatTransaction(app, tx, data) {
     //
     // won't exist if encrypted
     //
@@ -468,20 +496,23 @@ class Chat extends ModTemplate {
         this.inTransitImageMsgSig = tx.transaction.sig;
       }
     }
-    if (app.network.peers.length > 0) {
-      let recipient = app.network.peers[0].peer.publickey;
-      for (let i = 0; i < app.network.peers.length; i++) {
-        if (app.network.peers[i].hasService("chat")) {
-          recipient = app.network.peers[i].peer.publickey;
+    let peers = await app.network.getPeers();
+    if (peers.length > 0) {
+      let recipient = peers[0].publickey;
+      for (let i = 0; i < peers.length; i++) {
+        if (peers[i].hasService("chat")) {
+          recipient = peers[i].publicKey;
           break;
         }
       }
+      console.log(tx.transaction, tx, "transaction.transaction");
 
       app.network.propagateTransaction(tx);
+      console.log(tx.toJson(), "to json");
       app.connection.emit("relay-send-message", {
         recipient,
         request: "chat message broadcast",
-        data: tx.transaction,
+        data: tx,
       });
     } else {
       salert("Connection to chat server lost");
@@ -490,9 +521,15 @@ class Chat extends ModTemplate {
 
   async createChatTransaction(group_id, msg = "") {
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
     if (newtx == null) {
       return;
     }
+
+    // let slip = new Slip();
+    // slip.publicKey = this.publicKey;
+    // slip.amount = 0;
+    // newtx.addToSlip(slip);
 
     let members = this.returnMembers(group_id);
 
@@ -537,11 +574,11 @@ class Chat extends ModTemplate {
       let key = this.app.keychain.returnKey(newtx.transaction.to[0].publicKey);
       console.log(newtx.transaction.to[0].publicKey);
       console.log(key);
-      newtx = this.app.wallet.signAndEncryptTransaction(newtx);
+      await newtx.sign();
     } else {
-      newtx = this.app.wallet.signTransaction(newtx);
+      await newtx.sign();
     }
-    return newtx;
+    return [newtx, newtx.msg];
   }
 
   /**
@@ -558,6 +595,7 @@ class Chat extends ModTemplate {
     try {
       tx.decryptMessage(app);
       txmsg = tx.returnMessage();
+      console.log("transaction message ", txmsg, tx);
     } catch (err) {
       console.log("ERROR: " + JSON.stringify(err));
     }
