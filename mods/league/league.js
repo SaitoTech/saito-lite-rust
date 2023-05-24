@@ -6,6 +6,8 @@ const LeagueMain = require("./lib/main");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const JoinLeagueOverlay = require("./lib/overlays/join");
+const localforage = require("localforage");
+
 
 //Trial -- So that we can display league results in game page
 const LeagueOverlay = require("./lib/overlays/league");
@@ -45,7 +47,7 @@ class League extends ModTemplate {
     };
 
     this.icon_fa = "fas fa-user-friends";
-    this.debug = false;
+    this.debug = true;
   }
 
   //
@@ -83,10 +85,14 @@ class League extends ModTemplate {
       });
     });
 
-    this.sortLeagues();
-    //Render initial UI based on what we have saved
-    app.connection.emit("leagues-render-request");
-    app.connection.emit("league-rankings-render-request");
+    //Give the localForage a second to load before rendering
+    setTimeout(
+      ()=>{
+        this.sortLeagues();
+        //Render initial UI based on what we have saved
+        app.connection.emit("leagues-render-request");
+        app.connection.emit("league-rankings-render-request");
+      }, 1000);
 
     if (app.browser.returnURLParameter("view_game")) {
       let game = app.browser.returnURLParameter("view_game").toLowerCase();
@@ -215,7 +221,7 @@ class League extends ModTemplate {
         if (this.debug) {
           console.log("Load my leagues");
         }
-        let league_list = this.leagues.map((x) => `'${x.id}'`).join(", ");
+        let league_list = this.app.options.leagues.map((x) => `'${x}'`).join(", ");
         sql = `SELECT * FROM leagues WHERE id IN (${league_list})`;
       }
       //
@@ -410,6 +416,7 @@ class League extends ModTemplate {
   }
 
   loadLeagues() {
+    let league_self = this;
     if (this.app.options.leagues) {
       if (this.debug) {
         console.log(
@@ -418,34 +425,54 @@ class League extends ModTemplate {
         );
       }
 
-      this.leagues = this.app.options.leagues;
+      for (let lid of this.app.options.leagues) {
+        localforage.getItem(`league_${lid}`, function (error, value) {
+          //Because this is async, the initialize function may have created an
+          //empty default group
 
-      //Restore the array for players
-      for (let league of this.leagues) {
-        league.players = [];
+          if (value) {
+          let currentGroup = league_self.returnLeague(lid);
+          if (currentGroup) {
+            currentGroup = Object.assign(currentGroup, value);
+          } else {
+            league_self.leagues.push(value);
+          }
+
+          }
+        });
       }
 
       return;
+    }else{
+      this.app.options.leagues = [];
     }
+
     this.leagues = [];
   }
 
   /**
    * We only store the leagues we are a member of.
-   * And we only store meta data, not full player list.
+   * League id -> app.options, full league data in localForage
    */
   saveLeagues() {
     if (!this.app.BROWSER) {
       return;
     }
 
+    let league_self = this;
     this.app.options.leagues = [];
 
     for (let league of this.leagues) {
       if (league.rank >= 0 || league.admin === this.app.wallet.returnPublicKey()) {
-        let newLeague = JSON.parse(JSON.stringify(league));
-        delete newLeague.players;
-        this.app.options.leagues.push(newLeague);
+        //let newLeague = JSON.parse(JSON.stringify(league));
+        //delete newLeague.players;
+        this.app.options.leagues.push(league.id);
+        localforage.setItem(`league_${league.id}`, league).then(function () {
+          if (league_self.debug) {
+            console.log("Saved league data for " + league.id);
+            console.log(JSON.parse(JSON.stringify(league)));
+          }
+        });
       }
     }
 
