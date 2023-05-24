@@ -79,6 +79,7 @@
   border-left: 1px solid var(--saito-border-color);
   transition: all 0.2s;
   opacity: 0;
+  z-index: 20;
   width: 20rem;
   height: calc(100vh - var(--saito-header-height) + 3px);
   overflow: hidden auto;
