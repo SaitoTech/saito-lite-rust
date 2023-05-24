@@ -100,7 +100,7 @@ class Wuziqi extends GameTemplate {
                     this.addEvents(this.game.board);
                     this.updateStatus("Your move, "+this.formatPlayer());
                 } else {
-                    this.updateStatus("Waiting on <span class='playertitle'>Black</span>");
+                    this.updateStatus("Waiting on <span class='playertitle'>Black</span> to start");
                 }
 
             }
@@ -198,13 +198,14 @@ class Wuziqi extends GameTemplate {
       this.game.status = str;
 
       if (this.browser_active == 1) {
-        let status_obj = document.querySelector(".me .plog");
-        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
+        let status_obj = document.querySelector(".status");
+        let seat = this.playerbox.playerBox(this.game.player);
+        if (status_obj) {
           status_obj.innerHTML = str;
+        } else {
+          this.app.browser.addElementToSelector(`<div class="status">${str}</div>`, `#player-box-body-${seat}`);
         }
       }
-    } catch (err) { 
-      console.log("ERR: " + err);
     }
 
     animatePlay(cell){
@@ -339,10 +340,16 @@ class Wuziqi extends GameTemplate {
             }
 
             if (mv[0] === "clearboard"){
+                let first_player = parseInt(mv[1]);
                 this.generateBoard(this.game.options.board_size);
                 this.drawBoard(this.game.board);
                 // Remove this item from the queue.
                 this.game.queue.splice(this.game.queue.length - 1, 1);
+
+                if (this.game.player == first_player) {
+                    this.addEvents(this.game.board);
+                    this.updateStatus("You go first");
+                }
                 return 1;
             }
 
@@ -415,7 +422,7 @@ class Wuziqi extends GameTemplate {
                     this.addEvents(this.game.board);
                     this.updateStatus("Your move");
                 }else{
-                    this.updateStatus("Waiting on <span class='playertitle'>" + this.game.sides[player % 2] + "</span>");                        
+                    this.updateStatus("Waiting on <span class='playertitle'>" + this.game.sides[player % 2] + "</span>");
                 }
                 
                 // Remove this item from the queue.
@@ -429,18 +436,17 @@ class Wuziqi extends GameTemplate {
     // Add button to continue the game
     addContinueButton() {
         if (this.game.player == 0 ) { return; }
-        var el = document.createElement('button');
-        el.textContent = "Continue";
-        el.classList.add("continue");
-        // Reinitialise the board and add events.
-        el.addEventListener("click", () => {
-            this.addMove("clearboard");
-            this.generateBoard(this.game.options.board_size);
-            this.drawBoard(this.game.board);
-            this.addEvents(this.game.board);
-            this.updateStatus("You go first");
-        });
-        document.querySelector(".me .plog").append(el);
+
+        this.app.browser.addElementAfterSelector(`<button class="continue">Continue</button>`, ".status");
+        let el = document.querySelector(".continue");
+        if (el){
+            el.addEventListener("click", () => {
+                this.addMove("clearboard\t"+this.game.player);
+                this.endTurn();
+                el.remove();
+            });
+
+        }
     }
 
     // Check if a player won the round
