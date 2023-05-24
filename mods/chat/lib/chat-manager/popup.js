@@ -1,5 +1,6 @@
 const SaitoEmoji = require("../../../../lib/saito/ui/saito-emoji/saito-emoji");
 const ChatPopupTemplate = require("./popup.template");
+const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class ChatPopup {
 
@@ -18,7 +19,7 @@ class ChatPopup {
     this.y_pos = 0;
     this.width = 0;
     this.height = 0;
-
+    this.overlay = new SaitoOverlay(app, mod);
   }
 
   remove() {
@@ -160,7 +161,7 @@ class ChatPopup {
     //
     let popup_id = "chat-popup-" + this.group.id;
     let popup_qs = "#chat-popup-" + this.group.id;
-    
+    this_self = this;
 
     if (document.querySelector(".chat-container"+popup_qs)){
 
@@ -302,6 +303,18 @@ class ChatPopup {
 
         //}
       }, false); // false = no drag-and-drop image click
+
+
+      document.querySelectorAll(`.img-prev`).forEach(function(img, key) { 
+        img.onclick = (e) => {
+          e.preventDefault();
+          
+          let img = e.currentTarget;
+          let src = img.getAttribute('src');
+
+          this_self.overlay.show(`<img class="chat-popup-img-enhanced" src="${src}" >`);
+        }
+      });
 
 
     } catch (err) {

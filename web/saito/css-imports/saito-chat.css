@@ -11,6 +11,12 @@
 
 .chat-manager .saito-userline .img-prev {
   max-width: 100%;
+  cursor: pointer;
+}
+
+.chat-popup-img-enhanced {
+  max-height: 90vh;
+  max-width: 95vw;
 }
 
 .chat-manager .saito-user {
