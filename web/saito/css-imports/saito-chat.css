@@ -36,7 +36,9 @@
   height: 50rem;
   width: 36rem;
   border-radius: 0.5rem;
-  z-index: 14; /* So weird, at 15 it blocks the z-index 20 slide in menu*/
+  z-index: 15; /* So weird, at 15 it blocks the z-index 20 slide in menu*/
+  /* reason: the slidein is child of saito header, so whatever z-index is assigned to saito header,
+  the child (slidein menu) inherits it */
   position: fixed;
   bottom: 0px;
   right: 0px;
