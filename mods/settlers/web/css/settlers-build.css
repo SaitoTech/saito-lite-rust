@@ -446,3 +446,7 @@
   border-bottom-right-radius: 1rem;
 }
 
+.bank-overlay img {
+  width: 15rem;
+  height: auto!important;
+}

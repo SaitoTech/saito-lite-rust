@@ -13,10 +13,10 @@ module.exports = BankOverlayTemplate = (app, mod, bank) => {
   }
 
   let html = `
-        <div class="saitoa settlers-info-overlay">
+        <div class="saitoa settlers-info-overlay bank-overlay">
           <div class="settlers-items-container settlers-items-container-2">
             <div class="settlers-item-row">
-              <div class="settlers-item-info-text"> Select resource to trade with bank: </div>
+              <div class="settlers-item-info-text">Select resource to give bank:</div>
             </div>
   `;
 
@@ -38,7 +38,7 @@ module.exports = BankOverlayTemplate = (app, mod, bank) => {
           </div>
           <div class="settlers-items-container settlers-items-container-desired-resources hide">
             <div class="settlers-item-row">
-              <div class="settlers-item-info-text"> Select desired resource: </div>
+              <div class="settlers-item-info-text">Select resource to buy:</div>
             </div>
             <div class="settlers-item-row settlers-cards-container settlers-desired-resources">
               
