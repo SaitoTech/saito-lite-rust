@@ -1,54 +1,29 @@
 
 class SettlersState {
 
-	initializeTheme(option = "classic"){
 
-		this.empty = false;
-		this.c1 = {name: "village", svg:`<img src="/settlers/img/icons/village.png"/>`};
-		this.c2 = {name: "city", svg:`<img src="/settlers/img/icons/city.png"/>`};
-		this.r = {name: "road", svg:`<img src="/settlers/img/icons/road.png"/>`};
-		this.b = {name: "bandit", svg:`<img src="/settlers/img/icons/bandit.png"/>`};
-		this.s = {name: "knight", img:`<img src="/settlers/img/icons/knight.png"/>`};
-		this.t = {name: "bank"};
-		this.vp = {name: "VP", img:`<img src="/settlers/img/icons/point_card.png"/>`};
-		this.longest = {name: "Longest Road", svg:`<img src="/settlers/img/icons/road.png"/>`};
-		this.largest = {name:"Largest Army", img:`<img src="/settlers/img/icons/knight.png"/>`};
-		this.resources = [
-						  {name: "brick",count:3,ict:3,icon:"/settlers/img/icons/brick-icon.png"},
-						  {name: "wood",count:4,ict:3,icon:"/settlers/img/icons/wood-icon.png"},
-						  {name: "wheat",count:4,ict:3,icon:"/settlers/img/icons/wheat-icon.png"},
-						  {name: "wool",count:4,ict:3,icon:"/settlers/img/icons/wool-icon.png"},
-						  {name: "ore",count:3,ict:3,icon:"/settlers/img/icons/ore-icon.png"},
-						  {name: "desert",count:1,ict:1}
-		];
+  /*
+    Given a resource cost and player, check if they meet the minimum
+    requirement = ["res1","res2"...]
+  */
+  doesPlayerHaveResources(player, requirement) {
+    let myBank = this.game.state.players[player - 1].resources.slice();
+    for (let x of requirement) {
+      let ind = myBank.indexOf(x);
+      if (ind >= 0) myBank.splice(ind, 1);
+      else return false;
+    }
+    return true;
+  }
 
-		// Order is IMPORTANT
-		this.priceList = [["brick","wood"],["brick","wood","wheat","wool"],["ore","ore", "ore","wheat","wheat"],["ore","wool","wheat"]];
-		this.cardDir = "/settlers/img/cards/";
-		this.back = "/settlers/img/cards/red_back.png"; //Hidden Resource cards 
-		this.card = {name: "development", back: "/settlers/img/cards/red_back.png"};
-		this.deck = [
-						{ card : "Knight",count:14, img: "/settlers/img/cards/knight.png", action:1},
-						{ card : "Unexpected Bounty" ,count:2, img : "/settlers/img/cards/treasure.png" , action : 2 },
-						{ card : "Legal Monopoly" , count:2, img : "/settlers/img/cards/scroll.png" , action : 3 },
-						{ card : "Caravan" , count:2, img : "/settlers/img/cards/wagon.png" , action : 4},
-						{ card : "Brewery" , count:1, img : "/settlers/img/cards/drinking.png", action: 0 },
-						{ card : "Bazaar" , count:1, img : "/settlers/img/cards/shop.png", action: 0 },
-						{ card : "Advanced Industry" , count:1, img : "/settlers/img/cards/windmill.png", action: 0 },
-						{ card : "Cathedral" , count:1, img : "/settlers/img/cards/church.png", action: 0 },
-						{ card : "Chemistry" , count:1, img : "/settlers/img/cards/potion.png", action: 0 }
-		];
-		this.gametitle = "Settlers of Saitoa";
-		this.winState = "elected governor";		
+  hasVPCards() {
+    for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+      let cardname = this.game.deck[0].cards[this.game.deck[0].hand[i]].card;
+      if (!this.isActionCard(cardname)) { return true; }
+    }
+    return false;
+  }
 
-		this.rules = [
-			`Gain 1 ${this.vp.name}.`,
-			`Move the ${this.b.name} to a tile of your choosing`,
-			`Gain any two resources`,
-			`Collect all cards of a resource from the other players`,
-			`Build 2 ${this.r.name}s`
-		];
-	}
 
 
 	returnResources() {
@@ -373,71 +348,6 @@ class SettlersState {
         }
     }
 
-    renderTradeOfferInPlayerBox(offering_player, stuff_on_offer, stuff_in_return) {
-        let settlers_self = this;
-
-        let can_accept = true;
-        for (let r in stuff_in_return) {
-            if (this.countResource(this.game.player, r) < stuff_in_return[r]) {
-                can_accept = false;
-            }
-        }
-
-        if (!can_accept) {
-            this.game.state.ads[offering_player - 1].ad = true;
-            this.addMove(`reject_offer\t${this.game.player}\t${offering_player}`);
-            this.endTurn();
-            return;
-        }
-
-        //Simplify resource objects
-        let offer = this.wishListToImage(stuff_on_offer) || "<em>nothing</em>";
-        let ask = this.wishListToImage(stuff_in_return) || "<em>nothing</em>";
-
-        let html = `<div class="pbtrade">
-                  <div class="flexline">Offers <span class="tip highlight">${offer}</span> for <span class="tip highlight">${ask}</span></div>`;
-
-        if (this.game.state.canTrade) {
-            html += `<ul class="flexline">
-                <li class="pboption" id="accept">✔</li>
-                <li class="pboption" id="reject">✘</li>
-              </ul>`;
-        }
-        html += "</div>";
-
-        this.playerbox.refreshLog(html, offering_player);
-
-        let selector =
-            "#player-box-" + this.playerbox.playerBox(offering_player);
-
-        $(`${selector} .pboption`).off();
-        $(`${selector} .pboption`).on("click", function () {
-            //
-            settlers_self.playerbox.refreshLog("", offering_player);
-            //
-            let choice = $(this).attr("id");
-            if (choice == "accept") {
-                settlers_self.game.state.ads[offering_player - 1].offer = null;
-                settlers_self.game.state.ads[offering_player - 1].ask = null;
-                settlers_self.addMove(`clear_advert\t${settlers_self.game.player}`);
-                settlers_self.addMove(
-                    "accept_offer\t" +
-                    settlers_self.game.player + "\t" +
-                    offering_player + "\t" +
-                    JSON.stringify(stuff_on_offer) + "\t" +
-                    JSON.stringify(stuff_in_return)
-                );
-                settlers_self.endTurn();
-            }
-            if (choice == "reject") {
-                settlers_self.game.state.ads[offering_player - 1].ad = true;
-                settlers_self.addMove(`reject_offer\t${settlers_self.game.player}\t${offering_player}`);
-                settlers_self.endTurn();
-            }
-        });
-
-
-    }
 
     //Allow this player to click buttons to display resource or dev cards in their cardfan
     addEventsToHand() {

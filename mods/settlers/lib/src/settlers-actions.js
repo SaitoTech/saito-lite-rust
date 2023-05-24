@@ -37,7 +37,7 @@ class SettlersActions {
                 }
             }
         }
-        if (poor_harvest == true) { notice = " a poor harvest"; }
+        if (poor_harvest == true) { notice = "&nbsp; a poor harvest"; }
         logMsg = logMsg.substr(0, logMsg.length - 2);
         if (logMsg) {
             this.updateLog(logMsg);
@@ -218,28 +218,6 @@ console.log("DONE GENERATING MAP");
     this.game.state.roads.push({ player: player, slot: slot });
   }
 
-
-  /*
-    Given a resource cost and player, check if they meet the minimum
-    requirement = ["res1","res2"...]
-  */
-  doesPlayerHaveResources(player, requirement) {
-    let myBank = this.game.state.players[player - 1].resources.slice();
-    for (let x of requirement) {
-      let ind = myBank.indexOf(x);
-      if (ind >= 0) myBank.splice(ind, 1);
-      else return false;
-    }
-    return true;
-  }
-
-  hasVPCards() {
-    for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-      let cardname = this.game.deck[0].cards[this.game.deck[0].hand[i]].card;
-      if (!this.isActionCard(cardname)) { return true; }
-    }
-    return false;
-  }
 
 
   /*

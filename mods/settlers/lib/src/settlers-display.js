@@ -1,6 +1,40 @@
 
 class SettlersDisplay {
 
+  /*
+    Every player should have in deck[2] and deck[3] the board tiles and tokens in the same order
+    */
+    displayMap() {
+        let tileCt = 0;
+        let tokenCt = 0;
+        let tile, resourceName, token;
+        for (let hex of this.hexgrid.hexes) {
+            tile = this.game.pool[0].hand[tileCt++];
+            resourceName = this.game.deck[1].cards[tile].resource;
+            if (resourceName != this.returnNullResource()) {
+                let temp = this.game.pool[1].hand[tokenCt++];
+                token = this.game.deck[2].cards[temp].value;
+            } else {
+                token = 0;
+            }
+            this.game.state.hexes[hex] = {
+                resource: resourceName,
+                value: token,
+                img: this.game.deck[1].cards[tile].img,
+                neighbours: [],
+                robber: false,
+            };
+            if (resourceName == this.returnNullResource()) {
+              this.game.state.hexes[hex].robber = true;
+	    }
+            if (token) { 
+	      this.addSectorValueToGameboard(hex, token); 
+	    }
+        }
+console.log("DONE GENERATING MAP");
+    }
+
+
 
     renderTradeOfferInPlayerBox(offering_player, stuff_on_offer, stuff_in_return) {
         let settlers_self = this;
@@ -73,6 +107,9 @@ class SettlersDisplay {
 
 
     displayBoard() {
+
+        
+
         console.log("Draw board");
         $(".road.empty").remove();
         for (let i in this.game.state.hexes) {
@@ -230,6 +267,8 @@ class SettlersDisplay {
 
     displayPlayers() {
 
+      try {
+
         this.displayScore();
 
         if (!this.browser_active) { return; }
@@ -371,6 +410,11 @@ class SettlersDisplay {
             this.displayCardfan();
         }
         this.addEventsToHand();
+
+
+      } catch (e) {
+	console.log("error in displayPlayers(): " + e);
+      }
     }
 
 

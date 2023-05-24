@@ -69,7 +69,7 @@ class YearOfPlentyOverlay {
   updateCards(){
     let html = ``;
     for(let i=0; i<this.cardsToGain.length; i++) {
-      html += `<img id="${i}" src="${this.mod.skin.resourceCard(this.cardsToGain[i])}" >`;
+      html += `<img id="${i}" src="${this.mod.returnCardImage(this.cardsToGain[i])}" >`;
     }
 
     document.querySelector('.settlers-selected-resources').innerHTML = html;

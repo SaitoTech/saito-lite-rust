@@ -27,7 +27,7 @@ class DiscardOverlay {
     if (cardCt <= 7) return;
     this.targetCt = Math.floor(cardCt / 2);
 
-    for (let resource of this.mod.skin.resourceArray()) {
+    for (let resource of this.mod.returnResources()) {
       let temp = this.mod.countResource(
         this.mod.game.player,
         resource

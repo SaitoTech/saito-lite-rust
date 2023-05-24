@@ -13,7 +13,7 @@ module.exports = DiscardOverlayTemplate = (app, mod, discard) => {
           if (discard.my_resources[i] > 0)
             html += `<div id="${i}" class="settlers-item-row settlers-cards-container">`;
             for (let j = 0; j < discard.my_resources[i]; j++){
-              html += `<img id="${i}" src="${mod.skin.resourceCard(i)}">`;
+              html += `<img id="${i}" src="${mod.returnCardImage(i)}">`;
             }
             html += `</div>`;
         }

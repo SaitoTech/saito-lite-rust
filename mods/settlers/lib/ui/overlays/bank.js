@@ -22,7 +22,7 @@ class BankOverlay {
     
     this.minForTrade = this.mod.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
                 
-    for (let resource of this.mod.skin.resourceArray()) {
+    for (let resource of this.mod.returnResources()) {
       let temp = this.mod.countResource(
         this.mod.game.player,
         resource

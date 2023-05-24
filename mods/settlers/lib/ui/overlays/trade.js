@@ -22,7 +22,7 @@ class TradeOverlay {
     this.tradeType = tradeType;    
     this.accepting_trade = 0;
 
-    let resources = this.mod.skin.resourceArray();
+    let resources = this.mod.returnResources();
 
     //
     // we use numeric values to simplify hte refactor, so we don't need to change every

@@ -77,7 +77,7 @@ class BuildOverlay {
             }
             let purchase = parseInt(id);
             if (purchase >= 0 && purchase <= 3) {
-              let cost = this_self.mod.skin.priceList[parseInt(id)];
+              let cost = this_self.mod.priceList[parseInt(id)];
               for (let resource of cost) {
                 //Put the spends on the front of the move, so we can maybe cancel the building action
                 this_self.mod.prependMove(

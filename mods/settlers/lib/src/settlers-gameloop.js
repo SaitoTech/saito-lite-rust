@@ -1,7 +1,3 @@
-/*
-  Functions for handling the game loop
-*/
-
 const { ModuleResolutionKind } = require("typescript");
 
 class SettlersGameloop {
@@ -19,38 +15,37 @@ class SettlersGameloop {
     ///////////
     if (this.game.queue.length > 0) {
 
-      //Before popping, so if display players adds a win command, we will catch it.
-      try {
-        this.displayPlayers(); //Is it enough to update the player huds each iteration, board doesn't get redrawn at all?
-      } catch (e) {
-        //console.log("Attempting to access DOM elements which haven't been created yet");
-        console.log(e);
-      }
+      //
+      // catch win condition
+      //
+      this.displayPlayers(); //Is it enough to update the player huds each iteration, board doesn't get redrawn at all?
 
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
 
       //console.log("QUEUE: " + this.game.queue);
-      //console.log(JSON.parse(JSON.stringify(this.game.state)));
 
-      /* Game Setup */
-
+      
       if (mv[0] == "init") {
         this.game.queue.splice(qe, 1);
         this.game.state.placedCity = null; //We are in game play mode, not initial set up
         this.game.state.lastroll = [0, 0];
         this.game.queue.push("round");
+	//
+	// what does this do and why is it not in an init function?
+	//
+	// initX()
+	//
         $(".dark").css("background-color", "unset");
         return 1;
       }
 
-      if (mv[0] == "round") { // no splice, we want to bounce off this
-        for (let i = this.game.players.length; i > 0; i--) {
-          //count backwards so it goes P1, P2, P3,
-          this.game.queue.push(`play\t${i}`);
-        }
+      if (mv[0] == "round") {
+        for (let i = this.game.players.length; i > 0; i--) { this.game.queue.push(`play\t${i}`); }
         return 1;
       }
+
+
 
       if (mv[0] == "generate_map") {
         console.log("Building the map");
@@ -74,11 +69,8 @@ class SettlersGameloop {
         let winner = parseInt(mv[1]);
         this.game.queue = [];
 
-        this.updateLog(
-          `${this.game.playerNames[winner]} is ${this.winState} of Saitoa! The game is over.`
-        );
+        this.updateLog(`${this.game.playerNames[winner]} wins!`);
 
-        //this.overlay.show(this.returnStatsOverlay());
         this.stats_overlay.render();
         $(".rules-overlay h1").text(`Game Over: ${this.game.playerNames[winner]} wins!`);
 

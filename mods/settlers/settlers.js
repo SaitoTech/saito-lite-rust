@@ -10,7 +10,7 @@ const SettlersGameLoop = require("./lib/src/settlers-gameloop.js");
 const SettlersPlayer = require("./lib/src/settlers-player");
 const SettlersActions = require("./lib/src/settlers-actions");
 const SettlersDisplay = require("./lib/src/settlers-display");
-const SettlersResources = require("./lib/src/settlers-resources");
+const SettlersState = require("./lib/src/settlers-state");
 
 const TradeOverlay = require("./lib/ui/overlays/trade");
 const BuildOverlay = require("./lib/ui/overlays/build");
@@ -51,20 +51,76 @@ class Settlers extends GameTemplate {
     this.stats_overlay = new SettlersStats(this.app, this);
     this.trade_overlay = new TradeOverlay(this.app, this);
 
-    this.grace_window = 24;
-    //
-    // temp var to help w/ post-splash flash
-    //
-    this.currently_active_player = 0;
-
-    this.acknowledge_text = "continue..."; // not "i understand..."
-
     this.build = new BuildOverlay(this.app, this);
     this.bank = new BankOverlay(this.app, this);
     this.dev_card = new DevCardOverlay(this.app, this);
     this.year_of_plenty = new YearOfPlentyOverlay(this.app, this);
     this.discard = new DiscardOverlay(this.app, this);
     this.monopoly = new MonopolyOverlay(this.app, this);
+
+
+    //
+    // basic game info
+    //
+    this.empty = false;
+    this.c1 = 					{name: "village", svg:`<img src="/settlers/img/icons/village.png"/>`};
+    this.c2 = 					{name: "city", svg:`<img src="/settlers/img/icons/city.png"/>`};
+    this.r = 					{name: "road", svg:`<img src="/settlers/img/icons/road.png"/>`};
+    this.b = 					{name: "bandit", svg:`<img src="/settlers/img/icons/bandit.png"/>`};
+    this.s = 					{name: "knight", img:`<img src="/settlers/img/icons/knight.png"/>`};
+    this.t = 					{name: "bank"};
+    this.vp = 					{name: "VP", img:`<img src="/settlers/img/icons/point_card.png"/>`};
+    this.longest = 				{name: "Longest Road", svg:`<img src="/settlers/img/icons/road.png"/>`};
+    this.largest = 				{name:"Largest Army", img:`<img src="/settlers/img/icons/knight.png"/>`};
+    this.resources = [
+                                                {name: "brick",count:3,ict:3,icon:"/settlers/img/icons/brick-icon.png"},
+                                                {name: "wood",count:4,ict:3,icon:"/settlers/img/icons/wood-icon.png"},
+                                                {name: "wheat",count:4,ict:3,icon:"/settlers/img/icons/wheat-icon.png"},
+                                                {name: "wool",count:4,ict:3,icon:"/settlers/img/icons/wool-icon.png"},
+                                                {name: "ore",count:3,ict:3,icon:"/settlers/img/icons/ore-icon.png"},
+                                                {name: "desert",count:1,ict:1}
+    ];
+    this.priceList = [
+						["brick","wood"],
+						["brick","wood","wheat","wool"],
+						["ore","ore", "ore","wheat","wheat"],
+						["ore","wool","wheat"]
+    ];
+    this.cardDir = 				"/settlers/img/cards/";
+    this.back = 				"/settlers/img/cards/red_back.png"; //Hidden Resource cards
+    this.card = 				{name: "development", back: "/settlers/img/cards/red_back.png"};
+    this.deck = [
+                                                { card : "Knight",count:14, img: "/settlers/img/cards/knight.png", action:1},
+                                                { card : "Unexpected Bounty" ,count:2, img : "/settlers/img/cards/treasure.png" , action : 2 },
+                                                { card : "Legal Monopoly" , count:2, img : "/settlers/img/cards/scroll.png" , action : 3 },
+                                                { card : "Caravan" , count:2, img : "/settlers/img/cards/wagon.png" , action : 4},
+                                                { card : "Brewery" , count:1, img : "/settlers/img/cards/drinking.png", action: 0 },
+                                                { card : "Bazaar" , count:1, img : "/settlers/img/cards/shop.png", action: 0 },
+                                                { card : "Advanced Industry" , count:1, img : "/settlers/img/cards/windmill.png", action: 0 },
+                                                { card : "Cathedral" , count:1, img : "/settlers/img/cards/church.png", action: 0 },
+                                                { card : "Chemistry" , count:1, img : "/settlers/img/cards/potion.png", action: 0 }
+    ];
+    this.gametitle = "Settlers of Saitoa";
+    this.winState = "elected governor";
+
+    this.rules = [
+ 	                 			`Gain 1 ${this.vp.name}.`,
+                        			`Move the ${this.b.name} to a tile of your choosing`,
+                       			 	`Gain any two resources`,
+                        			`Collect all cards of a resource from the other players`,
+                        			`Build 2 ${this.r.name}s`
+    ];
+
+
+    //
+    // complicated game engine variables
+    //
+    //
+    this.grace_window = 24;
+    this.acknowledge_text = "continue..."; // not "i understand..."
+    // temp var to help w/ post-splash flash
+    this.currently_active_player = 0;
+
 
     this.enable_observer = false;
   }
@@ -119,15 +175,12 @@ class Settlers extends GameTemplate {
 
     try {
 
-      this.initializeTheme(this.game.options.theme);
-
       this.cardbox.render();
       this.cardbox.addCardType("handy-help","",null);
       this.cardbox.makeDraggable();
 
       this.playerbox.render();
       this.playerbox.addStatus();
-      //this.playerbox.classList.add("saitoa");
       this.playerbox.addClass("me", this.game.player);
 
       for (let i = 1; i <= this.game.players.length; i++) {
@@ -236,9 +289,13 @@ class Settlers extends GameTemplate {
 
   }
 
+
+
+
   initializeGame(game_id) {
 
     if (this.game.state == undefined) {
+
       this.game.state = this.initializeState();
 
       let colors = [1, 2, 3, 4];
@@ -246,8 +303,6 @@ class Settlers extends GameTemplate {
       for (let i = 0; i < this.game.players.length; i++){
         this.game.colors = this.game.colors.concat(colors.splice(this.rollDice(colors.length)-1,1));
       }
-
-      this.initializeTheme(this.game.options.theme);
 
       this.game.stats = this.initializeStats();
 
@@ -350,6 +405,8 @@ class Settlers extends GameTemplate {
 
 }
 
-Settlers.importFunctions(SettlersGameLoop, SettlersPlayer, SettlersDisplay, SettlersActions, SettlersResources);
+Settlers.importFunctions(SettlersGameLoop, SettlersPlayer, SettlersDisplay, SettlersActions, SettlersState);
 
 module.exports = Settlers;
+
+

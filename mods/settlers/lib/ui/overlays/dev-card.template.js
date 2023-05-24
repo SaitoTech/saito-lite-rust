@@ -15,7 +15,7 @@ module.exports = DevCardOverlayTemplate = (app, mod, dev_card) => {
             <div class="settlers-dev-card" id="${x}">
               <img src="${card.img}">
               <div class="settlers-dev-card-title">${card.card}</div>
-              <div class="settlers-dev-card-text">${mod.skin.rules[card.action]}</div>
+              <div class="settlers-dev-card-text">${mod.rules[card.action]}</div>
             </div>
           `;
 
