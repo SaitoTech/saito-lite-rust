@@ -164,6 +164,10 @@ export class NodeSharedMethods extends CustomSharedMethods {
     this.app.connection.emit(event, peerIndex);
   }
 
+  sendBlockSuccess(hash: string, blockId: bigint) {
+    this.app.connection.emit("add-block-success", { hash, blockId });
+  }
+
   async saveWallet(): Promise<void> {
     this.app.options.wallet.publicKey = await this.app.wallet.getPublicKey();
     this.app.options.wallet.privateKey = await this.app.wallet.getPrivateKey();

@@ -102,7 +102,7 @@ class Relay extends ModTemplate {
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
-    console.log("relay.handlePeerTransaction : ", tx);
+    // console.log("relay.handlePeerTransaction : ", tx);
     if (tx == null) {
       return;
     }
@@ -115,7 +115,7 @@ class Relay extends ModTemplate {
         // sanity check on tx
         //
         let txjson = message.data;
-        console.log("txjson : ", txjson);
+        // console.log("txjson : ", txjson);
         let inner_tx = new Transaction(undefined, txjson);
         if (inner_tx.to.length === 0) {
           return;

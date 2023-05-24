@@ -254,15 +254,17 @@ class StorageCore extends Storage {
    */
   async loadOptions() {
     if (fs.existsSync(`${this.config_dir}/options`)) {
-      //
+      let optionsfile = null;
       // open options file
-      //
       try {
-        const optionsfile = fs.readFileSync(`${this.config_dir}/options`, this.file_encoding_load);
+        optionsfile = fs.readFileSync(`${this.config_dir}/options`, this.file_encoding_load);
         this.app.options = JSON.parse(optionsfile.toString());
+        this.app.options.browser_mode = false;
+        this.app.options.spv_mode = false;
       } catch (err) {
         // this.app.logger.logError("Error Reading Options File", {message:"", stack: err});
         console.error(err);
+        console.log("options = ", optionsfile);
         process.exit();
       }
     } else {
@@ -515,7 +517,7 @@ class StorageCore extends Storage {
    */
   async executeDatabase(sql, params, database, mycallback = null) {
     try {
-      console.log("executeDatabase : " + sql);
+      // console.log("executeDatabase : " + sql);
       const db = await this.returnDatabaseByName(database);
       if (mycallback == null) {
         return await db.run(sql, params);
