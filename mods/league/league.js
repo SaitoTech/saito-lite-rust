@@ -6,6 +6,8 @@ const LeagueMain = require("./lib/main");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const JoinLeagueOverlay = require("./lib/overlays/join");
+const localforage = require("localforage");
+
 
 //Trial -- So that we can display league results in game page
 const LeagueOverlay = require("./lib/overlays/league");
@@ -83,10 +85,14 @@ class League extends ModTemplate {
       });
     });
 
-    this.sortLeagues();
-    //Render initial UI based on what we have saved
-    app.connection.emit("leagues-render-request");
-    app.connection.emit("league-rankings-render-request");
+    //Give the localForage a second to load before rendering
+    setTimeout(
+      ()=>{
+        this.sortLeagues();
+        //Render initial UI based on what we have saved
+        app.connection.emit("leagues-render-request");
+        app.connection.emit("league-rankings-render-request");
+      }, 1000);
 
     if (app.browser.returnURLParameter("view_game")) {
       let game = app.browser.returnURLParameter("view_game").toLowerCase();
@@ -215,7 +221,7 @@ class League extends ModTemplate {
         if (this.debug) {
           console.log("Load my leagues");
         }
-        let league_list = this.leagues.map((x) => `'${x.id}'`).join(", ");
+        let league_list = this.app.options.leagues.map((x) => `'${x}'`).join(", ");
         sql = `SELECT * FROM leagues WHERE id IN (${league_list})`;
       }
       //
@@ -344,41 +350,27 @@ class League extends ModTemplate {
 
       if (txmsg.request === "league create") {
         await this.receiveCreateTransaction(blk, tx, conf, app);
-      }
-
-      if (txmsg.request === "league join") {
+      } else if (txmsg.request === "league join") {
         await this.receiveJoinTransaction(blk, tx, conf, app);
-      }
-      if (txmsg.request === "league quit") {
+      } else if (txmsg.request === "league quit") {
         await this.receiveQuitTransaction(blk, tx, conf, app);
-      }
-
-      if (txmsg.request === "league remove") {
+      } else if (txmsg.request === "league remove") {
         await this.receiveRemoveTransaction(blk, tx, conf, app);
-      }
-
-      if (txmsg.request === "league update") {
+      } else if (txmsg.request === "league update") {
         await this.receiveUpdateTransaction(blk, tx, conf, app);
-      }
-
-      if (txmsg.request === "league update player") {
+      } else if (txmsg.request === "league update player") {
         await this.receiveUpdatePlayerTransaction(blk, tx, conf, app);
-      }
-
-      if (txmsg.request === "gameover") {
+      } else if (txmsg.request === "gameover") {
         await this.receiveGameoverTransaction(app, txmsg);
-      }
-
-      if (txmsg.request === "roundover") {
+      } else if (txmsg.request === "roundover") {
         await this.receiveRoundoverTransaction(app, txmsg);
-      }
-
-      if (txmsg.request === "accept") {
+      } else if (txmsg.request === "accept") {
         await this.receiveAcceptTransaction(blk, tx, conf, app);
-      }
-
-      if (txmsg.request === "launch singleplayer") {
+      } else if (txmsg.request === "launch singleplayer") {
         await this.receiveLaunchSinglePlayerTransaction(blk, tx, conf, app);
+      } else {
+        //Don't save or refresh if just a game move!!!
+        return;
       }
 
       this.saveLeagues();
@@ -410,6 +402,7 @@ class League extends ModTemplate {
   }
 
   loadLeagues() {
+    let league_self = this;
     if (this.app.options.leagues) {
       if (this.debug) {
         console.log(
@@ -418,34 +411,54 @@ class League extends ModTemplate {
         );
       }
 
-      this.leagues = this.app.options.leagues;
+      for (let lid of this.app.options.leagues) {
+        localforage.getItem(`league_${lid}`, function (error, value) {
+          //Because this is async, the initialize function may have created an
+          //empty default group
 
-      //Restore the array for players
-      for (let league of this.leagues) {
-        league.players = [];
+          if (value) {
+          let currentGroup = league_self.returnLeague(lid);
+          if (currentGroup) {
+            currentGroup = Object.assign(currentGroup, value);
+          } else {
+            league_self.leagues.push(value);
+          }
+
+          }
+        });
       }
 
       return;
+    }else{
+      this.app.options.leagues = [];
     }
+
     this.leagues = [];
   }
 
   /**
    * We only store the leagues we are a member of.
-   * And we only store meta data, not full player list.
+   * League id -> app.options, full league data in localForage
    */
   saveLeagues() {
     if (!this.app.BROWSER) {
       return;
     }
 
+    let league_self = this;
     this.app.options.leagues = [];
 
     for (let league of this.leagues) {
       if (league.rank >= 0 || league.admin === this.app.wallet.returnPublicKey()) {
-        let newLeague = JSON.parse(JSON.stringify(league));
-        delete newLeague.players;
-        this.app.options.leagues.push(newLeague);
+        //let newLeague = JSON.parse(JSON.stringify(league));
+        //delete newLeague.players;
+        this.app.options.leagues.push(league.id);
+        localforage.setItem(`league_${league.id}`, league).then(function () {
+          if (league_self.debug) {
+            console.log("Saved league data for " + league.id);
+            console.log(JSON.parse(JSON.stringify(league)));
+          }
+        });
       }
     }
 

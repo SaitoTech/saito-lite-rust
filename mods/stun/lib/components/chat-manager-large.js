@@ -110,6 +110,11 @@ class VideoChatManager {
 
   createRoomTextChat() {
     let chat_mod = this.app.modules.returnModule("Chat");
+
+    if (!chat_mod){
+      return;
+    }
+    
     let cm = chat_mod.respondTo("chat-manager");
     
     this.chat_group = {
