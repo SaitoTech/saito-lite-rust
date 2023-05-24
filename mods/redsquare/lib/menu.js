@@ -8,9 +8,6 @@ class RedSquareMenu {
     this.mod = mod;
     this.container = container;
     this.name = "RedSquareMenu";
-
-    console.log("constructor mod ////////");
-    console.log(this.mod);
   }
 
   render() {
