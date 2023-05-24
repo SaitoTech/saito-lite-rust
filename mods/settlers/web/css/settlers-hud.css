@@ -75,6 +75,12 @@
   padding: 0.2rem 0.7rem;
 }
 
+
+.status-text-menu ul li.disabled, .status ul li.disabled {
+  cursor: not-allowed;
+  background: #64625af5;
+}
+
 .status-message ul li:hover, .status ul li:hover {
   background-color: #ab815faa;
 }
