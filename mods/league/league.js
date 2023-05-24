@@ -47,7 +47,7 @@ class League extends ModTemplate {
     };
 
     this.icon_fa = "fas fa-user-friends";
-    this.debug = true;
+    this.debug = false;
   }
 
   //
@@ -350,41 +350,27 @@ class League extends ModTemplate {
 
       if (txmsg.request === "league create") {
         await this.receiveCreateTransaction(blk, tx, conf, app);
-      }
-
-      if (txmsg.request === "league join") {
+      } else if (txmsg.request === "league join") {
         await this.receiveJoinTransaction(blk, tx, conf, app);
-      }
-      if (txmsg.request === "league quit") {
+      } else if (txmsg.request === "league quit") {
         await this.receiveQuitTransaction(blk, tx, conf, app);
-      }
-
-      if (txmsg.request === "league remove") {
+      } else if (txmsg.request === "league remove") {
         await this.receiveRemoveTransaction(blk, tx, conf, app);
-      }
-
-      if (txmsg.request === "league update") {
+      } else if (txmsg.request === "league update") {
         await this.receiveUpdateTransaction(blk, tx, conf, app);
-      }
-
-      if (txmsg.request === "league update player") {
+      } else if (txmsg.request === "league update player") {
         await this.receiveUpdatePlayerTransaction(blk, tx, conf, app);
-      }
-
-      if (txmsg.request === "gameover") {
+      } else if (txmsg.request === "gameover") {
         await this.receiveGameoverTransaction(app, txmsg);
-      }
-
-      if (txmsg.request === "roundover") {
+      } else if (txmsg.request === "roundover") {
         await this.receiveRoundoverTransaction(app, txmsg);
-      }
-
-      if (txmsg.request === "accept") {
+      } else if (txmsg.request === "accept") {
         await this.receiveAcceptTransaction(blk, tx, conf, app);
-      }
-
-      if (txmsg.request === "launch singleplayer") {
+      } else if (txmsg.request === "launch singleplayer") {
         await this.receiveLaunchSinglePlayerTransaction(blk, tx, conf, app);
+      } else {
+        //Don't save or refresh if just a game move!!!
+        return;
       }
 
       this.saveLeagues();
