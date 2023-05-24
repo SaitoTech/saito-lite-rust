@@ -346,7 +346,7 @@
           }
         }
         //Something went wrong, try again
-        settlers_self.playerUpgradeCity(player);
+        settlers_self.playerBuildCity(player);
       });
     }
 
