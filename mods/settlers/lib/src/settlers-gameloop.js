@@ -674,6 +674,10 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
           //Or, choose menu option
           $(".option").off();
           $(".option").on("click", function () {
+
+            settlers_self.updateStatus("sending move...");
+            $(this).addClass("disabled");
+
             let choice = $(this).attr("id");
             if (choice === "rolldice") {
               settlers_self.addMove("roll\t" + player);
