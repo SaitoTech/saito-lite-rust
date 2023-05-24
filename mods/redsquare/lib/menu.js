@@ -8,6 +8,9 @@ class RedSquareMenu {
     this.mod = mod;
     this.container = container;
     this.name = "RedSquareMenu";
+
+    console.log("constructor mod ////////");
+    console.log(this.mod);
   }
 
   render() {
@@ -44,7 +47,8 @@ class RedSquareMenu {
   attachEvents() {
     this_self = this;
     document.querySelector(".redsquare-menu-home").onclick = (e) => {
-      this_self.mod.header.undoUpdateHeaderLogo();
+      let rs_mod = this_self.app.modules.returnModule("RedSquare");
+      rs_mod.header.undoUpdateHeaderLogo();
       setHash('home');
       this.app.connection.emit("redsquare-home-render-request");
     }
