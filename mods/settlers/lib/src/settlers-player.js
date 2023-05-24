@@ -4,6 +4,84 @@
 
 
 
+    //Select the person to steal from
+    playerMoveBandit(player, hexId) {
+        let settlers_self = this;
+        //Find adjacent cities and launch into stealing mechanism
+        let thievingTargets = [];
+
+        for (let city of this.game.state.cities) {
+            if (city.neighbours.includes(hexId)) {
+                if (city.player != player)
+                    if (!thievingTargets.includes(city.player))
+                        thievingTargets.push(city.player);
+            }
+        }
+        if (thievingTargets.length > 0) {
+            let robPlayer = (victim) => {
+                let potentialLoot =
+                    settlers_self.game.state.players[victim - 1].resources;
+                if (potentialLoot.length > 0) {
+                    let loot =
+                        potentialLoot[Math.floor(Math.random() * potentialLoot.length)];
+                    settlers_self.addMove(`steal_card\t${player}\t${victim}\t${loot}`);
+                } else settlers_self.addMove(`steal_card\t${player}\t${victim}\tnothing`);
+                settlers_self.endTurn();
+            };
+
+            if (thievingTargets.length > 1) {
+                let html = '<div class="status-header"><span id="status-content">Steal from which Player:</span></div>';
+                html +=  `<div class="status-text-menu"> <ul>`;
+                for (let i = 0; i < this.game.players.length; i++) {
+                    if (thievingTargets.includes(i + 1)) {
+                        html += `<li class="textchoice steal-player-choice" id="${i + 1}">${settlers_self.game.playerNames[i]} (${settlers_self.game.state.players[i].resources.length
+                            } cards)</li>`;
+                    }
+                }
+                html += "</ul></div>";
+                this.updateStatus(html, 1);
+
+                //Select a player to steal from
+                $(".textchoice").off();
+                $(".textchoice").on("click", function () {
+                    $(".textchoice").off();
+                    let victim = $(this).attr("id");
+                    robPlayer(victim);
+                });
+            } else {
+                robPlayer(thievingTargets[0]);
+            }
+        } else {
+            //No one to steal from
+            settlers_self.addMove(`steal_card\t${player}\t0\tnothing`);
+            settlers_self.endTurn();
+        }
+    }
+
+
+    //
+    // when 7 is rolled or Soldier Played
+    // Select the target spot
+    //
+    playerPlayBandit() {
+        this.updateStatus("Move the bandit...");
+        let settlers_self = this;
+        $(".sector-container").addClass("rhover");
+        $(".sector-container").off();
+        $(".sector-container").on("click", function () {
+            $(".sector-container").off();
+            $(".sector-container").removeClass("rhover");
+            let slot = $(this).attr("id");
+
+            settlers_self.addMove(
+                `move_bandit\t${settlers_self.game.player}\t${slot}`
+            );
+            settlers_self.endTurn();
+        });
+        $(".bandit").removeClass("rhover");
+        $(".bandit").off(); //Don't select bandit tile
+    }
+
     canPlayerBuildTown(player) {
       if (this.game.state.players[player - 1].towns == 0) return false;
       if (this.returnCitySlotsAdjacentToPlayerRoads(this.game.player).length == 0)

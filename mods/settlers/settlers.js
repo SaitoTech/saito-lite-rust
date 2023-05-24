@@ -8,8 +8,8 @@ const SettlersTradeHelpOverlayTemplate = require("./lib/ui/settlers-trade-help-o
 
 const SettlersGameLoop = require("./lib/src/settlers-gameloop.js");
 const SettlersPlayer = require("./lib/src/settlers-player");
-const SettlersState = require("./lib/src/settlers-state");
 const SettlersActions = require("./lib/src/settlers-actions");
+const SettlersDisplay = require("./lib/src/settlers-display");
 const SettlersResources = require("./lib/src/settlers-resources");
 
 const TradeOverlay = require("./lib/ui/overlays/trade");
@@ -350,6 +350,6 @@ class Settlers extends GameTemplate {
 
 }
 
-Settlers.importFunctions(SettlersGameLoop, SettlersPlayer, SettlersState, SettlersActions, SettlersResources);
+Settlers.importFunctions(SettlersGameLoop, SettlersPlayer, SettlersDisplay, SettlersActions, SettlersResources);
 
 module.exports = Settlers;

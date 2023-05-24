@@ -1,6 +1,91 @@
 
 class SettlersActions {
 
+    //
+    // Award resources for dice roll
+    //
+    collectHarvest(value) {
+        let logMsg = "";
+        let notice = "";
+        let poor_harvest = true;
+        for (let city of this.game.state.cities) {
+            let player = city.player;
+
+            for (let neighboringHex of city.neighbours) {
+                if (
+                    this.game.state.hexes[neighboringHex].value == value &&
+                    !this.game.state.hexes[neighboringHex].robber
+                ) {
+                    let resource = this.game.state.hexes[neighboringHex].resource;
+                    logMsg += `${this.game.playerNames[player - 1]} gains ${resource}`;
+                    if (this.game.player == player) {
+                      notice += this.returnResourceHTML(resource);
+                      poor_harvest = false;
+                    }
+                    this.game.state.players[player - 1].resources.push(resource);
+                    this.game.stats.production[resource][player - 1]++;
+                    //Double Resources for Upgraded City
+                    if (city.level == 2) {
+                        this.game.state.players[player - 1].resources.push(resource);
+                        this.game.stats.production[resource][player - 1]++;
+                        logMsg += " x2";
+                        if (this.game.player == player) {
+                            notice += this.returnResourceHTML(resource);
+                        }
+                    }
+                    logMsg += "; ";
+                }
+            }
+        }
+        if (poor_harvest == true) { notice = " a poor harvest"; }
+        logMsg = logMsg.substr(0, logMsg.length - 2);
+        if (logMsg) {
+            this.updateLog(logMsg);
+        } else {
+            this.updateLog("no-one collects any resources.");
+        }
+        if (notice) {
+            this.updateStatus(
+                `<div class="persistent alignme"><span>You acquired: </span>${notice}</div>`
+            );
+        }
+    }
+
+
+   /*
+    Every player should have in deck[2] and deck[3] the board tiles and tokens in the same order
+    */
+    generateMap() {
+console.log("GENERATING MAP");
+console.log(JSON.stringify(this.game.deck));
+        let tileCt = 0;
+        let tokenCt = 0;
+        let tile, resourceName, token;
+console.log("POOL 1");
+        for (let hex of this.hexgrid.hexes) {
+            tile = this.game.pool[0].hand[tileCt++];
+            resourceName = this.game.deck[1].cards[tile].resource;
+console.log("res: " + resourceName);
+            if (resourceName != this.returnNullResource()) {
+                let temp = this.game.pool[1].hand[tokenCt++];
+                token = this.game.deck[2].cards[temp].value;
+            } else {
+                token = 0;
+            }
+            this.game.state.hexes[hex] = {
+                resource: resourceName,
+                value: token,
+                img: this.game.deck[1].cards[tile].img,
+                neighbours: [],
+                robber: false,
+            };
+            if (resourceName == this.returnNullResource())
+                this.game.state.hexes[hex].robber = true;
+            if (token) this.addSectorValueToGameboard(hex, token);
+        }
+console.log("DONE GENERATING MAP");
+    }
+
 
   buildCity(player, slot) {
 
@@ -440,40 +525,6 @@ class SettlersActions {
 
 
 
-  /*<><><><><><><>
-  Broadcast offer to trade to all players
-  This just makes an advertisement accessible through game menu to any player at any time (even if not eligible to trade)
-  and there is no game mechanic to go directly into accepting or rejecting the trade
-  @param tradeType (integer) the player number of the targeted player, 0 for all players, -1 for advertisement
-  */
-  showTradeOverlay(tradeType = -1, i_should_give = null, i_should_accept = null, offering_player = null) {
-
-    let settlers_self = this;
-
-    if (i_should_accept) { 
-      settlers_self.trade_overlay.get = i_should_accept;
-    }
-    if (i_should_give) { 
-      settlers_self.trade_overlay.give = i_should_give;
-    }
-    if (offering_player) {
-      settlers_self.trade_overlay.offering_player = offering_player;
-    }
-    settlers_self.trade_overlay.render(tradeType, false); // don't reset, we want to start with this trade
-    return;
-
-  }
-
-  /*
-  Alternate UI for advertizing your wants and needs
-  */
-  showResourceOverlay() {
-
-    this.trade_overlay.render();
-    return;
-
-  }
-
 
   /* 
   Create an object saying what the exchange rate for each resource is
@@ -503,98 +554,6 @@ class SettlersActions {
     return tradeCost;
   }
 
-
-  /***********
-   *
-   * Game animations
-   *
-   ***********/
-  /*
-  Briefly animate the longest road and update log if there is a change in ownership
-  */
-  highlightRoad(player, road, msg) {
-    this.updateLog(`${this.game.playerNames[player-1]} ${msg}`);
-    for (let segment of road) {
-      let selector = "#road_" + segment;
-      let div = document.querySelector(selector);
-      if (div) div.classList.add("roadhighlight");
-      //else  console.log("Null selector?",selector);
-    }
-
-    let divname = ".roadhighlight";
-
-    $(divname)
-      .css("background", "#FFF")
-      .delay(500)
-      .queue(function () {
-        $(this).removeAttr("style").dequeue();
-      })
-      .delay(500)
-      .queue(function () {
-        $(this).css("background", "#FFF").dequeue();
-      })
-      .delay(500)
-      .queue(function () {
-        $(this).removeAttr("style").dequeue();
-      })
-      .delay(500)
-      .queue(function () {
-        $(this).css("background", "#FFF").dequeue();
-      })
-      .delay(500)
-      .queue(function () {
-        $(this).removeAttr("style").dequeue();
-      })
-      .delay(500)
-      .queue(function () {
-        $(this).css("background", "#FFF").dequeue();
-      })
-      .delay(500)
-      .queue(function () {
-        $(this).removeAttr("style").removeClass("roadhighlight").dequeue();
-      });
-  }
-
-  /*
-  Flashes tiles activated by dice roll
-  */
-  animateDiceRoll(roll) {
-    //console.log("Dice Animated: " + roll);
-    $(".rolled").removeClass("rolled");
-    $(".sector_value:not(.bandit)").attr("style","");
-    let divname = ".sv" + roll + ":not(.bandit)";
-    $(divname).addClass("rolled")
-      .css("color", "#000")
-      .css("background", "#FFF6")
-      .delay(600)
-      .queue(function () {
-        $(this).css("color", "#FFF").css("background", "#0004").dequeue();
-      })
-      .delay(600)
-      .queue(function () {
-        $(this).css("color", "#000").css("background", "#FFF6").dequeue();
-      })
-      .delay(600)
-      .queue(function () {
-        $(this).css("color", "#FFF").css("background", "#0004").dequeue();
-      })
-      .delay(600)
-      .queue(function () {
-        $(this).css("color", "#000").css("background", "#FFF6").dequeue();
-      })
-      .delay(600)
-      .queue(function () {
-        $(this).css("color", "#FFF").css("background", "#0004").dequeue();
-      })
-      .delay(600)
-      .queue(function () {
-        $(this).css("color", "#000").css("background", "#FFF6").dequeue();
-      });
-      /*.delay(800)
-      .queue(function () {
-        $(this).removeAttr("style").dequeue();
-      });*/
-  }
 
   /*
   So we sometimes want a status update message to persist through the next update status 
