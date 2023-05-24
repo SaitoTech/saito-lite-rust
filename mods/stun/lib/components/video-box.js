@@ -28,16 +28,17 @@ class VideoBox {
       if (public_key !== this.stream_id) return;
       const video_box = document.querySelector(`#stream${this.stream_id}`);
       if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
-        if (!enabled) {
+        let element = video_box.querySelector(
+          `#stream${this.stream_id} .video-call-info .fa-microphone-slash`
+        );
+
+        if (!enabled && !element) {
           video_box
             .querySelector(`#stream${this.stream_id} .video-call-info`)
             .insertAdjacentHTML("beforeend", `<i class="fa fa-microphone-slash"> </i>`);
         } else {
-          let element = video_box.querySelector(
-            `#stream${this.stream_id} .video-call-info .fa-microphone-slash`
-          );
           if (element) {
-            element.parentElement.removeChild(element);
+            element.remove();
           }
         }
       }
@@ -46,14 +47,15 @@ class VideoBox {
       if (public_key !== this.stream_id) return;
       const video_box = document.querySelector(`#stream${this.stream_id}`);
       if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
-        if (!enabled) {
+        let element = video_box.querySelector(
+          `#stream${this.stream_id} .video-call-info .fa-video-slash`
+        );
+
+        if (!enabled && !element) {
           video_box
             .querySelector(`#stream${this.stream_id} .video-call-info`)
             .insertAdjacentHTML("beforeend", `<i class="fas fa-video-slash"> </i>`);
         } else {
-          let element = video_box.querySelector(
-            `#stream${this.stream_id} .video-call-info .fa-video-slash`
-          );
           if (element) {
             element.parentElement.removeChild(element);
           }
