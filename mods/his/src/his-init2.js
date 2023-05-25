@@ -54,6 +54,11 @@ console.log("\n\n\n\n");
       //
       if (this.game.state.scenario == "1517") {
 
+	// VENICE AND PROTESTANT ALLIANCE
+	this.addRegular("protestant", "venice", 1);
+	this.setAllies("protestant", "venice");
+
+
 	// OTTOMAN
         this.addArmyLeader("ottoman", "istanbul", "suleiman");
         this.addArmyLeader("ottoman", "istanbul", "ibrahim-pasha");

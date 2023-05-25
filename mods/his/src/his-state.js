@@ -334,6 +334,8 @@
     state.players = [];
     state.events = {};
 
+    state.diplomacy = this.returnDiplomacyAlliance();
+
     // whose turn is it? (attacker)
     state.active_player = -1;
 
@@ -777,6 +779,114 @@
 
   }
 
+
+  returnDiplomacyAlliance() {
+
+    let diplomacy 		= {};
+    diplomacy["ottoman"] 	= {
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["england"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["france"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["papacy"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["protestant"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["hapsburg"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["venice"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["genoa"] 		= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["hungary"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["scotland"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+    };
+
+    return diplomacy;
+  }
 
   returnDiplomacyTable() {
 

@@ -2200,6 +2200,11 @@ console.log("\n\n\n\n");
       //
       if (this.game.state.scenario == "1517") {
 
+	// VENICE AND PROTESTANT ALLIANCE
+	this.addRegular("protestant", "venice", 1);
+	this.setAllies("protestant", "venice");
+
+
 	// OTTOMAN
         this.addArmyLeader("ottoman", "istanbul", "suleiman");
         this.addArmyLeader("ottoman", "istanbul", "ibrahim-pasha");
@@ -2495,9 +2500,7 @@ console.log("\n\n\n\n");
 
     this.menu.addChatMenu();
     this.menu.render();
-
     this.log.render();
-
     this.cardbox.render();
 
     //
@@ -2539,8 +2542,6 @@ console.log("\n\n\n\n");
 	}
       }
     }
-
-
 
     //
     // position diplomacy chart
@@ -2589,13 +2590,15 @@ console.log("\n\n\n\n");
 	let his_self = this;
         this.sizer.render();
         this.sizer.attachEvents('#gameboard');
-/*** sizer makes draggable 
+	//
+	// sizer makes draggable 
+	//
         //$('#gameboard').draggable({
 	//  stop : function(event, ui) {
 	//    his_self.saveGamePreference((his_self.returnSlug()+"-board-offset"), ui.offset);
 	//  }
 	//});
-***/
+	//
       }
 
     } catch (err) {}
@@ -7806,18 +7809,26 @@ console.log("this faction is not an ally to " + attacker_faction + " --- " + thi
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     let faction_map = {};
+
+console.log("rfm: " + faction1 + " -- " + faction2);
+
     for (let f in space.units) {
+console.log("checking f: " + f);
       if (this.returnFactionLandUnitsInSpace(f, space)) {
+console.log("there are faction land units in space: " + f);
         if (f == faction1) {
           faction_map[f] = faction1;
         } else {
           if (f == faction2) {
             faction_map[f] = faction2;
           } else {
+console.log("about to check allies...");
             if (this.areAllies(f, faction1)) {
+console.log("setting as ally of " + faction1);
               faction_map[f] = faction1;
             }
             if (this.areAllies(f, faction2)) {
+console.log("setting as ally of " + faction2);
               faction_map[f] = faction2;
             }
           }
@@ -9988,55 +9999,67 @@ console.log("this faction is not an ally to " + attacker_faction + " --- " + thi
   }
 
   areAllies(faction1, faction2) {
-    try { if (this.game.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
-    try { if (this.game.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
+console.log("DIPLOMACY: " + JSON.stringify(this.game.state.diplomacy));
+console.log("checking if allies: " + faction1 + " -- " + faction2);
+    try { if (this.game.state.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 1; } } catch (err) {}
     if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
+console.log("minor power...");
       let f1cp = this.returnControllingPower(faction1);
       let f2cp = this.returnControllingPower(faction2);
-      try { if (this.game.diplomacy[f1cp][f2cp].allies == 1) { return 1; } } catch (err) {}
-      try { if (this.game.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
+      console.log(f1cp + " -- " + f2cp + " -- " + faction1 + " -- " + faction2);
+      try { if (this.game.state.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
+      try { if (this.game.state.diplomacy[f1cp][f2cp].allies == 1) { return 1; } } catch (err) {}
+      try { if (this.game.state.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
     }
+console.log("saying no!");
     return 0;
   }
 
   areEnemies(faction1, faction2) {
-    try { if (this.game.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
-    try { if (this.game.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 0; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 0; } } catch (err) {}
     if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
       let f1cp = this.returnControllingPower(faction1);
       let f2cp = this.returnControllingPower(faction2);
-      try { if (this.game.diplomacy[f1cp][f2cp].enemies == 1) { return 1; } } catch (err) {}
-      try { if (this.game.diplomacy[f2cp][f1cp].enemies == 1) { return 1; } } catch (err) {}
+      try { if (this.game.state.diplomacy[f1cp][f2cp].enemies == 1) { return 1; } } catch (err) {}
+      try { if (this.game.state.diplomacy[f2cp][f1cp].enemies == 1) { return 1; } } catch (err) {}
     }
     return 0;
   }
 
   setAllies(faction1, faction2) {
-    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
+
+console.log("set allies: " + faction1 + " || " + faction2);
+
+    try { this.game.state.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
+    try { this.game.state.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
+    try { this.game.state.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
+    try { this.game.state.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
+
+console.log("GAME DIPLOMACY: " + JSON.stringify(this.game.state.diplomacy));
+
   }
 
   unsetAllies(faction1, faction2) {
-    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
+    try { this.game.state.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
+    try { this.game.state.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
   }
 
   setEnemies(faction1, faction2) {
-    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction1][faction2].enemies = 1; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].enemies = 1; } catch (err) {}
+    try { this.game.state.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
+    try { this.game.state.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
+    try { this.game.state.diplomacy[faction1][faction2].enemies = 1; } catch (err) {}
+    try { this.game.state.diplomacy[faction2][faction1].enemies = 1; } catch (err) {}
   }
 
   unsetEnemies(faction1, faction2) {
-    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
+    try { this.game.state.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
+    try { this.game.state.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
   }
 
 
@@ -10473,6 +10496,8 @@ console.log("this faction is not an ally to " + attacker_faction + " --- " + thi
     state.round = 0;
     state.players = [];
     state.events = {};
+
+    state.diplomacy = this.returnDiplomacyAlliance();
 
     // whose turn is it? (attacker)
     state.active_player = -1;
@@ -10917,6 +10942,114 @@ console.log("this faction is not an ally to " + attacker_faction + " --- " + thi
 
   }
 
+
+  returnDiplomacyAlliance() {
+
+    let diplomacy 		= {};
+    diplomacy["ottoman"] 	= {
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["england"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["france"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["papacy"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["protestant"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["hapsburg"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["venice"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["genoa"] 		= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["hungary"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+      scotland 		: { allies : 0 , enemies : 0 } ,
+    };
+    diplomacy["scotland"] 	= {
+      ottoman 		: { allies : 0 , enemies : 0 } ,
+      england 		: { allies : 0 , enemies : 0 } ,
+      france  		: { allies : 0 , enemies : 0 } ,
+      papacy  		: { allies : 0 , enemies : 0 } ,
+      protestant 	: { allies : 0 , enemies : 0 } ,
+      hapsburg 		: { allies : 0 , enemies : 0 } ,
+      venice 		: { allies : 0 , enemies : 0 } ,
+      genoa 		: { allies : 0 , enemies : 0 } ,
+    };
+
+    return diplomacy;
+  }
 
   returnDiplomacyTable() {
 
@@ -13284,6 +13417,10 @@ console.log("POOL: " + hapsburg_card);
 	  let attacking_factions = 0;
 	  let defending_factions = 0;
 	  let faction_map = this.returnFactionMap(space, attacker_faction, defender_faction);
+
+console.log("defender faction is: " + defender_faction);
+console.log("faction_map: " + JSON.stringify(faction_map));
+
 
 	  //
 	  // migrate any bonuses to attacker or defender

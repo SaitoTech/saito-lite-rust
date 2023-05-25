@@ -398,7 +398,7 @@ class SettlersGameloop {
         this.game.queue.splice(qe, 1);
         this.game.state.canTrade = false;
         if (this.game.player == player) {
-          this.playerUpgradeCity(player, 1);
+          this.playerBuildCity(player, 1);
         } else {
           this.updateStatus(
             `<div class="tbd">${this.game.playerNames[player - 1]} is upgrading to a ${this.c2.name}...</div>`

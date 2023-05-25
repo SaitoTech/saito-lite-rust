@@ -575,18 +575,26 @@ console.log("this faction is not an ally to " + attacker_faction + " --- " + thi
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     let faction_map = {};
+
+console.log("rfm: " + faction1 + " -- " + faction2);
+
     for (let f in space.units) {
+console.log("checking f: " + f);
       if (this.returnFactionLandUnitsInSpace(f, space)) {
+console.log("there are faction land units in space: " + f);
         if (f == faction1) {
           faction_map[f] = faction1;
         } else {
           if (f == faction2) {
             faction_map[f] = faction2;
           } else {
+console.log("about to check allies...");
             if (this.areAllies(f, faction1)) {
+console.log("setting as ally of " + faction1);
               faction_map[f] = faction1;
             }
             if (this.areAllies(f, faction2)) {
+console.log("setting as ally of " + faction2);
               faction_map[f] = faction2;
             }
           }
