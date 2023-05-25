@@ -117,6 +117,7 @@ class Relay extends ModTemplate {
         let txjson = message.data;
         console.log("txjson : ", txjson);
         let inner_tx = new Transaction(undefined, txjson);
+        await inner_tx.sign();
         if (inner_tx.to.length === 0) {
           return;
         }
