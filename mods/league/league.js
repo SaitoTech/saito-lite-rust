@@ -62,7 +62,6 @@ class League extends ModTemplate {
   }
 
   initialize(app) {
-    this.loadLeagues();
 
     super.initialize(app);
 
@@ -84,6 +83,8 @@ class League extends ModTemplate {
         default_score: modResponse.default_score, // default ranking for newbies
       });
     });
+
+    this.loadLeagues();
 
     //Give the localForage a second to load before rendering
     setTimeout(
@@ -332,7 +333,7 @@ class League extends ModTemplate {
             return 0;
           }
         );
-      }, 2000);
+      }, 5000);
     }
   }
 
@@ -417,13 +418,11 @@ class League extends ModTemplate {
           //empty default group
 
           if (value) {
-          let currentGroup = league_self.returnLeague(lid);
-          if (currentGroup) {
-            currentGroup = Object.assign(currentGroup, value);
-          } else {
-            league_self.leagues.push(value);
-          }
-
+            league_self.updateLeague(value);
+            let league = league_self.returnLeague(lid);
+            league.players = value.players;
+            league.rank = value.rank;
+            league.numPlayers = value.numPlayers;
           }
         });
       }
@@ -464,7 +463,7 @@ class League extends ModTemplate {
 
     if (this.debug) {
       console.info("Save Leagues:");
-      console.info(JSON.parse(JSON.stringify(this.app.options.leagues)));
+      console.info(JSON.stringify(this.app.options.leagues));
       console.info(JSON.parse(JSON.stringify(this.leagues)));
     }
 
@@ -810,7 +809,7 @@ class League extends ModTemplate {
 
     if (this.debug) {
       console.log("League: AcceptGame");
-      console.log(txmsg?.options?.league_id);
+      console.log("Specific league? " + (txmsg?.options?.league_id)? txmsg?.options?.league_id : "no");
       console.log(JSON.parse(JSON.stringify(relevantLeagues)));
     }
 
@@ -879,8 +878,8 @@ class League extends ModTemplate {
       localStats = league.players.filter((p) => players.includes(p.publickey));
     }
 
-    //console.log("SQL:", sqlResults);
-    //console.log("Local:", localStats);
+    console.log("SQL:", sqlResults);
+    console.log("Local:", localStats);
 
     // should we look to ts value for which is the newest reault
     // Only matters on server nodes where we would have both
@@ -1140,15 +1139,19 @@ class League extends ModTemplate {
       let newLeague = this.validateLeague(obj);
 
       //if (this.debug) {
-      //console.log(`Add ${newLeague.game} League, ${newLeague.id}`);
+      //  console.log(`Add ${newLeague.game} League, ${newLeague.id}`);
       //}
 
       //
       // dynamic data-storage
       //
-      newLeague.players = [];
+      newLeague.players = obj?.players || [];
       newLeague.rank = -1; //My rank in the league
-      newLeague.numPlayers = 0;
+      newLeague.numPlayers = obj?.numPlayers || 0;
+
+      if (obj?.rank >= 0){
+        newLeague.rank = obj.rank;
+      }
 
       this.leagues.push(newLeague);
 
@@ -1171,6 +1174,7 @@ class League extends ModTemplate {
     }
 
     oldLeague = Object.assign(oldLeague, this.validateLeague(obj));
+    console.log(JSON.parse(JSON.stringify(oldLeague)));
   }
 
   validatePlayer(obj) {
@@ -1201,6 +1205,8 @@ class League extends ModTemplate {
     if (!newPlayer.score) {
       newPlayer.score = league.default_score;
     }
+    //Make sure it is a number!
+    newPlayer.score = parseInt(newPlayer.score);
 
     //If we have the player already, just update the stats
     for (let z = 0; z < league.players.length; z++) {
