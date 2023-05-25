@@ -1,0 +1,27 @@
+
+.indopaki-war {
+    background-size: cover;
+    background-position-y: top;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/indopaki-bg.jpg);
+}
+.koreanwar-war {
+    background-size: cover;
+    background-position-y: top;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/koreanwar-bg.jpg);
+}
+.arabisraeli-war {
+    background-size: cover;
+    background-position-y: top;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/arabisraeli-bg.jpg);
+}
+.brushwar-war {
+    background-size: cover;
+    background-position-y: top;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/brushwar-bg.jpg);
+}
+.iraniraq-war {
+    background-size: cover;
+    background-position-y: top;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/iraniraq-bg.jpg);
+}
+

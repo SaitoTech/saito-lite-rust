@@ -5,6 +5,7 @@
     if (card == "koreanwar") {
 
       let target = 4;
+      let success = 0;
       
       let modifications = 0;
       if (this.isControlled("us", "japan") == 1) { modifications++; }
@@ -19,6 +20,7 @@
       let winner = "";
 
       if (roll - modifications >= target) {
+        success = 1;
         winner = "North Korea wins!";
         this.updateLog("North Korea wins the Korean War");
         if (this.countries['southkorea'].us > 0){
@@ -34,7 +36,8 @@
 
       this.game.state.milops_ussr += 2;
       this.updateMilitaryOperations();
-      this.showWarOverlay(card, winner, roll, modifications);
+
+      this.war_overlay.render(card, { winner : winner , die : roll , modifications : modifications , player : player , success : success});
       return 1;
 
     }

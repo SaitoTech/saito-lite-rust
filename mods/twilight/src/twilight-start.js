@@ -3,6 +3,7 @@ const TwilightRules = require('./lib/twilight-game-rules.template');
 const TwilightOptions = require('./lib/twilight-game-options.template');
 const TwilightSingularOption = require('./lib/twilight-singular-game-options.template');
 const ScoringOverlay = require('./lib/overlays/scoring');
+const WarOverlay = require('./lib/overlays/war');
 
 const JSON = require('json-bigint');
 
@@ -57,10 +58,11 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     // ui components
     this.scoring_overlay = new ScoringOverlay(this.app, this);
+    this.war_overlay = new WarOverlay(this.app, this);
 
     // newbie mode
     this.confirm_moves = 0;
@@ -2542,9 +2544,9 @@ console.log("LATEST MOVE: " + mv);
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["shuttle", "starwars", "europe", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["arabisraeli", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["che", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
+          this.game.deck[0].hand = ["koreanwar", "iraniraq", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -3090,8 +3092,16 @@ try {
 
     //twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
     if (mv[0] === "war"){
-      let sponsor = mv[5] || "";
-      this.showWarOverlay(mv[1],mv[2],parseInt(mv[3]),parseInt(mv[4]),sponsor);
+
+      let card 		= mv[1] || "";
+      let winner 	= mv[2] || "";
+      let die 		= mv[3] || "";
+      let modifications = mv[4] || "";
+      let player 	= mv[5] || "";
+      let success 	= mv[6] || -1;
+
+      this.war_overlay.render(card, { winner : winner , die : die , modifications : modifications , player : player , success : success });
+
       this.game.queue.splice(qe, 1);
       return 1;
     }
@@ -6281,6 +6291,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     state.stats.ussr_neutral_ops = 0;
     state.stats.us_ops_spaced = 0;
     state.stats.ussr_ops_spaced = 0;
+    state.stats.us_modified_ops = 0;
+    state.stats.ussr_modified_ops = 0;
     state.stats.us_coups = [];
     state.stats.ussr_coups = [];
     state.stats.round = [];

@@ -10,6 +10,7 @@
         return 1;
       }
 
+      let success = 0;
       let target = 4;
       let modifications = 0;
       if (this.isControlled("us", "israel") == 1) { modifications++; }
@@ -24,6 +25,7 @@
       //this.updateLog("<span>" + player.toUpperCase()+"</span> <span>modified:</span> "+(roll-modified));
 
       if (roll - modifications >= target) {
+        success = 1;
         winner = "Pan-Arab Coalition wins"
         this.updateLog("USSR wins the Arab-Israeli War");
         if (this.countries['israel'].us > 0){
@@ -39,6 +41,8 @@
       }
         this.game.state.milops_ussr += 2;
         this.updateMilitaryOperations();
+
+        this.war_overlay.render(card, { winner : winner , die : roll , modifications : modifications , player : player , success : success});
         this.showWarOverlay(card, winner, roll, modifications);
 
       return 1;

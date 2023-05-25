@@ -3,6 +3,7 @@ const TwilightRules = require('./lib/twilight-game-rules.template');
 const TwilightOptions = require('./lib/twilight-game-options.template');
 const TwilightSingularOption = require('./lib/twilight-singular-game-options.template');
 const ScoringOverlay = require('./lib/overlays/scoring');
+const WarOverlay = require('./lib/overlays/war');
 
 const JSON = require('json-bigint');
 
@@ -57,10 +58,11 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     // ui components
     this.scoring_overlay = new ScoringOverlay(this.app, this);
+    this.war_overlay = new WarOverlay(this.app, this);
 
     // newbie mode
     this.confirm_moves = 0;
@@ -2542,9 +2544,9 @@ console.log("LATEST MOVE: " + mv);
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["shuttle", "starwars", "europe", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["arabisraeli", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["che", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
+          this.game.deck[0].hand = ["koreanwar", "iraniraq", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -3090,8 +3092,16 @@ try {
 
     //twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
     if (mv[0] === "war"){
-      let sponsor = mv[5] || "";
-      this.showWarOverlay(mv[1],mv[2],parseInt(mv[3]),parseInt(mv[4]),sponsor);
+
+      let card 		= mv[1] || "";
+      let winner 	= mv[2] || "";
+      let die 		= mv[3] || "";
+      let modifications = mv[4] || "";
+      let player 	= mv[5] || "";
+      let success 	= mv[6] || -1;
+
+      this.war_overlay.render(card, { winner : winner , die : die , modifications : modifications , player : player , success : success });
+
       this.game.queue.splice(qe, 1);
       return 1;
     }
@@ -6281,6 +6291,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     state.stats.ussr_neutral_ops = 0;
     state.stats.us_ops_spaced = 0;
     state.stats.ussr_ops_spaced = 0;
+    state.stats.us_modified_ops = 0;
+    state.stats.ussr_modified_ops = 0;
     state.stats.us_coups = [];
     state.stats.ussr_coups = [];
     state.stats.round = [];
@@ -8744,6 +8756,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
         return 1;
       }
 
+      let success = 0;
       let target = 4;
       let modifications = 0;
       if (this.isControlled("us", "israel") == 1) { modifications++; }
@@ -8758,6 +8771,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
       //this.updateLog("<span>" + player.toUpperCase()+"</span> <span>modified:</span> "+(roll-modified));
 
       if (roll - modifications >= target) {
+        success = 1;
         winner = "Pan-Arab Coalition wins"
         this.updateLog("USSR wins the Arab-Israeli War");
         if (this.countries['israel'].us > 0){
@@ -8773,6 +8787,8 @@ console.log("SCORING: " + JSON.stringify(scoring));
       }
         this.game.state.milops_ussr += 2;
         this.updateMilitaryOperations();
+
+        this.war_overlay.render(card, { winner : winner , die : roll , modifications : modifications , player : player , success : success});
         this.showWarOverlay(card, winner, roll, modifications);
 
       return 1;
@@ -9088,6 +9104,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
     if (card == "brushwar") {
 
+      let success = 0;
       let me = "ussr";
       let opponent = "us";
       if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
@@ -9146,6 +9163,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
               let winner = ""
               if (die >= 3 + modifications) {
+       		success = 1;
                 winner = twilight_self.countries[c].name + " is conquered!";
                 let influence_change = 0;
                 if (player == "us") {
@@ -9179,7 +9197,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
               }
 
               twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+` rolls for Brush War: ${die}, adjusted: ${die-modifications}`);  
-              twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
+              twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}\t${success}`);
               twilight_self.endTurn();
 
 
@@ -10398,6 +10416,8 @@ console.log("SCORING: " + JSON.stringify(scoring));
     if (card == "indopaki") {
       let target = 4;
       let opponent = "us";
+      let success = 0;
+
       if (this.game.player == 2) { opponent = "ussr";  }
 
       if (this.playerRoles[this.game.player] == player) {
@@ -10424,6 +10444,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
           if (die >= target + modifications) { //Successful Invasion
             winner = (invaded == "pakistan")? "India conquers Pakistan!": "Pakistan conquers India";
+	    success = 1;
 
             let influence_change = 0;
             if (player == "us") {
@@ -10448,7 +10469,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
               twilight_self.addMove("milops\tussr\t2");
             }
           }
-          twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
+          twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}\t${success}`);
           twilight_self.endTurn();
             
         });
@@ -10600,6 +10621,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
     if (card == "iraniraq") {
 
       let opponent = (this.game.player == 2)? "ussr" : "us";
+      let success = 0;
 
       if (this.playerRoles[this.game.player] == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
@@ -10625,6 +10647,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
           twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+`rolls: ${die}, adjusted: ${die-modifications}`);
 
           if (die >= target + modifications) { //Successful Invasion
+            success = 1;
             winner = (invaded == "iran")? "Iraq conquers Iran!": "Iran conquers Iraq";
 
             let influence_change = 0;
@@ -10644,14 +10667,14 @@ console.log("SCORING: " + JSON.stringify(scoring));
             twilight_self.showInfluence(invaded);
 
           } else { //India fails invasion
-            winner = (invaded == "iran")? "Iran repels Iraqi aggression!": "Iraq repels Iranian aggression!";
+            winner = (invaded == "iran")? "Iran repels Iraq!": "Iraq repels Iran!";
             if (player == "us") {
               twilight_self.addMove("milops\tus\t2");
             } else {
               twilight_self.addMove("milops\tussr\t2");
             }
           }
-          twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
+          twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}\t${success}`);
           twilight_self.endTurn();
 
 
@@ -10927,6 +10950,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
     if (card == "koreanwar") {
 
       let target = 4;
+      let success = 0;
       
       let modifications = 0;
       if (this.isControlled("us", "japan") == 1) { modifications++; }
@@ -10941,6 +10965,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
       let winner = "";
 
       if (roll - modifications >= target) {
+        success = 1;
         winner = "North Korea wins!";
         this.updateLog("North Korea wins the Korean War");
         if (this.countries['southkorea'].us > 0){
@@ -10956,7 +10981,8 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
       this.game.state.milops_ussr += 2;
       this.updateMilitaryOperations();
-      this.showWarOverlay(card, winner, roll, modifications);
+
+      this.war_overlay.render(card, { winner : winner , die : roll , modifications : modifications , player : player , success : success});
       return 1;
 
     }

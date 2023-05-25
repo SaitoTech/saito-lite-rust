@@ -1,6 +1,7 @@
 
     if (card == "brushwar") {
 
+      let success = 0;
       let me = "ussr";
       let opponent = "us";
       if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
@@ -59,6 +60,7 @@
 
               let winner = ""
               if (die >= 3 + modifications) {
+       		success = 1;
                 winner = twilight_self.countries[c].name + " is conquered!";
                 let influence_change = 0;
                 if (player == "us") {
@@ -92,7 +94,7 @@
               }
 
               twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+` rolls for Brush War: ${die}, adjusted: ${die-modifications}`);  
-              twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
+              twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}\t${success}`);
               twilight_self.endTurn();
 
 
