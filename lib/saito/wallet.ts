@@ -174,8 +174,8 @@ export default class Wallet extends SaitoWallet {
     }
 
     //
-    // this.wallet.publickey = await S.getInstance().getPublicKey();
-    // this.wallet.privatekey = await S.getInstance().getPrivateKey();
+    // this.publickey = await S.getInstance().getPublicKey();
+    // this.privatekey = await S.getInstance().getPrivateKey();
 
     this.saitoCrypto = new SaitoCrypto(this.app);
     let privateKey = await this.getPrivateKey();
@@ -214,8 +214,8 @@ export default class Wallet extends SaitoWallet {
             // re-specify after reset
             await this.setPrivateKey(tmpprivkey);
             await this.setPublicKey(tmppubkey);
-            // this.wallet.publickey = tmppubkey;
-            // this.wallet.privatekey = tmpprivkey;
+            // this.publickey = tmppubkey;
+            // this.privatekey = tmpprivkey;
 
             // this.app.options.wallet = this.wallet;
             this.app.options.wallet.preferred_crypto = this.preferred_crypto;
@@ -547,7 +547,7 @@ export default class Wallet extends SaitoWallet {
     // only send if hasn't been sent before
     console.log(
       "does preferred crypto transaction exist: " +
-        this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
+      this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
     );
     console.log("unique hash: " + unique_hash);
     console.log("uuid: " + getUuid(unique_hash));
@@ -758,10 +758,10 @@ export default class Wallet extends SaitoWallet {
     return this.app.crypto.hash(
       Buffer.from(
         JSON.stringify(senders) +
-          JSON.stringify(receivers) +
-          JSON.stringify(amounts) +
-          unique_hash +
-          ticker,
+        JSON.stringify(receivers) +
+        JSON.stringify(amounts) +
+        unique_hash +
+        ticker,
         "utf-8"
       )
     );

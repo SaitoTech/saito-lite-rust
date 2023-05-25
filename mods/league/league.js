@@ -192,6 +192,7 @@ class League extends ModTemplate {
     //
     // add remote leagues
     //
+    return;
     let league_self = this;
 
     if (service.service === "league") {
