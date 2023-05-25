@@ -167,6 +167,9 @@
   left: 12vh;
 }
 
+.opponents > .player-box{
+  position: unset;
+}
 
 /*********************************/
 /*          PLAYER BOX           */

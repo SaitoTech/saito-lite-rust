@@ -51,6 +51,7 @@ input[type="checkbox"]:checked {
     box-shadow: 2px 2px 5px 0px #644b37;
 }
 
+
 .main{
     width: 100vw;
     height: 100vh;
@@ -66,10 +67,28 @@ input[type="checkbox"]:checked {
 
 
 #board {
-    max-width: min(98vh,98vw);
+    max-width: min(98vh,98vw,700px);
     width: 50%;
 }
 
+
+.opponents {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 50%;
+}
+
+.opponents .me {
+    order: 2;
+}
+
+.player-box {
+    background: #f9efdf;
+    border-radius: 10px;
+    box-shadow: 0 2px 3px 2px #644b37;
+    color: black;
+}
 
 .controls-space {    
     width: 35%;
@@ -230,6 +249,12 @@ img.captured {
     .numeric-fc462 {
         left: -16px;
         font-size: 14px;
+    }
+
+    .opponents {
+        flex-direction: row;
+        height: unset;
+        width: 80%;
     }
 
     .controls-space {    

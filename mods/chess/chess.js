@@ -40,13 +40,14 @@ class Chessgame extends GameTemplate {
   initializeHTML(app) {
 
     if (!this.browser_active) { return; }
+    if (this.initialize_game_run) { return; }
+
     super.initializeHTML(app);
 
     //
     // ADD MENU
     //
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addMenuOption("game-info", "Info");
 
     if (this.game.player > 0){
 
@@ -92,22 +93,13 @@ class Chessgame extends GameTemplate {
 
     }
 
-    this.menu.addSubMenuOption("game-info", {
-      text: "Rules",
+    this.menu.addSubMenuOption("game-game", {
+      text: "How to Play",
       id: "game-rules",
       class: "game-rules",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(game_mod.returnGameRulesHTML());
-      },
-    });
-    this.menu.addSubMenuOption("game-info", {
-      text: "Log",
-      id: "game-log",
-      class: "game-log",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
       },
     });
 
@@ -116,26 +108,16 @@ class Chessgame extends GameTemplate {
 
     this.log.render();
 
+    this.playerbox.render();   
+    this.playerbox.addClass("white", 1); 
+    this.playerbox.addClass("black", 2);
+    this.playerbox.addClass("me");
+    this.playerbox.addClass("notme", 3-this.game.player);
+    this.playerbox.groupOpponents(false);
     
-    //Plug Opponent Information into the Controls 
-    if (this.game.player){
-      let opponent = this.game.opponents[0];
+    window.onresize = () => this.board.resize();
 
-      let identicon = this.app.keychain.returnIdenticon(opponent);
-      identicon = identicon ? `<img class="player-identicon" src="${identicon}">` : "";
-
-      let name = this.app.keychain.returnUsername(opponent);
-      if (name && name.indexOf("@") > 0) {
-        name = name.substring(0, name.indexOf("@"));
-      }
-
-      $("#opponent_id").html(name);
-      $("#opponent_identicon").html(identicon)
-
-    }else{
-      //Hide some controls in Observer Mode
-      $(".hide_in_observer").remove();
-    }
+    $(".main").append($("#opponentbox"));
 
   }
 
@@ -225,7 +207,7 @@ class Chessgame extends GameTemplate {
 
     this.updateStatusMessage();
     this.game.draw_offered = this.game.draw_offered || 0;
-    this.attachGameEvents();
+    //this.attachGameEvents();
 
 
   }
@@ -278,7 +260,7 @@ class Chessgame extends GameTemplate {
         } 
       }
       //Refresh events
-      this.attachGameEvents();
+      //this.attachGameEvents();
       
       //Process independently of game moves
       //i.e. don't disrupt turn system
@@ -287,7 +269,7 @@ class Chessgame extends GameTemplate {
 
     if (this.game.draw_offered !== 0){
       this.game.draw_offered = 0; //No offer on table
-      this.attachGameEvents();      
+      //this.attachGameEvents();      
     }
 
 
@@ -351,86 +333,24 @@ class Chessgame extends GameTemplate {
 
   }
 
-  attachGameEvents() {
-    if (this.game?.player == 0 || !this.browser_active){
+/*  attachGameEvents() {
+    if (!this.browser_active){
       return;
-    }
-
-    let resign_icon = document.getElementById('resign_icon');
-    let draw_icon = document.getElementById('draw_icon');
-    let chat_btn = document.getElementById('chat-btn');
-
-    if (resign_icon) {
-      resign_icon.onclick = async () => {
-        let c = await sconfirm("Do you really want to resign?");
-        if (c) {
-        	this.resignGame(this.game.id, "resignation");
-        	return;
-        }
-      }
-    }
-
-    if (draw_icon){
-      draw_icon.classList.remove("hidden");
-      $(".flash").removeClass("flash");
-      if (this.game.draw_offered >= 0){
-        draw_icon.onclick = async () => {
-          if (this.game.draw_offered == 0){
-            let c = await sconfirm("Offer to end the game in a draw?");
-            if (c) {
-              this.updateStatusMessage("Draw offer sent; " + this.status);
-              this.game.draw_offered = -1; //Offer already sent
-              var data = {draw: "offer"};
-              this.endTurn(data);
-              return;
-            }  
-          }else{
-            let c = await sconfirm("Accept offer to end the game in a draw?");
-            if (c) {
-              this.updateStatusMessage("Draw offer accepted!");
-              this.game.draw_offered = -1; //Offer already sent
-              var data = {draw: "accept"};
-              this.endTurn(data);
-              return;
-            }
-          }
-        }
-        if (this.game.draw_offered > 0){
-          draw_icon.classList.add("flash");
-        }
-      }else{
-        console.log("Hide draw icon");
-        draw_icon.classList.add("hidden");
-      }
-    }
-
-    if (chat_btn){
-      chat_btn.onclick = () => {
-        this.app.connection.emit("open-chat-with", {key: this.game.players[2-this.game.player], name: "Opponent"});
-      }
     }
 
     window.onresize = () => this.board.resize();
-
   }
-
+*/
   updateStatusMessage(str = "") {
 
-    if (this.browser_active != 1) { return; }
+    if (!this.browser_active) { return; }
 
-    let statusEl = document.getElementById('status');
-    let casualtiesEl = document.getElementById('captured');
-    
-    if (!statusEl || !casualtiesEl){
-      console.warn("Updating status to null elements");
-      return;
-    }
 
     //
     // print message if provided
     //
     if (str != "") {
-      statusEl.innerHTML = sanitize(str);
+      this.playerbox.refreshLog(str);
       this.status = str;
       return;
     }
@@ -446,7 +366,8 @@ class Chessgame extends GameTemplate {
       bgColor = '#111';
     }
 
-    document.getElementById('turn-shape').style.backgroundColor = bgColor;
+    //document.getElementById('turn-shape').style.backgroundColor = bgColor;
+    
 
     // check?
     if (this.engine.in_check() === true) {
@@ -460,14 +381,13 @@ class Chessgame extends GameTemplate {
     }
     
     this.status = status;
-    statusEl.innerHTML = sanitize(status);
+
     let captHTML = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()));
     if (captHTML !== "<br/>"){
-      casualtiesEl.innerHTML = sanitize(captHTML);
-      $("#captured-cont").removeClass("hidden");  
+      status += sanitize(captHTML);
     }
     
-    
+    this.playerbox.refreshLog(status);
 
   };
 
