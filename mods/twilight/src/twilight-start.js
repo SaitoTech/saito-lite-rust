@@ -2511,9 +2511,9 @@ console.log("LATEST MOVE: " + mv);
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["arabisraeli", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["missileenvy", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["cubanmissile", "koreanwar", "iraniraq", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
+          this.game.deck[0].hand = ["cubanmissile", "brezhnev", "iraniraq", "cambridge", "warsawpact", "mideast", "indopaki", "cia", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -6946,6 +6946,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       ops++;
     }
 
+    if (player === 1) { player = "ussr"; }
+    if (player === 2) { player = "us"; }
     if (player === "") {
       if (this.game.player == 1) { player = "ussr"; }
       if (this.game.player == 2) { player = "us"; }

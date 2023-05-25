@@ -2511,9 +2511,9 @@ console.log("LATEST MOVE: " + mv);
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["arabisraeli", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["missileenvy", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["cubanmissile", "koreanwar", "iraniraq", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
+          this.game.deck[0].hand = ["cubanmissile", "brezhnev", "iraniraq", "cambridge", "warsawpact", "mideast", "indopaki", "cia", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -6946,6 +6946,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       ops++;
     }
 
+    if (player === 1) { player = "ussr"; }
+    if (player === 2) { player = "us"; }
     if (player === "") {
       if (this.game.player == 1) { player = "ussr"; }
       if (this.game.player == 2) { player = "us"; }
@@ -11256,12 +11258,12 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
           let card = this.game.deck[0].cards[available_cards[i]];
 
-          if (this.modifyOps(card.ops, available_cards[i], opponent) == selected_ops) {
+          if (this.modifyOps(card.ops, available_cards[i], player) == selected_ops) {
             multiple_cards = 1;
           }
 
-          if (this.modifyOps(card.ops) > selected_ops) {
-            selected_ops  = this.modifyOps(card.ops);
+          if (this.modifyOps(card.ops, available_cards[i], player) > selected_ops) {
+            selected_ops  = this.modifyOps(card.ops, available_cards[i], player);
             selected_card = available_cards[i];
             multiple_cards = 0;
           }
@@ -11283,8 +11285,8 @@ console.log("SCORING: " + JSON.stringify(scoring));
           //
           let html = "<ul>";
           for (let i = 0; i < available_cards.length; i++) {
-console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " + this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops, available_cards[i], opponent));
-            if (this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops, available_cards[i], opponent) == selected_ops && available_cards[i] != "china") {
+console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " + this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops, available_cards[i], player));
+            if (this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops, available_cards[i], player) == selected_ops && available_cards[i] != "china") {
               html += `<li class="card" id="${available_cards[i]}">${this.game.deck[0].cards[available_cards[i]].name}</li>`;
             }
           }
