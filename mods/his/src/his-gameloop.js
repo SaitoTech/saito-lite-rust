@@ -2033,6 +2033,10 @@ console.log("POOL: " + hapsburg_card);
 	  let defending_factions = 0;
 	  let faction_map = this.returnFactionMap(space, attacker_faction, defender_faction);
 
+console.log("defender faction is: " + defender_faction);
+console.log("faction_map: " + JSON.stringify(faction_map));
+
+
 	  //
 	  // migrate any bonuses to attacker or defender
 	  //
@@ -2246,7 +2250,15 @@ console.log("POOL: " + hapsburg_card);
 
 
 
+
         if (mv[0] === "field_battle_assign_hits") {
+
+	  //
+	  // major powers may assign hits completely to minor allies, but they have
+	  // to split hits, with a random roll used to determine who takes the extra
+	  // hit ON DEFENSE. the active power assigns hits independently to any land
+	  // units who attack.
+	  //
 
 	  let his_self = this;
 	  let faction = mv[1];

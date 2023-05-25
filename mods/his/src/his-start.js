@@ -163,9 +163,7 @@
 
     this.menu.addChatMenu();
     this.menu.render();
-
     this.log.render();
-
     this.cardbox.render();
 
     //
@@ -207,8 +205,6 @@
 	}
       }
     }
-
-
 
     //
     // position diplomacy chart
@@ -257,13 +253,15 @@
 	let his_self = this;
         this.sizer.render();
         this.sizer.attachEvents('#gameboard');
-/*** sizer makes draggable 
+	//
+	// sizer makes draggable 
+	//
         //$('#gameboard').draggable({
 	//  stop : function(event, ui) {
 	//    his_self.saveGamePreference((his_self.returnSlug()+"-board-offset"), ui.offset);
 	//  }
 	//});
-***/
+	//
       }
 
     } catch (err) {}

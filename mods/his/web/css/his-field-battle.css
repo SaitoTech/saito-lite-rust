@@ -49,6 +49,7 @@
     background-color: #FFFC;
     color: black;
     grid-template-columns: 1fr min-content;
+    cursor: pointer;
 }
 .field-battle-grid .attacker .field-battle-row.destroyed , .field-battle-grid .defender .field-battle-row.destroyed {
     background-color: #000A;
