@@ -4,6 +4,7 @@ const TwilightOptions = require('./lib/twilight-game-options.template');
 const TwilightSingularOption = require('./lib/twilight-singular-game-options.template');
 const ScoringOverlay = require('./lib/overlays/scoring');
 const WarOverlay = require('./lib/overlays/war');
+const StatsOverlay = require('./lib/overlays/stats');
 
 const JSON = require('json-bigint');
 
@@ -62,6 +63,7 @@ class Twilight extends GameTemplate {
 
     // ui components
     this.scoring_overlay = new ScoringOverlay(this.app, this);
+    this.stats_overlay = new StatsOverlay(this.app, this);
     this.war_overlay = new WarOverlay(this.app, this);
 
     // newbie mode
@@ -155,74 +157,12 @@ class Twilight extends GameTemplate {
 
   
   handleStatsMenu() {
-    let twilight_self = this;
 
-    let us_bg = 0;
-    let ussr_bg = 0;
-
-    for (var i in twilight_self.countries) {
-      let countryname = i;
-
-      if (twilight_self.countries[countryname].bg == 1) {
-        if (this.isControlled("us", i) == 1) {
-          us_bg++;
-        }
-        if (this.isControlled("ussr", i) == 1) {
-          ussr_bg++;
-        }
-      }
-    }
-
+    this.stats_overlay.render(this.game.state.stats);
+return;
+/***
     let html = `
-      <div class="game-overlay-menu statistics-overlay">
-      <table class="headline-statistics-table">
-        <caption>Overall Statistics</caption>
-        <thead>
-        <tr>
-          <th></th>
-          <th>US</th>
-          <th>USSR</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <th>OPS Played</th>
-          <td>${this.game.state.stats.us_ops}</td>
-          <td>${this.game.state.stats.ussr_ops}</td>
-        </tr>
-        <tr>
-          <th>OPS Spaced</th>
-          <td>${this.game.state.stats.us_ops_spaced}</td>
-          <td>${this.game.state.stats.ussr_ops_spaced}</td>
-        </tr>
-        <tr>
-          <th>Scoring Cards</th>
-          <td>${this.game.state.stats.us_scorings}</td>
-          <td>${this.game.state.stats.ussr_scorings}</td>
-        </tr>
-        <tr>
-          <th>Battlegrounds Controlled</th>
-          <td>${us_bg}</td>
-          <td>${ussr_bg}</td>
-        </tr>
-        <tr>
-          <th>Coups</th>
-          <td>`;
-    if (this.game.state.stats.us_coups.length > 0) {
-      html += JSON.stringify(this.game.state.stats.us_coups);
-    }else {
-      html += "0";
-    }
-    html += `</td><td>`;
-    if (this.game.state.stats.ussr_coups.length > 0) {
-      html += JSON.stringify(this.game.state.stats.ussr_coups);
-    }else {
-      html += "0";
-    }
-    html += `</td>
-        </tr>
-        </table>
-      
+
       <table class="statistics-round-table">
       <caption>Round-by-Round Statistics</caption>
         <thead>
@@ -305,6 +245,7 @@ class Twilight extends GameTemplate {
         `;
 
     twilight_self.overlay.show(html);
+****/
   }
 
 
@@ -2093,7 +2034,7 @@ console.log("LATEST MOVE: " + mv);
 
       //Don't want to log the original ops value ***** 
       let orig_ops = parseInt(mv[3]);
-      let mod_ops = this.modifyOps(orig_ops, mv[2],mv[1], 0);
+      let mod_ops = this.modifyOps(orig_ops, mv[2], mv[1], 0);
       if (mod_ops > orig_ops){
         this.updateLog(mv[1].toUpperCase() + ` plays ${this.game.state.event_name} for ${mv[3]} OPS (+${mod_ops-orig_ops} bonus)`);
       }else if (mod_ops < orig_ops){
@@ -2104,35 +2045,40 @@ console.log("LATEST MOVE: " + mv);
       
 
       // stats
-      if (mv[1] === "us") { this.game.state.stats.us_ops += parseInt(mv[3]); }
-      if (mv[1] === "ussr") { this.game.state.stats.ussr_ops += parseInt(mv[3]); }
-      
-  	  if (this.game.deck[0].cards[mv[2]] != undefined) {
-  	    if (this.game.deck[0].cards[mv[2]].player === "us") {
-  	      if (mv[1] === "ussr") {
-  	        this.game.state.stats.ussr_us_ops += parseInt(mv[3]);
-  	      }
-  	      if (mv[1] === "us") {
-  	        this.game.state.stats.us_us_ops += parseInt(mv[3]);
-  	      }
-  	    }
-  	    if (this.game.deck[0].cards[mv[2]].player === "ussr") {
-  	      if (mv[1] === "ussr") {
-  	        this.game.state.stats.ussr_ussr_ops += parseInt(mv[3]);
-  	      }
-  	      if (mv[1] === "us") {
-  	        this.game.state.stats.us_ussr_ops += parseInt(mv[3]);
-  	      }
-  	    }
-  	    if (this.game.deck[0].cards[mv[2]].player == "both") {
-  	      if (mv[1] == "ussr") {
-  	        this.game.state.stats.ussr_neutral_ops += parseInt(mv[3]);
-  	      }
-  	      if (mv[1] == "us") {
-  	        this.game.state.stats.us_neutral_ops += parseInt(mv[3]);
-  	      }
-  	    }
-  	  }
+      if (mv[1] === "us") {
+	this.game.state.stats.us_ops += parseInt(mv[3]);
+	this.game.state.stats.us_modified_ops += mod_ops; 
+      }
+      if (mv[1] === "ussr") {
+	this.game.state.stats.ussr_ops += parseInt(mv[3]);
+	this.game.state.stats.ussr_modified_ops += mod_ops;
+      }
+      if (this.game.deck[0].cards[mv[2]] != undefined) {
+        if (this.game.deck[0].cards[mv[2]].player === "us") {
+          if (mv[1] === "ussr") {
+            this.game.state.stats.ussr_us_ops += parseInt(mv[3]);
+          }
+          if (mv[1] === "us") {
+            this.game.state.stats.us_us_ops += parseInt(mv[3]);
+          }
+        }
+        if (this.game.deck[0].cards[mv[2]].player === "ussr") {
+          if (mv[1] === "ussr") {
+            this.game.state.stats.ussr_ussr_ops += parseInt(mv[3]);
+          }
+          if (mv[1] === "us") {
+            this.game.state.stats.us_ussr_ops += parseInt(mv[3]);
+          }
+        }
+        if (this.game.deck[0].cards[mv[2]].player == "both") {
+          if (mv[1] == "ussr") {
+            this.game.state.stats.ussr_neutral_ops += parseInt(mv[3]);
+          }
+          if (mv[1] == "us") {
+            this.game.state.stats.us_neutral_ops += parseInt(mv[3]);
+          }
+        }
+      }
 
       // unset formosan if China card played by US
       if (mv[1] == "us" && mv[2] == "china") {
@@ -2189,9 +2135,30 @@ console.log("LATEST MOVE: " + mv);
     if (mv[0] === "coup") {
 
       let card = "";
+      let player = mv[1];
+      let countryname = mv[2];
+      let ops = parseInt(mv[3]);
       if (mv.length >= 5) { card = mv[4]; }
+      let mod_ops = this.modifyOps(ops, card, player, 0);
 
       this.updateLog(mv[1].toUpperCase() + " coups " + this.countries[mv[2]].name + " with " + mv[3] + " OPS");
+
+/*****
+      // stats
+      if (player == "us") {
+	if (card != "") {
+          this.game.state.stats.us_ops += ops;
+          this.game.state.stats.us_modified_ops += mod_ops;
+	}
+      }
+      if (player == "ussr") {
+	if (card != "") {
+          this.game.state.stats.ussr_ops += ops;
+          this.game.state.stats.ussr_modified_ops += mod_ops;
+        }
+      }
+****/
+
 
       if (this.game.state.limit_milops != 1) {
         //
@@ -5566,6 +5533,16 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     let modifier = 0;
 
     //
+    // stats
+    //
+    if (player == "us") {
+	this.game.state.stats.us_coups.push(roll);
+    }
+    if (player == "ussr") {
+	this.game.state.stats.ussr_coups.push(roll);
+    }
+
+    //
     // Cuban Missile Crisis
     //
     if (player == "ussr" && this.game.state.events.cubanmissilecrisis == 1) {
@@ -5577,9 +5554,6 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       return;
     }
 
-    // stats
-    if (player == "us") { this.game.state.stats.us_coups.push(roll); }
-    if (player == "ussr") { this.game.state.stats.ussr_coups.push(roll); }
 
     //
     // Yuri and Samantha
