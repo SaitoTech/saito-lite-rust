@@ -155,7 +155,7 @@ class AppspaceHome {
       document.querySelector('.tweet-' + sig).scrollIntoView(); 
 
       let html = `<div id="redsquare-page-header-title" class="redsquare-page-header-title tweetmode">
-                  <i class="redsquare-redsquare fa-solid fa-arrow-left"></i> RED SQUARE
+                  <i class="redsquare-redsquare fa-solid fa-arrow-left"></i>
                 </div>`;
       this_self.mod.header.updateHeaderLogo(html, function() {
 

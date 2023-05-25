@@ -214,7 +214,6 @@ console.log("DONE GENERATING MAP");
                 for (let r of this.game.state.players[this.game.player - 1].resources) {
                     //Show all cards
                     cards += `<div class="card tip"><img src="${this.returnCardImage(r)}">
-                    <img class="icon" src="${this.returnCardImage(r)}"/>
                     </div>`;
                 }
             }

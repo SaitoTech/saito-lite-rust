@@ -39,7 +39,9 @@
 }
 
 .redsquare-page-header-title i::before {
-  -webkit-text-stroke: var(--saito-white) 1px;
+  -webkit-text-stroke: unset;
+    color: var(--saito-font-color);
+    margin: 0 0 0 2rem;
 }
 
 .redsquare-profile {
@@ -130,6 +132,9 @@
 @media screen and (max-width: 900px) {
   .redsquare-page-header-title {
     font-size: 2rem;
+  }
+  .redsquare-page-header-title i::before {
+    margin: 0;
   }
   div#redsquare-tweet {
     content: "\002B";
