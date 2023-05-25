@@ -20,6 +20,24 @@ This alows for a header with a header with title to be added without extra CSS
   font-size: 3rem;
 }
 
+.saito-modal-menu .saito-modal-title {
+  padding: unset;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid;
+}
+
+.saito-modal-menu .saito-modal-title .saito-user {
+  height: 6rem;
+  margin: 0 2rem;
+  padding: 0 1.5rem;
+  cursor: default;
+  align-items: center;
+}
+
+.saito-modal-menu .saito-modal-title .saito-user .saito-identicon-box {
+  width: 4rem;
+  height: 4rem;
+}
 
 /* saito-modal-menu
 /* theming for a simple menu with font-awesome icon and text in a two col grid */
