@@ -40,7 +40,7 @@
 
 .redsquare-page-header-title i::before {
   -webkit-text-stroke: unset;
-    color: var(--saito-font-color);
+    color: var(--saito-white);
     margin: 0 0 0 2rem;
 }
 
