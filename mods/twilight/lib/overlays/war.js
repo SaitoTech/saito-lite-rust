@@ -14,8 +14,10 @@ class WarOverlay {
 
         this.overlay.show(WarTemplate(conflict, obj));
 
+console.log("conflict is: " + conflict);
+
 	let cardimg = this.mod.returnCardImage(conflict);
-	let qs = '.scoring-overlay .card';
+	let qs = '.war-overlay .card';
 	let qobj = document.querySelector(qs);
 
 	if (qobj) {

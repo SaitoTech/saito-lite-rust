@@ -12,7 +12,7 @@ module.exports = (card, sobj) => {
 
   let html = `
 
-    <div class="scoring-overlay ${card}-war ${winner_css}">
+    <div class="war-overlay ${card}-war ${winner_css}">
 
         <div class="card card-hud"><img class="cardimg" src="/twilight/img/en/TNRnTS-01.svg"><img class="cardimg" src="/twilight/img/EarlyWar.svg"><img class="cardimg" src="/twilight/img/BothPlayerCard.svg"><img class="cardimg" src="/twilight/img/MayNotBeHeld.svg"></div>
      

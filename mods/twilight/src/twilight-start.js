@@ -58,7 +58,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 1;
+    this.is_testing 	 = 0;
 
     // ui components
     this.scoring_overlay = new ScoringOverlay(this.app, this);
@@ -2546,7 +2546,7 @@ console.log("LATEST MOVE: " + mv);
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["arabisraeli", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["koreanwar", "iraniraq", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
+          this.game.deck[0].hand = ["cubanmissile", "koreanwar", "iraniraq", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -3090,7 +3090,6 @@ try {
       return 0;
     }
 
-    //twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
     if (mv[0] === "war"){
 
       let card 		= mv[1] || "";
@@ -8378,6 +8377,19 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
       //
       // this is not a card, it is something like "skip turn" or cancel
+      //
+      if (cardname === "skipturn") {
+        return `<div class="noncard" style="height:100%;background-image: url('/twilight/img/skipturn.png'); background-size: cover;" id="${cardname.replaceAll(" ","")}"></div>`;
+      }
+      if (cardname === "cancel cuban missile crisis") {
+        return `<div class="noncard" style="height:100%;background-image: url('/twilight/img/cancel_cmc.png'); background-size: cover;" id="${cardname.replaceAll(" ","")}"></div>`;
+      }
+      if (cardname === "cancel_cmc") {
+        return `<div class="noncard" style="height:100%;background-image: url('/twilight/img/cancel_cmc.png'); background-size: cover;" id="${cardname.replaceAll(" ","")}"></div>`;
+      }
+
+      //
+      // or something else
       //
       return `<div class="noncard" id="${cardname.replaceAll(" ","")}">${cardname}</div>`;
 

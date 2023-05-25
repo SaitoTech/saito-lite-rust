@@ -1,3 +1,32 @@
+.war-overlay {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: space-around;
+    width: min(750px, 90vw);
+    min-height: 50vh;
+    padding: 1rem 0;
+    border-radius: 0.5rem;
+    column-gap: 2rem;
+    padding: 2rem;
+    align-items: center;
+    width: 90vw;
+    height: 80vh;
+    justify-content: space-evenly;
+    justify-items: center;
+}
+
+.war-overlay .card {
+    display: block;
+    height: 45rem;
+    width: calc(45rem * 0.72110);
+    justify-content: space-around;
+    padding: 2rem;
+    z-index: 2;
+    background-image: url(/twilight/img/Base.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
 
 .indopaki-war {
     background-size: cover;
