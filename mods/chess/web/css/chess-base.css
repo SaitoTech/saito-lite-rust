@@ -51,6 +51,7 @@ input[type="checkbox"]:checked {
     box-shadow: 2px 2px 5px 0px #644b37;
 }
 
+
 .main{
     width: 100vw;
     height: 100vh;
@@ -66,10 +67,36 @@ input[type="checkbox"]:checked {
 
 
 #board {
-    max-width: min(98vh,98vw);
+    max-width: min(98vh,98vw,700px);
     width: 50%;
 }
 
+
+.opponents {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 50%;
+}
+
+.opponents .me {
+    order: 2;
+}
+
+.player-box {
+    background: #f9efdf;
+    border-radius: 10px;
+    box-shadow: 0 2px 3px 2px #644b37;
+    color: black;
+    min-height: 10rem;
+}
+
+.player-box-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    flex: 1; /* Make sure body fills up available space in player-box*/
+}
 
 .controls-space {    
     width: 35%;
@@ -110,6 +137,15 @@ input[type="checkbox"]:checked {
     flex-grow: 1;
 }
 
+.last_move {
+    margin: auto;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.last_move:hover {
+    background-color: #b58863;
+}
 
 .tool-cont i {
     color: sandybrown;
@@ -129,13 +165,20 @@ input[type="checkbox"]:checked {
 
 .turn-shape {
     box-sizing: border-box;
-    width: 50px;
-    height: 50px;
+    width: 35px;
+    height: 35px;
     border-radius: 25px;
     border: 2px solid;
+    grid-row: span 2;
 }
 
+.turn-shape.white {
+    background-color: #fff;
+}
 
+.turn-shape.black {
+    background-color: #111;
+}
 
 
 .promotion-choices img.captured {
@@ -230,6 +273,12 @@ img.captured {
     .numeric-fc462 {
         left: -16px;
         font-size: 14px;
+    }
+
+    .opponents {
+        flex-direction: row;
+        height: unset;
+        width: 80%;
     }
 
     .controls-space {    

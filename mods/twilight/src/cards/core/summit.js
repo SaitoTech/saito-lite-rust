@@ -122,7 +122,7 @@
           });
         }else{
           if (this.game.player == 0){
-            this.updateStatus(`${this.playerRoles[winner].toUpperCase()} won the ${this.cardToText(card)}`);
+            this.updateStatus(`${this.roles[winner].toUpperCase()} won the ${this.cardToText(card)}`);
           }else{
             this.updateStatus(`You lost the ${this.cardToText(card)}, waiting for opponent to change DEFCON`);            
           }

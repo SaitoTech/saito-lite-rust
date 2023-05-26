@@ -4,7 +4,7 @@
       let opponent = (this.game.player == 2)? "ussr" : "us";
       let success = 0;
 
-      if (this.playerRoles[this.game.player] == player) {
+      if (this.roles[this.game.player] == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 

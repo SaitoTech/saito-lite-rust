@@ -11,7 +11,7 @@
 
       this.addMove("resolve\tterrorism");
 
-      if (target == this.playerRoles[this.game.player]) {
+      if (target == this.roles[this.game.player]) {
 
         let available_cards = this.game.deck[0].hand.length;
         let cards_for_select = [];
