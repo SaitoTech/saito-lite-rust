@@ -215,6 +215,7 @@ class Chessgame extends GameTemplate {
     //
     if (this.game.target == this.game.player) {
       if (this.useClock) { this.startClock(); }
+      this.setPlayReminder();
     }
 
     // If we have a fast-ish timed game turn off move confirmations initially    
@@ -315,6 +316,7 @@ class Chessgame extends GameTemplate {
         }
 
         if (this.useClock) { this.startClock(); }
+        this.setPlayReminder();
 
       }
     }

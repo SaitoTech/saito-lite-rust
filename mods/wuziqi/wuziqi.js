@@ -251,6 +251,9 @@ class Wuziqi extends GameTemplate {
 
     // Add click events to the board
     addEvents(board) {
+
+        this.setPlayReminder();
+        
         board.forEach(cell => {
             el = document.getElementById("tile_"+cell.id);
             // Only add click function to blank cells,

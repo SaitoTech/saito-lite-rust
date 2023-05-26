@@ -469,6 +469,7 @@ class Wordblocks extends GameTemplate {
   enableEvents() {
     if (this.browser_active == 1) {
       this.addEventsToBoard();
+      this.setPlayReminder();
       $(".gameboard").addClass("active_board");
     }
   }
