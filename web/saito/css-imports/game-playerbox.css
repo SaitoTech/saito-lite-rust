@@ -26,6 +26,10 @@
   position: absolute;
 }
 
+.player-box .saito-user {
+  align-items: center;
+}
+
 .player-box .plog.status {
   padding-bottom: 0;
 }

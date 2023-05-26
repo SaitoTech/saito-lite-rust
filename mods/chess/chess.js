@@ -5,6 +5,7 @@ const ChessGameOptions = require("./lib/chess-game-options.template");
 const ChessSingularGameOptions = require("./lib/chess-singular-game-options.template");
 const chess = require('./lib/chess.js');
 const chessboard = require('./lib/chessboard');
+const SaitoUser = require("../../lib/saito/ui/saito-user/saito-user");
 
 var this_chess = null;
 
@@ -30,7 +31,7 @@ class Chessgame extends GameTemplate {
     
     this.confirm_moves = 1; 
 
-    this.player_roles = ["Observer", "White", "Black"];
+    this.roles = ["Observer", "White", "Black"];
     this.app = app;
     return this;
 
@@ -115,11 +116,23 @@ class Chessgame extends GameTemplate {
     this.playerbox.addClass("notme", 3-this.game.player);
     this.playerbox.groupOpponents(false);
     
+    let me = new SaitoUser(app, this, `player-box-head-${this.playerbox.playerBox(this.game.player)}`, this.game.players[this.game.player-1], this.roles[this.game.player], this.returnTile(this.game.player));
+    me.render();
+
+    let opp = new SaitoUser(app, this, `player-box-head-${this.playerbox.playerBox(3-this.game.player)}`, this.game.players[2-this.game.player], this.roles[3-this.game.player], this.returnTile(3-this.game.player));
+    opp.render();
+
     window.onresize = () => this.board.resize();
 
     $(".main").append($("#opponentbox"));
 
   }
+
+  returnTile(player) {
+    return `<div class="tool-item item-detail turn-shape ${this.roles[player].toLowerCase()}"></div>`;
+  }
+
+
 
   switchColors(){
     // observer skips
@@ -176,6 +189,10 @@ class Chessgame extends GameTemplate {
 
     if (!this.browser_active){
       return;
+    }
+
+    if (this.loadGamePreference("chess_expert_mode")){
+      this.confirm_moves = 0;
     }
 
     this.board = new chessboard('board', { pieceTheme: 'img/pieces/{piece}.png' });
@@ -272,7 +289,7 @@ class Chessgame extends GameTemplate {
       //this.attachGameEvents();      
     }
 
-
+    this.game.last_position = this.game.position;
     this.game.position = data.position;
 
     this.updateLog(data.move);
@@ -280,6 +297,7 @@ class Chessgame extends GameTemplate {
     if (this.browser_active == 1) {
       
       this.updateBoard(this.game.position);
+      this.updateOpponent(msg.extra.target, data.move);
   
       //Check for draw according to game engine
       if (this.engine.in_draw() === true) {
@@ -350,8 +368,14 @@ class Chessgame extends GameTemplate {
     // print message if provided
     //
     if (str != "") {
-      this.playerbox.refreshLog(str);
       this.status = str;
+
+      if (document.querySelector(".status")){
+        this.app.browser.replaceElementBySelector(`<div class="status">${str}</div>`, ".status");
+      }else{
+        this.playerbox.refreshLog(`<div class="status">${str}</div>`);  
+      }
+      
       return;
     }
 
@@ -359,22 +383,14 @@ class Chessgame extends GameTemplate {
 
     var status = '';
 
-    var moveColor = 'White';
-    let bgColor = '#fff';
-    if (this.engine.turn() === 'b') {
-      moveColor = 'Black';
-      bgColor = '#111';
-    }
-
-    //document.getElementById('turn-shape').style.backgroundColor = bgColor;
+    var moveColor = (this.engine.turn() === 'b')? "Black" : 'White';
     
-
     // check?
     if (this.engine.in_check() === true) {
       status = moveColor + ' is in check';
     }else{
-      if (this.player_roles[this.game.player] == moveColor){
-        status = "It's your move, " + moveColor;
+      if (this.roles[this.game.player] == moveColor){
+        status = "It's your move";
       }else{
         status = "Waiting for " + moveColor;
       }
@@ -382,14 +398,35 @@ class Chessgame extends GameTemplate {
     
     this.status = status;
 
-    let captHTML = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()));
-    if (captHTML !== "<br/>"){
-      status += sanitize(captHTML);
-    }
+    status = `<div class="status">${status}</div>`;
+
+    let captHTML = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()), this.game.player);
     
+    status = sanitize(captHTML) + status;
+        
     this.playerbox.refreshLog(status);
 
   };
+
+  updateOpponent(target, move){
+    
+    let status = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()), 3-this.game.player);
+
+    if (target == this.game.player){
+      status += `<div class="last_move">${move.substring(move.indexOf(":")+2)}</div>`;
+    }
+
+    this.playerbox.refreshLog(status, 3-this.game.player);
+
+    if (document.querySelector(".last_move")){
+      document.querySelector(".last_move").onclick = () =>{
+        if (this.game.last_position){
+          this.setBoard(this.game.last_position);
+          this.updateBoard(this.game.position);
+        }
+      };
+    }
+  }
 
   updateBoard(position){
     console.log("MOVING OPPONENT's PIECE");
@@ -687,6 +724,7 @@ class Chessgame extends GameTemplate {
     $('input:checkbox').change(function() {
       if ($(this).is(':checked')) {
         this_chess.confirm_moves = 0;
+        this_chess.saveGamePreference("chess_expert_mode", 1);
       }else{
         this_chess.confirm_moves = 1;
       }
@@ -735,18 +773,27 @@ class Chessgame extends GameTemplate {
     return [WH, BL];
   }
 
-  returnCapturedHTML(acapt) {
+  // player = number of opponent
+  returnCapturedHTML(acapt, player) {
+    
     let captHTML = "";
-    for (var i = 0; i < acapt[0].length; i++) {
-      captHTML += this.piecehtml(acapt[0][i], "w");
-    }
     
-    captHTML += "<br/>";  
-    
-    for (var i = 0; i < acapt[1].length; i++) {
-      captHTML += this.piecehtml(acapt[1][i], "b");
+    if (player == 2){
+      for (var i = 0; i < acapt[0].length; i++) {
+        captHTML += this.piecehtml(acapt[0][i], "w");
+      }
+    }else {
+      for (var i = 0; i < acapt[1].length; i++) {
+        captHTML += this.piecehtml(acapt[1][i], "b");
+      }
     }
-    return captHTML;
+
+    if (captHTML) {
+      return `<div class="trophies">${captHTML}</div>`;
+    } else {
+      return "";
+    }
+        
   }
 
   piecehtml(p, c) {

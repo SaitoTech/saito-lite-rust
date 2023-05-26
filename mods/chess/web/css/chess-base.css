@@ -88,6 +88,14 @@ input[type="checkbox"]:checked {
     border-radius: 10px;
     box-shadow: 0 2px 3px 2px #644b37;
     color: black;
+    min-height: 10rem;
+}
+
+.player-box-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    flex: 1; /* Make sure body fills up available space in player-box*/
 }
 
 .controls-space {    
@@ -129,6 +137,15 @@ input[type="checkbox"]:checked {
     flex-grow: 1;
 }
 
+.last_move {
+    margin: auto;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.last_move:hover {
+    background-color: #b58863;
+}
 
 .tool-cont i {
     color: sandybrown;
@@ -148,13 +165,20 @@ input[type="checkbox"]:checked {
 
 .turn-shape {
     box-sizing: border-box;
-    width: 50px;
-    height: 50px;
+    width: 35px;
+    height: 35px;
     border-radius: 25px;
     border: 2px solid;
+    grid-row: span 2;
 }
 
+.turn-shape.white {
+    background-color: #fff;
+}
 
+.turn-shape.black {
+    background-color: #111;
+}
 
 
 .promotion-choices img.captured {
