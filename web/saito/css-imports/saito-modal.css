@@ -20,6 +20,24 @@ This alows for a header with a header with title to be added without extra CSS
   font-size: 3rem;
 }
 
+.saito-modal-menu .saito-modal-title {
+  padding: unset;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid;
+}
+
+.saito-modal-menu .saito-modal-title .saito-user {
+  height: 6rem;
+  margin: 0 1.25rem;
+  padding: 0 1.25rem;
+  cursor: default;
+  align-items: center;
+}
+
+.saito-modal-menu .saito-modal-title .saito-user .saito-identicon-box {
+  width: 5.5rem;
+  height: 5.5rem;
+}
 
 /* saito-modal-menu
 /* theming for a simple menu with font-awesome icon and text in a two col grid */
@@ -88,12 +106,11 @@ This alows for a header with a header with title to be added without extra CSS
   display: inline-block;
   margin-left: 50%;
   transform: translateX(-50%);
-}
-
-#saito-confirm-add-publickey .saito-identicon-box .saito-identicon {
   width: 8rem;
   height: 8rem;
+
 }
+
 
 #saito-confirm-add-publickey>.saito-address {
   width: 100%;
@@ -113,10 +130,6 @@ This alows for a header with a header with title to be added without extra CSS
   text-align: center;
 }
 
-.saito-modal-title .saito-user .saito-identicon {
-  width: 4rem;
-  height: 4rem;
-}
 
 .saito-modal-title .saito-user .saito-address {
   font-size: 4rem;
