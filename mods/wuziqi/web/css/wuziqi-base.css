@@ -160,7 +160,6 @@ Board is a grid of wooden squares
   border: 1px solid #FFFFFF;
   border-radius: 0px 18px 18px 18px;
   font-size: 1.2em;
-  text-align: center;
   box-sizing: content-box;
   padding: 0px;
   height: unset;
@@ -171,19 +170,18 @@ Board is a grid of wooden squares
 
 .player-box-head{
     background: #AAA;
-    box-shadow: 0px 3px 6px #00000029;
     border-bottom: 1px solid #FFFFFF;
     color: black;
-    color: var(--saito-cyber-black);
-    border-radius: 0px 18px 3px 0px;
-    opacity: 1;
-    width: 100%;
-    display: inline-flex;
-   
-    align-items: center;
-    
+    margin-bottom: 5px;    
 }
 
+
+.player-box-body { 
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+    justify-content: space-evenly;
+}
 
 .player-box .piece{
     width: 2em;
@@ -262,11 +260,11 @@ Board is a grid of wooden squares
 /*
     Intermediate (roughly square screen size, technically landscape, but keep portrait layout)
 */
-@media (max-aspect-ratio:  8/7) and (min-aspect-ratio: 7/8) {
+@media (max-aspect-ratio:  8/7) and (min-aspect-ratio: 3/4) {
     .board{
         margin-top: 0px;
-        width: 80vh;
-        height: 80vh;
+        width: min(80vh,92vw);
+        height: min(80vh,92vw);
     }
     .inner{
         padding: 5vh;

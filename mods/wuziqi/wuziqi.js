@@ -29,6 +29,8 @@ class Wuziqi extends GameTemplate {
         this.seats = [2,5];
         this.app   = app;
 
+        this.roles = ["observer", "black", "white"];
+
         return this;
     }
 
@@ -40,9 +42,6 @@ class Wuziqi extends GameTemplate {
 
         // Don't completly Override the game template initializeHTML function
         super.initializeHTML(app);
-
-        //Define black and white so can use in menus        
-        this.game.sides = ["black", "white"];
 
         this.menu.addMenuOption("game-game", "Game");
         this.menu.addMenuOption("game-info", "Info");
@@ -58,7 +57,7 @@ class Wuziqi extends GameTemplate {
         });
 
         // Add Chat Features to Menu
-        this.menu.addChatMenu(this.game.sides);
+        this.menu.addChatMenu(this.roles.slice(1));
         
         // Render menu and attach events
         this.menu.render();
@@ -117,7 +116,7 @@ class Wuziqi extends GameTemplate {
     and formats it to capitalize the first letter
     */
     formatPlayer(){
-        let myColor = this.game.sides[this.game.player-1];
+        let myColor = this.roles[this.game.player];
         return myColor.charAt(0).toUpperCase() + myColor.slice(1);
     }
 
@@ -179,14 +178,14 @@ class Wuziqi extends GameTemplate {
     updateScore() {
         let roundsToWin = Math.ceil(this.game.options.best_of/2);
         for (let i = 0; i<this.game.players.length; i++){
-            //this.playerbox.refreshName(i);
-            let scoreHTML = `<div>Score: </div>`;
+            let scoreHTML = `<div>Score: </div><div class="tokens">`;
             for (let j = 0; j < this.game.score[i]; j++) {
-                scoreHTML += `<img class="piece" src="img/${this.game.sides[i]}piece.png">`;
+                scoreHTML += `<img class="piece" src="img/${this.roles[i+1]}piece.png">`;
             }
             for (let j = 0; j < (roundsToWin - this.game.score[i]); j++) {
-                scoreHTML += `<img class="piece opaque30" src="img/${this.game.sides[i]}piece.png">`;
+                scoreHTML += `<img class="piece opaque30" src="img/${this.roles[i+1]}piece.png">`;
             }
+            scoreHTML += "</div>";
             this.playerbox.refreshInfo(scoreHTML,i+1);                        
         }
     }
@@ -262,7 +261,7 @@ class Wuziqi extends GameTemplate {
                 // When the cell is clicked
                 el.addEventListener("click", (e) => {
                     // Set it's owner to the clicker.
-                    cell.owner = this.game.sides[this.game.player - 1];
+                    cell.owner = this.roles[this.game.player];
                     // Check for round winner.
                     let winner = this.findWinner(cell);
 
@@ -355,13 +354,14 @@ class Wuziqi extends GameTemplate {
 
             if (mv[0] == "draw"){
 
+                let player = parseInt(mv[1]);
                 // Initiate next round.
                 // Add a continue button if player did not play the winning token, just draw the board (and remove events if they did not);
-                if (mv[1] != this.game.player) {
+                if (player != this.game.player && this.game.player > 0) {
                     this.updateStatus(`<span class='playertitle'>It's a draw -- no winner.`);
                     this.addContinueButton();
                 } else {
-                    this.updateStatus(`It's a draw -- no winner! <span class="playertitle">${this.game.sides[mv[1]%2]}</span> will start next round.`);
+                    this.updateStatus(`It's a draw -- no winner! <span class="playertitle">${this.roles[3-player]}</span> will start next round.`);
                 }
                 // Remove this item from the queue.
                 this.game.queue.splice(this.game.queue.length - 1, 1);
@@ -390,10 +390,10 @@ class Wuziqi extends GameTemplate {
                     // Initiate next round.
                     // Add a continue button if player did not play the winning token, just draw the board (and remove events if they did not);
                     if (winner != this.game.player) {
-                        this.updateStatus(`<span class='playertitle'>${this.game.sides[winner - 1]}</span> wins the round.`);
+                        this.updateStatus(`<span class='playertitle'>${this.roles[winner]}</span> wins the round.`);
                         this.addContinueButton();
                     } else {
-                        this.updateStatus(`You win the round! Waiting for <span class="playertitle">${this.game.sides[winner%2]}</span> to start next round.`);
+                        this.updateStatus(`You win the round! Waiting for <span class="playertitle">${this.roles[3-winner]}</span> to start next round.`);
                         this.drawBoard(this.game.board);
                     }
                 }
@@ -422,7 +422,7 @@ class Wuziqi extends GameTemplate {
                     this.addEvents(this.game.board);
                     this.updateStatus("Your move");
                 }else{
-                    this.updateStatus("Waiting on <span class='playertitle'>" + this.game.sides[player % 2] + "</span>");
+                    this.updateStatus("Waiting on <span class='playertitle'>" + this.roles[3-player] + "</span>");
                 }
                 
                 // Remove this item from the queue.
