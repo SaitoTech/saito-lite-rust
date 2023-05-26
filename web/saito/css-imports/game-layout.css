@@ -116,3 +116,24 @@ div.h3{
     height: 230px !important;
   }
 }
+
+
+.message_box {
+  background-image: url(/saito/img/arcade/your_move.png);
+  background-size: cover;
+  background-position: center;
+  width: 400px;
+  max-width: 95vw;
+  font-size: 4rem;
+  height: 404px;
+  max-height: 95vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  color: white;
+  text-shadow: 2px 2px black;
+  padding: 1rem 0;
+  text-transform: uppercase;
+  font-family: impact;
+}
