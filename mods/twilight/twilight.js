@@ -157,95 +157,7 @@ class Twilight extends GameTemplate {
 
   
   handleStatsMenu() {
-
     this.stats_overlay.render(this.game.state.stats);
-return;
-/***
-    let html = `
-
-      <table class="statistics-round-table">
-      <caption>Round-by-Round Statistics</caption>
-        <thead>
-        <tr><th></th>`;
-
-    for (let z = 1; z < 11; z++) {
-      html += `<th>R${z}</th>`;
-    }
-
-    html += `</tr></thead>`;
-
-    html += '<tbody><th>OPS</th>';
-    for (let z = 0; z < 10; z++) {
-      if (z > this.game.state.stats.round.length) {
-        html += `<td> - </td>`;
-      } else {
-        if (z == this.game.state.stats.round.length) {
-          html += `<td>${this.game.state.stats.us_ops - this.game.state.stats.ussr_ops}</td>`;
-        } else {
-          html += `<td>${
-            this.game.state.stats.round[z].us_ops - this.game.state.stats.round[z].ussr_ops
-          }</td>`;
-        }
-      }
-    }
-    html += "</tr>";
-
-    html += "<tr>";
-    html += '<th>VP</th>';
-
-    for (let z = 0; z < 10; z++) {
-      if (z > this.game.state.stats.round.length) {
-        html += `<td> - </td>`;
-      } else {
-        if (z == this.game.state.stats.round.length) {
-          html += `<td>${this.game.state.vp}</th>`;
-        } else {
-          html += `<td>${this.game.state.stats.round[z].vp}</th>`;
-        }
-      }
-    }
-
-    html += "</tr>";
-    html += "<tr>";
-    html += '<th>US Scoring</th>';
-
-    for (let z = 0; z < 10; z++) {
-      if (z > this.game.state.stats.round.length) {
-        html += `<td> - </td>`;
-      } else {
-        if (z == this.game.state.stats.round.length) {
-          html += `<td>${this.game.state.stats.us_scorings}</th>`;
-        } else {
-          html += `<td>${this.game.state.stats.round[z].us_scorings}</th>`;
-        }
-      }
-    }
-    html += "</tr>";
-    html += "<tr>";
-    html += '<th>USSR Scoring</th>';
-    for (let z = 0; z < 10; z++) {
-      if (z > this.game.state.stats.round.length) {
-        html += `<td> - </td>`;
-      } else {
-        if (z == this.game.state.stats.round.length) {
-          html += `<td>${this.game.state.stats.ussr_scorings}</th>`;
-        } else {
-          html += `<td>${this.game.state.stats.round[z].ussr_scorings}</th>`;
-        }
-      }
-    }
-
-    html += "</tr>";
-
-    html += `
-            </table>
-        `;
-    html += `
-          </div>
-        `;
-
-    twilight_self.overlay.show(html);
-****/
   }
 
 
@@ -2677,24 +2589,8 @@ try {
 } catch (err) {
 }
 
-      // STATS - aggregate the statisics
-      if (this.game.state.round > 1) {
+console.log("ROUND: " + this.game.state.round);
 
-	while (this.game.state.stats.round.length < this.game.state.round) {
-          this.game.state.stats.round.push({});
-	}
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_scorings = this.game.state.stats.us_scorings;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_scorings = this.game.state.stats.ussr_scorings;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_ops = this.game.state.stats.us_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ops = this.game.state.stats.ussr_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_us_ops = this.game.state.stats.us_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_us_ops = this.game.state.stats.ussr_ussr_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_ussr_ops = this.game.state.stats.us_ussr_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ussr_ops = this.game.state.stats.ussr_ussr_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].us_neutral_ops = this.game.state.stats.us_neutral_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_neutral_ops = this.game.state.stats.ussr_neutral_ops;
-        this.game.state.stats.round[this.game.state.stats.round.length-1].vp = this.game.state.vp;
-      }
 
       //
       // settle outstanding VP issue
@@ -2850,6 +2746,39 @@ try {
 
       //Increment state.round and resets state variables for next round
       if (!this.endRound()) { return 0; } 
+
+
+      //
+      // STATS - aggregate the statisics
+      //
+      if (this.game.state.round > 1) {
+
+	while (this.game.state.stats.round.length < this.game.state.round) {
+          this.game.state.stats.round.push({});
+	}
+
+console.log("STATS ROUNDS: " + this.game.state.stats.round.length);
+
+        this.game.state.stats.round[this.game.state.stats.round.length-1].us_scorings = this.game.state.stats.us_scorings;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_scorings = this.game.state.stats.ussr_scorings;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].us_ops = this.game.state.stats.us_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ops = this.game.state.stats.ussr_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].us_modified_ops = this.game.state.stats.us_modified_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_modified_ops = this.game.state.stats.ussr_modified_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].us_us_ops = this.game.state.stats.us_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_us_ops = this.game.state.stats.ussr_ussr_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].us_ussr_ops = this.game.state.stats.us_ussr_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ussr_ops = this.game.state.stats.ussr_ussr_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].us_neutral_ops = this.game.state.stats.us_neutral_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_neutral_ops = this.game.state.stats.ussr_neutral_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].vp = this.game.state.vp;
+
+console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
+
+      }
+
+
+
 
       //
       // END GAME IF WE MAKE IT !

@@ -84,25 +84,25 @@ module.exports = (twilight_self, stats) => {
       <div class="hdr round9">R9</div>
       <div class="hdr round10">R10</div>
       <div class="nhdr round1 round_us">${round_us_vp[0]}</div>
-      <div class="nhdr round2 round_us">${round_us_vp[0]}</div>
-      <div class="nhdr round3 round_us">${round_us_vp[0]}</div>
-      <div class="nhdr round4 round_us">${round_us_vp[0]}</div>
-      <div class="nhdr round5 round_us">${round_us_vp[0]}</div>
-      <div class="nhdr round6 round_us">${round_us_vp[0]}</div>
-      <div class="nhdr round7 round_us">${round_us_vp[0]}</div>
-      <div class="nhdr round8 round_us">${round_us_vp[0]}</div>
-      <div class="nhdr round9 round_us">${round_us_vp[0]}</div>
-      <div class="nhdr round10 round_us">${round_us_vp[0]}</div>
+      <div class="nhdr round2 round_us">${round_us_vp[1]}</div>
+      <div class="nhdr round3 round_us">${round_us_vp[2]}</div>
+      <div class="nhdr round4 round_us">${round_us_vp[3]}</div>
+      <div class="nhdr round5 round_us">${round_us_vp[4]}</div>
+      <div class="nhdr round6 round_us">${round_us_vp[5]}</div>
+      <div class="nhdr round7 round_us">${round_us_vp[6]}</div>
+      <div class="nhdr round8 round_us">${round_us_vp[7]}</div>
+      <div class="nhdr round9 round_us">${round_us_vp[8]}</div>
+      <div class="nhdr round10 round_us">${round_us_vp[9]}</div>
       <div class="nhdr round1 round_ussr">${round_ussr_vp[0]}</div>
-      <div class="nhdr round2 round_ussr">${round_ussr_vp[0]}</div>
-      <div class="nhdr round3 round_ussr">${round_ussr_vp[0]}</div>
-      <div class="nhdr round4 round_ussr">${round_ussr_vp[0]}</div>
-      <div class="nhdr round5 round_ussr">${round_ussr_vp[0]}</div>
-      <div class="nhdr round6 round_ussr">${round_ussr_vp[0]}</div>
-      <div class="nhdr round7 round_ussr">${round_ussr_vp[0]}</div>
-      <div class="nhdr round8 round_ussr">${round_ussr_vp[0]}</div>
-      <div class="nhdr round9 round_ussr">${round_ussr_vp[0]}</div>
-      <div class="nhdr round10 round_ussr">${round_ussr_vp[0]}</div>
+      <div class="nhdr round2 round_ussr">${round_ussr_vp[1]}</div>
+      <div class="nhdr round3 round_ussr">${round_ussr_vp[2]}</div>
+      <div class="nhdr round4 round_ussr">${round_ussr_vp[3]}</div>
+      <div class="nhdr round5 round_ussr">${round_ussr_vp[4]}</div>
+      <div class="nhdr round6 round_ussr">${round_ussr_vp[5]}</div>
+      <div class="nhdr round7 round_ussr">${round_ussr_vp[6]}</div>
+      <div class="nhdr round8 round_ussr">${round_ussr_vp[7]}</div>
+      <div class="nhdr round9 round_ussr">${round_ussr_vp[8]}</div>
+      <div class="nhdr round10 round_ussr">${round_ussr_vp[9]}</div>
     </div>      
 </div>
 
