@@ -532,7 +532,7 @@ class StorageCore extends Storage {
 
   async queryDatabase(sql, params, database) {
     try {
-      console.log("queryDatabase : " + sql);
+      // console.log("queryDatabase : " + sql);
       const db = await this.returnDatabaseByName(database);
       const rows = await db.all(sql, params);
       if (rows == undefined) {

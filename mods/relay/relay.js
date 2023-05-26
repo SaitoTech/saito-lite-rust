@@ -127,7 +127,7 @@ class Relay extends ModTemplate {
         await inner_tx.decryptMessage(this.app);
         let inner_txmsg = inner_tx.returnMessage();
 
-        console.log("inner txmsg : ", inner_txmsg);
+        // console.log("inner txmsg : ", inner_txmsg);
         //
         // if interior transaction is intended for me, I process regardless
         //

@@ -442,6 +442,7 @@ class Arcade extends ModTemplate {
   ////////////////////////////////////////////////////
 
   async onConfirmation(blk, tx, conf, app) {
+    console.log("onConfirmation called");
     let txmsg = tx.returnMessage();
     let arcade_self = app.modules.returnModule("Arcade");
 

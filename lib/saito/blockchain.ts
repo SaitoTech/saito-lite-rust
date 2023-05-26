@@ -3,6 +3,7 @@ import SaitoBlockchain from "saito-js/lib/blockchain";
 import Block from "./block";
 import { Saito as S } from "../../apps/core";
 import { TransactionType } from "saito-js/lib/transaction";
+import Transaction from "./transaction";
 
 export default class Blockchain extends SaitoBlockchain {
   public app: S;
@@ -49,9 +50,7 @@ export default class Blockchain extends SaitoBlockchain {
   }
 
   async loadBlockAsync(hash: string): Promise<Block | null> {
-    // TODO : implement
-    // throw new Error("not implemented");
-    return null;
+    return Saito.getInstance().getBlock(hash);
   }
 
   async initialize() {
@@ -74,21 +73,21 @@ export default class Blockchain extends SaitoBlockchain {
     // }
   }
 
-  public affixCallbacks(block: Block) {
+  public async affixCallbacks(block: Block) {
     console.log("affixing callbacks for block : " + block.hash);
-    for (let z = 0; z < block.transactions.length; z++) {
-      if (block.transactions[z].type === TransactionType.Normal) {
-        // block.transactions[z].decryptMessage(this.app);
-        const txmsg = block.transactions[z].msg;
-        this.app.modules.affixCallbacks(
-          block.transactions[z],
-          z,
-          txmsg,
-          this.callbacks,
-          this.callbackIndices
-        );
+    let callbacks = [];
+    let callbackIndices = [];
+    let txs: Transaction[] = block.transactions as Transaction[];
+    for (let z = 0; z < txs.length; z++) {
+      if (txs[z].type === TransactionType.Normal) {
+        await txs[z].decryptMessage(this.app);
+        const txmsg = txs[z].msg;
+        this.app.modules.affixCallbacks(txs[z], z, txmsg, callbacks, callbackIndices);
       }
     }
+    this.callbacks.set(block.hash, callbacks);
+    this.callbackIndices.set(block.hash, callbackIndices);
+    this.confirmations.set(block.hash, BigInt(-1));
   }
 
   public onNewBlock(block: Block, lc: boolean) {

@@ -20,6 +20,7 @@ import Peer from "../peer";
 import Transaction from "../transaction";
 import Factory from "../factory";
 import PeerServiceList from "saito-js/lib/peer_service_list";
+import Block from "../block";
 
 const JSON = require("json-bigint");
 const app = express();
@@ -346,7 +347,7 @@ class Server {
     url += this.server.endpoint.host;
     url += ":";
     url += this.server.endpoint.port;
-    url += "/block/";
+    // url += "/block/";
 
     this.server.block_fetch_url = url;
 
@@ -370,20 +371,18 @@ class Server {
     /////////////////
     // full blocks //
     /////////////////
-    app.get("/blocks/:bhash/:pkey", (req, res) => {
+    app.get("/blocks/:bhash/:pkey", async (req, res) => {
       const bhash = req.params.bhash;
       if (bhash == null) {
         return;
       }
 
       try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const blk = this.app.blockchain.blocks.get(bhash);
+        const blk = await this.app.blockchain.getBlock(bhash);
         if (!blk) {
           return;
         }
-        const filename = blk.returnFilename();
+        const filename = "./data/blocks/" + blk.file_name;
         console.info("### write from line 188 of server.ts.");
         res.writeHead(200, {
           "Content-Type": "text/plain",
@@ -455,7 +454,7 @@ class Server {
     /////////////////
     // lite-blocks //
     /////////////////
-    app.get("/lite-block/:bhash/:pkey", async (req, res) => {
+    app.get("/lite-block/:bhash/:pkey?", async (req, res) => {
       if (req.params.bhash == null) {
         return;
       }
@@ -497,53 +496,58 @@ class Server {
       //
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const block = this.app.blockchain.blocks.get(bsh);
+      const block = await this.app.blockchain.getBlock(bsh);
 
       if (!block) {
         console.log(`block : ${bsh} doesn't exist...`);
         res.sendStatus(404);
         return;
       }
-      if (!block.hasKeylistTransactions(keylist)) {
+      if (!block.hasKeylistTxs(keylist)) {
         console.info("### write from line 307 of server.ts.");
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
         });
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const liteblock = block.returnLiteBlock(keylist);
+        const liteblock = block.generateLiteBlock(keylist);
         const buffer = Buffer.from(liteblock.serialize());
         res.end(buffer, "utf8");
         return;
       }
 
-      //
+      let methods = new NodeSharedMethods(this.app);
       // TODO - load from disk to ensure we have txs -- slow.
-      //
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const blk = await this.app.storage.loadBlockByHash(bsh);
+      let buffer;
+      try {
+        let list = methods.loadBlockFileList();
+        console.log("file list : ", list);
+        for (let filename of list) {
+          if (filename.includes(bsh)) {
+            buffer = methods.readValue("./data/blocks/" + filename);
+            break;
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+      // const blk = await this.app.storage.loadBlockByHash(bsh);
 
-      if (blk == null) {
+      if (buffer.byteLength == 0) {
         res.sendStatus(404);
-        return;
       } else {
-        const newblk = blk.returnLiteBlock(keylist);
+        let blk = new Block();
+        blk.deserialize(buffer);
+        const newblk = blk.generateLiteBlock(keylist);
 
         console.info("### write from line 333 of server.ts.");
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
         });
-        const liteblock = block.returnLiteBlock(keylist);
-        const buffer = Buffer.from(liteblock.serialize()); //, "binary").toString("base64");
-        res.end(buffer);
-        return;
+        // const liteblock = block.generateLiteBlock(keylist);
+        const buffer2 = Buffer.from(newblk.serialize()); //, "binary").toString("base64");
+        res.end(buffer2);
       }
-
-      console.log("hit end...");
-      return;
     });
 
     app.get("/block/:hash", async (req, res) => {

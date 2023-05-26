@@ -4,7 +4,7 @@
     "port": 12101,
     "protocol": "http",
     "endpoint": {
-      "host": "127.0.0.1",
+      "host": "localhost",
       "port": 12101,
       "protocol": "http"
     },

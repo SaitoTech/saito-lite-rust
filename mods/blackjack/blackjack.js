@@ -1096,9 +1096,7 @@ class Blackjack extends GameTableTemplate {
     }
     let array_of_cards = [];
 
-    console.log("11111111 : ", this.game.deck[0].hand);
     for (let i of this.game.deck[0].hand) {
-      console.log("222222222222 : " + i, this.game.deck[0].cards[i]);
       array_of_cards.push(this.game.deck[0].cards[i].name);
     }
     return array_of_cards;
