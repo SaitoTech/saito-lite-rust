@@ -1272,19 +1272,23 @@ class Poker extends GameTableTemplate {
         html += `</div><ul><li class="menu_option" id="0">${(mobileToggle)? "nope":"cancel raise"}</li>`;
         let max_raise = Math.min(poker_self.stf(credit_remaining), poker_self.stf(smallest_stack));
 
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 4; i++) {
 
           let this_raise = poker_self.stf(poker_self.game.state.last_raise) + (i * poker_self.stf(poker_self.game.state.last_raise));
 
           if (max_raise > this_raise) {
             html += `<li class="menu_option" id="${this_raise + poker_self.stf(match_required)}">${(mobileToggle)? " ":"raise "}${poker_self.formatWager(this_raise)}</li>`;
           } else {
-            i = 6; //Stop for-loop
-            html += `<li class="menu_option" id="${poker_self.addToString(max_raise, match_required)}">
-                      raise ${poker_self.formatWager(max_raise)} 
-                      (all in${(smallest_stack_player !== poker_self.game.player - 1)?` for ${poker_self.game.state.player_names[smallest_stack_player]}`:""})</li>`;
+            break;
           }
         }
+        
+        //Always give option for all in
+        html += `<li class="menu_option" id="${poker_self.addToString(max_raise, match_required)}">
+                  raise ${poker_self.formatWager(max_raise)} 
+                  (all in${(smallest_stack_player !== poker_self.game.player - 1)?` for ${poker_self.game.state.player_names[smallest_stack_player]}`:""})</li>`;
+
+
 
         html += "</ul>";
         poker_self.updateStatus(html);
