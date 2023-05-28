@@ -3,6 +3,7 @@ const JSON = require("json-bigint");
 const PokerGameRulesTemplate = require("./lib/poker-game-rules.template");
 const PokerGameOptionsTemplate = require("./lib/poker-game-options.template");
 
+
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
@@ -1466,55 +1467,31 @@ class Poker extends GameTableTemplate {
     }
   }
 
+  returnPlayerRole(player) {
+    if (player == this.game.state.button_player){
+      return "dealer";
+    }
+    if (player == this.game.state.small_blind_player){
+      return "small blind";
+    }
+    if (player == this.game.state.big_blind_player){
+      return "big blind";
+    }
+    return "";
+  }
+
   displayPlayers(preserveLog = false) {
     if (!this.browser_active){
       return;
     }
     try {
       for (let i = 1; i <= this.game.players.length; i++) {
-
-	let seat = this.playerbox.playerBox(i);
-
-        this.playerbox.refreshName(i);
         this.refreshPlayerStack(i, true);  
         if (!preserveLog){
           this.refreshPlayerLog("", i);
         }
 
-	let userline_updated = false;
-
-	if (i == this.game.state.button_player) {
-	  let qs = `#player-box-head-${seat} .saito-user .saito-userline`;
-	  let obj = document.querySelector(qs);
-	  if (obj) {
- 	    obj.innerHTML = "dealer";
-	  }
-	  userline_updated = true;
-	}
-
-	if (i == this.game.state.small_blind_player) {
-	  let qs = `#player-box-head-${seat} .saito-user .saito-userline`;
-	  let obj = document.querySelector(qs);
-	  if (obj) { 
-	    obj.innerHTML = "small blind";
-	  }
-	  userline_updated = true;
-	}
-
-	if (i == this.game.state.big_blind_player) {
-	  let qs = `#player-box-head-${seat} .saito-user .saito-userline`;
-	  let obj = document.querySelector(qs);
-	  if (obj) { obj.innerHTML = "big blind"; }
-	  userline_updated = true;
-	}
-
-	if (userline_updated == false) {
-	  let qs = `#player-box-head-${seat} .saito-user .saito-userline`;
-	  let obj = document.querySelector(qs);
-	  if (obj) { obj.innerHTML = "out of position"; }
-	  userline_updated = true;
-	}
-      }
+	    }
 
     } catch (err) {
       console.log("error displaying player box",err);
@@ -1629,32 +1606,27 @@ class Poker extends GameTableTemplate {
   }
 
   refreshPlayerLog(html, player) {
-    if (html.indexOf("menu-player-upper") == -1) { html = '<div class="menu-player-upper"></div>' + html; }
+    //if (html.indexOf("menu-player-upper") == -1) { html = '<div class="menu-player-upper"></div>' + html; }
     this.playerbox.refreshLog(html, player);
-    this.refreshPlayerStack(player, false);
+    //this.refreshPlayerStack(player, false);
   }
+  
   refreshPlayerStack(player, includeCards = true){
 
     if (!this.browser_active) { return; }
 
-    let html = "";
+    /*let html = "";
     let innerhtml = "";
     if (this.stf(this.game.state.player_credit[player-1]) === 0 && this.game.state.all_in){
       innerhtml = `<div class="saito-balance" style="float:right">All in!</div>`;
     } else {
       innerhtml = `<div class="saito-balance" style="float:right">${this.formatWager(this.game.state.player_credit[player-1], true)}</div>`;
-    }
+    }*/
 
-    let seat = this.playerbox.playerBox(player);
-    let qs = `#player-box-body-${seat} .menu-player-upper`;
-    if (document.querySelector(qs)) {
-      document.querySelector(qs).innerHTML = innerhtml;
-    } else {
-      let qs = `#player-box-body-${seat}`;
-      if (document.querySelector(qs)) {
-        document.querySelector(qs).innerHTML = `<div class="menu-player-upper">${innerhtml}</div>`;
-      }
-    }
+    let userline = this.returnPlayerRole(player) + `<div class="saito-balance" style="float:right">${this.formatWager(this.game.state.player_credit[player-1], true)}</div>`;
+    this.playerbox.refreshName(player, "", userline);
+
+
 
 /*******
 ******** Graphics Removed
