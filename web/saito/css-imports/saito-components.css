@@ -5,12 +5,13 @@
   height: 2rem;
   border-radius: 0.5rem;
   background-color: var(--saito-primary);
-  color: var(--saito-background-color);
+  color: var(--saito-white);
   position: absolute;
   bottom: 2.5rem;
   left: 3.5rem;
-  text-align: center;
-  line-height: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 
 .online-status-indicator:after {
