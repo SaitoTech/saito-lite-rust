@@ -45,21 +45,12 @@ class Blackjack extends GameTableTemplate {
     // ADD MENU
     //
     this.menu.addSubMenuOption("game-game", {
-      text : "Rules",
+      text : "How to Play",
       id : "game-intro",
       class : "game-intro",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(game_mod.returnGameRulesHTML());
-      }
-    });
-    this.menu.addSubMenuOption("game-game", {
-      text : "Log",
-      id : "game-log",
-      class : "game-log",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
       }
     });
 
@@ -903,25 +894,22 @@ class Blackjack extends GameTableTemplate {
         let player_hand_shown = 0;
 
         this.refreshPlayerLog("", i+1);
-        this.playerbox.refreshName(i+1);
-	let seat = this.playerbox.playerBox(i+1);
 
+        let userline = (this.game.state.dealer == (i+1)) ? "dealer" : "player";
+
+        let balance = this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].credit);
+
+        userline += `<div class="saito-balance">${this.formatWager(balance)}</div>`;
+
+        this.playerbox.refreshName(i+1, "", userline);
+	
         if (this.game.state.player[i].wager>0 && this.game.state.dealer !== (i+1)){
           newhtml = `<div class="chips">${(this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].credit-this.game.state.player[i].wager))} ${this.game.crypto || "SAITO"}, Bet: ${this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].wager)}</div>`;
         } else {
           newhtml = `<div class="chips">${this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].credit)} ${this.game.crypto || "SAITO"}</div>`;
         }
 
-	let qs = `#player-box-head-${seat} .saito-user .saito-userline`;
-	let obj = document.querySelector(qs);
 
-	if (obj) {
-          if (this.game.state.dealer == (i+1)) {
-            obj.innerHTML = `dealer`;  
-          }else{
-            obj.innerHTML = `normal`;  
-          }
-	}
 
         newhtml = "";
 
@@ -1381,31 +1369,6 @@ class Blackjack extends GameTableTemplate {
 
 
 
-  refreshPlayerStack(player) {
-        
-    if (!this.browser_active) { return; }
-
-    let html = "";
-    let innerhtml = "";
-    let balance = this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[player-1].credit);
-
-    if (this.game.state.player.length >= player) {
-      innerhtml = `<div class="saito-balance" style="float:right">${this.formatWager(balance)}</div>`;
-    }
-          
-    let seat = this.playerbox.playerBox(player);
-    let qs = `#player-box-body-${seat} .menu-player-upper`;
-    if (document.querySelector(qs)) {
-      document.querySelector(qs).innerHTML = innerhtml;
-    } else {
-      let qs = `#player-box-body-${seat}`;
-      if (document.querySelector(qs)) {
-        document.querySelector(qs).innerHTML = `<div class="menu-player-upper">${innerhtml}</div>`;
-      } 
-    } 
-
-  }
-
   refreshPlayerCards(html, player) {
 
     if (!this.browser_active) { return; }
@@ -1432,9 +1395,9 @@ class Blackjack extends GameTableTemplate {
   }
 
   refreshPlayerLog(html, player) {
-    if (html.indexOf("menu-player-upper") == -1) { html = '<div class="menu-player-upper"></div>' + html; }
+
     this.playerbox.refreshLog(html, player);
-    this.refreshPlayerStack(player, false);
+
     if (this.game.state.player) {
       if (this.game.state.player.length >= player) {
         this.refreshPlayerCards(this.game.state.player[player-1].cardshtml, player);

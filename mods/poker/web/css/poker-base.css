@@ -15,8 +15,7 @@ body {
 }
 
 .saito-balance {
-    float: right;
-    margin-top: 0.2rem;
+  text-align: center;
 }
 
 .player-box-body .status {
@@ -39,6 +38,11 @@ body {
 
 .player-box-head .saito-user>.saito-address , .player-box-head .saito-user>.saito-userline {
   color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 .cardfan {
@@ -65,6 +69,7 @@ body {
 }
 
 .player-box{
+  min-width: 200px;
   max-width: 250px;
   border: 1px solid #FFF3;
   min-height: unset;
