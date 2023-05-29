@@ -31,6 +31,26 @@
     border-radius: 2.5rem;
 }
 
+.hud-header.black {
+    background-color: black;
+    color: white;
+}
+
+.hud-header.white {
+    background-color: white;
+    color: black;
+}
+
+
+.racetrack .pblack {
+    background-color: black;
+    color: white;
+}
+
+.racetrack .pwhite {
+    background-color: white;
+    color: black;
+}
 
 /*
 Board is a grid of wooden squares

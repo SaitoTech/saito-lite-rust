@@ -74,7 +74,7 @@ class Wuziqi extends GameTemplate {
         }
 
 
-        //Player Boxes
+        /*Player Boxes
         this.playerbox.render();
         if (this.game.player == 0){
             this.playerbox.addClass("me",1);
@@ -84,13 +84,32 @@ class Wuziqi extends GameTemplate {
             this.playerbox.addClass("notme",3-this.game.player);
         }
         this.playerbox.makeDraggable(); //I think we still want to be able to move them
+        */
+
+        this.hud.render();
+
+        let hh = document.querySelector(".hud-header");
+        if (hh){
+            hh.classList.add(this.roles[this.game.player]);
+        }  
+      
+        this.racetrack.win = Math.ceil(this.game.options.best_of/2);
+        this.racetrack.title = "Best of " + this.game.options.best_of;
+        for (let i = 0; i < this.game.players.length; i++){
+            let player = {
+                name: this.roles[i+1].toUpperCase(),
+                score: this.game.score[i],
+                color: this.roles[i+1]
+            };
+            this.racetrack.players.push(player);
+        }
+        this.racetrack.render();
 
         // Render board and set up values.
         try {
             // Check if anyone has played yet (black goes first)
             let blackplayedyet = this.serializeBoard(this.game.board).indexOf("B");
             this.drawBoard(this.game.board);
-            this.updateScore();
 
             // If no one has played set up the board
             if (blackplayedyet < 0) {
@@ -176,6 +195,8 @@ class Wuziqi extends GameTemplate {
         but data structures for player properties are typically 0-indexed arrays
     */
     updateScore() {
+        this.racetrack.render();
+       /*
         let roundsToWin = Math.ceil(this.game.options.best_of/2);
         for (let i = 0; i<this.game.players.length; i++){
             let scoreHTML = `<div>Score: </div><div class="tokens">`;
@@ -188,9 +209,10 @@ class Wuziqi extends GameTemplate {
             scoreHTML += "</div>";
             this.playerbox.refreshInfo(scoreHTML,i+1);                        
         }
+        */
     }
 
-    updateStatus(str) {
+    /*updateStatus(str) {
     
       if (this.lock_interface == 1) { return; }
 
@@ -205,7 +227,7 @@ class Wuziqi extends GameTemplate {
           this.app.browser.addElementToSelector(`<div class="status">${str}</div>`, `#player-box-body-${seat}`);
         }
       }
-    }
+    }*/
 
     animatePlay(cell){
         //$(`div#tile_${cell.id} div`).removeClass("empty").addClass("piece").addClass(cell.owner).fadeIn();
@@ -361,7 +383,7 @@ class Wuziqi extends GameTemplate {
                 // Initiate next round.
                 // Add a continue button if player did not play the winning token, just draw the board (and remove events if they did not);
                 if (player != this.game.player && this.game.player > 0) {
-                    this.updateStatus(`<span class='playertitle'>It's a draw -- no winner.`);
+                    this.updateStatus(`It's a draw -- no winner.`);
                     this.addContinueButton();
                 } else {
                     this.updateStatus(`It's a draw -- no winner! <span class="playertitle">${this.roles[3-player]}</span> will start next round.`);
@@ -380,7 +402,7 @@ class Wuziqi extends GameTemplate {
 
                 // Update my scores
                 this.game.score[winner - 1]++;
-                this.updateScore();
+                this.racetrack.advancePlayer(winner);
 
                 // If this round win, wins the game - let the winner know.
                 if (2 * this.game.score[winner - 1] > this.game.options.best_of) {
