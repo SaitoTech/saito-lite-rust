@@ -313,14 +313,17 @@ console.log("DONE GENERATING MAP");
                 <div class="cardct">
                    resources: ${this.game.state.players[i - 1].resources.length},
                    cards: ${this.game.state.players[i - 1].devcards}
-                </div>`;
-                userline += `${statshtml}</div>`;
+                </div></div>`;
+                //userline += `${statshtml}</div>`;
 
             let playerHTML = `
               <div class="saito-user settlers-user saito-user-${this.game.players[i - 1]}" id="saito-user-${this.game.players[i - 1]}" data-id="${this.game.players[i - 1]}">
                 <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i - 1])}"></div>
-                <div class="saito-address saito-playername" data-id="${this.game.players[i - 1]}">${this.game.playerNames[i - 1]}</div>
-                <div class="saito-userline">${userline}</div>
+                <div class="saito-player-line">
+                  <div class="saito-address saito-playername" data-id="${this.game.players[i - 1]}">${this.game.playerNames[i - 1]}</div>
+                  <div class="saito-userline">${userline}</div>
+                </div>
+                ${statshtml}
               </div>
             `;
 
