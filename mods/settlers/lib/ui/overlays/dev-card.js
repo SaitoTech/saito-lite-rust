@@ -23,7 +23,7 @@ class DevCardOverlay {
 
   attachEvents() {
     this_dev_card = this;
-    document.querySelectorAll(".settlers-dev-card").forEach(function(card, k) {
+    document.querySelectorAll(".settlers-dev-card").forEach((card) => {
       card.onclick = (e) => {
 
         let target = e.currentTarget;

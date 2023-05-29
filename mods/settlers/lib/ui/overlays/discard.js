@@ -42,7 +42,7 @@ class DiscardOverlay {
   attachEvents() {
 
     this_self = this;
-    document.querySelectorAll(".discard-cards-overlay .settlers-cards-container img").forEach(function(card, k) {
+    document.querySelectorAll(".discard-cards-overlay .settlers-cards-container img").forEach((card) => {
       card.onclick = (e) => {
 
         let target = e.currentTarget;

@@ -1547,8 +1547,9 @@ alert("Not Implemented");
         type : "mandatory" ,
         removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
         onEvent : function(his_self, faction) {
-          state.events.schmalkaldic_league = 1;
+          his_self.game.state.events.schmalkaldic_league = 1;
           his_self.game.state.activated_powers["papacy"].push("hapsburg");
+	  return 1;
         }
       }
     } else {
@@ -1560,7 +1561,8 @@ alert("Not Implemented");
         type : "mandatory" ,
         removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
         onEvent : function(his_self, faction) {
-          state.events.schmalkaldic_league = 1;
+          his_self.game.state.events.schmalkaldic_league = 1;
+	  return 1;
         }
       }
     }

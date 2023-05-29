@@ -21,7 +21,7 @@ class YearOfPlentyOverlay {
   attachEvents() {
 
     this_self = this;
-    document.querySelectorAll(".settlers-select-options img").forEach(function(card, k) {
+    document.querySelectorAll(".settlers-select-options img").forEach((card) => {
       card.onclick = (e) => {
 
         let target = e.currentTarget;
@@ -48,7 +48,7 @@ class YearOfPlentyOverlay {
       }
     });
 
-    document.querySelectorAll(".settlers-selected-resources img").forEach(function(card, k) {
+    document.querySelectorAll(".settlers-selected-resources img").forEach((card) => {
       card.onclick = (e) => {
 
         let target = e.currentTarget;
