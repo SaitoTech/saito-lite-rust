@@ -468,7 +468,6 @@ initializeGame(game_id) {
   //
   // check user preferences to update interface, if text
   //
-  
   if (this.app?.options?.gameprefs) {
     this.interface = this.app.options.gameprefs.interface || this.interface;  
     
@@ -847,6 +846,14 @@ try {
     })
 
   } catch (err) {}
+
+
+  //
+  // preload images
+  //
+  if (this.browser_active) {
+    this.preloadImages();
+  }
 
 }
 
@@ -14649,6 +14656,44 @@ console.log("ROUND: " + this.game.state.round);
 
     return nsgo;
   }
+
+
+
+
+  preloadImages() {
+
+    let allImages = [
+	"img/backgrounds/europe-scoring-bg.png",
+	"img/backgrounds/asia-scoring-bg.png",
+	"img/backgrounds/mideast-scoring-bg.png",
+	"img/backgrounds/africa-scoring-bg.png",
+	"img/backgrounds/southamerica-scoring-bg.png",
+	"img/backgrounds/centralamerica-scoring-bg.png",
+	"img/backgrounds/seasia-scoring-bg.png",
+	"img/backgrounds/indopaki-bg.jpg",
+	"img/backgrounds/arabisraeli-bg.jpg",
+	"img/backgrounds/iraniraq-bg.jpg",
+	"img/backgrounds/koreanwar-bg.jpg",
+	"img/backgrounds/brushwar-bg.jpg"
+    ];
+
+    this.preloadImageArray(allImages, 0);
+
+  }
+  preloadImageArray(imageArray=[], idx=0) {
+
+    let pre_images = [imageArray.length];
+
+    if (imageArray && imageArray.length > idx) {
+      pre_images[idx] = new Image();
+      pre_images[idx].onload = () => {
+        this.preloadImageArray(imageArray, idx+1);
+      }
+      pre_images[idx].src = "/imperium/" + imageArray[idx];
+    }
+
+  }
+
 
 
 

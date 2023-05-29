@@ -468,7 +468,6 @@ initializeGame(game_id) {
   //
   // check user preferences to update interface, if text
   //
-  
   if (this.app?.options?.gameprefs) {
     this.interface = this.app.options.gameprefs.interface || this.interface;  
     
@@ -847,6 +846,14 @@ try {
     })
 
   } catch (err) {}
+
+
+  //
+  // preload images
+  //
+  if (this.browser_active) {
+    this.preloadImages();
+  }
 
 }
 
