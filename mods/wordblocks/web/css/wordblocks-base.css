@@ -177,8 +177,9 @@ thead,  tfoot{
 /* Popup menu controls */
 .tile-placement-controls, .tile-submit-controls{
   position: absolute;
-  top: -55px;
-  right: -34%;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
   text-align: center;
   width: 150px;
   display: flex;
@@ -517,11 +518,20 @@ thead,  tfoot{
   .player-box .plog, .player-box .player-box-info{
     padding: 0.25em;
   }
+
+  .tile-submit-controls{
+    flex-direction: row;
+    justify-content: space-between;
+    width: 550px;
+    max-width: 100vw;
+  }
+
 }
 
 /*
 Resize board on smaller screens
 */
+
 @media only screen and (max-width: 600px) {
   #game-scoreboard{
     display: flex;
@@ -566,18 +576,6 @@ Resize board on smaller screens
     max-height: unset;
     height: fit-content;
     height: -moz-fit-content;
-  }
-
-  .tile-submit-controls{
-    top: unset;
-    left: 50%;
-    right: unset;
-    bottom: 100%;
-    transform: translateX(-50%);
-    flex-direction: row;
-    justify-content: space-between;
-    width: 550px;
-    max-width: 100vw;
   }
 
   .tiles {

@@ -35,8 +35,8 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
-	  this.game.queue.push("spring_deployment_phase");
-	  this.game.queue.push("diplomacy_phase");
+//	  this.game.queue.push("spring_deployment_phase");
+//	  this.game.queue.push("diplomacy_phase");
 
 	  //
 	  // start the game with the Protestant Reformation
@@ -785,7 +785,7 @@ return 0; }
 	      // fortifications; all other land units in excess of 4 are eliminated.
       	      //
       	      // this only runs after we have had a battle, so we fortify everything if we still
-	      // exist. HACK
+	      // exist. 
       	      //
 	      //
 	      // fortify everything
@@ -809,6 +809,7 @@ return 0; }
 	  let player = parseInt(mv[2]);
 	  let faction = mv[3];
 	  let spacekey = mv[4];
+	  let space = this.game.spaces[spacekey];
 
 	  if (this.game.player == player) {
 	    this.playerEvaluateFortification(attacker, faction, spacekey);
@@ -828,7 +829,7 @@ return 0; }
 	      // fortifications; all other land units in excess of 4 are eliminated.
       	      //
       	      // this only runs after we have had a battle, so we fortify everything if we still
-	      // exist. HACK
+	      // exist. 
       	      //
 	      //
 	      // fortify everything
@@ -2263,6 +2264,7 @@ console.log("faction_map: " + JSON.stringify(faction_map));
 	  let his_self = this;
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
+	  let space = this.game.spaces[this.game.state.field_battle.spacekey];
 
           this.game.queue.splice(qe, 1);
 
@@ -2456,7 +2458,64 @@ alert("Units Destroyed Requires Check");
 	    if (this.game.state.field_battle.attacker_hits == 0) { return 1; }
 	  }
 
+	  //
+	  // if we hit this point we need manual intervention to assign the hits.
+	  // the attacker can assign hits however they prefer if others join them
+	  // in the attack, but if two major powers share defense then the hits
+	  // are divided evenly among them.
+	  //
+          let hits_to_assign = this.game.state.field_battle.attacker_hits; 
+          let defending_factions = [];
+          let defending_factions_count = 0;
+          let defending_major_powers = 0;
+          let defending_factions_hits = [];
+	  for (let f in this.game.state.field_battle.faction_map) {
+	    if (this.game.state.field_battle.faction_map[f] === this.game.state.field_battle.defender_faction) {
+	      if (this.isMajorPower(f)) {
+	        defending_factions.push(f);
+                defending_factions_hits.push(0);
+	      }
+	    }
+	  }
 
+	  //
+	  // every gets shared hits
+	  //
+	  while (hits_to_assign > defending_factions_hits.length) {
+	    for (let i = 0; i < defending_factions_hits.length; i++) { defending_factions_hits[i]++; }
+	    hits_to_assign -= defending_factions_hits.length;
+	  }
+
+	  //
+	  // randomly assign remainder
+	  //
+	  let already_punished = [];
+	  for (let i = 0; i < hits_to_assign; i++) {
+	    let unlucky_faction = this.rollDice(defending_factions_hits.length)-1;
+	    while (already_punished.includes(unlucky_faction)) {
+	      unlucky_faction = this.rollDice(defending_factions_hits.length)-1;
+	    }
+	    defending_factions_hits[unlucky_faction]++;
+	    already_punished.push(unlucky_faction);
+	  }
+	  
+
+	  //
+	  // defending major powers
+	  // 
+	  if (defending_major_powers > 0 && this.game.state.field_battle.faction_map[faction] === this.game.state.field_battle.defender_faction) {
+	    for (let i = 0; i < defending_factions_hits.length; i++) {
+  	      this.game.queue.push(`field_battle_manually_assign_hits\t${defending_factions[i]}\t${defending_factions_hits[i]}`);
+	    }
+	    return 1;
+	  }
+
+console.log("DEFENDING FACTIONS: " + defending_factions);
+console.log("FM: " + JSON.stringify(this.game.state.field_battle.faction_map));
+
+	  //
+	  // otherwise assign hits directly
+	  //
 	  if (player == this.game.player) {
             his_self.field_battle_overlay.renderFieldBattle(his_self.game.state.field_battle);
             his_self.field_battle_overlay.assignHits(his_self.game.state.field_battle, faction);
@@ -2468,6 +2527,34 @@ alert("Units Destroyed Requires Check");
 	  return 0;
 
 	}
+
+        //
+        // variant of above when major powers have to split hits assignments
+        //
+	if (mv[0] === "field_battle_manually_assign_hits") {
+
+	  let his_self = this;
+	  let faction = mv[1];
+	  let hits = parseInt(mv[2]);
+	  let player = this.returnPlayerOfFaction(faction);
+	  let space = this.game.spaces[this.game.state.field_battle.spacekey];
+
+          this.game.queue.splice(qe, 1);
+
+	  //
+	  // otherwise assign hits directly
+	  //
+	  if (player == this.game.player) {
+            his_self.field_battle_overlay.renderFieldBattle(his_self.game.state.field_battle);
+            his_self.field_battle_overlay.assignHitsManually(his_self.game.state.field_battle, faction, hits);
+	  } else {
+            his_self.field_battle_overlay.renderFieldBattle(his_self.game.state.field_battle);
+            his_self.field_battle_overlay.updateInstructions(this.returnFactionName(faction) + " Assigning Hits");
+	  }
+
+	  return 0;
+        }
+
 
 	if (mv[0] === "field_battle_assign_hits_render") {
           this.game.queue.splice(qe, 1);

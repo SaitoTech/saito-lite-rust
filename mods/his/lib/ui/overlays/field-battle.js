@@ -69,11 +69,18 @@ class FieldBattleOverlay {
     }
 
     assignHits(res={}, faction="") {
+      let hits_to_assign = res.attacker_hits;
+      if (faction === res.attacker_faction) { hits_to_assign = res.defender_hits; }
+      this.assignHitsManually(res, faction, hits_to_assign);
+    }
+
+    assignHitsManually(res={}, faction="", hits_to_assign=1) {
+
+console.log("AHM!");
 
       let hits_assignable = 0;
       let hits_assigned = 0;
-      let hits_to_assign = res.attacker_hits;
-      if (faction === res.attacker_faction) { hits_to_assign = res.defender_hits; }
+      let his_self = this.mod;
 
       this.updateInstructions(`Assign <span class="hits_to_assign">${hits_to_assign}</span> Hits`);
       this.mod.updateStatus(`Assign <span class="hits_to_assign">${hits_to_assign}</span> Hits`);
@@ -83,30 +90,45 @@ class FieldBattleOverlay {
       });
       document.querySelectorAll(".hits-assignable").forEach((el) => {
 
-	let factionspace = el.querySelector(".field-battle-desc");
-	if (factionspace) { factionspace.innerHTML = "click to assign hit"; }
-	el.classList.add("hits-assignable-hover-effect");
+console.log("HA");
 
-        hits_assignable++;
-	el.onclick = (e) => {
+	let factionspace = el.querySelector(".field-battle-desc").innerHTML;
+	let can_i_kill_this_guy = false;
 
-	  hits_assigned++;
-	  let hits_left = hits_to_assign - hits_assigned;
+	if (factionspace === faction || his_self.returnAllyOfMinorPower(factionspace) === faction) {
+	  can_i_kill_this_guy = true;
+	}
 
-	  document.querySelectorAll("hits_to_assign").forEach((el) => {
-	    el.innerHTML = hits_left;
-	  });
+console.log("faction: " + faction);
+console.log("factionspace: " + factionspace);
+console.log("ally of: " + his_self.returnAllyOfMinorPower(factionspace));
 
-	  let unit_type = el.getAttribute("data-unit-type");
-	  let faction = el.getAttribute("data-faction");
-	  let spacekey = res.spacekey;
+	if (can_i_kill_this_guy) {
 
-	  el.remove();
+	  if (factionspace) { factionspace.innerHTML += " (click to assign hit)"; }
+	  el.classList.add("hits-assignable-hover-effect");
 
-	  this.mod.addMove("field_battle_destroy_unit\t" + faction + "\t" + spacekey + "\t" + unit_type);
-	  if (hits_assigned == hits_to_assign || hits_assigned >= hits_assignable) {
-            document.querySelectorAll(".hits-assignable").forEach((el) => { el.onclick = (e) => {}; });
-	    this.mod.endTurn();
+          hits_assignable++;
+	  el.onclick = (e) => {
+
+	    hits_assigned++;
+	    let hits_left = hits_to_assign - hits_assigned;
+
+	    document.querySelectorAll("hits_to_assign").forEach((el) => {
+	      el.innerHTML = hits_left;
+	    });
+
+	    let unit_type = el.getAttribute("data-unit-type");
+	    let faction = el.getAttribute("data-faction");
+	    let spacekey = res.spacekey;
+
+	    el.remove();
+
+	    this.mod.addMove("field_battle_destroy_unit\t" + faction + "\t" + spacekey + "\t" + unit_type);
+	    if (hits_assigned == hits_to_assign || hits_assigned >= hits_assignable) {
+              document.querySelectorAll(".hits-assignable").forEach((el) => { el.onclick = (e) => {}; });
+	      this.mod.endTurn();
+	    }
 	  }
 
 	}

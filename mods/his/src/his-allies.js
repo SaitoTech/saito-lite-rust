@@ -64,7 +64,7 @@ console.log("saying no!");
     return 0;
   }
 
-  setAllies(faction1, faction2) {
+  setAllies(faction1, faction2, amp=1) {
 
 console.log("set allies: " + faction1 + " || " + faction2);
 
@@ -73,13 +73,37 @@ console.log("set allies: " + faction1 + " || " + faction2);
     try { this.game.state.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
 
-console.log("GAME DIPLOMACY: " + JSON.stringify(this.game.state.diplomacy));
+    if (amp == 1) {
+      if (this.isMinorPower(faction1)) {
+        if (!this.isMinorPower(faction2)) {
+  	  this.activateMinorPower(faction2, faction1);
+        }
+      }
+      if (this.isMinorPower(faction2)) {
+        if (!this.isMinorPower(faction1)) {
+	  this.activateMinorPower(faction1, faction2);
+        }
+      }
+    }
 
   }
 
-  unsetAllies(faction1, faction2) {
+  unsetAllies(faction1, faction2, amp=1) {
     try { this.game.state.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
     try { this.game.state.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
+
+    if (amp == 1) {
+      if (this.isMinorPower(faction1)) {
+        if (!this.isMinorPower(faction2)) {
+  	  this.activateMinorPower(faction2, faction1);
+        }
+      }
+      if (this.isMinorPower(faction2)) {
+        if (!this.isMinorPower(faction1)) {
+	  this.activateMinorPower(faction1, faction2);
+        }
+      }
+    }
   }
 
   setEnemies(faction1, faction2) {

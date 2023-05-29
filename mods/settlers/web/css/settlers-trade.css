@@ -1,7 +1,6 @@
 
 .mobile-trading-container .player-box {
-  width: 30rem;
-  max-width: 50rem;
+  max-width: 80vw;
 }
 
 .trade_area {

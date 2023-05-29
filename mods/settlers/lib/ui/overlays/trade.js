@@ -79,9 +79,8 @@ console.log(JSON.stringify(this.get));
     let trade_overlay = this;
     let settlers_self = this.mod;
 
-
-    document.querySelectorAll(".trade_count_up").forEach(function(arrow, k){
-      arrow.addEventListener("click", function(e){
+    document.querySelectorAll(".trade_count_up").forEach((arrow) => {
+      arrow.addEventListener("click", (e) => {
 
         settlers_self.accepting_trade = 0;
         document.querySelector(".trade_overlay_button.saito-button-primary").innerHTML = "Broadcast Offer";
@@ -122,8 +121,8 @@ console.log(JSON.stringify(this.get));
     });
 
 
-    document.querySelectorAll(".trade_count_down").forEach(function(arrow, k){
-      arrow.addEventListener("click", function(e){
+    document.querySelectorAll(".trade_count_down").forEach((arrow) => {
+      arrow.addEventListener("click", (e) => {
 
           settlers_self.accepting_trade = 0;
           document.querySelector(".trade_overlay_button.saito-button-primary").innerHTML = "Broadcast Offer";

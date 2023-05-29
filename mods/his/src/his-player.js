@@ -921,7 +921,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 	let tf = available_units[i].faction;
 	let tu = space.units[tf][available_units[i].unit_idx];
 	if (units_to_move.includes(i)) {
-          html += `<li class="option" style="font-weight:bold" id="${i}">${tu.name} - ${his_self.returnFactionName(tf)}</li>`;
+          html += `<li class="option" style="font-weight:bold" id="${i}">* ${tu.name} - ${his_self.returnFactionName(tf)} *</li>`;
 	} else {
           html += `<li class="option" style="" id="${i}">${tu.name} - ${his_self.returnFactionName(tf)}</li>`;
         }

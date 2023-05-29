@@ -475,8 +475,12 @@ body {
 }
 
 .player-box {
-  width: 45rem;
   max-width: 80vw;
+  width: unset;
+}
+
+.mobile-trading-container .flexline {
+  min-width: 16rem;
 }
 
 .player-box-info {
@@ -864,7 +868,6 @@ ul.horizontal_list li.iconoption {
   flex-direction: row;
   width: 100%;
   flex-wrap: wrap;
-  margin-bottom: 0.5em;
 }
 
 .flexline2 {
@@ -1211,7 +1214,6 @@ ul.horizontal_list li.iconoption {
 
 
 .achievements {
-  position: absolute;
   top: 0rem;
   right: 0rem;
   display: flex;

@@ -1,6 +1,6 @@
 .blackjack-rules-overlay {
     border: solid 0.5rem #fff;
-    min-width: 95rem;
+    width: 95rem;
     max-width: 80vw;
     background-image: url(/saito/img/arcade/greenfelt.jpg);
     background-size: cover;

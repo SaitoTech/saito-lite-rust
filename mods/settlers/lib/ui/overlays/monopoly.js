@@ -19,7 +19,7 @@ class MonopolyOverlay {
 
   attachEvents() {
     this_self = this;
-    document.querySelectorAll(".monopoly .settlers-desired-resources img").forEach(function(card, k) {
+    document.querySelectorAll(".monopoly .settlers-desired-resources img").forEach((card) => {
       card.onclick = (e) => {
 
         let target = e.currentTarget;

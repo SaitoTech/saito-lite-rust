@@ -1,3 +1,10 @@
+
+.hud-body .status .tbd ul li, .hud-body .status ul li {
+    font-size: 1.8rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
 .status-header, .status-message {
   box-shadow: none;
   background-color: transparent;
