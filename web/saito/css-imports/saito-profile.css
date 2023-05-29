@@ -68,7 +68,8 @@
   font-size: 2.4rem;
   line-height: 4rem;
   cursor: pointer;
-
+  color: var(--saito-faded-icon-font);
+  border: 1px solid var(--saito-faded-icon-border);
   /* circular */
   background: var(--saito-background-light);
   padding: 0rem 0.6rem;
@@ -82,7 +83,7 @@
   text-align: center;
   line-height: 4rem;
   border-radius: 0.3rem;
-  color: var(--saito-font-color-heavy);
+  color: var(--saito-primary);
   font-size: 1.1em;
   cursor: pointer;
 }

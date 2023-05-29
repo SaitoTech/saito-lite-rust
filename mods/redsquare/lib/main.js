@@ -71,7 +71,8 @@ class RedSquareMain {
     });
     this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
       setHash('profile');
-      this.renderAppspaceComponent("profile", publickey);
+      //this.renderAppspaceComponent("profile", publickey);
+      this.app.connection.emit("saito-profile-render-request", this.app.wallet.returnPublicKey());
     });
     //this.app.connection.on("redsquare-contacts-render-request", () => {
     //  this.renderAppspaceComponent("contacts");

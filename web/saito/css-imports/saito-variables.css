@@ -71,6 +71,8 @@ font imports
   --saito-arcade-header-background: var(--dreamscape);
   --saito-modal-background: var(--dreamscape);
   --saito-font-color-dark-modal: #efefef;
+  --saito-faded-icon-font: #6a6a6a;
+  --saito-faded-icon-border: #d7d7d7;
 }
 
 html[data-theme="dark"] {
@@ -93,6 +95,8 @@ html[data-theme="dark"] {
   --saito-button-background: var(--saito-primary);
   --saito-modal-background: #2e2636;
   --saito-font-color-dark-modal: #efefef;
+  --saito-faded-icon-font: #bdbaba;
+  --saito-faded-icon-border: #000;
 }
 
 html[data-theme="arcade"] {
