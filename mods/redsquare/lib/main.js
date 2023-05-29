@@ -17,7 +17,7 @@ class RedSquareMain {
 
     this.components = {};
     this.components['home'] = new RedSquareAppspaceHome(app, mod, ".saito-main");
-    this.components['profile'] = new RedSquareAppspaceProfile(app, mod, ".saito-main");
+    this.components['profile'] = this.mod.profile;
     this.components['notifications'] = new RedSquareAppspaceNotifications(app, mod, ".saito-main");
     //this.components['contacts'] = new RedSquareAppspaceContacts(app, mod, ".saito-main");
     this.render_component = 'home';

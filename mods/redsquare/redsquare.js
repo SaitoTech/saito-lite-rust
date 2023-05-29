@@ -127,6 +127,7 @@ class RedSquare extends ModTemplate {
     };
 
     this.profile = new SaitoProfile(app, this, ".saito-main");
+    this.profile.publickey = app.wallet.returnPublicKey();
 
     return this;
 
