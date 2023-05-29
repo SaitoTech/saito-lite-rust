@@ -77,7 +77,7 @@ class Twilight extends GameTemplate {
     this.hud.mode = 0;  // long-horizontal
     this.hud.enable_mode_change = 1;
     this.hud.card_width = 120;
-    this.playerRoles = ["observer", "ussr", "us"];
+    this.roles = ["observer", "ussr", "us"];
     this.region_key = { "asia": "Asia", "seasia": "Southeast Asia", "europe":"Europe", "africa":"Africa", "mideast":"Middle East", "camerica": "Central America", "samerica":"South America"};
     this.grace_window = 25;
   }
@@ -3207,7 +3207,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
     let twilight_self = this;
     if (this.browser_active == 0) { return; }
 
-    let player = this.playerRoles[this.game.player];
+    let player = this.roles[this.game.player];
     let x = "";
 
     //
@@ -4107,7 +4107,7 @@ playerTurnHeadlineSelected(card, player) {
     // modify ops
     ops = this.modifyOps(ops, card, player);
 
-    let me = this.playerRoles[this.game.player];
+    let me = this.roles[this.game.player];
 
     // reset events / DOM
     twilight_self.playerFinishedPlacingInfluence();
@@ -5777,7 +5777,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
 
   identifyPlayer(player){
-    return this.playerRoles[player].toUpperCase();
+    return this.roles[player].toUpperCase();
   }
   identifyPlayerByPublicKey(pkey){
     let player = this.game.players.indexOf(pkey);
@@ -8514,7 +8514,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
     }
 
     
-    let i_played_the_card = (this.playerRoles[this.game.player] == player);
+    let i_played_the_card = (this.roles[this.game.player] == player);
 
 
 
@@ -10337,7 +10337,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
       if (this.game.player == 2) { opponent = "ussr";  }
 
-      if (this.playerRoles[this.game.player] == player) {
+      if (this.roles[this.game.player] == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
@@ -10540,7 +10540,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
       let opponent = (this.game.player == 2)? "ussr" : "us";
       let success = 0;
 
-      if (this.playerRoles[this.game.player] == player) {
+      if (this.roles[this.game.player] == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
@@ -11232,7 +11232,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
           });
         }
       }else{
-        this.updateStatus(`<div class='status-message' id='status-message'>${this.playerRoles[respondant].toUpperCase()} is returning card for ${this.cardToText(card)}</div>`);
+        this.updateStatus(`<div class='status-message' id='status-message'>${this.roles[respondant].toUpperCase()} is returning card for ${this.cardToText(card)}</div>`);
       }
       return 0;
     }
@@ -12760,7 +12760,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
           });
         }else{
           if (this.game.player == 0){
-            this.updateStatus(`${this.playerRoles[winner].toUpperCase()} won the ${this.cardToText(card)}`);
+            this.updateStatus(`${this.roles[winner].toUpperCase()} won the ${this.cardToText(card)}`);
           }else{
             this.updateStatus(`You lost the ${this.cardToText(card)}, waiting for opponent to change DEFCON`);            
           }
@@ -12856,7 +12856,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
 
       this.addMove("resolve\tterrorism");
 
-      if (target == this.playerRoles[this.game.player]) {
+      if (target == this.roles[this.game.player]) {
 
         let available_cards = this.game.deck[0].hand.length;
         let cards_for_select = [];
@@ -12981,7 +12981,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
       this.game.state.events.unintervention = 1;
       this.game.state.cancel_back_button = 1;
 
-      if (player === this.playerRoles[this.game.player]) {
+      if (player === this.roles[this.game.player]) {
 
         let twilight_self = this;
 

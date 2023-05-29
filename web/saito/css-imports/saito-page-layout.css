@@ -26,7 +26,7 @@
 /* Perhaps we should select for saito-menu  */
 .saito-sidebar > div:not(:last-child) {
   margin-bottom: 2rem;
-  max-height: calc(75vh - var(--saito-header-height));
+  max-height: calc(75% - 2rem);
 }
 
 .saito-sidebar-container {
@@ -35,12 +35,12 @@
 }
 
 .saito-sidebar.left {
-  padding-top: 2rem;
   position: sticky;
-  height: inherit;
+  height: calc(100% - 2rem);
   width: 25rem;
   top: 0;
-  margin: 0 0 0 1rem;
+  margin: 2rem 0 0 1rem;
+  overflow: hidden;
 }
 
 .saito-sidebar.right {

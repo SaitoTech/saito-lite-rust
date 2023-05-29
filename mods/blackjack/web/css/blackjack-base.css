@@ -37,18 +37,19 @@ body {
   box-shadow: none;
 }
 
-
-.menu-player-upper {
-  font-size: 1.4rem;
-  font-weight: bolder;
-  width: 100%;
-  margin-top: -1.8rem;
-  position: absolute;
-  padding-right: 1.8rem;
+.saito-balance {
+  text-align: right;
 }
+
+
 
 .player-box-head .saito-user>.saito-address , .player-box-head .saito-user>.saito-userline {
   color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 .player-box-body .chips {
@@ -96,6 +97,7 @@ body {
   width: 6vh;
   position: relative;
 }
+
 
 
 .splithand{

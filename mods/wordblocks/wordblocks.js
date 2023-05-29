@@ -43,12 +43,13 @@ class Wordblocks extends GameTemplate {
       return;
     }
 
+    if (this.initialize_game_run) { return; }
+
     super.initializeHTML(app);
 
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addMenuOption("game-info", "Info");
 
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text: "How to Play",
       id: "game-intro",
       class: "game-intro",
@@ -58,17 +59,7 @@ class Wordblocks extends GameTemplate {
       },
     });
 
-    this.menu.addSubMenuOption("game-info", {
-      text: "Log",
-      id: "game-log",
-      class: "game-log",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
-      },
-    });
-
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text: "Stats",
       id: "game-stats",
       class: "game-stats",
@@ -88,13 +79,6 @@ class Wordblocks extends GameTemplate {
     this.log.render();
 
     try {
-      if (!this.game.userlines) {
-        this.game.userlines = [];
-        for (let i = 0; i < this.game.players.length; i++) {
-          this.game.userlines.push("");
-        }
-      }
-
       this.playerbox.render();
 
       this.playerbox.groupOpponents(false);
@@ -103,7 +87,6 @@ class Wordblocks extends GameTemplate {
       let compact_html = "";
 
       for (let i = 1; i <= this.game.players.length; i++) {
-        this.refreshPlayerName(i);
         let score = this.getPlayerScore(i);
         this.refreshPlayerInfo(
           `<span>Score:</span> <span class="playerscore" id="score_${i}">${score}</span>`,
@@ -486,6 +469,7 @@ class Wordblocks extends GameTemplate {
   enableEvents() {
     if (this.browser_active == 1) {
       this.addEventsToBoard();
+      this.setPlayReminder();
       $(".gameboard").addClass("active_board");
     }
   }
@@ -578,14 +562,7 @@ class Wordblocks extends GameTemplate {
               <div class="action" id="cancel"><i class="far fa-window-close"></i> Cancel</div>
             </div>`;
 
-          $("#hud").append(html);
-
-          /*Need to dynamically check for portrait mode...
-          if (window.innerWidth > innerHeight){
-            $(".tile-placement-controls").addClass("landscape-mode");  
-          }else{
-            $(".tile-placement-controls").addClass("portrait-mode");
-          }*/
+          $("#opponentbox").append(html);
 
           $(".action").off();
           $(".action").on("click", function () {
@@ -2415,59 +2392,19 @@ class Wordblocks extends GameTemplate {
     //
     // update userline
     //
-    for (let i = 0; i < this.game.players.length; i++) {
-      if (i + 1 == active_player) {
+    for (let i = 1; i <= this.game.players.length; i++) {
+      if (i == active_player) {
         console.log("NOW PLAYING REQUEST!");
-        this.refreshPlayerUserline(i + 1, "now playing");
+
+        this.playerbox.refreshName(i, "", "now playing");
       } else {
-        this.refreshPlayerUserline(i + 1); // their name
+        this.playerbox.refreshName(i);
       }
 
-      let seat = this.playerbox.playerBox(i + 1);
-      let sq = `#player-box-head-${seat} .saito-user .saito-userline`;
-      let obj = document.querySelector(sq);
-      if (obj) {
-        console.log("updating seat to waiting!");
-        if (obj.innerHTML === "") {
-          console.log("SUBMITTING UPDATE to waiting!");
-          this.refreshPlayerUserline(i + 1, "waiting");
-        }
-      }
     }
   }
 
-  refreshPlayerUserline(player, userline = "") {
-    let seat = this.playerbox.playerBox(player);
-    if (userline == "") {
-      let publickey = this.game.players[player - 1];
-      let name = this.app.keychain.returnUsername(publickey);
-      if (name.includes("...")) {
-        name = `Player ${player}`;
-      }
-      if (name.includes("@")) {
-        name = name.substring(0, name.indexOf("@"));
-      }
-      if (name !== `Player ${player}`) {
-        userline = `Player ${player}`;
-      }
-    }
 
-    let sq = `#player-box-head-${seat} .saito-user .saito-userline`;
-    let obj = document.querySelector(sq);
-    if (obj) {
-      obj.innerHTML = userline;
-    }
-
-    //Store this so it is valid on browser refresh
-    this.game.userlines[player - 1] = userline;
-  }
-
-  refreshPlayerName(player) {
-    this.playerbox.refreshName(player);
-    for (let i = 0; i < this.game.players.length; i++) {
-      this.refreshPlayerUserline(i + 1, this.game.userlines[i]);
-    }
-  }
   refreshPlayerLog(html, player) {
     if (!this.game.state) {
       this.game.state = {};

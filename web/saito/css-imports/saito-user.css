@@ -13,6 +13,12 @@ Saito Identicon
   height: 3.5rem;
 }
 
+.saito-identicon-box .saito-identicon {
+  /* It should grow to fit the box! */
+  width: 100%;
+  height: 100%;
+}
+
 /* ----------------------------------------------------------------
 Saito Username  --- Partially duplicated in saito-base
 -----------------------------------------------------------------*/

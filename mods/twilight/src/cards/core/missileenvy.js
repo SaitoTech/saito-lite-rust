@@ -93,7 +93,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
           });
         }
       }else{
-        this.updateStatus(`<div class='status-message' id='status-message'>${this.playerRoles[respondant].toUpperCase()} is returning card for ${this.cardToText(card)}</div>`);
+        this.updateStatus(`<div class='status-message' id='status-message'>${this.roles[respondant].toUpperCase()} is returning card for ${this.cardToText(card)}</div>`);
       }
       return 0;
     }
