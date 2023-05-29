@@ -323,7 +323,7 @@ console.log("DONE GENERATING MAP");
         vpChange = true;
       }
     }
-    if (vpChange) this.updateScore(); //Maybe not necessary?
+    //if (vpChange) this.updateScore(); //Maybe not necessary?
   }
 
   /*
