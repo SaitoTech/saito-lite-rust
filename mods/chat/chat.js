@@ -1030,6 +1030,27 @@ class Chat extends ModTemplate {
     });
   }
 
+  deleteChatGroup(group){
+    for (let i = 0; i < this.groups.length; i++){
+      if (this.groups[i].id === group.id){
+        this.groups.splice(i,1);
+        break;
+      }
+    }
+
+    for (let i = 0; i < this.app.options.chat.length; i++){
+      if (this.app.options.chat[i] === group.id){
+        this.app.options.chat.splice(i,1);
+        break;
+      }  
+    }
+
+    this.app.storage.saveOptions();
+    localforage.removeItem(`chat_${group.id}`);
+
+    this.app.connection.emit("chat-manager-render-request");
+  }
+
   /****************************
         
     DO NOT DELETE
