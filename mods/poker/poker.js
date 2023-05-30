@@ -1557,11 +1557,8 @@ class Poker extends GameTableTemplate {
 
     await this.updateStatus(html, 1);
 
-    console.log("1111111111111");
     $(".menu_option").off();
-    console.log("2222222222222");
     $(".menu_option").on("click", async function () {
-      console.log("3333333333333");
       let choice = $(this).attr("id");
 
       if (choice === "raise") {

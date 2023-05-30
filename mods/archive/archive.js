@@ -46,7 +46,7 @@ class Archive extends ModTemplate {
     return services;
   }
 
-  async onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     //
@@ -254,7 +254,7 @@ class Archive extends ModTemplate {
     //
     // sanity check that we want to be saving this for the FROM fields
     //
-    for (let i = 0; i < tx.transaction.from.length; i++) {
+    for (let i = 0; i < tx.from.length; i++) {
       sql =
         "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
       params = {
@@ -289,7 +289,7 @@ class Archive extends ModTemplate {
       optional = tx.optional;
     }
 
-    for (let i = 0; i < tx.transaction.to.length; i++) {
+    for (let i = 0; i < tx.to.length; i++) {
       sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
       params = {
         $tx: tx.serialize(),
@@ -299,7 +299,7 @@ class Archive extends ModTemplate {
       };
       await this.app.storage.executeDatabase(sql, params, "archive");
     }
-    for (let i = 0; i < tx.transaction.from.length; i++) {
+    for (let i = 0; i < tx.from.length; i++) {
       sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
       params = {
         $tx: tx.serialize(),

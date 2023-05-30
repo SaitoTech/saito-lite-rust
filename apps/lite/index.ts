@@ -47,6 +47,10 @@ class WebMethods extends WebSharedMethods {
     this.app.connection.emit(event, peerIndex);
   }
 
+  sendBlockSuccess(hash: string, blockId: bigint) {
+    this.app.connection.emit("add-block-success", { hash, blockId });
+  }
+
   async saveWallet() {
     this.app.options.wallet.publicKey = await this.app.wallet.getPublicKey();
     this.app.options.wallet.privateKey = await this.app.wallet.getPrivateKey();
@@ -78,6 +82,9 @@ async function init() {
   const saito = new Saito({ mod_paths: mods_config.lite });
   await saito.storage.initialize();
 
+  saito.options.browser_mode = true;
+  saito.options.spv_mode = true;
+
   await initSaito(
     saito.options,
     new WebMethods(saito),
@@ -87,6 +94,7 @@ async function init() {
   saito.wallet = (await S.getInstance().getWallet()) as Wallet;
   saito.wallet.app = saito;
   saito.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
+  saito.blockchain.app = saito;
   saito.BROWSER = 1;
   saito.SPVMODE = 1;
   await saito.init();

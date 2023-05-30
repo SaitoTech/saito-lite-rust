@@ -40,6 +40,7 @@ async function initSaito() {
   app.wallet = (await S.getInstance().getWallet()) as Wallet;
   app.wallet.app = app;
   app.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
+  app.blockchain.app = app;
   app.server = new Server(app);
 
   await app.init();

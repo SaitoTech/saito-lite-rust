@@ -4,7 +4,7 @@
     "port": 12101,
     "protocol": "http",
     "endpoint": {
-      "host": "127.0.0.1",
+      "host": "localhost",
       "port": 12101,
       "protocol": "http"
     },
@@ -15,6 +15,7 @@
     "thread_sleep_time_in_ms": 10,
     "block_fetch_batch_size": 10
   },
-  "peers": [
-  ]
+  "peers": [],
+  "spv_mode": false,
+  "browser_mode": false
 }

@@ -11,7 +11,8 @@ const HTMLParser = require("node-html-parser");
 const prettify = require("html-prettify");
 const redsquareHome = require("./index");
 const Post = require("./lib/post");
-const Transaction = require("../../lib/saito/transaction").default;
+const Transaction = require("../../lib/saito/transaction");
+const Slip = require("../../lib/saito/slip");
 const Factory = require("../../lib/saito/factory").default;
 const PeerService = require("saito-js/lib/peer_service").default;
 
@@ -493,22 +494,21 @@ class RedSquare extends ModTemplate {
   ///////////////////////
   // network functions //
   ///////////////////////
-  async onConfirmation(blk, tx, conf, app) {
-    console.log("on confirmation");
+  async onConfirmation(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
-          await this.receiveTweetTransaction(blk, tx, conf, app);
+          await this.receiveTweetTransaction(blk, tx, conf);
           this.sqlcache = {};
         }
         if (txmsg.request === "like tweet") {
-          await this.receiveLikeTransaction(blk, tx, conf, app);
+          await this.receiveLikeTransaction(blk, tx, conf);
           this.sqlcache = {};
         }
         if (txmsg.request === "flag tweet") {
-          await this.receiveFlagTransaction(blk, tx, conf, app);
+          await this.receiveFlagTransaction(blk, tx, conf);
           this.sqlcache = {};
         }
       }
@@ -1122,7 +1122,9 @@ class RedSquare extends ModTemplate {
     let newtx = await redsquare_self.app.wallet.createUnsignedTransaction(app.wallet.publicKey);
     for (let i = 0; i < tx.to.length; i++) {
       if (tx.to[i].publicKey !== this.publicKey) {
-        newtx.addToSlip(new saito.default.slip(tx.transaction.to[i].add, 0.0));
+        let slip = new Slip();
+        slip.publicKey = tx.to[i].publicKey;
+        newtx.addToSlip(slip);
       }
     }
 
@@ -1147,7 +1149,7 @@ class RedSquare extends ModTemplate {
       //
       // save my likes
       //
-      if (tx.isTo(app.wallet.publicKey)) {
+      if (tx.isTo(this.publicKey)) {
         await this.app.storage.saveTransaction(tx);
 
         //
@@ -1219,7 +1221,7 @@ class RedSquare extends ModTemplate {
     }
 
     try {
-      let public_key = await app.wallet.getPublicKey();
+      let public_key = this.publicKey;
       let newtx = await mod.app.wallet.createUnsignedTransactionWithDefaultFee();
       console.log("my public key", public_key);
       let slip = new Slip();
@@ -1227,7 +1229,7 @@ class RedSquare extends ModTemplate {
       slip.amount = BigInt(0);
       newtx.addToSlip(slip);
       for (let i = 0; i < keys.length; i++) {
-        if (keys[i] !== app.wallet.publicKey) {
+        if (keys[i] !== this.publicKey) {
           let slip = new Slip();
           slip.publicKey = keys[i];
           slip.amount = BigInt(0);
@@ -1267,7 +1269,7 @@ class RedSquare extends ModTemplate {
         console.log("received tweet", tweet);
         // save tweets addressed to me
         //
-        if (tx.isTo(app.wallet.publicKey)) {
+        if (tx.isTo(this.publicKey)) {
           await this.app.storage.saveTransaction(tx);
 
           //
@@ -1288,7 +1290,7 @@ class RedSquare extends ModTemplate {
               tx.optional.num_replies++;
               await this.app.storage.updateTransactionOptional(
                 txmsg.data.parent_id,
-                app.wallet.publicKey,
+                this.publicKey,
                 tweet.tx.optional
               );
               tweet.renderReplies();
@@ -1305,9 +1307,8 @@ class RedSquare extends ModTemplate {
           //
           if (txmsg.data?.retweet_tx) {
             if (txmsg.data?.retweet_tx) {
-              // let rtx = new saito.default.transaction();
-              let rtx = Transaction.deserialize(txmsg.data.retweet_tx, new Factory());
-              // Transaction.deserialize(this.app, txmsg.data.retweet_tx);
+              let rtx = new Transaction();
+              rtx.deserialize_from_web(this.app, txmsg.data.retweet_tx);
               let rtxsig = rtxobj.sig;
 
               if (this.tweets_sigs_hmap[rtxsig]) {
@@ -1325,7 +1326,7 @@ class RedSquare extends ModTemplate {
                 tx.optional.num_retweets++;
                 await this.app.storage.updateTransactionOptional(
                   rtxsig,
-                  app.wallet.publicKey,
+                  this.publicKey,
                   tx.optional
                 );
                 tweet2.renderRetweets();

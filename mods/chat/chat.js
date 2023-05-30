@@ -9,6 +9,7 @@ const PeerService = require("saito-js/lib/peer_service").default;
 const Slip = require("../../lib/saito/slip").default;
 const Transaction = require("../../lib/saito/transaction").default;
 const localforage = require("localforage");
+
 class Chat extends ModTemplate {
   constructor(app) {
     super(app);
@@ -20,7 +21,7 @@ class Chat extends ModTemplate {
     this.groups = [];
 
     /*
-         Array of: 
+         Array of:
          {
             id: id,
             members: members, //Array of publickeys
@@ -61,8 +62,6 @@ class Chat extends ModTemplate {
     });
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
-
-    return;
   }
 
   async initialize(app) {
@@ -80,7 +79,7 @@ class Chat extends ModTemplate {
     //
     // create chatgroups from keychain -- friends only
     //
-    let keys = app.keychain.returnKeys();
+    let keys = await app.keychain.returnKeys();
     for (let i = 0; i < keys.length; i++) {
       if (keys[i].aes_publickey) {
         this.returnOrCreateChatGroupFromMembers(
@@ -103,10 +102,10 @@ class Chat extends ModTemplate {
     //
     if (app.BROWSER == 0) {
       this.communityGroup = this.returnOrCreateChatGroupFromMembers(
-        [this.app.wallet.publickey],
+        [this.publicKey],
         "Saito Community Chat"
       );
-      this.communityGroup.members = [this.app.wallet.publicKey];
+      this.communityGroup.members = [this.publicKey];
     }
 
     //Add script for emoji to work
@@ -137,7 +136,11 @@ class Chat extends ModTemplate {
           // But I need a finer grained query than the app.storage API currently supports
           // TODO FIX THIS
 
-          let sql = `SELECT tx FROM txs WHERE type = "${group.id}" AND ts > ${group.last_update} ORDER BY ts DESC LIMIT 100`;
+          let sql = `SELECT tx
+                     FROM txs
+                     WHERE type = "${group.id}"
+                       AND ts > ${group.last_update}
+                     ORDER BY ts DESC LIMIT 100`;
 
           this.sendPeerDatabaseRequestWithFilter(
             "Archive",
@@ -172,7 +175,7 @@ class Chat extends ModTemplate {
           /*
                     this.app.storage.loadTransactions(group_id, 25, function (txs) {
                         if (chat_self.debug){ console.log("Chat PSuP Archive callback:" + txs.length); }
-                        
+
                         try {
                             //Note loadTransactions returns them in reverse order....
                             //Now addTransactionToGroup will sort them, but this will be more efficient
@@ -181,7 +184,7 @@ class Chat extends ModTemplate {
                                 tx.decryptMessage(chat_self.app);
                                 chat_self.addTransactionToGroup(group, tx);
                             }
-                            
+
                         } catch (err) {
                             console.log("error loading chats...: " + err);
                         }
@@ -340,10 +343,9 @@ class Chat extends ModTemplate {
   // so I will process messages I send to community, but not other peoples
   // it is mostly just a legacy safety catch for direct messaging
   //
-  onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf) {
     if (conf == 0) {
-      tx.decryptMessage(app);
-
+      await tx.decryptMessage(this.app);
       let txmsg = tx.returnMessage();
 
       if (this.debug) {
@@ -351,7 +353,7 @@ class Chat extends ModTemplate {
       }
 
       if (txmsg.request == "chat message") {
-        this.receiveChatTransaction(app, tx);
+        await this.receiveChatTransaction(this.app, tx);
       }
     }
   }
@@ -421,8 +423,8 @@ class Chat extends ModTemplate {
       // to a peer if the inner_tx is addressed to one of our peers.
       //
 
-      if (inner_tx.transaction.to.length > 0) {
-        if (inner_tx.transaction.to[0].publicKey != this.app.wallet.publicKey) {
+      if (inner_tx.to.length > 0) {
+        if (inner_tx.to[0].publicKey != this.publicKey) {
           if (app.BROWSER == 0) {
             let peers = await app.network.getPeers();
             peers.forEach((p) => {
@@ -487,7 +489,7 @@ class Chat extends ModTemplate {
           salert("Image already being sent");
           return;
         }
-        this.inTransitImageMsgSig = tx.transaction.sig;
+        this.inTransitImageMsgSig = tx.signature;
       }
     }
     let peers = await app.network.getPeers();
@@ -537,10 +539,11 @@ class Chat extends ModTemplate {
     //
     // swap first two addresses so if private chat we will encrypt with proper shared-secret
     //
-    if (newtx.transaction.to.length > 1) {
-      let x = newtx.transaction.to[0];
-      newtx.transaction.to[0] = newtx.transaction.to[1];
-      newtx.transaction.to[1] = x;
+    if (newtx.to.length > 1) {
+      // TODO : this assignment won't work with WASM API
+      let x = newtx.to[0];
+      newtx.to[0] = newtx.to[1];
+      newtx.to[1] = x;
     }
 
     if (msg.substring(0, 4) == "<img") {
@@ -548,7 +551,7 @@ class Chat extends ModTemplate {
         salert("Image already being sent");
         return;
       }
-      this.inTransitImageMsgSig = newtx.transaction.sig;
+      this.inTransitImageMsgSig = newtx.signature;
     }
 
     newtx.msg = {
@@ -563,7 +566,7 @@ class Chat extends ModTemplate {
       //
       // the first recipient is ourself, so the second is the one with the shared secret
       //
-      let key = this.app.keychain.returnKey(newtx.transaction.to[0].publicKey);
+      let key = this.app.keychain.returnKey(newtx.to[0].publicKey);
       await newtx.sign();
     } else {
       await newtx.sign();
@@ -576,7 +579,7 @@ class Chat extends ModTemplate {
    * So we make sure here it is actually for us (otherwise will be encrypted gobbledygook)
    */
   async receiveChatTransaction(app, tx) {
-    if (this.inTransitImageMsgSig == tx.transaction.sig) {
+    if (this.inTransitImageMsgSig == tx.signature) {
       this.inTransitImageMsgSig = null;
     }
 
@@ -601,8 +604,8 @@ class Chat extends ModTemplate {
     // if to someone else and encrypted
     // (i.e. I am sending an encrypted message and not waiting for relay)
     //
-    //if (tx.transaction.from[0].add == app.wallet.publicKey) {
-    //    if (app.keychain.hasSharedSecret(tx.transaction.to[0].add)) {
+    //if (tx.from[0].add == app.wallet.publicKey) {
+    //    if (app.keychain.hasSharedSecret(tx.to[0].add)) {
     //    }
     //}
 
@@ -611,13 +614,13 @@ class Chat extends ModTemplate {
     //
     if (this.app.BROWSER) {
       if (txmsg.group_id !== this.communityGroup?.id) {
-        for (let i = 0; i < tx.transaction.to.length; i++) {
-          if (tx.transaction.to[i].publicKey == app.wallet.publicKey) {
+        for (let i = 0; i < tx.to.length; i++) {
+          if (tx.to[i].publicKey == this.publicKey) {
             // if (this.debug) {
             console.log("Should save TX in Archive or locally");
             // }
-            this.app.storage.saveTransaction(tx, txmsg.group_id);
-            this.saveChatTx(tx, txmsg.group_id);
+            await this.app.storage.saveTransaction(tx, txmsg.group_id);
+            await this.saveChatTx(tx, txmsg.group_id);
             break;
           }
         }
@@ -629,7 +632,7 @@ class Chat extends ModTemplate {
     console.log("group ", group);
 
     if (!group) {
-      if (!tx.isTo(app.wallet.publicKey)) {
+      if (!tx.isTo(this.publicKey)) {
         if (this.debug) {
           console.log("Chat message not for me");
         }
@@ -640,9 +643,9 @@ class Chat extends ModTemplate {
         //
 
         let members = [];
-        for (let x = 0; x < tx.transaction.to.length; x++) {
-          if (!members.includes(tx.transaction.to[x].publicKey)) {
-            members.push(tx.transaction.to[x].publicKey);
+        for (let x = 0; x < tx.to.length; x++) {
+          if (!members.includes(tx.to[x].publicKey)) {
+            members.push(tx.to[x].publicKey);
           }
         }
 
@@ -659,7 +662,7 @@ class Chat extends ModTemplate {
 
     //Have we already inserted this message into the chat?
     for (let z = 0; z < group.txs.length; z++) {
-      if (group.txs[z].sig === tx.transaction.sig) {
+      if (group.txs[z].signature === tx.signature) {
         // if (this.debug) {
         console.log("Duplicate received message");
         // }
@@ -769,27 +772,27 @@ class Chat extends ModTemplate {
       return;
     }
     let new_message = {
-      sig: tx.transaction.sig,
-      ts: tx.transaction.ts,
+      sig: tx.signature,
+      ts: tx.timestamp,
       from: [],
       msg: content,
     };
 
     //Keep the from array just in case....
-    for (let sender of tx.transaction.from) {
+    for (let sender of tx.from) {
       if (!new_message.from.includes(sender.publicKey)) {
         new_message.from.push(sender.publicKey);
       }
     }
 
     for (let i = 0; i < group.txs.length; i++) {
-      if (group.txs[i].sig === tx.transaction.sig) {
+      if (group.txs[i].signature === tx.signature) {
         if (this.debug) {
           console.log("duplicate");
         }
         return;
       }
-      if (tx.transaction.ts < group.txs[i].ts) {
+      if (tx.timestamp < group.txs[i].ts) {
         group.txs.splice(i, 0, new_message);
         group.unread++;
 
@@ -806,7 +809,7 @@ class Chat extends ModTemplate {
 
     group.unread++;
 
-    group.last_update = tx.transaction.ts;
+    group.last_update = tx.timestamp;
 
     if (this.debug) {
       console.log(`new msg: ${group.unread} unread`);
@@ -861,7 +864,7 @@ class Chat extends ModTemplate {
     if (name == null) {
       name = "";
       for (let i = 0; i < members.length; i++) {
-        if (members[i] != this.app.wallet.publicKey) {
+        if (members[i] != this.publicKey) {
           name += members[i] + ", ";
         }
       }
@@ -1030,17 +1033,17 @@ class Chat extends ModTemplate {
   }
 
   /****************************
-        
-    DO NOT DELETE
 
-    These are working bits of code that we need to implement in storage/Archive later
+   DO NOT DELETE
 
-    *****************************/
+   These are working bits of code that we need to implement in storage/Archive later
+
+   *****************************/
 
   async loadChatTxs() {
     /*
        this.db_connection = new JsStore.Connection(new Worker("/saito/lib/jsstore/jsstore.worker.js"));
-    
+
         let tbl = {
             name: "chat_history",
             columns: {
@@ -1057,7 +1060,7 @@ class Chat extends ModTemplate {
 
         var isDbCreated = await this.db_connection.initDb(db);
 
-     
+
           if (isDbCreated) {
             console.log('Db Created & connection is opened');
           }

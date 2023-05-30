@@ -176,10 +176,10 @@ export default class Transaction extends SaitoTransaction {
     try {
       if (this.from[0].publicKey !== (await app.wallet.getPublicKey())) {
         try {
-          if (this.msg === null) {
+          if (this.returnMessage() === null) {
             this.dmsg = "";
           } else {
-            const parsed_msg = this.msg;
+            const parsed_msg = this.returnMessage();
             this.dmsg = app.keychain.decryptMessage(this.from[0].publicKey, parsed_msg);
           }
         } catch (e) {
@@ -187,11 +187,11 @@ export default class Transaction extends SaitoTransaction {
         }
         return;
       }
-      if (this.msg === null) {
+      if (this.returnMessage() === null) {
         this.dmsg = "";
         return;
       }
-      this.dmsg = app.keychain.decryptMessage(this.to[0].publicKey, this.msg);
+      this.dmsg = app.keychain.decryptMessage(this.to[0].publicKey, this.returnMessage());
     } catch (e) {
       this.dmsg = "";
     }
@@ -302,15 +302,15 @@ export default class Transaction extends SaitoTransaction {
     return Buffer.from(str, "base64").toString("utf-8");
   }
 
-  public get transaction() {
-    return {
-      to: this.to.map((slip) => slip.toJson()),
-      from: this.from.map((slip) => slip.toJson()),
-      ts: this.timestamp,
-      sig: this.signature,
-      r: this.txs_replacements, // "replaces" (how many txs this represents in merkle-tree -- spv block)
-      type: this.type,
-      m: this.data,
-    };
-  }
+  // public get transaction() {
+  //   return {
+  //     to: this.to.map((slip) => slip.toJson()),
+  //     from: this.from.map((slip) => slip.toJson()),
+  //     ts: this.timestamp,
+  //     sig: this.signature,
+  //     r: this.txs_replacements, // "replaces" (how many txs this represents in merkle-tree -- spv block)
+  //     type: this.type,
+  //     m: this.data,
+  //   };
+  // }
 }

@@ -213,7 +213,7 @@ class Stun extends ModTemplate {
     return null;
   }
 
-  onConfirmation(blk, tx, conf, app) {
+  onConfirmation(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     if (conf === 0) {

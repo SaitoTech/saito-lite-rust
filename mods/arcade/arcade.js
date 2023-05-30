@@ -441,9 +441,10 @@ class Arcade extends ModTemplate {
   // ON CONFIRMATION === process on-chain transactions
   ////////////////////////////////////////////////////
 
-  async onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf) {
+    // console.log("onConfirmation called");
     let txmsg = tx.returnMessage();
-    let arcade_self = app.modules.returnModule("Arcade");
+    let arcade_self = this.app.modules.returnModule("Arcade");
 
     try {
       if (conf == 0) {
@@ -503,7 +504,7 @@ class Arcade extends ModTemplate {
         }
       }
     } catch (err) {
-      console.log("ERROR in arcade: " + err);
+      console.log("ERROR in arcade: ", err);
     }
   }
 
@@ -660,6 +661,7 @@ class Arcade extends ModTemplate {
   // available if asked.
   //
   async createOpenTransaction(gamedata) {
+    // console.log("createOpenTransaction", gamedata);
     let sendto = this.publicKey;
     let moduletype = "Arcade";
 
@@ -707,7 +709,7 @@ class Arcade extends ModTemplate {
   }
 
   async receiveOpenTransaction(tx, blk = null) {
-    console.log("arcade receiveOpenTransaction : ", tx);
+    // console.log("arcade receiveOpenTransaction : ", tx);
     let txmsg = tx.returnMessage();
 
     // add to games list == open or private
@@ -721,7 +723,7 @@ class Arcade extends ModTemplate {
     let options = txmsg.options != undefined ? txmsg.options : {};
 
     let players_array = txmsg.players[0] + "/" + txmsg.players_sigs[0];
-    let start_bid = blk != null ? blk.block.id : BigInt(1);
+    let start_bid = blk != null ? blk.id : BigInt(1);
 
     let created_at = tx.timestamp;
     console.log(
@@ -925,7 +927,7 @@ class Arcade extends ModTemplate {
   }
 
   async changeGameStatus(game_id, newStatus) {
-    console.log("changeGameStatus : ", arguments);
+    // console.log("changeGameStatus : ", arguments);
     let game = this.returnGame(game_id);
 
     if (!game) {
@@ -996,6 +998,7 @@ class Arcade extends ModTemplate {
   }
 
   async receiveGameStepTransaction(tx) {
+    // console.log("receiveGameStepTransaction", tx);
     let txmsg = tx.returnMessage();
     let game = this.returnGame(txmsg.game_id);
     if (game?.msg) {
@@ -1029,6 +1032,7 @@ class Arcade extends ModTemplate {
   // unsure
   //
   async createInviteTransaction(orig_tx) {
+    // console.log("createInviteTransaction", orig_tx);
     let txmsg = orig_tx.returnMessage();
 
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
@@ -1055,7 +1059,7 @@ class Arcade extends ModTemplate {
     if (orig_tx.msg.timestamp != "") {
       newtx.msg.timestamp = orig_tx.msg.timestamp;
     }
-    newtx.msg.invite_sig = this.app.crypto.signMessage(
+    newtx.msg.invite_sig = await this.app.crypto.signMessage(
       "invite_game_" + newtx.msg.timestamp,
       await this.app.wallet.getPrivateKey()
     );
@@ -1074,6 +1078,7 @@ class Arcade extends ModTemplate {
   // the game.
   //
   async createJoinTransaction(orig_tx) {
+    console.log("createJoinTransaction", orig_tx);
     if (!orig_tx || !orig_tx.signature) {
       console.error("Invalid Game Invite TX, cannot Join");
       return;
@@ -1109,6 +1114,7 @@ class Arcade extends ModTemplate {
   }
 
   async receiveJoinTransaction(tx) {
+    // console.log("receiveJoinTransaction", tx);
     if (!tx || !tx.signature) {
       return;
     }
@@ -1195,6 +1201,7 @@ class Arcade extends ModTemplate {
   // signature we will auto-accept it, kicking off the game.
   //
   async createAcceptTransaction(orig_tx) {
+    // console.log("createAcceptTransaction", orig_tx);
     if (!orig_tx || !orig_tx.signature) {
       console.error("Invalid Game Invite TX, cannot Accept");
       return;
@@ -1221,6 +1228,7 @@ class Arcade extends ModTemplate {
   }
 
   async receiveAcceptTransaction(tx) {
+    // console.log("receiveAcceptTransaction", tx);
     //Must be valid tx
     if (!tx || !tx.signature) {
       return;

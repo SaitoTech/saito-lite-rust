@@ -123,7 +123,7 @@ class Recovery extends ModTemplate {
     return super.respondTo(type);
   }
 
-  async onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf) {
     if (conf == 0) {
       let txmsg = tx.returnMessage();
       if (txmsg.request == "recovery backup") {
@@ -168,7 +168,9 @@ class Recovery extends ModTemplate {
       wallet: this.app.crypto.aesEncrypt(JSON.stringify(this.app.wallet.wallet), decryption_secret),
     };
 
-    newtx.transaction.to.push(new saito.default.slip(this.publicKey, 0.0));
+    let slip = new Slip();
+    slip.publicKey = this.publicKey;
+    newtx.addToSlip(slip);
     await newtx.sign();
     return newtx;
   }
