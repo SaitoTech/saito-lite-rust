@@ -63,6 +63,8 @@ Slide in score track
   font-family: 'orbitron-medium', 'bank-gothic', arial, helvetica, sans-serif;
   flex: 1;
   padding: 2px;
+  display: flex;
+  align-items: center;
 }
 
 
