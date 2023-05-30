@@ -132,6 +132,14 @@
 }
 */
 
+
+.saito-time-stamp { 
+  text-align: center;
+  color: var(--saito-font-color-light);
+  font-style: italic;
+  margin: 3px 0;
+}
+
 .saito-chat-line-controls {
   display: flex;
   flex-direction: column;
