@@ -179,6 +179,7 @@ class Settlers extends GameTemplate {
       this.cardbox.addCardType("handy-help","",null);
       this.cardbox.makeDraggable();
 
+      this.playerbox.render_as_grid = true;
       this.playerbox.render();
       this.playerbox.addStatus();
       this.playerbox.addClass("me", this.game.player);
