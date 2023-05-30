@@ -244,7 +244,7 @@ class ChatPopup {
       msg_input.onkeydown = (e) => {
         if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
           e.preventDefault();
-          if (msg_input.innerHTML == "") { return; }
+          if (msg_input.innerHTML.trim() == "") { return; }
           let newtx = mod.createChatTransaction(group_id, msg_input.innerHTML);
           mod.sendChatTransaction(app, newtx);
           mod.receiveChatTransaction(app, newtx);
@@ -267,7 +267,7 @@ class ChatPopup {
       //
       document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
         e.preventDefault();
-        if (msg_input.innerHTML == "") { return; }
+        if (msg_input.innerHTML.trim() == "") { return; }
         let newtx = mod.createChatTransaction(group_id, msg_input.innerHTML);
         mod.sendChatTransaction(app, newtx);
         mod.receiveChatTransaction(app, newtx);
