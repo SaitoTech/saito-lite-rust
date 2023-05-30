@@ -221,7 +221,7 @@ class RedSquare extends ModTemplate {
 
       x.push({
         text: "Tweet Image",
-        icon: "fa fa-camera",
+        icon: "fa-solid fa-image",
         allowed_mods: ['redsquare'],
         disallowed_mods: ['arcade'],
         rank: 20,
