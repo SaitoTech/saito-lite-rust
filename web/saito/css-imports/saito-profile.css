@@ -77,18 +77,19 @@
 }
 
 .saito-profile-follow-btn {
-  border: 1px solid var(--saito-primary);
+  border: 1px solid var(--saito-font-color);
   width: 10rem;
   height: 4rem;
   text-align: center;
   line-height: 4rem;
   border-radius: 0.3rem;
-  color: var(--saito-primary);
+  color: var(--saito-font-color);
   font-size: 1.1em;
   cursor: pointer;
 }
 
 .saito-profile-follow-btn:hover {
   background: var(--saito-primary);
+  border: 1px solid var(--saito-primary);
   color: #fff;
 }
