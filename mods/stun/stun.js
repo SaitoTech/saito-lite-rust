@@ -249,7 +249,7 @@ class Stun extends ModTemplate {
     return null;
   }
 
-  onConfirmation(blk, tx, conf, app) {
+  onConfirmation(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     if (conf === 0) {
@@ -331,9 +331,9 @@ class Stun extends ModTemplate {
     };
 
     this.app.connection.emit("relay-send-message", {
-      recipient:server.publicKey,
+      recipient: server.publicKey,
       request,
-      data
+      data,
     });
 
     // server.sendRequestAsTransaction("stun-create-room-transaction", data);
@@ -353,7 +353,7 @@ class Stun extends ModTemplate {
   async sendStunMessageToServerTransaction(_data) {
     let request = "stun-send-message-to-server";
     let peers = await this.app.network.getPeers();
-    let server = peers[0]
+    let server = peers[0];
 
     // console.log('server public key', server, server.publicKey)
 
@@ -364,16 +364,15 @@ class Stun extends ModTemplate {
     };
 
     this.app.connection.emit("relay-send-message", {
-      recipient:server.publicKey,
+      recipient: server.publicKey,
       request,
-      data
+      data,
     });
     // await server.sendRequestAsTransaction("stun-send-message-to-server", data);
   }
 
   // server receives this
   async receiveStunMessageToServerTransaction(app, tx, peer) {
-
     // console.log('peer.peer', peer, peer.peer.public_key)
     let txmsg = tx.returnMessage();
     let stun_mod = app.modules.returnModule("Stun");

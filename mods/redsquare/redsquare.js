@@ -12,6 +12,7 @@ const prettify = require("html-prettify");
 const redsquareHome = require("./index");
 const Post = require("./lib/post");
 const Transaction = require("../../lib/saito/transaction");
+const Slip = require("../../lib/saito/slip");
 const Factory = require("../../lib/saito/factory").default;
 const PeerService = require("saito-js/lib/peer_service").default;
 
@@ -491,20 +492,20 @@ class RedSquare extends ModTemplate {
   ///////////////////////
   // network functions //
   ///////////////////////
-  async onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf) {
     let txmsg = tx.returnMessage();
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
-          await this.receiveTweetTransaction(blk, tx, conf, app);
+          await this.receiveTweetTransaction(blk, tx, conf);
           this.sqlcache = {};
         }
         if (txmsg.request === "like tweet") {
-          await this.receiveLikeTransaction(blk, tx, conf, app);
+          await this.receiveLikeTransaction(blk, tx, conf);
           this.sqlcache = {};
         }
         if (txmsg.request === "flag tweet") {
-          await this.receiveFlagTransaction(blk, tx, conf, app);
+          await this.receiveFlagTransaction(blk, tx, conf);
           this.sqlcache = {};
         }
       }
@@ -1093,7 +1094,9 @@ class RedSquare extends ModTemplate {
     let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
     for (let i = 0; i < tx.to.length; i++) {
       if (tx.to[i].publicKey !== this.publicKey) {
-        newtx.transaction.to.push(new saito.default.slip(tx.transaction.to[i].add, 0.0));
+        let slip = new Slip();
+        slip.publicKey = tx.to[i].publicKey;
+        newtx.addToSlip(slip);
       }
     }
 
@@ -1111,7 +1114,7 @@ class RedSquare extends ModTemplate {
       //
       // save my likes
       //
-      if (tx.isTo(app.wallet.returnPublicKey())) {
+      if (tx.isTo(this.publicKey)) {
         await this.app.storage.saveTransaction(tx);
 
         //
@@ -1186,7 +1189,9 @@ class RedSquare extends ModTemplate {
     newtx.msg = obj;
     for (let i = 0; i < keys.length; i++) {
       if (keys[i] !== app.wallet.returnPublicKey()) {
-        newtx.transaction.to.push(new saito.default.slip(keys[i]));
+        let slip = new Slip();
+        slip.publicKey = keys[i];
+        newtx.addToSlip(slip);
       }
     }
     await newtx.sign();
@@ -1206,7 +1211,7 @@ class RedSquare extends ModTemplate {
         //
         // save tweets addressed to me
         //
-        if (tx.isTo(app.wallet.returnPublicKey())) {
+        if (tx.isTo(this.publicKey)) {
           await this.app.storage.saveTransaction(tx);
 
           //
@@ -1227,7 +1232,7 @@ class RedSquare extends ModTemplate {
               tx.optional.num_replies++;
               await this.app.storage.updateTransactionOptional(
                 txmsg.data.parent_id,
-                app.wallet.returnPublicKey(),
+                this.publicKey,
                 tweet.tx.optional
               );
               tweet.renderReplies();
@@ -1244,7 +1249,7 @@ class RedSquare extends ModTemplate {
           //
           if (txmsg.data?.retweet_tx) {
             if (txmsg.data?.retweet_tx) {
-              let rtx = new saito.default.transaction();
+              let rtx = new Transaction();
               rtx.deserialize_from_web(this.app, txmsg.data.retweet_tx);
               let rtxsig = rtxobj.sig;
 
@@ -1263,7 +1268,7 @@ class RedSquare extends ModTemplate {
                 tx.optional.num_retweets++;
                 await this.app.storage.updateTransactionOptional(
                   rtxsig,
-                  app.wallet.returnPublicKey(),
+                  this.publicKey,
                   tx.optional
                 );
                 tweet2.renderRetweets();

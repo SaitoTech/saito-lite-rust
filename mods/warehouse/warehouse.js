@@ -10,7 +10,7 @@ class Warehouse extends ModTemplate {
     this.categories = "Utilities Dev";
   }
 
-  onConfirmation(blk, tx, conf, app) {
+  onConfirmation(blk, tx, conf) {
     if (conf == 0) {
       // removed addTransactionsToDatabase from here
     }
@@ -86,7 +86,7 @@ class Warehouse extends ModTemplate {
             let params = {
               $address: blk.transactions[i].to[ii].publicKey,
               $amt: blk.transactions[i].to[ii].amount,
-              $bid: blk.block.id,
+              $bid: blk.id,
               $tid: blk.transactions[i].id,
               $sid: ii,
               $bhash: blk.returnHash(),
@@ -94,7 +94,7 @@ class Warehouse extends ModTemplate {
               $rebroadcast: 0,
               $sig: blk.transactions[i].signature,
               $ts: blk.transactions[i].timestamp,
-              $block_ts: blk.block.ts,
+              $block_ts: blk.timestamp,
               $type: ttype,
               $tx_from: tx_from,
               $tx_to: blk.transactions[i].to[ii].publicKey,

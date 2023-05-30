@@ -16,11 +16,11 @@ class MailRelay extends ModTemplate {
     this.categories = "Core Utilities";
   }
 
-  onConfirmation(blk, tx, conf, app) {}
+  onConfirmation(blk, tx, conf) {}
 
-  initialize(app) {
+  async initialize(app) {
     //For testing only, no need to initialize module
-    super.initialize(app);
+    await super.initialize(app);
 
     // add an email
     let email = {

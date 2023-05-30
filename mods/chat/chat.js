@@ -291,12 +291,12 @@ class Chat extends ModTemplate {
   // so I will process messages I send to community, but not other peoples
   // it is mostly just a legacy safety catch for direct messaging
   //
-  async onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf) {
     if (conf == 0) {
-      await tx.decryptMessage(app);
+      await tx.decryptMessage(this.app);
       let txmsg = tx.returnMessage();
       if (txmsg.request == "chat message") {
-        await this.receiveChatTransaction(app, tx);
+        await this.receiveChatTransaction(this.app, tx);
       }
     }
   }
@@ -536,7 +536,7 @@ class Chat extends ModTemplate {
     //
     // save transaction if private chat
     //
-    for (let i = 0; i < tx.transaction.to.length; i++) {
+    for (let i = 0; i < tx.to.length; i++) {
       if (tx.to[i].publicKey == this.publicKey) {
         await this.app.storage.saveTransaction(tx, txmsg.group_id);
         break;

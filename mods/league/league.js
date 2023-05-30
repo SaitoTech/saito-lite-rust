@@ -11,6 +11,7 @@ const PeerService = require("saito-js/lib/peer_service").default;
 
 //Trial -- So that we can display league results in game page
 const LeagueOverlay = require("./lib/overlays/league");
+const Slip = require("../../lib/saito/slip");
 
 class League extends ModTemplate {
   constructor(app) {
@@ -161,10 +162,7 @@ class League extends ModTemplate {
     if (qs == ".redsquare-sidebar") {
       return true;
     }
-    if (qs == ".arcade-leagues") {
-      return true;
-    }
-    return false;
+    return qs == ".arcade-leagues";
   }
 
   async renderInto(qs) {
@@ -268,7 +266,7 @@ class League extends ModTemplate {
           "League",
           `SELECT *
            FROM players
-           WHERE (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}')
+           WHERE (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.publicKey}')
              AND league_id IN (${league_list})
            ORDER BY league_id, score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
           (res) => {
@@ -336,7 +334,7 @@ class League extends ModTemplate {
     }
   }
 
-  async onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf) {
     if (conf != 0) {
       return;
     }
@@ -349,42 +347,42 @@ class League extends ModTemplate {
       }
 
       if (txmsg.request === "league create") {
-        await this.receiveCreateTransaction(blk, tx, conf, app);
+        await this.receiveCreateTransaction(blk, tx, conf);
       }
 
       if (txmsg.request === "league join") {
-        await this.receiveJoinTransaction(blk, tx, conf, app);
+        await this.receiveJoinTransaction(blk, tx, conf);
       }
       if (txmsg.request === "league quit") {
-        await this.receiveQuitTransaction(blk, tx, conf, app);
+        await this.receiveQuitTransaction(blk, tx, conf);
       }
 
       if (txmsg.request === "league remove") {
-        await this.receiveRemoveTransaction(blk, tx, conf, app);
+        await this.receiveRemoveTransaction(blk, tx, conf);
       }
 
       if (txmsg.request === "league update") {
-        await this.receiveUpdateTransaction(blk, tx, conf, app);
+        await this.receiveUpdateTransaction(blk, tx, conf);
       }
 
       if (txmsg.request === "league update player") {
-        await this.receiveUpdatePlayerTransaction(blk, tx, conf, app);
+        await this.receiveUpdatePlayerTransaction(blk, tx, conf);
       }
 
       if (txmsg.request === "gameover") {
-        await this.receiveGameoverTransaction(app, txmsg);
+        await this.receiveGameoverTransaction(txmsg);
       }
 
       if (txmsg.request === "roundover") {
-        await this.receiveRoundoverTransaction(app, txmsg);
+        await this.receiveRoundoverTransaction(txmsg);
       }
 
       if (txmsg.request === "accept") {
-        await this.receiveAcceptTransaction(blk, tx, conf, app);
+        await this.receiveAcceptTransaction(blk, tx, conf);
       }
 
       if (txmsg.request === "launch singleplayer") {
-        await this.receiveLaunchSinglePlayerTransaction(blk, tx, conf, app);
+        await this.receiveLaunchSinglePlayerTransaction(blk, tx, conf);
       }
 
       this.saveLeagues();
@@ -396,8 +394,6 @@ class League extends ModTemplate {
     } catch (err) {
       console.log("ERROR in league onConfirmation: " + err);
     }
-
-    return;
   }
 
   shouldAffixCallbackToModule(modname, tx = null) {
@@ -477,12 +473,14 @@ class League extends ModTemplate {
     newtx.msg.module = "League";
     newtx.msg.request = "league create";
 
-    newtx.transaction.to.push(new saito.default.slip(this.publicKey, 0.0));
+    let slip = new Slip();
+    slip.publicKey = this.publicKey;
+    newtx.addToSlip(slip);
     await newtx.sign();
     return newtx;
   }
 
-  async receiveCreateTransaction(blk, tx, conf, app) {
+  async receiveCreateTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     let obj = this.validateLeague(txmsg);
@@ -492,17 +490,23 @@ class League extends ModTemplate {
   }
 
   addressToAll(tx, league_id) {
-    tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+    let slip = new Slip();
+    slip.publicKey = this.publicKey;
+    tx.addToSlip(slip);
 
     let league = this.returnLeague(league_id);
     if (!league?.admin) {
       return tx;
     }
 
-    tx.transaction.to.push(new saito.default.slip(league.admin, 0.0));
+    slip = new Slip();
+    slip.publicKey = league.admin;
+    tx.addToSlip(slip);
 
     for (let p of league.players) {
-      tx.transaction.to.push(new saito.default.slip(p.publickey, 0.0));
+      slip = new Slip();
+      slip.publicKey = p.publickey;
+      tx.addToSlip(slip);
     }
 
     return tx;
@@ -528,11 +532,11 @@ class League extends ModTemplate {
     return newtx;
   }
 
-  async receiveJoinTransaction(blk, tx, conf, app) {
+  async receiveJoinTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     let params = {
-      publickey: tx.transaction.from[0].add,
+      publickey: tx.from[0].publicKey,
       email: txmsg.email || "",
       ts: parseInt(tx.timestamp),
     };
@@ -543,13 +547,11 @@ class League extends ModTemplate {
     //So, when we get our join message returned to us, we will do a query to figure out our rank
     //save the info locally, and emit an event to update as a success
     //
-    if (this.app.wallet.returnPublicKey() === tx.transaction.from[0].add) {
+    if (this.publicKey === tx.from[0].publicKey) {
       await this.fetchLeagueLeaderboard(txmsg.league_id, () => {
         this.app.connection.emit("join-league-success");
       });
     }
-
-    return;
   }
 
   async createUpdateTransaction(league_id, new_data, field = "description") {
@@ -567,7 +569,7 @@ class League extends ModTemplate {
     return newtx;
   }
 
-  async receiveUpdateTransaction(blk, tx, conf, app) {
+  async receiveUpdateTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     let league_id = txmsg.league_id;
@@ -598,8 +600,12 @@ class League extends ModTemplate {
   async createUpdatePlayerTransaction(league_id, publickey, new_data, field = "email") {
     let newtx = await this.app.wallet.createUnsignedTransaction();
 
-    newtx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
-    newtx.transaction.to.push(new saito.default.slip(publickey, 0.0));
+    let slip = new Slip();
+    slip.publicKey = this.publicKey;
+    newtx.addToSlip(slip);
+    slip = new Slip();
+    slip.publicKey = publickey;
+    newtx.addToSlip(slip);
 
     newtx.msg = {
       module: "League",
@@ -613,7 +619,7 @@ class League extends ModTemplate {
     return newtx;
   }
 
-  async receiveUpdatePlayerTransaction(blk, tx, conf, app) {
+  async receiveUpdatePlayerTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     let league_id = txmsg.league_id;
@@ -660,7 +666,7 @@ class League extends ModTemplate {
     return newtx;
   }
 
-  async receiveQuitTransaction(blk, tx, conf, app) {
+  async receiveQuitTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
     let sql = `DELETE
                FROM players
@@ -668,7 +674,7 @@ class League extends ModTemplate {
                  AND publickey = $publickey`;
     let params = {
       $league: txmsg.league_id,
-      $publickey: tx.transaction.from[0].add,
+      $publickey: tx.from[0].publicKey,
     };
     await this.app.storage.executeDatabase(sql, params, "league");
   }
@@ -689,7 +695,7 @@ class League extends ModTemplate {
     return newtx;
   }
 
-  async receiveRemoveTransaction(blk, tx, conf, app) {
+  async receiveRemoveTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
     let sql1 = `DELETE
                 FROM leagues
@@ -697,7 +703,7 @@ class League extends ModTemplate {
                   AND admin = $publickey`;
     let params1 = {
       $league_id: txmsg.league_id,
-      $publickey: tx.transaction.from[0].add,
+      $publickey: tx.from[0].publicKey,
     };
     await this.app.storage.executeDatabase(sql1, params1, "league");
 
@@ -713,14 +719,14 @@ class League extends ModTemplate {
   ///////////////////////////
   // roundover transaction //
   ///////////////////////////
-  async receiveRoundoverTransaction(app, txmsg) {
-    await this.receiveGameoverTransaction(app, txmsg, false);
+  async receiveRoundoverTransaction(txmsg) {
+    await this.receiveGameoverTransaction(txmsg, false);
   }
 
   //////////////////////////
   // gameover transaction //
   //////////////////////////
-  async receiveGameoverTransaction(app, txmsg, is_gameover = true) {
+  async receiveGameoverTransaction(txmsg, is_gameover = true) {
     //if (app.BROWSER == 1) { return; }
 
     let game = txmsg.module;
@@ -782,7 +788,7 @@ class League extends ModTemplate {
         //console.log("Update league rankings on game over");
         //console.log(JSON.parse(JSON.stringify(leag.players)));
         await this.fetchLeagueLeaderboard(leag.id, () => {
-          app.connection.emit("league-rankings-render-request");
+          this.app.connection.emit("league-rankings-render-request");
           //console.log("Records checked");
           this.saveLeagues();
         });
@@ -796,11 +802,11 @@ class League extends ModTemplate {
   //
   // inserts player into public league if one exists
   //
-  async receiveLaunchSinglePlayerTransaction(blk, tx, conf, app) {
-    await this.receiveAcceptTransaction(blk, tx, conf, app);
+  async receiveLaunchSinglePlayerTransaction(blk, tx, conf) {
+    await this.receiveAcceptTransaction(blk, tx, conf);
   }
 
-  async receiveAcceptTransaction(blk, tx, conf, app) {
+  async receiveAcceptTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     if (this.debug) {
@@ -824,9 +830,9 @@ class League extends ModTemplate {
     // who are the players ?
     //
     let publickeys = [];
-    for (let i = 0; i < tx.transaction.to.length; i++) {
-      if (!publickeys.includes(tx.transaction.to[i].add)) {
-        publickeys.push(tx.transaction.to[i].add);
+    for (let i = 0; i < tx.to.length; i++) {
+      if (!publickeys.includes(tx.to[i].publicKey)) {
+        publickeys.push(tx.to[i].publicKey);
       }
     }
 
@@ -1237,13 +1243,13 @@ class League extends ModTemplate {
 
     league.players.push(newPlayer);
 
-    if (newPlayer.publickey === this.app.wallet.returnPublicKey()) {
+    if (newPlayer.publickey === this.publicKey) {
       if (league.rank <= 0) {
         league.rank = 0;
         league.numPlayers = league.players.length;
       }
 
-      if (league.admin && league.admin !== this.app.wallet.returnPublicKey()) {
+      if (league.admin && league.admin !== this.publicKey) {
         league.unverified = newPlayer.email == "";
       }
     }
@@ -1274,7 +1280,7 @@ class League extends ModTemplate {
       `SELECT *
        FROM players
        WHERE league_id = '${league_id}'
-         AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}')
+         AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.publicKey}')
        ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
       async (res) => {
         if (res?.rows) {
@@ -1284,7 +1290,7 @@ class League extends ModTemplate {
             //
             rank++;
 
-            if (p.publickey == this.app.wallet.returnPublicKey()) {
+            if (p.publickey == this.publicKey) {
               if (p.games_finished > 0) {
                 league.rank = rank;
               } else {
@@ -1358,8 +1364,6 @@ class League extends ModTemplate {
     };
 
     await this.app.storage.executeDatabase(sql, params, "league");
-
-    return;
   }
 
   async playerInsert(league_id, obj) {
@@ -1381,7 +1385,6 @@ class League extends ModTemplate {
     console.log("Insert player:", params);
 
     await this.app.storage.executeDatabase(sql, params, "league");
-    return;
   }
 
   async pruneOldPlayers() {

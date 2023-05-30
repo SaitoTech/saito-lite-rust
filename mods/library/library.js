@@ -226,7 +226,7 @@ class Library extends ModTemplate {
         //console.log(" >> requesting: " + m.collection);
         //console.log(" >> ");
 
-        app.network.sendRequestAsTransactionWithCallback(
+        app.network.sendRequestAsTransaction(
           message.request,
           message.data,
           (res) => {
@@ -239,7 +239,7 @@ class Library extends ModTemplate {
               library_self.library[m.collection].peers[peer.publicKey] = res; // res = collection
             }
           },
-          peer
+          peer.peerIndex
         );
       }
     }

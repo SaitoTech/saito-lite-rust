@@ -473,8 +473,8 @@ class Registry extends ModTemplate {
     }
   }
 
-  async onConfirmation(blk, tx, conf, app) {
-    let registry_self = app.modules.returnModule("Registry");
+  async onConfirmation(blk, tx, conf) {
+    let registry_self = this.app.modules.returnModule("Registry");
     let txmsg = tx.returnMessage();
 
     if (conf == 0) {
@@ -492,8 +492,8 @@ class Registry extends ModTemplate {
           let identifier = txmsg.identifier;
           let publickey = tx.from[0].publicKey;
           let unixtime = new Date().getTime();
-          let bid = blk.block.id;
-          let bsh = blk.returnHash();
+          let bid = blk.id;
+          let bsh = blk.hash;
           let lock_block = 0;
           let signed_message = identifier + publickey + bid + bsh;
           let sig = registry_self.app.wallet.signMessage(signed_message);
@@ -581,28 +581,28 @@ class Registry extends ModTemplate {
                     registry_self.publickey
                   )
                 ) {
-                  registry_self.app.keychain.addKey(tx.transaction.to[0].add, {
+                  registry_self.app.keychain.addKey(tx.to[0].publicKey, {
                     identifier: identifier,
                     watched: true,
-                    block_id: blk.block.id,
-                    block_hash: blk.returnHash(),
+                    block_id: blk.id,
+                    block_hash: blk.hash,
                     lc: 1,
                   });
                   console.info("verification success for : " + identifier);
                 } else {
-                  registry_self.app.keychain.addKey(tx.transaction.to[0].add, {
+                  registry_self.app.keychain.addKey(tx.to[0].publicKey, {
                     has_registered_username: false,
                   });
                   console.debug("verification failed for sig : ", tx);
                 }
-                registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].add, identifier);
-                registry_self.app.connection.emit("update_identifier", tx.transaction.to[0].add);
+                registry_self.app.browser.updateAddressHTML(tx.to[0].publicKey, identifier);
+                registry_self.app.connection.emit("update_identifier", tx.to[0].publicKey);
               } catch (err) {
                 console.error("ERROR verifying username registration message: ", err);
               }
             }
           } else {
-            if (registry_self.app.wallet.returnPublicKey() != registry_self.publickey) {
+            if ((await registry_self.app.wallet.getPublicKey()) != registry_self.publickey) {
               //
               // am email? for us? from the DNS registrar?
               //
@@ -613,10 +613,10 @@ class Registry extends ModTemplate {
               // if i am server, save copy of record
               await registry_self.addRecord(
                 identifier,
-                tx.transaction.to[0].add,
+                tx.to[0].publicKey,
                 tx.timestamp,
-                blk.block.id,
-                blk.returnHash(),
+                blk.id,
+                blk.hash,
                 0,
                 sig,
                 registry_self.publickey
@@ -624,7 +624,7 @@ class Registry extends ModTemplate {
 
               // if i am a server, i will notify lite-peers of
               console.log("notifying lite-peers of registration!");
-              this.notifyPeers(app, tx);
+              this.notifyPeers(this.app, tx);
             }
           }
         }

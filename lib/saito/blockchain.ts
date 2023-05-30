@@ -81,7 +81,7 @@ export default class Blockchain extends SaitoBlockchain {
     for (let z = 0; z < txs.length; z++) {
       if (txs[z].type === TransactionType.Normal) {
         await txs[z].decryptMessage(this.app);
-        const txmsg = txs[z].msg;
+        const txmsg = txs[z].returnMessage();
         this.app.modules.affixCallbacks(txs[z], z, txmsg, callbacks, callbackIndices);
       }
     }

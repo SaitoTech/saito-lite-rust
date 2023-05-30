@@ -8,7 +8,7 @@ import * as blake3 from "blake3";
 
 async function initCLI() {
   const app = new Saito({
-    mod_paths: mods_config.core,
+    mod_paths: mods_config.core
   });
 
   //app.server = new Server(app);
@@ -150,7 +150,7 @@ async function initCLI() {
               let params = {
                 $address: blk.transactions[i].to[ii].publicKey,
                 $amt: blk.transactions[i].to[ii].amount,
-                $bid: blk.block.id,
+                $bid: blk.id,
                 $tid: blk.transactions[i].id,
                 $sid: ii,
                 $bhash: blk.returnHash(),
@@ -163,7 +163,7 @@ async function initCLI() {
                 $tx_from: tx_from,
                 $tx_to: blk.transactions[i].to[ii].publicKey,
                 $name: tname,
-                $module: tmodule,
+                $module: tmodule
               };
               await app.storage.executeDatabase(sql, params, "warehouse");
             }
@@ -191,11 +191,11 @@ async function initCLI() {
   /////////////////////
   // Cntl-C to Close //
   /////////////////////
-  process.on("SIGTERM", function () {
+  process.on("SIGTERM", function() {
     console.log("Network Shutdown");
     process.exit(0);
   });
-  process.on("SIGINT", function () {
+  process.on("SIGINT", function() {
     console.log("Network Shutdown");
     process.exit(0);
   });

@@ -76,7 +76,7 @@ class StorageCore extends Storage {
 
   generateBlockFilename(block): string {
     let filename = this.data_dir + "/" + this.dest + "/";
-    filename += block.block.timestamp;
+    filename += block.timestamp;
     filename += "-";
     filename += block.hash;
     filename += ".sai";

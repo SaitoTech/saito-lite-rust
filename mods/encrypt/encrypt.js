@@ -295,8 +295,8 @@ class Encrypt extends ModTemplate {
     this.saveEncrypt();
   }
 
-  async onConfirmation(blk, tx, conf, app) {
-    let encrypt_self = app.modules.returnModule("Encrypt");
+  async onConfirmation(blk, tx, conf) {
+    let encrypt_self = this.app.modules.returnModule("Encrypt");
 
     if (conf == 0) {
       console.log("ENCRYPT ONCONF");
@@ -311,7 +311,7 @@ class Encrypt extends ModTemplate {
         let receiver = tx.to[0].publicKey;
         let txmsg = tx.returnMessage();
         let request = txmsg.request; // "request"
-        if (app.keychain.alreadyHaveSharedSecret(sender)) {
+        if (this.app.keychain.alreadyHaveSharedSecret(sender)) {
           return;
         }
 
@@ -334,7 +334,7 @@ class Encrypt extends ModTemplate {
         if (txmsg.request == "key exchange confirm") {
           let bob_publickey = Buffer.from(txmsg.bob, "hex");
 
-          var senderkeydata = app.keychain.returnKey(sender);
+          var senderkeydata = this.app.keychain.returnKey(sender);
           if (senderkeydata == null) {
             if (app.BROWSER == 1) {
               alert("Cannot find original diffie-hellman keys for key-exchange");
@@ -343,9 +343,9 @@ class Encrypt extends ModTemplate {
           }
           let alice_publickey = Buffer.from(senderkeydata.aes_publickey, "hex");
           let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
-          let alice = app.crypto.createDiffieHellman(alice_publickey, alice_privatekey);
-          let alice_secret = app.crypto.createDiffieHellmanSecret(alice, bob_publickey);
-          app.keychain.updateCryptoByPublicKey(
+          let alice = this.app.crypto.createDiffieHellman(alice_publickey, alice_privatekey);
+          let alice_secret = this.app.crypto.createDiffieHellmanSecret(alice, bob_publickey);
+          this.app.keychain.updateCryptoByPublicKey(
             sender,
             alice_publickey.toString("hex"),
             alice_privatekey.toString("hex"),
