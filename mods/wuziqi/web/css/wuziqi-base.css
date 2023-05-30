@@ -75,12 +75,12 @@ Board is a grid of wooden squares
 
 .board > div.top::after {
     border-top: 2px solid black;
-    top: calc(50% - 1px);
+    top: 50%
 }
 
 .board > div.left::after {
     border-left: 2px solid black;
-    left: calc(50% - 1px);
+    left: 50%
 }
 
 .board > div.bottom::after, .board > div.right::after {
