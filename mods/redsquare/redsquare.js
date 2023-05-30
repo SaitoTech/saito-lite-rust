@@ -10,6 +10,7 @@ const HTMLParser = require('node-html-parser');
 const prettify = require('html-prettify');
 const redsquareHome = require("./index");
 const Post = require("./lib/post");
+const SaitoProfile = require('../../lib/saito/ui/saito-profile/saito-profile');
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {			// renders main tweets
@@ -125,6 +126,9 @@ class RedSquare extends ModTemplate {
       'dark': 'fa-solid fa-moon'
     };
 
+    this.profile = new SaitoProfile(app, this, ".saito-main");
+    this.profile.publickey = app.wallet.returnPublicKey();
+
     return this;
 
   }
@@ -217,7 +221,7 @@ class RedSquare extends ModTemplate {
 
       x.push({
         text: "Tweet Image",
-        icon: "fa fa-camera",
+        icon: "fa-solid fa-image",
         allowed_mods: ['redsquare'],
         disallowed_mods: ['arcade'],
         rank: 20,
