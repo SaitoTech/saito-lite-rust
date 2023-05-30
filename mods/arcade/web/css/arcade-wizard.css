@@ -283,12 +283,9 @@
 }
 
 .saito-multi-select_btn_options {
-  width: calc(100% - 5rem - 4px);
-  padding: 0;
+  width: calc(100% - 5rem - 2px);
+  padding: 0 !important;
   border: none;
-}
-
-.saito-multi-select_btn_options {
   background: none;
 }
 
