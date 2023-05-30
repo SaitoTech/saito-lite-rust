@@ -44,9 +44,8 @@ class Wuziqi extends GameTemplate {
         super.initializeHTML(app);
 
         this.menu.addMenuOption("game-game", "Game");
-        this.menu.addMenuOption("game-info", "Info");
 
-        this.menu.addSubMenuOption("game-info", {
+        this.menu.addSubMenuOption("game-game", {
             text: "How to Play",
             id: "game-intro",
             class: "game-intro",
@@ -74,23 +73,31 @@ class Wuziqi extends GameTemplate {
         }
 
 
-        //Player Boxes
-        this.playerbox.render();
-        if (this.game.player == 0){
-            this.playerbox.addClass("me",1);
-            this.playerbox.addClass("notme",2);
-        }else{
-            this.playerbox.addClass("me",this.game.player);
-            this.playerbox.addClass("notme",3-this.game.player);
+        this.hud.render();
+        //this.hud.minWidth = 400; //Doesn't work...
+
+        let hh = document.querySelector(".hud-header");
+        if (hh){
+            hh.classList.add(this.roles[this.game.player]);
+        }  
+      
+        this.racetrack.win = Math.ceil(this.game.options.best_of/2);
+        this.racetrack.title = "Best of " + this.game.options.best_of;
+        for (let i = 0; i < this.game.players.length; i++){
+            let player = {
+                name: this.roles[i+1].toUpperCase(),
+                score: this.game.score[i],
+                color: this.roles[i+1]
+            };
+            this.racetrack.players.push(player);
         }
-        this.playerbox.makeDraggable(); //I think we still want to be able to move them
+        this.racetrack.render();
 
         // Render board and set up values.
         try {
             // Check if anyone has played yet (black goes first)
             let blackplayedyet = this.serializeBoard(this.game.board).indexOf("B");
             this.drawBoard(this.game.board);
-            this.updateScore();
 
             // If no one has played set up the board
             if (blackplayedyet < 0) {
@@ -176,36 +183,9 @@ class Wuziqi extends GameTemplate {
         but data structures for player properties are typically 0-indexed arrays
     */
     updateScore() {
-        let roundsToWin = Math.ceil(this.game.options.best_of/2);
-        for (let i = 0; i<this.game.players.length; i++){
-            let scoreHTML = `<div>Score: </div><div class="tokens">`;
-            for (let j = 0; j < this.game.score[i]; j++) {
-                scoreHTML += `<img class="piece" src="img/${this.roles[i+1]}piece.png">`;
-            }
-            for (let j = 0; j < (roundsToWin - this.game.score[i]); j++) {
-                scoreHTML += `<img class="piece opaque30" src="img/${this.roles[i+1]}piece.png">`;
-            }
-            scoreHTML += "</div>";
-            this.playerbox.refreshInfo(scoreHTML,i+1);                        
-        }
+        this.racetrack.render();
     }
 
-    updateStatus(str) {
-    
-      if (this.lock_interface == 1) { return; }
-
-      this.game.status = str;
-
-      if (this.browser_active == 1) {
-        let status_obj = document.querySelector(".status");
-        let seat = this.playerbox.playerBox(this.game.player);
-        if (status_obj) {
-          status_obj.innerHTML = str;
-        } else {
-          this.app.browser.addElementToSelector(`<div class="status">${str}</div>`, `#player-box-body-${seat}`);
-        }
-      }
-    }
 
     animatePlay(cell){
         //$(`div#tile_${cell.id} div`).removeClass("empty").addClass("piece").addClass(cell.owner).fadeIn();
@@ -361,8 +341,7 @@ class Wuziqi extends GameTemplate {
                 // Initiate next round.
                 // Add a continue button if player did not play the winning token, just draw the board (and remove events if they did not);
                 if (player != this.game.player && this.game.player > 0) {
-                    this.updateStatus(`<span class='playertitle'>It's a draw -- no winner.`);
-                    this.addContinueButton();
+                    this.addContinueButton(`It's a draw -- no winner.`);
                 } else {
                     this.updateStatus(`It's a draw -- no winner! <span class="playertitle">${this.roles[3-player]}</span> will start next round.`);
                 }
@@ -380,7 +359,8 @@ class Wuziqi extends GameTemplate {
 
                 // Update my scores
                 this.game.score[winner - 1]++;
-                this.updateScore();
+                this.racetrack.advancePlayer(winner);
+                this.racetrack.lock();
 
                 // If this round win, wins the game - let the winner know.
                 if (2 * this.game.score[winner - 1] > this.game.options.best_of) {
@@ -393,10 +373,9 @@ class Wuziqi extends GameTemplate {
                     // Initiate next round.
                     // Add a continue button if player did not play the winning token, just draw the board (and remove events if they did not);
                     if (winner != this.game.player) {
-                        this.updateStatus(`<span class='playertitle'>${this.roles[winner]}</span> wins the round.`);
-                        this.addContinueButton();
+                        this.addContinueButton("You lost!");
                     } else {
-                        this.updateStatus(`You win the round! Waiting for <span class="playertitle">${this.roles[3-winner]}</span> to start next round.`);
+                        this.updateStatus(`You win the round! Waiting for <span class="playertitle">${this.roles[3-winner]}</span> to start`);
                         this.drawBoard(this.game.board);
                     }
                 }
@@ -437,19 +416,15 @@ class Wuziqi extends GameTemplate {
     }
 
     // Add button to continue the game
-    addContinueButton() {
+    addContinueButton(notice) {
         if (this.game.player == 0 ) { return; }
 
-        this.app.browser.addElementAfterSelector(`<button class="continue">Continue</button>`, ".status");
-        let el = document.querySelector(".continue");
-        if (el){
-            el.addEventListener("click", () => {
-                this.addMove("clearboard\t"+this.game.player);
-                this.endTurn();
-                el.remove();
-            });
+        let game_self = this;
+        this.playerAcknowledgeNotice(notice, function () {
+            game_self.addMove("clearboard\t"+game_self.game.player);
+            game_self.endTurn();
+        });
 
-        }
     }
 
     // Check if a player won the round
