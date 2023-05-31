@@ -1029,11 +1029,11 @@ ul.horizontal_list li.iconoption {
 }
 
 .mobile-trading-container {
-    row-gap: 2.5rem;
-    display: grid;
-    grid-template-rows: minmax(70px, max-content) repeat(auto-fill, 10vh);
-    top: 70px;
     position: absolute;
+    top: 70px;
+    display: flex;
+    flex-direction: column;
+    gaps: 2.5rem;
 }
 .player-box {
     display: relative;
