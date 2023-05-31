@@ -1,42 +1,20 @@
-const ChatManagerLarge = require("./chat-manager-large");
+/**
+ * This appears to hold the core code for connecting to peers over stun
+ * 
+ */
 
 class PeerManager {
   constructor(app, mod, ui_type = "large", config) {
-    console.log(config, "config");
+    console.log("PeerManager constructor, config:", config);
     this.app = app;
     this.mod = mod;
     this.ui_type = ui_type;
     this.config = config;
     this.peers = new Map();
-    this.localStream = null;
-    this.remoteStreams = new Map();
-    this.servers = [
-      {
-        urls: "stun:stun-sf.saito.io:3478",
-      },
-      {
-        urls: "turn:stun-sf.saito.io:3478",
-        username: "guest",
-        credential: "somepassword",
-      },
-      {
-        urls: "stun:stun-sg.saito.io:3478",
-      },
-      {
-        urls: "turn:stun-sg.saito.io:3478",
-        username: "guest",
-        credential: "somepassword",
-      },
-      {
-        urls: "stun:stun-de.saito.io:3478",
-      },
-      {
-        urls: "turn:stun-de.saito.io:3478",
-        username: "guest",
-        credential: "somepassword",
-      },
-    ];
-    this.videoEnabled = false;
+    this.localStream = null;        //My Video Feed
+    this.remoteStreams = new Map(); //The video of the other parties
+
+    this.videoEnabled = true;
     this.audioEnabled = true;
 
     this.app.connection.on("stun-peer-manager-update-room-code", (room_code) => {
@@ -79,16 +57,16 @@ class PeerManager {
     });
 
     app.connection.on("stun-toggle-video", async () => {
-      if (!this.localStream.getVideoTracks()[0]) return;
+
       if (this.videoEnabled === true) {
+        if (!this.localStream.getVideoTracks()[0]) return;
+
         this.localStream.getVideoTracks()[0].enabled = false;
         this.app.connection.emit("mute", "video", "local");
         this.videoEnabled = false;
-        document.querySelector(".video-control i").classList.remove("fa-video");
-        document.querySelector(".video-control i").classList.add("fa-video-slash");
+
       } else {
-        document.querySelector(".video-control i").classList.add("fa-video");
-        document.querySelector(".video-control i").classList.remove("fa-video-slash");
+
         if (!this.localStream.getVideoTracks()[0]) {
           const oldVideoTracks = this.localStream.getVideoTracks();
           if (oldVideoTracks.length > 0) {
@@ -119,11 +97,9 @@ class PeerManager {
 
             this.renegotiate(key);
           });
-          document.querySelector(".video-control i").classList.add("fa-video");
-          this.videoEnabled = true;
+          
         } else {
           this.localStream.getVideoTracks()[0].enabled = true;
-          this.app.connection.emit("unmute", "video", "local");
         }
         this.videoEnabled = true;
       }
@@ -133,7 +109,8 @@ class PeerManager {
         type: "toggle-video",
         enabled: this.videoEnabled,
       };
-      this.app.connection.emit("stun-send-message-to-server", data);
+
+      this.mod.sendStunMessageToServerTransaction(data);
     });
 
     app.connection.on("stun-toggle-audio", async () => {
@@ -142,17 +119,9 @@ class PeerManager {
         this.localStream.getAudioTracks()[0].enabled = false;
         this.app.connection.emit("mute", "audio", "local");
         this.audioEnabled = false;
-        document.querySelectorAll(".audio-control i").forEach((item) => {
-          item.classList.add("fa-microphone-slash");
-          item.classList.remove("fa-microphone");
-        });
       } else {
         this.localStream.getAudioTracks()[0].enabled = true;
         this.audioEnabled = true;
-        document.querySelectorAll(".audio-control i").forEach((item) => {
-          item.classList.remove("fa-microphone-slash");
-          item.classList.add("fa-microphone");
-        });
       }
 
       let data = {
@@ -160,19 +129,21 @@ class PeerManager {
         type: "toggle-audio",
         enabled: this.audioEnabled,
       };
-      this.app.connection.emit("stun-send-message-to-server", data);
+      this.mod.sendStunMessageToServerTransaction(data);
     });
 
-    app.connection.on("show-chat-manager-large", async (to_join) => {
-      // console.log(this, "peer")
+    //Emitted by StunAppspace
+    app.connection.on("show-chat-manager-large", async () => {
+      //Send message that we are joining room
+      this.join();
+
+      //Set up Chat-Manager component
       await this.showChatManagerLarge();
 
-      if (to_join) {
-        this.join();
-      }
       let sound = new Audio("/videocall/audio/enter-call.mp3");
       sound.play();
     });
+
     app.connection.on("show-chat-manager-small", async (to_join, config) => {
       // console.log(this, "peer")
       await this.showChatManagerSmall(this.config);
@@ -182,16 +153,13 @@ class PeerManager {
       let sound = new Audio("/videocall/audio/enter-call.mp3");
       sound.play();
     });
+
     app.connection.on("switch-ui-type-to-large", async () => {
       this.ui_type = "large";
       // remove small ui
       this.removeChatManagerSmall(false);
       // render large ui
-
       this.showChatManagerLarge();
-      setTimeout(() => {
-        app.connection.emit("stun-toggle-video");
-      }, 500);
 
       setTimeout(() => {
         this.renderRemoteStreams();
@@ -199,10 +167,13 @@ class PeerManager {
 
       // loop over this.remoteStreams and render them
     });
+
     app.connection.on("switch-ui-type-to-small", async () => {
       this.ui_type = "small";
     });
 
+
+    //Chat-Settings saves whether to enter the room with mic/camera on/off
     app.connection.on("update-media-preference", (kind, state) => {
       if (kind === "audio") {
         this.audioEnabled = state;
@@ -210,10 +181,6 @@ class PeerManager {
         this.videoEnabled = state;
       }
     });
-  }
-
-  showSetting() {
-    this.app.connection.emit("show-chat-setting", this.room_code);
   }
 
   async showChatManagerLarge() {
@@ -224,21 +191,20 @@ class PeerManager {
       audio: true,
     });
     this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
-    // this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
-    console.log(this.config);
+
+    //Tell Chat Manager to Set Up
     this.app.connection.emit(
       "show-video-chat-large-request",
       this.app,
       this.mod,
-      "video",
       this.room_code,
       this.videoEnabled,
       this.audioEnabled,
       this.config
     );
-    this.app.connection.emit("stun-remove-loader");
-    this.app.connection.emit("render-local-stream-large-request", this.localStream, "video");
-    this.app.connection.emit("remove-overlay-request");
+
+    //Turn on my camera in Chat-Manager-Large
+    this.app.connection.emit("render-local-stream-large-request", this.localStream);
   }
 
   async showChatManagerSmall() {
@@ -293,7 +259,7 @@ class PeerManager {
             sdp: this.getPeerConnection(public_key).localDescription.sdp,
             targetPeerId: public_key,
           };
-          this.app.connection.emit("stun-send-message-to-server", data);
+          this.mod.sendStunMessageToServerTransaction(data);
         })
         .catch((error) => {
           console.error("Error handling offer:", error);
@@ -330,7 +296,7 @@ class PeerManager {
   createPeerConnection(peerId, type) {
     // check if peer connection already exists
     const peerConnection = new RTCPeerConnection({
-      iceServers: this.servers,
+      iceServers: this.mod.servers,
     });
 
     this.peers.set(peerId, peerConnection);
@@ -346,7 +312,7 @@ class PeerManager {
           candidate: event.candidate,
           targetPeerId: peerId,
         };
-        this.app.connection.emit("stun-send-message-to-server", data);
+        this.mod.sendStunMessageToServerTransaction(data);
       }
     };
 
@@ -367,15 +333,13 @@ class PeerManager {
         this.app.connection.emit(
           "render-remote-stream-large-request",
           peerId,
-          remoteStream,
-          peerConnection
+          remoteStream
         );
       } else if (this.ui_type === "small") {
         this.app.connection.emit(
           "add-remote-stream-small-request",
           peerId,
-          remoteStream,
-          peerConnection
+          remoteStream
         );
       }
     });
@@ -512,7 +476,7 @@ class PeerManager {
           sdp: peerConnection.localDescription.sdp,
           targetPeerId: peerId,
         };
-        this.app.connection.emit("stun-send-message-to-server", data);
+        this.mod.sendStunMessageToServerTransaction(data);
       })
       .catch((error) => {
         console.error("Error creating offer:", error);
@@ -523,7 +487,7 @@ class PeerManager {
 
   join() {
     console.log("joining mesh network");
-    this.app.connection.emit("stun-send-message-to-server", {
+    this.mod.sendStunMessageToServerTransaction({
       type: "peer-joined",
       room_code: this.room_code,
     });
@@ -546,7 +510,7 @@ class PeerManager {
       type: "peer-left",
     };
 
-    this.app.connection.emit("stun-send-message-to-server", data);
+    this.mod.sendStunMessageToServerTransaction(data);
   }
 
   sendSignalingMessage(data) {}
@@ -567,15 +531,13 @@ class PeerManager {
         this.app.connection.emit(
           "render-remote-stream-large-request",
           key,
-          property.remoteStream,
-          property.peerConnection
+          property.remoteStream
         );
       } else if (this.ui_type === "small") {
         this.app.connection.emit(
           "add-remote-stream-small-request",
           key,
-          property.remoteStream,
-          property.peerConnection
+          property.remoteStream
         );
       }
     });

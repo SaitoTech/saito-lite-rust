@@ -27,13 +27,11 @@ class StunxGameMenu {
       console.log(this.config, "config")
 
       // create a room
-      let room_code = app.crypto.generateRandomNumber().substring(0, 6);
+      let room_code = mod.sendCreateRoomTransaction(room_code);
 
-      mod.updateGameRoomCode(room_code);
-
-      let stun_mod = app.modules.returnModule("Stun");
-      stun_mod.sendCreateRoomTransaction(room_code);
-
+      //Store room_code in stun
+      mod.updateGameRoomCode(room_code); 
+      //Store room_code in PeerManager
       app.connection.emit("stun-peer-manager-update-room-code", room_code);
 
       // send the information to the other peers and ask them to join the call
@@ -76,7 +74,7 @@ class StunxGameMenu {
 
   async joinConferenceRoom(app, mod, room_obj) {
     // create peer manager and initialize , send an event to stun to initialize
-    // this.app.connection.emit('stun-init-peer-manager', localStream, room_code, true)
+
   }
 }
 

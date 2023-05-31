@@ -473,6 +473,13 @@
   opacity: 0;
 }
 
+.control-list .icon_click_area.disabled {
+  background-color: grey;
+}
+.control-list .icon_click_area.disabled i {
+  color: black;
+}
+
 .speaker {
   border: 3px solid var(--saito-primary) !important;
 }

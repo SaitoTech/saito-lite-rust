@@ -4,25 +4,13 @@ const { setTextRange } = require("typescript");
 // import {applyVideoBackground, } from 'virtual-bg';
 
 class VideoBox {
-  stream_id = null;
-  stream = null;
-  placeholderRendered = false;
-  stream_rendered = false;
-  waitTimer;
-  waitSeconds = 0;
-  is_connected_creator = false;
-  receiving_connection = false;
-  is_connected = false;
 
-  constructor(app, mod, call_type, central, room_code, peer, container_class) {
+  constructor(app, mod, peer, container_class) {
     this.app = app;
     this.mod = mod;
-    this.call_type = call_type;
-    this.central = central;
-    this.room_code = room_code;
+    this.stream = null;
     this.stream_id = peer;
     this.containerClass = container_class;
-    this.retry_attempt_no = 0;
 
     app.connection.on("toggle-peer-audio-status", ({ enabled, public_key }) => {
       if (public_key !== this.stream_id) return;
@@ -66,7 +54,7 @@ class VideoBox {
 
   attachEvents() {}
 
-  render(stream, placeholder_info = null) {
+  render(stream = null, placeholder_info = null) {
     if (stream) {
       this.stream = stream;
     }
@@ -122,14 +110,7 @@ class VideoBox {
     }
 
     const videoBox = document.querySelector(`#stream${this.stream_id}`);
-    if (this.call_type === "audio") {
-      videoBox.insertAdjacentHTML(
-        "beforeend",
-        `<div class="audio-stream"> <i class="fas fa-microphone"></i></div> `
-      );
-    } else if (this.call_type === "video") {
       videoBox.firstElementChild.srcObject = this.stream;
-    }
   }
 
   renderPlaceholder(placeholder_info = "negotiating peer connection") {
@@ -185,12 +166,6 @@ class VideoBox {
     }
   }
 
-  stopWaitTimer() {
-    if (this.waitTimer) {
-      clearInterval(this.waitTimer);
-      this.waitSeconds = 0;
-    }
-  }
 
   remove(is_disconnection = false) {
     let videoBox = document.querySelector(`#stream${this.stream_id}`);

@@ -6,7 +6,6 @@ const AudioBox = require("./audio-box");
 class ChatManagerSmall {
   // peers = {};
   localStream;
-  my_pc = [];
   video_boxes = {};
   audio_boxes = {};
   videoEnabled = true;
@@ -35,8 +34,8 @@ class ChatManagerSmall {
     this.app.connection.on("render-local-stream-small-request", (localStream) => {
       this.addLocalStream(localStream);
     });
-    this.app.connection.on("add-remote-stream-small-request", (peer, remoteStream, pc) => {
-      this.addRemoteStream(peer, remoteStream, pc);
+    this.app.connection.on("add-remote-stream-small-request", (peer, remoteStream) => {
+      this.addRemoteStream(peer, remoteStream);
     });
     // this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type, call_type) => {
     //     console.log('ui_type ', ui_type);
@@ -155,12 +154,12 @@ class ChatManagerSmall {
     this.localStream = stream;
   }
 
-  addRemoteStream(peer, remoteStream, pc) {
+  addRemoteStream(peer, remoteStream) {
     /// chat-manager-small-audio-container
     if (this.config) {
-      this.createAudioBox(peer, remoteStream, pc, this.config.stream_container);
+      this.createAudioBox(peer, remoteStream, this.config.stream_container);
     } else {
-      this.createAudioBox(peer, remoteStream, pc, "chat-manager-small");
+      this.createAudioBox(peer, remoteStream, "chat-manager-small");
     }
 
     this.audio_boxes[peer].audio_box.render(remoteStream);
@@ -172,10 +171,10 @@ class ChatManagerSmall {
     this.attachEvents(this.app, this.mod)
   }
 
-  createAudioBox(peer, remoteStream, pc, container) {
+  createAudioBox(peer, remoteStream, container) {
     if (!this.audio_boxes[peer]) {
-      const audioBox = new AudioBox(this.app, this.mod, this.room_code, peer, container);
-      this.audio_boxes[peer] = { audio_box: audioBox, remote_stream: remoteStream, pc: pc };
+      const audioBox = new AudioBox(this.app, this.mod, peer, container);
+      this.audio_boxes[peer] = { audio_box: audioBox, remote_stream: remoteStream };
     }
   }
 

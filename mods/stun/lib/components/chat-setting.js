@@ -1,6 +1,12 @@
-
-
 const ChatSettingTemplate = require("./chat-setting.template");
+
+/**
+ * 
+ * This is the part of the splash screen where you can check your camera
+ * and mute your self before creating or joining a meeting
+ * 
+ * There are (currently disabled) functions to test your mic by recording a brief message
+ */
 
 class ChatSetting {
   videoStream = null;
@@ -16,37 +22,8 @@ class ChatSetting {
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
-
-    app.connection.on("show-chat-setting", (room_code) => {
-      if (room_code) {
-        this.room_code = room_code;
-      }
-
-      this.render();
-    });
-
-    app.connection.on("join-meeting", (to_join) => {
-      if (this.audioStream) {
-        this.audioStream.getTracks().forEach((track) => {
-          track.stop();
-          console.log(track);
-          console.log("stopping audio track");
-        });
-      }
-
-      if (this.videoStream) {
-        this.videoStream.getTracks().forEach((track) => {
-          track.stop();
-          console.log(track);
-          console.log("stopping video track");
-        });
-      }
-
-      this.remove();
-      this.app.connection.emit("show-chat-manager-large", to_join);
-    });
   
-    app.connection.on("cancel-meeting", ()=>{
+    app.connection.on("close-preview-window", ()=>{
       if (this.audioStream) {
         this.audioStream.getTracks().forEach((track) => {
           track.stop();
@@ -68,10 +45,7 @@ class ChatSetting {
   }
 
   render() {
-    this.app.browser.addElementToClass(
-      ChatSettingTemplate(this.app, this.mod),
-      "stun-appspace-settings"
-    );
+    this.app.browser.addElementToClass(ChatSettingTemplate(), "stun-appspace-settings");
     this.attachEvents(this.app, this.mod);
   }
 
@@ -160,6 +134,7 @@ class ChatSetting {
     this.getUserMedia(videoElement);
   }
 
+
   async getUserMedia(videoElement) {
     try {
       this.audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -167,19 +142,17 @@ class ChatSetting {
       console.error("Error accessing media devices.", error);
       salert("Error access media devices, please check your permissions");
     }
-
     
     try {
       this.videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
       videoElement.srcObject = this.videoStream;
       this.videoEnabled = true
-      this.app.connection.emit("update-media-preference", "video", this.videoEnabled);
     } catch (error) {
       this.videoStream = null;
       this.videoEnabled = false
-      this.app.connection.emit("update-media-preference", "video", this.videoEnabled);
       salert("Error access camera, using audio only mode ");
     }
+    this.app.connection.emit("update-media-preference", "video", this.videoEnabled);
 
     this.loadMediaDevices();
   }
@@ -203,6 +176,7 @@ class ChatSetting {
       kind === "video"
         ? { video: { deviceId: this.videoInput.value } }
         : { audio: { deviceId: this.audioInput.value } };
+        
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
     if (kind === "video") {
