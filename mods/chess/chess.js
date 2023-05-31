@@ -5,7 +5,7 @@ const ChessGameOptions = require("./lib/chess-game-options.template");
 const ChessSingularGameOptions = require("./lib/chess-singular-game-options.template");
 const chess = require('./lib/chess.js');
 const chessboard = require('./lib/chessboard');
-const SaitoUser = require("../../lib/saito/ui/saito-user/saito-user");
+//const SaitoUser = require("../../lib/saito/ui/saito-user/saito-user");
 
 var this_chess = null;
 
@@ -116,12 +116,15 @@ class Chessgame extends GameTemplate {
     this.playerbox.addClass("notme", 3-this.game.player);
     this.playerbox.groupOpponents(false);
     
+    /*
     let me = new SaitoUser(app, this, `player-box-head-${this.playerbox.playerBox(this.game.player)}`, this.game.players[this.game.player-1], this.roles[this.game.player], this.returnTile(this.game.player));
     me.render();
 
     let opp = new SaitoUser(app, this, `player-box-head-${this.playerbox.playerBox(3-this.game.player)}`, this.game.players[2-this.game.player], this.roles[3-this.game.player], this.returnTile(3-this.game.player));
     opp.render();
-
+    */
+    
+    
     window.onresize = () => this.board.resize();
 
     $(".main").append($("#opponentbox"));

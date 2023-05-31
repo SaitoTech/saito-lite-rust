@@ -36,10 +36,11 @@
 
 .saito-sidebar.left {
   position: sticky;
-  height: calc(100% - 2rem);
+  height: calc(100vh - var(--saito-header-height));
   width: 25rem;
   top: 0;
-  margin: 2rem 0 0 1rem;
+  margin: 0 0 0 1rem;
+  padding: 1.5rem 0 0 0;
   overflow: hidden;
 }
 

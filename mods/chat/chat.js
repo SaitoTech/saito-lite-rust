@@ -689,31 +689,37 @@ class Chat extends ModTemplate {
 
     for (let block of message_blocks) {
       let ts = 0;
-      if (block.length > 0) {
-        let sender = "";
-        let msg = "";
-        for (let z = 0; z < block.length; z++) {
-          if (z > 0) {
-            msg += "<br>";
+      if (block?.date){
+        html += `<div class="saito-time-stamp">${block.date}</div>`;
+      }else{
+        if (block.length > 0) {
+          let sender = "";
+          let msg = "";
+          for (let z = 0; z < block.length; z++) {
+            if (z > 0) {
+              msg += "<br>";
+            }
+            sender = block[z].from[0];
+            if (block[z].msg.indexOf("<img") != 0) {
+              msg += this.app.browser.sanitize(block[z].msg);
+            } else {
+              msg += block[z].msg.substring(0, block[z].msg.indexOf(">") + 1);
+            }
+            ts = ts || block[z].ts;
           }
-          sender = block[z].from[0];
-          if (block[z].msg.indexOf("<img") != 0) {
-            msg += this.app.browser.sanitize(block[z].msg);
-          } else {
-            msg += block[z].msg.substring(0, block[z].msg.indexOf(">") + 1);
-          }
-          ts = ts || block[z].ts;
+
+          //Use FA 5 so compatible in games (until we upgrade everything to FA6)
+          const replyButton = `<div data-id="${group_id}" class="saito-userline-reply">reply <i class="fas fa-reply"></i></div>`;
+          html += `${SaitoUserTemplate({
+            app: this.app,
+            publickey: sender,
+            notice: msg,
+            fourthelem:
+              `<div class="saito-chat-line-controls"><span class="saito-chat-line-timestamp">` +
+              this.app.browser.returnTime(ts) +
+              `</span>${replyButton}</div>`,
+          })}`;
         }
-        const replyButton = `<div data-id="${group_id}" class="saito-userline-reply">reply <i class="fa-solid fa-reply"></i></div>`;
-        html += `${SaitoUserTemplate({
-          app: this.app,
-          publickey: sender,
-          notice: msg,
-          fourthelem:
-            `<div class="saito-chat-line-controls"><span class="saito-chat-line-timestamp">` +
-            this.app.browser.returnTime(ts) +
-            `</span>${replyButton}</div>`,
-        })}`;
       }
     }
 
@@ -727,20 +733,34 @@ class Chat extends ModTemplate {
     let block = [];
     let last_message_sender = "";
     let last_message_ts = 0;
+    let last = new Date(0);
 
     for (let minimized_tx of group?.txs) {
       //Same Sender -- keep building block 
-      if (minimized_tx.from.includes(last_message_sender) && (minimized_tx.ts - last_message_ts) < 300000) {
+      let next = new Date(minimized_tx.ts);
+      
+      if (minimized_tx.from.includes(last_message_sender) && (minimized_tx.ts - last_message_ts) < 300000 && next.getDate() == last.getDate()) {
         block.push(minimized_tx);
       } else {
         //Start new block
-        blocks.push(block);
-        block = [];
+        if (block.length > 0){
+          blocks.push(block);
+          block = [];  
+        }
+        if (next.getDate() !== last.getDate()){
+          if (next.toDateString() == new Date().toDateString()){
+            blocks.push({ date: "Today"});
+          }else{
+            blocks.push( { date: next.toDateString()});
+          }
+        }
+        
         block.push(minimized_tx);
       }
     
       last_message_sender = minimized_tx.from[0];
       last_message_ts = minimized_tx.ts;
+      last = next;
     }
 
     blocks.push(block);
@@ -1028,6 +1048,27 @@ class Chat extends ModTemplate {
         console.log(JSON.parse(JSON.stringify(group)));
       }
     });
+  }
+
+  deleteChatGroup(group){
+    for (let i = 0; i < this.groups.length; i++){
+      if (this.groups[i].id === group.id){
+        this.groups.splice(i,1);
+        break;
+      }
+    }
+
+    for (let i = 0; i < this.app.options.chat.length; i++){
+      if (this.app.options.chat[i] === group.id){
+        this.app.options.chat.splice(i,1);
+        break;
+      }  
+    }
+
+    this.app.storage.saveOptions();
+    localforage.removeItem(`chat_${group.id}`);
+
+    this.app.connection.emit("chat-manager-render-request");
   }
 
   /****************************

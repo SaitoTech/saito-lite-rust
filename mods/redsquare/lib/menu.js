@@ -122,7 +122,7 @@ class RedSquareMenu {
           obj.style.display = "none";
           obj.innerHTML = 0;
         } else {
-          obj.style.display = "block";
+          obj.style.display = "flex";
           existing_notifications++;
           obj.innerHTML = existing_notifications;
         }
