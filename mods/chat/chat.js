@@ -707,7 +707,9 @@ class Chat extends ModTemplate {
             }
             ts = ts || block[z].ts;
           }
-          const replyButton = `<div data-id="${group_id}" class="saito-userline-reply">reply <i class="fa-solid fa-reply"></i></div>`;
+
+          //Use FA 5 so compatible in games (until we upgrade everything to FA6)
+          const replyButton = `<div data-id="${group_id}" class="saito-userline-reply">reply <i class="fas fa-reply"></i></div>`;
           html += `${SaitoUserTemplate({
             app: this.app,
             publickey: sender,
