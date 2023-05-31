@@ -1,0 +1,58 @@
+
+.game-playerbox-manager {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    position: absolute;
+    top: 6rem;
+    right: 3rem;
+}
+
+.game-playerbox {
+    border: 5px solid #424143;
+    background-color: #d3c38df5;
+    padding: 1rem 2rem !important;
+    padding: 1rem;
+    z-index: 3;
+    max-width: 25vw;
+    border-image: url(/settlers/img/border.png);
+    border-image-slice: 51;
+    border-image-width: 21px;
+    border-image-repeat: stretch;
+    border-style: solid;
+    border-image-outset: 7px;
+    color: var(--text-color);
+}
+
+.game-playerbox-graphics {
+    top: 0rem;
+    right: 0rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+
+  .game-playerbox-manager {
+    display: none;
+    top: 0px;
+    left: 0px;
+    padding: 2rem;
+    padding-top: 10rem;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    z-index: 9;
+  }
+
+  .game-playerbox {
+    width: 100%;
+    max-width: 100%;
+  }
+
+}
+
+
+

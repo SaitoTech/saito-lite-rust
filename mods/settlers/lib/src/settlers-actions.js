@@ -549,40 +549,9 @@ console.log("DONE GENERATING MAP");
   }
 
 
-  updatePlayerBox(str, hide_info = 0) {
-    try {
-      if (hide_info == 0) {
-        this.playerbox.showInfo();
-      } else {
-        this.playerbox.hideInfo();
-      }
-
-      if (this.lock_interface == 1) {
-        return;
-      }
-
-      this.game.status = str;
-
-      if (this.browser_active == 1) {
-        let status_obj = document.querySelector(".player-box.me .status");
-        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
-          status_obj.innerHTML = str;
-          $(".player-box.me .status").disableSelection();
-        }
-      }
-    } catch (err) {
-      //console.log("ERR: " + err);
-    }
-  }
-
   updateStatus(str, hide_info = 0) {
 
     try {
-//      if (hide_info == 0) {
-//        this.playerbox.showInfo();
-//      } else {
-//        this.playerbox.hideInfo();
-//      }
 
       if (this.lock_interface == 1) {
 	//

@@ -68,7 +68,7 @@ console.log("DONE GENERATING MAP");
         }
         html += "</div>";
 
-        this.playerbox.refreshLog(html, offering_player);
+        this.playerbox.updateBody(html, offering_player);
 
         let selector =
             "#player-box-" + this.playerbox.playerBox(offering_player);
@@ -77,7 +77,7 @@ console.log("DONE GENERATING MAP");
         $(`${selector} .pboption`).on("click", function () {
 
             //
-            settlers_self.playerbox.refreshLog("", offering_player);
+            settlers_self.playerbox.updateBody("", offering_player);
             //
             let choice = $(this).attr("id");
             if (choice == "accept") {
@@ -108,9 +108,6 @@ console.log("DONE GENERATING MAP");
 
     displayBoard() {
 
-        
-
-        console.log("Draw board");
         $(".road.empty").remove();
         for (let i in this.game.state.hexes) {
             let divname = "#hex_bg_" + i;
@@ -273,36 +270,35 @@ console.log("DONE GENERATING MAP");
         if (!this.browser_active) { return; }
 
         let card_dir = "/settlers/img/cards/";
+
         for (let i = 1; i <= this.game.state.players.length; i++) {
 
-        //
-        // player vp achievements
-        //
+            //
+            // PLAYERBOX HEAD - graphics box 
+            //
+            let statshtml = `<div class="achievements">`;
+            statshtml += `<div class="victory_point_cards">`;
+            for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
+                statshtml += `<div class="victory_point_card">${this.vp.img}</div>`;
+            }
+            statshtml += `</div>`
+            if (this.game.state.largestArmy.player == i) {
+                statshtml += `<div class="token army largest" title="${this.largest.name}">`;
+            } else {
+                statshtml += `<div class="token army" title="${this.largest.name}">`;
+            }
+            for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
+                statshtml += this.s.img;
+            }
+            statshtml += `</div>`;
+            if (this.game.state.longestRoad.player == i) {
+                statshtml += `<div class="token longest-road" title="${this.longest.name}">${this.longest.svg}</div>`;
+            }
+            statshtml += `</div>`;
 
-        let statshtml = `<div class="achievements">`;
-        //Victory Point Card Tokens -- should move to VP track
-        statshtml += `<div class="victory_point_cards">`;
-        for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
-          statshtml += `<div class="victory_point_card">${this.vp.img}</div>`;
-        }
-        statshtml += `</div>`
-        if (this.game.state.largestArmy.player == i) {
-            statshtml += `<div class="token army largest" title="${this.largest.name}">`;
-        } else {
-            statshtml += `<div class="token army" title="${this.largest.name}">`;
-        }
-        for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
-          statshtml += this.s.img;
-        }
-        statshtml += `</div>`;
-
-        if (this.game.state.longestRoad.player == i) {
-          statshtml += `<div class="token longest-road" title="${this.longest.name}">${this.longest.svg}</div>`;
-        }
-        statshtml += `</div>`;
 
             //
-            // TOP - player info
+            // PLAYERBOX HEAD
             //
             this.game.state.players[i - 1].resources.sort();
             let num_resources = this.game.state.players[i - 1].resources.length;
@@ -310,27 +306,18 @@ console.log("DONE GENERATING MAP");
             let userline = "";
                 userline += `<div class="flexline">`;
                 userline += `
-                <div class="cardct">
+                  <div class="cardct">
                    resources: ${this.game.state.players[i - 1].resources.length},
                    cards: ${this.game.state.players[i - 1].devcards}
-                </div></div>`;
-                //userline += `${statshtml}</div>`;
+                  </div></div>
+	        `;
 
-            let playerHTML = `
-              <div class="saito-user settlers-user saito-user-${this.game.players[i - 1]}" id="saito-user-${this.game.players[i - 1]}" data-id="${this.game.players[i - 1]}">
-                <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i - 1])}"></div>
-                <div class="saito-player-line">
-                  <div class="saito-address saito-playername" data-id="${this.game.players[i - 1]}">${this.game.playerNames[i - 1]}</div>
-                  <div class="saito-userline">${userline}</div>
-                </div>
-                ${statshtml}
-              </div>
-            `;
-
-            this.playerbox.refreshTitle(playerHTML, i);
+            this.playerbox.updateAddress(this.game.playerNames[i-1], i);
+            this.playerbox.updateUserline(userline, i);
+            this.playerbox.updateGraphics(statshtml, i);
 
             //
-            // TOP - trade offers
+            // PLAYERBOX BODY
             //
             let reshtml  = "";
                 reshtml += `<div class="flexline">`;
@@ -344,12 +331,12 @@ console.log("DONE GENERATING MAP");
               //reshtml += `<span id="tradenow">Trade</span>`;
             }
             reshtml += `</div>`;
-            // flexline has border bottom, so hide if unneeded
             if (reshtml === '<div class="flexline"></div>') { reshtml = ""; }
 
-            this.playerbox.refreshLog(reshtml, i);
+
+            this.playerbox.updateBody(reshtml, i);
             $(".player-box-info").disableSelection();
-            //Other player ads... in LOG
+
             if (this.game.player != i) {
                 if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
 
@@ -364,7 +351,7 @@ console.log("DONE GENERATING MAP");
                         if (offer) {
                             html += `<span>Has:</span><span class="tip">${offer}</span></div>`;
                         }
-                        this.playerbox.refreshLog(html, i);
+                        this.playerbox.updateBody(html, i);
                         id = "#" + id;
                         $(id).off();
                         $(id).on("click", function () {
@@ -375,9 +362,13 @@ console.log("DONE GENERATING MAP");
                         this.renderTradeOfferInPlayerBox(i, this.game.state.ads[i - 1].offer, this.game.state.ads[i - 1].ask);
                     }
                 } else {
-                    this.playerbox.refreshLog("", i);
+                    this.playerbox.updateBody("", i);
                 }
-            }
+            } else {
+                this.playerbox.onclick(() => {
+  	  	  this.showTradeOverlay();
+		});
+	    }
         }
 
         if (this.game.player == 0) {
