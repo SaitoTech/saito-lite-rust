@@ -366,7 +366,7 @@ class Wordblocks extends GameTemplate {
             <div id="skipturn" class="hidden">Skip: <i class="fas fa-fast-forward"></i></div>
           </div>
         </div>
-      </div
+      </div>
     `;
 
       this.updateStatus(html); //Attach html to #status box
