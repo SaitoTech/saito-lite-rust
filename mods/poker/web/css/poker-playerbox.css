@@ -9,9 +9,6 @@
 
 }
 
-.game-playerbox-body .status .status-header .status-message {
-  box-shadow: none;
-}
 
 .game-playerbox-body .status {
     width: 100%;
@@ -21,12 +18,18 @@
     font-size: 1.8rem;
 }
 
+.game-playerbox-body .status .status-header .status-message {
+  box-shadow: none;
+}
+
 .game-playerbox .status-header .status-message {
     background: unset;
 }
+
 .game-playerbox .status-text-menu ul li:hover, .game-playerbox .textchoice:hover {
   background-color: whitesmoke;
 }
+
 .game-playerbox .status-text-menu, .game-playerbox .status-text-menu ul {
     background: unset;
 }
@@ -40,7 +43,7 @@
   width: 100%;
 }
 
-.game-playerbox-graphic{
+.game-playerbox-graphics {
   position: absolute;
   height: 100%;
   width: 100%;

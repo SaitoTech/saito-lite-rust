@@ -64,12 +64,10 @@ class Blackjack extends GameTableTemplate {
     this.playerbox = new GamePlayerBox(this.app, this);
     this.playerbox.mode = 2;
     this.playerbox.render();
-    this.playerbox.addStatus();
 
 //    this.playerbox.addClassAll("poker-seat-",true);
 //    this.playerbox.addGraphicClass("hand");   
 //    this.playerbox.addGraphicClass("tinyhand");   
-    this.playerbox.addStatus(); //enable update Status to display in playerbox
     this.updateStatus("waiting for other players");
   }
 
@@ -1322,10 +1320,6 @@ class Blackjack extends GameTableTemplate {
   }
 
 
-  /*
-    This function may be less than ideal, abusing the concept of status, 
-    since it is mostly being used to update the DOM for user interface
-  */
   updateStatus(str, hide_info=0) {
 
     if (str.indexOf('<') == -1) {
@@ -1340,11 +1334,10 @@ class Blackjack extends GameTableTemplate {
     
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".status");
-        let seat = this.playerbox.playerBox(this.game.player);
         if (status_obj) {
           status_obj.innerHTML = str;
         } else {
-          this.app.browser.addElementToSelector(`<div class="status">${str}</div>`, `#game-playerbox-body-${seat}`);
+          this.playerbox.updateBody(`<div class="status">${str}</div>`, this.game.player);
         }
       }
 
@@ -1368,34 +1361,23 @@ class Blackjack extends GameTableTemplate {
 
   refreshPlayerCards(html, player) {
 
+    let seat = this.playerbox.playerBox(player);
+
     if (!this.browser_active) { return; }
-    if (!this.game.state.player) {
-      return;
-    }
+    if (!this.game.state.player) { return; }
     if (this.game.state.player.length < player) { return; }
+    if (seat == 1) { return; } // cardfan exists so unneeded
 
     this.game.state.player[player-1].cardshtml = html;
 
-    let seat = this.playerbox.playerBox(player);
-    // no need for P1/seat to show cards as cardfan exists
-    if (seat == 1) { return; }
+    this.playerbox.updateGraphics(`<div class="game-playerbox-graphic hand tinyhand" id="game-playerbox-graphic-${player}">${html}</div>`, player);
 
-    let qs = `#game-playerbox-graphic-${player}`;
-    if (document.querySelector(qs)) {
-      document.querySelector(qs).innerHTML = html;
-    } else {
-      let qs = `#game-playerbox-${player}`;
-      this.app.browser.addElementToSelector(`<div class="game-playerbox-graphic hand tinyhand" id="game-playerbox-graphic-${player}">${html}</div>`, qs);
-    } 
   }
+
 
   refreshPlayerLog(html, player) {
     this.playerbox.updateBody(html, player);
-    if (this.game.state.player) {
-      if (this.game.state.player.length >= player) {
-        this.refreshPlayerCards(this.game.state.player[player-1].cardshtml, player);
-      }
-    }
+    this.refreshPlayerCards(this.game.state.player[player-1].cardshtml, player);
   }
 
 
