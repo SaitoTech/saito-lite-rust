@@ -2,6 +2,7 @@ const LeagueOverlayTemplate = require("./league.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 const Leaderboard = require("./../leaderboard");
 const LeagueWelcomeTemplate = require("./league-welcome.template");
+const JoinLeagueOverlay = require("./join");
 
 class LeagueOverlay {
 
@@ -75,6 +76,12 @@ class LeagueOverlay {
       };
     }
 
+    if (document.querySelector(".join_league")) {
+      document.querySelector(".join_league").onclick = () => {
+        let jlo = new JoinLeagueOverlay(this.app, this.mod, this.league.id);
+        jlo.render();
+      }
+    }
 
     if (document.querySelector(".backup_account")) {
       document.querySelector(".backup_account").onclick = () => {
@@ -90,7 +97,7 @@ class LeagueOverlay {
       }
     }
 
-    if (!document.querySelector(".contactAdminWarning")){
+    //if (!document.querySelector(".contactAdminWarning")){
       Array.from(document.querySelectorAll(".menu-icon")).forEach(item => {
         item.onclick = (e) => {
           let nav = e.currentTarget.id;
@@ -114,8 +121,7 @@ class LeagueOverlay {
               break;
             case "players":
               document.querySelector("#admin-widget").classList.remove("hidden");
-              document.querySelector("#admin_details").classList.remove("hidden");
-              document.querySelector(".league-overlay-leaderboard").classList.remove("hidden");
+              document.querySelector(".league-overlay-leaderboard").classList.add("hidden");
               this.loadPlayersUI();
             }
           }catch(err){
@@ -124,7 +130,7 @@ class LeagueOverlay {
         e.currentTarget.classList.add("active-tab");
         }
       });
-    }
+    //}
 
   }
 

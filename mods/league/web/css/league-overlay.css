@@ -28,7 +28,8 @@
   display: flex;
   flex-direction: row;
   justify-content: end;
-  width: 100%;
+  width: fit-content;
+  margin: auto;
 }
 
 .league-overlay-controls i {
@@ -51,6 +52,7 @@
   flex-direction: row;
   justify-content: flex-start;
   row-gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .league-overlay-header-title-box {
