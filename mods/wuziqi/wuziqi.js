@@ -4,6 +4,7 @@ const GameTemplate = require('../../lib/templates/gametemplate');
 const WuziqiGameRulesTemplate = require("./lib/wuziqi-game-rules.template");
 const WuziqiGameOptionsTemplate = require("./lib/wuziqi-game-options.template");
 const WuziqiSingularGameOptionsTemplate = require("./lib/wuziqi-singular-game-options.template");
+const GamePlayerboxManager = require("./../../lib/saito/ui/game-playerbox/main");
 
 class Wuziqi extends GameTemplate {
 
@@ -75,15 +76,8 @@ class Wuziqi extends GameTemplate {
 
 
         //Player Boxes
+        this.playerbox = new GamePlayerboxManager(this.app, this);;
         this.playerbox.render();
-        if (this.game.player == 0){
-            this.playerbox.addClass("me",1);
-            this.playerbox.addClass("notme",2);
-        }else{
-            this.playerbox.addClass("me",this.game.player);
-            this.playerbox.addClass("notme",3-this.game.player);
-        }
-        this.playerbox.makeDraggable(); //I think we still want to be able to move them
 
         // Render board and set up values.
         try {
@@ -186,7 +180,7 @@ class Wuziqi extends GameTemplate {
                 scoreHTML += `<img class="piece opaque30" src="img/${this.roles[i+1]}piece.png">`;
             }
             scoreHTML += "</div>";
-            this.playerbox.refreshInfo(scoreHTML,i+1);                        
+            this.playerbox.updateBody(scoreHTML,i+1);                        
         }
     }
 
@@ -198,11 +192,10 @@ class Wuziqi extends GameTemplate {
 
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".status");
-        let seat = this.playerbox.playerBox(this.game.player);
         if (status_obj) {
           status_obj.innerHTML = str;
         } else {
-          this.app.browser.addElementToSelector(`<div class="status">${str}</div>`, `#player-box-body-${seat}`);
+          this.playerbox.updateBody(`<div class="status">${str}</div>`, this.game.player);
         }
       }
     }
