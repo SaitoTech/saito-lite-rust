@@ -7,6 +7,9 @@
     background-size: cover;
 }
 
+.textchoice {
+    background-color: whitesmoke;
+}
 
 /*
     Format the help overlay
@@ -31,6 +34,26 @@
     border-radius: 2.5rem;
 }
 
+.hud-header.black {
+    background-color: black;
+    color: white;
+}
+
+.hud-header.white {
+    background-color: white;
+    color: black;
+}
+
+
+.racetrack .pblack {
+    background-color: black;
+    color: white;
+}
+
+.racetrack .pwhite {
+    background-color: white;
+    color: black;
+}
 
 /*
 Board is a grid of wooden squares
@@ -52,12 +75,12 @@ Board is a grid of wooden squares
 
 .board > div.top::after {
     border-top: 2px solid black;
-    top: calc(50% - 1px);
+    top: 50%
 }
 
 .board > div.left::after {
     border-left: 2px solid black;
-    left: calc(50% - 1px);
+    left: 50%
 }
 
 .board > div.bottom::after, .board > div.right::after {
@@ -152,13 +175,6 @@ Board is a grid of wooden squares
 
 .playertitle {
     text-transform: capitalize;
-}
-
-.continue {
-    border: 1px solid #aaaaaa;
-    background: linear-gradient(217deg, #343434, transparent 70.71%), linear-gradient(127deg, #121212, #444444 70.71%), linear-gradient(336deg, #666, #222222 70.71%);
-    color: #eee;
-    min-width: 6em;
 }
 
 

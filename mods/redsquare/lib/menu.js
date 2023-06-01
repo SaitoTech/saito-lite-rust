@@ -73,7 +73,8 @@ class RedSquareMenu {
 
     document.querySelector(".redsquare-menu-profile").onclick = (e) => {
       setHash('profile');
-      this.app.connection.emit("redsquare-profile-render-request", this.app.wallet.returnPublicKey());
+      this.app.connection.emit("saito-profile-render-request", this.app.wallet.returnPublicKey());
+      //this.app.connection.emit("redsquare-profile-render-request", this.app.wallet.returnPublicKey());
     }
 
     //    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
@@ -122,7 +123,7 @@ class RedSquareMenu {
           obj.style.display = "none";
           obj.innerHTML = 0;
         } else {
-          obj.style.display = "block";
+          obj.style.display = "flex";
           existing_notifications++;
           obj.innerHTML = existing_notifications;
         }

@@ -5,7 +5,7 @@ const ChessGameOptions = require("./lib/chess-game-options.template");
 const ChessSingularGameOptions = require("./lib/chess-singular-game-options.template");
 const chess = require('./lib/chess.js');
 const chessboard = require('./lib/chessboard');
-const SaitoUser = require("../../lib/saito/ui/saito-user/saito-user");
+//const SaitoUser = require("../../lib/saito/ui/saito-user/saito-user");
 
 
 var this_chess = null;
@@ -111,6 +111,7 @@ class Chessgame extends GameTemplate {
     this.log.render();
 
     this.playerbox.render();   
+
     this.playerbox.updateUserline(this.roles[this.game.player], this.game.player);
     this.playerbox.updateGraphics(`<div class="tool-item item-detail turn-shape ${this.roles[this.game.player].toLowerCase()}"></div>`, this.game.player);
     this.playerbox.updateUserline(this.roles[(3-this.game.player)], (3-this.game.player));

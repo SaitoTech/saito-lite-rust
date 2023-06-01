@@ -2,6 +2,7 @@ const ChatPopup = require("./popup");
 const ChatManagerTemplate = require("./main.template");
 const ChatTeaser = require('./teaser.template');
 const JSON = require('json-bigint');
+const ChatMenu = require("./../overlays/chat-menu");
 
 class ChatManager {
 
@@ -225,6 +226,13 @@ class ChatManager {
         // unset manually closed to permit re-opening
         if (this.popups[gid]) { this.popups[gid].manually_closed = false; }
         cm.app.connection.emit("chat-popup-render-request", group);
+      };
+
+      item.oncontextmenu = (e) => {
+        e.preventDefault();
+        let gid = e.currentTarget.getAttribute("data-id");
+        let chatMenu = new ChatMenu(cm.app, cm.mod, cm.mod.returnGroup(gid));
+        chatMenu.render();
       }
     });
 
