@@ -73,6 +73,8 @@ class Wuziqi extends GameTemplate {
         }
 
 
+        this.playerbox.render();
+
         this.hud.render();
         //this.hud.minWidth = 400; //Doesn't work...
 
@@ -183,9 +185,36 @@ class Wuziqi extends GameTemplate {
         but data structures for player properties are typically 0-indexed arrays
     */
     updateScore() {
-        this.racetrack.render();
+
+        let roundsToWin = Math.ceil(this.game.options.best_of/2);
+        for (let i = 0; i<this.game.players.length; i++){
+            let scoreHTML = `<div>Score: </div><div class="tokens">`;
+            for (let j = 0; j < this.game.score[i]; j++) {
+                scoreHTML += `<img class="piece" src="img/${this.roles[i+1]}piece.png">`;
+            }
+            for (let j = 0; j < (roundsToWin - this.game.score[i]); j++) {
+                scoreHTML += `<img class="piece opaque30" src="img/${this.roles[i+1]}piece.png">`;
+            }
+            scoreHTML += "</div>";
+            this.playerbox.updateBody(scoreHTML,i+1);                        
+        }
     }
 
+    updateStatus(str) {
+    
+      if (this.lock_interface == 1) { return; }
+
+      this.game.status = str;
+
+      if (this.browser_active == 1) {
+        let status_obj = document.querySelector(".status");
+        if (status_obj) {
+          status_obj.innerHTML = str;
+        } else {
+          this.playerbox.updateBody(`<div class="status">${str}</div>`, this.game.player);
+        }
+      }
+    }
 
     animatePlay(cell){
         //$(`div#tile_${cell.id} div`).removeClass("empty").addClass("piece").addClass(cell.owner).fadeIn();

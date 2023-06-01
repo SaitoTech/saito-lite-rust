@@ -1,0 +1,23 @@
+
+.game-playerbox-manager {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(90%);
+}
+
+.game-playerbox {
+    background: #f9efdf;
+    border-radius: 10px;
+    box-shadow: 0 2px 3px 2px #644b37;
+    color: black;
+    min-height: 10rem;
+}
+
+.game-playerbox-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    flex: 1; /* Make sure body fills up available space in player-box*/
+}
+

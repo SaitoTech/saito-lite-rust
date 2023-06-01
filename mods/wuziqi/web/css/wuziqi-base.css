@@ -168,6 +168,11 @@ Board is a grid of wooden squares
 
 
 
+.opaque30 {
+    opacity: 0.3;
+}
+
+
 .playertitle {
     text-transform: capitalize;
 }
@@ -186,21 +191,6 @@ Board is a grid of wooden squares
     .inner{
         padding: 5vh;
     }
-    .player-box{
-        top: 40vh;  /*Center in screen:  50vh - 1/2 height */
-        margin: auto auto;
-        max-width: 20vw;
-    }
-
-    .player-box.me{
-        left: max(5px, calc(12vw - 7em));
-    }
-
-    .player-box.notme{
-        right: max(5px, calc(12vw - 7em));
-    }
-
-
 }
 
 @media (orientation: portrait) {
@@ -215,18 +205,6 @@ Board is a grid of wooden squares
         padding-top: 0px;
     }
 
-    .player-box{
-        top: calc(65vw + 26vh);
-        max-width: 35vw;
-    }
-
-    .player-box.me{
-        left: calc(30vw - 6em);
-    }
-
-    .player-box.notme{
-        right: calc(30vw - 6em);
-    }
 }
 
 
@@ -243,25 +221,6 @@ Board is a grid of wooden squares
         padding: 5vh;
         padding-top: 45px;
      }
-
-    .player-box{
-        top: unset;
-        bottom: 0px;
-        max-width: 40vw;
-    }
-
-    .player-box-info{
-        display: inline-flex;
-        align-items: center;
-        margin: 3px;
-    }
-    .player-box.me{
-        left: calc(30vw - 5.5em);
-    }
-
-    .player-box.notme{
-        right: calc(30vw - 5.5em);
-    }
 }
 
 
@@ -297,12 +256,5 @@ Board is a grid of wooden squares
         padding: 2.5vw;
         padding-top: 45px;
     }
-
-    .player-box{
-        top: calc(95vw + 15vh);
-        max-width: 38vw;
-    }
-    
-
 }
 

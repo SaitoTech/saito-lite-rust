@@ -1006,13 +1006,14 @@ ul.horizontal_list li.iconoption {
   margin-top: 0.5em;
 }
 
+/*******
 .player-box.notme, .opponents {
   position: absolute;
   height: fit-content;
   top: 76px;
   right: 40px;
 }
-
+******/
 
 .opponents>.player-box {
   position: relative;
@@ -1022,30 +1023,38 @@ ul.horizontal_list li.iconoption {
 
 .player-box.me {
   max-height: unset;
-  left: 30px;
+/* left: 30px; */
   top: unset;
   bottom: 1px;
 }
 
+.mobile-trading-container {
+    position: absolute;
+    top: 70px;
+    display: flex;
+    flex-direction: column;
+    gaps: 2.5rem;
+}
+.player-box {
+    display: relative;
+}
+/*****
 .mobile-trading-container .player-box.notme:nth-child(0) {
   top: 76px;
   right: 40px;
 }
-
 .mobile-trading-container .player-box.notme:nth-child(1) {
   top: auto;
   bottom: 76px;
   left: 40px;
   right: auto;
 }
-
-
 .mobile-trading-container .player-box.notme:nth-child(2) {
   top: auto;
   bottom: 76px;
   right: 40px;
 }
-
+*****/
 
 .player-box-graphic .hand {
   position: absolute;

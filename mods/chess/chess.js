@@ -7,6 +7,7 @@ const chess = require('./lib/chess.js');
 const chessboard = require('./lib/chessboard');
 //const SaitoUser = require("../../lib/saito/ui/saito-user/saito-user");
 
+
 var this_chess = null;
 
 class Chessgame extends GameTemplate {
@@ -110,64 +111,16 @@ class Chessgame extends GameTemplate {
     this.log.render();
 
     this.playerbox.render();   
-    this.playerbox.addClass("white", 1); 
-    this.playerbox.addClass("black", 2);
-    this.playerbox.addClass("me");
-    this.playerbox.addClass("notme", 3-this.game.player);
-    this.playerbox.groupOpponents(false);
-    
-    /*
-    let me = new SaitoUser(app, this, `player-box-head-${this.playerbox.playerBox(this.game.player)}`, this.game.players[this.game.player-1], this.roles[this.game.player], this.returnTile(this.game.player));
-    me.render();
 
-    let opp = new SaitoUser(app, this, `player-box-head-${this.playerbox.playerBox(3-this.game.player)}`, this.game.players[2-this.game.player], this.roles[3-this.game.player], this.returnTile(3-this.game.player));
-    opp.render();
-    */
-    
-    
+    this.playerbox.updateUserline(this.roles[this.game.player], this.game.player);
+    this.playerbox.updateGraphics(`<div class="tool-item item-detail turn-shape ${this.roles[this.game.player].toLowerCase()}"></div>`, this.game.player);
+    this.playerbox.updateUserline(this.roles[(3-this.game.player)], (3-this.game.player));
+    this.playerbox.updateGraphics(`<div class="tool-item item-detail turn-shape ${this.roles[(3-this.game.player)].toLowerCase()}"></div>`, (3-this.game.player));
+
     window.onresize = () => this.board.resize();
 
-    $(".main").append($("#opponentbox"));
-
   }
 
-  returnTile(player) {
-    return `<div class="tool-item item-detail turn-shape ${this.roles[player].toLowerCase()}"></div>`;
-  }
-
-
-
-  switchColors(){
-    // observer skips
-    if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
-          return 1;
-      } 
-
-      //Game engine automatically randomizes player order, so we are good to go
-      if (!this.game.options.player1 || this.game.options.player1 == "random"){
-        return 1;
-      }
-      
-      //Reordeer the players so that originator can be the correct role
-      if (this.game.options.player1 === "white"){
-        if (this.game.players[0] !== this.game.originator){
-          let p = this.game.players.shift();
-          this.game.players.push(p);
-        }
-      }else{
-        if (this.game.players[1] !== this.game.originator){
-          let p = this.game.players.shift();
-          this.game.players.push(p);
-        }
-      }
-      //Fix game.player so that it corresponds to the indices of game.players[]
-      for (let i = 0; i < this.game.players.length; i++){
-        if (this.game.players[i] === this.app.wallet.returnPublicKey()){
-          this.game.player = i+1;
-        }
-      }
-
-  }
 
   async initializeGame(game_id) {
 
@@ -331,6 +284,38 @@ class Chessgame extends GameTemplate {
 
   }
 
+  switchColors(){
+    // observer skips
+    if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
+          return 1;
+      } 
+
+      //Game engine automatically randomizes player order, so we are good to go
+      if (!this.game.options.player1 || this.game.options.player1 == "random"){
+        return 1;
+      }
+      
+      // re-order the players so that originator can be the correct role
+      if (this.game.options.player1 === "white"){
+        if (this.game.players[0] !== this.game.originator){
+          let p = this.game.players.shift();
+          this.game.players.push(p);
+        }
+      }else{
+        if (this.game.players[1] !== this.game.originator){
+          let p = this.game.players.shift();
+          this.game.players.push(p);
+        }
+      }
+      //Fix game.player so that it corresponds to the indices of game.players[]
+      for (let i = 0; i < this.game.players.length; i++){
+        if (this.game.players[i] === this.app.wallet.returnPublicKey()){
+          this.game.player = i+1;
+        }
+      }
+
+  }
+
   removeEvents(){
     this.lockBoard(this.game.position);
   }
@@ -356,62 +341,54 @@ class Chessgame extends GameTemplate {
 
   }
 
-/*  attachGameEvents() {
-    if (!this.browser_active){
-      return;
-    }
 
-    window.onresize = () => this.board.resize();
-  }
-*/
   updateStatusMessage(str = "") {
 
     if (!this.browser_active) { return; }
 
-
     //
-    // print message if provided
+    // print message
     //
     if (str != "") {
       this.status = str;
 
       if (document.querySelector(".status")){
         this.app.browser.replaceElementBySelector(`<div class="status">${str}</div>`, ".status");
-      }else{
-        this.playerbox.refreshLog(`<div class="status">${str}</div>`);  
+      } else {
+        this.playerbox.updateBody(`<div class="status">${str}</div>`, this.game.player);  
       }
       
       return;
-    }
 
-    //Otherwise build up default status messaging...
+    //
+    // or print game info
+    //
+    } else {
 
-    var status = '';
-
-    var moveColor = (this.engine.turn() === 'b')? "Black" : 'White';
+      var status = '';
+      var moveColor = (this.engine.turn() === 'b')? "Black" : 'White';
     
-    // check?
-    if (this.engine.in_check() === true) {
-      status = moveColor + ' is in check';
-    }else{
-      if (this.roles[this.game.player] == moveColor){
-        status = "It's your move";
-      }else{
-        status = "Waiting for " + moveColor;
+      // check?
+      if (this.engine.in_check() === true) {
+        status = moveColor + ' is in check';
+      } else {
+        if (this.roles[this.game.player] == moveColor){
+          status = "It's your move";
+        }else{
+          status = "Waiting for " + moveColor;
+        }
       }
+    
+      this.status = status;
+      status = `<div class="status">${status}</div>`;
+      let captHTML = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()), this.game.player);
+      status = sanitize(captHTML) + status;
+       
+      this.playerbox.updateBody(status, this.game.player);
+
     }
-    
-    this.status = status;
+  }
 
-    status = `<div class="status">${status}</div>`;
-
-    let captHTML = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()), this.game.player);
-    
-    status = sanitize(captHTML) + status;
-        
-    this.playerbox.refreshLog(status);
-
-  };
 
   updateOpponent(target, move){
     
@@ -421,7 +398,7 @@ class Chessgame extends GameTemplate {
       status += `<div class="last_move">${move.substring(move.indexOf(":")+2)}</div>`;
     }
 
-    this.playerbox.refreshLog(status, 3-this.game.player);
+    this.playerbox.updateBody(status, 3-this.game.player);
 
     if (document.querySelector(".last_move")){
       document.querySelector(".last_move").onclick = () =>{

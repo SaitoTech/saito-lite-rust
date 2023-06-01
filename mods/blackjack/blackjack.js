@@ -60,12 +60,11 @@ class Blackjack extends GameTableTemplate {
 
     this.log.render();
 
+    this.playerbox.mode = 2;
     this.playerbox.render();
-    this.playerbox.addClassAll("poker-seat-",true);
-    this.playerbox.addGraphicClass("hand");   
-    this.playerbox.addGraphicClass("tinyhand");   
-    this.playerbox.addStatus(); //enable update Status to display in playerbox
+
     this.updateStatus("waiting for other players");
+
   }
 
 
@@ -369,8 +368,8 @@ class Blackjack extends GameTableTemplate {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
         let status = null;
-        $(".player-box.active").removeClass("active");
-        this.playerbox.addClass("active",player);
+
+        this.playerbox.setActive(player);
 
         if (this.game.state.player[player-1].wager == 0 && player != this.game.state.dealer){
           return 1;
@@ -548,14 +547,17 @@ class Blackjack extends GameTableTemplate {
       }
 
       if (mv[0] === "takebets"){
+
         let betters = JSON.parse(mv[1]);
         let betsNeeded = 0;
         let doINeedToBet = false;
         let statusMsg = "";
-        $(".player-box.active").removeClass("active");
+
+	this.playerbox.setInactive();
+
         for (let i of betters){
           if (this.game.confirms_needed[(i-1)] == 1) {
-            this.playerbox.addClass("active",i);
+	    this.playerbox.setActive(i, false); // don't de-activate others
             statusMsg += `Player ${i}, `;
             betsNeeded++;
             if (this.game.player == parseInt(i)) { //If >2 players, this gets called repeatedly....
@@ -901,7 +903,7 @@ class Blackjack extends GameTableTemplate {
 
         userline += `<div class="saito-balance">${this.formatWager(balance)}</div>`;
 
-        this.playerbox.refreshName(i+1, "", userline);
+        this.playerbox.updateUserline(userline, i+1);
 	
         if (this.game.state.player[i].wager>0 && this.game.state.dealer !== (i+1)){
           newhtml = `<div class="chips">${(this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].credit-this.game.state.player[i].wager))} ${this.game.crypto || "SAITO"}, Bet: ${this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].wager)}</div>`;
@@ -977,9 +979,6 @@ class Blackjack extends GameTableTemplate {
           newhtml += "</div>";
         }
        this.refreshPlayerLog(newhtml, this.game.player);
-//       $("#player-box-graphic-1").removeClass("hidden-playerbox-element");
-      } else {
-//        $("#player-box-graphic-1").addClass("hidden-playerbox-element");
       }
     } catch (err) {
      console.error("Display Hand err: " + err);
@@ -1320,10 +1319,6 @@ class Blackjack extends GameTableTemplate {
   }
 
 
-  /*
-    This function may be less than ideal, abusing the concept of status, 
-    since it is mostly being used to update the DOM for user interface
-  */
   updateStatus(str, hide_info=0) {
 
     if (str.indexOf('<') == -1) {
@@ -1331,11 +1326,6 @@ class Blackjack extends GameTableTemplate {
     }
   
     try {
-      if (hide_info == 0) {
-        this.playerbox.showInfo();
-      } else {
-        this.playerbox.hideInfo();
-      }
 
       if (this.lock_interface == 1) { return; }
 
@@ -1343,11 +1333,10 @@ class Blackjack extends GameTableTemplate {
     
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".status");
-        let seat = this.playerbox.playerBox(this.game.player);
         if (status_obj) {
           status_obj.innerHTML = str;
         } else {
-          this.app.browser.addElementToSelector(`<div class="status">${str}</div>`, `#player-box-body-${seat}`);
+          this.playerbox.updateBody(`<div class="status">${str}</div>`, this.game.player);
         }
       }
 
@@ -1371,38 +1360,23 @@ class Blackjack extends GameTableTemplate {
 
   refreshPlayerCards(html, player) {
 
+    let seat = this.playerbox.playerBox(player);
+
     if (!this.browser_active) { return; }
-    if (!this.game.state.player) {
-      return;
-    }
+    if (!this.game.state.player) { return; }
     if (this.game.state.player.length < player) { return; }
+    if (seat == 1) { return; } // cardfan exists so unneeded
 
     this.game.state.player[player-1].cardshtml = html;
 
-    let seat = this.playerbox.playerBox(player);
-    // no need for P1/seat to show cards as cardfan exists
-    if (seat == 1) { return; }
+    this.playerbox.updateGraphics(`<div class="game-playerbox-graphic hand tinyhand" id="game-playerbox-graphic-${player}">${html}</div>`, player);
 
-    let qs = `#player-box-graphic-${seat}`;
-    if (document.querySelector(qs)) {
-      document.querySelector(qs).innerHTML = html;
-    } else {
-      let qs = `#player-box-body-${seat}`;
-      if (document.querySelector(qs)) {
-        document.querySelector(qs).innerHTML = `<div class="player-box-graphic hand tinyhand" id="player-box-graphic-${seat}">${html}</div>`;
-      } 
-    } 
   }
 
+
   refreshPlayerLog(html, player) {
-
-    this.playerbox.refreshLog(html, player);
-
-    if (this.game.state.player) {
-      if (this.game.state.player.length >= player) {
-        this.refreshPlayerCards(this.game.state.player[player-1].cardshtml, player);
-      }
-    }
+    this.playerbox.updateBody(html, player);
+    this.refreshPlayerCards(this.game.state.player[player-1].cardshtml, player);
   }
 
 
