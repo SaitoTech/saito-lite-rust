@@ -71,33 +71,6 @@ input[type="checkbox"]:checked {
     width: 50%;
 }
 
-
-.opponents {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 50%;
-}
-
-.opponents .me {
-    order: 2;
-}
-
-.player-box {
-    background: #f9efdf;
-    border-radius: 10px;
-    box-shadow: 0 2px 3px 2px #644b37;
-    color: black;
-    min-height: 10rem;
-}
-
-.player-box-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    flex: 1; /* Make sure body fills up available space in player-box*/
-}
-
 .controls-space {    
     width: 35%;
     max-width: 500px;
