@@ -4,9 +4,9 @@
 }
 
 .tinyhand .card {
-  position: absolute;
-  width: min(12vh,16vw);
-  height: auto;
+    position: absolute;
+    width: min(12vh,16vw);
+    height: auto;
 }
 
 .game-playerbox-seat-1 {
@@ -14,21 +14,12 @@
   min-height: 28rem;
 }
 
-.game-playerbox-graphics {
-}
 
-.game-playerbox-seat-4 .game-playerbox-head .saito-user .game-playerbox-graphics {
+.game-playerbox-graphic.hand {
   position: absolute;
-  top: 8rem;
-  left: 5rem;
 }
 
 .game-playerbox.hide-scrollbar {
-  overflow: unset;
-  min-height: unset;
-}
-
-.game-playerbox-head.hide-scrollbar {
   overflow: unset;
   min-height: unset;
 }
@@ -47,13 +38,11 @@
 }
 .game-playerbox-head .saito-user>.saito-address , .game-playerbox-head .saito-user>.saito-userline {
   color: white;
-/***
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-***/
 }
 
 .game-playerbox-body .chips {
@@ -72,6 +61,16 @@
 }
 
 
+/* Split hands display on playerbox */
+.game-playerbox-seat-1 .game-playerbox-graphic.hand{
+  display: block;
+  position: absolute;
+}
+
+.game-playerbox-seat-1 .game-playerbox-graphic.hand {
+  left: 32vh;
+}
+
 .playerbox-graphic .htmlCards{
   width: 30vh;
 }
@@ -88,3 +87,40 @@
 }
 
 
+.game-playerbox-seat-4 .hand{
+  top: 15vh;
+  left: 33%;
+}
+.game-playerbox-seat-2 .hand{
+  left: 9vh;
+}
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .game-playerbox-seat-6, .game-playerbox-seat-2{ 
+    top:40vh 
+  }
+  .game-playerbox-seat-5, .game-playerbox-seat-3{ 
+    top:25vh
+   }
+  .game-playerbox-seat-5 .hand, .game-playerbox-seat-3 .hand{ 
+    left: 15%;
+    top: -20vh;
+ }
+ .game-playerbox-seat-2 .hand{
+    left: 4vh;
+ }
+}
+
+
+@media screen and (orientation: landscape) and (max-height: 600px) {
+
+  .game-playerbox-seat-4 .hand{
+    top: 3vh;
+    left: -50%;
+  }
+
+  .game-playerbox-seat-1{
+    max-height: 45vh;
+  }
+
+}
