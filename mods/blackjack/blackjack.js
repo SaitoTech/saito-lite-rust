@@ -1,7 +1,6 @@
 const GameTableTemplate = require('../../lib/templates/gametabletemplate');
 const saito = require('../../lib/saito/saito');
 const BlackjackGameRulesTemplate = require('./lib/blackjack-game-rules.template');
-const GamePlayerBox = require('../../lib/saito/ui/game-playerbox/main');
 
 
 //////////////////
@@ -61,7 +60,6 @@ class Blackjack extends GameTableTemplate {
 
     this.log.render();
 
-    this.playerbox = new GamePlayerBox(this.app, this);
     this.playerbox.mode = 2;
     this.playerbox.render();
 

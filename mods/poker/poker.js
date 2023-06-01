@@ -2,7 +2,6 @@ const GameTableTemplate = require("../../lib/templates/gametabletemplate");
 const JSON = require("json-bigint");
 const PokerGameRulesTemplate = require("./lib/poker-game-rules.template");
 const PokerGameOptionsTemplate = require("./lib/poker-game-options.template");
-const GamePlayerBox = require("../../lib/saito/ui/game-playerbox/main");
 
 
 //////////////////
@@ -199,7 +198,6 @@ class Poker extends GameTableTemplate {
 
     this.log.render();
 
-    this.playerbox = new GamePlayerBox(this.app, this);
     this.playerbox.mode = 2; // poker/cards
     this.playerbox.render();
 

@@ -21,8 +21,3 @@
     flex: 1; /* Make sure body fills up available space in player-box*/
 }
 
-.game-playerbox-graphics {
-    grid-row: 1 / span 2;
-    grid-column: 3;
-}
-

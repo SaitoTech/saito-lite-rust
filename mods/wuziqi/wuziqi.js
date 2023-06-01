@@ -4,7 +4,6 @@ const GameTemplate = require('../../lib/templates/gametemplate');
 const WuziqiGameRulesTemplate = require("./lib/wuziqi-game-rules.template");
 const WuziqiGameOptionsTemplate = require("./lib/wuziqi-game-options.template");
 const WuziqiSingularGameOptionsTemplate = require("./lib/wuziqi-singular-game-options.template");
-const GamePlayerboxManager = require("./../../lib/saito/ui/game-playerbox/main");
 
 class Wuziqi extends GameTemplate {
 
@@ -76,7 +75,6 @@ class Wuziqi extends GameTemplate {
 
 
         //Player Boxes
-        this.playerbox = new GamePlayerboxManager(this.app, this);;
         this.playerbox.render();
 
         // Render board and set up values.

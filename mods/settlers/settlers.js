@@ -6,8 +6,6 @@ const SettlersStats = require("./lib/ui/overlays/stats");
 const SettlersGameOptionsTemplate = require("./lib/ui/settlers-game-options.template");
 const SettlersTradeHelpOverlayTemplate = require("./lib/ui/settlers-trade-help-overlay.template");
 
-const GamePlayerboxManager = require("./../../lib/saito/ui/game-playerbox/main");
-
 const SettlersGameLoop = require("./lib/src/settlers-gameloop.js");
 const SettlersPlayer = require("./lib/src/settlers-player");
 const SettlersActions = require("./lib/src/settlers-actions");
@@ -181,26 +179,7 @@ class Settlers extends GameTemplate {
       this.cardbox.addCardType("handy-help","",null);
       this.cardbox.makeDraggable();
 
-      this.playerbox = new GamePlayerboxManager(this.app, this);
       this.playerbox.render();
-
-//      this.playerbox.render_as_grid = true;
-//      this.playerbox.render();
-//      this.playerbox.addStatus();
-//      this.playerbox.addClass("me", this.game.player);
-
-//      for (let i = 1; i <= this.game.players.length; i++) {
-//        this.playerbox.addClass(`c${this.game.colors[i-1]}`, i);
-//        if (i != this.game.player) {
-//          this.playerbox.addClass("notme", i);
-//        }
-//      }
-
-//      if (this.game.players.length > 2 || this.game.player == 0) {
-//        this.playerbox.groupOpponents();
-//      }
-//      this.playerbox.makeDraggable();
-//      $(".player-box *").disableSelection();
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.hammer.render(this.app, this);

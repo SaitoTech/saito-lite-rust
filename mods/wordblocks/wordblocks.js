@@ -1,7 +1,6 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
 const WordblocksGameRulesTemplate = require("./lib/wordblocks-game-rules.template");
 const WordblocksGameOptionsTemplate = require("./lib/wordblocks-game-options.template");
-const GamePlayerboxManager = require("../../lib/saito/ui/game-playerbox/main");
 
 
 class Wordblocks extends GameTemplate {
@@ -82,7 +81,6 @@ class Wordblocks extends GameTemplate {
 
     try {
 
-      this.playerbox = new GamePlayerboxManager(this.app, this);
       this.playerbox.render();
 
       let compact_html = "";

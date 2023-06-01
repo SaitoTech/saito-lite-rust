@@ -6,7 +6,6 @@ const ChessSingularGameOptions = require("./lib/chess-singular-game-options.temp
 const chess = require('./lib/chess.js');
 const chessboard = require('./lib/chessboard');
 const SaitoUser = require("../../lib/saito/ui/saito-user/saito-user");
-const GamePlayerboxManager = require("../../lib/saito/ui/game-playerbox/main");
 
 
 var this_chess = null;
@@ -111,55 +110,16 @@ class Chessgame extends GameTemplate {
 
     this.log.render();
 
-    this.playerbox = new GamePlayerboxManager(this.app, this);
     this.playerbox.render();   
-
     this.playerbox.updateUserline(this.roles[this.game.player], this.game.player);
-    this.playerbox.updateGraphics(this.returnTile(this.game.player), this.game.player);
+    this.playerbox.updateGraphics(`<div class="tool-item item-detail turn-shape ${this.roles[this.game.player].toLowerCase()}"></div>`, this.game.player);
     this.playerbox.updateUserline(this.roles[(3-this.game.player)], (3-this.game.player));
-    this.playerbox.updateGraphics(this.returnTile(3-this.game.player), (3-this.game.player));
+    this.playerbox.updateGraphics(`<div class="tool-item item-detail turn-shape ${this.roles[(3-this.game.player)].toLowerCase()}"></div>`, (3-this.game.player));
 
     window.onresize = () => this.board.resize();
 
   }
 
-  returnTile(player) {
-    return `<div class="tool-item item-detail turn-shape ${this.roles[player].toLowerCase()}"></div>`;
-  }
-
-
-
-  switchColors(){
-    // observer skips
-    if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
-          return 1;
-      } 
-
-      //Game engine automatically randomizes player order, so we are good to go
-      if (!this.game.options.player1 || this.game.options.player1 == "random"){
-        return 1;
-      }
-      
-      //Reordeer the players so that originator can be the correct role
-      if (this.game.options.player1 === "white"){
-        if (this.game.players[0] !== this.game.originator){
-          let p = this.game.players.shift();
-          this.game.players.push(p);
-        }
-      }else{
-        if (this.game.players[1] !== this.game.originator){
-          let p = this.game.players.shift();
-          this.game.players.push(p);
-        }
-      }
-      //Fix game.player so that it corresponds to the indices of game.players[]
-      for (let i = 0; i < this.game.players.length; i++){
-        if (this.game.players[i] === this.app.wallet.returnPublicKey()){
-          this.game.player = i+1;
-        }
-      }
-
-  }
 
   async initializeGame(game_id) {
 
@@ -323,6 +283,38 @@ class Chessgame extends GameTemplate {
 
   }
 
+  switchColors(){
+    // observer skips
+    if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
+          return 1;
+      } 
+
+      //Game engine automatically randomizes player order, so we are good to go
+      if (!this.game.options.player1 || this.game.options.player1 == "random"){
+        return 1;
+      }
+      
+      // re-order the players so that originator can be the correct role
+      if (this.game.options.player1 === "white"){
+        if (this.game.players[0] !== this.game.originator){
+          let p = this.game.players.shift();
+          this.game.players.push(p);
+        }
+      }else{
+        if (this.game.players[1] !== this.game.originator){
+          let p = this.game.players.shift();
+          this.game.players.push(p);
+        }
+      }
+      //Fix game.player so that it corresponds to the indices of game.players[]
+      for (let i = 0; i < this.game.players.length; i++){
+        if (this.game.players[i] === this.app.wallet.returnPublicKey()){
+          this.game.player = i+1;
+        }
+      }
+
+  }
+
   removeEvents(){
     this.lockBoard(this.game.position);
   }
@@ -347,6 +339,7 @@ class Chessgame extends GameTemplate {
     this.sendMessage("game", extra);
 
   }
+
 
   updateStatusMessage(str = "") {
 
