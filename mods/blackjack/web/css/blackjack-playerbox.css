@@ -9,6 +9,13 @@
   height: auto;
 }
 
+.game-playerbox.active {
+  border: 1px solid silver;
+}
+.game-playerbox {
+  border: 1px dashed silver;
+}
+
 .game-playerbox-seat-1 {
   height: 28rem;
   min-height: 28rem;

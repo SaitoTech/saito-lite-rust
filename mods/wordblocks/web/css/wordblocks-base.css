@@ -19,6 +19,7 @@ body {
 
 .pboxlog {
     margin-top: 1rem;
+    color: white;
 }
 .pboxinfo {
     display: flex;
@@ -27,16 +28,9 @@ body {
     justify-content: space-between;
     margin: 1px 0;
     margin-top: 1rem;
+    color: white;
 }
 
-.player-box-head .saito-user .saito-address {
-  color: white;
-}
-
-/* Undo HUD styling for Acknowledge */
- .status-header, .status-message, .status-text-menu,  .status-text-menu ul,  .status-text-menu ul li,  .textchoice{
-  background: unset;
-}
  .textchoice:hover{
   color: black;
 }
@@ -49,37 +43,8 @@ body {
   display: none;
 }
 
-#opponentbox{
-  position: absolute;
-  right: 40px;
-  top: 50px;
-  cursor: default;
-}
 .plog {
   padding: 0.5em;
-}
-
-.opponents > .player-box{
-  position: unset;
-  height: fit-content;
-  background-color: rgba(43,29,14,0.5);
-  margin: 0.5em;
-  border: 2px solid transparent;
-  border-radius: 18px;
-  box-shadow: -5px 3px 4px black;
-}
-
-.opponents > .player-box.active{
-  border-color: silver;
-}
-
-/* Nicely displaying scores in playerboxes */
-.opponents .player-box-info, .lastmove{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  margin: 1px 0;
 }
 
 .playedword{
@@ -491,32 +456,8 @@ thead,  tfoot{
 /*Rearrange HUD/Playerbox elements for portrait layout  */
 @media  (orientation: portrait){
 
-  #opponentbox{
-    top: 45px;
-    left: 0;
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-evenly;
-  }
-
-  .opponents > .player-box{
-    min-height: unset;
-    width: 20vh;
-    max-width: 23vw;
-    padding: 0.25em;
-    margin: 0;
-    border-radius: 12px;
-    box-shadow: -4px 2px 3px black;
-    font-size: 15px;
-  }
-
   .player-box-head-name{
     font-size: 2vh;
-  }
-
-  .player-box .plog, .player-box .player-box-info{
-    padding: 0.25em;
   }
 
   .tile-submit-controls{

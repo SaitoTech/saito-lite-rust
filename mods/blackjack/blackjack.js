@@ -65,10 +65,8 @@ class Blackjack extends GameTableTemplate {
     this.playerbox.mode = 2;
     this.playerbox.render();
 
-//    this.playerbox.addClassAll("poker-seat-",true);
-//    this.playerbox.addGraphicClass("hand");   
-//    this.playerbox.addGraphicClass("tinyhand");   
     this.updateStatus("waiting for other players");
+
   }
 
 
@@ -372,8 +370,8 @@ class Blackjack extends GameTableTemplate {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
         let status = null;
-        $(".game-playerbox.active").removeClass("active");
-        this.playerbox.addClass("active",player);
+
+        this.playerbox.setActive(player);
 
         if (this.game.state.player[player-1].wager == 0 && player != this.game.state.dealer){
           return 1;
@@ -551,14 +549,17 @@ class Blackjack extends GameTableTemplate {
       }
 
       if (mv[0] === "takebets"){
+
         let betters = JSON.parse(mv[1]);
         let betsNeeded = 0;
         let doINeedToBet = false;
         let statusMsg = "";
-        $(".game-playerbox.active").removeClass("active");
+
+	this.playerbox.setInactive();
+
         for (let i of betters){
           if (this.game.confirms_needed[(i-1)] == 1) {
-            this.playerbox.addClass("active",i);
+	    this.playerbox.setActive(i, false); // don't de-activate others
             statusMsg += `Player ${i}, `;
             betsNeeded++;
             if (this.game.player == parseInt(i)) { //If >2 players, this gets called repeatedly....

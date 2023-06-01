@@ -661,7 +661,8 @@ cosole.log("pnum is: " + pnum);
         if (this.game.state.plays_since_last_raise > this.game.players.length) {
           //Is this the end of the hand?
           if (this.game.state.flipped == 5) {
-            $(".game-playerbox.active").removeClass("active");
+
+	    this.playerbox.setInactive();
 
             this.game.queue = [];
             let first_scorer = 0;
@@ -707,8 +708,7 @@ cosole.log("pnum is: " + pnum);
           return 1;
         }else{
           if (this.browser_active){
-            $(".game-playerbox.active").removeClass("active");
-            this.playerbox.addClass("active", player_to_go);  
+	    this.playerbox.setActive(player_to_go);
           }
           
           if (player_to_go == this.game.player) {

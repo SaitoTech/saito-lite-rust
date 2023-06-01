@@ -24,6 +24,14 @@
     max-width: 25vw;
 }
 
+.game-playerbox.active {
+    border: 1px solid white;
+}
+.game-playerbox.flash {
+}
+.game-playerbox.shake {
+}
+
 .game-playerbox-head {
     width: 100%;
     display: inline-flex;

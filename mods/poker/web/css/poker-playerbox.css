@@ -9,6 +9,9 @@
 
 }
 
+.game-playerbox.active {
+  border: 1px solid #FFF;
+}
 
 .game-playerbox-body .status {
     width: 100%;
