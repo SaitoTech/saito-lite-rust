@@ -1,6 +1,7 @@
 const GameTableTemplate = require('../../lib/templates/gametabletemplate');
 const saito = require('../../lib/saito/saito');
 const BlackjackGameRulesTemplate = require('./lib/blackjack-game-rules.template');
+const GamePlayerBox = require('../../lib/saito/ui/game-playerbox/main');
 
 
 //////////////////
@@ -60,10 +61,14 @@ class Blackjack extends GameTableTemplate {
 
     this.log.render();
 
+    this.playerbox = new GamePlayerBox(this.app, this);
+    this.playerbox.mode = 2;
     this.playerbox.render();
-    this.playerbox.addClassAll("poker-seat-",true);
-    this.playerbox.addGraphicClass("hand");   
-    this.playerbox.addGraphicClass("tinyhand");   
+    this.playerbox.addStatus();
+
+//    this.playerbox.addClassAll("poker-seat-",true);
+//    this.playerbox.addGraphicClass("hand");   
+//    this.playerbox.addGraphicClass("tinyhand");   
     this.playerbox.addStatus(); //enable update Status to display in playerbox
     this.updateStatus("waiting for other players");
   }
@@ -369,7 +374,7 @@ class Blackjack extends GameTableTemplate {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
         let status = null;
-        $(".player-box.active").removeClass("active");
+        $(".game-playerbox.active").removeClass("active");
         this.playerbox.addClass("active",player);
 
         if (this.game.state.player[player-1].wager == 0 && player != this.game.state.dealer){
@@ -552,7 +557,7 @@ class Blackjack extends GameTableTemplate {
         let betsNeeded = 0;
         let doINeedToBet = false;
         let statusMsg = "";
-        $(".player-box.active").removeClass("active");
+        $(".game-playerbox.active").removeClass("active");
         for (let i of betters){
           if (this.game.confirms_needed[(i-1)] == 1) {
             this.playerbox.addClass("active",i);
@@ -901,7 +906,7 @@ class Blackjack extends GameTableTemplate {
 
         userline += `<div class="saito-balance">${this.formatWager(balance)}</div>`;
 
-        this.playerbox.refreshName(i+1, "", userline);
+        this.playerbox.updateUserline(userline, i+1);
 	
         if (this.game.state.player[i].wager>0 && this.game.state.dealer !== (i+1)){
           newhtml = `<div class="chips">${(this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].credit-this.game.state.player[i].wager))} ${this.game.crypto || "SAITO"}, Bet: ${this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].wager)}</div>`;
@@ -977,9 +982,6 @@ class Blackjack extends GameTableTemplate {
           newhtml += "</div>";
         }
        this.refreshPlayerLog(newhtml, this.game.player);
-//       $("#player-box-graphic-1").removeClass("hidden-playerbox-element");
-      } else {
-//        $("#player-box-graphic-1").addClass("hidden-playerbox-element");
       }
     } catch (err) {
      console.error("Display Hand err: " + err);
@@ -1331,11 +1333,6 @@ class Blackjack extends GameTableTemplate {
     }
   
     try {
-      if (hide_info == 0) {
-        this.playerbox.showInfo();
-      } else {
-        this.playerbox.hideInfo();
-      }
 
       if (this.lock_interface == 1) { return; }
 
@@ -1347,7 +1344,7 @@ class Blackjack extends GameTableTemplate {
         if (status_obj) {
           status_obj.innerHTML = str;
         } else {
-          this.app.browser.addElementToSelector(`<div class="status">${str}</div>`, `#player-box-body-${seat}`);
+          this.app.browser.addElementToSelector(`<div class="status">${str}</div>`, `#game-playerbox-body-${seat}`);
         }
       }
 
@@ -1383,21 +1380,17 @@ class Blackjack extends GameTableTemplate {
     // no need for P1/seat to show cards as cardfan exists
     if (seat == 1) { return; }
 
-    let qs = `#player-box-graphic-${seat}`;
+    let qs = `#game-playerbox-graphic-${player}`;
     if (document.querySelector(qs)) {
       document.querySelector(qs).innerHTML = html;
     } else {
-      let qs = `#player-box-body-${seat}`;
-      if (document.querySelector(qs)) {
-        document.querySelector(qs).innerHTML = `<div class="player-box-graphic hand tinyhand" id="player-box-graphic-${seat}">${html}</div>`;
-      } 
+      let qs = `#game-playerbox-${player}`;
+      this.app.browser.addElementToSelector(`<div class="game-playerbox-graphic hand tinyhand" id="game-playerbox-graphic-${player}">${html}</div>`, qs);
     } 
   }
 
   refreshPlayerLog(html, player) {
-
-    this.playerbox.refreshLog(html, player);
-
+    this.playerbox.updateBody(html, player);
     if (this.game.state.player) {
       if (this.game.state.player.length >= player) {
         this.refreshPlayerCards(this.game.state.player[player-1].cardshtml, player);

@@ -2,6 +2,7 @@ const GameTableTemplate = require("../../lib/templates/gametabletemplate");
 const JSON = require("json-bigint");
 const PokerGameRulesTemplate = require("./lib/poker-game-rules.template");
 const PokerGameOptionsTemplate = require("./lib/poker-game-options.template");
+const GamePlayerBox = require("../../lib/saito/ui/game-playerbox/main");
 
 
 //////////////////
@@ -198,9 +199,9 @@ class Poker extends GameTableTemplate {
 
     this.log.render();
 
+    this.playerbox = new GamePlayerBox(this.app, this);
+    this.playerbox.mode = 2; // poker/cards
     this.playerbox.render();
-    this.playerbox.addClassAll("poker-seat-", true);
-    this.playerbox.addStatus(); //enable update Status to display in playerbox
 
     if (this.game?.options?.crypto){
       if (this.game.options.crypto == "TRX"){
@@ -643,6 +644,7 @@ class Poker extends GameTableTemplate {
               }
             }
           }
+cosole.log("pnum is: " + pnum);
 
           // if everyone has folded - start a new round
           this.settleLastRound();
@@ -653,11 +655,13 @@ class Poker extends GameTableTemplate {
         }
         this.game.state.plays_since_last_raise++;
         
+	//
         // Is this the end of betting?
+	//
         if (this.game.state.plays_since_last_raise > this.game.players.length) {
           //Is this the end of the hand?
           if (this.game.state.flipped == 5) {
-            $(".player-box.active").removeClass("active");
+            $(".game-playerbox.active").removeClass("active");
 
             this.game.queue = [];
             let first_scorer = 0;
@@ -703,7 +707,7 @@ class Poker extends GameTableTemplate {
           return 1;
         }else{
           if (this.browser_active){
-            $(".player-box.active").removeClass("active");
+            $(".game-playerbox.active").removeClass("active");
             this.playerbox.addClass("active", player_to_go);  
           }
           
@@ -1181,7 +1185,6 @@ class Poker extends GameTableTemplate {
     }
 
     let poker_self = this;
-    let seat = this.playerbox.playerBox(this.game.player);
     let balance_html = "";
     let html = "";
     let mobileToggle = (window.matchMedia("(orientation: landscape)").matches && window.innerHeight <= 600);
@@ -1234,10 +1237,12 @@ class Poker extends GameTableTemplate {
       return;
     }
 
-    balance_html = `<div class="menu-player-upper">
-               <div style="float:right;" class="saito-balance">${this.formatWager(this.game.state.player_credit[this.game.player - 1])}</div>
-             </div>`;
-    this.app.browser.replaceElementBySelector(balance_html, `.player-box-body-${seat} .menu-player-upper`);
+    balance_html = `
+	<div class="menu-player-upper">
+          <div style="float:right;" class="saito-balance">${this.formatWager(this.game.state.player_credit[this.game.player - 1])}</div>
+        </div>
+    `;
+    this.app.browser.replaceElementBySelector(balance_html, `.game-playerbox-body-${this.game.player} .menu-player-upper`);
 
 
     html  = "<ul>";
@@ -1603,70 +1608,20 @@ class Poker extends GameTableTemplate {
     }else{
        $("#deal").children().animate({left: "1000px"}, 1200, "swing", function(){$(this).remove();});
     }
-    $(".player-box-graphic .hand").animate({left: "1000px"}, 1200, "swing", function(){
+    $(".game-playerbox-graphic .hand").animate({left: "1000px"}, 1200, "swing", function(){
       $(this).remove();
     });
 
   }
 
   refreshPlayerLog(html, player) {
-    //if (html.indexOf("menu-player-upper") == -1) { html = '<div class="menu-player-upper"></div>' + html; }
-    this.playerbox.refreshLog(html, player);
-    //this.refreshPlayerStack(player, false);
+    this.playerbox.updateBody(html, player);
   }
   
-  refreshPlayerStack(player, includeCards = true){
-
+  refreshPlayerStack(player, includeCards = true) {
     if (!this.browser_active) { return; }
-
-    /*let html = "";
-    let innerhtml = "";
-    if (this.stf(this.game.state.player_credit[player-1]) === 0 && this.game.state.all_in){
-      innerhtml = `<div class="saito-balance" style="float:right">All in!</div>`;
-    } else {
-      innerhtml = `<div class="saito-balance" style="float:right">${this.formatWager(this.game.state.player_credit[player-1], true)}</div>`;
-    }*/
-
     let userline = this.returnPlayerRole(player) + `<div class="saito-balance" style="float:right">${this.formatWager(this.game.state.player_credit[player-1], true)}</div>`;
-    this.playerbox.refreshName(player, "", userline);
-
-
-
-/*******
-******** Graphics Removed
-********
-    if (this.useGraphics) {
-      html = this.returnPlayerStackHTML(player, this.game.state.player_credit[player - 1]);
-      html = html.substring(0,html.length - 6); //remove final </div> tag
-      let bonusExplainer = `<div>${this.formatWager(this.game.state.player_credit[player - 1], true)}</div>`;
-      if (this.game.crypto){
-        bonusExplainer += `<div>${this.formatWager(this.game.state.player_credit[player - 1], true)}</div>`;
-      }
-      this.playerbox.refreshGraphic(`${html}<div class="tiptext">${bonusExplainer}</div></div>`,player);
-    } 
-    
-    //Append cards in graphics box for other players
-    if (includeCards){
-      if (player != this.game.player && !this.game.state.passed[player-1]) {
-        //Show backs of cards
-        let newhtml = `
-          <div class="other-player-hand hand tinyhand">
-            <img class="card" src="${this.card_img_dir}/red_back.png">
-            <img class="card" src="${this.card_img_dir}/red_back.png">
-          </div>
-        `;
-        if (this.useGraphics){
-          //Need to put tinyhand and chip-stack both in graphic
-          this.playerbox.appendGraphic(newhtml, player);  
-        }else{
-          this.playerbox.refreshGraphic(newhtml, player);
-        }
-      }
-    }
-*********
-*********
-********/
-
+    this.playerbox.updateUserline(userline, player);
   }
   
   returnPlayerStackHTML(player,numChips){
@@ -2988,7 +2943,10 @@ class Poker extends GameTableTemplate {
     return ngoa;
   }
 
+
   updateStatus(str, hide_info = 0) {
+
+console.log("update status with: " + str);
 
     if (str.indexOf('<') == -1) {
       str = `<div style="padding-top:2rem">${str}</div>`;
@@ -2998,24 +2956,22 @@ class Poker extends GameTableTemplate {
     if (!this.browser_active){return;}
     if (this.lock_interface == 1) { return; }
 
-     try {
-        if (hide_info == 0) {
-          this.playerbox.showInfo();
-        } else {
-          this.playerbox.hideInfo();
-        }
-        
+    //
+    // insert status message into playerbox BODY unless the status
+    // already exists, in which case we simplify update it instead
+    // of updating the body again.
+    //
+    try {
         let status_obj = document.querySelector(".status");
-	let seat = this.playerbox.playerBox(this.game.player);
         if (status_obj) {
           status_obj.innerHTML = str;
         } else {
-	  this.app.browser.addElementToSelector(`<div class="status">${str}</div>`, `#player-box-body-${seat}`);
+	  this.playerbox.updateBody(`<div class="status">${str}</div>`, this.game.player);
 	}
       
-      } catch (err) { 
-        console.log("ERR: " + err);
-      }
+     } catch (err) { 
+       console.log("ERR: " + err);
+     }
 
   }
 

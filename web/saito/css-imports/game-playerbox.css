@@ -1,277 +1,142 @@
 
-.saito-playername {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  display: inline-block !important;
-  width: inherit;
-  max-width: 99%;
+.game-playerbox-manager {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    position: absolute;
+    top: 6rem;
+    right: 3rem;
 }
 
-/**********************************************/
-/*** Playerbox Layout ***/
-/**********************************************/
-.player-box {
-  display: flex;
-  flex-direction: column;
-  width: 30vh;
-  min-width: 150px;
-  max-width: 30vw;
-  min-height: 15vh;
-  max-height: 30vh;
-  background-color: #4448;
-  color: #fff;
-  font-size: min(1.2em,2.5vh);
-  padding: 0.5em;
-  position: absolute;
+.game-playerbox-manager.game-playerbox-seat-manager {
+   position: absolute;
+   display: block;
+   top: unset;
+   right: unset;
+   height: 100vh;
+   width: 100vw;
 }
 
-.player-box .saito-user {
-  align-items: center;
+.game-playerbox {
+    padding: 1rem 1rem !important;
+    padding: 1rem;
+    z-index: 3;
+    max-width: 25vw;
 }
 
-.player-box .plog.status {
-  padding-bottom: 0;
+.game-playerbox-head {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
 }
 
-.player-box.active{
-  border: 1px solid silver;
+.game-playerbox-body {
+    width: 100%;
+    padding: 0rem;
+    margin-top: 0.5rem;
+    line-height: 2.3rem;
+    font-size: 1.6rem;
 }
 
-.player-box.winner{
- border: 2px solid gold; 
-}
-
-
-.player-box-head{
-   width: 100%;
-   display: inline-flex;
-   align-items: center;
-   cursor: pointer;
-}
-
-.player-box .player-box-head .saito-identicon-box {
-  width: 40px;
-  height: 40px;
+.game-playerbox-graphics {
+    top: 0rem;
+    right: 0rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
 }
 
 
-.player-box-head-name {
-  font-size: max(1em,2.5vh);
-  padding-left: 1vh;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.game-playerbox-head .saito-user>.saito-address , .game-playerbox-head .saito-user>.saito-userline {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
-
-.player-box-info{
-  padding: 0.5em;
-}
-
-.hidden-playerbox-element {
-  display: none !important;
-}
-
-.player-info-chips, .player-box-info .chips {
-  text-align: center;
-  font-size: max(1em,3vh);
-  overflow: hidden;
-}
-
-/* Smaller cards for other players hands */
-.player-box-graphic .card, .other-player-hand .card {
-  width: 12vh;
-  position: absolute;
-}
-
-.player-box-body { 
-  flex: 1
- }
-
+  
 /******************************/
 /*** Poker / Cardgame Boxes ***/
 /******************************/
-.poker-seat-8{
+.game-playerbox-seat-8 {
   bottom: 1vh;
   left: 1em;
-}
+} 
 
-.poker-seat-7{
+.game-playerbox-seat-7 {
   bottom: 1vh;
   right: 1em;
 }
 
-.poker-seat-6{
+.game-playerbox-seat-6 {
   left: 1em;
   top: 45vh;
   transform: translateY(-50%);
 }
-
-.poker-seat-5 {
+  
+.game-playerbox-seat-5 {
   left: 1em;
   top: 20vh;
   transform: translateY(-50%);
 }
 
-.poker-seat-4 {
+.game-playerbox-seat-4 {
   left: 50vw;
   top: 30px;
   transform: translateX(-50%);
 }
 
-.poker-seat-3 {
+.game-playerbox-seat-3 {
   right: 1em;
   top: 20vh;
   transform: translateY(-50%);
 }
 
-.poker-seat-2 {
+.game-playerbox-seat-2 {
   right: 1em;
   top: 45vh;
   transform: translateY(-50%);
 }
 
-/* Special rules for this player */
-.poker-seat-1{
+.game-playerbox-seat-1 {
   min-width: 30vh;
   max-height: 32vh;
-  bottom: 1vh;
   left: 50vw;
   transform: translateX(-50%);
   width: 16vw;
+  bottom: 0px;
+  margin-bottom: 2rem;
+}
+
+.game-playerbox-seat-1 , .game-playerbox-seat-2 , .game-playerbox-seat-3 , .game-playerbox-seat-4 , .game-playerbox-seat-5 , .game-playerbox-seat-6 , .game-playerbox-seat-7 , .game-playerbox-seat-8 {
+  position: absolute;
 }
 
 
-.hand{
-  position: relative;
-}
-
-.poker-seat-1 .hand {
-  display: none;
-}
-.poker-seat-1 .status{
-  min-height: 20vh;
-  overflow-y: auto;
-}
 
 
-.poker-seat-4 .hand, .poker-seat-3 .hand {
-  left: unset;
-  right: 15vh;
-  top: 2vh;
-}
-
-.poker-seat-5 .hand {
-  left: 24vh;
-  top: 2vh;
-}
-
-.poker-seat-6 .hand{
-  top: 12vh;
-}
-
-.poker-seat-2 .hand{
-  top: 12vh;
-  left: 12vh;
-}
-
-.opponents > .player-box{
-  position: unset;
-}
-
-/*********************************/
-/*          PLAYER BOX           */
-/*** SCREEN SIZE MODIFICATIONS ***/
-/*********************************/
-@media screen and (orientation: landscape) and (max-height: 600px) {
-  /*Hide backs of other player cards*/
-  .other-player-hand .card {
-    display: none;
-  }
-
-
-  /*Fit Other players*/
-  .poker-seat-3{
-    right: 15vw;
-  }
-  .poker-seat-3 .hand{
-    left:  24vh;
-    top: 0;
-  }
-
-  .poker-seat-5{
-    left: 15vw;
-  }
-  .poker-seat-5 .hand{
-    top: 0;
-    left: unset;
-    right: 15vh;
-  }
-
-  .player-box{
-    font-size: 15px;
-    padding: 1vh;
-  }
-
-  .player-box-info{
-    padding: 1vh;
-  }
-
-  /*Maximize my space to play*/
-  #player-box-1:not(.opponents .player-box){
-    max-width: unset;
-    width: min(45vw,400px);
-    font-size: 18px;
-  }
-
-  .plog.status ul{
-    display: flex;
-  }
-  .plog.status ul .menu_option{
-    font-size: 1.5em;
-    border-left: 1px solid rgb(234, 234, 239);
-    line-height: min(3em,15vh);
-  }
-  .plog.status ul li:first-child{
-    border-left: none;
-  }
-  .menu-player{
-    margin: 0;
-  }
-}
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
-  /*Hide backs of other player cards*/
-  .other-player-hand .card {
+
+  .game-playerbox-manager {
     display: none;
-  }
-  .poker-seat-3,.poker-seat-5{
-    top: 15vh;
-  }
-  .poker-seat-2,.poker-seat-6{
-    top: 30vh;
-  }
-
-  /* Adjust sizing of text menu options*/
-  .status ul .menu_option {
-    line-height: 3em;
+    top: 0px;
+    left: 0px;
+    padding: 2rem;
+    padding-top: 10rem;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    z-index: 9;
   }
 
-  .poker-seat-1{
-    max-height: 40vh;
+  .game-playerbox {
+    width: 100%;
+    max-width: 100%;
   }
 
-  .player-box{
-    min-height: 10vh;
-    width: 30vw;
-    padding: 1vw;
-  }
-  .player-box-info{
-    padding: 1vw;
-  }
 }
-
 
 
 
