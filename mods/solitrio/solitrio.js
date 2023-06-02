@@ -73,11 +73,11 @@ class Solitrio extends OnePlayerGameTemplate {
   }
 
 
-  initializeHTML(app) {
+  render(app) {
     //console.trace("Initialize HTML");
     if (!this.browser_active) { return; }
     
-    super.initializeHTML(app);
+    super.render(app);
 
     //
     // ADD MENU

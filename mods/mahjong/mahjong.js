@@ -229,10 +229,10 @@ class Mahjong extends OnePlayerGameTemplate {
   //
   // runs whenever we load the game into the browser. render()
   //
-  initializeHTML(app) {
+  render(app) {
     if (!this.browser_active) { return; }
     
-    super.initializeHTML(app);
+    super.render(app);
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");

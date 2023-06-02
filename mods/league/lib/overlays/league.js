@@ -41,7 +41,7 @@ class LeagueOverlay {
 
     let game_mod = this.app.modules.returnModuleByName(this.league.game);
     if (game_mod) {  
-      this.overlay.setBackground(game_mod.respondTo("arcade-game").image);
+      this.overlay.setBackground(game_mod.respondTo("arcade-games").image);
     }
 
     //Show Leaderboard

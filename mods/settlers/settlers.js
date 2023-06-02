@@ -127,14 +127,14 @@ class Settlers extends GameTemplate {
 
        
 
-  initializeHTML(app) {
+  render(app) {
 
     if (!this.browser_active) { return; }
 
     //Prevent this function from running twice as saito-lite is configured to run it twice
     if (this.initialize_game_run) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
     
     this.scoreboard.render();
 

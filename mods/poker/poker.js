@@ -121,12 +121,12 @@ class Poker extends GameTableTemplate {
   }
 
 
-  initializeHTML(app) {
+  render(app) {
 
     if (!this.browser_active) { return; }
     if (this.initialize_game_run) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
 
     //
     // ADD MENU
@@ -574,7 +574,7 @@ class Poker extends GameTableTemplate {
           //Reload game to rebuild the html
           setTimeout(()=>{
             this.initialize_game_run = 0;
-            this.initializeGameFeeder(this.game.id);
+            this.initializeGameQueue(this.game.id);
           }, 1000);
           return 0;
         }

@@ -39,14 +39,14 @@ class Wordblocks extends GameTemplate {
     return this;
   }
 
-  initializeHTML(app) {
+  render(app) {
     if (!this.browser_active) {
       return;
     }
 
     if (this.initialize_game_run) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
 
     this.menu.addMenuOption("game-game", "Game");
 

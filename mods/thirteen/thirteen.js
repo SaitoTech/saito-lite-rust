@@ -44,11 +44,11 @@ class Thirteen extends GameTemplate {
 
 
   
-  initializeHTML(app) {
+  render(app) {
 
     if (this.browser_active == 0) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
 
     this.log.render();
 

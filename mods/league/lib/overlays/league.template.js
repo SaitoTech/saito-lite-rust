@@ -2,7 +2,7 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
 
     let game_mod = app.modules.returnModuleByName(league.game);
     let img = "";
-    if (game_mod) { img = this.game_mod.respondTo("arcade-game").image; }
+    if (game_mod) { img = this.game_mod.respondTo("arcade-games").image; }
 
     let key = app.keychain.returnKey(app.wallet.returnPublicKey());
 

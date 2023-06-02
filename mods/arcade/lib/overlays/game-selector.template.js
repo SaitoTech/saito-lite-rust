@@ -11,7 +11,7 @@ module.exports = GameSelectorTemplate = (app, mod, game_selector) => {
 
       games_menu += `
        <div id="${game_mod.name}" class="arcade-game-selector-game" data-id="${game_mod.name}">
-     	 <div class="arcade-game-selector-game-image"><img src="${game_mod.respondTo("arcade-game").image}" /></div>
+     	 <div class="arcade-game-selector-game-image"><img src="${game_mod.respondTo("arcade-games").image}" /></div>
       	 <div class="arcade-game-selector-game-title">${game_mod.returnName()}</div>
        </div>
       `;

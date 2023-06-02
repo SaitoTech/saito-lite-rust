@@ -48,7 +48,7 @@ class JoinLeague {
     this.overlay.show(JoinLeagueTemplate(this.app, this.mod, league), ()=>{
       this.app.connection.emit('league-overlay-render-request', this.league_id);  
     });
-    this.overlay.setBackground(this.game_mod.respondTo("arcade-game").image);
+    this.overlay.setBackground(this.game_mod.respondTo("arcade-games").image);
 
     this.attachEvents();
 

@@ -56,11 +56,11 @@ class President extends GameTemplate {
 
 
 
-  initializeHTML(app) {
+  render(app) {
 
     if (!this.browser_active) { return; }
     
-    super.initializeHTML(app);
+    super.render(app);
  
     //
     // add card events -- text shown and callback run if there

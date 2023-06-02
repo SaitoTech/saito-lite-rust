@@ -47,7 +47,7 @@ class GameWizard {
     }
 
     this.overlay.show(GameWizardTemplate(this.game_mod, this.obj), () => { if (this.meta_overlay) { this.meta_overlay.remove();}});
-    this.overlay.setBackground(this.game_mod.respondTo("arcade-game").image);
+    this.overlay.setBackground(this.game_mod.respondTo("arcade-games").image);
 
     //Test if we should include Advanced Options
     let advancedOptions = this.game_mod.returnGameOptionsHTML();

@@ -93,11 +93,11 @@ class Monarchy extends GameTemplate {
   }
 
  
- initializeHTML(app) {
+ render(app) {
 
     if (this.browser_active == 0) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");

@@ -128,9 +128,9 @@ class Pandemic extends GameTemplate {
     this.grace_window = this.game.players.length * 4;
   }
 
-  initializeHTML(app) {
+  render(app) {
 
-    super.initializeHTML(app);
+    super.render(app);
 
     
     if (!this.skin){

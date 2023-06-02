@@ -35,11 +35,11 @@ class Blackjack extends GameTableTemplate {
 
 
 
-  initializeHTML(app) {
+  render(app) {
     if (!this.browser_active) { return; }
     if (this.initialize_game_run) { return; }
    
-    super.initializeHTML(app);
+    super.render(app);
    
     //
     // ADD MENU
@@ -355,7 +355,7 @@ class Blackjack extends GameTableTemplate {
           //Let's just try reloading the game
           setTimeout(()=>{
             this.initialize_game_run = 0;
-            this.initializeGameFeeder(this.game.id);
+            this.initializeGameQueue(this.game.id);
           }, 1000);
           return 0;
         }else{

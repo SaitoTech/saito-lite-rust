@@ -1327,7 +1327,6 @@ class Browser {
   //
   // usage:
   // let currentHash = window.location.hash; // (e.g."#page=2&ready=1")
-  // initializeHash("#page=1", currentHash, {ready: 0}) --> #page=2&ready=0
   initializeHash(defaultHash, deepLinkHash, forcedHashValues) {
     return this.modifyHash(this.defaultHashTo(defaultHash, deepLinkHash), forcedHashValues);
   }

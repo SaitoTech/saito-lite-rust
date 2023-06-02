@@ -39,12 +39,12 @@ class Chessgame extends GameTemplate {
   }
 
 
-  initializeHTML(app) {
+  render(app) {
 
     if (!this.browser_active) { return; }
     if (this.initialize_game_run) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
 
     //
     // ADD MENU
@@ -229,7 +229,7 @@ class Chessgame extends GameTemplate {
         if (this.game.player === msg.extra.target){
           this.game.draw_offered = 2; //I am receving offer
           this.updateStatusMessage("Opponent offers a draw; " + this.status);
-          this.initializeHTML(this.app);
+          this.render(this.app);
         } 
       }
       //Refresh events

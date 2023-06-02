@@ -3,13 +3,13 @@
 
 
 
-  initializeHTML(app) {
+  render(app) {
 
     if (!this.browser_active) { return; }
 
     let imperium_self = this;
 
-    super.initializeHTML(app);
+    super.render(app);
 
     try {
 

@@ -78,11 +78,11 @@ class Hearts extends GameTemplate {
   //
   // initialize HTML (overwrites game template stuff, so include...)
   //
-  initializeHTML(app) {
+  render(app) {
 
     if (!this.browser_active) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
 
     //
     // add ui components here

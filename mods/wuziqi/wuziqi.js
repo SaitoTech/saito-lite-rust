@@ -35,13 +35,13 @@ class Wuziqi extends GameTemplate {
     }
 
 
-    initializeHTML(app) {
+    render(app) {
 
         if (!this.browser_active) { return; }
         if (this.initialize_game_run) { return 0; }
 
-        // Don't completly Override the game template initializeHTML function
-        super.initializeHTML(app);
+        // Don't completly Override the game template render function
+        super.render(app);
 
         this.menu.addMenuOption("game-game", "Game");
 
