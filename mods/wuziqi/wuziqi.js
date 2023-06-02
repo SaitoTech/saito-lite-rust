@@ -1,4 +1,4 @@
-const { timingSafeEqual } = require('crypto');
+const { timingSafeEqual } = require('crypto'); //Wtf is this???
 const saito = require('../../lib/saito/saito');
 const GameTemplate = require('../../lib/templates/gametemplate');
 const WuziqiGameRulesTemplate = require("./lib/wuziqi-game-rules.template");
@@ -72,8 +72,6 @@ class Wuziqi extends GameTemplate {
             this.generateBoard(this.game.size);
         }
 
-
-        this.playerbox.render();
 
         this.hud.render();
         //this.hud.minWidth = 400; //Doesn't work...
@@ -196,7 +194,6 @@ class Wuziqi extends GameTemplate {
                 scoreHTML += `<img class="piece opaque30" src="img/${this.roles[i+1]}piece.png">`;
             }
             scoreHTML += "</div>";
-            this.playerbox.updateBody(scoreHTML,i+1);                        
         }
     }
 
@@ -210,9 +207,7 @@ class Wuziqi extends GameTemplate {
         let status_obj = document.querySelector(".status");
         if (status_obj) {
           status_obj.innerHTML = str;
-        } else {
-          this.playerbox.updateBody(`<div class="status">${str}</div>`, this.game.player);
-        }
+        } 
       }
     }
 
