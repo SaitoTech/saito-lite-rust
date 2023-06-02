@@ -114,7 +114,9 @@ class LeagueOverlay {
               break;
             case "contact":
               document.querySelector("#admin_details").classList.remove("hidden");
-              document.querySelector("#admin_note").classList.remove("hidden");
+              if (document.querySelector("#admin_note")){
+                document.querySelector("#admin_note").classList.remove("hidden");  
+              }
               break;
             case "games":
               document.querySelector(".league-overlay-league-body-games").classList.remove("hidden");
@@ -158,8 +160,6 @@ class LeagueOverlay {
     let html = "";
     for (let player of this.league.players) {
       let datetime = this.app.browser.formatDate(player.ts);
-      console.log(player.ts);
-      console.log(datetime);
       html += `<div class="saito-table-row">
         <div>${this.app.browser.returnAddressHTML(player.publickey)}</div>
         <div>${Math.round(player.score)}</div>
@@ -167,7 +167,7 @@ class LeagueOverlay {
         <div>${Math.round(player.games_started)}</div>
         <div>${datetime.day} ${datetime.month} ${datetime.year}</div>
         <div class="email_field" data-id="${player.publickey}" contenteditable="true">${player.email}</div>
-        <div><i class="fas fa-ban"></i></div>
+        <div class="remove_player" data-id="${player.publickey}"><i class="fas fa-ban"></i></div>
       </div> `;
     }
 
@@ -187,6 +187,18 @@ class LeagueOverlay {
       }
     });
 
+    Array.from(document.querySelectorAll(".remove_player")).forEach(player => {
+      player.onclick = async (e) => {
+        let key = e.currentTarget.dataset.id;
+        let c = await sconfirm(`Remove ${this.app.keychain.returnIdentifierByPublicKey(key, true)} from the league?`);
+        if (c){
+          let tx = this.mod.createQuitTransaction(this.league.id, key);
+          this.app.network.propagateTransaction(tx);
+          this.mod.removeLeaguePlayer(this.league.id, key);
+          this.loadPlayersUI();
+        }
+      }
+    });
   }
 }
 

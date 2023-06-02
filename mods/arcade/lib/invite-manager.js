@@ -30,7 +30,6 @@ class InviteManager {
 		});
 
 		app.connection.on("finished-loading-leagues", ()=>{
-			console.log("Refresh invite manager");
 			if (!this.mod.is_game_initializing) {
 				this.mod.purgeOldGames();
 				this.render();

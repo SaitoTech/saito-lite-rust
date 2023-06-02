@@ -110,6 +110,8 @@ class League extends ModTemplate {
 
     this.loadLeagues();
 
+    this.pruneOldPlayers();
+
     if (app.browser.returnURLParameter("view_game")) {
       let game = app.browser.returnURLParameter("view_game").toLowerCase();
       let gm = app.modules.returnModuleBySlug(game);
@@ -233,7 +235,7 @@ class League extends ModTemplate {
         if (this.debug) {
           console.log("Load all leagues");
         }
-        sql = `SELECT * FROM leagues WHERE status = 'public' OR id = '${league_id}'`;
+        sql = `SELECT * FROM leagues WHERE ( status = 'public' OR id = '${league_id}' ) AND deleted = 0`;
       } else {
         let league_list = this.app.options.leagues.map((x) => `'${x}'`).join(", ");
 
@@ -253,7 +255,12 @@ class League extends ModTemplate {
         (res) => {
           if (res?.rows) {
             for (let league of res.rows) {
-              league_self.updateLeague(league);
+              //In case I missed the deletion tx, I can catch that my league has been removed and I should drop it
+              if (league.deleted){
+                league_self.removeLeague(league.id);
+              }else{
+                league_self.updateLeague(league);  
+              }
             }
           }
 
@@ -292,7 +299,7 @@ class League extends ModTemplate {
         //console.log("Sending SQL query to update");
         this.sendPeerDatabaseRequestWithFilter(
           "League",
-          `SELECT * FROM players WHERE (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}') AND league_id IN (${league_list}) ORDER BY league_id, score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
+          `SELECT * FROM players WHERE deleted = 0 AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}') AND league_id IN (${league_list}) ORDER BY league_id, score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
           (res) => {
             if (res?.rows) {
               let league_id = 0;
@@ -479,7 +486,7 @@ class League extends ModTemplate {
     } else {
 
       //Do we need to make sure the service node has all the data in memory??
-      let sqlResults = await this.app.storage.queryDatabase(`SELECT * FROM leagues`, [], "league");
+      let sqlResults = await this.app.storage.queryDatabase(`SELECT * FROM leagues WHERE deleted = 0`, [], "league");
       for (let league of sqlResults) {
         league_self.updateLeague(league);
       }
@@ -703,26 +710,41 @@ class League extends ModTemplate {
   ///////////////////
   // quit a league //
   ///////////////////
-  createQuitTransaction(publickey, league_id) {
+  createQuitTransaction(league_id, publickey = null) {
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx = this.addressToAll(newtx, league_id);
 
+    publickey = publickey || this.app.wallet.returnPublicKey();
+
     newtx.msg = {
       module: "League",
-      league_id: league_id,
       request: "league quit",
+      league_id: league_id,
+      publickey,
     };
     return this.app.wallet.signTransaction(newtx);
   }
 
   async receiveQuitTransaction(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
-    let sql = `DELETE FROM players WHERE league_id=$league AND publickey=$publickey`;
+
+    let sql = `UPDATE players SET deleted = 1 WHERE league_id=$league AND publickey=$publickey`;
     let params = {
       $league: txmsg.league_id,
-      $publickey: tx.transaction.from[0].add,
+      $publickey: txmsg.publickey,
     };
-    this.app.storage.executeDatabase(sql, params, "league");
+
+    //if (tx.transaction.from[0].add !== txmsg.publickey){
+    //  let league = this.returnLeague(txmsg.league_id);
+    //  if (!league?.admin || league.admin !== tx.transaction.from[0].add){
+    //    console.log("Ignore invalid removal request");
+    //    return;
+    //  }
+    //}
+
+    await this.app.storage.executeDatabase(sql, params, "league");
+
+    this.removeLeaguePlayer(txmsg.league_id, txmsg.publickey);
   }
 
   /////////////////////
@@ -735,23 +757,28 @@ class League extends ModTemplate {
     newtx.msg = {
       module: "League",
       request: "league remove",
-      league: league_id,
+      league_id: league_id,
     };
 
     return this.app.wallet.signTransaction(newtx);
   }
-  async receiveRemoveTransaction(blk, tx, conf, app) {
-    let txmsg = tx.returnMessage();
-    let sql1 = `DELETE FROM leagues WHERE id=$league_id AND admin=$publickey`;
-    let params1 = {
-      $league_id: txmsg.league_id,
-      $publickey: tx.transaction.from[0].add,
-    };
-    this.app.storage.executeDatabase(sql1, params1, "league");
 
-    let sql2 = `DELETE FROM players WHERE league_id='$league_id'`;
+  async receiveRemoveTransaction(blk, tx, conf, app) {
+
+    let txmsg = tx.returnMessage();
+    
+    let sql1 = `UPDATE leagues SET deleted = 1 WHERE id = $id AND admin = $admin`;
+    let params1 = {
+      $id: txmsg.league_id,
+      $admin: tx.transaction.from[0].add,
+    };
+    
+    let result = await this.app.storage.executeDatabase(sql1, params1, "league");
+
+    let sql2 = `UPDATE players SET deleted = 1 WHERE league_id = $league_id`;
     let params2 = { $league_id: txmsg.league_id };
-    this.app.storage.executeDatabase(sql2, params2, "league");
+    
+    result = await this.app.storage.executeDatabase(sql2, params2, "league");
 
     this.removeLeague(txmsg.league_id);
   }
@@ -894,7 +921,7 @@ class League extends ModTemplate {
   /////////////////////
   /////////////////////
   async getRelevantLeagues(game, target_league = "") {
-    let sql = `SELECT * FROM leagues WHERE game = $game AND (admin = "" OR id = $target)`;
+    let sql = `SELECT * FROM leagues WHERE game = $game AND (admin = "" OR id = $target) AND deleted = 0`;
 
     let params = { $game: game, $target: target_league };
 
@@ -917,7 +944,7 @@ class League extends ModTemplate {
     for (let pk of players) {
       sql2 += `'${pk}', `;
     }
-    sql2 = sql2.substring(0, sql2.length - 2) + `)`;
+    sql2 = sql2.substring(0, sql2.length - 2) + `) AND deleted = 0`;
 
     let sqlResults = await this.app.storage.queryDatabase(sql2, [league_id], "league");
 
@@ -1301,6 +1328,27 @@ class League extends ModTemplate {
     }
   }
 
+  async removeLeaguePlayer(league_id, publickey){
+    if (publickey == this.app.wallet.returnPublicKey()){
+      this.removeLeague(league_id);
+      return;
+    }
+
+    let league = this.returnLeague(league_id);
+
+    for (let i = 0; i < league.players.length; i++){
+      if (league.players[i].publickey === publickey){
+        league.players.splice(i, 1);
+
+        //Force a new ranking calculation on next leaderboard load
+        league.ts = 0;
+        break;
+      }
+    }
+
+    this.saveLeagues();
+  }
+
   fetchLeagueLeaderboard(league_id, mycallback = null) {
     let league = this.returnLeague(league_id);
     let rank = 0;
@@ -1318,7 +1366,7 @@ class League extends ModTemplate {
     let cutoff = new Date().getTime() - 24 * 60 * 60 * 1000;
     this.sendPeerDatabaseRequestWithFilter(
       "League",
-      `SELECT * FROM players WHERE league_id = '${league_id}' AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}') ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
+      `SELECT * FROM players WHERE league_id = '${league_id}' AND deleted = 0 AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}') ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
       (res) => {
         if (res?.rows) {
           for (let p of res.rows) {
@@ -1412,7 +1460,7 @@ class League extends ModTemplate {
   }
 
   async pruneOldPlayers() {
-    let sql = `DELETE FROM players WHERE ts < ?`;
+    let sql = `UPDATE players SET deleted = 1 WHERE ts < ?`;
     let cutoff = new Date().getTime() - this.inactive_player_cutoff;
     await this.app.storage.executeDatabase(sql, [cutoff], "league");
   }
