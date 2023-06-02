@@ -51,7 +51,7 @@ class LeagueOverlay {
 
     let obj = {game: this.league.game};
     if (this.league.admin){
-      obj["league"] = this.league.id; ///>>>>>>>>>>>>>>
+      obj["league_id"] = this.league.id; ///>>>>>>>>>>>>>>
     }
     this.app.connection.emit("league-overlay-games-list", obj);
 

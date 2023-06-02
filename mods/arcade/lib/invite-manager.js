@@ -24,9 +24,15 @@ class InviteManager {
 		//
 		app.connection.on("arcade-invite-manager-render-request", () => {
 			if (!this.mod.is_game_initializing) {
-				
 				this.mod.purgeOldGames();
+				this.render();
+			}
+		});
 
+		app.connection.on("finished-loading-leagues", ()=>{
+			console.log("Refresh invite manager");
+			if (!this.mod.is_game_initializing) {
+				this.mod.purgeOldGames();
 				this.render();
 			}
 		});
@@ -90,6 +96,12 @@ class InviteManager {
 						this.type,
 						this.mod.games[list][i]
 					);
+
+					if (newInvite.invite_data.league){
+						if (!this.mod.leagueCallback?.testMembership(newInvite.invite_data.league)){
+							continue;
+						}
+					}
 					newInvite.render();
 				}
 			}

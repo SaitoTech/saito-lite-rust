@@ -12,7 +12,7 @@ class LeagueRankings {
     //this.overlay = new LeagueOverlay(this.app, this.mod);
 
     app.connection.on('league-rankings-render-request', () => {
-      //if (this.mod.debug) { console.log('league-rankings-render-request'); }
+      if (this.mod.debug) { console.log('league-rankings-render-request'); }
       this.render();
     });
 

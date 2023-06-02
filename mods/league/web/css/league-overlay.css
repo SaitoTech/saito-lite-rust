@@ -274,6 +274,7 @@ span.attention {
 
 .admin-widget .saito-table-row>div {
   width: 100%;
+  text-align: center;
 }
 
 .email_field {

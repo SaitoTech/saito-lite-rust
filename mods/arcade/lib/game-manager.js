@@ -13,7 +13,13 @@ class GameManager {
 		// We may want to only display one type of game invite, so overwrite this before render()
 		this.lists = ["active", "over"];
 
+		/*filter = {
+					game: 
+					league_id: 
+					}
+		*/
 		app.connection.on("league-overlay-games-list", (filter) => {
+			console.log("Show recent games in overlay");
 			this.filter = filter;
 			this.render();
 		});

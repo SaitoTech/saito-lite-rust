@@ -45,7 +45,6 @@ class Leaderboard {
       }
       this.mod.fetchLeagueLeaderboard(this.league.id, (rows) => {
         this.renderLeaderboardContents();
-        this.mod.saveLeagues();
       });
     }
   
