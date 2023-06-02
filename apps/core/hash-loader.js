@@ -1,4 +1,4 @@
-export default async (saito) => {wa
+export default async (saito) => {
   if (!saito.BROWSER) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const blake3 = require("blake3");

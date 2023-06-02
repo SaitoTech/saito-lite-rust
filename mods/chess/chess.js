@@ -191,7 +191,6 @@ class Chessgame extends GameTemplate {
   ////////////////
   handleGameLoop(msg={}) {
 
-
     msg = {};
     if (this.game.queue.length > 0) {
       msg.extra = JSON.parse(this.app.crypto.base64ToString(this.game.queue[this.game.queue.length-1]));
@@ -283,6 +282,18 @@ class Chessgame extends GameTemplate {
     return 0;
 
   }
+
+
+
+
+
+
+
+
+
+
+
+
 
   switchColors(){
     // observer skips

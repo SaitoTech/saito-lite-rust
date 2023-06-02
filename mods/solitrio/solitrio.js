@@ -248,8 +248,6 @@ class Solitrio extends OnePlayerGameTemplate {
           });
                 
         } else {
-          //solitrio_self.displayWarning("Invalid Move", "There is nowhere to move that card");
-          //salert("<p>Sorry, You can't move that card anywhere");
           $(this).toggleClass("misclick");
           solitrio_self.untoggleCard(card);
         }
@@ -331,8 +329,6 @@ class Solitrio extends OnePlayerGameTemplate {
             smartTip = "Hint: Try a 2 of any suit";
           }
           //Feedback
-          //solitrio_self.displayWarning("Invalid Move", "Sorry, "+solitrio_self.cardSuitHTML(solitrio_self.returnCardSuite(selected))+solitrio_self.returnCardNumber(selected)+" cannot go there... ");
-          //salert("Sorry, "+solitrio_self.cardSuitHTML(solitrio_self.returnCardSuite(selected))+solitrio_self.returnCardNumber(selected)+" cannot go there... </p><p>"+smartTip+"</p>");
           $(this).toggleClass("misclick");
           solitrio_self.untoggleCard(selected);
           selected = "";
