@@ -13,7 +13,7 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
     
       <!- ***Game thumbnail & options start*** -->
       <div class="arcade-wizard-game-image">
-        <img class="arcade-wizard-game-thumbnail" src="${game_mod.respondTo("arcade-game").image}">
+        <img class="arcade-wizard-game-thumbnail" src="${game_mod.respondTo("arcade-games").image}">
       </div>
       <!- ***Game thumbnail & options end*** -->
 
