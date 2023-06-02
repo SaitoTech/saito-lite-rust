@@ -50,12 +50,6 @@ input[type="checkbox"]:checked {
     background-color: #533a26;
 }
 
-.game-menu{
-    background-color: #f9efdf;
-    box-shadow: 2px 2px 5px 0px #644b37;
-}
-
-
 .main{
     width: 100vw;
     height: 100vh;

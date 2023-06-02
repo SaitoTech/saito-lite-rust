@@ -19,7 +19,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	let html = `
   <div class="arcade-game-overlay">
   <div class="arcade-game-overlay-header">
-	  <div class="arcade-game-overlay-header-image" style="background-image: url('${invite.game_mod.returnArcadeImg()}')">
+	  <div class="arcade-game-overlay-header-image" style="background-image: url('${invite.game_mod.respondTo("arcade-game").image}')">
 	  </div>
 	  <div class="arcade-game-overlay-header-title-box">
 		  <div class="arcade-game-overlay-header-title-box-title">${invite.game_name}</div>
