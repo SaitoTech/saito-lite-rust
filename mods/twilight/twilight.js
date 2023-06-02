@@ -1,7 +1,7 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
-const TwilightRules = require('./lib/twilight-game-rules.template');
-const TwilightOptions = require('./lib/twilight-game-options.template');
-const TwilightSingularOption = require('./lib/twilight-singular-game-options.template');
+const TwilightRules = require('./lib/core/rules.template');
+const TwilightAdvancedOptions = require('./lib/core/advanced-options.template');
+const TwilightOptions = require('./lib/core/options.template');
 const ScoringOverlay = require('./lib/overlays/scoring');
 const WarOverlay = require('./lib/overlays/war');
 const StatsOverlay = require('./lib/overlays/stats');
@@ -8408,11 +8408,11 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
 
   returnSingularGameOption(){
-    return TwilightSingularOption();
+    return TwilightOptions();
   }
 
   returnGameOptionsHTML() {
-    return TwilightOptions();
+    return TwilightAdvancedOptions();
   }
 
   returnGameRulesHTML(){

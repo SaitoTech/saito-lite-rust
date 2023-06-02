@@ -6,8 +6,6 @@ module.exports = () => {
 
   <div style="top:0;left:0;">
 
-            
-
             <label for="deck">Deck:</label>
             <select name="deck" id="deckselect" onchange='
         if ($("#deckselect").val() == "saito") { 
