@@ -479,10 +479,10 @@ class Blackjack extends GameTableTemplate {
         this.game.state.player[this.game.state.dealer-1].wager -= wager*2;
         this.game.state.player[player-1].wager = 0;
         if (player == this.game.player){
-          this.updateStatus(`<div class="persistent">Blackjack! You win double your bet (${wager}x2)</div>`);
+          this.updateStatus(`<div class="persistent">Blackjack! You win double your bet (${(wager).toFixed(this.decimal_precision)}x2)</div>`);
         }
 
-        this.updateHTML += `<div class="h3 justify"><span>${this.game.state.player[player-1].name}: Blackjack!</span><span>Win:${wager*2}</span></div>`;
+        this.updateHTML += `<div class="h3 justify"><span>${this.game.state.player[player-1].name}: Blackjack!</span><span>Win:${(wager*2).toFixed(this.decimal_precision)}</span></div>`;
         this.updateHTML += this.handToHTML(this.game.state.player[player-1].hand);
 
         if (this.game.crypto){
@@ -509,16 +509,16 @@ class Blackjack extends GameTableTemplate {
         
         if (player != this.game.state.dealer){ //Player, not dealer
           let wager = this.game.state.player[player-1].wager;
-          this.updateLog(`Player ${player} busts, loses ${wager} to dealer`);
+          this.updateLog(`Player ${player} busts, loses ${(wager).toFixed(this.decimal_precision)} to dealer`);
           //Collect their chips immediately
           this.game.state.player[player-1].credit -= wager;
           this.game.state.player[this.game.state.dealer-1].wager += wager;
           this.game.state.player[player-1].wager = 0;
           if (player == this.game.player){
-            this.updateStatus(`<div class="persistent">You have gone bust. You lose your bet of ${wager}</div>`);
+            this.updateStatus(`<div class="persistent">You have gone bust. You lose your bet of ${(wager).toFixed(this.decimal_precision)}</div>`);
           }
         
-          this.updateHTML += `<div class="h3 justify"><span>${this.game.state.player[player-1].name}: Bust!</span><span>Loss:${wager}</span></div>`;
+          this.updateHTML += `<div class="h3 justify"><span>${this.game.state.player[player-1].name}: Bust!</span><span>Loss:${(wager).toFixed(this.decimal_precision)}</span></div>`;
           this.updateHTML += this.handToHTML(this.game.state.player[player-1].hand);
     
           if (this.game.crypto){
@@ -1149,6 +1149,7 @@ class Blackjack extends GameTableTemplate {
               sender = this.game.players[i];     
 
             }
+
             playerHTML += `<div class="h3 justify"><span>${this.game.state.player[i].name}: ${this.game.state.player[i].total}.</span><span>${(this.game.state.player[i].winner)?"Win":"Loss"}: ${Math.abs(debt).toFixed(this.decimal_precision)}</span></div>`;
             playerHTML += this.handToHTML(this.game.state.player[i].hand);
             if (this.game.crypto){
@@ -1186,6 +1187,7 @@ class Blackjack extends GameTableTemplate {
                 if (this.game.state.player[i].credit<=0){
                   logMsg += "going bankrupt, ";       
                 }
+
                 playerHTML += `<span>Loss: ${debt.toFixed(this.decimal_precision)}</span></div>`;
                 receiver = this.game.players[this.game.state.dealer-1];
                 sender = this.game.players[i];     
@@ -1302,7 +1304,7 @@ class Blackjack extends GameTableTemplate {
         this.game.state.player[player-1].credit = 0;
       }
 
-      this.updateHTML += `<div class="h3 justify"><span>${this.game.state.player[player-1].name}: Quit the game!</span><span>Loss:${wager}</span></div>`;
+      this.updateHTML += `<div class="h3 justify"><span>${this.game.state.player[player-1].name}: Quit the game!</span><span>Loss:${(wager).toFixed(this.decimal_precision)}</span></div>`;
       this.updateHTML += this.handToHTML(this.game.state.player[player-1].hand);
 
       if (this.game.crypto){
