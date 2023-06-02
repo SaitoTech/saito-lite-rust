@@ -4,10 +4,10 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	}
 
 	//Uncreated games
-	let desc =
-		invite?.desired_opponent_publickeys?.length > 0 || invite.game_status == "private"
-			? "private invitation"
-			: "open invitation";
+	let desc = invite.verbose_game_type;
+			//	invite?.desired_opponent_publickeys?.length > 0 || invite.game_status == "private"
+			//			? "private invitation"
+			//		: "open invitation";
 	//If created
 	if (mod.isAcceptedGame(invite.game_id)) {
 		desc = "active game";

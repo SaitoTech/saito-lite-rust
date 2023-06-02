@@ -164,6 +164,13 @@ class Arcade extends ModTemplate {
 
       this.app.connection.emit("arcade-invite-manager-render-request");
     }
+
+    try {
+      this.leagueCallback = this.app.modules.returnFirstRespondTo("league_membership");
+    }catch(err){
+      this.leagueCallback = {};
+    }
+    
   }
 
   //

@@ -2,6 +2,7 @@ const LeagueOverlayTemplate = require("./league.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 const Leaderboard = require("./../leaderboard");
 const LeagueWelcomeTemplate = require("./league-welcome.template");
+const JoinLeagueOverlay = require("./join");
 
 class LeagueOverlay {
 
@@ -52,7 +53,7 @@ class LeagueOverlay {
 
     let obj = {game: this.league.game};
     if (this.league.admin){
-      obj["league"] = this.league.id; ///>>>>>>>>>>>>>>
+      obj["league_id"] = this.league.id; ///>>>>>>>>>>>>>>
     }
     this.app.connection.emit("league-overlay-games-list", obj);
 
@@ -77,6 +78,12 @@ class LeagueOverlay {
       };
     }
 
+    if (document.querySelector(".join_league")) {
+      document.querySelector(".join_league").onclick = () => {
+        let jlo = new JoinLeagueOverlay(this.app, this.mod, this.league.id);
+        jlo.render();
+      }
+    }
 
     if (document.querySelector(".backup_account")) {
       document.querySelector(".backup_account").onclick = () => {
@@ -92,7 +99,7 @@ class LeagueOverlay {
       }
     }
 
-    if (!document.querySelector(".contactAdminWarning")){
+    //if (!document.querySelector(".contactAdminWarning")){
       Array.from(document.querySelectorAll(".menu-icon")).forEach(item => {
         item.onclick = (e) => {
           let nav = e.currentTarget.id;
@@ -109,15 +116,16 @@ class LeagueOverlay {
               break;
             case "contact":
               document.querySelector("#admin_details").classList.remove("hidden");
-              document.querySelector("#admin_note").classList.remove("hidden");
+              if (document.querySelector("#admin_note")){
+                document.querySelector("#admin_note").classList.remove("hidden");  
+              }
               break;
             case "games":
               document.querySelector(".league-overlay-league-body-games").classList.remove("hidden");
               break;
             case "players":
               document.querySelector("#admin-widget").classList.remove("hidden");
-              document.querySelector("#admin_details").classList.remove("hidden");
-              document.querySelector(".league-overlay-leaderboard").classList.remove("hidden");
+              document.querySelector(".league-overlay-leaderboard").classList.add("hidden");
               this.loadPlayersUI();
             }
           }catch(err){
@@ -126,7 +134,7 @@ class LeagueOverlay {
         e.currentTarget.classList.add("active-tab");
         }
       });
-    }
+    //}
 
   }
 
@@ -154,8 +162,6 @@ class LeagueOverlay {
     let html = "";
     for (let player of this.league.players) {
       let datetime = this.app.browser.formatDate(player.ts);
-      console.log(player.ts);
-      console.log(datetime);
       html += `<div class="saito-table-row">
         <div>${this.app.browser.returnAddressHTML(player.publickey)}</div>
         <div>${Math.round(player.score)}</div>
@@ -163,7 +169,7 @@ class LeagueOverlay {
         <div>${Math.round(player.games_started)}</div>
         <div>${datetime.day} ${datetime.month} ${datetime.year}</div>
         <div class="email_field" data-id="${player.publickey}" contenteditable="true">${player.email}</div>
-        <div><i class="fas fa-ban"></i></div>
+        <div class="remove_player" data-id="${player.publickey}"><i class="fas fa-ban"></i></div>
       </div> `;
     }
 
@@ -183,6 +189,18 @@ class LeagueOverlay {
       }
     });
 
+    Array.from(document.querySelectorAll(".remove_player")).forEach(player => {
+      player.onclick = async (e) => {
+        let key = e.currentTarget.dataset.id;
+        let c = await sconfirm(`Remove ${this.app.keychain.returnIdentifierByPublicKey(key, true)} from the league?`);
+        if (c){
+          let tx = this.mod.createQuitTransaction(this.league.id, key);
+          this.app.network.propagateTransaction(tx);
+          this.mod.removeLeaguePlayer(this.league.id, key);
+          this.loadPlayersUI();
+        }
+      }
+    });
   }
 }
 

@@ -992,7 +992,7 @@ class RedSquare extends ModTemplate {
       //  page when fetching page source)
       //
       try {
-        return fetch(link)
+        return fetch(link, {follow: 10})
           .then(res => res.text())
           .then(data => {
 
