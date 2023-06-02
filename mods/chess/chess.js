@@ -384,9 +384,9 @@ class Chessgame extends GameTemplate {
         status = moveColor + ' is in check';
       } else {
         if (this.roles[this.game.player] == moveColor){
-          status = "It's your move";
+          status = "your move";
         }else{
-          status = "Waiting for " + moveColor;
+          status = "waiting for " + moveColor;
         }
       }
     
