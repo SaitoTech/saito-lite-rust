@@ -4,6 +4,8 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
     let img = "";
     if (game_mod) { img = this.game_mod.respondTo("arcade-games").image; }
 
+    let key_words = this.categories.replace("Games ", "").split(" ").reverse().join(" ");
+
     let key = app.keychain.returnKey(app.wallet.returnPublicKey());
 
     let newPlayer = league.admin && !key.email && league.admin !== app.wallet.returnPublicKey();
@@ -15,7 +17,7 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
                 <div class="league-overlay-header-image" style="background-image: url('${img}')"></div>
                 <div class="league-overlay-header-title-box">
                     <div class="league-overlay-header-title-box-title">${league.name}</div>
-                    <div class="league-overlay-header-title-box-desc">${(league.admin) ? `${game_mod.returnName()} league` : game_mod.returnGameType() }</div>
+                    <div class="league-overlay-header-title-box-desc">${(league.admin) ? `${game_mod.returnName()} league` : key_words }</div>
                 </div>
                 <div class="league-overlay-controls">
                     <div id="home" class="menu-icon active-tab"><i class="fas fa-house"></i><div class="menu-text">Home</div></div>

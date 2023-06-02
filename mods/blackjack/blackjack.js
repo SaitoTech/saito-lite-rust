@@ -790,12 +790,10 @@ class Blackjack extends GameTableTemplate {
 
     this.updateStatus(this.getLastNotice()+html, 0);
 
-    this.lockInterface();
     try {
       $('.menu_option').off();
       $('.menu_option').on('click', function () {
           $('.menu_option').off();
-          blackjack_self.unlockInterface();
           let choice = $(this).attr("id");
           blackjack_self.addMove("setwager\t" + blackjack_self.game.player + "\t" + choice);
           blackjack_self.endTurn();
@@ -831,13 +829,11 @@ class Blackjack extends GameTableTemplate {
     }
    
     this.updateStatus(html, 0);
-    this.lockInterface();
 
     
     $('.menu_option').off();
     $('.menu_option').on('click', function () {
       $('.menu_option').off();
-      blackjack_self.unlockInterface();
       let choice = $(this).attr("id");
 
       if (choice === "hit") {
