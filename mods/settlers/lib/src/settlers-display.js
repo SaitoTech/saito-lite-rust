@@ -277,25 +277,34 @@ console.log("DONE GENERATING MAP");
             // PLAYERBOX HEAD - graphics box 
             //
             let statshtml = `<div class="achievements">`;
+            //Victory Point Card Tokens -- should move to VP track
             statshtml += `<div class="victory_point_cards">`;
             for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
-                statshtml += `<div class="victory_point_card">${this.vp.img}</div>`;
+              statshtml += `<div class="victory_point_card">${this.vp.img}</div>`;
             }
-            statshtml += `</div>`
+            if (this.game.state.players[i - 1].vpc > 0) {
+              statshtml += `<div class="victory_point_card_points vproundel">${this.game.state.players[i - 1].vpc}</div>`
+            }
+            statshtml += `</div>`;
             if (this.game.state.largestArmy.player == i) {
-                statshtml += `<div class="token army largest" title="${this.largest.name}">`;
+              statshtml += `<div class="token army largest" title="${this.largest.name}">`;
             } else {
-                statshtml += `<div class="token army" title="${this.largest.name}">`;
+              statshtml += `<div class="token army" title="${this.largest.name}">`;
             }
             for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
-                statshtml += this.s.img;
+              statshtml += this.s.img;
+            }
+            if (this.game.state.largestArmy.player == i) {
+              statshtml += `<div class="army_knights vproundel">2</div>`
             }
             statshtml += `</div>`;
+    
             if (this.game.state.longestRoad.player == i) {
-                statshtml += `<div class="token longest-road" title="${this.longest.name}">${this.longest.svg}</div>`;
-            }
+              statshtml += `<div class="token longest-road" title="${this.longest.name}">${this.longest.svg}`
+              statshtml += `<div class="army_knights vproundel">2</div>`
+              statshtml += `</div>`;
+              }
             statshtml += `</div>`;
-
 
             //
             // PLAYERBOX HEAD
