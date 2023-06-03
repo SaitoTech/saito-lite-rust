@@ -1,7 +1,7 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const TwilightRules = require('./lib/core/rules.template');
-const TwilightAdvancedOptions = require('./lib/core/advanced-options.template');
-const TwilightOptions = require('./lib/core/options.template');
+const TwilightOptions = require('./lib/core/advanced-options.template');
+const TwilightSingularOption = require('./lib/core/options.template');
 const ScoringOverlay = require('./lib/overlays/scoring');
 const WarOverlay = require('./lib/overlays/war');
 const StatsOverlay = require('./lib/overlays/stats');
@@ -5783,19 +5783,6 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
   }
 
 
-  identifyPlayer(player){
-    return this.roles[player].toUpperCase();
-  }
-  identifyPlayerByPublicKey(pkey){
-    let player = this.game.players.indexOf(pkey);
-    if (player >= 0 && player < this.game.players.length){
-      return this.identifyPlayer(player+1);  
-    }else{
-      return "";
-    }
-    
-  }
-
   displayBoard() {
     this.updateDefcon();
     this.updateActionRound();
@@ -8408,11 +8395,11 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
 
   returnSingularGameOption(){
-    return TwilightOptions();
+    return TwilightSingularOption();
   }
 
   returnGameOptionsHTML() {
-    return TwilightAdvancedOptions();
+    return TwilightOptions();
   }
 
   returnGameRulesHTML(){
@@ -14695,6 +14682,15 @@ console.log("ROUND: " + this.game.state.round);
   }
 
 
+
+  formatStatusHeader(status_header, include_back_button = false) {
+    return `
+    <div class="status-header">
+      ${include_back_button ? this.back_button_html : ""}
+      <span id="status-content">${status_header}</span>
+    </div>
+    `;
+  }
 
 
 } // end Twilight class
