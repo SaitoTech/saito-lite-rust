@@ -773,21 +773,22 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         let discardString = "";
         let confirmsNeeded = 0;
         let amIPlaying = false;
+
+	let idx = 0;
         for (let i of playersToGo) {
+	  idx++;
           if (this.game.confirms_needed[i - 1] == 1) {
-            discardString += `${this.game.playerNames[i - 1]}, `;
+            if (idx > 1) { discardString += ", "; }
+            discardString += `${this.game.playerNames[i - 1]}`;
             confirmsNeeded++;
             if (this.game.player == parseInt(i)) {
               this.addMove("RESOLVE\t" + this.app.wallet.returnPublicKey());
-              
-              this.discard.discardString = this.prettifyList(discardString);
+              this.discard.discardString = discardString;
               this.discard.render();
               amIPlaying = true;
             }
           }
         }
-
-        discardString = this.prettifyList(discardString);
 
         this.game.queue.push(
           `NOTIFY\t${discardString} must discard half their hand.`

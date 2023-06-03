@@ -5783,19 +5783,6 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
   }
 
 
-  identifyPlayer(player){
-    return this.roles[player].toUpperCase();
-  }
-  identifyPlayerByPublicKey(pkey){
-    let player = this.game.players.indexOf(pkey);
-    if (player >= 0 && player < this.game.players.length){
-      return this.identifyPlayer(player+1);  
-    }else{
-      return "";
-    }
-    
-  }
-
   displayBoard() {
     this.updateDefcon();
     this.updateActionRound();

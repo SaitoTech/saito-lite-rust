@@ -1435,8 +1435,29 @@ class Blackjack extends GameTableTemplate {
     return this.app.crypto.convertStringToDecimalPrecision(y, 8);
   }
 
+  returnPokerDeck() { 
+    var deck = {};
+    var suits = ["S", "C", "H", "D"];
+    let indexCt = 1;
+    for (let i = 0; i < 4; i++) {
+      for (let j = 1; j <= 13; j++) { 
+        let cardImg = `${suits[i]}${j}`; 
+        deck[indexCt.toString()] = { name: cardImg };
+        indexCt++;
+      }
+    }
+    return deck;
+  } 
 
 
+  handToHTML(hand) {
+    let html = "<div class='htmlCards'>";
+    hand.forEach((card) => {
+      html += `<img class="card" src="${this.card_img_dir}/${card}.png">`;
+    });
+    html += "</div> ";
+    return html;
+  }
 }
 
 module.exports = Blackjack;

@@ -856,13 +856,12 @@ cosole.log("pnum is: " + pnum);
         let pot_size = Math.floor(this.stf(this.game.state.pot) / winners.length);
         let winnerStr = "";
         for (let i = 0; i < winners.length; i++) {
+          if (i >= 1) { winnerStr += ", "; }
           this.playerbox.addClass("winner", winners[i]+1);  
           this.game.stats[this.game.players[winners[i]]].handsWon++;
-          winnerStr += this.game.state.player_names[winners[i]] + ", ";
-          //Award in game winnings
+          winnerStr += this.game.state.player_names[winners[i]];
 	  this.game.state.player_credit[winners[i]] = this.addToString(this.game.state.player_credit[winners[i]], this.fts(pot_size));
         }
-        winnerStr = this.prettifyList(winnerStr); //works with one player
 
         // update logs and splash!
         let winner_html = `<div class="h2">` + winnerStr;
@@ -1356,7 +1355,7 @@ cosole.log("pnum is: " + pnum);
       state.player_pot[i] = "0";
       state.player_credit[i] = "0";
       state.debt[i] = "0";      
-      state.player_names[i] = this.getShortNames(this.game.players[i]);
+      state.player_names[i] = this.app.keychain.returnUsername(this.game.players[i], 12);
     }
 
     state.big_blind = "2";
@@ -2986,7 +2985,7 @@ console.log("update status with: " + str);
         <table><thead><tr><th></th>
        `; 
     for (let p in this.game.stats){
-      html += `<th>${this.getShortNames(p)}</th>`;
+      html += `<th>${this.app.keychain.returnUsername(p, 10)}</th>`;
     }
     html += `</tr></thead><tbody>`;
     for (let s of stats){
@@ -3004,6 +3003,14 @@ console.log("update status with: " + str);
   }
 
 
+  handToHTML(hand) {
+    let html = "<div class='htmlCards'>";
+    hand.forEach((card) => {
+      html += `<img class="card" src="${this.card_img_dir}/${card}.png">`;
+    });
+    html += "</div> ";
+    return html;
+  }
  
 }
 

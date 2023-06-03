@@ -148,7 +148,7 @@ class President extends GameTemplate {
           if (i > 0) { cards_played += ", "; }
           cards_played += deck[cards[i]].name;
         }
-        this.updateLog(this.app.keys.returnUsername(this.game.players[player-1]) + " plays " + cards_played);
+        this.updateLog(this.app.keychain.returnUsername(this.game.players[player-1]) + " plays " + cards_played);
 
         this.game.queue.splice(qe, 1);
         this.displayTable();
@@ -301,7 +301,7 @@ class President extends GameTemplate {
         this.game.players_info[player - 1].passed = 1;
         this.game.queue.splice(qe, 1);
 
-        this.updateLog(this.app.keys.returnUsername(this.game.players[player-1]) + " passes");
+        this.updateLog(this.app.keychain.returnUsername(this.game.players[player-1]) + " passes");
 
       }
 

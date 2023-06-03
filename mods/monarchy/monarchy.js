@@ -1997,6 +1997,7 @@ initializeGame(game_id) {
 
   //!!!!!!!!!!!     
   reshuffleNotification(playerDeck, discards){
+
     this.updateLog("Shuffling discards back into the deck..." + playerDeck);
     if (this.game.player == playerDeck){
       $("#drawpile div").html("");
