@@ -132,7 +132,6 @@ p {
   right: -12.5%;
 }
 
-
 .hex_bg img {
   left: -12.5%;
   right: -12.5%;
@@ -313,8 +312,6 @@ body {
   position: relative;
   top: -4px;
 }
-
-
 
 .rhover:hover, .city.empty.rhover:hover {
   border: 1px solid white;
@@ -620,7 +617,7 @@ input[type="checkbox"] {
   z-index: 15;
   font-weight: bold;
   border: 2px solid #fff;
-  border-radius: 50%;  
+  border-radius: 50%;
   width: 2em;
   height: 2em;
   line-height: 2em;
@@ -827,8 +824,6 @@ ul.horizontal_list li.iconoption {
   left: 1vw;*/
 }
 
-
-
 /* Dice display (position handled by playerbox-graphic) */
 
 .diceroll {
@@ -867,7 +862,6 @@ ul.horizontal_list li.iconoption {
   align-items: center;
   flex-direction: row;
   width: 100%;
-  flex-wrap: wrap;
 }
 
 .flexline2 {
@@ -909,6 +903,7 @@ ul.horizontal_list li.iconoption {
 .cardct {
   width: fit-content;
   font-size: 1.35rem;
+  min-width: 15rem;
 }
 
 .cardselector {
@@ -997,10 +992,10 @@ ul.horizontal_list li.iconoption {
   border-top: 1px dashed var(--text-color);
   padding-top: 1rem;
 }
+
 .hud-body .status .player-notice+.tbd {
   padding-top: 1rem;
 }
-
 
 .tbd ul {
   margin-top: 0.5em;
@@ -1023,21 +1018,23 @@ ul.horizontal_list li.iconoption {
 
 .player-box.me {
   max-height: unset;
-/* left: 30px; */
+  /* left: 30px; */
   top: unset;
   bottom: 1px;
 }
 
 .mobile-trading-container {
-    position: absolute;
-    top: 70px;
-    display: flex;
-    flex-direction: column;
-    gaps: 2.5rem;
+  position: absolute;
+  top: 70px;
+  display: flex;
+  flex-direction: column;
+  gaps: 2.5rem;
 }
+
 .player-box {
-    display: relative;
+  display: relative;
 }
+
 /*****
 .mobile-trading-container .player-box.notme:nth-child(0) {
   top: 76px;
@@ -1101,7 +1098,6 @@ ul.horizontal_list li.iconoption {
 .vp-table img {
   max-height: 4rem;
 }
-
 
 .welcome_overlay {
   padding: 0 !important;
@@ -1221,13 +1217,11 @@ ul.horizontal_list li.iconoption {
   }
 }
 
-
 .achievements {
-  top: 0rem;
-  right: 0rem;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  gap: 1rem;
 }
 
 .achievements .army img {
@@ -1245,18 +1239,24 @@ ul.horizontal_list li.iconoption {
   width: 4rem;
 }
 
-.victory_point_cards {
+.victory_point_cards, .longest-road {
   display: flex;
   gap: 1rem;
   flex-direction: row;
-  margin: 0 1rem 0 0;
+  align-items: center;
 }
 
 .achievements .victory_point_cards img {
-  height: 4rem;
-  margin: 3px -3rem;
+  height: 3.5rem;
+  margin: 0;
   display: block;
   transform: rotate(-5deg);
+}
+
+.achievements .victory_point_card {
+  margin: 0 0 0 -2rem;
+  display: flex;
+  align-items: center;
 }
 
 .achievements .token img, .achievements .token svg {
@@ -1270,13 +1270,13 @@ ul.horizontal_list li.iconoption {
   transform: scale(1.8);
 }
 
-.token.largest.army, .longest-road, .victory_point_card {
+.token.largest.army, .longest-road, .victory_point_cards {
   position: relative;
+  margin: 0 -4rem 0 0;
 }
 
-.token.largest.army::after, .longest-road::after, .victory_point_card::after {
-  content: "2";
-  position: absolute;
+.vproundel {
+  position: relative;
   width: 3rem;
   line-height: 3rem;
   font-size: 1.5rem;
@@ -1286,11 +1286,21 @@ ul.horizontal_list li.iconoption {
   background-color: #ffa400cc;
   border-radius: 50%;
   font-weight: bold;
-  right: -1rem;
+  right: 3rem;
   top: -1rem;
+  height: 3rem;
 }
 
-.victory_point_card::after {
-  top: -0.7rem;
-  content: "1";
+.flexline img.icon {
+  width: 2.5rem;
+}
+
+.flexline span {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
