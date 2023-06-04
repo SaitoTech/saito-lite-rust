@@ -419,14 +419,14 @@ class Mahjong extends OnePlayerGameTemplate {
 
     let option = '';
     if (this.game.hidden.length > 0){
-      option += `<ul><li class="menu_option" id="undo">Undo`;
+      option += `<ul><li class="option" id="undo">Undo`;
       option += "</li></ul>";
     }    
     
     this.updateStatusWithOptions(html,option); 
 
-    $('.menu_option').off();
-    $('.menu_option').on('click', function() {
+    $('.option').off();
+    $('.option').on('click', function() {
       let action = $(this).attr("id");
       if (action === "undo"){
         mahjong_self.undoMove();

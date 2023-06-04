@@ -1243,22 +1243,22 @@ cosole.log("pnum is: " + pnum);
 
 
     html  = "<ul>";
-    html += '<li class="menu_option" id="fold">fold</li>';
+    html += '<li class="option" id="fold">fold</li>';
     
     if (this.stf(match_required) > 0) {
-      html += `<li class="menu_option" id="call">call - ${this.formatWager(match_required)}</li>`;
+      html += `<li class="option" id="call">call - ${this.formatWager(match_required)}</li>`;
     } else { // we don't NEED to match
-      html += '<li class="menu_option" id="check">check</li>';
+      html += '<li class="option" id="check">check</li>';
     }
     if (can_raise) {
-        html += `<li class="menu_option" id="raise">raise</li>`;
+        html += `<li class="option" id="raise">raise</li>`;
       }
     html += "</ul>";
 
     this.updateStatus(html);
 
-    $(".menu_option").off();
-    $(".menu_option").on("click", function () {
+    $(".option").off();
+    $(".option").on("click", function () {
 
       let choice = $(this).attr("id");
    
@@ -1271,7 +1271,7 @@ cosole.log("pnum is: " + pnum);
           html += `match ${poker_self.formatWager(match_required)} and raise `;
         } else {
         }
-        html += `</div><ul><li class="menu_option" id="0">${(mobileToggle)? "nope":"cancel raise"}</li>`;
+        html += `</div><ul><li class="option" id="0">${(mobileToggle)? "nope":"cancel raise"}</li>`;
         let max_raise = Math.min(poker_self.stf(credit_remaining), poker_self.stf(smallest_stack));
 
         for (let i = 0; i < 4; i++) {
@@ -1279,14 +1279,14 @@ cosole.log("pnum is: " + pnum);
           let this_raise = poker_self.stf(poker_self.game.state.last_raise) + (i * poker_self.stf(poker_self.game.state.last_raise));
 
           if (max_raise > this_raise) {
-            html += `<li class="menu_option" id="${this_raise + poker_self.stf(match_required)}">${(mobileToggle)? " ":"raise "}${poker_self.formatWager(this_raise)}</li>`;
+            html += `<li class="option" id="${this_raise + poker_self.stf(match_required)}">${(mobileToggle)? " ":"raise "}${poker_self.formatWager(this_raise)}</li>`;
           } else {
             break;
           }
         }
         
         //Always give option for all in
-        html += `<li class="menu_option" id="${poker_self.addToString(max_raise, match_required)}">
+        html += `<li class="option" id="${poker_self.addToString(max_raise, match_required)}">
                   raise ${poker_self.formatWager(max_raise)} 
                   (all in${(smallest_stack_player !== poker_self.game.player - 1)?` for ${poker_self.game.state.player_names[smallest_stack_player]}`:""})</li>`;
 
@@ -1295,8 +1295,8 @@ cosole.log("pnum is: " + pnum);
         html += "</ul>";
         poker_self.updateStatus(html);
 
-        $(".menu_option").off();
-        $(".menu_option").on("click", function () {
+        $(".option").off();
+        $(".option").on("click", function () {
 
           let raise = $(this).attr("id");
 
@@ -1508,7 +1508,7 @@ cosole.log("pnum is: " + pnum);
 
   displayHand() {
     if (this.game.player == 0){ 
-      this.playerbox.refreshInfo(`<div>You are observing the game</div>`, -1);
+      this.updateStatus(`You are observing the game`, -1);
       return; 
     }
 
@@ -1701,7 +1701,7 @@ cosole.log("pnum is: " + pnum);
     }
 
     try {
-      $(".menu_option").off();
+      $(".option").off();
     } catch (err) {}
 
     let extra = {};

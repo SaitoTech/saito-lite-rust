@@ -89,21 +89,24 @@
   overflow-y: clip;
 }
 
-.status {
+.hud-body .status {
     background-color: whitesmoke;
-    border-radius: unset;
-    position: relative;
     width: 500px;
     max-width: 100%;
     margin-left: auto;
     margin-right: auto;
     box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
+}
+
+.status {
+    border-radius: unset;
+    position: relative;
     font-size: 1.6rem;
     justify-content: space-around;
     height: min-content;
     min-height: fit-content;
-    padding-top: 0.9rem;
-    padding-bottom: 0.9rem;
     text-align: center;
 }
 

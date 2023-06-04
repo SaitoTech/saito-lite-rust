@@ -476,7 +476,7 @@ class Solitrio extends OnePlayerGameTemplate {
 
 
   async clearTable(){
-    $('.menu_option').off();
+    $('.option').off();
     $('.slot').off();
 
     for (let i = 1; i <= 4; i++){
@@ -653,7 +653,7 @@ no status atm, but this is to update the hud
     let solitrio_self = this;
 
     let html = '<span class="hidable">Arrange the cards from 2 to 10, one suit per row by moving cards into empty spaces.</span>'; 
-    let option = `<ul><li class="menu_option"`;
+    let option = `<ul><li class="option"`;
     if (this.game.state.recycles_remaining > 0) {
       html += '<span>You may shuffle the unarranged cards ';
       if (this.game.state.recycles_remaining == 2) { 
@@ -667,7 +667,7 @@ no status atm, but this is to update the hud
       option += ` id="quit">Start New Game`;
     }
     if (this.moves.length > 0){
-      option += `</li><li class="menu_option" id="undo">Undo`;
+      option += `</li><li class="option" id="undo">Undo`;
     }
 
     option += "</li></ul>";
@@ -675,8 +675,8 @@ no status atm, but this is to update the hud
     this.updateStatusWithOptions(html,option);        
 
 
-    $('.menu_option').off();
-    $('.menu_option').on('click', function() {
+    $('.option').off();
+    $('.option').on('click', function() {
       let action = $(this).attr("id");
       $("#rowbox").removeClass("nomoves");
       if (action == "shuffle"){

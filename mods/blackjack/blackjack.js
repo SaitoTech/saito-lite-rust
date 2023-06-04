@@ -781,20 +781,20 @@ class Blackjack extends GameTableTemplate {
     let html = '<ul>';
     for (let i = 0; i < fractions.length; i++){
       if (fractions[i]*this.game.stake<myCredit)
-        html += `<li class="menu_option" id="${fractions[i]*this.game.stake}">stake ${fractions[i]*this.game.stake} ${this.game.crypto}</li>`;
+        html += `<li class="option" id="${fractions[i]*this.game.stake}">stake ${fractions[i]*this.game.stake} ${this.game.crypto}</li>`;
     }
     //Add an all-in option when almost out of credit
     if (fractions.slice(-1)*this.game.stake > myCredit) {
-      html += `<li class="menu_option" id="${myCredit}">All In!</li>`;
+      html += `<li class="option" id="${myCredit}">All In!</li>`;
     }
     html += '</ul>';
 
     this.updateStatus(this.getLastNotice()+html, 0);
 
     try {
-      $('.menu_option').off();
-      $('.menu_option').on('click', function () {
-          $('.menu_option').off();
+      $('.option').off();
+      $('.option').on('click', function () {
+          $('.option').off();
           let choice = $(this).attr("id");
           blackjack_self.addMove("setwager\t" + blackjack_self.game.player + "\t" + choice);
           blackjack_self.endTurn();
@@ -813,18 +813,18 @@ class Blackjack extends GameTableTemplate {
       //Check if Dealer need to play -- blackjacks too!
       html = this.getLastNotice();
       html += `<div class="menu-player">no players remain</div>`;
-      html += `<ul><li class="menu_option" id="stand">end round</li></ul>`;
+      html += `<ul><li class="option" id="stand">end round</li></ul>`;
     }else{ //Let Player or Dealer make choice
       html = `<ul>`;
-      html += `<li class="menu_option" id="stand" title="end your turn">stand</li>`;
+      html += `<li class="option" id="stand" title="end your turn">stand</li>`;
       if (this.game.state.player[this.game.player-1].total<21){
-        html += `<li class="menu_option" id="hit" title="get another card">hit</li>`;  
+        html += `<li class="option" id="hit" title="get another card">hit</li>`;  
       }
       if (this.canDouble()){
-        html += `<li class="menu_option" id="double" title="double your bet for one card">double down</li>`;
+        html += `<li class="option" id="double" title="double your bet for one card">double down</li>`;
       }
       if (this.canSplit()) {
-        html += `<li class="menu_option" id="split" title="double your bet to split to two hands">split</li>`;
+        html += `<li class="option" id="split" title="double your bet to split to two hands">split</li>`;
       }
       html += "</ul>";      
     }
@@ -832,9 +832,9 @@ class Blackjack extends GameTableTemplate {
     this.updateStatus(html, 0);
 
     
-    $('.menu_option').off();
-    $('.menu_option').on('click', function () {
-      $('.menu_option').off();
+    $('.option').off();
+    $('.option').on('click', function () {
+      $('.option').off();
       let choice = $(this).attr("id");
 
       if (choice === "hit") {
@@ -991,7 +991,7 @@ class Blackjack extends GameTableTemplate {
   */
   endTurn(nextTarget = 0) {
 
-    $(".menu_option").off();
+    $(".option").off();
 
     let extra = {};
     extra.target = this.returnNextPlayer(this.game.player);

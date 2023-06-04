@@ -1,8 +1,4 @@
 
-.status ul .menu-option {
-  text-tranform: unset;
-}
-
 .tinyhand .card {
   position: absolute;
   width: min(12vh,16vw);
