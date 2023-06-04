@@ -31,10 +31,8 @@
         }
 
         html += '<li class="option dashed nocard" id="finished">finished</li></ul>';
-        twilight_self.updateStatusWithOptions("Select cards to discard:",html,false);
         twilight_self.addMove("resolve\tpoliovaccine");
-
-        twilight_self.attachCardboxEvents(function(card) {
+        twilight_self.updateStatusWithOptions("Select cards to discard:",html, function(card) {
           cards_discarded++;
           twilight_self.removeCardFromHand(action2);
           twilight_self.addMove("discard\tus\t"+action2);

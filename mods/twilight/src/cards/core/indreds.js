@@ -50,10 +50,8 @@
           }
           userhtml += '</ul>';
 
-          this.updateStatusWithOptions("Match USSR influence in which country?",userhtml,false);
           let twilight_self = this;
-
-          twilight_self.attachCardboxEvents(function(myselect) {
+          this.updateStatusWithOptions("Match USSR influence in which country?", userhtml, function(myselect) {
             $('.card').off();
 
             if (myselect == "romania") {

@@ -1657,8 +1657,7 @@ cosole.log("pnum is: " + pnum);
       stroke_color = "white";
     }
 
-   // if (single){
-     return `<svg class="poker_chip" style="bottom:${offset}px; fill:${color}; stroke: ${stroke_color}" viewbox="0 0 100 35">
+    return `<svg class="poker_chip" style="bottom:${offset}px; fill:${color}; stroke: ${stroke_color}" viewbox="0 0 100 35">
             <path d="
                 M 2 13
                 A 41 10 0 0 0 98 13
@@ -1669,52 +1668,7 @@ cosole.log("pnum is: " + pnum);
               " 
               stroke-width="1">
             </svg>`;
-    /*}else{
-      return `<svg class="poker_chip" style="bottom:${offset}px; " viewbox="0 0 100 35">
-              <path d="
-                M 2 13
-                L 2 21
-                A 41 10 0 0 0 98 21
-                L 98 13
-                A 41 10 0 0 0 2 13
-              "
-              stroke-width="1" stroke="black" fill="url(#stripes${player})"/>
-              <path d="
-                M 2 13
-                A 41 10 0 0 0 98 13
-                A 41 10 0 0 0 2 13
-              " 
-              stroke-width="1" stroke="black" />
-            </svg>`;
-    }*/
   }
-
-  payWinners(winner){
-    if (this.needToSettleDebt()){
-      for (let i = 0; i < this.game.state.debt.length; i++){
-        //Player i+1 owes money
-        if (this.game.state.debt[i] > 0){
-          //But to whom
-          for (let j = 0; j < this.game.state.debt.length; j++){
-            if (this.game.state.debt[j] < 0){
-              let amount_to_send = Math.min(Math.abs(this.game.state.debt[j]),this.game.state.debt[i]);
-              if (amount_to_send > 0){
-                this.settleNow = true;
-                this.game.state.debt[i] -= amount_to_send;
-                this.game.state.debt[j] += amount_to_send;
-                //Convert (whole) Chips to crypto
-                amount_to_send = amount_to_send * this.game.chipValue
-                amount_to_send = amount_to_send.toFixed(8+1);
-                this.payWinner(this.game.players[i], this.game.players[j], amount_to_send);
-              }
-            }
-          }
-        }
-      }
-    }
-    
-  }
-
 
 
   processResignation(resigning_player, txmsg){

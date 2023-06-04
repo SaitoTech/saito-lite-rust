@@ -41,13 +41,11 @@
           return 0;
         }
 
-        this.updateStatusWithOptions(`${this.cardToText(card)}:`,'<ul><li class="card" id="discard">discard 3 OP card</li><li class="card" id="remove">remove all US influence in W. Germany</li></ul>',false);
-        twilight_self.attachCardboxEvents(function(action) {
+        this.updateStatusWithOptions(`${this.cardToText(card)}:`,'<ul><li class="card" id="discard">discard 3 OP card</li><li class="card" id="remove">remove all US influence in W. Germany</li></ul>', function(action) {
 
           if (action == "discard") {
             
-            twilight_self.updateStatusAndListCards("Choose a card to discard:",cards_to_discard,false);
-            twilight_self.attachCardboxEvents(function(card) {
+            twilight_self.updateStatusAndListCards("Choose a card to discard:",cards_to_discard, function(card) {
               twilight_self.removeCardFromHand(card);
               twilight_self.addMove(`NOTIFY\tUS discarded ${twilight_self.cardToText(card)} to resolve ${twilight_self.cardToText("blockade")}`);
               twilight_self.endTurn();
@@ -68,7 +66,6 @@
       
       }else{
         this.updateStatus(`<div class='status-message' id='status-message'>US is responding to ${this.cardToText(card)}</div>`);
-        this.attachCardboxEvents();
       }
       return 0;
     }

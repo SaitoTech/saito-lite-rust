@@ -14,11 +14,9 @@
                   <li class="option" id="samerica">South America</li>
                   <li class="option" id="mideast">Middle-East</li>
                   </ul>`;
-
-      this.updateStatusWithOptions("Chernobyl triggered. Designate region to prohibit USSR placement of influence from OPS:",html,false);
-
       let twilight_self = this;
-      twilight_self.attachCardboxEvents(function(action2) {
+
+      this.updateStatusWithOptions("Chernobyl triggered. Designate region to prohibit USSR placement of influence from OPS:", html, function(action2) {
 
         twilight_self.addMove("resolve\tchernobyl");
         twilight_self.addMove("chernobyl\t"+action2);

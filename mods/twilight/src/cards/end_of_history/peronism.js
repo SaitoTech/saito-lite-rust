@@ -20,9 +20,7 @@
                     <li class="option" id="couporrealign">coup or realign Argentina</li>
                     </ul>`;
 
-        this.updateStatusWithOptions("Do you choose to:",html,false);
-
-        twilight_self.attachCardboxEvents(function(action2) {
+        this.updateStatusWithOptions("Do you choose to:",html, function(action2) {
           if (action2 == "place") {
             twilight_self.placeInfluence("argentina", 1, player, function() {
               twilight_self.addMove("resolve\tperonism");
@@ -30,7 +28,6 @@
               twilight_self.addMove("notify\t"+player+" places an extra influence in Argentina");
               twilight_self.endTurn();
             });
-
           }
           if (action2 == "couporrealign") {
             let user_message = "Do you choose to:";
@@ -39,8 +36,7 @@
                     <li class="option" id="realign">realign in Argentina</li>
                     </ul>`;
 
-            twilight_self.updateStatusWithOptions(user_message,html,false);
-            twilight_self.attachCardboxEvents(function(action2) {
+            twilight_self.updateStatusWithOptions(user_message,html, function(action2) {
 
               let modified_ops = twilight_self.modifyOps(1, "peronism", me);
 

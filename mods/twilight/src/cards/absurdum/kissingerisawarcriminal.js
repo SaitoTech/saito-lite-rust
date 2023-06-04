@@ -1,6 +1,8 @@
 
     if (card == "kissingerisawarcriminal") {
 
+      let twilight_self = this;
+
       if (this.game.player == 1) {
         this.updateStatus("US playing Kissinger:");
         return 0;
@@ -17,10 +19,7 @@
                   <li class="option" id="mideast">Middle-East</li>
                   </ul>`;
 
-      this.updateStatusWithOptions(user_message, html, false);
-
-      let twilight_self = this;
-      twilight_self.attachCardboxEvents(function(action2) {
+      this.updateStatusWithOptions(user_message, html, function(action2) {
 
 	let selreg = "europe";
 	if (action2 == "asia") { selreg = "Asia"; }

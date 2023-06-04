@@ -53,7 +53,7 @@
 
               let html = 'Discard one of the following cards to increase the stability of this country by 1 and add 1 influence: ';
               twilight_self.updateStatusAndListCards(html, eligible_cards);
-              twilight_self.attachCardboxEvents(function(card) {
+              twilight_self.hud.attachControlCallback(function(card) {
                 twilight_self.placeInfluence(c, 1, player, function() {
                   twilight_self.removeCardFromHand(card);
                   twilight_self.addMove("place\t"+player+"\t"+player+"\t"+c+"\t1");

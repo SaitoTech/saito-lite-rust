@@ -64,8 +64,7 @@
       	//
       	// and handle with the HUD too
       	//
-        twilight_self.updateStatusWithOptions('Set DEFCON to:','<ul><li class="option" id="5">five</li><li class="option" id="4">four</li><li class="option" id="3">three</li><li class="option" id="2">two</li><li class="option" id="1">one</li></ul></div>',false);
-        twilight_self.attachCardboxEvents(function(action2) {
+        twilight_self.updateStatusWithOptions('Set DEFCON to:','<ul><li class="option" id="5">five</li><li class="option" id="4">four</li><li class="option" id="3">three</li><li class="option" id="2">two</li><li class="option" id="1">one</li></ul></div>', function(action2) {
           adjustDefcon(parseInt(action2));
       	  $('.set_defcon_box').remove();
 

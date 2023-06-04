@@ -8,9 +8,7 @@
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
 
-        twilight_self.updateStatusWithOptions(`${twilight_self.cardToText(card)}: `,'<ul><li class="option" id="southafrica">2 Influence in South Africa</li><li class="option" id="adjacent">1 Influence in South Africa and 2 Influence in an adjacent country</li></ul>',false);
-
-        twilight_self.attachCardboxEvents(function(action2) {
+        twilight_self.updateStatusWithOptions(`${twilight_self.cardToText(card)}: `,'<ul><li class="option" id="southafrica">2 Influence in South Africa</li><li class="option" id="adjacent">1 Influence in South Africa and 2 Influence in an adjacent country</li></ul>', function(action2) {
           twilight_self.addMove("resolve\tsouthafrican");
 
           if (action2 == "southafrica") {

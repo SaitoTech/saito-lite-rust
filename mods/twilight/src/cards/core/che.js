@@ -32,8 +32,7 @@
         let user_message = `${this.cardToText(card)} takes effect. Pick first target for coup:`;
         let html = '<ul><li class="option" id="skipche">or skip coup</li></ul>';
             
-        twilight_self.updateStatusWithOptions(user_message, html, false);
-        twilight_self.attachCardboxEvents(function(action2) {
+        twilight_self.updateStatusWithOptions(user_message, html, function(action2) {
           if (action2 == "skipche") {
             twilight_self.addMove("resolve\tche");
             twilight_self.endTurn();

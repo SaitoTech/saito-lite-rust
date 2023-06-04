@@ -1169,13 +1169,11 @@ console.log("LATEST MOVE: " + mv);
           let html = "<ul>";
           if (mv[2] == "unintervention" && this.game.state.headline == 1) {
           } else {
-            html += '<li class="card noncard" id="play">play card</li>';
+            html += '<li class="option noncard" id="play">play card</li>';
           }
-          html += '<li class="card noncard" id="nope">return card</li>';
+          html += '<li class="option noncard" id="nope">return card</li>';
           html += '</ul>';
-          this.updateStatusWithOptions(user_message, html, false);
-
-          twilight_self.attachCardboxEvents(function(action2) {
+          this.updateStatusWithOptions(user_message, html, function(action2) {
             if (action2 == "play") {
               // trigger play of selected card
               twilight_self.addMove("resolve\tgrainsales");
@@ -1267,15 +1265,12 @@ console.log("LATEST MOVE: " + mv);
               let user_message = "Pick second target for coup:";
               let html =  '<ul><li class="option" id="skipche">or skip coup</li></ul>';
                   
-              twilight_self.updateStatusWithOptions(user_message, html, false);
-
-              twilight_self.attachCardboxEvents(function(action2) {
+              twilight_self.updateStatusWithOptions(user_message, html, function(action2) {
                 if (action2 == "skipche") {
                   twilight_self.endTurn();
                   twilight_self.updateStatus("Skipping Che coups...");
                 }
               });
-
 
               $(".easterneurope").on('click', function() {
                 twilight_self.playerFinishedPlacingInfluence("ussr");
@@ -1285,9 +1280,7 @@ console.log("LATEST MOVE: " + mv);
                 twilight_self.endTurn();
               });
             }else{
-
               twilight_self.updateStatus(`Waiting for USSR to play second ${twilight_self.cardToText("che")} coup`);
-              twilight_self.attachCardboxEvents();
               return 0;
             }
           }
@@ -1423,18 +1416,16 @@ console.log("LATEST MOVE: " + mv);
           let user_message = "Select cards to discard:";
           /*let html = "<ul>";
           for (let i = 0; i < cardoptions.length; i++) {
-            html += `<li class="card card_${this.game.deck[0].crypt[i]}" id="${this.game.deck[0].crypt[i]}_${cardoptions[i]}">${this.game.deck[0].cards[cardoptions[i]].name}</li>`;
+            html += `<li class="option card_${this.game.deck[0].crypt[i]}" id="${this.game.deck[0].crypt[i]}_${cardoptions[i]}">${this.game.deck[0].cards[cardoptions[i]].name}</li>`;
           }*/
-          //html += '<li class="card dashed nocard" id="finished">Done discarding</li></ul>';
+          //html += '<li class="option dashed nocard" id="finished">Done discarding</li></ul>';
           cardoptions.push("finished");
-          twilight_self.updateStatusAndListCards(user_message, cardoptions, false);
+          twilight_self.updateStatusAndListCards(user_message, cardoptions, function(action2) {
 
-          //
-          // cardoptions is in proper order
-          //
-          let cards_discarded = 0;
-
-          twilight_self.attachCardboxEvents(function(action2) {
+            //
+            // cardoptions is in proper order
+            //
+            let cards_discarded = 0;
 
             if (action2 == "finished") {
 
@@ -1597,9 +1588,7 @@ console.log("LATEST MOVE: " + mv);
                     <li class="option" id="play">yes</li>
                     <li class="option" id="nope">no</li>
                     </ul>`;
-        this.updateStatusWithOptions(user_message, html, false);
-
-        twilight_self.attachCardboxEvents(function(action2) {
+        this.updateStatusWithOptions(user_message, html, function(action2) {
 
           if (action2 == "play") {
               twilight_self.addMove("resolve\tnorthsea");
@@ -1724,9 +1713,7 @@ console.log("LATEST MOVE: " + mv);
           //If the event card has a UI component, run the clock for the player we are waiting on
           this.startClock();
 
-          this.updateStatusAndListCards(user_message, uscards, false);
-
-          twilight_self.attachCardboxEvents(function(action2) {
+          this.updateStatusAndListCards(user_message, uscards, function(action2) {
             twilight_self.addMove("aldrich\tussr\t"+action2);
             twilight_self.endTurn();
           });
@@ -1796,8 +1783,7 @@ console.log("LATEST MOVE: " + mv);
             <li class="option" id="taketear">make coup or realign</li>
             <li class="option" id="skiptear">skip coup</li>
             </ul>`;
-        twilight_self.updateStatusWithOptions(user_message, html,false);
-        twilight_self.attachCardboxEvents(function(action2) {
+        twilight_self.updateStatusWithOptions(user_message, html, function(action2) {
 
           if (action2 == "skiptear") {
             twilight_self.updateStatus("Skipping Tear Down this Wall...");
@@ -2624,9 +2610,7 @@ console.log("ROUND: " + this.game.state.round);
                       <li class="option" id="play">play extra turn</li>
                       <li class="option" id="nope">do not play</li>
                       </ul>`;
-          this.updateStatusWithOptions(`Do you want to take an extra turn? (North Sea Oil)`,html,false);
-
-          twilight_self.attachCardboxEvents(function(action2) {
+          this.updateStatusWithOptions(`Do you want to take an extra turn? (North Sea Oil)`,html, function(action2) {
 
             if (action2 == "play") {
               twilight_self.addMove("play\t2");
@@ -2680,12 +2664,10 @@ try {
           for (let i = 0; i < available_cards.length; i++) {
             html += `<li class="option" id="${available_cards[i]}">${twilight_self.game.deck[0].cards[available_cards[i]].name}</li>`;
           }
-          html +=    `<li class="card dashed nocard" id="nope">do not discard</li>
+          html +=    `<li class="option dashed nocard" id="nope">do not discard</li>
                       </ul>`;
                     
-          this.updateStatusWithOptions(user_message, html, false);
-
-          twilight_self.attachCardboxEvents(function(action2) {
+          this.updateStatusWithOptions(user_message, html, function(action2) {
 
             if (action2 == "nope") {
               twilight_self.addMove("NOTIFY\t"+twilight_self.game.state.eagle_has_landed.toUpperCase()+" does not discard a card");
@@ -2727,9 +2709,7 @@ try {
         //
         let html  = `<ul><li class="option" id="play">play extra turn</li>
                      <li class="option" id="nope">do not play</li></ul>`;
-        this.updateStatusWithOptions("Do you want to take an extra turn: (Space Shuttle)",html,false);
-
-        twilight_self.attachCardboxEvents(function(action2) {
+        this.updateStatusWithOptions("Do you want to take an extra turn: (Space Shuttle)", html, function(action2) {
           if (action2 == "play") {
             twilight_self.addMove("play\t"+bonus_player);
             twilight_self.endTurn(1);
@@ -3235,7 +3215,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
     }
     this.updateStatusAndListCards(x,this.game.deck[0].hand);
     if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 0; }
-    twilight_self.attachCardboxEvents(function(card) {
+    twilight_self.hud.attachControlCallback(function(card) {
       if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 1; } //You want to skip confirmations after Headline???
       twilight_self.playerTurnHeadlineSelected(card, player);
     });
@@ -3358,7 +3338,6 @@ playerTurnHeadlineSelected(card, player) {
         }
       } else {
         this.updateStatusAndListCards(`Waiting for USSR to move`);
-        this.attachCardboxEvents();
       }
       return;
     }
@@ -3393,11 +3372,9 @@ playerTurnHeadlineSelected(card, player) {
           }
           html += "</ul>";
 
-          this.updateStatusWithOptions(user_message, html, false);
-
           let twilight_self = this;
 
-          twilight_self.attachCardboxEvents(function (action2) {
+          this.updateStatusWithOptions(user_message, html, function (action2) {
             if (action2 === "select") {
               twilight_self.updateStatus();
               twilight_self.playerTurn();
@@ -3452,7 +3429,6 @@ playerTurnHeadlineSelected(card, player) {
         }
       } else {
         this.updateStatusAndListCards(`Waiting for US to move`);
-        this.attachCardboxEvents();
       }
       return;
     }
@@ -3518,8 +3494,7 @@ playerTurnHeadlineSelected(card, player) {
 
             let user_message = `You only have the ${this.cardToText("china")} card remaining. Do you wish to play it this turn?`;
             let html = '<ul><li class="option" id="play">play card</li><li class="option" id="skipturn">skip turn</li></ul>';
-            this.updateStatusWithOptions(user_message, html,false);
-            this.attachCardboxEvents(function(action) {
+            this.updateStatusWithOptions(user_message, html, function(action) {
               if (action === "play") {
                 twilight_self.playerTurn("china"); //reload function, ignoring this logic tree
               }
@@ -3744,7 +3719,7 @@ playerTurnHeadlineSelected(card, player) {
       return;
     }
 
-    twilight_self.attachCardboxEvents(function(card) {
+    twilight_self.hud.attachControlCallback(function(card) {
       twilight_self.playerTurnCardSelected(card, player);
     });
 
@@ -3862,7 +3837,7 @@ playerTurnHeadlineSelected(card, player) {
       if (twilight_self.game.deck[0].cards[card]?.scoring == 1) {
         let status_header = `Playing ${twilight_self.game.deck[0].cards[card].name}:`;
         let html = `<ul><li class="option" id="event">score region</li></ul>`;
-        twilight_self.updateStatusWithOptions(status_header, html, (this.game.state.back_button_cancelled != 1));
+        twilight_self.updateStatusWithOptions(status_header, html);
       } else {
 
         let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops, card, player, 0);
@@ -3920,9 +3895,7 @@ playerTurnHeadlineSelected(card, player) {
         this.playerTurn();
       });
 
-      twilight_self.attachCardboxEvents(async function(action) {
-
-alert("ACTION: " + action);
+      twilight_self.hud.attachControlCallback(async function(action) {
 
         $('.card').off();
 
@@ -3959,9 +3932,7 @@ alert("ACTION: " + action);
             let fr_header =  "This is your opponent's event. Are you sure you wish to play it for the event instead of the OPS?";
             let fr_msg = '<ul><li class="option" id="playevent">play event</li></ul>';
 
-            twilight_self.updateStatusWithOptions(fr_header,fr_msg,true);
-
-            twilight_self.attachCardboxEvents(function(action) {
+            twilight_self.updateStatusWithOptions(fr_header,fr_msg, function(action) {
               $('.card').off();
               if (action == "playevent") {
                 twilight_self.playerTriggerEvent(player, card);
@@ -3983,8 +3954,7 @@ alert("ACTION: " + action);
               <li class="option" id="dontshowme">don't confirm (expert mode)...</li>
               <ul>`;
 
-            twilight_self.updateStatusWithOptions(fr_header,fr_msg,true);
-            twilight_self.attachCardboxEvents(function(action) {
+            twilight_self.updateStatusWithOptions(fr_header, fr_msg, function(action) {
               $('.card').off();
   	      if (action === "dontshowme") {
                 twilight_self.confirm_moves = 0;
@@ -4022,9 +3992,7 @@ alert("ACTION: " + action);
               </ul>
               `;
           
-             twilight_self.updateStatusWithOptions(fr_header, fr_msg, true);
-
-             twilight_self.attachCardboxEvents(function(action) {
+             twilight_self.updateStatusWithOptions(fr_header, fr_msg, function(action) {
               $('.card').off();
 
   	      if (action === "dontshowme") {
@@ -4057,8 +4025,7 @@ alert("ACTION: " + action);
               <li class="option" id="dontshowme">don't confirm (expert mode)...</li>
               </ul>`;
 
-            twilight_self.updateStatusWithOptions(fr_header,fr_msg,true);
-            twilight_self.attachCardboxEvents(function(action) {
+            twilight_self.updateStatusWithOptions(fr_header,fr_msg, function(action) {
               $('.card').off();
 
 	      if (action === "dontshowme") {
@@ -4122,7 +4089,6 @@ alert("ACTION: " + action);
       let html = twilight_self.formatPlayOpsStatus(player, ops); 
       
       twilight_self.updateStatusWithOptions(`${player.toUpperCase()} plays ${ops} OPS:`, html, bind_back_button_state);
-
       if (bind_back_button_state) {
         twilight_self.bindBackButtonFunction(() => {
           twilight_self.game.state.events.vietnam_revolts_eligible = 1;
@@ -4134,7 +4100,7 @@ alert("ACTION: " + action);
       }
 
       // TODO:
-      twilight_self.attachCardboxEvents(async function(action2) {
+      twilight_self.hud.attachControlCallback(async function(action2) {
 
         //
         // prevent ops hang
@@ -4165,8 +4131,7 @@ alert("ACTION: " + action);
                 <li class="option" id="dontshowme">don't confirm (expert mode)...</li>
               </ul>`;
 
-              twilight_self.updateStatusWithOptions(fr_header,fr_msg,true);
-              twilight_self.attachCardboxEvents(function(action) {
+              twilight_self.updateStatusWithOptions(fr_header,fr_msg, function(action) {
                 $('.card').off();
 
   	        if (action === "dontshowme") {
@@ -4287,9 +4252,7 @@ alert("ACTION: " + action);
           let alignment_rolls = ops;
           let header_msg = `Pick a target to realign (${alignment_rolls} rolls), or:`;
           let html = `<ul><li class="option" id="cancelrealign">end turn without rolling</li></ul>`;
-          twilight_self.updateStatusWithOptions(header_msg,html,true);
-
-          twilight_self.attachCardboxEvents(function(action2) {
+          twilight_self.updateStatusWithOptions(header_msg,html, function(action2) {
             if (action2 == "cancelrealign") {
               twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+" opts to end realignments");
               twilight_self.endTurn();
@@ -4373,8 +4336,7 @@ alert("ACTION: " + action);
               alignment_rolls--;
 
               //Update directions
-              twilight_self.updateStatusWithOptions(`Pick a target to realign (${alignment_rolls} rolls), or:`,`<ul><li class="option" id="cancelrealign">end turn</li></ul>`,false);
-              twilight_self.attachCardboxEvents(function(action2) {
+              twilight_self.updateStatusWithOptions(`Pick a target to realign (${alignment_rolls} rolls), or:`,`<ul><li class="option" id="cancelrealign">end turn</li></ul>`, function(action2) {
                 if (action2 == "cancelrealign") { //Not a cancel, keeps realignment rolls so far...
                   twilight_self.reverseMoves("realign");
                   return;
@@ -4405,7 +4367,6 @@ alert("ACTION: " + action);
 
     }else{
       this.updateStatusAndListCards(`${player.toUpperCase()} playing ${this.game.state.event_name} for ${ops} OPS`);
-      this.attachCardboxEvents();
     }
 
     return;
@@ -4490,8 +4451,7 @@ alert("ACTION: " + action);
         html += '<li class="option" id="westgermany">West Germany</li>';
       }
       html += '</ul>';
-      twilight_self.updateStatusWithOptions('Select country from which to remove influence:',html,false);
-      twilight_self.attachCardboxEvents(function(action2) {
+      twilight_self.updateStatusWithOptions('Select country from which to remove influence:',html, function(action2) {
     
         twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis\t0");
         twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_cancelled\t1");
@@ -4610,11 +4570,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
     if (twilight_self.game.deck[0].cards[card].player == opponent) {
         let html = '<ul><li class="option" id="before_ops">event before ops</li><li class="option" id="after_ops">event after ops</li></ul>';
-        twilight_self.updateStatusWithOptions('Playing opponent card:', html, true);
-
         twilight_self.bindBackButtonFunction(() => {  twilight_self.playerTurnCardSelected(card, player);  });
-
-        twilight_self.attachCardboxEvents(function(action2) {
+        twilight_self.updateStatusWithOptions('Playing opponent card:', html, function(action2) {
 
           twilight_self.game.state.event_name = twilight_self.cardToText(card);
 
@@ -8490,7 +8447,6 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
     if (this.game.deck[0].cards[card] != undefined) {
       this.updateStatus(`${player.toUpperCase()} triggers ${this.cardToText(card)}`);
-      this.attachCardboxEvents();
     } else {
       console.log("sync loading error -- playEvent on card: " + card);
       return 1;

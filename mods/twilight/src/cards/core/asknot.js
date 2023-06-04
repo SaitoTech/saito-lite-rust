@@ -31,7 +31,7 @@
 
         twilight_self.updateStatusAndListCards(user_message, cardList, false);
         twilight_self.addMove("resolve\tasknot");
-        twilight_self.attachCardboxEvents(function(action2) {
+        twilight_self.hud.attachControlCallback(function(action2) {
 
           if (action2 == "finished") {
 

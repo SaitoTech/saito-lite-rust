@@ -48,7 +48,7 @@
         twilight_self.updateStatusAndListCards("Choose Card to Reclaim:",discard_deck,true);
         twilight_self.addMove("resolve\tsaltnegotiations");
 
-        twilight_self.attachCardboxEvents(function(action2) {
+        twilight_self.hud.attachControlCallback(function(action2) {
           twilight_self.game.deck[0].hand.push(action2);
           twilight_self.addMove("NOTIFY\t"+player.toUpperCase() +" retrieved "+twilight_self.cardToText(action2));
           twilight_self.addMove("undiscard\t"+action2); 

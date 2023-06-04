@@ -81,8 +81,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
             }
           }
           html += '</ul>';
-          this.updateStatusWithOptions("Select card to give opponent:",html,false);
-          twilight_self.attachCardboxEvents(function(action2) {
+          this.updateStatusWithOptions("Select card to give opponent:", html, function(action2) {
 
             //
             // offer card

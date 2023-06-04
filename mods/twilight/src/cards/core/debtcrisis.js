@@ -31,7 +31,7 @@
           return 0;
         }
 
-        twilight_self.attachCardboxEvents(function(action2) {
+        twilight_self.hud.attachControlCallback(function(action2) {
           if (action2 == "no discard") {
             twilight_self.addMove("resolve\tdebtcrisis");
             twilight_self.addMove("latinamericandebtcrisis");

@@ -12,8 +12,7 @@
 
         twilight_self.addMove("resolve\tperestroika");
 
-        twilight_self.updateStatusWithOptions('Remove four USSR influence from existing countries. You will receive 1 VP per influence removed from battleground countries, and 1 VP for every 2 influence removed from non-battleground countries controlled by the USSR:','<ul><li class="option" id="skip">or skip...</li></ul>');
-        twilight_self.attachCardboxEvents(function(action2) {
+        twilight_self.updateStatusWithOptions('Remove four USSR influence from existing countries. You will receive 1 VP per influence removed from battleground countries, and 1 VP for every 2 influence removed from non-battleground countries controlled by the USSR:','<ul><li class="option" id="skip">or skip...</li></ul>', function(action2) {
           twilight_self.playerFinishedPlacingInfluence();
           twilight_self.endTurn();
         });

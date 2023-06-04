@@ -13,10 +13,7 @@
 
         let choicehtml = '<ul><li class="option" id="endgame">end the game</li><li class="option" id="cont">continue playing</li></ul>';
 
-        this.updateStatusWithOptions(`${this.cardToText(card)}: Do you want to give your opponent 6 VP and End the Game? (VP ties will be won by opponent)`, choicehtml, false);
-        
-
-        twilight_self.attachCardboxEvents(function(action2) {
+        this.updateStatusWithOptions(`${this.cardToText(card)}: Do you want to give your opponent 6 VP and End the Game? (VP ties will be won by opponent)`, choicehtml, function(action2) {
 
           if (action2 == "endgame") {
             twilight_self.updateStatus("Triggering Wargames...");

@@ -1285,11 +1285,6 @@ class Blackjack extends GameTableTemplate {
   }
 
 
-  payWinners(winner){
-    return 0;
-  }
-
-
   processResignation(resigning_player, txmsg){
     super.processResignation(resigning_player, txmsg);
 
