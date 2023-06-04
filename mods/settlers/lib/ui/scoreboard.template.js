@@ -11,7 +11,7 @@ module.exports = SettlersScoreboardTemplate = (scoreboard) => {
     html += '<div class="vp-players">'
     for (let i = 0; i < scoreboard.mod.game.state.players.length; i++) {
       if (scoreboard.mod.game.state.players[i].vp == j) {
-        html += `  <div class="player-vp" style="background-color:var(--p${scoreboard.mod.game.colors[i]}-color);"><div class="vp-faction-name">${scoreboard.mod.game.playerNames[i]}</div></div>`;
+        html += `  <div class="player-vp" style="background-color:var(--p${scoreboard.mod.game.colors[i]}-color);"><div class="vp-faction-name">${scoreboard.app.keychain.returnUsername(scoreboard.mod.game.players[i])}</div></div>`;
       }
     }
     html += '</div></div>';

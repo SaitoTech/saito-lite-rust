@@ -325,8 +325,6 @@ class Settlers extends GameTemplate {
     
     }
 
-    this.resetPlayerNames();
-
     if (this.game.players.length > 2){
       this.grace_window = this.game.players.length * 12;
     }
