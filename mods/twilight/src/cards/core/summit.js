@@ -100,7 +100,7 @@
           let x = 0;
           let y = 0;
 
-          twilight_self.updateStatusWithOptions(`You win the ${twilight_self.cardToText(card)}:`,'<ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li><li class="card" id="same">do not change</li></ul>',false);
+          twilight_self.updateStatusWithOptions(`You win the ${twilight_self.cardToText(card)}:`,'<ul><li class="option" id="raise">raise DEFCON</li><li class="option" id="lower">lower DEFCON</li><li class="option" id="same">do not change</li></ul>',false);
 
           twilight_self.attachCardboxEvents(function(action2) {
 

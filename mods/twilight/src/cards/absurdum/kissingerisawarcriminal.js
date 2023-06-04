@@ -9,12 +9,12 @@
 
       let user_message = "Designate a region to turn all 1-stability countries into battleground countries:";
       let html = `<ul>";
-                  <li class="card" id="asia">Asia</li>
-                  <li class="card" id="europe">Europe</li>
-                  <li class="card" id="africa">Africa</li>
-                  <li class="card" id="camerica">Central America</li>
-                  <li class="card" id="samerica">South America</li>
-                  <li class="card" id="mideast">Middle-East</li>
+                  <li class="option" id="asia">Asia</li>
+                  <li class="option" id="europe">Europe</li>
+                  <li class="option" id="africa">Africa</li>
+                  <li class="option" id="camerica">Central America</li>
+                  <li class="option" id="samerica">South America</li>
+                  <li class="option" id="mideast">Middle-East</li>
                   </ul>`;
 
       this.updateStatusWithOptions(user_message, html, false);

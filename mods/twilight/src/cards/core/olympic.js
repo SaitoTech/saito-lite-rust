@@ -17,7 +17,7 @@
 
         this.addMove("resolve\tolympic");
 
-        twilight_self.updateStatusWithOptions(`${opponent.toUpperCase()} hosts the ${this.cardToText(card)}:`,'<ul><li class="card" id="boycott">boycott</li><li class="card" id="participate">participate</li></ul>',false);
+        twilight_self.updateStatusWithOptions(`${opponent.toUpperCase()} hosts the ${this.cardToText(card)}:`,'<ul><li class="option" id="boycott">boycott</li><li class="option" id="participate">participate</li></ul>',false);
 
         twilight_self.attachCardboxEvents(function(action) {
 

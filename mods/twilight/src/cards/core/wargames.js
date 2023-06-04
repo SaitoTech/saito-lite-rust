@@ -11,7 +11,7 @@
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
-        let choicehtml = '<ul><li class="card" id="endgame">end the game</li><li class="card" id="cont">continue playing</li></ul>';
+        let choicehtml = '<ul><li class="option" id="endgame">end the game</li><li class="option" id="cont">continue playing</li></ul>';
 
         this.updateStatusWithOptions(`${this.cardToText(card)}: Do you want to give your opponent 6 VP and End the Game? (VP ties will be won by opponent)`, choicehtml, false);
         

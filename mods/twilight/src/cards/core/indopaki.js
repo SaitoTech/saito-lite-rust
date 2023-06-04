@@ -17,7 +17,7 @@
         twilight_self.playerFinishedPlacingInfluence();
 
         twilight_self.addMove("resolve\tindopaki");
-        twilight_self.updateStatusWithOptions('Indo-Pakistani War. Choose Target to invade:',`<ul><li class="card" id="pakistan">Pakistan</li><li class="card" id="india">India</li></ul>`,false);
+        twilight_self.updateStatusWithOptions('Indo-Pakistani War. Choose Target to invade:',`<ul><li class="option" id="pakistan">Pakistan</li><li class="option" id="india">India</li></ul>`,false);
 
         let modifications = 0;
         let winner = "india";

@@ -12,7 +12,7 @@
         twilight_self.playerFinishedPlacingInfluence();
 
         twilight_self.addMove("resolve\tiraniraq");
-        twilight_self.updateStatusWithOptions('Iran-Iraq War. Choose Target:',`<ul><li class="card" id="iraq">Iraq</li><li class="card" id="iran">Iran</li></ul>`,false);
+        twilight_self.updateStatusWithOptions('Iran-Iraq War. Choose Target:',`<ul><li class="option" id="iraq">Iraq</li><li class="option" id="iran">Iran</li></ul>`,false);
 
         let target = 4;
         let modifications = 0;

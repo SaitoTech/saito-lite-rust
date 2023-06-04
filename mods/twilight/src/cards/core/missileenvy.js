@@ -77,7 +77,7 @@
           for (let i = 0; i < available_cards.length; i++) {
 console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " + this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops, available_cards[i], player));
             if (this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops, available_cards[i], player) == selected_ops && available_cards[i] != "china") {
-              html += `<li class="card" id="${available_cards[i]}">${this.game.deck[0].cards[available_cards[i]].name}</li>`;
+              html += `<li class="option" id="${available_cards[i]}">${this.game.deck[0].cards[available_cards[i]].name}</li>`;
             }
           }
           html += '</ul>';

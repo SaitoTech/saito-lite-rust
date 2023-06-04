@@ -19,7 +19,7 @@
         let html = "<ul>";
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].hand[i] != "china") {
-            html += `<li class="card" id="${this.game.deck[0].hand[i]}">${this.game.deck[0].cards[this.game.deck[0].hand[i]].name}</li>`;
+            html += `<li class="option" id="${this.game.deck[0].hand[i]}">${this.game.deck[0].cards[this.game.deck[0].hand[i]].name}</li>`;
             cards_to_discard++;
           }
         }
@@ -30,7 +30,7 @@
           return 0;
         }
 
-        html += '<li class="card dashed nocard" id="finished">finished</li></ul>';
+        html += '<li class="option dashed nocard" id="finished">finished</li></ul>';
         twilight_self.updateStatusWithOptions("Select cards to discard:",html,false);
         twilight_self.addMove("resolve\tpoliovaccine");
 

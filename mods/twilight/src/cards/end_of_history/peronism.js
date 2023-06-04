@@ -16,8 +16,8 @@
       } else {
 
         let html = `<ul>
-                    <li class="card" id="place">place 1 influence in Argentina</li>
-                    <li class="card" id="couporrealign">coup or realign Argentina</li>
+                    <li class="option" id="place">place 1 influence in Argentina</li>
+                    <li class="option" id="couporrealign">coup or realign Argentina</li>
                     </ul>`;
 
         this.updateStatusWithOptions("Do you choose to:",html,false);
@@ -35,8 +35,8 @@
           if (action2 == "couporrealign") {
             let user_message = "Do you choose to:";
             html = `<ul>
-                    <li class="card" id="coup">coup in Argentina</li>
-                    <li class="card" id="realign">realign in Argentina</li>
+                    <li class="option" id="coup">coup in Argentina</li>
+                    <li class="option" id="realign">realign in Argentina</li>
                     </ul>`;
 
             twilight_self.updateStatusWithOptions(user_message,html,false);
@@ -56,8 +56,8 @@
                 if (modified_ops > 0) {
                   user_message = "You have an OP Bonus. Realign again?:";
                   html = `<ul>
-                          <li class="card" id="realign">realign in Argentina</li>
-                          <li class="card" id="skip">no, please stop</li>
+                          <li class="option" id="realign">realign in Argentina</li>
+                          <li class="option" id="skip">no, please stop</li>
                           </ul>`;
                   //Is there a bug here?? 
 

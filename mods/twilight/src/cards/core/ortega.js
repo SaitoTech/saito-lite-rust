@@ -28,7 +28,7 @@
         let twilight_self = this;
         let neighbors = ["costarica","cuba","honduras"];      
 
-        twilight_self.updateStatusWithOptions("Pick a country adjacent to Nicaragua to coup:", '<ul><li class="card" id="skiportega">or skip coup</li></ul>',false);
+        twilight_self.updateStatusWithOptions("Pick a country adjacent to Nicaragua to coup:", '<ul><li class="option" id="skiportega">or skip coup</li></ul>',false);
 
         //To Skip the Coup
         twilight_self.attachCardboxEvents(function(action2) {

@@ -16,8 +16,8 @@
 
         let html = `
           <ul>
-            <li class="card" id="remove">remove all US influence in four countries in Eastern Europe</li>
-            <li class="card" id="add">add five USSR influence in Eastern Europe (max 2 per country)</li>
+            <li class="option" id="remove">remove all US influence in four countries in Eastern Europe</li>
+            <li class="option" id="add">add five USSR influence in Eastern Europe (max 2 per country)</li>
           </ul>`;
         twilight_self.updateStatusWithOptions("USSR establishes the Warsaw Pact:",html,false);
 
