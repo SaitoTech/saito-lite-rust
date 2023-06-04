@@ -14,7 +14,7 @@
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
-        this.updateStatusHeader("Remove 4 USSR influence from non-European countries (max 2 per country)");
+        this.updateStatus("Remove 4 USSR influence from non-European countries (max 2 per country)");
 
         var twilight_self = this;
         var ops_purged = {};

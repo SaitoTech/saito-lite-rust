@@ -2,7 +2,7 @@
     if (card == "perestroika") {
 
       if (this.game.player == 2) {
-        this.updateStatusHeader("USSR is playing Perestroika");
+        this.updateStatus("USSR is playing Perestroika");
         return 0;
       }
       if (this.game.player == 1) {

@@ -1,0 +1,58 @@
+
+.game-controls-options {
+    width: min(500px,100%);
+    overflow-y: auto;
+    font-size: 1.6rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.game-controls-options ul li {
+    background-color: whitesmoke;
+    width: 100%;
+    line-height: 5.75rem;
+    height: 8rem;
+    font-size: 1.8rem;
+    border-top: 1px solid var(--saito-border-color);
+    cursor: pointer;
+    list-style: none;
+    padding: 1rem;
+    display: list-item;
+    text-align: center;
+}
+.game-controls-options ul li:hover {
+   background-color: #e7e7e7;
+}
+
+.game-controls-cardbox {
+    display: grid;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: clip;
+    /* change game-cards.css for cards for min width if != 10vw */
+    grid-template-columns: repeat(auto-fit, minmax(10vw, 1fr) );
+    user-select: none;
+    margin-top: 1rem;
+}
+
+
+
+.hud-body .status {
+    background-color: whitesmoke;
+    border-radius: unset;
+    position: relative;
+    width: 500px;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
+    font-size: 1.6rem;
+    justify-content: space-around;
+    height: min-content;
+    min-height: fit-content;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+
+

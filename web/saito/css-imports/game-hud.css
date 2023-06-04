@@ -5,15 +5,36 @@
 .hud {
   font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
   position: absolute;
+  width: inherit;
+  max-width: 100vw;
   left: 0;
   bottom: 0;
   float: none;
   z-index: 40;
   font-size: 1.6rem;
   border-bottom: 0px;
-  /*transition: height 0.3s ease, width 0.3s ease, right 0.3s ease, top 0.3s ease, bottom 0.3s ease; */
-  max-width: 100vw;
 }
+.status-overlay {
+  height: 100%;
+  padding: 5px;
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  top: 0px;
+  left: 0px;
+  display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 .hud-header {
   display: flex;

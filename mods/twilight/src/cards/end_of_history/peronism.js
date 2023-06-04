@@ -10,7 +10,7 @@
       this.placeInfluence("argentina", 1, "ussr");
 
       if (player != me) {
-        this.updateStatusHeader("Opponent deciding to add influence to or coup or realign Argentina");
+        this.updateStatus("Opponent deciding to add influence to or coup or realign Argentina");
         return 0;
 
       } else {

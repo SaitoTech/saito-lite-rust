@@ -6,7 +6,7 @@
       if (player == "us" && this.game.player == 2) { my_go = 1; }
 
       if (my_go == 0) {
-        this.updateStatusHeader("Waiting for Opponent to play Polio Vaccine");
+        this.updateStatus("Waiting for Opponent to play Polio Vaccine");
         return 0;
 
       }

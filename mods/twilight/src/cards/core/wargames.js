@@ -19,13 +19,13 @@
         twilight_self.attachCardboxEvents(function(action2) {
 
           if (action2 == "endgame") {
-            twilight_self.updateStatusHeader("Triggering Wargames...");
+            twilight_self.updateStatus("Triggering Wargames...");
             twilight_self.addMove("resolve\twargames");
             twilight_self.addMove("wargames\t"+player+"\t1");
             twilight_self.endTurn();
           }
           if (action2 == "cont") {
-            twilight_self.updateStatusHeader("Discarding Wargames...");
+            twilight_self.updateStatus("Discarding Wargames...");
             twilight_self.addMove("resolve\twargames");
             twilight_self.addMove("wargames\t"+player+"\t0");
             twilight_self.endTurn();

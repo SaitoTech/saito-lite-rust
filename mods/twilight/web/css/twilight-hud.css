@@ -1,0 +1,22 @@
+
+.hud-header {
+  max-width: 500px;
+  margin: auto;
+  box-shadow: 2px 2px 5px 0px rgb(0 0 0 / 75%);
+}
+
+.hud-header.soviet {
+  background: linear-gradient(to right, rgba(255, 0, 0, 0.6), rgba(255, 255, 0, 0.4), rgba(255, 0, 0, 0.6));
+}
+
+.hud-header.american {
+  background: linear-gradient(to right, rgba(0, 0, 255, 0.6), rgba(255, 255, 255, 0.4), rgba(0, 0, 255, 0.6));
+}
+
+.hud-card {
+  background-image: url("/twilight/img/Base.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  /*max-width: 120px;*/
+}
+

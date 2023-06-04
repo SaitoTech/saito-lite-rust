@@ -2,10 +2,8 @@
     if (card == "chernobyl") {
 
       if (this.game.player == 1) {
-        //this.updateStatusHeader("US is playing Chernobyl");
         return 0;
       }
-      //If the event card has a UI component, run the clock for the player we are waiting on
       this.startClock();
 
       let html = `<ul>

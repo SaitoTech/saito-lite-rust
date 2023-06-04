@@ -1,11 +1,6 @@
 /*********************/
 /*** MOD DEFAULTS ****/
 /*********************/
-/*.hud-long .status-cardbox {
-  grid-template-columns: repeat(auto-fit, minmax(40px, 125px) );
-  grid-gap: 0px;
-}*/
-
 
 .cancel_x {
   opacity: 0.5;
@@ -24,49 +19,10 @@
   position: relative;
 }
 
-.hud-header {
-  max-width: 500px;
-  margin: auto;
-  box-shadow: 2px 2px 5px 0px rgb(0 0 0 / 75%);
-}
-
-.hud-header.soviet {
-  background: linear-gradient(to right, rgba(255, 0, 0, 0.6), rgba(255, 255, 0, 0.4), rgba(255, 0, 0, 0.6));
-}
-
-.hud-header.american {
-  background: linear-gradient(to right, rgba(0, 0, 255, 0.6), rgba(255, 255, 255, 0.4), rgba(0, 0, 255, 0.6));
-}
-
-/*.hud{
-  pointer-events: none;
-}*/
-
-.status-message {
-  padding-left: 0;
-  padding-right: 0;
-  border-radius: 0px;
-}
-
-.status-text-message {
-  background-color: whitesmoke;
-}
-
-.status-text-menu ul li, .status ul li {
-  background-color: whitesmoke;
-}
-
-.status-header {
-  background-color: whitesmoke;
-  border-radius: unset;
-}
-
-/* General overlays */
 .rules-overlay {
   background: whitesmoke;
   padding: 0.5em 2.5em;
 }
-
 
 .transparent-card-overlay {
     width: 85vw;
@@ -313,13 +269,11 @@ body {
   cursor: pointer;
 }
 
-/* Modal Header */
 .modal_header {
   padding: 2px 16px;
   color: white;
 }
 
-/* Modal Body */
 .modal_body {
   padding: 2px 16px;
   color: white;
@@ -335,7 +289,6 @@ body {
   margin: 1em 0 1em 0;
 }
 
-/* Modal Footer */
 .modal_footer {
   display: grid;
   justify-content: center;
@@ -344,7 +297,6 @@ body {
   color: white;
 }
 
-/* Button for closing the modal */
 .modal_ok_button {
   float: right;
   padding: 12px;
@@ -358,7 +310,6 @@ body {
   background-color: rgb(0, 190, 10);
 }
 
-/* Modal Content */
 .modal_content {
   position: absolute;
   background-color: #fefefe;
@@ -396,7 +347,6 @@ body {
   border-bottom: 1px dashed;
 }
 
-
 .gameboard {
   position: relative;
   /*background-image: url('/twilight/img/TS Map-11.jpg');*/
@@ -407,7 +357,6 @@ body {
   background-size: cover;
   width: 2550px;
   height: 1650px;
-
 
   /*   3D Perspective
   -webkit-transform: perspective(200px) rotateX(5deg");
@@ -506,12 +455,9 @@ body {
   box-shadow: -2px 2px 8px 4px lightblue;
 }
 
-
-.us,
-.ussr {
+.us, .ussr {
   float: left;
 }
-
 
 .us_control {
   color: #FFFFFF;
@@ -560,7 +506,6 @@ body {
   width: unset;
 }
 
-
 .cardlist-container {
   max-height: 80vh;
   min-width: 90vh;
@@ -584,23 +529,6 @@ body {
   background-repeat: no-repeat;
 }
 
-.cardimg {
-  position: absolute;
-  width: 100%;
-  height: auto;
-  top: 0px;
-  left: 0px;
-}
-
-
-.hud-card {
-  background-image: url("/twilight/img/Base.svg");
-  background-size: contain;
-  background-repeat: no-repeat;
-  /*max-width: 120px;*/
-}
-
-/** adjust to account for transparency on shown cards ***/
 .cardbox-menu {
   width: 65%;
   left: 48%;

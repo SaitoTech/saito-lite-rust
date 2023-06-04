@@ -7,7 +7,7 @@
       if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
 
       if (player != me) {
-        this.updateStatusHeader("Opponent is playing Nation Building");
+        this.updateStatus("Opponent is playing Nation Building");
         return 0;
 
       } else {
@@ -30,7 +30,7 @@
 
 
         let eligible_countries = 0;
-        this.updateStatusHeader("Select any country in Africa, Central America or South America that is not controlled by the opposing player and in which you have at least 1 influence:");
+        this.updateStatus("Select any country in Africa, Central America or South America that is not controlled by the opposing player and in which you have at least 1 influence:");
         for (var i in this.countries) {
 
           let divname      = '#'+i;

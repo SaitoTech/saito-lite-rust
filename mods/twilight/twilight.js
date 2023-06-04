@@ -502,7 +502,7 @@ initializeGame(game_id) {
     console.log("DECK: " + this.game.options.deck);
     console.log("\n\n\n\n");
 
-    this.updateStatusHeader("Generating the Game");
+    this.updateStatus("Generating the Game");
 
     this.game.queue.push("round");
     if (this.game.options.usbonus != undefined) {
@@ -892,7 +892,7 @@ try {
       if (this.game.winner == 2) { winner = "us"; }
       let gid = $('#sage_game_id').attr("class");
       if (gid === this.game.id) {
-        this.updateStatusHeader("Game Over: "+winner.toUpperCase() + " wins");
+        this.updateStatus("Game Over: "+winner.toUpperCase() + " wins");
       }
 
       return 0;
@@ -1272,7 +1272,7 @@ console.log("LATEST MOVE: " + mv);
               twilight_self.attachCardboxEvents(function(action2) {
                 if (action2 == "skipche") {
                   twilight_self.endTurn();
-                  twilight_self.updateStatusHeader("Skipping Che coups...");
+                  twilight_self.updateStatus("Skipping Che coups...");
                 }
               });
 
@@ -1286,7 +1286,7 @@ console.log("LATEST MOVE: " + mv);
               });
             }else{
 
-              twilight_self.updateStatusHeader(`Waiting for USSR to play second ${twilight_self.cardToText("che")} coup`);
+              twilight_self.updateStatus(`Waiting for USSR to play second ${twilight_self.cardToText("che")} coup`);
               twilight_self.attachCardboxEvents();
               return 0;
             }
@@ -1550,7 +1550,7 @@ console.log("LATEST MOVE: " + mv);
 
         let countries_to_double = Math.min(2, potCountries.length);
 
-        this.updateStatusHeader("Select "+countries_to_double+" countries in South America to double USSR influence");
+        this.updateStatus("Select "+countries_to_double+" countries in South America to double USSR influence");
 
         //
         // double influence in two countries
@@ -1581,7 +1581,7 @@ console.log("LATEST MOVE: " + mv);
         });
         
       }else{
-        this.updateStatusHeader(`USSR is deciding which country to double their influence`);
+        this.updateStatus(`USSR is deciding which country to double their influence`);
       }
       return 0;
     }
@@ -1614,7 +1614,7 @@ console.log("LATEST MOVE: " + mv);
 
         });
       }else{
-        this.updateStatusHeader("US determining whether to take extra turn");
+        this.updateStatus("US determining whether to take extra turn");
       }
       shd_continue = 0;
     }
@@ -1731,7 +1731,7 @@ console.log("LATEST MOVE: " + mv);
             twilight_self.endTurn();
           });
         }else{
-          this.updateStatusHeader(`${this.cardToText("aldrichames")}: USSR choosing card to discard`);
+          this.updateStatus(`${this.cardToText("aldrichames")}: USSR choosing card to discard`);
         }
 
         return 0;
@@ -1776,7 +1776,7 @@ console.log("LATEST MOVE: " + mv);
           twilight_self.addMove("place\tussr\tussr\t"+countryname+"\t1");
           twilight_self.endTurn();
         });
-        twilight_self.updateStatusHeader(placetxt);
+        twilight_self.updateStatus(placetxt);
 
       }
       this.game.queue.splice(qe, 1);
@@ -1800,7 +1800,7 @@ console.log("LATEST MOVE: " + mv);
         twilight_self.attachCardboxEvents(function(action2) {
 
           if (action2 == "skiptear") {
-            twilight_self.updateStatusHeader("Skipping Tear Down this Wall...");
+            twilight_self.updateStatus("Skipping Tear Down this Wall...");
             twilight_self.addMove("resolve\tteardownthiswall");
             twilight_self.endTurn();
           }
@@ -1826,7 +1826,7 @@ console.log("LATEST MOVE: " + mv);
 
         });
       }else{
-          this.updateStatusHeader("US playing Tear Down This Wall");     
+          this.updateStatus("US playing Tear Down This Wall");     
       }
         shd_continue = 0;
       }
@@ -1849,7 +1849,7 @@ console.log("LATEST MOVE: " + mv);
         this.endTurn();
       }
 
-      this.updateStatusHeader(player.toUpperCase() + " is fetching new cards");
+      this.updateStatus(player.toUpperCase() + " is fetching new cards");
       return 0;
     }
 
@@ -1936,7 +1936,7 @@ console.log("LATEST MOVE: " + mv);
               this.game.queue.push("DEAL\t1\t2\t"+player2_cards);
               this.game.queue.push("DEAL\t1\t1\t"+player1_cards);
             }
-            this.updateStatusHeader("Dealing remaining cards from draw deck before reshuffling...");
+            this.updateStatus("Dealing remaining cards from draw deck before reshuffling...");
             this.updateLog(`Dealing ${cards_available} remaining cards from draw deck before reshuffling...`);
 
           }
@@ -2571,7 +2571,7 @@ try {
               }
             }
         
-            this.updateStatusHeader("Place your NORAD bonus: (1 OP)");
+            this.updateStatus("Place your NORAD bonus: (1 OP)");
 
             $(".westerneurope").off();
             $(".westerneurope").on('click', function() {
@@ -2587,7 +2587,7 @@ try {
             });
 
           }else{
-            this.updateStatusHeader("NORAD triggers: US places 1 influence in country with US influence");
+            this.updateStatus("NORAD triggers: US places 1 influence in country with US influence");
           }
           return 0;
         }
@@ -2639,7 +2639,7 @@ console.log("ROUND: " + this.game.state.round);
 
           });
         }else{
-          this.updateStatusHeader("US is deciding whether to take extra turn");
+          this.updateStatus("US is deciding whether to take extra turn");
         }
 
         return 0;
@@ -2655,7 +2655,7 @@ try {
         let bonus_player = (this.game.state.eagle_has_landed == "us") ? 2 : 1;
     
         if (this.game.player != bonus_player) {
-          this.updateStatusHeader(this.game.state.eagle_has_landed.toUpperCase() + " is deciding whether to discard a card");
+          this.updateStatus(this.game.state.eagle_has_landed.toUpperCase() + " is deciding whether to discard a card");
           return 0;
         }
 
@@ -2693,7 +2693,7 @@ try {
             } else {
               $(`#${action2}.card`).hide(); 
               twilight_self.hideCard();
-              twilight_self.updateStatusHeader("Discarding...");
+              twilight_self.updateStatus("Discarding...");
               twilight_self.removeCardFromHand(action2);
               twilight_self.addMove("discard\t"+twilight_self.game.state.eagle_has_landed+"\t"+action2);
               twilight_self.addMove("NOTIFY\t"+twilight_self.game.state.eagle_has_landed.toUpperCase()+` discards ${twilight_self.cardToText(action2)}`);
@@ -2718,7 +2718,7 @@ try {
         let bonus_player = (this.game.state.space_station == "us") ? 2 : 1;
 
         if (this.game.player != bonus_player) {
-          this.updateStatusHeader(this.game.state.space_station.toUpperCase() + " is deciding whether to take extra turn");
+          this.updateStatus(this.game.state.space_station.toUpperCase() + " is deciding whether to take extra turn");
           return 0;
         }
 
@@ -2795,7 +2795,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
         return 0; //Stop running through the queue
       }
 
-      this.updateStatusHeader("Preparing for round " + this.game.state.round);
+      this.updateStatus("Preparing for round " + this.game.state.round);
 
       let rounds_in_turn = 6;
       if (this.game.state.round > 3) { rounds_in_turn = 7; }
@@ -2924,7 +2924,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
               }
             }
                   
-            this.updateStatusHeader("US place NORAD bonus: (1 OP)");
+            this.updateStatus("US place NORAD bonus: (1 OP)");
 
             $(".westerneurope").off();
             $(".westerneurope").on('click', function() {
@@ -2939,7 +2939,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
               });
             });
           }else{
-            this.updateStatusHeader("NORAD triggers: US places 1 influence in country with US influence");  
+            this.updateStatus("NORAD triggers: US places 1 influence in country with US influence");  
           }
           return 0;
         } 
@@ -3147,7 +3147,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
           this.addMove("discard\tussr\t"+my_card);
           this.endTurn();
         }
-        this.updateStatusHeader(`>${this.cardToText("defectors")} cancels USSR headline. Moving into first turn...`);
+        this.updateStatus(`>${this.cardToText("defectors")} cancels USSR headline. Moving into first turn...`);
 
       } else {
         let statusMsg = "";
@@ -3169,7 +3169,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
           this.removeCardFromHand(my_card);
           this.endTurn();
         }
-        this.updateStatusHeader(statusMsg);  
+        this.updateStatus(statusMsg);  
       }
       return 0;
     }
@@ -3197,7 +3197,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
         this.removeCardFromHand(my_card);
         this.endTurn();
       }
-      this.updateStatusHeader(statusMsg);
+      this.updateStatus(statusMsg);
       return 0;
     }
 
@@ -3297,7 +3297,7 @@ playerTurnHeadlineSelected(card, player) {
     $('.card').off();
     twilight_self.hideCard();
     twilight_self.endTurn();
-    twilight_self.updateStatusHeader("simultaneous blind pick... encrypting selected card");
+    twilight_self.updateStatus("simultaneous blind pick... encrypting selected card");
 
     return;
 
@@ -3400,7 +3400,7 @@ playerTurnHeadlineSelected(card, player) {
 
           twilight_self.attachCardboxEvents(function (action2) {
             if (action2 === "select") {
-              twilight_self.updateStatusHeader();
+              twilight_self.updateStatus();
               twilight_self.playerTurn();
               return;
             }
@@ -3741,7 +3741,7 @@ playerTurnHeadlineSelected(card, player) {
       this.addMove("resolve\tplay");
       this.addMove(`NOTIFY\t${player.toUpperCase()} skipping turn... no cards left to play`);
       this.endTurn();
-      this.updateStatusHeader("Skipping turn... no cards left to play");
+      this.updateStatus("Skipping turn... no cards left to play");
       return;
     }
 
@@ -4096,7 +4096,7 @@ playerTurnHeadlineSelected(card, player) {
           return;
         }
 
-        twilight_self.updateStatusHeader("");
+        twilight_self.updateStatus("");
 
       });
 
@@ -4210,7 +4210,7 @@ playerTurnHeadlineSelected(card, player) {
 
           let j = ops;
           let html = "Place " + j + " influence";
-          twilight_self.updateStatusHeader(html, true);
+          twilight_self.updateStatus(html, true);
           twilight_self.prePlayerPlaceInfluence(player);
           if (j == 1) {
             twilight_self.uneventOpponentControlledCountries(player, card);
@@ -4234,7 +4234,7 @@ playerTurnHeadlineSelected(card, player) {
             }
 
             let html = "Place " + j + " influence";
-            twilight_self.updateStatusHeader(html, true);
+            twilight_self.updateStatus(html, true);
 
             if (j <= 0) {
               if (twilight_self.isRegionBonus(card) == 1) {
@@ -4287,7 +4287,7 @@ playerTurnHeadlineSelected(card, player) {
           }
 
           let html = "Pick a country to coup";
-          twilight_self.updateStatusHeader(html, true);
+          twilight_self.updateStatus(html, true);
           twilight_self.playerCoupCountry(player, ops, card);
 
         }
@@ -5720,7 +5720,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     if (this.game.player == 0){
       console.log("Observer submitting moves, something went wrong: ", JSON.stringify(this.moves));
     }
-    this.updateStatusHeader("Submitting moves... awaiting response from peers...");
+    this.updateStatus("Submitting moves... awaiting response from peers...");
 
     //
     // remove events from board to prevent "Doug Corley" gameplay
@@ -6785,7 +6785,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       // https://boardgamegeek.com/thread/1136951/red-scarepurge-and-vietnam-revolts
       if (card != "") { if (this.returnOpsOfCard(card) == 1 && this.game.state.events.redscare_player1 >= 1) { return 0; } }
 
-      this.updateStatusHeader("Extra 1 OP Available for Southeast Asia");
+      this.updateStatus("Extra 1 OP Available for Southeast Asia");
       this.game.state.events.region_bonus = "seasia";
       return 1;
     }
@@ -6795,7 +6795,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     //
     if (this.game.state.events.china_card_in_play == 1 && this.game.state.events.china_card_eligible == 1) {
 
-      this.updateStatusHeader("Extra 1 OP Available for Asia");
+      this.updateStatus("Extra 1 OP Available for Asia");
       this.game.state.events.region_bonus = "asia";
       return 1;
     }
@@ -8500,7 +8500,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
   playEvent(player, card) {
 
     if (this.game.deck[0].cards[card] != undefined) {
-      this.updateStatusHeader(`${player.toUpperCase()} triggers ${this.cardToText(card)}`);
+      this.updateStatus(`${player.toUpperCase()} triggers ${this.cardToText(card)}`);
       this.attachCardboxEvents();
     } else {
       console.log("sync loading error -- playEvent on card: " + card);
@@ -8562,7 +8562,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
       if (this.game.player == 2) {
 
-        this.updateStatusHeader("USSR is playing Aldrich Ames<");
+        this.updateStatus("USSR is playing Aldrich Ames<");
 
         this.addMove("resolve\taldrichames");
 
@@ -9125,7 +9125,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
       if (this.game.state.round > 7) {
         this.updateLog("<span>The Cambridge Five cannot be played as an event in Late Wa</span>");
-        this.updateStatusHeader("The Cambridge Five cannot be played as an event in Late War");
+        this.updateStatus("The Cambridge Five cannot be played as an event in Late War");
         return 1;
       }
 
@@ -9173,7 +9173,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
           this.addMove("showhand\t2\t"+keys);
           this.addMove("NOTIFY\tUS has scoring cards for: " + revealed);
           this.endTurn();
-          this.updateStatusHeader(`USSR is placing influence for ${this.cardToText(card)}`);
+          this.updateStatus(`USSR is placing influence for ${this.cardToText(card)}`);
         }
 
       }
@@ -9271,7 +9271,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
           if (action2 == "skipche") {
             twilight_self.addMove("resolve\tche");
             twilight_self.endTurn();
-            twilight_self.updateStatusHeader("Skipping Che coups...");
+            twilight_self.updateStatus("Skipping Che coups...");
           }
         });
           
@@ -9296,10 +9296,8 @@ console.log("SCORING: " + JSON.stringify(scoring));
     if (card == "chernobyl") {
 
       if (this.game.player == 1) {
-        //this.updateStatusHeader("US is playing Chernobyl");
         return 0;
       }
-      //If the event card has a UI component, run the clock for the player we are waiting on
       this.startClock();
 
       let html = `<ul>
@@ -9463,7 +9461,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
         var ops_to_place = Math.min(4, countries_where_i_can_place);
 
-        twilight_self.updateStatusHeader("Place "+ops_to_place+" influence in non-US controlled countries in Eastern Europe (1 per country)");
+        twilight_self.updateStatus("Place "+ops_to_place+" influence in non-US controlled countries in Eastern Europe (1 per country)");
 
         twilight_self.addMove("resolve\tcomecon");
 
@@ -9475,7 +9473,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
             twilight_self.placeInfluence(c, 1, "ussr"); 
             twilight_self.countries[c].place = 0;
             ops_to_place--;
-            twilight_self.updateStatusHeader("Place "+ops_to_place+" influence in non-US controlled countries in Eastern Europe (1 per country)");
+            twilight_self.updateStatus("Place "+ops_to_place+" influence in non-US controlled countries in Eastern Europe (1 per country)");
             if (ops_to_place == 0) {
               twilight_self.playerFinishedPlacingInfluence();
               twilight_self.endTurn();
@@ -9939,7 +9937,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
           twilight_self.endTurn();
         } else {
 
-          twilight_self.updateStatusHeader("Remove "+ops_to_purge+" from 3 countries in Eastern Europe");          
+          twilight_self.updateStatus("Remove "+ops_to_purge+" from 3 countries in Eastern Europe");          
 
           for (let c of options_purge) {
             $("#"+c).addClass("westerneurope");
@@ -10914,7 +10912,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
         twilight_self.addMove("resolve\tliberation");
 
-        this.updateStatusHeader("USSR places three influence in Central America (max 2 per country)");
+        this.updateStatus("USSR places three influence in Central America (max 2 per country)");
         for (var i in this.countries) {
           if (this.countries[i].region == "camerica"){
             this.countries[i].place = 1;
@@ -11034,7 +11032,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
         let ops_to_purge = Math.min(2, ops_available);
 
-        this.updateStatusHeader("Remove"+ops_to_purge+" US influence from the Middle East");
+        this.updateStatus("Remove"+ops_to_purge+" US influence from the Middle East");
         
         $(".easterneurope").off();
         $(".easterneurope").on('click', function() {
@@ -11052,7 +11050,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
               twilight_self.endTurn();
             }
           }
-          twilight_self.updateStatusHeader("Remove "+ops_to_purge+" US influence from the Middle East");        
+          twilight_self.updateStatus("Remove "+ops_to_purge+" US influence from the Middle East");        
 
         });
 
@@ -11087,7 +11085,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
         var ops_to_place = Math.min(7, countries_where_i_can_place);
         
-        this.updateStatusHeader("Place 1 influence in each of "+ops_to_place+" non USSR-controlled countries in Western Europe");
+        this.updateStatus("Place 1 influence in each of "+ops_to_place+" non USSR-controlled countries in Western Europe");
 
         twilight_self.addMove("resolve\tmarshall");
         
@@ -11100,7 +11098,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
             twilight_self.placeInfluence(c, 1, "us"); 
             twilight_self.countries[c].place = 0;
             ops_to_place--;
-            twilight_self.updateStatusHeader("Place 1 influence in each of "+ops_to_place+" non USSR-controlled countries in Western Europe");
+            twilight_self.updateStatus("Place 1 influence in each of "+ops_to_place+" non USSR-controlled countries in Western Europe");
             if (ops_to_place <= 0) {
               twilight_self.playerFinishedPlacingInfluence();
               twilight_self.endTurn();
@@ -11281,7 +11279,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
-        this.updateStatusHeader("Remove All US influence from 2 countries among: Sudan, Egypt, Iran, Iraq, Libya, Saudi Arabia, Syria, Jordan.");
+        this.updateStatus("Remove All US influence from 2 countries among: Sudan, Egypt, Iran, Iraq, Libya, Saudi Arabia, Syria, Jordan.");
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -11332,7 +11330,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
 
       this.removeInfluence("egypt", influence_to_remove, "us");
       this.placeInfluence("egypt", 2, "ussr");
-      this.updateStatusHeader("Nasser - Soviets add two influence in Egypt. US loses half (rounded-up) of all influence in Egypt.");
+      this.updateStatus("Nasser - Soviets add two influence in Egypt. US loses half (rounded-up) of all influence in Egypt.");
       
       if (!i_played_the_card){
         if (player == "ussr"){
@@ -11562,7 +11560,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
 
         twilight_self.addMove("resolve\toas");
 
-        this.updateStatusHeader("US places two influence in Central or South America");
+        this.updateStatus("US places two influence in Central or South America");
         for (var i in this.countries) {
           if (this.countries[i].region == "samerica" || this.countries[i].region == "camerica"){
             this.countries[i].place = 1;
@@ -11750,7 +11748,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
       }
 
       if (this.game.state.events.cubanmissilecrisis == 1) {
-        this.updateStatusHeader("USSR is under Cuban Missile Crisis and cannot coup. Skipping Ortega coup.");
+        this.updateStatus("USSR is under Cuban Missile Crisis and cannot coup. Skipping Ortega coup.");
         this.updateLog("USSR is under Cuban Missile Crisis and cannot coup. Skipping Ortega coup.");
         return 1;
       }
@@ -11767,7 +11765,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
         //To Skip the Coup
         twilight_self.attachCardboxEvents(function(action2) {
           if (action2 == "skiportega") {
-            twilight_self.updateStatusHeader("Skipping Ortega coup...");
+            twilight_self.updateStatus("Skipping Ortega coup...");
             twilight_self.addMove("resolve\tortega");
             twilight_self.endTurn();
           }
@@ -11933,7 +11931,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
 
         twilight_self.addMove("resolve\tpuppet");
 
-        this.updateStatusHeader("US place three influence in countries without any influence");
+        this.updateStatus("US place three influence in countries without any influence");
 
         for (var i in this.countries) {
 
@@ -12255,7 +12253,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
 
       if (this.game.state.events.ironlady == 1) {
         this.updateLog("Iron Lady cancels Socialist Governments");
-        this.updateStatusHeader("Socialist Governments prevented by Iron Lady");
+        this.updateStatus("Socialist Governments prevented by Iron Lady");
         return 1;
       }
 
@@ -12292,7 +12290,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
 
         ops_to_purge = Math.min(3, available_targets);
         
-        this.updateStatusHeader("Remove "+ops_to_purge+" US influence from Western Europe (max 2 per country)");        
+        this.updateStatus("Remove "+ops_to_purge+" US influence from Western Europe (max 2 per country)");        
 
         $(".easterneurope").off();
         $(".easterneurope").on('click', function() {
@@ -12370,7 +12368,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
             twilight_self.placeInfluence("southafrica", 1, "ussr");
             twilight_self.addMove("place\tussr\tussr\tsouthafrica\t1");
 
-              twilight_self.updateStatusHeader("Place two influence in neighboring country");
+              twilight_self.updateStatus("Place two influence in neighboring country");
               let neighbors = ["angola", "botswana"];
     
               for (var i of neighbors) {
@@ -12443,11 +12441,11 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
             placeable.push("norway");
             placeable.push("sweden");
             placeable.push("finland");
-            this.updateStatusHeader("US is playing Special Relationship. Place 2 OPS anywhere in Western Europe.");
+            this.updateStatus("US is playing Special Relationship. Place 2 OPS anywhere in Western Europe.");
 
           } else {
 
-            this.updateStatusHeader("US is playing Special Relationship. Place 1 OP adjacent to the UK.");
+            this.updateStatus("US is playing Special Relationship. Place 1 OP adjacent to the UK.");
             placeable.push("canada");
             placeable.push("france");
             placeable.push("norway");
@@ -12549,7 +12547,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
         var twilight_self = this;
 
         twilight_self.addMove("resolve\tsuezcrisis");
-        twilight_self.updateStatusHeader("Remove four influence from Israel, UK or France");
+        twilight_self.updateStatus("Remove four influence from Israel, UK or France");
 
         var ops_to_purge = 4;
         var options_purge = [];
@@ -12923,7 +12921,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
           this.countries[i].place = 1;
         }
 
-        twilight_self.updateStatusHeader("Select a non-controlled country in Europe to remove all USSR influence:");
+        twilight_self.updateStatus("Select a non-controlled country in Europe to remove all USSR influence:");
         twilight_self.addMove("resolve\ttruman");
         
         $(".westerneurope").off();
@@ -13085,7 +13083,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
           var ops_to_place = 4;
           twilight_self.addMove("resolve\tussuri");
 
-          this.updateStatusHeader("US place four influence in Asia (2 max per country)");
+          this.updateStatus("US place four influence in Asia (2 max per country)");
 
           for (var i in this.countries) {
 
@@ -13189,7 +13187,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
-        this.updateStatusHeader("Remove 4 USSR influence from non-European countries (max 2 per country)");
+        this.updateStatus("Remove 4 USSR influence from non-European countries (max 2 per country)");
 
         var twilight_self = this;
         var ops_purged = {};
@@ -13259,13 +13257,13 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
         twilight_self.attachCardboxEvents(function(action2) {
 
           if (action2 == "endgame") {
-            twilight_self.updateStatusHeader("Triggering Wargames...");
+            twilight_self.updateStatus("Triggering Wargames...");
             twilight_self.addMove("resolve\twargames");
             twilight_self.addMove("wargames\t"+player+"\t1");
             twilight_self.endTurn();
           }
           if (action2 == "cont") {
-            twilight_self.updateStatusHeader("Discarding Wargames...");
+            twilight_self.updateStatus("Discarding Wargames...");
             twilight_self.addMove("resolve\twargames");
             twilight_self.addMove("wargames\t"+player+"\t0");
             twilight_self.endTurn();
@@ -13525,13 +13523,13 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
       } else {
 
         if (player == opponent) {
-    this.updateStatusHeader("Opponent is placing 1 influence in a European country in which they have a predominance of influence");
+    this.updateStatus("Opponent is placing 1 influence in a European country in which they have a predominance of influence");
     return 0;
 
         }
 
         this.addMove("resolve\tberlinagreement");
-        this.updateStatusHeader("Place 1 influence in a European country in which you have a predominance of influence");
+        this.updateStatus("Place 1 influence in a European country in which you have a predominance of influence");
 
         for (let i = 0; i < placeable.length; i++) {
 
@@ -13569,7 +13567,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
 
         twilight_self.addMove("resolve\tculturaldiplomacy");
 
-        this.updateStatusHeader("Place one influence two hops away from a country in which you have existing influence. You cannot break control with this influence.");
+        this.updateStatus("Place one influence two hops away from a country in which you have existing influence. You cannot break control with this influence.");
 
         for (var i in this.countries) {
 
@@ -13660,7 +13658,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
       if (player == "us" && this.game.player == 2) { my_go = 1; }
 
       if (my_go == 0) {
-        this.updateStatusHeader("Waiting for Opponent to play Polio Vaccine");
+        this.updateStatus("Waiting for Opponent to play Polio Vaccine");
         return 0;
 
       }
@@ -13794,7 +13792,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
       if (this.game.player == 2) { return 0; }
       if (this.game.player == 1) {
 
-        this.updateStatusHeader("Remove 3 US influence from Southeast Asia or North Korea (max 2 per country)");
+        this.updateStatus("Remove 3 US influence from Southeast Asia or North Korea (max 2 per country)");
 
         var twilight_self = this;
         var ops_purged = {};
@@ -13846,13 +13844,13 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
     if (card == "eurocommunism") {
 
       if (this.game.player == 1) {
-        this.updateStatusHeader("Eurocommunism: US is removing 4 USSR influence from Western Europe (max 2 per country)");
+        this.updateStatus("Eurocommunism: US is removing 4 USSR influence from Western Europe (max 2 per country)");
         return 0;
 
       }
       if (this.game.player == 2) {
 
-        this.updateStatusHeader("Remove 4 USSR influence from Western Europe (max 2 per country)");
+        this.updateStatus("Remove 4 USSR influence from Western Europe (max 2 per country)");
 
         let twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -13875,7 +13873,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
         }
         if (available_targets < 4) {
           ops_to_purge = available_targets;
-          this.updateStatusHeader("Remove " + ops_to_purge + " USSR influence from Western Europe (max 2 per country)");
+          this.updateStatus("Remove " + ops_to_purge + " USSR influence from Western Europe (max 2 per country)");
         }
 
 
@@ -13976,7 +13974,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
       if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
 
       if (player != me) {
-        this.updateStatusHeader("Opponent is playing Nation Building");
+        this.updateStatus("Opponent is playing Nation Building");
         return 0;
 
       } else {
@@ -13999,7 +13997,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
 
 
         let eligible_countries = 0;
-        this.updateStatusHeader("Select any country in Africa, Central America or South America that is not controlled by the opposing player and in which you have at least 1 influence:");
+        this.updateStatus("Select any country in Africa, Central America or South America that is not controlled by the opposing player and in which you have at least 1 influence:");
         for (var i in this.countries) {
 
           let divname      = '#'+i;
@@ -14061,7 +14059,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
     if (card == "perestroika") {
 
       if (this.game.player == 2) {
-        this.updateStatusHeader("USSR is playing Perestroika");
+        this.updateStatus("USSR is playing Perestroika");
         return 0;
       }
       if (this.game.player == 1) {
@@ -14137,7 +14135,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
       this.placeInfluence("argentina", 1, "ussr");
 
       if (player != me) {
-        this.updateStatusHeader("Opponent deciding to add influence to or coup or realign Argentina");
+        this.updateStatus("Opponent deciding to add influence to or coup or realign Argentina");
         return 0;
 
       } else {
@@ -14490,7 +14488,7 @@ console.log("ROUND: " + this.game.state.round);
           twilight_self.removeInfluence("us", "finland", x);
 	  twilight_self.addMove("remove\tus\tfinland\t"+x);
 
-          this.updateStatusHeader("Place eight influence in non-US controlled countries:");
+          this.updateStatus("Place eight influence in non-US controlled countries:");
 	  let influence_remaining = 8;
 
           for (var i in this.countries) {
@@ -14568,7 +14566,7 @@ console.log("ROUND: " + this.game.state.round);
     if (card == "kissingerisawarcriminal") {
 
       if (this.game.player == 1) {
-        this.updateStatusHeader("US playing Kissinger:");
+        this.updateStatus("US playing Kissinger:");
         return 0;
 
       }

@@ -72,7 +72,7 @@ console.log("ROUND: " + this.game.state.round);
           twilight_self.removeInfluence("us", "finland", x);
 	  twilight_self.addMove("remove\tus\tfinland\t"+x);
 
-          this.updateStatusHeader("Place eight influence in non-US controlled countries:");
+          this.updateStatus("Place eight influence in non-US controlled countries:");
 	  let influence_remaining = 8;
 
           for (var i in this.countries) {

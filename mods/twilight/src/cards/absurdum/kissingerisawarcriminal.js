@@ -2,7 +2,7 @@
     if (card == "kissingerisawarcriminal") {
 
       if (this.game.player == 1) {
-        this.updateStatusHeader("US playing Kissinger:");
+        this.updateStatus("US playing Kissinger:");
         return 0;
 
       }

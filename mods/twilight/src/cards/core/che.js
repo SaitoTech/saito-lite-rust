@@ -37,7 +37,7 @@
           if (action2 == "skipche") {
             twilight_self.addMove("resolve\tche");
             twilight_self.endTurn();
-            twilight_self.updateStatusHeader("Skipping Che coups...");
+            twilight_self.updateStatus("Skipping Che coups...");
           }
         });
           
