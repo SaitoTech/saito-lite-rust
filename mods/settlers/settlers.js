@@ -329,6 +329,12 @@ class Settlers extends GameTemplate {
       this.grace_window = this.game.players.length * 12;
     }
 
+
+    this.game.playerNames = [];
+    for (let i = 0; i < this.game.players.length; i++) {
+      this.game.playerNames.push(this.app.keychain.returnUsername(this.game.players[i]));
+    }
+
   }
 
   initializeState() {
