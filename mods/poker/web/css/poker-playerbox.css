@@ -19,6 +19,7 @@
     margin-top: 0.5rem;
     line-height: 2.3rem;
     font-size: 1.8rem;
+    text-align: center;
 }
 
 .game-playerbox-body .status .status-header .status-message {

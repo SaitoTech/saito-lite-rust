@@ -3234,7 +3234,6 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
       x = "Players picking headline cards";
     }
     this.updateStatusAndListCards(x,this.game.deck[0].hand);
-
     if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 0; }
     twilight_self.attachCardboxEvents(function(card) {
       if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 1; } //You want to skip confirmations after Headline???

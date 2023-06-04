@@ -35,6 +35,12 @@
     margin-top: 1rem;
 }
 
+.option , .textchoice {
+    text-align: center;
+    padding: 1rem;
+    line-height: 4rem;
+    border-top: 1px solid var(--saito-border-color);
+}
 
 
 .hud-body .status {
@@ -50,8 +56,9 @@
     justify-content: space-around;
     height: min-content;
     min-height: fit-content;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
+    text-align: center;
 }
 
 

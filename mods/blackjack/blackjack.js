@@ -44,6 +44,7 @@ class Blackjack extends GameTableTemplate {
     //
     // ADD MENU
     //
+    this.menu.addMenuOption("game-game", "Game");
     this.menu.addSubMenuOption("game-game", {
       text : "How to Play",
       id : "game-intro",

@@ -43,6 +43,7 @@
 .game-playerbox-body .status {
     font-size: 1.7rem;
     line-height: 2.2rem;
+    text-align: center;
 }
 
 .game-playerbox-body .status .status-header .status-message {
