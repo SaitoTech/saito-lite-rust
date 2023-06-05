@@ -2,15 +2,34 @@
 .hud {
   width: 50rem;
   max-width: 50rem;
+  z-index: 50 !important;
 }
 
 .hud-body {
   min-height: 15vh;
 }
 
-.hud-body .status {
+/* override default whitesmoke background */
+.hud-body .status , .controls ul li , options {
   background-color: transparent;
   box-shadow: none;
+}
+
+/* hide scrollbars */
+.hud-body .controls {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.hud-body .status ul li , .hud-body .status .tbh ul li {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    line-height: 4rem;
+}
+.hud-body .status ul li:hover , .hud-body .status .tbh ul li:hover {
+    background-color:#cbaf83
 }
 
 .hud-body .mobile {

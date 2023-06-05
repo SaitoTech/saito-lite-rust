@@ -967,6 +967,8 @@ ul.horizontal_list li.iconoption {
   font-weight: 800;
   padding-bottom: 0.5rem;
   width: max-content;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .player-notice+.tbd {

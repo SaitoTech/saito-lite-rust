@@ -871,11 +871,11 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         }
 
         if (this.game.player === thief) {
-          let x = `<div class="card tinycard"><img src="${this.returnCardImage(resource)}" /></div>`;
+          let x = `<div class="card tinycard"><img src="${this.returnCardImage(loot)}" /></div>`;
           this.updateStatus(`<div class="persistent">You stole ${(loot == "nothing") ? "nothing" : x }</div>`);
         }
         if (this.game.player === victim) {
-          let x = `<div class="card tinycard"><img src="${this.returnCardImage(resource)}" /></div>`;
+          let x = `<div class="card tinycard"><img src="${this.returnCardImage(loot)}" /></div>`;
           this.updateStatus(`<div class="persistent">${this.game.playerNames[thief - 1]} stole ${(loot == "nothing") ? "nothing" : x } from you</div>`);
         }
 
