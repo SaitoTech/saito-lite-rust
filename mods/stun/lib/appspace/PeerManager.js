@@ -78,7 +78,6 @@ class PeerManager {
           let localStream = await navigator.mediaDevices.getUserMedia({ video: true });
 
           // Add new track to the local stream
-
           this.app.connection.emit("render-local-stream-request", this.localStream, "video");
           let track = localStream.getVideoTracks()[0];
           this.localStream.addTrack(track);
@@ -134,22 +133,25 @@ class PeerManager {
 
     //Emitted by StunAppspace
     app.connection.on("show-chat-manager-large", async () => {
-      //Send message that we are joining room
-      this.join();
 
       //Set up Chat-Manager component
       await this.showChatManagerLarge();
+
+      //Send message that we are joining room
+      this.join();
 
       let sound = new Audio("/videocall/audio/enter-call.mp3");
       sound.play();
     });
 
-    app.connection.on("show-chat-manager-small", async (to_join, config) => {
+    app.connection.on("show-chat-manager-small", async (to_join) => {
       // console.log(this, "peer")
       await this.showChatManagerSmall(this.config);
+  
       if (to_join) {
         this.join();
       }
+  
       let sound = new Audio("/videocall/audio/enter-call.mp3");
       sound.play();
     });
@@ -184,12 +186,12 @@ class PeerManager {
   }
 
   async showChatManagerLarge() {
-    // emit events to show chatmanager;
-    // get local stream;
+    
     this.localStream = await navigator.mediaDevices.getUserMedia({
       video: this.videoEnabled,
       audio: true,
     });
+    
     this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
 
     //Tell Chat Manager to Set Up
@@ -208,9 +210,8 @@ class PeerManager {
   }
 
   async showChatManagerSmall() {
-    // emit events to show chatmanager;
-    // get local stream;
     this.videoEnabled = false;
+
     this.localStream = await navigator.mediaDevices.getUserMedia({
       video: this.videoEnabled,
       audio: true,
@@ -293,11 +294,19 @@ class PeerManager {
     }
   }
 
-  createPeerConnection(peerId, type) {
+  async createPeerConnection(peerId, type) {
     // check if peer connection already exists
     const peerConnection = new RTCPeerConnection({
       iceServers: this.mod.servers,
     });
+
+    //Make sure you have a local Stream
+    if (!this.localStream){
+      this.localStream = await navigator.mediaDevices.getUserMedia({
+        video: this.videoEnabled,
+        audio: true,
+      });
+    }
 
     this.peers.set(peerId, peerConnection);
 

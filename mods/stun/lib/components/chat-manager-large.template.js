@@ -60,32 +60,3 @@ const ChatManagerLargeTemplate = (videoEnabled = true, audioEnabled = true) => {
 };
 
 module.exports = ChatManagerLargeTemplate;
-
-{
-  /* <div class="box">
-<button class="b-btngrid">2h5dt6dd678s..</button>
-</div>
-<div class="box">
-<button class="b-btngrid">2h5dt6dd678s..</button>
-</div> */
-}
-
-// <i class="audio-control fa fa-microphone-slash" aria-hidden="true"></i>
-
-// <video id="localStream" muted="true"  class="box" style="display: block" autoplay>
-//       <button class="b-btngrid">2h5dt6dd678s..</button>
-//     </video>
-//     <video id="remoteStream1"   autoplay class="box">
-//       <button class="b-btngrid">2h5dt6dd678s..</button>
-//     </video>
-//     <video id="remoteStream2"   autoplay class="box">
-//       <button class="b-btngrid">2h5dt6dd678s..</button>
-//     </video>
-//     <video id="remoteStream3"    autoplay class="box">
-//       <button class="b-btngrid">2h5dt6dd678s..</button>
-//     </video>
-//     <video id="remoteStream4" style="display: none"   autoplay class="box">
-//       <button class="b-btngrid">2h5dt6dd678s..</button>
-//     </video>
-
-// <span> <i class="fas fa-chalkboard effects-control"></i> </span>

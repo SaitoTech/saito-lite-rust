@@ -151,10 +151,6 @@
   border-radius: 0.5rem;
 }
 
-#localStream {
-  display: block;
-}
-
 .stun-chatbox .b-btngrid {
   border: none;
   margin-left: 1rem;

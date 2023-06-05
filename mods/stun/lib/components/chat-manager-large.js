@@ -5,7 +5,7 @@ const ChatManagerSmallExtensionTemplate = require("./chat-manager-small-extensio
 const SwitchDisplay = require("../overlays/switch-display");
 const Effects = require("../overlays/effects");
 
-class VideoChatManager {
+class StunChatManagerLarge {
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
@@ -56,9 +56,9 @@ class VideoChatManager {
     );
 
     this.app.connection.on("render-local-stream-large-request", (localStream) => {
-      this.localStream = localStream;
       this.renderLocalStream(localStream);
     });
+
     this.app.connection.on("render-remote-stream-large-request", (peer, remoteStream) => {
       this.remote_streams.set(peer, remoteStream);
       this.addRemoteStream(peer, remoteStream);
@@ -96,6 +96,7 @@ class VideoChatManager {
       }
     });
 
+    // Change arrangement of video boxes (emitted from SwitchDisplay overlay)
     app.connection.on("stun-switch-view", (newView) => {
       this.display_mode = newView;
       if (newView == "gallery") {
@@ -299,7 +300,6 @@ class VideoChatManager {
       peer.querySelector(".video-box").click();
     }
 
-    let video_box = document.querySelector(`#stream${peer}`);
     this.analyzeAudio(remoteStream, peer);
   }
 
@@ -449,6 +449,9 @@ class VideoChatManager {
     this.chat_group.target_container = `.stun-chatbox .${this.remote_container}`;
   }
 
+  /*
+   Should move this an a same named, similar function in chat-manager-large to a library and have them emit an event to update the DOM???
+  */
   analyzeAudio(stream, peer) {
     let video_chat_self = this;
     const audioContext = new AudioContext();
@@ -508,4 +511,4 @@ class VideoChatManager {
   }
 }
 
-module.exports = VideoChatManager;
+module.exports = StunChatManagerLarge;

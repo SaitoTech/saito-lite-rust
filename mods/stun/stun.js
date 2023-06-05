@@ -2,8 +2,8 @@ const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require("serialize-javascript");
 const StunAppspace = require("./lib/appspace/main");
-const ChatManagerLarge = require("./lib/components/chat-manager-large");
-const ChatManagerSmall = require("./lib/components/chat-manager-small");
+const StunChatManagerLarge = require("./lib/components/chat-manager-large");
+const StunChatManagerSmall = require("./lib/components/chat-manager-small");
 const StunxGameMenu = require("./lib/game-menu/main");
 const Relay = require("../relay/relay");
 const adapter = require("webrtc-adapter");
@@ -21,8 +21,8 @@ class Stun extends ModTemplate {
     this.categories = "Utilities Communications";
     this.icon = "fas fa-video";
 
-    this.ChatManagerLarge = new ChatManagerLarge(app, this);
-    this.ChatManagerSmall = new ChatManagerSmall(app, this);
+    this.ChatManagerLarge = new StunChatManagerLarge(app, this);
+    this.ChatManagerSmall = new StunChatManagerSmall(app, this);
     this.stunGameMenu = new StunxGameMenu(app, this);
     this.chatSetting = new ChatSetting(app, this);
 
