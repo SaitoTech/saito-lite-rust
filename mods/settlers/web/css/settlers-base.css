@@ -1050,7 +1050,7 @@ ul.horizontal_list li.iconoption {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  padding: 5rem 5rem !important;
+  padding: 4rem 5rem !important;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */

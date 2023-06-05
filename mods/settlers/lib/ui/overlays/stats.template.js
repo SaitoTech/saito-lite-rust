@@ -3,6 +3,15 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
     let html = `
       <div class="rules-overlay saitoa">`;
 
+        // //VP Race
+        html += `<div class="settlers-state-container">`;
+        html += `   <div class="settlers-vp-race-body">`
+        
+        html += `   </div>
+                </div>`;       
+
+
+
         //Fucking Dice
         html += `<div class="settlers-state-container">`;
         
@@ -53,15 +62,6 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
                     <div class="settlers-stats-caption">Resources</div>`;
         html += player_html;
         html += `</div>`;
-
-
-        // //VP Race
-        html += `<div class="settlers-state-container">`;
-        html += `   <div class="settlers-vp-race-body">`
-        
-        html += `   </div>
-                </div>`;       
-
 
 
       return html+"</div>";

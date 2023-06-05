@@ -188,7 +188,7 @@ stats overlay
 .rules-overlay {
   display: flex;
   flex-direction: column;
-  gap: 5rem;
+  gap: 6rem;
 }
 
 

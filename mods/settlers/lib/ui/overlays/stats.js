@@ -59,13 +59,13 @@ class StatsOverlay {
       let player = this.mod.game.state.players[i];
 
       let vp = this.createCityVp(i);
-      statshtml += `<div class="settlers-stats-player">Player ${i} (VP: ${vp.score})</div>`;
+      statshtml += `<div class="settlers-stats-player">Player ${i} - ${vp.score} Victory Points</div>`;
 
       statshtml += `<div class="settlers-achievements-row">`;
         statshtml += vp.html;
 
         statshtml += `<div class="achievements">`;
-        
+
         //Victory Point Card Tokens -- should move to VP track
         if (this.mod.game.state.players[i - 1].vpc > 0) {
           statshtml += `<div class="victory_point_cards">`;
