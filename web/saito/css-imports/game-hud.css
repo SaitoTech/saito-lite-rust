@@ -129,11 +129,12 @@
 }
 
 .controls .game-cardgrid {
-    display: grid;
-    width: 100%;
+    display: flex;
+    column-gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
     overflow-y: auto;
     overflow-x: clip;
-    /* change game-cards.css for cards for min width if != 10vw */
     grid-template-columns: repeat(auto-fit, minmax(10vw, 1fr) );
     user-select: none;
     margin-top: 1rem;
