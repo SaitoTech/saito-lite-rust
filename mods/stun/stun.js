@@ -2,47 +2,32 @@ const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require("serialize-javascript");
 const StunAppspace = require("./lib/appspace/main");
-const ChatManagerLarge = require("./lib/components/chat-manager-large");
-const ChatManagerSmall = require("./lib/components/chat-manager-small");
-const InviteOverlay = require("./lib/components/invite-overlay");
+const StunChatManagerLarge = require("./lib/components/chat-manager-large");
+const StunChatManagerSmall = require("./lib/components/chat-manager-small");
 const StunxGameMenu = require("./lib/game-menu/main");
-const ChatInvitationLink = require("./lib/overlays/chat-invitation-link");
 const Relay = require("../relay/relay");
 const adapter = require("webrtc-adapter");
-const PeerManager = require("./lib/components/PeerManager");
+const PeerManager = require("./lib/appspace/PeerManager");
 const ChatSetting = require("./lib/components/chat-setting");
 
 class Stun extends ModTemplate {
-  constructor(app, mod) {
+  constructor(app) {
     super(app);
+    this.app = app;
     this.appname = "Video Call";
     this.name = "Stun";
     this.slug = this.returnSlug();
-    this.description = "Dedicated Video Chat Module";
-    this.categories = "Video Call";
-    this.app = app;
-    this.appspaceRendered = false;
-    this.remoteStreamPosition = 0;
-    this.peer_connections = {};
-    this.videoMaxCapacity = 5;
-    this.ChatManagerLarge = new ChatManagerLarge(app, this);
-    this.ChatManagerSmall = new ChatManagerSmall(app, this);
-    this.InviteOverlay = new InviteOverlay(app, this);
+    this.description = "P2P Video & Audio Connection Module";
+    this.categories = "Utilities Communications";
     this.icon = "fas fa-video";
-    this.localStream = null;
-    this.hasRendered = true;
-    this.chatType = null;
-    this.central = false;
-    this.peer_connections = {};
-    this.peer_connection_states = {};
+
+    this.ChatManagerLarge = new StunChatManagerLarge(app, this);
+    this.ChatManagerSmall = new StunChatManagerSmall(app, this);
     this.stunGameMenu = new StunxGameMenu(app, this);
-    this.current_step = 0;
-    this.gotten_keys = false;
-    this.commands = [];
-    this.request_no_interrupts = true;
+    this.chatSetting = new ChatSetting(app, this);
+
+    this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
     this.rooms = new Map();
-    this.chatSetting = new ChatSetting(app, mod);
-    // this.receiving_from = {}
 
     this.servers = [
       {
@@ -73,18 +58,22 @@ class Stun extends ModTemplate {
 
     this.styles = ["/saito/saito.css", "/videocall/style.css"];
 
-    app.connection.on("stun-send-message-to-server", (data) => {
-      this.sendStunMessageToServerTransaction(data);
-    });
-
-    app.connection.on("stun-init-peer-manager", (ui_type, config) => {
-      console.log("config", config);
+    //When a appspace/main StunAppspace is rendered -or- StunxGameMenu hears "game-menu-start-video-call"
+    app.connection.on("stun-init-peer-manager", (ui_type, config=null) => {
+      //config is only defined by game-menu/main.js
+      if (config){
+        console.log("init peer manager config", config);  
+      }
+      
       if (!this.peerManager) {
-        this.peerManager = new PeerManager(app, mod, ui_type, config);
+        //Create the PeerManager, which includes listeners for events
+        this.peerManager = new PeerManager(app, this, ui_type, config);
       }
 
       if (ui_type === "large") {
-        this.peerManager.showSetting();
+        //Tell ChatSetting (aka Preview Window) to render on the splash screen
+        //but only if through appspace/main (aka the splash screen)
+        this.chatSetting.render();
       }
     });
   }
@@ -100,24 +89,23 @@ class Stun extends ModTemplate {
         );
 
         // JOIN THE ROOM
-        let stun_self = app.modules.returnModule("Stun");
-        stun_self.renderInto("body");
-
-        let interval = setInterval(() => {
-          if (document.readyState === "complete") {
-            let room_code = room_obj.room_code;
-            // stun_self.peerManager = new PeerManager(app, stun_self, room_code);
-            // stun_self.peerManager.showSetting(true);
-            app.connection.emit("stun-to-join-room", true, room_code);
-            clearInterval(interval);
-          }
-        }, 500);
+        this.renderInto("body");
+        app.connection.emit("stun-to-join-room", room_obj.room_code);
       }
     }
 
     this.video_chat_loaded = 1;
   }
 
+  /**
+  * Stun will be rendered on 
+  *  - /videocall
+  *  - Saito-header menu
+  *  - Saito-user-menu
+  *  - game-menu options
+  * 
+  * This will trigger a "stun-init-peer-manager" event that leads to the creation of PeerManager
+  */
   render() {
     this.renderInto("body");
   }
@@ -158,12 +146,12 @@ class Stun extends ModTemplate {
     let stun_self = this;
 
     if (type === "invite") {
-      stun_self.attachStyleSheets();
+      this.attachStyleSheets();
       super.render(this.app, this);
       return new StunxInvite(this.app, this);
     }
     if (type === "saito-header") {
-      stun_self.attachStyleSheets();
+      this.attachStyleSheets();
       super.render(this.app, this);
 
       return [
@@ -178,7 +166,7 @@ class Stun extends ModTemplate {
       ];
     }
     if (type == "game-menu") {
-      stun_self.attachStyleSheets();
+      this.attachStyleSheets();
       super.render(this.app, this);
 
       return {
@@ -254,26 +242,13 @@ class Stun extends ModTemplate {
 
     if (conf === 0) {
       if (txmsg.module === "Stun") {
-        // if (app.BROWSER === 0) {
-        //     if (txmsg.request === "stun-create-room-transaction") {
-        //       let stun_mod = app.modules.returnModule("Stun");
-        //       stun_mod.receiveCreateRoomTransaction(app, tx);
-        //     }
-        //     if (txmsg.request === "stun-send-message-to-server") {
-        //       let stun_mod = app.modules.returnModule("Stun");
-        //       stun_mod.receiveStunMessageToServerTransaction(app, tx, peer);
-        //     }
-        //   }
+
+        //Do we even need/want to send messages on chain?
 
         if (app.BROWSER === 1) {
           if (txmsg.request === "stun-send-message-to-peers") {
-            let stun_mod = app.modules.returnModule("Stun");
-            stun_mod.receiveStunMessageToPeersTransaction(app, tx);
-          }
-          if (txmsg.request === "stun-send-game-call-message") {
-            console.log("receiving");
-            let stun_mod = app.modules.returnModule("Stun");
-            stun_mod.receiveGameCallMessageToPeers(app, tx);
+            console.log("onConf: stun-send-message-to-peers");
+            this.receiveStunMessageToPeersTransaction(app, tx);
           }
         }
       }
@@ -287,59 +262,59 @@ class Stun extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     if (app.BROWSER === 0) {
-      if (txmsg.request === "stun-create-room-transaction") {
-        let stun_mod = app.modules.returnModule("Stun");
-        stun_mod.receiveCreateRoomTransaction(app, tx);
-      }
-      if (txmsg.request === "stun-send-message-to-server") {
-        let stun_mod = app.modules.returnModule("Stun");
-        stun_mod.receiveStunMessageToServerTransaction(app, tx, peer);
+      try { //Let's not kill the server with bad data
+        if (txmsg.request === "stun-create-room-transaction") {
+          this.receiveCreateRoomTransaction(app, tx);
+        }
+        if (txmsg.request === "stun-send-message-to-server") {
+          this.receiveStunMessageToServerTransaction(app, tx, peer);
+        }
+      }catch(err){
+        console.error("Stun Error:", err);
       }
     }
 
     if (app.BROWSER === 1) {
       if (txmsg.request === "stun-send-message-to-peers") {
-        let stun_mod = app.modules.returnModule("Stun");
-        stun_mod.receiveStunMessageToPeersTransaction(app, tx);
+        console.log("HPT: stun-send-message-to-peers");
+        this.receiveStunMessageToPeersTransaction(app, tx);
       }
       if (txmsg.request === "stun-send-game-call-message") {
-        console.log("receiving");
-        let stun_mod = app.modules.returnModule("Stun");
-        stun_mod.receiveGameCallMessageToPeers(app, tx);
+        console.log("HPT: stun-send-game-call-message");
+        this.receiveGameCallMessageToPeers(app, tx);
       }
     }
     super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
-  async sendCreateRoomTransaction(room_code) {
-    let public_key = this.app.wallet.returnPublicKey();
-    let newtx = this.app.wallet.createUnsignedTransaction();
 
-    let _data = {
-      public_key,
-      room_code,
-    };
-    let request = "stun command transmission request";
-    let server = this.app.network.peers[0];
+  async sendCreateRoomTransaction() {
+    let room_code =  this.app.crypto.generateRandomNumber().substring(0, 6);
 
     // offchain data
+    let _data = {
+      public_key: this.app.wallet.returnPublicKey(),
+      room_code,
+    };
+
+    //Are we sure this will always be the stun server?
+    // Shouldn't this be set by onPeerServiceUp
+    let server = this.app.network.peers[0];
+
     let data = {
-      request,
+      request: "stun command transmission request",
       data: _data,
     };
 
     server.sendRequestAsTransaction("stun-create-room-transaction", data);
+
+    return room_code;
   }
 
   // server receives this
   async receiveCreateRoomTransaction(app, tx) {
     let txmsg = tx.returnMessage();
-    let stun_mod = app.modules.returnModule("Stun");
-
-    let room_code = txmsg.data.data.room_code;
-    let public_key = txmsg.data.data.public_key;
-    stun_mod.addRoom(room_code);
-    stun_mod.addKeyToRoom(room_code, public_key);
+    this.addKeyToRoom(txmsg.data.data.room_code, txmsg.data.data.public_key);
   }
 
   async sendStunMessageToServerTransaction(_data) {
@@ -351,13 +326,13 @@ class Stun extends ModTemplate {
       request,
       data: _data,
     };
+
     server.sendRequestAsTransaction("stun-send-message-to-server", data);
   }
 
   // server receives this
   async receiveStunMessageToServerTransaction(app, tx, peer) {
     let txmsg = tx.returnMessage();
-    let stun_mod = app.modules.returnModule("Stun");
 
     let room_code = txmsg.data.data.room_code;
     let type = txmsg.data.data.type;
@@ -366,15 +341,17 @@ class Stun extends ModTemplate {
     if (type === "peer-joined") {
       this.addKeyToRoom(room_code, public_key);
     }
+
     if (type === "peer-left") {
       this.removeKeyFromRoom(room_code, public_key);
     }
+
     // public keys in the room and relay;
     let recipients = [];
     if (txmsg.data.data.targetPeerId) {
       recipients.push(txmsg.data.data.targetPeerId);
     } else {
-      recipients = stun_mod.rooms.get(room_code)?.filter((p) => p !== public_key);
+      recipients = this.rooms.get(room_code)?.filter((p) => p !== public_key);
     }
 
     let data = {
@@ -382,6 +359,7 @@ class Stun extends ModTemplate {
       public_key,
     };
 
+    //And rebroadcasts to peers
     this.sendStunMessageToPeersTransaction(data, recipients);
   }
 
@@ -409,6 +387,8 @@ class Stun extends ModTemplate {
 
     this.app.connection.emit("relay-send-message", data);
     setTimeout(()=> {
+      
+      //This is the only proper onChain TX... ?
       this.app.network.propagateTransaction(newtx);
     },2000)
    
@@ -421,16 +401,17 @@ class Stun extends ModTemplate {
   }
 
   sendGameCallMessageToPeers(app, _data, recipients) {
-    //
-    let request = "stun-send-game-call-message";
 
     let data = {
       recipient: recipients,
-      request,
+      request: "stun-send-game-call-message",
       data: _data,
     };
+
     console.log("sending to", recipients);
     this.app.connection.emit("relay-send-message", data);
+
+    //Relay only...
   }
 
   async receiveGameCallMessageToPeers(app, tx) {
@@ -479,25 +460,19 @@ class Stun extends ModTemplate {
         break;
     }
 
-    //
-    // app.connection.emit('stun-event-message', data);
   }
 
-  // server functions
-  addRoom(room_code) {
-    if (!this.rooms.has(room_code)) {
-      this.rooms.set(room_code, []);
-    }
-  }
+  /*
+  Will add an empty room if it doesn't already exist and there is no key
+  */
+  addKeyToRoom(room_code, public_key = "") {
+    let public_keys = (this.rooms.has(room_code)) ? this.rooms.get(room_code) : [];
 
-  addKeyToRoom(room_code, public_key) {
-    if (this.rooms.has(room_code)) {
-      let public_keys = this.rooms.get(room_code);
-      if (!public_keys.includes(public_key)) {
-        public_keys.push(public_key);
-      }
-      this.rooms.set(room_code, public_keys);
+    if (!public_keys.includes(public_key)) {
+      public_keys.push(public_key);
     }
+
+    this.rooms.set(room_code, public_keys);
   }
 
   removeKeyFromRoom(room_code, public_key) {
