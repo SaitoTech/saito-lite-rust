@@ -14,10 +14,6 @@ class StunxGameMenu {
     };
 
 
-    app.connection.on("stun-join-conference-room-with-link", (room_obj) => {
-      console.log("app", this.app, "mod", this.mod);
-      this.joinConferenceRoom(app, mod, room_obj);
-    });
 
     app.connection.on("game-menu-start-video-call", (recipients) => {
       console.log("initing peer manager");
@@ -51,7 +47,7 @@ class StunxGameMenu {
         sender: app.wallet.returnPublicKey(),
       };
 
-      stun_mod.sendGameCallMessageToPeers(app, data, recipients);
+      this.mod.sendGameCallMessageToPeers(app, data, recipients);
     });
 
     app.connection.on("game-menu-join-video-call", (data) => {
@@ -60,7 +56,6 @@ class StunxGameMenu {
 
       // init peer manager
       app.connection.emit("stun-init-peer-manager", "small", this.config);
-      let stun_mod = app.modules.returnModule("Stun");
       app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
 
       // send the information to the other peers and ask them to join the call
@@ -72,10 +67,6 @@ class StunxGameMenu {
     });
   }
 
-  async joinConferenceRoom(app, mod, room_obj) {
-    // create peer manager and initialize , send an event to stun to initialize
-
-  }
 }
 
 module.exports = StunxGameMenu;
