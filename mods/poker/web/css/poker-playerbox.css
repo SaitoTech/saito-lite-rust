@@ -1,4 +1,18 @@
 
+
+.other-player-hand {
+  position: absolute;
+}
+.other-player-hand .card {
+  position: absolute;
+}
+.game-playerbox-manager .game-playerbox {
+  overflow: visible;
+}
+.game-playerbox-1 .game-playerbox-seat-1 .game-playerbox-head .saito-user .game-playerbox-graphics {
+  display: none;
+}
+
 .game-playerbox {
   min-width: 250px;
   max-width: 250px;

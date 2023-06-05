@@ -292,6 +292,10 @@ class Poker extends GameTableTemplate {
     //
     // and redisplay board
     //
+    for (let i = 1; i <= this.game.players; i++) {
+      this.playerbox.updateGraphics("", i);
+    }
+
     this.displayBoard();
 
     super.initializeGameStake(crypto, stake);
@@ -772,7 +776,7 @@ cosole.log("pnum is: " + pnum);
             <img class="card" src="${this.card_img_dir}/${this.game.deck[0].cards[card2].name}">
           </div>
         `;
-        this.playerbox.refreshGraphic(playercards, scorer);
+        this.playerbox.updateGraphics(playercards, scorer);
    
 
         //Everyone can use the pool
@@ -857,7 +861,6 @@ cosole.log("pnum is: " + pnum);
         let winnerStr = "";
         for (let i = 0; i < winners.length; i++) {
           if (i >= 1) { winnerStr += ", "; }
-          this.playerbox.addClass("winner", winners[i]+1);  
           this.game.stats[this.game.players[winners[i]]].handsWon++;
           winnerStr += this.game.state.player_names[winners[i]];
 	  this.game.state.player_credit[winners[i]] = this.addToString(this.game.state.player_credit[winners[i]], this.fts(pot_size));

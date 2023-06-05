@@ -93,6 +93,7 @@ body {
   transform: rotateY(0deg);
 }
 .flipped .cardBack{
+  display: none;
   transform: rotateY(-180deg);
 }
 
