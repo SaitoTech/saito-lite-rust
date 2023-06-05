@@ -11,8 +11,8 @@ body {
 
 .tinyhand .card {
     position: absolute;
-    width: min(12vh,16vw);
-    height: auto;
+    width: 12vh;
+    height: calc(12vh * 1.55);
 }
 
 .saito-balance {
@@ -44,6 +44,7 @@ body {
 
 .plog .htmlCards .card{
   width: 20px;
+  height: calc(20px * 1.55);
 }
 
 .justify{
@@ -75,15 +76,6 @@ body {
   margin-top: 0.5vh;
   margin-bottom: 0.5vh;
 }
-
-.status ul .option {
-  text-transform: uppercase;
-  line-height: 4rem;
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-top: 1px dashed silver;
-}
-
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
    .game-scoreboard{

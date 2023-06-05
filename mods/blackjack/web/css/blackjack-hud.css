@@ -1,0 +1,11 @@
+
+.status ul .option {
+  text-transform: uppercase;
+  line-height: 4rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-top: 1px dashed silver;
+  cursor: pointer;
+}
+
+
