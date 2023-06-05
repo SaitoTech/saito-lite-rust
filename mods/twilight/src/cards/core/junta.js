@@ -31,9 +31,8 @@
           twilight_self.placeInfluence(c, 2, player);
           twilight_self.playerFinishedPlacingInfluence();
               
-          let confirmoptional = '<ul><li class="card" id="conduct">coup or realign</li><li class="card" id="skip">skip</li></ul>';
-          twilight_self.updateStatusWithOptions("Do you wish to use 2 free OPS for a coup or realignment rolls in Central or South America?",confirmoptional,false);
-          twilight_self.attachCardboxEvents(function(action2) {
+          let confirmoptional = '<ul><li class="option" id="conduct">coup or realign</li><li class="option" id="skip">skip</li></ul>';
+          twilight_self.updateStatusWithOptions("Do you wish to use 2 free OPS for a coup or realignment rolls in Central or South America?",confirmoptional, function(action2) {
 
             if (action2 == "conduct") {
               twilight_self.addMove("resolve\tjunta");

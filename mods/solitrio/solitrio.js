@@ -73,11 +73,11 @@ class Solitrio extends OnePlayerGameTemplate {
   }
 
 
-  initializeHTML(app) {
+  render(app) {
     //console.trace("Initialize HTML");
     if (!this.browser_active) { return; }
     
-    super.initializeHTML(app);
+    super.render(app);
 
     //
     // ADD MENU
@@ -248,8 +248,6 @@ class Solitrio extends OnePlayerGameTemplate {
           });
                 
         } else {
-          //solitrio_self.displayWarning("Invalid Move", "There is nowhere to move that card");
-          //salert("<p>Sorry, You can't move that card anywhere");
           $(this).toggleClass("misclick");
           solitrio_self.untoggleCard(card);
         }
@@ -331,8 +329,6 @@ class Solitrio extends OnePlayerGameTemplate {
             smartTip = "Hint: Try a 2 of any suit";
           }
           //Feedback
-          //solitrio_self.displayWarning("Invalid Move", "Sorry, "+solitrio_self.cardSuitHTML(solitrio_self.returnCardSuite(selected))+solitrio_self.returnCardNumber(selected)+" cannot go there... ");
-          //salert("Sorry, "+solitrio_self.cardSuitHTML(solitrio_self.returnCardSuite(selected))+solitrio_self.returnCardNumber(selected)+" cannot go there... </p><p>"+smartTip+"</p>");
           $(this).toggleClass("misclick");
           solitrio_self.untoggleCard(selected);
           selected = "";
@@ -480,7 +476,7 @@ class Solitrio extends OnePlayerGameTemplate {
 
 
   async clearTable(){
-    $('.menu_option').off();
+    $('.option').off();
     $('.slot').off();
 
     for (let i = 1; i <= 4; i++){
@@ -656,8 +652,8 @@ no status atm, but this is to update the hud
 
     let solitrio_self = this;
 
-    let html = '<span class="hidable">Arrange the cards from 2 to 10, one suit per row by moving cards into empty spaces.</span>'; 
-    let option = `<ul><li class="menu_option"`;
+    let html = '<span class="hidable">Arrange the cards from 2 to 10, one suit per row by moving cards into empty spaces. </span>'; 
+    let option = `<ul><li class="option"`;
     if (this.game.state.recycles_remaining > 0) {
       html += '<span>You may shuffle the unarranged cards ';
       if (this.game.state.recycles_remaining == 2) { 
@@ -671,16 +667,16 @@ no status atm, but this is to update the hud
       option += ` id="quit">Start New Game`;
     }
     if (this.moves.length > 0){
-      option += `</li><li class="menu_option" id="undo">Undo`;
+      option += `</li><li class="option" id="undo">Undo`;
     }
 
     option += "</li></ul>";
     
-    this.updateStatusWithOptions(html,option);        
+    this.updateStatusWithOptions(html, option);        
 
 
-    $('.menu_option').off();
-    $('.menu_option').on('click', function() {
+    $('.option').off();
+    $('.option').on('click', function() {
       let action = $(this).attr("id");
       $("#rowbox").removeClass("nomoves");
       if (action == "shuffle"){

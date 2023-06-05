@@ -33,7 +33,7 @@ class Midnight extends OnePlayerGameTemplate {
   }
 
 
-  initializeHTML(app){
+  render(app){
 
       if (!this.browser_active) { return; }
       if (this.initialize_game_run) {return;} 
@@ -43,8 +43,8 @@ class Midnight extends OnePlayerGameTemplate {
         this.initializeSinglePlayerGame();
       }
 
-      // Override the game template initializeHTML function
-      super.initializeHTML(app);
+      // Override the game template render function
+      super.render(app);
 
       this.menu.addMenuOption("game-game", "Game");
       this.menu.addMenuOption("game-info", "Info");

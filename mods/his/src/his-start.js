@@ -1,9 +1,9 @@
 
-  initializeHTML(app) {
+  render(app) {
 
     if (this.browser_active == 0) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
 
     let game_mod = this;
 

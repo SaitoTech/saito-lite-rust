@@ -41,7 +41,7 @@ class GameSlider {
       this.mod.arcade_games.forEach(game_mod => {
         gamelist.push([game_mod.categories, `<li class="slide arcade-game-slider-item-${game_mod.returnSlug()}" data-game="${game_mod.name}">
           <span class="game-slider-name">${game_mod.returnName()}</span>
-          <img alt="${game_mod.returnName()}" src="${game_mod.returnArcadeBanner()}">
+          <img alt="${game_mod.returnName()}" src="${game_mod.respondTo("arcade-games").banner}">
           </li>`]); 
       });
       if (!this.mod.manual_ordering){

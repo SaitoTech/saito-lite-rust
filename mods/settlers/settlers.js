@@ -127,14 +127,14 @@ class Settlers extends GameTemplate {
 
        
 
-  initializeHTML(app) {
+  render(app) {
 
     if (!this.browser_active) { return; }
 
     //Prevent this function from running twice as saito-lite is configured to run it twice
     if (this.initialize_game_run) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
     
     this.scoreboard.render();
 
@@ -180,21 +180,6 @@ class Settlers extends GameTemplate {
       this.cardbox.makeDraggable();
 
       this.playerbox.render();
-      this.playerbox.addStatus();
-      this.playerbox.addClass("me", this.game.player);
-
-      for (let i = 1; i <= this.game.players.length; i++) {
-        this.playerbox.addClass(`c${this.game.colors[i-1]}`, i);
-        if (i != this.game.player) {
-          this.playerbox.addClass("notme", i);
-        }
-      }
-
-      if (this.game.players.length > 2 || this.game.player == 0) {
-        this.playerbox.groupOpponents();
-      }
-      this.playerbox.makeDraggable();
-      $(".player-box *").disableSelection();
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.hammer.render(this.app, this);
@@ -242,49 +227,51 @@ class Settlers extends GameTemplate {
  
 
     //
-    // mobile UI toggles
+    //
+    //
+    //
+    // add extra controls to HUD
     //
     this.app.browser.prependElementToSelector('<div class="mobile"><div class="score">score</div><div class="trade">trade</div></div>', '.hud-body');
-    this.app.browser.addElementToSelector('<div class="mobile-trading-container"></div>', '.gameboard');
-    let num_playerboxes = 0;
-    let gas = ``; // grid-area-string
-    let gtr = ``;
-    document.querySelectorAll(".player-box").forEach((el) => {
-      num_playerboxes++;
-      el.style.gridArea = `area${num_playerboxes}`;
-      gas += `"area${num_playerboxes}" `;
-      gtr += `min-content `;
-      document.querySelector(".mobile-trading-container").appendChild(el);
-    });
-    document.querySelector(".mobile-trading-container").style.gridTemplateAreas = gas;
-    document.querySelector(".mobile-trading-container").style.gridTemplateColumns = "1fr";
-    document.querySelector(".mobile-trading-container").style.gridTemplateRows = gtr;
-    document.querySelector(".mobile-trading-container").style.rowGap = "2.5vh";
 
+    //
+    // hook up interactivity
+    //
     document.querySelector(".hud-body .mobile .score").onclick = (e) => {
-      let s = document.querySelector(".scoreboard");
-      s.style.display = "block";
-      //
-      // desktop show the stats menu - which has the score
-      //
-      if (s.style.zIndex < 10) {
-        this.stats_overlay.render();
-        return;
-      }
-      document.querySelector(".mobile-trading-container").style.display = "none";
-      if (s.style.display != "block") { s.style.display = "block"; } else { s.style.display = "none"; }
+      this.stats_overlay.render();
     }
     document.querySelector(".hud-body .mobile .trade").onclick = (e) => {
-      let s = document.querySelector(".mobile-trading-container");
-      //
-      // desktop might already have the hud visible
-      //
-      if (s.style.zIndex < 10) { 
-        document.querySelector(".scoreboard").style.display = "none";
-	this.showResourceOverlay();
-	return;
+      if (this.app.browser.isMobileBrowser()) {
+        if (document.querySelector(".game-playerbox-manager").style.display == "flex") {
+	  document.querySelector(".game-playerbox-manager").style.display = "none";
+	  return;
+	};
+        document.querySelector(".game-playerbox-manager").style.display = "flex";
+        try {
+
+	  //
+	  // load trade overlay on playerbox click
+	  //
+	  for (let i = 0; i < this.game.players.length; i++) {
+  	    this.playerbox.onclick(() => {
+	      this.trade_overlay.render();
+	    }, (i+1));
+	  }
+
+	  //
+	  // close playerboxen on back-click
+	  //
+	  document.querySelector(".game-playerbox-manager").off();
+	  document.querySelector(".game-playerbox-manager").on("click", () => {
+            document.querySelector(".game-playerbox-manager").style.display = "none";
+	  });
+
+	} catch (err) {
+	  console.log("ERROR 485023: " + err);
+	}
+      } else {
+        this.trade_overlay.render();
       }
-      if (s.style.display != "grid") { s.style.display = "grid"; } else { s.style.display = "none"; }
     }
 
   }
@@ -338,10 +325,14 @@ class Settlers extends GameTemplate {
     
     }
 
-    this.resetPlayerNames();
-
     if (this.game.players.length > 2){
       this.grace_window = this.game.players.length * 12;
+    }
+
+
+    this.game.playerNames = [];
+    for (let i = 0; i < this.game.players.length; i++) {
+      this.game.playerNames.push(this.app.keychain.returnUsername(this.game.players[i]));
     }
 
   }

@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS leagues (
   welcome TEXT DEFAULT "",
   ranking_algorithm TEXT,
   default_score INTEGER,
+  deleted INTEGER DEFAULT 0,
   UNIQUE (id)
 );
 

@@ -44,11 +44,11 @@ class Thirteen extends GameTemplate {
 
 
   
-  initializeHTML(app) {
+  render(app) {
 
     if (this.browser_active == 0) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
 
     this.log.render();
 
@@ -3709,7 +3709,14 @@ returnUnplayedCards() {
 }
 
 
-
+  formatStatusHeader(status_header, include_back_button = false) {
+    return `
+    <div class="status-header">
+      ${include_back_button ? this.back_button_html : ""}
+      <span id="status-content">${status_header}</span>
+    </div>
+    `;
+  }
 
 } // end Thirteen class
 

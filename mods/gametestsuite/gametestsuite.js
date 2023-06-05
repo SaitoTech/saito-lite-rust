@@ -83,14 +83,14 @@ class GameTestSuite extends GameTemplate {
   //
   // initialize HTML and UI components
   //
-  initializeHTML(app) {
+  render(app) {
     //Game initialization begins from the Arcade. 
     //So, it is best to prevent any HTML/DOM manipulation until in the right page
     if (!this.browser_active){
       return;
     }
 
-    super.initializeHTML(app);
+    super.render(app);
 
     //Put functionality into the menu
 
@@ -533,7 +533,7 @@ class GameTestSuite extends GameTemplate {
   // MODULE SPECIFIC FUNCTION //
   //////////////////////////////
   //
-  // this is a non-standard function that we called in initializeHTML() to handle
+  // this is a non-standard function that we called in render() to handle
   // all of the DOM events. It is not part of the game engine and is included here
   // merely to isolate the code away from the core components so that the logic of
   // game creation is cleaner and easier to see.

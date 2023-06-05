@@ -258,12 +258,9 @@ class Browser {
         if (
           e.target?.classList?.contains("saito-identicon") || e.target?.classList?.contains("saito-address")
         ) {
-
-console.log("clicking on identicon...");
-
           let disable_click = e.target.getAttribute("data-disable");
           let publickey = e.target.getAttribute("data-id");
-          if (!publickey || !app.crypto.isPublicKey(publickey) || disable_click === "true") {
+          if (!publickey || !app.crypto.isPublicKey(publickey) || disable_click === "true" || disable_click == true) {
             return;
           }
 
@@ -1330,7 +1327,6 @@ console.log("clicking on identicon...");
   //
   // usage:
   // let currentHash = window.location.hash; // (e.g."#page=2&ready=1")
-  // initializeHash("#page=1", currentHash, {ready: 0}) --> #page=2&ready=0
   initializeHash(defaultHash, deepLinkHash, forcedHashValues) {
     return this.modifyHash(this.defaultHashTo(defaultHash, deepLinkHash), forcedHashValues);
   }

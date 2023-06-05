@@ -370,12 +370,12 @@ console.log("THIS ONE IS ON US");
   }
 
 
-  initializeHTML(app) {
+  render(app) {
 
     if (this.browser_active != 1) { return; }
     if (this.initialize_game_run) { return; }
     
-    super.initializeHTML(app);
+    super.render(app);
 
     //
     // ADD MENU

@@ -58,7 +58,7 @@ class SaitoMania extends OnePlayerGameTemplate {
   }
 
 
-  initializeHTML(app) {
+  render(app) {
 
     if (!this.browser_active) { return; }
     
@@ -83,7 +83,7 @@ class SaitoMania extends OnePlayerGameTemplate {
     //  }
     //}
 
-    super.initializeHTML(app);
+    super.render(app);
 
     //
     // ADD MENU

@@ -93,11 +93,11 @@ class Monarchy extends GameTemplate {
   }
 
  
- initializeHTML(app) {
+ render(app) {
 
     if (this.browser_active == 0) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");
@@ -1997,6 +1997,7 @@ initializeGame(game_id) {
 
   //!!!!!!!!!!!     
   reshuffleNotification(playerDeck, discards){
+
     this.updateLog("Shuffling discards back into the deck..." + playerDeck);
     if (this.game.player == playerDeck){
       $("#drawpile div").html("");
@@ -2299,6 +2300,15 @@ initializeGame(game_id) {
 
   }
 
+
+  formatStatusHeader(status_header, include_back_button = false) {
+    return `
+    <div class="status-header">
+      ${include_back_button ? this.back_button_html : ""}
+      <span id="status-content">${status_header}</span>
+    </div>
+    `;
+  }
 
 } // end Monarchy class
 

@@ -30,8 +30,8 @@ class Realms extends GameTemplate {
 		return super.respondTo(type);
 	}
 
-	initializeHTML(app) {
-		super.initializeHTML(app);
+	render(app) {
+		super.render(app);
 
 		//
 		// ADD MENU

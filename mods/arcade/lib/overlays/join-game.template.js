@@ -4,10 +4,10 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	}
 
 	//Uncreated games
-	let desc =
-		invite?.desired_opponent_publickeys?.length > 0 || invite.game_status == "private"
-			? "private invitation"
-			: "open invitation";
+	let desc = invite.verbose_game_type;
+			//	invite?.desired_opponent_publickeys?.length > 0 || invite.game_status == "private"
+			//			? "private invitation"
+			//		: "open invitation";
 	//If created
 	if (mod.isAcceptedGame(invite.game_id)) {
 		desc = "active game";
@@ -19,7 +19,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	let html = `
   <div class="arcade-game-overlay">
   <div class="arcade-game-overlay-header">
-	  <div class="arcade-game-overlay-header-image" style="background-image: url('${invite.game_mod.returnArcadeImg()}')">
+	  <div class="arcade-game-overlay-header-image" style="background-image: url('${invite.game_mod.respondTo("arcade-games").image}')">
 	  </div>
 	  <div class="arcade-game-overlay-header-title-box">
 		  <div class="arcade-game-overlay-header-title-box-title">${invite.game_name}</div>

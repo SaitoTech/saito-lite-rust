@@ -11,7 +11,7 @@ module.exports = (app, mod, league) => {
         </div>
         <div class="league-component-existing-league-controls">`;
 
-    if (league.rank < 0){
+    if (league.rank < 0 && league.admin){
      html +=`<button class="league-component-existing-league league-join-button">Join</button>`; 
     }
 
@@ -19,6 +19,7 @@ module.exports = (app, mod, league) => {
 
     if (!league.admin){
       html += `<button class="league-component-existing-league league-edit-button">Edit</button>`;
+      html += `<button class="league-component-existing-league league-sudo-button">Admin</button>`;
     }
 
     if (app.wallet.returnPublicKey() == league.admin) { 

@@ -208,9 +208,10 @@ class Mods {
     // .. and setup active module
     //
     if (this.app.BROWSER) {
+      await this.app.modules.render();
+      // deprecate initializeHTML but make sure all render functions call attachEvents
       await this.app.modules.initializeHTML();
       await this.app.modules.attachEvents();
-      await this.app.modules.render();
     }
   }
 

@@ -448,12 +448,12 @@ class Keychain {
     }
   }
 
-  returnUsername(publickey: string): string {
+  returnUsername(publickey: string, max=12): string {
     const name = this.returnIdentifierByPublicKey(publickey, true);
     if (name != publickey && name != "") { return name; }
     if (name == publickey) {
-      if (name.length > 12) {
-        return name.substring(0, 12) + "...";
+      if (name.length > max) {
+        return name.substring(0, max) + "...";
       }
     }
     return publickey;

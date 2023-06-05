@@ -3,7 +3,7 @@
 
       if (this.game.state.round > 7) {
         this.updateLog("<span>The Cambridge Five cannot be played as an event in Late Wa</span>");
-        this.updateStatusHeader("The Cambridge Five cannot be played as an event in Late War");
+        this.updateStatus("The Cambridge Five cannot be played as an event in Late War");
         return 1;
       }
 
@@ -51,7 +51,7 @@
           this.addMove("showhand\t2\t"+keys);
           this.addMove("NOTIFY\tUS has scoring cards for: " + revealed);
           this.endTurn();
-          this.updateStatusHeader(`USSR is placing influence for ${this.cardToText(card)}`);
+          this.updateStatus(`USSR is placing influence for ${this.cardToText(card)}`);
         }
 
       }

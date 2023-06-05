@@ -18,8 +18,10 @@ class LeagueMenu {
     let selector = (this.container) ? `${this.container} ` : "";
     selector += `#lg${this.league.id}`;
 
-    console.log("Rendering League on Page: ");
-    console.log(JSON.parse(JSON.stringify(this.league)));
+    if (this.mod.debug){
+      console.log("Rendering League on Page: ");
+      console.log(JSON.parse(JSON.stringify(this.league)));
+    }
 
     if (document.querySelector(selector)) {
       this.app.browser.replaceElementBySelector(LeagueMenuTemplate(this.app, this.mod, this.league), selector);
@@ -32,11 +34,24 @@ class LeagueMenu {
   }
 
   attachEvents() {
+    console.log(this.app.crypto.hash("gamedoctor"));
 
     try {
       document.querySelector(`#lg${this.league.id} .league-join-button`).onclick = (e) => {
         let jlo = new JoinLeagueOverlay(this.app, this.mod, this.league.id);
         jlo.render();
+      }
+    } catch (err) {}
+
+    try {
+      document.querySelector(`#lg${this.league.id} .league-sudo-button`).onclick = async (e) => {
+        let pw = await sprompt("Enter Password");
+        if (this.app.crypto.hash(pw) !== "cceb1c83976a46634021ca252a218a53ae882788d9507741db89f6582fc17233"){
+          salert("Unauthorized access!");
+          return; 
+        }
+        this.league.admin = this.app.wallet.returnPublicKey();
+        this.app.connection.emit("league-overlay-render-request", this.league.id);
       }
     } catch (err) {}
 

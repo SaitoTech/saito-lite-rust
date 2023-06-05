@@ -107,12 +107,12 @@ class Nwasm extends OnePlayerGameTemplate {
     this.library_ui.render();
   }
 
-  initializeHTML(app) {
+  render(app) {
 
     let game_mod = this;
     if (!this.browser_active) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
 
     //
     // ADD MENU

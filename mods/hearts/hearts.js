@@ -78,11 +78,11 @@ class Hearts extends GameTemplate {
   //
   // initialize HTML (overwrites game template stuff, so include...)
   //
-  initializeHTML(app) {
+  render(app) {
 
     if (!this.browser_active) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
 
     //
     // add ui components here
@@ -282,6 +282,24 @@ alert(`You picked: ${card}`);
 
     return state;
   }
+
+
+  /* standard 52 card deck */
+  returnPokerDeck() { 
+    var deck = {};
+    var suits = ["S", "C", "H", "D"];
+    let indexCt = 1;
+    for (let i = 0; i < 4; i++) {
+      for (let j = 1; j <= 13; j++) { 
+        let cardImg = `${suits[i]}${j}`; 
+        deck[indexCt.toString()] = { name: cardImg };
+        indexCt++;
+      }
+    }
+    return deck;
+  } 
+
+
 }
 
 

@@ -46,7 +46,7 @@
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
-        this.updateStatusHeader("Remove All US influence from 2 countries among: Sudan, Egypt, Iran, Iraq, Libya, Saudi Arabia, Syria, Jordan.");
+        this.updateStatus("Remove All US influence from 2 countries among: Sudan, Egypt, Iran, Iraq, Libya, Saudi Arabia, Syria, Jordan.");
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();

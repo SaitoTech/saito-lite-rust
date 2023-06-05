@@ -89,16 +89,9 @@
               if (max_choices >= 2) { max_choices = 2; }
 
               imperium_self.updateStatus(html);
-	      imperium_self.lockInterface();
 
               $(divname).off();
               $(divname).on('click', function() {
-
-	        if (!imperium_self.mayUnlockInterface()) {
-	          salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-	          return;
-	        }
-	        imperium_self.unlockInterface();
 
                 let action2 = $(this).attr("id");
 

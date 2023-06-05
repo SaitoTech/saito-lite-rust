@@ -36,13 +36,13 @@
       } else {
 
         if (player == opponent) {
-    this.updateStatusHeader("Opponent is placing 1 influence in a European country in which they have a predominance of influence");
+    this.updateStatus("Opponent is placing 1 influence in a European country in which they have a predominance of influence");
     return 0;
 
         }
 
         this.addMove("resolve\tberlinagreement");
-        this.updateStatusHeader("Place 1 influence in a European country in which you have a predominance of influence");
+        this.updateStatus("Place 1 influence in a European country in which you have a predominance of influence");
 
         for (let i = 0; i < placeable.length; i++) {
 

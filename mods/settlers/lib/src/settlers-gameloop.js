@@ -276,7 +276,7 @@ class SettlersGameloop {
         this.game.queue.splice(qe, 1);
 
         this.buildRoad(player, slot);
-        this.updateLog(`${this.game.playerNames[player - 1]} built a ${this.r.name}`);
+        this.updateLog(`${this.game.playerNames[player - 1]} builds ${this.r.name}`);
         if (this.checkLongestRoad(player)) {
           console.log("Longest Road:", this.game.state.longestRoad.path);
         }
@@ -319,7 +319,7 @@ class SettlersGameloop {
         let city = mv[2];
         this.game.queue.splice(qe, 1);
 
-        let logMsg = `${this.game.playerNames[player - 1]} starts with `;
+        let logMsg = `${this.game.playerNames[player - 1]} gains `;
         for (let hextile of this.hexgrid.hexesFromVertex(city)) {
           let bounty = this.game.state.hexes[hextile].resource;
           if (bounty !== this.returnNullResource()) { //DESERT ATTACK
@@ -346,7 +346,7 @@ class SettlersGameloop {
           this.game.state.last_city = slot;
         }
 
-        this.updateLog(`${this.game.playerNames[player - 1]} built a ${this.c1.name}`);
+        this.updateLog(`${this.game.playerNames[player - 1]} builds ${this.c1.name}`);
 
         //Check for edge case where the new city splits a (longest) road
         let adj_road_owners = {};
@@ -773,21 +773,22 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         let discardString = "";
         let confirmsNeeded = 0;
         let amIPlaying = false;
+
+	let idx = 0;
         for (let i of playersToGo) {
+	  idx++;
           if (this.game.confirms_needed[i - 1] == 1) {
-            discardString += `${this.game.playerNames[i - 1]}, `;
+            if (idx > 1) { discardString += ", "; }
+            discardString += `${this.game.playerNames[i - 1]}`;
             confirmsNeeded++;
             if (this.game.player == parseInt(i)) {
               this.addMove("RESOLVE\t" + this.app.wallet.returnPublicKey());
-              
-              this.discard.discardString = this.prettifyList(discardString);
+              this.discard.discardString = discardString;
               this.discard.render();
               amIPlaying = true;
             }
           }
         }
-
-        discardString = this.prettifyList(discardString);
 
         this.game.queue.push(
           `NOTIFY\t${discardString} must discard half their hand.`
@@ -870,10 +871,12 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         }
 
         if (this.game.player === thief) {
-          this.updateStatus(`<div class="persistent">You stole ${(loot == "nothing") ? "nothing" : this.returnResourceHTML(loot)}</div>`);
+          let x = `<div class="card tinycard"><img src="${this.returnCardImage(loot)}" /></div>`;
+          this.updateStatus(`<div class="persistent">You stole ${(loot == "nothing") ? "nothing" : x }</div>`);
         }
         if (this.game.player === victim) {
-          this.updateStatus(`<div class="persistent">${this.game.playerNames[thief - 1]} stole ${(loot == "nothing") ? "nothing" : this.returnResourceHTML(loot)} from you</div>`);
+          let x = `<div class="card tinycard"><img src="${this.returnCardImage(loot)}" /></div>`;
+          this.updateStatus(`<div class="persistent">${this.game.playerNames[thief - 1]} stole ${(loot == "nothing") ? "nothing" : x } from you</div>`);
         }
 
         let victim_name = (victim > 0) ? `${this.game.playerNames[victim - 1]}` : "nobody";

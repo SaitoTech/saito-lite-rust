@@ -9,56 +9,14 @@ body {
   height: 100vh;
 }
 
-.status ul .menu-option {
-  text-tranform: unset;
-}
-
-.poker-seat-1 {
-  height: 28rem;
-  min-height: 28rem;
-}
-
-
-.player-box-graphic.hand {
-  position: absolute;
-}
-
-.player-box.hide-scrollbar {
-  overflow: unset;
-  min-height: unset;
-}
-
-.player-box-body .status {
-    font-size: 1.7rem;
-    line-height: 2.2rem;
-}
-
-.player-box-body .status .status-header .status-message {
-  box-shadow: none;
+.tinyhand .card {
+    position: absolute;
+    width: 12vh;
+    height: calc(12vh * 1.55);
 }
 
 .saito-balance {
   text-align: right;
-}
-
-
-
-.player-box-head .saito-user>.saito-address , .player-box-head .saito-user>.saito-userline {
-  color: white;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.player-box-body .chips {
-    font-size: 1.4rem;
-    font-weight: bolder;
-    width: 100%;
-    margin-top: -1.8rem;
-    position: absolute;
-    padding-right: 1.8rem;
 }
 
 .status-info {
@@ -66,8 +24,6 @@ body {
     padding-top: 1rem;
     padding-bottom: 1rem;
 }
-
-
 
 .gameboard{
   /* Default fill the background with image */
@@ -79,27 +35,6 @@ body {
   overflow: hidden;
 }
 
-/* Split hands display on playerbox */
-.poker-seat-1 .player-box-graphic.hand{
-  display: block;
-  position: absolute;
-}
-
-.poker-seat-1 .player-box-graphic.hand {
-  left: 32vh;
-}
-
-.player-box-graphic .htmlCards{
-  width: 30vh;
-}
-
-.player-box-graphic .htmlCards .card{
-  width: 6vh;
-  position: relative;
-}
-
-
-
 .splithand{
   display: flex;
   flex-direction: row;
@@ -109,6 +44,7 @@ body {
 
 .plog .htmlCards .card{
   width: 20px;
+  height: calc(20px * 1.55);
 }
 
 .justify{
@@ -116,7 +52,6 @@ body {
   flex-direction: row;
   justify-content: space-between;
 }
-
 
 .card {
   width: unset;
@@ -135,15 +70,6 @@ body {
   border-radius: 6px;
 }
 
-
-
-/*For visibility with white text on dark background*/
-.status ul li:hover {
-  background: #ccc3;
-}
-
-
-/*Playerbox text menu prompt*/
 .menu-player {
   font-size: 2vh;
   font-weight: bolder;
@@ -151,33 +77,7 @@ body {
   margin-bottom: 0.5vh;
 }
 
-.menu_option{
-  text-transform: uppercase;
-}
-
-.poker-seat-4 .hand{
-  top: 15vh;
-  left: 33%;
-}
-.poker-seat-2 .hand{
-  left: 9vh;
-}
-
 @media screen and (orientation: portrait) and (max-width: 600px) {
-  .poker-seat-6, .poker-seat-2{ 
-    top:40vh 
-  }
-  .poker-seat-5, .poker-seat-3{ 
-    top:25vh
-   }
-  .poker-seat-5 .hand, .poker-seat-3 .hand{ 
-    left: 15%;
-    top: -20vh;
- }
- .poker-seat-2 .hand{
-    left: 4vh;
- }
-
    .game-scoreboard{
     top: unset;
     left: unset;
@@ -194,27 +94,10 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
 }
 
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
-
-  .poker-seat-4 .hand{
-    top: 3vh;
-    left: -50%;
-  }
-
-  .poker-seat-1{
-    max-height: 45vh;
-  }
-
-  .menu-player{
-    font-size: 0.9em;
-    font-weight: normal;
-    margin: 0.3vh auto;
-  }
-  
   .game-scoreboard{
     top: unset;
     left: unset;

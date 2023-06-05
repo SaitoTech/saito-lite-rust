@@ -45,7 +45,7 @@
 
         let ops_to_purge = Math.min(2, ops_available);
 
-        this.updateStatusHeader("Remove"+ops_to_purge+" US influence from the Middle East");
+        this.updateStatus("Remove"+ops_to_purge+" US influence from the Middle East");
         
         $(".easterneurope").off();
         $(".easterneurope").on('click', function() {
@@ -63,7 +63,7 @@
               twilight_self.endTurn();
             }
           }
-          twilight_self.updateStatusHeader("Remove "+ops_to_purge+" US influence from the Middle East");        
+          twilight_self.updateStatus("Remove "+ops_to_purge+" US influence from the Middle East");        
 
         });
 

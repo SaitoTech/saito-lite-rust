@@ -9,16 +9,14 @@
         this.startClock();
 
         var twilight_self = this;
+
         twilight_self.playerFinishedPlacingInfluence();
-
         twilight_self.addMove("resolve\tiraniraq");
-        twilight_self.updateStatusWithOptions('Iran-Iraq War. Choose Target:',`<ul><li class="card" id="iraq">Iraq</li><li class="card" id="iran">Iran</li></ul>`,false);
+        twilight_self.updateStatusWithOptions('Iran-Iraq War. Choose Target:',`<ul><li class="option" id="iraq">Iraq</li><li class="option" id="iran">Iran</li></ul>`, function(invaded) {
 
-        let target = 4;
-        let modifications = 0;
-        let winner = "";
-
-        twilight_self.attachCardboxEvents(function(invaded) {
+          let target = 4;
+          let modifications = 0;
+          let winner = "";
 
           for (let c of twilight_self.countries[invaded].neighbours){
             if (twilight_self.isControlled(opponent, c) == 1) { modifications++; }

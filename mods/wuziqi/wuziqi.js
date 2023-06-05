@@ -1,4 +1,4 @@
-const { timingSafeEqual } = require('crypto');
+const { timingSafeEqual } = require('crypto'); //Wtf is this???
 const saito = require('../../lib/saito/saito');
 const GameTemplate = require('../../lib/templates/gametemplate');
 const WuziqiGameRulesTemplate = require("./lib/wuziqi-game-rules.template");
@@ -35,13 +35,13 @@ class Wuziqi extends GameTemplate {
     }
 
 
-    initializeHTML(app) {
+    render(app) {
 
         if (!this.browser_active) { return; }
         if (this.initialize_game_run) { return 0; }
 
-        // Don't completly Override the game template initializeHTML function
-        super.initializeHTML(app);
+        // Don't completly Override the game template render function
+        super.render(app);
 
         this.menu.addMenuOption("game-game", "Game");
 
@@ -183,9 +183,33 @@ class Wuziqi extends GameTemplate {
         but data structures for player properties are typically 0-indexed arrays
     */
     updateScore() {
-        this.racetrack.render();
+
+        let roundsToWin = Math.ceil(this.game.options.best_of/2);
+        for (let i = 0; i<this.game.players.length; i++){
+            let scoreHTML = `<div>Score: </div><div class="tokens">`;
+            for (let j = 0; j < this.game.score[i]; j++) {
+                scoreHTML += `<img class="piece" src="img/${this.roles[i+1]}piece.png">`;
+            }
+            for (let j = 0; j < (roundsToWin - this.game.score[i]); j++) {
+                scoreHTML += `<img class="piece opaque30" src="img/${this.roles[i+1]}piece.png">`;
+            }
+            scoreHTML += "</div>";
+        }
     }
 
+    updateStatus(str) {
+    
+      if (this.lock_interface == 1) { return; }
+
+      this.game.status = str;
+
+      if (this.browser_active == 1) {
+        let status_obj = document.querySelector(".status");
+        if (status_obj) {
+          status_obj.innerHTML = str;
+        } 
+      }
+    }
 
     animatePlay(cell){
         //$(`div#tile_${cell.id} div`).removeClass("empty").addClass("piece").addClass(cell.owner).fadeIn();

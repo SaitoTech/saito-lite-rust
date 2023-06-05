@@ -48,11 +48,11 @@ class SaitoRun extends GameTemplate {
   }
 
 
-  initializeHTML(app) {
+  render(app) {
 
     if (!this.browser_active) { return; }
     
-    super.initializeHTML(app);
+    super.render(app);
 
     //
     // ADD MENU

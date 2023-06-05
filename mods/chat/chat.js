@@ -358,6 +358,29 @@ class Chat extends ModTemplate {
         }
 
         return null;
+
+      case "saito-profile-menu":
+        if (obj?.publickey) {
+          if (
+            chat_self.app.keychain.hasPublicKey(obj.publickey) &&
+            obj.publickey !== chat_self.app.wallet.returnPublicKey()
+          ) {
+            return {
+              text: "Chat",
+              icon: "far fa-comment-dots",
+              callback: function (app, publickey) {
+                if (chat_self.chat_manager == null) {
+                  chat_self.chat_manager = new ChatManager(chat_self.app, chat_self);
+                }
+
+                chat_self.chat_manager.render_popups_to_screen = 1;
+                chat_self.app.connection.emit("open-chat-with", { key: publickey });
+              },
+            };
+          }
+        }
+
+        return null;
       default:
         return super.respondTo(type);
     }

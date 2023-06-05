@@ -10,39 +10,8 @@ body {
 }
 
 
-.player-box-body .status .status-header .status-message {
-  box-shadow: none;
-}
-
 .saito-balance {
   text-align: center;
-}
-
-.player-box-body .status {
-    width: 100%;
-    padding: 0rem;
-    margin-top: 0.5rem;
-    line-height: 2.3rem;
-    font-size: 1.8rem;
-}
-
-.player-box .status-header .status-message {
-    background: unset;
-}
-.player-box .status-text-menu ul li:hover, .player-box .textchoice:hover {
-  background-color: whitesmoke;
-}
-.player-box .status-text-menu, .player-box .status-text-menu ul {
-    background: unset;
-}
-
-.player-box-head .saito-user>.saito-address , .player-box-head .saito-user>.saito-userline {
-  color: white;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
 }
 
 .cardfan {
@@ -50,9 +19,7 @@ body {
   max-width: 20vw;
 }
 
-
 .gameboard{
-  /* Default fill the background with image */
   position: absolute;
   background-image: url(/saito/img/arcade/greenfelt.jpg);
   background-size: cover;
@@ -68,23 +35,6 @@ body {
   width: 20vw;
 }
 
-.player-box{
-  min-width: 200px;
-  max-width: 250px;
-  border: 1px solid #FFF3;
-  min-height: unset;
-}
-
-.player-box-graphic{
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  z-index: -10;
-}
-
-
-
-/* Since Poker only has two cards in a hand, can adjust the angles*/
 .cardfan>.card:nth-child(1), .hand>.card:nth-child(1) {
   transform: rotate(-15deg);
   left: 0px; 
@@ -95,19 +45,10 @@ body {
   left: 3vh;
 }
 
-
 .hand {
   position: relative;
 }
 
-.poker-seat-1 .hand{
-  display: block;
-  right: 15vh;
-  top: 8vh;
-}
-
-
-/* display chips */
 .chip_stack{
   position: relative;
   top: 100%;
@@ -115,14 +56,7 @@ body {
   filter: drop-shadow(6px 6px 4px #000A);
 }
 
-.poker-seat-1 .chip_stack{
-  top: 85%;
-}
-
-.poker-seat-5 .chip_stack{
-  left: 100%;
-}
-.chip_stack .poker_chip{
+.chip_stack .poker_chip {
   position: absolute;
   width: 100px;
 }
@@ -136,38 +70,11 @@ body {
 
 }
 
-
-/*.pstack1 .poker_chip, #stripes1{
-  fill: #ff1205;
-}
-.pstack2 .poker_chip, #stripes2{
-  fill: #ff05f2;
-}
-.pstack3 .poker_chip, #stripes3{
-  fill: #05ff12;
-}
-.pstack4 .poker_chip, #stripes4{
-  fill: #05f2ff;
-}
-.pstack5 .poker_chip, #stripes5{
-  fill: #1205ff;
-}
-.pstack6 .poker_chip, #stripes6{
-  fill: #f2ff05;
-}*/
-
-.poker-seat-2 .chip_stack, .poker-seat-3 .chip_stack{
-  left: unset;
-  right: 100px;
-}
-
-.flip-card , .card {
-  width: 10vw;
-  max-width: 120px;
-}
-
 .flip-card .card {
-  position: absolute;
+  width: 10vw;
+  height: calc(10vw * 1.55);
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .cardFront, .cardBack{
@@ -188,7 +95,6 @@ body {
 .flipped .cardBack{
   transform: rotateY(-180deg);
 }
-
 
 .deal {
   margin: 0 auto;
@@ -274,7 +180,6 @@ body {
 }
 
 
-/*Playerbox text menu prompt*/
 .menu-player-upper {
     font-size: 1.4rem;
     font-weight: bolder;
@@ -285,7 +190,6 @@ body {
 }
 
 
-/* Player Markers */
 .dealerbutton{
   color: #fff;
   width: 1em;
@@ -314,32 +218,44 @@ body {
 
 @media screen and (max-width: 1200px) {
 
-  .flip-card , .card {
+  .flip-card .card {
     width: 13vw;
+    height: calc(13vw * 1.575);
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
   }
 
 }
 
 @media screen and (max-width: 800px) {
 
-  .flip-card , .card {
+  .flip-card .card {
     width: 15vw;
+    height: calc(15vw * 1.575);
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
   }
 
 }
 
 @media screen and (max-width: 600px) {
 
-  .flip-card , .card {
+  .flip-card .card {
     width: 17vw;
+    height: calc(17vw * 1.575);
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
   }
 
 }
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
 
-  .flip-card , .card {
-    width: 20%;
+  .flip-card .card {
+    width: 20vw;
+    height: calc(20vw * 1.575);
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
   }
 
   .chip_stack {
@@ -369,19 +285,16 @@ body {
     margin: 0.3vh auto;
   }
 
-  .poker-seat-1 .player-box-info{
-    position: absolute;
-    top: 0;
-    right: 0;
-  }
- 
 }
 
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
 
-  .flip-card {
+  .flip-card .card {
     width: 18vw;
+    height: calc(18vw * 1.575);
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
   }
 
   .chip_stack {

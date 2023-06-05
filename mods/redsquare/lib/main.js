@@ -17,7 +17,7 @@ class RedSquareMain {
 
     this.components = {};
     this.components['home'] = new RedSquareAppspaceHome(app, mod, ".saito-main");
-    this.components['profile'] = new RedSquareAppspaceProfile(app, mod, ".saito-main");
+    this.components['profile'] = this.mod.profile;
     this.components['notifications'] = new RedSquareAppspaceNotifications(app, mod, ".saito-main");
     //this.components['contacts'] = new RedSquareAppspaceContacts(app, mod, ".saito-main");
     this.render_component = 'home';
@@ -71,7 +71,8 @@ class RedSquareMain {
     });
     this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
       setHash('profile');
-      this.renderAppspaceComponent("profile", publickey);
+      //this.renderAppspaceComponent("profile", publickey);
+      this.app.connection.emit("saito-profile-render-request", this.app.wallet.returnPublicKey());
     });
     //this.app.connection.on("redsquare-contacts-render-request", () => {
     //  this.renderAppspaceComponent("contacts");

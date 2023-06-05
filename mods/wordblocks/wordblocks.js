@@ -2,6 +2,7 @@ const GameTemplate = require("../../lib/templates/gametemplate");
 const WordblocksGameRulesTemplate = require("./lib/wordblocks-game-rules.template");
 const WordblocksGameOptionsTemplate = require("./lib/wordblocks-game-options.template");
 
+
 class Wordblocks extends GameTemplate {
   constructor(app) {
     super(app);
@@ -38,14 +39,14 @@ class Wordblocks extends GameTemplate {
     return this;
   }
 
-  initializeHTML(app) {
+  render(app) {
     if (!this.browser_active) {
       return;
     }
 
     if (this.initialize_game_run) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
 
     this.menu.addMenuOption("game-game", "Game");
 
@@ -79,10 +80,8 @@ class Wordblocks extends GameTemplate {
     this.log.render();
 
     try {
-      this.playerbox.render();
 
-      this.playerbox.groupOpponents(false);
-      $("#opponentbox *").disableSelection();
+      this.playerbox.render();
 
       let compact_html = "";
 
@@ -179,9 +178,12 @@ class Wordblocks extends GameTemplate {
   }
 
   initializeGame(game_id) {
-    console.log("InitializeGame");
 
-    this.resetPlayerNames();
+    this.game.playerNames = [];
+    for (let i = 0; i < this.game.players.length; i++) {
+      this.game.playerNames.push(this.app.keychain.returnUsername(this.game.players[i]));
+    }
+
 
     //
     // deal cards
@@ -2137,6 +2139,7 @@ class Wordblocks extends GameTemplate {
         let tileCt = parseInt(mv[2]);
         this.game.queue.splice(this.game.queue.length - 1, 1);
         console.log(player, tileCt);
+
         if (this.browser_active) {
           this.playerbox.appendLog(
             `<div class="lastmove"><span>Tiles:</span><span class="playerscore">${tileCt}</span></div>`,
@@ -2209,11 +2212,10 @@ class Wordblocks extends GameTemplate {
         }
 
         this.updateActivePlayerUserline(this.game.target);
+	this.playerbox.setActive(this.game.target);
 
-        $(".player-box").removeClass("active");
-        this.playerbox.addClass("active", this.game.target);
         if (this.game.target == this.game.player){
-          this.playerbox.alertNextPlayer(this.game.target, "flash");
+          this.playerbox.alertPlayer(this.game.target, "flash");
         }
         
 
@@ -2277,10 +2279,9 @@ class Wordblocks extends GameTemplate {
           this.stopClock(); //Make sure clock didn't start again on browser refresh
           this.updateStatusWithTiles(`${this.game.playerNames[this.game.target - 1]}'s turn`);
         }
-        $("player-box").removeClass("active");
-        this.playerbox.addClass("active", this.game.target);
-        this.playerbox.alertNextPlayer(this.game.target, "flash");
-        //console.log("New Queue:",JSON.stringify(this.game.queue));
+
+	this.playerbox.setInactive(this.game.target);
+        this.playerbox.alertPlayer(this.game.target, "flash");
         return 1;
       }
     }
@@ -2289,13 +2290,9 @@ class Wordblocks extends GameTemplate {
   }
 
   checkForEndGame() {
-    //
-    // the game ends when one player has no cards left
-    //
     if (this.game.deck[0].hand.length == 0 && this.game.deck[0].crypt.length == 0) {
       return 1;
     }
-
     return 0;
   }
 
@@ -2387,25 +2384,20 @@ class Wordblocks extends GameTemplate {
   }
 
   updateActivePlayerUserline(active_player) {
-    console.log("active player is: " + active_player);
-
-    //
-    // update userline
-    //
+    let np = "now playing";
+    if (this.app.browser.isMobileBrowser()) { np = "playing"; }
     for (let i = 1; i <= this.game.players.length; i++) {
       if (i == active_player) {
-        console.log("NOW PLAYING REQUEST!");
-
-        this.playerbox.refreshName(i, "", "now playing");
+        this.playerbox.updateUserline(np, i);
       } else {
-        this.playerbox.refreshName(i);
+        this.playerbox.updateUserline(("Player "+i), i);
       }
-
     }
   }
 
 
   refreshPlayerLog(html, player) {
+
     if (!this.game.state) {
       this.game.state = {};
       this.game.state.players = [];
@@ -2425,7 +2417,8 @@ class Wordblocks extends GameTemplate {
       </div>
     `;
 
-    this.playerbox.refreshLog(newhtml, player);
+    this.playerbox.updateBody(newhtml, player);
+
   }
   refreshPlayerInfo(html, player) {
     if (!this.game.state) {
@@ -2447,7 +2440,7 @@ class Wordblocks extends GameTemplate {
       </div>
     `;
 
-    this.playerbox.refreshInfo(newhtml, player);
+    this.playerbox.updateBody(newhtml, player);
   }
 }
 

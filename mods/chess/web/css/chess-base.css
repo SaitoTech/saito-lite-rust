@@ -50,12 +50,6 @@ input[type="checkbox"]:checked {
     background-color: #533a26;
 }
 
-.game-menu{
-    background-color: #f9efdf;
-    box-shadow: 2px 2px 5px 0px #644b37;
-}
-
-
 .main{
     width: 100vw;
     height: 100vh;
@@ -78,33 +72,44 @@ input[type="checkbox"]:checked {
     width: 100%;
 }
 
+.controls-space {    
+    width: 35%;
+    max-width: 500px;
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+    grid-gap: 6px;   
+    font-size: max(14px, 1.2vw);
 
-.opponents {
+}
+
+.tool-cont {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: calc(100% - 60px);
-}
-
-.opponents .me {
-    order: 2;
-}
-
-.player-box {
+    flex-direction: row;
+    justify-content: left;
+    column-gap: 2rem;
+    align-items: center;
+    padding: 10px 20px;
+    width: 100%;
+    max-width: 450px;
     background: #f9efdf;
     border-radius: 10px;
     box-shadow: 0 2px 3px 2px #644b37;
-    color: black;
-    min-height: 10rem;
+    gap: 1rem;
+    overflow: hidden;
 }
 
-.player-box-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    flex: 1; /* Make sure body fills up available space in player-box*/
+.player-identicon {
+    width: 48px;
+    margin: 1px 4px;
+    box-shadow: 0 0 1px 1px dimgray;
 }
 
+#opponent_id {
+    font-family: 'Courier New', Courier, monospace;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    flex-grow: 1;
+}
 
 .last_move {
     margin: auto;
@@ -255,9 +260,7 @@ img.captured {
      }
 
     .turn-shape {
-        width: 40px;
-        height: 40px;
-        margin: 5px;
+        margin: 0px;
     }
 
 

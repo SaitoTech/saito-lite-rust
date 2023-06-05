@@ -1,26 +1,25 @@
 
     if (card == "kissingerisawarcriminal") {
 
+      let twilight_self = this;
+
       if (this.game.player == 1) {
-        this.updateStatusHeader("US playing Kissinger:");
+        this.updateStatus("US playing Kissinger:");
         return 0;
 
       }
 
       let user_message = "Designate a region to turn all 1-stability countries into battleground countries:";
       let html = `<ul>";
-                  <li class="card" id="asia">Asia</li>
-                  <li class="card" id="europe">Europe</li>
-                  <li class="card" id="africa">Africa</li>
-                  <li class="card" id="camerica">Central America</li>
-                  <li class="card" id="samerica">South America</li>
-                  <li class="card" id="mideast">Middle-East</li>
+                  <li class="option" id="asia">Asia</li>
+                  <li class="option" id="europe">Europe</li>
+                  <li class="option" id="africa">Africa</li>
+                  <li class="option" id="camerica">Central America</li>
+                  <li class="option" id="samerica">South America</li>
+                  <li class="option" id="mideast">Middle-East</li>
                   </ul>`;
 
-      this.updateStatusWithOptions(user_message, html, false);
-
-      let twilight_self = this;
-      twilight_self.attachCardboxEvents(function(action2) {
+      this.updateStatusWithOptions(user_message, html, function(action2) {
 
 	let selreg = "europe";
 	if (action2 == "asia") { selreg = "Asia"; }

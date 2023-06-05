@@ -3,7 +3,6 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
     let html = `
       <div class="rules-overlay saitoa">`;
 
-
         //Fucking Dice
         html += `<div class="settlers-state-container">`;
         

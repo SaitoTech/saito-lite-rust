@@ -34,26 +34,24 @@
           let userhtml = "<ul>";
 
           if (yugo_diff > 0) {
-            userhtml += '<li class="card" id="yugoslavia">Yugoslavia</li>';
+            userhtml += '<li class="option" id="yugoslavia">Yugoslavia</li>';
           }
           if (romania_diff > 0) {
-            userhtml += '<li class="card" id="romania">Romania</li>';
+            userhtml += '<li class="option" id="romania">Romania</li>';
           }
           if (bulgaria_diff > 0) {
-            userhtml += '<li class="card" id="bulgaria">Bulgaria</li>';
+            userhtml += '<li class="option" id="bulgaria">Bulgaria</li>';
           }
           if (hungary_diff > 0) {
-            userhtml += '<li class="card" id="hungary">Hungary</li>';
+            userhtml += '<li class="option" id="hungary">Hungary</li>';
           }
           if (czechoslovakia_diff > 0) {
-            userhtml += '<li class="card" id="czechoslovakia">Czechoslovakia</li>';
+            userhtml += '<li class="option" id="czechoslovakia">Czechoslovakia</li>';
           }
           userhtml += '</ul>';
 
-          this.updateStatusWithOptions("Match USSR influence in which country?",userhtml,false);
           let twilight_self = this;
-
-          twilight_self.attachCardboxEvents(function(myselect) {
+          this.updateStatusWithOptions("Match USSR influence in which country?", userhtml, function(myselect) {
             $('.card').off();
 
             if (myselect == "romania") {

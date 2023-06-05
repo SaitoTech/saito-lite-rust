@@ -132,7 +132,6 @@ p {
   right: -12.5%;
 }
 
-
 .hex_bg img {
   left: -12.5%;
   right: -12.5%;
@@ -231,27 +230,6 @@ body {
   box-shadow: unset !important;
 }
 
-/*
-  Shrink Development cards
-*/
-
-.devcards>.card {
-  width: 10vh;
-  position: absolute;
-}
-
-.card>img {
-  width: 100%;
-}
-
-.card .icon {
-  position: absolute;
-  width: 15%;
-  left: 7%;
-  top: 5%;
-  pointer-events: none;
-}
-
 /* Make room to display two hands of cards*/
 
 .devcards {
@@ -313,8 +291,6 @@ body {
   position: relative;
   top: -4px;
 }
-
-
 
 .rhover:hover, .city.empty.rhover:hover {
   border: 1px solid white;
@@ -620,7 +596,7 @@ input[type="checkbox"] {
   z-index: 15;
   font-weight: bold;
   border: 2px solid #fff;
-  border-radius: 50%;  
+  border-radius: 50%;
   width: 2em;
   height: 2em;
   line-height: 2em;
@@ -827,8 +803,6 @@ ul.horizontal_list li.iconoption {
   left: 1vw;*/
 }
 
-
-
 /* Dice display (position handled by playerbox-graphic) */
 
 .diceroll {
@@ -867,7 +841,6 @@ ul.horizontal_list li.iconoption {
   align-items: center;
   flex-direction: row;
   width: 100%;
-  flex-wrap: wrap;
 }
 
 .flexline2 {
@@ -909,6 +882,7 @@ ul.horizontal_list li.iconoption {
 .cardct {
   width: fit-content;
   font-size: 1.35rem;
+  min-width: 15rem;
 }
 
 .cardselector {
@@ -991,28 +965,33 @@ ul.horizontal_list li.iconoption {
   align-items: center;
   flex-wrap: wrap;
   font-weight: 800;
+  padding-bottom: 0.5rem;
+  width: max-content;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .player-notice+.tbd {
   border-top: 1px dashed var(--text-color);
   padding-top: 1rem;
 }
+
 .hud-body .status .player-notice+.tbd {
   padding-top: 1rem;
 }
-
 
 .tbd ul {
   margin-top: 0.5em;
 }
 
+/*******
 .player-box.notme, .opponents {
   position: absolute;
   height: fit-content;
   top: 76px;
   right: 40px;
 }
-
+******/
 
 .opponents>.player-box {
   position: relative;
@@ -1022,30 +1001,40 @@ ul.horizontal_list li.iconoption {
 
 .player-box.me {
   max-height: unset;
-  left: 30px;
+  /* left: 30px; */
   top: unset;
   bottom: 1px;
 }
 
+.mobile-trading-container {
+  position: absolute;
+  top: 70px;
+  display: flex;
+  flex-direction: column;
+  gaps: 2.5rem;
+}
+
+.player-box {
+  display: relative;
+}
+
+/*****
 .mobile-trading-container .player-box.notme:nth-child(0) {
   top: 76px;
   right: 40px;
 }
-
 .mobile-trading-container .player-box.notme:nth-child(1) {
   top: auto;
   bottom: 76px;
   left: 40px;
   right: auto;
 }
-
-
 .mobile-trading-container .player-box.notme:nth-child(2) {
   top: auto;
   bottom: 76px;
   right: 40px;
 }
-
+*****/
 
 .player-box-graphic .hand {
   position: absolute;
@@ -1092,7 +1081,6 @@ ul.horizontal_list li.iconoption {
 .vp-table img {
   max-height: 4rem;
 }
-
 
 .welcome_overlay {
   padding: 0 !important;
@@ -1212,7 +1200,6 @@ ul.horizontal_list li.iconoption {
   }
 }
 
-
 .achievements {
   display: flex;
   flex-direction: row;
@@ -1239,6 +1226,10 @@ ul.horizontal_list li.iconoption {
   display: flex;
   gap: 1rem;
   flex-direction: row;
+<<<<<<< HEAD
+=======
+  align-items: center;
+>>>>>>> c18510f5b8830fbba4ac38f33d9993274dc7e70d
 }
 
 .achievements .victory_point_cards img {
@@ -1285,4 +1276,18 @@ ul.horizontal_list li.iconoption {
   right: 3rem;
   top: -1rem;
   height: 3rem;
+}
+
+.flexline img.icon {
+  width: 2.5rem;
+}
+
+.flexline span {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 1rem;
 }

@@ -24,7 +24,7 @@ class JoinGameOverlay {
     let game_mod = this.app.modules.returnModuleBySlug(this.invite.game_slug);
 
     this.overlay.show(JoinGameOverlayTemplate(this.app, this.mod, this.invite));
-    this.overlay.setBackground(game_mod.returnArcadeImg());
+    this.overlay.setBackground(game_mod.respondTo("arcade-games").image);
     this.attachEvents();
     this.app.connection.emit("add-league-identifier-to-dom");
   }

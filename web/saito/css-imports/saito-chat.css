@@ -100,9 +100,13 @@
 .chat-body {
   padding: 1rem;
   display: block;
-  height: calc(100% - 10.4rem);
+  height: calc(100% - 9rem);
   overflow: auto;
-  margin-bottom: 5.8rem;
+
+  /* Put a TRANSPARENT TEXTURE over the chat body background www.transparenttextures.com*/
+  background-image: url("/chat/img/subtle-surface.png");
+  /* Not sure what this is supposed to do?? */
+  /*margin-bottom: 5.8rem;*/
 }
 
 .chat-body>.saito-user {
@@ -164,7 +168,6 @@
   flex-direction: column-reverse;
   align-items: center;
   gap: 0.5rem;
-  background-color: var(--saito-background-color);
   right: 0;
   z-index: 9;
 }
@@ -193,7 +196,7 @@
   font-size: 2rem;
   position: absolute;
   bottom: 0;
-  width: calc(100% - 0.5rem);
+  width: 100%;
   padding: 0.5rem;
   display: flex;
   flex-flow: row;

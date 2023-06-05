@@ -1,117 +1,35 @@
 
-.hud-body .status .tbd ul li, .hud-body .status ul li {
-    font-size: 1.8rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-}
-
-.status-header, .status-message {
-  box-shadow: none;
-  background-color: transparent;
-}
-
-.hud-long {
-  max-height: unset;
-  bottom: 10px;
-  z-index: 9 !important;
+.hud {
+  width: 50rem;
+  max-width: 50rem;
+  z-index: 50 !important;
 }
 
 .hud-body {
-  height: 12rem;
-  width: auto;
-  background-color: #d3c38df5;
-  padding: 0.5rem 1rem;
+  min-height: 15vh;
 }
 
-.hud-header {
-  background: #000;
-  opacity: 0.1;
+/* override default whitesmoke background */
+.hud-body .status , .controls ul li , options {
+  background-color: transparent;
+  box-shadow: none;
 }
 
-.hud-body .status {
-  height: auto;
+/* hide scrollbars */
+.hud-body .controls {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overflow-y: auto;
+  overflow-x: auto;
 }
 
-.status ul {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 1rem;
+.hud-body .status ul li , .hud-body .status .tbh ul li {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    line-height: 4rem;
 }
-
-.status ul::-webkit-scrollbar {
-  display: none;
-}
-
-.hud-body .status .tbd ul li, .hud-body .status ul li {
-  font-size: 1.8rem;
-}
-
-/*
-.hud-body .status .tbd ul li:nth-child(1) , .hud-body .status ul li:nth-child(1) {
-  border-top: 0px;
-}
-*/
-
-.hud-body .status .tbd, .hud-body .status .player-notice {
-  min-width: 80%;
-  font-size: 1.8rem;
-  padding: 0 1rem 1rem;
-  justify-content: center;
-}
-
-.status-text-menu ul li, .status ul li {
-  border-color: var(--text-color);
-  border: 3px solid;
-  min-width: 12rem;
-  padding: 0;
-  border-radius: 10px;
-  background-color: #ab815f73;
-}
-
-.status-text-menu ul li.resolve, .status ul li.resolve {
-  width: max-content;
-  border: none;
-  background: none; 
-}
-
-.status-text-menu ul li.steal-player-choice {
-  width: max-content;
-  padding: 0.2rem 0.7rem;
-}
-
-
-.status-text-menu ul li.disabled, .status ul li.disabled {
-  cursor: not-allowed;
-  background: #64625af5;
-}
-
-.status-message ul li:hover, .status ul li:hover {
-  background-color: #ab815faa;
-}
-
-.iconoption {
-  border: unset;
-  margin: 2px;
-}
-
-.discard-select ul li {
-  display: inline;
-  border: 0px;
-}
-
-.discard-select ul li .icon, .player-notice .tip .icon , .permanent .tip .icon {
-  height: 4rem;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-}
-
-.player-notice .tip .icon {
-  height: 4rem;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+.hud-body .status ul li:hover , .hud-body .status .tbh ul li:hover {
+    background-color:#cbaf83
 }
 
 .hud-body .mobile {
@@ -144,13 +62,9 @@
   display: inline-block;
   position: relative;
   width: 100%;
-  top: -0.75rem;
+  top: 0rem;
 }
 
-
-.status-header > #status-content, .status-message > #status-content, .status {
-  font-size: 2rem;
-}
 
 @media only screen and (max-width: 700px) and (orientation: portrait) {
   body .player-box {
@@ -163,14 +77,6 @@
     margin-left: 5vw;
     margin-right: 5vw;
     margin-top: 5vw;
-  }
-  body .player-box.notme, .opponents, body .player-box.me {
-    position: unset;
-    top: unset;
-    bottom: unset;
-    right: unset;
-    height: auto;
-    max-height: unset;
   }
   .scoreboard {
     display: none;
@@ -191,7 +97,6 @@
   }
   .mobile-trading-container {
     display: none;
-    /* grid-template-areas: 'areaOne areaTwo'; // set in code */
     position: absolute;
     background-color: black;
     height: 100%;
@@ -200,9 +105,9 @@
     top: 0;
     left: 0;
     padding-top: 6vh;
-    /* ensures can scroll up if too big */
     overflow-y: scroll;
     max-height: 120vh;
     padding-bottom: 40vh;
   }
 }
+
