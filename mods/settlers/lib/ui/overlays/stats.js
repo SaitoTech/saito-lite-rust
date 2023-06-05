@@ -50,8 +50,6 @@ class StatsOverlay {
   createVPStats(){
     let card_dir = "/settlers/img/cards/";
     let statshtml = ``;
-    console.log("mod players //////////");
-    console.log(this.mod.game.state.players);
     statshtml += `<div class="settlers-achievements-container">`;
     for (let i = 1; i <= this.mod.game.state.players.length; i++) {
       //
@@ -59,12 +57,11 @@ class StatsOverlay {
       //
 
       let player = this.mod.game.state.players[i];
+
+      let vp = this.createCityVp(i);
+      statshtml += `<div class="settlers-stats-player">Player ${i} (VP: ${vp.score})</div>`;
+
       statshtml += `<div class="settlers-achievements-row">`;
-
-        statshtml += `<div class="settlers-stats-player">Player ${i}</div>`;
-
-        let vp = this.createCityVp(i);
-
         statshtml += vp.html;
 
         statshtml += `<div class="achievements">`;
@@ -99,60 +96,49 @@ class StatsOverlay {
 
         statshtml += `</div>`;
 
-        statshtml += `<div class="settlers-stats-total">${vp.score}</div>`
-
       statshtml += `</div>`;
     }
 
     statshtml += `</div>`;
-
-    console.log("let statshtml ///////////");
-    console.log(statshtml);
-
     document.querySelector('.settlers-vp-race-body').innerHTML = statshtml;
   }
 
   createCityVp(player){
-      let html = ``;
-      let ranking_scores = [this.mod.game.state.players[0].vp];
-      let ranking_players = [0];
-      for (let i = 1; i < this.mod.game.state.players.length; i++){
-        let j = 0;
-        for (; j < ranking_scores.length; j++){
-          if (this.mod.game.state.players[i].vp > ranking_scores[j]){
-            break;
-          }
+    let html = ``;
+    let ranking_scores = [this.mod.game.state.players[0].vp];
+    let ranking_players = [0];
+    for (let i = 1; i < this.mod.game.state.players.length; i++){
+      let j = 0;
+      for (; j < ranking_scores.length; j++){
+        if (this.mod.game.state.players[i].vp > ranking_scores[j]){
+          break;
         }
-        ranking_scores.splice(j,0,this.mod.game.state.players[i].vp);
-        ranking_players.splice(j,0,i);
       }
-      for (let i = 0; i < ranking_scores.length; i++){
-        if (player == i+1) {
-          let player = ranking_players[i];
-          let numVil = 0;
-          let numCity = 0;
-          for (let j = 0; j < this.mod.game.state.cities.length; j++) {
-            if (this.mod.game.state.cities[j].player === player + 1) {
-              if (this.mod.game.state.cities[j].level == 1){
-                numVil++;
-              }else{
-                numCity++;
-              }
+      ranking_scores.splice(j,0,this.mod.game.state.players[i].vp);
+      ranking_players.splice(j,0,i);
+    }
+    for (let i = 0; i < ranking_scores.length; i++){
+      if (player == i+1) {
+        let player = ranking_players[i];
+        let numVil = 0;
+        let numCity = 0;
+        for (let j = 0; j < this.mod.game.state.cities.length; j++) {
+          if (this.mod.game.state.cities[j].player === player + 1) {
+            if (this.mod.game.state.cities[j].level == 1){
+              numVil++;
+            }else{
+              numCity++;
             }
           }
-
-          html += `<div class="victory_point_cards"><img src="/settlers/img/icons/village.png"> <div class="army_knights vproundel">${numVil}</div></div>
-                   <div class="victory_point_cards"><img src="/settlers/img/icons/city.png"> <div class="army_knights vproundel">${numCity}</div></div>
-                `;
         }
+
+        html += `<div class="victory_point_cards"><img src="/settlers/img/icons/village.png"> <div class="army_knights vproundel">${numVil}</div></div>
+                 <div class="victory_point_cards"><img src="/settlers/img/icons/city.png"> <div class="army_knights vproundel">${numCity}</div></div>
+              `;
       }
+    }
 
-      console.log("scores //////////");
-      console.log(ranking_scores);
-      console.log("playerr //////////");
-      console.log(player);
-
-      return {html: html, score: ranking_scores[player-1]};
+    return {html: html, score: ranking_scores[player-1]};
   }
 
 }

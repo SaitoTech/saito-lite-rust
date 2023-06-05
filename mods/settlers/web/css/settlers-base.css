@@ -1061,7 +1061,7 @@ ul.horizontal_list li.iconoption {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  padding: 2rem 5rem !important;
+  padding: 5rem 5rem !important;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -1315,7 +1315,7 @@ ul.horizontal_list li.iconoption {
 
 .settlers-dice-number {
   position: absolute;
-  bottom: -2rem;
+  bottom: -1rem;
   left: 0rem;
   font-size: 1.5rem;
   text-align: center;
@@ -1324,7 +1324,7 @@ ul.horizontal_list li.iconoption {
 .settlers-dice-numbers {
   display: flex;
   gap: 1rem; 
-  margin-bottom: 5rem;
+  margin-top: -1rem;
 }
 
 .settlers-dice-number {
@@ -1338,6 +1338,7 @@ ul.horizontal_list li.iconoption {
   flex-direction: column;
   gap: 2rem;
   display: flex;
+  width: 100%;
 }
 
 .settlers-achievements-row {
@@ -1347,7 +1348,7 @@ ul.horizontal_list li.iconoption {
 
 .settlers-stats-player {
   font-weight: bold;
-  line-height: 4rem;
+  line-height: 3rem;
 }
 
 .settlers-achievements-row  .achievements .army,
@@ -1375,17 +1376,74 @@ ul.horizontal_list li.iconoption {
 }
 
 .settlers-stats-resource-container {
-  position: relative;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
 }
 
-.settlers-stats-resource-card {
+.settlers-stats-card {
+  position: relative;
   filter: grayscale(0.2);
 }
 
 .settlers-stats-resource-count {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
+  top: 50%;
+  left: 50%;
   color: var(--saito-white);
-  text-shadow: 1px 1px 1px var(--saito-black);
+  text-shadow: 1px 1px 3px var(--saito-black);
+  transform: translate(-50%, -50%);
+  font-size: 4rem;  
+}
+
+.settlers-stats-caption {
+  text-align: left;
+  font-size: 3rem;
+}
+
+.settlers-state-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.settlers-stats-player {
+  font-size: 2rem;
+  font-weight: normal;
+}
+
+.settlers-achievements-row .victory_point_cards img {
+  height: 4rem;
+}
+
+.settlers-stats-overlay {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.rules-overlay {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+}
+
+
+.settlers-state-container .settlers-achievements-row .achievements .army, 
+.settlers-state-container .settlers-achievements-row .achievements .victory_point_cards {
+  margin: 0rem;
+  padding: 0rem;
+}
+
+.settlers-state-container .achievements .army {
+  padding: 0rem;
+}
+
+.settlers-state-container .achievements .army img {
+  margin: 0rem;
+}
+
+.settlers-state-container .achievements .army img:not(:first-child) {
+  margin: 0 0 0 -2rem;
 }
