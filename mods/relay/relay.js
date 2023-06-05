@@ -1,4 +1,5 @@
 const Slip = require("../../lib/saito/slip").default;
+const PeerService = require("saito-js/lib/peer_service").default;
 
 const Transaction = require("../../lib/saito/transaction").default;
 
@@ -38,7 +39,7 @@ class Relay extends ModTemplate {
 
   returnServices() {
     let services = [];
-    services.push({ service: "relay" });
+    services.push(new PeerService(null, "relay"));
     return services;
   }
 
@@ -101,7 +102,7 @@ class Relay extends ModTemplate {
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
-    console.log("relay.handlePeerTransaction : ", tx);
+    // console.log("relay.handlePeerTransaction : ", tx);
     if (tx == null) {
       return;
     }
@@ -114,8 +115,9 @@ class Relay extends ModTemplate {
         // sanity check on tx
         //
         let txjson = message.data;
-        console.log("txjson : ", txjson);
+        // console.log("txjson : ", txjson);
         let inner_tx = new Transaction(undefined, txjson);
+        await inner_tx.sign();
         if (inner_tx.to.length === 0) {
           return;
         }
@@ -126,7 +128,7 @@ class Relay extends ModTemplate {
         await inner_tx.decryptMessage(this.app);
         let inner_txmsg = inner_tx.returnMessage();
 
-        console.log("inner txmsg : ", inner_txmsg);
+        // console.log("inner txmsg : ", inner_txmsg);
         //
         // if interior transaction is intended for me, I process regardless
         //

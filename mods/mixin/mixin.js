@@ -635,7 +635,7 @@ class Mixin extends ModTemplate {
     }
   }
 
-  createAccount(callback = null) {
+  async createAccount(callback = null) {
     let mixin_self = this;
 
     if (this.mixin.publickey !== "") {
@@ -713,18 +713,19 @@ class Mixin extends ModTemplate {
       let privateKey = m.privateKey;
 
       let data = {
-        saito_publickey: mixin_self.app.wallet.returnPublicKey(),
+        saito_publickey: await mixin_self.app.wallet.getPublicKey(),
         mixin_publickey: user_public_key,
       };
 
       //console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
-      mixin_self.app.network.peers[0].sendRequestAsTransactionWithCallback(
+      mixin_self.app.network.sendRequestAsTransaction(
         "mixin create account",
         data,
         function (res) {
           //console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
           mixin_self.createAccountCallback(res, callback);
-        }
+        },
+        mixin_self.app.network.peers[0].peerIndex
       );
     }
   }

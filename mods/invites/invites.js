@@ -47,8 +47,8 @@ class Invites extends InviteTemplate {
     await super.onPeerHandshakeComplete(app, peer);
   }
 
-  async onConfirmation(blk, tx, conf, app) {
-    await super.onConfirmation(blk, tx, conf, app);
+  async onConfirmation(blk, tx, conf) {
+    await super.onConfirmation(blk, tx, conf);
   }
 }
 

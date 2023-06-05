@@ -9,6 +9,7 @@ import Transaction from "../../lib/saito/transaction";
 import Factory from "../../lib/saito/factory";
 import Wallet from "../../lib/saito/wallet";
 import Blockchain from "../../lib/saito/blockchain";
+import PeerServiceList from "saito-js/lib/peer_service_list";
 
 class WebMethods extends WebSharedMethods {
   app: Saito;
@@ -46,6 +47,10 @@ class WebMethods extends WebSharedMethods {
     this.app.connection.emit(event, peerIndex);
   }
 
+  sendBlockSuccess(hash: string, blockId: bigint) {
+    this.app.connection.emit("add-block-success", { hash, blockId });
+  }
+
   async saveWallet() {
     this.app.options.wallet.publicKey = await this.app.wallet.getPublicKey();
     this.app.options.wallet.privateKey = await this.app.wallet.getPrivateKey();
@@ -63,12 +68,22 @@ class WebMethods extends WebSharedMethods {
   async loadBlockchain() {
     throw new Error("Method not implemented.");
   }
+
+  getMyServices() {
+    let list = new PeerServiceList();
+    let result = this.app.network.getServices();
+    result.forEach((s) => list.push(s));
+    return list;
+  }
 }
 
 async function init() {
   console.log("lite init...");
   const saito = new Saito({ mod_paths: mods_config.lite });
   await saito.storage.initialize();
+
+  saito.options.browser_mode = true;
+  saito.options.spv_mode = true;
 
   await initSaito(
     saito.options,
@@ -79,12 +94,13 @@ async function init() {
   saito.wallet = (await S.getInstance().getWallet()) as Wallet;
   saito.wallet.app = saito;
   saito.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
+  saito.blockchain.app = saito;
   saito.BROWSER = 1;
   saito.SPVMODE = 1;
   await saito.init();
 }
 
 // init();
-window.onload = async function() {
-  return init();
+window.onload = async function () {
+  await init();
 };

@@ -12,6 +12,7 @@ const CryptoModule = require("../templates/cryptomodule");
 
 export default class Wallet extends SaitoWallet {
   public app: Saito;
+  publicKey;
   // public wallet = {
   // balance: "0",
   // publickey: "",
@@ -53,6 +54,9 @@ export default class Wallet extends SaitoWallet {
     fee = BigInt(0),
     force_merge = false
   ): Promise<Transaction> {
+    if (publicKey == "") {
+      publicKey = await this.getPublicKey();
+    }
     return S.getInstance().createTransaction(publicKey, amount, fee, force_merge);
   }
 
@@ -62,10 +66,10 @@ export default class Wallet extends SaitoWallet {
   //   return (await S.getInstance().signTransaction(tx)) as T;
   // }
 
-  // public async getPublicKey(): Promise<string> {
+  // public async returnPublicKey(): Promise<string> {
   //   return S.getInstance().getPublicKey();
   // }
-  //
+
   // public async returnPrivateKey(): Promise<string> {
   //   return S.getInstance().getPrivateKey();
   // }
@@ -119,19 +123,19 @@ export default class Wallet extends SaitoWallet {
         const from_from = 0;
         const to_to = 0;
         if (to == (await this.app.wallet.getPublicKey())) {
-          for (let i = 0; i < this.app.wallet.wallet.inputs.length; i++) {
-            if (this.app.wallet.wallet.inputs[i].amount === howMuch) {
-              if (parseInt(this.app.wallet.wallet.inputs[i].timestamp) >= parseInt(timestamp)) {
-                if (this.app.wallet.wallet.inputs[i].publicKey == to) {
+          for (let i = 0; i < this.app.wallet.instance.inputs.length; i++) {
+            if (this.app.wallet.instance.inputs[i].amount === howMuch) {
+              if (parseInt(this.app.wallet.instance.inputs[i].timestamp) >= parseInt(timestamp)) {
+                if (this.app.wallet.instance.inputs[i].publicKey == to) {
                   return true;
                 }
               }
             }
           }
-          for (let i = 0; i < this.app.wallet.wallet.outputs.length; i++) {
-            if (this.app.wallet.wallet.outputs[i].amount === howMuch) {
-              if (parseInt(this.app.wallet.wallet.outputs[i].timestamp) >= parseInt(timestamp)) {
-                if (this.app.wallet.wallet.outputs[i].publicKey == to) {
+          for (let i = 0; i < this.app.wallet.instance.outputs.length; i++) {
+            if (this.app.wallet.instance.outputs[i].amount === howMuch) {
+              if (parseInt(this.app.wallet.instance.outputs[i].timestamp) >= parseInt(timestamp)) {
+                if (this.app.wallet.instance.outputs[i].publicKey == to) {
                   return true;
                 }
               }
@@ -140,12 +144,14 @@ export default class Wallet extends SaitoWallet {
           return false;
         } else {
           if (from == (await this.app.wallet.getPublicKey())) {
-            for (let i = 0; i < this.app.wallet.wallet.outputs.length; i++) {
+            for (let i = 0; i < this.app.wallet.instance.outputs.length; i++) {
               //console.log("OUTPUT");
-              //console.log(this.app.wallet.wallet.outputs[i]);
-              if (this.app.wallet.wallet.outputs[i].amount === howMuch) {
-                if (parseInt(this.app.wallet.wallet.outputs[i].timestamp) >= parseInt(timestamp)) {
-                  if (this.app.wallet.wallet.outputs[i].publicKey == to) {
+              //console.log(this.app.wallet.instance.outputs[i]);
+              if (this.app.wallet.instance.outputs[i].amount === howMuch) {
+                if (
+                  parseInt(this.app.wallet.instance.outputs[i].timestamp) >= parseInt(timestamp)
+                ) {
+                  if (this.app.wallet.instance.outputs[i].publicKey == to) {
                     return true;
                   }
                 }
@@ -168,12 +174,13 @@ export default class Wallet extends SaitoWallet {
     }
 
     //
-    // this.wallet.publickey = await S.getInstance().getPublicKey();
-    // this.wallet.privatekey = await S.getInstance().getPrivateKey();
+    // this.publickey = await S.getInstance().getPublicKey();
+    // this.privatekey = await S.getInstance().getPrivateKey();
 
     this.saitoCrypto = new SaitoCrypto(this.app);
     let privateKey = await this.getPrivateKey();
     let publicKey = await this.getPublicKey();
+    this.publicKey = publicKey;
     console.log("public key = " + publicKey);
     console.log("private key = " + privateKey);
 
@@ -193,8 +200,8 @@ export default class Wallet extends SaitoWallet {
             // specify before reset to avoid archives reset problem
             await this.setPrivateKey(tmpprivkey);
             await this.setPublicKey(tmppubkey);
-            // this.wallet.publickey = tmppubkey;
-            // this.wallet.privatekey = tmpprivkey;
+            // this.instance.publickey = tmppubkey;
+            // this.instance.privatekey = tmpprivkey;
 
             // let modules purge stuff
             this.app.modules.onWalletReset();
@@ -207,8 +214,8 @@ export default class Wallet extends SaitoWallet {
             // re-specify after reset
             await this.setPrivateKey(tmpprivkey);
             await this.setPublicKey(tmppubkey);
-            // this.wallet.publickey = tmppubkey;
-            // this.wallet.privatekey = tmpprivkey;
+            // this.publickey = tmppubkey;
+            // this.privatekey = tmpprivkey;
 
             // this.app.options.wallet = this.wallet;
             this.app.options.wallet.preferred_crypto = this.preferred_crypto;
@@ -292,8 +299,8 @@ export default class Wallet extends SaitoWallet {
     // let publicKey = S.getInstance().generatePublicKey(privateKey);
     // await this.setPrivateKey(privateKey);
     // await this.setPublicKey(publicKey);
-    // this.wallet.privatekey = await S.getInstance().getPrivateKey();
-    // this.wallet.publickey = await S.getInstance().getPublicKey();
+    // this.instance.privatekey = await S.getInstance().getPrivateKey();
+    // this.instance.publickey = await S.getInstance().getPublicKey();
 
     if (this.app.options.blockchain) {
       this.app.blockchain.resetBlockchain();
@@ -304,10 +311,10 @@ export default class Wallet extends SaitoWallet {
       this.app.options.keys = [];
     }
 
-    // this.wallet.inputs = [];
-    // this.wallet.outputs = [];
-    // this.wallet.spends = [];
-    // this.wallet.pending = [];
+    // this.instance.inputs = [];
+    // this.instance.outputs = [];
+    // this.instance.spends = [];
+    // this.instance.pending = [];
 
     await this.saveWallet();
 
@@ -333,7 +340,7 @@ export default class Wallet extends SaitoWallet {
     this.app.options.wallet.version = this.version;
     this.app.options.wallet.default_fee = this.default_fee;
 
-    // this.app.options.wallet = this.wallet;
+    // this.app.options.wallet = this.instance;
     // for (let i = 0; i < this.app.options.wallet.inputs.length; i++) {
     //   this.app.options.wallets.inputs[i].amount =
     //     this.app.options.wallets.inputs[i].amount.toString();
@@ -540,7 +547,7 @@ export default class Wallet extends SaitoWallet {
     // only send if hasn't been sent before
     console.log(
       "does preferred crypto transaction exist: " +
-        this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
+      this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
     );
     console.log("unique hash: " + unique_hash);
     console.log("uuid: " + getUuid(unique_hash));
@@ -751,10 +758,10 @@ export default class Wallet extends SaitoWallet {
     return this.app.crypto.hash(
       Buffer.from(
         JSON.stringify(senders) +
-          JSON.stringify(receivers) +
-          JSON.stringify(amounts) +
-          unique_hash +
-          ticker,
+        JSON.stringify(receivers) +
+        JSON.stringify(amounts) +
+        unique_hash +
+        ticker,
         "utf-8"
       )
     );

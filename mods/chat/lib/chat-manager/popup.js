@@ -240,14 +240,14 @@ class ChatPopup {
       // submit
       //
       let msg_input = document.querySelector(`${popup_qs} .chat-footer .chat-input`);
-      msg_input.onkeydown = (e) => {
+      msg_input.onkeydown = async (e) => {
         if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
           e.preventDefault();
           if (msg_input.innerHTML == "") {
             return;
           }
-          let newtx = mod.createChatTransaction(group_id, msg_input.innerHTML);
-          mod.sendChatTransaction(app, newtx);
+          let [newtx, data] = await mod.createChatTransaction(group_id, msg_input.innerHTML);
+          await mod.sendChatTransaction(app, newtx, data);
           mod.receiveChatTransaction(app, newtx);
           msg_input.textContent = "";
           msg_input.innerHTML = "";
@@ -271,8 +271,8 @@ class ChatPopup {
         if (msg_input.innerHTML == "") {
           return;
         }
-        let newtx = mod.createChatTransaction(group_id, msg_input.innerHTML);
-        mod.sendChatTransaction(app, newtx);
+        let [newtx, data] = mod.createChatTransaction(group_id, msg_input.innerHTML);
+        mod.sendChatTransaction(app, newtx, data);
         mod.receiveChatTransaction(app, newtx);
         msg_input.textContent = "";
         msg_input.innerHTML = "";
@@ -299,9 +299,9 @@ class ChatPopup {
           //  salert("Image too large: 220kb max");
           //} else {
 
-          let newtx = await mod.createChatTransaction(group_id, img.outerHTML); // img into msg
+          let [newtx, data] = await mod.createChatTransaction(group_id, img.outerHTML); // img into msg
           await newtx.sign();
-          await mod.sendChatTransaction(app, newtx);
+          await mod.sendChatTransaction(app, newtx, data);
           document.getElementById(input_id).innerHTML = ""; //clear the input div off of the image after sending chat transaction
           await mod.receiveChatTransaction(app, newtx);
 

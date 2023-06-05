@@ -14,6 +14,13 @@ export default class Storage {
     try {
       const response = await fetch(`/options`);
       this.app.options = await response.json();
+      if (typeof window !== "undefined") {
+        this.app.options.spv_mode = true;
+        this.app.options.browser_mode = true;
+      } else {
+        this.app.options.spv_mode = false;
+        this.app.options.browser_mode = false;
+      }
       this.saveOptions();
     } catch (err) {
       console.error(err);
@@ -116,8 +123,16 @@ export default class Storage {
         try {
           console.log("fetching options from server...");
           const response = await fetch(`/options`);
+
           this.app.options = await response.json();
           this.app.options = JSON.parse(JSON.stringify(this.app.options));
+          if (typeof window !== "undefined") {
+            this.app.options.spv_mode = true;
+            this.app.options.browser_mode = true;
+          } else {
+            this.app.options.spv_mode = false;
+            this.app.options.browser_mode = false;
+          }
           console.log("options loaded : ", this.app.options);
           this.saveOptions();
         } catch (err) {
