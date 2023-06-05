@@ -1,7 +1,7 @@
 const GameWizardTemplate = require('./game-wizard.template.js');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay.js');
 
-  //
+      //
       // {
       //    game   : module_name
       //    league : league_obj { id , name , mod }
