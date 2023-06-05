@@ -24,10 +24,6 @@ module.exports = () => {
             <div id="progress" class="chat-settings-progress"></div>
         </div>
     </div>
-    <div style="display:none"  class="chat-settings-join-section">
-        <h2>Ready to join?</h2>
-        <button id="join-button" class="chat-settings-join">Join Meeting</button>
-    </div>
 
 </div>
 </div>

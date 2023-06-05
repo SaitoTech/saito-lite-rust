@@ -1,4 +1,3 @@
-const VideoBox = require("./video-box");
 const ChatManagerSmallTemplate = require("./chat-manager-small.template");
 const ChatManagerSmallExtensionTemplate = require("./chat-manager-small-extension.template");
 const AudioBox = require("./audio-box");

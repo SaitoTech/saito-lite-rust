@@ -39,13 +39,15 @@ class PeerManager {
       } else if (data.type === "toggle-video") {
         app.connection.emit("toggle-peer-video-status", data);
       } else {
+
         let peerConnection = this.peers.get(data.public_key);
-        console.log("peers consoled", peerConnection);
         if (!peerConnection) {
+          console.log("Create Peer Connection with " + data.public_key);
           this.createPeerConnection(data.public_key);
           peerConnection = this.peers.get(data.public_key);
         }
-
+        console.log("peers consoled", peerConnection);
+        
         if (peerConnection) {
           this.handleSignalingMessage(data);
         }
