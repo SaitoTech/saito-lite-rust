@@ -65,15 +65,17 @@ class StatsOverlay {
         statshtml += vp.html;
 
         statshtml += `<div class="achievements">`;
+        
         //Victory Point Card Tokens -- should move to VP track
-        statshtml += `<div class="victory_point_cards">`;
-        for (let j = 0; j < this.mod.game.state.players[i - 1].vpc; j++) {
-          statshtml += `<div class="victory_point_card">${this.mod.vp.img}</div>`;
-        }
         if (this.mod.game.state.players[i - 1].vpc > 0) {
+          statshtml += `<div class="victory_point_cards">`;
+          for (let j = 0; j < this.mod.game.state.players[i - 1].vpc; j++) {
+            statshtml += `<div class="victory_point_card">${this.mod.vp.img}</div>`;
+          }
           statshtml += `<div class="victory_point_card_points vproundel">${this.mod.game.state.players[i - 1].vpc}</div>`
+          statshtml += `</div>`;
         }
-        statshtml += `</div>`;
+
         if (this.mod.game.state.largestArmy.player == i) {
           statshtml += `<div class="token army largest" title="${this.mod.largest.name}">`;
         } else {
