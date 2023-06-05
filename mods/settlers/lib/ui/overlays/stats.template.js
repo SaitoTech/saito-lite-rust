@@ -19,10 +19,6 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
     //
     html += `<table class="stats-table">`;
     html += `<caption>Resources Produced</caption><thead><tr><th></th>`;
-    //for (let r in stats.mod.game.stats.production){
-    //  html += `<th>${stats.mod.returnResourceHTML(r)}</th>`;
-    //}
-    //html += `<th>Sum</th></tr></thead>`;
     html += `<tbody>`;
 
     for (let j = 0; j < stats.mod.game.players.length; j++){

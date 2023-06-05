@@ -587,7 +587,7 @@
           //Picked something to give, now pick something to get
           html = "<div class='tbd'>Select Desired Resource: <ul class='bank horizontal_list'>";
           for (let i of settlers_self.returnResources()) {
-            html += `<li id="${i}" class="iconoption option tip"><img class="icon" src="${settlers_self.retrnCardImage(i)}">
+            html += `<li id="${i}" class="iconoption option tip"><img class="icon" src="${settlers_self.returnCardImage(i)}">
               <div class="tiptext">${i}</div></li>`;
           }
           html += '<li id="cancel" class="option">cancel trade</li>';

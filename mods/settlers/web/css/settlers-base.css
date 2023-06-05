@@ -230,27 +230,6 @@ body {
   box-shadow: unset !important;
 }
 
-/*
-  Shrink Development cards
-*/
-
-.devcards>.card {
-  width: 10vh;
-  position: absolute;
-}
-
-.card>img {
-  width: 100%;
-}
-
-.card .icon {
-  position: absolute;
-  width: 15%;
-  left: 7%;
-  top: 5%;
-  pointer-events: none;
-}
-
 /* Make room to display two hands of cards*/
 
 .devcards {
@@ -986,6 +965,8 @@ ul.horizontal_list li.iconoption {
   align-items: center;
   flex-wrap: wrap;
   font-weight: 800;
+  padding-bottom: 0.5rem;
+  width: max-content;
 }
 
 .player-notice+.tbd {

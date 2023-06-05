@@ -1,0 +1,39 @@
+
+
+.card {
+  width: min(17.5vh,20vw);
+  height: auto;
+}
+.card.tinycard , .card.tiny {
+  height: calc(4rem * 1.4);
+  width: 4rem;
+}
+
+
+
+  
+/*
+  unsure if still used
+*/
+
+.devcards>.card {
+  width: 10vh;
+  position: absolute;
+}
+
+.card > img {
+  width: 100%;
+  position: relative;
+  pointer-events: none;
+  width: inherit;
+  height: inherit;
+} 
+
+.card .icon {
+  position: absolute;
+  width: 15%;
+  left: 7%;
+  top: 5%;
+  pointer-events: none;
+}
+

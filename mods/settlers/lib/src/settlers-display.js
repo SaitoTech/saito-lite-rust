@@ -210,7 +210,7 @@ console.log("DONE GENERATING MAP");
             if (deck == "resource" || deck == "") {
                 for (let r of this.game.state.players[this.game.player - 1].resources) {
                     //Show all cards
-                    cards += `<div class="card tip"><img src="${this.returnCardImage(r)}">
+                    cards += `<div class="card"><img src="${this.returnCardImage(r)}">
                     </div>`;
                 }
             }
@@ -221,7 +221,7 @@ console.log("DONE GENERATING MAP");
                     let card = this.game.deck[0].cards[this.game.deck[0].hand[x]];
                     console.log("card ////////////////");
                     console.log(card);
-                    cards += `<div class="card tip"><img src="${card.img}">
+                    cards += `<div class="card"><img src="${card.img}" />
                     <div class="cardtitle">${card.card}</div>
                     <div class="cardrules">${this.rules[card.action]}</div>
                     <div class="tiptext">${card.card}: ${this.rules[card.action]}</div>

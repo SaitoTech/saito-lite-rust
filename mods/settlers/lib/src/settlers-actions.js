@@ -19,7 +19,7 @@ class SettlersActions {
                     let resource = this.game.state.hexes[neighboringHex].resource;
                     logMsg += `${this.game.playerNames[player - 1]} gains ${resource}`;
                     if (this.game.player == player) {
-                      notice += this.returnResourceHTML(resource);
+                      notice += `<div class="card tiny"><img src="${this.returnCardImage(resource)}" /></div>`;
                       poor_harvest = false;
                     }
                     this.game.state.players[player - 1].resources.push(resource);
@@ -30,7 +30,7 @@ class SettlersActions {
                         this.game.stats.production[resource][player - 1]++;
                         logMsg += " x2";
                         if (this.game.player == player) {
-                            notice += this.returnResourceHTML(resource);
+                            notice += `<div class="card tiny"><img src="${this.returnCardImage(resource)}" /></div>`;
                         }
                     }
                     logMsg += "; ";
@@ -46,7 +46,7 @@ class SettlersActions {
         }
         if (notice) {
             this.updateStatus(
-                `<div class="persistent alignme"><span>You acquired: </span>${notice}</div>`
+                `<div class="persistent alignme"><span style="margin-right:0.5rem">You acquired: </span>${notice}</div>`
             );
         }
     }
@@ -235,7 +235,7 @@ console.log("DONE GENERATING MAP");
     let gainResource = function (settlers_self) {
       let html = `<div class='tbd'>Select Resources (Can get ${remaining}): <ul class="horizontal_list">`;
       for (let i of resourceList) {
-        html += `<li id="${i}" class="iconoption option">${settlers_self.returnResourceHTML(i)}</li>`;
+        html += `<li id="${i}" class="iconoption option"><div class="tip"><img class="icon" src="${this.returnCardImage(i)}" /></div></li>`;
       }
       html += "</ul>";
       html += "</div>";
@@ -275,7 +275,7 @@ console.log("DONE GENERATING MAP");
     //Player recursively selects all the resources they want to get rid of
     let html = `<div class='tbd'>Select Desired Resource: <ul class="horizontal_list">`;
     for (let i of resourceList) {
-      html += `<li id="${i}" class="iconoption option">${settlers_self.returnResourceHTML(i)}</li>`;
+      html += `<li id="${i}" class="iconoption option"><div class="tip"><img class="icon" src="${settlers_self.returnCardImage(i)}" /></div></li>`;
     }
     html += "</ul>";
     html += "</div>";
