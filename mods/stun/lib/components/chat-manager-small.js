@@ -3,10 +3,9 @@ const ChatManagerSmallTemplate = require("./chat-manager-small.template");
 const ChatManagerSmallExtensionTemplate = require("./chat-manager-small-extension.template");
 const AudioBox = require("./audio-box");
 
-class ChatManagerSmall {
+class StunChatManagerSmall {
   // peers = {};
   localStream;
-  my_pc = [];
   video_boxes = {};
   audio_boxes = {};
   videoEnabled = true;
@@ -35,8 +34,8 @@ class ChatManagerSmall {
     this.app.connection.on("render-local-stream-small-request", (localStream) => {
       this.addLocalStream(localStream);
     });
-    this.app.connection.on("add-remote-stream-small-request", (peer, remoteStream, pc) => {
-      this.addRemoteStream(peer, remoteStream, pc);
+    this.app.connection.on("add-remote-stream-small-request", (peer, remoteStream) => {
+      this.addRemoteStream(peer, remoteStream);
     });
     // this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type, call_type) => {
     //     console.log('ui_type ', ui_type);
@@ -155,28 +154,25 @@ class ChatManagerSmall {
     this.localStream = stream;
   }
 
-  addRemoteStream(peer, remoteStream, pc) {
+  addRemoteStream(peer, remoteStream) {
     /// chat-manager-small-audio-container
-    if (this.config) {
-      this.createAudioBox(peer, remoteStream, pc, this.config.stream_container);
-    } else {
-      this.createAudioBox(peer, remoteStream, pc, "chat-manager-small");
+    let container = this?.config?.stream_container || "chat-manager-small";
+
+    if (!this.audio_boxes[peer]) {
+      const audioBox = new AudioBox(this.app, this.mod, peer, container);
+      this.audio_boxes[peer] = { audio_box: audioBox, remote_stream: remoteStream };
     }
 
     this.audio_boxes[peer].audio_box.render(remoteStream);
     this.updateImages();
 
-    let audio_box = document.querySelector(`#audiostream${peer}`);
-    this.analyzeAudio(remoteStream, audio_box);
+    this.analyzeAudio(remoteStream, peer);
 
     this.attachEvents(this.app, this.mod)
   }
 
-  createAudioBox(peer, remoteStream, pc, container) {
-    if (!this.audio_boxes[peer]) {
-      const audioBox = new AudioBox(this.app, this.mod, this.room_code, peer, container);
-      this.audio_boxes[peer] = { audio_box: audioBox, remote_stream: remoteStream, pc: pc };
-    }
+  createAudioBox(peer, remoteStream, container) {
+    
   }
 
   updateImages() {
@@ -331,7 +327,10 @@ class ChatManagerSmall {
     document.querySelector(".users-on-call-count").innerHTML = count;
   }
 
-  analyzeAudio(stream, audio) {
+  /*
+   Should move this an a same named, similar function in chat-manager-large to a library and have them emit an event to update the DOM???
+  */
+  analyzeAudio(stream, peer) {
     const audioContext = new AudioContext();
     const source = audioContext.createMediaStreamSource(stream);
     const analyser = audioContext.createAnalyser();
@@ -346,6 +345,10 @@ class ChatManagerSmall {
     function update() {
       analyser.getByteFrequencyData(dataArray);
       const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+      
+      let audio = document.querySelector(`#audiostream${peer}`);
+      
+      if (!audio) { return;}
 
       if (average > threshold && !speaking) {
         audio.classList.add("speaking");
@@ -362,4 +365,4 @@ class ChatManagerSmall {
   }
 }
 
-module.exports = ChatManagerSmall;
+module.exports = StunChatManagerSmall;

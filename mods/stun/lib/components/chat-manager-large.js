@@ -1,50 +1,54 @@
 const VideoBox = require("./video-box");
 const ChatManagerLargeTemplate = require("./chat-manager-large.template");
 const ChatManagerSmallExtensionTemplate = require("./chat-manager-small-extension.template");
-const SwitchDisplay = require("./switch-display");
-const ChatInvitationOverlay = require("../overlays/chat-invitation-link");
+
+const SwitchDisplay = require("../overlays/switch-display");
 const Effects = require("../overlays/effects");
 
-class VideoChatManager {
-  peers = [];
-  localStream;
-  room_code;
-  // my_pc = [];
-  video_boxes = {};
-  videoEnabled = true;
-  audioEnabled = true;
-  isActive = false;
-  central;
-  mode = ""; // full, addon
-  local_container = "expanded-video";
-  remote_container = "side-videos";
-  display_mode = "focus";
-  remote_streams = new Map();
-  current_speaker = null
-  speaker_candidate = null
-
+class StunChatManagerLarge {
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
-    this.config;
-    this.switchDisplay = new SwitchDisplay(app, mod, this);
-
+    this.config = null;
+    this.switchDisplay = new SwitchDisplay(app, mod);
     this.effectsMenu = new Effects(app, mod);
     this.users_on_call = 0;
+    this.peers = []; //people in the call
+    this.localStream;
+    this.room_code;
+
+    this.video_boxes = {};
+
+    this.local_container = "expanded-video";
+    this.remote_container = "side-videos";
+    this.display_mode = "focus";
+    this.remote_streams = new Map();
+    this.current_speaker = null;
+    this.speaker_candidate = null;
 
     this.app.connection.on(
       "show-video-chat-large-request",
-      (app, mod, call_type = "Video", room_code, videoEnabled, audioEnabled, config = null) => {
-        this.videoEnabled = videoEnabled;
-        this.audioEnabled = audioEnabled;
-        this.call_type = "video";
+      (app, mod, room_code, videoEnabled, audioEnabled, config = null) => {
         this.room_code = room_code;
         this.config = config;
-        if (this.config === null) {
-          this.mode = "full";
+
+        //This will render the (full-screen) component
+        if (!document.querySelector(".stun-chatbox")) {
+          this.render(videoEnabled, audioEnabled);
+          this.attachEvents(app, mod);
         }
-        this.show(app, mod);
-        this.updateRoomLink();
+
+        this.room_link = this.createRoomLink();
+
+        /* automatically copy invite link to clipboard for first user */
+        if (this.users_on_call == 1) {
+          this.copyInviteLink();
+        }
+
+        history.pushState(null, null, this.room_link);
+        
+        this.app.browser.makeDraggable("stun-chatbox", "", true);
+
 
         // create chat group
         this.createRoomTextChat();
@@ -52,12 +56,12 @@ class VideoChatManager {
     );
 
     this.app.connection.on("render-local-stream-large-request", (localStream) => {
-      this.localStream = localStream;
       this.renderLocalStream(localStream);
     });
-    this.app.connection.on("render-remote-stream-large-request", (peer, remoteStream, pc) => {
+
+    this.app.connection.on("render-remote-stream-large-request", (peer, remoteStream) => {
       this.remote_streams.set(peer, remoteStream);
-      this.addRemoteStream(peer, remoteStream, pc);
+      this.addRemoteStream(peer, remoteStream);
     });
 
     this.app.connection.on("stun-update-connection-message", (room_code, peer_id, status) => {
@@ -91,32 +95,40 @@ class VideoChatManager {
         }
       }
     });
+
+    // Change arrangement of video boxes (emitted from SwitchDisplay overlay)
+    app.connection.on("stun-switch-view", (newView) => {
+      this.display_mode = newView;
+      if (newView == "gallery") {
+        this.switchDisplayToGallery();
+      }else{
+        this.switchDisplayToExpanded();
+      }
+      siteMessage(`Switched to ${newView} display`, 2000);
+    });
+
   }
 
-  render() {
-    this.app.browser.addElementToDom(
-      ChatManagerLargeTemplate(this.call_type, this.room_code, this.mode),
-      document.getElementById("content__")
-    );
-    this.isActive = true;
+  render(videoEnabled, audioEnabled) {
 
+    //This is very non-standard
     if (this.config) {
-      this.app.browser.addElementToSelector(
-        ChatManagerSmallExtensionTemplate(),
-        this.config.container
-      );
+      this.app.browser.addElementToSelector(ChatManagerSmallExtensionTemplate(), this.config.container);
+    }else{
+      this.app.browser.addElementToDom(ChatManagerLargeTemplate(videoEnabled, audioEnabled));
     }
+
   }
 
   createRoomTextChat() {
     let chat_mod = this.app.modules.returnModule("Chat");
 
-    if (!chat_mod){
+    if (!chat_mod) {
       return;
     }
-    
+
     let cm = chat_mod.respondTo("chat-manager");
-    
+
     this.chat_group = {
       id: this.room_code,
       members: [this.app.network.peers[0].peer.publickey],
@@ -127,34 +139,32 @@ class VideoChatManager {
     };
 
     chat_mod.groups.push(this.chat_group);
-    
+
     //You should be able to just create a Chat Group, but we are duplicating the public chat server
     //so we need this hacky work around
     //this.chat_group = chat_mod.returnOrCreateChatGroupFromMembers([this.app.network.peers[0].peer.publickey], `Chat ${this.room_code}`);
   }
 
   attachEvents(app, mod) {
-    if (this.mode === "full") {
-      let add_users = document.querySelector(".add_users_container");
-      if (add_users) {
-        add_users.addEventListener("click", (e) => {
-          this.updateRoomLink();
-          this.copyInviteLink();
-        });
-      }
-
-      document.querySelector(".chat_control").addEventListener("click", (e) => {
-        //let chat_target_element = `.stun-chatbox .${this.remote_container}`;
-
-        if (document.querySelector(".chat-static")){
-          //document.querySelector(".chat-static").remove();
-          this.app.connection.emit("chat-popup-remove-request", this.chat_group);
-        }else{
-          this.app.connection.emit("chat-popup-render-request", this.chat_group);
-        }
-        
+    
+    let add_users = document.querySelector(".add_users_container");
+    if (add_users) {
+      add_users.addEventListener("click", (e) => {
+        this.copyInviteLink();
       });
     }
+
+    document.querySelector(".chat_control").addEventListener("click", (e) => {
+      //let chat_target_element = `.stun-chatbox .${this.remote_container}`;
+
+      if (document.querySelector(".chat-static")) {
+        //document.querySelector(".chat-static").remove();
+        this.app.connection.emit("chat-popup-remove-request", this.chat_group);
+      } else {
+        this.app.connection.emit("chat-popup-render-request", this.chat_group);
+      }
+    });
+    
 
     if (document.querySelector(".effects-control")) {
       document.querySelector(".effects-control").addEventListener("click", (e) => {
@@ -165,7 +175,7 @@ class VideoChatManager {
     document.querySelectorAll(".disconnect-control").forEach((item) => {
       item.addEventListener("click", (e) => {
         this.disconnect();
-        siteMessage("You have been disconnected", 5000);
+        siteMessage("You have been disconnected", 3000);
       });
     });
 
@@ -176,7 +186,7 @@ class VideoChatManager {
     });
     document.querySelectorAll(".display-control").forEach((item) => {
       item.onclick = () => {
-        this.switchDisplay.render();
+        this.switchDisplay.render(this.display_mode);
       };
     });
     document.querySelectorAll(".video-control").forEach((item) => {
@@ -188,41 +198,20 @@ class VideoChatManager {
     document.querySelector(".stun-chatbox .minimizer").addEventListener("click", (e) => {
       // fas fa-expand"
       let icon = document.querySelector(".stun-chatbox .minimizer i");
+      let chat_box = document.querySelector(".stun-chatbox");
+
       if (icon.classList.contains("fa-caret-down")) {
-        let chat_box = document.querySelector(".stun-chatbox");
         chat_box.classList.add("minimize");
         icon.classList.remove("fa-caret-down");
         icon.classList.add("fa-expand");
       } else {
-        let chat_box = document.querySelector(".stun-chatbox");
         chat_box.classList.remove("minimize");
+        chat_box.style.top = "0";
+        chat_box.style.left = "0";
         icon.classList.remove("fa-expand");
         icon.classList.add("fa-caret-down");
       }
     });
-
-    if (this.videoEnabled === true) {
-      document.querySelectorAll(".video-control i").forEach((item) => {
-        item.classList.remove("fa-video-slash");
-        item.classList.add("fa-video");
-      });
-    } else {
-      document.querySelectorAll(".video-control i").forEach((item) => {
-        item.classList.remove("fa-video");
-        item.classList.add("fa-video-slash");
-      });
-    }
-    if (this.audioEnabled === true) {
-      document.querySelectorAll(".audio-control i").forEach((item) => {
-        item.classList.remove("fa-microphone-slash");
-        item.classList.add("fa-microphone");
-      });
-    } else {
-      document.querySelectorAll(".audio-control i").forEach((item) => {
-        item.classList.add("fa-microphone-slash");
-        item.classList.remove("fa-microphone");
-      });
-    }
 
     document.querySelector(".large-wrapper").addEventListener("click", (e) => {
       if (this.display_mode == "gallery") {
@@ -243,9 +232,7 @@ class VideoChatManager {
   }
 
   flipDisplay(stream_id) {
-    let id = document
-      .querySelector(`.${this.local_container}`)
-      .querySelector(".video-box").id;
+    let id = document.querySelector(`.${this.local_container}`).querySelector(".video-box").id;
     this.video_boxes[id].video_box.containerClass = this.remote_container;
     this.video_boxes[id].video_box.rerender();
     this.video_boxes[stream_id].video_box.containerClass = this.local_container;
@@ -270,54 +257,16 @@ class VideoChatManager {
     return `${myurl}?stun_video_chat=${base64obj}`;
   }
 
-  updateRoomLink() {
-    const room_link = this.createRoomLink();
-    this.room_link = room_link;
-
-    if (document.querySelector(".add-users-code-container span")) {
-      document.querySelector(".add-users-code-container span").textContent = this.room_link.slice(
-        0,
-        30
-      );
-    }
-    // return public_keys;
-  }
 
   copyInviteLink() {
     navigator.clipboard.writeText(this.room_link);
-    siteMessage('Invite link copied to clipboard', 5000);
+    siteMessage("Invite link copied to clipboard", 3000);
   }
 
   removePeer(peer) {
     this.peers = this.peers.filter((p) => peer !== p);
   }
 
-  show(app, mod) {
-    if (!document.querySelector(".stun-chatbox")) {
-      this.render();
-      this.attachEvents(app, mod);
-    }
-
-    let room_link = this.createRoomLink();
-    history.pushState(null, null, room_link);
-    this.isActive = true;
-
-    this.app.browser.makeDraggable("stun-chatbox");
-    this.app.browser.makeDraggable("stun-chatbox");
-  }
-
-  hide() {
-    document
-      .querySelector("#stun-chatbox")
-      .parentElement.removeChild(document.querySelector("#stun-chatbox"));
-    let stun_mod = this.app.modules.returnModule("Stun");
-    this.isActive = false;
-    stun_mod.renderInto(this.mod.renderedInto);
-
-    if (this.config) {
-      this.config.onHide();
-    }
-  }
 
   disconnect() {
     this.app.connection.emit("stun-disconnect");
@@ -339,22 +288,18 @@ class VideoChatManager {
     window.location.href = myurl;
   }
 
-  addRemoteStream(peer, remoteStream, pc) {
+  addRemoteStream(peer, remoteStream) {
     this.createVideoBox(peer);
     this.video_boxes[peer].video_box.render(remoteStream);
     if (!this.peers.includes(peer)) {
       this.peers.push(peer);
     }
 
-    let room_link = this.createRoomLink();
-    history.pushState(null, null, room_link);
-
     if (this.peers.length === 1) {
       let peer = document.querySelector(`#stream${this.peers[0]}`);
       peer.querySelector(".video-box").click();
     }
 
-    let video_box = document.querySelector(`#stream${peer}`);
     this.analyzeAudio(remoteStream, peer);
   }
 
@@ -363,7 +308,7 @@ class VideoChatManager {
     this.video_boxes["local"].video_box.render(localStream, "large-wrapper");
     this.localStream = localStream;
     this.updateImages();
-    this.analyzeAudio(localStream, 'local');
+    this.analyzeAudio(localStream, "local");
     // segmentBackground(document.querySelector('#streamlocal video'), document.querySelector('#streamlocal canvas'), 1);
     // applyBlur(7);
   }
@@ -371,7 +316,6 @@ class VideoChatManager {
   renderRemoteStreamPlaceholder(peer, placeholder_info, is_creator) {
     this.createVideoBox(peer);
     this.video_boxes[peer].video_box.render(null, placeholder_info);
-
   }
 
   createVideoBox(peer, container = this.remote_container) {
@@ -379,9 +323,6 @@ class VideoChatManager {
       const videoBox = new VideoBox(
         this.app,
         this.mod,
-        this.call_type,
-        this.central,
-        this.room_code,
         peer,
         container
       );
@@ -390,12 +331,31 @@ class VideoChatManager {
   }
 
   toggleAudio() {
+    //Tell PeerManager to adjust streams
     this.app.connection.emit("stun-toggle-audio");
+
+    //Update UI
+    try{
+      document.querySelector(".audio-control").classList.toggle("disabled");
+      document.querySelector(".audio-control i").classList.toggle("fa-microphone-slash");
+      document.querySelector(".audio-control i").classList.toggle("fa-microphone");
+    }catch(err){
+      console.warn("Stun UI error", err);
+    }
   }
 
   toggleVideo() {
-
     this.app.connection.emit("stun-toggle-video");
+
+    //Update UI
+    try{
+      document.querySelector(".video-control").classList.toggle("disabled");
+      document.querySelector(".video-control i").classList.toggle("fa-video-slash");
+      document.querySelector(".video-control i").classList.toggle("fa-video");
+    }catch(err){
+      console.warn("Stun UI error", err);
+    }
+
   }
 
   updateImages() {
@@ -415,11 +375,6 @@ class VideoChatManager {
     document.querySelector(".stun-chatbox .image-list").innerHTML = images;
     document.querySelector(".stun-chatbox .users-on-call-count").innerHTML = count;
     this.users_on_call = count;
-
-    /* automatically copy invite link to clipboard for first user */
-    if (this.users_on_call == 1) {
-      this.copyInviteLink();
-    }
 
   }
 
@@ -462,50 +417,24 @@ class VideoChatManager {
   }
 
   switchDisplayToGallery() {
-    this.display_mode = "gallery";
     this.local_container = "gallery";
     this.remote_container = "gallery";
 
-    document.querySelector(".video-container-large").innerHTML = `
-    <div class="gallery">
-
-    </div>
-    `;
+    document.querySelector(".video-container-large").innerHTML = `<div class="gallery"></div>`;
 
     this.setDisplayContainers();
   }
 
-  switchDisplayToFocus() {
-    this.display_mode = "focus";
+  switchDisplayToExpanded() {
     this.local_container = "expanded-video";
     this.remote_container = "side-videos";
 
-    document.querySelector(".video-container-large").innerHTML = `
-    <div class="expanded-video">
-
-    </div>
-    <div class="side-videos">
-    </div>
-    `;
+    document.querySelector(".video-container-large").innerHTML = `<div class="expanded-video"></div>
+    <div class="side-videos"></div>`;
 
     this.setDisplayContainers();
   }
 
-  switchDisplayToSpeaker() {
-    this.display_mode = "speaker";
-    this.local_container = "expanded-video";
-    this.remote_container = "side-videos";
-
-    document.querySelector(".video-container-large").innerHTML = `
-    <div class="expanded-video">
-
-    </div>
-    <div class="side-videos">
-    </div>
-    `;
-
-    this.setDisplayContainers();
-  }
 
   setDisplayContainers() {
     for (let i in this.video_boxes) {
@@ -520,6 +449,9 @@ class VideoChatManager {
     this.chat_group.target_container = `.stun-chatbox .${this.remote_container}`;
   }
 
+  /*
+   Should move this an a same named, similar function in chat-manager-large to a library and have them emit an event to update the DOM???
+  */
   analyzeAudio(stream, peer) {
     let video_chat_self = this;
     const audioContext = new AudioContext();
@@ -532,7 +464,6 @@ class VideoChatManager {
 
     let speaking = false;
     const threshold = 20;
-
 
     function update() {
       analyser.getByteFrequencyData(dataArray);
@@ -552,25 +483,23 @@ class VideoChatManager {
         this.current_speaker = peer;
         let speaker_candidate = peer;
 
-
         setTimeout(() => {
           if (speaker_candidate === this.current_speaker) {
-            document.querySelectorAll('.video-box-container-large').forEach(item => {
+            document.querySelectorAll(".video-box-container-large").forEach((item) => {
               // console.log(item.id, `stream${peer}`)
 
               if (item.id === `stream${peer}`) {
-                item.classList.add('speaker');
+                item.classList.add("speaker");
                 if (video_chat_self.display_mode == "speaker") {
                   video_chat_self.flipDisplay(peer);
-                } 
+                }
               } else {
-                item.classList.remove('speaker');
+                item.classList.remove("speaker");
               }
-            })
+            });
             speaking = true;
           }
-        }, 5000)
-
+        }, 5000);
       } else if (average <= threshold && speaking) {
         speaking = false;
       }
@@ -580,8 +509,6 @@ class VideoChatManager {
 
     update();
   }
-
 }
 
-module.exports = VideoChatManager;
-
+module.exports = StunChatManagerLarge;

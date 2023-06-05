@@ -7,10 +7,9 @@ const { setTextRange } = require("typescript");
 
 class AudioBox {
 
-    constructor(app, mod, room_code, stream_id, container) {
+    constructor(app, mod, stream_id, container) {
         this.app = app;
         this.mod = mod;
-        this.room_code = room_code;
         this.stream_id = stream_id
         this.container = container
         this.stream = null
@@ -24,7 +23,6 @@ class AudioBox {
         console.log(stream, 'stream')
         const audio_box = document.querySelector(`#audiostream${this.stream_id}`);
         audio_box.firstElementChild.srcObject = this.stream;
-        // console.log(this);
     }
 
     remove() {
