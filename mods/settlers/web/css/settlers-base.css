@@ -1286,3 +1286,106 @@ ul.horizontal_list li.iconoption {
   top: -1rem;
   height: 3rem;
 }
+
+
+.settlers-dice-histogram {
+  border-bottom: 1px solid #000;
+  display: flex;
+  gap: 1rem;
+  align-content: flex-end;
+  flex-wrap: wrap-reverse;
+}
+
+.settlers-dice-bar {
+  border: 1px solid #000;
+  width: calc(100%/14);
+  height: 10rem;
+  background: #ab815f73;
+  border-bottom: none;
+  position: relative;
+}
+
+.settlers-dice-count {
+  text-align: center;
+  font-size: 1.5rem;
+  position: absolute;
+  top: -2rem;
+  left: 1.25rem;
+}
+
+.settlers-dice-number {
+  position: absolute;
+  bottom: -2rem;
+  left: 0rem;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.settlers-dice-numbers {
+  display: flex;
+  gap: 1rem; 
+  margin-bottom: 5rem;
+}
+
+.settlers-dice-number {
+  width: calc(100%/14);
+  position: relative;
+}
+
+.settlers-achievements-container {
+  width: fit-content;
+  margin: auto;
+  flex-direction: column;
+  gap: 2rem;
+  display: flex;
+}
+
+.settlers-achievements-row {
+  display: flex;
+  gap: 5rem;
+}
+
+.settlers-stats-player {
+  font-weight: bold;
+  line-height: 4rem;
+}
+
+.settlers-achievements-row  .achievements .army,
+.settlers-achievements-row  .achievements .victory_point_cards {
+  padding: 0 0 0 1rem;
+  margin:0 -1rem 0 0;
+}
+
+.settlers-achievements-row  .achievements .victory_point_cards {
+  /*min-width: 8rem;*/
+}
+
+.settlers-stats-total {
+  position: relative;
+  width: 4rem;
+  line-height: 4rem;
+  font-size: 1.8rem;
+  color: #fff;
+  text-align: center;
+  margin: 0.5rem;
+  background-color: #ffa400cc;
+  border-radius: 50%;
+  font-weight: bold;
+  height: 4rem;
+}
+
+.settlers-stats-resource-container {
+  position: relative;
+}
+
+.settlers-stats-resource-card {
+  filter: grayscale(0.2);
+}
+
+.settlers-stats-resource-count {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  color: var(--saito-white);
+  text-shadow: 1px 1px 1px var(--saito-black);
+}
