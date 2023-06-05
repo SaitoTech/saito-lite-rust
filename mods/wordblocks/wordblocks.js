@@ -178,9 +178,12 @@ class Wordblocks extends GameTemplate {
   }
 
   initializeGame(game_id) {
-    console.log("InitializeGame");
 
-    this.resetPlayerNames();
+    this.game.playerNames = [];
+    for (let i = 0; i < this.game.players.length; i++) {
+      this.game.playerNames.push(this.app.keychain.returnUsername(this.game.players[i]));
+    }
+
 
     //
     // deal cards
