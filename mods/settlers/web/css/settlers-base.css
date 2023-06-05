@@ -1074,7 +1074,6 @@ ul.horizontal_list li.iconoption {
 }
 
 .rules-overlay img {
-  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -1226,10 +1225,7 @@ ul.horizontal_list li.iconoption {
   display: flex;
   gap: 1rem;
   flex-direction: row;
-<<<<<<< HEAD
-=======
   align-items: center;
->>>>>>> c18510f5b8830fbba4ac38f33d9993274dc7e70d
 }
 
 .achievements .victory_point_cards img {

@@ -13,7 +13,9 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
 
 
         //Fucking Dice
-        html += `<div class="settlers-state-container">`;
+        html += `<div class="settlers-state-container">
+                  <div class="settlers-stats-player">Dice Rolls</div>
+        `;
         
         html += `<div class="settlers-dice-histogram">`
         for (let i = 2; i <= 12; i++){
@@ -59,7 +61,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats) => {
         }
 
         html += `<div class="settlers-state-container">
-                    <div class="settlers-stats-caption">Resources</div>`;
+                    `;
         html += player_html;
         html += `</div>`;
 

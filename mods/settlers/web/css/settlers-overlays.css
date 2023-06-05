@@ -106,6 +106,7 @@ stats overlay
 .settlers-achievements-row {
   display: flex;
   gap: 5rem;
+  justify-content: space-between;
 }
 
 .settlers-stats-player {
@@ -138,15 +139,19 @@ stats overlay
 }
 
 .settlers-stats-resource-container {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .settlers-stats-card {
   position: relative;
   filter: grayscale(0.2);
+}
+
+.settlers-stats-card img {
+  width: 8rem;
 }
 
 .settlers-stats-resource-count {
@@ -156,7 +161,7 @@ stats overlay
   color: var(--saito-white);
   text-shadow: 1px 1px 3px var(--saito-black);
   transform: translate(-50%, -50%);
-  font-size: 4rem;  
+  font-size: 3.3rem;  
 }
 
 .settlers-stats-caption {
@@ -176,7 +181,8 @@ stats overlay
 }
 
 .settlers-achievements-row .victory_point_cards img {
-  height: 4rem;
+  height: 6.5rem;  
+  width: auto !important;
 }
 
 .settlers-stats-overlay {
@@ -192,20 +198,60 @@ stats overlay
 }
 
 
-.settlers-state-container .settlers-achievements-row .achievements .army, 
-.settlers-state-container .settlers-achievements-row .achievements .victory_point_cards {
+.settlers-state-container .settlers-achievements-row .achievements  {  
   margin: 0rem;
+  padding: 0rem;
+  gap: 0rem;
+}
+
+.settlers-state-container > * ,
+.settlers-achievements-row > *,
+.settlers-achievements-row .achievements > * {
+ 
+}
+
+.settlers-state-container .settlers-achievements-row .achievements .army, 
+.settlers-state-container .settlers-achievements-row .achievements .victory_point_cards,
+.settlers-state-container .settlers-achievements-row  .army, 
+.settlers-state-container .settlers-achievements-row .victory_point_cards {  margin: 0rem;
   padding: 0rem;
 }
 
 .settlers-state-container .achievements .army {
   padding: 0rem;
+  margin-right: -4rem;
 }
 
 .settlers-state-container .achievements .army img {
   margin: 0rem;
+  min-width: 6.5rem;
 }
 
-.settlers-state-container .achievements .army img:not(:first-child) {
-  margin: 0 0 0 -2rem;
+.settlers-state-container .achievements .army img:not(:last-child) {
+  margin-right: -3rem;
+}
+
+.settlers-state-container .achievements .token.army.largest {
+  margin-right:  3rem; 
+}
+
+.settlers-state-container .achievements .longest-road img {
+  min-width: 6.5rem;
+}
+
+
+.settlers-state-container .vproundel {
+    position: absolute;
+    width: 3rem;
+    line-height: 3rem;
+    font-size: 1.5rem;
+    color: #fff;
+    text-align: center;
+    margin: 0.5rem;
+    background-color: #ffa400cc;
+    border-radius: 50%;
+    font-weight: bold;
+    right: -2rem;
+    top: -1rem;
+    height: 3rem;
 }

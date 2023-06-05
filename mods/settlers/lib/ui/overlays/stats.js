@@ -140,6 +140,12 @@ class StatsOverlay {
       }
     }
 
+    console.log("player ///");
+    console.log(player);
+    console.log("ranking_scores //////////");
+    console.log(ranking_scores);
+
+
     return {html: html, score: ranking_scores[player-1]};
   }
 
