@@ -4,7 +4,6 @@ const AudioBox = require("./audio-box");
 class StunChatManagerSmall {
   // peers = {};
   localStream;
-  video_boxes = {};
   audio_boxes = {};
   audioEnabled = true;
 
@@ -14,31 +13,32 @@ class StunChatManagerSmall {
     this.container = "#game-chat ul";
 
     this.app.connection.on(
-      "show-video-chat-small-request",
+      "show-video-chat-request",
       (room_code, videoEnabled, audioEnabled) => {
+        console.log("Render Small");
         this.audioEnabled = audioEnabled;
         this.room_code = room_code;
-        this.show(this.app, this.mod);
-        // this.updateRoomLink();
+        this.render();
+        this.attachEvents(this.app, this.mod);
       }
     );
-    this.app.connection.on("remove-video-chat-small-request", (completely) => {
-      this.hide(completely);
-    });
 
-    this.app.connection.on("add-local-stream-small-request", (localStream) => {
+
+    this.app.connection.on("add-local-stream-request", (localStream) => {
       this.addLocalStream(localStream);
     });
-    this.app.connection.on("add-remote-stream-small-request", (peer, remoteStream) => {
+    this.app.connection.on("add-remote-stream-request", (peer, remoteStream) => {
       this.addRemoteStream(peer, remoteStream);
     });
 
-
-    this.app.connection.on("change-connection-state-request", (peer, state, ui_type, call_type) => {
-      this.updateConnectionState(peer, state, call_type);
+    this.app.connection.on("stun-update-connection-message", (room_code, peer_id, status) => {
+      if (room_code !== this.room_code) {
+        return;
+      }
+      siteMessage(status);
     });
 
-    this.app.connection.on("audio-box-remove", (peer_id, disconnection) => {
+    this.app.connection.on("remove-peer-box", (peer_id, disconnection) => {
       if (this.audio_boxes[peer_id].audio_box) {
         if (this.audio_boxes[peer_id].audio_box.remove) {
           this.audio_boxes[peer_id].audio_box.remove();
@@ -87,11 +87,6 @@ class StunChatManagerSmall {
     });
   }
 
-  show(app, mod) {
-    this.render();
-    this.attachEvents(app, mod);
-  }
-
   hide(completely = false) {
     try{
       document.querySelectorAll(".chat-manager-small-extension").forEach((item) => {
@@ -108,7 +103,6 @@ class StunChatManagerSmall {
 
   disconnect() {
     this.app.connection.emit("stun-disconnect");
-    this.video_boxes = {};
     this.audio_boxes = {};
     this.hide(true);
   }
@@ -173,32 +167,6 @@ class StunChatManagerSmall {
     // document.querySelector('.stun-chatbox .users-on-call-count').innerHTML = count
   }
 
-  updateConnectionState(peer, state) {
-    try {
-      console.log(state, this.video_boxes[peer].video_box);
-      if (!this.video_boxes[peer].video_box) {
-        return;
-      }
-      this.video_boxes[peer].video_box.handleConnectionStateChange(state);
-
-      switch (state) {
-        case "disconnected":
-          this.disconnect();
-          console.log("video boxes: after ", this.video_boxes);
-          break;
-        case "connected":
-          // start counter
-          this.startTimer();
-          this.addImages();
-          break;
-
-        default:
-          break;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   toggleAudio() {
     console.log("toggling audio");
@@ -252,24 +220,6 @@ class StunChatManagerSmall {
     this.timer_interval = setInterval(timer, 1000);
   }
 
-  addImages() {
-    let images = ``;
-    let count = 0;
-    console.log("video boxe3s ", this.video_boxes);
-    for (let i in this.video_boxes) {
-      if (i === "local") {
-        let publickey = this.app.wallet.returnPublicKey();
-        let imgsrc = this.app.keychain.returnIdenticon(publickey);
-        images += `<img data-id="${publickey}" src="${imgsrc}"/>`;
-      } else {
-        let imgsrc = this.app.keychain.returnIdenticon(i);
-        images += `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`;
-      }
-      count++;
-    }
-    document.querySelector(".small-video-chatbox .image-list").innerHTML = images;
-    document.querySelector(".users-on-call-count").innerHTML = count;
-  }
 
   /*
    Should move this an a same named, similar function in chat-manager-large to a library and have them emit an event to update the DOM???

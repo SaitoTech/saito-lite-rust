@@ -4,7 +4,6 @@ const StunAppspace = require("./lib/appspace/main");
 const StunChatManagerLarge = require("./lib/components/chat-manager-large");
 const StunChatManagerSmall = require("./lib/components/chat-manager-small");
 const PeerManager = require("./lib/appspace/PeerManager");
-const ChatSetting = require("./lib/components/chat-setting");
 
 //Do these do anything???
 var serialize = require("serialize-javascript");
@@ -21,9 +20,6 @@ class Stun extends ModTemplate {
     this.categories = "Utilities Communications";
     this.icon = "fas fa-video";
 
-    this.ChatManagerLarge = new StunChatManagerLarge(app, this);
-    this.ChatManagerSmall = new StunChatManagerSmall(app, this);
-    this.chatSetting = new ChatSetting(app, this);
 
     this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
     this.rooms = new Map();
@@ -60,17 +56,25 @@ class Stun extends ModTemplate {
     //When a appspace/main StunAppspace is rendered or game-menu triggers it
     app.connection.on("stun-init-peer-manager", (ui_type = "large") => {
 
-      if (!this.peerManager) {
-        //Create the PeerManager, which includes listeners for events
-        this.peerManager = new PeerManager(app, this, ui_type);
+      if (this.ChatManagerLarge || this.ChatManagerSmall){
+        console.warn("Already instatiated a video/audio call manager");
+        return;
       }
 
+      if (!this.peerManager) {
+        //Create the PeerManager, which includes listeners for events
+        this.peerManager = new PeerManager(app, this);
+      }
+
+      this.ui_type = ui_type;
+
       if (ui_type === "large") {
-        //Tell ChatSetting (aka Preview Window) to render on the splash screen
-        //but only if through appspace/main (aka the splash screen)
-        this.chatSetting.render();
+        this.ChatManagerLarge = new StunChatManagerLarge(app, this);
+      }else{
+        this.ChatManagerSmall = new StunChatManagerSmall(app, this);        
       }
     });
+
   }
 
   onPeerHandshakeComplete(app, peer) {
@@ -374,8 +378,8 @@ class Stun extends ModTemplate {
 
   async establishStunCallWithPeers(ui_type, recipients) {
 
-    // init peer manager
-    this.app.connection.emit("stun-init-peer-manager", "small");
+    // init peer manager and chat manager through self event
+    this.app.connection.emit("stun-init-peer-manager", ui_type);
 
     // create a room
     let room_code = await this.sendCreateRoomTransaction();
@@ -440,7 +444,7 @@ class Stun extends ModTemplate {
 
           // send the information to the other peers and ask them to join the call
           // show-small-chat-manager
-          app.connection.emit("show-chat-manager-small", true);
+          app.connection.emit("show-chat-manager");
           try {
             document.querySelector("#start-group-video-chat").style.display = "none";
           } catch (err) {}
@@ -459,7 +463,7 @@ class Stun extends ModTemplate {
       case "connection-accepted":
         console.log("connection accepted");
         salert(`Call accepted by ${data.sender}`);
-        app.connection.emit("show-chat-manager-small", true);
+        app.connection.emit("show-chat-manager");
         break;
       case "connection-rejected":
         console.log("connection rejected");
