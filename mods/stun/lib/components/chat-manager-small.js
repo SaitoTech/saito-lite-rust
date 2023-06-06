@@ -6,22 +6,19 @@ class StunChatManagerSmall {
   localStream;
   video_boxes = {};
   audio_boxes = {};
-  videoEnabled = true;
   audioEnabled = true;
-  //   mod = "audio";
-  config = {}; // {name: "string", container: string, onHide: function, onShow: function}
 
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
+    this.container = "#game-chat ul";
+
     this.app.connection.on(
       "show-video-chat-small-request",
-      (app, mod, room_code, videoEnabled, audioEnabled, config) => {
-        this.videoEnabled = videoEnabled;
+      (room_code, videoEnabled, audioEnabled) => {
         this.audioEnabled = audioEnabled;
-        this.config = config;
         this.room_code = room_code;
-        this.show(app, mod);
+        this.show(this.app, this.mod);
         // this.updateRoomLink();
       }
     );
@@ -29,17 +26,13 @@ class StunChatManagerSmall {
       this.hide(completely);
     });
 
-    this.app.connection.on("render-local-stream-small-request", (localStream) => {
+    this.app.connection.on("add-local-stream-small-request", (localStream) => {
       this.addLocalStream(localStream);
     });
     this.app.connection.on("add-remote-stream-small-request", (peer, remoteStream) => {
       this.addRemoteStream(peer, remoteStream);
     });
-    // this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type, call_type) => {
-    //     console.log('ui_type ', ui_type);
-    //     if (ui_type !== "small") return
-    //     this.renderRemoteStreamPlaceholder(peer, ui_type, call_type);
-    // });
+
 
     this.app.connection.on("change-connection-state-request", (peer, state, ui_type, call_type) => {
       this.updateConnectionState(peer, state, call_type);
@@ -57,14 +50,9 @@ class StunChatManagerSmall {
   }
 
   render() {
-    if (this.config) {
-      if (this.config.container) {
-        this.app.browser.addElementToSelector(
-          ChatManagerSmallExtensionTemplate(),
-          this.config.container
-        );
-      }
-    }
+    if (!document.querySelector(".chat-manager-small-extension")) {
+      this.app.browser.addElementToSelector(ChatManagerSmallExtensionTemplate(), this.container);
+    } 
   }
 
   attachEvents(app, mod) {
@@ -97,16 +85,6 @@ class StunChatManagerSmall {
         this.toggleAudio();
       };
     });
-    document.querySelectorAll(".video-control").forEach((item) => {
-      item.onclick = () => {
-        this.app.connection.emit("switch-ui-type-to-large");
-      };
-    });
-    // document.querySelectorAll('.video-control').forEach(item => {
-    //     item.onclick = () => {
-    //        this.app.connection.emit('switch-ui-type-to-large');
-    //     }
-    // })
   }
 
   show(app, mod) {
@@ -115,12 +93,16 @@ class StunChatManagerSmall {
   }
 
   hide(completely = false) {
-    document.querySelectorAll(".chat-manager-small-extension").forEach((item) => {
-      item.parentElement.removeChild(item);
-    });
+    try{
+      document.querySelectorAll(".chat-manager-small-extension").forEach((item) => {
+        item.remove();
+      });
 
-    if (completely) {
-      this.config.onHide && this.config.onHide();
+      if (completely) {
+        document.querySelector("#start-group-video-chat").style.display = "block";
+      }
+    }catch(err){
+
     }
   }
 
@@ -137,7 +119,7 @@ class StunChatManagerSmall {
 
   addRemoteStream(peer, remoteStream) {
     /// chat-manager-small-audio-container
-    let container = this?.config?.stream_container || "chat-manager-small";
+    let container = "chat-manager-small-audio-container";
 
     if (!this.audio_boxes[peer]) {
       const audioBox = new AudioBox(this.app, this.mod, peer, container);
@@ -234,25 +216,6 @@ class StunChatManagerSmall {
         item.classList.remove("fa-microphone-slash");
         item.classList.add("fa-microphone");
       });
-    }
-  }
-
-  toggleVideo() {
-    console.log("toggling video");
-    if (this.call_type === "video") {
-      if (this.videoEnabled === true) {
-        this.localStream.getVideoTracks()[0].enabled = false;
-        this.videoEnabled = false;
-        document.querySelector(".video-control").classList.remove("fa-video");
-        document.querySelector(".video_control").classList.add("fa-video-slash");
-      } else {
-        this.localStream.getVideoTracks()[0].enabled = true;
-        // this.localStream.getVideoTracks()[0].start();
-
-        this.videoEnabled = true;
-        document.querySelector(".video-control").classList.remove("fa-video-slash");
-        document.querySelector(".video-control").classList.add("fa-video");
-      }
     }
   }
 

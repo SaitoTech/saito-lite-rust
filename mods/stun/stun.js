@@ -57,16 +57,12 @@ class Stun extends ModTemplate {
 
     this.styles = ["/saito/saito.css", "/videocall/style.css"];
 
-    //When a appspace/main StunAppspace is rendered
-    app.connection.on("stun-init-peer-manager", (ui_type = "large", config = null) => {
-      //config is only defined by game-menu/main.js
-      if (config) {
-        console.log("init peer manager config", config);
-      }
+    //When a appspace/main StunAppspace is rendered or game-menu triggers it
+    app.connection.on("stun-init-peer-manager", (ui_type = "large") => {
 
       if (!this.peerManager) {
         //Create the PeerManager, which includes listeners for events
-        this.peerManager = new PeerManager(app, this, ui_type, config);
+        this.peerManager = new PeerManager(app, this, ui_type);
       }
 
       if (ui_type === "large") {
@@ -377,17 +373,9 @@ class Stun extends ModTemplate {
   }
 
   async establishStunCallWithPeers(ui_type, recipients) {
-    let config = {
-      name: "game",
-      container: "#game-chat ul",
-      stream_container: "chat-manager-small-audio-container",
-      onHide: () => {
-        document.querySelector("#start-group-video-chat").style.display = "block";
-      },
-    };
 
     // init peer manager
-    this.app.connection.emit("stun-init-peer-manager", "small", config);
+    this.app.connection.emit("stun-init-peer-manager", "small");
 
     // create a room
     let room_code = await this.sendCreateRoomTransaction();
@@ -444,19 +432,10 @@ class Stun extends ModTemplate {
 
           this.sendGameCallMessageToPeers(app, _data, [data.sender]);
 
-          let config = {
-            name: "game",
-            container: "#game-chat ul",
-            stream_container: "chat-manager-small-audio-container",
-            onHide: () => {
-              document.querySelector("#start-group-video-chat").style.display = "block";
-            },
-          };
-
           // join room
           app.connection.emit("game-menu-join-video-call", { room_code: data.room_code });
           // init peer manager
-          app.connection.emit("stun-init-peer-manager", "small", config);
+          app.connection.emit("stun-init-peer-manager", "small");
           app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
 
           // send the information to the other peers and ask them to join the call

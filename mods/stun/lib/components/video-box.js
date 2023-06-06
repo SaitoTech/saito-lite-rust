@@ -1,7 +1,7 @@
 const { forEach } = require("jszip");
 const videoBoxTemplate = require("./video-box.template");
 const { setTextRange } = require("typescript");
-// import {applyVideoBackground, } from 'virtual-bg';
+// import {applyVideoBackground } from 'virtual-bg';
 
 class VideoBox {
 
@@ -172,17 +172,14 @@ class VideoBox {
     if (videoBox) {
       if (is_disconnection) {
         if (videoBox.parentElement.classList.contains("expanded-video")) {
-          videoBox.parentElement.removeChild(videoBox);
+          videoBox.remove();
           this.mod.ChatManagerLarge.video_boxes["local"].video_box.containerClass =
             "expanded-video";
           this.mod.ChatManagerLarge.video_boxes["local"].video_box.rerender();
           return;
         }
-        videoBox.parentElement.removeChild(videoBox);
-      } else {
-        // console.log(videoBox, 'video box')
-        videoBox.parentElement.removeChild(videoBox);
-      }
+      } 
+      videoBox.remove();
     }
   }
 

@@ -9,7 +9,6 @@ class StunChatManagerLarge {
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
-    this.config = null;
     this.switchDisplay = new SwitchDisplay(app, mod);
     this.effectsMenu = new Effects(app, mod);
     this.users_on_call = 0;
@@ -28,14 +27,13 @@ class StunChatManagerLarge {
 
     this.app.connection.on(
       "show-video-chat-large-request",
-      (app, mod, room_code, videoEnabled, audioEnabled, config = null) => {
+      (room_code, videoEnabled, audioEnabled) => {
         this.room_code = room_code;
-        this.config = config;
 
         //This will render the (full-screen) component
         if (!document.querySelector(".stun-chatbox")) {
           this.render(videoEnabled, audioEnabled);
-          this.attachEvents(app, mod);
+          this.attachEvents(this.app, this.mod);
         }
 
         this.room_link = this.createRoomLink();
@@ -49,17 +47,16 @@ class StunChatManagerLarge {
         
         this.app.browser.makeDraggable("stun-chatbox", "", true);
 
-
         // create chat group
         this.createRoomTextChat();
       }
     );
 
-    this.app.connection.on("render-local-stream-large-request", (localStream) => {
-      this.renderLocalStream(localStream);
+    this.app.connection.on("add-local-stream-large-request", (localStream) => {
+      this.addLocalStream(localStream);
     });
 
-    this.app.connection.on("render-remote-stream-large-request", (peer, remoteStream) => {
+    this.app.connection.on("add-remote-stream-large-request", (peer, remoteStream) => {
       this.remote_streams.set(peer, remoteStream);
       this.addRemoteStream(peer, remoteStream);
     });
@@ -86,13 +83,13 @@ class StunChatManagerLarge {
       }
     });
 
-    this.app.connection.on("video-box-remove", (peer_id, disconnection) => {
+    this.app.connection.on("video-box-remove", (peer_id) => {
       if (this.video_boxes[peer_id].video_box) {
-        if (this.video_boxes[peer_id].video_box.remove) {
-          this.video_boxes[peer_id].video_box.remove(disconnection);
-          delete this.video_boxes[peer_id];
-          this.updateImages();
+        if (this.video_boxes[peer_id].video_box?.remove) {
+          this.video_boxes[peer_id].video_box.remove(true);
         }
+        delete this.video_boxes[peer_id];
+        this.updateImages();
       }
     });
 
@@ -111,11 +108,8 @@ class StunChatManagerLarge {
 
   render(videoEnabled, audioEnabled) {
 
-    //This is very non-standard
-    if (this.config) {
-      this.app.browser.addElementToSelector(ChatManagerSmallExtensionTemplate(), this.config.container);
-    }else{
-      this.app.browser.addElementToDom(ChatManagerLargeTemplate(videoEnabled, audioEnabled));
+    if (!document.querySelector("#stun-chatbox")){
+      this.app.browser.addElementToDom(ChatManagerLargeTemplate(videoEnabled, audioEnabled));  
     }
 
   }
@@ -234,6 +228,7 @@ class StunChatManagerLarge {
   }
 
   flipDisplay(stream_id) {
+    console.log("flipDisplay");
     let id = document.querySelector(`.${this.local_container}`).querySelector(".video-box").id;
     this.video_boxes[id].video_box.containerClass = this.remote_container;
     this.video_boxes[id].video_box.rerender();
@@ -305,7 +300,7 @@ class StunChatManagerLarge {
     this.analyzeAudio(remoteStream, peer);
   }
 
-  renderLocalStream(localStream) {
+  addLocalStream(localStream) {
     this.createVideoBox("local", this.local_container);
     this.video_boxes["local"].video_box.render(localStream, "large-wrapper");
     this.localStream = localStream;
@@ -315,10 +310,6 @@ class StunChatManagerLarge {
     // applyBlur(7);
   }
 
-  renderRemoteStreamPlaceholder(peer, placeholder_info, is_creator) {
-    this.createVideoBox(peer);
-    this.video_boxes[peer].video_box.render(null, placeholder_info);
-  }
 
   createVideoBox(peer, container = this.remote_container) {
     if (!this.video_boxes[peer]) {
