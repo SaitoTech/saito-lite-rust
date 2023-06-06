@@ -678,6 +678,7 @@
 .chat-settings video {
   width: 100%;
   border-radius: var(--border-radiius);
+  transform: rotateY(180deg);
 }
 
 .chat-settings-toggle-icons {

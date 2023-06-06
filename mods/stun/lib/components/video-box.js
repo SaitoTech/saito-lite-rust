@@ -69,22 +69,21 @@ class VideoBox {
         // console.log('rendering stream');
       }
 
-      let name;
+      let key;
       if (this.stream_id === "local") {
-        let public_key = this.app.wallet.returnPublicKey();
-        name = public_key;
+        key = this.app.wallet.returnPublicKey();
       } else {
-        // name = this.app.keychain.returnIdentifierByPublicKey(this.stream_id);
-        name = this.stream_id;
+        key = this.stream_id;
       }
-
-      //name = `${name.substring(0,9)}....${name.substring(37, name.length -1)}`
+      let name = this.app.keychain.returnIdentifierByPublicKey(key, true);
+      
       const video_box = document.querySelector(`#stream${this.stream_id}`);
+      
       if (video_box) {
         if (video_box.querySelector(".video-call-info")) {
           video_box.querySelector(
             ".video-call-info"
-          ).innerHTML = `<p class="saito-address" data-id="${name}" >${name}</p>`;
+          ).innerHTML = `<p class="saito-address" data-id="${key}" >${name}</p>`;
         }
       }
 
