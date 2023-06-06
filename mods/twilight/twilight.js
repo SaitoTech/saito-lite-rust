@@ -8344,7 +8344,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
     return TwilightSingularOption();
   }
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
     return TwilightOptions();
   }
 
