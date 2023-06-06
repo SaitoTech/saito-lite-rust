@@ -15,7 +15,7 @@ class StunxGameMenu {
 
 
 
-    app.connection.on("game-menu-start-video-call", (recipients) => {
+    app.connection.on("game-menu-start-video-call", async (recipients) => {
       console.log("initing peer manager");
       // init peer manager
       app.connection.emit("stun-init-peer-manager", "small", this.config);
@@ -23,7 +23,7 @@ class StunxGameMenu {
       console.log(this.config, "config")
 
       // create a room
-      let room_code = mod.sendCreateRoomTransaction(room_code);
+      let room_code = await mod.sendCreateRoomTransaction();
 
       //Store room_code in stun
       mod.updateGameRoomCode(room_code); 
