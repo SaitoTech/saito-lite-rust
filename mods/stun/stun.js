@@ -197,15 +197,9 @@ class Stun extends ModTemplate {
               text: "Video/Audio Call",
               icon: "fas fa-video",
               callback: function (app, public_key) {
-                stun_self.renderInto(".saito-overlay");
-                salert(
-                  "You still need to send an invitation link to the call (after you start it)"
-                );
-                /*
-                  We should have a general function to launch the chat-manager with an invitation system
-                  like the in-game start-video-call but without all the DOM manipulations on game-menu
-                */
-                //app.connection.emit("game-menu-start-video-call", [app.wallet.returnPublicKey(), public_key]);
+                //stun_self.renderInto(".saito-overlay");
+                //salert("You still need to send an invitation link to the call (after you start it)");
+                stun_self.establishStunCallWithPeers("large", [public_key]);
               },
             },
           ];

@@ -78,6 +78,7 @@ class PeerManager {
 
           // Add new track to the local stream
           this.app.connection.emit("add-local-stream-request", this.localStream, "video");
+
           let track = localStream.getVideoTracks()[0];
           this.localStream.addTrack(track);
 
@@ -151,9 +152,12 @@ class PeerManager {
 
       //Send Message to peers
       this.join(); 
-  
+      
       let sound = new Audio("/videocall/audio/enter-call.mp3");
       sound.play();
+
+      this.analyzeAudio(this.localStream, "local");  
+
     });
 
     //Chat-Settings saves whether to enter the room with mic/camera on/off
@@ -274,6 +278,8 @@ class PeerManager {
       this.remoteStreams.set(peerId, { remoteStream, peerConnection });
       console.log(this.remoteStreams, "remote stream new");
       this.app.connection.emit("add-remote-stream-request", peerId, remoteStream);
+
+      this.analyzeAudio(remoteStream, peerId);
     });
 
     this.localStream.getTracks().forEach((track) => {
@@ -444,17 +450,52 @@ class PeerManager {
   sendSignalingMessage(data) {}
 
 
-  renderRemoteStreams() {
-    // loop over remote stream
-    this.remoteStreams.forEach((property, key) => {
-      console.log(property, "property", key, "key");
-      this.app.connection.emit("add-remote-stream-request", key, property.remoteStream);
-    });
-  }
-
   getPeerConnection(public_key) {
     return this.peers.get(public_key);
   }
+
+
+  analyzeAudio(stream, peer) {
+    let peer_manager_self = this;
+
+    const audioContext = new AudioContext();
+    const source = audioContext.createMediaStreamSource(stream);
+    const analyser = audioContext.createAnalyser();
+    source.connect(analyser);
+    analyser.fftSize = 512;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    let has_mike = false;
+    const threshold = 20;
+
+
+    function update() {
+      console.log("Update");
+      
+      analyser.getByteFrequencyData(dataArray);
+      const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+
+      if (average > threshold && !has_mike) {
+
+        this.current_speaker = peer;
+
+        setTimeout(() => {
+          if (peer === this.current_speaker) {
+            peer_manager_self.app.connection.emit("stun-new-speaker", peer);
+            has_mike = true;
+          }
+        }, 1000);
+      } else if (average <= threshold) {
+        has_mike = false;
+      }
+
+      //requestAnimationFrame(update);
+    }
+    setInterval(update, 1000);
+    //requestAnimationFrame(update);
+  }
+
 }
 
 module.exports = PeerManager;

@@ -54,9 +54,6 @@
   animation-fill-mode: forwards; */
 }
 
-.stun-chatbox.minimize .minimizer {
-  bottom: 1rem;
-}
 
 .stun-chatbox.minimize .minimizer i {
   font-size: 2rem;

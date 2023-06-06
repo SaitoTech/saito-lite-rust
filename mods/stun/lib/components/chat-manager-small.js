@@ -47,7 +47,20 @@ class StunChatManagerSmall {
         }
       }
     });
+
+    app.connection.on("stun-new-speaker", (peer) => {
+      console.log("New Speaker: " + peer);
+      document.querySelectorAll(".audio-box").forEach((item) => {
+        if (item.id === `audiostream${peer}`) {
+          item.classList.add("speaker");
+        } else {
+          item.classList.remove("speaker");
+        }
+      });
+    });
+
   }
+
 
   render() {
     if (!document.querySelector(".chat-manager-small-extension")) {
@@ -122,8 +135,6 @@ class StunChatManagerSmall {
 
     this.audio_boxes[peer].audio_box.render(remoteStream);
     this.updateImages();
-
-    this.analyzeAudio(remoteStream, peer);
 
     this.attachEvents(this.app, this.mod)
   }
@@ -221,42 +232,6 @@ class StunChatManagerSmall {
   }
 
 
-  /*
-   Should move this an a same named, similar function in chat-manager-large to a library and have them emit an event to update the DOM???
-  */
-  analyzeAudio(stream, peer) {
-    const audioContext = new AudioContext();
-    const source = audioContext.createMediaStreamSource(stream);
-    const analyser = audioContext.createAnalyser();
-    source.connect(analyser);
-    analyser.fftSize = 512;
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-
-    let speaking = false;
-    const threshold = 20;
-
-    function update() {
-      analyser.getByteFrequencyData(dataArray);
-      const average = dataArray.reduce((a, b) => a + b) / bufferLength;
-      
-      let audio = document.querySelector(`#audiostream${peer}`);
-      
-      if (!audio) { return;}
-
-      if (average > threshold && !speaking) {
-        audio.classList.add("speaking");
-        speaking = true;
-      } else if (average <= threshold && speaking) {
-        audio.classList.remove("speaking");
-        speaking = false;
-      }
-
-      requestAnimationFrame(update);
-    }
-
-    update();
-  }
 }
 
 module.exports = StunChatManagerSmall;

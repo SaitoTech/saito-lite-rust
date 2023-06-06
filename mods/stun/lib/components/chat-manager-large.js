@@ -106,6 +106,30 @@ class StunChatManagerLarge {
       siteMessage(`Switched to ${newView} display`, 2000);
     });
 
+
+    app.connection.on("stun-new-speaker", (peer) => {
+      console.log("New Speaker: " + peer);
+      document.querySelectorAll(".video-box-container-large").forEach((item) => {
+        if (item.id === `stream${peer}`) {
+          
+          if (item.classList.contains("speaker")){
+            console.log("Same speaker");
+            return;
+          }
+
+          if (this.display_mode == "speaker" && !item.parentElement.classList.contains("expanded-video")) {
+            this.flipDisplay(peer);
+          }
+          
+          item.classList.add("speaker");
+
+        } else {
+          item.classList.remove("speaker");
+        }
+      });
+
+    });
+
   }
 
   render(videoEnabled, audioEnabled) {
@@ -301,7 +325,6 @@ class StunChatManagerLarge {
       peer.querySelector(".video-box").click();
     }
 
-    this.analyzeAudio(remoteStream, peer);
   }
 
   addLocalStream(localStream) {
@@ -309,7 +332,7 @@ class StunChatManagerLarge {
     this.video_boxes["local"].video_box.render(localStream, "large-wrapper");
     this.localStream = localStream;
     this.updateImages();
-    this.analyzeAudio(localStream, "local");
+
     // segmentBackground(document.querySelector('#streamlocal video'), document.querySelector('#streamlocal canvas'), 1);
     // applyBlur(7);
   }
@@ -446,66 +469,7 @@ class StunChatManagerLarge {
     this.chat_group.target_container = `.stun-chatbox .${this.remote_container}`;
   }
 
-  /*
-   Should move this an a same named, similar function in chat-manager-large to a library and have them emit an event to update the DOM???
-  */
-  analyzeAudio(stream, peer) {
-    let video_chat_self = this;
-    const audioContext = new AudioContext();
-    const source = audioContext.createMediaStreamSource(stream);
-    const analyser = audioContext.createAnalyser();
-    source.connect(analyser);
-    analyser.fftSize = 512;
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
 
-    let speaking = false;
-    const threshold = 20;
-
-    function update() {
-      analyser.getByteFrequencyData(dataArray);
-      const average = dataArray.reduce((a, b) => a + b) / bufferLength;
-
-      if (average > threshold && !speaking) {
-        let video_container = document.querySelector(`#stream${peer}`);
-
-        // setTimeout(()=> {
-        //   if(speaking) return;
-        //   document.querySelectorAll('.video-box-container-large').forEach(item => {
-        //     item.classList.remove('speaker');
-        // });
-        // },3000)
-
-        let video_box = video_container.querySelector(".video-box");
-        this.current_speaker = peer;
-        let speaker_candidate = peer;
-
-        setTimeout(() => {
-          if (speaker_candidate === this.current_speaker) {
-            document.querySelectorAll(".video-box-container-large").forEach((item) => {
-              // console.log(item.id, `stream${peer}`)
-
-              if (item.id === `stream${peer}`) {
-                item.classList.add("speaker");
-                if (video_chat_self.display_mode == "speaker") {
-                  video_chat_self.flipDisplay(peer);
-                }
-              } else {
-                item.classList.remove("speaker");
-              }
-            });
-            speaking = true;
-          }
-        }, 5000);
-      } else if (average <= threshold && speaking) {
-        speaking = false;
-      }
-
-      requestAnimationFrame(update);
-    }
-
-    update();
-  }
 }
 
 module.exports = StunChatManagerLarge;
