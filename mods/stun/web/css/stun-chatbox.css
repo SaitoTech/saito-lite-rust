@@ -116,6 +116,11 @@
   margin-right: 10px;
 }
 
+.stun-chatbox.minimize .expanded-video {
+  width: 100%;
+  margin-right: unset;
+}
+
 .expanded-video .video-box-container-large {
   width: 100%;
   opacity: 0;
@@ -140,6 +145,10 @@
   gap: 1rem;
   width: 25%;
   height: 100%;
+}
+
+.stun-chatbox.minimize .side-videos {
+  display: none;
 }
 
 .side-videos .video-box-container-large {

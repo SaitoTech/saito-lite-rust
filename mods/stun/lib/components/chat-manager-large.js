@@ -201,6 +201,8 @@ class StunChatManagerLarge {
       let chat_box = document.querySelector(".stun-chatbox");
 
       if (icon.classList.contains("fa-caret-down")) {
+        this.app.connection.emit("stun-switch-view", "speaker");
+        
         chat_box.classList.add("minimize");
         icon.classList.remove("fa-caret-down");
         icon.classList.add("fa-expand");

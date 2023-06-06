@@ -1,4 +1,3 @@
-const ChatManagerSmallTemplate = require("./chat-manager-small.template");
 const ChatManagerSmallExtensionTemplate = require("./chat-manager-small-extension.template");
 const AudioBox = require("./audio-box");
 
@@ -10,7 +9,7 @@ class StunChatManagerSmall {
   videoEnabled = true;
   audioEnabled = true;
   //   mod = "audio";
-  config = {}; // {name: "string", container: string, onHide: function, onShow: function, showMain: boolean}
+  config = {}; // {name: "string", container: string, onHide: function, onShow: function}
 
   constructor(app, mod) {
     this.app = app;
@@ -58,13 +57,6 @@ class StunChatManagerSmall {
   }
 
   render() {
-    if (this.config && this.config.showMain) {
-      if (!document.querySelector(".chat-manager-small")) {
-        this.app.browser.addElementToDom(ChatManagerSmallTemplate());
-        this.app.browser.makeDraggable("chat-manager-small");
-      }
-    }
-
     if (this.config) {
       if (this.config.container) {
         this.app.browser.addElementToSelector(
@@ -123,19 +115,9 @@ class StunChatManagerSmall {
   }
 
   hide(completely = false) {
-    if (this.showMain) {
-      document
-        .querySelector(".chat-manager-small")
-        .parentElement.removeChild(document.querySelector(".chat-manager-small"));
-    }
-
-    
-  
     document.querySelectorAll(".chat-manager-small-extension").forEach((item) => {
       item.parentElement.removeChild(item);
     });
-
-
 
     if (completely) {
       this.config.onHide && this.config.onHide();

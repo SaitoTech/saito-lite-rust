@@ -87,10 +87,6 @@
     background-color: var(--saito-primary);
 }
 
-.join-group-video-chat {
-    display: none;
-}
-
 
 .audio-box {
     display: inline-block !important;
