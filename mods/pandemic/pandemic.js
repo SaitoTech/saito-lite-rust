@@ -2477,7 +2477,7 @@ displayDisease() {
     return PandemicGameRulesTemplate(this.app, this);
   }
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
     return PandemicGameOptionsTemplate(this.app, this); 
   }
 

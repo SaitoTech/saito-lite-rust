@@ -801,7 +801,7 @@ class Chessgame extends GameTemplate {
     return ChessSingularGameOptions(this.app, this);
   }
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
     return ChessGameOptions(this.app, this);
   }
 

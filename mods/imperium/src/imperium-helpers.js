@@ -121,7 +121,7 @@
   }
 
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
 
     let player_upper_limit = this.maxPlayers;
     try {

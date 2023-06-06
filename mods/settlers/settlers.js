@@ -385,7 +385,7 @@ class Settlers extends GameTemplate {
   }
 
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
     return SettlersGameOptionsTemplate(this.app, this);
   }
 
