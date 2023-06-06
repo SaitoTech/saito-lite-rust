@@ -1,4 +1,3 @@
-
 .hud {
   width: 50rem;
   max-width: 50rem;
@@ -6,16 +5,20 @@
 }
 
 .hud-body {
-  min-height: 15vh;
+  min-height: 11rem;
+  width: calc(100% - 5rem);
 }
 
-/* override default whitesmoke background */
-.hud-body .status , .controls ul li , options {
+/* override default #efefef background */
+
+.hud-body .status, .controls ul li, options {
   background-color: transparent;
   box-shadow: none;
+  padding: 0;
 }
 
 /* hide scrollbars */
+
 .hud-body .controls {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -23,13 +26,18 @@
   overflow-x: auto;
 }
 
-.hud-body .status ul li , .hud-body .status .tbh ul li {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    line-height: 4rem;
+.hud-body .status ul li, .hud-body .controls ul li, .hud-body .status .tbh ul li {
+  padding: 0.5rem 1rem;
+  line-height: 4rem;
+  border: 4px solid #424143;
+  border-radius: 1.5rem;
+  min-width: 12rem;
+  list-style: none;
+  margin: 1rem 0 0;
+  height: unset;
 }
-.hud-body .status ul li:hover , .hud-body .status .tbh ul li:hover {
-    background-color:#cbaf83
+.hud-body .status ul li:hover, .hud-body .controls ul li:hover, .hud-body .status .tbh ul li:hover {
+  background-color: #cbaf83
 }
 
 .hud-body .mobile {
@@ -64,6 +72,15 @@
   width: 100%;
   top: 0rem;
 }
+
+/* ul to buttons in settlers hud */
+
+.saitoa .status ul, .saitoa .controls ul  {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
 
 
 @media only screen and (max-width: 700px) and (orientation: portrait) {
@@ -110,4 +127,3 @@
     padding-bottom: 40vh;
   }
 }
-
