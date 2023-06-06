@@ -3882,9 +3882,8 @@ playerTurnHeadlineSelected(card, player) {
           }
         }
 
-        if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
-
         announcement += '<li class="option" id="ops">play ops</li>';
+        if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
         announcement += twilight_self.isSpaceRaceAvailable(ops);    
         let header_msg = `${player.toUpperCase()} playing <span>${twilight_self.game.deck[0].cards[card].name}</span>`; 
 
