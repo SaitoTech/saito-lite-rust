@@ -2790,7 +2790,7 @@ class Poker extends GameTableTemplate {
     return PokerGameRulesTemplate(this.app, this);
   }
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
     return PokerGameOptionsTemplate(this.app, this);
   }
 

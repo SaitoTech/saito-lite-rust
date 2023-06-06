@@ -296,7 +296,7 @@ alert("Deletion Not Supported Yet! ");
     this.hideLibrary();
   }
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
     return NwasmGameOptionsTemplate(this.app, this);
   }
 

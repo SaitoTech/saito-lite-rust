@@ -1042,7 +1042,7 @@ initializeQueue(first_player = 1){
     return GameRulesTemplate(this.app, this);
   }
 
-  returnGameOptionsHTML(){
+  returnAdvancedOptions() {
     return GameOptionsTemplate(this.app, this);
   }
 

@@ -19805,7 +19805,7 @@ console.log("HGL 1: " + z[i].name);
   }
 
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
 
     let player_upper_limit = this.maxPlayers;
     try {

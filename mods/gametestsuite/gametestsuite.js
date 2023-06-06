@@ -417,7 +417,7 @@ class GameTestSuite extends GameTemplate {
   //
   // used here to allow users to select in-game web3 crypto
   // 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
 
     let options_html = `
       <h1 class="overlay-title">Select a Web3 Crypto:</h1>

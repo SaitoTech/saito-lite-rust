@@ -594,7 +594,7 @@ class Wuziqi extends GameTemplate {
         return WuziqiSingularGameOptionsTemplate(this.app, this);
     }
     // Add options to the game start wizard for different game parameters
-    returnGameOptionsHTML() {
+    returnAdvancedOptions() {
         return WuziqiGameOptionsTemplate(this.app, this);
     }
 

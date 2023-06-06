@@ -50,7 +50,7 @@ class GameWizard {
     this.overlay.setBackground(this.game_mod.respondTo("arcade-games").image);
 
     //Test if we should include Advanced Options
-    let advancedOptions = this.game_mod.returnGameOptionsHTML();
+    let advancedOptions = this.game_mod.returnAdvancedOptions();
     if (!advancedOptions) {
       if (document.getElementById("arcade-advance-opt")) {
         document.getElementById("arcade-advance-opt").style.visibility = "hidden";
@@ -89,7 +89,7 @@ class GameWizard {
 
         //Requery advancedOptions on the click so it can dynamically update based on # of players
         let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary">Accept</div>`;
-        let advancedOptionsHTML = this.game_mod.returnGameOptionsHTML();
+        let advancedOptionsHTML = this.game_mod.returnAdvancedOptions();
         if (!advancedOptionsHTML.includes(accept_button)) {
           advancedOptionsHTML += accept_button;
         }

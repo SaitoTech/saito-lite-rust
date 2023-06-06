@@ -30,7 +30,7 @@ class Solitrio extends OnePlayerGameTemplate {
 
   
   //Single player games don't allow game-creation and options prior to join
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
     return SolitrioGameOptionsTemplate(this.app, this);
   }
 
