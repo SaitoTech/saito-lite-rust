@@ -37,7 +37,8 @@
   height: 50rem;
   width: 36rem;
   border-radius: 0.5rem;
-  z-index: 15; /* So weird, at 15 it blocks the z-index 20 slide in menu*/
+  z-index: 15;
+  /* So weird, at 15 it blocks the z-index 20 slide in menu*/
   /* reason: the slidein is child of saito header, so whatever z-index is assigned to saito header,
   the child (slidein menu) inherits it */
   position: fixed;
@@ -102,11 +103,9 @@
   display: block;
   height: calc(100% - 9rem);
   overflow: auto;
-
-  /* Put a TRANSPARENT TEXTURE over the chat body background www.transparenttextures.com*/
-  background-image: url("/chat/img/subtle-surface.png");
-  /* Not sure what this is supposed to do?? */
-  /*margin-bottom: 5.8rem;*/
+  /* Put a TRANSPARENT TEXTURE over the chat body background www.transparenttextures.com
+  background-image: url("/chat/img/subtle-surface.png");*/
+  background-color: #0001;
 }
 
 .chat-body>.saito-user {
@@ -137,8 +136,7 @@
 }
 */
 
-
-.saito-time-stamp { 
+.saito-time-stamp {
   text-align: center;
   color: var(--saito-font-color-light);
   font-style: italic;
@@ -197,11 +195,12 @@
   position: absolute;
   bottom: 0;
   width: 100%;
-  padding: 0.5rem;
+  padding: 0;
   display: flex;
   flex-flow: row;
   align-items: end;
   z-index: 2;
+  border-top: 1px solid var(--saito-border-color);
 }
 
 .chat-container blockquote {
@@ -211,11 +210,10 @@
 }
 
 .chat-input {
-  border: 1px solid var(--saito-border-color);
-  border-radius: 0.5rem;
-  width: calc(100% - 0rem);
+  border: 1px solid transparent;
+  width: 100%;
   font-size: 1.6rem;
-  padding: 0.9rem 3rem 0.5rem 0.5rem;
+  padding: 1.2rem 3rem 1.2rem 1rem;
   outline: none;
   background: var(--saito-arcade-background);
   max-height: 15rem;
@@ -223,13 +221,17 @@
   word-break: break-word;
 }
 
-.chat-footer > i {
+.chat-footer .saito-emoji {
+  padding: 1.3rem 0.5rem;
+}
+
+.chat-footer>i {
   color: var(--saito-primary);
   cursor: pointer;
   z-index: 2;
   transition: all 0.2s;
   font-size: 2rem;
-  padding: 0.8rem;
+  padding: 1.1rem 0.8rem;
 }
 
 .chat-footer i:hover {
@@ -259,7 +261,6 @@
   border-bottom-left-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
-
 
 /* Mobile Overlay */
 
