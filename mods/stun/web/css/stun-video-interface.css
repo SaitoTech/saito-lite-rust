@@ -20,9 +20,6 @@
   z-index: 100;
 }
 
-.stun-chatbox.minimize:hover {
-  cursor: pointer;
-}
 
 .stun-chatbox .minimizer {
   position: absolute;
@@ -36,6 +33,7 @@
   font-size: 4rem;
   color: var(--saito-white);
   transition: all 0.2s;
+  text-shadow: 0 0 3px var(--saito-black);
 }
 
 @keyframes minimize {
@@ -47,8 +45,10 @@
 }
 
 .minimize {
-  width: 20vw;
-  height: 30vh;
+  width: 30rem;
+  height: 20rem;
+  overflow: auto;
+  resize: both;
   /* animation-name: minimize;
   animation-duration: 1s;
   animation-fill-mode: forwards; */
@@ -59,8 +59,54 @@
   font-size: 2rem;
 }
 
-.stun-chatbox.minimize .footer {
+.stun-chatbox.minimize .video-box-container-large {
+  resize: unset;
+}
+
+.stun-chatbox.minimize .expanded-video {
+  width: 100%;
+  margin-right: unset;
+}
+
+.stun-chatbox.minimize .side-videos {
   display: none;
+}
+
+.stun-chatbox.minimize .large-wrapper {
+  height: 100%;
+}
+
+.stun-chatbox.minimize .footer {
+  position: absolute;
+  bottom: 1rem;
+  width: 100%;
+}
+
+.stun-chatbox.minimize .control-panel{
+  background-color: unset;
+  padding: 0.5rem;
+  align-items: flex-end;
+}
+
+.stun-chatbox.minimize .timer, .stun-chatbox.minimize span, .stun-chatbox.minimize label {
+  display: none;
+}
+
+.stun-chatbox.minimize .control-list {
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.stun-chatbox.minimize span.mini_okay {
+  display: flex;
+  width: 3rem;
+  height: 3rem;
+  background-color: rgba(230, 230, 230, 0.8);
+  margin-right: 1rem;
+}
+
+.stun-chatbox.minimize .minimizer:hover i {
+  transform: scale(1.1);
 }
 
 .stun-chatbox .minimizer:hover i {
@@ -113,10 +159,6 @@
   margin-right: 10px;
 }
 
-.stun-chatbox.minimize .expanded-video {
-  width: 100%;
-  margin-right: unset;
-}
 
 .expanded-video .video-box-container-large {
   width: 100%;
@@ -144,9 +186,6 @@
   height: 100%;
 }
 
-.stun-chatbox.minimize .side-videos {
-  display: none;
-}
 
 .side-videos .video-box-container-large {
   height: 30%;
@@ -227,6 +266,7 @@
   color: var(--saito-white);
   position: relative;
 }
+
 
 .video-box-container-large video {
   width: 100%;
@@ -514,7 +554,6 @@
 }
 
 .control-list .disconnect_btn {
-  background-color: var(--saito-white);
   color: var(--saito-primary);
 }
 

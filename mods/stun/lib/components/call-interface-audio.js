@@ -15,7 +15,7 @@ class CallInterfaceAudio {
     this.app.connection.on(
       "show-call-interface",
       (room_code, videoEnabled, audioEnabled) => {
-        console.log("Render Small");
+        console.log("Render Audio Interface");
 
         try {
           if (document.querySelector("#start-group-video-chat")){

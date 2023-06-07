@@ -489,7 +489,7 @@ class PeerManager {
 
 
     function update() {
-      console.log("Update");
+      //console.log("Update");
       
       analyser.getByteFrequencyData(dataArray);
       const average = dataArray.reduce((a, b) => a + b) / bufferLength;

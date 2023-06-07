@@ -22,6 +22,9 @@ class CallLaunch {
     // close-preview-window shuts downt the streams in call-settings
     app.connection.on('close-preview-window', () => {
       this.overlay.remove();
+      if (document.querySelector(".stun-appspace")){
+        document.querySelector(".stun-appspace").remove();
+      }
     });
 
     app.connection.on('stun-to-join-room', (room_code) => {

@@ -90,7 +90,12 @@ class Stun extends ModTemplate {
       );
 
       // JOIN THE ROOM
-      this.renderInto("body");
+      if (this.browser_active){
+        this.renderInto("body");  
+      }else{
+        this.renderInto(".saito-overlay");  
+      }
+      
       app.connection.emit("stun-to-join-room", room_obj.room_code);
     }
   }
