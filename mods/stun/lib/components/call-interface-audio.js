@@ -1,16 +1,16 @@
 const CallInterfaceGameTemplate = require("./call-interface-audio-game.template");
+const CallInterfaceGenericTemplate = require("./call-interface-audio-generic.template");
 const AudioBox = require("./audio-box");
 
 class CallInterfaceAudio {
-  // peers = {};
-  localStream;
-  audio_boxes = {};
-  audioEnabled = true;
 
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
-    this.container = "#game-chat ul";
+    this.container = "body"; //"#game-chat ul";
+    this.localStream = null;
+    this.audio_boxes = {};
+    this.audioEnabled = true;
 
     this.app.connection.on(
       "show-call-interface",
@@ -26,7 +26,7 @@ class CallInterfaceAudio {
         this.audioEnabled = audioEnabled;
         this.room_code = room_code;
         this.render();
-        this.attachEvents(this.app, this.mod);
+        this.attachEvents();
       }
     );
 
@@ -70,30 +70,22 @@ class CallInterfaceAudio {
 
 
   render() {
-    if (!document.querySelector(".chat-manager-small-extension")) {
-      this.app.browser.addElementToSelector(CallInterfaceGameTemplate(), this.container);
-    } 
+    if (this.container == "body"){
+      if (!document.getElementById("small-audio-chatbox")){
+        this.app.browser.addElementToDom(CallInterfaceGenericTemplate());
+      }else{
+        this.app.browser.replaceElementById(CallInterfaceGenericTemplate(), "small-audio-chatbox");
+      }
+    }else{
+      if (!document.querySelector(".chat-manager-small-extension")) {
+        this.app.browser.addElementToSelector(CallInterfaceGameTemplate(), this.container);
+      } 
+    }
   }
 
-  attachEvents(app, mod) {
+  attachEvents() {
     console.log('attaching events')
-    const videoCallComponent = document.getElementById("chat-manager-small");
-    const expandBtn = document.getElementById("expand-btn");
-    if (expandBtn) {
-      expandBtn.addEventListener("click", () => {
-        videoCallComponent.classList.toggle("expanded");
-        if (videoCallComponent.classList.contains("expanded")) {
-          // setAutoCollapse();
-        }
-      });
-    }
-
-    // function setAutoCollapse() {
-    //     setTimeout(() => {
-    //         // videoCallComponent.classList.remove('expanded');
-    //     }, 3000);
-    // }
-
+    
     document.querySelectorAll(".disconnect-control").forEach((item) => {
       item.onclick = () => {
         this.disconnect();
@@ -105,6 +97,9 @@ class CallInterfaceAudio {
         this.toggleAudio();
       };
     });
+
+    this.app.browser.makeDraggable("small-audio-chatbox", "", true);
+
   }
 
   hide(completely = false) {
@@ -119,6 +114,10 @@ class CallInterfaceAudio {
     }catch(err){
 
     }
+
+    if (document.getElementById("small-audio-chatbox")){
+      document.getElementById("small-audio-chatbox").remove();
+    }
   }
 
   disconnect() {
@@ -129,11 +128,12 @@ class CallInterfaceAudio {
 
   addLocalStream(stream) {
     this.localStream = stream;
+    this.addRemoteStream("local", stream);
   }
 
   addRemoteStream(peer, remoteStream) {
     /// chat-manager-small-audio-container
-    let container = "chat-manager-small-audio-container";
+    let container = ".image-list";
 
     if (!this.audio_boxes[peer]) {
       const audioBox = new AudioBox(this.app, this.mod, peer, container);
@@ -143,7 +143,6 @@ class CallInterfaceAudio {
     this.audio_boxes[peer].audio_box.render(remoteStream);
     this.updateImages();
 
-    this.attachEvents(this.app, this.mod)
   }
 
   createAudioBox(peer, remoteStream, container) {
@@ -154,35 +153,17 @@ class CallInterfaceAudio {
     let images = ``;
     let count = 0;
     console.log(this.audio_boxes);
+ 
     for (let i in this.audio_boxes) {
-      if (i === "local") {
-        let publickey = this.app.wallet.returnPublicKey();
-        let imgsrc = this.app.keychain.returnIdenticon(publickey);
-        if (
-          !document.querySelector(`#audiostream${publickey}`).querySelector(`#image${publickey}`)
-        ) {
-          document
-            .querySelector(`#audiostream${publickey}`)
-            .insertAdjacentHTML(
-              "beforeend",
-              `<img id ="image${publickey}" class="saito-identicon" src="${imgsrc}"/>`
-            );
-        }
-      } else {
-        let imgsrc = this.app.keychain.returnIdenticon(i);
-        if (!document.querySelector(`#audiostream${i}`).querySelector(`#image${i}`)) {
-          document
-            .querySelector(`#audiostream${i}`)
-            .insertAdjacentHTML(
-              "beforeend",
-              `<img id ="image${i}" class="saito-identicon" src="${imgsrc}"/>`
-            );
-        }
-      }
       count++;
     }
-    // document.querySelector('.stun-chatbox .image-list').innerHTML = images;
-    // document.querySelector('.stun-chatbox .users-on-call-count').innerHTML = count
+
+    //Will fail for game mode
+    try{
+
+      document.querySelector(".users-on-call .users-on-call-count").innerHTML = count;
+    } catch(err){}
+    this.users_on_call = count;
   }
 
 
@@ -209,7 +190,7 @@ class CallInterfaceAudio {
     if (this.timer_interval) {
       return;
     }
-    let timerElement = document.querySelector(".small-video-chatbox .counter");
+    let timerElement = document.querySelector(".timer .counter");
     let seconds = 0;
 
     const timer = () => {
@@ -232,7 +213,7 @@ class CallInterfaceAudio {
         secs = `0${secs}`;
       }
 
-      timerElement.innerHTML = `<sapn style="color:orangered; font-size: 3rem;" >${hours}:${minutes}:${secs} </sapn>`;
+      timerElement.innerHTML = `<span style="color:orangered; font-size: 3rem;" >${hours}:${minutes}:${secs} </span>`;
     };
 
     this.timer_interval = setInterval(timer, 1000);

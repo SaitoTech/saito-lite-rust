@@ -24,20 +24,22 @@ class AudioBox {
 
     render(stream) {
         if (!document.querySelector(`#audiostream${this.stream_id}`)) {
-            this.app.browser.addElementToClass(AudioBoxTemplate(this.stream_id), this.container);
+            this.app.browser.addElementToSelector(AudioBoxTemplate(this.app, this.stream_id), this.container);
         }
         this.stream = stream;
         console.log(stream, 'stream')
-        const audio_box = document.querySelector(`#audiostream${this.stream_id}`);
+        const audio_box = document.querySelector(`audio#${this.stream_id}`);
         if (audio_box){
-            audio_box.firstElementChild.srcObject = this.stream;            
+            audio_box.srcObject = this.stream;            
         }
 
     }
 
     remove() {
         let audio_box = document.querySelector(`#audiostream${this.stream_id}`);
-        audio_box.parentElement.removeChild(audio_box)
+        if (audio_box){
+            audio_box.remove();            
+        }
     }
 }
 

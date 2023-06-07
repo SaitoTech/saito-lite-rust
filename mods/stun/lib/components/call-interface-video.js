@@ -369,18 +369,18 @@ class CallInterfaceVideo {
     let images = ``;
     let count = 0;
     for (let i in this.video_boxes) {
+      let publickey = i;
       if (i === "local") {
-        let publickey = this.app.wallet.returnPublicKey();
-        let imgsrc = this.app.keychain.returnIdenticon(publickey);
-        images += `<img data-id="${publickey}" src="${imgsrc}"/>`;
-      } else {
-        let imgsrc = this.app.keychain.returnIdenticon(i);
-        images += `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`;
-      }
+        publickey = this.app.wallet.returnPublicKey();
+      } 
+
+      let imgsrc = this.app.keychain.returnIdenticon(publickey);
+      images += `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`;
       count++;
+
     }
-    document.querySelector(".stun-chatbox .image-list").innerHTML = images;
-    document.querySelector(".stun-chatbox .users-on-call-count").innerHTML = count;
+    document.querySelector(".users-on-call .image-list").innerHTML = images;
+    document.querySelector(".users-on-call .users-on-call-count").innerHTML = count;
     this.users_on_call = count;
 
   }
