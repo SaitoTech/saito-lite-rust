@@ -1,5 +1,6 @@
 const SaitoOverlay = require('../../../../lib/saito/ui/saito-overlay/saito-overlay.js');
 const StunAppspaceTemplate = require('./main.template.js');
+const ChatSetting = require("../components/chat-setting");
 
 /**
  * 
@@ -14,6 +15,8 @@ class StunAppspace {
     this.mod = mod;
     this.container = container;
     this.overlay = new SaitoOverlay(app, mod);
+    this.chatSetting = new ChatSetting(app, this);
+
     this.room_code = null;
 
     // close-preview-window shuts downt the streams in chat-settings
@@ -42,6 +45,8 @@ class StunAppspace {
     this.attachEvents(this.app, this.mod);
     // create peer manager and initialize , send an event to stun to initialize
     this.app.connection.emit('stun-init-peer-manager',"large");
+
+    this.chatSetting.render();
   }
 
   attachEvents(app, mod) {
@@ -70,7 +75,7 @@ class StunAppspace {
     this.app.connection.emit('stun-peer-manager-update-room-code', this.room_code);
     //For myself and Chat-Settings
     this.app.connection.emit('close-preview-window');
-    this.app.connection.emit("show-chat-manager-large");
+    this.app.connection.emit("show-chat-manager");
   }
 
   async createConferenceCall(app, mod, room_code) {
