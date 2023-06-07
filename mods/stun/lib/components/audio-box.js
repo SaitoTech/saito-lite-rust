@@ -28,11 +28,11 @@ class AudioBox {
         }
         this.stream = stream;
         console.log(stream, 'stream')
-        const audio_box = document.querySelector(`audio#${this.stream_id}`);
-        if (audio_box){
-            audio_box.srcObject = this.stream;            
-        }
-
+        document.querySelectorAll("audio").forEach(audio => {
+            if (audio.getAttribute("id") == this.stream_id){
+                audio.srcObject = this.stream;
+            }
+        });
     }
 
     remove() {

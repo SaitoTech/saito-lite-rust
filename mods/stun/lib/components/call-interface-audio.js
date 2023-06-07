@@ -42,6 +42,12 @@ class CallInterfaceAudio {
       if (room_code !== this.room_code) {
         return;
       }
+
+      if (status === "connected") {
+        this.startTimer();
+      }
+
+      this.updateImages();
       siteMessage(status, 2000);
     });
 
