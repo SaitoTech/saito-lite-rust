@@ -142,7 +142,7 @@ class Quake3 extends GameTemplate {
 
     return 1;
   }
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
     return QuakeGameOptionsTemplate(this.app, this);
   }
 

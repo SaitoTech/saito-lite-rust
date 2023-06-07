@@ -3,6 +3,13 @@ const AudioBoxTemplate = require("./audio-box.template");
 const { setTextRange } = require("typescript");
 // import {applyVideoBackground, } from 'virtual-bg';
 
+/**
+ * 
+ *  Audio Box is a hook for a voice call, it adds an <audio> element to the DOM
+ *  and can display the identicons of the people involved in the call
+ * 
+ */
+
 
 
 class AudioBox {
@@ -22,7 +29,10 @@ class AudioBox {
         this.stream = stream;
         console.log(stream, 'stream')
         const audio_box = document.querySelector(`#audiostream${this.stream_id}`);
-        audio_box.firstElementChild.srcObject = this.stream;
+        if (audio_box){
+            audio_box.firstElementChild.srcObject = this.stream;            
+        }
+
     }
 
     remove() {

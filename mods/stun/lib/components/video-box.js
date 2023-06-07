@@ -1,7 +1,7 @@
 const { forEach } = require("jszip");
 const videoBoxTemplate = require("./video-box.template");
 const { setTextRange } = require("typescript");
-// import {applyVideoBackground, } from 'virtual-bg';
+// import {applyVideoBackground } from 'virtual-bg';
 
 class VideoBox {
 
@@ -69,22 +69,21 @@ class VideoBox {
         // console.log('rendering stream');
       }
 
-      let name;
+      let key;
       if (this.stream_id === "local") {
-        let public_key = this.app.wallet.returnPublicKey();
-        name = public_key;
+        key = this.app.wallet.returnPublicKey();
       } else {
-        // name = this.app.keychain.returnIdentifierByPublicKey(this.stream_id);
-        name = this.stream_id;
+        key = this.stream_id;
       }
-
-      //name = `${name.substring(0,9)}....${name.substring(37, name.length -1)}`
+      let name = this.app.keychain.returnIdentifierByPublicKey(key, true);
+      
       const video_box = document.querySelector(`#stream${this.stream_id}`);
+      
       if (video_box) {
         if (video_box.querySelector(".video-call-info")) {
           video_box.querySelector(
             ".video-call-info"
-          ).innerHTML = `<p class="saito-address" data-id="${name}" >${name}</p>`;
+          ).innerHTML = `<p class="saito-address" data-id="${key}" >${name}</p>`;
         }
       }
 
@@ -172,17 +171,14 @@ class VideoBox {
     if (videoBox) {
       if (is_disconnection) {
         if (videoBox.parentElement.classList.contains("expanded-video")) {
-          videoBox.parentElement.removeChild(videoBox);
+          videoBox.remove();
           this.mod.ChatManagerLarge.video_boxes["local"].video_box.containerClass =
             "expanded-video";
           this.mod.ChatManagerLarge.video_boxes["local"].video_box.rerender();
           return;
         }
-        videoBox.parentElement.removeChild(videoBox);
-      } else {
-        // console.log(videoBox, 'video box')
-        videoBox.parentElement.removeChild(videoBox);
-      }
+      } 
+      videoBox.remove();
     }
   }
 

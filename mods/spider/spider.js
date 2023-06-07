@@ -45,8 +45,7 @@ class Spider extends OnePlayerGameTemplate {
   }
     
   //Single player games don't allow game-creation and options prior to join
-  returnGameOptionsHTML() {
-
+  returnAdvancedOptions() {
 
     /* to do -- add auto play mode
             <p>Play Mode:</p>

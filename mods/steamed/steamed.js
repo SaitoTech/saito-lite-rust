@@ -1008,7 +1008,7 @@ initializeGame(game_id) {
     return GameRulesTemplate(this.app, this);
   }
 
-  returnGameOptionsHTML(){
+  returnAdvancedOptions() {
     return GameOptionsTemplate(this.app, this);
   }
 

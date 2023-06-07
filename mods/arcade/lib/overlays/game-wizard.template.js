@@ -38,7 +38,7 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
     <div class="arcade-wizard-game-controls">
   
       <div class="settings">
-        ${game_mod.returnPlayerSelectHTML()}
+        ${game_mod.returnOptions()}
         <div id="arcade-advance-opt"><span class="arcade-advance-opt-text">advanced options...</span></div>
       </div>
 

@@ -2612,7 +2612,7 @@ console.log("\n\n\n\n");
 
 
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
 
     return `
       <div style="padding:40px;width:100vw;height:100vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
@@ -20266,7 +20266,6 @@ return;
   canPlayerRescindExcommunication(his_self, f1, f2) {
     return 0;
   }
-
 
   async playerFormAlliance(his_self, f1, f2) {
     return 0;

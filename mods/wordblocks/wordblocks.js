@@ -2330,7 +2330,7 @@ class Wordblocks extends GameTemplate {
     this.sendMessage("game", extra);
   }
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
     return WordblocksGameOptionsTemplate(this.app, this);
   }
 

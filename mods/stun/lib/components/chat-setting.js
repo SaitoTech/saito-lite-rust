@@ -129,8 +129,6 @@ class ChatSetting {
       }
     });
 
-    document.getElementById("join-button").addEventListener("click", () => {});
-
     this.getUserMedia(videoElement);
   }
 

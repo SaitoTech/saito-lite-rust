@@ -3684,7 +3684,7 @@ returnGameRulesHTML(){
   return ThirteenGameRulesTemplate(this.app, this);
 }
 
-returnGameOptionsHTML() {
+returnAdvancedOptions() {
   return ThirteenGameOptionsTemplate(this.app, this);
 }
 

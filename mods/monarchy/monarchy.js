@@ -2240,7 +2240,7 @@ initializeGame(game_id) {
     return MonarchyGameRulesTemplate(this.app, this);
   }
 
-  returnGameOptionsHTML(){
+  returnAdvancedOptions() {
     return MonarchyGameOptionsTemplate(this.app, this);
   }
 

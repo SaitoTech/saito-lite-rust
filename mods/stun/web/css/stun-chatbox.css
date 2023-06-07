@@ -54,9 +54,6 @@
   animation-fill-mode: forwards; */
 }
 
-.stun-chatbox.minimize .minimizer {
-  bottom: 1rem;
-}
 
 .stun-chatbox.minimize .minimizer i {
   font-size: 2rem;
@@ -116,6 +113,11 @@
   margin-right: 10px;
 }
 
+.stun-chatbox.minimize .expanded-video {
+  width: 100%;
+  margin-right: unset;
+}
+
 .expanded-video .video-box-container-large {
   width: 100%;
   opacity: 0;
@@ -140,6 +142,10 @@
   gap: 1rem;
   width: 25%;
   height: 100%;
+}
+
+.stun-chatbox.minimize .side-videos {
+  display: none;
 }
 
 .side-videos .video-box-container-large {
@@ -414,6 +420,10 @@
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
+  max-width: 100vw;
+  justify-content: space-evenly;
+  gap: 1rem;
+  min-width: 35rem;
 }
 
 .timer p {
@@ -433,12 +443,13 @@
 .users-on-call {
   display: flex;
   align-items: center;
+  justify-content: space-evenly;
   gap: 1rem;
 }
 
 .users-on-call .image-list {
   display: flex;
-  margin-right: 2rem;
+  margin-right: 1rem;
 }
 
 .image-list img {
@@ -664,6 +675,7 @@
 .chat-settings video {
   width: 100%;
   border-radius: var(--border-radiius);
+  transform: rotateY(180deg);
 }
 
 .chat-settings-toggle-icons {

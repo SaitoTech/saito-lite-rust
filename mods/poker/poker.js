@@ -646,7 +646,6 @@ class Poker extends GameTableTemplate {
               }
             }
           }
-cosole.log("pnum is: " + pnum);
 
           // if everyone has folded - start a new round
           this.settleLastRound();
@@ -2791,7 +2790,7 @@ cosole.log("pnum is: " + pnum);
     return PokerGameRulesTemplate(this.app, this);
   }
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
     return PokerGameOptionsTemplate(this.app, this);
   }
 
