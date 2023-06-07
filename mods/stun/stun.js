@@ -56,6 +56,8 @@ class Stun extends ModTemplate {
     //When a appspace/main StunAppspace is rendered or game-menu triggers it
     app.connection.on("stun-init-peer-manager", (ui_type = "large") => {
 
+      console.log("Init PeerManager and Set UI to " + ui_type);
+
       if (this.ChatManagerLarge || this.ChatManagerSmall){
         console.warn("Already instatiated a video/audio call manager");
         return;
@@ -164,27 +166,29 @@ class Stun extends ModTemplate {
         },
       ];
     }
+    //
+    //Game-Menu passes the game_mod as the obj, so we can test if we even want to add the option
+    //
     if (type == "game-menu") {
       this.attachStyleSheets();
       super.render(this.app, this);
-
-      return {
-        id: "game-chat",
-        text: "Video Chat",
-        submenus: [
-          {
-            text: "Start call",
-            id: "start-group-video-chat",
-            class: "start-group-video-chat",
-            callback: function (app, game_mod) {
-              if (game_mod.game.players.length > 1) {
+      if (obj?.game?.players?.length > 1) {
+        return {
+          id: "game-chat",
+          text: "Video Chat",
+          submenus: [
+            {
+              text: "Start call",
+              id: "start-group-video-chat",
+              class: "start-group-video-chat",
+              callback: function (app, game_mod) {
+                //Start Call          
                 stun_self.establishStunCallWithPeers("small", [...game_mod.game.players]);
-                //app.connection.emit("game-menu-start-video-call", );
-              }
+              },
             },
-          },
-        ],
-      };
+          ],
+        };
+      }
     }
 
     if (type === "user-menu") {
@@ -215,8 +219,10 @@ class Stun extends ModTemplate {
 
     if (conf === 0) {
       if (txmsg.module === "Stun") {
-        //Do we even need/want to send messages on chain?
-
+        //
+        // Do we even need/want to send messages on chain?
+        // There are problems with double processing events...
+        //
         if (app.BROWSER === 1) {
           if (txmsg.request === "stun-send-message-to-peers") {
             console.log("onConf: stun-send-message-to-peers");
@@ -372,6 +378,8 @@ class Stun extends ModTemplate {
 
   async establishStunCallWithPeers(ui_type, recipients) {
 
+    salert("Establishing a connection with your peers...");
+
     // init peer manager and chat manager through self event
     this.app.connection.emit("stun-init-peer-manager", ui_type);
 
@@ -380,10 +388,7 @@ class Stun extends ModTemplate {
 
     //Store room_code in PeerManager
     this.app.connection.emit("stun-peer-manager-update-room-code", room_code);
-
-    // change ui from start to join
-    document.querySelector("#start-group-video-chat").style.display = "none";
-
+ 
     // send the information to the other peers and ask them to join the call
     recipients = recipients.filter((player) => {
       return player !== this.app.wallet.returnPublicKey();
@@ -392,13 +397,14 @@ class Stun extends ModTemplate {
     let data = {
       type: "connection-request",
       room_code,
+      ui: ui_type,
       sender: this.app.wallet.returnPublicKey(),
     };
 
-    this.sendGameCallMessageToPeers(this.app, data, recipients);
+    this.sendStunCallMessageToPeers(this.app, data, recipients);
   }
 
-  sendGameCallMessageToPeers(app, _data, recipients) {
+  sendStunCallMessageToPeers(app, _data, recipients) {
     let data = {
       recipient: recipients,
       request: "stun-send-game-call-message",
@@ -418,7 +424,8 @@ class Stun extends ModTemplate {
 
     switch (data.type) {
       case "connection-request":
-        let result = await sconfirm("Accept in game call");
+        let call_type = (data.ui == "small") ? "Voice" : "Video";
+        let result = await sconfirm(`Accept Saito ${call_type} Call`);
         if (result === true) {
           // connect
           // send to sender and inform
@@ -428,20 +435,16 @@ class Stun extends ModTemplate {
             sender: app.wallet.returnPublicKey(),
           };
 
-          this.sendGameCallMessageToPeers(app, _data, [data.sender]);
+          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
 
-          // join room
-          app.connection.emit("game-menu-join-video-call", { room_code: data.room_code });
           // init peer manager
-          app.connection.emit("stun-init-peer-manager", "small");
+          app.connection.emit("stun-init-peer-manager", data.ui);
           app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
 
           // send the information to the other peers and ask them to join the call
           // show-small-chat-manager
           app.connection.emit("show-chat-manager");
-          try {
-            document.querySelector("#start-group-video-chat").style.display = "none";
-          } catch (err) {}
+
         } else if (result == false) {
           //send to sender to stop connection
           let _data = {
@@ -449,7 +452,7 @@ class Stun extends ModTemplate {
             room_code: data.room_code,
             sender: app.wallet.returnPublicKey(),
           };
-          this.sendGameCallMessageToPeers(app, _data, [data.sender]);
+          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
         }
         console.log(result);
         break;

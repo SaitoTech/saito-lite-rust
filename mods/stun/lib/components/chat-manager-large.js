@@ -86,7 +86,7 @@ class StunChatManagerLarge {
     });
 
     this.app.connection.on("remove-peer-box", (peer_id) => {
-      if (this.video_boxes[peer_id].video_box) {
+      if (this.video_boxes[peer_id]?.video_box) {
         if (this.video_boxes[peer_id].video_box?.remove) {
           this.video_boxes[peer_id].video_box.remove(true);
         }

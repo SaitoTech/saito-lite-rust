@@ -29,7 +29,10 @@ class AudioBox {
         this.stream = stream;
         console.log(stream, 'stream')
         const audio_box = document.querySelector(`#audiostream${this.stream_id}`);
-        audio_box.firstElementChild.srcObject = this.stream;
+        if (audio_box){
+            audio_box.firstElementChild.srcObject = this.stream;            
+        }
+
     }
 
     remove() {

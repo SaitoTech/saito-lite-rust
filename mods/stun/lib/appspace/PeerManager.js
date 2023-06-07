@@ -139,10 +139,21 @@ class PeerManager {
       }
 
       //Get my local media
-      this.localStream = await navigator.mediaDevices.getUserMedia({
-        video: this.videoEnabled,
-        audio: true,
-      });
+      try {
+        this.localStream = await navigator.mediaDevices.getUserMedia({
+          video: this.videoEnabled,
+          audio: true,
+        });
+      } catch (err){
+        console.warn("Problem attempting to get User Media", err);
+        console.log("Trying without video");
+
+        this.videoEnabled = false;
+        this.localStream = await navigator.mediaDevices.getUserMedia({
+          video: false,
+          audio: true,
+        });
+      }
 
       this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
 
@@ -354,16 +365,19 @@ class PeerManager {
     attemptReconnect(0);
   }
 
+  //This can get double processed by PeerTransaction and onConfirmation
+  //So need safety checks
   removePeerConnection(peerId) {
     const peerConnection = this.peers.get(peerId);
     if (peerConnection) {
       peerConnection.close();
       this.peers.delete(peerId);
+
+      let sound = new Audio("/videocall/audio/end-call.mp3");
+      sound.play();
+      console.log("peer left");
     }
 
-    let sound = new Audio("/videocall/audio/end-call.mp3");
-    sound.play();
-    console.log("peer left");
     this.app.connection.emit("remove-peer-box", peerId);
   }
 
@@ -439,6 +453,10 @@ class PeerManager {
 
     this.peers = new Map();
 
+    if (this.audioStreamAnalysis){
+      clearInterval(this.audioStreamAnalysis);  
+    }
+    
     let data = {
       room_code: this.room_code,
       type: "peer-left",
@@ -492,7 +510,7 @@ class PeerManager {
 
       //requestAnimationFrame(update);
     }
-    setInterval(update, 1000);
+    this.audioStreamAnalysis = setInterval(update, 1000);
     //requestAnimationFrame(update);
   }
 

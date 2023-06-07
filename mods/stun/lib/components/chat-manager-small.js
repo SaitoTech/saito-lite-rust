@@ -16,6 +16,13 @@ class StunChatManagerSmall {
       "show-video-chat-request",
       (room_code, videoEnabled, audioEnabled) => {
         console.log("Render Small");
+
+        try {
+          if (document.querySelector("#start-group-video-chat")){
+            document.querySelector("#start-group-video-chat").style.display = "none";
+          }
+        } catch (err) {}
+
         this.audioEnabled = audioEnabled;
         this.room_code = room_code;
         this.render();
@@ -35,11 +42,11 @@ class StunChatManagerSmall {
       if (room_code !== this.room_code) {
         return;
       }
-      siteMessage(status);
+      siteMessage(status, 2000);
     });
 
     this.app.connection.on("remove-peer-box", (peer_id, disconnection) => {
-      if (this.audio_boxes[peer_id].audio_box) {
+      if (this.audio_boxes[peer_id]?.audio_box) {
         if (this.audio_boxes[peer_id].audio_box.remove) {
           this.audio_boxes[peer_id].audio_box.remove();
           delete this.audio_boxes[peer_id];
