@@ -132,9 +132,9 @@ class PeerManager {
     });
 
     //Launch the Stun call
-    app.connection.on("show-chat-manager", async () => {
-      console.log("Show-chat-manager");
-      if (this.mod.ui_type == "small"){
+    app.connection.on("start-stun-call", async () => {
+      console.log("start-stun-call");
+      if (this.mod.ui_type == "voice"){
         this.videoEnabled = false;
       }
 
@@ -158,7 +158,7 @@ class PeerManager {
       this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
 
       //Render the UI component
-      this.app.connection.emit("show-video-chat-request", this.room_code, this.videoEnabled, this.audioEnabled);
+      this.app.connection.emit("show-call-interface", this.room_code, this.videoEnabled, this.audioEnabled);
       this.app.connection.emit("add-local-stream-request", this.localStream);
 
       //Send Message to peers

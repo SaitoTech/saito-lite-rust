@@ -1,4 +1,4 @@
-const ChatSettingTemplate = require("./chat-setting.template");
+const CallSettingTemplate = require("./call-setting.template");
 
 /**
  * 
@@ -8,7 +8,7 @@ const ChatSettingTemplate = require("./chat-setting.template");
  * There are (currently disabled) functions to test your mic by recording a brief message
  */
 
-class ChatSetting {
+class CallSetting {
   videoStream = null;
   audioStream = null;
   videoEnabled = true;
@@ -45,7 +45,7 @@ class ChatSetting {
   }
 
   render() {
-    this.app.browser.addElementToClass(ChatSettingTemplate(), "stun-appspace-settings");
+    this.app.browser.addElementToClass(CallSettingTemplate(), "stun-appspace-settings");
     this.attachEvents(this.app, this.mod);
   }
 
@@ -243,5 +243,5 @@ class ChatSetting {
   }
 }
 
-module.exports = ChatSetting;
+module.exports = CallSetting;
 

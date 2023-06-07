@@ -1,11 +1,10 @@
 const VideoBox = require("./video-box");
-const ChatManagerLargeTemplate = require("./chat-manager-large.template");
-const ChatManagerSmallExtensionTemplate = require("./chat-manager-small-extension.template");
+const CallInterfaceVideoTemplate = require("./call-interface-video.template");
 
 const SwitchDisplay = require("../overlays/switch-display");
 const Effects = require("../overlays/effects");
 
-class StunChatManagerLarge {
+class CallInterfaceVideo {
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
@@ -26,7 +25,7 @@ class StunChatManagerLarge {
     this.speaker_candidate = null;
 
     this.app.connection.on(
-      "show-video-chat-request",
+      "show-call-interface",
       (room_code, videoEnabled, audioEnabled) => {
         this.room_code = room_code;
         console.log("Render Large");
@@ -135,7 +134,7 @@ class StunChatManagerLarge {
   render(videoEnabled, audioEnabled) {
 
     if (!document.querySelector("#stun-chatbox")){
-      this.app.browser.addElementToDom(ChatManagerLargeTemplate(videoEnabled, audioEnabled));  
+      this.app.browser.addElementToDom(CallInterfaceVideoTemplate(videoEnabled, audioEnabled));  
     }
 
   }
@@ -472,4 +471,4 @@ class StunChatManagerLarge {
 
 }
 
-module.exports = StunChatManagerLarge;
+module.exports = CallInterfaceVideo;

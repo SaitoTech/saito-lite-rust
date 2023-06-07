@@ -1,8 +1,8 @@
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
-const StunAppspace = require("./lib/appspace/main");
-const StunChatManagerLarge = require("./lib/components/chat-manager-large");
-const StunChatManagerSmall = require("./lib/components/chat-manager-small");
+const StunLauncher = require("./lib/appspace/call-launch");
+const CallInterfaceVideo = require("./lib/components/call-interface-video");
+const CallInterfaceAudio = require("./lib/components/call-interface-audio");
 const PeerManager = require("./lib/appspace/PeerManager");
 
 //Do these do anything???
@@ -53,12 +53,12 @@ class Stun extends ModTemplate {
 
     this.styles = ["/saito/saito.css", "/videocall/style.css"];
 
-    //When a appspace/main StunAppspace is rendered or game-menu triggers it
+    //When StunLauncher is rendered or game-menu triggers it
     app.connection.on("stun-init-peer-manager", (ui_type = "large") => {
 
       console.log("Init PeerManager and Set UI to " + ui_type);
 
-      if (this.ChatManagerLarge || this.ChatManagerSmall){
+      if (this.CallInterface){
         console.warn("Already instatiated a video/audio call manager");
         return;
       }
@@ -71,9 +71,9 @@ class Stun extends ModTemplate {
       this.ui_type = ui_type;
 
       if (ui_type === "large") {
-        this.ChatManagerLarge = new StunChatManagerLarge(app, this);
+        this.CallInterface = new CallInterfaceVideo(app, this);
       }else{
-        this.ChatManagerSmall = new StunChatManagerSmall(app, this);        
+        this.CallInterface = new CallInterfaceAudio(app, this);        
       }
     });
 
@@ -83,19 +83,16 @@ class Stun extends ModTemplate {
     if (app.BROWSER !== 1) {
       return;
     }
-    if (!this.video_chat_loaded) {
-      if (app.browser.returnURLParameter("stun_video_chat")) {
-        let room_obj = JSON.parse(
-          app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat"))
-        );
 
-        // JOIN THE ROOM
-        this.renderInto("body");
-        app.connection.emit("stun-to-join-room", room_obj.room_code);
-      }
+    if (app.browser.returnURLParameter("stun_video_chat")) {
+      let room_obj = JSON.parse(
+        app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat"))
+      );
+
+      // JOIN THE ROOM
+      this.renderInto("body");
+      app.connection.emit("stun-to-join-room", room_obj.room_code);
     }
-
-    this.video_chat_loaded = 1;
   }
 
   /**
@@ -122,7 +119,7 @@ class Stun extends ModTemplate {
     if (qs == ".saito-overlay") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
+        this.renderIntos[qs].push(new StunLauncher(this.app, this, qs));
       }
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => {
@@ -133,7 +130,7 @@ class Stun extends ModTemplate {
     if (qs == "body") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
+        this.renderIntos[qs].push(new StunLauncher(this.app, this, qs));
       }
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => {
@@ -183,7 +180,7 @@ class Stun extends ModTemplate {
               class: "start-group-video-chat",
               callback: function (app, game_mod) {
                 //Start Call          
-                stun_self.establishStunCallWithPeers("small", [...game_mod.game.players]);
+                stun_self.establishStunCallWithPeers("voice", [...game_mod.game.players]);
               },
             },
           ],
@@ -424,7 +421,7 @@ class Stun extends ModTemplate {
 
     switch (data.type) {
       case "connection-request":
-        let call_type = (data.ui == "small") ? "Voice" : "Video";
+        let call_type = (data.ui == "voice") ? "Voice" : "Video";
         let result = await sconfirm(`Accept Saito ${call_type} Call`);
         if (result === true) {
           // connect
@@ -442,8 +439,8 @@ class Stun extends ModTemplate {
           app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
 
           // send the information to the other peers and ask them to join the call
-          // show-small-chat-manager
-          app.connection.emit("show-chat-manager");
+          // show-call-interface
+          app.connection.emit("start-stun-call");
 
         } else if (result == false) {
           //send to sender to stop connection
@@ -460,7 +457,7 @@ class Stun extends ModTemplate {
       case "connection-accepted":
         console.log("connection accepted");
         salert(`Call accepted by ${data.sender}`);
-        app.connection.emit("show-chat-manager");
+        app.connection.emit("start-stun-call");
         break;
       case "connection-rejected":
         console.log("connection rejected");

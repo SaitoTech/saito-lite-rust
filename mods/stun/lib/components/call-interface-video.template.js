@@ -1,4 +1,4 @@
-const ChatManagerLargeTemplate = (videoEnabled = true, audioEnabled = true) => {
+module.exports = CallInterfaceVideoTemplate = (videoEnabled = true, audioEnabled = true) => {
   return `
     <div class="stun-chatbox" id="stun-chatbox">
       <main>
@@ -59,4 +59,4 @@ const ChatManagerLargeTemplate = (videoEnabled = true, audioEnabled = true) => {
   </div>`;
 };
 
-module.exports = ChatManagerLargeTemplate;
+

@@ -1,7 +1,7 @@
-const ChatManagerSmallExtensionTemplate = require("./chat-manager-small-extension.template");
+const CallInterfaceGameTemplate = require("./call-interface-audio-game.template");
 const AudioBox = require("./audio-box");
 
-class StunChatManagerSmall {
+class CallInterfaceAudio {
   // peers = {};
   localStream;
   audio_boxes = {};
@@ -13,7 +13,7 @@ class StunChatManagerSmall {
     this.container = "#game-chat ul";
 
     this.app.connection.on(
-      "show-video-chat-request",
+      "show-call-interface",
       (room_code, videoEnabled, audioEnabled) => {
         console.log("Render Small");
 
@@ -71,7 +71,7 @@ class StunChatManagerSmall {
 
   render() {
     if (!document.querySelector(".chat-manager-small-extension")) {
-      this.app.browser.addElementToSelector(ChatManagerSmallExtensionTemplate(), this.container);
+      this.app.browser.addElementToSelector(CallInterfaceGameTemplate(), this.container);
     } 
   }
 
@@ -241,4 +241,4 @@ class StunChatManagerSmall {
 
 }
 
-module.exports = StunChatManagerSmall;
+module.exports = CallInterfaceAudio;

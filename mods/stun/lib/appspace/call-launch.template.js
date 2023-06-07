@@ -1,10 +1,10 @@
-module.exports = StunAppspaceTemplate = () => {
+module.exports = StunLaunchTemplate = () => {
 
   return `
       <div class="stun-appspace"> 
         <div class="stun-appspace-content">
           <card class="appear stunx-appspace-splash">
-            <div class="saito-page-header-title"> Saito Video</div>
+            <div class="saito-page-header-title">Saito Video</div>
               <p>peer-to-peer video chat</p>
             <div class="stunx-appspace-actions">
               <div class="stunx-appspace-create">
