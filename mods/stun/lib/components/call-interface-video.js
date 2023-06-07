@@ -205,6 +205,11 @@ class CallInterfaceVideo {
         this.switchDisplay.render(this.display_mode);
       };
     });
+    document.querySelectorAll(".share-control").forEach((item) => {
+      item.onclick = () => {
+        app.connection.emit("begin-share-screen");
+      };
+    });
     document.querySelectorAll(".video-control").forEach((item) => {
       item.onclick = () => {
         this.toggleVideo();
@@ -327,12 +332,7 @@ class CallInterfaceVideo {
 
   createVideoBox(peer, container = this.remote_container) {
     if (!this.video_boxes[peer]) {
-      const videoBox = new VideoBox(
-        this.app,
-        this.mod,
-        peer,
-        container
-      );
+      const videoBox = new VideoBox(this.app, this.mod, peer, container);
       this.video_boxes[peer] = { video_box: videoBox };
     }
   }
