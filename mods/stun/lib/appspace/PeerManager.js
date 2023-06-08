@@ -133,7 +133,8 @@ class PeerManager {
 
         videoTrack.onended = () => {
           console.log("Screen sharing stopped by user");
-          app.connection.emit("remove-peer-box", "Presentation");
+          app.connection.emit("remove-peer-box", "presentation");
+          this.app.connection.emit("stun-switch-view", "focus");
           this.peers.forEach((pc, key) => {
             pc.dc.send("remove-presentation-box");
           });
@@ -348,7 +349,8 @@ class PeerManager {
           this.trackIsPresentation = true;
           break;
         case "remove-presentation-box":
-          this.app.connection.emit("remove-peer-box", "Presentation");
+          this.app.connection.emit("remove-peer-box", "presentation");
+          this.app.connection.emit("stun-switch-view", "focus");
         default:
           break;
       }
@@ -374,7 +376,8 @@ class PeerManager {
             this.trackIsPresentation = true;
             break;
           case "remove-presentation-box":
-            this.app.connection.emit("remove-peer-box", "Presentation");
+            this.app.connection.emit("remove-peer-box", "presentation");
+            this.app.connection.emit("stun-switch-view", "focus");
           default:
             break;
         }
