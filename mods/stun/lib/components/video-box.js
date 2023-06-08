@@ -1,16 +1,15 @@
-const { forEach } = require("jszip");
 const videoBoxTemplate = require("./video-box.template");
 const { setTextRange } = require("typescript");
 // import {applyVideoBackground } from 'virtual-bg';
 
 class VideoBox {
-
-  constructor(app, mod, peer, container_class) {
+  constructor(app, mod, peer, container_class, isPresentation) {
     this.app = app;
     this.mod = mod;
     this.stream = null;
     this.stream_id = peer;
     this.containerClass = container_class;
+    this.isPresentation = isPresentation;
 
     app.connection.on("toggle-peer-audio-status", ({ enabled, public_key }) => {
       if (public_key !== this.stream_id) return;
@@ -76,9 +75,9 @@ class VideoBox {
         key = this.stream_id;
       }
       let name = this.app.keychain.returnIdentifierByPublicKey(key, true);
-      
+
       const video_box = document.querySelector(`#stream${this.stream_id}`);
-      
+
       if (video_box) {
         if (video_box.querySelector(".video-call-info")) {
           video_box.querySelector(
@@ -103,19 +102,19 @@ class VideoBox {
   renderStream({ muted }) {
     if (!document.querySelector(`#stream${this.stream_id}`)) {
       this.app.browser.addElementToClass(
-        videoBoxTemplate(this.stream_id, muted),
+        videoBoxTemplate(this.stream_id, muted, this.isPresentation),
         this.containerClass
       );
     }
 
     const videoBox = document.querySelector(`#stream${this.stream_id}`);
-      videoBox.firstElementChild.srcObject = this.stream;
+    videoBox.firstElementChild.srcObject = this.stream;
   }
 
   renderPlaceholder(placeholder_info = "negotiating peer connection") {
     if (!document.querySelector(`#stream${this.stream_id}`)) {
       this.app.browser.prependElementToClass(
-        videoBoxTemplate(this.stream_id, false),
+        videoBoxTemplate(this.stream_id, false, this.isPresentation),
         this.containerClass
       );
       // this.app.browser.makeDraggable(`stream${this.stream_id}`, `stream${this.stream_id}`);
@@ -165,21 +164,19 @@ class VideoBox {
     }
   }
 
-
   remove(is_disconnection = false) {
     let videoBox = document.querySelector(`#stream${this.stream_id}`);
     if (videoBox) {
       if (is_disconnection) {
         if (videoBox.parentElement.classList.contains("expanded-video")) {
           videoBox.remove();
-          try{
-            this.mod.CallInterface.video_boxes["local"].video_box.containerClass =
-              "expanded-video";
+          try {
+            this.mod.CallInterface.video_boxes["local"].video_box.containerClass = "expanded-video";
             this.mod.CallInterface.video_boxes["local"].video_box.rerender();
-          }catch(err){}
+          } catch (err) {}
           return;
         }
-      } 
+      }
       videoBox.remove();
     }
   }

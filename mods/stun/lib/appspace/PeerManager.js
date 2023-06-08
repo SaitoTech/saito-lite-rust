@@ -142,7 +142,7 @@ class PeerManager {
         remoteStream.addTrack(videoTrack);
 
         /// emit event to make presentation be the large screen and make presentation mode on
-        this.app.connection.emit("add-remote-stream-request", "Presentation", remoteStream);
+        this.app.connection.emit("add-remote-stream-request", "presentation", remoteStream);
         this.peers.forEach((pc, key) => {
           pc.dc.send("presentation");
           pc.addTrack(videoTrack);
@@ -312,7 +312,7 @@ class PeerManager {
         remoteStream.addTrack(event.track);
         //this.remoteStreams.set("Presentation", { remoteStream, peerConnection });
         //console.log(this.remoteStreams, "presentation stream");
-        this.app.connection.emit("add-remote-stream-request", "Presentation", remoteStream);
+        this.app.connection.emit("add-remote-stream-request", "presentation", remoteStream);
         setTimeout(() => {
           this.trackIsPresentation = false;
         }, 1000);

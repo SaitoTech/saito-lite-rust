@@ -16,10 +16,9 @@
   width: 100vw;
 }
 
-.stun-chatbox~.chat-container {
+.stun-chatbox ~ .chat-container {
   z-index: 100;
 }
-
 
 .stun-chatbox .minimizer {
   position: absolute;
@@ -54,7 +53,6 @@
   animation-fill-mode: forwards; */
 }
 
-
 .stun-chatbox.minimize .minimizer i {
   font-size: 2rem;
 }
@@ -82,13 +80,15 @@
   width: 100%;
 }
 
-.stun-chatbox.minimize .control-panel{
+.stun-chatbox.minimize .control-panel {
   background-color: unset;
   padding: 0.5rem;
   align-items: flex-end;
 }
 
-.stun-chatbox.minimize .timer, .stun-chatbox.minimize span, .stun-chatbox.minimize label {
+.stun-chatbox.minimize .timer,
+.stun-chatbox.minimize span,
+.stun-chatbox.minimize label {
   display: none;
 }
 
@@ -159,7 +159,6 @@
   margin-right: 10px;
 }
 
-
 .expanded-video .video-box-container-large {
   width: 100%;
   opacity: 0;
@@ -167,6 +166,38 @@
   animation: fade-in 0.5s ease-in;
   animation-fill-mode: forwards;
   border: 2px solid var(--saito-border-color-dark);
+}
+
+.side-videos .video-box-container-large {
+  height: 30%;
+  border: 2px solid var(--saito-border-color-dark);
+}
+
+.stun-chatbox .video-box-container-large {
+  border-radius: 0.5rem;
+}
+
+.presentation {
+  width: 90%;
+  height: 100%;
+  margin-right: 10px;
+}
+.presentation .video-box-container-large {
+  width: 100%;
+  opacity: 0;
+  opacity: 0;
+  animation: fade-in 0.5s ease-in;
+  animation-fill-mode: forwards;
+  border: 2px solid var(--saito-border-color-dark);
+}
+
+.presentation-side-videos .video-box-container-large {
+  height: 10%;
+  border: 2px solid var(--saito-border-color-dark);
+}
+
+.stun-chatbox .video-box-container-large {
+  border-radius: 0.5rem;
 }
 
 @keyframes fade-in {
@@ -184,16 +215,6 @@
   gap: 1rem;
   width: 25%;
   height: 100%;
-}
-
-
-.side-videos .video-box-container-large {
-  height: 30%;
-  border: 2px solid var(--saito-border-color-dark);
-}
-
-.stun-chatbox .video-box-container-large {
-  border-radius: 0.5rem;
 }
 
 .stun-chatbox .b-btngrid {
@@ -267,18 +288,16 @@
   position: relative;
 }
 
-
 .video-box-container-large video {
   width: 100%;
   height: 100%;
   z-index: 2;
-  transform: rotateY(180deg);
   border-radius: 0.1rem;
   object-fit: cover;
   border: none;
 }
 
-.video-box-container-large>#connection-message {
+.video-box-container-large > #connection-message {
   color: var(--saito-white);
   width: 50%;
   line-height: 1.5;
@@ -319,7 +338,7 @@
   border: 1px solid transparent;
 }
 
-.video-box-container-large>#connection-message>p {
+.video-box-container-large > #connection-message > p {
   color: var(--saito-white);
   font-size: 2.8rem;
 }
@@ -337,7 +356,7 @@
   width: calc(100% - 1rem);
 }
 
-.video-call-info>p {
+.video-call-info > p {
   color: #ffffff69;
   font-size: 2rem;
   white-space: nowrap;
@@ -496,14 +515,14 @@
   width: 4rem;
   height: 4rem;
   margin-right: 1rem;
-
 }
 
 .control-list {
   display: flex;
 }
 
-.control-list span, .add_users_container {
+.control-list span,
+.add_users_container {
   margin-right: 2rem;
   border-radius: 50%;
   padding: 1rem;
@@ -531,7 +550,8 @@
   border: 3px solid var(--saito-primary) !important;
 }
 
-.control-list span label, .add_users_container label {
+.control-list span label,
+.add_users_container label {
   position: absolute;
   color: white;
   bottom: -2.5rem;
@@ -595,7 +615,8 @@
 }
 
 @media screen and (max-height: 850px) {
-  .video-box-container-large:nth-child(2) {}
+  .video-box-container-large:nth-child(2) {
+  }
   .control-panel {
     padding-bottom: 10rem;
   }
@@ -690,7 +711,6 @@
   margin-top: 1rem;
 }
 
-
 .chat-settings h1 {
   color: var(--saito-white);
   margin-bottom: 1rem;
@@ -714,7 +734,6 @@
 .chat-settings video {
   width: 100%;
   border-radius: var(--border-radiius);
-  transform: rotateY(180deg);
 }
 
 .chat-settings-toggle-icons {
@@ -807,10 +826,10 @@
   .chat-settings-preview {
     width: 100%;
   }
-  .video-box-container-large>#connection-message {
+  .video-box-container-large > #connection-message {
     width: 100%;
   }
-  .video-box-container-large>#connection-message p {
+  .video-box-container-large > #connection-message p {
     font-size: 1rem;
   }
   .chat-settings select {
