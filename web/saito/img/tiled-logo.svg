@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%">
+<style type="text/css">
+   path { fill:#99999904;stroke:#888;stroke-width:1;stroke-opacity:0.4; } 
+</style> <defs>
+	<pattern id="hexagons" width="200" height="220" patternUnits="userSpaceOnUse" patternTransform="scale(0.33) rotate(30)">
+	 <g id="hex" transform="rotate(-30) translate(-30 34)">
+   <path
+     style=""
+     d="M 55.499987,95.389918 H 103.69995 L 55.499987,123.1996 Z"
+     id="path862" />
+  <path
+     style=""
+     d="M 53.499996,0.68089422 80.00999,45.510437 64.319986,54.570336 53.999993,60.570273 2.0499973,30.380586 Z"
+     id="path860" />
+  <path
+     style=""
+     d="M 82.49999,44.070446 61.409989,8.4008148 58.049993,2.7208729 106.04996,30.450588 Z"
+     id="path858" />
+  <path
+     style=""
+     d="m 55.499987,63.030252 1.43001,-0.829989 25.789991,-14.909855 24.780002,-14.329847 v 59.499387 l -52.000003,0.04002 z"
+     id="path856" />
+  <path
+     style=""
+     d="M 0.49999724,32.800565 24.729997,46.880421 0.49999724,88.459988 Z"
+     id="path854" />
+  <path
+     style=""
+     d="M 52.549992,123.1996 0.93999721,93.37994 27.229996,48.330399 52.549992,63.030252 Z"
+     id="path852" />
+  </g>
+	
+</pattern>
+	 </defs>
+<rect width="100%" height="100%" fill="url(#hexagons)" />
+</svg>
