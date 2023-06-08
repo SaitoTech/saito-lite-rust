@@ -51,12 +51,17 @@ class BuildOverlay {
           e.preventDefault();
           e.stopImmediatePropagation();
 
+
           this_self.overlay.hide();
 
           let id = e.currentTarget.getAttribute("id");
           let disabled = e.currentTarget.classList.contains("settlers-row-disabled");
 
           if (!disabled) {
+
+            document.querySelectorAll(".settlers-item-row").forEach((row) => {row.onclick = (e) => {}});
+
+
             if (id === "0") {
               this_self.mod.addMove(
                 `player_build_road\t${this_self.mod.game.player}\t0\t1`);

@@ -40,6 +40,9 @@ class BankOverlay {
       row.classList.remove("selected");
 
       row.onclick = (e) => {
+
+        document.querySelectorAll(".settlers-trade-resources").forEach((row) => {row.onclick = (e) => {}});
+
         let target = e.currentTarget;
 
         this_bank.selected_resource = target.getAttribute("id");
@@ -52,6 +55,9 @@ class BankOverlay {
 
     document.querySelectorAll(".settlers-desired-resources img").forEach((row) => {
       row.onclick = (e) => {
+
+        document.querySelectorAll(".settlers-desired-resources img").forEach((row) => {row.onclick = (e) => {}});
+
         let target = e.currentTarget;
         this_bank.desired_resource = target.getAttribute("id");
 

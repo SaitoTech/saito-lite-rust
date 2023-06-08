@@ -62,9 +62,6 @@ class TradeOverlay {
       }
     }
 
-console.log(JSON.stringify(this.give));
-console.log(JSON.stringify(this.get));
-
     this.overlay.show(TradeOverlayTemplate(this));
 
     if (this.accepting_trade == 1) {
@@ -80,7 +77,7 @@ console.log(JSON.stringify(this.get));
     let settlers_self = this.mod;
 
     document.querySelectorAll(".trade_count_up").forEach((arrow) => {
-      arrow.addEventListener("click", (e) => {
+      arrow.onclick = (e) => {
 
         settlers_self.accepting_trade = 0;
         document.querySelector(".trade_overlay_button.saito-button-primary").innerHTML = "Broadcast Offer";
@@ -117,12 +114,12 @@ console.log(JSON.stringify(this.get));
           }
         }
 
-      });
+      };
     });
 
 
     document.querySelectorAll(".trade_count_down").forEach((arrow) => {
-      arrow.addEventListener("click", (e) => {
+      arrow.onclick = (e) => {
 
           settlers_self.accepting_trade = 0;
           document.querySelector(".trade_overlay_button.saito-button-primary").innerHTML = "Broadcast Offer";
@@ -155,18 +152,20 @@ console.log(JSON.stringify(this.get));
               count_div.innerHTML = "";
             } 
           }
-      });  
+      };
     });
 
 
     $(".trade_overlay_reset_button").off();
     $(".trade_overlay_reset_button").on("click", function () {
-	// render with implicit "reset=true"
+        $('.trade_overlay_reset_button').off();
         trade_overlay.render(trade_overlay.tradeType);
     });
 
     $(".trade_overlay_broadcast_button").off();
     $(".trade_overlay_broadcast_button").on("click", function () {
+
+      $('.trade_overlay_broadcast_button').off();
 
       let offering = {};
       let receiving = {};
