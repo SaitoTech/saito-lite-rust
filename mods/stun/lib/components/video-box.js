@@ -172,9 +172,11 @@ class VideoBox {
       if (is_disconnection) {
         if (videoBox.parentElement.classList.contains("expanded-video")) {
           videoBox.remove();
-          this.mod.ChatManagerLarge.video_boxes["local"].video_box.containerClass =
-            "expanded-video";
-          this.mod.ChatManagerLarge.video_boxes["local"].video_box.rerender();
+          try{
+            this.mod.CallInterface.video_boxes["local"].video_box.containerClass =
+              "expanded-video";
+            this.mod.CallInterface.video_boxes["local"].video_box.rerender();
+          }catch(err){}
           return;
         }
       } 
