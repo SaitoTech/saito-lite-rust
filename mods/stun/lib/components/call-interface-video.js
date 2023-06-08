@@ -1,11 +1,10 @@
 const VideoBox = require("./video-box");
-const ChatManagerLargeTemplate = require("./chat-manager-large.template");
-const ChatManagerSmallExtensionTemplate = require("./chat-manager-small-extension.template");
+const CallInterfaceVideoTemplate = require("./call-interface-video.template");
 
 const SwitchDisplay = require("../overlays/switch-display");
 const Effects = require("../overlays/effects");
 
-class StunChatManagerLarge {
+class CallInterfaceVideo {
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
@@ -26,14 +25,14 @@ class StunChatManagerLarge {
     this.speaker_candidate = null;
 
     this.app.connection.on(
-      "show-video-chat-request",
+      "show-call-interface",
       (room_code, videoEnabled, audioEnabled) => {
         this.room_code = room_code;
-        console.log("Render Large");
+
+        console.log("Render Video Call Interface");
         //This will render the (full-screen) component
         if (!document.querySelector(".stun-chatbox")) {
           this.render(videoEnabled, audioEnabled);
-          this.attachEvents(this.app, this.mod);
         }
 
         this.room_link = this.createRoomLink();
@@ -44,11 +43,7 @@ class StunChatManagerLarge {
         if (this.users_on_call == 1) {
           this.copyInviteLink();
         }
-
-        history.pushState(null, null, this.room_link);
         
-        this.app.browser.makeDraggable("stun-chatbox", "", true);
-
         // create chat group
         this.createRoomTextChat();
       }
@@ -135,9 +130,10 @@ class StunChatManagerLarge {
   render(videoEnabled, audioEnabled) {
 
     if (!document.querySelector("#stun-chatbox")){
-      this.app.browser.addElementToDom(ChatManagerLargeTemplate(videoEnabled, audioEnabled));  
+      this.app.browser.addElementToDom(CallInterfaceVideoTemplate(this.mod, videoEnabled, audioEnabled));  
     }
 
+    this.attachEvents();
   }
 
   createRoomTextChat() {
@@ -165,7 +161,7 @@ class StunChatManagerLarge {
     //this.chat_group = chat_mod.returnOrCreateChatGroupFromMembers([this.app.network.peers[0].peer.publickey], `Chat ${this.room_code}`);
   }
 
-  attachEvents(app, mod) {
+  attachEvents() {
     
     let add_users = document.querySelector(".add_users_container");
     if (add_users) {
@@ -209,31 +205,44 @@ class StunChatManagerLarge {
         this.switchDisplay.render(this.display_mode);
       };
     });
+    document.querySelectorAll(".share-control").forEach((item) => {
+      item.onclick = () => {
+        this.app.connection.emit("begin-share-screen");
+      };
+    });
     document.querySelectorAll(".video-control").forEach((item) => {
       item.onclick = () => {
         this.toggleVideo();
       };
     });
 
-    document.querySelector(".stun-chatbox .minimizer").addEventListener("click", (e) => {
-      // fas fa-expand"
-      let icon = document.querySelector(".stun-chatbox .minimizer i");
-      let chat_box = document.querySelector(".stun-chatbox");
+    if (!this.mod.browser_active){
 
-      if (icon.classList.contains("fa-caret-down")) {
-        this.app.connection.emit("stun-switch-view", "speaker");
-        
-        chat_box.classList.add("minimize");
-        icon.classList.remove("fa-caret-down");
-        icon.classList.add("fa-expand");
-      } else {
-        chat_box.classList.remove("minimize");
-        chat_box.style.top = "0";
-        chat_box.style.left = "0";
-        icon.classList.remove("fa-expand");
-        icon.classList.add("fa-caret-down");
-      }
-    });
+      document.querySelector(".stun-chatbox .minimizer").addEventListener("click", (e) => {
+        // fas fa-expand"
+        let icon = document.querySelector(".stun-chatbox .minimizer i");
+        let chat_box = document.querySelector(".stun-chatbox");
+
+        if (icon.classList.contains("fa-caret-down")) {
+          this.app.connection.emit("stun-switch-view", "speaker");
+          
+          chat_box.classList.add("minimize");
+          icon.classList.remove("fa-caret-down");
+          icon.classList.add("fa-expand");
+          this.app.browser.makeDraggable("stun-chatbox", "", true);
+
+        } else {
+          chat_box.classList.remove("minimize");
+          chat_box.style.top = "0";
+          chat_box.style.left = "0";
+          chat_box.style.width = "";
+          chat_box.style.height = "";
+          icon.classList.remove("fa-expand");
+          icon.classList.add("fa-caret-down");
+          this.app.browser.cancelDraggable("stun-chatbox");          
+        }
+      });
+    }
 
     document.querySelector(".large-wrapper").addEventListener("click", (e) => {
       if (this.display_mode == "gallery") {
@@ -267,23 +276,20 @@ class StunChatManagerLarge {
       room_code: this.room_code,
     };
     let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
-    let url = window.location.toString();
 
-    if (url.includes("?")) {
-      let index = url.indexOf("?");
-      url = url.slice(0, index);
-    }
+    let url1 = window.location.origin + "/videocall/";
 
-    let myurl = new URL(url);
-    myurl = myurl.href.split("#")[0];
-    myurl = myurl.replace("redsquare", "videocall");
-    return `${myurl}?stun_video_chat=${base64obj}`;
+    let orig_url = window.location.origin + window.location.pathname
+    orig_url = `${orig_url}?stun_video_chat=${base64obj}`
+    history.pushState(null, null, orig_url);
+
+    return `${url1}?stun_video_chat=${base64obj}`;
   }
 
 
   copyInviteLink() {
     navigator.clipboard.writeText(this.room_link);
-    siteMessage("Invite link copied to clipboard", 3000);
+    siteMessage("Invite link copied to clipboard", 1500);
   }
 
   removePeer(peer) {
@@ -295,22 +301,10 @@ class StunChatManagerLarge {
     this.app.connection.emit("stun-disconnect");
     this.video_boxes = {};
     
-    let obj = {
-      room_code: this.room_code,
-    };
+    let url = window.location.origin + window.location.pathname;
 
-    let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
-    let url = window.location.toString();
-
-    if (url.includes("?")) {
-      let index = url.indexOf("?");
-      url = url.slice(0, index);
-    }
-
-    let myurl = new URL(url);
-    myurl = myurl.href.split("#")[0];
-    myurl = myurl.replace("redsquare", "videocall");
-    window.location.href = myurl;
+    setTimeout(()=>{window.location.href = url;}, 2000);
+    
   }
 
   addRemoteStream(peer, remoteStream) {
@@ -340,12 +334,7 @@ class StunChatManagerLarge {
 
   createVideoBox(peer, container = this.remote_container) {
     if (!this.video_boxes[peer]) {
-      const videoBox = new VideoBox(
-        this.app,
-        this.mod,
-        peer,
-        container
-      );
+      const videoBox = new VideoBox(this.app, this.mod, peer, container);
       this.video_boxes[peer] = { video_box: videoBox };
     }
   }
@@ -382,18 +371,18 @@ class StunChatManagerLarge {
     let images = ``;
     let count = 0;
     for (let i in this.video_boxes) {
+      let publickey = i;
       if (i === "local") {
-        let publickey = this.app.wallet.returnPublicKey();
-        let imgsrc = this.app.keychain.returnIdenticon(publickey);
-        images += `<img data-id="${publickey}" src="${imgsrc}"/>`;
-      } else {
-        let imgsrc = this.app.keychain.returnIdenticon(i);
-        images += `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`;
-      }
+        publickey = this.app.wallet.returnPublicKey();
+      } 
+
+      let imgsrc = this.app.keychain.returnIdenticon(publickey);
+      images += `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`;
       count++;
+
     }
-    document.querySelector(".stun-chatbox .image-list").innerHTML = images;
-    document.querySelector(".stun-chatbox .users-on-call-count").innerHTML = count;
+    document.querySelector(".users-on-call .image-list").innerHTML = images;
+    document.querySelector(".users-on-call .users-on-call-count").innerHTML = count;
     this.users_on_call = count;
 
   }
@@ -472,4 +461,4 @@ class StunChatManagerLarge {
 
 }
 
-module.exports = StunChatManagerLarge;
+module.exports = CallInterfaceVideo;

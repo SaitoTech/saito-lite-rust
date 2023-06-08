@@ -131,10 +131,40 @@ class PeerManager {
       this.mod.sendStunMessageToServerTransaction(data);
     });
 
+    app.connection.on("begin-share-screen", async () => {
+      try {
+        let stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        let videoTrack = stream.getVideoTracks()[0];
+        
+        videoTrack.onended = () => {
+          console.log("Screen sharing stopped by user");
+          app.connection.emit("remove-peer-box", "Presentation");
+          this.peers.forEach((pc, key) => {
+            pc.dc.send("remove-presentation-box");
+          });
+        };
+        let remoteStream = new MediaStream();
+        remoteStream.addTrack(videoTrack);
+
+        /// emit event to make presentation be the large screen and make presentation mode on
+        this.app.connection.emit("add-remote-stream-request", "Presentation", remoteStream);
+        this.peers.forEach((pc, key) => {
+          pc.dc.send("presentation");
+          pc.addTrack(videoTrack);
+
+          this.renegotiate(key);
+          //console.log("adding presentation video track to peer");
+        });
+      } catch (err) {
+        console.error("Error accessing media devices.", err);
+      }
+      // let sender = pc.addTrack(videoTrack);
+    });
+    
     //Launch the Stun call
-    app.connection.on("show-chat-manager", async () => {
-      console.log("Show-chat-manager");
-      if (this.mod.ui_type == "small"){
+    app.connection.on("start-stun-call", async () => {
+      console.log("start-stun-call");
+      if (this.mod.ui_type == "voice"){
         this.videoEnabled = false;
       }
 
@@ -158,7 +188,7 @@ class PeerManager {
       this.localStream.getAudioTracks()[0].enabled = this.audioEnabled;
 
       //Render the UI component
-      this.app.connection.emit("show-video-chat-request", this.room_code, this.videoEnabled, this.audioEnabled);
+      this.app.connection.emit("show-call-interface", this.room_code, this.videoEnabled, this.audioEnabled);
       this.app.connection.emit("add-local-stream-request", this.localStream);
 
       //Send Message to peers
@@ -185,13 +215,13 @@ class PeerManager {
   handleSignalingMessage(data) {
     const { type, sdp, candidate, targetPeerId, public_key } = data;
     if (type === "renegotiate-offer" || type === "offer") {
-      if (
-        this.getPeerConnection(public_key).connectionState === "connected" ||
-        this.getPeerConnection(public_key).remoteDescription !== null ||
-        this.getPeerConnection(public_key).connectionState === "stable"
-      ) {
-        return;
-      }
+    //  if (
+    //    this.getPeerConnection(public_key).connectionState === "connected" ||
+    //   this.getPeerConnection(public_key).remoteDescription !== null ||
+    //    this.getPeerConnection(public_key).connectionState === "stable"
+    //  ) {
+    //    return;
+    //  }
 
       console.log(this.getPeerConnection(public_key), "remote description offer");
 
@@ -222,11 +252,11 @@ class PeerManager {
         this.getPeerConnection(public_key).connectionState,
         "remote description answer"
       );
-      if (
-        this.getPeerConnection(public_key).connectionState === "connected" ||
-        this.getPeerConnection(public_key).signalingState === "stable"
-      )
-        return;
+      //if (
+      //  this.getPeerConnection(public_key).connectionState === "connected" ||
+      //  this.getPeerConnection(public_key).signalingState === "stable"
+      //)
+      //  return;
       this.getPeerConnection(public_key)
         .setRemoteDescription(new RTCSessionDescription({ type: "answer", sdp }))
         .then((answer) => {})
@@ -250,6 +280,8 @@ class PeerManager {
       iceServers: this.mod.servers,
     });
 
+    this.peers.set(peerId, peerConnection);
+
     //Make sure you have a local Stream
     if (!this.localStream){
       this.localStream = await navigator.mediaDevices.getUserMedia({
@@ -257,8 +289,6 @@ class PeerManager {
         audio: true,
       });
     }
-
-    this.peers.set(peerId, peerConnection);
 
     // Implement the creation of a new RTCPeerConnection and its event handlers
 
@@ -278,25 +308,89 @@ class PeerManager {
     const remoteStream = new MediaStream();
     peerConnection.addEventListener("track", (event) => {
       // console.log("trackss", event.track, "stream :", event.streams);
-      if (event.streams.length === 0) {
+      console.log("another remote stream added", event.track);
+      if (this.trackIsPresentation) {
         remoteStream.addTrack(event.track);
+        //this.remoteStreams.set("Presentation", { remoteStream, peerConnection });
+        //console.log(this.remoteStreams, "presentation stream");
+        this.app.connection.emit("add-remote-stream-request", "Presentation", remoteStream);
+        setTimeout(() => {
+            this.trackIsPresentation = false;
+          }, 1000);        
       } else {
-        event.streams[0].getTracks().forEach((track) => {
-          remoteStream.addTrack(track);
-        });
+        if (event.streams.length === 0) {
+          remoteStream.addTrack(event.track);
+        } else {
+          event.streams[0].getTracks().forEach((track) => {
+            remoteStream.addTrack(track);
+          });
+        }
+
+        this.remoteStreams.set(peerId, { remoteStream, peerConnection });
+        console.log(this.remoteStreams, "remote stream new");
+        this.app.connection.emit("add-remote-stream-request", peerId, remoteStream);
+
+        this.analyzeAudio(remoteStream, peerId);
       }
-
-      this.remoteStreams.set(peerId, { remoteStream, peerConnection });
-      console.log(this.remoteStreams, "remote stream new");
-      this.app.connection.emit("add-remote-stream-request", peerId, remoteStream);
-
-      this.analyzeAudio(remoteStream, peerId);
     });
 
     this.localStream.getTracks().forEach((track) => {
       peerConnection.addTrack(track, this.localStream);
       // console.log('track local ', track)
     });
+
+   let dc = peerConnection.createDataChannel("data-channel");
+    peerConnection.dc = dc;
+
+    dc.onmessage = (event) => {
+      console.log("Message from data channel:", event.data);
+      switch (event.data) {
+        case "presentation":
+          this.trackIsPresentation = true;
+          break;
+        case "remove-presentation-box":
+          this.app.connection.emit("remove-peer-box", "Presentation");
+        default:
+          break;
+      }
+    };
+
+    dc.onopen = (event) => {
+      console.log("Data channel is open");
+    };
+
+    dc.onclose = (event) => {
+      console.log("Data channel is closed");
+    };
+
+    peerConnection.addEventListener("datachannel", (event) => {
+      let receiveChannel = event.channel;
+
+      peerConnection.dc = receiveChannel;
+
+      receiveChannel.onmessage = (event) => {
+        console.log("Message from data channel:", event.data);
+        switch (event.data) {
+        case "presentation":
+          this.trackIsPresentation = true;
+          break;
+        case "remove-presentation-box":
+          this.app.connection.emit("remove-peer-box", "Presentation");
+        default:
+          break;
+      }
+      };
+
+      receiveChannel.onopen = (event) => {
+        console.log("Data channel is open");
+      };
+
+      receiveChannel.onclose = (event) => {
+        console.log("Data channel is closed");
+      };
+    });
+
+
 
     peerConnection.addEventListener("connectionstatechange", () => {
       if (
@@ -390,6 +484,7 @@ class PeerManager {
       return;
     }
 
+    console.log("renegotiating with pc", peerConnection);
     // console.log('signalling state, ', peerConnection.signalingState)
     if (peerConnection.signalingState !== "stable") {
       if (retryCount < maxRetries) {
@@ -489,7 +584,7 @@ class PeerManager {
 
 
     function update() {
-      console.log("Update");
+      //console.log("Update");
       
       analyser.getByteFrequencyData(dataArray);
       const average = dataArray.reduce((a, b) => a + b) / bufferLength;

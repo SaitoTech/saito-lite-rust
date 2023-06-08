@@ -6,7 +6,7 @@ module.exports = () => {
           <li class="chat-manager-small-extension game-menu-sub-option">
             <span class="disconnect-control"  id="disconnect-btn-menu">Disconnect</span>
           </li>
-          <li class="chat-manager-small-extension chat-manager-small-audio-container game-menu-sub-option">
+          <li class="chat-manager-small-extension image-list game-menu-sub-option">
 
           </li>
 

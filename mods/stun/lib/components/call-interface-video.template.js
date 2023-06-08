@@ -1,4 +1,4 @@
-const ChatManagerLargeTemplate = (videoEnabled = true, audioEnabled = true) => {
+module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEnabled = true) => {
   return `
     <div class="stun-chatbox" id="stun-chatbox">
       <main>
@@ -29,6 +29,10 @@ const ChatManagerLargeTemplate = (videoEnabled = true, audioEnabled = true) => {
               <label>Display</label>
               <i class="fa-solid fa-display"></i>
             </span>
+            <span class="share-control icon_click_area">
+              <label>Share</label>
+              <i class="fa-brands fa-slideshare"></i>
+            </span>
             <span class="chat_control_container icon_click_area">
               <label>Chat</label>
               <i class="chat_control fa-regular fa-comments"></i>
@@ -36,15 +40,15 @@ const ChatManagerLargeTemplate = (videoEnabled = true, audioEnabled = true) => {
             
             <span class="spacer"></span>
 
-            <span class="audio-control icon_click_area${(audioEnabled)?"":" disabled"}">
+            <span class="audio-control mini_okay icon_click_area${(audioEnabled)?"":" disabled"}">
               <label>Audio</label>
               <i class="fa ${(audioEnabled)?"fa-microphone":"fa-microphone-slash"}"> </i>
             </span>
-            <span class="video-control icon_click_area${(videoEnabled)?"":" disabled"}">
+            <span class="video-control mini_okay icon_click_area${(videoEnabled)?"":" disabled"}">
               <label>Video</label>
               <i class="fas ${(videoEnabled)?"fa-video":"fa-video-slash"}"></i>
             </span>
-            <span class="disconnect-control icon_click_area">
+            <span class="disconnect-control mini_okay icon_click_area">
                <label>End </label>
                <i class="disconnect_btn  fas fa-phone"> </i>
             </span>
@@ -53,10 +57,14 @@ const ChatManagerLargeTemplate = (videoEnabled = true, audioEnabled = true) => {
       </section>
     </main>
 
-    <div class="minimizer">
+    ${(mod.browser_active)? 
+    "" :
+    `<div class="minimizer">
       <i class=" fas fa-caret-down"></i>
-    </div>
+    </div>`
+    }
+
   </div>`;
 };
 
-module.exports = ChatManagerLargeTemplate;
+
