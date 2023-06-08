@@ -70,7 +70,8 @@ stats overlay
   font-size: 1.8rem;
   position: absolute;
   top: -2.3rem;
-  left: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .settlers-dice-number {
@@ -160,13 +161,13 @@ stats overlay
   color: var(--saito-white);
   text-shadow: 1px 1px 3px var(--saito-black);
   transform: translate(-50%, -50%);
-  font-size: 3.6rem;
+  font-size: 3.4rem;
   background: rgba(0,0,0,0.4);
-  width: 90%;
+  width: 82%;
   text-align: center;
   border-radius: 50%;
-  height: 65%;
-  line-height: 6rem;
+  height: 60%;
+  line-height: 5.6rem;
 }
 
 .settlers-stats-caption {
@@ -199,7 +200,7 @@ stats overlay
 .rules-overlay {
   display: flex;
   flex-direction: column;
-  gap: 4.5rem;
+  gap: 2rem;
 }
 
 
@@ -294,16 +295,34 @@ stats overlay
   right: -1rem;
   background: #72634bed;
   color: var(--saito-profile-background);
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.7rem;
+  height: 2.7rem;
   text-align: center;
   border-radius: 50%;
-  line-height: 2.5rem;
+  line-height: 2.7rem;
   text-shadow: 1px 1px 1px var(--saito-font-color-heavy);
-  font-size: 2rem;
+  font-size: 2.4rem;
 }
 
 .settlers-stats-largest-road .settlers-stats-vp-count,
 .settlers-stats-largest-army .settlers-stats-vp-count {
   right: -0.5rem;
+}
+
+
+.settlers-state-container.combined-player-stats {
+  flex-direction: row;
+  gap: 6rem;
+}
+
+.settlers-state-container.vp-3p {
+  gap: 2.2rem;
+}
+
+.settlers-stats-vp-row.vp-3p {
+    gap: 3rem;
+}
+
+.settlers-stats-resource-container.vp-3p {
+  gap: 2rem;
 }

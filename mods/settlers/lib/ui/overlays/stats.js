@@ -31,8 +31,11 @@ class StatsOverlay {
       }
     }
 
-    // height for 1 count; max: 10rem
-    let base_height = 10/highest_count;
+    let player_count = this.mod.game.state.players.length;
+    let max_bar_height = (player_count >= 3) ? 15 : 10;
+
+    // height for 1 count; 
+    let base_height = max_bar_height/highest_count;
 
     for (let i = 2; i <= 12; i++){
       let bar_height = base_height*this.mod.game.stats.dice[i];
