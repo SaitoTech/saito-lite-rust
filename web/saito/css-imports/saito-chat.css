@@ -220,6 +220,7 @@
   max-height: 15rem;
   overflow-y: auto;
   word-break: break-word;
+  height: 4.2rem;
 }
 
 .chat-footer .saito-emoji {
@@ -232,7 +233,7 @@
   z-index: 2;
   transition: all 0.2s;
   font-size: 2rem;
-  padding: 1.1rem 0.8rem;
+  padding: 1rem 0.5rem;
 }
 
 .chat-footer i:hover {
