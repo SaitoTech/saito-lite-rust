@@ -48,11 +48,12 @@ class BuildOverlay {
 
     document.querySelectorAll(".settlers-item-row").forEach((item) => {
       item.onclick = (e) => {
+
           e.preventDefault();
           e.stopImmediatePropagation();
 
-
           this_self.overlay.hide();
+	  this_self.mod.updateStatus("processing...", this_self.mod.game.player);
 
           let id = e.currentTarget.getAttribute("id");
           let disabled = e.currentTarget.classList.contains("settlers-row-disabled");
@@ -60,7 +61,6 @@ class BuildOverlay {
           if (!disabled) {
 
             document.querySelectorAll(".settlers-item-row").forEach((row) => {row.onclick = (e) => {}});
-
 
             if (id === "0") {
               this_self.mod.addMove(
