@@ -105,7 +105,8 @@
   overflow: auto;
   /* Put a TRANSPARENT TEXTURE over the chat body background www.transparenttextures.com
   background-image: url("/chat/img/subtle-surface.png");*/
-  background-color: #0001;
+  background-color: #bbb1;
+  background-image: url(/saito/img/tiled-logo.svg);
 }
 
 .chat-body>.saito-user {
