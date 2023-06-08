@@ -413,6 +413,10 @@ class Poker extends GameTableTemplate {
       this.updateLog(`Player ${(i + 1)}${i+1 == this.game.state.button_player ? " (dealer)":""}: ${this.game.state.player_names[i]} (${this.formatWager(this.game.state.player_credit[i], true)})`);
     }
  
+    for (let i = 1; i <= this.game.players.length; i++) {
+      this.playerbox.updateGraphics("", i);
+    }
+ 
     this.initializeQueue();
 
   }
