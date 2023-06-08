@@ -32,7 +32,7 @@ class StatsOverlay {
     }
 
     let player_count = this.mod.game.state.players.length;
-    let max_bar_height = (player_count >= 3) ? 15 : 10;
+    let max_bar_height = (player_count >= 3) ? 15 : 15;
 
     // height for 1 count; 
     let base_height = max_bar_height/highest_count;

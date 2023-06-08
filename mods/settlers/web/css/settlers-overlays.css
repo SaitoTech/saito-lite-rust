@@ -51,7 +51,7 @@ stats overlay
 .settlers-dice-histogram {
   border-bottom: 1px solid var(--saito-black);
   display: flex;
-  gap: 1rem;
+  justify-content: space-around;
   align-content: flex-end;
   flex-wrap: wrap-reverse;
 }
@@ -85,8 +85,8 @@ stats overlay
 
 .settlers-dice-numbers {
   display: flex;
-  gap: 1rem; 
-  margin-bottom: 2em;
+  justify-content: space-around;
+  margin-bottom: 1.5em;
 }
 
 .settlers-dice-number {
@@ -151,7 +151,7 @@ stats overlay
 }
 
 .settlers-stats-card img {
-  width: 6.5rem;
+  width: 5.3rem;
 }
 
 .settlers-stats-resource-count {
@@ -161,13 +161,13 @@ stats overlay
   color: var(--saito-white);
   text-shadow: 1px 1px 3px var(--saito-black);
   transform: translate(-50%, -50%);
-  font-size: 3.4rem;
+  font-size: 3rem;
   background: rgba(0,0,0,0.4);
   width: 82%;
   text-align: center;
   border-radius: 50%;
   height: 60%;
-  line-height: 5.6rem;
+  line-height: 4.5rem;
 }
 
 .settlers-stats-caption {
@@ -325,4 +325,15 @@ stats overlay
 
 .settlers-stats-resource-container.vp-3p {
   gap: 2rem;
+}
+
+.settlers-stats-resource-container.vp-3p .settlers-stats-card img {
+  width: 6.5rem;
+}
+
+.settlers-stats-resource-container.vp-3p .settlers-stats-card .settlers-stats-resource-count {
+  font-size: 3rem;
+  width: 82%;
+  height: 58%;
+  line-height: 5.3rem;
 }
