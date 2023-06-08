@@ -1,14 +1,13 @@
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
-var serialize = require("serialize-javascript");
-const StunAppspace = require("./lib/appspace/main");
-const StunChatManagerLarge = require("./lib/components/chat-manager-large");
-const StunChatManagerSmall = require("./lib/components/chat-manager-small");
-const StunxGameMenu = require("./lib/game-menu/main");
-const Relay = require("../relay/relay");
-const adapter = require("webrtc-adapter");
+const StunLauncher = require("./lib/appspace/call-launch");
+const CallInterfaceVideo = require("./lib/components/call-interface-video");
+const CallInterfaceAudio = require("./lib/components/call-interface-audio");
 const PeerManager = require("./lib/appspace/PeerManager");
-const ChatSetting = require("./lib/components/chat-setting");
+
+//Do these do anything???
+var serialize = require("serialize-javascript");
+const adapter = require("webrtc-adapter");
 
 class Stun extends ModTemplate {
   constructor(app) {
@@ -21,10 +20,6 @@ class Stun extends ModTemplate {
     this.categories = "Utilities Communications";
     this.icon = "fas fa-video";
 
-    this.ChatManagerLarge = new StunChatManagerLarge(app, this);
-    this.ChatManagerSmall = new StunChatManagerSmall(app, this);
-    this.stunGameMenu = new StunxGameMenu(app, this);
-    this.chatSetting = new ChatSetting(app, this);
 
     this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
     this.rooms = new Map();
@@ -58,54 +53,62 @@ class Stun extends ModTemplate {
 
     this.styles = ["/saito/saito.css", "/videocall/style.css"];
 
-    //When a appspace/main StunAppspace is rendered -or- StunxGameMenu hears "game-menu-start-video-call"
-    app.connection.on("stun-init-peer-manager", (ui_type, config=null) => {
-      //config is only defined by game-menu/main.js
-      if (config){
-        console.log("init peer manager config", config);  
-      }
-      
-      if (!this.peerManager) {
-        //Create the PeerManager, which includes listeners for events
-        this.peerManager = new PeerManager(app, this, ui_type, config);
+    //When StunLauncher is rendered or game-menu triggers it
+    app.connection.on("stun-init-peer-manager", (ui_type = "large") => {
+
+      console.log("Init PeerManager and Set UI to " + ui_type);
+
+      if (this.CallInterface){
+        console.warn("Already instatiated a video/audio call manager");
+        return;
       }
 
+      if (!this.peerManager) {
+        //Create the PeerManager, which includes listeners for events
+        this.peerManager = new PeerManager(app, this);
+      }
+
+      this.ui_type = ui_type;
+
       if (ui_type === "large") {
-        //Tell ChatSetting (aka Preview Window) to render on the splash screen
-        //but only if through appspace/main (aka the splash screen)
-        this.chatSetting.render();
+        this.CallInterface = new CallInterfaceVideo(app, this);
+      }else{
+        this.CallInterface = new CallInterfaceAudio(app, this);        
       }
     });
+
   }
 
   onPeerHandshakeComplete(app, peer) {
     if (app.BROWSER !== 1) {
       return;
     }
-    if (!this.video_chat_loaded) {
-      if (app.browser.returnURLParameter("stun_video_chat")) {
-        let room_obj = JSON.parse(
-          app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat"))
-        );
 
-        // JOIN THE ROOM
-        this.renderInto("body");
-        app.connection.emit("stun-to-join-room", room_obj.room_code);
+    if (app.browser.returnURLParameter("stun_video_chat")) {
+      let room_obj = JSON.parse(
+        app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat"))
+      );
+
+      // JOIN THE ROOM
+      if (this.browser_active){
+        this.renderInto("body");  
+      }else{
+        this.renderInto(".saito-overlay");  
       }
+      
+      app.connection.emit("stun-to-join-room", room_obj.room_code);
     }
-
-    this.video_chat_loaded = 1;
   }
 
   /**
-  * Stun will be rendered on 
-  *  - /videocall
-  *  - Saito-header menu
-  *  - Saito-user-menu
-  *  - game-menu options
-  * 
-  * This will trigger a "stun-init-peer-manager" event that leads to the creation of PeerManager
-  */
+   * Stun will be rendered on
+   *  - /videocall
+   *  - Saito-header menu
+   *  - Saito-user-menu
+   *  - game-menu options
+   *
+   * This will trigger a "stun-init-peer-manager" event that leads to the creation of PeerManager
+   */
   render() {
     this.renderInto("body");
   }
@@ -121,7 +124,7 @@ class Stun extends ModTemplate {
     if (qs == ".saito-overlay") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
+        this.renderIntos[qs].push(new StunLauncher(this.app, this, qs));
       }
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => {
@@ -132,7 +135,7 @@ class Stun extends ModTemplate {
     if (qs == "body") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
+        this.renderIntos[qs].push(new StunLauncher(this.app, this, qs));
       }
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => {
@@ -165,54 +168,34 @@ class Stun extends ModTemplate {
         },
       ];
     }
+    //
+    //Game-Menu passes the game_mod as the obj, so we can test if we even want to add the option
+    //
     if (type == "game-menu") {
       this.attachStyleSheets();
       super.render(this.app, this);
-
-      return {
-        id: "game-chat",
-        text: "Video Chat",
-        submenus: [
-          {
-            text: "Start call",
-            id: "start-group-video-chat",
-            class: "start-group-video-chat",
-            callback: function (app, game_mod) {
-              if (game_mod.game.players.length > 1) {
-                app.connection.emit("game-menu-start-video-call", [...game_mod.game.players]);
-              }
+      if (obj?.game?.players?.length > 1) {
+        return {
+          id: "game-chat",
+          text: "Video Chat",
+          submenus: [
+            {
+              text: "Start call",
+              id: "start-group-video-chat",
+              class: "start-group-video-chat",
+              callback: function (app, game_mod) {
+                //Start Call          
+                stun_self.establishStunCallWithPeers("voice", [...game_mod.game.players]);
+              },
             },
-          },
-          {
-            text: "Join call",
-            id: "join-group-video-chat",
-            class: "join-group-video-chat",
-            callback: function (app, game_mod) {
-              app.connection.emit("game-menu-join-video-call", {
-                room_code: stun_self.game_room_code,
-              });
-            },
-          },
-          // game_mod.game.player.map(player => (
-          //     {
-          //         text: `Player ${player}`,
-          //         id: `${player}-video-chat`,
-          //         class: `${player}-video-chat`,
-          //         callback: function (app, game_mod) {
-          //              //
-
-          //         },
-          //     }
-          // )),
-        ],
-      };
+          ],
+        };
+      }
     }
 
     if (type === "user-menu") {
-
       if (obj?.publickey) {
-        if (obj.publickey !== this.app.wallet.returnPublicKey()){
-
+        if (obj.publickey !== this.app.wallet.returnPublicKey()) {
           this.attachStyleSheets();
           super.render(this.app, this);
           return [
@@ -220,13 +203,9 @@ class Stun extends ModTemplate {
               text: "Video/Audio Call",
               icon: "fas fa-video",
               callback: function (app, public_key) {
-                stun_self.renderInto(".saito-overlay");
-                salert("You still need to send an invitation link to the call (after you start it)");
-                /*
-                  We should have a general function to launch the chat-manager with an invitation system
-                  like the in-game start-video-call but without all the DOM manipulations on game-menu
-                */
-                //app.connection.emit("game-menu-start-video-call", [app.wallet.returnPublicKey(), public_key]);
+                //stun_self.renderInto(".saito-overlay");
+                //salert("You still need to send an invitation link to the call (after you start it)");
+                stun_self.establishStunCallWithPeers("large", [public_key]);
               },
             },
           ];
@@ -242,9 +221,10 @@ class Stun extends ModTemplate {
 
     if (conf === 0) {
       if (txmsg.module === "Stun") {
-
-        //Do we even need/want to send messages on chain?
-
+        //
+        // Do we even need/want to send messages on chain?
+        // There are problems with double processing events...
+        //
         if (app.BROWSER === 1) {
           if (txmsg.request === "stun-send-message-to-peers") {
             console.log("onConf: stun-send-message-to-peers");
@@ -262,14 +242,15 @@ class Stun extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     if (app.BROWSER === 0) {
-      try { //Let's not kill the server with bad data
+      try {
+        //Let's not kill the server with bad data
         if (txmsg.request === "stun-create-room-transaction") {
           this.receiveCreateRoomTransaction(app, tx);
         }
         if (txmsg.request === "stun-send-message-to-server") {
           this.receiveStunMessageToServerTransaction(app, tx, peer);
         }
-      }catch(err){
+      } catch (err) {
         console.error("Stun Error:", err);
       }
     }
@@ -287,9 +268,8 @@ class Stun extends ModTemplate {
     super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
-
   async sendCreateRoomTransaction() {
-    let room_code =  this.app.crypto.generateRandomNumber().substring(0, 6);
+    let room_code = this.app.crypto.generateRandomNumber().substring(0, 6);
 
     // offchain data
     let _data = {
@@ -386,12 +366,10 @@ class Stun extends ModTemplate {
     };
 
     this.app.connection.emit("relay-send-message", data);
-    setTimeout(()=> {
-      
+    setTimeout(() => {
       //This is the only proper onChain TX... ?
       this.app.network.propagateTransaction(newtx);
-    },2000)
-   
+    }, 2000);
   }
 
   receiveStunMessageToPeersTransaction(app, tx) {
@@ -400,8 +378,35 @@ class Stun extends ModTemplate {
     app.connection.emit("stun-event-message", data);
   }
 
-  sendGameCallMessageToPeers(app, _data, recipients) {
+  async establishStunCallWithPeers(ui_type, recipients) {
 
+    salert("Establishing a connection with your peers...");
+
+    // init peer manager and chat manager through self event
+    this.app.connection.emit("stun-init-peer-manager", ui_type);
+
+    // create a room
+    let room_code = await this.sendCreateRoomTransaction();
+
+    //Store room_code in PeerManager
+    this.app.connection.emit("stun-peer-manager-update-room-code", room_code);
+ 
+    // send the information to the other peers and ask them to join the call
+    recipients = recipients.filter((player) => {
+      return player !== this.app.wallet.returnPublicKey();
+    });
+
+    let data = {
+      type: "connection-request",
+      room_code,
+      ui: ui_type,
+      sender: this.app.wallet.returnPublicKey(),
+    };
+
+    this.sendStunCallMessageToPeers(this.app, data, recipients);
+  }
+
+  sendStunCallMessageToPeers(app, _data, recipients) {
     let data = {
       recipient: recipients,
       request: "stun-send-game-call-message",
@@ -421,7 +426,8 @@ class Stun extends ModTemplate {
 
     switch (data.type) {
       case "connection-request":
-        let result = await sconfirm("Accept in game call");
+        let call_type = (data.ui == "voice") ? "Voice" : "Video";
+        let result = await sconfirm(`Accept Saito ${call_type} Call`);
         if (result === true) {
           // connect
           // send to sender and inform
@@ -431,10 +437,16 @@ class Stun extends ModTemplate {
             sender: app.wallet.returnPublicKey(),
           };
 
-          this.sendGameCallMessageToPeers(app, _data, [data.sender]);
+          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
 
-          // join room
-          app.connection.emit("game-menu-join-video-call", { room_code: data.room_code });
+          // init peer manager
+          app.connection.emit("stun-init-peer-manager", data.ui);
+          app.connection.emit("stun-peer-manager-update-room-code", data.room_code);
+
+          // send the information to the other peers and ask them to join the call
+          // show-call-interface
+          app.connection.emit("start-stun-call");
+
         } else if (result == false) {
           //send to sender to stop connection
           let _data = {
@@ -442,7 +454,7 @@ class Stun extends ModTemplate {
             room_code: data.room_code,
             sender: app.wallet.returnPublicKey(),
           };
-          this.sendGameCallMessageToPeers(app, _data, [data.sender]);
+          this.sendStunCallMessageToPeers(app, _data, [data.sender]);
         }
         console.log(result);
         break;
@@ -450,6 +462,7 @@ class Stun extends ModTemplate {
       case "connection-accepted":
         console.log("connection accepted");
         salert(`Call accepted by ${data.sender}`);
+        app.connection.emit("start-stun-call");
         break;
       case "connection-rejected":
         console.log("connection rejected");
@@ -459,14 +472,13 @@ class Stun extends ModTemplate {
       default:
         break;
     }
-
   }
 
   /*
   Will add an empty room if it doesn't already exist and there is no key
   */
   addKeyToRoom(room_code, public_key = "") {
-    let public_keys = (this.rooms.has(room_code)) ? this.rooms.get(room_code) : [];
+    let public_keys = this.rooms.has(room_code) ? this.rooms.get(room_code) : [];
 
     if (!public_keys.includes(public_key)) {
       public_keys.push(public_key);
@@ -480,10 +492,6 @@ class Stun extends ModTemplate {
       let public_keys = this.rooms.get(room_code).filter((p) => p !== public_key);
       this.rooms.set(room_code, public_keys);
     }
-  }
-
-  updateGameRoomCode(room_code) {
-    this.game_room_code = room_code;
   }
 }
 
