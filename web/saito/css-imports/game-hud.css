@@ -59,7 +59,7 @@
 }
 
 .hud-long {
-  width: 1200px;
+  width: max-content;
   max-width: calc(100vw - 1rem);
   height: 280px;
   max-height: 280px;

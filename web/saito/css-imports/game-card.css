@@ -6,11 +6,12 @@
   width: 10vw;
 }
 
-.cardimg {
+.cardimg , .card img {
   position: absolute;
   height: 100%;
   width: 100%;
   top: 0px;
   left: 0px;
 }
+
 
