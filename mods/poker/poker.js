@@ -453,6 +453,13 @@ class Poker extends GameTableTemplate {
 
       if (mv[0] === "newround"){
 
+        //
+        // clear displayed cards...
+        //
+        for (let i = 1; i <= this.game.players; i++) {
+          this.playerbox.updateGraphics("", i);
+        }
+
         this.game.state.round++;
 
         //Shift dealer, small blind, and big blind
@@ -704,7 +711,7 @@ class Poker extends GameTableTemplate {
           if (player_to_go == this.game.player) {
             this.playerTurn();
           } else {
-	    this.refreshPlayerLog(`<div class="plog-update">active</div>`, player_to_go);          
+	    this.refreshPlayerLog(`<div class="plog-update">active player</div>`, player_to_go);          
             if (this.game.state.passed[this.game.player-1]){
               this.updateStatus("waiting for next round");
             } else {
@@ -1539,7 +1546,7 @@ class Poker extends GameTableTemplate {
 
           if (i < this.game.pool[0].hand.length) {
             card = this.game.pool[0].cards[this.game.pool[0].hand[i]];
-            newHTML += `<div class="card"><img class="cardFront" src="${this.card_img_dir}/${card.name}"></div>`;
+            newHTML += `<div class="flip-card card"><img class="cardFront" src="${this.card_img_dir}/${card.name}"></div>`;
           } else {
             newHTML += `<div class="flip-card card"><img class="cardBack" src="${this.card_img_dir}/red_back.png"></div>`;
           }
