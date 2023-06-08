@@ -207,7 +207,7 @@ class CallInterfaceVideo {
     });
     document.querySelectorAll(".share-control").forEach((item) => {
       item.onclick = () => {
-        app.connection.emit("begin-share-screen");
+        this.app.connection.emit("begin-share-screen");
       };
     });
     document.querySelectorAll(".video-control").forEach((item) => {
@@ -217,7 +217,6 @@ class CallInterfaceVideo {
     });
 
     if (!this.mod.browser_active){
-      this.app.browser.makeDraggable("stun-chatbox", "", true);
 
       document.querySelector(".stun-chatbox .minimizer").addEventListener("click", (e) => {
         // fas fa-expand"
@@ -230,6 +229,8 @@ class CallInterfaceVideo {
           chat_box.classList.add("minimize");
           icon.classList.remove("fa-caret-down");
           icon.classList.add("fa-expand");
+          this.app.browser.makeDraggable("stun-chatbox", "", true);
+
         } else {
           chat_box.classList.remove("minimize");
           chat_box.style.top = "0";
@@ -238,6 +239,7 @@ class CallInterfaceVideo {
           chat_box.style.height = "";
           icon.classList.remove("fa-expand");
           icon.classList.add("fa-caret-down");
+          this.app.browser.cancelDraggable("stun-chatbox");          
         }
       });
     }

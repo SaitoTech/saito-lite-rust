@@ -1229,7 +1229,16 @@ console.log("clicking on identicon...");
     }
   }
 
+  cancelDraggable(id_to_drag){
+    try {
+      let element_to_drag = document.getElementById(id_to_drag);
+      element_to_drag.onmousedown = null;
+      element_to_drag.ontouchstart = null;
+    }catch(err){
+      console.error(err);
+    }
 
+  }
 
   returnAddressHTML(key) {
     return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(key, true)}</div>`;

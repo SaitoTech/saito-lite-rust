@@ -155,7 +155,7 @@ class PeerManager {
           this.renegotiate(key);
           //console.log("adding presentation video track to peer");
         });
-      } catch (error) {
+      } catch (err) {
         console.error("Error accessing media devices.", err);
       }
       // let sender = pc.addTrack(videoTrack);
