@@ -1,4 +1,5 @@
-const SaitoEmoji = require("../../../../lib/saito/ui/saito-emoji/saito-emoji");
+//const SaitoEmoji = require("../../../../lib/saito/ui/saito-emoji/saito-emoji");
+const SaitoInput = require("../../../../lib/saito/ui/saito-input/saito-input");
 const ChatPopupTemplate = require("./popup.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
@@ -10,7 +11,7 @@ class ChatPopup {
     this.mod = mod;
 
     this.container = container;
-    this.emoji = null;
+    this.input = new SaitoInput(this.app, this.mod, ".chat-footer");
     this.manually_closed = false;
 
     this.group = null;
@@ -46,20 +47,15 @@ class ChatPopup {
     //
     let popup_id = "chat-popup-" + this.group.id;
     let popup_qs = "#" + popup_id;
-    let input_id = "chat-input-" + this.group.id;
+    
+    //let input_id = "chat-input-" + this.group.id;
 
-    let existing_input = "";
+    let existing_input = this.input.getInput();
 
-    if (document.getElementById(input_id)) {
-      existing_input = document.getElementById(input_id).innerHTML;
-    }
+    //if (document.getElementById(input_id)) {
+    //  existing_input = document.getElementById(input_id).innerHTML;
+    //}
 
-    //
-    //
-    //
-    if (this.emoji == null) {
-      this.emoji = new SaitoEmoji(this.app, this.mod, input_id);
-    }
 
     //
     // calculate some values to determine position on screen...
@@ -121,9 +117,9 @@ class ChatPopup {
 
 
     //
-    // emojis
+    // inputs
     //
-    this.emoji.render();
+    this.input.render();
 
     //
     // scroll to bottom
@@ -135,7 +131,8 @@ class ChatPopup {
     // re-render typed text
     //
     if (existing_input != "") {
-      document.getElementById(input_id).innerHTML = existing_input;
+      this.input.setInput(existing_input);
+      //document.getElementById(input_id).innerHTML = existing_input;
       existing_input = "";
     }
 
@@ -194,15 +191,22 @@ class ChatPopup {
         } else {
           quote += el.parentElement.innerText.slice(0, -6) + "</em></blockquote><br/>";
         }
-        let chat_input = el.parentElement.parentElement.parentElement.nextElementSibling.querySelector('.chat-input');
-        chat_input.innerHTML = quote.replaceAll('\n', '<br/>');
-        chat_input.focus();
-        const range = document.createRange();
+
+        this.input.setInput(quote.replaceAll('\n', '<br/>'));
+        this.input.focus();
+
+        //let chat_input = el.parentElement.parentElement.parentElement.nextElementSibling.querySelector('.chat-input');
+        //chat_input.innerHTML = quote.replaceAll('\n', '<br/>');
+        //chat_input.focus();
+        
+        //Fix this!!!
+        /*const range = document.createRange();
         var sel = window.getSelection()
         range.setStart(chat_input, 2);
         range.collapse(true);
         sel.removeAllRanges();
         sel.addRange(range);
+        */
       });
     });
 
@@ -232,7 +236,8 @@ class ChatPopup {
       // focus on text input
       //
       if (!mod.isOtherInputActive()) {
-        document.getElementById(input_id).focus();
+        this.input.focus();
+        //document.getElementById(input_id).focus();
         document.execCommand('selectAll', false, null);
         document.getSelection().collapseToEnd();
       }
@@ -240,6 +245,17 @@ class ChatPopup {
       //
       // submit
       //
+      this.input.callbackOnReturn = (message) => {
+          console.log("Return key");
+          let new_msg = message.replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
+          if (new_msg.trim() == "") { return; }
+          let newtx = mod.createChatTransaction(group_id, message);
+          mod.sendChatTransaction(app, newtx);
+          mod.receiveChatTransaction(app, newtx);
+          this.input.setInput("");
+      }
+
+      /*
       let msg_input = document.querySelector(`${popup_qs} .chat-footer .chat-input`);
       msg_input.onkeydown = (e) => {
         if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
@@ -251,9 +267,11 @@ class ChatPopup {
           mod.receiveChatTransaction(app, newtx);
           msg_input.textContent = "";
           msg_input.innerHTML = "";
-          if (document.getElementById(input_id)) {
-            document.getElementById(input_id).innerHTML = "";
-          }
+          
+          this.input.setInput("");
+          //if (document.getElementById(input_id)) {
+          //  document.getElementById(input_id).innerHTML = "";
+          //}
         }
       }
       msg_input.onpaste = (e) => {
@@ -262,22 +280,26 @@ class ChatPopup {
           el.innerHTML = el.innerHTML;
         }, 0)
       }
-
+      */
       //
       // submit (button)
       //
       document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
         e.preventDefault();
-        let new_msg = msg_input.innerHTML.replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
+        console.log("Click to send");
+        let new_msg = this.input.getInput().replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
+        //let new_msg = msg_input.innerHTML.replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
         if (new_msg.trim() == "") { return; }
-        let newtx = mod.createChatTransaction(group_id, msg_input.innerHTML);
+        let newtx = mod.createChatTransaction(group_id, this.input.getInput());
         mod.sendChatTransaction(app, newtx);
         mod.receiveChatTransaction(app, newtx);
-        msg_input.textContent = "";
-        msg_input.innerHTML = "";
-        if (document.getElementById(input_id)) {
-          document.getElementById(input_id).innerHTML = "";
-        }
+        //msg_input.textContent = "";
+        //msg_input.innerHTML = "";
+        
+        this.input.setInput("");
+        //if (document.getElementById(input_id)) {
+        //  document.getElementById(input_id).innerHTML = "";
+        //}
       }
 
 
@@ -300,7 +322,8 @@ class ChatPopup {
         let newtx = mod.createChatTransaction(group_id, img.outerHTML); // img into msg
         newtx = app.wallet.signTransaction(newtx);
         mod.sendChatTransaction(app, newtx);
-        document.getElementById(input_id).innerHTML = ""; //clear the input div off of the image after sending chat transaction
+        this.input.setInput("");
+        //document.getElementById(input_id).innerHTML = ""; //clear the input div off of the image after sending chat transaction
         mod.receiveChatTransaction(app, newtx);
 
         //}

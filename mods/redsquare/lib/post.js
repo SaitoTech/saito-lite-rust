@@ -49,18 +49,6 @@ class Post {
     this.emoji = new SaitoEmoji(this.app, this.mod, 'post-tweet-textarea', '.saito-emoji-icon-container');
     this.emoji.render();
 
-    let post_self = this;
-    this.app.modules.mods.forEach((mod) => {
-      try {
-        if (mod.name == "Giphy") {
-          const SaitoGif = require("./../../giphy/giphy");
-          post_self.gif = new SaitoGif(post_self.app, post_self.mod, "post-tweet-textarea", function (img) { post_self.addImg(img) });
-          post_self.gif.render(this.app, this.mod);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    });
 
     this.attachEvents();
   }
@@ -257,6 +245,20 @@ class Post {
         post_self.overlay.hide();
       }, 500);
     });
+
+
+    //
+    let gif_icon = document.querySelector(".saito-gif");
+    let gif_mod = this.app.modules.respondTo("giphy");
+    let gif_function = null;
+    if (gif_mod?.length > 0){
+      gif_function = gif_mod[0].respondTo("giphy");
+    }
+    if (gif_icon && gif_function) {
+      gif_icon.onclick = (e) => {
+        gif_function.renderInto(null, function (img) { post_self.addImg(img) });
+      }
+    }
 
   }
 
