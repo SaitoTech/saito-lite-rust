@@ -253,6 +253,9 @@ class ChatPopup {
           mod.sendChatTransaction(app, newtx);
           mod.receiveChatTransaction(app, newtx);
           this.input.setInput("");
+          if (document.querySelector(popup_qs + " .chat-body")) {
+            document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
+          }
       }
 
       /*
@@ -308,7 +311,7 @@ class ChatPopup {
       //
 
       app.browser.addDragAndDropFileUploadToElement(popup_id, async (filesrc) => {
-        filesrc = await app.browser.resizeImg(filesrc, 230, 0.75); // (img, dimensions, quality)
+        filesrc = await app.browser.resizeImg(filesrc); // (img, dimensions, quality)
 
         let img = document.createElement('img');
         img.classList.add('img-prev');

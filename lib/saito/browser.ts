@@ -1484,14 +1484,19 @@ class Browser {
     canvas.width = w;
     canvas.height = h;
 
+    let last_img_size = 1000000000000;
+
     function resizeLoop(img, quality = 1) {
-      console.log("resizing");
+      
       oImg.setAttribute("src", img);
       canvas.getContext("2d").drawImage(oImg, 0, 0, w, h);
       new_img = canvas.toDataURL("image/jpeg", quality);
       let imgSize = new_img.length / 1024; // in KB
+      console.log("resizing: " + imgSize);
 
-      if (imgSize > targetSize) {
+      //Prevent infinite loops by seeing if the size is still going down
+      if (imgSize > targetSize && imgSize < last_img_size) {
+        last_img_size = imgSize;
         resizeLoop(new_img, quality * 0.9);
       } else {
         return;

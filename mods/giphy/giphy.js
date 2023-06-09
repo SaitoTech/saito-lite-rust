@@ -31,6 +31,7 @@ class Giphy extends ModTemplate {
     this.overlay = new SaitoOverlay(app, mod);
     //this.loader = new SaitoLoader(app, mod);
     this.auth = null;
+    this.gf = null;
 
     this.styles = ["/giphy/style.css"];
 
@@ -91,7 +92,6 @@ class Giphy extends ModTemplate {
 
   render() {
     let giphy_self = this;
-    let gf = null;
 
     //
     //Calculate reasonable sizing of results 
@@ -117,8 +117,8 @@ class Giphy extends ModTemplate {
     //
     // Initiate the Giphy search service
     //
-    if (!gf || gf.apiKey === null) {
-      gf = new GiphyFetch(this.auth);
+    if (!this.gf || this.gf.apiKey === null) {
+      this.gf = new GiphyFetch(this.auth);
     }
 
 
@@ -142,7 +142,7 @@ class Giphy extends ModTemplate {
         width: giphy_self.selectorWidth,
         fetchGifs: (offset) => {
             //giphy_self.loader.remove();
-          return gf.search("inception", { offset });
+          return this.gf.search("inception", { offset });
         },
         columns: giphy_self.selectorColumns,
         gutter: 2,
@@ -177,7 +177,7 @@ class Giphy extends ModTemplate {
           fetchGifs: (offset) => {
             //giphy_self.loader.remove();
             console.log("offset", offset, "value ", value);
-            return gf.search(value, { offset });
+            return this.gf.search(value, { offset });
           },
           columns: giphy_self.selectorColumns,
           gutter: 2,

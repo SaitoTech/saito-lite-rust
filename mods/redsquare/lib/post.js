@@ -66,13 +66,14 @@ class Post {
 
     if (post_self.file_event_added == false) {
       post_self.app.browser.addDragAndDropFileUploadToElement("tweet-overlay",
-        (file) => {
+        async (file) => {
           if (post_self.images.length >= 4) {
             salert("Maximum 4 images allowed per tweet.");
           } else {
             let type = file.substring(file.indexOf(":") + 1, file.indexOf(";"));
             if (post_self.mod.allowed_upload_types.includes(type)) {
-              post_self.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
+              let resized_img = await this.app.browser.resizeImg(file);
+              this.addImg(resized_img);
             } else {
               salert("allowed file types: " + post_self.mod.allowed_upload_types.join(', ') + " - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.");
             }
@@ -291,12 +292,6 @@ class Post {
 
   }
 
-  async resizeImg(img, dimensions, quality) {
-    let imgSize = img.length / 1024;
-    let resized_img = await this.app.browser.resizeImg(img);
-    this.addImg(resized_img);
-    return resized_img;
-  }
 
 }
 

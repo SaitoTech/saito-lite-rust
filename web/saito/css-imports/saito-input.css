@@ -42,11 +42,12 @@
 .photo-window {
 	font-size: 48px;
 	text-align: center;
-	background-color: rgba(50,50,50,0.5);
+	background-color: rgba(150,150,150,0.5);
 	height: 100%;
 	padding: 2rem;
 	border: 2px dashed;
 	border-radius: 30px;
+	cursor: pointer;
 }
 
 .selection-box-pane {
@@ -68,9 +69,11 @@
 	align-items: center;
 	justify-content: space-evenly;
 	width: 100%;
-	
 }
 
+.selection-box-tabs i { 
+	text-shadow: 1px 1px 3px var(--saito-black-faded);
+}
 
 .saito-box-tab {
 	padding: 1rem;
