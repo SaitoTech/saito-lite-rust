@@ -2418,7 +2418,7 @@ console.log("LATEST MOVE: " + mv);
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["missileenvy", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["cubanmissile", "brezhnev", "iraniraq", "cambridge", "warsawpact", "mideast", "indopaki", "cia", "china"];
+          this.game.deck[0].hand = ["cubanmissile", "saltnegotiations", "iraniraq", "cambridge", "warsawpact", "mideast", "indopaki", "cia", "china"];
         }
 
       	//this.game.state.round = 1;
