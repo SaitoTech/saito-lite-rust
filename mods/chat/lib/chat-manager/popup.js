@@ -52,11 +52,6 @@ class ChatPopup {
 
     let existing_input = this.input.getInput();
 
-    //if (document.getElementById(input_id)) {
-    //  existing_input = document.getElementById(input_id).innerHTML;
-    //}
-
-
     //
     // calculate some values to determine position on screen...
     //
@@ -76,7 +71,6 @@ class ChatPopup {
         am_i_on_page = 1;
     }
 
-    //console.log("Rendering Chat popup", this.container);
     //
     // insert or replace popup on page
     //
@@ -132,7 +126,6 @@ class ChatPopup {
     //
     if (existing_input != "") {
       this.input.setInput(existing_input);
-      //document.getElementById(input_id).innerHTML = existing_input;
       existing_input = "";
     }
 
@@ -178,7 +171,6 @@ class ChatPopup {
     // add reply functionality
 
     document.querySelectorAll(`${popup_qs} .saito-userline-reply`).forEach((el) => {
-      var clicked = el;
       el.addEventListener('click', (e) => {
         let quote = "<blockquote>";
         if (el.parentElement.previousElementSibling.innerText.length > 25) {
@@ -186,27 +178,12 @@ class ChatPopup {
         } else {
           quote += el.parentElement.previousElementSibling.innerText + "<br/><em>";
         }
-        if (el.parentElement.innerText.slice(0, -6).length > 60) {
-          quote += el.parentElement.innerText.slice(0, -6).substring(0, 60) + "...</em></blockquote><br/>";
-        } else {
-          quote += el.parentElement.innerText.slice(0, -6) + "</em></blockquote><br/>";
-        }
+        //Add the time stamp of the original message
+        quote += el.parentElement.querySelector(".saito-chat-line-timestamp").innerHTML + "</em></blockquote><br/>";
 
-        this.input.setInput(quote.replaceAll('\n', '<br/>'));
+        this.input.insertRange(quote.replaceAll('\n', '<br/>'))
         this.input.focus();
 
-        //let chat_input = el.parentElement.parentElement.parentElement.nextElementSibling.querySelector('.chat-input');
-        //chat_input.innerHTML = quote.replaceAll('\n', '<br/>');
-        //chat_input.focus();
-        
-        //Fix this!!!
-        /*const range = document.createRange();
-        var sel = window.getSelection()
-        range.setStart(chat_input, 2);
-        range.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(range);
-        */
       });
     });
 
@@ -237,7 +214,6 @@ class ChatPopup {
       //
       if (!mod.isOtherInputActive()) {
         this.input.focus();
-        //document.getElementById(input_id).focus();
         document.execCommand('selectAll', false, null);
         document.getSelection().collapseToEnd();
       }
@@ -246,7 +222,6 @@ class ChatPopup {
       // submit
       //
       this.input.callbackOnReturn = (message) => {
-          console.log("Return key");
           let new_msg = message.replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
           if (new_msg.trim() == "") { return; }
           let newtx = mod.createChatTransaction(group_id, message);
@@ -258,53 +233,12 @@ class ChatPopup {
           }
       }
 
-      /*
-      let msg_input = document.querySelector(`${popup_qs} .chat-footer .chat-input`);
-      msg_input.onkeydown = (e) => {
-        if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
-          e.preventDefault();
-          let new_msg = msg_input.innerHTML.replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
-          if (new_msg.trim() == "") { return; }
-          let newtx = mod.createChatTransaction(group_id, msg_input.innerHTML);
-          mod.sendChatTransaction(app, newtx);
-          mod.receiveChatTransaction(app, newtx);
-          msg_input.textContent = "";
-          msg_input.innerHTML = "";
-          
-          this.input.setInput("");
-          //if (document.getElementById(input_id)) {
-          //  document.getElementById(input_id).innerHTML = "";
-          //}
-        }
-      }
-      msg_input.onpaste = (e) => {
-        var el = e.target;
-        setTimeout(function () {
-          el.innerHTML = el.innerHTML;
-        }, 0)
-      }
-      */
       //
       // submit (button)
       //
       document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
-        e.preventDefault();
-        console.log("Click to send");
-        let new_msg = this.input.getInput().replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
-        //let new_msg = msg_input.innerHTML.replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
-        if (new_msg.trim() == "") { return; }
-        let newtx = mod.createChatTransaction(group_id, this.input.getInput());
-        mod.sendChatTransaction(app, newtx);
-        mod.receiveChatTransaction(app, newtx);
-        //msg_input.textContent = "";
-        //msg_input.innerHTML = "";
-        
-        this.input.setInput("");
-        //if (document.getElementById(input_id)) {
-        //  document.getElementById(input_id).innerHTML = "";
-        //}
+        this.input.callbackOnReturn(this.input.getInput());
       }
-
 
       //  
       // drag and drop images into chat window
@@ -318,18 +252,12 @@ class ChatPopup {
         img.src = filesrc;
         let msg = img.outerHTML;
 
-        //if (msg.length > mod.max_msg_size) {
-        //  salert("Image too large: 220kb max");
-        //} else {
-
         let newtx = mod.createChatTransaction(group_id, img.outerHTML); // img into msg
         newtx = app.wallet.signTransaction(newtx);
         mod.sendChatTransaction(app, newtx);
         this.input.setInput("");
-        //document.getElementById(input_id).innerHTML = ""; //clear the input div off of the image after sending chat transaction
         mod.receiveChatTransaction(app, newtx);
 
-        //}
       }, false); // false = no drag-and-drop image click
 
 
