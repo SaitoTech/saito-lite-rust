@@ -36,7 +36,7 @@
 .selection-box-window {
 	position: relative;
 	width: 100%;
-	height: 80%;
+	height: 90%;
 }
 
 .photo-window {
@@ -71,6 +71,7 @@
 	
 }
 
+
 .saito-box-tab {
 	padding: 1rem;
 	font-size: 36px;
@@ -80,4 +81,16 @@
 
 .saito-box-tab:hover{
 	color: var(--saito-secondary);
+}
+
+
+/* override definitions from giphy.css and saito-emoji.css */
+.selection-box-window .saito-gif-container {
+	padding: 0.5rem;
+	border: 1px solid;
+}
+
+.selection-box-window emoji-picker {
+	width: 100%;
+	height: 100%;
 }
