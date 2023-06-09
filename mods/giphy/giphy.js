@@ -77,6 +77,9 @@ class Giphy extends ModTemplate {
     return super.respondTo(type, obj);
   }
 
+  ////////
+  //Wait, is this even used????
+  ////////
   toDataURL = (url) =>
     fetch(url)
       .then((response) => response.blob())
@@ -176,7 +179,7 @@ class Giphy extends ModTemplate {
           width: giphy_self.selectorWidth,
           fetchGifs: (offset) => {
             //giphy_self.loader.remove();
-            console.log("offset", offset, "value ", value);
+            //console.log("offset", offset, "value ", value);
             return this.gf.search(value, { offset });
           },
           columns: giphy_self.selectorColumns,

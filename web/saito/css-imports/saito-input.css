@@ -12,6 +12,7 @@
 	cursor: text;
 	border: 1px solid transparent;
 	font-size: 1.6rem;
+	line-height: 1.6rem;
 	outline: none;
 	background: var(--saito-arcade-background);
 	max-height: 15rem;
@@ -69,6 +70,7 @@
 	align-items: center;
 	justify-content: space-evenly;
 	width: 100%;
+	background-color: rgba(150,150,150,0.5);
 }
 
 .selection-box-tabs i { 
