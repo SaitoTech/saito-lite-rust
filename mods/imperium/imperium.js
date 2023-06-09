@@ -19,7 +19,10 @@ const AntiFighterBarrageOverlay = require('./lib/overlays/anti-fighter-barrage')
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
 const TokenBar = require('./lib/tokenbar');
-const Dashboard = require('./lib/dashboard');
+const Dashboard = require('./lib/dashboard-manager');
+const RoundBox = require('./lib/round');
+const Leaderboard = require('./lib/leaderboard');
+const Sector = require('./lib/sector');
 
 
 class Imperium extends GameTemplate {
@@ -62,6 +65,8 @@ class Imperium extends GameTemplate {
     this.anti_fighter_barrage_overlay = new AntiFighterBarrageOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
+    this.roundbox = new RoundBox(this.app, this, "");
+    this.leaderboard = new Leaderboard(this.app, this, "");
 
     //
     // specific to THIS game
@@ -79,6 +84,7 @@ class Imperium extends GameTemplate {
     // not specific to THIS game
     //
     this.factions       	= {};
+    this.sectors           	= {}; // objs used to render
     this.tech           	= {};
     this.strategy_cards 	= {};
     this.action_cards 		= {};
@@ -119,8 +125,8 @@ class Imperium extends GameTemplate {
   initializeGameObjects() {
 
     this.hud.render();
-
     this.log.render();
+
 
 
     this.importTech("antimass-deflectors", {
@@ -11745,13 +11751,11 @@ console.log("qe: " + qe);
 	let ac = game_mod.returnActionCards();
 	let ac2 = [];
 	for (let x in ac) {
-console.log(JSON.stringify(x));
 	  if (x.indexOf("2") > 0 || x.indexOf("3") > 0 || x.indexOf("4") > 0 || x.indexOf("5") > 0 ) {
 	  } else {
 	    ac2.push(ac[x]);
 	  }
 	}
-console.log("ACT: " + JSON.stringify(ac2));
         game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac2, {});
       }
     });
@@ -11841,6 +11845,7 @@ console.log("ACT: " + JSON.stringify(ac2));
     // this.stage_ii_objectives
     // this.secret_objectives
     // this.promissary_notes
+    // this.sectors 
     //
 
     //
@@ -12207,46 +12212,29 @@ console.log("ACT: " + JSON.stringify(ac2));
     // display board
     //
     for (let i in this.game.board) {
-  
-      // add html to index
-      let boardslot = "#" + i;
 
-try {
-      $(boardslot).html(
-        ' \
-          <div class="hexIn" id="hexIn_'+i+'"> \
-            <div class="hexLink" id="hexLink_'+i+'"> \
-            <div class="hexInfo" id="hex_info_'+i+'"></div> \
-              <div class="hex_bg" id="hex_bg_'+i+'"> \
-                <img class="hex_img sector_graphics_background '+this.game.board[i].tile+'" id="hex_img_'+i+'" src="" /> \
-                <img src="/imperium/img/frame/border_full_white.png" id="hex_img_faction_border_'+i+'" class="faction_border" /> \
-                <img src="/imperium/img/frame/border_full_yellow.png" id="hex_img_hazard_border_'+i+'" class="hazard_border" /> \
-                <div class="hex_activated" id="hex_activated_'+i+'"> \
-              </div> \
-                <div class="hex_space" id="hex_space_'+i+'"> \
-              </div> \
-                <div class="hex_ground" id="hex_ground_'+i+'"> \
-              </div> \
-              </div> \
-            </div> \
-          </div> \
-        '
-      );
-  
+      // add html to index
+      let boardslot = ".sector_" + i;
+
+      this.sectors[i] = new Sector(this.app, this, boardslot, i);
+      this.sectors[i].render();
+
+      //
       // insert planet
+      //
       let planet_div = "#hex_img_"+i;
       $(planet_div).attr("src", this.game.sectors[this.game.board[i].tile].img);
 
-      // add planet info
-  
-      this.updateSectorGraphics(i);
-} catch (err) {}
-        
     }
   
   
     this.updateLeaderboard();
   
+    //
+    // faction dashboard
+    //
+    this.displayFactionDashboard();
+
 
     //
     // prevent hangs
@@ -12258,7 +12246,6 @@ try {
     // add events to board 
     //
     try {
-      this.addEventsToBoard();
       this.addUIEvents();
     } catch (err) {
      
@@ -31095,10 +31082,9 @@ console.log(JSON.stringify(ship));
 // redraw all sectors
 //
 displayBoard() {
-  for (let i in this.game.systems) {
-    this.updateSectorGraphics(i);
+  for (let i in this.sectors) {
+    this.sectors[i].render();
   }
-  this.addEventsToBoard();
 }
 
 
@@ -31145,44 +31131,6 @@ flashSector(sector) {
 
 }
 
-
-
-
-/////////////////////////
-// Add Events to Board //
-/////////////////////////
-addEventsToBoard() {
-
-  let imperium_self = this;
-  let pid = "";
-
-  let xpos = 0;
-  let ypos = 0;
-
-//
-// TODO remove jquery dependency
-//
-try {
-  $('.sector').off();
-  $('.sector').on('mouseenter', function () {
-    pid = $(this).attr("id");
-    imperium_self.showSector(pid);
-  }).on('mouseleave', function () {
-    pid = $(this).attr("id");
-    imperium_self.hideSector(pid);
-  });
-  $('.sector').on('mousedown', function (e) {
-    xpos = e.clientX;
-    ypos = e.clientY;
-  });
-  $('.sector').on('mouseup', function (e) {
-    if (Math.abs(xpos-e.clientX) > 4) { return; }
-    if (Math.abs(ypos-e.clientY) > 4) { return; }
-    pid = $(this).attr("id");
-    imperium_self.overlay.show(imperium_self.returnSectorInformationHTML(pid));
-  });
-} catch (err) {}
-}
 
 
 
@@ -31749,6 +31697,7 @@ displayFactionDashboard(agenda_phase=0) {
 
   try {
 
+    this.roundbox.render();
     this.dashboard.render(agenda_phase);
 
     let pl = "";
@@ -31780,26 +31729,6 @@ displayFactionDashboard(agenda_phase=0) {
       }
 
     }
-
-/****
-    $('.dash-item-resources').on('mouseenter', function() {
-      imperium_self.showHelpCard("resources");
-    }).on('mouseleave', function() {
-      imperium_self.hideHelpCard();
-    });
-
-    $('.dash-item-influence').on('mouseenter', function() {
-      imperium_self.showHelpCard("influence");
-    }).on('mouseleave', function() {
-      imperium_self.hideHelpCard();
-    });
-
-    $('.dash-item-trade').on('mouseenter', function() {
-      imperium_self.showHelpCard("trade");
-    }).on('mouseleave', function() {
-      imperium_self.hideHelpCard();
-    });
-****/
 
   } catch (err) {
 console.log("ERROR: " + err);
@@ -31872,9 +31801,15 @@ updateTokenDisplay() {
 
 }
 
+
+updateRound() {
+    this.roundbox.render();
+}
+
 updateLeaderboard() {
 
   if (this.browser_active == 0) { return; }
+  this.leaderboard.render();
 
   let imperium_self = this;
   let factions = this.returnFactions();
@@ -31895,10 +31830,7 @@ updateLeaderboard() {
     }
 
 
-    document.querySelector('.round').innerHTML = this.game.state.round;
-    document.querySelector('.turn').innerHTML = this.game.state.turn;
-
-    let html = '<div class="VP-track-label" id="VP-track-label">Victory Points<div class="objectives-toggle" id="objectives-toggle">?</div></div>';
+    let html = '<div class="VP-track-label" id="VP-track-label">Victory Points</div>';
 
     let vp_needed = 14;
     if (this.game.state.vp_target != 14 && this.game.state.vp_target > 0) { vp_needed = this.game.state.vp_target; }
@@ -31919,6 +31851,8 @@ updateLeaderboard() {
 
     document.querySelector('.leaderboard').innerHTML = html;
 
+    this.updateRound();
+
   } catch (err) { }
 }
 
@@ -31935,6 +31869,11 @@ updateSectorGraphics(sector) {
   if (sys == null) { return; }
   if (sys.s == undefined) { return; }
   if (sys.s == null) { return; }
+
+  this.sectors[sys.tile].update();
+
+  return;
+/******
   try {
 
   if (sector.indexOf("_") == -1) { sector = sys.s.tile; }
@@ -32244,7 +32183,7 @@ updateSectorGraphics(sector) {
   }
 
   } catch (err) {}
-
+*****/
 };
 
 
@@ -32458,13 +32397,55 @@ updateSectorGraphics(sector) {
     if (obj.name == null) 	{ obj.name = "Strategy Card"; }
     if (obj.rank == null) 	{ obj.rank = 1; }
 
-
     if (obj.returnCardImage == null) {
-      obj.returnCardImage = function() {
+      obj.returnCardImage = (mode=0) => {
+
+	let cards = this.returnStrategyCards();
+	let idx = ""; for (let x in cards) { if (cards[x].name === obj.name) { idx = x; } }
+        let picked = "not picked";
+        let player = -1;
+        let bonus = 0;
+        let bonus_html = "";
+        card_html = '';
+
+        if (mode == 1) {
+
+          for (let i = 0; i < this.game.state.strategy_cards.length; i++) {
+            if (idx === this.game.state.strategy_cards[i]) {
+              bonus = this.game.state.strategy_cards_bonus[i];
+            }
+          }
+
+          if (bonus > 0) {
+            bonus_html =
+            `<div class="bonus">
+              <i class="fas fa-database white-stroke"></i>
+              <span>${bonus}</span>
+            </div>`;
+          }
+
+          for (let i = 0; i < this.game.state.players_info.length; i++) {
+            if (this.game.state.players_info[i].strategy.includes(idx)) {
+              picked = "unplayed";
+              player = (i+1);
+              if (this.game.state.players_info[i].strategy_cards_played.includes(idx)) {
+                picked = "played";
+              };
+            };
+          }
+
+          if (picked != "not picked") {
+            card_html += `
+              <div class="picked p${player} bk">${picked}</div>
+           `;
+          }
+        }
+
         return `
-          <div class="strategy_card" id="${name}">
-	    <img class="strategy_card_img" id="${name}" src="/imperium/img${obj.img}" style="width:100%">
-	    <div class="strategy_card_text">${obj.text}</div>
+          <div class="strategy-card" id="${name}">
+	    <img id="${name}" src="/imperium/img${obj.img}" style="width:100%">
+	    <div class="text">${obj.text}</div>
+	    ${bonus_html} ${card_html}
 	  </div>
         `;
       };

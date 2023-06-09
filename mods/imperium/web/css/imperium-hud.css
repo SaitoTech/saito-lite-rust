@@ -6,3 +6,124 @@
   font-size: 1.8rem;
 }
 
+.hud-body .controls {
+  display: none;
+}
+
+.hud-body .status {
+  background-color: #0005;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.status p {
+  color: white;
+}
+
+.status, .hud-header, .hud-menu, .hud-body, .controls, #menu-container>ul>li, #menu-container>ul>li:first-child {
+  background-color: #222C;
+  color: #fff;
+  border-color: #555;
+  font-family: 'orbitron-medium', helvetica, sans-serif;
+  line-height: 1.3em;
+}
+.hud-square {
+  min-height: min-content;
+  height: auto;
+  max-height: max-content;
+}
+.hud-square .hud-body {
+  min-height: 270px;
+  height: 270px;
+  max-height: 270px;
+  width: 100%;
+}
+
+.status-message{
+  background-color: unset;
+  box-shadow: none;
+}
+
+.hud-header {
+  min-height: 40px;
+  height: 40px;
+  width: 100%;
+  opacity: 1;
+  visibility: visible;
+  background-color: #222e;
+  cursor: move;
+}
+
+#menu-container>ul>li:hover {
+  background-color: #3334;
+}
+
+
+.status ul li:hover, .hud-menu ul li a:hover, hud-menu-overlay ul li:hover {
+  background: #8888;
+}
+
+.status p {
+  margin: 0;
+  padding: 0 1em;
+  text-align: left;
+  display: block;
+}
+
+.hud-menu-overlay {
+  background-color: transparent;
+  overflow-y: auto;
+  color: #fff;
+  padding-top: 5px;
+}
+
+.status ul li, .status ul li:last-child, hud-menu-overlay ul li {
+  border-color: #555;
+}
+
+.hud {
+  background-color: unset;
+  border: 1px solid var(--my-color);
+  box-shadow: none;
+}
+
+.hud {
+  width: 600px;
+  min-width: 600px;
+}
+
+.hud-body {
+  display: block;
+  height: 100%;
+  max-width: 100%;
+  overflow-y: auto;
+  cursor: pointer;
+}
+
+.hud-menu ul li a {
+  text-decoration: none;
+  color: #fffD;
+}
+
+.hud-menu ul li:hover {
+  background-color: #888888;
+}
+
+.status {
+  display: block;
+  text-align: center;
+  padding: 10px 10px;
+  border: none;
+  overflow-y: auto;
+  background-color: transparent;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 10px;
+  background-color: transparent;
+}
+

@@ -3,10 +3,9 @@
 // redraw all sectors
 //
 displayBoard() {
-  for (let i in this.game.systems) {
-    this.updateSectorGraphics(i);
+  for (let i in this.sectors) {
+    this.sectors[i].render();
   }
-  this.addEventsToBoard();
 }
 
 
@@ -53,44 +52,6 @@ flashSector(sector) {
 
 }
 
-
-
-
-/////////////////////////
-// Add Events to Board //
-/////////////////////////
-addEventsToBoard() {
-
-  let imperium_self = this;
-  let pid = "";
-
-  let xpos = 0;
-  let ypos = 0;
-
-//
-// TODO remove jquery dependency
-//
-try {
-  $('.sector').off();
-  $('.sector').on('mouseenter', function () {
-    pid = $(this).attr("id");
-    imperium_self.showSector(pid);
-  }).on('mouseleave', function () {
-    pid = $(this).attr("id");
-    imperium_self.hideSector(pid);
-  });
-  $('.sector').on('mousedown', function (e) {
-    xpos = e.clientX;
-    ypos = e.clientY;
-  });
-  $('.sector').on('mouseup', function (e) {
-    if (Math.abs(xpos-e.clientX) > 4) { return; }
-    if (Math.abs(ypos-e.clientY) > 4) { return; }
-    pid = $(this).attr("id");
-    imperium_self.overlay.show(imperium_self.returnSectorInformationHTML(pid));
-  });
-} catch (err) {}
-}
 
 
 
@@ -657,6 +618,7 @@ displayFactionDashboard(agenda_phase=0) {
 
   try {
 
+    this.roundbox.render();
     this.dashboard.render(agenda_phase);
 
     let pl = "";
@@ -688,26 +650,6 @@ displayFactionDashboard(agenda_phase=0) {
       }
 
     }
-
-/****
-    $('.dash-item-resources').on('mouseenter', function() {
-      imperium_self.showHelpCard("resources");
-    }).on('mouseleave', function() {
-      imperium_self.hideHelpCard();
-    });
-
-    $('.dash-item-influence').on('mouseenter', function() {
-      imperium_self.showHelpCard("influence");
-    }).on('mouseleave', function() {
-      imperium_self.hideHelpCard();
-    });
-
-    $('.dash-item-trade').on('mouseenter', function() {
-      imperium_self.showHelpCard("trade");
-    }).on('mouseleave', function() {
-      imperium_self.hideHelpCard();
-    });
-****/
 
   } catch (err) {
 console.log("ERROR: " + err);
@@ -780,9 +722,15 @@ updateTokenDisplay() {
 
 }
 
+
+updateRound() {
+    this.roundbox.render();
+}
+
 updateLeaderboard() {
 
   if (this.browser_active == 0) { return; }
+  this.leaderboard.render();
 
   let imperium_self = this;
   let factions = this.returnFactions();
@@ -803,10 +751,7 @@ updateLeaderboard() {
     }
 
 
-    document.querySelector('.round').innerHTML = this.game.state.round;
-    document.querySelector('.turn').innerHTML = this.game.state.turn;
-
-    let html = '<div class="VP-track-label" id="VP-track-label">Victory Points<div class="objectives-toggle" id="objectives-toggle">?</div></div>';
+    let html = '<div class="VP-track-label" id="VP-track-label">Victory Points</div>';
 
     let vp_needed = 14;
     if (this.game.state.vp_target != 14 && this.game.state.vp_target > 0) { vp_needed = this.game.state.vp_target; }
@@ -827,6 +772,8 @@ updateLeaderboard() {
 
     document.querySelector('.leaderboard').innerHTML = html;
 
+    this.updateRound();
+
   } catch (err) { }
 }
 
@@ -843,6 +790,11 @@ updateSectorGraphics(sector) {
   if (sys == null) { return; }
   if (sys.s == undefined) { return; }
   if (sys.s == null) { return; }
+
+  this.sectors[sys.tile].update();
+
+  return;
+/******
   try {
 
   if (sector.indexOf("_") == -1) { sector = sys.s.tile; }
@@ -1152,7 +1104,7 @@ updateSectorGraphics(sector) {
   }
 
   } catch (err) {}
-
+*****/
 };
 
 

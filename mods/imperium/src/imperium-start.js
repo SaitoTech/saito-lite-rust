@@ -19,7 +19,10 @@ const AntiFighterBarrageOverlay = require('./lib/overlays/anti-fighter-barrage')
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
 const TokenBar = require('./lib/tokenbar');
-const Dashboard = require('./lib/dashboard');
+const Dashboard = require('./lib/dashboard-manager');
+const RoundBox = require('./lib/round');
+const Leaderboard = require('./lib/leaderboard');
+const Sector = require('./lib/sector');
 
 
 class Imperium extends GameTemplate {
@@ -62,6 +65,8 @@ class Imperium extends GameTemplate {
     this.anti_fighter_barrage_overlay = new AntiFighterBarrageOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
+    this.roundbox = new RoundBox(this.app, this, "");
+    this.leaderboard = new Leaderboard(this.app, this, "");
 
     //
     // specific to THIS game
@@ -79,6 +84,7 @@ class Imperium extends GameTemplate {
     // not specific to THIS game
     //
     this.factions       	= {};
+    this.sectors           	= {}; // objs used to render
     this.tech           	= {};
     this.strategy_cards 	= {};
     this.action_cards 		= {};
@@ -119,6 +125,6 @@ class Imperium extends GameTemplate {
   initializeGameObjects() {
 
     this.hud.render();
-
     this.log.render();
+
 

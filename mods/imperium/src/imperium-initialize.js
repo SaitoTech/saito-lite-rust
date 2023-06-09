@@ -156,13 +156,11 @@
 	let ac = game_mod.returnActionCards();
 	let ac2 = [];
 	for (let x in ac) {
-console.log(JSON.stringify(x));
 	  if (x.indexOf("2") > 0 || x.indexOf("3") > 0 || x.indexOf("4") > 0 || x.indexOf("5") > 0 ) {
 	  } else {
 	    ac2.push(ac[x]);
 	  }
 	}
-console.log("ACT: " + JSON.stringify(ac2));
         game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac2, {});
       }
     });
@@ -252,6 +250,7 @@ console.log("ACT: " + JSON.stringify(ac2));
     // this.stage_ii_objectives
     // this.secret_objectives
     // this.promissary_notes
+    // this.sectors 
     //
 
     //
@@ -618,46 +617,29 @@ console.log("ACT: " + JSON.stringify(ac2));
     // display board
     //
     for (let i in this.game.board) {
-  
-      // add html to index
-      let boardslot = "#" + i;
 
-try {
-      $(boardslot).html(
-        ' \
-          <div class="hexIn" id="hexIn_'+i+'"> \
-            <div class="hexLink" id="hexLink_'+i+'"> \
-            <div class="hexInfo" id="hex_info_'+i+'"></div> \
-              <div class="hex_bg" id="hex_bg_'+i+'"> \
-                <img class="hex_img sector_graphics_background '+this.game.board[i].tile+'" id="hex_img_'+i+'" src="" /> \
-                <img src="/imperium/img/frame/border_full_white.png" id="hex_img_faction_border_'+i+'" class="faction_border" /> \
-                <img src="/imperium/img/frame/border_full_yellow.png" id="hex_img_hazard_border_'+i+'" class="hazard_border" /> \
-                <div class="hex_activated" id="hex_activated_'+i+'"> \
-              </div> \
-                <div class="hex_space" id="hex_space_'+i+'"> \
-              </div> \
-                <div class="hex_ground" id="hex_ground_'+i+'"> \
-              </div> \
-              </div> \
-            </div> \
-          </div> \
-        '
-      );
-  
+      // add html to index
+      let boardslot = ".sector_" + i;
+
+      this.sectors[i] = new Sector(this.app, this, boardslot, i);
+      this.sectors[i].render();
+
+      //
       // insert planet
+      //
       let planet_div = "#hex_img_"+i;
       $(planet_div).attr("src", this.game.sectors[this.game.board[i].tile].img);
 
-      // add planet info
-  
-      this.updateSectorGraphics(i);
-} catch (err) {}
-        
     }
   
   
     this.updateLeaderboard();
   
+    //
+    // faction dashboard
+    //
+    this.displayFactionDashboard();
+
 
     //
     // prevent hangs
@@ -669,7 +651,6 @@ try {
     // add events to board 
     //
     try {
-      this.addEventsToBoard();
       this.addUIEvents();
     } catch (err) {
      

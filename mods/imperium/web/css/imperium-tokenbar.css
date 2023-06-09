@@ -2,6 +2,7 @@
 .tokenbar {
   display: block;
   position: relative;
+  margin-right: 1rem;
 }
 
 .tokenbar > div {
