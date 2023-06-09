@@ -49,18 +49,6 @@ class Post {
     this.emoji = new SaitoEmoji(this.app, this.mod, 'post-tweet-textarea', '.saito-emoji-icon-container');
     this.emoji.render();
 
-    let post_self = this;
-    this.app.modules.mods.forEach((mod) => {
-      try {
-        if (mod.name == "Giphy") {
-          const SaitoGif = require("./../../giphy/giphy");
-          post_self.gif = new SaitoGif(post_self.app, post_self.mod, "post-tweet-textarea", function (img) { post_self.addImg(img) });
-          post_self.gif.render(this.app, this.mod);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    });
 
     this.attachEvents();
   }
@@ -78,13 +66,14 @@ class Post {
 
     if (post_self.file_event_added == false) {
       post_self.app.browser.addDragAndDropFileUploadToElement("tweet-overlay",
-        (file) => {
+        async (file) => {
           if (post_self.images.length >= 4) {
             salert("Maximum 4 images allowed per tweet.");
           } else {
             let type = file.substring(file.indexOf(":") + 1, file.indexOf(";"));
             if (post_self.mod.allowed_upload_types.includes(type)) {
-              post_self.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
+              let resized_img = await this.app.browser.resizeImg(file);
+              this.addImg(resized_img);
             } else {
               salert("allowed file types: " + post_self.mod.allowed_upload_types.join(', ') + " - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.");
             }
@@ -258,6 +247,20 @@ class Post {
       }, 500);
     });
 
+
+    //
+    let gif_icon = document.querySelector(".saito-gif");
+    let gif_mod = this.app.modules.respondTo("giphy");
+    let gif_function = null;
+    if (gif_mod?.length > 0){
+      gif_function = gif_mod[0].respondTo("giphy");
+    }
+    if (gif_icon && gif_function) {
+      gif_icon.onclick = (e) => {
+        gif_function.renderInto(null, function (img) { post_self.addImg(img) });
+      }
+    }
+
   }
 
   addImg(img) {
@@ -289,12 +292,6 @@ class Post {
 
   }
 
-  async resizeImg(img, dimensions, quality) {
-    let imgSize = img.length / 1024;
-    let resized_img = await this.app.browser.resizeImg(img);
-    this.addImg(resized_img);
-    return resized_img;
-  }
 
 }
 

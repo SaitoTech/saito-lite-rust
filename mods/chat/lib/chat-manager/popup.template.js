@@ -28,9 +28,7 @@ module.exports = (app, mod, group, isStatic = false) => {
         <div class="chat-body">${mod.returnChatBody(group.id)}</div>
 
         <div class="chat-footer">
-          <div name="chat-input" class="chat-input hide-scrollbar" id="chat-input-${
-            group.id
-          }" type="text" value="" autocomplete="off" placeholder="Type something..." contenteditable="true"></div>
+          <!--div name="chat-input" class="chat-input" id="chat-input-${group.id}" type="text" value="" autocomplete="off" placeholder="Type something..." contenteditable="true"></div-->
           <i class="fa-regular fa-paper-plane chat-input-submit" id="chat-input-submit"></i>
         </div>
 

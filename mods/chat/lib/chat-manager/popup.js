@@ -1,4 +1,5 @@
-const SaitoEmoji = require("../../../../lib/saito/ui/saito-emoji/saito-emoji");
+//const SaitoEmoji = require("../../../../lib/saito/ui/saito-emoji/saito-emoji");
+const SaitoInput = require("../../../../lib/saito/ui/saito-input/saito-input");
 const ChatPopupTemplate = require("./popup.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
@@ -10,7 +11,7 @@ class ChatPopup {
     this.mod = mod;
 
     this.container = container;
-    this.emoji = null;
+    this.input = new SaitoInput(this.app, this.mod, ".chat-footer");
     this.manually_closed = false;
 
     this.group = null;
@@ -46,20 +47,10 @@ class ChatPopup {
     //
     let popup_id = "chat-popup-" + this.group.id;
     let popup_qs = "#" + popup_id;
-    let input_id = "chat-input-" + this.group.id;
+    
+    //let input_id = "chat-input-" + this.group.id;
 
-    let existing_input = "";
-
-    if (document.getElementById(input_id)) {
-      existing_input = document.getElementById(input_id).innerHTML;
-    }
-
-    //
-    //
-    //
-    if (this.emoji == null) {
-      this.emoji = new SaitoEmoji(this.app, this.mod, input_id);
-    }
+    let existing_input = this.input.getInput();
 
     //
     // calculate some values to determine position on screen...
@@ -80,7 +71,6 @@ class ChatPopup {
         am_i_on_page = 1;
     }
 
-    //console.log("Rendering Chat popup", this.container);
     //
     // insert or replace popup on page
     //
@@ -121,9 +111,9 @@ class ChatPopup {
 
 
     //
-    // emojis
+    // inputs
     //
-    this.emoji.render();
+    this.input.render();
 
     //
     // scroll to bottom
@@ -135,7 +125,7 @@ class ChatPopup {
     // re-render typed text
     //
     if (existing_input != "") {
-      document.getElementById(input_id).innerHTML = existing_input;
+      this.input.setInput(existing_input);
       existing_input = "";
     }
 
@@ -181,7 +171,6 @@ class ChatPopup {
     // add reply functionality
 
     document.querySelectorAll(`${popup_qs} .saito-userline-reply`).forEach((el) => {
-      var clicked = el;
       el.addEventListener('click', (e) => {
         let quote = "<blockquote>";
         if (el.parentElement.previousElementSibling.innerText.length > 25) {
@@ -189,20 +178,12 @@ class ChatPopup {
         } else {
           quote += el.parentElement.previousElementSibling.innerText + "<br/><em>";
         }
-        if (el.parentElement.innerText.slice(0, -6).length > 60) {
-          quote += el.parentElement.innerText.slice(0, -6).substring(0, 60) + "...</em></blockquote><br/>";
-        } else {
-          quote += el.parentElement.innerText.slice(0, -6) + "</em></blockquote><br/>";
-        }
-        let chat_input = el.parentElement.parentElement.parentElement.nextElementSibling.querySelector('.chat-input');
-        chat_input.innerHTML = quote.replaceAll('\n', '<br/>');
-        chat_input.focus();
-        const range = document.createRange();
-        var sel = window.getSelection()
-        range.setStart(chat_input, 2);
-        range.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(range);
+        //Add the time stamp of the original message
+        quote += el.parentElement.querySelector(".saito-chat-line-timestamp").innerHTML + "</em></blockquote><br/>";
+
+        this.input.insertRange(quote.replaceAll('\n', '<br/>'))
+        this.input.focus();
+
       });
     });
 
@@ -232,7 +213,7 @@ class ChatPopup {
       // focus on text input
       //
       if (!mod.isOtherInputActive()) {
-        document.getElementById(input_id).focus();
+        this.input.focus();
         document.execCommand('selectAll', false, null);
         document.getSelection().collapseToEnd();
       }
@@ -240,70 +221,43 @@ class ChatPopup {
       //
       // submit
       //
-      let msg_input = document.querySelector(`${popup_qs} .chat-footer .chat-input`);
-      msg_input.onkeydown = (e) => {
-        if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
-          e.preventDefault();
-          let new_msg = msg_input.innerHTML.replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
+      this.input.callbackOnReturn = (message) => {
+          let new_msg = message.replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
           if (new_msg.trim() == "") { return; }
-          let newtx = mod.createChatTransaction(group_id, msg_input.innerHTML);
+          let newtx = mod.createChatTransaction(group_id, message);
           mod.sendChatTransaction(app, newtx);
           mod.receiveChatTransaction(app, newtx);
-          msg_input.textContent = "";
-          msg_input.innerHTML = "";
-          if (document.getElementById(input_id)) {
-            document.getElementById(input_id).innerHTML = "";
+          this.input.setInput("");
+          if (document.querySelector(popup_qs + " .chat-body")) {
+            document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
           }
-        }
-      }
-      msg_input.onpaste = (e) => {
-        var el = e.target;
-        setTimeout(function () {
-          el.innerHTML = el.innerHTML;
-        }, 0)
       }
 
       //
       // submit (button)
       //
       document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
-        e.preventDefault();
-        let new_msg = msg_input.innerHTML.replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
-        if (new_msg.trim() == "") { return; }
-        let newtx = mod.createChatTransaction(group_id, msg_input.innerHTML);
-        mod.sendChatTransaction(app, newtx);
-        mod.receiveChatTransaction(app, newtx);
-        msg_input.textContent = "";
-        msg_input.innerHTML = "";
-        if (document.getElementById(input_id)) {
-          document.getElementById(input_id).innerHTML = "";
-        }
+        this.input.callbackOnReturn(this.input.getInput());
       }
-
 
       //  
       // drag and drop images into chat window
       //
 
       app.browser.addDragAndDropFileUploadToElement(popup_id, async (filesrc) => {
-        filesrc = await app.browser.resizeImg(filesrc, 230, 0.75); // (img, dimensions, quality)
+        filesrc = await app.browser.resizeImg(filesrc); // (img, dimensions, quality)
 
         let img = document.createElement('img');
         img.classList.add('img-prev');
         img.src = filesrc;
         let msg = img.outerHTML;
 
-        //if (msg.length > mod.max_msg_size) {
-        //  salert("Image too large: 220kb max");
-        //} else {
-
         let newtx = mod.createChatTransaction(group_id, img.outerHTML); // img into msg
         newtx = app.wallet.signTransaction(newtx);
         mod.sendChatTransaction(app, newtx);
-        document.getElementById(input_id).innerHTML = ""; //clear the input div off of the image after sending chat transaction
+        this.input.setInput("");
         mod.receiveChatTransaction(app, newtx);
 
-        //}
       }, false); // false = no drag-and-drop image click
 
 
