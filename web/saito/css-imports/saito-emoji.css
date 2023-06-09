@@ -1,10 +1,5 @@
 
 emoji-picker {
-  /*position: absolute;
-  height: 40rem;
-  bottom: 7rem;
-  width: 30rem;
-  right: 5rem;*/
   --emoji-size: 2.5rem;
   --emoji-padding: 0.5rem;
   z-index: 2;
@@ -13,6 +8,14 @@ emoji-picker {
 .saito-emoji-container {
   width: 100%;
   position: relative;
+}
+
+.saito-emoji-container emoji-picker {
+  position: absolute;
+  height: 40rem;
+  bottom: 7rem;
+  width: 30rem;
+  right: 5rem;
 }
 
 .saito-emoji {
