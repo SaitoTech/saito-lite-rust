@@ -1,7 +1,7 @@
 .saito-input {
 	position: relative;
-	height: 100%;
 	width: 100%;
+	height: 100%;
 	overflow: visible;
 }
 
@@ -23,32 +23,30 @@
 
 .saito-input-selection-box{
 	position: absolute;
-	height: 50rem;
+	height: 45rem;
 	width: 36rem;
 	z-index: 15;
 	display: flex;
 	align-items: center;
 	justify-content: space-around;
 	flex-direction: column;
-	border: 1px solid white;
-	/*background: aquamarine;*/
+	border: 1px solid var(--saito-border-color);
+	border-top: none;
+	border-left: none;
+	background-color: var(--saito-background-color);
 }
 
 .selection-box-window {
 	position: relative;
 	width: 100%;
-	height: 90%;
+	height: calc(100% - 4rem);
 }
 
 .photo-window {
-	font-size: 48px;
-	text-align: center;
-	background-color: rgba(150,150,150,0.5);
-	height: 100%;
-	padding: 2rem;
-	border: 2px dashed;
-	border-radius: 30px;
-	cursor: pointer;
+	font-size: 3rem;
+    text-align: center;
+    padding: 4rem;
+    cursor: pointer;
 }
 
 .selection-box-pane {
@@ -70,18 +68,20 @@
 	align-items: center;
 	justify-content: space-evenly;
 	width: 100%;
-	background-color: rgba(150,150,150,0.5);
+	height: 5rem;
+	background-color: var(--saito-background-color);
+    border-top: 1px solid var(--saito-border-color);
 }
 
 .selection-box-tabs i { 
-	text-shadow: 1px 1px 3px var(--saito-black-faded);
+	/*text-shadow: 1px 1px 3px var(--saito-black-faded);*/
 }
 
 .saito-box-tab {
-	padding: 1rem;
-	font-size: 36px;
+	font-size: 2.6rem;
 	color: var(--saito-primary);
 	cursor: pointer;
+	line-height: 1rem;
 }
 
 .saito-box-tab:hover{
@@ -92,10 +92,13 @@
 /* override definitions from giphy.css and saito-emoji.css */
 .selection-box-window .saito-gif-container {
 	padding: 0.5rem;
-	border: 1px solid;
 }
 
 .selection-box-window emoji-picker {
 	width: 100%;
 	height: 100%;
+}
+
+.photo-window {
+    opacity: 0.5;
 }
