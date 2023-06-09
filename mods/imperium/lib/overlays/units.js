@@ -12,10 +12,12 @@ class UnitsOverlay {
 
   render() {
     this.overlay.show(ImperiumUnitsOverlayTemplate(this.mod));
+    this.overlay.setBackground("/imperium/img/backgrounds/units-background.jpg");
     this.attachEvents();
   }
 
   attachEvents() {
+    document.querySelector(".saito-overlay").onclick = (e) => { this.overlay.hide(); }
   }
 }
 

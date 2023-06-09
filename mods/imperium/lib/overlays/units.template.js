@@ -5,53 +5,43 @@ module.exports = ImperiumUnitsOverlayTemplate = (imperium_self) => {
     available_units.push(x);
   }
 
-  let html = "";
-  html += `
-
-<div class="units-overlay" style="">
-  <div class="units-info">
-    <div class="units-header">
-      <div class="units-description">UNITS: all units in game</div>
-    </div>
-    <div class="units-table">
-      <div class="unit-table small">
+  let html = `
+    <div class="units-overlay hide-scrollbar">
   `;
 
 
   for (let i = 0; i < available_units.length; i++) {
 
-    let preobj = imperium_self.units[available_units[i]];
-    let obj = JSON.parse(JSON.stringify(preobj));
+    let obj = imperium_self.units[available_units[i]];
+
+console.log(JSON.stringify(obj));
 
     html += `
-        <div class="unit-element">
+        <div class="unit">
           <div class="unit-description" data-type="${obj.type}" data-name="${obj.name}" data-amount="0">${obj.name}</div>
-          <div class="unit-box-ship unit-box-ship-${obj.type}"></div>
-          <div class="unit-box">
-            <div class="unit-box-num">${obj.cost}</div>
-            <div class="unit-box-desc">cost</div>
+          <div class="unit-ship unit-ship-${obj.type}"></div>
+          <div class="unit-details">
+            <div class="unit-num">${obj.cost}</div>
+            <div class="unit-desc">cost</div>
 	  </div>
-          <div class="unit-box">
-  	    <div class="unit-box-num">${obj.move}</div>
-	    <div class="unit-box-desc">move</div>
+          <div class="unit-details">
+  	    <div class="unit-num">${obj.move}</div>
+	    <div class="unit-desc">move</div>
 	  </div>
-          <div class="unit-box">
-  	    <div class="unit-box-num">${obj.combat}</div>
-	    <div class="unit-box-desc">combat</div>
+          <div class="unit-details">
+  	    <div class="unit-num">${obj.combat}</div>
+	    <div class="unit-desc">combat</div>
 	  </div>
-          <div class="unit-box">
-	    <div class="unit-box-num">${obj.capacity}</div>
-	    <div class="unit-box-desc">cargo</div>
+          <div class="unit-details">
+	    <div class="unit-num">${obj.capacity}</div>
+	    <div class="unit-desc">cargo</div>
  	  </div>
         </div>
       `;
   }
 
   html += `
-      </div>
     </div>
-  </div>
-</div>
   `;
 
   return html;

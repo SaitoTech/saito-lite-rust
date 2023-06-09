@@ -1,0 +1,133 @@
+
+.units-overlay {
+    display: flex;
+    flex-wrap: wrap;
+    width: 95vw;
+    height: min-content;
+    max-height: 90vh;
+    justify-content: space-around;
+    overflow-y: auto;
+}
+
+.unit {
+    display: grid;
+    width: 50rem;
+    max-width: 50rem;
+    margin-top: 2rem;
+    color: white;
+    font-family: 'orbitron-light', helvetica, arial;
+}
+
+.unit-ship-fighter, .unit-ship-fighter-ii {
+  background-image: url("/imperium/img/ships/fighter_100x200.png");
+  background-size: cover;
+}
+.unit-ship-destroyer, .unit-ship-destroyer-ii {
+  background-image: url("/imperium/img/ships/destroyer_100x200.png");
+  background-size: cover;
+}
+.unit-ship-carrier, .unit-ship-carrier-ii {
+  background-image: url("/imperium/img/ships/carrier_100x200.png");
+  background-size: cover;
+}
+.unit-ship-cruiser, .unit-ship-cruiser-ii {
+  background-image: url("/imperium/img/ships/cruiser_100x200.png");
+  background-size: cover;
+}
+.unit-ship-dreadnaught, .unit-ship-dreadnaught-ii {
+  background-image: url("/imperium/img/ships/dreadnaught_100x200.png");
+  background-size: cover;
+}
+.unit-ship-flagship {
+  background-image: url("/imperium/img/ships/flagship_100x200.png");
+  background-size: cover;
+}
+.unit-ship-warsun, .unit-ship-warsun-ii {
+  background-image: url("/imperium/img/ships/warsun_100x200.png");
+  background-size: cover;
+}
+.unit-ship-infantry, .unit-ship-infantry-ii {
+  background-image: url("/imperium/img/ships/infantry_100x200.png");
+  background-size: cover;
+}
+.unit-ship-pds, .unit-ship-pds-ii {
+  background-image: url("/imperium/img/ships/pds_100x200.png");
+  background-size: cover;
+}
+.unit-ship-spacedock, .unit-ship-spacedock-ii {
+  background-image: url("/imperium/img/ships/spacedock_100x200.png");
+  background-size: cover;
+}
+
+.unit-details {
+    width: 8rem;
+    height: 8rem;
+    text-align: center;
+}
+
+.unit-description {
+  margin-bottom: 0rem;
+  min-height: 0px;
+  font-weight: bolder;
+  text-transform: uppercase;
+  padding: 0px;
+  grid-column: 1 / span 5;
+}
+
+.unit-ship {
+    grid-column: 2 / 1;
+}
+
+.unit-details::nth-child(1) {
+    grid-column: 2 / 2;
+}
+
+.unit-details::nth-child(2) {
+    grid-column: 2 / 3;
+}
+
+.unit-details::nth-child(3) {
+    grid-column: 2 / 4;
+}
+
+.unit-details::nth-child(4) {
+    grid-column: 2 / 5;
+}
+
+
+.unit-ship {
+  float: left;
+  color: black;
+  width: 20rem;
+  text-align: center;
+  height: 10rem;
+  vertical-align: middle;
+  padding-top: 4rem;
+  font-size: 2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-family: 'bank-gothic', 'orbitron-medium', helvetica;
+}
+
+.unit-num {
+  font-size: 6rem;
+  padding-top: 1.7rem;
+}
+
+.unit-desc {
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.8rem;
+  clear:both;
+}
+
+.unit-num {
+  font-size: 2.6rem;
+}
+
+.unit-desc {
+  font-size: 1.5rem;
+  opacity: 0.8;
+}
+
+
