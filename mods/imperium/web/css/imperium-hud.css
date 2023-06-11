@@ -53,6 +53,7 @@
   visibility: visible;
   background-color: #222e;
   cursor: move;
+  margin: 0 0 0 0;
 }
 
 #menu-container>ul>li:hover {

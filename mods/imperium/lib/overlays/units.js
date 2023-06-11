@@ -10,8 +10,15 @@ class UnitsOverlay {
   }
 
 
-  render() {
-    this.overlay.show(ImperiumUnitsOverlayTemplate(this.mod));
+  render(available_units=[]) {
+
+    if (available_units.length == 0) {
+      for (let x in this.mod.units) {
+        available_units.push(x);
+      }
+    }
+
+    this.overlay.show(ImperiumUnitsOverlayTemplate(this.mod, available_units));
     this.overlay.setBackground("/imperium/img/backgrounds/units-background.jpg");
     this.attachEvents();
   }

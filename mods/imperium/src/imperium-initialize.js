@@ -113,7 +113,7 @@
 	  let tech = game_mod.returnTechnology();
           let t2 = [];
           for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
-          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
+          game_mod.upgrades_overlay.render({ tech : t2 , img : "/imperium/img/backgrounds/unit-upgrades.jpg" });
         }
     });
     for (let i = 0; i < this.game.players.length; i++) {
@@ -569,7 +569,6 @@
     }
 
 
-
     //
     // update planets with tile / sector info
     //
@@ -620,6 +619,8 @@
 
       // add html to index
       let boardslot = ".sector_" + i;
+
+console.log("initing sector: " + i);
 
       this.sectors[i] = new Sector(this.app, this, boardslot, i);
       this.sectors[i].render();

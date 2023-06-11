@@ -63,6 +63,8 @@
     width: 8rem;
     height: 8rem;
     text-align: center;
+    border: 1px solid #FFF6;
+    background-color: #0005;
 }
 
 .unit-description {
