@@ -37,7 +37,7 @@ handleAgendasMenuItem() {
   }   
       
   if (cards.length == 0) {
-    alert("No Laws in Force");
+    alert("No Upcoming Agendas");
     return;
   }
 

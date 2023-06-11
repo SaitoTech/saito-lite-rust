@@ -12707,7 +12707,7 @@ handleAgendasMenuItem() {
   }   
       
   if (cards.length == 0) {
-    alert("No Laws in Force");
+    alert("No Upcoming Agendas");
     return;
   }
 
@@ -31970,19 +31970,6 @@ updateLeaderboard() {
   removePlanetHighlight(sector, pid)  {
     this.hideSectorHighlight(sector);
   }
-  showHelpCard(type) {
-    let html = "";
-
-    if (type == "resources") { html = `<div style="width:100%; height: 100%"><img style="width:100%;height:auto;" src="/imperium/img/resources_dash_card.png" /></div>`; }
-    if (type == "influence") { html = `<div style="width:100%; height: 100%"><img style="width:100%;height:auto;" src="/imperium/img/influence_dash_card.png" /></div>`; }
-    if (type == "trade")     { html = `<div style="width:100%; height: 100%"><img style="width:100%;height:auto;" src="/imperium/img/trade_dash_card.png" /></div>`; }
-
-    this.cardbox.showCardboxHTML(null, html);
-  }
-  hideHelpCard(c) {
-    this.cardbox.hide(1);
-  }
-
   showActionCard(c) {
     let thiscard = this.action_cards[c];
     let html = `
