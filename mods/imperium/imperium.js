@@ -10,6 +10,8 @@ const FactionsOverlay = require('./lib/overlays/factions');
 const ProductionOverlay = require('./lib/overlays/production');
 const UnitsOverlay = require('./lib/overlays/units');
 const UpgradesOverlay = require('./lib/overlays/upgrades');
+const ObjectivesOverlay = require('./lib/overlays/objectives');
+const AgendasOverlay = require('./lib/overlays/agenda');
 const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
 const InfluenceSelectionOverlay = require('./lib/overlays/influence-selection');
 const SenateOverlay = require('./lib/overlays/senate');
@@ -56,6 +58,8 @@ class Imperium extends GameTemplate {
     this.senate_overlay = new SenateOverlay(this.app, this);
     this.production_overlay = new ProductionOverlay(this.app, this);
     this.upgrades_overlay = new UpgradesOverlay(this.app, this);
+    this.objectives_overlay = new ObjectivesOverlay(this.app, this);
+    this.agendas_overlay = new AgendasOverlay(this.app, this);
     this.units_overlay = new UnitsOverlay(this.app, this);
     this.tech_tree_overlay = new TechTreeOverlay(this.app, this);
     this.factions_overlay = new FactionsOverlay(this.app, this);
@@ -11671,6 +11675,58 @@ console.log("qe: " + qe);
 	game_mod.strategy_card_overlay.render();
       }
     });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Objectives",
+      id : "game-objectives",
+      class : "gams-objectives",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	game_mod.handleObjectivesMenuItem();
+      }
+    });
+
+
+
+    //
+    // agendas
+    //
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Agendas",
+      id : "game-agendas",
+      class : "game-agendas",
+      callback : function(app, game_mod) {
+         game_mod.menu.showSubSubMenu("game-agendas");
+      }
+    });
+    this.menu.addSubMenuOption("game-agendas", {
+      text : "All" ,
+      id : "game-agendas-all",
+      class : "game-agendas-all",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        let cards = game_mod.returnAgendaCards();
+        game_mod.agendas_overlay.render(cards);
+      }
+    });
+    this.menu.addSubMenuOption("game-agendas", {
+      text : "Active" ,
+      id : "game-agendas-active",
+      class : "game-agendas-active",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	game_mod.handleAgendasMenuItem();
+      }
+    });
+    this.menu.addSubMenuOption("game-agendas", {
+      text : "Laws" ,
+      id : "game-agendas-laws",
+      class : "game-agendas-laws",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.handleLawsMenuItem();
+      }
+    });
+
 
     this.menu.addSubMenuOption("game-cards", {
       text : "Tech",
@@ -12642,11 +12698,41 @@ handleTechMenuItem() {
 }
 
 handleAgendasMenuItem() {
-  this.overlay.show(this.returnAgendasOverlay());
+
+  let cards = [];
+  let laws = this.returnAgendaCards();
+      
+  for (let i = 0; i < this.game.state.agendas.length; i++) {
+    cards.push(laws[this.game.state.agendas[i]]);
+  }   
+      
+  if (cards.length == 0) {
+    alert("No Laws in Force");
+    return;
+  }
+
+  this.agenda_overlay.render(cards);
+      
 }
+      
 handleLawsMenuItem() {
-  this.overlay.show(this.returnLawsOverlay());
-}
+
+  let laws = this.returnAgendaCards();
+  let cards = [];
+
+  for (let i = 0; i < this.game.state.laws.length; i++) {
+    cards.push(laws[this.game.state.laws[i].agenda]);
+  }   
+   
+  if (cards.length == 0) {
+    alert("No Laws in Force");
+    return;
+  }
+
+  this.agenda_overlay.render(cards);
+      
+}     
+        
 handleUnitsMenuItem() {
   this.overlay.show(this.returnUnitsOverlay());
   let imperium_self = this;
@@ -12656,7 +12742,49 @@ handleUnitsMenuItem() {
 }
 
 handleObjectivesMenuItem() {
-  this.overlay.show(this.returnObjectivesOverlay());
+
+  let cards = [];
+  let imperium_self = this;
+
+  //
+  // MY SECRET OBJECTIVES
+  //
+  for (let i = 0; i < imperium_self.game.deck[5].hand.length; i++) {
+    if (!imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.deck[5].hand[i])) {
+      let obj = imperium_self.secret_objectives[imperium_self.game.deck[5].hand[i]];
+      cards.push(obj);
+    }
+  }
+
+  //
+  // STAGE 1 OBJECTIVES
+  //
+  for (let i = 0; i < this.game.state.stage_i_objectives.length; i++) {
+    let obj = this.stage_i_objectives[this.game.state.stage_i_objectives[i]];
+    cards.push(obj);
+  }
+
+  //
+  // STAGE 2 OBJECTIVES
+  //
+  for (let i = 0; i < this.game.state.stage_ii_objectives.length; i++) {
+    let obj = this.stage_ii_objectives[this.game.state.stage_ii_objectives[i]];
+    cards.push(obj);
+  }
+
+  //
+  // OTHERS SECRET OBJECTIVES
+  //
+  for (let i = 0; i < this.game.state.players_info.length; i++) {
+    if (i > 0) { html += '<p></p>'; }
+    let objc = imperium_self.returnPlayerObjectivesScored((i+1), ["secret_objectives"]);
+    for (let o in objc) {
+      cards.push(objc[i]);
+    }
+  }
+
+  this.objectives_overlay.render(cards);
+
 }
 handleInfoMenuItem() {
   if (document.querySelector('.gameboard').classList.contains('bi')) {
@@ -12800,10 +12928,10 @@ handleSystemsMenuItem() {
     if (obj.bombardment_combat == null) { obj.bombardment_combat = -1; } // hits on N
 
     if (obj.returnCardImage == null) { 
-      obj.returnCardImage = (unit) => {
+      obj.returnCardImage = (unit, mode="long") => {
 
         return `
-          <div class="unit">
+          <div class="unit ${mode}">
             <div class="unit-description" data-type="${unit.type}" data-name="${unit.name}" data-amount="0">${unit.name}</div>
             <div class="unit-ship unit-ship-${unit.type}"></div>
             <div class="unit-details">
@@ -13422,8 +13550,6 @@ handleSystemsMenuItem() {
     this.secret_objectives[name] = obj;
 
   }  
-
-
 
 
   returnStageIPublicObjectives() {
@@ -15433,11 +15559,14 @@ if (debugging == 0) {
 	  }
 	}  
 
+        this.objectives_overlay.render(cards);
+
+/*****
   	if (this.game.state.round > 1) {
   	  title = "New Objectives"; 
   	  subtitle = "view all public and secret objectives in the CARDS menu...";
   	}
-
+       
         this.overlay.showCardSelectionOverlay(this.app, this, cards, {
 
 	  title : title,
@@ -15472,6 +15601,7 @@ if (debugging == 0) {
             }
 	  },
 	});
+*****/
 
   	this.game.queue.splice(qe, 1);
   	return 1;
@@ -16507,7 +16637,18 @@ if (debugging == 0) {
 	}
 	if (type === "secret_objectives" || type === "secret_objective") {
           if (this.game.player == player && this.browser_active == 1) {
-	    this.overlay.show(this.returnNewSecretObjectiveOverlay(this.game.deck[5].hand.slice(this.game.deck[5].hand.length-amount, this.game.deck[5].hand.length)));
+
+	    let idxs = this.game.deck[5].hand.slice(this.game.deck[5].hand.length-amount, this.game.deck[5].hand.length);
+	    let cards = [];
+	    for (let i = 0; i < idxs.length; i++) {
+	      cards.push(this.secret_objectives[idxs[i]]);
+	    }
+
+	    //
+	    // show the objective(s)
+	    //
+	    this.objectives_overlay.render(cards);
+
 	  }
 	  this.game.state.players_info[player-1].secret_objectives_in_hand += amount;
 	}
@@ -31314,25 +31455,6 @@ buy command tokens and vote on laws.
 
 
 
-returnNewSecretObjectiveOverlay(card) {
-  let obj = this.secret_objectives[card];
-  let html = `
-    <div class="new_secret_objective_overlay" id="new_secret_objective_overlay">
-      <div style="width:100%"><div class="new_secret_objective_overlay_title">New Secret Objective</div></div>
-      <div style="width:100%"><div style="display:inline-block">
-      <div class="objectives_overlay_objectives_card" style="background-image: url(${obj.img})">
-        <div class="objectives_card_name">${obj.name}</div>
-        <div class="objectives_card_content">
-          ${obj.text}
-        <div class="objectives_secret_notice">secret</div>
-      </div>
-      </div></div>
-    </div>
-  `;
-  return html;
-}
-
-
 returnSectorInformationHTML(sector) {
 
   if (sector.indexOf("_") > -1) { sector = this.game.board[sector].tile; }
@@ -31505,56 +31627,6 @@ returnPlanetInformationHTML(planet) {
 }
 
 
-returnLawsOverlay() {
-
-  let laws = this.returnAgendaCards();
-  let html = '<div class="overlay_laws_container">';
-
-  if (this.game.state.laws.length > 0) {
-      html += '<ul style="clear:both;margin-top:10px;">';
-      for (let i = 0; i < this.game.state.laws.length; i++) {
-        html += `  <li style="background-image: url('/imperium/img/agenda_card_template.png');background-size:cover;" class="overlay_agendacard card option" id="${i}"><div class="overlay_agendatitle">${laws[this.game.state.laws[i].agenda].name}</div><div class="overlay_agendacontent">${laws[this.game.state.laws[i].agenda].text}</div><div class="overlay_law_option">${this.returnNameOfUnknown(this.game.state.laws[i].option)}</div></li>`;
-      }
-      html += '</ul>';
-  }
-
-  if (this.game.state.laws.length == 0 && this.game.state.agendas.length == 0) {
-      html += '<div class="overlay_laws_header">There are no laws in force or agendas up for consideration at this time.</div>';
-  }
-
-  html += '</div>';
-
-  return html;
-
-}
-
-
-
-returnAgendasOverlay() {
-
-  let laws = this.returnAgendaCards();
-  let html = '<div class="overlay_laws_container">';
-
-  if (this.game.state.agendas.length > 0) {
-      html += '<div class="overlay_laws_list">';
-      for (let i = 0; i < this.game.state.agendas.length; i++) {
-        html += `  <div style="background-image: url('/imperium/img/agenda_card_template.png');" class="overlay_agendacard card option" id="${i}"><div class="overlay_agendatitle">${laws[this.game.state.agendas[i]].name}</div><div class="overlay_agendacontent">${laws[this.game.state.agendas[i]].text}</div></div>`;
-      }
-      html += '</div>';
-  }
-
-  if (this.game.state.laws.length == 0 && this.game.state.agendas.length == 0) {
-      html += '<div class="overlay_laws_header">There are no laws in force or agendas up for consideration at this time.</div>';
-  }
-
-  html += '</div>';
-
-  return html;
-
-}
-
-
-
 returnUnitPopup(unittype) {
 
   let html = `
@@ -31625,98 +31697,6 @@ returnNewActionCardsOverlay(cards) {
     </div>
   `;
   return html;
-}
-
-
-
-returnObjectivesOverlay() {
-
-  let html = '';
-  let imperium_self = this;
-
-  html += '<div class="objectives-overlay-container" style="">';
-
-  //
-  // SECRET OBJECTIVES
-  //
-  for (let i = 0; i < imperium_self.game.deck[5].hand.length; i++) {
-    if (!imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.deck[5].hand[i])) {
-      let obj = imperium_self.secret_objectives[imperium_self.game.deck[5].hand[i]];
-      html += `<div class="objectives_overlay_objectives_card" style="background-image: url(${obj.img})">
-                 <div class="objectives_card_name">${obj.name}</div>
-                 <div class="objectives_card_content">${obj.text}
-		   <div class="objectives_secret_notice">secret</div>
-		 </div>
-	       </div>
-      `;
-    }
-  }
-
-  //
-  // STAGE 1 OBJECTIVES
-  //
-  for (let i = 0; i < this.game.state.stage_i_objectives.length; i++) {
-    let obj = this.stage_i_objectives[this.game.state.stage_i_objectives[i]];
-    html += `<div class="objectives_overlay_objectives_card" style="background-image: url(${obj.img})">
-               <div class="objectives_card_name">${obj.name}</div>
-               <div class="objectives_card_content">${obj.text}</div>
-               <div class="objectives_scorings">
-    `;
-    for (let p = 0; p < this.game.state.players_info.length; p++) {
-      for (let z = 0; z < this.game.state.players_info[p].objectives_scored.length; z++) {
-        if (this.game.state.stage_i_objectives[i] === this.game.state.players_info[p].objectives_scored[z]) {
-          html += `<div class="objectives_players_scored players_scored_${(p+1)} p${(p+1)}"><div class="bk" style="width:100%;height:100%"></div></div>`;
-        }
-      }
-    }
-    html += `</div>`;
-    html += `</div>`;
-  }
-
-  html += '<p></p>';
-
-  //
-  // STAGE 2 OBJECTIVES
-  //
-  for (let i = 0; i < this.game.state.stage_ii_objectives.length; i++) {
-    let obj = this.stage_ii_objectives[this.game.state.stage_ii_objectives[i]];
-    html += `<div class="objectives_overlay_objectives_card" style="background-image: url(${obj.img})">
-               <div class="objectives_card_name">${obj.name}</div>
-               <div class="objectives_card_content">${obj.text}</div>
-               <div class="objectives_scorings">
-    `;
-    for (let p = 0; p < this.game.state.players_info.length; p++) {
-      for (let z = 0; z < this.game.state.players_info[p].objectives_scored.length; z++) {
-        if (this.game.state.stage_ii_objectives[i] === this.game.state.players_info[p].objectives_scored[z]) {
-          html += `<div class="objectives_players_scored players_scored_${(p+1)} p${(p+1)}"><div class="bk" style="width:100%;height:100%"></div></div>`;
-        }
-      }
-    }
-    html += `</div>`;
-    html += `</div>`;
-  }
-
-  html += '<p></p>';
-
-  //
-  // SECRET OBJECTIVES
-  //
-  for (let i = 0; i < this.game.state.players_info.length; i++) {
-    if (i > 0) { html += '<p></p>'; }
-    let objc = imperium_self.returnPlayerObjectivesScored((i+1), ["secret_objectives"]);
-    for (let o in objc) {
-      html += `<div class="objectives_overlay_objectives_card" style="background-image: url(${objc[o].img})">
-               <div class="objectives_card_name">${objc[o].name}</div>
-               <div class="objectives_card_content">${objc[o].text}</div>
-               <div class="objectives_players_scored players_scored_${(i+1)} p${(i+1)}"><div class="bk" style="width:100%;height:100%"></div></div>
-             </div>`;
-    }
-  }
-
-  html += '</div>';
-
-  return html;
-
 }
 
 

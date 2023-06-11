@@ -21,11 +21,6 @@
     margin-right: auto;
 }
 
-.production-table .unit {
-    width: 26rem;
-    padding: 1rem;
-}
-
 .production-header {
     display: grid;
     grid-template-columns: auto min-content;
@@ -54,10 +49,6 @@
     background-color: yellow;
 }
 
-.production-table .unit {
-    width: 24rem;
-}
-
 .production-table .unit:hover {
     background-color: #0009;
 }
@@ -75,22 +66,28 @@
     font-size: 1.7rem;
 }
 
-.production-table .unit .unit-ship {
+.unit.square {
+    width: 26rem;
+    padding: 1rem;
+}
+
+
+.unit.square .unit-ship {
     height: 8.1rem;
     width: 16rem;
     background-size: contain;
 }
 
-.production-table .unit div:nth-child(1) {
+.unit.square div:nth-child(1) {
     grid-column: 1 / span 3;
 }
-.production-table .unit div:nth-child(2) {
+.unit.square div:nth-child(2) {
     grid-column-start: 1;
     grid-column-end: span 2;
     grid-row-start: 2;
     grid-row-end: 2;
 }
-.production-table .unit div:nth-child(3) {
+.unit.square div:nth-child(3) {
     grid-column-start: 3;
     grid-column-end: 3;
     grid-row-start: 2;
@@ -98,19 +95,19 @@
     color: black;
     background-color: goldenrod;
 }
-.production-table .unit div:nth-child(4) {
+.unit.square div:nth-child(4) {
     grid-column-start: 1;
     grid-column-end: 1;
     grid-row-start: 3;
     grid-row-end: 3;
 }
-.production-table .unit div:nth-child(5) {
+.unit.square div:nth-child(5) {
     grid-column-start: 2;
     grid-column-end: 2;
     grid-row-start: 3;
     grid-row-end: 3;
 }
-.production-table .unit div:nth-child(6) {
+.unit.square div:nth-child(6) {
     grid-column-start: 3;
     grid-column-end: 3;
     grid-row-start: 3;

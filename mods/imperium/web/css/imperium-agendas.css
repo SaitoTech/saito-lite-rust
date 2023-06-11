@@ -1,0 +1,42 @@
+
+.objectives-overlay {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: space-evenly;
+    width: 100%;
+    max-width: 80vw;
+    max-height: 85vh;
+}
+
+
+.overlay_agendacard {
+  width: calc(42vh * 0.72110);
+  height: 42vh;
+  color: white;
+  padding: 10px;
+  background-size: cover;
+  margin: 5px 10px;
+  font-size:0.7em;
+}
+
+.overlay_agendatitle {
+    font-weight: bold;
+    min-height: 7vh;
+    text-align: center;
+    width: 100%;
+    margin-top: 0.5rem;
+    font-size: 2.4rem;
+}
+
+.overlay_agendacontent {
+  font-family: 'orbitron-medium';
+  position: absolute;
+  color: white;
+  margin-top: 2.5remx;
+  padding: 1.4rem;
+  padding-top:10px;
+  font-size: 1.6em;
+  line-height: 1.5em;
+}
+

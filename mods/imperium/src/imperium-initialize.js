@@ -74,6 +74,58 @@
 	game_mod.strategy_card_overlay.render();
       }
     });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Objectives",
+      id : "game-objectives",
+      class : "gams-objectives",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	game_mod.handleObjectivesMenuItem();
+      }
+    });
+
+
+
+    //
+    // agendas
+    //
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Agendas",
+      id : "game-agendas",
+      class : "game-agendas",
+      callback : function(app, game_mod) {
+         game_mod.menu.showSubSubMenu("game-agendas");
+      }
+    });
+    this.menu.addSubMenuOption("game-agendas", {
+      text : "All" ,
+      id : "game-agendas-all",
+      class : "game-agendas-all",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        let cards = game_mod.returnAgendaCards();
+        game_mod.agendas_overlay.render(cards);
+      }
+    });
+    this.menu.addSubMenuOption("game-agendas", {
+      text : "Active" ,
+      id : "game-agendas-active",
+      class : "game-agendas-active",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	game_mod.handleAgendasMenuItem();
+      }
+    });
+    this.menu.addSubMenuOption("game-agendas", {
+      text : "Laws" ,
+      id : "game-agendas-laws",
+      class : "game-agendas-laws",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.handleLawsMenuItem();
+      }
+    });
+
 
     this.menu.addSubMenuOption("game-cards", {
       text : "Tech",

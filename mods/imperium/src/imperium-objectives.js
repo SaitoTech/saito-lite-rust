@@ -33,8 +33,6 @@
   }  
 
 
-
-
   returnStageIPublicObjectives() {
     return this.stage_i_objectives;
   }

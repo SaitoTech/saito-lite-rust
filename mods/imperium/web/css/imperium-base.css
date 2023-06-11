@@ -281,125 +281,9 @@
 .cardbox-card img {
   position: absolute;
 }
-.strategy_card_overlay {
-  font-family: 'orbitron-medium';
-  position: absolute;
-  color: white;
-  padding: 20px;
-  padding-right: 50px;
-  padding-top:10px;
-  font-size: 1.2em;
-  line-height: 1.5em;
-  cursor: pointer;
-}
 
 .game-menu {
   font-family: 'bank-gothic', 'orbitron-medium', arial, helvetica, sans-serif;
-}
-
-.overlay_laws_container {
-  width: 80vw;
-  height: auto;
-  max-height: 90vh;
-  overflow-y: scroll;
-}
-
-.overlay_laws_header {
-  font-size: 2em;
-  color: #fff;
-  padding: 1em;
-}
-
-.overlay_laws_list {
-  display: flex;
-  justify-content: space-around;
-}
-
-.overlay_agendacard {
-  width: calc(42vh * 0.72110);
-  height: 42vh;
-  color: white;
-  padding: 10px;
-  background-size: cover;
-  margin: 5px 10px;
-  font-size:0.7em;
-}
-
-.overlay_agendatitle {
-    font-weight: bold;
-    min-height: 7vh;
-    text-align: center;
-    width: 100%;
-    margin-top: 0.5rem;
-    font-size: 2.4rem;
-}
-
-.overlay_agendacontent {
-  font-family: 'orbitron-medium';
-  position: absolute;
-  color: white;
-  margin-top: 2.5remx;
-  padding: 1.4rem;
-  padding-top:10px;
-  font-size: 1.6em;
-  line-height: 1.5em;
-}
-
-.objectives-overlay-container {
-  width:80vw;
-  height: auto;
-  overflow-y: scroll;
-  max-height: 90vh;
-}
-.objectives_card_name {
-  min-height: 60px;
-  color: white;
-  font-size: 1em;
-  padding: 15px 5px 10px;
-  background: #0008;
-  position: relative;
-  font-size: 2em;
-  min-height: 4em;
-  font-family: 'orbitron-medium' ariel;
-  font-weight: bold;
-  text-align: center;
-  width: 100%;
-}
-
-.objectives_card_content {
-  color: white;
-  padding: 10px;
-  background: #0006;
-  font-family: 'orbitron-medium';
-  position: relative;
-  color: white;
-  margin-top: 0px;
-  padding: 14px;
-  padding-top:10px;
-  font-size: 1.6em;
-  line-height: 1.5em;
-  height: calc(42vh - 5em);
-  text-align: center;
-}
-
-
-.objectives_overlay_objectives_card {
-  position: relative;
-  width: calc(42vh * 0.72110);
-  height: 42vh;
-  margin: 10px;
-  background-size: cover;
-  max-width: 300px;
-  max-height: 450px;
-  float: left;
-  font-size: 0.8em;
-  z-index: 5;
-  border: 1px solid #FFF8;
-}
-
-.objectives_overlay_objectives_card:hover {
-  z-index: 10;
-  border: 1px solid whitesmoke;
 }
 
 #close-action-cards-btn {
@@ -411,42 +295,6 @@
   margin-bottom: 20px;
   font-size: 2em;
   font-family: 'bank-gothic';
-}
-#close-agendas-btn {
-  max-width: 240px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 240px;
-  margin-top: 14px;
-  margin-bottom: 20px;
-  font-size: 2em;
-  font-family: 'bank-gothic';
-}
-#close-objectives-btn {
-  max-width: 240px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 240px;
-  margin-top: 14px;
-  margin-bottom: 20px;
-  font-size: 2em;
-  font-family: 'bank-gothic';
-}
-.new_objectives_container {
-  display: inline-block;
-  text-align:center;
-}
-.new_objectives_text {
-  background-color: whitesmoke;
-  display: inline-block;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 6px;
-  padding-bottom: 2px;
-  border-radius: 5px;
-  font-size: 1.3em;
-  margin-top: 5px;
-  margin-bottom: 10px;
 }
 .objectives_secret_notice {
   position: absolute;

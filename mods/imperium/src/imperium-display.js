@@ -204,25 +204,6 @@ buy command tokens and vote on laws.
 
 
 
-returnNewSecretObjectiveOverlay(card) {
-  let obj = this.secret_objectives[card];
-  let html = `
-    <div class="new_secret_objective_overlay" id="new_secret_objective_overlay">
-      <div style="width:100%"><div class="new_secret_objective_overlay_title">New Secret Objective</div></div>
-      <div style="width:100%"><div style="display:inline-block">
-      <div class="objectives_overlay_objectives_card" style="background-image: url(${obj.img})">
-        <div class="objectives_card_name">${obj.name}</div>
-        <div class="objectives_card_content">
-          ${obj.text}
-        <div class="objectives_secret_notice">secret</div>
-      </div>
-      </div></div>
-    </div>
-  `;
-  return html;
-}
-
-
 returnSectorInformationHTML(sector) {
 
   if (sector.indexOf("_") > -1) { sector = this.game.board[sector].tile; }
@@ -395,56 +376,6 @@ returnPlanetInformationHTML(planet) {
 }
 
 
-returnLawsOverlay() {
-
-  let laws = this.returnAgendaCards();
-  let html = '<div class="overlay_laws_container">';
-
-  if (this.game.state.laws.length > 0) {
-      html += '<ul style="clear:both;margin-top:10px;">';
-      for (let i = 0; i < this.game.state.laws.length; i++) {
-        html += `  <li style="background-image: url('/imperium/img/agenda_card_template.png');background-size:cover;" class="overlay_agendacard card option" id="${i}"><div class="overlay_agendatitle">${laws[this.game.state.laws[i].agenda].name}</div><div class="overlay_agendacontent">${laws[this.game.state.laws[i].agenda].text}</div><div class="overlay_law_option">${this.returnNameOfUnknown(this.game.state.laws[i].option)}</div></li>`;
-      }
-      html += '</ul>';
-  }
-
-  if (this.game.state.laws.length == 0 && this.game.state.agendas.length == 0) {
-      html += '<div class="overlay_laws_header">There are no laws in force or agendas up for consideration at this time.</div>';
-  }
-
-  html += '</div>';
-
-  return html;
-
-}
-
-
-
-returnAgendasOverlay() {
-
-  let laws = this.returnAgendaCards();
-  let html = '<div class="overlay_laws_container">';
-
-  if (this.game.state.agendas.length > 0) {
-      html += '<div class="overlay_laws_list">';
-      for (let i = 0; i < this.game.state.agendas.length; i++) {
-        html += `  <div style="background-image: url('/imperium/img/agenda_card_template.png');" class="overlay_agendacard card option" id="${i}"><div class="overlay_agendatitle">${laws[this.game.state.agendas[i]].name}</div><div class="overlay_agendacontent">${laws[this.game.state.agendas[i]].text}</div></div>`;
-      }
-      html += '</div>';
-  }
-
-  if (this.game.state.laws.length == 0 && this.game.state.agendas.length == 0) {
-      html += '<div class="overlay_laws_header">There are no laws in force or agendas up for consideration at this time.</div>';
-  }
-
-  html += '</div>';
-
-  return html;
-
-}
-
-
-
 returnUnitPopup(unittype) {
 
   let html = `
@@ -515,98 +446,6 @@ returnNewActionCardsOverlay(cards) {
     </div>
   `;
   return html;
-}
-
-
-
-returnObjectivesOverlay() {
-
-  let html = '';
-  let imperium_self = this;
-
-  html += '<div class="objectives-overlay-container" style="">';
-
-  //
-  // SECRET OBJECTIVES
-  //
-  for (let i = 0; i < imperium_self.game.deck[5].hand.length; i++) {
-    if (!imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.deck[5].hand[i])) {
-      let obj = imperium_self.secret_objectives[imperium_self.game.deck[5].hand[i]];
-      html += `<div class="objectives_overlay_objectives_card" style="background-image: url(${obj.img})">
-                 <div class="objectives_card_name">${obj.name}</div>
-                 <div class="objectives_card_content">${obj.text}
-		   <div class="objectives_secret_notice">secret</div>
-		 </div>
-	       </div>
-      `;
-    }
-  }
-
-  //
-  // STAGE 1 OBJECTIVES
-  //
-  for (let i = 0; i < this.game.state.stage_i_objectives.length; i++) {
-    let obj = this.stage_i_objectives[this.game.state.stage_i_objectives[i]];
-    html += `<div class="objectives_overlay_objectives_card" style="background-image: url(${obj.img})">
-               <div class="objectives_card_name">${obj.name}</div>
-               <div class="objectives_card_content">${obj.text}</div>
-               <div class="objectives_scorings">
-    `;
-    for (let p = 0; p < this.game.state.players_info.length; p++) {
-      for (let z = 0; z < this.game.state.players_info[p].objectives_scored.length; z++) {
-        if (this.game.state.stage_i_objectives[i] === this.game.state.players_info[p].objectives_scored[z]) {
-          html += `<div class="objectives_players_scored players_scored_${(p+1)} p${(p+1)}"><div class="bk" style="width:100%;height:100%"></div></div>`;
-        }
-      }
-    }
-    html += `</div>`;
-    html += `</div>`;
-  }
-
-  html += '<p></p>';
-
-  //
-  // STAGE 2 OBJECTIVES
-  //
-  for (let i = 0; i < this.game.state.stage_ii_objectives.length; i++) {
-    let obj = this.stage_ii_objectives[this.game.state.stage_ii_objectives[i]];
-    html += `<div class="objectives_overlay_objectives_card" style="background-image: url(${obj.img})">
-               <div class="objectives_card_name">${obj.name}</div>
-               <div class="objectives_card_content">${obj.text}</div>
-               <div class="objectives_scorings">
-    `;
-    for (let p = 0; p < this.game.state.players_info.length; p++) {
-      for (let z = 0; z < this.game.state.players_info[p].objectives_scored.length; z++) {
-        if (this.game.state.stage_ii_objectives[i] === this.game.state.players_info[p].objectives_scored[z]) {
-          html += `<div class="objectives_players_scored players_scored_${(p+1)} p${(p+1)}"><div class="bk" style="width:100%;height:100%"></div></div>`;
-        }
-      }
-    }
-    html += `</div>`;
-    html += `</div>`;
-  }
-
-  html += '<p></p>';
-
-  //
-  // SECRET OBJECTIVES
-  //
-  for (let i = 0; i < this.game.state.players_info.length; i++) {
-    if (i > 0) { html += '<p></p>'; }
-    let objc = imperium_self.returnPlayerObjectivesScored((i+1), ["secret_objectives"]);
-    for (let o in objc) {
-      html += `<div class="objectives_overlay_objectives_card" style="background-image: url(${objc[o].img})">
-               <div class="objectives_card_name">${objc[o].name}</div>
-               <div class="objectives_card_content">${objc[o].text}</div>
-               <div class="objectives_players_scored players_scored_${(i+1)} p${(i+1)}"><div class="bk" style="width:100%;height:100%"></div></div>
-             </div>`;
-    }
-  }
-
-  html += '</div>';
-
-  return html;
-
 }
 
 
