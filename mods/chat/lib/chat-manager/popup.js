@@ -233,6 +233,14 @@ class ChatPopup {
           }
       }
 
+      this.input.callbackOnUpload = (filesrc) => {
+          let img = document.createElement("img");
+          img.classList.add("img-prev");
+          img.src = filesrc;
+          let msg = img.outerHTML;
+          this.input.callbackOnReturn(msg);
+      }
+
       //
       // submit (button)
       //

@@ -5,7 +5,7 @@
 	overflow: visible;
 }
 
-.saito-input .text-input {
+.saito-input .text-input:not(.post-tweet-textarea) {
 	height: 100%;
 	width: 100%;
 	padding: 1.2rem 3rem 1.2rem 1rem;
@@ -23,23 +23,27 @@
 
 .saito-input-selection-box{
 	position: absolute;
-	height: 45rem;
+	height: 46rem;
 	width: 36rem;
-	z-index: 15;
+	z-index: 150;
 	display: flex;
 	align-items: center;
-	justify-content: space-around;
+	justify-content: space-between;
 	flex-direction: column;
 	border: 1px solid var(--saito-border-color);
+
+	/*
+	We can't control for if user resizes chat-popup, better to have visibile borders
 	border-top: none;
 	border-left: none;
+	*/
 	background-color: var(--saito-background-color);
 }
 
 .selection-box-window {
 	position: relative;
 	width: 100%;
-	height: calc(100% - 4rem);
+	height: 100%
 }
 
 .photo-window {
@@ -101,4 +105,49 @@
 
 .photo-window {
     opacity: 0.5;
+}
+
+.saito-input-large .selection-box-tabs {
+	width: 16rem;
+	border-top: unset;
+	background-color: unset;
+	align-items: flex-end;
+}
+
+.post-tweet-img-preview-container {
+	position: absolute;
+	left: 17rem;
+	bottom: 1rem;
+}
+
+
+/*** Fix Redsquare Post ***/
+.tweet-overlay-content {
+	margin-bottom: 2rem;
+}
+
+.post-tweet-button {
+	position: absolute;
+	right: 1rem;
+	bottom: 1rem;
+}
+
+@media only screen and (max-width: 525px) {
+
+	.tweet-overlay-content {
+		margin-bottom: unset;
+	}
+
+	.post-tweet-button {
+		position: static;
+		justify-self: flex-end;
+	}
+
+	.saito-input-large .selection-box-tabs {
+		align-items: flex-start;
+	}
+
+	.post-tweet-img-preview-container {
+		bottom: 7.5rem;
+	}
 }
