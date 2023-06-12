@@ -6,16 +6,11 @@ const Board = require("./lib/board");
 const CoinsOverlay = require("./lib/overlays/coins");
 const EstatesOverlay = require("./lib/overlays/estates");
 const CardpileOverlay = require("./lib/overlays/cardpile");
-
+const AttackOverlay = require("./lib/overlays/attack");
 
 
 //
 // TODO
-//
-// augmentQueueCommands - refactor as we should never change underlying game engine instructions. UI is game-level.
-//			if something in the game wants to trigger an animation, put something on the stack before the 
-//			DECK , etc. instructions are executed, so that the cryptographic execution is totally 
-//			independent from UI.
 //
 // card-events		- should be defined as parts of the cards and then executed from the deck rather than hardcoded
 //			in a separate location, which requires much more delicacy in keeping things in track and 
@@ -66,6 +61,7 @@ class Monarchy extends GameTemplate {
     this.coins_overlay = new CoinsOverlay(this.app, this);
     this.estates_overlay = new EstatesOverlay(this.app, this);
     this.cardpile_overlay = new CardpileOverlay(this.app, this);
+    this.attack_overlay = new AttackOverlay(this.app, this);
 
   }
 
@@ -159,7 +155,6 @@ class Monarchy extends GameTemplate {
       this.hud.render();  
     }
 
-alert("rendering board!");
     this.board.render();
 
   }
@@ -202,9 +197,7 @@ alert("rendering board!");
 
     }
 
-    this.augmentQueueCommands();
-
-    if (this.browser_active){
+    if (this.browser_active) {
       this.board.render();
     }
  
@@ -475,9 +468,6 @@ alert("rendering board!");
         this.game.state.merchant = false;
         this.game.state.throneroom = false;
 
-
-        //console.log(this.game.player,player,JSON.parse(JSON.stringify(this.game.deck[player-1])));
-        
         //Check for end game
         if (this.gameOver()){
           this.game.queue.push("gameover");
@@ -516,7 +506,6 @@ alert("rendering board!");
               console.log(JSON.parse(JSON.stringify(this.game.deck[player-1])));
             }
 
-
             this.runAnimationQueue(150);  
             
             //We submit the move while the animations are running...
@@ -525,7 +514,6 @@ alert("rendering board!");
           return 0;
           
         }
-
       }
 
       if (mv[0] == "reportdeck"){
@@ -616,9 +604,7 @@ alert("rendering board!");
         /*  
           Animate the purchase
         */
-
         const game_self = this;
-       
         if (player !== this.game.player){
           this.game.halted = 1;
           let animator;
@@ -719,13 +705,12 @@ alert("rendering board!");
         return 0;
       }
 
-      //Attack -- counter
       if (mv[0] == "attack"){
+
         let player = parseInt(mv[1]);
         let victim = parseInt(mv[2]);
         let card_to_play = mv[3];
         this.game.queue.splice(qe, 1);
-
 
         if (this.game.player == victim){
           //Spy Affects even the one who played it
@@ -779,6 +764,7 @@ alert("rendering board!");
 
       //Specific card instructions
       if (mv[0] == "adventurer"){
+
         let player = parseInt(mv[1]);
         if (player !== this.game.player){ return 0;}
 
@@ -830,7 +816,7 @@ alert("rendering board!");
           }
         }
 
-        this.augmentAttackOverlay(`Player ${victim}'s top cards:`, ...top_cards);
+        this.attack_overlay.render(`Player ${victim}'s top cards:`, ...top_cards);
         if (trash.length > 1){
           if (this.game.pool[victim-1].cards[trash[0]] == "silver"){
             discard.push(trash.shift());
@@ -1007,7 +993,7 @@ alert("rendering board!");
 
         let card = (this.game.pool[victim-1].hand.length > 0) ? this.game.pool[victim-1].cards[this.game.pool[victim-1].hand[0]] : "Deck empty";
         let player_display = (this.game.player === victim) ? "My top card:" : `Player ${victim}'s top card:`; 
-        this.augmentAttackOverlay(player_display,card);
+        this.attack_overlay.render(player_display, card);
 
         if (this.game.player == spy){
           if (this.game.pool[victim-1].hand.length == 0){
@@ -1066,7 +1052,7 @@ alert("rendering board!");
         let card2 = mv[4];
 
         let name = (this.game.player == victim) ? "Your" : `Player ${victim}'s`;
-        this.augmentAttackOverlay(`${name} top two cards:`,card1, card2);        
+        this.attack_overlay.render(`${name} top two cards:`, card1, card2);        
         if (this.game.player !== player){ return 0;}
         let tcards = [];
         if (this.deck[card1].type == "treasure"){
@@ -1179,9 +1165,9 @@ alert("rendering board!");
         let card = mv[2];
         try{
           card = JSON.parse(card);
-          this.augmentAttackOverlay(msg, ...card);
+          this.attack_overlay.render(msg, ...card);
         }catch(err){
-          this.augmentAttackOverlay(msg, card);
+          this.attack_overlay.render(msg, card);
         }
         return 1;
       }
@@ -1304,32 +1290,6 @@ alert("rendering board!");
 
   }
 
-  returnAttackOverlay(card){
-    let html = `<div class="attack_overlay">
-                  <div class="h2">Attack! -- ${this.deck[card].name}</div>
-                  <div class="overlay_content">
-                    <div class="overlay-img">${this.returnCardImage(card)}</div>
-                    <div class="attack_details"></div>
-                  </div>
-                </div>`;
-
-    return html;
-  }
-
-  augmentAttackOverlay(text, ...cards){
-    let rCol = document.querySelector(".attack_details");
-    if (!rCol){ return; }
-    let html = rCol.innerHTML;
-    if (text){
-      html += `<div class="overlay-msg">${text}</div>`;
-    }
-    for (let i = 0; i < cards.length; i++){
-      html += `<div class="aoc">${this.returnCardImage(cards[i])}</div>`;
-    }
-    rCol.innerHTML = html;
-    this.attackOverlay.show();
-  }
-
 
   clearActiveCards(player){
     if (!this.browser_active){return;}
@@ -1358,9 +1318,6 @@ alert("rendering board!");
 
     this.board.render();
     return;
-
-
-
 
     let html = "";
     for (let c in this.game.state.supply){
@@ -1670,12 +1627,23 @@ alert("rendering board!");
   }
 
  playCard(player, card_to_play){
-    console.log("Playing card",player,card_to_play);
-    console.log(JSON.parse(JSON.stringify(this.game.state)));
+
     we_self = this;
 
     //Attacks
     if (this.deck[card_to_play].type.includes("attack")){
+
+      let html = `<div class="attack_overlay">
+                    <div class="h2">Attack! -- ${this.deck[card].name}</div>
+                    <div class="overlay_content">
+                      <div class="overlay-img">${this.returnCardImage(card)}</div>
+                      <div class="attack_details"></div>
+                    </div>
+                 </div>`;
+
+//
+// HACK
+//
       this.attackOverlay.show(this.returnAttackOverlay(card_to_play));
       for (let i = 1; i <= this.game.players.length; i++){
         this.game.queue.push(`attack\t${player}\t${i}\t${card_to_play}`);
@@ -2009,29 +1977,6 @@ alert("rendering board!");
   }
 
 
-  returnDoubleSidedCardList(cardarray = [], deckid = 0){
-    if (cardarray.length === 0) {
-      for (let i = 0; i < this.game.deck[deckid].hand.length; i++){
-        cardarray.push(this.game.deck[deckid].cards[this.game.deck[deckid].hand[i]]);
-      }
-    }
-
-    if (cardarray.length === 0) {
-      console.warn("No cards to render...");
-      return "";
-    }
-
-    //console.log("cardarray length in returnCardList: " + cardarray.length);
-
-    let html = "";
-    for (let i = 0; i < cardarray.length; i++) {
-      //console.log("card image: " + this.returnCardImage(cardarray[i], deckid));
-      html += this.flipCardHTML(cardarray[i]);
-    }
-    return html;
-
-  }
-
   flipCardHTML(card, facedown = true){
     return  `<div id="${card}" class="card hud-card flippable-card${facedown?"":" flipped"}">
               ${this.returnCardImage(card)}
@@ -2195,7 +2140,7 @@ alert("rendering board!");
     return MonarchyGameOptionsTemplate(this.app, this);
   }
 
-  //Animation functions
+
 
 
   async finishAnimation(delay = 0, cont = true){
@@ -2220,36 +2165,6 @@ alert("rendering board!");
     
   }
 
-
-
-  augmentQueueCommands(){
-
-    //We double define DEAL so we can attach an animation while the players are communicating
-    this.commands.push((game_self, gmv) => {
-      if (gmv[0] === "DEAL") {
-        let deckidx = parseInt(gmv[1]);
-        let recipient = parseInt(gmv[2]);
-        let cards = parseInt(gmv[3]);
-
-        if (recipient == game_self.game.player && game_self.browser_active){
-          console.log("ANIMATE CARD DEALING");
-
-          for (let i = 0; i < cards; i++){
-            let target = `#drawpile #draw${i+1}`;
-            let destination = `#slot${++this.newDeal}`;
-            game_self.animationSequence.push({callback: game_self.moveGameElement,
-                                  params: [game_self.copyGameElement(target), destination, {insert:1}, () => {game_self.restartQueue(); }]});
-          }
-          game_self.runAnimationQueue(200);
-
-          return 0;
-        }
-      }
-      return 1;
-    });
-
-
-  }
 
 } 
 
