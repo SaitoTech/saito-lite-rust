@@ -589,8 +589,8 @@ class Chat extends ModTemplate {
       // the first recipient is ourself, so the second is the one with the shared secret
       //
       let key = this.app.keychain.returnKey(newtx.transaction.to[0].add);
-      console.log(newtx.transaction.to[0].add);
-      console.log(key);
+      //console.log(newtx.transaction.to[0].add);
+      //console.log(key);
       newtx = this.app.wallet.signAndEncryptTransaction(newtx);
     } else {
       newtx = this.app.wallet.signTransaction(newtx);

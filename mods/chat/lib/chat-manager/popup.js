@@ -10,7 +10,7 @@ class ChatPopup {
     this.mod = mod;
 
     this.container = container;
-    this.input = new SaitoInput(this.app, this.mod, ".chat-footer");
+    this.input = null; //new SaitoInput(this.app, this.mod, `#chat-popup-${this.group.id} .chat-footer`);
     this.manually_closed = false;
 
     this.group = null;
@@ -48,6 +48,9 @@ class ChatPopup {
     let popup_qs = "#" + popup_id;
     
     //let input_id = "chat-input-" + this.group.id;
+    if (!this.input){
+      this.input = new SaitoInput(this.app, this.mod, `#chat-popup-${this.group.id} .chat-footer`);
+    }
 
     let existing_input = this.input.getInput();
 
@@ -126,6 +129,15 @@ class ChatPopup {
     if (existing_input != "") {
       this.input.setInput(existing_input);
       existing_input = "";
+    }
+
+    //
+    // focus on text input
+    //
+    if (!this.mod.isOtherInputActive()) {
+      this.input.focus();
+      document.execCommand('selectAll', false, null);
+      document.getSelection().collapseToEnd();
     }
 
 
@@ -208,14 +220,6 @@ class ChatPopup {
         }
       }
 
-      //
-      // focus on text input
-      //
-      if (!mod.isOtherInputActive()) {
-        this.input.focus();
-        document.execCommand('selectAll', false, null);
-        document.getSelection().collapseToEnd();
-      }
 
       //
       // submit
