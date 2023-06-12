@@ -1,6 +1,6 @@
 .chat-manager {
-  max-height: 25vh;
   height: 25%;
+  flex: 1;
 }
 
 .chat-manager .saito-userline {
