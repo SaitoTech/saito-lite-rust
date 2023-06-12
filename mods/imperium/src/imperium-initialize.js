@@ -19,7 +19,6 @@
     //
     // menu
     //
-
     this.menu.addMenuOption("game-game", "Game");
 
     this.menu.addSubMenuOption("game-game", {

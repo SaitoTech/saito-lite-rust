@@ -5,12 +5,13 @@ class Sector {
   constructor(app, mod, container="", sector) {
     this.app = app;
     this.mod = mod;
-    this.sector = sector;
     this.container = container;
+    this.sector = sector;
+console.log("Setting sector as: " + sector);
   }
 
   render() {
- 
+
     let myqs = this.container + ` .hexIn`;
     let obj = null;
 
@@ -28,12 +29,6 @@ class Sector {
 
   }
 
-  attachEvents() {
-  }
-
-  //
-  // assumes sector already written to screen
-  //
   update() {
 
     let imperium_self = this.mod;
@@ -101,7 +96,6 @@ class Sector {
         $(divpid).css('opacity', '1');
         player_border_visible = 1;
       }
-
 
       //
       // for each space unit belonging to this faction
@@ -200,7 +194,6 @@ class Sector {
       }
     }
 
-
     //
     // if player_fleet_drawn is 0 then remove any space ships
     //
@@ -246,23 +239,18 @@ class Sector {
             player_border_visible = 1;
           }
 
-
           let infantry = 0;
           let spacedock = 0;
           let pds = 0;
 
           for (let k = 0; k < sys.p[j].units[player - 1].length; k++) {
-
             let unit = sys.p[j].units[player - 1][k];
-
             if (unit.type == "infantry") { infantry++; }
             if (unit.type == "pds") { pds++; }
             if (unit.type == "spacedock") { spacedock++; }
-
           }
 
           let postext = "";
-
           ground_frames.push("white_planet_center.png");
           if (sys.p.length == 1) {
             postext = "center";
@@ -275,7 +263,6 @@ class Sector {
             }
           }
           ground_pos.push(postext);
-
 
           if (infantry > 0) {
             let x = infantry; if (infantry > 9) { x = 9; }
@@ -321,7 +308,6 @@ class Sector {
       }
     }
 
-
     if (player_border_visible == 0) {
       for (let p = 0; p < sys.p.length; p++) {
         if (sys.p[p].owner != -1) {
@@ -341,18 +327,26 @@ class Sector {
       }
     }
 
-
     //
     // add events to anything listed
     //
     this.attachEvents();
+
   }
+
+
 
 
   attachEvents() {
 
     let imperium_self = this.mod;
     let qs = `.sector_${this.sector}`;
+    let sys = imperium_self.returnSectorAndPlanets(this.sector);
+    let sector = this.sector;
+
+console.log("attach events...");
+console.log("testing: " + qs);
+console.log("to sector: " + this.sector);
 
     try {
       $(qs).off();
@@ -371,10 +365,12 @@ class Sector {
       });
 
       $(qs).on('mouseup', function (e) {
+console.log("this sector: " + sector);
+imperium_self.sector_overlay.render(sector);
         if (Math.abs(xpos-e.clientX) > 4) { return; }
         if (Math.abs(ypos-e.clientY) > 4) { return; }
-        let pid = $(this).attr("id");
-        imperium_self.overlay.show(imperium_self.returnSectorInformationHTML(pid));
+//        let pid = $(this).attr("id");
+//        imperium_self.overlay.show(imperium_self.returnSectorInformationHTML(pid));
       });
     } catch (err) {
 console.log("error attaching events to sector...");
