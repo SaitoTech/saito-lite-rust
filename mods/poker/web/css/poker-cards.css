@@ -1,0 +1,111 @@
+
+.cardfan {
+  max-height: 20vh;
+  max-width: 20vw;
+}
+
+.cardfan>.card:nth-child(1), .hand>.card:nth-child(1) {
+  transform: rotate(-15deg);
+  left: 0px; 
+} 
+  
+.cardfan>.card:nth-child(2), .hand>.card:nth-child(2) {
+  transform: rotate(-5deg);
+  left: 3vh;
+}
+
+.card {
+  position: relative;
+  width: 10vw;
+  height: calc(10vw * 1.55);
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.cardFront, .cardBack{
+  transition: transform 0.5s ease;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.cardFront{
+  transform: rotateY(180deg);
+}
+.flipped .cardFront{
+  transform: rotateY(0deg);
+}
+.cardBack{
+  transform: rotateY(0deg);
+}
+.flipped .cardBack{
+  display: none;
+  transform: rotateY(-180deg);
+}
+
+@media screen and (max-width: 1200px) {
+
+  .flip-card.card {
+    width: 13vw;
+    height: calc(13vw * 1.575);
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+}
+
+@media screen and (max-width: 800px) {
+
+  .flip-card.card {
+    width: 15vw;
+    height: calc(15vw * 1.575);
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+}
+
+@media screen and (max-width: 600px) {
+
+  .flip-card.card {
+    width: 17vw;
+    height: calc(17vw * 1.575);
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+}
+
+@media screen and (orientation: landscape) and (max-height: 600px) {
+
+  .flip-card.card {
+    width: 20vw;
+    height: calc(20vw * 1.575);
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+}
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+
+  .flip-card .card {
+    width: 18vw;
+    height: calc(18vw * 1.575);
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+  .cardfan {
+    left: 38vw;
+    top: 53vh;
+    position: absolute;
+    width: 100%;
+  }
+
+  .cardfan .card {
+    width: min(26vh,26vw);
+  }
+
+}
+
+

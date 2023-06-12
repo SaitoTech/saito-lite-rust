@@ -14,13 +14,55 @@
     if (obj.name == null) 	{ obj.name = "Strategy Card"; }
     if (obj.rank == null) 	{ obj.rank = 1; }
 
-
     if (obj.returnCardImage == null) {
-      obj.returnCardImage = function() {
+      obj.returnCardImage = (mode=0) => {
+
+	let cards = this.returnStrategyCards();
+	let idx = ""; for (let x in cards) { if (cards[x].name === obj.name) { idx = x; } }
+        let picked = "not picked";
+        let player = -1;
+        let bonus = 0;
+        let bonus_html = "";
+        card_html = '';
+
+        if (mode == 1) {
+
+          for (let i = 0; i < this.game.state.strategy_cards.length; i++) {
+            if (idx === this.game.state.strategy_cards[i]) {
+              bonus = this.game.state.strategy_cards_bonus[i];
+            }
+          }
+
+          if (bonus > 0) {
+            bonus_html =
+            `<div class="bonus">
+              <i class="fas fa-database white-stroke"></i>
+              <span>${bonus}</span>
+            </div>`;
+          }
+
+          for (let i = 0; i < this.game.state.players_info.length; i++) {
+            if (this.game.state.players_info[i].strategy.includes(idx)) {
+              picked = "unplayed";
+              player = (i+1);
+              if (this.game.state.players_info[i].strategy_cards_played.includes(idx)) {
+                picked = "played";
+              };
+            };
+          }
+
+          if (picked != "not picked") {
+            card_html += `
+              <div class="picked p${player} bk">${picked}</div>
+           `;
+          }
+        }
+
         return `
-          <div class="strategy_card" id="${name}">
-	    <img class="strategy_card_img" id="${name}" src="/imperium/img${obj.img}" style="width:100%">
-	    <div class="strategy_card_text">${obj.text}</div>
+          <div class="strategy-card" id="${name}">
+	    <img id="${name}" src="/imperium/img${obj.img}" style="width:100%">
+	    <div class="text">${obj.text}</div>
+	    ${bonus_html} ${card_html}
 	  </div>
         `;
       };

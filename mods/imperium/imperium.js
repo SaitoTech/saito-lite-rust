@@ -9,6 +9,9 @@ const TechTreeOverlay = require('./lib/overlays/tech-tree');
 const FactionsOverlay = require('./lib/overlays/factions');
 const ProductionOverlay = require('./lib/overlays/production');
 const UnitsOverlay = require('./lib/overlays/units');
+const UpgradesOverlay = require('./lib/overlays/upgrades');
+const ObjectivesOverlay = require('./lib/overlays/objectives');
+const AgendasOverlay = require('./lib/overlays/agenda');
 const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
 const InfluenceSelectionOverlay = require('./lib/overlays/influence-selection');
 const SenateOverlay = require('./lib/overlays/senate');
@@ -19,7 +22,10 @@ const AntiFighterBarrageOverlay = require('./lib/overlays/anti-fighter-barrage')
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
 const TokenBar = require('./lib/tokenbar');
-const Dashboard = require('./lib/dashboard');
+const Dashboard = require('./lib/dashboard-manager');
+const RoundBox = require('./lib/round');
+const Leaderboard = require('./lib/leaderboard');
+const Sector = require('./lib/sector');
 
 
 class Imperium extends GameTemplate {
@@ -51,6 +57,9 @@ class Imperium extends GameTemplate {
     this.movement_overlay = new MovementOverlay(this.app, this);
     this.senate_overlay = new SenateOverlay(this.app, this);
     this.production_overlay = new ProductionOverlay(this.app, this);
+    this.upgrades_overlay = new UpgradesOverlay(this.app, this);
+    this.objectives_overlay = new ObjectivesOverlay(this.app, this);
+    this.agendas_overlay = new AgendasOverlay(this.app, this);
     this.units_overlay = new UnitsOverlay(this.app, this);
     this.tech_tree_overlay = new TechTreeOverlay(this.app, this);
     this.factions_overlay = new FactionsOverlay(this.app, this);
@@ -62,6 +71,8 @@ class Imperium extends GameTemplate {
     this.anti_fighter_barrage_overlay = new AntiFighterBarrageOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
+    this.roundbox = new RoundBox(this.app, this, "");
+    this.leaderboard = new Leaderboard(this.app, this, "");
 
     //
     // specific to THIS game
@@ -79,6 +90,7 @@ class Imperium extends GameTemplate {
     // not specific to THIS game
     //
     this.factions       	= {};
+    this.sectors           	= {}; // objs used to render
     this.tech           	= {};
     this.strategy_cards 	= {};
     this.action_cards 		= {};
@@ -119,8 +131,8 @@ class Imperium extends GameTemplate {
   initializeGameObjects() {
 
     this.hud.render();
-
     this.log.render();
+
 
 
     this.importTech("antimass-deflectors", {
@@ -11663,6 +11675,58 @@ console.log("qe: " + qe);
 	game_mod.strategy_card_overlay.render();
       }
     });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Objectives",
+      id : "game-objectives",
+      class : "gams-objectives",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	game_mod.handleObjectivesMenuItem();
+      }
+    });
+
+
+
+    //
+    // agendas
+    //
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Agendas",
+      id : "game-agendas",
+      class : "game-agendas",
+      callback : function(app, game_mod) {
+         game_mod.menu.showSubSubMenu("game-agendas");
+      }
+    });
+    this.menu.addSubMenuOption("game-agendas", {
+      text : "All" ,
+      id : "game-agendas-all",
+      class : "game-agendas-all",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        let cards = game_mod.returnAgendaCards();
+        game_mod.agendas_overlay.render(cards);
+      }
+    });
+    this.menu.addSubMenuOption("game-agendas", {
+      text : "Active" ,
+      id : "game-agendas-active",
+      class : "game-agendas-active",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	game_mod.handleAgendasMenuItem();
+      }
+    });
+    this.menu.addSubMenuOption("game-agendas", {
+      text : "Laws" ,
+      id : "game-agendas-laws",
+      class : "game-agendas-laws",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.handleLawsMenuItem();
+      }
+    });
+
 
     this.menu.addSubMenuOption("game-cards", {
       text : "Tech",
@@ -11702,7 +11766,7 @@ console.log("qe: " + qe);
 	  let tech = game_mod.returnTechnology();
           let t2 = [];
           for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
-          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
+          game_mod.upgrades_overlay.render({ tech : t2 , img : "/imperium/img/backgrounds/unit-upgrades.jpg" });
         }
     });
     for (let i = 0; i < this.game.players.length; i++) {
@@ -11745,13 +11809,11 @@ console.log("qe: " + qe);
 	let ac = game_mod.returnActionCards();
 	let ac2 = [];
 	for (let x in ac) {
-console.log(JSON.stringify(x));
 	  if (x.indexOf("2") > 0 || x.indexOf("3") > 0 || x.indexOf("4") > 0 || x.indexOf("5") > 0 ) {
 	  } else {
 	    ac2.push(ac[x]);
 	  }
 	}
-console.log("ACT: " + JSON.stringify(ac2));
         game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac2, {});
       }
     });
@@ -11841,6 +11903,7 @@ console.log("ACT: " + JSON.stringify(ac2));
     // this.stage_ii_objectives
     // this.secret_objectives
     // this.promissary_notes
+    // this.sectors 
     //
 
     //
@@ -12159,7 +12222,6 @@ console.log("ACT: " + JSON.stringify(ac2));
     }
 
 
-
     //
     // update planets with tile / sector info
     //
@@ -12207,46 +12269,31 @@ console.log("ACT: " + JSON.stringify(ac2));
     // display board
     //
     for (let i in this.game.board) {
-  
-      // add html to index
-      let boardslot = "#" + i;
 
-try {
-      $(boardslot).html(
-        ' \
-          <div class="hexIn" id="hexIn_'+i+'"> \
-            <div class="hexLink" id="hexLink_'+i+'"> \
-            <div class="hexInfo" id="hex_info_'+i+'"></div> \
-              <div class="hex_bg" id="hex_bg_'+i+'"> \
-                <img class="hex_img sector_graphics_background '+this.game.board[i].tile+'" id="hex_img_'+i+'" src="" /> \
-                <img src="/imperium/img/frame/border_full_white.png" id="hex_img_faction_border_'+i+'" class="faction_border" /> \
-                <img src="/imperium/img/frame/border_full_yellow.png" id="hex_img_hazard_border_'+i+'" class="hazard_border" /> \
-                <div class="hex_activated" id="hex_activated_'+i+'"> \
-              </div> \
-                <div class="hex_space" id="hex_space_'+i+'"> \
-              </div> \
-                <div class="hex_ground" id="hex_ground_'+i+'"> \
-              </div> \
-              </div> \
-            </div> \
-          </div> \
-        '
-      );
-  
+      // add html to index
+      let boardslot = ".sector_" + i;
+
+console.log("initing sector: " + i);
+
+      this.sectors[i] = new Sector(this.app, this, boardslot, i);
+      this.sectors[i].render();
+
+      //
       // insert planet
+      //
       let planet_div = "#hex_img_"+i;
       $(planet_div).attr("src", this.game.sectors[this.game.board[i].tile].img);
 
-      // add planet info
-  
-      this.updateSectorGraphics(i);
-} catch (err) {}
-        
     }
   
   
     this.updateLeaderboard();
   
+    //
+    // faction dashboard
+    //
+    this.displayFactionDashboard();
+
 
     //
     // prevent hangs
@@ -12258,7 +12305,6 @@ try {
     // add events to board 
     //
     try {
-      this.addEventsToBoard();
       this.addUIEvents();
     } catch (err) {
      
@@ -12652,11 +12698,41 @@ handleTechMenuItem() {
 }
 
 handleAgendasMenuItem() {
-  this.overlay.show(this.returnAgendasOverlay());
+
+  let cards = [];
+  let laws = this.returnAgendaCards();
+      
+  for (let i = 0; i < this.game.state.agendas.length; i++) {
+    cards.push(laws[this.game.state.agendas[i]]);
+  }   
+      
+  if (cards.length == 0) {
+    alert("No Upcoming Agendas");
+    return;
+  }
+
+  this.agenda_overlay.render(cards);
+      
 }
+      
 handleLawsMenuItem() {
-  this.overlay.show(this.returnLawsOverlay());
-}
+
+  let laws = this.returnAgendaCards();
+  let cards = [];
+
+  for (let i = 0; i < this.game.state.laws.length; i++) {
+    cards.push(laws[this.game.state.laws[i].agenda]);
+  }   
+   
+  if (cards.length == 0) {
+    alert("No Laws in Force");
+    return;
+  }
+
+  this.agenda_overlay.render(cards);
+      
+}     
+        
 handleUnitsMenuItem() {
   this.overlay.show(this.returnUnitsOverlay());
   let imperium_self = this;
@@ -12666,7 +12742,49 @@ handleUnitsMenuItem() {
 }
 
 handleObjectivesMenuItem() {
-  this.overlay.show(this.returnObjectivesOverlay());
+
+  let cards = [];
+  let imperium_self = this;
+
+  //
+  // MY SECRET OBJECTIVES
+  //
+  for (let i = 0; i < imperium_self.game.deck[5].hand.length; i++) {
+    if (!imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.deck[5].hand[i])) {
+      let obj = imperium_self.secret_objectives[imperium_self.game.deck[5].hand[i]];
+      cards.push(obj);
+    }
+  }
+
+  //
+  // STAGE 1 OBJECTIVES
+  //
+  for (let i = 0; i < this.game.state.stage_i_objectives.length; i++) {
+    let obj = this.stage_i_objectives[this.game.state.stage_i_objectives[i]];
+    cards.push(obj);
+  }
+
+  //
+  // STAGE 2 OBJECTIVES
+  //
+  for (let i = 0; i < this.game.state.stage_ii_objectives.length; i++) {
+    let obj = this.stage_ii_objectives[this.game.state.stage_ii_objectives[i]];
+    cards.push(obj);
+  }
+
+  //
+  // OTHERS SECRET OBJECTIVES
+  //
+  for (let i = 0; i < this.game.state.players_info.length; i++) {
+    if (i > 0) { html += '<p></p>'; }
+    let objc = imperium_self.returnPlayerObjectivesScored((i+1), ["secret_objectives"]);
+    for (let o in objc) {
+      cards.push(objc[i]);
+    }
+  }
+
+  this.objectives_overlay.render(cards);
+
 }
 handleInfoMenuItem() {
   if (document.querySelector('.gameboard').classList.contains('bi')) {
@@ -12751,11 +12869,13 @@ handleSystemsMenuItem() {
         if (obj.prereqs[i] == "red") { prereqs += '<span class="red">♦</span>'; }      
       }
 
-      return `<div id="${obj.key}" class="tech_${obj.color} tech_card card_nonopaque">
-        <div class="tech_card_name">${obj.name}</div>
-        <div class="tech_card_content">${obj.text}</div>
-        <div class="tech_card_level">${prereqs}</div>
-      </div>`;
+      return `
+        <div id="${obj.key}" class="tech-card tech-${obj.color} nonopaque">
+          <div class="name">${obj.name}</div>
+          <div class="text">${obj.text}</div>
+          <div class="prereqs">${prereqs}</div>
+        </div>
+      `;
     }; }
 
     obj = this.addEvents(obj);
@@ -12807,6 +12927,33 @@ handleSystemsMenuItem() {
     if (obj.bombardment_rolls == null)  { obj.bombardment_rolls = 0; } // 0 means no bombardment abilities
     if (obj.bombardment_combat == null) { obj.bombardment_combat = -1; } // hits on N
 
+    if (obj.returnCardImage == null) { 
+      obj.returnCardImage = (unit, mode="long") => {
+
+        return `
+          <div class="unit ${mode}">
+            <div class="unit-description" data-type="${unit.type}" data-name="${unit.name}" data-amount="0">${unit.name}</div>
+            <div class="unit-ship unit-ship-${unit.type}"></div>
+            <div class="unit-details">
+              <div class="unit-num">${unit.cost}</div>
+              <div class="unit-desc">cost</div>
+            </div>
+            <div class="unit-details">
+              <div class="unit-num">${unit.move}</div>
+              <div class="unit-desc">move</div>
+            </div>
+            <div class="unit-details">
+              <div class="unit-num">${unit.combat}</div>
+              <div class="unit-desc">combat</div>
+            </div>
+            <div class="unit-details">
+              <div class="unit-num">${unit.capacity}</div>
+              <div class="unit-desc">cargo</div>
+            </div>
+          </div>
+        `;
+      }
+    }
 
     obj = this.addEvents(obj);
     this.units[name] = obj;
@@ -13403,8 +13550,6 @@ handleSystemsMenuItem() {
     this.secret_objectives[name] = obj;
 
   }  
-
-
 
 
   returnStageIPublicObjectives() {
@@ -14277,7 +14422,6 @@ console.log("WHO: " + this.returnFaction(z+1));
 
         } else {
 
-	  this.addEventsToBoard();
   	  this.updateStatus("<div class=\"status-update\"><div class=\"player_color_box player_color_"+player+"\"></div>" + this.returnFaction(parseInt(player)) + " is taking their turn.</div>");
 
   	}
@@ -15415,11 +15559,14 @@ if (debugging == 0) {
 	  }
 	}  
 
+        this.objectives_overlay.render(cards);
+
+/*****
   	if (this.game.state.round > 1) {
   	  title = "New Objectives"; 
   	  subtitle = "view all public and secret objectives in the CARDS menu...";
   	}
-
+       
         this.overlay.showCardSelectionOverlay(this.app, this, cards, {
 
 	  title : title,
@@ -15454,6 +15601,7 @@ if (debugging == 0) {
             }
 	  },
 	});
+*****/
 
   	this.game.queue.splice(qe, 1);
   	return 1;
@@ -16489,7 +16637,18 @@ if (debugging == 0) {
 	}
 	if (type === "secret_objectives" || type === "secret_objective") {
           if (this.game.player == player && this.browser_active == 1) {
-	    this.overlay.show(this.returnNewSecretObjectiveOverlay(this.game.deck[5].hand.slice(this.game.deck[5].hand.length-amount, this.game.deck[5].hand.length)));
+
+	    let idxs = this.game.deck[5].hand.slice(this.game.deck[5].hand.length-amount, this.game.deck[5].hand.length);
+	    let cards = [];
+	    for (let i = 0; i < idxs.length; i++) {
+	      cards.push(this.secret_objectives[idxs[i]]);
+	    }
+
+	    //
+	    // show the objective(s)
+	    //
+	    this.objectives_overlay.render(cards);
+
 	  }
 	  this.game.state.players_info[player-1].secret_objectives_in_hand += amount;
 	}
@@ -31095,10 +31254,9 @@ console.log(JSON.stringify(ship));
 // redraw all sectors
 //
 displayBoard() {
-  for (let i in this.game.systems) {
-    this.updateSectorGraphics(i);
+  for (let i in this.sectors) {
+    this.sectors[i].render();
   }
-  this.addEventsToBoard();
 }
 
 
@@ -31145,44 +31303,6 @@ flashSector(sector) {
 
 }
 
-
-
-
-/////////////////////////
-// Add Events to Board //
-/////////////////////////
-addEventsToBoard() {
-
-  let imperium_self = this;
-  let pid = "";
-
-  let xpos = 0;
-  let ypos = 0;
-
-//
-// TODO remove jquery dependency
-//
-try {
-  $('.sector').off();
-  $('.sector').on('mouseenter', function () {
-    pid = $(this).attr("id");
-    imperium_self.showSector(pid);
-  }).on('mouseleave', function () {
-    pid = $(this).attr("id");
-    imperium_self.hideSector(pid);
-  });
-  $('.sector').on('mousedown', function (e) {
-    xpos = e.clientX;
-    ypos = e.clientY;
-  });
-  $('.sector').on('mouseup', function (e) {
-    if (Math.abs(xpos-e.clientX) > 4) { return; }
-    if (Math.abs(ypos-e.clientY) > 4) { return; }
-    pid = $(this).attr("id");
-    imperium_self.overlay.show(imperium_self.returnSectorInformationHTML(pid));
-  });
-} catch (err) {}
-}
 
 
 
@@ -31333,25 +31453,6 @@ buy command tokens and vote on laws.
 }
 
 
-
-
-returnNewSecretObjectiveOverlay(card) {
-  let obj = this.secret_objectives[card];
-  let html = `
-    <div class="new_secret_objective_overlay" id="new_secret_objective_overlay">
-      <div style="width:100%"><div class="new_secret_objective_overlay_title">New Secret Objective</div></div>
-      <div style="width:100%"><div style="display:inline-block">
-      <div class="objectives_overlay_objectives_card" style="background-image: url(${obj.img})">
-        <div class="objectives_card_name">${obj.name}</div>
-        <div class="objectives_card_content">
-          ${obj.text}
-        <div class="objectives_secret_notice">secret</div>
-      </div>
-      </div></div>
-    </div>
-  `;
-  return html;
-}
 
 
 returnSectorInformationHTML(sector) {
@@ -31526,56 +31627,6 @@ returnPlanetInformationHTML(planet) {
 }
 
 
-returnLawsOverlay() {
-
-  let laws = this.returnAgendaCards();
-  let html = '<div class="overlay_laws_container">';
-
-  if (this.game.state.laws.length > 0) {
-      html += '<ul style="clear:both;margin-top:10px;">';
-      for (let i = 0; i < this.game.state.laws.length; i++) {
-        html += `  <li style="background-image: url('/imperium/img/agenda_card_template.png');background-size:cover;" class="overlay_agendacard card option" id="${i}"><div class="overlay_agendatitle">${laws[this.game.state.laws[i].agenda].name}</div><div class="overlay_agendacontent">${laws[this.game.state.laws[i].agenda].text}</div><div class="overlay_law_option">${this.returnNameOfUnknown(this.game.state.laws[i].option)}</div></li>`;
-      }
-      html += '</ul>';
-  }
-
-  if (this.game.state.laws.length == 0 && this.game.state.agendas.length == 0) {
-      html += '<div class="overlay_laws_header">There are no laws in force or agendas up for consideration at this time.</div>';
-  }
-
-  html += '</div>';
-
-  return html;
-
-}
-
-
-
-returnAgendasOverlay() {
-
-  let laws = this.returnAgendaCards();
-  let html = '<div class="overlay_laws_container">';
-
-  if (this.game.state.agendas.length > 0) {
-      html += '<div class="overlay_laws_list">';
-      for (let i = 0; i < this.game.state.agendas.length; i++) {
-        html += `  <div style="background-image: url('/imperium/img/agenda_card_template.png');" class="overlay_agendacard card option" id="${i}"><div class="overlay_agendatitle">${laws[this.game.state.agendas[i]].name}</div><div class="overlay_agendacontent">${laws[this.game.state.agendas[i]].text}</div></div>`;
-      }
-      html += '</div>';
-  }
-
-  if (this.game.state.laws.length == 0 && this.game.state.agendas.length == 0) {
-      html += '<div class="overlay_laws_header">There are no laws in force or agendas up for consideration at this time.</div>';
-  }
-
-  html += '</div>';
-
-  return html;
-
-}
-
-
-
 returnUnitPopup(unittype) {
 
   let html = `
@@ -31650,98 +31701,6 @@ returnNewActionCardsOverlay(cards) {
 
 
 
-returnObjectivesOverlay() {
-
-  let html = '';
-  let imperium_self = this;
-
-  html += '<div class="objectives-overlay-container" style="">';
-
-  //
-  // SECRET OBJECTIVES
-  //
-  for (let i = 0; i < imperium_self.game.deck[5].hand.length; i++) {
-    if (!imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.deck[5].hand[i])) {
-      let obj = imperium_self.secret_objectives[imperium_self.game.deck[5].hand[i]];
-      html += `<div class="objectives_overlay_objectives_card" style="background-image: url(${obj.img})">
-                 <div class="objectives_card_name">${obj.name}</div>
-                 <div class="objectives_card_content">${obj.text}
-		   <div class="objectives_secret_notice">secret</div>
-		 </div>
-	       </div>
-      `;
-    }
-  }
-
-  //
-  // STAGE 1 OBJECTIVES
-  //
-  for (let i = 0; i < this.game.state.stage_i_objectives.length; i++) {
-    let obj = this.stage_i_objectives[this.game.state.stage_i_objectives[i]];
-    html += `<div class="objectives_overlay_objectives_card" style="background-image: url(${obj.img})">
-               <div class="objectives_card_name">${obj.name}</div>
-               <div class="objectives_card_content">${obj.text}</div>
-               <div class="objectives_scorings">
-    `;
-    for (let p = 0; p < this.game.state.players_info.length; p++) {
-      for (let z = 0; z < this.game.state.players_info[p].objectives_scored.length; z++) {
-        if (this.game.state.stage_i_objectives[i] === this.game.state.players_info[p].objectives_scored[z]) {
-          html += `<div class="objectives_players_scored players_scored_${(p+1)} p${(p+1)}"><div class="bk" style="width:100%;height:100%"></div></div>`;
-        }
-      }
-    }
-    html += `</div>`;
-    html += `</div>`;
-  }
-
-  html += '<p></p>';
-
-  //
-  // STAGE 2 OBJECTIVES
-  //
-  for (let i = 0; i < this.game.state.stage_ii_objectives.length; i++) {
-    let obj = this.stage_ii_objectives[this.game.state.stage_ii_objectives[i]];
-    html += `<div class="objectives_overlay_objectives_card" style="background-image: url(${obj.img})">
-               <div class="objectives_card_name">${obj.name}</div>
-               <div class="objectives_card_content">${obj.text}</div>
-               <div class="objectives_scorings">
-    `;
-    for (let p = 0; p < this.game.state.players_info.length; p++) {
-      for (let z = 0; z < this.game.state.players_info[p].objectives_scored.length; z++) {
-        if (this.game.state.stage_ii_objectives[i] === this.game.state.players_info[p].objectives_scored[z]) {
-          html += `<div class="objectives_players_scored players_scored_${(p+1)} p${(p+1)}"><div class="bk" style="width:100%;height:100%"></div></div>`;
-        }
-      }
-    }
-    html += `</div>`;
-    html += `</div>`;
-  }
-
-  html += '<p></p>';
-
-  //
-  // SECRET OBJECTIVES
-  //
-  for (let i = 0; i < this.game.state.players_info.length; i++) {
-    if (i > 0) { html += '<p></p>'; }
-    let objc = imperium_self.returnPlayerObjectivesScored((i+1), ["secret_objectives"]);
-    for (let o in objc) {
-      html += `<div class="objectives_overlay_objectives_card" style="background-image: url(${objc[o].img})">
-               <div class="objectives_card_name">${objc[o].name}</div>
-               <div class="objectives_card_content">${objc[o].text}</div>
-               <div class="objectives_players_scored players_scored_${(i+1)} p${(i+1)}"><div class="bk" style="width:100%;height:100%"></div></div>
-             </div>`;
-    }
-  }
-
-  html += '</div>';
-
-  return html;
-
-}
-
-
-
 
 displayFactionDashboard(agenda_phase=0) {
 
@@ -31749,6 +31708,7 @@ displayFactionDashboard(agenda_phase=0) {
 
   try {
 
+    this.roundbox.render();
     this.dashboard.render(agenda_phase);
 
     let pl = "";
@@ -31780,26 +31740,6 @@ displayFactionDashboard(agenda_phase=0) {
       }
 
     }
-
-/****
-    $('.dash-item-resources').on('mouseenter', function() {
-      imperium_self.showHelpCard("resources");
-    }).on('mouseleave', function() {
-      imperium_self.hideHelpCard();
-    });
-
-    $('.dash-item-influence').on('mouseenter', function() {
-      imperium_self.showHelpCard("influence");
-    }).on('mouseleave', function() {
-      imperium_self.hideHelpCard();
-    });
-
-    $('.dash-item-trade').on('mouseenter', function() {
-      imperium_self.showHelpCard("trade");
-    }).on('mouseleave', function() {
-      imperium_self.hideHelpCard();
-    });
-****/
 
   } catch (err) {
 console.log("ERROR: " + err);
@@ -31872,9 +31812,15 @@ updateTokenDisplay() {
 
 }
 
+
+updateRound() {
+    this.roundbox.render();
+}
+
 updateLeaderboard() {
 
   if (this.browser_active == 0) { return; }
+  this.leaderboard.render();
 
   let imperium_self = this;
   let factions = this.returnFactions();
@@ -31895,10 +31841,7 @@ updateLeaderboard() {
     }
 
 
-    document.querySelector('.round').innerHTML = this.game.state.round;
-    document.querySelector('.turn').innerHTML = this.game.state.turn;
-
-    let html = '<div class="VP-track-label" id="VP-track-label">Victory Points<div class="objectives-toggle" id="objectives-toggle">?</div></div>';
+    let html = '<div class="VP-track-label" id="VP-track-label">Victory Points</div>';
 
     let vp_needed = 14;
     if (this.game.state.vp_target != 14 && this.game.state.vp_target > 0) { vp_needed = this.game.state.vp_target; }
@@ -31919,333 +31862,29 @@ updateLeaderboard() {
 
     document.querySelector('.leaderboard').innerHTML = html;
 
+    this.updateRound();
+
   } catch (err) { }
 }
 
 
 
-updateSectorGraphics(sector) {
-
-  //
-  // handle both 'sector41' and '2_1'
-  //
-  let sys = this.returnSectorAndPlanets(sector);
-
-  if (sys == undefined) { return; }
-  if (sys == null) { return; }
-  if (sys.s == undefined) { return; }
-  if (sys.s == null) { return; }
-  try {
-
-  if (sector.indexOf("_") == -1) { sector = sys.s.tile; }
-
-  for (let i = 0; i < this.game.state.players_info.length; i++) {
-    if (this.game.queue.length > 0) {
-      let lmv = this.game.queue[this.game.queue.length-1].split("\t");
-      //
-      // don't prune if midway through destroying units, as causes array issues
-      //
-      if (lmv[0] !== "destroy_unit" && lmv[0] !== "assign_hit") {
-        this.eliminateDestroyedUnitsInSector((i+1), sector);
-      }
-    }
-  }
-
-
-  let divsector = '#hex_space_' + sector;
-  let fleet_color = '';
-  let bg = '';
-  let bgsize = '';
-  let sector_controlled = 0;
-  let player_border_visible = 0;
-  let player_fleet_drawn = 0;
-  let player_planets_drawn = 0;
-
-  //
-  // is activated?
-  //
-  if (sys.s.activated[this.game.player - 1] == 1) {
-    let divpid = '#' + sector;
-    $(divpid).find('.hex_activated').css('background-color', 'var(--p' + this.game.player + ")");
-    $(divpid).find('.hex_activated').css('opacity', '0.3');
-  } else {
-    let divpid = '#' + sector;
-    $(divpid).find('.hex_activated').css('opacity', '0.0');
-  }
-
-
-  for (let z = 0; z < sys.s.units.length; z++) {
-
-    let player = z + 1;
-
-    if (sys.s.type > 0) {
-      let divpid = '#hex_img_hazard_border_' + sector;
-      $(divpid).css('display', 'block');
-    }
-
-    if (sys.s.units[player-1].length > 0) {
-      let divpid = '#hex_img_faction_border_' + sector;
-      let newclass = "player_color_"+player;
-      $(divpid).removeClass("player_color_1");
-      $(divpid).removeClass("player_color_2");
-      $(divpid).removeClass("player_color_3");
-      $(divpid).removeClass("player_color_4");
-      $(divpid).removeClass("player_color_5");
-      $(divpid).removeClass("player_color_6");
-      $(divpid).addClass(newclass);
-      $(divpid).css('display','block');
-      $(divpid).css('opacity', '1');
-      player_border_visible = 1;
-    }
-
+  updateSectorGraphics(sector) {
 
     //
-    // space
+    // handle both 'sector41' and '2_1'
     //
-    if (sys.s.units[player - 1].length > 0) {
+    let sys = this.returnSectorAndPlanets(sector);
 
-      updated_space_graphics = 1;
-      player_fleet_drawn = 1;
+    if (sys == undefined) { return; }
+    if (sys == null) { return; }
+    if (sys.s == undefined) { return; }
+    if (sys.s == null) { return; }
 
-      let carriers = 0;
-      let fighters = 0;
-      let destroyers = 0;
-      let cruisers = 0;
-      let dreadnaughts = 0;
-      let flagships = 0;
-      let warsuns = 0;
+    this.sectors[sys.s.tile].update();
 
-      for (let i = 0; i < sys.s.units[player - 1].length; i++) {
-
-        let ship = sys.s.units[player - 1][i];
-        if (ship.type == "carrier") { carriers++; }
-        if (ship.type == "fighter") { fighters++; }
-        if (ship.type == "destroyer") { destroyers++; }
-        if (ship.type == "cruiser") { cruisers++; }
-        if (ship.type == "dreadnaught") { dreadnaughts++; }
-        if (ship.type == "flagship") { flagships++; }
-        if (ship.type == "warsun") { warsuns++; }
-
-      }
-
-      let space_frames = [];
-      let ship_graphics = [];
-
-      ////////////////////
-      // SPACE GRAPHICS //
-      ////////////////////
-      fleet_color = "color" + player;
-
-      if (fighters > 0) {
-        let x = fighters; if (fighters > 9) { x = 9; }
-        let numpng = "white_space_frame_1_" + x + ".png";
-        ship_graphics.push("white_space_fighter.png");
-        space_frames.push(numpng);
-      }
-      if (destroyers > 0) {
-        let x = destroyers; if (destroyers > 9) { x = 9; }
-        let numpng = "white_space_frame_2_" + x + ".png";
-        ship_graphics.push("white_space_destroyer.png");
-        space_frames.push(numpng);
-      }
-      if (carriers > 0) {
-        let x = carriers; if (carriers > 9) { x = 9; }
-        let numpng = "white_space_frame_3_" + x + ".png";
-        ship_graphics.push("white_space_carrier.png");
-        space_frames.push(numpng);
-      }
-      if (cruisers > 0) {
-        let x = cruisers; if (cruisers > 9) { x = 9; }
-        let numpng = "white_space_frame_4_" + x + ".png";
-        ship_graphics.push("white_space_cruiser.png");
-        space_frames.push(numpng);
-      }
-      if (dreadnaughts > 0) {
-        let x = dreadnaughts; if (dreadnaughts > 9) { x = 9; }
-        let numpng = "white_space_frame_5_" + x + ".png";
-        ship_graphics.push("white_space_dreadnaught.png");
-        space_frames.push(numpng);
-      }
-      if (flagships > 0) {
-        let x = flagships; if (flagships > 9) { x = 9; }
-        let numpng = "white_space_frame_6_" + x + ".png";
-        ship_graphics.push("white_space_flagship.png");
-        space_frames.push(numpng);
-      }
-      if (warsuns > 0) {
-        let x = warsuns; if (warsuns > 9) { x = 9; }
-        let numpng = "white_space_frame_7_" + x + ".png";
-        ship_graphics.push("white_space_warsun.png");
-        space_frames.push(numpng);
-      }
-
-      //
-      // remove and re-add space frames
-      //
-      let old_images = "#hex_bg_" + sector + " > .sector_graphics";
-      $(old_images).remove();
-      let divsector2 = "#hex_bg_" + sector;
-      let player_color = "player_color_" + player;
-      for (let i = 0; i < ship_graphics.length; i++) {
-        $(divsector2).append('<img class="sector_graphics ' + player_color + ' ship_graphic sector_graphics_space sector_graphics_space_' + sector + '" src="/imperium/img/frame/' + ship_graphics[i] + '" />');
-      }
-      for (let i = 0; i < space_frames.length; i++) {
-        $(divsector2).append('<img style="opacity:0.8" class="sector_graphics sector_graphics_space sector_graphics_space_' + sector + '" src="/imperium/img/frame/' + space_frames[i] + '" />');
-      }
-    }
-  }
-
-
-  //
-  // if player_fleet_drawn is 0 then remove any space ships
-  //
-  if (player_fleet_drawn == 0) {
-    let old_images = "#hex_bg_" + sector + " > .sector_graphics";
-    $(old_images).remove();
-  }
-
-
-  let ground_frames = [];
-  let ground_pos = [];
-
-  for (let z = 0; z < sys.s.units.length; z++) {
-
-    let player = z + 1;
-
-    ////////////////////////
-    // PLANETARY GRAPHICS //
-    ////////////////////////
-    let total_ground_forces_of_player = 0;
-
-    for (let j = 0; j < sys.p.length; j++) {
-      total_ground_forces_of_player += sys.p[j].units[player - 1].length;
-    }
-
-
-    if (total_ground_forces_of_player > 0) {
-
-      for (let j = 0; j < sys.p.length; j++) {
-
-	player_planets_drawn = 1;
-
-        if (sys.p[j].units[player-1].length > 0 && player_border_visible == 0) {
-          let divpid = '#hex_img_faction_border_' + sector;
-          let newclass = "player_color_"+player;
-          $(divpid).removeClass("player_color_1");
-          $(divpid).removeClass("player_color_2");
-          $(divpid).removeClass("player_color_3");
-          $(divpid).removeClass("player_color_4");
-          $(divpid).removeClass("player_color_5");
-          $(divpid).removeClass("player_color_6");
-          $(divpid).addClass(newclass);
-          $(divpid).css('display','block');
-          $(divpid).css('opacity', '0.6');
-          player_border_visible = 1;
-        }
-
-
-        let infantry = 0;
-        let spacedock = 0;
-        let pds = 0;
-
-        for (let k = 0; k < sys.p[j].units[player - 1].length; k++) {
-
-          let unit = sys.p[j].units[player - 1][k];
-
-          if (unit.type == "infantry") { infantry++; }
-          if (unit.type == "pds") { pds++; }
-          if (unit.type == "spacedock") { spacedock++; }
-
-        }
-
-        let postext = "";
-
-        ground_frames.push("white_planet_center.png");
-        if (sys.p.length == 1) {
-          postext = "center";
-        } else {
-          if (j == 0) {
-            postext = "top_left";
-          }
-          if (j == 1) {
-            postext = "bottom_right";
-          }
-        }
-        ground_pos.push(postext);
-
-
-        if (infantry > 0) {
-          let x = infantry; if (infantry > 9) { x = 9; }
-          let numpng = "white_planet_center_1_" + x + ".png";
-          ground_frames.push(numpng);
-          ground_pos.push(postext);
-        }
-        if (spacedock > 0) {
-          let x = spacedock; if (spacedock > 9) { x = 9; }
-          let numpng = "white_planet_center_2_" + x + ".png";
-          ground_frames.push(numpng);
-          ground_pos.push(postext);
-        }
-        if (pds > 0) {
-          let x = pds; if (pds > 9) { x = 9; }
-          let numpng = "white_planet_center_3_" + x + ".png";
-          ground_frames.push(numpng);
-          ground_pos.push(postext);
-        }
-      }
-
-
-
-      //
-      // remove space units if needed - otherwise last unit will not be removed when sector is emptied
-      //
-      if (player_fleet_drawn == 0) {
-        let old_images = "#hex_bg_" + sector + " > .sector_graphics";
-        $(old_images).remove();
-	player_fleet_drawn = 1;
-      }
-
-
-
-      //
-      // remove and re-add space frames
-      //
-      let old_images = "#hex_bg_" + sector + " > .sector_graphics_planet";
-      $(old_images).remove();
-
-      let divsector2 = "#hex_bg_" + sector;
-      let player_color = "player_color_" + player;
-      let pid = 0;
-      for (let i = 0; i < ground_frames.length; i++) {
-        if (i > 0 && ground_pos[i] != ground_pos[i - 1]) { pid++; }
-        //$(divsector2).append('<img class="sector_graphics ' + player_color + ' sector_graphics_planet sector_graphics_planet_' + sector + ' sector_graphics_planet_' + sector + '_' + pid + ' ' + ground_pos[i] + '" src="/imperium/img/frame/' + ground_frames[i] + '" />');
-      }
-    }
-  }
-
-
-  if (player_border_visible == 0) {
-    for (let p = 0; p < sys.p.length; p++) {
-      if (sys.p[p].owner != -1) {
-        let divpid = '#hex_img_faction_border_' + sector;
-        let newclass = "player_color_"+sys.p[p].owner;
-        $(divpid).removeClass("player_color_1");
-        $(divpid).removeClass("player_color_2");
-        $(divpid).removeClass("player_color_3");
-        $(divpid).removeClass("player_color_4");
-        $(divpid).removeClass("player_color_5");
-        $(divpid).removeClass("player_color_6");
-        $(divpid).addClass(newclass);
-        $(divpid).css('display','block');
-        $(divpid).css('opacity', '0.6');
-        player_border_visible = 1;
-      }
-    }
-  }
-
-  } catch (err) {}
-
-};
+    return;
+  };
 
 
   unhighlightSectors() {
@@ -32331,19 +31970,6 @@ updateSectorGraphics(sector) {
   removePlanetHighlight(sector, pid)  {
     this.hideSectorHighlight(sector);
   }
-  showHelpCard(type) {
-    let html = "";
-
-    if (type == "resources") { html = `<div style="width:100%; height: 100%"><img style="width:100%;height:auto;" src="/imperium/img/resources_dash_card.png" /></div>`; }
-    if (type == "influence") { html = `<div style="width:100%; height: 100%"><img style="width:100%;height:auto;" src="/imperium/img/influence_dash_card.png" /></div>`; }
-    if (type == "trade")     { html = `<div style="width:100%; height: 100%"><img style="width:100%;height:auto;" src="/imperium/img/trade_dash_card.png" /></div>`; }
-
-    this.cardbox.showCardboxHTML(null, html);
-  }
-  hideHelpCard(c) {
-    this.cardbox.hide(1);
-  }
-
   showActionCard(c) {
     let thiscard = this.action_cards[c];
     let html = `
@@ -32458,13 +32084,55 @@ updateSectorGraphics(sector) {
     if (obj.name == null) 	{ obj.name = "Strategy Card"; }
     if (obj.rank == null) 	{ obj.rank = 1; }
 
-
     if (obj.returnCardImage == null) {
-      obj.returnCardImage = function() {
+      obj.returnCardImage = (mode=0) => {
+
+	let cards = this.returnStrategyCards();
+	let idx = ""; for (let x in cards) { if (cards[x].name === obj.name) { idx = x; } }
+        let picked = "not picked";
+        let player = -1;
+        let bonus = 0;
+        let bonus_html = "";
+        card_html = '';
+
+        if (mode == 1) {
+
+          for (let i = 0; i < this.game.state.strategy_cards.length; i++) {
+            if (idx === this.game.state.strategy_cards[i]) {
+              bonus = this.game.state.strategy_cards_bonus[i];
+            }
+          }
+
+          if (bonus > 0) {
+            bonus_html =
+            `<div class="bonus">
+              <i class="fas fa-database white-stroke"></i>
+              <span>${bonus}</span>
+            </div>`;
+          }
+
+          for (let i = 0; i < this.game.state.players_info.length; i++) {
+            if (this.game.state.players_info[i].strategy.includes(idx)) {
+              picked = "unplayed";
+              player = (i+1);
+              if (this.game.state.players_info[i].strategy_cards_played.includes(idx)) {
+                picked = "played";
+              };
+            };
+          }
+
+          if (picked != "not picked") {
+            card_html += `
+              <div class="picked p${player} bk">${picked}</div>
+           `;
+          }
+        }
+
         return `
-          <div class="strategy_card" id="${name}">
-	    <img class="strategy_card_img" id="${name}" src="/imperium/img${obj.img}" style="width:100%">
-	    <div class="strategy_card_text">${obj.text}</div>
+          <div class="strategy-card" id="${name}">
+	    <img id="${name}" src="/imperium/img${obj.img}" style="width:100%">
+	    <div class="text">${obj.text}</div>
+	    ${bonus_html} ${card_html}
 	  </div>
         `;
       };

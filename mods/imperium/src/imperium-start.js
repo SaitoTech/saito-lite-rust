@@ -9,6 +9,9 @@ const TechTreeOverlay = require('./lib/overlays/tech-tree');
 const FactionsOverlay = require('./lib/overlays/factions');
 const ProductionOverlay = require('./lib/overlays/production');
 const UnitsOverlay = require('./lib/overlays/units');
+const UpgradesOverlay = require('./lib/overlays/upgrades');
+const ObjectivesOverlay = require('./lib/overlays/objectives');
+const AgendasOverlay = require('./lib/overlays/agenda');
 const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
 const InfluenceSelectionOverlay = require('./lib/overlays/influence-selection');
 const SenateOverlay = require('./lib/overlays/senate');
@@ -19,7 +22,10 @@ const AntiFighterBarrageOverlay = require('./lib/overlays/anti-fighter-barrage')
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
 const TokenBar = require('./lib/tokenbar');
-const Dashboard = require('./lib/dashboard');
+const Dashboard = require('./lib/dashboard-manager');
+const RoundBox = require('./lib/round');
+const Leaderboard = require('./lib/leaderboard');
+const Sector = require('./lib/sector');
 
 
 class Imperium extends GameTemplate {
@@ -51,6 +57,9 @@ class Imperium extends GameTemplate {
     this.movement_overlay = new MovementOverlay(this.app, this);
     this.senate_overlay = new SenateOverlay(this.app, this);
     this.production_overlay = new ProductionOverlay(this.app, this);
+    this.upgrades_overlay = new UpgradesOverlay(this.app, this);
+    this.objectives_overlay = new ObjectivesOverlay(this.app, this);
+    this.agendas_overlay = new AgendasOverlay(this.app, this);
     this.units_overlay = new UnitsOverlay(this.app, this);
     this.tech_tree_overlay = new TechTreeOverlay(this.app, this);
     this.factions_overlay = new FactionsOverlay(this.app, this);
@@ -62,6 +71,8 @@ class Imperium extends GameTemplate {
     this.anti_fighter_barrage_overlay = new AntiFighterBarrageOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
+    this.roundbox = new RoundBox(this.app, this, "");
+    this.leaderboard = new Leaderboard(this.app, this, "");
 
     //
     // specific to THIS game
@@ -79,6 +90,7 @@ class Imperium extends GameTemplate {
     // not specific to THIS game
     //
     this.factions       	= {};
+    this.sectors           	= {}; // objs used to render
     this.tech           	= {};
     this.strategy_cards 	= {};
     this.action_cards 		= {};
@@ -119,6 +131,6 @@ class Imperium extends GameTemplate {
   initializeGameObjects() {
 
     this.hud.render();
-
     this.log.render();
+
 

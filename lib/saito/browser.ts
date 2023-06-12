@@ -565,7 +565,7 @@ class Browser {
 
   addElementToDom(html, elemWhere = null) {
     const el = document.createElement("div");
-    if (elemWhere == null) {
+    if (elemWhere == null || elemWhere === "") {
       document.body.appendChild(el);
       el.outerHTML = html;
     } else {

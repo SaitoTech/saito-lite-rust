@@ -121,6 +121,8 @@ class Poker extends GameTableTemplate {
   }
 
 
+
+
   render(app) {
 
     if (!this.browser_active) { return; }
@@ -132,7 +134,6 @@ class Poker extends GameTableTemplate {
     // ADD MENU
     //
     this.menu.addMenuOption("game-game", "Game");
-
     this.menu.addSubMenuOption("game-game", {
       text: "How to Play",
       id: "game-rules",
@@ -161,37 +162,26 @@ class Poker extends GameTableTemplate {
       },
     });
 
-    // <<<<<<<<<<<<<<<<<<<<<<< Hello Game Developer >>>>>>>>>>>>>>>>>>>>  ****
-    //                                                                    ****
-    // This code gets overwriten by the game-menu                         **** 
-    //                                                                    ****
-    // The correct way to change the behavior of game-exit is to redefine ****
-    //                                                                    ****
-    //             game_mod.exitGame();                                   ****
-    //                                                                    ****
-    // in this file
-    // ================================================================== ****
-    /*this.menu.addSubMenuOption("game-game", {
+/****
+    this.menu.addSubMenuOption("game-game", {
       text: "Exit",
       id: "game-exit",
       class: "game-exit",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        let c = confirm("Forfeit the Game?");
-        if (c) {
-	  if (game_mod.game.state.passed[game_mod.game.player] != 1) {
-	    game_mod.addMove("fold\t" + game_mod.game.player);
-	    game_mod.endTurn();
-            game_mod.willleave = true;
-            game_mod.sendMetaMessage("LEAVE");
-	  }
-    //We don't want to hardcode redirections! 
+        //let c = confirm("Forfeit the Game?");
+        //if (c) {
+	  //if (game_mod.game.state.passed[game_mod.game.player] != 1) {
+	  //  game_mod.addMove("fold\t" + game_mod.game.player);
+	  //  game_mod.endTurn();
+          //  game_mod.willleave = true;
+          //  game_mod.sendMetaMessage("LEAVE");
+	  //}
 	  window.location = "/arcade";
-        }
+        //}
       },
-    });*/
-
-
+    });
+****/
 
     this.menu.addChatMenu();
     this.menu.render();
@@ -242,7 +232,7 @@ class Poker extends GameTableTemplate {
             </svg></div>
           `));  
           }
-        }catch(err){
+        } catch(err){
 
         }
       }
@@ -423,6 +413,10 @@ class Poker extends GameTableTemplate {
       this.updateLog(`Player ${(i + 1)}${i+1 == this.game.state.button_player ? " (dealer)":""}: ${this.game.state.player_names[i]} (${this.formatWager(this.game.state.player_credit[i], true)})`);
     }
  
+    for (let i = 1; i <= this.game.players.length; i++) {
+      this.playerbox.updateGraphics("", i);
+    }
+ 
     this.initializeQueue();
 
   }
@@ -462,6 +456,13 @@ class Poker extends GameTableTemplate {
       }
 
       if (mv[0] === "newround"){
+
+        //
+        // clear displayed cards...
+        //
+        for (let i = 1; i <= this.game.players; i++) {
+          this.playerbox.updateGraphics("", i);
+        }
 
         this.game.state.round++;
 
@@ -708,16 +709,16 @@ class Poker extends GameTableTemplate {
           this.game.queue.splice(qe, 1);
           return 1;
         }else{
-          if (this.browser_active){
-	    this.playerbox.setActive(player_to_go);
-          }
-          
+
+	  this.playerbox.setActive(player_to_go);
+
           if (player_to_go == this.game.player) {
             this.playerTurn();
           } else {
+	    this.refreshPlayerLog(`<div class="plog-update">active player</div>`, player_to_go);          
             if (this.game.state.passed[this.game.player-1]){
               this.updateStatus("waiting for next round");
-            }else{
+            } else {
               this.updateStatus("waiting for " + this.game.state.player_names[player_to_go - 1]);  
             }
           }
@@ -771,8 +772,8 @@ class Poker extends GameTableTemplate {
 
         let playercards = `
           <div class="other-player-hand hand tinyhand">
-            <img class="card" src="${this.card_img_dir}/${this.game.deck[0].cards[card1].name}">
-            <img class="card" src="${this.card_img_dir}/${this.game.deck[0].cards[card2].name}">
+            <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card1].name}"></div>
+            <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card2].name}"></div>
           </div>
         `;
         this.playerbox.updateGraphics(playercards, scorer);
@@ -1009,9 +1010,6 @@ class Poker extends GameTableTemplate {
 	  this.game.state.player_credit[sbpi] = this.subtractFromString(this.game.state.player_credit[sbpi], this.game.state.small_blind);
         }
 
-        this.outputState();
-
-//        this.refreshPlayerLog(`<div class="plog-update">committed: ${this.formatWager(this.game.state.small_blind)}</div>`,this.game.state.small_blind_player);
         this.displayPlayers(true);        //Update Chip stacks after betting
         this.game.queue.push("round");    //Start
         this.game.queue.push("announce"); //Print Hole cards to Log
@@ -1047,7 +1045,6 @@ class Poker extends GameTableTemplate {
 
         if (amount_to_call <= 0) {
           console.error("Zero/Negative Call");
-          this.outputState();
         }
 
         //
@@ -1113,7 +1110,6 @@ class Poker extends GameTableTemplate {
         if (raise_portion <= 0){
           salert("Insufficient raise");
           console.error("Call process in raise/Insufficient Raise",mv);
-          this.outputState();
         }
         
         this.game.state.plays_since_last_raise = 1;
@@ -1169,12 +1165,8 @@ class Poker extends GameTableTemplate {
   }
 
 
-  outputState(){
-    console.log("######################");
-    console.log(JSON.parse(JSON.stringify(this.game.state)));
-  }
-
   playerTurn() {
+
     if (this.browser_active == 0) {
       return;
     }
@@ -1229,7 +1221,6 @@ class Poker extends GameTableTemplate {
     });
 
     if (!can_call) {
-      this.outputState();
       this.updateStatus("You can only fold...");
       this.addMove("fold\t" + poker_self.game.player);
       this.endTurn();
@@ -1559,9 +1550,9 @@ class Poker extends GameTableTemplate {
 
           if (i < this.game.pool[0].hand.length) {
             card = this.game.pool[0].cards[this.game.pool[0].hand[i]];
-            newHTML += `<img class="card" src="${this.card_img_dir}/${card.name}">`;
+            newHTML += `<div class="flip-card card"><img class="cardFront" src="${this.card_img_dir}/${card.name}"></div>`;
           } else {
-            newHTML += `<div class="flip-card"><img class="card cardBack" src="${this.card_img_dir}/red_back.png"></div>`;
+            newHTML += `<div class="flip-card card"><img class="cardBack" src="${this.card_img_dir}/red_back.png"></div>`;
           }
 
         }
@@ -2740,8 +2731,6 @@ class Poker extends GameTableTemplate {
     return 0;
   }
 
-  /*Helper functions for display and options*/
-
   cardToHuman(card) {
     
     if (!this.game.deck[0].cards[card]){
@@ -2899,8 +2888,6 @@ class Poker extends GameTableTemplate {
 
   updateStatus(str, hide_info = 0) {
 
-console.log("update status with: " + str);
-
     if (str.indexOf('<') == -1) {
       str = `<div style="padding-top:2rem">${str}</div>`;
     }
@@ -2927,10 +2914,6 @@ console.log("update status with: " + str);
      }
 
   }
-
-
-
-
 
   handleStatsMenu() {
     
@@ -2968,6 +2951,82 @@ console.log("update status with: " + str);
     return html;
   }
  
+  preloadImages() {
+  
+    let allImages = [
+        "/poker/img/cards/C1.png",
+        "/poker/img/cards/C2.png",
+        "/poker/img/cards/C3.png",
+        "/poker/img/cards/C4.png",
+        "/poker/img/cards/C5.png",
+        "/poker/img/cards/C6.png",
+        "/poker/img/cards/C7.png",
+        "/poker/img/cards/C8.png",
+        "/poker/img/cards/C9.png",
+        "/poker/img/cards/C10.png",
+        "/poker/img/cards/C11.png",
+        "/poker/img/cards/C12.png",
+        "/poker/img/cards/C13.png",
+        "/poker/img/cards/S1.png",
+        "/poker/img/cards/S2.png",
+        "/poker/img/cards/S3.png",
+        "/poker/img/cards/S4.png",
+        "/poker/img/cards/S5.png",
+        "/poker/img/cards/S6.png",
+        "/poker/img/cards/S7.png",
+        "/poker/img/cards/S8.png",
+        "/poker/img/cards/S9.png",
+        "/poker/img/cards/S10.png",
+        "/poker/img/cards/S11.png",
+        "/poker/img/cards/S12.png",
+        "/poker/img/cards/S13.png",
+        "/poker/img/cards/D1.png",
+        "/poker/img/cards/D2.png",
+        "/poker/img/cards/D3.png",
+        "/poker/img/cards/D4.png",
+        "/poker/img/cards/D5.png",
+        "/poker/img/cards/D6.png",
+        "/poker/img/cards/D7.png",
+        "/poker/img/cards/D8.png",
+        "/poker/img/cards/D9.png",
+        "/poker/img/cards/D10.png",
+        "/poker/img/cards/D11.png",
+        "/poker/img/cards/D12.png",
+        "/poker/img/cards/D13.png",
+        "/poker/img/cards/H1.png",
+        "/poker/img/cards/H2.png",
+        "/poker/img/cards/H3.png",
+        "/poker/img/cards/H4.png",
+        "/poker/img/cards/H5.png",
+        "/poker/img/cards/H6.png",
+        "/poker/img/cards/H7.png",
+        "/poker/img/cards/H8.png",
+        "/poker/img/cards/H9.png",
+        "/poker/img/cards/H10.png",
+        "/poker/img/cards/H11.png",
+        "/poker/img/cards/H12.png",
+        "/poker/img/cards/H13.png",
+    ];
+
+    this.preloadImageArray(allImages, 0);
+    
+  } 
+  preloadImageArray(imageArray=[], idx=0) {
+
+    let pre_images = [imageArray.length];
+    
+    if (imageArray && imageArray.length > idx) {
+      pre_images[idx] = new Image();
+      pre_images[idx].onload = () => {
+        this.preloadImageArray(imageArray, idx+1);
+      }
+      pre_images[idx].src = imageArray[idx];
+    }
+
+  }
+
+
+
 }
 
 module.exports = Poker;

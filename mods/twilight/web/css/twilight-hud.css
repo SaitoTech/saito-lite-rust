@@ -1,4 +1,29 @@
 
+.controls ul li , .options {
+    background-color: whitesmoke;
+    height: 7rem;
+    border-top: 1px solid var(--saito-border-color);
+    width: 100%;
+    font-size: 1.6rem;
+    display: list-item;
+    line-height: 4.75rem;
+    list-style: none;
+    cursor: pointer;
+    text-align: center;
+    padding: 1rem;
+}
+
+.controls ul {
+    overflow: auto;
+}
+
+.controls {
+    height: max-content;
+    margin-top: 1rem;
+    max-height: 20rem;
+    overflow-y: scroll;
+}
+
 .hud-header {
   max-width: 500px;
   margin: auto;

@@ -82,6 +82,7 @@ class SettlersGameloop {
       /* Development Cards */
 
       if (mv[0] == "buy_card") {
+
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
 

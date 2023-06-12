@@ -1280,6 +1280,7 @@ console.log("LATEST MOVE: " + mv);
                 twilight_self.endTurn();
               });
             }else{
+	      twilight_self.cancelBackButtonFunction();
               twilight_self.updateStatus(`Waiting for USSR to play second ${twilight_self.cardToText("che")} coup`);
               return 0;
             }
@@ -1412,20 +1413,13 @@ console.log("LATEST MOVE: " + mv);
             this.game.queue.splice(this.game.queue.length-1, 1);
           }
 
-
           let user_message = "Select cards to discard:";
-          /*let html = "<ul>";
-          for (let i = 0; i < cardoptions.length; i++) {
-            html += `<li class="option card_${this.game.deck[0].crypt[i]}" id="${this.game.deck[0].crypt[i]}_${cardoptions[i]}">${this.game.deck[0].cards[cardoptions[i]].name}</li>`;
-          }*/
-          //html += '<li class="option dashed nocard" id="finished">Done discarding</li></ul>';
           cardoptions.push("finished");
+          //
+          // cardoptions is in proper order
+          //
+          let cards_discarded = 0;
           twilight_self.updateStatusAndListCards(user_message, cardoptions, function(action2) {
-
-            //
-            // cardoptions is in proper order
-            //
-            let cards_discarded = 0;
 
             if (action2 == "finished") {
 
@@ -1441,7 +1435,6 @@ console.log("LATEST MOVE: " + mv);
               cards_discarded++;
               $(`#${action2}.card`).hide();
               twilight_self.addMove("discard\tus\t"+action2);
-              //twilight_self.addMove(`NOTIFY\tUS discards <span class="showcard" id="${tmpar[1]}">${twilight_self.game.deck[0].cards[tmpar[1]].name}</span>`);
 
             }
           });
@@ -2048,23 +2041,6 @@ console.log("LATEST MOVE: " + mv);
 
       this.updateLog(mv[1].toUpperCase() + " coups " + this.countries[mv[2]].name + " with " + mv[3] + " OPS");
 
-/*****
-      // stats
-      if (player == "us") {
-	if (card != "") {
-          this.game.state.stats.us_ops += ops;
-          this.game.state.stats.us_modified_ops += mod_ops;
-	}
-      }
-      if (player == "ussr") {
-	if (card != "") {
-          this.game.state.stats.ussr_ops += ops;
-          this.game.state.stats.ussr_modified_ops += mod_ops;
-        }
-      }
-****/
-
-
       if (this.game.state.limit_milops != 1) {
         //
         // modify ops is handled incoherently with milops, so we calculate afresh here
@@ -2418,7 +2394,7 @@ console.log("LATEST MOVE: " + mv);
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["missileenvy", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["cubanmissile", "brezhnev", "iraniraq", "cambridge", "warsawpact", "mideast", "indopaki", "cia", "china"];
+          this.game.deck[0].hand = ["cubanmissile", "saltnegotiations", "iraniraq", "cambridge", "warsawpact", "mideast", "tehran", "cia", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -3337,6 +3313,7 @@ playerTurnHeadlineSelected(card, player) {
           this.playerTurn();
         }
       } else {
+	this.cancelBackButtonFunction();
         this.updateStatusAndListCards(`Waiting for USSR to move`);
       }
       return;
@@ -3428,6 +3405,7 @@ playerTurnHeadlineSelected(card, player) {
           this.playerTurn();
         }
       } else {
+	this.cancelBackButtonFunction();
         this.updateStatusAndListCards(`Waiting for US to move`);
       }
       return;
@@ -3464,6 +3442,13 @@ playerTurnHeadlineSelected(card, player) {
     //
     if (selected_card != null) { 
       this.game.state.back_button_cancelled = 1; 
+    }
+
+    //
+    // cancel this first round anyway
+    //
+    if (this.hud.back_button_clicked == true) {
+      this.cancelBackButtonFunction();
     }
 
     //
@@ -3887,12 +3872,12 @@ playerTurnHeadlineSelected(card, player) {
         announcement += twilight_self.isSpaceRaceAvailable(ops);    
         let header_msg = `${player.toUpperCase()} playing <span>${twilight_self.game.deck[0].cards[card].name}</span>`; 
 
-        twilight_self.updateStatusWithOptions(header_msg, announcement, (twilight_self.game.state.back_button_cancelled!=1));
+        if (twilight_self.game.state.back_button_cancelled != 1) { 
+	  twilight_self.bindBackButtonFunction(() => { this.playerTurn(); });
+	}
+        twilight_self.updateStatusWithOptions(header_msg, announcement);
       }
 
-      twilight_self.bindBackButtonFunction(() => {
-        this.playerTurn();
-      });
 
       twilight_self.hud.attachControlCallback(async function(action) {
 
@@ -3931,14 +3916,14 @@ playerTurnHeadlineSelected(card, player) {
             let fr_header =  "This is your opponent's event. Are you sure you wish to play it for the event instead of the OPS?";
             let fr_msg = '<ul><li class="option" id="playevent">play event</li></ul>';
 
-            twilight_self.updateStatusWithOptions(fr_header,fr_msg, function(action) {
+            twilight_self.bindBackButtonFunction(()=>{ twilight_self.playerTurn(original_selected_card); });
+            twilight_self.updateStatusWithOptions(fr_header, fr_msg, function(action) {
               $('.card').off();
               if (action == "playevent") {
                 twilight_self.playerTriggerEvent(player, card);
                 return;
               }
             });
-            twilight_self.bindBackButtonFunction(()=>{twilight_self.playerTurn(original_selected_card)});
             return;
           }
 
@@ -3953,6 +3938,7 @@ playerTurnHeadlineSelected(card, player) {
               <li class="option" id="dontshowme">don't confirm (expert mode)...</li>
               <ul>`;
 
+            twilight_self.bindBackButtonFunction(()=>{ twilight_self.playerTurn(original_selected_card)} );
             twilight_self.updateStatusWithOptions(fr_header, fr_msg, function(action) {
               $('.card').off();
   	      if (action === "dontshowme") {
@@ -3968,7 +3954,6 @@ playerTurnHeadlineSelected(card, player) {
               }
             });
 
-            twilight_self.bindBackButtonFunction(()=>{twilight_self.playerTurn(original_selected_card)});
             return;
           }
 
@@ -3991,6 +3976,7 @@ playerTurnHeadlineSelected(card, player) {
               </ul>
               `;
           
+             twilight_self.bindBackButtonFunction(()=>{ twilight_self.playerTurn(original_selected_card)} );
              twilight_self.updateStatusWithOptions(fr_header, fr_msg, function(action) {
               $('.card').off();
 
@@ -4006,7 +3992,6 @@ playerTurnHeadlineSelected(card, player) {
               }
              });
 
-            twilight_self.bindBackButtonFunction(()=>{twilight_self.playerTurn(original_selected_card)});
             return;
           }
 
@@ -4024,6 +4009,7 @@ playerTurnHeadlineSelected(card, player) {
               <li class="option" id="dontshowme">don't confirm (expert mode)...</li>
               </ul>`;
 
+            twilight_self.bindBackButtonFunction(()=>{twilight_self.playerTurn(original_selected_card)});
             twilight_self.updateStatusWithOptions(fr_header,fr_msg, function(action) {
               $('.card').off();
 
@@ -4042,7 +4028,6 @@ playerTurnHeadlineSelected(card, player) {
               }
             });
 
-            twilight_self.bindBackButtonFunction(()=>{twilight_self.playerTurn(original_selected_card)});
             return;
           }
 
@@ -4083,20 +4068,34 @@ playerTurnHeadlineSelected(card, player) {
       if (card === "missileenvy") { bind_back_button_state = false; }
       if (twilight_self.game.state.event_before_ops == 1) { bind_back_button_state = false; }
       if (twilight_self.game.state.headline == 1) { bind_back_button_state = false; }
-      if (twilight_self.game.state.back_button_cancelled == 1) { bind_back_button_state = false; }
+      if (twilight_self.game.state.back_button_cancelled == 1) {
+	twilight_self.cancelBackButtonFunction();
+	bind_back_button_state = false; 
+      }
 
-      let html = twilight_self.formatPlayOpsStatus(player, ops); 
+      let html = '<ul>';
+      if ((this.game.player == this.game.state.events.cubanmissilecrisis)  && this.game.state.events.cubanmissilecrisis > 0 ) {
+        if (this.canCancelCMC()) {
+          html += '<li class="option" id="cancel_cmc">cancel cuban missile crisis</li>';
+        }
+      }
+      if (this.game.state.limit_placement == 0) { html += '<li class="option" id="place">place influence</li>'; }
+      if (this.game.state.limit_coups == 0) { html += '<li class="option" id="coup">launch coup</li>'; }
+      if (this.game.state.limit_realignments == 0) { html += '<li class="option" id="realign">realign country</li>'; }
+      if (this.game.state.events.unintervention == 1) {html += this.isSpaceRaceAvailable(ops); }
+      html += '</ul>';
+
       
-      twilight_self.updateStatusWithOptions(`${player.toUpperCase()} plays ${ops} OPS:`, html, bind_back_button_state);
       if (bind_back_button_state) {
         twilight_self.bindBackButtonFunction(() => {
           twilight_self.game.state.events.vietnam_revolts_eligible = 1;
           twilight_self.game.state.events.china_card_eligible = 1;
           twilight_self.addMove("revert");
           twilight_self.endTurn();
-  	      return;
+           return;
         });
       }
+      twilight_self.updateStatusWithOptions(`${player.toUpperCase()} plays ${ops} OPS:`, html);
 
       // TODO:
       twilight_self.hud.attachControlCallback(async function(action2) {
@@ -4130,6 +4129,7 @@ playerTurnHeadlineSelected(card, player) {
                 <li class="option" id="dontshowme">don't confirm (expert mode)...</li>
               </ul>`;
 
+              twilight_self.bindBackButtonFunction(()=>{twilight_self.playerOps(player, ops, card)});
               twilight_self.updateStatusWithOptions(fr_header,fr_msg, function(action) {
                 $('.card').off();
 
@@ -4148,7 +4148,6 @@ playerTurnHeadlineSelected(card, player) {
                 }
               });
 
-              twilight_self.bindBackButtonFunction(()=>{twilight_self.playerOps(player, ops, card)});
               return;
             }
 
@@ -4357,10 +4356,6 @@ playerTurnHeadlineSelected(card, player) {
           });
         }
 
-        twilight_self.bindBackButtonFunction(() => {
-          twilight_self.playOps(player, ops, card);
-        });       
-
 
       });
 
@@ -4391,27 +4386,13 @@ playerTurnHeadlineSelected(card, player) {
     return c;
   }
 
-  formatPlayOpsStatus(player, ops) {
-    let html = '<ul>';
-
-    if ((this.game.player == this.game.state.events.cubanmissilecrisis)  && this.game.state.events.cubanmissilecrisis > 0 ) {
-      if (this.canCancelCMC()) {
-        html += '<li class="option" id="cancel_cmc">cancel cuban missile crisis</li>';
-      }
-    }
-
-    if (this.game.state.limit_placement == 0) { html += '<li class="option" id="place">place influence</li>'; }
-    if (this.game.state.limit_coups == 0) { html += '<li class="option" id="coup">launch coup</li>'; }
-    if (this.game.state.limit_realignments == 0) { html += '<li class="option" id="realign">realign country</li>'; }
-    if (this.game.state.events.unintervention == 1) {html += this.isSpaceRaceAvailable(ops); }
-
-    html += '</ul>';
-    return html;
+  cancelBackButtonFunction() {
+    this.hud.back_button = false;
+    this.hud.back_button_callback = null;
   }
-
   bindBackButtonFunction(mycallback) {
-    $('#back_button').off();
-    $('#back_button').on('click', mycallback);
+    this.hud.back_button = true;
+    this.hud.back_button_callback = mycallback;
   }
 
 
@@ -4475,7 +4456,9 @@ playerTurnHeadlineSelected(card, player) {
   revertTurn() {
 
     let twilight_self = this;
-
+ 
+    this.cancelBackButtonFunction();
+    this.hud.back_button_clicked = true;
 console.log("REVERTING TURN: ");
 console.log("CMC 1: " + twilight_self.game.state.events.cubanmissilecrisis_cancelled);
 console.log("CMC 2: " + twilight_self.game.state.events.cubanmissilecrisis_removal_country);

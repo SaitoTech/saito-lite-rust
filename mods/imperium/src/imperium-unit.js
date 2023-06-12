@@ -34,6 +34,33 @@
     if (obj.bombardment_rolls == null)  { obj.bombardment_rolls = 0; } // 0 means no bombardment abilities
     if (obj.bombardment_combat == null) { obj.bombardment_combat = -1; } // hits on N
 
+    if (obj.returnCardImage == null) { 
+      obj.returnCardImage = (unit, mode="long") => {
+
+        return `
+          <div class="unit ${mode}">
+            <div class="unit-description" data-type="${unit.type}" data-name="${unit.name}" data-amount="0">${unit.name}</div>
+            <div class="unit-ship unit-ship-${unit.type}"></div>
+            <div class="unit-details">
+              <div class="unit-num">${unit.cost}</div>
+              <div class="unit-desc">cost</div>
+            </div>
+            <div class="unit-details">
+              <div class="unit-num">${unit.move}</div>
+              <div class="unit-desc">move</div>
+            </div>
+            <div class="unit-details">
+              <div class="unit-num">${unit.combat}</div>
+              <div class="unit-desc">combat</div>
+            </div>
+            <div class="unit-details">
+              <div class="unit-num">${unit.capacity}</div>
+              <div class="unit-desc">cargo</div>
+            </div>
+          </div>
+        `;
+      }
+    }
 
     obj = this.addEvents(obj);
     this.units[name] = obj;

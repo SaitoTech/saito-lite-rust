@@ -672,7 +672,6 @@ console.log("WHO: " + this.returnFaction(z+1));
 
         } else {
 
-	  this.addEventsToBoard();
   	  this.updateStatus("<div class=\"status-update\"><div class=\"player_color_box player_color_"+player+"\"></div>" + this.returnFaction(parseInt(player)) + " is taking their turn.</div>");
 
   	}
@@ -1810,11 +1809,14 @@ if (debugging == 0) {
 	  }
 	}  
 
+        this.objectives_overlay.render(cards);
+
+/*****
   	if (this.game.state.round > 1) {
   	  title = "New Objectives"; 
   	  subtitle = "view all public and secret objectives in the CARDS menu...";
   	}
-
+       
         this.overlay.showCardSelectionOverlay(this.app, this, cards, {
 
 	  title : title,
@@ -1849,6 +1851,7 @@ if (debugging == 0) {
             }
 	  },
 	});
+*****/
 
   	this.game.queue.splice(qe, 1);
   	return 1;
@@ -2884,7 +2887,18 @@ if (debugging == 0) {
 	}
 	if (type === "secret_objectives" || type === "secret_objective") {
           if (this.game.player == player && this.browser_active == 1) {
-	    this.overlay.show(this.returnNewSecretObjectiveOverlay(this.game.deck[5].hand.slice(this.game.deck[5].hand.length-amount, this.game.deck[5].hand.length)));
+
+	    let idxs = this.game.deck[5].hand.slice(this.game.deck[5].hand.length-amount, this.game.deck[5].hand.length);
+	    let cards = [];
+	    for (let i = 0; i < idxs.length; i++) {
+	      cards.push(this.secret_objectives[idxs[i]]);
+	    }
+
+	    //
+	    // show the objective(s)
+	    //
+	    this.objectives_overlay.render(cards);
+
 	  }
 	  this.game.state.players_info[player-1].secret_objectives_in_hand += amount;
 	}

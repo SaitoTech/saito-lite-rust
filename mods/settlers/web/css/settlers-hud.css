@@ -4,6 +4,12 @@
   z-index: 50 !important;
 }
 
+.tbd {
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .hud-body {
   min-height: 11rem;
   width: calc(100% - 5rem);
@@ -42,6 +48,7 @@
 
 .hud-body .mobile {
   display: none;
+  z-index: 10000;
 }
 
 .hud-body .mobile .score {

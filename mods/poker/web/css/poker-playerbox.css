@@ -9,6 +9,9 @@
 .game-playerbox-manager .game-playerbox {
   overflow: visible;
 }
+.game-playerbox.game-playerbox-seat-1 {
+  overflow: auto;
+}
 .game-playerbox-1 .game-playerbox-seat-1 .game-playerbox-head .saito-user .game-playerbox-graphics {
   display: none;
   overflow: auto;
