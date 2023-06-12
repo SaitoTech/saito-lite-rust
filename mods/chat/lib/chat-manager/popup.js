@@ -1,4 +1,3 @@
-//const SaitoEmoji = require("../../../../lib/saito/ui/saito-emoji/saito-emoji");
 const SaitoInput = require("../../../../lib/saito/ui/saito-input/saito-input");
 const ChatPopupTemplate = require("./popup.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");

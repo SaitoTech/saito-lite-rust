@@ -93,9 +93,26 @@
 }
 
 
-/* override definitions from giphy.css and saito-emoji.css */
+/* override definitions from giphy.css */
 .selection-box-window .saito-gif-container {
 	padding: 0.5rem;
+}
+
+emoji-picker {
+  --emoji-size: 2.5rem;
+  --emoji-padding: 0.5rem;
+  z-index: 2;
+}
+
+.saito-emoji {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 0.8rem 0.5rem;
+  color: var(--saito-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 2rem;
 }
 
 .selection-box-window emoji-picker {

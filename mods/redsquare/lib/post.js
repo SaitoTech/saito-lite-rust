@@ -1,7 +1,6 @@
 const SaitoUser = require("./../../../lib/saito/ui/saito-user/saito-user");
 const PostTemplate = require("./post.template");
 const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
-//const SaitoEmoji = require("./../../../lib/saito/ui/saito-emoji/saito-emoji");
 const SaitoInput = require("./../../../lib/saito/ui/saito-input/saito-input");
 const JSON = require("json-bigint");
 
@@ -87,9 +86,6 @@ class Post {
     };
 
     this.input.render();
-
-    //this.emoji = new SaitoEmoji(this.app, this.mod, 'post-tweet-textarea', '.saito-emoji-icon-container');
-    //this.emoji.render();
 
     this.attachEvents();
   }
