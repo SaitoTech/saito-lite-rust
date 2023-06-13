@@ -154,6 +154,8 @@ class Shogun extends GameTemplate {
       this.hud.render();  
     }
 
+console.log("PRE-RENDER");
+
     this.board.render();
 
   }
@@ -164,6 +166,8 @@ class Shogun extends GameTemplate {
     if (this.game.status != "") { this.updateStatus(this.game.status); }
 
     this.deck = this.returnDeck();
+
+console.log("DECK LOADED: " + JSON.stringify(this.deck));
 
     //
     // initialize
@@ -419,7 +423,8 @@ return;
           //Make sure incoming moves from opponent are queued until the animation finishes
           this.game.halted = 1;
 
-          this.displayDecks();
+	  this.board.render();
+
           $(".animation_helper").remove();
 
           console.log("Replacing cards in HUD");
@@ -1111,6 +1116,8 @@ return;
       }
 
 
+
+
       if (mv[0] == "vassal"){
         this.game.queue.splice(qe, 1);
         let player = parseInt(mv[1]);
@@ -1144,6 +1151,7 @@ return;
         }
         return 0;
       }
+
 
       if (mv[0] == "augment"){
         this.game.queue.splice(qe, 1);
@@ -1193,57 +1201,14 @@ return;
     this.board.render();
     return;
 
-    let html = "";
-    for (let c in this.game.state.supply){
-      if (c !== "curse"){
-        html += `<div class="cardpile showcard" id="${c}">`;
-        let count = this.game.state.supply[c]; 
-        if (count > 0){
-          /*
-          for (let i = 0; i < count - 1; i++){
-            let shift = (count > 12) ? i : i*2;
-            html += `<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;  
-          }
-            let shift = (count > 12) ? count : count*2;
-            */
-
-          html += `<div class="card_count">${this.game.state.supply[c]}</div>
-                  ${this.returnCardImage(c, false)}
-                  </div>`;
-        }else{
-          html += `<div class="card_count">No more ${this.cardToText(c,true)}</div>`;
-        }
-        html += "</div>";  
-      }
-    }
-
-    //html += `<i id="board-display" class="board-display fas fa-recycle"></i>`;
-
-    if (document.querySelector(".cardstacks")){
-      $(".cardstacks").html(html);
-    }else{
-      this.app.browser.addElementToId(`<div class="cardstacks">${html}</div>`, "main");
-      $(".cardstacks").draggable();
-    }
-
-    //Toggle card pile configuration
-
-    /*$("#board-display").off();
-    $("#board-display").on("click", ()=>{
-      if ($(".cardstacks").hasClass("large")){
-        $(".cardstacks").removeClass("large");
-        $(".cardstacks").addClass("long");
-      }else if ($(".cardstacks").hasClass("long")){
-        $(".cardstacks").removeClass("long");
-      }else{
-        $(".cardstacks").addClass("large");
-      }
-    });
-    */
     this.displayDecks();
   }
 
   displayDecks(){
+
+    this.board.render();
+    return;
+
     //Show Discard/DrawPiles
     console.log("Update decks");
     $(".animation_helper.done").remove();
@@ -1333,212 +1298,6 @@ return;
       if (this.game.state.supply[s]==0){
         count++;
       }
-    }
-
-    return (count>=3);
-  }
-
-  //Utilities
-  hasActionCard(){
-    if (this.game.player === 0) { return; }
-    let pi = this.game.player-1;
-    for (let c of this.game.deck[pi].hand){
-      let cardname = this.game.deck[pi].cards[c];
-      if (this.deck[cardname].type.includes("action")){
-        return true;
-      }
-    }
-    return false;
-  }
-
-  hasCardInHand(cardvalue){
-    if (this.game.player === 0) { return; }
-    let pi = this.game.player-1;
-    for (let c of this.game.deck[pi].hand){
-      console.log(cardvalue, this.game.deck[pi].cards[c]);
-      if(this.game.deck[pi].cards[c] == cardvalue){
-        return true;
-      }
-    }
-    return false;
-  }
-
-   returnAvailableMoney(){
-    if (this.game.player === 0) { return; }
-    let bank = this.game.state.coins;
-    let pi = this.game.player-1;
-    for (let c of this.game.deck[pi].hand){
-      let cardname = this.game.deck[pi].cards[c];
-      if (this.deck[cardname].type == "treasure"){
-        bank += parseInt(this.deck[cardname].text);
-        if (this.game.state.merchant && cardname == "silver"){
-          bank++;
-          this.game.state.merchant = false;
-        }
-      }
-    }
-    return bank;
-  }
-
-  async spendMoney(price){
-    if (this.game.player === 0) { return; }
-    let pi = this.game.player-1;
-    let used = [];
-    let available_money = this.sortHand(Array.from(this.game.deck[pi].hand));
-
-    for (let i = available_money.length - 1; i >= 0; i--){
-      let cardname = this.game.deck[pi].cards[available_money[i]];
-      if (this.deck[cardname].type == "treasure"){
-        if (parseInt(this.deck[cardname].text) <= price){
-          used.push(cardname);
-          price -= parseInt(this.deck[cardname].text);
-        }
-      }
-    }
-    if (price>0){
-      if (price <= this.game.state.coins){
-        this.game.state.coins -= price;
-      }else{
-        console.error("Overspending");
-      }
-    }
-
-    for (let bill of used){
-      this.discardCard(bill);
-      this.addMove(`DISCARD\t${this.game.player}\t${this.lastCardKey}`);
-      await this.timeout(250);
-    }
-    this.endTurn();
-  }
-
-  cardToText(card, textonly = false){
-    try{
-      if (textonly){
-        return this.deck[card].name;
-      }else{
-        return `<span class="logcard" id="${card}">${this.deck[card].name}</span>`;
-      }
-    }catch(err){
-      console.log(err);
-      console.log(card,this.deck[card]);
-    }
-  }
-
-  cardsToText(cards){
-    if (cards.length == 0){
-      return "";
-    }
-    if (cards.length == 1){
-      return this.cardToText(cards[0]);
-    }
-    let text = "";
-    for (let c of cards){
-      text += this.cardToText(c) + ", ";
-    }
-    return text.substring(0, text.length - 2);
-  }
-
-  /*
-  Get the card out of the hand (but don't add it to the discards ...yet)
-  */
-  discardCard(card, pause){
-    this.removeCardFromHand(card);
-  }
-
-  trashCard(card){
-    this.removeCardFromHand(card);
-    this.moveGameElement(this.copyGameElement(`#status-cardbox #${card}:not(.hidden)`), "#trash_can", {resize: 1, insert: 1}, () => { $("#trash_can").html("");});
-  }
-
-  putCardInPlay(card){
-    this.removeCardFromHand(card);
-    this.moveGameElement(this.copyGameElement(`#status-cardbox #${card}:not(.hidden)`), "#active_card_zone", {insert: 1});
-  }
-
-  putCardOnDeck(card){
-    let we_self = this;
-    this.removeCardFromHand(card);
-    this.moveGameElement(this.copyGameElement(`#status-cardbox #${card}:not(.hidden)`), "#drawpile", {}, 
-                       (elem)=>{
-                          $(elem).remove();
-                          $(we_self.flipCardHTML(card, false)).appendTo("#drawpile").toggleClass("flipped");
-                        }); 
-  }
-
-  removeCardFromHand(card) {
-    if (this.game.player === 0) { return; }
-    let pi = this.game.player-1;
-
-    for (let i = this.game.deck[pi].hand.length - 1; i >= 0 ; i--) {
-      if (this.game.deck[pi].cards[this.game.deck[pi].hand[i]] === card) {
-        this.lastCardKey = this.game.deck[pi].hand[i];
-        this.lastCardValue = card;
-        this.game.deck[pi].hand.splice(i, 1);
-
-        return 1; //Only remove one copy
-      }
-    }
-    console.log("Card not found");
-  }
-
-  removeCardFromPool(card, pool) {
-    if (this.game.player == 0) { return; }
-    for (let i = 0; i < this.game.pool[pool-1].hand.length; i++) {
-      if (this.game.pool[pool-1].cards[this.game.pool[pool-1].hand[i]] == card) {
-        this.lastCardKey = this.game.pool[pool-1].hand[i];
-        this.lastCardValue = card;
-        this.game.pool[pool-1].hand.splice(i, 1);
-        return; //Only remove one copy
-      }
-    }
-  }
-
- playCard(player, card_to_play){
-
-    we_self = this;
-
-    //Attacks
-    if (this.deck[card_to_play].type.includes("attack")){
-
-      let html = `<div class="attack_overlay">
-                    <div class="h2">Attack! -- ${this.deck[card].name}</div>
-                    <div class="overlay_content">
-                      <div class="overlay-img">${this.returnCardImage(card)}</div>
-                      <div class="attack_details"></div>
-                    </div>
-                 </div>`;
-
-//
-// HACK
-//
-      this.attackOverlay.show(this.returnAttackOverlay(card_to_play));
-      for (let i = 1; i <= this.game.players.length; i++){
-        this.game.queue.push(`attack\t${player}\t${i}\t${card_to_play}`);
-      }
-    }
-    //**
-    if (card_to_play == "bandit"){
-      //Gain a gold. Each other player reveals the top 2 cards of their deck, trashes a revealed Treasure other than Copper, and discards the rest.
-      this.game.queue.push(`buy\t${player}\tgold`);
-    }
-    //**
-    if (card_to_play == "bureaucrat"){
-      //Gain a Silver onto your deck. Each other player reveals a Victory card from their hand and puts it onto their deck (or reveals a hand with no Victory cards)
-      this.game.queue.push(`buy\t${player}\tsilver\tdeck`);
-    }
-   //**
-    if (card_to_play == "militia"){
-      //+2 Coin, Each other play discards down to 3 cards in hand
-      this.game.state.coins += 2;
-    }
-    //**
-    if (card_to_play == "spy"){
-      //+1 Card +1 Action, Each player (including you) reveals the top card of their deck and either discards it or puts it back, your choice.
-      this.game.state.actions++;
-      this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t1`);
-    }
-    if (card_to_play == "thief"){
-      //Each other player reveals the top 2 cards of their deck. If they revealed any Treasure cards, you choose one to trash. You may gain any and all of these trashed cards. Other revealed cards are discarded.      
     }
     //**
     if (card_to_play == "witch"){
@@ -2102,7 +1861,7 @@ return;
 	name : "Remodel", 
 	type : "action" , 
 	cost : 4 , 
-`	text: "Trash a card from your hand. Gain a card costing up to 2 more than it"
+	text: "Trash a card from your hand. Gain a card costing up to 2 more than it"
     };
     deck['sentry']      = { 
 	img : "sentry.jpg" , 
@@ -2220,6 +1979,5 @@ return;
 } 
 
 module.exports = Shogun;
-
 
 

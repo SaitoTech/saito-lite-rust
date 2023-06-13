@@ -6,7 +6,11 @@ module.exports = () => {
       <div class="coins"></div>
       <div class="cardpile"></div>
       <div class="estates"></div>
+      <div class="draw-pile"></div>
+      <div class="discard-pile"></div>
     </div>
+
+
 
   `;
 
