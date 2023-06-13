@@ -1,0 +1,8 @@
+
+The files contained in the /web/images directory are from the VASSAL Game Module of Dominion
+
+	https://vassalengine.org/wiki/Module:Dominion
+
+The blockchain module files not explicitly owned by GMT Games are happily released under the same license as the Saito engine.
+
+
