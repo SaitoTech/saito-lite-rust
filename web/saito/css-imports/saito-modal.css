@@ -18,13 +18,35 @@ This alows for a header with a header with title to be added without extra CSS
 
 .saito-modal-title {
   font-size: 3rem;
-}
-
-.saito-modal-menu .saito-modal-title {
   padding: unset;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid;
 }
+
+
+.saito-contact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.saito-contacts-list {
+  margin: 0.5rem 0;
+}
+
+.saito-modal-content .saito-user {
+  height: 5rem;
+
+  align-items: center;
+  font-size: 20px;
+}
+
+.saito-modal-content .saito-user .saito-identicon-box {
+  width: 4.5rem;
+  height: 4.5rem;
+}
+
 
 .saito-modal-menu .saito-modal-title .saito-user {
   height: 6rem;
@@ -52,7 +74,7 @@ This alows for a header with a header with title to be added without extra CSS
   grid-template-columns: 4rem 1fr;
 }
 
-.saito-modal-menu-option:hover {
+.saito-modal-menu-option:hover, .saito-contact:hover {
   background-color: var(--saito-hover-background);
   cursor: pointer;
 }
