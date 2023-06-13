@@ -46,7 +46,7 @@ class Encrypt extends ModTemplate {
     let encrypt_self = this;
 
     if (type == "user-menu") {
-      if (obj?.publickey) {
+      if (obj?.aes_publickey) {
         if (this.app.keychain.hasPublicKey(obj.publickey)) {
           return null;
         }
