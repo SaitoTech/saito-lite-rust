@@ -70,6 +70,7 @@ class Post {
       if (this.images.length >= 4) {
         salert("Maximum 4 images allowed per tweet.");
       } else {
+        console.log(file);
         let type = file.substring(file.indexOf(":") + 1, file.indexOf(";"));
         if (this.mod.allowed_upload_types.includes(type)) {
           let resized_img = await this.app.browser.resizeImg(file);
