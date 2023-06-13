@@ -12,8 +12,15 @@ class ChatManager {
     this.app = app;
     this.mod = mod;
     this.container = container || ".chat-manager";
-    this.contactList = new ContactsList(app, mod, false);
-    this.contactList.callback = (person) => { console.log(person); }
+    this.contactList = new ContactsList(app, mod, true);
+    this.contactList.callback = async (person) => 
+        { 
+          if (Array.isArray(person) && person.length > 1){
+            let name = await sprompt("Choose a name for the group");
+            this.mod.returnOrCreateChatGroupFromMembers(person, name);   
+          }
+        }
+
 
     //
     // some apps may want chat manager quietly in background

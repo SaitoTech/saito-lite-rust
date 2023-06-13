@@ -926,7 +926,7 @@ class Chat extends ModTemplate {
       name: name,
       txs: [],
       unread: 0,
-      last_update: 0,
+      last_update: new Date().getTime(),
     };
 
     //Prepend the community chat
