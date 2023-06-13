@@ -3,6 +3,7 @@ const ChatManagerTemplate = require("./main.template");
 const ChatTeaser = require('./teaser.template');
 const JSON = require('json-bigint');
 const ChatMenu = require("./../overlays/chat-menu");
+const ContactsList = require("./../../../../lib/saito/ui/modals/saito-contacts/saito-contacts");
 
 class ChatManager {
 
@@ -11,6 +12,15 @@ class ChatManager {
     this.app = app;
     this.mod = mod;
     this.container = container || ".chat-manager";
+    this.contactList = new ContactsList(app, mod, true);
+    this.contactList.callback = async (person) => 
+        { 
+          if (Array.isArray(person) && person.length > 1){
+            let name = await sprompt("Choose a name for the group");
+            this.mod.returnOrCreateChatGroupFromMembers(person, name);   
+          }
+        }
+
 
     //
     // some apps may want chat manager quietly in background
@@ -257,6 +267,13 @@ class ChatManager {
         chatMenu.render();
       }
     });
+
+
+    if (document.querySelector(".add-contacts")){
+      document.querySelector(".add-contacts").onclick = (e) => {
+        this.contactList.render();
+      }
+    }
 
   }
 

@@ -36,6 +36,8 @@ class ChatPopup {
     //
     if (this.group == null) { return; }
 
+    //console.log(JSON.parse(JSON.stringify(this.group)));
+
     //
     // exit if manually minimized
     //
@@ -264,10 +266,9 @@ class ChatPopup {
         let msg = img.outerHTML;
 
         let newtx = mod.createChatTransaction(group_id, img.outerHTML); // img into msg
-        newtx = app.wallet.signTransaction(newtx);
         mod.sendChatTransaction(app, newtx);
-        this.input.setInput("");
         mod.receiveChatTransaction(app, newtx);
+        this.input.setInput("");
 
       }, false); // false = no drag-and-drop image click
 

@@ -69,20 +69,20 @@ class Post {
     this.input.callbackOnUpload = async (file) => {
       if (this.images.length >= 4) {
         salert("Maximum 4 images allowed per tweet.");
+      } else if (file.includes("giphy.gif")) {
+        this.addImg(file);
       } else {
         let type = file.substring(file.indexOf(":") + 1, file.indexOf(";"));
         if (this.mod.allowed_upload_types.includes(type)) {
           let resized_img = await this.app.browser.resizeImg(file);
           this.addImg(resized_img);
         } else {
-          salert(
-            "allowed file types: " +
-              this.mod.allowed_upload_types.join(", ") +
-              " - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading."
+          salert(`Cannot upload ${type} image, allowed file types: 
+              ${this.mod.allowed_upload_types.join(", ")} 
+              - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.`
           );
         }
       }
-      this.file_event_added = true;
     };
 
     this.input.render();

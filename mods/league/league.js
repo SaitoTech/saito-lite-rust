@@ -295,7 +295,7 @@ class League extends ModTemplate {
 
         let league = null;
         let rank, myPlayerStats;
-        let cutoff = new Date().getTime() - 24 * 60 * 60 * 1000;
+        let cutoff = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
         //console.log("Sending SQL query to update");
         this.sendPeerDatabaseRequestWithFilter(
           "League",

@@ -300,3 +300,17 @@
     border-radius: 0;
   }
 }
+
+
+.add-contacts {
+  position: relative;
+  width: fit-content;
+  left: 90%;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.5s;
+}
+
+.add-contacts:hover{
+  transform: rotate(90deg);
+}
