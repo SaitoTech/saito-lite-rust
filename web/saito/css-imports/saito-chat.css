@@ -1,6 +1,6 @@
 .chat-manager {
-  max-height: 25vh;
   height: 25%;
+  flex: 1;
 }
 
 .chat-manager .saito-userline {
@@ -102,9 +102,7 @@
   padding: 1rem;
   display: block;
   height: calc(100% - 9rem);
-  overflow: auto;
-  /* Put a TRANSPARENT TEXTURE over the chat body background www.transparenttextures.com
-  background-image: url("/chat/img/subtle-surface.png");*/
+  overflow: clip auto;
   background-color: #bbb1;
   background-image: url(/saito/img/tiled-logo.svg);
 }
@@ -220,6 +218,7 @@
   max-height: 15rem;
   overflow-y: auto;
   word-break: break-word;
+  height: 4.2rem;
 }
 
 .chat-footer .saito-emoji {
@@ -232,7 +231,7 @@
   z-index: 2;
   transition: all 0.2s;
   font-size: 2rem;
-  padding: 1.1rem 0.8rem;
+  padding: 1rem 0.5rem;
 }
 
 .chat-footer i:hover {

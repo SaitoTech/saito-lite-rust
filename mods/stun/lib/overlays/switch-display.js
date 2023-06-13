@@ -9,22 +9,18 @@ class SwitchDisplay {
   }
 
   render(display_mode) {
-    this.saitoOverlay.show(
-      SwitchDisplayTemplate(display_mode)
-    );
+    this.saitoOverlay.show(SwitchDisplayTemplate(display_mode));
     this.attachEvents();
   }
 
   attachEvents() {
-
-    Array.from(document.querySelectorAll(".switch-to")).forEach(option => {
+    Array.from(document.querySelectorAll(".switch-to")).forEach((option) => {
       option.onclick = (e) => {
         let choice = e.currentTarget.getAttribute("id");
         this.app.connection.emit("stun-switch-view", choice);
-        this.saitoOverlay.hide();  
-      }
+        this.saitoOverlay.hide();
+      };
     });
-
   }
 }
 

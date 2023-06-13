@@ -10,6 +10,10 @@
   display: grid;
 }
 
+.tweet-overlay-header {
+  grid-row: 1;
+}
+
 .tweet-overlay-content-controls {
   display: flex;
   flex-direction: row;

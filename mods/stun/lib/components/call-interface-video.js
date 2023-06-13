@@ -24,30 +24,27 @@ class CallInterfaceVideo {
     this.current_speaker = null;
     this.speaker_candidate = null;
 
-    this.app.connection.on(
-      "show-call-interface",
-      (room_code, videoEnabled, audioEnabled) => {
-        this.room_code = room_code;
+    this.app.connection.on("show-call-interface", (room_code, videoEnabled, audioEnabled) => {
+      this.room_code = room_code;
 
-        console.log("Render Video Call Interface");
-        //This will render the (full-screen) component
-        if (!document.querySelector(".stun-chatbox")) {
-          this.render(videoEnabled, audioEnabled);
-        }
-
-        this.room_link = this.createRoomLink();
-
-        /* automatically copy invite link to clipboard for first user */
-        console.log(this.users_on_call);
-
-        if (this.users_on_call == 1) {
-          this.copyInviteLink();
-        }
-        
-        // create chat group
-        this.createRoomTextChat();
+      console.log("Render Video Call Interface");
+      //This will render the (full-screen) component
+      if (!document.querySelector(".stun-chatbox")) {
+        this.render(videoEnabled, audioEnabled);
       }
-    );
+
+      this.room_link = this.createRoomLink();
+
+      /* automatically copy invite link to clipboard for first user */
+      console.log(this.users_on_call);
+
+      if (this.users_on_call == 1) {
+        this.copyInviteLink();
+      }
+
+      // create chat group
+      this.createRoomTextChat();
+    });
 
     this.app.connection.on("add-local-stream-request", (localStream) => {
       this.addLocalStream(localStream);
@@ -93,44 +90,53 @@ class CallInterfaceVideo {
     // Change arrangement of video boxes (emitted from SwitchDisplay overlay)
     app.connection.on("stun-switch-view", (newView) => {
       this.display_mode = newView;
-      if (newView == "gallery") {
-        this.switchDisplayToGallery();
-      }else{
-        this.switchDisplayToExpanded();
+      switch (newView) {
+        case "gallery":
+          this.switchDisplayToGallery();
+          break;
+        case "focus":
+          this.switchDisplayToExpanded();
+          break;
+        case "presentation":
+          this.swicthDisplayToPresentation();
+          break;
+
+        default:
+          break;
       }
+      // if(newView !== "presentation"){}
       siteMessage(`Switched to ${newView} display`, 2000);
     });
-
 
     app.connection.on("stun-new-speaker", (peer) => {
       console.log("New Speaker: " + peer);
       document.querySelectorAll(".video-box-container-large").forEach((item) => {
         if (item.id === `stream${peer}`) {
-          
-          if (item.classList.contains("speaker")){
+          if (item.classList.contains("speaker")) {
             console.log("Same speaker");
             return;
           }
 
-          if (this.display_mode == "speaker" && !item.parentElement.classList.contains("expanded-video")) {
+          if (
+            this.display_mode == "speaker" &&
+            !item.parentElement.classList.contains("expanded-video")
+          ) {
             this.flipDisplay(peer);
           }
-          
-          item.classList.add("speaker");
 
+          item.classList.add("speaker");
         } else {
           item.classList.remove("speaker");
         }
       });
-
     });
-
   }
 
   render(videoEnabled, audioEnabled) {
-
-    if (!document.querySelector("#stun-chatbox")){
-      this.app.browser.addElementToDom(CallInterfaceVideoTemplate(this.mod, videoEnabled, audioEnabled));  
+    if (!document.querySelector("#stun-chatbox")) {
+      this.app.browser.addElementToDom(
+        CallInterfaceVideoTemplate(this.mod, videoEnabled, audioEnabled)
+      );
     }
 
     this.attachEvents();
@@ -162,7 +168,6 @@ class CallInterfaceVideo {
   }
 
   attachEvents() {
-    
     let add_users = document.querySelector(".add_users_container");
     if (add_users) {
       add_users.addEventListener("click", (e) => {
@@ -180,7 +185,6 @@ class CallInterfaceVideo {
         this.app.connection.emit("chat-popup-render-request", this.chat_group);
       }
     });
-    
 
     if (document.querySelector(".effects-control")) {
       document.querySelector(".effects-control").addEventListener("click", (e) => {
@@ -216,8 +220,7 @@ class CallInterfaceVideo {
       };
     });
 
-    if (!this.mod.browser_active){
-
+    if (!this.mod.browser_active) {
       document.querySelector(".stun-chatbox .minimizer").addEventListener("click", (e) => {
         // fas fa-expand"
         let icon = document.querySelector(".stun-chatbox .minimizer i");
@@ -225,12 +228,10 @@ class CallInterfaceVideo {
 
         if (icon.classList.contains("fa-caret-down")) {
           this.app.connection.emit("stun-switch-view", "speaker");
-          
           chat_box.classList.add("minimize");
           icon.classList.remove("fa-caret-down");
           icon.classList.add("fa-expand");
           this.app.browser.makeDraggable("stun-chatbox", "", true);
-
         } else {
           chat_box.classList.remove("minimize");
           chat_box.style.top = "0";
@@ -239,21 +240,18 @@ class CallInterfaceVideo {
           chat_box.style.height = "";
           icon.classList.remove("fa-expand");
           icon.classList.add("fa-caret-down");
-          this.app.browser.cancelDraggable("stun-chatbox");          
+          this.app.browser.cancelDraggable("stun-chatbox");
         }
       });
     }
 
     document.querySelector(".large-wrapper").addEventListener("click", (e) => {
-      if (this.display_mode == "gallery") {
+      if (this.display_mode == "gallery" || this.display_mode == "presentation") {
         return;
       }
       if (e.target.classList.contains("video-box")) {
         let stream_id = e.target.id;
-        // console.log(e.target, stream_id);
-        // console.log("praent element ", e.target.parentElement.parentElement);
         if (e.target.parentElement.parentElement.classList.contains(this.local_container)) {
-          // console.log("already expanded");
           return;
         } else {
           this.flipDisplay(stream_id);
@@ -279,13 +277,12 @@ class CallInterfaceVideo {
 
     let url1 = window.location.origin + "/videocall/";
 
-    let orig_url = window.location.origin + window.location.pathname
-    orig_url = `${orig_url}?stun_video_chat=${base64obj}`
+    let orig_url = window.location.origin + window.location.pathname;
+    orig_url = `${orig_url}?stun_video_chat=${base64obj}`;
     history.pushState(null, null, orig_url);
 
     return `${url1}?stun_video_chat=${base64obj}`;
   }
-
 
   copyInviteLink() {
     navigator.clipboard.writeText(this.room_link);
@@ -296,15 +293,15 @@ class CallInterfaceVideo {
     this.peers = this.peers.filter((p) => peer !== p);
   }
 
-
   disconnect() {
     this.app.connection.emit("stun-disconnect");
     this.video_boxes = {};
-    
+
     let url = window.location.origin + window.location.pathname;
 
-    setTimeout(()=>{window.location.href = url;}, 2000);
-    
+    setTimeout(() => {
+      window.location.href = url;
+    }, 2000);
   }
 
   addRemoteStream(peer, remoteStream) {
@@ -316,9 +313,27 @@ class CallInterfaceVideo {
 
     if (this.peers.length === 1) {
       let peer = document.querySelector(`#stream${this.peers[0]}`);
-      peer.querySelector(".video-box").click();
+      if (peer) {
+        peer.querySelector(".video-box").click();
+      }
     }
+    console.log(peer, "presentation?");
+    if (peer.toLowerCase() === "presentation") {
+      // switch mode to presentation
+      this.app.connection.emit("stun-switch-view", "presentation");
 
+      this.flipDisplay("presentation");
+
+      // // maximize presentation
+      // console.log(peer, "presentation?");
+      // if (!peer) return;
+
+      // let peer = document.querySelector(`#stream${peer}}`);
+      // console.log(peer, "presentation?");
+      // if (peer) {
+      //   peer.querySelector(".video-box").click();
+      // }
+    }
   }
 
   addLocalStream(localStream) {
@@ -331,10 +346,13 @@ class CallInterfaceVideo {
     // applyBlur(7);
   }
 
-
   createVideoBox(peer, container = this.remote_container) {
+    let isPresentation = false;
+    if (peer.toLowerCase() == "presentation") {
+      isPresentation = true;
+    }
     if (!this.video_boxes[peer]) {
-      const videoBox = new VideoBox(this.app, this.mod, peer, container);
+      const videoBox = new VideoBox(this.app, this.mod, peer, container, isPresentation);
       this.video_boxes[peer] = { video_box: videoBox };
     }
   }
@@ -344,11 +362,11 @@ class CallInterfaceVideo {
     this.app.connection.emit("stun-toggle-audio");
 
     //Update UI
-    try{
+    try {
       document.querySelector(".audio-control").classList.toggle("disabled");
       document.querySelector(".audio-control i").classList.toggle("fa-microphone-slash");
       document.querySelector(".audio-control i").classList.toggle("fa-microphone");
-    }catch(err){
+    } catch (err) {
       console.warn("Stun UI error", err);
     }
   }
@@ -357,14 +375,13 @@ class CallInterfaceVideo {
     this.app.connection.emit("stun-toggle-video");
 
     //Update UI
-    try{
+    try {
       document.querySelector(".video-control").classList.toggle("disabled");
       document.querySelector(".video-control i").classList.toggle("fa-video-slash");
       document.querySelector(".video-control i").classList.toggle("fa-video");
-    }catch(err){
+    } catch (err) {
       console.warn("Stun UI error", err);
     }
-
   }
 
   updateImages() {
@@ -374,17 +391,15 @@ class CallInterfaceVideo {
       let publickey = i;
       if (i === "local") {
         publickey = this.app.wallet.returnPublicKey();
-      } 
+      }
 
       let imgsrc = this.app.keychain.returnIdenticon(publickey);
       images += `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`;
       count++;
-
     }
     document.querySelector(".users-on-call .image-list").innerHTML = images;
     document.querySelector(".users-on-call .users-on-call-count").innerHTML = count;
     this.users_on_call = count;
-
   }
 
   startTimer() {
@@ -444,6 +459,19 @@ class CallInterfaceVideo {
     this.setDisplayContainers();
   }
 
+  swicthDisplayToPresentation() {
+    this.local_container = "presentation";
+    this.remote_container = "presentation-side-videos";
+
+    document.querySelector(".video-container-large").innerHTML = `<div class="presentation"></div>
+    <div class="presentation-side-videos"></div>`;
+    this.setDisplayContainers();
+
+    // let peer = document.querySelector(`#stream${peer}}`);
+    // if (peer) {
+    //   peer.querySelector(".video-box").click();
+    // }
+  }
 
   setDisplayContainers() {
     for (let i in this.video_boxes) {
@@ -457,8 +485,6 @@ class CallInterfaceVideo {
     }
     this.chat_group.target_container = `.stun-chatbox .${this.remote_container}`;
   }
-
-
 }
 
 module.exports = CallInterfaceVideo;

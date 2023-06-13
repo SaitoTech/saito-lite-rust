@@ -24,6 +24,10 @@ body {
   row-gap: 1rem;
 }
 
+.arcade-menu {
+  max-height: calc(70% - 2rem);
+}
+
 button, .saito-button-primary, .saito-button-secondary:hover {
   background: var(--saito-button-background);
 }

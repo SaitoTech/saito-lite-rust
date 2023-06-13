@@ -168,6 +168,14 @@ class ChatManager {
       this.app.browser.addElementToSelectorOrDom(ChatManagerTemplate(this.app, this.mod), this.container);
     }
 
+    // Sort chat groups
+    this.mod.groups = this.mod.groups.sort((a,b) => {
+      let ts_a = a?.last_update || 0;
+      let ts_b = b?.last_update || 0;
+
+      return ts_b - ts_a;
+    });
+
     //
     // render chat groups
     //
@@ -213,8 +221,6 @@ class ChatManager {
 
   attachEvents() {
 
-    let cm = this;
-
     //
     // clicks on the element itself (background)
     //
@@ -222,16 +228,32 @@ class ChatManager {
       item.onclick = (e) => {
         let gid = e.currentTarget.getAttribute("data-id");
         this.render_popups_to_screen = 1;
-        let group = cm.mod.returnGroup(gid);
+        let group = this.mod.returnGroup(gid);
+
+        if (!this.popups[gid]) {
+          this.popups[gid] = new ChatPopup(this.app, this.mod);
+          this.popups[gid].group = group;
+        }
+
         // unset manually closed to permit re-opening
-        if (this.popups[gid]) { this.popups[gid].manually_closed = false; }
-        cm.app.connection.emit("chat-popup-render-request", group);
+        this.popups[gid].manually_closed = false;
+
+        if (this.render_popups_to_screen) {
+          this.popups[gid].container = group?.target_container || "";  
+          this.popups[gid].render();
+          this.popups[gid].input.focus();
+        }
+
+        if (this.render_manager_to_screen) {
+          this.render();
+        }
+ 
       };
 
       item.oncontextmenu = (e) => {
         e.preventDefault();
         let gid = e.currentTarget.getAttribute("data-id");
-        let chatMenu = new ChatMenu(cm.app, cm.mod, cm.mod.returnGroup(gid));
+        let chatMenu = new ChatMenu(this.app, this.mod, this.mod.returnGroup(gid));
         chatMenu.render();
       }
     });
