@@ -25,6 +25,7 @@
 
 **********************************************************************************/
 const CryptoModule = require('./../../../lib/templates/cryptomodule');
+
 const getUuid = require('uuid-by-string');
 
 class MixinModule extends CryptoModule {
@@ -132,28 +133,6 @@ class MixinModule extends CryptoModule {
   }  
 
 
-}
-
-
-
-MixinModule.prototype.renderModalSelectCrypto = function(app, mod, cryptomod) {
-  return `
-    <div class="mixin_crypto_overlay" id="mixin_crypto_overlay">
-
-      <div class="mixin_crypto_title">Heads up!</div>
-
-      <div class="mixin_crypto_warning">
-      Third party cryptocurrency support is in active development. Please take precautions such
-       as only using a small amount of funds and avoiding sharing sensitive information. 
-       Check for updates regularly and report any suspicious activity. 
-       <br >
-       Thank you for helping us improve the experience.
-      </div>
-
-      <button class="mixin_risk_acknowledge button">i understand</button>
-
-    </div>
-  `;
 }
 
 

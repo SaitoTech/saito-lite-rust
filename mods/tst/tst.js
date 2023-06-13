@@ -1,5 +1,4 @@
 const CryptoModule = require("../../lib/templates/cryptomodule");
-const WarningTemplate = require("./lib/ui/overlays/warning.template.js");
 
 
 class TST extends CryptoModule {
@@ -71,11 +70,6 @@ class TST extends CryptoModule {
      return 0;
    }
 
-
-
-  renderModalSelectCrypto(app, mod, cryptomod) {
-    return WarningTemplate(this.returnAddress());
-  }
 
   attachEventsModalSelectCrypto(app, mod, cryptomod) {
     try {

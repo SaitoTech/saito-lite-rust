@@ -30,7 +30,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.955,
+    version: 4.957,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -1032,7 +1032,8 @@ console.log("---------------------");
     }
 
     if (cryptomod != null && show_overlay == 1) {
-      if (cryptomod.renderModalSelectCrypto() != null) {
+console.log("TESTING A");
+      if (cryptomod.renderModalSelectCrypto(this.app, this.app.modules.returnActiveModule()) != null) {
         const modal_select_crypto = new ModalSelectCrypto(this.app, null, cryptomod);
         modal_select_crypto.render(this.app, null, cryptomod);
         modal_select_crypto.attachEvents(this.app, null, cryptomod);
