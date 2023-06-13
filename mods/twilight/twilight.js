@@ -3872,6 +3872,8 @@ playerTurnHeadlineSelected(card, player) {
         announcement += twilight_self.isSpaceRaceAvailable(ops);    
         let header_msg = `${player.toUpperCase()} playing <span>${twilight_self.game.deck[0].cards[card].name}</span>`; 
 
+alert("back button cancelled? " + twilight_self.game.state.back_button_cancelled);
+
         if (twilight_self.game.state.back_button_cancelled != 1) { 
 	  twilight_self.bindBackButtonFunction(() => { this.playerTurn(); });
 	}
@@ -8205,6 +8207,9 @@ console.log("SCORING: " + JSON.stringify(scoring));
       //
       // this is not a card, it is something like "skip turn" or cancel
       //
+      if (cardname === "finished") {
+        return `<div class="noncard" style="height:100%;background-image: url('/twilight/img/done.png'); background-size: cover;" id="${cardname.replaceAll(" ","")}"></div>`;
+      }
       if (cardname === "skipturn") {
         return `<div class="noncard" style="height:100%;background-image: url('/twilight/img/skipturn.png'); background-size: cover;" id="${cardname.replaceAll(" ","")}"></div>`;
       }

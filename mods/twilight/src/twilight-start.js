@@ -8207,6 +8207,9 @@ console.log("SCORING: " + JSON.stringify(scoring));
       //
       // this is not a card, it is something like "skip turn" or cancel
       //
+      if (cardname === "finished") {
+        return `<div class="noncard" style="height:100%;background-image: url('/twilight/img/done.png'); background-size: cover;" id="${cardname.replaceAll(" ","")}"></div>`;
+      }
       if (cardname === "skipturn") {
         return `<div class="noncard" style="height:100%;background-image: url('/twilight/img/skipturn.png'); background-size: cover;" id="${cardname.replaceAll(" ","")}"></div>`;
       }
