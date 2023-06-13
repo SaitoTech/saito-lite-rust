@@ -2,6 +2,20 @@ const GameTemplate = require('../../lib/templates/gametemplate');
 const MonarchyGameRulesTemplate = require("./lib/monarchy-game-rules.template");
 const MonarchyGameOptionsTemplate = require("./lib/monarchy-game-options.template");
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
+const Board = require("./lib/board");
+const CoinsOverlay = require("./lib/overlays/coins");
+const EstatesOverlay = require("./lib/overlays/estates");
+const CardpileOverlay = require("./lib/overlays/cardpile");
+const AttackOverlay = require("./lib/overlays/attack");
+
+
+//
+// TODO
+//
+// card-events		- should be defined as parts of the cards and then executed from the deck rather than hardcoded
+//			in a separate location, which requires much more delicacy in keeping things in track and 
+//			upgrading / downgrading cards.
+//
 
 //////////////////
 // CONSTRUCTOR  //
@@ -26,7 +40,6 @@ class Monarchy extends GameTemplate {
     this.categories 	 = "Games Cardgame Strategy Deckbuilding";
 
     this.hud.mode = 0;  // long-horizontal
-    //this.hud.enable_mode_change = 1;
     this.hud.card_width = 120;
     this.hud.respectDocking = true;
     this.attackOverlay = new SaitoOverlay(app, this, true, false);
@@ -40,60 +53,49 @@ class Monarchy extends GameTemplate {
     this.card_back = "blank.jpg";
     this.back_button_html = `<i class="fas fa-window-close" id="back_button"></i>`;
     this.menu_backup_callback = ()=>{this.endTurn();} //Default behavior
+
+    //
+    // UI components
+    //
+    this.board = new Board(this.app, this, ".main");
+    this.coins_overlay = new CoinsOverlay(this.app, this);
+    this.estates_overlay = new EstatesOverlay(this.app, this);
+    this.cardpile_overlay = new CardpileOverlay(this.app, this);
+    this.attack_overlay = new AttackOverlay(this.app, this);
+
   }
 
   
+  returnState() {
 
-  formatDeck(cardStats, title = ""){
-    let html = `
-      <div class="rules-overlay">
-        <h1>${title}</h1>
-        <div class="cardlist-container">`;
-
-    for (let cardType in this.game.state.supply){
-      if (cardStats[cardType]){
-        html += `<div class="cardlist" style="width:${80+40*cardStats[cardType]}px">`;
-        for (let i = 0; i < cardStats[cardType]; i++){
-          html += this.returnCardImage(cardType);
-        }
-        html += "</div>";   
-      }
-    }
-
-    html += "</div></div>";
-
-    return html;
-  }
-
-  returnWelcomeOverlay(){
-   let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay">
-           <img src="/${this.name.toLowerCase()}/img/welcome_splash.jpg"/>
-               </div>`;
-    return html;
-  }
-
-  showDecks(){
-    this.menu.addMenuOption("game-decks", "Decks");
+    let state = {};
+    state.supply = { };
     
-    for (let i = 1; i <= this.game.players.length; i++){
-      let title = (this.game.player == i) ? "My Deck" : `Player ${i}'s Deck`;
-      this.menu.addSubMenuOption("game-decks", {
-        text : `Player ${i}${(this.game.player == i)?" (Me)":""}`,
-        id : "decks-player-"+i,
-        class : "decks-cards",
-        callback : function(app, game_mod) {
-           game_mod.menu.hideSubMenus();
-           game_mod.overlay.show(game_mod.formatDeck(game_mod.game.state.decks[i], title)); 
-        }
-      });
-    }
-    this.menu.render();
+    state.supply.copper = 60 - ( 7 * this.game.players.length );
+    state.supply.silver = 40;
+    state.supply.gold = 30;
+    state.supply.estate = 12;
+    state.supply.duchy = 12;
+    state.supply.province = 12;
+    state.supply.curse = 10 * (this.game.players.length - 1); 
 
-    console.log(JSON.parse(JSON.stringify(this.game.state.decks)));
+    state.buys = 1;
+    state.actions = 1;
+    state.coins = 0;
+
+    state.welcome = 0;
+    state.players = [];
+    for (let i = 0; i < this.game.players.length; i++){
+      let stats = {vp:3, gardens:0, curses:0, turns:0};
+      state.players.push(stats);
+    }
+
+    return state;
+
   }
 
- 
- render(app) {
+
+  render(app) {
 
     if (this.browser_active == 0) { return; }
 
@@ -101,7 +103,6 @@ class Monarchy extends GameTemplate {
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");
-
     this.menu.addSubMenuOption("game-info", {
       text : "How to Play",
       id : "game-rules",
@@ -111,7 +112,6 @@ class Monarchy extends GameTemplate {
          game_mod.overlay.show(game_mod.returnGameRulesHTML()); 
       }
     });
-
     this.menu.addSubMenuOption("game-info", {
       text : "Score",
       id : "game-score",
@@ -121,8 +121,6 @@ class Monarchy extends GameTemplate {
          game_mod.overlay.show(game_mod.updateScore()); 
       }
     });
-
-
     this.menu.addChatMenu();
     this.menu.render();
 
@@ -157,67 +155,53 @@ class Monarchy extends GameTemplate {
       this.hud.render();  
     }
 
-}
+    this.board.render();
+
+  }
 
 
   ////////////////
   // initialize //
   ////////////////
-initializeGame(game_id) {
+  initializeGame(game_id) {
 
-  if (this.game.status != "") { this.updateStatus(this.game.status); }
+    if (this.game.status != "") { this.updateStatus(this.game.status); }
 
-  this.deck = this.returnCards();
+    this.deck = this.returnDeck();
 
-  //
-  // initialize
-  //
-  if (!this.game.state) {
-    this.game.state = this.returnState();
-
-    console.log("\n\n\n\n");
-    console.log("---------------------------");
-    console.log("---------------------------");
-    console.log("------ INITIALIZE GAME ----");
-    console.log(`----------${this.name}---------`);
-    console.log("---------------------------");
-    console.log("---------------------------");
-    console.log("\n\n\n\n");
-
-    this.updateStatus("<div class='status-message' id='status-message'>Generating the Game</div>");
-
-    this.game.queue.push("turn\t1");
-    this.game.queue.push("READY");
-
-    /*
-    Each player has their own deck that they draw from to build their hand.
-    The deck's are cross encrypted to prevent look ahead
-    When a player draws openly (to reveal card to all), they draw into a pool.
-    Otherwise, they just have their secret hand.
-    */
-    for (let p = 1; p <= this.game.players.length; p++){
-      this.game.queue.push(`DEAL\t${p}\t${p}\t5`);  
-      
-      for (let i = this.game.players.length; i>0; i--){
-        this.game.queue.push(`DECKENCRYPT\t${p}\t${i}`);
-      }
-      for (let i = this.game.players.length; i>0; i--){
-        this.game.queue.push(`DECKXOR\t${p}\t${i}`);
-      }
-      this.game.queue.push(`DECK\t${p}\t${JSON.stringify(this.returnInitialHand())}`);  
-    }
-    
-    this.game.queue.push("init");
-
-  }
-
-  this.augmentQueueCommands();
-
-  if (this.browser_active){
-     this.displayBoard();
-  }
+    //
+    // initialize
+    //
+    if (!this.game.state) {
  
-}
+      this.game.state = this.returnState();
+      this.updateStatus("Generating Game");
+
+      this.game.queue.push("turn\t1");
+      this.game.queue.push("READY");
+
+      for (let p = 1; p <= this.game.players.length; p++) {
+
+        this.game.queue.push(`DEAL\t${p}\t${p}\t5`);  
+
+        for (let i = this.game.players.length; i > 0; i--) {
+          this.game.queue.push(`DECKENCRYPT\t${p}\t${i}`);
+        }
+        for (let i = this.game.players.length; i > 0; i--) {
+          this.game.queue.push(`DECKXOR\t${p}\t${i}`);
+        }
+        this.game.queue.push(`DECK\t${p}\t${JSON.stringify(this.returnInitialHand())}`);  
+      }
+    
+      this.game.queue.push("init");
+
+    }
+
+    if (this.browser_active) {
+      this.board.render();
+    }
+ 
+  }
 
 
 
@@ -300,7 +284,6 @@ initializeGame(game_id) {
         let highScore = -1;
         let reason = "high score";
         
-        this.showDecks();
         //Find High Score
         for (let i = 1; i <= this.game.players.length; i++){
           let score = this.returnPlayerVP(i);
@@ -343,10 +326,7 @@ initializeGame(game_id) {
 
         //For the beginning of the game only...
         if (this.game.state.welcome == 0) {
-          try {
-            this.overlay.show(this.returnWelcomeOverlay());
-            document.querySelector(".welcome_overlay").onclick = () => { this.overlay.hide(); };
-          } catch (err) {}
+	  // we can put an overlay here
           this.game.state.welcome = 1;
         }
 
@@ -471,7 +451,6 @@ initializeGame(game_id) {
           }else{
             this.game.state.players[player-1].vp -= parseInt(cobj.text);
           }
-          //this.updateScore();
         }
 
         return 1;        
@@ -489,9 +468,6 @@ initializeGame(game_id) {
         this.game.state.merchant = false;
         this.game.state.throneroom = false;
 
-
-        //console.log(this.game.player,player,JSON.parse(JSON.stringify(this.game.deck[player-1])));
-        
         //Check for end game
         if (this.gameOver()){
           this.game.queue.push("gameover");
@@ -507,7 +483,7 @@ initializeGame(game_id) {
           this.clearActiveCards(player);
 
           if (this.game.player == player){
-            this.hud.updateStatusHeaderOnly(this.formatStatusHeader("Clearing the table..."));
+            this.hud.updateStatus("Clearing the table...");
             this.addMove("turn\t"+this.returnNextPlayer(player));
             
             this.addMove(`draw\t${player}\t5`);
@@ -530,7 +506,6 @@ initializeGame(game_id) {
               console.log(JSON.parse(JSON.stringify(this.game.deck[player-1])));
             }
 
-
             this.runAnimationQueue(150);  
             
             //We submit the move while the animations are running...
@@ -539,7 +514,6 @@ initializeGame(game_id) {
           return 0;
           
         }
-
       }
 
       if (mv[0] == "reportdeck"){
@@ -623,7 +597,6 @@ initializeGame(game_id) {
           }else{
             this.game.state.players[player-1].vp += parseInt(cobj.text);
           }
-          //this.updateScore();
         }
 
         if (!this.browser_active){return 1;}  
@@ -631,9 +604,7 @@ initializeGame(game_id) {
         /*  
           Animate the purchase
         */
-
         const game_self = this;
-       
         if (player !== this.game.player){
           this.game.halted = 1;
           let animator;
@@ -734,13 +705,12 @@ initializeGame(game_id) {
         return 0;
       }
 
-      //Attack -- counter
       if (mv[0] == "attack"){
+
         let player = parseInt(mv[1]);
         let victim = parseInt(mv[2]);
         let card_to_play = mv[3];
         this.game.queue.splice(qe, 1);
-
 
         if (this.game.player == victim){
           //Spy Affects even the one who played it
@@ -794,6 +764,7 @@ initializeGame(game_id) {
 
       //Specific card instructions
       if (mv[0] == "adventurer"){
+
         let player = parseInt(mv[1]);
         if (player !== this.game.player){ return 0;}
 
@@ -845,7 +816,7 @@ initializeGame(game_id) {
           }
         }
 
-        this.augmentAttackOverlay(`Player ${victim}'s top cards:`, ...top_cards);
+        this.attack_overlay.render(`Player ${victim}'s top cards:`, ...top_cards);
         if (trash.length > 1){
           if (this.game.pool[victim-1].cards[trash[0]] == "silver"){
             discard.push(trash.shift());
@@ -1022,7 +993,7 @@ initializeGame(game_id) {
 
         let card = (this.game.pool[victim-1].hand.length > 0) ? this.game.pool[victim-1].cards[this.game.pool[victim-1].hand[0]] : "Deck empty";
         let player_display = (this.game.player === victim) ? "My top card:" : `Player ${victim}'s top card:`; 
-        this.augmentAttackOverlay(player_display,card);
+        this.attack_overlay.render(player_display, card);
 
         if (this.game.player == spy){
           if (this.game.pool[victim-1].hand.length == 0){
@@ -1081,7 +1052,7 @@ initializeGame(game_id) {
         let card2 = mv[4];
 
         let name = (this.game.player == victim) ? "Your" : `Player ${victim}'s`;
-        this.augmentAttackOverlay(`${name} top two cards:`,card1, card2);        
+        this.attack_overlay.render(`${name} top two cards:`, card1, card2);        
         if (this.game.player !== player){ return 0;}
         let tcards = [];
         if (this.deck[card1].type == "treasure"){
@@ -1194,9 +1165,9 @@ initializeGame(game_id) {
         let card = mv[2];
         try{
           card = JSON.parse(card);
-          this.augmentAttackOverlay(msg, ...card);
+          this.attack_overlay.render(msg, ...card);
         }catch(err){
-          this.augmentAttackOverlay(msg, card);
+          this.attack_overlay.render(msg, card);
         }
         return 1;
       }
@@ -1300,7 +1271,7 @@ initializeGame(game_id) {
 
   acquireCard(max_value, target = ""){
     let we_self = this;
-    this.updateStatus(this.formatStatusHeader(`You may select a card worth up to ${max_value}`));
+    this.updateStatus(`You may select a card worth up to ${max_value}`);
     this.filterBoardDisplay(max_value);
 
     this.cardbox.addCardType("buyme","take", function(newcard){
@@ -1317,32 +1288,6 @@ initializeGame(game_id) {
     });
     this.attachCardboxEvents();
 
-  }
-
-  returnAttackOverlay(card){
-    let html = `<div class="attack_overlay">
-                  <div class="h2">Attack! -- ${this.deck[card].name}</div>
-                  <div class="overlay_content">
-                    <div class="overlay-img">${this.returnCardImage(card)}</div>
-                    <div class="attack_details"></div>
-                  </div>
-                </div>`;
-
-    return html;
-  }
-
-  augmentAttackOverlay(text, ...cards){
-    let rCol = document.querySelector(".attack_details");
-    if (!rCol){ return; }
-    let html = rCol.innerHTML;
-    if (text){
-      html += `<div class="overlay-msg">${text}</div>`;
-    }
-    for (let i = 0; i < cards.length; i++){
-      html += `<div class="aoc">${this.returnCardImage(cards[i])}</div>`;
-    }
-    rCol.innerHTML = html;
-    this.attackOverlay.show();
   }
 
 
@@ -1369,18 +1314,10 @@ initializeGame(game_id) {
 
   }
 
-  /*
-    displayCardInDiscard(c){
-
-    //Show temporary discard
-    let shift = Object.keys(this.game.deck[this.game.player-1].discards) + 1;
-    $(`<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`).hide().appendTo("#discardpile").slideDown();
-
-  }*/
-
-
   displayBoard(){
-    console.log("Redrawing board");
+
+    this.board.render();
+    return;
 
     let html = "";
     for (let c in this.game.state.supply){
@@ -1690,12 +1627,23 @@ initializeGame(game_id) {
   }
 
  playCard(player, card_to_play){
-    console.log("Playing card",player,card_to_play);
-    console.log(JSON.parse(JSON.stringify(this.game.state)));
+
     we_self = this;
 
     //Attacks
     if (this.deck[card_to_play].type.includes("attack")){
+
+      let html = `<div class="attack_overlay">
+                    <div class="h2">Attack! -- ${this.deck[card].name}</div>
+                    <div class="overlay_content">
+                      <div class="overlay-img">${this.returnCardImage(card)}</div>
+                      <div class="attack_details"></div>
+                    </div>
+                 </div>`;
+
+//
+// HACK
+//
       this.attackOverlay.show(this.returnAttackOverlay(card_to_play));
       for (let i = 1; i <= this.game.players.length; i++){
         this.game.queue.push(`attack\t${player}\t${i}\t${card_to_play}`);
@@ -2029,29 +1977,6 @@ initializeGame(game_id) {
   }
 
 
-  returnDoubleSidedCardList(cardarray = [], deckid = 0){
-    if (cardarray.length === 0) {
-      for (let i = 0; i < this.game.deck[deckid].hand.length; i++){
-        cardarray.push(this.game.deck[deckid].cards[this.game.deck[deckid].hand[i]]);
-      }
-    }
-
-    if (cardarray.length === 0) {
-      console.warn("No cards to render...");
-      return "";
-    }
-
-    //console.log("cardarray length in returnCardList: " + cardarray.length);
-
-    let html = "";
-    for (let i = 0; i < cardarray.length; i++) {
-      //console.log("card image: " + this.returnCardImage(cardarray[i], deckid));
-      html += this.flipCardHTML(cardarray[i]);
-    }
-    return html;
-
-  }
-
   flipCardHTML(card, facedown = true){
     return  `<div id="${card}" class="card hud-card flippable-card${facedown?"":" flipped"}">
               ${this.returnCardImage(card)}
@@ -2096,35 +2021,6 @@ initializeGame(game_id) {
   ////////////////////
   // Core Game Data //
   ////////////////////
-  returnState() {
-
-    let state = {};
-    state.supply = { };
-    
-    let numPlayers = this.game.players.length;
-    state.supply.copper = 60 - 7*numPlayers;
-    state.supply.silver = 40;
-    state.supply.gold = 30;
-    state.supply.estate = 12;
-    state.supply.duchy = 12;
-    state.supply.province = 12;
-    state.supply.curse = 10 * (numPlayers-1); 
-
-    state.buys = 1;
-    state.actions = 1;
-    state.coins = 0;
-
-    state.welcome = 0;
-    state.players = [];
-    for (let i = 0; i < this.game.players.length; i++){
-      let stats = {vp:3, gardens:0, curses:0, turns:0};
-      state.players.push(stats);
-    }
-
-    return state;
-
-  }
-
   returnFirstEd(){
     return ["cellar", "chapel", "moat", "chancellor", "woodcutter", "feast", "village", "workshop",
             "bureaucrat", "gardens", "militia", "moneylender", "spy", "remodel", "smithy",
@@ -2157,7 +2053,7 @@ initializeGame(game_id) {
     return deck;
   }
 
-  returnCards() {
+  returnDeck() {
 
     var deck = {};
 
@@ -2244,7 +2140,7 @@ initializeGame(game_id) {
     return MonarchyGameOptionsTemplate(this.app, this);
   }
 
-  //Animation functions
+
 
 
   async finishAnimation(delay = 0, cont = true){
@@ -2270,47 +2166,7 @@ initializeGame(game_id) {
   }
 
 
-
-  augmentQueueCommands(){
-
-    //We double define DEAL so we can attach an animation while the players are communicating
-    this.commands.push((game_self, gmv) => {
-      if (gmv[0] === "DEAL") {
-        let deckidx = parseInt(gmv[1]);
-        let recipient = parseInt(gmv[2]);
-        let cards = parseInt(gmv[3]);
-
-        if (recipient == game_self.game.player && game_self.browser_active){
-          console.log("ANIMATE CARD DEALING");
-
-          for (let i = 0; i < cards; i++){
-            let target = `#drawpile #draw${i+1}`;
-            let destination = `#slot${++this.newDeal}`;
-            game_self.animationSequence.push({callback: game_self.moveGameElement,
-                                  params: [game_self.copyGameElement(target), destination, {insert:1}, () => {game_self.restartQueue(); }]});
-          }
-          game_self.runAnimationQueue(200);
-
-          return 0;
-        }
-      }
-      return 1;
-    });
-
-
-  }
-
-
-  formatStatusHeader(status_header, include_back_button = false) {
-    return `
-    <div class="status-header">
-      ${include_back_button ? this.back_button_html : ""}
-      <span id="status-content">${status_header}</span>
-    </div>
-    `;
-  }
-
-} // end Monarchy class
+} 
 
 module.exports = Monarchy;
 

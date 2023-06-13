@@ -125,42 +125,6 @@ img, .cardimg, .cardBack {
  visibility: hidden; 
 }
 
-
-.hud-long{
-  max-height: 310px;
-}
-
-.hud-body{
-  position: relative;
-}
-
-.hud-body #drawpile{
-  position: absolute;
-  right: 105%;
-  bottom: 5%;
-}
-
-.hud-body #discardpile{
-  position: absolute;
-  left: 105%;
-  bottom: 5%;
-}
-
-.hud .cardpile{
-  width: 120px;
-  height: 190px;
-}
-
-.hud .cardpile div:first-child{
-  position: absolute;
-  width: 100%;
-  top: -25px;
-  color: ghostwhite;
-  font-size: 18px;
-  text-align: center;
-  text-shadow: 1px 1px 2px black;
-}
-
 .saito-overlay .game-scoreboard{
   min-width: 300px;
   min-height: 100px;

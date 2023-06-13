@@ -91,6 +91,10 @@
   overflow-y: clip;
 }
 
+.hud-body > li {
+    list-style: none;
+}
+
 .hud-body .status {
     background-color: whitesmoke;
     width: 500px;
@@ -110,6 +114,15 @@
     height: min-content;
     min-height: fit-content;
     text-align: center;
+}
+
+.hud-body .status .back-button {
+    padding-left: 1rem;
+    font-size: 1.85rem;
+    display: inline-block;
+    position: absolute;
+    top: 1rem;
+    left: 0;
 }
 
 .status-overlay {
