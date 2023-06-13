@@ -26,10 +26,10 @@ class SettlersDisplay {
             };
             if (resourceName == this.returnNullResource()) {
               this.game.state.hexes[hex].robber = true;
-	    }
+      }
             if (token) { 
-	      this.addSectorValueToGameboard(hex, token); 
-	    }
+        this.addSectorValueToGameboard(hex, token); 
+      }
         }
 console.log("DONE GENERATING MAP");
     }
@@ -319,7 +319,7 @@ console.log("DONE GENERATING MAP");
                    resources: ${this.game.state.players[i - 1].resources.length},
                    cards: ${this.game.state.players[i - 1].devcards}
                   </div></div>
-	        `;
+          `;
 
             this.playerbox.updateAddress(this.game.playerNames[i-1], i);
             this.playerbox.updateUserline(userline, i);
@@ -375,9 +375,9 @@ console.log("DONE GENERATING MAP");
                 }
             } else {
                 this.playerbox.onclick(() => {
-  	  	  this.showTradeOverlay();
-		});
-	    }
+          this.showTradeOverlay();
+    });
+      }
         }
 
         if (this.game.player == 0) {
@@ -415,7 +415,7 @@ console.log("DONE GENERATING MAP");
 
 
       } catch (e) {
-	console.log("error in displayPlayers(): " + e);
+  console.log("error in displayPlayers(): " + e);
       }
     }
 
