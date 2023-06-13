@@ -8886,7 +8886,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
           return 0;
         }
 
-        this.updateStatusWithOptions(`${this.cardToText(card)}:`,'<ul><li class="card" id="discard">discard 3 OP card</li><li class="card" id="remove">remove all US influence in W. Germany</li></ul>', function(action) {
+        this.updateStatusWithOptions(`${this.cardToText(card)}:`,'<ul><li class="option" id="discard">discard 3 OP card</li><li class="option" id="remove">remove all US influence in W. Germany</li></ul>', function(action) {
 
           if (action == "discard") {
             
