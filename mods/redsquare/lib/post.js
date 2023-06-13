@@ -75,10 +75,9 @@ class Post {
           let resized_img = await this.app.browser.resizeImg(file);
           this.addImg(resized_img);
         } else {
-          salert(
-            "allowed file types: " +
-              this.mod.allowed_upload_types.join(", ") +
-              " - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading."
+          salert(`Cannot upload ${type} image, allowed file types: 
+              ${this.mod.allowed_upload_types.join(", ")} 
+              - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.`
           );
         }
       }
