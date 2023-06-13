@@ -28,8 +28,11 @@ class ChatMenu {
     if (document.getElementById("rename")){
       document.getElementById("rename").onclick = async (e) => {
         let name = await sprompt("What do you want to call the chat group?");
-        thisobj.chat_group.name = sanitize(name);
-        thisobj.mod.saveChatGroup(thisobj.chat_group);
+        if (name){
+          thisobj.chat_group.name = sanitize(name);
+          thisobj.mod.saveChatGroup(thisobj.chat_group);
+          thisobj.app.connection.emit("chat-manager-render-request");          
+        }
         thisobj.overlay.remove();
       }
     }

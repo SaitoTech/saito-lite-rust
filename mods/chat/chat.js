@@ -339,7 +339,7 @@ class Chat extends ModTemplate {
       case "user-menu":
         if (obj?.publickey) {
           if (
-            chat_self.app.keychain.hasPublicKey(obj.publickey) &&
+            chat_self.app.keychain.alreadyHaveSharedSecret(obj.publickey) &&
             obj.publickey !== chat_self.app.wallet.returnPublicKey()
           ) {
             return {
