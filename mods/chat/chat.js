@@ -339,7 +339,7 @@ class Chat extends ModTemplate {
       case "user-menu":
         if (obj?.publickey) {
           if (
-            chat_self.app.keychain.hasPublicKey(obj.publickey) &&
+            chat_self.app.keychain.alreadyHaveSharedSecret(obj.publickey) &&
             obj.publickey !== chat_self.app.wallet.returnPublicKey()
           ) {
             return {
@@ -559,14 +559,6 @@ class Chat extends ModTemplate {
       }
     }
 
-    //
-    // swap first two addresses so if private chat we will encrypt with proper shared-secret
-    //
-    if (newtx.transaction.to.length > 1) {
-      let x = newtx.transaction.to[0];
-      newtx.transaction.to[0] = newtx.transaction.to[1];
-      newtx.transaction.to[1] = x;
-    }
 
     if (msg.substring(0, 4) == "<img") {
       if (this.inTransitImageMsgSig) {
@@ -584,13 +576,16 @@ class Chat extends ModTemplate {
       timestamp: new Date().getTime(),
     };
 
+    //
+    // swap first two addresses so if private chat we will encrypt with proper shared-secret
+    //
+    if (newtx.transaction.to.length == 2) {
+      let x = newtx.transaction.to[0];
+      newtx.transaction.to[0] = newtx.transaction.to[1];
+      newtx.transaction.to[1] = x;
+    }
+
     if (members.length == 2) {
-      //
-      // the first recipient is ourself, so the second is the one with the shared secret
-      //
-      let key = this.app.keychain.returnKey(newtx.transaction.to[0].add);
-      //console.log(newtx.transaction.to[0].add);
-      //console.log(key);
       newtx = this.app.wallet.signAndEncryptTransaction(newtx);
     } else {
       newtx = this.app.wallet.signTransaction(newtx);
@@ -638,9 +633,6 @@ class Chat extends ModTemplate {
       if (txmsg.group_id !== this.communityGroup?.id) {
         for (let i = 0; i < tx.transaction.to.length; i++) {
           if (tx.transaction.to[i].add == app.wallet.returnPublicKey()) {
-            if (this.debug) {
-              console.log("Should save TX in Archive or locally");
-            }
             this.app.storage.saveTransaction(tx, txmsg.group_id);
             //this.saveChatTx(tx, txmsg.group_id);
             break;
@@ -918,6 +910,7 @@ class Chat extends ModTemplate {
 
     if (this.debug) {
       console.log("Creating new chat group " + id);
+      console.log(JSON.stringify(members));
     }
 
     let newGroup = {
@@ -926,7 +919,7 @@ class Chat extends ModTemplate {
       name: name,
       txs: [],
       unread: 0,
-      last_update: 0,
+      last_update: new Date().getTime(),
     };
 
     //Prepend the community chat

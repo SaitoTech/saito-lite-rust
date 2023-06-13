@@ -477,11 +477,11 @@ class Keychain {
 
   updateCryptoByPublicKey(publickey, aes_publickey = "", aes_privatekey = "", shared_secret = "") {
     if (publickey == "") { return; }
-    this.addKey(publickey, { aes_publickey : aes_publickey , aes_privatekey : aes_privatekey , aes_secret : shared_secret});
+    this.addKey(publickey, { aes_publickey : aes_publickey , aes_privatekey : aes_privatekey , aes_secret : shared_secret, lc : 1 });
     this.saveKeys();
 
-console.log("SAVED CRYPTO AES: " + publickey);
-console.log(JSON.stringify(this.returnKey(publickey)));
+    console.log("SAVED CRYPTO AES: " + publickey);
+    console.log(JSON.stringify(this.returnKey(publickey)));
 
     return true;
   }
