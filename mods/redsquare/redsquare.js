@@ -88,7 +88,7 @@ class RedSquare extends ModTemplate {
     this.load_more_tweets = 1;
     this.load_more_notifications = 1;
     this.trackedTweet = null
-    this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif'];
+    this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg'];
 
     this.scripts = [
       '/saito/lib/virtual-bg/virtual-bg.js'

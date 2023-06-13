@@ -69,8 +69,9 @@ class Post {
     this.input.callbackOnUpload = async (file) => {
       if (this.images.length >= 4) {
         salert("Maximum 4 images allowed per tweet.");
+      } else if (file.includes("giphy.gif")) {
+        this.addImg(file);
       } else {
-        console.log(file);
         let type = file.substring(file.indexOf(":") + 1, file.indexOf(";"));
         if (this.mod.allowed_upload_types.includes(type)) {
           let resized_img = await this.app.browser.resizeImg(file);
@@ -82,7 +83,6 @@ class Post {
           );
         }
       }
-      this.file_event_added = true;
     };
 
     this.input.render();
