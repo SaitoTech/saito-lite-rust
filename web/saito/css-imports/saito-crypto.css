@@ -50,6 +50,8 @@
     width: auto;
     height: auto;
     min-height: max-content;
+    min-width: 40vw;
+    max-width: 800px;
     border-radius: 0.5rem;
     border: 0.2rem solid var(--saito-border-color);
     background-position: center;
