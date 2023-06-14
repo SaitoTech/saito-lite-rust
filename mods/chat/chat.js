@@ -87,7 +87,7 @@ class Chat extends ModTemplate {
     for (let i = 0; i < keys.length; i++) {
       if (keys[i].aes_publickey) {
         this.returnOrCreateChatGroupFromMembers(
-          [keys[i].publickey, app.wallet.returnPublicKey()],
+          [keys[i].publickey],
           keys[i].name
         );
       }
@@ -106,10 +106,10 @@ class Chat extends ModTemplate {
     //
     if (app.BROWSER == 0) {
       this.communityGroup = this.returnOrCreateChatGroupFromMembers(
-        [this.app.wallet.returnPublicKey()],
+        [app.wallet.returnPublicKey()],
         "Saito Community Chat"
       );
-      this.communityGroup.members = [this.app.wallet.returnPublicKey()];
+       this.communityGroup.members = [app.wallet.returnPublicKey()];
     }
 
     //Add script for emoji to work
@@ -173,7 +173,7 @@ class Chat extends ModTemplate {
           // But I need a finer grained query than the app.storage API currently supports
           // TODO FIX THIS
 
-          let sql = `SELECT tx FROM txs WHERE type = "${group.id}" AND ts > ${group.last_update} ORDER BY ts DESC LIMIT 100`;
+          let sql = `SELECT tx FROM txs WHERE type = "${group.id}" AND ts > ${group.last_update} ORDER BY ts DESC LIMIT 200`;
 
           this.sendPeerDatabaseRequestWithFilter(
             "Archive",
@@ -947,6 +947,9 @@ class Chat extends ModTemplate {
     if (members == null) {
       return "";
     }
+    //So David + Richard == Richard + David
+    members.sort();
+
     return this.app.crypto.hash(`${members.join("_")}`);
   }
 
@@ -959,16 +962,18 @@ class Chat extends ModTemplate {
     if (!members) {
       return null;
     }
-
-    //So David + Richard == Richard + David
-    members.sort();
-
-    // be careful changing this, other components
-    let id = this.createGroupIdFromMembers(members);
+    
+    let id;
 
     //This might keep persistence across server resets
     if (name === this.communityGroupName) {
       id = this.app.crypto.hash(this.communityGroupName);
+    }else{
+      //Make sure that I am part of the chat group
+      if (!members.includes(this.app.wallet.returnPublicKey())){
+        members.push(this.app.wallet.returnPublicKey());
+      }
+      id = this.createGroupIdFromMembers(members);
     }
 
     for (let i = 0; i < this.groups.length; i++) {

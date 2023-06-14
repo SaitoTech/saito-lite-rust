@@ -136,9 +136,10 @@ class ChatManager {
     });
 
     app.connection.on("relay-is-online", (pkey) => {
-      let group = this.mod.returnGroupByMemberPublickey(pkey);
+      let target_id = this.mod.createGroupIdFromMembers([pkey, app.wallet.returnPublicKey()]);
+      let group = this.mod.returnGroup(target_id);
       console.log("Receive online confirmation from " + pkey);
-      if (!group) {
+      if (!group || group.members.length !== 2) {
         return;
       }
       group.online = true;
@@ -153,13 +154,24 @@ class ChatManager {
     });
 
     app.connection.on("group-is-active", (group) => {
+
+      if (group.members.length !== 2) {
+        return;
+      }
+
       group.online = true;
       if (this.timers[group.id]) {
         clearTimeout(this.timers[group.id]);
       }
-      this.timers[group.id] = null;
+      
       this.pinged[group.id] = new Date().getTime();
+
+      this.timers[group.id] = setTimeout(()=>{
+        group.offline = false;
+        app.connection.emit("chat-manager-render-request");
+      }, 60000);
     });
+
   }
 
   render() {
@@ -199,6 +211,14 @@ class ChatManager {
     let now = new Date().getTime();
 
     for (let group of this.mod.groups) {
+
+      // *****************************************************
+      // If this devolves into a DDOS attack against ourselves
+      // comment out the following code
+      // 
+      // We only send out a ping on a render if it has been at 
+      // least a minute since the last ping
+      // *****************************************************
       if (group.members.length == 2 && this.mod.isRelayConnected) {
         for (let member of group.members) {
           if (member != this.app.wallet.returnPublicKey()) {
