@@ -412,6 +412,9 @@ class Chat extends ModTemplate {
       if (txmsg.request == "chat message") {
         this.receiveChatTransaction(app, tx);
       }
+      if (txmsg.request == "chat group") {
+        this.receiveCreateGroupTransaction(app, tx);
+      }
     }
   }
 
@@ -467,7 +470,18 @@ class Chat extends ModTemplate {
       if (mycallback) {
         mycallback({ payload: "success", error: {} });
       }
+    } else if (txmsg.request == "chat group") {
+      
+      console.log("HPT create group");
+      console.log(tx);
+      this.receiveCreateGroupTransaction(app, tx);
+
     } else if (txmsg.request === "chat message broadcast") {
+
+      /*
+      * This whole block is duplicating the functional logic of the Relay module....
+      */
+
       let inner_tx = new saito.default.transaction(txmsg.data);
       let inner_txmsg = inner_tx.returnMessage();
 
@@ -508,6 +522,67 @@ class Chat extends ModTemplate {
       }
     }
   }
+
+  sendCreateGroupTransaction(group){
+
+    let newtx = this.app.wallet.createUnsignedTransaction(
+      this.app.wallet.returnPublicKey(),
+      0.0,
+      0.0
+    );
+    if (newtx == null) {
+      return;
+    }
+
+    for (let i = 0; i < group.members.length; i++) {
+      if (group.members[i] !== this.app.wallet.returnPublicKey()) {
+        newtx.transaction.to.push(new saito.default.slip(group.members[i]));
+      }
+    }
+
+    newtx.msg = {
+      module: "Chat",
+      request: "chat group",
+      group_id: group.id,
+      group_name: group.name,
+      timestamp: new Date().getTime(),
+    };
+
+    newtx = this.app.wallet.signTransaction(newtx);
+
+    this.sendChatTransaction(this.app, newtx);
+
+  }
+
+  receiveCreateGroupTransaction(app, tx) {
+
+    if (tx.isTo(app.wallet.returnPublicKey())) {
+        
+      let txmsg = tx.returnMessage();
+
+      let group = this.returnGroup(txmsg.group_id);
+
+      if (group) {
+        group.name = txmsg.group_name;
+
+      }else{
+        let members = [];
+        for (let x = 0; x < tx.transaction.to.length; x++) {
+          if (!members.includes(tx.transaction.to[x].add)) {
+            members.push(tx.transaction.to[x].add);
+          }
+        }
+
+        console.log(JSON.stringify(members));
+
+        group = this.returnOrCreateChatGroupFromMembers(members, txmsg.group_name);
+      }
+
+      this.saveChatGroup(group);
+      this.app.connection.emit("chat-manager-render-request");
+    }
+  }
+
 
   /**
    *

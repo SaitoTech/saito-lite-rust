@@ -14,7 +14,13 @@ class ChatManager {
     this.contactList.callback = async (person) => {
       if (Array.isArray(person) && person.length > 1) {
         let name = await sprompt("Choose a name for the group");
-        this.mod.returnOrCreateChatGroupFromMembers(person, name);
+        //Make sure I am in the group too!
+        person.push(this.app.wallet.returnPublicKey());
+        let group = this.mod.returnOrCreateChatGroupFromMembers(person, name);
+        
+        if (group.txs.length == 0){
+          this.mod.sendCreateGroupTransaction(group);  
+        }
       }
     };
 
