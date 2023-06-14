@@ -107,9 +107,10 @@
 }
 
 .league-overlay-body {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(40rem, 2fr) minmax(30rem, 1fr);
   gap: 2rem;
-  min-height: 25rem;
+  min-height: min(50rem, 80vh);
 }
 
 .league-error {

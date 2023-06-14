@@ -124,6 +124,10 @@ class League extends ModTemplate {
       app.connection.emit("league-overlay-render-request", leaderboard_id);
     }
 
+    if (app.browser.returnURLParameter("league")) {
+      app.connection.emit("league-overlay-render-request", app.browser.returnURLParameter("league")); 
+    }
+
   }
 
   //
