@@ -26,7 +26,7 @@
 
 .online .online-status-indicator:after {
   display: block;
-  top: 0;
+  top: 2.5rem;
   left: 4rem;
   box-shadow: 0 0 3px 1px;
 }

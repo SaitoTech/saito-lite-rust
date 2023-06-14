@@ -854,6 +854,7 @@ class Chat extends ModTemplate {
 
     if (group.name !== this.communityGroupName){
       this.startTabNotification();    
+      this.app.connection.emit("group-is-active", group);
     }
 
     //Save to IndexedDB Here
@@ -926,7 +927,7 @@ class Chat extends ModTemplate {
       name: name,
       txs: [],
       unread: 0,
-      last_update: new Date().getTime(),
+      last_update: 0,
     };
 
     //Prepend the community chat
@@ -1065,12 +1066,18 @@ class Chat extends ModTemplate {
       return;
     }
     let chat_self = this;
-    localforage.setItem(`chat_${group.id}`, group).then(function () {
-      if (chat_self.debug) {
-        console.log("Saved chat history for " + group.id);
-        console.log(JSON.parse(JSON.stringify(group)));
-      }
+
+    let online_status = group.online;
+
+    let new_group = Object.assign(group, {online: false});
+
+    localforage.setItem(`chat_${group.id}`, new_group).then(function () {
+      //if (chat_self.debug) {
+        console.log("Saved chat history for " + new_group.id);
+        console.log(JSON.parse(JSON.stringify(new_group)));
+      //}
     });
+    group.online = online_status;
   }
 
   deleteChatGroup(group){
