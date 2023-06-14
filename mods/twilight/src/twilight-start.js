@@ -97,28 +97,6 @@ class Twilight extends GameTemplate {
     this.overlay.show(html);
   }
 
-  showWarOverlay(card, winner, roll, modifications, player = ""){
-    let html = `
-    <div class="ts-overlay">
-    <h1>${this.cardToText(card, true)}</h1>
-    <div class="waroverlay-body">
-    <div class="cardlist-container">
-      <div class="card card-hud">${this.returnCardImage(card)}</div>
-    </div>
-    <div class="warstats">
-      <div class="winner">${winner}</div>
-      <div>Roll: ${roll}</div>
-      <div>Mod: -${(modifications)?modifications:""}</div>
-      <div>Modified Roll: ${roll-modifications}</div>
-    `;
-    if (player){
-      html += `<div>Sponsor: ` + player.toUpperCase() + "</div>";
-    }  
-    html += `</div></div>`;
-
-    this.overlay.show(html);
-  }
-
 
   showScoreOverlay(card, point_obj){
     this.scoring_overlay.render(card, point_obj);
