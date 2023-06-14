@@ -12,8 +12,8 @@ const JSON = require("json-bigint");
 //
 // HOW THE ARCHIVE LOADS TXS
 //
-// modules call ---> app.storage.loadTransaction()
-//    ---> loadTransaction() sends TX to peers via "archive" request="save" transaction
+// modules call ---> app.storage.loadTransactions()
+//    ---> loadTransactions() sends TX to peers via "archive" request="save" transaction
 //    ---> peers receive by handlePeerTransaction();
 //    ---> peers fetch from DB, return via callback or return TX
 //
@@ -34,9 +34,6 @@ class Archive extends ModTemplate {
     this.archive.index_blockchain = 0;
     if (this.app.BROWSER == 0) { this.archive.index_blockchain = 1; }
 
-    app.connection.on("archive-save-transaction", (data) => {
-      alert("RECEIVED ARCHIVE SAVE TRANSACTION BROADCAST -- update this");
-    });
   }
 
 
@@ -123,11 +120,13 @@ class Archive extends ModTemplate {
       if (req.data.request === "save") {
         this.saveTransaction(req.data.tx, req.data);
       }
-      if (req.data.request === "load") {
-        this.loadTransaction(req.data.tx, req.data);
-      }
       if (req.data.request === "update") {
         this.updateTransaction(req.data.tx, req.data);
+      }
+      if (req.data.request === "load") {
+        let txs = this.loadTransactions(req.data);
+        mycallback(txs);
+        return;
       }
     }
 
@@ -232,7 +231,7 @@ class Archive extends ModTemplate {
     // find entries to update
     //
     let sql = `SELECT id , tx_id FROM archives WHERE owner = $owner AND sig = $sig`;
-    let params = { $owner : obj.owner && $sig : obj.sig };
+    let params = { $owner : obj.owner , $sig : obj.sig };
     let rows = await this.app.storage.queryDatabase(sql, params, "archive");
     if (rows.length < 1) { return; }
     let id  	= rows[0].id;
@@ -268,47 +267,47 @@ class Archive extends ModTemplate {
   //////////
   // load //
   //////////
-  async loadTransactions(tx, obj={}) {
+  async loadTransactions(obj={}) {
 
-    let num = 10;
+    let limit = 10;
     let txs = [];
 
     //
     // ACCEPT REASONABLE LIMITS
     //
-    if (obj.num && obj.num <= 100) { num = obj.num; }
+    if (obj.limit && obj.limit <= 100) { limit = obj.limit; }
 
     //
     // SEARCH BASED ON CRITERIA PROVIDED
     //
     if (obj.field1) {
-      let sql = "SELECT * FROM archives JOIN txs WHERE archives.field1 = $field1 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $num";
-      let params = { $field1 : obj.field1 , $num : num };
+      let sql = "SELECT * FROM archives JOIN txs WHERE archives.field1 = $field1 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      let params = { $field1 : obj.field1 , $limit : limit };
       let rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.field2) {
-      let sql = "SELECT * FROM archives JOIN txs WHERE archives.field2 = $field2 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $num";
-      let params = { $field2 : obj.field2 , $num : num };
+      let sql = "SELECT * FROM archives JOIN txs WHERE archives.field2 = $field2 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      let params = { $field2 : obj.field2 , $limit : limit };
       let rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.field3) {
-      let sql = "SELECT * FROM archives JOIN txs WHERE archives.field3 = $field3 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $num";
-      let params = { $field3 : obj.field3 , $num : num };
+      let sql = "SELECT * FROM archives JOIN txs WHERE archives.field3 = $field3 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      let params = { $field3 : obj.field3 , $limit : limit };
       let rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.owner) {
-      let sql = "SELECT * FROM archives JOIN txs WHERE archives.owner = $owner AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $num";
-      let params = { $owner : obj.owner , $num : num };
+      let sql = "SELECT * FROM archives JOIN txs WHERE archives.owner = $owner AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      let params = { $owner : obj.owner , $limit : limit };
       let rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.publickey) {
-      let sql = "SELECT * FROM archives JOIN txs WHERE archives.publickey = $publickey AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $num";
-      let params = { $publickey : obj.publickey , $num : num };
+      let sql = "SELECT * FROM archives JOIN txs WHERE archives.publickey = $publickey AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      let params = { $publickey : obj.publickey , $limit : limit };
       let rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.sig) {
-      let sql = "SELECT * FROM archives JOIN txs WHERE archives.sig = $sig AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $num";
-      let params = { $sig : obj.sig , $num : num };
+      let sql = "SELECT * FROM archives JOIN txs WHERE archives.sig = $sig AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      let params = { $sig : obj.sig , $limit : limit };
       let rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
 
@@ -336,7 +335,7 @@ class Archive extends ModTemplate {
   ////////////
   // delete //
   ////////////
-  async deleteTransactions(type = "all", publickey = null) {
+  async deleteTransactions(obj={}) {
   }
 
 

@@ -987,14 +987,8 @@ class Arcade extends ModTemplate {
     };
     await this.app.storage.executeDatabase(sql, params, "arcade");
 
-    //Observer stuff
-    //if (!this.app.BROWSER) {
+    this.app.storage.saveTransaction(tx, { field1 : txmsg.module+"_"+txmsg.game_id });
 
-      //And make sure archive saves all the tx's under the game id
-
-      //this.app.storage.saveTransactionByKey(txmsg.game_id, tx);
-      this.app.storage.saveTransaction(tx, txmsg.module+"_"+txmsg.game_id);
-    //}
   }
 
   ////////////
@@ -1910,7 +1904,6 @@ class Arcade extends ModTemplate {
     }
 
     console.log(`${game_mod.name}_${game_mod.game.id} from ${game_mod.game.originator}`);
-    //this.app.storage.loadTransactionsByKeys([game_mod.game.id], game_mod.name, 100, callback);
 
     let sql = `SELECT * FROM txs WHERE type = '${game_mod.name}_${game_mod.game.id}' AND publickey = '${game_mod.game.originator}' ORDER BY id ASC`;
     this.sendPeerDatabaseRequestWithFilter("Archive", sql, (res) => {

@@ -265,15 +265,6 @@ class RedSquare extends ModTemplate {
 
 
     //
-    // fetch content from local archive
-    //
-//    this.tweets_last_viewed_ts = new Date().getTime();
-//    app.storage.loadTransactionsFromLocal("RedSquare", (50 * 1), (txs) => {
-//      for (let i = 0; i < txs.length; i++) { this.addTweet(tx); }
-//    });
-
-
-    //
     // this prints the last 10 tweets to ./web/tweets.js which is optionally
     // fetched by browsers. It allows us to rapidly put the last 10 tweets we
     // prefer at the top of their feed for more rapid page load.
@@ -656,8 +647,7 @@ class RedSquare extends ModTemplate {
   }
   loadNotificationsFromPeer(peer, increment = 1, post_load_callback = null) {
 
-    this.app.storage.loadTransactionsFromPeer("RedSquare", (10 * increment), peer, (txs) => {
-
+    this.app.storage.loadTransactions({ field1 : "RedSquare" , limit : 10 , offset : (10 * increment)}, (txs) => {
       if (!this.peers_for_notifications.includes(peer)) {
         this.peers_for_notifications.push(peer);
       }
@@ -666,7 +656,7 @@ class RedSquare extends ModTemplate {
         this.addTweet(txs[i], false, false);
       }
       if (post_load_callback != null) { post_load_callback(); }
-    });
+    }, "localhost");
   }
 
 

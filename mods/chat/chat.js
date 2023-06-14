@@ -197,25 +197,6 @@ class Chat extends ModTemplate {
               return 0;
             }
           );
-
-          /*
-                    this.app.storage.loadTransactions(group_id, 25, function (txs) {
-                        if (chat_self.debug){ console.log("Chat PSuP Archive callback:" + txs.length); }
-                        
-                        try {
-                            //Note loadTransactions returns them in reverse order....
-                            //Now addTransactionToGroup will sort them, but this will be more efficient
-                            while (txs.length > 0){
-                                let tx = txs.pop();
-                                tx.decryptMessage(chat_self.app);
-                                chat_self.addTransactionToGroup(group, tx);
-                            }
-                            
-                        } catch (err) {
-                            console.log("error loading chats...: " + err);
-                        }
-                    });
-                    */
         }
       }
     }
@@ -633,8 +614,7 @@ class Chat extends ModTemplate {
       if (txmsg.group_id !== this.communityGroup?.id) {
         for (let i = 0; i < tx.transaction.to.length; i++) {
           if (tx.transaction.to[i].add == app.wallet.returnPublicKey()) {
-            this.app.storage.saveTransaction(tx, txmsg.group_id);
-            //this.saveChatTx(tx, txmsg.group_id);
+            this.app.storage.saveTransaction(tx, { field2 : txmsg.group_id });
             break;
           }
         }
