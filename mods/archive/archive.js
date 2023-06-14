@@ -199,7 +199,6 @@ class Archive extends ModTemplate {
     }
     let archives_id = await this.app.storage.insertDatabase(sql, params, "archive");
 
-
   }
 
   ////////////
@@ -207,14 +206,131 @@ class Archive extends ModTemplate {
   ////////////
   async updateTransaction(tx, obj={}) {
 
+    //
+    // only owner can update
+    //
+    if (tx.transaction.from[0].add != obj.owner && obj.sig != "") {
+      console.log("Archive: only owner has the rights to modify records");
+      return 0;
+    }
+
+    //
+    // update records
+    //
+    if (!obj.tx_id) 		{ obj.tx_id = ""; }
+    if (!obj.publickey) 	{ obj.publickey = ""; }
+    if (!obj.owner) 		{ obj.owner = ""; }
+    if (!obj.sig) 		{ obj.sig = ""; }
+    if (!obj.field1) 		{ obj.field1 = ""; }
+    if (!obj.field2) 		{ obj.field2 = ""; }
+    if (!obj.field3) 		{ obj.field3 = ""; }
+    if (!obj.block_id) 		{ obj.block_id = ""; }
+    if (!obj.block_hash) 	{ obj.block_hash= ""; }
+    if (!obj.preserve) 		{ obj.preserve = ""; }
+
+    //
+    // find entries to update
+    //
+    let sql = `SELECT id , tx_id FROM archives WHERE owner = $owner AND sig = $sig`;
+    let params = { $owner : obj.owner && $sig : obj.sig };
+    let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+    if (rows.length < 1) { return; }
+    let id  	= rows[0].id;
+    let tx_id 	= rows[0].tx_id;
+
+    //
+    // update index
+    //
+    sql = `UPDATE archives SET owner = $owner , preserve = $preserve WHERE id = $id AND sig = $sig`;
+    params = {
+      $id : id ,
+      $tx_id : tx_id ,
+      $owner :  obj.owner ,
+      $sig :  obj.sig ,
+    }
+    await this.app.storage.executeDatabase(sql, params, "archive");
     
+    //
+    // update tx
+    //
+    sql = `UPDATE txs SET tx = $tx WHERE tx_id = $tx_id`;
+    params = {
+      $tx_id : tx_id ,
+      $tx :  tx.serialize_to_web(this.app)
+    }
+    await this.app.storage.executeDatabase(sql, params, "archive");
+
+    return 1;
+ 
+  }
+
+
+  //////////
+  // load //
+  //////////
+  async loadTransactions(tx, obj={}) {
+
+    let num = 10;
+    let txs = [];
+
+    //
+    // ACCEPT REASONABLE LIMITS
+    //
+    if (obj.num && obj.num <= 100) { num = obj.num; }
+
+    //
+    // SEARCH BASED ON CRITERIA PROVIDED
+    //
+    if (obj.field1) {
+      let sql = "SELECT * FROM archives JOIN txs WHERE archives.field1 = $field1 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $num";
+      let params = { $field1 : obj.field1 , $num : num };
+      let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+    }
+    if (obj.field2) {
+      let sql = "SELECT * FROM archives JOIN txs WHERE archives.field2 = $field2 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $num";
+      let params = { $field2 : obj.field2 , $num : num };
+      let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+    }
+    if (obj.field3) {
+      let sql = "SELECT * FROM archives JOIN txs WHERE archives.field3 = $field3 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $num";
+      let params = { $field3 : obj.field3 , $num : num };
+      let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+    }
+    if (obj.owner) {
+      let sql = "SELECT * FROM archives JOIN txs WHERE archives.owner = $owner AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $num";
+      let params = { $owner : obj.owner , $num : num };
+      let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+    }
+    if (obj.publickey) {
+      let sql = "SELECT * FROM archives JOIN txs WHERE archives.publickey = $publickey AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $num";
+      let params = { $publickey : obj.publickey , $num : num };
+      let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+    }
+    if (obj.sig) {
+      let sql = "SELECT * FROM archives JOIN txs WHERE archives.sig = $sig AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $num";
+      let params = { $sig : obj.sig , $num : num };
+      let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+    }
+
+    //
+    // FILTER FOR TXS
+    //
+    if (rows != undefined) {
+      if (rows.length > 0) {
+        for (let i = 0; i < rows.length; i++) {
+          txs.push({ tx: rows[i].tx });
+        }
+      }
+    }
+
+    return txs;
 
   }
 
   ////////////
   // delete //
   ////////////
-  async deleteTransaction(tx = null, authorizing_publickey = "", authorizing_sig = "") {
+  async deleteTransaction(tx, obj={}) {
   }
 
   ////////////
@@ -223,11 +339,6 @@ class Archive extends ModTemplate {
   async deleteTransactions(type = "all", publickey = null) {
   }
 
-  //////////
-  // load //
-  //////////
-  async loadTransactions(publickey, sig, type, num) {
-  }
 
 
 
