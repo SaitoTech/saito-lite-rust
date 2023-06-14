@@ -127,13 +127,13 @@ class Relay extends ModTemplate {
                 if (inner_tx.isTo(app.wallet.returnPublicKey())) {
 
                     if (inner_txmsg.request === "ping") {
-                        console.log("Respond to ping");
+                        //console.log("Respond to ping");
                         this.sendRelayMessage(inner_tx.transaction.from[0].add, "echo", { status: this.busy });
                         return;
                     }
 
                     if (inner_txmsg.request === "echo") {
-                        console.log("Received echo");
+                        //console.log("Received echo");
                         if (inner_txmsg.data.status) {
                             app.connection.emit("relay-is-busy", inner_tx.transaction.from[0].add);
                         } else {
@@ -162,7 +162,12 @@ class Relay extends ModTemplate {
                             peer_found = 1;
 
                             if (this.app.BROWSER == 0) {
-                                app.network.peers[i].sendTransactionWithCallback(inner_tx, function () {
+                                /*
+                                    Update 14/6/23 replace inner_tx with tx
+                                    Not sure if/how relay worked since most modules are expecting the
+                                    meta relay tag in their handlePeerTransaction
+                                */
+                                app.network.peers[i].sendTransactionWithCallback(tx, function () {
                                     if (mycallback != null) {
                                         mycallback({ err: "", success: 1 });
                                     }
