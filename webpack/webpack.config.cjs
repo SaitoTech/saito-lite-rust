@@ -191,10 +191,11 @@ webpack({
           publicPath: "dist/"
         }
       },
-      {
-        test: /\.wasm$/,
-        type: "webassembly/sync",
-      },
+      // {
+      //   test: /\.wasm$/,
+      //   type: "webassembly/async",
+      //   loader:'file-loader'
+      // },
       {
         test: /\.zip$/,
         exclude: [
@@ -216,7 +217,7 @@ webpack({
   ],
   experiments: {
     asyncWebAssembly: true,
-    syncWebAssembly: true
+    // syncWebAssembly: true
   },
   mode: "production",
   devtool: devtool
