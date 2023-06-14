@@ -146,6 +146,7 @@ class ChatManager {
     app.connection.on("relay-is-online", (pkey)=>{
       let group = this.mod.returnGroupByMemberPublickey(pkey);
       console.log("Receive online confirmation from " + pkey);
+      group.online = true;
       let cm_handle = document.querySelector(`.chat-manager #saito-user-${group.id}`);
       if (cm_handle){
         cm_handle.classList.add("online");
@@ -154,6 +155,7 @@ class ChatManager {
         }
         this.timers[group.id] = setTimeout(()=>{
           cm_handle.classList.remove("online");
+          group.online = false;
         }, 360000)
       }
     });
@@ -205,16 +207,8 @@ class ChatManager {
       }
       
 
-      let last_msg = "new chat";
-      let last_ts = new Date().getTime();
 
-      if (group.txs.length > 0) {
-        let tx = group.txs[group.txs.length - 1];
-        last_msg = (tx.msg.indexOf('<img') == 0) ? "image" : this.app.browser.sanitize(tx.msg);
-        last_ts = tx.ts;
-      }
-
-      let html = ChatTeaser(this.app, group.name, last_msg, last_ts, group.id, group.unread);
+      let html = ChatTeaser(this.app, group); 
       let divid = "saito-user-" + group.id;
 
       let obj = document.getElementById(divid);
