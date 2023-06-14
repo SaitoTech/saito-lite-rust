@@ -34,6 +34,7 @@ class ChatManager {
     this.popups = {};
 
     this.timers = {};
+    this.pinged = {};
 
     //
     // handle requests to re-render chat manager
@@ -142,8 +143,9 @@ class ChatManager {
       app.connection.emit('chat-popup-render-request', group);
     });
 
-    /*app.connection.on("relay-is-online", (pkey)=>{
+    app.connection.on("relay-is-online", (pkey)=>{
       let group = this.mod.returnGroupByMemberPublickey(pkey);
+      console.log("Receive online confirmation from " + pkey);
       let cm_handle = document.querySelector(`.chat-manager #saito-user-${group.id}`);
       if (cm_handle){
         cm_handle.classList.add("online");
@@ -152,10 +154,10 @@ class ChatManager {
         }
         this.timers[group.id] = setTimeout(()=>{
           cm_handle.classList.remove("online");
-        }, 90000)
+        }, 360000)
       }
     });
-    */
+    
 
   }
 
@@ -189,17 +191,21 @@ class ChatManager {
     //
     // render chat groups
     //
+    let now = new Date().getTime();
+
     for (let group of this.mod.groups) {
 
-      /*if (group.members.length == 2){
+      if (group.members.length == 2 && this.mod.isRelayConnected){
         console.log(JSON.parse(JSON.stringify(group.members)));
         for (let member of group.members){
-          if (member != this.app.wallet.returnPublicKey()){
+          console.log(this.pinged[member]);
+          if (member != this.app.wallet.returnPublicKey() && (!this.pinged[member] || this.pinged[member] < now - 1000*60*60*2)){
             console.log("Send Ping to " + member);
             this.app.connection.emit("relay-send-message", {recipient: [member], request: "ping", data: {}});
+            this.pinged[member] = now;
           }
         }
-      }*/
+      }
       
 
       let last_msg = "new chat";
@@ -272,6 +278,23 @@ class ChatManager {
     if (document.querySelector(".add-contacts")){
       document.querySelector(".add-contacts").onclick = (e) => {
         this.contactList.render();
+      }
+    }
+
+    if (document.querySelector(".refresh-contacts")){
+      document.querySelector(".refresh-contacts").onclick = (e) => {
+          for (let group of this.mod.groups) {
+
+          if (group.members.length == 2){
+            console.log(JSON.parse(JSON.stringify(group.members)));
+            for (let member of group.members){
+              if (member != this.app.wallet.returnPublicKey()){
+                console.log("Send Ping to " + member);
+                this.app.connection.emit("relay-send-message", {recipient: [member], request: "ping", data: {}});
+              }
+            }
+          }
+        }
       }
     }
 

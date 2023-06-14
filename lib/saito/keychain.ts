@@ -327,21 +327,23 @@ class Keychain {
           kx.push(this.keys[x]);
         }
       }
-    }
+    }else{
 
-    //
-    // if keys exist
-    //
-    for (let x = 0; x < this.keys.length; x++) {
-      let match = true;
-      for (let key in data) {
-        if (this.keys[x][key] !== data[key]) {
-          match = false;
+      //
+      // if data filter for keys
+      //
+      for (let x = 0; x < this.keys.length; x++) {
+        let match = true;
+        for (let key in data) {
+          if (this.keys[x][key] !== data[key]) {
+            match = false;
+          }
+        }
+        if (match == true) {
+          kx.push(this.keys[x]);
         }
       }
-      if (match == true) {
-        kx.push(this.keys[x]);
-      }
+
     }
 
     return kx;

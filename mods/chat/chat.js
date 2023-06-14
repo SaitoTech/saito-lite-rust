@@ -52,6 +52,8 @@ class Chat extends ModTemplate {
 
     this.loading = true;
 
+    this.isRelayConnected = false;
+
     this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
       this.returnOrCreateChatGroupFromMembers(data?.members);
       this.app.connection.emit("chat-manager-render-request");
@@ -148,6 +150,11 @@ class Chat extends ModTemplate {
 
   onPeerServiceUp(app, peer, service = {}) {
     let chat_self = this;
+
+    if (service.service === "relay"){
+      this.isRelayConnected = true;
+      this.app.connection.emit("chat-manager-render-request");
+    }
 
     //
     // load private chat

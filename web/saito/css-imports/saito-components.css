@@ -19,12 +19,14 @@
   display: none;
   content: "";
   border-radius: 100%;
-  width: 1rem;
-  height: 1rem;
+  width: 1.5rem;
+  height: 1.5rem;
   background-color: var(--saito-primary);
 }
 
-.online .online-status-indicator {
+.online .online-status-indicator:after {
   display: block;
-
+  top: 0;
+  left: 4rem;
+  box-shadow: 0 0 3px 1px;
 }
