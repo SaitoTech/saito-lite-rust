@@ -196,11 +196,8 @@ class ChatManager {
     for (let group of this.mod.groups) {
 
       if (group.members.length == 2 && this.mod.isRelayConnected){
-        console.log(JSON.parse(JSON.stringify(group.members)));
         for (let member of group.members){
-          console.log(this.pinged[member]);
           if (member != this.app.wallet.returnPublicKey() && (!this.pinged[member] || this.pinged[member] < now - 1000*60*60*2)){
-            console.log("Send Ping to " + member);
             this.app.connection.emit("relay-send-message", {recipient: [member], request: "ping", data: {}});
             this.pinged[member] = now;
           }
