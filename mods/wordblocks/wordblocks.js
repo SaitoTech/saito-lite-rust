@@ -2141,8 +2141,9 @@ class Wordblocks extends GameTemplate {
         console.log(player, tileCt);
 
         if (this.browser_active) {
-          this.playerbox.appendLog(
-            `<div class="lastmove"><span>Tiles:</span><span class="playerscore">${tileCt}</span></div>`,
+          let html = this.game.state.players[player-1].log;
+          this.refreshPlayerLog(
+            `${html}<div class="lastmove"><span>Tiles:</span><span class="playerscore">${tileCt}</span></div>`,
             player
           );
         }

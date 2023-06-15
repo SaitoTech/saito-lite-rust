@@ -15,7 +15,7 @@ class ChatMenu {
       return;
     }
     if (!document.querySelector("#saito-chat-menu")) {
-      this.overlay.show(chatMenuTemplate(this.chat_group));
+      this.overlay.show(chatMenuTemplate(this.app, this.chat_group));
       this.attachEvents();
     }
 
