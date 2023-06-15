@@ -110,7 +110,7 @@ class League extends ModTemplate {
 
     this.loadLeagues();
 
-    this.pruneOldPlayers();
+    //this.pruneOldPlayers();
 
     if (app.browser.returnURLParameter("view_game")) {
       let game = app.browser.returnURLParameter("view_game").toLowerCase();
@@ -1466,7 +1466,11 @@ class League extends ModTemplate {
   }
 
   async pruneOldPlayers() {
-    let sql = `UPDATE players SET deleted = 1 WHERE ts < ? AND admin = ""`;
+    /*
+    Need to do an inner join to select for default leaderboards only
+    */
+
+    let sql = `UPDATE players SET deleted = 1 WHERE players.ts < ?`;
     let cutoff = new Date().getTime() - this.inactive_player_cutoff;
     await this.app.storage.executeDatabase(sql, [cutoff], "league");
   }
