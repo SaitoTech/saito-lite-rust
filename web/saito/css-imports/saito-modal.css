@@ -31,8 +31,10 @@ This alows for a header with a header with title to be added without extra CSS
   cursor: pointer;
 }
 
-.saito-contacts-list {
-  margin: 0.5rem 0;
+
+.saito-modal-content{
+  border-top: 1px solid;
+  padding: 0.5rem 0;
 }
 
 .saito-modal-content .saito-user {
