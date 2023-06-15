@@ -62,7 +62,6 @@ class Chat extends ModTemplate {
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
 
     this.hiddenTab = "hidden";
-    this.notifications = 0;
     this.orig_title = "";
 
     return;
@@ -139,7 +138,6 @@ class Chat extends ModTemplate {
               clearInterval(this.tabInterval);
               this.tabInterval = null;
               document.title = this.orig_title;
-              this.notifications = 0;
             }
           }
         },
@@ -1078,36 +1076,6 @@ class Chat extends ModTemplate {
     return this.groups[0];
   }
 
-  //
-  // Maybe needs improvement, but simple test to not rip away
-  // focus from a ChatPopup if rendering a new Chatpopup
-  //
-  isOtherInputActive() {
-    // if we are viewing an overlay, nope out
-    if (document.querySelector(".saito-overlay-backdrop")?.style?.display == "block") {
-      return 1;
-    }
-
-    let ae = document.activeElement;
-
-    if (!ae) {
-      return 0;
-    }
-
-    if (ae.tagName.toLowerCase() == "input" || ae.tagName.toLowerCase() == "textarea") {
-      return 1;
-    }
-
-    if (ae.className == "chat-input") {
-      return 1;
-    }
-
-    if (document.querySelector("emoji-picker")) {
-      return 1;
-    }
-
-    return 0;
-  }
 
   ///////////////////
   // LOCAL STORAGE //
@@ -1282,16 +1250,20 @@ class Chat extends ModTemplate {
       return;
     }
     //If we haven't already started flashing the tab
-    this.notifications++;
-        
+    let notificatons = 0;
+    for (let group of this.groups){
+      if (group.name !== this.communityGroupName){
+        notificatons += group.unread;
+      }
+    }
+
     if (!this.tabInterval && document[this.hiddenTab]) {
       this.orig_title = document.title;
       this.tabInterval = setInterval(() => {
         if (document.title === this.orig_title) {
-          document.title =
-            this.notifications == 1 ? "New message" : `(${this.notifications}) new messages`;
+          document.title = `(${notifications}) unread message${notifications == 1 ?"":"s"}`;
         } else {
-          document.title = this.orig_title;
+          document.title = "New message";
         }
       }, 650);
     }

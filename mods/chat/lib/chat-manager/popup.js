@@ -133,15 +133,6 @@ class ChatPopup {
       existing_input = "";
     }
 
-    //
-    // focus on text input
-    //
-    if (!this.mod.isOtherInputActive()) {
-      this.input.focus();
-      document.execCommand('selectAll', false, null);
-      document.getSelection().collapseToEnd();
-    }
-
 
     //
     // attach events

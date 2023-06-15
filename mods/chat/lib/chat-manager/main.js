@@ -285,7 +285,7 @@ class ChatManager {
         if (this.render_popups_to_screen) {
           this.popups[gid].container = group?.target_container || "";
           this.popups[gid].render();
-          this.popups[gid].input.focus();
+          this.popups[gid].input.focus(true);
         }
 
         if (this.render_manager_to_screen) {
