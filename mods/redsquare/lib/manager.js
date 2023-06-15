@@ -1,6 +1,7 @@
 const TweetManagerTemplate = require("./manager.template");
 const Tweet = require("./tweet");
 const SaitoProfile = require("./../../../lib/saito/ui/saito-profile/saito-profile");
+const SaitoLoader = require("./../../../lib/saito/ui/saito-loader/saito-loader");
 
 
 class TweetManager {
@@ -13,6 +14,23 @@ class TweetManager {
 
     this.mode = "tweets";
     this.profile = new SaitoProfile(app, mod, ".saito-main");
+
+    // dynamic loading
+    this.intersection_loader = new SaitoLoader(app, mod, "#redsquare-intersection");
+    this.intersectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+alert("INTERSECTION LOADER");
+          this.intersection_loader.render();
+          mod.loadTweets(() => { this.intersection_loader.hide() });
+        }
+      });
+    }, {
+      root: null,
+      rootMargin: '0px',
+      threshold: 1
+    });
+
 
   }
 
@@ -61,12 +79,16 @@ class TweetManager {
       this.profile.render();
     }
  
-
     this.attachEvents();
 
   }
 
   attachEvents() {
+
+    //
+    // dynamic content loading
+    //
+    this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
 
   }
 

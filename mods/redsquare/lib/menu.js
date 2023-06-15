@@ -62,7 +62,6 @@ class RedSquareMenu {
     }
 
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
-alert("sending menu click on notifications...");
       this.app.connection.emit("redsquare-notifications-render-request");
     }
 
@@ -87,6 +86,29 @@ alert("sending menu click on notifications...");
     });
 
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   incrementNotifications(menu_item, notifications = -1) {
