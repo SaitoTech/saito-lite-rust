@@ -14,38 +14,53 @@ class Tweet {
     this.mod = mod;
     this.container = container;
     this.name = "Tweet";
-
+ 
+    //
+    // the core
+    //
     this.tx = tx;
 
-    if (!this.tx.optional) {
-      this.tx.optional = {};
-      this.tx.optional.num_replies = 0;
-      this.tx.optional.num_retweets = 0;
-      this.tx.optional.num_likes = 0;
-    }
+    //
+    // ancillary content is stored in the tx.optional array, where it
+    // can be saved back to the network of archive nodes / databases and
+    // preserved along with the transaction as optional (unverified) but
+    // associated content.
+    //
+    // this includes information like the number of replies, retweets, 
+    // likes, and information like open graph images, etc.
+    //
+    if (!this.tx.optional) { this.tx.optional = {}; }
+    if (!this.tx.optional.num_replies) 	{ this.tx.optional.num_replies = 0; }
+    if (!this.tx.optional.num_retweets) { this.tx.optional.num_retweets = 0; }
+    if (!this.tx.optional.num_likes) 	{ this.tx.optional.num_likes = 0; }
+    if (!this.tx.optional.link) 	{ this.tx.optional.link = 0; }
+    if (!this.tx.optional.parent_id) 	{ this.tx.optional.parent_id = ""; }
+    if (!this.tx.optional.thread_id)	{ this.tx.optional.thread_id = ""; }
     let txmsg = tx.returnMessage();
 
+    //
+    // additional variables are created in-memory from the core transaction
+    // without the need for re-saving, these are specified below.
+    //
     this.text = "";
-    this.parent_id = "";
-    this.thread_id = "";
     this.youtube_id = null;
     this.created_at = this.tx.transaction.ts;
     this.updated_at = 0;
+
+    //
+    // the notice shows up at the top of the tweet BEFORE the username and
+    // is used for "retweeted by X" or "liked by Y". the userline is the 
+    // line that goes in the tweet header below the username/address but to
+    // the right of the identicon.
+    //
     this.notice = "";
-
-    //
-    // userline will be set to this in template if not specified
-    //
-    // we specify it to indicate why it is showing up now!
-    //
-    //  let dt = app.browser.formatDate(tweet.tx.transaction.ts);
-    //  let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
-    //
     this.userline = "";
-    //
-    //
 
-
+    //
+    // default userline is time of posting
+    //
+    let dt = app.browser.formatDate(this.tx.transaction.ts);
+    userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
 
     this.user = new SaitoUser(app, mod, `.tweet-${this.tx.transaction.sig} > .tweet-header`, this.tx.transaction.from[0].add);
 
@@ -62,7 +77,6 @@ class Tweet {
     this.retweet_tx_sig = null;
     this.links = [];
     this.link = null;
-    this.link_properties = null;
     this.show_controls = 1;
     this.force_long_tweet = false;
     this.is_long_tweet = false;
@@ -81,7 +95,7 @@ class Tweet {
     this.generateTweetProperties(app, mod, 1);
 
     //
-    // create retweet if exists
+    // retweets
     //
     if (this.retweet_tx != null) {
       let newtx = new saito.default.transaction();
@@ -89,10 +103,10 @@ class Tweet {
       this.retweet = new Tweet(this.app, this.mod, `.tweet-preview-${this.tx.transaction.sig}`, newtx);
       this.retweet.is_retweet = true;
       this.retweet.show_controls = 0;
+    //
+    // image preview
+    //
     } else {
-      //
-      // create image preview
-      //
       if (this.images?.length > 0) {
         this.img_preview = new Image(this.app, this.mod, `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`, this);
       } else {
@@ -102,6 +116,7 @@ class Tweet {
       }
     }
   }
+
 
   remove() {
     let eqs = `.tweet-${this.tx.transaction.sig}`;
@@ -131,7 +146,6 @@ class Tweet {
         has_reply_disconnected = true;
       }
     }
-
 
     //
     //
@@ -176,7 +190,7 @@ class Tweet {
 
 
     //
-    // retweetsnw without commentary? pass-through and render subtweet
+    // retweets without commentary? pass-through and render subtweet
     //
     //          
     // this is if i retweet my own tweet
@@ -212,14 +226,19 @@ class Tweet {
     }
 
     if (replace_existing_element && document.querySelector(myqs)) {
+console.log("inserting 1");
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
       if (prepend == true) {
+console.log("inserting 2");
         this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
       } else {
+console.log("inserting 3");
         if (this.render_after_selector) {
+console.log("inserting 4");
           this.app.browser.addElementAfterSelector(TweetTemplate(this.app, this.mod, this), this.render_after_selector);
         } else {
+console.log("inserting 5");
           this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
         }
       }
@@ -278,8 +297,8 @@ class Tweet {
       this.img_preview.render();
     }
     if (this.link_preview != null) {
-      if (this.link_properties != null) {
-        if (Object.keys(this.link_properties).length > 0) {
+      if (this.tx.optional.link_properties != null) {
+        if (Object.keys(this.tx.optional.link_properties).length > 0) {
           this.link_preview.render();
         }
       }
@@ -295,6 +314,8 @@ class Tweet {
       let dt = this.app.browser.formatDate(this.updated_at);
       this.userline = this.user.notice = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
     }
+
+console.log("in render with critical child");
 
     this.render(prepend);
 
@@ -941,7 +962,7 @@ class Tweet {
       if (fetch_open_graph == 1) {
         let res = await mod.fetchOpenGraphProperties(app, mod, this.link);
         if (res != '') {
-          this.link_properties = res;
+          this.tx.optional.link_properties = res;
         }
       }
 

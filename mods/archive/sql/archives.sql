@@ -10,5 +10,8 @@ CREATE TABLE IF NOT EXISTS archives (
   field3 TEXT DEFAULT "",
   block_id INTEGER DEFAULT 0,
   block_hash TEXT DEFAULT "",
+  created_at INTEGER DEFAULT 0,
+  updated_at INTEGER DEFAULT 0,
+  block_hash TEXT DEFAULT "",
   preserve INTEGER DEFAULT 0
 );

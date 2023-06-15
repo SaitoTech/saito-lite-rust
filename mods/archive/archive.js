@@ -150,6 +150,8 @@ class Archive extends ModTemplate {
     if (!obj.block_id) 		{ obj.block_id = ""; }
     if (!obj.block_hash) 	{ obj.block_hash= ""; }
     if (!obj.preserve) 		{ obj.preserve = ""; }
+    if (!obj.created_at) 	{ obj.created_at = tx.transaction.ts; }
+    obj.updated_at = new Date().getTime();
 
     //
     // insert transaction
@@ -171,6 +173,8 @@ class Archive extends ModTemplate {
       field3, 
       block_id, 
       block_hash, 
+      created_at, 
+      updated_at, 
       preserve
     ) VALUES (
       $tx_id, 
@@ -182,6 +186,8 @@ class Archive extends ModTemplate {
       $field3, 
       $block_id, 
       $block_hash, 
+      $created_at,
+      $updated_at,
       $preserve
     )`;
     params = {
@@ -194,6 +200,8 @@ class Archive extends ModTemplate {
       $field3 : obj.field3 ,
       $block_id : obj.block_id ,
       $block_hash :  obj.block_hash ,
+      $created_at : obj.created_at ,
+      $updated_at :  obj.updated_at ,
       $preserve : obj.preserve
     }
     let archives_id = await this.app.storage.insertDatabase(sql, params, "archive");
@@ -226,6 +234,7 @@ class Archive extends ModTemplate {
     if (!obj.block_id) 		{ obj.block_id = ""; }
     if (!obj.block_hash) 	{ obj.block_hash= ""; }
     if (!obj.preserve) 		{ obj.preserve = ""; }
+    obj.updated_at = new Date().getTime();
 
     //
     // find entries to update
@@ -240,8 +249,9 @@ class Archive extends ModTemplate {
     //
     // update index
     //
-    sql = `UPDATE archives SET owner = $owner , preserve = $preserve WHERE id = $id AND sig = $sig`;
+    sql = `UPDATE archives SET updated_at = $updated_at , owner = $owner , preserve = $preserve WHERE id = $id AND sig = $sig`;
     params = {
+      $updated_at : obj.updated_at ,
       $id : id ,
       $tx_id : tx_id ,
       $owner :  obj.owner ,
@@ -271,6 +281,9 @@ class Archive extends ModTemplate {
 
     let limit = 10;
     let txs = [];
+    let sql = "";
+    let params = {};
+    let rows = [];
 
     //
     // ACCEPT REASONABLE LIMITS
@@ -281,34 +294,34 @@ class Archive extends ModTemplate {
     // SEARCH BASED ON CRITERIA PROVIDED
     //
     if (obj.field1) {
-      let sql = "SELECT * FROM archives JOIN txs WHERE archives.field1 = $field1 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
-      let params = { $field1 : obj.field1 , $limit : limit };
-      let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      sql = "SELECT * FROM archives JOIN txs WHERE archives.field1 = $field1 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      params = { $field1 : obj.field1 , $limit : limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.field2) {
-      let sql = "SELECT * FROM archives JOIN txs WHERE archives.field2 = $field2 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
-      let params = { $field2 : obj.field2 , $limit : limit };
-      let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      sql = "SELECT * FROM archives JOIN txs WHERE archives.field2 = $field2 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      params = { $field2 : obj.field2 , $limit : limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.field3) {
-      let sql = "SELECT * FROM archives JOIN txs WHERE archives.field3 = $field3 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
-      let params = { $field3 : obj.field3 , $limit : limit };
-      let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      sql = "SELECT * FROM archives JOIN txs WHERE archives.field3 = $field3 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      params = { $field3 : obj.field3 , $limit : limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.owner) {
-      let sql = "SELECT * FROM archives JOIN txs WHERE archives.owner = $owner AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
-      let params = { $owner : obj.owner , $limit : limit };
-      let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      sql = "SELECT * FROM archives JOIN txs WHERE archives.owner = $owner AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      params = { $owner : obj.owner , $limit : limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.publickey) {
-      let sql = "SELECT * FROM archives JOIN txs WHERE archives.publickey = $publickey AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
-      let params = { $publickey : obj.publickey , $limit : limit };
-      let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      sql = "SELECT * FROM archives JOIN txs WHERE archives.publickey = $publickey AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      params = { $publickey : obj.publickey , $limit : limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.sig) {
-      let sql = "SELECT * FROM archives JOIN txs WHERE archives.sig = $sig AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
-      let params = { $sig : obj.sig , $limit : limit };
-      let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      sql = "SELECT * FROM archives JOIN txs WHERE archives.sig = $sig AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      params = { $sig : obj.sig , $limit : limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
 
     //

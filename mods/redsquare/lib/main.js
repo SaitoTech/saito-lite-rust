@@ -5,6 +5,7 @@ const RedSquareAppspaceNotifications = require("./appspace/notifications");
 const RedSquareAppspaceGames = require("./appspace/games");
 const RedSquareAppspaceContacts = require("./appspace/contacts");
 const SaitoLoader = require("../../../lib/saito/ui/saito-loader/saito-loader");
+const TweetManager = require("./manager");
 
 class RedSquareMain {
 
@@ -16,12 +17,17 @@ class RedSquareMain {
     this.name = "RedSquareMain";
 
     this.components = {};
+
+    this.manager = new TweetManager(app, mod, ".saito-main");
+
+
+/***
+    this.components['home'] = new RedSquareAppspaceHome(app, mod, ".saito-main");
     this.components['home'] = new RedSquareAppspaceHome(app, mod, ".saito-main");
     this.components['profile'] = this.mod.profile;
     this.components['notifications'] = new RedSquareAppspaceNotifications(app, mod, ".saito-main");
-    //this.components['contacts'] = new RedSquareAppspaceContacts(app, mod, ".saito-main");
     this.render_component = 'home';
-
+***/
 
     //
     // EVENTS
@@ -29,62 +35,53 @@ class RedSquareMain {
     // redsquare - component - ui-component - [render-method] - (render-request)
     //
     this.app.connection.on("redsquare-home-render-request", () => {
-      this.renderAppspaceComponent("home");
-      this.components["home"].renderTweets();
+      this.manager.publickey = this.app.wallet.returnPublicKey();
+      this.manager.mode = "tweets";
+      this.manager.render();
     });
-    this.app.connection.on("redsquare-home-loader-render-request", () => {
-      this.components["home"].loader.render();
-    });
-    this.app.connection.on("redsquare-home-loader-hide-request", () => {
-      this.components["home"].loader.hide();
-    });
-    this.app.connection.on("redsquare-home-thread-render-request", (tweets) => {
-      this.renderAppspaceComponent("home");
-      this.components["home"].renderThread(tweets);
-    });
-    this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
-      //document.querySelector('.saito-container').scrollTo({top:0, left:0, behavior:"smooth"});
-      this.components["home"].renderTweet(tweet);
-    });
-    this.app.connection.on("redsquare-home-tweet-append-render-request", (tweet) => {
-      this.components["home"].appendTweet(tweet);
-    });
-    this.app.connection.on("redsquare-home-tweet-prepend-render-request", (tweet) => {
-      this.components["home"].prependTweet(tweet);
-    });
-    this.app.connection.on("redsquare-home-tweet-and-critical-child-append-render-request", (tweet) => {
-      this.components["home"].prependTweetWithCriticalChild(tweet);
-    });
-    this.app.connection.on("redsquare-home-tweet-and-critical-child-prepend-render-request", (tweet) => {
-      this.components["home"].prependTweetWithCriticalChild(tweet);
-    });
-    this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {
-      if (this.render_component === "home") {
-        if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
-          this.app.connection.emit("redsquare-home-tweet-append-render-request", (tweet));
-        } else {
-          if (tweet.tx.transaction.from[0].add === this.app.wallet.returnPublicKey()) {
-            this.app.connection.emit("redsquare-home-tweet-prepend-render-request", (tweet));
-          }
-        }
-      }
+    this.app.connection.on("redsquare-notifications-render-request", () => {
+alert("and sending into manager!");
+      this.manager.publickey = this.app.wallet.returnPublicKey();
+      this.manager.mode = "notifications";
+      this.manager.render();
     });
     this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
-      setHash('profile');
-      //this.renderAppspaceComponent("profile", publickey);
-      this.app.connection.emit("saito-profile-render-request", this.app.wallet.returnPublicKey());
+      this.manager.mode = "profile";
+      this.manager.publickey = publickey;
+      this.manager.render();
     });
-    //this.app.connection.on("redsquare-contacts-render-request", () => {
-    //  this.renderAppspaceComponent("contacts");
-    //});
-    this.app.connection.on("redsquare-notifications-render-request", () => {
-      this.renderAppspaceComponent("notifications");
-      this.components["notifications"].renderNotifications();
-      // and load more notifications
-      this.mod.loadMoreNotifications();
+
+    this.app.connection.on("redsquare-home-loader-render-request", () => {
+      alert("1");
+    });
+    this.app.connection.on("redsquare-home-loader-hide-request", () => {
+      alert("2");
+    });
+    this.app.connection.on("redsquare-home-thread-render-request", (tweets) => {
+      alert("3");
+    });
+    this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
+      alert("4");
+    });
+    this.app.connection.on("redsquare-home-tweet-append-render-request", (tweet) => {
+      alert("5");
+    });
+    this.app.connection.on("redsquare-home-tweet-prepend-render-request", (tweet) => {
+      alert("6");
+    });
+    this.app.connection.on("redsquare-home-tweet-and-critical-child-append-render-request", (tweet) => {
+      alert("7");
+    });
+    this.app.connection.on("redsquare-home-tweet-and-critical-child-prepend-render-request", (tweet) => {
+      alert("8");
+    });
+    this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {
+      //alert("9");
     });
 
     this.app.connection.on("redsquare-component-render-request", (obj) => {
+
+      alert("12");
 
       let hash = obj.hash;
       let params = obj.params;
@@ -113,19 +110,8 @@ class RedSquareMain {
   }
 
 
-  renderAppspaceComponent(component, id=null) {
-    document.querySelector(".saito-main").innerHTML = "";
-    this.mod.viewing = component;
-    this.render_component = component;
-    this.components[this.render_component].render(id);
-    document.querySelector(".saito-sidebar.right").innerHTML = "";
-    this.mod.sidebar.render();
-  }
-
   render() {
-    //
-    // render framework for app
-    //
+
     if (document.querySelector(".saito-container")) {
       this.app.browser.replaceElementBySelector(RedSquareMainTemplate(), ".saito-container");
     } else {
@@ -137,6 +123,7 @@ class RedSquareMain {
 
 
   attachEvents() {
+
     var scrollableElement = document.querySelector(".saito-container");
     var sidebar = document.querySelector(".saito-sidebar.right");
     var scrollTop = 0;
