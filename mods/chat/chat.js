@@ -1123,10 +1123,10 @@ class Chat extends ModTemplate {
     let new_group = Object.assign(group, {online: false});
 
     localforage.setItem(`chat_${group.id}`, new_group).then(function () {
-      //if (chat_self.debug) {
+      if (chat_self.debug) {
         console.log("Saved chat history for " + new_group.id);
         console.log(JSON.parse(JSON.stringify(new_group)));
-      //}
+      }
     });
     group.online = online_status;
   }
@@ -1253,7 +1253,7 @@ class Chat extends ModTemplate {
       return;
     }
     //If we haven't already started flashing the tab
-    let notificatons = 0;
+    let notifications = 0;
     for (let group of this.groups){
       if (group.name !== this.communityGroupName){
         notificatons += group.unread;
