@@ -820,6 +820,9 @@ class Chat extends ModTemplate {
 
     group.unread = 0;
 
+    //Save the status that we have read these messages
+    this.saveChatGroup(group);
+
     return html;
   }
 
