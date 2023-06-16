@@ -54,6 +54,10 @@
   min-height: 150px;
 }
 
+.chat-container.active {
+  z-index: 16;
+}
+
 .chat-body img {
   max-width: 100%;
 }
@@ -292,6 +296,10 @@
     min-height: 100vh;
   }
 */
+
+  .chat-container {
+    resize: unset;
+  }
 }
 
 @media screen and (max-width: 768px) {

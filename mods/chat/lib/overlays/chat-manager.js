@@ -32,7 +32,7 @@ class ChatManagerOverlay {
 
     document.querySelector(".chat-manager-overlay").onclick = (e) => {
 
-      if (e.currentTarget == e.target){
+      if (e.currentTarget == e.target) {
         document.querySelector(".chat-manager-overlay").style.visibility = "hidden";  
       }
       

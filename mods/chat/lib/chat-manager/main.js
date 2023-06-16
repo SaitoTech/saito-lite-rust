@@ -66,7 +66,7 @@ class ChatManager {
           this.popups[group.id].group = group;
         }
 
-        if (this.render_popups_to_screen) {
+        if (this.render_popups_to_screen || this.popups[group.id].is_rendered) {
           this.popups[group.id].container = group?.target_container || "";
           this.popups[group.id].render();
         }
@@ -277,9 +277,8 @@ class ChatManager {
     document.querySelectorAll(".chat-manager-list .saito-user").forEach((item) => {
       item.onclick = (e) => {
         e.stopPropagation();
-        
+
         let gid = e.currentTarget.getAttribute("data-id");
-        this.render_popups_to_screen = 1;
         let group = this.mod.returnGroup(gid);
 
         if (!this.popups[gid]) {
@@ -289,12 +288,9 @@ class ChatManager {
 
         // unset manually closed to permit re-opening
         this.popups[gid].manually_closed = false;
-
-        if (this.render_popups_to_screen) {
-          this.popups[gid].container = group?.target_container || "";
-          this.popups[gid].render();
-          this.popups[gid].input.focus(true);
-        }
+        this.popups[gid].container = group?.target_container || "";
+        this.popups[gid].render();
+        this.popups[gid].input.focus(true);
 
         if (this.render_manager_to_screen) {
           this.render();
