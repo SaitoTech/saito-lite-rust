@@ -660,92 +660,12 @@ console.log("TXS loaded: " + txs.length);
   }
 
 
-
-  loadMoreTweets(post_load_tweet_callback = null) {
-
-    this.increment_for_tweets++;
-    let pre_existing_tweets_on_page = this.tweets.length;
-    let loaded_tweets = false;
-    for (let i = 0; i < this.peers.length; i++) {
-      let peer = this.peers[i].peer;
-      let sql = `SELECT * FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT '${this.results_per_page * this.increment_for_tweets - 1}','${this.results_per_page}'`;
-
-      this.peers[i].limit = this.results_per_page;
-      this.peers[i].offset = this.increment_for_tweets * this.results_per_page;
-
-      this.loadTweetsFromPeer(peer, sql, (txs) => {
-        if (txs.length > 0) {
-          let x = [];
-          for (let z = 0; z < txs.length; z++) {
-            let tweet = new Tweet(this.app, this, ".tweet-manager", txs[z]);
-            this.app.connection.emit("redsquare-home-tweet-append-render-request", (tweet));
-          }
-        }
-        if (txs.length > 0) { loaded_tweets = true; }
-        if (post_load_tweet_callback) {
-          post_load_tweet_callback()
-        }
-      });
-    }
-    if (this.tweets.length <= pre_existing_tweets_on_page && loaded_tweets == true) {
-      this.loadMoreTweets(post_load_tweet_callback);
-      return;
-    }
-  }
-
-  loadMoreNotifications() {
-
-    this.increment_for_notifications++;
-    let pre_existing_notifications = this.notifications.length;
-    let loaded_notifications = false;
-    for (let i = 0; i < this.peers_for_notifications.length; i++) {
-      let peer = this.peers_for_notifications[i];
-      this.loadNotificationsFromPeer(peer, this.increment_for_notifications, () => {
-        if (this.notifications.length > pre_existing_notifications) { loaded_notifications = true; }
-        let hash = this.app.browser.returnHashAndParameters();
-        if (hash) {
-          if (hash.hash === "notifications") {
-            this.app.connection.emit("redsquare-home-notifications-render-request");
-          }
-        }
-      });
-    }
-  }
-  loadNotificationsFromPeer(peer, increment = 1, post_load_callback = null) {
-
-    this.app.storage.loadTransactions({ field1 : "RedSquare" , limit : 10 , offset : (10 * increment)}, (txs) => {
-      if (!this.peers_for_notifications.includes(peer)) {
-        this.peers_for_notifications.push(peer);
-      }
-      for (let i = 0; i < txs.length; i++) {
-        txs[i].decryptMessage(this.app);
-        this.addTweet(txs[i], false, false);
-      }
-      if (post_load_callback != null) { post_load_callback(); }
-    }, "localhost");
-  }
-
-
-  trackTweet(tweet) {
-    this.trackedTweet = tweet;
-  }
-
-
-
-
-
   //
-  // adding tweets and notifications
-  //
-  // all tweets and notifications are added as transactions. this function examines the
-  // tweet-tree ( this.tweets ) and inserts the transaction into the appropriate spot so 
-  // that when specific tweets are rendered their children will also display as wanted.
+  // adds tweets to internal data structure
   //
   // notifications are added through this function. 
   //
   addTweet(tx, prepend = false, render = true) {
-
-console.log("adding tweet...");
 
     //
     // create the tweet
@@ -760,8 +680,6 @@ console.log("adding tweet...");
     // maybe this needs to go into notifications too
     //
     if (tx.isTo(this.app.wallet.returnPublicKey())) {
-
-console.log("adding to notifications...");
 
       //
       // this is a notification, so update our timestamps
@@ -837,8 +755,6 @@ console.log("adding to notifications...");
     //
     if (tweet.tx.optional.parent_id === "") {
 
-console.log("this is a top level post");
-
       //
       // we do not have this tweet indexed, it's new
       //
@@ -894,13 +810,10 @@ console.log("this is a top level post");
       //
     } else {
 
-console.log("we have found a comment!");
-
       let inserted = false;
 
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.tx.optional.thread_id) {
-console.log("inserting into thread id: " + tweet.tx.optional.thread_id);
           if (this.tweets[i].addTweet(tweet) == 1) {
             this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
             inserted = true;
@@ -970,8 +883,6 @@ console.log("inserting into thread id: " + tweet.tx.optional.thread_id);
         return fetch(link, {follow: 10})
           .then(res => res.text())
           .then(data => {
-
-            console.log("fetched link now processing...");
 
             // required og properties for link preview
             let og_tags = {
@@ -1206,10 +1117,10 @@ console.log("inserting into thread id: " + tweet.tx.optional.thread_id);
       //
       // fetch supporting link properties
       //
-      console.log("SERVER FETCHING OPEN GRAPH PROPERTIES!");
-      console.log("this is for: " + tweet.text);
+      //console.log("SERVER FETCHING OPEN GRAPH PROPERTIES!");
+      //console.log("this is for: " + tweet.text);
       tweet = await tweet.generateTweetProperties(app, this, 1);
-      console.log("DONE: " + JSON.stringify(tweet.link_properties));
+      //console.log("DONE: " + JSON.stringify(tweet.link_properties));
 
 
       let type_of_tweet = 0; // unknown
@@ -1575,11 +1486,6 @@ console.log("inserting into thread id: " + tweet.tx.optional.thread_id);
     expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
   }
 
-
-
-  //  returnFirstNonVisibleTweet() {
-  //    
-  //  }
 }
 
 module.exports = RedSquare;
