@@ -167,7 +167,7 @@ class ChatManager {
       this.pinged[group.id] = new Date().getTime();
 
       this.timers[group.id] = setTimeout(()=>{
-        group.offline = false;
+        group.online = false;
         app.connection.emit("chat-manager-render-request");
       }, 60000);
     });
@@ -311,15 +311,31 @@ class ChatManager {
       document.querySelector(".refresh-contacts").onclick = (e) => {
         for (let group of this.mod.groups) {
           if (group.members.length == 2) {
-            console.log(JSON.parse(JSON.stringify(group.members)));
+            //console.log(JSON.parse(JSON.stringify(group.members)));
             for (let member of group.members) {
               if (member != this.app.wallet.returnPublicKey()) {
-                console.log("Send Ping to " + member);
+                //console.log("Send Ping to " + member);
                 this.app.connection.emit("relay-send-message", {
                   recipient: [member],
                   request: "ping",
                   data: {},
                 });
+
+                this.pinged[group.id] = new Date().getTime();
+
+                if (this.timers[group.id]) {
+                  clearTimeout(this.timers[group.id]);
+                }
+
+                //If you don't hear back in 5 seconds, assume offline
+                this.timers[group.id] = setTimeout(() => {
+                  console.log("Auto change to offline");
+                  let cm_handle = document.querySelector(`.chat-manager #saito-user-${group.id}`);
+                  cm_handle.classList.remove("online");
+                  group.online = false;
+                  this.timers[group.id] = null;
+                }, 1000 * 5);
+
               }
             }
           }
