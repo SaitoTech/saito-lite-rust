@@ -66,7 +66,7 @@ class ChatManager {
           this.popups[group.id].group = group;
         }
 
-        if (this.render_popups_to_screen) {
+        if (this.render_popups_to_screen || this.popups[group.id].is_rendered) {
           this.popups[group.id].container = group?.target_container || "";
           this.popups[group.id].render();
         }
@@ -185,12 +185,16 @@ class ChatManager {
     //
     // replace element or insert into page
     //
-    if (document.querySelector(".chat-manager")) {
+    if (document.querySelector(this.container + ".chat-manager")) {
       this.app.browser.replaceElementBySelector(
         ChatManagerTemplate(this.app, this.mod),
         ".chat-manager"
       );
     } else {
+      if (document.querySelector(".chat-manager")) {
+        document.querySelector(".chat-manager").remove();
+      }
+
       this.app.browser.addElementToSelectorOrDom(
         ChatManagerTemplate(this.app, this.mod),
         this.container
@@ -239,7 +243,9 @@ class ChatManager {
               this.timers[group.id] = setTimeout(() => {
                 console.log("Auto change to offline");
                 let cm_handle = document.querySelector(`.chat-manager #saito-user-${group.id}`);
-                cm_handle.classList.remove("online");
+                if (cm_handle){
+                  cm_handle.classList.remove("online");
+                }
                 group.online = false;
                 this.timers[group.id] = null;
               }, 1000 * 5);
@@ -270,8 +276,9 @@ class ChatManager {
     //
     document.querySelectorAll(".chat-manager-list .saito-user").forEach((item) => {
       item.onclick = (e) => {
+        e.stopPropagation();
+
         let gid = e.currentTarget.getAttribute("data-id");
-        this.render_popups_to_screen = 1;
         let group = this.mod.returnGroup(gid);
 
         if (!this.popups[gid]) {
@@ -281,12 +288,9 @@ class ChatManager {
 
         // unset manually closed to permit re-opening
         this.popups[gid].manually_closed = false;
-
-        if (this.render_popups_to_screen) {
-          this.popups[gid].container = group?.target_container || "";
-          this.popups[gid].render();
-          this.popups[gid].input.focus(true);
-        }
+        this.popups[gid].container = group?.target_container || "";
+        this.popups[gid].render();
+        this.popups[gid].input.focus(true);
 
         if (this.render_manager_to_screen) {
           this.render();
@@ -331,7 +335,9 @@ class ChatManager {
                 this.timers[group.id] = setTimeout(() => {
                   console.log("Auto change to offline");
                   let cm_handle = document.querySelector(`.chat-manager #saito-user-${group.id}`);
-                  cm_handle.classList.remove("online");
+                  if (cm_handle) {
+                    cm_handle.classList.remove("online");
+                  }
                   group.online = false;
                   this.timers[group.id] = null;
                 }, 1000 * 5);
