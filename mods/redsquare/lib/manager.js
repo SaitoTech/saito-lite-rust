@@ -1,5 +1,6 @@
 const TweetManagerTemplate = require("./manager.template");
 const Tweet = require("./tweet");
+const Notification = require("./notification");
 const SaitoProfile = require("./../../../lib/saito/ui/saito-profile/saito-profile");
 const SaitoLoader = require("./../../../lib/saito/ui/saito-loader/saito-loader");
 
@@ -33,9 +34,7 @@ class TweetManager {
 	      this.intersection_loader.hide();
       	      for (let i = 0; i < this.mod.tweets.length; i++) {
       	        let tweet = this.mod.tweets[i];
-console.log("checking tweet: " + i);
         	if (!tweet.isRendered()) {
-console.log("rendering new tweet!");
 		  tweet.renderWithCriticalChild();
 		}
       	      }
@@ -71,12 +70,12 @@ console.log("rendering new tweet!");
 
     this.intersectionObserver.unobserve(document.querySelector('#redsquare-intersection'));
 
-
     let myqs = `.tweet-manager`;
 
     if (!document.querySelector(myqs)) {
       this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
     } else {
+      document.querySelector("#redsquare-intersection").remove();
       this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
     }
 
@@ -86,7 +85,6 @@ console.log("rendering new tweet!");
     tweet.render();
     this.intersection_loader.render();
     this.mod.loadTweetChildren(null, tweet.tx.transaction.sig, () => {
-console.log("render tweet with children...");
       tweet.renderWithChildren();
       this.intersection_loader.hide();
     });
@@ -104,6 +102,7 @@ console.log("render tweet with children...");
     if (!document.querySelector(myqs)) {
       this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
     } else {
+      document.querySelector("#redsquare-intersection").remove();
       this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
     }
 

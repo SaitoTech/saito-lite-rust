@@ -32,8 +32,12 @@ class RedSquareMain {
       this.manager.mode = "tweets";
       this.manager.renderTweet(tweet);
     });
+    // when someone adds a tweet at top -- scroll up and render
+    this.app.connection.on("redsquare-home-tweet-prepend-render-request", (tweet) => {
+      document.querySelector('.tweet-manager').scroll({ top: 0, left: 0, behavior: 'smooth' });
+      tweet.render(true); // prepend = true
+    });
     this.app.connection.on("redsquare-notifications-render-request", () => {
-alert("and sending into manager!");
       this.manager.publickey = this.app.wallet.returnPublicKey();
       this.manager.mode = "notifications";
       this.manager.render();
@@ -56,9 +60,7 @@ alert("and sending into manager!");
     this.app.connection.on("redsquare-home-tweet-append-render-request", (tweet) => {
       alert("5");
     });
-    this.app.connection.on("redsquare-home-tweet-prepend-render-request", (tweet) => {
-      alert("6");
-    });
+
     this.app.connection.on("redsquare-home-tweet-and-critical-child-append-render-request", (tweet) => {
       alert("7");
     });

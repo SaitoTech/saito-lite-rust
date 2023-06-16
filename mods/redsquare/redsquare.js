@@ -323,7 +323,7 @@ class RedSquare extends ModTemplate {
 	publickey : peer.returnPublicKey() , 
 	tweets_earliest_ts : 0 ,
 	tweets_latest_ts : 0 ,
-	tweets_limit : 10 ,
+	tweets_limit : 20 ,
 	notifications_earliest_ts : 0 ,
 	notifications_latest_ts : 0 ,
 	notifications_limit : 10 ,
@@ -599,7 +599,7 @@ console.log("TXS loaded: " + txs.length);
       this.peers[0].offset += txs.length;
 
       for (let z = 0; z < txs.length; z++) {
-        let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
+        let tweet = new Tweet(this.app, this, ".tweet-manager", txs[z]);
         x.push(tweet);
       }
       mycallback(x);
@@ -619,7 +619,7 @@ console.log("TXS loaded: " + txs.length);
     this.loadTweetsFromPeer(this.peers[0].peer, sql, (txs) => {
       this.loadTweetsFromPeerAndReturn(this.peers[0].peer, sql, (txs) => {
         for (let z = 0; z < txs.length; z++) {
-          let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
+          let tweet = new Tweet(this.app, this, ".tweet-manager", txs[z]);
           mycallback(tweet);
         }
       }, false, false);
@@ -649,7 +649,7 @@ console.log("TXS loaded: " + txs.length);
       //this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
       this.loadTweetsFromPeer(peer, sql, (txs) => {
         for (let z = 0; z < txs.length; z++) {
-          let tweet = new Tweet(app, mod, ".redsquare-appspace-body", txs[z]);
+          let tweet = new Tweet(app, mod, ".tweet-manager", txs[z]);
           x.push(tweet);
         }
         mycallback(x);
@@ -677,7 +677,7 @@ console.log("TXS loaded: " + txs.length);
         if (txs.length > 0) {
           let x = [];
           for (let z = 0; z < txs.length; z++) {
-            let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
+            let tweet = new Tweet(this.app, this, ".tweet-manager", txs[z]);
             this.app.connection.emit("redsquare-home-tweet-append-render-request", (tweet));
           }
         }
@@ -1070,10 +1070,10 @@ console.log("inserting into thread id: " + tweet.tx.optional.thread_id);
           if (!tx.optional) { tx.optional = {}; }
           if (!tx.optional.num_likes) { tx.optional.num_likes = 0; }
           tx.optional.num_likes++;
-          this.app.storage.updateTransactionOptional(txmsg.data.sig, app.wallet.returnPublicKey(), tx.optional);
+          this.app.storage.updateTransaction(tx, { field1 : "RedSquare" }, "localhost");
           tweet.renderLikes();
         } else {
-          this.app.storage.incrementTransactionOptionalValue(txmsg.data.sig, "num_likes");
+          this.app.storage.updateTransaction(tx, { field1 : "RedSquare" }, "localhost");
         }
 
         //

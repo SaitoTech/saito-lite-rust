@@ -27,6 +27,8 @@ class RedSquareNotification {
     let app = this.app;
     let mod = this.mod;
 
+console.log("asked to render a notification!");
+
     if (this.tx == null) { 
       document.querySelector(selector).innerHTML = `<div class="notifications-empty"><span> <i class="far fa-folder-open" aria-hidden="true"></i> </span> <p>No new notifications </p> </div>`
     } else {
@@ -82,9 +84,9 @@ class RedSquareNotification {
       //
       let nqs = ".notification-item-"+this.tx.transaction.sig;
       if (document.querySelector(nqs)) {
-        app.browser.replaceElementBySelector(html, ".redsquare-notifications");
+        app.browser.replaceElementBySelector(html, nqs);
       } else {
-        app.browser.addElementToSelector(html, ".redsquare-notifications");
+        app.browser.addElementToSelector(html, ".tweet-manager");
       }
 
 

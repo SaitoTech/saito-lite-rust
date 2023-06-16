@@ -115,13 +115,16 @@ class Archive extends ModTemplate {
     if (req.request === "archive") {
 
       if (req.data.request === "delete") {
-        this.deleteTransaction(req.data.tx, req.data);
+	let newtx = new saito.default.transaction(req.data.tx);
+        this.deleteTransaction(newtx, req.data);
       }
       if (req.data.request === "save") {
-        this.saveTransaction(req.data.tx, req.data);
+	let newtx = new saito.default.transaction(req.data.tx);
+        this.saveTransaction(newtx, req.data);
       }
       if (req.data.request === "update") {
-        this.updateTransaction(req.data.tx, req.data);
+	let newtx = new saito.default.transaction(req.data.tx);
+        this.updateTransaction(newtx, req.data);
       }
       if (req.data.request === "load") {
         let txs = this.loadTransactions(req.data);

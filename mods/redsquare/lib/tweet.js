@@ -235,15 +235,18 @@ class Tweet {
     }
 
     if (!this.container || this.container == "") {
-      this.container = ".redsquare-appspace-body";
+      this.container = ".tweet-manager";
     }
 
     if (replace_existing_element && document.querySelector(myqs)) {
+console.log("replacing existing element");
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
       if (prepend == true) {
+console.log("prepending element to selector...: " + this.container);
         this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
       } else {
+console.log("NOT PREPENDING");
         if (this.render_after_selector) {
           this.app.browser.addElementAfterSelector(TweetTemplate(this.app, this.mod, this), this.render_after_selector);
         } else {
