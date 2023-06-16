@@ -271,94 +271,6 @@ class RedSquare extends ModTemplate {
 
   }
 
-  //
-  // runs when archive peer connects
-  //
-  async onPeerServiceUp(app, peer, service = {}) {
-
-    //
-    // avoid network overhead if in other apps
-    //
-    if (!this.browser_active) { return; }
-
-    //
-    // redsquare -- load tweets
-    //
-    if (service.service === "redsquare") {
-      this.addPeer(peer, "tweets");
-      this.loadTweets(peer, () => {
-	this.app.connection.emit("redsquare-home-render-request");
-      });
-    }
-
-    //
-    // archive -- load notifications
-    //
-    if (service.service === "archive") {
-      this.addPeer(peer, "notifications");
-      setTimeout(() => { 
-	this.loadNotifications(peer, () => {
-        });
-      }, 3500);
-    }
-
-  }
-
-
-  addPeer(peer, type="tweets") {
-
-    let has_tweets = false;
-    let has_notifications = false;
-
-    if (type === "tweets") { has_tweets = true; }
-    if (type === "notifications") { has_notifications = true; }
-
-    let peer_idx = -1;
-    for (let i = 0; i < this.peers.length; i++) {
-      if (this.peers[i].publickey == peer.returnPublicKey()) { peer_idx = i; }
-    }
-    if (peer_idx == -1) {
-      this.peers.push({
-	peer : peer , 
-	publickey : peer.returnPublicKey() , 
-	tweets_earliest_ts : 0 ,
-	tweets_latest_ts : 0 ,
-	tweets_limit : 20 ,
-	notifications_earliest_ts : 0 ,
-	notifications_latest_ts : 0 ,
-	notifications_limit : 10 ,
-	has_tweets : has_tweets ,
-	has_notifications : has_notifications 
-      });
-    } else {
-      this.peers[peer_idx].peer = peer;
-      if (has_tweets) { this.peers[peer_idx].tweets = true; }
-      if (has_notifications) { this.peers[peer_idx].notifications = true; }
-    }
-
-  }
-
-
-  //
-  // runs when normal peer connects
-  //
-  async onPeerHandshakeComplete(app, peer) {
-
-    //
-    // avoid network overhead if in other apps
-    //
-    if (!this.browser_active) { return; }
-
-    //
-    // render tweet thread
-    //
-
-    //
-    // render user profile
-    //
-
-  }
-
 
   //
   // this initializes the DOM but does not necessarily show the loaded content 
@@ -405,6 +317,151 @@ class RedSquare extends ModTemplate {
   }
 
 
+  //
+  // runs when archive peer connects
+  //
+  async onPeerServiceUp(app, peer, service = {}) {
+
+    //
+    // avoid network overhead if in other apps
+    //
+    if (!this.browser_active) { return; }
+
+    //
+    // redsquare -- load tweets
+    //
+    if (service.service === "redsquare") {
+      this.addPeer(peer, "tweets");
+      this.loadTweets(peer, () => {
+	this.app.connection.emit("redsquare-home-render-request");
+      });
+    }
+
+    //
+    // archive -- load notifications
+    //
+    if (service.service === "archive") {
+      this.addPeer(peer, "notifications");
+      setTimeout(() => { 
+	this.loadNotifications(peer, () => {
+        });
+      }, 3500);
+    }
+
+  }
+
+
+  //
+  // runs when normal peer connects
+  //
+  async onPeerHandshakeComplete(app, peer) {
+
+    //
+    // avoid network overhead if in other apps
+    //
+    if (!this.browser_active) { return; }
+
+    //
+    // render tweet thread
+    //
+
+    //
+    // render user profile
+    //
+
+  }
+
+
+  //
+  // adds peer to list of content sources
+  //
+  addPeer(peer, type="tweets") {
+
+    let has_tweets = false;
+    let has_notifications = false;
+
+    if (type === "tweets") { has_tweets = true; }
+    if (type === "notifications") { has_notifications = true; }
+
+    let peer_idx = -1;
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].publickey == peer.returnPublicKey()) { peer_idx = i; }
+    }
+    if (peer_idx == -1) {
+      this.peers.push({
+	peer : peer , 
+	publickey : peer.returnPublicKey() , 
+	tweets_earliest_ts : 0 ,
+	tweets_latest_ts : 0 ,
+	tweets_limit : 20 ,
+	profile_earliest_ts : 0 ,
+	profile_latest_ts : 0 ,
+	profile_limit : 20 ,
+	notifications_earliest_ts : 0 ,
+	notifications_latest_ts : 0 ,
+	notifications_limit : 10 ,
+	has_tweets : has_tweets ,
+	has_notifications : has_notifications 
+      });
+    } else {
+      this.peers[peer_idx].peer = peer;
+      if (has_tweets) { this.peers[peer_idx].tweets = true; }
+      if (has_notifications) { this.peers[peer_idx].notifications = true; }
+    }
+
+  }
+
+  updatePeerEarliestTweetTimestamp(peer=null, ts) {
+    if (peer == null) {
+      for (let i = 0; i < this.peers.length; i++) {
+        this.peers[i].tweets_earliest_ts = ts;
+      }
+    } else {
+      for (let i = 0; i < this.peers.length; i++) {
+        if (this.peers[i].peer == peer) {
+	  this.peers[i].tweets_earliest_ts = ts;
+        }
+      }
+    }
+  }
+
+  updatePeerEarliestProfileTimestamp(peer=null, ts) {
+    if (peer == null) {
+      for (let i = 0; i < this.peers.length; i++) {
+        this.peers[i].profile_earliest_ts = ts;
+      }
+    } else {
+      for (let i = 0; i < this.peers.length; i++) {
+        if (this.peers[i].peer == peer) {
+	  this.peers[i].profile_earliest_ts = ts;
+        }
+      }
+    }
+  }
+
+  updatePeerEarliestNotificationTimestamp(peer=null, ts) {
+    if (peer == null) {
+      for (let i = 0; i < this.peers.length; i++) {
+        this.peers[i].notification_earliest_ts = ts;
+      }
+    } else {
+      for (let i = 0; i < this.peers.length; i++) {
+        if (this.peers[i].peer == peer) {
+	  this.peers[i].notification_earliest_ts = ts;
+        }
+      }
+    }
+  }
+
+
+  returnEarliestTimestampFromTransactionArray(txs = []) {
+    let ts = 0;
+    for (let i = 0; i < txs.length; i++) {
+      if (txs[i].transaction.ts < ts || ts == 0) { ts = txs[i].transaction.ts; }
+    }
+    return ts;
+  }
+
 
   ///////////////////////
   // network functions //
@@ -434,11 +491,32 @@ class RedSquare extends ModTemplate {
 
 
 
+  ///////////////////////////////
+  // content loading functions //
+  ///////////////////////////////
   //
   // NOTE - we are ignoring PEER here and making request of ALL peers
   // but am leaving function name intact in case we want to add a meta-layer
   // that discriminates.
   //
+  loadProfileTweets(peer, publickey="", mycallback) {
+
+    for (let i = 0; i < this.peers.length; i++) {
+
+      let peer = this.peers[i].peer;
+      if (this.peers[i].tweets_earliest_ts == 0) { this.peers[i].tweets_earliest_ts = new Date().getTime(); }
+
+      let sql = `SELECT * FROM tweets WHERE publickey = '${publickey}' AND updated_at < ${this.peers[i].profile_earliest_ts} ORDER BY created_at DESC LIMIT '${this.peers[i].profile_limit}'`;
+      this.loadTweetsFromPeer(peer, sql, (txs) => {
+        for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
+	this.updatePeerEarliestProfileTimestamp(peer, this.returnEarliestTimestampFromTransactionArray(txs));
+        if (mycallback) {
+          mycallback(txs)
+        }
+      });
+    }
+  }
+
   loadTweets(peer, mycallback) {
 
     for (let i = 0; i < this.peers.length; i++) {
@@ -450,17 +528,14 @@ class RedSquare extends ModTemplate {
 
       this.loadTweetsFromPeer(peer, sql, (txs) => {
         for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
+	this.updatePeerEarliestTweetTimestamp(peer, this.returnEarliestTimestampFromTransactionArray(txs));
         if (mycallback) {
           mycallback(txs)
         }
       });
-
     }
   }
 
-  //
-  // fetch tweets / notifications middleware
-  //
   loadTweetChildren(peer, sig, mycallback = null) {
 
     if (this.peers.length == 0) { return; }
@@ -473,18 +548,30 @@ class RedSquare extends ModTemplate {
       let x = [];
       let sql = `SELECT * FROM tweets WHERE parent_id = '${sig}' ORDER BY created_at DESC`;
 
-console.log(sql);
-
       this.loadTweetsFromPeer(this.peers[0].peer, sql, (txs) => {
         for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
         if (mycallback) {
-console.log("TXS loaded: " + txs.length);
           mycallback(txs)
         }
       });
-
     }
+  }
 
+  loadTweetWithSig(sig, mycallback = null) {
+
+    if (this.peers.length == 0) { return; }
+    if (mycallback == null) { return; }
+
+    let t = this.returnTweet(sig);
+    if (t != null) { mycallback(t); return; }
+
+    let sql = `SELECT * FROM tweets WHERE sig = '${sig}' ORDER BY created_at DESC`;
+    this.loadTweetsFromPeer(this.peers[0].peer, sql, (txs) => {
+      for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
+      if (mycallback) {
+        mycallback(txs)
+      }
+    });
   }
 
   loadTweetsFromPeer(peer, sql, mycallback = null) {
@@ -548,6 +635,8 @@ console.log("TXS loaded: " + txs.length);
     //
     for (let i = 0; i < this.peers.length; i++) {
 
+      let peer = this.peers[i].peer;
+
       this.app.storage.loadTransactions(
         {
 	  field3 : this.app.wallet.returnPublicKey() ,
@@ -561,6 +650,7 @@ console.log("TXS loaded: " + txs.length);
 	      this.addTweet(txs[z]);
 	    }
           }
+	  this.updatePeerEarliestProfileTimestamp(peer, this.returnEarliestTimestampFromTransactionArray(txs));
           if (mycallback) {
             mycallback(txs)
           }
@@ -577,56 +667,6 @@ console.log("TXS loaded: " + txs.length);
 
 
 
-
-
-
-
-
-
-  //
-  // fetch tweets / notifications middleware
-  //
-  loadChildrenOfTweet(sig, mycallback = null) {
-
-    if (this.peers.length == 0) { return; }
-    if (mycallback == null) { return; }
-
-    let x = [];
-    let sql = `SELECT * FROM tweets WHERE parent_id = '${sig}' ORDER BY created_at DESC`;
-    this.loadTweetsFromPeer(this.peers[0].peer, sql, (txs) => {
-
-      this.peers[0].limit = this.results_per_page;
-      this.peers[0].offset += txs.length;
-
-      for (let z = 0; z < txs.length; z++) {
-        let tweet = new Tweet(this.app, this, ".tweet-manager", txs[z]);
-        x.push(tweet);
-      }
-      mycallback(x);
-      return;
-    });
-
-  }
-  loadTweetWithSig(sig, mycallback = null) {
-
-    if (this.peers.length == 0) { return; }
-    if (mycallback == null) { return; }
-
-    let t = this.returnTweet(sig);
-    if (t != null) { mycallback(t); return; }
-
-    let sql = `SELECT * FROM tweets WHERE sig = '${sig}' ORDER BY created_at DESC`;
-    this.loadTweetsFromPeer(this.peers[0].peer, sql, (txs) => {
-      this.loadTweetsFromPeerAndReturn(this.peers[0].peer, sql, (txs) => {
-        for (let z = 0; z < txs.length; z++) {
-          let tweet = new Tweet(this.app, this, ".tweet-manager", txs[z]);
-          mycallback(tweet);
-        }
-      }, false, false);
-      return;
-    });
-
-  }
 
   loadTweetsWithParentId(sig, mycallback = null) {
 
@@ -665,7 +705,7 @@ console.log("TXS loaded: " + txs.length);
   //
   // notifications are added through this function. 
   //
-  addTweet(tx, prepend = false, render = true) {
+  addTweet(tx, prepend = false) {
 
     //
     // create the tweet
@@ -839,10 +879,6 @@ console.log("TXS loaded: " + txs.length);
         this.tweets_oldest_ts = tx.transaction.ts;
       }
     }
-
-    //if (render == true) {
-    //  this.app.connection.emit("redsquare-tweet-added-render-request", (tweet));
-    //}
 
   }
 

@@ -239,14 +239,11 @@ class Tweet {
     }
 
     if (replace_existing_element && document.querySelector(myqs)) {
-console.log("replacing existing element");
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
       if (prepend == true) {
-console.log("prepending element to selector...: " + this.container);
         this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
       } else {
-console.log("NOT PREPENDING");
         if (this.render_after_selector) {
           this.app.browser.addElementAfterSelector(TweetTemplate(this.app, this.mod, this), this.render_after_selector);
         } else {
@@ -325,8 +322,6 @@ console.log("NOT PREPENDING");
       let dt = this.app.browser.formatDate(this.updated_at);
       this.userline = this.user.notice = "new reply on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
     }
-
-console.log("in render with critical child");
 
     this.render(prepend);
 
@@ -496,7 +491,6 @@ console.log("in render with critical child");
             highlightedText = document.selection.createRange().text;
           }
           if (highlightedText != "") {
-            console.log("text highlighted: exiting");
             return;
           }
 
@@ -515,16 +509,7 @@ console.log("in render with critical child");
                 }
                 window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
                 let sig = this.tx.transaction.sig;
-
                 app.connection.emit('redsquare-home-tweet-render-request', (this));
-
-//                app.connection.emit('redsquare-home-loader-render-request');
-//                mod.loadChildrenOfTweet(sig, (tweets) => {
-//                  app.connection.emit('redsquare-home-loader-hide-request');
-//                  for (let i = 0; i < tweets.length; i++) {
-//                    app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
-//                  }
-//                });
               }
             }
             return;
@@ -537,14 +522,6 @@ console.log("in render with critical child");
             window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
             let sig = this.tx.transaction.sig;
             app.connection.emit('redsquare-home-tweet-render-request', (this));
-
-//            app.connection.emit('redsquare-home-loader-render-request');
-//            mod.loadChildrenOfTweet(sig, (tweets) => {
-//              app.connection.emit('redsquare-home-loader-hide-request');
-//              for (let i = 0; i < tweets.length; i++) {
-//                app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
-//              }
-//            });
           }
         }
       }

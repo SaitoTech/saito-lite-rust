@@ -16,12 +16,13 @@ class TweetManager {
     this.mode = "tweets";
     this.thread_id = "";
     this.parent_id = "";
+    this.publickey = "";
 
     this.profile = new SaitoProfile(app, mod, ".saito-main");
 
-    //
-    // dynamic loading
-    //
+    //////////////////////////////
+    // load more on scroll-down //
+    //////////////////////////////
     this.loader = new SaitoLoader(app, mod, "#redsquare-intersection");
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -29,8 +30,11 @@ class TweetManager {
 
           this.loader.render();
 
+	  //
+	  // load more tweets
+	  //
 	  if (this.mode == "tweets") {
-            mod.loadTweets(null, () => {
+            mod.loadTweets(null, (txs) => {
 	      this.loader.hide();
       	      for (let i = 0; i < this.mod.tweets.length; i++) {
       	        let tweet = this.mod.tweets[i];
@@ -41,14 +45,27 @@ class TweetManager {
 	    });
 	  }
 
+	  //
+	  // load more notifications
+	  //
 	  if (this.mode == "notifications") {
             mod.loadNotifications(null, (txs) => {
 	      this.loader.hide();
 	    });
 	  }
 
+	  //
+	  // load more profile tweets
+	  //
 	  if (this.mode == "profile") {
-            mod.loadTweets(null, () => { this.loader.hide() });
+            this.mod.loadProfileTweets(null , this.publickey , (txs) => {
+              for (let z = 0; z < txs.length; z++) {
+                let tweet = new Tweet(this.app, this.mod, ".tweet-manager", txs[z]);
+                tweet.render();
+              }
+              this.mod.updatePeerEarliestProfileTimestamp(null, this.mod.returnEarliestTimestampFromTransactionArray(txs));
+	      this.loader.hide();
+            });
 	  }
 
         }
@@ -138,7 +155,22 @@ class TweetManager {
     // profile //
     /////////////
     if (this.mode == "profile") {
+
       this.profile.render();
+
+      //
+      // all peers reset to 0 tweets fetched
+      //
+      this.mod.updatePeerEarliestProfileTimestamp(null, new Date().getTime());
+      this.mod.loadProfileTweets(null , this.publickey , (txs) => {
+        for (let z = 0; z < txs.length; z++) {
+          let tweet = new Tweet(this.app, this.mod, ".tweet-manager", txs[z]);
+          tweet.render();
+        }
+        this.mod.updatePeerEarliestProfileTimestamp(null, this.mod.returnEarliestTimestampFromTransactionArray(txs));
+alert("Profile Loaded 2");
+      });
+alert("Profile Loaded");
     }
  
     this.attachEvents();

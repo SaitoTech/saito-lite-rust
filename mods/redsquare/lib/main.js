@@ -43,6 +43,7 @@ class RedSquareMain {
       this.manager.render();
     });
     this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
+console.log("publickey getting rendered is: " + publickey);
       this.manager.mode = "profile";
       this.manager.publickey = publickey;
       this.manager.render();
