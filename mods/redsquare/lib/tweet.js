@@ -30,13 +30,21 @@ class Tweet {
     // likes, and information like open graph images, etc.
     //
     if (!this.tx.optional) { this.tx.optional = {}; }
-    if (!this.tx.optional.num_replies) 	{ this.tx.optional.num_replies = 0; }
-    if (!this.tx.optional.num_retweets) { this.tx.optional.num_retweets = 0; }
-    if (!this.tx.optional.num_likes) 	{ this.tx.optional.num_likes = 0; }
-    if (!this.tx.optional.link) 	{ this.tx.optional.link = 0; }
-    if (!this.tx.optional.parent_id) 	{ this.tx.optional.parent_id = ""; }
-    if (!this.tx.optional.thread_id)	{ this.tx.optional.thread_id = ""; }
+    if (!this.tx.optional.num_replies) 		{ this.tx.optional.num_replies = 0; }
+    if (!this.tx.optional.num_retweets) 	{ this.tx.optional.num_retweets = 0; }
+    if (!this.tx.optional.num_likes) 		{ this.tx.optional.num_likes = 0; }
+    if (!this.tx.optional.link_properties)	{ this.tx.optional.link_properties = null; }
+    if (!this.tx.optional.parent_id) 		{ this.tx.optional.parent_id = ""; }
+    if (!this.tx.optional.thread_id)		{ this.tx.optional.thread_id = ""; }
     let txmsg = tx.returnMessage();
+    //
+    // comments will specify parent and thread ids, so we should capture that in the optional
+    // field here in the constructor so that we can guarantee they exist
+    //
+    if (txmsg.data) {
+      if (txmsg.data.parent_id) 	{ this.tx.optional.parent_id = txmsg.data.parent_id; }
+      if (txmsg.data.thread_id) 	{ this.tx.optional.thread_id = txmsg.data.thread_id; }
+    }
 
     //
     // additional variables are created in-memory from the core transaction
@@ -115,6 +123,11 @@ class Tweet {
         }
       }
     }
+  }
+
+  isRendered() {
+    if (document.querySelector(`.tweet-${this.tx.transaction.sig}`)) { return true; }
+    return false;
   }
 
 
@@ -226,19 +239,14 @@ class Tweet {
     }
 
     if (replace_existing_element && document.querySelector(myqs)) {
-console.log("inserting 1");
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
       if (prepend == true) {
-console.log("inserting 2");
         this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
       } else {
-console.log("inserting 3");
         if (this.render_after_selector) {
-console.log("inserting 4");
           this.app.browser.addElementAfterSelector(TweetTemplate(this.app, this.mod, this), this.render_after_selector);
         } else {
-console.log("inserting 5");
           this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
         }
       }
@@ -504,14 +512,16 @@ console.log("in render with critical child");
                 }
                 window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
                 let sig = this.tx.transaction.sig;
+
                 app.connection.emit('redsquare-home-tweet-render-request', (this));
-                app.connection.emit('redsquare-home-loader-render-request');
-                mod.loadChildrenOfTweet(sig, (tweets) => {
-                  app.connection.emit('redsquare-home-loader-hide-request');
-                  for (let i = 0; i < tweets.length; i++) {
-                    app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
-                  }
-                });
+
+//                app.connection.emit('redsquare-home-loader-render-request');
+//                mod.loadChildrenOfTweet(sig, (tweets) => {
+//                  app.connection.emit('redsquare-home-loader-hide-request');
+//                  for (let i = 0; i < tweets.length; i++) {
+//                    app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
+//                  }
+//                });
               }
             }
             return;
@@ -524,13 +534,14 @@ console.log("in render with critical child");
             window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
             let sig = this.tx.transaction.sig;
             app.connection.emit('redsquare-home-tweet-render-request', (this));
-            app.connection.emit('redsquare-home-loader-render-request');
-            mod.loadChildrenOfTweet(sig, (tweets) => {
-              app.connection.emit('redsquare-home-loader-hide-request');
-              for (let i = 0; i < tweets.length; i++) {
-                app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
-              }
-            });
+
+//            app.connection.emit('redsquare-home-loader-render-request');
+//            mod.loadChildrenOfTweet(sig, (tweets) => {
+//              app.connection.emit('redsquare-home-loader-hide-request');
+//              for (let i = 0; i < tweets.length; i++) {
+//                app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
+//              }
+//            });
           }
         }
       }

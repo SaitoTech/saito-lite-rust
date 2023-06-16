@@ -287,7 +287,6 @@ class RedSquare extends ModTemplate {
     if (service.service === "redsquare") {
       this.addPeer(peer, "tweets");
       this.loadTweets(peer, () => {
-alert("tweets loaded...");
 	this.app.connection.emit("redsquare-home-render-request");
       });
     }
@@ -297,9 +296,10 @@ alert("tweets loaded...");
     //
     if (service.service === "archive") {
       this.addPeer(peer, "notifications");
-      setTimeout(() => { this.loadNotifications(peer, () => {
-alert("Notifications Loaded!");
-      }); }, 3500);
+      setTimeout(() => { 
+	this.loadNotifications(peer, () => {
+        });
+      }, 3500);
     }
 
   }
@@ -449,15 +449,42 @@ alert("Notifications Loaded!");
       let sql = `SELECT * FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND updated_at < ${this.peers[i].tweets_earliest_ts} ORDER BY updated_at DESC LIMIT '${this.peers[i].tweets_limit}'`;
 
       this.loadTweetsFromPeer(peer, sql, (txs) => {
-        if (txs.length > 0) {
-          for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
-        }
+        for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
         if (mycallback) {
-          mycallback()
+          mycallback(txs)
         }
       });
 
     }
+  }
+
+  //
+  // fetch tweets / notifications middleware
+  //
+  loadTweetChildren(peer, sig, mycallback = null) {
+
+    if (this.peers.length == 0) { return; }
+    if (mycallback == null) { return; }
+
+    for (let i = 0; i < this.peers.length; i++) {
+
+      let peer = this.peers[i].peer;
+
+      let x = [];
+      let sql = `SELECT * FROM tweets WHERE parent_id = '${sig}' ORDER BY created_at DESC`;
+
+console.log(sql);
+
+      this.loadTweetsFromPeer(this.peers[0].peer, sql, (txs) => {
+        for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
+        if (mycallback) {
+console.log("TXS loaded: " + txs.length);
+          mycallback(txs)
+        }
+      });
+
+    }
+
   }
 
   loadTweetsFromPeer(peer, sql, mycallback = null) {
@@ -718,14 +745,12 @@ alert("Notifications Loaded!");
   //
   addTweet(tx, prepend = false, render = true) {
 
-console.log("in add tweet...");
+console.log("adding tweet...");
 
     //
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, ".tweet-manager", tx);
-
-console.log("text: " + tweet.text);
 
     tweet.updated_at = tx.transaction.ts;
 
@@ -735,6 +760,8 @@ console.log("text: " + tweet.text);
     // maybe this needs to go into notifications too
     //
     if (tx.isTo(this.app.wallet.returnPublicKey())) {
+
+console.log("adding to notifications...");
 
       //
       // this is a notification, so update our timestamps
@@ -776,8 +803,6 @@ console.log("text: " + tweet.text);
 
       }
 
-console.log("part ii");
-
       //
       // if this is a like, we can avoid adding it to our tweet index
       //
@@ -796,8 +821,6 @@ console.log("part ii");
       }
     }
 
-console.log("part iii");
-
     //
     // if this is a like, we can avoid adding it to our tweet index
     //
@@ -806,9 +829,6 @@ console.log("part iii");
       return;
     }
 
-console.log("OPTIONAL: " + JSON.stringify(tweet.tx.optional));
-console.log("part iv - " + tweet.tx.optional.parent_id);
-
     //
     // add tweet to tweet and tweets_sigs_hmap for easy-reference
     //
@@ -816,6 +836,8 @@ console.log("part iv - " + tweet.tx.optional.parent_id);
     // this is a post
     //
     if (tweet.tx.optional.parent_id === "") {
+
+console.log("this is a top level post");
 
       //
       // we do not have this tweet indexed, it's new
@@ -852,7 +874,6 @@ console.log("part iv - " + tweet.tx.optional.parent_id);
         //
         // and insert it
         //
-console.log("inserting at index: " + insertion_index);
         this.tweets.splice(insertion_index, 0, tweet);
         this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
 
@@ -873,13 +894,14 @@ console.log("inserting at index: " + insertion_index);
       //
     } else {
 
+console.log("we have found a comment!");
+
       let inserted = false;
 
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.tx.optional.thread_id) {
-console.log("adding as comment...");
+console.log("inserting into thread id: " + tweet.tx.optional.thread_id);
           if (this.tweets[i].addTweet(tweet) == 1) {
-console.log("pushing into unknown children...");
             this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
             inserted = true;
             break;
@@ -888,13 +910,10 @@ console.log("pushing into unknown children...");
       }
 
       if (inserted == false) {
-console.log("pushing into unknown children...");
         this.unknown_children.push(tweet);
       }
 
     }
-
-console.log("part v");
 
     //
     // this is a tweet, so update our info
@@ -908,9 +927,6 @@ console.log("part v");
       }
     }
 
-    //
-    // only render if asked
-    //
     //if (render == true) {
     //  this.app.connection.emit("redsquare-tweet-added-render-request", (tweet));
     //}
@@ -1124,6 +1140,7 @@ console.log("part v");
       let tweet = new Tweet(app, this, "", tx);
       let txmsg = tx.returnMessage();
 
+  
       //
       // browsers
       //
@@ -1143,7 +1160,7 @@ console.log("part v");
             if (this.tweets_sigs_hmap[txmsg.data.parent_id]) {
               let tweet = this.returnTweet(txmsg.data.parent_id);
               if (tweet == null) { return; }
-              if (!tweet.tx.optional) { tweet.tx.optional = {}; }
+      	      if (!tweet.tx.optional) { tweet.tx.optional = {}; }
               if (!tweet.tx.optional.num_replies) { tweet.tx.optional.num_replies = 0; }
               tx.optional.num_replies++;
               this.app.storage.updateTransaction(tx, { field1 : "RedSquare" }, "localhost");
@@ -1260,12 +1277,12 @@ console.log("part v");
         $sig: tx.transaction.sig,
         $created_at: created_at,
         $updated_at: updated_at,
-        $parent_id: tweet.parent_id,
+        $parent_id: tweet.tx.optional.parent_id,
         $type: type_of_tweet,
-        $thread_id: tweet.thread_id,
+        $thread_id: tweet.tx.optional.thread_id,
         $publickey: tx.transaction.from[0].add,
         $link: tweet.link,
-        $link_properties: JSON.stringify(tweet.link_properties),
+        $link_properties: JSON.stringify(tweet.tx.optional.link_properties),
         $has_images: has_images,
         $tx_size: tx_size
       };

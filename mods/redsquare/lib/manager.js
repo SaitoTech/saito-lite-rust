@@ -13,16 +13,43 @@ class TweetManager {
     this.container = container;
 
     this.mode = "tweets";
+    this.thread_id = "";
+    this.parent_id = "";
+
     this.profile = new SaitoProfile(app, mod, ".saito-main");
 
+    //
     // dynamic loading
+    //
     this.intersection_loader = new SaitoLoader(app, mod, "#redsquare-intersection");
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-alert("INTERSECTION LOADER");
+
           this.intersection_loader.render();
-          mod.loadTweets(() => { this.intersection_loader.hide() });
+
+	  if (this.mode == "tweets") {
+            mod.loadTweets(null, () => {
+	      this.intersection_loader.hide();
+      	      for (let i = 0; i < this.mod.tweets.length; i++) {
+      	        let tweet = this.mod.tweets[i];
+        	if (!tweet.isRendered()) {
+		  tweet.renderWithCriticalChild();
+		}
+      	      }
+	    });
+	  }
+
+	  if (this.mode == "notifications") {
+            mod.loadNotifications(null, (txs) => {
+	      this.intersection_loader.hide();
+	    });
+	  }
+
+	  if (this.mode == "profile") {
+            mod.loadTweets(null, () => { this.intersection_loader.hide() });
+	  }
+
         }
       });
     }, {
@@ -33,6 +60,40 @@ alert("INTERSECTION LOADER");
 
 
   }
+
+  //
+  // this renders a tweet, loads all of its available children and adds them to the page
+  // as they appear...
+  //
+  renderTweet(tweet) {
+
+    this.intersectionObserver.unobserve(document.querySelector('#redsquare-intersection'));
+
+
+    let myqs = `.tweet-manager`;
+
+    if (!document.querySelector(myqs)) {
+      this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
+    } else {
+      this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
+    }
+
+    this.mode = "tweets";
+    this.profile.remove();
+
+    tweet.render();
+    this.intersection_loader.render();
+    this.mod.loadTweetChildren(null, tweet.tx.transaction.sig, () => {
+console.log("render tweet with children...");
+      tweet.renderWithChildren();
+      this.intersection_loader.hide();
+    });
+
+  }
+
+
+
+
 
   render() {
 
