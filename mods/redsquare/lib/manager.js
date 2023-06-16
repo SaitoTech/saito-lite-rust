@@ -79,36 +79,6 @@ class TweetManager {
 
   }
 
-  //
-  // this renders a tweet, loads all of its available children and adds them to the page
-  // as they appear...
-  //
-  renderTweet(tweet) {
-
-    this.intersectionObserver.unobserve(document.querySelector('#redsquare-intersection'));
-
-    let myqs = `.tweet-manager`;
-
-    if (!document.querySelector(myqs)) {
-      this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
-    } else {
-      document.querySelector("#redsquare-intersection").remove();
-      this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
-    }
-
-    this.mode = "tweets";
-    this.profile.remove();
-
-    tweet.render();
-    this.loader.render();
-    this.mod.loadTweetChildren(null, tweet.tx.transaction.sig, () => {
-      tweet.renderWithChildren();
-      this.loader.hide();
-    });
-
-  }
-
-
 
 
 
@@ -156,6 +126,7 @@ class TweetManager {
     /////////////
     if (this.mode == "profile") {
 
+      this.profile.publickey = this.publickey;
       this.profile.render();
 
       //
@@ -168,14 +139,45 @@ class TweetManager {
           tweet.render();
         }
         this.mod.updatePeerEarliestProfileTimestamp(null, this.mod.returnEarliestTimestampFromTransactionArray(txs));
-alert("Profile Loaded 2");
       });
-alert("Profile Loaded");
     }
  
     this.attachEvents();
 
   }
+
+
+  //
+  // this renders a tweet, loads all of its available children and adds them to the page
+  // as they appear...
+  //
+  renderTweet(tweet) {
+
+    this.intersectionObserver.unobserve(document.querySelector('#redsquare-intersection'));
+
+    let myqs = `.tweet-manager`;
+
+    if (!document.querySelector(myqs)) {
+      this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
+    } else {
+      document.querySelector("#redsquare-intersection").remove();
+      this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
+    }
+
+    this.mode = "tweets";
+    this.profile.remove();
+
+    tweet.render();
+    this.loader.render();
+    this.mod.loadTweetChildren(null, tweet.tx.transaction.sig, () => {
+      tweet.renderWithChildren();
+      this.loader.hide();
+    });
+
+  }
+
+
+
 
   attachEvents() {
 
