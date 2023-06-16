@@ -273,11 +273,14 @@
     height: 100vh;
     width: 100vw;
     padding-top: 1rem;
+    z-index: 7;
   }
   .chat-manager-overlay .chat-manager {
     margin-left: auto;
     margin-right: auto;
     width: 95vw;
+    height: fit-content;
+    max-height: 100%;
   }
   /*
   .chat-popup {

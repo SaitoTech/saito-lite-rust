@@ -319,23 +319,21 @@ class Chat extends ModTemplate {
           this.chat_manager = new ChatManager(this.app, this);
         }
         return this.chat_manager;
-      case "chat-manager-overlay":
-        if (this.chat_manager_overlay == null) {
-          this.chat_manager_overlay = new ChatManagerOverlay(this.app, this);
-        }
-        return this.chat_manager_overlay;
       case "saito-header":
         //TODO:
         //Since the left-sidebar chat-manager disappears at screens less than 1200px wide
         //We need another way to display/open it...
         if (this.app.browser.isMobileBrowser() || (this.app.BROWSER && window.innerWidth < 600)) {
+          if (this.chat_manager_overlay == null) {
+            this.chat_manager_overlay = new ChatManagerOverlay(this.app, this);
+          }  
           return [
             {
               text: "Chat",
               icon: "fas fa-comments",
               callback: function (app, id) {
-                let cmo = chat_self.respondTo("chat-manager-overlay");
-                cmo.render();
+                console.log("Callback for saito-header chat");
+                chat_self.chat_manager_overlay.render();
               },
             },
           ];

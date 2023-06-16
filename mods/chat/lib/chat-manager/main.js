@@ -185,12 +185,16 @@ class ChatManager {
     //
     // replace element or insert into page
     //
-    if (document.querySelector(".chat-manager")) {
+    if (document.querySelector(this.container + ".chat-manager")) {
       this.app.browser.replaceElementBySelector(
         ChatManagerTemplate(this.app, this.mod),
         ".chat-manager"
       );
     } else {
+      if (document.querySelector(".chat-manager")) {
+        document.querySelector(".chat-manager").remove();
+      }
+
       this.app.browser.addElementToSelectorOrDom(
         ChatManagerTemplate(this.app, this.mod),
         this.container
@@ -239,7 +243,9 @@ class ChatManager {
               this.timers[group.id] = setTimeout(() => {
                 console.log("Auto change to offline");
                 let cm_handle = document.querySelector(`.chat-manager #saito-user-${group.id}`);
-                cm_handle.classList.remove("online");
+                if (cm_handle){
+                  cm_handle.classList.remove("online");
+                }
                 group.online = false;
                 this.timers[group.id] = null;
               }, 1000 * 5);
@@ -270,6 +276,8 @@ class ChatManager {
     //
     document.querySelectorAll(".chat-manager-list .saito-user").forEach((item) => {
       item.onclick = (e) => {
+        e.stopPropagation();
+        
         let gid = e.currentTarget.getAttribute("data-id");
         this.render_popups_to_screen = 1;
         let group = this.mod.returnGroup(gid);
@@ -331,7 +339,9 @@ class ChatManager {
                 this.timers[group.id] = setTimeout(() => {
                   console.log("Auto change to offline");
                   let cm_handle = document.querySelector(`.chat-manager #saito-user-${group.id}`);
-                  cm_handle.classList.remove("online");
+                  if (cm_handle) {
+                    cm_handle.classList.remove("online");
+                  }
                   group.online = false;
                   this.timers[group.id] = null;
                 }, 1000 * 5);

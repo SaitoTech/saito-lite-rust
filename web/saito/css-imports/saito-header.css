@@ -258,9 +258,6 @@
   text-overflow: ellipsis;
 }
 
-.saito-header-chat {
-  display: none !important;
-}
 
 .hamburger-container {
   display: flex;
@@ -426,9 +423,6 @@
   }
   #saito-header {
     padding: 1.3rem 1rem;
-  }
-  .saito-header-chat {
-    display: flex !important;
   }
   .saito-header-logo {
     max-width: 12rem;
