@@ -54,6 +54,10 @@
   min-height: 150px;
 }
 
+.chat-container.active {
+  z-index: 16;
+}
+
 .chat-body img {
   max-width: 100%;
 }
@@ -273,11 +277,14 @@
     height: 100vh;
     width: 100vw;
     padding-top: 1rem;
+    z-index: 7;
   }
   .chat-manager-overlay .chat-manager {
     margin-left: auto;
     margin-right: auto;
     width: 95vw;
+    height: fit-content;
+    max-height: 100%;
   }
   /*
   .chat-popup {
@@ -289,6 +296,10 @@
     min-height: 100vh;
   }
 */
+
+  .chat-container {
+    resize: unset;
+  }
 }
 
 @media screen and (max-width: 768px) {
@@ -301,16 +312,24 @@
   }
 }
 
-
-.add-contacts {
-  position: relative;
-  width: fit-content;
-  left: 90%;
-  font-size: 24px;
-  cursor: pointer;
-  transition: all 0.5s;
+.chat-manager-header {
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+  justify-content: flex-end;
 }
 
-.add-contacts:hover{
+.chat-manager-header > div {
+  width: fit-content;
+  cursor: pointer;
+  transition: all 0.5s;
+  margin-left: 1rem;
+}
+
+.add-contacts{
+  font-size: 24px;
+}
+
+.chat-manager-header > div:hover{
   transform: rotate(90deg);
 }

@@ -110,7 +110,7 @@ class League extends ModTemplate {
 
     this.loadLeagues();
 
-    this.pruneOldPlayers();
+    //this.pruneOldPlayers();
 
     if (app.browser.returnURLParameter("view_game")) {
       let game = app.browser.returnURLParameter("view_game").toLowerCase();
@@ -122,6 +122,10 @@ class League extends ModTemplate {
       let leaderboard_id = app.crypto.hash(gm.returnName());
       console.log("ID: " + leaderboard_id, game);
       app.connection.emit("league-overlay-render-request", leaderboard_id);
+    }
+
+    if (app.browser.returnURLParameter("league")) {
+      app.connection.emit("league-overlay-render-request", app.browser.returnURLParameter("league")); 
     }
 
   }
@@ -318,7 +322,7 @@ class League extends ModTemplate {
                   league.players = [];
                   rank = 0;
                   myPlayerStats = null;
-                  league.ts = new Date().getTime();
+                  //league.ts = new Date().getTime();
                 }
 
                 //
@@ -1363,10 +1367,12 @@ class League extends ModTemplate {
     //and if the scores have changed, we need to resort the players
     league.players = [];
 
-    let cutoff = new Date().getTime() - 24 * 60 * 60 * 1000;
+    let cond = (league.admin) ? `` : ` AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}')`;
+
+    let cutoff = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
     this.sendPeerDatabaseRequestWithFilter(
       "League",
-      `SELECT * FROM players WHERE league_id = '${league_id}' AND deleted = 0 AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}') ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
+      `SELECT * FROM players WHERE league_id = '${league_id}' AND deleted = 0${cond} ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
       (res) => {
         if (res?.rows) {
           for (let p of res.rows) {
@@ -1460,7 +1466,11 @@ class League extends ModTemplate {
   }
 
   async pruneOldPlayers() {
-    let sql = `UPDATE players SET deleted = 1 WHERE ts < ?`;
+    /*
+    Need to do an inner join to select for default leaderboards only
+    */
+
+    let sql = `UPDATE players SET deleted = 1 WHERE players.ts < ?`;
     let cutoff = new Date().getTime() - this.inactive_player_cutoff;
     await this.app.storage.executeDatabase(sql, [cutoff], "league");
   }

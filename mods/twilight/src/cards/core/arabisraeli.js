@@ -43,7 +43,6 @@
         this.updateMilitaryOperations();
 
         this.war_overlay.render(card, { winner : winner , die : roll , modifications : modifications , player : player , success : success});
-        this.showWarOverlay(card, winner, roll, modifications);
 
       return 1;
     }

@@ -103,7 +103,24 @@ class Relay extends ModTemplate {
         try {
 
             let relay_self = app.modules.returnModule("Relay");
+            if (tx.isTo(app.wallet.returnPublicKey())) {
+                if (message.request === "ping") {
+                    //console.log("Respond to ping");
+                    this.sendRelayMessage(tx.transaction.from[0].add, "echo", { status: this.busy });
+                    return;
+                }
 
+                if (message.request === "echo") {
+                    //console.log("Received echo");
+                    if (message.data.status) {
+                        app.connection.emit("relay-is-busy", tx.transaction.from[0].add);
+                    } else {
+                        app.connection.emit("relay-is-online", tx.transaction.from[0].add);
+                    }
+                    return;
+                }
+            }
+                    
             if (message.request === "relay peer message") {
 
                 //
@@ -125,22 +142,6 @@ class Relay extends ModTemplate {
                 // if interior transaction is intended for me, I process regardless
                 //
                 if (inner_tx.isTo(app.wallet.returnPublicKey())) {
-
-                    if (inner_txmsg.request === "ping") {
-                        console.log("Respond to ping");
-                        this.sendRelayMessage(inner_tx.transaction.from[0].add, "echo", { status: this.busy });
-                        return;
-                    }
-
-                    if (inner_txmsg.request === "echo") {
-                        console.log("Received echo");
-                        if (inner_txmsg.data.status) {
-                            app.connection.emit("relay-is-busy", inner_tx.transaction.from[0].add);
-                        } else {
-                            app.connection.emit("relay-is-online", inner_tx.transaction.from[0].add);
-                        }
-                        return;
-                    }
 
                     app.modules.handlePeerTransaction(inner_tx, peer, mycallback);
                     return;
