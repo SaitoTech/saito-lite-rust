@@ -323,7 +323,7 @@ class Keychain {
     //
     if (data == null) {
       for (let x = 0; x < this.keys.length; x++) {
-        if (this.keys[x].lc && this.keys[x].publickey != this.app.wallet.returnPublicKey()) {
+        if (/*this.keys[x].lc &&*/ this.keys[x].publickey != this.app.wallet.returnPublicKey()) {
           kx.push(this.keys[x]);
         }
       }
@@ -479,7 +479,7 @@ class Keychain {
 
   updateCryptoByPublicKey(publickey, aes_publickey = "", aes_privatekey = "", shared_secret = "") {
     if (publickey == "") { return; }
-    this.addKey(publickey, { aes_publickey : aes_publickey , aes_privatekey : aes_privatekey , aes_secret : shared_secret, lc : 1 });
+    this.addKey(publickey, { aes_publickey : aes_publickey , aes_privatekey : aes_privatekey , aes_secret : shared_secret });
     this.saveKeys();
 
     console.log("SAVED CRYPTO AES: " + publickey);
@@ -490,7 +490,7 @@ class Keychain {
 
   alreadyHaveSharedSecret(publickey: string): boolean {
     for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].publickey === publickey && this.keys[x].lc) {
+      if (this.keys[x].publickey === publickey /*&& this.keys[x].lc*/) {
         if (this.keys[x].aes_secret != "") {
           return true;
         }
