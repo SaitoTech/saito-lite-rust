@@ -1,0 +1,10 @@
+
+.tweet-manager {
+  display: flex;
+  flex-direction: column;
+}
+
+.tweet-manager .saito-profile {
+  order: -1;
+}
+
