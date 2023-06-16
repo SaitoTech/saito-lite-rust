@@ -364,9 +364,9 @@ class Mods {
     }
   }
 
-  onWalletReset() {
+  onWalletReset(nuke = false) {
     for (let i = 0; i < this.mods.length; i++) {
-      this.mods[i].onWalletReset();
+      this.mods[i].onWalletReset(nuke);
     }
   }
 

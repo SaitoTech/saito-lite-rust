@@ -928,7 +928,7 @@ class Chat extends ModTemplate {
       console.log(JSON.parse(JSON.stringify(new_message)));
     }
 
-    if (group.name !== this.communityGroupName){
+    if (group.name !== this.communityGroupName && !new_message.from.includes(this.app.wallet.returnPublicKey())) {
       this.startTabNotification();    
       this.app.connection.emit("group-is-active", group);
     }
@@ -1237,8 +1237,15 @@ class Chat extends ModTemplate {
         */
   }
 
-  onWalletReset() {
+  onWalletReset(nuke) {
     console.log("Wallet reset");
+
+    if (nuke){
+      for (let i = 0; i < this.groups.length; i++) {
+        localforage.removeItem(`chat_${this.groups[i].id}`);
+      }
+    }
+
     /*this.db_connection.dropDb().then(function() {
             console.log('Db deleted successfully');
             window.location.reload();
@@ -1256,7 +1263,7 @@ class Chat extends ModTemplate {
     let notifications = 0;
     for (let group of this.groups){
       if (group.name !== this.communityGroupName){
-        notificatons += group.unread;
+        notifications += group.unread;
       }
     }
 

@@ -320,6 +320,22 @@ class ChatManager {
                   request: "ping",
                   data: {},
                 });
+
+                this.pinged[group.id] = new Date().getTime();
+
+                if (this.timers[group.id]) {
+                  clearTimeout(this.timers[group.id]);
+                }
+
+                //If you don't hear back in 5 seconds, assume offline
+                this.timers[group.id] = setTimeout(() => {
+                  console.log("Auto change to offline");
+                  let cm_handle = document.querySelector(`.chat-manager #saito-user-${group.id}`);
+                  cm_handle.classList.remove("online");
+                  group.online = false;
+                  this.timers[group.id] = null;
+                }, 1000 * 5);
+
               }
             }
           }
