@@ -1,9 +1,4 @@
 const RedSquareMainTemplate = require("./main.template");
-const RedSquareAppspaceProfile = require("./appspace/profile");
-const RedSquareAppspaceHome = require("./appspace/home");
-const RedSquareAppspaceNotifications = require("./appspace/notifications");
-const RedSquareAppspaceGames = require("./appspace/games");
-const RedSquareAppspaceContacts = require("./appspace/contacts");
 const SaitoLoader = require("../../../lib/saito/ui/saito-loader/saito-loader");
 const TweetManager = require("./manager");
 
@@ -19,15 +14,6 @@ class RedSquareMain {
     this.components = {};
 
     this.manager = new TweetManager(app, mod, ".saito-main");
-
-
-/***
-    this.components['home'] = new RedSquareAppspaceHome(app, mod, ".saito-main");
-    this.components['home'] = new RedSquareAppspaceHome(app, mod, ".saito-main");
-    this.components['profile'] = this.mod.profile;
-    this.components['notifications'] = new RedSquareAppspaceNotifications(app, mod, ".saito-main");
-    this.render_component = 'home';
-***/
 
     //
     // EVENTS

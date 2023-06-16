@@ -33,7 +33,9 @@ class TweetManager {
 	      this.intersection_loader.hide();
       	      for (let i = 0; i < this.mod.tweets.length; i++) {
       	        let tweet = this.mod.tweets[i];
+console.log("checking tweet: " + i);
         	if (!tweet.isRendered()) {
+console.log("rendering new tweet!");
 		  tweet.renderWithCriticalChild();
 		}
       	      }
