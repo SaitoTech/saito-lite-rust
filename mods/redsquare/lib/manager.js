@@ -22,16 +22,16 @@ class TweetManager {
     //
     // dynamic loading
     //
-    this.intersection_loader = new SaitoLoader(app, mod, "#redsquare-intersection");
+    this.loader = new SaitoLoader(app, mod, "#redsquare-intersection");
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
 
-          this.intersection_loader.render();
+          this.loader.render();
 
 	  if (this.mode == "tweets") {
             mod.loadTweets(null, () => {
-	      this.intersection_loader.hide();
+	      this.loader.hide();
       	      for (let i = 0; i < this.mod.tweets.length; i++) {
       	        let tweet = this.mod.tweets[i];
         	if (!tweet.isRendered()) {
@@ -43,12 +43,12 @@ class TweetManager {
 
 	  if (this.mode == "notifications") {
             mod.loadNotifications(null, (txs) => {
-	      this.intersection_loader.hide();
+	      this.loader.hide();
 	    });
 	  }
 
 	  if (this.mode == "profile") {
-            mod.loadTweets(null, () => { this.intersection_loader.hide() });
+            mod.loadTweets(null, () => { this.loader.hide() });
 	  }
 
         }
@@ -83,10 +83,10 @@ class TweetManager {
     this.profile.remove();
 
     tweet.render();
-    this.intersection_loader.render();
+    this.loader.render();
     this.mod.loadTweetChildren(null, tweet.tx.transaction.sig, () => {
       tweet.renderWithChildren();
-      this.intersection_loader.hide();
+      this.loader.hide();
     });
 
   }
@@ -153,6 +153,20 @@ class TweetManager {
     this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
 
   }
+
+
+  showLoader() {
+
+    if (!document.querySelector("#redsquare-intersection")) {
+      if (document.querySelector(".tweet-manager")) {
+	document.querySelector(".tweet-manager").remove();
+      }
+      this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
+    }
+    this.loader.show(); 
+
+  }
+  hideLoader() { this.loader.hide(); }
 
 }
 

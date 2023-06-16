@@ -88,29 +88,6 @@ class RedSquareMenu {
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   incrementNotifications(menu_item, notifications = -1) {
 
     let qs = `.redsquare-menu-${menu_item}`;

@@ -1,5 +1,4 @@
 const RedSquareMainTemplate = require("./main.template");
-const SaitoLoader = require("../../../lib/saito/ui/saito-loader/saito-loader");
 const TweetManager = require("./manager");
 
 class RedSquareMain {
@@ -38,6 +37,7 @@ class RedSquareMain {
       tweet.render(true); // prepend = true
     });
     this.app.connection.on("redsquare-notifications-render-request", () => {
+      this.mod.menu.incrementNotifications("notifications", 0);
       this.manager.publickey = this.app.wallet.returnPublicKey();
       this.manager.mode = "notifications";
       this.manager.render();
@@ -49,10 +49,10 @@ class RedSquareMain {
     });
 
     this.app.connection.on("redsquare-home-loader-render-request", () => {
-      alert("1");
+      this.manager.showLoader();
     });
     this.app.connection.on("redsquare-home-loader-hide-request", () => {
-      alert("2");
+      this.manager.hideLoader();
     });
     this.app.connection.on("redsquare-home-thread-render-request", (tweets) => {
       alert("3");
