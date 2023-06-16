@@ -12,6 +12,5 @@ CREATE TABLE IF NOT EXISTS archives (
   block_hash TEXT DEFAULT "",
   created_at INTEGER DEFAULT 0,
   updated_at INTEGER DEFAULT 0,
-  block_hash TEXT DEFAULT "",
   preserve INTEGER DEFAULT 0
 );

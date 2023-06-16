@@ -29,6 +29,7 @@ class RedSquareMain {
     this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
       this.manager.publickey = this.app.wallet.returnPublicKey();
       this.manager.mode = "tweets";
+console.log("home tweet render request");
       this.manager.renderTweet(tweet);
     });
     // when someone adds a tweet at top -- scroll up and render
@@ -43,7 +44,6 @@ class RedSquareMain {
       this.manager.render();
     });
     this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
-console.log("publickey getting rendered is: " + publickey);
       this.manager.mode = "profile";
       this.manager.publickey = publickey;
       this.manager.render();
@@ -67,6 +67,7 @@ console.log("publickey getting rendered is: " + publickey);
     });
     this.app.connection.on("redsquare-home-tweet-and-critical-child-prepend-render-request", (tweet) => {
       alert("8");
+      this.app.connection.emit("redsquare-home-tweet-render-request", (tweet));
     });
     this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {
       //alert("9");

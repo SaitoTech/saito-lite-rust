@@ -16,6 +16,7 @@ class TweetManager {
     this.mode = "tweets";
     this.thread_id = "";
     this.parent_id = "";
+    this.tweet_id = "";
     this.publickey = "";
 
     this.profile = new SaitoProfile(app, mod, ".saito-main");
@@ -89,9 +90,10 @@ class TweetManager {
     if (!document.querySelector(myqs)) {
       this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
     } else {
-      document.querySelector("#redsquare-intersection").remove();
+      if (document.querySelector("#redsquare-intersection")) { document.querySelector("#redsquare-intersection").remove(); }
       this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
     }
+
 
     ////////////
     // tweets //
@@ -127,6 +129,9 @@ class TweetManager {
     if (this.mode == "profile") {
 
       this.profile.publickey = this.publickey;
+
+      window.history.pushState(null, "", `/redsquare/?user_id=${this.publickey}`);
+
       this.profile.render();
 
       //
@@ -153,13 +158,16 @@ class TweetManager {
   //
   renderTweet(tweet) {
 
-    this.intersectionObserver.unobserve(document.querySelector('#redsquare-intersection'));
+    if (document.querySelector('#redsquare-intersection')) {
+      this.intersectionObserver.unobserve(document.querySelector('#redsquare-intersection'));
+    }
 
     let myqs = `.tweet-manager`;
 
     if (!document.querySelector(myqs)) {
       this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
     } else {
+console.log("remove redsquare intersection");
       document.querySelector("#redsquare-intersection").remove();
       this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
     }

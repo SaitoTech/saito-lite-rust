@@ -327,10 +327,45 @@ class RedSquare extends ModTemplate {
     //
     if (!this.browser_active) { return; }
 
+
     //
     // redsquare -- load tweets
     //
     if (service.service === "redsquare") {
+
+      //
+      // render tweet + children
+      //
+      let tweet_id = this.app.browser.returnURLParameter('tweet_id');
+console.log("TWEET ID");
+      if (tweet_id != "") {
+        let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}' ORDER BY created_at DESC`;
+console.log("TWEET ID 2");
+        this.loadTweetsFromPeer(peer, sql, (txs) => {
+console.log("TWEET ID 3");
+          for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
+  	  let tweet = this.returnTweet(tweet_id);
+console.log("TWEET ID 4");
+          this.app.connection.emit('redsquare-home-tweet-render-request', tweet);
+console.log("TWEET ID 5");
+        });
+        return;
+      }
+
+      //
+      // render user profile
+      //
+      let user_id = this.app.browser.returnURLParameter('user_id');
+console.log("uSER ID");
+      if (user_id != "") {
+console.log("uSER ID 2");
+        this.app.connection.emit("redsquare-profile-render-request", (user_id));
+        return;
+      }
+
+      //
+      // or fetch tweets
+      //
       this.addPeer(peer, "tweets");
       this.loadTweets(peer, () => {
 	this.app.connection.emit("redsquare-home-render-request");
@@ -576,7 +611,9 @@ class RedSquare extends ModTemplate {
 
   loadTweetsFromPeer(peer, sql, mycallback = null) {
     let txs = [];
+console.log("LTFPAR...");
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs, tweet_to_track = null) => {
+console.log("LTFPAR 2...");
       for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
       if (mycallback != null) { mycallback(txs); }
     });
@@ -614,6 +651,7 @@ class RedSquare extends ModTemplate {
             txs.push(tx);
           });
         }
+console.log("LTFPAR pre callback...");
         if (mycallback != null) { mycallback(txs); }
       },
       (p) => { if (p == peer) { return 1; } return 0; }
@@ -820,9 +858,14 @@ class RedSquare extends ModTemplate {
         //
         for (let i = 0; i < this.unknown_children.length; i++) {
           if (this.unknown_children[i].tx.optional.thread_id === tweet.tx.transaction.sig) {
-            if (this.tweets[insertion_index].addTweet(this.unknown_children[i]) == 1) {
-              this.unknown_children.splice(i, 1);
-              i--;
+console.log("insertion index is: " + insertion_index);
+console.log("i is: " + i);
+console.log(this.tweets.length + " -- and -- " + this.unknown_children.length);
+	    if (this.tweets.length > insertion_index) {
+              if (this.tweets[insertion_index].addTweet(this.unknown_children[i]) == 1) {
+                this.unknown_children.splice(i, 1);
+                i--;
+              }
             }
           }
         }

@@ -140,6 +140,9 @@ class Tweet {
 
   render(prepend = false) {
 
+    // double-rendering is possible with commented retweets
+    if (this.isRendered()) { return; }
+
     let myqs = `.tweet-${this.tx.transaction.sig}`;
     let replace_existing_element = true;
     let replace_nothing = false;
