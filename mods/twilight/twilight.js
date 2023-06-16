@@ -2392,7 +2392,7 @@ console.log("LATEST MOVE: " + mv);
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["missileenvy", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["tehran", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["cubanmissile", "saltnegotiations", "iraniraq", "cambridge", "warsawpact", "mideast", "tehran", "cia", "china"];
         }
