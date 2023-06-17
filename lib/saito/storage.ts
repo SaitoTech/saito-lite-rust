@@ -110,7 +110,7 @@ class Storage {
 
   }
 
-  loadTransactions(obj={ sig : "" , owner : "" , publickey : "" , field1 : "" , field2 : "" , field3 : "" , limit : "" , offset : "" }, mycallback, peer=null) {
+  loadTransactions(obj={ sig : "" , owner : "" , publickey : "" , field1 : "" , field2 : "" , field3 : "" , limit : "" , offset : "" , created_later_than : "" , created_earlier_than : "" , updated_later_than : "" , updated_earlier_than : ""}, mycallback, peer=null) {
 
     let storage_self = this;
 
@@ -147,12 +147,6 @@ class Storage {
       return;
     }
 
-  }
-  incrementTransactionOptionalValue(sig, optional_key) {
-console.log("increment transaction optional value unsupported...");
-  }
-  updateTransactionOptionalValue(sig, optional_key, optional_value) {
-console.log("update transaction optional value unsupported...");
   }
 
   deleteTransactions(obj={} , mycallback = null , peer = null) {

@@ -337,17 +337,12 @@ class RedSquare extends ModTemplate {
       // render tweet + children
       //
       let tweet_id = this.app.browser.returnURLParameter('tweet_id');
-console.log("TWEET ID");
       if (tweet_id != "") {
         let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}' ORDER BY created_at DESC`;
-console.log("TWEET ID 2");
         this.loadTweetsFromPeer(peer, sql, (txs) => {
-console.log("TWEET ID 3");
           for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
   	  let tweet = this.returnTweet(tweet_id);
-console.log("TWEET ID 4");
           this.app.connection.emit('redsquare-home-tweet-render-request', tweet);
-console.log("TWEET ID 5");
         });
         return;
       }
@@ -356,9 +351,7 @@ console.log("TWEET ID 5");
       // render user profile
       //
       let user_id = this.app.browser.returnURLParameter('user_id');
-console.log("uSER ID");
       if (user_id != "") {
-console.log("uSER ID 2");
         this.app.connection.emit("redsquare-profile-render-request", (user_id));
         return;
       }
@@ -432,7 +425,7 @@ console.log("uSER ID 2");
 	profile_earliest_ts : 0 ,
 	profile_latest_ts : 0 ,
 	profile_limit : 20 ,
-	notifications_earliest_ts : 0 ,
+	notifications_earliest_ts : new Date().getTime() ,
 	notifications_latest_ts : 0 ,
 	notifications_limit : 10 ,
 	has_tweets : has_tweets ,
@@ -611,9 +604,7 @@ console.log("uSER ID 2");
 
   loadTweetsFromPeer(peer, sql, mycallback = null) {
     let txs = [];
-console.log("LTFPAR...");
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs, tweet_to_track = null) => {
-console.log("LTFPAR 2...");
       for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
       if (mycallback != null) { mycallback(txs); }
     });
@@ -651,7 +642,6 @@ console.log("LTFPAR 2...");
             txs.push(tx);
           });
         }
-console.log("LTFPAR pre callback...");
         if (mycallback != null) { mycallback(txs); }
       },
       (p) => { if (p == peer) { return 1; } return 0; }
@@ -667,17 +657,27 @@ console.log("LTFPAR pre callback...");
   loadNotifications(peer, mycallback=null) {
 
     //
-    // tweets are fetched from a special SQL table maintained by servers, and potentially
-    // in the future from the Archives of peers, but Notifications are always fetched as 
-    // transactions.
+    // notifications are not fetched from peers that index the tweets but from transactions
+    // that have been archived for us and others, because they are saved transactions rather 
+    // than curated tweets. tweets from servers can still show up as notifications, of course
+    // because addTweets() will automatically make them a notification if they are addressed 
+    // TO us, but when we want to fetch our list of notifications, we want to fetch from our
+    // archive nodes.
     //
     for (let i = 0; i < this.peers.length; i++) {
 
       let peer = this.peers[i].peer;
 
+      // 
+      //
+      // 
+      if (this.peers[i].notifications_earliest_ts == "") { this.peers[i].notifications_latest_ts = new Date().getTime(); }
+
+
       this.app.storage.loadTransactions(
         {
 	  field3 : this.app.wallet.returnPublicKey() ,
+	  created_earlier_than : this.peers[i].notifications_earliest_ts ,
 	  limit : this.peers[i].limit ,
   	  offset : this.peers[i].offset ,
         },
@@ -690,6 +690,20 @@ console.log("LTFPAR pre callback...");
           }
 	  this.updatePeerEarliestProfileTimestamp(peer, this.returnEarliestTimestampFromTransactionArray(txs));
           if (mycallback) {
+
+	    //
+	    // can't fetch more? we are at the earliest point
+	    //
+	    if (txs.length == 0) { this.peers[i].notifications_earliest_ts = 0; }
+
+	    //
+	    // update our earliest fetched notification
+	    //
+            for (let z = 0; z < txs.length; z++) {
+	      if (txs[z].transaction.ts < this.peers[i].notifications_earliest_ts) { this.peers[i].notifications_earliest_ts = txs[z].transaction.ts; }
+	      if (txs[z].transaction.ts > this.peers[i].notifications_latest_ts) { this.peers[i].notifications_latest_ts = txs[z].transaction.ts; }
+            }
+
             mycallback(txs)
           }
         },
@@ -858,9 +872,6 @@ console.log("LTFPAR pre callback...");
         //
         for (let i = 0; i < this.unknown_children.length; i++) {
           if (this.unknown_children[i].tx.optional.thread_id === tweet.tx.transaction.sig) {
-console.log("insertion index is: " + insertion_index);
-console.log("i is: " + i);
-console.log(this.tweets.length + " -- and -- " + this.unknown_children.length);
 	    if (this.tweets.length > insertion_index) {
               if (this.tweets[insertion_index].addTweet(this.unknown_children[i]) == 1) {
                 this.unknown_children.splice(i, 1);
@@ -1194,12 +1205,7 @@ console.log(this.tweets.length + " -- and -- " + this.unknown_children.length);
       //
       // servers
       //
-      // fetch supporting link properties
-      //
-      //console.log("SERVER FETCHING OPEN GRAPH PROPERTIES!");
-      //console.log("this is for: " + tweet.text);
       tweet = await tweet.generateTweetProperties(app, this, 1);
-      //console.log("DONE: " + JSON.stringify(tweet.link_properties));
 
 
       let type_of_tweet = 0; // unknown

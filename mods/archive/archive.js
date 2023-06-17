@@ -154,6 +154,7 @@ class Archive extends ModTemplate {
     if (!obj.block_hash) 	{ obj.block_hash= ""; }
     if (!obj.preserve) 		{ obj.preserve = ""; }
     if (!obj.created_at) 	{ obj.created_at = tx.transaction.ts; }
+    if (!obj.updated_at)        { new Date().getTime(); }
     obj.updated_at = new Date().getTime();
 
     //
@@ -287,6 +288,12 @@ class Archive extends ModTemplate {
     let sql = "";
     let params = {};
     let rows = [];
+    let timestamp_limiting_clause = "";
+
+    if (obj.created_later_than)   { timestamp_limiting_clause = " AND created_at > " + parseInt(obj.created_later_than); }
+    if (obj.created_earlier_than) { timestamp_limiting_clause = " AND created_at < " + parseInt(obj.created_earlier_than); }
+    if (obj.updated_later_than)   { timestamp_limiting_clause = " AND created_at > " + parseInt(obj.updated_later_than); }
+    if (obj.updated_earlier_than) { timestamp_limiting_clause = " AND created_at < " + parseInt(obj.updated_earlier_than); }
 
     //
     // ACCEPT REASONABLE LIMITS
@@ -297,32 +304,32 @@ class Archive extends ModTemplate {
     // SEARCH BASED ON CRITERIA PROVIDED
     //
     if (obj.field1) {
-      sql = "SELECT * FROM archives JOIN txs WHERE archives.field1 = $field1 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      sql = `SELECT * FROM archives JOIN txs WHERE archives.field1 = $field1 AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC LIMIT $limit`;
       params = { $field1 : obj.field1 , $limit : limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.field2) {
-      sql = "SELECT * FROM archives JOIN txs WHERE archives.field2 = $field2 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      sql = `SELECT * FROM archives JOIN txs WHERE archives.field2 = $field2 AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC LIMIT $limit`;
       params = { $field2 : obj.field2 , $limit : limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.field3) {
-      sql = "SELECT * FROM archives JOIN txs WHERE archives.field3 = $field3 AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      sql = `SELECT * FROM archives JOIN txs WHERE archives.field3 = $field3 AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC LIMIT $limit`;
       params = { $field3 : obj.field3 , $limit : limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.owner) {
-      sql = "SELECT * FROM archives JOIN txs WHERE archives.owner = $owner AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      sql = `SELECT * FROM archives JOIN txs WHERE archives.owner = $owner AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC LIMIT $limit`;
       params = { $owner : obj.owner , $limit : limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.publickey) {
-      sql = "SELECT * FROM archives JOIN txs WHERE archives.publickey = $publickey AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      sql = `SELECT * FROM archives JOIN txs WHERE archives.publickey = $publickey AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC LIMIT $limit`;
       params = { $publickey : obj.publickey , $limit : limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
     if (obj.sig) {
-      sql = "SELECT * FROM archives JOIN txs WHERE archives.sig = $sig AND txs.id = archives.tx_id ORDER BY archives.id DESC LIMIT $limit";
+      sql = `SELECT * FROM archives JOIN txs WHERE archives.sig = $sig AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC LIMIT $limit`;
       params = { $sig : obj.sig , $limit : limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
     }
