@@ -43,7 +43,7 @@ class RedSquareNotification {
           return;
         } else {
           html = LikeNotificationTemplate(app, mod, this.tx);
-	  this.user.notice = "<i class='fas fa-heart fa-notification'></i> <span class='notification-type'>liked your tweet</span>";
+	  this.user.notice = "</i> <span class='notification-type'>liked your tweet</span>";
 	  this.user.fourthelem = app.browser.returnTime(new Date().getTime());
 	  this.type = 3; // like
         }
@@ -59,7 +59,7 @@ class RedSquareNotification {
           let retweet_txmsg = retweet_tx.returnMessage();
           html = RetweetNotificationTemplate(app, mod, this.tx, retweet_tx, retweet_txmsg);
 	  this.type = 2; // retweet
-	  this.user.notice = "<i class='fa fa-repeat fa-notification'></i> <span class='notification-type'>retweeted your tweet</span>";
+	  this.user.notice = "<span class='notification-type'>retweeted your tweet</span>";
 	  this.user.fourthelem = app.browser.returnTime(new Date().getTime());
 
           //
@@ -67,7 +67,7 @@ class RedSquareNotification {
           //
         } else {
           html = ReplyNotificationTemplate(app, mod, this.tx, txmsg);
-	  this.user.notice = "<i class='fa-solid fa-comment-dots'></i> <span class='notification-type'>replies to your tweet</span>";
+	  this.user.notice = "<span class='notification-type'>replied to your tweet</span>";
 	  this.user.fourthelem = app.browser.returnTime(new Date().getTime());
         }
       }
@@ -82,9 +82,9 @@ class RedSquareNotification {
       //
       let nqs = ".notification-item-"+this.tx.transaction.sig;
       if (document.querySelector(nqs)) {
-        app.browser.replaceElementBySelector(html, ".redsquare-notifications");
+        app.browser.replaceElementBySelector(html, nqs);
       } else {
-        app.browser.addElementToSelector(html, ".redsquare-notifications");
+        app.browser.addElementToSelector(html, ".tweet-manager");
       }
 
 
@@ -114,26 +114,25 @@ class RedSquareNotification {
       	if (tweet) {
           app.connection.emit('redsquare-home-tweet-render-request', (tweet));
           app.connection.emit('redsquare-home-loader-render-request');
-          mod.loadChildrenOfTweet(sig, (tweets) => {
-            app.connection.emit('redsquare-home-loader-hide-request');
-      	    for (let i = 0; i < tweets.length; i++) {
-              app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
-      	    }
-          });
       	} else {
-          mod.loadTweetWithSig(sig, (tweet) => {
+          mod.loadTweetWithSig(sig, (txs) => {
+      	    let tweet = this.mod.returnTweet(sig);
             app.connection.emit('redsquare-home-tweet-render-request', (tweet));
-            mod.loadChildrenOfTweet(tweet.tx.transaction.sig, (tweets) => {
-              for (let i = 0; i < tweets.length; i++) {
-                app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
-              }
-            });
+            app.connection.emit('redsquare-home-loader-render-request');
           });
       	}
       
       }
     }
   }
+
+  isRendered() {
+    if (document.querySelector(`.notification-item-${this.tx.transaction.sig}`)) { return true; }
+    return false;
+  } 
+    
+
+
 }
 
 module.exports = RedSquareNotification;

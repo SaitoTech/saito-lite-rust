@@ -803,15 +803,6 @@ try {
       this.optional = JSON.parse(app.crypto.base64ToString(web_obj.opt));
     } catch (err) {}
   }
-// seems buggy
-//  serialize_to_utf8(app) {
-//    let b = Buffer.from(this.serialize(app));
-//    return b.toString("utf8");
-//  }
-//  deserialize_from_utf8(app: Saito, utf8string) {
-//    let b = Buffer.from(utf8string, "utf8");
-//    this.deserialize(app, b, 0);
-//  }
 
   //
   // everything but the signature

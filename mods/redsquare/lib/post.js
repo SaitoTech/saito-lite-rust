@@ -237,7 +237,7 @@ class Post {
     // move to the top
     //
     var TweetClass = require("./tweet");
-    let tweet = new TweetClass(this.app, this.mod, ".redsquare-appspace-body", newtx);
+    let tweet = new TweetClass(this.app, this.mod, ".tweet-manager", newtx);
     //
     //
     //

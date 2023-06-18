@@ -358,7 +358,7 @@ alert("Deletion Not Supported Yet! ");
 	  //
 	  // load 5 saved games
 	  //
-          this.app.storage.loadTransactions(("Nwasm"+this.active_rom_sig), 5, function(txs) {
+          this.app.storage.loadTransactions( { field1 : ("Nwasm"+this.active_rom_sig) , limit : 5 }, function(txs) {
             try {
 	      for (let z = 0; z < txs.length; z++) {
                 let newtx = new saito.default.transaction(txs[z].transaction);
@@ -368,6 +368,7 @@ alert("Deletion Not Supported Yet! ");
               log("error loading Nwasm game...: " + err);
             }
           });
+
 
 	}
       }
@@ -490,7 +491,7 @@ alert("Deletion Not Supported Yet! ");
     let nwasm_mod = this;
     let module_type = "Nwasm"+this.active_rom_sig;
 
-    this.app.storage.loadTransactions(("Nwasm"+this.active_rom_sig), 1, function(txs) {
+    this.app.storage.loadTransactions( { field1 : ("Nwasm"+this.active_rom_sig) , limit : 1 }, function(txs) {
       try {
         if (txs.length <= 0) { alert("No Saved Games Available"); }
         let newtx = new saito.default.transaction(txs[0].transaction);
@@ -526,7 +527,7 @@ alert("Deletion Not Supported Yet! ");
 
     newtx.msg = obj;
     newtx = this.app.wallet.signTransaction(newtx);
-    this.app.storage.saveTransaction(newtx, ("Nwasm-"+this.active_rom_sig));
+    this.app.storage.saveTransaction(newtx, { field1 : ("Nwasm-"+this.active_rom_sig) });
     this.active_game_saves.push(newtx);
 
   }
