@@ -27,8 +27,6 @@ class RedSquareNotification {
     let app = this.app;
     let mod = this.mod;
 
-console.log("asked to render a notification!");
-
     if (this.tx == null) { 
       document.querySelector(selector).innerHTML = `<div class="notifications-empty"><span> <i class="far fa-folder-open" aria-hidden="true"></i> </span> <p>No new notifications </p> </div>`
     } else {
@@ -127,6 +125,14 @@ console.log("asked to render a notification!");
       }
     }
   }
+
+  isRendered() {
+    if (document.querySelector(`.notification-item-${this.tx.transaction.sig}`)) { return true; }
+    return false;
+  } 
+    
+
+
 }
 
 module.exports = RedSquareNotification;

@@ -51,6 +51,12 @@ class TweetManager {
 	  //
 	  if (this.mode == "notifications") {
             mod.loadNotifications(null, (txs) => {
+              for (let i = 0; i < this.mod.notifications.length; i++) {
+                let notification = new Notification(this.app, this.mod, this.mod.notifications[i].tx);
+        	if (!notification.isRendered()) {
+                  notification.render(".tweet-manager");
+                }
+              }
 	      this.loader.hide();
 	    });
 	  }
@@ -121,6 +127,8 @@ class TweetManager {
         notification.render(".tweet-manager");
       }
 
+      this.loader.hide();
+
     }
 
     /////////////
@@ -167,7 +175,6 @@ class TweetManager {
     if (!document.querySelector(myqs)) {
       this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
     } else {
-console.log("remove redsquare intersection");
       document.querySelector("#redsquare-intersection").remove();
       this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
     }

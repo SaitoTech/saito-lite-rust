@@ -29,7 +29,6 @@ class RedSquareMain {
     this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
       this.manager.publickey = this.app.wallet.returnPublicKey();
       this.manager.mode = "tweets";
-console.log("home tweet render request");
       this.manager.renderTweet(tweet);
     });
     // when someone adds a tweet at top -- scroll up and render
@@ -68,8 +67,8 @@ console.log("home tweet render request");
     this.app.connection.on("redsquare-home-tweet-and-critical-child-append-render-request", (tweet) => {
       alert("7");
     });
+    // this is triggered when you reply to a tweet -- it pushes tweet and your reply to top, or should
     this.app.connection.on("redsquare-home-tweet-and-critical-child-prepend-render-request", (tweet) => {
-      alert("8");
       this.app.connection.emit("redsquare-home-tweet-render-request", (tweet));
     });
     this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {

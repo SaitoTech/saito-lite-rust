@@ -260,7 +260,7 @@ class Archive extends ModTemplate {
     //
     // update tx
     //
-    sql = `UPDATE txs SET tx = $tx WHERE tx_id = $tx_id`;
+    sql = `UPDATE txs SET tx = $tx WHERE id = $tx_id`;
     params = {
       $tx_id : tx_id ,
       $tx :  tx.serialize_to_web(this.app)

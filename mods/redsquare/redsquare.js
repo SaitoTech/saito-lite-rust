@@ -371,14 +371,20 @@ class RedSquare extends ModTemplate {
     if (service.service === "archive") {
       this.addPeer(peer, "notifications");
 
+console.log("ABOUT TO LOAD NOTIFICATIONS");
       let recursiveLoadNotifications = (peer, delay) => {
         setTimeout(() => { 
 	  this.loadNotifications(peer, (txs) => {
-	    if (txs.length == 0) { return; }
+console.log("received TXS: " + txs.length);
+	    if (txs.length == 0) {
+      	      this.app.connection.emit("redsquare-home-loader-hide-request");
+	      return;
+	    }
 	    //
 	    // need more, fetch more !
 	    //
 	    if (this.notifications.length < 5) {
+console.log(" ... and less than 5 so fetching more");
 	      recursiveLoadNotifications(peer, delay);
 	    }
           });
@@ -784,8 +790,6 @@ class RedSquare extends ModTemplate {
     // maybe this needs to go into notifications too
     //
     if (tx.isTo(this.app.wallet.returnPublicKey())) {
-
-      this.app.storage.saveTransaction(tx , { owner : this.app.wallet.returnPublicKey() });
 
       //
       // this is a notification, so update our timestamps
