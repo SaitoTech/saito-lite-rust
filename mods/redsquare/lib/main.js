@@ -38,6 +38,9 @@ console.log("home tweet render request");
       tweet.render(true); // prepend = true
     });
     this.app.connection.on("redsquare-notifications-render-request", () => {
+      this.mod.notifications_last_viewed_ts = new Date().getTime();
+      this.mod.notifications_number_unviewed = 0;
+      this.mod.save();
       this.mod.menu.incrementNotifications("notifications", 0);
       this.manager.publickey = this.app.wallet.returnPublicKey();
       this.manager.mode = "notifications";

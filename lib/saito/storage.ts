@@ -66,14 +66,20 @@ class Storage {
 
     const txmsg = tx.returnMessage();
     const message = "archive";
+
     let data: any = {};
     data.request = "save";
     data.tx = tx;
+
     data = Object.assign(data, obj);
+
+    if (!data.field1) { data.field1 = txmsg.type; }
+    if (!data.field2) { data.field2 = tx.transaction.from[0].add; }
+    if (!data.field3) { data.field3 = tx.transaction.to[0].add; }
 
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
-      if (archive_mod) { let res = archive_mod.saveTransaction(tx, obj) };
+      if (archive_mod) { let res = archive_mod.saveTransaction(tx, data) };
       return;
     }
     if (peer != null) {
@@ -110,7 +116,7 @@ class Storage {
 
   }
 
-  loadTransactions(obj={ sig : "" , owner : "" , publickey : "" , field1 : "" , field2 : "" , field3 : "" , limit : "" , offset : "" , created_later_than : "" , created_earlier_than : "" , updated_later_than : "" , updated_earlier_than : ""}, mycallback, peer=null) {
+  loadTransactions(obj={}, mycallback, peer=null) {
 
     let storage_self = this;
 
@@ -122,12 +128,10 @@ class Storage {
     let internal_callback = (res) => {
       let txs = [];
       if (res) {
-        if (res.txs) {
-          for (let i = 0; i < res.txs.length; i++) {
-            let tx = new Transaction();
-	    tx.deserialize_from_web(this.app, res.txs[i].tx);
-            txs.push(tx);
-          }
+        for (let i = 0; i < res.length; i++) {
+          let tx = new Transaction();
+	  tx.deserialize_from_web(this.app, res[i].tx);
+          txs.push(tx);
         }
       }
       mycallback(txs);

@@ -370,13 +370,27 @@ class RedSquare extends ModTemplate {
     //
     if (service.service === "archive") {
       this.addPeer(peer, "notifications");
-      setTimeout(() => { 
-	this.loadNotifications(peer, () => {
-        });
-      }, 3500);
+
+      let recursiveLoadNotifications = (peer, delay) => {
+        setTimeout(() => { 
+	  this.loadNotifications(peer, (txs) => {
+	    if (txs.length == 0) { return; }
+	    //
+	    // need more, fetch more !
+	    //
+	    if (this.notifications.length < 5) {
+	      recursiveLoadNotifications(peer, delay);
+	    }
+          });
+        }, delay);
+      }
+
+      recursiveLoadNotifications(peer, 3500);
+
     }
 
   }
+
 
 
   //
@@ -667,50 +681,48 @@ class RedSquare extends ModTemplate {
     for (let i = 0; i < this.peers.length; i++) {
 
       let peer = this.peers[i].peer;
+      if (this.peers[i].notifications_earliest_ts != 0) {
 
-      // 
-      //
-      // 
-      if (this.peers[i].notifications_earliest_ts == "") { this.peers[i].notifications_latest_ts = new Date().getTime(); }
+        // 
+        //
+        // 
+        if (this.peers[i].notifications_earliest_ts == "") { this.peers[i].notifications_latest_ts = new Date().getTime(); }
 
-
-      this.app.storage.loadTransactions(
-        {
-	  field3 : this.app.wallet.returnPublicKey() ,
-	  created_earlier_than : this.peers[i].notifications_earliest_ts ,
-	  limit : this.peers[i].limit ,
-  	  offset : this.peers[i].offset ,
-        },
-        (txs) => { 
-          if (txs.length > 0) {
-            for (let z = 0; z < txs.length; z++) { 
-              txs[z].decryptMessage(this.app);
-	      this.addTweet(txs[z]);
-	    }
-          }
-	  this.updatePeerEarliestProfileTimestamp(peer, this.returnEarliestTimestampFromTransactionArray(txs));
-          if (mycallback) {
-
-	    //
-	    // can't fetch more? we are at the earliest point
-	    //
-	    if (txs.length == 0) { this.peers[i].notifications_earliest_ts = 0; }
-
-	    //
-	    // update our earliest fetched notification
-	    //
-            for (let z = 0; z < txs.length; z++) {
-	      if (txs[z].transaction.ts < this.peers[i].notifications_earliest_ts) { this.peers[i].notifications_earliest_ts = txs[z].transaction.ts; }
-	      if (txs[z].transaction.ts > this.peers[i].notifications_latest_ts) { this.peers[i].notifications_latest_ts = txs[z].transaction.ts; }
+        this.app.storage.loadTransactions(
+          {
+	    field3 : this.app.wallet.returnPublicKey() ,
+	    created_earlier_than : this.peers[i].notifications_earliest_ts ,
+	    limit : this.peers[i].limit ,
+          },
+          (txs) => { 
+            if (txs.length > 0) {
+              for (let z = 0; z < txs.length; z++) { 
+                txs[z].decryptMessage(this.app);
+	        this.addTweet(txs[z]);
+	      }
             }
+	    this.updatePeerEarliestProfileTimestamp(peer, this.returnEarliestTimestampFromTransactionArray(txs));
+            if (mycallback) {
 
-            mycallback(txs)
-          }
-        },
-        this.peers[i].peer
-      );
+	      //
+	      // can't fetch more? we are at the earliest point
+	      //
+	      if (txs.length == 0) { this.peers[i].notifications_earliest_ts = 0; }
 
-      this.peers[i].offset += this.peers[i].limit;
+	      //
+	      // update our earliest fetched notification
+	      //
+              for (let z = 0; z < txs.length; z++) {
+	        if (txs[z].transaction.ts < this.peers[i].notifications_earliest_ts) { this.peers[i].notifications_earliest_ts = txs[z].transaction.ts; }
+	        if (txs[z].transaction.ts > this.peers[i].notifications_latest_ts) { this.peers[i].notifications_latest_ts = txs[z].transaction.ts; }
+              }
+
+              mycallback(txs)
+            }
+          },
+          this.peers[i].peer
+        );
+      }
     }
 
   }
@@ -773,6 +785,8 @@ class RedSquare extends ModTemplate {
     //
     if (tx.isTo(this.app.wallet.returnPublicKey())) {
 
+      this.app.storage.saveTransaction(tx , { owner : this.app.wallet.returnPublicKey() });
+
       //
       // this is a notification, so update our timestamps
       //
@@ -818,6 +832,7 @@ class RedSquare extends ModTemplate {
       //
       let txmsg = tx.returnMessage();
       if (txmsg.request === "like tweet") {
+
         //
         // skip out on likes but still update timestamps
         //
@@ -937,9 +952,6 @@ class RedSquare extends ModTemplate {
   }
 
 
-
-
-
   returnTweet(tweet_sig = null) {
 
     if (tweet_sig == null) { return null; }
@@ -1016,9 +1028,6 @@ class RedSquare extends ModTemplate {
   }
 
 
-
-
-
   sendLikeTransaction(app, mod, data, tx = null) {
 
     let redsquare_self = this;
@@ -1058,7 +1067,7 @@ class RedSquare extends ModTemplate {
       //
       if (tx.isTo(app.wallet.returnPublicKey())) {
 
-        this.app.storage.saveTransaction(tx);
+        this.app.storage.saveTransaction(tx , { owner : app.wallet.returnPublicKey() , field3 : app.wallet.returnPublicKey() });
 
         //
         // save optional likes
@@ -1071,10 +1080,10 @@ class RedSquare extends ModTemplate {
           if (!tx.optional) { tx.optional = {}; }
           if (!tx.optional.num_likes) { tx.optional.num_likes = 0; }
           tx.optional.num_likes++;
-          this.app.storage.updateTransaction(tx, { field1 : "RedSquare" }, "localhost");
+          this.app.storage.updateTransaction(tx, { owner : app.wallet.returnPublicKey() } );
           tweet.renderLikes();
         } else {
-          this.app.storage.updateTransaction(tx, { field1 : "RedSquare" }, "localhost");
+          this.app.storage.updateTransaction(tx, { owner : app.wallet.returnPublicKey() } );
         }
 
         //
@@ -1141,7 +1150,6 @@ class RedSquare extends ModTemplate {
       let tweet = new Tweet(app, this, "", tx);
       let txmsg = tx.returnMessage();
 
-  
       //
       // browsers
       //
@@ -1152,7 +1160,13 @@ class RedSquare extends ModTemplate {
         //
         if (tx.isTo(app.wallet.returnPublicKey())) {
 
-          this.app.storage.saveTransaction(tx, { field1 : "RedSquare" }, "localhost");
+	  //
+	  // this transaction is TO me, but I may not be the tx.transaction.to[0].add address, and thus the archive
+	  // module may not index this transaction for me in a way that makes it very easy to fetch (field3 = MY_KEY}
+	  // thus we override the defaults by setting field3 explicitly to our publickey so that loading transactions
+	  // from archives by fetching on field3 will get this.
+	  //
+          this.app.storage.saveTransaction(tx, { owner : app.wallet.returnPublicKey() , field3 : app.wallet.returnPublicKey() });
 
           //
           // if replies
@@ -1164,10 +1178,10 @@ class RedSquare extends ModTemplate {
       	      if (!tweet.tx.optional) { tweet.tx.optional = {}; }
               if (!tweet.tx.optional.num_replies) { tweet.tx.optional.num_replies = 0; }
               tx.optional.num_replies++;
-              this.app.storage.updateTransaction(tx, { field1 : "RedSquare" }, "localhost");
+              this.app.storage.updateTransaction(tx, { owner : app.wallet.returnPublicKey() , field3 : app.wallet.returnPublicKey() }, "localhost");
               tweet.renderReplies();
             } else {
-              this.app.storage.updateTransaction(tx, { field1 : "RedSquare" }, "localhost");
+              this.app.storage.updateTransaction(tx, { owner : app.wallet.returnPublicKey() , field3 : app.wallet.returnPublicKey() }, "localhost");
             }
           }
 
@@ -1187,10 +1201,10 @@ class RedSquare extends ModTemplate {
                 if (!tx.optional) { tx.optional = {}; }
                 if (!tx.optional.num_retweets) { tx.optional.num_retweets = 0; }
                 tx.optional.num_retweets++;
-                this.app.storage.updateTransaction(tx, { field1 : "RedSquare" }, "localhost");
+                this.app.storage.updateTransaction(tx, { owner : app.wallet.returnPublicKey() , field3 : app.wallet.returnPublicKey() }, "localhost");
                 tweet2.renderRetweets();
               } else {
-                this.app.storage.updateTransaction(tx, { field1 : "RedSquare" }, "localhost");
+                this.app.storage.updateTransaction(tx, { owner : app.wallet.returnPublicKey() , field3 : app.wallet.returnPublicKey() }, "localhost");
               }
             }
           }

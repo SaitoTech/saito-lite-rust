@@ -45,7 +45,7 @@ console.log("asked to render a notification!");
           return;
         } else {
           html = LikeNotificationTemplate(app, mod, this.tx);
-	  this.user.notice = "<i class='fas fa-heart fa-notification'></i> <span class='notification-type'>liked your tweet</span>";
+	  this.user.notice = "</i> <span class='notification-type'>liked your tweet</span>";
 	  this.user.fourthelem = app.browser.returnTime(new Date().getTime());
 	  this.type = 3; // like
         }
@@ -61,7 +61,7 @@ console.log("asked to render a notification!");
           let retweet_txmsg = retweet_tx.returnMessage();
           html = RetweetNotificationTemplate(app, mod, this.tx, retweet_tx, retweet_txmsg);
 	  this.type = 2; // retweet
-	  this.user.notice = "<i class='fa fa-repeat fa-notification'></i> <span class='notification-type'>retweeted your tweet</span>";
+	  this.user.notice = "<span class='notification-type'>retweeted your tweet</span>";
 	  this.user.fourthelem = app.browser.returnTime(new Date().getTime());
 
           //
@@ -69,7 +69,7 @@ console.log("asked to render a notification!");
           //
         } else {
           html = ReplyNotificationTemplate(app, mod, this.tx, txmsg);
-	  this.user.notice = "<i class='fa-solid fa-comment-dots'></i> <span class='notification-type'>replies to your tweet</span>";
+	  this.user.notice = "<span class='notification-type'>replied to your tweet</span>";
 	  this.user.fourthelem = app.browser.returnTime(new Date().getTime());
         }
       }

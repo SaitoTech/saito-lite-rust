@@ -42,8 +42,6 @@ class Archive extends ModTemplate {
   }
 
 
-
-
   returnServices() {
     let services = [];
     if (this.app.BROWSER == 0) {
@@ -51,10 +49,6 @@ class Archive extends ModTemplate {
     }
     return services;
   }
-
-
-
-
 
 
   //
@@ -71,9 +65,6 @@ class Archive extends ModTemplate {
 
       let block_id = 0;
       let block_hash = "";
-      let field1 = "";
-      let field2 = "";
-      let field3 = "";
 
       if (blk.block.id) {
          block_id = blk.block.id;
@@ -81,22 +72,12 @@ class Archive extends ModTemplate {
       if (blk.returnHash()) {
          block_hash = blk.returnHash();
       }
-      if (txmsg.type) {
-        field1 = txmsg.type;
-      }
-      if (tx.transaction.from.length > 0) {
-        field2 = tx.transaction.from[0].add;
-      }
-      if (tx.transaction.to.length > 0) {
-        field3 = tx.transaction.to[0].add;
-      }
 
-      this.saveTransaction(tx, { block_id : block_id , block_hash : block_hash , field1 : field1 , field2 : field2, field3 : field3 }, 1);
+      this.saveTransaction(tx, { block_id : block_id , block_hash : block_hash }, 1);
 
     }
 
   }
-
 
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
@@ -114,20 +95,21 @@ class Archive extends ModTemplate {
     //
     if (req.request === "archive") {
 
+
       if (req.data.request === "delete") {
-	let newtx = new saito.default.transaction(req.data.tx);
+        let newtx = new saito.default.transaction(req.data.tx.transaction);
         this.deleteTransaction(newtx, req.data);
       }
       if (req.data.request === "save") {
-	let newtx = new saito.default.transaction(req.data.tx);
+        let newtx = new saito.default.transaction(req.data.tx.transaction);
         this.saveTransaction(newtx, req.data);
       }
       if (req.data.request === "update") {
-	let newtx = new saito.default.transaction(req.data.tx);
+        let newtx = new saito.default.transaction(req.data.tx.transaction);
         this.updateTransaction(newtx, req.data);
       }
       if (req.data.request === "load") {
-        let txs = this.loadTransactions(req.data);
+        let txs = await this.loadTransactions(req.data);
         mycallback(txs);
         return;
       }
@@ -208,9 +190,11 @@ class Archive extends ModTemplate {
       $updated_at :  obj.updated_at ,
       $preserve : obj.preserve
     }
+
     let archives_id = await this.app.storage.insertDatabase(sql, params, "archive");
 
   }
+
 
   ////////////
   // update //
@@ -221,6 +205,16 @@ class Archive extends ModTemplate {
     // only owner can update
     //
     if (tx.transaction.from[0].add != obj.owner && obj.sig != "") {
+
+      //
+      // this may be a transaction that I have saved that was originally from
+      // someone else, such as a RedSquare tweet that I have saved because it
+      // is a reply or a like.
+      //
+      // in this situation, we want to update the version of the transaction 
+      // that we have saved rather than the original version of the transaction
+      // that is somewhere on chain.
+      //
       console.log("Archive: only owner has the rights to modify records");
       return 0;
     }
