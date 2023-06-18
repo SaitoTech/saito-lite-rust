@@ -32,7 +32,7 @@ class Chessgame extends GameTemplate {
     
     this.confirm_moves = 1; 
 
-    this.roles = ["Observer", "White", "Black"];
+    this.roles = ["observer", "white", "black"];
     this.app = app;
     return this;
 
@@ -377,7 +377,7 @@ class Chessgame extends GameTemplate {
     } else {
 
       var status = '';
-      var moveColor = (this.engine.turn() === 'b')? "Black" : 'White';
+      var moveColor = (this.engine.turn() === 'b')? "black" : 'white';
     
       // check?
       if (this.engine.in_check() === true) {
@@ -728,8 +728,8 @@ class Chessgame extends GameTemplate {
   colours(x) {
 
     switch (x) {
-      case "w": return ("White");
-      case "b": return ("Black");
+      case "w": return ("white");
+      case "b": return ("black");
     }
 
     return;
