@@ -240,6 +240,7 @@ class Archive extends ModTemplate {
     let sql = `SELECT id , tx_id FROM archives WHERE owner = $owner AND sig = $sig`;
     let params = { $owner : obj.owner , $sig : obj.sig };
     let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+    if (!rows.length) { return; }
     if (rows.length < 1) { return; }
     let id  	= rows[0].id;
     let tx_id 	= rows[0].tx_id;

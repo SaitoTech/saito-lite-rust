@@ -360,8 +360,12 @@ class RedSquare extends ModTemplate {
       // or fetch tweets
       //
       this.addPeer(peer, "tweets");
-      this.loadTweets(peer, () => {
+      this.loadTweets(peer, (txs) => {
 	this.app.connection.emit("redsquare-home-render-request");
+	if (txs.length == 0) {
+      	  this.app.connection.emit("redsquare-home-loader-hide-request");
+	  return;
+	}
       });
     }
 
@@ -371,11 +375,9 @@ class RedSquare extends ModTemplate {
     if (service.service === "archive") {
       this.addPeer(peer, "notifications");
 
-console.log("ABOUT TO LOAD NOTIFICATIONS");
       let recursiveLoadNotifications = (peer, delay) => {
         setTimeout(() => { 
 	  this.loadNotifications(peer, (txs) => {
-console.log("received TXS: " + txs.length);
 	    if (txs.length == 0) {
       	      this.app.connection.emit("redsquare-home-loader-hide-request");
 	      return;
@@ -384,7 +386,6 @@ console.log("received TXS: " + txs.length);
 	    // need more, fetch more !
 	    //
 	    if (this.notifications.length < 5) {
-console.log(" ... and less than 5 so fetching more");
 	      recursiveLoadNotifications(peer, delay);
 	    }
           });
