@@ -232,9 +232,37 @@ class Nwasm extends OnePlayerGameTemplate {
 
   deleteRoms() {
 
-alert("Deletion Not Supported Yet! ");
+    let newtx = this.app.wallet.createUnsignedTransaction();
+    newtx.msg = {
+      module: this.name,
+      request: "archive delete",
+    }
 
-/*
+    newtx = this.app.wallet.signTransaction(newtx);
+      
+    //
+    // save off-chain
+    //
+    // TODO - uploading such a large file halts execution of the emulator
+    // because it is so CPU and memory intensive, so we want to see if we
+    // can avoid this problem and somehow speed up ROM loading. It would
+    // be ideal either to display an advert showing the pace of ROM upload
+    // or allow the upload to happen in the background.
+    //
+    //this.app.storage.saveTransaction(newtx, { owner : this.app.wallet.returnPublicKey() });
+  
+
+    let library_mod = this.app.modules.returnModule("Library");
+    if (library_mod) {
+      library_mod.handlePeerTransaction(this.app, newtx, null, function() {
+        nwasm_mod.libraries = {};
+        nwasm_mod.save();
+        nwasm_mod.updateVisibleLibrary();
+      });
+    }
+
+
+/***
     let message = {};
         message.request = "library delete";
         message.data = {};
@@ -254,7 +282,7 @@ alert("Deletion Not Supported Yet! ");
             nwasm_mod.updateVisibleLibrary();
 	  });
 	}
-*/
+***/
   }
 
   hideSplashScreen() {

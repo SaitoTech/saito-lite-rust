@@ -93,10 +93,31 @@ class Library extends ModTemplate {
         try {
           let c = confirm("Your library already contains a copy of this item. Is this a new copy?");
           if (c) {
-            this.library[module][idx].num++;
-            this.library[module][idx].available++;
-            this.save();
-          }
+
+	    let idx = -1;
+	    for (let i = 0; i < this.library[module].peers[this.app.wallet.returnPublicKey()],length; i++) {
+	      if (this.library[module].peers[this.app.wallet.returnPublicKey()][i].id == id) {
+		idx = i;
+		break;
+	      }
+	    }
+
+	    if (idx == -1) {
+	      alert("ERROR: cannot find item which supposedly exists");
+	    } else {
+              this.library[module].peers[this.app.wallet.returnPublicKey()][idx].num++;
+              this.library[module].peers[this.app.wallet.returnPublicKey()][idx].available++;
+              this.save();
+	    }
+
+	    return;
+
+          } else {
+
+	    alert("Not Saving");
+	    return;
+
+	  }
         } catch (err) {}
       }
 
@@ -356,37 +377,32 @@ class Library extends ModTemplate {
     }
   }
 
-  checkoutItem(collection, publickey, sig, mycallback) {
 
-alert("coll: " + collection + " -- " + publickey + " --- " + sig);
+  checkoutItem(collection, publickey, sig, mycallback) {
 
     //
     // if the collection doesn't exist, we cannot lend
     //
     if (!this.library[collection]) { return; }
 
-alert("checkout item 2");
-
     //
     // get index of item
     //
     let idx = -1;
     for (let i = 0; i < this.library[collection].peers[this.app.wallet.returnPublicKey()].length; i++) {
-
-alert( this.library[collection].peers[this.app.wallet.returnPublicKey()][i].sig + " -- " + sig);
-
       if (this.library[collection].peers[this.app.wallet.returnPublicKey()][i].sig === sig) {
         idx = i;
         break;
       }
     }
 
-alert("INDEX IS: " + idx);
-
+    //
+    // if the item exists
+    //
     if (idx != -1) {
 
       //
-      // find the item
+      // grab the item
       //
       let item = this.library[collection].peers[publickey][idx];
 
@@ -428,14 +444,10 @@ alert("INDEX IS: " + idx);
         }
       }
 
-alert("about to borrow: " + is_already_borrowed);
-
       //
       // now we can permit the checkout
       //
       if (!is_already_borrowed) {
-
-alert("about to borrow: " + item.available + " -- " + item.num + " -- " + item.checkout.length);
 
         if (item.available < 1) { return; }
         if (item.checkout.length > item.num) { return; }
@@ -449,7 +461,6 @@ alert("about to borrow: " + item.available + " -- " + item.num + " -- " + item.c
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
         item.available--;
         this.save();
-alert("LOAD TRANSACTION BY SIG");
         this.app.storage.loadTransactions({ sig : sig }, mycallback);
       }
     }
