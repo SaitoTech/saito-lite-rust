@@ -1380,7 +1380,7 @@ class Arcade extends ModTemplate {
   }
 
   ///////////////////////////////
-  // LOADING AND RUNNING GAMES //
+  // "LOAD"ING AND RUNNING GAMES //
   ///////////////////////////////
 
   //
@@ -1904,6 +1904,12 @@ class Arcade extends ModTemplate {
     }
 
     console.log(`${game_mod.name}_${game_mod.game.id} from ${game_mod.game.originator}`);
+
+    ////////////////////////////////////////////////////
+    // TODO -- change this to restore observer mode
+    ////////////////////////////////////////////////////
+
+    //{ field1 : txmsg.module+"_"+txmsg.game_id }
 
     let sql = `SELECT * FROM txs WHERE type = '${game_mod.name}_${game_mod.game.id}' AND publickey = '${game_mod.game.originator}' ORDER BY id ASC`;
     this.sendPeerDatabaseRequestWithFilter("Archive", sql, (res) => {
