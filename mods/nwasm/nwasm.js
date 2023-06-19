@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 const saito = require("./../../lib/saito/saito");
 const GameTemplate = require("./../../lib/templates/gametemplate");
+=======
+const saito = require('./../../lib/saito/saito');
+const OnePlayerGameTemplate = require('../../lib/templates/oneplayergametemplate');
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 const NwasmGameOptionsTemplate = require("./lib/nwasm-game-options.template");
 const UploadRom = require("./lib/upload-rom");
 const ControlsOverlay = require("./lib/controls");
@@ -12,7 +17,12 @@ const xorInplace = require("buffer-xor/inplace");
 // ROMS -- saved as 'Nwams' modules
 // SAVEGAMES --- saved as 'NwasmGAMESIG' (hash of title)
 //
+<<<<<<< HEAD
 class Nwasm extends GameTemplate {
+=======
+class Nwasm extends OnePlayerGameTemplate {
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
   constructor(app) {
     super(app);
 
@@ -24,11 +34,15 @@ class Nwasm extends GameTemplate {
       "The Saito Nintendo 64 emulator provides a user-friendly in-browser N64 emulator that allows players to archive and play the N64 games you own directly in your browser. Game files are encrypted so only you can access them and archived in your private transaction store.";
     this.categories = "Games Videogame Classic";
 
+<<<<<<< HEAD
     this.maxPlayers = 1;
     this.minPlayers = 1;
     this.winnable = 0;
 
     this.uploader = null;
+=======
+    this.uploader        = null;
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
     this.library_ui = new NwasmLibrary(this.app, this);
 
@@ -112,13 +126,22 @@ class Nwasm extends GameTemplate {
     this.library_ui.render();
   }
 
+<<<<<<< HEAD
   async initializeHTML(app) {
+=======
+  render(app) {
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     let game_mod = this;
     if (!this.browser_active) {
       return;
     }
 
+<<<<<<< HEAD
     await super.initializeHTML(app);
+=======
+    super.render(app);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
     //
     // ADD MENU
@@ -303,7 +326,7 @@ class Nwasm extends GameTemplate {
     this.hideLibrary();
   }
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
     return NwasmGameOptionsTemplate(this.app, this);
   }
 

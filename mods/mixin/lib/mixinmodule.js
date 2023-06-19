@@ -5,11 +5,21 @@
  Extends the generic web3 crypto module to add auto-support for cryptos that are
  supported by the Mixin module.
 
+<<<<<<< HEAD
  returnAddress()
  returnPrivateKey()
  async returnBalance(address = "")
  async sendPayment(amount="", recipient="", unique_hash="")
  async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
+=======
+   returnAddress()
+   returnPrivateKey()
+   returnHistory(mycallback, order="DESC", limit=20);
+   async returnBalance(address = "")
+   async sendPayment(amount="", recipient="", unique_hash="")
+   async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
+   returnHistory(page=1, records=20, callback())
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
 
  TODO:
@@ -21,9 +31,16 @@
 
 
 
+<<<<<<< HEAD
  **********************************************************************************/
 const CryptoModule = require("./../../../lib/templates/cryptomodule");
 const getUuid = require("uuid-by-string");
+=======
+**********************************************************************************/
+const CryptoModule = require('./../../../lib/templates/cryptomodule');
+
+const getUuid = require('uuid-by-string');
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
 class MixinModule extends CryptoModule {
 
@@ -125,6 +142,7 @@ class MixinModule extends CryptoModule {
     return 0;
   }
 
+<<<<<<< HEAD
 }
 
 
@@ -133,20 +151,22 @@ MixinModule.prototype.renderModalSelectCrypto = function(app, mod, cryptomod) {
     <div class="mixin_crypto_overlay" id="mixin_crypto_overlay">
 
       <div class="mixin_crypto_title">Heads up!</div>
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
-      <div class="mixin_crypto_warning">
-      Third party cryptocurrency support is in active development. Please take precautions such
-       as only using a small amount of funds and avoiding sharing sensitive information. 
-       Check for updates regularly and report any suspicious activity. 
-       <br >
-       Thank you for helping us improve the experience.
-      </div>
+  returnHistory(records, callback) {
+    this.mixin.fetchSnapshots(this.asset_id, records, callback);
+  }  
 
-      <button class="mixin_risk_acknowledge button">i understand</button>
 
+<<<<<<< HEAD
     </div>
   `;
 };
+=======
+}
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
 
 MixinModule.prototype.attachEventsModalSelectCrypto = function(app, mod, cryptomod) {

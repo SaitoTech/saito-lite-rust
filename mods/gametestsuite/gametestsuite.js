@@ -80,14 +80,23 @@ class GameTestSuite extends GameTemplate {
   //
   // initialize HTML and UI components
   //
+<<<<<<< HEAD
   async initializeHTML(app) {
     //Game initialization begins from the Arcade.
+=======
+  render(app) {
+    //Game initialization begins from the Arcade. 
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     //So, it is best to prevent any HTML/DOM manipulation until in the right page
     if (!this.browser_active) {
       return;
     }
 
+<<<<<<< HEAD
     await super.initializeHTML(app);
+=======
+    super.render(app);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
     //Put functionality into the menu
 
@@ -404,8 +413,14 @@ class GameTestSuite extends GameTemplate {
   // ( advanced options on Arcade start )
   //
   // used here to allow users to select in-game web3 crypto
+<<<<<<< HEAD
   //
   returnGameOptionsHTML() {
+=======
+  // 
+  returnAdvancedOptions() {
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     let options_html = `
       <h1 class="overlay-title">Select a Web3 Crypto:</h1>
       <div class="overlay-input">
@@ -513,7 +528,7 @@ class GameTestSuite extends GameTemplate {
   // MODULE SPECIFIC FUNCTION //
   //////////////////////////////
   //
-  // this is a non-standard function that we called in initializeHTML() to handle
+  // this is a non-standard function that we called in render() to handle
   // all of the DOM events. It is not part of the game engine and is included here
   // merely to isolate the code away from the core components so that the logic of
   // game creation is cleaner and easier to see.

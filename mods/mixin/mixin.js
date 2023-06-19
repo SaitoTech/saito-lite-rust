@@ -10,10 +10,17 @@ const axios = require("axios");
 const { sharedKey: sharedKey } = require("curve25519-js");
 const LittleEndian = require("int64-buffer");
 const JSON = require("json-bigint");
+<<<<<<< HEAD
 const MixinAppspaceSidebar = require("./lib/appspace-sidebar/main");
 const Deposit = require("./../../lib/saito/ui/saito-crypto/overlays/deposit");
 const Withdraw = require("./../../lib/saito/ui/saito-crypto/overlays/withdraw.js");
 const History = require("./../../lib/saito/ui/saito-crypto/overlays/history");
+=======
+const MixinAppspaceSidebar = require('./lib/appspace-sidebar/main');
+//const Deposit = require('./../../lib/saito/ui/saito-crypto/overlays/deposit');
+//const Withdraw = require('./../../lib/saito/ui/saito-crypto/overlays/withdraw.js');
+//const History = require('./../../lib/saito/ui/saito-crypto/overlays/history');
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
 class Mixin extends ModTemplate {
   constructor(app) {
@@ -62,10 +69,16 @@ class Mixin extends ModTemplate {
     if (qs == ".saito-header") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
+<<<<<<< HEAD
         this.renderIntos[qs].push(new Deposit(this.app, this));
         this.renderIntos[qs].push(new Withdraw(this.app, this));
         this.renderIntos[qs].push(new History(this.app, this));
 
+=======
+        //this.renderIntos[qs].push(new Deposit(this.app, this));
+        //this.renderIntos[qs].push(new Withdraw(this.app, this));
+        //this.renderIntos[qs].push(new History(this.app, this));
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         this.attachStyleSheets();
       }
     }
@@ -275,12 +288,20 @@ class Mixin extends ModTemplate {
     }
   }
 
+<<<<<<< HEAD
   fetchSnapshots(asset_id = "", order = "DESC", limit = 20, callback = null) {
+=======
+
+  fetchSnapshots(asset_id="", records, callback) {
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     let appId = this.mixin.user_id;
     let sessionId = this.mixin.session_id;
     let privateKey = this.mixin.privatekey;
+    let history_data = [];
 
     let method = "GET";
+<<<<<<< HEAD
     let uri = `/snapshots?limit=${limit}&order=${order}`;
     if (asset_id !== "") {
       url += `&asset=${asset_id}`;
@@ -311,6 +332,30 @@ class Mixin extends ModTemplate {
            "opponent_id":"a465ffdb-4441-4cb9-8b45-00cf79dfbc46",
            "data":       "Transfer!"
            *******************************************/
+=======
+    let uri = `/snapshots?limit=${records}`;
+    if (asset_id !== "") { uri += `&asset=${asset_id}`; }
+
+    try {
+      this.request(appId, sessionId, privateKey, method, uri).then(
+        (res) => {
+            let d = res.data;
+
+            for (let i = 0; i < d.data.length; i++) {
+              let row = d.data[i];
+              let obj = {};
+
+              obj.created_at = row.created_at;
+              obj.amount = row.amount;
+              obj.type = (row.closing_balance > row.opening_balance) ? 'Deposit' : 'Withdrawal';
+              
+              history_data.push(obj);
+            }
+
+            if (callback) { 
+              callback(history_data); 
+            }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         }
         if (callback) {
           callback(res.data);

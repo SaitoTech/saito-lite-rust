@@ -53,7 +53,17 @@ class Thirteen extends GameTemplate {
       return;
     }
 
+<<<<<<< HEAD
     await super.initializeHTML(app);
+=======
+
+  
+  render(app) {
+
+    if (this.browser_active == 0) { return; }
+
+    super.render(app);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
     this.log.render();
 
@@ -3528,6 +3538,7 @@ class Thirteen extends GameTemplate {
       },
     };
 
+<<<<<<< HEAD
     deck["s15b"] = {
       img: "Strategy Card 15b.png",
       name: "Excomm",
@@ -3563,6 +3574,310 @@ class Thirteen extends GameTemplate {
             options.push(i);
           }
         }
+=======
+ },
+}
+deck['s23b']            = { 
+	img : "Strategy Card 23b.png" , 
+	name : "Quarantine",
+	text : "Place up to 2 Influence cubes on the Atlantic battleground",
+	side : "us",
+	tokens : 1 ,
+	defcon : 0 ,
+	event : function(player) {
+   thirteen_self.updateStatusWithOptions("Place up to 2 Influence on the Atlantic battleground:",`<ul><li class="card nocard" id="done">finish</li></ul>`);
+   thirteen_self.eventAddInfluence(player, player, ['atlantic'], 2, 2, 0); 
+
+ },
+}
+deck['s24b']            = { 
+	img : "Strategy Card 24b.png" , 
+	name : "U-2 Photographs",
+	text : "Command 3 Influence cubes on to one military battleground",
+	side : "us",
+	tokens : 1 ,
+	defcon : 1 ,
+	event : function(player) {
+    //FIX THIS <<<<<<
+   thirteen_self.eventAddInfluence(player, player, ['cuba_mil','berlin','atlantic'], 100, 3, 1); 
+
+ },
+}
+deck['s25b']            = { 
+	img : "Strategy Card 25b.png" , 
+	name : "Wave and Smile",
+	text : "Remove up to 2 US Influence cubes in total from one or more battlerounds. Place them on other battlegrounds",
+	side : "us",
+	tokens : 2 ,
+	defcon : 0 ,
+	event : function(player) {
+
+   thirteen_self.updateStatusWithOptions('Remove up to 2 US influence cubes in total from one or more battlegrounds. Place them on other battlegrounds:', `<ul><li class="card nocard" id="done">finish</li></ul>`);
+   thirteen_self.eventRemoveInfluence(player, player, thirteen_self.all_battlegrounds, 2, 2, 0, function(arg) {
+      thirteen_self.updateStatusWithOptions(`Now place the ${arg} influence on other battlegrounds:`, `<ul><li class="card nocard" id="done">finish</li></ul>`);
+     thirteen_self.eventAddInfluence(player, player, thirteen_self.all_battlegrounds, arg, arg, 0);
+   });
+ },
+}
+deck['s26b']            = { 
+	img : "Strategy Card 26b.png" , 
+	name : "Eyeball to Eyeball",
+	text : "If US is more escalated than USSR on the military DEFCON track, place up to 3 Influence cubes in total on one or both Cuba battlegrounds",
+	side : "us",
+	tokens : 1 ,
+	defcon : 1 ,
+	event : function(player) {
+
+   if (thirteen_self.game.state.defcon1_us > thirteen_self.game.state.defcon1_ussr) {
+     let options = thirteen_self.app.crypto.stringToBase64(JSON.stringify(['cuba_mil', 'cuba_pol']));
+     thirteen_self.addMove("event_add_influence\t2\t2\t"+options+"\t3\t3\t1");
+   } else {
+     thirteen_self.addMove("notify\tUS is not higher than USSR on military defcon track. Skipping event");
+   }
+   thirteen_self.endTurn();
+
+ },
+}
+deck['s27b']            = { 
+	img : "Strategy Card 27b.png" , 
+	name : "MRBMs & IRBMs",
+	text : "Escalate/deflate the USSR military DEFCON track by up to 2 steps. Then Command 1 Influence cube",
+	side : "ussr",
+	tokens : 3 ,
+	defcon : 1 ,
+	event : function(player) {
+
+    thirteen_self.eventShiftDefcon(1, 1, [1], 2, "both", function(args) {
+      thirteen_self.playerPlaceCommandTokens(1, 1);
+    });
+ },
+}
+deck['s28b']            = { 
+
+	img : "Strategy Card 28b.png" , 
+	name : "Moscow is our Brain",
+	text : "Place up to 4 Influence dubes in total on battlegrounds where the USSR player currently has Influence cubes. Max 2 per battleground",
+	side : "ussr",
+	tokens : 3 ,
+	defcon : 1 ,
+	event : function(player) {
+
+   thirteen_self.updateStatusWithOptions("Place up to 4 Influence cubes in total on battlegrounds where the USSR player currently has Influence cubes. Max 2 per battleground: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+   let options = [];
+
+   for (var i in thirteen_self.game.arenas) {
+     if (thirteen_self.game.arenas[i].ussr > 0) {
+       options.push(i);
+     }
+   }
+   thirteen_self.eventAddInfluence(1, 1, options, 4, 2, 1);
+ },
+}
+deck['s29b']            = { 
+	img : "Strategy Card 29b.png" , 
+	name : "Missile Trade",
+	text : "Remove up to 3 USSR Influence cubes in total from one or more battlegrounds",
+	side : "ussr",
+	tokens : 3 ,
+	defcon : 1 ,
+	event : function(player) {
+   thirteen_self.updateStatusWithOptions("Remove up to 3 USSR Influence cubes in total from one or more battlegrounds: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+   thirteen_self.eventRemoveInfluence(player, 1, thirteen_self.all_battlegrounds, 3, 3, 1);
+ },
+}
+deck['s30b']            = { 
+	img : "Strategy Card 30b.png" , 
+	name : "Fidel Castro",
+	text : "Place up to 3 Influence cubes in total on one or both Cuba battlegrounds",
+	side : "ussr",
+	tokens : 3 ,
+	defcon : 0 ,
+	event : function(player) {
+   thirteen_self.updateStatusWithOptions("Place up to 3 USSR Influence cubes in total on one or both Cuba battlegrounds: ", `<ul><li class="card nocard" id="done">finish</li></ul>`); 
+   thirteen_self.eventAddInfluence(player, player, ['cuba_mil','cuba_pol'], 3, 3, 0); 
+ },
+}
+deck['s31b']            = { 
+	img : "Strategy Card 31b.png" , 
+	name : "Berlin Blockade",
+	text : "USSR gains 2 Prestige. Then US player may escalate/deflate a USSR DEFCON track by up to 2 steps",
+	side : "ussr",
+	tokens : 2 ,
+	defcon : 0 ,
+	event : function(player) {
+
+   let options = thirteen_self.app.crypto.stringToBase64(JSON.stringify([1,2,3]));
+   thirteen_self.addMove("event_shift_defcon\t2\t1\t" + options + "\t2");
+   thirteen_self.addMove("prestige\t1\t2");
+   thirteen_self.addMove("notify\tUSSR gains 2 prestige");
+   thirteen_self.endTurn();
+
+ },
+}
+deck['s32b']            = { 
+	img : "Strategy Card 32b.png" , 
+	name : "Suez-Hungary",
+	text : "Keep placing 1 USSR Influence cube on the Italy battleground until the USSR runs out, reaches 5, or has one more Influence cube there than the US player",
+	side : "ussr",
+	tokens : 2 ,
+	defcon : 0 ,
+	event : function(player) {
+
+   let total_needed = Math.min(thirteen_self.game.arenas['italy'].us + 1, 5);
+
+   let total_to_add = total_needed - thirteen_self.game.arenas['italy'].ussr;
+   if (thirteen_self.game.state.influence_on_board_ussr + total_to_add > 17){
+      total_to_add = 17 - thirteen_self.game.state.influence_on_board_ussr; 
+   }
+
+   if (total_to_add > 0) {
+     thirteen_self.addMove("add_influence\t1\titaly\t"+total_to_add + "\t" + "-1");
+     thirteen_self.addMove("notify\tUSSR adds "+total_to_add+" in Italy");
+   }
+
+   thirteen_self.endTurn();
+ },
+}
+deck['s33b']            = { 
+	img : "Strategy Card 33b.png" , 
+	name : "Maskirovka",
+	text : "If USSR military DEFCON track is in the DEFCON 3 area, place up to 1 Influence cube on all military battlegrounds",
+	side : "ussr",
+	tokens : 2 ,
+	defcon : 0 ,
+	event : function(player) {
+
+   let options = thirteen_self.app.crypto.stringToBase64(JSON.stringify(['cuba_mil', 'atlantic', 'berlin']));
+
+   if (thirteen_self.game.state.defcon1_ussr < 4) {
+     thirteen_self.addMove("event_add_influence\t1\t1\t"+options+"\t3\t1\t0");
+     thirteen_self.addMove("notify\tUSSR places influence in military battlegrounds");
+   } else {
+     thirteen_self.addMove("notify\tUSSR military defcon track is higher than 3.");
+   }
+   thirteen_self.endTurn();
+ },
+}
+deck['s34b']            = { 
+	img : "Strategy Card 34b.png" , 
+	name : "Bay of Pigs",
+	text : "Play on opponent. They EITHER remove 2 Influence cubes from the Alliances battleground OR they can't play Events to deflate their DEFCON tracks for this round",
+	side : "ussr",
+	tokens : 2 ,
+	defcon : 0 ,
+	event : function(player) {
+    thirteen_self.addMove("bayofpigs\t"+player);
+    thirteen_self.endTurn();
+ },
+}
+deck['s35b']            = { 
+	img : "Strategy Card 35b.png" , 
+	name : "Turn Back the Ships",
+	text : "Deflate the most escalated USSR DEFCON track by up to 2 steps (if tied, pick one)",
+	side : "ussr",
+	tokens : 1 ,
+	defcon : 0 ,
+	event : function(player) {
+
+   let max_defcon = 0;
+   let options    = [];
+
+   if (thirteen_self.game.state.defcon1_ussr > max_defcon) { max_defcon = thirteen_self.game.state.defcon1_ussr; }
+   if (thirteen_self.game.state.defcon2_ussr > max_defcon) { max_defcon = thirteen_self.game.state.defcon2_ussr; }
+   if (thirteen_self.game.state.defcon3_ussr > max_defcon) { max_defcon = thirteen_self.game.state.defcon3_ussr; }
+   if (thirteen_self.game.state.defcon1_ussr >= max_defcon) { options.push(1); }
+   if (thirteen_self.game.state.defcon2_ussr >= max_defcon) { options.push(2); }
+   if (thirteen_self.game.state.defcon3_ussr >= max_defcon) { options.push(3); }
+
+   thirteen_self.eventShiftDefcon(player, player, options, 2, "decrease"); 
+ },
+}
+deck['s36b']            = { 
+	img : "Strategy Card 36b.png" , 
+	name : "Strategic Balance",
+	text : "Place up to 3 Influence cubes on the Atlantic battleground",
+	side : "ussr",
+	tokens : 1 ,
+	defcon : 1 ,
+	event : function(player) {
+   thirteen_self.updateStatusWithOptions("Place up to 3 Influence on the Atlantic battleground: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+   thirteen_self.eventAddInfluence(player, player, ['atlantic'], 3, 3, 1); 
+
+ },
+}
+deck['s37b']            = { 
+	img : "Strategy Card 37b.png" , 
+	name : "National Liberation",
+	text : "Command 3 Influence cubes on to one political battleground",
+	side : "ussr",
+	tokens : 1 ,
+	defcon : 1 ,
+	event : function(player) {
+   thirteen_self.updateStatusWithOptions("Command 3 Influence cubes on to one political battleground: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+   thirteen_self.eventAddInfluence(player, player, ['cuba_pol','italy','turkey'], 100, 3, 1); 
+ },
+}
+deck['s38b']            = { 
+	img : "Strategy Card 38b.png" , 
+	name : "U-2 Downed",
+	text : "Place up to 2 Influence cubes on the Turkey battleground. Remove half the US Influence cubes from one Cuba battleground (rounded up)",
+	side : "ussr",
+	tokens : 2 ,
+	defcon : 0 ,
+	event : function(player) {
+   thirteen_self.updateStatusWithOptions("Add up to 2 influence cubes in Turkey: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+   thirteen_self.eventAddInfluence(player, player, ['turkey'], 2, 2, 0, function(args) {
+     thirteen_self.updateStatusWithOptions("Now, click remove half of US influence from one Cuban battleground: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+     thirteen_self.eventRemoveInfluence(player, 2, ['cuba_pol', 'cuba_mil'], 101, 2, 0); 
+   }); 
+ },
+}
+deck['s39b']            = { 
+	img : "Strategy Card 39b.png" , 
+	name : "Defensive Missiles",
+	text : "Place up to 2 Influence cubes in total on the Television and United Nations battlegrounds",
+	side : "ussr",
+	tokens : 1 ,
+	defcon : 1 ,
+	event : function(player) {
+   thirteen_self.updateStatusWithOptions("Place up to 2 Influence cubes in total on the Television and United Nations battlegrounds: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+   thirteen_self.eventAddInfluence(player, player, ['un','television'], 2, 2, 1); 
+ },
+}
+
+return deck;
+
+}
+
+
+
+
+
+
+returnGameRulesHTML(){
+  return ThirteenGameRulesTemplate(this.app, this);
+}
+
+returnAdvancedOptions() {
+  return ThirteenGameOptionsTemplate(this.app, this);
+}
+
+returnUnplayedCards() {
+
+  var unplayed = {};
+  for (let i in this.game.deck[1].cards) {
+    unplayed[i] = this.game.deck[1].cards[i];
+  }
+  for (let i in this.game.deck[1].discards) {
+    delete unplayed[i];
+  }
+  for (let i in this.game.deck[1].removed) {
+    delete unplayed[i];
+  }
+  for (let i = 0; i < this.game.deck[1].hand.length; i++) {
+    delete unplayed[this.game.deck[1].hand[i]];
+  }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
         if (options.length == 0) {
           thirteen_self.addMove(
@@ -3703,6 +4018,7 @@ class Thirteen extends GameTemplate {
       },
     };
 
+<<<<<<< HEAD
     deck["s22b"] = {
       img: "Strategy Card 22b.png",
       name: "Invasion of Cuba",
@@ -3907,6 +4223,16 @@ class Thirteen extends GameTemplate {
           thirteen_self.addMove("add_influence\t1\titaly\t" + total_to_add + "\t" + "-1");
           thirteen_self.addMove("notify\tUSSR adds " + total_to_add + " in Italy");
         }
+=======
+  formatStatusHeader(status_header, include_back_button = false) {
+    return `
+    <div class="status-header">
+      ${include_back_button ? this.back_button_html : ""}
+      <span id="status-content">${status_header}</span>
+    </div>
+    `;
+  }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
         thirteen_self.endTurn();
       },

@@ -3,6 +3,7 @@ const JSON = require("json-bigint");
 const PokerGameRulesTemplate = require("./lib/poker-game-rules.template");
 const PokerGameOptionsTemplate = require("./lib/poker-game-options.template");
 
+
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
@@ -111,12 +112,18 @@ class Poker extends GameTableTemplate {
   formatWager(x, includeTicker = true) {
     let numChips = x.toString();
     if (includeTicker) {
+      let chips = "CHIPS";
       if (numChips === "1" || this.stf(numChips) == 1) {
+<<<<<<< HEAD
         if (this.game.crypto === "CHIPS") {
           chips = "CHIP";
         }
+=======
+	if (this.game.crypto === "CHIPS") { chips = "CHIP"; }
+        else { chips = this.game.crypto; }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       }
-      return `${this.app.crypto.convertStringToDecimalPrecision(numChips)} ${this.game.crypto}`;
+      return `${this.app.crypto.convertStringToDecimalPrecision(numChips)} ${chips}`;
     } else {
       return `${this.app.crypto.convertStringToDecimalPrecision(numChips)}`;
     }
@@ -130,13 +137,23 @@ class Poker extends GameTableTemplate {
       return;
     }
 
+<<<<<<< HEAD
     await super.initializeHTML(app);
+=======
+
+
+  render(app) {
+
+    if (!this.browser_active) { return; }
+    if (this.initialize_game_run) { return; }
+
+    super.render(app);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
     //
     // ADD MENU
     //
     this.menu.addMenuOption("game-game", "Game");
-
     this.menu.addSubMenuOption("game-game", {
       text: "How to Play",
       id: "game-rules",
@@ -164,6 +181,7 @@ class Poker extends GameTableTemplate {
         game_mod.log.toggleLog();
       },
     });
+<<<<<<< HEAD
     //
     // this is almost unmodified code from the /lib/template/gametabletemplate.js file that
     // provides a way to exit an ongoing game. it removes the player from the deal flow but
@@ -186,12 +204,17 @@ class Poker extends GameTableTemplate {
         game_mod.sendMetaMessage("LEAVE");
       },
     });
+=======
+
+/****
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     this.menu.addSubMenuOption("game-game", {
       text: "Exit",
       id: "game-exit",
       class: "game-exit",
       callback: async function (app, game_mod) {
         game_mod.menu.hideSubMenus();
+<<<<<<< HEAD
         let c = confirm("Exit the Game?");
         if (c) {
           if (game_mod.game.state.passed[game_mod.game.player] != 1) {
@@ -230,6 +253,35 @@ class Poker extends GameTableTemplate {
           if (!document.querySelector(".crypto_logo")) {
             $(".gameboard").append(
               app.browser.htmlToElement(`
+=======
+        //let c = confirm("Forfeit the Game?");
+        //if (c) {
+	  //if (game_mod.game.state.passed[game_mod.game.player] != 1) {
+	  //  game_mod.addMove("fold\t" + game_mod.game.player);
+	  //  game_mod.endTurn();
+          //  game_mod.willleave = true;
+          //  game_mod.sendMetaMessage("LEAVE");
+	  //}
+	  window.location = "/arcade";
+        //}
+      },
+    });
+****/
+
+    this.menu.addChatMenu();
+    this.menu.render();
+
+    this.log.render();
+
+    this.playerbox.mode = 2; // poker/cards
+    this.playerbox.render();
+
+    if (this.game?.options?.crypto){
+      if (this.game.options.crypto == "TRX"){
+        try{
+          if (!document.querySelector(".crypto_logo")){
+            $(".gameboard").append(app.browser.htmlToElement(`
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
             <div class="crypto_logo">
             <?xml version="1.0" encoding="utf-8"?>
             <svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -267,7 +319,13 @@ class Poker extends GameTableTemplate {
           `)
             );
           }
+<<<<<<< HEAD
         } catch (err) {}
+=======
+        } catch(err){
+
+        }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       }
     }
 
@@ -324,7 +382,18 @@ class Poker extends GameTableTemplate {
     //
     // and redisplay board
     //
+<<<<<<< HEAD
     await this.displayBoard();
+=======
+    for (let i = 1; i <= this.game.players; i++) {
+      this.playerbox.updateGraphics("", i);
+    }
+
+    this.displayBoard();
+
+    super.initializeGameStake(crypto, stake);
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
   }
 
   async initializeGame() {
@@ -366,6 +435,7 @@ class Poker extends GameTableTemplate {
   //
   // returns "true" or "false" based on need to settle
   //
+<<<<<<< HEAD
   needToSettleDebt() {
     console.log("NTSD: 1");
 
@@ -375,6 +445,11 @@ class Poker extends GameTableTemplate {
     console.log("NTSD: 2");
 
     if (this.toLeave.length > 0) {
+=======
+  needToSettleDebt(){
+    if (!this.game.crypto || this.settleNow) { return false; }
+    if (this.toLeave.length > 0){
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       return true;
     }
     for (let i = 0; i < this.game.state.player_credit.length; i++) {
@@ -382,14 +457,18 @@ class Poker extends GameTableTemplate {
         return true;
       }
     }
+<<<<<<< HEAD
     console.log("NTSD: 3");
 
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     return false;
   }
 
   //
   // adds settlement instructions to queue for processing
   //
+<<<<<<< HEAD
   settleDebt() {
     console.log("SETTLE: " + JSON.stringify(this.game.state.debt));
 
@@ -412,6 +491,17 @@ class Poker extends GameTableTemplate {
                 this.game.state.debt[j],
                 this.fts(amount_to_send)
               );
+=======
+  settleDebt(){
+    for (let i = 0; i < this.game.state.debt.length; i++){
+      if (this.game.state.debt[i] > 0){
+        for (let j = 0; j < this.game.state.debt.length; j++){
+          if (this.game.state.debt[j] < 0){
+            let amount_to_send = Math.min(this.stf(this.game.state.debt[j]),this.stf(this.game.state.debt[i]));
+            if (amount_to_send > 0){
+              this.game.state.debt[i] = this.subtractFromString(this.game.state.debt[i], this.fts(amount_to_send));
+              this.game.state.debt[j] = this.addToString(this.game.state.debt[j], this.fts(amount_to_send));
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
               let ts = new Date().getTime();
               this.rollDice();
               let uh = this.game.dice;
@@ -438,23 +528,32 @@ class Poker extends GameTableTemplate {
     any players got removed, there will be some issues....
     */
     let msg = "Clearing the table";
+<<<<<<< HEAD
     this.game.queue.push("newround");
     //Have to do twice because want to add players before checking for end of game condition,
     //but if too many players want to join they may want to take the seat of an eliminated player
     this.game.queue.push("PLAYERS");
     this.game.queue.push("checkplayers");
     this.game.queue.push("PLAYERS");
+=======
+    this.game.queue.push("newround");   
+
+    this.game.queue.push("PLAYERS");
+    this.game.queue.push("checkplayers");     
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
     if (this.needToSettleDebt()) {
       this.settleDebt();
     }
 
+<<<<<<< HEAD
     console.log("CRYPTO: " + this.game.crypto);
     console.log("SETTLE? " + this.settleNow);
 
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     if (this.game.crypto != "" && this.game.crypto != "CHIPS" && this.settleNow == true) {
       msg += " and settling bets...";
-
       for (let i = 0; i < this.settlement.length; i++) {
         this.game.queue.push(this.settlement[i]);
       }
@@ -463,10 +562,16 @@ class Poker extends GameTableTemplate {
     }
 
     this.cardfan.hide();
+<<<<<<< HEAD
 
     await this.updateStatus(msg);
 
     this.settlement = [];
+=======
+    this.updateStatus(msg);
+    this.settlement = [];
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
   }
 
   startRound() {
@@ -480,6 +585,7 @@ class Poker extends GameTableTemplate {
         } (${this.formatWager(this.game.state.player_credit[i], true)})`
       );
     }
+<<<<<<< HEAD
 
     try {
       if (this.browser_active) {
@@ -488,21 +594,36 @@ class Poker extends GameTableTemplate {
       }
     } catch (err) {}
 
+=======
+ 
+    for (let i = 1; i <= this.game.players.length; i++) {
+      this.playerbox.updateGraphics("", i);
+    }
+ 
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     this.initializeQueue();
   }
 
+<<<<<<< HEAD
   /*
  Called by initializeGame
  */
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
   initializeQueue() {
     this.game.queue = [];
 
     this.game.queue.push("ante");
     this.game.queue.push("READY");
+<<<<<<< HEAD
     this.game.queue.push("POOL\t1"); // CREATE or RESET pool for cards on table
 
     //Deal two cards to everyone
     this.game.queue.push(`SIMPLEDEAL\t2\t1\t` + JSON.stringify(this.returnDeck()));
+=======
+    this.game.queue.push("POOL\t1");
+    this.game.queue.push(`SIMPLEDEAL\t2\t1\t`+ JSON.stringify(this.returnDeck()));
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
   }
 
   async handleGameLoop() {
@@ -518,23 +639,35 @@ class Poker extends GameTableTemplate {
         this.updatePot(); //to update pot
       }
 
-      console.log("QUEUE: " + JSON.stringify(this.game.queue));
-      //this.outputState();
-
       if (mv[0] === "winner") {
         await this.displayPlayers(true); //to update chips before game_over
         this.game.queue = [];
         this.game.crypto = null;
         this.settleDebt();
+<<<<<<< HEAD
         await this.endGame(this.game.players[parseInt(mv[1])], "elimination");
         return 0;
       }
 
       if (mv[0] === "newround") {
+=======
+        this.endGame(this.game.players[parseInt(mv[1])], "elimination"); 
+        return 0;
+      }
+
+      if (mv[0] === "newround"){
+
+        //
+        // clear displayed cards...
+        //
+        for (let i = 1; i <= this.game.players; i++) {
+          this.playerbox.updateGraphics("", i);
+        }
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         this.game.state.round++;
 
         //Shift dealer, small blind, and big blind
-
         this.game.state.button_player--; //dealer
         if (this.game.state.button_player < 1) {
           this.game.state.button_player = this.game.players.length;
@@ -614,7 +747,7 @@ class Poker extends GameTableTemplate {
         }
 
         //Catch that only one player is standing at the start of the new round
-        if (alive_players == 1) {
+        if (alive_players + this.toJoin.length == 1) {
           this.game.queue = [];
           this.game.queue.push("winner\t" + winner);
           return 1;
@@ -658,7 +791,11 @@ class Poker extends GameTableTemplate {
           //Reload game to rebuild the html
           setTimeout(async () => {
             this.initialize_game_run = 0;
+<<<<<<< HEAD
             await this.initializeGameFeeder(this.game.id);
+=======
+            this.initializeGameQueue(this.game.id);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
           }, 1000);
           return 0;
         }
@@ -677,7 +814,10 @@ class Poker extends GameTableTemplate {
         //
         let active_players = 0;
         let player_left_idx = 0;
+<<<<<<< HEAD
         console.log("passed array: " + JSON.stringify(this.game.state.passed));
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         for (let i = 0; i < this.game.state.passed.length; i++) {
           if (this.game.state.passed[i] == 0) {
             active_players++;
@@ -685,9 +825,12 @@ class Poker extends GameTableTemplate {
           }
         }
 
+<<<<<<< HEAD
         console.log("players total: " + this.game.players.length);
         console.log("active players: " + active_players);
 
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         /***********************/
         /*PLAYER WINS HAND HERE*/
         /***********************/
@@ -747,24 +890,36 @@ class Poker extends GameTableTemplate {
           }
 
           // if everyone has folded - start a new round
+<<<<<<< HEAD
           console.log("everyone has folded... start next round");
           await this.settleLastRound();
           await this.clearTable();
           this.game.queue.push(
             `ROUNDOVER\t${JSON.stringify([this.game.players[player_left_idx]])}`
           );
+=======
+          this.settleLastRound();
+          this.clearTable();
+          this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.game.players[player_left_idx]])}\tfold`);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
           return 1;
         }
         this.game.state.plays_since_last_raise++;
+<<<<<<< HEAD
         console.log("PLAYS SINCE LAST RAISE: " + this.game.state.plays_since_last_raise);
 
+=======
+        
+	//
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         // Is this the end of betting?
+	//
         if (this.game.state.plays_since_last_raise > this.game.players.length) {
           //Is this the end of the hand?
           if (this.game.state.flipped == 5) {
-            console.log("GO TO SHOWDOWN");
-            $(".player-box.active").removeClass("active");
+
+	    this.playerbox.setInactive();
 
             this.game.queue = [];
             let first_scorer = 0;
@@ -785,8 +940,12 @@ class Poker extends GameTableTemplate {
             }
             return 0;
           } else {
+<<<<<<< HEAD
             console.log("REVEAL MORE CARD[S]");
             let cards_to_flip = this.game.state.flipped == 0 ? 3 : 1;
+=======
+            let cards_to_flip =  (this.game.state.flipped == 0)? 3: 1;
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
             this.game.state.flipped += cards_to_flip;
 
@@ -800,35 +959,52 @@ class Poker extends GameTableTemplate {
         }
 
         if (this.game.state.passed[player_to_go - 1] == 1) {
-          console.log("THIS PLAYER ALREADY PASSED " + player_to_go);
           //
           // we auto-clear without need for player to broadcast
           //
           this.game.queue.splice(qe, 1);
           return 1;
+<<<<<<< HEAD
         } else if (this.stf(this.game.state.player_credit[player_to_go - 1]) == 0) {
           console.log("THIS PLAYER IS ALL IN " + player_to_go);
+=======
+        } else if (this.stf(this.game.state.player_credit[player_to_go - 1]) == 0){
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
           //
           // we auto-clear without need for player to broadcast
           //
           this.game.queue.splice(qe, 1);
           return 1;
+<<<<<<< HEAD
         } else {
           console.log("GET ACTION " + player_to_go);
           if (this.browser_active) {
             $(".player-box.active").removeClass("active");
             await this.playerbox.addClass("active", player_to_go);
           }
+=======
+        }else{
+
+	  this.playerbox.setActive(player_to_go);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
           if (player_to_go == this.game.player) {
             await this.playerTurn();
           } else {
+<<<<<<< HEAD
             if (this.game.state.passed[this.game.player - 1]) {
               await this.updateStatus("Waiting for next round");
             } else {
               await this.updateStatus(
                 "Waiting for " + this.game.state.player_names[player_to_go - 1]
               );
+=======
+	    this.refreshPlayerLog(`<div class="plog-update">active player</div>`, player_to_go);          
+            if (this.game.state.passed[this.game.player-1]){
+              this.updateStatus("waiting for next round");
+            } else {
+              this.updateStatus("waiting for " + this.game.state.player_names[player_to_go - 1]);  
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
             }
           }
           return 0;
@@ -894,11 +1070,16 @@ class Poker extends GameTableTemplate {
 
         let playercards = `
           <div class="other-player-hand hand tinyhand">
-            <img class="card" src="${this.card_img_dir}/${this.game.deck[0].cards[card1].name}">
-            <img class="card" src="${this.card_img_dir}/${this.game.deck[0].cards[card2].name}">
+            <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card1].name}"></div>
+            <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card2].name}"></div>
           </div>
         `;
+<<<<<<< HEAD
         await this.playerbox.refreshGraphic(playercards, scorer);
+=======
+        this.playerbox.updateGraphics(playercards, scorer);
+   
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
         //Everyone can use the pool
         for (let i = 0; i < 5; i++) {
@@ -941,8 +1122,12 @@ class Poker extends GameTableTemplate {
         let winlist = [];
 
         //Sort hands from low to high
+<<<<<<< HEAD
         console.log(JSON.parse(JSON.stringify(this.game.state.player_cards)));
         for (let key in this.game.state.player_cards) {
+=======
+        for (var key in this.game.state.player_cards) {
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
           let deck = this.game.state.player_cards[key];
 
           if (winlist.length == 0) {
@@ -966,7 +1151,6 @@ class Poker extends GameTableTemplate {
               player_hand: score,
             });
           }
-          console.log("*** Low-high ranking: " + JSON.stringify(winlist));
         }
 
         // Populate winners with winning players
@@ -980,11 +1164,11 @@ class Poker extends GameTableTemplate {
           }
         }
 
-        console.log(" * Winners (0-index): " + JSON.stringify(winners));
         // split winnings among winners ***TO DO: examine possibility of fractional chips
         let pot_size = Math.floor(this.stf(this.game.state.pot) / winners.length);
         let winnerStr = "";
         for (let i = 0; i < winners.length; i++) {
+<<<<<<< HEAD
           await this.playerbox.addClass("winner", winners[i] + 1);
           this.game.stats[this.game.players[winners[i]]].handsWon++;
           winnerStr += this.game.state.player_names[winners[i]] + ", ";
@@ -999,12 +1183,16 @@ class Poker extends GameTableTemplate {
             this.fts(pot_size)
           );
           console.log("WINNER CREDIT: " + this.game.state.player_credit[winners[i]]);
+=======
+          if (i >= 1) { winnerStr += ", "; }
+          this.game.stats[this.game.players[winners[i]]].handsWon++;
+          winnerStr += this.game.state.player_names[winners[i]];
+	  this.game.state.player_credit[winners[i]] = this.addToString(this.game.state.player_credit[winners[i]], this.fts(pot_size));
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         }
-        winnerStr = this.prettifyList(winnerStr); //works with one player
 
         // update logs and splash!
         let winner_html = `<div class="h2">` + winnerStr;
-
         if (winners.length == 1) {
           winner_html += " takes the pot!</div>";
         } else {
@@ -1012,6 +1200,7 @@ class Poker extends GameTableTemplate {
         }
 
         winlist.forEach((pl) => {
+<<<<<<< HEAD
           this.updateLog(
             `${this.game.state.player_names[pl.player - 1]}: ${
               pl.player_hand.hand_description
@@ -1021,6 +1210,17 @@ class Poker extends GameTableTemplate {
           updateHTML = `<div class="h3">${this.game.state.player_names[pl.player - 1]}: ${
             pl.player_hand.hand_description
           }</div>${updateHTML}`;
+=======
+          
+         
+          this.updateLog(`${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description} <br> ${ this.toHuman(pl.player_hand.cards_to_score)}`);
+
+          let player_hand = this.game.state.player_cards[pl.player].slice(0, 2);
+          updateHTML = `<div class="htmlCards">` + this.handToHTML(player_hand) + this.handToHTML(pl.player_hand.cards_to_score) + `</div>` + updateHTML;
+         
+
+          updateHTML = `<div class="h3">${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description}</div>${updateHTML}`;      
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         });
 
         this.updateHTML = updateHTML;
@@ -1037,10 +1237,14 @@ class Poker extends GameTableTemplate {
                 if (!winners.includes(ii) && this.stf(this.game.state.player_pot[ii]) > 0) {
                   let amount_to_send = this.stf(this.game.state.player_pot[ii]) / winners.length;
                   amount_to_send = amount_to_send.toFixed(8);
+<<<<<<< HEAD
 
                   console.log("AMOUNT TO SEND: " + amount_to_send);
 
                   if (this.settleNow) {
+=======
+                  if (this.settleNow){
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
                     // do not reformat -- adding whitespace screws with API
                     let ts = new Date().getTime();
                     this.rollDice();
@@ -1120,10 +1324,14 @@ class Poker extends GameTableTemplate {
           }
         }
 
+<<<<<<< HEAD
         console.log("HERE AT END OF TURN");
         console.log(JSON.stringify(this.game.state));
 
         if (this.browser_active) {
+=======
+        if (this.browser_active){
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
           this.overlay.closebox = true;
           this.overlay.show(
             `<div class="shim-notice">${winner_html}${updateHTML}</div>`,
@@ -1138,8 +1346,13 @@ class Poker extends GameTableTemplate {
 
           this.game.halted = 1;
         }
+<<<<<<< HEAD
         await this.settleLastRound();
         this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winner_keys)}`);
+=======
+        this.settleLastRound();
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winner_keys)}\tbesthand`);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
         return 0;
       }
@@ -1171,6 +1384,7 @@ class Poker extends GameTableTemplate {
           this.game.state.player_credit[bbpi] = "0";
           this.game.state.passed[bbpi] = 1;
         } else {
+<<<<<<< HEAD
           this.updateLog(
             `${this.game.state.player_names[bbpi]} posts big blind: ${
               this.game.state.big_blind
@@ -1195,6 +1409,17 @@ class Poker extends GameTableTemplate {
           )}</div>`,
           this.game.state.big_blind_player
         );
+=======
+          this.updateLog(`${this.game.state.player_names[bbpi]} posts big blind: ${this.game.state.big_blind} chips${(this.game.crypto)?` ~ ${this.formatWager(this.game.state.big_blind, false)}`:""}`);
+	  this.game.state.player_pot[bbpi] = this.addToString(this.game.state.player_pot[bbpi], this.game.state.big_blind);
+	  this.game.state.pot = this.addToString(this.game.state.pot, this.game.state.big_blind);
+	  this.game.state.player_credit[bbpi] = this.subtractFromString(this.game.state.player_credit[bbpi], this.game.state.big_blind);
+        }
+
+//        this.refreshPlayerLog(`<div class="plog-update">committed: ${this.formatWager(this.game.state.big_blind)}</div>`,this.game.state.big_blind_player);
+
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         //
         // Small Blind
         //
@@ -1233,6 +1458,7 @@ class Poker extends GameTableTemplate {
           );
         }
 
+<<<<<<< HEAD
         this.outputState();
 
         await this.playerbox.refreshLog(
@@ -1243,6 +1469,10 @@ class Poker extends GameTableTemplate {
         );
         await this.displayPlayers(true); //Update Chip stacks after betting
         this.game.queue.push("round"); //Start
+=======
+        this.displayPlayers(true);        //Update Chip stacks after betting
+        this.game.queue.push("round");    //Start
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         this.game.queue.push("announce"); //Print Hole cards to Log
       }
 
@@ -1278,12 +1508,13 @@ class Poker extends GameTableTemplate {
           )
         );
 
+<<<<<<< HEAD
         console.log("amount to call: " + amount_to_call);
 
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         if (amount_to_call <= 0) {
           console.error("Zero/Negative Call");
-          console.log(mv);
-          this.outputState();
         }
 
         //
@@ -1301,7 +1532,15 @@ class Poker extends GameTableTemplate {
 
         this.game.queue.splice(qe, 1);
 
+<<<<<<< HEAD
         await this.refreshPlayerStack(player, true); //Here we don't want to hide cards
+=======
+        this.refreshPlayerStack(player, true); //Here we don't want to hide cards
+        
+        if (this.browser_active == 1 && this.game.player !== player) {
+	  this.refreshPlayerLog(`<div class="plog-update">calls</div>`, player);
+	}
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
         if (this.game.player !== player) {
           await this.playerbox.refreshLog(`<div class="plog-update">calls</div>`, player);
@@ -1310,7 +1549,11 @@ class Poker extends GameTableTemplate {
         if (this.game.state.player_credit[player - 1] === 0) {
           this.game.state.all_in = true;
           this.updateLog(this.game.state.player_names[player - 1] + " goes all in to call");
+<<<<<<< HEAD
         } else {
+=======
+        } else{
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
           this.updateLog(this.game.state.player_names[player - 1] + " calls");
         }
       }
@@ -1320,11 +1563,18 @@ class Poker extends GameTableTemplate {
 
         if (this.browser_active) {
           if (this.game.player !== player) {
+<<<<<<< HEAD
             await this.refreshPlayerStack(player, false); //Here we want to hide cards
             await this.playerbox.refreshLog(`<div class="plog-update">folds</div>`, player);
           } else {
             await this.displayHand();
           }
+=======
+            this.refreshPlayerLog(`<div class="plog-update">folds</div>`, player);
+          }else{
+            this.displayHand();
+          } 
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         }
 
         this.updateLog(this.game.state.player_names[player - 1] + " folds");
@@ -1339,7 +1589,11 @@ class Poker extends GameTableTemplate {
         this.game.queue.splice(qe, 1);
         this.updateLog(this.game.state.player_names[player - 1] + " checks.");
         if (this.game.player !== player && this.browser_active) {
+<<<<<<< HEAD
           await this.playerbox.refreshLog(`<div class="plog-update">checks</div>`, player);
+=======
+          this.refreshPlayerLog(`<div class="plog-update">checks</div>`, player);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         }
         return 1;
       }
@@ -1355,6 +1609,7 @@ class Poker extends GameTableTemplate {
         );
         let raise_portion = raise - call_portion;
 
+<<<<<<< HEAD
         console.log("raise is: " + raise);
         console.log("raise portion: " + raise_portion);
         console.log("call portion: " + call_portion);
@@ -1363,6 +1618,11 @@ class Poker extends GameTableTemplate {
           salert("Insufficient raise");
           console.error("Call process in raise/Insufficient Raise", mv);
           this.outputState();
+=======
+        if (raise_portion <= 0){
+          salert("Insufficient raise");
+          console.error("Call process in raise/Insufficient Raise",mv);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         }
 
         this.game.state.plays_since_last_raise = 1;
@@ -1382,10 +1642,12 @@ class Poker extends GameTableTemplate {
           this.fts(raise_portion)
         );
 
+
         let raise_message = `raises ${this.formatWager(raise_portion)} `;
         if (this.stf(this.game.state.player_credit[player - 1]) === 0) {
           this.game.state.all_in = 1;
           raise_message = `goes all in `;
+<<<<<<< HEAD
         }
         if (call_portion > 0) {
           if (raise_portion > 0) {
@@ -1421,6 +1683,32 @@ class Poker extends GameTableTemplate {
         this.game.queue.splice(qe, 1);
 
         await this.refreshPlayerStack(player, true); //Here we don't want to hide cards
+=======
+          if (this.game.player !== player && this.browser_active) {
+            this.refreshPlayerLog(`<div class="plog-update">all in!</div>`, player);
+          }
+        }      
+        if (call_portion > 0) {  
+          if (raise_portion > 0) {
+            this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}to ${this.formatWager(this.game.state.player_pot[player - 1])}`);
+            if (this.game.player !== player && this.browser_active) {
+	      this.refreshPlayerLog(`<div class="plog-update">raises ${this.formatWager(raise_portion)}</div>`, player);
+	    }
+          } else {
+            this.updateLog(`${this.game.state.player_names[player - 1]} calls ${this.formatWager(call_portion)}`);
+            if (this.game.player !== player && this.browser_active) {
+              this.refreshPlayerLog(`<div class="plog-update">calls ${this.formatWager(call_portion)}</div>`, player);
+            }
+          }
+        } else {
+          this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}to ${this.formatWager(this.game.state.player_pot[player - 1])}`);
+          if (this.game.player !== player && this.browser_active) {
+	    this.refreshPlayerLog(`<div class="plog-update">raises ${this.formatWager(raise)}</div>`, player);
+	  }
+        }
+        this.game.queue.splice(qe, 1);
+        this.refreshPlayerStack(player, true); //Here we don't want to hide cards
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
         return 1;
       }
@@ -1429,21 +1717,30 @@ class Poker extends GameTableTemplate {
       // avoid infinite loops
       //
       if (shd_continue == 0) {
-        console.log("NOT CONTINUING");
         return 0;
       }
+<<<<<<< HEAD
     } else {
       console.log("QUEUE EMPTY!");
+=======
+    }else{
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     }
     return 1;
   }
 
+<<<<<<< HEAD
   outputState() {
     console.log("######################");
     console.log(JSON.parse(JSON.stringify(this.game.state)));
   }
 
   async playerTurn() {
+=======
+
+  playerTurn() {
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     if (this.browser_active == 0) {
       console.log("7777777777777777");
       return;
@@ -1453,9 +1750,13 @@ class Poker extends GameTableTemplate {
       return;
     }
 
+<<<<<<< HEAD
     console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
 
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     let poker_self = this;
+    let balance_html = "";
     let html = "";
     let mobileToggle =
       window.matchMedia("(orientation: landscape)").matches && window.innerHeight <= 600;
@@ -1467,6 +1768,7 @@ class Poker extends GameTableTemplate {
       poker_self.addMove("resolve\tturn");
     }
 
+<<<<<<< HEAD
     console.log("required pot: " + this.game.state.required_pot);
     console.log("player pot: " + this.game.state.player_pot[this.game.player - 1]);
     console.log("all in: " + this.game.state.all_in);
@@ -1475,6 +1777,9 @@ class Poker extends GameTableTemplate {
       this.game.state.required_pot,
       this.game.state.player_pot[this.game.player - 1]
     );
+=======
+    let match_required = this.subtractFromString(this.game.state.required_pot, this.game.state.player_pot[this.game.player - 1]);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
     if (this.stf(match_required) === 0 && this.game.state.all_in) {
       console.log("666666666666666666");
@@ -1512,6 +1817,7 @@ class Poker extends GameTableTemplate {
         }
       }
     });
+<<<<<<< HEAD
 
     //console.log(match_required,this.game.state.last_raise,smallest_stack);
 
@@ -1519,11 +1825,17 @@ class Poker extends GameTableTemplate {
       console.error("Auto fold... this should never arise");
       this.outputState();
       await this.updateStatus("You can only fold...");
+=======
+
+    if (!can_call) {
+      this.updateStatus("You can only fold...");
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       this.addMove("fold\t" + poker_self.game.player);
       await this.endTurn();
       return;
     }
 
+<<<<<<< HEAD
     html += '<div class="menu-player" style="text-align:left;width:100%">';
 
     if (this.game.state.flipped == 0 && this.game.player == this.game.state.big_blind_player) {
@@ -1559,6 +1871,34 @@ class Poker extends GameTableTemplate {
 
     $(".menu_option").off();
     $(".menu_option").on("click", async function () {
+=======
+    balance_html = `
+	<div class="menu-player-upper">
+          <div style="float:right;" class="saito-balance">${this.formatWager(this.game.state.player_credit[this.game.player - 1])}</div>
+        </div>
+    `;
+    this.app.browser.replaceElementBySelector(balance_html, `.game-playerbox-body-${this.game.player} .menu-player-upper`);
+
+
+    html  = "<ul>";
+    html += '<li class="option" id="fold">fold</li>';
+    
+    if (this.stf(match_required) > 0) {
+      html += `<li class="option" id="call">call - ${this.formatWager(match_required)}</li>`;
+    } else { // we don't NEED to match
+      html += '<li class="option" id="check">check</li>';
+    }
+    if (can_raise) {
+        html += `<li class="option" id="raise">raise</li>`;
+      }
+    html += "</ul>";
+
+    this.updateStatus(html);
+
+    $(".option").off();
+    $(".option").on("click", function () {
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       let choice = $(this).attr("id");
 
       if (choice === "raise") {
@@ -1569,10 +1909,10 @@ class Poker extends GameTableTemplate {
 
         html = `<div class="menu-player">`;
         if (poker_self.stf(match_required) > 0) {
-          html += `Match ${poker_self.formatWager(match_required)} and raise: `;
+          html += `match ${poker_self.formatWager(match_required)} and raise `;
         } else {
-          html += "Please select an option below: ";
         }
+<<<<<<< HEAD
         html += `</div><ul><li class="menu_option" id="0">${
           mobileToggle ? "nope" : "cancel raise"
         }</li>`;
@@ -1582,11 +1922,17 @@ class Poker extends GameTableTemplate {
           let this_raise =
             poker_self.stf(poker_self.game.state.last_raise) +
             i * poker_self.stf(poker_self.game.state.last_raise);
+=======
+        html += `</div><ul><li class="option" id="0">${(mobileToggle)? "nope":"cancel raise"}</li>`;
+        let max_raise = Math.min(poker_self.stf(credit_remaining), poker_self.stf(smallest_stack));
 
-          console.log("this raise: " + this_raise);
-          console.log("id is: " + (this_raise + poker_self.stf(match_required)));
+        for (let i = 0; i < 4; i++) {
+
+          let this_raise = poker_self.stf(poker_self.game.state.last_raise) + (i * poker_self.stf(poker_self.game.state.last_raise));
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
           if (max_raise > this_raise) {
+<<<<<<< HEAD
             console.log("this raise 2: " + this_raise);
             html += `<li class="menu_option" id="${this_raise + poker_self.stf(match_required)}">${
               mobileToggle ? " " : "raise "
@@ -1603,27 +1949,52 @@ class Poker extends GameTableTemplate {
                           ? ` for ${poker_self.game.state.player_names[smallest_stack_player]}`
                           : ""
                       })</li>`;
+=======
+            html += `<li class="option" id="${this_raise + poker_self.stf(match_required)}">${(mobileToggle)? " ":"raise "}${poker_self.formatWager(this_raise)}</li>`;
+          } else {
+            break;
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
           }
         }
+        
+        //Always give option for all in
+        html += `<li class="option" id="${poker_self.addToString(max_raise, match_required)}">
+                  raise ${poker_self.formatWager(max_raise)} 
+                  (all in${(smallest_stack_player !== poker_self.game.player - 1)?` for ${poker_self.game.state.player_names[smallest_stack_player]}`:""})</li>`;
+
+
 
         html += "</ul>";
         await poker_self.updateStatus(html);
 
+<<<<<<< HEAD
         $(".menu_option").off();
         $(".menu_option").on("click", async function () {
           console.log("44444444444444444");
+=======
+        $(".option").off();
+        $(".option").on("click", function () {
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
           let raise = $(this).attr("id");
 
           if (raise === "0") {
             await poker_self.playerTurn();
           } else {
+<<<<<<< HEAD
             console.log("Player choice: " + raise);
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
             poker_self.addMove(`raise\t${poker_self.game.player}\t${raise}`);
             await poker_self.endTurn();
           }
         });
+<<<<<<< HEAD
       } else {
         console.log("Player choice: " + choice);
+=======
+      }else{
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         poker_self.addMove(`${choice}\t${poker_self.game.player}`);
         await poker_self.endTurn();
       }
@@ -1667,8 +2038,13 @@ class Poker extends GameTableTemplate {
       state.passed[i] = 0;
       state.player_pot[i] = "0";
       state.player_credit[i] = "0";
+<<<<<<< HEAD
       state.debt[i] = "0";
       state.player_names[i] = this.getShortNames(this.game.players[i]);
+=======
+      state.debt[i] = "0";      
+      state.player_names[i] = this.app.keychain.returnUsername(this.game.players[i], 12);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     }
 
     state.big_blind = "2";
@@ -1785,19 +2161,43 @@ class Poker extends GameTableTemplate {
     }
   }
 
+<<<<<<< HEAD
   async displayPlayers(preserveLog = false) {
     if (!this.browser_active) {
+=======
+  returnPlayerRole(player) {
+    if (player == this.game.state.button_player){
+      return "dealer";
+    }
+    if (player == this.game.state.small_blind_player){
+      return "small blind";
+    }
+    if (player == this.game.state.big_blind_player){
+      return "big blind";
+    }
+    return "";
+  }
+
+  displayPlayers(preserveLog = false) {
+    if (!this.browser_active){
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       return;
     }
     try {
       for (let i = 1; i <= this.game.players.length; i++) {
+<<<<<<< HEAD
         await this.playerbox.refreshName(i);
         await this.refreshPlayerStack(i, true);
         if (!preserveLog) {
           await this.playerbox.refreshLog("", i);
+=======
+        this.refreshPlayerStack(i, true);  
+        if (!preserveLog){
+          this.refreshPlayerLog("", i);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         }
-      }
 
+<<<<<<< HEAD
       let elem;
 
       elem = document.querySelector(
@@ -1810,15 +2210,28 @@ class Poker extends GameTableTemplate {
         elem.firstChild.after(newButton);
         this.app.browser.addToolTip(newButton, "Dealer");
       }
+=======
+	    }
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     } catch (err) {
       console.log("error displaying player box", err);
     }
   }
 
+<<<<<<< HEAD
   async displayHand() {
     if (this.game.player == 0) {
       await this.playerbox.refreshInfo(`<div>You are observing the game</div>`, -1);
       return;
+=======
+
+
+  displayHand() {
+    if (this.game.player == 0){ 
+      this.updateStatus(`You are observing the game`, -1);
+      return; 
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     }
 
     if (this.game.state.passed[this.game.player - 1]) {
@@ -1840,9 +2253,19 @@ class Poker extends GameTableTemplate {
     console.log("update pot...: " + this.game.state.pot);
     let html = `<div class="pot-counter">${this.formatWager(this.game.state.pot, true)}</div>`;
 
+<<<<<<< HEAD
     if (this.useGraphics) {
       for (let i = 0; i < this.game.state.player_pot.length; i++) {
         html += this.returnPlayerStackHTML(i + 1, this.game.state.player_pot[i]);
+=======
+      let poker_self = this;
+      let html = `<div class="pot-counter">${this.formatWager(this.game.state.pot, true)}</div>`;
+
+      if (this.useGraphics){
+        for (let i = 0; i < this.game.state.player_pot.length; i++){
+          html += this.returnPlayerStackHTML(i+1, this.game.state.player_pot[i]);
+        }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       }
     }
 
@@ -1867,9 +2290,9 @@ class Poker extends GameTableTemplate {
 
           if (i < this.game.pool[0].hand.length) {
             card = this.game.pool[0].cards[this.game.pool[0].hand[i]];
-            newHTML += `<img class="card" src="${this.card_img_dir}/${card.name}">`;
+            newHTML += `<div class="flip-card card"><img class="cardFront" src="${this.card_img_dir}/${card.name}"></div>`;
           } else {
-            newHTML += `<div class="flip-card"><img class="card cardBack" src="${this.card_img_dir}/red_back.png"></div>`;
+            newHTML += `<div class="flip-card card"><img class="cardBack" src="${this.card_img_dir}/red_back.png"></div>`;
           }
         }
         document.getElementById("deal").innerHTML = newHTML;
@@ -1907,6 +2330,7 @@ class Poker extends GameTableTemplate {
 
     $(".winner").removeClass("winner");
     $("#pot").fadeOut();
+<<<<<<< HEAD
     if (document.querySelector(".flipped")) {
       $(".flipped")
         .removeClass("flipped")
@@ -1927,10 +2351,21 @@ class Poker extends GameTableTemplate {
         });
     }
     $(".player-box-graphic .hand").animate({ left: "1000px" }, 1200, "swing", function () {
+=======
+    if (document.querySelector(".flipped")){
+      $(".flipped").removeClass("flipped").delay(200).queue(function(){
+        $("#deal").children().animate({left: "1000px"}, 1200, "swing", function(){$(this).remove();}).dequeue();  
+      });      
+    }else{
+       $("#deal").children().animate({left: "1000px"}, 1200, "swing", function(){$(this).remove();});
+    }
+    $(".game-playerbox-graphic .hand").animate({left: "1000px"}, 1200, "swing", function(){
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       $(this).remove();
     });
   }
 
+<<<<<<< HEAD
   async refreshPlayerStack(player, includeCards = true) {
     if (!this.browser_active) {
       return;
@@ -1991,6 +2426,16 @@ class Poker extends GameTableTemplate {
         }
       }
     }
+=======
+  refreshPlayerLog(html, player) {
+    this.playerbox.updateBody(html, player);
+  }
+  
+  refreshPlayerStack(player, includeCards = true) {
+    if (!this.browser_active) { return; }
+    let userline = this.returnPlayerRole(player) + `<div class="saito-balance" style="float:right">${this.formatWager(this.game.state.player_credit[player-1], true)}</div>`;
+    this.playerbox.updateUserline(userline, player);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
   }
 
   returnPlayerStackHTML(player, numChips) {
@@ -2032,7 +2477,10 @@ class Poker extends GameTableTemplate {
       stroke_color = "white";
     }
 
+<<<<<<< HEAD
     // if (single){
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     return `<svg class="poker_chip" style="bottom:${offset}px; fill:${color}; stroke: ${stroke_color}" viewbox="0 0 100 35">
             <path d="
                 M 2 13
@@ -2044,6 +2492,7 @@ class Poker extends GameTableTemplate {
               " 
               stroke-width="1">
             </svg>`;
+<<<<<<< HEAD
     /*}else{
       return `<svg class="poker_chip" style="bottom:${offset}px; " viewbox="0 0 100 35">
               <path d="
@@ -2090,11 +2539,14 @@ class Poker extends GameTableTemplate {
         }
       }
     }
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
   }
 
   async processResignation(resigning_player, txmsg) {
     await super.processResignation(resigning_player, txmsg);
 
+<<<<<<< HEAD
     if (!txmsg.loser) {
       return;
     }
@@ -2107,6 +2559,18 @@ class Poker extends GameTableTemplate {
           txmsg.loser
         );
       }
+=======
+  processResignation(resigning_player, txmsg){
+
+    super.processResignation(resigning_player, txmsg);
+
+    if (!txmsg.loser) { return; }
+
+    if (this.browser_active){
+      if (this.app.wallet.returnPublicKey() !== resigning_player) {
+        this.refreshPlayerLog(`<div class="plog-update">leaves the table</div>`, txmsg.loser);
+      } 
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     }
 
     this.updateLog(this.game.state.player_names[txmsg.loser - 1] + " left the table");
@@ -2121,13 +2585,19 @@ class Poker extends GameTableTemplate {
     }
   }
 
+<<<<<<< HEAD
   async endTurn(nextTarget = 0) {
     if (this.browser_active) {
       await this.updateStatus("Waiting for information from peers....");
+=======
+  endTurn(nextTarget = 0) {
+    if (this.browser_active){
+      this.updateStatus("waiting for information from peers...");  
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     }
 
     try {
-      $(".menu_option").off();
+      $(".option").off();
     } catch (err) {}
 
     let extra = {};
@@ -2158,10 +2628,15 @@ class Poker extends GameTableTemplate {
 
     if (score1.hand_description == "royal flush" && score2.hand_description == "royal flush") {
       for (let i = 0; i < score1.cards_to_score.length; i++) {
+<<<<<<< HEAD
         if (
           this.returnHigherCard(score1.cards_to_score[i], score2.cards_to_score[i]) ==
           score1.cards_to_score[i]
         ) {
+=======
+	// first card will be aces, so we only need to compare the first entry
+        if (this.returnHigherCard(score1.cards_to_score[i], score2.cards_to_score[i]) == score1.cards_to_score[i]) {
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
           return 1;
         } else {
           return 2;
@@ -3090,7 +3565,6 @@ class Poker extends GameTableTemplate {
     for (let i = 0; i < val.length; i++) {
       if (noval.includes(suite[i] + val[i])) {
         //if the case id not in the exclude list
-        //console.log("you are barred from the pub");
       } else {
         if (val[i] == 1) {
           //if the candidate is an ace
@@ -3256,12 +3730,15 @@ class Poker extends GameTableTemplate {
     return 0;
   }
 
-  /*Helper functions for display and options*/
-
   cardToHuman(card) {
+<<<<<<< HEAD
     if (!this.game.deck[0].cards[card]) {
       console.log("Deck error: " + card);
       console.log(JSON.parse(JSON.stringify(this.game.deck[0])));
+=======
+    
+    if (!this.game.deck[0].cards[card]){
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       return "";
     }
     let h = this.game.deck[0].cards[card].name;
@@ -3313,7 +3790,7 @@ class Poker extends GameTableTemplate {
     return PokerGameRulesTemplate(this.app, this);
   }
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
     return PokerGameOptionsTemplate(this.app, this);
   }
 
@@ -3421,7 +3898,17 @@ class Poker extends GameTableTemplate {
     return ngoa;
   }
 
+<<<<<<< HEAD
   async updateStatus(str, hide_info = 0) {
+=======
+
+  updateStatus(str, hide_info = 0) {
+
+    if (str.indexOf('<') == -1) {
+      str = `<div style="padding-top:2rem">${str}</div>`;
+    }
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     this.game.status = str;
     if (!this.browser_active) {
       return;
@@ -3430,12 +3917,31 @@ class Poker extends GameTableTemplate {
       return;
     }
 
+<<<<<<< HEAD
     try {
       if (hide_info == 0) {
         await this.playerbox.showInfo();
       } else {
         await this.playerbox.hideInfo();
       }
+=======
+    //
+    // insert status message into playerbox BODY unless the status
+    // already exists, in which case we simplify update it instead
+    // of updating the body again.
+    //
+    try {
+        let status_obj = document.querySelector(".status");
+        if (status_obj) {
+          status_obj.innerHTML = str;
+        } else {
+	  this.playerbox.updateBody(`<div class="status">${str}</div>`, this.game.player);
+	}
+      
+     } catch (err) { 
+       console.log("ERR: " + err);
+     }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
       console.log("STATUS UPDATE: ", str);
       let status_obj = document.querySelector(".status");
@@ -3448,16 +3954,27 @@ class Poker extends GameTableTemplate {
   }
 
   handleStatsMenu() {
+<<<<<<< HEAD
     console.log(JSON.parse(JSON.stringify(this.game.stats)));
 
     let stats = ["handsPlayed", "handsWon", "handsFolded"];
+=======
+    
+    let stats = ["handsPlayed", "handsWon","handsFolded"];
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     let html = `
       <div class="rules-overlay" id="game-stats-overlay">
         <div class="h1">Game Statistics:</div>
         <table><thead><tr><th></th>
+<<<<<<< HEAD
        `;
     for (let p in this.game.stats) {
       html += `<th>${this.getShortNames(p)}</th>`;
+=======
+       `; 
+    for (let p in this.game.stats){
+      html += `<th>${this.app.keychain.returnUsername(p, 10)}</th>`;
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     }
     html += `</tr></thead><tbody>`;
     for (let s of stats) {
@@ -3473,6 +3990,96 @@ class Poker extends GameTableTemplate {
 
     this.overlay.show(html);
   }
+<<<<<<< HEAD
+=======
+
+
+  handToHTML(hand) {
+    let html = "<div class='htmlCards'>";
+    hand.forEach((card) => {
+      html += `<img class="card" src="${this.card_img_dir}/${card}.png">`;
+    });
+    html += "</div> ";
+    return html;
+  }
+ 
+  preloadImages() {
+  
+    let allImages = [
+        "/poker/img/cards/C1.png",
+        "/poker/img/cards/C2.png",
+        "/poker/img/cards/C3.png",
+        "/poker/img/cards/C4.png",
+        "/poker/img/cards/C5.png",
+        "/poker/img/cards/C6.png",
+        "/poker/img/cards/C7.png",
+        "/poker/img/cards/C8.png",
+        "/poker/img/cards/C9.png",
+        "/poker/img/cards/C10.png",
+        "/poker/img/cards/C11.png",
+        "/poker/img/cards/C12.png",
+        "/poker/img/cards/C13.png",
+        "/poker/img/cards/S1.png",
+        "/poker/img/cards/S2.png",
+        "/poker/img/cards/S3.png",
+        "/poker/img/cards/S4.png",
+        "/poker/img/cards/S5.png",
+        "/poker/img/cards/S6.png",
+        "/poker/img/cards/S7.png",
+        "/poker/img/cards/S8.png",
+        "/poker/img/cards/S9.png",
+        "/poker/img/cards/S10.png",
+        "/poker/img/cards/S11.png",
+        "/poker/img/cards/S12.png",
+        "/poker/img/cards/S13.png",
+        "/poker/img/cards/D1.png",
+        "/poker/img/cards/D2.png",
+        "/poker/img/cards/D3.png",
+        "/poker/img/cards/D4.png",
+        "/poker/img/cards/D5.png",
+        "/poker/img/cards/D6.png",
+        "/poker/img/cards/D7.png",
+        "/poker/img/cards/D8.png",
+        "/poker/img/cards/D9.png",
+        "/poker/img/cards/D10.png",
+        "/poker/img/cards/D11.png",
+        "/poker/img/cards/D12.png",
+        "/poker/img/cards/D13.png",
+        "/poker/img/cards/H1.png",
+        "/poker/img/cards/H2.png",
+        "/poker/img/cards/H3.png",
+        "/poker/img/cards/H4.png",
+        "/poker/img/cards/H5.png",
+        "/poker/img/cards/H6.png",
+        "/poker/img/cards/H7.png",
+        "/poker/img/cards/H8.png",
+        "/poker/img/cards/H9.png",
+        "/poker/img/cards/H10.png",
+        "/poker/img/cards/H11.png",
+        "/poker/img/cards/H12.png",
+        "/poker/img/cards/H13.png",
+    ];
+
+    this.preloadImageArray(allImages, 0);
+    
+  } 
+  preloadImageArray(imageArray=[], idx=0) {
+
+    let pre_images = [imageArray.length];
+    
+    if (imageArray && imageArray.length > idx) {
+      pre_images[idx] = new Image();
+      pre_images[idx].onload = () => {
+        this.preloadImageArray(imageArray, idx+1);
+      }
+      pre_images[idx].src = imageArray[idx];
+    }
+
+  }
+
+
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 }
 
 module.exports = Poker;

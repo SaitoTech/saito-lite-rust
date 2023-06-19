@@ -54,6 +54,7 @@ this.importStrategyCard("construction", {
 
         let id = $(this).attr("id");
 
+<<<<<<< HEAD
         if (id == "yes") {
           imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
           imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
@@ -69,6 +70,49 @@ this.importStrategyCard("construction", {
           imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
           imperium_self.endTurn();
           return 0;
+=======
+      },
+
+
+      strategySecondaryEvent 	:	function(imperium_self, player, strategy_card_player) {
+
+        if (imperium_self.game.player != strategy_card_player && imperium_self.game.player == player) {
+
+          let html = '<div class="status-message">Construction has been played. Do you wish to spend 1 strategy token to build a PDS or Space Dock? This will activate the sector (if unactivated): </div><ul>';
+          if (imperium_self.game.state.round == 1) { 
+	    html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Construction strategy card. You may spend 1 strategy token to build a PDS or Space Dock on a planet you control (this will activate the sector). You have ${imperium_self.game.state.players_info[player-1].strategy_tokens} strategy tokens. Use this ability? </div><ul>`;
+	  }
+          if (imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
+            html += '<li class="option" id="yes">Yes</li>';
+          }
+	  html += '<li class="option" id="no">No</li>';
+          html += '</ul>';
+ 
+          imperium_self.updateStatus(html);
+
+          $('.option').off();
+          $('.option').on('click', function() {
+
+            let id = $(this).attr("id");
+ 
+            if (id == "yes") {
+              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("expend\t"+imperium_self.game.player+"\tstrategy\t1");
+              imperium_self.playerBuildInfrastructure((sector) => {
+                imperium_self.addMove("activate\t"+imperium_self.game.player+"\t"+sector);
+		imperium_self.updateSectorGraphics(sector);
+                imperium_self.endTurn();
+              }, 1);
+            }
+            if (id == "no") {
+              imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.endTurn();
+              return 0;
+            }
+          });
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         }
       });
     }

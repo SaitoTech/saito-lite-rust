@@ -1,7 +1,12 @@
 const saito = require("./../../lib/saito/saito");
+<<<<<<< HEAD
 const RedSquareIndex = require("./lib/index");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
+=======
+const ModTemplate = require('../../lib/templates/modtemplate');
+const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 const SaitoMain = require("./lib/main");
 const SaitoMenu = require("./lib/menu");
 const RedSquareSidebar = require("./lib/sidebar");
@@ -11,10 +16,14 @@ const HTMLParser = require("node-html-parser");
 const prettify = require("html-prettify");
 const redsquareHome = require("./index");
 const Post = require("./lib/post");
+<<<<<<< HEAD
 const Transaction = require("../../lib/saito/transaction");
 const Slip = require("../../lib/saito/slip");
 const Factory = require("../../lib/saito/factory").default;
 const PeerService = require("saito-js/lib/peer_service").default;
+=======
+const SaitoProfile = require('../../lib/saito/ui/saito-profile/saito-profile');
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {			// renders main tweets
@@ -122,6 +131,9 @@ class RedSquare extends ModTemplate {
       dark: "fa-solid fa-moon",
     };
 
+    this.profile = new SaitoProfile(app, this, ".saito-main");
+    this.profile.publickey = app.wallet.returnPublicKey();
+
     return this;
   }
 
@@ -134,16 +146,33 @@ class RedSquare extends ModTemplate {
   /////////////////////////////////
   // inter-module communications //
   /////////////////////////////////
+<<<<<<< HEAD
   respondTo(type = "") {
     let this_mod = this;
     if (type === "user-menu") {
+=======
+  respondTo(type = "", obj) {
+    this_mod = this;
+    if (type === 'user-menu') {
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       return {
-        text: "View Profile",
-        icon: "fa-regular fa-user",
+        text: `View ${(obj?.publickey && obj.publickey === this.app.wallet.returnPublicKey())?"My ":""}Profile`,
+        icon: "fa fa-user",
         callback: function (app, publickey) {
+<<<<<<< HEAD
           app.connection.emit("redsquare-profile-render-request", publickey);
         },
       };
+=======
+          if (app.modules.returnActiveModule().returnName() == "Red Square"){
+            app.connection.emit('redsquare-profile-render-request', publickey);
+          }else{
+            window.location = `/redsquare/?user_id=${publickey}`;
+          }
+          
+        }
+      }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     }
     if (type === "saito-header") {
       let x = [];
@@ -157,14 +186,18 @@ class RedSquare extends ModTemplate {
           },
         });
       }
-      //Suggestion -- these are covered by the floating menu
-      /*if (this.app.browser.isMobileBrowser()) {
+
+      if (this.app.browser.isMobileBrowser()) {
         x.push({
           text: "Notifications",
           icon: "fas fa-bell",
           rank: 23,
           callback: function (app, id) {
-            window.location = "/redsquare#notifications";
+            if (app.modules.returnActiveModule().returnName() == "Red Square"){
+              document.querySelector(".redsquare-menu-notifications").click();
+            }else{
+              window.location = "/redsquare#notifications";
+            }
           }
         });
         x.push({
@@ -172,10 +205,14 @@ class RedSquare extends ModTemplate {
           icon: "fas fa-user",
           rank: 26,
           callback: function (app, id) {
-            window.location = "/redsquare#profile";
+            if (app.modules.returnActiveModule().returnName() == "Red Square"){
+              document.querySelector(".redsquare-menu-profile").click();
+            }else{
+              window.location = "/redsquare#profile";
+            }
           }
         });
-      }*/
+      }
 
       return x;
     }
@@ -185,9 +222,15 @@ class RedSquare extends ModTemplate {
       x.push({
         text: "Tweet",
         icon: "fa-solid fa-pen",
+<<<<<<< HEAD
         allowed_mods: ["redsquare"],
         disallowed_mods: ["arcade"],
         rank: 20,
+=======
+        allowed_mods: ['redsquare'],
+        disallowed_mods: ['arcade'],
+        rank: 10,
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         callback: function (app, id) {
           let post = new Post(app, this_mod);
           post.render();
@@ -195,6 +238,7 @@ class RedSquare extends ModTemplate {
       });
 
       x.push({
+<<<<<<< HEAD
         text: "Refresh",
         icon: "fa-solid fa-house",
         allowed_mods: ["redsquare"],
@@ -231,6 +275,18 @@ class RedSquare extends ModTemplate {
         callback: function (app, id) {
           app.connection.emit("redsquare-profile-render-request");
         },
+=======
+        text: "Tweet Image",
+        icon: "fa-solid fa-image",
+        allowed_mods: ['redsquare'],
+        disallowed_mods: ['arcade'],
+        rank: 20,
+        callback: function (app, id) {
+          let post = new Post(app, this_mod);
+          post.render();
+          post.triggerClick("#hidden_file_element_tweet-overlay");
+        }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       });
 
       return x;
@@ -446,6 +502,7 @@ class RedSquare extends ModTemplate {
       for (const mod of await this.app.modules.returnModulesRespondingTo("chat-manager")) {
         let cm = await mod.respondTo("chat-manager");
         cm.container = ".saito-sidebar.left";
+        cm.render_manager_to_screen = 1;
         this.addComponent(cm);
       }
     }
@@ -1062,9 +1119,16 @@ class RedSquare extends ModTemplate {
       //  page when fetching page source)
       //
       try {
+<<<<<<< HEAD
         return fetch(link)
           .then((res) => res.text())
           .then((data) => {
+=======
+        return fetch(link, {follow: 10})
+          .then(res => res.text())
+          .then(data => {
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
             console.log("fetched link now processing...");
 
             // required og properties for link preview
@@ -1720,8 +1784,13 @@ class RedSquare extends ModTemplate {
               let tx = new saito.default.transaction();
               tx.deserialize(redsquare_self.app, rows[i].tx);
               //console.info(rows[i]);
+<<<<<<< HEAD
               let txmsg = tx.returnMessage();
               console.info(txmsg);
+=======
+              txmsg = tx.returnMessage();
+              //console.info(txmsg);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
               if (typeof txmsg.data.images != "undefined") {
                 let img_uri = txmsg.data?.images[0];
                 let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
@@ -1739,7 +1808,11 @@ class RedSquare extends ModTemplate {
                 img_type = "image/svg";
               }
 
+<<<<<<< HEAD
               console.info("### write from 1229 of redsquare.js");
+=======
+              console.info('### write from 1651 of redsquare.js (request Open Graph Image)');
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
               res.writeHead(200, {
                 "Content-Type": img_type,
                 "Content-Length": img.length,

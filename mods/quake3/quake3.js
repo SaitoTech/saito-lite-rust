@@ -137,8 +137,12 @@ class Quake3 extends GameTemplate {
 
     return 1;
   }
+<<<<<<< HEAD
 
   returnGameOptionsHTML() {
+=======
+  returnAdvancedOptions() {
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     return QuakeGameOptionsTemplate(this.app, this);
   }
 
@@ -270,6 +274,7 @@ class Quake3 extends GameTemplate {
             if (pn !== pn2) {
               //log("not the same as pn");
               if (logline.indexOf(pn2) > -1) {
+<<<<<<< HEAD
                 //log("3::: " + logline);
                 let victim = z;
                 let killer = i;
@@ -284,6 +289,16 @@ class Quake3 extends GameTemplate {
                       this.game.players[victim],
                     ])}`
                   );
+=======
+//log("3::: " + logline);
+	        let victim = z;
+	        let killer = i;
+//log(this.game.players[victim] + " --- " + this.app.wallet.returnPublicKey());
+	        if (this.game.players[victim] === this.app.wallet.returnPublicKey()) {
+console.log("THIS ONE IS ON US");
+                  this.addMove("player_kill\t"+this.game.players[victim]+"\t"+this.game.players[killer]);
+                  this.addMove(`ROUNDOVER\t${JSON.stringify([this.game.players[killer]])}\tpk\t${JSON.stringify([this.game.players[victim]])}`);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
                   this.endTurn();
                 }
               }
@@ -375,7 +390,16 @@ class Quake3 extends GameTemplate {
       return;
     }
 
+<<<<<<< HEAD
     await super.initializeHTML(app);
+=======
+  render(app) {
+
+    if (this.browser_active != 1) { return; }
+    if (this.initialize_game_run) { return; }
+    
+    super.render(app);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
     //
     // ADD MENU

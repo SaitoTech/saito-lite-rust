@@ -291,16 +291,26 @@ class Mahjong extends OnePlayerGameTemplate {
   }
 
   makeInvisible(divname) {
+<<<<<<< HEAD
     let noShadowBox = "none";
     this.applyShadowBox(divname, noShadowBox);
+=======
+    //let noShadowBox = 'none';
+    //this.applyShadowBox(divname, noShadowBox);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     $(`#${divname}`).addClass("invisible");
     $(`#${divname}`).removeClass("selected");
   }
 
   makeVisible(divname) {
     $(`#${divname}`).removeClass("invisible");
+<<<<<<< HEAD
     let boxShadow = "12px 10px 12px 1px #000000";
     this.applyShadowBox(divname, boxShadow);
+=======
+    //let boxShadow = '12px 10px 12px 1px #000000';
+    //this.applyShadowBox(divname, boxShadow);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
   }
 
   toggleCard(divname) {
@@ -328,6 +338,7 @@ class Mahjong extends OnePlayerGameTemplate {
     $(`#${divname}`).removeClass("selected");
   }
 
+<<<<<<< HEAD
   applyShadowBox(divname, property) {
     let boxShadowProperties = [
       "box-shadow",
@@ -335,10 +346,14 @@ class Mahjong extends OnePlayerGameTemplate {
       "-webkit-box-shadow",
       "-o-box-shadow",
     ];
+=======
+  /*applyShadowBox(divname, property) {
+    let boxShadowProperties = ['box-shadow', '-moz-box-shadow', '-webkit-box-shadow', '-o-box-shadow'];
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     for (let i = 0; i < boxShadowProperties.length; i++) {
       $(`#${divname}`).css(boxShadowProperties[i], property);
     }
-  }
+  }*/
 
   returnCardImageHTML(name) {
     if (name[0] === "E") {
@@ -355,12 +370,19 @@ class Mahjong extends OnePlayerGameTemplate {
   //
   // runs whenever we load the game into the browser. render()
   //
+<<<<<<< HEAD
   async initializeHTML(app) {
     if (!this.browser_active) {
       return;
     }
 
     await super.initializeHTML(app);
+=======
+  render(app) {
+    if (!this.browser_active) { return; }
+    
+    super.render(app);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");
@@ -404,7 +426,19 @@ class Mahjong extends OnePlayerGameTemplate {
     //
     // display the board?
     //
+<<<<<<< HEAD
     await this.displayBoard();
+=======
+    this.displayBoard();
+
+    if (app.browser.isMobileBrowser(navigator.userAgent)) {
+      this.hammer.render(this.app, this);
+      this.hammer.attachEvents(this.app, this, "#mahj-rowbox");
+    }else{
+      this.sizer.render();
+      this.sizer.attachEvents("#mahj-rowbox");
+    }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
   }
 
   attachEventsToBoard() {
@@ -548,16 +582,27 @@ class Mahjong extends OnePlayerGameTemplate {
                   <div class="tiptext">Click for a hint</div>
                 </div>`;
 
+<<<<<<< HEAD
     let option = "";
     if (this.game.hidden.length > 0) {
       option += `<ul><li class="menu_option" id="undo">Undo`;
+=======
+    let option = '';
+    if (this.game.hidden.length > 0){
+      option += `<ul><li class="option" id="undo">Undo`;
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       option += "</li></ul>";
     }
 
+<<<<<<< HEAD
     this.updateStatusWithOptions(html, option);
 
     $(".menu_option").off();
     $(".menu_option").on("click", function () {
+=======
+    $('.option').off();
+    $('.option').on('click', function() {
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       let action = $(this).attr("id");
       if (action === "undo") {
         mahjong_self.undoMove();
@@ -641,9 +686,13 @@ class Mahjong extends OnePlayerGameTemplate {
         await this.newRound();
         this.game.state.session.round++;
         this.game.state.session.losses++;
+<<<<<<< HEAD
         this.game.queue.push(
           `ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`
         );
+=======
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\troundover\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
         return 1;
       }
@@ -652,11 +701,17 @@ class Mahjong extends OnePlayerGameTemplate {
         this.game.queue.splice(qe, 1);
         this.game.state.session.round++;
         this.game.state.session.wins++;
+<<<<<<< HEAD
         await this.displayModal("Congratulations!", "You solved the puzzle!");
         await this.newRound();
         this.game.queue.push(
           `ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${JSON.stringify([])}`
         );
+=======
+        this.displayModal("Congratulations!", "You solved the puzzle!");
+        this.newRound();
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\troundover\t${JSON.stringify([])}`);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
         return 1;
       }

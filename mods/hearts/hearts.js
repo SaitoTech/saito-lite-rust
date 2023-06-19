@@ -62,12 +62,20 @@ class Hearts extends GameTemplate {
   //
   // initialize HTML (overwrites game template stuff, so include...)
   //
+<<<<<<< HEAD
   async initializeHTML(app) {
     if (!this.browser_active) {
       return;
     }
 
     await super.initializeHTML(app);
+=======
+  render(app) {
+
+    if (!this.browser_active) { return; }
+
+    super.render(app);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
     //
     // add ui components here
@@ -246,6 +254,24 @@ class Hearts extends GameTemplate {
 
     return state;
   }
+
+
+  /* standard 52 card deck */
+  returnPokerDeck() { 
+    var deck = {};
+    var suits = ["S", "C", "H", "D"];
+    let indexCt = 1;
+    for (let i = 0; i < 4; i++) {
+      for (let j = 1; j <= 13; j++) { 
+        let cardImg = `${suits[i]}${j}`; 
+        deck[indexCt.toString()] = { name: cardImg };
+        indexCt++;
+      }
+    }
+    return deck;
+  } 
+
+
 }
 
 

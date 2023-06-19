@@ -73,8 +73,12 @@ this.importStrategyCard("diplomacy", {
 
           let array_of_cards = imperium_self.returnPlayerExhaustedPlanetCards(imperium_self.game.player); // unexhausted
 
+<<<<<<< HEAD
           let choices_selected = 0;
           let max_choices = 0;
+=======
+              imperium_self.updateStatus(html);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
           let html = '<div class="status-message">Select planets to unexhaust: </div><ul>';
           let divname = ".cardchoice";
@@ -91,11 +95,15 @@ this.importStrategyCard("diplomacy", {
             max_choices = 2;
           }
 
+<<<<<<< HEAD
           imperium_self.updateStatus(html);
           imperium_self.lockInterface();
 
           $(divname).off();
           $(divname).on('click', function() {
+=======
+                let action2 = $(this).attr("id");
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
             if (!imperium_self.mayUnlockInterface()) {
               salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");

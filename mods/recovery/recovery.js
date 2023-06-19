@@ -38,28 +38,45 @@ class Recovery extends ModTemplate {
       }
     });
 
+<<<<<<< HEAD
     app.connection.on("recovery-backup-overlay-render-request", async (success_callback = null) => {
-      console.debug("Received recovery-backup-overlay-render-request");
-      this.backup_overlay.success_callback = success_callback;
+=======
 
+    app.connection.on("recovery-backup-overlay-render-request", (obj = {}) => {
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
+      console.debug("Received recovery-backup-overlay-render-request");
       //
       //If we already have the email/password, just send the backup
       //
       let key = app.keychain.returnKey(this.publicKey);
       if (key) {
         if (key.wallet_decryption_secret && key.wallet_retrieval_hash) {
+<<<<<<< HEAD
           let newtx = await this.createBackupTransaction(
             key.wallet_decryption_secret,
             key.wallet_retrieval_hash
           );
           await this.app.network.propagateTransaction(newtx);
+=======
+          let newtx = this.createBackupTransaction(key.wallet_decryption_secret, key.wallet_retrieval_hash);
+          this.app.network.propagateTransaction(newtx);
+          if (obj?.success_callback){
+            obj.success_callback();
+          }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
           return;
         }
       }
 
+      //Read optional parameters
+      this.backup_overlay.success_callback = obj?.success_callback;
+      this.backup_overlay.desired_identifier = obj?.desired_identifier;
+
       //
       // Otherwise, call up the modal to query them from the user
       //
+
       this.backup_overlay.render();
     });
 
@@ -94,6 +111,7 @@ class Recovery extends ModTemplate {
     if (type == "saito-header") {
       let x = [];
 
+<<<<<<< HEAD
       let unknown_user =
         this.app.keychain.returnIdentifierByPublicKey(this.publicKey, true) === this.publicKey;
 
@@ -115,6 +133,12 @@ class Recovery extends ModTemplate {
             app.connection.emit("recovery-backup-overlay-render-request");
           },
         });
+=======
+      let unknown_user = this.app.keychain.returnIdentifierByPublicKey(this.app.wallet.returnPublicKey(), true) === this.app.wallet.returnPublicKey();
+
+    	if (unknown_user) {
+      } else {
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       }
 
       return x;

@@ -47,7 +47,7 @@ class AppspaceHome {
       this.app.browser.replaceElementBySelector(AppspaceHomeTemplate(), ".redsquare-home");
     } else {
       this.container.innerHTML = "";
-      this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
+      this.app.browser.addElementToSelector(AppspaceHomeTemplate(), this.container);
     }
   }
 
@@ -57,7 +57,7 @@ class AppspaceHome {
     //
     if (!document.querySelector(".redsquare-home")) {
       this.container.innerHTML = "";
-      this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
+      this.app.browser.addElementToSelector(AppspaceHomeTemplate(), this.container);
     }
 
     this.loader.render();
@@ -70,7 +70,7 @@ class AppspaceHome {
     //
     if (!document.querySelector(".redsquare-home")) {
       this.container.innerHTML = "";
-      this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
+      this.app.browser.addElementToSelector(AppspaceHomeTemplate(), this.container);
     }
 
     //
@@ -116,7 +116,12 @@ class AppspaceHome {
   }
 
   renderTweet(tweet) {
+<<<<<<< HEAD
     let sig = tweet.tx.signature;
+=======
+    this_self = this;
+    let sig = tweet.tx.transaction.sig;
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
     //hide current tweet thread and replace with single tweet
 
@@ -149,6 +154,7 @@ class AppspaceHome {
     try {
       document.querySelector(".tweet-" + sig).scrollIntoView();
 
+<<<<<<< HEAD
       document.querySelectorAll(".redsquare-page-header-title").forEach((el) => {
         el.outerHTML = `<div id="redsquare-page-header-title" class="redsquare-page-header-title tweetmode"><i class="redsquare-redsquare fa-solid fa-arrow-left"></i> RED SQUARE</div>`;
       });
@@ -171,6 +177,30 @@ class AppspaceHome {
             document.querySelector(".tweet-" + sig).scrollIntoView();
             this.intersectionObserver.observe(document.querySelector("#redsquare-intersection"));
           }
+=======
+      document.querySelector('.tweet-' + sig).scrollIntoView(); 
+
+      let html = `<div id="redsquare-page-header-title" class="redsquare-page-header-title tweetmode">
+                  <i class="redsquare-redsquare fa-solid fa-arrow-left"></i>
+                </div>`;
+      this_self.mod.header.updateHeaderLogo(html, function() {
+
+        document.querySelectorAll('.redsquare-page-header-title').forEach(el => {
+          el.addEventListener('click', (e) => {
+            setHash('home');
+
+             this_self.mod.header.undoUpdateHeaderLogo();
+
+            if (window.holder.querySelector('.redsquare-appspace-body')) {
+              document.querySelector('.redsquare-home').querySelector('.redsquare-appspace-body').remove();
+              document.querySelector('.redsquare-home').append(window.holder.querySelector('.redsquare-appspace-body'));
+              document.querySelector('.redsquare-home').append(document.querySelector('#redsquare-intersection'));
+              document.querySelector('.tweet-' + sig).scrollIntoView(); 
+              this_self.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
+            }
+
+          });
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         });
       });
     } catch (err) {}

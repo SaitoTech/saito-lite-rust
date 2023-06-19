@@ -1,5 +1,5 @@
 var saito = require("../../lib/saito/saito");
-var GameTemplate = require("../../lib/templates/gametemplate");
+const OnePlayerGameTemplate = require('../../lib/templates/oneplayergametemplate');
 const JSON = require("json-bigint");
 const MidnightGameRulesTemplate = require("./lib/midnight-game-rules.template");
 const MidnightBook = require("./lib/midnight-book");
@@ -7,7 +7,7 @@ const MidnightBook = require("./lib/midnight-book");
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
-class Midnight extends GameTemplate {
+class Midnight extends OnePlayerGameTemplate {
   constructor(app) {
     super(app);
 
@@ -16,8 +16,6 @@ class Midnight extends GameTemplate {
 
     this.description = "Experimental Interactive Fiction demo";
     this.categories = "Games Roleplaying One-player";
-    this.maxPlayers = 1;
-    this.minPlayers = 1;
     this.app = app;
   }
 
@@ -41,10 +39,28 @@ class Midnight extends GameTemplate {
       return;
     }
 
+<<<<<<< HEAD
     // init single player if needed
     if (this.game.players.length == 0) {
       this.initializeSinglePlayerGame();
     }
+=======
+  render(app){
+
+      if (!this.browser_active) { return; }
+      if (this.initialize_game_run) {return;} 
+
+      // init single player if needed
+      if (this.game.players.length == 0) {
+        this.initializeSinglePlayerGame();
+      }
+
+      // Override the game template render function
+      super.render(app);
+
+      this.menu.addMenuOption("game-game", "Game");
+      this.menu.addMenuOption("game-info", "Info");
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
     // Override the game template initializeHTML function
     await super.initializeHTML(app);

@@ -1,5 +1,6 @@
-const SaitoEmoji = require("../../../../lib/saito/ui/saito-emoji/saito-emoji");
+const SaitoInput = require("../../../../lib/saito/ui/saito-input/saito-input");
 const ChatPopupTemplate = require("./popup.template");
+const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class ChatPopup {
   constructor(app, mod, container = "") {
@@ -7,20 +8,29 @@ class ChatPopup {
     this.mod = mod;
 
     this.container = container;
-    this.emoji = null;
+    this.input = null; //new SaitoInput(this.app, this.mod, `#chat-popup-${this.group.id} .chat-footer`);
     this.manually_closed = false;
-    this.manually_moved = false;
+
     this.group = null;
 
     this.x_pos = 0;
     this.y_pos = 0;
     this.width = 0;
     this.height = 0;
+<<<<<<< HEAD
   }
 
   remove() {
     let popup_qs = ".chat-popup-" + this.group.id;
     console.log("removing: " + popup_qs);
+=======
+    this.overlay = new SaitoOverlay(app, mod);
+  }
+
+  remove() {
+
+    let popup_qs = "#chat-popup-" + this.group.id;
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     document.querySelector(popup_qs).remove();
   }
 
@@ -32,6 +42,8 @@ class ChatPopup {
       return;
     }
 
+    //console.log(JSON.parse(JSON.stringify(this.group)));
+
     //
     // exit if manually minimized
     //
@@ -42,68 +54,79 @@ class ChatPopup {
     //
     // our query selector
     //
-    let popup_qs = ".chat-popup-" + this.group.id;
     let popup_id = "chat-popup-" + this.group.id;
-    let header_id = "chat-header-" + this.group.id;
-    let input_id = "chat-input-" + this.group.id;
-
-    let existing_input = "";
-
-    if (document.getElementById(input_id)) {
-      existing_input = document.getElementById(input_id).innerHTML;
+    let popup_qs = "#" + popup_id;
+    
+    //let input_id = "chat-input-" + this.group.id;
+    if (!this.input){
+      this.input = new SaitoInput(this.app, this.mod, `#chat-popup-${this.group.id} .chat-footer`);
     }
 
-    //
-    //
-    //
-    if (this.emoji == null) {
-      this.emoji = new SaitoEmoji(this.app, this.mod, input_id);
-    }
+    let existing_input = this.input.getInput();
 
     //
     // calculate some values to determine position on screen...
     //
     let x_offset = 1000000;
-    let x_range = 440;
     let popups_on_page = 0;
     let am_i_on_page = 0;
 
-    document.querySelectorAll(".chat-popup").forEach((el) => {
+    document.querySelectorAll(".chat-container").forEach((el) => {
       popups_on_page++;
       var rect = el.getBoundingClientRect();
-      x_range = rect.right - rect.left;
       if (rect.left < x_offset) {
         x_offset = rect.left;
       }
     });
 
     if (document.querySelector(popup_qs)) {
-      am_i_on_page = 1;
+        am_i_on_page = 1;
     }
 
     //
     // insert or replace popup on page
     //
     if (am_i_on_page == 1) {
+
       let obj = document.querySelector(popup_qs);
       var rect = obj.getBoundingClientRect();
+<<<<<<< HEAD
       this.app.browser.replaceElementBySelector(
         ChatPopupTemplate(this.app, this.mod, this.group),
         popup_qs
       );
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       this.x_pos = rect.left;
       this.y_pos = rect.top;
       this.width = rect.width;
       this.height = rect.height;
-      obj = document.querySelector(popup_qs);
-      obj.style.left = this.x_pos + "px";
-      obj.style.top = this.y_pos + "px";
-      obj.style.width = this.width + "px";
-      obj.style.height = this.height + "px";
-    } else {
-      this.app.browser.addElementToDom(ChatPopupTemplate(this.app, this.mod, this.group));
-    }
 
+      this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group, this.container), popup_qs);
+      
+      //Don't reset any user dragging/resizing
+      if (!this.container){
+        obj = document.querySelector(popup_qs);
+        obj.style.left = this.x_pos + "px";
+        obj.style.top = this.y_pos + "px";
+        obj.style.width = this.width + "px";
+        obj.style.height = this.height + "px";
+      }
+    } else {
+      this.app.browser.addElementToSelectorOrDom(ChatPopupTemplate(this.app, this.mod, this.group, this.container), this.container);
+
+      //
+      // now set left-position of popup
+      //
+      if (!this.container && popups_on_page > 0){
+        console.log("Reposition secondary popup");
+        let obj = document.querySelector(popup_qs);
+        this.x_pos = x_offset - obj.getBoundingClientRect().width - 10;
+        if (this.x_pos < 0) { this.x_pos = 0; }
+        obj.style.left = this.x_pos + "px";
+      }
+
+<<<<<<< HEAD
     //
     // now set left-position of popup
     //
@@ -114,35 +137,27 @@ class ChatPopup {
       }
       let obj = document.querySelector(popup_qs);
       obj.style.left = this.x_pos + "px";
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     }
 
-    //
-    // make draggable
-    //
-    this.app.browser.makeDraggable(popup_id, header_id, true, () => {
-      let obj = document.querySelector(popup_qs);
-      var rect = obj.getBoundingClientRect();
-      this.x_pos = rect.left;
-      this.y_pos = rect.top;
-      this.manually_moved = true;
-    });
 
     //
-    // emojis
+    // inputs
     //
-    this.emoji.render();
+    this.input.render();
 
     //
     // scroll to bottom
     //
-    if (document.querySelector("." + popup_id + " .chat-body")) {
-      document.querySelector("." + popup_id + " .chat-body").scroll(0, 1000000000);
+    if (document.querySelector(popup_qs + " .chat-body")) {
+      document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
     }
     //
     // re-render typed text
     //
     if (existing_input != "") {
-      document.getElementById(input_id).innerHTML = existing_input;
+      this.input.setInput(existing_input);
       existing_input = "";
     }
 
@@ -152,31 +167,40 @@ class ChatPopup {
     this.attachEvents();
   }
 
-  insertBackgroundTab(app, mod, gid) {
-    let tabContainer = document.querySelector(".chat-group-tabs");
-    if (tabContainer) {
-      tabContainer.classList.add("show-multi");
-    }
-
-    let group = mod.returnGroup(gid);
-    this.attachEvents(app, mod);
-  }
 
   attachEvents() {
     let app = this.app;
     let mod = this.mod;
     let group_id = this.group.id;
     let input_id = "chat-input-" + this.group.id;
+    let header_id = "chat-header-" + this.group.id;
 
     //
     // our query selector
     //
-    let popup_qs = ".chat-popup-" + this.group.id;
     let popup_id = "chat-popup-" + this.group.id;
+    let popup_qs = "#chat-popup-" + this.group.id;
+    this_self = this;
+
+    if (document.querySelector(".chat-container"+popup_qs)){
+
+      //
+      // make draggable
+      //
+      this.app.browser.makeDraggable(popup_id, header_id, true, () => {
+        let obj = document.querySelector(popup_qs);
+        var rect = obj.getBoundingClientRect();
+        this.x_pos = rect.left;
+        this.y_pos = rect.top;
+        this.manually_moved = true;
+      });
+
+    }
 
     // add reply functionality
 
     document.querySelectorAll(`${popup_qs} .saito-userline-reply`).forEach((el) => {
+<<<<<<< HEAD
       var clicked = el;
       el.addEventListener("click", (e) => {
         let quote = "<blockquote>";
@@ -204,6 +228,21 @@ class ChatPopup {
         range.collapse(true);
         sel.removeAllRanges();
         sel.addRange(range);
+=======
+      el.addEventListener('click', (e) => {
+        let quote = "<blockquote>";
+        if (el.parentElement.previousElementSibling.innerText.length > 25) {
+          quote += "..." + el.parentElement.previousElementSibling.innerText.slice(-25) + "<br/><em>";
+        } else {
+          quote += el.parentElement.previousElementSibling.innerText + "<br/><em>";
+        }
+        //Add the time stamp of the original message
+        quote += el.parentElement.querySelector(".saito-chat-line-timestamp").innerHTML + "</em></blockquote><br/>";
+
+        this.input.insertRange(quote.replaceAll('\n', '<br/>'))
+        this.input.focus();
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       });
     });
 
@@ -227,6 +266,7 @@ class ChatPopup {
         };
       }
 
+<<<<<<< HEAD
       //
       // focus on text input
       //
@@ -235,10 +275,13 @@ class ChatPopup {
         document.execCommand("selectAll", false, null);
         document.getSelection().collapseToEnd();
       }
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
       //
       // submit
       //
+<<<<<<< HEAD
       let msg_input = document.querySelector(`${popup_qs} .chat-footer .chat-input`);
       msg_input.onkeydown = async (e) => {
         if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
@@ -248,12 +291,19 @@ class ChatPopup {
           }
           let [newtx, data] = await mod.createChatTransaction(group_id, msg_input.innerHTML);
           await mod.sendChatTransaction(app, newtx, data);
+=======
+      this.input.callbackOnReturn = (message) => {
+          let new_msg = message.replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
+          if (new_msg.trim() == "") { return; }
+          let newtx = mod.createChatTransaction(group_id, message);
+          mod.sendChatTransaction(app, newtx);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
           mod.receiveChatTransaction(app, newtx);
-          msg_input.textContent = "";
-          msg_input.innerHTML = "";
-          if (document.getElementById(input_id)) {
-            document.getElementById(input_id).innerHTML = "";
+          this.input.setInput("");
+          if (document.querySelector(popup_qs + " .chat-body")) {
+            document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
           }
+<<<<<<< HEAD
         }
       };
       msg_input.onpaste = (e) => {
@@ -262,11 +312,23 @@ class ChatPopup {
           el.innerHTML = el.innerHTML;
         }, 0);
       };
+=======
+      }
+
+      this.input.callbackOnUpload = (filesrc) => {
+          let img = document.createElement("img");
+          img.classList.add("img-prev");
+          img.src = filesrc;
+          let msg = img.outerHTML;
+          this.input.callbackOnReturn(msg);
+      }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
       //
       // submit (button)
       //
       document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
+<<<<<<< HEAD
         e.preventDefault();
         if (msg_input.innerHTML == "") {
           return;
@@ -309,6 +371,43 @@ class ChatPopup {
         },
         false
       ); // false = no drag-and-drop image click
+=======
+        this.input.callbackOnReturn(this.input.getInput());
+      }
+
+      //  
+      // drag and drop images into chat window
+      //
+
+      app.browser.addDragAndDropFileUploadToElement(popup_id, async (filesrc) => {
+        filesrc = await app.browser.resizeImg(filesrc); // (img, dimensions, quality)
+
+        let img = document.createElement('img');
+        img.classList.add('img-prev');
+        img.src = filesrc;
+        let msg = img.outerHTML;
+
+        let newtx = mod.createChatTransaction(group_id, img.outerHTML); // img into msg
+        mod.sendChatTransaction(app, newtx);
+        mod.receiveChatTransaction(app, newtx);
+        this.input.setInput("");
+
+      }, false); // false = no drag-and-drop image click
+
+
+      document.querySelectorAll(`.img-prev`).forEach(function(img, key) { 
+        img.onclick = (e) => {
+          e.preventDefault();
+          
+          let img = e.currentTarget;
+          let src = img.getAttribute('src');
+
+          this_self.overlay.show(`<img class="chat-popup-img-enhanced" src="${src}" >`);
+        }
+      });
+
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     } catch (err) {
       console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);
     }

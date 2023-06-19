@@ -25,6 +25,7 @@ class Crypto extends ModTemplate {
       // only show if games are winable
       //
       let gm = this.app.modules.returnActiveModule();
+<<<<<<< HEAD
       if (gm.winable == 0) {
         return null;
       }
@@ -34,6 +35,9 @@ class Crypto extends ModTemplate {
       if (gm.losable == 0) {
         return null;
       }
+=======
+      if (!gm.can_bet) { return null; }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
       let ac = this.app.wallet.returnActivatedCryptos();
       let cm = this;
@@ -44,6 +48,7 @@ class Crypto extends ModTemplate {
       };
 
       for (let i = 0; i < ac.length; i++) {
+<<<<<<< HEAD
         menu.submenus.push({
           text: ac[i].ticker,
           id: "game-crypto-" + ac[i].ticker,
@@ -56,6 +61,33 @@ class Crypto extends ModTemplate {
               await cm.enableCrypto(game_mod, game_mod.game.id, ac[i].ticker, amount);
             });
           },
+=======
+      	menu.submenus.push({
+          text : ac[i].ticker,
+          id : "game-crypto-"+ac[i].ticker,
+          class : "game-crypto-ticker",
+          callback : async (app, game_mod) => {
+	    this.attachStyleSheets();
+	    this.ticker = ac[i].ticker;
+	    this.overlay.render(async (amount) => {
+              game_mod.menu.hideSubMenus();
+
+    	      let ticker = ac[i].ticker;
+	      let cryptomod = game_mod.app.wallet.returnCryptoModuleByTicker(ticker);
+	      let current_balance = await cryptomod.returnBalance();
+
+	      //
+	      // if proposing, you should be ready
+	      //
+	      if (Number(current_balance) < Number(amount)) {
+		alert("You do not have this amount of "+ticker+" available yourself. Please deposit before inviting others to a peer-to-peer crypto game.");
+		return;
+	      }
+
+      	      cm.enableCrypto(game_mod, game_mod.game.id, ac[i].ticker, amount);
+	    });
+          }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         });
       }
       return menu;

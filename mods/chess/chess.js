@@ -3,8 +3,15 @@ const saito = require("../../lib/saito/saito");
 const ChessGameRulesTemplate = require("./lib/chess-game-rules.template");
 const ChessGameOptions = require("./lib/chess-game-options.template");
 const ChessSingularGameOptions = require("./lib/chess-singular-game-options.template");
+<<<<<<< HEAD
 const chess = require("./lib/chess.js");
 const chessboard = require("./lib/chessboard");
+=======
+const chess = require('./lib/chess.js');
+const chessboard = require('./lib/chessboard');
+//const SaitoUser = require("../../lib/saito/ui/saito-user/saito-user");
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
 let this_chess = null;
 
@@ -29,20 +36,31 @@ class Chessgame extends GameTemplate {
 
     this.confirm_moves = 1;
 
-    this.player_roles = ["Observer", "White", "Black"];
+    this.roles = ["Observer", "White", "Black"];
     this.app = app;
   }
 
+<<<<<<< HEAD
   async initializeHTML(app) {
     if (!this.browser_active) {
       return;
     }
     await super.initializeHTML(app);
+=======
+
+  render(app) {
+
+    if (!this.browser_active) { return; }
+    if (this.initialize_game_run) { return; }
+
+    super.render(app);
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
     //
     // ADD MENU
     //
     this.menu.addMenuOption("game-game", "Game");
+<<<<<<< HEAD
     this.menu.addMenuOption("game-info", "Info");
 
     /*
@@ -142,20 +160,60 @@ class Chessgame extends GameTemplate {
 
     this.menu.addSubMenuOption("game-info", {
       text: "Rules",
+=======
+
+    if (this.game.player > 0){
+
+      this.menu.addSubMenuOption("game-game", {
+        text : (this.game.draw_offered)? "Accept Draw": "Offer Draw",
+        id : "game-draw",
+        class : "game-draw",
+        callback : async function(app, game_mod) {
+           if (game_mod.game.draw_offered == 0){
+              let c = await sconfirm("Offer to end the game in a draw?");
+              if (c) {
+                game_mod.updateStatusMessage("Draw offer sent; " + game_mod.status);
+                game_mod.game.draw_offered = -1; //Offer already sent
+                var data = {draw: "offer"};
+                game_mod.endTurn(data);
+                return;
+              }  
+            }else{
+              let c = await sconfirm("Accept offer to end the game in a draw?");
+              if (c) {
+                game_mod.updateStatusMessage("Draw offer accepted!");
+                game_mod.game.draw_offered = -1; //Offer already sent
+                var data = {draw: "accept"};
+                game_mod.endTurn(data);
+                return;
+              }
+            }
+        }
+      });
+
+      this.menu.addSubMenuOption("game-game", {
+        text : "Resign",
+        id : "game-resign",
+        class : "game-resign",
+        callback : async function(app, game_mod) {
+          let c = await sconfirm("Do you really want to resign?");
+          if (c) {
+            game_mod.resignGame(game_mod.game.id, "resignation");
+            return;
+          }
+        }
+      });
+
+    }
+
+    this.menu.addSubMenuOption("game-game", {
+      text: "How to Play",
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       id: "game-rules",
       class: "game-rules",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(game_mod.returnGameRulesHTML());
-      },
-    });
-    this.menu.addSubMenuOption("game-info", {
-      text: "Log",
-      id: "game-log",
-      class: "game-log",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
       },
     });
 
@@ -164,6 +222,7 @@ class Chessgame extends GameTemplate {
 
     this.log.render();
 
+<<<<<<< HEAD
     //Plug Opponent Information into the Controls
     if (this.game.player) {
       let opponent = this.game.opponents[0];
@@ -214,6 +273,19 @@ class Chessgame extends GameTemplate {
       }
     }
   }
+=======
+    this.playerbox.render();   
+
+    this.playerbox.updateUserline(this.roles[this.game.player], this.game.player);
+    this.playerbox.updateGraphics(`<div class="tool-item item-detail turn-shape ${this.roles[this.game.player].toLowerCase()}"></div>`, this.game.player);
+    this.playerbox.updateUserline(this.roles[(3-this.game.player)], (3-this.game.player));
+    this.playerbox.updateGraphics(`<div class="tool-item item-detail turn-shape ${this.roles[(3-this.game.player)].toLowerCase()}"></div>`, (3-this.game.player));
+
+    window.onresize = () => this.board.resize();
+
+  }
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
   async initializeGame(game_id) {
     console.log("######################################################");
@@ -238,7 +310,15 @@ class Chessgame extends GameTemplate {
       return;
     }
 
+<<<<<<< HEAD
     this.board = new chessboard("board", { pieceTheme: "img/pieces/{piece}.png" });
+=======
+    if (this.loadGamePreference("chess_expert_mode")){
+      this.confirm_moves = 0;
+    }
+
+    this.board = new chessboard('board', { pieceTheme: 'img/pieces/{piece}.png' });
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     this.engine = new chess.Chess();
 
     if (this.game.position != undefined) {
@@ -257,9 +337,14 @@ class Chessgame extends GameTemplate {
     //game.target is initialized to 1, which is white (switched above if "player 1" wanted to be black)
     //
     if (this.game.target == this.game.player) {
+<<<<<<< HEAD
       if (this.useClock) {
         this.startClock();
       }
+=======
+      if (this.useClock) { this.startClock(); }
+      this.setPlayReminder();
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     }
 
     // If we have a fast-ish timed game turn off move confirmations initially
@@ -269,13 +354,24 @@ class Chessgame extends GameTemplate {
 
     this.updateStatusMessage();
     this.game.draw_offered = this.game.draw_offered || 0;
+<<<<<<< HEAD
     this.attachGameEvents();
+=======
+    //this.attachGameEvents();
+
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
   }
 
   ////////////////
   // handleGame //
   ////////////////
+<<<<<<< HEAD
   async handleGameLoop(msg = {}) {
+=======
+  handleGameLoop(msg={}) {
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     msg = {};
     if (this.game.queue.length > 0) {
       msg.extra = JSON.parse(
@@ -314,11 +410,20 @@ class Chessgame extends GameTemplate {
         if (this.game.player === msg.extra.target) {
           this.game.draw_offered = 2; //I am receving offer
           this.updateStatusMessage("Opponent offers a draw; " + this.status);
+<<<<<<< HEAD
         }
       }
       //Refresh events
       this.attachGameEvents();
 
+=======
+          this.render(this.app);
+        } 
+      }
+      //Refresh events
+      //this.attachGameEvents();
+      
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       //Process independently of game moves
       //i.e. don't disrupt turn system
       return;
@@ -326,16 +431,28 @@ class Chessgame extends GameTemplate {
 
     if (this.game.draw_offered !== 0) {
       this.game.draw_offered = 0; //No offer on table
+<<<<<<< HEAD
       this.attachGameEvents();
     }
 
+=======
+      //this.attachGameEvents();      
+    }
+
+    this.game.last_position = this.game.position;
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     this.game.position = data.position;
 
     this.updateLog(data.move);
 
     if (this.browser_active == 1) {
       this.updateBoard(this.game.position);
+<<<<<<< HEAD
 
+=======
+      this.updateOpponent(msg.extra.target, data.move);
+  
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       //Check for draw according to game engine
       if (this.engine.in_draw() === true) {
         await this.endGame(this.game.players, "draw");
@@ -351,9 +468,15 @@ class Chessgame extends GameTemplate {
           return 0;
         }
 
+<<<<<<< HEAD
         if (this.useClock) {
           this.startClock();
         }
+=======
+        if (this.useClock) { this.startClock(); }
+        this.setPlayReminder();
+
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
       }
     }
 
@@ -363,7 +486,55 @@ class Chessgame extends GameTemplate {
     return 0;
   }
 
+<<<<<<< HEAD
   removeEvents() {
+=======
+
+
+
+
+
+
+
+
+
+
+
+
+  switchColors(){
+    // observer skips
+    if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
+          return 1;
+      } 
+
+      //Game engine automatically randomizes player order, so we are good to go
+      if (!this.game.options.player1 || this.game.options.player1 == "random"){
+        return 1;
+      }
+      
+      // re-order the players so that originator can be the correct role
+      if (this.game.options.player1 === "white"){
+        if (this.game.players[0] !== this.game.originator){
+          let p = this.game.players.shift();
+          this.game.players.push(p);
+        }
+      }else{
+        if (this.game.players[1] !== this.game.originator){
+          let p = this.game.players.shift();
+          this.game.players.push(p);
+        }
+      }
+      //Fix game.player so that it corresponds to the indices of game.players[]
+      for (let i = 0; i < this.game.players.length; i++){
+        if (this.game.players[i] === this.app.wallet.returnPublicKey()){
+          this.game.player = i+1;
+        }
+      }
+
+  }
+
+  removeEvents(){
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
     this.lockBoard(this.game.position);
   }
 
@@ -386,6 +557,7 @@ class Chessgame extends GameTemplate {
     await this.sendMessage("game", extra);
   }
 
+<<<<<<< HEAD
   attachGameEvents() {
     if (this.game?.player == 0 || !this.browser_active) {
       return;
@@ -448,12 +620,15 @@ class Chessgame extends GameTemplate {
 
     window.onresize = () => this.board.resize();
   }
+=======
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
   updateStatusMessage(str = "") {
     if (this.browser_active != 1) {
       return;
     }
 
+<<<<<<< HEAD
     let statusEl = document.getElementById("status");
     let casualtiesEl = document.getElementById("captured");
 
@@ -461,18 +636,30 @@ class Chessgame extends GameTemplate {
       console.warn("Updating status to null elements");
       return;
     }
+=======
+    if (!this.browser_active) { return; }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
 
     //
-    // print message if provided
+    // print message
     //
     if (str != "") {
-      statusEl.innerHTML = sanitize(str);
       this.status = str;
+
+      if (document.querySelector(".status")){
+        this.app.browser.replaceElementBySelector(`<div class="status">${str}</div>`, ".status");
+      } else {
+        this.playerbox.updateBody(`<div class="status">${str}</div>`, this.game.player);  
+      }
+      
       return;
-    }
 
-    //Otherwise build up default status messaging...
+    //
+    // or print game info
+    //
+    } else {
 
+<<<<<<< HEAD
     let status = "";
 
     let moveColor = "White";
@@ -480,8 +667,33 @@ class Chessgame extends GameTemplate {
     if (this.engine.turn() === "b") {
       moveColor = "Black";
       bgColor = "#111";
-    }
+=======
+      var status = '';
+      var moveColor = (this.engine.turn() === 'b')? "Black" : 'White';
+    
+      // check?
+      if (this.engine.in_check() === true) {
+        status = moveColor + ' is in check';
+      } else {
+        if (this.roles[this.game.player] == moveColor){
+          status = "your move";
+        }else{
+          status = "waiting for " + moveColor;
+        }
+      }
+    
+      this.status = status;
+      status = `<div class="status">${status}</div>`;
+      let captHTML = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()), this.game.player);
+      status = sanitize(captHTML) + status;
+       
+      this.playerbox.updateBody(status, this.game.player);
 
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
+    }
+  }
+
+<<<<<<< HEAD
     document.getElementById("turn-shape").style.backgroundColor = bgColor;
 
     // check?
@@ -502,6 +714,27 @@ class Chessgame extends GameTemplate {
       casualtiesEl.innerHTML = sanitize(captHTML);
       $("#captured-cont").removeClass("hidden");
     }
+=======
+
+  updateOpponent(target, move){
+    
+    let status = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()), 3-this.game.player);
+
+    if (target == this.game.player){
+      status += `<div class="last_move">${move.substring(move.indexOf(":")+2)}</div>`;
+    }
+
+    this.playerbox.updateBody(status, 3-this.game.player);
+
+    if (document.querySelector(".last_move")){
+      document.querySelector(".last_move").onclick = () =>{
+        if (this.game.last_position){
+          this.setBoard(this.game.last_position);
+          this.updateBoard(this.game.position);
+        }
+      };
+    }
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
   }
 
   updateBoard(position) {
@@ -795,7 +1028,12 @@ class Chessgame extends GameTemplate {
     $("input:checkbox").change(function () {
       if ($(this).is(":checked")) {
         this_chess.confirm_moves = 0;
+<<<<<<< HEAD
       } else {
+=======
+        this_chess.saveGamePreference("chess_expert_mode", 1);
+      }else{
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
         this_chess.confirm_moves = 1;
       }
     });
@@ -846,6 +1084,7 @@ class Chessgame extends GameTemplate {
     return [WH, BL];
   }
 
+<<<<<<< HEAD
   returnCapturedHTML(acapt) {
     let captHTML = "";
     for (var i = 0; i < acapt[0].length; i++) {
@@ -856,8 +1095,29 @@ class Chessgame extends GameTemplate {
 
     for (var i = 0; i < acapt[1].length; i++) {
       captHTML += this.piecehtml(acapt[1][i], "b");
+=======
+  // player = number of opponent
+  returnCapturedHTML(acapt, player) {
+    
+    let captHTML = "";
+    
+    if (player == 2){
+      for (var i = 0; i < acapt[0].length; i++) {
+        captHTML += this.piecehtml(acapt[0][i], "w");
+      }
+    }else {
+      for (var i = 0; i < acapt[1].length; i++) {
+        captHTML += this.piecehtml(acapt[1][i], "b");
+      }
     }
-    return captHTML;
+
+    if (captHTML) {
+      return `<div class="trophies">${captHTML}</div>`;
+    } else {
+      return "";
+>>>>>>> d78b646660d92a43b6b603e94e8e9f5ce5b2f4b0
+    }
+        
   }
 
   piecehtml(p, c) {
@@ -872,7 +1132,7 @@ class Chessgame extends GameTemplate {
     return ChessSingularGameOptions(this.app, this);
   }
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
     return ChessGameOptions(this.app, this);
   }
 
