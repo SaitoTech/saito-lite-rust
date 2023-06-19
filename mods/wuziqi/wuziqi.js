@@ -72,14 +72,14 @@ class Wuziqi extends GameTemplate {
             this.generateBoard(this.game.size);
         }
 
-
-        this.hud.render();
-        //this.hud.minWidth = 400; //Doesn't work...
-
-        let hh = document.querySelector(".hud-header");
-        if (hh){
-            hh.classList.add(this.roles[this.game.player]);
-        }  
+        if (this.game.player > 0) {
+            this.hud.render();    
+            let hh = document.querySelector(".hud-header");
+            if (hh){
+                hh.classList.add(this.roles[this.game.player]);
+            }  
+        }
+        
       
         this.racetrack.win = Math.ceil(this.game.options.best_of/2);
         this.racetrack.title = "Best of " + this.game.options.best_of;

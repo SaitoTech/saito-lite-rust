@@ -392,10 +392,20 @@ class Chessgame extends GameTemplate {
     
       this.status = status;
       status = `<div class="status">${status}</div>`;
-      let captHTML = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()), this.game.player);
-      status = sanitize(captHTML) + status;
-       
-      this.playerbox.updateBody(status, this.game.player);
+
+      if (this.game.player > 0){
+        let captHTML = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()), this.game.player);
+        status = sanitize(captHTML) + status;
+
+        this.playerbox.updateBody(status, this.game.player);
+
+      }else{
+        for (let i = 1; i < 3; i++){
+          let captHTML = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()), i);
+          this.playerbox.updateBody(captHTML, i);          
+          this.updateStatus(status);
+        }
+      }
 
     }
   }
@@ -403,6 +413,10 @@ class Chessgame extends GameTemplate {
 
   updateOpponent(target, move){
     
+    if (this.game.player == 0 ){
+      return;
+    }
+
     let status = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()), 3-this.game.player);
 
     if (target == this.game.player){
