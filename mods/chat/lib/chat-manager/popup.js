@@ -86,7 +86,7 @@ class ChatPopup {
       this.width = rect.width;
       this.height = rect.height;
 
-      this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group, this.container), popup_qs);
+      this.app.browser.replaceElementBySelector(`<div class="chat-body">${this.mod.returnChatBody(this.group.id)}</div>`, popup_qs + " .chat-body");
       
       //Don't reset any user dragging/resizing
       if (!this.container){
@@ -110,13 +110,12 @@ class ChatPopup {
         obj.style.left = this.x_pos + "px";
       }
 
+      //
+      // inputs
+      //
+      this.input.render();
+
     }
-
-
-    //
-    // inputs
-    //
-    this.input.render();
 
     //
     // scroll to bottom
@@ -124,13 +123,14 @@ class ChatPopup {
     if (document.querySelector(popup_qs + " .chat-body")) {
       document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
     }
+    
     //
     // re-render typed text
     //
-    if (existing_input != "") {
-      this.input.setInput(existing_input);
-      existing_input = "";
-    }
+    //if (existing_input != "") {
+    //  this.input.setInput(existing_input);
+    //  existing_input = "";
+    //}
 
 
     //

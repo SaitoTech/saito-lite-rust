@@ -167,41 +167,20 @@ class Chat extends ModTemplate {
       for (let group of this.groups) {
         //Let's not hit the Archive for community chat since that is seperately queried on service.service == chat
         if (group.name !== this.communityGroupName) {
-          // Mods should not be directly querying the archive module (or should they)
-          // But I need a finer grained query than the app.storage API currently supports
-          // TODO FIX THIS
 
-          let sql = `SELECT tx FROM txs WHERE type = "${group.id}" AND ts > ${group.last_update} ORDER BY ts DESC LIMIT 200`;
+          this.app.storage.loadTransactions({ field3 : group.id, limit: 100, created_later_than: group.last_update }, (txs) => {
 
-          this.sendPeerDatabaseRequestWithFilter(
-            "Archive",
-            sql,
+            chat_self.loading--;
 
-            (res) => {
-              chat_self.loading--;
-
-              if (res?.rows) {
-                if (chat_self.debug) {
-                  console.log(group.id + " Archive TXs:" + res.rows.length);
-                }
-
-                while (res.rows.length > 0) {
-                  //Process the chat transaction like a new message
-                  let temp = res.rows.pop();
-                  let tx = new saito.default.transaction();
-                  tx.deserialize_from_web(app, temp.tx);
-                  tx.decryptMessage(chat_self.app);
-                  chat_self.addTransactionToGroup(group, tx);
-                }
+            if (txs) {
+              while (txs.length > 0) {
+                //Process the chat transaction like a new message
+                let tx = txs.pop();
+                tx.decryptMessage(chat_self.app);
+                chat_self.addTransactionToGroup(group, tx);
               }
-            },
-            (p) => {
-              if (p == peer) {
-                return 1;
-              }
-              return 0;
             }
-          );
+          });
         }
       }
     }
@@ -691,9 +670,10 @@ class Chat extends ModTemplate {
     //
     if (this.app.BROWSER) {
       if (txmsg.group_id !== this.communityGroup?.id) {
-        for (let i = 0; i < tx.transaction.to.length; i++) {
-          if (tx.transaction.to[i].add == app.wallet.returnPublicKey()) {
-            this.app.storage.saveTransaction(tx, { field2 : txmsg.group_id });
+        for (let i = 0; i < tx.transaction.from.length; i++) {
+          if (tx.transaction.from[i].add == app.wallet.returnPublicKey()) {
+            console.log("Save Chat TX");
+            this.app.storage.saveTransaction(tx, { field3 : txmsg.group_id });
             break;
           }
         }

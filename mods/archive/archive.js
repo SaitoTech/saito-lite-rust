@@ -291,10 +291,13 @@ class Archive extends ModTemplate {
     if (obj.updated_earlier_than) { timestamp_limiting_clause = " AND created_at < " + parseInt(obj.updated_earlier_than); }
 
     //
-    // ACCEPT REASONABLE LIMITS
+    // ACCEPT REASONABLE LIMITS -- [10, 100]
     //
-    if (obj.limit && obj.limit <= 100) { limit = obj.limit; }
-
+    if (obj.limit) {
+      limit = Math.max(limit, obj.limit);
+      limit = Math.min(limit, 100);
+    } 
+    
     //
     // SEARCH BASED ON CRITERIA PROVIDED
     //

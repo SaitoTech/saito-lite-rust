@@ -34,15 +34,6 @@
     border-radius: 2.5rem;
 }
 
-.hud-header.black {
-    background-color: black;
-    color: white;
-}
-
-.hud-header.white {
-    background-color: white;
-    color: black;
-}
 
 
 .racetrack .pblack {

@@ -1380,7 +1380,7 @@ class Arcade extends ModTemplate {
   }
 
   ///////////////////////////////
-  // LOADING AND RUNNING GAMES //
+  // "LOAD"ING AND RUNNING GAMES //
   ///////////////////////////////
 
   //
@@ -1905,30 +1905,22 @@ class Arcade extends ModTemplate {
 
     console.log(`${game_mod.name}_${game_mod.game.id} from ${game_mod.game.originator}`);
 
-    let sql = `SELECT * FROM txs WHERE type = '${game_mod.name}_${game_mod.game.id}' AND publickey = '${game_mod.game.originator}' ORDER BY id ASC`;
-    this.sendPeerDatabaseRequestWithFilter("Archive", sql, (res) => {
-      if (res.rows) {
-        console.log("sql rows: " + res.rows.length);
+    this.app.storage.loadTransactions({ field1 : game_mod.name+"_"+game_mod.game.id, limit: 100 }, (txs) => {
+      for (let tx of txs){
+        let game_move = tx.returnMessage();
+        let loaded_step = game_move.step.game;
 
-        for (let record of res.rows) {
-          let future_tx = new saito.default.transaction();
-          future_tx.deserialize_from_web(this.app, record.tx);
-          let game_move = future_tx.returnMessage();
-          let loaded_step = game_move.step.game;
-
-          if (loaded_step > game_mod.game.step.game ||
-            loaded_step > game_mod.game.step.players[future_tx.transaction.from[0].add]) 
-          {
-            console.log("Add move: " + JSON.stringify(game_move));
-            game_mod.addFutureMove(future_tx); //This will save future moves (so saveGame below doesn't overwrite them)
-          }
+        if (loaded_step > game_mod.game.step.game ||
+          loaded_step > game_mod.game.step.players[tx.transaction.from[0].add]) 
+        {
+          console.log("Add move: " + JSON.stringify(game_move));
+          game_mod.addFutureMove(tx); //This will save future moves (so saveGame below doesn't overwrite them)
         }
+      }
+      game_mod.saveGame(game_mod.game.id);
 
-        game_mod.saveGame(game_mod.game.id);
-        
-        if (mycallback) {
-          mycallback(game_mod);
-        }
+      if (mycallback) {
+        mycallback(game_mod);
       }
     });
 
