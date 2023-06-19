@@ -37,8 +37,6 @@ class ChatPopup {
     //
     if (this.group == null) { return; }
 
-    //console.log(JSON.parse(JSON.stringify(this.group)));
-
     //
     // exit if manually minimized
     //

@@ -3,20 +3,16 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 
 //
 // Library module is used to index material that I have saved in my own transaction
-// archives for curation, personal use, and lending as legally permitted. It queries
+// archives for curation, personal use and lending as legally permitted. It queries
 // my peers for items they have indexed in the same collections, and fetches those 
 // records on load.
 //
-// The module then provides abstract functionality permitting the borrowing and 
-// lending of this content. Records are updated across the distributed system such
-// that we can ensure compliance with US copyright law.
+// Modules that wish to manage distributed and curated content should respondTo() the
+// the "library-collection" to tell it what class of material it should index for 
+// personal or distributed use. The library will then start indexing those materials 
+// and serve entries to peers on request.
 //
-// Modules that wish to take advantage of the existence of the library should respondTo
-// the "library-collection" to inform it that it should listen for collections of a 
-// specific type of material. The library will then start indexing those materials and
-// serving entries out to peers on request.
-//
-// Library indexes are currently stored in the wallet. backup Wallet to save index.
+// Library indexes are stored in the wallet - backup wallet to save.
 //
 // library['collection'] = [
 //    { 
@@ -47,153 +43,177 @@ class Library extends ModTemplate {
     this.return_milliseconds = 7200000;
 
     //
-    // contains both our collection and list of remote / indexable
-    //
-    // library['collection'].local <-- index of our items
-    // library['collection'].peers <-- 
+    // library['collection'].peers = {}
     //
     this.library = {};
 
     //
-    // array of content our modules care about
-    //
     // the information stored will look like this
     //
-    //    module : "Nwasm" ,
-    //    mod : this ,     
-    //    collection : "Nwasm" ,
-    //    key : this.nwasm.random ,
-    //    shouldArchive : (request="", subrequest="") => {
-    //      if (request === "archive rom" || subrequest === "archive rom") { return true; }
-    //      return false;
-    //    },
+    //    module 	: "Nwasm" ,
+    //    mod 		: this ,     
+    //    collection 	: "Nwasm" ,
+    //    key 		: this.nwasm.random ,
+    //    shouldArchive : (tx) => { return false; } // true or false
     //
-    this.monitor = [];
+    this.collections = [];
 
     //
     //
     //
     this.load();
 
+
     //
     // index transactions that are saved
     //
-    app.connection.on("save-transaction", (tx) => {
+    app.connection.on("saito-save-transaction", (tx) => {
 
-//console.log("---------------------");
-//console.log("---------------------");
-//console.log("IN LIBRARY ON SAVE TX");
-//console.log("---------------------");
-//console.log("---------------------");
+console.log("---------------------");
+console.log("---------------------");
+console.log("IN LIBRARY ON SAVE TX");
+console.log("---------------------");
+console.log("---------------------");
 
       //
-      // library exists?
+      // fetch information for index
       //
-      let txmsg = tx.returnMessage();
-      let id = txmsg.id;
-      let title = txmsg.title;
-      let module = txmsg.module;
-      let request = txmsg.request || "";
-      let subrequest = txmsg.subrequest || "";
-      let sig = tx.transaction.sig;
+      let txmsg 	= tx.returnMessage();
+      let id 		= txmsg.id;
+      let title 	= txmsg.title;
+      let module 	= txmsg.module;
+      let request 	= txmsg.request || "";
+      let sig 		= tx.transaction.sig;
 
-      if (this.library[module]) {
+      //
+      // sanity check
+      //
+      let does_item_exist_in_collection = this.isItemInCollection({ id : id }, module);
+      if (does_item_exist_in_collection) {
+        try {
+          let c = confirm("Your library already contains a copy of this item. Is this a new copy?");
+          if (c) {
+            this.library[module][idx].num++;
+            this.library[module][idx].available++;
+            this.save();
+          }
+        } catch (err) {}
+      }
 
-	let idx = -1;
-	let contains_item = false;
-
-        for (let i = 0; i < this.library[module].length; i++) {
-	  let item = this.library[module][i];
-	  if (item.id == id) {
-	    contains_item = true;
-	    idx = i;
-	    i = this.library[module].length+1;
-	  }
-	}
-
-	//
-	// add ROM or update library
-	//
-	for (let i = 0; i < this.monitor.length; i++) {
-
-	  if (this.monitor[i].shouldArchive(request, subrequest)) {
-
-	    if (contains_item == false) {
-	      let item = {
-  		id : id ,
-		title : txmsg.title ,
-		description : "" ,
-		num : 1 ,			// total
-		available : 1 ,		// total available
-		checkout : [] ,
-		sig : sig
-	      }
-	      if (!this.library[module])       { this.library[module] = {}; }
-	      if (!this.library[module].local) { this.library[module].local = []; }
-	      if (!this.library[module].peers) { this.library[module].peers = {}; }
-	      this.library[module].local.push(item);
-	      this.save();
-	    } else {
-	      try {
-	        let c = confirm("Your library already contains a copy of this item. Is this a new copy?");
-	        if (c) {
-	          this.library[module][idx].num++;
-	          this.library[module][idx].available++;
-	          this.save();
-	        }
-	      } catch (err) {}
-	    }
-	  }
+      //
+      // add item to library
+      //
+      for (let i = 0; i < this.collections.length; i++) {
+        if (this.collections[i].shouldArchive(tx)) {
+	  let item = {
+  		id 		: id ,
+		title 		: txmsg.title ,
+		description 	: "" ,
+		num 		: 1 ,			// total
+		available 	: 1 ,		// total available
+		checkout 	: [] ,
+		sig 		: sig
+	  };
+	  this.addItemToCollection(item, this.app.wallet.returnPublicKey());
 	}
       }
     });
   } 
 
 
-  //
-  // check which modules / libraries we care about
-  //
+  addCollection(collection, peer="localhost") {
+
+    if (peer === "localhost") { peer = this.app.wallet.returnPublicKey(); }
+
+    this.collections.push(collection);
+
+    //
+    // if this is an existing collection, we will already have content
+    // indexed in our library. but if it is not indexed, we should create
+    // the library and ensure we have "localhost" available as a peer
+    // so there is a place to store our collection.
+    //
+    if (!this.library[collection.name]) {
+      this.library[collection.name] = {};
+      this.library[collection.name].peers = {};
+      this.library[collection.name].peers[peer] = [];
+    } else {
+      if (!this.library[collection.name].peers) {
+        this.library[collection.name].peers = {};
+        this.library[collection.name].peers[peer] = [];
+      }
+    }
+
+    this.save();
+
+  }
+
+
+  isItemInCollection(item, collection, peer="localhost") {
+    if (peer === "localhost") { peer = this.app.wallet.returnPublicKey(); }
+    if (this.library[collection]) {
+      let idx = -1;
+      let contains_item = false;
+      for (let i = 0; i < this.library[collection].peers[this.app.wallet.returnPublicKey()].length; i++) {
+        let item = this.library[collection].peers[this.app.wallet.returnPublicKey()][i];
+	if (item.id == id) { return true; }
+      }
+    }
+  }
+
+
+  addItemToCollection(item, collection, peer="localhost") {
+
+    if (peer === "localhost") { peer = this.app.wallet.returnPublicKey(); }
+
+    if (!this.library[collection.name]) {
+      this.addCollection(collection);
+    }
+
+    // id 		: "id" ,
+    // title 		: "title" ,
+    // description 	: "description" ,
+    // num 		: 1 ,				// total in collection
+    // available 	: 1 ,				// total available (not in use)
+    // checkout 	: [] ,
+    // sig 		: "sig"
+
+    let does_item_exist_in_collection = false;
+
+    for (let i = 0; i < this.library[collection.name].peers[peer].length; i++) {
+      if (this.library[collection.name].peers[peer][i].title === item.title) {
+        does_item_exist_in_collection = true;
+        this.library[collection.name].peers[peer][i].num++;
+        this.library[collection.name].peers[peer][i].available++;
+      }
+    }
+
+    if (!does_item_exist_in_collection) {
+      this.library[collection.name].peers[peer].push(item);
+    }
+
+  }
+
+
   initialize(app) {
 
     //
-    // modules tell us which content to monitor from peers, and which we 
-    // index ourselves
+    // modules respondTo("library-collection") if they want the library to be 
+    // indexing content for them. we add each of the collections we are being 
+    // asked to manage to our library, and initialize it with sensible default
+    // values.
     //
     app.modules.getRespondTos("library-collection").forEach((m) => {
-
-      this.monitor.push(m);
-
-      if (!this.library[m.collection]) {
-
-//console.log(" > ");
-//console.log(" > added collection: " + m.collection);
-//console.log(" > ");
-
-	this.library[m.collection] = {};
-	this.library[m.collection].local = [];
-	this.library[m.collection].peers = {};
-
-//  		  id : "id" ,
-//		  title : "title" ,
-//		  description : "description" ,
-//		  num : 1 ,				// total
-//		  available : 1 ,			// total available
-//		  checkout : [] ,
-//		  sig : "sig"
-
-        this.save();
-      } else {
-	if (!this.library[m.collection].local) { this.library[m.collection].local = []; }
-	if (!this.library[m.collection].peers) { this.library[m.collection].peers = {}; }
-      }
+      this.addCollection(m, this.app.wallet.returnPublicKey());
     });
+
 
   }
 
 
   returnServices() {
     let services = [];
-    if (this.app.BROWSER == 0) { services.push({ service: "library", name: "Multimedia Library" }); }
+    if (this.app.BROWSER == 0) { services.push({ service: "library", name: "Library" }); }
     return services;
   }
  
@@ -207,32 +227,28 @@ class Library extends ModTemplate {
     let library_self = app.modules.returnModule("Library"); 
 
     //
-    // library -- let remote library know we are 
-    // interested in their index of content for 
-    // collections we monitor.
+    // remote peer runs a library
     //
     if (service.service === "library") {
-      //
-      // fetch
-      //
-      for (let m of library_self.monitor) {
 
+      //
+      // fetch content for collections we are tracking
+      //
+      for (let m of library_self.collections) {
+
+	//
+	// we want to know what content is indexed for collection with specified name
+	//
         let message = {};
             message.request = "library collection";
             message.data = {};
-            message.data.collection = m.collection
+            message.data.collection = m.name;
 
-//console.log(" >> ");
-//console.log(" >> requesting: " + m.collection);
-//console.log(" >> ");
-
+	//
+	// send the request and fetch the peer collection
+	//
         app.network.sendRequestAsTransactionWithCallback(message.request, message.data, (res) => {
-//console.log("RETURNED: " + JSON.stringify(res));
           if (res.length > 0) {
-//console.log(" >>> ");
-//console.log(" >>> response: " + JSON.stringify(res));
-//console.log(" >>> ");
-
 	    library_self.library[m.collection].peers[peer.returnPublicKey()] = res;  // res = collection
 	  }
         }, peer);
@@ -242,27 +258,24 @@ class Library extends ModTemplate {
 
 
 
-
   async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
     if (tx == null) { return; }
     let message = tx.returnMessage();
 
+    //
+    // respond to requests for our local collection
+    //
     if (message.request === "library collection") {
-
       if (!message.data) { return; }
       if (!message.data.collection) { return; }
-      if (!this.library[message.data.collection].local) {return; }
-      if (mycallback) { mycallback(this.library[message.data.collection].local); }
+      if (!this.library[message.data.collection].peers[this.app.wallet.returnPublicKey()]) {return; }
+      if (mycallback) { mycallback(this.library[message.data.collection].peers[this.app.wallet.returnPublicKey()]); }
       return;
-
     }
 
     super.handlePeerTransaction(app, tx, peer, mycallback);
   }
-
-
-
 
 
   load() {
@@ -280,43 +293,45 @@ class Library extends ModTemplate {
   }
 
 
+  checkout(collection, publickey, sig, mycallback) {
 
+    //
+    // if the collection doesn't exist, we cannot lend
+    //
+    if (!this.library[collection]) { return; }
 
-  checkout(key, sig, publickey, mycallback) {
+    //
+    // not our publickey, not ours to lend
+    //
+    if (publickey != this.app.wallet.returnPublicKey()) { return; }
 
-    if (!this.library[key]) { return; }
-    let collection = this.library[key];
-
-    let local = false;
+    //
+    // get index of item
+    //
     let idx = -1;
-
-    if (publickey === this.app.wallet.returnPublicKey()) {
-      for (let i = 0; i < collection.local.length; i++) {
-        if (collection.local[i].sig === sig) {
-          idx = i;
-	  local = true;
-          break;
-        }
-      }
-    } else {
-      for (let key in collection.peers) {
-	//
+    for (let i = 0; i < this.library[collection].peers[this.app.wallet.returnPublicKey()].length; i++) {
+      if (this.library[collection].peers[this.app.wallet.returnPublicKey()][i].sig === sig) {
+        idx = i;
+        break;
       }
     }
 
     if (idx != -1) {
 
-      let item = this.library[collection].local[idx];
+      //
+      // find the item
+      //
+      let item = this.library[collection].peers[publickey][idx];
 
       //
-      // current user may checkout again, but we need to 
-      // update the time they checked it out
+      // is it checked out ?
       //
       let is_already_borrowed = 0;
+      let is_already_borrowed_idx = -1;
       for (let i = 0; i < item.checkout.length; i++) {
         if (item.checkout[i].publickey === publickey) {
 	  item.checkout[i].ts = new Date().getTime();
-          is_already_borrowed = 1;
+          is_already_borrowed_idx = i;
 	}
       }
 
@@ -325,7 +340,7 @@ class Library extends ModTemplate {
       // one who has borrowed the item previously and has it in their
       // possession. in that case they have simply rebooted their 
       // machine and should be provided with the data under the previous
-      // or existing loan agreement. this is a roll-over loan.
+      // loan.
       //
       // this "unsets" the loan so that it can be reset with the passing
       // through of control to the !is_already_borrowed sanity check.
@@ -346,6 +361,9 @@ class Library extends ModTemplate {
         }
       }
 
+      //
+      // now we can permit the checkout
+      //
       if (!is_already_borrowed) {
 
         if (item.available < 1) { return; }

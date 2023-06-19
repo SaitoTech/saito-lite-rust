@@ -64,6 +64,8 @@ class Storage {
   //
   saveTransaction(tx, obj={}, peer=null) {
 
+console.log("saving transaction !!!");
+
     const txmsg = tx.returnMessage();
     const message = "archive";
 
@@ -80,13 +82,16 @@ class Storage {
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) { let res = archive_mod.saveTransaction(tx, data) };
+      this.app.connection.emit("saito-save-transaction", tx);
       return;
     }
     if (peer != null) {
       peer.sendRequestWithCallback(message, data, function (res) {});
+      this.app.connection.emit("saito-save-transaction", tx);
       return;
     } else {
       this.app.network.sendRequestWithCallback(message, data, function (res) {});
+      this.app.connection.emit("saito-save-transaction", tx);
       return;
     }
 

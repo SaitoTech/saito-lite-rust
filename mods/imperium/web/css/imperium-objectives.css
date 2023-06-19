@@ -7,37 +7,38 @@
     width: 100%;
     max-width: 80vw;
     max-height: 85vh;
-}
-
-.objectives_card_name {
-  min-height: 60px;
-  color: white;
-  font-size: 1em;
-  padding: 15px 5px 10px;
-  background: #0008;
-  position: relative;
-  font-size: 2em;
-  min-height: 4em;
-  font-family: 'orbitron-medium' ariel;
-  font-weight: bold;
-  text-align: center;
-  width: 100%;
+    background-image: url(imperium/img/backgrounds/objectives-background.jpg);
+    height: min-content;
+    width: min-content;
+    background-size: cover;
+    padding: 2rem;
 }
 
 .objectives_card_content {
-  color: white;
-  padding: 10px;
-  background: #0006;
-  font-family: 'orbitron-medium';
-  position: relative;
-  color: white;
-  margin-top: 0px;
-  padding: 14px;
-  padding-top:10px;
-  font-size: 1.6em;
-  line-height: 1.5em;
-  height: calc(42vh - 5em);
-  text-align: center;
+    color: white;
+    background: #0006;
+    position: relative;
+    color: white;
+    margin-top: 0px;
+    padding: 1.4rem;
+    padding-top: 1rem;
+    line-height: 2.4rem;
+    height: calc(42vh - 5em);
+    text-align: center;
+    font-size: 1.7rem;
+}
+
+.objectives_card_name {
+    color: white;
+    background: #0008;
+    position: relative;
+    min-height: min-content;
+    text-align: center;
+    width: 100%;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+    font-size: 2rem;
+    font-weight: bold;
 }
 
 .objectives_overlay_objectives_card {
