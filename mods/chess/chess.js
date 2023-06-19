@@ -112,10 +112,10 @@ class Chessgame extends GameTemplate {
 
     this.playerbox.render();   
 
-    this.playerbox.updateUserline(this.roles[this.game.player], this.game.player);
-    this.playerbox.updateGraphics(`<div class="tool-item item-detail turn-shape ${this.roles[this.game.player].toLowerCase()}"></div>`, this.game.player);
-    this.playerbox.updateUserline(this.roles[(3-this.game.player)], (3-this.game.player));
-    this.playerbox.updateGraphics(`<div class="tool-item item-detail turn-shape ${this.roles[(3-this.game.player)].toLowerCase()}"></div>`, (3-this.game.player));
+    for (let i = 1; i < 2; i++){
+      this.playerbox.updateUserline(this.roles[i], i);
+      this.playerbox.updateGraphics(`<div class="tool-item item-detail turn-shape ${this.roles[i].toLowerCase()}"></div>`, i);
+    }
 
     window.onresize = () => this.board.resize();
 
