@@ -74,8 +74,10 @@ class Invite {
         }
 
         //Invitation / Challenge ?
-        if (app.wallet.returnPublicKey() == txmsg.options.desired_opponent_publickey) {
-          this.invite_data.game_type = "direct invite";
+
+        if (app.wallet.returnPublicKey() == txmsg.options.desired_opponent_publickey){
+         alt_game_type = "direct invite ";
+         this.invite_data.game_type = "direct invite"; 
         }
       }
 
@@ -99,32 +101,47 @@ class Invite {
       let defaultOptions = game_mod.returnDefaultGameOptions();
       let defaultKeys = Object.keys(defaultOptions);
       let inviteKeys = Object.keys(txmsg.options);
-      if (defaultKeys.length == inviteKeys.length) {
-        for (const key of defaultKeys) {
-          if (defaultOptions[key] !== txmsg.options[key] && !key.includes("game-wizard-players")) {
-            console.log(key, defaultOptions[key], txmsg.options[key]);
+
+      if (defaultKeys.length == inviteKeys.length){
+        for (const key of defaultKeys){
+          if (defaultOptions[key] !== txmsg.options[key] && !key.includes("game-wizard-players")){
+            alt_game_type += "custom "
             this.invite_data.game_type = "custom game";
             break;
           }
         }
-      } else {
+
+      }else{
+        alt_game_type += "custom "
         this.invite_data.game_type = "custom game";
       }
 
       //Crypto Game
       if (txmsg.options?.crypto) {
+        alt_game_type += txmsg.options.crypto + " ";
         this.invite_data.game_type = `${txmsg.options.crypto} game`;
       }
 
       //League
-      if (txmsg.options?.league_id) {
-        this.invite_data.game_type = "league game";
+
+      if (txmsg.options?.league_id){
+        this.invite_data.league = txmsg.options.league_id;
+        alt_game_type += "league ";
+        this.invite_data.game_type = "league game"; 
       }
 
       //Private (only shown to the originator)
-      if (txmsg.request === "private") {
-        this.invite_data.game_type = "private game";
+      if (txmsg.request === "private"){
+        alt_game_type += "private ";
+        this.invite_data.game_type = "private game"; 
       }
+      alt_game_type += "game";
+      if (alt_game_type == "game"){
+        this.invite_data.verbose_game_type = "standard game open invitation";
+      }else{
+        this.invite_data.verbose_game_type = alt_game_type;
+      }
+
     }
 
     // calculate empty slots

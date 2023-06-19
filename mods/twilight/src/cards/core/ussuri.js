@@ -57,7 +57,7 @@
           var ops_to_place = 4;
           twilight_self.addMove("resolve\tussuri");
 
-          this.updateStatusHeader("US place four influence in Asia (2 max per country)");
+          this.updateStatus("US place four influence in Asia (2 max per country)");
 
           for (var i in this.countries) {
 

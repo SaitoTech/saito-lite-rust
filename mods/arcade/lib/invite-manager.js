@@ -24,6 +24,14 @@ class InviteManager {
 		//
 		app.connection.on("arcade-invite-manager-render-request", () => {
 			if (!this.mod.is_game_initializing) {
+				this.mod.purgeOldGames();
+				this.render();
+			}
+		});
+
+		app.connection.on("finished-loading-leagues", ()=>{
+			if (!this.mod.is_game_initializing) {
+				this.mod.purgeOldGames();
 				this.render();
 			}
 		});
@@ -50,7 +58,7 @@ class InviteManager {
 		if (document.querySelector(target)) {
 			this.app.browser.replaceElementBySelector(InviteManagerTemplate(this.app, this.mod), target);
 		} else {
-			this.app.browser.addElementToSelectorOrDom(
+			this.app.browser.addElementToSelector(
 				InviteManagerTemplate(this.app, this.mod),
 				this.container
 			);
@@ -87,6 +95,12 @@ class InviteManager {
 						this.type,
 						this.mod.games[list][i]
 					);
+
+					if (newInvite.invite_data.league){
+						if (!this.mod.leagueCallback?.testMembership(newInvite.invite_data.league)){
+							continue;
+						}
+					}
 					newInvite.render();
 				}
 			}

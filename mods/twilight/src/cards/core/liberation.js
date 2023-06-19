@@ -13,7 +13,7 @@
 
         twilight_self.addMove("resolve\tliberation");
 
-        this.updateStatusHeader("USSR places three influence in Central America (max 2 per country)");
+        this.updateStatus("USSR places three influence in Central America (max 2 per country)");
         for (var i in this.countries) {
           if (this.countries[i].region == "camerica"){
             this.countries[i].place = 1;

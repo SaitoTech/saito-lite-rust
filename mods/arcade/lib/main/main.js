@@ -26,6 +26,10 @@ class ArcadeMain {
       document.querySelector(".arcade-central-panel").innerHTML = "";
       this.slider.hide();
 
+      if (document.getElementById("saito-container")) {
+        document.getElementById("saito-container").scrollTop = 0;
+      }
+
       let initializer = new ArcadeInitializer(this.app, this.mod, ".arcade-central-panel");
       await initializer.render();
     });
@@ -35,7 +39,7 @@ class ArcadeMain {
     if (document.querySelector(".saito-container")) {
       this.app.browser.replaceElementBySelector(ArcadeMainTemplate(), ".saito-container");
     } else {
-      this.app.browser.addElementToSelectorOrDom(ArcadeMainTemplate(), this.container);
+      this.app.browser.addElementToSelector(ArcadeMainTemplate(), this.container);
     }
 
     await this.sidebar.render();

@@ -6,7 +6,7 @@ class ReformationOverlay {
     constructor(app, mod){
         this.app = app;
         this.mod = mod;
-        this.overlay = new SaitoOverlay(app, mod);
+        this.overlay = new SaitoOverlay(app, mod, false);
     }
 
     hide() {
@@ -28,8 +28,10 @@ class ReformationOverlay {
 	    }
 	  }
 	  let html = `
-	    <div class="reform-box-description">${res.p_roll_desc[i].name} <div class="adjacency">${res.p_roll_desc[i].desc}</div></div>
-            <div class="reform-roll ${rrclass}">${res.pdice[i]}</div>
+	    <div class="reformation-row">
+	    	<div class="reform-box-description">${res.p_roll_desc[i].name} <div class="adjacency">${res.p_roll_desc[i].desc}</div></div>
+            	<div class="reform-roll ${rrclass}">${res.pdice[i]}</div>
+            </div>	
 	  `;
 	  this.app.browser.addElementToSelector(html, ".reformation-box .protestant");
         }
@@ -40,9 +42,11 @@ class ReformationOverlay {
 	      rrclass = "hit";
 	    }
 	  }
-	  let html = `
-	    <div class="reform-box-description">${res.c_roll_desc[i].name} <div class="adjacency">${res.c_roll_desc[i].desc}</div></div>
-            <div class="reform-roll ${rrclass}">${res.cdice[i]}</div>
+	  let html = `	  
+	    <div class="reformation-row">
+	    	<div class="reform-box-description">${res.c_roll_desc[i].name} <div class="adjacency">${res.c_roll_desc[i].desc}</div></div>
+            	<div class="reform-roll ${rrclass}">${res.cdice[i]}</div>
+            </div>
 	  `;
 	  this.app.browser.addElementToSelector(html, ".reformation-box .papacy");
 	}
@@ -55,4 +59,3 @@ class ReformationOverlay {
 }
 
 module.exports = ReformationOverlay;
-

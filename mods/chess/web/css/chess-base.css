@@ -19,6 +19,10 @@ html, body {
     transform: rotate(90deg);
 }
 
+.saito-userline {
+    text-transform: lowercase;
+}
+
 .observer-mode .notation-322f9, .observer-mode .piece-417db {
     transform: rotate(-90deg);
 }
@@ -46,30 +50,27 @@ input[type="checkbox"]:checked {
     background-color: #533a26;
 }
 
-.game-menu{
-    background-color: #f9efdf;
-    box-shadow: 2px 2px 5px 0px #644b37;
-}
-
 .main{
     width: 100vw;
     height: 100vh;
     padding: 40px;
     position: relative;
 
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: min(86vh,60vw,700px) 280px;
+    grid-template-rows: max-content;
+    column-gap: 20px;
     align-items: center;
-    flex-wrap: wrap;
+    justify-items: center;
+    align-content: center;
+    justify-content: center;
+
 }
 
 
 #board {
-    max-width: min(98vh,98vw);
-    width: 50%;
+    width: 100%;
 }
-
 
 .controls-space {    
     width: 35%;
@@ -110,6 +111,15 @@ input[type="checkbox"]:checked {
     flex-grow: 1;
 }
 
+.last_move {
+    margin: auto;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.last_move:hover {
+    background-color: #b58863;
+}
 
 .tool-cont i {
     color: sandybrown;
@@ -129,13 +139,20 @@ input[type="checkbox"]:checked {
 
 .turn-shape {
     box-sizing: border-box;
-    width: 50px;
-    height: 50px;
+    width: 35px;
+    height: 35px;
     border-radius: 25px;
     border: 2px solid;
+    grid-row: span 2;
 }
 
+.turn-shape.white {
+    background-color: #fff;
+}
 
+.turn-shape.black {
+    background-color: #111;
+}
 
 
 .promotion-choices img.captured {
@@ -211,12 +228,11 @@ img.captured {
 @media only screen and (max-width: 900px) and (orientation: portrait) {
     .main{
         padding: 25px;
+        grid-template-rows: min(60vh,90vw,900px) 150px;
+        grid-template-columns: min(60vh,90vw,900px);
+        row-gap: 20px;
     }
 
-    #board {
-        max-width: 60vh;
-        width: 90%;
-    }
 
     .board-b72b1{
         border-width: 25px;
@@ -232,27 +248,19 @@ img.captured {
         font-size: 14px;
     }
 
-    .controls-space {    
-        width: 100%;
-        max-width: 700px;
-        grid-template-columns: repeat(2, calc(50% - 4px));
-        grid-gap: 8px;
-        margin-top: 1rem;
+    .opponents {
+        flex-direction: row;
+        height: unset;
+        width: calc(100% - 50px);
     }
 
-    .tool-cont {
-        width: 100%;
-        padding: 5px 10px;
-    }
+    .player-box { 
+        max-width: 45%;
+        width: 45%;
+     }
 
-    .player-identicon {
-        width: 40px;
-        margin: 5px 4px;
-    }
     .turn-shape {
-        width: 40px;
-        height: 40px;
-        margin: 5px;
+        margin: 0px;
     }
 
 
@@ -262,12 +270,6 @@ img.captured {
 @media only screen and (max-width: 525px) {
     .main{
         padding: 40px 5px;
-    }
-
-    #board {
-        width: 100%;
-        max-width: min(100vw, 60vh);
-        margin-top: 1rem;
     }
 
     .alpha-d2270 {
@@ -288,31 +290,25 @@ img.captured {
         width: 6vw;
     }
 
-    .controls-space {
-        width: 95%;
-        grid-template-rows: repeat(4, 1fr);
-        grid-template-columns: repeat(1, 1fr);
-        margin-top: 1rem;
-    }
 
-    .tool-cont {
-        width: 98%;
-        margin-top: 4px;
-        min-height: unset;
-    }
-
-    #identicon-cont{
-        display: none;
-    }
-    #commands-cont{
-        display: none;
-    }
 
 }
 
 @media only screen and (max-height: 525px) and (orientation:landscape){
     .main{
-        padding: 5px 50px;
+        padding: 0 25px;
+        grid-template-columns: 150px min(86vh,60vw,500px) ;
+        grid-template-rows: max-content;
+    }
+
+    .opponents {
+        justify-content: flex-end;       
+        height: calc(100% - 32px);
+        row-gap: 10px;
+    }
+
+    #board {
+        order: 2;
     }
 
    .board-b72b1{

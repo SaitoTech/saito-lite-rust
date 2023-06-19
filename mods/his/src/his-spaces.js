@@ -15,6 +15,9 @@
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
     // home spaces that have not fallen to another power.
+    if (space.home === faction && space.political == "") { return true; }
+
+    // home spaces that have not fallen to another power.
     if (space.home === faction && space.political == faction) { return true; }
 
     // independent (gray) spaces seized by the power.
@@ -179,8 +182,9 @@
     return "";
   }
 
-  returnIndexOfPersonageInSpace(faction, personage, spacekey) {
+  returnIndexOfPersonageInSpace(faction, personage, spacekey="") {
     if (spacekey === "") { return -1; }
+    if (!this.game.spaces[spacekey]) { return -1; }
     for (let i = 0; i < this.game.spaces[spacekey].units[faction].length; i++) {
       if (this.game.spaces[spacekey].units[faction][i].type === personage) {
         return i;
@@ -431,9 +435,12 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     // or -- failing that -- whichever faction is recorded as occupying the space.
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let f in space.units) {
+console.log("we have found: " + f);
       let luis = this.returnFactionLandUnitsInSpace(f, space);
       if (luis > 0) {
-        if (!this.areAllies(attacker_faction, f)) {
+console.log("this faction has units!");
+        if (!this.areAllies(attacker_faction, f) && f !== attacker_faction) {
+console.log("this faction is not an ally to " + attacker_faction + " --- " + this.areAllies(attacker_faction, f));
 	  return f;
 	}
       }
@@ -568,18 +575,26 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     let faction_map = {};
+
+console.log("rfm: " + faction1 + " -- " + faction2);
+
     for (let f in space.units) {
+console.log("checking f: " + f);
       if (this.returnFactionLandUnitsInSpace(f, space)) {
+console.log("there are faction land units in space: " + f);
         if (f == faction1) {
           faction_map[f] = faction1;
         } else {
           if (f == faction2) {
             faction_map[f] = faction2;
           } else {
+console.log("about to check allies...");
             if (this.areAllies(f, faction1)) {
+console.log("setting as ally of " + faction1);
               faction_map[f] = faction1;
             }
             if (this.areAllies(f, faction2)) {
+console.log("setting as ally of " + faction2);
               faction_map[f] = faction2;
             }
           }
@@ -894,6 +909,26 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 
   }
 
+  returnNumberOfCatholicElectorates() {
+    let controlled_keys = 0;
+    if (!this.isSpaceControlled('augsburg', "protestant")) { controlled_keys++; }
+    if (!this.isSpaceControlled('mainz', "protestant")) { controlled_keys++; }
+    if (!this.isSpaceControlled('trier', "protestant")) { controlled_keys++; }
+    if (!this.isSpaceControlled('cologne', "protestant")) { controlled_keys++; }
+    if (!this.isSpaceControlled('wittenberg', "protestant")) { controlled_keys++; }
+    if (!this.isSpaceControlled('brandenburg', "protestant")) { controlled_keys++; }
+    return controlled_keys;
+  }
+  returnNumberOfProtestantElectorates() {
+    let controlled_keys = 0;
+    if (this.isSpaceControlled('augsburg', "protestant")) { controlled_keys++; }
+    if (this.isSpaceControlled('mainz', "protestant")) { controlled_keys++; }
+    if (this.isSpaceControlled('trier', "protestant")) { controlled_keys++; }
+    if (this.isSpaceControlled('cologne', "protestant")) { controlled_keys++; }
+    if (this.isSpaceControlled('wittenberg', "protestant")) { controlled_keys++; }
+    if (this.isSpaceControlled('brandenburg', "protestant")) { controlled_keys++; }
+    return controlled_keys;
+  }
   returnNumberOfElectoratesControlledByCatholics() {
     let controlled_keys = 0;
     if (this.game.spaces['augsburg'].religion === "catholic") { controlled_keys++; }
@@ -942,7 +977,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     let catholic_spaces = 0;
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].religion === "catholic") {
-	if (zone == "" || this.game.spaces[key].language == language) {
+	if (language == "" || this.game.spaces[key].language == language) {
 	  catholic_spaces++;
 	}
       }
@@ -954,7 +989,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     let protestant_spaces = 0;
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].religion === "protestant") {
-	if (zone == "" || this.game.spaces[key].language == language) {
+	if (language == "" || this.game.spaces[key].language == language) {
 	  protestant_spaces++;
 	}
       }

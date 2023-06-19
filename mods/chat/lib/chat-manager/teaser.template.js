@@ -1,25 +1,32 @@
-module.exports = ChatTeaser = (app, publickey = "", userline = "", timestamp = 0, id = "", alert = 0) => {
+module.exports = ChatTeaser = (app, group) => {
 
-  id = (id) ? id : publickey;
+  let id = group.id;
 
+  let last_msg = "new chat";
+  let last_ts = new Date().getTime();
   let time = "";
-
-  if (timestamp) {
-    let x = app.browser.formatDate(timestamp);
+  
+  if (group.txs.length > 0) {
+    let tx = group.txs[group.txs.length - 1];
+    last_msg = (tx.msg.indexOf('<img') == 0) ? "image" : app.browser.sanitize(tx.msg);
+    last_ts = tx.ts;
+    let x = app.browser.formatDate(last_ts);
     time = x.hours + ":" + x.minutes;
   }
-
-  let imgsrc = (publickey) ? app.keychain.returnIdenticon(publickey) : '/saito/img/no-profile.png';
+ 
+  let imgsrc = (group.name) ? app.keychain.returnIdenticon(group.name) : '/saito/img/no-profile.png';
 
   return `
-  <div class="saito-user" id="saito-user-${id}" data-id="${id}" data-disable="true">
-  <div class="saito-identicon-box">
-    <img class="saito-identicon" src="${imgsrc}" data-disable="true">
-    ${alert > 0 ? `<div class="saito-notification-counter">${alert}</div>` : ""}
-  </div>
-  <div class="saito-address saito-address-long" data-id="${publickey}" data-disable="true">${publickey}</div>
-  <div class="saito-userline">${userline}</div>
-  ${time && `<div class="saito-datetime">${time}</div>`}
+  <div class="saito-user${(group?.online)?" online":""}" id="saito-user-${id}" data-id="${id}" data-disable="true">
+    <div class="saito-identicon-box">
+      <img class="saito-identicon" src="${imgsrc}" data-disable="true"/>
+    
+    </div>
+    <div class="saito-address saito-address-long" data-id="${group.name}" data-disable="true">${group.name}</div>
+    <div class="saito-userline">${last_msg}</div>
+    ${time && `<div class="saito-datetime">${time}</div>`}
+    ${group.unread > 0 ? `<div class="saito-notification-dot">${group.unread}</div>` : ""}
+    <div class="online-status-indicator"></div>
   </div>
   `;
 

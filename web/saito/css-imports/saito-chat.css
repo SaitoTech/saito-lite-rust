@@ -1,5 +1,6 @@
 .chat-manager {
-  margin: 0 0 0 1.5rem;
+  height: 25%;
+  flex: 1;
 }
 
 .chat-manager .saito-userline {
@@ -11,11 +12,22 @@
 
 .chat-manager .saito-userline .img-prev {
   max-width: 100%;
+  cursor: pointer;
+}
+
+.chat-popup-img-enhanced {
+  max-height: 90vh;
+  max-width: 95vw;
 }
 
 .chat-manager .saito-user {
-  column-gap: 2rem;
-  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  padding-left: 1.5rem;
+}
+
+.chat-manager .saito-user:hover, .chat-manager .saito-user:hover .saito-address {
+  background-color: var(--saito-primary);
+  color: var(--saito-background-color);
 }
 
 /*  Chat / Popup  */
@@ -26,6 +38,9 @@
   width: 36rem;
   border-radius: 0.5rem;
   z-index: 15;
+  /* So weird, at 15 it blocks the z-index 20 slide in menu*/
+  /* reason: the slidein is child of saito header, so whatever z-index is assigned to saito header,
+  the child (slidein menu) inherits it */
   position: fixed;
   bottom: 0px;
   right: 0px;
@@ -86,15 +101,17 @@
 .chat-body {
   padding: 1rem;
   display: block;
-  height: calc(100% - 10.4rem);
-  overflow: auto;
-  margin-bottom: 5.8rem;
+  height: calc(100% - 9rem);
+  overflow: clip auto;
+  background-color: #bbb1;
+  background-image: url(/saito/img/tiled-logo.svg);
 }
 
 .chat-body>.saito-user {
   padding-bottom: 1rem;
   cursor: default;
   grid-template-rows: min-content 1fr;
+  min-height: 5.5rem;
 }
 
 .chat-body>.saito-user>.saito-userline {
@@ -118,11 +135,19 @@
 }
 */
 
+.saito-time-stamp {
+  text-align: center;
+  color: var(--saito-font-color-light);
+  font-style: italic;
+  margin: 3px 0;
+}
+
 .saito-chat-line-controls {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  grid-row: span 2;
 }
 
 .saito-userline-reply {
@@ -140,8 +165,6 @@
   flex-direction: column-reverse;
   align-items: center;
   gap: 0.5rem;
-  background-color: var(--saito-background-color);
-  padding: 0 2px 1rem;
   right: 0;
   z-index: 9;
 }
@@ -170,13 +193,13 @@
   font-size: 2rem;
   position: absolute;
   bottom: 0;
-  width: calc(100% - 0.5rem);
-  padding: 0.5rem;
+  width: 100%;
+  padding: 0;
   display: flex;
   flex-flow: row;
-  grid-gap: 1rem;
   align-items: end;
   z-index: 2;
+  border-top: 1px solid var(--saito-border-color);
 }
 
 .chat-container blockquote {
@@ -186,25 +209,29 @@
 }
 
 .chat-input {
-  border: 1px solid var(--saito-border-color);
-  border-radius: 0.5rem;
-  width: calc(100% - 0rem);
+  border: 1px solid transparent;
+  width: 100%;
   font-size: 1.6rem;
-  padding: 0.9rem 3rem 0.5rem 0.5rem;
+  padding: 1.2rem 3rem 1.2rem 1rem;
   outline: none;
   background: var(--saito-arcade-background);
   max-height: 15rem;
   overflow-y: auto;
   word-break: break-word;
+  height: 4.2rem;
 }
 
-.chat-footer i {
+.chat-footer .saito-emoji {
+  padding: 1.3rem 0.5rem;
+}
+
+.chat-footer>i {
   color: var(--saito-primary);
   cursor: pointer;
   z-index: 2;
   transition: all 0.2s;
   font-size: 2rem;
-  margin-bottom: 0.8rem;
+  padding: 1rem 0.5rem;
 }
 
 .chat-footer i:hover {
@@ -233,12 +260,6 @@
   border-bottom: 3px solid var(--saito-primary)!important;
   border-bottom-left-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
-}
-
-.chat-footer .saito-emoji {
-  position: absolute;
-  top: 1.25rem;
-  right: 4rem;
 }
 
 /* Mobile Overlay */
@@ -278,4 +299,26 @@
     max-height: none;
     border-radius: 0;
   }
+}
+
+.chat-manager-header {
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+  justify-content: flex-end;
+}
+
+.chat-manager-header > div {
+  width: fit-content;
+  cursor: pointer;
+  transition: all 0.5s;
+  margin-left: 1rem;
+}
+
+.add-contacts{
+  font-size: 24px;
+}
+
+.chat-manager-header > div:hover{
+  transform: rotate(90deg);
 }

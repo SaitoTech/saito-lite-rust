@@ -1,0 +1,61 @@
+
+.objectives-overlay {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: space-evenly;
+    width: 100%;
+    max-width: 80vw;
+    max-height: 85vh;
+}
+
+.objectives_card_name {
+  min-height: 60px;
+  color: white;
+  font-size: 1em;
+  padding: 15px 5px 10px;
+  background: #0008;
+  position: relative;
+  font-size: 2em;
+  min-height: 4em;
+  font-family: 'orbitron-medium' ariel;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.objectives_card_content {
+  color: white;
+  padding: 10px;
+  background: #0006;
+  font-family: 'orbitron-medium';
+  position: relative;
+  color: white;
+  margin-top: 0px;
+  padding: 14px;
+  padding-top:10px;
+  font-size: 1.6em;
+  line-height: 1.5em;
+  height: calc(42vh - 5em);
+  text-align: center;
+}
+
+.objectives_overlay_objectives_card {
+  position: relative;
+  width: calc(42vh * 0.72110);
+  height: 42vh;
+  margin: 10px;
+  background-size: cover;
+  max-width: 300px;
+  max-height: 450px;
+  float: left;
+  font-size: 0.8em;
+  z-index: 5;
+  border: 1px solid #FFF8;
+}
+
+.objectives_overlay_objectives_card:hover {
+  z-index: 10;
+  border: 1px solid whitesmoke;
+}
+

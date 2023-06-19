@@ -5,11 +5,17 @@
 .league-leaderboard .saito-table .saito-table-header {
   grid-template-columns: 4rem auto 5rem 5rem;
   text-align: center;
-  padding-top: 0px;
+  padding: 8px;
   text-transform: capitalize;
+  margin: 3px 0;
 }
 
-
+.saito-table-header { 
+  position: sticky;
+  top: 0px;
+  background: var(--saito-background-light);
+  z-index: 3;
+}
 
 .my-leaderboard-position{
   border: 1px solid var(--saito-primary);
@@ -23,3 +29,6 @@
   content: "\22B3";
   font-size: 1.5rem;
 }
+
+
+

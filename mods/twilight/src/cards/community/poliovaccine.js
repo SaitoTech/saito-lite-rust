@@ -6,7 +6,7 @@
       if (player == "us" && this.game.player == 2) { my_go = 1; }
 
       if (my_go == 0) {
-        this.updateStatusHeader("Waiting for Opponent to play Polio Vaccine");
+        this.updateStatus("Waiting for Opponent to play Polio Vaccine");
         return 0;
 
       }
@@ -19,7 +19,7 @@
         let html = "<ul>";
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].hand[i] != "china") {
-            html += `<li class="card" id="${this.game.deck[0].hand[i]}">${this.game.deck[0].cards[this.game.deck[0].hand[i]].name}</li>`;
+            html += `<li class="option" id="${this.game.deck[0].hand[i]}">${this.game.deck[0].cards[this.game.deck[0].hand[i]].name}</li>`;
             cards_to_discard++;
           }
         }
@@ -30,11 +30,9 @@
           return 0;
         }
 
-        html += '<li class="card dashed nocard" id="finished">finished</li></ul>';
-        twilight_self.updateStatusWithOptions("Select cards to discard:",html,false);
+        html += '<li class="option dashed nocard" id="finished">finished</li></ul>';
         twilight_self.addMove("resolve\tpoliovaccine");
-
-        twilight_self.attachCardboxEvents(function(card) {
+        twilight_self.updateStatusWithOptions("Select cards to discard:",html, function(card) {
           cards_discarded++;
           twilight_self.removeCardFromHand(action2);
           twilight_self.addMove("discard\tus\t"+action2);

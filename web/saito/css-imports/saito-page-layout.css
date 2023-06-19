@@ -23,9 +23,12 @@
   top: calc(var(--saito-header-height) + 1rem);
 }
 
+/* Perhaps we should select for saito-menu  
+  Also not necessary if the chat-manager has some new "padding" on top
 .saito-sidebar > div:not(:last-child) {
   margin-bottom: 2rem;
 }
+*/
 
 .saito-sidebar-container {
   width: 25rem;
@@ -33,12 +36,15 @@
 }
 
 .saito-sidebar.left {
-  padding-top: 2rem;
   position: sticky;
-  height: inherit;
+  height: calc(100vh - var(--saito-header-height));
   width: 25rem;
   top: 0;
   margin: 0 0 0 1rem;
+  padding: 1.5rem 0 0 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .saito-sidebar.right {
@@ -79,7 +85,7 @@
     width: 100vw !important;
     margin-left: 0rem !important;
     margin-right: 0rem;
-    padding: 1rem;
+    padding: 2rem 1rem 1rem 1rem;
   }
 
   .saito-sidebar.left {

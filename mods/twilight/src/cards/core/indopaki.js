@@ -5,9 +5,11 @@
     if (card == "indopaki") {
       let target = 4;
       let opponent = "us";
+      let success = 0;
+
       if (this.game.player == 2) { opponent = "ussr";  }
 
-      if (this.playerRoles[this.game.player] == player) {
+      if (this.roles[this.game.player] == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
@@ -15,12 +17,10 @@
         twilight_self.playerFinishedPlacingInfluence();
 
         twilight_self.addMove("resolve\tindopaki");
-        twilight_self.updateStatusWithOptions('Indo-Pakistani War. Choose Target to invade:',`<ul><li class="card" id="pakistan">Pakistan</li><li class="card" id="india">India</li></ul>`,false);
+        twilight_self.updateStatusWithOptions('Indo-Pakistani War. Choose Target to invade:',`<ul><li class="option" id="pakistan">Pakistan</li><li class="option" id="india">India</li></ul>`, function(invaded) {
 
-        let modifications = 0;
-        let winner = "india";
-
-        twilight_self.attachCardboxEvents(function(invaded) {
+          let modifications = 0;
+          let winner = "india";
 
           for (let c of twilight_self.countries[invaded].neighbours){
             if (twilight_self.isControlled(opponent, c) == 1) { modifications++; }
@@ -30,7 +30,8 @@
           twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+` rolls: ${die}, adjusted: ${die-modifications}`);
 
           if (die >= target + modifications) { //Successful Invasion
-            winner = (invaded == "pakistan")? "India conquers Pakistan!": "Pakistan conquers India";
+            winner = (invaded == "pakistan")? "India invades Pakistan!": "Pakistan invades India";
+	    success = 1;
 
             let influence_change = 0;
             if (player == "us") {
@@ -55,7 +56,7 @@
               twilight_self.addMove("milops\tussr\t2");
             }
           }
-          twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
+          twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}\t${success}`);
           twilight_self.endTurn();
             
         });

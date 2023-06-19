@@ -1,7 +1,7 @@
 const GameWizardTemplate = require('./game-wizard.template.js');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay.js');
 
-  //
+      //
       // {
       //    game   : module_name
       //    league : league_obj { id , name , mod }
@@ -47,10 +47,10 @@ class GameWizard {
     }
 
     this.overlay.show(GameWizardTemplate(this.game_mod, this.obj), () => { if (this.meta_overlay) { this.meta_overlay.remove();}});
-    this.overlay.setBackground(this.game_mod.returnArcadeImg());
+    this.overlay.setBackground(this.game_mod.respondTo("arcade-games").image);
 
     //Test if we should include Advanced Options
-    let advancedOptions = this.game_mod.returnGameOptionsHTML();
+    let advancedOptions = this.game_mod.returnAdvancedOptions();
     if (!advancedOptions) {
       if (document.getElementById("arcade-advance-opt")) {
         document.getElementById("arcade-advance-opt").style.visibility = "hidden";
@@ -89,7 +89,7 @@ class GameWizard {
 
         //Requery advancedOptions on the click so it can dynamically update based on # of players
         let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary">Accept</div>`;
-        let advancedOptionsHTML = this.game_mod.returnGameOptionsHTML();
+        let advancedOptionsHTML = this.game_mod.returnAdvancedOptions();
         if (!advancedOptionsHTML.includes(accept_button)) {
           advancedOptionsHTML += accept_button;
         }
@@ -156,16 +156,18 @@ class GameWizard {
   getOptions() {
     let options = {};
     document.querySelectorAll("#advanced-options-overlay-container input, #advanced-options-overlay-container select, .arcade-wizard-overlay input, .arcade-wizard-overlay select").forEach((element) => {
-      if (element.type == "checkbox") {
-        if (element.checked) {
-          options[element.name] = 1;
-        }
-      } else if (element.type == "radio") {
-        if (element.checked) {
+      if (element.name){
+        if (element.type == "checkbox") {
+          if (element.checked) {
+            options[element.name] = 1;
+          }
+        } else if (element.type == "radio") {
+          if (element.checked) {
+            options[element.name] = element.value;
+          }
+        } else {
           options[element.name] = element.value;
         }
-      } else {
-        options[element.name] = element.value;
       }
     });
 

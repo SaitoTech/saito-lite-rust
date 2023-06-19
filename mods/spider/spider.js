@@ -45,8 +45,7 @@ class Spider extends OnePlayerGameTemplate {
   }
     
   //Single player games don't allow game-creation and options prior to join
-  returnGameOptionsHTML() {
-
+  returnAdvancedOptions() {
 
     /* to do -- add auto play mode
             <p>Play Mode:</p>
@@ -234,11 +233,11 @@ class Spider extends OnePlayerGameTemplate {
   }
 
 
-  initializeHTML(app) {
+  render(app) {
     //console.trace("Initialize HTML");
     if (!this.browser_active) { return; }
     
-    super.initializeHTML(app);
+    super.render(app);
 
     this.preloadImages();
 
@@ -840,14 +839,19 @@ class Spider extends OnePlayerGameTemplate {
 
       if (mv[0] === "lose"){
         this.game.queue.splice(qe, 1);
+        let final_score = 0;
         if (this.game.state.moves > 0){
           this.game.state.session.round++;
           this.game.state.session.losses++;
-          let final_score = this.game.state.score; 
+          final_score = this.game.state.score; 
           this.game.state.scores.push(final_score);
-          this.endGame([], final_score.toString());  
+          //this.endGame([], final_score.toString());  
         }
         this.newRound();
+        if (final_score){
+          this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${final_score}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);  
+        }
+        
         return 1;
       }
 
@@ -858,9 +862,10 @@ class Spider extends OnePlayerGameTemplate {
         this.animateFinalVictory();
         let final_score = this.game.state.score + 400;
         this.game.state.scores.push(final_score);
-        this.endGame(this.app.wallet.returnPublicKey(), final_score.toString());
+        //this.endGame(this.app.wallet.returnPublicKey(), final_score.toString());
         this.overlay.show(this.returnStatsHTML("Winner!"), ()=>{
           this.newRound();
+          this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${final_score}\t${JSON.stringify([])}`); 
           $(".completed_card").remove();
           this.restartQueue();
         });

@@ -23,7 +23,7 @@
 
         var ops_to_place = Math.min(4, countries_where_i_can_place);
 
-        twilight_self.updateStatusHeader("Place "+ops_to_place+" influence in non-US controlled countries in Eastern Europe (1 per country)");
+        twilight_self.updateStatus("Place "+ops_to_place+" influence in non-US controlled countries in Eastern Europe (1 per country)");
 
         twilight_self.addMove("resolve\tcomecon");
 
@@ -35,7 +35,7 @@
             twilight_self.placeInfluence(c, 1, "ussr"); 
             twilight_self.countries[c].place = 0;
             ops_to_place--;
-            twilight_self.updateStatusHeader("Place "+ops_to_place+" influence in non-US controlled countries in Eastern Europe (1 per country)");
+            twilight_self.updateStatus("Place "+ops_to_place+" influence in non-US controlled countries in Eastern Europe (1 per country)");
             if (ops_to_place == 0) {
               twilight_self.playerFinishedPlacingInfluence();
               twilight_self.endTurn();

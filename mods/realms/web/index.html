@@ -14,10 +14,9 @@
     <script type="text/javascript" src="/saito/lib/jquery/jquery-ui.min.js"></script>
 
     <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
-    <link rel="manifest" href="/manifest.json">
 
     <link rel="stylesheet" type="text/css" href="/saito/saito.css" />
-    <link rel="stylesheet" type="text/css" href="/saito/lib/templates/game.css" />
+    <link rel="stylesheet" type="text/css" href="/saito/game.css" />
     <link rel="stylesheet" type="text/css" href="/realms/style.css" />
 
     <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
@@ -27,13 +26,12 @@
 
     <div class="main" id="main" style="display:all">
       <div class="gameboard" id="gameboard">
-	<div id="opponent" class="realm-card-tray">
-CARDS GO HERE
-        </div>
-	<div id="me" class="realm-card-tray">
-CARDS GO HERE
-        </div>
+	      <div id="opponent" class="realm-card-tray"></div>
+        <div id="summoning_stack" class="realm-card-tray"></div>
+	      <div id="me" class="realm-card-tray"></div>
       </div>
+      <div class="graveyard"><div>
+      <div class="opponent_hand"></div>
     </div>
 
     <script id="saito" type="text/javascript" src="/saito/saito.js"></script>

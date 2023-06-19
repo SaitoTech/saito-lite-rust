@@ -32,12 +32,28 @@
     width: 50%;
     background-color: whitesmoke;
     height: auto;
-    margin-top: 4rem;
     border-radius: 1rem;
     clear: both;
-    margin-top: 10rem;
+    margin-top: 20rem;
 }
 
+.theological-debate-overlay .status .status-header , .theological-debate-overlay .status .status-message {
+    box-shadow: none;
+    margin-bottom: 0px;
+    padding: 1rem;
+}
+
+.theological-debate-overlay .status .status-text-menu {
+    background-color: whitesmoke;
+    border-radius: 0.5rem;
+    width: 100%;
+}
+
+.theological-debate-overlay .status ul .option {
+    padding: 15px;
+}
+
+ 
 .attacker_debater {
     height: 300px;
     width: 300px;

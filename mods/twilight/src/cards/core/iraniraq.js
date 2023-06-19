@@ -2,22 +2,21 @@
     if (card == "iraniraq") {
 
       let opponent = (this.game.player == 2)? "ussr" : "us";
+      let success = 0;
 
-      if (this.playerRoles[this.game.player] == player) {
+      if (this.roles[this.game.player] == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
         var twilight_self = this;
+
         twilight_self.playerFinishedPlacingInfluence();
-
         twilight_self.addMove("resolve\tiraniraq");
-        twilight_self.updateStatusWithOptions('Iran-Iraq War. Choose Target:',`<ul><li class="card" id="iraq">Iraq</li><li class="card" id="iran">Iran</li></ul>`,false);
+        twilight_self.updateStatusWithOptions('Iran-Iraq War. Choose Target:',`<ul><li class="option" id="iraq">Iraq</li><li class="option" id="iran">Iran</li></ul>`, function(invaded) {
 
-        let target = 4;
-        let modifications = 0;
-        let winner = "";
-
-        twilight_self.attachCardboxEvents(function(invaded) {
+          let target = 4;
+          let modifications = 0;
+          let winner = "";
 
           for (let c of twilight_self.countries[invaded].neighbours){
             if (twilight_self.isControlled(opponent, c) == 1) { modifications++; }
@@ -27,7 +26,8 @@
           twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+`rolls: ${die}, adjusted: ${die-modifications}`);
 
           if (die >= target + modifications) { //Successful Invasion
-            winner = (invaded == "iran")? "Iraq conquers Iran!": "Iran conquers Iraq";
+            success = 1;
+            winner = (invaded == "iran")? "Iraq invades Iran!": "Iran invades Iraq";
 
             let influence_change = 0;
             if (player == "us") {
@@ -46,14 +46,14 @@
             twilight_self.showInfluence(invaded);
 
           } else { //India fails invasion
-            winner = (invaded == "iran")? "Iran repels Iraqi aggression!": "Iraq repels Iranian aggression!";
+            winner = (invaded == "iran")? "Iran repels Iraq!": "Iraq repels Iran!";
             if (player == "us") {
               twilight_self.addMove("milops\tus\t2");
             } else {
               twilight_self.addMove("milops\tussr\t2");
             }
           }
-          twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
+          twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}\t${success}`);
           twilight_self.endTurn();
 
 

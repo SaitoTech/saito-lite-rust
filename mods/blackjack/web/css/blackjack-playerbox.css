@@ -1,0 +1,94 @@
+
+.tinyhand .card {
+  position: absolute;
+  width: min(12vh,16vw);
+  height: auto;
+}
+
+.game-playerbox.active {
+  border: 1px solid silver;
+}
+.game-playerbox {
+  border: 1px dashed silver;
+}
+
+.game-playerbox-seat-1 {
+  height: 28rem;
+  min-height: 28rem;
+}
+
+.game-playerbox-graphics {
+}
+
+.game-playerbox-seat-4 .game-playerbox-head .saito-user .game-playerbox-graphics {
+  position: absolute;
+  top: 8rem;
+  left: 5rem;
+}
+
+.game-playerbox.hide-scrollbar {
+  overflow: unset;
+  min-height: unset;
+}
+
+.game-playerbox-head.hide-scrollbar {
+  overflow: unset;
+  min-height: unset;
+}
+
+.game-playerbox-body .status {
+    font-size: 1.7rem;
+    line-height: 2.2rem;
+    text-align: center;
+}
+
+.game-playerbox-body .status .status-header .status-message {
+  box-shadow: none;
+}
+
+.game-playerbox {
+  color: white;
+}
+.game-playerbox-head .saito-user>.saito-address , .game-playerbox-head .saito-user>.saito-userline {
+  color: white;
+/***
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+***/
+}
+
+.game-playerbox-body .chips {
+    font-size: 1.4rem;
+    font-weight: bolder;
+    width: 100%;
+    margin-top: -1.8rem;
+    position: absolute;
+    padding-right: 1.8rem;
+}
+
+.status-info {
+    font-size: 1.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+
+.playerbox-graphic .htmlCards{
+  width: 30vh;
+}
+
+.playerbox-graphic .htmlCards .card{
+  width: 6vh;
+  position: relative;
+}
+
+
+/*For visibility with white text on dark background*/
+.status ul li:hover {
+  background: #ccc3;
+}
+
+

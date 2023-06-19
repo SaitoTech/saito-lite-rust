@@ -6,7 +6,7 @@
   border-radius: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 1.6rem;
   width: auto;
   padding: 3rem;
   min-width: 55rem;
@@ -39,7 +39,6 @@ input[type="checkbox"].ignore_checkbox {
 
 .auth_title {
   font-size:1.7em;
-  margin: 0rem;
 }
 
 .crypto_transfer_btn {
@@ -73,7 +72,6 @@ input[type="checkbox"].ignore_checkbox {
 .crypto_amount_btn {
     margin-left: auto;
     margin-right: auto;
-    height: 6rem;
     padding: 0rem;
     width: auto;
     line-height: 6rem;

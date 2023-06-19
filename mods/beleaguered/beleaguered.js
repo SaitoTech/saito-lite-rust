@@ -55,13 +55,15 @@ class Beleaguered extends OnePlayerGameTemplate {
     this.game.board = {};
   }
 
-  async initializeHTML(app) {
+
+
+  async render(app) {
     //console.trace("Initialize HTML");
     if (!this.browser_active) {
       return;
     }
 
-    await super.initializeHTML(app);
+    await super.render(app);
 
     //
     // ADD MENU

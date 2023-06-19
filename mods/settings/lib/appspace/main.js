@@ -124,6 +124,7 @@ class SettingsAppspace {
         };
       }
 
+
       document.getElementById("nuke-account-btn").onclick = async (e) => {
         let confirmation = await sconfirm(
           "This will reset/nuke your account, do you wish to proceed?"
@@ -144,6 +145,7 @@ class SettingsAppspace {
 
           await app.blockchain.resetBlockchain();
         }
+
       };
 
       Array.from(document.querySelectorAll(".settings-appspace .pubkey-containter")).forEach(

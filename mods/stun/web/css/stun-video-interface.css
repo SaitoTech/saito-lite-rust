@@ -1,0 +1,915 @@
+.saito-overlay-closebox-btn {
+  width: 3rem;
+  height: 3rem;
+  font-size: 3rem;
+}
+
+.stun-chatbox {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  background-color: var(--saito-white) fff;
+  position: fixed;
+  z-index: 100;
+  transition: all 0.2s;
+  height: 100vh;
+  width: 100vw;
+}
+
+.stun-chatbox ~ .chat-container {
+  z-index: 100;
+}
+
+.stun-chatbox .minimizer {
+  position: absolute;
+  right: 2rem;
+  top: 1rem;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.stun-chatbox .minimizer i {
+  font-size: 4rem;
+  color: var(--saito-white);
+  transition: all 0.2s;
+  text-shadow: 0 0 3px var(--saito-black);
+}
+
+@keyframes minimize {
+  100% {
+    position: absolute;
+    opacity: 0.8;
+    transform: translate(-40%, 90%) translate(0, -50%) scale(0.2);
+  }
+}
+
+.minimize {
+  width: 30rem;
+  height: 20rem;
+  overflow: auto;
+  resize: both;
+  /* animation-name: minimize;
+  animation-duration: 1s;
+  animation-fill-mode: forwards; */
+}
+
+.stun-chatbox.minimize .minimizer i {
+  font-size: 2rem;
+}
+
+.stun-chatbox.minimize .video-box-container-large {
+  resize: unset;
+}
+
+.stun-chatbox.minimize .expanded-video {
+  width: 100%;
+  margin-right: unset;
+}
+
+.stun-chatbox.minimize .side-videos {
+  display: none;
+}
+
+.stun-chatbox.minimize .large-wrapper {
+  height: 100%;
+}
+
+.stun-chatbox.minimize .footer {
+  position: absolute;
+  bottom: 1rem;
+  width: 100%;
+}
+
+.stun-chatbox.minimize .control-panel {
+  background-color: unset;
+  padding: 0.5rem;
+  align-items: flex-end;
+}
+
+.stun-chatbox.minimize .timer,
+.stun-chatbox.minimize span,
+.stun-chatbox.minimize label {
+  display: none;
+}
+
+.stun-chatbox.minimize .control-list {
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.stun-chatbox.minimize span.mini_okay {
+  display: flex;
+  width: 3rem;
+  height: 3rem;
+  background-color: rgba(230, 230, 230, 0.8);
+  margin-right: 1rem;
+}
+
+.stun-chatbox.minimize .minimizer:hover i {
+  transform: scale(1.1);
+}
+
+.stun-chatbox .minimizer:hover i {
+  color: var(--saito-primary);
+  transform: scale(1.2);
+}
+
+.stun-chatbox main {
+  height: 100%;
+  width: 100%;
+}
+
+.stun-chatbox .heading {
+  padding: 1rem;
+}
+
+.stun-chatbox .large-wrapper {
+  grid-gap: 1rem;
+  /* padding: 1rem; */
+  height: 80%;
+  background: black;
+}
+
+.stun-chatbox .footer {
+  height: 20%;
+}
+
+.stun-chatbox .video-container-large {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  transition: all 0.5s ease;
+  position: relative;
+  padding: 1rem;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
+  grid-gap: 1rem;
+  height: 100%;
+  width: 100%;
+  background: black;
+}
+
+.expanded-video {
+  width: 75%;
+  height: 100%;
+  margin-right: 10px;
+}
+
+.expanded-video .video-box-container-large {
+  width: 100%;
+  opacity: 0;
+  opacity: 0;
+  animation: fade-in 0.5s ease-in;
+  animation-fill-mode: forwards;
+  border: 2px solid var(--saito-border-color-dark);
+}
+
+.side-videos .video-box-container-large {
+  height: 100%;
+  border: 2px solid var(--saito-border-color-dark);
+}
+
+.stun-chatbox .video-box-container-large {
+  border-radius: 0.5rem;
+}
+
+.presentation {
+  width: 85%;
+  height: 100%;
+  margin-right: 10px;
+}
+.presentation .video-box-container-large {
+  width: 100%;
+  opacity: 0;
+  opacity: 0;
+  animation: fade-in 0.5s ease-in;
+  animation-fill-mode: forwards;
+  border: 2px solid var(--saito-border-color-dark);
+}
+
+.presentation-side-videos {
+  flex: 1;
+}
+
+.presentation-side-videos .video-box-container-large {
+  height: fit-content;
+  border: 2px solid var(--saito-border-color-dark);
+}
+
+.stun-chatbox .video-box-container-large {
+  border-radius: 0.5rem;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.stun-chatbox .side-videos {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-rows: repeat(auto-fit, minmax(100px, auto));
+  width: 25%;
+  height: 100%;
+  flex: 1;
+}
+
+.stun-chatbox .b-btngrid {
+  border: none;
+  margin-left: 1rem;
+  margin-top: 250px;
+  width: 160px;
+  height: 38px;
+  border-radius: 4px;
+  left: 51px;
+  cursor: pointer;
+}
+
+.stun-chatbox .heading {
+  background: linear-gradient(96.79deg, #f30c4f 0%, #f8c062 91.87%);
+}
+
+/* video chat */
+
+.lds-dual-ring {
+  display: inline-block;
+}
+
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid var(--saito-white);
+  border-color: var(--saito-white) transparent var(--saito-white) transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glow {
+  0% {
+    transform: scale(0.97);
+  }
+  50% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(0.97);
+  }
+  100% {
+    transform: scale(0.97);
+  }
+}
+
+/*  video box */
+.presentation, .expanded-video {
+  resize: both;
+  overflow: auto;
+}
+
+
+.video-box-container-large {
+  background-color: black;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  color: var(--saito-white);
+  position: relative;
+}
+
+.chat-settings-preview video {
+  transform: rotateY(180deg);
+}
+
+/* So for some reason we think it is better to inline style these through the template file */
+.video-box-container-large video {
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  border-radius: 0.1rem;
+  object-fit: cover;
+  border: none;
+}
+
+.video-box-container-large > #connection-message {
+  color: var(--saito-white);
+  width: 50%;
+  line-height: 1.5;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+#reconnect-button {
+  color: var(--saito-white);
+  /* width: 50%; */
+  line-height: 1.5;
+  position: absolute;
+  /* display: flex; */
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  opacity: 0;
+}
+
+#reconnect-button button {
+  background: var(--saito-primary);
+  text-align: center;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  letter-spacing: 1px;
+  color: var(--saito-white);
+  font-weight: 500;
+  font-size: 1.2rem;
+  border-radius: 0.5rem;
+  min-width: 0;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.video-box-container-large > #connection-message > p {
+  color: var(--saito-white);
+  font-size: 2.8rem;
+}
+
+.video-call-info {
+  color: var(--saito-white);
+  line-height: 1.5;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  left: 1rem;
+  font-size: 1rem;
+  bottom: 0;
+  z-index: 2;
+  width: calc(100% - 1rem);
+}
+
+.video-call-info > p {
+  color: #ffffff69;
+  font-size: 2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 1rem;
+  max-width: 90%;
+}
+
+.video-call-info i {
+  font-size: 2rem;
+  margin-right: 1rem;
+}
+
+.video-box-container-large canvas {
+  /* position: absolute;
+  height: 100%;
+  width: 100%; */
+}
+
+.lds-dual-ring {
+  display: inline-block;
+}
+
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid var(--saito-white);
+  border-color: var(--saito-white) transparent var(--saito-white) transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+
+.ls-dual-ring2 {
+  display: inline-block;
+}
+
+.lds-dual-ring2:after {
+  content: " ";
+  display: block;
+  width: 10px;
+  height: 10px;
+  /* margin: 8px; */
+  border-radius: 50%;
+  border: 6px solid var(--saito-white);
+  border-color: var(--saito-white) transparent var(--saito-white) transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+
+/*  Add users */
+
+.add-users-container {
+  min-width: 0;
+  width: 50rem;
+}
+
+.add-users-header {
+  font-size: 1.7rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.add-users-code-container {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--saito-white);
+  color: var(--saito-font-color);
+  font-size: 1.6rem;
+  display: flex;
+  width: 55%;
+  justify-content: space-between;
+}
+
+.add-users-code-container i {
+  cursor: pointer;
+}
+
+.add-users-footer-text {
+  margin-top: 1rem;
+  font-size: 1.4rem;
+}
+
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glow {
+  0% {
+    transform: scale(0.97);
+  }
+  50% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(0.97);
+  }
+  100% {
+    transform: scale(0.97);
+  }
+}
+
+.control-panel {
+  padding: 2rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #060505;
+  height: 100%;
+}
+
+.control-panel .timer {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  max-width: 100vw;
+  justify-content: space-evenly;
+  gap: 1rem;
+  min-width: 35rem;
+}
+
+.timer p {
+  color: var(--saito-white);
+  margin-right: 1rem;
+}
+
+.timer .counter {
+  font-size: 2rem;
+}
+
+.timer .counter span {
+  color: orangered;
+  font-size: 2rem;
+}
+
+.users-on-call {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 1rem;
+}
+
+.users-on-call .image-list {
+  display: flex;
+  margin-right: 1rem;
+}
+
+.image-list img {
+  width: 4rem;
+  height: 4rem;
+  margin-right: 1rem;
+}
+
+.control-list {
+  display: flex;
+}
+
+.control-list span,
+.add_users_container {
+  margin-right: 2rem;
+  border-radius: 50%;
+  padding: 1rem;
+  width: 5rem;
+  height: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--saito-white);
+  position: relative;
+}
+
+.control-list .spacer {
+  opacity: 0;
+}
+
+.control-list .icon_click_area.disabled {
+  background-color: grey;
+}
+.control-list .icon_click_area.disabled i {
+  color: black;
+}
+
+.speaker {
+  border: 3px solid var(--saito-primary) !important;
+}
+
+.control-list span label,
+.add_users_container label {
+  position: absolute;
+  color: white;
+  bottom: -2.5rem;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.icon_click_area i {
+  color: green;
+  transition: all 0.2s;
+  font-size: 2rem;
+}
+
+.icon_click_area {
+  cursor: pointer;
+}
+
+.icon_click_area:hover i {
+  transform: scale(1.2);
+}
+
+.control-list .disconnect_btn {
+  color: var(--saito-primary);
+}
+
+.control-list .add_users {
+  color: var(--saito-gray-mid);
+}
+
+@media screen and (max-width: 900px) {
+  .stun-chatbox .large-wrapper {
+    grid-gap: 1rem;
+    padding: 0;
+    height: 70%;
+    background: black;
+  }
+  .stun-chatbox .footer {
+    height: 30%;
+  }
+  .control-panel {
+    padding-bottom: 5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: start;
+    align-items: center;
+    gap: 3rem;
+  }
+  .control-panel .control-list {
+    margin-bottom: 1.7rem;
+    gap: 1.5rem;
+  }
+  .control-list span {
+    margin: 0;
+  }
+  .control-list .spacer {
+    display: none;
+  }
+  .add_users_container label {
+    display: none;
+  }
+}
+
+@media screen and (max-height: 850px) {
+  .video-box-container-large:nth-child(2) {
+  }
+  .control-panel {
+    padding-bottom: 10rem;
+  }
+  .control-panel span {
+    width: 4rem;
+    height: 4rem;
+  }
+  .control-panel .timer {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+  }
+  .control-panel .timer .counter {
+    margin-left: 1rem;
+  }
+  .control-panel .timer .counter span {
+    color: orangered;
+    font-size: 2rem;
+  }
+}
+
+/* CHAT SETTINGS */
+
+.chat-settings-container {
+  background-color: #000;
+  color: var(--saito-white);
+  display: flex;
+  justify-content: center;
+  /* width: 100vw;
+  height: 100vh; */
+  margin: 0;
+  /* position: fixed; */
+  color: var(--saito-white);
+  top: 0;
+  z-index: 200;
+}
+
+.chat-settings-wrapper {
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem;
+  margin-top: 4rem;
+}
+
+.chat-settings {
+  display: flex;
+  padding: 2rem;
+  border-radius: 1rem;
+  z-index: 40;
+}
+
+.chat-settings-preview-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--saito-white);
+}
+
+.chat-settings-preview-section p {
+  margin-bottom: 2rem;
+  color: var(--saito-white);
+}
+
+.chat-settings-join-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--saito-white);
+}
+
+.chat-settings-join-section h2 {
+  margin-bottom: 1.5rem;
+}
+
+.chat-settings-join-section p {
+  margin-bottom: 1.5rem;
+  color: var(--saito-white);
+}
+
+.chat-settings-test-mic {
+  margin-top: 1rem;
+}
+
+.chat-settings-test-mic {
+  margin-top: 1rem;
+}
+
+.chat-settings-audio-controls {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.chat-settings h1 {
+  color: var(--saito-white);
+  margin-bottom: 1rem;
+}
+
+.chat-setting p {
+  color: var(--saito-white);
+  margin-bottom: 1rem;
+}
+
+.chat-settings-preview {
+  position: relative;
+  border: 1px solid #e5e5e59d;
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  width: 55rem;
+  /* background-color: #f9f9f9; */
+}
+
+.chat-settings video {
+  width: 100%;
+  border-radius: var(--border-radiius);
+}
+
+.chat-settings-toggle-icons {
+  cursor: pointer;
+  position: absolute;
+  bottom: 2rem;
+}
+
+.chat-settings-toggle-icon {
+  color: var(--saito-primary);
+  width: 5rem;
+  text-align: center;
+  font-size: 3rem;
+  padding: 0.25rem;
+  cursor: pointer;
+}
+
+.chat-settings-toggle-icon:hover {
+  color: var(--saito-secondary);
+}
+
+.chat-settings select {
+  background-color: var(--saito-black-faded);
+  color: var(--saito-white);
+  width: 55rem;
+}
+
+.chat-settings select option {
+  background-color: var(--saito-black-faded);
+  color: var(--saito-white);
+}
+
+.chat-settings button.join {
+  background-color: #1a73e8;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.chat-settings .toggle-icon {
+  color: var(--saito-white);
+  font-size: 1.5rem;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  background-color: #4a4a4a;
+  border-radius: 50%;
+  padding: 0.5rem;
+}
+
+.chat-settings-audio-progress-bar {
+  position: relative;
+  background-color: var(--saito-white);
+  height: 0.5rem;
+  width: 15rem;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.chat-settings-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 10rem;
+  background-color: #28a745;
+  width: 0%;
+  transition: width 0.1s;
+}
+
+@media screen and (max-width: 767px) {
+  .video-call-info i {
+    font-size: 1rem;
+    margin-right: 0.5rem;
+  }
+  .chat-settings {
+    flex-direction: column;
+    padding: 1rem;
+    margin-top: 0;
+  }
+  .chat-settings video {
+    height: 18rem;
+  }
+  .chat-settings-preview-section {
+    margin-right: 0;
+    margin-bottom: 2rem;
+  }
+  .chat-settings-preview {
+    width: 100%;
+  }
+  .video-box-container-large > #connection-message {
+    width: 100%;
+  }
+  .video-box-container-large > #connection-message p {
+    font-size: 1rem;
+  }
+  .chat-settings select {
+    width: 100%;
+  }
+  .gallery {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+  .expanded-video {
+    width: 100%;
+    margin-right: 0;
+  }
+  .side-videos {
+    position: absolute;
+    right: 0;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .chat-settings {
+    padding: 1rem;
+  }
+  .chat-settings-preview {
+    width: 40rem;
+  }
+  .chat-settings select {
+    width: 40rem;
+  }
+}
+
+/* --chat in video calls -- */
+
+.stun-chatbox.minimize .chat-static {
+  display: none;
+}
+
+.stun-chatbox .chat-static {
+  color: var(--saito-white);
+}
+
+.stun-chatbox .saito-address {
+  color: var(--saito-grey);
+}
+
+.stun-chatbox .saito-user:hover .saito-userline-reply {
+  background-color: var(--saito-black);
+}
+
+.stun-chatbox .saito-user:hover .saito-userline-reply i {
+  border: 1px solid var(--saito-grey);
+}
+
+.stun-chatbox .side-videos .chat-footer {
+  width: 25%;
+  margin: 0 0 0.5rem;
+}
+
+.stun-chatbox .chat-footer {
+  width: -webkit-fill-available;
+  max-width: 50%;
+  margin: 0 0 0.5rem;
+}
+
+.stun-chatbox .chat-input {
+  background: unset;
+}

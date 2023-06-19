@@ -54,6 +54,12 @@ console.log("\n\n\n\n");
       //
       if (this.game.state.scenario == "1517") {
 
+	// VENICE AND PROTESTANT ALLIANCE
+	this.addRegular("protestant", "venice", 4);
+	this.addRegular("papacy", "ravenna", 2);
+	this.setAllies("protestant", "venice");
+
+
 	// OTTOMAN
         this.addArmyLeader("ottoman", "istanbul", "suleiman");
         this.addArmyLeader("ottoman", "istanbul", "ibrahim-pasha");
@@ -146,6 +152,21 @@ console.log("\n\n\n\n");
 	this.addDebater("protestant", "melanchthon-debater");
 	this.addDebater("protestant", "bucer-debater");
 	this.addDebater("protestant", "carlstadt-debater");
+
+	this.game.spaces['worms'].religion = "protestant";
+
+	// HACK
+	this.addDebater("protestant", "bullinger-debater");
+	this.addDebater("protestant", "oekolampadius-debater");
+	this.addDebater("protestant", "zwingli-debater");
+	this.addDebater("papacy", "caraffa-debater");
+	this.addDebater("papacy", "gardiner-debater");
+	this.addDebater("papacy", "loyola-debater");
+	this.addDebater("papacy", "pole-debater");
+	this.addDebater("papacy", "canisius-debater");
+	this.addDebater("papacy", "contarini-debater");
+	this.addDebater("papacy", "faber-debater");
+
       }
 
       //

@@ -6,7 +6,6 @@
   --text-color: #331800;
 }
 
-
 .mobile-log-tab {
   background-color: #d3c38df5;
   color: #424143;
@@ -28,7 +27,6 @@ p {
   overflow: unset;
 }
 
-
 .settlers-user {
   display: grid;
   column-gap: 1rem;
@@ -39,7 +37,8 @@ p {
   width: 100%;
   position: relative;
 }
-.settlers-userline > .saito-userline {
+
+.settlers-userline>.saito-userline {
   grid-column-start: 2;
   grid-column-end: span 1;
   grid-row-start: 2;
@@ -47,11 +46,9 @@ p {
   font-size: 1.4rem;
 }
 
-
 .tip {
   width: unset;
 }
-
 
 .tip .tiptext {
   min-width: 100px;
@@ -70,7 +67,7 @@ p {
   padding: 5px;
 }
 
-#cleartrade{
+#cleartrade {
   cursor: pointer;
   font-size: 20px;
 }
@@ -88,7 +85,7 @@ p {
   text-align: center;
 }
 
-.construction-costs.saitoa{
+.construction-costs.saitoa {
   min-width: unset;
   padding: 1rem;
 }
@@ -145,7 +142,7 @@ dt {
   margin-bottom: 0.5em;
 }
 
-.saito-address{
+.saito-address {
   color: unset;
 }
 
@@ -154,11 +151,14 @@ dt {
 }
 
 /*Richard background*/
+
 body {
   background: linear-gradient(-75deg, #369, #58b, #58b, #369);
   background-size: 100% 100%;
 }
+
 /* background moved to body so board is resizable */
+
 .gameboard {
   width: 100vw;
   height: 100vh;
@@ -166,20 +166,18 @@ body {
   background-blend-mode: multiply;
 }
 
-
 #game-hexgrid {
   transform-origin: center;
   z-index: 2;
   width: 1000px;
   padding: 10% 5% 15%;
   /*Creates space for board overflow*/
-  padding: 100px 35px 150px;
+  padding: 150px 135px 350px;
   box-sizing: content-box;
   border-radius: 400px;
   cursor: grab;
   background-color: rgba(200, 200, 240, 0.1);
 }
-
 
 .player-box {
   background-color: #444E;
@@ -230,27 +228,6 @@ body {
 
 .status-message {
   box-shadow: unset !important;
-}
-
-/*
-  Shrink Development cards
-*/
-
-.devcards>.card {
-  width: 10vh;
-  position: absolute;
-}
-
-.card>img {
-  width: 100%;
-}
-
-.card .icon {
-  position: absolute;
-  width: 15%;
-  left: 7%;
-  top: 5%;
-  pointer-events: none;
 }
 
 /* Make room to display two hands of cards*/
@@ -308,10 +285,17 @@ body {
   border: 3px dotted purple;
 }
 
+.city img, .village img {
+  transform: scale(1.4);
+  margin: 0 0 3rem;
+  position: relative;
+  top: -4px;
+}
+
 .rhover:hover, .city.empty.rhover:hover {
   border: 1px solid white;
   background-color: whitesmoke;
-  cursor: crosshair;
+  cursor: pointer;
 }
 
 .ship {
@@ -392,28 +376,28 @@ body {
   position: absolute;
   display: block;
   width: 65%;
-  height: 10%;
+  height: 14%;
   background-color: transparent;
   z-index: 10;
   border-radius: 10px;
 }
 
 .road5 {
-    transform: rotate(90deg);
-    left: -34%;
-    top: 43%;
-    width: 62%;
+  transform: rotate(90deg);
+  left: -34%;
+  top: 43%;
+  width: 63%;
 }
 
 .road6 {
   transform: rotate(-30deg);
-  top: 9%;
+  top: 7%;
   left: -9%;
 }
 
 .road1 {
   transform: rotate(30deg);
-  right: -4%;
+  right: -8%;
   top: 7%;
   width: 62%;
 }
@@ -442,13 +426,14 @@ body {
 .city {
   position: absolute;
   display: block;
-  width: 30%;
-  height: 25%;
+  width: 28%;
+  height: 23%;
   background-color: transparent;
   z-index: 12;
   font-size: 2em;
   text-align: center;
-  border-radius: 10px;
+  border-radius: 50%;
+  scale: 1.6;
 }
 
 .city>svg, .city>img {
@@ -457,6 +442,25 @@ body {
   top: 0px;
   left: 0px;
   padding: 0px;
+}
+
+.city img, .village img {
+  transform: scale(1.4);
+  position: relative;
+  top: -4px;
+}
+
+.player-box {
+  max-width: 80vw;
+  width: unset;
+}
+
+.mobile-trading-container .flexline {
+  min-width: 16rem;
+}
+
+.player-box-info {
+  padding: 0;
 }
 
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
@@ -477,7 +481,7 @@ body {
   background-color: var(--p4-color);
 }
 
-.saito-userline{
+.saito-userline {
   width: 100%;
 }
 
@@ -497,20 +501,23 @@ body {
   background-color: var(--p4-color);
 }*/
 
-.player-box.c1 .saito-identicon-box{
+.player-box.c1 .saito-identicon-box {
   border: 5px solid var(--p1-color);
 }
-.player-box.c2 .saito-identicon-box{
+
+.player-box.c2 .saito-identicon-box {
   border: 5px solid var(--p2-color);
 }
-.player-box.c3 .saito-identicon-box{
+
+.player-box.c3 .saito-identicon-box {
   border: 5px solid var(--p3-color);
 }
-.player-box.c4 .saito-identicon-box{
+
+.player-box.c4 .saito-identicon-box {
   border: 5px solid var(--p4-color);
 }
 
-.player-box .saito-identicon{
+.player-box .saito-identicon {
   width: 100%;
   height: unset;
 }
@@ -529,18 +536,18 @@ input[type="checkbox"] {
 
 .city1 {
   top: -10%;
-  left: 50%;
+  left: 55%;
   transform: translate(-50%);
 }
 
 .city2 {
   top: 15%;
-  right: -18%;
+  right: -17%;
 }
 
 .city3 {
   bottom: 15%;
-  right: -18%;
+  right: -17%;
 }
 
 .city4 {
@@ -551,12 +558,36 @@ input[type="checkbox"] {
 
 .city5 {
   bottom: 15%;
-  left: -18%;
+  left: -17%;
 }
 
 .city6 {
   top: 15%;
-  left: -18%;
+  left: -17%;
+}
+
+.sector-container {
+  position: absolute;
+  border-radius: 50%;
+  width: 12em;
+  height: 12em;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  cursor: pointer;
+}
+
+.sector-container.rhover:hover {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.sector-container.rhover:hover .sector_value {
+  border: 1px solid white;
+  background-color: whitesmoke;
+  cursor: pointer;
 }
 
 .sector_value {
@@ -579,10 +610,19 @@ input[type="checkbox"] {
 }
 
 .bandit {
-  background-color: black;
-  color: darkgray;
-  border-color: black;
-  box-shadow: 0 0 25px 45px rgba(0, 0, 0, 0.75);
+  color: #FFF9;
+  background-image: url(/settlers/img/icons/bandit.png);
+  background-size: cover;
+  overflow: visible;
+  border: none;
+  width: 50%;
+  height: 40%;
+  box-shadow: 0 0 32px 32px #000b;
+  background-color: #000b;
+}
+
+.bandit .hexTileCenter {
+  opacity: 0.5;
 }
 
 .city.p1 {
@@ -605,7 +645,6 @@ input[type="checkbox"] {
   color: var(--p4-color);
 }
 
-
 /*********
  * 
  * Trading overlays
@@ -618,10 +657,9 @@ input[type="checkbox"] {
   min-width: 50vw;
   max-width: 80vw;
   max-height: 70vh;
-
 }
 
-.trade_overlay > div {
+.trade_overlay>div {
   width: 100%;
 }
 
@@ -665,53 +703,32 @@ input[type="checkbox"] {
 }
 
 /* Disable trade submit button in overlays */
+
 .trade_overlay_button.noselect {
   background-color: lightgrey;
   border: unset;
   color: unset;
   cursor: unset;
 }
+
 /*.trade_overlay_button.noselect:hover {
   background-color: lightgrey;
   color: unset;
 }*/
 
-/* Disable resource selection in trade overlays */ 
+/* Disable resource selection in trade overlays */
+
 .noselect .icon {
   filter: grayscale(100%) brightness(0.55);
   cursor: default;
 }
-
 
 .option.noselect {
   font-style: italic;
   color: lightgrey;
 }
 
-
-/* TradeOverlay --> specify numbers */
-.trade_area {
-  height: 72px;
-}
-
-.trade_area > div:first-child{
-  text-transform: uppercase;
-  text-align: center;
-}
-
-.trade_area.select > div:first-child{
-  cursor: pointer;
-}
-
-.trade_overlay .trade_area .icon:hover{
-  border-color: grey;
-  filter: grayscale(50%);
-}
-
-.offer_icons{
-  position: relative;
-}
-.icon_multiplier{
+.icon_multiplier {
   position: absolute;
   bottom: 0;
   right: 2px;
@@ -730,7 +747,6 @@ input[type="checkbox"] {
 /*.tbd .icon{
   height: 1.25em;
 }*/
-
 
 .horizontal_list {
   display: flex;
@@ -752,7 +768,6 @@ ul.horizontal_list li.iconoption {
   background: unset;
   min-width: 20%;
 }
-
 
 .status-message {
   width: unset;
@@ -826,8 +841,6 @@ ul.horizontal_list li.iconoption {
   align-items: center;
   flex-direction: row;
   width: 100%;
-  flex-wrap: wrap;
-  margin-bottom: 0.5em;
 }
 
 .flexline2 {
@@ -868,6 +881,8 @@ ul.horizontal_list li.iconoption {
 
 .cardct {
   width: fit-content;
+  font-size: 1.35rem;
+  min-width: 15rem;
 }
 
 .cardselector {
@@ -882,7 +897,6 @@ ul.horizontal_list li.iconoption {
 
 .token {
   margin: min(3px, 1vh);
-  width: 1.2em;
   background-color: unset;
 }
 
@@ -944,7 +958,6 @@ ul.horizontal_list li.iconoption {
   border-radius: 5px;
 }
 
-
 .player-notice {
   line-height: 1.25em;
   display: flex;
@@ -952,23 +965,33 @@ ul.horizontal_list li.iconoption {
   align-items: center;
   flex-wrap: wrap;
   font-weight: 800;
+  padding-bottom: 0.5rem;
+  width: max-content;
+  margin-right: auto;
+  margin-left: auto;
 }
 
-.player-notice + .tbd {
+.player-notice+.tbd {
   border-top: 1px dashed var(--text-color);
-  padding-top: 0.5em;
+  padding-top: 1rem;
 }
 
-.tbd ul{
+.hud-body .status .player-notice+.tbd {
+  padding-top: 1rem;
+}
+
+.tbd ul {
   margin-top: 0.5em;
 }
 
+/*******
 .player-box.notme, .opponents {
   position: absolute;
   height: fit-content;
   top: 76px;
   right: 40px;
 }
+******/
 
 .opponents>.player-box {
   position: relative;
@@ -978,10 +1001,40 @@ ul.horizontal_list li.iconoption {
 
 .player-box.me {
   max-height: unset;
-  left: 30px;
+  /* left: 30px; */
   top: unset;
   bottom: 1px;
 }
+
+.mobile-trading-container {
+  position: absolute;
+  top: 70px;
+  display: flex;
+  flex-direction: column;
+  gaps: 2.5rem;
+}
+
+.player-box {
+  display: relative;
+}
+
+/*****
+.mobile-trading-container .player-box.notme:nth-child(0) {
+  top: 76px;
+  right: 40px;
+}
+.mobile-trading-container .player-box.notme:nth-child(1) {
+  top: auto;
+  bottom: 76px;
+  left: 40px;
+  right: auto;
+}
+.mobile-trading-container .player-box.notme:nth-child(2) {
+  top: auto;
+  bottom: 76px;
+  right: 40px;
+}
+*****/
 
 .player-box-graphic .hand {
   position: absolute;
@@ -997,19 +1050,23 @@ ul.horizontal_list li.iconoption {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  padding: 2rem 5rem !important;
+  padding: 6.5rem 5rem 4rem 5rem !important;
 }
 
- /* Hide scrollbar for Chrome, Safari and Opera */
+/* Hide scrollbar for Chrome, Safari and Opera */
+
 .rules-overlay::-webkit-scrollbar {
   display: none;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
+
 .rules-overlay {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-} 
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
 
 .rules-overlay h2 {
   margin-top: 1em;
@@ -1017,9 +1074,11 @@ ul.horizontal_list li.iconoption {
 }
 
 .rules-overlay img {
-  max-width: 100%;
   margin: 0 auto;
-  border: 2px solid black;
+}
+
+.vp-table img {
+  max-height: 4rem;
 }
 
 .welcome_overlay {
@@ -1035,11 +1094,11 @@ ul.horizontal_list li.iconoption {
 
 .stats-table caption {
   font-size: 1.5em;
-  font-weight: bold;
 }
 
 .stats-table td, .stats-table th {
   width: 2em;
+  padding: 3px;
 }
 
 .stats-table th:first-child {
@@ -1049,7 +1108,6 @@ ul.horizontal_list li.iconoption {
 
 .stats-table .icon, .stats-table .token {
   width: 50px;
-  height: 50px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -1070,7 +1128,7 @@ ul.horizontal_list li.iconoption {
   }
 }
 
-@media (max-aspect-ratio : 8/7) {
+@media (max-aspect-ratio: 8/7) {
   .opponents {
     width: 75vw;
     top: unset;
@@ -1108,40 +1166,124 @@ ul.horizontal_list li.iconoption {
 
 .saitoa, .player-box {
   border: 5px solid #424143;
-  background-color: /*#edddb8;*/ #d3c38df5;
+  background-color: #d3c38df5;
   padding: 1rem;
-  /*background-image: url(/settlers/img/bkg.png);*/
   border-image: url(/settlers/img/border.png);
   border-image-slice: 51;
   border-image-width: 21px;
   border-image-repeat: stretch;
   border-style: solid;
-  border-image-outset: 10px;
+  border-image-outset: 7px;
   color: var(--text-color);
-  /*background-blend-mode: darken;*/
 }
 
-
+/*
 .saitoa {
-  min-width: min(500px,95vw);
+  min-width: min(500px, 95vw);
   min-height: min(225px, 80vw);
 }
+*/
 
 .game-menu {
   background-color: #d3c38df5;
   color: var(--text-color);
 }
 
-.game-menu-sub-option, .game-menu-sub-sub-option{
+.game-menu-sub-option, .game-menu-sub-sub-option {
   background-color: #d3c38dee;
 }
 
-
-
-
 @media screen and (orientation: portrait) and (max-width: 600px) {
-  .gameboard{
+  .gameboard {
     transform: scale(0.6);
   }
 }
 
+.achievements {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.achievements .army img {
+  width: 4rem;
+  margin: 0 0 0 -2rem;
+}
+
+.achievements .army {
+  display: flex;
+  flex-direction: row;
+  padding: 0 0 0 2rem;
+}
+
+.achievements .longest-road img {
+  width: 4rem;
+}
+
+.victory_point_cards, .longest-road {
+  display: flex;
+  gap: 1rem;
+  flex-direction: row;
+  align-items: center;
+}
+
+.achievements .victory_point_cards img {
+  height: 3.5rem;
+  margin: 0;
+  display: block;
+  transform: rotate(-5deg);
+}
+
+.achievements .victory_point_card {
+  margin: 0 0 0 -2rem;
+  display: flex;
+  align-items: center;
+}
+
+.achievements .token img, .achievements .token svg {
+  transition: all ease-in-out 300ms;
+  border-radius: 50%;
+  border: 2px solid #fff8;
+  background-color: #456;
+}
+
+.achievements .token img:hover, .achievements .token svg:hover {
+  transform: scale(1.8);
+}
+
+.token.largest.army, .longest-road, .victory_point_cards {
+  position: relative;
+  margin: 0 -4rem 0 0;
+}
+
+
+.vproundel {
+  position: relative;
+  width: 3rem;
+  line-height: 3rem;
+  font-size: 1.5rem;
+  color: #fff;
+  text-align: center;
+  margin: 0.5rem;
+  background-color: #ffa400cc;
+  border-radius: 50%;
+  font-weight: bold;
+  right: 3rem;
+  top: -1rem;
+  height: 3rem;
+}
+
+.flexline img.icon {
+  width: 2.5rem;
+}
+
+.flexline span {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 1rem;
+}

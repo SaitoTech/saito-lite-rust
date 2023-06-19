@@ -190,7 +190,6 @@
     return 0;
   }
 
-
   async playerFormAlliance(his_self, f1, f2) {
     return 0;
   }

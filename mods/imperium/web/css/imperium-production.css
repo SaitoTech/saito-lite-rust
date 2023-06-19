@@ -1,0 +1,119 @@
+
+
+.production-overlay {
+    height: 90vh;
+    max-height: 90vh;
+    width: 90vw;
+    max-width: 90vw;
+    display: block;
+    background-image: url(/imperium/img/backgrounds/starscape-background4.jpg);
+    background-size: cover;
+    color: white;
+    padding: 2rem;
+}
+
+.production-table {
+    display: grid;
+    grid-template-columns: 26rem 26rem 26rem 26rem;
+    column-gap: 3rem;
+    row-gap: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.production-header {
+    display: grid;
+    grid-template-columns: auto min-content;
+    border-bottom: 1px solid #ddd5;
+    column-gap: 2rem;
+    padding: 1rem;
+}
+
+.production-description {
+    font-size: 2.1rem;
+    line-height: 4rem;
+    min-height: 12rem;
+}
+
+.production-button {
+    width: 12rem;
+    height: 7rem;
+    text-align: center;
+    margin-right: auto;
+    font-size: 1.8rem;
+    line-height: 4.75rem;
+}
+
+.unit-description.highlight {
+    color: black;
+    background-color: yellow;
+}
+
+.production-table .unit:hover {
+    background-color: #0009;
+}
+
+.production-table .unit .unit-description {
+    clear: both;
+    padding-left: 1rem;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    min-height: 3rem;
+    line-height: 1.7em;
+    letter-spacing: 0.1em;
+    font-weight: bolder;
+    font-family: 'bank-gothic';
+    font-size: 1.7rem;
+    margin-bottom: 0.25rem;
+}
+
+.unit.square {
+    width: 26rem;
+    padding: 1rem;
+}
+
+
+.unit.square .unit-ship {
+    height: 8.1rem;
+    width: 16rem;
+    background-size: contain;
+}
+
+.unit.square div:nth-child(1) {
+    grid-column: 1 / span 3;
+}
+.unit.square div:nth-child(2) {
+    grid-column-start: 1;
+    grid-column-end: span 2;
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+.unit.square div:nth-child(3) {
+    grid-column-start: 3;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 2;
+    color: black;
+    background-color: goldenrod;
+}
+.unit.square div:nth-child(4) {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 3;
+    grid-row-end: 3;
+}
+.unit.square div:nth-child(5) {
+    grid-column-start: 2;
+    grid-column-end: 2;
+    grid-row-start: 3;
+    grid-row-end: 3;
+}
+.unit.square div:nth-child(6) {
+    grid-column-start: 3;
+    grid-column-end: 3;
+    grid-row-start: 3;
+    grid-row-end: 3;
+}
+
+
+

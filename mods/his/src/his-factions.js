@@ -1,4 +1,11 @@
 
+  isPlayerControlledFaction(faction="") {
+    if (faction === "") { return false; }
+    if (this.isAlliedMinorPower(faction)) { return true; }
+    if (this.isMajorPower(faction)) { return true; }
+    return false;
+  }
+
   returnFactionName(f) {
     if (this.factions[f]) {
       return this.factions[f].name;
@@ -91,5 +98,6 @@
     }
     return -1;
   }
+
 
 

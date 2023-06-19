@@ -8,7 +8,7 @@
       this.game.state.events.unintervention = 1;
       this.game.state.cancel_back_button = 1;
 
-      if (player === this.playerRoles[this.game.player]) {
+      if (player === this.roles[this.game.player]) {
 
         let twilight_self = this;
 

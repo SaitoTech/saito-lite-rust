@@ -565,7 +565,7 @@ export default class Wallet extends SaitoWallet {
 
         //
         // DEBUGGING - sender is address to which we send the crypto
-        // 	     - not our own publickey
+        //       - not our own publickey
         //
         if (senders[i] === (await cryptomod.returnAddress())) {
           // Need to save before we await, otherwise there is a race condition

@@ -6,7 +6,7 @@
 
       if (this.game.state.events.ironlady == 1) {
         this.updateLog("Iron Lady cancels Socialist Governments");
-        this.updateStatusHeader("Socialist Governments prevented by Iron Lady");
+        this.updateStatus("Socialist Governments prevented by Iron Lady");
         return 1;
       }
 
@@ -43,7 +43,7 @@
 
         ops_to_purge = Math.min(3, available_targets);
         
-        this.updateStatusHeader("Remove "+ops_to_purge+" US influence from Western Europe (max 2 per country)");        
+        this.updateStatus("Remove "+ops_to_purge+" US influence from Western Europe (max 2 per country)");        
 
         $(".easterneurope").off();
         $(".easterneurope").on('click', function() {

@@ -34,6 +34,12 @@ class Wallet extends ModTemplate {
     }
     return null;
   }
+
+
+  returnHistory(records, callback) {
+    console.log("fetch SAITO payment transfer history here");
+  }
+
 }
 
 module.exports = Wallet;

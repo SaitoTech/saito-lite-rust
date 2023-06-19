@@ -30,11 +30,11 @@
             placeable.push("norway");
             placeable.push("sweden");
             placeable.push("finland");
-            this.updateStatusHeader("US is playing Special Relationship. Place 2 OPS anywhere in Western Europe.");
+            this.updateStatus("US is playing Special Relationship. Place 2 OPS anywhere in Western Europe.");
 
           } else {
 
-            this.updateStatusHeader("US is playing Special Relationship. Place 1 OP adjacent to the UK.");
+            this.updateStatus("US is playing Special Relationship. Place 1 OP adjacent to the UK.");
             placeable.push("canada");
             placeable.push("france");
             placeable.push("norway");

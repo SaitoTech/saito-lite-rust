@@ -2,25 +2,21 @@
     if (card == "chernobyl") {
 
       if (this.game.player == 1) {
-        //this.updateStatusHeader("US is playing Chernobyl");
         return 0;
       }
-      //If the event card has a UI component, run the clock for the player we are waiting on
       this.startClock();
 
       let html = `<ul>
-                  <li class="card" id="asia">Asia</li>
-                  <li class="card" id="europe">Europe</li>
-                  <li class="card" id="africa">Africa</li>
-                  <li class="card" id="camerica">Central America</li>
-                  <li class="card" id="samerica">South America</li>
-                  <li class="card" id="mideast">Middle-East</li>
+                  <li class="option" id="asia">Asia</li>
+                  <li class="option" id="europe">Europe</li>
+                  <li class="option" id="africa">Africa</li>
+                  <li class="option" id="camerica">Central America</li>
+                  <li class="option" id="samerica">South America</li>
+                  <li class="option" id="mideast">Middle-East</li>
                   </ul>`;
-
-      this.updateStatusWithOptions("Chernobyl triggered. Designate region to prohibit USSR placement of influence from OPS:",html,false);
-
       let twilight_self = this;
-      twilight_self.attachCardboxEvents(function(action2) {
+
+      this.updateStatusWithOptions("Chernobyl triggered. Designate region to prohibit USSR placement of influence from OPS:", html, function(action2) {
 
         twilight_self.addMove("resolve\tchernobyl");
         twilight_self.addMove("chernobyl\t"+action2);

@@ -2,7 +2,7 @@
   position: fixed;
   display: flex;
   width: 100vw;
-  background: var(--dreamscape);
+  background: var(--saito-arcade-header-background);
   backdrop-filter: blur(5px);
   margin: 0;
   align-items: center;
@@ -11,14 +11,12 @@
   left: 0;
   z-index: 15;
   height: var(--saito-header-height);
-  border-bottom: 1px solid var(--saito-border-color);
 }
 
 #saito-header nav {
   display: flex;
   align-items: center;
   margin-left: auto;
-  margin-right: 2rem;
 }
 
 .saito-header-logo {
@@ -84,7 +82,7 @@
   z-index: 20;
   width: 20rem;
   height: calc(100vh - var(--saito-header-height) + 3px);
-  overflow: auto;
+  overflow: hidden auto;
 }
 
 .saito-header-menu-section {
@@ -109,6 +107,24 @@
   width: 40rem;
   -webkit-transform: translateX(0);
   transform: translateX(0);
+  pointer-events: auto;
+}
+
+.saito-header-backdrop {
+  display: none;
+  pointer-events: none;
+  position: fixed;
+  top: var(--saito-header-height);
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - var(--saito-header-height));
+  opacity: 0;
+  overflow: hidden;
+  z-index: 19;
+}
+
+.saito-header-backdrop.menu-visible {
+  display: block;
   pointer-events: auto;
 }
 
@@ -314,6 +330,23 @@
   gap: 1rem;
 }
 
+.saito-floating-menu-mask {
+  width: 100%;
+  height: 100%;
+  background: var(--saito-background-color);
+  position: absolute;
+  top: 0rem;
+  left: 0rem;
+  z-index: -1;
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.saito-floating-menu-mask.show {
+  z-index: 2;
+  opacity: 0.9;
+}
+
 .saito-floating-container {
   display: inline-block;
   height: max-content;
@@ -321,7 +354,7 @@
   position: fixed;
   bottom: 2.5rem;
   right: 2.5rem;
-  z-index: 2;
+  z-index: 3;
 }
 
 .saito-floating-item-container {

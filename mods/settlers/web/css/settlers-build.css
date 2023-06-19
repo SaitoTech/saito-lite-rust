@@ -1,0 +1,452 @@
+.saitoa {
+  border: 5px solid #424143;
+  background-color: #d3c38df5;
+  padding: 1rem;
+  border-image: url(https://saito.io/settlers/img/border.png);
+  border-image-slice: 51;
+  border-image-width: 21px;
+  border-image-repeat: stretch;
+  border-style: solid;
+  border-image-outset: 9px;
+  color: #331800;
+}
+
+.settlers-info-overlay {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  position: relative;
+  gap: 3rem;
+  overflow: hidden;
+  padding: 3rem !important;
+}
+
+
+/* build overlay */
+.settlers-items-container {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  font-size: 1.3rem;
+  overflow:hidden auto;
+  margin-bottom: 0rem;
+  position: relative;
+  overflow: hidden; 
+}
+
+.settlers-item-row {
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+  position: relative;
+}
+
+
+.build-overlay .settlers-item-row .settlers-cards-container {
+  position: relative;
+}
+
+.build-overlay .settlers-item-row {
+  transition: all 0.2s ease-in-out;
+  border: 5px solid transparent;
+  border-radius: 1rem;
+  padding: 1rem;
+  overflow: hidden;
+  transform: scale(0.98);
+}
+
+.build-overlay .settlers-item-row:hover {
+  border: 5px solid #efefef33;
+  transform: scale(1.01);
+  cursor: pointer;
+}
+
+.build-overlay .settlers-item-row::after {
+  transition: all 0.2s ease-in-out;
+  content: "Build";
+  width: calc(50% + 2rem);
+  min-width: 25rem;
+  height: 3rem;
+  position: absolute;
+  top: calc(50%);
+  left: calc(50%);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  font-size: 2.3rem; 
+  opacity: 0;
+  z-index: 2;
+  white-space: pre;
+  word-wrap: break-word;
+  background-color: #d3c38d88;
+  line-height: 3rem;
+  border-radius: 1rem;
+}
+
+.settlers-item-row.item-development-card::after {
+  content: "Buy development card";
+}
+
+.settlers-item-row.settlers-row-disabled::after {
+  content: "Insufficent resources"!important;
+  cursor: not-allowed;
+}
+
+
+.build-overlay .settlers-item-row:hover::after {
+  opacity: 1;
+}
+
+
+.settlers-row-disabled .settlers-item-img {
+  filter:grayscale(1);
+  opacity: 0.5;
+}
+
+.settlers-item-row.settlers-row-disabled:hover {
+  cursor: not-allowed!important;
+}
+
+.settlers-item-row.settlers-row-disabled .settlers-item-img:hover {
+  cursor: not-allowed!important;
+}
+
+
+.settlers-row-disabled .settlers-item-img{
+  filter:grayscale(1);
+  opacity: 0.5;
+}
+
+
+.settlers-item-column.settlers-item-goods {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  width: 8rem;
+}
+
+.settlers-cards-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.dev-card-overlay .settlers-cards-container {
+  height: 20rem;
+}
+
+.settlers-cards-container img {
+  height: 9rem;
+}
+
+.settlers-item-img {
+  height: 7rem;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.settlers-card-disabled {
+  opacity: 0.5;
+}
+
+@media screen and (max-width: 768px) {
+  .settlers-cards-container {
+    gap: 0rem;
+    
+  }
+  
+  .settlers-item-row {
+    gap: 5rem;
+  }
+  
+  .settlers-cards-container img{
+    margin-left: -4rem;
+  }
+}
+
+
+/* development overlay */
+.settlers-items-container {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  font-size: 2rem;
+  overflow:hidden auto;
+  posiiton: relative;
+  margin-bottom: 0rem;
+  position: relative;
+  padding: 0.2rem;
+  overflow: hidden; 
+}
+
+
+.monopoly .settlers-item-row {
+  gap: 5rem;
+}
+
+
+.monopoly .settlers-cards-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  cursor: pointer;
+  padding: 0.5rem
+}
+
+.settlers-cards-container img {
+  height: 15rem;
+}
+
+
+.settlers-desired-resources img:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.year-of-plenty-overlay .settlers-item-info-text,  
+.monopoly .settlers-item-info-text {
+  text-align: left;
+}
+
+
+
+/* monopoly */
+.settlers-cards-container img {
+  height: 9rem;
+}
+
+.settlers-trade-resources:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+
+/* year of plenty overlay */
+
+
+.settlers-desired-resources img:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.settlers-icons-container {
+  gap: 3rem
+}
+
+.settlers-icons-container img {
+  width: 4rem;
+  margin: auto;
+}
+
+.settlers-card-item {
+  min-width: 6.5rem;
+  position: relative;
+}
+
+
+.year-of-plenty-overlay .settlers-card-item-empty:hover:after {
+  display: none;
+  cursor: pointer;
+}
+
+.settlers-overlay-title {
+  text-align: center;
+  font-size: 2.5rem;
+}
+
+
+/* bank overlay */
+
+.settlers-items-container.settlers-items-container-desired-resources.hide {
+  display: none;
+}
+
+.settlers-items-container .settlers-cards-container img {
+  height: 13rem;
+}
+
+.settlers-items-container-2 .settlers-cards-container  img {
+  height: 11rem;
+}
+
+.settlers-items-container-3 .settlers-cards-container  img {
+  height: 9rem;
+}
+
+.settlers-items-container-4 .settlers-cards-container  img {
+  height: 7rem;
+}
+
+.settlers-items-container-5 .settlers-cards-container  img {
+  height: 6rem;
+}
+
+.settlers-item-row.settlers-trade-resources:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+
+.discard-cards-overlay .settlers-items-container .settlers-cards-container img {
+  height: 13rem;
+}
+
+.settlers-trade-resources.selected {
+  opacity: 0.5; 
+}
+
+.settlers-desired-resources img:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+/* discard overlay */
+
+.settlers-cards-container img:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.settlers-cards-container .settlers-img-disabled {
+   filter: opacity(0.2);
+}
+
+/*.discard-cards-overlay .settlers-cards-container img {
+  height: 7rem;
+}*/
+
+.monopoly-overlay .settlers-cards-container img {
+  height: 11rem;
+}
+
+.monopoly-overlay .settlers-cards-container {
+  gap: 1rem;
+}
+
+
+.dev-card-overlay .settlers-cards-container img {
+  height: 20rem;
+}
+
+.monopoly-overlay .settlers-cards-container {
+  gap: 1rem;
+}
+
+.settlers-dev-card {
+  position: relative;
+  width: 14.5rem;
+}
+
+.settlers-dev-card .settlers-dev-card-title {
+  font-size: 1.4rem;
+  z-index: 2;
+  display: inline-block;
+  position: relative;
+  margin-top: 2rem;
+}
+
+.settlers-dev-card .settlers-dev-card-text {
+  font-size: 1.5rem;
+  text-align: center;
+  z-index: 2;
+  position: relative;
+  margin-top: 8rem;
+  padding: 0rem 1rem;
+}
+
+.settlers-dev-card img {
+  position: absolute;
+  top: 0rem;
+  left: 0rem;
+  z-index: 0;
+}
+
+.discard-cards-overlay .settlers-cards-container img.selected {
+  opacity: 0.5;
+}
+
+
+.trade-overlay {
+  margin: auto;
+}
+
+.trade_area {
+  position: relative;
+  font-size: 14vh;
+}
+
+
+.trade_area:hover .trade_count_arrow {
+  opacity: 0.7;
+}
+
+.trade_count_number {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  transform: translate(-50%, -50%);
+  transition: all 0.2s ease-in-out;
+}
+
+.trade_area:hover .trade_count_number {
+  font-size: 8rem;
+}
+
+.trade_count_arrow {
+  content: "";
+  width: 100%;
+  height: 5rem;
+  position: absolute;
+  left: 0px;
+  z-index: 3;
+  background: #331800;
+  opacity: 0;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.trade_count_up {
+  top: 0px;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+.trade_count_up::before  {
+  content: "⌃";
+  font-size: 5rem;
+  color: #fff !important;
+  position: absolute;
+  left: 50%;
+  top: 80%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  -webkit-text-stroke: #fff;
+}
+
+.trade_count_down::after {
+  content: "⌄";
+  font-size: 5rem;
+  color: #fff !important;
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  -webkit-text-stroke: #fff;
+}
+
+.trade_count_down {
+  top: 16vh;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+}
+
+.bank-overlay img {
+  width: 15rem;
+  height: auto!important;
+}

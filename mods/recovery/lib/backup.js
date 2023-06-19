@@ -8,6 +8,7 @@ class Backup {
     this.app = app;
     this.mod = mod;
     this.success_callback = null;
+    this.desired_identifier = "";
 
     this.modal_overlay = new SaitoOverlay(this.app, this.mod);
     this.loader = new SaitoLoader(this.app, this.mod, "#backup-template .saito-overlay-subform");
@@ -17,6 +18,7 @@ class Backup {
     let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
     let identifier = key?.identifier || "";
     let newIdentifier = key?.has_registered_username && identifier === "";
+    identifier = this.desired_identifier || identifier;
 
     console.log("Render backup overlay");
     this.modal_overlay.show(BackupTemplate(identifier, newIdentifier));
@@ -41,6 +43,10 @@ class Backup {
         return;
       }
       
+      if (document.querySelector(".saito-overlay-form-text")){
+        document.querySelector(".saito-overlay-form-text").remove();
+      }
+
       let div = document.querySelector("#backup-template .saito-overlay-subform");
       if (div){
         div.innerHTML = "";
@@ -56,11 +62,20 @@ class Backup {
       }
 
       this.mod.backupWallet(email, password);
+
+      setTimeout(()=>{
+        this.remove();
+        if (this.success_callback) {
+          this.success_callback();
+        }
+      }, 3000);
+
     }
   }
 
+  //Don't actually care about receiving a transaction
   success(){
-    let div = document.querySelector("#backup-template .saito-overlay-form-submit");
+    /*let div = document.querySelector("#backup-template .saito-overlay-form-submit");
     if (div){
       this.loader.remove();
       div.innerHTML = `Success`;
@@ -69,7 +84,7 @@ class Backup {
 
     if (this.success_callback){
       this.success_callback();
-    }
+    }*/
   }
 
 }

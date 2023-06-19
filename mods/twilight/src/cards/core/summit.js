@@ -100,9 +100,7 @@
           let x = 0;
           let y = 0;
 
-          twilight_self.updateStatusWithOptions(`You win the ${twilight_self.cardToText(card)}:`,'<ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li><li class="card" id="same">do not change</li></ul>',false);
-
-          twilight_self.attachCardboxEvents(function(action2) {
+          twilight_self.updateStatusWithOptions(`You win the ${twilight_self.cardToText(card)}:`,'<ul><li class="option" id="raise">raise DEFCON</li><li class="option" id="lower">lower DEFCON</li><li class="option" id="same">do not change</li></ul>', function(action2) {
 
             if (action2 == "raise") {
               twilight_self.addMove("defcon\traise");
@@ -122,7 +120,7 @@
           });
         }else{
           if (this.game.player == 0){
-            this.updateStatus(`${this.playerRoles[winner].toUpperCase()} won the ${this.cardToText(card)}`);
+            this.updateStatus(`${this.roles[winner].toUpperCase()} won the ${this.cardToText(card)}`);
           }else{
             this.updateStatus(`You lost the ${this.cardToText(card)}, waiting for opponent to change DEFCON`);            
           }

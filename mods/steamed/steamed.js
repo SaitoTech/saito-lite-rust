@@ -44,7 +44,7 @@ class Steamed extends GameTemplate {
 
 
  
- initializeHTML(app) {
+ render(app) {
 
     if (this.browser_active == 0) { return; }
     if (this.initialize_game_run) { return; }
@@ -56,7 +56,7 @@ class Steamed extends GameTemplate {
     s.href = `/${this.name.toLowerCase()}/style.css`;
     document.querySelector('head').appendChild(s);
 
-    super.initializeHTML(app);
+    super.render(app);
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");
@@ -1008,7 +1008,7 @@ initializeGame(game_id) {
     return GameRulesTemplate(this.app, this);
   }
 
-  returnGameOptionsHTML(){
+  returnAdvancedOptions() {
     return GameOptionsTemplate(this.app, this);
   }
 

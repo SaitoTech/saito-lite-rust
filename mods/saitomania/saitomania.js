@@ -35,18 +35,29 @@ class SaitoMania extends OnePlayerGameTemplate {
       this.game.queue = [];
       this.game.queue.push("play");
       this.game.queue.push("READY");
+
       this.game.state = {
         scores: [],
+        lifetime: {
+          round: 0,
+          high_score: 0,
+        },
       };
+
+      if (this.loadGamePreference(this.name+"_stats")) {
+        this.game.state.lifetime = this.loadGamePreference(this.name+"_stats");
+      }
     }
 
     console.log(JSON.parse(JSON.stringify(this.game)));
   }
 
-  async initializeHTML(app) {
-    if (!this.browser_active) {
-      return;
-    }
+
+
+  async render(app) {
+
+    if (!this.browser_active) { return; }
+    
 
     //
     // leaving here as an example of how we can parse game.options
@@ -69,7 +80,9 @@ class SaitoMania extends OnePlayerGameTemplate {
     //  }
     //}
 
-    await super.initializeHTML(app);
+
+    await super.render(app);
+
 
     //
     // ADD MENU
@@ -118,7 +131,11 @@ class SaitoMania extends OnePlayerGameTemplate {
       let score = log_msg.replace("SAITOMANIA:", "");
       console.log("Game over, final score:" + score);
       this.game.state.scores.push(score);
-      await this.endGame([], score);
+      this.game.state.lifetime.round++;
+      this.game.state.lifetime.high_score = Math.max(score, this.game.state.lifetime.high_score);
+      //this.endGame([], score);
+      this.addMove(`ROUNDOVER\t${JSON.stringify([this.app.wallet.getPublicKey()])}\t${score}\t${JSON.stringify([])}`);
+      this.endTurn();
       return 1;
     }
     return 0;

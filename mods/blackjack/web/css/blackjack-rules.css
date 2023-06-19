@@ -1,0 +1,39 @@
+.blackjack-rules-overlay {
+    border: solid 0.5rem #fff;
+    width: 95rem;
+    max-width: 80vw;
+    background-image: url(/saito/img/arcade/greenfelt.jpg);
+    background-size: cover;
+    padding: 2rem;
+    border-radius: 5rem;
+}
+div.h2 {
+    font-size: 4rem;
+    margin: 1rem;
+    color: white;
+    padding: 0rem 3.2rem;
+    font-weight: bolder;
+    text-align: center;  
+}
+.blackjack-modal-table {
+    display: grid;
+    justify-items: center;
+    padding: 2rem 0rem 2rem 0rem;
+}
+img.bcard {
+    width: 7rem;
+    padding: 0.5rem 0rem;
+}
+.blackjack-box-description {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+}
+.blackjack-explanation {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+    padding-top: 2rem;
+}

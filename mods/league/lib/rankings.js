@@ -37,7 +37,7 @@ class LeagueRankings {
     if (leagues.length > 0){
       let cnt = 0;
       leagues.forEach(l => {
-        if (this.mod.debug) { console.log((l.rank > 0), JSON.parse(JSON.stringify(l))); }
+        //if (this.mod.debug) { console.log((l.rank > 0), JSON.parse(JSON.stringify(l))); }
 
         if (l.rank > 0) {
           html += `

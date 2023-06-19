@@ -1,0 +1,170 @@
+.saito-input {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+.saito-input .text-input:not(.post-tweet-textarea) {
+	height: 100%;
+	width: 100%;
+	padding: 1.2rem 3rem 1.2rem 1rem;
+	cursor: text;
+	border: 1px solid transparent;
+	font-size: 1.6rem;
+	line-height: 1.6rem;
+	outline: none;
+	background: var(--saito-arcade-background);
+	max-height: 15rem;
+	overflow-y: auto;
+	word-break: break-word;
+}
+
+
+.saito-input-selection-box{
+	position: absolute;
+	height: 46rem;
+	width: 36rem;
+	z-index: 150;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-direction: column;
+	border: 1px solid var(--saito-border-color);
+
+	/*
+	We can't control for if user resizes chat-popup, better to have visibile borders
+	border-top: none;
+	border-left: none;
+	*/
+	background-color: var(--saito-background-color);
+}
+
+.selection-box-window {
+	position: relative;
+	width: 100%;
+	height: 100%
+}
+
+.photo-window {
+	font-size: 3rem;
+    text-align: center;
+    padding: 4rem;
+    cursor: pointer;
+}
+
+.selection-box-pane {
+	display: none;
+	position: absolute;
+	margin: auto;
+	width: 100%;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+}
+
+.selection-box-pane.active-tab {
+	display: flex;
+}
+
+.selection-box-tabs {
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+	width: 100%;
+	height: 5rem;
+	background-color: var(--saito-background-color);
+    border-top: 1px solid var(--saito-border-color);
+}
+
+.selection-box-tabs i { 
+	/*text-shadow: 1px 1px 3px var(--saito-black-faded);*/
+}
+
+.saito-box-tab {
+	font-size: 2.6rem;
+	color: var(--saito-primary);
+	cursor: pointer;
+	line-height: 1rem;
+}
+
+.saito-box-tab:hover{
+	color: var(--saito-secondary);
+}
+
+
+/* override definitions from giphy.css */
+.selection-box-window .saito-gif-container {
+	padding: 0.5rem;
+}
+
+emoji-picker {
+  --emoji-size: 2.5rem;
+  --emoji-padding: 0.5rem;
+  z-index: 2;
+}
+
+.saito-emoji {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 0.8rem 0.5rem;
+  color: var(--saito-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 2rem;
+}
+
+.selection-box-window emoji-picker {
+	width: 100%;
+	height: 100%;
+}
+
+.photo-window {
+    opacity: 0.5;
+}
+
+.saito-input-large .selection-box-tabs {
+	width: 16rem;
+	border-top: unset;
+	background-color: unset;
+	align-items: flex-end;
+}
+
+.post-tweet-img-preview-container {
+	position: absolute;
+	left: 17rem;
+	bottom: 1rem;
+}
+
+
+/*** Fix Redsquare Post ***/
+.tweet-overlay-content {
+	margin-bottom: 2rem;
+}
+
+.post-tweet-button {
+	position: absolute;
+	right: 1rem;
+	bottom: 1rem;
+}
+
+@media only screen and (max-width: 525px) {
+
+	.tweet-overlay-content {
+		margin-bottom: unset;
+	}
+
+	.post-tweet-button {
+		position: static;
+		justify-self: flex-end;
+	}
+
+	.saito-input-large .selection-box-tabs {
+		align-items: flex-start;
+	}
+
+	.post-tweet-img-preview-container {
+		bottom: 7.5rem;
+	}
+}

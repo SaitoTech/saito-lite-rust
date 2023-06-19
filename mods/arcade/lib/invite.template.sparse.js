@@ -2,7 +2,10 @@ module.exports = (app, mod, invite) => {
 
     let time = invite.time_finished || invite.time_created;
     let datetime = app.browser.formatDate(time);
-    let date = (invite.time_finished) ? datetime.month + ' ' + datetime.day + ', ' + datetime.year : datetime.hours + ":" + datetime.minutes; 
+    let date = datetime.hours + ":" + datetime.minutes;
+    if (invite.time_finished) {
+      date += ", " + datetime.day + ' ' + datetime.month; 
+    } 
 
     let players_html = `<div class="league_recent_players_list">`;
     // render players who have joined

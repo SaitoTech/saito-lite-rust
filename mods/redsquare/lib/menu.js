@@ -18,7 +18,7 @@ class RedSquareMenu {
     if (document.querySelector(".redsquare-menu")) {
       this.app.browser.replaceElementBySelector(RedSquareMenuTemplate(this.app, this.mod), ".redsquare-menu");
     } else {
-      this.app.browser.addElementToSelectorOrDom(RedSquareMenuTemplate(this.app, this.mod), this.container);
+      this.app.browser.addElementToSelector(RedSquareMenuTemplate(this.app, this.mod), this.container);
     }
 
     //
@@ -42,8 +42,10 @@ class RedSquareMenu {
 
 
   attachEvents() {
-
+    this_self = this;
     document.querySelector(".redsquare-menu-home").onclick = (e) => {
+      let rs_mod = this_self.app.modules.returnModule("RedSquare");
+      rs_mod.header.undoUpdateHeaderLogo();
       setHash('home');
       this.app.connection.emit("redsquare-home-render-request");
     }
@@ -71,7 +73,8 @@ class RedSquareMenu {
 
     document.querySelector(".redsquare-menu-profile").onclick = (e) => {
       setHash('profile');
-      this.app.connection.emit("redsquare-profile-render-request", this.app.wallet.returnPublicKey());
+      this.app.connection.emit("saito-profile-render-request", this.app.wallet.returnPublicKey());
+      //this.app.connection.emit("redsquare-profile-render-request", this.app.wallet.returnPublicKey());
     }
 
     //    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
@@ -120,7 +123,7 @@ class RedSquareMenu {
           obj.style.display = "none";
           obj.innerHTML = 0;
         } else {
-          obj.style.display = "block";
+          obj.style.display = "flex";
           existing_notifications++;
           obj.innerHTML = existing_notifications;
         }

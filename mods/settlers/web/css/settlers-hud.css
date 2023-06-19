@@ -1,111 +1,54 @@
-.status-header, .status-message {
-  box-shadow: none;
-  background-color: transparent;
+.hud {
+  width: 50rem;
+  max-width: 50rem;
+  z-index: 50 !important;
 }
 
-.hud-long {
-  max-height: unset;
-  bottom: 10px;
-  z-index: 9 !important;
+.tbd {
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hud-body {
-  height: 30rem;
-  width: auto;
-  background-color: rgba(211, 195, 141, 0.96);
-  border: 5px solid #424143;
-  background-color: #d3c38df5;
-  padding: 1rem;
-  border-image: url(/settlers/img/border.png);
-  border-image-slice: 51;
-  border-image-width: 2.1rem;
-  border-image-repeat: stretch;
-  border-style: solid;
-  border-image-outset: 10px;
-  ;
+  min-height: 11rem;
+  width: calc(100% - 5rem);
 }
 
-.hud-header {
-  background: #000;
-  opacity: 0.1;
+/* override default #efefef background */
+
+.hud-body .status, .controls ul li, options {
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0;
 }
 
-.hud-body .status {
-  height: auto;
-}
+/* hide scrollbars */
 
-.status ul {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  max-height: 23rem;
-  overflow-y: auto;
+.hud-body .controls {
   -ms-overflow-style: none;
   scrollbar-width: none;
+  overflow-y: auto;
+  overflow-x: auto;
 }
 
-.status ul::-webkit-scrollbar {
-  display: none;
+.hud-body .status ul li, .hud-body .controls ul li, .hud-body .status .tbh ul li {
+  padding: 0.5rem 1rem;
+  line-height: 4rem;
+  border: 4px solid #424143;
+  border-radius: 1.5rem;
+  min-width: 12rem;
+  list-style: none;
+  margin: 1rem 0 0;
+  height: unset;
 }
-
-.hud-body .status .tbd ul li, .hud-body .status ul li {
-  min-height: 4.4rem;
-  font-size: 2.3rem;
-  padding: 1rem;
-}
-
-/*
-.hud-body .status .tbd ul li:nth-child(1) , .hud-body .status ul li:nth-child(1) {
-  border-top: 0px;
-}
-*/
-
-.hud-body .status .tbd, .hud-body .status .player-notice {
-  min-width: 80%;
-  font-size: 1.8rem;
-  padding: 1rem;
-  justify-content: center;
-}
-
-.status-text-menu ul li, .status ul li {
-  border-color: var(--text-color);
-  border: 3px solid;
-  margin: 5px 0;
-  min-width: 25rem;
-  padding: 0;
-  border-radius: 10px;
-  background-color: #ab815f73;
-}
-
-.status-message ul li:hover, .status ul li:hover {
-  background-color: #ab815faa;
-}
-
-.iconoption {
-  border: unset;
-  margin: 2px;
-}
-
-.discard-select ul li {
-  display: inline;
-  border: 0px;
-}
-
-.discard-select ul li .icon, .player-notice .tip .icon {
-  height: 4rem;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-}
-
-.player-notice .tip .icon {
-  height: 4rem;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+.hud-body .status ul li:hover, .hud-body .controls ul li:hover, .hud-body .status .tbh ul li:hover {
+  background-color: #cbaf83
 }
 
 .hud-body .mobile {
   display: none;
+  z-index: 10000;
 }
 
 .hud-body .mobile .score {
@@ -134,13 +77,18 @@
   display: inline-block;
   position: relative;
   width: 100%;
-  top: -0.75rem;
+  top: 0rem;
+}
+
+/* ul to buttons in settlers hud */
+
+.saitoa .status ul, .saitoa .controls ul  {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
 }
 
 
-.status-header > #status-content, .status-message > #status-content, .status {
-  font-size: 2rem;
-}
 
 @media only screen and (max-width: 700px) and (orientation: portrait) {
   body .player-box {
@@ -153,14 +101,6 @@
     margin-left: 5vw;
     margin-right: 5vw;
     margin-top: 5vw;
-  }
-  body .player-box.notme, .opponents, body .player-box.me {
-    position: unset;
-    top: unset;
-    bottom: unset;
-    right: unset;
-    height: auto;
-    max-height: unset;
   }
   .scoreboard {
     display: none;
@@ -181,7 +121,6 @@
   }
   .mobile-trading-container {
     display: none;
-    /* grid-template-areas: 'areaOne areaTwo'; // set in code */
     position: absolute;
     background-color: black;
     height: 100%;
@@ -190,7 +129,6 @@
     top: 0;
     left: 0;
     padding-top: 6vh;
-    /* ensures can scroll up if too big */
     overflow-y: scroll;
     max-height: 120vh;
     padding-bottom: 40vh;
