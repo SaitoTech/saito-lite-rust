@@ -110,7 +110,6 @@ class Archive extends ModTemplate {
       }
       if (req.data.request === "load") {
         let txs = await this.loadTransactions(req.data);
-        console.log(mycallback);
         mycallback(txs);
         return;
       }
@@ -298,9 +297,6 @@ class Archive extends ModTemplate {
       limit = Math.max(limit, obj.limit);
       limit = Math.min(limit, 100);
     } 
-
-    console.log("Archive loading transactions");
-    console.log(obj);
     
     //
     // SEARCH BASED ON CRITERIA PROVIDED
@@ -340,7 +336,6 @@ class Archive extends ModTemplate {
     // FILTER FOR TXS
     //
     if (rows != undefined) {
-      console.log(rows.length + " entries found");
       if (rows.length > 0) {
         for (let i = 0; i < rows.length; i++) {
           txs.push({ tx: rows[i].tx });
