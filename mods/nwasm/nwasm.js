@@ -75,8 +75,9 @@ class Nwasm extends OnePlayerGameTemplate {
       return { 
 	name : "Nwasm" , 
 	key : this.nwasm.random ,
-	mod : this ,
-	shouldArchive : (tx=null) => {
+//	mod : this ,
+	shouldArchive : function(tx=null) {
+	  if (tx == null) { try { alert("NULL!"); } catch (err) {}; return false; };
 	  let txmsg = tx.returnMessage();
 	  if (txmsg.request === "archive insert") { return true; }
 	  return false;
@@ -103,9 +104,6 @@ class Nwasm extends OnePlayerGameTemplate {
   }
 
 
-  render() {
-    this.library.render();
-  }
 
   render(app) {
 
@@ -194,6 +192,9 @@ class Nwasm extends OnePlayerGameTemplate {
 
     this.menu.addChatMenu();
     this.menu.render();
+
+    this.library.render();
+
   }
 
   initializeGame(game_id) {
@@ -257,12 +258,18 @@ alert("Deletion Not Supported Yet! ");
   }
 
   hideSplashScreen() {
+    if (document.querySelector(".nwasm-instructions")) {
+      document.querySelector(".nwasm-instructions").style.display = "none";
+    }
     if (document.querySelector(".nwasm-selector")) {
       document.querySelector(".nwasm-selector").style.display = "none";
     }
   }
 
   hideLibrary() {
+    if (document.querySelector(".nwasm-instructions")) {
+      document.querySelector(".nwasm-instructions").style.display = "none";
+    }
     this.library.hide();
   }
 
@@ -303,8 +310,6 @@ alert("Deletion Not Supported Yet! ");
 
 	if (this.active_rom_name.indexOf(x.trim().substring(0, len)) != 0) {
 
-alert("TESTING GAME START 1!");
-
           this.active_rom_name = x.trim();
           this.active_rom_sig = this.app.crypto.hash(this.active_rom_name);
 
@@ -313,7 +318,6 @@ alert("TESTING GAME START 1!");
           //
           if (this.uploaded_rom == false && this.active_rom_name !== "") {
 
-alert("TESTING GAME START 2!");
             this.uploaded_rom = true;
 	    let similar_rom_exists = false;
 
@@ -325,12 +329,9 @@ alert("TESTING GAME START 2!");
 	      similar_rom_exists = library_mod.isItemInCollection({ id : this.app.crypto.hash(this.active_rom_name) }, this.app.wallet.returnPublicKey());
             }
 
-alert("TESTING GAME START 3: " + similar_rom_exists);
-
 	    if (similar_rom_exists) {
 	      let c = confirm("Archive: ROM with this name already archived - is this a separate lawful copy?");
 	      if (c) {
-alert("about to SAVE ROM FILE");
                 this.saveRomFile(this.active_rom);
 	      }
 	    } else {
@@ -426,17 +427,16 @@ alert("about to SAVE ROM FILE");
   // Archive module will then be able to transfer ownership and control as needed
   // for DRM management purposes.
   //
+  // DO NOT CONSOLE LOG THIS FUNCTION as it is called from the browser when 
+  // parsing the logs for the NWASM game load condition.
+  //
   async saveRomFile(data) {
-
-console.log("SAVE ROM FILE");
 
     let nwasm_self = this;
 
     let base64data = this.xorBase64(this.convertByteArrayToBase64(data));
     let added_to_library = 0;
     let iobj = document.querySelector(".nwasm-upload-instructions");
-
-console.log("more details");
 
     //
     // larger tx, so we use subrequest and manually handle the save
@@ -468,22 +468,18 @@ console.log("more details");
     //
     // save off-chain
     //
-console.log("SAVING TRANSACTION 1");
+    // TODO - uploading such a large file halts execution of the emulator
+    // because it is so CPU and memory intensive, so we want to see if we
+    // can avoid this problem and somehow speed up ROM loading. It would 
+    // be ideal either to display an advert showing the pace of ROM upload
+    // or allow the upload to happen in the background.
+    //
     this.app.storage.saveTransaction(newtx, { owner : this.app.wallet.returnPublicKey() });
-console.log("SAVING TRANSACTION 2");
 
     //
+    // and hide our instructions
     //
-    //
-    //this.app.network.sendTransactionWithCallback(newtx, async function (res) {
-    //  if (iobj) { iobj.innerHTML = "archive upload completed..."; }
-    //  if (added_to_library == 1) { return; }
-    //  added_to_library = 1;
-    //  nwasm_self.app.connection.emit("save-transaction", newtx);
-    //  if (iobj) { iobj.innerHTML = "adding to personal library..."; }    
-    //});
-    //
-    //
+    this.hideLibrary();
 
   }
 

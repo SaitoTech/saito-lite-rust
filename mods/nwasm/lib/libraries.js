@@ -84,7 +84,9 @@ class NwasmLibrary {
 	  if (publickey === this.app.wallet.returnPublicKey()) {
 
 	    let library_mod = this.app.modules.returnModule("Library");
-	    library_mod.checkout("Nwasm", sig, this.app.wallet.returnPublicKey(), function(txs) {
+	    library_mod.checkoutItem("Nwasm", this.app.wallet.returnPublicKey(), sig, function(txs) {
+
+alert("WE HAVE RETURNED THE TX AND ARE IN THE CALLBACK");
 
 	      if (txs == null) {
 	        alert("Cannot checkout item...");
@@ -92,15 +94,20 @@ class NwasmLibrary {
 	      }
 
 	      if (txs.length > 0) {
+
+console.log("THEREIS AT LEAST 1 TX");
+
 	        try {
 	          let tx = new saito.default.transaction(txs[0].transaction);
 	  	  this.mod.hideLibrary();
 		  lib_self.loader.overlay.hide();
+alert("about to load rom file...");
 		  this.mod.loadRomFile(tx);
 		} catch (err) {
 		  console.log("Error downloading and decrypting: " + err);
 		}
 	      } else {
+alert("ERROR LOADING NWASM ROM");
 	        console.log("ERROR TXS LIBRARY: " + JSON.stringify(txs));
 	        alert("Error - is network down?");
 	      }

@@ -69,11 +69,11 @@ class Library extends ModTemplate {
     //
     app.connection.on("saito-save-transaction", (tx) => {
 
-console.log("---------------------");
-console.log("---------------------");
-console.log("IN LIBRARY ON SAVE TX");
-console.log("---------------------");
-console.log("---------------------");
+//console.log("---------------------");
+//console.log("---------------------");
+//console.log("IN LIBRARY ON SAVE TX");
+//console.log("---------------------");
+//console.log("---------------------");
 
       //
       // fetch information for index
@@ -104,6 +104,7 @@ console.log("---------------------");
       // add item to library
       //
       for (let i = 0; i < this.collections.length; i++) {
+
         if (this.collections[i].shouldArchive(tx)) {
 	  let item = {
   		id 		: id ,
@@ -114,7 +115,8 @@ console.log("---------------------");
 		checkout 	: [] ,
 		sig 		: sig
 	  };
-	  this.addItemToCollection(item, this.app.wallet.returnPublicKey());
+	  this.addItemToCollection(item, this.collections[i], this.app.wallet.returnPublicKey());
+	  this.save();
 	}
       }
     });
@@ -156,9 +158,10 @@ console.log("---------------------");
       let contains_item = false;
       for (let i = 0; i < this.library[collection].peers[this.app.wallet.returnPublicKey()].length; i++) {
         let item = this.library[collection].peers[this.app.wallet.returnPublicKey()][i];
-	if (item.id == id) { return true; }
+	if (item.id == this.library[collection].peers[this.app.wallet.returnPublicKey()].id) { return true; }
       }
     }
+    return false;
   }
 
 
@@ -203,8 +206,8 @@ console.log("---------------------");
     // asked to manage to our library, and initialize it with sensible default
     // values.
     //
-    app.modules.getRespondTos("library-collection").forEach((m) => {
-      this.addCollection(m, this.app.wallet.returnPublicKey());
+    app.modules.returnModulesRespondingTo("library-collection").forEach((m) => {
+      this.addCollection(m.respondTo("library-collection"), this.app.wallet.returnPublicKey());
     });
 
 
@@ -293,17 +296,7 @@ console.log("---------------------");
   }
 
 
-  checkout(collection, publickey, sig, mycallback) {
-
-    //
-    // if the collection doesn't exist, we cannot lend
-    //
-    if (!this.library[collection]) { return; }
-
-    //
-    // not our publickey, not ours to lend
-    //
-    if (publickey != this.app.wallet.returnPublicKey()) { return; }
+  returnItem(collection, publickey, sig, mycallback) {
 
     //
     // get index of item
@@ -360,11 +353,89 @@ console.log("---------------------");
 	  }	
         }
       }
+    }
+  }
+
+  checkoutItem(collection, publickey, sig, mycallback) {
+
+alert("coll: " + collection + " -- " + publickey + " --- " + sig);
+
+    //
+    // if the collection doesn't exist, we cannot lend
+    //
+    if (!this.library[collection]) { return; }
+
+alert("checkout item 2");
+
+    //
+    // get index of item
+    //
+    let idx = -1;
+    for (let i = 0; i < this.library[collection].peers[this.app.wallet.returnPublicKey()].length; i++) {
+
+alert( this.library[collection].peers[this.app.wallet.returnPublicKey()][i].sig + " -- " + sig);
+
+      if (this.library[collection].peers[this.app.wallet.returnPublicKey()][i].sig === sig) {
+        idx = i;
+        break;
+      }
+    }
+
+alert("INDEX IS: " + idx);
+
+    if (idx != -1) {
+
+      //
+      // find the item
+      //
+      let item = this.library[collection].peers[publickey][idx];
+
+      //
+      // is it checked out ?
+      //
+      let is_already_borrowed = 0;
+      let is_already_borrowed_idx = -1;
+      for (let i = 0; i < item.checkout.length; i++) {
+        if (item.checkout[i].publickey === publickey) {
+	  item.checkout[i].ts = new Date().getTime();
+          is_already_borrowed_idx = i;
+	}
+      }
+
+      //
+      // the one condition we permit re-borrowing is if this user is the 
+      // one who has borrowed the item previously and has it in their
+      // possession. in that case they have simply rebooted their 
+      // machine and should be provided with the data under the previous
+      // loan.
+      //
+      // this "unsets" the loan so that it can be reset with the passing
+      // through of control to the !is_already_borrowed sanity check.
+      //
+      //
+      if (is_already_borrowed) {
+        for (let i = 0; i < item.checkout.length; i++) {
+          if (item.checkout[i].publickey === publickey) {
+	    item.checkout.splice(i, 1);
+	    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+	    // be careful that item.available //
+	    // is not removed below for legal //
+	    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+	    item.available++;
+            this.save();
+            is_already_borrowed = 0;
+	  }	
+        }
+      }
+
+alert("about to borrow: " + is_already_borrowed);
 
       //
       // now we can permit the checkout
       //
       if (!is_already_borrowed) {
+
+alert("about to borrow: " + item.available + " -- " + item.num + " -- " + item.checkout.length);
 
         if (item.available < 1) { return; }
         if (item.checkout.length > item.num) { return; }
@@ -378,7 +449,8 @@ console.log("---------------------");
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
         item.available--;
         this.save();
-        this.app.storage.loadTransactionBySig(sig, mycallback);
+alert("LOAD TRANSACTION BY SIG");
+        this.app.storage.loadTransactions({ sig : sig }, mycallback);
       }
     }
   }

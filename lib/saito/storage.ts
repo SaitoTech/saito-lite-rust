@@ -62,9 +62,7 @@ class Storage {
   //    ---> peers receive via Archive module
   //    ---> peers fetch from DB, return via callback or return TX
   //
-  saveTransaction(tx, obj={}, peer=null) {
-
-console.log("saving transaction !!!");
+  async saveTransaction(tx, obj={}, peer=null) {
 
     const txmsg = tx.returnMessage();
     const message = "archive";
@@ -97,7 +95,7 @@ console.log("saving transaction !!!");
 
   }
 
-  updateTransaction(tx, obj={}, peer=null) {
+  async updateTransaction(tx, obj={}, peer=null) {
 
     const txmsg = tx.returnMessage();
     const message = "archive";
