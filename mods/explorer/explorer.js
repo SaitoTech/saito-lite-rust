@@ -112,7 +112,7 @@ class ExplorerCore extends ModTemplate {
     <link rel=\"stylesheet\" type=\"text/css\" href=\"/saito/saito.css\" /> \
     <link rel=\"stylesheet\" type=\"text/css\" href=\"/explorer/style.css\" /> \
     <link rel=\"stylesheet\" type=\"text/css\" href=\"/saito/lib/jsonTree/jsonTree.css\" /> \
-    <link rel=\"stylesheet\" href=\"/saito/lib/font-awesome-5/css/all.css\" type=\"text/css\" media=\"screen\"> \
+    <link rel=\"stylesheet\" href=\"/saito/lib/font-awesome-6/css/all.css\" type=\"text/css\" media=\"screen\"> \
     <script src=\"/explorer/utils.js\"></script> \
     <script src=\"/saito/lib/jsonTree/jsonTree.js\"></script> \
     <link rel=\"icon\" sizes=\"192x192\" href=\"/saito/img/touch/pwa-192x192.png\"> \
