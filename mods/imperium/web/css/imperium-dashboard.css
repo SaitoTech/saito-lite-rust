@@ -10,7 +10,7 @@
   z-index: 9;
   color: #fff;
   background: transparent;
-  margin-top: 6.5rem;
+  margin-top: 5.5rem;
   margin-left: 15em;
 }
 
@@ -21,6 +21,7 @@
   cursor: pointer;
   user-select: none;
   width: max-content;
+  row-gap: 0.5rem;
 }
 
 .dash-faction-name {

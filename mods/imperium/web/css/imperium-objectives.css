@@ -1,5 +1,26 @@
 
 .objectives-overlay {
+    width: 100%;
+    height: min-content;
+    width: min-content;
+    max-width: 1000px;
+    max-height: 85vh;
+    background-image: url('/imperium/img/backgrounds/objectives-background.jpg');
+    background-size: cover;
+    padding: 4rem;
+    min-width: 80vw;
+}
+
+.objectives-overlay-title {
+    color: white;
+    font-size: 2.4rem;
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: auto;
+    width: min-content;
+}
+
+.objectives-overlay-content {
     display: flex;
     flex-direction: row;
     gap: 2rem;
@@ -7,10 +28,8 @@
     width: 100%;
     max-width: 80vw;
     max-height: 85vh;
-    background-image: url(imperium/img/backgrounds/objectives-background.jpg);
     height: min-content;
-    width: min-content;
-    background-size: cover;
+    width: 100%;
     padding: 2rem;
 }
 
@@ -52,7 +71,7 @@
   float: left;
   font-size: 0.8em;
   z-index: 5;
-  border: 1px solid #FFF8;
+  border: 3px solid #FFF;
 }
 
 .objectives_overlay_objectives_card:hover {

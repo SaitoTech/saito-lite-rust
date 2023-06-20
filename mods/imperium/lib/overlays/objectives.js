@@ -14,11 +14,10 @@ class ObjectivesOverlay {
     //
     // show overlay
     //
-    this.overlay.setBackground("/imperium/img/backgrounds/objectives-background.jpg");
     this.overlay.show(ImperiumObjectivesOverlayTemplate());
 
     for (let i in objectives) {
-      this.app.browser.addElementToSelector(objectives[i].returnCardImage(), '.objectives-overlay');
+      this.app.browser.addElementToSelector(objectives[i].returnCardImage(), '.objectives-overlay-content');
     }
 
   }

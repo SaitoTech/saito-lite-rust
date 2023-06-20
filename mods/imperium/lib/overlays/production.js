@@ -31,7 +31,7 @@ class ProductionOverlay {
   }
 
   reset() {
-    document.querySelectorAll(".production-table .unit-table.small .unit-element").forEach((el) => {
+    document.querySelectorAll(".production-table .unit").forEach((el) => {
       let desc = el.querySelector(".unit-description");
       desc.setAttribute("data-amount", 0);
       let name = desc.getAttribute("data-name");

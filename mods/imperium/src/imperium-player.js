@@ -4121,12 +4121,8 @@ console.log("idx: " + idx);
       array_of_cards_to_exhaust.push(array_of_cards[idx]);
       $(divid).off();
       $(divid).css('opacity', '0.2');
-console.log("AOC[idx]: " + array_of_cards[idx]);
-console.log("resources: " + imperium_self.game.planets[array_of_cards[idx]].resources);
       selected_cost += parseInt(imperium_self.game.planets[array_of_cards[idx]].resources);
     }
-
-console.log(cost + " --- " + selected_cost);
 
     if (cost <= selected_cost) { 
       $('.cardchoice , .textchoice').off();
@@ -4146,6 +4142,7 @@ console.log(cost + " --- " + selected_cost);
 
   $('.cardchoice , .textchoice').on('click', () => {
     let action2 = $(this).attr("id");
+alert("action2: " + action2);
     selectResource(action2);
   });
 
