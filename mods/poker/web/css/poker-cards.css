@@ -18,8 +18,8 @@
   position: relative;
   width: 10vw;
   height: calc(10vw * 1.55);
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+  /*margin-left: 0.5rem;
+  margin-right: 0.5rem;*/
 }
 
 .cardFront, .cardBack{
@@ -47,8 +47,6 @@
   .flip-card.card {
     width: 13vw;
     height: calc(13vw * 1.575);
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
   }
 
 }
@@ -58,8 +56,6 @@
   .flip-card.card {
     width: 15vw;
     height: calc(15vw * 1.575);
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
   }
 
 }
@@ -69,8 +65,6 @@
   .flip-card.card {
     width: 17vw;
     height: calc(17vw * 1.575);
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
   }
 
 }
@@ -80,19 +74,15 @@
   .flip-card.card {
     width: 20vw;
     height: calc(20vw * 1.575);
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
   }
 
 }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
 
-  .flip-card .card {
+  .flip-card.card {
     width: 18vw;
     height: calc(18vw * 1.575);
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
   }
 
   .cardfan {
