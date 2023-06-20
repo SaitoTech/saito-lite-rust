@@ -169,9 +169,14 @@ body {
   width: 100%;
 }
 
-.card-stack .card:last-child img.cardFront {
+/*.card-stack .card:last-child img.cardFront {
  pointer-events: unset; 
 } 
+*/
+
+.facedown { 
+  pointer-events: none;
+}
 
 .card.selected {
   filter: brightness(0.85);
