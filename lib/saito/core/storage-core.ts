@@ -507,6 +507,28 @@ class StorageCore extends Storage {
    * @param {*} params
    * @param {*} callback
    */
+  async insertDatabase(sql, params, database, mycallback = null) {
+    try {
+      const db = await this.returnDatabaseByName(database);
+      if (mycallback == null) {
+        let res = await db.run(sql, params);
+	return res.lastID;
+      } else {
+        let res = await db.run(sql, params, mycallback);
+	return res.lastID;
+      }
+    } catch (err) {
+      console.log("sql : ", sql);
+      console.log(err);
+    }
+  }
+
+  /**
+   *
+   * @param {*} sql
+   * @param {*} params
+   * @param {*} callback
+   */
   async executeDatabase(sql, params, database, mycallback = null) {
     try {
       const db = await this.returnDatabaseByName(database);

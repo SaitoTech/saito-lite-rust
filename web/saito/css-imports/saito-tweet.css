@@ -120,6 +120,11 @@
 .tweet-text.full~.tweet-preview {
   margin-top: 1rem;
 }
+
+.tweet-text.preview{
+  position: relative;
+}
+
 .tweet-text.preview::before {
   content: " ";
   position: absolute;
@@ -153,9 +158,9 @@
   transition: all 1s;
 }
 
-.tweet-text.preview~.tweet-controls {
+/*.tweet-text.preview~.tweet-controls {
   display: none;
-}
+}*/
 
 .tweet-text.full~.tweet-controls {
   display: flex;

@@ -235,7 +235,6 @@ class Mahjong extends OnePlayerGameTemplate {
     super.render(app);
 
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addMenuOption("game-info", "Info");
 
     this.menu.addSubMenuOption("game-game",{
       text : "Start New Game",
@@ -247,7 +246,7 @@ class Mahjong extends OnePlayerGameTemplate {
         game_mod.endTurn();
       }
     });
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text : "How to Play",
       id : "game-intro",
       class : "game-intro",
@@ -256,7 +255,7 @@ class Mahjong extends OnePlayerGameTemplate {
         game_mod.overlay.show(game_mod.returnGameRulesHTML());
       }
     });
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text : "Stats",
       id : "game-stats",
       class : "game-stats",

@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS user (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  publickey TEXT,
+  type TEXT DEFAULT "normal"
+);

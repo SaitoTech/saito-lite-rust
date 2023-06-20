@@ -26,7 +26,7 @@ class Nwasm extends OnePlayerGameTemplate {
 
     this.uploader        = null;
 
-    this.library_ui = new NwasmLibrary(this.app, this);
+    this.library = new NwasmLibrary(this.app, this);
 
     this.load();
 
@@ -73,12 +73,13 @@ class Nwasm extends OnePlayerGameTemplate {
   respondTo(type="") {
     if (type === "library-collection") {
       return { 
-	module : "Nwasm" , 
-	mod : this ,
-	collection : "Nwasm" , 
+	name : "Nwasm" , 
 	key : this.nwasm.random ,
-	shouldArchive : (request="", subrequest="") => {
-	  if (request === "archive rom" || subrequest === "archive rom") { return true; }
+//	mod : this ,
+	shouldArchive : function(tx=null) {
+	  if (tx == null) { try { alert("NULL!"); } catch (err) {}; return false; };
+	  let txmsg = tx.returnMessage();
+	  if (txmsg.request === "archive insert") { return true; }
 	  return false;
 	},
       };
@@ -95,7 +96,7 @@ class Nwasm extends OnePlayerGameTemplate {
     // this code doubles onConfirmation
     //
     if (message.request === "nwasm testing") {
-      mycallback("HPR RESPONSE FROM NWASM");
+      mycallback("Handle Peer Request in Nwasm: this can be used for testing");
       return;
     }
 
@@ -103,9 +104,6 @@ class Nwasm extends OnePlayerGameTemplate {
   }
 
 
-  render() {
-    this.library_ui.render();
-  }
 
   render(app) {
 
@@ -178,30 +176,6 @@ class Nwasm extends OnePlayerGameTemplate {
 	//game_mod.importState();
       }
     });
-/****
-    this.menu.addSubMenuOption("game-game", {
-        text : "Share",
-        id : "game-share",
-        class : "game-share",
-        callback : async function(app, game_mod) {
-          let m = game_mod.app.modules.returnModule("RedSquare");
-          if (m){
-            let log = document.getElementById("log-wrapper");
-            if (log && !log.classList.contains("log_lock")) { log.style.display = "none"; }
-            let menu = document.getElementById("game-menu");
-            menu.style.display = "none";
-            await app.browser.screenshotCanvasElementById("canvas", function(image) {
-              if (log && !log.classList.contains("log_lock")) { log.style.display = "block"; }
-              menu.style.display = "block";
-              SAITO_COMPONENT_ACTIVE = true;
-              SAITO_COMPONENT_CLICKED = true;
-              m.tweetImage(image);
-            });
-            game_mod.menu.hideSubMenus();
-          }
-        },
-    });
-****/
     this.menu.addSubMenuOption("game-game",{
       text : "Delete",
       id : "game-rom-delete",
@@ -211,13 +185,16 @@ class Nwasm extends OnePlayerGameTemplate {
 	let c = confirm("Confirm: delete all your ROMS?");
 	if (c) {
 	  game_mod.deleteRoms();
-	  game_mod.library_ui.render();
+	  game_mod.library.render();
 	}
       }
     });
 
     this.menu.addChatMenu();
     this.menu.render();
+
+    this.library.render();
+
   }
 
   initializeGame(game_id) {
@@ -255,9 +232,37 @@ class Nwasm extends OnePlayerGameTemplate {
 
   deleteRoms() {
 
-alert("Deletion Not Supported Yet! ");
+    let newtx = this.app.wallet.createUnsignedTransaction();
+    newtx.msg = {
+      module: this.name,
+      request: "archive delete",
+    }
 
-/*
+    newtx = this.app.wallet.signTransaction(newtx);
+      
+    //
+    // save off-chain
+    //
+    // TODO - uploading such a large file halts execution of the emulator
+    // because it is so CPU and memory intensive, so we want to see if we
+    // can avoid this problem and somehow speed up ROM loading. It would
+    // be ideal either to display an advert showing the pace of ROM upload
+    // or allow the upload to happen in the background.
+    //
+    //this.app.storage.saveTransaction(newtx, { owner : this.app.wallet.returnPublicKey() });
+  
+
+    let library_mod = this.app.modules.returnModule("Library");
+    if (library_mod) {
+      library_mod.handlePeerTransaction(this.app, newtx, null, function() {
+        nwasm_mod.libraries = {};
+        nwasm_mod.save();
+        nwasm_mod.updateVisibleLibrary();
+      });
+    }
+
+
+/***
     let message = {};
         message.request = "library delete";
         message.data = {};
@@ -277,17 +282,23 @@ alert("Deletion Not Supported Yet! ");
             nwasm_mod.updateVisibleLibrary();
 	  });
 	}
-*/
+***/
   }
 
   hideSplashScreen() {
+    if (document.querySelector(".nwasm-instructions")) {
+      document.querySelector(".nwasm-instructions").style.display = "none";
+    }
     if (document.querySelector(".nwasm-selector")) {
       document.querySelector(".nwasm-selector").style.display = "none";
     }
   }
 
   hideLibrary() {
-    this.library_ui.hide();
+    if (document.querySelector(".nwasm-instructions")) {
+      document.querySelector(".nwasm-instructions").style.display = "none";
+    }
+    this.library.hide();
   }
 
   initializeRom(bytearray) {
@@ -334,23 +345,25 @@ alert("Deletion Not Supported Yet! ");
           // archive the rom
           //
           if (this.uploaded_rom == false && this.active_rom_name !== "") {
+
+            this.uploaded_rom = true;
+	    let similar_rom_exists = false;
+
             //
             // save ROM in archives --dynamically is best
             //
-            this.uploaded_rom = true;
-	    let similar_rom_exists = false;
-	    for (let item in this.libraries[this.app.wallet.returnPublicKey()]) {
-	      if (item.title === this.active_rom_name) { similar_rom_exists = true; }
-	    }
-	    if (this.browser_active) {
-	      if (similar_rom_exists) {
-	        let c = confirm("Archive: ROM with this name already archived - is this a separate lawful copy?");
-	        if (c) {
-                  this.saveRomFile(this.active_rom);
-	        }
-	      } else {
+            let library_mod = this.app.modules.returnModule("Library");
+            if (library_mod) {
+	      similar_rom_exists = library_mod.isItemInCollection({ id : this.app.crypto.hash(this.active_rom_name) }, this.app.wallet.returnPublicKey());
+            }
+
+	    if (similar_rom_exists) {
+	      let c = confirm("Archive: ROM with this name already archived - is this a separate lawful copy?");
+	      if (c) {
                 this.saveRomFile(this.active_rom);
 	      }
+	    } else {
+              this.saveRomFile(this.active_rom);
 	    }
           }
 
@@ -358,7 +371,7 @@ alert("Deletion Not Supported Yet! ");
 	  //
 	  // load 5 saved games
 	  //
-          this.app.storage.loadTransactions(("Nwasm"+this.active_rom_sig), 5, function(txs) {
+          this.app.storage.loadTransactions( { field1 : ("Nwasm"+this.active_rom_sig) , limit : 5 }, function(txs) {
             try {
 	      for (let z = 0; z < txs.length; z++) {
                 let newtx = new saito.default.transaction(txs[z].transaction);
@@ -368,6 +381,7 @@ alert("Deletion Not Supported Yet! ");
               log("error loading Nwasm game...: " + err);
             }
           });
+
 
 	}
       }
@@ -402,6 +416,9 @@ alert("Deletion Not Supported Yet! ");
     this.uploader.render(app, this);
   }
 
+
+
+
   //////////////////
   // transactions //
   //////////////////
@@ -424,6 +441,23 @@ alert("Deletion Not Supported Yet! ");
     myApp.initializeRom(ab, this.app, this);
 
   }
+
+
+  //
+  // save the ROM
+  //
+  // this function is run when the user uploads the ROM into their browser. it
+  // encrypts the ROM using a secret key that is only known to this wallet and 
+  // then puts it into a transaction which is saved out in the network.
+  //
+  // the transaction will be indexed by the Archive module of any users who are 
+  // providing storage for this user, as well as their own browser possibly. the
+  // Archive module will then be able to transfer ownership and control as needed
+  // for DRM management purposes.
+  //
+  // DO NOT CONSOLE LOG THIS FUNCTION as it is called from the browser when 
+  // parsing the logs for the NWASM game load condition.
+  //
   async saveRomFile(data) {
 
     let nwasm_self = this;
@@ -459,13 +493,21 @@ alert("Deletion Not Supported Yet! ");
     newtx = this.app.wallet.signTransaction(newtx);
     if (iobj) { iobj.innerHTML = "uploading archive file: "+newtx.transaction.m.length+" bytes"; }
 
-    this.app.network.sendTransactionWithCallback(newtx, async function (res) {
-      if (iobj) { iobj.innerHTML = "archive upload completed..."; }
-      if (added_to_library == 1) { return; }
-      added_to_library = 1;
-      nwasm_self.app.connection.emit("save-transaction", newtx);
-      if (iobj) { iobj.innerHTML = "adding to personal library..."; }    
-    });
+    //
+    // save off-chain
+    //
+    // TODO - uploading such a large file halts execution of the emulator
+    // because it is so CPU and memory intensive, so we want to see if we
+    // can avoid this problem and somehow speed up ROM loading. It would 
+    // be ideal either to display an advert showing the pace of ROM upload
+    // or allow the upload to happen in the background.
+    //
+    this.app.storage.saveTransaction(newtx, { owner : this.app.wallet.returnPublicKey() });
+
+    //
+    // and hide our instructions
+    //
+    this.hideLibrary();
 
   }
 
@@ -490,7 +532,7 @@ alert("Deletion Not Supported Yet! ");
     let nwasm_mod = this;
     let module_type = "Nwasm"+this.active_rom_sig;
 
-    this.app.storage.loadTransactions(("Nwasm"+this.active_rom_sig), 1, function(txs) {
+    this.app.storage.loadTransactions( { field1 : ("Nwasm"+this.active_rom_sig) , limit : 1 }, function(txs) {
       try {
         if (txs.length <= 0) { alert("No Saved Games Available"); }
         let newtx = new saito.default.transaction(txs[0].transaction);
@@ -526,7 +568,7 @@ alert("Deletion Not Supported Yet! ");
 
     newtx.msg = obj;
     newtx = this.app.wallet.signTransaction(newtx);
-    this.app.storage.saveTransaction(newtx, ("Nwasm-"+this.active_rom_sig));
+    this.app.storage.saveTransaction(newtx, { field1 : ("Nwasm-"+this.active_rom_sig) });
     this.active_game_saves.push(newtx);
 
   }

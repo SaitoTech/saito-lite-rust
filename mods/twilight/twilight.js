@@ -59,7 +59,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     // ui components
     this.scoring_overlay = new ScoringOverlay(this.app, this);
@@ -90,10 +90,11 @@ class Twilight extends GameTemplate {
     `;
 
     if (cards.length == 0) { 
-      html = `<div style="text-align:center; margin: auto;">
+      html = `<div class="transparent-card-overlay" style="text-align:center; margin: auto;">
               There are no cards to display
               </div>`;
     }
+    this.overlay.clickToClose = true;
     this.overlay.show(html);
   }
 
@@ -2370,7 +2371,7 @@ console.log("LATEST MOVE: " + mv);
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["missileenvy", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["cambridge", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["cubanmissile", "saltnegotiations", "iraniraq", "cambridge", "warsawpact", "mideast", "tehran", "cia", "china"];
         }

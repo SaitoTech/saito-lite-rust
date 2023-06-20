@@ -30,7 +30,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.963,
+    version: 4.965,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -716,8 +716,8 @@ console.log("---------------------");
     // this adds a 1 block buffer so that inputs are valid in the future block included
     //
     const lowest_block: bigint =
-      this.app.blockchain.blockchain.last_block_id -
-      this.app.blockchain.returnGenesisPeriod() +
+      BigInt(this.app.blockchain.blockchain.last_block_id) -
+      BigInt(this.app.blockchain.returnGenesisPeriod()) +
       BigInt(2);
 
     //
