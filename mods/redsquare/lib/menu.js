@@ -106,7 +106,7 @@ class RedSquareMenu {
         }
       } else {
         let existing_notifications = 0;
-        if (obj.innerHTML) { existing_notificaitons = parseInt(obj.innerHTML); }
+        if (obj.innerHTML) { existing_notifications = parseInt(obj.innerHTML); }
         if (notifications <= 0) {
           obj.style.display = "none";
           obj.innerHTML = 0;
