@@ -29,6 +29,7 @@ This alows for a header with a header with title to be added without extra CSS
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
+  gap: 1rem;
 }
 
 
@@ -347,4 +348,20 @@ This alows for a header with a header with title to be added without extra CSS
   .saito-modal-menu-option>div {
     font-size: 1.5rem;
   }
+}
+
+
+/* not sure where this should be */
+
+.saito-modal.contacts {
+  background-color: var(--saito-background-color);
+  background-image: url(/saito/img/tiled-logo.svg);
+  color: var(--saito-font-color);
+}
+
+.saito-contacts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 0;
 }
