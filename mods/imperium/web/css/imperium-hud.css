@@ -6,6 +6,11 @@
   font-size: 1.8rem;
 }
 
+
+.hud-header .hud-controls {
+  padding: 1.5rem;
+}
+
 .hud-body .controls {
   display: none;
 }
@@ -59,7 +64,12 @@
 #menu-container>ul>li:hover {
   background-color: #3334;
 }
-
+.status-overlay>ul>li:hover {
+  background-color: #3334;
+}
+.status-overlay ul li:hover {
+  background: #8888;
+}
 
 .status ul li:hover, .hud-menu ul li a:hover, hud-menu-overlay ul li:hover {
   background: #8888;

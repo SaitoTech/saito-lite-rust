@@ -30,9 +30,7 @@ class RedSquareNotification {
     let mod = this.mod;
 
     if (this.tx == null) {
-      document.querySelector(
-        selector
-      ).innerHTML = `<div class="notifications-empty"><span> <i class="far fa-folder-open" aria-hidden="true"></i> </span> <p>No new notifications </p> </div>`;
+      document.querySelector(selector).innerHTML = '';
     } else {
       let html = "";
       let txmsg = this.tx.returnMessage();

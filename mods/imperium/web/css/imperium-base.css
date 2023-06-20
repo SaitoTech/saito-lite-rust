@@ -5,6 +5,7 @@
     border: 1px solid #000;
 }
 
+
 .objectives-toggle {
   font-family: orbitron-medium, sans-serif;
   float: right;
@@ -65,6 +66,10 @@
 
 .chat-body>.saito-user>.saito-userline {
   font-family: sans-serif;
+}
+
+ul li {
+  list-style: none;
 }
 
 .game-menu ul li {
@@ -846,39 +851,14 @@ body {
   font-weight: bold;
 }
 
-.faction_sheet_planet_card {
-  height: 26vh;
-  width: calc(26vh * 0.72110);
-  background-size: cover;
-  margin: 1vw;
-  padding: 1vw;
-  text-align: center;
-  font-size: 0.75vw;
-  transition: all 50ms;
-  margin-bottom: -15vw;
-  border: 1px solid;
-  float: left;
-  z-index: 1;
-}
-
-.faction_sheet_objectives {
-  display: grid;
-  grid-template-columns: auto auto;
-  margin-bottom: 17vw;
-}
-
-.faction_sheet_objective_cards {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  margin: 1em 1em 1em 1em;
-}
-
-.card_nonopaque {
+.nonopaque {
   opacity: 1;
 }
-.card_opaque {
-  opacity: 0.55;
+.opaque {
+  opacity: 0.6;
+}
+.opaque:hover {
+  opacity: 0.8;
 }
 
 .unit-display-tile {

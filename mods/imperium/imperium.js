@@ -2088,7 +2088,7 @@ class Imperium extends GameTemplate {
       type        :       "special" ,
       color       	: 	"yellow" ,
       prereqs	:	["yellow","yellow"],
-      text	:	"Gain 4 trade goods whenever a system is activated containing your ships" ,
+      text	:	"Gain 4 trade goods when a sector with your ships is activated" ,
       initialize  :	  function(imperium_self, player) {
         if (imperium_self.game.state.players_info[player-1].eres_siphons == null) {
           imperium_self.game.state.players_info[player-1].eres_siphons = 0;
@@ -2119,12 +2119,12 @@ class Imperium extends GameTemplate {
 
 
     this.importTech('faction2-deep-space-conduits', {
-      name        :       "Deep Space Conduits" ,
+      name        :       "Space Conduits" ,
       faction     :       "faction2",
       type        :       "special" ,
       color       	: 	"blue" ,
       prereqs	:	["blue","blue"],
-      text	:	"Exhaust and activated system with Jol Nar ships now 1 hop away from others" ,
+      text	:	"Exhaust after activating sector and all Jol Nar ships one hex distance" ,
       initialize  :	  function(imperium_self, player) {
         if (imperium_self.game.state.players_info[player-1].deep_space_conduits == null) {
           imperium_self.game.state.players_info[player-1].deep_space_conduits = 0;
@@ -24142,12 +24142,8 @@ console.log("idx: " + idx);
       array_of_cards_to_exhaust.push(array_of_cards[idx]);
       $(divid).off();
       $(divid).css('opacity', '0.2');
-console.log("AOC[idx]: " + array_of_cards[idx]);
-console.log("resources: " + imperium_self.game.planets[array_of_cards[idx]].resources);
       selected_cost += parseInt(imperium_self.game.planets[array_of_cards[idx]].resources);
     }
-
-console.log(cost + " --- " + selected_cost);
 
     if (cost <= selected_cost) { 
       $('.cardchoice , .textchoice').off();
@@ -24167,6 +24163,7 @@ console.log(cost + " --- " + selected_cost);
 
   $('.cardchoice , .textchoice').on('click', () => {
     let action2 = $(this).attr("id");
+alert("action2: " + action2);
     selectResource(action2);
   });
 
