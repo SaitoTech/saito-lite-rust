@@ -495,7 +495,10 @@ class Wordblocks extends GameTemplate {
 
     try {
       //Show delete and skip controls
-      $("#deletectrl").removeClass("hidden");
+      if (this.game.deck[0].crypt.length > 0) {
+        $("#deletectrl").removeClass("hidden");
+      }
+      
       $("#skipturn").removeClass("hidden");
 
       /*
@@ -651,9 +654,10 @@ class Wordblocks extends GameTemplate {
           for (let i = 0; i < tileRack.length; i++) {
             if (tileRack[i].classList.contains("todelete")) deletedTiles += tileRack[i].textContent;
           }
-          if (deletedTiles) {
+          if (deletedTiles && deletedTiles.length <= wordblocks_self.game.deck[0].crypt.length) {
             wordblocks_self.discardAndDrawTiles(deletedTiles);
           } else {
+            salert("You must discard at least one tile and no more than are available to draw!");
             revertToPlay();
           }
         });
@@ -869,26 +873,37 @@ class Wordblocks extends GameTemplate {
       //Must be added here because maybe refreshing the hud-status-message
       $(".tosstiles").off();
       $(".tosstiles").on("click", async function () {
-        tiles = await sprompt("Which tiles do you want to discard?");
-        if (tiles) {
-          let tmphand = JSON.parse(JSON.stringify(wordblocks_self.game.deck[0].hand));
-          for (let i = 0; i < tiles.length; i++) {
-            let letter = tiles[i].toUpperCase();
-            let letter_found = 0;
-            for (let k = 0; k < tmphand.length; k++) {
-              if (wordblocks_self.game.deck[0].cards[tmphand[k]].name == letter) {
-                tmphand.splice(k, 1);
-                letter_found = 1;
-                k = tmphand.length + 1;
-              }
-            }
-            if (letter_found == 0) {
-              salert("INVALID: letter not in hand: " + letter);
+
+        if (wordblocks_self.game.deck[0].crypt.length > 0){
+          tiles = await sprompt("Which tiles do you want to discard?");
+          if (tiles) {
+            if (tiles.length > wordblocks_self.game.deck[0].crypt.length){
+              salert("INVALID: You cannot throw away more letters than you can draw");
               return false;
             }
+
+            let tmphand = JSON.parse(JSON.stringify(wordblocks_self.game.deck[0].hand));
+            for (let i = 0; i < tiles.length; i++) {
+              let letter = tiles[i].toUpperCase();
+              let letter_found = 0;
+              for (let k = 0; k < tmphand.length; k++) {
+                if (wordblocks_self.game.deck[0].cards[tmphand[k]].name == letter) {
+                  tmphand.splice(k, 1);
+                  letter_found = 1;
+                  k = tmphand.length + 1;
+                }
+              }
+              if (letter_found == 0) {
+                salert("INVALID: letter not in hand: " + letter);
+                return false;
+              }
+            }
+            wordblocks_self.discardAndDrawTiles(tiles);
           }
-          wordblocks_self.discardAndDrawTiles(tiles);
+        }else{
+          salert("You can only discard if there are tiles to draw");
         }
+        
       });
     } catch (err) {
       console.log(err);
