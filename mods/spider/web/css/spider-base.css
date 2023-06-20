@@ -169,7 +169,7 @@ body {
   width: 100%;
 }
 
-.card-stack .card:last-child img {
+.card-stack .card:last-child img.cardFront {
  pointer-events: unset; 
 } 
 

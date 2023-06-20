@@ -10,10 +10,14 @@ body {
   padding: 0 0 0 0;
 }
 
-.logobox .status-header, .logobox .status-text-menu{
+.logobox .status, .logobox .status-header, .logobox .status-text-menu{
   background-color: #fffe
 }
 
+.status {
+  border-radius: 5px;
+  padding: 1rem;
+}
 
 .rules-overlay ul {
   margin-left: 25px;

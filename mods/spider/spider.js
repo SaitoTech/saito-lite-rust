@@ -461,6 +461,7 @@ class Spider extends OnePlayerGameTemplate {
     let spider_self = this;
     let selected_stack = null;
     let selected_stack_size = 0;
+    console.log("Attach manual events");
    
     /*
     So we need to know the width and borders of each card stack
@@ -815,10 +816,9 @@ class Spider extends OnePlayerGameTemplate {
   
   finishAnimation(){
     setTimeout(()=>{
+      console.log("Animation finished");
       $(".animated_elem").remove();
-      this.displayBoard();
-      this.attachEventsToBoard();
-      this.game.halted = 0;
+      this.restartQueue();
     }, 400);
   }
 
@@ -917,7 +917,7 @@ class Spider extends OnePlayerGameTemplate {
             indexCt = ( indexCt + 1 ) % 10;
           }
 
-          this.animationSequence.push({delay: 500});
+          this.animationSequence.push({delay: 500, params: null});
           
           //Flip bottom row
           for (let i = 0; i < 10; i++){
