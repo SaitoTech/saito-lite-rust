@@ -1,5 +1,5 @@
 const saito = require("./../../lib/saito/saito");
-const RedSquareIndex = require("./lib/index");
+//const RedSquareIndex = require("./lib/index");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const SaitoMain = require("./lib/main");

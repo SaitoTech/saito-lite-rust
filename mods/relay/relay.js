@@ -128,89 +128,56 @@ class Relay extends ModTemplate {
         await inner_tx.decryptMessage(this.app);
         let inner_txmsg = inner_tx.returnMessage();
 
+        // console.log("inner txmsg : ", inner_txmsg);
+        //
+        // if interior transaction is intended for me, I process regardless
+        //
+        if (inner_tx.isTo(await app.wallet.getPublicKey())) {
+          if (inner_txmsg.request === "ping") {
+            await this.sendRelayMessage(inner_tx.from[0].publicKey, "echo", {
+              status: this.busy,
+            });
+            return;
+          }
 
-    async handlePeerTransaction(app, tx = null, peer, mycallback) {
-
-        if (tx == null) { return; }
-        let message = tx.returnMessage();
-
-        try {
-
-            let relay_self = app.modules.returnModule("Relay");
-            if (tx.isTo(app.wallet.returnPublicKey())) {
-                if (message.request === "ping") {
-                    //console.log("Respond to ping");
-                    this.sendRelayMessage(tx.transaction.from[0].publicKey, "echo", { status: this.busy });
-                    return;
-                }
-
-                if (message.request === "echo") {
-                    //console.log("Received echo");
-                    if (message.data.status) {
-                        app.connection.emit("relay-is-busy", tx.transaction.from[0].publicKey);
-                    } else {
-                        app.connection.emit("relay-is-online", tx.transaction.from[0].publicKey);
-                    }
-                    return;
-                }
+          if (inner_txmsg.request === "echo") {
+            if (inner_txmsg.data.status) {
+              app.connection.emit("relay-is-busy", inner_tx.from[0].publicKey);
+            } else {
+              app.connection.emit("relay-is-online", inner_tx.from[0].publicKey);
             }
-                    
-            if (message.request === "relay peer message") {
+            return;
+          }
 
-                //
-                // sanity check on tx
-                //
-                let txjson = message.data;
-                let inner_tx = new saito.default.transaction(txjson);
-                if (inner_tx.transaction.to.length <= 0) {
-                    return;
-                }
-                if (inner_tx.transaction.to[0].add == undefined) {
-                    return;
-                }
+          await app.modules.handlePeerTransaction(inner_tx, peer, mycallback);
 
-                inner_tx.decryptMessage(this.app);
-                let inner_txmsg = inner_tx.returnMessage();
+          // otherwise relay
+        } else {
+          // check to see if original tx is for a peer
+          let peer_found = 0;
 
-                //
-                // if interior transaction is intended for me, I process regardless
-                //
-                if (inner_tx.isTo(app.wallet.returnPublicKey())) {
+          let peers = await app.network.getPeers();
+          for (let i = 0; i < peers.length; i++) {
+            if (inner_tx.isTo(peers[i].publicKey)) {
+              peer_found = 1;
 
-                    app.modules.handlePeerTransaction(inner_tx, peer, mycallback);
-                    return;
-
-                    //
-                    // otherwise relay
-                    //
-                } else {
-
-                    //
-                    // check to see if original tx is for a peer
-                    //
-                    let peer_found = 0;
-
-                    for (let i = 0; i < app.network.peers.length; i++) {
-
-                        if (inner_tx.isTo(app.network.peers[i].peer.publickey)) {
-
-                            peer_found = 1;
-
-                            if (this.app.BROWSER == 0) {
-                                app.network.peers[i].sendTransactionWithCallback(inner_tx, function () {
-                                    if (mycallback != null) {
-                                        mycallback({ err: "", success: 1 });
-                                    }
-                                });
-                            }
-                        }
+              if (this.app.BROWSER == 0) {
+                app.network.sendTransactionWithCallback(
+                  inner_tx,
+                  async function () {
+                    if (mycallback != null) {
+                      await mycallback({ err: "", success: 1 });
                     }
-                    if (peer_found == 0) {
-                        if (mycallback != null) {
-                            mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
-                        }
-                    }
-                }
+                  },
+                  peers[i].peerIndex
+                );
+              }
+            }
+          }
+
+          if (peer_found == 0) {
+            if (mycallback != null) {
+              await mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
             }
           }
         }

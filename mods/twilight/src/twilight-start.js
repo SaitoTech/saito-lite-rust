@@ -4,7 +4,7 @@ const TwilightOptions = require('./lib/core/advanced-options.template');
 const TwilightSingularOption = require('./lib/core/options.template');
 const ScoringOverlay = require('./lib/overlays/scoring');
 const WarOverlay = require('./lib/overlays/war');
-const StatsOverlay = require('./lib/overlays/stats');
+//const StatsOverlay = require('./lib/overlays/stats');
 
 const JSON = require('json-bigint');
 
@@ -63,7 +63,7 @@ class Twilight extends GameTemplate {
 
     // ui components
     this.scoring_overlay = new ScoringOverlay(this.app, this);
-    this.stats_overlay = new StatsOverlay(this.app, this);
+    //this.stats_overlay = new StatsOverlay(this.app, this);
     this.war_overlay = new WarOverlay(this.app, this);
 
     // newbie mode
@@ -135,7 +135,7 @@ class Twilight extends GameTemplate {
 
   
   handleStatsMenu() {
-    this.stats_overlay.render(this.game.state.stats);
+    //this.stats_overlay.render(this.game.state.stats);
   }
 
 

@@ -1,8 +1,8 @@
 const VideoBox = require("./video-box");
-const ChatManagerLargeTemplate = require("./chat-manager-large.template");
-const ChatManagerSmallExtensionTemplate = require("./chat-manager-small-extension.template");
-const SwitchDisplay = require("./switch-display");
-const ChatInvitationOverlay = require("../overlays/chat-invitation-link");
+//const ChatManagerLargeTemplate = require("./chat-manager-large.template");
+//const ChatManagerSmallExtensionTemplate = require("./chat-manager-small-extension.template");
+const SwitchDisplay = require("./../overlays/switch-display");
+//const ChatInvitationOverlay = require("../overlays/chat-invitation-link");
 const Effects = require("../overlays/effects");
 
 class VideoChatManager {
@@ -93,17 +93,17 @@ class VideoChatManager {
   }
 
   render() {
-    this.app.browser.addElementToDom(
-      ChatManagerLargeTemplate(this.call_type, this.room_code, this.mode),
-      document.getElementById("content__")
-    );
+    // this.app.browser.addElementToDom(
+    //   ChatManagerLargeTemplate(this.call_type, this.room_code, this.mode),
+    //   document.getElementById("content__")
+    // );
     this.isActive = true;
 
     if (this.config) {
-      this.app.browser.addElementToSelector(
-        ChatManagerSmallExtensionTemplate(),
-        this.config.container
-      );
+      // this.app.browser.addElementToSelector(
+      //   ChatManagerSmallExtensionTemplate(),
+      //   this.config.container
+      // );
     }
   }
 
@@ -131,7 +131,7 @@ class VideoChatManager {
       if (add_users) {
         add_users.addEventListener("click", (e) => {
           this.updateRoomLink();
-          this.chatInvitationOverlay.render();
+          //this.chatInvitationOverlay.render();
         });
       }
 
@@ -265,7 +265,7 @@ class VideoChatManager {
   updateRoomLink() {
     const room_link = this.createRoomLink();
     this.room_link = room_link;
-    this.chatInvitationOverlay = new ChatInvitationOverlay(this.app, this.mod, this.room_link);
+    //this.chatInvitationOverlay = new ChatInvitationOverlay(this.app, this.mod, this.room_link);
     if (document.querySelector(".add-users-code-container span")) {
       document.querySelector(".add-users-code-container span").textContent = this.room_link.slice(
         0,

@@ -1,6 +1,6 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
 const JSON = require("json-bigint");
-const RulesOverlay = require("./lib/overlays/rules");
+// const RulesOverlay = require("./lib/overlays/rules");
 const FactionSheetOverlay = require("./lib/overlays/faction-sheet");
 const StrategyCardOverlay = require("./lib/overlays/strategy-card");
 const CombatOverlay = require("./lib/overlays/combat");
@@ -41,7 +41,7 @@ class Imperium extends GameTemplate {
     //
     // components and overlays
     //
-    this.rules_overlay = new RulesOverlay(this.app, this);
+    //this.rules_overlay = new RulesOverlay(this.app, this);
     this.faction_sheet_overlay = new FactionSheetOverlay(this.app, this);
     this.strategy_card_overlay = new StrategyCardOverlay(this.app, this);
     this.combat_overlay = new CombatOverlay(this.app, this);
@@ -14736,7 +14736,7 @@ class Imperium extends GameTemplate {
   }
 
   handleHowToPlayMenuItem() {
-    this.rules_overlay.render();
+    //this.rules_overlay.render();
   }
 
   handleTechMenuItem() {

@@ -1,4 +1,4 @@
-const SaitoEmoji = require("../../../../lib/saito/ui/saito-emoji/saito-emoji");
+//const SaitoEmoji = require("../../../../lib/saito/ui/saito-emoji/saito-emoji");
 const ChatPopupTemplate = require("./popup.template");
 
 class ChatPopup {
@@ -57,7 +57,7 @@ class ChatPopup {
     //
     //
     if (this.emoji == null) {
-      this.emoji = new SaitoEmoji(this.app, this.mod, input_id);
+      //this.emoji = new SaitoEmoji(this.app, this.mod, input_id);
     }
 
     //
@@ -130,7 +130,9 @@ class ChatPopup {
     //
     // emojis
     //
-    this.emoji.render();
+    if (this.emoji != null) {
+      this.emoji.render();
+    }
 
     //
     // scroll to bottom

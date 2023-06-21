@@ -342,11 +342,11 @@ class Browser {
     let adds = text.match(/([a-zA-Z0-9._-]{44}|[a-zA-Z0-9._-]{45})/gi);
 
     if (adds) {
-      adds.forEach(add) => {
+      adds.forEach((add) => {
         if (this.app.crypto.isPublicKey(add) && !keys.includes(add)) {
           keys.push(add);
         }
-      }
+      });
     }
     if (identifiers) {
       identifiers.forEach(id => {

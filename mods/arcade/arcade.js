@@ -206,7 +206,7 @@ class Arcade extends ModTemplate {
     //  ( status = "open" OR status = "private" ) AND
 
     let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND (status = 'over' OR status = 'active')) ORDER BY created_at ASC`;
-    this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
+    this.sendPeerDatabaseRequestWithFilter("Arcade", sql, async (res) => {
 
       if (res.rows) {
         for (let record of res.rows) {

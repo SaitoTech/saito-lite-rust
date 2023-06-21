@@ -1,16 +1,16 @@
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require("serialize-javascript");
-const StunAppspace = require("./lib/appspace/main");
+//const StunAppspace = require("./lib/appspace/main");
 const ChatManagerLarge = require("./lib/components/chat-manager-large");
-const ChatManagerSmall = require("./lib/components/chat-manager-small");
-const InviteOverlay = require("./lib/components/invite-overlay");
-const StunxGameMenu = require("./lib/game-menu/main");
-const ChatInvitationLink = require("./lib/overlays/chat-invitation-link");
+//const ChatManagerSmall = require("./lib/components/chat-manager-small");
+//const InviteOverlay = require("./lib/components/invite-overlay");
+//const StunxGameMenu = require("./lib/game-menu/main");
+//const ChatInvitationLink = require("./lib/overlays/chat-invitation-link");
 const Relay = require("../relay/relay");
 const adapter = require("webrtc-adapter");
 const PeerManager = require("./lib/components/PeerManager");
-const ChatSetting = require("./lib/components/chat-setting");
+//const ChatSetting = require("./lib/components/chat-setting");
 
 class Stun extends ModTemplate {
   constructor(app, mod) {
@@ -26,8 +26,8 @@ class Stun extends ModTemplate {
     this.peer_connections = {};
     this.videoMaxCapacity = 5;
     this.ChatManagerLarge = new ChatManagerLarge(app, this);
-    this.ChatManagerSmall = new ChatManagerSmall(app, this);
-    this.InviteOverlay = new InviteOverlay(app, this);
+    //this.ChatManagerSmall = new ChatManagerSmall(app, this);
+    //this.InviteOverlay = new InviteOverlay(app, this);
     this.icon = "fas fa-video";
     this.localStream = null;
     this.hasRendered = true;
@@ -35,12 +35,12 @@ class Stun extends ModTemplate {
     this.central = false;
     this.peer_connections = {};
     this.peer_connection_states = {};
-    this.stunGameMenu = new StunxGameMenu(app, this);
+    //this.stunGameMenu = new StunxGameMenu(app, this);
     this.current_step = 0;
     this.gotten_keys = false;
     this.commands = [];
     this.rooms = new Map();
-    this.chatSetting = new ChatSetting(app, mod);
+    //this.chatSetting = new ChatSetting(app, mod);
     // this.receiving_from = {}
 
     this.servers = [
@@ -132,7 +132,7 @@ class Stun extends ModTemplate {
     if (qs == ".saito-overlay") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
+        //this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
       }
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => {
@@ -143,7 +143,7 @@ class Stun extends ModTemplate {
     if (qs == "body") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
+        //this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
       }
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => {

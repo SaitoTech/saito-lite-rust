@@ -1,11 +1,11 @@
-const Scoreboard = require("./lib/scoreboard");
+//const Scoreboard = require("./lib/scoreboard");
 const GameTemplate = require("../../lib/templates/gametemplate");
 const SettlersSkin = require("./lib/settlers.skin.js");
-const SettlersRules = require("./lib/overlays/rules");
-const SettlersWelcome = require("./lib/overlays/welcome");
-const SettlersStats = require("./lib/overlays/stats");
-const SettlersGameOptionsTemplate = require("./lib/settlers-game-options.template");
-const SettlersTradeHelpOverlayTemplate = require("./lib/settlers-trade-help-overlay.template");
+//const SettlersRules = require("./lib/overlays/rules");
+//const SettlersWelcome = require("./lib/overlays/welcome");
+//const SettlersStats = require("./lib/overlays/stats");
+//const SettlersGameOptionsTemplate = require("./lib/settlers-game-options.template");
+//const SettlersTradeHelpOverlayTemplate = require("./lib/settlers-trade-help-overlay.template");
 
 const SettlersGameLoop = require("./lib/src/settlers-gameloop.js");
 const SettlersPlayer = require("./lib/src/settlers-player");
@@ -37,10 +37,10 @@ class Settlers extends GameTemplate {
     this.confirm_moves = true;
 
     // UI components
-    this.scoreboard = new Scoreboard(this.app, this);
-    this.rules_overlay = new SettlersRules(this.app, this);
-    this.welcome_overlay = new SettlersWelcome(this.app, this);
-    this.stats_overlay = new SettlersStats(this.app, this);
+    //this.scoreboard = new Scoreboard(this.app, this);
+    //this.rules_overlay = new SettlersRules(this.app, this);
+    //this.welcome_overlay = new SettlersWelcome(this.app, this);
+    //this.stats_overlay = new SettlersStats(this.app, this);
 
     this.grace_window = 24;
     // temp variable to help with post-splash flash
@@ -59,7 +59,7 @@ class Settlers extends GameTemplate {
 
     await super.initializeHTML(app);
 
-    this.scoreboard.render();
+    //this.scoreboard.render();
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addSubMenuOption("game-game", {
@@ -189,7 +189,7 @@ class Settlers extends GameTemplate {
       // desktop show the stats menu - which has the score
       //
       if (s.style.zIndex < 10) {
-        this.stats_overlay.render();
+        //this.stats_overlay.render();
         return;
       }
       document.querySelector(".mobile-trading-container").style.display = "none";
@@ -338,11 +338,11 @@ class Settlers extends GameTemplate {
   }
 
   returnGameOptionsHTML() {
-    return SettlersGameOptionsTemplate(this.app, this);
+    //return SettlersGameOptionsTemplate(this.app, this);
   }
 
   returnTradeHelpOverlay() {
-    return SettlersTradeHelpOverlayTemplate(this.app, this);
+    //return SettlersTradeHelpOverlayTemplate(this.app, this);
   }
 }
 
