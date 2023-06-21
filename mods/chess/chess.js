@@ -52,33 +52,43 @@ class Chessgame extends GameTemplate {
     this.menu.addMenuOption("game-game", "Game");
 
     if (this.game.player > 0){
+      console.log(this.game.draw_offered, this.game.player);
 
-      this.menu.addSubMenuOption("game-game", {
-        text : (this.game.draw_offered)? "Accept Draw": "Offer Draw",
-        id : "game-draw",
-        class : "game-draw",
-        callback : async function(app, game_mod) {
-           if (game_mod.game.draw_offered == 0){
-              let c = await sconfirm("Offer to end the game in a draw?");
-              if (c) {
-                game_mod.updateStatusMessage("Draw offer sent; " + game_mod.status);
-                game_mod.game.draw_offered = -1; //Offer already sent
-                var data = {draw: "offer"};
-                game_mod.endTurn(data);
-                return;
-              }  
-            }else{
-              let c = await sconfirm("Accept offer to end the game in a draw?");
-              if (c) {
-                game_mod.updateStatusMessage("Draw offer accepted!");
-                game_mod.game.draw_offered = -1; //Offer already sent
-                var data = {draw: "accept"};
-                game_mod.endTurn(data);
-                return;
-              }
+      if (!this.game.draw_offered){
+        this.menu.addSubMenuOption("game-game", {
+          text : "Offer Draw",
+          id : "game-draw",
+          class : "game-draw",
+          callback : async function(app, game_mod) {
+            let c = await sconfirm("Offer to end the game in a draw?");
+            if (c) {
+              game_mod.updateStatusMessage("Draw offer sent; " + game_mod.status);
+              game_mod.game.draw_offered = -1; //Offer already sent
+              var data = {draw: "offer"};
+              game_mod.endTurn(data);
+              return;
+            }  
+          }
+        });
+      }
+
+      if (this.game.player == this.game.draw_offered){
+        this.menu.addSubMenuOption("game-game", {
+          text : "Accept Draw",
+          id : "game-draw",
+          class : "game-draw",
+          callback : async function(app, game_mod) {
+            let c = await sconfirm("Accept offer to end the game in a draw?");
+            if (c) {
+              game_mod.updateStatusMessage("Draw offer accepted!");
+              game_mod.game.draw_offered = -1; //Offer already sent
+              var data = {draw: "accept"};
+              game_mod.endTurn(data);
+              return;
             }
-        }
-      });
+          }
+        });
+      }
 
       this.menu.addSubMenuOption("game-game", {
         text : "Resign",
@@ -226,11 +236,13 @@ class Chessgame extends GameTemplate {
         this.endGame(this.game.players, "draw");
         return;
       }else{ //(data.draw == "offer")
+        this.game.draw_offered = msg.extra.target; //I am receving offer
         if (this.game.player === msg.extra.target){
-          this.game.draw_offered = 2; //I am receving offer
           this.updateStatusMessage("Opponent offers a draw; " + this.status);
-          this.render(this.app);
         } 
+        this.initialize_game_run = 0;
+        this.render(this.app);
+        this.initialize_game_run = 1;
       }
       //Refresh events
       //this.attachGameEvents();
@@ -240,10 +252,10 @@ class Chessgame extends GameTemplate {
       return;
     }
 
-    if (this.game.draw_offered !== 0){
-      this.game.draw_offered = 0; //No offer on table
+    //if (this.game.draw_offered !== 0){
+    //  this.game.draw_offered = 0; //No offer on table
       //this.attachGameEvents();      
-    }
+    //}
 
     this.game.last_position = this.game.position;
     this.game.position = data.position;

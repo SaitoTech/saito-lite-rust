@@ -8,7 +8,6 @@ class Wordblocks extends GameTemplate {
     super(app);
 
     this.wordlist = [];
-    this.mydeck = {};
     this.score = "";
     this.app = app;
     this.icon = "fa-solid fa-braille";
@@ -235,7 +234,7 @@ class Wordblocks extends GameTemplate {
             this.loadingDictionary = false;
             this.wordlist = xhr.response; //;Array.from(JSON.parse(xhr.response));
             //console.log("\n\n\nDOWNLOADED WORDLIST: " + JSON.parse(JSON.stringify(xhr.response)));
-            console.log("My word list is a :", typeof this.wordlist);
+            //console.log("My word list is a :", typeof this.wordlist);
             this.restartQueue();
           }
         };
@@ -496,7 +495,10 @@ class Wordblocks extends GameTemplate {
 
     try {
       //Show delete and skip controls
-      $("#deletectrl").removeClass("hidden");
+      if (this.game.deck[0].crypt.length > 0) {
+        $("#deletectrl").removeClass("hidden");
+      }
+      
       $("#skipturn").removeClass("hidden");
 
       /*
@@ -652,9 +654,10 @@ class Wordblocks extends GameTemplate {
           for (let i = 0; i < tileRack.length; i++) {
             if (tileRack[i].classList.contains("todelete")) deletedTiles += tileRack[i].textContent;
           }
-          if (deletedTiles) {
+          if (deletedTiles && deletedTiles.length <= wordblocks_self.game.deck[0].crypt.length) {
             wordblocks_self.discardAndDrawTiles(deletedTiles);
           } else {
+            salert("You must discard at least one tile and no more than are available to draw!");
             revertToPlay();
           }
         });
@@ -870,26 +873,37 @@ class Wordblocks extends GameTemplate {
       //Must be added here because maybe refreshing the hud-status-message
       $(".tosstiles").off();
       $(".tosstiles").on("click", async function () {
-        tiles = await sprompt("Which tiles do you want to discard?");
-        if (tiles) {
-          let tmphand = JSON.parse(JSON.stringify(wordblocks_self.game.deck[0].hand));
-          for (let i = 0; i < tiles.length; i++) {
-            let letter = tiles[i].toUpperCase();
-            let letter_found = 0;
-            for (let k = 0; k < tmphand.length; k++) {
-              if (wordblocks_self.game.deck[0].cards[tmphand[k]].name == letter) {
-                tmphand.splice(k, 1);
-                letter_found = 1;
-                k = tmphand.length + 1;
-              }
-            }
-            if (letter_found == 0) {
-              salert("INVALID: letter not in hand: " + letter);
+
+        if (wordblocks_self.game.deck[0].crypt.length > 0){
+          tiles = await sprompt("Which tiles do you want to discard?");
+          if (tiles) {
+            if (tiles.length > wordblocks_self.game.deck[0].crypt.length){
+              salert("INVALID: You cannot throw away more letters than you can draw");
               return false;
             }
+
+            let tmphand = JSON.parse(JSON.stringify(wordblocks_self.game.deck[0].hand));
+            for (let i = 0; i < tiles.length; i++) {
+              let letter = tiles[i].toUpperCase();
+              let letter_found = 0;
+              for (let k = 0; k < tmphand.length; k++) {
+                if (wordblocks_self.game.deck[0].cards[tmphand[k]].name == letter) {
+                  tmphand.splice(k, 1);
+                  letter_found = 1;
+                  k = tmphand.length + 1;
+                }
+              }
+              if (letter_found == 0) {
+                salert("INVALID: letter not in hand: " + letter);
+                return false;
+              }
+            }
+            wordblocks_self.discardAndDrawTiles(tiles);
           }
-          wordblocks_self.discardAndDrawTiles(tiles);
+        }else{
+          salert("You can only discard if there are tiles to draw");
         }
+        
       });
     } catch (err) {
       console.log(err);
@@ -1421,8 +1435,10 @@ class Wordblocks extends GameTemplate {
 
   returnDeck() {
     var dictionary = this.game.options.dictionary;
+    console.log("Dictionary: " + dictionary);
+
     if (dictionary === "twl" || dictionary === "sowpods") {
-      this.mydeck = {
+      return {
         1: { name: "A" },
         2: { name: "A" },
         3: { name: "A" },
@@ -1525,7 +1541,7 @@ class Wordblocks extends GameTemplate {
       };
     }
     if (dictionary === "fise" || dictionary === "tagalog") {
-      this.mydeck = {
+      return {
         1: { name: "A" },
         2: { name: "A" },
         3: { name: "A" },
@@ -1633,11 +1649,9 @@ class Wordblocks extends GameTemplate {
         105: { name: "Z" },
       };
     }
-    /*if (dictionary === "sowpods") {
-      this.mydeck = {"1":{"name":"A"},"2":{"name":"A"},"3":{"name":"A"},"4":{"name":"A"},"5":{"name":"A"},"6":{"name":"A"},"7":{"name":"A"},"8":{"name":"A"},"9":{"name":"A"},"10":{"name":"B"},"11":{"name":"B"},"12":{"name":"C"},"13":{"name":"C"},"14":{"name":"D"},"15":{"name":"D"},"16":{"name":"D"},"17":{"name":"D"},"18":{"name":"E"},"19":{"name":"E"},"20":{"name":"E"},"21":{"name":"E"},"22":{"name":"E"},"23":{"name":"E"},"24":{"name":"E"},"25":{"name":"E"},"26":{"name":"E"},"27":{"name":"E"},"28":{"name":"E"},"29":{"name":"E"},"30":{"name":"F"},"41":{"name":"F"},"42":{"name":"G"},"43":{"name":"G"},"44":{"name":"G"},"45":{"name":"H"},"46":{"name":"H"},"47":{"name":"I"},"48":{"name":"I"},"49":{"name":"I"},"50":{"name":"I"},"51":{"name":"I"},"52":{"name":"I"},"53":{"name":"I"},"54":{"name":"I"},"55":{"name":"I"},"56":{"name":"J"},"57":{"name":"K"},"58":{"name":"L"},"59":{"name":"L"},"60":{"name":"L"},"61":{"name":"L"},"62":{"name":"M"},"63":{"name":"M"},"64":{"name":"N"},"65":{"name":"N"},"66":{"name":"N"},"67":{"name":"N"},"68":{"name":"N"},"69":{"name":"N"},"70":{"name":"O"},"71":{"name":"O"},"72":{"name":"O"},"73":{"name":"O"},"74":{"name":"O"},"75":{"name":"O"},"76":{"name":"O"},"77":{"name":"O"},"78":{"name":"P"},"79":{"name":"P"},"80":{"name":"Q"},"81":{"name":"R"},"82":{"name":"R"},"83":{"name":"R"},"84":{"name":"R"},"85":{"name":"R"},"86":{"name":"R"},"87":{"name":"S"},"88":{"name":"S"},"89":{"name":"S"},"90":{"name":"S"},"91":{"name":"T"},"92":{"name":"T"},"93":{"name":"T"},"94":{"name":"T"},"95":{"name":"T"},"96":{"name":"T"},"97":{"name":"U"},"98":{"name":"U"},"99":{"name":"U"},"100":{"name":"U"},"101":{"name":"V"},"102":{"name":"V"},"103":{"name":"W"},"104":{"name":"W"},"105":{"name":"X"},"106":{"name":"U"},"107":{"name":"Y"},"108":{"name":"Y"},"109":{"name":"Z"}};
-    }*/
+
     if (dictionary === "test") {
-      let mydeck = {
+      return {
         1: { name: "A" },
         2: { name: "A" },
         3: { name: "A" },
@@ -1660,7 +1674,8 @@ class Wordblocks extends GameTemplate {
         20: { name: "T" },
       };
     }
-    return this.mydeck;
+    console.error("Undefined Letter Set");
+    return {};
   }
 
   returnLetters() {
@@ -1725,9 +1740,7 @@ class Wordblocks extends GameTemplate {
         Z: { score: 10 },
       };
     }
-    /*if (dictionary === "sowpods") {
-      this.letterset = {"A":{"score":1},"B":{"score":3},"C":{"score":2},"D":{"score":2},"E":{"score":1},"F":{"score":2},"G":{"score":2},"H":{"score":1},"I":{"score":1},"J":{"score":8},"K":{"score":4},"L":{"score":2},"M":{"score":2},"N":{"score":1},"O":{"score":1},"P":{"score":2},"Q":{"score":10},"R":{"score":1},"S":{"score":1},"T":{"score":1},"U":{"score":2},"V":{"score":3},"W":{"score":2},"X":{"score":8},"Y":{"score":2},"Z":{"score":10}};
-    }*/
+
     if (dictionary === "test") {
       return { A: { score: 1 }, C: { score: 3 }, T: { score: 2 } };
     }
@@ -2281,7 +2294,7 @@ class Wordblocks extends GameTemplate {
           this.updateStatusWithTiles(`${this.game.playerNames[this.game.target - 1]}'s turn`);
         }
 
-	this.playerbox.setInactive(this.game.target);
+	      this.playerbox.setInactive(this.game.target);
         this.playerbox.alertPlayer(this.game.target, "flash");
         return 1;
       }

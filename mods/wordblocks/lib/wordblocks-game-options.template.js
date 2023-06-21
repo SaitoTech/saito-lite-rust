@@ -9,6 +9,7 @@ module.exports = (app, mod) => {
                   <option value="twl" title="Scrabble Tournament Word List">English: TWL06</option>
                   <option value="fise">Spanish: FISE</option>
                   <option value="tagalog">Tagalog</option>
+                  <option value="test">Test</option>
                 </select>
               </div>
           <div class="overlay-input">
