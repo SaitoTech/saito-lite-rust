@@ -97,7 +97,13 @@ class ChatPopup {
         obj.style.height = this.height + "px";
       }
     } else {
-      this.app.browser.addElementToSelectorOrDom(ChatPopupTemplate(this.app, this.mod, this.group, this.container), this.container);
+      if (this.container && document.querySelector(".chat-static")){
+        this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group, this.container), ".chat-static");
+      }else{
+        this.app.browser.addElementToSelectorOrDom(ChatPopupTemplate(this.app, this.mod, this.group, this.container), this.container);  
+      }
+      
+      
 
       //
       // now set left-position of popup

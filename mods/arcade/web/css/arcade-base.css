@@ -26,6 +26,7 @@ body {
 
 .arcade-menu {
   max-height: calc(70% - 2rem);
+  margin-left: 1rem;
 }
 
 button, .saito-button-primary, .saito-button-secondary:hover {

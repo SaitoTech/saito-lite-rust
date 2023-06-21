@@ -62,12 +62,11 @@ class ChatManager {
 
       if (group) {
         if (!this.popups[group.id]) {
-          this.popups[group.id] = new ChatPopup(this.app, this.mod);
+          this.popups[group.id] = new ChatPopup(this.app, this.mod, group?.target_container || this.chat_popup_container);
           this.popups[group.id].group = group;
         }
 
         if (this.render_popups_to_screen || this.popups[group.id].is_rendered) {
-          this.popups[group.id].container = group?.target_container || "";
           this.popups[group.id].render();
         }
 
@@ -282,13 +281,12 @@ class ChatManager {
         let group = this.mod.returnGroup(gid);
 
         if (!this.popups[gid]) {
-          this.popups[gid] = new ChatPopup(this.app, this.mod);
+          this.popups[gid] = new ChatPopup(this.app, this.mod, group?.target_container || this.chat_popup_container);
           this.popups[gid].group = group;
         }
 
         // unset manually closed to permit re-opening
         this.popups[gid].manually_closed = false;
-        this.popups[gid].container = group?.target_container || "";
         this.popups[gid].render();
         this.popups[gid].input.focus(true);
 

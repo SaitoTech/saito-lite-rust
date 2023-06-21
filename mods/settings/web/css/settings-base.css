@@ -9,6 +9,7 @@
   background: var(--saito-background-color);
   color: var(--saito-font-color);
   padding: 2rem;
+  margin: 2rem;
 }
 
 .settings-appspace-user-details {

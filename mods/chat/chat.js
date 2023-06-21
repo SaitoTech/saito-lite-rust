@@ -1,9 +1,10 @@
 const SaitoUserTemplate = require("./../../lib/saito/ui/saito-user/saito-user.template.js");
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
+const ChatMain = require("./lib/appspace/main");
+const SaitoHeader = require("./../../lib/saito/ui/saito-header/saito-header");
 const ChatManager = require("./lib/chat-manager/main");
 const ChatManagerOverlay = require("./lib/overlays/chat-manager");
-const ChatPopup = require("./lib/chat-manager/popup");
 const JSON = require("json-bigint");
 //const JsStore = require("jsstore");
 const localforage = require("localforage");
@@ -60,6 +61,11 @@ class Chat extends ModTemplate {
     });
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
+
+    this.theme_options = {
+      lite: "fa-solid fa-sun",
+      dark: "fa-solid fa-moon",
+    };
 
     this.hiddenTab = "hidden";
     this.orig_title = "";
@@ -145,6 +151,38 @@ class Chat extends ModTemplate {
       );
     }
   }
+
+
+  render() {
+    if (this.app.BROWSER == 1) {
+      if (this.app.options.theme) {
+        let theme = this.app.options.theme[this.slug];
+
+        if (theme != null) {
+          this.app.browser.switchTheme(theme);
+        }
+      }
+    }
+
+    if (this.main == null) {
+      this.main = new ChatMain(this.app, this);
+      this.header = new SaitoHeader(this.app, this);
+      this.addComponent(this.header);
+      this.addComponent(this.main);
+    }
+
+    if (this.chat_manager == null) {
+      console.log("Render");
+      this.chat_manager = new ChatManager(this.app, this);
+      this.addComponent(this.chat_manager);
+    }
+    this.chat_manager.container = ".saito-sidebar.left";
+    this.chat_manager.chat_popup_container = ".saito-main";
+    this.chat_manager.render_manager_to_screen = 1;
+
+    super.render();
+  }
+
 
   onPeerServiceUp(app, peer, service = {}) {
     let chat_self = this;
@@ -276,6 +314,7 @@ class Chat extends ModTemplate {
     switch (type) {
       case "chat-manager":
         if (this.chat_manager == null) {
+          console.log("Respond to");
           this.chat_manager = new ChatManager(this.app, this);
         }
         return this.chat_manager;
@@ -298,6 +337,17 @@ class Chat extends ModTemplate {
               },
             },
           ];
+        }else if (!chat_self.browser_active){
+          return [
+            {
+              text: "Chat",
+              icon: "fas fa-comments",
+              callback: function (app, id) {
+                window.location = "/chat";
+              },
+            },
+
+            ];
         }
         return null;
       case "user-menu":

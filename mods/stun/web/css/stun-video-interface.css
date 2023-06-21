@@ -883,33 +883,3 @@
   display: none;
 }
 
-.stun-chatbox .chat-static {
-  color: var(--saito-white);
-}
-
-.stun-chatbox .saito-address {
-  color: var(--saito-grey);
-}
-
-.stun-chatbox .saito-user:hover .saito-userline-reply {
-  background-color: var(--saito-black);
-}
-
-.stun-chatbox .saito-user:hover .saito-userline-reply i {
-  border: 1px solid var(--saito-grey);
-}
-
-.stun-chatbox .side-videos .chat-footer {
-  width: 25%;
-  margin: 0 0 0.5rem;
-}
-
-.stun-chatbox .chat-footer {
-  width: -webkit-fill-available;
-  max-width: 50%;
-  margin: 0 0 0.5rem;
-}
-
-.stun-chatbox .chat-input {
-  background: unset;
-}

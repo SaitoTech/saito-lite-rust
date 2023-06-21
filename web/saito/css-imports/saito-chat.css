@@ -32,6 +32,18 @@
 
 /*  Chat / Popup  */
 
+/* Embedded chat container */ 
+.chat-static {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.chat-static .chat-container-close, .chat-static .fa-comment-dots {
+  display: none;
+}
+
+/* Free floating chat container */
 .chat-container {
   margin-right: 1rem;
   height: 50rem;
@@ -100,6 +112,7 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  margin: auto;
 }
 
 .chat-body {
@@ -332,4 +345,19 @@
 
 .chat-manager-header > div:hover{
   transform: rotate(90deg);
+}
+
+
+.chat-main-container {
+  background-color: #bbb1;
+  background-image: url(/saito/img/tiled-logo.svg);
+}
+
+.chat-main-container .chat-body{
+  background-color: unset;
+  background-image: unset;
+}
+
+.chat-main-container .saito-sidebar.left {
+  background-color: var(--saito-background-color);
 }

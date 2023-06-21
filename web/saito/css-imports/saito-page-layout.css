@@ -15,7 +15,7 @@
 .saito-main {
   padding: 2rem 0;
   min-width: 54rem;
-  margin: 0 2rem 15rem;
+  margin: 0 1rem;
   position: relative;
 }
 
@@ -40,15 +40,15 @@
   height: calc(100vh - var(--saito-header-height));
   width: 25rem;
   top: 0;
-  margin: 0 0 0 1rem;
-  padding: 1.5rem 0 0 0;
+  /*margin: 0 0 0 ;*/
+  padding: 1.5rem 1rem 0 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
 .saito-sidebar.right {
-  padding: 2rem 1rem 10rem 0;
+  padding: 2rem 1rem 10rem 1rem;
   grid-column-start: 3;
   grid-row: 1/2;
   position: relative;
