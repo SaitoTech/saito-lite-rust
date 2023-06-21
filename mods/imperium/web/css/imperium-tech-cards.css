@@ -21,6 +21,7 @@
     color: whitesmoke;
     border: 1px solid #fff6;
     padding: 1vw;
+    cursor: pointer;
 }
 
 .tech-card::before {

@@ -312,7 +312,33 @@ class RedSquare extends ModTemplate {
 
     }
 
+
     super.render();
+
+
+    //
+    // servers can suggest a number of curated tweets for instant-loading
+    // and display. this avoids the need for the browser to handshake with
+    // the peer before there is something to load on-screen.
+    //
+    // if our browser has loaded cached tweets through a direct
+    // download they will be in our tweets object already and we can and
+    // should display them to speed-up the experience of using Red Square.
+    //
+    // this runs after components are rendered or it breaks/fails
+    //
+    try {
+      if (this.app.browser.returnURLParameter('tweet_id')) { return; }
+      if (this.app.browser.returnURLParameter('user_id')) { return; }
+      for (let z = 0; z < tweets.length; z++) {
+        let newtx = new saito.default.transaction();
+        newtx.deserialize_from_web(this.app, tweets[z]);
+        this.addTweet(newtx, true); // prepend ?
+      }
+      this.app.connection.emit("redsquare-home-render-request");
+    } catch (err) {
+      console.log("error in initial redsquare post fetch: " + err);
+    }
 
   }
 

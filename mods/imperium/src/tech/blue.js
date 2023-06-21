@@ -3,7 +3,7 @@
       name        	:       "Antimass Deflectors" ,
       color       	:       "blue" ,
       prereqs             :       [],
-      text		: 	"You may move through asteroid fields and gain -1 when receiving PDS fire",
+      text		: 	"Move through asteroid fields and gain -1 when receiving PDS fire",
       initialize : function(imperium_self, player) {
         if (imperium_self.game.state.players_info[player-1].antimass_deflectors == undefined) {
           imperium_self.game.state.players_info[player-1].antimass_deflectors = 0;
@@ -22,7 +22,7 @@
       name                :       "Gravity Drive" ,
       color               :       "blue" ,
       prereqs             :       ["blue"],
-      text		: 	"One ship may gain +1 movement when you activate a system" ,
+      text		: 	"One ship gains +1 movement when you activate a system" ,
       initialize : function(imperium_self, player) {
         if (imperium_self.game.state.players_info[player-1].gravity_drive == undefined) {
           imperium_self.game.state.players_info[player-1].gravity_drive = 0;

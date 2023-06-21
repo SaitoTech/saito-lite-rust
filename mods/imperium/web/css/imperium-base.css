@@ -699,11 +699,6 @@ body {
   text-shadow: 1px 1px #000;
 }
 
-.overlay_action_card:hover, .faction_sheet_action_card:hover, .faction_sheet_planet_card:hover, .tech_card:hover {
-  transform: scale(1.5) translate(1vw, 1vw);
-  z-index: 100;
-}
-
 .combat_attacker {
   margin-top: 20px;
   margin-bottom: 15px;
