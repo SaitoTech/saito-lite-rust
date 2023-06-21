@@ -4,6 +4,8 @@ const RulesOverlay = require('./lib/overlays/rules');
 const FactionSheetOverlay = require('./lib/overlays/faction-sheet');
 const StrategyCardOverlay = require('./lib/overlays/strategy-card');
 const CombatOverlay = require('./lib/overlays/combat');
+const HowToMoveOverlay = require('./lib/overlays/how-to-move');
+const HowToProduceOverlay = require('./lib/overlays/how-to-produce');
 const MovementOverlay = require('./lib/overlays/movement');
 const TechTreeOverlay = require('./lib/overlays/tech-tree');
 const FactionsOverlay = require('./lib/overlays/factions');
@@ -55,6 +57,8 @@ class Imperium extends GameTemplate {
     this.faction_sheet_overlay = new FactionSheetOverlay(this.app, this);
     this.strategy_card_overlay = new StrategyCardOverlay(this.app, this);
     this.combat_overlay = new CombatOverlay(this.app, this);
+    this.how_to_move_overlay = new HowToMoveOverlay(this.app, this);
+    this.how_to_produce_overlay = new HowToProduceOverlay(this.app, this);
     this.movement_overlay = new MovementOverlay(this.app, this);
     this.senate_overlay = new SenateOverlay(this.app, this);
     this.production_overlay = new ProductionOverlay(this.app, this);
@@ -141,7 +145,7 @@ class Imperium extends GameTemplate {
       name        	:       "Antimass Deflectors" ,
       color       	:       "blue" ,
       prereqs             :       [],
-      text		: 	"You may move through asteroid fields and gain -1 when receiving PDS fire",
+      text		: 	"Move through asteroid fields and gain -1 when receiving PDS fire",
       initialize : function(imperium_self, player) {
         if (imperium_self.game.state.players_info[player-1].antimass_deflectors == undefined) {
           imperium_self.game.state.players_info[player-1].antimass_deflectors = 0;
@@ -160,7 +164,7 @@ class Imperium extends GameTemplate {
       name                :       "Gravity Drive" ,
       color               :       "blue" ,
       prereqs             :       ["blue"],
-      text		: 	"One ship may gain +1 movement when you activate a system" ,
+      text		: 	"One ship gains +1 movement when you activate a system" ,
       initialize : function(imperium_self, player) {
         if (imperium_self.game.state.players_info[player-1].gravity_drive == undefined) {
           imperium_self.game.state.players_info[player-1].gravity_drive = 0;
@@ -15427,7 +15431,7 @@ if (debugging == 0) {
         this.game.queue.push("playerschoosestrategycards_before");
 
         if (this.game.state.round == 1) {
-          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players must select a strategy card. If this is your first game, consider taking Leadership, Politics, or Technology.");
+          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players select a strategy card. new players consider taking Leadership, Politics, or Technology.");
 	} else {
           this.game.queue.push(`ACKNOWLEDGE\tNEXT: all players select their strategy card(s) for Round ${this.game.state.round}.`);
 	}
@@ -20306,14 +20310,14 @@ playerTurn(stage = "main") {
     }
 
     if (this.game.state.round == 1 && this.game.state.active_player_moved == 0) {
-      if (this.tutorial_move_clicked == 0) {
+      //if (this.tutorial_move_clicked == 0) {
         html += '<li class="option" id="tutorial_move_ships">move ships</li>';
 	auto_end_turn = 0;
-      }
-      if (this.tutorial_produce_clicked == 0) {
+      //}
+      //if (this.tutorial_produce_clicked == 0) {
         html += '<li class="option" id="tutorial_produce_units">produce units</li>';
 	auto_end_turn = 0;
-      }
+      //}
     }
 
     if (this.canPlayerScoreActionStageVictoryPoints(this.game.player) != "") {
@@ -20418,8 +20422,8 @@ playerTurn(stage = "main") {
       if (action2 == "tutorial_move_ships") {
         imperium_self.tutorial_move_clicked = 1;
         imperium_self.game.state.use_tutorials = 1;
-        imperium_self.overlay.show('<div style="margin-left:auto;margin-right:auto;width:1200px;height:auto"><img src="/imperium/img/tutorials/movement.png" style="width:100%; height:auto;" /></div>');
-        imperium_self.playerAcknowledgeNotice("REMEMBER: to move ships select \"activate sector\" and pick the sector you are moving into. Most ships can only move 1-hex and you cannot move ships from sectors that are already activated. You will be able to choose the ships to move, and load infantry and fighters into units that can carry them.", function () {
+        imperium_self.how_to_move_overlay.render();
+        imperium_self.playerAcknowledgeNotice("REMEMBER: to move \"activate sector\" and pick the sector you are moving into. To conquer planets bring infantry along with your fleet.", function () {
           imperium_self.playerTurn();
         });
         return;
@@ -20427,8 +20431,8 @@ playerTurn(stage = "main") {
       if (action2 == "tutorial_produce_units") {
         imperium_self.tutorial_produce_clicked = 1;
         imperium_self.game.state.use_tutorials = 1;
-        imperium_self.overlay.show('<div style="margin-left:auto;margin-right:auto;width:1200px;height:auto"><img src="/imperium/img/tutorials/production.png" style="width:100%; height:auto;" /></div>');
-        imperium_self.playerAcknowledgeNotice("REMEMBER: to produce units, select \"activate sector\" and activate a sector with a space dock (like your home system). You are limited to producing +2 more units than the resources of the planet on which the Space Dock sits. And you can only have as many non-fighter ships in any sector as your fleet supply, so move your ships out before producing more!", function () {
+        imperium_self.how_to_produce_overlay.render();
+        imperium_self.playerAcknowledgeNotice("REMEMBER: to produce units \"activate sector\" with spacedock. You are limited to producing +2 more units than the resource-lavel of the planet with the spacedock!", function () {
           imperium_self.playerTurn();
         });
         return;

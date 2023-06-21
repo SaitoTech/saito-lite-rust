@@ -6,6 +6,16 @@
   font-size: 1.8rem;
 }
 
+.hud-body .status {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  overflow-y: auto;
+  overflow-x: auto;
+}
+.hud-body .status::-webkit-scrollbar {
+  display: none;
+} 
+
 
 .hud-header .hud-controls {
   padding: 1.5rem;

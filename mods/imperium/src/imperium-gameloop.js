@@ -1676,7 +1676,7 @@ if (debugging == 0) {
         this.game.queue.push("playerschoosestrategycards_before");
 
         if (this.game.state.round == 1) {
-          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players must select a strategy card. If this is your first game, consider taking Leadership, Politics, or Technology.");
+          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players select a strategy card. new players consider taking Leadership, Politics, or Technology.");
 	} else {
           this.game.queue.push(`ACKNOWLEDGE\tNEXT: all players select their strategy card(s) for Round ${this.game.state.round}.`);
 	}

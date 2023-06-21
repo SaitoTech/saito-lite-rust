@@ -5,15 +5,15 @@
     width: min-content;
     max-width: 1000px;
     max-height: 85vh;
-    background-image: url('/imperium/img/backgrounds/objectives-background.jpg');
-    background-size: cover;
     padding: 4rem;
     min-width: 80vw;
 }
 
 .objectives-overlay-title {
     color: white;
-    font-size: 2.4rem;
+    font-family: 'bank-gothic';
+    letter-spacing: 0.75rem;
+    font-size: 5rem;
     font-weight: bold;
     margin-left: auto;
     margin-right: auto;
@@ -44,7 +44,7 @@
     line-height: 2.4rem;
     height: calc(42vh - 5em);
     text-align: center;
-    font-size: 1.7rem;
+    font-size: 2rem;
 }
 
 .objectives_card_name {
@@ -56,7 +56,7 @@
     width: 100%;
     padding-bottom: 1rem;
     padding-top: 1rem;
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: bold;
 }
 
@@ -71,11 +71,7 @@
   float: left;
   font-size: 0.8em;
   z-index: 5;
-  border: 3px solid #FFF;
+  border: 1px solid #FFF;
 }
 
-.objectives_overlay_objectives_card:hover {
-  z-index: 10;
-  border: 1px solid whitesmoke;
-}
 

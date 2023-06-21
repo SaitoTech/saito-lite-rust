@@ -4,6 +4,8 @@ const RulesOverlay = require('./lib/overlays/rules');
 const FactionSheetOverlay = require('./lib/overlays/faction-sheet');
 const StrategyCardOverlay = require('./lib/overlays/strategy-card');
 const CombatOverlay = require('./lib/overlays/combat');
+const HowToMoveOverlay = require('./lib/overlays/how-to-move');
+const HowToProduceOverlay = require('./lib/overlays/how-to-produce');
 const MovementOverlay = require('./lib/overlays/movement');
 const TechTreeOverlay = require('./lib/overlays/tech-tree');
 const FactionsOverlay = require('./lib/overlays/factions');
@@ -55,6 +57,8 @@ class Imperium extends GameTemplate {
     this.faction_sheet_overlay = new FactionSheetOverlay(this.app, this);
     this.strategy_card_overlay = new StrategyCardOverlay(this.app, this);
     this.combat_overlay = new CombatOverlay(this.app, this);
+    this.how_to_move_overlay = new HowToMoveOverlay(this.app, this);
+    this.how_to_produce_overlay = new HowToProduceOverlay(this.app, this);
     this.movement_overlay = new MovementOverlay(this.app, this);
     this.senate_overlay = new SenateOverlay(this.app, this);
     this.production_overlay = new ProductionOverlay(this.app, this);

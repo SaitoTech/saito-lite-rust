@@ -285,14 +285,14 @@ playerTurn(stage = "main") {
     }
 
     if (this.game.state.round == 1 && this.game.state.active_player_moved == 0) {
-      if (this.tutorial_move_clicked == 0) {
+      //if (this.tutorial_move_clicked == 0) {
         html += '<li class="option" id="tutorial_move_ships">move ships</li>';
 	auto_end_turn = 0;
-      }
-      if (this.tutorial_produce_clicked == 0) {
+      //}
+      //if (this.tutorial_produce_clicked == 0) {
         html += '<li class="option" id="tutorial_produce_units">produce units</li>';
 	auto_end_turn = 0;
-      }
+      //}
     }
 
     if (this.canPlayerScoreActionStageVictoryPoints(this.game.player) != "") {
@@ -397,8 +397,8 @@ playerTurn(stage = "main") {
       if (action2 == "tutorial_move_ships") {
         imperium_self.tutorial_move_clicked = 1;
         imperium_self.game.state.use_tutorials = 1;
-        imperium_self.overlay.show('<div style="margin-left:auto;margin-right:auto;width:1200px;height:auto"><img src="/imperium/img/tutorials/movement.png" style="width:100%; height:auto;" /></div>');
-        imperium_self.playerAcknowledgeNotice("REMEMBER: to move ships select \"activate sector\" and pick the sector you are moving into. Most ships can only move 1-hex and you cannot move ships from sectors that are already activated. You will be able to choose the ships to move, and load infantry and fighters into units that can carry them.", function () {
+        imperium_self.how_to_move_overlay.render();
+        imperium_self.playerAcknowledgeNotice("REMEMBER: to move \"activate sector\" and pick the sector you are moving into. To conquer planets bring infantry along with your fleet.", function () {
           imperium_self.playerTurn();
         });
         return;
@@ -406,8 +406,8 @@ playerTurn(stage = "main") {
       if (action2 == "tutorial_produce_units") {
         imperium_self.tutorial_produce_clicked = 1;
         imperium_self.game.state.use_tutorials = 1;
-        imperium_self.overlay.show('<div style="margin-left:auto;margin-right:auto;width:1200px;height:auto"><img src="/imperium/img/tutorials/production.png" style="width:100%; height:auto;" /></div>');
-        imperium_self.playerAcknowledgeNotice("REMEMBER: to produce units, select \"activate sector\" and activate a sector with a space dock (like your home system). You are limited to producing +2 more units than the resources of the planet on which the Space Dock sits. And you can only have as many non-fighter ships in any sector as your fleet supply, so move your ships out before producing more!", function () {
+        imperium_self.how_to_produce_overlay.render();
+        imperium_self.playerAcknowledgeNotice("REMEMBER: to produce units \"activate sector\" with spacedock. You are limited to producing +2 more units than the resource-lavel of the planet with the spacedock!", function () {
           imperium_self.playerTurn();
         });
         return;

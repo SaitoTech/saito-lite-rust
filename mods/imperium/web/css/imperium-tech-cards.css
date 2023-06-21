@@ -52,7 +52,7 @@
     letter-spacing: 2px;
     position: absolute;
     bottom: 0.5rem;
-    left: 0.5rem;
+    right: 0rem;
     -webkit-text-stroke: 1px #000;
 }
 

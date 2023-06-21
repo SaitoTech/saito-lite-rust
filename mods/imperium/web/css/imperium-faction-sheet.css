@@ -165,6 +165,12 @@
   font-size: 1rem;
   line-height: 1.5rem;
 }
+.faction_ability {
+  margin-bottom: 2rem;
+}
+.faction_ability:last-child {
+  margin-bottom: 0rem;
+}
 .faction_ability:nth-child(n+2) {
   margin-top: 1rem;
 }

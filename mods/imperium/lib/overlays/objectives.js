@@ -7,6 +7,7 @@ class ObjectivesOverlay {
     this.app = app;
     this.mod = mod;
     this.overlay = new SaitoOverlay(this.app, this.mod, false);
+    this.overlay.clickToClose = true;
   }
 
   render(objectives=[]) {
@@ -15,6 +16,7 @@ class ObjectivesOverlay {
     // show overlay
     //
     this.overlay.show(ImperiumObjectivesOverlayTemplate());
+    this.overlay.setBackground("/imperium/img/backgrounds/objectives-background.jpg", false); // background not dark
 
     for (let i in objectives) {
       this.app.browser.addElementToSelector(objectives[i].returnCardImage(), '.objectives-overlay-content');
