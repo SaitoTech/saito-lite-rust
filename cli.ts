@@ -6,7 +6,6 @@ import fs from "fs-extra";
 import * as JSON from "json-bigint";
 
 import mods_config from "./config/modules.config";
-const blake3 = require("blake3");
 
 async function initCLI() {
   const app = new Saito({
@@ -17,9 +16,6 @@ async function initCLI() {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   app.storage = new StorageCore(app);
-  app.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
 
   app.BROWSER = 0;
   app.SPVMODE = 0;

@@ -517,7 +517,7 @@ class Registry extends ModTemplate {
           // send message
           if (res == 1) {
             let newtx = await registry_self.app.wallet.createUnsignedTransaction(
-              tx.transaction.from[0].add,
+              tx.transaction.from[0].publicKey,
               0,
               fee
             );
@@ -536,7 +536,7 @@ class Registry extends ModTemplate {
             await registry_self.app.network.propagateTransaction(newtx);
           } else {
             let newtx = await registry_self.app.wallet.createUnsignedTransaction(
-              tx.transaction.from[0].add,
+              tx.transaction.from[0].publicKey,
               0.0,
               fee
             );

@@ -91,7 +91,7 @@ function listTransactions(blk, hash) {
       //}
       let tx_from = "fee tx";
       if (tmptx.transaction.from.length > 0) {
-        tx_from = tmptx.transaction.from[0].add;
+        tx_from = tmptx.transaction.from[0].publicKey;
       }
 
       html +=

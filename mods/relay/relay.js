@@ -140,16 +140,16 @@ class Relay extends ModTemplate {
             if (tx.isTo(app.wallet.returnPublicKey())) {
                 if (message.request === "ping") {
                     //console.log("Respond to ping");
-                    this.sendRelayMessage(tx.transaction.from[0].add, "echo", { status: this.busy });
+                    this.sendRelayMessage(tx.transaction.from[0].publicKey, "echo", { status: this.busy });
                     return;
                 }
 
                 if (message.request === "echo") {
                     //console.log("Received echo");
                     if (message.data.status) {
-                        app.connection.emit("relay-is-busy", tx.transaction.from[0].add);
+                        app.connection.emit("relay-is-busy", tx.transaction.from[0].publicKey);
                     } else {
-                        app.connection.emit("relay-is-online", tx.transaction.from[0].add);
+                        app.connection.emit("relay-is-online", tx.transaction.from[0].publicKey);
                     }
                     return;
                 }

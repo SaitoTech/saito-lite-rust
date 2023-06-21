@@ -127,7 +127,7 @@ class Browser {
         window.addEventListener("storage", async (e) => {
           if (this.active_tab == 0) {
             console.log("LOAD OPTIONS IN BROWSER");
-            this.app.storage.loadOptions();
+            await this.app.storage.loadOptions();
           }
         });
       } catch (err) {

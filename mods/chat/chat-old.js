@@ -636,7 +636,7 @@ class Chat extends ModTemplate {
     // if to someone else and encrypted
     // (i.e. I am sending an encrypted message and not waiting for relay)
     //
-    //if (tx.transaction.from[0].add == this.publicKey) {
+    //if (tx.transaction.from[0].publicKey == this.publicKey) {
     //    if (app.keychain.hasSharedSecret(tx.transaction.to[0].add)) {
     //    }
     //}
