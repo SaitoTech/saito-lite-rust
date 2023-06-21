@@ -90,7 +90,7 @@ class Chat extends ModTemplate {
     //
     let keys = app.keychain.returnKeys();
     for (let i = 0; i < keys.length; i++) {
-      if (keys[i].aes_publickey) {
+      if (keys[i].aes_publickey && !keys[i]?.mute) {
         this.returnOrCreateChatGroupFromMembers(
           [keys[i].publickey],
           keys[i].name
@@ -179,6 +179,7 @@ class Chat extends ModTemplate {
     this.chat_manager.container = ".saito-sidebar.left";
     this.chat_manager.chat_popup_container = ".saito-main";
     this.chat_manager.render_manager_to_screen = 1;
+    this.chat_manager.render_popups_to_screen = 0;
 
     super.render();
   }
@@ -1141,8 +1142,18 @@ class Chat extends ModTemplate {
   }
 
   deleteChatGroup(group){
+
+    let key_to_update = "";
     for (let i = 0; i < this.groups.length; i++){
       if (this.groups[i].id === group.id){
+        if (this.groups[i].members.length == 2){
+          for (let member of this.groups[i].members){
+            if (member !== this.app.wallet.returnPublicKey()){
+              key_to_update = member;
+            }
+          }
+        }
+
         this.groups.splice(i,1);
         break;
       }
@@ -1156,6 +1167,12 @@ class Chat extends ModTemplate {
     }
 
     this.app.storage.saveOptions();
+
+    if (key_to_update){
+      this.app.keychain.addKey(key_to_update, {mute: 1});  
+    }
+    
+
     localforage.removeItem(`chat_${group.id}`);
 
     this.app.connection.emit("chat-manager-render-request");
