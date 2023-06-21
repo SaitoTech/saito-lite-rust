@@ -117,7 +117,7 @@ class ChatManager {
         group = this.mod.createChatGroup(data.key, data.name);
       } else {
         let name = data.name || app.keychain.returnUsername(data.key);
-        group = this.mod.createChatGroup([app.wallet.returnPublicKey(), data.key], name);
+        group = this.mod.createChatGroup([app.wallet.getPublicKey(), data.key], name);
       }
 
       //

@@ -37,9 +37,9 @@ class LeagueMain {
       console.log(JSON.parse(JSON.stringify(leagues)));  
     }
 
-    let filter1 = leagues.filter(l => l.admin == this.app.wallet.returnPublicKey());
-    let filter2 = leagues.filter(l => l.rank >= 0 && l.admin != this.app.wallet.returnPublicKey());
-    let filter3 = leagues.filter(l => l.rank < 0 && l.admin != this.app.wallet.returnPublicKey());
+    let filter1 = leagues.filter(l => l.admin == this.app.wallet.getPublicKey());
+    let filter2 = leagues.filter(l => l.rank >= 0 && l.admin != this.app.wallet.getPublicKey());
+    let filter3 = leagues.filter(l => l.rank < 0 && l.admin != this.app.wallet.getPublicKey());
 
     if (filter1.length > 0) {
       filter1.forEach((lg) => {

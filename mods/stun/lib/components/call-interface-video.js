@@ -59,7 +59,7 @@ class CallInterfaceVideo {
       if (room_code !== this.room_code) {
         return;
       }
-      let my_pub_key = this.app.wallet.returnPublicKey();
+      let my_pub_key = this.app.wallet.getPublicKey();
       let container;
       if (peer_id === my_pub_key) {
         container = this.local_container;
@@ -390,7 +390,7 @@ class CallInterfaceVideo {
     for (let i in this.video_boxes) {
       let publickey = i;
       if (i === "local") {
-        publickey = this.app.wallet.returnPublicKey();
+        publickey = this.app.wallet.getPublicKey();
       }
 
       let imgsrc = this.app.keychain.returnIdenticon(publickey);

@@ -411,7 +411,7 @@ class Arcade extends ModTemplate {
       };
     }
     if (type === "user-menu") {
-      if (obj?.publickey && obj.publickey !== this.app.wallet.returnPublicKey()){
+      if (obj?.publickey && obj.publickey !== this.app.wallet.getPublicKey()){
         return {
           text: "Challenge to Game",
           icon: "fas fa-gamepad",
@@ -1332,7 +1332,7 @@ class Arcade extends ModTemplate {
   /*
   createChangeTransaction(gametx, direction) {
       let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-      tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+      tx.transaction.to.push(new saito.default.slip(this.app.wallet.getPublicKey(), 0.0));
       tx.msg = gametx.returnMessage();
       tx.msg.request = "change_" + direction;
       tx.msg.game_id = gametx.transaction.sig;
@@ -1364,7 +1364,7 @@ class Arcade extends ModTemplate {
     //
     // and re-display
     //
-    if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
+    if (!tx.isFrom(this.app.wallet.getPublicKey())) {
       if (this.isMyGame(tx)) {
         this.app.connection.emit('arcade-invite-manager-render-request', invites[i]);
       } else {
@@ -1406,9 +1406,9 @@ class Arcade extends ModTemplate {
       game: gameData.game,
       options: gameData.options,
       players_needed: gameData.players.length,
-      players: [this.app.wallet.returnPublicKey()],
+      players: [this.app.wallet.getPublicKey()],
       players_sigs: [accept_sig],
-      originator: this.app.wallet.returnPublicKey(),
+      originator: this.app.wallet.getPublicKey(),
       invitees: gameData.players,
     };
 
@@ -1423,7 +1423,7 @@ class Arcade extends ModTemplate {
       return;
     }
 
-    if (!tx.isTo(this.app.wallet.returnPublicKey())) {
+    if (!tx.isTo(this.app.wallet.getPublicKey())) {
       return;
     }
 
@@ -1519,7 +1519,7 @@ class Arcade extends ModTemplate {
           }
 
           let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-          tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+          tx.transaction.to.push(new saito.default.slip(this.app.wallet.getPublicKey(), 0.0));
 
           tx.msg = {};
           tx.msg.request = "launch singleplayer";

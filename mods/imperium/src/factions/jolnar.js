@@ -110,16 +110,16 @@
 	          let id = $(this).attr("id");
 
 		  if (id === "no") {
-                    imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-                    imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                    imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.getPublicKey());
+                    imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
 		    imperium_self.endTurn();
 		    return 0;
 		  }
 
                   imperium_self.playerResearchTechnology(function(tech) {
 
-                    imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-                    imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                    imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.getPublicKey());
+                    imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
                     imperium_self.addMove("purchase\t"+player+"\ttechnology\t"+tech);
 
 

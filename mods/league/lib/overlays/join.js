@@ -67,7 +67,7 @@ class JoinLeague {
         e.preventDefault();
 
         let league_id = e.target.getAttribute("data-id");
-        //let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+        //let key = this.app.keychain.returnKey(this.app.wallet.getPublicKey());
         //let user_email = key.email || "";
 
         //
@@ -86,7 +86,7 @@ class JoinLeague {
         }
 
         let params = {
-          publickey: this.app.wallet.returnPublicKey(),
+          publickey: this.app.wallet.getPublicKey(),
         }
         this.mod.addLeaguePlayer(league_id, params);
 

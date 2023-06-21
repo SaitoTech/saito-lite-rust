@@ -71,7 +71,7 @@ class VideoBox {
       let key;
       if (this.stream_id === "local") {
 
-        key = this.app.wallet.returnPublicKey();
+        key = this.app.wallet.getPublicKey();
 
       } else {
         key = this.stream_id;

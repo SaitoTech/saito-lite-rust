@@ -68,7 +68,7 @@ class Leaderboard {
       let player = this.league.players[i];
       let publickey = player.publickey;
       html += `
-        <div class="saito-table-row${(publickey == this.app.wallet.returnPublicKey())?" my-leaderboard-position":""}">
+        <div class="saito-table-row${(publickey == this.app.wallet.getPublicKey())?" my-leaderboard-position":""}">
           <div class="center-align">${i+1}</div>
           ${this.app.browser.returnAddressHTML(publickey)}
           <div class="right-align">${Math.round(player.score)}</div>

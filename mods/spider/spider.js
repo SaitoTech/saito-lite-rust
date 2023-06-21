@@ -849,7 +849,7 @@ class Spider extends OnePlayerGameTemplate {
         }
         this.newRound();
         if (final_score){
-          this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${final_score}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`);  
+          this.game.queue.push(`ROUNDOVER\t${JSON.stringify([])}\t${final_score}\t${JSON.stringify([this.app.wallet.getPublicKey()])}`);  
         }
         
         return 1;
@@ -862,10 +862,10 @@ class Spider extends OnePlayerGameTemplate {
         this.animateFinalVictory();
         let final_score = this.game.state.score + 400;
         this.game.state.scores.push(final_score);
-        //this.endGame(this.app.wallet.returnPublicKey(), final_score.toString());
+        //this.endGame(this.app.wallet.getPublicKey(), final_score.toString());
         this.overlay.show(this.returnStatsHTML("Winner!"), ()=>{
           this.newRound();
-          this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${final_score}\t${JSON.stringify([])}`); 
+          this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.app.wallet.getPublicKey()])}\t${final_score}\t${JSON.stringify([])}`); 
           $(".completed_card").remove();
           this.restartQueue();
         });

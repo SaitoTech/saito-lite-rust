@@ -1,7 +1,7 @@
 module.exports = (app, stream_id) => {
 
     if (stream_id === "local") {
-        stream_id = app.wallet.returnPublicKey();
+        stream_id = app.wallet.getPublicKey();
     } 
 
     let imgsrc = app.keychain.returnIdenticon(stream_id);

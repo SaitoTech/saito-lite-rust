@@ -958,7 +958,7 @@ class Chat extends ModTemplate {
     if (name == null) {
       name = "";
       for (let i = 0; i < members.length; i++) {
-        if (members[i] != this.app.wallet.returnPublicKey()) {
+        if (members[i] != this.app.wallet.getPublicKey()) {
           name += members[i] + ", ";
         }
       }

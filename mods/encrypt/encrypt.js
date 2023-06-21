@@ -93,7 +93,7 @@ class Encrypt extends ModTemplate {
       // key exchange requests
       //
       if (txmsg.request == "key exchange request") {
-        if (receiver == app.wallet.returnPublicKey()) {
+        if (receiver == app.wallet.getPublicKey()) {
           console.log("\n\n\nYou have accepted an encrypted channel request from " + receiver);
           await encrypt_self.accept_key_exchange(tx, 1, peer);
         }
@@ -142,7 +142,7 @@ class Encrypt extends ModTemplate {
       //
       //
       this.sendEvent("encrypt-key-exchange-confirm", {
-        members: [sender, app.wallet.returnPublicKey()],
+        members: [sender, app.wallet.getPublicKey()],
       });
       this.saveEncrypt();
     }

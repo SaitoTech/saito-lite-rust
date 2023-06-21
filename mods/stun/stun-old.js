@@ -203,7 +203,7 @@ class Stun extends ModTemplate {
           icon: this.icon,
           allowed_mods: ["redsquare", "arcade"],
           callback: async function (app, id) {
-            let pub_key = await app.wallet.returnPublicKey();
+            let pub_key = await app.wallet.getPublicKey();
             app.connection.emit("game-start-video-call", pub_key);
           },
         },
@@ -375,7 +375,7 @@ class Stun extends ModTemplate {
         break;
     }
 
-    let my_pubkey = app.wallet.returnPublicKey();
+    let my_pubkey = app.wallet.getPublicKey();
   }
 
   createMediaConnectionOffer(publicKey, ui_type, call_type, room_code) {
@@ -574,7 +574,7 @@ class Stun extends ModTemplate {
   //         try {
   //             pc.onicecandidate = (ice) => {
   //                 if (!ice || !ice.candidate || !ice.candidate.candidate) {
-  //                     stunx_mod.sendMediaChannelAnswerTransaction(stunx_mod.app.wallet.returnPublicKey(), offer_creator, reply);
+  //                     stunx_mod.sendMediaChannelAnswerTransaction(stunx_mod.app.wallet.getPublicKey(), offer_creator, reply);
   //                     return;
   //                 };
   //                 reply.ice_candidates.push(ice.candidate);
@@ -639,7 +639,7 @@ class Stun extends ModTemplate {
   //                 event.streams[0].getTracks().forEach(track => {
   //                     remoteStream.addTrack(track);
   //                 });
-  //                 let my_pubkey = this.app.wallet.returnPublicKey();
+  //                 let my_pubkey = this.app.wallet.getPublicKey();
   //                 if (!this.room.peers.includes(my_pubkey)) {
   //                     this.room.peers.push(my_pubkey);
   //                 }
@@ -700,7 +700,7 @@ class Stun extends ModTemplate {
             stunx_mod.peer_connections[offer_creator] = pc;
             // stunx_mod.initializeStun(stunx_mod.peer_connections[offer_creator]);
             stunx_mod.sendDataChannelAnswerTransaction(
-              stunx_mod.app.wallet.returnPublicKey(),
+              stunx_mod.app.wallet.getPublicKey(),
               offer_creator,
               reply
             );
@@ -756,7 +756,7 @@ class Stun extends ModTemplate {
   }
 
   // async createMediaChannelConnectionWithPeers(public_keys, ui_type, call_type, room_code) {
-  //     let my_pubkey = this.app.wallet.returnPublicKey();
+  //     let my_pubkey = this.app.wallet.getPublicKey();
   //     if (public_keys.includes(my_pubkey)) return;
   //     let peerConnectionOffers = [];
   //     if (public_keys.length > 0) {
@@ -764,7 +764,7 @@ class Stun extends ModTemplate {
   //         for (let i = 0; i < public_keys.length; i++) {
   //             console.log('public key ', public_keys[i], ' ui_type ', ui_type);
   //             // send notification
-  //             this.sendMediaChannelNotificationTransaction(this.app.wallet.returnPublicKey(), public_keys[i], room_code)
+  //             this.sendMediaChannelNotificationTransaction(this.app.wallet.getPublicKey(), public_keys[i], room_code)
   //             peerConnectionOffers.push(this.createMediaConnectionOffer(public_keys[i], ui_type, call_type, room_code));
   //         }
   //     }
@@ -790,7 +790,7 @@ class Stun extends ModTemplate {
   //             let interval = setInterval(() => {
   //                 let offer;
   //                 offer = offers[index];
-  //                 this.sendMediaChannelOfferTransaction(this.app.wallet.returnPublicKey(), offer)
+  //                 this.sendMediaChannelOfferTransaction(this.app.wallet.getPublicKey(), offer)
   //                 console.log('sending offer', index)
   //                 if (offers.length - 1 === index) {
   //                     clearInterval(interval)
@@ -832,7 +832,7 @@ class Stun extends ModTemplate {
   //                 })
   //             })
   //             // const offers = peerConnectionOffers.map(item => item.offer_sdp);
-  //             this.sendDataChannelOfferTransaction(this.app.wallet.returnPublicKey(), offers);
+  //             this.sendDataChannelOfferTransaction(this.app.wallet.getPublicKey(), offers);
   //         }
   //     } catch (error) {
   //         console.log('an error occurred with peer connection creation', error);
@@ -876,7 +876,7 @@ class Stun extends ModTemplate {
 
   //     if (!this.ChatManagerLarge.isActive || this.ChatManagerLarge.room_code !== room_code) return;
 
-  //     let my_pubkey = app.wallet.returnPublicKey();
+  //     let my_pubkey = app.wallet.getPublicKey();
 
   //     app.connection.emit('stun-receive-media-offer', {
   //         room_code,
@@ -930,7 +930,7 @@ class Stun extends ModTemplate {
   //     }
 
   //     let stunx_self = app.modules.returnModule("Stun");
-  //     let my_pubkey = app.wallet.returnPublicKey();
+  //     let my_pubkey = app.wallet.getPublicKey();
   //     const offer_creator = tx.msg.data.offer_creator;
 
   //     const recipient = tx.msg.data.offer.recipient;
@@ -1040,7 +1040,7 @@ class Stun extends ModTemplate {
   //     // this.current_step = 2;;
   //     if (!this.ChatManagerLarge.isActive) return;
   //     let stunx_self = app.modules.returnModule("Stun");
-  //     let my_pubkey = app.wallet.returnPublicKey();
+  //     let my_pubkey = app.wallet.getPublicKey();
   //     // console.log('receiving stun media channel answer');
 
   //     // app.connection.emit('stun-receive-media-answer', {
@@ -1118,7 +1118,7 @@ class Stun extends ModTemplate {
   receiveDataChannelOfferTransaction(app, tx, conf, blk) {
     if (app.BROWSER !== 1) return;
     let stunx_self = app.modules.returnModule("Stun");
-    let my_pubkey = app.wallet.returnPublicKey();
+    let my_pubkey = app.wallet.getPublicKey();
     const offer_creator = tx.msg.offers.offer_creator;
 
     // offer creator should not respond
@@ -1137,7 +1137,7 @@ class Stun extends ModTemplate {
 
   receiveDataChannelAnswerTransaction(app, tx, conf, blk) {
     let stunx_self = app.modules.returnModule("Stun");
-    let my_pubkey = app.wallet.returnPublicKey();
+    let my_pubkey = app.wallet.getPublicKey();
     if (my_pubkey === tx.msg.answer.offer_creator) {
       if (app.BROWSER !== 1) return;
       console.log("current instance: ", my_pubkey, " answer room: ", tx.msg.answer);
@@ -1176,7 +1176,7 @@ class Stun extends ModTemplate {
   receiveRoomCodeTransaction(app, tx, conf, blk) {
     if (app.BROWSER !== 1) return;
     console.log(tx.msg.data);
-    if (tx.msg.data.creator === app.wallet.returnPublicKey()) {
+    if (tx.msg.data.creator === app.wallet.getPublicKey()) {
       return;
     }
     sconfirm("Accept video call from " + tx.msg.data.creator).then((e) => {

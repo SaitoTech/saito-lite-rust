@@ -1,7 +1,7 @@
 module.exports = JoinLeagueTemplate = (app, mod, league) => {
 
 	let game = league.game.toLowerCase();
-	let pubKey = app.wallet.returnPublicKey();
+	let pubKey = app.wallet.getPublicKey();
 	let key = app.keychain.returnKey({ publickey : pubKey });
 	let user_email = key.email || "";
 

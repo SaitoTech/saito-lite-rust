@@ -7,7 +7,7 @@ console.log("KEY RETURNED: " + JSON.stringify(key));
 console.log(">");
 
    let is_this_me = false;
-   if (publickey === app.wallet.returnPublicKey()) { is_this_me = true; }
+   if (publickey === app.wallet.getPublicKey()) { is_this_me = true; }
    let follow_text = "follow";
 
    if (!key) {

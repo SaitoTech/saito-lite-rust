@@ -50,7 +50,7 @@ class LeagueMenu {
           salert("Unauthorized access!");
           return; 
         }
-        this.league.admin = this.app.wallet.returnPublicKey();
+        this.league.admin = this.app.wallet.getPublicKey();
         this.app.connection.emit("league-overlay-render-request", this.league.id);
       }
     } catch (err) {}

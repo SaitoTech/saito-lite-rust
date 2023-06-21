@@ -115,7 +115,7 @@
 	if (lmv[1] != undefined) {
 	  if (lmv[1] === "tokenallocation") {
 	    if (lmv[2] != undefined) {
-	      if (lmv[2] === this.app.wallet.returnPublicKey()) {
+	      if (lmv[2] === this.app.wallet.getPublicKey()) {
 		this.playing_token_allocation = 0;
 	      }
 	    }
@@ -127,7 +127,7 @@
 	//
 	if (mv[1] === "strategy") {
 	  if (mv[3]) {
-	    if (mv[3] === this.app.wallet.returnPublicKey()) {
+	    if (mv[3] === this.app.wallet.getPublicKey()) {
               this.game.state.playing_strategy_card_secondary = 0;
 	    }
 	  }
@@ -199,7 +199,7 @@ console.log("PLAYERS: " + JSON.stringify(this.game.players));
 	    for (let i = 0; i < still_to_move.length; i++) {
 	      for (let z = 0; z < this.game.players.length; z++) {
 		if (this.game.players[z] === still_to_move[i]) {
-		  if (this.game.players[z] === this.app.wallet.returnPublicKey()) { am_i_still_to_move = 1; }
+		  if (this.game.players[z] === this.app.wallet.getPublicKey()) { am_i_still_to_move = 1; }
 console.log("WHO - IDX " + z);
 console.log("WHO - PLAYER " + (z+1));
 console.log("WHO: " + this.game.players[z]);
@@ -229,7 +229,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	      // the last one.... 
 	      //
 	      if (mv[3] != undefined) {
-	        if (!this.game.confirms_players.includes(this.app.wallet.returnPublicKey())) {
+	        if (!this.game.confirms_players.includes(this.app.wallet.getPublicKey())) {
 	  	  return 1;
 	        }
                 if (mv[1] == "agenda") {
@@ -691,7 +691,7 @@ console.log("WHO: " + this.returnFaction(z+1));
   	let stage = parseInt(mv[3]);  
 
 	if (this.game.state.playing_strategy_card_secondary == 1) {
-	  if (this.game.confirms_players.includes(this.app.wallet.returnPublicKey()) || this.game.tmp_confirms_players.includes(this.app.wallet.returnPublicKey())) {
+	  if (this.game.confirms_players.includes(this.app.wallet.getPublicKey()) || this.game.tmp_confirms_players.includes(this.app.wallet.getPublicKey())) {
 	    return 0;
 	  } else {
 	    //
@@ -1243,7 +1243,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	  // if the player has a rider, we skip the interactive voting and submit an abstention
 	  //
 	  if (imperium_self.doesPlayerHaveRider(this.game.player)) {
-	    imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.returnPublicKey());
+	    imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
 	    imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+"abstain"+"\t"+"0");
 	    imperium_self.endTurn();
 	    return 0;
@@ -1305,7 +1305,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
 	    if (vote == "abstain") {
 
-	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.returnPublicKey());
+	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
 	      imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+vote+"\t"+votes);
 	      imperium_self.endTurn();
 	      return 0;
@@ -1327,7 +1327,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
               votes = $(this).attr("id");
  
-  	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.returnPublicKey());
+  	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
 	      imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+vote+"\t"+votes);
 	      imperium_self.endTurn();
 	      return 0;
@@ -1392,7 +1392,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	  // if the player has a rider, we skip the interactive voting and submit an abstention
 	  //
 	  if (imperium_self.doesPlayerHaveRider(this.game.player)) {
-	    imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.returnPublicKey());
+	    imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
 	    imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+"abstain"+"\t"+"0");
 	    imperium_self.endTurn();
 	    return 0;
@@ -1454,7 +1454,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
 	    if (vote == "abstain") {
 
-	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.returnPublicKey());
+	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
 	      imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+vote+"\t"+votes);
 	      imperium_self.endTurn();
 	      return 0;
@@ -1476,7 +1476,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
               votes = $(this).attr("id");
  
-  	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.returnPublicKey());
+  	      imperium_self.addMove("resolve\tagenda\t1\t"+imperium_self.app.wallet.getPublicKey());
 	      imperium_self.addMove("vote\t"+agenda+"\t"+imperium_self.game.player+"\t"+vote+"\t"+votes);
 	      imperium_self.endTurn();
 	      return 0;
@@ -5989,26 +5989,26 @@ console.log("HIDING SPACE COMBAT OVERLAY!");
 	if (this.game.player == action_card_player) {
     	  //this.game.queue.splice(qe, 1);
 	  this.updateStatus("Your opponents are being notified you have played " + this.action_cards[action_card].name);
-	  if (this.hasPlayerConfirmed(this.app.wallet.returnPublicKey())) {
+	  if (this.hasPlayerConfirmed(this.app.wallet.getPublicKey())) {
 	    if (action_card.indexOf("sabotage") != 0) {
-              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
               imperium_self.endTurn();
 	    } else {
 	      // sabotage doesn't need resolve, it happily resolves itself
-              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
               imperium_self.endTurn();
             }
           } else {
-              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
               imperium_self.endTurn();
 	  }
 	  return 0;
 	} else {
 	  // sabotage is a special case where we want to show the menu even if we have already confirmed
-	  if (this.hasPlayerConfirmed(this.app.wallet.returnPublicKey()) && action_card.indexOf("sabotage") != 0) {
+	  if (this.hasPlayerConfirmed(this.app.wallet.getPublicKey()) && action_card.indexOf("sabotage") != 0) {
   	    this.updateStatus("Waiting for players to respond to "+this.action_cards[action_card].name);
 	  } else {
     	    //this.game.queue.splice(qe, 1);

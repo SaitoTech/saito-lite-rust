@@ -565,7 +565,7 @@ console.log("DONE GENERATING MAP");
 
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".hud-body .status");
-        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
+        if (this.game.players.includes(this.app.wallet.getPublicKey())) {
           status_obj.innerHTML = str;
           $(".status").disableSelection();
         }

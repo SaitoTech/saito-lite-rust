@@ -269,9 +269,9 @@ class Nwasm extends GameTemplate {
             message.request = "library delete";
             message.data = {};
             message.data.collection = "Nwasm";
-            message.data.publickey = this.app.wallet.returnPublicKey();
+            message.data.publickey = this.app.wallet.getPublicKey();
 
-      let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), BigInt(0), BigInt(0));
+      let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.getPublicKey(), BigInt(0), BigInt(0));
       newtx.msg = message;
       newtx.presign(this.app);
       newtx.sign(this.app);
@@ -346,7 +346,7 @@ class Nwasm extends GameTemplate {
             //
             this.uploaded_rom = true;
             let similar_rom_exists = false;
-            for (let item in this.libraries[this.app.wallet.returnPublicKey()]) {
+            for (let item in this.libraries[this.app.wallet.getPublicKey()]) {
               if (item.title === this.active_rom_name) {
                 similar_rom_exists = true;
               }

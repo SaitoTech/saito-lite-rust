@@ -13,7 +13,7 @@ class RegisterUsername {
 
     /*app.connection.on("update_identifier", (publickey) => {
       if (document.getElementById("register-username-template")){
-        if (publickey === app.wallet.returnPublicKey()) {    
+        if (publickey === app.wallet.getPublicKey()) {    
           if (app.keychain.returnIdentifierByPublicKey(publickey, true) !== publickey){
             this.loader.remove();
             document.querySelector(".saito-overlay-form-text").innerHTML = "name registered!";
@@ -76,10 +76,10 @@ class RegisterUsername {
                     //
                     // mark wallet that we have registered username
                     //
-                    this.app.keychain.addKey(this.app.wallet.returnPublicKey(), { has_registered_username : true });
+                    this.app.keychain.addKey(this.app.wallet.getPublicKey(), { has_registered_username : true });
 
                     // Change Saito-header / Settings page
-                    this.app.connection.emit("update_identifier", this.app.wallet.returnPublicKey());
+                    this.app.connection.emit("update_identifier", this.app.wallet.getPublicKey());
 
                     //Fake responsiveness
                     setTimeout(()=>{

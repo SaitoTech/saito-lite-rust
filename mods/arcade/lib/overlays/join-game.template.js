@@ -120,13 +120,13 @@ module.exports = JoinGameOverlayTemplate = async (app, mod, invite) => {
 				html += `<div id="arcade-game-controls-watch-game" class="saito-button saito-button-primary">watch game</div>`;
 			}
 		} else {
-			if (invite.players.includes(app.wallet.returnPublicKey())) {
-				if (app.wallet.returnPublicKey() === invite.originator) {
+			if (invite.players.includes(app.wallet.getPublicKey())) {
+				if (app.wallet.getPublicKey() === invite.originator) {
 					html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">cancel invite</div>`;
 				} else {
 					html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">leave invite</div>`;
 				}
-			} else if (invite.empty_slots > 0 || invite.desired_opponent_publickeys.includes(app.wallet.returnPublicKey())) {
+			} else if (invite.empty_slots > 0 || invite.desired_opponent_publickeys.includes(app.wallet.getPublicKey())) {
 				html += `<div id="arcade-game-controls-join-game" class="saito-button saito-button-primary">join game</div>`;
 			}
 		}

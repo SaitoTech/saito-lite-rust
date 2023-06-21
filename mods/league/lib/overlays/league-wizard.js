@@ -60,7 +60,7 @@ class LeagueWizard {
       let obj = this.mod.validateLeague(this.game_mod.respondTo("default-league"));
       obj.name = title;
       obj.description = desc;
-      obj.admin = this.app.wallet.returnPublicKey();
+      obj.admin = this.app.wallet.getPublicKey();
       obj.contact = contact || "";
 
       if (obj.game === "Unknown"){

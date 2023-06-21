@@ -51,7 +51,7 @@ class Registry extends ModTemplate {
                 this.cached_keys[key] = value;
 
                 //
-                // We don't NEED or WANT to filter for key == wallet.returnPublicKey
+                // We don't NEED or WANT to filter for key == wallet.getPublicKey
                 // If the key is in our keychain, we obviously care enough that we
                 // want to update that key in the keychain!
                 //
@@ -109,7 +109,7 @@ class Registry extends ModTemplate {
     // registering domains should report they run the registry module.
     //
     if (this.app.BROWSER == 0) {
-      //if (this.registry_publickey == this.app.wallet.returnPublicKey()) {
+      //if (this.registry_publickey == this.app.wallet.getPublicKey()) {
       services.push(new PeerService(null, "registry", "saito"));
     }
     return services;
@@ -127,7 +127,7 @@ class Registry extends ModTemplate {
     const missing_keys = [];
 
     identifiers.forEach((identifier) => {
-      let publickey = this.app.browser.returnPublicKeyByIdentifier(identifier);
+      let publickey = this.app.browser.getPublicKeyByIdentifier(identifier);
       if (publickey != "" && publickey != identifier) {
         found_keys.push[publickey] = identifier;
       } else {
@@ -465,7 +465,7 @@ class Registry extends ModTemplate {
     /***** USE VARIABLE TO TOGGLE LOCAL DEV MODE ******/
     if (this.local_dev) {
       if (this.app.options.server != undefined) {
-        this.publickey = this.app.wallet.returnPublicKey();
+        this.publickey = this.app.wallet.getPublicKey();
       } else {
         this.publickey = peer.peer.publickey;
       }

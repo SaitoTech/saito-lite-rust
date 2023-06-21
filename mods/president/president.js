@@ -387,7 +387,7 @@ class President extends GameTemplate {
     this.game.state.round++;
 
     for (let i = 0; i < this.game.players.length; i++) {
-      if (this.game.players[i] === this.app.wallet.returnPublicKey()) {
+      if (this.game.players[i] === this.app.wallet.getPublicKey()) {
         this.game.player = (i + 1);
       }
     }

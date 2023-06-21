@@ -16,7 +16,7 @@ class AppspaceProfile {
   render(publickey = "") {
 
     if (publickey == "") { if (this.publickey != "") { publickey = this.publickey; } }
-    if (publickey == "") { publickey = this.app.wallet.returnPublicKey(); }
+    if (publickey == "") { publickey = this.app.wallet.getPublicKey(); }
     this.publickey = publickey;
 
     if (document.querySelector(".redsquare-profile")) {
