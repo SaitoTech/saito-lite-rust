@@ -1,6 +1,7 @@
 const saito = require("./../../lib/saito/saito");
-const ModTemplate = require("../../lib/templates/modtemplate");
-const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
+const ModTemplate = require('../../lib/templates/modtemplate');
+const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+const SaitoCamera = require("../../lib/saito/ui/saito-camera/saito-camera");
 const SaitoMain = require("./lib/main");
 const SaitoMenu = require("./lib/menu");
 const RedSquareSidebar = require("./lib/sidebar");
@@ -11,6 +12,7 @@ const prettify = require("html-prettify");
 const redsquareHome = require("./index");
 const Post = require("./lib/post");
 const localforage = require("localforage");
+
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
@@ -146,6 +148,16 @@ class RedSquare extends ModTemplate {
           },
         });
       }
+
+      x.push({
+        text: "Camera",
+        icon: "fas fa-camera",
+        rank: 27,
+        callback: function (app, id) {
+          let camera = new SaitoCamera(app, this_mod);
+          camera.render();
+        }
+      });
 
       return x;
     }
