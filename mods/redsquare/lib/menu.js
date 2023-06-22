@@ -42,13 +42,8 @@ class RedSquareMenu {
 
 
   attachEvents() {
+
     this_self = this;
-    document.querySelector(".redsquare-menu-home").onclick = (e) => {
-      let rs_mod = this_self.app.modules.returnModule("RedSquare");
-      rs_mod.header.undoUpdateHeaderLogo();
-      setHash('home');
-      this.app.connection.emit("redsquare-home-render-request");
-    }
 
     document.getElementById("new-tweet").onclick = (e) => {
       let post = new Post(this.app, this.mod);
@@ -62,24 +57,17 @@ class RedSquareMenu {
       }
     }
 
+    document.querySelector(".redsquare-menu-home").onclick = (e) => {
+      this.app.connection.emit("redsquare-home-render-request");
+    }
+
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
-      setHash('notifications');
       this.app.connection.emit("redsquare-notifications-render-request");
-      this.mod.notifications_number_unviewed = 0;
-      this.mod.notifications_last_viewed_ts = new Date().getTime();
-      this.mod.save();
-      this.incrementNotifications("notifications", this.notifications_number_unviewed);
     }
 
     document.querySelector(".redsquare-menu-profile").onclick = (e) => {
-      setHash('profile');
-      this.app.connection.emit("saito-profile-render-request", this.app.wallet.getPublicKey());
-      //this.app.connection.emit("redsquare-profile-render-request", this.app.wallet.getPublicKey());
+      this.app.connection.emit("redsquare-profile-render-request", this.app.wallet.returnPublicKey());
     }
-
-    //    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
-    //      this.app.connection.emit("redsquare-contacts-render-request");
-    //    }
 
     //
     // appspace modules
@@ -118,7 +106,7 @@ class RedSquareMenu {
         }
       } else {
         let existing_notifications = 0;
-        if (obj.innerHTML) { existing_notificaitons = parseInt(obj.innerHTML); }
+        if (obj.innerHTML) { existing_notifications = parseInt(obj.innerHTML); }
         if (notifications <= 0) {
           obj.style.display = "none";
           obj.innerHTML = 0;
