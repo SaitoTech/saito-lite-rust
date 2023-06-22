@@ -16,9 +16,6 @@
   width: 100vw;
 }
 
-.stun-chatbox ~ .chat-container {
-  z-index: 100;
-}
 
 .stun-chatbox .minimizer {
   position: absolute;

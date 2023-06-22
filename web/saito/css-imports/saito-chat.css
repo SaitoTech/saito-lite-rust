@@ -70,6 +70,20 @@
   z-index: 16;
 }
 
+.chat-container.minimized {
+  height: unset;
+  min-height: unset;
+  resize: unset;
+}
+
+.chat-container.minimized .chat-body {
+  display: none;
+}
+
+.chat-container.minimized .chat-footer {
+  display: none;
+}
+
 .chat-body img {
   max-width: 100%;
 }

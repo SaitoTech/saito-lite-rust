@@ -14,12 +14,11 @@ class ChatPopup {
     this.manually_closed = false;
     this.is_rendered = false;
 
+    this.width = "";
+    this.height = "";
+
     this.group = null;
 
-    this.x_pos = 0;
-    this.y_pos = 0;
-    this.width = 0;
-    this.height = 0;
     this.overlay = new SaitoOverlay(app, mod);
   }
 
@@ -72,30 +71,14 @@ class ChatPopup {
 
     if (document.querySelector(popup_qs)) {
         am_i_on_page = 1;
+        this.restorePopup(document.querySelector(popup_qs));
     }
 
     //
     // insert or replace popup on page
     //
     if (am_i_on_page == 1) {
-
-      let obj = document.querySelector(popup_qs);
-      var rect = obj.getBoundingClientRect();
-      this.x_pos = rect.left;
-      this.y_pos = rect.top;
-      this.width = rect.width;
-      this.height = rect.height;
-
       this.app.browser.replaceElementBySelector(`<div class="chat-body">${this.mod.returnChatBody(this.group.id)}</div>`, popup_qs + " .chat-body");
-      
-      //Don't reset any user dragging/resizing
-      if (!this.container){
-        obj = document.querySelector(popup_qs);
-        obj.style.left = this.x_pos + "px";
-        obj.style.top = this.y_pos + "px";
-        obj.style.width = this.width + "px";
-        obj.style.height = this.height + "px";
-      }
     } else {
       if (this.container && document.querySelector(".chat-static")){
         this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group, this.container), ".chat-static");
@@ -111,9 +94,9 @@ class ChatPopup {
       if (!this.container && popups_on_page > 0){
         console.log("Reposition secondary popup");
         let obj = document.querySelector(popup_qs);
-        this.x_pos = x_offset - obj.getBoundingClientRect().width - 10;
-        if (this.x_pos < 0) { this.x_pos = 0; }
-        obj.style.left = this.x_pos + "px";
+        let x_pos = x_offset - obj.getBoundingClientRect().width - 10;
+        x_pos = Math.max(0, x_pos);
+        obj.style.left = x_pos + "px";
       }
 
       //
@@ -178,15 +161,28 @@ class ChatPopup {
         //
         // make draggable
         //
-        this.app.browser.makeDraggable(popup_id, header_id, true, () => {
-          let obj = document.querySelector(popup_qs);
-          var rect = obj.getBoundingClientRect();
-          this.x_pos = rect.left;
-          this.y_pos = rect.top;
-          this.manually_moved = true;
-        });
+        this.app.browser.makeDraggable(popup_id, header_id, true);
 
       }
+
+      //
+      // minimize
+      let chat_bubble = document.querySelector(`${popup_qs} .chat-header .fa-comment-dots`);
+      if (chat_bubble) {
+        chat_bubble.onclick = (e) => {
+          if (chatPopup.classList.contains("minimized")){
+            this.restorePopup(chatPopup);
+          }else{
+            this.width = chatPopup.style.width;
+            this.height = chatPopup.style.height;
+            chatPopup.style.width = "";
+            chatPopup.style.height = "";
+            chatPopup.classList.add("minimized");
+            chatPopup.classList.remove("active");
+          }
+        }
+      }
+
     }
   
     // add reply functionality
@@ -221,16 +217,6 @@ class ChatPopup {
         app.storage.saveOptions();
       }
 
-      //
-      // minimize
-      /*
-      let chat_bubble = document.querySelector(`${popup_qs} .chat-header .fa-comment-dots`);
-      if (chat_bubble) {
-        chat_bubble.onclick = (e) => {
-          this.toggleDisplay();
-        }
-      }
-      */
 
       //
       // submit
@@ -300,6 +286,12 @@ class ChatPopup {
 
   }
 
+  restorePopup(chatPopup){
+    chatPopup.classList.remove("minimized");
+    chatPopup.classList.add("active");
+    chatPopup.style.width = this.width;
+    chatPopup.style.height = this.height;
+  }
 }
 
 module.exports = ChatPopup;
