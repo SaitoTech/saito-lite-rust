@@ -40,9 +40,9 @@ This alows for a header with a header with title to be added without extra CSS
 
 .saito-modal-content .saito-user {
   height: 5rem;
-
   align-items: center;
   font-size: 20px;
+  overflow: hidden;
 }
 
 .saito-modal-content .saito-user .saito-identicon-box {
@@ -323,7 +323,13 @@ This alows for a header with a header with title to be added without extra CSS
     max-width: unset;
     padding: 0.5rem;
     width: 90vw;
+    grid-template-columns: 100%;
   }
+
+  .saito-modal > * {
+    max-width: 100%;
+  }
+
   .welcome-modal-wrapper {
     /*grid-template-columns: 1fr;*/
     width: 90vw;

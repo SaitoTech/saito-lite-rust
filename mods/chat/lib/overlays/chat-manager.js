@@ -7,6 +7,12 @@ class ChatManagerOverlay {
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
+
+    app.connection.on("close-chat-manager-overlay", ()=> {
+      if (document.querySelector(".chat-manager-overlay")){
+        document.querySelector(".chat-manager-overlay").style.visibility = "hidden";    
+      }
+    });
   }
 
   render() {
@@ -31,7 +37,6 @@ class ChatManagerOverlay {
   attachEvents() {
 
     document.querySelector(".chat-manager-overlay").onclick = (e) => {
-
       if (e.currentTarget == e.target) {
         document.querySelector(".chat-manager-overlay").style.visibility = "hidden";  
       }
