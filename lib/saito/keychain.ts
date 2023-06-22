@@ -18,7 +18,6 @@ class Keychain {
 
   constructor(app: Saito) {
     this.app = app;
-    this.publickey_keys_hmap = {}; // 1 if saved
     this.keys = [];
     this.groups = [];
     this.modtemplate = new modtemplate(this.app);
@@ -109,7 +108,6 @@ class Keychain {
     newkey.publickey = data.publickey;
     for (let key in data) { if (key !== "publickey") { newkey[key] = data[key]; } }
     this.keys.push(newkey);
-    this.publickey_keys_hmap[newkey.publickey] = 1;
     this.saveKeys();
 
   }

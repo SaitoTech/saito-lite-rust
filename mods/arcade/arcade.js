@@ -180,7 +180,7 @@ class Arcade extends ModTemplate {
     }
 
     try {
-      this.leagueCallback = this.app.modules.returnFirstRespondTo("league_membership");
+      this.leagueCallback = await this.app.modules.returnFirstRespondTo("league_membership");
     }catch(err){
       this.leagueCallback = {};
     }
