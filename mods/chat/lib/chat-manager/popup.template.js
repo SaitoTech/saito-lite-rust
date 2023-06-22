@@ -16,7 +16,7 @@ module.exports = (app, mod, group, isStatic = false) => {
       <div class="${class_name} chat-popup" id="chat-popup-${group.id}">
 
         <div class="chat-header" id="chat-header-${group.id}">
-          <i  class="far fa-comment-dots"></i>
+          <i  class="far fa-comment-dots chat-minimizer-icon"></i>
           <div id="chat-group-${
             group.id
           }" class="chat-group active-chat-tab saito-address" data-id="${group.name}">${

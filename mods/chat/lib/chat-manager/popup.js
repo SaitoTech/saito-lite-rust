@@ -169,16 +169,18 @@ class ChatPopup {
       // minimize
       let chat_bubble = document.querySelector(`${popup_qs} .chat-header .fa-comment-dots`);
       if (chat_bubble) {
-        chat_bubble.onclick = (e) => {
-          if (chatPopup.classList.contains("minimized")){
-            this.restorePopup(chatPopup);
-          }else{
-            this.width = chatPopup.style.width;
-            this.height = chatPopup.style.height;
-            chatPopup.style.width = "";
-            chatPopup.style.height = "";
-            chatPopup.classList.add("minimized");
-            chatPopup.classList.remove("active");
+        if (!this.mod.chat_manager_overlay) {
+          chat_bubble.onclick = (e) => {
+            if (chatPopup.classList.contains("minimized")){
+              this.restorePopup(chatPopup);
+            }else{
+              this.width = chatPopup.style.width;
+              this.height = chatPopup.style.height;
+              chatPopup.style.width = "";
+              chatPopup.style.height = "";
+              chatPopup.classList.add("minimized");
+              chatPopup.classList.remove("active");
+            }
           }
         }
       }

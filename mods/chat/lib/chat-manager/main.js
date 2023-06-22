@@ -307,6 +307,12 @@ class ChatManager {
       };
     });
 
+    if (document.querySelector(".close-chat-manager")){
+      document.querySelector(".close-chat-manager").onclick = (e) => {
+        this.app.connection.emit("close-chat-manager-overlay");
+      }
+    }
+
     if (document.querySelector(".add-contacts")) {
       document.querySelector(".add-contacts").onclick = (e) => {
         this.contactList.render();

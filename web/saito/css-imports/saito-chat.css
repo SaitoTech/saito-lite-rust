@@ -294,6 +294,23 @@
 }
 
 /* Mobile Overlay */
+.close-chat-manager {
+  margin-left: 1rem;
+  margin-right: auto;
+  display: none;
+}
+
+.chat-manager-overlay .close-chat-manager {
+  display: block;
+}
+
+.chat-manager-overlay .chat-manager-header {
+  font-size: 32px;
+}
+
+.chat-manager-overlay .add-contacts {
+  font-size: 38px;
+}
 
 @media screen and (max-width: 600px) {
   .chat-manager-overlay {
@@ -313,6 +330,11 @@
     height: fit-content;
     max-height: 100%;
   }
+
+  .chat-minimizer-icon {
+    visibility: hidden;
+  }
+  
   /*
   .chat-popup {
     z-index: 10000;
@@ -349,15 +371,15 @@
 .chat-manager-header > div {
   width: fit-content;
   cursor: pointer;
-  transition: all 0.5s;
-  margin-left: 1rem;
+  transition: transform 0.4s;
+  padding: 0 0.5rem;
 }
 
 .add-contacts{
   font-size: 24px;
 }
 
-.chat-manager-header > div:hover{
+.saito-sidebar .chat-manager-header > div:hover{
   transform: rotate(90deg);
 }
 
