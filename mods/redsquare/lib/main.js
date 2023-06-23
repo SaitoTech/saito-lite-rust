@@ -39,7 +39,7 @@ class RedSquareMain {
     this.app.connection.on("redsquare-notifications-render-request", () => {
       this.mod.notifications_last_viewed_ts = new Date().getTime();
       this.mod.notifications_number_unviewed = 0;
-      this.mod.save();
+      this.mod.saveLocalTweets();
       this.mod.menu.incrementNotifications("notifications");
       this.manager.publickey = this.app.wallet.returnPublicKey();
       this.manager.mode = "notifications";

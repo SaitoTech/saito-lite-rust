@@ -954,13 +954,14 @@ class Tweet {
       // normal link
       //
       if (fetch_open_graph == 1) {
+        //
+        // Returns "" if a browser or error
+        //
         let res = await mod.fetchOpenGraphProperties(app, mod, this.link);
-        if (res != '') {
+        if (res !== "") {
           this.tx.optional.link_properties = res;
         }
       }
-
-      return this;
 
     }
 

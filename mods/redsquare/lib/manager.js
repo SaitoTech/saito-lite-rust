@@ -71,10 +71,7 @@ class TweetManager {
                   let tweet = new Tweet(this.app, this.mod, ".tweet-manager", txs[z]);
                   tweet.render();
                 }
-                this.mod.updatePeerEarliestProfileTimestamp(
-                  null,
-                  this.mod.returnEarliestTimestampFromTransactionArray(txs)
-                );
+                this.mod.updatePeerStat(this.mod.returnEarliestTimestampFromTransactionArray(txs), "profile_earliest_ts");
                 this.loader.hide();
               });
             }
@@ -90,7 +87,6 @@ class TweetManager {
   }
 
   render() {
-
     console.log("Render RS Manager for " + this.publickey + " in state: " + this.mode);
 
     let myqs = `.tweet-manager`;
@@ -126,10 +122,10 @@ class TweetManager {
 
       window.history.pushState(null, "", "/redsquare/#notifications");
 
-      if (this.mod.notifications.length == 0){
+      if (this.mod.notifications.length == 0) {
         let notification = new Notification(this.app, this.mod, null);
         notification.render(".tweet-manager");
-      }else{
+      } else {
         for (let i = 0; i < this.mod.notifications.length; i++) {
           let notification = new Notification(this.app, this.mod, this.mod.notifications[i].tx);
           notification.render(".tweet-manager");
@@ -152,16 +148,13 @@ class TweetManager {
       //
       // all peers reset to 0 tweets fetched
       //
-      this.mod.updatePeerEarliestProfileTimestamp(null, new Date().getTime());
+      this.mod.updatePeerStat(new Date().getTime(),"profile_earliest_ts");
       this.mod.loadProfileTweets(null, this.publickey, (txs) => {
         for (let z = 0; z < txs.length; z++) {
           let tweet = new Tweet(this.app, this.mod, ".tweet-manager", txs[z]);
           tweet.render();
         }
-        this.mod.updatePeerEarliestProfileTimestamp(
-          null,
-          this.mod.returnEarliestTimestampFromTransactionArray(txs)
-        );
+        this.mod.updatePeerStat(this.mod.returnEarliestTimestampFromTransactionArray(txs), "profile_earliest_ts");
       });
     }
 
