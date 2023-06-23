@@ -1,0 +1,15 @@
+
+.strategy-card-selection-controls {
+  display: flex;
+  flex-direction: row;
+  row-gap: 1rem;
+}
+
+.strategy-card-selection-controls .strategy-card {
+  width: 10vw;
+  height: calc(10vw * 1.42);
+  font-size: 0.7vw;
+  line-height: 1vw;
+}
+
+
