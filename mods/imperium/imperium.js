@@ -3,6 +3,7 @@ const JSON = require('json-bigint');
 const RulesOverlay = require('./lib/overlays/rules');
 const FactionSheetOverlay = require('./lib/overlays/faction-sheet');
 const StrategyCardOverlay = require('./lib/overlays/strategy-card');
+const StrategyCardSelectionOverlay = require('./lib/overlays/strategy-card-selection');
 const CombatOverlay = require('./lib/overlays/combat');
 const HowToMoveOverlay = require('./lib/overlays/how-to-move');
 const HowToProduceOverlay = require('./lib/overlays/how-to-produce');
@@ -55,6 +56,7 @@ class Imperium extends GameTemplate {
     //
     this.rules_overlay = new RulesOverlay(this.app, this);
     this.faction_sheet_overlay = new FactionSheetOverlay(this.app, this);
+    this.strategy_card_selection_overlay = new StrategyCardSelectionOverlay(this.app, this);
     this.strategy_card_overlay = new StrategyCardOverlay(this.app, this);
     this.combat_overlay = new CombatOverlay(this.app, this);
     this.how_to_move_overlay = new HowToMoveOverlay(this.app, this);
@@ -11619,6 +11621,7 @@ console.log("qe: " + qe);
     super.render(app);
 
     try {
+
 
     $('.content').css('visibility', 'visible');
     $('.hud_menu_game-status').css('display', 'none');
@@ -24125,8 +24128,6 @@ console.log(JSON.stringify(array_of_cards));
       }
     }
 
-console.log("idx: " + idx);
-
     //
     // handle spending trade goods
     //
@@ -24167,7 +24168,6 @@ console.log("idx: " + idx);
 
   $('.cardchoice , .textchoice').on('click', () => {
     let action2 = $(this).attr("id");
-alert("action2: " + action2);
     selectResource(action2);
   });
 
@@ -24368,6 +24368,7 @@ playerSelectStrategyCards(mycallback, selection = 0) {
   }
 
   html += '</ul></p>';
+
   this.updateStatus(html);
 
   $('.textchoice').off();
@@ -24401,6 +24402,9 @@ playerSelectStrategyCards(mycallback, selection = 0) {
   //
   if (ac.length == 0) {
 
+alert("render: scso");
+    imperium_self.strategy_card_selection_overlay.render(scards_objs);
+/***
     let t = "Select Your Strategy Card";
     if (selection == 1) { t = "Select Your FIRST Strategy Card"; }
     if (selection == 2) { t = "Select Your SECOND Strategy Card"; }
@@ -24422,7 +24426,7 @@ playerSelectStrategyCards(mycallback, selection = 0) {
     		  mycallback(cardname);
                 }
     });
-
+***/
   }
 }
 

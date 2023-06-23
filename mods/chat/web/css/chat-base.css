@@ -1,1 +1,84 @@
-/* empty */
+
+
+.saito-container.chat-main-container { 
+	padding: 0
+}
+
+#saito-header {
+	padding: 1.3rem 3rem !important;
+}
+
+
+.saito-floating-container,  .saito-floating-plus-btn {
+	display: none !important;
+}
+
+#chat-main { 
+	padding: 0;
+	margin: 0 0 1rem;
+}
+
+.chat-main-container .chat-header,  .chat-main-container .chat-footer { 
+	padding: 0 1rem !important;
+}
+
+.chat-main-container.saito-container{
+	grid-template-columns: min-content auto;
+}
+
+.chat-main-container .saito-sidebar.left {
+	width: 30rem;
+	border-right: 1px solid var(--saito-border-color);
+}
+
+.chat-main-container .chat-header { 
+	background-color: var(--saito-background-color);
+}
+
+.chat-main-container .chat-footer {
+	border-top: unset;
+	max-width: 60rem;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.chat-main-container .chat-body {
+	max-width: 60rem;
+	margin: auto;
+}
+
+.text-input {
+	border-radius: 5px;
+	box-shadow: 0 0 1px var(--saito-primary);
+}
+
+.chat-footer > i {
+	margin-left: 1rem;
+	border-radius: 50%;
+	background-color: var(--saito-background-color);
+	height: 4.3rem;
+	width: 4.3rem;
+	text-align: center;
+	box-shadow: 0 0 1px var(--saito-primary);
+
+}
+
+@media screen and (max-width: 1200px) {
+	.chat-main-container .saito-sidebar.left {
+		position: sticky;
+		width: 25rem;
+		height: calc(100vh - var(--saito-header-height));
+		visibility: visible;
+		border: unset;
+		top: 0;
+	}
+
+
+}
+
+
+@media screen and (max-width: 900px) {
+	.chat-main-container .saito-main {
+		width: unset !important;
+	}
+}

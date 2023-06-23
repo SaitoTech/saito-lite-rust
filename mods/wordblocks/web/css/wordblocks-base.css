@@ -550,7 +550,7 @@ Resize board on smaller screens
 
 /* End of responsive layout */
 
-.hidden{
+.hidden, .rack-controls > div.hidden {
   display: none;
 }
 
