@@ -60,7 +60,7 @@
 
         return `
           <div class="strategy-card" id="${name}">
-	    <img id="${name}" src="/imperium/img${obj.img}" style="width:100%">
+	    <img id="${name}" src="/imperium/img${obj.img}">
 	    <div class="text">${obj.text}</div>
 	    ${bonus_html} ${card_html}
 	  </div>

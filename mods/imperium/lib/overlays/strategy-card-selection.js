@@ -26,19 +26,40 @@ class StrategyCardSelectionOverlay {
       this.app.browser.addElementToSelector(scards_objs[i].returnCardImage(1), '.strategy-card-selection-controls');
     }
 
+    let cards = [];
     document.querySelectorAll(".strategy-card").forEach((el) => {
-      el.classList.add("strategy-card-popup");
+      cards.push(el);
     });
+    for (let i = 0; i < cards.length; i++) {
+      cards[i].classList.add("strategy-card-popup");
+      cards[i].classList.add(`strat_slot_${(i+1)}`);
+    };
 
-    
+        
 
-    this.attachEvents();
+    this.attachEvents(cards);
 
   }
 
-  attachEvents() {
+  attachEvents(cards) {
 
+/***
+    let zindex = [];
+    let old = 
+
+    for (let i = 0; i < cards.length; i++) {
+      cards[i].bind("mouseenter", function() {
+        let slot = document.querySelector(`.strat_slot_${i+1}`);
+	l
+      });
+      cards[i].bind("mouseenter", function() {
+	
+      });
+    }
+    $(adddiv).on('mouseenter', function () { let s = $(this).attr("id"); imperium_self.addSectorHighlight(s); });
+    $(adddiv).on('mouseleave', function () { let s = $(this).attr("id"); imperium_self.removeSectorHighlight(s); });
     this.mod.cardbox.attachCardEvents();
+***/
 
   }
 

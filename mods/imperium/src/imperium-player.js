@@ -4374,7 +4374,6 @@ playerSelectStrategyCards(mycallback, selection = 0) {
   //
   if (ac.length == 0) {
 
-alert("render: scso");
     imperium_self.strategy_card_selection_overlay.render(scards_objs);
 /***
     let t = "Select Your Strategy Card";
