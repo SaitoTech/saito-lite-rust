@@ -11,9 +11,7 @@ class TweetManager {
     this.container = container;
 
     this.mode = "tweets";
-    this.thread_id = "";
-    this.parent_id = "";
-    this.tweet_id = "";
+
     this.publickey = "";
 
     this.profile = new SaitoProfile(app, mod, ".saito-main");

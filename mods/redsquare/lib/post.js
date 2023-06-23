@@ -14,17 +14,6 @@ class Post {
     this.images = [];
     this.tweet = tweet;
 
-    if (tweet != null) {
-      if (tweet.parent_id) {
-        this.parent_id = tweet.parent_id;
-        if (tweet.thread_id) {
-          this.thread_id = tweet.thread_id;
-        } else {
-          this.thread_id = this.parent_id;
-        }
-      }
-    }
-
     this.render_after_submit = 1;
     this.file_event_added = false;
     this.publickey = app.wallet.returnPublicKey();
@@ -165,14 +154,6 @@ class Post {
     keys = post_self.app.browser.extractKeys(text);
     identifiers = post_self.app.browser.extractIdentifiers(text);
 
-    if (this.tweet != null) {
-      for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
-        if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
-          keys.push(this.tweet.tx.transaction.to[i].add);
-        }
-      }
-    }
-
     //
     // add identifiers as available
     //
@@ -188,22 +169,10 @@ class Post {
     //
     // any previous recipients get added to "to"
     //
-    if (post_self.tweet) {
-      if (post_self.tweet.tx) {
-        if (post_self.tweet.tx.transaction) {
-          for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
-            if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
-              keys.push(post_self.tweet.tx.transaction.to[i].add);
-            }
-          }
-        }
-      }
-    }
-
-    if (this.tweet != null) {
-      for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
-        if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
-          keys.push(this.tweet.tx.transaction.to[i].add);
+    if (post_self?.tweet?.tx?.transaction) {
+      for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
+        if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
+          keys.push(post_self.tweet.tx.transaction.to[i].add);
         }
       }
     }
@@ -234,10 +203,12 @@ class Post {
     let newtx = post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
     //
-    // move to the top
+    // This makes no sense. If you require at the top of the file, it fails with a 
+    // new Tweet is not a constructor error!!! ???
     //
-    var TweetClass = require("./tweet");
-    let tweet = new TweetClass(this.app, this.mod, ".tweet-manager", newtx);
+    const Tweet = require("./tweet");
+
+    let tweet = new Tweet(post_self.app, post_self.mod, ".tweet-manager", newtx);
     //
     //
     //
