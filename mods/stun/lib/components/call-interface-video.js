@@ -139,6 +139,11 @@ class CallInterfaceVideo {
       );
     }
 
+    //We don't want to save the theme!
+    //this.app.browser.switchTheme("stun");
+    document.documentElement.setAttribute('data-theme', "stun");
+    
+
     this.attachEvents();
   }
 

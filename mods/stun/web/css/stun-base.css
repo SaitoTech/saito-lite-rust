@@ -1,1 +1,6 @@
 
+html[data-theme="stun"] {
+  --saito-arcade-background: black;
+  --saito-font-color: white;
+  --saito-font-color-heavy: white;
+}
