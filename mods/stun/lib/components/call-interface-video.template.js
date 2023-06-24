@@ -26,15 +26,15 @@ module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEn
 
           <div class="control-list">
             <span class="display-control icon_click_area">
-              <label>Display</label>
-              <i class="fa-solid fa-display"></i>
+              <label>Layout</label>
+              <i class="fa-solid fa-table-cells-large"></i>
             </span>
             ${
               mod.CallInterface.display_mode !== "presentation" &&
               `<span class="share-control icon_click_area">
                   <label>Present</label>
-                  <i class="fa-brands fa-slideshare"></i>
-                </span>`
+                  <i class="fa-solid fa-display"></i>
+                  </span>`
             }
           
             <span class="chat_control_container icon_click_area">
