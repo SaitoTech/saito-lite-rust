@@ -20,6 +20,7 @@ class StrategyCardSelectionOverlay {
 
 
     this.overlay.show(ImperiumStrategyCardSelectionOverlayTemplate());
+    this.overlay.setBackgroundColor("#000D");
     this.app.browser.addElementToSelector(ImperiumStrategyCardOverlayTemplate(), ".strategy-card-selection-content");
 
     for (let i = 0; i < scards_objs.length; i++) {
@@ -42,24 +43,6 @@ class StrategyCardSelectionOverlay {
   }
 
   attachEvents(cards) {
-
-/***
-    let zindex = [];
-    let old = 
-
-    for (let i = 0; i < cards.length; i++) {
-      cards[i].bind("mouseenter", function() {
-        let slot = document.querySelector(`.strat_slot_${i+1}`);
-	l
-      });
-      cards[i].bind("mouseenter", function() {
-	
-      });
-    }
-    $(adddiv).on('mouseenter', function () { let s = $(this).attr("id"); imperium_self.addSectorHighlight(s); });
-    $(adddiv).on('mouseleave', function () { let s = $(this).attr("id"); imperium_self.removeSectorHighlight(s); });
-    this.mod.cardbox.attachCardEvents();
-***/
 
   }
 

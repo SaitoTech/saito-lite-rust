@@ -12,8 +12,8 @@
 }
 
 .strategy-card-selection-controls .strategy-card {
-    width: 25vw;
-    height: calc(25vw * 1.42);
+    width: 20vw;
+    height: calc(20vw * 1.42);
     font-size: 0.7vw;
     line-height: 1vw;
 }
@@ -23,49 +23,60 @@
 }
 
 .strat_slot_1 {
-    transform: rotate(-49deg);
+    transform: scale(0.90);
     overflow: visible;
-    top: 15vw;
-    right: -10rem;
+    top: -10vh;
+    z-index: 8;
 }
 .strat_slot_2 {
-    transform: rotate(-35deg);
+    transform: scale(0.90);
     overflow: visible;
-    top: 5vw;
-    right: -5rem;
+    top: 10vh;
+    right: 5vw;
+    z-index: 10;
 }
 .strat_slot_3 {
-    transform: rotate(-21deg);
+    transform: scale(0.90);
     overflow: visible;
-    top: -2vw;
-    right: 2rem;
+    top: -10vh;
+    z-index: 8;
 }
 .strat_slot_4 {
-    transform: rotate(-7deg);
+    transform: scale(0.90);
     overflow: visible;
-    top: -6vw;
+    top: 10vh;
+    right: 5vw;
+    z-index: 10;
 }
 .strat_slot_5 {
-    transform: rotate(7deg);
+    transform: scale(0.90);
     overflow: visible;
-    top: -7vw;
+    top: -10vh;
+    z-index: 8;
 }
 .strat_slot_6 {
-    transform: rotate(21deg);
+    transform: scale(0.90);
     overflow: visible;
-    top: -5vw;
-    right: 2rem;
+    top: 10vh;
+    right: 5vw;
+    z-index: 10;
 }
 .strat_slot_7 {
-    transform: rotate(35deg);
+    transform: scale(0.90);
     overflow: visible;
-    top: 0rem;
-    right: 5rem;
+    top: -10vh;
+    z-index: 8;
 }
 .strat_slot_8 {
-    transform: rotate(49deg);
+    transform: scale(0.90);
     overflow: visible;
-    top: 6vw;
-    right: 12rem;
+    z-index: 8;
+    top: 10vh;
+    right: 5vw;
+}
+
+.strategy-card-popup:hover {
+  transform: scale(1.1) !important;
+  z-index: 20 !important;
 }
 

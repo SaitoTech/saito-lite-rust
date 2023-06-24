@@ -37,13 +37,21 @@
 }
 
 .strategy-card .text {
-  position: absolute;
-  z-index: 101;
-  padding-left: 5%;
-  padding-right: 16%;
-  padding-top: 20%;
-  height: inherit;
-  width: inherit;
+    position: absolute;
+    z-index: 101;
+    padding-left: 1.5vw;
+    padding-right: 3vw;
+    padding-top: 20%;
+    height: inherit;
+    width: inherit;
+    font-size: 1.4vw;
+    line-height: 2vw;
+    padding-top: 6vh;
+    color: #FFFB;
+}
+
+.strategy-card .text br {
+    margin: 1.5rem;
 }
 
 .strategy-card .picked {

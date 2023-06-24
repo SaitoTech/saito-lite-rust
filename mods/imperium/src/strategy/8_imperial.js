@@ -3,7 +3,7 @@
       name     			:       "Imperial",
       rank			:	8,
       img			:	"/strategy/8_IMPERIAL.png",
-      text			:	"<b>Player</b> may score a public objective, gains 1 VP for controlling New Byzantium or secret objective if not.<hr /><b>Others</b> may spend strategy token to purchase secret objective" ,
+      text			:	"<b>Player</b> may score a public objective. 1 VP for New Byzantium or secret objective otherwise.<hr /><b>Others</b> may spend strategy token to buy secret objective" ,
       strategyPrimaryEvent 	:	function(imperium_self, player, strategy_card_player) {
 
         if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
