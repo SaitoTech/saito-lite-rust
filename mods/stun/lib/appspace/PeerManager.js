@@ -214,7 +214,6 @@ class PeerManager {
   handleSignalingMessage(data) {
     const { type, sdp, candidate, targetPeerId, public_key } = data;
 
-    console.log(data.stun_id, "stun id");
     if (type === "renegotiate-offer" || type === "offer") {
       //  if (
       //    this.getPeerConnection(public_key).connectionState === "connected" ||

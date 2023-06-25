@@ -19,7 +19,6 @@ class Stun extends ModTemplate {
     this.description = "P2P Video & Audio Connection Module";
     this.categories = "Utilities Communications";
     this.icon = "fas fa-video";
-    this.stun_id = 1;
     this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
     this.rooms = new Map();
 
@@ -351,7 +350,6 @@ class Stun extends ModTemplate {
       });
     }
 
-    _data.stun_id = this.stun_id;
     newtx.msg.module = "Stun";
     newtx.msg.request = "send-message-to-peers";
     newtx.msg.data = _data;
@@ -365,12 +363,11 @@ class Stun extends ModTemplate {
     };
 
     this.app.connection.emit("relay-send-message", data);
-    console.log(data.data.stun_id, "stun id");
+
     setTimeout(() => {
       //This is the only proper onChain TX... ?
       this.app.network.propagateTransaction(newtx);
     }, 2000);
-    this.stun_id++;
   }
 
   receiveStunMessageToPeersTransaction(app, tx) {
