@@ -55,6 +55,7 @@
   font-family: 'orbitron-light', helvetica, arial;
   text-transform: uppercase;
   width: auto;
+  letter-spacing: 0.1rem;
 }
 
 .how-to-move-tutorial .desc {

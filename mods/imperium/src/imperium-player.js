@@ -4100,8 +4100,6 @@ console.log(JSON.stringify(array_of_cards));
       }
     }
 
-console.log("idx: " + idx);
-
     //
     // handle spending trade goods
     //
@@ -4142,7 +4140,6 @@ console.log("idx: " + idx);
 
   $('.cardchoice , .textchoice').on('click', () => {
     let action2 = $(this).attr("id");
-alert("action2: " + action2);
     selectResource(action2);
   });
 
@@ -4343,6 +4340,7 @@ playerSelectStrategyCards(mycallback, selection = 0) {
   }
 
   html += '</ul></p>';
+
   this.updateStatus(html);
 
   $('.textchoice').off();
@@ -4376,6 +4374,8 @@ playerSelectStrategyCards(mycallback, selection = 0) {
   //
   if (ac.length == 0) {
 
+    imperium_self.strategy_card_selection_overlay.render(scards_objs, mycallback);
+/***
     let t = "Select Your Strategy Card";
     if (selection == 1) { t = "Select Your FIRST Strategy Card"; }
     if (selection == 2) { t = "Select Your SECOND Strategy Card"; }
@@ -4397,7 +4397,7 @@ playerSelectStrategyCards(mycallback, selection = 0) {
     		  mycallback(cardname);
                 }
     });
-
+***/
   }
 }
 
