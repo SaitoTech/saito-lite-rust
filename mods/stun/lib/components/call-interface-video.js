@@ -23,7 +23,7 @@ class CallInterfaceVideo {
     this.remote_streams = new Map();
     this.current_speaker = null;
     this.speaker_candidate = null;
-
+    this.is_presenting = false;
     this.app.connection.on("show-call-interface", (room_code, videoEnabled, audioEnabled) => {
       this.room_code = room_code;
 
@@ -78,6 +78,9 @@ class CallInterfaceVideo {
     });
 
     this.app.connection.on("remove-peer-box", (peer_id) => {
+      if (peer_id === "presentation") {
+        this.allowPresentation();
+      }
       if (this.video_boxes[peer_id]?.video_box) {
         if (this.video_boxes[peer_id].video_box?.remove) {
           this.video_boxes[peer_id].video_box.remove(true);
@@ -141,8 +144,7 @@ class CallInterfaceVideo {
 
     //We don't want to save the theme!
     //this.app.browser.switchTheme("stun");
-    document.documentElement.setAttribute('data-theme', "stun");
-    
+    document.documentElement.setAttribute("data-theme", "stun");
 
     this.attachEvents();
   }
@@ -215,7 +217,12 @@ class CallInterfaceVideo {
       };
     });
     document.querySelectorAll(".share-control").forEach((item) => {
+      console.log(this.is_presenting, "is presenting");
+
       item.onclick = () => {
+        if (this.is_presenting === true) {
+          return;
+        }
         this.app.connection.emit("begin-share-screen");
       };
     });
@@ -326,8 +333,10 @@ class CallInterfaceVideo {
     if (peer.toLowerCase() === "presentation") {
       // switch mode to presentation
       this.app.connection.emit("stun-switch-view", "presentation");
-
       this.flipDisplay("presentation");
+
+      this.disallowPresentation();
+      // console.log(this.is_presenting, "is presenting after being set");
 
       // // maximize presentation
       // console.log(peer, "presentation?");
@@ -353,6 +362,7 @@ class CallInterfaceVideo {
 
   createVideoBox(peer, container = this.remote_container) {
     let isPresentation = false;
+
     if (peer.toLowerCase() == "presentation") {
       isPresentation = true;
     }
@@ -405,6 +415,19 @@ class CallInterfaceVideo {
     document.querySelector(".users-on-call .image-list").innerHTML = images;
     document.querySelector(".users-on-call .users-on-call-count").innerHTML = count;
     this.users_on_call = count;
+  }
+
+  allowPresentation() {
+    this.is_presenting = false;
+    document.querySelector(".share-control").style.backgroundColor = "white";
+    document.querySelector(".share-control.icon_click_area i").style.color = "green";
+  }
+
+  disallowPresentation() {
+    // make present icon greyed out
+    document.querySelector(".share-control").style.backgroundColor = "grey";
+    document.querySelector(".share-control.icon_click_area i").style.color = "black";
+    this.is_presenting = true;
   }
 
   startTimer() {
