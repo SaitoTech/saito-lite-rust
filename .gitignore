@@ -17,6 +17,7 @@ config/modules.config.js
 config/runtime.config.js
 config/mixin-credentials.js
 
+compile
 
 .gitignore
 compile-e
