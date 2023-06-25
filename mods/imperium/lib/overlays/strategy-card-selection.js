@@ -10,13 +10,16 @@ class StrategyCardSelectionOverlay {
     this.overlay = new SaitoOverlay(this.app, this.mod, false);
   }
 
-  render(scards_objs=[]) {
+  render(scards_objs=[], mycallback) {
+
+    let overlay_self = this;
 
     //
     //
     //
-    this.mod.cardbox.render();
-    this.mod.cardbox.addCardType("strategy-card-popup", "select", function() { alert("TESTING"); });
+    //this.mod.cardbox.render();
+    //this.mod.cardbox.addCardType("strategy-card-popup", "select", function(cardname) {
+    //});
 
 
     this.overlay.show(ImperiumStrategyCardSelectionOverlayTemplate());
@@ -38,11 +41,21 @@ class StrategyCardSelectionOverlay {
 
         
 
-    this.attachEvents(cards);
+    this.attachEvents(cards, mycallback);
 
   }
 
-  attachEvents(cards) {
+  attachEvents(cards, mycallback) {
+
+    let overlay_self = this;
+
+    for (let i = 0; i < cards.length; i++) {
+      cards[i].onclick = (e) => {
+       overlay_self.overlay.hide();
+        overlay_self.mod.hideStrategyCard(e.currentTarget.id);
+        mycallback(e.currentTarget.id);
+      }
+    }
 
   }
 

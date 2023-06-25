@@ -672,6 +672,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
         } else {
 
+	  this.hideStrategyCard();
   	  this.updateStatus("<div class=\"status-update\"><div class=\"player_color_box player_color_"+player+"\"></div>" + this.returnFaction(parseInt(player)) + " is taking their turn.</div>");
 
   	}
@@ -2973,7 +2974,7 @@ if (debugging == 0) {
 
           if (this.game.state.use_tutorials == 1 && !this.game.state.seen_goods_tutorial) {
             this.game.state.seen_goods_tutorial = 1;
-            this.overlay.show('<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/trade_goods.png" style="width:auto;height:100%" /></div>');
+	    this.how_to_trade_overlay.show();
           }
 
   	}

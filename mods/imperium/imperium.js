@@ -5,6 +5,7 @@ const FactionSheetOverlay = require('./lib/overlays/faction-sheet');
 const StrategyCardOverlay = require('./lib/overlays/strategy-card');
 const StrategyCardSelectionOverlay = require('./lib/overlays/strategy-card-selection');
 const CombatOverlay = require('./lib/overlays/combat');
+const HowToTradeOverlay = require('./lib/overlays/how-to-trade');
 const HowToMoveOverlay = require('./lib/overlays/how-to-move');
 const HowToProduceOverlay = require('./lib/overlays/how-to-produce');
 const MovementOverlay = require('./lib/overlays/movement');
@@ -59,6 +60,7 @@ class Imperium extends GameTemplate {
     this.strategy_card_selection_overlay = new StrategyCardSelectionOverlay(this.app, this);
     this.strategy_card_overlay = new StrategyCardOverlay(this.app, this);
     this.combat_overlay = new CombatOverlay(this.app, this);
+    this.how_to_trade_overlay = new HowToTradeOverlay(this.app, this);
     this.how_to_move_overlay = new HowToMoveOverlay(this.app, this);
     this.how_to_produce_overlay = new HowToProduceOverlay(this.app, this);
     this.movement_overlay = new MovementOverlay(this.app, this);
@@ -5362,7 +5364,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
       name     			:       "Imperial",
       rank			:	8,
       img			:	"/strategy/8_IMPERIAL.png",
-      text			:	"<b>Player</b> may score a public objective, gains 1 VP for controlling New Byzantium or secret objective if not.<hr /><b>Others</b> may spend strategy token to purchase secret objective" ,
+      text			:	"<b>Player</b> may score a public objective. 1 VP for New Byzantium or secret objective otherwise.<hr /><b>Others</b> may spend strategy token to buy secret objective" ,
       strategyPrimaryEvent 	:	function(imperium_self, player, strategy_card_player) {
 
         if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
@@ -14430,6 +14432,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
         } else {
 
+	  this.hideStrategyCard();
   	  this.updateStatus("<div class=\"status-update\"><div class=\"player_color_box player_color_"+player+"\"></div>" + this.returnFaction(parseInt(player)) + " is taking their turn.</div>");
 
   	}
@@ -16731,7 +16734,7 @@ if (debugging == 0) {
 
           if (this.game.state.use_tutorials == 1 && !this.game.state.seen_goods_tutorial) {
             this.game.state.seen_goods_tutorial = 1;
-            this.overlay.show('<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/trade_goods.png" style="width:auto;height:100%" /></div>');
+	    this.how_to_trade_overlay.show();
           }
 
   	}
@@ -24402,7 +24405,7 @@ playerSelectStrategyCards(mycallback, selection = 0) {
   //
   if (ac.length == 0) {
 
-    imperium_self.strategy_card_selection_overlay.render(scards_objs);
+    imperium_self.strategy_card_selection_overlay.render(scards_objs, mycallback);
 /***
     let t = "Select Your Strategy Card";
     if (selection == 1) { t = "Select Your FIRST Strategy Card"; }
