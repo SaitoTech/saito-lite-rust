@@ -1329,7 +1329,7 @@ class Arcade extends ModTemplate {
   /*
   createChangeTransaction(gametx, direction) {
       let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-      tx.transaction.to.push(new saito.default.slip(this.app.wallet.getPublicKey(), 0.0));
+      tx.to.push(new saito.default.slip(this.app.wallet.getPublicKey(), 0.0));
       tx.msg = gametx.returnMessage();
       tx.msg.request = "change_" + direction;
       tx.msg.game_id = gametx.signature;
@@ -1393,7 +1393,7 @@ class Arcade extends ModTemplate {
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
     for (let sendto of gameData.players) {
-      tx.transaction.to.push(new saito.default.slip(sendto, 0.0));
+      tx.to.push(new saito.default.slip(sendto, 0.0));
     }
 
     tx.msg = {
@@ -1516,7 +1516,7 @@ class Arcade extends ModTemplate {
           }
 
           let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-          tx.transaction.to.push(new saito.default.slip(this.app.wallet.getPublicKey(), 0.0));
+          tx.to.push(new saito.default.slip(this.app.wallet.getPublicKey(), 0.0));
 
           tx.msg = {};
           tx.msg.request = "launch singleplayer";
