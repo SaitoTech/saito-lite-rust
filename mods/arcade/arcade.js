@@ -213,7 +213,7 @@ class Arcade extends ModTemplate {
           //console.log(JSON.parse(JSON.stringify(record)));
           //This is the save openTX
 
-          let game_tx = new saito.default.transaction(undefined, record.tx);
+          let game_tx = new saito.default.transaction(undefined, JSON.parse(record.tx));
           game_tx.timestamp = record.created_at;
           
           //But we update the player list
