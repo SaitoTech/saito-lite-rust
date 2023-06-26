@@ -213,6 +213,7 @@ class PeerManager {
 
   handleSignalingMessage(data) {
     const { type, sdp, candidate, targetPeerId, public_key } = data;
+
     if (type === "renegotiate-offer" || type === "offer") {
       //  if (
       //    this.getPeerConnection(public_key).connectionState === "connected" ||

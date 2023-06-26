@@ -19,8 +19,6 @@ class Stun extends ModTemplate {
     this.description = "P2P Video & Audio Connection Module";
     this.categories = "Utilities Communications";
     this.icon = "fas fa-video";
-
-
     this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
     this.rooms = new Map();
 
@@ -55,10 +53,9 @@ class Stun extends ModTemplate {
 
     //When StunLauncher is rendered or game-menu triggers it
     app.connection.on("stun-init-peer-manager", (ui_type = "large") => {
-
       console.log("Init PeerManager and Set UI to " + ui_type);
 
-      if (this.CallInterface){
+      if (this.CallInterface) {
         console.warn("Already instatiated a video/audio call manager");
         return;
       }
@@ -72,11 +69,10 @@ class Stun extends ModTemplate {
 
       if (ui_type === "large") {
         this.CallInterface = new CallInterfaceVideo(app, this);
-      }else{
-        this.CallInterface = new CallInterfaceAudio(app, this);        
+      } else {
+        this.CallInterface = new CallInterfaceAudio(app, this);
       }
     });
-
   }
 
   onPeerHandshakeComplete(app, peer) {
@@ -90,12 +86,12 @@ class Stun extends ModTemplate {
       );
 
       // JOIN THE ROOM
-      if (this.browser_active){
-        this.renderInto("body");  
-      }else{
-        this.renderInto(".saito-overlay");  
+      if (this.browser_active) {
+        this.renderInto("body");
+      } else {
+        this.renderInto(".saito-overlay");
       }
-      
+
       app.connection.emit("stun-to-join-room", room_obj.room_code);
     }
   }
@@ -184,7 +180,7 @@ class Stun extends ModTemplate {
               id: "start-group-video-chat",
               class: "start-group-video-chat",
               callback: function (app, game_mod) {
-                //Start Call          
+                //Start Call
                 stun_self.establishStunCallWithPeers("voice", [...game_mod.game.players]);
               },
             },
@@ -353,8 +349,9 @@ class Stun extends ModTemplate {
         newtx.transaction.to.push(new saito.default.slip(recipient));
       });
     }
+
     newtx.msg.module = "Stun";
-    newtx.msg.request = request;
+    newtx.msg.request = "send-message-to-peers";
     newtx.msg.data = _data;
     newtx = this.app.wallet.signTransaction(newtx);
 
@@ -366,6 +363,7 @@ class Stun extends ModTemplate {
     };
 
     this.app.connection.emit("relay-send-message", data);
+
     setTimeout(() => {
       //This is the only proper onChain TX... ?
       this.app.network.propagateTransaction(newtx);
@@ -379,7 +377,6 @@ class Stun extends ModTemplate {
   }
 
   async establishStunCallWithPeers(ui_type, recipients) {
-
     salert("Establishing a connection with your peers...");
 
     // init peer manager and chat manager through self event
@@ -390,7 +387,7 @@ class Stun extends ModTemplate {
 
     //Store room_code in PeerManager
     this.app.connection.emit("stun-peer-manager-update-room-code", room_code);
- 
+
     // send the information to the other peers and ask them to join the call
     recipients = recipients.filter((player) => {
       return player !== this.app.wallet.returnPublicKey();
@@ -426,7 +423,7 @@ class Stun extends ModTemplate {
 
     switch (data.type) {
       case "connection-request":
-        let call_type = (data.ui == "voice") ? "Voice" : "Video";
+        let call_type = data.ui == "voice" ? "Voice" : "Video";
         let result = await sconfirm(`Accept Saito ${call_type} Call`);
         if (result === true) {
           // connect
@@ -446,7 +443,6 @@ class Stun extends ModTemplate {
           // send the information to the other peers and ask them to join the call
           // show-call-interface
           app.connection.emit("start-stun-call");
-
         } else if (result == false) {
           //send to sender to stop connection
           let _data = {
