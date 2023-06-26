@@ -2,7 +2,6 @@ const RedSquareMenuTemplate = require("./menu.template");
 const Post = require("./post");
 
 class RedSquareMenu {
-
   constructor(app, mod, container = "") {
     this.app = app;
     this.mod = mod;
@@ -11,14 +10,19 @@ class RedSquareMenu {
   }
 
   render() {
-
     //
     // replace element or insert into page
     //
     if (document.querySelector(".redsquare-menu")) {
-      this.app.browser.replaceElementBySelector(RedSquareMenuTemplate(this.app, this.mod), ".redsquare-menu");
+      this.app.browser.replaceElementBySelector(
+        RedSquareMenuTemplate(this.app, this.mod),
+        ".redsquare-menu"
+      );
     } else {
-      this.app.browser.addElementToSelector(RedSquareMenuTemplate(this.app, this.mod), this.container);
+      this.app.browser.addElementToSelector(
+        RedSquareMenuTemplate(this.app, this.mod),
+        this.container
+      );
     }
 
     //
@@ -39,35 +43,35 @@ class RedSquareMenu {
     this.attachEvents();
   }
 
-
-
   attachEvents() {
-
     this_self = this;
 
     document.getElementById("new-tweet").onclick = (e) => {
       let post = new Post(this.app, this.mod);
       post.render();
-    }
+    };
 
     if (document.getElementById("mobile-new-tweet") != null) {
       document.getElementById("mobile-new-tweet").onclick = (e) => {
         let post = new Post(this.app, this.mod);
         post.render();
-      }
+      };
     }
 
     document.querySelector(".redsquare-menu-home").onclick = (e) => {
       this.app.connection.emit("redsquare-home-render-request");
-    }
+    };
 
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
       this.app.connection.emit("redsquare-notifications-render-request");
-    }
+    };
 
-    document.querySelector(".redsquare-menu-profile").onclick = (e) => {
-      this.app.connection.emit("redsquare-profile-render-request", this.app.wallet.returnPublicKey());
-    }
+    document.querySelector(".redsquare-menu-profile").onclick = async (e) => {
+      this.app.connection.emit(
+        "redsquare-profile-render-request",
+        await this.app.wallet.getPublicKey()
+      );
+    };
 
     //
     // appspace modules
@@ -77,19 +81,16 @@ class RedSquareMenu {
         setHash(mod.returnSlug());
         document.querySelector(".saito-main").innerHTML = "";
         mod.renderInto(".saito-main");
-        document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
+        document.querySelector(".saito-container").scroll({ top: 0, left: 0, behavior: "smooth" });
         if (mod.canRenderInto(".saito-sidebar.right")) {
           document.querySelector(".saito-sidebar.right").innerHTML = "";
           mod.renderInto(".saito-sidebar.right");
         }
-      }
+      };
     });
-
   }
 
-
   incrementNotifications(menu_item, notifications = -1) {
-
     let qs = `.redsquare-menu-${menu_item}`;
 
     if (document.querySelector(qs)) {
@@ -97,16 +98,24 @@ class RedSquareMenu {
       let obj = document.querySelector(qs);
       if (!obj) {
         if (notifications > 0) {
-          this.app.browser.addElementToSelector(`<div class="saito-notification-dot">${notifications}</div>`, `.redsquare-menu-${menu_item}`);
+          this.app.browser.addElementToSelector(
+            `<div class="saito-notification-dot">${notifications}</div>`,
+            `.redsquare-menu-${menu_item}`
+          );
         } else {
-          this.app.browser.addElementToSelector(`<div class="saito-notification-dot"></div>`, `.redsquare-menu-${menu_item}`);
+          this.app.browser.addElementToSelector(
+            `<div class="saito-notification-dot"></div>`,
+            `.redsquare-menu-${menu_item}`
+          );
           qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
           let obj = document.querySelector(qs);
           obj.style.display = "none";
         }
       } else {
         let existing_notifications = 0;
-        if (obj.innerHTML) { existing_notifications = parseInt(obj.innerHTML); }
+        if (obj.innerHTML) {
+          existing_notifications = parseInt(obj.innerHTML);
+        }
         if (notifications <= 0) {
           obj.style.display = "none";
           obj.innerHTML = 0;
@@ -118,8 +127,6 @@ class RedSquareMenu {
       }
     }
   }
-
-
 }
 
 module.exports = RedSquareMenu;

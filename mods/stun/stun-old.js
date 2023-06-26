@@ -11,6 +11,7 @@ const ChatManagerLarge = require("./lib/components/chat-manager-large");
 //const ChatInvitationLink = require("./lib/overlays/chat-invitation-link");
 const Relay = require("../relay/relay");
 const adapter = require("webrtc-adapter");
+const Slip = require("../../lib/saito/slip");
 
 class Stun extends ModTemplate {
   constructor(app, mod) {
@@ -1074,7 +1075,9 @@ class Stun extends ModTemplate {
     let newtx = await this.app.wallet.createUnsignedTransaction();
     console.log("broadcasting offers");
     for (let i = 0; i < offers.length; i++) {
-      newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
+      let slip = new Slip();
+      slip.publicKey = offers[i].recipient;
+      newtx.addToSlip(slip);
     }
 
     newtx.msg.module = "Stun";
@@ -1102,7 +1105,9 @@ class Stun extends ModTemplate {
   async sendDataChannelAnswerTransaction(answer_creator, offer_creator, reply) {
     let newtx = await this.app.wallet.createUnsignedTransaction();
     console.log("broadcasting answer to ", offer_creator);
-    newtx.transaction.to.push(new saito.default.slip(offer_creator));
+    let slip = new Slip();
+    slip.publicKey = offer_creator;
+    newtx.addToSlip(slip);
     newtx.msg.module = "Stun";
     newtx.msg.request = "stun data channel answer";
     newtx.msg.data = {
@@ -1118,7 +1123,7 @@ class Stun extends ModTemplate {
   receiveDataChannelOfferTransaction(app, tx, conf, blk) {
     if (app.BROWSER !== 1) return;
     let stunx_self = app.modules.returnModule("Stun");
-    let my_pubkey = app.wallet.getPublicKey();
+    let my_pubkey = this.publicKey;
     const offer_creator = tx.msg.offers.offer_creator;
 
     // offer creator should not respond
@@ -1137,7 +1142,7 @@ class Stun extends ModTemplate {
 
   receiveDataChannelAnswerTransaction(app, tx, conf, blk) {
     let stunx_self = app.modules.returnModule("Stun");
-    let my_pubkey = app.wallet.getPublicKey();
+    let my_pubkey = this.publicKey;
     if (my_pubkey === tx.msg.answer.offer_creator) {
       if (app.BROWSER !== 1) return;
       console.log("current instance: ", my_pubkey, " answer room: ", tx.msg.answer);
@@ -1176,7 +1181,7 @@ class Stun extends ModTemplate {
   receiveRoomCodeTransaction(app, tx, conf, blk) {
     if (app.BROWSER !== 1) return;
     console.log(tx.msg.data);
-    if (tx.msg.data.creator === app.wallet.getPublicKey()) {
+    if (tx.msg.data.creator === this.publicKey) {
       return;
     }
     sconfirm("Accept video call from " + tx.msg.data.creator).then((e) => {

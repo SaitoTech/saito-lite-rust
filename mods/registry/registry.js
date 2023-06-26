@@ -389,14 +389,14 @@ class Registry extends ModTemplate {
             registry_self.registry_publickey
           )
         ) {
-          registry_self.app.keychain.addKey(tx.transaction.to[0].add, {
+          registry_self.app.keychain.addKey(tx.to[0].publicKey, {
             identifier: identifier,
             watched: true,
             block_id: registry_self.app.blockchain.returnLatestBlockId(),
             block_hash: registry_self.app.blockchain.returnLatestBlockHash(),
             lc: 1,
           });
-          registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].add, identifier);
+          registry_self.app.browser.updateAddressHTML(tx.to[0].publicKey, identifier);
         } else {
           console.debug("failed verifying message for username registration : ", tx);
         }
@@ -461,11 +461,11 @@ class Registry extends ModTemplate {
 
   onPeerServiceUp(app, peer, service = {}) {}
 
-  onPeerHandshakeComplete(app, peer) {
+  async onPeerHandshakeComplete(app, peer) {
     /***** USE VARIABLE TO TOGGLE LOCAL DEV MODE ******/
     if (this.local_dev) {
       if (this.app.options.server != undefined) {
-        this.publickey = this.app.wallet.getPublicKey();
+        this.publickey = await this.app.wallet.getPublicKey();
       } else {
         this.publickey = peer.peer.publickey;
       }
@@ -517,7 +517,7 @@ class Registry extends ModTemplate {
           // send message
           if (res == 1) {
             let newtx = await registry_self.app.wallet.createUnsignedTransaction(
-              tx.transaction.from[0].publicKey,
+              tx.from[0].publicKey,
               0,
               fee
             );
@@ -536,7 +536,7 @@ class Registry extends ModTemplate {
             await registry_self.app.network.propagateTransaction(newtx);
           } else {
             let newtx = await registry_self.app.wallet.createUnsignedTransaction(
-              tx.transaction.from[0].publicKey,
+              tx.from[0].publicKey,
               0.0,
               fee
             );

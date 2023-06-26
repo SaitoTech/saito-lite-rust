@@ -227,7 +227,7 @@ class AppStore extends ModTemplate {
             if (tx.isFrom(this.publicKey)) {
               try {
                 document.querySelector(".appstore-loading-text").innerHTML =
-                  "Your application is being broadcast to the network. <p></p>Your AppStore should receive it within <span class=\"time_remaining\">45</span> seconds.";
+                  'Your application is being broadcast to the network. <p></p>Your AppStore should receive it within <span class="time_remaining">45</span> seconds.';
                 let appstore_mod = this.app.modules.returnModule("AppStore");
                 appstore_mod.time_remaining = 45;
                 appstore_mod.bundling_timer = setInterval(() => {
@@ -254,7 +254,7 @@ class AppStore extends ModTemplate {
             if (tx.isFrom(this.publicKey)) {
               try {
                 document.querySelector(".appstore-loading-text").innerHTML =
-                  "Your application is being processed by the network. Your upgrade should be complete within about <span class=\"time_remaining\">120</span> seconds.";
+                  'Your application is being processed by the network. Your upgrade should be complete within about <span class="time_remaining">120</span> seconds.';
                 let appstore_mod = this.app.modules.returnModule("AppStore");
                 appstore_mod.time_remaining = 120;
                 appstore_mod.bundling_timer = setInterval(() => {
@@ -529,7 +529,6 @@ class AppStore extends ModTemplate {
       $featured
       )`;
 
-
       // should happen locally from ZIP
       let { module_zip } = tx.returnMessage();
 
@@ -588,7 +587,7 @@ class AppStore extends ModTemplate {
           sql = "UPDATE modules SET featured = 1 WHERE name = $name AND version = $version";
           params = {
             $name: name,
-            $version: this.app.crypto.hash(`${tx.timestamp}-${tx.signature}`)
+            $version: this.app.crypto.hash(`${tx.timestamp}-${tx.signature}`),
           };
           await this.app.storage.executeDatabase(sql, params, "appstore");
 
@@ -658,7 +657,7 @@ class AppStore extends ModTemplate {
 
         for (let i = 0; i < rows.length; i++) {
           let tx = JSON.parse(rows[i].tx);
-          let { module_zip } = new saito.default.transaction(undefined, tx).returnMessage();
+          let { module_zip } = new Transaction(undefined, tx).returnMessage();
           modules_selected.push({
             name: rows[i].name,
             description: rows[i].description,
@@ -745,7 +744,9 @@ class AppStore extends ModTemplate {
       //
       // send our filename back at our person of interest
       //
-      let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(tx.from[0].publicKey);
+      let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+        tx.from[0].publicKey
+      );
       let msg = {
         module: "AppStore",
         request: "receive bundle",
@@ -973,7 +974,7 @@ class AppStore extends ModTemplate {
 
     let data = {};
     data.appstore = this;
-    data.bundle_appstore_publickey = tx.transaction.from[0].publicKey;
+    data.bundle_appstore_publickey = tx.from[0].publicKey;
     data.appstore_bundle = txmsg.bundle;
 
     AppStoreBundleConfirm.render(this.app, data);

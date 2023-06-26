@@ -30,7 +30,7 @@ class RedSquareNotification {
     let mod = this.mod;
 
     if (this.tx == null) {
-      document.querySelector(selector).innerHTML = '';
+      document.querySelector(selector).innerHTML = "";
     } else {
       let html = "";
       let txmsg = this.tx.returnMessage();
@@ -53,7 +53,7 @@ class RedSquareNotification {
         // retweet
         //
         if (txmsg.data.retweet_tx) {
-          let retweet_tx = new saito.default.transaction();
+          let retweet_tx = new Transaction();
           retweet_tx.deserialize_from_web(this.app, txmsg.data.retweet_tx);
           let retweet_txmsg = retweet_tx.returnMessage();
           html = RetweetNotificationTemplate(app, mod, this.tx, retweet_tx, retweet_txmsg);

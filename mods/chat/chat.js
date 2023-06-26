@@ -157,7 +157,7 @@ class Chat extends ModTemplate {
                 while (res.rows.length > 0) {
                   //Process the chat transaction like a new message
                   let temp = res.rows.pop();
-                  let tx = new saito.default.transaction();
+                  let tx = new Transaction();
                   tx.deserialize_from_web(app, temp.tx);
                   tx.decryptMessage(chat_self.app);
                   // chat_self.addTransactionToGroup(group, tx);

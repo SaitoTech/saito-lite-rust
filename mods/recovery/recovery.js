@@ -3,6 +3,7 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const SaitoLogin = require("./lib/login");
 const SaitoBackup = require("./lib/backup");
 const Slip = require("../../lib/saito/slip");
+const Transaction = require("../../lib/saito/transaction");
 const PeerService = require("saito-js/lib/peer_service").default;
 
 class Recovery extends ModTemplate {
@@ -165,7 +166,7 @@ class Recovery extends ModTemplate {
       request: "recovery backup",
       email: "",
       hash: retrieval_hash,
-      wallet: this.app.crypto.aesEncrypt(JSON.stringify(this.app.wallet.wallet), decryption_secret),
+      wallet: this.app.crypto.aesEncrypt(JSON.stringify(this.app.wallet), decryption_secret),
     };
 
     let slip = new Slip();
@@ -268,7 +269,7 @@ class Recovery extends ModTemplate {
     if (peers.length > 0) {
       this.app.network.sendTransactionWithCallback(
         newtx,
-        (res) => {
+        async (res) => {
           if (!res) {
             console.log("empty response!");
             this.login_overlay.failure();
@@ -288,14 +289,14 @@ class Recovery extends ModTemplate {
 
           let tx = JSON.parse(res.rows[0].tx);
           let identifier = res.rows[0].identifier;
-          let newtx2 = new saito.default.transaction(undefined, tx);
+          let newtx2 = new Transaction(undefined, tx);
           let txmsg = newtx2.returnMessage();
 
           let encrypted_wallet = txmsg.wallet;
           let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
 
-          this.app.wallet.wallet = JSON.parse(decrypted_wallet);
-          this.app.wallet.saveWallet();
+          this.app.wallet = JSON.parse(decrypted_wallet);
+          await this.app.wallet.saveWallet();
           this.app.keychain.addKey(this.publicKey, { identifier: identifier });
           this.app.keychain.saveKeys();
 
@@ -310,8 +311,6 @@ class Recovery extends ModTemplate {
       }
       this.login_overlay.failure();
     }
-
-    return;
   }
 }
 
