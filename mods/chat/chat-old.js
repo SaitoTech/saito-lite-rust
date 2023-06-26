@@ -71,7 +71,11 @@ class Chat extends ModTemplate {
           // But I need a finer grained query than the app.storage API currently supports
           // TODO FIX THIS
 
-          let sql = `SELECT tx FROM txs WHERE type = "${group.id}" AND ts > ${group.last_update} ORDER BY ts DESC LIMIT 100`;
+          let sql = `SELECT tx
+                     FROM txs
+                     WHERE type = "${group.id}"
+                       AND ts > ${group.last_update}
+                     ORDER BY ts DESC LIMIT 100`;
 
           this.sendPeerDatabaseRequestWithFilter(
             "Archive",
@@ -88,7 +92,7 @@ class Chat extends ModTemplate {
                 while (res.rows.length > 0) {
                   //Process the chat transaction like a new message
                   let temp = res.rows.pop();
-                  let tx = new saito.default.transaction();
+                  let tx = new Transaction();
                   tx.deserialize_from_web(app, temp.tx);
                   tx.decryptMessage(chat_self.app);
                   chat_self.addTransactionToGroup(group, tx);
@@ -106,7 +110,7 @@ class Chat extends ModTemplate {
           /*
               this.app.storage.loadTransactions(group_id, 25, function (txs) {
                   if (chat_self.debug){ console.log("Chat PSuP Archive callback:" + txs.length); }
-                  
+
                   try {
                       //Note loadTransactions returns them in reverse order....
                       //Now addTransactionToGroup will sort them, but this will be more efficient
@@ -115,7 +119,7 @@ class Chat extends ModTemplate {
                           tx.decryptMessage(chat_self.app);
                           chat_self.addTransactionToGroup(group, tx);
                       }
-                      
+
                   } catch (err) {
                       console.log("error loading chats...: " + err);
                   }
@@ -576,10 +580,10 @@ class Chat extends ModTemplate {
     //
     // swap first two addresses so if private chat we will encrypt with proper shared-secret
     //
-    if (newtx.transaction.to.length > 1) {
-      let x = newtx.transaction.to[0];
-      newtx.transaction.to[0] = newtx.transaction.to[1];
-      newtx.transaction.to[1] = x;
+    if (newtx.to.length > 1) {
+      let x = newtx.to[0];
+      newtx.to[0] = newtx.to[1];
+      newtx.to[1] = x;
     }
 
     if (msg.substring(0, 4) == "<img") {
@@ -644,7 +648,7 @@ class Chat extends ModTemplate {
     //
     // save transaction if private chat
     //
-    for (let i = 0; i < tx.transaction.to.length; i++) {
+    for (let i = 0; i < tx.to.length; i++) {
       if (tx.to[i].publicKey == this.publicKey) {
         await this.app.storage.saveTransaction(tx, txmsg.group_id);
         break;

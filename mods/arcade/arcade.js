@@ -54,8 +54,8 @@ class Arcade extends ModTemplate {
     this.affix_callbacks_to = [];
     this.services = [new PeerService(null, "arcade", "", "saito")];
 
-    this.invite_cutoff  = 3500000;
-    this.game_cutoff    = 600000000;
+    this.invite_cutoff = 3500000;
+    this.game_cutoff = 600000000;
 
     this.theme_options = {
       lite: "fa-solid fa-sun",
@@ -157,10 +157,9 @@ class Arcade extends ModTemplate {
               players_sigs: [], //Only used to verify cryptology when initializing the game
               originator: game.originator,
               //winner: game.winner,
-              step: game?.step?.game, 
+              step: game?.step?.game,
               ts: game?.step?.ts,
             };
-
 
             game_tx.signature = game.id;
             game_tx.timestamp = game.ts;
@@ -181,10 +180,9 @@ class Arcade extends ModTemplate {
 
     try {
       this.leagueCallback = await this.app.modules.returnFirstRespondTo("league_membership");
-    }catch(err){
+    } catch (err) {
       this.leagueCallback = {};
     }
-    
   }
 
   //
@@ -199,23 +197,26 @@ class Arcade extends ModTemplate {
     let arcade_self = this;
 
     let cutoff1 = new Date().getTime() - this.invite_cutoff;
-    let cutoff2 = new Date().getTime() - this.game_cutoff; 
+    let cutoff2 = new Date().getTime() - this.game_cutoff;
 
     //
     // load open games from server
     //  ( status = "open" OR status = "private" ) AND
 
-    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND (status = 'over' OR status = 'active')) ORDER BY created_at ASC`;
+    let sql = `SELECT *
+               FROM games
+               WHERE created_at > ${cutoff1}
+                  OR (created_at > ${cutoff2} AND (status = 'over' OR status = 'active'))
+               ORDER BY created_at ASC`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql, async (res) => {
-
       if (res.rows) {
         for (let record of res.rows) {
           //console.log(JSON.parse(JSON.stringify(record)));
           //This is the save openTX
 
-          let game_tx = new saito.default.transaction(undefined, JSON.parse(record.tx));
+          let game_tx = new Transaction(undefined, JSON.parse(record.tx));
           game_tx.timestamp = record.created_at;
-          
+
           //But we update the player list
           let player_info = record.players_array.split("_");
           for (let pi of player_info) {
@@ -231,12 +232,12 @@ class Arcade extends ModTemplate {
           //
           //Game Meta Data stored directly in DB
           //
-          if (record.winner){
+          if (record.winner) {
             game_tx.msg.winner = [record.winner];
             try {
               game_tx.msg.winner = JSON.parse(record.winner);
-            } catch(err) {
-              //console.log("Non-JSON DB entry:", record.winner);              
+            } catch (err) {
+              //console.log("Non-JSON DB entry:", record.winner);
             }
           }
 
@@ -297,7 +298,6 @@ class Arcade extends ModTemplate {
         let join_overlay = new JoinGameOverlay(app, this, invite.invite_data);
         await join_overlay.render();
         window.history.pushState("", "", `/arcade/`);
-
       }
 
       app.connection.emit("arcade-invite-manager-render-request");
@@ -411,7 +411,7 @@ class Arcade extends ModTemplate {
       };
     }
     if (type === "user-menu") {
-      if (obj?.publickey && obj.publickey !== this.app.wallet.getPublicKey()){
+      if (obj?.publickey && obj.publickey !== this.app.wallet.getPublicKey()) {
         return {
           text: "Challenge to Game",
           icon: "fas fa-gamepad",
@@ -446,7 +446,7 @@ class Arcade extends ModTemplate {
     }
     if (type === "saito-floating-menu") {
       let x = [];
-      
+
       x.push({
         text: "Games",
         icon: this.icon || "fas fa-gamepad",
@@ -636,10 +636,8 @@ class Arcade extends ModTemplate {
       // only servers notify lite-clients
       //
       if (app.BROWSER == 0 && app.SPVMODE == 0) {
-
         console.log("notify peers?");
         await this.notifyPeers(tx);
-
       }
     }
 
@@ -1013,8 +1011,8 @@ class Arcade extends ModTemplate {
     await this.changeGameStatus(txmsg.game_id, "over");
 
     let sql = `UPDATE games
-               SET winner        = $winner,
-                   method        = $method,
+               SET winner = $winner,
+                   method = $method,
                    time_finished = $ts
                WHERE game_id = $game_id`;
     let params = {
@@ -1026,9 +1024,8 @@ class Arcade extends ModTemplate {
     await this.app.storage.executeDatabase(sql, params, "arcade");
 
     //if (this.debug){
-      console.log("Winner updated in arcade");  
-   // }
-
+    console.log("Winner updated in arcade");
+    // }
   }
 
   async receiveCloseTransaction(tx) {
@@ -1611,20 +1608,19 @@ class Arcade extends ModTemplate {
     }
   }
 
-  purgeOldGames(){
+  purgeOldGames() {
     let now = new Date().getTime();
     for (let key in this.games) {
       let cutoff = now - this.invite_cutoff;
-      if (key == "active" || key == "over"){
+      if (key == "active" || key == "over") {
         cutoff = now - this.game_cutoff;
       }
-      
+
       this.games[key] = this.games[key].filter((game) => {
         return game.transaction?.ts > cutoff;
       });
     }
   }
-
 
   purgeBadGamesFromWallet() {
     if (this.app.options.games) {
@@ -1881,17 +1877,23 @@ class Arcade extends ModTemplate {
       if (gameType == "direct") {
         this.app.connection.emit("arcade-launch-game-scheduler", newtx);
 
-        this.app.connection.emit("relay-send-message", {recipient: options.desired_opponent_publickey, request: "arcade spv update", data: newtx.transaction});      
+        this.app.connection.emit("relay-send-message", {
+          recipient: options.desired_opponent_publickey,
+          request: "arcade spv update",
+          data: newtx.transaction,
+        });
         return;
       }
 
       if (gameType == "open") {
-        if (this.app.browser.isMobileBrowser(navigator.userAgent) && 
-          this.app.modules.returnActiveModule().returnName() == "Red Square"){
-          salert("Game invite created. Redirecting to arcade...")
-          setTimeout(function(){
+        if (
+          this.app.browser.isMobileBrowser(navigator.userAgent) &&
+          this.app.modules.returnActiveModule().returnName() == "Red Square"
+        ) {
+          salert("Game invite created. Redirecting to arcade...");
+          setTimeout(function () {
             window.location.href = "/arcade";
-          }, 2000)
+          }, 2000);
         }
         return;
       }
@@ -2023,12 +2025,11 @@ class Arcade extends ModTemplate {
           ) {
             console.log("Add move: " + JSON.stringify(game_move));
             await game_mod.addFutureMove(future_tx);
-
           }
         }
 
         game_mod.saveGame(game_mod.game.id);
-        
+
         if (mycallback) {
           await mycallback(game_mod);
         }

@@ -79,8 +79,7 @@ class Post {
         } else {
           salert(`Cannot upload ${type} image, allowed file types: 
               ${this.mod.allowed_upload_types.join(", ")} 
-              - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.`
-          );
+              - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.`);
         }
       }
     };
@@ -166,9 +165,9 @@ class Post {
     identifiers = post_self.app.browser.extractIdentifiers(text);
 
     if (this.tweet != null) {
-      for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
-        if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
-          keys.push(this.tweet.tx.transaction.to[i].add);
+      for (let i = 0; i < this.tweet.tx.to.length; i++) {
+        if (!keys.includes(this.tweet.tx.to[i].add)) {
+          keys.push(this.tweet.tx.to[i].add);
         }
       }
     }
@@ -190,20 +189,18 @@ class Post {
     //
     if (post_self.tweet) {
       if (post_self.tweet.tx) {
-        if (post_self.tweet.tx.transaction) {
-          for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
-            if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
-              keys.push(post_self.tweet.tx.transaction.to[i].add);
-            }
+        for (let i = 0; i < post_self.tweet.tx.to.length; i++) {
+          if (!keys.includes(post_self.tweet.tx.to[i].add)) {
+            keys.push(post_self.tweet.tx.to[i].add);
           }
         }
       }
     }
 
     if (this.tweet != null) {
-      for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
-        if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
-          keys.push(this.tweet.tx.transaction.to[i].add);
+      for (let i = 0; i < this.tweet.tx.to.length; i++) {
+        if (!keys.includes(this.tweet.tx.to[i].add)) {
+          keys.push(this.tweet.tx.to[i].add);
         }
       }
     }

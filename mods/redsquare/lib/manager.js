@@ -23,8 +23,8 @@ class TweetManager {
     //////////////////////////////
     this.loader = new SaitoLoader(app, mod, "#redsquare-intersection");
     this.intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      async (entries) => {
+        for (const entry of entries) {
           if (entry.isIntersecting) {
             this.loader.render();
 
@@ -66,7 +66,7 @@ class TweetManager {
             // load more profile tweets
             //
             if (this.mode == "profile") {
-              this.mod.loadProfileTweets(null, this.publickey, (txs) => {
+              await this.mod.loadProfileTweets(null, this.publickey, (txs) => {
                 for (let z = 0; z < txs.length; z++) {
                   let tweet = new Tweet(this.app, this.mod, ".tweet-manager", txs[z]);
                   tweet.render();
@@ -79,7 +79,7 @@ class TweetManager {
               });
             }
           }
-        });
+        }
       },
       {
         root: null,
@@ -89,8 +89,7 @@ class TweetManager {
     );
   }
 
-  render() {
-
+  async render() {
     console.log("Render RS Manager for " + this.publickey + " in state: " + this.mode);
 
     let myqs = `.tweet-manager`;
@@ -126,10 +125,10 @@ class TweetManager {
 
       window.history.pushState(null, "", "/redsquare/#notifications");
 
-      if (this.mod.notifications.length == 0){
+      if (this.mod.notifications.length == 0) {
         let notification = new Notification(this.app, this.mod, null);
         notification.render(".tweet-manager");
-      }else{
+      } else {
         for (let i = 0; i < this.mod.notifications.length; i++) {
           let notification = new Notification(this.app, this.mod, this.mod.notifications[i].tx);
           notification.render(".tweet-manager");
@@ -147,13 +146,13 @@ class TweetManager {
 
       window.history.pushState(null, "", `/redsquare/?user_id=${this.publickey}`);
 
-      this.profile.render();
+      await this.profile.render();
 
       //
       // all peers reset to 0 tweets fetched
       //
       this.mod.updatePeerEarliestProfileTimestamp(null, new Date().getTime());
-      this.mod.loadProfileTweets(null, this.publickey, (txs) => {
+      await this.mod.loadProfileTweets(null, this.publickey, (txs) => {
         for (let z = 0; z < txs.length; z++) {
           let tweet = new Tweet(this.app, this.mod, ".tweet-manager", txs[z]);
           tweet.render();
@@ -191,7 +190,7 @@ class TweetManager {
 
     tweet.render();
     this.loader.render();
-    this.mod.loadTweetChildren(null, tweet.tx.transaction.sig, () => {
+    this.mod.loadTweetChildren(null, tweet.tx.signature, () => {
       tweet.renderWithChildren();
       this.loader.hide();
     });
@@ -213,6 +212,7 @@ class TweetManager {
     }
     this.loader.show();
   }
+
   hideLoader() {
     this.loader.hide();
   }

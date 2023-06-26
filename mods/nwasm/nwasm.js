@@ -7,6 +7,7 @@ const NwasmLibrary = require("./lib/libraries");
 const SaveGameOverlay = require("./lib/save-games");
 const JSON = require("json-bigint");
 const xorInplace = require("buffer-xor/inplace");
+const Transaction = require("../../lib/saito/transaction");
 
 //
 // ROMS -- saved as 'Nwams' modules
@@ -50,11 +51,11 @@ class Nwasm extends GameTemplate {
     return this;
   }
 
-  initialize(app) {
+  async initialize(app) {
     if (app.BROWSER == 0) {
       return;
     }
-    super.initialize(app);
+    await super.initialize(app);
 
     //
     // monitor log if browser
@@ -108,8 +109,8 @@ class Nwasm extends GameTemplate {
     await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
-  render() {
-    this.library_ui.render();
+  async render() {
+    await this.library_ui.render();
   }
 
   async initializeHTML(app) {
@@ -239,9 +240,9 @@ class Nwasm extends GameTemplate {
     //
     // when games are saved in the emulator
     //
-    this.app.connection.on("nwasm-export-game-save", (savegame) => {
+    this.app.connection.on("nwasm-export-game-save", async (savegame) => {
       nwasm_self.active_game = savegame;
-      nwasm_self.saveGameFile(savegame);
+      await nwasm_self.saveGameFile(savegame);
     });
   }
 
@@ -310,7 +311,7 @@ class Nwasm extends GameTemplate {
   //
   // for the love of God don't add console.logs within this function
   //
-  processNwasmLog(logline = "", log) {
+  async processNwasmLog(logline = "", log) {
     let x = logline;
     let nwasm_self = this;
 
@@ -357,10 +358,10 @@ class Nwasm extends GameTemplate {
                   "Archive: ROM with this name already archived - is this a separate lawful copy?"
                 );
                 if (c) {
-                  this.saveRomFile(this.active_rom);
+                  await this.saveRomFile(this.active_rom);
                 }
               } else {
-                this.saveRomFile(this.active_rom);
+                await this.saveRomFile(this.active_rom);
               }
             }
           }
@@ -371,7 +372,7 @@ class Nwasm extends GameTemplate {
           this.app.storage.loadTransactions("Nwasm" + this.active_rom_sig, 5, function (txs) {
             try {
               for (let z = 0; z < txs.length; z++) {
-                let newtx = new saito.default.transaction(undefined, txs[z].toJson());
+                let newtx = new Transaction(undefined, txs[z].toJson());
                 nwasm_self.active_game_saves.push(newtx);
               }
             } catch (err) {
@@ -512,7 +513,7 @@ class Nwasm extends GameTemplate {
         if (txs.length <= 0) {
           alert("No Saved Games Available");
         }
-        let newtx = new saito.default.transaction(undefined, txs[0].toJson());
+        let newtx = new Transaction(undefined, txs[0].toJson());
         let txmsg = newtx.returnMessage();
         let byteArray = nwasm_mod.convertBase64ToByteArray(txmsg.data);
         nwasm_mod.active_game = byteArray;
@@ -581,9 +582,9 @@ class Nwasm extends GameTemplate {
     myApp.loadStateLocal();
   }
 
-  exportState() {
+  async exportState() {
     let nwasm_mod = this;
-    this.app.browser.screenshotCanvasElementById("canvas", function (img) {
+    await this.app.browser.screenshotCanvasElementById("canvas", function (img) {
       nwasm_mod.active_game_img = img;
       myApp.saveStateLocal();
       myApp.exportStateLocal();

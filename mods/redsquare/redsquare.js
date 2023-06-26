@@ -1297,7 +1297,7 @@ class RedSquare extends ModTemplate {
           //
           if (txmsg.data?.retweet_tx) {
             if (txmsg.data?.retweet_tx) {
-              let rtx = new saito.default.transaction();
+              let rtx = new Transaction();
               rtx.deserialize(this.app, txmsg.data.retweet_tx);
               let rtxsig = rtxobj.sig;
 
@@ -1623,7 +1623,7 @@ class RedSquare extends ModTemplate {
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
 
             for (let i = 0; i < rows.length; i++) {
-              let tx = new saito.default.transaction();
+              let tx = new Transaction();
               tx.deserialize(app, rows[i].tx);
               let txmsg = tx.returnMessage();
               let text = txmsg.data.text;
@@ -1664,10 +1664,10 @@ class RedSquare extends ModTemplate {
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
             console.info(rows.length);
             for (let i = 0; i < rows.length; i++) {
-              let tx = new saito.default.transaction();
+              let tx = new Transaction();
               tx.deserialize(redsquare_self.app, rows[i].tx);
               //console.info(rows[i]);
-              txmsg = tx.returnMessage();
+              let txmsg = tx.returnMessage();
               //console.info(txmsg);
               if (typeof txmsg.data.images != "undefined") {
                 let img_uri = txmsg.data?.images[0];
@@ -1711,4 +1711,3 @@ class RedSquare extends ModTemplate {
 }
 
 module.exports = RedSquare;
-

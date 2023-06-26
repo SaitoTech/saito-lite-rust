@@ -22,6 +22,8 @@
 var saito = require("../../lib/saito/saito");
 var ModTemplate = require("../../lib/templates/modtemplate");
 const Big = require("big.js");
+const Slip = require("../../lib/saito/slip");
+const Transaction = require("../../lib/saito/transaction").default;
 
 class Encrypt extends ModTemplate {
   constructor(app) {
@@ -79,7 +81,7 @@ class Encrypt extends ModTemplate {
     let encrypt_self = this;
 
     if (message.request === "diffie hellman key exchange") {
-      let tx = new saito.default.transaction(undefined, message.data.tx);
+      let tx = new Transaction(undefined, message.data.tx);
 
       let sender = tx.from[0].publicKey;
       let receiver = tx.to[0].publicKey;
@@ -93,7 +95,7 @@ class Encrypt extends ModTemplate {
       // key exchange requests
       //
       if (txmsg.request == "key exchange request") {
-        if (receiver == app.wallet.getPublicKey()) {
+        if (receiver == this.publicKey) {
           console.log("\n\n\nYou have accepted an encrypted channel request from " + receiver);
           await encrypt_self.accept_key_exchange(tx, 1, peer);
         }
@@ -101,7 +103,7 @@ class Encrypt extends ModTemplate {
     }
 
     if (message.request === "diffie hellman key response") {
-      let tx = new saito.default.transaction(undefined, message.data.tx);
+      let tx = new Transaction(undefined, message.data.tx);
 
       let sender = tx.from[0].publicKey;
       let receiver = tx.to[0].publicKey;
@@ -142,7 +144,7 @@ class Encrypt extends ModTemplate {
       //
       //
       this.sendEvent("encrypt-key-exchange-confirm", {
-        members: [sender, app.wallet.getPublicKey()],
+        members: [sender, this.publicKey],
       });
       this.saveEncrypt();
     }
@@ -229,7 +231,9 @@ class Encrypt extends ModTemplate {
     //
     if (parties_to_exchange > 2) {
       for (let i = 1; i < parties_to_exchange; i++) {
-        tx.transaction.to.push(new saito.default.slip(recipients[i], 0.0));
+        let slip = new Slip();
+        slip.publicKey = recipients[i];
+        tx.addToSlip(slip);
       }
     }
 
@@ -271,7 +275,7 @@ class Encrypt extends ModTemplate {
     }
     newtx.msg.module = "Encrypt";
     newtx.msg.request = "key exchange confirm";
-    newtx.msg.tx_id = tx.transaction.id; // reference id for parent tx
+    newtx.msg.tx_id = tx.id; // reference id for parent tx
     newtx.msg.bob = bob_publickey;
     await newtx.sign();
 
