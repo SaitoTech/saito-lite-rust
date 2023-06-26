@@ -28,14 +28,11 @@ class RedSquareMain {
     // when someone clicks on a tweet
     this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
       this.manager.publickey = this.app.wallet.returnPublicKey();
+      document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
       this.manager.mode = "tweets";
       this.manager.renderTweet(tweet);
     });
-    // when someone adds a tweet at top -- scroll up and render
-    this.app.connection.on("redsquare-home-tweet-prepend-render-request", (tweet) => {
-      document.querySelector('.tweet-manager').scroll({ top: 0, left: 0, behavior: 'smooth' });
-      tweet.render(true); // prepend = true
-    });
+
     this.app.connection.on("redsquare-notifications-render-request", () => {
       this.mod.notifications_last_viewed_ts = new Date().getTime();
       this.mod.notifications_number_unviewed = 0;
@@ -69,7 +66,8 @@ class RedSquareMain {
     });
     // this is triggered when you reply to a tweet -- it pushes tweet and your reply to top, or should
     this.app.connection.on("redsquare-home-tweet-and-critical-child-prepend-render-request", (tweet) => {
-      this.app.connection.emit("redsquare-home-tweet-render-request", (tweet));
+      this.render();
+      //this.app.connection.emit("redsquare-home-tweet-render-request", (tweet));
     });
     this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {
       //alert("9");

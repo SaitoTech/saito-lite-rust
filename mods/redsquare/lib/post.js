@@ -14,13 +14,13 @@ class Post {
     this.images = [];
     this.tweet = tweet;
 
-    this.render_after_submit = 1;
+    this.render_after_submit = 0;
     this.file_event_added = false;
     this.publickey = app.wallet.returnPublicKey();
     this.source = "Tweet";
 
     let userline = "create a text-tweet or drag-and-drop images...";
-    if (this.source == "Retweet / Share") {
+    if (this.source == "Retweet") {
       userline = "add a comment to your retweet or just click submit...";
     }
 
@@ -48,7 +48,7 @@ class Post {
     this.input.display = "large";
 
     this.input.placeholder = "What's happening";
-    if (this.source == "Retweet / Share") {
+    if (this.source == "Retweet") {
       this.input.placeholder = "Optional comment?";
     }
 
@@ -231,7 +231,6 @@ class Post {
       }
 
       rparent.addTweet(tweet);
-      this.mod.addTweet(tweet.tx);
       rparent.updated_at = new Date().getTime();
       rparent.critical_child = tweet;
       if (tweet.retweet_tx) {
@@ -244,17 +243,11 @@ class Post {
         rparent
       );
     } else {
-      this.mod.addTweet(tweet.tx);
-      this.app.connection.emit("redsquare-home-tweet-prepend-render-request", tweet);
+      this.mod.addTweet(tweet.tx, true);
+      tweet.render(true);
     }
 
     setTimeout(() => {
-      if (post_self.render_after_submit == 1) {
-        //
-        // scroll to top
-        //
-        document.querySelector(".saito-container").scroll({ top: 0, left: 0, behavior: "smooth" });
-      }
       post_self.overlay.hide();
     }, 500);
   }

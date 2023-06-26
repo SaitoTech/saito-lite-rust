@@ -98,6 +98,9 @@ class TweetManager {
       this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
     }
 
+    this.loader.render();
+
+
     ////////////
     // tweets //
     ////////////
@@ -105,7 +108,7 @@ class TweetManager {
       this.profile.remove();
 
       window.history.pushState(null, "", "/redsquare/#home");
-
+      this.loader.hide();
       for (let i = 0; i < this.mod.tweets.length; i++) {
         let tweet = this.mod.tweets[i];
         tweet.renderWithCriticalChild();
@@ -152,6 +155,7 @@ class TweetManager {
           let tweet = new Tweet(this.app, this.mod, ".tweet-manager", txs[z]);
           tweet.render();
         }
+        this.loader.hide();
         this.mod.updatePeerStat(this.mod.returnEarliestTimestampFromTransactionArray(txs), "profile_earliest_ts");
       });
     }

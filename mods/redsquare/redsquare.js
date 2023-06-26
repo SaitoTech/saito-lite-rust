@@ -19,7 +19,6 @@ const localforage = require("localforage");
  * lib/main.js:    this.app.connection.on("redsquare-home-thread-render-request", (tweets) => {   // renders thread (tweets = array)
  * lib/main.js:    this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {   // renders tweet
  * lib/main.js:    this.app.connection.on("redsquare-home-tweet-append-render-request", (tweet) => {  // appends tweet to home
- * lib/main.js:    this.app.connection.on("redsquare-home-tweet-prepend-render-request", (tweet) => { // prepends tweet to home
  * lib/main.js:    this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {    // runs when tweet is added in redsquare
  * lib/main.js:    this.app.connection.on("redsquare-profile-render-request", () => {     // renders profile
  * lib/main.js:    //this.app.connection.on("redsquare-contacts-render-request", () => {    // renders contacts
@@ -226,6 +225,8 @@ class RedSquare extends ModTemplate {
       }
     }
 
+    console.log("Render RS");
+
     if (this.main == null) {
       this.main = new SaitoMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
@@ -277,7 +278,7 @@ class RedSquare extends ModTemplate {
       for (let z = 0; z < tweets.length; z++) {
         let newtx = new saito.default.transaction();
         newtx.deserialize_from_web(this.app, tweets[z]);
-        this.addTweet(newtx, true); // prepend ?
+        this.addTweet(newtx); 
       }
       this.app.connection.emit("redsquare-home-render-request");
     } catch (err) {
@@ -300,6 +301,9 @@ class RedSquare extends ModTemplate {
     // redsquare -- load tweets
     //
     if (service.service === "redsquare") {
+      this.addPeer(peer, "tweets");
+
+      console.log("RS PSU");
       //
       // render tweet + children
       //
@@ -328,14 +332,9 @@ class RedSquare extends ModTemplate {
       //
       // or fetch tweets
       //
-      this.addPeer(peer, "tweets");
 
       this.loadTweets(null, (txs) => {
         this.app.connection.emit("redsquare-home-render-request");
-        if (txs.length == 0) {
-          this.app.connection.emit("redsquare-home-loader-hide-request");
-          return;
-        }
       });
     }
 
@@ -518,6 +517,7 @@ class RedSquare extends ModTemplate {
       let sql = `SELECT * FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND updated_at < ${time_cutoff} ORDER BY updated_at DESC LIMIT '${this.peers[i].tweets_limit}'`;
 
       this.loadTweetsFromPeer(peer, sql, (txs) => {
+
         this.updatePeerStat(
           this.returnEarliestTimestampFromTransactionArray(txs),
           "tweets_earliest_ts",
@@ -561,6 +561,7 @@ class RedSquare extends ModTemplate {
 
   loadTweetsFromPeer(peer, sql, mycallback = null) {
     let txs = [];
+
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
       for (let z = 0; z < txs.length; z++) {
         this.addTweet(txs[z]);
@@ -579,7 +580,6 @@ class RedSquare extends ModTemplate {
       sql,
       async (res) => {
         if (res.rows) {
-          this.addPeer(peer, "tweet");
 
           res.rows.forEach((row) => {
             let tx = new saito.default.transaction();
@@ -593,6 +593,7 @@ class RedSquare extends ModTemplate {
             tx.optional.num_retweets = row.num_retweets;
             tx.optional.num_likes = row.num_likes;
             tx.optional.flagged = row.flagged;
+            tx.optional.updated_at = row.updated_at;
             tx.optional.link_properties = {};
             try {
               let x = JSON.parse(row.link_properties);
@@ -689,47 +690,6 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  loadTweetsWithParentId(sig, mycallback = null) {
-    if (this.peers.length == 0) {
-      return;
-    }
-    if (mycallback == null) {
-      return;
-    }
-
-    let t = this.returnTweet(sig);
-    if (t != null) {
-      let x = [];
-      for (let z = 0; z < t.children.length; z++) {
-        x.push(t.children[z]);
-      }
-      mycallback(x);
-      return;
-    }
-
-    let sql = `SELECT * FROM tweets WHERE parent_id = '${sig}' ORDER BY created_at DESC`;
-    this.loadTweetsFromPeer(mod.peers[0].peer, sql, (txs) => {
-      let x = [];
-      this.loadTweetsFromPeer(
-        peer,
-        sql,
-        (txs) => {
-          for (let z = 0; z < txs.length; z++) {
-            let tweet = new Tweet(app, mod, ".tweet-manager", txs[z]);
-            if (tweet){
-              x.push(tweet);  
-            }
-            
-          }
-          mycallback(x);
-        },
-        false,
-        false
-      );
-      return;
-    });
-  }
-
   //
   // adds tweets to internal data structure
   //
@@ -739,6 +699,7 @@ class RedSquare extends ModTemplate {
     //
     // create the tweet
     //
+
     let tweet = new Tweet(this.app, this, ".tweet-manager", tx);
 
     if (!tweet) { return; }
@@ -757,9 +718,9 @@ class RedSquare extends ModTemplate {
         if (prepend == false) {
           for (let i = 0; i < this.notifications.length; i++) {
             if (this.notifications[i].updated_at > tweet.updated_at) {
-              insertion_index = i + 1;
               break;
             } 
+            insertion_index++;
           }
         }
 
@@ -803,10 +764,10 @@ class RedSquare extends ModTemplate {
         let insertion_index = 0;
         if (!prepend) {
           for (let i = 0; i < this.tweets.length; i++) {
-            if (this.tweets[i].updated_at > tweet.updated_at) {
-              insertion_index = i + 1;
+            if (tweet.updated_at > this.tweets[i].updated_at) {
               break;
-            } 
+            }
+            insertion_index++; 
           }
         }
 
@@ -821,11 +782,9 @@ class RedSquare extends ModTemplate {
         //
         for (let i = 0; i < this.unknown_children.length; i++) {
           if (this.unknown_children[i].tx.optional.thread_id === tweet.tx.transaction.sig) {
-            if (this.tweets.length > insertion_index) {
-              if (this.tweets[insertion_index].addTweet(this.unknown_children[i]) == 1) {
-                this.unknown_children.splice(i, 1);
-                i--;
-              }
+            if (tweet.addTweet(this.unknown_children[i]) == 1) {
+              this.unknown_children.splice(i, 1);
+              i--;
             }
           }
         }
@@ -862,6 +821,13 @@ class RedSquare extends ModTemplate {
       }
     }
 
+    /*
+    let output = {};
+    for (let i = 0; i < this.tweets.length; i++){
+        output[i] = this.tweets[i].formatDate();
+    }
+    console.log(JSON.parse(JSON.stringify(output)));
+    */  
   }
 
   returnTweet(tweet_sig = null) {
@@ -872,11 +838,8 @@ class RedSquare extends ModTemplate {
       return null;
     }
 
+    //Performs a recursive search
     for (let i = 0; i < this.tweets.length; i++) {
-      if (this.tweets[i].tx.transaction.sig === tweet_sig) {
-        return this.tweets[i];
-      }
-      // !!!! This seems wrong....
       if (this.tweets[i].hasChildTweet(tweet_sig)) {
         return this.tweets[i].returnChildTweet(tweet_sig);
       }
@@ -979,7 +942,7 @@ class RedSquare extends ModTemplate {
             if (txmsg.data?.retweet_tx) {
               let rtx = new saito.default.transaction();
               rtx.deserialize_from_web(this.app, txmsg.data.retweet_tx);
-              let rtxsig = rtxobj.sig;
+              let rtxsig = rtx.transaction.sig;
 
               if (this.tweets_sigs_hmap[rtxsig]) {
                 let tweet2 = this.returnTweet(rtxsig);
@@ -1113,7 +1076,7 @@ class RedSquare extends ModTemplate {
       if (tweet.retweet_tx != null) {
         let sql3 = "UPDATE tweets SET num_retweets = num_retweets + 1 WHERE sig = $sig";
         let params3 = {
-          $sig: tweet.thread_id,
+          $sig: tweet.retweet.tx.transaction.sig,
         };
         await app.storage.executeDatabase(sql3, params3, "redsquare");
       }
@@ -1203,7 +1166,7 @@ class RedSquare extends ModTemplate {
       //
       // convert like into tweet and addTweet to get notifications working
       //
-      this.addTweet(tx, true);
+      this.addTweet(tx);
 
       return;
     }
