@@ -8,7 +8,7 @@ module.exports = ImperiumHowToProduceOverlayTemplate = (imperium_self, units) =>
         <ol class="how-to-trade-tutorial">
 
           <li>
-            <div class="title">neighbours can trade</div>
+            <div class="title">neighbours matter</div>
             <div class="desc">you can only trade with neighbours</div>
           </li>
 
@@ -18,7 +18,7 @@ module.exports = ImperiumHowToProduceOverlayTemplate = (imperium_self, units) =>
           </li>
 
           <li>
-            <div class="title">receive trade goods</div>
+            <div class="title">get trade goods</div>
             <div class="desc">you receive trade goods</div>
           </li>
 
@@ -51,7 +51,7 @@ module.exports = ImperiumHowToProduceOverlayTemplate = (imperium_self, units) =>
         </div>
 
         <div class="how-to-trade-example-desc">
-          NOTE: use Trade to receive trade goods and give commodities to yourself and your neighbours
+          NOTE: use Trade to give commodities to yourself and your neighbours, trade for win-win relations
         </div>
 
     </div>
