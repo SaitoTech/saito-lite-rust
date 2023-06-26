@@ -179,7 +179,7 @@ class ChatManager {
         last_ts = tx.ts;
       }
 
-      let html = ChatTeaser(this.app, group.name, last_msg, last_ts, group.id, group.unread);
+      let html = ChatTeaser(this.app, group);
       let divid = "saito-user-" + group.id;
 
       let obj = document.getElementById(divid);

@@ -1430,11 +1430,18 @@ class RedSquare extends ModTemplate {
       //
       // create the transaction
       //
+
+
+
       let tx = Transaction.deserialize(rows[i].tx, new Factory());
       if (rows[i].num_reples) { tx.optional.num_replies = rows[i].num_replies; }
       if (rows[i].num_retweets) { tx.optional.num_retweets = rows[i].num_retweets; }
       if (rows[i].num_likes) { tx.optional.num_likes = rows[i].num_likes; }
       if (rows[i].flagged) { tx.optional.flagged = rows[i].flagged; }
+
+      console.log(typeof tx);
+      console.log(tx);
+
       let hexstring = tx.serialize(this.app);
       hex_entries.push(hexstring);
 

@@ -4,6 +4,7 @@ import StorageCore from "./lib/saito/core/storage-core";
 import { Saito } from "./apps/core";
 import fs from "fs-extra";
 import * as JSON from "json-bigint";
+import hashLoader from "./apps/core/hash-loader";
 
 import mods_config from "./config/modules.config";
 
@@ -16,6 +17,7 @@ async function initCLI() {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   app.storage = new StorageCore(app);
+  await hashLoader(app);
 
   app.BROWSER = 0;
   app.SPVMODE = 0;

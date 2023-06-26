@@ -162,8 +162,8 @@ class Arcade extends ModTemplate {
             };
 
 
-            game_tx.transaction.sig = game.id;
-            game_tx.transaction.ts = game.ts;
+            game_tx.signature = game.id;
+            game_tx.timestamp = game.ts;
             game_tx.msg = msg;
 
             console.log("Processing games from app.options:");
@@ -213,8 +213,8 @@ class Arcade extends ModTemplate {
           //console.log(JSON.parse(JSON.stringify(record)));
           //This is the save openTX
 
-          let game_tx = new saito.default.transaction(JSON.parse(record.tx));
-          game_tx.transaction.ts = record.created_at;
+          let game_tx = new saito.default.transaction(undefined, record.tx);
+          game_tx.timestamp = record.created_at;
           
           //But we update the player list
           let player_info = record.players_array.split("_");
@@ -1335,7 +1335,7 @@ class Arcade extends ModTemplate {
       tx.transaction.to.push(new saito.default.slip(this.app.wallet.getPublicKey(), 0.0));
       tx.msg = gametx.returnMessage();
       tx.msg.request = "change_" + direction;
-      tx.msg.game_id = gametx.transaction.sig;
+      tx.msg.game_id = gametx.signature;
       tx = this.app.wallet.signTransaction(tx);
 
       if (this.debug) {
@@ -1419,7 +1419,7 @@ class Arcade extends ModTemplate {
   }
 
   receiveChallengeTransaction(tx) {
-    if (!tx.transaction || !tx.transaction.sig || !tx.msg) {
+    if (!tx.transaction || !tx.signature || !tx.msg) {
       return;
     }
 

@@ -21,13 +21,13 @@ class RedSquareMain {
     //
     // rendering the main thread
     this.app.connection.on("redsquare-home-render-request", async () => {
-      this.manager.publickey = await this.app.wallet.returnPublicKey();
+      this.manager.publickey = await this.app.wallet.getPublicKey();
       this.manager.mode = "tweets";
       this.manager.render();
     });
     // when someone clicks on a tweet
     this.app.connection.on("redsquare-home-tweet-render-request", async (tweet) => {
-      this.manager.publickey = await this.app.wallet.returnPublicKey();
+      this.manager.publickey = await this.app.wallet.getPublicKey();
       this.manager.mode = "tweets";
       this.manager.renderTweet(tweet);
     });
@@ -41,7 +41,7 @@ class RedSquareMain {
       this.mod.notifications_number_unviewed = 0;
       this.mod.save();
       this.mod.menu.incrementNotifications("notifications");
-      this.manager.publickey = await this.app.wallet.returnPublicKey();
+      this.manager.publickey = await this.app.wallet.getPublicKey();
       this.manager.mode = "notifications";
       this.manager.render();
     });
