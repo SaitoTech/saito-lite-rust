@@ -1,5 +1,5 @@
 
-.how-to-move-overlay {
+.how-to-trade-overlay {
     display: grid;
     color: white;
     width: 80vw;
@@ -17,7 +17,7 @@
     align-items: baseline;
 }
 
-.how-to-move-overlay > .title {
+.how-to-trade-overlay > .title {
     margin-left: auto;
     margin-right: auto;
     font-family: 'bank-gothic';
@@ -30,25 +30,25 @@
     grid-row-end: 2;
 }
 
-.how-to-move-tutorial {
+.how-to-trade-tutorial {
     grid-column-start: 2;
     grid-column-end: span 1;
     grid-row-start: 2;
     grid-row-end: span 1;
 }
 
-.how-to-move-tutorial li {
+.how-to-trade-tutorial li {
     margin-bottom: 2rem;
     margin-left: 2rem;
     padding-left: 1rem;
     font-size: 1.8rem;
 }
 
-.how-to-move-tutorial li:nth-child(3) {
+.how-to-trade-tutorial li:nth-child(3) {
     margin-bottom: 0px
 }
 
-.how-to-move-tutorial .title {
+.how-to-trade-tutorial .title {
   font-family: unset;
   font-weight: bold;
   margin-bottom: 0.5rem;
@@ -59,13 +59,13 @@
   letter-spacing: 0.1rem;
 }
 
-.how-to-move-tutorial .desc {
+.how-to-trade-tutorial .desc {
   font-family: unset;
   font-weight: bold;
   font-size: 1.8rem;
 }
 
-.how-to-move-example {
+.how-to-trade-example {
     grid-column-start: 1;
     grid-column-end: span 1;
     grid-row-start: 2;
@@ -77,7 +77,7 @@
     font-size: 1.6rem;
 }
 
-.how-to-move-example-desc {
+.how-to-trade-example-desc {
     font-size: 1.6rem;
     text-align: center;
     grid-column-start: 1;
@@ -86,11 +86,11 @@
     grid-row-end: 3;
 }
 
-.how-to-move-example .unit .unit-description {
+.how-to-trade-example .unit .unit-description {
     visibility: hidden;
 }
 
-.how-to-move-example .unit {
+.how-to-trade-example .unit {
     margin-top: 0rem;
     padding-top: 0rem;
 }

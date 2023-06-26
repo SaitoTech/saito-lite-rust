@@ -13,8 +13,7 @@ class HowToTradeOverlay {
 
   render() {
     this.overlay.show(ImperiumHowToTradeOverlayTemplate());
-    this.overlay.setBackground("/imperium/img/backgrounds/production_background2.png");
-    //this.overlay.setBackground("/imperium/img/backgrounds/production_background2.png", false);
+    this.overlay.setBackground("/imperium/img/backgrounds/trade-background.jpg");
   }
 
 }

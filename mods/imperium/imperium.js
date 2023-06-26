@@ -16734,7 +16734,7 @@ if (debugging == 0) {
 
           if (this.game.state.use_tutorials == 1 && !this.game.state.seen_goods_tutorial) {
             this.game.state.seen_goods_tutorial = 1;
-	    this.how_to_trade_overlay.show();
+	    this.how_to_trade_overlay.render();
           }
 
   	}
@@ -16744,9 +16744,7 @@ if (debugging == 0) {
 
 	  if (this.game.state.use_tutorials == 1 && !this.game.state.seen_commodities_tutorial) {
 	    this.game.state.seen_commodities_tutorial = 1;
-            this.overlay.show('<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/commodities.png" style="width:auto;height:100%" /></div>');
-// this likely causes disconnects as is not guaranteed to run on player turn
-//            this.playerAcknowledgeNotice("REMEMBER: when you have commodities, trade them with a neighbouring player. They receive trade goods. Two players can trade commodities to each other and receive trade goods in return!", function() {});
+	    this.how_to_trade_overlay.render();
 	  }
 
   	  this.updateLog(this.returnFactionNickname(player) + " gains " + mv[3] + " commodities");
