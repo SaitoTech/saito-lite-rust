@@ -315,7 +315,7 @@ class Chat extends ModTemplate {
     switch (type) {
       case "chat-manager":
         if (this.chat_manager == null) {
-          console.log("Respond to");
+          //console.log("Respond to");
           this.chat_manager = new ChatManager(this.app, this);
         }
         return this.chat_manager;

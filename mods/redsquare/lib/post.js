@@ -14,24 +14,13 @@ class Post {
     this.images = [];
     this.tweet = tweet;
 
-    if (tweet != null) {
-      if (tweet.parent_id) {
-        this.parent_id = tweet.parent_id;
-        if (tweet.thread_id) {
-          this.thread_id = tweet.thread_id;
-        } else {
-          this.thread_id = this.parent_id;
-        }
-      }
-    }
-
-    this.render_after_submit = 1;
+    this.render_after_submit = 0;
     this.file_event_added = false;
     this.publickey = app.wallet.returnPublicKey();
     this.source = "Tweet";
 
     let userline = "create a text-tweet or drag-and-drop images...";
-    if (this.source == "Retweet / Share") {
+    if (this.source == "Retweet") {
       userline = "add a comment to your retweet or just click submit...";
     }
 
@@ -59,7 +48,7 @@ class Post {
     this.input.display = "large";
 
     this.input.placeholder = "What's happening";
-    if (this.source == "Retweet / Share") {
+    if (this.source == "Retweet") {
       this.input.placeholder = "Optional comment?";
     }
 
@@ -165,14 +154,6 @@ class Post {
     keys = post_self.app.browser.extractKeys(text);
     identifiers = post_self.app.browser.extractIdentifiers(text);
 
-    if (this.tweet != null) {
-      for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
-        if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
-          keys.push(this.tweet.tx.transaction.to[i].add);
-        }
-      }
-    }
-
     //
     // add identifiers as available
     //
@@ -188,22 +169,10 @@ class Post {
     //
     // any previous recipients get added to "to"
     //
-    if (post_self.tweet) {
-      if (post_self.tweet.tx) {
-        if (post_self.tweet.tx.transaction) {
-          for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
-            if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
-              keys.push(post_self.tweet.tx.transaction.to[i].add);
-            }
-          }
-        }
-      }
-    }
-
-    if (this.tweet != null) {
-      for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
-        if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
-          keys.push(this.tweet.tx.transaction.to[i].add);
+    if (post_self?.tweet?.tx?.transaction) {
+      for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
+        if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
+          keys.push(post_self.tweet.tx.transaction.to[i].add);
         }
       }
     }
@@ -234,10 +203,12 @@ class Post {
     let newtx = post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
     //
-    // move to the top
+    // This makes no sense. If you require at the top of the file, it fails with a 
+    // new Tweet is not a constructor error!!! ???
     //
-    var TweetClass = require("./tweet");
-    let tweet = new TweetClass(this.app, this.mod, ".tweet-manager", newtx);
+    const Tweet = require("./tweet");
+
+    let tweet = new Tweet(post_self.app, post_self.mod, ".tweet-manager", newtx);
     //
     //
     //
@@ -260,7 +231,6 @@ class Post {
       }
 
       rparent.addTweet(tweet);
-      this.mod.addTweet(tweet.tx);
       rparent.updated_at = new Date().getTime();
       rparent.critical_child = tweet;
       if (tweet.retweet_tx) {
@@ -273,17 +243,11 @@ class Post {
         rparent
       );
     } else {
-      this.mod.addTweet(tweet.tx);
-      this.app.connection.emit("redsquare-home-tweet-prepend-render-request", tweet);
+      this.mod.addTweet(tweet.tx, true);
+      tweet.render(true);
     }
 
     setTimeout(() => {
-      if (post_self.render_after_submit == 1) {
-        //
-        // scroll to top
-        //
-        document.querySelector(".saito-container").scroll({ top: 0, left: 0, behavior: "smooth" });
-      }
       post_self.overlay.hide();
     }, 500);
   }
