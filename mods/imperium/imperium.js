@@ -2760,8 +2760,8 @@ class Imperium extends GameTemplate {
               imperium_self.endTurn();
               return 0;
             },
-            function () {
-              imperium_self.playerTurn();
+            function async () {
+              await imperium_self.playerTurn();
             }
           );
 
@@ -4512,8 +4512,8 @@ class Imperium extends GameTemplate {
             imperium_self.endTurn();
             return 0;
           },
-          function () {
-            imperium_self.playerTurn();
+          function async () {
+            await imperium_self.playerTurn();
           }
         );
       },
@@ -5124,8 +5124,8 @@ class Imperium extends GameTemplate {
             imperium_self.endTurn();
             return 0;
           },
-          function () {
-            imperium_self.playerTurn();
+          function async () {
+            await imperium_self.playerTurn();
           }
         );
 
@@ -5175,13 +5175,13 @@ class Imperium extends GameTemplate {
             imperium_self.updateStatus(html);
 
             $(".option").off();
-            $(".option").on("click", function () {
+            $(".option").on("click", function async () {
               $(".option").off();
 
               let opt = $(this).attr("id");
 
               if (opt === "skip") {
-                imperium_self.playerTurn();
+                await imperium_self.playerTurn();
                 return 0;
               }
 
@@ -11093,8 +11093,8 @@ class Imperium extends GameTemplate {
               imperium_self.endTurn();
               return 0;
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11156,8 +11156,8 @@ class Imperium extends GameTemplate {
               return 0;
             },
             // cancel -- no space dock available?
-            function () {
-              imperium_self.playerTurn();
+            function async () {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11184,8 +11184,8 @@ class Imperium extends GameTemplate {
               imperium_self.endTurn();
               return 0;
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11225,8 +11225,8 @@ class Imperium extends GameTemplate {
               imperium_self.endTurn();
               return 0;
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11274,8 +11274,8 @@ class Imperium extends GameTemplate {
               imperium_self.endTurn();
               return 0;
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11324,8 +11324,8 @@ class Imperium extends GameTemplate {
               imperium_self.endTurn();
               return 0;
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11444,8 +11444,8 @@ class Imperium extends GameTemplate {
               imperium_self.endTurn();
               return 0;
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11492,8 +11492,8 @@ class Imperium extends GameTemplate {
               imperium_self.endTurn();
               return 0;
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11537,8 +11537,8 @@ class Imperium extends GameTemplate {
               imperium_self.endTurn();
               return 0;
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11593,8 +11593,8 @@ class Imperium extends GameTemplate {
               imperium_self.endTurn();
               return 0;
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11681,8 +11681,8 @@ class Imperium extends GameTemplate {
                 null
               );
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11792,8 +11792,8 @@ class Imperium extends GameTemplate {
               imperium_self.endTurn();
               return 0;
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11835,8 +11835,8 @@ class Imperium extends GameTemplate {
               imperium_self.endTurn();
               return 0;
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11876,8 +11876,8 @@ class Imperium extends GameTemplate {
               imperium_self.endTurn();
               return 0;
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11922,8 +11922,8 @@ class Imperium extends GameTemplate {
                 null
               );
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -11971,8 +11971,8 @@ class Imperium extends GameTemplate {
 
               return 0;
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
         }
@@ -15817,7 +15817,7 @@ class Imperium extends GameTemplate {
   /////////////////////
   // Core Game Logic //
   /////////////////////
-  handleGameLoop(msg = null) {
+  async handleGameLoop(msg = null) {
     //
     // set to 1 to speed-up game init for testing
     //
@@ -16475,7 +16475,7 @@ class Imperium extends GameTemplate {
             return 0;
           }
 
-          this.playerTurn();
+          await this.playerTurn();
         } else {
           this.addEventsToBoard();
           this.updateStatus(
@@ -22727,7 +22727,7 @@ class Imperium extends GameTemplate {
 
       for (let i in z) {
         console.log("HGL 1: " + z[i].name);
-        if (!z[i].handleGameLoop(imperium_self, qe, mv)) {
+        if (!(await z[i].handleGameLoop(imperium_self, qe, mv))) {
           return 0;
         }
       }
@@ -23332,8 +23332,8 @@ class Imperium extends GameTemplate {
           );
           imperium_self.playerAcknowledgeNotice(
             'REMEMBER: to move ships select "activate sector" and pick the sector you are moving into. Most ships can only move 1-hex and you cannot move ships from sectors that are already activated. You will be able to choose the ships to move, and load infantry and fighters into units that can carry them.',
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
           return;
@@ -23346,8 +23346,8 @@ class Imperium extends GameTemplate {
           );
           imperium_self.playerAcknowledgeNotice(
             'REMEMBER: to produce units, select "activate sector" and activate a sector with a space dock (like your home system). You are limited to producing +2 more units than the resources of the planet on which the Space Dock sits. And you can only have as many non-fighter ships in any sector as your fleet supply, so move your ships out before producing more!',
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             }
           );
           return;
@@ -23379,8 +23379,8 @@ class Imperium extends GameTemplate {
               imperium_self.addMove("lose\t" + imperium_self.game.player + "\taction_cards\t1");
               imperium_self.endTurn();
             },
-            function () {
-              imperium_self.playerTurn();
+            function async() {
+              await imperium_self.playerTurn();
             },
             relevant_action_cards
           );
@@ -25775,7 +25775,7 @@ class Imperium extends GameTemplate {
 
       if (action2 == "trade") {
         imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
-        imperium_self.playerTurn();
+        await imperium_self.playerTurn();
         return 0;
       }
 
@@ -27322,7 +27322,7 @@ class Imperium extends GameTemplate {
         }
 
         if (selected == "cancel") {
-          imperium_self.playerTurn();
+          await imperium_self.playerTurn();
           return;
         }
         if (selected == "action_cards_offer") {
@@ -27665,7 +27665,7 @@ class Imperium extends GameTemplate {
         let faction = $(this).attr("id");
 
         if (faction == "cancel") {
-          imperium_self.playerTurn();
+          await imperium_self.playerTurn();
           return 0;
         }
 
@@ -28068,7 +28068,7 @@ class Imperium extends GameTemplate {
             cancel_callback();
             return 0;
           }
-          imperium_self.playerTurn();
+          await imperium_self.playerTurn();
           return 0;
         }
       );
@@ -28144,7 +28144,7 @@ class Imperium extends GameTemplate {
           cancel_callback();
           return 0;
         }
-        imperium_self.playerTurn();
+        await imperium_self.playerTurn();
         return 0;
       });
       return 0;
@@ -28238,7 +28238,7 @@ class Imperium extends GameTemplate {
       }
 
       if (action2 === "cancel") {
-        imperium_self.playerTurn();
+        await imperium_self.playerTurn();
         return;
       }
 

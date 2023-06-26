@@ -340,7 +340,7 @@ class Jaipur extends GameTemplate {
         await this.playerbox.addClass("active", player);
 
         if (this.game.player == player) {
-          this.playerTurn();
+          await this.playerTurn();
         } else {
           this.updateStatusWithCards(`Waiting for opponent to play`);
         }
@@ -811,9 +811,9 @@ class Jaipur extends GameTemplate {
         }
       }
 
-      $("#cancel_btn").on("click", () => {
+      $("#cancel_btn").on("click", async () => {
         game_self.overlay.remove();
-        game_self.playerTurn();
+        await game_self.playerTurn();
       });
     };
 

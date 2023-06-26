@@ -66,7 +66,7 @@ export default class Wallet extends SaitoWallet {
   //   return (await S.getInstance().signTransaction(tx)) as T;
   // }
 
-  // public async returnPublicKey(): Promise<string> {
+  // public async getPublicKey(): Promise<string> {
   //   return S.getInstance().getPublicKey();
   // }
 
