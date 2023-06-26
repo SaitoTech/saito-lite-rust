@@ -1089,7 +1089,7 @@ body {
 .option {
   cursor: pointer;
   font-family: 'orbitron-medium', helvetica, arial, courier;
-  padding: 15px;
+  padding: 2rem;
   user-select: none;
 }
 
@@ -1105,9 +1105,6 @@ body {
 }
 .cardchoice:hover {
   background: transparent;
-}
-.option {
-  cursor: pointer;
 }
 
 .sector_name {
@@ -1247,10 +1244,6 @@ body {
 }
 
 .objectives {}
-
-.option {
-  cursor: pointer;
-}
 
 #game_board_sizer {
   position: absolute;
