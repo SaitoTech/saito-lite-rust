@@ -12,11 +12,11 @@ const GameManager = require("./lib/game-manager");
 const GameWizard = require("./lib/overlays/game-wizard");
 const GameSelector = require("./lib/overlays/game-selector");
 const GameScheduler = require("./lib/overlays/game-scheduler");
-const GameInvitationLink = require("./lib/overlays/game-invitation-link");
 const Invite = require("./lib/invite");
 const JoinGameOverlay = require("./lib/overlays/join-game");
 const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const Factory = require("../../lib/saito/factory");
+const GameInvitationLink = require("./../../lib/saito/ui/modals/saito-link/saito-link");
 
 class Arcade extends ModTemplate {
   constructor(app) {
