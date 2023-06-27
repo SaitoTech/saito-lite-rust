@@ -16,10 +16,7 @@ const localforage = require("localforage");
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
  * lib/main.js:    this.app.connection.on("redsquare-home-loader-render-request", () => {   // renders loader (home)
  * lib/main.js:    this.app.connection.on("redsquare-home-loader-hide-request", () => {     // hides loader (home)
- * lib/main.js:    this.app.connection.on("redsquare-home-thread-render-request", (tweets) => {   // renders thread (tweets = array)
  * lib/main.js:    this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {   // renders tweet
- * lib/main.js:    this.app.connection.on("redsquare-home-tweet-append-render-request", (tweet) => {  // appends tweet to home
- * lib/main.js:    this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {    // runs when tweet is added in redsquare
  * lib/main.js:    this.app.connection.on("redsquare-profile-render-request", () => {     // renders profile
  * lib/main.js:    //this.app.connection.on("redsquare-contacts-render-request", () => {    // renders contacts
  * lib/main.js:    this.app.connection.on("redsquare-notifications-render-request", () => {   // renders notifications
@@ -271,16 +268,16 @@ class RedSquare extends ModTemplate {
       }
 
       //Prefer our locally cached tweets to the webServer ones
-      if (this.tweets.length > 0) {
-        return;
-      }
+      if (this.tweets.length == 0 && tweets) {
 
-      for (let z = 0; z < tweets.length; z++) {
-        let newtx = new saito.default.transaction();
-        newtx.deserialize_from_web(this.app, tweets[z]);
-        this.addTweet(newtx); 
+        for (let z = 0; z < tweets.length; z++) {
+          let newtx = new saito.default.transaction();
+          newtx.deserialize_from_web(this.app, tweets[z]);
+          this.addTweet(newtx); 
+        }
+
       }
-      this.app.connection.emit("redsquare-home-render-request");
+      this.app.connection.emit("redsquare-home-render-request", false);
     } catch (err) {
       console.log("error in initial redsquare post fetch: " + err);
     }
@@ -334,7 +331,7 @@ class RedSquare extends ModTemplate {
       //
 
       this.loadTweets(null, (txs) => {
-        this.app.connection.emit("redsquare-home-render-request");
+        this.app.connection.emit("redsquare-home-render-request", false);
       });
     }
 
@@ -456,6 +453,16 @@ class RedSquare extends ModTemplate {
     return ts;
   }
 
+ returnLatestTimeStamp() {
+    let ts = 0;
+    for (let tweet of this.tweets) {
+      if (tweet.updated_at > ts) {
+        ts = tweet.updated_at;
+      }
+    }
+    return ts;
+  }
+
   ///////////////////////
   // network functions //
   ///////////////////////
@@ -529,6 +536,25 @@ class RedSquare extends ModTemplate {
         }
       });
     }
+  }
+
+  loadNewTweets(peer, mycallback) {
+    for (let i = 0; i < this.peers.length; i++) {
+      let peer = this.peers[i].peer;
+
+      let time_cutoff = this.peers[i].tweets_latest_ts || this.returnLatestTimeStamp();
+
+      let sql = `SELECT * FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND updated_at > ${time_cutoff} ORDER BY updated_at DESC`;
+
+      this.loadTweetsFromPeer(peer, sql, (txs) => {
+
+        this.updatePeerStat(time_cutoff, "tweets_latest_ts", peer);
+        if (mycallback) {
+          mycallback(txs);
+        }
+      });
+    }
+
   }
 
   loadTweetChildren(peer, sig, mycallback = null) {
@@ -700,7 +726,7 @@ class RedSquare extends ModTemplate {
     // create the tweet
     //
 
-    let tweet = new Tweet(this.app, this, ".tweet-manager", tx);
+    let tweet = new Tweet(this.app, this, tx);
 
     if (!tweet) { return; }
 
@@ -981,7 +1007,7 @@ class RedSquare extends ModTemplate {
       //
       // servers
       //
-      let tweet = new Tweet(app, this, "", tx);
+      let tweet = new Tweet(app, this, tx, "");
 
       if (!tweet) { return; }
 
@@ -1327,6 +1353,7 @@ class RedSquare extends ModTemplate {
   async updateTweetsCacheForBrowsers() {
     let hex_entries = [];
 
+
     let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 AND moderated IS NOT 1) AND 
                     (((num_replies > 0 OR num_likes > 0) AND parent_id IS NOT "") OR (parent_id IS "")) AND 
                     (sig IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10)) OR 
@@ -1334,6 +1361,8 @@ class RedSquare extends ModTemplate {
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 
+    console.log("Update Tweets: " + rows.length);
+    
     for (let i = 0; i < rows.length; i++) {
       //
       // create the transaction

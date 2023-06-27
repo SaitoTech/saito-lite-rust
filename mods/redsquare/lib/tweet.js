@@ -7,11 +7,16 @@ const Post = require("./post");
 const JSON = require("json-bigint");
 
 class Tweet {
-  constructor(app, mod, container = "", tx = null) {
+  constructor(app, mod, tx, container = ".tweet-manager") {
     this.app = app;
     this.mod = mod;
     this.container = container;
     this.name = "Tweet";
+
+    if (!tx) {
+      console.warn("Attempting to create a tweet from a null tx");
+      return null;
+    }
 
     //
     // the core
@@ -50,12 +55,12 @@ class Tweet {
     }
     let txmsg = tx.returnMessage();
 
-    if (txmsg.module !== mod.name){
+    if (txmsg.module !== mod.name) {
       console.warn("Attempting to create Tweet from non-Redsquare tx");
       return null;
     }
 
-    // 
+    //
     // If I am not part of a thread, become my own thread
     // This value will get propagated to this.thread_id
     //
@@ -107,7 +112,7 @@ class Tweet {
     this.unknown_children = [];
     this.unknown_children_sigs_hmap = {};
     this.critical_child = null;
-    this.render_after_selector = "";
+    this.render_after_selector = ""; //Used to attach replies to the original tweet
 
     this.retweet = null;
     this.retweeters = [];
@@ -118,7 +123,7 @@ class Tweet {
     this.force_long_tweet = false;
     this.is_long_tweet = false;
     this.is_retweet = false;
-    
+
     //
     // Read data from txmsg.data and tx.optional to populate this class
     //
@@ -144,12 +149,11 @@ class Tweet {
       this.retweet = new Tweet(
         this.app,
         this.mod,
-        `.tweet-preview-${this.tx.transaction.sig}`,
-        newtx
+        newtx,
+        `.tweet-preview-${this.tx.transaction.sig}`
       );
       this.retweet.is_retweet = true;
       this.retweet.show_controls = 0;
-
     } else {
       //
       // image preview
@@ -174,13 +178,16 @@ class Tweet {
     }
   }
 
-  formatDate(ts = 0){
+  formatDate(ts = 0) {
     let dt = this.app.browser.formatDate(ts || this.updated_at);
     return `${dt.month} ${dt.day}, ${dt.year} at ${dt.hours}:${dt.minutes}`;
   }
 
+  //
+  //  This is helpful when pulling older tweets and then running through the whole list of tweets
+  //
   isRendered() {
-    if (document.querySelector(`.tweet-${this.tx.transaction.sig}`)) {
+    if (document.querySelector(`.tweet-manager > .tweet-${this.tx.transaction.sig}`)) {
       return true;
     }
     return false;
@@ -195,11 +202,16 @@ class Tweet {
 
   render(prepend = false) {
     // double-rendering is possible with commented retweets
-    if (this.isRendered()) {
-      return;
-    }
+    // but we should just replace, duh.
 
-    let myqs = `.tweet-${this.tx.transaction.sig}`;
+    //if (this.isRendered()) {
+    //  console.log("Already rendered");
+    //  return;
+    //}
+
+    //console.log(this);
+
+    let myqs = this.container + ` .tweet-${this.tx.transaction.sig}`;
     let replace_existing_element = true;
 
     let has_reply = false;
@@ -209,18 +221,29 @@ class Tweet {
     // we might be re-rendering when critical child is on screen, so check if the
     // class exists and flag if so
     //
-    if (document.querySelector(myqs)) {
-      let obj = document.querySelector(myqs);
+    let obj = document.querySelector(myqs);
+
+    if (obj) {
       if (obj.classList.contains("has-reply")) {
         has_reply = true;
       }
       if (obj.classList.contains("has-reply-disconnected")) {
         has_reply_disconnected = true;
       }
+
+      if (has_reply || has_reply_disconnected){
+        //console.log(has_reply, has_reply_disconnected);
+      }
+      //
+      // if prepend = true, remove existing element
+      //
+      if (prepend) {
+        obj.remove();
+      }
     }
 
     //
-    //
+    // We only want this default behavior for main feed, NEED TO FIX
     //
     if (this.updated_at > this.created_at) {
       if (this.num_replies > 0) {
@@ -229,19 +252,10 @@ class Tweet {
     }
 
     //
-    // if prepend = true, remove existing element
-    //
-    if (prepend == true) {
-      let eqs = ".tweet-" + this.tx.transaction.sig;
-      if (document.querySelector(eqs)) {
-        document.querySelector(eqs).remove();
-      }
-    }
-
-    //
     // retweets displayed in container even if master exists elsewhere on page
     //
     if (this.is_retweet) {
+      //console.log("Is retweet");
       myqs = this.container;
       replace_existing_element = true;
     } else {
@@ -249,12 +263,9 @@ class Tweet {
       // this isn't retweet, but if the original exists, we want to ignore
       // it unless it is parent-level (top thread).
       //
-      if (document.querySelector(myqs)) {
-        let obj = document.querySelector(myqs);
-        let parent = obj.parentElement;
-        if (parent.classList.contains("tweet-main")) {
-          replace_existing_element = false;
-        }
+      if (obj?.parentElement?.classList.contains("tweet-main")) {
+        //console.log("parent is a tweet");
+        replace_existing_element = false;
       }
     }
 
@@ -265,18 +276,20 @@ class Tweet {
     // this is if i retweet my own tweet
     //
     if (!this.text && this.retweet_tx) {
-      //
-      // i am retweeting myself
-      //
+      //console.log("Retweet without quote");
       this.retweet.notice =
-        "retweeted by " + this.app.browser.returnAddressHTML(this.tx.transaction.from[0].add) + this.formatDate();
+        "retweeted by " +
+        this.app.browser.returnAddressHTML(this.tx.transaction.from[0].add) +
+        this.formatDate();
       this.retweet.container = ".tweet-" + this.retweet.tx.transaction.sig;
-      
+
       let t = this.mod.returnTweet(this.retweet.tx.transaction.sig);
       if (t) {
+        //console.log("returned tweet");
         t.notice = this.retweet.notice;
         t.render(prepend);
       } else {
+        //console.log("saved tweet");
         this.retweet.render(prepend);
       }
       return;
@@ -284,8 +297,7 @@ class Tweet {
 
     //
     // remove if selector does not exist
-    // - if we click on a child we rerender but w/o parent just insert in container
-    // why? I want to expand to see the whole thread
+    //
     if (this.render_after_selector) {
       if (!document.querySelector(this.render_after_selector)) {
         this.render_after_selector = "";
@@ -298,25 +310,23 @@ class Tweet {
 
     if (replace_existing_element && document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
+      //console.log("Replace: " + myqs);
+    } else if (prepend) {
+      this.app.browser.prependElementToSelector(
+        TweetTemplate(this.app, this.mod, this),
+        this.container
+      );
+    } else if (this.render_after_selector) {
+      this.app.browser.addElementAfterSelector(
+        TweetTemplate(this.app, this.mod, this),
+        this.render_after_selector
+      );
     } else {
-      if (prepend) {
-        this.app.browser.prependElementToSelector(
-          TweetTemplate(this.app, this.mod, this),
-          this.container
-        );
-      } else {
-        if (this.render_after_selector) {
-          this.app.browser.addElementAfterSelector(
-            TweetTemplate(this.app, this.mod, this),
-            this.render_after_selector
-          );
-        } else {
-          this.app.browser.addElementToSelector(
-            TweetTemplate(this.app, this.mod, this),
-            this.container
-          );
-        }
-      }
+      this.app.browser.addElementToSelector(
+        TweetTemplate(this.app, this.mod, this),
+        this.container
+      );
+      //console.log("Append to: " + this.container);
     }
 
     //
@@ -352,10 +362,11 @@ class Tweet {
         }
       }
     }
-
+    
     this.user.render();
 
-    if (this.retweet != null) {
+    if (this.retweet) {
+      //console.log("Render quoted tweet");
       this.retweet.render();
     }
     if (this.img_preview != null) {
@@ -372,15 +383,17 @@ class Tweet {
     this.attachEvents();
   }
 
-  renderWithCriticalChild(prepend = false) {
+  renderWithCriticalChild() {
+    //console.log("renderWithCriticalChild");
 
-    this.render(prepend);
+    this.render();
 
     if (this.critical_child) {
+      //console.log("Rendering child");
       this.critical_child.render_after_selector = ".tweet-" + this.tx.transaction.sig;
       this.critical_child.render();
 
-      let myqs = `.tweet-${this.tx.transaction.sig}`;
+      let myqs = this.container + ` .tweet-${this.tx.transaction.sig}`;
       let obj = document.querySelector(myqs);
       if (obj) {
         if (this.critical_child.parent_id == this.tx.transaction.sig) {
@@ -395,6 +408,8 @@ class Tweet {
   }
 
   renderWithChildren() {
+
+    //console.log("Render thread");
     //
     // first render the tweet
     //
@@ -403,7 +418,16 @@ class Tweet {
     //
     // then render its children
     //
+    // it's clear we need to figure out tweet threading....
+    //
     if (this.children.length > 0) {
+
+      let myqs = this.container + ` .tweet-${this.tx.transaction.sig}`;
+      let obj = document.querySelector(myqs);
+      if (obj) {
+        obj.classList.add("has-reply");
+      }
+
       if (
         this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add ||
         this.children.length == 1
@@ -429,7 +453,6 @@ class Tweet {
 
     this.attachEvents();
   }
-
 
   attachEvents() {
     let mod = this.mod;
@@ -504,14 +527,13 @@ class Tweet {
               tweet_text.classList.add("full");
               this.force_long_tweet = true;
               return;
-            } 
+            }
           }
 
           //
           // if we are asking to see a tweet, WE SHOULD load from parent if exists
           //
           if (e.target.tagName != "IMG") {
-
             //window.location.href = `/redsquare/?tweet_id=${this.thread_id}`;
 
             window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`);
@@ -521,7 +543,7 @@ class Tweet {
       }
 
       ////////////////////////////////////////////////
-      // view preview  -- click on the retweeted post 
+      // view preview  -- click on the retweeted post
       ////////////////////////////////////////////////
       document.querySelectorAll(`.tweet-${this.tx.transaction.sig} .tweet`).forEach((item) => {
         item.addEventListener("click", (e) => {
@@ -543,27 +565,29 @@ class Tweet {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        let tweet_sig = this.tx.transaction.sig;
-        if (tweet_sig != null) {
-          let post = new Post(this.app, this.mod, this);
-          post.parent_id = tweet_sig;
-          post.thread_id = this.thread_id;
+        let post = new Post(this.app, this.mod, this);
+        post.parent_id = this.tx.transaction.sig;
+        post.thread_id = this.thread_id;
 
-          post.source = "Reply";
-          post.render();
-          this.app.browser.prependElementToSelector(
-            `<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`,
-            ".tweet-overlay"
-          );
+        post.source = "Reply";
+        post.render();
+        this.app.browser.prependElementToSelector(
+          `<div id="post-tweet-preview-${this.tx.transaction.sig}" class="post-tweet-preview" data-id="${this.tx.transaction.sig}"></div>`,
+          ".tweet-overlay"
+        );
 
-          let newtx = new saito.default.transaction(
-            JSON.parse(JSON.stringify(this.tx.transaction))
-          );
-          newtx.transaction.sig = this.app.crypto.hash(newtx.transaction.sig);
-          let new_tweet = new Tweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, newtx);
-          new_tweet.show_controls = 0;
-          new_tweet.render();
-        }
+        let newtx = new saito.default.transaction(JSON.parse(JSON.stringify(this.tx.transaction)));
+
+        newtx.transaction.sig = this.app.crypto.hash(newtx.transaction.sig);
+
+        let new_tweet = new Tweet(
+          this.app,
+          this.mod,
+          newtx,
+          `#post-tweet-preview-${this.tx.transaction.sig}`
+        );
+        new_tweet.show_controls = 0;
+        new_tweet.render();
       };
 
       /////////////
@@ -575,27 +599,29 @@ class Tweet {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
-        if (tweet_sig) {
-          let post = new Post(this.app, this.mod, this);
+        let post = new Post(this.app, this.mod, this);
 
-          post.source = "Retweet";
-          post.render();
+        post.source = "Retweet";
+        post.render();
 
-          this.app.browser.prependElementToSelector(
-            `<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`,
-            ".tweet-overlay"
-          );
+        this.app.browser.prependElementToSelector(
+          `<div id="post-tweet-preview-${this.tx.transaction.sig}" class="post-tweet-preview" data-id="${this.tx.transaction.sig}"></div>`,
+          ".tweet-overlay"
+        );
 
-          //Insert this tweet as a new Tweet in the post window
-          let newtx = new saito.default.transaction(
-            JSON.parse(JSON.stringify(this.tx.transaction))
-          );
-          newtx.transaction.sig = this.app.crypto.hash(newtx.transaction.sig);
-          let new_tweet = new Tweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, newtx);
-          new_tweet.show_controls = 0;
-          new_tweet.render();
-        }
+        //Insert this tweet as a new Tweet in the post window
+        let newtx = new saito.default.transaction(JSON.parse(JSON.stringify(this.tx.transaction)));
+
+        newtx.transaction.sig = this.app.crypto.hash(newtx.transaction.sig);
+
+        let new_tweet = new Tweet(
+          this.app,
+          this.mod,
+          newtx,
+          `#post-tweet-preview-${this.tx.transaction.sig}`
+        );
+        new_tweet.show_controls = 0;
+        new_tweet.render();
       };
 
       //////////
@@ -617,24 +643,18 @@ class Tweet {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        let tweet_sig =
-          e.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.getAttribute(
-            "data-id"
-          );
-        if (tweet_sig != null) {
-          this.mod.sendLikeTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
+        this.mod.sendLikeTransaction(this.app, this.mod, { sig: this.tx.transaction.sig }, this.tx);
 
-          //
-          // increase num likes
-          //
-          let obj = document.querySelector(
-            `.tweet-${tweet_sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`
-          );
-          obj.innerHTML = parseInt(obj.innerHTML) + 1;
-          if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
-            obj.parentNode.classList.remove("saito-tweet-no-activity");
-            obj.parentNode.classList.add("saito-tweet-activity");
-          }
+        //
+        // increase num likes
+        //
+        let obj = document.querySelector(
+          `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`
+        );
+        obj.innerHTML = parseInt(obj.innerHTML) + 1;
+        if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
+          obj.parentNode.classList.remove("saito-tweet-no-activity");
+          obj.parentNode.classList.add("saito-tweet-activity");
         }
       };
 
@@ -647,15 +667,14 @@ class Tweet {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        let tweet_sig =
-          e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
-        if (tweet_sig != null) {
-          let tweetUrl =
-            window.location.origin + window.location.pathname + "?tweet_id=" + tweet_sig;
-          navigator.clipboard.writeText(tweetUrl).then(() => {
-            siteMessage("Link copied to clipboard.", 2000);
-          });
-        }
+        let tweetUrl =
+          window.location.origin +
+          window.location.pathname +
+          "?tweet_id=" +
+          this.tx.transaction.sig;
+        navigator.clipboard.writeText(tweetUrl).then(() => {
+          siteMessage("Link copied to clipboard.", 2000);
+        });
       };
 
       //////////
@@ -667,20 +686,19 @@ class Tweet {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        let tweet_sig =
-          e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
-        if (tweet_sig != null) {
-          this.mod.sendFlagTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
-          let obj = document.querySelector(`.tweet-flag-${tweet_sig}`);
-          if (obj) {
-            obj.classList.add("saito-tweet-activity");
-          }
-          obj = document.querySelector(`.tweet-${tweet_sig}`);
-          if (obj) {
-            obj.style.display = "none";
-          }
-          salert("Tweet reported to moderators successfully.");
+        this.mod.sendFlagTransaction(this.app, this.mod, { sig: this.tx.transaction.sig }, this.tx);
+        let obj = document.querySelector(`.tweet-flag-${this.tx.transaction.sig}`);
+        if (obj) {
+          obj.classList.add("saito-tweet-activity");
         }
+
+        this.flagged = 1;
+        obj = document.querySelector(`.tweet-${this.tx.transaction.sig}`);
+
+        if (obj) {
+          obj.style.display = "none";
+        }
+        salert("Tweet reported to moderators successfully.");
       };
     } catch (err) {
       console.log("ERROR attaching events to tweet: " + err);
@@ -738,9 +756,8 @@ class Tweet {
           if (levels_deep == 0) {
             this.updated_at = this.critical_child.updated_at;
           }
-          
+
           this.user.notice = "new reply on " + this.formatDate();
-              
         }
         this.unknown_children[i].parent_tweet = tweet;
 
@@ -1004,7 +1021,6 @@ class Tweet {
       }
     } catch (err) {}
   }
-
 }
 
 module.exports = Tweet;
