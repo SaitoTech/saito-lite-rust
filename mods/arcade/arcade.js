@@ -1114,7 +1114,7 @@ class Arcade extends ModTemplate {
   }
 
   async receiveJoinTransaction(tx) {
-    // console.log("receiveJoinTransaction", tx);
+    console.log("receiveJoinTransaction", tx);
     if (!tx || !tx.signature) {
       return;
     }
@@ -1250,6 +1250,7 @@ class Arcade extends ModTemplate {
 
     // Must be an available invite
     if (!game || !this.isAvailableGame(game, "accepted")) {
+      console.log("not valid invite");
       return;
     }
 
@@ -1265,6 +1266,8 @@ class Arcade extends ModTemplate {
     //
     await this.changeGameStatus(txmsg.game_id, "active");
 
+    console.log("after changing game status");
+
     //
     // If I am a player in the game, let's start it initializing
     //
@@ -1279,7 +1282,10 @@ class Arcade extends ModTemplate {
       from initializing, so... we should wait for feedback and nope out of the spinner if something breaks
       */
 
+      console.log(gamemod, "game mode ");
       let game_engine_id = await gamemod.processAcceptRequest(tx);
+
+      console.log(game_engine_id, "game engine ");
 
       if (!game_engine_id || game_engine_id !== txmsg.game_id) {
         await sconfirm("Something went wrong with the game initialization: " + game_engine_id);

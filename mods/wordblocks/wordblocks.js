@@ -39,6 +39,7 @@ class Wordblocks extends GameTemplate {
   }
 
   async initializeHTML(app) {
+    console.log("initializing html", this.browser_active);
     if (!this.browser_active) {
       return;
     }
@@ -82,6 +83,8 @@ class Wordblocks extends GameTemplate {
 
     await this.menu.render();
 
+    console.log("rendering menu");
+
     this.hud.auto_sizing = 0; //turn off default sizing
     this.hud.draggable_whole = false;
     this.hud.render();
@@ -92,7 +95,7 @@ class Wordblocks extends GameTemplate {
       await this.playerbox.render();
 
       await this.playerbox.groupOpponents(false);
-      $("#opponentbox *").disableSelection();
+      // document.querySelector("#opponentbox *").disableSelection();
 
       let compact_html = "";
 
