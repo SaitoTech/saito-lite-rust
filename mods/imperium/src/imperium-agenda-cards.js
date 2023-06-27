@@ -16,9 +16,9 @@
     if (obj.returnCardImage == null) {
       obj.returnCardImage = function() {
         return `
-  	  <div style="background-image: url('/imperium/img/agenda_card_template.png');" class="overlay_agendacard card option ${key}" id="${key}">
-	    <div class="overlay_agendatitle">${obj.name}</div>
-	    <div class="overlay_agendacontent">${obj.text}</div>
+  	  <div class="agenda-card agenda-card-${key} card option ${key}" id="${key}">
+	    <div class="agenda-card-title">${obj.name}</div>
+	    <div class="agenda-card-content">${obj.text}</div>
 	  </div>
         `;
       }

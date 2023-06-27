@@ -1,4 +1,7 @@
 
+
+
+
 .status-update {
   display: grid;
   grid-template-columns: min-content 1fr;
@@ -19,7 +22,12 @@
 
 .hud-header .hud-controls {
   padding: 1.5rem;
+  padding: 1.5rem;
+  min-width: 12.5rem;
+  margin-top: -0.5rem;
 }
+
+
 
 .hud-body .controls {
   display: none;

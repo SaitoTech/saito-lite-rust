@@ -1,0 +1,14 @@
+
+.factionbar {
+    display: flex;
+    flex-direction: rows;
+    margin-top: -0.5rem;
+}
+
+.hud-header {
+    display: flex;
+    flex-direction: rows;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+}
+

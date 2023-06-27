@@ -35,10 +35,7 @@ console.log("ac length: " + ac.length);
     for (let i = 0; i < ac.length; i++) {
       let html = '';
       if (imperium_self.game.player == player) {
-        html = `<div class="faction_sheet_action_card bc">
-                  <div class="action_card_name">${imperium_self.action_cards[ac[i]].name}</div>
-                  <div class="action_card_content">${imperium_self.action_cards[ac[i]].text}</div>
-                </div>`;
+        html += imperium_self.action_cards[ac[i]].returnCardImage();
       } else {
         html = `<div class="faction_sheet_action_card faction_sheet_action_card_back bc"></div>`;
       }

@@ -617,6 +617,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
       if (mv[0] === "play") {
 
+	this.factionbar.render(this.game.player);
 	this.tokenbar.render(this.game.player);
         this.updateLeaderboard();
 
@@ -2915,7 +2916,7 @@ if (debugging == 0) {
 	    let bonus_buff = 0;
 	    document.querySelectorAll('.overlay_action_card').forEach(el => { bonus_buff++; });
 
-	    this.overlay.show(this.returnNewActionCardsOverlay(this.game.deck[1].hand.slice(this.game.deck[1].hand.length-(amount+bonus_buff), this.game.deck[1].hand.length)));
+	    this.new_action_cards_overlay.render(this.game.deck[1].hand.slice(this.game.deck[1].hand.length-(amount+bonus_buff), this.game.deck[1].hand.length));
 	    this.game.state.showing_action_cards_amounts = 0;
 	  }
 	  this.game.state.players_info[player-1].action_cards_in_hand += amount;

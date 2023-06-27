@@ -19,6 +19,7 @@ const ObjectivesOverlay = require('./lib/overlays/objectives');
 const AgendasOverlay = require('./lib/overlays/agenda');
 const AgendaSelectionOverlay = require('./lib/overlays/agenda-selection');
 const AgendaVotingOverlay = require('./lib/overlays/agenda-voting');
+const NewActionCardsOverlay = require('./lib/overlays/new-action-cards');
 const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
 const InfluenceSelectionOverlay = require('./lib/overlays/influence-selection');
 const SenateOverlay = require('./lib/overlays/senate');
@@ -28,6 +29,7 @@ const BombardmentOverlay = require('./lib/overlays/bombardment');
 const AntiFighterBarrageOverlay = require('./lib/overlays/anti-fighter-barrage');
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
+const FactionBar = require('./lib/factionbar');
 const TokenBar = require('./lib/tokenbar');
 const Dashboard = require('./lib/dashboard-manager');
 const RoundBox = require('./lib/round');
@@ -73,6 +75,7 @@ class Imperium extends GameTemplate {
     this.agendas_overlay = new AgendasOverlay(this.app, this);
     this.agenda_selection_overlay = new AgendaSelectionOverlay(this.app, this);
     this.agenda_voting_overlay = new AgendaVotingOverlay(this.app, this);
+    this.new_action_cards_overlay = new NewActionCardsOverlay(this.app, this);
     this.units_overlay = new UnitsOverlay(this.app, this);
     this.sector_overlay = new SectorOverlay(this.app, this);
     this.tech_tree_overlay = new TechTreeOverlay(this.app, this);
@@ -85,6 +88,7 @@ class Imperium extends GameTemplate {
     this.anti_fighter_barrage_overlay = new AntiFighterBarrageOverlay(this.app, this);
     this.dashboard = new Dashboard(this.app, this, ".dashboard");
     this.tokenbar = new TokenBar(this.app, this, ".hud-header");
+    this.factionbar = new FactionBar(this.app, this, ".hud-header");
     this.roundbox = new RoundBox(this.app, this, "");
     this.leaderboard = new Leaderboard(this.app, this, "");
 
@@ -10035,7 +10039,7 @@ console.log("qe: " + qe);
     this.importActionCard('tactical-bombardment', {
   	name : "Tactical Bombardment" ,
   	type : "action" ,
-  	text : "ACTION: Choose a sector in which you have ships with bombardment. Exhaust all planets in that sector" ,
+  	text : "ACTION: Exhaust all planets in a sector where you have a ship with bombardment." ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
 	  if (imperium_self.game.player == action_card_player) {
@@ -10073,7 +10077,7 @@ console.log("qe: " + qe);
     this.importActionCard('signal-jamming', {
   	name : "Signal Jamming" ,
   	type : "action" ,
-  	text : "ACTION: Choose a player. They must activate a system in or next to a system in which you have a ship" ,
+  	text : "ACTION: Player chosen must activate sector in or next to one where you have a ship" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
 	  if (imperium_self.game.player == action_card_player) {
@@ -13736,9 +13740,9 @@ handleSystemsMenuItem() {
     if (obj.returnCardImage == null) {
       obj.returnCardImage = function() {
         return `
-  	  <div style="background-image: url('/imperium/img/agenda_card_template.png');" class="overlay_agendacard card option ${key}" id="${key}">
-	    <div class="overlay_agendatitle">${obj.name}</div>
-	    <div class="overlay_agendacontent">${obj.text}</div>
+  	  <div class="agenda-card agenda-card-${key} card option ${key}" id="${key}">
+	    <div class="agenda-card-title">${obj.name}</div>
+	    <div class="agenda-card-content">${obj.text}</div>
 	  </div>
         `;
       }
@@ -13777,9 +13781,9 @@ handleSystemsMenuItem() {
     if (obj.returnCardImage == null) {
       obj.returnCardImage = function() {
         return `
-          <div class="action_card" id="${name}" style="background-image: url(${obj.img});background-size:cover;">
-            <div class="action_card_title">${obj.name}</div>
-            <div class="action_card_text">${obj.text}</div>
+          <div class="action-card action-card-${name}" id="${name}">
+            <div class="title">${obj.name}</div>
+            <div class="text">${obj.text}</div>
           </div>
         `;
       }
@@ -14410,6 +14414,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
       if (mv[0] === "play") {
 
+	this.factionbar.render(this.game.player);
 	this.tokenbar.render(this.game.player);
         this.updateLeaderboard();
 
@@ -16708,7 +16713,7 @@ if (debugging == 0) {
 	    let bonus_buff = 0;
 	    document.querySelectorAll('.overlay_action_card').forEach(el => { bonus_buff++; });
 
-	    this.overlay.show(this.returnNewActionCardsOverlay(this.game.deck[1].hand.slice(this.game.deck[1].hand.length-(amount+bonus_buff), this.game.deck[1].hand.length)));
+	    this.new_action_cards_overlay.render(this.game.deck[1].hand.slice(this.game.deck[1].hand.length-(amount+bonus_buff), this.game.deck[1].hand.length));
 	    this.game.state.showing_action_cards_amounts = 0;
 	  }
 	  this.game.state.players_info[player-1].action_cards_in_hand += amount;
@@ -20364,7 +20369,7 @@ playerTurn(stage = "main") {
     let playercol = "player_color_" + this.game.player;
 
     let html = '';
-    html += '<div class="terminal_header2 sf-readable status-update"><div class="player_color_box ' + playercol + '"></div>' + this.returnFaction(this.game.player) + ":</div><p><ul class='terminal_header3'>";
+    html += "<ul class='terminal_header3'>";
 
     if (this.canPlayerPass(this.game.player) == 1) {
       if (this.game.state.active_player_moved == 1) {
@@ -20448,7 +20453,7 @@ playerTurn(stage = "main") {
       }
     }
 
-    html += '</ul></p>';
+    html += '</ul>';
 
     //
     // automatically trigger end-of-turn if no other options
@@ -22474,7 +22479,7 @@ playerContinueTurn(player, sector) {
   // check to see if any ships survived....
   //
   let playercol = "player_color_" + this.game.player;
-  let html = "<div class='sf-readable status-update'><div class='player_color_box " + playercol + "'></div>" + this.returnFaction(player) + ": </div><ul>";
+  let html = "<ul>";
 
   if (this.canPlayerScoreActionStageVictoryPoints(player) != "") {
     html += '<li class="option" id="score">score secret objective</li>';
@@ -24402,7 +24407,7 @@ playerSelectStrategyCards(mycallback, selection = 0) {
   let relevant_action_cards = ["strategy"];
   let ac = this.returnPlayerActionCards(this.game.player, relevant_action_cards);
 
-  let html = "<div class='terminal_header status-update'><div class='player_color_box " + playercol + "'></div>" + this.returnFaction(this.game.player) + ": select your strategy card:</div><ul>";
+  let html = "<div class='terminal_header status-update'>" + this.returnFaction(this.game.player) + ": select your strategy card:</div><ul>";
   if (this.game.state.round > 1) {
     html = "<div class='terminal_header'>" + this.returnFaction(this.game.player) + ": select your strategy card:</div><ul>";
   }
@@ -31341,6 +31346,7 @@ displayBoard() {
 }
 
 
+
 //
 // flash a sector
 //
@@ -31753,33 +31759,6 @@ returnUnitPopupEntry(unittype) {
 
 }
 
-returnNewActionCardsOverlay(cards) {
-
-  let title = "Your New Action Cards";
-
-  let html = `
-    <div class="new_action_cards_overlay_container" style="">
-      <div class="new_action_cards_title">${title}</div>
-      <div style="width:100%"><div class="new_action_cards_text">click on your faction to see all your action cards anytime...</div></div>
-      <div class="new_action_cards">
-  `;
-
-  for (let i = 0; i < cards.length; i++) {
-    html += `
-      <div class="overlay_action_card bc">
-        <div class="action_card_name">${this.action_cards[cards[i]].name}</div>
-        <div class="action_card_content">${this.action_cards[cards[i]].text}</div>
-      </div>
-    `;
-  }
-  html += `
-      </div>
-    </div>
-  `;
-  return html;
-}
-
-
 
 
 displayFactionDashboard(agenda_phase=0) {
@@ -31849,6 +31828,8 @@ addUIEvents() {
   //set player highlight color
   document.documentElement.style.setProperty('--my-color', `var(--p${this.game.player})`);
   this.displayFactionDashboard();
+
+  this.factionbar.render(this.game.player);
   this.tokenbar.render(this.game.player);
 
 }
@@ -31888,6 +31869,7 @@ hideSector(pid) {
 updateTokenDisplay() {
 
   let imperium_self = this;
+  this.factionbar.render(this.game.player);
   this.tokenbar.render(this.game.player);
 
 }
