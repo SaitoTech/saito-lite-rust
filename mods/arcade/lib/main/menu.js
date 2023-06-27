@@ -1,13 +1,15 @@
-const ArcadeMenuTemplate = require("./menu.template");
+const ArcadeMenuTemplate = require('./menu.template');
 
 class ArcadeMenu {
-  constructor(app, mod, container = "") {
+
+  constructor(app, mod, container="") {
     this.app = app;
     this.mod = mod;
     this.container = container;
   }
 
-  async render() {
+  render() {
+
     //
     // create HTML of games list
     //
@@ -15,23 +17,16 @@ class ArcadeMenu {
     let html = "";
     for (let i = 0; i < this.mod.arcade_games.length; i++) {
       let game_mod = this.mod.arcade_games[i];
-      gamelist.push([
-        game_mod.categories,
-        `<li class="arcade-menu-item" id="${game_mod.name}">${game_mod.returnName()}</li>`,
-      ]);
-    }
-    if (!this.mod.manual_ordering) {
-      gamelist.sort(function (a, b) {
-        if (a[0] > b[0]) {
-          return 1;
-        }
-        if (a[0] < b[0]) {
-          return -1;
-        }
+      gamelist.push([game_mod.categories, `<li class="arcade-menu-item" id="${game_mod.name}">${game_mod.returnName()}</li>`]);
+    };
+    if (!this.mod.manual_ordering){
+      gamelist.sort(function (a,b){
+        if (a[0]>b[0]){ return 1;}
+        if (a[0]<b[0]){ return -1;}
         return 0;
       });
     }
-    for (let g of gamelist) {
+    for (let g of gamelist){
       html += g[1];
     }
 
@@ -42,18 +37,23 @@ class ArcadeMenu {
     }
 
     this.attachEvents();
+
   }
 
+  
   attachEvents() {
-    let menu_self = this;
+    menu_self = this;
 
-    Array.from(document.getElementsByClassName("arcade-menu-item")).forEach((game) => {
-      game.addEventListener("click", async (e) => {
-        await this.app.browser.logMatomoEvent("GameWizard", "ArcadeMenu", e.currentTarget.id);
+    Array.from(document.getElementsByClassName('arcade-menu-item')).forEach(game => {
+      game.addEventListener('click', (e) => {
+
+        this.app.browser.logMatomoEvent("GameWizard", "ArcadeMenu", e.currentTarget.id);
         menu_self.app.connection.emit("arcade-launch-game-wizard", { game: e.currentTarget.id });
       });
     });
+
   }
+
 }
 
 module.exports = ArcadeMenu;

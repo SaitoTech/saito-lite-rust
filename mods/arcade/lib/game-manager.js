@@ -13,7 +13,13 @@ class GameManager {
 		// We may want to only display one type of game invite, so overwrite this before render()
 		this.lists = ["active", "over"];
 
+		/*filter = {
+					game: 
+					league_id: 
+					}
+		*/
 		app.connection.on("league-overlay-games-list", (filter) => {
+			console.log("Show recent games in overlay");
 			this.filter = filter;
 			this.render();
 		});
@@ -28,7 +34,7 @@ class GameManager {
 		if (document.querySelector(target)) {
 			this.app.browser.replaceElementBySelector(`<div class="game-manager"></div>`, target);
 		} else {
-			this.app.browser.addElementToSelectorOrDom(
+			this.app.browser.addElementToSelector(
 				`<div class="game-manager"></div>`,
 				this.container
 			);
@@ -70,6 +76,11 @@ class GameManager {
 
 				if (gameList.length > 0) {
 					if (list == "active") {
+
+						gameList.sort((a, b) => {
+							return b.msg.ts - a.msg.ts;
+						});
+
 						let html = 	`<div class="saito-table-header">
 						            	<div>Time Started</div>
 						            	<div>Players</div>
@@ -78,6 +89,11 @@ class GameManager {
 
 						this.app.browser.addElementToSelector(html, target);
 					} else if (list == "over") {
+
+						gameList.sort((a, b) => {
+							return b.msg.time_finished - a.msg.time_finished;
+						});
+
 						let html = 	`<div class="saito-table-header">
 						            	<div>Time Finished</div>
 						            	<div>Players</div>
