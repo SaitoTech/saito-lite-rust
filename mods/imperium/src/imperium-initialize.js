@@ -7,6 +7,7 @@
 
     if (!this.browser_active) { return; }
 
+
     let imperium_self = this;
 
     super.render(app);
@@ -228,6 +229,10 @@
         nickname.push(imperium_self.returnFactionNickname((ii+1)));
       }
       this.menu.addChatMenu(nickname, fullname);
+
+      //set player highlight color
+      document.documentElement.style.setProperty('--my-color', `var(--p${this.game.player})`);
+
     } catch (err) {
       console.log("error initing chat: " + err);
     }
@@ -708,7 +713,6 @@ console.log("initing sector: " + i);
     try {
       this.addUIEvents();
     } catch (err) {
-     
     }
 
 

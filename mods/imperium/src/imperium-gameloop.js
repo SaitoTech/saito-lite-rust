@@ -674,7 +674,7 @@ console.log("WHO: " + this.returnFaction(z+1));
         } else {
 
 	  this.hideStrategyCard();
-  	  this.updateStatus("<div class=\"status-update\"><div class=\"player_color_box player_color_"+player+"\"></div>" + this.returnFaction(parseInt(player)) + " is taking their turn.</div>");
+  	  this.updateStatus("<div class=\"status-header-text\">" + this.returnFaction(parseInt(player)) + " is taking their turn.</div>");
 
   	}
   
@@ -2229,7 +2229,7 @@ if (debugging == 0) {
   	} else {
 
 	  let html = '';
-	  html += this.returnFaction(player) + " is picking a strategy card: <ul>";
+	  html += '<div class="status-header-text">' + this.returnFaction(player) + " is picking a strategy card:</div><ul>";
 
           let scards = [];
           for (let z in this.strategy_cards) {

@@ -11652,6 +11652,7 @@ console.log("qe: " + qe);
 
     if (!this.browser_active) { return; }
 
+
     let imperium_self = this;
 
     super.render(app);
@@ -11873,6 +11874,10 @@ console.log("qe: " + qe);
         nickname.push(imperium_self.returnFactionNickname((ii+1)));
       }
       this.menu.addChatMenu(nickname, fullname);
+
+      //set player highlight color
+      document.documentElement.style.setProperty('--my-color', `var(--p${this.game.player})`);
+
     } catch (err) {
       console.log("error initing chat: " + err);
     }
@@ -12353,7 +12358,6 @@ console.log("initing sector: " + i);
     try {
       this.addUIEvents();
     } catch (err) {
-     
     }
 
 
@@ -14471,7 +14475,7 @@ console.log("WHO: " + this.returnFaction(z+1));
         } else {
 
 	  this.hideStrategyCard();
-  	  this.updateStatus("<div class=\"status-update\"><div class=\"player_color_box player_color_"+player+"\"></div>" + this.returnFaction(parseInt(player)) + " is taking their turn.</div>");
+  	  this.updateStatus("<div class=\"status-header-text\">" + this.returnFaction(parseInt(player)) + " is taking their turn.</div>");
 
   	}
   
@@ -16026,7 +16030,7 @@ if (debugging == 0) {
   	} else {
 
 	  let html = '';
-	  html += this.returnFaction(player) + " is picking a strategy card: <ul>";
+	  html += '<div class="status-header-text">' + this.returnFaction(player) + " is picking a strategy card:</div><ul>";
 
           let scards = [];
           for (let z in this.strategy_cards) {
@@ -20573,7 +20577,7 @@ playerRearrangeTokens() {
   let new_fs = 0;
 
   let imperium_self = this;
-  let html = '<div class="sf-readable">Do you wish to re-arrange your command / strategy / fleet tokens? </div><ul>';
+  let html = '<div class="status-header-text">Do you wish to re-arrange your command / strategy / fleet tokens? </div><ul>';
   html += '<li class="option" id="rearrange">rearrange tokens</li>';
   html += '<li class="option" id="skip">no need</li>';
   html += '</ul>';  
@@ -20583,13 +20587,13 @@ playerRearrangeTokens() {
     let html = '';
 
     if (existing_tokens > 0) {
-        html = '<div class="sf-readable">Tokens Remaining: '+existing_tokens+'</div><ul>';
+        html = '<div class="status-header-text">Tokens Remaining: '+existing_tokens+'</div><ul>';
         html += '<li class="option" id="command">'+new_ct+' command tokens</li>';
         html += '<li class="option" id="strategy">'+new_st+' strategy tokens</li>';
         html += '<li class="option" id="fleet">'+new_fs+' fleet supply</li>';
         html += '</ul>';  
     } else {
-        html = '<div class="sf-readable">Confirm: '+new_ct+"/"+new_st+"/"+new_fs+'</div><ul>';
+        html = '<div class="status-header-text">Confirm: '+new_ct+"/"+new_st+"/"+new_fs+'</div><ul>';
         html += '<li class="option" id="confirm">yes, confirm</li>';
         html += '<li class="option" id="redo">no, try again</li>';
         html += '</ul>';
@@ -20863,7 +20867,7 @@ playerPlayBombardment(attacker, sector, planet_idx) {
     }
   }
 
-  html = '<div class="sf-readable">Do you wish to bombard ' + sys.p[planet_idx].name + '? </div><ul>';
+  html = '<div class="status-header-text">Do you wish to bombard ' + sys.p[planet_idx].name + '? </div><ul>';
 
   let ac = this.returnPlayerActionCards(this.game.player, ["pre_bombardment"]);
   if (ac.length > 0) {
@@ -20937,7 +20941,7 @@ playerPlayBombardment(attacker, sector, planet_idx) {
 
 playerAcknowledgeNotice(msg, mycallback) {
 
-  let html = '<div class="sf-readable">' + msg + "</div><ul>";
+  let html = '<div class="status-header-text">' + msg + "</div><ul>";
   html += '<li class="textchoice acknowledge" id="acknowledge">I understand...</li>';
   html += '</ul></p>';
 
@@ -20966,7 +20970,7 @@ playerAcknowledgeNotice(msg, mycallback) {
 
   let targetted_units = ["destroyer","cruiser","carrier","dreadnaught","warsun","flagship"];
 
-  html = '<div class="sf-readable">You must assign ' + total_hits + ' to your capital ships (if possible):</div><ul>';
+  html = '<div class="status-header-text">You must assign ' + total_hits + ' to capital ships (if possible):</div><ul>';
   html += '<li class="option" id="assign">continue</li>';
   html += '</ul>';
   this.updateStatus(html);
@@ -20990,7 +20994,7 @@ playerAcknowledgeNotice(msg, mycallback) {
       let sys = imperium_self.returnSectorAndPlanets(sector);
 
       let html = '';
-      html += '<div class="sf-readable">Assign <div style="display:inline" id="total_hits_to_assign">' + total_hits + '</div> hits:</div>';
+      html += '<div class="status-header-text">Assign <div style="display:inline" id="total_hits_to_assign">' + total_hits + '</div> hits:</div>';
       html += '<ul>';
 
       for (let i = 0; i < sys.s.units[imperium_self.game.player - 1].length; i++) {
@@ -21106,7 +21110,7 @@ playerAcknowledgeNotice(msg, mycallback) {
   html += '</ul>';
 
   let overlay_html = `<div>assign ${total_hits} to your fleet</div>${html}`;
-  html = '<div class="sf-readable">assign ' + total_hits + ' to your fleet:</div><ul>' + html;
+  html = '<div class="status-header-text">assign ' + total_hits + ' to your fleet:</div><ul>' + html;
 
 
   if (imperium_self.space_combat_overlay.visible) {
@@ -21163,7 +21167,7 @@ playerAcknowledgeNotice(msg, mycallback) {
       let sys = imperium_self.returnSectorAndPlanets(sector);
 
       let html = '';
-      html += '<div class="sf-readable">Assign <div style="display:inline" id="total_hits_to_assign">' + total_hits + '</div> hits:</div>';
+      html += '<div class="status-header-text">Assign <div style="display:inline" id="total_hits_to_assign">' + total_hits + '</div> hits:</div>';
       html += '<ul>';
 
       let total_targetted_units = 0;
@@ -21268,7 +21272,7 @@ playerDestroyUnits(player, total, sector, capital = 0) {
   let maximum_assignable_hits = 0;
   let sys = imperium_self.returnSectorAndPlanets(sector);
 
-  html = '<div class="sf-readable">You must destroy ' + total + ' units in sector: ' + imperium_self.game.sectors[sector].name + ':</div><ul>';
+  html = '<div class="status-header-text">You must destroy ' + total + ' units in sector: ' + imperium_self.game.sectors[sector].name + ':</div><ul>';
 
   let total_targetted_units = 0;
   let targetted_units = imperium_self.game.state.players_info[imperium_self.game.player - 1].target_units;
@@ -21379,7 +21383,7 @@ playerDestroyShips(player, total, sector, capital = 0) {
   let sys = imperium_self.returnSectorAndPlanets(sector);
   let total_targetted_units_hits = 0;
 
-  html = '<div class="sf-readable">You must destroy ' + total + ' ships in your fleet:</div><ul>';
+  html = '<div class="status-header-text">You must destroy ' + total + ' ships in your fleet:</div><ul>';
 
   let total_targetted_units = 0;
   let targetted_units = imperium_self.game.state.players_info[imperium_self.game.player - 1].target_units;
@@ -21478,7 +21482,7 @@ playerDestroyOpponentShips(player, total, sector, capital = 0) {
     return 0;
   }
 
-  html = '<div class="sf-readable">You may destroy ' + total + ' ships in opponent fleet:</div><ul>';
+  html = '<div class="status-header-text">You may destroy ' + total + ' ships in opponent fleet:</div><ul>';
 
   let total_targetted_units = 0;
   let targetted_units = imperium_self.game.state.players_info[imperium_self.game.player - 1].target_units;
@@ -21599,7 +21603,7 @@ playerPlaySpaceCombat(attacker, defender, sector) {
   html += '</ul>';
 
   overlay_html = '<div>round '+ this.game.state.space_combat_round + '</div><ul>' + html;
-  html = '<div class="sf-readable"><b>Space Combat: round ' + this.game.state.space_combat_round + ':</b><div class="combat_attacker">' + this.returnFaction(attacker) + '</div><div class="combat_attacker_fleet">' + this.returnPlayerFleetInSector(attacker, sector) + '</div><div class="combat_defender">' + this.returnFaction(defender) + '</div><div class="combat_defender_fleet">' + this.returnPlayerFleetInSector(defender, sector) + '</div><ul>' + html;
+  html = '<div class="status-header-text"><b>Space Combat: round ' + this.game.state.space_combat_round + ':</b><div class="combat_attacker">' + this.returnFaction(attacker) + '</div><div class="combat_attacker_fleet">' + this.returnPlayerFleetInSector(attacker, sector) + '</div><div class="combat_defender">' + this.returnFaction(defender) + '</div><div class="combat_defender_fleet">' + this.returnPlayerFleetInSector(defender, sector) + '</div><ul>' + html;
 
   this.updateStatus(html);
 
@@ -21656,7 +21660,7 @@ playerPlaySpaceCombat(attacker, defender, sector) {
       if (imperium_self.canPlayerRetreat(imperium_self.game.player, attacker, defender, sector)) {
         let retreat_options = imperium_self.returnSectorsWherePlayerCanRetreat(imperium_self.game.player, sector);
 
-        let html = '<div clss="sf-readable">Retreat into which Sector? </div><ul>';
+        let html = '<div clss="status-header-text">Retreat into which Sector? </div><ul>';
         for (let i = 0; i < retreat_options.length; i++) {
 	  let sys = imperium_self.returnSectorAndPlanets(retreat_options[i]);
           html += '<li class="option" id="' + i + '">' + sys.s.name + '</li>';
@@ -21695,7 +21699,7 @@ playerRespondToRetreat(player, opponent, from, to) {
   let relevant_action_cards = ["retreat"];
   let ac = this.returnPlayerActionCards(this.game.player, relevant_action_cards);
 
-  let html = '<div class="sf-readable">Your opponent has announced a retreat into ' + sys.s.name + ' at the end of this round of combat: </div><p></p><ul>';
+  let html = '<div class="status-header-text">Your opponent has announced a retreat into ' + sys.s.name + ' at the end of this round of combat: </div><p></p><ul>';
   if (ac.length > 0) {
     html += '<li class="option" id="action">play action card</li>';
   }
@@ -21775,10 +21779,10 @@ playerPlayGroundCombatOver(player, sector, planet_idx) {
   let win = 0;
 
   if (player == sys.p[planet_idx].owner) {
-    html = '<div class="sf-readable">Ground Combat is Over (you win): </div><ul>';
+    html = '<div class="status-header-text">Ground Combat is Over (you win): </div><ul>';
     win = 1;
   } else {
-    html = '<div class="sf-readable">Space Combat is Over (you lose): </div><ul>';
+    html = '<div class="status-header-text">Space Combat is Over (you lose): </div><ul>';
   }
 
   if (ac.length > 0) {
@@ -21892,12 +21896,12 @@ playerPlaySpaceCombatOver(player, sector) {
 
 
   if (this.doesPlayerHaveShipsInSector(player, sector)) {
-    overlay_html = '<div class="sf-readable">Space Combat is Over (you win): </div>' + html; 
-    html = '<div class="sf-readable">Space Combat is Over (you win): </div>' + html; 
+    overlay_html = '<div class="status-header-text">Space Combat is Over (you win): </div>' + html; 
+    html = '<div class="status-header-text">Space Combat is Over (you win): </div>' + html; 
     win = 1;
   } else {
-    overlay_html = '<div class="sf-readable">Space Combat is Over (you lose): </div>' + html; 
-    html = '<div class="sf-readable">Space Combat is Over (you lose): </div>' + html;
+    overlay_html = '<div class="status-header-text">Space Combat is Over (you lose): </div>' + html; 
+    html = '<div class="status-header-text">Space Combat is Over (you lose): </div>' + html;
   }
 
   if (this.space_combat_overlay.visible) {
@@ -21998,9 +22002,9 @@ playerPlayGroundCombat(attacker, defender, sector, planet_idx) {
   overlay_html = '<div>'+sys.p[planet_idx].name+': round ' + this.game.state.ground_combat_round + '</div><ul>' + html;
 
   if (sys.p[planet_idx].owner != attacker) {
-    html = '<div class="sf-readable">'+this.returnFactionNickname(attacker)+' are invading ' + sys.p[planet_idx].name + ' with ' + attacker_forces + ' infantry. ' + this.returnFactionNickname(defender) + ' is defending with ' + defender_forces + ' infantry. This is round ' + this.game.state.ground_combat_round + ' of ground combat. </div>' + html;
+    html = '<div class="status-header-text">'+this.returnFactionNickname(attacker)+' are invading ' + sys.p[planet_idx].name + ' with ' + attacker_forces + ' infantry. ' + this.returnFactionNickname(defender) + ' is defending with ' + defender_forces + ' infantry. This is round ' + this.game.state.ground_combat_round + ' of ground combat. </div>' + html;
   } else {
-    html = '<div class="sf-readable">' + this.returnFactionNickname(defender) + ' are invading ' + sys.p[planet_idx].name + ' with ' + defender_forces + ' infantry. You have ' + attacker_forces + ' infantry remaining. This is round ' + this.game.state.ground_combat_round + ' of ground combat. </div>' + html;
+    html = '<div class="status-header-text">' + this.returnFactionNickname(defender) + ' are invading ' + sys.p[planet_idx].name + ' with ' + defender_forces + ' infantry. You have ' + attacker_forces + ' infantry remaining. This is round ' + this.game.state.ground_combat_round + ' of ground combat. </div>' + html;
   }
 
   if (this.game.state.ground_combat_round > 1) {
@@ -22084,18 +22088,18 @@ playerPlayPDSAttack(player, attacker, sector) {
     }
   }
 
-  html = '<div class="sf-readable">Do you wish to fire your PDS before moving into the sector?</div><ul>';
+  html = '<div class="status-header-text">Do you wish to fire your PDS before moving into the sector?</div><ul>';
 
   //
   // skip if attacker is immune
   //
   if (defender != -1) {
     if (imperium_self.game.state.players_info[defender - 1].temporary_immune_to_pds_fire) {
-      html = '<div class="sf-readable">' + imperium_self.returnFaction(defender) + ' cannot be targeted by PDS fire during this invasion:</div><ul>';
+      html = '<div class="status-header-text">' + imperium_self.returnFaction(defender) + ' cannot be targeted by PDS fire during this invasion:</div><ul>';
       can_target_with_pds_fire = 0;
     }
   } else {
-    html = '<div class="sf-readable">You cannot target any ships with PDS fire and must skip firing:</div><ul>';
+    html = '<div class="status-header-text">You cannot target any ships with PDS fire and must skip firing:</div><ul>';
     can_target_with_pds_fire = 0;
   }
 
@@ -22182,13 +22186,13 @@ playerPlayPDSDefense(player, attacker, sector) {
   let relevant_action_cards = ["pre_pds"];
   let can_target_with_pds_fire = 1;
 
-  html = '<div class="sf-readable">Do you wish to fire your PDS?</div><ul>';
+  html = '<div class="status-header-text">Do you wish to fire your PDS?</div><ul>';
 
   //
   // skip if attacker is immune
   //
   if (imperium_self.game.state.players_info[attacker - 1].temporary_immune_to_pds_fire) {
-    html = '<div class="sf-readable">Your attacker cannot be targeted by PDS fire during this invasion:</div><ul>';
+    html = '<div class="status-header-text">Your attacker cannot be targeted by PDS fire during this invasion:</div><ul>';
     can_target_with_pds_fire = 0;
   }
 
@@ -22273,7 +22277,7 @@ playerResolveDeadlockedAgenda(agenda, choices) {
   let imperium_self = this;
   let html = '';
 
-  html = '<div class="sf-readable">The agenda has become deadlocked in the Senate. You - the Speaker - must resolve it: </div><ul>';
+  html = '<div class="status-header-text">The agenda has become deadlocked in the Senate. You - the Speaker - must resolve it: </div><ul>';
   for (let i = 0; i < choices.length; i++) {
     html += '<li class="option" id="' + i + '">' + this.returnNameFromIndex(choices[i]) + '</li>';
   }
@@ -22307,9 +22311,9 @@ playerPlayPreAgendaStage(player, agenda, agenda_idx) {
   let ac = this.returnPlayerActionCards(imperium_self.game.player, relevant_action_cards);
 
   if (this.doesPlayerHaveRider(imperium_self.game.player)) {
-    html = '<div class="sf-readable">With your riders depending on how the other factions vote, your emissaries track the mood in the Senate closely...:</div><ul>';
+    html = '<div class="status-header-text">With your riders depending on how the other factions vote, your emissaries track the mood in the Senate closely...:</div><ul>';
   } else {
-    html = '<div class="sf-readable">As the Senators gather to vote on ' + this.agenda_cards[agenda].name + ', your emissaries nervously tally the votes in their head:</div><ul>';
+    html = '<div class="status-header-text">As the Senators gather to vote on ' + this.agenda_cards[agenda].name + ', your emissaries nervously tally the votes in their head:</div><ul>';
   }
 
   if (1 == 1) {
@@ -22389,12 +22393,12 @@ playerPlayPostAgendaStage(player, agenda, array_of_winning_options) {
   let ac = this.returnPlayerActionCards(imperium_self.game.player, relevant_action_cards);
 
   if (array_of_winning_options.length > 0) {
-    html = '<div class="sf-readable">The Senate has apparently voted for "' + this.returnNameFromIndex(array_of_winning_options[0]) + '". As the Speaker confirms the final tally, you get the feeling the issue may not be fully settled:</div><ul>';
+    html = '<div class="status-header-text">The Senate has apparently voted for "' + this.returnNameFromIndex(array_of_winning_options[0]) + '". As the Speaker confirms the final tally, you get the feeling the issue may not be fully settled:</div><ul>';
   } else {
-    html = '<div class="sf-readable">No-one in the Senate bothered to show-up and vote, leaving the matter to be decided by the Speaker:</div><ul>';
+    html = '<div class="status-header-text">No-one in the Senate bothered to show-up and vote, leaving the matter to be decided by the Speaker:</div><ul>';
   }
   if (array_of_winning_options.length > 1) {
-    html = '<div class="sf-readable">The voting has concluded in deadlock. The Speaker must resolve the agenda:</div><ul>';
+    html = '<div class="status-header-text">The voting has concluded in deadlock. The Speaker must resolve the agenda:</div><ul>';
   }
 
   if (1 == 1) {
@@ -22675,10 +22679,10 @@ playerBuyTokens(stage = 0, resolve = 1) {
     return 0;
   }
 
-  let html = '<div class="sf-readable">Do you wish to purchase any command or strategy tokens, or increase your fleet supply?</div><ul>';
+  let html = '<div class="status-header-text">Do you wish to purchase any command or strategy tokens, or increase your fleet supply?</div><ul>';
 
   if (stage == 2) {
-    html = '<div class="sf-readable">Leadership has been played. Do you wish to purchase any additional command or strategy tokens, or increase your fleet supply?</div><ul>';
+    html = '<div class="status-header-text">Leadership has been played. Do you wish to purchase any additional command or strategy tokens, or increase your fleet supply?</div><ul>';
     if (imperium_self.game.state.round == 1)  {
       html = `The Leadership strategy card has been played. This lets you spend 3 influence to purchase additional command tokens, strategy tokens or fleet supply. Do you wish to purchase any additional tokens: </p><ul>`;
     }
@@ -22780,9 +22784,9 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
   let imperium_self = this;
 
-  let html = '<div class="sf-readable">Do you wish to spend 1 strategy token to purchase 2 action cards?</div><ul>';
+  let html = '<div class="status-header-text">Do you wish to spend 1 strategy token to purchase 2 action cards?</div><ul>';
   if (stage == 2) {
-    html = '<div class="sf-readable">Politics has been played: do you wish to spend 1 strategy token to purchase 2 action cards?</div><ul>';
+    html = '<div class="status-header-text">Politics has been played: do you wish to spend 1 strategy token to purchase 2 action cards?</div><ul>';
     if (imperium_self.game.state.round == 1) {
       html = `${imperium_self.returnFaction(imperium_self.game.player)} has played the Politics strategy card. This lets you to spend 1 strategy token to purchase 2 action cards, which provide special one-time abilities. You have ${imperium_self.game.state.players_info[imperium_self.game.player-1].strategy_tokens} strategy tokens. Purchase action cards: </p><ul>`;
     }
@@ -22830,9 +22834,9 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
   let imperium_self = this;
 
-  let html = '<div class="sf-readable">Do you wish to spend 1 strategy token to purchase a Secret Objective?</div><ul>';
+  let html = '<div class="status-header-text">Do you wish to spend 1 strategy token to purchase a Secret Objective?</div><ul>';
   if (stage == 2) {
-    html = '<div class="sf-readable">The Imperial Strategy card has been played: do you wish to spend 1 strategy token to purchase a Secret Objective?</div><ul>';
+    html = '<div class="status-header-text">The Imperial Strategy card has been played: do you wish to spend 1 strategy token to purchase a Secret Objective?</div><ul>';
     if (imperium_self.game.state.round == 1) {
       html = `${imperium_self.returnFaction(imperium_self.game.player)} has played the Imperial strategy card. This lets you to spend 1 strategy token to purchase an additional secret bjective. You have ${imperium_self.game.state.players_info[imperium_self.game.player-1].strategy_tokens} strategy tokens. Purchase secret objective: </p><ul>`;
     }
@@ -22879,7 +22883,7 @@ playerBuyTokens(stage = 0, resolve = 1) {
 playerResearchTechnology(mycallback) {
 
   let imperium_self = this;
-  let html = '<div class="sf-readable">You are eligible to upgrade to the following technologies: </div><ul>';
+  let html = '<div class="status-header-text">You are eligible to upgrade to the following technologies: </div><ul>';
 
   for (var i in this.tech) {
     if (this.canPlayerResearchTechnology(i)) {
@@ -22942,7 +22946,7 @@ playerScoreActionStageVictoryPoints(imperium_self, mycallback, stage = 0) {
   let html = '';
   let player = imperium_self.game.player;
 
-  html += '<div class="sf-readable">Do you wish to score a secret objective? </div><ul>';
+  html += '<div class="status-header-text">Do you wish to score a secret objective? </div><ul>';
 
   html += this.canPlayerScoreActionStageVictoryPoints(player);
   html += '<li class="option cancel" id="cancel">cancel</li>';
@@ -23022,7 +23026,7 @@ playerScoreSecretObjective(imperium_self, mycallback, stage = 0) {
   let html = '';
   let can_score = 0;
 
-  html += '<div class="sf-readable">Do you wish to score any Secret Objectives? </div><ul>';
+  html += '<div class="status-header-text">Do you wish to score any Secret Objectives? </div><ul>';
 
   // Secret Objectives
   for (let i = 0; i < imperium_self.game.deck[5].hand.length; i++) {
@@ -23066,7 +23070,7 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
 
   if (imperium_self.doesPlayerControlHomeworld(imperium_self.game.player) == 0) {
 
-    html += '<div class="sf-readable">You cannot score public objectives without control of your Homeworld: </div><ul>';
+    html += '<div class="status-header-text">You cannot score public objectives without control of your Homeworld: </div><ul>';
     html += '<li class="option" id="no">I choose not to score...</li>';
     html += '</ul>';
 
@@ -23082,7 +23086,7 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   }
 
 
-  html += '<div class="sf-readable">Do you wish to score any public objectives? </div><ul>';
+  html += '<div class="status-header-text">Do you wish to score any public objectives? </div><ul>';
 
   // Stage I Public Objectives
   for (let i = 0; i < imperium_self.game.state.stage_i_objectives.length; i++) {
@@ -23145,7 +23149,7 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
 
   let html = '';
 
-  if (stage == 1) { html += "<div class='sf-readable'>Which would you like to build: </div><ul>"; }
+  if (stage == 1) { html += "<div class='status-header-text'>Which would you like to build: </div><ul>"; }
   else { html += "<div class='sf_readable'>You may also build an additional PDS: </div><ul>"; }
 
   html += '<li class="buildchoice" id="pds">Planetary Defense System</li>';
@@ -23257,7 +23261,7 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   };
   if (calculated_production_limit > production_limit) { production_limit = calculated_production_limit; }
 
-  let html = '<div class="sf-readable">Produce Units in this Sector: ';
+  let html = '<div class="status-header-text">Produce Units in this Sector: ';
   if (production_limit != 0) { html += '(' + production_limit + ' units max)'; }
   if (cost_limit != 0) { html += '(' + cost_limit + ' cost max)'; }
   html += '</div><ul>';
@@ -23569,7 +23573,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
     }
   }
 
-  let html = '<div class="sf-readable">You have received a trade offer from ' + imperium_self.returnFaction(faction_offering) + '. ';
+  let html = '<div class="status-header-text">You have received a trade offer from ' + imperium_self.returnFaction(faction_offering) + '. ';
   html += offer_log;
   html += ': </div><ul>';
   html += `  <li class="option" id="yes">accept trade</li>`;
@@ -23667,7 +23671,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         offer_promissary_text += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}`;	
       }
 
-      let html = "<div class='sf-readable'>Make an Offer: </div><ul>";
+      let html = "<div class='status-header-text'>Make an Offer: </div><ul>";
       html += '<li id="to_offer" class="option">you give <span class="offer_total">'+offer_selected+'</span> trade goods</li>';
       html += '<li id="to_receive" class="option">you receive <span class="receive_total">'+receive_selected+'</span> trade goods</li>';
       if (imperium_self.game.state.players_info[imperium_self.game.player-1].may_trade_action_cards == 1 || imperium_self.game.state.players_info[player-1].may_trade_action_cards == 1) {
@@ -23745,7 +23749,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
       // offer mine to them
       if (mode == 1) {
 
-        let html = '<div class="sf-readable">Add Promissary to YOUR Offer: </div><ul>';
+        let html = '<div class="status-header-text">Add Promissary to YOUR Offer: </div><ul>';
         for (let i = 0; i < imperium_self.game.state.players_info[imperium_self.game.player-1].promissary_notes.length; i++) {
 
 	  let pm = imperium_self.game.state.players_info[imperium_self.game.player-1].promissary_notes[i];
@@ -23791,7 +23795,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
       // request theirs
       if (mode == 2) {
 
-        let html = '<div class="sf-readable">Request Promissary FROM them: </div><ul>';
+        let html = '<div class="status-header-text">Request Promissary FROM them: </div><ul>';
         for (let i = 0; i < imperium_self.game.state.players_info[player-1].promissary_notes.length; i++) {
 	  let pm = imperium_self.game.state.players_info[player-1].promissary_notes[i];
 	  let tmpar = pm.split("-");
@@ -23845,7 +23849,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
       // offer mine to them
       if (mode == 1) {
 
-        let html = '<div class="sf-readable">Add Action Card to YOUR Offer: </div><ul>';
+        let html = '<div class="status-header-text">Add Action Card to YOUR Offer: </div><ul>';
 	let pac = imperium_self.returnPlayerActionCards(imperium_self.game.player);
         for (let i = 0; i < pac.length; i++) {
 	  let ac = pac[i];
@@ -23881,7 +23885,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 
 
       if (mode == 2) {
-        let html = '<div class="sf-readable">You may not request action cards - players must send on their turn</div><ul>';
+        let html = '<div class="status-header-text">You may not request action cards - players must send on their turn</div><ul>';
         html += `  <li class="option" id="cancel">return to trade menu</li>`;
 	imperium_self.updateStatus(html);
         $('.option').off();
@@ -23896,7 +23900,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 
     let mainTradeInterface = function (imperium_self, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface) {
 
-      let html = '<div class="sf-readable">Make Trade Offer to Faction: </div><ul>';
+      let html = '<div class="status-header-text">Make Trade Offer to Faction: </div><ul>';
       for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
         if (imperium_self.game.state.players_info[i].traded_this_turn == 0 && (i + 1) != imperium_self.game.player) {
           if (imperium_self.arePlayersAdjacent(imperium_self.game.player, (i + 1)) ||
@@ -23999,7 +24003,7 @@ playerSelectPlanet(mycallback, mode = 0) {
     }
 
 
-    html = '<div class="sf-readable">Select a planet in this system: </div><ul>';
+    html = '<div class="status-header-text">Select a planet in this system: </div><ul>';
     for (let i = 0; i < sys.p.length; i++) {
       if (mode == 0) {
         html += '<li class="option" id="' + i + '">' + sys.p[i].name + ' - <span class="invadeplanet_' + i + '">0</span></li>';
@@ -24043,7 +24047,7 @@ playerSelectStrategyAndCommandTokens(cost, mycallback) {
   let imperium_self = this;
   let selected_cost = 0;
 
-  let html = "<div class='sf-readable'>Select " + cost + " in Strategy and Command Tokens: </div><ul>";
+  let html = "<div class='status-header-text'>Select " + cost + " in Strategy and Command Tokens: </div><ul>";
   html += '<li class="textchoice" id="command">command tokens - <span class="available_command_tokens">'+imperium_self.game.state.players_info[imperium_self.game.player-1].command_tokens+'</span></li>';
   html += '<li class="textchoice" id="strategy">strategy tokens - <span class="available_strategy_tokens">'+imperium_self.game.state.players_info[imperium_self.game.player-1].strategy_tokens+'</span></li>';
   html += '</ul>';
@@ -24092,7 +24096,7 @@ playerSelectInfluence(cost, mycallback) {
   let selected_cost = 0;
   let total_trade_goods = imperium_self.game.state.players_info[imperium_self.game.player - 1].goods;
 
-  let html = "<div class='sf-readable'>Select " + cost + " in influence: </div><ul>";
+  let html = "<div class='status-header-text'>Select " + cost + " in influence: </div><ul>";
   for (let z = 0; z < array_of_cards.length; z++) {
     html += '<li class="cardchoice cardchoice-card" id="cardchoice_' + array_of_cards[z] + '">' + this.returnPlanetCard(array_of_cards[z]) + '</li>';
   }
@@ -24179,7 +24183,7 @@ playerSelectResources(cost, mycallback) {
   let selected_cost = 0;
   let total_trade_goods = imperium_self.game.state.players_info[imperium_self.game.player - 1].goods;
 
-  let html = "<div class='sf-readable'>Select " + cost + " in resources: </div><ul>";
+  let html = "<div class='status-header-text'>Select " + cost + " in resources: </div><ul>";
   for (let z = 0; z < array_of_cards.length; z++) {
     html += '<li class="cardchoice cardchoice-card" id="cardchoice_' + array_of_cards[z] + '">' + this.returnPlanetCard(array_of_cards[z]) + '</li>';
   }
@@ -24276,7 +24280,7 @@ playerSelectActionCard(mycallback, cancel_callback, types = []) {
 
   let html = '';
 
-  html += "<div class='sf-readable'>Select an action card: </div><ul>";
+  html += "<div class='status-header-text'>Select an action card: </div><ul>";
   for (let z = 0; z < array_of_cards.length; z++) {
     if (!this.game.state.players_info[this.game.player - 1].action_cards_played.includes(array_of_cards[z])) {
       let thiscard = imperium_self.action_cards[array_of_cards[z]];
@@ -24323,7 +24327,7 @@ playerSelectActionCardFromList(mycallback, cancel_callback, array_of_cards = [])
 
   let html = '';
 
-  html += "<div class='sf-readable'>Select an action card: </div><ul>";
+  html += "<div class='status-header-text'>Select an action card: </div><ul>";
   for (let z = 0; z < array_of_cards.length; z++) {
     if (!this.game.state.players_info[this.game.player - 1].action_cards_played.includes(array_of_cards[z])) {
       let thiscard = imperium_self.action_cards[array_of_cards[z]];
@@ -24364,7 +24368,7 @@ playerSelectStrategyCard(mycallback, mode = 0) {
 
   let html = "";
 
-  html += "<div class='sf-readable'>Select a strategy card: </div><ul>";
+  html += "<div class='status-header-text'>Select a strategy card: </div><ul>";
   for (let z in array_of_cards) {
     if (!this.game.state.players_info[this.game.player - 1].strategy_cards_played.includes(array_of_cards[z])) {
       html += '<li class="textchoice" id="' + array_of_cards[z] + '">' + strategy_cards[array_of_cards[z]].name + '</li>';
@@ -24517,7 +24521,7 @@ playerRemoveInfantryFromPlanets(player, total = 1, mycallback) {
   let imperium_self = this;
 
   let html = '';
-  html += '<div class="sf-readable">Remove ' + total + ' infantry from planets you control:</div>';
+  html += '<div class="status-header-text">Remove ' + total + ' infantry from planets you control:</div>';
   html += '<ul>';
 
   let infantry_to_remove = [];
@@ -24590,7 +24594,7 @@ playerAddInfantryToPlanets(player, total = 1, mycallback) {
   let imperium_self = this;
 
   let html = '';
-  html += '<div class="sf-readable">Add ' + total + ' infantry to planets you control:</div>';
+  html += '<div class="status-header-text">Add ' + total + ' infantry to planets you control:</div>';
   html += '<ul>';
 
   let infantry_to_add = [];
@@ -24845,7 +24849,7 @@ playerMoveShipsMenu(destination) {
 
   obj.ships_and_sectors = imperium_self.returnShipsMovableToDestinationFromSectors(destination, sectors, distance, hazards, hoppable);
 
-  let html = "<div class='sf-readable'>" + this.returnFaction(this.game.player) + ": </div><ul>";
+  let html = "<div class='status-header-text'>" + this.returnFaction(this.game.player) + ": </div><ul>";
 
 
   for (let sec = 0; sec < obj.ships_and_sectors.length; sec++) {
@@ -25381,7 +25385,7 @@ console.log("DONE!");
           }
         }
 
-        let user_message = `<div class="sf-readable">This ship has <span class="capacity_remaining">${total_ship_capacity}</span> capacity. Infantry can capture planets and fighters can protect your fleet. Do you wish to add them? </div><ul>`;
+        let user_message = `<div class="status-header-text">This ship has <span class="capacity_remaining">${total_ship_capacity}</span> capacity. Infantry can capture planets and fighters can protect your fleet. Do you wish to add them? </div><ul>`;
 
         for (let i = 0; i < sys.p.length; i++) {
           let planetary_units = sys.p[i].units[imperium_self.game.player - 1];
@@ -25682,7 +25686,7 @@ playerSelectInfantryToLand(sector) {
         infantry_available_for_reassignment++;
       }
 
-      let html = '<div class="sf-readable" id="status-message">Reassign Infantry to Planets: <ul>';
+      let html = '<div class="status-header-text" id="status-message">Reassign Infantry to Planets: <ul>';
           for (let i = 0; i < sys.p.length; i++) {
 	    let infantry_remaining_on_planet = imperium_self.returnInfantryOnPlanet(sys.p[i]);
 	    for (let ii = 0; ii < ground_infantry.length; ii++) {
@@ -25802,7 +25806,7 @@ playerInvadePlanet(player, sector, auto_option=1) {
 
   if (exists_resistance == 0 && auto_option == 1 && tai >= sys.p.length) {
 
-    html  = '<div class="sf-readable">There is no resistance in this sector.<p></p>Do you want to auto-invade (1 infantry per planet)?: </div><ul>';
+    html  = '<div class="status-header-text">There is no resistance in this sector.<p></p>Do you want to auto-invade (1 infantry per planet)?: </div><ul>';
     html += '<li class="option" id="auto">automatic invasion</li>'; 
     html += '<li class="option" id="manual">manual invasion</li>'; 
     html += '</ul>';
@@ -25860,7 +25864,7 @@ playerInvadePlanet(player, sector, auto_option=1) {
 
 
 
-  html = '<div class="sf-readable">Which planet(s) do you invade: </div><ul>';
+  html = '<div class="status-header-text">Which planet(s) do you invade: </div><ul>';
   for (let i = 0; i < sys.p.length; i++) {
     if (sys.p[i].owner != player) {
       html += '<li class="option sector_name" id="' + i + '">' + sys.p[i].name + ' - <span class="invadeplanet_' + i + '">0</span></li>';
@@ -25936,7 +25940,7 @@ playerInvadePlanet(player, sector, auto_option=1) {
       }
     }
 
-    html = '<div class="sf-readable">Select Ground Forces for Invasion of ' + sys.p[planet_idx].name + ': </div><ul>';
+    html = '<div class="status-header-text">Select Ground Forces for Invasion of ' + sys.p[planet_idx].name + ': </div><ul>';
 
     //
     // other planets in system
@@ -26133,7 +26137,7 @@ playerActivateSystem() {
       $(divpid).find('.hex_activated').css('opacity', '0.3');
 
 
-      let chtml = "<div class='sf-readable'>Activate this system?</div><ul>";
+      let chtml = "<div class='status-header-text'>Activate this system?</div><ul>";
           chtml += '<li class="option" id="yes">yes, do it</li>';
           chtml += '<li class="option" id="no">choose again</li>';
           chtml += '</ul>';
@@ -26183,7 +26187,7 @@ playerPostActivateSystem(sector) {
   let ac = this.returnPlayerActionCards(imperium_self.game.player, relevant_action_cards);
   let player = imperium_self.game.player;
 
-  let html = "<div class='sf-readable'>" + this.returnFaction(this.game.player) + ": </div><ul>";
+  let html = "<div class='status-header-text'>" + this.returnFaction(this.game.player) + ": </div><ul>";
 
   if (imperium_self.canPlayerMoveShipsIntoSector(player, sector)) {
     html += '<li class="option" id="move">move into sector</li>';
@@ -26319,16 +26323,16 @@ playerAllocateNewTokens(player, tokens, resolve_needed = 1, stage = 0, leadershi
 
     let updateInterface = function (imperium_self, obj, updateInterface) {
 
-      let html = '<div class="sf-readable">You have ' + obj.new_tokens + ' tokens to allocate. How do you want to allocate them? </div><ul>';
+      let html = '<div class="status-header-text">You have ' + obj.new_tokens + ' tokens to allocate. How do you want to allocate them? </div><ul>';
 
       if (stage == 1) {
-        html = '<div class="sf-readable">The Leadership card gives you ' + obj.new_tokens + ' tokens to allocate. How do you wish to allocate them? </div><ul>';
+        html = '<div class="status-header-text">The Leadership card gives you ' + obj.new_tokens + ' tokens to allocate. How do you wish to allocate them? </div><ul>';
       }
       if (stage == 2) {
-        html = '<div class="sf-readable">Leadership has been played and you have purchased ' + obj.new_tokens + ' additional tokens. How do you wish to allocate them? </div><ul>';
+        html = '<div class="status-header-text">Leadership has been played and you have purchased ' + obj.new_tokens + ' additional tokens. How do you wish to allocate them? </div><ul>';
       }
       if (stage == 3) {
-        html = '<div class="sf-readable">You have ' + obj.new_tokens + ' new tokens to allocate: </div><ul>';
+        html = '<div class="status-header-text">You have ' + obj.new_tokens + ' new tokens to allocate: </div><ul>';
       }
 
       html += '<li class="option" id="command">Command Token - ' + (parseInt(obj.current_command) + parseInt(obj.new_command)) + '</li>';
@@ -26392,7 +26396,7 @@ playerSelectPlayerWithFilter(msg, filter_func, mycallback = null, cancel_func = 
 
   let imperium_self = this;
 
-  let html = '<div class="sf-readable">' + msg + '</div>';
+  let html = '<div class="status-header-text">' + msg + '</div>';
   html += '<ul>';
 
   for (let i = 0; i < this.game.state.players_info.length; i++) {
@@ -26428,7 +26432,7 @@ playerSelectSectorWithFilter(msg, filter_func, mycallback = null, cancel_func = 
 
   let imperium_self = this;
 
-  let html = '<div class="sf-readable">' + msg + '</div>';
+  let html = '<div class="status-header-text">' + msg + '</div>';
   html += '<ul>';
 
   for (let i in this.game.board) {
@@ -26484,7 +26488,7 @@ playerSelectChoice(msg, choices, elect = "other", mycallback = null) {
 
   let imperium_self = this;
 
-  let html = '<div class="sf-readable">' + msg + '</div>';
+  let html = '<div class="status-header-text">' + msg + '</div>';
   html += '<ul>';
 
   for (let i = 0; i < choices.length; i++) {
@@ -26532,7 +26536,7 @@ playerSelectPlanetWithFilter(msg, filter_func, mycallback = null, cancel_func = 
 
   let imperium_self = this;
 
-  let html = '<div class="sf-readable">' + msg + '</div>';
+  let html = '<div class="status-header-text">' + msg + '</div>';
   html += '<ul>';
 
   for (let i in this.game.planets) {
@@ -26597,7 +26601,7 @@ playerSelectUnitInSectorWithFilter(msg, sector, filter_func, mycallback = null, 
   let unit_idx = [];
   let exists_unit = 0;
 
-  let html = '<div class="sf-readable">' + msg + '</div>';
+  let html = '<div class="status-header-text">' + msg + '</div>';
   html += '<ul>';
 
   let sys = this.returnSectorAndPlanets(sector);
@@ -26671,7 +26675,7 @@ playerSelectUnitWithFilter(msg, filter_func, mycallback = null, cancel_func = nu
   let unit_idx = [];
   let exists_unit = 0;
 
-  let html = '<div class="sf-readable">' + msg + '</div>';
+  let html = '<div class="status-header-text">' + msg + '</div>';
   html += '<ul>';
 
   for (let i in this.game.board) {
@@ -26755,7 +26759,7 @@ playerSelectOpponentUnitInSectorWithFilter(msg, sector, filter_func, mycallback 
   let unit_idx = [];
   let exists_unit = 0;
 
-  let html = '<div class="sf-readable">' + msg + '</div>';
+  let html = '<div class="status-header-text">' + msg + '</div>';
   html += '<ul>';
 
   let sys = this.returnSectorAndPlanets(sector);
@@ -26835,7 +26839,7 @@ playerSelectUnitInSectorFilter(msg, sector, filter_func, mycallback = null, canc
   let imperium_self = this;
   let sys = this.returnSectorAndPlanets(sector);
 
-  let html = '<div class="sf-readable">' + msg + '</div>';
+  let html = '<div class="status-header-text">' + msg + '</div>';
   html += '<ul>';
 
   for (let i = 0; i < this.game.state.players_info.length; i++) {
@@ -26881,7 +26885,7 @@ playerDiscardActionCards(num, mycallback=null) {
 
   if (num < 0) { imperium_self.endTurn(); }
 
-  let html = "<div class='sf-readable'>You must discard <div style='display:inline' class='totalnum' id='totalnum'>" + num + "</div> action card"; if (num > 1) { html += 's'; }; html += ':</div>';
+  let html = "<div class='status-header-text'>You must discard <div style='display:inline' class='totalnum' id='totalnum'>" + num + "</div> action card"; if (num > 1) { html += 's'; }; html += ':</div>';
   html += '<ul>';
   let ac_in_hand = this.returnPlayerActionCards(imperium_self.game.player);
 
