@@ -709,7 +709,7 @@ class Arcade extends ModTemplate {
   }
 
   async receiveOpenTransaction(tx, blk = null) {
-    // console.log("arcade receiveOpenTransaction : ", tx);
+    console.log("arcade receiveOpenTransaction : ", tx);
     let txmsg = tx.returnMessage();
 
     // add to games list == open or private
@@ -1523,7 +1523,7 @@ class Arcade extends ModTemplate {
     //
     // Sanity check the tx and make sure we don't already have it
     //
-    if (!tx || !tx.msg || !tx.signature) {
+    if (!tx || !tx.msg || !tx.transaction || !tx.transaction.sig) {
       console.error("Invalid Game TX, won't add to list", tx);
       return false;
     }
@@ -1531,7 +1531,7 @@ class Arcade extends ModTemplate {
     //Always removeGame before calling addGame to successfully reclassify
     for (let key in this.games) {
       for (let z = 0; z < this.games[key].length; z++) {
-        if (tx.signature === this.games[key][z].signature) {
+        if (tx.transaction.sig === this.games[key][z].transaction.sig) {
           if (this.debug) {
             console.log("TX is already in Arcade list");
           }
@@ -1560,7 +1560,7 @@ class Arcade extends ModTemplate {
 
     if (this.debug) {
       console.log(
-        `Added game (${tx.signature}) to ${list}`,
+        `Added game (${tx.transaction.sig}) to ${list}`,
         JSON.parse(JSON.stringify(this.games))
       );
     }
@@ -1934,6 +1934,20 @@ class Arcade extends ModTemplate {
       request: "game relay update",
       data: tx.toJson(),
     });
+  }
+
+  purgeOldGames() {
+    let now = new Date().getTime();
+    for (let key in this.games) {
+      let cutoff = now - this.invite_cutoff;
+      if (key == "active" || key == "over") {
+        cutoff = now - this.game_cutoff;
+      }
+
+      this.games[key] = this.games[key].filter((game) => {
+        return game.transaction?.ts > cutoff;
+      });
+    }
   }
 
   async observerDownloadNextMoves(game_mod, mycallback = null) {
