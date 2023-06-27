@@ -5124,7 +5124,7 @@ class Imperium extends GameTemplate {
             imperium_self.endTurn();
             return 0;
           },
-          function async() {
+          async function async() {
             await imperium_self.playerTurn();
           }
         );
@@ -22644,7 +22644,7 @@ class Imperium extends GameTemplate {
             if (action_card.indexOf("sabotage") != 0) {
               imperium_self.addMove(
                 "resolve\tsimultaneous_action_card_player_menu\t1\t" +
-                await imperium_self.publicKey
+                imperium_self.publicKey
               );
               imperium_self.addPublickeyConfirm(imperium_self.publicKey, 1);
               imperium_self.endTurn();
@@ -22652,7 +22652,7 @@ class Imperium extends GameTemplate {
               // sabotage doesn't need resolve, it happily resolves itself
               imperium_self.addMove(
                 "resolve\tsimultaneous_action_card_player_menu\t1\t" +
-                await imperium_self.publicKey
+                imperium_self.publicKey
               );
               imperium_self.addPublickeyConfirm(imperium_self.publicKey, 1);
               imperium_self.endTurn();
@@ -22660,7 +22660,7 @@ class Imperium extends GameTemplate {
           } else {
             imperium_self.addMove(
               "resolve\tsimultaneous_action_card_player_menu\t1\t" +
-              await imperium_self.publicKey
+              imperium_self.publicKey
             );
             imperium_self.addPublickeyConfirm(imperium_self.publicKey, 1);
             imperium_self.endTurn();
@@ -23166,7 +23166,7 @@ class Imperium extends GameTemplate {
     return players;
   }
 
-  playerTurn(stage = "main") {
+  async playerTurn(stage = "main") {
     let html = "";
     let imperium_self = this;
     let technologies = this.returnTechnology();
@@ -23282,7 +23282,7 @@ class Imperium extends GameTemplate {
       // automatically trigger end-of-turn if no other options
       //
       if (auto_end_turn == 1) {
-        imperium_self.updateStatus("No more moves possible, ending turn...");
+        await imperium_self.updateStatus("No more moves possible, ending turn...");
         imperium_self.addMove("resolve\tplay");
         imperium_self.addMove("setvar\tstate\t0\tactive_player_moved\t" + "int" + "\t" + "0");
         imperium_self.addMove("player_end_turn\t" + imperium_self.game.player);
@@ -23290,7 +23290,7 @@ class Imperium extends GameTemplate {
         return 0;
       }
 
-      this.updateStatus(html);
+      await this.updateStatus(html);
 
       $(".option").on("click", function() {
         let action2 = $(this).attr("id");
@@ -23344,7 +23344,7 @@ class Imperium extends GameTemplate {
           );
           imperium_self.playerAcknowledgeNotice(
             "REMEMBER: to move ships select \"activate sector\" and pick the sector you are moving into. Most ships can only move 1-hex and you cannot move ships from sectors that are already activated. You will be able to choose the ships to move, and load infantry and fighters into units that can carry them.",
-            function async() {
+            async function async() {
               await imperium_self.playerTurn();
             }
           );
@@ -23358,7 +23358,7 @@ class Imperium extends GameTemplate {
           );
           imperium_self.playerAcknowledgeNotice(
             "REMEMBER: to produce units, select \"activate sector\" and activate a sector with a space dock (like your home system). You are limited to producing +2 more units than the resources of the planet on which the Space Dock sits. And you can only have as many non-fighter ships in any sector as your fleet supply, so move your ships out before producing more!",
-            function async() {
+            async function async() {
               await imperium_self.playerTurn();
             }
           );
@@ -23391,7 +23391,7 @@ class Imperium extends GameTemplate {
               imperium_self.addMove("lose\t" + imperium_self.game.player + "\taction_cards\t1");
               imperium_self.endTurn();
             },
-            function async() {
+            async function async() {
               await imperium_self.playerTurn();
             },
             relevant_action_cards
