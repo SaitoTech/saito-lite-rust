@@ -1523,7 +1523,7 @@ class Arcade extends ModTemplate {
     //
     // Sanity check the tx and make sure we don't already have it
     //
-    if (!tx || !tx.msg || !tx.transaction || !tx.transaction.sig) {
+    if (!tx || !tx.msg || !tx.signature) {
       console.error("Invalid Game TX, won't add to list", tx);
       return false;
     }
@@ -1531,7 +1531,7 @@ class Arcade extends ModTemplate {
     //Always removeGame before calling addGame to successfully reclassify
     for (let key in this.games) {
       for (let z = 0; z < this.games[key].length; z++) {
-        if (tx.transaction.sig === this.games[key][z].transaction.sig) {
+        if (tx.signature === this.games[key][z].signature) {
           if (this.debug) {
             console.log("TX is already in Arcade list");
           }
@@ -1556,7 +1556,9 @@ class Arcade extends ModTemplate {
 
     // We want new games to go towards the top
 
-    this.games[list].unshift(tx);
+    this.games["open"].unshift(tx);
+
+    console.log("the transction ", this.games, tx);
 
     if (this.debug) {
       console.log(
