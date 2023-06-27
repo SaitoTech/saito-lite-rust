@@ -10,35 +10,40 @@ class TweetManager {
     this.mod = mod;
     this.container = container;
 
-    this.mode = "tweets";
-    this.thread_id = "";
-    this.parent_id = "";
-    this.tweet_id = "";
+    this.mode = "loading";
+
     this.publickey = "";
 
     this.profile = new SaitoProfile(app, mod, ".saito-main");
 
+    //This is an in-place loader... not super useful when content is overflowing off the bottom of the screen
+    this.loader = new SaitoLoader(app, mod, "#redsquare-intersection");
+
     //////////////////////////////
     // load more on scroll-down //
     //////////////////////////////
-    this.loader = new SaitoLoader(app, mod, "#redsquare-intersection");
     this.intersectionObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            this.loader.render();
+            this.showLoader();
 
             //
             // load more tweets
             //
             if (this.mode == "tweets") {
               mod.loadTweets(null, (txs) => {
-                this.loader.hide();
+                this.hideLoader();
                 for (let i = 0; i < this.mod.tweets.length; i++) {
                   let tweet = this.mod.tweets[i];
                   if (!tweet.isRendered()) {
                     tweet.renderWithCriticalChild();
                   }
+                }
+
+                if (txs.length == 0){
+                  this.app.browser.addElementToSelector(`<div class="saito-end-of-redsquare">No more tweets</div>`, ".tweet-manager");
+                  this.intersectionObserver.unobserve(document.querySelector("#redsquare-intersection"));
                 }
               });
             }
@@ -58,7 +63,7 @@ class TweetManager {
                     notification.render(".tweet-manager");
                   }
                 }
-                this.loader.hide();
+                this.hideLoader();
               });
             }
 
@@ -68,14 +73,11 @@ class TweetManager {
             if (this.mode == "profile") {
               this.mod.loadProfileTweets(null, this.publickey, (txs) => {
                 for (let z = 0; z < txs.length; z++) {
-                  let tweet = new Tweet(this.app, this.mod, ".tweet-manager", txs[z]);
+                  let tweet = new Tweet(this.app, this.mod, txs[z]);
                   tweet.render();
                 }
-                this.mod.updatePeerEarliestProfileTimestamp(
-                  null,
-                  this.mod.returnEarliestTimestampFromTransactionArray(txs)
-                );
-                this.loader.hide();
+                this.mod.updatePeerStat(this.mod.returnEarliestTimestampFromTransactionArray(txs), "profile_earliest_ts");
+                this.hideLoader();
               });
             }
           }
@@ -90,9 +92,6 @@ class TweetManager {
   }
 
   render() {
-
-    console.log("Render RS Manager for " + this.publickey + " in state: " + this.mode);
-
     let myqs = `.tweet-manager`;
 
     if (!document.querySelector(myqs)) {
@@ -103,6 +102,9 @@ class TweetManager {
       }
       this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
     }
+
+    this.showLoader();
+
 
     ////////////
     // tweets //
@@ -116,6 +118,8 @@ class TweetManager {
         let tweet = this.mod.tweets[i];
         tweet.renderWithCriticalChild();
       }
+
+      setTimeout(()=> { this.hideLoader();}, 50);
     }
 
     ///////////////////
@@ -126,17 +130,17 @@ class TweetManager {
 
       window.history.pushState(null, "", "/redsquare/#notifications");
 
-      if (this.mod.notifications.length == 0){
+      if (this.mod.notifications.length == 0) {
         let notification = new Notification(this.app, this.mod, null);
         notification.render(".tweet-manager");
-      }else{
+      } else {
         for (let i = 0; i < this.mod.notifications.length; i++) {
           let notification = new Notification(this.app, this.mod, this.mod.notifications[i].tx);
           notification.render(".tweet-manager");
         }
       }
 
-      this.loader.hide();
+      this.hideLoader();
     }
 
     /////////////
@@ -152,16 +156,14 @@ class TweetManager {
       //
       // all peers reset to 0 tweets fetched
       //
-      this.mod.updatePeerEarliestProfileTimestamp(null, new Date().getTime());
+      this.mod.updatePeerStat(new Date().getTime(),"profile_earliest_ts");
       this.mod.loadProfileTweets(null, this.publickey, (txs) => {
         for (let z = 0; z < txs.length; z++) {
-          let tweet = new Tweet(this.app, this.mod, ".tweet-manager", txs[z]);
+          let tweet = new Tweet(this.app, this.mod, txs[z]);
           tweet.render();
         }
-        this.mod.updatePeerEarliestProfileTimestamp(
-          null,
-          this.mod.returnEarliestTimestampFromTransactionArray(txs)
-        );
+        this.hideLoader();
+        this.mod.updatePeerStat(this.mod.returnEarliestTimestampFromTransactionArray(txs), "profile_earliest_ts");
       });
     }
 
@@ -176,6 +178,8 @@ class TweetManager {
     if (document.querySelector("#redsquare-intersection")) {
       this.intersectionObserver.unobserve(document.querySelector("#redsquare-intersection"));
     }
+    
+    this.showLoader();
 
     let myqs = `.tweet-manager`;
 
@@ -186,14 +190,14 @@ class TweetManager {
       this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
     }
 
-    this.mode = "tweets";
+    this.mode = "single";
     this.profile.remove();
 
     tweet.render();
-    this.loader.render();
+
     this.mod.loadTweetChildren(null, tweet.tx.transaction.sig, () => {
       tweet.renderWithChildren();
-      this.loader.hide();
+      this.hideLoader();
     });
   }
 

@@ -8,3 +8,10 @@
   order: -1;
 }
 
+.saito-end-of-redsquare {
+  margin: 1rem;
+  text-align: center;
+  width: 100%;
+  font-size: 16px;
+  font-style: italic;
+}

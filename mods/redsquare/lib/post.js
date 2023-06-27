@@ -12,35 +12,19 @@ class Post {
     this.parent_id = "";
     this.thread_id = "";
     this.images = [];
-    this.tweet = tweet;
+    this.tweet = tweet; //For reply or Retweet
 
-    if (tweet != null) {
-      if (tweet.parent_id) {
-        this.parent_id = tweet.parent_id;
-        if (tweet.thread_id) {
-          this.thread_id = tweet.thread_id;
-        } else {
-          this.thread_id = this.parent_id;
-        }
-      }
-    }
-
-    this.render_after_submit = 1;
+    this.render_after_submit = 0;
     this.file_event_added = false;
     this.publickey = app.wallet.returnPublicKey();
     this.source = "Tweet";
-
-    let userline = "create a text-tweet or drag-and-drop images...";
-    if (this.source == "Retweet / Share") {
-      userline = "add a comment to your retweet or just click submit...";
-    }
 
     this.user = new SaitoUser(
       this.app,
       this.mod,
       `.tweet-overlay-header`,
       this.publickey,
-      userline
+      "create a text-tweet or drag-and-drop images..."
     );
   }
 
@@ -50,7 +34,6 @@ class Post {
     //
     //
     //
-    this.user.render();
 
     if (!this.input) {
       this.input = new SaitoInput(this.app, this.mod, ".tweet-overlay-content");
@@ -59,8 +42,14 @@ class Post {
     this.input.display = "large";
 
     this.input.placeholder = "What's happening";
-    if (this.source == "Retweet / Share") {
-      this.input.placeholder = "Optional comment?";
+    if (this.source == "Retweet") {
+      this.input.placeholder = "optional comment";
+      this.user.notice = "add a comment to your retweet or just click submit...";
+    }
+
+    if (this.source == "Reply") {
+      this.input.placeholder = "my reply...";
+      this.user.notice = "add your comment to the tweet...";
     }
 
     this.input.callbackOnReturn = () => {
@@ -79,11 +68,12 @@ class Post {
         } else {
           salert(`Cannot upload ${type} image, allowed file types: 
               ${this.mod.allowed_upload_types.join(", ")} 
-              - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.`
-          );
+              - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.`);
         }
       }
     };
+
+    this.user.render();
 
     this.input.render();
 
@@ -165,14 +155,6 @@ class Post {
     keys = post_self.app.browser.extractKeys(text);
     identifiers = post_self.app.browser.extractIdentifiers(text);
 
-    if (this.tweet != null) {
-      for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
-        if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
-          keys.push(this.tweet.tx.transaction.to[i].add);
-        }
-      }
-    }
-
     //
     // add identifiers as available
     //
@@ -188,22 +170,10 @@ class Post {
     //
     // any previous recipients get added to "to"
     //
-    if (post_self.tweet) {
-      if (post_self.tweet.tx) {
-        if (post_self.tweet.tx.transaction) {
-          for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
-            if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
-              keys.push(post_self.tweet.tx.transaction.to[i].add);
-            }
-          }
-        }
-      }
-    }
-
-    if (this.tweet != null) {
-      for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
-        if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
-          keys.push(this.tweet.tx.transaction.to[i].add);
+    if (post_self?.tweet?.tx?.transaction) {
+      for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
+        if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
+          keys.push(post_self.tweet.tx.transaction.to[i].add);
         }
       }
     }
@@ -219,10 +189,12 @@ class Post {
     // tweet data
     //
     let data = { text: text };
+
+    //Replies
     if (parent_id !== "") {
       data = { text: text, parent_id: parent_id, thread_id: thread_id };
     }
-
+    //Retweets
     if (source == "Retweet") {
       data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);
     }
@@ -234,18 +206,17 @@ class Post {
     let newtx = post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
     //
-    // move to the top
+    // This makes no sense. If you require at the top of the file, it fails with a
+    // new Tweet is not a constructor error!!! ???
     //
-    var TweetClass = require("./tweet");
-    let tweet = new TweetClass(this.app, this.mod, ".tweet-manager", newtx);
-    //
-    //
-    //
-    let rparent_id = parent_id;
+    const Tweet = require("./tweet");
+    let posted_tweet = new Tweet(post_self.app, post_self.mod, newtx);
+    console.log("New tweet:" , posted_tweet);
 
-    let rparent = this.mod.returnTweet(rparent_id);
-
+    let rparent = this.tweet;
     if (rparent) {
+      console.log(rparent)
+
       //
       // loop to remove anything we will hide
       //
@@ -254,38 +225,34 @@ class Post {
         let x = this.mod.returnTweet(rparent2.parent_id);
         let qs = ".tweet-" + x.tx.transaction.sig;
         if (document.querySelector(qs)) {
+          console.log(qs);
           document.querySelector(qs).remove();
         }
         rparent2 = x;
       }
 
-      rparent.addTweet(tweet);
-      this.mod.addTweet(tweet.tx);
-      rparent.updated_at = new Date().getTime();
-      rparent.critical_child = tweet;
-      if (tweet.retweet_tx) {
+
+      if (posted_tweet.retweet_tx) {
         rparent.tx.optional.num_retweets++;
+        rparent.num_retweets++;
+        rparent.render();
       } else {
+        rparent.addTweet(posted_tweet);
+        rparent.critical_child = posted_tweet;
         rparent.tx.optional.num_replies++;
+        rparent.num_replies++;
+        rparent.renderWithCriticalChild();
       }
-      this.app.connection.emit(
-        "redsquare-home-tweet-and-critical-child-prepend-render-request",
-        rparent
-      );
+
     } else {
-      this.mod.addTweet(tweet.tx);
-      this.app.connection.emit("redsquare-home-tweet-prepend-render-request", tweet);
+      this.mod.addTweet(posted_tweet.tx, true);
+      posted_tweet.render(true);
     }
 
+    //We let the loader run for a half second to show we are sending the tweet
     setTimeout(() => {
-      if (post_self.render_after_submit == 1) {
-        //
-        // scroll to top
-        //
-        document.querySelector(".saito-container").scroll({ top: 0, left: 0, behavior: "smooth" });
-      }
       post_self.overlay.hide();
-    }, 500);
+    }, 800);
   }
 
   addImg(img) {

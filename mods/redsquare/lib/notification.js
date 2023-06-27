@@ -73,7 +73,7 @@ class RedSquareNotification {
 
       if (this.tx.transaction.ts > mod.last_viewed_notifications_ts) {
         mod.last_viewed_notifications_ts = this.tx.transaction.ts;
-        mod.save();
+        mod.saveLocalTweets();
       }
 
       //
