@@ -59,7 +59,7 @@
         }
 
         return `
-          <div class="strategy-card" id="${name}">
+          <div class="strategy-card strategy-card-${name}" id="${name}">
 	    <img id="${name}" src="/imperium/img${obj.img}">
 	    <div class="text">${obj.text}</div>
 	    ${bonus_html} ${card_html}
@@ -69,6 +69,7 @@
     }
 
 
+    obj.key = name;
     obj = this.addEvents(obj);
     this.strategy_cards[name] = obj;
 

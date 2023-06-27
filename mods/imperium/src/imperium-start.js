@@ -17,6 +17,8 @@ const UnitsOverlay = require('./lib/overlays/units');
 const UpgradesOverlay = require('./lib/overlays/upgrades');
 const ObjectivesOverlay = require('./lib/overlays/objectives');
 const AgendasOverlay = require('./lib/overlays/agenda');
+const AgendaSelectionOverlay = require('./lib/overlays/agenda-selection');
+const AgendaVotingOverlay = require('./lib/overlays/agenda-voting');
 const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
 const InfluenceSelectionOverlay = require('./lib/overlays/influence-selection');
 const SenateOverlay = require('./lib/overlays/senate');
@@ -69,6 +71,8 @@ class Imperium extends GameTemplate {
     this.upgrades_overlay = new UpgradesOverlay(this.app, this);
     this.objectives_overlay = new ObjectivesOverlay(this.app, this);
     this.agendas_overlay = new AgendasOverlay(this.app, this);
+    this.agenda_selection_overlay = new AgendaSelectionOverlay(this.app, this);
+    this.agenda_voting_overlay = new AgendaVotingOverlay(this.app, this);
     this.units_overlay = new UnitsOverlay(this.app, this);
     this.sector_overlay = new SectorOverlay(this.app, this);
     this.tech_tree_overlay = new TechTreeOverlay(this.app, this);

@@ -29,6 +29,10 @@
   float: left;
 }
 
+.new_action_cards_text {
+  color: whitesmoke;
+}
+
 .action_card {
     padding: 2rem;
   dding-top: 2.2rem;

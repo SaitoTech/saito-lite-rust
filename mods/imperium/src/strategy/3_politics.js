@@ -95,18 +95,25 @@
 
             imperium_self.updateStatus(html);
 
-            $('.option').off();
-            $('.option').on('mouseenter', function() { let s = $(this).attr("id"); imperium_self.showAgendaCard(s); });
-            $('.option').on('mouseleave', function() { let s = $(this).attr("id"); imperium_self.hideAgendaCard(s); });
-            $('.option').on('click', function() {
+	    let card_removal_function = function(cardkey) {
+              laws_selected--;
+	      for (let z = 0; z < selected_agendas.length; z++) {
+		if (selected_agendas[z] === cardkey) { selected_agendas.splice(z, 1); }
+	      }
+	    }
+
+	    let card_selection_function = function(cardkey) {
 
               laws_selected++;
-              selected_agendas.push($(this).attr('id'));
 
-              $(this).hide();
-              imperium_self.hideAgendaCard(selected_agendas[selected_agendas.length-1]);
+              selected_agendas.push(cardkey);
 
               if (laws_selected >= imperium_self.game.state.agendas_per_round) {
+
+                $(this).hide();
+                imperium_self.hideAgendaCard(selected_agendas[selected_agendas.length-1]);
+		imperium_self.agenda_selection_overlay.hide();
+
                 for (i = 1; i >= 0; i--) {
 if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
                   imperium_self.addMove("resolve_agenda\t"+selected_agendas[i]);
@@ -129,11 +136,30 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
                 }
                 imperium_self.addMove("resetagenda");
                 imperium_self.endTurn();
-              }
+	      }
+
+	    };
+
+console.log("SELECTED AGENDAS: " + JSON.stringify(selected_agendas));
+console.log("SELECTEABLE AGENDAS: " + JSON.stringify(imperium_self.game.state.agendas));
+
+	    imperium_self.agenda_selection_overlay.render(imperium_self.game.state.agendas, selected_agendas, imperium_self.game.state.agendas_per_round, function(cardkey) {
+	      card_selection_function(cardkey);
+	    }, card_removal_function);
+
+            // this doesn't trigger overlays, as those are divs not li
+            $('li.option').off();
+            $('li.option').on('mouseenter', function() { let s = $(this).attr("id"); imperium_self.showAgendaCard(s); });
+            $('li.option').on('mouseleave', function() { let s = $(this).attr("id"); imperium_self.hideAgendaCard(s); });
+            $('li.option').on('click', function() {
+
+	      $('.option').off();
+	      let cardkey = $(this).attr("id");
+	      card_selection_function(cardkey);
             });
         } else {
 
-	  imperium_self.updateStatus("The Speaker is selecting two Agendas for consideration by the Senate");
+	  imperium_self.updateStatus("Speaker selecting Agendas for consideration by Senate");
 
 	}
       },

@@ -4374,7 +4374,7 @@ playerSelectStrategyCards(mycallback, selection = 0) {
   //
   if (ac.length == 0) {
 
-    imperium_self.strategy_card_selection_overlay.render(scards_objs, mycallback);
+    imperium_self.strategy_card_selection_overlay.render(scards_objs, unselect_scards, mycallback);
 /***
     let t = "Select Your Strategy Card";
     if (selection == 1) { t = "Select Your FIRST Strategy Card"; }

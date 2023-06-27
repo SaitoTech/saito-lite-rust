@@ -428,7 +428,7 @@ returnNewActionCardsOverlay(cards) {
   let html = `
     <div class="new_action_cards_overlay_container" style="">
       <div class="new_action_cards_title">${title}</div>
-      <div style="width:100%"><div class="new_objectives_text">click on your faction to see all your action cards anytime...</div></div>
+      <div style="width:100%"><div class="new_action_cards_text">click on your faction to see all your action cards anytime...</div></div>
       <div class="new_action_cards">
   `;
 
@@ -442,7 +442,6 @@ returnNewActionCardsOverlay(cards) {
   }
   html += `
       </div>
-      <div id="close-action-cards-btn" class="button" style="">CONTINUE</div>
     </div>
   `;
   return html;

@@ -17,6 +17,8 @@ const UnitsOverlay = require('./lib/overlays/units');
 const UpgradesOverlay = require('./lib/overlays/upgrades');
 const ObjectivesOverlay = require('./lib/overlays/objectives');
 const AgendasOverlay = require('./lib/overlays/agenda');
+const AgendaSelectionOverlay = require('./lib/overlays/agenda-selection');
+const AgendaVotingOverlay = require('./lib/overlays/agenda-voting');
 const ResourceSelectionOverlay = require('./lib/overlays/resource-selection');
 const InfluenceSelectionOverlay = require('./lib/overlays/influence-selection');
 const SenateOverlay = require('./lib/overlays/senate');
@@ -69,6 +71,8 @@ class Imperium extends GameTemplate {
     this.upgrades_overlay = new UpgradesOverlay(this.app, this);
     this.objectives_overlay = new ObjectivesOverlay(this.app, this);
     this.agendas_overlay = new AgendasOverlay(this.app, this);
+    this.agenda_selection_overlay = new AgendaSelectionOverlay(this.app, this);
+    this.agenda_voting_overlay = new AgendaVotingOverlay(this.app, this);
     this.units_overlay = new UnitsOverlay(this.app, this);
     this.sector_overlay = new SectorOverlay(this.app, this);
     this.tech_tree_overlay = new TechTreeOverlay(this.app, this);
@@ -4849,18 +4853,25 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
 
             imperium_self.updateStatus(html);
 
-            $('.option').off();
-            $('.option').on('mouseenter', function() { let s = $(this).attr("id"); imperium_self.showAgendaCard(s); });
-            $('.option').on('mouseleave', function() { let s = $(this).attr("id"); imperium_self.hideAgendaCard(s); });
-            $('.option').on('click', function() {
+	    let card_removal_function = function(cardkey) {
+              laws_selected--;
+	      for (let z = 0; z < selected_agendas.length; z++) {
+		if (selected_agendas[z] === cardkey) { selected_agendas.splice(z, 1); }
+	      }
+	    }
+
+	    let card_selection_function = function(cardkey) {
 
               laws_selected++;
-              selected_agendas.push($(this).attr('id'));
 
-              $(this).hide();
-              imperium_self.hideAgendaCard(selected_agendas[selected_agendas.length-1]);
+              selected_agendas.push(cardkey);
 
               if (laws_selected >= imperium_self.game.state.agendas_per_round) {
+
+                $(this).hide();
+                imperium_self.hideAgendaCard(selected_agendas[selected_agendas.length-1]);
+		imperium_self.agenda_selection_overlay.hide();
+
                 for (i = 1; i >= 0; i--) {
 if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
                   imperium_self.addMove("resolve_agenda\t"+selected_agendas[i]);
@@ -4883,11 +4894,30 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
                 }
                 imperium_self.addMove("resetagenda");
                 imperium_self.endTurn();
-              }
+	      }
+
+	    };
+
+console.log("SELECTED AGENDAS: " + JSON.stringify(selected_agendas));
+console.log("SELECTEABLE AGENDAS: " + JSON.stringify(imperium_self.game.state.agendas));
+
+	    imperium_self.agenda_selection_overlay.render(imperium_self.game.state.agendas, selected_agendas, imperium_self.game.state.agendas_per_round, function(cardkey) {
+	      card_selection_function(cardkey);
+	    }, card_removal_function);
+
+            // this doesn't trigger overlays, as those are divs not li
+            $('li.option').off();
+            $('li.option').on('mouseenter', function() { let s = $(this).attr("id"); imperium_self.showAgendaCard(s); });
+            $('li.option').on('mouseleave', function() { let s = $(this).attr("id"); imperium_self.hideAgendaCard(s); });
+            $('li.option').on('click', function() {
+
+	      $('.option').off();
+	      let cardkey = $(this).attr("id");
+	      card_selection_function(cardkey);
             });
         } else {
 
-	  imperium_self.updateStatus("The Speaker is selecting two Agendas for consideration by the Senate");
+	  imperium_self.updateStatus("Speaker selecting Agendas for consideration by Senate");
 
 	}
       },
@@ -11852,7 +11882,9 @@ console.log("qe: " + qe);
     this.menu.render();
 
     this.hud.auto_sizing = 0;
-    this.hud.render();
+    if (!document.querySelector(".hud")) {
+      this.hud.render();
+    }
 
     this.log.render();
 
@@ -12082,8 +12114,8 @@ console.log("qe: " + qe);
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      //let sys = this.returnSectorAndPlanets("4_4");
-      //sys.p[0].owner = 1;
+      let sys = this.returnSectorAndPlanets("4_4");
+      sys.p[0].owner = 1;
 
 
       //
@@ -13692,18 +13724,19 @@ handleSystemsMenuItem() {
   }
 
   
-  importAgendaCard(name, obj) {
+  importAgendaCard(key, obj) {
 
     if (obj.name == null) 	{ obj.name = "Unknown Agenda"; }
     if (obj.type == null)	{ obj.type = "Law"; }
     if (obj.text == null)	{ obj.text = "Unknown Document"; }
     if (obj.img  == null)	{ obj.img = "/imperium/img/agenda_card_template.png"; }
+    if (obj.key  == null)	{ obj.key = name; }
     if (obj.elect == null)	{ obj.elect = "other"; }
 
     if (obj.returnCardImage == null) {
       obj.returnCardImage = function() {
         return `
-  	  <div style="background-image: url('/imperium/img/agenda_card_template.png');" class="overlay_agendacard card option" id="${name}">
+  	  <div style="background-image: url('/imperium/img/agenda_card_template.png');" class="overlay_agendacard card option ${key}" id="${key}">
 	    <div class="overlay_agendatitle">${obj.name}</div>
 	    <div class="overlay_agendacontent">${obj.text}</div>
 	  </div>
@@ -13712,7 +13745,7 @@ handleSystemsMenuItem() {
     }
 
     obj = this.addEvents(obj);
-    this.agenda_cards[name] = obj;
+    this.agenda_cards[key] = obj;
 
   }  
 
@@ -14969,12 +15002,19 @@ console.log("WHO: " + this.returnFaction(z+1));
 	//
 	this.displayFactionDashboard(1);
 
-
 	//
 	// voting happens in turns, speaker last
 	//
         let who_is_next = 0;
 	let speaker_order = this.returnSpeakerOrder();
+
+
+        //
+        // show overlay and pull HUD over
+        //
+	let card = this.agenda_cards[agenda];
+        this.agenda_voting_overlay.render(card);
+
 
 	for (let i = 0; i < speaker_order.length; i++) {
 	  if (this.game.state.voted_on_agenda[speaker_order[i]-1][agenda_num] == 0) { 
@@ -14984,7 +15024,6 @@ console.log("WHO: " + this.returnFaction(z+1));
 	    i = this.game.state.players_info.length; 
 	  }
         }
-
 
         this.setPlayerActiveOnly(who_is_next);
 
@@ -14997,6 +15036,12 @@ console.log("WHO: " + this.returnFaction(z+1));
 	      html += '</div>';
 	      html += '<div class="agenda_status">'+this.returnFaction(who_is_next)+' is now voting.</div>';
 	  this.updateStatus(html);
+
+          //
+          // show overlay and pull HUD over
+          //
+	  let card = this.agenda_cards[agenda];
+          this.agenda_voting_overlay.render(card);
 
 	} else {
 
@@ -15032,6 +15077,12 @@ console.log("WHO: " + this.returnFaction(z+1));
 	  }
               html += '<li class="option" id="abstain">abstain</li></ul></p>';
 	  imperium_self.updateStatus(html);
+
+          //
+          // show overlay and pull HUD over
+          //
+	  let card = imperium_self.agenda_cards[agenda];
+          imperium_self.agenda_voting_overlay.render(card);
 
           $('.option').off();
     	  $('.option').on('mouseenter', function() {
@@ -15073,7 +15124,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
 	    }
 
-            let html = '<p style="margin-bottom:15px">Your voting strength is determined by your influence. Conquer more influence-rich planets to increase it. How many votes do you wish to cast in the Galactic Senate:</p>';
+            let html = '<p style="margin-bottom:15px;text-align:center">How much influence do you wish to spend in the Senate:</p>';
 	    for (let i = 1; i <= imperium_self.game.state.votes_available[imperium_self.game.player-1]; i++) {
               if (i == 1) {
 	        html += '<li class="option textchoice" id="'+i+'">'+i+' vote</li>';
@@ -15121,6 +15172,12 @@ console.log("WHO: " + this.returnFaction(z+1));
 	//
 	this.displayFactionDashboard(1);
 
+        //
+        // show overlay and pull HUD over
+        //
+	let card = this.agenda_cards[agenda];
+        this.agenda_voting_overlay.render(card);
+
 
 	//
 	// voting happens simultaneously
@@ -15146,6 +15203,12 @@ console.log("WHO: " + this.returnFaction(z+1));
 	      html += imperium_self.agenda_cards[agenda].text;
 	      html += '</div>';
 	  this.updateStatus(html);
+
+          //
+          // show overlay and pull HUD over
+          //
+	  let card = this.agenda_cards[agenda];
+          this.agenda_voting_overlay.render(card);
 
 	} else {
 
@@ -15181,6 +15244,13 @@ console.log("WHO: " + this.returnFaction(z+1));
 	  }
               html += '<li class="option" id="abstain">abstain</li></ul></p>';
 	  imperium_self.updateStatus(html);
+
+          //
+          // show overlay and pull HUD over
+          //
+	  let card = imperium_self.agenda_cards[agenda];
+          imperium_self.agenda_voting_overlay.render(card);
+
 
           $('.option').off();
     	  $('.option').on('mouseenter', function() {
@@ -15222,7 +15292,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
 	    }
 
-            let html = '<p style="margin-bottom:15px">Your voting strength is determined by your influence. Conquer more influence-rich planets to increase it. How many votes do you wish to cast in the Galactic Senate:</p>';
+            let html = '<p style="margin-bottom:15px;text-align:center">How much influence do you wish to spend in the Senate:</p>';
 	    for (let i = 1; i <= imperium_self.game.state.votes_available[imperium_self.game.player-1]; i++) {
               if (i == 1) {
 	        html += '<li class="option textchoice" id="'+i+'">'+i+' vote</li>';
@@ -15231,6 +15301,12 @@ console.log("WHO: " + this.returnFaction(z+1));
 	      }
 	    }
 	    imperium_self.updateStatus(html);
+
+            //
+            // show overlay and pull HUD over
+            //
+	    let card = imperium_self.agenda_cards[agenda];
+            imperium_self.agenda_voting_overlay.render(card);
 
             $('.option').off();
             $('.option').on('click', function() {
@@ -15370,6 +15446,8 @@ console.log("WHO: " + this.returnFaction(z+1));
   	  }
   	}
 
+        this.agenda_voting_overlay.hide();
+
       	this.game.queue.push("resolve\tnewround");
     	this.game.state.round++;
     	this.updateLog("ROUND: " + this.game.state.round);
@@ -15437,7 +15515,7 @@ if (debugging == 0) {
         this.game.queue.push("playerschoosestrategycards_before");
 
         if (this.game.state.round == 1) {
-          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players select a strategy card. new players consider taking Leadership, Politics, or Technology.");
+          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players select a Strategy Card for Round 1.");
 	} else {
           this.game.queue.push(`ACKNOWLEDGE\tNEXT: all players select their strategy card(s) for Round ${this.game.state.round}.`);
 	}
@@ -16631,10 +16709,7 @@ if (debugging == 0) {
 	    document.querySelectorAll('.overlay_action_card').forEach(el => { bonus_buff++; });
 
 	    this.overlay.show(this.returnNewActionCardsOverlay(this.game.deck[1].hand.slice(this.game.deck[1].hand.length-(amount+bonus_buff), this.game.deck[1].hand.length)));
-	    document.getElementById("close-action-cards-btn").onclick = (e) => {
-	      this.overlay.hide();
-	      this.game.state.showing_action_cards_amounts = 0;
-            }
+	    this.game.state.showing_action_cards_amounts = 0;
 	  }
 	  this.game.state.players_info[player-1].action_cards_in_hand += amount;
 
@@ -24403,7 +24478,7 @@ playerSelectStrategyCards(mycallback, selection = 0) {
   //
   if (ac.length == 0) {
 
-    imperium_self.strategy_card_selection_overlay.render(scards_objs, mycallback);
+    imperium_self.strategy_card_selection_overlay.render(scards_objs, unselect_scards, mycallback);
 /***
     let t = "Select Your Strategy Card";
     if (selection == 1) { t = "Select Your FIRST Strategy Card"; }
@@ -31685,7 +31760,7 @@ returnNewActionCardsOverlay(cards) {
   let html = `
     <div class="new_action_cards_overlay_container" style="">
       <div class="new_action_cards_title">${title}</div>
-      <div style="width:100%"><div class="new_objectives_text">click on your faction to see all your action cards anytime...</div></div>
+      <div style="width:100%"><div class="new_action_cards_text">click on your faction to see all your action cards anytime...</div></div>
       <div class="new_action_cards">
   `;
 
@@ -31699,7 +31774,6 @@ returnNewActionCardsOverlay(cards) {
   }
   html += `
       </div>
-      <div id="close-action-cards-btn" class="button" style="">CONTINUE</div>
     </div>
   `;
   return html;
@@ -32135,7 +32209,7 @@ updateLeaderboard() {
         }
 
         return `
-          <div class="strategy-card" id="${name}">
+          <div class="strategy-card strategy-card-${name}" id="${name}">
 	    <img id="${name}" src="/imperium/img${obj.img}">
 	    <div class="text">${obj.text}</div>
 	    ${bonus_html} ${card_html}
@@ -32145,6 +32219,7 @@ updateLeaderboard() {
     }
 
 
+    obj.key = name;
     obj = this.addEvents(obj);
     this.strategy_cards[name] = obj;
 

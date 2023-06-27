@@ -1,0 +1,24 @@
+
+.voting-hud {
+  height: 450px;
+  min-height: 450px;
+  max-height: 450px;
+  bottom: 0% !important;
+  top: unset !important;
+}
+
+.voting-hud .hud-body {
+    min-height: 100%;
+    height: 100%;
+    max-height: 100%;
+    width: 100%;
+}
+
+.voting-hud .hud-body .status li.option.textchoice {
+    padding: 1rem;
+    list-style: none;
+}
+.voting-hud .hud-body .status li.option.textchoice:hover {
+    background-color: #3334;
+}
+
