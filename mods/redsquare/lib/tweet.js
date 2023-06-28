@@ -98,7 +98,7 @@ class Tweet {
     this.user = new SaitoUser(
       app,
       mod,
-      `.tweet-${this.tx.transaction.sig} > .tweet-header`,
+      this.container + `> .tweet-${this.tx.transaction.sig} > .tweet-header`,
       this.tx.transaction.from[0].add
     );
 
@@ -204,13 +204,6 @@ class Tweet {
     // double-rendering is possible with commented retweets
     // but we should just replace, duh.
 
-    //if (this.isRendered()) {
-    //  console.log("Already rendered");
-    //  return;
-    //}
-
-    console.log(this);
-
     let myqs = this.container + `> .tweet-${this.tx.transaction.sig}`;
     let replace_existing_element = true;
 
@@ -285,11 +278,11 @@ class Tweet {
 
       let t = this.mod.returnTweet(this.retweet.tx.transaction.sig);
       if (t) {
-        console.log("returned tweet");
         t.notice = this.retweet.notice;
         t.render(prepend);
       } else {
         console.log("saved tweet");
+        this.retweet.user.container = this.container + `> .tweet-${this.tx.transaction.sig} > .tweet-header`,
         this.retweet.render(prepend);
       }
       return;
@@ -306,7 +299,6 @@ class Tweet {
 
     if (/*replace_existing_element &&*/ document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
-      console.log("Replace: " + myqs);
     } else if (prepend) {
       this.app.browser.prependElementToSelector(
         TweetTemplate(this.app, this.mod, this),
@@ -322,7 +314,6 @@ class Tweet {
         TweetTemplate(this.app, this.mod, this),
         this.container
       );
-      console.log("Append to: " + this.container);
     }
 
     //
@@ -362,7 +353,6 @@ class Tweet {
     this.user.render();
 
     if (this.retweet) {
-      //console.log("Render quoted tweet");
       this.retweet.render();
     }
     if (this.img_preview != null) {
@@ -498,6 +488,7 @@ class Tweet {
       if (!this_tweet.dataset.hasClickEvent) {
         this_tweet.dataset.hasClickEvent = true;
         this_tweet.onclick = (e) => {
+          console.log("Regular click event");
           //
           // if we have selected text, then we are trying to copy and paste and
           // the last thing we want is for the UI to update and prevent us from
@@ -547,7 +538,16 @@ class Tweet {
           e.stopImmediatePropagation();
           let sig = item.getAttribute("data-id");
           if (e.target.tagName != "IMG" && sig) {
-            window.location.href = `/redsquare/?tweet_id=${sig}`;
+            //window.location.href = `/redsquare/?tweet_id=${sig}`;
+            let t = this.mod.returnTweet(sig);
+            if (t) {
+              app.connection.emit("redsquare-home-tweet-render-request", t);  
+            }else{
+              console.warn("This is going to screw up the feed");
+              this.retweet.container = ".tweet-manager";
+              app.connection.emit("redsquare-home-tweet-render-request", this.retweet);  
+            }
+            window.history.pushState(null, "", `/redsquare/?tweet_id=${sig}`);
           }
         });
       });

@@ -124,6 +124,14 @@ class RedSquare extends ModTemplate {
 
       if (this.app.browser.isMobileBrowser() && this.browser_active) {
         x.push({
+          text: "RedSquare Home",
+          icon: "fa-solid fa-house",
+          rank: 21,
+          callback: function (app, id) {
+            document.querySelector(".redsquare-menu-home").click();
+          },
+        });
+        x.push({
           text: "Notifications",
           icon: "fas fa-bell",
           rank: 23,
@@ -1365,11 +1373,8 @@ class RedSquare extends ModTemplate {
 
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
-
-    console.log("Update Tweets: " + rows.length);
     
     for (let i = 0; i < rows.length; i++) {
-      console.log(rows[i]);
       //
       // create the transaction
       //
