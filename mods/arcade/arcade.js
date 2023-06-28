@@ -1556,13 +1556,13 @@ class Arcade extends ModTemplate {
 
     // We want new games to go towards the top
 
-    this.games["open"].unshift(tx);
+    this.games[list].push(tx);
 
     console.log("the transction ", this.games, tx);
 
     if (this.debug) {
       console.log(
-        `Added game (${tx.transaction.sig}) to ${list}`,
+        `Added game (${tx.signature}) to ${list}`,
         JSON.parse(JSON.stringify(this.games))
       );
     }
@@ -1939,17 +1939,16 @@ class Arcade extends ModTemplate {
   }
 
   purgeOldGames() {
-    let now = new Date().getTime();
-    for (let key in this.games) {
-      let cutoff = now - this.invite_cutoff;
-      if (key == "active" || key == "over") {
-        cutoff = now - this.game_cutoff;
-      }
-
-      this.games[key] = this.games[key].filter((game) => {
-        return game.transaction?.ts > cutoff;
-      });
-    }
+    // let now = new Date().getTime();
+    // for (let key in this.games) {
+    //   let cutoff = now - this.invite_cutoff;
+    //   if (key == "active" || key == "over") {
+    //     cutoff = now - this.game_cutoff;
+    //   }
+    //   this.games[key] = this.games[key].filter((game) => {
+    //     return game.transaction?.ts > cutoff;
+    //   });
+    // }
   }
 
   async observerDownloadNextMoves(game_mod, mycallback = null) {
