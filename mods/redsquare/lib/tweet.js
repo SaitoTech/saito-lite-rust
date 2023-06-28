@@ -269,7 +269,7 @@ class Tweet {
     // this is if i retweet my own tweet
     //
     if (!this.text && this.retweet_tx) {
-      console.log("Retweet without quote");
+      //console.log("Retweet without quote");
       this.retweet.notice =
         "retweeted by " +
         this.app.browser.returnAddressHTML(this.tx.transaction.from[0].add) +
@@ -488,7 +488,7 @@ class Tweet {
       if (!this_tweet.dataset.hasClickEvent) {
         this_tweet.dataset.hasClickEvent = true;
         this_tweet.onclick = (e) => {
-          console.log("Regular click event");
+          //console.log("Regular click event");
           //
           // if we have selected text, then we are trying to copy and paste and
           // the last thing we want is for the UI to update and prevent us from

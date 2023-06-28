@@ -60,13 +60,6 @@ class RedSquareMain {
       this.manager.render();
     });
 
-    this.app.connection.on("redsquare-home-loader-render-request", () => {
-      this.manager.showLoader();
-    });
-    this.app.connection.on("redsquare-home-loader-hide-request", () => {
-      this.manager.hideLoader();
-    });
-
     // this is triggered when you reply to a tweet -- it pushes tweet and your reply to top, or should
     this.app.connection.on("redsquare-home-tweet-and-critical-child-prepend-render-request", (tweet) => {
       this.app.connection.emit("redsquare-home-tweet-render-request", (tweet));

@@ -9,9 +9,14 @@ module.exports = (app, mod, tx) => {
     if (txmsg.data?.sig) { txsig = txmsg.data.sig; }
 
     return `
-        <div class="tweet tweet-notification notification-item-${tx.transaction.sig} tweet-notif-fav-${from}-${txsig}" data-id="${txsig}">
+        <div class="tweet tweet-notification notification-item-${from}-${txsig} tweet-notif-fav" data-id="${txsig}">
           <div class="tweet-notice"></div>
-          <div class="tweet-header">
+          <div class="tweet-header"></div>
+          <div class="tweet-body">
+            <div class="tweet-sidebar"></div>
+            <div class="tweet-main">
+              <div class="tweet-preview"></div>
+            </div>
           </div>
         </div>
     `;

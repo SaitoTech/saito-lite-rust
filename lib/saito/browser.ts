@@ -687,7 +687,7 @@ class Browser {
       if (container) {
         this.app.browser.addElementToElement(html, container);
       }else{
-        console.info("Container not found");
+        console.info("Container not found: " + selector);
       }
     }
   }

@@ -14,8 +14,6 @@ const localforage = require("localforage");
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
- * lib/main.js:    this.app.connection.on("redsquare-home-loader-render-request", () => {   // renders loader (home)
- * lib/main.js:    this.app.connection.on("redsquare-home-loader-hide-request", () => {     // hides loader (home)
  * lib/main.js:    this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {   // renders tweet
  * lib/main.js:    this.app.connection.on("redsquare-profile-render-request", () => {     // renders profile
  * lib/main.js:    //this.app.connection.on("redsquare-contacts-render-request", () => {    // renders contacts
@@ -230,8 +228,6 @@ class RedSquare extends ModTemplate {
       }
     }
 
-    console.log("Render RS");
-
     if (this.main == null) {
       this.main = new SaitoMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
@@ -308,7 +304,6 @@ class RedSquare extends ModTemplate {
     if (service.service === "redsquare") {
       this.addPeer(peer, "tweets");
 
-      console.log("RS PSU");
       //
       // render tweet + children
       //
@@ -349,24 +344,11 @@ class RedSquare extends ModTemplate {
     if (service.service === "archive") {
       this.addPeer(peer, "notifications");
 
-      let recursiveLoadNotifications = (peer, delay) => {
-        setTimeout(() => {
-          this.loadNotifications(peer, (txs) => {
-            if (txs.length == 0) {
-              this.app.connection.emit("redsquare-home-loader-hide-request");
-              return;
-            }
-            //
-            // need more, fetch more !
-            //
-            if (this.notifications.length < 5) {
-              recursiveLoadNotifications(peer, delay);
-            }
-          });
-        }, delay);
-      };
+      setTimeout(() => {
+        this.loadNotifications(peer, () => {
+        });
+      }, 1500);
 
-      recursiveLoadNotifications(peer, 3500);
     }
   }
 
@@ -426,12 +408,9 @@ class RedSquare extends ModTemplate {
       tweets_earliest_ts: 0,
       tweets_latest_ts: 0,
       tweets_limit: 20,
-      profile_earliest_ts: 0,
-      profile_latest_ts: 0,
+      profile_earliest_ts: new Date().getTime(),
       profile_limit: 20,
-      notifications_earliest_ts: new Date().getTime(),
-      notifications_latest_ts: 0,
-      notifications_limit: 10,
+      notifications_limit: 500,
       has_tweets: has_tweets,
       has_notifications: has_notifications,
     });
@@ -478,6 +457,8 @@ class RedSquare extends ModTemplate {
     let txmsg = tx.returnMessage();
     try {
       if (conf == 0) {
+        //console.log("RS onConfirmation: " + txmsg.request);
+
         if (txmsg.request === "create tweet") {
           this.receiveTweetTransaction(blk, tx, conf, app);
         }
@@ -665,62 +646,32 @@ class RedSquare extends ModTemplate {
     // TO us, but when we want to fetch our list of notifications, we want to fetch from our
     // archive nodes.
     //
+    //console.log("Load notifications after " + this.notifications_last_viewed_ts);
+
     for (let i = 0; i < this.peers.length; i++) {
-      let peer = this.peers[i].peer;
-      if (this.peers[i].notifications_earliest_ts != 0) {
-        //
-        //
-        //
-        if (this.peers[i].notifications_earliest_ts == "") {
-          this.peers[i].notifications_latest_ts = new Date().getTime();
-        }
 
-        this.app.storage.loadTransactions(
-          {
-            field3: this.app.wallet.returnPublicKey(),
-            created_earlier_than: this.peers[i].notifications_earliest_ts,
-            limit: this.peers[i].limit,
-          },
-          (txs) => {
-            if (txs.length > 0) {
-              for (let z = 0; z < txs.length; z++) {
-                txs[z].decryptMessage(this.app);
-                this.addTweet(txs[z]);
-              }
+      this.app.storage.loadTransactions(
+        { 
+          field3: this.app.wallet.returnPublicKey(),
+          //created_later_than: this.notifications_last_viewed_ts,
+          limit: this.peers[i].limit,
+        },
+      
+        (txs) => {
+          if (txs.length > 0) {
+            for (let z = 0; z < txs.length; z++) {
+              txs[z].decryptMessage(this.app);
+              this.addTweet(txs[z]);
             }
+          }
 
-            this.updatePeerStat(
-              this.returnEarliestTimestampFromTransactionArray(txs),
-              "profile_earliest_ts",
-              peer
-            );
-
-            if (mycallback) {
-              //
-              // can't fetch more? we are at the earliest point
-              //
-              if (txs.length == 0) {
-                this.peers[i].notifications_earliest_ts = 0;
-              }
-
-              //
-              // update our earliest fetched notification
-              //
-              for (let z = 0; z < txs.length; z++) {
-                if (txs[z].transaction.ts < this.peers[i].notifications_earliest_ts) {
-                  this.peers[i].notifications_earliest_ts = txs[z].transaction.ts;
-                }
-                if (txs[z].transaction.ts > this.peers[i].notifications_latest_ts) {
-                  this.peers[i].notifications_latest_ts = txs[z].transaction.ts;
-                }
-              }
-
-              mycallback(txs);
-            }
-          },
-          this.peers[i].peer
-        );
-      }
+          if (mycallback) {
+            mycallback(txs);
+          }
+        },
+        this.peers[i].peer
+      );
+    
     }
   }
 
@@ -738,8 +689,6 @@ class RedSquare extends ModTemplate {
 
     if (!tweet) { return; }
 
-    let is_notification = 0;
-
     //
     // maybe this needs to go into notifications too
     //
@@ -747,25 +696,27 @@ class RedSquare extends ModTemplate {
       //
       // notify of other people's actions, but not ours
       //
-      if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
+      if (!tx.isFrom(this.app.wallet.returnPublicKey()) && !this.notifications_sigs_hmap[tx.transaction.sig]) {
+        //console.log("Notification!");
+
         let insertion_index = 0;
         if (prepend == false) {
           for (let i = 0; i < this.notifications.length; i++) {
-            if (this.notifications[i].updated_at > tweet.updated_at) {
+            if (tweet.updated_at > this.notifications[i].updated_at) {
               break;
             } 
             insertion_index++;
           }
         }
 
-        is_notification = 1;
         this.notifications.splice(insertion_index, 0, tweet);
-        this.notifications_sigs_hmap[tweet.tx.transaction.sig] = 1;
+        this.notifications_sigs_hmap[tx.transaction.sig] = 1;
 
         //
         // increment notifications in menu unless is our own
         //
         if (tx.transaction.ts > this.notifications_last_viewed_ts) {
+          this.notifications_last_viewed_ts = tx.transaction.ts;
           this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
           this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
         }
@@ -825,6 +776,7 @@ class RedSquare extends ModTemplate {
 
       } else {
         //Just update the stats...
+
         for (let i = 0; i < this.tweets.length; i++) {
           if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
             this.tweets[i].tx.optional.num_replies = tweet.num_replies;
@@ -927,6 +879,9 @@ class RedSquare extends ModTemplate {
         // save tweets addressed to me
         //
         if (tx.isTo(app.wallet.returnPublicKey())) {
+          
+          //console.log("Save notification to archive");
+
           //
           // this transaction is TO me, but I may not be the tx.transaction.to[0].add address, and thus the archive
           // module may not index this transaction for me in a way that makes it very easy to fetch (field3 = MY_KEY}
@@ -1169,6 +1124,8 @@ class RedSquare extends ModTemplate {
       // save my likes
       //
       if (tx.isTo(app.wallet.returnPublicKey())) {
+        //console.log("Save (like) notification to archive");
+
         this.app.storage.saveTransaction(tx, {
           owner: app.wallet.returnPublicKey(),
           field3: app.wallet.returnPublicKey(),
@@ -1296,6 +1253,7 @@ class RedSquare extends ModTemplate {
     this.app.options.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
     this.app.options.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
 
+    //console.log(JSON.parse(JSON.stringify(this.app.options.redsquare)));
     this.app.storage.saveOptions();
   }
 

@@ -192,11 +192,12 @@ class Post {
 
     //Replies
     if (parent_id !== "") {
-      data = { text: text, parent_id: parent_id, thread_id: thread_id };
+      data = { text: text, parent_id: parent_id, thread_id: thread_id, sig: parent_id };
     }
     //Retweets
     if (source == "Retweet") {
       data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);
+      data.sig = post_self.tweet.tx.transaction.sig;
     }
 
     if (post_self.images.length > 0) {
