@@ -34,7 +34,7 @@ class RedSquareLink {
     //
     if (typeof this.tweet.link != "undefined") {
 
-      let qs = ".tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body .tweet-main .tweet-preview";
+      let qs = this.container + " > .link-preview";
 
       if (document.querySelector(qs)) {
         this.app.browser.replaceElementBySelector(RedSquareLinkTemplate(this), qs);

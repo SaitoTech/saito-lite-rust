@@ -150,7 +150,7 @@ class Tweet {
         this.app,
         this.mod,
         newtx,
-        `.tweet-preview-${this.tx.transaction.sig}`
+        this.container + `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`
       );
       this.retweet.is_retweet = true;
       this.retweet.show_controls = 0;
@@ -162,7 +162,7 @@ class Tweet {
         this.img_preview = new Image(
           this.app,
           this.mod,
-          `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
+          this.container + `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
           this
         );
       } else {
@@ -170,7 +170,7 @@ class Tweet {
           this.link_preview = new Link(
             this.app,
             this.mod,
-            `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
+            this.container + `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
             this
           );
         }
@@ -209,9 +209,9 @@ class Tweet {
     //  return;
     //}
 
-    //console.log(this);
+    console.log(this);
 
-    let myqs = this.container + ` .tweet-${this.tx.transaction.sig}`;
+    let myqs = this.container + `> .tweet-${this.tx.transaction.sig}`;
     let replace_existing_element = true;
 
     let has_reply = false;
@@ -232,7 +232,7 @@ class Tweet {
       }
 
       if (has_reply || has_reply_disconnected){
-        //console.log(has_reply, has_reply_disconnected);
+        console.log(has_reply, has_reply_disconnected);
       }
       //
       // if prepend = true, remove existing element
@@ -254,20 +254,20 @@ class Tweet {
     //
     // retweets displayed in container even if master exists elsewhere on page
     //
-    if (this.is_retweet) {
-      //console.log("Is retweet");
-      myqs = this.container;
-      replace_existing_element = true;
-    } else {
+    //if (this.is_retweet) {
+    //  console.log("Is retweet");
+    //  myqs = this.container;
+    //  replace_existing_element = true;
+    //} else {
       //
       // this isn't retweet, but if the original exists, we want to ignore
       // it unless it is parent-level (top thread).
       //
-      if (obj?.parentElement?.classList.contains("tweet-main")) {
-        //console.log("parent is a tweet");
-        replace_existing_element = false;
-      }
-    }
+    //  if (obj?.parentElement?.classList.contains("tweet-main")) {
+    //    console.log("parent is a tweet");
+    //    replace_existing_element = false;
+    //  }
+    //}
 
     //
     // retweets without commentary? pass-through and render subtweet
@@ -276,20 +276,20 @@ class Tweet {
     // this is if i retweet my own tweet
     //
     if (!this.text && this.retweet_tx) {
-      //console.log("Retweet without quote");
+      console.log("Retweet without quote");
       this.retweet.notice =
         "retweeted by " +
         this.app.browser.returnAddressHTML(this.tx.transaction.from[0].add) +
         this.formatDate();
-      this.retweet.container = ".tweet-" + this.retweet.tx.transaction.sig;
+      this.retweet.container = ".tweet-manager";
 
       let t = this.mod.returnTweet(this.retweet.tx.transaction.sig);
       if (t) {
-        //console.log("returned tweet");
+        console.log("returned tweet");
         t.notice = this.retweet.notice;
         t.render(prepend);
       } else {
-        //console.log("saved tweet");
+        console.log("saved tweet");
         this.retweet.render(prepend);
       }
       return;
@@ -304,13 +304,9 @@ class Tweet {
       }
     }
 
-    if (!this.container) {
-      this.container = ".tweet-manager";
-    }
-
-    if (replace_existing_element && document.querySelector(myqs)) {
+    if (/*replace_existing_element &&*/ document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
-      //console.log("Replace: " + myqs);
+      console.log("Replace: " + myqs);
     } else if (prepend) {
       this.app.browser.prependElementToSelector(
         TweetTemplate(this.app, this.mod, this),
@@ -326,7 +322,7 @@ class Tweet {
         TweetTemplate(this.app, this.mod, this),
         this.container
       );
-      //console.log("Append to: " + this.container);
+      console.log("Append to: " + this.container);
     }
 
     //

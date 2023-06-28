@@ -1354,16 +1354,22 @@ class RedSquare extends ModTemplate {
     let hex_entries = [];
 
 
-    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 AND moderated IS NOT 1) AND 
+    /*let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 AND moderated IS NOT 1) AND 
                     (((num_replies > 0 OR num_likes > 0) AND parent_id IS NOT "") OR (parent_id IS "")) AND 
                     (sig IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10)) OR 
                     (thread_id IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10)) ORDER BY created_at ASC LIMIT 10`;
+    */
+
+    //Alternate selection
+    let sql = `SELECT *, (num_likes + num_replies + num_retweets) AS virality FROM tweets WHERE (flagged IS NOT 1 AND moderated IS NOT 1) ORDER BY virality DESC LIMIT 10`;
+
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 
     console.log("Update Tweets: " + rows.length);
     
     for (let i = 0; i < rows.length; i++) {
+      console.log(rows[i]);
       //
       // create the transaction
       //

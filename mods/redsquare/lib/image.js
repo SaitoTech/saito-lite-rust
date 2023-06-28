@@ -14,7 +14,7 @@ class RedSquareImage {
 
   render() {
 
-    let element = ".tweet-" + this.tweet.tx.transaction.sig + " > .tweet-body  .tweet-picture";
+    let element = this.container +  " > .tweet-picture";
     let template = RedSquareImageTemplate(this.app, this.mod, this.images);
     let sig = this.tweet.tx.transaction.sig;
 
