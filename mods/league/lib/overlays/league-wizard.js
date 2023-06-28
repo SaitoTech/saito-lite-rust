@@ -1,22 +1,21 @@
-const LeagueWizardTemplate = require('./league-wizard.template');
-const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
-
+const LeagueWizardTemplate = require("./league-wizard.template");
+const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class LeagueWizard {
-
   constructor(app, mod, game_mod) {
-
     this.app = app;
     this.mod = mod;
     this.game_mod = game_mod;
     this.overlay = new SaitoOverlay(app);
 
     this.app.connection.on("league-launch-wizard", (game_mod = {}) => {
-      if (!game_mod){ console.log("No game module to launch league wizard"); return;}
+      if (!game_mod) {
+        console.log("No game module to launch league wizard");
+        return;
+      }
       this.game_mod = game_mod;
       this.render();
     });
-
   }
 
   render() {
@@ -24,25 +23,23 @@ class LeagueWizard {
     this.attachEvents();
   }
 
-  attachEvents(){
-
+  attachEvents() {
     document.querySelector("#league-name").onclick = (e) => {
       document.querySelector("#league-name").select();
-    }
+    };
 
     document.querySelector("#league-desc").onclick = (e) => {
       document.querySelector("#league-desc").select();
-    }
+    };
 
     document.querySelector("#create-league-btn").onclick = (e) => {
       e.stopPropagation();
       e.preventDefault();
-      
 
       let title = document.getElementById("league-name")?.value;
       let desc = document.getElementById("league-desc")?.value;
       let contact = document.getElementById("admin-contact")?.value;
-    
+
       if (!title || title === "League Name") {
         alert("Your league must have a name");
         return false;
@@ -53,17 +50,16 @@ class LeagueWizard {
         return false;
       }
 
-
       //let status = document.querySelector(".league-wizard-status-select").value;
 
       //
       let obj = this.mod.validateLeague(this.game_mod.respondTo("default-league"));
       obj.name = title;
       obj.description = desc;
-      obj.admin = this.app.wallet.returnPublicKey();
+      obj.admin = this.app.wallet.publicKey;
       obj.contact = contact || "";
 
-      if (obj.game === "Unknown"){
+      if (obj.game === "Unknown") {
         obj.game = this.game_mod.name;
       }
 
@@ -73,14 +69,8 @@ class LeagueWizard {
 
       salert("please wait a few moments for the league to be confirmed");
       return false;
-      
-    }
-  
+    };
   }
-
-
 }
 
 module.exports = LeagueWizard;
-
-

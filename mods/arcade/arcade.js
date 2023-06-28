@@ -1299,7 +1299,7 @@ class Arcade extends ModTemplate {
   /*
   createChangeTransaction(gametx, direction) {
       let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-      tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+      tx.transaction.to.push(new saito.default.slip(this.app.wallet.publicKey, 0.0));
       tx.msg = gametx.returnMessage();
       tx.msg.request = "change_" + direction;
       tx.msg.game_id = gametx.transaction.sig;
@@ -1331,7 +1331,7 @@ class Arcade extends ModTemplate {
     //
     // and re-display
     //
-    if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
+    if (!tx.isFrom(this.app.wallet.publicKey)) {
       if (this.isMyGame(tx)) {
         this.app.connection.emit('arcade-invite-manager-render-request', invites[i]);
       } else {
@@ -1373,9 +1373,9 @@ class Arcade extends ModTemplate {
       game: gameData.game,
       options: gameData.options,
       players_needed: gameData.players.length,
-      players: [this.app.wallet.returnPublicKey()],
+      players: [this.app.wallet.publicKey],
       players_sigs: [accept_sig],
-      originator: this.app.wallet.returnPublicKey(),
+      originator: this.app.wallet.publicKey,
       invitees: gameData.players,
     };
 
@@ -1390,7 +1390,7 @@ class Arcade extends ModTemplate {
       return;
     }
 
-    if (!tx.isTo(this.app.wallet.returnPublicKey())) {
+    if (!tx.isTo(this.app.wallet.publicKey)) {
       return;
     }
 
@@ -1486,7 +1486,7 @@ class Arcade extends ModTemplate {
           }
 
           let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-          tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+          tx.transaction.to.push(new saito.default.slip(this.app.wallet.publicKey, 0.0));
 
           tx.msg = {};
           tx.msg.request = "launch singleplayer";

@@ -1,23 +1,22 @@
 module.exports = JoinLeagueTemplate = (app, mod, league) => {
+  let game = league.game.toLowerCase();
+  let pubKey = app.wallet.publicKey;
+  let key = app.keychain.returnKey({ publickey: pubKey });
+  let user_email = key.email || "";
 
-	let game = league.game.toLowerCase();
-	let pubKey = app.wallet.returnPublicKey();
-	let key = app.keychain.returnKey({ publickey : pubKey });
-	let user_email = key.email || "";
+  let name = app.keychain.returnIdentifierByPublicKey(pubKey, true);
+  if (name == pubKey) {
+    name = "Anonymous Player";
+  }
 
-	let name = app.keychain.returnIdentifierByPublicKey(pubKey, true);
-	if (name == pubKey){
-		name = "Anonymous Player";
-	}
+  console.log(JSON.parse(JSON.stringify(league)));
 
-	console.log(JSON.parse(JSON.stringify(league)));
-
-	let html = `
+  let html = `
 	   <div class="league-join-overlay-box">
         <img src="/${game}/img/arcade/arcade.jpg" />
 	`;
 
-	/*let html = `
+  /*let html = `
 	   <div class="league-join-overlay-box">
       	  	<div class="join-overlay-header">
 		  		<div class="game-image" style="background-image: url('/${game}/img/arcade/arcade.jpg')"></div>
@@ -32,9 +31,10 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
 	  		`;
 	*/
 
-  	if (league.rank >= 0) {
-
-	  	return html + `
+  if (league.rank >= 0) {
+    return (
+      html +
+      `
 	        <div class="title-box">
 		    	<div class="title">League Joined</div>
 			</div>
@@ -46,11 +46,10 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
 				<div id="gonow" class="saito-overlay-form-alt-opt">Redirect now</div>
 			</div>
 	    </div>
-	   `;	  
-  	
-	} else {
-
-		html += `
+	   `
+    );
+  } else {
+    html += `
 		    <div class="title-box">
 		    	<div class="title">${league.name}</div>
 			</div>
@@ -64,10 +63,7 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
 	    </div>
 
 	   `;
+  }
 
-	}
-
-	return html;
-
+  return html;
 };
-

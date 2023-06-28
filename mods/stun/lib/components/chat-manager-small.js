@@ -78,7 +78,7 @@ class ChatManagerSmall {
   }
 
   attachEvents(app, mod) {
-    console.log('attaching events')
+    console.log("attaching events");
     const videoCallComponent = document.getElementById("chat-manager-small");
     const expandBtn = document.getElementById("expand-btn");
     if (expandBtn) {
@@ -131,13 +131,9 @@ class ChatManagerSmall {
         .parentElement.removeChild(document.querySelector(".chat-manager-small"));
     }
 
-    
-  
     document.querySelectorAll(".chat-manager-small-extension").forEach((item) => {
       item.parentElement.removeChild(item);
     });
-
-
 
     if (completely) {
       this.config.onHide && this.config.onHide();
@@ -169,7 +165,7 @@ class ChatManagerSmall {
     let audio_box = document.querySelector(`#audiostream${peer}`);
     this.analyzeAudio(remoteStream, audio_box);
 
-    this.attachEvents(this.app, this.mod)
+    this.attachEvents(this.app, this.mod);
   }
 
   createAudioBox(peer, remoteStream, pc, container) {
@@ -185,7 +181,7 @@ class ChatManagerSmall {
     console.log(this.audio_boxes);
     for (let i in this.audio_boxes) {
       if (i === "local") {
-        let publickey = this.app.wallet.returnPublicKey();
+        let publickey = this.app.wallet.publicKey;
         let imgsrc = this.app.keychain.returnIdenticon(publickey);
         if (
           !document.querySelector(`#audiostream${publickey}`).querySelector(`#image${publickey}`)
@@ -318,7 +314,7 @@ class ChatManagerSmall {
     console.log("video boxe3s ", this.video_boxes);
     for (let i in this.video_boxes) {
       if (i === "local") {
-        let publickey = this.app.wallet.returnPublicKey();
+        let publickey = this.app.wallet.publicKey;
         let imgsrc = this.app.keychain.returnIdenticon(publickey);
         images += `<img data-id="${publickey}" src="${imgsrc}"/>`;
       } else {

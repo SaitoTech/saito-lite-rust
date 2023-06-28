@@ -1,12 +1,9 @@
-
-  /*
+/*
     Functions for basic actions
   */
 
-    class SettlersActions {
-
-
-buildCity(player, slot) {
+class SettlersActions {
+  buildCity(player, slot) {
     // remove adjacent slots
     let ad = this.returnAdjacentCitySlots(slot);
     for (let i = 0; i < ad.length; i++) {
@@ -18,7 +15,7 @@ buildCity(player, slot) {
 
     //Put City on GUI Board
     let divname = "#" + slot;
-    let classname = "p" + this.game.colors[player-1];
+    let classname = "p" + this.game.colors[player - 1];
 
     $(divname).addClass(classname);
     $(divname).removeClass("empty");
@@ -32,23 +29,23 @@ buildCity(player, slot) {
         //console.log("Add ghost road from city");
         this.addRoadToGameboard(road.substring(2), road[0]);
       }
-    }else{
-      //Check if new city blocks other players from expanding their roads    
+    } else {
+      //Check if new city blocks other players from expanding their roads
       for (let road of newRoads) {
         //console.log("road: ",road);
-        for (let i = 0; i < this.game.state.roads.length; i++){
-          if (this.game.state.roads[i].slot == "road_"+road){
+        for (let i = 0; i < this.game.state.roads.length; i++) {
+          if (this.game.state.roads[i].slot == "road_" + road) {
             //console.log("exists");
-            if (this.game.state.roads[i].player == this.game.player){
+            if (this.game.state.roads[i].player == this.game.player) {
               //console.log("is mine");
               blocks_me = true;
             }
-           break;
+            break;
           }
         }
       }
     }
-    
+
     //Save City to Internal Game Logic
     //Stop if we already saved the Village
     for (let i = 0; i < this.game.state.cities.length; i++) {
@@ -64,9 +61,7 @@ buildCity(player, slot) {
       let porttowns = this.hexgrid.verticesFromEdge(p);
       for (let t of porttowns) {
         if ("city_" + t == slot) {
-          this.game.state.players[player - 1].ports.push(
-            this.game.state.ports[p]
-          );
+          this.game.state.players[player - 1].ports.push(this.game.state.ports[p]);
           //console.log(`Player ${player} has a ${this.game.state.ports[p]} port`);
         }
       }
@@ -80,12 +75,11 @@ buildCity(player, slot) {
       neighbours: neighbours,
       level: 1,
     });
-  
-    if (blocks_me){
+
+    if (blocks_me) {
       console.log("undo ghost roads");
       this.displayBoard();
     }
-
   }
 
   /*
@@ -93,7 +87,7 @@ buildCity(player, slot) {
   */
   buildRoad(player, slot) {
     let divname = "#" + slot;
-    let owner = "p" + this.game.colors[player-1];
+    let owner = "p" + this.game.colors[player - 1];
 
     //Check if road exists in DOM and update status
     if (!document.querySelector(divname)) {
@@ -109,20 +103,22 @@ buildCity(player, slot) {
       for (let road of this.hexgrid.adjacentEdges(slot.replace("road_", ""))) {
         //console.log("road: ",road);
         let v2 = this.hexgrid.verticesFromEdge(road);
-        let intersection = v2.filter(function(n){return v1.indexOf(n) !== -1;});
+        let intersection = v2.filter(function (n) {
+          return v1.indexOf(n) !== -1;
+        });
         //console.log(v1, v2, intersection);
         let block_me = false;
         for (let i = 0; i < this.game.state.cities.length; i++) {
-          if (this.game.state.cities[i].slot == "city_"+intersection[0]) {
-            if(this.game.state.cities[i].player !== this.game.player){
+          if (this.game.state.cities[i].slot == "city_" + intersection[0]) {
+            if (this.game.state.cities[i].player !== this.game.player) {
               block_me = true;
             }
             break;
           }
         }
-        if (!block_me){
+        if (!block_me) {
           //console.log("city_"+intersection[0]+" clear, Add ghost road from road");
-          this.addRoadToGameboard(road.substring(2), road[0]);  
+          this.addRoadToGameboard(road.substring(2), road[0]);
         }
       }
     }
@@ -136,8 +132,7 @@ buildCity(player, slot) {
     this.game.state.roads.push({ player: player, slot: slot });
   }
 
-
-  returnResourceHTML(resource){
+  returnResourceHTML(resource) {
     return `<div class="tip">
             <img class="icon" src="${this.skin.resourceCard(resource)}">
             </div>`;
@@ -158,30 +153,41 @@ buildCity(player, slot) {
   Overwrite standard card imaging function to hijack the game-cardbox and have it show
   building costs "help" card
   */
-  returnCardImage(card){
-    if (card == "construction-costs"){
+  returnCardImage(card) {
+    if (card == "construction-costs") {
       let html = `<div class="construction-costs saitoa">
               <div class="h2">Building Costs</div>
               <div class="table">
-              <div class="tip token p${this.game.colors[this.game.player-1]}"><svg viewbox="0 0 200 200"><polygon points="0,175 175,0, 200,25 25,200"/></svg>
+              <div class="tip token p${
+                this.game.colors[this.game.player - 1]
+              }"><svg viewbox="0 0 200 200"><polygon points="0,175 175,0, 200,25 25,200"/></svg>
                 <div class="tiptext">${this.skin.r.name}: Longest road worth 2 VP</div></div>
                   <div class="cost">${this.visualizeCost(0)}</div>
-                <div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c1.svg}<div class="tiptext">${this.skin.c1.name}: 1 VP</div></div>
+                <div class="tip token p${this.game.colors[this.game.player - 1]}">${
+        this.skin.c1.svg
+      }<div class="tiptext">${this.skin.c1.name}: 1 VP</div></div>
                     <div class="cost">${this.visualizeCost(1)}</div>
-                    <div class="tip token p${this.game.colors[this.game.player-1]}">${this.skin.c2.svg}<div class="tiptext">${this.skin.c2.name}: 2 VP</div></div>
+                    <div class="tip token p${this.game.colors[this.game.player - 1]}">${
+        this.skin.c2.svg
+      }<div class="tiptext">${this.skin.c2.name}: 2 VP</div></div>
                     <div class="cost">${this.visualizeCost(2)}</div>
                 <div class="tip token"><svg viewbox="0 0 200 200"><polygon points="25,0 175,0, 175,200 25,200"/>
                 <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="132px" fill="red">?</text></svg>
-                <div class="tiptext">${this.skin.card.name} card: Largest army worth 2 VP</div></div><div class="cost">${this.visualizeCost(3)}</div>
+                <div class="tiptext">${
+                  this.skin.card.name
+                } card: Largest army worth 2 VP</div></div><div class="cost">${this.visualizeCost(
+        3
+      )}</div>
               </div>
-              <div class="message">The first player to reach ${this.game.options.game_length} VP wins!</div>
+              <div class="message">The first player to reach ${
+                this.game.options.game_length
+              } VP wins!</div>
               </div>`;
       return html;
-    }else{
+    } else {
       return "";
     }
   }
-
 
   /*
     Given a resource cost and player, check if they meet the minimum
@@ -205,7 +211,6 @@ buildCity(player, slot) {
     return false;
   }
 
-
   /*
     Recursively let player select two resources, then push them to game queue to share selection
   */
@@ -221,7 +226,9 @@ buildCity(player, slot) {
     let gainResource = function (settlers_self) {
       let html = `<div class='tbd'>Select Resources (Can get ${remaining}): <ul class="horizontal_list">`;
       for (let i of resourceList) {
-        html += `<li id="${i}" class="iconoption option">${settlers_self.returnResourceHTML(i)}</li>`;
+        html += `<li id="${i}" class="iconoption option">${settlers_self.returnResourceHTML(
+          i
+        )}</li>`;
       }
       html += "</ul>";
       html += "</div>";
@@ -235,9 +242,7 @@ buildCity(player, slot) {
         remaining--;
         if (remaining <= 0) {
           settlers_self.addMove(
-            `year_of_plenty\t${player}\t${cardname}\t${JSON.stringify(
-              cardsToGain
-            )}`
+            `year_of_plenty\t${player}\t${cardname}\t${JSON.stringify(cardsToGain)}`
           );
           settlers_self.endTurn();
           return 0;
@@ -286,26 +291,20 @@ buildCity(player, slot) {
       //Someone already has it
       if (this.game.state.largestArmy.player != player) {
         //Only care if a diffeent player
-        if (
-          this.game.state.players[player - 1].knights >
-          this.game.state.largestArmy.size
-        ) {
+        if (this.game.state.players[player - 1].knights > this.game.state.largestArmy.size) {
           this.game.state.largestArmy.player = player;
-          this.game.state.largestArmy.size =
-            this.game.state.players[player - 1].knights;
+          this.game.state.largestArmy.size = this.game.state.players[player - 1].knights;
           vpChange = true;
         }
       } else {
         //Increase army size
-        this.game.state.largestArmy.size =
-          this.game.state.players[player - 1].knights;
+        this.game.state.largestArmy.size = this.game.state.players[player - 1].knights;
       }
     } else {
       //Open to claim
       if (this.game.state.players[player - 1].knights >= 3) {
         this.game.state.largestArmy.player = player;
-        this.game.state.largestArmy.size =
-          this.game.state.players[player - 1].knights;
+        this.game.state.largestArmy.size = this.game.state.players[player - 1].knights;
         vpChange = true;
       }
     }
@@ -319,8 +318,7 @@ buildCity(player, slot) {
   isCityAt(slot) {
     if (!slot.includes("city_")) slot = "city_" + slot;
 
-    for (let city of this.game.state.cities)
-      if (city.slot == slot) return city.player;
+    for (let city of this.game.state.cities) if (city.slot == slot) return city.player;
     return 0;
   }
 
@@ -339,8 +337,7 @@ buildCity(player, slot) {
         potTemp,
         verts = [];
       //Look in both directions
-      if (currentPath.length === 1)
-        verts = settlers_self.hexgrid.verticesFromEdge(currentPath[0]);
+      if (currentPath.length === 1) verts = settlers_self.hexgrid.verticesFromEdge(currentPath[0]);
       else
         verts.push(
           settlers_self.hexgrid.directedEdge(
@@ -370,8 +367,7 @@ buildCity(player, slot) {
     //Determine which roads belong to player
     let playerSegments = [];
     for (let road of this.game.state.roads) {
-      if (road.player == player)
-        playerSegments.push(road.slot.replace("road_", ""));
+      if (road.player == player) playerSegments.push(road.slot.replace("road_", ""));
     }
     //Starting with each, find maximal continguous path
     let longest = [];
@@ -393,7 +389,9 @@ buildCity(player, slot) {
             this.highlightRoad(
               player,
               longest,
-              `claimed the ${this.skin.longest.name} from ${this.game.playerNames[this.game.state.longestRoad.player-1]} with ${longest.length} segments!`
+              `claimed the ${this.skin.longest.name} from ${
+                this.game.playerNames[this.game.state.longestRoad.player - 1]
+              } with ${longest.length} segments!`
             );
             this.game.state.longestRoad.player = player;
             this.game.state.longestRoad.size = longest.length;
@@ -403,7 +401,9 @@ buildCity(player, slot) {
             this.game.state.longestRoad.size = longest.length;
             this.game.state.longestRoad.path = longest;
             this.updateLog(
-              `${this.game.playerNames[player-1]} extended the ${this.skin.longest.name} to ${longest.length} segments.`
+              `${this.game.playerNames[player - 1]} extended the ${this.skin.longest.name} to ${
+                longest.length
+              } segments.`
             );
           }
           return 1;
@@ -426,8 +426,7 @@ buildCity(player, slot) {
 
   countResource(player, resource) {
     let ct = 0;
-    for (let i of this.game.state.players[player - 1].resources)
-      if (i == resource) ct++;
+    for (let i of this.game.state.players[player - 1].resources) if (i == resource) ct++;
     return ct;
   }
 
@@ -456,12 +455,13 @@ buildCity(player, slot) {
     let offer = "";
     for (let resource in stuff) {
       for (let i = 0; i < stuff[resource]; i++) {
-        offer += `<img class="icon" src="${this.skin.resourceIcon(resource)}"/><div class="tiptext">${resource}</div>`;
+        offer += `<img class="icon" src="${this.skin.resourceIcon(
+          resource
+        )}"/><div class="tiptext">${resource}</div>`;
       }
     }
     return offer;
   }
-
 
   /*
   Short circuit the simultaneous moves from an open offer trade to give player control of the game again
@@ -484,8 +484,6 @@ buildCity(player, slot) {
     this.endTurn();
   }
 
-
-
   /*<><><><><><><>
   Broadcast offer to trade to all players
   This just makes an advertisement accessible through game menu to any player at any time (even if not eligible to trade)
@@ -505,10 +503,7 @@ buildCity(player, slot) {
 
     //Convert the players array of resources into a compact object {wheat:1, wood:2,...}
     for (let resource of resources) {
-      let temp = settlers_self.countResource(
-        settlers_self.game.player,
-        resource
-      );
+      let temp = settlers_self.countResource(settlers_self.game.player, resource);
       if (temp > 0) my_resources[resource] = temp;
     }
 
@@ -518,21 +513,25 @@ buildCity(player, slot) {
 
       let html = `
           <div class="trade_overlay saitoa" id="trade_overlay">
-            <div class="h1 trade_overlay_title">Trade with ${settlers_self.game.playerNames[tradeType-1]}</div>
+            <div class="h1 trade_overlay_title">Trade with ${
+              settlers_self.game.playerNames[tradeType - 1]
+            }</div>
             <div class="h2">You will accept</div>
             <div class="trade_overlay_offers">`;
-      for (let i = 0; i < resList.length; i++){
+      for (let i = 0; i < resList.length; i++) {
         resource_cnt += receiving[resList[i]];
         html += `<div id="want_${i}" class="trade_area select">
                   <div>${resList[i]}</div>
                   <div class="offer_icons" id="want_${resList[i]}">`;
-        if (receiving[resList[i]]>0){
-          html += `<img id="${resList[i]}" class="icon receive" src="${settlers_self.skin.resourceIcon(resList[i])}"/>`;
+        if (receiving[resList[i]] > 0) {
+          html += `<img id="${
+            resList[i]
+          }" class="icon receive" src="${settlers_self.skin.resourceIcon(resList[i])}"/>`;
         }
-        if (receiving[resList[i]]>1){
+        if (receiving[resList[i]] > 1) {
           html += `<div class="icon_multiplier">x${receiving[resList[i]]}</div>`;
         }
-         html +=  `</div></div>`;
+        html += `</div></div>`;
       }
 
       html += `</div>
@@ -542,25 +541,31 @@ buildCity(player, slot) {
       for (let i = 0; i < resList.length; i++) {
         resource_cnt += offering[resList[i]];
         console.log(resList[i], offering[resList[i]], myRes[resList[i]]);
-        if (offering[resList[i]] > (myRes[resList[i]] || 0)){
+        if (offering[resList[i]] > (myRes[resList[i]] || 0)) {
           can_afford = false;
         }
-        html += `<div id="offer_${i}" class="trade_area ${(myRes[resList[i]])?"select":"noselect"}">
+        html += `<div id="offer_${i}" class="trade_area ${
+          myRes[resList[i]] ? "select" : "noselect"
+        }">
                  <div class="tip"><span>${resList[i]}</span>
-                 <div class="tiptext">${(myRes[resList[i]])?myRes[resList[i]]:0} total</div></div>
+                 <div class="tiptext">${myRes[resList[i]] ? myRes[resList[i]] : 0} total</div></div>
                  <div class="offer_icons" id="offer_${resList[i]}">`;
-          if (offering[resList[i]]>0){
-            html += `<img id="${resList[i]}" class="icon offer" src="${settlers_self.skin.resourceIcon(resList[i])}"/>`;
-          }
-          if (offering[resList[i]]>1){
-            html += `<div class="icon_multiplier">x${offering[resList[i]]}</div>`;
-          }
-          html += `</div></div>`;
+        if (offering[resList[i]] > 0) {
+          html += `<img id="${
+            resList[i]
+          }" class="icon offer" src="${settlers_self.skin.resourceIcon(resList[i])}"/>`;
+        }
+        if (offering[resList[i]] > 1) {
+          html += `<div class="icon_multiplier">x${offering[resList[i]]}</div>`;
+        }
+        html += `</div></div>`;
       }
 
       html += `</div><div class="trade_overlay_buttons">
             <div class="trade_overlay_button saito-button-primary trade_overlay_reset_button">Reset</div>
-            <div class="trade_overlay_button saito-button-primary trade_overlay_broadcast_button${(can_afford && resource_cnt>0)?"":" noselect"}">Submit Offer</div>
+            <div class="trade_overlay_button saito-button-primary trade_overlay_broadcast_button${
+              can_afford && resource_cnt > 0 ? "" : " noselect"
+            }">Submit Offer</div>
           </div></div>`;
 
       settlers_self.overlay.closebox = true;
@@ -582,11 +587,11 @@ buildCity(player, slot) {
         updateOverlay(settlers_self, resList, myRes, offering, receiving);
       });
       $(".icon").off();
-      $(".icon").on("click", function(e){
+      $(".icon").on("click", function (e) {
         let res = $(this).attr("id");
-        if ($(this).hasClass("offer")){
+        if ($(this).hasClass("offer")) {
           offering[res]--;
-        }else{
+        } else {
           receiving[res]--;
         }
         e.stopPropagation();
@@ -604,12 +609,15 @@ buildCity(player, slot) {
       });
       $(".trade_overlay_broadcast_button").off();
       $(".trade_overlay_broadcast_button").on("click", function () {
-        if ($(this).hasClass("noselect")) { return; }
+        if ($(this).hasClass("noselect")) {
+          return;
+        }
         settlers_self.addMove(`clear_advert\t${settlers_self.game.player}`);
         settlers_self.addMove(
-            `offer\t${settlers_self.game.player}\t
+          `offer\t${settlers_self.game.player}\t
             ${tradeType}\t${JSON.stringify(offering)}\t
-            ${JSON.stringify(receiving)}`);
+            ${JSON.stringify(receiving)}`
+        );
         settlers_self.overlay.hide();
         settlers_self.overlay.closebox = false;
         settlers_self.endTurn();
@@ -617,13 +625,7 @@ buildCity(player, slot) {
     };
 
     //Start the display and selection process
-    updateOverlay(
-      settlers_self,
-      resources,
-      my_resources,
-      offer_resources,
-      receive_resources
-    );
+    updateOverlay(settlers_self, resources, my_resources, offer_resources, receive_resources);
   }
 
   /*
@@ -636,10 +638,7 @@ buildCity(player, slot) {
 
     //Convert the players array of resources into a compact object {wheat:1, wood:2,...}
     for (let resource of resources) {
-      let temp = settlers_self.countResource(
-        settlers_self.game.player,
-        resource
-      );
+      let temp = settlers_self.countResource(settlers_self.game.player, resource);
       if (temp > 0) myRes[resource] = temp;
     }
 
@@ -661,7 +660,9 @@ buildCity(player, slot) {
       if (myRes[resources[i]])
         html += `<div id="offer_${i}" class="trade_area select tip"><img class="icon" src="${this.skin.resourceIcon(
           resources[i]
-        )}"/><div class="tiptext">You have ${myRes[resources[i]]} ${resources[i]} available</div></div>`;
+        )}"/><div class="tiptext">You have ${myRes[resources[i]]} ${
+          resources[i]
+        } available</div></div>`;
       else
         html += `<div id="offer_${i}" class="trade_area noselect tip"><img class="icon" src="${this.skin.resourceIcon(
           resources[i]
@@ -678,9 +679,9 @@ buildCity(player, slot) {
 
     $(".trade_area.select").on("click", function () {
       $(this).toggleClass("selected");
-      if (document.querySelector(".trade_area.selected")){
+      if (document.querySelector(".trade_area.selected")) {
         $(".trade_overlay_broadcast_button").removeClass("noselect");
-      }else{
+      } else {
         $(".trade_overlay_broadcast_button").addClass("noselect");
       }
     });
@@ -690,7 +691,7 @@ buildCity(player, slot) {
     });
 
     $(".trade_overlay_broadcast_button").on("click", function () {
-      if ($(this).hasClass("noselect")){
+      if ($(this).hasClass("noselect")) {
         return;
       }
       let offering = {};
@@ -726,10 +727,8 @@ buildCity(player, slot) {
       });
       settlers_self.overlay.hide();
       settlers_self.overlay.closebox = false;
-
     });
   }
-
 
   /* 
   Create an object saying what the exchange rate for each resource is
@@ -759,7 +758,6 @@ buildCity(player, slot) {
     return tradeCost;
   }
 
-
   /***********
    *
    * Game animations
@@ -769,7 +767,7 @@ buildCity(player, slot) {
   Briefly animate the longest road and update log if there is a change in ownership
   */
   highlightRoad(player, road, msg) {
-    this.updateLog(`${this.game.playerNames[player-1]} ${msg}`);
+    this.updateLog(`${this.game.playerNames[player - 1]} ${msg}`);
     for (let segment of road) {
       let selector = "#road_" + segment;
       let div = document.querySelector(selector);
@@ -817,9 +815,10 @@ buildCity(player, slot) {
   animateDiceRoll(roll) {
     //console.log("Dice Animated: " + roll);
     $(".rolled").removeClass("rolled");
-    $(".sector_value:not(.bandit)").attr("style","");
+    $(".sector_value:not(.bandit)").attr("style", "");
     let divname = ".sv" + roll + ":not(.bandit)";
-    $(divname).addClass("rolled")
+    $(divname)
+      .addClass("rolled")
       .css("color", "#000")
       .css("background", "#FFF6")
       .delay(600)
@@ -846,7 +845,7 @@ buildCity(player, slot) {
       .queue(function () {
         $(this).css("color", "#000").css("background", "#FFF6").dequeue();
       });
-      /*.delay(800)
+    /*.delay(800)
       .queue(function () {
         $(this).removeAttr("style").dequeue();
       });*/
@@ -867,7 +866,6 @@ buildCity(player, slot) {
     return "";
   }
 
-
   updatePlayerBox(str, hide_info = 0) {
     try {
       if (hide_info == 0) {
@@ -884,7 +882,7 @@ buildCity(player, slot) {
 
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".player-box.me .status");
-        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
+        if (this.game.players.includes(this.app.wallet.publicKey)) {
           status_obj.innerHTML = str;
           $(".player-box.me .status").disableSelection();
         }
@@ -895,19 +893,18 @@ buildCity(player, slot) {
   }
 
   updateStatus(str, hide_info = 0) {
-
     try {
-//      if (hide_info == 0) {
-//        this.playerbox.showInfo();
-//      } else {
-//        this.playerbox.hideInfo();
-//      }
+      //      if (hide_info == 0) {
+      //        this.playerbox.showInfo();
+      //      } else {
+      //        this.playerbox.hideInfo();
+      //      }
 
       if (this.lock_interface == 1) {
-	//
-	// 
-	//
-	this.setHudHeight();
+        //
+        //
+        //
+        this.setHudHeight();
         return;
       }
 
@@ -915,7 +912,7 @@ buildCity(player, slot) {
 
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".hud-body .status");
-        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
+        if (this.game.players.includes(this.app.wallet.publicKey)) {
           status_obj.innerHTML = str;
           $(".status").disableSelection();
         }
@@ -944,8 +941,8 @@ buildCity(player, slot) {
     }
   }
 
-  confirmPlacement(slot, piece, callback){
-    if (this.confirm_moves == 0){
+  confirmPlacement(slot, piece, callback) {
+    if (this.confirm_moves == 0) {
       callback();
       return;
     }
@@ -963,40 +960,39 @@ buildCity(player, slot) {
 
     let left = $(`#${slot}`).offset().left + 50;
     let top = $(`#${slot}`).offset().top + 20;
-          
+
     $(".popup-confirm-menu").remove();
     $("body").append(html);
     $(".popup-confirm-menu").css({
       position: "absolute",
-          top: top,
-          left: left,
-      });
+      top: top,
+      left: left,
+    });
 
     $(".action").off();
     $(".action").on("click", function () {
-      $("#"+slot).css("background-color", "");
+      $("#" + slot).css("background-color", "");
       let confirmation = $(this).attr("id");
-      
+
       $(".action").off();
       $(".popup-confirm-menu").remove();
-      if (confirmation == "stopasking"){
+      if (confirmation == "stopasking") {
         settlers_self.confirm_moves = 0;
         callback();
       }
-      if (confirmation == "confirm"){
+      if (confirmation == "confirm") {
         callback();
       }
     });
 
-    $('input:checkbox').change(function() {
-      if ($(this).is(':checked')) {
+    $("input:checkbox").change(function () {
+      if ($(this).is(":checked")) {
         settlers_self.confirm_moves = 0;
-      }else{
+      } else {
         settlers_self.confirm_moves = 1;
       }
     });
   }
-
 }
 
 module.exports = SettlersActions;

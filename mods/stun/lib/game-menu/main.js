@@ -6,13 +6,12 @@ class StunxGameMenu {
     this.config = {
       name: "game",
       container: "#game-chat ul",
-      stream_container: 'chat-manager-small-audio-container',
+      stream_container: "chat-manager-small-audio-container",
       onHide: () => {
         document.querySelector(".join-group-video-chat").style.display = "block";
       },
-      showMain: false
+      showMain: false,
     };
-
 
     app.connection.on("stun-join-conference-room-with-link", (room_obj) => {
       console.log("app", this.app, "mod", this.mod);
@@ -24,7 +23,7 @@ class StunxGameMenu {
       // init peer manager
       app.connection.emit("stun-init-peer-manager", "small", this.config);
 
-      console.log(this.config, "config")
+      console.log(this.config, "config");
 
       // create a room
       let room_code = app.crypto.generateRandomNumber().substring(0, 6);
@@ -38,7 +37,7 @@ class StunxGameMenu {
 
       // send the information to the other peers and ask them to join the call
       recipients = recipients.filter((player) => {
-        return player !== app.wallet.returnPublicKey();
+        return player !== app.wallet.publicKey;
       });
 
       // show-small-chat-manager
@@ -50,7 +49,7 @@ class StunxGameMenu {
       let data = {
         type: "connection-request",
         room_code,
-        sender: app.wallet.returnPublicKey(),
+        sender: app.wallet.publicKey,
       };
 
       stun_mod.sendGameCallMessageToPeers(app, data, recipients);

@@ -1,23 +1,20 @@
-const ModTemplate = require('../../lib/templates/modtemplate');
+const ModTemplate = require("../../lib/templates/modtemplate");
 const UserMenu = require("./../../lib/saito/ui/modals/user-menu/user-menu");
 const MyUserMenu = require("./../../lib/saito/ui/modals/my-user-menu/my-user-menu");
 
-
 const HeaderDropdownTemplate = (dropdownmods) => {
-  html = dropdownmods.map(mod => {
+  html = dropdownmods.map((mod) => {
     if (mod.returnLink() != null) {
       return `<a href="${mod.returnLink()}"><li>${mod.name}</li></a>`;
     }
-  })
+  });
   return `
   <div id="modules-dropdown" class="header-dropdown">
     <ul>${html}</ul>
   </div>`;
-}
-
+};
 
 class QRScanner extends ModTemplate {
-
   constructor(app) {
     super(app);
 
@@ -29,17 +26,17 @@ class QRScanner extends ModTemplate {
     this.canvas_context = null;
     this.isStreamInit = false;
 
-    this.styles = ['/qrscanner/style.css'];
+    this.styles = ["/qrscanner/style.css"];
     this.scanner_callback = null;
 
-    this.description = "Helper module with QR code scanning functionality."
+    this.description = "Helper module with QR code scanning functionality.";
     this.categories = "Dev Data Utilities";
 
     this.constraints = {
       audio: false,
       video: {
-        facingMode: 'environment'
-      }
+        facingMode: "environment",
+      },
     };
 
     // quirc wasm version
@@ -50,7 +47,7 @@ class QRScanner extends ModTemplate {
     // In milliseconds
     this.debounce_timeout = 750;
 
-    this.events = ['encrypt-key-exchange-confirm'];
+    this.events = ["encrypt-key-exchange-confirm"];
 
     //
     // and scan when asked
@@ -58,23 +55,23 @@ class QRScanner extends ModTemplate {
     this.app.connection.on("scanner-start-scanner", () => {
       this.startScanner();
     });
-
   }
 
   initialize(app) {
     super.initialize(app);
-    if (app.BROWSER == 1) { this.attachStyleSheets(); }
+    if (app.BROWSER == 1) {
+      this.attachStyleSheets();
+    }
   }
 
   attachEvents(app) {
     let scanner_self = this;
-    document.querySelector('.launch-scanner').addEventListener('click', function (e) {
+    document.querySelector(".launch-scanner").addEventListener("click", function (e) {
       scanner_self.startScanner();
     });
   }
 
   startQRDecoderInitializationLoop() {
-
     x = this.attemptQRDecode();
 
     if (x == 1) {
@@ -83,24 +80,30 @@ class QRScanner extends ModTemplate {
         this.startQRDecoderInitializationLoop();
       }, 100);
     }
-
   }
 
   //
   // turns BODY into the scanner
   //
   startScanner(mycallback = null) {
-
-    if (this.app.BROWSER == 0) { return; }
-    if (!document) { return; }
-    if (document.querySelector('.qrscanner-container')) { return; }
+    if (this.app.BROWSER == 0) {
+      return;
+    }
+    if (!document) {
+      return;
+    }
+    if (document.querySelector(".qrscanner-container")) {
+      return;
+    }
 
     this.scanner_callback = null;
-    if (mycallback) { this.scanner_callback = mycallback; }
+    if (mycallback) {
+      this.scanner_callback = mycallback;
+    }
 
     this.app.browser.addElementToDom(this.returnScannerHTML());
     //document.body.innerHTML = this.returnScannerHTML();
-    document.querySelector('.close-scanner').onclick = () => {
+    document.querySelector(".close-scanner").onclick = () => {
       //window.location.reload();
       document.querySelector(".qrscanner-container").remove();
       this.stop();
@@ -108,39 +111,37 @@ class QRScanner extends ModTemplate {
 
     let scanner_self = this;
 
-    scanner_self.start(
-      document.getElementById("qr-video"),
-      document.getElementById("qr-canvas")
-    );
-
+    scanner_self.start(document.getElementById("qr-video"), document.getElementById("qr-canvas"));
   }
 
   //
   // turns submitted EL into the scanner
   //
   startEmbeddedScanner(el, mycallback = null) {
-
-    if (this.app.BROWSER == 0) { return; }
-    if (!document) { return; }
-    if (document.querySelector('.qrscanner-container')) { return; }
+    if (this.app.BROWSER == 0) {
+      return;
+    }
+    if (!document) {
+      return;
+    }
+    if (document.querySelector(".qrscanner-container")) {
+      return;
+    }
 
     this.scanner_callback = null;
-    if (mycallback) { this.scanner_callback = mycallback; }
+    if (mycallback) {
+      this.scanner_callback = mycallback;
+    }
 
     el.innerHTML = this.returnScannerHTML();
-    document.querySelector('.close-scanner').onclick = () => {
+    document.querySelector(".close-scanner").onclick = () => {
       window.location.reload();
     };
 
     let scanner_self = this;
 
-    scanner_self.start(
-      document.getElementById("qr-video"),
-      document.getElementById("qr-canvas")
-    );
-
+    scanner_self.start(document.getElementById("qr-video"), document.getElementById("qr-canvas"));
   }
-
 
   returnScannerHTML() {
     return `
@@ -158,14 +159,13 @@ class QRScanner extends ModTemplate {
   }
 
   async start(video, canvas) {
-
-    this.video = video
+    this.video = video;
     this.canvas = canvas;
 
     this.canvas_context = this.canvas.getContext("2d");
-    this.decoder = new Worker('/qrscanner/quirc_worker.js');
-    this.decoder.onmessage = (msg) => { 
-      this.onDecoderMessage(msg) 
+    this.decoder = new Worker("/qrscanner/quirc_worker.js");
+    this.decoder.onmessage = (msg) => {
+      this.onDecoderMessage(msg);
     };
 
     try {
@@ -177,22 +177,17 @@ class QRScanner extends ModTemplate {
     this.startQRDecoderInitializationLoop();
   }
 
-
   stop() {
     this.decoder.terminate();
-    if (this.video){
-      this.video.srcObject.getTracks().forEach(track => track.stop());
+    if (this.video) {
+      this.video.srcObject.getTracks().forEach((track) => track.stop());
     }
-    if (document.querySelector(".qrscanner-container")){
-      document.querySelector(".qrscanner-container").remove();  
+    if (document.querySelector(".qrscanner-container")) {
+      document.querySelector(".qrscanner-container").remove();
     }
-    
-
   }
 
-  render() {
-  }
-
+  render() {}
 
   //
   // main loop sending messages to quirc_worker to detect qrcodes on the page
@@ -221,14 +216,17 @@ class QRScanner extends ModTemplate {
   }
 
   //
-  // worker passes back a message either containing decoded data, 
+  // worker passes back a message either containing decoded data,
   // or it attempts t
   //
   onDecoderMessage(msg) {
-    if (msg.data != 'done') {
-      var qrid = msg.data['payload_string'];
+    if (msg.data != "done") {
+      var qrid = msg.data["payload_string"];
       let right_now = Date.now();
-      if (qrid != this.last_scanned_raw || this.last_scanned_at < right_now - this.debounce_timeout) {
+      if (
+        qrid != this.last_scanned_raw ||
+        this.last_scanned_at < right_now - this.debounce_timeout
+      ) {
         this.last_scanned_raw = qrid;
         this.last_scanned_at = right_now;
         this.handleDecodedMessage(qrid);
@@ -237,7 +235,9 @@ class QRScanner extends ModTemplate {
         this.last_scanned_at = right_now;
       }
     }
-    setTimeout(() => { this.attemptQRDecode() }, 0);
+    setTimeout(() => {
+      this.attemptQRDecode();
+    }, 0);
   }
 
   //
@@ -245,7 +245,6 @@ class QRScanner extends ModTemplate {
   // Else, the message is broadcast for other modules to utilize
   //
   handleDecodedMessage(msg) {
-
     //
     // remove scanline
     //
@@ -269,8 +268,8 @@ class QRScanner extends ModTemplate {
       this.stop();
       let c = confirm("Visit: " + msg + "?");
       if (c) {
-      	window.location = msg;
-      	return;	
+        window.location = msg;
+        return;
       }
     }
 
@@ -279,14 +278,14 @@ class QRScanner extends ModTemplate {
     //
     if (this.app.crypto.isPublicKey(msg)) {
       this.stop();
-      if (this.app.wallet.returnPublicKey() === msg) {
-          let myUserMenu = new MyUserMenu(this.app, msg);
-          myUserMenu.render(this.app);
-    	  return;
+      if (this.app.wallet.publicKey === msg) {
+        let myUserMenu = new MyUserMenu(this.app, msg);
+        myUserMenu.render(this.app);
+        return;
       } else {
-          let userMenu = new UserMenu(this.app, msg);
-          userMenu.render(this.app);
-  	  return;
+        let userMenu = new UserMenu(this.app, msg);
+        userMenu.render(this.app);
+        return;
       }
     }
 
@@ -299,14 +298,13 @@ class QRScanner extends ModTemplate {
 
         let obj = {};
         obj.address = msg;
-        this.app.connection.emit('saito-crypto-withdraw-render-request', obj);
+        this.app.connection.emit("saito-crypto-withdraw-render-request", obj);
 
         return;
       }
     }
 
-    this.sendEvent('qrcode', msg);
-
+    this.sendEvent("qrcode", msg);
   }
 
   decodeFromFile(f) {
@@ -329,7 +327,6 @@ class QRScanner extends ModTemplate {
   handleError(error) {
     //console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
   }
-
 }
 
 module.exports = QRScanner;

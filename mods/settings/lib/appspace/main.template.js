@@ -1,13 +1,12 @@
 module.exports = SettingsAppspaceTemplate = (app) => {
-
-  let key = app.keychain.returnKey({ publickey : app.wallet.returnPublicKey()});
+  let key = app.keychain.returnKey({ publickey: app.wallet.publicKey });
   let identifier_registered = key?.identifier || "";
 
   if (!identifier_registered) {
-    if (key.has_registered_username){
-      identifier_registered = `<span class="register-identifier-btn settings-appspace-link">Registering...</span>`;  
-    }else{
-      identifier_registered = `<span id="register-identifier-btn" class="register-identifier-btn settings-appspace-link">Register a username</span>`;  
+    if (key.has_registered_username) {
+      identifier_registered = `<span class="register-identifier-btn settings-appspace-link">Registering...</span>`;
+    } else {
+      identifier_registered = `<span id="register-identifier-btn" class="register-identifier-btn settings-appspace-link">Register a username</span>`;
     }
   }
 
@@ -16,7 +15,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   try {
     modules_html = app.options.modules
       .map((mod, i) => {
-        let CHECKED = mod.active ? 'CHECKED' : '';
+        let CHECKED = mod.active ? "CHECKED" : "";
         return `
         <div class="settings-appspace-app">
         <label class="saito-switch">
@@ -29,11 +28,11 @@ module.exports = SettingsAppspaceTemplate = (app) => {
          </div>
       `;
       })
-      .join('');
+      .join("");
 
     modules_html_active = app.options.modules
       .map((mod, i) => {
-        let CHECKED = mod.active ? 'CHECKED' : '';
+        let CHECKED = mod.active ? "CHECKED" : "";
         return `
         <div class="settings-appspace-installed-app">
           <label>${mod.name}
@@ -42,7 +41,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
          </div>
       `;
       })
-      .join('');
+      .join("");
   } catch (err) {
     if (err.message.startsWith("Cannot read property 'map'")) {
       modules_html = "Initialization error. Refresh page should fix this.";
@@ -52,14 +51,15 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   }
 
   let balance_link = "";
-  app.modules.mods.forEach(mod => {
-    if (mod.name == 'Balance') {
+  app.modules.mods.forEach((mod) => {
+    if (mod.name == "Balance") {
       balance_link = `
-        <a target="_blank" href="${window.location.origin + "/balance?address=" + app.wallet.returnPublicKey()}">Check Recorded Balance</a>
+        <a target="_blank" href="${
+          window.location.origin + "/balance?address=" + app.wallet.publicKey
+        }">Check Recorded Balance</a>
       `;
     }
   });
-
 
   let html = `
   
@@ -86,8 +86,10 @@ module.exports = SettingsAppspaceTemplate = (app) => {
             <div>${identifier_registered}</div>
       
             <div>Public Key:</div>
-            <div class="pubkey-containter" data-id="${app.wallet.returnPublicKey()}">
-              <span class="profile-public-key">${app.wallet.returnPublicKey()}</span><i class="fas fa-copy" id="copy-public-key"></i>
+            <div class="pubkey-containter" data-id="${app.wallet.publicKey}">
+              <span class="profile-public-key">${
+                app.wallet.publicKey
+              }</span><i class="fas fa-copy" id="copy-public-key"></i>
             </div>
       
             <div>Private Key:</div>
@@ -114,5 +116,4 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   `;
 
   return html;
-
-}
+};

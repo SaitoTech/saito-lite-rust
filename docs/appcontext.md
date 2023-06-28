@@ -20,7 +20,7 @@ isMainPeer()
 
 returnHandshake()
 
-returnPublicKey()
+publicKey
 
 >Returns wallet's public key
 
@@ -292,7 +292,7 @@ returnPrivateKey()
 
 * returns string private key
 
-returnPublicKey() 
+publicKey 
 
 async backupWallet() 
 

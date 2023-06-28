@@ -22,7 +22,7 @@ module.exports = LeagueOverlayTemplate = async (app, mod, league) => {
 
   if (league.admin) {
     html +=
-      league.admin === app.wallet.returnPublicKey()
+      league.admin === app.wallet.publicKey
         ? `<div id="players" class="menu-icon"><i class="fas fa-users-cog"></i><div class="menu-text">Manage</div></div>`
         : `<div id="contact" class="menu-icon"><i class="fas fa-comment-alt"></i><div class="menu-text">Contact</div></div>`;
   }
@@ -39,7 +39,7 @@ module.exports = LeagueOverlayTemplate = async (app, mod, league) => {
                     </div>`;
 
   if (league.admin) {
-    if (league.admin == app.wallet.returnPublicKey()) {
+    if (league.admin == app.wallet.publicKey) {
       html += `<div id="admin-widget" class="admin-widget league-overlay-content-box hidden"></div>`;
     } else {
       html += `<div id="admin_details" class="saito-user league-overlay-content-box hidden" id="saito-user-${

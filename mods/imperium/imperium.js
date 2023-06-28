@@ -1811,9 +1811,9 @@ class Imperium extends GameTemplate {
                 imperium_self.game.state.players_info[player - 1].commodity_limit
               ) {
                 imperium_self.addMove(
-                  "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
+                  "resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey
                 );
-                imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
                 imperium_self.endTurn();
                 imperium_self.updateLog(
                   "Hacan already refreshed, do not need to play faction ability."
@@ -1835,9 +1835,9 @@ class Imperium extends GameTemplate {
                 $(this).hide();
                 if (id != "yes") {
                   imperium_self.addMove(
-                    "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
+                    "resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey
                   );
-                  imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                  imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
                   imperium_self.addMove(
                     "purchase\t" +
                       imperium_self.game.player +
@@ -1851,9 +1851,9 @@ class Imperium extends GameTemplate {
                   return;
                 } else {
                   imperium_self.addMove(
-                    "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
+                    "resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey
                   );
-                  imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                  imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
                   imperium_self.endTurn();
                 }
               });
@@ -2379,24 +2379,18 @@ class Imperium extends GameTemplate {
 
                     if (id === "no") {
                       imperium_self.addMove(
-                        "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
+                        "resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey
                       );
-                      imperium_self.addPublickeyConfirm(
-                        imperium_self.app.wallet.returnPublicKey(),
-                        1
-                      );
+                      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
                       imperium_self.endTurn();
                       return 0;
                     }
 
                     imperium_self.playerResearchTechnology(function (tech) {
                       imperium_self.addMove(
-                        "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
+                        "resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey
                       );
-                      imperium_self.addPublickeyConfirm(
-                        imperium_self.app.wallet.returnPublicKey(),
-                        1
-                      );
+                      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
                       imperium_self.addMove("purchase\t" + player + "\ttechnology\t" + tech);
 
                       //
@@ -5433,9 +5427,7 @@ class Imperium extends GameTemplate {
 
             imperium_self.addMove("resolve\tstrategy");
             imperium_self.addMove("strategy\t" + "diplomacy" + "\t" + strategy_card_player + "\t2");
-            imperium_self.addMove(
-              "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-            );
+            imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
             imperium_self.addMove(
               "resetconfirmsneeded\t" + imperium_self.game.state.players_info.length
             );
@@ -5544,9 +5536,9 @@ class Imperium extends GameTemplate {
 
                 if (action2 === "cancel") {
                   imperium_self.addMove(
-                    "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
+                    "resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey
                   );
-                  imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                  imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
                   imperium_self.endTurn();
                   return;
                 }
@@ -5571,9 +5563,9 @@ class Imperium extends GameTemplate {
 
                 if (choices_selected >= max_choices) {
                   imperium_self.prependMove(
-                    "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
+                    "resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey
                   );
-                  imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                  imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
                   imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
                   imperium_self.endTurn();
                 }
@@ -5581,10 +5573,8 @@ class Imperium extends GameTemplate {
             }
 
             if (id == "no") {
-              imperium_self.addMove(
-                "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-              );
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
               imperium_self.endTurn();
               return 0;
             }
@@ -5665,10 +5655,8 @@ class Imperium extends GameTemplate {
           ) {
             imperium_self.playerBuyActionCards(2);
           } else {
-            imperium_self.addMove(
-              "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-            );
-            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+            imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
             imperium_self.endTurn();
           }
         }
@@ -5770,9 +5758,7 @@ class Imperium extends GameTemplate {
           imperium_self.addMove(
             "strategy\t" + "construction" + "\t" + strategy_card_player + "\t2"
           );
-          imperium_self.addMove(
-            "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-          );
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
           imperium_self.addMove(
             "resetconfirmsneeded\t" + imperium_self.game.state.players_info.length
           );
@@ -5827,10 +5813,8 @@ class Imperium extends GameTemplate {
             let id = $(this).attr("id");
 
             if (id == "yes") {
-              imperium_self.addMove(
-                "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-              );
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
               imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
               imperium_self.playerBuildInfrastructure((sector) => {
                 imperium_self.addMove("activate\t" + imperium_self.game.player + "\t" + sector);
@@ -5839,10 +5823,8 @@ class Imperium extends GameTemplate {
               }, 1);
             }
             if (id == "no") {
-              imperium_self.addMove(
-                "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-              );
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
               imperium_self.endTurn();
               return 0;
             }
@@ -5860,9 +5842,7 @@ class Imperium extends GameTemplate {
         if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
           imperium_self.addMove("resolve\tstrategy");
           imperium_self.addMove("strategy\t" + "trade" + "\t" + strategy_card_player + "\t2");
-          imperium_self.addMove(
-            "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-          );
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
           imperium_self.addMove(
             "resetconfirmsneeded\t" + imperium_self.game.state.players_info.length
           );
@@ -5919,9 +5899,7 @@ class Imperium extends GameTemplate {
             imperium_self.game.state.players_info[player - 1].commodities ==
             imperium_self.game.state.players_info[player - 1].commodity_limit
           ) {
-            imperium_self.addMove(
-              "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-            );
+            imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
             imperium_self.updateLog(
               imperium_self.returnFaction(player) +
                 " skips the Trade secondary as they have already refreshed commodities"
@@ -5949,10 +5927,8 @@ class Imperium extends GameTemplate {
             imperium_self.game.state.players_info[imperium_self.game.player - 1].commodities ==
             imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit
           ) {
-            imperium_self.addMove(
-              "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-            );
-            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+            imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
             imperium_self.addMove(
               "NOTIFY\t" +
                 imperium_self.returnFaction(imperium_self.game.player) +
@@ -5980,10 +5956,8 @@ class Imperium extends GameTemplate {
             let id = $(this).attr("id");
 
             if (id == "yes") {
-              imperium_self.addMove(
-                "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-              );
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
               imperium_self.addMove(
                 "purchase\t" +
                   imperium_self.game.player +
@@ -5995,10 +5969,8 @@ class Imperium extends GameTemplate {
               imperium_self.endTurn();
             }
             if (id == "no") {
-              imperium_self.addMove(
-                "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-              );
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
               imperium_self.endTurn();
               return 0;
             }
@@ -6020,9 +5992,7 @@ class Imperium extends GameTemplate {
 
             imperium_self.addMove("resolve\tstrategy");
             imperium_self.addMove("strategy\t" + "warfare" + "\t" + strategy_card_player + "\t2");
-            imperium_self.addMove(
-              "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-            );
+            imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
             imperium_self.addMove(
               "resetconfirmsneeded\t" + imperium_self.game.state.players_info.length
             );
@@ -6056,10 +6026,8 @@ class Imperium extends GameTemplate {
               imperium_self.returnFactionName(imperium_self, player) +
                 " unable to play Warfare secondary"
             );
-            imperium_self.addMove(
-              "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-            );
-            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+            imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
             imperium_self.endTurn();
             return 0;
           }
@@ -6105,10 +6073,8 @@ class Imperium extends GameTemplate {
               ); // final is warfare card
             }
             if (id == "no") {
-              imperium_self.addMove(
-                "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-              );
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
               imperium_self.endTurn();
               return 0;
             }
@@ -6176,10 +6142,8 @@ class Imperium extends GameTemplate {
               imperium_self.returnFactionName(imperium_self, player) +
                 " unable to play Technology secondary"
             );
-            imperium_self.addMove(
-              "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-            );
-            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+            imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
             imperium_self.endTurn();
             return 0;
           }
@@ -6237,10 +6201,8 @@ class Imperium extends GameTemplate {
               imperium_self.game.state.players_info[
                 player - 1
               ].temporary_research_technology_card_must_not_spend_resources = 0;
-              imperium_self.addMove(
-                "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-              );
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
               imperium_self.playerSelectResources(resources_to_spend, function (success) {
                 if (success == 1) {
                   imperium_self.playerResearchTechnology(function (tech) {
@@ -6254,10 +6216,8 @@ class Imperium extends GameTemplate {
               });
             }
             if (id === "no") {
-              imperium_self.addMove(
-                "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-              );
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
               imperium_self.endTurn();
               return 0;
             }
@@ -6317,10 +6277,8 @@ class Imperium extends GameTemplate {
             if (id == "yes") {
               imperium_self.game.state.players_info[imperium_self.game.player - 1]
                 .temporary_research_technology_card_must_not_spend_resources == 0;
-              imperium_self.addMove(
-                "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-              );
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
               imperium_self.playerSelectResources(resources_to_spend, function (success) {
                 if (success == 1) {
                   imperium_self.playerResearchTechnology(function (tech) {
@@ -6334,10 +6292,8 @@ class Imperium extends GameTemplate {
               });
             }
             if (id == "no") {
-              imperium_self.addMove(
-                "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-              );
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
               imperium_self.endTurn();
               return 0;
             }
@@ -6606,10 +6562,8 @@ class Imperium extends GameTemplate {
           ) {
             imperium_self.playerBuySecretObjective(2);
           } else {
-            imperium_self.addMove(
-              "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-            );
-            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+            imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
             imperium_self.endTurn();
           }
         }
@@ -6635,9 +6589,9 @@ class Imperium extends GameTemplate {
               function (x, vp, objective) {
                 imperium_self.updateStatus("scoring completed");
                 imperium_self.addMove(
-                  "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
+                  "resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey
                 );
-                imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
 
                 if (my_secret_vp > 0) {
                   if (imperium_self.secret_objectives[my_secret_objective] != undefined) {
@@ -15919,7 +15873,7 @@ class Imperium extends GameTemplate {
         if (lmv[1] != undefined) {
           if (lmv[1] === "tokenallocation") {
             if (lmv[2] != undefined) {
-              if (lmv[2] === this.app.wallet.returnPublicKey()) {
+              if (lmv[2] === this.app.wallet.publicKey) {
                 this.playing_token_allocation = 0;
               }
             }
@@ -15931,7 +15885,7 @@ class Imperium extends GameTemplate {
         //
         if (mv[1] === "strategy") {
           if (mv[3]) {
-            if (mv[3] === this.app.wallet.returnPublicKey()) {
+            if (mv[3] === this.app.wallet.publicKey) {
               this.game.state.playing_strategy_card_secondary = 0;
             }
           }
@@ -16001,7 +15955,7 @@ class Imperium extends GameTemplate {
             for (let i = 0; i < still_to_move.length; i++) {
               for (let z = 0; z < this.game.players.length; z++) {
                 if (this.game.players[z] === still_to_move[i]) {
-                  if (this.game.players[z] === this.app.wallet.returnPublicKey()) {
+                  if (this.game.players[z] === this.app.wallet.publicKey) {
                     am_i_still_to_move = 1;
                   }
                   console.log("WHO - IDX " + z);
@@ -16031,7 +15985,7 @@ class Imperium extends GameTemplate {
               // the last one....
               //
               if (mv[3] != undefined) {
-                if (!this.game.confirms_players.includes(this.app.wallet.returnPublicKey())) {
+                if (!this.game.confirms_players.includes(this.app.wallet.publicKey)) {
                   return 1;
                 }
                 if (mv[1] == "agenda") {
@@ -16500,8 +16454,8 @@ class Imperium extends GameTemplate {
 
         if (this.game.state.playing_strategy_card_secondary == 1) {
           if (
-            this.game.confirms_players.includes(this.app.wallet.returnPublicKey()) ||
-            this.game.tmp_confirms_players.includes(this.app.wallet.returnPublicKey())
+            this.game.confirms_players.includes(this.app.wallet.publicKey) ||
+            this.game.tmp_confirms_players.includes(this.app.wallet.publicKey)
           ) {
             return 0;
           } else {
@@ -17139,9 +17093,7 @@ class Imperium extends GameTemplate {
           // if the player has a rider, we skip the interactive voting and submit an abstention
           //
           if (imperium_self.doesPlayerHaveRider(this.game.player)) {
-            imperium_self.addMove(
-              "resolve\tagenda\t1\t" + imperium_self.app.wallet.returnPublicKey()
-            );
+            imperium_self.addMove("resolve\tagenda\t1\t" + imperium_self.app.wallet.publicKey);
             imperium_self.addMove(
               "vote\t" + agenda + "\t" + imperium_self.game.player + "\t" + "abstain" + "\t" + "0"
             );
@@ -17247,9 +17199,7 @@ class Imperium extends GameTemplate {
             }
 
             if (vote == "abstain") {
-              imperium_self.addMove(
-                "resolve\tagenda\t1\t" + imperium_self.app.wallet.returnPublicKey()
-              );
+              imperium_self.addMove("resolve\tagenda\t1\t" + imperium_self.app.wallet.publicKey);
               imperium_self.addMove(
                 "vote\t" + agenda + "\t" + imperium_self.game.player + "\t" + vote + "\t" + votes
               );
@@ -17276,9 +17226,7 @@ class Imperium extends GameTemplate {
             $(".option").on("click", function () {
               votes = $(this).attr("id");
 
-              imperium_self.addMove(
-                "resolve\tagenda\t1\t" + imperium_self.app.wallet.returnPublicKey()
-              );
+              imperium_self.addMove("resolve\tagenda\t1\t" + imperium_self.app.wallet.publicKey);
               imperium_self.addMove(
                 "vote\t" + agenda + "\t" + imperium_self.game.player + "\t" + vote + "\t" + votes
               );
@@ -17335,9 +17283,7 @@ class Imperium extends GameTemplate {
           // if the player has a rider, we skip the interactive voting and submit an abstention
           //
           if (imperium_self.doesPlayerHaveRider(this.game.player)) {
-            imperium_self.addMove(
-              "resolve\tagenda\t1\t" + imperium_self.app.wallet.returnPublicKey()
-            );
+            imperium_self.addMove("resolve\tagenda\t1\t" + imperium_self.app.wallet.publicKey);
             imperium_self.addMove(
               "vote\t" + agenda + "\t" + imperium_self.game.player + "\t" + "abstain" + "\t" + "0"
             );
@@ -17443,9 +17389,7 @@ class Imperium extends GameTemplate {
             }
 
             if (vote == "abstain") {
-              imperium_self.addMove(
-                "resolve\tagenda\t1\t" + imperium_self.app.wallet.returnPublicKey()
-              );
+              imperium_self.addMove("resolve\tagenda\t1\t" + imperium_self.app.wallet.publicKey);
               imperium_self.addMove(
                 "vote\t" + agenda + "\t" + imperium_self.game.player + "\t" + vote + "\t" + votes
               );
@@ -17472,9 +17416,7 @@ class Imperium extends GameTemplate {
             $(".option").on("click", function () {
               votes = $(this).attr("id");
 
-              imperium_self.addMove(
-                "resolve\tagenda\t1\t" + imperium_self.app.wallet.returnPublicKey()
-              );
+              imperium_self.addMove("resolve\tagenda\t1\t" + imperium_self.app.wallet.publicKey);
               imperium_self.addMove(
                 "vote\t" + agenda + "\t" + imperium_self.game.player + "\t" + vote + "\t" + votes
               );
@@ -22629,36 +22571,36 @@ class Imperium extends GameTemplate {
             "Your opponents are being notified you have played " +
               this.action_cards[action_card].name
           );
-          if (this.hasPlayerConfirmed(this.app.wallet.returnPublicKey())) {
+          if (this.hasPlayerConfirmed(this.app.wallet.publicKey)) {
             if (action_card.indexOf("sabotage") != 0) {
               imperium_self.addMove(
                 "resolve\tsimultaneous_action_card_player_menu\t1\t" +
-                  imperium_self.app.wallet.returnPublicKey()
+                  imperium_self.app.wallet.publicKey
               );
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
               imperium_self.endTurn();
             } else {
               // sabotage doesn't need resolve, it happily resolves itself
               imperium_self.addMove(
                 "resolve\tsimultaneous_action_card_player_menu\t1\t" +
-                  imperium_self.app.wallet.returnPublicKey()
+                  imperium_self.app.wallet.publicKey
               );
-              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+              imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
               imperium_self.endTurn();
             }
           } else {
             imperium_self.addMove(
               "resolve\tsimultaneous_action_card_player_menu\t1\t" +
-                imperium_self.app.wallet.returnPublicKey()
+                imperium_self.app.wallet.publicKey
             );
-            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
             imperium_self.endTurn();
           }
           return 0;
         } else {
           // sabotage is a special case where we want to show the menu even if we have already confirmed
           if (
-            this.hasPlayerConfirmed(this.app.wallet.returnPublicKey()) &&
+            this.hasPlayerConfirmed(this.app.wallet.publicKey) &&
             action_card.indexOf("sabotage") != 0
           ) {
             this.updateStatus(
@@ -23566,8 +23508,8 @@ class Imperium extends GameTemplate {
       //    if (tech_attach_menu_events == 0 && ac.length == 0) {
       //      if (imperium_self.game.state.action_card_order === "simultaneous") {
       //console.log("BROADCASTING MOVES 1: " + JSON.stringify(this.moves));
-      //        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.returnPublicKey());
-      //        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+      //        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.publicKey);
+      //        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
       //      }
       //      imperium_self.endTurn();
       //      return;
@@ -23627,9 +23569,9 @@ class Imperium extends GameTemplate {
           if (imperium_self.game.state.action_card_order === "simultaneous") {
             imperium_self.prependMove(
               "resolve\tsimultaneous_action_card_player_menu\t1\t" +
-                imperium_self.app.wallet.returnPublicKey()
+                imperium_self.app.wallet.publicKey
             );
-            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
           }
           imperium_self.endTurn();
         }
@@ -23650,9 +23592,9 @@ class Imperium extends GameTemplate {
         if (imperium_self.game.state.action_card_order === "simultaneous") {
           imperium_self.prependMove(
             "resolve\tsimultaneous_action_card_player_menu\t1\t" +
-              imperium_self.app.wallet.returnPublicKey()
+              imperium_self.app.wallet.publicKey
           );
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
         }
         imperium_self.endTurn();
       });
@@ -25884,9 +25826,7 @@ class Imperium extends GameTemplate {
       this.updateLog("You skip the initiative secondary, as you lack adequate influence...");
       this.updateStatus("Skipping purchase of tokens as insufficient influence...");
       if (resolve == 1) {
-        imperium_self.addMove(
-          "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-        );
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
       }
       this.endTurn();
       return 0;
@@ -25936,9 +25876,7 @@ class Imperium extends GameTemplate {
 
       if (id == "skip") {
         if (resolve == 1) {
-          imperium_self.addMove(
-            "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-          );
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
         }
         imperium_self.unlockInterface();
         imperium_self.endTurn();
@@ -25949,10 +25887,8 @@ class Imperium extends GameTemplate {
         total_cost = 3 * (fleet_supply + command_tokens + strategy_tokens);
 
         if (resolve == 1) {
-          imperium_self.addMove(
-            "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-          );
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+          imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
         }
 
         imperium_self.unlockInterface();
@@ -26048,10 +25984,8 @@ class Imperium extends GameTemplate {
       let id = $(this).attr("id");
 
       if (id == "yes") {
-        imperium_self.addMove(
-          "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-        );
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
         imperium_self.addMove(
           "NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " gets action cards"
         );
@@ -26062,10 +25996,8 @@ class Imperium extends GameTemplate {
         imperium_self.updateStatus("submitted...");
         return;
       } else {
-        imperium_self.addMove(
-          "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-        );
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
         imperium_self.endTurn();
         imperium_self.updateStatus("submitted...");
         return;
@@ -26108,10 +26040,8 @@ class Imperium extends GameTemplate {
       let id = $(this).attr("id");
 
       if (id == "yes") {
-        imperium_self.addMove(
-          "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-        );
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
         imperium_self.addMove("gain\t" + imperium_self.game.player + "\tsecret_objective\t1");
         imperium_self.addMove("DEAL\t6\t" + imperium_self.game.player + "\t1");
         imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
@@ -26119,10 +26049,8 @@ class Imperium extends GameTemplate {
         imperium_self.updateStatus("submitted...");
         return;
       } else {
-        imperium_self.addMove(
-          "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-        );
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
         imperium_self.endTurn();
         imperium_self.updateStatus("submitted...");
         return;
@@ -26959,10 +26887,8 @@ class Imperium extends GameTemplate {
         imperium_self.addMove("resolve\tplay");
         imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
       } else {
-        imperium_self.addMove(
-          "resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey()
-        );
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.publicKey);
+        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.publicKey, 1);
         imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
       }
 
@@ -30703,7 +30629,7 @@ class Imperium extends GameTemplate {
             if (resolve_needed == 1) {
               if (imperium_self.game.confirms_needed > 0 && leadership_primary == 0) {
                 imperium_self.addMove(
-                  "resolve\ttokenallocation\t1\t" + imperium_self.app.wallet.returnPublicKey()
+                  "resolve\ttokenallocation\t1\t" + imperium_self.app.wallet.publicKey
                 );
               } else {
                 imperium_self.addMove("resolve\ttokenallocation");

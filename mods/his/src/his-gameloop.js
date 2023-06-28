@@ -1540,7 +1540,7 @@ alert("H: " + action2);
 	    //
 	    // this ensures we clear regardless of choice
 	    //
-            his_self.addMove("RESOLVE\t"+his_self.app.wallet.returnPublicKey());
+            his_self.addMove("RESOLVE\t"+his_self.app.wallet.publicKey);
 
             //
             // events in play

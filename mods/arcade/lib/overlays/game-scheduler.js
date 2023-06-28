@@ -42,7 +42,7 @@ class GameScheduler {
       //
       let peers = [];
       for (let i = 0; i < app.network.peers.length; i++) {
-        peers.push(app.network.peers[i].returnPublicKey());
+        peers.push(app.network.peers[i].publicKey);
       }
       this.app.connection.emit("relay-send-message", {
         recipient: peers,
