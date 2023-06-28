@@ -251,9 +251,9 @@ class Archive extends ModTemplate {
     sql = `UPDATE archives SET updated_at = $updated_at , owner = $owner , preserve = $preserve WHERE id = $id AND sig = $sig`;
     params = {
       $updated_at : obj.updated_at ,
-      $id : id ,
-      $tx_id : tx_id ,
       $owner :  obj.owner ,
+      $preserve : obj.preserve ,
+      $id : id ,
       $sig :  obj.sig ,
     }
     await this.app.storage.executeDatabase(sql, params, "archive");

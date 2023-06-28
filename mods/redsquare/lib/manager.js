@@ -52,6 +52,7 @@ class TweetManager {
             // load more notifications
             //
             if (this.mode == "notifications") {
+
               mod.loadNotifications(null, (txs) => {
                 for (let i = 0; i < this.mod.notifications.length; i++) {
                   let notification = new Notification(
@@ -59,10 +60,16 @@ class TweetManager {
                     this.mod,
                     this.mod.notifications[i].tx
                   );
-                  if (!notification.isRendered()) {
+                  //if (!notification.isRendered()) {
                     notification.render(".tweet-manager");
-                  }
+                  //}
                 }
+                if (this.mod.notifications.length == 0) {
+                   let notification = new Notification(this.app, this.mod, null);
+                   notification.render(".tweet-manager");
+                }
+
+                this.intersectionObserver.unobserve(document.querySelector("#redsquare-intersection"));
                 this.hideLoader();
               });
             }
@@ -76,7 +83,6 @@ class TweetManager {
                   let tweet = new Tweet(this.app, this.mod, txs[z]);
                   tweet.render();
                 }
-                this.mod.updatePeerStat(this.mod.returnEarliestTimestampFromTransactionArray(txs), "profile_earliest_ts");
                 this.hideLoader();
               });
             }
@@ -101,6 +107,11 @@ class TweetManager {
         document.querySelector("#redsquare-intersection").remove();
       }
       this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
+    }
+
+
+    if (document.querySelector(".rs-back-button")){
+      document.querySelector(".rs-back-button").remove();
     }
 
     this.showLoader();
@@ -130,7 +141,7 @@ class TweetManager {
 
       window.history.pushState(null, "", "/redsquare/#notifications");
 
-      if (this.mod.notifications.length == 0) {
+      /*if (this.mod.notifications.length == 0) {
         let notification = new Notification(this.app, this.mod, null);
         notification.render(".tweet-manager");
       } else {
@@ -138,9 +149,9 @@ class TweetManager {
           let notification = new Notification(this.app, this.mod, this.mod.notifications[i].tx);
           notification.render(".tweet-manager");
         }
-      }
+      }*/
 
-      this.hideLoader();
+      //this.hideLoader();
     }
 
     /////////////
@@ -163,7 +174,6 @@ class TweetManager {
           tweet.render();
         }
         this.hideLoader();
-        this.mod.updatePeerStat(this.mod.returnEarliestTimestampFromTransactionArray(txs), "profile_earliest_ts");
       });
     }
 
@@ -190,6 +200,8 @@ class TweetManager {
       this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
     }
 
+    this.app.browser.prependElementToSelector(`<div class="rs-back-button"><i class="fa-solid fa-arrow-left"></i></div>`, myqs);
+
     this.mode = "single";
     this.profile.remove();
 
@@ -199,6 +211,17 @@ class TweetManager {
       tweet.renderWithChildren();
       this.hideLoader();
     });
+
+    //
+    //Mobile back button
+    //
+    let button = document.querySelector(".rs-back-button");
+    if (button){
+      button.onclick = (e) => {
+        this.app.connection.emit("redsquare-home-render-request");
+      }
+    }
+
   }
 
   attachEvents() {
@@ -206,6 +229,7 @@ class TweetManager {
     // dynamic content loading
     //
     this.intersectionObserver.observe(document.querySelector("#redsquare-intersection"));
+
   }
 
   showLoader() {

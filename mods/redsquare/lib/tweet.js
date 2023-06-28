@@ -98,7 +98,7 @@ class Tweet {
     this.user = new SaitoUser(
       app,
       mod,
-      `.tweet-${this.tx.transaction.sig} > .tweet-header`,
+      this.container + `> .tweet-${this.tx.transaction.sig} > .tweet-header`,
       this.tx.transaction.from[0].add
     );
 
@@ -150,7 +150,7 @@ class Tweet {
         this.app,
         this.mod,
         newtx,
-        `.tweet-preview-${this.tx.transaction.sig}`
+        this.container + `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`
       );
       this.retweet.is_retweet = true;
       this.retweet.show_controls = 0;
@@ -162,7 +162,7 @@ class Tweet {
         this.img_preview = new Image(
           this.app,
           this.mod,
-          `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
+          this.container + `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
           this
         );
       } else {
@@ -170,7 +170,7 @@ class Tweet {
           this.link_preview = new Link(
             this.app,
             this.mod,
-            `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
+            this.container + `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
             this
           );
         }
@@ -204,14 +204,7 @@ class Tweet {
     // double-rendering is possible with commented retweets
     // but we should just replace, duh.
 
-    //if (this.isRendered()) {
-    //  console.log("Already rendered");
-    //  return;
-    //}
-
-    //console.log(this);
-
-    let myqs = this.container + ` .tweet-${this.tx.transaction.sig}`;
+    let myqs = this.container + `> .tweet-${this.tx.transaction.sig}`;
     let replace_existing_element = true;
 
     let has_reply = false;
@@ -232,7 +225,7 @@ class Tweet {
       }
 
       if (has_reply || has_reply_disconnected){
-        //console.log(has_reply, has_reply_disconnected);
+        console.log(has_reply, has_reply_disconnected);
       }
       //
       // if prepend = true, remove existing element
@@ -254,20 +247,20 @@ class Tweet {
     //
     // retweets displayed in container even if master exists elsewhere on page
     //
-    if (this.is_retweet) {
-      //console.log("Is retweet");
-      myqs = this.container;
-      replace_existing_element = true;
-    } else {
+    //if (this.is_retweet) {
+    //  console.log("Is retweet");
+    //  myqs = this.container;
+    //  replace_existing_element = true;
+    //} else {
       //
       // this isn't retweet, but if the original exists, we want to ignore
       // it unless it is parent-level (top thread).
       //
-      if (obj?.parentElement?.classList.contains("tweet-main")) {
-        //console.log("parent is a tweet");
-        replace_existing_element = false;
-      }
-    }
+    //  if (obj?.parentElement?.classList.contains("tweet-main")) {
+    //    console.log("parent is a tweet");
+    //    replace_existing_element = false;
+    //  }
+    //}
 
     //
     // retweets without commentary? pass-through and render subtweet
@@ -281,15 +274,15 @@ class Tweet {
         "retweeted by " +
         this.app.browser.returnAddressHTML(this.tx.transaction.from[0].add) +
         this.formatDate();
-      this.retweet.container = ".tweet-" + this.retweet.tx.transaction.sig;
+      this.retweet.container = ".tweet-manager";
 
       let t = this.mod.returnTweet(this.retweet.tx.transaction.sig);
       if (t) {
-        //console.log("returned tweet");
         t.notice = this.retweet.notice;
         t.render(prepend);
       } else {
-        //console.log("saved tweet");
+        console.log("saved tweet");
+        this.retweet.user.container = this.container + `> .tweet-${this.tx.transaction.sig} > .tweet-header`,
         this.retweet.render(prepend);
       }
       return;
@@ -304,13 +297,8 @@ class Tweet {
       }
     }
 
-    if (!this.container) {
-      this.container = ".tweet-manager";
-    }
-
-    if (replace_existing_element && document.querySelector(myqs)) {
+    if (/*replace_existing_element &&*/ document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
-      //console.log("Replace: " + myqs);
     } else if (prepend) {
       this.app.browser.prependElementToSelector(
         TweetTemplate(this.app, this.mod, this),
@@ -326,7 +314,6 @@ class Tweet {
         TweetTemplate(this.app, this.mod, this),
         this.container
       );
-      //console.log("Append to: " + this.container);
     }
 
     //
@@ -366,7 +353,6 @@ class Tweet {
     this.user.render();
 
     if (this.retweet) {
-      //console.log("Render quoted tweet");
       this.retweet.render();
     }
     if (this.img_preview != null) {
@@ -502,6 +488,7 @@ class Tweet {
       if (!this_tweet.dataset.hasClickEvent) {
         this_tweet.dataset.hasClickEvent = true;
         this_tweet.onclick = (e) => {
+          //console.log("Regular click event");
           //
           // if we have selected text, then we are trying to copy and paste and
           // the last thing we want is for the UI to update and prevent us from
@@ -547,11 +534,19 @@ class Tweet {
       ////////////////////////////////////////////////
       document.querySelectorAll(`.tweet-${this.tx.transaction.sig} .tweet`).forEach((item) => {
         item.addEventListener("click", (e) => {
-          console.log("Click to View Original of Retweeted");
           e.stopImmediatePropagation();
           let sig = item.getAttribute("data-id");
           if (e.target.tagName != "IMG" && sig) {
-            window.location.href = `/redsquare/?tweet_id=${sig}`;
+            //window.location.href = `/redsquare/?tweet_id=${sig}`;
+            let t = this.mod.returnTweet(sig);
+            if (t) {
+              app.connection.emit("redsquare-home-tweet-render-request", t);  
+            }else{
+              console.warn("This is going to screw up the feed");
+              this.retweet.container = ".tweet-manager";
+              app.connection.emit("redsquare-home-tweet-render-request", this.retweet);  
+            }
+            window.history.pushState(null, "", `/redsquare/?tweet_id=${sig}`);
           }
         });
       });

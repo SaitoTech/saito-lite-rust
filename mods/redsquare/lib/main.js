@@ -43,6 +43,10 @@ class RedSquareMain {
       this.manager.renderTweet(tweet);
     });
 
+    this.app.connection.on("redsquare-new-tweets-notification-request", () => {
+      document.getElementById("show-new-tweets").style.display="flex";
+    });
+
     this.app.connection.on("redsquare-notifications-render-request", () => {
       this.mod.notifications_last_viewed_ts = new Date().getTime();
       this.mod.notifications_number_unviewed = 0;
@@ -58,13 +62,6 @@ class RedSquareMain {
       this.manager.mode = "profile";
       this.manager.publickey = publickey;
       this.manager.render();
-    });
-
-    this.app.connection.on("redsquare-home-loader-render-request", () => {
-      this.manager.showLoader();
-    });
-    this.app.connection.on("redsquare-home-loader-hide-request", () => {
-      this.manager.hideLoader();
     });
 
     // this is triggered when you reply to a tweet -- it pushes tweet and your reply to top, or should
@@ -153,6 +150,13 @@ class RedSquareMain {
       }
       scrollTop = scrollableElement.scrollTop;
     });
+
+    document.getElementById("show-new-tweets").onclick = () => {
+      this.scoll_depth = 0;
+      this.app.connection.emit("redsquare-home-render-request", false);
+      document.querySelector("#show-new-tweets").style.display = "none";
+    }
+
   }
 
 
