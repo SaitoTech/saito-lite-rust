@@ -103,6 +103,11 @@ class TweetManager {
       this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
     }
 
+
+    if (document.querySelector(".rs-back-button")){
+      document.querySelector(".rs-back-button").remove();
+    }
+
     this.showLoader();
 
 
@@ -190,6 +195,8 @@ class TweetManager {
       this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
     }
 
+    this.app.browser.prependElementToSelector(`<div class="rs-back-button"><i class="fa-solid fa-arrow-left"></i></div>`, myqs);
+
     this.mode = "single";
     this.profile.remove();
 
@@ -199,6 +206,17 @@ class TweetManager {
       tweet.renderWithChildren();
       this.hideLoader();
     });
+
+    //
+    //Mobile back button
+    //
+    let button = document.querySelector(".rs-back-button");
+    if (button){
+      button.onclick = (e) => {
+        this.app.connection.emit("redsquare-home-render-request");
+      }
+    }
+
   }
 
   attachEvents() {
@@ -206,6 +224,7 @@ class TweetManager {
     // dynamic content loading
     //
     this.intersectionObserver.observe(document.querySelector("#redsquare-intersection"));
+
   }
 
   showLoader() {

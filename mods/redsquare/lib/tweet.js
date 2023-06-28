@@ -534,7 +534,6 @@ class Tweet {
       ////////////////////////////////////////////////
       document.querySelectorAll(`.tweet-${this.tx.transaction.sig} .tweet`).forEach((item) => {
         item.addEventListener("click", (e) => {
-          console.log("Click to View Original of Retweeted");
           e.stopImmediatePropagation();
           let sig = item.getAttribute("data-id");
           if (e.target.tagName != "IMG" && sig) {
