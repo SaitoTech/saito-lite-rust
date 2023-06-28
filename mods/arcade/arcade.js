@@ -1094,7 +1094,9 @@ class Arcade extends ModTemplate {
       newtx.addToSlip(slip);
     }
     let slip = new Slip();
-    slip.publicKey = this.publicKey;
+    let publicKey = await this.app.wallet.getPublicKey();
+    console.log("my public key ", publicKey);
+    slip.publicKey = publicKey;
     slip.amount = BigInt(0);
     newtx.addToSlip(slip);
 
@@ -1114,7 +1116,7 @@ class Arcade extends ModTemplate {
   }
 
   async receiveJoinTransaction(tx) {
-    console.log("receiveJoinTransaction", tx);
+    console.log("receiveJoinTransaction", tx.signature);
     if (!tx || !tx.signature) {
       return;
     }
@@ -1122,6 +1124,7 @@ class Arcade extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     //Transaction must be signed
+    console.log("txmsges", txmsg, txmsg.invite_sig);
     if (!txmsg.invite_sig) {
       return;
     }
@@ -1133,6 +1136,7 @@ class Arcade extends ModTemplate {
     //
     // If we don't find it, or we have already marked the game as active, stop processing
     //
+    console.log("isAvailableGame", this.isAvailableGame(game));
     if (!game || !this.isAvailableGame(game)) {
       return;
     }
@@ -1170,21 +1174,32 @@ class Arcade extends ModTemplate {
         //
         // First player (originator) sends the accept message
         //
-        if (game.msg.originator == this.publicKey) {
+        let publicKey = await this.app.wallet.getPublicKey();
+        console.log(
+          "getPublicKey ",
+          publicKey,
+          "game.msg.originator",
+          game.msg.originator,
+          "current public key",
+          this.app.wallet.publicKey
+        );
+        if (game.msg.originator == publicKey) {
           let newtx = await this.createAcceptTransaction(game);
+          console.log("createAcceptTransaction ", newtx);
           await this.app.network.propagateTransaction(newtx);
+
           this.app.connection.emit("relay-send-message", {
             recipient: "PEERS",
             request: "arcade spv update",
             data: newtx.toJson(),
           });
-          /*
-          this.app.connection.emit("relay-send-message", {
-            recipient: game.msg.players,
-            request: "arcade spv update",
-            data: newtx..toJson(),
-          });
-          */
+
+          // this.app.connection.emit("relay-send-message", {
+          //   recipient: game.msg.players,
+          //   request: "arcade spv update",
+          //   data: newtx.toJson(),
+          // });
+
           //Start Spinner
           this.app.connection.emit("arcade-game-initialize-render-request");
         }
@@ -1249,10 +1264,11 @@ class Arcade extends ModTemplate {
     let game = this.returnGame(txmsg.game_id);
 
     // Must be an available invite
-    if (!game || !this.isAvailableGame(game, "accepted")) {
-      console.log("not valid invite");
-      return;
-    }
+    console.log("this is the game ", game);
+    // if (!game || !this.isAvailableGame(game, "accepted")) {
+    //   console.log("not valid invite");
+    //   return;
+    // }
 
     // do not re-accept game already in my local storage (a consequence of game initialization)
     for (let i = 0; i < this.app?.options?.games?.length; i++) {
@@ -1556,7 +1572,7 @@ class Arcade extends ModTemplate {
 
     // We want new games to go towards the top
 
-    this.games[list].push(tx);
+    this.games[list].unshift(tx);
 
     console.log("the transction ", this.games, tx);
 
@@ -1873,6 +1889,8 @@ class Arcade extends ModTemplate {
     let game_msg = game_tx.returnMessage();
 
     let game_mod = this.app.modules.returnModule(game_msg.game);
+
+    console.log("emitting one in arcade");
 
     this.app.connection.emit("arcade-game-initialize-render-request");
 

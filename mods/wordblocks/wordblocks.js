@@ -38,6 +38,12 @@ class Wordblocks extends GameTemplate {
   }
 
   render(app) {
+    console.log(
+      this.browser_active,
+      "browser active",
+      this.initialize_game_run,
+      "initialize game run "
+    );
     if (!this.browser_active) {
       return;
     }
