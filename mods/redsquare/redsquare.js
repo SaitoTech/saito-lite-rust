@@ -298,6 +298,8 @@ class RedSquare extends ModTemplate {
       return;
     }
 
+    console.log("RS PSU");
+    
     //
     // redsquare -- load tweets
     //
@@ -334,7 +336,11 @@ class RedSquare extends ModTemplate {
       //
 
       this.loadTweets(null, (txs) => {
-        this.app.connection.emit("redsquare-home-render-request", false);
+
+        if (txs.length > 0){
+          this.app.connection.emit("redsquare-new-tweets-notification-request");
+        }
+        
       });
     }
 

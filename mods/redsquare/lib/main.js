@@ -43,6 +43,10 @@ class RedSquareMain {
       this.manager.renderTweet(tweet);
     });
 
+    this.app.connection.on("redsquare-new-tweets-notification-request", () => {
+      document.getElementById("show-new-tweets").style.display="flex";
+    });
+
     this.app.connection.on("redsquare-notifications-render-request", () => {
       this.mod.notifications_last_viewed_ts = new Date().getTime();
       this.mod.notifications_number_unviewed = 0;
@@ -146,6 +150,13 @@ class RedSquareMain {
       }
       scrollTop = scrollableElement.scrollTop;
     });
+
+    document.getElementById("show-new-tweets").onclick = () => {
+      this.scoll_depth = 0;
+      this.app.connection.emit("redsquare-home-render-request", false);
+      document.querySelector("#show-new-tweets").style.display = "none";
+    }
+
   }
 
 
