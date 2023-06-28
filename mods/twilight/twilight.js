@@ -818,11 +818,19 @@ try {
     }).mouseout(function() {
       let region = this.id;
       $(`.display_card#${region}`).hide();
-    }).click(function() {
-      let region = this.id;
+    });
+
+    $('.scoring_card').on('mousedown', function (e) {
+      xpos = e.clientX;
+      ypos = e.clientY;
+    });
+    $('.scoring_card').on('mouseup', function (e) {
+      if (Math.abs(xpos-e.clientX) > 4) { return; }
+      if (Math.abs(ypos-e.clientY) > 4) { return; }
+      let region = e.currentTarget.id;
       let scoring = twilight_self.calculateScoring(region, 1);
       twilight_self.scoring_overlay.render(region, scoring);
-    })
+    });
 
   } catch (err) {}
 
@@ -2371,7 +2379,7 @@ console.log("LATEST MOVE: " + mv);
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["cambridge", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["voiceofamerica", "indopaki", "brushwar", "asia", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["cubanmissile", "saltnegotiations", "iraniraq", "cambridge", "warsawpact", "mideast", "tehran", "cia", "china"];
         }
@@ -13057,6 +13065,7 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
 
     if (card == "voiceofamerica") {
 
+
       var ops_to_purge = 4;
       var ops_removable = 0;
 
@@ -13070,6 +13079,8 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
+        this.hud.back_button = false;
+        this.hud.back_button_callback = null;
         this.updateStatus("Remove 4 USSR influence from non-European countries (max 2 per country)");
 
         var twilight_self = this;
