@@ -41,6 +41,8 @@ export default class Blockchain extends SaitoBlockchain {
     // this.blockchain.lowest_acceptable_block_hash = "";
     // this.blockchain.lowest_acceptable_block_id = BigInt(0);
 
+    this.instance.reset();
+
     this.saveBlockchain();
   }
 
@@ -71,6 +73,11 @@ export default class Blockchain extends SaitoBlockchain {
     //   }
     //   this.blockchain.last_callback_block_id = this.blockchain.last_block_id;
     // }
+
+    if (this.app.options.blockchain) {
+      let chain = this.app.options.blockchain;
+      // this.last_block_hash = chain.last_block_hash;
+    }
   }
 
   public async affixCallbacks(block: Block) {
