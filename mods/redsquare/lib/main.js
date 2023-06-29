@@ -23,11 +23,18 @@ class RedSquareMain {
     //
     // rendering the main thread
     this.app.connection.on("redsquare-home-render-request", (user_click = true) => {
+      //Update menu that we are on the main feed
+      this.app.connection.emit("redsquare-navigation", true);
+      
       if (this.manager.mode == "tweets" && user_click) {
         this.scroll_depth = 0;      
         this.manager.showLoader();
-        this.mod.loadNewTweets(null, () => {
-          this.app.connection.emit("redsquare-home-render-request", false);
+        this.mod.loadNewTweets(null, (txs) => {
+          if (txs.length > 0) {
+            this.app.connection.emit("redsquare-new-tweets-notification-request");
+          }else{
+            siteMessage("No new tweets", 1000);
+          }
         });
         return;        
       }
