@@ -80,9 +80,9 @@ class GameScheduler {
         title: title,
         adds: adds,
       });
-      scheduler.render(() => {
+      scheduler.render(async () => {
         if (mycallback != null) {
-          mycallback();
+          await mycallback();
         }
       });
     };

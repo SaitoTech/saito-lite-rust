@@ -294,7 +294,7 @@ class Arcade extends ModTemplate {
 
         await app.browser.logMatomoEvent("GameInvite", "FollowLink", game.game);
 
-        let invite = new Invite(app, this, null, null, game);
+        let invite = new Invite(app, this, null, null, game, this.publicKey);
         let join_overlay = new JoinGameOverlay(app, this, invite.invite_data);
         await join_overlay.render();
         window.history.pushState("", "", `/arcade/`);
@@ -401,7 +401,7 @@ class Arcade extends ModTemplate {
   // flexible inter-module-communications
   //
 
-  async respondTo(type = "") {
+  async respondTo(type = "", obj) {
     if (type == "header-dropdown") {
       return {
         name: this.appname ? this.appname : this.name,
@@ -411,7 +411,7 @@ class Arcade extends ModTemplate {
       };
     }
     if (type === "user-menu") {
-      if (obj?.publickey && obj.publickey !== this.app.wallet.getPublicKey()) {
+      if (obj?.publickey && obj.publickey !== this.publicKey) {
         return {
           text: "Challenge to Game",
           icon: "fas fa-gamepad",
@@ -1970,7 +1970,7 @@ class Arcade extends ModTemplate {
       slip.amount = 0;
       tx.addToSlip(slip);
     }
-    tx.sign();
+    await tx.sign();
 
     //Only looking for this in handlePeerRequest, pure off-chain
     //this.app.network.propagateTransaction(tx);

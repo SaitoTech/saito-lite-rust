@@ -404,7 +404,7 @@ class Chat extends ModTemplate {
     }
 
     if (txmsg.request === "chat message") {
-      this.receiveChatTransaction(app, tx);
+      await this.receiveChatTransaction(app, tx);
 
       //
       // notify sender if requested
@@ -502,7 +502,7 @@ class Chat extends ModTemplate {
         }
       }
 
-      app.network.propagateTransaction(tx);
+      // app.network.propagateTransaction(tx);
       app.connection.emit("relay-send-message", {
         recipient,
         request: "chat message broadcast",
@@ -628,6 +628,10 @@ class Chat extends ModTemplate {
     }
 
     let group = this.returnGroup(txmsg.group_id);
+
+    if (!Array.isArray(group.txs)) {
+      group.txs = group.txs.msg;
+    }
 
     console.log("group ", group);
 

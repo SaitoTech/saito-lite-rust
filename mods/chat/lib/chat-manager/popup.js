@@ -250,7 +250,7 @@ class ChatPopup {
           }
           let [newtx, data] = await mod.createChatTransaction(group_id, msg_input.innerHTML);
           await mod.sendChatTransaction(app, newtx, data);
-          mod.receiveChatTransaction(app, newtx);
+          await mod.receiveChatTransaction(app, newtx);
           msg_input.textContent = "";
           msg_input.innerHTML = "";
           if (document.getElementById(input_id)) {
@@ -312,7 +312,7 @@ class ChatPopup {
         false
       ); // false = no drag-and-drop image click
     } catch (err) {
-      console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);
+      console.error("ERROR IN CHAT POPUP -- we can fix later: ", err);
     }
   }
 }

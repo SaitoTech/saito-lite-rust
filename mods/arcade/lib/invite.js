@@ -4,7 +4,7 @@ const InviteTemplateSparse = require("./invite.template.sparse");
 const JSON = require("json-bigint");
 
 class Invite {
-  constructor(app, mod, container, type, tx = null) {
+  constructor(app, mod, container, type, tx = null, publicKey = "") {
     this.app = app;
     this.mod = mod;
     this.container = container;
@@ -76,7 +76,7 @@ class Invite {
 
         //Invitation / Challenge ?
 
-        if (app.wallet.getPublicKey() == txmsg.options.desired_opponent_publickey) {
+        if (publicKey == txmsg.options.desired_opponent_publickey) {
           alt_game_type = "direct invite ";
           this.invite_data.game_type = "direct invite";
         }
