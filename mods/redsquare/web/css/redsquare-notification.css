@@ -6,7 +6,7 @@
 .saito-floating-button {
   position: fixed;
   display: none;
-  top: 10vw;
+  top: max(10vh, var(--saito-header-height));
   left: 50%;
   transform: translateX(-50%);
   width: 18rem;

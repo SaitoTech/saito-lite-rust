@@ -34,6 +34,12 @@ class RedSquareMain {
       this.manager.mode = "tweets";
       this.manager.render();
       this.scrollFeed(this.scroll_depth);
+      
+      //Automated refresh when new tweets to display (so also save them!)
+      if (!user_click){
+        this.mod.saveLocalTweets();  
+      }
+      
     });
 
 
