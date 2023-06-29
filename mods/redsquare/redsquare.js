@@ -10,9 +10,8 @@ const HTMLParser = require("node-html-parser");
 const prettify = require("html-prettify");
 const redsquareHome = require("./index");
 const Post = require("./lib/post");
-
 const Transaction = require("../../lib/saito/transaction").default;
-const Slip = require("../../lib/saito/slip");
+const Slip = require("../../lib/saito/slip").default;
 const Factory = require("../../lib/saito/factory").default;
 const PeerService = require("saito-js/lib/peer_service").default;
 
