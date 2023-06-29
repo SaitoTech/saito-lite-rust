@@ -149,7 +149,7 @@ class RedSquare extends ModTemplate {
         });
       }
 
-      x.push({
+      /*x.push({
         text: "Camera",
         icon: "fas fa-camera",
         rank: 27,
@@ -158,7 +158,7 @@ class RedSquare extends ModTemplate {
           camera.render();
         }
       });
-
+      */
       return x;
     }
 
@@ -177,17 +177,36 @@ class RedSquare extends ModTemplate {
       });
 
       x.push({
-        text: "Tweet Image",
-        icon: "fa-solid fa-image",
+        text: "Tweet Camera",
+        icon: "fas fa-camera",
         allowed_mods: ["redsquare"],
         disallowed_mods: ["arcade"],
         rank: 20,
         callback: function (app, id) {
+          let post = new Post(app, this_mod);
+          let camera = new SaitoCamera(app, this_mod, (img) => {
+            post.render();  
+            post.addImg(img);
+          });
+          camera.render();
+
+          //Id created by app.browser.addDragAndDrop
+          //post.triggerClick("#hidden_file_element_tweet-overlay");
+        },
+      });
+
+      x.push({
+        text: "Tweet Image",
+        icon: "fas fa-image",
+        allowed_mods: ["redsquare"],
+        disallowed_mods: ["arcade"],
+        rank: 30,
+        callback: function (app, id) {
+          let post = new Post(app, this_mod);
           post.render();
           post.triggerClick("#hidden_file_element_tweet-overlay");
         },
       });
-
       return x;
     }
 
