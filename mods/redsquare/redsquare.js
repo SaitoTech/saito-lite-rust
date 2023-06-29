@@ -778,9 +778,9 @@ class RedSquare extends ModTemplate {
 
         for (let i = 0; i < this.tweets.length; i++) {
           if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
-            this.tweets[i].tx.optional.num_replies = tweet.num_replies;
-            this.tweets[i].tx.optional.num_retweets = tweet.num_retweets;
-            this.tweets[i].tx.optional.num_likes = tweet.num_likes;
+            this.tweets[i].tx.optional.num_replies = tweet.tx.optional.num_replies;
+            this.tweets[i].tx.optional.num_retweets = tweet.tx.optional.num_retweets;
+            this.tweets[i].tx.optional.num_likes = tweet.tx.optional.num_likes;
           }
         }
       }
@@ -904,16 +904,18 @@ class RedSquare extends ModTemplate {
               if (!tweet.tx.optional.num_replies) {
                 tweet.tx.optional.num_replies = 0;
               }
-              tx.optional.num_replies++;
+              
+              tweet.tx.optional.num_replies++;
+
               this.app.storage.updateTransaction(
-                tx,
+                tweet.tx,
                 { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() },
                 "localhost"
               );
               tweet.renderReplies();
             } else {
               this.app.storage.updateTransaction(
-                tx,
+                tweet.tx,
                 { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() },
                 "localhost"
               );
@@ -923,38 +925,36 @@ class RedSquare extends ModTemplate {
           //
           // if retweets
           //
-          if (txmsg.data?.retweet_tx) {
-            if (txmsg.data?.retweet_tx) {
-              let rtx = new saito.default.transaction();
-              rtx.deserialize_from_web(this.app, txmsg.data.retweet_tx);
-              let rtxsig = rtx.transaction.sig;
 
-              if (this.tweets_sigs_hmap[rtxsig]) {
-                let tweet2 = this.returnTweet(rtxsig);
-                if (tweet2 == null) {
-                  return;
-                }
-                let tx = tweet2.tx;
-                if (!tx.optional) {
-                  tx.optional = {};
-                }
-                if (!tx.optional.num_retweets) {
-                  tx.optional.num_retweets = 0;
-                }
-                tx.optional.num_retweets++;
-                this.app.storage.updateTransaction(
-                  tx,
-                  { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() },
-                  "localhost"
-                );
-                tweet2.renderRetweets();
-              } else {
-                this.app.storage.updateTransaction(
-                  tx,
-                  { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() },
-                  "localhost"
-                );
+          if (txmsg.data?.retweet_tx) {
+            let rtx = new saito.default.transaction();
+            rtx.deserialize_from_web(this.app, txmsg.data.retweet_tx);
+
+            if (this.tweets_sigs_hmap[rtx.transaction.sig]) {
+              let tweet2 = this.returnTweet(rtx.transaction.sig);
+              if (tweet2 == null) {
+                return;
               }
+
+              if (!tweet2.tx.optional) {
+                tweet2.tx.optional = {};
+              }
+              if (!tweet2.tx.optional.num_retweets) {
+                tweet2.tx.optional.num_retweets = 0;
+              }
+              tweet2.tx.optional.num_retweets++;
+              this.app.storage.updateTransaction(
+                tweet2.tx,
+                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() },
+                "localhost"
+              );
+              tweet2.renderRetweets();
+            } else {
+              this.app.storage.updateTransaction(
+                tweet2.tx,
+                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() },
+                "localhost"
+              );
             }
           }
         }
@@ -1052,6 +1052,9 @@ class RedSquare extends ModTemplate {
 
       await app.storage.executeDatabase(sql, params, "redsquare");
 
+      // If you just inserted a record, you don't need to update its updated_at right away
+      // but if it is part of a thread, then yes! 
+      // We should update the whole thread (?) or just the root tweet
       if (tx.transaction.sig !== tweet.thread_id){
         let ts = tx.transaction.ts;
         let sql2 = "UPDATE tweets SET updated_at = $timestamp WHERE sig = $sig";

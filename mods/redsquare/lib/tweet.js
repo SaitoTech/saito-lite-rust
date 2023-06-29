@@ -239,7 +239,7 @@ class Tweet {
     // We only want this default behavior for main feed, NEED TO FIX
     //
     if (this.updated_at > this.created_at) {
-      if (this.num_replies > 0) {
+      if (this.tx.optional.num_replies > 0) {
         this.user.notice = "new reply on " + this.formatDate();
       }
     }
@@ -996,6 +996,7 @@ class Tweet {
   }
   renderRetweets() {
     // some edge cases where tweet won't have rendered
+    //console.log("RenderRetweets");
     try {
       let qs = `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-retweet .tweet-tool-retweet-count`;
       let obj = document.querySelector(qs);
@@ -1007,6 +1008,7 @@ class Tweet {
   }
   renderReplies() {
     // some edge cases where tweet won't have rendered
+    //console.log("RenderReplies");
     try {
       let qs = `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`;
       let obj = document.querySelector(qs);
