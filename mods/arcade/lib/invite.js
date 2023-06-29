@@ -64,6 +64,7 @@ class Invite {
         this.invite_data.ts = txmsg.ts;
       }
 
+      let alt_game_type = "";
       //We still don't know the exact data structures for specified invite(s)
       //But it isn't going to be a single string pushed into an array!
       if (txmsg.options?.desired_opponent_publickey) {
@@ -75,9 +76,9 @@ class Invite {
 
         //Invitation / Challenge ?
 
-        if (app.wallet.getPublicKey() == txmsg.options.desired_opponent_publickey){
-         alt_game_type = "direct invite ";
-         this.invite_data.game_type = "direct invite"; 
+        if (app.wallet.getPublicKey() == txmsg.options.desired_opponent_publickey) {
+          alt_game_type = "direct invite ";
+          this.invite_data.game_type = "direct invite";
         }
       }
 
@@ -102,17 +103,16 @@ class Invite {
       let defaultKeys = Object.keys(defaultOptions);
       let inviteKeys = Object.keys(txmsg.options);
 
-      if (defaultKeys.length == inviteKeys.length){
-        for (const key of defaultKeys){
-          if (defaultOptions[key] !== txmsg.options[key] && !key.includes("game-wizard-players")){
-            alt_game_type += "custom "
+      if (defaultKeys.length == inviteKeys.length) {
+        for (const key of defaultKeys) {
+          if (defaultOptions[key] !== txmsg.options[key] && !key.includes("game-wizard-players")) {
+            alt_game_type += "custom ";
             this.invite_data.game_type = "custom game";
             break;
           }
         }
-
-      }else{
-        alt_game_type += "custom "
+      } else {
+        alt_game_type += "custom ";
         this.invite_data.game_type = "custom game";
       }
 
@@ -124,24 +124,23 @@ class Invite {
 
       //League
 
-      if (txmsg.options?.league_id){
+      if (txmsg.options?.league_id) {
         this.invite_data.league = txmsg.options.league_id;
         alt_game_type += "league ";
-        this.invite_data.game_type = "league game"; 
+        this.invite_data.game_type = "league game";
       }
 
       //Private (only shown to the originator)
-      if (txmsg.request === "private"){
+      if (txmsg.request === "private") {
         alt_game_type += "private ";
-        this.invite_data.game_type = "private game"; 
+        this.invite_data.game_type = "private game";
       }
       alt_game_type += "game";
-      if (alt_game_type == "game"){
+      if (alt_game_type == "game") {
         this.invite_data.verbose_game_type = "standard game open invitation";
-      }else{
+      } else {
         this.invite_data.verbose_game_type = alt_game_type;
       }
-
     }
 
     // calculate empty slots

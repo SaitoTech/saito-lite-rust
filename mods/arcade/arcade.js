@@ -162,7 +162,7 @@ class Arcade extends ModTemplate {
             };
 
             game_tx.signature = game.id;
-            game_tx.timestamp = game.ts;
+            game_tx.timestamp = BigInt(game.ts || 0);
             game_tx.msg = msg;
 
             console.log("Processing games from app.options:");
@@ -1011,8 +1011,8 @@ class Arcade extends ModTemplate {
     await this.changeGameStatus(txmsg.game_id, "over");
 
     let sql = `UPDATE games
-               SET winner = $winner,
-                   method = $method,
+               SET winner        = $winner,
+                   method        = $method,
                    time_finished = $ts
                WHERE game_id = $game_id`;
     let params = {

@@ -66,28 +66,28 @@ class Settlers extends GameTemplate {
       text: "How to Play",
       id: "game-help",
       class: "game-help",
-      callback: function (app, game_mod) {
+      callback: function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.rules_overlay.render();
-      },
+      }
     });
     this.menu.addSubMenuOption("game-game", {
       text: "Stats",
       id: "game-stats",
       class: "game-stats",
-      callback: function (app, game_mod) {
+      callback: function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.stats_overlay.render();
-      },
+      }
     });
     this.menu.addSubMenuOption("game-game", {
       text: "Log",
       id: "game-log",
       class: "game-log",
-      callback: function (app, game_mod) {
+      callback: function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.log.toggleLog();
-      },
+      }
     });
 
     await this.menu.addChatMenu();
@@ -160,11 +160,11 @@ class Settlers extends GameTemplate {
     // mobile UI toggles
     //
     this.app.browser.prependElementToSelector(
-      '<div class="mobile"><div class="score">score</div><div class="trade">trade</div></div>',
+      "<div class=\"mobile\"><div class=\"score\">score</div><div class=\"trade\">trade</div></div>",
       ".hud-body"
     );
     this.app.browser.addElementToSelector(
-      '<div class="mobile-trading-container"></div>',
+      "<div class=\"mobile-trading-container\"></div>",
       ".gameboard"
     );
     let num_playerboxes = 0;
@@ -324,18 +324,18 @@ class Settlers extends GameTemplate {
     return stats;
   }
 
-  returnDiceTokens() {
-    let dice = [];
-    dice.push({ value: 2 });
-    dice.push({ value: 12 });
-    for (let i = 3; i < 7; i++) {
-      dice.push({ value: i });
-      dice.push({ value: i });
-      dice.push({ value: i + 5 });
-      dice.push({ value: i + 5 });
-    }
-    return dice;
-  }
+  // returnDiceTokens() {
+  //   let dice = [];
+  //   dice.push({ value: 2 });
+  //   dice.push({ value: 12 });
+  //   for (let i = 3; i < 7; i++) {
+  //     dice.push({ value: i });
+  //     dice.push({ value: i });
+  //     dice.push({ value: i + 5 });
+  //     dice.push({ value: i + 5 });
+  //   }
+  //   return dice;
+  // }
 
   returnGameOptionsHTML() {
     //return SettlersGameOptionsTemplate(this.app, this);
