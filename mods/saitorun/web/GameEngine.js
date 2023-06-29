@@ -4,6 +4,7 @@ import { DRACOLoader } from './DRACOLoader.js';
 import { RGBELoader } from './RGBELoader.js';
 import { LoadingBar } from './LoadingBar.js';
 import { Vector3 } from './three.module.js';
+import { getRandomQuestion } from './trivia.js';
 
 class GameEngine {
 	constructor() {
@@ -15,10 +16,8 @@ class GameEngine {
 		this.loadingBar = new LoadingBar();
 		this.loadingBar.visible = false;
 
-		this.assetsPath = './img/';
-
-		this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 12);
-		this.camera.position.set(0, 3, -5);
+		this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+		this.camera.position.set(0, 2, -5);
 
 		this.cameraController = new THREE.Object3D();
 		this.cameraController.add(this.camera);
@@ -30,7 +29,7 @@ class GameEngine {
 		this.scene.add(this.cameraController);
 
 		// new light
-		this.dirLight.position.set(0, 30, 8);
+		this.dirLight.position.set(0, 2.3, 8);
 		this.dirLight.target.position.set(0, -10, 6);
 		this.dirLight.castShadow = true;
 		this.dirLight.shadow.bias = -0.001;
@@ -68,11 +67,30 @@ class GameEngine {
 		document.addEventListener('touchstart', this.handleTouchStart.bind(this), false);
 		document.addEventListener('touchmove', this.handleTouchMove.bind(this), false);
 		// mobile touch actions end
+		const answer1Button = document.getElementById('answer-0');
+		const answer2Button = document.getElementById('answer-1');
+		const answer3Button = document.getElementById('answer-2');
+
+		function handleAnswer1() {
+			this.handleAnswer(0);
+		}
+
+		function handleAnswer2() {
+			this.handleAnswer(1);
+		}
+
+		function handleAnswer3() {
+			this.handleAnswer(2);
+		}
+
+		answer1Button.addEventListener("click", handleAnswer1.bind(this));
+		answer2Button.addEventListener("click", handleAnswer2.bind(this));
+		answer3Button.addEventListener("click", handleAnswer3.bind(this));
 	}
 
 	gameLoaded = false;
 
-	dirLight = new THREE.DirectionalLight(0xFFFFFF, 1);
+	dirLight = new THREE.DirectionalLight(0xFFFFFF, 5);
 
 	// mobile touch actions
 	xDown = null;
@@ -90,11 +108,6 @@ class GameEngine {
 	}
 
 	handleTouchMove(evt) {
-		if (!this.gameLoaded) {
-			this.gameLoaded = true;
-			this.loadCharacter();
-			return
-		}
 		if (!this.xDown || !this.yDown) {
 			return;
 		}
@@ -104,6 +117,15 @@ class GameEngine {
 
 		var xDiff = this.xDown - xUp;
 		var yDiff = this.yDown - yUp;
+		if (!this.gameLoaded && this.triviaAnswered) {
+			if (yDiff < 0) {
+				this.gameLoaded = true;
+				this.loadCharacter();
+				return
+			} else {
+				return;
+			}
+		}
 
 		if (Math.abs(xDiff) > Math.abs(yDiff)) {/*most significant*/
 			if (xDiff > 0) {
@@ -124,8 +146,16 @@ class GameEngine {
 	}
 	// mobile touch actions end
 
+	canTurn() {
+		return !this.isJumping && !this.isSliding && this.triviaAnswered;
+	}
+
+	canResumeRunning() {
+		return !this.isJumping && !this.isSliding && this.action !== 'falling' && this.action !== 'bounce' && !this.levelCompleted && this.triviaAnswered;
+	}
+
 	jumpAction() {
-		if (!this.isJumping && !this.isSliding && this.action !== 'falling' && this.action !== 'stop') {
+		if (this.canResumeRunning()) {
 			this.jumpStart = Math.round(this.character.position.z * 10) / 10;
 			this.jumpEnd = Math.round((this.character.position.z + 16 * this.moveBy) * 10) / 10; // approx 16 translateZ movements within a slide
 			this.jump();
@@ -133,7 +163,7 @@ class GameEngine {
 	}
 
 	slideAction() {
-		if (!this.isJumping && !this.isSliding && this.action !== 'falling' && this.action !== 'stop') {
+		if (this.canResumeRunning()) {
 			this.diveStart = Math.round(this.character.position.z * 10) / 10;
 			this.diveEnd = Math.round((this.character.position.z + 16 * this.moveBy) * 10) / 10; // approx 16 translateZ movements within a slide
 			this.slide();
@@ -141,7 +171,7 @@ class GameEngine {
 	}
 
 	leftAction() {
-		if (this.character.position.x < 1) {
+		if (this.character.position.x < 1 && !this.levelCompleted && this.canTurn()) {
 			this.previousX = Math.round(this.character.position.x * 10) / 10;
 			this.currentX = this.previousX + 1;
 			this.character.translateX(1);
@@ -150,7 +180,7 @@ class GameEngine {
 	}
 
 	rightAction() {
-		if (this.character.position.x > -1) {
+		if (this.character.position.x > -1 && !this.levelCompleted && this.canTurn()) {
 			this.previousX = Math.round(this.character.position.x * 10) / 10;
 			this.currentX = this.previousX - 1;
 			this.character.translateX(-1);
@@ -159,10 +189,12 @@ class GameEngine {
 	}
 
 	keyDown(evt) {
-		if (!this.gameLoaded) {
-			this.gameLoaded = true;
-			this.loadCharacter();
-			return
+		if (!this.gameLoaded && this.triviaAnswered) {
+			if (evt.keyCode === 40) {
+				this.gameLoaded = true;
+				this.loadCharacter();
+				return
+			}
 		}
 		if (this.animIndex > 1 && !this.stopped) {
 			switch (evt.keyCode) {
@@ -182,122 +214,227 @@ class GameEngine {
 		}
 	}
 
-	// remove not visible elements from the map
-	removeOldPathTrackingEntries(increment) {
-		if (increment < 8) {
-			return;
-		}
-		for (let i = increment; i > 7; i--) {
-			let key = i.toString();
-			if (this.pathTrackingMap.has(key)) {
-				this.pathTrackingMap.delete(key);
-			} else {
-				return;
-			}
-		}
-	}
-
-	addPathCube(geometry, material, x, y, z) {
+	addPathCube(geometry, material, x, y, z, rotate) {
 		const cube = new THREE.Mesh(geometry, material);
 		cube.position.setX(x);
 		cube.position.setY(y);
 		cube.position.setZ(z);
-		cube.rotation.z = Math.PI - Math.PI / 2;
+		if (rotate) {
+			cube.rotation.z = Math.PI - Math.PI / 2;
+		}
 		cube.receiveShadow = true;
 		cube.castShadow = true;
 		this.scene.add(cube);
 		this.floorCubes.push(cube)
 	}
 
+	addCeiling() {
+		const ceilingTexture = new THREE.TextureLoader().load(`./img/crooked-grey-bricks.png`);
+		ceilingTexture.wrapS = ceilingTexture.wrapT = THREE.RepeatWrapping;
+		ceilingTexture.repeat.set(3, 3);
+		const material = new THREE.MeshBasicMaterial({ map: ceilingTexture, side: THREE.DoubleSide });
+		const geometry = new THREE.PlaneGeometry(9, 9, 1, 1);
+		const cube = new THREE.Mesh(geometry, material);
+		cube.receiveShadow = true;
+		cube.castShadow = true;
+		cube.rotation.x = Math.PI - Math.PI / 2;
+		for (let z = -9; z <= 414; z = z + 9) {
+			let c = cube.clone();
+			c.position.setX(0);
+			c.position.setY(2.2);
+			c.position.setZ(z);
+			this.scene.add(c);
+			this.ceilingCubes.push(c);
+		}
+	}
+
+	addHangingObstacle(x, z) {
+		const texture = new THREE.TextureLoader().load(`./img/mark.jpg`);
+		const wallMaterialNormal = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+		const wallGeometry = new THREE.PlaneGeometry(3, 2, 1, 1);
+		const hangingObstacle = new THREE.Mesh(wallGeometry, wallMaterialNormal);
+		hangingObstacle.position.set(0, 1, z);
+		this.wallSegments.push(hangingObstacle);
+		this.scene.add(hangingObstacle);
+		for (const xs of x) {
+			const geometry = new THREE.PlaneGeometry(1, 1);
+			const material = new THREE.MeshStandardMaterial({
+				color: 0x000000,
+				side: THREE.DoubleSide,
+				transparent: true,
+				opacity: 0.2,
+			});
+			const plane = new THREE.Mesh(geometry, material);
+			plane.position.set(xs, -0.99, z + 0.5);
+			plane.rotation.x = Math.PI / 2;
+			this.scene.add(plane);
+			this.wallSegments.push(plane);
+		}
+	}
+
+	addWalls() {
+		const normalTexture = new THREE.TextureLoader().load(`./img/thick-grey.png`);
+		const wallMaterialNormal = new THREE.MeshBasicMaterial({ map: normalTexture, side: THREE.DoubleSide });
+		const wallGeometry = new THREE.PlaneGeometry(8, 8, 1, 1);
+		for (let z = -8; z <= 408;) {
+			const wall = new THREE.Mesh(wallGeometry, wallMaterialNormal);
+			const wall2 = new THREE.Mesh(wallGeometry, wallMaterialNormal);
+			wall.rotation.y = Math.PI / 2;
+			wall.position.set(-1.5, -2, z);
+			wall2.position.set(1.5, -2, z);
+			wall2.rotation.y = Math.PI / 2;
+			this.scene.add(wall);
+			this.scene.add(wall2);
+			this.wallSegments.push(wall);
+			this.wallSegments.push(wall2);
+			z = z + 8;
+		}
+	}
+
+	getPreviousNarrowIndex(zIndex) {
+		const lastMapEntryKey = (zIndex - 1).toString();
+		if (this.pathTrackingMap.has(lastMapEntryKey) && this.pathTrackingMap.get(lastMapEntryKey)["narrow"] === true) {
+			if (this.pathTrackingMap.get(lastMapEntryKey)["1"] === true) {
+				return 1;
+			} else if (this.pathTrackingMap.get(lastMapEntryKey)["0"] === true) {
+				return 0;
+			} else {
+				return -1;
+			}
+		}
+		return -2;
+	}
+
+	getNarrowIndex(previousIndex) {
+		if (previousIndex === -2) {
+			return Math.floor(Math.random() * 3) - 1;
+		} else {
+			if (previousIndex === 1 || previousIndex === -1) {
+				return 0;
+			} else {
+				return Math.floor(Math.random() * 2) - 1;
+			}
+		}
+	}
+
 	addPath(increment, blocksForward) {
-		this.removeOldPathTrackingEntries(increment - 30);
-		// add cube
-		const dim = 1;
-		const geometry = new THREE.BoxGeometry(dim, dim, dim);
+		const floorTexture = new THREE.TextureLoader().load(`./img/grey-green-old.jpg`);
+		const floorMaterial = new THREE.MeshBasicMaterial({ map: floorTexture });
 
-		const loader = new THREE.TextureLoader();
-
-		const material = new THREE.MeshStandardMaterial({
-			map: loader.load(`${this.assetsPath}/tile.png`),
-		});
-		const transparentMaterial = new THREE.MeshStandardMaterial({
-			map: loader.load(`${this.assetsPath}/floor2.png`),
-			transparent: true,
-			opacity: 0.5,
-		});
-		// initial cubes
+		const dimension = 1;
+		const geometry = new THREE.BoxGeometry(dimension, dimension, dimension);
+		// initial floor
 		if (increment === 0) {
 			for (let i = -4; i < blocksForward + 1; i++) {
 				let zPosition = i;
 				for (let j = -1; j < 2; j++) {
-					this.addPathCube(geometry, material, j, -1.5, zPosition);
+					this.addPathCube(geometry, floorMaterial, j, -1.5, zPosition, true);
 				}
 			}
 		} else {
-			let obstacleIndicator = Math.floor(Math.random() * blocksForward) - 1; // -1,0,1,2,3,4,5,6
-			if (increment > 600) {
-				obstacleIndicator = Math.floor(Math.random() * (blocksForward - 2) - 1); // -1,0,1,2,3,4
+			const pathTypeIndicator = Math.floor(Math.random() * 3); // 0,1,2
+			const isNarrow = (this.level === 1 && pathTypeIndicator === 2) || (this.level > 1 && pathTypeIndicator > 0);
+			const ditchIndicator = Math.floor(Math.random() * 2); // 0,1
+			const isDitch = ditchIndicator > 0 && !(this.level === 1 && isNarrow);
+			const hangingObstacleIndicator = Math.floor(Math.random() * 2); // 0,1
+			const isHanging = hangingObstacleIndicator === 1 && !isDitch && ((this.level === 2 && !isNarrow) || this.level > 2);
+			const hangingZIndex = Math.floor(Math.random() * 3 + 3) + increment;
+			const ditchStartZIndex = 2 + increment;
+			const previousNarrowIndex = this.getPreviousNarrowIndex(increment);
+			const narrowIndex = this.getNarrowIndex(previousNarrowIndex);
+
+			let ditchLengthExtension = 0;
+			let addNarrowPathToPreviousBatchLength = 3;
+			const distance = increment + this.getDistance();
+			if (distance > 300 && distance <= 600) {
+				ditchLengthExtension = 1;
+			} else if (distance > 600 && distance <= 800) {
+				ditchLengthExtension = 2;
+			} else if (distance > 800 && distance <= 1000) {
+				ditchLengthExtension = 3;
+				addNarrowPathToPreviousBatchLength = 4;
+			} else if (distance > 1000) {
+				ditchLengthExtension = 4;
+				addNarrowPathToPreviousBatchLength = 5;
 			}
 
-			// -1 - add only left lane
-			// 0 - add only middle lane
-			// 1 - add only right lane
-			// 2 - add full width ditch
-			// 3 - add hanging obstacle
-			// 4 or more - add normal path
-
-			// initially only create full width ditches
-			if (increment < 100) {
-				if (obstacleIndicator === 2) {
-					this.addFullWidthDitch(increment, blocksForward, geometry, material);
-				} else {
-					this.addNormalPath(increment, blocksForward, geometry, material);
+			// add narrow path extension to previous batch to allow for moving left/right
+			if (isNarrow && previousNarrowIndex !== -2) {
+				for (let z = increment - 1; z >= increment - addNarrowPathToPreviousBatchLength; z--) {
+					const mapEntry = this.pathTrackingMap.get(z.toString());
+					this.pathTrackingMap.set(z.toString(), {
+						"ditch": mapEntry["ditch"],
+						"hanging": mapEntry["hanging"],
+						"narrow": mapEntry["narrow"],
+						"1": mapEntry["1"] === true || narrowIndex === 1,
+						"0": mapEntry["0"] === true || narrowIndex === 0,
+						"-1": mapEntry["-1"] === true || narrowIndex === -1
+					});
+					this.addPathCube(geometry, floorMaterial, narrowIndex, -1.5, z, true);
 				}
-			} else {
-				if (obstacleIndicator < 2) {
-					this.addNarrowPath(increment, obstacleIndicator, blocksForward, geometry, material);
-				} else if (obstacleIndicator === 2) {
-					this.addFullWidthDitch(increment, blocksForward, geometry, material);
-				} else if (obstacleIndicator === 3) {
-					this.addHangingObstacle(increment, blocksForward, geometry, transparentMaterial);
-					this.addNormalPath(increment, blocksForward, geometry, material);
-				} else {
-					this.addNormalPath(increment, blocksForward, geometry, material);
+			}
+			// initial path state for the next 10 moves forward
+			for (let z = increment; z < increment + blocksForward; z++) {
+				const isDitchIndex = isDitch && z >= ditchStartZIndex && z <= ditchStartZIndex + ditchLengthExtension;
+				const isHangingIndex = isHanging && hangingZIndex === z;
+				const fillOne = !isDitchIndex && (!isNarrow || (isNarrow && narrowIndex === 1));
+				const fillZero = !isDitchIndex && (!isNarrow || (isNarrow && narrowIndex === 0));
+				const fillMinusOne = !isDitchIndex && (!isNarrow || (isNarrow && narrowIndex === -1));
+				this.pathTrackingMap.set(z.toString(), { "ditch": isDitchIndex, "hanging": isHangingIndex, "narrow": isNarrow, "1": fillOne, "0": fillZero, "-1": fillMinusOne });
+				if (isHangingIndex) {
+					if (isNarrow) {
+						this.addHangingObstacle([narrowIndex], z);
+					} else {
+						this.addHangingObstacle([-1, 0, 1], z);
+					}
+				}
+				if (fillOne) {
+					this.addPathCube(geometry, floorMaterial, 1, -1.5, z, true);
+				}
+				if (fillZero) {
+					this.addPathCube(geometry, floorMaterial, 0, -1.5, z, true);
+				}
+				if (fillMinusOne) {
+					this.addPathCube(geometry, floorMaterial, -1, -1.5, z, true);
+				}
+				if (this.zNextPoints === z) {
+					this.addPoint(z, 0, narrowIndex);
+					if (this.pointsLeftInSequence === 0) {
+						this.pointsLeftInSequence = 12;
+						this.zNextPoints = this.zNextPoints + 40;
+					} else {
+						this.zNextPoints = this.zNextPoints + 2;
+					}
 				}
 			}
 		}
-		this.cleanupOldFloorCubes(increment);
-		// add cube end
+	}
+
+	getPointValue() {
+		return this.level;
 	}
 
 	addPoint(zIndex, yIndex, xIndex) {
+		const dim = 0.2;
 		this.pointsLeftInSequence--;
-		let pointImage = "cube1.png";
-		if (zIndex < 200) {
-			this.pointValue = 1;
-		} else if (zIndex < 400) {
-			pointImage = "cube2.png";
-			this.pointValue = 2;
-		} else {
-			pointImage = "cube3.png";
-			this.pointValue = 3;
-		}
-		const dim = 0.15;
+		let pointImage = `cube${this.level}.png`;
 		const geometry = new THREE.BoxGeometry(dim, dim, dim);
 
 		const loader = new THREE.TextureLoader();
 
 		const material = new THREE.MeshBasicMaterial({
-			map: loader.load(`${this.assetsPath}/${pointImage}`),
+			map: loader.load(`./img/${pointImage}`),
 		});
 
 		const cube = new THREE.Mesh(geometry, material);
 		cube.position.setX(xIndex);
 		cube.position.setY(yIndex);
 		cube.position.setZ(zIndex);
-		cube.rotateY(45);
-		cube.rotateX(45);
+		cube.rotateX(135)
+		cube.rotateY(135);
+		cube.rotateZ(180);
 		cube.castShadow = true;
+		cube.receiveShadow = true;
 		this.scene.add(cube);
 		this.points.push(cube);
 	}
@@ -306,168 +443,30 @@ class GameEngine {
 		if (this.points.length > 0 && this.points[0].position.z === z) {
 			if (hit) {
 				this.points[0].position.y = this.points[0].position.y + 0.5;
-				this.increaseScore(this.pointValue);
+				this.increaseScore(this.getPointValue());
 			}
 			this.scene.remove(this.points[0]);
 			this.points.splice(0, 1);
 		}
 	}
 
-	async addFullWidthDitch(increment, blocksForward, geometry, material) {
-		// random x position for point
-		let xPosition = Math.floor(Math.random() * 3) - 1; // (-1,0,1)
-		let lengthExtension = 0;
-		if (increment > 100 && increment <= 300) {
-			lengthExtension = 1;
-		} else if (increment > 300) {
-			lengthExtension = 2;
-		}
-		let ditchStart = Math.floor(Math.random() * blocksForward - 2); // 0..<blocksForward - 3>
-		for (let i = 0; i < blocksForward; i++) {
-			let zPosition = i + increment;
-			// add gap of 'lengthExtension + 1' cubes in forward facing direction and full width
-			if (i < ditchStart || i > ditchStart + lengthExtension) {
-				// add z position entry for tracking collisions
-				this.pathTrackingMap.set(zPosition.toString(), { "ditch": false, "hanging": false, "1": true, "0": true, "-1": true });
-				//
-				for (let j = -1; j < 2; j++) {
-					this.addPathCube(geometry, material, j, -1.5, zPosition);
-				}
-				// add point end
-				if (this.zNextPoints === zPosition) {
-					this.addPoint(zPosition, 0, xPosition);
-					if (this.pointsLeftInSequence === 0) {
-						this.pointsLeftInSequence = 12;
-						this.zNextPoints = this.zNextPoints + 40;
-					} else {
-						this.zNextPoints = this.zNextPoints + 2;
-					}
-				}
-				// add point end
-			} else {
-				// add z position entry for tracking collisions
-				if (!this.pathTrackingMap.has(zPosition.toString())) {
-					this.pathTrackingMap.set(zPosition.toString(), { "ditch": true, "hanging": false, "1": false, "0": false, "-1": false });
-				}
-				// end
-				// add point end
-				if (this.zNextPoints === zPosition) {
-					this.addPoint(zPosition, 0.25, xPosition);
-					if (this.pointsLeftInSequence === 0) {
-						this.pointsLeftInSequence = 12;
-						this.zNextPoints = this.zNextPoints + 40;
-					} else {
-						this.zNextPoints = this.zNextPoints + 2;
-					}
-				}
-				// add point end
-			}
-		}
-	}
-
-	async addNarrowPath(increment, laneToShow, blocksForward, geometry, material) {
-		for (let i = 0; i < blocksForward + 1; i++) {
-			let zPosition = i + increment;
-			for (let j = -1; j < 2; j++) {
-				if (laneToShow === j) {
-					this.addPathCube(geometry, material, j, -1.5, zPosition);
-				}
-			}
-			// -1 - add only left lane
-			// 0 - add only middle lane
-			// 1 - add only right lane
-			if (laneToShow == -1) {
-				// add z position entry for tracking collisions
-				this.pathTrackingMap.set(zPosition.toString(), { "ditch": false, "hanging": false, "1": false, "0": false, "-1": true });
-				//
-			} else if (laneToShow == 0) {
-				// add z position entry for tracking collisions
-				this.pathTrackingMap.set(zPosition.toString(), { "ditch": false, "hanging": false, "1": false, "0": true, "-1": false });
-				//
-			} else if (laneToShow == 1) {
-				// add z position entry for tracking collisions
-				this.pathTrackingMap.set(zPosition.toString(), { "ditch": false, "hanging": false, "1": true, "0": false, "-1": false });
-				//
-			}
-			// add point
-			if (this.zNextPoints === zPosition) {
-				this.addPoint(zPosition, 0.25, laneToShow);
-				if (this.pointsLeftInSequence === 0) {
-					this.pointsLeftInSequence = 12;
-					this.zNextPoints = this.zNextPoints + 40;
-				} else {
-					this.zNextPoints = this.zNextPoints + 2;
-				}
-			}
-			// add point end
-		}
-	}
-
-	async addHangingObstacle(increment, blocksForward, geometry, material) {
-		let zPos = Math.floor(Math.random() * (blocksForward / 2)) + 1;
-		for (let j = -1; j < 2; j++) {
-			this.addPathCube(geometry, material, j, 1, increment + zPos);
-		}
-		let t = new THREE.Object3D();
-		t.translateX(0);
-		t.translateY(-10);
-		t.translateZ(increment + zPos + 5);
-		this.dirLight.target = t;
-		this.dirLight.position.set(0, 30, increment + zPos + 5);
-		this.dirLight.target.updateMatrixWorld();
-		// add z position entry for tracking collisions
-		this.pathTrackingMap.set((increment + zPos).toString(), { "ditch": false, "hanging": true, "1": true, "0": true, "-1": true });
-		//
-	}
-
-	async addNormalPath(increment, blocksForward, geometry, material) {
-		// random x position for point
-		let xPosition = Math.floor(Math.random() * 3) - 1; // (-1,0,1)
-		let yPosition = 0.5;
-		for (let i = 0; i < blocksForward; i++) {
-			let zPosition = i + increment;
-			for (let j = -1; j < 2; j++) {
-				this.addPathCube(geometry, material, j, -1.5, zPosition);
-			}
-			// hanging obstacle could have been added already - don't add new map entry if that's the case
-			if (!this.pathTrackingMap.has(zPosition.toString())) {
-				// add z position entry for tracking collisions
-				this.pathTrackingMap.set(zPosition.toString(), { "ditch": false, "hanging": false, "1": true, "0": true, "-1": true });
-			}
-			if (this.pathTrackingMap.has(zPosition.toString())) {
-				// check if hanging obstacle is present
-				let pathMapEntry = this.pathTrackingMap.get(zPosition.toString());
-				if (pathMapEntry["hanging"] === true) {
-					yPosition = 1;
-				}
-				// add point
-				if (this.zNextPoints === zPosition) {
-					this.addPoint(zPosition, 0.25, xPosition);
-					if (this.pointsLeftInSequence === 0) {
-						this.pointsLeftInSequence = 12;
-						this.zNextPoints = this.zNextPoints + 40;
-					} else {
-						this.zNextPoints = this.zNextPoints + 2;
-					}
-				}
-				// add point end
-			}
-		}
+	getDistance() {
+		return (this.level - 1) * 400;
 	}
 
 	async sleep(milliseconds) {
 		return new Promise((resolve) => setTimeout(resolve, milliseconds));
 	}
 
-	cleanupOldFloorCubes(increment) {
-		let i = this.floorCubes.length;
+	cleanupCollection(collection, zIncrement) {
+		let i = collection.length;
 		while (i--) {
 
-			if (this.floorCubes[i].position.z < increment - 15) {
-				this.floorCubes[i].material.dispose();
-				this.floorCubes[i].geometry.dispose();
-				this.scene.remove(this.floorCubes[i]);
-				this.floorCubes.splice(i, 1);
+			if (collection[i].position.z < zIncrement - 15) {
+				collection[i].material.dispose();
+				collection[i].geometry.dispose();
+				this.scene.remove(collection[i]);
+				collection.splice(i, 1);
 			}
 		}
 	}
@@ -478,6 +477,11 @@ class GameEngine {
 		const elm = document.getElementById('score');
 
 		elm.innerHTML = this.pointsEarned;
+
+		elm.classList.add("scaleOut");
+		setTimeout(() => {
+			elm.classList.remove("scaleOut");
+		}, 100);
 	}
 
 	setDistance(distance) {
@@ -486,136 +490,161 @@ class GameEngine {
 		elm.innerHTML = distance;
 	}
 
+	animatePoints() {
+		let pointIndex = 0;
+		while (pointIndex < 12 && pointIndex < this.points.length) {
+			this.points[pointIndex].rotation.x += 0.2;
+			this.points[pointIndex].rotation.y += 0.2;
+			this.points[pointIndex].rotation.z += 0.2;
+			pointIndex++;
+		}
+	}
+
 	moveForward() {
-		if (this.character.position.z < 100) {
-			this.moveBy = 0.2;
-		} else if (this.character.position.z < 300) {
-			this.moveBy = 0.3;
-		} else if (this.character.position.z < 500) {
-			if (this.action !== 'sprint' && !this.isSliding && !this.isJumping && this.stumbleZ !== 0) {
-				this.runningAction = 'sprint';
-				this.action = this.runningAction;
+		this.animatePoints();
+		const distance = this.getDistance() + this.character.position.z;
+		if (!this.levelCompleted) {
+			if (distance < 200) {
+				this.moveBy = 0.3;
+			} else if (distance < 400) {
+				if (this.action !== 'sprint' && !this.isSliding && !this.isJumping && this.stumbleZ !== 0) {
+					this.runningAction = 'sprint';
+					this.action = this.runningAction;
+				}
+				this.moveBy = 0.4;
+			} else if (distance < 600) {
+				this.moveBy = 0.5;
+			} else if (distance < 1000) {
+				this.moveBy = 0.6;
+			} else {
+				this.moveBy = 0.8;
 			}
-			this.moveBy = 0.4;
-		} else if (this.character.position.z < 750) {
-			this.pathSegments = 12;
-			this.moveBy = 0.5;
-		} else if (this.character.position.z < 1000) {
-			this.moveBy = 0.6;
-		} else {
-			this.moveBy = 0.8;
-		}
-		this.previousZ = Math.round(this.character.position.z * 10) / 10;
+			this.previousZ = Math.round(this.character.position.z * 10) / 10;
 
-		this.currentZ = Math.round((this.character.position.z + this.moveBy) * 10 / 10);
-		if (this.character.position.z > this.previousZpath + 1) {
-			this.previousZpath = this.previousZpath + this.pathSegments;
-			this.addPath(this.previousZpath, this.pathSegments);
-		}
+			this.currentZ = Math.round((this.character.position.z + this.moveBy) * 10 / 10);
+			if (this.currentZ % 20 === 0) {
+				this.cleanupCollection(this.ceilingCubes, this.currentZ);
+				this.cleanupCollection(this.floorCubes, this.currentZ);
+				this.cleanupCollection(this.wallSegments, this.currentZ);
+			}
 
-		this.character.translateZ(this.moveBy);
-		this.updateCamera();
+			this.setDistance(Math.floor(distance));
+			
+			if (Math.floor(this.character.position.z) === this.levelStop - 1) {
+				this.action = 'idle';
+				this.levelCompleted = true;
+				this.answerTrivia();
+				return;
+			}
 
-		// detect collisions here
-		let zFloor = Math.floor(this.currentZ);
+			this.character.translateZ(this.moveBy);
+			this.updateCamera();
 
-		this.setDistance(zFloor);
+			// detect collisions here
+			let zFloor = Math.floor(this.currentZ);
 
-		// zPosition.toString(), {"ditch": <bool>, "hanging": <bool>, "1": <bool>, "0": <bool>, "-1": <bool>}
-		if (this.pathTrackingMap.has(zFloor.toString()) && !this.stopped) {
-			let pathMapEntry = this.pathTrackingMap.get(zFloor.toString());
+			// zPosition.toString(), {"ditch": <bool>, "hanging": <bool>, "narrow": <bool>, "1": <bool>, "0": <bool>, "-1": <bool>}
+			if (this.pathTrackingMap.has(zFloor.toString()) && !this.stopped) {
+				let pathMapEntry = this.pathTrackingMap.get(zFloor.toString());
 
-			// fall
-			if (pathMapEntry["ditch"] === true && !(this.jumpStart <= zFloor && this.jumpEnd >= zFloor + 1)) {
-				this.stopped = true;
-				setTimeout(this.fall.bind(this), 1);
-				// hit hanging obstacle
-			} else if (pathMapEntry["hanging"] === true && !(this.diveStart <= zFloor && this.diveEnd >= zFloor + 1)) {
-				this.stumbleZ = zFloor;
-				this.stopped = true;
-				setTimeout(this.stumble.bind(this), 1);
-				// if narrow path
-			} else if (!pathMapEntry["1"] || !pathMapEntry["0"] || !pathMapEntry["-1"]) {
-				if (!(this.jumpStart <= zFloor && this.jumpEnd >= zFloor + 1)) {
-					if (!pathMapEntry[this.currentX.toString()]) {
-						setTimeout(this.fall.bind(this), 50);
+				// fall
+				if (pathMapEntry["ditch"] === true && !(this.jumpStart <= zFloor && this.jumpEnd >= zFloor + 1)) {
+					this.stopped = true;
+					setTimeout(this.fall.bind(this), 1);
+					// hit hanging obstacle
+				} else if (pathMapEntry["hanging"] === true && !(this.diveStart <= zFloor && this.diveEnd >= zFloor + 1)) {
+					this.stumbleZ = zFloor;
+					this.stopped = true;
+					setTimeout(this.stumble.bind(this), 1);
+					// if narrow path
+				} else if (!pathMapEntry["1"] || !pathMapEntry["0"] || !pathMapEntry["-1"]) {
+					if (!(this.jumpStart <= zFloor && this.jumpEnd >= zFloor + 1)) {
+						if (!pathMapEntry[this.currentX.toString()]) {
+							setTimeout(this.fall.bind(this), 50);
+						} else {
+							if (this.points.length > 0 && this.points[0].position.z === zFloor) {
+								this.removeFirstPoint(zFloor, this.points[0].position.x === this.currentX);
+							}
+							setTimeout(this.moveForward.bind(this), 50);
+						}
+						// skip current z position check, if jump occurred before and will end after current z
 					} else {
 						if (this.points.length > 0 && this.points[0].position.z === zFloor) {
-							if (Math.floor(this.points[0].position.x) === this.currentX) {
-								this.removeFirstPoint(zFloor, true)
-							} else {
-								this.removeFirstPoint(zFloor, false)
-							}
+							this.removeFirstPoint(zFloor, this.points[0].position.x === this.currentX);
 						}
 						setTimeout(this.moveForward.bind(this), 50);
 					}
-					// skip current z position check, if jump occurred before and will end after current z
 				} else {
 					if (this.points.length > 0 && this.points[0].position.z === zFloor) {
-						if (Math.floor(this.points[0].position.x) === this.currentX) {
-							this.removeFirstPoint(zFloor, true)
-						} else {
-							this.removeFirstPoint(zFloor, false)
-						}
+						this.removeFirstPoint(zFloor, this.points[0].position.x === this.currentX);
 					}
 					setTimeout(this.moveForward.bind(this), 50);
 				}
 			} else {
-				if (this.points.length > 0 && this.points[0].position.z === zFloor) {
-					if (Math.floor(this.points[0].position.x) === this.currentX) {
-						this.removeFirstPoint(zFloor, true)
-					} else {
-						this.removeFirstPoint(zFloor, false)
-					}
-				}
 				setTimeout(this.moveForward.bind(this), 50);
 			}
-		} else {
-			setTimeout(this.moveForward.bind(this), 50);
 		}
+	}
+
+	answerTrivia() {
+		this.triviaAnswered = false;
+		this.question = getRandomQuestion();
+		const triviaPanel = document.getElementById('trivia-panel');
+		triviaPanel.style.display = 'block';
+		const questionBlock = document.getElementById('question');
+		const answer1Block = document.getElementById('answer-0-text');
+		const answer2Block = document.getElementById('answer-1-text');
+		const answer3Block = document.getElementById('answer-2-text');
+
+		questionBlock.innerHTML = this.question.question;
+		answer1Block.innerHTML = `a. ${this.question.answers[0].answer}`;
+		answer2Block.innerHTML = `b. ${this.question.answers[1].answer}`;
+		answer3Block.innerHTML = `c. ${this.question.answers[2].answer}`;
+	}
+
+	question = {};
+
+	handleAnswer(answerIndex) {
+		const triviaPanel = document.getElementById('trivia-panel');
+		const wrongAnswer = this.question.correctAnswerIndex !== answerIndex;
+		this.triviaAnswered = true;
+		triviaPanel.style.display = 'none';
+		this.endGame(false, wrongAnswer, this.question);
 	}
 
 	async stumble() {
-		this.action = 'stop';
-		let indices = [];
-		for (let index = 0; index < this.floorCubes.length; index++) {
-			if (this.floorCubes[index].position.z === this.stumbleZ && this.floorCubes[index].position.y === 1) {
-				indices.push(index);
-			}
-		}
-		let i = this.floorCubes.length;
-		while (i--) {
-			if (indices.includes(i)) {
-				this.scene.remove(this.floorCubes[i]);
-				this.floorCubes.splice(i, 1);
-			}
-		}
+		this.action = 'bounce';
 		await this.sleep(3000);
-		this.endGame();
+		this.endGame(true, false, {});
 	}
 
 	async fall() {
+		this.stopped = true;
 		this.action = 'falling'; // TODO constant
 		if (this.fallingIndex >= 0) {
 			this.fallingIndex--;
-			this.character.translateY(-1);
+			this.character.translateY(-2);
 			this.updateCamera();
 			setTimeout(this.fall.bind(this), 50);
 		} else {
 			await this.sleep(3000);
-			this.endGame();
+			this.endGame(true, false, {});
 		}
 	}
 
+	level = 1;
+
 	stumbleZ = 0;
 
-	fallingIndex = 10;
+	fallingIndex = 20;
 
 	// position of next points objects sequence start
 	zNextPoints = 40;
 
 	// add 12 points in one sequence
 	pointsLeftInSequence = 12;
+
+	question = {};
 
 	// pathTrackingMap - used to calculate potential collisions
 	pathTrackingMap = new Map();
@@ -627,6 +656,7 @@ class GameEngine {
 	jumpingIndex = 0;
 
 	slidingIndex = 0;
+	levelStop = 400;
 
 	runningAction = "running";
 
@@ -638,10 +668,6 @@ class GameEngine {
 
 	// points
 	points = [];
-
-	pointValue = 1;
-
-	previousZpath = 0;
 
 	moveBy = 0;
 
@@ -662,44 +688,82 @@ class GameEngine {
 
 	floorCubes = [];
 
-	endGame() {
-		const instructions = document.getElementById('instructions');
-		instructions.style.display = 'block';
-		instructions.innerHTML = `Game over!<br>Distance: ${this.currentZ}<br>Points: ${this.pointsEarned}<br>Swipe or press any key to continue`;
-		this.cleanupOldFloorCubes(this.currentZ + 30); // cleanup all floor cubes
-		this.pathTrackingMap.clear();
-		this.cleanupAllPointCubes();
-		this.scene.remove(this.character);
-		this.gameLoaded = false;
-		this.animIndex = 0;
-		this.stumbleZ = 0;
-		this.zNextPoints = 40;
-		this.pointsLeftInSequence = 12;
-		this.pathTrackingMap = new Map();
-		this.isJumping = false;
-		this.isSliding = false;
-		this.jumpingIndex = 0;
-		this.slidingIndex = 0;
-		this.startCount = 4;
-		this.stopped = false;
-		this.points = [];
-		this.pointValue = 1;
-		this.previousZpath = 0;
-		this.moveBy = 0;
-		this.pathSegments = 8;
+	ceilingCubes = [];
+
+	wallSegments = [];
+
+	levelCompleted = false;
+	maxLevels = 5;
+
+	triviaAnswered = true;
+
+	resetGameFinishValues() {
+		this.pointsEarned = 0;
+		this.increaseScore(0);
+		this.setDistance(0);
 		this.previousZ = 0;
 		this.previousX = 0;
 		this.currentZ = 0;
 		this.currentX = 0;
-		this.jumpStart = 0;
-		this.jumpEnd = 0;
-		this.diveStart = 0;
-		this.diveEnd = 0;
-		this.hitHangingObstacle = false;
-		this.pointsEarned = 0;
-		this.floorCubes = [];
-		this.increaseScore(0);
-		this.setDistance(0);
+		this.moveBy = 0;
+		this.level = 1;
+		this.levelCompleted = false;
+	}
+
+	endGame(playerFailed, wrongAnswer, question) {
+		const distance = this.currentZ + this.getDistance();
+		if (this.triviaAnswered && distance > 0) {
+			document.body.style.backgroundImage = "url('./img/background.jpg')";
+			const instructions = document.getElementById('instructions');
+			instructions.style.display = 'block';
+			this.setDistance(distance);
+			let message = `Level ${this.level} completed!<br>Distance: ${distance}<br>Points: ${this.pointsEarned}<br>Swipe down or press down arrow to continue`;
+			const gameOver = wrongAnswer || playerFailed || this.level === this.maxLevels;
+			if (wrongAnswer) {
+				instructions.style.fontSize = "20px";
+				message = `Wrong answer! <br> Correct answer for question <br>${question.question} <br>is: <br>${question.answers[question.correctAnswerIndex].answer} <br>Game over!<br>Distance: ${distance}<br>Points: ${this.pointsEarned}<br>Swipe down or press down arrow to restart`;
+			} else if (playerFailed) {
+				message = `Game over!<br>Distance: ${distance}<br>Points: ${this.pointsEarned}<br>Swipe down or press down arrow to restart`;;
+			} else {
+				if (this.level === this.maxLevels) {
+					message = `Level ${this.level} completed!<br>Distance: ${distance}<br>Points: ${this.pointsEarned}<br>More levels coming soon! Swipe down or press down arrow to restart`;
+				}
+				this.level++;
+			}
+			if (gameOver) {
+				this.pointsEarned = 0;
+				this.resetGameFinishValues();
+			}
+			this.levelCompleted = false;
+			instructions.innerHTML = message;
+
+			this.cleanupCollection(this.floorCubes, this.currentZ + 3000);
+			this.cleanupCollection(this.ceilingCubes, this.currentZ + 3000);
+			this.cleanupCollection(this.wallSegments, this.currentZ + 3000);
+			this.pathTrackingMap.clear();
+			this.cleanupAllPointCubes();
+			this.scene.remove(this.character);
+			this.gameLoaded = false;
+			this.animIndex = 0;
+			this.stumbleZ = 0;
+			this.pointsLeftInSequence = 12;
+			this.pathTrackingMap = new Map();
+			this.isJumping = false;
+			this.isSliding = false;
+			this.jumpingIndex = 0;
+			this.slidingIndex = 0;
+			this.startCount = 4;
+			this.stopped = false;
+			this.points = [];
+			this.pathSegments = 100;
+			this.jumpStart = 0;
+			this.jumpEnd = 0;
+			this.diveStart = 0;
+			this.diveEnd = 0;
+			this.hitHangingObstacle = false;
+			this.floorCubes = [];
+			this.zNextPoints = 40;
+		}
 	}
 
 	cleanupAllPointCubes() {
@@ -716,7 +780,7 @@ class GameEngine {
 		let timeout = 800;
 		if (this.slidingIndex < 2 && !this.stopped) {
 			if (!this.isSliding) {
-				let action = 'dive';
+				let action = 'rolling';
 				this.action = action;
 				this.isSliding = true;
 			} else {
@@ -736,7 +800,7 @@ class GameEngine {
 		let timeout = 800;
 		if (this.jumpingIndex < 2 && !this.stopped) {
 			if (!this.isJumping) {
-				let action = 'ljump';
+				let action = 'jump';
 				this.action = action;
 				this.isJumping = true;
 			} else {
@@ -759,13 +823,13 @@ class GameEngine {
 	}
 
 	setEnvironment() {
-		const loader = new RGBELoader().setPath(this.assetsPath);
+		const loader = new RGBELoader().setPath("");
 		const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
 		pmremGenerator.compileEquirectangularShader();
 
 		const self = this;
 
-		loader.load('./hdr/factory.hdr', (texture) => {
+		loader.load('./img/hdr/factory.hdr', (texture) => {
 			const envMap = pmremGenerator.fromEquirectangular(texture).texture;
 			pmremGenerator.dispose();
 
@@ -777,7 +841,7 @@ class GameEngine {
 	}
 
 	loadCharacter() {
-		const loader = new GLTFLoader().setPath(`${this.assetsPath}/`);
+		const loader = new GLTFLoader().setPath(`./img/`);
 		const dracoLoader = new DRACOLoader();
 		dracoLoader.setDecoderConfig({ type: 'js' });
 		dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
@@ -786,7 +850,7 @@ class GameEngine {
 
 		// Load animated character
 		loader.load(
-			'character.glb',
+			'runner.glb',
 			// called when the resource is loaded
 			gltf => {
 
@@ -802,13 +866,11 @@ class GameEngine {
 				this.character.castShadow = true;
 				this.character.receiveShadow = true;
 
-				this.character.scale.y = 0.75;
-				this.character.scale.x = 0.75;
-				this.character.scale.z = 0.75;
+				this.character.scale.y = 0.8;
+				this.character.scale.x = 0.8;
+				this.character.scale.z = 0.8;
 
-				this.velocity = new Vector3(1, 1, 1);
-
-				this.fallingIndex = 10;
+				this.fallingIndex = 20;
 
 				this.animations = {};
 
@@ -820,9 +882,13 @@ class GameEngine {
 
 				this.newAnim();
 
-				this.addPath(0, 8);
-
+				for (let i = 0; i < 410; i = i + 10) {
+					this.addPath(i, 10);
+				}
+				this.addWalls();
+				this.addCeiling();
 				this.loadingBar.visible = false;
+				this.updateCamera();
 
 				this.renderer.setAnimationLoop(this.render.bind(this));
 			},
@@ -867,6 +933,7 @@ class GameEngine {
 			setTimeout(this.newAnim.bind(this), timeout);
 			this.updateCamera();
 			if (this.animIndex === 1) {
+				document.body.style.backgroundImage = "url('./img/sky.jpg')";
 				this.triggerCountDown();
 			}
 			if (this.animIndex === 2) {
@@ -877,7 +944,6 @@ class GameEngine {
 
 	set action(name) {
 		if (this.actionName == name.toLowerCase()) return;
-
 		const clip = this.animations[name.toLowerCase()];
 
 		if (clip !== undefined) {
@@ -887,7 +953,7 @@ class GameEngine {
 				action.setLoop(THREE.LoopOnce);
 			}
 			action.reset();
-			const nofade = this.actionName == 'stop';
+			const nofade = this.actionName == 'bounce';
 			this.actionName = name.toLowerCase();
 			action.play();
 			if (this.curAction) {
@@ -908,6 +974,8 @@ class GameEngine {
 
 		this.renderer.render(this.scene, this.camera);
 
+		this.velocity = new Vector3(1, 1, 1);
+
 		this.velocity.set(0, 0, 0.1);
 
 	}
@@ -922,6 +990,13 @@ class GameEngine {
 		this.cameraTarget.y = this.character.position.y + 1;
 		this.cameraTarget.x = 0;
 		this.camera.lookAt(this.cameraTarget);
+		let t = new THREE.Object3D();
+		t.translateX(0);
+		t.translateY(-1);
+		t.translateZ(this.character.position.z);
+		this.dirLight.target = t;
+		this.dirLight.position.set(0, 2.5, this.character.position.z);
+		this.dirLight.target.updateMatrixWorld();
 	}
 }
 
