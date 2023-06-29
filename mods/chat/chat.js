@@ -502,7 +502,7 @@ class Chat extends ModTemplate {
         }
       }
 
-      // app.network.propagateTransaction(tx);
+      app.network.propagateTransaction(tx);
       app.connection.emit("relay-send-message", {
         recipient,
         request: "chat message broadcast",
