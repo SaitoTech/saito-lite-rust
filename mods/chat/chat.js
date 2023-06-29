@@ -673,7 +673,6 @@ class Chat extends ModTemplate {
         return;
       }
     }
-    console.log("group to add to tx", group);
     this.addTransactionToGroup(group, tx, txmsg);
     app.connection.emit("chat-popup-render-request", group);
   }
