@@ -502,7 +502,7 @@ class Chat extends ModTemplate {
         }
       }
 
-      app.network.propagateTransaction(tx);
+      // app.network.propagateTransaction(tx);
       app.connection.emit("relay-send-message", {
         recipient,
         request: "chat message broadcast",
@@ -585,6 +585,8 @@ class Chat extends ModTemplate {
 
     let txmsg = "";
 
+    console.log(tx, txmsg, "received chat transaction");
+
     try {
       tx.decryptMessage(app);
       txmsg = await tx.returnMessage();
@@ -629,7 +631,9 @@ class Chat extends ModTemplate {
 
     let group = this.returnGroup(txmsg.group_id);
 
-    console.log("group ", group);
+    if (!Array.isArray(group.txs)) {
+      group.txs = group.txs.msg;
+    }
 
     if (!group) {
       if (!tx.isTo(this.publicKey)) {
@@ -669,7 +673,7 @@ class Chat extends ModTemplate {
         return;
       }
     }
-
+    console.log("group to add to tx", group);
     this.addTransactionToGroup(group, tx, txmsg);
     app.connection.emit("chat-popup-render-request", group);
   }

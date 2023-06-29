@@ -62,6 +62,9 @@ class ChatManager {
       if (group == null) {
         let group = this.mod.returnCommunityChat();
         if (group != null) {
+          if (!Array.isArray(group.txs)) {
+            group.txs = group.txs.msg;
+          }
           this.app.connection.emit("chat-popup-render-request", group);
         }
       } else {

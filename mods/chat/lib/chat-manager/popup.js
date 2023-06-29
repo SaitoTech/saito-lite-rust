@@ -266,14 +266,14 @@ class ChatPopup {
       //
       // submit (button)
       //
-      document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
+      document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = async (e) => {
         e.preventDefault();
         if (msg_input.innerHTML == "") {
           return;
         }
-        let [newtx, data] = mod.createChatTransaction(group_id, msg_input.innerHTML);
-        mod.sendChatTransaction(app, newtx, data);
-        mod.receiveChatTransaction(app, newtx);
+        let [newtx, data] = await mod.createChatTransaction(group_id, msg_input.innerHTML);
+        await mod.sendChatTransaction(app, newtx, data);
+        await mod.receiveChatTransaction(app, newtx);
         msg_input.textContent = "";
         msg_input.innerHTML = "";
         if (document.getElementById(input_id)) {
