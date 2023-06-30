@@ -1,5 +1,6 @@
 const videoBoxTemplate = require("./video-box.template");
 const { setTextRange } = require("typescript");
+
 // import {applyVideoBackground } from 'virtual-bg';
 
 class VideoBox {
@@ -53,7 +54,7 @@ class VideoBox {
 
   attachEvents() {}
 
-  render(stream = null, placeholder_info = null) {
+  async render(stream = null, placeholder_info = null) {
     if (stream) {
       this.stream = stream;
     }
@@ -70,9 +71,7 @@ class VideoBox {
 
       let key;
       if (this.stream_id === "local") {
-
-        key = this.app.wallet.getPublicKey();
-
+        key = await this.app.wallet.getPublicKey();
       } else {
         key = this.stream_id;
       }
@@ -96,9 +95,9 @@ class VideoBox {
     this.attachEvents();
   }
 
-  rerender() {
-    this.remove();
-    this.render(this.stream);
+  async rerender() {
+    await this.remove();
+    await this.render(this.stream);
   }
 
   renderStream({ muted }) {
@@ -166,7 +165,7 @@ class VideoBox {
     }
   }
 
-  remove(is_disconnection = false) {
+  async remove(is_disconnection = false) {
     let videoBox = document.querySelector(`#stream${this.stream_id}`);
     if (videoBox) {
       if (is_disconnection) {
@@ -174,7 +173,7 @@ class VideoBox {
           videoBox.remove();
           try {
             this.mod.CallInterface.video_boxes["local"].video_box.containerClass = "expanded-video";
-            this.mod.CallInterface.video_boxes["local"].video_box.rerender();
+            await this.mod.CallInterface.video_boxes["local"].video_box.rerender();
           } catch (err) {}
           return;
         }

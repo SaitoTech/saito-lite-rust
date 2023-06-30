@@ -95,7 +95,7 @@ class ChatManager {
       }
     });
 
-    app.connection.on("open-chat-with", (data = null) => {
+    app.connection.on("open-chat-with", async (data = null) => {
       this.render_popups_to_screen = 1;
 
       //
@@ -120,7 +120,7 @@ class ChatManager {
         group = this.mod.createChatGroup(data.key, data.name);
       } else {
         let name = data.name || app.keychain.returnUsername(data.key);
-        group = this.mod.createChatGroup([app.wallet.getPublicKey(), data.key], name);
+        group = this.mod.createChatGroup([await app.wallet.getPublicKey(), data.key], name);
       }
 
       //

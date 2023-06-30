@@ -10,10 +10,9 @@ const linkifyHtml = require("markdown-linkify");
 const emoji = require("node-emoji");
 const UserMenu = require("./ui/modals/user-menu/user-menu");
 const MyUserMenu = require("./ui/modals/my-user-menu/my-user-menu");
-const Deposit = require('./ui/saito-crypto/overlays/deposit');
-const Withdraw = require('./ui/saito-crypto/overlays/withdraw');
-const History = require('./ui/saito-crypto/overlays/history');
-
+const Deposit = require("./ui/saito-crypto/overlays/deposit");
+const Withdraw = require("./ui/saito-crypto/overlays/withdraw");
+const History = require("./ui/saito-crypto/overlays/history");
 
 class Browser {
   public app: any;
@@ -42,7 +41,6 @@ class Browser {
 
     this.identifiers_added_to_dom = false;
 
-
     //
     // tells us the browser window is visible, as opposed to
     // browser_active which is used to figure out which applications
@@ -69,7 +67,6 @@ class Browser {
       // up instead and showed it to them and they understood.
       //
       try {
-
         this.attachWindowFunctions();
 
         const channel = new BroadcastChannel("saito");
@@ -80,9 +77,8 @@ class Browser {
           });
         }
 
-
         /******
-                channel.onmessage = (e) => {
+         channel.onmessage = (e) => {
                   console.log("document onmessage change");
                   if (!document.hidden) {
                     channel.postMessage({
@@ -103,7 +99,7 @@ class Browser {
                     }
                   }
                 };
-        *****/
+         *****/
 
         document.addEventListener(
           "visibilitychange",
@@ -199,11 +195,9 @@ class Browser {
           //
           const urlParams = new URLSearchParams(location.search);
 
-
           this.app.modules.mods[i].handleUrlParams(urlParams);
         }
       }
-
 
       //
       // crypto overlays, add so events will listen. this assumes
@@ -212,8 +206,6 @@ class Browser {
       this.deposit_overlay = new Deposit(this.app, this.app.modules.returnActiveModule());
       this.withdrawal_overlay = new Withdraw(this.app, this.app.modules.returnActiveModule());
       this.history_overlay = new History(this.app, this.app.modules.returnActiveModule());
-
-
 
       //
       // check if we are already open in another tab -
@@ -262,23 +254,28 @@ class Browser {
         ) {
           let disable_click = e.target.getAttribute("data-disable");
           let publickey = e.target.getAttribute("data-id");
-          if (!publickey || !app.crypto.isPublicKey(publickey) || disable_click === "true" || disable_click == true) {
+          if (
+            !publickey ||
+            !app.crypto.isPublicKey(publickey) ||
+            disable_click === "true" ||
+            disable_click == true
+          ) {
             return;
           }
 
           e.preventDefault();
           e.stopImmediatePropagation();
 
-//          if (publickey !== publickey) {
+          //          if (publickey !== publickey) {
 
-            let userMenu = new UserMenu(app, publickey);
-            userMenu.render(app);
+          let userMenu = new UserMenu(app, publickey);
+          userMenu.render(app);
 
-//          } else {
-//
-//            let myUserMenu = new MyUserMenu(app, publickey);
-//            myUserMenu.render(app);
-//          }
+          //          } else {
+          //
+          //            let myUserMenu = new MyUserMenu(app, publickey);
+          //            myUserMenu.render(app);
+          //          }
         }
       },
       {
@@ -288,9 +285,8 @@ class Browser {
 
     window.setHash = function (hash) {
       window.history.pushState("", "", `/redsquare/#${hash}`);
-    }
+    };
   }
-
 
   extractIdentifiers(text = "") {
     let identifiers = [];
@@ -309,9 +305,7 @@ class Browser {
     }
 
     return identifiers;
-
   }
-
 
   extractKeys(text = "") {
     let keys = [];
@@ -349,7 +343,7 @@ class Browser {
       });
     }
     if (identifiers) {
-      identifiers.forEach(id => {
+      identifiers.forEach((id) => {
         let key = this.app.keychain.returnKey({ identifier: id });
         if (key.publickey) {
           let add = key.publickey;
@@ -373,8 +367,7 @@ class Browser {
   }
 
   returnHashAndParameters() {
-
-    let hash = new URL(document.URL).hash.split('#')[1];
+    let hash = new URL(document.URL).hash.split("#")[1];
     let component = "";
     let params = "";
     if (hash) {
@@ -386,7 +379,6 @@ class Browser {
       }
     }
     return { hash: component, params: params };
-
   }
 
   returnURLParameter(name) {
@@ -398,7 +390,7 @@ class Browser {
           return pair[1];
         }
       }
-    } catch (err) { }
+    } catch (err) {}
     return "";
   }
 
@@ -409,10 +401,9 @@ class Browser {
         return x.substring(0, 2);
       }
       return x;
-    } catch (err) { }
+    } catch (err) {}
     return "en";
   }
-
 
   isMobileBrowser(user_agent = navigator.userAgent) {
     let check = false;
@@ -458,11 +449,11 @@ class Browser {
 
   async sendNotification(title, message, event) {
     /***
-        if (this.app.BROWSER == 0) {
+     if (this.app.BROWSER == 0) {
             return;
         }
 
-        if (!this.isMobileBrowser(navigator.userAgent)) {
+     if (!this.isMobileBrowser(navigator.userAgent)) {
             if (Notification.permission === 'default') {
                 Notification.requestPermission();
             }
@@ -488,7 +479,7 @@ class Browser {
                     }
                 });
         }
-***/
+     ***/
   }
 
   checkForMultipleWindows() {
@@ -543,12 +534,11 @@ class Browser {
   //////////////////////////////////
   // Browser and Helper Functions //
   //////////////////////////////////
-  generateQRCode(data, qrid="qrcode") {
+  generateQRCode(data, qrid = "qrcode") {
     const QRCode = require("./../helpers/qrcode");
     let obj = document.getElementById(qrid);
     return new QRCode(obj, data);
   }
-
 
   // https://github.com/sindresorhus/screenfull.js
   async requestFullscreen() {
@@ -645,7 +635,7 @@ class Browser {
     }
   }
 
-  replaceElementContentBySelector(html, selector="") {
+  replaceElementContentBySelector(html, selector = "") {
     if (selector === "") {
       console.warn("no selector provided to replace, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
@@ -665,7 +655,7 @@ class Browser {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.addElementToElement(html, container);
-      }else{
+      } else {
         console.info(`${selector} not found, adding direct to DOM`);
         this.app.browser.addElementToDom(html);
       }
@@ -773,7 +763,6 @@ class Browser {
     }
   }
 
-
   makeElement(elemType, elemId, elemClass) {
     const headerDiv = document.createElement(elemType);
     headerDiv.id = elemId;
@@ -798,7 +787,6 @@ class Browser {
   }
 
   formatTime(milliseconds = 0) {
-
     let hours = parseInt(milliseconds / 3600000);
     milliseconds = milliseconds % 3600000;
 
@@ -808,7 +796,6 @@ class Browser {
     let seconds = parseInt(milliseconds / 1000);
 
     return { hours: hours, minutes: minutes, seconds: seconds };
-
   }
 
   returnTime(timestamp) {
@@ -828,6 +815,7 @@ class Browser {
     }
     return x;
   }
+
   formatDate(timestamp) {
     const datetime = new Date(timestamp);
 
@@ -856,8 +844,12 @@ class Browser {
     return { year, month, day, hours, minutes };
   }
 
-  addDragAndDropFileUploadToElement(id, handleFileDrop = null, click_to_upload = true, read_as_array_buffer = false) {
-
+  addDragAndDropFileUploadToElement(
+    id,
+    handleFileDrop = null,
+    click_to_upload = true,
+    read_as_array_buffer = false
+  ) {
     const hidden_upload_form = `
       <form class="my-form" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
@@ -905,7 +897,7 @@ class Browser {
         dropArea.addEventListener(
           "paste",
           function (e) {
-            console.info('Paste Event');
+            console.info("Paste Event");
             console.info(e);
 
             const files = e.clipboardData.files;
@@ -921,7 +913,7 @@ class Browser {
               }
             });
             console.info(dropArea.innerHTML);
-            console.info(dropArea.innerText);    
+            console.info(dropArea.innerText);
           },
           false
         );
@@ -1035,7 +1027,7 @@ class Browser {
 
         element_moved = false;
 
-        document.onmouseup = function (e) {
+        document.onmouseup = async function (e) {
           if (dockable) {
             if (element_to_move.classList.contains("dockedLeft")) {
               element_to_move.style.left = 0;
@@ -1068,7 +1060,7 @@ class Browser {
 
           element_to_move.style.transition = "";
           if (mycallback && element_moved) {
-            mycallback();
+            await mycallback();
           }
         };
 
@@ -1104,9 +1096,11 @@ class Browser {
             }
 
             if (
-              Math.abs(element_to_move.getBoundingClientRect().x +
-                element_to_move.getBoundingClientRect().width -
-                window.innerWidth) < threshold
+              Math.abs(
+                element_to_move.getBoundingClientRect().x +
+                  element_to_move.getBoundingClientRect().width -
+                  window.innerWidth
+              ) < threshold
             ) {
               element_to_move.classList.add("dockedRight");
             } else {
@@ -1114,9 +1108,11 @@ class Browser {
             }
 
             if (
-              Math.abs(element_to_move.getBoundingClientRect().y +
-                element_to_move.getBoundingClientRect().height -
-                window.innerHeight) < threshold
+              Math.abs(
+                element_to_move.getBoundingClientRect().y +
+                  element_to_move.getBoundingClientRect().height -
+                  window.innerHeight
+              ) < threshold
             ) {
               element_to_move.classList.add("dockedBottom");
             } else {
@@ -1128,17 +1124,24 @@ class Browser {
             if (Math.abs(newPosX) < threshold) {
               newPosX = 0;
             }
-            if (Math.abs(newPosX + element_to_move.getBoundingClientRect().width - window.innerWidth) < threshold) {
+            if (
+              Math.abs(
+                newPosX + element_to_move.getBoundingClientRect().width - window.innerWidth
+              ) < threshold
+            ) {
               newPosX = window.innerWidth - element_to_move.getBoundingClientRect().width;
             }
 
             if (Math.abs(newPosY) < threshold) {
               newPosY = 0;
             }
-            if (Math.abs(newPosY + element_to_move.getBoundingClientRect().height - window.innerHeight) < threshold) {
+            if (
+              Math.abs(
+                newPosY + element_to_move.getBoundingClientRect().height - window.innerHeight
+              ) < threshold
+            ) {
               newPosY = window.innerHeight - element_to_move.getBoundingClientRect().height;
             }
-
           }
 
           element_to_move.style.left = newPosX + "px";
@@ -1188,11 +1191,11 @@ class Browser {
         mouse_current_left = mouse_down_left;
         mouse_current_top = mouse_down_top;
 
-        document.ontouchend = function (e) {
+        document.ontouchend = async function (e) {
           document.ontouchend = null;
           document.ontouchmove = null;
           if (mycallback && element_moved) {
-            mycallback();
+            await mycallback();
           }
         };
 
@@ -1228,19 +1231,21 @@ class Browser {
     }
   }
 
-  cancelDraggable(id_to_drag){
+  cancelDraggable(id_to_drag) {
     try {
       let element_to_drag = document.getElementById(id_to_drag);
       element_to_drag.onmousedown = null;
       element_to_drag.ontouchstart = null;
-    }catch(err){
+    } catch (err) {
       console.error(err);
     }
-
   }
 
   returnAddressHTML(key) {
-    return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(key, true)}</div>`;
+    return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(
+      key,
+      true
+    )}</div>`;
   }
 
   updateAddressHTML(key, id) {
@@ -1254,23 +1259,25 @@ class Browser {
       Array.from(document.querySelectorAll(`.saito-address[data-id='${key}']`)).forEach(
         (add) => (add.innerHTML = id)
       );
-    } catch (err) { 
+    } catch (err) {
       console.error(err);
     }
 
     this.app.connection.emit("update-username-in-game");
-  
   }
 
   async logMatomoEvent(category, action, name, value) {
     try {
-      this.app.modules
-        .returnFirstRespondTo("matomo_event_push")
-        .push(category, action, name, value);
+      (await this.app.modules.returnFirstRespondTo("matomo_event_push")).push(
+        category,
+        action,
+        name,
+        value
+      );
     } catch (err) {
       //if (err.startsWith("Module responding to")) {
       //} else {
-        console.log(err);
+      console.error(err);
       //}
     }
   }
@@ -1342,7 +1349,6 @@ class Browser {
     return this.modifyHash(this.defaultHashTo(defaultHash, deepLinkHash), forcedHashValues);
   }
 
-
   //////////////////////////////////////////////////////////////////////////////
   /////////////////////// end url-hash helper functions ////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -1389,10 +1395,10 @@ class Browser {
     try {
       if (text !== "") {
         text = marked.parseInline(text);
-        //trim trailing line breaks - 
+        //trim trailing line breaks -
         // commenting it out because no need for this now
         // because of above marked parsing
-        //text = text.replace(/[\r<br>]+$/, ""); 
+        //text = text.replace(/[\r<br>]+$/, "");
       }
 
       text = sanitizeHtml(text, {
@@ -1461,8 +1467,6 @@ class Browser {
     }
   }
 
-
-
   async resizeImg(img, targetSize = 512, maxDimensions = { w: 1920, h: 1024 }) {
     let self = this;
     let dimensions = await this.getImageDimensions(img);
@@ -1489,7 +1493,6 @@ class Browser {
     let last_img_size = 1000000000000;
 
     function resizeLoop(img, quality = 1) {
-      
       oImg.setAttribute("src", img);
       canvas.getContext("2d").drawImage(oImg, 0, 0, w, h);
       new_img = canvas.toDataURL("image/jpeg", quality);
@@ -1515,7 +1518,6 @@ class Browser {
     return new_img;
   }
 
-
   getImageDimensions(file) {
     return new Promise(function (resolved, rejected) {
       let i = new Image();
@@ -1533,9 +1535,7 @@ class Browser {
   }
 
   attachWindowFunctions() {
-
     if (typeof window !== "undefined") {
-
       let browser_self = this;
 
       let mutationObserver = new MutationObserver(function (mutations) {
@@ -1712,14 +1712,9 @@ class Browser {
 
       window.setHash = function (hash) {
         window.history.pushState("", "", `/redsquare/#${hash}`);
-      }
-
-
+      };
     }
-
-
   }
-
 
   treatElements(nodeList) {
     for (let i = 0; i < nodeList.length; i++) {
@@ -1732,13 +1727,14 @@ class Browser {
   treatIdentifiers(nodeList) {
     let unknown_keys = [];
     let saito_app = this.app;
+
     function treat(nodes) {
       nodes.forEach((el) => {
         if (el.classList) {
-          if (el.classList.contains('saito-address') && !el.classList.contains('treated')) {
-            el.classList.add('treated');
+          if (el.classList.contains("saito-address") && !el.classList.contains("treated")) {
+            el.classList.add("treated");
             let key = el.dataset?.id;
-            if (key && saito_app.crypto.isPublicKey(key)){
+            if (key && saito_app.crypto.isPublicKey(key)) {
               let identifier = saito_app.keychain.returnIdentifierByPublicKey(key, true);
               if (identifier !== key) {
                 el.innerText = identifier;
@@ -1755,6 +1751,7 @@ class Browser {
         }
       });
     }
+
     treat(nodeList);
     if (unknown_keys.length > 0) {
       this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unknown_keys);
@@ -1791,7 +1788,7 @@ class Browser {
   }
 
   switchTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute("data-theme", theme);
 
     if (this.app.BROWSER == 1) {
       let mod_obj = this.app.modules.returnActiveModule();
@@ -1810,8 +1807,8 @@ class Browser {
 
   isValidUrl(urlString) {
     try {
-      let inputElement = document.createElement('input');
-      inputElement.type = 'url';
+      let inputElement = document.createElement("input");
+      inputElement.type = "url";
       inputElement.value = urlString;
 
       if (!inputElement.checkValidity()) {
@@ -1821,8 +1818,7 @@ class Browser {
       }
     } catch (err) {}
     return false;
-  } 
-
+  }
 }
-export default Browser;
 
+export default Browser;

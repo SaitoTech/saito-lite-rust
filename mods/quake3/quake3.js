@@ -71,7 +71,7 @@ class Quake3 extends GameTemplate {
         // victim offers sacrificial tribue
         //
         if (this.game.options.crypto) {
-          if (this.app.wallet.getPublicKey() === victim) {
+          if (this.publicKey === victim) {
             let ts = new Date().getTime();
             let ticker = this.game.options.crypto;
             let stake = this.game.options.stake;
@@ -118,7 +118,7 @@ class Quake3 extends GameTemplate {
         let publickey = mv[1];
         let name = mv[2];
         this.setPlayerName(publickey, name);
-        if (publickey === this.app.wallet.getPublicKey()) {
+        if (publickey === this.publicKey) {
           this.game.player_name_identified = true;
         }
         return 1;
@@ -274,7 +274,7 @@ class Quake3 extends GameTemplate {
                 let victim = z;
                 let killer = i;
                 //log(this.game.players[victim] + " --- " + this.app.wallet.getPublicKey());
-                if (this.game.players[victim] === this.app.wallet.getPublicKey()) {
+                if (this.game.players[victim] === this.publicKey) {
                   console.log("THIS ONE IS ON US");
                   this.addMove(
                     "player_kill\t" + this.game.players[victim] + "\t" + this.game.players[killer]
@@ -319,7 +319,7 @@ class Quake3 extends GameTemplate {
     document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 32 }));
 
     // type lowercase publickey
-    let publickey = this.app.wallet.getPublicKey().toLowerCase();
+    let publickey = this.publicKey.toLowerCase();
     for (let z = 0; z < publickey.length; z++) {
       let char = publickey[z];
       let charCode = char.charCodeAt(0);
@@ -334,8 +334,8 @@ class Quake3 extends GameTemplate {
     document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 13 }));
     document.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 192 }));
 
-    this.setPlayerName(this.app.wallet.getPublicKey(), publickey);
-    this.addMove("player_name\t" + this.app.wallet.getPublicKey() + "\t" + this.game.player_name);
+    this.setPlayerName(this.publicKey, publickey);
+    this.addMove("player_name\t" + this.publicKey + "\t" + this.game.player_name);
     this.endTurn();
 
     return;
@@ -348,7 +348,7 @@ class Quake3 extends GameTemplate {
         console.log("PLAYER " + (i + 1) + " is " + name);
       }
     }
-    if (this.app.wallet.getPublicKey() === publickey) {
+    if (this.publicKey === publickey) {
       this.game.player_name = name;
     }
   }
