@@ -89,8 +89,14 @@ class Archive extends ModTemplate {
     // saves TX embedded in data
     //
     if (req.request === "archive save") {
-      let newtx = Transaction.deserialize(req.data);
+      console.log("req.data", req.data);
+      let buffer = Buffer.from(JSON.stringify(req.data), "base64");
+      let uint8Array = new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+      let newtx = Transaction.deserialize(uint8Array);
+      console.log(newtx, "newtx");
       let txmsg = newtx.returnMessage();
+
+      console.log(txmsg, "saved archive message");
 
       try {
         let type = "";

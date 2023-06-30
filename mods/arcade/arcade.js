@@ -49,7 +49,7 @@ class Arcade extends ModTemplate {
 
     this.icon_fa = "fas fa-gamepad";
 
-    this.styles = ["/arcade/style.css"];
+    this.styles = ["/saito/saito.css", "/arcade/style.css"];
 
     this.affix_callbacks_to = [];
     this.services = [new PeerService(null, "arcade", "", "saito")];
@@ -337,6 +337,8 @@ class Arcade extends ModTemplate {
       cm.render_manager_to_screen = 1;
       this.addComponent(cm);
     }
+
+    console.log("rendering", this.main, this.header);
 
     await super.render();
   }
