@@ -81,6 +81,8 @@ class Post {
   }
 
   triggerClick(querySelector) {
+    console.log(querySelector);
+    console.log(document.querySelector(querySelector));
     if (typeof document.querySelector(querySelector) != "undefined") {
       document.querySelector(querySelector).click();
     }
