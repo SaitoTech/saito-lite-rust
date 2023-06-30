@@ -94,9 +94,7 @@ class Archive extends ModTemplate {
         .sort((a, b) => a - b)
         .map((key) => req.data[key]);
       let uint8Array = new Uint8Array(values);
-
       let newtx = Transaction.deserialize(uint8Array, new Factory());
-      console.log("the new tx ", newtx);
       let txmsg = newtx.returnMessage();
 
       try {
