@@ -90,10 +90,10 @@ class Archive extends ModTemplate {
     // saves TX embedded in data
     //
     if (req.request === "archive save") {
-      var values = Object.keys(req.data)
+      let values = Object.keys(req.data)
         .sort((a, b) => a - b)
         .map((key) => req.data[key]);
-      var uint8Array = new Uint8Array(values);
+      let uint8Array = new Uint8Array(values);
 
       let newtx = Transaction.deserialize(uint8Array, new Factory());
       console.log("the new tx ", newtx);
