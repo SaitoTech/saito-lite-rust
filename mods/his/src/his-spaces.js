@@ -2493,7 +2493,7 @@ console.log("setting as ally of " + faction2);
       political: "",
       religion: "catholic",
       neighbours: ["modena","genoa","siena"],
-       language: "italian",
+      language: "italian",
       type: "key"
     }
     spaces['siena'] = {
@@ -2652,6 +2652,7 @@ console.log("setting as ally of " + faction2);
       spaces[key].units['independent'] = [];
       spaces[key].university = 0;
       spaces[key].unrest = 0;
+      if (!spaces[key].ports) { spaces[key].ports = []; }
       if (!spaces[key].pass) { spaces[key].pass = []; }
       if (!spaces[key].name) { spaces[key].name = key.charAt(0).toUpperCase() + key.slice(1); }
       if (!spaces[key].besieged) { spaces[key].besieged = 0; }

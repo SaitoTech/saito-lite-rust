@@ -9730,7 +9730,7 @@ console.log("setting as ally of " + faction2);
       political: "",
       religion: "catholic",
       neighbours: ["modena","genoa","siena"],
-       language: "italian",
+      language: "italian",
       type: "key"
     }
     spaces['siena'] = {
@@ -9889,6 +9889,7 @@ console.log("setting as ally of " + faction2);
       spaces[key].units['independent'] = [];
       spaces[key].university = 0;
       spaces[key].unrest = 0;
+      if (!spaces[key].ports) { spaces[key].ports = []; }
       if (!spaces[key].pass) { spaces[key].pass = []; }
       if (!spaces[key].name) { spaces[key].name = key.charAt(0).toUpperCase() + key.slice(1); }
       if (!spaces[key].besieged) { spaces[key].besieged = 0; }
@@ -17723,8 +17724,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let his_self = this;
 
-    let html = msg;
-
+    let html = '';
     html += '<ul>';
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
@@ -17748,7 +17748,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     }
     html += '</ul>';
 
-    this.updateStatus(html);
+    this.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', function () {
@@ -17787,8 +17787,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let his_self = this;
 
-    let html = msg;
-
+    let html = '';
     html += '<ul>';
     for (let key in this.game.navalspaces) {
       if (filter_func(this.game.navalspaces[key]) == 1) {
@@ -17817,7 +17816,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     }
     html += '</ul>';
 
-    this.updateStatus(html);
+    this.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', function () {
@@ -18971,8 +18970,10 @@ console.log("units length: " + space.units[defender].length);
 
     if (ops < 2) { return 0; }
     let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
+console.log("SPACES WITH INFANTRY: " + JSON.stringify(spaces_with_infantry));
     for (let i = 0; i < spaces_with_infantry.length; i++) {
-      if (!his_self.game.spaces[spaces_with_infantry[i]].ports.length > 0) {
+console.log("SPACE: " + spaces_with_infantry[i]);
+      if (his_self.game.spaces[spaces_with_infantry[i]].ports.length == 0) {
 	spaces_with_infantry.splice(i, 1);
 	i--;
       }
@@ -20441,6 +20442,7 @@ return;
       console.warn("Error Updating Status: ignoring: " + err);
     }
   } 
+
 
 
 

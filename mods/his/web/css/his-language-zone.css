@@ -6,10 +6,11 @@
 	background-size: cover;
 }
 .language-zone-overlay .status {
+    line-height: 4rem;
     position: relative;
     height: 4rem;
     min-height: 0;
-    width: max-content;
+    width: 35rem;
     max-width: 35rem;
     background-color: whitesmoke;
     z-index: 10;
@@ -23,6 +24,31 @@
     padding-left: 0.5rem;
     padding-right: 0.5rem;
 }
+
+.language-zone-overlay .controls ul {
+    display: block;
+    position: relative;
+    background-color: whitesmoke;
+    line-height: 4rem;
+    width: 25rem;
+    max-width: 35rem;
+    z-index: 10;
+    border-radius: 1rem;
+    top: 0px;
+    left: 0px;
+    white-space: nowrap;
+    float: left;
+    margin-left: 5rem;
+    margin-top: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    clear: both;
+    min-height: max-content;
+    max-height: max-content;
+    height: auto;
+    cursor: pointer;
+}
+
 .language-zone-overlay .status .status-header {
    box-shadow: none;
    margin-bottom: 0px;
