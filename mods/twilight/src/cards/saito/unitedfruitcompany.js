@@ -1,21 +1,17 @@
 
-    if (card == "iranianultimatum") {
+    if (card == "unitedfruitcompany") {
 
-      this.game.state.event.iranianultimatum = 1;
-
-      this.countries["iran"].us += 2;
-      this.updateLog(`${this.cardToText(card)}: 2 US influence added to Iran`);
-       
+      this.game.state.event.unitedfruitcompany = 1;
 
       let ussrtroops = 0;
       for (var i in this.countries) {
-        if (this.countries[i].region == "mideast") {
+        if (this.countries[i].region == "centralamerica" || this.countries[i].region == "southamerica") {
           ussrtroops += this.countries[i].ussr;
         }
       }
 
       if (ustroops == 0) {
-        this.updateLog("USSR has no influence in the Middle-East");
+        this.updateLog("USSR has no influence in Central or South America");
         return 1;
       }
 
@@ -24,14 +20,14 @@
 
         this.startClock();
 
-        this.addMove("resolve\tiranianultimatum");
+        this.addMove("resolve\tunitedfruitcompany");
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
 
         var ops_available = 0;
         for (var i in this.countries) {
-          if (this.countries[i].region == "mideast") {
+          if (this.countries[i].region == "centralamerica" || this.countries[i].region == "southamerica") {
             if (this.countries[i].ussr > 0) {
               $("#"+i).addClass("easterneurope");
               this.countries[i].place = 1;
@@ -41,7 +37,7 @@
 
         let ops_to_purge = Math.min(1, ops_available);
 
-        this.updateStatus("Remove 1 USSR influence from the Middle East");
+        this.updateStatus("Remove 1 USSR influence from Central or South America");
         
         $(".easterneurope").off();
         $(".easterneurope").on('click', function() {
