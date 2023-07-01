@@ -11469,8 +11469,8 @@ console.log("MOVE: " + mv[0]);
 	    // cards dealt before diet of worms
 	    //
 	    this.game.queue.push("card_draw_phase");
-	    this.updateLog("Luther's 95 Theses!");
-	    this.game.queue.push("event\t1\t008");
+//	    this.updateLog("Luther's 95 Theses!");
+//	    this.game.queue.push("event\t1\t008");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -12848,6 +12848,7 @@ console.log(JSON.stringify(mv));
 	  //
 	  let x = [];
 	  for (let i = 0; i < this.game.deck[0].fhand[0].length; i++) {
+console.log("CARDS: " + JSON.stringify(this.game.deck[0].fhand));
 	    if (this.game.deck[0].cards[this.game.deck[0].fhand[0][i]].type === "mandatory") {} else { x.push(this.game.deck[0].fhand[0][i]); }
 	  }
 
@@ -12977,7 +12978,7 @@ console.log("POOL: " + hapsburg_card);
 	    for (let i = 1; i <= total_conversion_attempts && i <= this.returnNumberOfCatholicSpacesInLanguageZone(); i++) {
 	      this.game.queue.push("select_for_protestant_conversion\tprotestant\tgerman");
 	    }
-  	    this.game.queue.push("STATUS\t<div class='message'>Protestants selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_protestant));
+  	    this.game.queue.push("STATUS\tProtestants selecting towns to convert...\t"+JSON.stringify(all_players_but_protestant));
   	    this.game.queue.push("show_overlay\ttheses");
   	    this.game.queue.push("ACKNOWLEDGE\tProtestants win Diet of Worms");
 
@@ -12989,7 +12990,7 @@ console.log("POOL: " + hapsburg_card);
 	      for (let i = 1; i <= total_conversion_attempts && i <= this.returnNumberOfProtestantSpacesInLanguageZone(); i++) {
 	        this.game.queue.push("select_for_catholic_conversion\tpapacy\tgerman");
 	      }
-  	      this.game.queue.push("STATUS\t<div class='message'>Papacy selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_papacy));
+  	      this.game.queue.push("STATUS\tPapacy selecting towns to convert...\t"+JSON.stringify(all_players_but_papacy));
   	      this.game.queue.push("show_overlay\ttheses");
   	      this.game.queue.push("ACKNOWLEDGE\tPapacy wins Diet of Worms");
 	    } else {
@@ -17722,7 +17723,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let his_self = this;
 
-    let html = '<div class="message">' + msg + '</div>';
+    let html = msg;
 
     html += '<ul>';
     for (let key in this.game.spaces) {
@@ -17786,7 +17787,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let his_self = this;
 
-    let html = '<div class="message">' + msg + '</div>';
+    let html = msg;
 
     html += '<ul>';
     for (let key in this.game.navalspaces) {
@@ -20411,6 +20412,35 @@ return;
     }
     return -1;
   }
+
+
+
+
+  /* override default */
+  updateStatus(str, force = 0) {
+
+    this.updateControls("");
+
+    try {
+
+      this.game.status = str;
+      if (!this.browser_active) { return; }
+
+      if (this.useHUD) {
+        this.hud.updateStatus(str);
+      }
+
+      document.querySelectorAll(".status").forEach((el) => {
+        el.innerHTML = str;
+      });
+      if (document.getElementById("status")) {
+        document.getElementById("status").innerHTML = str;
+      }
+
+    } catch (err) {
+      console.warn("Error Updating Status: ignoring: " + err);
+    }
+  } 
 
 
 

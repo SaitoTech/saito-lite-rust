@@ -765,7 +765,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let his_self = this;
 
-    let html = '<div class="message">' + msg + '</div>';
+    let html = msg;
 
     html += '<ul>';
     for (let key in this.game.spaces) {
@@ -829,7 +829,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let his_self = this;
 
-    let html = '<div class="message">' + msg + '</div>';
+    let html = msg;
 
     html += '<ul>';
     for (let key in this.game.navalspaces) {

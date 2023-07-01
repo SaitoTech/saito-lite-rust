@@ -7,6 +7,19 @@ img {
   width: unset;
 }
 
+.card {
+  position: relative;
+}
+.cardimg , .card img {
+  position: relative;
+}
+.cardimg.cancel_x {
+  position: absolute;
+  width: inherit;
+  top: 20%;
+}
+
+
 .saito-overlay-backdrop {
   opacity: 0.8;
 }
