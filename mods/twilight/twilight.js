@@ -1618,6 +1618,55 @@ console.log("LATEST MOVE: " + mv);
     }
 
 
+    if (mv[0] == "pinochet") {
+
+      this.game.queue.splice(qe, 1);
+
+      if (this.game.player == 1) {
+
+        this.startClock();
+
+        this.playerFinishedPlacingInfluence();
+
+        var ops_available = 0;
+        for (var i in this.countries) {
+          if (this.countries[i].region == "centralamerica" || this.countries[i].region == "southamerica") {
+            if (this.countries[i].us > 0) {
+	      ops_available++;
+              $("#"+i).addClass("easterneurope");
+              this.countries[i].place = 1;
+            }
+          }
+        }
+
+        if (ops_available == 0) {
+	  return 1;
+        }
+
+        let ops_to_purge = 1;
+
+        this.updateStatus("Remove 1 US influence from Central or South America");
+
+        $(".easterneurope").off();
+        $(".easterneurope").on('click', function() {
+          let c = $(this).attr('id');
+          if (twilight_self.countries[c].place != 1 || twilight_self.countries[c].us == 0) {
+            twilight_self.displayModal("Invalid Country");
+          } else {
+            twilight_self.removeInfluence(c, 1, "us");
+            twilight_self.addMove("remove\tussr\tus\t"+c+"\t1");
+            twilight_self.playerFinishedPlacingInfluence();
+            twilight_self.endTurn();
+          }
+        });
+
+      }
+
+      return 0;
+    }
+
+
+
     if (mv[0] == "chernobyl") {
       this.game.state.events.chernobyl = mv[1];
       this.game.queue.splice(qe, 1);
