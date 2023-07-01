@@ -72,4 +72,8 @@
 }
 
 
+.diet_of_worms_noskip , .diet_of_worms_end {
+    cursor: pointer;
+}
+
 

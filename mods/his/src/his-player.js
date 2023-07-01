@@ -2955,7 +2955,7 @@ return;
   }
   async playerBurnBooks(his_self, player, faction) {
 
-    let msg = "Select Language Zone for Counter-Reformation Attempts:";
+    let msg = "Select Language Zone for Counter Reformations";
     let html = '<ul>';
         html += '<li class="option german" style="" id="german">German</li>';
         html += '<li class="option english" style="" id="english">English</li>';

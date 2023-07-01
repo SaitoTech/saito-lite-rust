@@ -496,23 +496,25 @@
           let p = his_self.returnPlayerOfFaction("papacy");
           if (p === his_self.game.player) {
 	    let cx = his_self.returnSpaceOfPersonage("hapsburg", "charles-v");
-	    if (his_self.spaces[cx]) {
+	    if (cx) {
 	      let targets = [];
-	      targets.push(cs);
+	      if (his_self.spaces[cx]) {
+	        targets.push(cx);
 
-	      for (let i = 0; i < his_self.spaces[cx].neighbours.length; i++) {
+	        for (let i = 0; i < his_self.spaces[cx].neighbours.length; i++) {
 
-		let x = his_self.spaces[cs].neighbours[i];
-		if (!targets.includes(x)) { targets.push(x); }
+		  let x = his_self.spaces[cx].neighbours[i];
+		  if (!targets.includes(x)) { targets.push(x); }
 
-	        for (let ii = 0; ii < his_self.spaces[x].neighbours.length; ii++) {
-		  let y = his_self.spaces[x].neighbours[ii];
-		  if (!targets.includes(y)) { targets.push(y); }
-		}
+	          for (let ii = 0; ii < his_self.spaces[x].neighbours.length; ii++) {
+		    let y = his_self.spaces[x].neighbours[ii];
+		    if (!targets.includes(y)) { targets.push(y); }
+	  	  }
+	        }
 	      }
-	    }
-	    if (targets.includes(spacekey)) {
-              return 1;
+	      if (targets.includes(spacekey)) {
+                return 1;
+              }
             }
           }
         }
@@ -534,11 +536,11 @@
           let cx = his_self.returnSpaceOfPersonage("hapsburg", "charles-v");
           if (his_self.spaces[cx]) {
             let targets = [];
-            targets.push(cs);
+            targets.push(cx);
 
             for (let i = 0; i < his_self.spaces[cx].neighbours.length; i++) {
 
-              let x = his_self.spaces[cs].neighbours[i];
+              let x = his_self.spaces[cx].neighbours[i];
               if (!targets.includes(x)) { targets.push(x); }
 
               for (let ii = 0; ii < his_self.spaces[x].neighbours.length; ii++) {
