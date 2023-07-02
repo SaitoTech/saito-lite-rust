@@ -1094,9 +1094,6 @@ Habsburg conquistadores:
 
 
 
-
-
-
     this.importDebater('bullinger-debater', {
       type		:	"bullinger-debater" ,
       name		: 	"Heinrich Bullinger",
@@ -13209,6 +13206,18 @@ console.log("POOL: " + hapsburg_card);
 	  this.updateStatusWithOptions(msg, html);
 
 	  $('.option').off();
+	  $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+	    if (his_self.debaters[action2]) {
+	      his_self.cardbox.show(action2);
+	    }
+          });
+	  $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+	    if (his_self.debaters[action2]) {
+	      his_self.cardbox.hide(action2);
+	    }
+	  });
           $('.option').on('click', function () {
 
             let action2 = $(this).attr("id");
@@ -16846,27 +16855,27 @@ console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
 	  // ourselves
 	  //
 	  if (this.hasProtestantLandUnits(space)) {
-	    p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
 	    p_rolls++;
-	    p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
 	    p_rolls++;
 	  }
 	  if (this.hasCatholicLandUnits(space)) {
-	    c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
 	    c_rolls++;
-	    c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
 	    c_rolls++;
 	  }
 	  if (this.hasProtestantReformer(space)) {
-	    p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "reformer"});
 	    p_rolls++;
-	    p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "reformer"});
 	    p_rolls++;
 	  }
 	  if (this.game.spaces[space].university) {
-	    c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "jesuit university"});
 	    c_rolls++;
-	    c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "jesuit university"});
 	    c_rolls++;
 	  }
 
@@ -19988,17 +19997,29 @@ return;
 
           let msg = "Use Calvin Debater Bonus +1 Attempt:";
           let html = '<ul>';
-          html += '<li class="option" style="" id="yes">Yes, Commit Calvin</li>';
+          html += '<li class="option" style="" id="calvin-debater">Yes, Commit Calvin</li>';
           html += '<li class="option" style="" id="no">No</li>';
           html += '</ul>';
 
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
+          $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.show(action2);
+            }
+          });
+          $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.hide(action2);
+            }
+          });
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    if (id === "yes") {
+	    if (id === "calvin-debater") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
@@ -20016,17 +20037,29 @@ return;
 
           let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
           let html = '<ul>';
-          html += '<li class="option" style="" id="yes">Yes, Commit Carlstadt</li>';
+          html += '<li class="option" style="" id="carlstadt-debater">Yes, Commit Carlstadt</li>';
           html += '<li class="option" style="" id="no">No</li>';
           html += '</ul>';
 
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
+          $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.show(action2);
+            }
+          });
+          $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.hide(action2);
+            }
+          });
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    if (id === "yes") {
+	    if (id === "carlstadt") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
@@ -20177,13 +20210,13 @@ return;
         let msg = "Commit Debater for Burn Books Bonus:";
         let html = '<ul>';
 	if (his_self.canPlayerCommitDebater("papacy", "tetzel-debater")) {
-          html += '<li class="option" style="" id="tetzel">+1 to Saint Peters</li>';
+          html += '<li class="option" style="" id="tetzel-debater">+1 to Saint Peters</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "cajetan-debater")) {
-          html += '<li class="option" style="" id="cajetan">Cajetan +1 Attempt</li>';
+          html += '<li class="option" style="" id="cajetan-debater">Cajetan +1 Attempt</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "caraffa-debater")) {
-          html += '<li class="option" style="" id="caraffa">Caraffa +1 Attempt</li>';
+          html += '<li class="option" style="" id="caraffa-debater">Caraffa +1 Attempt</li>';
         }
         html += '<li class="option" style="" id="no">No</li>';
 	html += '</ul>';
@@ -20191,16 +20224,28 @@ return;
         his_self.updateStatusWithOptions(msg, html);
 
         $('.option').off();
+        $('.option').on('mouseover', function() {
+          let action2 = $(this).attr("id");
+          if (his_self.debaters[action2]) {
+            his_self.cardbox.show(action2);
+          }
+        });
+        $('.option').on('mouseout', function() {
+          let action2 = $(this).attr("id");
+          if (his_self.debaters[action2]) {
+            his_self.cardbox.hide(action2);
+          }
+        });
         $('.option').on('click', function () {
           let id2 = $(this).attr("id");
 
-	  if (id2 === "tetzel") {
+	  if (id2 === "tetzel-debater") {
             his_self.addMove("build_saint_peters");
 	  }
 
-	  if (id2 === "cajetan" || id2 === "caraffa") {
-	    if (id2 === "cajetan") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
-	    if (id2 === "caraffa") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
+	  if (id2 === "cajetan-debater" || id2 === "caraffa-debater") {
+	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
+	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
             his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
 	  }
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
@@ -20706,6 +20751,10 @@ return;
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
+    if (obj.returnCardImage == null) {
+      obj.returnCardImage = () => { return ""; }
+    }
+
     this.addEvents(obj);
     this.units[name] = obj;
 
@@ -20848,6 +20897,16 @@ return;
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
+    if (obj.returnCardImage == null) {
+      obj.returnCardImage = () => {
+        let tile_f = "/his/img/tiles/debaters/" + obj.img;
+        let tile_b = tile_f.replace('.svg', '_back.svg');
+	return `
+	  <div class="debater-card" style="background-image: url('${tile_f}'); background-size: cover"></div>	
+	`;
+      }
+    }
+
     this.addEvents(obj);
     this.debaters[name] = obj;
   }
@@ -22040,6 +22099,11 @@ return;
     let deckidx = -1;
     let card;
 
+    //
+    //
+    //
+    if (this.debaters[cardname]) { return this.debaters[cardname].returnCardImage(); }
+
     for (let i = 0; i < this.game.deck.length; i++) {
       var c = this.game.deck[i].cards[cardname];
       if (c == undefined) { c = this.game.deck[i].discards[cardname]; }
@@ -22063,7 +22127,6 @@ return;
     // add cancel button to uneventable cards
     //
     if (deckidx == 0) { 
-console.log("card: " + cardname);
       if (!this.deck[cardname].canEvent(this, "")) {
         html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
       }
@@ -22079,7 +22142,9 @@ console.log("card: " + cardname);
   }
 
 
-
+  displayDebaterPopup(debater) {
+    
+  }
 
 
   addCard(faction, card) {

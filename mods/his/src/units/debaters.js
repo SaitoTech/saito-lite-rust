@@ -224,9 +224,6 @@
 
 
 
-
-
-
     this.importDebater('bullinger-debater', {
       type		:	"bullinger-debater" ,
       name		: 	"Heinrich Bullinger",

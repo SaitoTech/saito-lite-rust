@@ -2793,17 +2793,29 @@ return;
 
           let msg = "Use Calvin Debater Bonus +1 Attempt:";
           let html = '<ul>';
-          html += '<li class="option" style="" id="yes">Yes, Commit Calvin</li>';
+          html += '<li class="option" style="" id="calvin-debater">Yes, Commit Calvin</li>';
           html += '<li class="option" style="" id="no">No</li>';
           html += '</ul>';
 
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
+          $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.show(action2);
+            }
+          });
+          $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.hide(action2);
+            }
+          });
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    if (id === "yes") {
+	    if (id === "calvin-debater") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
@@ -2821,17 +2833,29 @@ return;
 
           let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
           let html = '<ul>';
-          html += '<li class="option" style="" id="yes">Yes, Commit Carlstadt</li>';
+          html += '<li class="option" style="" id="carlstadt-debater">Yes, Commit Carlstadt</li>';
           html += '<li class="option" style="" id="no">No</li>';
           html += '</ul>';
 
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
+          $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.show(action2);
+            }
+          });
+          $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.hide(action2);
+            }
+          });
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    if (id === "yes") {
+	    if (id === "carlstadt") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
@@ -2982,13 +3006,13 @@ return;
         let msg = "Commit Debater for Burn Books Bonus:";
         let html = '<ul>';
 	if (his_self.canPlayerCommitDebater("papacy", "tetzel-debater")) {
-          html += '<li class="option" style="" id="tetzel">+1 to Saint Peters</li>';
+          html += '<li class="option" style="" id="tetzel-debater">+1 to Saint Peters</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "cajetan-debater")) {
-          html += '<li class="option" style="" id="cajetan">Cajetan +1 Attempt</li>';
+          html += '<li class="option" style="" id="cajetan-debater">Cajetan +1 Attempt</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "caraffa-debater")) {
-          html += '<li class="option" style="" id="caraffa">Caraffa +1 Attempt</li>';
+          html += '<li class="option" style="" id="caraffa-debater">Caraffa +1 Attempt</li>';
         }
         html += '<li class="option" style="" id="no">No</li>';
 	html += '</ul>';
@@ -2996,16 +3020,28 @@ return;
         his_self.updateStatusWithOptions(msg, html);
 
         $('.option').off();
+        $('.option').on('mouseover', function() {
+          let action2 = $(this).attr("id");
+          if (his_self.debaters[action2]) {
+            his_self.cardbox.show(action2);
+          }
+        });
+        $('.option').on('mouseout', function() {
+          let action2 = $(this).attr("id");
+          if (his_self.debaters[action2]) {
+            his_self.cardbox.hide(action2);
+          }
+        });
         $('.option').on('click', function () {
           let id2 = $(this).attr("id");
 
-	  if (id2 === "tetzel") {
+	  if (id2 === "tetzel-debater") {
             his_self.addMove("build_saint_peters");
 	  }
 
-	  if (id2 === "cajetan" || id2 === "caraffa") {
-	    if (id2 === "cajetan") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
-	    if (id2 === "caraffa") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
+	  if (id2 === "cajetan-debater" || id2 === "caraffa-debater") {
+	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
+	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
             his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
 	  }
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);

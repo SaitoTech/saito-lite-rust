@@ -973,6 +973,11 @@
     let deckidx = -1;
     let card;
 
+    //
+    //
+    //
+    if (this.debaters[cardname]) { return this.debaters[cardname].returnCardImage(); }
+
     for (let i = 0; i < this.game.deck.length; i++) {
       var c = this.game.deck[i].cards[cardname];
       if (c == undefined) { c = this.game.deck[i].discards[cardname]; }
@@ -996,7 +1001,6 @@
     // add cancel button to uneventable cards
     //
     if (deckidx == 0) { 
-console.log("card: " + cardname);
       if (!this.deck[cardname].canEvent(this, "")) {
         html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
       }
@@ -1012,5 +1016,7 @@ console.log("card: " + cardname);
   }
 
 
-
+  displayDebaterPopup(debater) {
+    
+  }
 

@@ -1675,6 +1675,18 @@ console.log("POOL: " + hapsburg_card);
 	  this.updateStatusWithOptions(msg, html);
 
 	  $('.option').off();
+	  $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+	    if (his_self.debaters[action2]) {
+	      his_self.cardbox.show(action2);
+	    }
+          });
+	  $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+	    if (his_self.debaters[action2]) {
+	      his_self.cardbox.hide(action2);
+	    }
+	  });
           $('.option').on('click', function () {
 
             let action2 = $(this).attr("id");
@@ -5312,27 +5324,27 @@ console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
 	  // ourselves
 	  //
 	  if (this.hasProtestantLandUnits(space)) {
-	    p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
 	    p_rolls++;
-	    p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
 	    p_rolls++;
 	  }
 	  if (this.hasCatholicLandUnits(space)) {
-	    c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
 	    c_rolls++;
-	    c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
 	    c_rolls++;
 	  }
 	  if (this.hasProtestantReformer(space)) {
-	    p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "reformer"});
 	    p_rolls++;
-	    p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "reformer"});
 	    p_rolls++;
 	  }
 	  if (this.game.spaces[space].university) {
-	    c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "jesuit university"});
 	    c_rolls++;
-	    c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "jesuit university"});
 	    c_rolls++;
 	  }
 
