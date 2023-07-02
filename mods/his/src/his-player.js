@@ -2785,6 +2785,7 @@ return;
       $('.option').off();
       $('.option').on('click', function () {
 
+        $('.option').off();
         his_self.language_zone_overlay.hide();
 
         let id = $(this).attr("id");
@@ -2927,6 +2928,7 @@ return;
     $('.option').off();
     $('.option').on('click', () => {
 
+      $('.option').off();
       his_self.language_zone_overlay.hide();
       let language_zone = $(this).attr("id");
 
@@ -3004,6 +3006,7 @@ return;
     $('.option').off();
     $('.option').on('click', function () {
 
+      $('.option').off();
       his_self.language_zone_overlay.hide();
       let id = $(this).attr("id");
 
