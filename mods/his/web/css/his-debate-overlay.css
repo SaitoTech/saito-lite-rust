@@ -27,27 +27,15 @@
 }
 
 .theological-debate-overlay .controls ul {
-    display: block;
-    position: relative;
-    background-color: whitesmoke;
-    line-height: 4rem;
+    margin-left: auto;
+    margin-right: auto;
     width: 35rem;
-    max-width: 35rem;
-    z-index: 10;
-    border-radius: 1rem;
-    top: 0px;
-    left: 0px;
-    white-space: nowrap;
-    float: left;
-    margin-left: 5rem;
-    margin-top: 1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    clear: both;
-    min-height: max-content;
-    max-height: max-content;
+    background-color: whitesmoke;
     height: auto;
-    cursor: pointer;
+    border-radius: 1rem;
+    clear: both;
+    margin-top: 1rem;
+    line-height: 3rem;
 }
 
 .theological-debate-overlay .status {

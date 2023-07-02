@@ -2926,13 +2926,14 @@ return;
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
-    $('.option').on('click', () => {
+    $('.option').on('click', (e) => {
 
       $('.option').off();
-      his_self.language_zone_overlay.hide();
-      let language_zone = $(this).attr("id");
+      let language_zone = e.currentTarget.id;
 
-      let msg = "Against Comitted or Uncommited Debater?";
+      his_self.language_zone_overlay.hide();
+
+      let msg = "Against Commited or Uncommited Debater?";
       let html = '<ul>';
       if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
           html += '<li class="option" id="committed">Committed</li>';
@@ -2945,6 +2946,14 @@ return;
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
+      $('.option').on('mouseover', function() {
+        let action2 = $(this).attr("id");
+        his_self.cardbox.show(action2);
+      });
+      $('.option').on('mouseout', function() {
+        let action2 = $(this).attr("id");
+        his_self.cardbox.hide(action2);
+      });
       $('.option').on('click', () => {
 
         let committed = $(this).attr("id");

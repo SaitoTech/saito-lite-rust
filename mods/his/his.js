@@ -3743,7 +3743,7 @@ alert("Not Implemented");
       },
       menuOption  :       function(his_self, menu, player) {
         if (menu === "debate") {
-          return { faction : "protestant" , event : 'substitute_luther', html : `<li class="option" id="substitute_luther">Here I Stand (assign Luther)</li>` };
+          return { faction : "protestant" , event : '007', html : `<li class="option" id="007">Here I Stand (assign Luther)</li>` };
         }
         return {};
       },
@@ -11612,6 +11612,10 @@ console.log("MOVE: " + mv[0]);
 
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.render(); }
+	  if (mv[1] === "zoom") {
+	    let lz = mv[2];
+	    this.theses_overlay.render(lz);
+          }
 	  if (mv[1] === "burn_books") {
 	    let lz = mv[2];
 	    this.theses_overlay.render(lz);
@@ -11630,6 +11634,7 @@ console.log("MOVE: " + mv[0]);
 	}
 	if (mv[0] === "hide_overlay") {
 	  if (mv[1] === "theses") { this.theses_overlay.hide(); }
+	  if (mv[1] === "zoom") { this.theses_overlay.hide(); }
 	  if (mv[1] === "burn_books") { this.theses_overlay.hide(); }
 	  if (mv[1] === "publish_treatise") { this.theses_overlay.hide(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.hide(); }
@@ -13223,10 +13228,16 @@ console.log("POOL: " + hapsburg_card);
 	    if (his_self.debaters[action2]) {
 	      his_self.cardbox.show(action2);
 	    }
+	    if (his_self.game.deck[0].cards[action2]) {
+	      his_self.cardbox.show(action2);
+	    }
           });
 	  $('.option').on('mouseout', function() {
             let action2 = $(this).attr("id");
 	    if (his_self.debaters[action2]) {
+	      his_self.cardbox.hide(action2);
+	    }
+	    if (his_self.game.deck[0].cards[action2]) {
 	      his_self.cardbox.hide(action2);
 	    }
 	  });
@@ -15494,6 +15505,8 @@ console.log("purging naval units and capturing leader");
 	  let language_zone = mv[3];
 	  let committed = mv[4];
 
+alert("pick first round debater: " + language_zone);
+
 	  this.game.state.theological_debate = {};
 	  this.game.state.theological_debate.attacker_rolls = 0;
 	  this.game.state.theological_debate.defender_rolls = 0;
@@ -15629,6 +15642,8 @@ console.log("purging naval units and capturing leader");
 	  let defender_idx = 0;
 	  let was_defender_uncommitted = 0;
 
+alert("LANGUAGE ZONE: " + language_zone);
+
 	  this.game.queue.splice(qe, 1);
 
 	  //
@@ -15723,7 +15738,6 @@ console.log("purging naval units and capturing leader");
 	  this.displayTheologicalDebate(this.game.state.theological_debate);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.defender_debater, false);
-	  
 
 	  if (attacker_hits == defender_hits) {
 
@@ -15758,7 +15772,6 @@ console.log("purging naval units and capturing leader");
 	      bonus_conversions = 1;
 	    }
 
-
 	    if (attacker_hits > defender_hits) {
 
 	      let total_spaces_to_convert = attacker_hits - defender_hits;
@@ -15788,8 +15801,12 @@ console.log("purging naval units and capturing leader");
 	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces}`);
 	      }
 
-	      for (let i = total_spaces_to_convert+bonus_conversions; i >= 1; i--) {
-	        if (i > total_spaces_in_zone) {
+console.log("TOTAL SPACES AVAILABLE: " + (total_spaces_to_convert+ " + " + bonus_conversions));
+	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
+
+
+	      for (let i = (total_spaces_to_convert+bonus_conversions); i >= 1; i--) {
+	        if (i > (total_spaces_in_zone+bonus_conversions)) {
 		  if (attacker === "papacy") {
 		    this.game.queue.push("select_for_catholic_conversion\tpapacy");
 		  } else {
@@ -15803,10 +15820,13 @@ console.log("purging naval units and capturing leader");
 		  }
 		}
 	      }
+	      // 
+	      this.game.queue.push("show_overlay\tzoom\t"+language_zone);
 	      this.game.queue.push("hide_overlay\ttheological_debate");
 	      this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
               this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("show_overlay\ttheological_debate");
+
 	    } else {
 
 	      let total_spaces_to_convert = defender_hits - attacker_hits;
@@ -15836,6 +15856,11 @@ console.log("purging naval units and capturing leader");
 	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
 	      }
 
+
+console.log("TOTAL SPACES AVAILABLE: " + total_spaces_to_convert);
+	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
+
+
 	      for (let i = total_spaces_to_convert; i >= 1; i--) {
 	        if (i > total_spaces_in_zone) {
 		  if (defender === "papacy") {
@@ -15851,6 +15876,7 @@ console.log("purging naval units and capturing leader");
 		  }
 		}
 	      }
+	      this.game.queue.push("show_overlay\tzoom\t"+language_zone);
 	      this.game.queue.push("hide_overlay\ttheological_debate");
 	      this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
               this.game.queue.push("RESETCONFIRMSNEEDED\tall");
@@ -20142,13 +20168,16 @@ return;
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
-    $('.option').on('click', () => {
+    $('.option').on('click', (e) => {
 
       $('.option').off();
-      his_self.language_zone_overlay.hide();
-      let language_zone = $(this).attr("id");
+      let language_zone = e.currentTarget.id;
 
-      let msg = "Against Comitted or Uncommited Debater?";
+alert("LANGUAGE ZONE: " + language_zone);
+
+      his_self.language_zone_overlay.hide();
+
+      let msg = "Against Commited or Uncommited Debater?";
       let html = '<ul>';
       if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
           html += '<li class="option" id="committed">Committed</li>';
@@ -20161,6 +20190,14 @@ return;
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
+      $('.option').on('mouseover', function() {
+        let action2 = $(this).attr("id");
+        his_self.cardbox.show(action2);
+      });
+      $('.option').on('mouseout', function() {
+        let action2 = $(this).attr("id");
+        his_self.cardbox.hide(action2);
+      });
       $('.option').on('click', () => {
 
         let committed = $(this).attr("id");
@@ -22084,6 +22121,9 @@ return;
 
   displaySpaces() {
 
+    let his_self = this;
+
+
     //
     // add tiles
     //
@@ -22095,6 +22135,28 @@ return;
         }
       }
     }
+
+    let xpos = 0;
+    let ypos = 0;
+
+if (!his_self.bound_gameboard_zoom) {
+
+    $('.gameboard').on('mousedown', function (e) {
+      if (e.currentTarget.classList.contains("space")) { return; }
+      xpos = e.clientX;
+      ypos = e.clientY;
+    });
+    $('.gameboard').on('mouseup', function (e) { 
+      if (e.currentTarget.classList.contains("space")) { return; }
+      if (Math.abs(xpos-e.clientX) > 4) { return; }
+      if (Math.abs(ypos-e.clientY) > 4) { return; }
+      his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
+    });
+
+    his_self.bound_gameboard_zoom = 1;
+
+}
+
 
   }
 
@@ -22139,6 +22201,7 @@ return;
       }
     }
 
+
     if (deckidx === -1) {
       //
       // this is not a card, it is something like "skip turn" or cancel
@@ -22147,6 +22210,8 @@ return;
     }
 
     var html = `<img class="${cardclass}" src="/his/img/${card.img}" />`;
+
+console.log("X: " + html);
 
     //
     // add cancel button to uneventable cards

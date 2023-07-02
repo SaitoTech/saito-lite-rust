@@ -80,6 +80,10 @@ console.log("MOVE: " + mv[0]);
 
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.render(); }
+	  if (mv[1] === "zoom") {
+	    let lz = mv[2];
+	    this.theses_overlay.render(lz);
+          }
 	  if (mv[1] === "burn_books") {
 	    let lz = mv[2];
 	    this.theses_overlay.render(lz);
@@ -98,6 +102,7 @@ console.log("MOVE: " + mv[0]);
 	}
 	if (mv[0] === "hide_overlay") {
 	  if (mv[1] === "theses") { this.theses_overlay.hide(); }
+	  if (mv[1] === "zoom") { this.theses_overlay.hide(); }
 	  if (mv[1] === "burn_books") { this.theses_overlay.hide(); }
 	  if (mv[1] === "publish_treatise") { this.theses_overlay.hide(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.hide(); }
@@ -1691,10 +1696,16 @@ console.log("POOL: " + hapsburg_card);
 	    if (his_self.debaters[action2]) {
 	      his_self.cardbox.show(action2);
 	    }
+	    if (his_self.game.deck[0].cards[action2]) {
+	      his_self.cardbox.show(action2);
+	    }
           });
 	  $('.option').on('mouseout', function() {
             let action2 = $(this).attr("id");
 	    if (his_self.debaters[action2]) {
+	      his_self.cardbox.hide(action2);
+	    }
+	    if (his_self.game.deck[0].cards[action2]) {
 	      his_self.cardbox.hide(action2);
 	    }
 	  });
@@ -3962,6 +3973,8 @@ console.log("purging naval units and capturing leader");
 	  let language_zone = mv[3];
 	  let committed = mv[4];
 
+alert("pick first round debater: " + language_zone);
+
 	  this.game.state.theological_debate = {};
 	  this.game.state.theological_debate.attacker_rolls = 0;
 	  this.game.state.theological_debate.defender_rolls = 0;
@@ -4097,6 +4110,8 @@ console.log("purging naval units and capturing leader");
 	  let defender_idx = 0;
 	  let was_defender_uncommitted = 0;
 
+alert("LANGUAGE ZONE: " + language_zone);
+
 	  this.game.queue.splice(qe, 1);
 
 	  //
@@ -4191,7 +4206,6 @@ console.log("purging naval units and capturing leader");
 	  this.displayTheologicalDebate(this.game.state.theological_debate);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.defender_debater, false);
-	  
 
 	  if (attacker_hits == defender_hits) {
 
@@ -4226,7 +4240,6 @@ console.log("purging naval units and capturing leader");
 	      bonus_conversions = 1;
 	    }
 
-
 	    if (attacker_hits > defender_hits) {
 
 	      let total_spaces_to_convert = attacker_hits - defender_hits;
@@ -4256,8 +4269,12 @@ console.log("purging naval units and capturing leader");
 	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces}`);
 	      }
 
-	      for (let i = total_spaces_to_convert+bonus_conversions; i >= 1; i--) {
-	        if (i > total_spaces_in_zone) {
+console.log("TOTAL SPACES AVAILABLE: " + (total_spaces_to_convert+ " + " + bonus_conversions));
+	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
+
+
+	      for (let i = (total_spaces_to_convert+bonus_conversions); i >= 1; i--) {
+	        if (i > (total_spaces_in_zone+bonus_conversions)) {
 		  if (attacker === "papacy") {
 		    this.game.queue.push("select_for_catholic_conversion\tpapacy");
 		  } else {
@@ -4271,10 +4288,13 @@ console.log("purging naval units and capturing leader");
 		  }
 		}
 	      }
+	      // 
+	      this.game.queue.push("show_overlay\tzoom\t"+language_zone);
 	      this.game.queue.push("hide_overlay\ttheological_debate");
 	      this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
               this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("show_overlay\ttheological_debate");
+
 	    } else {
 
 	      let total_spaces_to_convert = defender_hits - attacker_hits;
@@ -4304,6 +4324,11 @@ console.log("purging naval units and capturing leader");
 	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
 	      }
 
+
+console.log("TOTAL SPACES AVAILABLE: " + total_spaces_to_convert);
+	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
+
+
 	      for (let i = total_spaces_to_convert; i >= 1; i--) {
 	        if (i > total_spaces_in_zone) {
 		  if (defender === "papacy") {
@@ -4319,6 +4344,7 @@ console.log("purging naval units and capturing leader");
 		  }
 		}
 	      }
+	      this.game.queue.push("show_overlay\tzoom\t"+language_zone);
 	      this.game.queue.push("hide_overlay\ttheological_debate");
 	      this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
               this.game.queue.push("RESETCONFIRMSNEEDED\tall");

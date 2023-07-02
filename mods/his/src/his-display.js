@@ -933,6 +933,9 @@
 
   displaySpaces() {
 
+    let his_self = this;
+
+
     //
     // add tiles
     //
@@ -944,6 +947,28 @@
         }
       }
     }
+
+    let xpos = 0;
+    let ypos = 0;
+
+if (!his_self.bound_gameboard_zoom) {
+
+    $('.gameboard').on('mousedown', function (e) {
+      if (e.currentTarget.classList.contains("space")) { return; }
+      xpos = e.clientX;
+      ypos = e.clientY;
+    });
+    $('.gameboard').on('mouseup', function (e) { 
+      if (e.currentTarget.classList.contains("space")) { return; }
+      if (Math.abs(xpos-e.clientX) > 4) { return; }
+      if (Math.abs(ypos-e.clientY) > 4) { return; }
+      his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
+    });
+
+    his_self.bound_gameboard_zoom = 1;
+
+}
+
 
   }
 
@@ -988,6 +1013,7 @@
       }
     }
 
+
     if (deckidx === -1) {
       //
       // this is not a card, it is something like "skip turn" or cancel
@@ -996,6 +1022,8 @@
     }
 
     var html = `<img class="${cardclass}" src="/his/img/${card.img}" />`;
+
+console.log("X: " + html);
 
     //
     // add cancel button to uneventable cards
