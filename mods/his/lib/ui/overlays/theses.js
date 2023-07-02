@@ -28,6 +28,11 @@ class ThesesOverlay {
 	gb2.classList.add("gameboard-clone");
 
 	if (language_zone == "german") { gb2.classList.add("zoom-german"); }
+	if (language_zone == "english") { gb2.classList.add("zoom-english"); }
+	if (language_zone == "french") { gb2.classList.add("zoom-french"); }
+	if (language_zone == "spanish") { gb2.classList.add("zoom-spanish"); }
+	if (language_zone == "italian") { gb2.classList.add("zoom-italian"); }
+	if (language_zone == "ottoman") { gb2.classList.add("zoom-ottoman"); }
 
 	dw.appendChild(gb2);
 

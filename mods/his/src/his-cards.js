@@ -1351,7 +1351,8 @@ alert("Not Implemented");
 	      function(spacekey) {
 	  	his_self.updateStatus("Counter-Reformation attempt in "+spacekey);
 		his_self.addMove("counter_reformation\t"+spacekey+"\t"+language_zone);
-		his_self.addMove("counter_or_acknowledge\tCatholic Counter-Reformation Attempt in "+spacekey+"\tcatholic_counter_reformation\t"+spacekey);
+		let name = his_self.game.spaces[spacekey].name;
+		his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt in "+spacekey+"\tcatholic_counter_reformation\t"+name);
         	his_self.addMove("RESETCONFIRMSNEEDED\tall");
 		his_self.endTurn();
 	      },

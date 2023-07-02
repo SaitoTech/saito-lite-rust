@@ -885,7 +885,7 @@ Habsburg conquistadores:
         if (menu == "translation_german_language_zone") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'martin_luther', html : `<li class="option" id="martin_luther">Martin Luther +1 Bonus CP</li>` };
+            return { faction : extra , event : 'luther-debater', html : `<li class="option" id="luther-debater">Martin Luther +1 Bonus CP</li>` };
           }
         } 
         return {};
@@ -925,7 +925,7 @@ Habsburg conquistadores:
         if (menu == "translation_german_language_zone") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'melanchthon', html : `<li class="option" id="melanchthon">Melanchthon +1 Bonus CP</li>` };
+            return { faction : extra , event : 'melanchthon-debater', html : `<li class="option" id="melanchthon-debater">Melanchthon +1 Bonus CP</li>` };
           }
         } 
         return {};
@@ -971,7 +971,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'ulrich_zwingli', html : `<li class="option" id="ulrich_zwingli">Ulrich Zwingli +1 Roll</li>` };
+            return { faction : extra , event : 'zwingli-debater', html : `<li class="option" id="zwingli-debater">Ulrich Zwingli +1 Roll</li>` };
           }
         } 
         return {};
@@ -1016,7 +1016,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'martin_bucer', html : `<li class="option" id="martin_bucer">Martin Bucer +1 Roll</li>` };
+            return { faction : extra , event : 'bucer-debater', html : `<li class="option" id="bucer-debater">Martin Bucer +1 Roll</li>` };
           }
         } 
         return {};
@@ -1060,7 +1060,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'oekolampadius', html : `<li class="option" id="oekolampadius">Johannes Oekolampadius +1 Bonus</li>` };
+            return { faction : extra , event : 'oekolampadius-debater', html : `<li class="option" id="oekolampadius-debater">Johannes Oekolampadius +1 Bonus</li>` };
           }
         } 
         return {};
@@ -1105,7 +1105,7 @@ Habsburg conquistadores:
       committed		: 	0,
       menuOption  :       function(his_self, menu, player) {
         if (menu === "debate") {
-          return { faction : "protestant" , event : 'substitute_bullinger', html : `<li class="option" id="substitute_bullinger">substitute Bullinger</li>` };
+          return { faction : "protestant" , event : 'bullinger-debater', html : `<li class="option" id="bullinger-debater">substitute Bullinger</li>` };
         }
         return {};
       },
@@ -1304,7 +1304,7 @@ Habsburg conquistadores:
         if (menu == "catholic_counter_reformation") {
           let p = his_self.returnPlayerOfFaction("papacy");
           if (p === his_self.game.player) {
-            return { faction : extra , event : 'peter_canisius', html : `<li class="option" id="peter_canisius">Peter Canisius +1 Roll</li>` };
+            return { faction : extra , event : 'canisius-debater', html : `<li class="option" id="canisius-debater">Peter Canisius +1 Roll</li>` };
           }
         }
         return {};
@@ -1353,7 +1353,7 @@ Habsburg conquistadores:
         if (menu == "catholic_counter_reformation") {
           let p = his_self.returnPlayerOfFaction("papacy");
           if (p === his_self.game.player) {
-            return { faction : extra , event : 'peter_canisius', html : `<li class="option" id="gasparo_contarini">Gasparo Contarini +1 Roll</li>` };
+            return { faction : extra , event : 'contarini-debater', html : `<li class="option" id="contarini-debater">Gasparo Contarini +1 Roll</li>` };
           }
         }
         return {};
@@ -1436,7 +1436,7 @@ Habsburg conquistadores:
         if (menu == "catholic_counter_reformation") {
           let p = his_self.returnPlayerOfFaction("papacy");
           if (p === his_self.game.player) {
-            return { faction : extra , event : 'peter_faber', html : `<li class="option" id="peter_faber">Peter Faber +1 Roll</li>` };
+            return { faction : extra , event : 'faber-debater', html : `<li class="option" id="faber-debater">Peter Faber +1 Roll</li>` };
           }
         }
         return {};
@@ -1505,7 +1505,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
           let p = his_self.returnPlayerOfFaction("protestant");
           if (p === his_self.game.player) {
-            return { faction : extra , event : 'nicholas_cop', html : `<li class="option" id="nicholas_cop">Nicholas Cop +1 Roll</li>` };
+            return { faction : extra , event : 'cop-debater', html : `<li class="option" id="cop-debater">Nicholas Cop +1 Roll</li>` };
           }
         } 
         return {};
@@ -1550,7 +1550,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
           let p = his_self.returnPlayerOfFaction("protestant");
           if (p === his_self.game.player) {
-            return { faction : extra , event : 'william_farel', html : `<li class="option" id="william_farel">William Farel +1 Roll</li>` };
+            return { faction : extra , event : 'farel-debater', html : `<li class="option" id="farel-debater">William Farel +1 Roll</li>` };
           }
         } 
         return {};
@@ -1596,7 +1596,7 @@ Habsburg conquistadores:
         if (menu == "translation_french_language_zone") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'olivetan', html : `<li class="option" id="olivetan">Olivetan +1 Bonus CP</li>` };
+            return { faction : extra , event : 'olivetan-debater', html : `<li class="option" id="olivetan-debater">Olivetan +1 Bonus CP</li>` };
           }
         } 
         return {};
@@ -1645,7 +1645,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'thomas_cranmer', html : `<li class="option" id="thomas_cranmer">Thomas Cranmer +1 Roll</li>` };
+            return { faction : extra , event : 'cranmer-debater', html : `<li class="option" id="cranmer-debater">Thomas Cranmer +1 Roll</li>` };
           }
         } 
         return {};
@@ -1690,7 +1690,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'george_wishart', html : `<li class="option" id="george_wishart">George Wishart +1 Roll</li>` };
+            return { faction : extra , event : 'wishart-debater', html : `<li class="option" id="wishart-debater">George Wishart +1 Roll</li>` };
           }
         } 
         return {};
@@ -1735,7 +1735,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'hugh_latimer', html : `<li class="option" id="hugh_latimer">Hugh Latimer +1 Roll</li>` };
+            return { faction : extra , event : 'latimer-debater', html : `<li class="option" id="latimer-debater">Hugh Latimer +1 Roll</li>` };
           }
         } 
         return {};
@@ -1780,7 +1780,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'john_knox', html : `<li class="option" id="john_knox">John Knox +1 Roll</li>` };
+            return { faction : extra , event : 'knox-debater', html : `<li class="option" id="knox-debater">John Knox +1 Roll</li>` };
           }
         } 
         return {};
@@ -1826,7 +1826,7 @@ Habsburg conquistadores:
         if (menu == "translation_english_language_zone") {
           let p = his_self.returnPlayerOfFaction("protestant");
           if (p === his_self.game.player) {
-            return { faction : extra , event : 'william_tyndale', html : `<li class="option" id="william_tyndale">William Tyndale +1 Bonus CP</li>` };
+            return { faction : extra , event : 'tyndale-debater', html : `<li class="option" id="tyndale-debater">William Tyndale +1 Bonus CP</li>` };
           }
         }
         return {};
@@ -1867,7 +1867,7 @@ Habsburg conquistadores:
         if (menu == "translation_english_language_zone") {
           let p = his_self.returnPlayerOfFaction("protestant");
           if (p === his_self.game.player) {
-            return { faction : extra , event : 'myles_coverdale', html : `<li class="option" id="myles_coverdale">Myles Coverdale +1 Bonus CP</li>` };
+            return { faction : extra , event : 'coverdale-debater', html : `<li class="option" id="coverdale-debater">Myles Coverdale +1 Bonus CP</li>` };
           }
         }
         return {};
@@ -3995,7 +3995,8 @@ alert("Not Implemented");
 	      function(spacekey) {
 	  	his_self.updateStatus("Counter-Reformation attempt in "+spacekey);
 		his_self.addMove("counter_reformation\t"+spacekey+"\t"+language_zone);
-		his_self.addMove("counter_or_acknowledge\tCatholic Counter-Reformation Attempt in "+spacekey+"\tcatholic_counter_reformation\t"+spacekey);
+		let name = his_self.game.spaces[spacekey].name;
+		his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt in "+spacekey+"\tcatholic_counter_reformation\t"+name);
         	his_self.addMove("RESETCONFIRMSNEEDED\tall");
 		his_self.endTurn();
 	      },
@@ -11608,8 +11609,17 @@ console.log("MOVE: " + mv[0]);
 	}
 
 	if (mv[0] === "show_overlay") {
+
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.render(); }
+	  if (mv[1] === "burn_books") {
+	    let lz = mv[2];
+	    this.theses_overlay.render(lz);
+          }
+	  if (mv[1] === "publish_treatise") {
+	    let lz = mv[2];
+	    this.theses_overlay.render(lz);
+          }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.render(); }
 	  if (mv[1] === "field_battle") {
 	    if (mv[2] === "post_field_battle_attackers_win") { this.field_battle_overlay.attackersWin(his_self.game.state.field_battle); }
@@ -11620,6 +11630,8 @@ console.log("MOVE: " + mv[0]);
 	}
 	if (mv[0] === "hide_overlay") {
 	  if (mv[1] === "theses") { this.theses_overlay.hide(); }
+	  if (mv[1] === "burn_books") { this.theses_overlay.hide(); }
+	  if (mv[1] === "publish_treatise") { this.theses_overlay.hide(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.hide(); }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.hide(); }
 	  if (mv[1] === "field_battle") { this.field_battle_overlay.hide(); }
@@ -20019,11 +20031,13 @@ return;
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
+	    his_self.addMove("hide_overlay\tpublish_treastise\tfrench");
 	    if (id === "calvin-debater") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
+	    his_self.addMove("show_overlay\tpublish_treastise\tfrench");
 	    his_self.endTurn();
 
 	    return 0;
@@ -20059,11 +20073,13 @@ return;
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
+	    his_self.addMove("hide_overlay\tpublish_treastise\tgerman");
 	    if (id === "carlstadt") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
+	    his_self.addMove("show_overlay\tpublish_treastise\tgerman");
 	    his_self.endTurn();
 
 	    return 0;
@@ -20072,8 +20088,10 @@ return;
 	  return 0;
         }
 
+	his_self.addMove("hide_overlay\tpublish_treastise\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+	his_self.addMove("show_overlay\tpublish_treastise\t"+id);
 	his_self.endTurn();
       });
 
@@ -20243,6 +20261,7 @@ return;
             his_self.addMove("build_saint_peters");
 	  }
 
+	  his_self.addMove("hide_overlay\tburn_books\t"+id);
 	  if (id2 === "cajetan-debater" || id2 === "caraffa-debater") {
 	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
 	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
@@ -20250,6 +20269,7 @@ return;
 	  }
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+	  his_self.addMove("show_overlay\tburn_books\t"+id);
 	  his_self.endTurn();
 
 	  return 0;
@@ -20258,8 +20278,10 @@ return;
 	return 0;
       }
 
+      his_self.addMove("hide_overlay\tburn_books\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+      his_self.addMove("show_overlay\tburn_books\t"+id);
       his_self.endTurn();
     });
 

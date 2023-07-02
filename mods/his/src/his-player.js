@@ -2815,11 +2815,13 @@ return;
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
+	    his_self.addMove("hide_overlay\tpublish_treastise\tfrench");
 	    if (id === "calvin-debater") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
+	    his_self.addMove("show_overlay\tpublish_treastise\tfrench");
 	    his_self.endTurn();
 
 	    return 0;
@@ -2855,11 +2857,13 @@ return;
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
+	    his_self.addMove("hide_overlay\tpublish_treastise\tgerman");
 	    if (id === "carlstadt") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
+	    his_self.addMove("show_overlay\tpublish_treastise\tgerman");
 	    his_self.endTurn();
 
 	    return 0;
@@ -2868,8 +2872,10 @@ return;
 	  return 0;
         }
 
+	his_self.addMove("hide_overlay\tpublish_treastise\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+	his_self.addMove("show_overlay\tpublish_treastise\t"+id);
 	his_self.endTurn();
       });
 
@@ -3039,6 +3045,7 @@ return;
             his_self.addMove("build_saint_peters");
 	  }
 
+	  his_self.addMove("hide_overlay\tburn_books\t"+id);
 	  if (id2 === "cajetan-debater" || id2 === "caraffa-debater") {
 	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
 	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
@@ -3046,6 +3053,7 @@ return;
 	  }
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+	  his_self.addMove("show_overlay\tburn_books\t"+id);
 	  his_self.endTurn();
 
 	  return 0;
@@ -3054,8 +3062,10 @@ return;
 	return 0;
       }
 
+      his_self.addMove("hide_overlay\tburn_books\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+      his_self.addMove("show_overlay\tburn_books\t"+id);
       his_self.endTurn();
     });
 

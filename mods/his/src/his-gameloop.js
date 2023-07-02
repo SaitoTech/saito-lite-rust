@@ -77,8 +77,17 @@ console.log("MOVE: " + mv[0]);
 	}
 
 	if (mv[0] === "show_overlay") {
+
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.render(); }
+	  if (mv[1] === "burn_books") {
+	    let lz = mv[2];
+	    this.theses_overlay.render(lz);
+          }
+	  if (mv[1] === "publish_treatise") {
+	    let lz = mv[2];
+	    this.theses_overlay.render(lz);
+          }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.render(); }
 	  if (mv[1] === "field_battle") {
 	    if (mv[2] === "post_field_battle_attackers_win") { this.field_battle_overlay.attackersWin(his_self.game.state.field_battle); }
@@ -89,6 +98,8 @@ console.log("MOVE: " + mv[0]);
 	}
 	if (mv[0] === "hide_overlay") {
 	  if (mv[1] === "theses") { this.theses_overlay.hide(); }
+	  if (mv[1] === "burn_books") { this.theses_overlay.hide(); }
+	  if (mv[1] === "publish_treatise") { this.theses_overlay.hide(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.hide(); }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.hide(); }
 	  if (mv[1] === "field_battle") { this.field_battle_overlay.hide(); }
