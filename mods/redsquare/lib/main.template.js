@@ -8,7 +8,7 @@ module.exports = () => {
       </div>
       
       <div class="saito-main">
-        <div id="show-new-tweets" class="saito-floating-button new-tweets-notification">New Tweets Available</div>
+        <div id="show-new-tweets" class="saito-button-primary new-tweets-notification">New Tweets Available</div>
       </div>
      
       <div class="saito-sidebar right">

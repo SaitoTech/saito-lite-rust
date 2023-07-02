@@ -2,7 +2,16 @@
 .tweet-notification .tweet-body {
   min-height: 6rem;
 }
- 
+
+.new-tweets-notification {
+  transform: translateY(-50%);
+  position: absolute;
+  left: 50%;
+  top: 5rem;
+  z-index: 999;
+}
+
+
 .saito-floating-button {
   position: fixed;
   display: none;
