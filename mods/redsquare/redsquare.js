@@ -12,7 +12,7 @@ const redsquareHome = require("./index");
 const Post = require("./lib/post");
 const Transaction = require("../../lib/saito/transaction").default;
 const Slip = require("../../lib/saito/slip").default;
-const Factory = require("../../lib/saito/factory").default;
+const { default: Factory } = require("../../lib/saito/factory");
 const PeerService = require("saito-js/lib/peer_service").default;
 
 /*
@@ -32,6 +32,9 @@ const PeerService = require("saito-js/lib/peer_service").default;
 
 class RedSquare extends ModTemplate {
   constructor(app) {
+
+    console.log('inside RedSquare ////////////');
+
     super(app);
     this.appname = "Red Square";
     this.name = "RedSquare";
@@ -139,7 +142,7 @@ class RedSquare extends ModTemplate {
     let this_mod = this;
     if (type === "user-menu") {
       return {
-        text: `View ${obj?.publickey && obj.publickey === this.this.publicKey ? "My " : ""}Profile`,
+        text: `View ${obj?.publickey && obj.publickey === this.publicKey ? "My " : ""}Profile`,
         icon: "fa fa-user",
         callback: function (app, publickey) {
           if (app.modules.returnActiveModule().returnName() == "Red Square") {
@@ -448,6 +451,10 @@ class RedSquare extends ModTemplate {
 
     let peer_idx = -1;
     for (let i = 0; i < this.peers.length; i++) {
+
+      console.log("peers /////////");
+      console.log(this.peers[i]);
+
       if (this.peers[i].publicKey == peer.publicKey) {
         peer_idx = i;
       }
@@ -759,48 +766,49 @@ class RedSquare extends ModTemplate {
           this.peers[i].notifications_latest_ts = new Date().getTime();
         }
 
-        this.app.storage.loadTransactions(
-          {
-            field3: this.this.publicKey,
-            created_earlier_than: this.peers[i].notifications_earliest_ts,
-            limit: this.peers[i].limit,
-          },
-          async (txs) => {
-            if (txs.length > 0) {
-              for (let z = 0; z < txs.length; z++) {
-                txs[z].decryptMessage(this.app);
-                await this.addTweet(txs[z]);
-              }
-            }
-            this.updatePeerEarliestProfileTimestamp(
-              peer,
-              this.returnEarliestTimestampFromTransactionArray(txs)
-            );
-            if (mycallback) {
-              //
-              // can't fetch more? we are at the earliest point
-              //
-              if (txs.length == 0) {
-                this.peers[i].notifications_earliest_ts = 0;
-              }
 
-              //
-              // update our earliest fetched notification
-              //
-              for (let z = 0; z < txs.length; z++) {
-                if (txs[z].timeStamp < this.peers[i].notifications_earliest_ts) {
-                  this.peers[i].notifications_earliest_ts = txs[z].timeStamp;
-                }
-                if (txs[z].timeStamp > this.peers[i].notifications_latest_ts) {
-                  this.peers[i].notifications_latest_ts = txs[z].timeStamp;
-                }
-              }
+        // this.app.storage.loadTransactions(
+        //   {
+        //     field3: this.publicKey,
+        //     created_earlier_than: this.peers[i].notifications_earliest_ts,
+        //     limit: this.peers[i].limit,
+        //   },
+        //   async (txs) => {
+        //     if (txs.length > 0) {
+        //       for (let z = 0; z < txs.length; z++) {
+        //         txs[z].decryptMessage(this.app);
+        //         await this.addTweet(txs[z]);
+        //       }
+        //     }
+        //     this.updatePeerEarliestProfileTimestamp(
+        //       peer,
+        //       this.returnEarliestTimestampFromTransactionArray(txs)
+        //     );
+        //     if (mycallback) {
+        //       //
+        //       // can't fetch more? we are at the earliest point
+        //       //
+        //       if (txs.length == 0) {
+        //         this.peers[i].notifications_earliest_ts = 0;
+        //       }
 
-              mycallback(txs);
-            }
-          },
-          this.peers[i].peer
-        );
+        //       //
+        //       // update our earliest fetched notification
+        //       //
+        //       for (let z = 0; z < txs.length; z++) {
+        //         if (txs[z].timeStamp < this.peers[i].notifications_earliest_ts) {
+        //           this.peers[i].notifications_earliest_ts = txs[z].timeStamp;
+        //         }
+        //         if (txs[z].timeStamp > this.peers[i].notifications_latest_ts) {
+        //           this.peers[i].notifications_latest_ts = txs[z].timeStamp;
+        //         }
+        //       }
+
+        //       mycallback(txs);
+        //     }
+        //   },
+        //   this.peers[i].peer
+        // );
       }
     }
   }
@@ -865,7 +873,10 @@ class RedSquare extends ModTemplate {
     //
     // maybe this needs to go into notifications too
     //
-    if (tx.isTo(this.this.publicKey)) {
+
+    console.log("i am here ////////");
+    console.log(this);
+    if (tx.isTo(this.publicKey)) {
       //
       // this is a notification, so update our timestamps
       //
@@ -878,7 +889,7 @@ class RedSquare extends ModTemplate {
       //
       // notify of other people's actions, but not ours
       //
-      if (!tx.isFrom(this.this.publicKey)) {
+      if (!tx.isFrom(this.publicKey)) {
         let insertion_index = 0;
         if (prepend == false) {
           for (let i = 0; i < this.notifications.length; i++) {
@@ -1221,8 +1232,13 @@ class RedSquare extends ModTemplate {
 
       newtx.msg = obj;
       await newtx.sign();
+      
+console.log("tx signed and sending it ////////////");
+console.log(newtx);
       // console.log(newtx.transaction)
       await mod.app.network.propagateTransaction(newtx);
+
+console.log("after sending tx ////////////");
 
       redsquare_self.app.connection.emit("relay-send-message", {
         recipient: "PEERS",
@@ -1394,7 +1410,7 @@ class RedSquare extends ModTemplate {
       if (typeof tweet.images != "undefined") {
         has_images = 1;
       }
-      let txjson = tx.serialize(this.app);
+      let txjson = {}; //tx.serialize(this.app);
       let tx_size = txjson.length;
 
       let params = {
@@ -1480,6 +1496,14 @@ class RedSquare extends ModTemplate {
       // create the transaction
       //
 
+      console.log("rows[i].tx ////////");
+      console.log(rows[i].tx);
+
+      let values = Object.keys(rows[i].tx)
+        .sort((a, b) => a - b)
+        .map((key) => rows[i].tx[key]);
+      let uint8Array = new Uint8Array(values);
+
       let tx = Transaction.deserialize(rows[i].tx, new Factory());
       if (rows[i].num_reples) {
         tx.optional.num_replies = rows[i].num_replies;
@@ -1493,9 +1517,6 @@ class RedSquare extends ModTemplate {
       if (rows[i].flagged) {
         tx.optional.flagged = rows[i].flagged;
       }
-
-      console.log(typeof tx);
-      console.log(tx);
 
       let hexstring = tx.serialize(this.app);
       hex_entries.push(hexstring);
@@ -1599,6 +1620,10 @@ class RedSquare extends ModTemplate {
   }
 
   webServer(app, expressapp, express) {
+
+    console.log("i am inside webServer ///////////");
+
+
     let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
     let fs = app?.storage?.returnFileSystem();
     let redsquare_self = this;
