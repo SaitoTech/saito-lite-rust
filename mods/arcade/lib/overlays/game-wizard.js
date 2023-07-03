@@ -32,6 +32,7 @@ class GameWizard {
   }
 
   async render() {
+  
     //
     // Create the game wizard overlay
     //  & set a callback to remove the advanced options overlay if we change our mind about creating a game

@@ -9,14 +9,15 @@ module.exports = GameWizardTemplate = async (game_mod, invite_obj = {}) => {
     publickey = invite_obj.publickey;
   }
 
+  let img = await game_mod.respondTo("arcade-games").image;
+
   html += `
     <form>
     <div class="arcade-wizard-game-container">
     
       <!- ***Game thumbnail & options start*** -->
       <div class="arcade-wizard-game-image">
-        <img class="arcade-wizard-game-thumbnail" src="${await game_mod.respondTo("arcade-games")
-          .image}">
+        <img class="arcade-wizard-game-thumbnail" src="${img}">
       </div>
       <!- ***Game thumbnail & options end*** -->
 
