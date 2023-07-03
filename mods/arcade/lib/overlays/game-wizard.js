@@ -17,8 +17,10 @@ class GameWizard {
     this.obj = obj;
 
     app.connection.on("arcade-launch-game-wizard", async (obj) => {
+      console.log("event : arcade-launch-game-wizard", obj);
       if (obj?.game) {
         let game_mod = this.app.modules.returnModuleByName(obj.game);
+        console.log("game mod : ", game_mod);
 
         if (game_mod) {
           this.game_mod = game_mod;
