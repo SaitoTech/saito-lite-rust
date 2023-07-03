@@ -33,7 +33,7 @@ class RedSquareMain {
     });
     // when someone adds a tweet at top -- scroll up and render
     this.app.connection.on("redsquare-home-tweet-prepend-render-request", async (tweet) => {
-      document.querySelector('.tweet-manager').scroll({ top: 0, left: 0, behavior: 'smooth' });
+     // document.querySelector('.tweet-manager').scroll({ top: 0, left: 0, behavior: 'smooth' });
       tweet.render(true); // prepend = true
     });
     this.app.connection.on("redsquare-notifications-render-request", async () => {

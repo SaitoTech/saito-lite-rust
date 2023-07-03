@@ -27,30 +27,36 @@ class Post {
 
     this.render_after_submit = 1;
     this.file_event_added = false;
-    this.publickey = app.wallet.getPublicKey();
+    this.publickey = null;
     this.source = "Tweet";
 
-    let userline = "create a text-tweet or drag-and-drop images...";
+    this.userline = "create a text-tweet or drag-and-drop images...";
     if (this.source == "Retweet / Share") {
-      userline = "add a comment to your retweet or just click submit...";
+      this.userline = "add a comment to your retweet or just click submit...";
     }
 
+    this.user = null;
+  }
+
+  async render() {
+    this.publickey = await this.app.wallet.getPublicKey();
     this.user = new SaitoUser(
       this.app,
       this.mod,
       `.tweet-overlay-header`,
       this.publickey,
-      userline
+      this.userline
     );
-  }
 
-  render() {
     this.overlay.show(PostTemplate(this.app, this.mod, this));
 
     //
     //
     //
+
+    console.log("i am before error ///////");
     this.user.render();
+    console.log("i am after error //////////");
 
     if (!this.input) {
       this.input = new SaitoInput(this.app, this.mod, ".tweet-overlay-content");
