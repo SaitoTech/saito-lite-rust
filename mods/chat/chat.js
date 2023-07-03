@@ -6,7 +6,6 @@ const SaitoHeader = require("./../../lib/saito/ui/saito-header/saito-header");
 const ChatManager = require("./lib/chat-manager/main");
 const ChatManagerOverlay = require("./lib/overlays/chat-manager");
 const JSON = require("json-bigint");
-//const JsStore = require("jsstore");
 const localforage = require("localforage");
 
 class Chat extends ModTemplate {
@@ -1178,90 +1177,6 @@ class Chat extends ModTemplate {
     this.app.connection.emit("chat-manager-render-request");
   }
 
-  /****************************
-        
-    DO NOT DELETE
-
-    These are working bits of code that we need to implement in storage/Archive later
-
-    *****************************/
-
-  async loadChatTxs() {
-    /*
-       this.db_connection = new JsStore.Connection(new Worker("/saito/lib/jsstore/jsstore.worker.js"));
-    
-        let tbl = {
-            name: "chat_history",
-            columns: {
-                id: {primaryKey: true, autoIncrement: true},
-                group_id: {notNull: true, dataType: "string"},
-                transaction: {notNull: true, dataType: "string", enableSearch: false},
-            },
-        };
-
-        let db = {
-            name: "chat_db",
-            tables: [tbl],
-        };
-
-        var isDbCreated = await this.db_connection.initDb(db);
-
-     
-          if (isDbCreated) {
-            console.log('Db Created & connection is opened');
-          }
-          else {
-            console.log('Connection is opened');
-          }
-
-        let results = await this.db_connection.select({
-            from: "chat_history",
-        });
-
-        results.forEach((item) => {
-
-            let group = this.returnGroup(item.group_id);
-
-            if (group){
-                console.log(item);
-                let newtx = new saito.default.transaction();
-                newtx.deserialize_from_web(this.app, item.transaction);
-                newtx.decryptMessage(this.app);
-                this.addTransactionToGroup(group, newtx);
-            }
-        });
-        //db_connection.terminate();
-        this.groups.forEach((group) => {
-            group.unread = 0;
-        });
-
-        this.app.connection.emit("chat-manager-render-request");
-        */
-  }
-
-  async saveChatTx(tx, group_id) {
-    /*datas = {
-            group_id,
-            transaction: tx.serialize_to_web(this.app),
-        };
-
-        try{
-
-            let inserted = await this.db_connection.insert({
-                into: "chat_history",
-                values: [datas],
-                ignore: true,
-            });
-
-            if (inserted > 0) {
-                console.log("Insert Successful");
-            }
-
-        }catch(err){
-
-        }
-        */
-  }
 
   onWalletReset(nuke) {
     console.log("Wallet reset");
@@ -1272,13 +1187,6 @@ class Chat extends ModTemplate {
       }
     }
 
-    /*this.db_connection.dropDb().then(function() {
-            console.log('Db deleted successfully');
-            window.location.reload();
-        }).catch(function(error) {
-            console.log(error);
-        });;
-        */
   }
 
   startTabNotification() {
