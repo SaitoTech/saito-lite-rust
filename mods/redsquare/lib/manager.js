@@ -26,7 +26,7 @@ class TweetManager {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            console.log("Intersection");
+            console.log("Intersection: " + this.mode);
 
             this.showLoader();
 
@@ -35,6 +35,8 @@ class TweetManager {
             //
             if (this.mode == "tweets") {
               mod.loadTweets(null, (txs) => {
+                if (this.mode !== "tweets") { return; }
+
                 this.hideLoader();
                 for (let i = 0; i < this.mod.tweets.length; i++) {
                   let tweet = this.mod.tweets[i];
@@ -56,6 +58,7 @@ class TweetManager {
             if (this.mode == "notifications") {
 
               mod.loadNotifications(null, (txs) => {
+                if (this.mode !== "notifications") { return; }
                 for (let i = 0; i < this.mod.notifications.length; i++) {
                   let notification = new Notification(
                     this.app,
@@ -81,6 +84,8 @@ class TweetManager {
             //
             if (this.mode == "profile") {
               this.mod.loadProfileTweets(null, this.publickey, (txs) => {
+                if (this.mode !== "profile") { return; }
+                
                 for (let z = 0; z < txs.length; z++) {
                   let tweet = new Tweet(this.app, this.mod, txs[z]);
                   tweet.render();
@@ -112,10 +117,7 @@ class TweetManager {
     if (!document.querySelector(myqs)) {
       this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
     } else {
-      if (document.querySelector("#redsquare-intersection")) {
-        document.querySelector("#redsquare-intersection").remove();
-      }
-      this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
+      document.querySelector(myqs).innerHTML = "";
     }
 
 
@@ -221,7 +223,7 @@ class TweetManager {
     let button = document.querySelector(".rs-back-button");
     if (button){
       button.onclick = (e) => {
-        this.app.connection.emit("redsquare-home-render-request", false);
+        this.app.connection.emit("redsquare-home-render-request");
       }
     }
 
@@ -237,12 +239,6 @@ class TweetManager {
   }
 
   showLoader() {
-    if (!document.querySelector("#redsquare-intersection")) {
-      if (document.querySelector(".tweet-manager")) {
-        document.querySelector(".tweet-manager").remove();
-      }
-      this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
-    }
     this.loader.show();
   }
   hideLoader() {

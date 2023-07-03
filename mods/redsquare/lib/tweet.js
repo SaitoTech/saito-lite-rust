@@ -522,7 +522,7 @@ class Tweet {
           //
           if (e.target.tagName != "IMG") {
             //window.location.href = `/redsquare/?tweet_id=${this.thread_id}`;
-            app.connection.emit("redsquare-home-tweet-render-request", this);
+            app.connection.emit("redsquare-tweet-render-request", this);
           }
         };
       }
@@ -538,11 +538,11 @@ class Tweet {
             //window.location.href = `/redsquare/?tweet_id=${sig}`;
             let t = this.mod.returnTweet(sig);
             if (t) {
-              app.connection.emit("redsquare-home-tweet-render-request", t);  
+              app.connection.emit("redsquare-tweet-render-request", t);  
             }else{
               console.warn("This is going to screw up the feed");
               this.retweet.container = ".tweet-manager";
-              app.connection.emit("redsquare-home-tweet-render-request", this.retweet);  
+              app.connection.emit("redsquare-tweet-render-request", this.retweet);  
             }
           }
         });

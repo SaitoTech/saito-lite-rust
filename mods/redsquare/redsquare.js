@@ -15,7 +15,7 @@ const localforage = require("localforage");
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
- * lib/main.js:    this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {   // renders tweet
+ * lib/main.js:    this.app.connection.on("redsquare-tweet-render-request", (tweet) => {   // renders tweet
  * lib/main.js:    this.app.connection.on("redsquare-profile-render-request", () => {     // renders profile
  * lib/main.js:    //this.app.connection.on("redsquare-contacts-render-request", () => {    // renders contacts
  * lib/main.js:    this.app.connection.on("redsquare-notifications-render-request", () => {   // renders notifications
@@ -298,6 +298,7 @@ class RedSquare extends ModTemplate {
       return;
     }
 
+
     //
     // redsquare -- load tweets
     //
@@ -315,7 +316,7 @@ class RedSquare extends ModTemplate {
             this.addTweet(txs[z]);
           }
           let tweet = this.returnTweet(tweet_id);
-          this.app.connection.emit("redsquare-home-tweet-render-request", tweet);
+          this.app.connection.emit("redsquare-tweet-render-request", tweet);
         });
         return;
       }
@@ -903,7 +904,7 @@ class RedSquare extends ModTemplate {
               if (!tweet.tx.optional.num_replies) {
                 tweet.tx.optional.num_replies = 0;
               }
-
+              
               tweet.tx.optional.num_replies++;
 
               this.app.storage.updateTransaction(
@@ -1052,9 +1053,9 @@ class RedSquare extends ModTemplate {
       await app.storage.executeDatabase(sql, params, "redsquare");
 
       // If you just inserted a record, you don't need to update its updated_at right away
-      // but if it is part of a thread, then yes!
+      // but if it is part of a thread, then yes! 
       // We should update the whole thread (?) or just the root tweet
-      if (tx.transaction.sig !== tweet.thread_id) {
+      if (tx.transaction.sig !== tweet.thread_id){
         let ts = tx.transaction.ts;
         let sql2 = "UPDATE tweets SET updated_at = $timestamp WHERE sig = $sig";
         let params2 = {
@@ -1285,7 +1286,7 @@ class RedSquare extends ModTemplate {
     });
   }
 
-  saveLocalTweets() {
+  saveOptions(){
     if (!this.app.BROWSER || !this.browser_active) {
       return;
     }
@@ -1298,7 +1299,15 @@ class RedSquare extends ModTemplate {
     this.app.options.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
 
     //console.log(JSON.parse(JSON.stringify(this.app.options.redsquare)));
-    this.app.storage.saveOptions();
+    this.app.storage.saveOptions();    
+  }
+
+  async saveLocalTweets() {
+    if (!this.app.BROWSER || !this.browser_active) {
+      return;
+    }
+
+    this.saveOptions();
 
     let tweet_txs = [];
     let maximum = 30;
@@ -1309,6 +1318,7 @@ class RedSquare extends ModTemplate {
         break;
       }
     }
+    console.log("start save");
     localforage.setItem(`tweet_history`, tweet_txs).then(function () {
       console.log(`Saved ${tweet_txs.length} tweets`);
     });
@@ -1324,8 +1334,7 @@ class RedSquare extends ModTemplate {
       //  page when fetching page source)
       //
       try {
-        console.info("fetching open graph info for: " + link);
-        return fetch(link, { redirect: "follow", follow: 1000 })
+        return fetch(link, { follow: 10 })
           .then((res) => res.text())
           .then((data) => {
             // required og properties for link preview
@@ -1336,16 +1345,6 @@ class RedSquare extends ModTemplate {
               "og:url": "",
               "og:image": "",
               "og:site_name": "",
-            };
-            let tw_tags = {
-              "twitter:exitst": false,
-              "twitter:card": "",
-              "twitter:site": "",
-              "twitter:creator": "",
-              "twitter:title": "",
-              "twitter:url": "",
-              "twitter:description": "",
-              "twitter:image": "",
             };
 
             // prettify html - unminify html if minified
@@ -1367,32 +1366,9 @@ class RedSquare extends ModTemplate {
                 og_tags["og:exists"] = true;
               }
             }
-            //console.info(JSON.stringify(og_tags));
-            // check for twitter tags if og does not exist.
-            // loop each meta tag and fetch required og properties
-            for (let i = 0; i < meta_tags.length; i++) {
-              let property = meta_tags[i].getAttribute("property");
-              let content = meta_tags[i].getAttribute("content");
-              // get required og properties only, discard others
-              if (property in tw_tags) {
-                tw_tags[property] = content;
-                tw_tags["twitter:exists"] = true;
-              }
-            }
-            //console.info(JSON.stringify(tw_tags));
-            
-            if (tw_tags["twitter:exists"]) {
-              if (og_tags["og:title"] ? "" : tw_tags["twitter:title"]);
-              if (tw_tags["og:description"] ? "" : tw_tags["twitter:description"]);
-              if (tw_tags["og:url"] ? "" : tw_tags["twitter:url"]);
-              if (tw_tags["og:image"] ? "" : tw_tags["twitter:image"]);
-              if (tw_tags["og:site_name"] ? "" : tw_tags["twitter:site"]);
-            }
-            //console.info(JSON.stringify(og_tags));
 
             return og_tags;
-          })
-          .catch((err) => console.error("Error fetching content" + err));
+          });
       } catch (err) {
         return "";
       }
