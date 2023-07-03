@@ -1099,7 +1099,7 @@ alert("Not Implemented");
       },
       menuOption  :       function(his_self, menu, player) {
         if (menu === "debate") {
-          return { faction : "protestant" , event : 'substitute_luther', html : `<li class="option" id="substitute_luther">Here I Stand (assign Luther)</li>` };
+          return { faction : "protestant" , event : '007', html : `<li class="option" id="007">Here I Stand (assign Luther)</li>` };
         }
         return {};
       },
@@ -1277,13 +1277,13 @@ alert("Not Implemented");
 	his_self.game.queue.push("hide_overlay\ttheses");
         his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation has begun!");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-	his_self.game.queue.push("protestant_reformation\t"+player);
-	his_self.game.queue.push("protestant_reformation\t"+player);
-	his_self.game.queue.push("protestant_reformation\t"+player);
-	his_self.game.queue.push("protestant_reformation\t"+player);
-	his_self.game.queue.push("protestant_reformation\t"+player);
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
-	his_self.game.queue.push("STATUS\t<div class='message'>Protestants selecting reformation targets...</div></div>\t"+JSON.stringify(players_to_go));
+	his_self.game.queue.push("STATUS\tProtestants selecting reformation targets...\t"+JSON.stringify(players_to_go));
 	his_self.game.queue.push("show_overlay\ttheses");
         his_self.convertSpace("protestant", "wittenberg");
         his_self.addUnit("protestant", "wittenberg", "regular");
@@ -1308,7 +1308,13 @@ alert("Not Implemented");
 	        space.religion === "protestant" &&
 	        (space.language === language_zone || language_zone == "all") &&
 	        !his_self.game.state.tmp_counter_reformations_this_turn.includes(space.key) &&
-	        his_self.isSpaceAdjacentToReligion(space, "catholic")
+	        ( 
+		  his_self.isSpaceAdjacentToReligion(space, "catholic")
+		  ||
+		  space.university == 1
+		  ||
+		  his_self.doesSpaceContainCatholicReformer(space)
+	        )
 	      ) {
 	        return 1;
 	      }
@@ -1344,8 +1350,9 @@ alert("Not Implemented");
 	      //
 	      function(spacekey) {
 	  	his_self.updateStatus("Counter-Reformation attempt in "+spacekey);
-		his_self.addMove("counter_reformation\t"+spacekey);
-		his_self.addMove("counter_or_acknowledge\tCatholic Counter-Reformation Attempt in "+spacekey+"\tcatholic_counter_reformation\t"+spacekey);
+		his_self.addMove("counter_reformation\t"+spacekey+"\t"+language_zone);
+		let name = his_self.game.spaces[spacekey].name;
+		his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt in "+spacekey+"\tcatholic_counter_reformation\t"+name);
         	his_self.addMove("RESETCONFIRMSNEEDED\tall");
 		his_self.endTurn();
 	      },
@@ -1380,7 +1387,13 @@ alert("Not Implemented");
 		space.religion === "catholic" &&
 		!his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
 		(space.language === language_zone || language_zone == "all") &&
-		his_self.isSpaceAdjacentToReligion(space, "protestant")
+		(
+			his_self.isSpaceAdjacentToReligion(space, "protestant")
+			||
+			his_self.doesSpaceContainProtestantReformer(space)
+			||
+			his_self.isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space)
+		)
 	      ) {
 	        return 1;
 	      }
@@ -1415,7 +1428,7 @@ alert("Not Implemented");
 	      //
 	      function(spacekey) {
 	  	his_self.updateStatus("Reformation attempt in "+spacekey);
-		his_self.addMove("reformation\t"+spacekey);
+		his_self.addMove("reformation\t"+spacekey+"\t"+language_zone);
 		his_self.addMove("counter_or_acknowledge\tProtestant Reformation Attempt in "+spacekey+"\tprotestant_reformation\t"+spacekey);
         	his_self.addMove("RESETCONFIRMSNEEDED\tall");
 		his_self.endTurn();

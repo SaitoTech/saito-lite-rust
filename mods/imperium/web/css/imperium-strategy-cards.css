@@ -1,4 +1,30 @@
 
+.strategy-card-leadership .text {
+  color: #13b708bb;
+}
+.strategy-card-diplomacy .text {
+  color: #ffc45ebb;
+}
+.strategy-card-politics .text {
+  color: #7a8de5bb;
+}
+.strategy-card-construction .text {
+  color: #feacacbb;
+}
+.strategy-card-trade .text {
+  color: #acfef8bb;
+}
+.strategy-card-warfare .text {
+  color: #fef9acbb;
+}
+.strategy-card-technology .text {
+  color: #d8acfebb;
+}
+.strategy-card-imperial .text {
+  color: #ff7272bb;
+}
+
+
 .strategy-card-overlay {
     display: flex;
     flex-wrap: wrap;

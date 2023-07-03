@@ -765,8 +765,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let his_self = this;
 
-    let html = '<div class="message">' + msg + '</div>';
-
+    let html = '';
     html += '<ul>';
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
@@ -790,7 +789,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     }
     html += '</ul>';
 
-    this.updateStatus(html);
+    this.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', function () {
@@ -829,8 +828,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let his_self = this;
 
-    let html = '<div class="message">' + msg + '</div>';
-
+    let html = '';
     html += '<ul>';
     for (let key in this.game.navalspaces) {
       if (filter_func(this.game.navalspaces[key]) == 1) {
@@ -859,7 +857,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     }
     html += '</ul>';
 
-    this.updateStatus(html);
+    this.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', function () {
@@ -2013,8 +2011,10 @@ console.log("units length: " + space.units[defender].length);
 
     if (ops < 2) { return 0; }
     let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
+console.log("SPACES WITH INFANTRY: " + JSON.stringify(spaces_with_infantry));
     for (let i = 0; i < spaces_with_infantry.length; i++) {
-      if (!his_self.game.spaces[spaces_with_infantry[i]].ports.length > 0) {
+console.log("SPACE: " + spaces_with_infantry[i]);
+      if (his_self.game.spaces[spaces_with_infantry[i]].ports.length == 0) {
 	spaces_with_infantry.splice(i, 1);
 	i--;
       }
@@ -2785,6 +2785,7 @@ return;
       $('.option').off();
       $('.option').on('click', function () {
 
+        $('.option').off();
         his_self.language_zone_overlay.hide();
 
         let id = $(this).attr("id");
@@ -2793,21 +2794,35 @@ return;
 
           let msg = "Use Calvin Debater Bonus +1 Attempt:";
           let html = '<ul>';
-          html += '<li class="option" style="" id="yes">Yes, Commit Calvin</li>';
+          html += '<li class="option" style="" id="calvin-debater">Yes, Commit Calvin</li>';
           html += '<li class="option" style="" id="no">No</li>';
           html += '</ul>';
 
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
+          $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.show(action2);
+            }
+          });
+          $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.hide(action2);
+            }
+          });
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    if (id === "yes") {
+	    his_self.addMove("hide_overlay\tpublish_treastise\tfrench");
+	    if (id === "calvin-debater") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
+	    his_self.addMove("show_overlay\tpublish_treastise\tfrench");
 	    his_self.endTurn();
 
 	    return 0;
@@ -2821,21 +2836,35 @@ return;
 
           let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
           let html = '<ul>';
-          html += '<li class="option" style="" id="yes">Yes, Commit Carlstadt</li>';
+          html += '<li class="option" style="" id="carlstadt-debater">Yes, Commit Carlstadt</li>';
           html += '<li class="option" style="" id="no">No</li>';
           html += '</ul>';
 
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
+          $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.show(action2);
+            }
+          });
+          $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.hide(action2);
+            }
+          });
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    if (id === "yes") {
+	    his_self.addMove("hide_overlay\tpublish_treastise\tgerman");
+	    if (id === "carlstadt") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
+	    his_self.addMove("show_overlay\tpublish_treastise\tgerman");
 	    his_self.endTurn();
 
 	    return 0;
@@ -2844,8 +2873,10 @@ return;
 	  return 0;
         }
 
+	his_self.addMove("hide_overlay\tpublish_treastise\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+	his_self.addMove("show_overlay\tpublish_treastise\t"+id);
 	his_self.endTurn();
       });
 
@@ -2895,12 +2926,14 @@ return;
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
-    $('.option').on('click', () => {
+    $('.option').on('click', (e) => {
+
+      $('.option').off();
+      let language_zone = e.currentTarget.id;
 
       his_self.language_zone_overlay.hide();
-      let language_zone = $(this).attr("id");
 
-      let msg = "Against Comitted or Uncommited Debater?";
+      let msg = "Against Commited or Uncommited Debater?";
       let html = '<ul>';
       if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
           html += '<li class="option" id="committed">Committed</li>';
@@ -2913,6 +2946,14 @@ return;
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
+      $('.option').on('mouseover', function() {
+        let action2 = $(this).attr("id");
+        his_self.cardbox.show(action2);
+      });
+      $('.option').on('mouseout', function() {
+        let action2 = $(this).attr("id");
+        his_self.cardbox.hide(action2);
+      });
       $('.option').on('click', () => {
 
         let committed = $(this).attr("id");
@@ -2955,7 +2996,7 @@ return;
   }
   async playerBurnBooks(his_self, player, faction) {
 
-    let msg = "Select Language Zone for Counter-Reformation Attempts:";
+    let msg = "Select Language Zone for Counter Reformations";
     let html = '<ul>';
         html += '<li class="option german" style="" id="german">German</li>';
         html += '<li class="option english" style="" id="english">English</li>';
@@ -2974,6 +3015,7 @@ return;
     $('.option').off();
     $('.option').on('click', function () {
 
+      $('.option').off();
       his_self.language_zone_overlay.hide();
       let id = $(this).attr("id");
 
@@ -2982,13 +3024,13 @@ return;
         let msg = "Commit Debater for Burn Books Bonus:";
         let html = '<ul>';
 	if (his_self.canPlayerCommitDebater("papacy", "tetzel-debater")) {
-          html += '<li class="option" style="" id="tetzel">+1 to Saint Peters</li>';
+          html += '<li class="option" style="" id="tetzel-debater">+1 to Saint Peters</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "cajetan-debater")) {
-          html += '<li class="option" style="" id="cajetan">Cajetan +1 Attempt</li>';
+          html += '<li class="option" style="" id="cajetan-debater">Cajetan +1 Attempt</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "caraffa-debater")) {
-          html += '<li class="option" style="" id="caraffa">Caraffa +1 Attempt</li>';
+          html += '<li class="option" style="" id="caraffa-debater">Caraffa +1 Attempt</li>';
         }
         html += '<li class="option" style="" id="no">No</li>';
 	html += '</ul>';
@@ -2996,20 +3038,34 @@ return;
         his_self.updateStatusWithOptions(msg, html);
 
         $('.option').off();
+        $('.option').on('mouseover', function() {
+          let action2 = $(this).attr("id");
+          if (his_self.debaters[action2]) {
+            his_self.cardbox.show(action2);
+          }
+        });
+        $('.option').on('mouseout', function() {
+          let action2 = $(this).attr("id");
+          if (his_self.debaters[action2]) {
+            his_self.cardbox.hide(action2);
+          }
+        });
         $('.option').on('click', function () {
           let id2 = $(this).attr("id");
 
-	  if (id2 === "tetzel") {
+	  if (id2 === "tetzel-debater") {
             his_self.addMove("build_saint_peters");
 	  }
 
-	  if (id2 === "cajetan" || id2 === "caraffa") {
-	    if (id2 === "cajetan") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
-	    if (id2 === "caraffa") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
+	  his_self.addMove("hide_overlay\tburn_books\t"+id);
+	  if (id2 === "cajetan-debater" || id2 === "caraffa-debater") {
+	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
+	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
             his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
 	  }
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+	  his_self.addMove("show_overlay\tburn_books\t"+id);
 	  his_self.endTurn();
 
 	  return 0;
@@ -3018,8 +3074,10 @@ return;
 	return 0;
       }
 
+      his_self.addMove("hide_overlay\tburn_books\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+      his_self.addMove("show_overlay\tburn_books\t"+id);
       his_self.endTurn();
     });
 

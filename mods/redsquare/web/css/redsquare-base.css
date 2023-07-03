@@ -102,6 +102,10 @@
   height: 1rem;
 }
 
+.saito-main {
+  transition: opacity 0.8s;
+}
+
 .saito-main>.saito-loader {
   margin-top: 15vh;
 }

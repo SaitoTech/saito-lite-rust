@@ -885,7 +885,7 @@ Habsburg conquistadores:
         if (menu == "translation_german_language_zone") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'martin_luther', html : `<li class="option" id="martin_luther">Martin Luther +1 Bonus CP</li>` };
+            return { faction : extra , event : 'luther-debater', html : `<li class="option" id="luther-debater">Martin Luther +1 Bonus CP</li>` };
           }
         } 
         return {};
@@ -925,7 +925,7 @@ Habsburg conquistadores:
         if (menu == "translation_german_language_zone") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'melanchthon', html : `<li class="option" id="melanchthon">Melanchthon +1 Bonus CP</li>` };
+            return { faction : extra , event : 'melanchthon-debater', html : `<li class="option" id="melanchthon-debater">Melanchthon +1 Bonus CP</li>` };
           }
         } 
         return {};
@@ -971,7 +971,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'ulrich_zwingli', html : `<li class="option" id="ulrich_zwingli">Ulrich Zwingli +1 Roll</li>` };
+            return { faction : extra , event : 'zwingli-debater', html : `<li class="option" id="zwingli-debater">Ulrich Zwingli +1 Roll</li>` };
           }
         } 
         return {};
@@ -1016,7 +1016,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'martin_bucer', html : `<li class="option" id="martin_bucer">Martin Bucer +1 Roll</li>` };
+            return { faction : extra , event : 'bucer-debater', html : `<li class="option" id="bucer-debater">Martin Bucer +1 Roll</li>` };
           }
         } 
         return {};
@@ -1060,7 +1060,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'oekolampadius', html : `<li class="option" id="oekolampadius">Johannes Oekolampadius +1 Bonus</li>` };
+            return { faction : extra , event : 'oekolampadius-debater', html : `<li class="option" id="oekolampadius-debater">Johannes Oekolampadius +1 Bonus</li>` };
           }
         } 
         return {};
@@ -1094,9 +1094,6 @@ Habsburg conquistadores:
 
 
 
-
-
-
     this.importDebater('bullinger-debater', {
       type		:	"bullinger-debater" ,
       name		: 	"Heinrich Bullinger",
@@ -1108,7 +1105,7 @@ Habsburg conquistadores:
       committed		: 	0,
       menuOption  :       function(his_self, menu, player) {
         if (menu === "debate") {
-          return { faction : "protestant" , event : 'substitute_bullinger', html : `<li class="option" id="substitute_bullinger">substitute Bullinger</li>` };
+          return { faction : "protestant" , event : 'bullinger-debater', html : `<li class="option" id="bullinger-debater">substitute Bullinger</li>` };
         }
         return {};
       },
@@ -1307,7 +1304,7 @@ Habsburg conquistadores:
         if (menu == "catholic_counter_reformation") {
           let p = his_self.returnPlayerOfFaction("papacy");
           if (p === his_self.game.player) {
-            return { faction : extra , event : 'peter_canisius', html : `<li class="option" id="peter_canisius">Peter Canisius +1 Roll</li>` };
+            return { faction : extra , event : 'canisius-debater', html : `<li class="option" id="canisius-debater">Peter Canisius +1 Roll</li>` };
           }
         }
         return {};
@@ -1356,7 +1353,7 @@ Habsburg conquistadores:
         if (menu == "catholic_counter_reformation") {
           let p = his_self.returnPlayerOfFaction("papacy");
           if (p === his_self.game.player) {
-            return { faction : extra , event : 'peter_canisius', html : `<li class="option" id="gasparo_contarini">Gasparo Contarini +1 Roll</li>` };
+            return { faction : extra , event : 'contarini-debater', html : `<li class="option" id="contarini-debater">Gasparo Contarini +1 Roll</li>` };
           }
         }
         return {};
@@ -1366,23 +1363,25 @@ Habsburg conquistadores:
           let p = his_self.returnPlayerOfFaction("papacy");
           if (p === his_self.game.player) {
 	    let cx = his_self.returnSpaceOfPersonage("hapsburg", "charles-v");
-	    if (his_self.spaces[cx]) {
+	    if (cx) {
 	      let targets = [];
-	      targets.push(cs);
+	      if (his_self.spaces[cx]) {
+	        targets.push(cx);
 
-	      for (let i = 0; i < his_self.spaces[cx].neighbours.length; i++) {
+	        for (let i = 0; i < his_self.spaces[cx].neighbours.length; i++) {
 
-		let x = his_self.spaces[cs].neighbours[i];
-		if (!targets.includes(x)) { targets.push(x); }
+		  let x = his_self.spaces[cx].neighbours[i];
+		  if (!targets.includes(x)) { targets.push(x); }
 
-	        for (let ii = 0; ii < his_self.spaces[x].neighbours.length; ii++) {
-		  let y = his_self.spaces[x].neighbours[ii];
-		  if (!targets.includes(y)) { targets.push(y); }
-		}
+	          for (let ii = 0; ii < his_self.spaces[x].neighbours.length; ii++) {
+		    let y = his_self.spaces[x].neighbours[ii];
+		    if (!targets.includes(y)) { targets.push(y); }
+	  	  }
+	        }
 	      }
-	    }
-	    if (targets.includes(spacekey)) {
-              return 1;
+	      if (targets.includes(spacekey)) {
+                return 1;
+              }
             }
           }
         }
@@ -1404,11 +1403,11 @@ Habsburg conquistadores:
           let cx = his_self.returnSpaceOfPersonage("hapsburg", "charles-v");
           if (his_self.spaces[cx]) {
             let targets = [];
-            targets.push(cs);
+            targets.push(cx);
 
             for (let i = 0; i < his_self.spaces[cx].neighbours.length; i++) {
 
-              let x = his_self.spaces[cs].neighbours[i];
+              let x = his_self.spaces[cx].neighbours[i];
               if (!targets.includes(x)) { targets.push(x); }
 
               for (let ii = 0; ii < his_self.spaces[x].neighbours.length; ii++) {
@@ -1437,7 +1436,7 @@ Habsburg conquistadores:
         if (menu == "catholic_counter_reformation") {
           let p = his_self.returnPlayerOfFaction("papacy");
           if (p === his_self.game.player) {
-            return { faction : extra , event : 'peter_faber', html : `<li class="option" id="peter_faber">Peter Faber +1 Roll</li>` };
+            return { faction : extra , event : 'faber-debater', html : `<li class="option" id="faber-debater">Peter Faber +1 Roll</li>` };
           }
         }
         return {};
@@ -1506,7 +1505,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
           let p = his_self.returnPlayerOfFaction("protestant");
           if (p === his_self.game.player) {
-            return { faction : extra , event : 'nicholas_cop', html : `<li class="option" id="nicholas_cop">Nicholas Cop +1 Roll</li>` };
+            return { faction : extra , event : 'cop-debater', html : `<li class="option" id="cop-debater">Nicholas Cop +1 Roll</li>` };
           }
         } 
         return {};
@@ -1551,7 +1550,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
           let p = his_self.returnPlayerOfFaction("protestant");
           if (p === his_self.game.player) {
-            return { faction : extra , event : 'william_farel', html : `<li class="option" id="william_farel">William Farel +1 Roll</li>` };
+            return { faction : extra , event : 'farel-debater', html : `<li class="option" id="farel-debater">William Farel +1 Roll</li>` };
           }
         } 
         return {};
@@ -1597,7 +1596,7 @@ Habsburg conquistadores:
         if (menu == "translation_french_language_zone") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'olivetan', html : `<li class="option" id="olivetan">Olivetan +1 Bonus CP</li>` };
+            return { faction : extra , event : 'olivetan-debater', html : `<li class="option" id="olivetan-debater">Olivetan +1 Bonus CP</li>` };
           }
         } 
         return {};
@@ -1646,7 +1645,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'thomas_cranmer', html : `<li class="option" id="thomas_cranmer">Thomas Cranmer +1 Roll</li>` };
+            return { faction : extra , event : 'cranmer-debater', html : `<li class="option" id="cranmer-debater">Thomas Cranmer +1 Roll</li>` };
           }
         } 
         return {};
@@ -1691,7 +1690,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'george_wishart', html : `<li class="option" id="george_wishart">George Wishart +1 Roll</li>` };
+            return { faction : extra , event : 'wishart-debater', html : `<li class="option" id="wishart-debater">George Wishart +1 Roll</li>` };
           }
         } 
         return {};
@@ -1736,7 +1735,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'hugh_latimer', html : `<li class="option" id="hugh_latimer">Hugh Latimer +1 Roll</li>` };
+            return { faction : extra , event : 'latimer-debater', html : `<li class="option" id="latimer-debater">Hugh Latimer +1 Roll</li>` };
           }
         } 
         return {};
@@ -1781,7 +1780,7 @@ Habsburg conquistadores:
         if (menu == "protestant_reformation") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
 	  if (p === his_self.game.player) {
-            return { faction : extra , event : 'john_knox', html : `<li class="option" id="john_knox">John Knox +1 Roll</li>` };
+            return { faction : extra , event : 'knox-debater', html : `<li class="option" id="knox-debater">John Knox +1 Roll</li>` };
           }
         } 
         return {};
@@ -1827,7 +1826,7 @@ Habsburg conquistadores:
         if (menu == "translation_english_language_zone") {
           let p = his_self.returnPlayerOfFaction("protestant");
           if (p === his_self.game.player) {
-            return { faction : extra , event : 'william_tyndale', html : `<li class="option" id="william_tyndale">William Tyndale +1 Bonus CP</li>` };
+            return { faction : extra , event : 'tyndale-debater', html : `<li class="option" id="tyndale-debater">William Tyndale +1 Bonus CP</li>` };
           }
         }
         return {};
@@ -1868,7 +1867,7 @@ Habsburg conquistadores:
         if (menu == "translation_english_language_zone") {
           let p = his_self.returnPlayerOfFaction("protestant");
           if (p === his_self.game.player) {
-            return { faction : extra , event : 'myles_coverdale', html : `<li class="option" id="myles_coverdale">Myles Coverdale +1 Bonus CP</li>` };
+            return { faction : extra , event : 'coverdale-debater', html : `<li class="option" id="coverdale-debater">Myles Coverdale +1 Bonus CP</li>` };
           }
         }
         return {};
@@ -3744,7 +3743,7 @@ alert("Not Implemented");
       },
       menuOption  :       function(his_self, menu, player) {
         if (menu === "debate") {
-          return { faction : "protestant" , event : 'substitute_luther', html : `<li class="option" id="substitute_luther">Here I Stand (assign Luther)</li>` };
+          return { faction : "protestant" , event : '007', html : `<li class="option" id="007">Here I Stand (assign Luther)</li>` };
         }
         return {};
       },
@@ -3922,13 +3921,13 @@ alert("Not Implemented");
 	his_self.game.queue.push("hide_overlay\ttheses");
         his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation has begun!");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-	his_self.game.queue.push("protestant_reformation\t"+player);
-	his_self.game.queue.push("protestant_reformation\t"+player);
-	his_self.game.queue.push("protestant_reformation\t"+player);
-	his_self.game.queue.push("protestant_reformation\t"+player);
-	his_self.game.queue.push("protestant_reformation\t"+player);
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
-	his_self.game.queue.push("STATUS\t<div class='message'>Protestants selecting reformation targets...</div></div>\t"+JSON.stringify(players_to_go));
+	his_self.game.queue.push("STATUS\tProtestants selecting reformation targets...\t"+JSON.stringify(players_to_go));
 	his_self.game.queue.push("show_overlay\ttheses");
         his_self.convertSpace("protestant", "wittenberg");
         his_self.addUnit("protestant", "wittenberg", "regular");
@@ -3953,7 +3952,13 @@ alert("Not Implemented");
 	        space.religion === "protestant" &&
 	        (space.language === language_zone || language_zone == "all") &&
 	        !his_self.game.state.tmp_counter_reformations_this_turn.includes(space.key) &&
-	        his_self.isSpaceAdjacentToReligion(space, "catholic")
+	        ( 
+		  his_self.isSpaceAdjacentToReligion(space, "catholic")
+		  ||
+		  space.university == 1
+		  ||
+		  his_self.doesSpaceContainCatholicReformer(space)
+	        )
 	      ) {
 	        return 1;
 	      }
@@ -3989,8 +3994,9 @@ alert("Not Implemented");
 	      //
 	      function(spacekey) {
 	  	his_self.updateStatus("Counter-Reformation attempt in "+spacekey);
-		his_self.addMove("counter_reformation\t"+spacekey);
-		his_self.addMove("counter_or_acknowledge\tCatholic Counter-Reformation Attempt in "+spacekey+"\tcatholic_counter_reformation\t"+spacekey);
+		his_self.addMove("counter_reformation\t"+spacekey+"\t"+language_zone);
+		let name = his_self.game.spaces[spacekey].name;
+		his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt in "+spacekey+"\tcatholic_counter_reformation\t"+name);
         	his_self.addMove("RESETCONFIRMSNEEDED\tall");
 		his_self.endTurn();
 	      },
@@ -4025,7 +4031,13 @@ alert("Not Implemented");
 		space.religion === "catholic" &&
 		!his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
 		(space.language === language_zone || language_zone == "all") &&
-		his_self.isSpaceAdjacentToReligion(space, "protestant")
+		(
+			his_self.isSpaceAdjacentToReligion(space, "protestant")
+			||
+			his_self.doesSpaceContainProtestantReformer(space)
+			||
+			his_self.isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space)
+		)
 	      ) {
 	        return 1;
 	      }
@@ -4060,7 +4072,7 @@ alert("Not Implemented");
 	      //
 	      function(spacekey) {
 	  	his_self.updateStatus("Reformation attempt in "+spacekey);
-		his_self.addMove("reformation\t"+spacekey);
+		his_self.addMove("reformation\t"+spacekey+"\t"+language_zone);
 		his_self.addMove("counter_or_acknowledge\tProtestant Reformation Attempt in "+spacekey+"\tprotestant_reformation\t"+spacekey);
         	his_self.addMove("RESETCONFIRMSNEEDED\tall");
 		his_self.endTurn();
@@ -7236,6 +7248,80 @@ alert("NOT IMPLEMENTED");
 
 
 
+  hasProtestantReformer(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units["protestant"].length; i++) {
+      let unit = space.units["protestant"][i];
+      if (unit.reformer) { return true; }
+    }
+    for (let i = 0; i < space.units["england"].length; i++) {
+      let unit = space.units["england"][i];
+      if (unit.reformer) { return true; }
+    }
+    for (let i = 0; i < space.units["france"].length; i++) {
+      let unit = space.units["france"][i];
+      if (unit.reformer) { return true; }
+    }
+    return false;
+  }
+
+
+  hasProtestantLandUnits(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    //
+    // only protestant units count
+    //
+    for (let i = 0; i < space.units["protestant"].length; i++) {
+      let unit = space.units["protestant"][i];
+      if (unit.type == "regular" || unit.type == "mercenary") { return true; }
+    }
+
+    //
+    // unless Edward VI or Elizabeth I are on the throne
+    //
+    if (this.game.state.leaders.edward_vi == 1 || this.game.state.leaders.elizabeth_i == 1) {
+
+      //
+      // then british mercenaries and regulars count
+      //
+      for (let i = 0; i < space.units["england"].length; i++) {
+        let unit = space.units["england"][i];
+        if (unit.type == "regular" || unit.type == "mercenary") { return true; }
+      }
+
+      //
+      // or Scottish ones if Scotland is allied to England
+      //
+      if (this.areAllies("england", "scotland")) {
+        for (let i = 0; i < space.units["scotland"].length; i++) {
+          let unit = space.units["scotland"][i];
+          if (unit.type == "regular" || unit.type == "mercenary") { return true; }
+        }
+      }
+
+    }
+
+    return false;
+
+  }
+
+  hasCatholicLandUnits(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let f in space.units) {
+      if (f != "protestant" && f != "ottoman") {
+
+	if (f == "england" && (this.game.state.leaders.edward_vi != 1 || this.game.state.leaders.elizabeth_i != 1)) {
+          if (this.returnFactionLandUnitsInSpace(f, space)) { return true; }
+	} else {
+          if (this.returnFactionLandUnitsInSpace(f, space)) { return true; }
+	}
+      }
+    }
+
+    return false;
+  }
+
   isSpaceFriendly(space, faction) {
     let cf = this.returnFactionControllingSpace(space);
     if (cf === faction) { return true; }
@@ -7328,6 +7414,40 @@ alert("NOT IMPLEMENTED");
     }
     return false;
   }
+
+  doesSpaceContainProtestantReformer(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units["protestant"].length; i++) {
+      if (space.units["protestant"][i].reformer == true) { return true; }
+    }
+    return false;
+  }
+
+  doesSpaceContainCatholicReformer(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units["papacy"].length; i++) {
+      if (space.units["papacy"][i].reformer == true) { return true; }
+    }
+    return false;
+  }
+
+  isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let seas = [];
+    for (let i = 0; i < space.ports.length; i++) {
+      if (!seas.includes(space.ports[i])) { seas.push(space.ports[i]); }
+    }
+    for (let s in this.game.spaces) {
+      let sp = this.game.spaces[s];
+      if (sp.religion == "protestant" && sp.ports.length > 0) {
+	for (let z = 0; z < sp.ports.length; z++) {
+	  if (seas.includes(sp.ports[z])) { return true; }
+	}
+      }
+    }  
+    return false;
+  }
+
 
   returnSpacesWithFilter(filter_func) {
     let spaces = [];
@@ -7650,7 +7770,6 @@ alert("NOT IMPLEMENTED");
   canFactionRetreatToNavalSpace(faction, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
-console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports AND open sea");
     return 1;
   }
 
@@ -7672,12 +7791,9 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     // or -- failing that -- whichever faction is recorded as occupying the space.
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let f in space.units) {
-console.log("we have found: " + f);
       let luis = this.returnFactionLandUnitsInSpace(f, space);
       if (luis > 0) {
-console.log("this faction has units!");
         if (!this.areAllies(attacker_faction, f) && f !== attacker_faction) {
-console.log("this faction is not an ally to " + attacker_faction + " --- " + this.areAllies(attacker_faction, f));
 	  return f;
 	}
       }
@@ -7689,7 +7805,6 @@ console.log("this faction is not an ally to " + attacker_faction + " --- " + thi
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.occupier != "" && space.occupier != undefined && space.occupier != "undefined" && space.occupier != 'undefined') { 
       // whoever had units here first
-      console.log("occupier: " + space.occupier);
       if (space.units[space.occupier]) {
         if (space.units[space.occupier].length > 0) {
           return space.occupier; 
@@ -7813,25 +7928,18 @@ console.log("this faction is not an ally to " + attacker_faction + " --- " + thi
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     let faction_map = {};
 
-console.log("rfm: " + faction1 + " -- " + faction2);
-
     for (let f in space.units) {
-console.log("checking f: " + f);
       if (this.returnFactionLandUnitsInSpace(f, space)) {
-console.log("there are faction land units in space: " + f);
         if (f == faction1) {
           faction_map[f] = faction1;
         } else {
           if (f == faction2) {
             faction_map[f] = faction2;
           } else {
-console.log("about to check allies...");
             if (this.areAllies(f, faction1)) {
-console.log("setting as ally of " + faction1);
               faction_map[f] = faction1;
             }
             if (this.areAllies(f, faction2)) {
-console.log("setting as ally of " + faction2);
               faction_map[f] = faction2;
             }
           }
@@ -7933,6 +8041,7 @@ console.log("setting as ally of " + faction2);
 
     return neighbours;
   }
+
 
 
 
@@ -9730,7 +9839,7 @@ console.log("setting as ally of " + faction2);
       political: "",
       religion: "catholic",
       neighbours: ["modena","genoa","siena"],
-       language: "italian",
+      language: "italian",
       type: "key"
     }
     spaces['siena'] = {
@@ -9889,6 +9998,7 @@ console.log("setting as ally of " + faction2);
       spaces[key].units['independent'] = [];
       spaces[key].university = 0;
       spaces[key].unrest = 0;
+      if (!spaces[key].ports) { spaces[key].ports = []; }
       if (!spaces[key].pass) { spaces[key].pass = []; }
       if (!spaces[key].name) { spaces[key].name = key.charAt(0).toUpperCase() + key.slice(1); }
       if (!spaces[key].besieged) { spaces[key].besieged = 0; }
@@ -10575,9 +10685,12 @@ console.log(JSON.stringify(this.game.state.activated_powers[key]));
     state.tmp_reformations_this_turn = [];
     state.tmp_counter_reformations_this_turn = [];
     state.tmp_protestant_reformation_bonus = 0;
-    state.tmp_catholic_reformation_bonus = 0;
-    state.tmp_protestant_counter_reformation_bonus = 0;
     state.tmp_protestant_reformation_bonus_spaces = [];
+    state.tmp_catholic_reformation_bonus = 0;
+    state.tmp_catholic_reformation_bonus_spaces = [];
+
+    state.tmp_protestant_counter_reformation_bonus = 0;
+    state.tmp_protestant_counter_reformation_bonus_spaces = [];
     state.tmp_catholic_counter_reformation_bonus = 0;
     state.tmp_catholic_counter_reformation_bonus_spaces = [];
     state.tmp_papacy_may_specify_debater = 0;
@@ -11496,8 +11609,21 @@ console.log("MOVE: " + mv[0]);
 	}
 
 	if (mv[0] === "show_overlay") {
+
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.render(); }
+	  if (mv[1] === "zoom") {
+	    let lz = mv[2];
+	    this.theses_overlay.render(lz);
+          }
+	  if (mv[1] === "burn_books") {
+	    let lz = mv[2];
+	    this.theses_overlay.render(lz);
+          }
+	  if (mv[1] === "publish_treatise") {
+	    let lz = mv[2];
+	    this.theses_overlay.render(lz);
+          }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.render(); }
 	  if (mv[1] === "field_battle") {
 	    if (mv[2] === "post_field_battle_attackers_win") { this.field_battle_overlay.attackersWin(his_self.game.state.field_battle); }
@@ -11508,6 +11634,9 @@ console.log("MOVE: " + mv[0]);
 	}
 	if (mv[0] === "hide_overlay") {
 	  if (mv[1] === "theses") { this.theses_overlay.hide(); }
+	  if (mv[1] === "zoom") { this.theses_overlay.hide(); }
+	  if (mv[1] === "burn_books") { this.theses_overlay.hide(); }
+	  if (mv[1] === "publish_treatise") { this.theses_overlay.hide(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.hide(); }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.hide(); }
 	  if (mv[1] === "field_battle") { this.field_battle_overlay.hide(); }
@@ -12848,6 +12977,7 @@ console.log(JSON.stringify(mv));
 	  //
 	  let x = [];
 	  for (let i = 0; i < this.game.deck[0].fhand[0].length; i++) {
+console.log("CARDS: " + JSON.stringify(this.game.deck[0].fhand));
 	    if (this.game.deck[0].cards[this.game.deck[0].fhand[0][i]].type === "mandatory") {} else { x.push(this.game.deck[0].fhand[0][i]); }
 	  }
 
@@ -12977,7 +13107,7 @@ console.log("POOL: " + hapsburg_card);
 	    for (let i = 1; i <= total_conversion_attempts && i <= this.returnNumberOfCatholicSpacesInLanguageZone(); i++) {
 	      this.game.queue.push("select_for_protestant_conversion\tprotestant\tgerman");
 	    }
-  	    this.game.queue.push("STATUS\t<div class='message'>Protestants selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_protestant));
+  	    this.game.queue.push("STATUS\tProtestants selecting towns to convert...\t"+JSON.stringify(all_players_but_protestant));
   	    this.game.queue.push("show_overlay\ttheses");
   	    this.game.queue.push("ACKNOWLEDGE\tProtestants win Diet of Worms");
 
@@ -12989,7 +13119,7 @@ console.log("POOL: " + hapsburg_card);
 	      for (let i = 1; i <= total_conversion_attempts && i <= this.returnNumberOfProtestantSpacesInLanguageZone(); i++) {
 	        this.game.queue.push("select_for_catholic_conversion\tpapacy\tgerman");
 	      }
-  	      this.game.queue.push("STATUS\t<div class='message'>Papacy selecting towns to convert...</div>\t"+JSON.stringify(all_players_but_papacy));
+  	      this.game.queue.push("STATUS\tPapacy selecting towns to convert...\t"+JSON.stringify(all_players_but_papacy));
   	      this.game.queue.push("show_overlay\ttheses");
   	      this.game.queue.push("ACKNOWLEDGE\tPapacy wins Diet of Worms");
 	    } else {
@@ -13093,6 +13223,24 @@ console.log("POOL: " + hapsburg_card);
 	  this.updateStatusWithOptions(msg, html);
 
 	  $('.option').off();
+	  $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+	    if (his_self.debaters[action2]) {
+	      his_self.cardbox.show(action2);
+	    }
+	    if (his_self.game.deck[0].cards[action2]) {
+	      his_self.cardbox.show(action2);
+	    }
+          });
+	  $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+	    if (his_self.debaters[action2]) {
+	      his_self.cardbox.hide(action2);
+	    }
+	    if (his_self.game.deck[0].cards[action2]) {
+	      his_self.cardbox.hide(action2);
+	    }
+	  });
           $('.option').on('click', function () {
 
             let action2 = $(this).attr("id");
@@ -15357,6 +15505,8 @@ console.log("purging naval units and capturing leader");
 	  let language_zone = mv[3];
 	  let committed = mv[4];
 
+alert("pick first round debater: " + language_zone);
+
 	  this.game.state.theological_debate = {};
 	  this.game.state.theological_debate.attacker_rolls = 0;
 	  this.game.state.theological_debate.defender_rolls = 0;
@@ -15492,6 +15642,8 @@ console.log("purging naval units and capturing leader");
 	  let defender_idx = 0;
 	  let was_defender_uncommitted = 0;
 
+alert("LANGUAGE ZONE: " + language_zone);
+
 	  this.game.queue.splice(qe, 1);
 
 	  //
@@ -15586,7 +15738,6 @@ console.log("purging naval units and capturing leader");
 	  this.displayTheologicalDebate(this.game.state.theological_debate);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.defender_debater, false);
-	  
 
 	  if (attacker_hits == defender_hits) {
 
@@ -15621,7 +15772,6 @@ console.log("purging naval units and capturing leader");
 	      bonus_conversions = 1;
 	    }
 
-
 	    if (attacker_hits > defender_hits) {
 
 	      let total_spaces_to_convert = attacker_hits - defender_hits;
@@ -15651,8 +15801,12 @@ console.log("purging naval units and capturing leader");
 	        this.updateLog(this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert+bonus_conversions} Spaces}`);
 	      }
 
-	      for (let i = total_spaces_to_convert+bonus_conversions; i >= 1; i--) {
-	        if (i > total_spaces_in_zone) {
+console.log("TOTAL SPACES AVAILABLE: " + (total_spaces_to_convert+ " + " + bonus_conversions));
+	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
+
+
+	      for (let i = (total_spaces_to_convert+bonus_conversions); i >= 1; i--) {
+	        if (i > (total_spaces_in_zone+bonus_conversions)) {
 		  if (attacker === "papacy") {
 		    this.game.queue.push("select_for_catholic_conversion\tpapacy");
 		  } else {
@@ -15666,10 +15820,13 @@ console.log("purging naval units and capturing leader");
 		  }
 		}
 	      }
+	      // 
+	      this.game.queue.push("show_overlay\tzoom\t"+language_zone);
 	      this.game.queue.push("hide_overlay\ttheological_debate");
 	      this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.attacker_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
               this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	      this.game.queue.push("show_overlay\ttheological_debate");
+
 	    } else {
 
 	      let total_spaces_to_convert = defender_hits - attacker_hits;
@@ -15699,6 +15856,11 @@ console.log("purging naval units and capturing leader");
 	        this.updateLog(this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
 	      }
 
+
+console.log("TOTAL SPACES AVAILABLE: " + total_spaces_to_convert);
+	      this.game.queue.push("hide_overlay\tzoom\t"+language_zone);
+
+
 	      for (let i = total_spaces_to_convert; i >= 1; i--) {
 	        if (i > total_spaces_in_zone) {
 		  if (defender === "papacy") {
@@ -15714,6 +15876,7 @@ console.log("purging naval units and capturing leader");
 		  }
 		}
 	      }
+	      this.game.queue.push("show_overlay\tzoom\t"+language_zone);
 	      this.game.queue.push("hide_overlay\ttheological_debate");
 	      this.game.queue.push("counter_or_acknowledge\t"+this.game.state.theological_debate.defender_faction + ` Wins - Convert ${total_spaces_to_convert} Spaces}`);
               this.game.queue.push("RESETCONFIRMSNEEDED\tall");
@@ -16674,6 +16837,7 @@ console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
 	  this.game.queue.splice(qe, 1);
 
 	  let space = mv[1];
+	  let target_language_zone = mv[2] || "german";
 	  this.game.state.tmp_reformations_this_turn.push(space);
 
 	  let p_rolls = 0;
@@ -16707,12 +16871,56 @@ console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
 	      p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
 	      p_neighbours++;
 	    }  
+	    if (this.hasProtestantLandUnits(this.game.spaces[space].neighbours[i])) {
+	      p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	      p_rolls++;
+	    }
+	    if (this.hasCatholicLandUnits(this.game.spaces[space].neighbours[i])) {
+	      c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+	      c_rolls++;
+	    }
+	    if (this.hasProtestantReformer(this.game.spaces[space].neighbours[i])) {
+	      p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
+	      p_rolls++;
+	    }
+	    if (this.game.spaces[this.game.spaces[space].neighbours[i]].university) {
+	      c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
+	      c_rolls++;
+	    }
+	  }
+
+	  //
+	  // ourselves
+	  //
+	  if (this.hasProtestantLandUnits(space)) {
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
+	    p_rolls++;
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
+	    p_rolls++;
+	  }
+	  if (this.hasCatholicLandUnits(space)) {
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
+	    c_rolls++;
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "land units"});
+	    c_rolls++;
+	  }
+	  if (this.hasProtestantReformer(space)) {
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "reformer"});
+	    p_rolls++;
+	    p_roll_desc.push({ name : this.game.spaces[space].name , desc : "reformer"});
+	    p_rolls++;
+	  }
+	  if (this.game.spaces[space].university) {
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "jesuit university"});
+	    c_rolls++;
+	    c_roll_desc.push({ name : this.game.spaces[space].name , desc : "jesuit university"});
+	    c_rolls++;
 	  }
 
 	  //
 	  // language zone
 	  //
-	  if (this.game.spaces[space].language !== "german") {
+	  if (this.game.spaces[space].language !== target_language_zone && target_language_zone != "all") {
 	    ties_resolve = "catholic";
  	  }
 
@@ -16725,10 +16933,10 @@ console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
 	      if (this.game.state.tmp_protestant_reformation_bonus < 0) { this.game.state.tmp_protestant_reformation_bonus = 0; }
 	    }
 	  }
-	  if (this.game.state.tmp_catholic_counter_reformation_bonus_spaces.length > 0) {
-	    if (!this.game.state.tmp_catholic_counter_reformation_bonus_spaces.includes(space)) {
-	      this.game.state.tmp_catholic_counter_reformation_bonus--;
-	      if (this.game.state.tmp_catholic_counter_reformation_bonus < 0) { this.game.state.tmp_catholic_counter_reformation_bonus = 0; }
+	  if (this.game.state.tmp_catholic_reformation_bonus_spaces.length > 0) {
+	    if (!this.game.state.tmp_catholic_reformation_bonus_spaces.includes(space)) {
+	      this.game.state.tmp_catholic_reformation_bonus--;
+	      if (this.game.state.tmp_catholic_reformation_bonus < 0) { this.game.state.tmp_catholic_reformation_bonus = 0; }
 	    }
 	  }
 
@@ -16750,7 +16958,17 @@ console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
 	  c_rolls += c_neighbours;
 	  c_rolls += c_bonus;
 
-console.log("PROLLS: " + p_rolls + " -- " + p_bonus);
+          //
+          // everyone rolls at least 1 dice
+          //
+          if (c_rolls == 0) {
+	    c_roll_desc.push({ name : "Default Roll" , desc : "base minimum"});
+	    c_rolls = 1;
+	  }
+          if (p_rolls == 0) {
+	    p_roll_desc.push({ name : "Default Roll" , desc : "base minimum"});
+	    p_rolls = 1;
+	  }
 
 	  let pdice = [];
 	  let cdice = [];
@@ -16766,9 +16984,6 @@ console.log("PROLLS: " + p_rolls + " -- " + p_bonus);
 	    if (x > c_high) { c_high = x; }
 	    cdice.push(x);
 	  }
-
-this.updateLog("Protestants: " + JSON.stringify(pdice));
-this.updateLog("Catholics: " + JSON.stringify(cdice));
 
 	  //
 	  // do protestants win?
@@ -16811,6 +17026,7 @@ this.updateLog("Catholics: " + JSON.stringify(cdice));
 	  this.game.queue.splice(qe, 1);
 
 	  let space = mv[1];
+	  let target_language_zone = mv[2] || "german";
 	  this.game.state.tmp_counter_reformations_this_turn.push(space);
 
 	  let p_rolls = 0;
@@ -16825,49 +17041,107 @@ this.updateLog("Catholics: " + JSON.stringify(cdice));
 	  let p_high = 0;
 	  let c_high = 0;
 
+	  let p_roll_desc = [];
+	  let c_roll_desc = [];
+
 	  let catholics_win = 0;
 
 	  let ties_resolve = "protestant";
 
 	  //
-	  // catholics win ties if Paul III or Julius III are Pope
-	  //
-	  if (this.game.state.leaders.paul_iii == 1 || this.game.state.leaders.julius_iii == 1) {
-	    ties_resolve = "catholic";
-	  }
-
-	  //
-	  // neighbours
-	  //
-	  for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
-	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
-	      c_neighbours++;
-	    }
-	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
-	      p_neighbours++;
-	    }  
-	  }
-
-	  //
 	  // language zone
 	  //
-console.log("FIX: unknown how to handle target language zone");
-	  //if (this.game.spaces[space].language !== "german") {
-	  //  ties_resolve = "catholic";
- 	  //}
+	  if (this.game.spaces[space].language !== target_language_zone) {
+	    //
+	    // catholics win ties if Paul III or Julius III are Pope
+	    //
+	    if (this.game.state.leaders.paul_iii == 1 || this.game.state.leaders.julius_iii == 1) {
+	      ties_resolve = "catholic";
+	    }
+ 	  }
 
+          //
+          // neighbours
+          //
+          for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
+            if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
+              c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
+              c_neighbours++;
+            }
+            if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
+              p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "adjacency"});
+              p_neighbours++;
+            }
+            if (this.hasProtestantLandUnits(this.game.spaces[space].neighbours[i])) {
+              p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+              p_rolls++;
+            }
+            if (this.hasCatholicLandUnits(this.game.spaces[space].neighbours[i])) {
+              c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+              c_rolls++;
+            }
+            if (this.hasProtestantReformer(this.game.spaces[space].neighbours[i])) {
+              p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
+              p_rolls++;
+            }
+            if (this.game.spaces[this.game.spaces[space].neighbours[i]].university) {
+              c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
+              c_rolls++;
+            }
+          }
 
-	  // jesuit universities
-console.log("FIX: not yet handling jesuit university counter-reformation bonus");
-	  // stack of land units
-console.log("FIX: not yet handling catholic land units");
-
+          //
+          // ourselves
+          //
+          if (this.hasProtestantLandUnits(space)) {
+            p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+            p_rolls++;
+            p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+            p_rolls++;
+          }
+          if (this.hasCatholicLandUnits(space)) {
+            c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+            c_rolls++;
+            c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "land units"});
+            c_rolls++;
+          }
+          if (this.hasProtestantReformer(space)) {
+            p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
+            p_rolls++;
+            p_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "reformer"});
+            p_rolls++;
+          }
+          if (this.game.spaces[space].university) {
+            c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
+            c_rolls++;
+            c_roll_desc.push({ name : this.game.spaces[this.game.spaces[space].neighbours[i]].name , desc : "jesuit university"});
+            c_rolls++;
+          }
 
 	  //
 	  // temporary bonuses
 	  //
-	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
-	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
+	  if (this.game.state.tmp_protestant_counter_reformation_bonus_spaces.length > 0) {
+	    if (!this.game.state.tmp_protestant_counter_reformation_bonus_spaces.includes(space)) {
+	      this.game.state.tmp_protestant_counter_reformation_bonus--;
+	      if (this.game.state.tmp_protestant_counter_reformation_bonus < 0) { this.game.state.tmp_protestant_counter_reformation_bonus = 0; }
+	    }
+	  }
+	  if (this.game.state.tmp_catholic_counter_reformation_bonus_spaces.length > 0) {
+	    if (!this.game.state.tmp_catholic_counter_reformation_bonus_spaces.includes(space)) {
+	      this.game.state.tmp_catholic_counter_reformation_bonus--;
+	      if (this.game.state.tmp_catholic_counter_reformation_bonus < 0) { this.game.state.tmp_catholic_counter_reformation_bonus = 0; }
+	    }
+	  }
+
+          for (let i = 0; i < this.game.state.tmp_protestant_counter_reformation_bonus; i++) {
+            p_roll_desc.push({ name : "Bonus" , desc : "protestant bonus roll"});
+          }
+          for (let i = 0; i < this.game.state.tmp_catholic_counter_reformation_bonus; i++) {
+            c_roll_desc.push({ name : "Bonus" , desc : "catholic bonus roll"});
+          }
+          p_bonus += this.game.state.tmp_protestant_counter_reformation_bonus;
+          c_bonus += this.game.state.tmp_catholic_counter_reformation_bonus;
 
 	  //
 	  // calculate total rolls
@@ -16880,8 +17154,14 @@ console.log("FIX: not yet handling catholic land units");
 	  //
 	  // everyone rolls at least 1 dice
 	  //
-	  if (c_rolls == 0) { c_rolls = 1; }
-	  if (p_rolls == 0) { p_rolls = 1; }
+          if (c_rolls == 0) {
+	    c_roll_desc.push({ name : "Default Roll" , desc : "base minimum"});
+	    c_rolls = 1;
+	  }
+          if (p_rolls == 0) {
+	    p_roll_desc.push({ name : "Default Roll" , desc : "base minimum"});
+	    p_rolls = 1;
+	  }
 
 	  let pdice = [];
 	  let cdice = [];
@@ -16898,23 +17178,28 @@ console.log("FIX: not yet handling catholic land units");
 	    if (x > c_high) { c_high = x; }
 	  }
 
-this.updateLog("Total Rolls: ");
-this.updateLog("Protestants: " + JSON.stringify(pdice));
-this.updateLog("Catholics: " + JSON.stringify(cdice));
-
-
 	  //
-	  // do protestants win?
+	  // do catholics win?
 	  //
 	  if (p_high < c_high) { catholics_win = 1; }
 	  if (p_high == c_high && ties_resolve === "catholics") { catholics_win = 1; }
 
-
-	  //
-	  //
-	  //
-	  this.reformation_overlay.render();
-
+          //
+          // render results
+          //
+          let obj = {};
+          obj.key = mv[1];
+          obj.name = this.spaces[space].name;
+          obj.pdice = pdice;
+          obj.cdice = cdice;
+          obj.p_roll_desc = p_roll_desc;
+          obj.c_roll_desc = c_roll_desc;
+          obj.p_high = p_high;
+          obj.c_high = c_high;
+          obj.catholics_win = catholics_win;
+	  obj.protestants_win = 1;
+	  if (catholics_win) { obj.protestants_win = 0; }
+          this.reformation_overlay.render(obj);
 
 	  //
 	  // handle victory
@@ -17722,8 +18007,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let his_self = this;
 
-    let html = '<div class="message">' + msg + '</div>';
-
+    let html = '';
     html += '<ul>';
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
@@ -17747,7 +18031,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     }
     html += '</ul>';
 
-    this.updateStatus(html);
+    this.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', function () {
@@ -17786,8 +18070,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let his_self = this;
 
-    let html = '<div class="message">' + msg + '</div>';
-
+    let html = '';
     html += '<ul>';
     for (let key in this.game.navalspaces) {
       if (filter_func(this.game.navalspaces[key]) == 1) {
@@ -17816,7 +18099,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     }
     html += '</ul>';
 
-    this.updateStatus(html);
+    this.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', function () {
@@ -18970,8 +19253,10 @@ console.log("units length: " + space.units[defender].length);
 
     if (ops < 2) { return 0; }
     let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
+console.log("SPACES WITH INFANTRY: " + JSON.stringify(spaces_with_infantry));
     for (let i = 0; i < spaces_with_infantry.length; i++) {
-      if (!his_self.game.spaces[spaces_with_infantry[i]].ports.length > 0) {
+console.log("SPACE: " + spaces_with_infantry[i]);
+      if (his_self.game.spaces[spaces_with_infantry[i]].ports.length == 0) {
 	spaces_with_infantry.splice(i, 1);
 	i--;
       }
@@ -19742,6 +20027,7 @@ return;
       $('.option').off();
       $('.option').on('click', function () {
 
+        $('.option').off();
         his_self.language_zone_overlay.hide();
 
         let id = $(this).attr("id");
@@ -19750,21 +20036,35 @@ return;
 
           let msg = "Use Calvin Debater Bonus +1 Attempt:";
           let html = '<ul>';
-          html += '<li class="option" style="" id="yes">Yes, Commit Calvin</li>';
+          html += '<li class="option" style="" id="calvin-debater">Yes, Commit Calvin</li>';
           html += '<li class="option" style="" id="no">No</li>';
           html += '</ul>';
 
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
+          $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.show(action2);
+            }
+          });
+          $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.hide(action2);
+            }
+          });
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    if (id === "yes") {
+	    his_self.addMove("hide_overlay\tpublish_treastise\tfrench");
+	    if (id === "calvin-debater") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
+	    his_self.addMove("show_overlay\tpublish_treastise\tfrench");
 	    his_self.endTurn();
 
 	    return 0;
@@ -19778,21 +20078,35 @@ return;
 
           let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
           let html = '<ul>';
-          html += '<li class="option" style="" id="yes">Yes, Commit Carlstadt</li>';
+          html += '<li class="option" style="" id="carlstadt-debater">Yes, Commit Carlstadt</li>';
           html += '<li class="option" style="" id="no">No</li>';
           html += '</ul>';
 
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
+          $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.show(action2);
+            }
+          });
+          $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.hide(action2);
+            }
+          });
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    if (id === "yes") {
+	    his_self.addMove("hide_overlay\tpublish_treastise\tgerman");
+	    if (id === "carlstadt") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
+	    his_self.addMove("show_overlay\tpublish_treastise\tgerman");
 	    his_self.endTurn();
 
 	    return 0;
@@ -19801,8 +20115,10 @@ return;
 	  return 0;
         }
 
+	his_self.addMove("hide_overlay\tpublish_treastise\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+	his_self.addMove("show_overlay\tpublish_treastise\t"+id);
 	his_self.endTurn();
       });
 
@@ -19852,12 +20168,16 @@ return;
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
-    $('.option').on('click', () => {
+    $('.option').on('click', (e) => {
+
+      $('.option').off();
+      let language_zone = e.currentTarget.id;
+
+alert("LANGUAGE ZONE: " + language_zone);
 
       his_self.language_zone_overlay.hide();
-      let language_zone = $(this).attr("id");
 
-      let msg = "Against Comitted or Uncommited Debater?";
+      let msg = "Against Commited or Uncommited Debater?";
       let html = '<ul>';
       if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
           html += '<li class="option" id="committed">Committed</li>';
@@ -19870,6 +20190,14 @@ return;
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
+      $('.option').on('mouseover', function() {
+        let action2 = $(this).attr("id");
+        his_self.cardbox.show(action2);
+      });
+      $('.option').on('mouseout', function() {
+        let action2 = $(this).attr("id");
+        his_self.cardbox.hide(action2);
+      });
       $('.option').on('click', () => {
 
         let committed = $(this).attr("id");
@@ -19912,7 +20240,7 @@ return;
   }
   async playerBurnBooks(his_self, player, faction) {
 
-    let msg = "Select Language Zone for Counter-Reformation Attempts:";
+    let msg = "Select Language Zone for Counter Reformations";
     let html = '<ul>';
         html += '<li class="option german" style="" id="german">German</li>';
         html += '<li class="option english" style="" id="english">English</li>';
@@ -19931,6 +20259,7 @@ return;
     $('.option').off();
     $('.option').on('click', function () {
 
+      $('.option').off();
       his_self.language_zone_overlay.hide();
       let id = $(this).attr("id");
 
@@ -19939,13 +20268,13 @@ return;
         let msg = "Commit Debater for Burn Books Bonus:";
         let html = '<ul>';
 	if (his_self.canPlayerCommitDebater("papacy", "tetzel-debater")) {
-          html += '<li class="option" style="" id="tetzel">+1 to Saint Peters</li>';
+          html += '<li class="option" style="" id="tetzel-debater">+1 to Saint Peters</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "cajetan-debater")) {
-          html += '<li class="option" style="" id="cajetan">Cajetan +1 Attempt</li>';
+          html += '<li class="option" style="" id="cajetan-debater">Cajetan +1 Attempt</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "caraffa-debater")) {
-          html += '<li class="option" style="" id="caraffa">Caraffa +1 Attempt</li>';
+          html += '<li class="option" style="" id="caraffa-debater">Caraffa +1 Attempt</li>';
         }
         html += '<li class="option" style="" id="no">No</li>';
 	html += '</ul>';
@@ -19953,20 +20282,34 @@ return;
         his_self.updateStatusWithOptions(msg, html);
 
         $('.option').off();
+        $('.option').on('mouseover', function() {
+          let action2 = $(this).attr("id");
+          if (his_self.debaters[action2]) {
+            his_self.cardbox.show(action2);
+          }
+        });
+        $('.option').on('mouseout', function() {
+          let action2 = $(this).attr("id");
+          if (his_self.debaters[action2]) {
+            his_self.cardbox.hide(action2);
+          }
+        });
         $('.option').on('click', function () {
           let id2 = $(this).attr("id");
 
-	  if (id2 === "tetzel") {
+	  if (id2 === "tetzel-debater") {
             his_self.addMove("build_saint_peters");
 	  }
 
-	  if (id2 === "cajetan" || id2 === "caraffa") {
-	    if (id2 === "cajetan") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
-	    if (id2 === "caraffa") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
+	  his_self.addMove("hide_overlay\tburn_books\t"+id);
+	  if (id2 === "cajetan-debater" || id2 === "caraffa-debater") {
+	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
+	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
             his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
 	  }
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+	  his_self.addMove("show_overlay\tburn_books\t"+id);
 	  his_self.endTurn();
 
 	  return 0;
@@ -19975,8 +20318,10 @@ return;
 	return 0;
       }
 
+      his_self.addMove("hide_overlay\tburn_books\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+      his_self.addMove("show_overlay\tburn_books\t"+id);
       his_self.endTurn();
     });
 
@@ -20415,6 +20760,36 @@ return;
 
 
 
+  /* override default */
+  updateStatus(str, force = 0) {
+
+    this.updateControls("");
+
+    try {
+
+      this.game.status = str;
+      if (!this.browser_active) { return; }
+
+      if (this.useHUD) {
+        this.hud.updateStatus(str);
+      }
+
+      document.querySelectorAll(".status").forEach((el) => {
+        el.innerHTML = str;
+      });
+      if (document.getElementById("status")) {
+        document.getElementById("status").innerHTML = str;
+      }
+
+    } catch (err) {
+      console.warn("Error Updating Status: ignoring: " + err);
+    }
+  } 
+
+
+
+
+
   importUnit(name, obj) {
 
     if (obj.type == null)               { obj.type = "unit"; }
@@ -20438,6 +20813,10 @@ return;
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
+    if (obj.returnCardImage == null) {
+      obj.returnCardImage = () => { return ""; }
+    }
+
     this.addEvents(obj);
     this.units[name] = obj;
 
@@ -20580,6 +20959,16 @@ return;
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
+    if (obj.returnCardImage == null) {
+      obj.returnCardImage = () => {
+        let tile_f = "/his/img/tiles/debaters/" + obj.img;
+        let tile_b = tile_f.replace('.svg', '_back.svg');
+	return `
+	  <div class="debater-card" style="background-image: url('${tile_f}'); background-size: cover"></div>	
+	`;
+      }
+    }
+
     this.addEvents(obj);
     this.debaters[name] = obj;
   }
@@ -21732,6 +22121,9 @@ return;
 
   displaySpaces() {
 
+    let his_self = this;
+
+
     //
     // add tiles
     //
@@ -21743,6 +22135,28 @@ return;
         }
       }
     }
+
+    let xpos = 0;
+    let ypos = 0;
+
+if (!his_self.bound_gameboard_zoom) {
+
+    $('.gameboard').on('mousedown', function (e) {
+      if (e.currentTarget.classList.contains("space")) { return; }
+      xpos = e.clientX;
+      ypos = e.clientY;
+    });
+    $('.gameboard').on('mouseup', function (e) { 
+      if (e.currentTarget.classList.contains("space")) { return; }
+      if (Math.abs(xpos-e.clientX) > 4) { return; }
+      if (Math.abs(ypos-e.clientY) > 4) { return; }
+      his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
+    });
+
+    his_self.bound_gameboard_zoom = 1;
+
+}
+
 
   }
 
@@ -21772,6 +22186,11 @@ return;
     let deckidx = -1;
     let card;
 
+    //
+    //
+    //
+    if (this.debaters[cardname]) { return this.debaters[cardname].returnCardImage(); }
+
     for (let i = 0; i < this.game.deck.length; i++) {
       var c = this.game.deck[i].cards[cardname];
       if (c == undefined) { c = this.game.deck[i].discards[cardname]; }
@@ -21782,6 +22201,7 @@ return;
       }
     }
 
+
     if (deckidx === -1) {
       //
       // this is not a card, it is something like "skip turn" or cancel
@@ -21791,11 +22211,12 @@ return;
 
     var html = `<img class="${cardclass}" src="/his/img/${card.img}" />`;
 
+console.log("X: " + html);
+
     //
     // add cancel button to uneventable cards
     //
     if (deckidx == 0) { 
-console.log("card: " + cardname);
       if (!this.deck[cardname].canEvent(this, "")) {
         html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
       }
@@ -21811,7 +22232,9 @@ console.log("card: " + cardname);
   }
 
 
-
+  displayDebaterPopup(debater) {
+    
+  }
 
 
   addCard(faction, card) {

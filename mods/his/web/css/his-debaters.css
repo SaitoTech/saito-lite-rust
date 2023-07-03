@@ -1,4 +1,12 @@
 
+.debater-card {
+  height: 25rem;
+  width: 25rem;
+  background-size: cover;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .debaters-tile {
   height: 20rem;
   width: 20rem;

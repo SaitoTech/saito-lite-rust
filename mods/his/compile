@@ -40,6 +40,7 @@ cat ./src/his-gameloop.js >> ./his.js
 cat ./src/his-player.js >> ./his.js
 cat ./src/his-diplomacy.js >> ./his.js
 cat ./src/his-factions.js >> ./his.js
+cat ./src/his-status.js >> ./his.js
 cat ./src/his-units.js >> ./his.js
 cat ./src/his-display.js >> ./his.js
 cat ./src/his-testing.js >> ./his.js

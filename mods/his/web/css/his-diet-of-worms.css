@@ -30,27 +30,13 @@
     height: 100%;
     min-height: inherit;
     justify-content: space-evenly;
+    margin-top: 5rem;
 }
 
-.protestant {
-    height: 100%;
-    width: auto;
-    margin-left: 25%;
-    margin-right: auto;
-    margin-top: 16%;
-}
-
-.catholic {
-    height: 100%;
-    width: auto;
-    margin-left: 25%;
-    margin-right: auto;
-    margin-top: 16%;
-}
-
-.catholic>.card:nth-child(2) {
-  transform: rotate(10deg);
-  z-index: 29;
+.cardfans .protestant , .cardfans .catholic {
+    width: inherit;
+    height: inherit;
+    max-width: inherit;
 }
 
 .diet_of_worms_end {
@@ -59,17 +45,35 @@
 }
 
 .cardfans .protestant .card , .cardfans .catholic .card {
-  height: 100% !important;
-  width: 100% !important;
-  float: left;
-  z-index: 30;
-}
-
-.protestant .card .cardimg , .catholic .card .cardimg {
-    margin-top: 20%;
-    height: 60%;
+    height: calc(20vw * 1.44);
     width: auto;
+    z-index: 30;
+    margin-left: auto;
+    margin-right: auto;
+    position: absolute;
+}
+.cardfans .protestant .card {
+  left: 10vw;
+}
+.cardfans .catholic>.card:nth-child(1) {
+  transform: rotate(10deg);
+  z-index: 29;
+  left: 50vw;
+}
+.cardfans .catholic>.card:nth-child(2) {
+  transform: rotate(10deg);
+  z-index: 30;
+  left: 60vw;
 }
 
+.cardfans .protestant .card .cardimg , .cardfans .catholic .card .cardimg {
+    height: inherit;
+    width: inherit;
+}
+
+
+.diet_of_worms_noskip , .diet_of_worms_end {
+    cursor: pointer;
+}
 
 

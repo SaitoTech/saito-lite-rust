@@ -378,9 +378,12 @@
     state.tmp_reformations_this_turn = [];
     state.tmp_counter_reformations_this_turn = [];
     state.tmp_protestant_reformation_bonus = 0;
-    state.tmp_catholic_reformation_bonus = 0;
-    state.tmp_protestant_counter_reformation_bonus = 0;
     state.tmp_protestant_reformation_bonus_spaces = [];
+    state.tmp_catholic_reformation_bonus = 0;
+    state.tmp_catholic_reformation_bonus_spaces = [];
+
+    state.tmp_protestant_counter_reformation_bonus = 0;
+    state.tmp_protestant_counter_reformation_bonus_spaces = [];
     state.tmp_catholic_counter_reformation_bonus = 0;
     state.tmp_catholic_counter_reformation_bonus_spaces = [];
     state.tmp_papacy_may_specify_debater = 0;

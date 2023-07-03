@@ -1,5 +1,6 @@
 const RedSquareMainTemplate = require("./main.template");
 const TweetManager = require("./manager");
+const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class RedSquareMain {
 
@@ -14,6 +15,7 @@ class RedSquareMain {
 
     this.scroll_depth = 0;
 
+    this.overlay = new SaitoOverlay(app, mod);
     this.manager = new TweetManager(app, mod, ".saito-main");
 
     //
@@ -21,14 +23,26 @@ class RedSquareMain {
     //
     // redsquare - component - ui-component - [render-method] - (render-request)
     //
+    this.app.connection.on("redsquare-navigation", (to_home) => {
+      //this.overlay.show('<div class="saito-loader"></div>');
+    });
+
+    this.app.connection.off("redsquare-navigation-complete", () => {
+      //this.overlay.remove();
+    });
+
+
     // rendering the main thread
-    this.app.connection.on("redsquare-home-render-request", (user_click = true) => {
+    this.app.connection.on("redsquare-home-render-request", async (user_click = true) => {
       //Update menu that we are on the main feed
       this.app.connection.emit("redsquare-navigation", true);
+      if (user_click){
+        window.history.pushState(null, "", "/redsquare/#home");  
+      }
       
       if (this.manager.mode == "tweets" && user_click) {
-        this.scroll_depth = 0;      
-        this.manager.showLoader();
+        this.scroll_depth = 0; 
+        this.scrollFeed(0);     
         this.mod.loadNewTweets(null, (txs) => {
           if (txs.length > 0) {
             this.app.connection.emit("redsquare-new-tweets-notification-request");
@@ -38,49 +52,56 @@ class RedSquareMain {
         });
         return;        
       }
+      
       this.manager.mode = "tweets";
       this.manager.render();
       this.scrollFeed(this.scroll_depth);
-      
-      //Automated refresh when new tweets to display (so also save them!)
-      if (!user_click){
-        this.mod.saveLocalTweets();  
-      }
-      
+            
     });
 
 
     // when someone clicks on a tweet
-    this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
+    this.app.connection.on("redsquare-tweet-render-request", (tweet) => {
       this.scrollFeed(0);
+      this.app.connection.emit("redsquare-navigation");
+      window.history.pushState(null, "", `/redsquare/?tweet_id=${tweet?.tx?.transaction?.sig}`);
+
       this.manager.renderTweet(tweet);
     });
 
-    this.app.connection.on("redsquare-new-tweets-notification-request", () => {
+    this.app.connection.on("redsquare-new-tweets-notification-request", async () => {
       document.getElementById("show-new-tweets").style.display="flex";
+      document.getElementById("show-new-tweets").onclick = (e) => {
+        e.currentTarget.onclick = null;
+        e.currentTarget.style.display = "none";
+        console.log("Show new tweets");
+        this.scoll_depth = 0;
+        
+        setTimeout(()=> {this.app.connection.emit("redsquare-home-render-request", false);}, 5);
+      };
+      this.mod.saveLocalTweets();
     });
 
     this.app.connection.on("redsquare-notifications-render-request", () => {
       this.mod.notifications_last_viewed_ts = new Date().getTime();
       this.mod.notifications_number_unviewed = 0;
-      this.mod.saveLocalTweets();
       this.mod.menu.incrementNotifications("notifications");
+      this.mod.saveOptions();
+
       this.scrollFeed(0);
+      window.history.pushState(null, "", "/redsquare/#notifications");
       this.manager.mode = "notifications";
       this.manager.render();
     });
 
     this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
       this.scrollFeed(0);
+      window.history.pushState(null, "", `/redsquare/?user_id=${publickey}`);
       this.manager.mode = "profile";
       this.manager.publickey = publickey;
       this.manager.render();
     });
 
-    // this is triggered when you reply to a tweet -- it pushes tweet and your reply to top, or should
-    this.app.connection.on("redsquare-home-tweet-and-critical-child-prepend-render-request", (tweet) => {
-      this.app.connection.emit("redsquare-home-tweet-render-request", (tweet));
-    });
 
     this.app.connection.on("redsquare-component-render-request", (obj) => {
 
@@ -163,12 +184,6 @@ class RedSquareMain {
       }
       scrollTop = scrollableElement.scrollTop;
     });
-
-    document.getElementById("show-new-tweets").onclick = () => {
-      this.scoll_depth = 0;
-      this.app.connection.emit("redsquare-home-render-request", false);
-      document.querySelector("#show-new-tweets").style.display = "none";
-    }
 
   }
 

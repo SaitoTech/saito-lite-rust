@@ -58,6 +58,9 @@ class RedSquareNotification {
         } else {
           this.user.notice = "<span class='notification-type'>replied to your tweet</span>";
         }
+      } else {
+        console.log("Unknown Notification type: ", txmsg.request);
+        return null;
       }
 
 
@@ -94,11 +97,11 @@ class RedSquareNotification {
         let tweet = this.mod.returnTweet(sig);
 
         if (tweet) {
-          this.app.connection.emit("redsquare-home-tweet-render-request", tweet);
+          this.app.connection.emit("redsquare-tweet-render-request", tweet);
         } else {
           this.mod.loadTweetWithSig(sig, (txs) => {
             let tweet = this.mod.returnTweet(sig);
-            this.app.connection.emit("redsquare-home-tweet-render-request", tweet);
+            this.app.connection.emit("redsquare-tweet-render-request", tweet);
           });
         }
       };

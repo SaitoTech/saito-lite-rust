@@ -2,27 +2,20 @@
 .tweet-notification .tweet-body {
   min-height: 6rem;
 }
- 
-.saito-floating-button {
+
+
+.new-tweets-notification {
   position: fixed;
   display: none;
-  top: max(10vh, var(--saito-header-height));
+  top: calc(var(--saito-header-height) + 1rem);
   left: 50%;
   transform: translateX(-50%);
-  width: 18rem;
   height: 6rem;
   border-radius: 2rem;
-  background: var(--saito-button-background);
   padding: 2rem 1rem;
   align-items: center;
   justify-content: center;
-  color: var(--saito-font-color-inverse);
-  border: 2px solid var(--saito-border-color);
   cursor: pointer;
   z-index: 1000;
 }
 
-.saito-floating-button:hover{
-  background: var(--saito-font-color-inverse);
-  color: var(--saito-font-color);
-}

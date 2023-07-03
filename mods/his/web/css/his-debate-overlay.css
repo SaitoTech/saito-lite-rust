@@ -3,9 +3,9 @@
   background-image: url("/his/img/backgrounds/theological-debate2.jpg");
   background-size: cover;
   width: 80vw;
-  min-height: 800px;
-  height: auto;
-
+  min-height: 80vh;
+  height: 80vh;
+  max-height: 95vh;
   overflow-y: auto;
 }
 
@@ -26,15 +26,28 @@
     line-height: 3.6rem;
 }
 
+.theological-debate-overlay .controls ul {
+    margin-left: auto;
+    margin-right: auto;
+    width: 35rem;
+    background-color: whitesmoke;
+    height: auto;
+    border-radius: 1rem;
+    clear: both;
+    margin-top: 1rem;
+    line-height: 3rem;
+}
+
 .theological-debate-overlay .status {
     margin-left: auto;
     margin-right: auto;
-    width: 50%;
+    width: 35rem;
     background-color: whitesmoke;
     height: auto;
     border-radius: 1rem;
     clear: both;
     margin-top: 20rem;
+    line-height: 3rem;
 }
 
 .theological-debate-overlay .status .status-header , .theological-debate-overlay .status .status-message {

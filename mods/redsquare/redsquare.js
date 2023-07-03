@@ -15,7 +15,7 @@ const localforage = require("localforage");
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
- * lib/main.js:    this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {   // renders tweet
+ * lib/main.js:    this.app.connection.on("redsquare-tweet-render-request", (tweet) => {   // renders tweet
  * lib/main.js:    this.app.connection.on("redsquare-profile-render-request", () => {     // renders profile
  * lib/main.js:    //this.app.connection.on("redsquare-contacts-render-request", () => {    // renders contacts
  * lib/main.js:    this.app.connection.on("redsquare-notifications-render-request", () => {   // renders notifications
@@ -316,7 +316,7 @@ class RedSquare extends ModTemplate {
             this.addTweet(txs[z]);
           }
           let tweet = this.returnTweet(tweet_id);
-          this.app.connection.emit("redsquare-home-tweet-render-request", tweet);
+          this.app.connection.emit("redsquare-tweet-render-request", tweet);
         });
         return;
       }
@@ -1286,8 +1286,8 @@ class RedSquare extends ModTemplate {
     });
   }
 
-  saveLocalTweets() {
-    if (!this.app.BROWSER) {
+  saveOptions(){
+    if (!this.app.BROWSER || !this.browser_active) {
       return;
     }
 
@@ -1299,13 +1299,26 @@ class RedSquare extends ModTemplate {
     this.app.options.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
 
     //console.log(JSON.parse(JSON.stringify(this.app.options.redsquare)));
-    this.app.storage.saveOptions();
+    this.app.storage.saveOptions();    
+  }
+
+  async saveLocalTweets() {
+    if (!this.app.BROWSER || !this.browser_active) {
+      return;
+    }
+
+    this.saveOptions();
 
     let tweet_txs = [];
+    let maximum = 30;
     for (let tweet of this.tweets) {
       tweet.tx.optional.updated_at = tweet.updated_at;
       tweet_txs.push(tweet.tx.serialize_to_web(this.app));
+      if (--maximum <= 0){
+        break;
+      }
     }
+    console.log("start save");
     localforage.setItem(`tweet_history`, tweet_txs).then(function () {
       console.log(`Saved ${tweet_txs.length} tweets`);
     });

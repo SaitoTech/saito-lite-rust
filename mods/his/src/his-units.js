@@ -22,6 +22,10 @@
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
+    if (obj.returnCardImage == null) {
+      obj.returnCardImage = () => { return ""; }
+    }
+
     this.addEvents(obj);
     this.units[name] = obj;
 
@@ -164,6 +168,16 @@
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
+    if (obj.returnCardImage == null) {
+      obj.returnCardImage = () => {
+        let tile_f = "/his/img/tiles/debaters/" + obj.img;
+        let tile_b = tile_f.replace('.svg', '_back.svg');
+	return `
+	  <div class="debater-card" style="background-image: url('${tile_f}'); background-size: cover"></div>	
+	`;
+      }
+    }
+
     this.addEvents(obj);
     this.debaters[name] = obj;
   }
