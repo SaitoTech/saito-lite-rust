@@ -58,6 +58,9 @@ class RedSquareNotification {
         } else {
           this.user.notice = "<span class='notification-type'>replied to your tweet</span>";
         }
+      } else {
+        console.log("Unknown Notification type: ", txmsg.request);
+        return null;
       }
 
 

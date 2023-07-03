@@ -1,5 +1,6 @@
 const RedSquareMainTemplate = require("./main.template");
 const TweetManager = require("./manager");
+const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class RedSquareMain {
 
@@ -14,6 +15,7 @@ class RedSquareMain {
 
     this.scroll_depth = 0;
 
+    this.overlay = new SaitoOverlay(app, mod);
     this.manager = new TweetManager(app, mod, ".saito-main");
 
     //
@@ -21,14 +23,22 @@ class RedSquareMain {
     //
     // redsquare - component - ui-component - [render-method] - (render-request)
     //
+    this.app.connection.on("redsquare-navigation", (to_home) => {
+
+    });
+
+
     // rendering the main thread
     this.app.connection.on("redsquare-home-render-request", (user_click = true) => {
       //Update menu that we are on the main feed
       this.app.connection.emit("redsquare-navigation", true);
+      if (user_click){
+        window.history.pushState(null, "", "/redsquare/#home");  
+      }
       
       if (this.manager.mode == "tweets" && user_click) {
-        this.scroll_depth = 0;      
-        this.manager.showLoader();
+        this.scroll_depth = 0; 
+        this.scrollFeed(0);     
         this.mod.loadNewTweets(null, (txs) => {
           if (txs.length > 0) {
             this.app.connection.emit("redsquare-new-tweets-notification-request");
@@ -38,6 +48,7 @@ class RedSquareMain {
         });
         return;        
       }
+      
       this.manager.mode = "tweets";
       this.manager.render();
       this.scrollFeed(this.scroll_depth);
@@ -53,6 +64,9 @@ class RedSquareMain {
     // when someone clicks on a tweet
     this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
       this.scrollFeed(0);
+      this.app.connection.emit("redsquare-navigation");
+      window.history.pushState(null, "", `/redsquare/?tweet_id=${tweet?.tx?.transaction?.sig}`);
+
       this.manager.renderTweet(tweet);
     });
 
@@ -66,12 +80,14 @@ class RedSquareMain {
       this.mod.saveLocalTweets();
       this.mod.menu.incrementNotifications("notifications");
       this.scrollFeed(0);
+      window.history.pushState(null, "", "/redsquare/#notifications");
       this.manager.mode = "notifications";
       this.manager.render();
     });
 
     this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
       this.scrollFeed(0);
+      window.history.pushState(null, "", `/redsquare/?user_id=${publickey}`);
       this.manager.mode = "profile";
       this.manager.publickey = publickey;
       this.manager.render();
@@ -165,9 +181,9 @@ class RedSquareMain {
     });
 
     document.getElementById("show-new-tweets").onclick = () => {
+      document.querySelector("#show-new-tweets").style.display = "none";
       this.scoll_depth = 0;
       this.app.connection.emit("redsquare-home-render-request", false);
-      document.querySelector("#show-new-tweets").style.display = "none";
     }
 
   }

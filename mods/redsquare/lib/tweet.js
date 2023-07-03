@@ -522,8 +522,6 @@ class Tweet {
           //
           if (e.target.tagName != "IMG") {
             //window.location.href = `/redsquare/?tweet_id=${this.thread_id}`;
-
-            window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`);
             app.connection.emit("redsquare-home-tweet-render-request", this);
           }
         };
@@ -546,7 +544,6 @@ class Tweet {
               this.retweet.container = ".tweet-manager";
               app.connection.emit("redsquare-home-tweet-render-request", this.retweet);  
             }
-            window.history.pushState(null, "", `/redsquare/?tweet_id=${sig}`);
           }
         });
       });

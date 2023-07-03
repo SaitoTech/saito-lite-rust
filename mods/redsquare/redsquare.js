@@ -1286,7 +1286,7 @@ class RedSquare extends ModTemplate {
   }
 
   saveLocalTweets() {
-    if (!this.app.BROWSER) {
+    if (!this.app.BROWSER || !this.browser_active) {
       return;
     }
 
@@ -1301,9 +1301,13 @@ class RedSquare extends ModTemplate {
     this.app.storage.saveOptions();
 
     let tweet_txs = [];
+    let maximum = 30;
     for (let tweet of this.tweets) {
       tweet.tx.optional.updated_at = tweet.updated_at;
       tweet_txs.push(tweet.tx.serialize_to_web(this.app));
+      if (--maximum <= 0){
+        break;
+      }
     }
     localforage.setItem(`tweet_history`, tweet_txs).then(function () {
       console.log(`Saved ${tweet_txs.length} tweets`);
