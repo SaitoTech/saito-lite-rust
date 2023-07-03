@@ -298,7 +298,6 @@ class RedSquare extends ModTemplate {
       return;
     }
 
-
     //
     // redsquare -- load tweets
     //
@@ -904,7 +903,7 @@ class RedSquare extends ModTemplate {
               if (!tweet.tx.optional.num_replies) {
                 tweet.tx.optional.num_replies = 0;
               }
-              
+
               tweet.tx.optional.num_replies++;
 
               this.app.storage.updateTransaction(
@@ -1053,9 +1052,9 @@ class RedSquare extends ModTemplate {
       await app.storage.executeDatabase(sql, params, "redsquare");
 
       // If you just inserted a record, you don't need to update its updated_at right away
-      // but if it is part of a thread, then yes! 
+      // but if it is part of a thread, then yes!
       // We should update the whole thread (?) or just the root tweet
-      if (tx.transaction.sig !== tweet.thread_id){
+      if (tx.transaction.sig !== tweet.thread_id) {
         let ts = tx.transaction.ts;
         let sql2 = "UPDATE tweets SET updated_at = $timestamp WHERE sig = $sig";
         let params2 = {
@@ -1321,8 +1320,8 @@ class RedSquare extends ModTemplate {
       //  page when fetching page source)
       //
       try {
-        console.info('fetching open graph info for: ' + link);
-        return fetch(link, { redirect: "follow", follow: 10000 })
+        console.info("fetching open graph info for: " + link);
+        return fetch(link, { redirect: "follow", follow: 1000 })
           .then((res) => res.text())
           .then((data) => {
             // required og properties for link preview
@@ -1333,6 +1332,16 @@ class RedSquare extends ModTemplate {
               "og:url": "",
               "og:image": "",
               "og:site_name": "",
+            };
+            let tw_tags = {
+              "twitter:exitst": false,
+              "twitter:card": "",
+              "twitter:site": "",
+              "twitter:creator": "",
+              "twitter:title": "",
+              "twitter:url": "",
+              "twitter:description": "",
+              "twitter:image": "",
             };
 
             // prettify html - unminify html if minified
@@ -1354,9 +1363,32 @@ class RedSquare extends ModTemplate {
                 og_tags["og:exists"] = true;
               }
             }
+            //console.info(JSON.stringify(og_tags));
+            // check for twitter tags if og does not exist.
+            // loop each meta tag and fetch required og properties
+            for (let i = 0; i < meta_tags.length; i++) {
+              let property = meta_tags[i].getAttribute("property");
+              let content = meta_tags[i].getAttribute("content");
+              // get required og properties only, discard others
+              if (property in tw_tags) {
+                tw_tags[property] = content;
+                tw_tags["twitter:exists"] = true;
+              }
+            }
+            //console.info(JSON.stringify(tw_tags));
+            
+            if (tw_tags["twitter:exists"]) {
+              if (og_tags["og:title"] ? "" : tw_tags["twitter:title"]);
+              if (tw_tags["og:description"] ? "" : tw_tags["twitter:description"]);
+              if (tw_tags["og:url"] ? "" : tw_tags["twitter:url"]);
+              if (tw_tags["og:image"] ? "" : tw_tags["twitter:image"]);
+              if (tw_tags["og:site_name"] ? "" : tw_tags["twitter:site"]);
+            }
+            //console.info(JSON.stringify(og_tags));
 
             return og_tags;
-          });
+          })
+          .catch((err) => console.error("Error fetching content" + err));
       } catch (err) {
         return "";
       }
