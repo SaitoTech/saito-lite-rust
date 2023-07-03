@@ -1316,7 +1316,7 @@ class League extends ModTemplate {
         league.ts = new Date().getTime();
 
         if (mycallback != null) {
-          mycallback(res);
+          await mycallback(res);
         } else {
           if (this.app.BROWSER) {
             this.saveLeagues();

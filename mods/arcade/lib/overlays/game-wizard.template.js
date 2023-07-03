@@ -1,11 +1,13 @@
-
-module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
-
+module.exports = GameWizardTemplate = async (game_mod, invite_obj = {}) => {
   let html = `<div class="arcade-wizard-overlay">`;
   let invite = null;
   let publickey = null;
-  if (invite_obj.invite) { invite = invite_obj.invite; }
-  if (invite_obj.publickey) { publickey = invite_obj.publickey; }
+  if (invite_obj.invite) {
+    invite = invite_obj.invite;
+  }
+  if (invite_obj.publickey) {
+    publickey = invite_obj.publickey;
+  }
 
   html += `
     <form>
@@ -13,7 +15,8 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
     
       <!- ***Game thumbnail & options start*** -->
       <div class="arcade-wizard-game-image">
-        <img class="arcade-wizard-game-thumbnail" src="${game_mod.respondTo("arcade-games").image}">
+        <img class="arcade-wizard-game-thumbnail" src="${await game_mod.respondTo("arcade-games")
+          .image}">
       </div>
       <!- ***Game thumbnail & options end*** -->
 
@@ -53,14 +56,13 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
 
     html += `<button type="button" id="game-invite-btn" class="saito-button saito-button-primary game-invite-btn" data-type="single">Play</button>`;
   } else {
-
     /*html += `<select name="invite_type">
               <option value="open" selected default>public invite</option>
               <option value="private">private invite</option>
              </select>
     `;
 
-    html += ` 
+    html += `
               <button type="button" id="game-invite-btn" class="saito-button saito-button-primary">Create Game</button>
          `;
 
@@ -76,7 +78,6 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
         html += `<button type="button" class="saito-multi-btn  game-invite-btn" data-type="open">create public league invite</button>
                  <button type="button" class="saito-multi-btn  game-invite-btn" data-type="private">create private league invite</button>`;
       } else {
-      
         html += `
               <button type="button" class="saito-multi-btn  game-invite-btn" data-type="open">create public invite</button>
               <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">create private invite</button>
@@ -85,9 +86,7 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
     }
     html += `</div>
           </div>`;
-    
   }
-
 
   html += `
       </div>
@@ -105,5 +104,4 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
   html += `</div>`; // overlay closing
 
   return html;
-
-}
+};

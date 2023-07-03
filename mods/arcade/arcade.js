@@ -350,10 +350,7 @@ class Arcade extends ModTemplate {
     if (qs === ".redsquare-sidebar") {
       return true;
     }
-    if (qs == ".league-overlay-games-list") {
-      return true;
-    }
-    return false;
+    return qs == ".league-overlay-games-list";
   }
 
   //

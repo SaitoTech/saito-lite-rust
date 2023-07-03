@@ -3,9 +3,7 @@
 const GameSliderTemplate = require("./game-slider.template");
 
 class GameSlider {
-
   constructor(app, mod, container = "") {
-
     this.app = app;
     this.mod = mod;
     this.container = container;
@@ -17,12 +15,10 @@ class GameSlider {
     //
     // handle requests to re-render
     //
-    this.app.connection.on("arcade-game-slider-render-request", () => {
-      this.render();
+    this.app.connection.on("arcade-game-slider-render-request", async () => {
+      await this.render();
     });
-
   }
-
 
   hide() {
     if (this.interval) {
@@ -34,22 +30,27 @@ class GameSlider {
     }
   }
 
-  render() {
-
+  async render() {
     //
     // create HTML of games list
     //
     let gamelist = [];
-    let html = "<ul class=\"slides\">";
-    let circles_html = "<div class=\"slides-circles\">";
-    this.mod.arcade_games.forEach(game_mod => {
-      gamelist.push([game_mod.categories, `<li class="slide arcade-game-slider-item-${game_mod.returnSlug()}" data-game="${game_mod.name}">
+    let html = '<ul class="slides">';
+    let circles_html = '<div class="slides-circles">';
+    for (const game_mod of this.mod.arcade_games) {
+      gamelist.push([
+        game_mod.categories,
+        `<li class="slide arcade-game-slider-item-${game_mod.returnSlug()}" data-game="${
+          game_mod.name
+        }">
           <span class="game-slider-name">${game_mod.returnName()}</span>
-          <img alt="${game_mod.returnName()}" src="${game_mod.respondTo("arcade-games").banner}">
-          </li>`]);
-    });
+          <img alt="${game_mod.returnName()}" src="${await game_mod.respondTo("arcade-games")
+          .banner}">
+          </li>`,
+      ]);
+    }
     if (!this.mod.manual_ordering) {
-      gamelist.sort(function(a, b) {
+      gamelist.sort(function (a, b) {
         if (a[0] > b[0]) {
           return 1;
         }
@@ -61,7 +62,7 @@ class GameSlider {
     }
 
     let first = true;
-    gamelist.forEach(game => {
+    gamelist.forEach((game) => {
       if (first) {
         html += game[1].replace("<li", "<li data-active-slide");
         circles_html += "<div data-active-slide></div>";
@@ -82,12 +83,9 @@ class GameSlider {
     }
 
     this.attachEvents();
-
   }
 
-
   attachEvents() {
-
     const buttons = document.querySelectorAll("[data-slide-direction]");
 
     buttons.forEach((button) => {
@@ -106,8 +104,8 @@ class GameSlider {
         newIndex < 0
           ? slides.children.length - 1
           : newIndex === slides.children.length
-            ? 0
-            : newIndex;
+          ? 0
+          : newIndex;
       slides.children[newIndex].dataset.activeSlide = true;
       delete activeSlide.dataset.activeSlide;
       /*
@@ -120,7 +118,6 @@ class GameSlider {
 
     this.interval = setInterval(changeSlide.bind(null, 1), 6000);
 
-
     slides.onclick = async (e) => {
       e.stopPropagation();
       const activeSlide = slides.querySelector("[data-active-slide]");
@@ -130,12 +127,7 @@ class GameSlider {
       await this.app.browser.logMatomoEvent("GameWizard", "GameSlider", modname);
       this.app.connection.emit("arcade-launch-game-wizard", { game: modname });
     };
-
-
   }
-
 }
 
 module.exports = GameSlider;
-
-

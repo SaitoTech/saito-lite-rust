@@ -30,7 +30,7 @@ class Realms extends GameTemplate {
   // manually announce arcade banner support
   //
   async respondTo(type) {
-    if (super.respondTo(type) != null) {
+    if ((await super.respondTo(type)) != null) {
       return super.respondTo(type);
     }
 
@@ -89,9 +89,9 @@ class Realms extends GameTemplate {
       },
     });
 
-    this.menu.addChatMenu();
+    await this.menu.addChatMenu();
 
-    this.menu.render(app, this);
+    await this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
     this.log.render(app, this);
@@ -110,12 +110,12 @@ class Realms extends GameTemplate {
     this.hud.attachEvents(app, this);
   }
 
-  initializeGame(game_id) {
+  async initializeGame(game_id) {
     //
     // initialize some useful variables
     //
     if (this.game.status != "") {
-      this.updateStatus(this.game.status);
+      await this.updateStatus(this.game.status);
     }
     if (this.game.dice == "") {
       this.initializeDice();
@@ -177,7 +177,7 @@ class Realms extends GameTemplate {
 
     try {
       this.displayBoard();
-      this.updateStatusAndListCards(
+      await this.updateStatusAndListCards(
         "Waiting for Opponent Move",
         this.game.deck[this.game.player - 1].hand
       );
@@ -709,15 +709,15 @@ class Realms extends GameTemplate {
     return obj;
   }
 
-  nonPlayerTurn() {
-    this.updateStatusAndListCards(
+  async nonPlayerTurn() {
+    await this.updateStatusAndListCards(
       `Opponent Turn`,
       this.game.deck[this.game.player - 1].hand,
       function () {}
     );
   }
 
-  playerTurn() {
+  async playerTurn() {
     if (this.browser_active == 0) {
       return;
     }
@@ -725,7 +725,7 @@ class Realms extends GameTemplate {
     //
     // show my hand
     //
-    this.updateStatusAndListCards(
+    await this.updateStatusAndListCards(
       `Your Turn <span id="end-turn" class="end-turn">[ or pass ]</span>`,
       this.game.deck[this.game.player - 1].hand,
       function () {}
@@ -741,14 +741,14 @@ class Realms extends GameTemplate {
     //
     // players may also end their turn
     //
-    document.getElementById("end-turn").onclick = (e) => {
-      this.updateStatusAndListCards(
+    document.getElementById("end-turn").onclick = async (e) => {
+      await this.updateStatusAndListCards(
         "Opponent Turn",
         this.game.deck[this.game.player - 1].hand,
         function () {}
       );
-      this.prependMove("RESOLVE\t" + this.app.wallet.getPublicKey());
-      this.endTurn();
+      this.prependMove("RESOLVE\t" + (await this.app.wallet.getPublicKey()));
+      await this.endTurn();
     };
 
     //
@@ -884,7 +884,7 @@ class Realms extends GameTemplate {
     }
   }
 
-  playerPlayCardFromHand(card) {
+  async playerPlayCardFromHand(card) {
     let c = this.game.cards[card];
 
     switch (c.type) {
@@ -902,14 +902,14 @@ class Realms extends GameTemplate {
         // move land from hand to board
         this.moveCard(this.game.player, c.key, "hand", "lands");
         this.addMove("move\t" + this.game.player + "\t" + c.key + "\thand\tlands\t0");
-        this.endTurn();
+        await this.endTurn();
         break;
 
       case "creature":
         // move creature from hand to board
         this.moveCard(this.game.player, c.key, "hand", "creatures");
         this.addMove("move\t" + this.game.player + "\t" + c.key + "\thand\tcreatures\t0");
-        this.endTurn();
+        await this.endTurn();
         break;
 
       case "sorcery":
@@ -917,14 +917,14 @@ class Realms extends GameTemplate {
         // move enchantment from hand to board
         this.moveCard(this.game.player, c.key, "hand", "enchantments");
         this.addMove("move\t" + this.game.player + "\t" + c.key + "\thand\tenchantments\t0");
-        this.endTurn();
+        await this.endTurn();
         break;
 
       case "instant":
         // move instant from hand to board
         this.moveCard(this.game.player, c.key, "hand", "instant");
         this.addMove("move\t" + this.game.player + "\t" + c.key + "\thand\tinstants\t0");
-        this.endTurn();
+        await this.endTurn();
         break;
 
       default:

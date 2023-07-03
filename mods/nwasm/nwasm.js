@@ -347,7 +347,7 @@ class Nwasm extends GameTemplate {
             //
             this.uploaded_rom = true;
             let similar_rom_exists = false;
-            for (let item in this.libraries[this.app.wallet.getPublicKey()]) {
+            for (let item in this.libraries[this.publicKey]) {
               if (item.title === this.active_rom_name) {
                 similar_rom_exists = true;
               }
