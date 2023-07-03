@@ -1321,7 +1321,8 @@ class RedSquare extends ModTemplate {
       //  page when fetching page source)
       //
       try {
-        return fetch(link, { follow: 10 })
+        console.info('fetching open graph info for: ' + link);
+        return fetch(link, { redirect: "follow", follow: 10000 })
           .then((res) => res.text())
           .then((data) => {
             // required og properties for link preview
