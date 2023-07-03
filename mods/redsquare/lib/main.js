@@ -24,7 +24,11 @@ class RedSquareMain {
     // redsquare - component - ui-component - [render-method] - (render-request)
     //
     this.app.connection.on("redsquare-navigation", (to_home) => {
+      //this.overlay.show('<div class="saito-loader"></div>');
+    });
 
+    this.app.connection.off("redsquare-navigation-complete", () => {
+      //this.overlay.remove();
     });
 
 
@@ -72,6 +76,12 @@ class RedSquareMain {
 
     this.app.connection.on("redsquare-new-tweets-notification-request", () => {
       document.getElementById("show-new-tweets").style.display="flex";
+      document.getElementById("show-new-tweets").onclick = (e) => {
+        e.currentTarget.onclick = null;
+        e.currentTarget.style.display = "none";
+        this.scoll_depth = 0;
+        this.app.connection.emit("redsquare-home-render-request", false);
+      };
     });
 
     this.app.connection.on("redsquare-notifications-render-request", () => {
@@ -179,12 +189,6 @@ class RedSquareMain {
       }
       scrollTop = scrollableElement.scrollTop;
     });
-
-    document.getElementById("show-new-tweets").onclick = () => {
-      document.querySelector("#show-new-tweets").style.display = "none";
-      this.scoll_depth = 0;
-      this.app.connection.emit("redsquare-home-render-request", false);
-    }
 
   }
 

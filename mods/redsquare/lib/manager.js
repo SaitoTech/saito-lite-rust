@@ -233,6 +233,7 @@ class TweetManager {
     //
     this.intersectionObserver.observe(document.querySelector("#redsquare-intersection"));
 
+    this.app.connection.emit("redsquare-navigation-complete");
   }
 
   showLoader() {
