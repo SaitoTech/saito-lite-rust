@@ -564,6 +564,7 @@ class Arcade extends ModTemplate {
         // cancel a join transaction / Remove a player from the game invite
         //
         if (txmsg.request == "cancel") {
+          console.log("receiving cancel transaction");
           await this.receiveCancelTransaction(tx);
         }
 
@@ -805,8 +806,9 @@ class Arcade extends ModTemplate {
 
   async receiveCancelTransaction(tx) {
     let txmsg = tx.returnMessage();
-    let game = this.returnGame(txmsg.game_id);
 
+    let game = this.returnGame(txmsg.game_id);
+    console.log("txmsg: ", tx.from[0].publicKey);
     if (!game || !game.msg) {
       return;
     }
@@ -844,7 +846,6 @@ class Arcade extends ModTemplate {
 
   async sendCancelTransaction(game_id) {
     let game = this.returnGame(game_id);
-
     if (!game || !game.msg) {
       return;
     }
@@ -940,6 +941,7 @@ class Arcade extends ModTemplate {
     }
 
     //Move game to different list
+
     this.removeGame(game_id);
     this.addGame(game, newStatus);
 
@@ -1561,9 +1563,13 @@ class Arcade extends ModTemplate {
   }
 
   removeGame(game_id) {
+    // this.games = this.games.filter((game) => {
+    //   return game.signature != game_id;
+    // });
+
     for (let key in this.games) {
       this.games[key] = this.games[key].filter((game) => {
-        if (game.transaction) {
+        if (game.signature) {
           return game.signature != game_id;
         } else {
           return true;
