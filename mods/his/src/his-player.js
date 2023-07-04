@@ -106,6 +106,8 @@
       players[i].tmp_roll_modifiers = [];
       players[i].factions = [];
       players[i].factions.push(rf);
+      players[i].factions_passed = [];
+      players[i].factions_passed.push(false); // faction not passed
       players[i].captured = [];
       players[i].num = i;
 
@@ -124,12 +126,15 @@
       for (let i = 0; i < players.length; i++) {
 	if (players[i].factions[0] === "protestant") {
 	  players[i].factions.push("england");
+	  players[i].factions_passed.push(false);
 	}
 	if (players[i].factions[0] === "papacy") {
 	  players[i].factions.push("hapsburg");
+	  players[i].factions_passed.push(false);
 	}
 	if (players[i].factions[0] === "france") {
 	  players[i].factions.push("ottoman");
+	  players[i].factions_passed.push(false);
 	}
       }
     }
@@ -138,9 +143,11 @@
       for (let i = 0; i < players.length; i++) {
 	if (players[i].factions[0] === "protestant") {
 	  players[i].factions.push("england");
+	  players[i].factions_passed.push(false);
 	}
 	if (players[i].factions[0] === "papacy") {
 	  players[i].factions.push("hapsburg");
+	  players[i].factions_passed.push(false);
 	}
       }
     }
@@ -149,6 +156,7 @@
       for (let i = 0; i < players.length; i++) {
 	if (players[i].factions[0] === "protestant") {
 	  players[i].factions.push("england");
+	  players[i].factions_passed.push(false);
 	}
       }
     }
@@ -167,6 +175,21 @@
     this.game.state.tmp_bonus_protestant_translation_english_zone = 0;
     this.game.state.tmp_bonus_papacy_burn_books = 0;
 
+    for (let i = 0; i < this.game.state.players_info[player_num-1].factions.length; i++) {
+      this.game.state.players_info[player_num-1].factions_passed[i] = false;
+    }
+  }
+
+  returnPlayerInfoFaction(faction) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+	if (this.game.state.players_info[i].factions[z].key == faction) {
+	  return this.game.state.players_info[i].factions[z];
+	}
+      }
+    }
+
+    return null;
   }
 
   //

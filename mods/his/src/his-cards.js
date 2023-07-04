@@ -1115,6 +1115,8 @@ alert("Not Implemented");
       },
       menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu === "debate") {
+	  his_self.addMove("discard\tprotestant\t007");
+	  his_self.addMove("NOTIFY\tHere I Stand played to substitute Luther into the Theological Debate");
 	  his_self.addMove("here_i_stand_response");
 	  his_self.endTurn();
         }
