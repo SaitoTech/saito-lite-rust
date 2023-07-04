@@ -112,9 +112,6 @@ console.log("MOVE: " + mv[0]);
 	  return 1;
 	}
 
-
-
-
 	if (mv[0] === "build") {
 
 	  let land_or_sea = mv[1];
@@ -139,8 +136,6 @@ console.log("MOVE: " + mv[0]);
 
 	}
 
-
-
 	if (mv[0] === "activate_minor_power") {
 
 	  let faction = mv[1];
@@ -153,7 +148,6 @@ console.log("MOVE: " + mv[0]);
 
 	}
 
-
 	if (mv[0] === "deactivate_minor_power") {
 
 	  let faction = mv[1];
@@ -165,10 +159,6 @@ console.log("MOVE: " + mv[0]);
 	  return 1;
 
 	}
-
-
-
-
 
 	if (mv[0] === "remove_unit") {
 
@@ -211,7 +201,6 @@ console.log("MOVE: " + mv[0]);
 	      }
 	    }
 	  }
-
 
 	  //
 	  // prevents in-memory differences in processing resulting in a different
@@ -1609,7 +1598,7 @@ console.log("POOL: " + hapsburg_card);
 	// for however many people need to have the opportunity to counter or acknowledge.
 	//
 	if (mv[0] === "insert_before_counter_or_acknowledge") {
-
+	
           this.game.queue.splice(qe, 1);
 
 	  let insert = "";
@@ -1631,6 +1620,12 @@ console.log("POOL: " + hapsburg_card);
 
         }
 	if (mv[0] === "counter_or_acknowledge") {
+
+	  //
+	  // hide any cardbox
+	  //
+	  this.cardbox.hide();
+
 
 	  if (this.game.state.skip_counter_or_acknowledge == 1) {
             this.game.queue.splice(qe, 1);
@@ -2186,10 +2181,10 @@ console.log("faction_map: " + JSON.stringify(faction_map));
 	  let attacker_modified_rolls = attacker_results;
 	  let defender_modified_rolls = attacker_results;
   	  if (his_self.game.state.field_battle.attacker_player > 0) {
-	    attacker_modified_rolls = modify_rolls(his_self.game.players_info[his_self.game.state.field_battle.attacker_player-1], attacker_results);
+	    attacker_modified_rolls = modify_rolls(his_self.game.state.players_info[his_self.game.state.field_battle.attacker_player-1], attacker_results);
 	  } 
   	  if (his_self.game.state.field_battle.defender_player > 0) {
- 	    defender_modified_rolls = modify_rolls(his_self.game.players_info[his_self.game.state.field_battle.defender_player-1], defender_results);
+ 	    defender_modified_rolls = modify_rolls(his_self.game.state.players_info[his_self.game.state.field_battle.defender_player-1], defender_results);
 	  }
 
 	  for (let i = 0; i < attacker_modified_rolls; i++) {
@@ -3973,8 +3968,6 @@ console.log("purging naval units and capturing leader");
 	  let language_zone = mv[3];
 	  let committed = mv[4];
 
-alert("pick first round debater: " + language_zone);
-
 	  this.game.state.theological_debate = {};
 	  this.game.state.theological_debate.attacker_rolls = 0;
 	  this.game.state.theological_debate.defender_rolls = 0;
@@ -4109,8 +4102,6 @@ alert("pick first round debater: " + language_zone);
 	  let attacker_idx = 0;
 	  let defender_idx = 0;
 	  let was_defender_uncommitted = 0;
-
-alert("LANGUAGE ZONE: " + language_zone);
 
 	  this.game.queue.splice(qe, 1);
 
@@ -4492,22 +4483,46 @@ console.log("NEW WORLD PHASE!");
         }
         if (mv[0] === "action_phase") {
 
-	  this.game.queue.splice(qe, 1);
+	  //
+	  // check if we are really ready for a new round, or just need another loop
+	  // until all of the players have passed.
+	  //
+	  let factions = this.returnFactions();
+	  let factions_in_play = [];
+	  for (let i = 0; i < this.game.state.players_info.length; i++) {
+console.log("i: " + i);
+	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+console.log("z: " + z);
+console.log("passed? " + JSON.stringify(this.game.state.players_info[i].factions[z]));
+	      if (this.game.state.players_info[i].factions_passed[z] == false) {
+console.log("pushing back!");
+		factions_in_play.push(this.factions[game.state.players_info[i].factions[z]]);
+	      }
+	    }
+	  }
 
-console.log("NUMBER OF PLAYERS: " + this.game.players);
+console.log("FACTIONS IN PLAY: " + JSON.stringify(factions_in_play));
 
-	  if (this.game.players.length == 2) {
-	    this.game.queue.push("play\tprotestant");
-	    this.game.queue.push("play\tpapacy");
+	  //
+	  // players still to go...
+	  //
+	  if (factions_in_play.length > 0) {
+	    let io = this.returnImpulseOrder();
+	    for (let i = 0; i < io.length; i++) {
+	      if (factions_in_play.includes(io[i])) {
+	        this.game.queue.push("play\t"+io[i]);
+	      }
+	    }
 	    return 1;
 	  }
 
-	  let io = this.returnImpulseOrder();
-	  for (let i = io.length-1; i>= 0; i--) {
-	    this.game.queue.push("play\t"+io[i]);
-	  }
+	  //
+	  // move past action phase if no-one left to play
+	  //
+	  this.game.queue.splice(qe, 1);
           return 1;
         }
+
         if (mv[0] === "spring_deployment_phase") {
 
 	  this.game.queue.splice(qe, 1);

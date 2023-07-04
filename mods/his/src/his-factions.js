@@ -28,6 +28,8 @@
     if (obj.vp_bonus == null)		{ obj.vp_bonus = 0; }
     if (obj.allies == null)		{ obj.allies = []; }
     if (obj.minor_allies == null)	{ obj.minor_allies = []; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.passed == null)		{ obj.passed = false; }
     if (obj.calculateBaseVictoryPoints == null) {
       obj.calculateBaseVictoryPoints = function() { return 0; }
     }
