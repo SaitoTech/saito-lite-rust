@@ -72,7 +72,7 @@ class Storage {
     data = Object.assign(data, obj);
 
     if (!data.field1) {
-      data.field1 = txmsg.type;
+      data.field1 = txmsg.module;
     }
     if (!data.field2) {
       data.field2 = tx.transaction.from[0].add;
@@ -147,7 +147,7 @@ class Storage {
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) {
-        archive_mod.loadTransactions(obj, (res) => {
+        archive_mod.loadTransactionsWithCallback(obj, (res) => {
           internal_callback(res);
         });
       }
@@ -199,7 +199,7 @@ class Storage {
         localStorage.setItem("options", JSON.stringify(this.app.options));
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -214,7 +214,7 @@ class Storage {
         return localStorage.getItem("options");
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 

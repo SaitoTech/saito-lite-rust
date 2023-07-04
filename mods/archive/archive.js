@@ -26,12 +26,15 @@ class Archive extends ModTemplate {
     this.description = "Supports the saving and serving of network transactions";
     this.categories = "Utilities Core";
 
-    this.db_connection = null;
+    this.localDB = null;
+    
     //
-    // settings
+    // settings saved and loaded from app.options
     //
-    this.archive = {};
-    this.archive.index_blockchain = 0;
+    this.archive = {
+      index_blockchain: 0,
+    };
+
     if (this.app.BROWSER == 0) {
       this.archive.index_blockchain = 1;
     } else {
@@ -40,6 +43,8 @@ class Archive extends ModTemplate {
   }
 
   async initialize(app) {
+    this.load();
+
     if (app.BROWSER) {
       //
       //Create Local DB schema
@@ -68,7 +73,7 @@ class Archive extends ModTemplate {
         name: "txs",
         columns: {
           id: { primaryKey: true, autoIncrement: true },
-          tx: { dataType: "string"},
+          tx: { dataType: "string", unique: true },
         },
       };
 
@@ -100,11 +105,10 @@ class Archive extends ModTemplate {
   //
   onConfirmation(blk, tx, conf, app) {
     //
-    // save all on-chain transactions
+    // save all on-chain transactions -- but only the service node...
     //
-    //if (conf == 0 && this.archive.index_blockchain == 1) {
-    if (conf == 0) {
-      let txmsg = tx.returnMessage();
+    if (conf == 0 && this.archive.index_blockchain == 1) {
+    //if (conf == 0) {
 
       let block_id = 0;
       let block_hash = "";
@@ -116,7 +120,7 @@ class Archive extends ModTemplate {
         block_hash = blk.returnHash();
       }
 
-      this.saveTransaction(tx, { block_id: block_id, block_hash: block_hash }, 1);
+      this.saveTransaction(tx, { block_id, block_hash }, 1);
     }
   }
 
@@ -165,43 +169,22 @@ class Archive extends ModTemplate {
   // save //
   //////////
   async saveTransaction(tx, obj = {}, onchain = 0) {
-    if (!obj.tx_id) {
-      obj.tx_id = "";
-    }
-    if (!obj.publickey) {
-      obj.publickey = "";
-    }
-    if (!obj.owner) {
-      obj.owner = "";
-    }
-    if (!obj.sig) {
-      obj.sig = "";
-    }
-    if (!obj.field1) {
-      obj.field1 = "";
-    }
-    if (!obj.field2) {
-      obj.field2 = "";
-    }
-    if (!obj.field3) {
-      obj.field3 = "";
-    }
-    if (!obj.block_id) {
-      obj.block_id = "";
-    }
-    if (!obj.block_hash) {
-      obj.block_hash = "";
-    }
-    if (!obj.preserve) {
-      obj.preserve = "";
-    }
-    if (!obj.created_at) {
-      obj.created_at = tx.transaction.ts;
-    }
-    if (!obj.updated_at) {
-      new Date().getTime();
-    }
-    obj.updated_at = new Date().getTime();
+
+    let newObj = {};
+
+    newObj.user_id   = obj?.user_id || 0;    //What is this supposed to be
+    newObj.publickey = obj?.publickey || tx.transaction.from[0].add;
+    newObj.owner     = obj?.owner || "";
+    newObj.sig       = obj?.sig || tx.transaction.sig;
+    //Field1-3 are set by default in app.storage
+    newObj.field1    = obj?.field1 || "";
+    newObj.field2    = obj?.field2 || "";
+    newObj.field3    = obj?.field3 || "";
+    newObj.block_id  = obj?.block_id || 0;
+    newObj.block_hash = obj?.block_hash || "";
+    newObj.preserve   = obj?.preserve || 0;
+    newObj.created_at = obj?.created_at || tx.transaction.ts;
+    newObj.updated_at = obj?.updated_at || tx.transaction.ts;
 
     //
     // insert transaction
@@ -211,12 +194,16 @@ class Archive extends ModTemplate {
     let tx_id = await this.app.storage.insertDatabase(sql, params, "archive");
 
     if (this.app.BROWSER){
-      tx_id = await this.localDB.insert({
+      let inserted_rows = await this.localDB.insert({
         into: "txs",
-        values: [{ tx }],
+        values: [{ tx: tx.serialize_to_web(this.app) }],
         return: true
       });
-      console.log("JSSTORE: " + tx_id);
+      tx_id = inserted_rows[0]["id"];
+    }
+        
+    if (!tx_id) {
+      return;
     }
 
     //
@@ -251,30 +238,31 @@ class Archive extends ModTemplate {
     )`;
     params = {
       $tx_id: tx_id,
-      $publickey: obj.publickey,
-      $owner: obj.owner,
-      $sig: obj.sig,
-      $field1: obj.field1,
-      $field2: obj.field2,
-      $field3: obj.field3,
-      $block_id: obj.block_id,
-      $block_hash: obj.block_hash,
-      $created_at: obj.created_at,
-      $updated_at: obj.updated_at,
-      $preserve: obj.preserve,
+      $publickey: newObj.publickey,
+      $owner: newObj.owner,
+      $sig: newObj.sig,
+      $field1: newObj.field1,
+      $field2: newObj.field2,
+      $field3: newObj.field3,
+      $block_id: newObj.block_id,
+      $block_hash: newObj.block_hash,
+      $created_at: newObj.created_at,
+      $updated_at: newObj.updated_at,
+      $preserve: newObj.preserve,
     };
 
     let archives_id = await this.app.storage.insertDatabase(sql, params, "archive");
 
     if (this.app.BROWSER){
-      obj.tx_id = tx_id;
+      newObj.tx_id = tx_id;
+
       let numRows = await this.localDB.insert({
         into: "archives",
-        values: [obj]
+        values: [newObj]
       });
 
       if (numRows){
-        console.log("Archive index successfully inserted");
+        console.log("Local Archive index successfully inserted");
       }
     }
   }
@@ -300,47 +288,43 @@ class Archive extends ModTemplate {
       return 0;
     }
 
+
     //
     // update records
     //
-    if (!obj.tx_id) {
-      obj.tx_id = "";
-    }
-    if (!obj.publickey) {
-      obj.publickey = "";
-    }
-    if (!obj.owner) {
-      obj.owner = "";
-    }
-    if (!obj.sig) {
-      obj.sig = "";
-    }
-    if (!obj.field1) {
-      obj.field1 = "";
-    }
-    if (!obj.field2) {
-      obj.field2 = "";
-    }
-    if (!obj.field3) {
-      obj.field3 = "";
-    }
-    if (!obj.block_id) {
-      obj.block_id = "";
-    }
-    if (!obj.block_hash) {
-      obj.block_hash = "";
-    }
-    if (!obj.preserve) {
-      obj.preserve = "";
-    }
-    obj.updated_at = new Date().getTime();
+
+    let newObj = {};
+    newObj.tx_id     = obj?.tx_id || 0;
+    newObj.user_id   = obj?.user_id || 0;    //What is this supposed to be
+    newObj.publickey = obj?.publickey || "";
+    newObj.owner     = obj?.owner || "";
+    newObj.sig       = obj?.sig || "";
+    //Field1-3 are set by default in app.storage
+    newObj.field1    = obj?.field1 || "";
+    newObj.field2    = obj?.field2 || "";
+    newObj.field3    = obj?.field3 || "";
+    newObj.block_id  = obj?.block_id || 0;
+    newObj.block_hash = obj?.block_hash || "";
+    newObj.preserve   = obj?.preserve || 0;
+    newObj.updated_at = new Date().getTime();
 
     //
     // find entries to update
     //
     let sql = `SELECT id , tx_id FROM archives WHERE owner = $owner AND sig = $sig`;
-    let params = { $owner: obj.owner, $sig: obj.sig };
+    let params = { $owner: newObj.owner, $sig: newObj.sig };
     let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+
+    if (this.app.BROWSER){
+      rows = await this.localDB.select({
+        from: "archives",
+        where: {
+          owner: newObj.owner,
+          sig: newObj.sig
+        }
+      });
+    }
+
     if (!rows?.length) {
       return;
     }
@@ -353,13 +337,28 @@ class Archive extends ModTemplate {
     //
     sql = `UPDATE archives SET updated_at = $updated_at , owner = $owner , preserve = $preserve WHERE id = $id AND sig = $sig`;
     params = {
-      $updated_at: obj.updated_at,
-      $owner: obj.owner,
-      $preserve: obj.preserve,
+      $updated_at: newObj.updated_at,
+      $owner: newObj.owner,
+      $preserve: newObj.preserve,
       $id: id,
-      $sig: obj.sig,
+      $sig: newObj.sig,
     };
     await this.app.storage.executeDatabase(sql, params, "archive");
+
+    if (this.app.BROWSER){
+      await this.localDB.update({
+        in: "archives",
+        set: {
+          updated_at: newObj.updated_at,
+          owner: newObj.owner,
+          preserve: newObj.preserve
+        },
+        where: {
+          id: id,
+          sig: newObj.sig
+        }
+      });
+    }
 
     //
     // update tx
@@ -369,7 +368,16 @@ class Archive extends ModTemplate {
       $tx_id: tx_id,
       $tx: tx.serialize_to_web(this.app),
     };
+
     await this.app.storage.executeDatabase(sql, params, "archive");
+
+    if (this.app.BROWSER){
+      await this.localDB.update({
+        in: "txs",
+        set: { tx: tx.serialize_to_web(this.app) },
+        where: { id: tx_id }
+      });
+    }
 
     return 1;
   }
@@ -377,6 +385,13 @@ class Archive extends ModTemplate {
   //////////
   // load //
   //////////
+  async loadTransactionsWithCallback(obj = {}, callback = null){
+    let txs = await this.loadTransactions(obj);
+    if (callback){
+      callback(txs);  
+    }
+  }
+
   async loadTransactions(obj = {}) {
     let limit = 10;
     let txs = [];
@@ -384,18 +399,23 @@ class Archive extends ModTemplate {
     let params = {};
     let rows = [];
     let timestamp_limiting_clause = "";
+    let where_obj = {};
 
     if (obj.created_later_than) {
       timestamp_limiting_clause = " AND created_at > " + parseInt(obj.created_later_than);
+      where_obj = {created_at: { '>': parseInt(obj.created_later_than)}};
     }
     if (obj.created_earlier_than) {
       timestamp_limiting_clause = " AND created_at < " + parseInt(obj.created_earlier_than);
+      where_obj = {created_at: { '<': parseInt(obj.created_earlier_than)}};
     }
     if (obj.updated_later_than) {
-      timestamp_limiting_clause = " AND created_at > " + parseInt(obj.updated_later_than);
+      timestamp_limiting_clause = " AND updated_at > " + parseInt(obj.updated_later_than);
+      where_obj = {updated_at: { '>': parseInt(obj.updated_later_than)}};
     }
     if (obj.updated_earlier_than) {
-      timestamp_limiting_clause = " AND created_at < " + parseInt(obj.updated_earlier_than);
+      timestamp_limiting_clause = " AND updated_at < " + parseInt(obj.updated_earlier_than);
+      where_obj = {updated_at: { '<': parseInt(obj.updated_earlier_than)}};
     }
 
     //
@@ -413,31 +433,52 @@ class Archive extends ModTemplate {
       sql = `SELECT * FROM archives JOIN txs WHERE archives.field1 = $field1 AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC LIMIT $limit`;
       params = { $field1: obj.field1, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["field1"] = obj.field1;
     }
     if (obj.field2) {
       sql = `SELECT * FROM archives JOIN txs WHERE archives.field2 = $field2 AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC LIMIT $limit`;
       params = { $field2: obj.field2, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["field2"] = obj.field2;
     }
     if (obj.field3) {
       sql = `SELECT * FROM archives JOIN txs WHERE archives.field3 = $field3 AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC LIMIT $limit`;
       params = { $field3: obj.field3, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["field3"] = obj.field3;
     }
     if (obj.owner) {
       sql = `SELECT * FROM archives JOIN txs WHERE archives.owner = $owner AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC LIMIT $limit`;
       params = { $owner: obj.owner, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["owner"] = obj.owner;
     }
     if (obj.publickey) {
       sql = `SELECT * FROM archives JOIN txs WHERE archives.publickey = $publickey AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC LIMIT $limit`;
       params = { $publickey: obj.publickey, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["publickey"] = obj.publickey;
     }
     if (obj.sig) {
       sql = `SELECT * FROM archives JOIN txs WHERE archives.sig = $sig AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC LIMIT $limit`;
       params = { $sig: obj.sig, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["sig"] = obj.sig;
+    }
+
+    if (this.app.BROWSER){
+      rows = await this.localDB.select({
+                          from: "archives",
+                          where: where_obj,
+                          join: {
+                            with: "txs",
+                            on: "archives.tx_id=txs.id",
+                            type: "inner",
+                            as: { id: "tid" }
+                          },
+                          order: { by: "archives.id", type: "desc" },
+                          limit
+                        });
     }
 
     //
@@ -492,11 +533,11 @@ class Archive extends ModTemplate {
     this.app.storage.saveOptions();
   }
 
-  onWalletReset(nuke) {
+  async onWalletReset(nuke) {
     console.log("Wallet reset");
 
     if (nuke && this.localDB) {
-      this.localDB
+      return this.localDB
         .dropDb()
         .then(function () {
           console.log("Db deleted successfully");
@@ -505,6 +546,7 @@ class Archive extends ModTemplate {
           console.log(error);
         });
     }
+    return 1;
   }
 }
 

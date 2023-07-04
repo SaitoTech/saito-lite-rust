@@ -449,7 +449,7 @@ console.log("---------------------");
             this.wallet.privatekey = tmpprivkey;
 
             // let modules purge stuff (not implementer)
-            this.app.modules.onWalletReset();
+            await this.app.modules.onWalletReset();
 
             // reset and save
             await this.app.storage.resetOptions();
@@ -811,7 +811,7 @@ console.log("---------------------");
     //Do we need to set wallet.balance or wallet.version?
 
     // let modules purge stuff (not implementer)
-    this.app.modules.onWalletReset(true);
+    await this.app.modules.onWalletReset(true);
 
     // reset and save
     await this.app.storage.resetOptions();

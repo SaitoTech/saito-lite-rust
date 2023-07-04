@@ -720,12 +720,9 @@ class Chat extends ModTemplate {
     //
     if (this.app.BROWSER) {
       if (txmsg.group_id !== this.communityGroup?.id) {
-        for (let i = 0; i < tx.transaction.from.length; i++) {
-          if (tx.transaction.from[i].add == app.wallet.returnPublicKey()) {
-            console.log("Save Chat TX");
-            this.app.storage.saveTransaction(tx, { field3 : txmsg.group_id });
-            break;
-          }
+        if (tx.isFrom(app.wallet.returnPublicKey())) {
+          console.log("Save My Sent Chat TX");
+          this.app.storage.saveTransaction(tx, { field3 : txmsg.group_id });
         }
       }
     }
@@ -931,6 +928,10 @@ class Chat extends ModTemplate {
     group.unread++;
 
     group.last_update = tx.transaction.ts;
+
+    if (!this.app.BROWSER) { 
+      return; 
+    }
 
     if (this.debug) {
       console.log(`new msg: ${group.unread} unread`);
@@ -1178,15 +1179,15 @@ class Chat extends ModTemplate {
   }
 
 
-  onWalletReset(nuke) {
+  async onWalletReset(nuke) {
     console.log("Wallet reset");
 
     if (nuke){
       for (let i = 0; i < this.groups.length; i++) {
-        localforage.removeItem(`chat_${this.groups[i].id}`);
+        await localforage.removeItem(`chat_${this.groups[i].id}`);
       }
     }
-
+    return 1;
   }
 
   startTabNotification() {
