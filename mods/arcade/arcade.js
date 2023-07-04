@@ -564,7 +564,6 @@ class Arcade extends ModTemplate {
         // cancel a join transaction / Remove a player from the game invite
         //
         if (txmsg.request == "cancel") {
-          console.log("receiving cancel transaction");
           await this.receiveCancelTransaction(tx);
         }
 
@@ -808,7 +807,6 @@ class Arcade extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     let game = this.returnGame(txmsg.game_id);
-    console.log("txmsg: ", tx.from[0].publicKey);
     if (!game || !game.msg) {
       return;
     }
