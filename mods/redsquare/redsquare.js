@@ -1620,10 +1620,6 @@ console.log("after sending tx ////////////");
   }
 
   webServer(app, expressapp, express) {
-
-    console.log("i am inside webServer ///////////");
-
-
     let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
     let fs = app?.storage?.returnFileSystem();
     let redsquare_self = this;
