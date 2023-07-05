@@ -632,9 +632,6 @@ class Chat extends ModTemplate {
 
     let peers = await app.network.getPeers();
 
-    console.log("peers  ////");
-    console.log(peers);
-
     if (peers.length > 0) {
 
       let recipient = peers[0].publicKey;
@@ -649,7 +646,7 @@ class Chat extends ModTemplate {
       app.connection.emit("relay-send-message", {
         recipient,
         request: "chat message broadcast",
-        data: tx.transaction,
+        data: tx,
       });
     } else {
       salert("Connection to chat server lost");
@@ -658,6 +655,10 @@ class Chat extends ModTemplate {
 
   async createChatTransaction(group_id, msg = "") {
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+
+    console.log("new chat tx");
+    console.log(newtx);
 
     if (newtx == null) {
       return;
@@ -715,6 +716,10 @@ class Chat extends ModTemplate {
    * So we make sure here it is actually for us (otherwise will be encrypted gobbledygook)
    */
   async receiveChatTransaction(app, tx) {
+
+    console.log("receiveChatTransaction ///");
+    console.log(tx);
+
     if (this.inTransitImageMsgSig == tx.signature) {
       this.inTransitImageMsgSig = null;
     }
@@ -799,8 +804,12 @@ class Chat extends ModTemplate {
       }
     }
 
+
+    // console.log("adding tx to group /////");
+    // console.log(tx);
+
     this.addTransactionToGroup(group, tx);
-    app.connection.emit("chat-popup-render-request", group);
+    this.app.connection.emit("chat-popup-render-request", group);
   }
 
   //////////////////
@@ -874,6 +883,9 @@ class Chat extends ModTemplate {
     let last_message_ts = 0;
     let last = new Date(0);
 
+    console.log("group //////");
+    console.log(group);
+
     for (let minimized_tx of group?.txs) {
       //Same Sender -- keep building block
       let next = new Date(minimized_tx.ts);
@@ -923,27 +935,27 @@ class Chat extends ModTemplate {
       group.txs.shift();
     }
 
-    let content = tx.returnMessage()?.message;
+    let content = tx.msg.message;
     if (!content) {
       console.warn("Not a chat message?");
       return;
     }
     let new_message = {
       sig: tx.signature,
-      ts: tx.ts,
+      ts: tx.timestamp,
       from: [],
       msg: content,
     };
 
     //Keep the from array just in case....
     for (let sender of tx.from) {
-      if (!new_message.from.includes(sender.add)) {
-        new_message.from.push(sender.add);
+      if (!new_message.from.includes(sender.publicKey)) {
+        new_message.from.push(sender.publicKey);
       }
     }
 
     for (let i = 0; i < group.txs.length; i++) {
-      if (group.txs[i].sig === tx.signature) {
+      if (group.txs[i].signature === tx.signature) {
         if (this.debug) {
           console.log("duplicate");
         }
