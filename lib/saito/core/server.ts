@@ -12,7 +12,7 @@ import S from "saito-js/index.node";
 import fs from "fs";
 import path from "path";
 import bodyParser from "body-parser";
-import { WebSocket } from "ws";
+import ws from "ws";
 import process from "process";
 import CustomSharedMethods from "saito-js/lib/custom/custom_shared_methods";
 import { parse } from "url";
@@ -59,7 +59,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
     try {
       console.log("connecting to " + url + "....");
-      let socket = new WebSocket(url);
+      let socket = new ws.WebSocket(url);
       let index = S.getInstance().addNewSocket(socket);
 
       socket.on("message", (buffer: any) => {
