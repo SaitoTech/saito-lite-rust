@@ -1,14 +1,30 @@
+// const SaitoUserTemplate = require("./../../lib/saito/ui/saito-user/saito-user.template.js");
+// const saito = require("../../lib/saito/saito");
+// const ModTemplate = require("../../lib/templates/modtemplate");
+// const ChatManager = require("./lib/chat-manager/main");
+// const ChatManagerOverlay = require("./lib/overlays/chat-manager");
+// const ChatPopup = require("./lib/chat-manager/popup");
+// const JSON = require("json-bigint");
+// const PeerService = require("saito-js/lib/peer_service").default;
+// const Slip = require("../../lib/saito/slip").default;
+// const Transaction = require("../../lib/saito/transaction").default;
+// const localforage = require("localforage");
+// const ChatMain = require("./lib/appspace/main");
+
+
 const SaitoUserTemplate = require("./../../lib/saito/ui/saito-user/saito-user.template.js");
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
+const ChatMain = require("./lib/appspace/main");
+const SaitoHeader = require("./../../lib/saito/ui/saito-header/saito-header");
 const ChatManager = require("./lib/chat-manager/main");
 const ChatManagerOverlay = require("./lib/overlays/chat-manager");
-const ChatPopup = require("./lib/chat-manager/popup");
 const JSON = require("json-bigint");
-const PeerService = require("saito-js/lib/peer_service").default;
+//const JsStore = require("jsstore");
 const Slip = require("../../lib/saito/slip").default;
 const Transaction = require("../../lib/saito/transaction").default;
-const localforage = require("localforage");
+const localforage = require("localforage")
+const PeerService = require("saito-js/lib/peer_service").default;
 
 class Chat extends ModTemplate {
   constructor(app) {
@@ -54,7 +70,7 @@ class Chat extends ModTemplate {
 
     this.loading = true;
 
-    //this.publicKey = app.wallet.publicKey;
+    this.publicKey = app.wallet.publicKey;
 
     this.isRelayConnected = false;
 
@@ -64,6 +80,8 @@ class Chat extends ModTemplate {
     });
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
+
+//    this.styles = ["/saito/saito.css", "/chat/style.css"];
 
     this.theme_options = {
       lite: "fa-solid fa-sun",
@@ -181,12 +199,13 @@ class Chat extends ModTemplate {
     this.chat_manager.render_manager_to_screen = 1;
     this.chat_manager.render_popups_to_screen = 0;
 
+
+    console.log("i am going to render it //////");
+
     await super.render();
   }
 
   async onPeerServiceUp(app, peer, service = {}) {
-    console.log("check peer service upp ///////////");
-    return;
 
     let chat_self = this;
 
@@ -239,11 +258,14 @@ class Chat extends ModTemplate {
         console.log("Chat: onPeerServiceUp", service.service);
       }
 
+      console.log("peeeeeeeer //////////");
+      console.log(peer);
+
       this.communityGroup = this.returnOrCreateChatGroupFromMembers(
-        [peer.returnPublicKey()],
+        [peer.publicKey],
         this.communityGroupName
       );
-      this.communityGroup.members = [peer.returnPublicKey()];
+      this.communityGroup.members = [peer.publicKey];
 
       if (this.communityGroup) {
         //
@@ -506,7 +528,7 @@ class Chat extends ModTemplate {
         if (inner_tx.to[0].publicKey != this.publickey) {
           if (app.BROWSER == 0) {
             app.network.peers.forEach((p) => {
-              if (p.peer.publickey === inner_tx.to[0].publicKey) {
+              if (p.peer.publicKey === inner_tx.to[0].publicKey) {
                 p.sendTransactionWithCallback(inner_tx, () => {});
               }
               return;
@@ -519,7 +541,7 @@ class Chat extends ModTemplate {
           //
           if (app.BROWSER == 0) {
             app.network.peers.forEach((p) => {
-              if (p.peer.publickey !== peer.peer.publickey) {
+              if (p.peer.publicKey !== peer.peer.publicKey) {
                 p.sendTransactionWithCallback(inner_tx, () => {});
               }
             });
@@ -607,11 +629,18 @@ class Chat extends ModTemplate {
         this.inTransitImageMsgSig = tx.signature;
       }
     }
-    if (app.network.peers.length > 0) {
-      let recipient = app.network.peers[0].peer.publickey;
-      for (let i = 0; i < app.network.peers.length; i++) {
-        if (app.network.peers[i].hasService("chat")) {
-          recipient = app.network.peers[i].peer.publickey;
+
+    let peers = await app.network.getPeers();
+
+    console.log("peers  ////");
+    console.log(peers);
+
+    if (peers.length > 0) {
+
+      let recipient = peers[0].publicKey;
+      for (let i = 0; i < peers.length; i++) {
+        if (peers[i].hasService("chat")) {
+          recipient = peers[i].publicKey;
           break;
         }
       }
@@ -802,6 +831,10 @@ class Chat extends ModTemplate {
             if (z > 0) {
               msg += "<br>";
             }
+
+            console.log("block ////");
+            console.log(block[z]);
+
             sender = block[z].from[0];
             if (block[z].msg.indexOf("<img") != 0) {
               msg += this.app.browser.sanitize(block[z].msg);
