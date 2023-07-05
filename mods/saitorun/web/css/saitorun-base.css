@@ -1,11 +1,15 @@
 body {
   margin: 0;
-  background-image: url("/saitorun/img/background.png");
+  background-image: url("/saitorun/img/background.jpg");
   background-size: cover;
   background-position: center;
   color: white;
   /* disable pull to refresh on mobile */
   overscroll-behavior: contain;
+}
+
+.solitaire-stats-overlay .saito-table-row {
+  grid-template-columns: 120px 1fr 1fr 1fr;
 }
 
 #score-panel {
@@ -21,6 +25,8 @@ body {
   top: 35px;
   right: 100px;
   font-size: x-large;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  color: white !important;
 }
 
 #distance-panel {
@@ -36,24 +42,44 @@ body {
   top: 25px;
   right: 100px;
   font-size: x-large;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  color: white !important;
 }
 
 #instructions {
-  font-family: 'RocknRoll One', sans-serif;
+  font-family: "RocknRoll One", sans-serif;
   font-size: 40px;
-  color: white;
-  width: 200px;
+  color: white !important;
+  width: 400px;
   height: 100px;
   position: absolute;
   top: 30%;
-  left: 50%;
-  margin: -100px 0 0 -100px;
+  left: calc(50% - 200px);
   text-align: center;
 }
 
 #dist,
 #points {
   width: 80px !important;
+}
+
+#trivia-panel {
+  display: none;
+  font-family: "RocknRoll One", sans-serif;
+  font-size: 2rem !important;
+  color: white !important;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  width: 80%;
+  height: auto;
+  position: absolute;
+  top: 30%;
+  left: 10%;
+  text-align: center;
+}
+
+#question,
+#answer-2-text {
+  margin-bottom: 1rem;
 }
 
 @media only screen and (max-width: 600px) {
@@ -86,6 +112,11 @@ body {
     right: 50px;
     font-size: x-large;
   }
+
+        #trivia-panel {
+        top: 20%;
+      }
+
 
   #dist,
   #points {
@@ -129,3 +160,39 @@ body {
     width: 40px !important;
   }
 }
+
+  a.answer-button {
+      background-color: #f14e4e;
+      display: inline-block;
+      padding: 0.3em 1.2em;
+      margin: 0 0.1em 0.1em 0;
+      border: 0.16em solid rgba(255, 255, 255, 0);
+      border-radius: 2em;
+      box-sizing: border-box;
+      text-decoration: none;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 300;
+      color: #FFFFFF !important;
+      text-shadow: 0 0.04em 0.04em rgba(0, 0, 0, 0.35);
+      text-align: center;
+      transition: all 0.2s;
+      width: 140px;
+    }
+
+    a.answer-button:hover {
+      border-color: rgba(255, 255, 255, 1);
+    }
+
+    @media only screen and (max-width: 600px) {
+      a.answer-button {
+        width: 80%;
+        margin-left: 10%;
+        margin-top: 5%;
+      }
+    }
+
+    .scaleOut {
+      font-size: 28px !important;
+      font-weight: 900 !important;
+      margin-top: -2px;
+    }
