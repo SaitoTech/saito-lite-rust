@@ -53,10 +53,8 @@ class LeagueEditor {
     let welcome = document.querySelector(".league-edit-overlay-box .welcome");
     if (welcome){
       if (welcome.textContent !== this.league.welcome){
-//        let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(welcome.textContent), "welcome");
         let newtx = this.mod.createUpdateTransaction(this.league.id, welcome.textContent, "welcome");
         this.app.network.propagateTransaction(newtx);
-//        this.league.welcome = sanitize(welcome.textContent);
         this.league.welcome = welcome.textContent;
       }
     }
@@ -73,10 +71,8 @@ class LeagueEditor {
     let description = document.querySelector(".league-edit-overlay-box .description");
     if (description){
       if (description.textContent !== this.league.description){
-//        let newtx = this.mod.createUpdateTransaction(this.league.id, sanitize(description.textContent), "description");
         let newtx = this.mod.createUpdateTransaction(this.league.id, description.textContent, "description");
         this.app.network.propagateTransaction(newtx);
-//        this.league.description = sanitize(description.textContent);
         this.league.description = description.textContent;
       }
     }
