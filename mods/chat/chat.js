@@ -701,10 +701,7 @@ class Chat extends ModTemplate {
     }
 
     if (members.length == 2) {
-      //newtx = this.app.wallet.signAndEncryptTransaction(newtx);
-
-      let key = this.app.keychain.returnKey(newtx.to[0].publicKey);
-      await newtx.sign();
+      await newtx.signAndEncrypt();
     } else {
       await newtx.sign();
     }
