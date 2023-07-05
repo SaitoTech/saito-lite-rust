@@ -249,8 +249,8 @@ class League extends ModTemplate {
           console.log("Load my leagues: " + league_list);
         }
         
-        //sql = `SELECT * FROM leagues WHERE id IN (${league_list})`;
-        sql = `SELECT * FROM leagues WHERE ( status = 'public' OR id IN (${league_list}) ) AND deleted = 0`;
+        sql = `SELECT * FROM leagues WHERE id IN (${league_list})`;
+        //sql = `SELECT * FROM leagues WHERE ( admin = '' OR id IN (${league_list}) ) AND deleted = 0`;
       }
       //
       // load any requested league we may not have in options file
