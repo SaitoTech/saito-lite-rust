@@ -78,8 +78,6 @@ class Chat extends ModTemplate {
 
   async initialize(app) {
     console.log("inside initialize /////");
-    return;
-
     await super.initialize(app);
 
     //Enforce compliance with wallet indexing
