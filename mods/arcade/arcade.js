@@ -1549,6 +1549,7 @@ class Arcade extends ModTemplate {
   //Add a game (tx) to a specified list
   //
   addGame(tx, list = "open") {
+
     //
     // Sanity check the tx and make sure we don't already have it
     //
@@ -1616,7 +1617,7 @@ class Arcade extends ModTemplate {
       }
 
       this.games[key] = this.games[key].filter((game) => {
-        return game.transaction?.ts > cutoff;
+        return game.timestamp > cutoff;
       });
     }
   }
@@ -1870,7 +1871,8 @@ class Arcade extends ModTemplate {
         request: "arcade spv update",
         data: newtx.toJson(),
       });
-      this.addGame(newtx, gamedata.invitation_type);
+      this.addGame(newtx, gamedata.invitation_type);  
+
       this.app.connection.emit("arcade-invite-manager-render-request");
 
       if (gameType == "direct") {
