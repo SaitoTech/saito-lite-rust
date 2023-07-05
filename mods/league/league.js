@@ -226,6 +226,7 @@ class League extends ModTemplate {
     let league_self = this;
 
     if (service.service === "league") {
+      
       if (this.debug) {
         console.log("===  peer server up  ===");
         console.log("Refresh local leagues: ");
@@ -241,13 +242,15 @@ class League extends ModTemplate {
         }
         sql = `SELECT * FROM leagues WHERE ( status = 'public' OR id = '${league_id}' ) AND deleted = 0`;
       } else {
+        
         let league_list = this.app.options.leagues.map((x) => `'${x}'`).join(", ");
 
         if (this.debug) {
           console.log("Load my leagues: " + league_list);
         }
         
-        sql = `SELECT * FROM leagues WHERE id IN (${league_list})`;
+        //sql = `SELECT * FROM leagues WHERE id IN (${league_list})`;
+        sql = `SELECT * FROM leagues WHERE ( status = 'public' OR id IN (${league_list}) ) AND deleted = 0`;
       }
       //
       // load any requested league we may not have in options file
@@ -1430,7 +1433,7 @@ class League extends ModTemplate {
   // convenience functions for database inserts //
   ////////////////////////////////////////////////
   async leagueInsert(obj) {
-    let sql = `INSERT OR REPLACE INTO leagues (id, game, name, admin, contact, status, description, ranking_algorithm, default_score) 
+    let sql = `INSERT OR IGNORE INTO leagues (id, game, name, admin, contact, status, description, ranking_algorithm, default_score) 
                     VALUES ( $id, $game, $name, $admin, $contact, $status, $description, $ranking_algorithm, $default_score )`;
     let params = {
       $id: obj.id,

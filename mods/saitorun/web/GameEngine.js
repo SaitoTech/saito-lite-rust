@@ -731,6 +731,7 @@ class GameEngine {
 				this.level++;
 			}
 			if (gameOver) {
+				console.info(`SAITORUN:${this.level}|${distance}|${this.pointsEarned}`);
 				this.pointsEarned = 0;
 				this.resetGameFinishValues();
 			}

@@ -287,8 +287,8 @@ class Archive extends ModTemplate {
 
     if (obj.created_later_than)   { timestamp_limiting_clause = " AND created_at > " + parseInt(obj.created_later_than); }
     if (obj.created_earlier_than) { timestamp_limiting_clause = " AND created_at < " + parseInt(obj.created_earlier_than); }
-    if (obj.updated_later_than)   { timestamp_limiting_clause = " AND created_at > " + parseInt(obj.updated_later_than); }
-    if (obj.updated_earlier_than) { timestamp_limiting_clause = " AND created_at < " + parseInt(obj.updated_earlier_than); }
+    if (obj.updated_later_than)   { timestamp_limiting_clause = " AND updated_at > " + parseInt(obj.updated_later_than); }
+    if (obj.updated_earlier_than) { timestamp_limiting_clause = " AND updated_at < " + parseInt(obj.updated_earlier_than); }
 
     //
     // ACCEPT REASONABLE LIMITS -- [10, 100]
