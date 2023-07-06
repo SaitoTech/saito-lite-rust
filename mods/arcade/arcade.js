@@ -545,6 +545,7 @@ class Arcade extends ModTemplate {
   // handles off-chain transactions
   //
   async handlePeerTransaction(app, newtx = null, peer, mycallback = null) {
+    console.log("handing");
     if (newtx == null) {
       return;
     }

@@ -142,9 +142,9 @@ export default class Storage {
     }
   }
 
-  async queryDatabase(sql, params, database) {}
+  async queryDatabase(sql, params, database) { }
 
-  async executeDatabase(sql, params, database, mycallback = null) {}
+  async executeDatabase(sql, params, database, mycallback = null) { }
 
   /**
    * FUNCTIONS OVERWRITTEN BY STORAGE-CORE WHICH HANDLES ITS OWN DATA STORAGE IN ./core/storage-core.js
@@ -155,7 +155,7 @@ export default class Storage {
     const data: any = {};
     data.request = "update";
     data.tx = tx;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+    this.app.network.sendRequestAsTransaction(message, data, function (res) { });
   }
 
   async incrementTransactionOptionalValue(sig, optional_key) {
@@ -165,7 +165,7 @@ export default class Storage {
     data.sig = sig;
     data.publickey = await this.app.wallet.getPublicKey();
     data.optional_key = optional_key;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+    this.app.network.sendRequestAsTransaction(message, data, function (res) { });
   }
 
   async updateTransactionOptionalValue(sig, optional_key, optional_value) {
@@ -176,7 +176,7 @@ export default class Storage {
     data.publickey = await this.app.wallet.getPublicKey();
     data.optional_value = optional_value;
     data.optional_key = optional_key;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+    this.app.network.sendRequestAsTransaction(message, data, function (res) { });
   }
 
   async updateTransactionOptional(sig, optional) {
@@ -186,7 +186,7 @@ export default class Storage {
     data.sig = sig;
     data.publickey = await this.app.wallet.getPublicKey();
     data.optional = optional;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+    this.app.network.sendRequestAsTransaction(message, data, function (res) { });
   }
 
   async saveTransaction(tx: Transaction, type = null) {
@@ -201,7 +201,7 @@ export default class Storage {
       newtx.msg.type = type;
     }
     await newtx.sign();
-    await this.app.network.sendTransactionWithCallback(newtx, function (res) {});
+    await this.app.network.sendTransactionWithCallback(newtx, function (res) { });
 
     //    const txmsg = tx.returnMessage();
     //    const message = "archive";
@@ -223,7 +223,7 @@ export default class Storage {
     data.tx = tx;
     data.key = key;
     data.type = txmsg.module;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+    this.app.network.sendRequestAsTransaction(message, data, function (res) { });
 
     this.app.connection.emit("save-transaction", tx);
   }

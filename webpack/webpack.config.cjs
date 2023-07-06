@@ -24,13 +24,13 @@ webpack(
     },
     optimization: {
       //set the appropriate value for minimisation
-      //dev => false, prod => true
-      // minimize: false,
-      // minimizer: [
-      //   new TerserPlugin({
-      //     parallel: true,
-      //   }),
-      // ],
+      // dev => false, prod => true
+      minimize: false,
+      minimizer: [
+        new TerserPlugin({
+          parallel: true,
+        }),
+      ],
       splitChunks: {
         chunks: "async",
         minSize: 20000,

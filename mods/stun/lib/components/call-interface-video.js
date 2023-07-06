@@ -24,7 +24,7 @@ class CallInterfaceVideo {
     this.current_speaker = null;
     this.speaker_candidate = null;
 
-    this.app.connection.on("show-call-interface", (room_code, videoEnabled, audioEnabled) => {
+    this.app.connection.on("show-call-interface", async (room_code, videoEnabled, audioEnabled) => {
       this.room_code = room_code;
 
       console.log("Render Video Call Interface");
@@ -43,7 +43,7 @@ class CallInterfaceVideo {
       }
 
       // create chat group
-      this.createRoomTextChat();
+      await this.createRoomTextChat();
     });
 
     this.app.connection.on("add-local-stream-request", (localStream) => {
@@ -142,7 +142,7 @@ class CallInterfaceVideo {
     this.attachEvents();
   }
 
-  createRoomTextChat() {
+  async createRoomTextChat() {
     let chat_mod = this.app.modules.returnModule("Chat");
 
     if (!chat_mod) {
@@ -150,10 +150,10 @@ class CallInterfaceVideo {
     }
 
     let cm = chat_mod.respondTo("chat-manager");
-
+    let peer = (await this.app.network.getPeers())[0].publicKey;
     this.chat_group = {
       id: this.room_code,
-      members: [this.app.network.peers[0].peer.publickey],
+      members: [peer],
       name: `Chat ${this.room_code}`,
       txs: [],
       unread: 0,
@@ -390,7 +390,7 @@ class CallInterfaceVideo {
     for (let i in this.video_boxes) {
       let publickey = i;
       if (i === "local") {
-        publickey = this.app.wallet.getPublicKey();
+        publickey = this.mod.publicKey;
       }
 
       let imgsrc = this.app.keychain.returnIdenticon(publickey);
