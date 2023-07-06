@@ -138,7 +138,10 @@ class Tweet {
       console.log("ERROR 2: " + err);
     }
 
-    this.generateTweetProperties(app, mod, 1);
+    //
+    //This is async and won't necessarily finish before running the following code!
+    //
+    this.generateTweetProperties(app, mod, 0);
 
     //
     // retweets
@@ -154,28 +157,21 @@ class Tweet {
       );
       this.retweet.is_retweet = true;
       this.retweet.show_controls = 0;
-    } else {
-      //
-      // image preview
-      //
-      if (this.images?.length > 0) {
-        this.img_preview = new Image(
-          this.app,
-          this.mod,
-          this.container + `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
-          this
-        );
-      } else {
-        if (this.link != null) {
-          this.link_preview = new Link(
-            this.app,
-            this.mod,
-            this.container + `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
-            this
-          );
-        }
-      }
-    }
+    } 
+      
+    //
+    // image preview -- copied over from txmsg.data.images
+    //
+    if (this.images?.length > 0) {
+      this.img_preview = new Image(
+        this.app,
+        this.mod,
+        this.container + `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
+        this
+      );
+    } 
+      
+    
   }
 
   formatDate(ts = 0) {
@@ -201,6 +197,18 @@ class Tweet {
   }
 
   render(prepend = false) {
+
+    //Process link stuff here and not on constructor
+    if (this.link && !this.link_preview) {
+      this.link_preview = new Link(
+        this.app,
+        this.mod,
+        this.container + `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
+        this
+      );
+    }
+
+
     // double-rendering is possible with commented retweets
     // but we should just replace, duh.
 
@@ -929,19 +937,36 @@ class Tweet {
   }
 
   async generateTweetProperties(app, mod, fetch_open_graph = 0) {
-    if (this.text == null) {
+    if (!this.text) {
       return this;
     }
 
     let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
     let links = this.text.match(expression);
+    
+    let link, urlParams;
+
 
     if (links != null && links.length > 0) {
+
       //
       // save the first link
       //
-      let link = new URL(links[0]);
-      this.link = link.toString();
+      let first_link = links[0];
+      if (first_link.indexOf("http") == -1){
+        first_link = "http://" + first_link;
+      }
+
+      try{
+        link = new URL(first_link);
+        urlParams = new URLSearchParams(link.search);
+        this.link = link.toString();
+      }catch(err){
+        console.error(err);
+        this.link = first_link;
+      }
+
+      console.log(this.link);
 
       //
       // youtube link
@@ -952,8 +977,7 @@ class Tweet {
         if (this.link.indexOf("youtu.be") != -1) {
           videoId = this.link.split("/");
           videoId = videoId[videoId.length - 1];
-        } else {
-          let urlParams = new URLSearchParams(link.search);
+        } else if (urlParams) {
           videoId = urlParams.get("v");
         }
 
@@ -975,8 +999,10 @@ class Tweet {
           this.tx.optional.link_properties = res;
         }
       }
+
     }
 
+    
     return this;
   }
 

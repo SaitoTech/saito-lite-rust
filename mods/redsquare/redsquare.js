@@ -971,6 +971,8 @@ class RedSquare extends ModTemplate {
         return;
       }
 
+      console.log("Process tweet for properties");
+
       tweet = await tweet.generateTweetProperties(app, this, 1);
 
       let type_of_tweet = 0; // unknown
@@ -1031,6 +1033,7 @@ class RedSquare extends ModTemplate {
       if (typeof tweet.images != "undefined") {
         has_images = 1;
       }
+      //This is the received TX without included optional data!
       let txjson = tx.serialize_to_web(this.app);
       let tx_size = txjson.length;
 
@@ -1332,35 +1335,46 @@ class RedSquare extends ModTemplate {
       // (sites which uses firewall like Cloudflare shows Cloudflare loading
       //  page when fetching page source)
 
-      console.info("fetching open graph info for: " + link);
-      return fetch(link, { redirect: "follow", follow: 1000 })
+      return fetch(link, { redirect: "follow", follow: 50 })
         .then((res) => res.text())
         .then((data) => {
+
           // required og properties for link preview
+          let no_tags = {
+            "title": "",
+            "description": "",
+          };
           let og_tags = {
             "og:exists": false,
             "og:title": "",
             "og:description": "",
             "og:url": "",
             "og:image": "",
-            "og:site_name": "",
+            "og:site_name": "", //We don't do anything with this
           };
           let tw_tags = {
-            "twitter:exitst": false,
-            "twitter:card": "",
-            "twitter:site": "",
-            "twitter:creator": "",
+            "twitter:exists": false,
             "twitter:title": "",
-            "twitter:url": "",
             "twitter:description": "",
+            "twitter:url": "",
             "twitter:image": "",
+            "twitter:site": "", //We don't do anything with this
+            "twitter:card": "", //We don't do anything with this
           };
 
           // prettify html - unminify html if minified
           let html = prettify(data);
 
+          //Useful to check, don't delete until perfect
+          //let testReg = /<head>.*<\/head>/gs;
+          //console.log(html.match(testReg));
+
           // parse string html to DOM html
           let dom = HTMLParser.parse(html);
+
+          try{
+            no_tags.title = dom.getElementsByTagName("title")[0].textContent;
+          }catch(err){}
 
           // fetch meta element for og tags
           let meta_tags = dom.getElementsByTagName("meta");
@@ -1374,33 +1388,34 @@ class RedSquare extends ModTemplate {
               og_tags[property] = content;
               og_tags["og:exists"] = true;
             }
-          }
-          //console.info(JSON.stringify(og_tags));
-          // check for twitter tags if og does not exist.
-          // loop each meta tag and fetch required og properties
-          for (let i = 0; i < meta_tags.length; i++) {
-            let property = meta_tags[i].getAttribute("property");
-            let content = meta_tags[i].getAttribute("content");
-            // get required og properties only, discard others
             if (property in tw_tags) {
               tw_tags[property] = content;
               tw_tags["twitter:exists"] = true;
             }
+            if (meta_tags[i].getAttribute("name") === "description"){
+              no_tags.description = content;
+            }
           }
-          //console.info(JSON.stringify(tw_tags));
 
-          if (tw_tags["twitter:exists"]) {
-            if (og_tags["og:title"] ? "" : tw_tags["twitter:title"]);
-            if (tw_tags["og:description"] ? "" : tw_tags["twitter:description"]);
-            if (tw_tags["og:url"] ? "" : tw_tags["twitter:url"]);
-            if (tw_tags["og:image"] ? "" : tw_tags["twitter:image"]);
-            if (tw_tags["og:site_name"] ? "" : tw_tags["twitter:site"]);
+          //Fall back to no tags
+          og_tags["og:title"] = og_tags["og:title"] || no_tags["title"];
+          og_tags["og:description"] = og_tags["og:description"] || no_tags["description"];
+
+          if (tw_tags["twitter:exists"] && !og_tags["og:exists"]) {
+            og_tags["og:title"] = tw_tags["twitter:title"];
+            og_tags["og:description"] = tw_tags["twitter:description"];
+            og_tags["og:url"] = tw_tags["twitter:url"];
+            og_tags["og:image"] = tw_tags["twitter:image"];
+            og_tags["og:site_name"] = tw_tags["twitter:site"];
           }
-          //console.info(JSON.stringify(og_tags));
 
           return og_tags;
         })
-        .catch((err) => console.error("Error fetching content" + err));
+        .catch(
+          (err) => {
+            console.error("Error fetching content: " + err);
+            return "";
+          });
     } else {
       return "";
     }
