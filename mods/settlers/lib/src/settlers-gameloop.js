@@ -6,7 +6,7 @@ class SettlersGameloop {
    * Core Game Logic
    * Commands: init, generate_map, winner
    */
-  handleGameLoop() {
+  async handleGameLoop() {
 
     let settlers_self = this;
     
@@ -783,7 +783,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
             discardString += `${this.game.playerNames[i - 1]}`;
             confirmsNeeded++;
             if (this.game.player == parseInt(i)) {
-              this.addMove("RESOLVE\t" + this.app.wallet.returnPublicKey());
+              this.addMove("RESOLVE\t" + this.publicKey);
               this.discard.discardString = discardString;
               this.discard.render();
               amIPlaying = true;

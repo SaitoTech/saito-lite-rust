@@ -127,14 +127,14 @@ class Settlers extends GameTemplate {
 
        
 
-  render(app) {
+  async render(app) {
 
     if (!this.browser_active) { return; }
 
     //Prevent this function from running twice as saito-lite is configured to run it twice
     if (this.initialize_game_run) { return; }
 
-    super.render(app);
+    await super.render(app);
     
     this.scoreboard.render();
 
@@ -167,9 +167,9 @@ class Settlers extends GameTemplate {
       },
     });
 
-    this.menu.addChatMenu();
+    await this.menu.addChatMenu();
 
-    this.menu.render();
+    await this.menu.render();
     this.log.render();
     this.hexgrid.render(".gameboard");
 
@@ -179,7 +179,7 @@ class Settlers extends GameTemplate {
       this.cardbox.addCardType("handy-help","",null);
       this.cardbox.makeDraggable();
 
-      this.playerbox.render();
+      await this.playerbox.render();
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.hammer.render(this.app, this);
