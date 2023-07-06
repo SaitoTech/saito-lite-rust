@@ -85,7 +85,7 @@ class Tweet {
     // default userline is time of posting
     //
     let dt = app.browser.formatDate(this.tx.timestamp);
-    userline =
+    this.userline =
       "posted on " +
       dt.month +
       " " +
