@@ -442,7 +442,7 @@ console.log("DONE GENERATING MAP");
     let ct = 0;
     for (let i of this.game.state.players[player - 1].resources) {
       if (i == resource) {
-	ct++;
+  ct++;
       }
     }
     return ct;
@@ -554,10 +554,10 @@ console.log("DONE GENERATING MAP");
     try {
 
       if (this.lock_interface == 1) {
-	//
-	// 
-	//
-	this.setHudHeight();
+  //
+  // 
+  //
+  this.setHudHeight();
         return;
       }
 
@@ -565,7 +565,7 @@ console.log("DONE GENERATING MAP");
 
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".hud-body .status");
-        if (this.game.players.includes(this.app.wallet.getPublicKey())) {
+        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
           status_obj.innerHTML = str;
           $(".status").disableSelection();
         }
@@ -634,7 +634,7 @@ console.log("DONE GENERATING MAP");
       $(".popup-confirm-menu").remove();
       if (confirmation == "stopasking"){
         settlers_self.confirm_moves = 0;
-	settlers_self.saveGamePreference("settlers_confirm_moves", 0);
+  settlers_self.saveGamePreference("settlers_confirm_moves", 0);
         callback();
       }
       if (confirmation == "confirm"){
@@ -645,10 +645,10 @@ console.log("DONE GENERATING MAP");
     $('input:checkbox').change(function() {
       if ($(this).is(':checked')) {
         settlers_self.confirm_moves = 0;
-	settlers_self.saveGamePreference("settlers_confirm_moves", 0);
+  settlers_self.saveGamePreference("settlers_confirm_moves", 0);
       }else{
         settlers_self.confirm_moves = 1;
-	settlers_self.saveGamePreference("settlers_confirm_moves", 1);
+  settlers_self.saveGamePreference("settlers_confirm_moves", 1);
       }
     });
   }

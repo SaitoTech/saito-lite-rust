@@ -26,117 +26,117 @@ class SettlersState {
 
 
 
-	returnResources() {
-		let newArray = [];
-		for (let i of this.resources){
-			if (i.count>1)
-				newArray.push(i.name);
-		}
-		return newArray;
-	}
+    returnResources() {
+        let newArray = [];
+        for (let i of this.resources){
+            if (i.count>1)
+                newArray.push(i.name);
+        }
+        return newArray;
+    }
 
 
-	//
-	// this should be returnCardImage, and the other function should be renamed somehow -- return resource image?
-	//
-  	returnResourceHTML(resource){
-    		return `<div class="tip"><img class="icon" src="${this.returnCardImage(resource)}" /></div>`;
-  	}
-
-
-
-	returnCardImage(res) {
-		for (let i of this.resources){
-			if (i.name == res){
-				if (i.card) {
-				  return i.card;
-				} else {
-				  return `${this.cardDir}${res}.png`;
-				}
-			}
-
-		}
-		return null;	
-	}
-
-
-	returnHexes() {
-		let hexes = [];
-    		for (let i of this.resources){
-    			for (let j = 0; j < i.count; j++){
-    				if (i.tile) hexes.push({resource:i.name,img: i.tile});
-    				else hexes.push({resource:i.name, img: this.randomizeTileImage(i)});
-    			}
-
-    		}
-	    	return hexes;
-	}
-
-	returnDevelopmentCards(option){
-		let deck = [];
-		for (let i of this.deck){
-    			for (let j = 0; j < i.count; j++){
-    				deck.push(i);
-    			}
-	 	}
-		return deck;
-	}
-
-
-	returnPortIcon(res){
-		if (res === "any"){
-			return `<img class="icon" src="/settlers/img/icons/any-port.png">`;
-		}
-		for (let i of this.resources){
-			if (i.name == res){
-				if (i.icon){
-					return `<img class="icon" src="${i.icon.replace('-icon','-port')}">`;
-				}
-			}
-		}
-		return `2:1 ${this.resourceIcon(res)}`;	
-	}
-
-
-	returnNullResource(){
-	   	for (let i of this.resources) {
-	   		if (i.count==1) {
-	   			return i.name;
-	   		}
-	   	}
-	}
-
-	isActionCard(cardname){
-		for (let c of this.deck){
-			if (cardname == c.card && c.action > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
+    //
+    // this should be returnCardImage, and the other function should be renamed somehow -- return resource image?
+    //
+    returnResourceHTML(resource){
+            return `<div class="tip"><img class="icon" src="${this.returnCardImage(resource)}" /></div>`;
+    }
 
 
 
-	randomizeTileImage(resObj){
-		let tileDir = "/settlers/img/sectors/";
-		let x = Math.ceil(Math.random()*resObj.ict); 
-		return tileDir+resObj.name+x+".png";
-	}
+    returnCardImage(res) {
+        for (let i of this.resources){
+            if (i.name == res){
+                if (i.card) {
+                  return i.card;
+                } else {
+                  return `${this.cardDir}${res}.png`;
+                }
+            }
+
+        }
+        return null;    
+    }
+
+
+    returnHexes() {
+        let hexes = [];
+            for (let i of this.resources){
+                for (let j = 0; j < i.count; j++){
+                    if (i.tile) hexes.push({resource:i.name,img: i.tile});
+                    else hexes.push({resource:i.name, img: this.randomizeTileImage(i)});
+                }
+
+            }
+            return hexes;
+    }
+
+    returnDevelopmentCards(option){
+        let deck = [];
+        for (let i of this.deck){
+                for (let j = 0; j < i.count; j++){
+                    deck.push(i);
+                }
+        }
+        return deck;
+    }
+
+
+    returnPortIcon(res){
+        if (res === "any"){
+            return `<img class="icon" src="/settlers/img/icons/any-port.png">`;
+        }
+        for (let i of this.resources){
+            if (i.name == res){
+                if (i.icon){
+                    return `<img class="icon" src="${i.icon.replace('-icon','-port')}">`;
+                }
+            }
+        }
+        return `2:1 ${this.resourceIcon(res)}`; 
+    }
+
+
+    returnNullResource(){
+        for (let i of this.resources) {
+            if (i.count==1) {
+                return i.name;
+            }
+        }
+    }
+
+    isActionCard(cardname){
+        for (let c of this.deck){
+            if (cardname == c.card && c.action > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
 
-  	returnDiceTokens() {
-    		let dice = [];
-    		dice.push({ value: 2 });
-    		dice.push({ value: 12 });
-    		for (let i = 3; i < 7; i++) {
-    		    dice.push({ value: i });
-    		    dice.push({ value: i });
-    		    dice.push({ value: i + 5 });
-    		    dice.push({ value: i + 5 });
-    		}
-    		return dice;
-  	}
+    randomizeTileImage(resObj){
+        let tileDir = "/settlers/img/sectors/";
+        let x = Math.ceil(Math.random()*resObj.ict); 
+        return tileDir+resObj.name+x+".png";
+    }
+
+
+
+    returnDiceTokens() {
+            let dice = [];
+            dice.push({ value: 2 });
+            dice.push({ value: 12 });
+            for (let i = 3; i < 7; i++) {
+                dice.push({ value: i });
+                dice.push({ value: i });
+                dice.push({ value: i + 5 });
+                dice.push({ value: i + 5 });
+            }
+            return dice;
+    }
 
 
 

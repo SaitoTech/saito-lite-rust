@@ -173,17 +173,23 @@ class Invite {
   attachEvents() {
     let qs = `#saito-game-${this.invite_data.game_id}`;
 
-    document.querySelector(qs).onclick = async (e) => {
-      e.stopImmediatePropagation();
+    try {
+      if (typeof document.querySelector(qs) != "undefined") {
+        document.querySelector(qs).onclick = async (e) => {
+          e.stopImmediatePropagation();
 
-      await this.app.browser.logMatomoEvent(
-        "GameInvite",
-        this.invite_data.game_status,
-        this.invite_data.game_mod.name
-      );
-      let game_overlay = new JoinGameOverlay(this.app, this.mod, this.invite_data);
-      await game_overlay.render();
-    };
+          await this.app.browser.logMatomoEvent(
+            "GameInvite",
+            this.invite_data.game_status,
+            this.invite_data.game_mod.name
+          );
+          let game_overlay = new JoinGameOverlay(this.app, this.mod, this.invite_data);
+          await game_overlay.render();
+        };
+      }
+    } catch(err){
+      console.log(err);
+    }
   }
 }
 
