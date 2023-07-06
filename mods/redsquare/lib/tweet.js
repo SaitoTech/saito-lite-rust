@@ -275,8 +275,8 @@ class Tweet {
     //
     //
     // this is if i retweet my own tweet
-    //
-    if (!this.text && this.retweet_tx) {
+    //>>>>>>>>>>.
+    if (this.retweet_tx && !this.text && !this.img_preview) {
       //console.log("Retweet without quote");
       this.retweet.notice =
         "retweeted by " +
@@ -360,11 +360,11 @@ class Tweet {
     
     this.user.render();
 
-    if (this.retweet) {
-      this.retweet.render();
-    }
     if (this.img_preview != null) {
       this.img_preview.render();
+    }
+    if (this.retweet) {
+      this.retweet.render();
     }
     if (this.link_preview != null) {
       if (this.tx.optional.link_properties != null) {
