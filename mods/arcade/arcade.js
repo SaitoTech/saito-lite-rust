@@ -710,7 +710,7 @@ class Arcade extends ModTemplate {
     if (options?.desired_opponent_publickey) {
       let slip = new Slip();
       slip.publicKey = options.desired_opponent_publickey;
-      slip.amount = 0;
+      slip.amount = BigInt(0);
       newtx.addToSlip(slip);
     }
 

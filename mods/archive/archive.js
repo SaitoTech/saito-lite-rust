@@ -3,8 +3,8 @@ const PeerService = require("saito-js/lib/peer_service").default;
 const ModTemplate = require("../../lib/templates/modtemplate");
 const saito = require("../../lib/saito/saito");
 const JSON = require("json-bigint");
-const Transaction = require("../../lib/saito/transaction").default;
 const { default: Factory } = require("../../lib/saito/factory");
+const Transaction = require("../../lib/saito/transaction").default;
 
 //
 // HOW THE ARCHIVE SAVES TXS
@@ -90,21 +90,12 @@ class Archive extends ModTemplate {
     // saves TX embedded in data
     //
     if (req.request === "archive save") {
-      console.log("req.data", req.data);
-      // let buffer = Buffer.from(JSON.stringify(req.data), "base64");
-      // let uint8Array = new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
-
       let values = Object.keys(req.data)
         .sort((a, b) => a - b)
         .map((key) => req.data[key]);
       let uint8Array = new Uint8Array(values);
-
       let newtx = Transaction.deserialize(uint8Array, new Factory());
-
-      console.log(newtx, "newtx");
       let txmsg = newtx.returnMessage();
-
-      // console.log(txmsg, "saved archive message");
 
       try {
         let type = "";
