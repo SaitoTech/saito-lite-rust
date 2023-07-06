@@ -32,8 +32,7 @@ const PeerService = require("saito-js/lib/peer_service").default;
 
 class RedSquare extends ModTemplate {
   constructor(app) {
-
-    console.log('inside RedSquare ////////////');
+    console.log("inside RedSquare ////////////");
 
     super(app);
     this.appname = "Red Square";
@@ -451,7 +450,6 @@ class RedSquare extends ModTemplate {
 
     let peer_idx = -1;
     for (let i = 0; i < this.peers.length; i++) {
-
       console.log("peers /////////");
       console.log(this.peers[i]);
 
@@ -541,20 +539,21 @@ class RedSquare extends ModTemplate {
   ///////////////////////
   // network functions //
   ///////////////////////
-  async onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf) {
     let txmsg = tx.returnMessage();
+    console.log("txmsg ", txmsg, "tx ", tx, "conf ", conf, "browser ");
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
-          await this.receiveTweetTransaction(blk, tx, conf, app);
+          await this.receiveTweetTransaction(blk, tx, conf);
           this.sqlcache = {};
         }
         if (txmsg.request === "like tweet") {
-          await this.receiveLikeTransaction(blk, tx, conf, app);
+          await this.receiveLikeTransaction(blk, tx, conf);
           this.sqlcache = {};
         }
         if (txmsg.request === "flag tweet") {
-          await this.receiveFlagTransaction(blk, tx, conf, app);
+          await this.receiveFlagTransaction(blk, tx, conf);
           this.sqlcache = {};
         }
       }
@@ -765,7 +764,6 @@ class RedSquare extends ModTemplate {
         if (this.peers[i].notifications_earliest_ts == "") {
           this.peers[i].notifications_latest_ts = new Date().getTime();
         }
-
 
         // this.app.storage.loadTransactions(
         //   {
@@ -1112,6 +1110,8 @@ class RedSquare extends ModTemplate {
       obj.data[key] = data[key];
     }
 
+    console.log(tx, "sending like transaction");
+
     let newtx = await redsquare_self.app.wallet.createUnsignedTransaction(app.wallet.publicKey);
     for (let i = 0; i < tx.to.length; i++) {
       if (tx.to[i].publicKey !== this.publicKey) {
@@ -1128,20 +1128,22 @@ class RedSquare extends ModTemplate {
     redsquare_self.app.connection.emit("relay-send-message", {
       recipient: "PEERS",
       request: "like tweet",
-      data: obj.data,
+      data: newtx.toJson(),
     });
 
     return newtx;
   }
 
-  async receiveLikeTransaction(blk, tx, conf, app) {
+  async receiveLikeTransaction(blk, tx, conf) {
     //
     // browsers
     //
+    let app = this.app;
     if (app.BROWSER == 1) {
       //
       // save my likes
       //
+
       if (tx.isTo(this.publicKey)) {
         await this.app.storage.saveTransaction(tx, {
           owner: this.publicKey,
@@ -1232,18 +1234,18 @@ class RedSquare extends ModTemplate {
 
       newtx.msg = obj;
       await newtx.sign();
-      
-console.log("tx signed and sending it ////////////");
-console.log(newtx);
+
+      console.log("tx signed and sending it ////////////");
+      console.log(newtx);
       // console.log(newtx.transaction)
       await mod.app.network.propagateTransaction(newtx);
 
-console.log("after sending tx ////////////");
+      console.log("after sending tx ////////////");
 
       redsquare_self.app.connection.emit("relay-send-message", {
         recipient: "PEERS",
         request: obj.request,
-        data: obj.data,
+        data: newtx.toJson(),
       });
 
       return newtx;
@@ -1252,11 +1254,13 @@ console.log("after sending tx ////////////");
     }
   }
 
-  async receiveTweetTransaction(blk, tx, conf, app) {
+  async receiveTweetTransaction(blk, tx, conf) {
+    let app = this.app;
     try {
       let tweet = new Tweet(app, this, "", tx);
       let txmsg = tx.returnMessage();
 
+      console.log("txmsg: ", txmsg, "tx.isTo :", tx.isTo);
       //
       // browsers
       //
@@ -1503,6 +1507,8 @@ console.log("after sending tx ////////////");
         .sort((a, b) => a - b)
         .map((key) => rows[i].tx[key]);
       let uint8Array = new Uint8Array(values);
+
+      console.log(rows[i].tx, "redsquare transaction");
 
       let tx = Transaction.deserialize(rows[i].tx, new Factory());
       if (rows[i].num_reples) {
