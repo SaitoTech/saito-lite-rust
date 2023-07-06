@@ -127,11 +127,13 @@ export class NodeSharedMethods extends CustomSharedMethods {
   }
 
   fetchBlockFromPeer(url: string): Promise<Uint8Array> {
+    console.log("fetching block from peer: " + url);
     return fetch(url)
       .then((res: any) => {
         return res.arrayBuffer();
       })
       .then((buffer: ArrayBuffer) => {
+        console.log("buffer fetched for block : " + buffer.byteLength);
         return new Uint8Array(buffer);
       });
   }
