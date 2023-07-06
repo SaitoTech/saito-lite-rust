@@ -20,8 +20,8 @@ class VideoChatManager {
   remote_container = "side-videos";
   display_mode = "focus";
   remote_streams = new Map();
-  current_speaker = null
-  speaker_candidate = null
+  current_speaker = null;
+  speaker_candidate = null;
 
   constructor(app, mod) {
     this.app = app;
@@ -33,7 +33,15 @@ class VideoChatManager {
 
     this.app.connection.on(
       "show-video-chat-large-request",
-      (app, mod, call_type = "Video", room_code, videoEnabled, audioEnabled, config = null) => {
+      async (
+        app,
+        mod,
+        call_type = "Video",
+        room_code,
+        videoEnabled,
+        audioEnabled,
+        config = null
+      ) => {
         this.videoEnabled = videoEnabled;
         this.audioEnabled = audioEnabled;
         this.call_type = "video";
@@ -46,17 +54,17 @@ class VideoChatManager {
         this.updateRoomLink();
 
         // create chat group
-        this.createRoomTextChat();
+        await this.createRoomTextChat();
       }
     );
 
-    this.app.connection.on("render-local-stream-large-request", (localStream) => {
+    this.app.connection.on("render-local-stream-large-request", async (localStream) => {
       this.localStream = localStream;
-      this.renderLocalStream(localStream);
+      await this.renderLocalStream(localStream);
     });
-    this.app.connection.on("render-remote-stream-large-request", (peer, remoteStream, pc) => {
+    this.app.connection.on("render-remote-stream-large-request", async (peer, remoteStream, pc) => {
       this.remote_streams.set(peer, remoteStream);
-      this.addRemoteStream(peer, remoteStream, pc);
+      await this.addRemoteStream(peer, remoteStream, pc);
     });
 
     this.app.connection.on("stun-update-connection-message", (room_code, peer_id, status) => {
@@ -81,10 +89,10 @@ class VideoChatManager {
       }
     });
 
-    this.app.connection.on("video-box-remove", (peer_id, disconnection) => {
+    this.app.connection.on("video-box-remove", async (peer_id, disconnection) => {
       if (this.video_boxes[peer_id].video_box) {
         if (this.video_boxes[peer_id].video_box.remove) {
-          this.video_boxes[peer_id].video_box.remove(disconnection);
+          await this.video_boxes[peer_id].video_box.remove(disconnection);
           delete this.video_boxes[peer_id];
           this.updateImages();
         }
@@ -107,10 +115,10 @@ class VideoChatManager {
     }
   }
 
- async createRoomTextChat() {
+  async createRoomTextChat() {
     let chat_mod = this.app.modules.returnModule("Chat");
-    let chat_manager = chat_mod.respondTo("chat-manager");
-    let my_pub_key = this.app.wallet.publicKey;
+    let chat_manager = await chat_mod.respondTo("chat-manager");
+    let my_pub_key = await this.app.wallet.getPublicKey();
     let peers = await this.app.network.getPeers();
 
     chat_mod.groups.push({
@@ -216,7 +224,7 @@ class VideoChatManager {
       });
     }
 
-    document.querySelector(".large-wrapper").addEventListener("click", (e) => {
+    document.querySelector(".large-wrapper").addEventListener("click", async (e) => {
       if (this.display_mode == "gallery") {
         return;
       }
@@ -228,20 +236,18 @@ class VideoChatManager {
           // console.log("already expanded");
           return;
         } else {
-          this.flipDisplay(stream_id);
+          await this.flipDisplay(stream_id);
         }
       }
     });
   }
 
-  flipDisplay(stream_id) {
-    let id = document
-      .querySelector(`.${this.local_container}`)
-      .querySelector(".video-box").id;
+  async flipDisplay(stream_id) {
+    let id = document.querySelector(`.${this.local_container}`).querySelector(".video-box").id;
     this.video_boxes[id].video_box.containerClass = this.remote_container;
-    this.video_boxes[id].video_box.rerender();
+    await this.video_boxes[id].video_box.rerender();
     this.video_boxes[stream_id].video_box.containerClass = this.local_container;
-    this.video_boxes[stream_id].video_box.rerender();
+    await this.video_boxes[stream_id].video_box.rerender();
   }
 
   createRoomLink() {
@@ -326,9 +332,9 @@ class VideoChatManager {
     window.location.href = myurl;
   }
 
-  addRemoteStream(peer, remoteStream, pc) {
+  async addRemoteStream(peer, remoteStream, pc) {
     this.createVideoBox(peer);
-    this.video_boxes[peer].video_box.render(remoteStream);
+    await this.video_boxes[peer].video_box.render(remoteStream);
     if (!this.peers.includes(peer)) {
       this.peers.push(peer);
     }
@@ -345,20 +351,19 @@ class VideoChatManager {
     this.analyzeAudio(remoteStream, peer);
   }
 
-  renderLocalStream(localStream) {
+  async renderLocalStream(localStream) {
     this.createVideoBox("local", this.local_container);
-    this.video_boxes["local"].video_box.render(localStream, "large-wrapper");
+    await this.video_boxes["local"].video_box.render(localStream, "large-wrapper");
     this.localStream = localStream;
     this.updateImages();
-    this.analyzeAudio(localStream, 'local');
+    this.analyzeAudio(localStream, "local");
     // segmentBackground(document.querySelector('#streamlocal video'), document.querySelector('#streamlocal canvas'), 1);
     // applyBlur(7);
   }
 
-  renderRemoteStreamPlaceholder(peer, placeholder_info, is_creator) {
+  async renderRemoteStreamPlaceholder(peer, placeholder_info, is_creator) {
     this.createVideoBox(peer);
-    this.video_boxes[peer].video_box.render(null, placeholder_info);
-
+    await this.video_boxes[peer].video_box.render(null, placeholder_info);
   }
 
   createVideoBox(peer, container = this.remote_container) {
@@ -381,7 +386,6 @@ class VideoChatManager {
   }
 
   toggleVideo() {
-
     this.app.connection.emit("stun-toggle-video");
   }
 
@@ -441,7 +445,7 @@ class VideoChatManager {
     this.timer_interval = null;
   }
 
-  switchDisplayToGallery() {
+  async switchDisplayToGallery() {
     this.display_mode = "gallery";
     this.local_container = "gallery";
     this.remote_container = "gallery";
@@ -452,10 +456,10 @@ class VideoChatManager {
     </div>
     `;
 
-    this.setDisplayContainers();
+    await this.setDisplayContainers();
   }
 
-  switchDisplayToFocus() {
+  async switchDisplayToFocus() {
     this.display_mode = "focus";
     this.local_container = "expanded-video";
     this.remote_container = "side-videos";
@@ -468,10 +472,10 @@ class VideoChatManager {
     </div>
     `;
 
-    this.setDisplayContainers();
+    await this.setDisplayContainers();
   }
 
-  switchDisplayToSpeaker() {
+  async switchDisplayToSpeaker() {
     this.display_mode = "speaker";
     this.local_container = "expanded-video";
     this.remote_container = "side-videos";
@@ -484,17 +488,17 @@ class VideoChatManager {
     </div>
     `;
 
-    this.setDisplayContainers();
+    await this.setDisplayContainers();
   }
 
-  setDisplayContainers() {
+  async setDisplayContainers() {
     for (let i in this.video_boxes) {
       if (i === "local") {
         this.video_boxes[i].video_box.containerClass = this.local_container;
-        this.video_boxes[i].video_box.render(this.localStream);
+        await this.video_boxes[i].video_box.render(this.localStream);
       } else {
         this.video_boxes[i].video_box.containerClass = this.remote_container;
-        this.video_boxes[i].video_box.render(this.remote_streams.get(i));
+        await this.video_boxes[i].video_box.render(this.remote_streams.get(i));
       }
     }
   }
@@ -511,7 +515,6 @@ class VideoChatManager {
 
     let speaking = false;
     const threshold = 20;
-
 
     function update() {
       analyser.getByteFrequencyData(dataArray);
@@ -531,25 +534,23 @@ class VideoChatManager {
         this.current_speaker = peer;
         let speaker_candidate = peer;
 
-
-        setTimeout(() => {
+        setTimeout(async () => {
           if (speaker_candidate === this.current_speaker) {
-            document.querySelectorAll('.video-box-container-large').forEach(item => {
+            for (const item of document.querySelectorAll(".video-box-container-large")) {
               // console.log(item.id, `stream${peer}`)
 
               if (item.id === `stream${peer}`) {
-                item.classList.add('speaker');
+                item.classList.add("speaker");
                 if (video_chat_self.display_mode == "speaker") {
-                  video_chat_self.flipDisplay(peer);
-                } 
+                  await video_chat_self.flipDisplay(peer);
+                }
               } else {
-                item.classList.remove('speaker');
+                item.classList.remove("speaker");
               }
-            })
+            }
             speaking = true;
           }
-        }, 5000)
-
+        }, 5000);
       } else if (average <= threshold && speaking) {
         speaking = false;
       }
@@ -559,8 +560,6 @@ class VideoChatManager {
 
     update();
   }
-
 }
 
 module.exports = VideoChatManager;
-
