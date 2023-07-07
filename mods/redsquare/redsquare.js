@@ -530,8 +530,10 @@ class RedSquare extends ModTemplate {
       let peer = this.peers[i].peer;
 
       let time_cutoff = this.peers[i].tweets_latest_ts || this.returnLatestTimeStamp();
-
-      let sql = `SELECT * FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND updated_at > ${time_cutoff} ORDER BY updated_at DESC`;
+      //
+      // 7/7 -- let's try not excluding replies from the data pull -- the renderWithCriticalChild should keep things from looking too crazy on the main feed
+      //
+      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND updated_at > ${time_cutoff} ORDER BY updated_at DESC`;
 
       this.loadTweetsFromPeer(peer, sql, (txs) => {
         let newTimeStamp = this.returnLatestTimeStamp();
@@ -725,8 +727,25 @@ class RedSquare extends ModTemplate {
     // if this is a like, we can avoid adding it to our tweet index
     //
     let txmsg = tx.returnMessage();
-
     if (txmsg.request === "like tweet") {
+      return;
+    }
+
+    //
+    // We have already indexed this tweet, so just update the stats
+    // we are adding it because it's updated_at is newer, e.g. there are more replies/retweets/likes
+    //
+    if (this.tweets_sigs_hmap[tweet.tx.transaction.sig]) {
+      for (let i = 0; i < this.tweets.length; i++) {
+        if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
+          this.tweets[i].tx.optional.num_replies = tweet.tx.optional.num_replies;
+          this.tweets[i].tx.optional.num_retweets = tweet.tx.optional.num_retweets;
+          this.tweets[i].tx.optional.num_likes = tweet.tx.optional.num_likes;
+          this.tweets[i].updated_at = tweet.tx.optional.updated_at;
+          console.log("Update stats of tweet we already indexed");
+          break;
+        }
+      }
       return;
     }
 
@@ -738,47 +757,32 @@ class RedSquare extends ModTemplate {
     //
     if (tweet.tx.optional.parent_id === "") {
       //
-      // we do not have this tweet indexed, it's new
+      // check where we insert the tweet
       //
-      if (!this.tweets_sigs_hmap[tweet.tx.transaction.sig]) {
-        //
-        // check where we insert the tweet
-        //
-        let insertion_index = 0;
-        if (!prepend) {
-          for (let i = 0; i < this.tweets.length; i++) {
-            if (tweet.updated_at > this.tweets[i].updated_at) {
-              break;
-            }
-            insertion_index++;
-          }
-        }
-
-        //
-        // and insert it
-        //
-        this.tweets.splice(insertion_index, 0, tweet);
-        this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
-
-        //
-        // add unknown children if possible
-        //
-        for (let i = 0; i < this.unknown_children.length; i++) {
-          if (this.unknown_children[i].tx.optional.thread_id === tweet.tx.transaction.sig) {
-            if (tweet.addTweet(this.unknown_children[i]) == 1) {
-              this.unknown_children.splice(i, 1);
-              i--;
-            }
-          }
-        }
-      } else {
-        //Just update the stats...
-
+      let insertion_index = 0;
+      if (!prepend) {
         for (let i = 0; i < this.tweets.length; i++) {
-          if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
-            this.tweets[i].tx.optional.num_replies = tweet.tx.optional.num_replies;
-            this.tweets[i].tx.optional.num_retweets = tweet.tx.optional.num_retweets;
-            this.tweets[i].tx.optional.num_likes = tweet.tx.optional.num_likes;
+          if (tweet.updated_at > this.tweets[i].updated_at) {
+            break;
+          }
+          insertion_index++;
+        }
+      }
+
+      //
+      // and insert it
+      //
+      this.tweets.splice(insertion_index, 0, tweet);
+      this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
+
+      //
+      // add unknown children if possible
+      //
+      for (let i = 0; i < this.unknown_children.length; i++) {
+        if (this.unknown_children[i].tx.optional.thread_id === tweet.tx.transaction.sig) {
+          if (tweet.addTweet(this.unknown_children[i]) == 1) {
+            this.unknown_children.splice(i, 1);
+            i--;
           }
         }
       }
@@ -1337,11 +1341,10 @@ class RedSquare extends ModTemplate {
       return fetch(link, { redirect: "follow", follow: 50 })
         .then((res) => res.text())
         .then((data) => {
-
           // required og properties for link preview
           let no_tags = {
-            "title": "",
-            "description": "",
+            title: "",
+            description: "",
           };
           let og_tags = {
             "og:exists": false,
@@ -1371,9 +1374,9 @@ class RedSquare extends ModTemplate {
           // parse string html to DOM html
           let dom = HTMLParser.parse(html);
 
-          try{
+          try {
             no_tags.title = dom.getElementsByTagName("title")[0].textContent;
-          }catch(err){}
+          } catch (err) {}
 
           // fetch meta element for og tags
           let meta_tags = dom.getElementsByTagName("meta");
@@ -1391,7 +1394,7 @@ class RedSquare extends ModTemplate {
               tw_tags[property] = content;
               tw_tags["twitter:exists"] = true;
             }
-            if (meta_tags[i].getAttribute("name") === "description"){
+            if (meta_tags[i].getAttribute("name") === "description") {
               no_tags.description = content;
             }
           }
@@ -1410,11 +1413,10 @@ class RedSquare extends ModTemplate {
 
           return og_tags;
         })
-        .catch(
-          (err) => {
-            console.error("Error fetching content: " + err);
-            return "";
-          });
+        .catch((err) => {
+          console.error("Error fetching content: " + err);
+          return "";
+        });
     } else {
       return "";
     }

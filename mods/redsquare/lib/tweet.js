@@ -85,6 +85,7 @@ class Tweet {
     this.text = "";
     this.youtube_id = null;
     this.created_at = this.tx.transaction.ts;
+    // ***will be updated by tx.optional.updated_at if necessary***
     this.updated_at = this.tx.transaction.ts;
 
     //
@@ -403,7 +404,7 @@ class Tweet {
 
   renderWithChildren() {
 
-    console.log("Render thread");
+    //console.log("Render thread");
     //
     // first render the tweet
     //
@@ -950,7 +951,7 @@ class Tweet {
         this.link = first_link;
       }
 
-      console.log(this.link);
+      //console.log(this.link);
 
       //
       // youtube link
