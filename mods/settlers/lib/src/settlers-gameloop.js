@@ -759,7 +759,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
       if (mv[0] == "collect_harvest") {
         let roll = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
-        this.collectHarvest(roll);
+        await this.collectHarvest(roll);
         return 1;
       }
 

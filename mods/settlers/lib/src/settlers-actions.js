@@ -4,7 +4,7 @@ class SettlersActions {
     //
     // Award resources for dice roll
     //
-    collectHarvest(value) {
+    async collectHarvest(value) {
         let logMsg = "";
         let notice = "";
         let poor_harvest = true;
@@ -45,7 +45,7 @@ class SettlersActions {
             this.updateLog("no-one collects any resources.");
         }
         if (notice) {
-            this.updateStatus(
+            await this.updateStatus(
                 `<div class="persistent alignme"><span style="margin-right:0.5rem">You acquired: </span>${notice}</div>`
             );
         }
@@ -549,7 +549,7 @@ console.log("DONE GENERATING MAP");
   }
 
 
-  updateStatus(str, hide_info = 0) {
+  async updateStatus(str, hide_info = 0) {
 
     try {
 
@@ -565,7 +565,7 @@ console.log("DONE GENERATING MAP");
 
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".hud-body .status");
-        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
+        if (this.game.players.includes(await this.app.wallet.getPublicKey())) {
           status_obj.innerHTML = str;
           $(".status").disableSelection();
         }
