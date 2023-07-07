@@ -123,6 +123,8 @@
         });
         //Create as menu on the game board to input word from a tile in horizontal or vertical direction
         $(".city.empty").on("mouseup", function (e) {
+            console.log("clicked on city empty ////");
+
             if (Math.abs(xpos - e.clientX) > 4) {
               return;
             }
