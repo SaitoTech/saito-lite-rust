@@ -12,6 +12,13 @@ const localforage = require("localforage");
 //Trial -- So that we can display league results in game page
 const LeagueOverlay = require("./lib/overlays/league");
 
+//
+// League uses 3 URL parameters (which will trigger overlays in Arcade/Redsquare/elsewhere)
+// view_game="GameName" (any case) ---> pull up the league_overlay for the default saito leaderboard of said game
+// league="id"  --> pull up the league_overlay for the specified league
+// league_id="id" --> pull up the join league overlay for the specified league
+//
+
 class League extends ModTemplate {
   constructor(app) {
     super(app);
@@ -46,6 +53,7 @@ class League extends ModTemplate {
       arcade: "fa-solid fa-gamepad",
     };
 
+    this.auto_open_league_overlay_league_id = null;
     this.icon_fa = "fas fa-user-friends";
     this.debug = false;
   }
@@ -119,13 +127,14 @@ class League extends ModTemplate {
         return; 
       }
       //TODO: Reset the default leagues and make the hashes based on game slugs!!!!
-      let leaderboard_id = app.crypto.hash(gm.returnName());
-      console.log("ID: " + leaderboard_id, game);
-      app.connection.emit("league-overlay-render-request", leaderboard_id);
+      this.auto_open_league_overlay_league_id = app.crypto.hash(gm.returnName());
+      console.log("ID: " + this.auto_open_league_overlay_league_id, game);
+      app.connection.emit("league-overlay-render-request", this.auto_open_league_overlay_league_id);
     }
 
     if (app.browser.returnURLParameter("league")) {
-      app.connection.emit("league-overlay-render-request", app.browser.returnURLParameter("league")); 
+      this.auto_open_league_overlay_league_id = app.browser.returnURLParameter("league");
+      app.connection.emit("league-overlay-render-request", this.auto_open_league_overlay_league_id); 
     }
 
   }
@@ -236,14 +245,29 @@ class League extends ModTemplate {
 
       let sql;
 
-      if (this.browser_active || league_id) {
+      if (this.browser_active) {
         if (this.debug) {
           console.log("Load all leagues");
         }
-        sql = `SELECT * FROM leagues WHERE ( status = 'public' OR id = '${league_id}' ) AND deleted = 0`;
+        sql = `SELECT * FROM leagues WHERE status = 'public' AND deleted = 0`;
       } else {
         
         let league_list = this.app.options.leagues.map((x) => `'${x}'`).join(", ");
+        
+        if (league_id && !league_list.includes(league_id)){
+          if (league_list){
+            league_list += `, '${league_id}'`;  
+          }else{
+            league_list = `'${league_id}'`;  
+          }
+        }
+        if (this.auto_open_league_overlay_league_id && !league_list.includes(this.auto_open_league_overlay_league_id)){
+          if (league_list){
+            league_list += `, '${this.auto_open_league_overlay_league_id}'`;  
+          }else{
+            league_list = `'${this.auto_open_league_overlay_league_id}'`;
+          }
+        }
 
         if (this.debug) {
           console.log("Load my leagues: " + league_list);
@@ -281,6 +305,14 @@ class League extends ModTemplate {
             console.log("Joining league: ", league_id);
             let jlo = new JoinLeagueOverlay(app, league_self, league_id);
             jlo.render();
+          }
+
+          //
+          // Viewing a league/game page
+          //
+          if (league_self.auto_open_league_overlay_league_id){
+            console.log("Redraw league overlay");
+            app.connection.emit("league-overlay-render-request", this.auto_open_league_overlay_league_id);
           }
         },
         (p) => {
