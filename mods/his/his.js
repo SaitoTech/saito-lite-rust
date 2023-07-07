@@ -117,6 +117,7 @@ class HereIStand extends GameTemplate {
       name		: 	"England",
       nickname		: 	"England",
       img		:	"england.png",
+      admin_rating	:	1,
       capitals		:	["london"],
       cards_bonus	:	1,
       marital_status    :       0,
@@ -199,6 +200,7 @@ class HereIStand extends GameTemplate {
       name		: 	"France",
       nickname		: 	"France",
       capitals          :       ["paris"],
+      admin_rating	:	1,
       img		:	"france.png",
       cards_bonus	:	1,
       returnCardsSaved  :       function(game_mod) {
@@ -288,6 +290,7 @@ class HereIStand extends GameTemplate {
       nickname		: 	"Hapsburg",
       capitals          :       ["valladolid","vienna"],
       img		:	"hapsburgs.png",
+      admin_rating	:	2,
       cards_bonus	:	0,
       returnCardsSaved  :       function(game_mod) {
  
@@ -383,6 +386,7 @@ class HereIStand extends GameTemplate {
       nickname		: 	"Ottoman",
       capitals          :       ["istanbul"],
       img		:	"ottoman.png",
+      admin_rating	:	2,
       cards_bonus	:	0,
       returnCardsSaved  :       function(game_mod) {
 
@@ -458,6 +462,7 @@ class HereIStand extends GameTemplate {
       nickname		: 	"Papacy",
       capitals          :       ["rome"],
       img		:	"papacy.png",
+      admin_rating	:	0,
       cards_bonus	:	0,
       returnCardsSaved  :       function(game_mod) {
  
@@ -538,6 +543,7 @@ class HereIStand extends GameTemplate {
       nickname		: 	"Protestants",
       capitals		:	[] ,
       img		:	"protestant.png",
+      admin_rating	:	2,
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {
         
@@ -2203,6 +2209,7 @@ console.log("\n\n\n\n");
 	this.addRegular("protestant", "venice", 4);
 	this.addRegular("papacy", "ravenna", 2);
 	this.setAllies("protestant", "venice");
+  	this.addUnrest("graz");
 
 
 	// OTTOMAN
@@ -7250,6 +7257,16 @@ alert("NOT IMPLEMENTED");
 
 
 
+  addUnrest(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    space.unrest = 1;
+  }
+
+  removeUnrest(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    space.unrest = 0;
+  }
+
   hasProtestantReformer(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < space.units["protestant"].length; i++) {
@@ -11646,6 +11663,22 @@ console.log("MOVE: " + mv[0]);
 	  return 1;
 	}
 
+	if (mv[0] === "pass") {
+          let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
+
+          for (let z = 0; z < this.game.state.players_info[player-1].factions.length; z++) {
+	    if (this.game.state.players_info[player-1].factions[z] == faction) {
+	      this.game.state.players_info[player-1].factions_passed[z] = true;
+	    }
+	  }
+
+	  this.updateLog(faction + " passes");
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+
 	if (mv[0] === "build") {
 
 	  let land_or_sea = mv[1];
@@ -16021,7 +16054,6 @@ console.log("NEW WORLD PHASE!");
 	  // check if we are really ready for a new round, or just need another loop
 	  // until all of the players have passed.
 	  //
-	  let factions = this.returnFactions();
 	  let factions_in_play = [];
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 console.log("i: " + i);
@@ -16030,7 +16062,7 @@ console.log("z: " + z);
 console.log("passed? " + JSON.stringify(this.game.state.players_info[i].factions[z]));
 	      if (this.game.state.players_info[i].factions_passed[z] == false) {
 console.log("pushing back!");
-		factions_in_play.push(this.factions[game.state.players_info[i].factions[z]]);
+		factions_in_play.push(this.factions[this.game.state.players_info[i].factions[z]]);
 	      }
 	    }
 	  }
@@ -16043,8 +16075,11 @@ console.log("FACTIONS IN PLAY: " + JSON.stringify(factions_in_play));
 	  if (factions_in_play.length > 0) {
 	    let io = this.returnImpulseOrder();
 	    for (let i = 0; i < io.length; i++) {
-	      if (factions_in_play.includes(io[i])) {
-	        this.game.queue.push("play\t"+io[i]);
+	      for (let k = 0; k < factions_in_play.length; k++) {
+console.log("io: " + io[i]);
+	        if (factions_in_play[k].key === io[i]) {
+	          this.game.queue.push("play\t"+io[i]);
+	        }
 	      }
 	    }
 	    return 1;
@@ -18166,7 +18201,14 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
-    this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
+    let cards = [];
+    for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length;i++) {
+      cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
+    }
+    cards.push("pass");
+
+
+    this.updateStatusAndListCards("Select a Card: ", cards);
     this.attachCardboxEvents((card) => {
       this.playerPlayCard(card, this.game.player, faction);
     });  
@@ -18266,6 +18308,16 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
   }
 
   playerPlayCard(card, player, faction) {
+
+    //
+    // maybe we are passing
+    //
+    if (card === "pass") {
+      this.addMove("pass\t"+faction);
+      this.endTurn();
+      return;
+    }
+
 
     //
     // mandatory event cards effect first, then 2 OPS
@@ -20702,6 +20754,13 @@ return;
     return false;
   }
 
+  returnFactionAdminRating(faction="") {
+    if (this.factions[faction]) {
+      return this.factions[faction].admin_rating;
+    }
+    return 0;
+  }
+ 
   returnFactionName(f) {
     if (this.factions[f]) {
       return this.factions[f].name;
@@ -20717,6 +20776,7 @@ return;
     if (obj.key == null)	        { obj.key = name; }
     if (obj.ruler == null)		{ obj.ruler = ""; }
     if (obj.capitals == null)	        { obj.capitals = []; }
+    if (obj.admin_rating == null)	{ obj.admin_rating = 0; } // cards "holdable"
     if (obj.cards_bonus == null)	{ obj.cards_bonus = 0; }
     if (obj.vp == null)			{ obj.vp = 0; }
     if (obj.vp_base == null)		{ obj.vp_base = 0; }
@@ -22226,6 +22286,10 @@ if (!his_self.bound_gameboard_zoom) {
     let deckidx = -1;
     let card;
 
+    if (cardname === "pass") {
+      return `<img class="${cardclass}" src="/his/img/cards/PASS.png" />`;
+    }
+
     //
     //
     //
@@ -22250,8 +22314,6 @@ if (!his_self.bound_gameboard_zoom) {
     }
 
     var html = `<img class="${cardclass}" src="/his/img/${card.img}" />`;
-
-console.log("X: " + html);
 
     //
     // add cancel button to uneventable cards

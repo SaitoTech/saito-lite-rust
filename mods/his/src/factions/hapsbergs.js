@@ -6,6 +6,7 @@
       nickname		: 	"Hapsburg",
       capitals          :       ["valladolid","vienna"],
       img		:	"hapsburgs.png",
+      admin_rating	:	2,
       cards_bonus	:	0,
       returnCardsSaved  :       function(game_mod) {
  

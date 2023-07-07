@@ -907,7 +907,14 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
-    this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
+    let cards = [];
+    for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length;i++) {
+      cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
+    }
+    cards.push("pass");
+
+
+    this.updateStatusAndListCards("Select a Card: ", cards);
     this.attachCardboxEvents((card) => {
       this.playerPlayCard(card, this.game.player, faction);
     });  
@@ -1007,6 +1014,16 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
   }
 
   playerPlayCard(card, player, faction) {
+
+    //
+    // maybe we are passing
+    //
+    if (card === "pass") {
+      this.addMove("pass\t"+faction);
+      this.endTurn();
+      return;
+    }
+
 
     //
     // mandatory event cards effect first, then 2 OPS

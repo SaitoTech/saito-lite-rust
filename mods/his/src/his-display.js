@@ -998,6 +998,10 @@ if (!his_self.bound_gameboard_zoom) {
     let deckidx = -1;
     let card;
 
+    if (cardname === "pass") {
+      return `<img class="${cardclass}" src="/his/img/cards/PASS.png" />`;
+    }
+
     //
     //
     //
@@ -1022,8 +1026,6 @@ if (!his_self.bound_gameboard_zoom) {
     }
 
     var html = `<img class="${cardclass}" src="/his/img/${card.img}" />`;
-
-console.log("X: " + html);
 
     //
     // add cancel button to uneventable cards

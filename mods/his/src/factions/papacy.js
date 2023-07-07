@@ -7,6 +7,7 @@
       nickname		: 	"Papacy",
       capitals          :       ["rome"],
       img		:	"papacy.png",
+      admin_rating	:	0,
       cards_bonus	:	0,
       returnCardsSaved  :       function(game_mod) {
  
