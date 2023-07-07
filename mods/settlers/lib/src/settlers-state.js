@@ -355,6 +355,7 @@ class SettlersState {
 
         $(".cardselector").off(); //Previous events should be erased when the dom is rebuilt, but just in case...
         $(".cardselector").on("click", function () {
+            console.log("settlers state cards ////");
             settlers_self.displayCardfan($(this).attr("id"));
         });
     }

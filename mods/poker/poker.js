@@ -658,7 +658,7 @@ class Poker extends GameTableTemplate {
           //Reload game to rebuild the html
           setTimeout(async () => {
             this.initialize_game_run = 0;
-            await this.initializeGameFeeder(this.game.id);
+            await this.initializeGameQueue(this.game.id);
           }, 1000);
           return 0;
         }

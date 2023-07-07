@@ -1317,6 +1317,9 @@ class Arcade extends ModTemplate {
 
       let game_engine_id = await gamemod.processAcceptRequest(tx);
 
+      console.log("game engine id ///////");
+      console.log(game_engine_id);
+
       if (!game_engine_id || game_engine_id !== txmsg.game_id) {
         await sconfirm("Something went wrong with the game initialization: " + game_engine_id);
       }

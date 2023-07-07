@@ -444,6 +444,7 @@
 
     playerPlayCard() {
       let settlers_self = this;
+      console.log("settlers players cards ////");
       this.displayCardfan("cards");
       let html = "";
       html += '<div class="tbd">Select a card to play: <ul>';

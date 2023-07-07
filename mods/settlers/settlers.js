@@ -134,7 +134,12 @@ class Settlers extends GameTemplate {
     //Prevent this function from running twice as saito-lite is configured to run it twice
     if (this.initialize_game_run) { return; }
 
+
+    console.log("abovesuper");
+
     await super.render(app);
+
+    console.log("belowsuper");
     
     this.scoreboard.render();
 
@@ -166,6 +171,7 @@ class Settlers extends GameTemplate {
         game_mod.log.toggleLog();
       },
     });
+
 
     await this.menu.addChatMenu();
 
@@ -234,6 +240,9 @@ class Settlers extends GameTemplate {
     //
     this.app.browser.prependElementToSelector('<div class="mobile"><div class="score">score</div><div class="trade">trade</div></div>', '.hud-body');
 
+
+    console.log("inside settlers render //////");
+
     //
     // hook up interactivity
     //
@@ -243,32 +252,33 @@ class Settlers extends GameTemplate {
     document.querySelector(".hud-body .mobile .trade").onclick = (e) => {
       if (this.app.browser.isMobileBrowser()) {
         if (document.querySelector(".game-playerbox-manager").style.display == "flex") {
-    document.querySelector(".game-playerbox-manager").style.display = "none";
-    return;
-  };
-        document.querySelector(".game-playerbox-manager").style.display = "flex";
+          document.querySelector(".game-playerbox-manager").style.display = "none";
+          return;
+        };
+
+      document.querySelector(".game-playerbox-manager").style.display = "flex";
         try {
 
-    //
-    // load trade overlay on playerbox click
-    //
-    for (let i = 0; i < this.game.players.length; i++) {
-        this.playerbox.onclick(() => {
-        this.trade_overlay.render();
-      }, (i+1));
-    }
+          //
+          // load trade overlay on playerbox click
+          //
+          for (let i = 0; i < this.game.players.length; i++) {
+              this.playerbox.onclick(() => {
+              this.trade_overlay.render();
+            }, (i+1));
+          }
 
-    //
-    // close playerboxen on back-click
-    //
-    document.querySelector(".game-playerbox-manager").off();
-    document.querySelector(".game-playerbox-manager").on("click", () => {
-            document.querySelector(".game-playerbox-manager").style.display = "none";
-    });
+          //
+          // close playerboxen on back-click
+          //
+          document.querySelector(".game-playerbox-manager").off();
+          document.querySelector(".game-playerbox-manager").on("click", () => {
+                  document.querySelector(".game-playerbox-manager").style.display = "none";
+          });
 
-  } catch (err) {
-    console.log("ERROR 485023: " + err);
-  }
+        } catch (err) {
+          console.log("ERROR 485023: " + err);
+        }
       } else {
         this.trade_overlay.render();
       }
@@ -280,6 +290,10 @@ class Settlers extends GameTemplate {
 
 
   initializeGame(game_id) {
+
+
+    console.log("inside initializeGame");
+    console.log(this.game.state);
 
     if (this.game.state == undefined) {
 
