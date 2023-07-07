@@ -2,7 +2,6 @@ import { Saito } from "../../../apps/core";
 import express from "express";
 import { Server as Ser } from "http";
 import S from "saito-js/index.node";
-
 // const io          = require('socket.io')(webserver, {
 //   cors: {
 //     origin: "*.*",
@@ -21,6 +20,8 @@ import Transaction from "../transaction";
 import Factory from "../factory";
 import PeerServiceList from "saito-js/lib/peer_service_list";
 import Block from "../block";
+
+import fetch from "node-fetch";
 
 const JSON = require("json-bigint");
 const expressApp = express();
@@ -130,6 +131,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
     console.log("fetching block from peer: " + url);
     return fetch(url)
       .then((res: any) => {
+        console.log("block data fetched for " + url);
         return res.arrayBuffer();
       })
       .then((buffer: ArrayBuffer) => {
