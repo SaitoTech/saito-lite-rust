@@ -1,6 +1,5 @@
 const LikeNotificationTemplate = require("./notification-like.template");
 const ReplyNotificationTemplate = require("./notification-reply.template");
-const RetweetNotificationTemplate = require("./notification-retweet.template");
 const saito = require("./../../../lib/saito/saito");
 const Tweet = require("./tweet");
 const SaitoUser = require("./../../../lib/saito/ui/saito-user/saito-user");
