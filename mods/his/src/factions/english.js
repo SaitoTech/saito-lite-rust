@@ -5,6 +5,7 @@
       name		: 	"England",
       nickname		: 	"England",
       img		:	"england.png",
+      admin_rating	:	1,
       capitals		:	["london"],
       cards_bonus	:	1,
       marital_status    :       0,

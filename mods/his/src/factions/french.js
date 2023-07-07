@@ -5,6 +5,7 @@
       name		: 	"France",
       nickname		: 	"France",
       capitals          :       ["paris"],
+      admin_rating	:	1,
       img		:	"france.png",
       cards_bonus	:	1,
       returnCardsSaved  :       function(game_mod) {

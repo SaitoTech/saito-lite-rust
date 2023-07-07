@@ -112,6 +112,22 @@ console.log("MOVE: " + mv[0]);
 	  return 1;
 	}
 
+	if (mv[0] === "pass") {
+          let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
+
+          for (let z = 0; z < this.game.state.players_info[player-1].factions.length; z++) {
+	    if (this.game.state.players_info[player-1].factions[z] == faction) {
+	      this.game.state.players_info[player-1].factions_passed[z] = true;
+	    }
+	  }
+
+	  this.updateLog(faction + " passes");
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
+
 	if (mv[0] === "build") {
 
 	  let land_or_sea = mv[1];
@@ -4487,7 +4503,6 @@ console.log("NEW WORLD PHASE!");
 	  // check if we are really ready for a new round, or just need another loop
 	  // until all of the players have passed.
 	  //
-	  let factions = this.returnFactions();
 	  let factions_in_play = [];
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 console.log("i: " + i);
@@ -4496,7 +4511,7 @@ console.log("z: " + z);
 console.log("passed? " + JSON.stringify(this.game.state.players_info[i].factions[z]));
 	      if (this.game.state.players_info[i].factions_passed[z] == false) {
 console.log("pushing back!");
-		factions_in_play.push(this.factions[game.state.players_info[i].factions[z]]);
+		factions_in_play.push(this.factions[this.game.state.players_info[i].factions[z]]);
 	      }
 	    }
 	  }
@@ -4509,8 +4524,11 @@ console.log("FACTIONS IN PLAY: " + JSON.stringify(factions_in_play));
 	  if (factions_in_play.length > 0) {
 	    let io = this.returnImpulseOrder();
 	    for (let i = 0; i < io.length; i++) {
-	      if (factions_in_play.includes(io[i])) {
-	        this.game.queue.push("play\t"+io[i]);
+	      for (let k = 0; k < factions_in_play.length; k++) {
+console.log("io: " + io[i]);
+	        if (factions_in_play[k].key === io[i]) {
+	          this.game.queue.push("play\t"+io[i]);
+	        }
 	      }
 	    }
 	    return 1;

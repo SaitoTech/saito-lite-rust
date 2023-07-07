@@ -6,6 +6,13 @@
     return false;
   }
 
+  returnFactionAdminRating(faction="") {
+    if (this.factions[faction]) {
+      return this.factions[faction].admin_rating;
+    }
+    return 0;
+  }
+ 
   returnFactionName(f) {
     if (this.factions[f]) {
       return this.factions[f].name;
@@ -21,6 +28,7 @@
     if (obj.key == null)	        { obj.key = name; }
     if (obj.ruler == null)		{ obj.ruler = ""; }
     if (obj.capitals == null)	        { obj.capitals = []; }
+    if (obj.admin_rating == null)	{ obj.admin_rating = 0; } // cards "holdable"
     if (obj.cards_bonus == null)	{ obj.cards_bonus = 0; }
     if (obj.vp == null)			{ obj.vp = 0; }
     if (obj.vp_base == null)		{ obj.vp_base = 0; }

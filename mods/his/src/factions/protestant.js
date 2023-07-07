@@ -6,6 +6,7 @@
       nickname		: 	"Protestants",
       capitals		:	[] ,
       img		:	"protestant.png",
+      admin_rating	:	2,
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {
         

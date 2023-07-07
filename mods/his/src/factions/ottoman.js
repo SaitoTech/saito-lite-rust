@@ -6,6 +6,7 @@
       nickname		: 	"Ottoman",
       capitals          :       ["istanbul"],
       img		:	"ottoman.png",
+      admin_rating	:	2,
       cards_bonus	:	0,
       returnCardsSaved  :       function(game_mod) {
 
