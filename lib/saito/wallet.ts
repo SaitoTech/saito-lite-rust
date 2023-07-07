@@ -448,7 +448,7 @@ console.log("---------------------");
             this.wallet.publickey = tmppubkey;
             this.wallet.privatekey = tmpprivkey;
 
-            // let modules purge stuff (not implementer)
+            // let modules purge stuff
             this.app.modules.onWalletReset();
 
             // reset and save
