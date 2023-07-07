@@ -543,12 +543,11 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  loadTweetChildren(peer, sig, mycallback = null) {
-    let sql = `SELECT * FROM tweets WHERE parent_id = '${sig}' ORDER BY created_at DESC`;
+  loadTweetThread(peer, sig, mycallback = null) {
+    let sql = `SELECT * FROM tweets WHERE thread_id = '${sig}' ORDER BY created_at DESC`;
 
     for (let i = 0; i < this.peers.length; i++) {
       let peer = this.peers[i].peer;
-
       this.loadTweetsFromPeer(peer, sql, mycallback);
     }
   }

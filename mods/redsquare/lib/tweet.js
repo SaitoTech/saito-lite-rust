@@ -403,7 +403,7 @@ class Tweet {
 
   renderWithChildren() {
 
-    //console.log("Render thread");
+    console.log("Render thread");
     //
     // first render the tweet
     //
@@ -422,26 +422,10 @@ class Tweet {
         obj.classList.add("has-reply");
       }
 
-      if (
-        this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add ||
-        this.children.length == 1
-      ) {
-        if (this.children[0].children.length > 0) {
-          this.children[0].container = this.container;
-          this.children[0].renderWithChildren();
-        } else {
-          for (let i = 0; i < this.children.length; i++) {
-            this.children[i].container = this.container;
-            this.children[i].render_after_selector = `.tweet-${this.tx.transaction.sig}`;
-            this.children[i].render();
-          }
-        }
-      } else {
-        for (let i = 0; i < this.children.length; i++) {
-          this.children[i].container = this.container;
-          this.children[i].render_after_selector = `.tweet-${this.tx.transaction.sig}`;
-          this.children[i].render();
-        }
+      for (let i = 0; i < this.children.length; i++) {
+        this.children[i].container = this.container;
+        this.children[i].render_after_selector = `.tweet-${this.tx.transaction.sig}`;
+        this.children[i].renderWithChildren();
       }
     }
 
