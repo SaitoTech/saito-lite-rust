@@ -1172,10 +1172,13 @@ class RedSquare extends ModTemplate {
     // servers
     //
     let txmsg = tx.returnMessage();
-    let sql = `UPDATE tweets SET num_likes = num_likes + 1 WHERE sig = $sig`;
+    let sql = `UPDATE tweets SET num_likes = num_likes + 1 , updated_at = $timestamp WHERE sig = $sig`;
     let params = {
       $sig: txmsg.data.sig,
+      $timestamp: tx.transaction.ts,
     };
+
+
     await app.storage.executeDatabase(sql, params, "redsquare");
 
     //
