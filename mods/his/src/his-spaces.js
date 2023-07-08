@@ -1,4 +1,19 @@
 
+  resetBesiegedSpaces() {
+    for (let space in this.game.spaces) {
+      if (space.besieged == 2) { space.besieged = 1; }
+    }
+  }
+  resetLockedTroops() {
+    for (let space in this.game.spaces) {
+      for (let f in this.game.spaces[space].units) {
+        for (let z = 0; z < this.game.spaces[space].units[f].length; z++) {
+          this.game.spaces[space].units[f][z].locked = false;
+        }
+      }
+    }
+  }
+
   addUnrest(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.unrest = 1;
@@ -552,7 +567,7 @@
     // or -- failing that -- whichever faction is recorded as occupying the space.
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let f in space.units) {
-      let luis = this.returnFactionLandUnitsInSpace(f, space);
+      let luis = this.returnFactionLandUnitsInSpace(f, space.key);
       if (luis > 0) {
         if (!this.areAllies(attacker_faction, f) && f !== attacker_faction) {
 	  return f;
@@ -2762,6 +2777,7 @@
       if (!spaces[key].ports) { spaces[key].ports = []; }
       if (!spaces[key].pass) { spaces[key].pass = []; }
       if (!spaces[key].name) { spaces[key].name = key.charAt(0).toUpperCase() + key.slice(1); }
+      if (!spaces[key].key) { spaces[key].key = spaces[key].name; }
       if (!spaces[key].besieged) { spaces[key].besieged = 0; }
       if (!spaces[key].besieged_factions) { spaces[key].besieged_factions = []; }
     }

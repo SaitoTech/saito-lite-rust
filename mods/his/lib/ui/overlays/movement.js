@@ -112,7 +112,6 @@ class MovementOverlay {
       }
     }
 
-
     let obj = {
       faction : faction ,
       has_regulars : has_regulars ,
