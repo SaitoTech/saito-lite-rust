@@ -876,6 +876,8 @@
     let t = "."+key;
     document.querySelectorAll(t).forEach((obj) => {
 
+      obj.innerHTML = "";
+
       if (show_tile === 1) {
         obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
         obj.innerHTML += this.returnArmies(space);
@@ -886,6 +888,9 @@
 
       if (this.isSpaceInUnrest(space)) {
         obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
+      }
+      if (this.isBesieged(space)) {
+        obj.innerHTML += `<img class="seige" src="/his/img/tiles/seige.png" />`;
       }
 
     });
