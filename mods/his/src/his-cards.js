@@ -1704,9 +1704,12 @@ console.log("COUNCIL OF TRENT: " + JSON.stringify(his_self.game.state.council_of
         if (mv[0] === "council_of_trent_results") {
 
           his_self.game.queue.splice(qe, 1);
+	  //
+	  // this adds stuff to the queue -- so we pass through
+	  //
 	  his_self.council_of_trent_overlay.render("results");
 
-	  return 0;
+	  return 1;
 
 	}
 
