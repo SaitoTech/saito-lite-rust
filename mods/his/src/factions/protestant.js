@@ -15,16 +15,16 @@
         let kc = game_mod.returnNumberOfElectoratesControlledByProtestants();
         if (kc > 4) { base += 1; }
 
-        if (game_mod.game.state.leaders_martin_luther == 1) { base += 0; }
+        if (game_mod.game.state.leaders.luther == 1) { base += 0; }
 
 	return base;        
 
       },
       returnCardsSaved  :       function(game_mod) {
 
-	let base = 2;
-	return base; 
+	if (game_mod.game.state.leaders.luther == 1) { return 1; }
       
+	return 0;
       },
 
       calculateBaseVictoryPoints  : function(game_mod) {

@@ -35,6 +35,11 @@
     }
     return 0;
   }
+  isSpaceBesieged(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.besieged == true) { return true; }
+    return false;
+  }
   isBesieged(faction, unittype) {
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].besieged) {
@@ -414,8 +419,6 @@
     state.autowin_papacy_keys_controlled = 7;
     state.autowin_france_keys_controlled = 11;
     state.autowin_england_keys_controlled = 9;
-
-
 
     state.debaters = [];
     state.explorers = [];

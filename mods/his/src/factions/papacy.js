@@ -13,10 +13,10 @@
  
         let base = 0;
 
-        if (game_mod.game.state.leaders_leo_x == 1) { base += 0; }
-        if (game_mod.game.state.leaders_clement_vii == 1) { base += 1; }
-        if (game_mod.game.state.leaders_paul_iii == 1) { base += 1; }
-        if (game_mod.game.state.leaders_julius_iii == 1) { base += 0; }
+        if (game_mod.game.state.leaders.leo_x == 1) { base += 0; }
+        if (game_mod.game.state.leaders.clement_vii == 1) { base += 1; }
+        if (game_mod.game.state.leaders.paul_iii == 1) { base += 1; }
+        if (game_mod.game.state.leaders.julius_iii == 1) { base += 0; }
 
         return base; 
 
@@ -36,10 +36,10 @@
           default: { base = 0; break; }
         }
 
-        if (game_mod.game.state.leaders_leo_x == 1) { base += 0; }
-        if (game_mod.game.state.leaders_clement_vii == 1) { base += 0; }
-        if (game_mod.game.state.leaders_paul_iii == 1) { base += 1; }
-        if (game_mod.game.state.leaders_julius_iii == 1) { base += 1; }       
+        if (game_mod.game.state.leaders.leo_x == 1) { base += 0; }
+        if (game_mod.game.state.leaders.clement_vii == 1) { base += 0; }
+        if (game_mod.game.state.leaders.paul_iii == 1) { base += 1; }
+        if (game_mod.game.state.leaders.julius_iii == 1) { base += 1; }       
 
         // TODO - bonus for home spaces under protestant control
         return base;

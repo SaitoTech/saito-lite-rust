@@ -151,6 +151,16 @@ img {
   display: none;
 }
 
+.seige {
+  position: absolute;
+  display: block;
+  height: 130px;
+  width: 130px;
+  top: -10px;
+  left: -10px;
+  z-index: 1000;
+}
+
 .unrest {
   position: absolute;
   display: block;

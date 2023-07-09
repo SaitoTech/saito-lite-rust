@@ -76,8 +76,6 @@ class FieldBattleOverlay {
 
     assignHitsManually(res={}, faction="", hits_to_assign=1) {
 
-console.log("AHM!");
-
       let hits_assignable = 0;
       let hits_assigned = 0;
       let his_self = this.mod;
@@ -90,18 +88,12 @@ console.log("AHM!");
       });
       document.querySelectorAll(".hits-assignable").forEach((el) => {
 
-console.log("HA");
-
 	let factionspace = el.querySelector(".field-battle-desc").innerHTML;
 	let can_i_kill_this_guy = false;
 
 	if (factionspace === faction || his_self.returnAllyOfMinorPower(factionspace) === faction) {
 	  can_i_kill_this_guy = true;
 	}
-
-console.log("faction: " + faction);
-console.log("factionspace: " + factionspace);
-console.log("ally of: " + his_self.returnAllyOfMinorPower(factionspace));
 
 	if (can_i_kill_this_guy) {
 
@@ -173,18 +165,11 @@ console.log("ally of: " + his_self.returnAllyOfMinorPower(factionspace));
 	if (this.mod.returnPlayerFactions(this.mod.game.player).includes(res.attacker_faction)) { am_i_attacker = true; }
 	if (this.mod.returnPlayerFactions(this.mod.game.player).includes(res.defender_faction)) { am_i_defender = true; }
 
-console.log("am i attacker: " + am_i_attacker);
-console.log("am i defender: " + am_i_defender);
-console.log(JSON.stringify(res));
-
 	this.visible = true;
         this.overlay.show(FieldBattleTemplate());
 
 	if (pre_battle == 1) { res.attacker_modified_rolls = res.attacker_results; }
 	if (pre_battle == 1) { res.defender_modified_rolls = res.defender_results }
-
-//	document.querySelector(".field-battle-grid .attacker .title").innerHTML = res.attacker_faction + " (attacker)";
-//	document.querySelector(".field-battle-grid .defender .title").innerHTML = res.defender_faction + " (defender)";
 
 	if (res.attacker_modified_rolls) {
 	  for (let i = 0; i < res.attacker_modified_rolls.length; i++) {
@@ -218,8 +203,6 @@ console.log(JSON.stringify(res));
 	if (res.defender_modified_rolls) {
 	  for (let i = 0; i < res.defender_modified_rolls.length; i++) {
 
-console.log("def mod rolls: " + i);
-
 	      let roll = res.defender_modified_rolls[i];
 	      let unit_type = res.defender_units[i];
 	      let faction_name = res.defender_units_faction[i];
@@ -235,18 +218,13 @@ console.log("def mod rolls: " + i);
 	      if (roll >= 5) { rrclass = "hit"; }
 	      if (pre_battle) { roll = "?"; rrclass = ""; }
 
-console.log("def mod rolls 2: " + i);
-
               let html = `
                 <div class="field-battle-row ${assignable}" data-unit-type="${unit_type}" data-faction="${faction_name}">
                 	<div class="field-battle-unit">${unit_type}<div class="field-battle-desc">${faction_name}</div></div>
                 	<div class="field-battle-roll ${rrclass}">${roll}</div>
                 </div>
               `;
-console.log("def mod rolls 3: " + i);
               this.app.browser.addElementToSelector(html, ".field-battle-grid .defender");
-console.log("def mod rolls 4: " + i);
-
 	  }
 	}
  

@@ -25,6 +25,7 @@ console.log("MOVE: " + mv[0]);
 	//
         if (mv[0] === "round") {
 
+
 	  this.game.state.round++;
 
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
@@ -49,6 +50,7 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    // cards dealt before diet of worms
 	    //
+this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
 //	    this.updateLog("Luther's 95 Theses!");
 //	    this.game.queue.push("event\t1\t008");
@@ -56,6 +58,7 @@ console.log("MOVE: " + mv[0]);
 	  } else {
 	    this.game.queue.push("card_draw_phase");
 	  }
+
 
 	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
 
@@ -80,6 +83,7 @@ console.log("MOVE: " + mv[0]);
 
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.render(); }
+	  if (mv[1] === "council_of_trent") { this.council_of_trent_overlay.render(); }
 	  if (mv[1] === "zoom") {
 	    let lz = mv[2];
 	    this.theses_overlay.render(lz);
@@ -106,6 +110,7 @@ console.log("MOVE: " + mv[0]);
 	  if (mv[1] === "burn_books") { this.theses_overlay.hide(); }
 	  if (mv[1] === "publish_treatise") { this.theses_overlay.hide(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.hide(); }
+	  if (mv[1] === "council_of_trent") { this.council_of_trent_overlay.hide(); }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.hide(); }
 	  if (mv[1] === "field_battle") { this.field_battle_overlay.hide(); }
           this.game.queue.splice(qe, 1);
@@ -386,14 +391,15 @@ console.log("MOVE: " + mv[0]);
     	  this.addRegular("venice", "agram", 4);
     	  this.game.spaces['agram'].type = "fortress";
 
-    	  this.addCard("protestant", "036");
-    	  this.addCard("protestant", "026");
-    	  this.addCard("protestant", "027");
-    	  this.addCard("protestant", "028");
-    	  this.addCard("papacy", "029");
-    	  this.addCard("papacy", "030");
-    	  this.addCard("papacy", "024");
-    	  this.addCard("papacy", "025");
+    	  this.addCard("papacy", "017");
+//    	  this.addCard("protestant", "036");
+//    	  this.addCard("protestant", "026");
+//    	  this.addCard("protestant", "027");
+//    	  this.addCard("protestant", "028");
+//    	  this.addCard("papacy", "029");
+//    	  this.addCard("papacy", "030");
+//    	  this.addCard("papacy", "024");
+//    	  this.addCard("papacy", "025");
 
     	  this.game.spaces['graz'].type = 'key';
     	  this.game.spaces['graz'].occupier = 'protestant';
