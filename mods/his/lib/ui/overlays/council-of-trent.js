@@ -95,7 +95,7 @@ alert(this.mod.game.state.council_of_trent.papacy.debaters.length + " -- " + thi
 	    winner = `Protestants may convert ${winner_converts} space(s) (<span class="continue_protestants">click here</a>)`;
 	    html += winner;
 	    for (let i = 0; i < winner_converts; i++) {
-	      this.mod.game.queue.push("protestant_reformation\t"+protestant_player+"\tall");
+	      this.mod.game.queue.push("protestant_reformation\t"+protestants_player+"\tall");
 	    }
 	    this.mod.game.queue.push("ACKNOWLEDGE\tProtestants win the Council of Trent");
 	  }
@@ -112,48 +112,27 @@ alert(this.mod.game.state.council_of_trent.papacy.debaters.length + " -- " + thi
 	    this.mod.game.queue.push("ACKNOWLEDGE\tThe Council of Trent is Inconclusive");
 	  }
 
+	  document.querySelector(".council-of-trent-overlay .help").innerHTML = html;
+
 	  let his_self = this.mod;
 
-	  his_self.restartQueue();
-
-
-	  $(".council-of-trent-overlay .continue_inconclusive").off();
-	  $(".council-of-trent-overlay .continue_inconclusive").on("click", () => {
-            let lqe = his_self.game.queue[his_self.game.queue.length-1];
-            let mv = lqe.split("\t");
-            if (mv[0] === "ACKNOWLEDGE") {
-              his_self.game.queue.splice(his_self.game.queue.length-1, 1);
-              his_self.restartQueue();
-            }
+	  $(".continue_inconclusive").off();
+	  $(".continue_inconclusive").on("click", () => {
             this.overlay.remove();
 	  });
 
 
-	  $(".council-of-trent-overlay .continue_protestants").off();
-	  $(".council-of-trent-overlay .continue_protestants").on("click", () => {
-            let lqe = his_self.game.queue[his_self.game.queue.length-1];
-            let mv = lqe.split("\t");
-            if (mv[0] === "ACKNOWLEDGE") {
-              his_self.game.queue.splice(his_self.game.queue.length-1, 1);
-              his_self.restartQueue();
-            }
+	  $(".continue_protestants").off();
+	  $(".continue_protestants").on("click", () => {
             this.overlay.remove();
 	  });
 
 
-	  $(".council-of-trent-overlay .continue_inconclusive").off();
-	  $(".council-of-trent-overlay .continue_inconclusive").on("click", () => {
-            let lqe = his_self.game.queue[his_self.game.queue.length-1];
-            let mv = lqe.split("\t");
-            if (mv[0] === "ACKNOWLEDGE") {
-              his_self.game.queue.splice(his_self.game.queue.length-1, 1);
-              his_self.restartQueue();
-            }
+	  $(".continue_papacy").off();
+	  $(".continue_papacy").on("click", () => {
             this.overlay.remove();
 	  });
 
-
-	  document.querySelector(".council-of-trent-overlay .help").innerHTML = html;
 
         }
 
