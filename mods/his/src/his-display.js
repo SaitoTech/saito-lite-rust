@@ -889,7 +889,8 @@
       if (this.isSpaceInUnrest(space)) {
         obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
       }
-      if (this.isBesieged(space)) {
+      if (this.isSpaceBesieged(space)) {
+alert("SPACE IS BESIEGED: " + space.key);
         obj.innerHTML += `<img class="seige" src="/his/img/tiles/seige.png" />`;
       }
 

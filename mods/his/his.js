@@ -3,6 +3,7 @@ const DebateOverlay = require('./lib/ui/overlays/debate');
 const TreatiseOverlay = require('./lib/ui/overlays/treatise');
 const FactionOverlay = require('./lib/ui/overlays/faction');
 const ReligiousOverlay = require('./lib/ui/overlays/religious');
+const CouncilOfTrentOverlay = require('./lib/ui/overlays/council-of-trent');
 const ReformationOverlay = require('./lib/ui/overlays/reformation');
 const MovementOverlay = require('./lib/ui/overlays/movement');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
@@ -42,6 +43,7 @@ class HereIStand extends GameTemplate {
     this.religious_overlay = new ReligiousOverlay(this.app, this);  // religious conflict sheet
     this.faction_overlay = new FactionOverlay(this.app, this);  // faction sheet
     this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
+    this.council_of_trent_overlay = new CouncilOfTrentOverlay(this.app, this);  // council of trent
     this.theses_overlay = new ThesesOverlay(this.app, this);  // 95 theses
     this.reformation_overlay = new ReformationOverlay(this.app, this);  // reformations and counter-reformations
     this.language_zone_overlay = new LanguageZoneOverlay(this.app, this);  // language zone selection
@@ -125,10 +127,10 @@ class HereIStand extends GameTemplate {
 
         let base = 0;
 
-        if (game_mod.game.state.leaders_henry_viii == 1) { base += 1; }
-        if (game_mod.game.state.leaders_edward_vi == 1) { base += 1; }
-        if (game_mod.game.state.leaders_mary_i == 1) { base += 1; }
-        if (game_mod.game.state.leaders_elizabeth_i == 1) { base += 2; }
+        if (game_mod.game.state.leaders.henry_viii == 1) { base += 1; }
+        if (game_mod.game.state.leaders.edward_vi == 1) { base += 1; }
+        if (game_mod.game.state.leaders.mary_i == 1) { base += 1; }
+        if (game_mod.game.state.leaders.elizabeth_i == 1) { base += 2; }
 
         return base;
 
@@ -155,10 +157,10 @@ class HereIStand extends GameTemplate {
 	}
 
 	// bonuses based on leaders
-	if (game_mod.game.state.leaders_henry_viii == 1) { base += 1; }
-	if (game_mod.game.state.leaders_edward_vi == 1) { base += 0; }
-	if (game_mod.game.state.leaders_mary_i == 1) { base += 0; }
-	if (game_mod.game.state.leaders_elizabeth_i == 1) { base += 2; }
+	if (game_mod.game.state.leaders.henry_viii == 1) { base += 1; }
+	if (game_mod.game.state.leaders.edward_vi == 1) { base += 0; }
+	if (game_mod.game.state.leaders.mary_i == 1) { base += 0; }
+	if (game_mod.game.state.leaders.elizabeth_i == 1) { base += 2; }
 
 	// TODO - bonus for home spaces under protestant control
 	return base;
@@ -207,8 +209,8 @@ class HereIStand extends GameTemplate {
 
         let base = 0;
 
-        if (game_mod.game.state.leaders_francis_i == 1) { base += 1; }
-        if (game_mod.game.state.leaders_henry_ii == 1) { base += 1; }
+        if (game_mod.game.state.leaders.francis_i == 1) { base += 1; }
+        if (game_mod.game.state.leaders.henry_ii == 1) { base += 1; }
 
         return base;
 
@@ -235,8 +237,8 @@ class HereIStand extends GameTemplate {
         }
 
         // bonuses based on leaders
-        if (game_mod.game.state.leaders_francis_i == 1) { base += 1; }        
-        if (game_mod.game.state.leaders_henry_ii == 1) { base += 0; }        
+        if (game_mod.game.state.leaders.francis_i == 1) { base += 1; }        
+        if (game_mod.game.state.leaders.henry_ii == 1) { base += 0; }        
 
         // TODO - bonus for home spaces under protestant control
         return base;
@@ -294,7 +296,12 @@ class HereIStand extends GameTemplate {
       cards_bonus	:	0,
       returnCardsSaved  :       function(game_mod) {
  
-        let base = 2;
+        let base = 0;
+
+        if (game_mod.game.state.leaders.charles_v == 1) { base += 2; }
+
+        return base;
+
         return base; 
 
       },
@@ -320,7 +327,7 @@ class HereIStand extends GameTemplate {
           default: { base = 0; break; }
         }
 
-        if (game_mod.game.state.leaders_charles_v == 1) { base += 0; }
+        if (game_mod.game.state.leaders.charles_v == 1) { base += 0; }
        
         // TODO - bonus for home spaces under protestant control
         return base;
@@ -392,7 +399,7 @@ class HereIStand extends GameTemplate {
 
         let base = 0;
 
-        if (game_mod.game.state.leaders_suleiman == 1) { base += 2; }
+        if (game_mod.game.state.leaders.suleiman == 1) { base += 2; }
 
         return base;
 
@@ -416,7 +423,7 @@ class HereIStand extends GameTemplate {
           default: { base = 0; break; }
         }
 
-        if (game_mod.game.state.leaders_suleiman == 1) { base += 0; }        
+        if (game_mod.game.state.leaders.suleiman == 1) { base += 0; }        
        
         // TODO - bonus for home spaces under protestant control
         return base;
@@ -468,10 +475,10 @@ class HereIStand extends GameTemplate {
  
         let base = 0;
 
-        if (game_mod.game.state.leaders_leo_x == 1) { base += 0; }
-        if (game_mod.game.state.leaders_clement_vii == 1) { base += 1; }
-        if (game_mod.game.state.leaders_paul_iii == 1) { base += 1; }
-        if (game_mod.game.state.leaders_julius_iii == 1) { base += 0; }
+        if (game_mod.game.state.leaders.leo_x == 1) { base += 0; }
+        if (game_mod.game.state.leaders.clement_vii == 1) { base += 1; }
+        if (game_mod.game.state.leaders.paul_iii == 1) { base += 1; }
+        if (game_mod.game.state.leaders.julius_iii == 1) { base += 0; }
 
         return base; 
 
@@ -491,10 +498,10 @@ class HereIStand extends GameTemplate {
           default: { base = 0; break; }
         }
 
-        if (game_mod.game.state.leaders_leo_x == 1) { base += 0; }
-        if (game_mod.game.state.leaders_clement_vii == 1) { base += 0; }
-        if (game_mod.game.state.leaders_paul_iii == 1) { base += 1; }
-        if (game_mod.game.state.leaders_julius_iii == 1) { base += 1; }       
+        if (game_mod.game.state.leaders.leo_x == 1) { base += 0; }
+        if (game_mod.game.state.leaders.clement_vii == 1) { base += 0; }
+        if (game_mod.game.state.leaders.paul_iii == 1) { base += 1; }
+        if (game_mod.game.state.leaders.julius_iii == 1) { base += 1; }       
 
         // TODO - bonus for home spaces under protestant control
         return base;
@@ -552,16 +559,16 @@ class HereIStand extends GameTemplate {
         let kc = game_mod.returnNumberOfElectoratesControlledByProtestants();
         if (kc > 4) { base += 1; }
 
-        if (game_mod.game.state.leaders_martin_luther == 1) { base += 0; }
+        if (game_mod.game.state.leaders.luther == 1) { base += 0; }
 
 	return base;        
 
       },
       returnCardsSaved  :       function(game_mod) {
 
-	let base = 2;
-	return base; 
+	if (game_mod.game.state.leaders.luther == 1) { return 1; }
       
+	return 0;
       },
 
       calculateBaseVictoryPoints  : function(game_mod) {
@@ -4303,6 +4310,75 @@ alert("Not Implemented");
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+        return 1;
+      },
+      onEvent : function(his_self, faction) {
+
+	his_self.game.state.council_of_trent = {};
+	his_self.game.state.council_of_trent.papacy = {};
+	his_self.game.state.council_of_trent.protestants = {};
+
+	his_self.game.queue.push("hide_overlay\tcouncil_of_trent");
+	his_self.game.queue.push("council_of_trent_results");
+	his_self.game.queue.push("show_overlay\tcouncil_of_trent");
+	his_self.game.queue.push("council_of_trent_protestants");
+	his_self.game.queue.push("show_overlay\tcouncil_of_trent");
+	his_self.game.queue.push("council_of_trent_papacy");
+	his_self.game.queue.push("show_overlay\tcouncil_of_trent");
+
+	return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] === "council_of_trent_add_debaters") {
+
+          his_self.game.queue.splice(qe, 1);
+	  
+	  let faction = mv[1];
+	  let debaters = mv[2];
+
+	  if (faction === "papacy") {
+	    his_self.game.state.council_of_trent.papacy.debaters = JSON.parse(debaters);
+	  } else {
+	    his_self.game.state.council_of_trent.protestants.debaters = JSON.parse(debaters);
+	  }
+
+console.log("COUNCIL OF TRENT: " + JSON.stringify(his_self.game.state.council_of_trent));
+
+	  return 1;
+
+	}
+
+        if (mv[0] === "council_of_trent_papacy") {
+
+          his_self.game.queue.splice(qe, 1);
+	  his_self.council_of_trent_overlay.render("papacy");
+
+	  return 0;
+
+	}
+
+        if (mv[0] === "council_of_trent_results") {
+
+          his_self.game.queue.splice(qe, 1);
+	  his_self.council_of_trent_overlay.render("results");
+
+	  return 0;
+
+	}
+
+        if (mv[0] === "council_of_trent_protestants") {
+
+          his_self.game.queue.splice(qe, 1);
+	  his_self.council_of_trent_overlay.render("protestants");
+
+	  return 0;
+
+        }
+
+	return 1;
+      },
     }
     deck['018'] = { 
       img : "cards/HIS-018.svg" , 
@@ -4324,6 +4400,8 @@ alert("Not Implemented");
 	return 1;
       },
     }
+
+/****
     deck['020'] = { 
       img : "cards/HIS-020.svg" , 
       name :"Henry II" ,
@@ -7246,7 +7324,7 @@ alert("NOT IMPLEMENTED");
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
-
+****/
     for (let key in deck) {
       deck[key] = this.addEvents(deck[key]);
     }
@@ -10377,6 +10455,11 @@ console.log(JSON.stringify(this.game.state.activated_powers[key]));
     }
     return 0;
   }
+  isSpaceBesieged(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.besieged == true) { return true; }
+    return false;
+  }
   isBesieged(faction, unittype) {
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].besieged) {
@@ -10756,8 +10839,6 @@ console.log(JSON.stringify(this.game.state.activated_powers[key]));
     state.autowin_papacy_keys_controlled = 7;
     state.autowin_france_keys_controlled = 11;
     state.autowin_england_keys_controlled = 9;
-
-
 
     state.debaters = [];
     state.explorers = [];
@@ -11592,6 +11673,7 @@ console.log("MOVE: " + mv[0]);
 	//
         if (mv[0] === "round") {
 
+
 	  this.game.state.round++;
 
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
@@ -11616,6 +11698,7 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    // cards dealt before diet of worms
 	    //
+this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
 //	    this.updateLog("Luther's 95 Theses!");
 //	    this.game.queue.push("event\t1\t008");
@@ -11623,6 +11706,7 @@ console.log("MOVE: " + mv[0]);
 	  } else {
 	    this.game.queue.push("card_draw_phase");
 	  }
+
 
 	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
 
@@ -11647,6 +11731,7 @@ console.log("MOVE: " + mv[0]);
 
 	  if (mv[1] === "theses") { this.theses_overlay.render(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.render(); }
+	  if (mv[1] === "council_of_trent") { this.council_of_trent_overlay.render(); }
 	  if (mv[1] === "zoom") {
 	    let lz = mv[2];
 	    this.theses_overlay.render(lz);
@@ -11673,6 +11758,7 @@ console.log("MOVE: " + mv[0]);
 	  if (mv[1] === "burn_books") { this.theses_overlay.hide(); }
 	  if (mv[1] === "publish_treatise") { this.theses_overlay.hide(); }
 	  if (mv[1] === "diet_of_worms") { this.diet_of_worms_overlay.hide(); }
+	  if (mv[1] === "council_of_trent") { this.council_of_trent_overlay.hide(); }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.hide(); }
 	  if (mv[1] === "field_battle") { this.field_battle_overlay.hide(); }
           this.game.queue.splice(qe, 1);
@@ -11953,14 +12039,15 @@ console.log("MOVE: " + mv[0]);
     	  this.addRegular("venice", "agram", 4);
     	  this.game.spaces['agram'].type = "fortress";
 
-    	  this.addCard("protestant", "036");
-    	  this.addCard("protestant", "026");
-    	  this.addCard("protestant", "027");
-    	  this.addCard("protestant", "028");
-    	  this.addCard("papacy", "029");
-    	  this.addCard("papacy", "030");
-    	  this.addCard("papacy", "024");
-    	  this.addCard("papacy", "025");
+    	  this.addCard("papacy", "017");
+//    	  this.addCard("protestant", "036");
+//    	  this.addCard("protestant", "026");
+//    	  this.addCard("protestant", "027");
+//    	  this.addCard("protestant", "028");
+//    	  this.addCard("papacy", "029");
+//    	  this.addCard("papacy", "030");
+//    	  this.addCard("papacy", "024");
+//    	  this.addCard("papacy", "025");
 
     	  this.game.spaces['graz'].type = 'key';
     	  this.game.spaces['graz'].occupier = 'protestant';
@@ -20653,6 +20740,36 @@ return;
 
 
 
+  
+  returnDebaters(faction="papacy", type="uncommitted") {
+    let debaters = [];
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (faction == "papacy") {
+        if (this.game.state.debaters[i].faction == faction) {
+	  if (type == "uncommitted" && this.game.state.debaters[i].committed != 1) {
+	    debaters.push(this.game.state.debaters[i]);
+	  }
+	  if (type == "committed" && this.game.state.debaters[i].committed == 1) {
+	    debaters.push(this.game.state.debaters[i]);
+	  }
+	}
+      } else {
+        if (this.game.state.debaters[i].faction != "papacy") {
+	  if (type == "uncommitted" && this.game.state.debaters[i].committed != 1) {
+	    debaters.push(this.game.state.debaters[i]);
+	  }
+	  if (type == "committed" && this.game.state.debaters[i].committed == 1) {
+	    debaters.push(this.game.state.debaters[i]);
+	  }
+	}
+      }
+    }
+    return debaters;
+  }
+
+
+
+
   returnDiplomacyMenuOptions(player=null, faction=null) {
 
     let menu = [];
@@ -20898,7 +21015,7 @@ return;
 
   returnFactionAdminRating(faction="") {
     if (this.factions[faction]) {
-      return this.factions[faction].admin_rating;
+      return this.factions[faction].returnAdminRating();
     }
     return 0;
   }
@@ -20933,6 +21050,9 @@ return;
     }
     if (obj.calculateBonusVictoryPoints == null) {
       obj.calculateBonusVictoryPoints = function() { return 0; }
+    }
+    if (obj.returnAdminRating == null) {
+      obj.returnAdminRating = function() { return this.admin_rating; }
     }
     if (obj.calculateSpecialVictoryPoints == null) {
       obj.calculateSpecialVictoryPoints = function() { return 0; }
@@ -21198,6 +21318,7 @@ return;
     if (obj.besieged == null)           { obj.besieged = false; }
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.power == null)		{ obj.power = 0; }
     if (obj.key == null)		{ obj.key = name; }
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
@@ -21207,10 +21328,12 @@ return;
         let tile_f = "/his/img/tiles/debaters/" + obj.img;
         let tile_b = tile_f.replace('.svg', '_back.svg');
 	return `
-	  <div class="debater-card" style="background-image: url('${tile_f}'); background-size: cover"></div>	
+	  <div class="debater-card" id="${obj.key}" style="background-image: url('${tile_f}'); background-size: cover"></div>	
 	`;
       }
     }
+
+console.log(` importing ${name} with power ${obj.power}`);
 
     this.addEvents(obj);
     this.debaters[name] = obj;
@@ -22320,7 +22443,8 @@ return;
       if (this.isSpaceInUnrest(space)) {
         obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
       }
-      if (this.isBesieged(space)) {
+      if (this.isSpaceBesieged(space)) {
+alert("SPACE IS BESIEGED: " + space.key);
         obj.innerHTML += `<img class="seige" src="/his/img/tiles/seige.png" />`;
       }
 

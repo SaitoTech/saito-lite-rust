@@ -10,7 +10,12 @@
       cards_bonus	:	0,
       returnCardsSaved  :       function(game_mod) {
  
-        let base = 2;
+        let base = 0;
+
+        if (game_mod.game.state.leaders.charles_v == 1) { base += 2; }
+
+        return base;
+
         return base; 
 
       },
@@ -36,7 +41,7 @@
           default: { base = 0; break; }
         }
 
-        if (game_mod.game.state.leaders_charles_v == 1) { base += 0; }
+        if (game_mod.game.state.leaders.charles_v == 1) { base += 0; }
        
         // TODO - bonus for home spaces under protestant control
         return base;

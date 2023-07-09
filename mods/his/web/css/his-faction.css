@@ -103,6 +103,8 @@
 .faction_sheet {
   width: 1240px;
   height: 800px;
+  max-height: 80vh;
+  max-width: calc(80vh * 1.55);
   background-image: url(/his/img/factions/protestant.png);
   background-size: contain;
 }
