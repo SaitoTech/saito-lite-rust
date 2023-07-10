@@ -91,7 +91,7 @@ class Storage {
     }
     if (peer != null) {
       peer.sendRequestWithCallback(message, data, function (res) {});
-      this.app.connection.emit("saito - save - transaction;", tx);
+      this.app.connection.emit("saito-save-transaction", tx);
       return;
     } else {
       this.app.network.sendRequestWithCallback(message, data, function (res) {});
