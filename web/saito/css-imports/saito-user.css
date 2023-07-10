@@ -65,6 +65,10 @@ Saito User
   grid-row-start: 2;
   grid-row-end: span 1;
   font-size: 1.4rem;
+  /* Added for all the publickeys in saito-userlines that overflow */ 
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .saito-user .saito-datetime {

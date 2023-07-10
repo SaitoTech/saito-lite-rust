@@ -57,6 +57,8 @@ This alows for a header with a header with title to be added without extra CSS
   padding: 0 1.25rem;
   cursor: default;
   align-items: center;
+  width: calc(100% - 2.5rem);
+  white-space: nowrap;
 }
 
 .saito-modal-menu .saito-modal-title .saito-user .saito-identicon-box {
@@ -356,6 +358,17 @@ This alows for a header with a header with title to be added without extra CSS
   }
 }
 
+@media only screen and (max-width: 525px) {
+  .saito-modal-menu .saito-modal-title .saito-user {
+    margin: 0;
+  }
+
+  .saito-modal-menu-option {
+    margin: 0 1rem;
+  }
+
+
+}
 
 /* not sure where this should be */
 
