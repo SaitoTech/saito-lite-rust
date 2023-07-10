@@ -615,14 +615,14 @@ class Tweet {
       const heartIcon = document.querySelector(
         `.tweet-${this.tx.transaction.sig} .tweet-like-button .heart-icon`
       );
-      heartIcon.onclick = (e) => {
-        if (heartIcon.classList.contains("liked")) {
-          heartIcon.classList.remove("liked");
-          setTimeout(() => {
-            heartIcon.classList.add("liked");
-          });
-        } else {
+      heartIcon.onclick = async (e) => {
+        if (!heartIcon.classList.contains("liked")) {
           heartIcon.classList.add("liked");
+        }else{
+          setTimeout(() => {
+            heartIcon.classList.remove("liked");
+            heartIcon.classList.add("liked");
+          }, 5);
         }
 
         e.preventDefault();
@@ -636,10 +636,8 @@ class Tweet {
         let obj = document.querySelector(
           `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`
         );
-        obj.innerHTML = parseInt(obj.innerHTML) + 1;
-        if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
-          obj.parentNode.classList.remove("saito-tweet-no-activity");
-          obj.parentNode.classList.add("saito-tweet-activity");
+        if (obj) {
+          obj.innerHTML = parseInt(obj.innerHTML) + 1;
         }
       };
 
@@ -672,14 +670,9 @@ class Tweet {
         e.stopImmediatePropagation();
 
         this.mod.sendFlagTransaction(this.app, this.mod, { sig: this.tx.transaction.sig }, this.tx);
-        let obj = document.querySelector(`.tweet-flag-${this.tx.transaction.sig}`);
-        if (obj) {
-          obj.classList.add("saito-tweet-activity");
-        }
-
         this.flagged = 1;
-        obj = document.querySelector(`.tweet-${this.tx.transaction.sig}`);
 
+        let obj = document.querySelector(`.tweet-${this.tx.transaction.sig}`);
         if (obj) {
           obj.style.display = "none";
         }

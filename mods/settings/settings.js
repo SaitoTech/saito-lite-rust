@@ -1,6 +1,8 @@
 var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/modtemplate');
 const SettingsAppspace = require('./lib/appspace/main');
+
+//Is this deprecated???
 const SettingsAppspaceSidebar = require('./lib/appspace-sidebar/main');
 const SettingsThemeSwitcherOverlay = require('./lib/theme-switcher-overlay');
 const localforage = require("localforage");

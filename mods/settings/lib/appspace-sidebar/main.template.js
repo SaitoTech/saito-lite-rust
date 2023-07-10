@@ -1,3 +1,4 @@
+//Is this deprecated???
 module.exports = SettingsAppspaceSidebarTemplate = (app, mod) => {
 
   return `
