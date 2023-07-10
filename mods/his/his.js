@@ -4385,11 +4385,28 @@ console.log("COUNCIL OF TRENT: " + JSON.stringify(his_self.game.state.council_of
     }
     deck['018'] = { 
       img : "cards/HIS-018.svg" , 
-      name : "Dragu" ,
+      name : "Dragut" ,
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
+      canEvent : function(his_self, faction) {
+        return 1;
+      },
+      onEvent : function(his_self, faction) {
+
+	// barbarossa dies, replaced by Dragut
+	let s = his_self.returnSpaceOfPersonage("ottoman", "barbarossa");
+	if (s != "") {
+	  let idx = his_self.returnIndexOfPersonageInSpace("ottoman", "barbarossa", s);
+	  if (idx > -1) {
+	    his_self.game.spaces[s].units["ottoman"].splice(idx, 1);
+	    his_self.addNavyLeader("ottoman", s, "dragut");
+	  }	  
+	}
+
+	return 1;
+      },
     }
     deck['019'] = { 
       img : "cards/HIS-019.svg" , 
@@ -4397,24 +4414,67 @@ console.log("COUNCIL OF TRENT: " + JSON.stringify(his_self.game.state.council_of
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
+      canEvent : function(his_self, faction) {
+        return 1;
+      },
       onEvent : function(his_self, faction) {
+
 	his_self.game.state.leaders.edward_vi = 1;
+	his_self.game.state.leaders.henry_viii = 0;
+
+	let placed = 0;
+
+        // henry_viii dies, replaced by dudley
+        let s = his_self.returnSpaceOfPersonage("england", "henry_viii");
+        if (s != "") {
+          let idx = his_self.returnIndexOfPersonageInSpace("england", "henry_viii", s);
+          if (idx > -1) {
+            his_self.game.spaces[s].units["england"].splice(idx, 1);
+            his_self.addArmyLeader("england", s, "dudley");
+	    placed = 1;
+          } 
+        }
+        
+	if (placed == 0) {
+          his_self.addArmyLeader("england", "london", "dudley");
+	}
+
 	return 1;
       },
     }
 
-/****
     deck['020'] = { 
       img : "cards/HIS-020.svg" , 
       name :"Henry II" ,
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
+      canEvent : function(his_self, faction) {
+        return 1;
+      },
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(his_self, faction) {
+
 	his_self.game.state.leaders.francis_i = 0;
 	his_self.game.state.leaders.henry_ii = 1;
+	let placed = 0;
+
+        // francis_i dies replaced by henry_ii
+        let s = his_self.returnSpaceOfPersonage("france", "francis_i");
+        if (s != "") {
+          let idx = his_self.returnIndexOfPersonageInSpace("france", "francis_i", s);
+          if (idx > -1) {
+            his_self.game.spaces[s].units["france"].splice(idx, 1);
+            his_self.addArmyLeader("france", s, "henry_ii");
+	    placed = 1;
+          } 
+        }
+        
+	if (placed == 0) {
+          his_self.addArmyLeader("france", "paris", "henry_ii");
+	}
+
 	return 1;
       },
     }
@@ -4424,12 +4484,37 @@ console.log("COUNCIL OF TRENT: " + JSON.stringify(his_self.game.state.council_of
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+        return 1;
+      },
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       onEvent : function(his_self, faction) {
-	his_self.game.state.leaders.henry_viii = 0;
 	his_self.game.state.leaders.edward_vi = 0;
 	his_self.game.state.leaders.mary_i = 1;
-	his_self.removeCardFromGame('021');
+
+	his_self.removeCardFromGame('019'); // remove edward_vi if still in deck
+
+	let placed = 0;
+	if (his_self.game.state.leaders.henry_viii == 1) {
+
+	  his_self.game.state.leaders.henry_viii = 0; 
+
+          // mary_i replaces edward_vi or henry_viii
+          let s = his_self.returnSpaceOfPersonage("england", "henry_viii");
+          if (s != "") {
+            let idx = his_self.returnIndexOfPersonageInSpace("england", "henry_viii", s);
+            if (idx > -1) {
+              his_self.game.spaces[s].units["england"].splice(idx, 1);
+              his_self.addArmyLeader("england", s, "dudley");
+	      placed = 1;
+            } 
+          }
+        
+	  if (placed == 0) {
+            his_self.addArmyLeader("france", "paris", "henry_ii");
+	  }
+	}
+
 	return 1;
       },
     }
@@ -4439,7 +4524,10 @@ console.log("COUNCIL OF TRENT: " + JSON.stringify(his_self.game.state.council_of
       ops : 2 ,
       turn : 7 ,
       type : "mandatory" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+        return 1;
+      },
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       onEvent : function(his_self, faction) {
 	his_self.game.state.leaders.leo_x = 0;
 	his_self.game.state.leaders.clement_vii = 0;
@@ -4456,7 +4544,10 @@ console.log("COUNCIL OF TRENT: " + JSON.stringify(his_self.game.state.council_of
       ops : 2 ,
       turn : 0 ,
       type : "mandatory" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+        return 1;
+      },
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       onEvent : function(his_self, faction) {
 	his_self.game.state.leaders.henry_viii = 0;
 	his_self.game.state.leaders.edward_vi = 0;
@@ -4734,7 +4825,7 @@ console.log("COUNCIL OF TRENT: " + JSON.stringify(his_self.game.state.council_of
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "field_battle") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('30')) {
+            if (his_self.game.deck[0].fhand[i].includes('030')) {
               return 1;
             }
           }
@@ -4755,6 +4846,35 @@ console.log("COUNCIL OF TRENT: " + JSON.stringify(his_self.game.state.council_of
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "move" || menu == "assault" || menu == "piracy") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('031')) {
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'foulweather', html : `<li class="option" id="foulweather">foul weather (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
+        if (menu == "move" || menu == "assault" || menu == "piracy") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('031')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, extra) {
+        if (menu == "move" || menu == "assault" || menu == "piracy") {
+	  alert("foul weather is complicated...");
+        }
+        return 1;
+      },
     }
     deck['032'] = { 
       img : "cards/HIS-032.svg" , 
@@ -5110,7 +5230,7 @@ console.log("COUNCIL OF TRENT: " + JSON.stringify(his_self.game.state.council_of
 	    $('.option').off();
 	    let action = $(this).attr("id");
 
-            his_self.addMove("ops\t"+faction+"\t"+"004"+"\t"+2);
+            his_self.addMove("ops\t"+faction+"\t"+"040"+"\t"+2);
             his_self.addMove("declare_war\t"+faction+"\t"+action);
 	    his_self.endTurn();
 
@@ -5199,8 +5319,6 @@ console.log("COUNCIL OF TRENT: " + JSON.stringify(his_self.game.state.council_of
 	if (count >= (total/2)) {
 	  double_vp = 1;
 	}
-
-console.log(faction + " has " + total + " home spaces, protestant count is " + count + " for " + (double_vp+1) + " VP");
 
 	//
 	//
@@ -7327,7 +7445,7 @@ alert("NOT IMPLEMENTED");
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
-****/
+
     for (let key in deck) {
       deck[key] = this.addEvents(deck[key]);
     }
