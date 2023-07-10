@@ -1,12 +1,7 @@
-class RealmsDeck {
 
 	////////////////////////////////
 	/// Cards and Card Functions ///
 	////////////////////////////////
-
-	/*
-	Master list / definition of all legal cards that may appear in the game
-	*/
 	returnCards() {
 		var deck = {};
 
@@ -573,4 +568,5 @@ returnGreenDeck() {
 */
 }
 
-module.exports = RealmsDeck;
+
+

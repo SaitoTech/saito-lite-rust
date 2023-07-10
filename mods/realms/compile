@@ -1,0 +1,24 @@
+
+#
+# class constructor
+#
+cat ./src/realms-start.js > ./realms.js
+cat ./src/realms-init.js > ./realms.js
+cat ./src/realms-gameloop.js > ./realms.js
+cat ./src/realms-player.js > ./realms.js
+cat ./src/realms-state.js > ./realms.js
+cat ./src/realms-display.js > ./realms.js
+cat ./src/realms-cards.js > ./realms.js
+
+#
+#
+#do
+#  cat $file >> ./twilight.js
+#done
+#
+#
+cat ./src/realms-end.js >> ./realms.js
+
+
+npm run compile
+
