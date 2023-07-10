@@ -235,7 +235,7 @@ class Post {
       data["images"] = post_self.images;
     }
 
-    console.log("extracted keys ", keys, "text ", text, "this.tweet", this.tweet);
+    // console.log("extracted keys ", keys, "text ", text, "this.tweet", this.tweet);
     let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
     console.log("new transaction ", newtx);

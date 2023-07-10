@@ -1217,7 +1217,13 @@ class RedSquare extends ModTemplate {
       console.log("after sending tx ////////////");
       let server = (await app.network.getPeers())[0];
       console.log("serveer ", server);
-      let recipient = [...keys, this.publicKey, server.publicKey];
+      let peers = [];
+      let p = await app.network.getPeers();
+      console.log("peers ", p);
+      for (let i = 0; i < p.length; i++) {
+        peers.push(p[i].publicKey);
+      }
+      let recipient = [...peers, this.publicKey, server.publicKey];
       redsquare_self.app.connection.emit("relay-send-message", {
         recipient,
         request: obj.request,
