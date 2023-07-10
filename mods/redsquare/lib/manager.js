@@ -26,7 +26,7 @@ class TweetManager {
       async (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            this.loader.render();
+            // this.loader.render();
 
             //
             // load more tweets

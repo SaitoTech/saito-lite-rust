@@ -5,7 +5,8 @@ const Link = require("./link");
 const Image = require("./image");
 const Post = require("./post");
 const JSON = require("json-bigint");
-const Transaction = require("../../../lib/saito/transaction");
+const Factory = require("../../../lib/saito/factory").default;
+const Transaction = require("../../../lib/saito/transaction").default;
 
 class Tweet {
   constructor(app, mod, container = "", tx = null) {
@@ -49,7 +50,8 @@ class Tweet {
     if (!this.tx.optional.thread_id) {
       this.tx.optional.thread_id = "";
     }
-    let txmsg = tx.returnMessage();
+    console.log(this.tx);
+    let txmsg = this.tx.returnMessage();
     //
     // comments will specify parent and thread ids, so we should capture that in the optional
     // field here in the constructor so that we can guarantee they exist
@@ -138,8 +140,7 @@ class Tweet {
     // retweets
     //
     if (this.retweet_tx != null) {
-      let newtx = new Transaction();
-      newtx.deserialize_from_web(this.app, this.retweet_tx);
+      let newtx = Transaction.deserialize(this.retweet_tx, new Factory());
       this.retweet = new Tweet(this.app, this.mod, `.tweet-preview-${this.tx.signature}`, newtx);
       this.retweet.is_retweet = true;
       this.retweet.show_controls = 0;
@@ -169,7 +170,7 @@ class Tweet {
 
   async init(app, mod) {
     // let tx = this.tx
-    let txmsg = await this.tx.returnMessage();
+    let txmsg = this.tx.returnMessage();
 
     //
     // userline will be set to this in template if not specified
@@ -199,8 +200,8 @@ class Tweet {
     // retweets
     //
     if (this.retweet_tx != null) {
-      let newtx = new Transaction();
-      newtx.deserialize_from_web(this.app, this.retweet_tx);
+      let newtx = Transaction.deserialize(this.retweet_tx, new Factory());
+      console.log("newer tx ", newtx);
       this.retweet = new Tweet(this.app, this.mod, `.tweet-preview-${this.tx.signature}`, newtx);
       this.retweet.is_retweet = true;
       this.retweet.show_controls = 0;
@@ -961,7 +962,7 @@ class Tweet {
             this.updated_at = tweet.created_at;
           }
         }
-        let dt = app.browser.formatDate(this.updated_at);
+        let dt = this.app.browser.formatDate(this.updated_at);
         if (this.userline == "") {
           this.userline =
             "new reply on " +

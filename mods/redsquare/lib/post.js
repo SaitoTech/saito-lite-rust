@@ -172,8 +172,9 @@ class Post {
 
     if (this.tweet != null) {
       for (let i = 0; i < this.tweet.tx.to.length; i++) {
-        if (!keys.includes(this.tweet.tx.to[i].add)) {
-          keys.push(this.tweet.tx.to[i].add);
+        if (!keys.includes(this.tweet.tx.to[i].publicKey)) {
+          console.log(this.tweet.tx.to[i]);
+          keys.push(this.tweet.tx.to[i].publicKey);
         }
       }
     }
@@ -196,8 +197,8 @@ class Post {
     if (post_self.tweet) {
       if (post_self.tweet.tx) {
         for (let i = 0; i < post_self.tweet.tx.to.length; i++) {
-          if (!keys.includes(post_self.tweet.tx.to[i].add)) {
-            keys.push(post_self.tweet.tx.to[i].add);
+          if (!keys.includes(post_self.tweet.tx.to[i].publicKey)) {
+            keys.push(post_self.tweet.tx.to[i].publicKey);
           }
         }
       }
@@ -205,8 +206,8 @@ class Post {
 
     if (this.tweet != null) {
       for (let i = 0; i < this.tweet.tx.to.length; i++) {
-        if (!keys.includes(this.tweet.tx.to[i].add)) {
-          keys.push(this.tweet.tx.to[i].add);
+        if (!keys.includes(this.tweet.tx.to[i].publicKey)) {
+          keys.push(this.tweet.tx.to[i].publicKey);
         }
       }
     }
@@ -227,14 +228,17 @@ class Post {
     }
 
     if (source == "Retweet") {
-      data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);
+      data.retweet_tx = post_self.tweet.tx.serialize();
     }
 
     if (post_self.images.length > 0) {
       data["images"] = post_self.images;
     }
 
+    console.log("extracted keys ", keys, "text ", text, "this.tweet", this.tweet);
     let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
+
+    console.log("new transaction ", newtx);
 
     //
     // move to the top
@@ -255,7 +259,7 @@ class Post {
       let rparent2 = rparent;
       while (this.mod.returnTweet(rparent2.parent_id)) {
         let x = this.mod.returnTweet(rparent2.parent_id);
-        let qs = ".tweet-" + x.tx.transaction.sig;
+        let qs = ".tweet-" + x.tx.signature;
         if (document.querySelector(qs)) {
           document.querySelector(qs).remove();
         }

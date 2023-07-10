@@ -1650,11 +1650,11 @@ class RedSquare extends ModTemplate {
           //
           try {
             //Prefer our locally cached tweets to the webServer ones
-            if (tweets) {
+            if (this.tweets) {
               console.log("Using Server Cached Tweets");
-              for (let z = 0; z < tweets.length; z++) {
+              for (let z = 0; z < this.tweets.length; z++) {
                 // let newtx = new saito.default.transaction();
-                let newtx = Transaction.deserialize(tweets[z], new Factory());
+                let newtx = Transaction.deserialize(this.tweets[z], new Factory());
                 let promise = this.addTweet(newtx);
                 promises.push(promise);
               }

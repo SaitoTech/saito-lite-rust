@@ -2,9 +2,7 @@ const RedSquareMainTemplate = require("./main.template");
 const TweetManager = require("./manager");
 
 class RedSquareMain {
-
   constructor(app, mod, container = "") {
-
     this.app = app;
     this.mod = mod;
     this.container = container;
@@ -33,8 +31,9 @@ class RedSquareMain {
     });
     // when someone adds a tweet at top -- scroll up and render
     this.app.connection.on("redsquare-home-tweet-prepend-render-request", async (tweet) => {
-     // document.querySelector('.tweet-manager').scroll({ top: 0, left: 0, behavior: 'smooth' });
+      // document.querySelector('.tweet-manager').scroll({ top: 0, left: 0, behavior: 'smooth' });
       tweet.render(true); // prepend = true
+      this.manager.render();
     });
     this.app.connection.on("redsquare-notifications-render-request", async () => {
       this.mod.notifications_last_viewed_ts = new Date().getTime();
@@ -64,19 +63,24 @@ class RedSquareMain {
       alert("5");
     });
 
-    this.app.connection.on("redsquare-home-tweet-and-critical-child-append-render-request", (tweet) => {
-      alert("7");
-    });
+    this.app.connection.on(
+      "redsquare-home-tweet-and-critical-child-append-render-request",
+      (tweet) => {
+        alert("7");
+      }
+    );
     // this is triggered when you reply to a tweet -- it pushes tweet and your reply to top, or should
-    this.app.connection.on("redsquare-home-tweet-and-critical-child-prepend-render-request", (tweet) => {
-      this.app.connection.emit("redsquare-home-tweet-render-request", (tweet));
-    });
+    this.app.connection.on(
+      "redsquare-home-tweet-and-critical-child-prepend-render-request",
+      (tweet) => {
+        this.app.connection.emit("redsquare-home-tweet-render-request", tweet);
+      }
+    );
     this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {
       //alert("9");
     });
 
     this.app.connection.on("redsquare-component-render-request", (obj) => {
-
       alert("12");
 
       let hash = obj.hash;
@@ -92,7 +96,9 @@ class RedSquareMain {
             if (mod.returnSlug() === hash) {
               document.querySelector(".saito-main").innerHTML = "";
               mod.renderInto(".saito-main");
-              document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
+              document
+                .querySelector(".saito-container")
+                .scroll({ top: 0, left: 0, behavior: "smooth" });
               if (mod.canRenderInto(".saito-sidebar.right")) {
                 document.querySelector(".saito-sidebar.right").innerHTML = "";
                 mod.renderInto(".saito-sidebar.right");
@@ -102,12 +108,9 @@ class RedSquareMain {
         }
       }
     });
-
   }
 
-
   async render() {
-
     if (document.querySelector(".saito-container")) {
       this.app.browser.replaceElementBySelector(RedSquareMainTemplate(), ".saito-container");
     } else {
@@ -117,9 +120,7 @@ class RedSquareMain {
     this.attachEvents();
   }
 
-
   attachEvents() {
-
     var scrollableElement = document.querySelector(".saito-container");
     var sidebar = document.querySelector(".saito-sidebar.right");
     var scrollTop = 0;
@@ -157,8 +158,6 @@ class RedSquareMain {
       scrollTop = scrollableElement.scrollTop;
     });
   }
-
 }
 
 module.exports = RedSquareMain;
-
