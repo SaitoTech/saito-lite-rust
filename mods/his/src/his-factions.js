@@ -6,6 +6,13 @@
     return false;
   }
 
+  returnFactionAdminRating(faction="") {
+    if (this.factions[faction]) {
+      return this.factions[faction].returnAdminRating();
+    }
+    return 0;
+  }
+ 
   returnFactionName(f) {
     if (this.factions[f]) {
       return this.factions[f].name;
@@ -21,6 +28,7 @@
     if (obj.key == null)	        { obj.key = name; }
     if (obj.ruler == null)		{ obj.ruler = ""; }
     if (obj.capitals == null)	        { obj.capitals = []; }
+    if (obj.admin_rating == null)	{ obj.admin_rating = 0; } // cards "holdable"
     if (obj.cards_bonus == null)	{ obj.cards_bonus = 0; }
     if (obj.vp == null)			{ obj.vp = 0; }
     if (obj.vp_base == null)		{ obj.vp_base = 0; }
@@ -28,11 +36,16 @@
     if (obj.vp_bonus == null)		{ obj.vp_bonus = 0; }
     if (obj.allies == null)		{ obj.allies = []; }
     if (obj.minor_allies == null)	{ obj.minor_allies = []; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.passed == null)		{ obj.passed = false; }
     if (obj.calculateBaseVictoryPoints == null) {
       obj.calculateBaseVictoryPoints = function() { return 0; }
     }
     if (obj.calculateBonusVictoryPoints == null) {
       obj.calculateBonusVictoryPoints = function() { return 0; }
+    }
+    if (obj.returnAdminRating == null) {
+      obj.returnAdminRating = function() { return this.admin_rating; }
     }
     if (obj.calculateSpecialVictoryPoints == null) {
       obj.calculateSpecialVictoryPoints = function() { return 0; }

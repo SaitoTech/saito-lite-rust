@@ -19,6 +19,7 @@
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.loaned == null)             { obj.loaned = false; }
     if (obj.key == null)                { obj.key = name; }
+    if (obj.locked == null)		{ obj.locked = false; }
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
@@ -164,6 +165,7 @@
     if (obj.besieged == null)           { obj.besieged = false; }
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.power == null)		{ obj.power = 0; }
     if (obj.key == null)		{ obj.key = name; }
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
@@ -173,10 +175,12 @@
         let tile_f = "/his/img/tiles/debaters/" + obj.img;
         let tile_b = tile_f.replace('.svg', '_back.svg');
 	return `
-	  <div class="debater-card" style="background-image: url('${tile_f}'); background-size: cover"></div>	
+	  <div class="debater-card" id="${obj.key}" style="background-image: url('${tile_f}'); background-size: cover"></div>	
 	`;
       }
     }
+
+console.log(` importing ${name} with power ${obj.power}`);
 
     this.addEvents(obj);
     this.debaters[name] = obj;

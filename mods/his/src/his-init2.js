@@ -58,6 +58,7 @@ console.log("\n\n\n\n");
 	this.addRegular("protestant", "venice", 4);
 	this.addRegular("papacy", "ravenna", 2);
 	this.setAllies("protestant", "venice");
+  	this.addUnrest("graz");
 
 
 	// OTTOMAN

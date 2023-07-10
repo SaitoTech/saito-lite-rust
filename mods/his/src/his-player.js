@@ -106,6 +106,8 @@
       players[i].tmp_roll_modifiers = [];
       players[i].factions = [];
       players[i].factions.push(rf);
+      players[i].factions_passed = [];
+      players[i].factions_passed.push(false); // faction not passed
       players[i].captured = [];
       players[i].num = i;
 
@@ -124,12 +126,15 @@
       for (let i = 0; i < players.length; i++) {
 	if (players[i].factions[0] === "protestant") {
 	  players[i].factions.push("england");
+	  players[i].factions_passed.push(false);
 	}
 	if (players[i].factions[0] === "papacy") {
 	  players[i].factions.push("hapsburg");
+	  players[i].factions_passed.push(false);
 	}
 	if (players[i].factions[0] === "france") {
 	  players[i].factions.push("ottoman");
+	  players[i].factions_passed.push(false);
 	}
       }
     }
@@ -138,9 +143,11 @@
       for (let i = 0; i < players.length; i++) {
 	if (players[i].factions[0] === "protestant") {
 	  players[i].factions.push("england");
+	  players[i].factions_passed.push(false);
 	}
 	if (players[i].factions[0] === "papacy") {
 	  players[i].factions.push("hapsburg");
+	  players[i].factions_passed.push(false);
 	}
       }
     }
@@ -149,6 +156,7 @@
       for (let i = 0; i < players.length; i++) {
 	if (players[i].factions[0] === "protestant") {
 	  players[i].factions.push("england");
+	  players[i].factions_passed.push(false);
 	}
       }
     }
@@ -167,6 +175,21 @@
     this.game.state.tmp_bonus_protestant_translation_english_zone = 0;
     this.game.state.tmp_bonus_papacy_burn_books = 0;
 
+    for (let i = 0; i < this.game.state.players_info[player_num-1].factions.length; i++) {
+      this.game.state.players_info[player_num-1].factions_passed[i] = false;
+    }
+  }
+
+  returnPlayerInfoFaction(faction) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+	if (this.game.state.players_info[i].factions[z].key == faction) {
+	  return this.game.state.players_info[i].factions[z];
+	}
+      }
+    }
+
+    return null;
   }
 
   //
@@ -884,7 +907,14 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
-    this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
+    let cards = [];
+    for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length;i++) {
+      cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
+    }
+    cards.push("pass");
+
+
+    this.updateStatusAndListCards("Select a Card: ", cards);
     this.attachCardboxEvents((card) => {
       this.playerPlayCard(card, this.game.player, faction);
     });  
@@ -943,8 +973,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 	  // move in the units
 	  for (let i = 0; i < units_to_move.length; i++) {
 	    let ui = units_to_move[i];
-	    let tf = units_available[ui].faction;
-	    let tu = units_available[ui].unit_idx;
+	    let tf = available_units[ui].faction;
+	    let tu = available_units[ui].unit_idx;
 	    fa[tf].push(tu);
 	  }
 
@@ -984,6 +1014,16 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
   }
 
   playerPlayCard(card, player, faction) {
+
+    //
+    // maybe we are passing
+    //
+    if (card === "pass") {
+      this.addMove("pass\t"+faction);
+      this.endTurn();
+      return;
+    }
+
 
     //
     // mandatory event cards effect first, then 2 OPS
@@ -1456,10 +1496,12 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
-	      if (units_to_move.includes(parseInt(i))) {
-	        html += `<li class="option" style="font-weight:bold" id="${i}">*${space.units[faction][i].name}*</li>`;
-	      } else {
-	        html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+	      if (space.units[faction][i].locked == false) {
+	        if (units_to_move.includes(parseInt(i))) {
+	          html += `<li class="option" style="font-weight:bold" id="${i}">*${space.units[faction][i].name}*</li>`;
+	        } else {
+	          html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+	        }
 	      }
 	    }
 	  }
@@ -1858,10 +1900,12 @@ console.log("units length: " + space.units[defender].length);
 
       for (let i = 0; i < space.units[defender].length; i++) {
         if (space.units[defender][i].land_or_sea === "land" || space.units[defender][i].land_or_sea === "both") {
-          if (units_to_move.includes(parseInt(i))) {
-            html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
-          } else {
-            html += `<li class="option" id="${i}">${space.units[defender][i].name}</li>`;
+	  if (space.units[defender][i].locked == false) {
+            if (units_to_move.includes(parseInt(i))) {
+              html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
+            } else {
+              html += `<li class="option" id="${i}">${space.units[defender][i].name}</li>`;
+            }
           }
         }
       }
@@ -1869,6 +1913,15 @@ console.log("units length: " + space.units[defender].length);
       html += "</ul>";
 
       his_self.updateStatusWithOptions(msg, html);
+
+      let mobj = {
+	space : space ,
+	faction : defender ,
+	source : defender_spacekey ,
+	destination : spacekey ,
+      }
+
+      his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, onFinishSelect); // no destination interface
 
       $('.option').off();
       $('.option').on('click', function () {
@@ -2011,9 +2064,7 @@ console.log("units length: " + space.units[defender].length);
 
     if (ops < 2) { return 0; }
     let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
-console.log("SPACES WITH INFANTRY: " + JSON.stringify(spaces_with_infantry));
     for (let i = 0; i < spaces_with_infantry.length; i++) {
-console.log("SPACE: " + spaces_with_infantry[i]);
       if (his_self.game.spaces[spaces_with_infantry[i]].ports.length == 0) {
 	spaces_with_infantry.splice(i, 1);
 	i--;
@@ -2115,7 +2166,14 @@ console.log("SPACE: " + spaces_with_infantry[i]);
   canPlayerMoveFormationOverPass(his_self, player, faction) {
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_with_units.length; i++) {
-      if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) { return 1; }
+      if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) {
+        let any_unlocked_units = false;
+        for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
+  	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked == false) {
+	    return 1;
+	  }
+        }
+      }
     }
     return 0;
   }
@@ -2131,6 +2189,11 @@ console.log("SPACE: " + spaces_with_infantry[i]);
       function(space) {
 	for (let z in space.units) {
 	  if (space.units[z].length > 0 && z === faction) {
+	    let any_unlocked_units = false;
+	    for (let i = 0; i < spaces.units[z].length; i++) {
+	      if (space.units[z][i].locked == false) { any_unlocked_units = true; }
+	    }
+	    if (any_unlocked_units) { return 1; }
 	    if (space.pass) { if (space.pass.length > 0) { return 1; } }
           }
 	}
@@ -2401,7 +2464,14 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
     if (spaces_with_units.length > 0) { 
-      return 1;
+      let any_unlocked_units = false;
+      for (let i = 0; i < spaces_with_units.length; i++) {
+       for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
+	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked == false) {
+	    return 1;
+	  }
+	}
+      }
     }
     return 0;
   }
@@ -2494,7 +2564,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
-        if (his_self.game.spaces[conquerable_spaces[i]].besieged > 0) {
+        if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
 	  return 1;
 	}
       }
@@ -2508,8 +2578,14 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Space for Siege/Assault: ",
 
       function(space) {
-        if (!his_self.isSpaceControlled(space, faction)) {
+        if (!his_self.isSpaceControlled(space, faction) && his_self.returnFactionLandUnitsInSpace(faction, space) > 0 && space.besieged == 1) {
           if (his_self.game.spaces[space.key].type === "fortress") {
+  	    return 1;
+	  }
+          if (his_self.game.spaces[space.key].type === "electorate") {
+  	    return 1;
+	  }
+          if (his_self.game.spaces[space.key].type === "key") {
   	    return 1;
 	  }
         }

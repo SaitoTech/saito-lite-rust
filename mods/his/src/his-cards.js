@@ -1115,6 +1115,8 @@ alert("Not Implemented");
       },
       menuOptionActivated:  function(his_self, menu, player, extra) {
         if (menu === "debate") {
+	  his_self.addMove("discard\tprotestant\t007");
+	  his_self.addMove("NOTIFY\tHere I Stand played to substitute Luther into the Theological Debate");
 	  his_self.addMove("here_i_stand_response");
 	  his_self.endTurn();
         }
@@ -1650,6 +1652,78 @@ alert("Not Implemented");
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+        return 1;
+      },
+      onEvent : function(his_self, faction) {
+
+	his_self.game.state.council_of_trent = {};
+	his_self.game.state.council_of_trent.papacy = {};
+	his_self.game.state.council_of_trent.protestants = {};
+
+	his_self.game.queue.push("hide_overlay\tcouncil_of_trent");
+	his_self.game.queue.push("council_of_trent_results");
+	his_self.game.queue.push("show_overlay\tcouncil_of_trent");
+	his_self.game.queue.push("council_of_trent_protestants");
+	his_self.game.queue.push("show_overlay\tcouncil_of_trent");
+	his_self.game.queue.push("council_of_trent_papacy");
+	his_self.game.queue.push("show_overlay\tcouncil_of_trent");
+
+	return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] === "council_of_trent_add_debaters") {
+
+          his_self.game.queue.splice(qe, 1);
+	  
+	  let faction = mv[1];
+	  let debaters = mv[2];
+
+	  if (faction === "papacy") {
+	    his_self.game.state.council_of_trent.papacy.debaters = JSON.parse(debaters);
+	  } else {
+	    his_self.game.state.council_of_trent.protestants.debaters = JSON.parse(debaters);
+	  }
+
+console.log("COUNCIL OF TRENT: " + JSON.stringify(his_self.game.state.council_of_trent));
+
+	  return 1;
+
+	}
+
+        if (mv[0] === "council_of_trent_papacy") {
+
+          his_self.game.queue.splice(qe, 1);
+	  his_self.council_of_trent_overlay.render("papacy");
+
+	  return 0;
+
+	}
+
+        if (mv[0] === "council_of_trent_results") {
+
+          his_self.game.queue.splice(qe, 1);
+	  //
+	  // this adds stuff to the queue -- so we pass through
+	  //
+	  his_self.council_of_trent_overlay.render("results");
+
+	  return 1;
+
+	}
+
+        if (mv[0] === "council_of_trent_protestants") {
+
+          his_self.game.queue.splice(qe, 1);
+	  his_self.council_of_trent_overlay.render("protestants");
+
+	  return 0;
+
+        }
+
+	return 1;
+      },
     }
     deck['018'] = { 
       img : "cards/HIS-018.svg" , 
@@ -1671,6 +1745,8 @@ alert("Not Implemented");
 	return 1;
       },
     }
+
+/****
     deck['020'] = { 
       img : "cards/HIS-020.svg" , 
       name :"Henry II" ,
@@ -4593,7 +4669,7 @@ alert("NOT IMPLEMENTED");
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
-
+****/
     for (let key in deck) {
       deck[key] = this.addEvents(deck[key]);
     }

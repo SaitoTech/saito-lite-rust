@@ -194,7 +194,6 @@ class TweetManager {
   renderTweet(tweet) {
     this.intersectionObserver.disconnect();
 
-    this.showLoader();
 
     let myqs = `.tweet-manager`;
 
@@ -210,10 +209,19 @@ class TweetManager {
     this.mode = "single";
     this.profile.remove();
 
-    tweet.render();
+    //Show the basic tweet first
+    if (!tweet.parent_id) {
+      tweet.renderWithChildren();  
+    }
+    
+    this.showLoader();
 
-    this.mod.loadTweetChildren(null, tweet.tx.transaction.sig, () => {
-      tweet.renderWithChildren();
+    //Query the whole thread
+    let thread_id = tweet.thread_id || tweet.parent_id || tweet.tx.transaction.sig;
+
+    this.mod.loadTweetThread(null, thread_id, () => {
+      let root_tweet = this.mod.returnTweet(thread_id);
+      root_tweet.renderWithChildren();
       this.hideLoader();
     });
 
