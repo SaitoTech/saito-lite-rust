@@ -38,16 +38,15 @@ class Storage {
     throw new Error("Method not implemented.");
   }
 
-
   //
   // HOW THE STORAGE CLASS SAVES TXS
   //
   // modules call ---> app.storage.saveTransaction(tx, obj, peer))
   //    ---> saveTransaction() creates TX type="archive" / request="save" transaction
   //    ---> saveTransaction() directs this transaction to:
-  //                   	"localhost" 	==> its own archive module
-  //			peer 		==> this specific peer via offchain handlePeerTransaction() request)
-  //			null 		==> all peers via offchain handlePeerTransaction() request)
+  //                    "localhost"   ==> its own archive module
+  //      peer    ==> this specific peer via offchain handlePeerTransaction() request)
+  //      null    ==> all peers via offchain handlePeerTransaction() request)
   //    ---> peers receive via Archive module
   //    ---> peers save to DB
   //
@@ -56,14 +55,13 @@ class Storage {
   // modules call ---> app.storage.loadTransactions()
   //    ---> loadTransactions() creates TX type="archive" / request="load" transaction
   //    ---> loadTransactions() directs this transaction to:
-  //                   	"localhost" 	==> its own archive module
-  //			peer 		==> this specific peer via offchain handlePeerTransaction() request)
-  //			null 		==> all peers via offchain handlePeerTransaction() request)
+  //                    "localhost"   ==> its own archive module
+  //      peer    ==> this specific peer via offchain handlePeerTransaction() request)
+  //      null    ==> all peers via offchain handlePeerTransaction() request)
   //    ---> peers receive via Archive module
   //    ---> peers fetch from DB, return via callback or return TX
   //
-  async saveTransaction(tx, obj={}, peer=null) {
-
+  async saveTransaction(tx, obj = {}, peer = null) {
     const txmsg = tx.returnMessage();
     const message = "archive";
 
@@ -73,30 +71,36 @@ class Storage {
 
     data = Object.assign(data, obj);
 
-    if (!data.field1) { data.field1 = txmsg.type; }
-    if (!data.field2) { data.field2 = tx.transaction.from[0].add; }
-    if (!data.field3) { data.field3 = tx.transaction.to[0].add; }
+    if (!data.field1) {
+      data.field1 = txmsg.module;
+    }
+    if (!data.field2) {
+      data.field2 = tx.transaction.from[0].add;
+    }
+    if (!data.field3) {
+      data.field3 = tx.transaction.to[0].add;
+    }
 
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
-      if (archive_mod) { let res = archive_mod.saveTransaction(tx, data) };
+      if (archive_mod) {
+        let res = archive_mod.saveTransaction(tx, data);
+      }
       this.app.connection.emit("saito-save-transaction", tx);
       return;
     }
     if (peer != null) {
       peer.sendRequestWithCallback(message, data, function (res) {});
-      this.app.connection.emit("saito-save-transaction", tx);
+      this.app.connection.emit("saito - save - transaction;", tx);
       return;
     } else {
       this.app.network.sendRequestWithCallback(message, data, function (res) {});
       this.app.connection.emit("saito-save-transaction", tx);
       return;
     }
-
   }
 
-  async updateTransaction(tx, obj={}, peer=null) {
-
+  async updateTransaction(tx, obj = {}, peer = null) {
     const txmsg = tx.returnMessage();
     const message = "archive";
     let data: any = {};
@@ -106,7 +110,9 @@ class Storage {
 
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
-      if (archive_mod) { let res = archive_mod.updateTransaction(tx, obj) };
+      if (archive_mod) {
+        let res = archive_mod.updateTransaction(tx, obj);
+      }
       return;
     }
     if (peer != null) {
@@ -116,11 +122,9 @@ class Storage {
       this.app.network.sendRequestWithCallback(message, data, function (res) {});
       return;
     }
-
   }
 
-  loadTransactions(obj={}, mycallback, peer=null) {
-
+  loadTransactions(obj = {}, mycallback, peer = null) {
     let storage_self = this;
 
     const message = "archive";
@@ -133,7 +137,7 @@ class Storage {
       if (res) {
         for (let i = 0; i < res.length; i++) {
           let tx = new Transaction();
-	  tx.deserialize_from_web(this.app, res[i].tx);
+          tx.deserialize_from_web(this.app, res[i].tx);
           txs.push(tx);
         }
       }
@@ -142,22 +146,28 @@ class Storage {
 
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
-      if (archive_mod) { archive_mod.loadTransactions(obj, (res) => { internal_callback(res); }); }
+      if (archive_mod) {
+        archive_mod.loadTransactionsWithCallback(obj, (res) => {
+          internal_callback(res);
+        });
+      }
       return;
     }
 
     if (peer != null) {
-      peer.sendRequestWithCallback(message, data, function (res) { internal_callback(res); });
+      peer.sendRequestWithCallback(message, data, function (res) {
+        internal_callback(res);
+      });
       return;
     } else {
-      this.app.network.sendRequestWithCallback(message, data, function (res) { internal_callback(res); });
+      this.app.network.sendRequestWithCallback(message, data, function (res) {
+        internal_callback(res);
+      });
       return;
     }
-
   }
 
-  deleteTransactions(obj={} , mycallback = null , peer = null) {
-
+  deleteTransactions(obj = {}, mycallback = null, peer = null) {
     const message = "archive";
     let data: any = {};
     data.request = "delete";
@@ -167,8 +177,6 @@ class Storage {
       mycallback();
     });
   }
-
-
 
   async resetOptions() {
     try {
@@ -191,7 +199,7 @@ class Storage {
         localStorage.setItem("options", JSON.stringify(this.app.options));
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -206,7 +214,7 @@ class Storage {
         return localStorage.getItem("options");
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -218,7 +226,6 @@ class Storage {
     }
     return null;
   }
-
 
   /**
    * DUMMY FUNCTIONS IMPLEMENTED BY STORAGE-CORE IN ./core/storage-core.js
