@@ -437,6 +437,7 @@ console.log("---------------------");
             // save contacts(keys)
             let keys = this.app.options.keys;
             let chats = this.app.options.chat;
+            let leagues = this.app.options.leagues;
 
             // save theme options
             let theme = this.app.options.theme;
@@ -479,6 +480,7 @@ console.log("---------------------");
             // keep contacts (keys)
             this.app.options.keys = keys;
             this.app.options.chat = chats;
+            this.app.options.leagues = leagues;
 
             // keep theme
             this.app.options.theme = theme;

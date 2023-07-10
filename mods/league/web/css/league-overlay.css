@@ -326,8 +326,8 @@ span.attention {
 
 @media screen and (max-width: 600px) {
   .league-overlay-container {
-    width: calc(100vw - 2px);
-    max-height: 98vh;
+    width: 100vw;
+    max-height: 95vh;
   }
   .contactAdminWarning {
     min-height: 0;
