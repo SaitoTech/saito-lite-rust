@@ -583,6 +583,7 @@ class Server {
         res.end(buffer);
       } catch (err) {
         console.log("ERROR: server cannot feed out block");
+        res.sendStatus(404);
       }
     });
 
