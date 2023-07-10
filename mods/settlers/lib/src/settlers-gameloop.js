@@ -674,9 +674,11 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 
           //Or, choose menu option
           $(".option").off();
-          $(".option").on("click", function () {
+          $(".option").on("click", async function () {
 
-            settlers_self.updateStatus("sending move...");
+            console.log("clicking on options");
+
+            await settlers_self.updateStatus("sending move...");
             $(this).addClass("disabled");
 
             let choice = $(this).attr("id");

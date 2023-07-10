@@ -244,6 +244,7 @@ console.log("DONE GENERATING MAP");
 
       $(".option").off();
       $(".option").on("click", function () {
+        console.log("clicked on option 8");
         let res = $(this).attr("id");
         cardsToGain.push(res);
         remaining--;
@@ -284,6 +285,7 @@ console.log("DONE GENERATING MAP");
     settlers_self.displayCardfan();
     $(".option").off();
     $(".option").on("click", function () {
+      console.log("clicked on option 9");
       let res = $(this).attr("id");
       settlers_self.addMove(`monopoly\t${player}\t${cardname}\t${res}`);
       settlers_self.endTurn();
@@ -549,7 +551,7 @@ console.log("DONE GENERATING MAP");
   }
 
 
-  async updateStatus(str, hide_info = 0) {
+  updateStatus(str, hide_info = 0) {
 
     try {
 
@@ -565,7 +567,7 @@ console.log("DONE GENERATING MAP");
 
       if (this.browser_active == 1) {
         let status_obj = document.querySelector(".hud-body .status");
-        if (this.game.players.includes(await this.app.wallet.getPublicKey())) {
+        if (this.game.players.includes(this.publicKey)) {
           status_obj.innerHTML = str;
           $(".status").disableSelection();
         }

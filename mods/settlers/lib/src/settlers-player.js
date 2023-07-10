@@ -64,7 +64,7 @@
     // Select the target spot
     //
     playerPlayBandit() {
-        this.updateStatus("Move the bandit...");
+        //this.updateStatus("Move the bandit...");
         let settlers_self = this;
         $(".sector-container").addClass("rhover");
         $(".sector-container").off();
@@ -157,7 +157,7 @@
       } else {
         /* During game, must build roads to open up board for new settlements*/
         if (canBackUp){
-          this.updateStatus(`<div class="tbd">You may build a ${this.c1.name}...</div><ul><li class="undo">cancel</li></ul>`);
+          //this.updateStatus(`<div class="tbd">You may build a ${this.c1.name}...</div><ul><li class="undo">cancel</li></ul>`);
           $(".undo").on("click",function(){
             //Make sure the confirm popup goes away
             $(".action").off();
@@ -169,7 +169,7 @@
             settlers_self.endTurn();
           });
         }else{
-          this.updateStatus(`<div class="tbd">You may build a ${this.c1.name}...</div>`);
+          //this.updateStatus(`<div class="tbd">You may build a ${this.c1.name}...</div>`);
         }
 
         let building_options = this.returnCitySlotsAdjacentToPlayerRoads(this.game.player);
@@ -404,6 +404,8 @@
 
       $(".option").off();
       $(".option").on("click", function () {
+
+        console.log("clicked on option 2");
         let id = $(this).attr("id");
         if (id === "pass") {
           settlers_self.addMove("end_turn\t" + settlers_self.game.player);
@@ -479,6 +481,7 @@
 
       $(".option").off();
       $(".option").on("click", function () {
+        console.log("clicked on option 3");
         let card = $(this).attr("id"); //this is either "cancel" or the card's deck index (i.e. "11")
         let cardobj = settlers_self.game.deck[0].cards[settlers_self.game.deck[0].hand[card]];
 
@@ -581,6 +584,7 @@
                       
         $(".option").off();
         $(".option").on("click", function () {
+          console.log("clicked on option 4");
           let res = $(this).attr("id");
           if (res == "cancel") {
             settlers_self.endTurn();
@@ -600,6 +604,7 @@
 
           $(".option").off();
           $(".option").on("click", function () {
+            console.log("clicked on option 5");
             let newRes = $(this).attr("id");
             if (newRes == "cancel") {
               settlers_self.endTurn();
@@ -615,6 +620,7 @@
               settlers_self.updateStatus(html, 1);
               $(".option").off();
               $(".option").on("click", function () {
+                console.log("clicked on option 6");
                 let choice = $(this).attr("id");
                 if (choice == "yes") {
                   settlers_self.addMove(
@@ -644,6 +650,7 @@
         settlers_self.updateStatus(ackhtml,1);
         $(".option").off();
         $(".option").on("click",function(){
+          console.log("clicked on option 7");
           settlers_self.playerPlayMove();
           return;
         });
