@@ -53,7 +53,7 @@
 		for (let key in deck1) { this.importCard(key, deck1[key]); }
 		for (let key in deck2) { this.importCard(key, deck2[key]); }
 
-		if (this.browser_active) { this.render(); }
+		if (this.browser_active) { this.render(this.app); }
 
 	}
 

@@ -51,7 +51,7 @@ class Realms extends GameTemplate {
 		this.log.render(app, this);
 		this.hud.render(app, this);
 
-		this.render();
+		this.board.render();
 
 	}
 
@@ -111,7 +111,7 @@ class Realms extends GameTemplate {
 		for (let key in deck1) { this.importCard(key, deck1[key]); }
 		for (let key in deck2) { this.importCard(key, deck2[key]); }
 
-		if (this.browser_active) { this.render(); }
+		if (this.browser_active) { this.render(this.app); }
 
 	}
 

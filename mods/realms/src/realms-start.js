@@ -51,7 +51,7 @@ class Realms extends GameTemplate {
 		this.log.render(app, this);
 		this.hud.render(app, this);
 
-		this.render();
+		this.board.render();
 
 	}
 
