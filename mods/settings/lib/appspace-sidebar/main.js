@@ -1,5 +1,6 @@
 const SettingsAppspaceSidebarTemplate = require('./main.template.js');
 
+//Is this deprecated???
 class SettingsAppspaceSidebar {
 
   constructor(app, mod, container="") {

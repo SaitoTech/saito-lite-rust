@@ -911,15 +911,13 @@ class RedSquare extends ModTemplate {
 
               this.app.storage.updateTransaction(
                 tweet.tx,
-                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() },
-                "localhost"
+                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() }
               );
               tweet.renderReplies();
             } else {
               this.app.storage.updateTransaction(
                 tweet.tx,
-                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() },
-                "localhost"
+                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() }
               );
             }
           }
@@ -947,15 +945,13 @@ class RedSquare extends ModTemplate {
               tweet2.tx.optional.num_retweets++;
               this.app.storage.updateTransaction(
                 tweet2.tx,
-                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() },
-                "localhost"
+                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() }
               );
               tweet2.renderRetweets();
             } else {
               this.app.storage.updateTransaction(
                 tweet2.tx,
-                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() },
-                "localhost"
+                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() }
               );
             }
           }
@@ -1172,10 +1168,13 @@ class RedSquare extends ModTemplate {
     // servers
     //
     let txmsg = tx.returnMessage();
-    let sql = `UPDATE tweets SET num_likes = num_likes + 1 WHERE sig = $sig`;
+    let sql = `UPDATE tweets SET num_likes = num_likes + 1 , updated_at = $timestamp WHERE sig = $sig`;
     let params = {
       $sig: txmsg.data.sig,
+      $timestamp: tx.transaction.ts,
     };
+
+
     await app.storage.executeDatabase(sql, params, "redsquare");
 
     //

@@ -18,7 +18,7 @@ class RedSquareImage {
     let template = RedSquareImageTemplate(this.app, this.mod, this.images);
     let sig = this.tweet.tx.transaction.sig;
 
-    let expected_width = "100%";
+    let expected_width = 520;
     let expected_height = "auto";
 
     //
@@ -30,18 +30,23 @@ class RedSquareImage {
       let tweet = this.tweet;
 
       img.onload = function () {
-
+        //console.log("Image load");
         let available_width_qs = ".tweet-" + tweet.tx.transaction.sig + " > .tweet-body .tweet-main";
         if (document.querySelector(available_width_qs)) {
           let obj = document.querySelector(available_width_qs);
           expected_width = parseInt(obj.getBoundingClientRect().width);
+          //console.log("Column Width: " + expected_width);
+        }else{
+          //console.log("QS not found");
         }
 
-        expected_width = parseInt(expected_width);
-        expected_height = parseInt((expected_width / img.width) * img.height);
+        let aspect_ratio = img.width / img.height;
+        //console.log("Aspect: " + aspect_ratio);
 
-        while (Math.floor(expected_height) > expected_width) {
-          expected_height = expected_width * 0.69;
+        if (img.height >= img.width){
+          expected_height = expected_width;
+        }else{
+          expected_height = expected_width / aspect_ratio;
         }
 
         let qs = ".tweet-" + sig + " > .tweet-body  .tweet-picture .image-" + i;
@@ -49,6 +54,7 @@ class RedSquareImage {
         if (obj) {
           obj.style.maxHeight = Math.floor(expected_height) + "px";
           obj.style.maxWidth = expected_width + "px"; 
+          //console.log(obj.style.maxWidth + ", " + obj.style.maxHeight);
         }
       };
       img.src = this.images[0];
