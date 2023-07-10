@@ -1,4 +1,15 @@
 
+	returnCardImage(cardname) {
+
+	  	if (this.deck[cardname]) {
+	  		return this.deck[cardname].returnCardImage();
+	  	}
+
+
+		return '';
+
+	}
+
 
         importCard(key, card) {
 

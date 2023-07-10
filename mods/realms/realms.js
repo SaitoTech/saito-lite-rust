@@ -19,6 +19,8 @@ class Realms extends GameTemplate {
 
 		this.card_height_ratio = 1.39;
 
+		this.interface = 1;
+
 		this.minPlayers = 2;
 		this.maxPlayers = 2;
 
@@ -219,21 +221,25 @@ class Realms extends GameTemplate {
 	}
 
 	playerTurn() {
+
 		if (this.browser_active == 0) {
 			return;
 		}
+
+console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].hand));
 
 		//
 		// show my hand
 		//
 		this.updateStatusAndListCards(
 			`Your Turn <span id="end-turn" class="end-turn">[ or pass ]</span>`,
-			this.game.deck[this.game.player - 1].hand
+			this.game.deck[this.game.player-1].hand
 		);
 
 		//
 		// players may click on cards in their hand
 		//
+/****
 		this.attachCardboxEvents((card) => {
 			this.playerPlayCardFromHand(card);
 		});
@@ -250,6 +256,7 @@ class Realms extends GameTemplate {
 			this.prependMove("RESOLVE\t" + this.app.wallet.returnPublicKey());
 			this.endTurn();
 		};
+****/
 
 	}
 
@@ -428,6 +435,17 @@ class Realms extends GameTemplate {
     `;
 	}
 
+
+	returnCardImage(cardname) {
+
+	  	if (this.deck[cardname]) {
+	  		return this.deck[cardname].returnCardImage();
+	  	}
+
+
+		return '';
+
+	}
 
 
         importCard(key, card) {

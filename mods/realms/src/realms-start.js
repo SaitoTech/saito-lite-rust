@@ -19,6 +19,8 @@ class Realms extends GameTemplate {
 
 		this.card_height_ratio = 1.39;
 
+		this.interface = 1;
+
 		this.minPlayers = 2;
 		this.maxPlayers = 2;
 
