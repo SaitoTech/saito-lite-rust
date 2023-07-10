@@ -50,6 +50,7 @@
 		//
 		// add events to cards
 		//
+		this.deck = {};
 		for (let key in deck1) { this.importCard(key, deck1[key]); }
 		for (let key in deck2) { this.importCard(key, deck2[key]); }
 

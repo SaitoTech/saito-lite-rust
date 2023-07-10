@@ -16,9 +16,15 @@
                 };
                 c = Object.assign(c, card);
 
+
                 //
                 // add dummy events that return 0 (do nothing)
                 //
+		if (!c.returnCardImage) {
+                	c.returnCardImage = function() {
+				return `<div class="card"><img src="/realms/img/cards/016_shellring_vindicator.png"></div>`;
+                	};
+	        }
                 if (!c.onInstant) {
                 	c.onInstant = function (game_self, player, card) {
                         	return 0;
@@ -35,6 +41,7 @@
                         };
                 }
 
+		
                 game_self.deck[c.key] = c;
 
         }
@@ -268,7 +275,7 @@
 
 	    var deck = {};
 
-	    deck['r001'] 	= { 
+	    deck['r001'] = { 
 		name: "Magic Cube",
 		type: "instant",
 		color: "red",

@@ -108,6 +108,7 @@ class Realms extends GameTemplate {
 		//
 		// add events to cards
 		//
+		this.deck = {};
 		for (let key in deck1) { this.importCard(key, deck1[key]); }
 		for (let key in deck2) { this.importCard(key, deck2[key]); }
 
@@ -445,9 +446,15 @@ class Realms extends GameTemplate {
                 };
                 c = Object.assign(c, card);
 
+
                 //
                 // add dummy events that return 0 (do nothing)
                 //
+		if (!c.returnCardImage) {
+                	c.returnCardImage = function() {
+				return `<div class="card"><img src="/realms/img/cards/016_shellring_vindicator.png"></div>`;
+                	};
+	        }
                 if (!c.onInstant) {
                 	c.onInstant = function (game_self, player, card) {
                         	return 0;
@@ -464,6 +471,7 @@ class Realms extends GameTemplate {
                         };
                 }
 
+		
                 game_self.deck[c.key] = c;
 
         }
@@ -697,7 +705,7 @@ class Realms extends GameTemplate {
 
 	    var deck = {};
 
-	    deck['r001'] 	= { 
+	    deck['r001'] = { 
 		name: "Magic Cube",
 		type: "instant",
 		color: "red",
