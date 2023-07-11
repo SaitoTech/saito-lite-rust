@@ -295,6 +295,7 @@ class League extends ModTemplate {
             }
           }
 
+          league_self.sortLeagues();
           app.connection.emit("leagues-render-request");
           app.connection.emit("league-rankings-render-request");
 
@@ -450,6 +451,7 @@ class League extends ModTemplate {
       this.saveLeagues();
 
       if (this.app.BROWSER) {
+        this.sortLeagues();
         this.app.connection.emit("leagues-render-request");
         this.app.connection.emit("league-rankings-render-request");
       }

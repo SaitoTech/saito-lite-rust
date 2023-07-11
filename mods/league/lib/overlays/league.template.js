@@ -1,11 +1,12 @@
 module.exports = LeagueOverlayTemplate = (app, mod, league) => {
 
     let game_mod = app.modules.returnModuleByName(league.game);
-    let img = "";
-    if (game_mod) { img = game_mod.respondTo("arcade-games").image; }
-
-    let key_words = game_mod.categories.replace("Games ", "").split(" ").reverse().join(" ");
-
+    let img = "", key_words = "", game_name = "";
+    if (game_mod) { 
+        img = game_mod.respondTo("arcade-games").image; 
+        key_words = game_mod.categories.replace("Games ", "").split(" ").reverse().join(" ");
+        game_name = game_mod.returnName();
+    }
     let key = app.keychain.returnKey(app.wallet.returnPublicKey());
 
     let isMember = league.rank >= 0; 
@@ -18,7 +19,7 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
                 <div class="league-overlay-header-image" style="background-image: url('${img}')"></div>
                 <div class="league-overlay-header-title-box">
                     <div class="league-overlay-header-title-box-title">${league.name}</div>
-                    <div class="league-overlay-header-title-box-desc">${(league.admin) ? `${game_mod.returnName()} league` : key_words }</div>
+                    <div class="league-overlay-header-title-box-desc">${(league.admin) ? `${game_name} league` : key_words }</div>
                 </div>
                 <div class="league-overlay-controls">
                     <div id="home" class="menu-icon active-tab"><i class="fas fa-house"></i><div class="menu-text">Home</div></div>

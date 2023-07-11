@@ -17,7 +17,12 @@ class LeagueOverlay {
      app.connection.on('league-overlay-render-request', (league_id) => {
       //console.log('league-overlay-render-request:',league_id);
       this.league = this.mod.returnLeague(league_id);
-      this.render();
+      if (this.league){
+        this.render();  
+      }else{
+        console.warn("Overlay Render Request for Invalid League");
+      }
+      
     });
      app.connection.on("league-overlay-remove-request", ()=> {
       this.overlay.remove();
