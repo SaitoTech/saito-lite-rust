@@ -80,3 +80,7 @@ Saito User
   font-size: 1.4rem;
   align-items: top;
 }
+
+.saito-user-fourth-elem-large {
+  grid-row: span 2;
+}

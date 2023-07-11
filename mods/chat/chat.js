@@ -23,6 +23,7 @@ class Chat extends ModTemplate {
      {
         id: id,
         members: members, //Array of publickeys
+        member_ids: {} // Key->value pairs  :admin / :1 / :0 -- group admin, confirmed, unconfirmed member
         name: name,
         unread: 0, //Number of new messages
         txs: [],
@@ -171,7 +172,6 @@ class Chat extends ModTemplate {
     }
 
     if (this.chat_manager == null) {
-      console.log("Render");
       this.chat_manager = new ChatManager(this.app, this);
       this.addComponent(this.chat_manager);
     }
@@ -424,6 +424,15 @@ class Chat extends ModTemplate {
       if (txmsg.request == "chat group") {
         this.receiveCreateGroupTransaction(app, tx);
       }
+      if (txmsg.request == "chat confirm") {
+        this.receiveConfirmGroupTransaction(app, tx); 
+      }
+      if (txmsg.request == "chat add") {
+        this.receiveAddMemberTransaction(app, tx);
+      }
+      if (txmsg.request == "chat remove") {
+        this.receiveRemoveMemberTransaction(app, tx);
+      }
     }
   }
 
@@ -479,13 +488,15 @@ class Chat extends ModTemplate {
       if (mycallback) {
         mycallback({ payload: "success", error: {} });
       }
-    } else if (txmsg.request == "chat group") {
-      
+    } /*else if (txmsg.request == "chat group") {
+      //
+      //Lets get rid of this -- keep it ON CHAIN only
+      //
       console.log("HPT create group");
       console.log(tx);
       this.receiveCreateGroupTransaction(app, tx);
 
-    } else if (txmsg.request === "chat message broadcast") {
+    } */ else if (txmsg.request === "chat message broadcast") {
 
       /*
       * This whole block is duplicating the functional logic of the Relay module....
@@ -532,7 +543,92 @@ class Chat extends ModTemplate {
     }
   }
 
+
+  //
+  // Create a n > 2 chat group (currently unencrypted)
+  // We have a single admin (who can add additional members or kick people out)
+  //
   sendCreateGroupTransaction(group){
+
+    let newtx = this.app.wallet.createUnsignedTransaction(
+      this.app.wallet.returnPublicKey(),
+      0.0,
+      0.0
+    );
+    if (newtx == null) {
+      return;
+    }
+
+    for (let i = 0; i < group.members.length; i++) {
+      //if (group.members[i] !== this.app.wallet.returnPublicKey()) {
+        newtx.transaction.to.push(new saito.default.slip(group.members[i]));
+      //}
+    }
+
+    newtx.msg = {
+      module: "Chat",
+      request: "chat group",
+      group_id: group.id,
+      group_name: group.name,
+      admin: this.app.wallet.returnPublicKey(), 
+      timestamp: new Date().getTime(),
+    };
+
+    newtx = this.app.wallet.signTransaction(newtx);
+
+    this.app.network.propagateTransaction(newtx);
+
+  }
+
+  receiveCreateGroupTransaction(app, tx) {
+
+    if (tx.isTo(app.wallet.returnPublicKey())) {
+        
+      let txmsg = tx.returnMessage();
+
+      let group = this.returnGroup(txmsg.group_id);
+
+      if (group) {
+        group.name = txmsg.group_name;
+      }else{
+        let members = [];
+        for (let x = 0; x < tx.transaction.to.length; x++) {
+          if (!members.includes(tx.transaction.to[x].add)) {
+            members.push(tx.transaction.to[x].add);
+          }
+        }
+
+        group = this.returnOrCreateChatGroupFromMembers(members, txmsg.group_name);
+        group.id = txmsg.group_id;
+      }
+
+      if (!group.member_ids){
+        group.member_ids = {};
+        for (let m of group.members) {
+          group.member_ids[m] = 0;
+        }
+      }
+      
+      group.member_ids[app.wallet.returnPublicKey()] = 1;
+      
+      if (txmsg.admin){
+        group.member_ids[txmsg.admin] = "admin";  
+      }
+      
+      this.saveChatGroup(group);
+      this.app.connection.emit("chat-manager-render-request");
+
+      if (!tx.isFrom(app.wallet.returnPublicKey())){
+        this.sendConfirmGroupTransaction(group);
+      }
+    }
+  }
+
+  //
+  // We automatically send a confirmation when added to a chat group (just so that we can make sure that the user was successfully added)
+  // But in the future, we may add a confirmation interface
+  //
+  sendConfirmGroupTransaction(group){
 
     let newtx = this.app.wallet.createUnsignedTransaction(
       this.app.wallet.returnPublicKey(),
@@ -551,7 +647,7 @@ class Chat extends ModTemplate {
 
     newtx.msg = {
       module: "Chat",
-      request: "chat group",
+      request: "chat confirm",
       group_id: group.id,
       group_name: group.name,
       timestamp: new Date().getTime(),
@@ -559,39 +655,169 @@ class Chat extends ModTemplate {
 
     newtx = this.app.wallet.signTransaction(newtx);
 
-    this.sendChatTransaction(this.app, newtx);
+    this.app.network.propagateTransaction(newtx);
 
   }
 
-  receiveCreateGroupTransaction(app, tx) {
+  receiveConfirmGroupTransaction(app, tx) {
 
-    if (tx.isTo(app.wallet.returnPublicKey())) {
+    if (tx.isTo(app.wallet.returnPublicKey()) && !tx.isFrom(app.wallet.returnPublicKey())) {
         
       let txmsg = tx.returnMessage();
 
       let group = this.returnGroup(txmsg.group_id);
 
-      if (group) {
-        group.name = txmsg.group_name;
-
-      }else{
-        let members = [];
-        for (let x = 0; x < tx.transaction.to.length; x++) {
-          if (!members.includes(tx.transaction.to[x].add)) {
-            members.push(tx.transaction.to[x].add);
-          }
-        }
-
-        console.log(JSON.stringify(members));
-
-        group = this.returnOrCreateChatGroupFromMembers(members, txmsg.group_name);
+      if (!group){
+        this.receiveCreateGroupTransaction(app, tx);
+        group = this.returnGroup(txmsg.group_id);        
       }
 
+      if (!group.members.includes(tx.transaction.from[0].add)) {
+        group.members.push(tx.transaction.from[0].add);
+      }
+
+      group.member_ids[tx.transaction.from[0].add] = 1;
       this.saveChatGroup(group);
-      this.app.connection.emit("chat-manager-render-request");
     }
   }
 
+
+  //
+  // Add a member to an existing chat group
+  //
+  sendAddMemberTransaction(group, member) {
+      let newtx = this.app.wallet.createUnsignedTransaction(
+        this.app.wallet.returnPublicKey(),
+        0.0,
+        0.0
+      );
+      if (newtx == null) {
+        return;
+      }
+
+      if (!group.members.includes(member)){
+        group.members.push(member);
+      }
+
+      for (let i = 0; i < group.members.length; i++) {
+        if (group.members[i] !== this.app.wallet.returnPublicKey()) {
+          newtx.transaction.to.push(new saito.default.slip(group.members[i]));
+        }
+      }
+
+
+      newtx.msg = {
+        module: "Chat",
+        request: "chat add",
+        group_name: group.name,
+        group_id: group.id,
+        member_id: member,
+      };
+
+      newtx = this.app.wallet.signTransaction(newtx);
+
+      this.app.network.propagateTransaction(newtx);
+  }
+
+  receiveAddMemberTransaction(app, tx) {
+
+    if (tx.isTo(app.wallet.returnPublicKey()) && !tx.isFrom(app.wallet.returnPublicKey())) {
+        
+      let txmsg = tx.returnMessage();
+
+      if (app.wallet.returnPublicKey() == txmsg.member_id) {
+        this.receiveCreateGroupTransaction(app, tx);
+        return;
+      }
+
+      let group = this.returnGroup(txmsg.group_id);
+
+      if (!group){
+        console.warn("Chat group not found");
+        return;
+      }
+
+      if (!group.members.includes(txmsg.member_id)) {
+        group.members.push(txmsg.member_id);
+      }
+
+      //
+      //Don't overwrite confirmed flag if txs arrive out of order
+      //
+      if (!group.member_ids){
+        group.member_ids = {};
+      }
+
+      if (!group.member_ids[txmsg.member_id]) {
+        group.member_ids[txmsg.member_id] = 0;  
+      }
+      
+      this.saveChatGroup(group);
+
+    }
+  }
+
+  sendRemoveMemberTransaction(group, member) {
+      let newtx = this.app.wallet.createUnsignedTransaction(
+        this.app.wallet.returnPublicKey(),
+        0.0,
+        0.0
+      );
+      if (newtx == null) {
+        return;
+      }
+
+      for (let i = 0; i < group.members.length; i++) {
+        if (group.members[i] !== this.app.wallet.returnPublicKey()) {
+          newtx.transaction.to.push(new saito.default.slip(group.members[i]));
+        }
+      }
+
+      newtx.msg = {
+        module: "Chat",
+        request: "chat remove",
+        group_id: group.id,
+        member_id: member,
+      };
+
+      newtx = this.app.wallet.signTransaction(newtx);
+
+      this.app.network.propagateTransaction(newtx);
+
+  }
+
+  receiveRemoveMemberTransaction(app, tx) {
+    if (tx.isTo(app.wallet.returnPublicKey()) && !tx.isFrom(app.wallet.returnPublicKey())) {
+        
+      let txmsg = tx.returnMessage();
+
+      let group = this.returnGroup(txmsg.group_id);
+
+      if (!group){
+        console.warn("Chat group doesn't exist locally");
+        return;
+      }
+
+      for (let i = 0; i < group.members.length; i++){
+        if (group.members[i] == txmsg.member_id){
+          group.members.splice(i,1);
+          break;
+        }
+      }
+
+      if (group.member_ids){
+        delete group.member_ids[txmsg.member_id];  
+      }
+      
+      if (app.wallet.returnPublicKey() == txmsg.member_id) {
+        this.deleteChatGroup(group);
+      }else{
+        this.saveChatGroup(group);  
+      }
+    }
+
+  }
+ 
 
   /**
    *
@@ -750,6 +976,9 @@ class Chat extends ModTemplate {
         }
 
         group = this.returnOrCreateChatGroupFromMembers(members);
+        
+        //Keep ID (since groups may have variable members)
+        group.id = txmsg.group_id;
 
         if (this.debug) {
           console.log(
@@ -1030,12 +1259,6 @@ class Chat extends ModTemplate {
       this.groups.push(newGroup);
     }
 
-    //Save group in app.options
-    if (!this.app.options.chat.includes(id)) {
-      this.app.options.chat.push(id);
-      this.app.storage.saveOptions();
-    }
-
     this.app.connection.emit("chat-manager-render-request");
 
     return newGroup;
@@ -1071,10 +1294,8 @@ class Chat extends ModTemplate {
 
   returnGroupByName(name = "") {
     for (let i = 0; i < this.groups.length; i++) {
-      if (this.app.options.peers.length > 0) {
-        if (this.groups[i].name === name) {
-          return this.groups[i];
-        }
+      if (this.groups[i].name === name) {
+        return this.groups[i];
       }
     }
     return this.groups[0];
@@ -1082,10 +1303,8 @@ class Chat extends ModTemplate {
 
   returnCommunityChat() {
     for (let i = 0; i < this.groups.length; i++) {
-      if (this.app.options.peers.length > 0) {
-        if (this.groups[i].name === this.communityGroupName) {
-          return this.groups[i];
-        }
+      if (this.groups[i].name === this.communityGroupName) {
+        return this.groups[i];
       }
     }
     return this.groups[0];
@@ -1129,6 +1348,12 @@ class Chat extends ModTemplate {
       return;
     }
     let chat_self = this;
+
+    //Save group in app.options
+    if (!this.app.options.chat.includes(group.id)) {
+      this.app.options.chat.push(group.id);
+      this.app.storage.saveOptions();
+    }
 
     let online_status = group.online;
 

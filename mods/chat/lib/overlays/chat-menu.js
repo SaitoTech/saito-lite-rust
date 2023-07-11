@@ -1,5 +1,6 @@
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 const chatMenuTemplate = require("./chat-menu.template");
+const ContactsList = require("./../../../../lib/saito/ui/modals/saito-contacts/saito-contacts");
 
 class ChatMenu {
   constructor(app, mod, chat_group) {
@@ -45,6 +46,72 @@ class ChatMenu {
         thisobj.overlay.remove();
       }
     }
+
+    if (document.getElementById("invite")){
+      document.getElementById("invite").onclick = (e) => {
+        const contactList = new ContactsList(this.app, this.mod, false);
+        contactList.callback = async (person) => {
+          if (person) {
+
+            //Add here, not on receiveTX
+            if (!thisobj.chat_group.members.includes(person)) {
+              thisobj.chat_group.members.push(person);
+            }
+
+            if (!thisobj.chat_group.member_ids[person]) {
+              thisobj.chat_group.member_ids[person] = 0;  
+            }
+
+            this.mod.sendAddMemberTransaction(thisobj.chat_group, person);
+
+            this.mod.saveChatGroup(thisobj.chat_group);
+            thisobj.overlay.remove();
+            thisobj.render();   
+            siteMessage("User invited to chat group", 2000);  
+          }
+        };
+        contactList.render();
+      }
+    }
+
+    document.querySelectorAll(".remove_user").forEach(user => {
+      user.onclick = (e) => {
+        let user_id = e.currentTarget.dataset.id;
+        if (user_id) {
+          this.mod.sendRemoveMemberTransaction(thisobj.chat_group, user_id);
+
+            //Add here, not on receiveTX
+            for (let i = 0; i < thisobj.chat_group.members.length; i++) {
+              if (thisobj.chat_group.members[i] == user_id){
+                thisobj.chat_group.members.splice(i,1);
+                break;
+              }
+            }
+            
+            delete thisobj.chat_group.member_ids[user_id];  
+            
+            if (this.app.wallet.returnPublicKey() == user_id){
+              this.mod.deleteChatGroup(thisobj.chat_group);
+            }else{
+              this.mod.saveChatGroup(thisobj.chat_group);
+            }
+          thisobj.overlay.remove();
+          thisobj.render();   
+          siteMessage("User removed from chat group", 2000);
+        }
+      }
+    });
+
+
+    document.querySelectorAll(".saito-contact.unconfirmed").forEach(user => {
+      user.onclick = (e) => {
+      let user_id = e.currentTarget.dataset.id;
+        if (user_id) {
+          this.mod.sendAddMemberTransaction(thisobj.chat_group, user_id);
+          siteMessage("Chat Group invite resent", 2000);
+        }        
+      }
+    });
 
   }
 

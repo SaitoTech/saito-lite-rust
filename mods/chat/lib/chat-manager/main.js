@@ -20,6 +20,8 @@ class ChatManager {
         
         if (group.txs.length == 0){
           this.mod.sendCreateGroupTransaction(group);  
+        }else{
+          this.app.connection.emit("chat-popup-render-request", group);
         }
       }else if (Array.isArray(person) && person.length == 1){
         this.app.keychain.addKey(person[0], {mute: 0});
