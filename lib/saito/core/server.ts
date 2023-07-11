@@ -2,12 +2,7 @@ import { Saito } from "../../../apps/core";
 import express from "express";
 import { Server as Ser } from "http";
 import S from "saito-js/index.node";
-// const io          = require('socket.io')(webserver, {
-//   cors: {
-//     origin: "*.*",
-//     methods: ["GET", "POST"]
-//   }
-// });
+
 import fs from "fs";
 import path from "path";
 import bodyParser from "body-parser";
@@ -636,12 +631,11 @@ class Server {
         const fd = fs.openSync(client_options_file, "w");
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        fs.writeSync(fd, this.app.storage.returnClientOptions(), this.server_file_encoding);
+        fs.writeSync(fd, this.app.storage.getClientOptions(), this.server_file_encoding);
         fs.closeSync(fd);
       }
       res.sendFile(client_options_file);
       //res.send(this.app.storage.returnClientOptions());
-      return;
     });
 
     expressApp.get("/r", (req, res) => {

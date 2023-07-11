@@ -36,11 +36,7 @@ export default class Storage {
 
     // console.log("saving options : ", this.app.options);
     try {
-      if (typeof Storage !== "undefined") {
-        localStorage.setItem("options", JSON.stringify(this.app.options));
-      } else {
-        console.error("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-      }
+      localStorage.setItem("options", JSON.stringify(this.app.options));
     } catch (err) {
       console.log(err);
     }
@@ -109,42 +105,44 @@ export default class Storage {
     console.log("storage.initialize");
     await this.loadOptions();
     this.saveOptions();
-    return;
+  }
+
+  getClientOptions(): string {
+    throw new Error("Method not implemented.");
   }
 
   async loadOptions() {
     console.log("loading options");
-    if (typeof Storage !== "undefined") {
-      const data = localStorage.getItem("options");
-      if (data != "null" && data != null) {
-        this.app.options = JSON.parse(data);
-        // console.log("loaded from local storage", this.app.options);
-      } else {
-        try {
-          console.log("fetching options from server...");
-          const response = await fetch(`/options`);
+    const data = localStorage.getItem("options");
+    if (data != "null" && data != null) {
+      this.app.options = JSON.parse(data);
+      // console.log("loaded from local storage", this.app.options);
+    } else {
+      try {
+        console.log("fetching options from server...");
+        const response = await fetch(`/options`);
 
-          this.app.options = await response.json();
-          this.app.options = JSON.parse(JSON.stringify(this.app.options));
-          if (typeof window !== "undefined") {
-            this.app.options.spv_mode = true;
-            this.app.options.browser_mode = true;
-          } else {
-            this.app.options.spv_mode = false;
-            this.app.options.browser_mode = false;
-          }
-          console.log("options loaded : ", this.app.options);
-          this.saveOptions();
-        } catch (err) {
-          console.error(err);
+        this.app.options = await response.json();
+        this.app.options = JSON.parse(JSON.stringify(this.app.options));
+        if (typeof window !== "undefined") {
+          this.app.options.spv_mode = true;
+          this.app.options.browser_mode = true;
+        } else {
+          this.app.options.spv_mode = false;
+          this.app.options.browser_mode = false;
         }
+        console.log("options loaded : ", this.app.options);
+        this.saveOptions();
+      } catch (err) {
+        console.error(err);
       }
     }
+    return this.app.options;
   }
 
-  async queryDatabase(sql, params, database) { }
+  async queryDatabase(sql, params, database) {}
 
-  async executeDatabase(sql, params, database, mycallback = null) { }
+  async executeDatabase(sql, params, database, mycallback = null) {}
 
   /**
    * FUNCTIONS OVERWRITTEN BY STORAGE-CORE WHICH HANDLES ITS OWN DATA STORAGE IN ./core/storage-core.js
@@ -155,7 +153,7 @@ export default class Storage {
     const data: any = {};
     data.request = "update";
     data.tx = tx;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) { });
+    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
   }
 
   async incrementTransactionOptionalValue(sig, optional_key) {
@@ -165,7 +163,7 @@ export default class Storage {
     data.sig = sig;
     data.publickey = await this.app.wallet.getPublicKey();
     data.optional_key = optional_key;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) { });
+    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
   }
 
   async updateTransactionOptionalValue(sig, optional_key, optional_value) {
@@ -176,7 +174,7 @@ export default class Storage {
     data.publickey = await this.app.wallet.getPublicKey();
     data.optional_value = optional_value;
     data.optional_key = optional_key;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) { });
+    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
   }
 
   async updateTransactionOptional(sig, optional) {
@@ -186,7 +184,7 @@ export default class Storage {
     data.sig = sig;
     data.publickey = await this.app.wallet.getPublicKey();
     data.optional = optional;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) { });
+    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
   }
 
   async saveTransaction(tx: Transaction, type = null) {
@@ -201,7 +199,7 @@ export default class Storage {
       newtx.msg.type = type;
     }
     await newtx.sign();
-    await this.app.network.sendTransactionWithCallback(newtx, function (res) { });
+    await this.app.network.sendTransactionWithCallback(newtx, function (res) {});
 
     //    const txmsg = tx.returnMessage();
     //    const message = "archive";
@@ -223,7 +221,7 @@ export default class Storage {
     data.tx = tx;
     data.key = key;
     data.type = txmsg.module;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) { });
+    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
 
     this.app.connection.emit("save-transaction", tx);
   }
