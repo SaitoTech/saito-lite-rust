@@ -359,7 +359,7 @@ class Server {
     //
     // save options
     //
-    this.app.options.server = this.server;
+    this.app.options.server = Object.assign(this.app.options.server, this.server);
     console.log("SAVE OPTIONS IN SERVER 2");
     this.app.storage.saveOptions();
 
