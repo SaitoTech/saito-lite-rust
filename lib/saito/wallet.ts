@@ -30,7 +30,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.989,
+    version: 4.990,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -437,6 +437,7 @@ console.log("---------------------");
             // save contacts(keys)
             let keys = this.app.options.keys;
             let chats = this.app.options.chat;
+            let leagues = this.app.options.leagues;
 
             // save theme options
             let theme = this.app.options.theme;
@@ -448,7 +449,7 @@ console.log("---------------------");
             this.wallet.publickey = tmppubkey;
             this.wallet.privatekey = tmpprivkey;
 
-            // let modules purge stuff (not implementer)
+            // let modules purge stuff
             await this.app.modules.onWalletReset();
 
             // reset and save
@@ -479,6 +480,7 @@ console.log("---------------------");
             // keep contacts (keys)
             this.app.options.keys = keys;
             this.app.options.chat = chats;
+            this.app.options.leagues = leagues;
 
             // keep theme
             this.app.options.theme = theme;

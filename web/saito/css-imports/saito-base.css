@@ -190,7 +190,7 @@ Scrollbars
   white-space: nowrap;
   text-overflow: ellipsis;
   display: inline-block !important;
-  width: inherit;
+  width: auto;
   max-width: 99%;
 }
 

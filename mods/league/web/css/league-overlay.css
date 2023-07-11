@@ -281,25 +281,14 @@ span.attention {
 }
 
 .contactAdminWarning {
-  /*min-width: 60rem;
-  max-width: 90%;
-  background: var(--saito-background-light); 
-  min-height: 20rem;
-  max-height: 90%;
-  padding: 1rem;
-  */
   font-size: 2rem;
   min-height: 40rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
-.error_line {
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
-}
 
 .contactAdminWarning>* {
   margin: 1rem;
@@ -310,12 +299,6 @@ span.attention {
   justify-content: center;
 }
 
-.contactAdminWarning>div {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  align-items: center;
-}
 
 .contactAdminWarning i {
   font-size: 5rem;
@@ -343,8 +326,8 @@ span.attention {
 
 @media screen and (max-width: 600px) {
   .league-overlay-container {
-    width: calc(100vw - 2px);
-    max-height: 98vh;
+    width: 100vw;
+    max-height: 95vh;
   }
   .contactAdminWarning {
     min-height: 0;

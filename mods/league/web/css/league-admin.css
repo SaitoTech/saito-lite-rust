@@ -274,11 +274,13 @@ i.link_icon.private {
   content: attr(data-placeholder);
 }
 
-@media (max-width: 94em) {
+@media (max-width: 90rem) {
   .league-main-container {
     grid-template-columns: 1fr;
   }
+
 }
+
 
 .league-main-container .saito-module {
   font-size: 2rem;
@@ -311,8 +313,8 @@ i.link_icon.private {
   background: var(--saito-background-color);
   padding: 1.5rem;
   border-radius: 1rem;
-  max-width: 90vw;
-  min-width: 60rem;
+  width: 60rem;
+  max-width: 95vw;
   font-size: 2rem;
 }
 
@@ -533,4 +535,10 @@ league-edit-overlay-box {
   background-color: var(--saito-white);
   border-radius: 1rem;
   padding: 0 1rem;
+}
+
+@media (max-width: 525px) {
+    .league-join-controls {
+      flex-direction: column-reverse;
+    }
 }
