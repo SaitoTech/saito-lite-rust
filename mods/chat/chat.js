@@ -322,8 +322,10 @@ class Chat extends ModTemplate {
         //TODO:
         //Since the left-sidebar chat-manager disappears at screens less than 1200px wide
         //We need another way to display/open it...
-        if (this.app.browser.isMobileBrowser() || (this.app.BROWSER && window.innerWidth < 600)) {
-          chat_self.chat_manager.render_popups_to_screen = 0;
+        if (this.chat_manger && (this.app.browser.isMobileBrowser() || (this.app.BROWSER && window.innerWidth < 600))) {
+          
+          chat_self.chat_manager.render_popups_to_screen = 0;  
+          
           if (this.chat_manager_overlay == null) {
             this.chat_manager_overlay = new ChatManagerOverlay(this.app, this);
           }  
