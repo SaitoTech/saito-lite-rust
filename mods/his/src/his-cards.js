@@ -1746,7 +1746,6 @@ console.log("COUNCIL OF TRENT: " + JSON.stringify(his_self.game.state.council_of
       },
     }
 
-/****
     deck['020'] = { 
       img : "cards/HIS-020.svg" , 
       name :"Henry II" ,
@@ -4669,7 +4668,6 @@ alert("NOT IMPLEMENTED");
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
-****/
     for (let key in deck) {
       deck[key] = this.addEvents(deck[key]);
     }
