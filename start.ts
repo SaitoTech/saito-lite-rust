@@ -4,7 +4,7 @@ import { Saito } from "./apps/core";
 import S, { initialize as initS } from "saito-js/index.node";
 import mods_config from "./config/modules.config";
 import process from "process";
-import configs from "./config/configs.json";
+// import configs from "./config/options";
 import Factory from "./lib/saito/factory";
 import Wallet from "./lib/saito/wallet";
 import Blockchain from "./lib/saito/blockchain";
@@ -29,7 +29,7 @@ async function initSaito() {
   await app.storage.initialize();
 
   await initS(
-    configs,
+    await app.storage.loadOptions(),
     new NodeSharedMethods(app),
     new Factory(),
     app.options.wallet?.privateKey || ""
