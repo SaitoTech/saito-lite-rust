@@ -3,6 +3,7 @@ const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-ove
 const Leaderboard = require("./../leaderboard");
 const LeagueWelcomeTemplate = require("./league-welcome.template");
 const JoinLeagueOverlay = require("./join");
+const InvitationLink = require("./../../../../lib/saito/ui/modals/saito-link/saito-link");
 
 class LeagueOverlay {
 
@@ -104,7 +105,29 @@ class LeagueOverlay {
       }
     }
 
-    //if (!document.querySelector(".contactAdminWarning")){
+    if (document.getElementById("league-chat-button")){
+      document.getElementById("league-chat-button").onclick = () => {
+        let player_keys = this.league.players.map(obj => obj.publickey);
+        this.overlay.remove();
+        this.app.connection.emit("open-chat-with", {name: this.league.name, id: this.league.id, key: player_keys});
+      }
+    }
+
+      if (document.getElementById("league-invite-button")) {
+        document.getElementById("league-invite-button").onclick = (e) => {
+          let data = {
+            game: this.league.game,
+            league_id: this.league.id,
+            name: "League", 
+            path: "/arcade/",
+          }
+          this.invitation_link = new InvitationLink(this.app, this.mod, data);
+          this.invitation_link.render();
+        }
+      }
+
+
+    if (!document.querySelector(".contactAdminWarning")){
       Array.from(document.querySelectorAll(".menu-icon")).forEach(item => {
         item.onclick = (e) => {
           let nav = e.currentTarget.id;
@@ -113,6 +136,7 @@ class LeagueOverlay {
 
             document.querySelector(".active-tab").classList.remove("active-tab");
             document.querySelector(".league-overlay-leaderboard").classList.remove("hidden");
+            document.querySelector(".league-overlay-body").classList.remove("admin-mode");
             Array.from(document.querySelectorAll(".league-overlay-body-content > .league-overlay-content-box")).forEach(div => div.classList.add("hidden"));
 
             switch (nav){
@@ -129,6 +153,7 @@ class LeagueOverlay {
               document.querySelector(".league-overlay-league-body-games").classList.remove("hidden");
               break;
             case "players":
+              document.querySelector(".league-overlay-body").classList.add("admin-mode");
               document.querySelector("#admin-widget").classList.remove("hidden");
               document.querySelector(".league-overlay-leaderboard").classList.add("hidden");
               this.loadPlayersUI();
@@ -139,7 +164,7 @@ class LeagueOverlay {
         e.currentTarget.classList.add("active-tab");
         }
       });
-    //}
+    }
 
   }
 

@@ -541,9 +541,9 @@ class Chat extends ModTemplate {
     }
 
     for (let i = 0; i < group.members.length; i++) {
-      //if (group.members[i] !== this.app.wallet.returnPublicKey()) {
+      if (group.members[i] !== this.app.wallet.returnPublicKey()) {
         newtx.transaction.to.push(new saito.default.slip(group.members[i]));
-      //}
+      }
     }
 
     newtx.msg = {
@@ -569,20 +569,23 @@ class Chat extends ModTemplate {
 
       let group = this.returnGroup(txmsg.group_id);
 
+      let members = [];
+      for (let x = 0; x < tx.transaction.to.length; x++) {
+        if (!members.includes(tx.transaction.to[x].add)) {
+          members.push(tx.transaction.to[x].add);
+        }
+      }
+
       if (group) {
         console.log("Update group name");
         group.name = txmsg.group_name;
       }else{
-        let members = [];
-        for (let x = 0; x < tx.transaction.to.length; x++) {
-          if (!members.includes(tx.transaction.to[x].add)) {
-            members.push(tx.transaction.to[x].add);
-          }
-        }
 
         group = this.returnOrCreateChatGroupFromMembers(members, txmsg.group_name);
         group.id = txmsg.group_id;
       }
+
+      group.members = members;
 
       if (!group.member_ids){
         group.member_ids = {};
@@ -870,10 +873,17 @@ class Chat extends ModTemplate {
     newtx.msg = {
       module: "Chat",
       request: "chat message",
-      group_id: group_id,
+      group_id: group_id, 
       message: msg,
       timestamp: new Date().getTime(),
     };
+
+    let group = this.returnGroup(group_id);
+    if (group){
+      if (!members.includes(group.name)){
+        newtx.msg.name = group.name;  
+      }
+    }
 
     //
     // swap first two addresses so if private chat we will encrypt with proper shared-secret
@@ -957,7 +967,7 @@ class Chat extends ModTemplate {
           }
         }
 
-        group = this.returnOrCreateChatGroupFromMembers(members);
+        group = this.returnOrCreateChatGroupFromMembers(members, txmsg.name);
         
         //Keep ID (since groups may have variable members)
         group.id = txmsg.group_id;

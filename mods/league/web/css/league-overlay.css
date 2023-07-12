@@ -22,6 +22,7 @@
   width: 20rem;
   font-size: 2.2rem;
   margin: 0;
+  margin-left: 1.5rem;
 }
 
 .league-overlay-controls {
@@ -135,6 +136,14 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.league-overlay-body.admin-mode .league-overlay-body-content {
+  grid-column: span 2;
+}
+
+.league-overlay-body.admin-mode .league-overlay-controls {
+  display: none;
 }
 
 .league-overlay-header-image {
@@ -282,7 +291,7 @@ span.attention {
 
 .contactAdminWarning {
   font-size: 2rem;
-  min-height: 40rem;
+  min-height: 30rem;
   display: flex;
   flex-direction: column;
   justify-content: center;

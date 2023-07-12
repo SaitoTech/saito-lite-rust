@@ -51,7 +51,9 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
                         <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(league.admin)}" data-id="${league.admin}"></div>
                         ${app.browser.returnAddressHTML(league.admin)}
                         <div id="admin_contact" class="saito-userline" data-id="${league.admin}">${league.contact}</div>
+                        ${(newPlayer || league.unverified || (league.admin && !isMember)) ? `<button id="league-chat-button" class="saito-user-fourth-elem-large">League Chat</button>`:""}
                     </div>`;
+
 
             if (newPlayer || league.unverified || !isMember){ 
                 html += `<div id="admin_welcome" class="league-overlay-content-box ${(!isMember)?"hidden":""}">${league.welcome}</div>`;
@@ -75,10 +77,17 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
                   
     }     
 
-    html +=  `
-            <div class="league-overlay-controls${(newPlayer || league.unverified || (league.admin && !isMember)) ? " hidden":""}">
-              <button id="league-overlay-create-game-button" class="saito-button saito-button-primary">create game</button>
-            </div>
+    html +=  `<div class="league-overlay-controls${(newPlayer || league.unverified || (league.admin && !isMember)) ? " hidden":""}">`;
+    
+    if (league.admin == app.wallet.returnPublicKey()){
+        html += `<button id="league-invite-button" class="saito-button saito-button-primary">invite link</button>`;
+    }
+    if (league.admin){
+        html += `<button id="league-chat-button" class="saito-button saito-button-primary">league chat</button>`;
+    }
+              
+    html += `<button id="league-overlay-create-game-button" class="saito-button saito-button-primary">create game</button>
+             </div>
 
             </div>
                 <div class="league-overlay-leaderboard league-overlay-content-box"></div>
