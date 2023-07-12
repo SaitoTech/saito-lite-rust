@@ -23,7 +23,16 @@ module.exports = (app, chat_group) => {
         name = "Anonymous User";
       }
 
-      html += `<div class="saito-contact${chat_group.member_ids[publickey]?"":" unconfirmed"}" data-id="${publickey}">`;
+      let unconfirmed_tag = "";
+      //
+      //only display for admin
+      //
+      if (chat_group.member_ids[app.wallet.returnPublicKey()] == "admin"){
+        if (!chat_group.member_ids[publickey]){
+          unconfirmed_tag = " unconfirmed";
+        }
+      }
+      html += `<div class="saito-contact${unconfirmed_tag}" data-id="${publickey}">`;
 
       html += `<div class="saito-user">
                 <div class="saito-identicon-box"><img class="saito-identicon" src="${imgsrc}"></div>

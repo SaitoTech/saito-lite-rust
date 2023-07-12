@@ -31,6 +31,11 @@ class ChatMenu {
         let name = await sprompt("What do you want to call the chat group?");
         if (name){
           thisobj.chat_group.name = sanitize(name);
+
+          if (thisobj.chat_group?.member_ids[thisobj.app.wallet.returnPublicKey()] == "admin") {
+            console.log("Send new name as group tx");
+            thisobj.mod.sendCreateGroupTransaction(thisobj.chat_group);
+          }
           thisobj.mod.saveChatGroup(thisobj.chat_group);
           thisobj.app.connection.emit("chat-manager-render-request");          
         }

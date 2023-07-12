@@ -414,9 +414,9 @@ class Chat extends ModTemplate {
 
       let txmsg = tx.returnMessage();
 
-      if (this.debug) {
+      //if (this.debug) {
         console.log("Chat onConfirmation: " + txmsg.request);
-      }
+      //}
 
       if (txmsg.request == "chat message") {
         this.receiveChatTransaction(app, tx);
@@ -589,6 +589,7 @@ class Chat extends ModTemplate {
       let group = this.returnGroup(txmsg.group_id);
 
       if (group) {
+        console.log("Update group name");
         group.name = txmsg.group_name;
       }else{
         let members = [];
