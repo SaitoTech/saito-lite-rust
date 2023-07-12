@@ -32,6 +32,9 @@ This alows for a header with a header with title to be added without extra CSS
   gap: 1rem;
 }
 
+.saito-contact.unconfirmed {
+  filter: brightness(0.7) grayscale(1);
+}
 
 .saito-modal-content{
   border-top: 1px solid;

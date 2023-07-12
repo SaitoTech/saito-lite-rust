@@ -295,6 +295,7 @@ class League extends ModTemplate {
             }
           }
 
+          league_self.sortLeagues();
           app.connection.emit("leagues-render-request");
           app.connection.emit("league-rankings-render-request");
 
@@ -450,6 +451,7 @@ class League extends ModTemplate {
       this.saveLeagues();
 
       if (this.app.BROWSER) {
+        this.sortLeagues();
         this.app.connection.emit("leagues-render-request");
         this.app.connection.emit("league-rankings-render-request");
       }
@@ -726,7 +728,7 @@ class League extends ModTemplate {
     let new_data = txmsg.new_data;
     let field = txmsg.field;
 
-    if (field !== "email") {
+    if (field !== "email" && field !== "score") {
       console.error("League Update Error: Unknown SQL field");
       return;
     }

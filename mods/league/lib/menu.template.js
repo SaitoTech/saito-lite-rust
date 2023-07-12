@@ -7,25 +7,25 @@ module.exports = (app, mod, league) => {
           <div>Type: ${league.status}</div>
           <div>Algo: ${league.ranking_algorithm}</div>
           <div>Players: ${league.players.length}</div>
-          <div style="display:flex;">Admin: ${app.browser.returnAddressHTML(league.admin)}</div>
+          <div>Admin: ${league.admin ? app.browser.returnAddressHTML(league.admin): "SAITO"}</div>
         </div>
         <div class="league-component-existing-league-controls">`;
 
     if (league.rank < 0 && league.admin){
-     html +=`<button class="league-component-existing-league league-join-button">Join</button>`; 
+     html +=`<button class="league-button league-join-button">Join</button>`; 
     }
 
-    html +=`<button class="league-component-existing-league league-view-button">View</button>`;
+    html +=`<button class="league-button league-view-button">View</button>`;
 
     if (!league.admin){
-      html += `<button class="league-component-existing-league league-edit-button">Edit</button>`;
-      html += `<button class="league-component-existing-league league-sudo-button">Admin</button>`;
+      html += `<button class="league-button league-edit-button">Edit</button>`;
+      html += `<button class="league-button league-sudo-button">Admin</button>`;
     }
 
     if (app.wallet.returnPublicKey() == league.admin) { 
-      html += `<button class="league-component-existing-league league-edit-button">Edit</button>`;
-      html += `<button class="league-component-existing-league league-invite-button">Invite</button>`;
-      html += `<button class="league-component-existing-league league-delete-button">Delete</button>`;
+      html += `<button class="league-button league-edit-button">Edit</button>`;
+      html += `<button class="league-button league-invite-button">Invite</button>`;
+      html += `<button class="league-button league-delete-button">Delete</button>`;
     }
 
   html += `</div></div>`;
