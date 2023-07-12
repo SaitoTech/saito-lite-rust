@@ -86,10 +86,7 @@ class ChatManager {
     // handle requests to re-render chat popups
     //
     app.connection.on("chat-popup-remove-request", (group = null) => {
-      //
-      // mobile devices should not force open chat for us
-      //
-      if (group == null) {
+      if (!group) {
         return;
       } else {
         if (this.popups[group.id]) {
@@ -109,25 +106,26 @@ class ChatManager {
         console.log("open-chat-with");
       }
 
-      if (!data) {
-        let group = this.mod.returnCommunityChat();
-        if (this.popups[group.id]) {
-          this.popups[group.id].manually_closed = false;
-        }
-        this.app.connection.emit("chat-popup-render-request", this.mod.returnCommunityChat());
-        return;
-      }
-
       let group;
 
-      if (Array.isArray(data.key)) {
-        group = this.mod.returnOrCreateChatGroupFromMembers(data.key, data.name);
-      } else {
-        let name = data.name || app.keychain.returnUsername(data.key);
-        group = this.mod.returnOrCreateChatGroupFromMembers(
-          [app.wallet.returnPublicKey(), data.key],
-          name
-        );
+
+      if (!data) {
+        group = this.mod.returnCommunityChat();
+      }else{
+        if (Array.isArray(data.key)) {
+          group = this.mod.returnOrCreateChatGroupFromMembers(data.key, data.name);
+        } else {
+          let name = data.name || app.keychain.returnUsername(data.key);
+          group = this.mod.returnOrCreateChatGroupFromMembers(
+            [app.wallet.returnPublicKey(), data.key],
+            name
+          );
+        }
+
+        //Other modules can specify a chat group id (maybe linked to game_id or league_id)
+        if (data.id) {
+          group.id = data.id;
+        }
       }
 
       //

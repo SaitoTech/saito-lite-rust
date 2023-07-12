@@ -32,7 +32,7 @@ class ChatMenu {
         if (name){
           thisobj.chat_group.name = sanitize(name);
 
-          if (thisobj.chat_group?.member_ids[thisobj.app.wallet.returnPublicKey()] == "admin") {
+          if (thisobj.chat_group?.member_ids && thisobj.chat_group.member_ids[thisobj.app.wallet.returnPublicKey()] == "admin") {
             console.log("Send new name as group tx");
             thisobj.mod.sendCreateGroupTransaction(thisobj.chat_group);
           }

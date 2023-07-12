@@ -79,32 +79,13 @@ class Chat extends ModTemplate {
     //Enforce compliance with wallet indexing
     if (!app.options?.chat || !Array.isArray(app.options.chat)) {
       app.options.chat = [];
+      this.createDefaultChatsFromKeys();
     }
 
     if (app.BROWSER) {
       this.loadChatGroups();
     }
 
-    //
-    // create chatgroups from keychain -- friends only
-    //
-    let keys = app.keychain.returnKeys();
-    for (let i = 0; i < keys.length; i++) {
-      if (keys[i].aes_publickey && !keys[i]?.mute) {
-        this.returnOrCreateChatGroupFromMembers(
-          [keys[i].publickey],
-          keys[i].name
-        );
-      }
-    }
-
-    //
-    // create chatgroups from groups
-    //
-    let g = app.keychain.returnGroups();
-    for (let i = 0; i < g.length; i++) {
-      this.returnOrCreateChatGroupFromMembers(g[i].members, g[i].name);
-    }
 
     //
     // if I run a chat service, create it
@@ -1201,7 +1182,7 @@ class Chat extends ModTemplate {
   // returnOrCreateChatGroupFromMembers will find and return it, otherwise
   // it makes a new group
   //
-  returnOrCreateChatGroupFromMembers(members = null, name = null) {
+  returnOrCreateChatGroupFromMembers(members = null, name = null, update_name = true) {
     if (!members) {
       return null;
     }
@@ -1219,12 +1200,6 @@ class Chat extends ModTemplate {
       id = this.createGroupIdFromMembers(members);
     }
 
-    for (let i = 0; i < this.groups.length; i++) {
-      if (this.groups[i].id == id) {
-        return this.groups[i];
-      }
-    }
-
     if (name == null) {
       name = "";
       for (let i = 0; i < members.length; i++) {
@@ -1238,11 +1213,28 @@ class Chat extends ModTemplate {
         name = name.substring(0, name.length - 2);
       }
     }
+    console.log("ReturnOrCreate: " + name);
 
-    if (this.debug) {
-      console.log("Creating new chat group " + id);
-      console.log(JSON.stringify(members));
+    for (let i = 0; i < this.groups.length; i++) {
+      if (this.groups[i].id == id) {
+        console.log(JSON.parse(JSON.stringify(this.groups[i])));
+        if (update_name && this.groups[i].name != name){
+          this.groups[i].old_name = this.groups[i].name;
+          this.groups[i].name = name;
+        }else if (this.groups[i].old_name){
+          this.groups[i].name = this.groups[i].old_name;
+          delete this.groups[i].old_name;
+        }
+        
+        return this.groups[i];
+      }
     }
+
+
+    //if (this.debug) {
+      console.log("Creating new chat group " + id);
+    //  console.log(JSON.stringify(members));
+    //}
 
     let newGroup = {
       id: id,
@@ -1311,6 +1303,31 @@ class Chat extends ModTemplate {
     return this.groups[0];
   }
 
+  createDefaultChatsFromKeys(){
+    //
+    // create chatgroups from keychain -- friends only
+    //
+    let keys = this.app.keychain.returnKeys();
+    console.log("Populate chat list");
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i].aes_publickey && !keys[i]?.mute) {
+        this.returnOrCreateChatGroupFromMembers(
+          [keys[i].publickey],
+          keys[i].name,
+          false
+        );
+      }
+    }
+
+    //
+    // create chatgroups from groups
+    //
+    let g = this.app.keychain.returnGroups();
+    for (let i = 0; i < g.length; i++) {
+      this.returnOrCreateChatGroupFromMembers(g[i].members, g[i].name, false);
+    }
+    this.app.connection.emit("chat-manager-render-request");
+  }
 
   ///////////////////
   // LOCAL STORAGE //
@@ -1322,9 +1339,12 @@ class Chat extends ModTemplate {
 
     let chat_self = this;
     //console.log("Reading local DB");
+    let count = 0;
     for (let g_id of this.app.options.chat) {
-      //console.log("Fetch", g_id);
+      console.log("Fetch", g_id);
+      count++;
       localforage.getItem(`chat_${g_id}`, function (error, value) {
+        count --;
         //Because this is async, the initialize function may have created an
         //empty default group
 
@@ -1337,8 +1357,11 @@ class Chat extends ModTemplate {
             chat_self.groups.push(value);
           }
 
-          chat_self.app.connection.emit("chat-manager-render-request");
-          //console.log(value);
+          console.log(value);
+        }
+
+        if (count === 0){
+          chat_self.createDefaultChatsFromKeys();
         }
       });
     }
