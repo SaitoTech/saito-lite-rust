@@ -285,8 +285,9 @@ span.attention {
   text-align: center;
 }
 
-.email_field {
+.editable_field {
   border: 1px solid;
+  cursor: text;
 }
 
 .contactAdminWarning {

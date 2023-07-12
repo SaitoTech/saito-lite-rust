@@ -728,7 +728,7 @@ class League extends ModTemplate {
     let new_data = txmsg.new_data;
     let field = txmsg.field;
 
-    if (field !== "email") {
+    if (field !== "email" && field !== "score") {
       console.error("League Update Error: Unknown SQL field");
       return;
     }

@@ -194,11 +194,11 @@ class LeagueOverlay {
       let datetime = this.app.browser.formatDate(player.ts);
       html += `<div class="saito-table-row">
         <div>${this.app.browser.returnAddressHTML(player.publickey)}</div>
-        <div>${Math.round(player.score)}</div>
+        <div class="player_score editable_field" data-id="${player.publickey}" contenteditable="true">${Math.round(player.score)}</div>
         <div>${Math.round(player.games_finished)}</div>
         <div>${Math.round(player.games_started)}</div>
         <div>${datetime.day} ${datetime.month} ${datetime.year}</div>
-        <div class="email_field" data-id="${player.publickey}" contenteditable="true">${player.email}</div>
+        <div class="email_field editable_field" data-id="${player.publickey}" contenteditable="true">${player.email}</div>
         <div class="remove_player" data-id="${player.publickey}"><i class="fas fa-ban"></i></div>
       </div> `;
     }
@@ -231,6 +231,26 @@ class LeagueOverlay {
         }
       }
     });
+
+    Array.from(document.querySelectorAll(".player_score")).forEach(player => {
+      player.onblur = async (e) => {
+        let key = e.currentTarget.dataset.id;
+        let c = await sconfirm(`Change ${this.app.keychain.returnIdentifierByPublicKey(key, true)}'s score?`);
+        if (c) {
+          let new_score = sanitize(player.textContent);
+          new_score = parseInt(new_score);
+
+          let newtx = this.mod.createUpdatePlayerTransaction(this.league.id, key, new_score, "score");
+          this.app.network.propagateTransaction(newtx);
+
+          for (let i = 0; i < this.league.players.length; i++){
+            if (this.league.players[i].publickey === key){
+              this.league.players[i].score = new_score;
+            }
+          }
+        }
+      }
+    })
   }
 }
 
