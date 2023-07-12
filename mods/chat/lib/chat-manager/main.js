@@ -62,6 +62,9 @@ class ChatManager {
       if (group == null) {
         let group = this.mod.returnCommunityChat();
         if (group != null) {
+          if (!Array.isArray(group.txs)) {
+            group.txs = group.txs.msg;
+          }
           this.app.connection.emit("chat-popup-render-request", group);
         }
       } else {
@@ -92,7 +95,7 @@ class ChatManager {
       }
     });
 
-    app.connection.on("open-chat-with", (data = null) => {
+    app.connection.on("open-chat-with", async (data = null) => {
       this.render_popups_to_screen = 1;
 
       //
@@ -117,7 +120,7 @@ class ChatManager {
         group = this.mod.createChatGroup(data.key, data.name);
       } else {
         let name = data.name || app.keychain.returnUsername(data.key);
-        group = this.mod.createChatGroup([app.wallet.returnPublicKey(), data.key], name);
+        group = this.mod.createChatGroup([await app.wallet.getPublicKey(), data.key], name);
       }
 
       //
@@ -179,7 +182,7 @@ class ChatManager {
         last_ts = tx.ts;
       }
 
-      let html = ChatTeaser(this.app, group.name, last_msg, last_ts, group.id, group.unread);
+      let html = ChatTeaser(this.app, group);
       let divid = "saito-user-" + group.id;
 
       let obj = document.getElementById(divid);

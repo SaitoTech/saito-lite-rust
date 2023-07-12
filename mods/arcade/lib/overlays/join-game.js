@@ -21,6 +21,7 @@ class JoinGameOverlay {
   async render() {
     let game_mod = this.app.modules.returnModuleBySlug(this.invite.game_slug);
 
+
     this.overlay.show(await JoinGameOverlayTemplate(this.app, this.mod, this.invite));
     this.overlay.setBackground(game_mod.returnArcadeImg());
     this.attachEvents();
@@ -112,7 +113,9 @@ class JoinGameOverlay {
     if (document.getElementById("arcade-game-controls-watch-game")) {
       document.getElementById("arcade-game-controls-watch-game").onclick = async (e) => {
         this.app.connection.emit("league-overlay-remove-request");
+
         await this.mod.observeGame(this.invite.game_id);
+        
         this.overlay.remove();
         await this.app.browser.logMatomoEvent("GameInvite", "WatchGame", this.invite.game_mod.name);
       };

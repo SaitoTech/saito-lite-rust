@@ -8,6 +8,7 @@
 }
 ,hud-body {
   overflow: scroll;
+  min-height: 20rem;
 }
 .hud-body .status .message {
   padding: 15px;
@@ -23,6 +24,7 @@
 .hud-body .status ul {
   width: 100%;
   background-color: whitesmoke;
+  overflow-y: auto;
 }
 .hud-body .status ul li , .hud-body .status .status-text-menu li {
   cursor: pointer;

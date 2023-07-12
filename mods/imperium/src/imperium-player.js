@@ -600,8 +600,8 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
 //    if (tech_attach_menu_events == 0 && ac.length == 0) {
 //      if (imperium_self.game.state.action_card_order === "simultaneous") {
 //console.log("BROADCASTING MOVES 1: " + JSON.stringify(this.moves));
-//        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.returnPublicKey());
-//        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+//        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
+//        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
 //      }
 //      imperium_self.endTurn();
 //      return;
@@ -649,8 +649,8 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
         // resolve action card simultaneous
         //
         if (imperium_self.game.state.action_card_order === "simultaneous") {
-          imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.returnPublicKey());
-          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+          imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
+          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
         }
         imperium_self.endTurn();
       }
@@ -667,8 +667,8 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
 
     this.playerAcknowledgeNotice(notice, function () { 
       if (imperium_self.game.state.action_card_order === "simultaneous") {
-        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.returnPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+        imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
       }
       imperium_self.endTurn(); 
     });
@@ -2560,7 +2560,7 @@ playerBuyTokens(stage = 0, resolve = 1) {
     this.updateLog("You skip the initiative secondary, as you lack adequate influence...");
     this.updateStatus("Skipping purchase of tokens as insufficient influence...");
     if (resolve == 1) {
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
     }
     this.endTurn();
     return 0;
@@ -2592,23 +2592,15 @@ playerBuyTokens(stage = 0, resolve = 1) {
   let fleet_supply = 0;
   let total_cost = 0;
 
-  imperium_self.lockInterface();
-
   $('.buildchoice').off();
   $('.buildchoice').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-      //salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      //return;
-    }
 
     let id = $(this).attr("id");
 
     if (id == "skip") {
       if (resolve == 1) {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
       }
-      imperium_self.unlockInterface();
       imperium_self.endTurn();
       return;
     }
@@ -2618,11 +2610,10 @@ playerBuyTokens(stage = 0, resolve = 1) {
       total_cost = 3 * (fleet_supply + command_tokens + strategy_tokens);
 
       if (resolve == 1) {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
       }
 
-      imperium_self.unlockInterface();
       imperium_self.playerSelectInfluence(total_cost, function (success) {
 
         if (success == 1) {
@@ -2693,23 +2684,15 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
   this.updateStatus(html);
 
-  imperium_self.lockInterface();
-
   $('.buildchoice').off();
   $('.buildchoice').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-    imperium_self.unlockInterface();
 
     let id = $(this).attr("id");
 
     if (id == "yes") {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
       imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " gets action cards");
       imperium_self.addMove("gain\t" + imperium_self.game.player + "\taction_cards\t2");
       imperium_self.addMove("DEAL\t2\t" + imperium_self.game.player + "\t2");
@@ -2720,8 +2703,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     } else {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
       imperium_self.endTurn();
       imperium_self.updateStatus("submitted...");
       return;
@@ -2751,23 +2734,15 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
   this.updateStatus(html);
 
-  imperium_self.lockInterface();
-
   $('.buildchoice').off();
   $('.buildchoice').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-    imperium_self.unlockInterface();
 
     let id = $(this).attr("id");
 
     if (id == "yes") {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
       imperium_self.addMove("gain\t" + imperium_self.game.player + "\tsecret_objective\t1");
       imperium_self.addMove("DEAL\t6\t" + imperium_self.game.player + "\t1");
       imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
@@ -2777,8 +2752,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
 
     } else {
 
-      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
-      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+      imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+      imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
       imperium_self.endTurn();
       imperium_self.updateStatus("submitted...");
       return;
@@ -2806,18 +2781,10 @@ playerResearchTechnology(mycallback) {
 
   this.updateStatus(html);
 
-  imperium_self.lockInterface();
-
   $('.option').off();
   $('.option').on('mouseenter', function () { let s = $(this).attr("id"); imperium_self.showTechCard(s); });
   $('.option').on('mouseleave', function () { let s = $(this).attr("id"); imperium_self.hideTechCard(s); });
   $('.option').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-    imperium_self.unlockInterface();
 
     let i = $(this).attr("id");
     imperium_self.hideTechCard(i);
@@ -2873,16 +2840,9 @@ playerScoreActionStageVictoryPoints(imperium_self, mycallback, stage = 0) {
   html += '</ul>';
 
   imperium_self.updateStatus(html);
-  imperium_self.lockInterface();
 
   $('.option').off();
   $('.option').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-    imperium_self.unlockInterface();
 
     let action = $(this).attr("id");
     let objective_type = 3;
@@ -2972,16 +2932,8 @@ playerScoreSecretObjective(imperium_self, mycallback, stage = 0) {
 
   imperium_self.updateStatus(html);
 
-  imperium_self.lockInterface();
-
   $('.option').off();
   $('.option').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-    imperium_self.unlockInterface();
 
     let action = $(this).attr("id");
     if (action == "no") {
@@ -3010,16 +2962,9 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
     html += '</ul>';
 
     imperium_self.updateStatus(html);
-    imperium_self.lockInterface();
 
     $('.option').off();
     $('.option').on('click', function () {
-
-      if (!imperium_self.mayUnlockInterface()) {
-//        salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//        return;
-      }
-      imperium_self.unlockInterface();
       mycallback(imperium_self, 0, "");
     });
 
@@ -3057,16 +3002,9 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   html += '</ul>';
 
   imperium_self.updateStatus(html);
-  imperium_self.lockInterface();
 
   $('.option').off();
   $('.option').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-    imperium_self.unlockInterface();
 
     let action = $(this).attr("id");
     let objective_type = 3;
@@ -3111,18 +3049,11 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
 
   let stuff_to_build = [];
 
-  imperium_self.lockInterface();
-
   $('.buildchoice').off();
   $('.buildchoice').on('mouseenter', function () { let s = $(this).attr("id"); imperium_self.showUnit(s); });
   $('.buildchoice').on('mouseleave', function () { let s = $(this).attr("id"); imperium_self.hideUnit(s); });
   $('.buildchoice').on('click', function () {
 
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-    imperium_self.unlockInterface();
     $('.buildchoice').off();
 
     let id = $(this).attr("id");
@@ -3168,7 +3099,6 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
         }
       },
       function() {
-        imperium_self.unlockInterface();
         imperium_self.playerBuildInfrastructure(mycallback, stage);
       },
     );
@@ -3264,7 +3194,6 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   this.updateStatus(html);
 
   let stuff_to_build = [];
-  imperium_self.lockInterface();
 
   let selectUnit = function(id) {
 
@@ -3399,8 +3328,8 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
         imperium_self.addMove("resolve\tplay");
         imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
       } else {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.returnPublicKey());
-        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.app.wallet.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.app.wallet.getPublicKey(), 1);
         imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
       }
 
@@ -3412,7 +3341,6 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
 	if (!c) { return; }
       }
 
-      imperium_self.unlockInterface();
       imperium_self.playerSelectResources(total_cost, function (success) {
 
         if (success == 1) {
@@ -4012,7 +3940,6 @@ playerSelectStrategyAndCommandTokens(cost, mycallback) {
   html += '</ul>';
 
   this.updateStatus(html);
-  this.lockInterface();
 
   $('.textchoice').on('click', function () {
 
@@ -4037,7 +3964,6 @@ playerSelectStrategyAndCommandTokens(cost, mycallback) {
 
 
     if (cost <= selected_cost) { 
-      imperium_self.unlockInterface();
       $('.textchoice').off();
       mycallback(1); 
     }
@@ -4069,7 +3995,6 @@ playerSelectInfluence(cost, mycallback) {
   html += '</ul>';
 
   this.updateStatus(html);
-  this.lockInterface();
 
   let selectInfluence = (action2) => {
 
@@ -4108,7 +4033,6 @@ playerSelectInfluence(cost, mycallback) {
     }
 
     if (cost <= selected_cost) {
-      imperium_self.unlockInterface();
       $('.cardchoice , .textchoice').off();
       mycallback(1);
     }
@@ -4158,7 +4082,6 @@ playerSelectResources(cost, mycallback) {
   html += '</ul>';
 
   this.updateStatus(html);
-  this.lockInterface();
 
 
 console.log("=======================");
@@ -4206,7 +4129,6 @@ console.log("resources: " + imperium_self.game.planets[array_of_cards[idx]].reso
 console.log(cost + " --- " + selected_cost);
 
     if (cost <= selected_cost) { 
-      imperium_self.unlockInterface();
       $('.cardchoice , .textchoice').off();
       mycallback(1); 
     }
@@ -6309,7 +6231,6 @@ playerAllocateNewTokens(player, tokens, resolve_needed = 1, stage = 0, leadershi
       html += '</ul>';
 
       imperium_self.updateStatus(html);
-      imperium_self.lockInterface();
 
       $('.option').off();
       $('.option').on('click', function () {
@@ -6334,7 +6255,7 @@ playerAllocateNewTokens(player, tokens, resolve_needed = 1, stage = 0, leadershi
         if (obj.new_tokens == 0) {
           if (resolve_needed == 1) {
             if (imperium_self.game.confirms_needed > 0 && leadership_primary == 0) {
-              imperium_self.addMove("resolve\ttokenallocation\t1\t" + imperium_self.app.wallet.returnPublicKey());
+              imperium_self.addMove("resolve\ttokenallocation\t1\t" + imperium_self.app.wallet.getPublicKey());
             } else {
               imperium_self.addMove("resolve\ttokenallocation");
             }
@@ -6342,10 +6263,8 @@ playerAllocateNewTokens(player, tokens, resolve_needed = 1, stage = 0, leadershi
           imperium_self.addMove("purchase\t" + player + "\tstrategy\t" + obj.new_strategy);
           imperium_self.addMove("purchase\t" + player + "\tcommand\t" + obj.new_command);
           imperium_self.addMove("purchase\t" + player + "\tfleetsupply\t" + obj.new_fleet);
-          imperium_self.unlockInterface();
           imperium_self.endTurn();
         } else {
-          imperium_self.unlockInterface();
           updateInterface(imperium_self, obj, updateInterface);
         }
 
@@ -6382,16 +6301,8 @@ playerSelectPlayerWithFilter(msg, filter_func, mycallback = null, cancel_func = 
 
   this.updateStatus(html);
 
-  imperium_self.lockInterface();
-
   $('.textchoice').off();
   $('.textchoice').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-    imperium_self.unlockInterface();
 
     let action = $(this).attr("id");
 
@@ -6425,7 +6336,6 @@ playerSelectSectorWithFilter(msg, filter_func, mycallback = null, cancel_func = 
   html += '</ul>';
 
   this.updateStatus(html);
-  this.lockInterface();
 
 
   $('.textchoice').off();
@@ -6442,13 +6352,6 @@ playerSelectSectorWithFilter(msg, filter_func, mycallback = null, cancel_func = 
     }
   });
   $('.textchoice').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-    imperium_self.unlockInterface();
-
 
     let action = $(this).attr("id");
 
@@ -6500,16 +6403,8 @@ playerSelectChoice(msg, choices, elect = "other", mycallback = null) {
 
   this.updateStatus(html);
 
-  this.lockInterface();
-
   $('.textchoice').off();
   $('.textchoice').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-    imperium_self.unlockInterface();
 
     let action = $(this).attr("id");
     mycallback(action);
@@ -6548,8 +6443,6 @@ playerSelectPlanetWithFilter(msg, filter_func, mycallback = null, cancel_func = 
 
   this.updateStatus(html);
 
-  this.lockInterface();
-
   $('.textchoice').off();
   $('.textchoice').on('mouseenter', function () {
     let s = $(this).attr("id");
@@ -6566,13 +6459,6 @@ playerSelectPlanetWithFilter(msg, filter_func, mycallback = null, cancel_func = 
     }
   });
   $('.textchoice').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-    imperium_self.unlockInterface();
-
 
     let action = $(this).attr("id");
     if (action != "cancel") {
@@ -6646,16 +6532,7 @@ playerSelectUnitInSectorWithFilter(msg, sector, filter_func, mycallback = null, 
 
   $('.textchoice').off();
 
-  this.lockInterface();
-
   $('.textchoice').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-    imperium_self.unlockInterface();
-
 
     let action = $(this).attr("id");
 
@@ -6738,15 +6615,7 @@ playerSelectUnitWithFilter(msg, filter_func, mycallback = null, cancel_func = nu
 
   $('.textchoice').off();
 
-  this.lockInterface();
-
   $('.textchoice').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-    imperium_self.unlockInterface();
 
     let action = $(this).attr("id");
 
@@ -6826,17 +6695,9 @@ playerSelectOpponentUnitInSectorWithFilter(msg, sector, filter_func, mycallback 
   html += '</ul>';
 
   this.updateStatus(html);
-  this.lockInterface();
 
   $('.textchoice').off();
   $('.textchoice').on('click', function () {
-
-    if (!imperium_self.mayUnlockInterface()) {
-//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-//      return;
-    }
-    imperium_self.unlockInterface();
-
 
     let action = $(this).attr("id");
 

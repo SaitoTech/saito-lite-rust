@@ -1,14 +1,32 @@
-.saito-notification-counter {
-  position: absolute;
-  top: -0.5rem;
-  right: 0;
-  font-size: 1.25rem;
-  line-height: 2rem;
-  text-align: center;
+/*  alert  */
+
+.saito-notification-dot {
   width: 2rem;
   height: 2rem;
   border-radius: 0.5rem;
-  color: var(--saito-white);
   background-color: var(--saito-primary);
-  overflow: auto;
+  color: var(--saito-white);
+  position: absolute;
+  bottom: 2.5rem;
+  left: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.online-status-indicator:after {
+  position: absolute;
+  display: none;
+  content: "";
+  border-radius: 100%;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--saito-primary);
+}
+
+.online .online-status-indicator:after {
+  display: block;
+  top: 2.5rem;
+  left: 4rem;
+  box-shadow: 0 0 3px 1px;
 }

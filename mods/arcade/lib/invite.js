@@ -4,7 +4,7 @@ const InviteTemplateSparse = require("./invite.template.sparse");
 const JSON = require("json-bigint");
 
 class Invite {
-  constructor(app, mod, container, type, tx = null) {
+  constructor(app, mod, container, type, tx = null, publicKey = "") {
     this.app = app;
     this.mod = mod;
     this.container = container;
@@ -64,6 +64,7 @@ class Invite {
         this.invite_data.ts = txmsg.ts;
       }
 
+      let alt_game_type = "";
       //We still don't know the exact data structures for specified invite(s)
       //But it isn't going to be a single string pushed into an array!
       if (txmsg.options?.desired_opponent_publickey) {
@@ -74,7 +75,9 @@ class Invite {
         }
 
         //Invitation / Challenge ?
-        if (app.wallet.returnPublicKey() == txmsg.options.desired_opponent_publickey) {
+
+        if (publicKey == txmsg.options.desired_opponent_publickey) {
+          alt_game_type = "direct invite ";
           this.invite_data.game_type = "direct invite";
         }
       }
@@ -99,31 +102,44 @@ class Invite {
       let defaultOptions = game_mod.returnDefaultGameOptions();
       let defaultKeys = Object.keys(defaultOptions);
       let inviteKeys = Object.keys(txmsg.options);
+
       if (defaultKeys.length == inviteKeys.length) {
         for (const key of defaultKeys) {
           if (defaultOptions[key] !== txmsg.options[key] && !key.includes("game-wizard-players")) {
-            console.log(key, defaultOptions[key], txmsg.options[key]);
+            alt_game_type += "custom ";
             this.invite_data.game_type = "custom game";
             break;
           }
         }
       } else {
+        alt_game_type += "custom ";
         this.invite_data.game_type = "custom game";
       }
 
       //Crypto Game
       if (txmsg.options?.crypto) {
+        alt_game_type += txmsg.options.crypto + " ";
         this.invite_data.game_type = `${txmsg.options.crypto} game`;
       }
 
       //League
+
       if (txmsg.options?.league_id) {
+        this.invite_data.league = txmsg.options.league_id;
+        alt_game_type += "league ";
         this.invite_data.game_type = "league game";
       }
 
       //Private (only shown to the originator)
       if (txmsg.request === "private") {
+        alt_game_type += "private ";
         this.invite_data.game_type = "private game";
+      }
+      alt_game_type += "game";
+      if (alt_game_type == "game") {
+        this.invite_data.verbose_game_type = "standard game open invitation";
+      } else {
+        this.invite_data.verbose_game_type = alt_game_type;
       }
     }
 
@@ -157,17 +173,23 @@ class Invite {
   attachEvents() {
     let qs = `#saito-game-${this.invite_data.game_id}`;
 
-    document.querySelector(qs).onclick = async (e) => {
-      e.stopImmediatePropagation();
+    try {
+      if (typeof document.querySelector(qs) != "undefined") {
+        document.querySelector(qs).onclick = async (e) => {
+          e.stopImmediatePropagation();
 
-      await this.app.browser.logMatomoEvent(
-        "GameInvite",
-        this.invite_data.game_status,
-        this.invite_data.game_mod.name
-      );
-      let game_overlay = new JoinGameOverlay(this.app, this.mod, this.invite_data);
-      await game_overlay.render();
-    };
+          await this.app.browser.logMatomoEvent(
+            "GameInvite",
+            this.invite_data.game_status,
+            this.invite_data.game_mod.name
+          );
+          let game_overlay = new JoinGameOverlay(this.app, this.mod, this.invite_data);
+          await game_overlay.render();
+        };
+      }
+    } catch(err){
+      console.log(err);
+    }
   }
 }
 

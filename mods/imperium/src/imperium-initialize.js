@@ -3,13 +3,13 @@
 
 
 
-  initializeHTML(app) {
+  render(app) {
 
     if (!this.browser_active) { return; }
 
     let imperium_self = this;
 
-    super.initializeHTML(app);
+    super.render(app);
 
     try {
 
@@ -19,7 +19,6 @@
     //
     // menu
     //
-
     this.menu.addMenuOption("game-game", "Game");
 
     this.menu.addSubMenuOption("game-game", {
@@ -74,6 +73,58 @@
 	game_mod.strategy_card_overlay.render();
       }
     });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Objectives",
+      id : "game-objectives",
+      class : "gams-objectives",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	game_mod.handleObjectivesMenuItem();
+      }
+    });
+
+
+
+    //
+    // agendas
+    //
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Agendas",
+      id : "game-agendas",
+      class : "game-agendas",
+      callback : function(app, game_mod) {
+         game_mod.menu.showSubSubMenu("game-agendas");
+      }
+    });
+    this.menu.addSubMenuOption("game-agendas", {
+      text : "All" ,
+      id : "game-agendas-all",
+      class : "game-agendas-all",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        let cards = game_mod.returnAgendaCards();
+        game_mod.agendas_overlay.render(cards);
+      }
+    });
+    this.menu.addSubMenuOption("game-agendas", {
+      text : "Active" ,
+      id : "game-agendas-active",
+      class : "game-agendas-active",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	game_mod.handleAgendasMenuItem();
+      }
+    });
+    this.menu.addSubMenuOption("game-agendas", {
+      text : "Laws" ,
+      id : "game-agendas-laws",
+      class : "game-agendas-laws",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.handleLawsMenuItem();
+      }
+    });
+
 
     this.menu.addSubMenuOption("game-cards", {
       text : "Tech",
@@ -113,7 +164,7 @@
 	  let tech = game_mod.returnTechnology();
           let t2 = [];
           for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
-          game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/backgrounds/unit-upgrades.jpg" , padding : "50px"});
+          game_mod.upgrades_overlay.render({ tech : t2 , img : "/imperium/img/backgrounds/unit-upgrades.jpg" });
         }
     });
     for (let i = 0; i < this.game.players.length; i++) {
@@ -156,13 +207,11 @@
 	let ac = game_mod.returnActionCards();
 	let ac2 = [];
 	for (let x in ac) {
-console.log(JSON.stringify(x));
 	  if (x.indexOf("2") > 0 || x.indexOf("3") > 0 || x.indexOf("4") > 0 || x.indexOf("5") > 0 ) {
 	  } else {
 	    ac2.push(ac[x]);
 	  }
 	}
-console.log("ACT: " + JSON.stringify(ac2));
         game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac2, {});
       }
     });
@@ -252,6 +301,7 @@ console.log("ACT: " + JSON.stringify(ac2));
     // this.stage_ii_objectives
     // this.secret_objectives
     // this.promissary_notes
+    // this.sectors 
     //
 
     //
@@ -570,7 +620,6 @@ console.log("ACT: " + JSON.stringify(ac2));
     }
 
 
-
     //
     // update planets with tile / sector info
     //
@@ -618,46 +667,31 @@ console.log("ACT: " + JSON.stringify(ac2));
     // display board
     //
     for (let i in this.game.board) {
-  
-      // add html to index
-      let boardslot = "#" + i;
 
-try {
-      $(boardslot).html(
-        ' \
-          <div class="hexIn" id="hexIn_'+i+'"> \
-            <div class="hexLink" id="hexLink_'+i+'"> \
-            <div class="hexInfo" id="hex_info_'+i+'"></div> \
-              <div class="hex_bg" id="hex_bg_'+i+'"> \
-                <img class="hex_img sector_graphics_background '+this.game.board[i].tile+'" id="hex_img_'+i+'" src="" /> \
-                <img src="/imperium/img/frame/border_full_white.png" id="hex_img_faction_border_'+i+'" class="faction_border" /> \
-                <img src="/imperium/img/frame/border_full_yellow.png" id="hex_img_hazard_border_'+i+'" class="hazard_border" /> \
-                <div class="hex_activated" id="hex_activated_'+i+'"> \
-              </div> \
-                <div class="hex_space" id="hex_space_'+i+'"> \
-              </div> \
-                <div class="hex_ground" id="hex_ground_'+i+'"> \
-              </div> \
-              </div> \
-            </div> \
-          </div> \
-        '
-      );
-  
+      // add html to index
+      let boardslot = ".sector_" + i;
+
+console.log("initing sector: " + i);
+
+      this.sectors[i] = new Sector(this.app, this, boardslot, i);
+      this.sectors[i].render();
+
+      //
       // insert planet
+      //
       let planet_div = "#hex_img_"+i;
       $(planet_div).attr("src", this.game.sectors[this.game.board[i].tile].img);
 
-      // add planet info
-  
-      this.updateSectorGraphics(i);
-} catch (err) {}
-        
     }
   
   
     this.updateLeaderboard();
   
+    //
+    // faction dashboard
+    //
+    this.displayFactionDashboard();
+
 
     //
     // prevent hangs
@@ -669,7 +703,6 @@ try {
     // add events to board 
     //
     try {
-      this.addEventsToBoard();
       this.addUIEvents();
     } catch (err) {
      

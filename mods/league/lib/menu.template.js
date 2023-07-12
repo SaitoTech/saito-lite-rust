@@ -1,5 +1,4 @@
-module.exports = (app, mod, league) => {
-
+module.exports = async (app, mod, league) => {
   let html = `
       <div class="league-component-existing-league-box" id="lg${league.id}">
         <div class="league-component-existing-league-details">
@@ -11,23 +10,24 @@ module.exports = (app, mod, league) => {
         </div>
         <div class="league-component-existing-league-controls">`;
 
-    if (league.rank < 0){
-     html +=`<button class="league-component-existing-league league-join-button">Join</button>`; 
-    }
+  if (league.rank < 0 && league.admin) {
+    html += `<button class="league-component-existing-league league-join-button">Join</button>`;
+  }
 
-    html +=`<button class="league-component-existing-league league-view-button">View</button>`;
+  html += `<button class="league-component-existing-league league-view-button">View</button>`;
 
-    if (!league.admin){
-      html += `<button class="league-component-existing-league league-edit-button">Edit</button>`;
-    }
+  if (!league.admin) {
+    html += `<button class="league-component-existing-league league-edit-button">Edit</button>`;
+    html += `<button class="league-component-existing-league league-sudo-button">Admin</button>`;
+  }
 
-    if (app.wallet.returnPublicKey() == league.admin) { 
-      html += `<button class="league-component-existing-league league-edit-button">Edit</button>`;
-      html += `<button class="league-component-existing-league league-invite-button">Invite</button>`;
-      html += `<button class="league-component-existing-league league-delete-button">Delete</button>`;
-    }
+  if ((await app.wallet.getPublicKey()) == league.admin) {
+    html += `<button class="league-component-existing-league league-edit-button">Edit</button>`;
+    html += `<button class="league-component-existing-league league-invite-button">Invite</button>`;
+    html += `<button class="league-component-existing-league league-delete-button">Delete</button>`;
+  }
 
   html += `</div></div>`;
 
   return html;
-}
+};

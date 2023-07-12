@@ -43,7 +43,7 @@ class ProductionOverlay {
 
   attachEvents() {
 
-    document.querySelectorAll(".production-table .unit-table.small .unit-element").forEach((el) => {
+    document.querySelectorAll(".production-table .unit").forEach((el) => {
       el.onclick = (e) => {
         let desc = el.querySelector(".unit-description");
 	let amount = parseInt(desc.getAttribute("data-amount"));

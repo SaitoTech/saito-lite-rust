@@ -71,6 +71,8 @@ font imports
   --saito-arcade-header-background: var(--dreamscape);
   --saito-modal-background: var(--dreamscape);
   --saito-font-color-dark-modal: #efefef;
+  --saito-faded-icon-font: #6a6a6a;
+  --saito-faded-icon-border: #d7d7d7;
 }
 
 html[data-theme="dark"] {
@@ -85,14 +87,16 @@ html[data-theme="dark"] {
   --saito-border-color-dark: #666;
   --saito-border: 1px solid #c5c5c5bb;
   --saito-background-color: #211f25;
-  --saito-background-light: #181a29;
+  --saito-background-light: #333;
   --saito-gray-transparent: #88888818;
   --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
-  --saito-arcade-header-background: transparent;
+  --saito-arcade-header-background: var(--saito-background-color);
   --saito-button-background: var(--saito-primary);
   --saito-modal-background: #2e2636;
   --saito-font-color-dark-modal: #efefef;
+  --saito-faded-icon-font: #bdbaba;
+  --saito-faded-icon-border: #000;
 }
 
 html[data-theme="arcade"] {

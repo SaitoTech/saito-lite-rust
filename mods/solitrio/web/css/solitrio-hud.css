@@ -1,0 +1,15 @@
+
+.status {
+    background-color: whitesmoke;
+    padding: 1rem;
+}
+
+.controls {
+    overflow-y: none;
+}
+.controls ul {
+    border-radius: 0.5rem;
+}
+
+
+

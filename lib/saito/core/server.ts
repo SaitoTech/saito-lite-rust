@@ -3,16 +3,10 @@ import express from "express";
 import { Server as Ser } from "http";
 import S from "saito-js/index.node";
 
-// const io          = require('socket.io')(webserver, {
-//   cors: {
-//     origin: "*.*",
-//     methods: ["GET", "POST"]
-//   }
-// });
 import fs from "fs";
 import path from "path";
 import bodyParser from "body-parser";
-import { WebSocket } from "ws";
+import ws from "ws";
 import process from "process";
 import CustomSharedMethods from "saito-js/lib/custom/custom_shared_methods";
 import { parse } from "url";
@@ -22,9 +16,11 @@ import Factory from "../factory";
 import PeerServiceList from "saito-js/lib/peer_service_list";
 import Block from "../block";
 
+import fetch from "node-fetch";
+
 const JSON = require("json-bigint");
-const app = express();
-const webserver = new Ser(app);
+const expressApp = express();
+const webserver = new Ser(expressApp);
 
 export class NodeSharedMethods extends CustomSharedMethods {
   public app: Saito;
@@ -59,7 +55,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
     try {
       console.log("connecting to " + url + "....");
-      let socket = new WebSocket(url);
+      let socket = new ws.WebSocket(url);
       let index = S.getInstance().addNewSocket(socket);
 
       socket.on("message", (buffer: any) => {
@@ -127,11 +123,14 @@ export class NodeSharedMethods extends CustomSharedMethods {
   }
 
   fetchBlockFromPeer(url: string): Promise<Uint8Array> {
+    console.log("fetching block from peer: " + url);
     return fetch(url)
       .then((res: any) => {
+        console.log("block data fetched for " + url);
         return res.arrayBuffer();
       })
       .then((buffer: ArrayBuffer) => {
+        console.log("buffer fetched for block : " + buffer.byteLength);
         return new Uint8Array(buffer);
       });
   }
@@ -233,7 +232,7 @@ class Server {
     this.server_file_encoding = "utf8";
   }
 
-  initializeWebSocketServer(app) {
+  initializeWebSocketServer() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const ws = require("ws");
 
@@ -242,8 +241,8 @@ class Server {
       // port:5001, // TODO : setup this correctly
       path: "/wsopen",
     });
-    app.on("upgrade", (request: any, socket: any, head: any) => {
-      console.log(" ----> " + request.url);
+    webserver.on("upgrade", (request: any, socket: any, head: any) => {
+      console.log("connection upgrade ----> " + request.url);
       const { pathname } = parse(request.url);
       if (pathname === "/wsopen") {
         wss.handleUpgrade(request, socket, head, (websocket: any) => {
@@ -252,6 +251,9 @@ class Server {
       } else {
         socket.destroy();
       }
+    });
+    webserver.on("error", (error) => {
+      console.error("error on express : ", error);
     });
     wss.on("connection", (socket: any, request: any) => {
       let index = S.getInstance().addNewSocket(socket);
@@ -262,6 +264,9 @@ class Server {
       });
       socket.on("close", () => {
         S.getLibInstance().process_peer_disconnection(index);
+      });
+      socket.on("error", (error) => {
+        console.error("error on socket : " + index, error);
       });
       S.getLibInstance().process_new_peer(index, null);
     });
@@ -354,7 +359,7 @@ class Server {
     //
     // save options
     //
-    this.app.options.server = this.server;
+    this.app.options.server = Object.assign(this.app.options.server, this.server);
     console.log("SAVE OPTIONS IN SERVER 2");
     this.app.storage.saveOptions();
 
@@ -365,13 +370,13 @@ class Server {
     //io.origins('*:*');
 
     // body-parser
-    app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(bodyParser.json());
+    expressApp.use(bodyParser.urlencoded({ extended: true }));
+    expressApp.use(bodyParser.json());
 
     /////////////////
     // full blocks //
     /////////////////
-    app.get("/blocks/:bhash/:pkey", async (req, res) => {
+    expressApp.get("/blocks/:bhash/:pkey", async (req, res) => {
       const bhash = req.params.bhash;
       if (bhash == null) {
         return;
@@ -454,7 +459,7 @@ class Server {
     /////////////////
     // lite-blocks //
     /////////////////
-    app.get("/lite-block/:bhash/:pkey?", async (req, res) => {
+    expressApp.get("/lite-block/:bhash/:pkey?", async (req, res) => {
       if (req.params.bhash == null) {
         return;
       }
@@ -550,7 +555,7 @@ class Server {
       }
     });
 
-    app.get("/block/:hash", async (req, res) => {
+    expressApp.get("/block/:hash", async (req, res) => {
       try {
         const hash = req.params.hash;
         console.debug("server giving out block : " + hash);
@@ -573,6 +578,7 @@ class Server {
         res.end(buffer);
       } catch (err) {
         console.log("ERROR: server cannot feed out block");
+        res.sendStatus(404);
       }
     });
 
@@ -615,7 +621,7 @@ class Server {
     /////////
     // web //
     /////////
-    app.get("/options", (req, res) => {
+    expressApp.get("/options", (req, res) => {
       //this.app.storage.saveClientOptions();
       // res.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
       // res.setHeader("expires","-1");
@@ -625,20 +631,19 @@ class Server {
         const fd = fs.openSync(client_options_file, "w");
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        fs.writeSync(fd, this.app.storage.returnClientOptions(), this.server_file_encoding);
+        fs.writeSync(fd, this.app.storage.getClientOptions(), this.server_file_encoding);
         fs.closeSync(fd);
       }
       res.sendFile(client_options_file);
       //res.send(this.app.storage.returnClientOptions());
-      return;
     });
 
-    app.get("/r", (req, res) => {
+    expressApp.get("/r", (req, res) => {
       res.sendFile(this.web_dir + "refer.html");
       return;
     });
 
-    app.get("/saito/saito.js", (req, res) => {
+    expressApp.get("/saito/saito.js", (req, res) => {
       //
       // may be useful in the future, if we gzip
       // files before releasing for production
@@ -671,7 +676,7 @@ class Server {
 
     //
     // make root directory recursively servable
-    app.use(express.static(this.web_dir));
+    expressApp.use(express.static(this.web_dir));
     //
 
     /////////////
@@ -681,9 +686,9 @@ class Server {
     // res.write -- have to use res.end()
     // res.send --- is combination of res.write() and res.end()
     //
-    this.app.modules.webServer(app, express);
+    this.app.modules.webServer(expressApp, express);
 
-    app.get("*", (req, res) => {
+    expressApp.get("*", (req, res) => {
       res.status(404).sendFile(`${this.web_dir}404.html`);
       res.status(404).sendFile(`${this.web_dir}tabs.html`);
     });
@@ -692,9 +697,11 @@ class Server {
     // console.log("IO CONNECTION on SERVER: ");
     //       this.app.network.addRemotePeer(socket);
     //     });
-    this.initializeWebSocketServer(webserver);
+    this.initializeWebSocketServer();
 
-    webserver.listen(this.server.port);
+    webserver.listen(this.server.port, () => {
+      console.log("web server is listening");
+    });
     // try webserver.listen(this.server.port, {cookie: false});
     this.webserver = webserver;
   }

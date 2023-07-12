@@ -11,7 +11,7 @@
         var twilight_self = this;
 
         twilight_self.addMove("resolve\tsuezcrisis");
-        twilight_self.updateStatusHeader("Remove four influence from Israel, UK or France");
+        twilight_self.updateStatus("Remove four influence from Israel, UK or France");
 
         var ops_to_purge = 4;
         var options_purge = [];

@@ -16,7 +16,7 @@ class SettingsAppspaceSidebar {
     if (document.querySelector(".settings-appspace-sidebar")) {
       this.app.browser.replaceElementBySelector(SettingsAppspaceSidebarTemplate(this.app, this.mod), ".settings-appspace-sidebar");
     } else {
-      this.app.browser.addElementToSelectorOrDom(SettingsAppspaceSidebarTemplate(this.app, this.mod), this.container);
+      this.app.browser.addElementToSelector(SettingsAppspaceSidebarTemplate(this.app, this.mod), this.container);
     }
 
     document.querySelector(".settings-sidebar-nuke").onclick = async (e) => {

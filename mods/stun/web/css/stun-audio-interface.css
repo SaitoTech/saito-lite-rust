@@ -1,0 +1,39 @@
+.small-audio-chatbox {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    position: absolute;
+    z-index: 200;
+    bottom: 0;
+}
+
+
+.audio-box {
+    display: inline-block !important;
+    height: 100%;
+    width: 100%;
+}
+
+
+.audio-box.speaking {
+    border-color: var(--saito-secondary);
+    animation: speaker-pulse .1s infinite;
+}
+
+  @keyframes speaker-pulse {
+    0%, 100% {
+        box-shadow: 0 0 20px 10px var(--saito-secondary);
+        border-color: var(--saito-secondary);
+      }
+      50% {
+        box-shadow: 0 0 20px 10px var(--saito-primary);
+        border-color: var(--saito-primary);
+      }
+  }
+
+
+
+  
+
+
+

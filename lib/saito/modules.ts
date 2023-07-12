@@ -220,9 +220,10 @@ class Mods {
     // .. and setup active module
     //
     if (this.app.BROWSER) {
+      await this.app.modules.render();
+      // deprecate initializeHTML but make sure all render functions call attachEvents
       await this.app.modules.initializeHTML();
       await this.app.modules.attachEvents();
-      await this.app.modules.render();
     }
   }
 
@@ -259,30 +260,30 @@ class Mods {
     });
   }
 
-  async returnModulesRespondingTo(request) {
+  async returnModulesRespondingTo(request, obj = null) {
     let m = [];
     for (let mod of this.mods) {
-      if ((await mod.respondTo(request)) != null) {
+      if ((await mod.respondTo(request, obj)) != null) {
         m.push(mod);
       }
     }
     return m;
   }
 
-  async respondTo(request) {
+  async respondTo(request, obj = null) {
     let m = [];
     for (let mod of this.mods) {
-      if ((await mod.respondTo(request)) != null) {
+      if ((await mod.respondTo(request, obj)) != null) {
         m.push(mod);
       }
     }
     return m;
   }
 
-  async getRespondTos(request) {
+  async getRespondTos(request, obj = null) {
     const compliantInterfaces = [];
     for (const mod of this.mods) {
-      const itnerface = await mod.respondTo(request);
+      const itnerface = await mod.respondTo(request, obj);
       if (itnerface != null) {
         if (Object.keys(itnerface)) {
           compliantInterfaces.push({ ...itnerface, modname: mod.returnName() });
@@ -385,9 +386,9 @@ class Mods {
     }
   }
 
-  onWalletReset() {
+  onWalletReset(nuke = false) {
     for (let i = 0; i < this.mods.length; i++) {
-      this.mods[i].onWalletReset();
+      this.mods[i].onWalletReset(nuke);
     }
   }
 

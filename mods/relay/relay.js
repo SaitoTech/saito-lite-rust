@@ -25,6 +25,7 @@ class Relay extends ModTemplate {
       if (obj.recipient === "PEERS") {
         let peers = [];
         let p = await app.network.getPeers();
+        console.log("peers ", p);
         for (let i = 0; i < p.length; i++) {
           peers.push(p[i].publicKey);
         }

@@ -13680,7 +13680,7 @@ class HereIStand extends GameTemplate {
           //
           // this ensures we clear regardless of choice
           //
-          his_self.addMove("RESOLVE\t" + his_self.app.wallet.returnPublicKey());
+          his_self.addMove("RESOLVE\t" + his_self.app.wallet.getPublicKey());
 
           //
           // events in play

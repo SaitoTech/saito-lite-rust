@@ -5,29 +5,97 @@ const Link = require("./link");
 const Image = require("./image");
 const Post = require("./post");
 const JSON = require("json-bigint");
+const Transaction = require("../../../lib/saito/transaction");
 
 class Tweet {
-   constructor(app, mod, container = "", tx = null) {
+  constructor(app, mod, container = "", tx = null) {
     this.app = app;
     this.mod = mod;
     this.container = container;
     this.name = "Tweet";
+
+    //
+    // the core
+    //
     this.tx = tx;
-    // this.tx = tx;
+
+    //
+    // ancillary content is stored in the tx.optional array, where it
+    // can be saved back to the network of archive nodes / databases and
+    // preserved along with the transaction as optional (unverified) but
+    // associated content.
+    //
+    // this includes information like the number of replies, retweets,
+    // likes, and information like open graph images, etc.
+    //
     if (!this.tx.optional) {
       this.tx.optional = {};
+    }
+    if (!this.tx.optional.num_replies) {
       this.tx.optional.num_replies = 0;
+    }
+    if (!this.tx.optional.num_retweets) {
       this.tx.optional.num_retweets = 0;
+    }
+    if (!this.tx.optional.num_likes) {
       this.tx.optional.num_likes = 0;
     }
+    if (!this.tx.optional.link_properties) {
+      this.tx.optional.link_properties = null;
+    }
+    if (!this.tx.optional.parent_id) {
+      this.tx.optional.parent_id = "";
+    }
+    if (!this.tx.optional.thread_id) {
+      this.tx.optional.thread_id = "";
+    }
+    let txmsg = tx.returnMessage();
+    //
+    // comments will specify parent and thread ids, so we should capture that in the optional
+    // field here in the constructor so that we can guarantee they exist
+    //
+    if (txmsg.data) {
+      if (txmsg.data.parent_id) {
+        this.tx.optional.parent_id = txmsg.data.parent_id;
+      }
+      if (txmsg.data.thread_id) {
+        this.tx.optional.thread_id = txmsg.data.thread_id;
+      }
+    }
 
+    //
+    // additional variables are created in-memory from the core transaction
+    // without the need for re-saving, these are specified below.
+    //
     this.text = "";
-    this.parent_id = "";
-    this.thread_id = "";
     this.youtube_id = null;
     this.created_at = this.tx.timestamp;
     this.updated_at = 0;
+
+    //
+    // the notice shows up at the top of the tweet BEFORE the username and
+    // is used for "retweeted by X" or "liked by Y". the userline is the
+    // line that goes in the tweet header below the username/address but to
+    // the right of the identicon.
+    //
     this.notice = "";
+    this.userline = "";
+
+    //
+    // default userline is time of posting
+    //
+    let dt = app.browser.formatDate(this.tx.timestamp);
+    this.userline =
+      "posted on " +
+      dt.month +
+      " " +
+      dt.day +
+      ", " +
+      dt.year +
+      " at  " +
+      dt.hours +
+      ":" +
+      dt.minutes;
 
     this.user = new SaitoUser(
       app,
@@ -35,8 +103,6 @@ class Tweet {
       `.tweet-${this.tx.signature} > .tweet-header`,
       this.tx.from[0].publicKey
     );
-
-    console.log(this.user, 'user')
 
     this.children = [];
     this.children_sigs_hmap = {};
@@ -51,57 +117,36 @@ class Tweet {
     this.retweet_tx_sig = null;
     this.links = [];
     this.link = null;
-    this.link_properties = null;
     this.show_controls = 1;
     this.force_long_tweet = false;
     this.is_long_tweet = false;
     this.is_retweet = false;
-
-    this.init(app, mod)
-  }
-
-  async init(app, mod){
-  
-    // let tx = this.tx
-    let txmsg = await this.tx.returnMessage()
-
-    //
-    // userline will be set to this in template if not specified
-    //
-    // we specify it to indicate why it is showing up now!
-    //
-    //  let dt = app.browser.formatDate(tweet.tx.timestamp);
-    //  let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
-    //
-    this.userline = "";
-    //
-    //
-   
     try {
       this.setKeys(txmsg.data);
     } catch (err) {
       console.log("ERROR 1: " + err);
     }
     try {
-      this.setKeys(this.tx.optional);
+      this.setKeys(tx.optional);
     } catch (err) {
       console.log("ERROR 2: " + err);
     }
+
     this.generateTweetProperties(app, mod, 1);
 
     //
-    // create retweet if exists
+    // retweets
     //
     if (this.retweet_tx != null) {
-      let newtx = new saito.default.transaction();
+      let newtx = new Transaction();
       newtx.deserialize_from_web(this.app, this.retweet_tx);
       this.retweet = new Tweet(this.app, this.mod, `.tweet-preview-${this.tx.signature}`, newtx);
       this.retweet.is_retweet = true;
       this.retweet.show_controls = 0;
+      //
+      // image preview
+      //
     } else {
-      //
-      // create image preview
-      //
       if (this.images?.length > 0) {
         this.img_preview = new Image(
           this.app,
@@ -122,6 +167,74 @@ class Tweet {
     }
   }
 
+  async init(app, mod) {
+    // let tx = this.tx
+    let txmsg = await this.tx.returnMessage();
+
+    //
+    // userline will be set to this in template if not specified
+    //
+    // we specify it to indicate why it is showing up now!
+    //
+    //  let dt = app.browser.formatDate(tweet.tx.timestamp);
+    //  let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
+    //
+    this.userline = "";
+    //
+    //
+
+    try {
+      this.setKeys(txmsg.data);
+    } catch (err) {
+      console.log("ERROR 1: " + err);
+    }
+    try {
+      this.setKeys(this.tx.optional);
+    } catch (err) {
+      console.log("ERROR 2: " + err);
+    }
+    await this.generateTweetProperties(app, mod, 1);
+
+    //
+    // retweets
+    //
+    if (this.retweet_tx != null) {
+      let newtx = new Transaction();
+      newtx.deserialize_from_web(this.app, this.retweet_tx);
+      this.retweet = new Tweet(this.app, this.mod, `.tweet-preview-${this.tx.signature}`, newtx);
+      this.retweet.is_retweet = true;
+      this.retweet.show_controls = 0;
+      //
+      // image preview
+      //
+    } else {
+      if (this.images?.length > 0) {
+        this.img_preview = new Image(
+          this.app,
+          this.mod,
+          `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-preview`,
+          this
+        );
+      } else {
+        if (this.link != null) {
+          this.link_preview = new Link(
+            this.app,
+            this.mod,
+            `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-preview`,
+            this
+          );
+        }
+      }
+    }
+  }
+
+  isRendered() {
+    if (document.querySelector(`.tweet-${this.tx.signature}`)) {
+      return true;
+    }
+    return false;
+  }
+
   remove() {
     let eqs = `.tweet-${this.tx.signature}`;
     if (document.querySelector(eqs)) {
@@ -131,6 +244,12 @@ class Tweet {
 
   render(prepend = false) {
     let myqs = `.tweet-${this.tx.signature}`;
+
+    // double-rendering is possible with commented retweets
+    if (this.isRendered()) {
+      return;
+    }
+
     let replace_existing_element = true;
     let replace_nothing = false;
     let has_reply = false;
@@ -201,7 +320,7 @@ class Tweet {
     }
 
     //
-    // retweetsnw without commentary? pass-through and render subtweet
+    // retweets without commentary? pass-through and render subtweet
     //
     //
     // this is if i retweet my own tweet
@@ -233,7 +352,7 @@ class Tweet {
     }
 
     if (!this.container || this.container == "") {
-      this.container = ".redsquare-appspace-body";
+      this.container = ".tweet-manager";
     }
 
     if (replace_existing_element && document.querySelector(myqs)) {
@@ -320,8 +439,8 @@ class Tweet {
       this.img_preview.render();
     }
     if (this.link_preview != null) {
-      if (this.link_properties != null) {
-        if (Object.keys(this.link_properties).length > 0) {
+      if (this.tx.optional.link_properties != null) {
+        if (Object.keys(this.tx.optional.link_properties).length > 0) {
           this.link_preview.render();
         }
       }
@@ -516,7 +635,6 @@ class Tweet {
             highlightedText = document.selection.createRange().text;
           }
           if (highlightedText != "") {
-            console.log("text highlighted: exiting");
             return;
           }
 
@@ -538,13 +656,6 @@ class Tweet {
                 window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.signature}`);
                 let sig = this.tx.signature;
                 app.connection.emit("redsquare-home-tweet-render-request", this);
-                app.connection.emit("redsquare-home-loader-render-request");
-                mod.loadChildrenOfTweet(sig, (tweets) => {
-                  app.connection.emit("redsquare-home-loader-hide-request");
-                  for (let i = 0; i < tweets.length; i++) {
-                    app.connection.emit("redsquare-home-tweet-append-render-request", tweets[i]);
-                  }
-                });
               }
             }
             return;
@@ -557,13 +668,6 @@ class Tweet {
             window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.signature}`);
             let sig = this.tx.signature;
             app.connection.emit("redsquare-home-tweet-render-request", this);
-            app.connection.emit("redsquare-home-loader-render-request");
-            mod.loadChildrenOfTweet(sig, (tweets) => {
-              app.connection.emit("redsquare-home-loader-hide-request");
-              for (let i = 0; i < tweets.length; i++) {
-                app.connection.emit("redsquare-home-tweet-append-render-request", tweets[i]);
-              }
-            });
           }
         };
       }
@@ -605,10 +709,7 @@ class Tweet {
             ".tweet-overlay"
           );
 
-          let newtx = new saito.default.transaction(
-            undefined,
-            JSON.parse(JSON.stringify(this.tx.toJson()))
-          );
+          let newtx = new Transaction(undefined, JSON.parse(JSON.stringify(this.tx.toJson())));
           newtx.signature = this.app.crypto.hash(newtx.signature);
           let new_tweet = new Tweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, newtx);
           new_tweet.show_controls = 0;
@@ -620,7 +721,7 @@ class Tweet {
       // retweet //
       /////////////
       document.querySelector(
-        `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-retweet`
+        `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-retweet`
       ).onclick = (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -640,10 +741,7 @@ class Tweet {
             ".tweet-overlay"
           );
 
-          let newtx = new saito.default.transaction(
-            undefined,
-            JSON.parse(JSON.stringify(this.tx.toJson()))
-          );
+          let newtx = new Transaction(undefined, JSON.parse(JSON.stringify(this.tx.toJson())));
           newtx.signature = this.app.crypto.hash(newtx.signature);
           let new_tweet = new Tweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, newtx);
           new_tweet.show_controls = 0;
@@ -806,7 +904,7 @@ class Tweet {
             this.updated_at = this.critical_child.updated_at;
           }
 
-          let dt = app.browser.formatDate(this.updated_at);
+          let dt = this.app.browser.formatDate(this.updated_at);
           if (this.userline == "") {
             this.user.notice = this.userline =
               "new reply on " +
@@ -1028,7 +1126,7 @@ class Tweet {
         if (this.critical_child == null) {
           return true;
         }
-        if (tweet.tx.timestamp > this.critical_child.tx.transaction.tx) {
+        if (tweet.tx.timestamp > this.critical_child.tx.tx) {
           return true;
         }
       }
@@ -1076,8 +1174,9 @@ class Tweet {
       //
       if (fetch_open_graph == 1) {
         let res = await mod.fetchOpenGraphProperties(app, mod, this.link);
+
         if (res != "") {
-          this.link_properties = res;
+          this.tx.optional.link_properties = res;
         }
       }
 

@@ -1,61 +1,145 @@
-/*
-  Functions for basic display
-*/
 
 class SettlersState {
 
 
-    //
-    // Award resources for dice roll
-    //
-    collectHarvest(value) {
-        let logMsg = "";
-        let notice = "";
-        for (let city of this.game.state.cities) {
-            let player = city.player;
+  /*
+    Given a resource cost and player, check if they meet the minimum
+    requirement = ["res1","res2"...]
+  */
+  doesPlayerHaveResources(player, requirement) {
+    let myBank = this.game.state.players[player - 1].resources.slice();
+    for (let x of requirement) {
+      let ind = myBank.indexOf(x);
+      if (ind >= 0) myBank.splice(ind, 1);
+      else return false;
+    }
+    return true;
+  }
 
-            for (let neighboringHex of city.neighbours) {
-                if (
-                    this.game.state.hexes[neighboringHex].value == value &&
-                    !this.game.state.hexes[neighboringHex].robber
-                ) {
-                    let resource = this.game.state.hexes[neighboringHex].resource;
-                    logMsg += `${this.game.playerNames[player - 1]} gains ${resource}`;
-                    if (this.game.player == player) {
-                        notice += this.returnResourceHTML(resource);
-                    }
-                    this.game.state.players[player - 1].resources.push(resource);
-                    this.game.stats.production[resource][player - 1]++;
-                    //Double Resources for Upgraded City
-                    if (city.level == 2) {
-                        this.game.state.players[player - 1].resources.push(resource);
-                        this.game.stats.production[resource][player - 1]++;
-                        logMsg += " x2";
-                        if (this.game.player == player) {
-                            notice += this.returnResourceHTML(resource);
-                        }
-                    }
-                    logMsg += "; ";
+  hasVPCards() {
+    for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+      let cardname = this.game.deck[0].cards[this.game.deck[0].hand[i]].card;
+      if (!this.isActionCard(cardname)) { return true; }
+    }
+    return false;
+  }
+
+
+
+    returnResources() {
+        let newArray = [];
+        for (let i of this.resources){
+            if (i.count>1)
+                newArray.push(i.name);
+        }
+        return newArray;
+    }
+
+
+    //
+    // this should be returnCardImage, and the other function should be renamed somehow -- return resource image?
+    //
+    returnResourceHTML(resource){
+            return `<div class="tip"><img class="icon" src="${this.returnCardImage(resource)}" /></div>`;
+    }
+
+
+
+    returnCardImage(res) {
+        for (let i of this.resources){
+            if (i.name == res){
+                if (i.card) {
+                  return i.card;
+                } else {
+                  return `${this.cardDir}${res}.png`;
+                }
+            }
+
+        }
+        return null;    
+    }
+
+
+    returnHexes() {
+        let hexes = [];
+            for (let i of this.resources){
+                for (let j = 0; j < i.count; j++){
+                    if (i.tile) hexes.push({resource:i.name,img: i.tile});
+                    else hexes.push({resource:i.name, img: this.randomizeTileImage(i)});
+                }
+
+            }
+            return hexes;
+    }
+
+    returnDevelopmentCards(option){
+        let deck = [];
+        for (let i of this.deck){
+                for (let j = 0; j < i.count; j++){
+                    deck.push(i);
+                }
+        }
+        return deck;
+    }
+
+
+    returnPortIcon(res){
+        if (res === "any"){
+            return `<img class="icon" src="/settlers/img/icons/any-port.png">`;
+        }
+        for (let i of this.resources){
+            if (i.name == res){
+                if (i.icon){
+                    return `<img class="icon" src="${i.icon.replace('-icon','-port')}">`;
                 }
             }
         }
-        logMsg = logMsg.substr(0, logMsg.length - 2);
-        if (logMsg) {
-            this.updateLog(logMsg);
-        } else {
-            this.updateLog("No one collects any resources.");
-        }
-        if (notice) {
-            this.updateStatus(
-                `<div class="persistent alignme"><span>You acquired: </span>${notice}</div>`
-            );
+        return `2:1 ${this.resourceIcon(res)}`; 
+    }
+
+
+    returnNullResource(){
+        for (let i of this.resources) {
+            if (i.count==1) {
+                return i.name;
+            }
         }
     }
 
-    /*
-    Used to help with settlement placement, 
-    returns list of all available vertices adjacent to the edges owned by a given player
-    */
+    isActionCard(cardname){
+        for (let c of this.deck){
+            if (cardname == c.card && c.action > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    randomizeTileImage(resObj){
+        let tileDir = "/settlers/img/sectors/";
+        let x = Math.ceil(Math.random()*resObj.ict); 
+        return tileDir+resObj.name+x+".png";
+    }
+
+
+
+    returnDiceTokens() {
+            let dice = [];
+            dice.push({ value: 2 });
+            dice.push({ value: 12 });
+            for (let i = 3; i < 7; i++) {
+                dice.push({ value: i });
+                dice.push({ value: i });
+                dice.push({ value: i + 5 });
+                dice.push({ value: i + 5 });
+            }
+            return dice;
+    }
+
+
+
     returnCitySlotsAdjacentToPlayerRoads(player) {
         let adjacentVertices = [];
 
@@ -97,85 +181,6 @@ class SettlersState {
         return adjacent;
     }
 
-    //
-    // when 7 is rolled or Soldier Played
-    // Select the target spot
-    //
-    playBandit() {
-        this.updateStatus("Move the bandit...");
-        let settlers_self = this;
-        $(".sector_value").addClass("rhover");
-        $(".sector_value").off();
-        $(".sector_value").on("click", function () {
-            $(".sector_value").off();
-            $(".sector_value").removeClass("rhover");
-            let slot = $(this).attr("id");
-
-            settlers_self.addMove(
-                `move_bandit\t${settlers_self.game.player}\t${slot}`
-            );
-            settlers_self.endTurn();
-        });
-        $(".bandit").removeClass("rhover");
-        $(".bandit").off(); //Don't select bandit tile
-    }
-
-    //Select the person to steal from
-    moveBandit(player, hexId) {
-        let settlers_self = this;
-        //Find adjacent cities and launch into stealing mechanism
-        let thievingTargets = [];
-
-        for (let city of this.game.state.cities) {
-            if (city.neighbours.includes(hexId)) {
-                if (city.player != player)
-                    if (!thievingTargets.includes(city.player))
-                        thievingTargets.push(city.player);
-            }
-        }
-        if (thievingTargets.length > 0) {
-            let robPlayer = (victim) => {
-                let potentialLoot =
-                    settlers_self.game.state.players[victim - 1].resources;
-                if (potentialLoot.length > 0) {
-                    let loot =
-                        potentialLoot[Math.floor(Math.random() * potentialLoot.length)];
-                    settlers_self.addMove(`steal_card\t${player}\t${victim}\t${loot}`);
-                } else settlers_self.addMove(`steal_card\t${player}\t${victim}\tnothing`);
-                settlers_self.endTurn();
-            };
-
-            if (thievingTargets.length > 1) {
-                let html = '<div class="tbd">Steal from which Player: <ul>';
-                for (let i = 0; i < this.game.players.length; i++) {
-                    if (thievingTargets.includes(i + 1)) {
-                        html += `<li class="option" id="${i + 1}">${settlers_self.game.playerNames[i]} (${settlers_self.game.state.players[i].resources.length
-                            } cards)</li>`;
-                    }
-                }
-                html += "</ul></div>";
-                this.updateStatus(html, 1);
-
-                //Select a player to steal from
-                $(".option").off();
-                $(".option").on("click", function () {
-                    $(".option").off();
-                    let victim = $(this).attr("id");
-                    robPlayer(victim);
-                });
-            } else {
-                robPlayer(thievingTargets[0]);
-            }
-        } else {
-            //No one to steal from
-            settlers_self.addMove(`steal_card\t${player}\t0\tnothing`);
-            settlers_self.endTurn();
-        }
-    }
-
-    /*
-    Functions to generate and display the game
-    */
 
     /*
       Set everything to zero by default
@@ -198,7 +203,11 @@ class SettlersState {
             temp.classList.add("sv" + sector_value);
         } else {
             //Create Sector_value
-            let sector_value_html = `<div class="sector_value hexTileCenter sv${sector_value}" id="${svid}">${sector_value}</div>`;
+            let sector_value_html = `
+                <div class="sector-container sc${sector_value}" id="${svid}">
+                    <div class="sector_value hexTileCenter sv${sector_value}" id="${svid}">${sector_value}</div>
+                </div>
+            `;
             let sector_value_obj = this.app.browser.htmlToElement(sector_value_html);
             if (hexobj) {
                 hexobj.after(sector_value_obj);
@@ -222,7 +231,7 @@ class SettlersState {
             }
         } else {
             //Define the ports
-            let resources = this.skin.resourceArray();
+            let resources = this.returnResources();
             let randomRoll = this.rollDice(2);
             let hexes, angles;
             if (randomRoll == 1) {
@@ -265,9 +274,7 @@ class SettlersState {
         let hexobj = document.getElementById(selector);
         if (!document.getElementById(port_id)) {
             let port_html = `<div class="port port${direction}" id="${port_id}">
-                        <div class="ship hexTileCenter">${this.skin.portIcon(
-                port
-            )}</div>
+                        <div class="ship hexTileCenter">${this.returnPortIcon(port)}</div>
                         <div class="harbor lharbor"></div>
                         <div class="harbor rharbor"></div>
                         </div>`;
@@ -342,435 +349,13 @@ class SettlersState {
     }
 
 
-    /*
-    Every player should have in deck[2] and deck[3] the board tiles and tokens in the same order
-    */
-    generateMap() {
-        let tileCt = 0;
-        let tokenCt = 0;
-        let tile, resourceName, token;
-        console.log(this.game.pool, this.game.deck);
-        for (let hex of this.hexgrid.hexes) {
-            tile = this.game.pool[0].hand[tileCt++];
-            resourceName = this.game.deck[1].cards[tile].resource;
-            if (resourceName != this.skin.nullResource()) {
-                let temp = this.game.pool[1].hand[tokenCt++];
-                token = this.game.deck[2].cards[temp].value;
-            } else {
-                token = 0;
-            }
-            this.game.state.hexes[hex] = {
-                resource: resourceName,
-                value: token,
-                img: this.game.deck[1].cards[tile].img,
-                neighbours: [],
-                robber: false,
-            };
-            if (resourceName == this.skin.nullResource())
-                this.game.state.hexes[hex].robber = true;
-            if (token) this.addSectorValueToGameboard(hex, token);
-        }
-    }
-
-    /*
-    Draw the board (Tiles are already in DOM), add/update sector_values, add/update built cities and roads
-    */
-    displayBoard() {
-        console.log("Draw board");
-        $(".road.empty").remove();
-        /*
-          Set the tile backgrounds to display resources and display sector values (dice value tokens)
-        */
-        for (let i in this.game.state.hexes) {
-            let divname = "#hex_bg_" + i;
-            $(divname).html(
-                `<img class="hex_img2" src="${this.game.state.hexes[i].img}">`
-            );
-            if (this.game.state.hexes[i].resource != this.skin.nullResource()) {
-                let svid = this.addSectorValueToGameboard(
-                    i,
-                    this.game.state.hexes[i].value
-                );
-                if (this.game.state.hexes[i].robber)
-                    document.getElementById(svid).classList.add("bandit");
-            }
-        }
-
-        /*
-          Identify which vertices have a player settlement/city and add those to board
-        */
-        for (let i in this.game.state.cities) {
-            let divname = "#" + this.game.state.cities[i].slot;
-            let classname = "p" + this.game.colors[this.game.state.cities[i].player - 1];
-            $(divname).addClass(classname);
-            $(divname).removeClass("empty");
-
-            if (this.game.state.cities[i].level == 1) {
-                $(divname).html(this.skin.c1.svg);
-            } else {
-                /* == 2*/
-                $(divname).html(this.skin.c2.svg);
-            }
-            $(divname).addClass(classname);
-
-            // remove adjacent slots
-            let ad = this.returnAdjacentCitySlots(this.game.state.cities[i].slot);
-            for (let i = 0; i < ad.length; i++) {
-                let d = "#" + ad[i];
-                try {
-                    $(d).remove();
-                } catch (err) { }
-            }
-        }
-
-        /*
-        Add roads to gameboard
-        */
-        for (let i in this.game.state.roads) {
-            //Not the most efficient, but should work to both draw the built roads and prep the available spaces for future building
-            this.buildRoad(this.game.state.roads[i].player, this.game.state.roads[i].slot);
-        }
-
-        this.displayPlayers();
-    }
-
-    /*
-    Work in Progress
-    Check the score everytime we update players, which is with each cycle of game queue, 
-    so should catch victory condition
-    */
-    updateScore() {
-
-        for (let i = 0; i < this.game.state.players.length; i++) {
-            let score = 0;
-            //Count towns and cities
-            for (let j = 0; j < this.game.state.cities.length; j++) {
-                if (this.game.state.cities[j].player === i + 1) {
-                    //Player Number, not array index
-                    score += this.game.state.cities[j].level;
-                }
-            }
-
-            //Update Longest Road
-            if (this.game.state.longestRoad.player == i + 1) {
-                score += 2;
-            }
-            //Update Largest Army
-            if (this.game.state.largestArmy.player == i + 1) {
-                score += 2;
-            }
-            //Count (played) Victory Points
-            score += this.game.state.players[i].vpc;
-
-            //Save Score
-            this.game.state.players[i].vp = score;
-
-            //Check for winner
-            if (score >= this.game.options.game_length) {
-                this.game.queue.push(`winner\t${i}`);
-            }
-        }
-
-        //
-        // and render to screen
-        //
-        this.scoreboard.render();
-
-    }
-
-
-    /*
-      @param {string} deck -- the name of the deck to render (resource || cards), if empty defaults to resource, if no resources, tries dev cards
-    */
-    displayCardfan(deck = "") {
-        try {
-            let usingDev = false;
-            let cards = "";
-            if (deck == "resource" || deck == "") {
-                for (let r of this.game.state.players[this.game.player - 1].resources) {
-                    //Show all cards
-                    cards += `<div class="card tip"><img src="${this.skin.resourceCard(r)}">
-                    <img class="icon" src="${this.skin.resourceIcon(r)}"/>
-                    </div>`;
-                }
-            }
-            if (deck == "cards" || cards == "") {
-                //Dev Cards
-                usingDev = true;
-                for (let x = 0; x < this.game.deck[0].hand.length; x++) {
-                    let card = this.game.deck[0].cards[this.game.deck[0].hand[x]];
-                    cards += `<div class="card tip"><img src="${card.img}">
-                    <div class="cardtitle">${card.card}</div>
-                    <div class="cardrules">${this.skin.rules[card.action]}</div>
-                    <div class="tiptext">${card.card}: ${this.skin.rules[card.action]}</div>
-                    </div>`;
-                }
-            }
-            this.cardfan.render(cards);
-
-            if (usingDev) {
-                this.cardfan.addClass("staggered-hand");
-                this.cardfan.removeClass("bighand");
-            } else {
-                this.cardfan.addClass("bighand");
-                this.cardfan.removeClass("staggered-hand");
-            }
-        } catch (err) {
-            //console.log(err);
-        }
-    }
-
-    // Only for the game Observer
-    showPlayerResources() {
-        $(".player-box-graphic .hand").remove();
-        for (let i = 0; i < this.game.players.length; i++) {
-            let hand = `<div class="hand">`;
-            for (let r of this.game.state.players[i].resources) {
-                hand += `<div class="card">
-                  <img src="${this.skin.resourceCard(r)}">
-                  <img class="icon" src="${this.skin.resourceIcon(r)}"/>
-                </div>`;
-            }
-            hand += "</div>";
-
-            this.playerbox.appendGraphic(hand, i + 1);
-        }
-    }
-
-    /*
-      Refresh the Playerboxes with formatted information on the players
-    */
-    /*
-      Refresh the Playerboxes with formatted information on the players
-    */
-    displayPlayers() {
-
-        this.updateScore();
-
-        if (!this.browser_active) { return; }
-
-        let card_dir = "/settlers/img/cards/";
-        for (let i = 1; i <= this.game.state.players.length; i++) {
-
-            this.game.state.players[i - 1].resources.sort();
-            let num_resources = this.game.state.players[i - 1].resources.length;
-            let num_cards = this.game.state.players[i - 1].devcards;
-            let userline = "your active trade offers";
-            if (i != this.game.player) { userline = "their active trade offers"; }
-
-            let newhtml = "";
-
-            let playerHTML = `
-          <div class="saito-user settlers-user saito-user-${this.game.players[i - 1]}" id="saito-user-${this.game.players[i - 1]}" data-id="${this.game.players[i - 1]}">
-            <div class="saito-identicon-box"><img class="saito-identicon" src="${this.app.keychain.returnIdenticon(this.game.players[i - 1])}"></div>
-            <div class="saito-playername" data-id="${this.game.players[i - 1]}">${this.game.playerNames[i - 1]}</div>
-            <div class="saito-userline">${userline}</div>
-          </div>`;
-            this.playerbox.refreshTitle(playerHTML, i);
-
-            //Stats
-            //anewhtml = `<div class="flexline">`;
-            //Victory Point Card Tokens -- should move to VP track
-            //for (let j = 0; j < this.game.state.players[i - 1].vpc; j++) {
-            //  newhtml += `<div class="token">${this.skin.vp.svg}</div>`;
-            //}
-            //if (this.game.state.largestArmy.player == i) {
-            //  newhtml += `<div class="token" title="${this.skin.largest.name}">${this.skin.largest.svg}</div>`;
-            //}
-            //if (this.game.state.longestRoad.player == i) {
-            //  newhtml += `<div class="token" title="${this.skin.longest.name}">${this.skin.longest.svg}</div>`;
-            //}
-            //newhtml += `</div>`;
-
-            //if (this.game.state.players[i - 1].knights > 0) {
-            //  newhtml += `<div class="flexline2">`;
-            //  for (let j = 0; j < this.game.state.players[i - 1].knights; j++) {
-            //    newhtml += this.skin.s.img;
-            //  }
-            //  newhtml += `</div>`;
-            //}
-
-            //For opponents, summarize their hands numerically
-            if (this.game.player != i) {
-                //  newhtml += `<div class="flexline">`;
-                //  newhtml += `<div class="cardct">Resources: ${
-                //    this.game.state.players[i - 1].resources.length
-                //  }</div>`;
-                //  newhtml += `<div class="cardct">Cards: ${
-                //    this.game.state.players[i - 1].devcards
-                //  }</div>`;
-                //  newhtml += `</div>`;
-            } else {  //Is me
-
-                if (!this.game.state.placedCity) {
-                    newhtml += `<div class="flexline">`;
-                    if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
-                        newhtml += "<span>";
-                        if (this.game.state.ads[i - 1].offer) {
-                            newhtml += this.wishListToImage(this.game.state.ads[i - 1].offer);
-                        }
-                        newhtml += `<i class="fas fa-long-arrow-alt-right"></i>`;
-                        if (this.game.state.ads[i - 1].ask) {
-                            newhtml += this.wishListToImage(this.game.state.ads[i - 1].ask);
-                        }
-                        newhtml += `</span><i id="cleartrade" class="fas fa-ban"></i>`;
-                    } else {
-                        //newhtml += `<span id="tradenow">Trade</span>`;
-                    }
-                    newhtml += `</div>`;
-                    //Interactive controls to toggle between "decks"
-                    if (
-                        this.game.deck[0].hand.length > 0 &&
-                        this.game.state.players[i - 1].resources.length > 0
-                    ) {
-                        //newhtml += `<div class="flexline">`;
-                        //newhtml += `<div class="cardselector" id="resource" title="Show my resources">Resources</div>`;
-                        //newhtml += `<div class="cardselector" id="cards" title="Show my ${this.skin.card.name} cards">Cards</div>`;
-                        //newhtml += `</div>`;
-                    }
-                }
-            }
-
-            this.playerbox.refreshInfo(newhtml, i);
-            $(".player-box-info").disableSelection();
-
-            //Other player ads... in LOG
-            if (this.game.player != i) {
-                if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
-
-                    if (this.game.state.ads[i - 1].ad) {
-                        let offer = this.wishListToImage(this.game.state.ads[i - 1].offer);
-                        let ask = this.wishListToImage(this.game.state.ads[i - 1].ask);
-                        let id = `trade_${i}`;
-                        let html = `<div class="trade flexline" id="${id}">`;
-                        if (ask) {
-                            html += `<span>Wants:</span><span class="tip">${ask}</span>`;
-                        }
-                        if (offer) {
-                            html += `<span>Has:</span><span class="tip">${offer}</span></div>`;
-                        }
-                        this.playerbox.refreshLog(html, i);
-                        id = "#" + id;
-                        $(id).off();
-                        $(id).on("click", function () {
-                            //  Launch overlay window for private trade
-                            settlers_self.showTradeOverlay(i, settlers_self.game.state.ads[i - 1].ask, settlers_self.game.state.ads[i - 1].offer);
-                        });
-                    } else {
-                        this.renderTradeOfferInPlayerBox(i, this.game.state.ads[i - 1].offer, this.game.state.ads[i - 1].ask);
-                    }
-                } else {
-                    this.playerbox.refreshLog("", i);
-                }
-            }
-        }
-
-        if (this.game.player == 0) {
-            this.showPlayerResources();
-            return;
-        }
-
-
-        let settlers_self = this;
-        $('#cleartrade').off();
-        $('#cleartrade').on("click", function () {
-            settlers_self.clearAdvert();
-        });
-        $(".player-box.me").off();
-        $(".player-box.me").on("click", function () {
-            settlers_self.showResourceOverlay();
-        });
-        //$("#tradenow").off();
-        //$("#tradenow").on("click", function(){
-        //  settlers_self.showResourceOverlay();
-        //});
-
-        this.cardbox.attachCardEvents();
-
-
-        //Show player cards and add events (Doesn't need to be in for loop!)
-        if (this.boughtCard) {
-            this.displayCardfan("cards"); //Only shows this player's
-            this.boughtCard = false;
-        } else {
-            this.displayCardfan();
-        }
-        this.addEventsToHand();
-    }
-
-
-    renderTradeOfferInPlayerBox(offering_player, stuff_on_offer, stuff_in_return) {
-        let settlers_self = this;
-
-        let can_accept = true;
-        for (let r in stuff_in_return) {
-            if (this.countResource(this.game.player, r) < stuff_in_return[r]) {
-                can_accept = false;
-            }
-        }
-
-        if (!can_accept) {
-            this.game.state.ads[offering_player - 1].ad = true;
-            this.addMove(`reject_offer\t${this.game.player}\t${offering_player}`);
-            this.endTurn();
-            return;
-        }
-
-        //Simplify resource objects
-        let offer = this.wishListToImage(stuff_on_offer) || "<em>nothing</em>";
-        let ask = this.wishListToImage(stuff_in_return) || "<em>nothing</em>";
-
-        let html = `<div class="pbtrade">
-                  <div class="flexline">Offers <span class="tip highlight">${offer}</span> for <span class="tip highlight">${ask}</span></div>`;
-
-        if (this.game.state.canTrade) {
-            html += `<ul class="flexline">
-                <li class="pboption" id="accept">✔</li>
-                <li class="pboption" id="reject">✘</li>
-              </ul>`;
-        }
-        html += "</div>";
-
-        this.playerbox.refreshLog(html, offering_player);
-
-        let selector =
-            "#player-box-" + this.playerbox.playerBox(offering_player);
-
-        $(`${selector} .pboption`).off();
-        $(`${selector} .pboption`).on("click", function () {
-            //
-            settlers_self.playerbox.refreshLog("", offering_player);
-            //
-            let choice = $(this).attr("id");
-            if (choice == "accept") {
-                settlers_self.game.state.ads[offering_player - 1].offer = null;
-                settlers_self.game.state.ads[offering_player - 1].ask = null;
-                settlers_self.addMove(`clear_advert\t${settlers_self.game.player}`);
-                settlers_self.addMove(
-                    "accept_offer\t" +
-                    settlers_self.game.player + "\t" +
-                    offering_player + "\t" +
-                    JSON.stringify(stuff_on_offer) + "\t" +
-                    JSON.stringify(stuff_in_return)
-                );
-                settlers_self.endTurn();
-            }
-            if (choice == "reject") {
-                settlers_self.game.state.ads[offering_player - 1].ad = true;
-                settlers_self.addMove(`reject_offer\t${settlers_self.game.player}\t${offering_player}`);
-                settlers_self.endTurn();
-            }
-        });
-
-
-    }
-
     //Allow this player to click buttons to display resource or dev cards in their cardfan
     addEventsToHand() {
         let settlers_self = this;
 
         $(".cardselector").off(); //Previous events should be erased when the dom is rebuilt, but just in case...
         $(".cardselector").on("click", function () {
+            console.log("settlers state cards ////");
             settlers_self.displayCardfan($(this).attr("id"));
         });
     }

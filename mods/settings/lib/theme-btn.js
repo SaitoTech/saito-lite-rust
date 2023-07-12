@@ -10,7 +10,7 @@ class ThemeBtn {
   }
 
   render() {
-    this.app.browser.addElementToSelectorOrDom(ThemeBtnTemplate(this.app, this.mod), this.container);
+    this.app.browser.addElementToSelector(ThemeBtnTemplate(this.app, this.mod), this.container);
 
     this.attachEvents();
   }

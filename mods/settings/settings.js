@@ -3,6 +3,7 @@ var ModTemplate = require('../../lib/templates/modtemplate');
 const SettingsAppspace = require('./lib/appspace/main');
 const SettingsAppspaceSidebar = require('./lib/appspace-sidebar/main');
 const SettingsThemeSwitcherOverlay = require('./lib/theme-switcher-overlay');
+const localforage = require("localforage");
 
 class Settings extends ModTemplate {
 
@@ -33,9 +34,9 @@ class Settings extends ModTemplate {
     // it will deactivate the button so you cannot reregister
     //
     this.app.connection.on("update_identifier", (publickey) => {
-      if (publickey === app.wallet.returnPublicKey()) {
+      if (publickey === app.wallet.getPublicKey()) {
         if (document.getElementById("register-identifier-btn")) {
-          let username = app.keychain.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
+          let username = app.keychain.returnIdentifierByPublicKey(app.wallet.getPublicKey());
           document.getElementById("register-identifier-btn").innerHTML = username;
           document.getElementById("register-identifier-btn").onclick = null;
         }
@@ -104,7 +105,14 @@ class Settings extends ModTemplate {
       	    app.keychain.groups = [];
       	    app.keychain.saveKeys();
       	    app.keychain.saveGroups();
-            app.wallet.resetWallet();
+            localforage.clear().then(function(){
+              console.log("DB Reset Success");
+              app.wallet.resetWallet();
+            }).catch(function(err) {
+              console.error(err);
+              app.wallet.resetWallet();
+            });
+            
           }
         },
       ]

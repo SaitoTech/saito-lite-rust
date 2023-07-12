@@ -1,0 +1,339 @@
+
+.mobile-trading-container .player-box {
+  max-width: 80vw;
+}
+
+.trade_area {
+    position: relative;
+    height: 22vh;
+    width: calc(22vh * 0.72);
+    padding-left: 3vh;
+    padding-top: 1vh;
+    color: white;
+    font-size: bold;
+    font-size: 17vh;
+    -webkit-text-stroke: 2px black;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+.brick {
+  background-image: url(/settlers/img/cards/brick.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.wool {
+  background-image: url(/settlers/img/cards/wool.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.wheat {
+  background-image: url(/settlers/img/cards/wheat.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.ore {
+  background-image: url(/settlers/img/cards/ore.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.wood {
+  background-image: url(/settlers/img/cards/wood.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/*
+stats overlay
+*/
+
+
+.settlers-dice-histogram {
+  border-bottom: 1px solid var(--saito-black);
+  display: flex;
+  justify-content: space-around;
+  align-content: flex-end;
+  flex-wrap: wrap-reverse;
+}
+
+.settlers-dice-bar {
+  border: 1px solid #000;
+  width: calc(100%/14);
+  height: 10rem;
+  background: #ab815f73;
+  border-bottom: none;
+  position: relative;
+}
+
+.settlers-dice-count {
+  text-align: center;
+  font-size: 1.8rem;
+  position: absolute;
+  top: -2.3rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.settlers-dice-number {
+  position: absolute;
+  bottom: -1rem;
+  left: 0rem;
+  font-size: 1.8rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+.settlers-dice-numbers {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1.5em;
+}
+
+.settlers-dice-number {
+  width: calc(100%/14);
+  position: relative;
+}
+
+.settlers-achievements-container {
+  width: fit-content;
+  margin: auto;
+  flex-direction: column;
+  gap: 2rem;
+  display: flex;
+  width: 100%;
+}
+
+.settlers-achievements-row {
+  display: flex;
+  gap: 5rem;
+  justify-content: space-between;
+}
+
+.settlers-stats-player {
+  font-weight: bold;
+  line-height: 3rem;
+}
+
+.settlers-achievements-row  .achievements .army,
+.settlers-achievements-row  .achievements .victory_point_cards {
+  padding: 0 0 0 1rem;
+  margin:0 -1rem 0 0;
+}
+
+.settlers-achievements-row  .achievements .victory_point_cards {
+  /*min-width: 8rem;*/
+}
+
+.settlers-stats-total {
+  position: relative;
+  width: 4rem;
+  line-height: 4rem;
+  font-size: 1.8rem;
+  color: #fff;
+  text-align: center;
+  margin: 0.5rem;
+  background-color: #ffa400cc;
+  border-radius: 50%;
+  font-weight: bold;
+  height: 4rem;
+}
+
+.settlers-stats-resource-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.settlers-stats-card {
+  position: relative;
+  filter: grayscale(0.2);
+}
+
+.settlers-stats-card img {
+  width: 5.3rem;
+}
+
+.settlers-stats-resource-count {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: var(--saito-white);
+  text-shadow: 1px 1px 3px var(--saito-black);
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  background: rgba(0,0,0,0.4);
+  width: 82%;
+  text-align: center;
+  border-radius: 50%;
+  height: 60%;
+  line-height: 4.5rem;
+}
+
+.settlers-stats-caption {
+  text-align: left;
+  font-size: 3rem;
+}
+
+.settlers-state-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.settlers-stats-player {
+  font-size: 1.9rem;
+  font-weight: normal;
+}
+
+.settlers-achievements-row .victory_point_cards img {
+  height: 6.5rem;  
+  width: auto !important;
+}
+
+.settlers-stats-overlay {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.rules-overlay {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+
+.settlers-state-container .settlers-achievements-row .achievements  {  
+  margin: 0rem;
+  padding: 0rem;
+  gap: 0rem;
+}
+
+.settlers-state-container > * ,
+.settlers-achievements-row > *,
+.settlers-achievements-row .achievements > * {
+ 
+}
+
+.settlers-state-container .settlers-achievements-row .achievements .army, 
+.settlers-state-container .settlers-achievements-row .achievements .victory_point_cards,
+.settlers-state-container .settlers-achievements-row  .army, 
+.settlers-state-container .settlers-achievements-row .victory_point_cards {  margin: 0rem;
+  padding: 0rem;
+}
+
+.settlers-state-container .achievements .army {
+  padding: 0rem;
+  margin-right: -4rem;
+}
+
+.settlers-state-container .achievements .army img {
+  margin: 0rem;
+  min-width: 6.5rem;
+}
+
+.settlers-state-container .achievements .army img:not(:last-child) {
+  margin-right: -3rem;
+}
+
+.settlers-state-container .achievements .token.army.largest {
+  margin-right:  3rem; 
+}
+
+.settlers-state-container .achievements .longest-road img {
+  min-width: 6.5rem;
+}
+
+
+.settlers-state-container .vproundel {
+  position: absolute;
+  width: 3rem;
+  line-height: 3rem;
+  font-size: 1.5rem;
+  color: #fff;
+  text-align: center;
+  margin: 0.5rem;
+  background-color: #ffa400cc;
+  border-radius: 50%;
+  font-weight: bold;
+  right: -2rem;
+  top: -1rem;
+  height: 3rem;
+}
+
+.settlers-stats-vp-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.settlers-stats-vp-row img {
+  width: 6rem;
+}
+
+.settlers-stats-vpc img {
+  width: 4.5rem;
+}
+
+.settlers-stats-largest-army img {
+  width: 7rem;
+}
+
+.settlers-stats-largest-road img {
+  width: 6.5rem;
+}
+
+.settlers-stats-vp {
+  position: relative;
+}
+
+
+.settlers-stats-vp-count {
+  position: absolute;
+  top: 0rem;
+  right: -1rem;
+  background: #72634bed;
+  color: var(--saito-profile-background);
+  width: 2.7rem;
+  height: 2.7rem;
+  text-align: center;
+  border-radius: 50%;
+  line-height: 2.7rem;
+  text-shadow: 1px 1px 1px var(--saito-font-color-heavy);
+  font-size: 2.4rem;
+}
+
+.settlers-stats-largest-road .settlers-stats-vp-count,
+.settlers-stats-largest-army .settlers-stats-vp-count {
+  right: -0.5rem;
+}
+
+
+.settlers-state-container.combined-player-stats {
+  flex-direction: row;
+  gap: 6rem;
+}
+
+.settlers-state-container.vp-3p {
+  gap: 2.2rem;
+}
+
+.settlers-stats-vp-row.vp-3p {
+    gap: 3rem;
+}
+
+.settlers-stats-resource-container.vp-3p {
+  gap: 2rem;
+}
+
+.settlers-stats-resource-container.vp-3p .settlers-stats-card img {
+  width: 6.5rem;
+}
+
+.settlers-stats-resource-container.vp-3p .settlers-stats-card .settlers-stats-resource-count {
+  font-size: 3rem;
+  width: 82%;
+  height: 58%;
+  line-height: 5.3rem;
+}

@@ -253,12 +253,15 @@ class StorageCore extends Storage {
    * Load the options file
    */
   async loadOptions() {
+    // if (Object.keys(this.app.options).length !== 0) {
+    //   return this.app.options;
+    // }
     if (fs.existsSync(`${this.config_dir}/options`)) {
       let optionsfile = null;
       // open options file
       try {
         optionsfile = fs.readFileSync(`${this.config_dir}/options`, this.file_encoding_load);
-        this.app.options = JSON.parse(optionsfile.toString());
+        this.app.options = Object.assign(this.app.options, JSON.parse(optionsfile.toString()));
         this.app.options.browser_mode = false;
         this.app.options.spv_mode = false;
       } catch (err) {
@@ -268,13 +271,12 @@ class StorageCore extends Storage {
         process.exit();
       }
     } else {
-      //
       // default options file
-      //
       this.app.options = JSON.parse(
         '{"server":{"host":"localhost","port":12101,"protocol":"http"}}'
       );
     }
+    return this.app.options;
   }
 
   async loadRuntimeOptions() {
@@ -305,7 +307,7 @@ class StorageCore extends Storage {
    * Save the options file
    */
   saveOptions() {
-    this.app.options = Object.assign({}, this.app.options);
+    // this.app.options = Object.assign({}, this.app.options);
 
     try {
       fs.writeFileSync(`${this.config_dir}/options`, JSON.stringify(this.app.options), null);
@@ -438,7 +440,7 @@ class StorageCore extends Storage {
     }
   }
 
-  returnClientOptions(): string {
+  getClientOptions(): string {
     if (this.app.BROWSER == 1) {
       return "";
     }

@@ -28,7 +28,6 @@
   display: flex;
   flex-direction: row;
   justify-content: end;
-  width: 100%;
 }
 
 .league-overlay-controls i {
@@ -51,6 +50,7 @@
   flex-direction: row;
   justify-content: flex-start;
   row-gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .league-overlay-header-title-box {
@@ -107,9 +107,10 @@
 }
 
 .league-overlay-body {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(40rem, 2fr) minmax(30rem, 1fr);
   gap: 2rem;
-  min-height: 25rem;
+  min-height: min(50rem, 80vh);
 }
 
 .league-error {
@@ -150,7 +151,6 @@
   position: relative;
   font-size: 1.7rem;
   line-height: 2.3rem;
-  overflow: visible;
 }
 
 .league-overlay-description i, #admin_contact i {
@@ -184,7 +184,7 @@ span.attention {
 
 .league_recent_game, .game-manager .saito-table-header {
   display: grid;
-  grid-template-columns: repeat(3, auto);
+  grid-template-columns: repeat(3, 1fr);
   grid-gap: 1rem;
   text-align: center;
 }
@@ -242,6 +242,7 @@ span.attention {
 
 .league-overlay-leaderboard {
   min-width: min(40rem, 100%);
+  padding-top: 0px; // keeps scrolled content from showing above sticky header
 }
 
 .alert_email, .alert_identifier {
@@ -272,6 +273,7 @@ span.attention {
 
 .admin-widget .saito-table-row>div {
   width: 100%;
+  text-align: center;
 }
 
 .email_field {

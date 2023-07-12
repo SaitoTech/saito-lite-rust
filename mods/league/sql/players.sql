@@ -9,5 +9,6 @@ CREATE TABLE IF NOT EXISTS players (
   games_won INTEGER DEFAULT 0,
   games_tied INTEGER DEFAULT 0,
   ts INTEGER,
+  deleted INTEGER DEFAULT 0,
   UNIQUE (league_id, publickey)
 );

@@ -37,7 +37,7 @@ class Jaipur extends GameTemplate {
     return html;
   }
 
-  async initializeHTML(app) {
+  async render(app) {
     if (this.browser_active == 0) {
       return;
     }
@@ -52,7 +52,8 @@ class Jaipur extends GameTemplate {
     s.href = `/${this.name.toLowerCase()}/style.css`;
     document.querySelector("head").appendChild(s);
 
-    await super.initializeHTML(app);
+
+    await super.render(app);
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");
@@ -339,7 +340,7 @@ class Jaipur extends GameTemplate {
         await this.playerbox.addClass("active", player);
 
         if (this.game.player == player) {
-          this.playerTurn();
+          await this.playerTurn();
         } else {
           this.updateStatusWithCards(`Waiting for opponent to play`);
         }
@@ -810,9 +811,9 @@ class Jaipur extends GameTemplate {
         }
       }
 
-      $("#cancel_btn").on("click", () => {
+      $("#cancel_btn").on("click", async () => {
         game_self.overlay.remove();
-        game_self.playerTurn();
+        await game_self.playerTurn();
       });
     };
 
@@ -1112,6 +1113,7 @@ class Jaipur extends GameTemplate {
   returnGameRulesHTML() {
     return GameRulesTemplate(this.app, this);
   }
+
 
   returnGameOptionsHTML() {
     return GameOptionsTemplate(this.app, this);

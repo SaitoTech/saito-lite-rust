@@ -1,43 +1,32 @@
-const { forEach } = require("jszip");
 const videoBoxTemplate = require("./video-box.template");
 const { setTextRange } = require("typescript");
-// import {applyVideoBackground, } from 'virtual-bg';
+
+// import {applyVideoBackground } from 'virtual-bg';
 
 class VideoBox {
-  stream_id = null;
-  stream = null;
-  placeholderRendered = false;
-  stream_rendered = false;
-  waitTimer;
-  waitSeconds = 0;
-  is_connected_creator = false;
-  receiving_connection = false;
-  is_connected = false;
-
-  constructor(app, mod, call_type, central, room_code, peer, container_class) {
+  constructor(app, mod, peer, container_class, isPresentation) {
     this.app = app;
     this.mod = mod;
-    this.call_type = call_type;
-    this.central = central;
-    this.room_code = room_code;
+    this.stream = null;
     this.stream_id = peer;
     this.containerClass = container_class;
-    this.retry_attempt_no = 0;
+    this.isPresentation = isPresentation;
 
     app.connection.on("toggle-peer-audio-status", ({ enabled, public_key }) => {
       if (public_key !== this.stream_id) return;
       const video_box = document.querySelector(`#stream${this.stream_id}`);
       if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
-        if (!enabled) {
+        let element = video_box.querySelector(
+          `#stream${this.stream_id} .video-call-info .fa-microphone-slash`
+        );
+
+        if (!enabled && !element) {
           video_box
             .querySelector(`#stream${this.stream_id} .video-call-info`)
             .insertAdjacentHTML("beforeend", `<i class="fa fa-microphone-slash"> </i>`);
         } else {
-          let element = video_box.querySelector(
-            `#stream${this.stream_id} .video-call-info .fa-microphone-slash`
-          );
           if (element) {
-            element.parentElement.removeChild(element);
+            element.remove();
           }
         }
       }
@@ -46,14 +35,15 @@ class VideoBox {
       if (public_key !== this.stream_id) return;
       const video_box = document.querySelector(`#stream${this.stream_id}`);
       if (video_box.querySelector(`#stream${this.stream_id} .video-call-info`)) {
-        if (!enabled) {
+        let element = video_box.querySelector(
+          `#stream${this.stream_id} .video-call-info .fa-video-slash`
+        );
+
+        if (!enabled && !element) {
           video_box
             .querySelector(`#stream${this.stream_id} .video-call-info`)
             .insertAdjacentHTML("beforeend", `<i class="fas fa-video-slash"> </i>`);
         } else {
-          let element = video_box.querySelector(
-            `#stream${this.stream_id} .video-call-info .fa-video-slash`
-          );
           if (element) {
             element.parentElement.removeChild(element);
           }
@@ -64,7 +54,7 @@ class VideoBox {
 
   attachEvents() {}
 
-  render(stream, placeholder_info = null) {
+  async render(stream = null, placeholder_info = null) {
     if (stream) {
       this.stream = stream;
     }
@@ -79,22 +69,21 @@ class VideoBox {
         // console.log('rendering stream');
       }
 
-      let name;
+      let key;
       if (this.stream_id === "local") {
-        let public_key = this.app.wallet.publicKey;
-        name = public_key;
+        key = await this.app.wallet.getPublicKey();
       } else {
-        // name = this.app.keychain.returnIdentifierByPublicKey(this.stream_id);
-        name = this.stream_id;
+        key = this.stream_id;
       }
+      let name = this.app.keychain.returnIdentifierByPublicKey(key, true);
 
-      //name = `${name.substring(0,9)}....${name.substring(37, name.length -1)}`
       const video_box = document.querySelector(`#stream${this.stream_id}`);
+
       if (video_box) {
         if (video_box.querySelector(".video-call-info")) {
           video_box.querySelector(
             ".video-call-info"
-          ).innerHTML = `<p class="saito-address" data-id="${name}" >${name}</p>`;
+          ).innerHTML = `<p class="saito-address" data-id="${key}" >${name}</p>`;
         }
       }
 
@@ -106,34 +95,27 @@ class VideoBox {
     this.attachEvents();
   }
 
-  rerender() {
-    this.remove();
-    this.render(this.stream);
+  async rerender() {
+    await this.remove();
+    await this.render(this.stream);
   }
 
   renderStream({ muted }) {
     if (!document.querySelector(`#stream${this.stream_id}`)) {
       this.app.browser.addElementToClass(
-        videoBoxTemplate(this.stream_id, muted),
+        videoBoxTemplate(this.stream_id, muted, this.isPresentation),
         this.containerClass
       );
     }
 
     const videoBox = document.querySelector(`#stream${this.stream_id}`);
-    if (this.call_type === "audio") {
-      videoBox.insertAdjacentHTML(
-        "beforeend",
-        `<div class="audio-stream"> <i class="fas fa-microphone"></i></div> `
-      );
-    } else if (this.call_type === "video") {
-      videoBox.firstElementChild.srcObject = this.stream;
-    }
+    videoBox.firstElementChild.srcObject = this.stream;
   }
 
   renderPlaceholder(placeholder_info = "negotiating peer connection") {
     if (!document.querySelector(`#stream${this.stream_id}`)) {
-      this.app.browser.addElementToClass(
-        videoBoxTemplate(this.stream_id, false),
+      this.app.browser.prependElementToClass(
+        videoBoxTemplate(this.stream_id, false, this.isPresentation),
         this.containerClass
       );
       // this.app.browser.makeDraggable(`stream${this.stream_id}`, `stream${this.stream_id}`);
@@ -183,29 +165,20 @@ class VideoBox {
     }
   }
 
-  stopWaitTimer() {
-    if (this.waitTimer) {
-      clearInterval(this.waitTimer);
-      this.waitSeconds = 0;
-    }
-  }
-
-  remove(is_disconnection = false) {
+  async remove(is_disconnection = false) {
     let videoBox = document.querySelector(`#stream${this.stream_id}`);
     if (videoBox) {
       if (is_disconnection) {
         if (videoBox.parentElement.classList.contains("expanded-video")) {
-          videoBox.parentElement.removeChild(videoBox);
-          this.mod.ChatManagerLarge.video_boxes["local"].video_box.containerClass =
-            "expanded-video";
-          this.mod.ChatManagerLarge.video_boxes["local"].video_box.rerender();
+          videoBox.remove();
+          try {
+            this.mod.CallInterface.video_boxes["local"].video_box.containerClass = "expanded-video";
+            await this.mod.CallInterface.video_boxes["local"].video_box.rerender();
+          } catch (err) {}
           return;
         }
-        videoBox.parentElement.removeChild(videoBox);
-      } else {
-        // console.log(videoBox, 'video box')
-        videoBox.parentElement.removeChild(videoBox);
       }
+      videoBox.remove();
     }
   }
 

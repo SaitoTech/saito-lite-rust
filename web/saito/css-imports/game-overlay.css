@@ -116,13 +116,14 @@
 
 .shim-notice  .htmlCards{
   display: flex;
+  margin-right: 3rem;
 }
 
 .shim-notice .card {
   width: 10vw;
-  max-width: 12vh;
-  min-width: 55px;
-  margin: 0;
+  height: calc(10vw, 1.55);
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .game_warning_overlay{

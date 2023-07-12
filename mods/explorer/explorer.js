@@ -210,13 +210,9 @@ class ExplorerCore extends ModTemplate {
     html +=
       '<div class="table-header"></div><div class="table-header">id</div><div class="table-header">block hash</div><div class="table-header">tx</div><div class="table-header">previous block</div>';
 
-    console.log("Latest Block ID: " + latest_block_id);
-
     for (var mb = latest_block_id; mb >= BigInt(0) && mb > latest_block_id - BigInt(200); mb--) {
       let longest_chain_hash = explorer_self.app.blockring.returnLongestChainBlockHashAtBlockId(mb);
       let hashes_at_block_id = explorer_self.app.blockring.returnBlockHashesAtBlockId(mb);
-
-      console.log(longest_chain_hash + " -- " + JSON.stringify(hashes_at_block_id));
 
       for (let i = 0; i < hashes_at_block_id.length; i++) {
         let txs_in_block = 0;

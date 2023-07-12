@@ -42,11 +42,13 @@
         if (obj.prereqs[i] == "red") { prereqs += '<span class="red">♦</span>'; }      
       }
 
-      return `<div id="${obj.key}" class="tech_${obj.color} tech_card card_nonopaque">
-        <div class="tech_card_name">${obj.name}</div>
-        <div class="tech_card_content">${obj.text}</div>
-        <div class="tech_card_level">${prereqs}</div>
-      </div>`;
+      return `
+        <div id="${obj.key}" class="tech-card tech-${obj.color} nonopaque">
+          <div class="name">${obj.name}</div>
+          <div class="text">${obj.text}</div>
+          <div class="prereqs">${prereqs}</div>
+        </div>
+      `;
     }; }
 
     obj = this.addEvents(obj);

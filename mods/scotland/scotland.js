@@ -115,12 +115,14 @@ class Scotland extends GameTemplate {
     return super.respondTo(type);
   }
 
-  async initializeHTML(app) {
+
+  async render(app) {
+
     if (!this.browser_active) {
       return;
     }
 
-    await super.initializeHTML(app);
+    await super.render(app);
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");

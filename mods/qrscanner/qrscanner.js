@@ -279,7 +279,7 @@ class QRScanner extends ModTemplate {
     //
     if (this.app.crypto.isPublicKey(msg)) {
       this.stop();
-      if (this.app.wallet.returnPublicKey() === msg) {
+      if (this.app.wallet.getPublicKey() === msg) {
           let myUserMenu = new MyUserMenu(this.app, msg);
           myUserMenu.render(this.app);
     	  return;

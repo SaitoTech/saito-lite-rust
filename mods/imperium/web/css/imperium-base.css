@@ -22,10 +22,6 @@
   top: -1.1rem;
 }
 
-.status p {
-  color: white;
-}
-
 .game-overlay-button-continue, .game-overlay-cardlist-button {
     background-color: white;
     padding: 2rem;
@@ -67,37 +63,9 @@
   filter: none !important;
 }
 
-/********************/
-/*** MOD DEFAULTS ***/
-/********************/
-.hud-controls {
-  padding-left: 10px;
-  padding-right: 10px;
-}
-.hud-header {
-  margin: 0px;
-}
-.status ul {
-  width: 100%;
-}
-
-
 .chat-body>.saito-user>.saito-userline {
   font-family: sans-serif;
 }
-
-
-
-#status::-webkit-scrollbar { width: 0 !important }
-
-
-.status-header > status-content ,
-.status-message > #status-content {
-  line-height: 1.5em;
-  padding-top: 10px;
-}
-
-
 
 .game-menu ul li {
     width: 160px;
@@ -313,125 +281,9 @@
 .cardbox-card img {
   position: absolute;
 }
-.strategy_card_overlay {
-  font-family: 'orbitron-medium';
-  position: absolute;
-  color: white;
-  padding: 20px;
-  padding-right: 50px;
-  padding-top:10px;
-  font-size: 1.2em;
-  line-height: 1.5em;
-  cursor: pointer;
-}
 
 .game-menu {
   font-family: 'bank-gothic', 'orbitron-medium', arial, helvetica, sans-serif;
-}
-
-.overlay_laws_container {
-  width: 80vw;
-  height: auto;
-  max-height: 90vh;
-  overflow-y: scroll;
-}
-
-.overlay_laws_header {
-  font-size: 2em;
-  color: #fff;
-  padding: 1em;
-}
-
-.overlay_laws_list {
-  display: flex;
-  justify-content: space-around;
-}
-
-.overlay_agendacard {
-  width: calc(42vh * 0.72110);
-  height: 42vh;
-  color: white;
-  padding: 10px;
-  background-size: cover;
-  margin: 5px 10px;
-  font-size:0.7em;
-}
-
-.overlay_agendatitle {
-    font-weight: bold;
-    min-height: 7vh;
-    text-align: center;
-    width: 100%;
-    margin-top: 0.5rem;
-    font-size: 2.4rem;
-}
-
-.overlay_agendacontent {
-  font-family: 'orbitron-medium';
-  position: absolute;
-  color: white;
-  margin-top: 2.5remx;
-  padding: 1.4rem;
-  padding-top:10px;
-  font-size: 1.6em;
-  line-height: 1.5em;
-}
-
-.objectives-overlay-container {
-  width:80vw;
-  height: auto;
-  overflow-y: scroll;
-  max-height: 90vh;
-}
-.objectives_card_name {
-  min-height: 60px;
-  color: white;
-  font-size: 1em;
-  padding: 15px 5px 10px;
-  background: #0008;
-  position: relative;
-  font-size: 2em;
-  min-height: 4em;
-  font-family: 'orbitron-medium' ariel;
-  font-weight: bold;
-  text-align: center;
-  width: 100%;
-}
-
-.objectives_card_content {
-  color: white;
-  padding: 10px;
-  background: #0006;
-  font-family: 'orbitron-medium';
-  position: relative;
-  color: white;
-  margin-top: 0px;
-  padding: 14px;
-  padding-top:10px;
-  font-size: 1.6em;
-  line-height: 1.5em;
-  height: calc(42vh - 5em);
-  text-align: center;
-}
-
-
-.objectives_overlay_objectives_card {
-  position: relative;
-  width: calc(42vh * 0.72110);
-  height: 42vh;
-  margin: 10px;
-  background-size: cover;
-  max-width: 300px;
-  max-height: 450px;
-  float: left;
-  font-size: 0.8em;
-  z-index: 5;
-  border: 1px solid #FFF8;
-}
-
-.objectives_overlay_objectives_card:hover {
-  z-index: 10;
-  border: 1px solid whitesmoke;
 }
 
 #close-action-cards-btn {
@@ -443,42 +295,6 @@
   margin-bottom: 20px;
   font-size: 2em;
   font-family: 'bank-gothic';
-}
-#close-agendas-btn {
-  max-width: 240px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 240px;
-  margin-top: 14px;
-  margin-bottom: 20px;
-  font-size: 2em;
-  font-family: 'bank-gothic';
-}
-#close-objectives-btn {
-  max-width: 240px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 240px;
-  margin-top: 14px;
-  margin-bottom: 20px;
-  font-size: 2em;
-  font-family: 'bank-gothic';
-}
-.new_objectives_container {
-  display: inline-block;
-  text-align:center;
-}
-.new_objectives_text {
-  background-color: whitesmoke;
-  display: inline-block;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 6px;
-  padding-bottom: 2px;
-  border-radius: 5px;
-  font-size: 1.3em;
-  margin-top: 5px;
-  margin-bottom: 10px;
 }
 .objectives_secret_notice {
   position: absolute;
@@ -1160,106 +976,6 @@ body {
   background-color: var(--p6);
 }
 
-.status, .hud-header, .hud-menu, .hud-body, .controls, #menu-container>ul>li, #menu-container>ul>li:first-child {
-  background-color: #222C;
-  color: #fff;
-  border-color: #555;
-  font-family: 'orbitron-medium', helvetica, sans-serif;
-  line-height: 1.3em;
-}
-.hud-square .hud-body {
-  min-height: 367px;
-  height: 367px;
-  max-height: 367px;
-}
-
-.status-message{
-  background-color: unset;
-  box-shadow: none;
-}
-
-.hud-header {
-  min-height: 40px;
-  height: 40px;
-  width: 100%;
-  opacity: 1;
-  visibility: visible;
-  background-color: #222e;
-  cursor: move;
-}
-
-#menu-container>ul>li:hover {
-  background-color: #3334;
-}
-
-
-.status ul li:hover, .hud-menu ul li a:hover, hud-menu-overlay ul li:hover {
-  background: #8888;
-}
-
-.status p {
-  margin: 0;
-  padding: 0 1em;
-  text-align: left;
-  display: block;
-}
-
-.hud-menu-overlay {
-  background-color: transparent;
-  overflow-y: auto;
-  color: #fff;
-  padding-top: 5px;
-}
-
-.status ul li, .status ul li:last-child, hud-menu-overlay ul li {
-  border-color: #555;
-}
-
-.hud {
-  background-color: unset;
-  border: 1px solid var(--my-color);
-  box-shadow: none;
-}
-
-.hud {
-  width: 600px;
-  min-width: 600px;
-}
-
-.hud-body {
-  display: block;
-  height: 100%;
-  max-width: 100%;
-  overflow-y: auto;
-  cursor: pointer;
-}
-
-.hud-menu ul li a {
-  text-decoration: none;
-  color: #fffD;
-}
-
-.hud-menu ul li:hover {
-  background-color: #888888;
-}
-
-.status {
-  display: block;
-  text-align: center;
-  padding: 10px 10px;
-  border: none;
-  overflow-y: auto;
-  background-color: transparent;
-}
-
-.controls {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 0 10px;
-  background-color: transparent;
-}
-
 .cardbox {
   top: 17vh;
   height: 60vh;
@@ -1364,25 +1080,6 @@ body {
   -webkit-text-stroke: 1px #8888;
   font-weight: bolder;
 }
-
-.leaderboardbox {
-  position: absolute;
-  bottom: 0;
-  left: -158px;
-  width: 200px;
-  transition: all 500ms;
-  z-index: 9;
-}
-
-.leaderboardbox:hover {
-  left: 0;
-}
-
-.leaderboardbox-lock {
-  left: 0;
-}
-
-.leaderboard {}
 
 .ship_graphic {
   filter: brightness(0) saturate(100%) invert(76%) sepia(0%) saturate(7455%) hue-rotate(66deg) brightness(66%) contrast(92%);

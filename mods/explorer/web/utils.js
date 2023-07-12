@@ -58,7 +58,7 @@ function listTransactions(blk, hash) {
 
     for (var mt = 0; mt < blk.transactions.length; mt++) {
       var tmptx = blk.transactions[mt];
-      tmptx.transaction.id = mt;
+      tmptx.id = mt;
 
       var tx_fees = 0;
       //if (tmptx.fees_total == "") {
@@ -67,9 +67,9 @@ function listTransactions(blk, hash) {
       // sum inputs
       //
       let inputs = 0;
-      if (tmptx.transaction.from != null) {
-        for (let v = 0; v < tmptx.transaction.from.length; v++) {
-          inputs += parseFloat(tmptx.transaction.from[v].amount);
+      if (tmptx.from != null) {
+        for (let v = 0; v < tmptx.from.length; v++) {
+          inputs += parseFloat(tmptx.from[v].amount);
         }
       }
 
@@ -77,12 +77,12 @@ function listTransactions(blk, hash) {
       // sum outputs
       //
       let outputs = 0;
-      for (let v = 0; v < tmptx.transaction.to.length; v++) {
+      for (let v = 0; v < tmptx.to.length; v++) {
         //
         // only count non-gt transaction outputs
         //
-        if (tmptx.transaction.to[v].type != 1 && tmptx.transaction.to[v].type != 2) {
-          outputs += parseFloat(tmptx.transaction.to[v].amount);
+        if (tmptx.to[v].type != 1 && tmptx.to[v].type != 2) {
+          outputs += parseFloat(tmptx.to[v].amount);
         }
       }
 
@@ -90,43 +90,28 @@ function listTransactions(blk, hash) {
 
       //}
       let tx_from = "fee tx";
-      if (tmptx.transaction.from.length > 0) {
-        tx_from = tmptx.transaction.from[0].add;
+      if (tmptx.from.length > 0) {
+        tx_from = tmptx.from[0].publicKey;
       }
 
-      html +=
-        `<div><a onclick="showTransaction('tx-` +
-        tmptx.transaction.id +
-        `');">` +
-        mt +
-        `</a></div>`;
-      html +=
-        `<div><a onclick="showTransaction('tx-` +
-        tmptx.transaction.id +
-        `');">` +
-        tx_from +
-        `</a></div>`;
+      html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + mt + `</a></div>`;
+      html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + tx_from + `</a></div>`;
       html += "<div>" + tx_fees.toFixed(5) + "</div>";
-      html += "<div>" + tmptx.transaction.type + "</div>";
-      if (tmptx.transaction.type == 0) {
+      html += "<div>" + tmptx.type + "</div>";
+      if (tmptx.type == 0) {
         if (tmptx.msg.module) {
           html += "<div>" + tmptx.msg.module + "</div>";
         } else {
           html += "<div>Money</div>";
         }
       }
-      if (tmptx.transaction.type == 1) {
+      if (tmptx.type == 1) {
         html += "<div>" + tmptx.msg.name + "</div>";
       }
-      if (tmptx.transaction.type > 1) {
+      if (tmptx.type > 1) {
         html += "<div> </div>";
       }
-      html +=
-        '<div class="hidden txbox tx-' +
-        tmptx.transaction.id +
-        '">' +
-        JSON.stringify(tmptx) +
-        "</div>";
+      html += '<div class="hidden txbox tx-' + tmptx.id + '">' + JSON.stringify(tmptx) + "</div>";
     }
     html += "</div>";
   }

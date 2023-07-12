@@ -172,6 +172,11 @@ export default class Transaction extends SaitoTransaction {
     return this;
   }
 
+
+  static deserialize(buffer, factory){
+    return SaitoTransaction.deserialize(buffer, factory);
+  }
+
   async decryptMessage(app: Saito) {
     try {
       if (this.from[0].publicKey !== (await app.wallet.getPublicKey())) {

@@ -1,9 +1,9 @@
 
-  initializeHTML(app) {
+  render(app) {
 
     if (this.browser_active == 0) { return; }
 
-    super.initializeHTML(app);
+    super.render(app);
 
     let game_mod = this;
 
@@ -65,7 +65,15 @@
       }
     });
     this.menu.addMenuOption("game-cards", "Cards");
-    
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Field Battle",
+      id : "game-field-battle",
+      class : "game-field_battle",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.field_battle_overlay.renderFortification();
+      }
+    });
     this.menu.addSubMenuOption("game-cards", {
       text : "Religion",
       id : "game-religious-conflict",
@@ -104,47 +112,6 @@
     });
 
     this.menu.addMenuOption("game-factions", "Factions");
-    
-    this.menu.addSubMenuOption("game-factions", {
-      text : "Theological Debate",
-      id : "game-debate",
-      class : "game-debate",
-      callback : function(app, game_mod) {
-        game_mod.debate_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
-      text : "Publish Treatise",
-      id : "game-treatise",
-      class : "game-treatise",
-      callback : function(app, game_mod) {
-        game_mod.treatise_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
-      text : "95 Theses",
-      id : "game-95-theses",
-      class : "game-95-theses",
-      callback : function(app, game_mod) {
-        game_mod.theses_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
-      text : "Reformations",
-      id : "game-diet-of-reformations",
-      class : "game-diet-of-reformations",
-      callback : function(app, game_mod) {
-        game_mod.reformation_overlay.render();
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
-      text : "Diet of Worms",
-      id : "game-diet-of-worms",
-      class : "game-diet-of-worms",
-      callback : function(app, game_mod) {
-        game_mod.diet_of_worms_overlay.render();
-      }
-    });
     this.menu.addSubMenuOption("game-factions", {
       text : "Hapsburgs",
       id : "game-hapsburgs",
@@ -196,9 +163,7 @@
 
     this.menu.addChatMenu();
     this.menu.render();
-
     this.log.render();
-
     this.cardbox.render();
 
     //
@@ -241,8 +206,6 @@
       }
     }
 
-
-
     //
     // position diplomacy chart
     //
@@ -284,17 +247,21 @@
     try {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-        this.hammer.render(this.app, this);
-        this.hammer.attachEvents(this.app, this, '.gameboard');
+        //this.hammer.render(this.app, this);
+        //this.hammer.attachEvents(this.app, this, '.gameboard');
       } else {
 	let his_self = this;
         this.sizer.render();
-        this.sizer.attachEvents('.gameboard');
-        $('#gameboard').draggable({
-	  stop : function(event, ui) {
-	    his_self.saveGamePreference((his_self.returnSlug()+"-board-offset"), ui.offset);
-	  }
-	});
+        this.sizer.attachEvents('#gameboard');
+	//
+	// sizer makes draggable 
+	//
+        //$('#gameboard').draggable({
+	//  stop : function(event, ui) {
+	//    his_self.saveGamePreference((his_self.returnSlug()+"-board-offset"), ui.offset);
+	//  }
+	//});
+	//
       }
 
     } catch (err) {}
@@ -307,7 +274,7 @@
 
 
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
 
     return `
       <div style="padding:40px;width:100vw;height:100vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">

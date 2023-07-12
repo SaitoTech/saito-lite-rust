@@ -16,7 +16,7 @@
       }
 
       if (this.game.state.events.cubanmissilecrisis == 1) {
-        this.updateStatusHeader("USSR is under Cuban Missile Crisis and cannot coup. Skipping Ortega coup.");
+        this.updateStatus("USSR is under Cuban Missile Crisis and cannot coup. Skipping Ortega coup.");
         this.updateLog("USSR is under Cuban Missile Crisis and cannot coup. Skipping Ortega coup.");
         return 1;
       }
@@ -28,12 +28,9 @@
         let twilight_self = this;
         let neighbors = ["costarica","cuba","honduras"];      
 
-        twilight_self.updateStatusWithOptions("Pick a country adjacent to Nicaragua to coup:", '<ul><li class="card" id="skiportega">or skip coup</li></ul>',false);
-
-        //To Skip the Coup
-        twilight_self.attachCardboxEvents(function(action2) {
+        twilight_self.updateStatusWithOptions("Pick a country adjacent to Nicaragua to coup:", '<ul><li class="option" id="skiportega">or skip coup</li></ul>', function(action2) {
           if (action2 == "skiportega") {
-            twilight_self.updateStatusHeader("Skipping Ortega coup...");
+            twilight_self.updateStatus("Skipping Ortega coup...");
             twilight_self.addMove("resolve\tortega");
             twilight_self.endTurn();
           }

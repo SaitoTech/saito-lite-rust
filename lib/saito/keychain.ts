@@ -85,6 +85,7 @@ class Keychain {
     //
     // skip empty keys
     //
+    //console.log("Add key: ", JSON.stringify(data));
     if (data.publickey === "") {
       return;
     }
@@ -94,12 +95,12 @@ class Keychain {
     //
     for (let i = 0; i < this.keys.length; i++) {
       if (this.keys[i].publickey === data.publickey) {
-        let newkey = {};
         for (let key in data) {
           if (key !== "publickey") {
-            newkey[key] = data[key];
+            this.keys[i][key] = data[key];
           }
         }
+        console.log(JSON.stringify(this.keys[i]));
         this.saveKeys();
         return;
       }
@@ -264,6 +265,7 @@ class Keychain {
     //
     // if keys exist
     //
+    let key_idx = -1;
     for (let x = 0; x < this.keys.length; x++) {
       let match = true;
       for (let key in data) {
@@ -291,20 +293,20 @@ class Keychain {
           kx.push(this.keys[x]);
         }
       }
-    }
-
-    //
-    // if keys exist
-    //
-    for (let x = 0; x < this.keys.length; x++) {
-      let match = true;
-      for (let key in data) {
-        if (this.keys[x][key] !== data[key]) {
-          match = false;
+    } else {
+      //
+      // if data filter for keys
+      //
+      for (let x = 0; x < this.keys.length; x++) {
+        let match = true;
+        for (let key in data) {
+          if (this.keys[x][key] !== data[key]) {
+            match = false;
+          }
         }
-      }
-      if (match == true) {
-        kx.push(this.keys[x]);
+        if (match == true) {
+          kx.push(this.keys[x]);
+        }
       }
     }
 
@@ -424,14 +426,14 @@ class Keychain {
   // returnWatchedPublicKeys() {
   //   const x = [];
   //   for (let i = 0; i < this.keys.length; i++) {
-  //     if (this.keys[i].isWatched() && this.keys[i].lc) {
+  //     if (this.keys[i].watched) {
   //       x.push(this.keys[i].publickey);
   //     }
   //   }
   //   return x;
   // }
 
-  addWatchedPublicKey(publickey = "") {
+  public addWatchedPublicKey(publickey = "") {
     this.addKey(publickey, { watched: true });
     this.saveKeys();
     this.app.network.updatePeersWithWatchedPublicKeys();

@@ -54,6 +54,7 @@
     "js-chess-engine": "^1.0.2",
     "json-bigint": "^1.0.0",
     "json-tree-viewer": "0.0.2",
+    "jsstore": "4.0.0",
     "jszip": "^3.5.0",
     "localforage": "^1.10.0",
     "markdown-linkify": "^1.0.3",
@@ -66,7 +67,7 @@
     "node-turn": "^0.0.6",
     "nodemailer": "^6.4.11",
     "readline": "^1.3.0",
-    "saito-js": "^0.0.20",
+    "saito-js": "^0.0.23",
     "sanitize-html": "^2.4.0",
     "sanitizer": "^0.1.3",
     "screenfull": "^5.0.2",
@@ -88,7 +89,7 @@
     "virtual-bg": "^0.1.1",
     "webrtc-adapter": "^8.2.0",
     "websocket": "^1.0.34",
-    "ws": "^7.5.5"
+    "ws": "^8.13.0"
   },
   "devDependencies": {
     "@babel/core": "^7.16.5",
@@ -99,7 +100,7 @@
     "@types/json-bigint": "^1.0.1",
     "@types/node-fetch": "^3.0.3",
     "@types/secp256k1": "^4.0.3",
-    "@types/ws": "^8.2.2",
+    "@types/ws": "^8.5.5",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
     "babel-jest": "^27.4.5",

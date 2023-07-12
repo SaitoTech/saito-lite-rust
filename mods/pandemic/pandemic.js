@@ -26,6 +26,7 @@ class Pandemic extends GameTemplate {
 
     this.outbreaks = [];
     this.maxHandSize = 7;
+    this.can_bet = 0;
 
     this.interface = 1; // default to graphics (as opposed to text interface)
 
@@ -127,9 +128,9 @@ class Pandemic extends GameTemplate {
     this.grace_window = this.game.players.length * 4;
   }
 
-  initializeHTML(app) {
+  render(app) {
 
-    super.initializeHTML(app);
+    super.render(app);
 
     
     if (!this.skin){
@@ -669,17 +670,17 @@ class Pandemic extends GameTemplate {
           html = "<ul>";
           if (can_play_event_card == 1) {
             html +=
-              '<li class="menu_option" id="eventcard">play event card</li>';
+              '<li class="option" id="eventcard">play event card</li>';
           }
           if (can_share_knowledge == 1) {
             html +=
-              '<li class="menu_option" id="shareknowledge">share knowledge</li>';
+              '<li class="option" id="shareknowledge">share knowledge</li>';
           }
           html += "</ul>";
 
-          $(".menu_option").off();
+          $(".option").off();
           pandemic_self.updateStatusWithOptions(statMsg, html,true);
-          $(".menu_option").on("click", function () {
+          $(".option").on("click", function () {
             let action = $(this).attr("id");
 
             if (action === "eventcard") {
@@ -787,13 +788,13 @@ class Pandemic extends GameTemplate {
       if (cardOwner > 0 && cardOwner != player){
         //Step 1, give or take
         let html = `<ul>
-                      <li id="take" class="menu_option">Take ${city} card</li>
-                      <li id="give" class="menu_option">Pick a card to give</li>
+                      <li id="take" class="option">Take ${city} card</li>
+                      <li id="give" class="option">Pick a card to give</li>
                     </ul>`;
         pandemic_self.updateStatusWithOptions(`How do you want to share knowledge?`,html,true);
-        $(".menu_option").off();
-        $(".menu_option").on("click",function(){
-          $(".menu_option").off();
+        $(".option").off();
+        $(".option").on("click",function(){
+          $(".option").off();
           let choice = $(this).attr("id");
           if (choice === "take"){
             pandemic_self.addMove(`takecard\t${pandemic_self.game.player}\t${cardOwner}\t${city}`); //Remove from their hand
@@ -822,13 +823,13 @@ class Pandemic extends GameTemplate {
       if (cardOwner == player){
         //Step 1, give or take
         let html = `<ul>
-                      <li id="give" class="menu_option">Give ${city} card</li>
-                      <li id="take" class="menu_option">Ask Researcher for a card</li>
+                      <li id="give" class="option">Give ${city} card</li>
+                      <li id="take" class="option">Ask Researcher for a card</li>
                     </ul>`;
         pandemic_self.updateStatusWithOptions(`How do you want to share knowledge?`,html,true);
-        $(".menu_option").off();
-        $(".menu_option").on("click",function(){
-          $(".menu_option").off();
+        $(".option").off();
+        $(".option").on("click",function(){
+          $(".option").off();
           let choice = $(this).attr("id");
           if (choice === "take"){
             pandemic_self.addMove(`begcard\t${pandemic_self.game.player}\t${researcher}\t${city}`); //Remove from their hand
@@ -1939,13 +1940,13 @@ class Pandemic extends GameTemplate {
         
         if (this.game.player === recipient){
           let html = `<ul>
-                      <li class="menu_option" id="yes">accept player card</li>
-                      <li class="menu_option" id="no">refuse card</li>
+                      <li class="option" id="yes">accept player card</li>
+                      <li class="option" id="no">refuse card</li>
                       </ul>`;
           this.updateStatusWithOptions(`Player ${player} wants to share knowledge <span class="showcard" id="${card}">(${this.skin.cities[card].name})</span> with you, okay?`,html);
           this.attachCardboxEvents();
-          $(".menu_option").off();
-          $(".menu_option").on("click",function(){
+          $(".option").off();
+          $(".option").on("click",function(){
              let choice = $(this).attr("id");
              if (choice === "yes"){
               pandemic_self.addMove(`shareknowledge\t${player}\t${recipient}\t${card}`);
@@ -1973,13 +1974,13 @@ class Pandemic extends GameTemplate {
 
         if (this.game.player === owner){
           let html = `<ul>
-                      <li class="menu_option" id="yes">give player card</li>
-                      <li class="menu_option" id="no">keep card</li>
+                      <li class="option" id="yes">give player card</li>
+                      <li class="option" id="no">keep card</li>
                       </ul>`;
           this.updateStatusWithOptions(`Will you share knowledge <span class="showcard" id="${card}">(${this.skin.cities[card].name})</span> with Player ${player}?`,html);
           this.attachCardboxEvents();
-          $(".menu_option").off();
-          $(".menu_option").on("click",function(){
+          $(".option").off();
+          $(".option").on("click",function(){
              let choice = $(this).attr("id");
              if (choice === "yes"){
               pandemic_self.addMove(`shareknowledge\t${owner}\t${player}\t${card}`);
@@ -2476,7 +2477,7 @@ displayDisease() {
     return PandemicGameRulesTemplate(this.app, this);
   }
 
-  returnGameOptionsHTML() {
+  returnAdvancedOptions() {
     return PandemicGameOptionsTemplate(this.app, this); 
   }
 

@@ -51,7 +51,7 @@ class Registry extends ModTemplate {
                 this.cached_keys[key] = value;
 
                 //
-                // We don't NEED or WANT to filter for key == wallet.returnPublicKey
+                // We don't NEED or WANT to filter for key == wallet.getPublicKey
                 // If the key is in our keychain, we obviously care enough that we
                 // want to update that key in the keychain!
                 //
@@ -109,7 +109,7 @@ class Registry extends ModTemplate {
     // registering domains should report they run the registry module.
     //
     if (this.app.BROWSER == 0) {
-      //if (this.registry_publickey == this.app.wallet.returnPublicKey()) {
+      //if (this.registry_publickey == this.app.wallet.getPublicKey()) {
       services.push(new PeerService(null, "registry", "saito"));
     }
     return services;
@@ -127,7 +127,7 @@ class Registry extends ModTemplate {
     const missing_keys = [];
 
     identifiers.forEach((identifier) => {
-      let publickey = this.app.browser.returnPublicKeyByIdentifier(identifier);
+      let publickey = this.app.browser.getPublicKeyByIdentifier(identifier);
       if (publickey != "" && publickey != identifier) {
         found_keys.push[publickey] = identifier;
       } else {
@@ -389,14 +389,14 @@ class Registry extends ModTemplate {
             registry_self.registry_publickey
           )
         ) {
-          registry_self.app.keychain.addKey(tx.transaction.to[0].add, {
+          registry_self.app.keychain.addKey(tx.to[0].publicKey, {
             identifier: identifier,
             watched: true,
             block_id: registry_self.app.blockchain.returnLatestBlockId(),
             block_hash: registry_self.app.blockchain.returnLatestBlockHash(),
             lc: 1,
           });
-          registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].add, identifier);
+          registry_self.app.browser.updateAddressHTML(tx.to[0].publicKey, identifier);
         } else {
           console.debug("failed verifying message for username registration : ", tx);
         }
@@ -461,11 +461,11 @@ class Registry extends ModTemplate {
 
   onPeerServiceUp(app, peer, service = {}) {}
 
-  onPeerHandshakeComplete(app, peer) {
+  async onPeerHandshakeComplete(app, peer) {
     /***** USE VARIABLE TO TOGGLE LOCAL DEV MODE ******/
     if (this.local_dev) {
       if (this.app.options.server != undefined) {
-        this.publickey = this.app.wallet.returnPublicKey();
+        this.publickey = await this.app.wallet.getPublicKey();
       } else {
         this.publickey = peer.peer.publickey;
       }
@@ -517,7 +517,7 @@ class Registry extends ModTemplate {
           // send message
           if (res == 1) {
             let newtx = await registry_self.app.wallet.createUnsignedTransaction(
-              tx.transaction.from[0].add,
+              tx.from[0].publicKey,
               0,
               fee
             );
@@ -536,7 +536,7 @@ class Registry extends ModTemplate {
             await registry_self.app.network.propagateTransaction(newtx);
           } else {
             let newtx = await registry_self.app.wallet.createUnsignedTransaction(
-              tx.transaction.from[0].add,
+              tx.from[0].publicKey,
               0.0,
               fee
             );

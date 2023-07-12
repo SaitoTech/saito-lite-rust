@@ -642,7 +642,7 @@ class Mahjong extends OnePlayerGameTemplate {
         this.game.state.session.round++;
         this.game.state.session.losses++;
         this.game.queue.push(
-          `ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.returnPublicKey()])}`
+          `ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([this.app.wallet.getPublicKey()])}`
         );
 
         return 1;
@@ -655,7 +655,7 @@ class Mahjong extends OnePlayerGameTemplate {
         await this.displayModal("Congratulations!", "You solved the puzzle!");
         await this.newRound();
         this.game.queue.push(
-          `ROUNDOVER\t${JSON.stringify([this.app.wallet.returnPublicKey()])}\t${JSON.stringify([])}`
+          `ROUNDOVER\t${JSON.stringify([this.app.wallet.getPublicKey()])}\t${JSON.stringify([])}`
         );
 
         return 1;

@@ -171,14 +171,14 @@ class SettingsAppspace {
         try {
           privatekey = await sprompt("Enter Private Key:");
           if (privatekey != "") {
-            publickey = app.crypto.returnPublicKey(privatekey);
+            publickey = app.crypto.getPublicKey(privatekey);
 
-            app.wallet.wallet.privatekey = privatekey;
-            app.wallet.wallet.publickey = publickey;
-            app.wallet.wallet.inputs = [];
-            app.wallet.wallet.outputs = [];
-            app.wallet.wallet.spends = [];
-            app.wallet.wallet.pending = [];
+            app.wallet.privatekey = privatekey;
+            app.wallet.publickey = publickey;
+            app.wallet.inputs = [];
+            app.wallet.outputs = [];
+            app.wallet.spends = [];
+            app.wallet.pending = [];
 
             await app.blockchain.resetBlockchain();
             await app.wallet.saveWallet();

@@ -261,7 +261,7 @@ class Blackjack extends GameTableTemplate {
     for (let i = this.game.players.length; i > 0; i--) this.game.queue.push(`DECKXOR\t1\t${i}`);
 
     this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnPokerDeck()));
-    //this.game.queue.push("BALANCE\t0\t"+this.app.wallet.returnPublicKey()+"\t"+"SAITO");
+    //this.game.queue.push("BALANCE\t0\t"+this.app.wallet.getPublicKey()+"\t"+"SAITO");
   }
 
   /*
@@ -376,7 +376,7 @@ class Blackjack extends GameTableTemplate {
           //Let's just try reloading the game
           setTimeout(() => {
             this.initialize_game_run = 0;
-            this.initializeGameFeeder(this.game.id);
+            this.initializeGameQueue(this.game.id);
           }, 1000);
           return 0;
         } else {
@@ -887,7 +887,7 @@ class Blackjack extends GameTableTemplate {
       }
 
       if (choice === "stand") {
-        //blackjack_self.addMove("RESOLVE\t"+blackjack_self.app.wallet.returnPublicKey());
+        //blackjack_self.addMove("RESOLVE\t"+blackjack_self.app.wallet.getPublicKey());
         blackjack_self.addMove("stand\t" + blackjack_self.game.player);
         await blackjack_self.endTurn();
         return 0;

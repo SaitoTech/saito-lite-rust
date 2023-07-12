@@ -36,11 +36,7 @@ export default class Storage {
 
     // console.log("saving options : ", this.app.options);
     try {
-      if (typeof Storage !== "undefined") {
-        localStorage.setItem("options", JSON.stringify(this.app.options));
-      } else {
-        console.error("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-      }
+      localStorage.setItem("options", JSON.stringify(this.app.options));
     } catch (err) {
       console.log(err);
     }
@@ -109,37 +105,39 @@ export default class Storage {
     console.log("storage.initialize");
     await this.loadOptions();
     this.saveOptions();
-    return;
+  }
+
+  getClientOptions(): string {
+    throw new Error("Method not implemented.");
   }
 
   async loadOptions() {
     console.log("loading options");
-    if (typeof Storage !== "undefined") {
-      const data = localStorage.getItem("options");
-      if (data != "null" && data != null) {
-        this.app.options = JSON.parse(data);
-        // console.log("loaded from local storage", this.app.options);
-      } else {
-        try {
-          console.log("fetching options from server...");
-          const response = await fetch(`/options`);
+    const data = localStorage.getItem("options");
+    if (data != "null" && data != null) {
+      this.app.options = JSON.parse(data);
+      // console.log("loaded from local storage", this.app.options);
+    } else {
+      try {
+        console.log("fetching options from server...");
+        const response = await fetch(`/options`);
 
-          this.app.options = await response.json();
-          this.app.options = JSON.parse(JSON.stringify(this.app.options));
-          if (typeof window !== "undefined") {
-            this.app.options.spv_mode = true;
-            this.app.options.browser_mode = true;
-          } else {
-            this.app.options.spv_mode = false;
-            this.app.options.browser_mode = false;
-          }
-          console.log("options loaded : ", this.app.options);
-          this.saveOptions();
-        } catch (err) {
-          console.error(err);
+        this.app.options = await response.json();
+        this.app.options = JSON.parse(JSON.stringify(this.app.options));
+        if (typeof window !== "undefined") {
+          this.app.options.spv_mode = true;
+          this.app.options.browser_mode = true;
+        } else {
+          this.app.options.spv_mode = false;
+          this.app.options.browser_mode = false;
         }
+        console.log("options loaded : ", this.app.options);
+        this.saveOptions();
+      } catch (err) {
+        console.error(err);
       }
     }
+    return this.app.options;
   }
 
   async queryDatabase(sql, params, database) {}

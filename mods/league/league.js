@@ -5,7 +5,6 @@ const LeagueLeaderboard = require("./lib/leaderboard");
 const LeagueMain = require("./lib/main");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
-const InvitationLink = require("./lib/overlays/league-invitation-link");
 const JoinLeagueOverlay = require("./lib/overlays/join");
 const PeerService = require("saito-js/lib/peer_service").default;
 
@@ -1317,7 +1316,7 @@ class League extends ModTemplate {
         league.ts = new Date().getTime();
 
         if (mycallback != null) {
-          mycallback(res);
+          await mycallback(res);
         } else {
           if (this.app.BROWSER) {
             this.saveLeagues();

@@ -10,11 +10,15 @@
   display: grid;
 }
 
+.tweet-overlay-header {
+  grid-row: 1;
+}
+
 .tweet-overlay-content-controls {
   display: flex;
   flex-direction: row;
   justify-content: right;
-  gap: 1.5rem;
+  align-items: center;
   flex-wrap: wrap;
 }
 
@@ -22,7 +26,14 @@
   color: transparent;
   font-size: 2rem;
   -webkit-text-stroke: var(--saito-primary) 1px;
-  margin: 1rem 2px 0;
+  padding: 1rem;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.1s;
+}
+
+.tweet-overlay-content-controls i:hover{
+  transform: scale(1.1);
 }
 
 .post-tweet-preview {

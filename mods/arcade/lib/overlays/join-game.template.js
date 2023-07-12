@@ -4,10 +4,10 @@ module.exports = JoinGameOverlayTemplate = async (app, mod, invite) => {
   }
 
   //Uncreated games
-  let desc =
-    invite?.desired_opponent_publickeys?.length > 0 || invite.game_status == "private"
-      ? "private invitation"
-      : "open invitation";
+  let desc = invite.verbose_game_type;
+  //	invite?.desired_opponent_publickeys?.length > 0 || invite.game_status == "private"
+  //			? "private invitation"
+  //		: "open invitation";
   //If created
   if (mod.isAcceptedGame(invite.game_id)) {
     desc = "active game";
@@ -19,7 +19,9 @@ module.exports = JoinGameOverlayTemplate = async (app, mod, invite) => {
   let html = `
   <div class="arcade-game-overlay">
   <div class="arcade-game-overlay-header">
-	  <div class="arcade-game-overlay-header-image" style="background-image: url('${invite.game_mod.returnArcadeImg()}')">
+	  <div class="arcade-game-overlay-header-image" style="background-image: url('${
+      (await invite.game_mod.respondTo("arcade-games")).image
+    }')">
 	  </div>
 	  <div class="arcade-game-overlay-header-title-box">
 		  <div class="arcade-game-overlay-header-title-box-title">${invite.game_name}</div>
@@ -88,6 +90,18 @@ module.exports = JoinGameOverlayTemplate = async (app, mod, invite) => {
     let datetime = app.browser.formatDate(invite.time_created);
     html += addTimeStamp("created at", datetime);
   }
+  if (invite?.step >= 0) {
+    html += `<div class="saito-table-row">
+              <div class="arcade-game-options-key">game moves</div>
+							<div class="arcade-game-options-value">${invite.step}</div>
+					</div>`;
+  }
+  if (invite?.method) {
+    html += `<div class="saito-table-row">
+              <div class="arcade-game-options-key">game ending</div>
+							<div class="arcade-game-options-value">${invite.method}</div>
+					</div>`;
+  }
 
   html += `
 			  </div>
@@ -105,7 +119,8 @@ module.exports = JoinGameOverlayTemplate = async (app, mod, invite) => {
           html += `<div id="arcade-game-controls-forfeit-game" class="saito-button saito-button-primary">forfeit game</div>`;
         }
         html += `<div id="arcade-game-controls-close-game" class="saito-button saito-button-primary">close game</div>`;
-      } else {
+      } else if (invite.game_mod.enable_observer) {
+        //Observer mode -- ongoing
         html += `<div id="arcade-game-controls-watch-game" class="saito-button saito-button-primary">watch game</div>`;
       }
     } else {
@@ -122,7 +137,7 @@ module.exports = JoinGameOverlayTemplate = async (app, mod, invite) => {
         html += `<div id="arcade-game-controls-join-game" class="saito-button saito-button-primary">join game</div>`;
       }
     }
-  } else {
+  } else if (invite.game_mod.enable_observer && invite?.step > 0) {
     //Observer mode -- finished
     html += `<div id="arcade-game-controls-review-game" class="saito-button saito-button-primary">review game</div>`;
   }
@@ -153,6 +168,6 @@ const formatOptions = (sgoa) => {
 const addTimeStamp = (label, datetime) => {
   return `<div class="saito-table-row">
               <div class="arcade-game-options-key">${label}</div>
-							<div class="arcade-game-options-value">${datetime.hours}:${datetime.minutes}, ${datetime.month} ${datetime.day}</div>
+							<div class="arcade-game-options-value">${datetime.hours}:${datetime.minutes}, ${datetime.day} ${datetime.month}</div>
 					</div>`;
 };

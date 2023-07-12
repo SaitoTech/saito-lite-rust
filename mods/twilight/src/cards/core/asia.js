@@ -1,5 +1,6 @@
 
     if (card == "asia") {
+
       let vp_adjustment = this.calculateScoring("asia");
       this.showScoreOverlay(card, vp_adjustment);
       let total_vp = vp_adjustment.us.vp - vp_adjustment.ussr.vp;

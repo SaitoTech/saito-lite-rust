@@ -1,0 +1,84 @@
+
+.lastmove {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 1px 0;
+    margin-top: 1rem;
+    color: white;
+}
+
+.game-playerbox-head .saito-user .saito-address {
+  color: white;
+}
+
+.game-playerbox-head .saito-user>.saito-address, .game-playerbox-head .saito-user>.saito-userline {
+  color: white;
+}
+
+.status-header, .status-message, .status-text-menu,  .status-text-menu ul,  .status-text-menu ul li,  .textchoice{
+  background: unset;
+}
+
+.textchoice:hover {
+  color: black;
+}
+
+.game-playerbox-manager {
+  position: absolute;
+  right: 40px;
+  top: 50px;
+  cursor: default;
+}
+
+.game-playerbox {
+  position: unset;
+  height: fit-content;
+  background-color: rgba(43,29,14,0.5);
+  margin: 0.5em;
+  border: 2px solid transparent;
+  border-radius: 18px;
+  box-shadow: -5px 3px 4px black;
+  max-width: 27.5rem;
+}
+
+.game-playerbox.active {
+  border-color: silver;
+}
+
+
+
+@media  (orientation: portrait){
+
+  .game-playerbox-manager {
+    top: 45px;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-evenly;
+  }
+
+  .game-playerbox {
+    min-height: unset;
+    width: 20vh;
+    max-width: 23vw;
+    padding: 0.25em;
+    margin: 0;
+    border-radius: 12px;
+    box-shadow: -4px 2px 3px black;
+    font-size: 15px;
+  }
+
+}
+
+
+@media only screen and (max-width: 600px) {
+
+  .game-playerbox-manager {
+    display: none;
+  }
+
+}
+

@@ -66,7 +66,7 @@ export default class Wallet extends SaitoWallet {
   //   return (await S.getInstance().signTransaction(tx)) as T;
   // }
 
-  // public async returnPublicKey(): Promise<string> {
+  // public async getPublicKey(): Promise<string> {
   //   return S.getInstance().getPublicKey();
   // }
 
@@ -565,7 +565,7 @@ export default class Wallet extends SaitoWallet {
 
         //
         // DEBUGGING - sender is address to which we send the crypto
-        // 	     - not our own publickey
+        //       - not our own publickey
         //
         if (senders[i] === (await cryptomod.returnAddress())) {
           // Need to save before we await, otherwise there is a race condition
