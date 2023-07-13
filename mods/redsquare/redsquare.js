@@ -1223,9 +1223,11 @@ class RedSquare extends ModTemplate {
       for (let i = 0; i < p.length; i++) {
         peers.push(p[i].publicKey);
       }
-      let recipient = [...peers, this.publicKey, server.publicKey];
+      let recipient = [...peers, this.publicKey];
+
+      console.log(recipient, "recipients");
       redsquare_self.app.connection.emit("relay-send-message", {
-        recipient,
+        recipient: "PEERS",
         request: obj.request,
         data: newtx.msg,
       });
