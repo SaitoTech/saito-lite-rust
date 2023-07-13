@@ -742,7 +742,7 @@ class RedSquare extends ModTemplate {
           this.tweets[i].tx.optional.num_retweets = tweet.tx.optional.num_retweets;
           this.tweets[i].tx.optional.num_likes = tweet.tx.optional.num_likes;
           this.tweets[i].updated_at = tweet.tx.optional.updated_at;
-          console.log("Update stats of tweet we already indexed");
+          //console.log("Update stats of tweet we already indexed");
           break;
         }
       }
@@ -969,8 +969,6 @@ class RedSquare extends ModTemplate {
       if (!tweet?.noerrors) {
         return;
       }
-
-      console.log("Process tweet for properties");
 
       tweet = await tweet.generateTweetProperties(app, this, 1);
 
@@ -1252,7 +1250,7 @@ class RedSquare extends ModTemplate {
 
     localforage.getItem(`tweet_history`, (error, value) => {
       if (value && value.length > 0) {
-        console.log("Using locally cached tweets");
+
         for (let tx of value) {
           let newtx = new saito.default.transaction();
           newtx.deserialize_from_web(this.app, tx);
@@ -1314,7 +1312,7 @@ class RedSquare extends ModTemplate {
     this.saveOptions();
 
     let tweet_txs = [];
-    let maximum = 30;
+    let maximum = 20;
     for (let tweet of this.tweets) {
       tweet.tx.optional.updated_at = tweet.updated_at;
       tweet_txs.push(tweet.tx.serialize_to_web(this.app));

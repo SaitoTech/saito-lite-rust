@@ -234,9 +234,9 @@ class Tweet {
         has_reply_disconnected = true;
       }
 
-      if (has_reply || has_reply_disconnected){
-        console.log(has_reply, has_reply_disconnected);
-      }
+      //if (has_reply || has_reply_disconnected){
+      //  console.log(has_reply, has_reply_disconnected);
+      //}
       //
       // if prepend = true, remove existing element
       //
@@ -291,7 +291,7 @@ class Tweet {
         t.notice = this.retweet.notice;
         t.render(prepend);
       } else {
-        console.log("saved tweet");
+        //console.log("saved tweet");
         this.retweet.user.container = this.container + `> .tweet-${this.tx.transaction.sig} > .tweet-header`,
         this.retweet.render(prepend);
       }

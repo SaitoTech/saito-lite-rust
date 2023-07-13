@@ -1119,9 +1119,9 @@ class Chat extends ModTemplate {
   // Since we were always testing the timestamp its a good thing we don't manipulate it
   //
   addTransactionToGroup(group, tx) {
-    //if (this.debug) {
+    if (this.debug) {
       console.log("Adding Chat TX to group: ", tx);
-    //}
+    }
 
     //Limit live memory
     while (group.txs.length > 200) {
@@ -1244,11 +1244,10 @@ class Chat extends ModTemplate {
         name = name.substring(0, name.length - 2);
       }
     }
-    console.log("ReturnOrCreate: " + name);
 
     for (let i = 0; i < this.groups.length; i++) {
       if (this.groups[i].id == id) {
-        console.log(JSON.parse(JSON.stringify(this.groups[i])));
+        //console.log(JSON.parse(JSON.stringify(this.groups[i])));
         if (update_name && this.groups[i].name != name){
           this.groups[i].old_name = this.groups[i].name;
           this.groups[i].name = name;
@@ -1262,10 +1261,10 @@ class Chat extends ModTemplate {
     }
 
 
-    //if (this.debug) {
+    if (this.debug) {
       console.log("Creating new chat group " + id);
-    //  console.log(JSON.stringify(members));
-    //}
+      console.log(JSON.stringify(members));
+    }
 
     let newGroup = {
       id: id,
@@ -1340,7 +1339,7 @@ class Chat extends ModTemplate {
     // create chatgroups from keychain -- friends only
     //
     let keys = this.app.keychain.returnKeys();
-    console.log("Populate chat list");
+    //console.log("Populate chat list");
     for (let i = 0; i < keys.length; i++) {
       if (keys[i].aes_publickey && !keys[i]?.mute) {
         this.returnOrCreateChatGroupFromMembers(
@@ -1373,7 +1372,7 @@ class Chat extends ModTemplate {
     //console.log("Reading local DB");
     let count = 0;
     for (let g_id of this.app.options.chat) {
-      console.log("Fetch", g_id);
+      //console.log("Fetch", g_id);
       count++;
       localforage.getItem(`chat_${g_id}`, function (error, value) {
         count --;
@@ -1389,7 +1388,7 @@ class Chat extends ModTemplate {
             chat_self.groups.push(value);
           }
 
-          console.log(value);
+          //console.log(value);
         }
 
         if (count === 0){
