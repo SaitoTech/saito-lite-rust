@@ -34,7 +34,6 @@ Saito User
 .saito-user {
   display: grid;
   column-gap: 1rem;
-  cursor: pointer;
   grid-template-columns: min-content 1fr min-content;
   grid-template-rows: min-content 1fr;
   justify-items: start;
@@ -49,6 +48,7 @@ Saito User
   grid-column-end: span 1;
   grid-row: span 2;
   position: relative;
+  cursor: pointer;
 }
 
 .saito-user>.saito-address {
@@ -57,6 +57,7 @@ Saito User
   grid-column-end: span 1;
   grid-row-start: 1;
   grid-row-end: span 1;
+  cursor: pointer;
 }
 
 .saito-user>.saito-userline {
@@ -65,6 +66,10 @@ Saito User
   grid-row-start: 2;
   grid-row-end: span 1;
   font-size: 1.4rem;
+  /* Added for all the publickeys in saito-userlines that overflow */ 
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .saito-user .saito-datetime {
@@ -74,4 +79,8 @@ Saito User
   grid-row: span 2;
   font-size: 1.4rem;
   align-items: top;
+}
+
+.saito-user-fourth-elem-large {
+  grid-row: span 2;
 }

@@ -14,7 +14,17 @@ module.exports = ChatTeaser = (app, group) => {
     time = x.hours + ":" + x.minutes;
   }
  
-  let imgsrc = (group.name) ? app.keychain.returnIdenticon(group.name) : '/saito/img/no-profile.png';
+  let identicon_source = id;
+
+  if (group.members.length == 2){
+    for (let mem of group.members){
+      if (mem !== app.wallet.returnPublicKey()){
+        identicon_source = mem;
+      }
+    }
+  }
+
+  let imgsrc = app.keychain.returnIdenticon(identicon_source);
 
   return `
   <div class="saito-user${(group?.online)?" online":""}" id="saito-user-${id}" data-id="${id}" data-disable="true">

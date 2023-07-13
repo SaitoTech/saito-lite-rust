@@ -30,6 +30,7 @@ class Post {
 
   render() {
     this.overlay.show(PostTemplate(this.app, this.mod, this));
+    this.overlay.blockClose();
 
     //
     //
@@ -254,7 +255,7 @@ class Post {
 
     //We let the loader run for a half second to show we are sending the tweet
     setTimeout(() => {
-      post_self.overlay.hide();
+      post_self.overlay.remove();
     }, 800);
   }
 

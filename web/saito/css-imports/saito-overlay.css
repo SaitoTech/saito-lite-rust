@@ -93,12 +93,14 @@
     position: absolute;
     height: 6rem;
     color: var(--saito-white);
-    width: 100%;
+    width: calc(100% - 3.2rem);
     padding: 1.6rem;
     font-size: 2.5rem;
     text-transform: uppercase;
     white-space: nowrap;
     display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .saito-overlay-form-input {
@@ -196,4 +198,14 @@
         top: 0.5rem;
         right: 0.5rem;
     }
+
+    .saito-overlay-subform > div:first-child {
+        display: none;
+    }
+
+    .saito-overlay-subform-inputs {
+        grid-column: span 2;
+    }
+
+
 }

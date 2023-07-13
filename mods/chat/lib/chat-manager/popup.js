@@ -25,7 +25,9 @@ class ChatPopup {
   remove() {
 
     let popup_qs = "#chat-popup-" + this.group.id;
-    document.querySelector(popup_qs).remove();
+    if (document.querySelector(popup_qs)){
+      document.querySelector(popup_qs).remove();
+    }
 
   }
 
