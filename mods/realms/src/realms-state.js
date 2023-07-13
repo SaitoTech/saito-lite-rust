@@ -29,7 +29,10 @@
 
 	  this.game.state.players_info[player-1].cards.push(obj);
 
+alert("deployed card: " + cardname);
+
 	  this.board.render();
+
 	}
 
 	

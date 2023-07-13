@@ -38,25 +38,26 @@
 
 	      let type = mv[1];
 	      let player = parseInt(mv[2]);
-	      let card = this.deck[mv[3]];
+	      let cardkey = mv[3];
+	      let card = this.deck[cardkey];
 	      let player_ignores = parseInt(mv[4]);
 
 	      if (this.game.player != player_ignores) {
 
 		if (type == "land") {
-		  this.deploy(player, card);
+		  this.deploy(player, cardkey);
 		}
 			
 		if (type == "creature") {
-		  this.deploy(player, card);
+		  this.deploy(player, cardkey);
 		}
 				
 		if (type == "artifact") {
-		  this.deploy(player, card);
+		  this.deploy(player, cardkey);
 		}
 				
 		if (type == "enchantment") {
-		  this.deploy(player, card);
+		  this.deploy(player, cardkey);
 		}
 
 	      }

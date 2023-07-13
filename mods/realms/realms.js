@@ -29,7 +29,7 @@ class Realms extends GameTemplate {
 		//
 		// UI components
 		//
-		this.board = new Board(this.app, this);
+		this.board = new Board(this.app, this, ".gameboard");
 		this.mana_overlay = new ManaOverlay(this.app, this);
 		this.combat_overlay = new CombatOverlay(this.app, this);
 
@@ -166,25 +166,26 @@ class Realms extends GameTemplate {
 
 	      let type = mv[1];
 	      let player = parseInt(mv[2]);
-	      let card = this.deck[mv[3]];
+	      let cardkey = mv[3];
+	      let card = this.deck[cardkey];
 	      let player_ignores = parseInt(mv[4]);
 
 	      if (this.game.player != player_ignores) {
 
 		if (type == "land") {
-		  this.deploy(player, card);
+		  this.deploy(player, cardkey);
 		}
 			
 		if (type == "creature") {
-		  this.deploy(player, card);
+		  this.deploy(player, cardkey);
 		}
 				
 		if (type == "artifact") {
-		  this.deploy(player, card);
+		  this.deploy(player, cardkey);
 		}
 				
 		if (type == "enchantment") {
-		  this.deploy(player, card);
+		  this.deploy(player, cardkey);
 		}
 
 	      }
@@ -234,26 +235,25 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 			function(cardname) {
 
 				let card = realms_self.deck[cardname];
-				alert("CLICKED ON CARD: " + cardname + " -- " + card.type);
 
 				if (card.type == "land") {
 					this.deploy(realms_self.game.player, cardname);
-					this.addMove(`deploy\tland\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.addMove(`deploy\tland\t${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 				}
 				if (card.type == "creature") {
 					this.deploy(realms_self.game.player, cardname);
-					this.addMove(`deploy\tcreature\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.addMove(`deploy\tcreature\t${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 				}
 				if (card.type == "artifact") {
 					this.deploy(realms_self.game.player, cardname);
-					this.addMove(`deploy\tartifact\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.addMove(`deploy\tartifact\t${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 				}
 				if (card.type == "enchantment") {
 					this.deploy(realms_self.game.player, cardname);
-					this.addMove(`deploy\tenchantment\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.addMove(`deploy\tenchantment\t${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 
 				}
@@ -271,40 +271,8 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 	}
 
-/****
-	playerPlayCardFromHand(card_index) {
-		let card = this.game.deck[this.game.player - 1].cards[card_index];
-
-		let c = this.card_library[card];
-
-		console.log(c);
-
-		if (c.type == "land") {
-			if (this.game.state.has_placed_land) {
-				salert("You may only play one land per turn.");
-				return;
-			} else {
-				this.game.state.has_placed_land = 1;
-			}
-		}
-
-		//To do -- insert test for mana pool
 
 
-		let ui_id = this.insertCardSlot(this.game.player, "#summoning_stack");
-		for (let i = 0; i < this.game.deck[this.game.player-1].hand.length; i++){
-			if (this.game.deck[this.game.player-1].hand[i] == card_index){
-				this.game.deck[this.game.player-1].hand.splice(i,1);
-				this.game.state.summoning_stack.push({player: this.game.player, key: card, card: c, uuid: ui_id});
-			}
-		}
-
-		this.addMove(`summon\t${this.game.player}\t${card}`);
-
-		this.moveCard(card_index, ui_id);
-		this.endTurn();
-	}
-****/
 
 
 	returnState() {
@@ -337,7 +305,10 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 	  this.game.state.players_info[player-1].cards.push(obj);
 
+alert("deployed card: " + cardname);
+
 	  this.board.render();
+
 	}
 
 	
@@ -422,8 +393,8 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 				return `<div class="card"><img class="card cardimg" src="/realms/img/cards/016_shellring_vindicator.png"></div>`;
                 	};
 	        }
-                if (!c.onInstant) {
-                	c.onInstant = function (game_self, player, card) {
+                if (!c.oninstant) {
+                	c.oninstant = function (game_self, player, card) {
                         	return 0;
                 	};
                 }
@@ -684,7 +655,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 	    deck['r002'] 	= { 
 		name: "Unwavering Lighting", 
-		type: "Instant",
+		type: "instant",
 		color: "red",
 		cost: ['*','*','*','*','*','red'],
 		text: `Unwavering Lighting inflicts 5 damage to a creature of your choosing and 2 damage to its Master. 
@@ -695,7 +666,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 	    deck['r003'] 	= { 
 		name: "Unformed Assassin", 
-		type: "Creature - Human Rogue",
+		type: "creature" ,
 		color: "red",
 		cost: ['*','*','*','*','red'],
 		power: 4,
@@ -709,7 +680,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 	    deck['r004'] 	= { 
 		name: "Restless Flameband", 
-		type: "Creature - Orc Berserker",
+		type: "creature" ,
 		color: "red",
 		cost: ['*','*','*','*','*','red'],
 		power: 5,
@@ -722,7 +693,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 	    deck['r005'] 	= { 
 		name: "Thisty Palemane", 
-		type: "Creature - Kobold",
+		type: "creature" ,
 		color: "red",
 		cost: ['*','*','red']	,
 		power: 5,
@@ -735,7 +706,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 	    deck['r006'] 	= { 
 		name: "Tempest Ravager", 
-		type: "Creature - Spirit",
+		type: "creature" ,
 		color: "red",
 		cost: ['*','*','red']	,
 		power: 3,
@@ -747,7 +718,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 	    deck['r007'] 	= { 
 		name: "Outcast Palemane", 
-		type: "Creature - Kobold Warrior",
+		type: "creature" ,
 		color: "red",
 		cost: ['*','red']	,
 		power: 1,
@@ -781,7 +752,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 	    deck['g001'] 	= { 
 		name: "Leshy",
-		type: "Creature - Fungus",
+		type: "creature",
 		color: "green",
 		cost: ['*','green']	,
 		power: 2,
@@ -794,7 +765,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 	
 	    deck['g002'] 	= { 
 		name: "Dormant Predator", 
-		type: "Creature - Treant Spirit",
+		type: "creature",
 		color: "green",
 		cost: ['*','*','*','*','*','green','green']		,
 		power: 6,
@@ -808,7 +779,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 	
 	    deck['g003'] 	= { 
 		name: "Dormant Wacher", 
-		type: "Creature - Treant",
+		type: "creature",
 		color: "green",
 		cost: ['*','*','*','green'],
 		power: 2,
@@ -821,7 +792,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 	    deck['g004'] 	= { 
 		name: "Forest Dreamcatcher",
-		type: "Enchantment",
+		type: "enchantment",
 		color: "green"	,
 		cost: ['*','*','*','*','*','red']	,
 		text: `Test Here`,
@@ -830,7 +801,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 	    deck['g005'] 	= { 
 		name: "Deadwood Ranger", 
-		type: "Creature - Human Scout",
+		type: "creature",
 		color: "green",
 		cost: ['*','*','green']			  		,
 		power: 1,
@@ -843,7 +814,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 	
 	    deck['g006'] 	= { 
 		name: "Dormant Sleeper", 
-		type: "Creature - Treant",
+		type: "creature",
 		color: "green",
 		cost: ['*','*','*','green'],
 		power: 4,
@@ -855,7 +826,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 	    }
 	    deck['g007'] 	= { 
 		name: "Leshy Fruit", 
-		type: "Creature - Fungus",
+		type: "creature",
 		color: "green",
 		cost: ['*','*','*','green'],
 		power: 3,
@@ -867,7 +838,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 	    }
 	    deck['g008'] 	= { 
 		name: "Spider's Game", 
-		type: "Instant",
+		type: "instant",
 		color: "green",
 		cost: ['*','*','green'],
 		properties: []	,

@@ -29,7 +29,7 @@ class Realms extends GameTemplate {
 		//
 		// UI components
 		//
-		this.board = new Board(this.app, this);
+		this.board = new Board(this.app, this, ".gameboard");
 		this.mana_overlay = new ManaOverlay(this.app, this);
 		this.combat_overlay = new CombatOverlay(this.app, this);
 

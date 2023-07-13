@@ -18,26 +18,25 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 			function(cardname) {
 
 				let card = realms_self.deck[cardname];
-				alert("CLICKED ON CARD: " + cardname + " -- " + card.type);
 
 				if (card.type == "land") {
 					this.deploy(realms_self.game.player, cardname);
-					this.addMove(`deploy\tland\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.addMove(`deploy\tland\t${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 				}
 				if (card.type == "creature") {
 					this.deploy(realms_self.game.player, cardname);
-					this.addMove(`deploy\tcreature\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.addMove(`deploy\tcreature\t${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 				}
 				if (card.type == "artifact") {
 					this.deploy(realms_self.game.player, cardname);
-					this.addMove(`deploy\tartifact\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.addMove(`deploy\tartifact\t${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 				}
 				if (card.type == "enchantment") {
 					this.deploy(realms_self.game.player, cardname);
-					this.addMove(`deploy\tenchantment\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.addMove(`deploy\tenchantment\t${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 
 				}
@@ -55,38 +54,6 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 	}
 
-/****
-	playerPlayCardFromHand(card_index) {
-		let card = this.game.deck[this.game.player - 1].cards[card_index];
-
-		let c = this.card_library[card];
-
-		console.log(c);
-
-		if (c.type == "land") {
-			if (this.game.state.has_placed_land) {
-				salert("You may only play one land per turn.");
-				return;
-			} else {
-				this.game.state.has_placed_land = 1;
-			}
-		}
-
-		//To do -- insert test for mana pool
 
 
-		let ui_id = this.insertCardSlot(this.game.player, "#summoning_stack");
-		for (let i = 0; i < this.game.deck[this.game.player-1].hand.length; i++){
-			if (this.game.deck[this.game.player-1].hand[i] == card_index){
-				this.game.deck[this.game.player-1].hand.splice(i,1);
-				this.game.state.summoning_stack.push({player: this.game.player, key: card, card: c, uuid: ui_id});
-			}
-		}
-
-		this.addMove(`summon\t${this.game.player}\t${card}`);
-
-		this.moveCard(card_index, ui_id);
-		this.endTurn();
-	}
-****/
 

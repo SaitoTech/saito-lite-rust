@@ -36,8 +36,8 @@
 				return `<div class="card"><img class="card cardimg" src="/realms/img/cards/016_shellring_vindicator.png"></div>`;
                 	};
 	        }
-                if (!c.onInstant) {
-                	c.onInstant = function (game_self, player, card) {
+                if (!c.oninstant) {
+                	c.oninstant = function (game_self, player, card) {
                         	return 0;
                 	};
                 }
@@ -298,7 +298,7 @@
 
 	    deck['r002'] 	= { 
 		name: "Unwavering Lighting", 
-		type: "Instant",
+		type: "instant",
 		color: "red",
 		cost: ['*','*','*','*','*','red'],
 		text: `Unwavering Lighting inflicts 5 damage to a creature of your choosing and 2 damage to its Master. 
@@ -309,7 +309,7 @@
 
 	    deck['r003'] 	= { 
 		name: "Unformed Assassin", 
-		type: "Creature - Human Rogue",
+		type: "creature" ,
 		color: "red",
 		cost: ['*','*','*','*','red'],
 		power: 4,
@@ -323,7 +323,7 @@
 
 	    deck['r004'] 	= { 
 		name: "Restless Flameband", 
-		type: "Creature - Orc Berserker",
+		type: "creature" ,
 		color: "red",
 		cost: ['*','*','*','*','*','red'],
 		power: 5,
@@ -336,7 +336,7 @@
 
 	    deck['r005'] 	= { 
 		name: "Thisty Palemane", 
-		type: "Creature - Kobold",
+		type: "creature" ,
 		color: "red",
 		cost: ['*','*','red']	,
 		power: 5,
@@ -349,7 +349,7 @@
 
 	    deck['r006'] 	= { 
 		name: "Tempest Ravager", 
-		type: "Creature - Spirit",
+		type: "creature" ,
 		color: "red",
 		cost: ['*','*','red']	,
 		power: 3,
@@ -361,7 +361,7 @@
 
 	    deck['r007'] 	= { 
 		name: "Outcast Palemane", 
-		type: "Creature - Kobold Warrior",
+		type: "creature" ,
 		color: "red",
 		cost: ['*','red']	,
 		power: 1,
@@ -395,7 +395,7 @@
 
 	    deck['g001'] 	= { 
 		name: "Leshy",
-		type: "Creature - Fungus",
+		type: "creature",
 		color: "green",
 		cost: ['*','green']	,
 		power: 2,
@@ -408,7 +408,7 @@
 	
 	    deck['g002'] 	= { 
 		name: "Dormant Predator", 
-		type: "Creature - Treant Spirit",
+		type: "creature",
 		color: "green",
 		cost: ['*','*','*','*','*','green','green']		,
 		power: 6,
@@ -422,7 +422,7 @@
 	
 	    deck['g003'] 	= { 
 		name: "Dormant Wacher", 
-		type: "Creature - Treant",
+		type: "creature",
 		color: "green",
 		cost: ['*','*','*','green'],
 		power: 2,
@@ -435,7 +435,7 @@
 
 	    deck['g004'] 	= { 
 		name: "Forest Dreamcatcher",
-		type: "Enchantment",
+		type: "enchantment",
 		color: "green"	,
 		cost: ['*','*','*','*','*','red']	,
 		text: `Test Here`,
@@ -444,7 +444,7 @@
 
 	    deck['g005'] 	= { 
 		name: "Deadwood Ranger", 
-		type: "Creature - Human Scout",
+		type: "creature",
 		color: "green",
 		cost: ['*','*','green']			  		,
 		power: 1,
@@ -457,7 +457,7 @@
 	
 	    deck['g006'] 	= { 
 		name: "Dormant Sleeper", 
-		type: "Creature - Treant",
+		type: "creature",
 		color: "green",
 		cost: ['*','*','*','green'],
 		power: 4,
@@ -469,7 +469,7 @@
 	    }
 	    deck['g007'] 	= { 
 		name: "Leshy Fruit", 
-		type: "Creature - Fungus",
+		type: "creature",
 		color: "green",
 		cost: ['*','*','*','green'],
 		power: 3,
@@ -481,7 +481,7 @@
 	    }
 	    deck['g008'] 	= { 
 		name: "Spider's Game", 
-		type: "Instant",
+		type: "instant",
 		color: "green",
 		cost: ['*','*','green'],
 		properties: []	,

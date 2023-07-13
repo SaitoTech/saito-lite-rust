@@ -59,15 +59,15 @@ class Board {
       let card = realms_self.deck[cobj.key];
 
       if (cobj.type == "land") {
-        this.app.browser.addElementToSelector(realms_self.deck[cobj.key].returnCardImage(), ".me .mana");
+        this.app.browser.addElementToSelector(realms_self.deck[card.key].returnCardImage(), ".me .mana");
       }
 
       if (cobj.type == "creature") {
-        this.app.browser.addElementToSelector(realms_self.deck[cobj.key].returnCardImage(), ".me .creatures");
+        this.app.browser.addElementToSelector(realms_self.deck[card.key].returnCardImage(), ".me .creatures");
       }
 
       if (cobj.type == "artifact") {
-        this.app.browser.addElementToSelector(realms_self.deck[cobj.key].returnCardImage(), ".me .artifacts");
+        this.app.browser.addElementToSelector(realms_self.deck[card.key].returnCardImage(), ".me .artifacts");
       }
     }
 
