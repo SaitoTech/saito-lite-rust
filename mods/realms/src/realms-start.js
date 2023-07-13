@@ -1,6 +1,8 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
 const saito = require("../../lib/saito/saito");
 const Board = require("./lib/ui/board");
+const ManaOverlay = require("./lib/ui/overlays/mana");
+const CombatOverlay = require("./lib/ui/overlays/combat");
 
 //////////////////
 // CONSTRUCTOR  //
@@ -24,7 +26,12 @@ class Realms extends GameTemplate {
 		this.minPlayers = 2;
 		this.maxPlayers = 2;
 
+		//
+		// UI components
+		//
 		this.board = new Board(this.app, this);
+		this.mana_overlay = new ManaOverlay(this.app, this);
+		this.combat_overlay = new CombatOverlay(this.app, this);
 
 		return this;
 	}
@@ -46,7 +53,7 @@ class Realms extends GameTemplate {
 		// add card events -- text shown and callback run if there
 		//
 		this.cardbox.render(app, this);
-		this.cardbox.skip_card_prompt = 0;
+		//this.cardbox.skip_card_prompt = 0;
 		this.cardbox.addCardType("showcard", "", null);
 		this.cardbox.addCardType("card", "select", this.cardbox_callback);
 

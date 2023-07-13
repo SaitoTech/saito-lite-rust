@@ -1,15 +1,7 @@
 	
-	nonPlayerTurn() {
-		if (this.browser_active == 0) {
-			return;
-		}
-
-		this.updateStatusAndListCards(`Opponent Turn`, this.game.deck[this.game.player - 1].hand);
-		this.attachCardboxEvents();
-
-	}
-
 	playerTurn() {
+
+		let realms_self = this;
 
 		if (this.browser_active == 0) {
 			return;
@@ -21,35 +13,49 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 		// show my hand
 		//
 		this.updateStatusAndListCards(
-			`Your Turn <span id="end-turn" class="end-turn">[ or pass ]</span>`,
-			this.game.deck[this.game.player-1].hand
+		  	`play card(s) or click board to attack <span id="end-turn" class="end-turn">[ or pass ]</span>`,
+		    	this.game.deck[this.game.player-1].hand, 
+			function(cardname) {
+
+				let card = realms_self.deck[cardname];
+				alert("CLICKED ON CARD: " + cardname);
+
+				if (card.type == "land") {
+					this.deployLand(realms_self.game.player, cardname);
+					this.addMove(`deploy\tland\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.endTurn();
+				}
+				if (card.type == "creature") {
+					this.deployLand(realms_self.game.player, cardname);
+					this.addMove(`deploy\tcreature\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.endTurn();
+				}
+				if (card.type == "artifact") {
+					this.deployLand(realms_self.game.player, cardname);
+					this.addMove(`deploy\tartifact\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.endTurn();
+				}
+				if (card.type == "enchantment") {
+					this.deployEnchantment(realms_self.game.player, cardname);
+					this.addMove(`deploy\tenchantment\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.endTurn();
+
+				}
+
+			}
 		);
 
 		//
-		// players may click on cards in their hand
-		//
-/****
-		this.attachCardboxEvents((card) => {
-			this.playerPlayCardFromHand(card);
-		});
-
-		//
-		// players may also end their turn
+		// or end their turn
 		//
 		document.getElementById("end-turn").onclick = (e) => {
-			this.updateStatusAndListCards(
-				"Opponent Turn",
-				this.game.deck[this.game.player - 1].hand,
-				function () {}
-			);
 			this.prependMove("RESOLVE\t" + this.app.wallet.returnPublicKey());
 			this.endTurn();
 		};
-****/
 
 	}
 
-
+/****
 	playerPlayCardFromHand(card_index) {
 		let card = this.game.deck[this.game.player - 1].cards[card_index];
 
@@ -82,5 +88,5 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 		this.moveCard(card_index, ui_id);
 		this.endTurn();
 	}
-
+****/
 

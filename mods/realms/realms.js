@@ -1,6 +1,8 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
 const saito = require("../../lib/saito/saito");
 const Board = require("./lib/ui/board");
+const ManaOverlay = require("./lib/ui/overlays/mana");
+const CombatOverlay = require("./lib/ui/overlays/combat");
 
 //////////////////
 // CONSTRUCTOR  //
@@ -24,7 +26,12 @@ class Realms extends GameTemplate {
 		this.minPlayers = 2;
 		this.maxPlayers = 2;
 
+		//
+		// UI components
+		//
 		this.board = new Board(this.app, this);
+		this.mana_overlay = new ManaOverlay(this.app, this);
+		this.combat_overlay = new CombatOverlay(this.app, this);
 
 		return this;
 	}
@@ -46,7 +53,7 @@ class Realms extends GameTemplate {
 		// add card events -- text shown and callback run if there
 		//
 		this.cardbox.render(app, this);
-		this.cardbox.skip_card_prompt = 0;
+		//this.cardbox.skip_card_prompt = 0;
 		this.cardbox.addCardType("showcard", "", null);
 		this.cardbox.addCardType("card", "select", this.cardbox_callback);
 
@@ -114,113 +121,101 @@ class Realms extends GameTemplate {
 		for (let key in deck1) { this.importCard(key, deck1[key]); }
 		for (let key in deck2) { this.importCard(key, deck2[key]); }
 
-		if (this.browser_active) { this.render(this.app); }
-
 	}
 
 
 
 	handleGameLoop() {
-		///////////
-		// QUEUE //
-		///////////
-		if (this.game.queue.length > 0) {
-			let qe = this.game.queue.length - 1;
-			let mv = this.game.queue[qe].split("\t");
 
-			console.log("QUEUE: " + JSON.stringify(this.game.queue));
+  	  ///////////
+	  // QUEUE //
+	  ///////////
+	  if (this.game.queue.length > 0) {
 
-			//
-			// we never clear the "round" so that when we hit it
-			// we always bounce back higher on the queue by adding
-			// turns for each player.
-			//
-			if (mv[0] == "round") {
-				this.game.queue.push("PLAY\t2");
-				this.game.queue.push("DEAL\t2\t2\t1");
-				this.game.queue.push("PLAY\t1");
-				this.game.queue.push("DEAL\t1\t1\t1");
-			}
+	    let qe = this.game.queue.length - 1;
+	    let mv = this.game.queue[qe].split("\t");
 
-			if (mv[0] === "summon") {
-				let player_id = parseInt(mv[1]);
-				let cardkey = mv[2];
+	    console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
-				if (this.game.player !== player_id){
-					let id = this.insertCardSlot(player_id, "#summoning_stack");
-					this.game.state.summoning_stack.push({player: player_id, key: cardkey, card: this.card_library[cardkey], uuid: id});
-					this.addCard(cardkey, id);					
+	    //
+	    // we never clear the "round" so that when we hit it
+	    // we always bounce back higher on the queue by adding
+	    // more turns for each player.
+	    //
+	    if (mv[0] == "round") {
+	      this.game.queue.push("play\t2");
+	      this.game.queue.push("DEAL\t2\t2\t1");
+	      this.game.queue.push("play\t1");
+	      this.game.queue.push("DEAL\t1\t1\t1");
+	    }
 
-					//To Do: add a step for opponent to Counter/Acknowledge summoned card
-					//Shortcut to accept
-					this.addMove("accept");
-					setTimeout(()=> {this.endTurn();}, 2000);
-					
-				}
 
-				this.game.queue.splice(qe, 1);
-				return 0;
-			}
+	    //
+	    // this "deploys" cards into the battleground, such
+	    // as adding mana into play. the 4th argument allows us
+	    // to specify that a player should ignore the instruction
+	    // which is used when a player has made their move locally
+	    // and we have already updated their board and do not want
+	    // them to repeat that.
+	    // 
+	    if (mv[0] == "deploy") {
 
-			if (mv[0] === "accept") {
-				this.game.queue.splice(qe, 1);
+	      this.game.queue.splice(qe, 1);
 
-				for (let summoned_card of this.game.state.summoning_stack) {
-					this.game.queue.push(`resolve_card\t${summoned_card.player}\t${summoned_card.key}`);
-				}
+	      let type = mv[1];
+	      let player = parseInt(mv[2]);
+	      let card = this.deck[mv[3]];
+	      let player_ignores = parseInt(mv[4]);
 
-			}
+	      if (this.game.player != player_ignores) {
 
-			if (mv[0] === "resolve_card") {
-				let player = parseInt(mv[1]);
-				let card_key = mv[2];
-
-				//Insert code to do stuff based on the card definition
-
-				this.game.queue.splice(qe, 1);
-
-				let card = this.game.state.summoning_stack.pop();
-				if (card.key !== card_key) {
-					console.log("Desyncronized stacks! " + card_key);
-					console.log(JSON.parse(JSON.stringify(card)));
-				}
-
-				//lands: [], 				creatures: [], 				artifacts: [],				graveyard: [],
-
-				
-				if (["land", "creature", "artifact"].includes(card.type)) {
-					//Move permanents onto board
-					if (card.type == "creature"){
-						card.tapped = true;
-					}
-
-					this.game.state.players[player - 1][card.type].push(card);
-					
-				} //else {
-					//Discard non-permanents
-					this.game.state.players[player - 1]["graveyard"].push(card);
-					this.moveCard(card.uuid, ".graveyard");
-				//}
-
-				
-			}
-
+		if (type == "land") {
+		  this.deployLand(player, card);
 		}
-		return 1;
+			
+		if (type == "creature") {
+		  this.deployCreature(player, card);
+		}
+				
+		if (type == "artifact") {
+		  this.deployArtifact(player, card);
+		}
+				
+		if (type == "enchantment") {
+		  this.deployEnchantment(player, card);
+		}
+
+	      }
+
+   	      this.board.render();			
+
+	      return 1;
+
+	    }
+
+	    if (mv[0] === "play") {
+
+	      // this is only removed through "resolve"
+
+	      let player = parseInt(mv[1]);
+   	      if (this.game.player == player) {
+		this.playerTurn();
+	      } else {
+	        this.updateStatusAndListCards("Opponent Turn", this.game.deck[this.game.player-1].hand);
+	      }
+
+	      return 0;
+
+	    }
+
+	  }
+	  return 1;
 	}
 
 	
-	nonPlayerTurn() {
-		if (this.browser_active == 0) {
-			return;
-		}
-
-		this.updateStatusAndListCards(`Opponent Turn`, this.game.deck[this.game.player - 1].hand);
-		this.attachCardboxEvents();
-
-	}
-
 	playerTurn() {
+
+		let realms_self = this;
 
 		if (this.browser_active == 0) {
 			return;
@@ -232,35 +227,49 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 		// show my hand
 		//
 		this.updateStatusAndListCards(
-			`Your Turn <span id="end-turn" class="end-turn">[ or pass ]</span>`,
-			this.game.deck[this.game.player-1].hand
+		  	`play card(s) or click board to attack <span id="end-turn" class="end-turn">[ or pass ]</span>`,
+		    	this.game.deck[this.game.player-1].hand, 
+			function(cardname) {
+
+				let card = realms_self.deck[cardname];
+				alert("CLICKED ON CARD: " + cardname);
+
+				if (card.type == "land") {
+					this.deployLand(realms_self.game.player, cardname);
+					this.addMove(`deploy\tland\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.endTurn();
+				}
+				if (card.type == "creature") {
+					this.deployLand(realms_self.game.player, cardname);
+					this.addMove(`deploy\tcreature\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.endTurn();
+				}
+				if (card.type == "artifact") {
+					this.deployLand(realms_self.game.player, cardname);
+					this.addMove(`deploy\tartifact\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.endTurn();
+				}
+				if (card.type == "enchantment") {
+					this.deployEnchantment(realms_self.game.player, cardname);
+					this.addMove(`deploy\tenchantment\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
+					this.endTurn();
+
+				}
+
+			}
 		);
 
 		//
-		// players may click on cards in their hand
-		//
-/****
-		this.attachCardboxEvents((card) => {
-			this.playerPlayCardFromHand(card);
-		});
-
-		//
-		// players may also end their turn
+		// or end their turn
 		//
 		document.getElementById("end-turn").onclick = (e) => {
-			this.updateStatusAndListCards(
-				"Opponent Turn",
-				this.game.deck[this.game.player - 1].hand,
-				function () {}
-			);
 			this.prependMove("RESOLVE\t" + this.app.wallet.returnPublicKey());
 			this.endTurn();
 		};
-****/
 
 	}
 
-
+/****
 	playerPlayCardFromHand(card_index) {
 		let card = this.game.deck[this.game.player - 1].cards[card_index];
 
@@ -293,7 +302,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 		this.moveCard(card_index, ui_id);
 		this.endTurn();
 	}
-
+****/
 
 
 	returnState() {
@@ -315,6 +324,34 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 		return state;
 	}
+
+
+
+	deployLand(player, card) {
+	  let c = this.deck[card];
+	  this.game.state.players_info[player-1].mana.push(c);
+	  this.game.state.players_info[player-1].mana[this.game.state.players_info[player-1].mana.length-1].tapped = true;
+	  this.board.render();
+	}
+
+	deployCreature(player, card) {
+	  let c = this.deck[card];
+	  this.game.state.players_info[player-1].creatures.push(c);
+	  this.game.state.players_info[player-1].creatures[this.game.state.players_info[player-1].artifacts.length-1].tapped = true;
+	  this.board.render();
+	}
+
+	deployArtifact(player, card) {
+	  let c = this.deck[card];
+	  this.game.state.players_info[player-1].artifacts.push(c);
+	  this.game.state.players_info[player-1].artifacts[this.game.state.players_info[player-1].artifacts.length-1].tapped = true;
+	  this.board.render();
+	}
+
+	playInstant(player, card) {
+
+	}
+
 
 
 
@@ -470,7 +507,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
                 //
 		if (!c.returnCardImage) {
                 	c.returnCardImage = function() {
-				return `<div class="card"><img src="/realms/img/cards/016_shellring_vindicator.png"></div>`;
+				return `<div class="card"><img class="card cardimg" src="/realms/img/cards/016_shellring_vindicator.png"></div>`;
                 	};
 	        }
                 if (!c.onInstant) {

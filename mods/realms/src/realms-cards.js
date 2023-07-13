@@ -33,7 +33,7 @@
                 //
 		if (!c.returnCardImage) {
                 	c.returnCardImage = function() {
-				return `<div class="card"><img src="/realms/img/cards/016_shellring_vindicator.png"></div>`;
+				return `<div class="card"><img class="card cardimg" src="/realms/img/cards/016_shellring_vindicator.png"></div>`;
                 	};
 	        }
                 if (!c.onInstant) {
