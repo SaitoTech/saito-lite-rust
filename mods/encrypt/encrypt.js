@@ -70,6 +70,7 @@ class Encrypt extends ModTemplate {
     return super.respondTo(type);
   }
 
+
   async handlePeerTransaction(app, newtx = null, peer, mycallback) {
     if (newtx == null) {
       return;
@@ -161,6 +162,14 @@ class Encrypt extends ModTemplate {
         }
         this.encrypt.pending = [];
         this.saveEncrypt();
+      }
+      //
+      // Try again for partial key exchanges!
+      //
+      for (let key of this.app.keychain.returnKeys()){
+        if ((key.aes_privatekey || key.aes_publickey) && !key.aes_secret){
+          this.initiate_key_exchange(key.publickey); 
+        }
       }
     }
 

@@ -132,7 +132,7 @@ class Keychain {
     // submit JSON parsed object after unencryption
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey === publickey) {
-        if (this.keys[x].aes_secret != "") {
+        if (this.keys[x].aes_secret) {
           const tmpmsg = this.app.crypto.aesDecrypt(encrypted_msg, this.keys[x].aes_secret);
           if (tmpmsg != null) {
             const tmpx = JSON.parse(tmpmsg);
@@ -198,7 +198,7 @@ class Keychain {
   decryptString(publickey, encrypted_string) {
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey == publickey) {
-        if (this.keys[x].aes_secret != "") {
+        if (this.keys[x].aes_secret) {
           return this.app.crypto.aesDecrypt(encrypted_string, this.keys[x].aes_secret);
         }
       }
@@ -210,7 +210,7 @@ class Keychain {
   encryptMessage(publickey: string, msg) {
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey === publickey) {
-        if (this.keys[x].aes_secret != "") {
+        if (this.keys[x].aes_secret) {
           const jsonmsg = JSON.stringify(msg);
           return this.app.crypto.aesEncrypt(jsonmsg, this.keys[x].aes_secret);
         }
