@@ -15,7 +15,7 @@ class Tweet {
 
     if (!tx) {
       console.warn("Attempting to create a tweet from a null tx");
-      return null;
+      return null; //Doesn't actually return null
     }
 
     //
@@ -172,7 +172,8 @@ class Tweet {
       );
     } 
       
-    
+   // We will use this as a flag to know there were no breaking failures in the constructor
+   this.noerrors = true; 
   }
 
   formatDate(ts = 0) {

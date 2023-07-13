@@ -682,7 +682,7 @@ class RedSquare extends ModTemplate {
 
     let tweet = new Tweet(this.app, this, tx);
 
-    if (!tweet) {
+    if (!tweet?.noerrors) {
       return;
     }
 
@@ -966,7 +966,7 @@ class RedSquare extends ModTemplate {
       //
       let tweet = new Tweet(app, this, tx, "");
 
-      if (!tweet) {
+      if (!tweet?.noerrors) {
         return;
       }
 

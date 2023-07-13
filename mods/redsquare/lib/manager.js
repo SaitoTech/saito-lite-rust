@@ -88,7 +88,9 @@ class TweetManager {
                 
                 for (let z = 0; z < txs.length; z++) {
                   let tweet = new Tweet(this.app, this.mod, txs[z]);
-                  tweet.render();
+                  if (tweet?.noerrors){
+                    tweet.render();  
+                  }
                 }
                 this.hideLoader();
                 if (txs.length == 0){
