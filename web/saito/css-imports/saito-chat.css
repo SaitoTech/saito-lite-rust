@@ -66,6 +66,12 @@
   min-height: 150px;
 }
 
+.chat-popup {
+  display: grid;
+  grid-template-rows: 45px 1fr min-content;
+  align-items: center;
+}
+
 .chat-container.active {
   z-index: 16;
 }
@@ -132,7 +138,7 @@
 .chat-body {
   padding: 1rem;
   display: block;
-  height: calc(100% - 9rem);
+  /*height: calc(100% - 9rem);*/
   overflow: clip auto;
   background-color: #bbb1;
   background-image: url(/saito/img/tiled-logo.svg);
@@ -225,10 +231,11 @@
 }
 
 .chat-footer {
-  height: 4.5rem;
+  min-height: 4.5rem;
+  height: fit-content;
   font-size: 2rem;
-  position: absolute;
-  bottom: 0;
+  /*position: absolute;
+  bottom: 0;*/
   width: 100%;
   padding: 0;
   display: flex;
@@ -236,6 +243,7 @@
   align-items: end;
   z-index: 2;
   border-top: 1px solid var(--saito-border-color);
+  background: var(--saito-arcade-background);
 }
 
 .chat-container blockquote {
@@ -261,13 +269,14 @@
   padding: 1.3rem 0.5rem;
 }
 
+/* This is the submit paper airplane icon */
 .chat-footer>i {
   color: var(--saito-primary);
   cursor: pointer;
   z-index: 2;
   transition: all 0.2s;
   font-size: 2rem;
-  padding: 1rem 0.5rem;
+  padding: 1.3rem 1rem 1.3rem 0.5rem;
 }
 
 .chat-footer i:hover {
