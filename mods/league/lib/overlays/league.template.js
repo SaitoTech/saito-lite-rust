@@ -56,15 +56,15 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
                 html += `<div id="admin_welcome" class="league-overlay-content-box ${(!isMember)?"hidden":""}">${league.welcome}</div>`;
 
                 html += `<div id="admin_note" class="contactAdminWarning league-overlay-content-box">
-                            <div>Warning</div>`;
+                            <div><i class="fas fa-exclamation-triangle"></i>Warning</div>`;
                 if (!isMember){
-                    html += `<div class="error_line"><i class="fas fa-exclamation-triangle"></i><span>You need to join the league! <span class="join_league attention">Join here</span></span></div>`;
+                    html += `<div class="error_line"><span>You aren't a member of the league <span class="join_league attention">Join here</span></span></div>`;
                 }else{
                     if (newPlayer){
-                        html += `<div class="error_line"><i class="fas fa-exclamation-triangle"></i><span>Your account is at risk. <span class="backup_account attention">Enable login</span></span></div>`;
+                        html += `<div class="error_line"><span>Please backup your account. <span class="backup_account attention">Enable login</span></span></div>`;
                     }
                     if (league.unverified){
-                        html += `<div class="error_line"><i class="fas fa-exclamation-triangle"></i><span>You need to <span class="contact_admin attention">message the admin</span></span></div>`;   
+                        html += `<div class="error_line"><span class="contact_admin attention">Message the admin</span> for full access to the league</div>`;   
                     }
                 }
 
