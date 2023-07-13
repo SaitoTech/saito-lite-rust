@@ -9,7 +9,12 @@
   width: 4rem;
 }
 
-
+.player-notice .card.tiny {
+  width: 3rem;
+  height: calc(3rem * 1.4);
+  margin: 1px 0.5rem;
+  transform: rotate(5deg);
+}
 
   
 /*
