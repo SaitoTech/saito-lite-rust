@@ -115,7 +115,8 @@ class RedSquareNotification {
     if (obj) {
       obj.onclick = (e) => {
         let sig = e.currentTarget.getAttribute("data-id");
-        let tweet = this.mod.returnTweet(sig);
+        console.log(sig, this.tx.transaction.sig);
+        let tweet = this.mod.returnTweet(this.tx.transaction.sig);
 
         if (tweet) {
           this.app.connection.emit("redsquare-tweet-render-request", tweet);
@@ -124,8 +125,10 @@ class RedSquareNotification {
           // I'm not sure we would ever run into this situation
           // Besides wounldn't the this.tweet be the one we are looking for... why even go through the DOM dataset?
           //
-          this.mod.loadTweetWithSig(sig, (txs) => {
-            let tweet = this.mod.returnTweet(sig);
+          console.log("Notification tweet not found...");
+
+          this.mod.loadTweetWithSig(this.tx.transaction.sig, (txs) => {
+            let tweet = this.mod.returnTweet(this.tx.transaction.sig);
             this.app.connection.emit("redsquare-tweet-render-request", tweet);
           });
         }
