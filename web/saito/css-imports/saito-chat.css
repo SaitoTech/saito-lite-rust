@@ -312,6 +312,15 @@
   font-size: 38px;
 }
 
+.remove_user {
+  padding: 0.5rem;
+}
+
+.remove_user:hover {
+  color: var(--saito-font-color-light);  
+}
+
+
 @media screen and (max-width: 600px) {
   .chat-manager-overlay {
     background-color: var(--saito-background-color);
