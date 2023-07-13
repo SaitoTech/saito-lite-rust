@@ -1,8 +1,17 @@
 module.exports = BoardTemplate = () => {
 
   return `
-    <div class="realms-opponent"></div>
-    <div class="realms-player"></div>
+    <div class="opponent">
+      <div class="mana"></div>
+      <div class="artifacts"></div>
+      <div class="creatures"></div>
+
+    </div>
+    <div class="me">
+      <div class="mana"></div>
+      <div class="creatures"></div>
+      <div class="artifacts"></div>
+    </div>
   `;
 
 }

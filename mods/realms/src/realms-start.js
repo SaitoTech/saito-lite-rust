@@ -39,6 +39,8 @@ class Realms extends GameTemplate {
 
 	render(app) {
 
+		if (!this.browser_active) { return; }
+
 		super.render(app);
 
 		//

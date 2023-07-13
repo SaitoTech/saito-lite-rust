@@ -44,19 +44,19 @@
 	      if (this.game.player != player_ignores) {
 
 		if (type == "land") {
-		  this.deployLand(player, card);
+		  this.deploy(player, card);
 		}
 			
 		if (type == "creature") {
-		  this.deployCreature(player, card);
+		  this.deploy(player, card);
 		}
 				
 		if (type == "artifact") {
-		  this.deployArtifact(player, card);
+		  this.deploy(player, card);
 		}
 				
 		if (type == "enchantment") {
-		  this.deployEnchantment(player, card);
+		  this.deploy(player, card);
 		}
 
 	      }

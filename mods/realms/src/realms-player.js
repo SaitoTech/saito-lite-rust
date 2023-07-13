@@ -18,25 +18,25 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 			function(cardname) {
 
 				let card = realms_self.deck[cardname];
-				alert("CLICKED ON CARD: " + cardname);
+				alert("CLICKED ON CARD: " + cardname + " -- " + card.type);
 
 				if (card.type == "land") {
-					this.deployLand(realms_self.game.player, cardname);
+					this.deploy(realms_self.game.player, cardname);
 					this.addMove(`deploy\tland\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 				}
 				if (card.type == "creature") {
-					this.deployLand(realms_self.game.player, cardname);
+					this.deploy(realms_self.game.player, cardname);
 					this.addMove(`deploy\tcreature\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 				}
 				if (card.type == "artifact") {
-					this.deployLand(realms_self.game.player, cardname);
+					this.deploy(realms_self.game.player, cardname);
 					this.addMove(`deploy\tartifact\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 				}
 				if (card.type == "enchantment") {
-					this.deployEnchantment(realms_self.game.player, cardname);
+					this.deploy(realms_self.game.player, cardname);
 					this.addMove(`deploy\tenchantment\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 

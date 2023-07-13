@@ -39,6 +39,8 @@ class Realms extends GameTemplate {
 
 	render(app) {
 
+		if (!this.browser_active) { return; }
+
 		super.render(app);
 
 		//
@@ -170,19 +172,19 @@ class Realms extends GameTemplate {
 	      if (this.game.player != player_ignores) {
 
 		if (type == "land") {
-		  this.deployLand(player, card);
+		  this.deploy(player, card);
 		}
 			
 		if (type == "creature") {
-		  this.deployCreature(player, card);
+		  this.deploy(player, card);
 		}
 				
 		if (type == "artifact") {
-		  this.deployArtifact(player, card);
+		  this.deploy(player, card);
 		}
 				
 		if (type == "enchantment") {
-		  this.deployEnchantment(player, card);
+		  this.deploy(player, card);
 		}
 
 	      }
@@ -232,25 +234,25 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 			function(cardname) {
 
 				let card = realms_self.deck[cardname];
-				alert("CLICKED ON CARD: " + cardname);
+				alert("CLICKED ON CARD: " + cardname + " -- " + card.type);
 
 				if (card.type == "land") {
-					this.deployLand(realms_self.game.player, cardname);
+					this.deploy(realms_self.game.player, cardname);
 					this.addMove(`deploy\tland\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 				}
 				if (card.type == "creature") {
-					this.deployLand(realms_self.game.player, cardname);
+					this.deploy(realms_self.game.player, cardname);
 					this.addMove(`deploy\tcreature\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 				}
 				if (card.type == "artifact") {
-					this.deployLand(realms_self.game.player, cardname);
+					this.deploy(realms_self.game.player, cardname);
 					this.addMove(`deploy\tartifact\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 				}
 				if (card.type == "enchantment") {
-					this.deployEnchantment(realms_self.game.player, cardname);
+					this.deploy(realms_self.game.player, cardname);
 					this.addMove(`deploy\tenchantment\t"${realms_self.game.player}\t${cardname}\t${realms_self.game.player}`);
 					this.endTurn();
 
@@ -306,52 +308,39 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 
 	returnState() {
-		let state = {};
 
-		state.players = [2];
+		let state = {};
+		state.players_info = [2];
 		for (let i = 0; i < 2; i++) {
-			state.players[i] = {
+			state.players_info[i] = {
 				health: 20,
 				mana: 0, 
-				land: [],
-				creature: [],
-				artifact: [],
+				cards: [],
 				graveyard: [],
 			};
 		}
-
-		state.summoning_stack = [];
 
 		return state;
 	}
 
 
 
-	deployLand(player, card) {
-	  let c = this.deck[card];
-	  this.game.state.players_info[player-1].mana.push(c);
-	  this.game.state.players_info[player-1].mana[this.game.state.players_info[player-1].mana.length-1].tapped = true;
+	deploy(player, cardname) {
+
+	  let c = this.deck[cardname];
+
+	  let obj = {
+	    key    	: cardname ,
+	    tapped 	: true ,
+            affixed 	: [] ,
+	  }
+
+	  this.game.state.players_info[player-1].cards.push(obj);
+
 	  this.board.render();
 	}
 
-	deployCreature(player, card) {
-	  let c = this.deck[card];
-	  this.game.state.players_info[player-1].creatures.push(c);
-	  this.game.state.players_info[player-1].creatures[this.game.state.players_info[player-1].artifacts.length-1].tapped = true;
-	  this.board.render();
-	}
-
-	deployArtifact(player, card) {
-	  let c = this.deck[card];
-	  this.game.state.players_info[player-1].artifacts.push(c);
-	  this.game.state.players_info[player-1].artifacts[this.game.state.players_info[player-1].artifacts.length-1].tapped = true;
-	  this.board.render();
-	}
-
-	playInstant(player, card) {
-
-	}
-
+	
 
 
 
@@ -360,13 +349,13 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 
 		let c = {
 			key,
-			name: "Unnamed",
-			color: "*",
-			cost: [],
-			power: 0,
-			toughness: 0,
-			text: "This card has not provided text",
-			img: "/img/cards/sample.png",
+			name		: "Unnamed",
+			color		: "*",
+			cost		: [],
+			power		: 0,
+			toughness	: 0,
+			text		: "This card has not provided text",
+			img		: "/img/cards/sample.png",
 		};
 
 		c = Object.assign(c, card);
@@ -390,87 +379,10 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 			};
 		}
 
-		game_self.card_library[c.key] = c;
+		game_self.deck[c.key] = c;
 	}
 
 
-	insertCardSlot(player, destination) {
-		let base_id = `p${player}-card-`;
-
-		let max = 0;
-		let existing_cards = document.getElementsByClassName("cardslot");
-		for (let div of existing_cards){
-			if (div.id.includes(base_id)){
-				let temp = parseInt(div.id.replace(base_id, ""));
-				if (temp > max) {
-					max = temp;
-				}
-			}
-		}
-		max++;
-
-		base_id += max;
-
-		this.app.browser.addElementToSelector(`<div class="cardslot" id="${base_id}"></div>`, destination);
-		
-		return base_id;
-	}
-
-	moveCard(source_id, destination) {
-		
-		console.log("Card at: ", source_id);
-		console.log("Move card to: ", destination);
-
-
-		this.moveGameElement(this.copyGameElement(`#${source_id} img`), 
-													destination, 
-													{insert: 1, resize: 1},
-													()=> { 
-														$(".animated_elem").remove(); 
-														$("#"+source_id).remove(); 
-														if (destination === ".graveyard") {
-															$(".graveyard").children().fadeOut();
-														}
-													}
-													);
-	
-	}
-
-	addCard(card_id, destination) {
-		console.log("Adding opponent's card to:", destination);
-
-		let destObj = document.getElementById(destination) || document.querySelector(destination);
-
-		this.moveGameElement(this.createGameElement(`<img src="${this.card_library[card_id].img}" id="${card_id}" class="cardimg" />`, ".opponent_hand", ".status-cardbox .hud-card"), 
-				destObj, {resize: 1, insert: 1}, ()=> { $(".animated_elem").remove();});	
-
-		//"#summoning_stack > div:last-child"
-	}
-
-
-	displayBoard() {
-		let game_self = this;
-
-		$("#summoning_stack").html("");
-		for (let summoned_card of this.game.state.summoning_stack){
-			this.app.browser.addElementToSelector(this.cardToHTML(summoned_card.key, summoned_card.uuid), "#summoning_stack");
-		}
-
-	}
-
-
-	//
-	// this controls the display of the card
-	//
-	cardToHTML(cardkey, uuid, tapped = false) {
-		let card = this.card_library[cardkey];
-		
-		return `
-      <div class="cardslot ${(tapped)?"tapped":""}" id="${uuid}">
-        <img src="${card.img}" class="cardimg" id="${cardkey}"/>
-      </div>
-    `;
-	}
 
 
 	returnCardImage(cardname) {
