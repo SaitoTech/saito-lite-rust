@@ -60,6 +60,15 @@ class Chat extends ModTemplate {
       this.app.connection.emit("chat-manager-render-request");
     });
 
+    this.app.connection.on("remove-user-from-chat-group", (group_id, member_id) => {
+      let group = this.returnGroup(group_id);
+      if (group) {
+        if (group.members.includes(member_id) && group?.member_ids[this.app.wallet.returnPublicKey()] == "admin"){
+          this.sendRemoveMemberTransaction(group, member_id);  
+        }
+      }
+    });
+
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
 
     this.theme_options = {

@@ -236,6 +236,7 @@ class LeagueOverlay {
           let tx = this.mod.createQuitTransaction(this.league.id, key);
           this.app.network.propagateTransaction(tx);
           this.mod.removeLeaguePlayer(this.league.id, key);
+          this.app.connection.emit("remove-user-from-chat-group", this.league.id, key);
           this.loadPlayersUI();
         }
       }
