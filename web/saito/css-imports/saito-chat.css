@@ -139,6 +139,7 @@
   padding: 1rem;
   display: block;
   /*height: calc(100% - 9rem);*/
+  height: 100%;
   overflow: clip auto;
   background-color: #bbb1;
   background-image: url(/saito/img/tiled-logo.svg);
