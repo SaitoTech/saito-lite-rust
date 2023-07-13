@@ -471,15 +471,7 @@ class Chat extends ModTemplate {
       if (mycallback) {
         mycallback({ payload: "success", error: {} });
       }
-    } /*else if (txmsg.request == "chat group") {
-      //
-      //Lets get rid of this -- keep it ON CHAIN only
-      //
-      console.log("HPT create group");
-      console.log(tx);
-      this.receiveCreateGroupTransaction(app, tx);
-
-    } */ else if (txmsg.request === "chat message broadcast") {
+    } else if (txmsg.request === "chat message broadcast") {
 
       /*
       * This whole block is duplicating the functional logic of the Relay module....
@@ -571,6 +563,9 @@ class Chat extends ModTemplate {
 
       let group = this.returnGroup(txmsg.group_id);
 
+      //
+      //Get the list of all keys message is sent to
+      //
       let members = [];
       for (let x = 0; x < tx.transaction.to.length; x++) {
         if (!members.includes(tx.transaction.to[x].add)) {
@@ -579,10 +574,11 @@ class Chat extends ModTemplate {
       }
 
       if (group) {
-        console.log("Update group name");
-        group.name = txmsg.group_name;
+        if (txmsg.group_name){
+          console.log("Update group name: " + txmsg.group_name);
+          group.name = txmsg.group_name;
+        }
       }else{
-
         group = this.returnOrCreateChatGroupFromMembers(members, txmsg.group_name);
         group.id = txmsg.group_id;
       }
@@ -591,8 +587,10 @@ class Chat extends ModTemplate {
 
       if (!group.member_ids){
         group.member_ids = {};
-        for (let m of group.members) {
-          group.member_ids[m] = 0;
+      }
+      for (let m of group.members) {
+        if (!group.member_ids[m]){
+          group.member_ids[m] = 0;  
         }
       }
       
@@ -605,7 +603,7 @@ class Chat extends ModTemplate {
       this.saveChatGroup(group);
       this.app.connection.emit("chat-manager-render-request");
 
-      if (!tx.isFrom(app.wallet.returnPublicKey())){
+      if (!tx.isFrom(app.wallet.returnPublicKey())) {
         this.sendConfirmGroupTransaction(group);
       }
     }
@@ -663,7 +661,11 @@ class Chat extends ModTemplate {
         group.members.push(tx.transaction.from[0].add);
       }
 
-      group.member_ids[tx.transaction.from[0].add] = 1;
+      //Don't overwrite admin (if for some reason admin is sending a confirm)
+      if (!group.member_ids[tx.transaction.from[0].add]){
+        group.member_ids[tx.transaction.from[0].add] = 1;
+      }
+
       this.saveChatGroup(group);
     }
   }
@@ -708,12 +710,18 @@ class Chat extends ModTemplate {
 
   receiveAddMemberTransaction(app, tx) {
 
-    if (tx.isTo(app.wallet.returnPublicKey()) && !tx.isFrom(app.wallet.returnPublicKey())) {
+    if (tx.isTo(app.wallet.returnPublicKey())) {
         
       let txmsg = tx.returnMessage();
 
+      //I am receiving message about being added to the group
       if (app.wallet.returnPublicKey() == txmsg.member_id) {
         this.receiveCreateGroupTransaction(app, tx);
+        let group = this.returnGroup(txmsg.group_id);
+
+        tx.msg.message = `<div class="saito-chat-notice">added you to the group</div>`;  
+        this.addTransactionToGroup(group, tx);
+
         return;
       }
 
@@ -739,7 +747,10 @@ class Chat extends ModTemplate {
         group.member_ids[txmsg.member_id] = 0;  
       }
       
-      this.saveChatGroup(group);
+        tx.msg.message = `<div class="saito-chat-notice">added ${this.app.browser.returnAddressHTML(txmsg.member_id)} to the group</div>`;  
+        this.addTransactionToGroup(group, tx);
+
+//      this.saveChatGroup(group);
 
     }
   }
@@ -774,7 +785,7 @@ class Chat extends ModTemplate {
   }
 
   receiveRemoveMemberTransaction(app, tx) {
-    if (tx.isTo(app.wallet.returnPublicKey()) && !tx.isFrom(app.wallet.returnPublicKey())) {
+    if (tx.isTo(app.wallet.returnPublicKey())) {
         
       let txmsg = tx.returnMessage();
 
@@ -799,7 +810,13 @@ class Chat extends ModTemplate {
       if (app.wallet.returnPublicKey() == txmsg.member_id) {
         this.deleteChatGroup(group);
       }else{
-        this.saveChatGroup(group);  
+        if (tx.isFrom(txmsg.member_id)){
+          tx.msg.message = `<div class="saito-chat-notice">left the group</div>`;  
+        }else{
+          tx.msg.message = `<div class="saito-chat-notice">kicked ${this.app.browser.returnAddressHTML(txmsg.member_id)} out of the group</div>`;  
+        }
+        
+        this.addTransactionToGroup(group, tx);
       }
     }
 
@@ -883,8 +900,8 @@ class Chat extends ModTemplate {
     let group = this.returnGroup(group_id);
     if (group){
       if (!members.includes(group.name)){
-        newtx.msg.name = group.name;  
-      }
+        newtx.msg.group_name = group.name;  
+      }   
     }
 
     //
@@ -952,36 +969,29 @@ class Chat extends ModTemplate {
     let group = this.returnGroup(txmsg.group_id);
 
     if (!group) {
+
       if (!tx.isTo(app.wallet.returnPublicKey())) {
         if (this.debug) {
           console.log("Chat message not for me");
         }
         return;
-      } else {
-        //
-        // no match on groups, but direct message to me
-        //
+      }
 
-        let members = [];
-        for (let x = 0; x < tx.transaction.to.length; x++) {
-          if (!members.includes(tx.transaction.to[x].add)) {
-            members.push(tx.transaction.to[x].add);
-          }
-        }
-
-        group = this.returnOrCreateChatGroupFromMembers(members, txmsg.name);
-        
-        //Keep ID (since groups may have variable members)
-        group.id = txmsg.group_id;
-
-        if (this.debug) {
-          console.log(
-            "creating new chat group from direct message:",
-            JSON.parse(JSON.stringify(group))
-          );
+      //
+      // Create a chat group on the fly if properly addressed to me
+      //
+      let members = [];
+      for (let x = 0; x < tx.transaction.to.length; x++) {
+        if (!members.includes(tx.transaction.to[x].add)) {
+          members.push(tx.transaction.to[x].add);
         }
       }
+
+      group = this.returnOrCreateChatGroupFromMembers(members, txmsg.group_name);
+      group.id = txmsg.group_id;
+    
     }
+
 
     //Have we already inserted this message into the chat?
     for (let z = 0; z < group.txs.length; z++) {
@@ -1100,9 +1110,9 @@ class Chat extends ModTemplate {
   // Since we were always testing the timestamp its a good thing we don't manipulate it
   //
   addTransactionToGroup(group, tx) {
-    if (this.debug) {
+    //if (this.debug) {
       console.log("Adding Chat TX to group: ", tx);
-    }
+    //}
 
     //Limit live memory
     while (group.txs.length > 200) {
@@ -1261,6 +1271,7 @@ class Chat extends ModTemplate {
     if (name === this.communityGroupName) {
       this.groups.unshift(newGroup);
     } else {
+
       this.groups.push(newGroup);
     }
 

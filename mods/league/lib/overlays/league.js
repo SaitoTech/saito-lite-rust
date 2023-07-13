@@ -109,7 +109,16 @@ class LeagueOverlay {
       document.getElementById("league-chat-button").onclick = () => {
         let player_keys = this.league.players.map(obj => obj.publickey);
         this.overlay.remove();
-        this.app.connection.emit("open-chat-with", {name: this.league.name, id: this.league.id, key: player_keys});
+        let league_group = {
+          name: this.league.name, 
+          id: this.league.id, 
+          key: player_keys
+        }
+        //This will serve as a flag to create a "permanent" group
+        if (this.league.admin === this.app.wallet.returnPublicKey()){
+          league_group.admin = this.league.admin;
+        }
+        this.app.connection.emit("open-chat-with", league_group);
       }
     }
 
