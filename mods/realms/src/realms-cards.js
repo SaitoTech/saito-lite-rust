@@ -67,97 +67,101 @@
 
 		var deck = {};
 
-		deck["b001"] = {
-			name: "Unguided Spirit",
-			type: "creature",
-			color: "blue",
-			cost: ["*", "*", "*", "blue"],
+		   	deck['b001'] = {
+			name: "Unguided Spirit", 
+			type: Creature-Spirit,
+			color: "blue"
+			cost: ['*','*','*','blue'],
 			power: 3,
 			toughness: 1,
-			properties: ["flying"],
-			text: `Flight - At the start of the battle pick one of the following:`,
-			lore: `You'll see whatever I choose to show you. Don't get your hopes up.`,
-			img: this.card_img_dir + "/025_unguided_spirit.png",
-		};
+			properties: ['flying']
+			text: <><p>Flight - At the start of the battle pick one of the following:</br><li> Flip one creature.</li><li>Chose one creature, it will not flip during its Master's unflip phase.</li></></p>,
+			lore: <p><i><q>You'll see whatever I choose to show you. Don't get your hopes up.</q><i/></p>,
+			img: https://github.com/Darkuso/Saito-fantasy-cards/blob/main/Starter%20Pack%201st%20Edition/Cards%20Final%20(with%20text)/Blue/025-Unguided-Spirit.png	,
+   		 };
 
-		deck["b002"] = {
-			name: "The Big Wave",
-			type: "sorcery",
+		 deck['b002'] = { 
+			name: "The Big Wave", 
+			type: Sorcery,
 			color: "blue",
-			cost: ["*", "*", "*", "*", "blue"],
-			text: `Each player picks a non-domain permanent under their command.`,
-			img: this.card_img_dir + "/024_big_wave.png",
-		};
+			cost: ['*','*','*','*','blue'],
+			text: <p>Each player picks a non-domain permanent under their command. Every other non-domain permanent must return to their Master's hand. After they do, you may draw a card for each opponent that had more cards in their hand than you do.<p/>,
+			img: https://github.com/Darkuso/Saito-fantasy-cards/blob/main/Starter%20Pack%201st%20Edition/Cards%20Final%20(with%20text)/Blue/024-The-Big-Wave.png ,
+	
+		 };
 
-		deck["b003"] = {
-			name: "Fake Destiny",
-			type: "instant",
+		 deck['b003'] 	= { 
+			name: "Fake Destiny", 
+			type: Instant,
 			color: "blue",
-			cost: ["*", "blue"],
-			text: `Send back a creature of your choosing to its Master's hand. If its Soul value is 3 or less, you get Foresight 1.`, 
-			img: this.card_img_dir + "/026_fake_destiny.png",
-		};
+			cost: ['*','blue']
+			text: "<p>Send back a creature of your choosing to its Master's hand. If its Soul value is 3 or less, you get Foresight 1. (Check the first card on your compendium. You may shuffle that card to the bottom of your compendium)<p/>",
+			img: https://github.com/Darkuso/Saito-fantasy-cards/blob/main/Starter%20Pack%201st%20Edition/Cards%20Final%20(with%20text)/Blue/026-Fake-Destiny.png			,
+   		};
 
-		deck["b004"] = {
-			name: "Luminous Being",
-			type: "creature",
+		   deck['b004'] = { 
+			name: "Luminous Being", 
+			type: Creature-Horror,
 			color: "blue",
-			cost: ["*", "*", "*", "*", "*", "blue", "blue"],
+			cost: ['*','*', '*','*','*','blue,'blue'],
 			power: 7,
 			toughness: 8,
-			properties: ["blaze"],
-			text: `Blaze - This spell cannot be countered.`,
-			img: this.card_img_dir + "/027_luminous_being.png",
-		};
+			properties: ['blaze']
+			text: <p>Blaze - This spell cannot be countered.</br> 
+			   	Every time you conjure a spell pick one of the following:</br> 
+				<li>Return a spell outside of your command to its Master's hand.</br>
+				<li>Return a non-domain permanent to its Master's hand.</li></p>,
+			img:  https://github.com/Darkuso/Saito-fantasy-cards/blob/main/Starter%20Pack%201st%20Edition/Cards%20Final%20(with%20text)/Blue/027-Luminous-Being.png	,
+   		 };
 
-		deck["b005"] = {
-			name: "Symbiotic Possesion",
-			type: "instant",
+		 deck['b005'] 	= { 
+			name: "Symbiotic Possession", 
+			type: Instant,
 			color: "blue",
-			cost: ["*", "*", "blue"],
-			text: `Chose a creature, for the rest of the turn it becomes a 5/5 wisdom ghost.`,
-			lore: `“A simple trade. Our brains for your brawn.”
-							-Ancestral Hive Mind`,
-			img: this.card_img_dir + "/028_symbiotic_possesion.png",
-		};
+			cost: ['*','*','blue'],
+			text: <p>Choose a creature, for the rest of the turn it becomes a 5/5 wisdom ghost.<br/><p/>
+			lore: <p><i>A simple trade. Our brains for your brawn.<br/>-Ancestral Hive Mind<i/><p/>,				
+			img: https://github.com/Darkuso/Saito-fantasy-cards/blob/main/Starter%20Pack%201st%20Edition/Cards%20Final%20(with%20text)/Blue/028-Symbiotic-Possesion.png ,
+   		 };
 
-		deck["b006"] = {
-			name: "Lakeshire Hippogriff",
-			type: "creature",
+		  deck['b006'] 	= { 
+			name: "Lakeshire Hippogriff", 
+			type: Creature-Hippogriff,
 			color: "blue",
-			cost: ["*", "*", "*", "*", "*", "blue"],
+			cost: ['*','*','*','*','*','blue'],
 			power: 3,
 			toughness: 3,
-			properties: ["flying", "blaze"],
-			text: `Blaze Flight`,
-			lore: `"With the dragons gone, Lakeshire's hippogriffs eagerly reclaimed their perches atop the valley's mountain peaks."`,
-			img: this.card_img_dir + "/029_lakeshire_hippogriff.png",
-		};
+			properties: ['flying']	['blaze']
+			text: <p>Blaze<br/>Flight<p/>,						
+			lore: <p><i>With the dragons gone, Lakeshire's hippogriffs eagerly reclaimed their perches atop the valley's mountain peaks.</i></p> ,
+			img: https://github.com/Darkuso/Saito-fantasy-cards/blob/main/Starter%20Pack%201st%20Edition/Cards%20Final%20(with%20text)/Blue/029-Lakeshire-Hippogriff.png ,
+   		 };
 
-		deck["b007"] = {
-			name: "Deformed Scarecrow",
-			type: "creature",
+		    deck['b007'] 	= { 
+			name: "Deformed Scarecrow", 
+			type: Creature-Zombie Horror,
 			color: "blue",
-			cost: ["*", "*", "blue"],
+			cost: ['*','*','blue'],
 			power: 2,
 			toughness: 1,
-			text: `When Deformed Scarecrow is killed, search through your compendium for another Deformed Scarecrow, put it on your hand after showing it to your opponent and then reshuffle the deck.`,
-			lore: `Anything, or anybody, can be replaced.`,
-			img: this.card_img_dir + "/030_deformed_scarecrow.png",
-		};
+			text: <p>When Deformed Scarecrow is killed, search through your compendium for another Deformed Scarecrow, 
+			put it on your hand after showing it to your opponent and then reshuffle the deck.<p/>				
+			lore: <p><i><q>Anything, or anybody, can be replaced<q/></q><i/><p/>
+			img: https://github.com/Darkuso/Saito-fantasy-cards/blob/main/Starter%20Pack%201st%20Edition/Cards%20Final%20(with%20text)/Blue/030-Deformed-Scarecrow.png			,
+   		 };
 
 		deck["island"] = {
 			name: "Island",
-			type: "land",
+			type: Land,
 			color: "blue",
-			img: this.card_img_dir + "/033_island.png",
+			img: https://github.com/Darkuso/Saito-fantasy-cards/blob/main/Starter%20Pack%201st%20Edition/Cards%20Final%20(with%20text)/Lands/033-Island.png,
 		};
 
 		deck["waterfall"] = {
 			name: "Waterfall Ruin",
-			type: "land",
+			type: Land,
 			color: ["blue", "white"],
-			img: this.card_img_dir + "/032_waterfall_ruin.png",
+			img: https://github.com/Darkuso/Saito-fantasy-cards/blob/main/Starter%20Pack%201st%20Edition/Cards%20Final%20(with%20text)/Lands/032-Waterfall-Ruin.png,
 		};
 
 		deck["w001"] = {
