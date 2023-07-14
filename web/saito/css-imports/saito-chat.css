@@ -173,6 +173,11 @@
 }
 */
 
+.chat-manager em {
+  color: var(--saito-font-color-light);
+  font-style: italic;  
+}
+
 .saito-time-stamp {
   text-align: center;
   color: var(--saito-font-color-light);
