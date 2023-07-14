@@ -338,36 +338,36 @@ class RedSquare extends ModTemplate {
     if (!txmsg?.data) {
       return;
     }
-    if (app.BROWSER === 0) {
-      console.log("this is the server", txmsg);
+    // if (app.BROWSER === 0) {
+    //   console.log("this is the server", txmsg);
 
-      let peers = await app.network.getPeers();
-      console.log("available peers ", peers);
-      console.log("sending to the browser", txmsg);
-      app.connection.emit("relay-send-message", {
-        recipient: "PEERS",
-        request: txmsg.request,
-        data: txmsg.data,
-      });
-    } else {
-      console.log("this is the browser", txmsg, newtx);
-      //
-      // this code doubles onConfirmation
-      //
-      if (txmsg.request === "create tweet") {
-        console.log("txrequest is create tweet");
-        await this.receiveTweetTransaction(null, newtx, null);
-        this.sqlcache = {};
-      }
-      if (txmsg.request === "like tweet") {
-        await this.receiveLikeTransaction(null, newtx, null);
-        this.sqlcache = {};
-      }
-      if (txmsg.request === "flag tweet") {
-        await this.receiveFlagTransaction(null, newtx, null);
-        this.sqlcache = {};
-      }
-    }
+    //   let peers = await app.network.getPeers();
+    //   console.log("available peers ", peers);
+    //   console.log("sending to the browser", txmsg);
+    //   app.connection.emit("relay-send-message", {
+    //     recipient: "PEERS",
+    //     request: txmsg.request,
+    //     data: txmsg.data,
+    //   });
+    // } else {
+    //   console.log("this is the browser", txmsg, newtx);
+    //   //
+    //   // this code doubles onConfirmation
+    //   //
+    //   if (txmsg.request === "create tweet") {
+    //     console.log("txrequest is create tweet");
+    //     await this.receiveTweetTransaction(null, newtx, null);
+    //     this.sqlcache = {};
+    //   }
+    //   if (txmsg.request === "like tweet") {
+    //     await this.receiveLikeTransaction(null, newtx, null);
+    //     this.sqlcache = {};
+    //   }
+    //   if (txmsg.request === "flag tweet") {
+    //     await this.receiveFlagTransaction(null, newtx, null);
+    //     this.sqlcache = {};
+    //   }
+    // }
 
     await super.handlePeerTransaction(app, newtx, peer, mycallback);
   }

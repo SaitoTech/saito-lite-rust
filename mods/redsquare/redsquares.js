@@ -530,8 +530,10 @@ class RedSquare extends ModTemplate {
       let peer = this.peers[i].peer;
 
       let time_cutoff = this.peers[i].tweets_latest_ts || this.returnLatestTimeStamp();
-
-      let sql = `SELECT * FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND updated_at > ${time_cutoff} ORDER BY updated_at DESC`;
+      //
+      // 7/7 -- let's try not excluding replies from the data pull -- the renderWithCriticalChild should keep things from looking too crazy on the main feed
+      //
+      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND updated_at > ${time_cutoff} ORDER BY updated_at DESC`;
 
       this.loadTweetsFromPeer(peer, sql, (txs) => {
         let newTimeStamp = this.returnLatestTimeStamp();
@@ -543,12 +545,11 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  loadTweetChildren(peer, sig, mycallback = null) {
-    let sql = `SELECT * FROM tweets WHERE parent_id = '${sig}' ORDER BY created_at DESC`;
+  loadTweetThread(peer, sig, mycallback = null) {
+    let sql = `SELECT * FROM tweets WHERE thread_id = '${sig}' ORDER BY created_at DESC`;
 
     for (let i = 0; i < this.peers.length; i++) {
       let peer = this.peers[i].peer;
-
       this.loadTweetsFromPeer(peer, sql, mycallback);
     }
   }
@@ -681,7 +682,7 @@ class RedSquare extends ModTemplate {
 
     let tweet = new Tweet(this.app, this, tx);
 
-    if (!tweet) {
+    if (!tweet?.noerrors) {
       return;
     }
 
@@ -726,8 +727,25 @@ class RedSquare extends ModTemplate {
     // if this is a like, we can avoid adding it to our tweet index
     //
     let txmsg = tx.returnMessage();
-
     if (txmsg.request === "like tweet") {
+      return;
+    }
+
+    //
+    // We have already indexed this tweet, so just update the stats
+    // we are adding it because it's updated_at is newer, e.g. there are more replies/retweets/likes
+    //
+    if (this.tweets_sigs_hmap[tweet.tx.transaction.sig]) {
+      for (let i = 0; i < this.tweets.length; i++) {
+        if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
+          this.tweets[i].tx.optional.num_replies = tweet.tx.optional.num_replies;
+          this.tweets[i].tx.optional.num_retweets = tweet.tx.optional.num_retweets;
+          this.tweets[i].tx.optional.num_likes = tweet.tx.optional.num_likes;
+          this.tweets[i].updated_at = tweet.tx.optional.updated_at;
+          //console.log("Update stats of tweet we already indexed");
+          break;
+        }
+      }
       return;
     }
 
@@ -739,47 +757,32 @@ class RedSquare extends ModTemplate {
     //
     if (tweet.tx.optional.parent_id === "") {
       //
-      // we do not have this tweet indexed, it's new
+      // check where we insert the tweet
       //
-      if (!this.tweets_sigs_hmap[tweet.tx.transaction.sig]) {
-        //
-        // check where we insert the tweet
-        //
-        let insertion_index = 0;
-        if (!prepend) {
-          for (let i = 0; i < this.tweets.length; i++) {
-            if (tweet.updated_at > this.tweets[i].updated_at) {
-              break;
-            }
-            insertion_index++;
-          }
-        }
-
-        //
-        // and insert it
-        //
-        this.tweets.splice(insertion_index, 0, tweet);
-        this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
-
-        //
-        // add unknown children if possible
-        //
-        for (let i = 0; i < this.unknown_children.length; i++) {
-          if (this.unknown_children[i].tx.optional.thread_id === tweet.tx.transaction.sig) {
-            if (tweet.addTweet(this.unknown_children[i]) == 1) {
-              this.unknown_children.splice(i, 1);
-              i--;
-            }
-          }
-        }
-      } else {
-        //Just update the stats...
-
+      let insertion_index = 0;
+      if (!prepend) {
         for (let i = 0; i < this.tweets.length; i++) {
-          if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
-            this.tweets[i].tx.optional.num_replies = tweet.tx.optional.num_replies;
-            this.tweets[i].tx.optional.num_retweets = tweet.tx.optional.num_retweets;
-            this.tweets[i].tx.optional.num_likes = tweet.tx.optional.num_likes;
+          if (tweet.updated_at > this.tweets[i].updated_at) {
+            break;
+          }
+          insertion_index++;
+        }
+      }
+
+      //
+      // and insert it
+      //
+      this.tweets.splice(insertion_index, 0, tweet);
+      this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
+
+      //
+      // add unknown children if possible
+      //
+      for (let i = 0; i < this.unknown_children.length; i++) {
+        if (this.unknown_children[i].tx.optional.thread_id === tweet.tx.transaction.sig) {
+          if (tweet.addTweet(this.unknown_children[i]) == 1) {
+            this.unknown_children.splice(i, 1);
+            i--;
           }
         }
       }
@@ -906,18 +909,16 @@ class RedSquare extends ModTemplate {
 
               tweet.tx.optional.num_replies++;
 
-              this.app.storage.updateTransaction(
-                tweet.tx,
-                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() },
-                "localhost"
-              );
+              this.app.storage.updateTransaction(tweet.tx, {
+                owner: app.wallet.returnPublicKey(),
+                field3: app.wallet.returnPublicKey(),
+              });
               tweet.renderReplies();
             } else {
-              this.app.storage.updateTransaction(
-                tweet.tx,
-                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() },
-                "localhost"
-              );
+              this.app.storage.updateTransaction(tweet.tx, {
+                owner: app.wallet.returnPublicKey(),
+                field3: app.wallet.returnPublicKey(),
+              });
             }
           }
 
@@ -942,18 +943,16 @@ class RedSquare extends ModTemplate {
                 tweet2.tx.optional.num_retweets = 0;
               }
               tweet2.tx.optional.num_retweets++;
-              this.app.storage.updateTransaction(
-                tweet2.tx,
-                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() },
-                "localhost"
-              );
+              this.app.storage.updateTransaction(tweet2.tx, {
+                owner: app.wallet.returnPublicKey(),
+                field3: app.wallet.returnPublicKey(),
+              });
               tweet2.renderRetweets();
             } else {
-              this.app.storage.updateTransaction(
-                tweet2.tx,
-                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() },
-                "localhost"
-              );
+              this.app.storage.updateTransaction(tweet2.tx, {
+                owner: app.wallet.returnPublicKey(),
+                field3: app.wallet.returnPublicKey(),
+              });
             }
           }
         }
@@ -967,7 +966,7 @@ class RedSquare extends ModTemplate {
       //
       let tweet = new Tweet(app, this, tx, "");
 
-      if (!tweet) {
+      if (!tweet?.noerrors) {
         return;
       }
 
@@ -1031,6 +1030,7 @@ class RedSquare extends ModTemplate {
       if (typeof tweet.images != "undefined") {
         has_images = 1;
       }
+      //This is the received TX without included optional data!
       let txjson = tx.serialize_to_web(this.app);
       let tx_size = txjson.length;
 
@@ -1166,10 +1166,12 @@ class RedSquare extends ModTemplate {
     // servers
     //
     let txmsg = tx.returnMessage();
-    let sql = `UPDATE tweets SET num_likes = num_likes + 1 WHERE sig = $sig`;
+    let sql = `UPDATE tweets SET num_likes = num_likes + 1 , updated_at = $timestamp WHERE sig = $sig`;
     let params = {
       $sig: txmsg.data.sig,
+      $timestamp: tx.transaction.ts,
     };
+
     await app.storage.executeDatabase(sql, params, "redsquare");
 
     //
@@ -1247,7 +1249,6 @@ class RedSquare extends ModTemplate {
 
     localforage.getItem(`tweet_history`, (error, value) => {
       if (value && value.length > 0) {
-        console.log("Using locally cached tweets");
         for (let tx of value) {
           let newtx = new saito.default.transaction();
           newtx.deserialize_from_web(this.app, tx);
@@ -1309,7 +1310,7 @@ class RedSquare extends ModTemplate {
     this.saveOptions();
 
     let tweet_txs = [];
-    let maximum = 30;
+    let maximum = 20;
     for (let tweet of this.tweets) {
       tweet.tx.optional.updated_at = tweet.updated_at;
       tweet_txs.push(tweet.tx.serialize_to_web(this.app));
@@ -1332,35 +1333,45 @@ class RedSquare extends ModTemplate {
       // (sites which uses firewall like Cloudflare shows Cloudflare loading
       //  page when fetching page source)
 
-      console.info("fetching open graph info for: " + link);
-      return fetch(link, { redirect: "follow", follow: 1000 })
+      return fetch(link, { redirect: "follow", follow: 50 })
         .then((res) => res.text())
         .then((data) => {
           // required og properties for link preview
+          let no_tags = {
+            title: "",
+            description: "",
+          };
           let og_tags = {
             "og:exists": false,
             "og:title": "",
             "og:description": "",
             "og:url": "",
             "og:image": "",
-            "og:site_name": "",
+            "og:site_name": "", //We don't do anything with this
           };
           let tw_tags = {
-            "twitter:exitst": false,
-            "twitter:card": "",
-            "twitter:site": "",
-            "twitter:creator": "",
+            "twitter:exists": false,
             "twitter:title": "",
-            "twitter:url": "",
             "twitter:description": "",
+            "twitter:url": "",
             "twitter:image": "",
+            "twitter:site": "", //We don't do anything with this
+            "twitter:card": "", //We don't do anything with this
           };
 
           // prettify html - unminify html if minified
           let html = prettify(data);
 
+          //Useful to check, don't delete until perfect
+          //let testReg = /<head>.*<\/head>/gs;
+          //console.log(html.match(testReg));
+
           // parse string html to DOM html
           let dom = HTMLParser.parse(html);
+
+          try {
+            no_tags.title = dom.getElementsByTagName("title")[0].textContent;
+          } catch (err) {}
 
           // fetch meta element for og tags
           let meta_tags = dom.getElementsByTagName("meta");
@@ -1374,33 +1385,33 @@ class RedSquare extends ModTemplate {
               og_tags[property] = content;
               og_tags["og:exists"] = true;
             }
-          }
-          //console.info(JSON.stringify(og_tags));
-          // check for twitter tags if og does not exist.
-          // loop each meta tag and fetch required og properties
-          for (let i = 0; i < meta_tags.length; i++) {
-            let property = meta_tags[i].getAttribute("property");
-            let content = meta_tags[i].getAttribute("content");
-            // get required og properties only, discard others
             if (property in tw_tags) {
               tw_tags[property] = content;
               tw_tags["twitter:exists"] = true;
             }
+            if (meta_tags[i].getAttribute("name") === "description") {
+              no_tags.description = content;
+            }
           }
-          //console.info(JSON.stringify(tw_tags));
 
-          if (tw_tags["twitter:exists"]) {
-            if (og_tags["og:title"] ? "" : tw_tags["twitter:title"]);
-            if (tw_tags["og:description"] ? "" : tw_tags["twitter:description"]);
-            if (tw_tags["og:url"] ? "" : tw_tags["twitter:url"]);
-            if (tw_tags["og:image"] ? "" : tw_tags["twitter:image"]);
-            if (tw_tags["og:site_name"] ? "" : tw_tags["twitter:site"]);
+          //Fall back to no tags
+          og_tags["og:title"] = og_tags["og:title"] || no_tags["title"];
+          og_tags["og:description"] = og_tags["og:description"] || no_tags["description"];
+
+          if (tw_tags["twitter:exists"] && !og_tags["og:exists"]) {
+            og_tags["og:title"] = tw_tags["twitter:title"];
+            og_tags["og:description"] = tw_tags["twitter:description"];
+            og_tags["og:url"] = tw_tags["twitter:url"];
+            og_tags["og:image"] = tw_tags["twitter:image"];
+            og_tags["og:site_name"] = tw_tags["twitter:site"];
           }
-          //console.info(JSON.stringify(og_tags));
 
           return og_tags;
         })
-        .catch((err) => console.error("Error fetching content" + err));
+        .catch((err) => {
+          console.error("Error fetching content: " + err);
+          return "";
+        });
     } else {
       return "";
     }
