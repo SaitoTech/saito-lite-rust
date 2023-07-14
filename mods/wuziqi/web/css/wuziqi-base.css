@@ -1,5 +1,7 @@
-.inner {
-    height: 100vh;
+.main {
+    position: absolute;
+    height: 100%;
+    width: 100%;
     background: linear-gradient(217deg, #125552, transparent 70.71%),
     linear-gradient(127deg, #093637, #44A08D 70.71%),
     linear-gradient(336deg, #67B26F, #4ca2cd 70.71%);

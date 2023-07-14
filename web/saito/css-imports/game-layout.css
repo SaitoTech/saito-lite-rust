@@ -10,15 +10,16 @@
 body {
   font-family: arial, helvetica, sans-serif;
   font-size: 13px;
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
   background-color: #4e4e4e !important;
 
   overflow: hidden;
   position: fixed;
   width: 100vw;
-
   height: 100vh;
+  max-height: -webkit-fill-available;
+  max-width: -webkit-fill-available;
 }
 
 .main {

@@ -112,7 +112,7 @@
   display: grid;
   grid-template-columns: minmax(40rem, 2fr) minmax(30rem, 1fr);
   gap: 2rem;
-  min-height: min(50rem, calc(100vh - 140px));
+  max-height: min(50rem, calc(100vh - 140px));
 }
 
 .league-error {
