@@ -309,8 +309,27 @@ class RedSquare extends ModTemplate {
     this.rendered = true;
   }
 
+  async onConfirmation(blk, tx, conf, app) {
+    let txmsg = tx.returnMessage();
+
+    console.log(txmsg.module, "Module name");
+
+    if (conf === 0) {
+      if (txmsg.module === "RedSquare") {
+        //
+        // Do we even need/want to send messages on chain?
+        // There are problems with double processing events...
+        //
+        if (app.BROWSER === 1) {
+          console.log(txmsg, "txmsg:::");
+        }
+      }
+    }
+  }
+
   async handlePeerTransaction(app, newtx = null, peer, mycallback = null) {
-    console.log("receiving tweet transaction", newtx, peer);
+    // console.log("receiving tweet transaction", newtx, peer);
+
     if (newtx == null) {
       return;
     }
@@ -319,22 +338,35 @@ class RedSquare extends ModTemplate {
     if (!txmsg?.data) {
       return;
     }
+    if (app.BROWSER === 0) {
+      console.log("this is the server", txmsg);
 
-    //
-    // this code doubles onConfirmation
-    //
-    if (txmsg.request === "create tweet") {
-      console.log("txrequest is create tweet");
-      await this.receiveTweetTransaction(null, newtx, null);
-      this.sqlcache = {};
-    }
-    if (txmsg.request === "like tweet") {
-      await this.receiveLikeTransaction(null, newtx, null);
-      this.sqlcache = {};
-    }
-    if (txmsg.request === "flag tweet") {
-      await this.receiveFlagTransaction(null, newtx, null);
-      this.sqlcache = {};
+      let peers = await app.network.getPeers();
+      console.log("available peers ", peers);
+      console.log("sending to the browser", txmsg);
+      app.connection.emit("relay-send-message", {
+        recipient: "PEERS",
+        request: txmsg.request,
+        data: txmsg.data,
+      });
+    } else {
+      console.log("this is the browser", txmsg, newtx);
+      //
+      // this code doubles onConfirmation
+      //
+      if (txmsg.request === "create tweet") {
+        console.log("txrequest is create tweet");
+        await this.receiveTweetTransaction(null, newtx, null);
+        this.sqlcache = {};
+      }
+      if (txmsg.request === "like tweet") {
+        await this.receiveLikeTransaction(null, newtx, null);
+        this.sqlcache = {};
+      }
+      if (txmsg.request === "flag tweet") {
+        await this.receiveFlagTransaction(null, newtx, null);
+        this.sqlcache = {};
+      }
     }
 
     await super.handlePeerTransaction(app, newtx, peer, mycallback);
@@ -1227,10 +1259,12 @@ class RedSquare extends ModTemplate {
 
       console.log(recipient, "recipients");
       redsquare_self.app.connection.emit("relay-send-message", {
-        recipient: "PEERS",
+        recipient: server.publicKey,
         request: obj.request,
         data: newtx.msg,
       });
+
+      // await redsquare_self.app.network.propagateTransaction(newtx);
 
       return newtx;
     } catch (error) {
