@@ -1,6 +1,3 @@
-html, body {
-    height: 99.999%;
-}
 
 .log-lock .mobile-log-tab {
     background-color: #222d;
@@ -27,15 +24,6 @@ html, body {
     transform: rotate(-90deg);
 }
 
-body {
-    font-family: arial, helvetica, sans-serif;
-    font-size: 13px;
-    padding: 0;
-    margin: 0;
-    background: url("/chess/img/background.jpg");
-    overflow: hidden;
-    background-size: 70% 100%;
-}
 
 h1 {
     margin: 0;
@@ -51,10 +39,10 @@ input[type="checkbox"]:checked {
 }
 
 .main{
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     padding: 40px;
-    position: relative;
+    position: absolute;
 
     display: grid;
     grid-template-columns: min(86vh,60vw,700px) 280px;
@@ -64,6 +52,9 @@ input[type="checkbox"]:checked {
     justify-items: center;
     align-content: center;
     justify-content: center;
+
+    background: url("/chess/img/background.jpg");
+    background-size: cover;
 
 }
 

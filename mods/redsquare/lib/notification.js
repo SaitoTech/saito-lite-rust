@@ -81,7 +81,10 @@ class RedSquareNotification {
           return null;
         }
 
-
+        if (!this.tweet?.noerrors){
+          return null;
+        }
+        
         //
         //
         //

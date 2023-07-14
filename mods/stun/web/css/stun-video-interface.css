@@ -158,6 +158,7 @@
 
 .expanded-video .video-box-container-large {
   width: 100%;
+  height: auto;
   opacity: 0;
   opacity: 0;
   animation: fade-in 0.5s ease-in;
@@ -828,7 +829,7 @@
     margin-top: 0;
   }
   .chat-settings video {
-    height: 18rem;
+    max-width: 90vw;
   }
   .chat-settings-preview-section {
     margin-right: 0;
@@ -836,7 +837,20 @@
   }
   .chat-settings-preview {
     width: 100%;
+    margin-bottom: unset;
+    padding: 0.5rem;
   }
+  
+  .video-container-large {
+    flex-direction: column;
+  }
+  .stun-chatbox .side-videos {
+    width: 100%;
+    max-height: 50%;
+    grid-template-columns: repeat(auto-fit, minmax(100px, auto));
+    grid-gap: 0.5rem;
+  }
+
   .video-box-container-large > #connection-message {
     width: 100%;
   }
@@ -855,10 +869,6 @@
   .expanded-video {
     width: 100%;
     margin-right: 0;
-  }
-  .side-videos {
-    position: absolute;
-    right: 0;
   }
 }
 

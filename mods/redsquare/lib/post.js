@@ -82,9 +82,9 @@ class Post {
   }
 
   triggerClick(querySelector) {
-    console.log(querySelector);
-    console.log(document.querySelector(querySelector));
-    if (typeof document.querySelector(querySelector) != "undefined") {
+    //console.log(querySelector);
+    //console.log(document.querySelector(querySelector));
+    if (document.querySelector(querySelector)) {
       document.querySelector(querySelector).click();
     }
   }
@@ -215,11 +215,11 @@ class Post {
     //
     const Tweet = require("./tweet");
     let posted_tweet = new Tweet(post_self.app, post_self.mod, newtx);
-    console.log("New tweet:" , posted_tweet);
+    //console.log("New tweet:" , posted_tweet);
 
     let rparent = this.tweet;
     if (rparent) {
-      console.log(rparent)
+      //console.log(rparent)
 
       //
       // loop to remove anything we will hide
@@ -229,7 +229,7 @@ class Post {
         let x = this.mod.returnTweet(rparent2.parent_id);
         let qs = ".tweet-" + x.tx.transaction.sig;
         if (document.querySelector(qs)) {
-          console.log(qs);
+          //console.log(qs);
           document.querySelector(qs).remove();
         }
         rparent2 = x;

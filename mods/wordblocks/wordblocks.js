@@ -566,7 +566,9 @@ class Wordblocks extends GameTemplate {
               <div class="action" id="cancel"><i class="far fa-window-close"></i> Cancel</div>
             </div>`;
 
-          $("#opponentbox").append(html);
+          //Change this because stupid game-playerbox-manager not opponent box
+          //$("#opponentbox").append(html);
+          $(".game-playerbox-manager").append(html);
 
           $(".action").off();
           $(".action").on("click", function () {
