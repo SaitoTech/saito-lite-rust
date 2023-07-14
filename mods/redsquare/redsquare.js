@@ -309,23 +309,23 @@ class RedSquare extends ModTemplate {
     this.rendered = true;
   }
 
-  async onConfirmation(blk, tx, conf, app) {
-    let txmsg = tx.returnMessage();
+  // async onConfirmation(blk, tx, conf, app) {
+  //   let txmsg = tx.returnMessage();
 
-    console.log(txmsg.module, "Module name");
+  //   console.log(txmsg.module, "Module name");
 
-    if (conf === 0) {
-      if (txmsg.module === "RedSquare") {
-        //
-        // Do we even need/want to send messages on chain?
-        // There are problems with double processing events...
-        //
-        if (app.BROWSER === 1) {
-          console.log(txmsg, "txmsg:::");
-        }
-      }
-    }
-  }
+  //   if (conf === 0) {
+  //     if (txmsg.module === "RedSquare") {
+  //       //
+  //       // Do we even need/want to send messages on chain?
+  //       // There are problems with double processing events...
+  //       //
+  //       if (app.BROWSER === 1) {
+  //         console.log(txmsg, "txmsg:::");
+  //       }
+  //     }
+  //   }
+  // }
 
   async handlePeerTransaction(app, newtx = null, peer, mycallback = null) {
     // console.log("receiving tweet transaction", newtx, peer);
@@ -901,6 +901,8 @@ class RedSquare extends ModTemplate {
 
     let tweet = new Tweet(this.app, this, ".tweet-manager", tx);
 
+    console.log("newly created tweet", tweet);
+
     if (!tweet) {
       return;
     }
@@ -1234,8 +1236,16 @@ class RedSquare extends ModTemplate {
           slip.publicKey = keys[i];
           slip.amount = BigInt(0);
           newtx.addToSlip(slip);
-          // newtx.transaction.to.push(new saito.default.slip(keys[i]));
         }
+      }
+
+      let peers = await app.network.getPeers();
+      console.log("peers ", peers);
+      for (let i = 0; i < peers.length; i++) {
+        let slip = new Slip();
+        slip.publicKey = peers[i].publicKey;
+        slip.amount = BigInt(0);
+        newtx.addToSlip(slip);
       }
 
       newtx.msg = obj;
@@ -1244,25 +1254,25 @@ class RedSquare extends ModTemplate {
       console.log("tx signed and sending it ////////////");
       console.log(newtx);
       // console.log(newtx.transaction)
-      // await mod.app.network.propagateTransaction(newtx);
+      await mod.app.network.propagateTransaction(newtx);
 
       console.log("after sending tx ////////////");
-      let server = (await app.network.getPeers())[0];
-      console.log("serveer ", server);
-      let peers = [];
-      let p = await app.network.getPeers();
-      console.log("peers ", p);
-      for (let i = 0; i < p.length; i++) {
-        peers.push(p[i].publicKey);
-      }
-      let recipient = [...peers, this.publicKey];
+      // let server = (await app.network.getPeers())[0];
+      // console.log("serveer ", server);
+      // let peers = [];
+      // let p = await app.network.getPeers();
+      // console.log("peers ", p);
+      // for (let i = 0; i < p.length; i++) {
+      //   peers.push(p[i].publicKey);
+      // }
+      // let recipient = [...peers, this.publicKey];
 
-      console.log(recipient, "recipients");
-      redsquare_self.app.connection.emit("relay-send-message", {
-        recipient: server.publicKey,
-        request: obj.request,
-        data: newtx.msg,
-      });
+      // console.log(recipient, "recipients");
+      // redsquare_self.app.connection.emit("relay-send-message", {
+      //   recipient: server.publicKey,
+      //   request: obj.request,
+      //   data: newtx.msg,
+      // });
 
       // await redsquare_self.app.network.propagateTransaction(newtx);
 
@@ -1285,6 +1295,7 @@ class RedSquare extends ModTemplate {
         // save tweets addressed to me
         //
         if (tx.isTo(this.publicKey)) {
+          console.log("isTo yes");
           //console.log("Save notification to archive");
 
           //
