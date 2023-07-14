@@ -161,6 +161,7 @@ body {
 
 .card img{
   width: 100%;
+  height: auto;
   position: absolute;
   pointer-events: none;
 }
