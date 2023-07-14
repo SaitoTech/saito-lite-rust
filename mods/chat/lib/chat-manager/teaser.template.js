@@ -12,6 +12,8 @@ module.exports = ChatTeaser = (app, group) => {
     console.log(last_msg);
     const regex = /<blockquote>.*<\/blockquote>/si;
     last_msg = last_msg.replace(regex, "<em>reply</em>: ").replace("<br>", "");
+    const regex2 = /<a[^>]+>/i;
+    last_msg = last_msg.replace(regex2, "").replace("</a>","");
     last_ts = tx.ts;
     let x = app.browser.formatDate(last_ts);
     time = x.hours + ":" + x.minutes;
