@@ -2218,6 +2218,10 @@ console.log("\n\n\n\n");
 	this.setAllies("protestant", "venice");
   	this.addUnrest("graz");
 
+	this.game.state.leaders.leo_x = 0;
+	this.game.state.leaders.paul_iii = 1;
+
+
 
 	// OTTOMAN
         this.addArmyLeader("ottoman", "istanbul", "suleiman");
@@ -3559,6 +3563,39 @@ alert("Not Implemented");
         type : "normal" ,
         faction : "papacy" ,
         removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+        canEvent : function(his_self, faction) {
+	  return 1;
+        },
+        onEvent : function(his_self, faction) {
+
+	  let papacy = his_self.returnPlayerOfFaction("papacy");
+
+	  if (papacy == his_self.game.player) {
+
+            let msg = "Select Protestant Reformer:";
+            let html = '<ul>';
+	    for (let key in his_self.reformers) {
+	      let s = his_self.returnSpaceOfPersonage(his_self.reformers[key].owner, key);
+	      if (s) {
+                html += `<li class="option" id="${key}">${his_self.game.reformers[key].name}</li>`;
+	      }
+	    }
+	    html += '</ul>';
+            his_self.updateStatusWithOptions(msg, html);
+  
+            $('.option').off();
+            $('.option').on('click', function () {
+              let selected_reformer = $(this).attr("id");
+	      his_self.addMove("excommunicate_reformer\t"+selected_reformer);
+	      his_self.endTurn();
+	    });
+
+	    return 0;
+
+          }
+
+	  return 0;
+	},
       }
     } else {
       deck['005'] = { 
@@ -3569,6 +3606,39 @@ alert("Not Implemented");
         type : "normal" , 
         faction : "papacy" ,
         removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+        canEvent : function(his_self, faction) {
+	  return 1;
+        },
+        onEvent : function(his_self, faction) {
+
+	  let papacy = his_self.returnPlayerOfFaction("papacy");
+
+	  if (papacy == his_self.game.player) {
+
+            let msg = "Select Protestant Reformer:";
+            let html = '<ul>';
+	    for (let key in his_self.reformers) {
+	      let s = his_self.returnSpaceOfPersonage(his_self.reformers[key].owner, key);
+	      if (s) {
+                html += `<li class="option" id="${key}">${his_self.game.reformers[key].name}</li>`;
+	      }
+	    }
+	    html += '</ul>';
+            his_self.updateStatusWithOptions(msg, html);
+  
+            $('.option').off();
+            $('.option').on('click', function () {
+              let selected_reformer = $(this).attr("id");
+	      his_self.addMove("excommunicate_reformer\t"+selected_reformer);
+	      his_self.endTurn();
+	    });
+
+	    return 0;
+
+          }
+
+	  return 0;
+	},
       }
     }
     deck['006'] = { 
@@ -4253,7 +4323,6 @@ alert("Not Implemented");
 	his_self.game.state.leaders.paul_iii = 1;
 	return 1;
       },
-
     }
     deck['015'] = { 
       img : "cards/HIS-015.svg" , 
@@ -10961,6 +11030,7 @@ console.log(JSON.stringify(this.game.state.activated_powers[key]));
     state.autowin_france_keys_controlled = 11;
     state.autowin_england_keys_controlled = 9;
 
+    state.excommunicated = [];
     state.debaters = [];
     state.explorers = [];
     state.conquistadors = [];
@@ -10990,6 +11060,83 @@ console.log(JSON.stringify(this.game.state.activated_powers[key]));
     state.events.wartburg = 0;
 
     return state;
+
+  }
+
+
+  excommunicateReformer(reformer="") {
+
+    if (reformer == "") { return; }
+
+    //
+    // debater
+    //
+    let debater = reformer.replace("-reformer", "-debater");
+    let faction = "protestant";
+    let s = this.returnSpaceOfPersonage("protestant", reformer);
+    if (s === "") { faction = "england"; s = this.returnSpaceOfPersonage("england", reformer); }
+    if (s === "") { faction = "france"; s = this.returnSpaceOfPersonage("france", reformer); }
+
+    if (s !== "") {
+      let idx = this.returnIndexOfPersonageInSpace(faction, reformer, s);
+    }
+
+    let obj = {};
+    obj.space = s;
+    obj.faction = faction;
+    obj.idx = idx;
+    obj.reformer = this.game.state.spaces[s].units[faction][idx];
+
+    //
+    // remove reformer
+    //
+    if (idx != -1) {
+      this.game.state.spaces[s].units[faction].splice(idx, 1);
+    }
+
+    //
+    // remove debater
+    //
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].key === debater) {
+        obj.debater = this.game.state.debaters[i];
+        this.game.state.debaters.splice(i, 1);
+      }
+    }
+
+    //
+    // add to excommunicated list
+    //
+    this.game.state.excommunicated.push(obj);
+
+    return;
+
+  }
+
+  unexcommunicateReformers() {
+
+    for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+      if (obj.reformer) {
+
+        let reformer = obj.reformer;
+	let debater = obj.debater;
+	let s = obj.space;
+        let faction = obj.faction;
+
+	if (reformer) {
+	  if (s) {
+	    if (faction) {
+	      this.game.state.spaces[s].units[faction].push(reformer);
+	    }
+	  }
+	}
+
+	if (debater) {
+	  this.game.state.debaters.push(debater);
+	}
+
+      }
+    }
 
   }
 
@@ -11797,6 +11944,7 @@ console.log("MOVE: " + mv[0]);
 
 	  this.game.state.round++;
 
+	  this.unexcommunicateReformers();
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 	    this.resetPlayerRound((i+1));
           }
@@ -16814,6 +16962,25 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	}
 
 
+
+
+	// discards N cards from faction hand
+	if (mv[0] === "excommunicate_reformer") {
+
+	  let reformer = mv[1];
+
+	  this.game.queue.splice(qe, 1);
+
+	  this.excommunicateReformer(reformer);
+	  this.displayBoard();
+
+          return 1;
+        }
+
+
+
+
+
 	// discards N cards from faction hand
 	if (mv[0] === "discard_random") {
 
@@ -21191,6 +21358,7 @@ return;
       obj.returnFactionSheet = function(faction) {
         return `
 	  <div class="faction_sheet" id="faction_sheet" style="background-image: url('/his/img/factions/${obj.img}')">
+	    <div class="faction_sheet_ruler" id="faction_sheet_ruler"></div>
 	  </div>
 	`;
       }

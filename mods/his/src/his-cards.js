@@ -901,6 +901,39 @@ alert("Not Implemented");
         type : "normal" ,
         faction : "papacy" ,
         removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+        canEvent : function(his_self, faction) {
+	  return 1;
+        },
+        onEvent : function(his_self, faction) {
+
+	  let papacy = his_self.returnPlayerOfFaction("papacy");
+
+	  if (papacy == his_self.game.player) {
+
+            let msg = "Select Protestant Reformer:";
+            let html = '<ul>';
+	    for (let key in his_self.reformers) {
+	      let s = his_self.returnSpaceOfPersonage(his_self.reformers[key].owner, key);
+	      if (s) {
+                html += `<li class="option" id="${key}">${his_self.game.reformers[key].name}</li>`;
+	      }
+	    }
+	    html += '</ul>';
+            his_self.updateStatusWithOptions(msg, html);
+  
+            $('.option').off();
+            $('.option').on('click', function () {
+              let selected_reformer = $(this).attr("id");
+	      his_self.addMove("excommunicate_reformer\t"+selected_reformer);
+	      his_self.endTurn();
+	    });
+
+	    return 0;
+
+          }
+
+	  return 0;
+	},
       }
     } else {
       deck['005'] = { 
@@ -911,6 +944,39 @@ alert("Not Implemented");
         type : "normal" , 
         faction : "papacy" ,
         removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+        canEvent : function(his_self, faction) {
+	  return 1;
+        },
+        onEvent : function(his_self, faction) {
+
+	  let papacy = his_self.returnPlayerOfFaction("papacy");
+
+	  if (papacy == his_self.game.player) {
+
+            let msg = "Select Protestant Reformer:";
+            let html = '<ul>';
+	    for (let key in his_self.reformers) {
+	      let s = his_self.returnSpaceOfPersonage(his_self.reformers[key].owner, key);
+	      if (s) {
+                html += `<li class="option" id="${key}">${his_self.game.reformers[key].name}</li>`;
+	      }
+	    }
+	    html += '</ul>';
+            his_self.updateStatusWithOptions(msg, html);
+  
+            $('.option').off();
+            $('.option').on('click', function () {
+              let selected_reformer = $(this).attr("id");
+	      his_self.addMove("excommunicate_reformer\t"+selected_reformer);
+	      his_self.endTurn();
+	    });
+
+	    return 0;
+
+          }
+
+	  return 0;
+	},
       }
     }
     deck['006'] = { 
@@ -1595,7 +1661,6 @@ alert("Not Implemented");
 	his_self.game.state.leaders.paul_iii = 1;
 	return 1;
       },
-
     }
     deck['015'] = { 
       img : "cards/HIS-015.svg" , 

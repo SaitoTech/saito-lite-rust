@@ -28,6 +28,7 @@ console.log("MOVE: " + mv[0]);
 
 	  this.game.state.round++;
 
+	  this.unexcommunicateReformers();
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 	    this.resetPlayerRound((i+1));
           }
@@ -5043,6 +5044,25 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  return 1;
 
 	}
+
+
+
+
+	// discards N cards from faction hand
+	if (mv[0] === "excommunicate_reformer") {
+
+	  let reformer = mv[1];
+
+	  this.game.queue.splice(qe, 1);
+
+	  this.excommunicateReformer(reformer);
+	  this.displayBoard();
+
+          return 1;
+        }
+
+
+
 
 
 	// discards N cards from faction hand

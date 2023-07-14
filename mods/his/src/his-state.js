@@ -420,6 +420,7 @@
     state.autowin_france_keys_controlled = 11;
     state.autowin_england_keys_controlled = 9;
 
+    state.excommunicated = [];
     state.debaters = [];
     state.explorers = [];
     state.conquistadors = [];
@@ -449,6 +450,83 @@
     state.events.wartburg = 0;
 
     return state;
+
+  }
+
+
+  excommunicateReformer(reformer="") {
+
+    if (reformer == "") { return; }
+
+    //
+    // debater
+    //
+    let debater = reformer.replace("-reformer", "-debater");
+    let faction = "protestant";
+    let s = this.returnSpaceOfPersonage("protestant", reformer);
+    if (s === "") { faction = "england"; s = this.returnSpaceOfPersonage("england", reformer); }
+    if (s === "") { faction = "france"; s = this.returnSpaceOfPersonage("france", reformer); }
+
+    if (s !== "") {
+      let idx = this.returnIndexOfPersonageInSpace(faction, reformer, s);
+    }
+
+    let obj = {};
+    obj.space = s;
+    obj.faction = faction;
+    obj.idx = idx;
+    obj.reformer = this.game.state.spaces[s].units[faction][idx];
+
+    //
+    // remove reformer
+    //
+    if (idx != -1) {
+      this.game.state.spaces[s].units[faction].splice(idx, 1);
+    }
+
+    //
+    // remove debater
+    //
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].key === debater) {
+        obj.debater = this.game.state.debaters[i];
+        this.game.state.debaters.splice(i, 1);
+      }
+    }
+
+    //
+    // add to excommunicated list
+    //
+    this.game.state.excommunicated.push(obj);
+
+    return;
+
+  }
+
+  unexcommunicateReformers() {
+
+    for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+      if (obj.reformer) {
+
+        let reformer = obj.reformer;
+	let debater = obj.debater;
+	let s = obj.space;
+        let faction = obj.faction;
+
+	if (reformer) {
+	  if (s) {
+	    if (faction) {
+	      this.game.state.spaces[s].units[faction].push(reformer);
+	    }
+	  }
+	}
+
+	if (debater) {
+	  this.game.state.debaters.push(debater);
+	}
+
+      }
+    }
 
   }
 

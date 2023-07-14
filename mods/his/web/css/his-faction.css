@@ -109,6 +109,14 @@
   background-size: contain;
 }
 
+.faction_sheet_rule3 {
+    top: 3.5%;
+    left: 66.5%;
+    position: relative;
+    width: 30.5%;
+}
+
+
 .faction_sheet_keytile {
   position: absolute;
   height: 100px;

@@ -60,6 +60,10 @@ console.log("\n\n\n\n");
 	this.setAllies("protestant", "venice");
   	this.addUnrest("graz");
 
+	this.game.state.leaders.leo_x = 0;
+	this.game.state.leaders.paul_iii = 1;
+
+
 
 	// OTTOMAN
         this.addArmyLeader("ottoman", "istanbul", "suleiman");
