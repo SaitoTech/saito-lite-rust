@@ -3573,13 +3573,24 @@ alert("Not Implemented");
 	  if (papacy == his_self.game.player) {
 
             let msg = "Select Protestant Reformer:";
+	    let reformer_exists = 0;
             let html = '<ul>';
 	    for (let key in his_self.reformers) {
-	      let s = his_self.returnSpaceOfPersonage(his_self.reformers[key].owner, key);
+console.log("key is: " + key);
+console.log(JSON.stringify(his_self.reformers[key]));
+	      let s = his_self.returnSpaceOfPersonage("protestant", key);
 	      if (s) {
+	        reformer_exists = 1;
                 html += `<li class="option" id="${key}">${his_self.game.reformers[key].name}</li>`;
 	      }
 	    }
+	
+	    if (reformer_exists == 0) {
+	      his_self.updateLog("No excommunicable Protestant reformers exist");
+	      his_self.endTurn();
+	      return;
+	    }
+
 	    html += '</ul>';
             his_self.updateStatusWithOptions(msg, html);
   
@@ -3616,13 +3627,24 @@ alert("Not Implemented");
 	  if (papacy == his_self.game.player) {
 
             let msg = "Select Protestant Reformer:";
+	    let reformer_exists = 0;
             let html = '<ul>';
 	    for (let key in his_self.reformers) {
-	      let s = his_self.returnSpaceOfPersonage(his_self.reformers[key].owner, key);
+console.log("key is: " + key);
+console.log(JSON.stringify(his_self.reformers[key]));
+	      let s = his_self.returnSpaceOfPersonage("protestant", key);
 	      if (s) {
+		reformer_exists = 1;
                 html += `<li class="option" id="${key}">${his_self.game.reformers[key].name}</li>`;
 	      }
 	    }
+
+	    if (reformer_exists == 0) {
+	      his_self.updateLog("No excommunicable Protestant reformers exist");
+	      his_self.endTurn();
+	      return;
+	    }
+
 	    html += '</ul>';
             his_self.updateStatusWithOptions(msg, html);
   
@@ -7832,6 +7854,8 @@ alert("NOT IMPLEMENTED");
 
   returnSpaceOfPersonage(faction, personage) {
     for (let key in this.game.spaces) {
+console.log("KEY: " + key);
+console.log("FACTION: " + faction);
       for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
 	if (this.game.spaces[key].units[faction][i].type === personage) {
 	  return key;
