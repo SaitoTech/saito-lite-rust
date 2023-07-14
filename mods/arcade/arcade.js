@@ -1724,6 +1724,7 @@ class Arcade extends ModTemplate {
     if (accepted_game) {
       data.game = accepted_game.msg.game;
       data.game_id = game_sig;
+      data.path = "/arcade/";
     } else {
       return;
     }
