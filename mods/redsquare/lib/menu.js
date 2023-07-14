@@ -7,6 +7,17 @@ class RedSquareMenu {
     this.mod = mod;
     this.container = container;
     this.name = "RedSquareMenu";
+
+    app.connection.on("redsquare-navigation", (to_home) => {
+      let home_button = document.querySelector(".redsquare-menu-home");
+      if (home_button) {
+        if (to_home) {
+          home_button.classList.add("redsquare-menu-refresh");
+        } else {
+          home_button.classList.remove("redsquare-menu-refresh");
+        }
+      }
+    });
   }
 
   render() {
@@ -64,13 +75,12 @@ class RedSquareMenu {
 
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
       this.app.connection.emit("redsquare-notifications-render-request");
+      this.app.connection.emit("redsquare-navigation", false);
     };
 
-    document.querySelector(".redsquare-menu-profile").onclick = async (e) => {
-      this.app.connection.emit(
-        "redsquare-profile-render-request",
-        await this.app.wallet.getPublicKey()
-      );
+    document.querySelector(".redsquare-menu-profile").onclick = (e) => {
+      this.app.connection.emit("redsquare-profile-render-request", this.app.wallet.publicKey);
+      this.app.connection.emit("redsquare-navigation", false);
     };
 
     //
@@ -130,4 +140,3 @@ class RedSquareMenu {
 }
 
 module.exports = RedSquareMenu;
-

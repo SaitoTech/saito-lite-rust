@@ -102,6 +102,10 @@
   height: 1rem;
 }
 
+.saito-main {
+  transition: opacity 0.8s;
+}
+
 .saito-main>.saito-loader {
   margin-top: 15vh;
 }
@@ -121,8 +125,18 @@
   z-index: 3;
 }
 
-.redsquare-menu-home:hover .fa-house::before {
+
+.redsquare-menu-refresh:hover .fa-house::before {
   content: "\f021";
+}
+.redsquare-menu-refresh:hover .no-display-hover {
+  display: none;
+}
+.display-on-hover {
+  display: none;
+}
+.redsquare-menu-refresh:hover .display-on-hover {
+  display: block;
 }
 
 .saito-loader.temp {

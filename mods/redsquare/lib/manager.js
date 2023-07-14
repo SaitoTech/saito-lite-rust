@@ -1,8 +1,8 @@
 const TweetManagerTemplate = require("./manager.template");
 const Tweet = require("./tweet");
 const Notification = require("./notification");
-const SaitoProfile = require("./../../../lib/saito/ui/saito-profile/saito-profile");
-const SaitoLoader = require("./../../../lib/saito/ui/saito-loader/saito-loader");
+const SaitoProfile = require("../../../lib/saito/ui/saito-profile/saito-profile");
+const SaitoLoader = require("../../../lib/saito/ui/saito-loader/saito-loader");
 
 class TweetManager {
   constructor(app, mod, container = ".saito-main") {
@@ -10,35 +10,51 @@ class TweetManager {
     this.mod = mod;
     this.container = container;
 
-    this.mode = "tweets";
-    this.thread_id = "";
-    this.parent_id = "";
-    this.tweet_id = "";
+    this.mode = "loading";
+
     this.publickey = "";
 
     this.profile = new SaitoProfile(app, mod, ".saito-main");
 
+    //This is an in-place loader... not super useful when content is overflowing off the bottom of the screen
+    this.loader = new SaitoLoader(app, mod, "#redsquare-intersection");
+
     //////////////////////////////
     // load more on scroll-down //
     //////////////////////////////
-    this.loader = new SaitoLoader(app, mod, "#redsquare-intersection");
     this.intersectionObserver = new IntersectionObserver(
-      async (entries) => {
-        for (const entry of entries) {
+      (entries) => {
+        entries.forEach(async (entry) => {
           if (entry.isIntersecting) {
-            // this.loader.render();
+            console.log("Intersection: " + this.mode);
+
+            this.showLoader();
 
             //
             // load more tweets
             //
             if (this.mode == "tweets") {
               mod.loadTweets(null, (txs) => {
-                this.loader.hide();
+                if (this.mode !== "tweets") {
+                  return;
+                }
+
+                this.hideLoader();
                 for (let i = 0; i < this.mod.tweets.length; i++) {
                   let tweet = this.mod.tweets[i];
                   if (!tweet.isRendered()) {
                     tweet.renderWithCriticalChild();
                   }
+                }
+
+                if (txs.length == 0) {
+                  this.app.browser.addElementToSelector(
+                    `<div class="saito-end-of-redsquare">No more tweets</div>`,
+                    ".tweet-manager"
+                  );
+                  this.intersectionObserver.unobserve(
+                    document.querySelector("#redsquare-intersection")
+                  );
                 }
               });
             }
@@ -48,17 +64,28 @@ class TweetManager {
             //
             if (this.mode == "notifications") {
               mod.loadNotifications(null, (txs) => {
+                if (this.mode !== "notifications") {
+                  return;
+                }
                 for (let i = 0; i < this.mod.notifications.length; i++) {
                   let notification = new Notification(
                     this.app,
                     this.mod,
                     this.mod.notifications[i].tx
                   );
-                  if (!notification.isRendered()) {
-                    notification.render(".tweet-manager");
-                  }
+                  //if (!notification.isRendered()) {
+                  notification.render(".tweet-manager");
+                  //}
                 }
-                this.loader.hide();
+                if (this.mod.notifications.length == 0) {
+                  let notification = new Notification(this.app, this.mod, null);
+                  notification.render(".tweet-manager");
+                }
+
+                this.intersectionObserver.unobserve(
+                  document.querySelector("#redsquare-intersection")
+                );
+                this.hideLoader();
               });
             }
 
@@ -67,41 +94,56 @@ class TweetManager {
             //
             if (this.mode == "profile") {
               await this.mod.loadProfileTweets(null, this.publickey, (txs) => {
-                for (let z = 0; z < txs.length; z++) {
-                  let tweet = new Tweet(this.app, this.mod, ".tweet-manager", txs[z]);
-                  tweet.render();
+                if (this.mode !== "profile") {
+                  return;
                 }
-                this.mod.updatePeerEarliestProfileTimestamp(
-                  null,
-                  this.mod.returnEarliestTimestampFromTransactionArray(txs)
-                );
-                this.loader.hide();
+
+                for (let z = 0; z < txs.length; z++) {
+                  let tweet = new Tweet(this.app, this.mod, txs[z]);
+                  if (tweet?.noerrors) {
+                    tweet.render();
+                  }
+                }
+                this.hideLoader();
+                if (txs.length == 0) {
+                  this.app.browser.addElementToSelector(
+                    `<div class="saito-end-of-redsquare">No more tweets</div>`,
+                    ".tweet-manager"
+                  );
+                  this.intersectionObserver.unobserve(
+                    document.querySelector("#redsquare-intersection")
+                  );
+                }
               });
             }
           }
-        }
+        });
       },
       {
         root: null,
-        rootMargin: "0px",
+        rootMargin: "30px",
         threshold: 1,
       }
     );
   }
 
-  async render() {
-    console.log("Render RS Manager for " + this.publickey + " in state: " + this.mode);
-
+  render() {
     let myqs = `.tweet-manager`;
+
+    //Stop observering while we rebuild the page
+    this.intersectionObserver.disconnect();
 
     if (!document.querySelector(myqs)) {
       this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
     } else {
-      if (document.querySelector("#redsquare-intersection")) {
-        document.querySelector("#redsquare-intersection").remove();
-      }
-      this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
+      document.querySelector(myqs).innerHTML = "";
     }
+
+    if (document.querySelector(".rs-back-button")) {
+      document.querySelector(".rs-back-button").remove();
+    }
+
+    this.showLoader();
 
     ////////////
     // tweets //
@@ -109,12 +151,14 @@ class TweetManager {
     if (this.mode == "tweets") {
       this.profile.remove();
 
-      window.history.pushState(null, "", "/redsquare/#home");
-
       for (let i = 0; i < this.mod.tweets.length; i++) {
         let tweet = this.mod.tweets[i];
         tweet.renderWithCriticalChild();
       }
+
+      setTimeout(() => {
+        this.hideLoader();
+      }, 50);
     }
 
     ///////////////////
@@ -122,8 +166,6 @@ class TweetManager {
     ///////////////////
     if (this.mode == "notifications") {
       this.profile.remove();
-
-      window.history.pushState(null, "", "/redsquare/#notifications");
 
       if (this.mod.notifications.length == 0) {
         let notification = new Notification(this.app, this.mod, null);
@@ -135,7 +177,9 @@ class TweetManager {
         }
       }
 
-      this.loader.hide();
+      setTimeout(() => {
+        this.hideLoader();
+      }, 50);
     }
 
     /////////////
@@ -144,26 +188,23 @@ class TweetManager {
     if (this.mode == "profile") {
       this.profile.publickey = this.publickey;
 
-      window.history.pushState(null, "", `/redsquare/?user_id=${this.publickey}`);
-
-      await this.profile.render();
+      this.profile.render();
 
       //
       // all peers reset to 0 tweets fetched
       //
-      this.mod.updatePeerEarliestProfileTimestamp(null, new Date().getTime());
-      await this.mod.loadProfileTweets(null, this.publickey, (txs) => {
+      this.mod.updatePeerStat(new Date().getTime(), "profile_earliest_ts");
+
+      /*this.mod.loadProfileTweets(null, this.publickey, (txs) => {
         for (let z = 0; z < txs.length; z++) {
-          let tweet = new Tweet(this.app, this.mod, ".tweet-manager", txs[z]);
+          let tweet = new Tweet(this.app, this.mod, txs[z]);
           tweet.render();
         }
-        this.mod.updatePeerEarliestProfileTimestamp(
-          null,
-          this.mod.returnEarliestTimestampFromTransactionArray(txs)
-        );
-      });
+        setTimeout(()=> { this.hideLoader();}, 50);
+      });*/
     }
 
+    //Fire up the intersection observer
     this.attachEvents();
   }
 
@@ -172,9 +213,7 @@ class TweetManager {
   // as they appear...
   //
   renderTweet(tweet) {
-    if (document.querySelector("#redsquare-intersection")) {
-      this.intersectionObserver.unobserve(document.querySelector("#redsquare-intersection"));
-    }
+    this.intersectionObserver.disconnect();
 
     let myqs = `.tweet-manager`;
 
@@ -185,15 +224,39 @@ class TweetManager {
       this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
     }
 
-    this.mode = "tweets";
+    this.app.browser.prependElementToSelector(
+      `<div class="rs-back-button"><i class="fa-solid fa-arrow-left"></i></div>`,
+      myqs
+    );
+
+    this.mode = "single";
     this.profile.remove();
 
-    tweet.render();
-    this.loader.render();
-    this.mod.loadTweetChildren(null, tweet.tx.signature, () => {
+    //Show the basic tweet first
+    if (!tweet.parent_id) {
       tweet.renderWithChildren();
-      this.loader.hide();
+    }
+
+    this.showLoader();
+
+    //Query the whole thread
+    let thread_id = tweet.thread_id || tweet.parent_id || tweet.tx.transaction.sig;
+
+    this.mod.loadTweetThread(null, thread_id, () => {
+      let root_tweet = this.mod.returnTweet(thread_id);
+      root_tweet.renderWithChildren();
+      this.hideLoader();
     });
+
+    //
+    //Mobile back button
+    //
+    let button = document.querySelector(".rs-back-button");
+    if (button) {
+      button.onclick = (e) => {
+        this.app.connection.emit("redsquare-home-render-request");
+      };
+    }
   }
 
   attachEvents() {
@@ -201,18 +264,13 @@ class TweetManager {
     // dynamic content loading
     //
     this.intersectionObserver.observe(document.querySelector("#redsquare-intersection"));
+
+    this.app.connection.emit("redsquare-navigation-complete");
   }
 
   showLoader() {
-    if (!document.querySelector("#redsquare-intersection")) {
-      if (document.querySelector(".tweet-manager")) {
-        document.querySelector(".tweet-manager").remove();
-      }
-      this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
-    }
     this.loader.show();
   }
-
   hideLoader() {
     this.loader.hide();
   }
