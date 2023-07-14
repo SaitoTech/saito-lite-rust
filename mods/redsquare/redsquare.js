@@ -1378,6 +1378,8 @@ class RedSquare extends ModTemplate {
         }
 
         await this.addTweet(tx, 1);
+
+        console.log(this.tweets, "current tweets");
         return;
       }
 
