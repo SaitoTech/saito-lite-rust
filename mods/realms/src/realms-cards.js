@@ -372,13 +372,13 @@
 				type: Land,
 				color: "red",
 				img: https://github.com/Darkuso/Saito-fantasy-cards/blob/main/Starter%20Pack%201st%20Edition/Cards%20Final%20(with%20text)/Lands/037-Volcano.png
-				}
+				};
 		deck['Duskwood Edge'] 		= { 
 				name: "Duskwood Edge", 
 				type: Land,
 				color: "red"&&"green"",
 				img: https://github.com/Darkuso/Saito-fantasy-cards/blob/main/Starter%20Pack%201st%20Edition/Cards%20Final%20(with%20text)/Lands/036-Duskwood-Edge.png
-				}
+				};
 
 			
 
