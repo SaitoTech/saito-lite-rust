@@ -891,7 +891,7 @@
       }
       if (this.isSpaceBesieged(space)) {
 alert("SPACE IS BESIEGED: " + space.key);
-        obj.innerHTML += `<img class="seige" src="/his/img/tiles/seige.png" />`;
+        obj.innerHTML += `<img class="siege" src="/his/img/tiles/siege.png" />`;
       }
 
     });

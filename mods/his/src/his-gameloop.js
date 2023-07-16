@@ -28,6 +28,7 @@ console.log("MOVE: " + mv[0]);
 
 	  this.game.state.round++;
 
+	  this.restoreMilitaryLeaders();
 	  this.unexcommunicateReformers();
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 	    this.resetPlayerRound((i+1));
@@ -38,6 +39,7 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
 //	  this.game.queue.push("spring_deployment_phase");
+//	  this.game.queue.push("counter_or_acknowledge\tpre_spring_deployment");
 //	  this.game.queue.push("diplomacy_phase");
 
 	  //
@@ -54,7 +56,7 @@ console.log("MOVE: " + mv[0]);
 this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
 //	    this.updateLog("Luther's 95 Theses!");
-//	    this.game.queue.push("event\t1\t008");
+//	    this.game.queue.push("event\tprotestant\t008");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -392,7 +394,7 @@ this.game.queue.push("is_testing");
     	  this.addRegular("venice", "agram", 4);
     	  this.game.spaces['agram'].type = "fortress";
 
-    	  this.addCard("papacy", "017");
+    	  this.addCard("papacy", "026");
 //    	  this.addCard("protestant", "036");
 //    	  this.addCard("protestant", "026");
 //    	  this.addCard("protestant", "027");
@@ -4962,16 +4964,14 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
         }
 
+	// fortify a spacekey
+	if (mv[0] === "fortify") {
 
-
-	// random card discard
-	if (mv[0] === "random_discard") {
-
-	  let faction = mv[1];
-	  let num = mv[2];
-	  let player_of_faction = this.returnPlayerOfFaction(faction);
-
+	  let spacekey = mv[1];
+	  this.game.spaces[spacekey].type = "fortress";
 	  this.game.queue.splice(qe, 1);
+
+	  this.displaySpace(spacekey);
 
 	  return 0;
 	}
@@ -5060,9 +5060,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
           return 1;
         }
-
-
-
 
 
 	// discards N cards from faction hand

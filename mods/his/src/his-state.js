@@ -420,6 +420,7 @@
     state.autowin_france_keys_controlled = 11;
     state.autowin_england_keys_controlled = 9;
 
+    state.military_leaders_removed_until_next_round = [];
     state.excommunicated = [];
     state.debaters = [];
     state.explorers = [];
@@ -464,11 +465,13 @@
     let debater = reformer.replace("-reformer", "-debater");
     let faction = "protestant";
     let s = this.returnSpaceOfPersonage("protestant", reformer);
+    let idx = -1;
+
     if (s === "") { faction = "england"; s = this.returnSpaceOfPersonage("england", reformer); }
     if (s === "") { faction = "france"; s = this.returnSpaceOfPersonage("france", reformer); }
 
     if (s !== "") {
-      let idx = this.returnIndexOfPersonageInSpace(faction, reformer, s);
+      idx = this.returnIndexOfPersonageInSpace(faction, reformer, s);
     }
 
     let obj = {};
@@ -500,6 +503,27 @@
     this.game.state.excommunicated.push(obj);
 
     return;
+
+  }
+
+  restoreMilitaryLeaders() {
+
+    for (let i = 0; i < this.game.state.military_leaders_removed_until_next_round.length; i++) {
+      if (obj.leader) {
+
+        let leader = obj.leader;
+	let s = obj.space;
+        let faction = obj.faction;
+
+	if (leader) {
+	  if (s) {
+	    if (faction) {
+	      this.game.state.spaces[s].units[faction].push(leader);
+	    }
+	  }
+	}
+      }
+    }
 
   }
 
