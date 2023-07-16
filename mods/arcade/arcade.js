@@ -980,14 +980,17 @@ class Arcade extends ModTemplate {
       game.msg.ts = txmsg.step.ts;
     }
 
-    let sql = `UPDATE games SET step = $step WHERE game_id = $game_id`;
-    let params = {
-      $step: JSON.stringify(txmsg.step),
-      $game_id: txmsg.game_id,
-    };
-    await this.app.storage.executeDatabase(sql, params, "arcade");
-
-    this.app.storage.saveTransaction(tx, { field1 : txmsg.module+"_"+txmsg.game_id });
+    if (!this.app.BROWSER){
+      let sql = `UPDATE games SET step = $step WHERE game_id = $game_id`;
+      let params = {
+        $step: JSON.stringify(txmsg.step),
+        $game_id: txmsg.game_id,
+      };
+      await this.app.storage.executeDatabase(sql, params, "arcade");
+    
+      this.app.storage.saveTransaction(tx, { field1 : txmsg.module+"_"+txmsg.game_id }, "localhost");  
+    }
+    
 
   }
 
@@ -1721,6 +1724,7 @@ class Arcade extends ModTemplate {
     if (accepted_game) {
       data.game = accepted_game.msg.game;
       data.game_id = game_sig;
+      data.path = "/arcade/";
     } else {
       return;
     }

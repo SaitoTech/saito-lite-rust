@@ -15,7 +15,7 @@ class Tweet {
 
     if (!tx) {
       console.warn("Attempting to create a tweet from a null tx");
-      return null;
+      return null; //Doesn't actually return null
     }
 
     //
@@ -172,7 +172,8 @@ class Tweet {
       );
     } 
       
-    
+   // We will use this as a flag to know there were no breaking failures in the constructor
+   this.noerrors = true; 
   }
 
   formatDate(ts = 0) {
@@ -233,9 +234,9 @@ class Tweet {
         has_reply_disconnected = true;
       }
 
-      if (has_reply || has_reply_disconnected){
-        console.log(has_reply, has_reply_disconnected);
-      }
+      //if (has_reply || has_reply_disconnected){
+      //  console.log(has_reply, has_reply_disconnected);
+      //}
       //
       // if prepend = true, remove existing element
       //
@@ -290,7 +291,7 @@ class Tweet {
         t.notice = this.retweet.notice;
         t.render(prepend);
       } else {
-        console.log("saved tweet");
+        //console.log("saved tweet");
         this.retweet.user.container = this.container + `> .tweet-${this.tx.transaction.sig} > .tweet-header`,
         this.retweet.render(prepend);
       }

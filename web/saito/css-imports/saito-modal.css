@@ -318,6 +318,16 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 
+.saito-overlaid-icon {
+  color: var(--saito-red);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(1px 1px 3px var(--saito-black));
+}
+
+
 
 
 /* mobile modals */

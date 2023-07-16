@@ -8,7 +8,7 @@
 
 .cardimg , .card img {
   position: absolute;
-  height: 100%;
+  height: 100%; /* We probably don't want this!!!*/
   width: 100%;
   top: 0px;
   left: 0px;

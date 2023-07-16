@@ -23,6 +23,8 @@
     min-height: 10%;
     max-height: 100vh;
     max-width: 100vw;
+    /*max-height: -webkit-fill-available;
+    max-width: -webkit-fill-available;*/
 }
 
 .saito-overlay>div, .saito-overlay>form {

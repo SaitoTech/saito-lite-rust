@@ -35,7 +35,7 @@ module.exports = (app, chat_group) => {
       html += `<div class="saito-contact${unconfirmed_tag}" data-id="${publickey}">`;
 
       html += `<div class="saito-user">
-                <div class="saito-identicon-box"><img class="saito-identicon" src="${imgsrc}"></div>
+                <div class="saito-identicon-box"><img class="saito-identicon" src="${imgsrc}">${chat_group.member_ids[publickey] == "admin" ? `<i class="saito-overlaid-icon fa-solid fa-dragon"></i>`:""}</div>
                   ${name}
                 <div class="saito-userline">${publickey}</div>
                 ${(chat_group.member_ids[app.wallet.returnPublicKey()] == "admin" || publickey === app.wallet.returnPublicKey()) ? 

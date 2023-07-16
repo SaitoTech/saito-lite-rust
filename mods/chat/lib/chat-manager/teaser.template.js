@@ -2,13 +2,18 @@ module.exports = ChatTeaser = (app, group) => {
 
   let id = group.id;
 
-  let last_msg = "new chat";
+  let last_msg = "<em>new chat</em>";
   let last_ts = new Date().getTime();
   let time = "";
   
   if (group.txs.length > 0) {
     let tx = group.txs[group.txs.length - 1];
-    last_msg = (tx.msg.indexOf('<img') == 0) ? "image" : app.browser.sanitize(tx.msg);
+    last_msg = (tx.msg.indexOf('<img') == 0) ? "<em>[image]</em>" : app.browser.sanitize(tx.msg);
+    console.log(last_msg);
+    const regex = /<blockquote>.*<\/blockquote>/si;
+    last_msg = last_msg.replace(regex, "<em>reply</em>: ").replace("<br>", "");
+    const regex2 = /<a[^>]+>/i;
+    last_msg = last_msg.replace(regex2, "").replace("</a>","");
     last_ts = tx.ts;
     let x = app.browser.formatDate(last_ts);
     time = x.hours + ":" + x.minutes;

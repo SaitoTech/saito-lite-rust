@@ -97,12 +97,13 @@ class ChatMenu {
             
             if (this.app.wallet.returnPublicKey() == user_id){
               this.mod.deleteChatGroup(thisobj.chat_group);
+              siteMessage("You left the chat group", 2000);
             }else{
               this.mod.saveChatGroup(thisobj.chat_group);
+              siteMessage("User removed from chat group", 2000);
             }
           thisobj.overlay.remove();
-          thisobj.render();   
-          siteMessage("User removed from chat group", 2000);
+          thisobj.render();
         }
       }
     });

@@ -52,6 +52,7 @@
   justify-content: flex-start;
   row-gap: 1.5rem;
   flex-wrap: wrap;
+  height: 8rem;
 }
 
 .league-overlay-header-title-box {
@@ -111,7 +112,7 @@
   display: grid;
   grid-template-columns: minmax(40rem, 2fr) minmax(30rem, 1fr);
   gap: 2rem;
-  min-height: min(50rem, 80vh);
+  max-height: min(50rem, calc(100vh - 140px));
 }
 
 .league-error {
@@ -119,10 +120,6 @@
   line-height: 2rem;
 }
 
-.league-overlay-body>div {
-  max-height: calc(90vh - 22rem);
-  flex-grow: 1;
-}
 
 .league-overlay-content-box {
   padding: 1.5rem;
@@ -170,6 +167,7 @@
 
 #admin_details {
   flex: unset;
+  min-height: 7.5rem;
 }
 
 span.attention {
@@ -292,11 +290,12 @@ span.attention {
 
 .contactAdminWarning {
   font-size: 2rem;
-  min-height: 30rem;
+  /*min-height: 30rem;*/
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex: 4;
 }
 
 
@@ -316,6 +315,10 @@ span.attention {
 }
 
 @media screen and (max-width: 1000px) {
+  .league-overlay-header {
+    height: unset;
+  }
+  
   .league-overlay-body {
     display: flex;
     flex-direction: column;
@@ -326,7 +329,6 @@ span.attention {
     padding: 1px 1rem;
   }
   .league-overlay-body>div {
-    max-height: unset;
     overflow-y: unset;
   }
   .league-overlay-body .league-overlay-controls {

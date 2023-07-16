@@ -66,6 +66,12 @@
   min-height: 150px;
 }
 
+.chat-popup {
+  display: grid;
+  grid-template-rows: 45px 1fr min-content;
+  align-items: center;
+}
+
 .chat-container.active {
   z-index: 16;
 }
@@ -132,7 +138,8 @@
 .chat-body {
   padding: 1rem;
   display: block;
-  height: calc(100% - 9rem);
+  /*height: calc(100% - 9rem);*/
+  height: 100%;
   overflow: clip auto;
   background-color: #bbb1;
   background-image: url(/saito/img/tiled-logo.svg);
@@ -166,11 +173,21 @@
 }
 */
 
+.chat-manager em {
+  color: var(--saito-font-color-light);
+  font-style: italic;  
+}
+
 .saito-time-stamp {
   text-align: center;
   color: var(--saito-font-color-light);
   font-style: italic;
   margin: 3px 0;
+}
+
+.saito-chat-notice {
+  color: var(--saito-font-color-light);
+  font-style: italic;
 }
 
 .saito-chat-line-controls {
@@ -220,10 +237,11 @@
 }
 
 .chat-footer {
-  height: 4.5rem;
+  min-height: 4.5rem;
+  height: fit-content;
   font-size: 2rem;
-  position: absolute;
-  bottom: 0;
+  /*position: absolute;
+  bottom: 0;*/
   width: 100%;
   padding: 0;
   display: flex;
@@ -231,6 +249,7 @@
   align-items: end;
   z-index: 2;
   border-top: 1px solid var(--saito-border-color);
+  background: var(--saito-arcade-background);
 }
 
 .chat-container blockquote {
@@ -256,13 +275,14 @@
   padding: 1.3rem 0.5rem;
 }
 
+/* This is the submit paper airplane icon */
 .chat-footer>i {
   color: var(--saito-primary);
   cursor: pointer;
   z-index: 2;
   transition: all 0.2s;
   font-size: 2rem;
-  padding: 1rem 0.5rem;
+  padding: 1.3rem 1rem 1.3rem 0.5rem;
 }
 
 .chat-footer i:hover {
@@ -320,56 +340,6 @@
   color: var(--saito-font-color-light);  
 }
 
-
-@media screen and (max-width: 600px) {
-  .chat-manager-overlay {
-    background-color: var(--saito-background-color);
-    position: absolute;
-    left: 0;
-    top: var(--saito-header-height);
-    height: 100vh;
-    width: 100vw;
-    padding-top: 1rem;
-    z-index: 7;
-  }
-  .chat-manager-overlay .chat-manager {
-    margin-left: auto;
-    margin-right: auto;
-    width: 95vw;
-    height: fit-content;
-    max-height: 100%;
-  }
-
-  .chat-minimizer-icon {
-    visibility: hidden;
-  }
-  
-  /*
-  .chat-popup {
-    z-index: 10000;
-    height: 100vh;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    min-height: 100vh;
-  }
-*/
-
-  .chat-container {
-    resize: unset;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .chat-container {
-    margin: 0;
-    width: 100vw;
-    height: calc(100% - var(--saito-header-height));
-    max-height: none;
-    border-radius: 0;
-  }
-}
-
 .chat-manager-header {
   display: flex;
   align-items: center;
@@ -406,3 +376,45 @@
 .chat-main-container .saito-sidebar.left {
   background-color: var(--saito-background-color);
 }
+
+@media screen and (max-width: 768px) {
+  .chat-container {
+    margin: 0;
+    width: 100vw;
+    height: calc(100% - var(--saito-header-height));
+    max-height: none;
+    border-radius: 0;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .chat-manager-overlay {
+    background-color: var(--saito-background-color);
+    position: absolute;
+    left: 0;
+    top: var(--saito-header-height);
+    height: 100vh;
+    width: 100vw;
+    max-height: -webkit-fill-available;
+    max-width: -webkit-fill-available;
+    padding-top: 1rem;
+    z-index: 7;
+  }
+  .chat-manager-overlay .chat-manager {
+    margin-left: auto;
+    margin-right: auto;
+    width: 95vw;
+    height: fit-content;
+    max-height: 100%;
+  }
+
+  .chat-minimizer-icon {
+    visibility: hidden;
+  }
+  
+
+  .chat-container {
+    resize: unset;
+  }
+}
+

@@ -108,7 +108,6 @@ class ChatManager {
 
       let group;
 
-
       if (!data) {
         group = this.mod.returnCommunityChat();
       }else{
@@ -125,6 +124,14 @@ class ChatManager {
         //Other modules can specify a chat group id (maybe linked to game_id or league_id)
         if (data.id) {
           group.id = data.id;
+        }
+        if (data.admin){
+          //
+          // It may be overkill to send a group update transaction everytime the admin starts a chat
+          // But if groups have variable memberships, it does push out an update to everyone as long
+          // as the admin has an accurate list
+          //
+          this.mod.sendCreateGroupTransaction(group);
         }
       }
 
@@ -273,6 +280,16 @@ class ChatManager {
     this.attachEvents();
   }
 
+  /*
+    Set popup flags so that we don't auto open any chat groups in the /chat interface
+  */
+  switchTabs() {
+    for (let popup in this.popups) {
+      this.popups[popup].manually_closed = true;
+      this.popups[popup].is_rendered = false;
+    }
+  }
+
   attachEvents() {
     //
     // clicks on the element itself (background)
@@ -289,7 +306,12 @@ class ChatManager {
           this.popups[gid].group = group;
         }
 
-        // unset manually closed to permit re-opening
+
+        if (this.mod.browser_active) {
+          this.switchTabs();
+        }
+
+        // unset manually closed to permit rendering
         this.popups[gid].manually_closed = false;
         this.popups[gid].render();
         this.popups[gid].input.focus(true);
