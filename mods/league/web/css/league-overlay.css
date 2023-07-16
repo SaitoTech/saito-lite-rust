@@ -115,6 +115,10 @@
   max-height: min(50rem, calc(100vh - 140px));
 }
 
+.league-overlay-body > div {
+ max-height: min(50rem, calc(100vh - 140px)); 
+}
+
 .league-error {
   padding: 0rem 1.5rem;
   line-height: 2rem;
