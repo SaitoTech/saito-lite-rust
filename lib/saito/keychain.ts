@@ -488,17 +488,6 @@ class Keychain {
     return true;
   }
 
-  alreadyHaveSharedSecret(publickey: string): boolean {
-    for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].publickey === publickey /*&& this.keys[x].lc*/) {
-        if (this.keys[x].aes_secret) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
 
 }
 
