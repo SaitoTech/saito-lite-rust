@@ -12,6 +12,24 @@
   margin: 2rem;
 }
 
+.settings-actions-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.settings-actions-container {
+  display: flex;
+  flex-flow: row-reverse;
+  right: 1rem;
+  margin-left: auto;
+}
+
+.settings-actions-container .saito-button-secondary {
+  margin-top: 0;
+  padding: 0.5rem 0.7rem 0.4rem 0.7rem;
+}
+
+
 .settings-appspace-user-details {
   display: grid;
   grid-template-columns: minmax(8rem, auto) 1fr;

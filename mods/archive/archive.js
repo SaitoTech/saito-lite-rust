@@ -534,17 +534,10 @@ class Archive extends ModTemplate {
   }
 
   async onWalletReset(nuke) {
-    console.log("Wallet reset");
 
     if (nuke && this.localDB) {
-      return this.localDB
-        .dropDb()
-        .then(function () {
-          console.log("Db deleted successfully");
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+      await this.localDB.clear("archives");
+      await this.localDB.clear("txs");
     }
     return 1;
   }
