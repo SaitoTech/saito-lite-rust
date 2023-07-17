@@ -406,12 +406,12 @@ class Chat extends ModTemplate {
 
       let txmsg = tx.returnMessage();
 
-      //if (this.debug) {
+      if (this.debug) {
         console.log("Chat onConfirmation: " + txmsg.request);
-      //}
+      }
 
       if (txmsg.request == "chat message") {
-        this.receiveChatTransaction(app, tx);
+        this.receiveChatTransaction(app, tx, 1);
       }
       if (txmsg.request == "chat group") {
         this.receiveCreateGroupTransaction(app, tx);
@@ -934,7 +934,7 @@ class Chat extends ModTemplate {
    * Everyone receives the chat message (via the Relay)
    * So we make sure here it is actually for us (otherwise will be encrypted gobbledygook)
    */
-  receiveChatTransaction(app, tx) {
+  receiveChatTransaction(app, tx, onchain = 0) {
     if (this.inTransitImageMsgSig == tx.transaction.sig) {
       this.inTransitImageMsgSig = null;
     }
@@ -964,13 +964,21 @@ class Chat extends ModTemplate {
     //}
 
     //
-    // save transaction if private chat
+    // save transactions if getting chat tx over chain
+    // (should less the duplication effect)
     //
-    if (this.app.BROWSER) {
-      if (txmsg.group_id !== this.communityGroup?.id) {
-        if (tx.isFrom(app.wallet.returnPublicKey())) {
-          console.log("Save My Sent Chat TX");
-          this.app.storage.saveTransaction(tx, { field3 : txmsg.group_id });
+    if (onchain){
+      if (this.app.BROWSER) {
+        if (txmsg.group_id !== this.communityGroup?.id) {
+          if (tx.isFrom(app.wallet.returnPublicKey())) {
+            console.log("Save My Sent Chat TX");
+            this.app.storage.saveTransaction(tx, { field3 : txmsg.group_id });
+          }
+        }
+      }else{
+        if (txmsg.group_id === this.communityGroup?.id) {
+          //console.log("Chat Server archive community chat");
+          this.app.storage.saveTransaction(tx, { field3 : txmsg.group_id }, "localhost");
         }
       }
     }
@@ -1360,6 +1368,42 @@ class Chat extends ModTemplate {
     this.app.connection.emit("chat-manager-render-request");
   }
 
+
+  getOlderTransactions(group_id){
+
+    let group = this.returnGroup(group_id);
+
+    if (!group) { return; }
+
+    let ts = new Date().getTime();
+
+    if (group.txs.length > 0) {
+      ts = group.txs[0].ts;
+    }
+
+    let chat_self = this;
+
+    this.app.storage.loadTransactions({ field3 : group.id, limit: 25, created_earlier_than: ts }, (txs) => {
+
+      console.log("Returned older messages");
+
+      if (!txs || txs.length < 25){
+        this.app.connection.emit("chat-remove-fetch-button-request", group_id);
+      }
+
+      if (txs) {
+        while (txs.length > 0) {
+          //Process the chat transaction like a new message
+          let tx = txs.pop();
+          tx.decryptMessage(chat_self.app);
+          chat_self.addTransactionToGroup(group, tx);
+          chat_self.app.connection.emit("chat-popup-render-request", group);
+        }
+      }
+
+    });
+  }
+
   ///////////////////
   // LOCAL STORAGE //
   ///////////////////
@@ -1413,6 +1457,7 @@ class Chat extends ModTemplate {
     let online_status = group.online;
 
     let new_group = Object.assign(group, {online: false});
+    new_group.txs = new_group.txs.slice(-30);
 
     localforage.setItem(`chat_${group.id}`, new_group).then(function () {
       if (chat_self.debug) {

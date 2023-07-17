@@ -377,6 +377,21 @@
   background-color: var(--saito-background-color);
 }
 
+
+.saito-chat-button {
+  cursor: pointer;
+  width: fit-content;
+  margin: auto;
+  padding: 4px;
+  color: var(--saito-font-color-light);
+  font-style: italic;
+}
+
+.saito-chat-button:hover {
+  font-style: unset;
+  color: var(--saito-font-color-heavy);
+}
+
 @media screen and (max-width: 768px) {
   .chat-container {
     margin: 0;
