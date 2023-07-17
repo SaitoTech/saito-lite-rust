@@ -2213,7 +2213,7 @@ console.log("\n\n\n\n");
       if (this.game.state.scenario == "1517") {
 
 	// VENICE AND PROTESTANT ALLIANCE
-	this.addMercenary("protestant", "venice", 3);
+	this.addMercenary("protestant", "modena", 3);
 	this.addRegular("papacy", "ravenna", 2);
 	this.setAllies("protestant", "venice");
   	this.addUnrest("graz");
