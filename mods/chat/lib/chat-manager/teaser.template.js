@@ -9,7 +9,6 @@ module.exports = ChatTeaser = (app, group) => {
   if (group.txs.length > 0) {
     let tx = group.txs[group.txs.length - 1];
     last_msg = (tx.msg.indexOf('<img') == 0) ? "<em>[image]</em>" : app.browser.sanitize(tx.msg);
-    console.log(last_msg);
     const regex = /<blockquote>.*<\/blockquote>/si;
     last_msg = last_msg.replace(regex, "<em>reply</em>: ").replace("<br>", "");
     const regex2 = /<a[^>]+>/i;
