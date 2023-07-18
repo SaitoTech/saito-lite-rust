@@ -91,6 +91,7 @@ class Arcade extends ModTemplate {
       // These are three overlays with event listeners that can function outside of the Arcade
       this.wizard = new GameWizard(app, this, null, {});
       this.game_selector = new GameSelector(app, this, {});
+      //We create this here so it can respond to events
       this.game_scheduler = new GameScheduler(app, this, {});
 
       // Necessary?
@@ -1787,16 +1788,17 @@ class Arcade extends ModTemplate {
       }
 
       let newtx = this.createOpenTransaction(gamedata);
-      this.app.network.propagateTransaction(newtx);
-      this.app.connection.emit("relay-send-message", {recipient: "PEERS", request: "arcade spv update", data: newtx.transaction});
-      this.addGame(newtx, gamedata.invitation_type);
-      this.app.connection.emit("arcade-invite-manager-render-request");
 
       if (gameType == "direct") {
         this.app.connection.emit("arcade-launch-game-scheduler", newtx);
-        this.app.connection.emit("relay-send-message", {recipient: options.desired_opponent_publickey, request: "arcade spv update", data: newtx.transaction});      
         return;
       }
+      
+      this.app.network.propagateTransaction(newtx);
+      this.app.connection.emit("relay-send-message", {recipient: "PEERS", request: "arcade spv update", data: newtx.transaction});
+      this.addGame(newtx, gamedata.invitation_type);
+      //Render game in my game list
+      this.app.connection.emit("arcade-invite-manager-render-request");
 
       if (gameType == "open") {
         if (this.app.browser.isMobileBrowser(navigator.userAgent) && 

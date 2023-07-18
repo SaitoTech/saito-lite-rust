@@ -7,7 +7,7 @@ module.exports = ChatManagerTemplate = (app, mod) => {
       <div class="refresh-contacts"><i class="fa-solid fa-rotate-right"></i></div>
       <div class="add-contacts"><i class="fa-solid fa-plus"></i></div>
     </div>
-    <div class="saito-list saito-white-background chat-manager-list">
+    <div class="chat-manager-list">
     </div>
   </div>`;
 
