@@ -126,8 +126,11 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 				} else {
 					html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">leave invite</div>`;
 				}
-			} else if (invite.empty_slots > 0 || invite.desired_opponent_publickeys.includes(app.wallet.returnPublicKey())) {
+			} else if (invite.empty_slots > 0){
 				html += `<div id="arcade-game-controls-join-game" class="saito-button saito-button-primary">join game</div>`;
+			} else if (invite.desired_opponent_publickeys.includes(app.wallet.returnPublicKey())) {
+				html += `<div id="arcade-game-controls-join-game" class="saito-button saito-button-primary">join game</div>
+								<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">decline invite</div>`;
 			}
 		}
 	} else if (invite.game_mod.enable_observer && invite?.step > 0) {

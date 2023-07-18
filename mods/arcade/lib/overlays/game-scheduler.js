@@ -38,7 +38,7 @@ class GameScheduler {
       this.app.network.propagateTransaction(scheduler_self.invite_tx);
       this.app.connection.emit("relay-send-message", {recipient: scheduler_self.invite_tx.msg.options.desired_opponent_publickey, request: "arcade spv update", data: scheduler_self.invite_tx.transaction});      
 
-      mod.addGame(scheduler_self.invite_tx, "open");
+      this.mod.addGame(scheduler_self.invite_tx, "open");
 
       //
       // create invite link from the game_sig
