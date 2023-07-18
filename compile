@@ -113,7 +113,6 @@ function reset_nonpersistent {
   rm -f ./data/appstore.sq3
   rm -f ./data/arcade.sq3
   rm -f ./data/records.sq3
-  rm -f ./data/archive.sq3
   rm -f ./data/timeclock.sq3
   rm -f ./data/earlybirds.sq3
   rm -f ./data/escrow.sq3
@@ -164,6 +163,7 @@ function reset_persistent {
 
 #  rm -f ./data/post.sq3
 #  rm -f ./data/arcade.sq3
+  rm -f ./data/archive.sq3
   rm -f ./data/registry.sq3
   rm -f ./data/league.sq3
   rm -f ./data/tutorial.sq3
