@@ -65,15 +65,14 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   
   <div class="settings-appspace">
 
-    <div class="redsquare-appspace-header">
-      <div class="redsquare-actions-buttons">
-        <div class="redsquare-actions-buttons-icon"></div>
-        <div id="redsquare-page-header-title" class="redsquare-page-header-title">SETTINGS</div>
-        <div class="redsquare-actions-container">
+    <div class="settings-appspace-header">
+      <div class="settings-actions-buttons">
+        <div class="settings-actions-container">
           <div class="saito-button-secondary small" id="restore-privatekey-btn">Import Key</div>
-          <div class="saito-button-secondary small"id="restore-account-btn">Restore Wallet</div>
-          <div class="saito-button-secondary small"id="backup-account-btn">Backup Wallet</div>
-          <div class="saito-button-secondary small"id="nuke-account-btn">Nuke Account</div>
+          <div class="saito-button-secondary small" id="restore-account-btn">Restore Wallet</div>
+          <div class="saito-button-secondary small" id="backup-account-btn">Backup Wallet</div>
+          <div class="saito-button-secondary small" id="nuke-account-btn">Nuke Account</div>
+          <div class="saito-button-secondary small" id="clear-storage-btn">Clear Local Cache</div>
         </div>
       </div>
     </div>

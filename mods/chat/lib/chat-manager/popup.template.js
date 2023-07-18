@@ -25,7 +25,10 @@ module.exports = (app, mod, group, isStatic = false) => {
           <i id="chat-container-close" class="chat-container-close fas fa-times"></i>
         </div>
 
-        <div class="chat-body">${mod.returnChatBody(group.id)}</div>
+        <div class="chat-body">
+          <div id="load-older-chats" class="saito-chat-button" data-id="${group.id}">fetch earlier messages</div>
+          ${mod.returnChatBody(group.id)}
+        </div>
 
         <div class="chat-footer">
           <i class="fa-regular fa-paper-plane chat-input-submit" id="chat-input-submit"></i>

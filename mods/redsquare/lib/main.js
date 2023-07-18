@@ -77,9 +77,10 @@ class RedSquareMain {
         console.log("Show new tweets");
         this.scoll_depth = 0;
         
-        setTimeout(()=> {this.app.connection.emit("redsquare-home-render-request", false);}, 5);
+        this.app.connection.emit("redsquare-home-render-request", false);
+        setTimeout(()=> {this.mod.saveLocalTweets();}, 1500);
       };
-      this.mod.saveLocalTweets();
+      
     });
 
     this.app.connection.on("redsquare-notifications-render-request", () => {

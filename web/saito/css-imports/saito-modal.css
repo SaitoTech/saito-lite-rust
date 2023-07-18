@@ -80,11 +80,16 @@ This alows for a header with a header with title to be added without extra CSS
   align-items: center;
   grid-gap: 1rem;
   grid-template-columns: 4rem 1fr;
+  cursor: pointer;
 }
 
-.saito-modal-menu-option:hover, .saito-contact:hover {
+.saito-modal-menu-option.disabled-option {
+  color: var(--saito-gray-mid);
+  cursor: default;
+}
+
+.saito-modal-menu-option:not(.disabled-option):hover, .saito-contact:hover {
   background-color: var(--saito-hover-background);
-  cursor: pointer;
 }
 
 .saito-modal-menu-option>i {
@@ -327,6 +332,10 @@ This alows for a header with a header with title to be added without extra CSS
   filter: drop-shadow(1px 1px 3px var(--saito-black));
 }
 
+/* Identicons aren't clickable in modals menus */
+.saito-modal-menu .saito-identicon-box {
+  cursor: default;
+}
 
 
 

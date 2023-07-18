@@ -30,6 +30,11 @@
   color: var(--saito-background-color);
 }
 
+/* We have a chat-manager click event on saito-user */ 
+.chat-manager-list .saito-user {
+  cursor: pointer;
+}
+
 /*  Chat / Popup  */
 
 /* Embedded chat container */ 
@@ -69,6 +74,7 @@
 .chat-popup {
   display: grid;
   grid-template-rows: 45px 1fr min-content;
+  grid-template-columns: 100%;
   align-items: center;
 }
 
@@ -375,6 +381,21 @@
 
 .chat-main-container .saito-sidebar.left {
   background-color: var(--saito-background-color);
+}
+
+
+.saito-chat-button {
+  cursor: pointer;
+  width: fit-content;
+  margin: auto;
+  padding: 4px;
+  color: var(--saito-font-color-light);
+  font-style: italic;
+}
+
+.saito-chat-button:hover {
+  font-style: unset;
+  color: var(--saito-font-color-heavy);
 }
 
 @media screen and (max-width: 768px) {

@@ -421,6 +421,11 @@ class RedSquare extends ModTemplate {
       for (let i = 0; i < this.peers.length; i++) {
         if (this.peers[i].peer == peer) {
           this.peers[i][field] = ts;
+
+          //Sanity check - so first intersection observer returns something
+          if (this.peers[i].tweets_earliest_ts > this.peers[i].tweets_latest_ts && this.peers[i].tweets_latest_ts > 0){
+            this.peers[i].tweets_earliest_ts = this.peers[i].tweets_latest_ts;
+          }
         }
       }
     } else {
@@ -533,7 +538,7 @@ class RedSquare extends ModTemplate {
       //
       // 7/7 -- let's try not excluding replies from the data pull -- the renderWithCriticalChild should keep things from looking too crazy on the main feed
       //
-      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND updated_at > ${time_cutoff} ORDER BY updated_at DESC`;
+      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND updated_at > ${time_cutoff} ORDER BY updated_at DESC LIMIT '${this.peers[i].tweets_limit}'`;
 
       this.loadTweetsFromPeer(peer, sql, (txs) => {
         let newTimeStamp = this.returnLatestTimeStamp();
@@ -1312,7 +1317,7 @@ class RedSquare extends ModTemplate {
     this.saveOptions();
 
     let tweet_txs = [];
-    let maximum = 20;
+    let maximum = 10;
     for (let tweet of this.tweets) {
       tweet.tx.optional.updated_at = tweet.updated_at;
       tweet_txs.push(tweet.tx.serialize_to_web(this.app));

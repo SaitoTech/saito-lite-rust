@@ -1,6 +1,5 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
 const UserMenu = require("./../../lib/saito/ui/modals/user-menu/user-menu");
-const MyUserMenu = require("./../../lib/saito/ui/modals/my-user-menu/my-user-menu");
 
 
 const HeaderDropdownTemplate = (dropdownmods) => {
@@ -279,15 +278,9 @@ class QRScanner extends ModTemplate {
     //
     if (this.app.crypto.isPublicKey(msg)) {
       this.stop();
-      if (this.app.wallet.returnPublicKey() === msg) {
-          let myUserMenu = new MyUserMenu(this.app, msg);
-          myUserMenu.render(this.app);
-    	  return;
-      } else {
-          let userMenu = new UserMenu(this.app, msg);
-          userMenu.render(this.app);
+      let userMenu = new UserMenu(this.app, msg);
+      userMenu.render(this.app);
   	  return;
-      }
     }
 
     //

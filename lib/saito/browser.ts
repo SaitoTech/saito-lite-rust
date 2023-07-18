@@ -9,7 +9,6 @@ var sanitizeHtml = require("sanitize-html");
 const linkifyHtml = require("markdown-linkify");
 const emoji = require("node-emoji");
 const UserMenu = require("./ui/modals/user-menu/user-menu");
-const MyUserMenu = require("./ui/modals/my-user-menu/my-user-menu");
 const Deposit = require('./ui/saito-crypto/overlays/deposit');
 const Withdraw = require('./ui/saito-crypto/overlays/withdraw');
 const History = require('./ui/saito-crypto/overlays/history');
@@ -267,16 +266,9 @@ class Browser {
           e.preventDefault();
           e.stopImmediatePropagation();
 
-//          if (publickey !== app.wallet.returnPublicKey()) {
+          let userMenu = new UserMenu(app, publickey);
+          userMenu.render(app);
 
-            let userMenu = new UserMenu(app, publickey);
-            userMenu.render(app);
-
-//          } else {
-//
-//            let myUserMenu = new MyUserMenu(app, publickey);
-//            myUserMenu.render(app);
-//          }
         }
       },
       {

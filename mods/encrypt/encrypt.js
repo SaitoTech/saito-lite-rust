@@ -18,6 +18,9 @@
  The keys as well as group members / shared keys are saved in the keychain class,
  where they are generally available for any Saito application to leverage.
 
+UPDATE 17-7-23: We had incomplete key exchanges that couldn't be rectified because on
+party would just return out instead of responding to a re-request.
+
  *********************************************************************************/
 var saito = require("../../lib/saito/saito");
 var ModTemplate = require("../../lib/templates/modtemplate");
@@ -47,7 +50,7 @@ class Encrypt extends ModTemplate {
 
     if (type == "user-menu") {
       if (obj?.publickey) {
-        if (this.app.keychain.alreadyHaveSharedSecret(obj.publickey) || obj.publickey == this.app.wallet.returnPublicKey()) {
+        if (this.app.keychain.hasSharedSecret(obj.publickey) || obj.publickey == this.app.wallet.returnPublicKey()) {
           return null;
         }
       }
@@ -84,10 +87,7 @@ class Encrypt extends ModTemplate {
       let receiver = tx.transaction.to[0].add;
       let txmsg = tx.returnMessage();
       let request = txmsg.request; // "request"
-      if (app.keychain.alreadyHaveSharedSecret(sender)) {
-        return;
-      }
-
+      
       //
       // key exchange requests
       //
@@ -106,11 +106,7 @@ class Encrypt extends ModTemplate {
       let receiver = tx.transaction.to[0].add;
       let txmsg = tx.returnMessage();
       let request = txmsg.request; // "request"
-      if (app.keychain.alreadyHaveSharedSecret(sender)) {
-        console.log("Already Have Shared Sectret");
-        return;
-      }
-
+      
       //
       // copied from onConfirmation
       //
@@ -318,10 +314,7 @@ class Encrypt extends ModTemplate {
         let receiver = tx.transaction.to[0].add;
         let txmsg = tx.returnMessage();
         let request = txmsg.request; // "request"
-        if (app.keychain.alreadyHaveSharedSecret(sender)) {
-          return;
-        }
-
+        
         //
         // key exchange requests
         //

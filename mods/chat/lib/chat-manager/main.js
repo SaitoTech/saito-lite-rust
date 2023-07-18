@@ -114,10 +114,9 @@ class ChatManager {
         if (Array.isArray(data.key)) {
           group = this.mod.returnOrCreateChatGroupFromMembers(data.key, data.name);
         } else {
-          let name = data.name || app.keychain.returnUsername(data.key);
           group = this.mod.returnOrCreateChatGroupFromMembers(
             [app.wallet.returnPublicKey(), data.key],
-            name
+            data.name
           );
         }
 

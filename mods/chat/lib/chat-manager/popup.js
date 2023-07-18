@@ -20,6 +20,17 @@ class ChatPopup {
     this.group = null;
 
     this.overlay = new SaitoOverlay(app, mod);
+
+    app.connection.on("chat-remove-fetch-button-request", (group_id) => {
+
+      if (this.group?.id === group_id){
+        console.log("Button remove request");
+        this.no_older_messages = true;
+        if (document.querySelector("#chat-popup-" + this.group.id + " #load-older-chats")){
+          document.querySelector("#chat-popup-" + this.group.id + " #load-older-chats").remove();
+        }
+      }
+    });
   }
 
   remove() {
@@ -80,7 +91,11 @@ class ChatPopup {
     // insert or replace popup on page
     //
     if (am_i_on_page == 1) {
-      this.app.browser.replaceElementBySelector(`<div class="chat-body">${this.mod.returnChatBody(this.group.id)}</div>`, popup_qs + " .chat-body");
+      let html = `<div class="chat-body">
+                    ${this?.no_older_messages ? "" : `<div id="load-older-chats" class="saito-chat-button" data-id="${this.group.id}">fetch earlier messages</div>`}
+                    ${this.mod.returnChatBody(this.group.id)}
+                  </div>`;
+      this.app.browser.replaceElementBySelector(html, popup_qs + " .chat-body");
     } else {
       if (this.container && document.querySelector(".chat-static")){
         this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group, this.container), ".chat-static");
@@ -207,6 +222,13 @@ class ChatPopup {
 
       });
     });
+
+
+    if (document.querySelector(popup_qs + " #load-older-chats")){
+      document.querySelector(popup_qs + " #load-older-chats").onclick = (e) => {
+        this.mod.getOlderTransactions(e.currentTarget.dataset.id); 
+      }
+    }
 
 
     try {
