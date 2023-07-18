@@ -7,6 +7,9 @@
       this.updateLog("<span>Europe:</span> " + total_vp + " <span>VP</span>");
       this.updateVictoryPoints();
 
+      // disable kissinger if in play - SAITO COMMUNITY
+      if (this.game.state.events.kissinger === "europe") { this.game.state.events.kissinger = ""; }
+
       // stats
       if (player == "us") { this.game.state.stats.us_scorings++; }
       if (player == "ussr") { this.game.state.stats.ussr_scorings++; }

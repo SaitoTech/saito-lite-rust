@@ -4,7 +4,7 @@
     //
     if (card == "antiapartheid") {
 
-      this.game.state.event.antiapartheid = 1;
+      this.game.state.events.antiapartheid = 1;
 
       var twilight_self = this;
 
@@ -15,45 +15,49 @@
 
         twilight_self.updateStatusWithOptions(`${twilight_self.cardToText(card)}: `,'<ul><li class="option" id="anywhere">2 Influence in Non-Battlegrounds</li><li class="option" id="african">2 Influence in African Battlegrounds</li></ul>', function(action2) {
 
-          let bgs = this.returnBattlegroundCountries();
+          let bgs = twilight_self.returnBattlegroundCountries();
           let targets = [];
 	  let us_troops = 0;
 
           if (action2 == "african") {
-            for (var i in this.countries) {
-	      if (this.countries[i].region == "africa" && bgs.includes(i)) {
-                us_troops += this.countries[i].us;
+            for (var i in twilight_self.countries) {
+	      if (twilight_self.countries[i].region == "africa" && bgs.includes(i)) {
+                if (twilight_self.countries[i].us > 0) {
+		  us_troops += twilight_self.countries[i].us;
+                  targets.push(i);
+                }
               }
             }
           }
 
           if (action2 == "anywhere") {
-            for (var i in this.countries) {
+            for (var i in twilight_self.countries) {
               if (!bgs.includes(i)) {
-                ustroops += this.countries[i].us;
-                targets.push(i);
+                if (twilight_self.countries[i].us > 0) {
+                  us_troops += twilight_self.countries[i].us;
+                  targets.push(i);
+                }
               }
             }
           }
 
-          if (ustroops == 0) {
-            this.updateLog("US has no influence in non-battleground countries");
-            this.endTurn();
+          if (us_troops == 0) {
+            twilight_self.updateLog("US has no influence in non-battleground countries");
+            twilight_self.endTurn();
 	    return 0;
           }
 
-          var twilight_self = this;
           twilight_self.playerFinishedPlacingInfluence();
 
           var ops_available = 0;
           for (let i = 0; i < targets.length; i++) {
             $("#"+targets[i]).addClass("easterneurope");
-            this.countries[targets[i]].place = 1;
+            twilight_self.countries[targets[i]].place = 1;
           }
 
           let ops_to_purge = Math.min(2, us_troops);
 
-          this.updateStatus("Remove"+ops_to_purge+" US influence");
+          twilight_self.updateStatus("Remove "+ops_to_purge+" US influence");
 
           $(".easterneurope").off();
           $(".easterneurope").on('click', function() {

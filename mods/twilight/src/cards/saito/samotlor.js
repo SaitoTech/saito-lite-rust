@@ -3,7 +3,7 @@
     // US may discard any number of cards and replace them with a new draw
     if (card == "samotlor") {
 
-      this.game.state.event.samotlor = 1;
+      this.game.state.events.samotlor = 1;
 
       if (this.game.player == 1) {
 
@@ -12,7 +12,7 @@
         var twilight_self = this;
         let cards_discarded = 0;
 
-        let user_message = `${this.cardToText(card)} -- Select cards to discard:`;
+        let user_message = `${this.cardToText(card)} -- select cards to discard:`;
         let cardList = [];
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           let card_in_hand = this.game.deck[0].hand[i];
