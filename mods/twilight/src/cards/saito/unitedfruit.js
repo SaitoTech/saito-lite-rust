@@ -1,7 +1,7 @@
 
-    if (card == "unitedfruitcompany") {
+    if (card == "unitedfruit") {
 
-      this.game.state.event.unitedfruitcompany = 1;
+      this.game.state.event.unitedfruit = 1;
 
       let ussrtroops = 0;
       for (var i in this.countries) {
@@ -20,7 +20,7 @@
 
         this.startClock();
 
-        this.addMove("resolve\tunitedfruitcompany");
+        this.addMove("resolve\tunitedfruit");
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
