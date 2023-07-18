@@ -5864,8 +5864,11 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     //
     // increase DEFCON by one
     //
-    this.game.state.defcon++;
-    if (this.game.state.defcon > 5) { this.game.state.defcon = 5; }
+    // SAITO COMMUNITY -- skip under tsar bomba
+    if (this.game.state.events.tsarbomba == 1) { this.game.state.events.tsarbomba = 0; } else {
+      this.game.state.defcon++;
+      if (this.game.state.defcon > 5) { this.game.state.defcon = 5; }
+    }
     this.game.state.ussr_milops = 0;
     this.game.state.us_milops = 0;
 
