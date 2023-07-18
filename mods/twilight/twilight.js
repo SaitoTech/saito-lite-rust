@@ -5864,8 +5864,11 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     //
     // increase DEFCON by one
     //
-    this.game.state.defcon++;
-    if (this.game.state.defcon > 5) { this.game.state.defcon = 5; }
+    // SAITO COMMUNITY -- skip under tsar bomba
+    if (this.game.state.events.tsarbomba == 1) { this.game.state.events.tsarbomba = 0; } else {
+      this.game.state.defcon++;
+      if (this.game.state.defcon > 5) { this.game.state.defcon = 5; }
+    }
     this.game.state.ussr_milops = 0;
     this.game.state.us_milops = 0;
 
@@ -8439,6 +8442,13 @@ console.log("SCORING: " + JSON.stringify(scoring));
   }
 
 
+
+
+
+
+
+
+
   // 
   // track events which are cancelled / cancellable dynamically 
   // 
@@ -8460,6 +8470,49 @@ console.log("SCORING: " + JSON.stringify(scoring));
         this.cancelEvent("wargames");
       } else {
         this.uncancelEvent("wargames");
+      }
+      // onesmallstep - if we are behind/ahead
+      if (this.game.player == 2) { 
+      	if (this.game.state.space_race_us >= this.game.state.space_race_ussr) {
+      	  this.cancelEvent("onesmallstep");
+              } else {
+      	  this.uncancelEvent("onesmallstep");
+      	}
+      } else {
+      	if (this.game.state.space_race_ussr >= this.game.state.space_race_us) {
+      	  this.cancelEvent("onesmallstep");
+              } else {
+      	  this.uncancelEvent("onesmallstep");
+      	}
+      }
+  }
+
+
+  /////////////////
+  // Play Events //
+  /////////////////
+  //
+  // the point of this function is either to execute events directly
+  // or permit the relevant player to translate them into actions
+  // that can be directly executed by UPDATE BOARD.
+  //
+  // this function returns 1 if we can continue, or 0 if we cannot
+  // in the handleGame loop managing the events / turns that are
+  // queued up to go.
+  //
+  playEvent(player, card) {
+
+    if (this.game.deck[0].cards[card] != undefined) {
+      this.updateStatus(`${player.toUpperCase()} triggers ${this.cardToText(card)}`);
+    } else {
+      console.log("sync loading error -- playEvent on card: " + card);
+      return 1;
+    }
+
+    
+    let i_played_the_card = (this.roles[this.game.player] == player);
+
+
 
     //
     // ABM Treaty
