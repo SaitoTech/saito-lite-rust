@@ -69,6 +69,7 @@
 .chat-popup {
   display: grid;
   grid-template-rows: 45px 1fr min-content;
+  grid-template-columns: 100%;
   align-items: center;
 }
 
