@@ -1,6 +1,8 @@
 var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/modtemplate');
 const SettingsAppspace = require('./lib/appspace/main');
+
+//Is this deprecated???
 const SettingsAppspaceSidebar = require('./lib/appspace-sidebar/main');
 const SettingsThemeSwitcherOverlay = require('./lib/theme-switcher-overlay');
 const localforage = require("localforage");
@@ -34,9 +36,9 @@ class Settings extends ModTemplate {
     // it will deactivate the button so you cannot reregister
     //
     this.app.connection.on("update_identifier", (publickey) => {
-      if (publickey === app.wallet.getPublicKey()) {
+      if (publickey === app.wallet.returnPublicKey()) {
         if (document.getElementById("register-identifier-btn")) {
-          let username = app.keychain.returnIdentifierByPublicKey(app.wallet.getPublicKey());
+          let username = app.keychain.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
           document.getElementById("register-identifier-btn").innerHTML = username;
           document.getElementById("register-identifier-btn").onclick = null;
         }
@@ -79,10 +81,10 @@ class Settings extends ModTemplate {
   respondTo(type = "") {
     if (type === 'saito-header') {      
       return [
-	      {
+        {
           text: "Scan",
           icon: "fas fa-expand",
-	        rank: 110 ,
+          rank: 110 ,
           callback: function (app, id) {
             app.connection.emit("scanner-start-scanner", {});
           }
@@ -96,15 +98,15 @@ class Settings extends ModTemplate {
              settings_self.renderInto(".saito-overlay");
           }
         },
-	      {
+        {
           text: "Nuke",
           icon: "fa-solid fa-radiation",
-	        rank: 130 ,
+          rank: 130 ,
           callback: function (app, id) {
-      	    app.keychain.keys = [];
-      	    app.keychain.groups = [];
-      	    app.keychain.saveKeys();
-      	    app.keychain.saveGroups();
+            app.keychain.keys = [];
+            app.keychain.groups = [];
+            app.keychain.saveKeys();
+            app.keychain.saveGroups();
             localforage.clear().then(function(){
               console.log("DB Reset Success");
               app.wallet.resetWallet();
@@ -129,5 +131,3 @@ class Settings extends ModTemplate {
 
 
 module.exports = Settings;
-
-

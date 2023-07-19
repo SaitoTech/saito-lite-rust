@@ -1,6 +1,6 @@
 const SettingsAppspaceTemplate = require("./main.template.js");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
-
+const localforage = require("localforage");
 const jsonTree = require("json-tree-viewer");
 
 class SettingsAppspace {
@@ -8,23 +8,26 @@ class SettingsAppspace {
     this.app = app;
     this.mod = mod;
     this.container = container;
-
+    this.privateKey = null;
     this.overlay = new SaitoOverlay(app, mod);
 
-    this.app.connection.on("settings-overlay-render-request", async () => {
+    this.app.connection.on("settings-overlay-render-request", () => {
       this.mod.attachStyleSheets();
-      await this.render();
+      this.render();
     });
   }
 
   async render() {
-    this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod));
+
+    this.privateKey = await this.app.wallet.getPrivateKey();
+    this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod, this));
 
     let settings_appspace = document.querySelector(".settings-appspace");
     if (settings_appspace) {
       for (let i = 0; i < this.app.modules.mods.length; i++) {
-        if ((await this.app.modules.mods[i].respondTo("settings-appspace")) != null) {
+        if (await this.app.modules.mods[i].respondTo("settings-appspace") != null) {
           let mod_settings_obj = await this.app.modules.mods[i].respondTo("settings-appspace");
+
           mod_settings_obj.render(this.app, this.mod);
         }
       }
@@ -33,6 +36,7 @@ class SettingsAppspace {
     //debug info
     let el = document.querySelector(".settings-appspace-debug-content");
 
+
     try {
       let optjson = JSON.parse(
         JSON.stringify(
@@ -40,6 +44,7 @@ class SettingsAppspace {
           (key, value) => (typeof value === "bigint" ? value.toString() : value) // return everything else unchanged
         )
       );
+
       var tree = jsonTree.create(optjson, el);
     } catch (err) {
       console.log("error creating jsonTree: " + err);
@@ -56,7 +61,7 @@ class SettingsAppspace {
       let settings_appspace = document.querySelector(".settings-appspace");
       if (settings_appspace) {
         for (let i = 0; i < app.modules.mods.length; i++) {
-          if ((await app.modules.mods[i].respondTo("settings-appspace")) != null) {
+          if (await app.modules.mods[i].respondTo("settings-appspace") != null) {
             let mod_settings_obj = await app.modules.mods[i].respondTo("settings-appspace");
             mod_settings_obj.attachEvents(app, mod);
           }
@@ -131,20 +136,35 @@ class SettingsAppspace {
         if (confirmation) {
           app.options.keys = [];
           app.options.groups = [];
-          await app.wallet.resetWallet();
-          app.modules.returnModule("Arcade").onResetWallet();
-          app.storage.resetOptions();
-
-          mod.emails.inbox = [];
-          mod.emails.sent = [];
-          mod.emails.trash = [];
-
-          mod.render(app, mod);
-          mod.attachEvents(app, mod);
-
-          await app.blockchain.resetBlockchain();
+          app.wallet.resetWallet();
         }
       };
+
+      if (document.getElementById("clear-storage-btn")) {
+        document.getElementById("clear-storage-btn").onclick = async (e) => {
+          let confirmation = await sconfirm(
+            "This will clear your browser's DB, proceed cautiously"
+          );
+          if (confirmation) {
+
+            localforage
+              .clear()
+              .then(function () {
+                console.log("Cleared LocalForage");
+              })
+              .catch(function (err) {
+                console.error(err);
+              });
+
+            let archive = this.app.modules.returnModule("Archive");
+            if (archive){
+              await archive.onWalletReset(true);
+            }
+
+
+          }
+        };
+      }
 
       Array.from(document.querySelectorAll(".settings-appspace .pubkey-containter")).forEach(
         (key) => {
@@ -171,16 +191,16 @@ class SettingsAppspace {
         try {
           privatekey = await sprompt("Enter Private Key:");
           if (privatekey != "") {
-            publickey = app.crypto.getPublicKey(privatekey);
+            publickey = app.crypto.returnPublicKey(privatekey);
 
-            app.wallet.privatekey = privatekey;
-            app.wallet.publickey = publickey;
-            app.wallet.inputs = [];
-            app.wallet.outputs = [];
-            app.wallet.spends = [];
-            app.wallet.pending = [];
+            app.wallet.wallet.privatekey = privatekey;
+            app.wallet.wallet.publickey = publickey;
+            app.wallet.wallet.inputs = [];
+            app.wallet.wallet.outputs = [];
+            app.wallet.wallet.spends = [];
+            app.wallet.wallet.pending = [];
 
-            await app.blockchain.resetBlockchain();
+            app.blockchain.resetBlockchain();
             await app.wallet.saveWallet();
             window.location = window.location;
           }

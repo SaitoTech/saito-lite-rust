@@ -38,4 +38,3 @@ class ThemeSwitcherOverlay {
 }
 
 module.exports = ThemeSwitcherOverlay;
-

@@ -1,6 +1,7 @@
-module.exports = SettingsAppspaceTemplate = (app) => {
+module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 
-  let key = app.keychain.returnKey({ publickey : app.wallet.getPublicKey()});
+  let publicKey = mod.publicKey;
+  let key = app.keychain.returnKey({ publickey : publicKey});
   let identifier_registered = key?.identifier || "";
 
   if (!identifier_registered) {
@@ -55,7 +56,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   app.modules.mods.forEach(mod => {
     if (mod.name == 'Balance') {
       balance_link = `
-        <a target="_blank" href="${window.location.origin + "/balance?address=" + app.wallet.getPublicKey()}">Check Recorded Balance</a>
+        <a target="_blank" href="${window.location.origin + "/balance?address=" + publicKey}">Check Recorded Balance</a>
       `;
     }
   });
@@ -65,15 +66,14 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   
   <div class="settings-appspace">
 
-    <div class="redsquare-appspace-header">
-      <div class="redsquare-actions-buttons">
-        <div class="redsquare-actions-buttons-icon"></div>
-        <div id="redsquare-page-header-title" class="redsquare-page-header-title">SETTINGS</div>
-        <div class="redsquare-actions-container">
+    <div class="settings-appspace-header">
+      <div class="settings-actions-buttons">
+        <div class="settings-actions-container">
           <div class="saito-button-secondary small" id="restore-privatekey-btn">Import Key</div>
-          <div class="saito-button-secondary small"id="restore-account-btn">Restore Wallet</div>
-          <div class="saito-button-secondary small"id="backup-account-btn">Backup Wallet</div>
-          <div class="saito-button-secondary small"id="nuke-account-btn">Nuke Account</div>
+          <div class="saito-button-secondary small" id="restore-account-btn">Restore Wallet</div>
+          <div class="saito-button-secondary small" id="backup-account-btn">Backup Wallet</div>
+          <div class="saito-button-secondary small" id="nuke-account-btn">Nuke Account</div>
+          <div class="saito-button-secondary small" id="clear-storage-btn">Clear Local Cache</div>
         </div>
       </div>
     </div>
@@ -86,13 +86,13 @@ module.exports = SettingsAppspaceTemplate = (app) => {
             <div>${identifier_registered}</div>
       
             <div>Public Key:</div>
-            <div class="pubkey-containter" data-id="${app.wallet.getPublicKey()}">
-              <span class="profile-public-key">${app.wallet.getPublicKey()}</span><i class="fas fa-copy" id="copy-public-key"></i>
+            <div class="pubkey-containter" data-id="${publicKey}">
+              <span class="profile-public-key">${publicKey}</span><i class="fas fa-copy" id="copy-public-key"></i>
             </div>
       
             <div>Private Key:</div>
-            <div class="pubkey-containter" data-id="${app.wallet.returnPrivateKey()}">
-              <span class="profile-public-key saito-password">${app.wallet.returnPrivateKey()}</span><i class="fas fa-copy" id="copy-private-key"></i>
+            <div class="pubkey-containter" data-id="${main.privateKey}">
+              <span class="profile-public-key saito-password">${main.privateKey}</span><i class="fas fa-copy" id="copy-private-key"></i>
             </div>
           </div>
         </div>
