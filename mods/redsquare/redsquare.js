@@ -1239,9 +1239,20 @@ class RedSquare extends ModTemplate {
     console.log(tx, "sending like transaction");
 
     let newtx = await redsquare_self.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+    // let peers = await app.network.getPeers();
+    // // console.log("peers ", peers);
+    // for (let i = 0; i < peers.length; i++) {
+    //   let slip = new Slip();
+    //   slip.publicKey = peers[i].publicKey;
+    //   slip.amount = BigInt(0);
+    //   newtx.addToSlip(slip);
+    // }
+
     for (let i = 0; i < tx.to.length; i++) {
       if (tx.to[i].publicKey !== this.publicKey) {
         let slip = new Slip();
+        slip.amount = BigInt(0);
         slip.publicKey = tx.to[i].publicKey;
         newtx.addToSlip(slip);
       }
@@ -1251,16 +1262,17 @@ class RedSquare extends ModTemplate {
     await newtx.sign();
     await redsquare_self.app.network.propagateTransaction(newtx);
 
-    redsquare_self.app.connection.emit("relay-send-message", {
-      recipient: "PEERS",
-      request: "like tweet",
-      data: newtx.msg,
-    });
+    // redsquare_self.app.connection.emit("relay-send-message", {
+    //   recipient: "PEERS",
+    //   request: "like tweet",
+    //   data: newtx.msg,
+    // });
 
     return newtx;
   }
 
-  async receiveLikeTransaction(blk, tx, conf, app) {
+  async receiveLikeTransaction(blk, tx, conf) {
+    let app = this.app;
     //
     // browsers
     //
@@ -1268,6 +1280,7 @@ class RedSquare extends ModTemplate {
       //
       // save my likes
       //
+      console.log(tx.to, "sent to");
       if (tx.isTo(app.wallet.publicKey)) {
         //console.log("Save (like) notification to archive");
 
@@ -1277,6 +1290,7 @@ class RedSquare extends ModTemplate {
         // save optional likes
         //
         let txmsg = tx.returnMessage();
+        console.log("txmsg in like", txmsg);
         if (this.tweets_sigs_hmap[txmsg.data.sig]) {
           let tweet = this.returnTweet(txmsg.data.sig);
           if (tweet == null) {
@@ -1343,7 +1357,8 @@ class RedSquare extends ModTemplate {
     return newtx;
   }
 
-  async receiveFlagTransaction(blk, tx, conf, app) {
+  async receiveFlagTransaction(blk, tx, conf) {
+    let app = this.app;
     //
     // browsers
     //

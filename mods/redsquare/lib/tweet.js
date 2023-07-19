@@ -658,7 +658,7 @@ class Tweet {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        this.mod.sendLikeTransaction(this.app, this.mod, { sig: this.tx.signature }, this.tx);
+        await this.mod.sendLikeTransaction(this.app, this.mod, { sig: this.tx.signature }, this.tx);
 
         //
         // increase num likes
