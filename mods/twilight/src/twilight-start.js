@@ -47,7 +47,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     //
     // ui components
@@ -594,7 +594,7 @@ initializeGame(game_id) {
       let p = Object.assign({}, m, o);
       let q = Object.assign({}, n, p);
       
-      this.game.queue.push("DECK\t1\t"+JSON.stringify(w));
+      this.game.queue.push("DECK\t1\t"+JSON.stringify(q));
 
     } else {
 
@@ -6806,6 +6806,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         if (key === "antiapartheid") { deck['antiapartheid']      = { img : "TNRnTS-214png" ,name : "Anti-Apartheid Movement", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 2 }; }
         if (key === "samotlor") { deck['samotlor']        	 = { img : "TNRnTS-215png" ,name : "Samotlor Oil Field", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 }; }
         if (key === "rustinredsquare") { deck['rustinredsquare'] = { img : "TNRnTS-203png" , name : "Rust Lands in Red Square", scoring : 0 , player : "us" , recurring : 0 , ops : 1 }; }
+        if (key === "revolutionsof1989") { deck['revolutionsof1989'] = { img : "TNRnTS-216png" , name : "Revolutions of 1989", scoring : 0 , player : "us" , recurring : 0 , ops : 4 }; }
 
         // END OF HISTORY
         if (key === "perestroika") { deck['perestroika']       = { img : "TNRnTS-305png" ,name : "Perestroika", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 }; }
