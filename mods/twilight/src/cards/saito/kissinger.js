@@ -1,12 +1,11 @@
 
-    if (card == "kissingerisawarcriminal") {
+    if (card == "kissinger") {
 
       let twilight_self = this;
 
       if (this.game.player == 1) {
         this.updateStatus("US playing Kissinger:");
         return 0;
-
       }
 
       let user_message = "Designate a region to turn all 1-stability countries into battleground countries:";
@@ -28,7 +27,8 @@
 	if (action2 == "samerica") { selreg = "South America"; }
 	if (action2 == "mideast") { selreg = "Middle East"; }
 
-        twilight_self.addMove("resolve\tkissingerisawarcriminal");
+        twilight_self.addMove("resolve\tkissinger");
+        twilight_self.addMove(`SETVAR\tstate\tevents\tkissinger\t${action2}`);
 
 	for (let i in twilight_self.countries) {
 	  if (twilight_self.countries[i].region.indexOf(action2) != -1 && twilight_self.countries[i].control == 1) {

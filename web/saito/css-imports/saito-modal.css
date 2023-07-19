@@ -13,6 +13,7 @@ This alows for a header with a header with title to be added without extra CSS
   padding: 2rem;
   display: grid;
   grid-template-rows: min-content auto;
+  max-height: 95vh;
 }
 
 
@@ -398,6 +399,7 @@ This alows for a header with a header with title to be added without extra CSS
   background-color: var(--saito-background-color);
   background-image: url(/saito/img/tiled-logo.svg);
   color: var(--saito-font-color);
+  grid-template-rows: min-content 1fr min-content;
 }
 
 .saito-contacts-list {
@@ -405,4 +407,5 @@ This alows for a header with a header with title to be added without extra CSS
   flex-direction: column;
   gap: 1rem;
   padding: 1rem 0;
+  height: 100%;
 }

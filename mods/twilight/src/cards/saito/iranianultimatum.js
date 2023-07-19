@@ -1,12 +1,13 @@
 
     if (card == "iranianultimatum") {
 
-      this.game.state.event.iranianultimatum = 1;
+      this.game.state.events.iranianultimatum = 1;
 
-      this.countries["iran"].us += 2;
+      this.placeInfluence("iran", 2, "us");
+
+      this.displayBoard();
       this.updateLog(`${this.cardToText(card)}: 2 US influence added to Iran`);
        
-
       let ussrtroops = 0;
       for (var i in this.countries) {
         if (this.countries[i].region == "mideast") {
@@ -14,7 +15,7 @@
         }
       }
 
-      if (ustroops == 0) {
+      if (ussrtroops == 0) {
         this.updateLog("USSR has no influence in the Middle-East");
         return 1;
       }
@@ -56,6 +57,8 @@
             twilight_self.playerFinishedPlacingInfluence();
             twilight_self.endTurn();
           }
+
+	  twilight_self.displayBoard();
         });
 
       }

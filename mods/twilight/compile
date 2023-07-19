@@ -11,6 +11,10 @@ for file in ./src/cards/core/*
 do
   cat $file >> ./twilight.js
 done
+for file in ./src/cards/saito/*
+do
+  cat $file >> ./twilight.js
+done
 for file in ./src/cards/community/*
 do
   cat $file >> ./twilight.js

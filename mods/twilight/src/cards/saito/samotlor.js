@@ -3,7 +3,7 @@
     // US may discard any number of cards and replace them with a new draw
     if (card == "samotlor") {
 
-      this.game.state.event.samotlor = 1;
+      this.game.state.events.samotlor = 1;
 
       if (this.game.player == 1) {
 
@@ -12,7 +12,7 @@
         var twilight_self = this;
         let cards_discarded = 0;
 
-        let user_message = `${this.cardToText(card)} -- Select cards to discard:`;
+        let user_message = `${this.cardToText(card)} -- select cards to discard:`;
         let cardList = [];
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           let card_in_hand = this.game.deck[0].hand[i];
@@ -21,6 +21,9 @@
 	      let mod_ops = this.modifyOps(3, "samotlor", "ussr", 0);
 	      let myspacerace = this.game.state.space_race_ussr;
 	      if ((myspacerace < 4 && mod_ops > 1) || (myspacerace < 7 && mod_ops > 2) || mod_ops > 3){
+		// cards we can space
+	      } else {
+		// everything else
                 cardList.push(card_in_hand);
 	      }
             }
@@ -32,6 +35,7 @@
           twilight_self.endTurn();
           return;
         }
+
 
         cardList.push("finished");
 
@@ -45,7 +49,7 @@
       	    // cards to deal first
       	    //
       	    let cards_to_deal_before_reshuffle = cards_discarded;
-	    
+
             if (cards_to_deal_before_reshuffle > twilight_self.game.deck[0].crypt.length) {
       	      cards_to_deal_before_reshuffle = twilight_self.game.deck[0].crypt.length;
       	      let cards_to_deal_after_reshuffle = cards_discarded - cards_to_deal_before_reshuffle;
@@ -84,7 +88,7 @@
               }
       	    }
 
-            twilight_self.addMove("DEAL\t1\t2\t"+cards_to_deal_before_reshuffle);
+            twilight_self.addMove("DEAL\t1\t1\t"+cards_to_deal_before_reshuffle);
             twilight_self.endTurn();
 
           } else {
