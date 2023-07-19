@@ -2,4 +2,20 @@
 .tweet-notification .tweet-body {
   min-height: 6rem;
 }
- 
+
+
+.new-tweets-notification {
+  position: fixed;
+  display: none;
+  top: calc(var(--saito-header-height) + 1rem);
+  left: 50%;
+  transform: translateX(-50%);
+  height: 6rem;
+  border-radius: 2rem;
+  padding: 2rem 1rem;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+}
+

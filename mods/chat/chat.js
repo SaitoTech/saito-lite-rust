@@ -11,7 +11,6 @@
 // const localforage = require("localforage");
 // const ChatMain = require("./lib/appspace/main");
 
-
 const SaitoUserTemplate = require("./../../lib/saito/ui/saito-user/saito-user.template.js");
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
@@ -23,7 +22,7 @@ const JSON = require("json-bigint");
 //const JsStore = require("jsstore");
 const Slip = require("../../lib/saito/slip").default;
 const Transaction = require("../../lib/saito/transaction").default;
-const localforage = require("localforage")
+const localforage = require("localforage");
 const PeerService = require("saito-js/lib/peer_service").default;
 
 class Chat extends ModTemplate {
@@ -81,7 +80,7 @@ class Chat extends ModTemplate {
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
 
-//    this.styles = ["/saito/saito.css", "/chat/style.css"];
+    //    this.styles = ["/saito/saito.css", "/chat/style.css"];
 
     this.theme_options = {
       lite: "fa-solid fa-sun",
@@ -199,14 +198,12 @@ class Chat extends ModTemplate {
     this.chat_manager.render_manager_to_screen = 1;
     this.chat_manager.render_popups_to_screen = 0;
 
-
     console.log("i am going to render it //////");
 
     await super.render();
   }
 
   async onPeerServiceUp(app, peer, service = {}) {
-
     let chat_self = this;
 
     if (service.service === "relay") {
@@ -633,7 +630,6 @@ class Chat extends ModTemplate {
     let peers = await app.network.getPeers();
 
     if (peers.length > 0) {
-
       let recipient = peers[0].publicKey;
       for (let i = 0; i < peers.length; i++) {
         if (peers[i].hasService("chat")) {
@@ -655,7 +651,6 @@ class Chat extends ModTemplate {
 
   async createChatTransaction(group_id, msg = "") {
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-
 
     console.log("new chat tx");
     console.log(newtx);
@@ -713,7 +708,6 @@ class Chat extends ModTemplate {
    * So we make sure here it is actually for us (otherwise will be encrypted gobbledygook)
    */
   async receiveChatTransaction(app, tx) {
-
     console.log("receiveChatTransaction ///");
     console.log(tx);
 
@@ -800,7 +794,6 @@ class Chat extends ModTemplate {
         return;
       }
     }
-
 
     // console.log("adding tx to group /////");
     // console.log(tx);

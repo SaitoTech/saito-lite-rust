@@ -15,18 +15,10 @@ class RedSquareLink {
     this.description = "";
 
     if (this.tweet.link_properties) {
-      if (this.tweet.link_properties['og:image']) {
-        this.src = this.tweet.link_properties['og:image'];
-      }
-      if (this.tweet.link_properties['og:url']) {
-        this.url = this.tweet.link_properties['og:url'];
-      }
-      if (this.tweet.link_properties['og:title']) {
-        this.title = this.tweet.link_properties['og:title'];
-      }
-      if (this.tweet.link_properties['og:description']) {
-        this.description = this.tweet.link_properties['og:description'];
-      }
+      if (this.tweet.link_properties['og:image']) { this.src = this.tweet.link_properties['og:image']; }
+      if (this.tweet.link_properties['og:url']) { this.url = this.tweet.link_properties['og:url']; }
+      if (this.tweet.link_properties['og:title']) { this.title = this.tweet.link_properties['og:title']; }
+      if (this.tweet.link_properties['og:description']) { this.description = this.tweet.link_properties['og:description']; }
     }
 
     if (this.url == "") {
@@ -42,7 +34,7 @@ class RedSquareLink {
     //
     if (typeof this.tweet.link != "undefined") {
 
-      let qs = ".tweet-" + this.tweet.tx.signature + " > .tweet-body .tweet-main .tweet-preview";
+      let qs = this.container + " > .link-preview";
 
       if (document.querySelector(qs)) {
         this.app.browser.replaceElementBySelector(RedSquareLinkTemplate(this), qs);
@@ -52,7 +44,8 @@ class RedSquareLink {
 
       this.attachEvents();
     }
-  }
+  }  
+
 
 
   attachEvents() {

@@ -2,34 +2,16 @@
 
 module.exports = (app, mod, tweet) => {
   let optional = tweet.tx.optional;
-  let notice = "";
-  if (tweet.notice != "") {
-    notice = tweet.notice;
+  let notice = tweet?.notice || "";
+  let text = tweet?.text || "";
+
+  if (!text && !notice && tweet.retweet_tx) {
+    notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.from[0].add);
   }
 
-  let publickey = "";
-  try {
-    if (tweet.tx.from[0].publicKey) {
-      publickey = tweet.tx.from[0].publicKey;
-    }
-  } catch (err) {}
-  let text = tweet.text || "";
-
-  if (text == "" && tweet.retweet_tx != null && tweet.retweet_tx != "" && notice == "") {
-    //
-    // set notice
-    //
-    notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.from[0].publicKey);
-  }
-
-  let flagged = optional.flagged || null;
-  let link_properties = optional.link_properties || null;
   let num_likes = optional.num_likes || 0;
   let num_replies = optional.num_replies || 0;
   let num_retweets = optional.num_retweets || 0;
-  let parent_id = optional.parent_id || "";
-  let show_controls = tweet.show_controls;
-  let sig_class = "tweet-" + tweet.tx.signature;
 
   let controls = `
               <div class="tweet-controls">
@@ -39,7 +21,7 @@ module.exports = (app, mod, tweet) => {
                 <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">${num_retweets}</span>
                   <i class="fa fa-repeat"></i>
                 </div>
-                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">${num_likes}</span> <div class="tweet-like-button">
+                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count">${num_likes}</span> <div class="tweet-like-button">
                 <div class="heart-bg">
                   <div class="heart-icon"></div>
                 </div>
@@ -51,28 +33,26 @@ module.exports = (app, mod, tweet) => {
               </div>`;
 
   let html = `
-        <div class="tweet ${sig_class}" data-id="${tweet.tx.signature}">
+        <div class="tweet tweet-${tweet.tx.signature}" data-id="${tweet.tx.signature}">
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header"></div>
           <div class="tweet-body">
             <div class="tweet-sidebar">
             </div>
             <div class="tweet-main">
-              <div class="tweet-text">${app.browser.sanitize(text)}</div>
-  `;
+              <div class="tweet-text">${app.browser.sanitize(text)}</div>`;
+
   if (tweet.youtube_id != null && tweet.youtube_id != "null") {
-    html += `
-      <iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>
-    `;
+    html += `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>`;
   } else {
-    html += `
-              <div class="tweet-preview tweet-preview-${tweet.tx.signature}">
-              </div>
-    `;
+    html += `<div class="tweet-preview tweet-preview-${tweet.tx.signature}"></div>`;
   }
-  html += `
-              ${show_controls ? controls : ``}
-            </div>
+
+  if (tweet?.show_controls) {
+    html += controls;
+  }
+
+  html += `</div>
           </div>
         </div>
   `;

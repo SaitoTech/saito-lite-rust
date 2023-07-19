@@ -1,22 +1,17 @@
-module.exports = (app, mod, tx, txmsg) => {
+module.exports = (app, mod, tx) => {
+  let txmsg = tx.returnMessage();
 
-    let txsig = "";
-    let tweet_to_show = txmsg.data.text;
-    if (txmsg.data?.parent_id) { txsig = txmsg.data.parent_id; }
-
-    return `
-        <div class="tweet tweet-notification notification-item-${tx.signature} tweet-notif-reply-${txsig}" data-id="${txsig}">
+  return `
+        <div class="tweet tweet-notification notification-item-${tx.signature}" data-id="${tx.signature}">
           <div class="tweet-notice"></div>
-          <div class="tweet-header">
-          </div>
+          <div class="tweet-header"></div>
           <div class="tweet-body">
-            <div class="tweet-sidebar">
-            </div>
+            <div class="tweet-sidebar"></div>
             <div class="tweet-main">
-              <div class="notification-tweet" id="tweet-${tx.signature}" data-id="${tx.signature}">${tweet_to_show}</div>
+              <div class="notification-tweet" id="tweet-${tx.signature}">${txmsg.data.text}</div>
+              <div class="tweet-preview"></div>
             </div>
           </div>
         </div>
     `;
-
-}
+};

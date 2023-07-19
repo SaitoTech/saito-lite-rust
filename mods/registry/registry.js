@@ -57,7 +57,7 @@ class Registry extends ModTemplate {
                 //
 
                 // save if locally stored
-                if (this.app.keychain.hasPublicKey(key)) {
+                if (this.app.keychain.returnKey(key)) {
                   this.app.keychain.addKey({ publickey: key, identifier: value });
                 }
 

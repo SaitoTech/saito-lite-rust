@@ -237,6 +237,8 @@ class Archive extends ModTemplate {
       optional = tx.optional;
     }
 
+    console.log(tx, "tx", typeof tx);
+
     //console.log("TXS to: " + tx.transaction.to.length);
 
     for (let i = 0; i < tx.to.length; i++) {
@@ -287,6 +289,7 @@ class Archive extends ModTemplate {
       return;
     }
 
+    console.log("archive transaction", tx, typeof tx);
     let sql = "";
     let params = {};
     let optional = {};
