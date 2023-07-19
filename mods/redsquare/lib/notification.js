@@ -28,6 +28,7 @@ class RedSquareNotification {
       // notification, we can make a peer DB request to try to find it
       //
       this.mod.loadTweetWithSig(txmsg.data.sig, (tweet_tx) => {
+        console.log(this.tx, "loadTweetWithSig");
         if (!tweet_tx) {
           console.log("Notification for unknown tweet");
           return null;

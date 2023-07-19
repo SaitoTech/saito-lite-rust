@@ -287,6 +287,7 @@ class Archive extends ModTemplate {
       return;
     }
 
+    console.log("archive transaction", tx, tx.to);
     let sql = "";
     let params = {};
     let optional = {};

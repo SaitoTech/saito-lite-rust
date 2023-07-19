@@ -1040,18 +1040,10 @@ class RedSquare extends ModTemplate {
 
               tweet.tx.optional.num_replies++;
 
-              this.app.storage.updateTransaction(
-                tweet.tx,
-                { owner: this.publicKey, field3: this.publicKey },
-                "localhost"
-              );
+              this.app.storage.updateTransaction(tweet.tx);
               tweet.renderReplies();
             } else {
-              this.app.storage.updateTransaction(
-                tweet.tx,
-                { owner: this.publicKey, field3: this.publicKey },
-                "localhost"
-              );
+              this.app.storage.updateTransaction(tweet.tx);
             }
           }
 
@@ -1075,18 +1067,10 @@ class RedSquare extends ModTemplate {
                 tweet2.tx.optional.num_retweets = 0;
               }
               tweet2.tx.optional.num_retweets++;
-              this.app.storage.updateTransaction(
-                tweet2.tx,
-                { owner: this.publicKey, field3: this.publicKey },
-                "localhost"
-              );
+              this.app.storage.updateTransaction(tweet2.tx);
               tweet2.renderRetweets();
             } else {
-              this.app.storage.updateTransaction(
-                tweet2.tx,
-                { owner: this.publicKey, field3: this.publicKey },
-                "localhost"
-              );
+              // this.app.storage.updateTransaction(tweet2.tx);
             }
           }
         }
@@ -1176,7 +1160,7 @@ class RedSquare extends ModTemplate {
         $parent_id: tweet.tx.optional.parent_id,
         $type: type_of_tweet,
         $thread_id: tweet.tx.optional.thread_id || tx.signature,
-        $publickey: tx.from[0].add,
+        $publickey: tx.from[0].publicKey,
         $link: tweet.link,
         $link_properties: JSON.stringify(tweet.tx.optional.link_properties),
         $has_images: has_images,
@@ -1304,7 +1288,7 @@ class RedSquare extends ModTemplate {
             liked_tx.optional.num_likes = 0;
           }
           liked_tx.optional.num_likes++;
-          this.app.storage.updateTransaction(tx, { owner: this.publicKey });
+          this.app.storage.updateTransaction(tx);
           tweet.renderLikes();
         }
       }
@@ -1745,7 +1729,7 @@ class RedSquare extends ModTemplate {
               let tx = new Transaction(undefined, rows[i].tx);
               let txmsg = tx.returnMessage();
               let text = txmsg.data.text;
-              let publickey = tx.transaction.from[0].publicKey;
+              let publickey = tx.from[0].publicKey;
               let user = app.keychain.returnIdentifierByPublicKey(publickey, true);
 
               redsquare_self.social.twitter_description = text;
@@ -1790,7 +1774,7 @@ class RedSquare extends ModTemplate {
                 let base64Data = img_uri.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
                 let img = Buffer.from(base64Data, "base64");
               } else {
-                let publickey = tx.transaction.from[0].publicKey;
+                let publickey = tx.from[0].publicKey;
                 let img_uri = app.keychain.returnIdenticon(publickey, "png");
                 let base64Data = img_uri.replace(/^data:image\/png;base64,/, "");
                 let img = Buffer.from(base64Data, "base64");
