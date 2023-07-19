@@ -1,5 +1,10 @@
 
     if (card == "liberation") {
+   
+      //
+      // SAITO COMMUNITY - united fruit company removed
+      //
+      if (!this.saito_cards_removed.includes("unitedfruit")) { this.saito_cards_removed.push("unitedfruit"); }
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on

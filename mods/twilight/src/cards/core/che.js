@@ -4,7 +4,13 @@
     // Che
     //
     if (card == "che") {
-      
+    
+      //
+      // SAITO COMMUNITY - united fruit company removed
+      //
+      if (!this.saito_cards_removed.includes("unitedfruit")) { this.saito_cards_removed.push("unitedfruit"); }
+
+     
       let twilight_self = this;
       let valid_targets = 0;
       let couppower = 3;

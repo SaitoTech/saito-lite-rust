@@ -9,37 +9,25 @@ module.exports = () => {
             <label for="deck">Deck:</label>
             <select name="deck" id="deckselect" onchange='
         if ($("#deckselect").val() == "saito") { 
-    $(".saito_edition").prop("checked",true); 
-    $(".endofhistory_edition").prop("checked", false); 
+          $(".saito_edition").prop("checked",true); 
+          $(".endofhistory_edition").prop("checked", false); 
         } else { 
-    $(".saito_edition").prop("checked", false); 
+          $(".saito_edition").prop("checked", false); 
           if ($("#deckselect").val() == "optional") { 
-      $(".optional_edition").prop("checked", false); 
-    } else { 
-      $(".optional_edition").prop("checked", true); 
-      if ($("#deckselect").val() == "endofhistory") { 
-        $(".endofhistory_edition").prop("checked",true); 
-        $(".optional_edition").prop("checked", false);
-      } else {
-        if ($("#deckselect").val() == "coldwarcrazies") { 
-          $(".coldwarcrazies_edition").prop("checked",true); 
-          $(".optional_edition").prop("checked", false);
-        } else {
-          if ($("#deckselect").val() == "absurdum") { 
-            $(".absurdum_edition").prop("checked",true); 
-            $(".optional_edition").prop("checked",true);
+            $(".optional_edition").prop("checked", false); 
+          } else { 
+            $(".optional").prop("checked", true); 
+            if ($("#deckselect").val() == "endofhistory") { 
+              $(".endofhistory_edition").prop("checked",true); 
+              $(".optional_edition").prop("checked", false);
+            }
           }
-        }
-      }
-    }
         } '>
             <option value="original">original</option>
-              <option value="optional" selected>optional</option>
-              <option value="late-war">late war</option>
-              <option value="saito">saito edition</option>
-              <option value="absurdum">twilight absurdum</option>
-              <option value="endofhistory">end of history</option>
-              <option value="coldwarcrazies">cold war crazies</option>
+              <option class="optional" value="optional" selected>optional</option>
+              <option class="late-war" value="late-war">late war</option>
+              <option class="saito" value="saito">saito edition</option>
+              <option class="endofhistory" value="endofhistory">end of history</option>
             </select>
 
             <label for="usbonus">US bonus: </label>
@@ -99,7 +87,7 @@ module.exports = () => {
               <li><input class="remove_card" type="checkbox" name="degaulle" /> <span> De Gaulle Leads France</span></li>
               <li><input class="remove_card" type="checkbox" name="naziscientist" /> <span> Nazi Scientists Captured</span></li>
               <li><input class="remove_card" type="checkbox" name="truman" /> <span> Truman</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="olympic" /> <span> Olympic Games</span></li>
+              <li><input class="remove_card" type="checkbox" name="olympic" /> <span> Olympic Games</span></li>
               <li><input class="remove_card" type="checkbox" name="nato" /> <span> NATO</span></li>
               <li><input class="remove_card" type="checkbox" name="indreds" /> <span> Independent Reds</span></li>
               <li><input class="remove_card" type="checkbox" name="marshall" /> <span> Marshall Plan</span></li>
@@ -198,12 +186,22 @@ module.exports = () => {
 
             <div class="list-header">add cards:</div>
             <ul id="removecards" class="removecards">
-              <li><input class="remove_card saito_edition" type="checkbox" name="culturaldiplomacy" /> <span> Cultural Diplomacy (Early-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="iranianultimatum" /> <span> Iranian Ultimatum (Early-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="tsarbomba" /> <span> Tsar Bomba (Early-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="unitedfruit" /> <span> United Fruit Company (Early-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="berlinagreement" /> <span> Berlin Agreement (Mid-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="carterdoctrine" /> <span> Carter Doctrine (Mid-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="energycrisis" /> <span> Energy Crisis (Mid-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="nixonshock" /> <span> Nixon Shock (Mid-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="kissinger" /> <span> Kissinger Bombs Cambodia (Mid-War)</span></li>
               <li><input class="remove_card saito_edition" type="checkbox" name="handshake" /> <span> Handshake in Space (Mid-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="revolutionsof1989" /> <span> Revolutions of 1989 (Late-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="samotlor" /> <span> Samotlor Oil Fields (Late-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="antiapartheid" /> <span> Anti-Apartheid Movement (Late-War)</span></li>
               <li><input class="remove_card saito_edition" type="checkbox" name="rustinredsquare" /> <span> Rust Lands in Red Square (Late-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="culturaldiplomacy" /> <span> Cultural Diplomacy (Early-War)</span></li>
               <li><input class="remove_card" type="checkbox" name="gouzenkoaffair" /> <span> Gouzenko Affair (Early-War)</span></li>
               <li><input class="remove_card" type="checkbox" name="poliovaccine" /> <span> Polio Vaccine (Early-War)</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="berlinagreement" /> <span> 1971 Berlin Agreement (Mid-War)</span></li>
               <li><input class="remove_card endofhistory_edition" type="checkbox" name="peronism" /> <span> Peronism (Early-War)</span></li>
               <li><input class="remove_card endofhistory_edition" type="checkbox" name="manwhosavedtheworld" /> <span> The Man Who Saved the World (Mid-War)</span></li>
               <li><input class="remove_card endofhistory_edition" type="checkbox" name="breakthroughatlopnor" /> <span> Breakthrough at Lop Nor (Mid-War)</span></li>

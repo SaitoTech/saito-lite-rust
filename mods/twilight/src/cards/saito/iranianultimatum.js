@@ -3,7 +3,8 @@
 
       this.game.state.events.iranianultimatum = 1;
 
-      this.countries["iran"].us += 2;
+      this.placeInfluence("iran", 2, "us");
+
       this.displayBoard();
       this.updateLog(`${this.cardToText(card)}: 2 US influence added to Iran`);
        

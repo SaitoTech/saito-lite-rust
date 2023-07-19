@@ -1,6 +1,9 @@
 
     if (card == "marshall") {
 
+      // SAITO COMMUNITY
+      if (!this.saito_cards_added.includes("nato")) { this.saito_cards_added.push("nato"); }
+
       this.game.state.events.marshall = 1;
       var twilight_self = this;
 
