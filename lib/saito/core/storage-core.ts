@@ -262,6 +262,9 @@ class StorageCore extends Storage {
       try {
         optionsfile = fs.readFileSync(`${this.config_dir}/options`, this.file_encoding_load);
         this.app.options = Object.assign(this.app.options, JSON.parse(optionsfile.toString()));
+
+        this.convertOptionsBigInt(this.app.options);
+
         this.app.options.browser_mode = false;
         this.app.options.spv_mode = false;
       } catch (err) {
@@ -424,7 +427,7 @@ class StorageCore extends Storage {
     t.peers = [];
     t.services = this.app.options.services;
     t.dns = [];
-    t.blockchain = {};
+    t.blockchain = this.app.options.blockchain;
     t.registry = this.app.options.registry;
     t.appstore = {};
     t.appstore.default = await this.app.wallet.getPublicKey();
@@ -464,7 +467,7 @@ class StorageCore extends Storage {
     t.services = this.app.options.services;
     t.dns = [];
     t.runtime = this.app.options.runtime;
-    t.blockchain = {};
+    t.blockchain = this.app.options.blockchain;
     t.wallet = {};
     t.registry = this.app.options.registry;
     //t.appstore             = {};
