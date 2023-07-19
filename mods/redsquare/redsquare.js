@@ -1410,7 +1410,7 @@ class RedSquare extends ModTemplate {
           if (this.tweets) {
             console.log("Using Server Cached Tweets");
             for (let z = 0; z < this.tweets.length; z++) {
-              let newtx = new Transaction.deserialize(this.tweets[z], new Factory());
+              let newtx = Transaction.deserialize(this.tweets[z], new Factory());
 
               this.addTweet(newtx);
             }
