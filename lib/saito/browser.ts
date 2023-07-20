@@ -12,7 +12,7 @@ const UserMenu = require("./ui/modals/user-menu/user-menu");
 const Deposit = require('./ui/saito-crypto/overlays/deposit');
 const Withdraw = require('./ui/saito-crypto/overlays/withdraw');
 const History = require('./ui/saito-crypto/overlays/history');
-
+const debounce = require("lodash/debounce");
 
 class Browser {
   public app: any;
@@ -226,6 +226,15 @@ class Browser {
       //}
 
       this.browser_active = 1;
+
+      const updateViewHeight = () => {
+          let vh = window.innerHeight * 0.01;
+          document.documentElement.style.setProperty("--saito-vh", `${vh}px`)
+      }
+
+      window.addEventListener("resize", debounce(updateViewHeight, 200));
+
+
     } catch (err) {
       if (err == "ReferenceError: document is not defined") {
         console.log("non-browser detected: " + err);

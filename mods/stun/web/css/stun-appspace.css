@@ -129,6 +129,7 @@
 
 .stunx-appspace-splash p {
   color: white;
+  height: 2rem; /* for some reason it scrolls if you don't set a height */
 }
 
 .stunx-appspace-join .saito-button-secondary {

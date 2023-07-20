@@ -32,6 +32,7 @@ font imports
 }
 
 :root {
+  --saito-vh: 1vh;
   --saito-font: "visuelt-light";
   --saito-header-height: 5em;
   --saito-width: 1250px;
