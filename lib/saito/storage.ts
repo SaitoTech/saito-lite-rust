@@ -114,9 +114,8 @@ export default class Storage {
   async loadOptions() {
     console.log("loading options");
     const data = localStorage.getItem("options");
-    if (data != "null" && data != null) {
+    if (data) {
       this.app.options = JSON.parse(data);
-      // console.log("loaded from local storage", this.app.options);
     } else {
       try {
         console.log("fetching options from server...");
@@ -131,13 +130,31 @@ export default class Storage {
           this.app.options.spv_mode = false;
           this.app.options.browser_mode = false;
         }
+
         console.log("options loaded : ", this.app.options);
         this.saveOptions();
       } catch (err) {
         console.error(err);
       }
     }
+    this.convertOptionsBigInt(this.app.options);
     return this.app.options;
+  }
+
+  convertOptionsBigInt(options: any) {
+    console.log("options for conversion : ", options);
+    if (options.blockchain) {
+      // options.blockchain.last_block_id = BigInt(options.blockchain.last_block_id);
+      // options.blockchain.last_timestamp = BigInt(options.blockchain.last_timestamp);
+      // options.blockchain.genesis_block_id = BigInt(options.blockchain.genesis_block_id);
+      // options.blockchain.genesis_timestamp = BigInt(options.blockchain.genesis_timestamp);
+      // options.blockchain.lowest_acceptable_timestamp = BigInt(
+      //   options.blockchain.lowest_acceptable_timestamp
+      // );
+      // options.blockchain.lowest_acceptable_block_id = BigInt(
+      //   options.blockchain.lowest_acceptable_block_id
+      // );
+    }
   }
 
   async queryDatabase(sql, params, database) {}

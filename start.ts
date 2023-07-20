@@ -4,10 +4,11 @@ import { Saito } from "./apps/core";
 import S, { initialize as initS } from "saito-js/index.node";
 import mods_config from "./config/modules.config";
 import process from "process";
-// import configs from "./config/options";
 import Factory from "./lib/saito/factory";
 import Wallet from "./lib/saito/wallet";
 import Blockchain from "./lib/saito/blockchain";
+
+// import Config from "saito-js/lib/config";
 
 async function initSaito() {
   const app = new Saito({
@@ -21,19 +22,13 @@ async function initSaito() {
   app.BROWSER = 0;
   app.SPVMODE = 0;
 
-  //
   // set basedir
-  //
   global.__webdir = __dirname + "/lib/saito/web/";
 
   await app.storage.initialize();
 
-  await initS(
-    await app.storage.loadOptions(),
-    new NodeSharedMethods(app),
-    new Factory(),
-    app.options.wallet?.privateKey || ""
-  ).then(() => {
+  let privateKey = app.options.wallet?.privateKey || "";
+  await initS(app.options, new NodeSharedMethods(app), new Factory(), privateKey).then(() => {
     console.log("saito wasm lib initialized");
   });
 

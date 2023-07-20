@@ -79,12 +79,12 @@ export class NodeSharedMethods extends CustomSharedMethods {
     }
   }
 
-  readValue(key: string): Uint8Array | null {
+  readValue(key: string): Uint8Array {
     try {
       return fs.readFileSync(key);
     } catch (error) {
       console.error(error);
-      return null;
+      return new Uint8Array();
     }
   }
 

@@ -13,6 +13,7 @@ import Storage from "../../lib/saito/storage";
 import Network from "../../lib/saito/network";
 
 import hash_loader from "./hash-loader";
+// import Config from "saito-js/lib/config";
 
 const path = require("path");
 
@@ -20,7 +21,7 @@ class Saito {
   BROWSER: number;
   SPVMODE: number;
   options: any = {};
-  config: any = {};
+  // config: any = {};
   modules: Mods;
   binary: Binary;
   crypto: Crypto;
@@ -39,7 +40,7 @@ class Saito {
     this.BROWSER = 1;
     this.SPVMODE = 0;
     this.options = config;
-    this.config = {};
+    // this.config = new Config();
 
     this.newSaito();
 
@@ -86,15 +87,11 @@ class Saito {
         return x;
       });
 
-      //
       // browser sets active module
-      //
       await this.browser.initialize(this);
       await this.modules.initialize();
 
-      //
       // blockchain after modules create dbs
-      //
       await this.blockchain.initialize();
       this.network.initialize();
 

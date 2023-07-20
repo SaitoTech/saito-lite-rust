@@ -303,7 +303,7 @@ export default class Wallet extends SaitoWallet {
     // this.instance.publickey = await S.getInstance().getPublicKey();
 
     if (this.app.options.blockchain) {
-      this.app.blockchain.resetBlockchain();
+      await this.app.blockchain.resetBlockchain();
     }
 
     // keychain
@@ -547,7 +547,7 @@ export default class Wallet extends SaitoWallet {
     // only send if hasn't been sent before
     console.log(
       "does preferred crypto transaction exist: " +
-      this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
+        this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
     );
     console.log("unique hash: " + unique_hash);
     console.log("uuid: " + getUuid(unique_hash));
@@ -758,10 +758,10 @@ export default class Wallet extends SaitoWallet {
     return this.app.crypto.hash(
       Buffer.from(
         JSON.stringify(senders) +
-        JSON.stringify(receivers) +
-        JSON.stringify(amounts) +
-        unique_hash +
-        ticker,
+          JSON.stringify(receivers) +
+          JSON.stringify(amounts) +
+          unique_hash +
+          ticker,
         "utf-8"
       )
     );
@@ -882,7 +882,7 @@ export default class Wallet extends SaitoWallet {
         wobj.gameprefs = {};
         this.app.options = wobj;
 
-        this.app.blockchain.resetBlockchain();
+        await this.app.blockchain.resetBlockchain();
 
         this.app.modules.returnModule("Arcade").onResetWallet();
         this.app.storage.saveOptions();

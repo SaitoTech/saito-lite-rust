@@ -11,6 +11,8 @@ import Wallet from "../../lib/saito/wallet";
 import Blockchain from "../../lib/saito/blockchain";
 import PeerServiceList from "saito-js/lib/peer_service_list";
 
+// import Config from "saito-js/lib/config";
+
 class WebMethods extends WebSharedMethods {
   app: Saito;
 
@@ -85,6 +87,9 @@ async function init() {
   saito.options.browser_mode = true;
   saito.options.spv_mode = true;
 
+  saito.storage.convertOptionsBigInt(saito.options);
+
+  console.log("saito options : ", saito.options);
   await initSaito(
     saito.options,
     new WebMethods(saito),

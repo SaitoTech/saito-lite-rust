@@ -18,35 +18,24 @@ export default class Blockchain extends SaitoBlockchain {
     return block as unknown as Block;
   }
 
-  resetBlockchain() {
-    // TODO : implement
-    // //
-    // // last in longest_chain
-    // //
-    // this.blockchain.last_block_hash = "";
-    // this.blockchain.last_block_id = BigInt(0);
-    // this.blockchain.last_timestamp = new Date().getTime();
-    // this.blockchain.last_burnfee = BigInt(0);
-    //
-    // //
-    // // earliest in epoch
-    // //
-    // this.blockchain.genesis_block_id = BigInt(0);
-    // this.blockchain.genesis_timestamp = 0;
-    //
-    // //
-    // // first received this sync (used to prevent recursive fetch forever)
-    // //
-    // this.blockchain.lowest_acceptable_timestamp = 0;
-    // this.blockchain.lowest_acceptable_block_hash = "";
-    // this.blockchain.lowest_acceptable_block_id = BigInt(0);
-
-    this.saveBlockchain();
+  async resetBlockchain() {
+    this.instance.reset();
+    await this.saveBlockchain();
   }
 
-  saveBlockchain() {
-    // TODO : implement
-    // throw new Error("not implemented");
+  async saveBlockchain() {
+    this.app.options.blockchain = {
+      last_block_hash: await this.instance.get_last_block_hash(),
+      last_block_id: Number(await this.instance.get_last_block_id()),
+      last_timestamp: Number(await this.instance.get_last_timestamp()),
+      genesis_block_id: Number(await this.instance.get_genesis_block_id()),
+      genesis_timestamp: Number(await this.instance.get_genesis_timestamp()),
+      lowest_acceptable_timestamp: Number(await this.instance.get_lowest_acceptable_timestamp()),
+      lowest_acceptable_block_hash: await this.instance.get_lowest_acceptable_block_hash(),
+      lowest_acceptable_block_id: Number(await this.instance.get_lowest_acceptable_block_id()),
+    };
+    console.log("saveBlockchain : ", this.app.options.blockchain);
+    this.app.storage.saveOptions();
   }
 
   async loadBlockAsync(hash: string): Promise<Block | null> {
@@ -58,19 +47,6 @@ export default class Blockchain extends SaitoBlockchain {
       console.log("calling add block success on : " + hash + " with id : " + blockId);
       await this.onAddBlockSuccess(blockId, hash);
     });
-    // TODO : implement
-    //
-    // load blockchain from options if exists
-    //
-    // if (this.app.options.blockchain) {
-    //   let obj = this.app.options.blockchain;
-    //   for (let key in obj) {
-    //     if (typeof obj[key] !== "undefined") {
-    //       this.blockchain[key] = obj[key];
-    //     }
-    //   }
-    //   this.blockchain.last_callback_block_id = this.blockchain.last_block_id;
-    // }
   }
 
   public async affixCallbacks(block: Block) {
@@ -90,8 +66,9 @@ export default class Blockchain extends SaitoBlockchain {
     this.confirmations.set(block.hash, BigInt(-1));
   }
 
-  public onNewBlock(block: Block, lc: boolean) {
+  public async onNewBlock(block: Block, lc: boolean) {
     console.log("onNewBlock : " + block.hash);
+    await this.saveBlockchain();
     this.app.modules.onNewBlock(block, lc);
   }
 }
