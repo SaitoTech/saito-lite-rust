@@ -153,7 +153,7 @@ async function initCLI() {
                 $bid: blk.id,
                 $tid: blk.transactions[i].id,
                 $sid: ii,
-                $bhash: blk.returnHash(),
+                $bhash: blk.hash,
                 $lc: 1,
                 $rebroadcast: 0,
                 $sig: blk.transactions[i].signature,

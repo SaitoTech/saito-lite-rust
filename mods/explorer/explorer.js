@@ -229,18 +229,9 @@ class ExplorerCore extends ModTemplate {
         } else {
           html += "<div></div>";
         }
+        html += '<div><a href="/explorer/block?hash=' + block.hash + '">' + block.id + "</a></div>";
         html +=
-          '<div><a href="/explorer/block?hash=' +
-          block.returnHash() +
-          '">' +
-          block.returnId() +
-          "</a></div>";
-        html +=
-          '<div><a href="/explorer/block?hash=' +
-          block.returnHash() +
-          '">' +
-          block.returnHash() +
-          "</a></div>";
+          '<div><a href="/explorer/block?hash=' + block.hash + '">' + block.hash + "</a></div>";
         html += "<div>" + txs_in_block + "</div>";
         html += '<div class="elipsis">' + previous_block_hash + "</div>";
       }
