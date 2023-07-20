@@ -739,6 +739,7 @@
   margin-bottom: 1rem;
   width: 55rem;
   max-width: 92vw;
+  max-height: 100vw;
   /* background-color: #f9f9f9; */
 }
 
