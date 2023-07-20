@@ -229,11 +229,13 @@ class Browser {
 
       const updateViewHeight = () => {
           let vh = window.innerHeight * 0.01;
-          document.documentElement.style.setProperty("--saito-vh", `${vh}px`)
+          document.documentElement.style.setProperty("--saito-vh", `${vh}px`);
+          console.log("Update view height");
+          siteMessage(`Update: ${vh}px`);
       }
 
       window.addEventListener("resize", debounce(updateViewHeight, 200));
-
+      updateViewHeight();
 
     } catch (err) {
       if (err == "ReferenceError: document is not defined") {
