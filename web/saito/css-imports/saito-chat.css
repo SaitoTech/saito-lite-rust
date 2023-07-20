@@ -414,7 +414,7 @@
     position: absolute;
     left: 0;
     top: var(--saito-header-height);
-    height: 100vh;
+    height: calc(100 * var(--saito-vh));
     width: 100vw;
     max-height: -webkit-fill-available;
     max-width: -webkit-fill-available;

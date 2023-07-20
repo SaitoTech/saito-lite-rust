@@ -1,6 +1,6 @@
 .saito-container {
   width: 100vw;
-  height: calc(100vh - var(--saito-header-height));
+  height: calc(100% - var(--saito-header-height));
   display: grid;
   grid-template-columns: min-content 5fr 3fr;
   padding: 0 calc((100vw - var(--saito-width)) / 2);
@@ -37,7 +37,7 @@
 
 .saito-sidebar.left {
   position: sticky;
-  height: calc(100vh - var(--saito-header-height));
+  height: calc(100% - var(--saito-header-height));
   width: 25rem;
   top: 0;
   /*margin: 0 0 0 ;*/

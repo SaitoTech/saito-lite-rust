@@ -13,6 +13,7 @@
   z-index: 100;
   transition: all 0.2s;
   height: 100vh;
+  height: calc(100 * var(--saito-vh));
   width: 100vw;
 }
 
@@ -658,10 +659,7 @@
   color: var(--saito-white);
   display: flex;
   justify-content: center;
-  /* width: 100vw;
-  height: 100vh; */
   margin: 0;
-  /* position: fixed; */
   color: var(--saito-white);
   top: 0;
   z-index: 200;
