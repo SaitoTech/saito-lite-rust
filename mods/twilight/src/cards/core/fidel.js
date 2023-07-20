@@ -2,6 +2,13 @@
     // Fidel //
     ///////////
     if (card == "fidel") {
+
+      //
+      // SAITO COMMUNITY - united fruit company removed
+      //
+      if (!this.saito_cards_removed.includes("unitedfruit")) { this.saito_cards_removed.push("unitedfruit"); }
+
+
       let usinf = parseInt(this.countries['cuba'].us);
       let ussrinf = parseInt(this.countries['cuba'].ussr);
       this.removeInfluence("cuba", usinf, "us");

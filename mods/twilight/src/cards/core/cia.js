@@ -4,6 +4,12 @@
     /////////////////
     if (card == "cia") {
 
+      //
+      // SAITO COMMUNITY - lone gunman added
+      //
+      if (!this.saito_cards_added.includes("lonegunman")) { this.saito_cards_added.push("lonegunman"); }
+
+
       //USSR needs to share its card information
       if (this.game.player == 1) {
 

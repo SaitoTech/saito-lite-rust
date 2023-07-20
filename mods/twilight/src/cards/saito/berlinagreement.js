@@ -1,7 +1,10 @@
 
     if (card == "berlinagreement") {
 
-      this.game.state.event.berlinagreement = 1;
+      if (!this.saito_cards_removed.includes("blockade")) { this.saito_cards_removed.push("blockade"); }
+      this.cancelEvent("blockade");
+
+      this.game.state.events.berlinagreement = 1;
 
       if (this.countries["westgermany"].us > 0){
         this.countries["westgermany"].us--;
@@ -17,8 +20,6 @@
         this.updateLog(`Berlin Agreement: no USSR influence in East Germany to remove`);
       }
        
-      this.game.state.events.berlinagreement = 1;
-
       return 1;
     }
 
