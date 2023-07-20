@@ -8734,7 +8734,6 @@ console.log("SCORING: " + JSON.stringify(scoring));
     //
     if (this.game.state.events.double_quagmire) {
       if (!this.saito_cards_added.includes("kissinger")) {
-      if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.cardToText(mv[2]); }
         this.updateLog(this.cardToText("kissinger") + ` added to deck`);
 	this.saito_cards_added.push("kissinger"); 
       }
