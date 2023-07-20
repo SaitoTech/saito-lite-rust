@@ -19,11 +19,13 @@
 }
 
 .league-overlay-controls button {
-  line-height: 4.5rem;
-  width: 20rem;
+  height: 7rem;
+  max-width: 20rem;
   font-size: 2.2rem;
   margin: 0;
   margin-left: 1.5rem;
+  min-width: unset;
+  flex-grow: 1;
 }
 
 .league-overlay-controls {
