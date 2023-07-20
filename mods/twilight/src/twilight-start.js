@@ -47,7 +47,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     //
     // ui components
@@ -758,7 +758,7 @@ initializeGame(game_id) {
 	  this.saito_cards_added.push("unitedfruit");
 	  this.saito_cards_added.push("tsarbomba");
 	}
-        this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnEarlyWarCards()));
+        this.game.queue.push("DECK\t1\t"+JSON.stringify(early_war_deck));
       }
     }
     this.game.queue.push("init");
@@ -938,6 +938,7 @@ console.log("LATEST MOVE: " + mv);
       //
       // start round
       // flush [discards] // empty discards pile if exists
+      // bgs // update or reset bgs
       // placement (initial placement)
       // ops [us/ussr] card num
       // round
@@ -963,6 +964,24 @@ console.log("LATEST MOVE: " + mv);
       // init -- assign roles
       // final_scoring -- trigger final scoring and end game
       // observer -- reveal cards to player0s (insecure)
+
+    if (mv[0] == "bgs") {
+
+      this.game.queue.splice(qe, 1);
+
+      let cmd = "";
+      if (mv[1]) { cmd = mv[1]; }
+
+      if (cmd === "reset") {
+        this.resetBattlegroundCountries();
+      } else {
+        for (let i in this.game.countries) {
+          this.game.countries[i].bg = parseInt(this.game.countries[i].bg);
+        }   
+      }   
+
+    }
+
 
     if (mv[0] == "init") {
 
@@ -1286,7 +1305,7 @@ console.log("LATEST MOVE: " + mv);
           let valid_targets = 0;
           for (let c in twilight_self.countries) {
         
-            if ( twilight_self.countries[c].bg == 0 && (twilight_self.countries[c].region === "africa" || twilight_self.countries[c].region === "camerica" || twilight_self.countries[c].region === "samerica") && twilight_self.countries[c].us > 0 ) {
+            if ( twilight_self.game.countries[c].bg == 0 && (twilight_self.countries[c].region === "africa" || twilight_self.countries[c].region === "camerica" || twilight_self.countries[c].region === "samerica") && twilight_self.countries[c].us > 0 ) {
               //Must be a new target for second attempt
               if (c !== target1){
                 valid_targets++;
@@ -5702,7 +5721,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     }
 
     // Lower Defcon in BG countries unless US has nuclear subs or special condition flagged
-    if (this.countries[countryname].bg == 1 && this.game.state.lower_defcon_on_coup == 1) {
+    if (this.game.countries[countryname].bg == 1 && this.game.state.lower_defcon_on_coup == 1) {
       if (player == "ussr" || this.game.state.events.nuclearsubs == 0 ){
         console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
         this.lowerDefcon();
@@ -5932,6 +5951,11 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
 
   displayBoard() {
+
+    for (let i in this.countries) {
+      this.showInfluence(i);
+    }
+
     this.updateDefcon();
     this.updateActionRound();
     this.updateSpaceRace();
@@ -6549,6 +6573,20 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     return x;
   }
 
+  resetBattlegroundCountries(region="") {
+    for (let i in this.game.countries) {
+      if (region == "") {
+console.log("resetting BG countries for: " + i);
+        this.game.countries[i].bg = this.countries[i].bg;
+      } else {
+        if (this.game.countries[i].region === region) { 
+console.log("resetting BG countries for: " + i);
+	  this.game.countries[i].bg = this.countries[i].bg;
+	}
+      }
+    }
+  }
+
   returnBattlegroundCountries() {
     let bgs = [];
     for (let i in this.countries) {
@@ -6625,7 +6663,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         if (key === "poliovaccine") { deck['poliovaccine'] = { img : "TNRnTS-206png" , name : "Polio Vaccine", scoring : 0 , player : "both" , recurring : 0 , ops : 3 }; }
 
 	// SAITO
-        if (key === "unitedfruit") { deck['unitedfruit']       = { img : "TNRnTS-207png" ,name : "United Fruit Company", scoring : 0 , player : "us"   , recurring : 0 , ops : 1 }; }
+        if (key === "unitedfruit") { deck['unitedfruit']       = { img : "TNRnTS-207png" ,name : "United Fruit Company", scoring : 0 , player : "us"   , recurring : 1 , ops : 1 }; }
         if (key === "iranianultimatum") { deck['iranianultimatum']       = { img : "TNRnTS-210png" ,name : "Iranian Ultimatum", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 }; }
 
 	// END OF HISTORY
@@ -7237,9 +7275,9 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     let non_bg_countries = [];
     let scoring_range = {presence: 0, domination: 0, control: 0};
 
-    for (let i in this.countries) {
-      if (this.countries[i].region.includes(region)) {
-        if (this.countries[i].bg === 1) {
+    for (let i in this.game.countries) {
+      if (this.game.countries[i].region.includes(region)) {
+        if (this.game.countries[i].bg === 1) {
           bg_countries.push(i);
         } else {
           non_bg_countries.push(i);
@@ -7301,6 +7339,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 	  }
         }
 
+        if (mouseover_preview != 1) { this.resetBattlegroundCountries(region); }
+
         break;
 
       /////////////
@@ -7327,6 +7367,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         }
 
         scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
+
+        if (mouseover_preview != 1) { this.resetBattlegroundCountries(region); }
 
         break;
 
@@ -7360,6 +7402,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
         scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
 
+        if (mouseover_preview != 1) { this.resetBattlegroundCountries(region); }
+
         break;
 
       /////////////////////
@@ -7385,6 +7429,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 	  scoring.bonus.push({ side : "ussr" , name : "Adjacency" , desc : "USSR +1 for Cuba" , icon : "/twilight/img/adjacency.png" });
 	}
 
+        if (mouseover_preview != 1) { this.resetBattlegroundCountries(region); }
+
         break;
 
       ///////////////////
@@ -7394,6 +7440,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         scoring_range = {presence: 2, domination: 5, control: 6};
 
         scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
+
+        if (mouseover_preview != 1) { this.resetBattlegroundCountries(region); }
 
         break;
 
@@ -7461,6 +7509,8 @@ console.log("PRESC: " + JSON.stringify(scoring));
 	}
 
 console.log("SCORING: " + JSON.stringify(scoring));
+
+        if (mouseover_preview != 1) { this.resetBattlegroundCountries(region); }
 
         break;
       }
@@ -8772,7 +8822,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
     //
     for (let i in this.game.deck[0].cards) {
       if (saito_edition_removed.includes(i)) {
-	this.game.deck[0].cards.splice(i, 1);
+	delete this.game.deck[0].cards[i];
 	cards_removed_from_deck++;
 	if (this.game.deck[0].hand.includes(i)) {
 	  for (let z = 0; z < this.game.deck[0].hand.length; z++) {

@@ -28,6 +28,7 @@
 	if (action2 == "mideast") { selreg = "Middle East"; }
 
         twilight_self.addMove("resolve\tkissinger");
+        twilight_self.addMove("bgs");
         twilight_self.addMove(`SETVAR\tstate\tevents\tkissinger\t${action2}`);
 
 	for (let i in twilight_self.countries) {

@@ -19,7 +19,9 @@
       } else {
         this.updateLog(`Berlin Agreement: no USSR influence in East Germany to remove`);
       }
-       
+ 
+      this.displayBoard();
+      
       return 1;
     }
 
