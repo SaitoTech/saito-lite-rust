@@ -154,12 +154,13 @@ class League extends ModTemplate {
       });
 
       superArray.sort((a, b) => {
+        console.log(a[0], b[0]);
         //Push community leagues to the bottom
         if (a[0] && !b[0]) {
-          return 1;
+          return -1;
         }
         if (!a[0] && b[0]) {
-          return -1;
+          return 1;
         }
 
         //Sort by game categories
