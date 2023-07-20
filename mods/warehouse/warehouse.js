@@ -23,7 +23,7 @@ class Warehouse extends ModTemplate {
 
   async addTransactionsToDatabase(blk) {
     try {
-      console.log("adding block to warehouse : " + blk.returnHash());
+      console.log("adding block to warehouse : " + blk.hash);
       for (let i = 0; i < blk.transactions.length; i++) {
         if (blk.transactions[i].type >= -999) {
           for (let ii = 0; ii < blk.transactions[i].to.length; ii++) {
@@ -89,7 +89,7 @@ class Warehouse extends ModTemplate {
               $bid: blk.id,
               $tid: blk.transactions[i].id,
               $sid: ii,
-              $bhash: blk.returnHash(),
+              $bhash: blk.hash,
               $lc: 1,
               $rebroadcast: 0,
               $sig: blk.transactions[i].signature,
