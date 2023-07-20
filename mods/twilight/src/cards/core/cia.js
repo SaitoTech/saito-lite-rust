@@ -7,7 +7,7 @@
       //
       // SAITO COMMUNITY - lone gunman added
       //
-      if (!this.saito_cards_added.includes("lonegunman")) { this.saito_cards_added.push("lonegunman"); }
+      this.addCardToDeck("lonegunman", "Prerequisites Met");
 
 
       //USSR needs to share its card information

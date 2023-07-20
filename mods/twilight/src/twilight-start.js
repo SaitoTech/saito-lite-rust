@@ -5,6 +5,7 @@ const TwilightSingularOption = require('./lib/core/options.template');
 const ScoringOverlay = require('./lib/overlays/scoring');
 const WarOverlay = require('./lib/overlays/war');
 const StatsOverlay = require('./lib/overlays/stats');
+const DeckOverlay = require('./lib/overlays/deck');
 
 const JSON = require('json-bigint');
 
@@ -55,17 +56,12 @@ class Twilight extends GameTemplate {
     this.scoring_overlay = new ScoringOverlay(this.app, this);
     this.stats_overlay = new StatsOverlay(this.app, this);
     this.war_overlay = new WarOverlay(this.app, this);
+    this.deck_overlay = new DeckOverlay(this.app, this);
 
     //
     // newbie mode
     //
     this.confirm_moves = 0;
-
-    //
-    // living history / saito edition -- SAITO COMMUNITY
-    //
-    this.saito_cards_added = [];
-    this.saito_cards_removed = [];
 
     this.interface 	 = 1;  //Graphical card display
     
@@ -753,10 +749,11 @@ initializeGame(game_id) {
 	// SAITO COMMUNITY - edition
         //
         if (this.game.options.deck === "saito") {
+	  this.removeCardFromDeck('nato', "Prerequisites Not Met");
+	  this.addCardToDeck('iranianultimatum', "New Card");
+	  this.addCardToDeck('unitedfruit', "New Card");
+	  this.addCardToDeck('tsarbomba', "New Card");
 	  delete early_war_deck['nato'];
-	  this.saito_cards_added.push("iranianultimatum");
-	  this.saito_cards_added.push("unitedfruit");
-	  this.saito_cards_added.push("tsarbomba");
 	}
         this.game.queue.push("DECK\t1\t"+JSON.stringify(early_war_deck));
       }
@@ -1705,8 +1702,21 @@ console.log("LATEST MOVE: " + mv);
     }
 
     if (mv[0] == "dynamic_deck_management") {
+
       this.game.queue.splice(qe, 1);
       this.dynamicDeckManagement();
+
+      //
+      // show overlay and purge
+      //
+      if (this.game.saito_cards_added.length > 0 || this.game.saito_cards_removed.length > 0) {
+	this.deck_overlay.render();
+	this.game.saito_cards_added = [];
+	this.game.saito_cards_added_reason = [];
+	this.game.saito_cards_removed = [];
+	this.game.saito_cards_removed_reason = [];
+      }
+
       return 1;
     }
 
@@ -2940,6 +2950,9 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
       // of dynamic balancing behavior.
       //
       this.dynamicDeckManagement();
+      if (this.game.state.round == 1) {
+        this.game.queue.push("dynamic_deck_management");
+      }
 
       //
       // DEAL MISSING CARDS
@@ -2970,16 +2983,18 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	  let mid_war_cards = this.returnMidWarCards();
           if (this.game.options.deck === "saito") {
 	    if (this.game.state.events.fidel != 1) {
-	    delete mid_war_cards['cubanmissile'];
+	      delete mid_war_cards['cubanmissile'];
+	      this.removeCardFromDeck("cubanmissile", "Fidel not evented");
 	    }
 	    if (this.game.state.events.tsarbomba != 1 || this.game.state.events.cia_created != 1) {
 	      delete mid_war_cards['lonegunman'];
+	      this.removeCardFromDeck("lonegunman", "CIA not evented");
 	    }
 	    delete mid_war_cards['summit'];
-            this.updateLog(this.cardToText("handshake") + ` added to deck`);
-            this.updateLog(this.cardToText("berlineagreement") + ` added to deck`);
-	    this.saito_cards_added.push("handshake");
-	    this.saito_cards_added.push("berlinagreement");
+	    this.removeCardFromDeck("summit", "Summit removed by default");
+	    
+	    this.addCardToDeck("handshake", "New Card");
+	    this.addCardToDeck("berlinagreement", "New Card");
 	    this.game.queue.push("dynamic_deck_management");
 	  }
 
@@ -3013,9 +3028,8 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
             if (this.isControlled("us", "southkorea") == 1) {
 	    } else {
 	      delete late_war_cards['kal007'];
-              this.updateLog(this.cardToText("kal007") + ` removed from deck`);
-              this.updateLog(this.cardToText("revolutionsof1989") + ` added to deck`);
-	      this.saito_cards_added.push("revolutionsof1989");
+	      this.removeCardFromDeck("kal007", "Prerequisite Not Met");
+	      this.addCardToDeck("revolutionsof1989", "Replacement for KAL007");
 	    }
 
 	    //
@@ -3023,26 +3037,24 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	    //
 	    if (this.game.state.space_race_ussr_counter <= this.game.state.space_race_us_counter) {
 	    } else {
-              this.updateLog(this.cardToText("starwars") + ` removed from deck`);
-              this.updateLog(this.cardToText("antiapartheid") + ` added to deck`);
 	      delete late_war_cards['starwars'];
-	      this.saito_cards_added.push("antiapartheid");
+	      this.removeCardFromDeck("starwars", "US not ahead in Space Race");
+	      this.addCardToDeck("antiapartheid", "Replacement for Star Wars");
 	    }
 
 	    //
 	    // remove Ortega unless US has influence in Cuba
 	    //
  	    if (this.countries['cuba'].us < 1) {
-              this.updateLog(this.cardToText("ortega") + ` removed from deck`);
+	      this.removeCardFromDeck("ortega", "US has no influence in Cuba");
 	      delete late_war_cards['ortega'];
 	    }
 
 	    //
 	    // replace cambridge 5 with rust in red square
 	    //
-	    this.saito_cards_removed.push("cambridge");
-            this.updateLog(this.cardToText("rustinredsquare") + ` added to deck`);
-	    this.saito_cards_added.push("rustinredsquare");
+	    this.removeCardFromDeck("cambridge", "Removed from Game");
+	    this.removeCardFromDeck("rustinredsquare", "Replacement for Cambridge Five");
 
 	  }
 
@@ -8730,67 +8742,52 @@ console.log("SCORING: " + JSON.stringify(scoring));
   dynamicDeckManagement() {
 
     //
+    // living history / saito edition -- SAITO COMMUNITY
+    //
+    if (!this.game.saito_cards_added) {
+      this.game.saito_cards_added = [];
+      this.game.saito_cards_added_reason = [];
+    }
+    if (!this.game.saito_cards_removed) {
+      this.game.saito_cards_removed = [];
+      this.game.saito_cards_removed_reason = [];
+    }
+
+    //
     // double quagmire / bear trap
     //
     if (this.game.state.events.double_quagmire) {
-      if (!this.saito_cards_added.includes("kissinger")) {
-        this.updateLog(this.cardToText("kissinger") + ` added to deck`);
-	this.saito_cards_added.push("kissinger"); 
-      }
+      this.addCardToDeck("kissinger", "Double Quagmire");
     }
     if (this.game.state.events.double_beartrap) {
-      if (!this.saito_cards_added.includes("samotlor")) {
-        this.updateLog(this.cardToText("samotlor") + ` added to deck`);
-	this.saito_cards_added.push("samotlor"); 
-      }
+      this.addCardToDeck("samotlor", "Double Bear Trap");
     }
 
     //
     // if USSR controls Cuba
     //
     if (this.isControlled("ussr", "cuba")) {
-      if (!this.saito_cards_added.includes("cubanmissile")) {
-        this.updateLog(this.cardToText("cubanmissile") + ` added to deck`);
-	this.saito_cards_added.push("cubanmissile");
-      }
+      this.addCardToDeck("cubanmissile", "USSR controls Cuba");
     }
 
     //
     // compensate for double-purge / double-scare
     //
     if (this.game.state.events.redscare_player1_count > 1) {
-      if (!this.saito_cards_added.includes("antiapartheid")) {
-        this.updateLog(this.cardToText("antiapartheid") + ` added to deck`);
-	this.saito_cards_added.push("antiapartheid");
-      }
-      if (!this.saito_cards_added.includes("samotlor")) {
-        this.updateLog(this.cardToText("samotlor") + ` added to deck`);
-	this.saito_cards_added.push("samotlor");
-      }
+      this.addCardToDeck("antiapartheid", "Double Red Purge");
+      this.addCardToDeck("samotlor", "Double Red Purge");
     } 
     if (this.game.state.events.redscare_player2_count > 1) {
-      if (!this.saito_cards_added.includes("carterdoctrine")) {
-        this.updateLog(this.cardToText("carterdoctrine") + ` added to deck`);
-	this.saito_cards_added.push("carterdoctrine");
-      }
+      this.addCardToDeck("carterdoctrine", "Double Red Scare");
     }
 
     //
     // destalinization + decolonization combo
     //
     if (this.game.state.events.destalinization_played && this.game.state.events.decolonization_played) {
-      if (!this.saito_cards_added.includes("pinochet")) {
-        this.updateLog(this.cardToText("pinochet") + ` added to deck`);
-	this.saito_cards_added.push("pinochet");
-      }
-      if (!this.saito_cards_added.includes("nixonshock")) {
-        this.updateLog(this.cardToText("nixonshock") + ` added to deck`);
-	this.saito_cards_added.push("nixonshock");
-      }
-      if (!this.saito_cards_added.includes("energycrisis")) {
-        this.updateLog(this.cardToText("energycrisis") + ` added to deck`);
-	this.saito_cards_added.push("energycrisis");
-      }
+      this.addCardToDeck("pinochet", "Destalinization and Decolonization");
+      this.addCardToDeck("nixonshock", "Destalinization and Decolonization");
+      this.addCardToDeck("energycrisis", "Destalinization and Decolonization");
     }
 
 
@@ -8802,8 +8799,8 @@ console.log("SCORING: " + JSON.stringify(scoring));
     // you should remove it from the removed 
     // array.
     //
-    let saito_edition_removed = this.saito_cards_removed;
-    let saito_edition_added   = this.saito_cards_added;
+    let saito_edition_removed = this.game.saito_cards_removed;
+    let saito_edition_added   = this.game.saito_cards_added;
 
     this.game.options.deck = "saito";
     let a = this.returnEarlyWarCards();
@@ -8821,7 +8818,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
     //
     for (let i in this.game.deck[0].cards) {
       if (saito_edition_removed.includes(i)) {
-	delete this.game.deck[0].cards[i];
+	if (this.game.deck[0].cards[i]) { delete this.game.deck[0].cards[i]; }
 	cards_removed_from_deck++;
 	if (this.game.deck[0].hand.includes(i)) {
 	  for (let z = 0; z < this.game.deck[0].hand.length; z++) {
@@ -8853,6 +8850,113 @@ console.log("SCORING: " + JSON.stringify(scoring));
       this.game.state.player1_card_replacements_needed = cards_removed_from_my_hand;
     } else {
       this.game.state.player2_card_replacements_needed = cards_removed_from_my_hand;
+    }
+
+  }
+  addCardToDeck(key="", reason="") {
+
+    if (!this.game.saito_cards_added) {
+      //
+      // living history / saito edition -- SAITO COMMUNITY
+      //
+      this.game.saito_cards_added = [];
+      this.game.saito_cards_removed = [];
+      this.game.saito_cards_added_reason = [];
+      this.game.saito_cards_removed_reason = [];
+    }
+
+    this.game.options.deck = "saito";
+    let a = this.returnEarlyWarCards();
+    let b = this.returnMidWarCards();
+    let c = this.returnLateWarCards();
+    let d = Object.assign({}, a, b);
+    let fulldeck = Object.assign({}, d, c);
+
+    //
+    // add to deck
+    //
+    if (this.game.deck.length > 0) {
+      if (!this.game.deck[0].cards[key]) {
+        if (fulldeck[key]) {
+          this.game.deck[0].cards[key] = fulldeck[key];
+        }
+      }
+    }
+
+    //
+    // remove from removed
+    //
+    if (this.game.saito_cards_removed.includes(key)) {
+      for (let z = 0; z < this.game.saito_cards_removed.length; z++) {
+        if (this.game.saito_cards_removed[z] === key) {
+          this.game.saito_cards_removed.splice(z, 1);
+          this.game.saito_cards_removed_reason.splice(z, 1);
+	}
+      }
+    }
+
+    //
+    // add to removed
+    //
+    if (!this.game.saito_cards_added.includes(key)) {
+      this.game.saito_cards_added.push(key);
+      this.game.saito_cards_added_reason.push(reason);
+    }
+
+  }
+  removeCardFromDeck(key="", reason="") {
+
+    if (!this.game.saito_cards_added) {
+      //
+      // living history / saito edition -- SAITO COMMUNITY
+      //
+      this.game.saito_cards_added = [];
+      this.game.saito_cards_removed = [];
+      this.game.saito_cards_added_reason = [];
+      this.game.saito_cards_removed_reason = [];
+    }
+
+
+    //
+    // remove from deck
+    //
+    if (this.game.deck.length > 0) {
+      if (this.game.deck[0].cards[key]) {
+        delete this.game.deck[0].cards[key];
+      }
+    }
+
+    //
+    // remove from hand
+    //
+    if (this.game.deck.length > 0) {
+      if (this.game.deck[0].hand.includes(key)) {
+        for (let z = 0; z < this.game.deck[0].hand.length; z++) {
+          if (this.game.deck[0].hand[z] === i) {
+            this.game.deck[0].hand.splice(z, 1);
+  	  }
+        }
+      }
+    }
+
+    //
+    // remove from added
+    //
+    if (this.game.saito_cards_added.includes(key)) {
+      for (let z = 0; z < this.game.saito_cards_added.length; z++) {
+        if (this.game.saito_cards_added[z] === key) {
+          this.game.saito_cards_added.splice(z, 1);
+          this.game.saito_cards_added_reason.splice(z, 1);
+	}
+      }
+    }
+
+    //
+    // add to removed
+    //
+    if (!this.game.saito_cards_removed.includes(key)) {
+      this.game.saito_cards_removed.push(key);
+      this.game.saito_cards_removed_reason.push(reason);
     }
 
   }

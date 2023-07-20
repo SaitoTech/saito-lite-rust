@@ -1,7 +1,8 @@
 
     if (card == "berlinagreement") {
 
-      if (!this.saito_cards_removed.includes("blockade")) { this.saito_cards_removed.push("blockade"); }
+      this.removeCardFromDeck("blockade", "Blockade Cancelled");
+
       this.cancelEvent("blockade");
 
       this.game.state.events.berlinagreement = 1;

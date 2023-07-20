@@ -6,7 +6,7 @@
     if (card == "johnpaul") {
 
       // SAITO COMMUNITY
-      if (!this.saito_cards_added.includes("solidarity")) { this.saito_cards_added.push("solidarity"); }
+      this.addCardToDeck("solidarity", "Prerequisites Met");
 
 
       this.game.state.events.johnpaul = 1;
