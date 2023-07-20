@@ -359,6 +359,7 @@
 
 .video-call-info {
   color: var(--saito-white);
+  text-shadow: 0px 1px 2px var(--saito-black-faded), 0px -1px 2px var(--saito-black-faded);
   line-height: 1.5;
   position: absolute;
   display: flex;
@@ -371,7 +372,6 @@
 }
 
 .video-call-info > p {
-  color: #ffffff69;
   font-size: 2rem;
   white-space: nowrap;
   overflow: hidden;
@@ -680,13 +680,13 @@
 
 .chat-settings-preview-section {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
+  row-gap: 2rem;
   align-items: center;
   color: var(--saito-white);
 }
 
 .chat-settings-preview-section p {
-  margin-bottom: 2rem;
   color: var(--saito-white);
 }
 
@@ -735,17 +735,17 @@
   position: relative;
   border: 1px solid #e5e5e59d;
   padding: 1rem;
-  border-radius: 5px;
-  margin-bottom: 1rem;
+  border-radius: var(--saito-border-radius);
   width: 55rem;
   max-width: 92vw;
-  max-height: 100vw;
-  /* background-color: #f9f9f9; */
+  max-height: 95vw;
+  display: flex;
 }
 
 .chat-settings video {
   width: 100%;
-  border-radius: var(--border-radiius);
+  border-radius: var(--saito-border-radius);
+  max-height: 100%;
 }
 
 .chat-settings-toggle-icons {
@@ -761,6 +761,7 @@
   font-size: 3rem;
   padding: 0.25rem;
   cursor: pointer;
+  text-shadow: 0px 1px 2px var(--saito-black-faded), 0px -1px 2px var(--saito-black-faded);
 }
 
 .chat-settings-toggle-icon:hover {
