@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1388"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   sodipodi:docname="Realms Mana Symbol Three.svg"
+   inkscape:export-filename="Realms Mana Symbol Three.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1390"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.72693603"
+     inkscape:cx="-303.32793"
+     inkscape:cy="534.43492"
+     inkscape:window-width="1920"
+     inkscape:window-height="1003"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1385">
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter17130"
+       x="-0.013020747"
+       y="-0.025680381"
+       width="1.0260415"
+       height="1.0513608">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.1343192"
+         id="feGaussianBlur17132" />
+    </filter>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath21654">
+      <path
+         style="mix-blend-mode:normal;fill:none;stroke:url(#linearGradient21658);stroke-width:1.05984;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter17130)"
+         d="m 162.38565,252.96349 h 20.85158 c 4.33173,7.01408 5.1e-4,12.55301 5.1e-4,12.55301 h -20.88132 c 0,0 -4.41078,-5.39726 0.0292,-12.55301 z"
+         id="path21656"
+         sodipodi:nodetypes="cccccc"
+         transform="matrix(-0.57235453,-0.80926911,0.80027902,-0.5659963,-392.17196,1022.2028)" />
+    </clipPath>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter26520"
+       x="-0.015201667"
+       y="-0.015201667"
+       width="1.0304033"
+       height="1.0304033">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.061324217"
+         id="feGaussianBlur26522" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter26516"
+       x="-0.015201719"
+       y="-0.015201719"
+       width="1.0304034"
+       height="1.0304034">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.061324217"
+         id="feGaussianBlur26518" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter26512"
+       x="-0.036299846"
+       y="-0.023895608"
+       width="1.0725997"
+       height="1.0477912">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.061324217"
+         id="feGaussianBlur26514" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter25015"
+       x="-0.042483593"
+       y="-0.040470496"
+       width="1.0849673"
+       height="1.0809409">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.11374807"
+         id="feGaussianBlur25017" />
+    </filter>
+  </defs>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g4743"
+       style="filter:url(#filter25015)">
+      <circle
+         style="mix-blend-mode:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.84946;stroke-opacity:0.696104;filter:url(#filter26520)"
+         id="circle26504"
+         cx="-163.68712"
+         cy="-39.709377"
+         transform="rotate(180,-29.119953,56.334538)"
+         r="4.8408546" />
+      <circle
+         style="mix-blend-mode:normal;fill:#d9d9d9;fill-opacity:1;stroke:#083838;stroke-width:0;stroke-dasharray:none;filter:url(#filter26516)"
+         id="circle26506"
+         cx="105.65574"
+         cy="151.67793"
+         r="4.8408546" />
+      <text
+         xml:space="preserve"
+         style="font-size:9.11126px;line-height:1.25;font-family:Plantin;-inkscape-font-specification:'Plantin, Normal';mix-blend-mode:normal;stroke-width:0.244049;filter:url(#filter26512);font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
+         x="157.12387"
+         y="42.996273"
+         id="text26510"
+         transform="matrix(1.0270241,0,0,0.97368698,-58.239907,112.66908)"><tspan
+           sodipodi:role="line"
+           id="tspan4518">3</tspan></text>
+    </g>
+  </g>
+</svg>

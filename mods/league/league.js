@@ -154,7 +154,6 @@ class League extends ModTemplate {
       });
 
       superArray.sort((a, b) => {
-        console.log(a[0], b[0]);
         //Push community leagues to the top
         if (a[0] && !b[0]) {
           return -1;

@@ -221,11 +221,13 @@ class TweetManager {
     });
 
     //
-    //Mobile back button
+    //Mobile back button (when left navigation bar hidden!)
     //
-    this.app.connection.emit("saito-header-replace-logo", (e) => {
-        this.app.connection.emit("redsquare-home-render-request");
-    });
+    if (window.innerWidth < 1200){
+      this.app.connection.emit("saito-header-replace-logo", (e) => {
+          this.app.connection.emit("redsquare-home-render-request");
+      });
+    }
 
   }
 

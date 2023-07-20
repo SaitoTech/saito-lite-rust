@@ -3,6 +3,7 @@
 .stun-appspace {
   width: 100vw;
   height: 100vh;
+  height: calc(100 * var(--saito-vh));
   left: 0;
   top: 0;
   display: flex;
@@ -129,6 +130,7 @@
 
 .stunx-appspace-splash p {
   color: white;
+  height: 2rem; /* for some reason it scrolls if you don't set a height */
 }
 
 .stunx-appspace-join .saito-button-secondary {
