@@ -374,6 +374,23 @@
   position: relative;
 }
 
+.saito-back-button {
+  font-size: 32px;
+  margin-left: 1rem;
+  padding: 0.5rem 1.25rem;
+  color: var(--saito-white);
+  width: fit-content;
+  cursor: pointer;
+  margin-right: auto;
+  transition: transform 0.2s;
+}
+
+.saito-back-button:hover{
+  transform: scale(1.1);
+}
+
+
+
 @media screen and (max-width: 1600px) {
   #saito-header {
     padding: 1.3rem calc((100vw - var(--saito-width)) / 2);

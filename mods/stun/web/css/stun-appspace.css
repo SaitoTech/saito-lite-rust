@@ -4,7 +4,6 @@
   width: 100vw;
   height: 100vh;
   left: 0;
-  padding: 2rem;
   top: 0;
   display: flex;
   flex-direction: column;
@@ -177,7 +176,6 @@
 @media screen and (max-width: 900px) {
   .stun-appspace-content {
     flex-direction: column;
-    width: 95%;
   }
   .stunx-appspace-splash {
     padding: 0 5rem;

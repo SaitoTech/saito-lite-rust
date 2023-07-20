@@ -39,7 +39,7 @@ class JoinLeague {
     this.overlay.remove();
 
     if (league.rank >= 0){
-      console.log("Don't join, I am a member");
+      //console.log("Don't join, I am a member");
       this.app.connection.emit('league-overlay-render-request', this.league_id);
       return;
     }
@@ -88,6 +88,7 @@ class JoinLeague {
         let params = {
           publickey: this.app.wallet.returnPublicKey(),
         }
+        
         this.mod.addLeaguePlayer(league_id, params);
 
         this.timer = setTimeout(()=> {

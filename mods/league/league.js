@@ -154,12 +154,13 @@ class League extends ModTemplate {
       });
 
       superArray.sort((a, b) => {
-        //Push community leagues to the bottom
+        console.log(a[0], b[0]);
+        //Push community leagues to the top
         if (a[0] && !b[0]) {
-          return 1;
+          return -1;
         }
         if (!a[0] && b[0]) {
-          return -1;
+          return 1;
         }
 
         //Sort by game categories
@@ -339,7 +340,7 @@ class League extends ModTemplate {
         //console.log("Sending SQL query to update");
         this.sendPeerDatabaseRequestWithFilter(
           "League",
-          `SELECT * FROM players WHERE deleted = 0 AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}') AND league_id IN (${league_list}) ORDER BY league_id, score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
+          `SELECT * FROM players WHERE deleted = 0 AND league_id IN (${league_list}) ORDER BY league_id, score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
           (res) => {
             if (res?.rows) {
               let league_id = 0;
@@ -356,9 +357,13 @@ class League extends ModTemplate {
 
                   league = league_self.returnLeague(league_id);
                   league.players = [];
-                  rank = 0;
+                  rank = -1;
                   myPlayerStats = null;
                   //league.ts = new Date().getTime();
+                }
+
+                if (p.games_finished == 0 && p.ts < cutoff && p.publickey !== this.app.wallet.returnPublicKey() && !league.admin) {
+                  continue;
                 }
 
                 //
@@ -510,7 +515,7 @@ class League extends ModTemplate {
             cnt--;
 
             if (cnt == 0){
-              //console.log("All leagues loaded from IndexedDB --> refresh UI");
+              console.log("All leagues loaded from IndexedDB --> refresh UI");
               league_self.sortLeagues();
               //Render initial UI based on what we have saved
               league_self.app.connection.emit("leagues-render-request");      // league/ main
@@ -656,9 +661,16 @@ class League extends ModTemplate {
       this.fetchLeagueLeaderboard(txmsg.league_id, () => {
         this.app.connection.emit("join-league-success");
       });
+      return;
     }
 
-    return;
+    let league = this.returnLeague(txmsg.league_id);
+    if (this.app.wallet.returnPublicKey() === league.admin) {
+     this.fetchLeagueLeaderboard(txmsg.league_id, () => {
+        siteMessage("New league member", 2500);
+      }); 
+    }
+    
   }
 
   createUpdateTransaction(league_id, new_data, field = "description") {
@@ -736,6 +748,19 @@ class League extends ModTemplate {
     let league = this.returnLeague(league_id);
     if (league) {
       league[field] = new_data;
+    }
+
+    //My data was updated...
+    if (this.app.wallet.returnPublicKey() === publickey) {
+      setTimeout(()=> {
+        this.fetchLeagueLeaderboard(league_id, ()=> {
+          if (field == "email" && new_data){
+            siteMessage(`${league.name} membership approved`, 2500);
+          }else if (field == "score"){
+            siteMessage(`${league.name} score updated`, 2500);
+          }
+        });
+      }, 1000);
     }
 
     let sql = `UPDATE OR IGNORE players SET ${field} = $data WHERE league_id = $league_id AND publickey = $publickey`;
@@ -1336,6 +1361,18 @@ class League extends ModTemplate {
     //Make sure it is a number!
     newPlayer.score = parseInt(newPlayer.score);
 
+    if (newPlayer.publickey === this.app.wallet.returnPublicKey()) {
+      console.log("Adding myself to league");
+      if (league.rank <= 0 || !league?.rank) {
+        league.rank = 0;
+        league.numPlayers = league.players.length;
+      }
+
+      if (league.admin && league.admin !== this.app.wallet.returnPublicKey()) {
+        league.unverified = newPlayer.email == "";
+      }
+    }
+
     //If we have the player already, just update the stats
     for (let z = 0; z < league.players.length; z++) {
       if (league.players[z].publickey === newPlayer.publickey) {
@@ -1351,17 +1388,6 @@ class League extends ModTemplate {
     }
 
     league.players.push(newPlayer);
-
-    if (newPlayer.publickey === this.app.wallet.returnPublicKey()) {
-      if (league.rank <= 0) {
-        league.rank = 0;
-        league.numPlayers = league.players.length;
-      }
-
-      if (league.admin && league.admin !== this.app.wallet.returnPublicKey()) {
-        league.unverified = newPlayer.email == "";
-      }
-    }
 
     //
     if (this.app.BROWSER == 0) {
@@ -1403,8 +1429,11 @@ class League extends ModTemplate {
     //We need to reset this because this should be an ordered array
     //and if the scores have changed, we need to resort the players
     league.players = [];
+    league.rank = -1;
 
     let cutoff = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
+    
+    //We do this here to avoid a SQL union statement
     let cond = (league.admin) ? `` : ` AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}')`;
 
     this.sendPeerDatabaseRequestWithFilter(
