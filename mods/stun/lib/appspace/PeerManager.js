@@ -591,7 +591,7 @@ class PeerManager {
         this.current_speaker = peer;
 
         setTimeout(() => {
-          if (peer === this.current_speaker) {
+          if (peer === this.current_speaker && !has_mike) {
             peer_manager_self.app.connection.emit("stun-new-speaker", peer);
             has_mike = true;
           }

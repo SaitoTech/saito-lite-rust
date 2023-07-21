@@ -110,26 +110,52 @@ class TweetManager {
     );
   }
 
-  render() {
+  render(new_mode = "tweets") {
     let myqs = `.tweet-manager`;
 
     //Stop observering while we rebuild the page
     this.intersectionObserver.disconnect();
+    this.profile.remove();
 
+    console.log(new_mode);
+
+    let holder = document.getElementById("tweet-thread-holder");
+    let managerElem = document.querySelector(myqs);
+    
     if (!document.querySelector(myqs)) {
       this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
     } else {
-      document.querySelector(myqs).innerHTML = "";
+      if (this.mode == "tweets" ) {
+        console.log("Cache tweets");
+    
+        let kids = managerElem.children;
+        console.log(kids.length);
+        holder.replaceChildren(...kids);
+        
+      }else {
+        console.log("clear tweet manager");
+        while (managerElem.hasChildNodes()){
+          managerElem.firstChild.remove();
+        }
+      }
     }
 
+    
+    
     this.showLoader();
 
 
     ////////////
     // tweets //
     ////////////
-    if (this.mode == "tweets") {
-      this.profile.remove();
+    if (new_mode == "tweets") {
+
+      if (holder){
+        console.log("Restore tweets");
+        let kids = holder.children;
+        console.log(kids.length);
+        managerElem.replaceChildren(...kids);
+      }
 
       for (let i = 0; i < this.mod.tweets.length; i++) {
         let tweet = this.mod.tweets[i];
@@ -142,8 +168,7 @@ class TweetManager {
     ///////////////////
     // notifications //
     ///////////////////
-    if (this.mode == "notifications") {
-      this.profile.remove();
+    if (new_mode == "notifications") {
 
       if (this.mod.notifications.length == 0) {
         let notification = new Notification(this.app, this.mod, null);
@@ -161,7 +186,7 @@ class TweetManager {
     /////////////
     // profile //
     /////////////
-    if (this.mode == "profile") {
+    if (new_mode == "profile") {
       this.profile.publickey = this.publickey;
 
       this.profile.render();
@@ -180,6 +205,8 @@ class TweetManager {
       });*/
     }
 
+    this.mode = new_mode;
+
     //Fire up the intersection observer
     this.attachEvents();
   }
@@ -189,28 +216,14 @@ class TweetManager {
   // as they appear...
   //
   renderTweet(tweet) {
-    this.intersectionObserver.disconnect();
 
-
-    let myqs = `.tweet-manager`;
-
-    if (!document.querySelector(myqs)) {
-      this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
-    } else {
-      document.querySelector("#redsquare-intersection").remove();
-      this.app.browser.replaceElementBySelector(TweetManagerTemplate(), myqs);
-    }
-
-    this.mode = "single";
-    this.profile.remove();
+    this.render("single");
 
     //Show the basic tweet first
     if (!tweet.parent_id) {
       tweet.renderWithChildren();  
     }
     
-    this.showLoader();
-
     //Query the whole thread
     let thread_id = tweet.thread_id || tweet.parent_id || tweet.tx.transaction.sig;
 

@@ -6,6 +6,8 @@
     if (card == "ironlady") {
 
       // SAITO COMMUNITY
+      this.removeCardFromDeck("socgov", "The Iron Lady evented");
+
       if (!this.saito_cards_removed.includes("socgov")) { this.saito_cards_removed.push("socgov"); }
 
 
