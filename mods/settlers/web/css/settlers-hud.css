@@ -28,6 +28,7 @@
   padding: 0;
   width: 100%;
   margin: 0 0 1rem;
+  min-height: 4.5rem;
 }
 
 /* hide scrollbars */
@@ -37,7 +38,7 @@
   scrollbar-width: none;
   overflow-y: auto;
   overflow-x: auto;
-  min-height: 3.5rem;
+  min-height: 4.5rem;
 }
 
 .hud-body .status ul li, .hud-body .controls ul li, .hud-body .status .tbh ul li {
