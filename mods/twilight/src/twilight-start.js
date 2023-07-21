@@ -7541,7 +7541,11 @@ console.log("PRESC: " + JSON.stringify(scoring));
 
 console.log("SCORING: " + JSON.stringify(scoring));
 
-        if (mouseover_preview != 1) { this.resetBattlegroundCountries(region); }
+        if (mouseover_preview != 1) { 
+	  // SAITO COMMUNITY
+	  if (region === this.game.state.events.kissinger) { this.game.state.events.kissinger = ""; }
+	  this.resetBattlegroundCountries(region); 
+	}
 
         break;
       }
@@ -8239,6 +8243,12 @@ console.log("SCORING: " + JSON.stringify(scoring));
     if (!this.browser_active){return;}
 
     try {
+
+    if (this.game.state.events.kissinger == "") {
+      $('#eventtile_kissinger').css('display','none');
+    } else {
+      $('#eventtile_kissinger').css('display','block');
+    }
 
     if (this.game.state.events.warsawpact == 0) {
       $('#eventtile_warsaw').css('display','none');
