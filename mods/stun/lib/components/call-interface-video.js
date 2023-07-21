@@ -100,6 +100,11 @@ class CallInterfaceVideo {
         case "focus":
           this.switchDisplayToExpanded();
           break;
+          
+        case "speaker":
+          this.switchDisplayToExpanded();
+          break;
+
         case "presentation":
           this.swicthDisplayToPresentation();
           break;
@@ -120,6 +125,8 @@ class CallInterfaceVideo {
             return;
           }
 
+          console.log("Change speaker");
+          
           if (
             this.display_mode == "speaker" &&
             !item.parentElement.classList.contains("expanded-video")
