@@ -752,7 +752,6 @@ initializeGame(game_id) {
 	  this.removeCardFromDeck('nato', "Prerequisites Not Met");
 	  this.addCardToDeck('iranianultimatum', "New Card");
 	  this.addCardToDeck('unitedfruit', "New Card");
-	  this.addCardToDeck('tsarbomba', "New Card");
 	  delete early_war_deck['nato'];
 	}
         this.game.queue.push("DECK\t1\t"+JSON.stringify(early_war_deck));
@@ -1104,9 +1103,9 @@ console.log("LATEST MOVE: " + mv);
       this.game.queue.splice(qe, 1);
     }
 
-	//
-	// remove from discards (will still be in cards)
-	//
+    //
+    // remove from discards (will still be in cards)
+    //
     if (mv[0] === "undiscard") {
 
       let cardkey = mv[1];
@@ -1704,6 +1703,9 @@ console.log("LATEST MOVE: " + mv);
     if (mv[0] == "dynamic_deck_management") {
 
       this.game.queue.splice(qe, 1);
+if (this.game.deck[0]) {
+console.log("CARDS IN DECK: " + this.game.deck[0].cards.length);
+}
       this.dynamicDeckManagement();
 
       //
@@ -2937,22 +2939,17 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
         this.game.queue.push("play\t1");
       }
 
-      this.game.queue.push("headline");
+
+
       //this.game.queue.push("update_observers\t2");
       //this.game.queue.push("update_observers\t1");
       
 
       //
-      // dynamic deck management -- SAITO COMMUNITY
+      // trigger headline
       //
-      // dynamically adding and removing cards from the deck based on card and game
-      // logic criteria. this is how the Saito Edition manages to squeeze in a bunch
-      // of dynamic balancing behavior.
-      //
-      this.dynamicDeckManagement();
-      if (this.game.state.round == 1) {
-        this.game.queue.push("dynamic_deck_management");
-      }
+      this.game.queue.push("headline");
+
 
       //
       // DEAL MISSING CARDS
@@ -2967,6 +2964,11 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
         this.game.queue.push("reshuffle");
         this.game.queue.push("sharehandsize\t2");
         this.game.queue.push("sharehandsize\t1");
+
+
+	if (this.game.state.round == 2) {
+	  this.addCardToDeck('tsarbomba', "New Card");
+	}
 
         if (this.game.state.round == 4) {
 
@@ -3065,11 +3067,27 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
         }
       }
 
+
+      //
+      // dynamic deck management -- SAITO COMMUNITY
+      //
+      // dynamically adding and removing cards from the deck based on card and game
+      // logic criteria. this is how the Saito Edition manages to squeeze in a bunch
+      // of dynamic balancing behavior.
+      //
+      if (this.game.state.round >= 1) {
+        this.game.queue.push("dynamic_deck_management");
+      }
+
+
+
       return 1;
     }
 
 
     if (mv[0] === "play") {
+
+console.log("CARDS IN DECK: " + this.game.deck[0].cards.length);
 
       //if (this.game.player == 0) {
       //  this.game.queue.push("OBSERVER_CHECKPOINT");
@@ -3342,7 +3360,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
       // check to see if defectors is in play
       //
      
-      if (uscard == "defectors") {
+      if (uscard == "defectors" || this.game.state.defectors_pulled_in_headline == 1) {
      
         this.game.turn = []; 
         this.updateLog(`USSR headlines ${this.cardToText(ussrcard)}`);
@@ -3359,6 +3377,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
         this.updateStatus(`>${this.cardToText("defectors")} cancels USSR headline. Moving into first turn...`);
 
       } else {
+
         let statusMsg = "";
         if (this.game.state.player_to_go == 1){
           statusMsg = `USSR headlines ${this.cardToText(ussrcard)}. US headlines ${this.cardToText(uscard)}`; 
@@ -8741,6 +8760,8 @@ console.log("SCORING: " + JSON.stringify(scoring));
   //
   dynamicDeckManagement() {
 
+    let shuffle_in_these_cards = {};
+
     //
     // living history / saito edition -- SAITO COMMUNITY
     //
@@ -8838,10 +8859,48 @@ console.log("SCORING: " + JSON.stringify(scoring));
       if (!this.game.deck[0].cards[saito_edition_added[i]]) {
 	if (fulldeck[saito_edition_added[i]] && !saito_edition_removed.includes(saito_edition_added[i])) {
 	  cards_added_to_deck++;
-	  this.game.deck[0].cards[saito_edition_added[i]] = fulldeck[saito_edition_added[i]];
+	  //this.game.deck[0].cards[saito_edition_added[i]] = fulldeck[saito_edition_added[i]];
+	  shuffle_in_these_cards[saito_edition_added[i]] = fulldeck[saito_edition_added[i]];
 	}
       }
     }
+
+
+    //
+    // discards should be removed from main deck for reshuffle
+    //
+    for (let key2 in this.game.deck[0].discards) {
+      if (this.game.deck[0].cards[key2]) {
+	delete this.game.deck[0].cards[key2];
+      }
+    }
+
+    for (let key3 in this.game.deck[0].cards) {
+      shuffle_in_these_cards[key3] = this.game.deck[0].cards[key3];
+    }
+
+console.log("DECK HAS THESE!");
+for (let key4 in shuffle_in_these_cards) {
+  console.log(key4);
+}
+
+    //
+    // shuffle in new cards
+    //
+    // note - no backup and restore as we are replacing the deck
+    //
+    this.game.queue.push("SHUFFLE\t1");
+    this.game.queue.push("DECKRESTORE");
+    this.game.queue.push("DECKENCRYPT\t1\t2");
+    this.game.queue.push("DECKENCRYPT\t1\t1");
+    this.game.queue.push("DECKXOR\t1\t2");
+    this.game.queue.push("DECKXOR\t1\t1");
+    this.game.queue.push("DECK\t1\t"+JSON.stringify(shuffle_in_these_cards));
+    this.game.queue.push("HANDBACKUP\t1");
+    this.updateLog("Shuffling new cards into deck...");
+    
+
+
 
     this.game.state.player1_card_replacements_needed = 0;
     this.game.state.player2_card_replacements_needed = 0;
@@ -8923,6 +8982,9 @@ console.log("SCORING: " + JSON.stringify(scoring));
     if (this.game.deck.length > 0) {
       if (this.game.deck[0].cards[key]) {
         delete this.game.deck[0].cards[key];
+      }
+      if (this.game.deck[0].discards[key]) {
+        delete this.game.deck[0].discards[key];
       }
     }
 
