@@ -265,7 +265,7 @@ class CallInterfaceVideo {
     }
 
     document.querySelector(".large-wrapper").addEventListener("click", (e) => {
-      if (this.display_mode == "gallery" || this.display_mode == "presentation") {
+      if (this.display_mode == "gallery" || this.display_mode == "presentation" || this.display_mode == "speaker") {
         return;
       }
       if (e.target.classList.contains("video-box")) {

@@ -145,6 +145,7 @@
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(100px, 1fr));
   grid-gap: 1rem;
   height: fit-content;
   width: 100%;
@@ -170,6 +171,8 @@
 
 .side-videos .video-box-container-large {
   height: fit-content;
+  max-height: 100%;
+  overflow: clip;
   border: 2px solid var(--saito-border-color-dark);
 }
 
@@ -887,7 +890,14 @@
 
 
 /* --chat in video calls -- */
+.stun-chatbox .chat-static {
+  border-radius: 2px solid var(--saito-border-color-dark);
+  border-radius: 0.5rem;
+}
 
+.stun-chatbox .chat-header, .stun-chatbox .chat-header .saito-address {
+  cursor: default;
+}
 .stun-chatbox.minimize .chat-static {
   display: none;
 }

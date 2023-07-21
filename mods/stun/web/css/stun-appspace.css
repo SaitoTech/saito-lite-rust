@@ -186,10 +186,10 @@
 
 
 @media screen and (max-width: 580px) {
-  .stun-appspace, .chat-settings-wrapper {
+  .stun-appspace{
     padding: 4rem 1rem;
-    margin: 0;
   }
+
   #createRoom {
     width: 100%;
   }
