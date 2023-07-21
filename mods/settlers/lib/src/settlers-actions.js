@@ -241,6 +241,7 @@ console.log("DONE GENERATING MAP");
       html += "</div>";
       settlers_self.displayCardfan();
       settlers_self.updateStatus(html, 1);
+      
 
       $(".option").off();
       $(".option").on("click", function () {

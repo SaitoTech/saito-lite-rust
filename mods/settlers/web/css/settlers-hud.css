@@ -1,6 +1,6 @@
 .hud {
-  width: 50rem;
-  max-width: 50rem;
+  width: 60rem;
+  max-width: 70rem;
   z-index: 50 !important;
 }
 
@@ -13,7 +13,12 @@
 .hud-body {
   min-height: 11rem;
   width: calc(100% - 5rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0 0 1rem;
 }
+
 
 /* override default #efefef background */
 
@@ -21,6 +26,8 @@
   background-color: transparent;
   box-shadow: none;
   padding: 0;
+  width: 100%;
+  margin: 0 0 1rem;
 }
 
 /* hide scrollbars */
@@ -30,6 +37,7 @@
   scrollbar-width: none;
   overflow-y: auto;
   overflow-x: auto;
+  min-height: 3.5rem;
 }
 
 .hud-body .status ul li, .hud-body .controls ul li, .hud-body .status .tbh ul li {
@@ -86,6 +94,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+  gap: 2rem;
 }
 
 
