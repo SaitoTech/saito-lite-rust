@@ -5,7 +5,7 @@
     if (card == "northseaoil") {
 
       // SAITO COMMUNITY
-      this.removeCardFromDeck("opec", "OPEC cancelled");
+      this.removeCardFromDeckNextDeal("opec", "OPEC cancelled");
 
       this.cancelEvent("opec");
       this.game.state.events.northseaoil = 1; //block OPEC

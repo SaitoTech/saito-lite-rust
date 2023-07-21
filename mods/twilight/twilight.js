@@ -8973,6 +8973,24 @@ for (let key4 in shuffle_in_these_cards) {
     }
 
   }
+  removeCardFromDeckNextDeal(key="", reason="") {
+
+    if (!this.game.saito_cards_added) {
+      //
+      // living history / saito edition -- SAITO COMMUNITY
+      //
+      this.game.saito_cards_added = [];
+      this.game.saito_cards_removed = [];
+      this.game.saito_cards_added_reason = [];
+      this.game.saito_cards_removed_reason = [];
+    }
+
+    if (!this.game.saito_cards_removed.includes(key)) {
+      this.game.saito_cards_removed.push(key);
+      this.game.saito_cards_removed_reason.push(reason);
+    }
+
+  }
   removeCardFromDeck(key="", reason="") {
 
     if (!this.game.saito_cards_added) {
@@ -9435,7 +9453,7 @@ for (let key4 in shuffle_in_these_cards) {
     if (card == "awacs") {
 
       // SAITO COMMUNITY
-      this.removeCardFromDeck("muslimrevolution", "Muslim Revolution cancelled");
+      this.removeCardFromDeckNextDeal("muslimrevolution", "Muslim Revolution cancelled");
 
       this.game.state.events.awacs = 1; //Prevent Muslim Revolution
       this.cancelEvent("muslimrevolution");
@@ -9744,7 +9762,7 @@ for (let key4 in shuffle_in_these_cards) {
     if (card == "campdavid") {
 
       // SAITO COMMUNITY
-      this.removeCardFromDeck("arabisraeli", "Camp David evented");
+      this.removeCardFromDeckNextDeal("arabisraeli", "Camp David evented");
 
       this.game.state.events.campdavid = 1; //Prevents Arab-Isreali War
       this.cancelEvent("arabisraeli");
@@ -9802,7 +9820,7 @@ for (let key4 in shuffle_in_these_cards) {
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeck("unitedfruit", "Che Evented");
+      this.removeCardFromDeckNextDeal("unitedfruit", "Che Evented");
 
      
       let twilight_self = this;
@@ -9921,6 +9939,7 @@ for (let key4 in shuffle_in_these_cards) {
       // SAITO COMMUNITY - lone gunman added
       //
       this.addCardToDeck("lonegunman", "Prerequisites Met");
+      this.removeCardFromDeckNextDeal("tsarbomba", "CIA Evented");
 
 
       //USSR needs to share its card information
@@ -10598,7 +10617,8 @@ for (let key4 in shuffle_in_these_cards) {
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeck("unitedfruit", "Fidel Evented");
+      this.removeCardFromDeckNextDeal("unitedfruit", "Fidel Evented");
+      this.cancelEvent("unitedfruit");
 
 
       let usinf = parseInt(this.countries['cuba'].us);
@@ -11179,9 +11199,7 @@ for (let key4 in shuffle_in_these_cards) {
     if (card == "ironlady") {
 
       // SAITO COMMUNITY
-      this.removeCardFromDeck("socgov", "The Iron Lady evented");
-
-      if (!this.saito_cards_removed.includes("socgov")) { this.saito_cards_removed.push("socgov"); }
+      this.removeCardFromDeckNextDeal("socgov", "The Iron Lady evented");
 
 
       this.updateLog("US gains 1 VP from The Iron Lady");
@@ -11488,7 +11506,8 @@ for (let key4 in shuffle_in_these_cards) {
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeck("unitedfruit", "Liberation Theology Evented");
+      this.removeCardFromDeckNextDeal("unitedfruit", "Liberation Theology Evented");
+      this.cancelEvent("unitedfruit");
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
@@ -12074,7 +12093,7 @@ for (let key4 in shuffle_in_these_cards) {
     if (card == "northseaoil") {
 
       // SAITO COMMUNITY
-      this.removeCardFromDeck("opec", "OPEC cancelled");
+      this.removeCardFromDeckNextDeal("opec", "OPEC cancelled");
 
       this.cancelEvent("opec");
       this.game.state.events.northseaoil = 1; //block OPEC
@@ -14173,7 +14192,7 @@ for (let key4 in shuffle_in_these_cards) {
 
     if (card == "berlinagreement") {
 
-      this.removeCardFromDeck("blockade", "Blockade Cancelled");
+      this.removeCardFromDeckNextDeal("blockade", "Blockade Cancelled");
 
       this.cancelEvent("blockade");
 

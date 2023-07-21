@@ -6,7 +6,8 @@
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeck("unitedfruit", "Fidel Evented");
+      this.removeCardFromDeckNextDeal("unitedfruit", "Fidel Evented");
+      this.cancelEvent("unitedfruit");
 
 
       let usinf = parseInt(this.countries['cuba'].us);

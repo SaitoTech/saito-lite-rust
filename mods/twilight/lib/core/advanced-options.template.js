@@ -10,6 +10,11 @@ module.exports = () => {
             <select name="deck" id="deckselect" onchange='
         if ($("#deckselect").val() == "saito") { 
           $(".saito_edition").prop("checked",true); 
+	  try {
+	    document.querySelector(".usbonus").value = 0;
+	  } catch (err) {
+console.log(err);
+	  }
           $(".endofhistory_edition").prop("checked", false); 
         } else { 
           $(".saito_edition").prop("checked", false); 
@@ -31,7 +36,7 @@ module.exports = () => {
             </select>
 
             <label for="usbonus">US bonus: </label>
-            <select name="usbonus">
+            <select class="usbonus" name="usbonus">
               <option value="0">0</option>
               <option value="1">1</option>
               <option value="2" selected>2</option>

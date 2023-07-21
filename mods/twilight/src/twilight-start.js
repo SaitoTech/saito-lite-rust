@@ -230,7 +230,6 @@ class Twilight extends GameTemplate {
       }
     });
 
-
     this.menu.addSubMenuOption("game-confirm",{
       text: `Newbie ${(this.confirm_moves==1)?"✔":""}`,
       id:"game-confirm-newbie",
@@ -522,7 +521,6 @@ initializeGame(game_id) {
       this.game.options.samotlor = 1;
       this.game.options.tsarbomba = 1;
       this.game.options.unitedfruit = 1;
-
 
       this.placeInfluence("mexico", 2, "us");
       this.placeInfluence("cuba", 3, "ussr");
@@ -1703,9 +1701,9 @@ console.log("LATEST MOVE: " + mv);
     if (mv[0] == "dynamic_deck_management") {
 
       this.game.queue.splice(qe, 1);
-if (this.game.deck[0]) {
-console.log("CARDS IN DECK: " + this.game.deck[0].cards.length);
-}
+
+      if (this.game.options.deck === "saito") { return; }
+
       this.dynamicDeckManagement();
 
       //
@@ -8770,6 +8768,8 @@ console.log("SCORING: " + JSON.stringify(scoring));
   //
   dynamicDeckManagement() {
 
+    if (this.game.options.deck === "saito") { return; }
+
     let shuffle_in_these_cards = {};
 
     //
@@ -8889,11 +8889,6 @@ console.log("SCORING: " + JSON.stringify(scoring));
       shuffle_in_these_cards[key3] = this.game.deck[0].cards[key3];
     }
 
-console.log("DECK HAS THESE!");
-for (let key4 in shuffle_in_these_cards) {
-  console.log(key4);
-}
-
     //
     // shuffle in new cards
     //
@@ -8909,9 +8904,6 @@ for (let key4 in shuffle_in_these_cards) {
     this.game.queue.push("HANDBACKUP\t1");
     this.updateLog("Shuffling new cards into deck...");
     
-
-
-
     this.game.state.player1_card_replacements_needed = 0;
     this.game.state.player2_card_replacements_needed = 0;
 
@@ -8970,6 +8962,24 @@ for (let key4 in shuffle_in_these_cards) {
     if (!this.game.saito_cards_added.includes(key)) {
       this.game.saito_cards_added.push(key);
       this.game.saito_cards_added_reason.push(reason);
+    }
+
+  }
+  removeCardFromDeckNextDeal(key="", reason="") {
+
+    if (!this.game.saito_cards_added) {
+      //
+      // living history / saito edition -- SAITO COMMUNITY
+      //
+      this.game.saito_cards_added = [];
+      this.game.saito_cards_removed = [];
+      this.game.saito_cards_added_reason = [];
+      this.game.saito_cards_removed_reason = [];
+    }
+
+    if (!this.game.saito_cards_removed.includes(key)) {
+      this.game.saito_cards_removed.push(key);
+      this.game.saito_cards_removed_reason.push(reason);
     }
 
   }
