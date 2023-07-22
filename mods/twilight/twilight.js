@@ -230,7 +230,6 @@ class Twilight extends GameTemplate {
       }
     });
 
-
     this.menu.addSubMenuOption("game-confirm",{
       text: `Newbie ${(this.confirm_moves==1)?"✔":""}`,
       id:"game-confirm-newbie",
@@ -522,7 +521,6 @@ initializeGame(game_id) {
       this.game.options.samotlor = 1;
       this.game.options.tsarbomba = 1;
       this.game.options.unitedfruit = 1;
-
 
       this.placeInfluence("mexico", 2, "us");
       this.placeInfluence("cuba", 3, "ussr");
@@ -1703,9 +1701,9 @@ console.log("LATEST MOVE: " + mv);
     if (mv[0] == "dynamic_deck_management") {
 
       this.game.queue.splice(qe, 1);
-if (this.game.deck[0]) {
-console.log("CARDS IN DECK: " + this.game.deck[0].cards.length);
-}
+
+      if (this.game.options.deck !== "saito") { return 1; }
+
       this.dynamicDeckManagement();
 
       //
@@ -2376,17 +2374,29 @@ console.log("CARDS IN DECK: " + this.game.deck[0].cards.length);
     }
 
     if (mv[0] === "setvar") {
+      this.game.queue.splice(qe, 1);
+      let player = parseInt(mv[1]);
+
+      if (mv[2] === "hold") {
+	if (player == 1) {
+	  this.game.state.player1_hold_cards = JSON.parse(mv[3]);
+	}
+	if (player == 2) {
+	  this.game.state.player2_hold_cards = JSON.parse(mv[3]);
+	}
+	return 1;
+      }
+
       if (this.game.player != mv[1]) {
-  	    if (mv[2] == "opponent_cards_in_hand") {
+  	if (mv[2] == "opponent_cards_in_hand") {
           this.game.state.opponent_cards_in_hand = parseInt(mv[3]);
         }
         if (mv[3]) {
-           if (mv[3] == "back_button_cancelled") {
-              this.game.state.back_button_cancelled = parseInt(mv[4]);
-           }
+          if (mv[3] == "back_button_cancelled") {
+           this.game.state.back_button_cancelled = parseInt(mv[4]);
+          }
         }
       }
-      this.game.queue.splice(qe, 1);
     }
 
 
@@ -2671,6 +2681,12 @@ console.log("CARDS IN DECK: " + this.game.deck[0].cards.length);
       // china card is face-up
       //
       this.game.state.events.china_card_facedown = 0;
+
+      //
+      // reset 
+      //
+      this.game.state.defectors_pulled_in_headline = false;
+
 
       //
       // reset / disable aldrich
@@ -3203,16 +3219,28 @@ console.log("CARDS IN DECK: " + this.game.deck[0].cards.length);
 
 
     if (mv[0] === "sharehandsize"){
+
       let player = parseInt(mv[1]);
+
+      //
+      // the hold card is shared according to tournament rules, and used
+      // to avoid re-dealing when cards are added / removed in the dynamic
+      // edition of the game.
+      //
+      let cards = [];
+
       this.game.queue.splice(qe, 1);
 
       if (this.game.player == player){
         let cards_in_hand = this.game.deck[0].hand.length;
         for (let z = 0; z < this.game.deck[0].hand.length; z++) {
-          if (this.game.deck[0].hand[z] == "china") {
+          if (this.game.deck[0].hand[z] === "china") {
             cards_in_hand--;
+          } else {
+	    cards.push(this.game.deck[0].hand[z]);
           }
         }
+        this.addMove("setvar\t"+this.game.player+"\thold\t"+JSON.stringify(cards));
         this.addMove("setvar\t"+this.game.player+"\topponent_cards_in_hand\t"+cards_in_hand);
         this.endTurn();
       }
@@ -6245,6 +6273,9 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     state.turn_in_round = 0;
     state.broke_control = 0;
     state.us_efcon_bonus = 0;
+    state.player1_hold_card = ""; // tournament rules require reveal end-of-turn
+    state.player2_hold_card = "";
+    state.opponent_cards_in_hand = 0;
     state.opponent_cards_in_hand = 0;
     state.event_before_ops = 0;
     state.event_name = "";
@@ -8770,7 +8801,10 @@ console.log("SCORING: " + JSON.stringify(scoring));
   //
   dynamicDeckManagement() {
 
+    if (this.game.options.deck === "saito") { return; }
+
     let shuffle_in_these_cards = {};
+    let already_dealt = {};
 
     //
     // living history / saito edition -- SAITO COMMUNITY
@@ -8886,13 +8920,12 @@ console.log("SCORING: " + JSON.stringify(scoring));
     }
 
     for (let key3 in this.game.deck[0].cards) {
-      shuffle_in_these_cards[key3] = this.game.deck[0].cards[key3];
+      if (this.game.state.player1_hold_cards.includes(key3) || this.game.state.player2_hold_cards.includes(key3)) {
+	already_dealt[key3] = this.game.deck[0].cards[key3];
+      } else {
+        shuffle_in_these_cards[key3] = this.game.deck[0].cards[key3];
+      }
     }
-
-console.log("DECK HAS THESE!");
-for (let key4 in shuffle_in_these_cards) {
-  console.log(key4);
-}
 
     //
     // shuffle in new cards
@@ -8900,6 +8933,7 @@ for (let key4 in shuffle_in_these_cards) {
     // note - no backup and restore as we are replacing the deck
     //
     this.game.queue.push("SHUFFLE\t1");
+    this.game.queue.push("DECKADDCARDS\t"+JSON.stringify(already_dealt));
     this.game.queue.push("DECKRESTORE");
     this.game.queue.push("DECKENCRYPT\t1\t2");
     this.game.queue.push("DECKENCRYPT\t1\t1");
@@ -8909,9 +8943,6 @@ for (let key4 in shuffle_in_these_cards) {
     this.game.queue.push("HANDBACKUP\t1");
     this.updateLog("Shuffling new cards into deck...");
     
-
-
-
     this.game.state.player1_card_replacements_needed = 0;
     this.game.state.player2_card_replacements_needed = 0;
 
