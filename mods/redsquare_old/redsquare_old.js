@@ -1177,7 +1177,7 @@ class RedSquare extends ModTemplate {
                SET num_likes = num_likes + 1
                WHERE sig = $sig`;
     let params = {
-      $sig: txmsg.data.sig,
+      $sig: txmsg.data.signature,
     };
     await app.storage.executeDatabase(sql, params, "redsquare");
 
@@ -1281,7 +1281,7 @@ class RedSquare extends ModTemplate {
           //console.log("Save notification to archive");
 
           //
-          // this transaction is TO me, but I may not be the tx.transaction.to[0].add address, and thus the archive
+          // this transaction is TO me, but I may not be the tx.to[0].publicKey address, and thus the archive
           // module may not index this transaction for me in a way that makes it very easy to fetch (field3 = MY_KEY}
           // thus we override the defaults by setting field3 explicitly to our publickey so that loading transactions
           // from archives by fetching on field3 will get this.
@@ -1442,7 +1442,7 @@ class RedSquare extends ModTemplate {
         $parent_id: tweet.tx.optional.parent_id,
         $type: type_of_tweet,
         $thread_id: tweet.tx.optional.thread_id || tx.signature,
-        $publickey: tx.from[0].add,
+        $publickey: tx.from[0].publicKey
         $link: tweet.link,
         $link_properties: JSON.stringify(tweet.tx.optional.link_properties),
         $has_images: has_images,
@@ -1607,7 +1607,7 @@ class RedSquare extends ModTemplate {
                SET flagged = 1
                WHERE sig = $sig`;
     let params = {
-      $sig: txmsg.data.sig,
+      $sig: txmsg.data.signature,
     };
     await app.storage.executeDatabase(sql, params, "redsquare");
 

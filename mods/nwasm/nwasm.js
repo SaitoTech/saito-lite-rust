@@ -497,7 +497,7 @@ class Nwasm extends OnePlayerGameTemplate {
     }
     newtx = this.app.wallet.signTransaction(newtx);
     if (iobj) {
-      iobj.innerHTML = "uploading archive file: " + newtx.transaction.m.length + " bytes";
+      iobj.innerHTML = "uploading archive file: " + newtx.m.length + " bytes";
     }
 
     //
@@ -524,7 +524,7 @@ class Nwasm extends OnePlayerGameTemplate {
   loadSaveGame(sig) {
     for (let i = 0; i < this.active_game_saves.length; i++) {
       let newtx = this.active_game_saves[i];
-      if (sig === newtx.transaction.sig) {
+      if (sig === newtx.signature) {
         let txmsg = newtx.returnMessage();
         let byteArray = this.convertBase64ToByteArray(txmsg.data);
         this.active_game = byteArray;

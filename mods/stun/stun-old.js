@@ -896,7 +896,7 @@ class Stun extends ModTemplate {
 
   //     // onchain
   //     let newtx = this.app.wallet.createUnsignedTransaction();
-  //     newtx.transaction.to.push(new saito.default.slip(offer.recipient));
+  //     newtx.to.push(new saito.default.slip(offer.recipient));
   //     newtx.msg.module = "Stun";
   //     newtx.msg.request = request
   //     newtx.msg.data = _data
@@ -957,7 +957,7 @@ class Stun extends ModTemplate {
 
   //     // onchain
   //     // let newtx = this.app.wallet.createUnsignedTransaction();
-  //     // newtx.transaction.to.push(new saito.default.slip(offer_creator));
+  //     // newtx.to.push(new saito.default.slip(offer_creator));
   //     // newtx.msg.module = "Stun";
   //     // newtx.msg.request = request
   //     // newtx.msg.data= _data;
@@ -1008,7 +1008,7 @@ class Stun extends ModTemplate {
 
   //     // onchain
   //     let newtx = this.app.wallet.createUnsignedTransaction();
-  //     newtx.transaction.to.push(new saito.default.slip(offer_creator));
+  //     newtx.to.push(new saito.default.slip(offer_creator));
   //     newtx.msg.module = "Stun";
   //     newtx.msg.request = request
   //     newtx.msg.data = _data;

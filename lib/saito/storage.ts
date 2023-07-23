@@ -177,7 +177,7 @@ export default class Storage {
     const message = "archive";
     const data: any = {};
     data.request = "increment_optional_value";
-    data.sig = sig;
+    data.signature = sig;
     data.publickey = await this.app.wallet.getPublicKey();
     data.optional_key = optional_key;
     return this.app.network.sendRequestAsTransaction(message, data, function (res) {});
@@ -187,7 +187,7 @@ export default class Storage {
     const message = "archive";
     const data: any = {};
     data.request = "update_optional_value";
-    data.sig = sig;
+    data.signature = sig;
     data.publickey = await this.app.wallet.getPublicKey();
     data.optional_value = optional_value;
     data.optional_key = optional_key;
@@ -198,7 +198,7 @@ export default class Storage {
     const message = "archive";
     const data: any = {};
     data.request = "update_optional";
-    data.sig = sig;
+    data.signature = sig;
     data.publickey = await this.app.wallet.getPublicKey();
     data.optional = optional;
     return this.app.network.sendRequestAsTransaction(message, data, function (res) {});

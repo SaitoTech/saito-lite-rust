@@ -85,8 +85,8 @@ export default class Transaction extends SaitoTransaction {
         slip.blockId = BigInt(fslip.blockId);
         slip.txOrdinal = BigInt(fslip.txOrdinal);
 
-        // this.transaction.from.push(
-        //   new Slip(fslip.add, fslip.amt, fslip.type, fslip.sid, fslip.block_id, fslip.tx_ordinal)
+        // this.from.push(
+        //   new Slip(fslip.publicKey  fslip.amt, fslip.type, fslip.sid, fslip.block_id, fslip.tx_ordinal)
         // );
         this.addFromSlip(slip);
       }
@@ -103,8 +103,8 @@ export default class Transaction extends SaitoTransaction {
         slip.index = fslip.index;
         slip.blockId = BigInt(fslip.blockId);
         slip.txOrdinal = BigInt(fslip.txOrdinal);
-        // this.transaction.to.push(
-        //   new Slip(fslip.add, fslip.amt, fslip.type, fslip.sid, fslip.block_id, fslip.tx_ordinal)
+        // this.to.push(
+        //   new Slip(fslip.publicKey  fslip.amt, fslip.type, fslip.sid, fslip.block_id, fslip.tx_ordinal)
         // );
         this.addToSlip(slip);
       }
@@ -140,19 +140,19 @@ export default class Transaction extends SaitoTransaction {
       // FRI FEB 3 -- DEPRECATED -- delete if no problems
       //
       /***********
-       if (this.transaction.type === TransactionType.Normal) {
+       if (this.type === TransactionType.Normal) {
         try {
-          let buffer = Buffer.from(this.transaction.m);
+          let buffer = Buffer.from(this.m);
           if (buffer.byteLength === 0) {
             this.msg = {};
           } else {
             try {
-              const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+              const reconstruct = Buffer.from(this.m).toString("utf-8");
               this.msg = JSON.parse(reconstruct);
             } catch (error) {
               //console.log("failed from utf8. trying if base64 still works for old version");
               //console.error(error);
-              const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
+              const reconstruct = this.base64ToString(Buffer.from(this.m).toString());
               this.msg = JSON.parse(reconstruct);
             }
           }

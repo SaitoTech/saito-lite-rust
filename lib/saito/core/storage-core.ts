@@ -186,8 +186,8 @@ class StorageCore extends Storage {
   //     //
   //     if (blk.transactions != undefined) {
   //       for (let b = 0; b < blk.transactions.length; b++) {
-  //         for (let bb = 0; bb < blk.transactions[b].transaction.to.length; bb++) {
-  //           this.app.utxoset.delete(blk.transactions[b].transaction.to[bb].returnKey());
+  //         for (let bb = 0; bb < blk.transactions[b].to.length; bb++) {
+  //           this.app.utxoset.delete(blk.transactions[b].to[bb].returnKey());
   //         }
   //       }
   //     }
@@ -525,10 +525,10 @@ class StorageCore extends Storage {
       const db = await this.returnDatabaseByName(database);
       if (mycallback == null) {
         let res = await db.run(sql, params);
-	return res.lastID;
+        return res.lastID;
       } else {
         let res = await db.run(sql, params, mycallback);
-	return res.lastID;
+        return res.lastID;
       }
     } catch (err) {
       console.log("sql : ", sql);

@@ -75,9 +75,9 @@
 //     "c9a6c2d0bf884be6933878577171a3c8094c2bf6e0bc1b4ec3535a4a55224d186d4d891e254736cae6c0d2002c8dfc0ddfc7fcdbe4bc583f96fa5b273b9d63f4";
 //
 //   const tx = new Transaction();
-//   tx.transaction.ts = 1637034582666;
-//   tx.transaction.type = TransactionType.ATR;
-//   tx.transaction.sig =
+//   tx.ts = 1637034582666;
+//   tx.type = TransactionType.ATR;
+//   tx.signature =
 //     "c9a6c2d0bf884be6933878577171a3c8094c2bf6e0bc1b4ec3535a4a55224d186d4d891e254736cae6c0d2002c8dfc0ddfc7fcdbe4bc583f96fa5b273b9d63f4";
 //   block.transactions.push(tx);
 //
@@ -110,9 +110,9 @@
 //   console.log("buffer for sig = " + block.serializeForSignature().toString("hex"));
 //
 //   const tx2 = block2.transactions[0];
-//   expect(tx2.transaction.ts).toEqual(tx.transaction.ts);
-//   expect(tx2.transaction.type).toEqual(tx.transaction.type);
-//   expect(tx2.transaction.sig).toEqual(tx.transaction.sig);
+//   expect(tx2.ts).toEqual(tx.ts);
+//   expect(tx2.type).toEqual(tx.type);
+//   expect(tx2.signature).toEqual(tx.signature);
 // });
 //
 // test.skip("read_block_from_disk (from rust generated block)", async () => {

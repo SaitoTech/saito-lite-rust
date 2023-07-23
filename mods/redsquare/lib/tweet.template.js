@@ -5,13 +5,13 @@ module.exports = (app, mod, tweet) => {
   let optional = tweet.tx.optional;
   let notice = tweet?.notice || "";
   let text = tweet?.text || "";
- 
+
   if (!text && !notice && tweet.retweet_tx) {
-    notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.transaction.from[0].add);
+    notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.from[0].publicKey ;
   }
 
-  let num_likes =  optional.num_likes ||  0;
-  let num_replies =  optional.num_replies ||  0;
+  let num_likes = optional.num_likes || 0;
+  let num_replies = optional.num_replies || 0;
   let num_retweets = optional.num_retweets || 0;
 
   let controls = `
@@ -34,7 +34,7 @@ module.exports = (app, mod, tweet) => {
               </div>`;
 
   let html = `
-        <div class="tweet tweet-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
+        <div class="tweet tweet-${tweet.tx.sig}" data-id="${tweet.tx.sig}">
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header"></div>
           <div class="tweet-body">
@@ -46,10 +46,10 @@ module.exports = (app, mod, tweet) => {
   if (tweet.youtube_id != null && tweet.youtube_id != "null") {
     html += `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>`;
   } else {
-    html += `<div class="tweet-preview tweet-preview-${tweet.tx.transaction.sig}"></div>`;
+    html += `<div class="tweet-preview tweet-preview-${tweet.tx.sig}"></div>`;
   }
 
-  if (tweet?.show_controls){
+  if (tweet?.show_controls) {
     html += controls;
   }
 
@@ -60,7 +60,7 @@ module.exports = (app, mod, tweet) => {
 
   return html;
 
-}
+};
 
 
 

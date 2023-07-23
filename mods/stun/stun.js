@@ -8,6 +8,7 @@ const PeerManager = require("./lib/appspace/PeerManager");
 //Do these do anything???
 var serialize = require("serialize-javascript");
 const adapter = require("webrtc-adapter");
+const Slip = require("../../lib/saito/slip");
 
 class Stun extends ModTemplate {
   constructor(app) {
@@ -339,21 +340,23 @@ class Stun extends ModTemplate {
     this.sendStunMessageToPeersTransaction(data, recipients);
   }
 
-  sendStunMessageToPeersTransaction(_data, recipients) {
+  async sendStunMessageToPeersTransaction(_data, recipients) {
     let request = "stun-send-message-to-peers";
 
     // onchain
-    let newtx = this.app.wallet.createUnsignedTransaction();
+    let newtx = await this.app.wallet.createUnsignedTransaction();
     if (recipients) {
       recipients.forEach((recipient) => {
-        newtx.transaction.to.push(new saito.default.slip(recipient));
+        let slip = new Slip();
+        slip.publicKey = recipient;
+        newtx.addToSlip(slip);
       });
     }
 
     newtx.msg.module = "Stun";
     newtx.msg.request = "send-message-to-peers";
     newtx.msg.data = _data;
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     // offchain data
     let data = {

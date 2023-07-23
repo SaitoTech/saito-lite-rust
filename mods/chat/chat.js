@@ -7,6 +7,7 @@ const ChatManager = require("./lib/chat-manager/main");
 const ChatManagerOverlay = require("./lib/overlays/chat-manager");
 const JSON = require("json-bigint");
 const localforage = require("localforage");
+const Transaction = require("../../lib/saito/transaction");
 
 class Chat extends ModTemplate {
   constructor(app) {
@@ -272,9 +273,9 @@ class Chat extends ModTemplate {
           // These are no longer proper transactions!!!!
 
           if (this.communityGroup.txs.length > 0) {
-            let most_recent_ts = this.communityGroup.txs[this.communityGroup.txs.length - 1].ts;
+            let most_recent_ts = this.communityGroup.txs[this.communityGroup.txs.length - 1].timestamp;
             for (let i = 0; i < txs.length; i++) {
-              if (txs[i].ts > most_recent_ts) {
+              if (txs[i].timestamp > most_recent_ts) {
                 this.communityGroup.txs.push(txs[i]);
               }
             }
@@ -473,7 +474,7 @@ class Chat extends ModTemplate {
       //mycallback(group.txs.slice(-50));
 
       if (mycallback) {
-        mycallback(group.txs.filter((t) => t.ts > txmsg.ts));
+        mycallback(group.txs.filter((t) => t.timestamp > txmsg.timestamp));
       }
     }
 
@@ -491,18 +492,18 @@ class Chat extends ModTemplate {
        * This whole block is duplicating the functional logic of the Relay module....
        */
 
-      let inner_tx = new saito.default.transaction(txmsg.data);
+      let inner_tx = new Transaction(undefined, txmsg.data);
       let inner_txmsg = inner_tx.returnMessage();
 
       //
       // if chat message broadcast is received - we are being asked to broadcast this
       // to a peer if the inner_tx is addressed to one of our peers.
       //
-      if (inner_tx.transaction.to.length > 0) {
-        if (inner_tx.transaction.to[0].add != this.publicKey) {
+      if (inner_tx.to.length > 0) {
+        if (inner_tx.to[0].publicKey != this.publicKey) {
           if (app.BROWSER == 0) {
             app.network.peers.forEach((p) => {
-              if (p.peer.publickey === inner_tx.transaction.to[0].add) {
+              if (p.peer.publickey === inner_tx.to[0].publicKey) {
                 p.sendTransactionWithCallback(inner_tx, () => {
                 });
               }
@@ -516,7 +517,7 @@ class Chat extends ModTemplate {
           //
           if (app.BROWSER == 0) {
             app.network.peers.forEach((p) => {
-              if (p.peer.publickey !== peer.peer.publickey) {
+              if (p.publicKey !== peer.publickey) {
                 p.sendTransactionWithCallback(inner_tx, () => {
                 });
               }
@@ -538,7 +539,7 @@ class Chat extends ModTemplate {
   // Create a n > 2 chat group (currently unencrypted)
   // We have a single admin (who can add additional members or kick people out)
   //
-  sendCreateGroupTransaction(group) {
+  async sendCreateGroupTransaction(group) {
     let newtx = await this.app.wallet.createUnsignedTransaction(
       this.publicKey,
       0.0,
@@ -550,7 +551,7 @@ class Chat extends ModTemplate {
 
     for (let i = 0; i < group.members.length; i++) {
       if (group.members[i] !== this.publicKey) {
-        newtx.transaction.to.push(new saito.default.slip(group.members[i]));
+        newtx.to.push(new saito.default.slip(group.members[i]));
       }
     }
 
@@ -578,9 +579,9 @@ class Chat extends ModTemplate {
       //Get the list of all keys message is sent to
       //
       let members = [];
-      for (let x = 0; x < tx.transaction.to.length; x++) {
-        if (!members.includes(tx.transaction.to[x].add)) {
-          members.push(tx.transaction.to[x].add);
+      for (let x = 0; x < tx.to.length; x++) {
+        if (!members.includes(tx.to[x].publicKey ) {
+          members.push(tx.to[x].publicKey ;
         }
       }
 
@@ -636,7 +637,7 @@ class Chat extends ModTemplate {
 
     for (let i = 0; i < group.members.length; i++) {
       if (group.members[i] !== this.publicKey) {
-        newtx.transaction.to.push(new saito.default.slip(group.members[i]));
+        newtx.to.push(new saito.default.slip(group.members[i]));
       }
     }
 
@@ -664,13 +665,13 @@ class Chat extends ModTemplate {
         group = this.returnGroup(txmsg.group_id);
       }
 
-      if (!group.members.includes(tx.transaction.from[0].add)) {
-        group.members.push(tx.transaction.from[0].add);
+      if (!group.members.includes(tx.from[0].publicKey ) {
+        group.members.push(tx.from[0].publicKey ;
       }
 
       //Don't overwrite admin (if for some reason admin is sending a confirm)
-      if (!group.member_ids[tx.transaction.from[0].add]) {
-        group.member_ids[tx.transaction.from[0].add] = 1;
+      if (!group.member_ids[tx.from[0].add]) {
+        group.member_ids[tx.from[0].add] = 1;
       }
 
       this.saveChatGroup(group);
@@ -696,7 +697,7 @@ class Chat extends ModTemplate {
 
     for (let i = 0; i < group.members.length; i++) {
       if (group.members[i] !== this.publicKey) {
-        newtx.transaction.to.push(new saito.default.slip(group.members[i]));
+        newtx.to.push(new saito.default.slip(group.members[i]));
       }
     }
 
@@ -771,7 +772,7 @@ class Chat extends ModTemplate {
 
     for (let i = 0; i < group.members.length; i++) {
       if (group.members[i] !== this.publicKey) {
-        newtx.transaction.to.push(new saito.default.slip(group.members[i]));
+        newtx.to.push(new saito.default.slip(group.members[i]));
       }
     }
 
@@ -841,14 +842,14 @@ class Chat extends ModTemplate {
           salert("Image already being sent");
           return;
         }
-        this.inTransitImageMsgSig = tx.transaction.sig;
+        this.inTransitImageMsgSig = tx.signature;
       }
     }
     if (app.network.peers.length > 0) {
-      let recipient = app.network.peers[0].peer.publickey;
+      let recipient = app.network.peers[0].publicKey;
       for (let i = 0; i < app.network.peers.length; i++) {
         if (app.network.peers[i].hasService("chat")) {
-          recipient = app.network.peers[i].peer.publickey;
+          recipient = app.network.peers[i].publicKey;
           break;
         }
       }
@@ -857,7 +858,7 @@ class Chat extends ModTemplate {
       app.connection.emit("relay-send-message", {
         recipient,
         request: "chat message broadcast",
-        data: tx.transaction
+        data: tx.toJson()
       });
     } else {
       salert("Connection to chat server lost");
@@ -878,7 +879,7 @@ class Chat extends ModTemplate {
 
     for (let i = 0; i < members.length; i++) {
       if (members[i] !== this.publicKey) {
-        newtx.transaction.to.push(new saito.default.slip(members[i]));
+        newtx.to.push(new saito.default.slip(members[i]));
       }
     }
 
@@ -887,7 +888,7 @@ class Chat extends ModTemplate {
         salert("Image already being sent");
         return;
       }
-      this.inTransitImageMsgSig = newtx.transaction.sig;
+      this.inTransitImageMsgSig = newtx.signature;
     }
 
     newtx.msg = {
@@ -908,10 +909,10 @@ class Chat extends ModTemplate {
     //
     // swap first two addresses so if private chat we will encrypt with proper shared-secret
     //
-    if (newtx.transaction.to.length == 2) {
-      let x = newtx.transaction.to[0];
-      newtx.transaction.to[0] = newtx.transaction.to[1];
-      newtx.transaction.to[1] = x;
+    if (newtx.to.length == 2) {
+      let x = newtx.to[0];
+      newtx.to[0] = newtx.to[1];
+      newtx.to[1] = x;
     }
 
     if (members.length == 2) {
@@ -927,7 +928,7 @@ class Chat extends ModTemplate {
    * So we make sure here it is actually for us (otherwise will be encrypted gobbledygook)
    */
   receiveChatTransaction(app, tx, onchain = 0) {
-    if (this.inTransitImageMsgSig == tx.transaction.sig) {
+    if (this.inTransitImageMsgSig == tx.signature) {
       this.inTransitImageMsgSig = null;
     }
 
@@ -950,8 +951,8 @@ class Chat extends ModTemplate {
     // if to someone else and encrypted
     // (i.e. I am sending an encrypted message and not waiting for relay)
     //
-    //if (tx.transaction.from[0].add == this.publicKey) {
-    //    if (app.keychain.hasSharedSecret(tx.transaction.to[0].add)) {
+    //if (tx.from[0].publicKey == this.publicKey) {
+    //    if (app.keychain.hasSharedSecret(tx.to[0].publicKey ) {
     //    }
     //}
 
@@ -983,9 +984,9 @@ class Chat extends ModTemplate {
       // Create a chat group on the fly if properly addressed to me
       //
       let members = [];
-      for (let x = 0; x < tx.transaction.to.length; x++) {
-        if (!members.includes(tx.transaction.to[x].add)) {
-          members.push(tx.transaction.to[x].add);
+      for (let x = 0; x < tx.to.length; x++) {
+        if (!members.includes(tx.to[x].publicKey ) {
+          members.push(tx.to[x].publicKey ;
         }
       }
 
@@ -995,7 +996,7 @@ class Chat extends ModTemplate {
 
     //Have we already inserted this message into the chat?
     for (let z = 0; z < group.txs.length; z++) {
-      if (group.txs[z].sig === tx.transaction.sig) {
+      if (group.txs[z].signature === tx.signature) {
         if (this.debug) {
           console.log("Duplicate received message");
         }
@@ -1041,7 +1042,7 @@ class Chat extends ModTemplate {
             } else {
               msg += block[z].msg.substring(0, block[z].msg.indexOf(">") + 1);
             }
-            ts = ts || block[z].ts;
+            ts = ts || block[z].timestamp;
           }
 
           //Use FA 5 so compatible in games (until we upgrade everything to FA6)
@@ -1076,11 +1077,11 @@ class Chat extends ModTemplate {
 
     for (let minimized_tx of group?.txs) {
       //Same Sender -- keep building block
-      let next = new Date(minimized_tx.ts);
+      let next = new Date(minimized_tx.timestamp);
 
       if (
         minimized_tx.from.includes(last_message_sender) &&
-        minimized_tx.ts - last_message_ts < 300000 &&
+        minimized_tx.timestamp - last_message_ts < 300000 &&
         next.getDate() == last.getDate()
       ) {
         block.push(minimized_tx);
@@ -1102,7 +1103,7 @@ class Chat extends ModTemplate {
       }
 
       last_message_sender = minimized_tx.from[0];
-      last_message_ts = minimized_tx.ts;
+      last_message_ts = minimized_tx.timestamp;
       last = next;
     }
 
@@ -1134,27 +1135,27 @@ class Chat extends ModTemplate {
       return;
     }
     let new_message = {
-      sig: tx.transaction.sig,
-      ts: tx.transaction.ts,
+      sig: tx.signature,
+      ts: tx.timestamp,
       from: [],
       msg: content
     };
 
     //Keep the from array just in case....
-    for (let sender of tx.transaction.from) {
-      if (!new_message.from.includes(sender.add)) {
-        new_message.from.push(sender.add);
+    for (let sender of tx.from) {
+      if (!new_message.from.includes(sender.publicKey ) {
+        new_message.from.push(sender.publicKey ;
       }
     }
 
     for (let i = 0; i < group.txs.length; i++) {
-      if (group.txs[i].sig === tx.transaction.sig) {
+      if (group.txs[i].signature === tx.signature) {
         if (this.debug) {
           console.log("duplicate");
         }
         return;
       }
-      if (tx.transaction.ts < group.txs[i].ts) {
+      if (tx.timestamp < group.txs[i].timestamp) {
         group.txs.splice(i, 0, new_message);
         group.unread++;
 
@@ -1171,7 +1172,7 @@ class Chat extends ModTemplate {
 
     group.unread++;
 
-    group.last_update = tx.transaction.ts;
+    group.last_update = tx.timestamp;
 
     if (!this.app.BROWSER) {
       return;
@@ -1367,7 +1368,7 @@ class Chat extends ModTemplate {
     let ts = new Date().getTime();
 
     if (group.txs.length > 0) {
-      ts = group.txs[0].ts;
+      ts = group.txs[0].timestamp;
     }
 
     let chat_self = this;

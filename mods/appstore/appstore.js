@@ -476,7 +476,7 @@ class AppStore extends ModTemplate {
     try {
       if (this.app.BROWSER == 1) {
         ////console.log("we are browser submit module...");
-        //console.log(`hash: ${this.app.crypto.hash(tx.transaction.ts + "-" + tx.transaction.sig)}`);
+        //console.log(`hash: ${this.app.crypto.hash(tx.timestamp + "-" + tx.signature)}`);
 
         if (tx.isFrom(this.publicKey)) {
           let newtx = await this.app.wallet.createUnsignedTransaction();

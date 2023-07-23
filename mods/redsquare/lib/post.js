@@ -175,9 +175,9 @@ class Post {
     // any previous recipients get added to "to"
     //
     if (post_self?.tweet?.tx?.transaction) {
-      for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
-        if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
-          keys.push(post_self.tweet.tx.transaction.to[i].add);
+      for (let i = 0; i < post_self.tweet.tx.to.length; i++) {
+        if (!keys.includes(post_self.tweet.tx.to[i].publicKey ) {
+          keys.push(post_self.tweet.tx.to[i].publicKey ;
         }
       }
     }
@@ -201,7 +201,7 @@ class Post {
     //Retweets
     if (source == "Retweet") {
       data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);
-      data.sig = post_self.tweet.tx.transaction.sig;
+      data.signature = post_self.tweet.tx.signature;
     }
 
     if (post_self.images.length > 0) {
@@ -228,7 +228,7 @@ class Post {
       let rparent2 = rparent;
       while (this.mod.returnTweet(rparent2.parent_id)) {
         let x = this.mod.returnTweet(rparent2.parent_id);
-        let qs = ".tweet-" + x.tx.transaction.sig;
+        let qs = ".tweet-" + x.tx.signature;
         if (document.querySelector(qs)) {
           //console.log(qs);
           document.querySelector(qs).remove();

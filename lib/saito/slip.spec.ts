@@ -29,7 +29,7 @@
 //   await hashLoader(mockApp);
 //
 //   const slip = new Slip(wallet.wallet.privatekey);
-//   slip.add = mockApp.crypto.toBase58(
+//   slip.publicKey = mockApp.crypto.toBase58(
 //     "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74"
 //   );
 //   slip.amt = BigInt(1234);
@@ -42,12 +42,12 @@
 //   slip2.deserialize(mockApp, buffer);
 //
 //   console.log("SLIP 2");
-//   console.log(slip2.add);
+//   console.log(slip2.publicKey ;
 //   console.log(slip2.amt);
 //   console.log(slip2.sid);
 //   console.log(slip2.type);
 //
-//   expect(slip2.add).toEqual(slip.add);
+//   expect(slip2.publicKey .toEqual(slip.publicKey ;
 //   expect(slip2.amt).toEqual(slip.amt);
 //   expect(slip2.sid).toEqual(slip.sid);
 //   expect(slip2.type).toEqual(slip.type);

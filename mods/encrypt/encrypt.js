@@ -50,7 +50,10 @@ class Encrypt extends ModTemplate {
 
     if (type == "user-menu") {
       if (obj?.publickey) {
-        if (this.app.keychain.hasSharedSecret(obj.publickey) || obj.publickey == await this.app.wallet.getPublicKey()) {
+        if (
+          this.app.keychain.hasSharedSecret(obj.publickey) ||
+          obj.publickey == (await this.app.wallet.getPublicKey())
+        ) {
           return null;
         }
       }
@@ -58,7 +61,7 @@ class Encrypt extends ModTemplate {
       return {
         text: "Add Contact",
         icon: "far fa-id-card",
-        callback: function(app, publickey) {
+        callback: function (app, publickey) {
           encrypt_self.app.keychain.saveKeys();
           encrypt_self.initiate_key_exchange(publickey, 0);
           //      encrypt_self.app.connection.emit("stun-create-peer-connection", ([publickey]));
@@ -67,12 +70,11 @@ class Encrypt extends ModTemplate {
           //
           //let stun_mod = app.modules.returnModule("Stun");
           //stun_mod.createStunConnectionWithPeers([public_key]);
-        }
+        },
       };
     }
     return super.respondTo(type);
   }
-
 
   async handlePeerTransaction(app, newtx = null, peer, mycallback) {
     if (newtx == null) {
@@ -83,8 +85,8 @@ class Encrypt extends ModTemplate {
     if (message.request === "diffie hellman key exchange") {
       let tx = new saito.default.transaction(message.data.tx);
 
-      let sender = tx.transaction.from[0].add;
-      let receiver = tx.transaction.to[0].add;
+      let sender = tx.from[0].publicKey;
+      let receiver = tx.to[0].publicKey;
       let txmsg = tx.returnMessage();
       let request = txmsg.request; // "request"
 
@@ -92,7 +94,7 @@ class Encrypt extends ModTemplate {
       // key exchange requests
       //
       if (txmsg.request == "key exchange request") {
-        if (receiver == await this.app.wallet.getPublicKey()) {
+        if (receiver == (await this.app.wallet.getPublicKey())) {
           console.log("\n\n\nYou have accepted an encrypted channel request from " + receiver);
           this.accept_key_exchange(tx, 1, peer);
         }
@@ -102,8 +104,8 @@ class Encrypt extends ModTemplate {
     if (message.request === "diffie hellman key response") {
       let tx = new saito.default.transaction(message.data.tx);
 
-      let sender = tx.transaction.from[0].add;
-      let receiver = tx.transaction.to[0].add;
+      let sender = tx.from[0].publicKey;
+      let receiver = tx.to[0].publicKey;
       let txmsg = tx.returnMessage();
       let request = txmsg.request; // "request"
 
@@ -137,7 +139,7 @@ class Encrypt extends ModTemplate {
       //
       //
       this.sendEvent("encrypt-key-exchange-confirm", {
-        members: [sender, await this.app.wallet.getPublicKey()]
+        members: [sender, await this.app.wallet.getPublicKey()],
       });
       this.saveEncrypt();
     }
@@ -232,7 +234,7 @@ class Encrypt extends ModTemplate {
     //
     if (parties_to_exchange > 2) {
       for (let i = 1; i < parties_to_exchange; i++) {
-        tx.transaction.to.push(new saito.default.slip(recipients[i], 0.0));
+        tx.to.push(new saito.default.slip(recipients[i], 0.0));
       }
     }
 
@@ -255,11 +257,11 @@ class Encrypt extends ModTemplate {
   accept_key_exchange(tx, offchain = 0, peer = null) {
     let txmsg = tx.returnMessage();
 
-    let remote_address = tx.transaction.from[0].add;
-    let our_address = tx.transaction.to[0].add;
+    let remote_address = tx.from[0].publicKey;
+    let our_address = tx.to[0].publicKey;
     let alice_publickey = txmsg.alice_publickey;
 
-    let fee = tx.transaction.to[0].amt;
+    let fee = tx.to[0].amt;
 
     let bob = this.app.crypto.createDiffieHellman();
     let bob_publickey = bob.getPublicKey(null, "compressed").toString("hex");
@@ -275,7 +277,7 @@ class Encrypt extends ModTemplate {
     }
     newtx.msg.module = "Encrypt";
     newtx.msg.request = "key exchange confirm";
-    newtx.msg.tx_id = tx.transaction.id; // reference id for parent tx
+    newtx.msg.tx_id = tx.id; // reference id for parent tx
     newtx.msg.bob = bob_publickey;
     newtx = this.app.wallet.signTransaction(newtx);
 
@@ -300,18 +302,17 @@ class Encrypt extends ModTemplate {
   }
 
   async onConfirmation(blk, tx, conf, app) {
-
     if (conf == 0) {
       console.log("ENCRYPT ONCONF");
 
-      if (tx.transaction.from[0].add == await this.app.wallet.getPublicKey()) {
+      if (tx.from[0].publicKey == (await this.app.wallet.getPublicKey())) {
         this.sendEvent("encrypt-key-exchange-confirm", {
-          members: [tx.transaction.to[0].add, tx.transaction.from[0].add]
+          members: [tx.to[0].publicKey  tx.from[0].add],
         });
       }
-      if (tx.transaction.to[0].add === await this.app.wallet.getPublicKey()) {
-        let sender = tx.transaction.from[0].add;
-        let receiver = tx.transaction.to[0].add;
+      if (tx.to[0].publicKey === (await this.app.wallet.getPublicKey())) {
+        let sender = tx.from[0].publicKey;
+        let receiver = tx.to[0].publicKey;
         let txmsg = tx.returnMessage();
         let request = txmsg.request; // "request"
 
@@ -319,10 +320,10 @@ class Encrypt extends ModTemplate {
         // key exchange requests
         //
         if (txmsg.request == "key exchange request") {
-          if (sender == await this.app.wallet.getPublicKey()) {
+          if (sender == (await this.app.wallet.getPublicKey())) {
             console.log("\n\n\nYou have sent an encrypted channel request to " + receiver);
           }
-          if (receiver == await this.app.wallet.getPublicKey()) {
+          if (receiver == (await this.app.wallet.getPublicKey())) {
             console.log("\n\n\nYou have accepted an encrypted channel request from " + receiver);
             this.accept_key_exchange(tx);
           }
@@ -356,7 +357,7 @@ class Encrypt extends ModTemplate {
           //
           //
           this.sendEvent("encrypt-key-exchange-confirm", {
-            members: [sender, await this.app.wallet.getPublicKey()]
+            members: [sender, await this.app.wallet.getPublicKey()],
           });
           this.saveEncrypt();
         }

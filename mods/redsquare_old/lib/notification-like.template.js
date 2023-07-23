@@ -4,8 +4,8 @@ module.exports = (app, mod, tx) => {
   let tweet_to_show = "";
   let from = tx.from[0].publicKey;
 
-  if (txmsg.data?.sig) {
-    txsig = txmsg.data.sig;
+  if (txmsg.data?.signature) {
+    txsig = txmsg.data.signature;
   }
 
   return `

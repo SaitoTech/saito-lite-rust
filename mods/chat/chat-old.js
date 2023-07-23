@@ -179,9 +179,10 @@ class Chat extends ModTemplate {
           // These are no longer proper transactions!!!!
 
           if (this.communityGroup.txs.length > 0) {
-            let most_recent_ts = this.communityGroup.txs[this.communityGroup.txs.length - 1].ts;
+            let most_recent_ts =
+              this.communityGroup.txs[this.communityGroup.txs.length - 1].timestamp;
             for (let i = 0; i < txs.length; i++) {
-              if (txs[i].ts > most_recent_ts) {
+              if (txs[i].timestamp > most_recent_ts) {
                 this.communityGroup.txs.push(txs[i]);
               }
             }
@@ -573,7 +574,7 @@ class Chat extends ModTemplate {
         slip.publicKey = members[i];
         slip.amount = 0;
         newtx.addToSlip(slip);
-        // newtx.transaction.to.push(new saito.default.slip(members[i]));
+        // newtx.to.push(new saito.default.slip(members[i]));
       }
     }
 
@@ -640,8 +641,8 @@ class Chat extends ModTemplate {
     // if to someone else and encrypted
     // (i.e. I am sending an encrypted message and not waiting for relay)
     //
-    //if (tx.transaction.from[0].publicKey == this.publicKey) {
-    //    if (app.keychain.hasSharedSecret(tx.transaction.to[0].add)) {
+    //if (tx.from[0].publicKey == this.publicKey) {
+    //    if (app.keychain.hasSharedSecret(tx.to[0].publicKey ) {
     //    }
     //}
 

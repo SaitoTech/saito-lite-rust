@@ -60,8 +60,8 @@ class Invite {
       if (txmsg.step) {
         this.invite_data.step = txmsg.step;
       }
-      if (txmsg.ts) {
-        this.invite_data.ts = txmsg.ts;
+      if (txmsg.timestamp) {
+        this.invite_data.timestamp = txmsg.timestamp;
       }
 
       let alt_game_type = "";
@@ -187,7 +187,7 @@ class Invite {
           await game_overlay.render();
         };
       }
-    } catch(err){
+    } catch (err) {
       console.log(err);
     }
   }

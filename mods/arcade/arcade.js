@@ -41,7 +41,7 @@ class Arcade extends ModTemplate {
       We store the original transactions (from createOpenTransaction/joinOpenTransaction) in this.games,
       but because it is an object in memory, we will update the player list as players join.
       When the game kicks off, we update the server side sql so that anyone else joining the network won't get confused
-      the tx.sig becomes the game_id.
+      the tx.signature becomes the game_id.
     */
     this.games = {};
 
@@ -159,11 +159,11 @@ class Arcade extends ModTemplate {
               originator: game.originator,
               //winner: game.winner,
               step: game?.step?.game,
-              ts: game?.step?.ts,
+              ts: game?.step?.timestamp,
             };
 
             game_tx.signature = game.id;
-            game_tx.timestamp = BigInt(game.ts || 0);
+            game_tx.timestamp = BigInt(game.timestamp || 0);
             game_tx.msg = msg;
 
             console.log("Processing games from app.options:");
@@ -247,7 +247,7 @@ class Arcade extends ModTemplate {
           if (record?.step) {
             let step = JSON.parse(record.step);
             game_tx.msg.step = step?.game;
-            game_tx.msg.ts = step?.ts;
+            game_tx.msg.timestamp = step?.timestamp;
           }
 
           if (arcade_self.debug) {
@@ -1022,8 +1022,8 @@ class Arcade extends ModTemplate {
     await this.changeGameStatus(txmsg.game_id, "over");
 
     let sql = `UPDATE games
-               SET winner = $winner,
-                   method = $method,
+               SET winner        = $winner,
+                   method        = $method,
                    time_finished = $ts
                WHERE game_id = $game_id`;
     let params = {
@@ -1050,7 +1050,7 @@ class Arcade extends ModTemplate {
     let game = this.returnGame(txmsg.game_id);
     if (game?.msg) {
       game.msg.step = txmsg.step.game;
-      game.msg.ts = txmsg.step.ts;
+      game.msg.timestamp = txmsg.step.timestamp;
     }
 
     if (!this.app.BROWSER) {
@@ -2021,7 +2021,7 @@ class Arcade extends ModTemplate {
 
           if (
             loaded_step > game_mod.game.step.game ||
-            loaded_step > game_mod.game.step.players[tx.transaction.from[0].add]
+            loaded_step > game_mod.game.step.players[tx.from[0].publicKey]
           ) {
             console.log("Add move: " + JSON.stringify(game_move));
             game_mod.addFutureMove(tx); //This will save future moves (so saveGame below doesn't overwrite them)

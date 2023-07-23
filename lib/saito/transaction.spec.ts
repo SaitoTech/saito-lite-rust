@@ -25,9 +25,9 @@
 //   await hashLoader(mockApp);
 //
 //   const tx = new Transaction();
-//   tx.transaction.ts = 1637034582666;
-//   tx.transaction.type = TransactionType.ATR;
-//   tx.transaction.sig =
+//   tx.ts = 1637034582666;
+//   tx.type = TransactionType.ATR;
+//   tx.signature =
 //     "c9a6c2d0bf884be6933878577171a3c8094c2bf6e0bc1b4ec3535a4a55224d186d4d891e254736cae6c0d2002c8dfc0ddfc7fcdbe4bc583f96fa5b273b9d63f4";
 //
 //   const buffer = tx.serialize(mockApp);
@@ -35,9 +35,9 @@
 //   const tx2 = new Transaction();
 //   tx2.deserialize(mockApp, buffer, 0);
 //
-//   expect(tx2.transaction.ts).toEqual(tx.transaction.ts);
-//   expect(tx2.transaction.type).toEqual(tx.transaction.type);
-//   expect(tx2.transaction.sig).toEqual(tx.transaction.sig);
+//   expect(tx2.ts).toEqual(tx.ts);
+//   expect(tx2.type).toEqual(tx.type);
+//   expect(tx2.signature).toEqual(tx.signature);
 // });
 //
 // describe("serializeForSignature", () => {
@@ -85,8 +85,8 @@
 //         };
 //
 //         let tx = new saito.transaction();
-//         tx.transaction.ts = 1637034582666;
-//         tx.transaction.type = saito.transaction.TransactionType.ATR;
+//         tx.ts = 1637034582666;
+//         tx.type = saito.TransactionType.ATR;
 //         tx.msg = {test: "test"};
 //
 //         let input_slip = new saito.slip(wallet.wallet.publickey);
@@ -101,8 +101,8 @@
 //         output_slip.sid = 23;
 //         output_slip.type = saito.slip.SlipType.Normal;
 //
-//         tx.transaction.from.push(input_slip);
-//         tx.transaction.to.push(output_slip);
+//         tx.from.push(input_slip);
+//         tx.to.push(output_slip);
 //
 //         let buffer = tx.serializeForSignature(mockApp);
 //
@@ -140,9 +140,9 @@
 //   await hashLoader(mockApp);
 //
 //   const tx = new Transaction();
-//   tx.transaction.ts = 1637034582666;
-//   tx.transaction.type = TransactionType.ATR;
-//   tx.transaction.m = Buffer.from("abc", "hex");
+//   tx.ts = 1637034582666;
+//   tx.type = TransactionType.ATR;
+//   tx.m = Buffer.from("abc", "hex");
 //
 //   const input_slip = new Slip(wallet.wallet.publickey);
 //   //input_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
@@ -156,8 +156,8 @@
 //   output_slip.sid = 23;
 //   output_slip.type = SlipType.Normal;
 //
-//   tx.transaction.from.push(input_slip);
-//   tx.transaction.to.push(output_slip);
+//   tx.from.push(input_slip);
+//   tx.to.push(output_slip);
 //
 //   tx.sign(mockApp);
 //
@@ -166,7 +166,7 @@
 //   console.log(Buffer.from(tx1_buffer).toString("hex"));
 //
 //   //TODO : FIX THIS
-//   expect(tx.transaction.sig).toEqual(
+//   expect(tx.signature).toEqual(
 //     "56f604952f5b325b445bd31e6fd62746532e5a568393315e661d0f944239cad845e402ffe8ff0a413d6835bae88efd7a8bb6313d72fa91c7af4cc18515578d7c"
 //   );
 //
@@ -179,7 +179,7 @@
 //   expect(tx).toEqual(tx2);
 //
 //   console.log("tx = ", tx);
-//   console.log("slip = ", tx.transaction.from[0]);
+//   console.log("slip = ", tx.from[0]);
 //
 //   console.log("ser = " + tx.serializeForSignature(mockApp).toString("hex"));
 //   let tx2_buffer = tx2.serialize(mockApp);

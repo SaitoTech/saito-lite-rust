@@ -12,7 +12,7 @@ module.exports = ChatTeaser = async (app, group) => {
     last_msg = last_msg.replace(regex, "<em>reply</em>: ").replace("<br>", "");
     const regex2 = /<a[^>]+>/i;
     last_msg = last_msg.replace(regex2, "").replace("</a>", "");
-    last_ts = tx.ts;
+    last_ts = tx.timestamp;
     let x = app.browser.formatDate(last_ts);
     time = x.hours + ":" + x.minutes;
   }
@@ -47,4 +47,3 @@ module.exports = ChatTeaser = async (app, group) => {
   </div>
   `;
 };
-

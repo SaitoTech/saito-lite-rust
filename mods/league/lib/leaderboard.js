@@ -34,8 +34,8 @@ class Leaderboard {
     //
     if (
       this.league.players.length == 0 ||
-      !this.league.ts ||
-      this.league.ts + 900000 < new Date().getTime()
+      !this.league.timestamp ||
+      this.league.timestamp + 900000 < new Date().getTime()
     ) {
       if (this.mod.debug) {
         console.log(

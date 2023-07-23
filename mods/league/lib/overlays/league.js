@@ -212,7 +212,7 @@ class LeagueOverlay {
 
     let html = "";
     for (let player of this.league.players) {
-      let datetime = this.app.browser.formatDate(player.ts);
+      let datetime = this.app.browser.formatDate(player.timestamp);
       html += `<div class="saito-table-row">
         <div>${this.app.browser.returnAddressHTML(player.publickey)}</div>
         <div class="player_score editable_field" data-id="${
@@ -294,4 +294,3 @@ class LeagueOverlay {
 }
 
 module.exports = LeagueOverlay;
-

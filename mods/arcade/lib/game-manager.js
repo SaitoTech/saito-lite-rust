@@ -74,7 +74,7 @@ class GameManager {
         if (gameList.length > 0) {
           if (list == "active") {
             gameList.sort((a, b) => {
-              return b.msg.ts - a.msg.ts;
+              return b.msg.timestamp - a.msg.timestamp;
             });
 
             let html = `<div class="saito-table-header">

@@ -372,12 +372,12 @@ class League extends ModTemplate {
                   league.players = [];
                   rank = -1;
                   myPlayerStats = null;
-                  //league.ts = new Date().getTime();
+                  //league.timestamp = new Date().getTime();
                 }
 
                 if (
                   p.games_finished == 0 &&
-                  p.ts < cutoff &&
+                  p.timestamp < cutoff &&
                   p.publickey !== this.publicKey &&
                   !league.admin
                 ) {
@@ -622,7 +622,7 @@ class League extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     let obj = this.validateLeague(txmsg);
-    obj.id = tx.transaction.sig;
+    obj.id = tx.signature;
 
     this.addLeague(obj);
 
@@ -676,9 +676,9 @@ class League extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     let params = {
-      publickey: tx.transaction.from[0].add,
+      publickey: tx.from[0].publicKey
       email: txmsg.email || "",
-      ts: parseInt(tx.transaction.ts),
+      ts: parseInt(tx.timestamp),
     };
 
     this.addLeaguePlayer(txmsg.league_id, params);
@@ -687,7 +687,7 @@ class League extends ModTemplate {
     //So, when we get our join message returned to us, we will do a query to figure out our rank
     //save the info locally, and emit an event to update as a success
     //
-    if (this.publicKey === tx.transaction.from[0].add) {
+    if (this.publicKey === tx.from[0].publicKey  {
       this.fetchLeagueLeaderboard(txmsg.league_id, () => {
         this.app.connection.emit("join-league-success");
       });
@@ -748,8 +748,8 @@ class League extends ModTemplate {
   async createUpdatePlayerTransaction(league_id, publickey, new_data, field = "email") {
     let newtx = await this.app.wallet.createUnsignedTransaction();
 
-    newtx.transaction.to.push(new saito.default.slip(this.publicKey, 0.0));
-    newtx.transaction.to.push(new saito.default.slip(publickey, 0.0));
+    newtx.to.push(new saito.default.slip(this.publicKey, 0.0));
+    newtx.to.push(new saito.default.slip(publickey, 0.0));
 
     newtx.msg = {
       module: "League",
@@ -837,9 +837,9 @@ class League extends ModTemplate {
       $publickey: txmsg.publickey,
     };
 
-    //if (tx.transaction.from[0].add !== txmsg.publickey){
+    //if (tx.from[0].publicKey !== txmsg.publickey){
     //  let league = this.returnLeague(txmsg.league_id);
-    //  if (!league?.admin || league.admin !== tx.transaction.from[0].add){
+    //  if (!league?.admin || league.admin !== tx.from[0].publicKey {
     //    console.log("Ignore invalid removal request");
     //    return;
     //  }
@@ -875,7 +875,7 @@ class League extends ModTemplate {
                   AND admin = $admin`;
     let params1 = {
       $id: txmsg.league_id,
-      $admin: tx.transaction.from[0].add,
+      $admin: tx.from[0].publicKey
     };
 
     let result = await this.app.storage.executeDatabase(sql1, params1, "league");
@@ -1001,9 +1001,9 @@ class League extends ModTemplate {
     // who are the players ?
     //
     let publickeys = [];
-    for (let i = 0; i < tx.transaction.to.length; i++) {
-      if (!publickeys.includes(tx.transaction.to[i].add)) {
-        publickeys.push(tx.transaction.to[i].add);
+    for (let i = 0; i < tx.to.length; i++) {
+      if (!publickeys.includes(tx.to[i].publicKey ) {
+        publickeys.push(tx.to[i].publicKey ;
       }
     }
 
@@ -1395,7 +1395,7 @@ class League extends ModTemplate {
     newObj.games_won = obj.games_won || 0;
     newObj.games_tied = obj.games_tied || 0;
     newObj.email = obj.email || "";
-    newObj.ts = obj.ts || 0;
+    newObj.timestamp = obj.timestamp || 0;
 
     return newObj;
   }
@@ -1463,7 +1463,7 @@ class League extends ModTemplate {
         league.players.splice(i, 1);
 
         //Force a new ranking calculation on next leaderboard load
-        league.ts = 0;
+        league.timestamp = 0;
         break;
       }
     }
@@ -1531,7 +1531,7 @@ class League extends ModTemplate {
           }
         }
 
-        league.ts = new Date().getTime();
+        league.timestamp = new Date().getTime();
 
         if (mycallback != null) {
           mycallback(res);
@@ -1615,7 +1615,7 @@ class League extends ModTemplate {
 
     let sql = `UPDATE players
                SET deleted = 1
-               WHERE players.ts < ?`;
+               WHERE players.timestamp < ?`;
     let cutoff = new Date().getTime() - this.inactive_player_cutoff;
     await this.app.storage.executeDatabase(sql, [cutoff], "league");
   }

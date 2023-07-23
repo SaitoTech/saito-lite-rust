@@ -36,14 +36,18 @@ class GameScheduler {
       this.overlay.hide();
 
       this.app.network.propagateTransaction(scheduler_self.invite_tx);
-      this.app.connection.emit("relay-send-message", {recipient: scheduler_self.invite_tx.msg.options.desired_opponent_publickey, request: "arcade spv update", data: scheduler_self.invite_tx.transaction});      
+      this.app.connection.emit("relay-send-message", {
+        recipient: scheduler_self.invite_tx.msg.options.desired_opponent_publickey,
+        request: "arcade spv update",
+        data: scheduler_self.invite_tx.transaction,
+      });
 
       this.mod.addGame(scheduler_self.invite_tx, "open");
 
       //
       // create invite link from the game_sig
       //
-      //mod.showShareLink(scheduler_self.invite_tx.transaction.sig);
+      //mod.showShareLink(scheduler_self.invite_tx.signature);
     };
 
     //
@@ -55,10 +59,10 @@ class GameScheduler {
       let title = "Game: " + txmsg.options.game;
       this.overlay.hide();
       let adds = [];
-      for (let i = 0; i < scheduler_self.invite_tx.transaction.to.length; i++) {
-        let inv = scheduler_self.invite_tx.transaction.to[i];
-        if (!adds.includes(inv.add)) {
-          adds.push(inv.add);
+      for (let i = 0; i < scheduler_self.invite_tx.to.length; i++) {
+        let inv = scheduler_self.invite_tx.to[i];
+        if (!adds.includes(inv.publicKey ) {
+          adds.push(inv.publicKey ;
         }
       }
       let scheduler = new SaitoScheduler(app, mod, {

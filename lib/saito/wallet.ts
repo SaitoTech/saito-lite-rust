@@ -305,69 +305,69 @@ export default class Wallet extends SaitoWallet {
     // this.recreate_pending_transactions = 0;
   }
 
-  returnAdequateInputs(amt: bigint) {
-    const utxiset = new Array<Slip>();
-    let value = BigInt(0);
-    const bigamt = BigInt(amt) * BigInt(100_000_000);
-
-    //
-    // this adds a 1 block buffer so that inputs are valid in the future block included
-    //
-    const lowest_block: bigint =
-      BigInt(this.app.blockchain.blockchain.last_block_id) -
-      BigInt(this.app.blockchain.returnGenesisPeriod()) +
-      BigInt(2);
-
-    //
-    // check pending txs to avoid slip reuse if necessary
-    //
-    if (this.wallet.pending.length > 0) {
-      for (let i = 0; i < this.wallet.pending.length; i++) {
-        let pendingtx = new Transaction();
-        pendingtx.deserialize_from_web(this.app, this.wallet.pending[i]);
-        for (let k = 0; k < pendingtx.transaction.from.length; k++) {
-          const slipIndex = pendingtx.transaction.from[k].returnKey();
-          for (let m = 0; m < this.wallet.inputs.length; m++) {
-            const thisSlipIndex = this.wallet.inputs[m].returnKey();
-            // if the input in the wallet is already in a pending tx...
-            // then set spends[m] to 1
-            if (thisSlipIndex === slipIndex) {
-              while (this.wallet.spends.length < m) {
-                this.wallet.spends.push(0);
-              }
-              this.wallet.spends[m] = 1;
-            }
-          }
-        }
-      }
-    }
-    let hasAdequateInputs = false;
-    const slipIndexes = [];
-    for (let i = 0; i < this.wallet.inputs.length; i++) {
-      if (this.wallet.spends[i] == 0 || i >= this.wallet.spends.length) {
-        const slip = this.wallet.inputs[i];
-        if (slip.lc && slip.block_id >= lowest_block) {
-          if (this.app.mempool.transactions_inputs_hmap.get(slip.returnKey()) != 1) {
-            slipIndexes.push(i);
-            utxiset.push(slip);
-            value += slip.returnAmount();
-            if (value >= bigamt) {
-              hasAdequateInputs = true;
-              break;
-            }
-          }
-        }
-      }
-    }
-    if (hasAdequateInputs) {
-      for (let i = 0; i < slipIndexes.length; i++) {
-        this.wallet.spends[slipIndexes[i]] = 1;
-      }
-      return utxiset;
-    } else {
-      return null;
-    }
-  }
+  // returnAdequateInputs(amt: bigint) {
+  //   const utxiset = new Array<Slip>();
+  //   let value = BigInt(0);
+  //   const bigamt = BigInt(amt) * BigInt(100_000_000);
+  //
+  //   //
+  //   // this adds a 1 block buffer so that inputs are valid in the future block included
+  //   //
+  //   const lowest_block: bigint =
+  //     BigInt(this.app.blockchain.blockchain.last_block_id) -
+  //     BigInt(this.app.blockchain.returnGenesisPeriod()) +
+  //     BigInt(2);
+  //
+  //   //
+  //   // check pending txs to avoid slip reuse if necessary
+  //   //
+  //   if (this.wallet.pending.length > 0) {
+  //     for (let i = 0; i < this.wallet.pending.length; i++) {
+  //       let pendingtx = new Transaction(undefined, this.wallet.pending[i]);
+  //       // pendingtx.deserialize_from_web(this.app, this.wallet.pending[i]);
+  //       for (let k = 0; k < pendingtx.from.length; k++) {
+  //         const slipIndex = pendingtx.from[k].returnKey();
+  //         for (let m = 0; m < this.inputs.length; m++) {
+  //           const thisSlipIndex = this.wallet.inputs[m].returnKey();
+  //           // if the input in the wallet is already in a pending tx...
+  //           // then set spends[m] to 1
+  //           if (thisSlipIndex === slipIndex) {
+  //             while (this.wallet.spends.length < m) {
+  //               this.wallet.spends.push(0);
+  //             }
+  //             this.wallet.spends[m] = 1;
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //   let hasAdequateInputs = false;
+  //   const slipIndexes = [];
+  //   for (let i = 0; i < this.wallet.inputs.length; i++) {
+  //     if (this.wallet.spends[i] == 0 || i >= this.wallet.spends.length) {
+  //       const slip = this.wallet.inputs[i];
+  //       if (slip.lc && slip.block_id >= lowest_block) {
+  //         if (this.app.mempool.transactions_inputs_hmap.get(slip.returnKey()) != 1) {
+  //           slipIndexes.push(i);
+  //           utxiset.push(slip);
+  //           value += slip.returnAmount();
+  //           if (value >= bigamt) {
+  //             hasAdequateInputs = true;
+  //             break;
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //   if (hasAdequateInputs) {
+  //     for (let i = 0; i < slipIndexes.length; i++) {
+  //       this.wallet.spends[slipIndexes[i]] = 1;
+  //     }
+  //     return utxiset;
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   // returnPublicKey(): string {
   //   return this.wallet.publickey;
@@ -1015,7 +1015,7 @@ export default class Wallet extends SaitoWallet {
     }
 
     //
-    // convert tx.msg to base64 tx.transaction.ms
+    // convert tx.msg to base64 tx.ms
     //
     // if the transaction is of excessive length, we cut the message and
     // continue blank. so be careful kids as there are some hardcoded
@@ -1035,7 +1035,7 @@ export default class Wallet extends SaitoWallet {
       //
       // nov 25 2022 - eliminate base64 formatting for TXS
       //
-      //tx.transaction.m = Buffer.from(
+      //tx.m = Buffer.from(
       //  this.app.crypto.stringToBase64(JSON.stringify(tx.msg)),
       //  "base64"
       //);

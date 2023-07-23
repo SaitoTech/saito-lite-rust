@@ -60,7 +60,7 @@ class NwasmLibrary {
       status = "loaned out";
     }
 
-    let obj = document.getElementById(item.sig);
+    let obj = document.getElementById(item.signature);
 
     if (obj) {
       if (status !== "available") {
@@ -123,7 +123,7 @@ class NwasmLibrary {
             message.request = "library collection";
             message.data = {};
             message.data.collection = "Nwasm";
-            message.data.sig = sig;
+            message.data.signature = sig;
 
             let peer = null;
             for (let i = 0; i < this.app.network.peers.length; i++) {
@@ -236,6 +236,4 @@ class NwasmLibrary {
   }
 }
 
-
 module.exports = NwasmLibrary;
-

@@ -80,7 +80,7 @@ class Library extends ModTemplate {
       let title = txmsg.title;
       let module = txmsg.module;
       let request = txmsg.request || "";
-      let sig = tx.transaction.sig;
+      let sig = tx.signature;
 
       //
       // sanity check
@@ -318,7 +318,7 @@ class Library extends ModTemplate {
     //
     let idx = -1;
     for (let i = 0; i < this.library[collection].peers[this.publicKey].length; i++) {
-      if (this.library[collection].peers[this.publicKey][i].sig === sig) {
+      if (this.library[collection].peers[this.publicKey][i].signature === sig) {
         idx = i;
         break;
       }
@@ -337,7 +337,7 @@ class Library extends ModTemplate {
       let is_already_borrowed_idx = -1;
       for (let i = 0; i < item.checkout.length; i++) {
         if (item.checkout[i].publickey === publickey) {
-          item.checkout[i].ts = new Date().getTime();
+          item.checkout[i].timestamp = new Date().getTime();
           is_already_borrowed_idx = i;
         }
       }
@@ -383,7 +383,7 @@ class Library extends ModTemplate {
     //
     let idx = -1;
     for (let i = 0; i < this.library[collection].peers[this.publicKey].length; i++) {
-      if (this.library[collection].peers[this.publicKey][i].sig === sig) {
+      if (this.library[collection].peers[this.publicKey][i].signature === sig) {
         idx = i;
         break;
       }
@@ -405,7 +405,7 @@ class Library extends ModTemplate {
       let is_already_borrowed_idx = -1;
       for (let i = 0; i < item.checkout.length; i++) {
         if (item.checkout[i].publickey === publickey) {
-          item.checkout[i].ts = new Date().getTime();
+          item.checkout[i].timestamp = new Date().getTime();
           is_already_borrowed_idx = i;
         }
       }

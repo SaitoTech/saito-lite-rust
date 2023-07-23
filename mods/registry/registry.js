@@ -379,7 +379,7 @@ class Registry extends ModTemplate {
       //
       let identifier = tx.msg.identifier;
       let signed_message = tx.msg.signed_message;
-      let sig = tx.msg.sig;
+      let sig = tx.msg.signature;
 
       try {
         if (
@@ -530,7 +530,7 @@ class Registry extends ModTemplate {
               "</span></p>";
             newtx.msg.identifier = identifier;
             newtx.msg.signed_message = signed_message;
-            newtx.msg.sig = sig;
+            newtx.msg.signature = sig;
 
             await newtx.sign();
             await registry_self.app.network.propagateTransaction(newtx);
@@ -548,7 +548,7 @@ class Registry extends ModTemplate {
               "</span>) has already been registered.</p>";
             newtx.msg.identifier = identifier;
             newtx.msg.signed_message = "";
-            newtx.msg.sig = "";
+            newtx.msg.signature = "";
 
             await newtx.sign();
             await registry_self.app.network.propagateTransaction(newtx);
@@ -564,14 +564,14 @@ class Registry extends ModTemplate {
             if (
               tx.msg.identifier != undefined &&
               tx.msg.signed_message != undefined &&
-              tx.msg.sig != undefined
+              tx.msg.signature != undefined
             ) {
               //
               // am email? for us? from the DNS registrar?
               //
               let identifier = tx.msg.identifier;
               let signed_message = tx.msg.signed_message;
-              let sig = tx.msg.sig;
+              let sig = tx.msg.signature;
 
               try {
                 if (
@@ -608,7 +608,7 @@ class Registry extends ModTemplate {
               //
               let identifier = tx.msg.identifier;
               let signed_message = tx.msg.signed_message;
-              let sig = tx.msg.sig;
+              let sig = tx.msg.signature;
 
               // if i am server, save copy of record
               await registry_self.addRecord(

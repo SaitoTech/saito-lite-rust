@@ -13,29 +13,28 @@ class RedSquareNotification {
   }
 
   render(selector = "") {
-
     if (this.tx == null) {
-      document.querySelector(selector).innerHTML = '<div class="saito-end-of-redsquare">No notifications</div>';
+      document.querySelector(selector).innerHTML =
+        '<div class="saito-end-of-redsquare">No notifications</div>';
     } else {
-
       let html = "";
       let txmsg = this.tx.returnMessage();
-      let from = this.tx.transaction.from[0].add;
+      let from = this.tx.from[0].publicKey;
 
       //
       // We put the entire render in a callback so that if we don't have the original tweet being referenced by the
       // notification, we can make a peer DB request to try to find it
       //
-      this.mod.loadTweetWithSig(txmsg.data.sig, (tweet_tx) => {
+      this.mod.loadTweetWithSig(txmsg.data.signature, (tweet_tx) => {
         if (!tweet_tx) {
           console.log("Notification for unknown tweet");
           return null;
         }
 
-        if (Array.isArray(tweet_tx)){
-          if (tweet_tx.length > 0){
-            tweet_tx = tweet_tx[0];  
-          }else{
+        if (Array.isArray(tweet_tx)) {
+          if (tweet_tx.length > 0) {
+            tweet_tx = tweet_tx[0];
+          } else {
             console.log("Notification for unknown tweet");
             return null;
           }
@@ -43,24 +42,43 @@ class RedSquareNotification {
 
         //Process as normal
         if (txmsg.request == "like tweet") {
-          this.tweet = new Tweet(this.app, this.mod, tweet_tx.tx, `.tweet-notif-fav.notification-item-${from}-${txmsg.data.sig} .tweet-body .tweet-main .tweet-preview`);
-          this.user = new SaitoUser(this.app, this.mod, `.notification-item-${from}-${txmsg.data.sig} > .tweet-header`, this.tx.transaction.from[0].add);
+          this.tweet = new Tweet(
+            this.app,
+            this.mod,
+            tweet_tx.tx,
+            `.tweet-notif-fav.notification-item-${from}-${txmsg.data.sig} .tweet-body .tweet-main .tweet-preview`
+          );
+          this.user = new SaitoUser(
+            this.app,
+            this.mod,
+            `.notification-item-${from}-${txmsg.data.sig} > .tweet-header`,
+            this.tx.from[0].add
+          );
 
           let qs = `.tweet-notif-fav.notification-item-${from}-${txmsg.data.sig}`;
           let obj = document.querySelector(qs);
           if (obj) {
             obj.innerHTML = obj.innerHTML.replace("liked ", "really liked ");
-            
+
             //We process multiple likes from same person of same tweet, just update html in situ and quit
             return;
-
           } else {
             html = LikeNotificationTemplate(this.app, this.mod, this.tx);
             this.user.notice = "</i> <span class='notification-type'>liked your tweet</span>";
           }
         } else if (txmsg.request == "create tweet") {
-          this.tweet = new Tweet(this.app, this.mod, tweet_tx.tx, `.notification-item-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`);
-          this.user = new SaitoUser(this.app, this.mod, `.notification-item-${this.tx.transaction.sig} > .tweet-header`, this.tx.transaction.from[0].add);
+          this.tweet = new Tweet(
+            this.app,
+            this.mod,
+            tweet_tx.tx,
+            `.notification-item-${this.tx.sig} .tweet-body .tweet-main .tweet-preview`
+          );
+          this.user = new SaitoUser(
+            this.app,
+            this.mod,
+            `.notification-item-${this.tx.sig} > .tweet-header`,
+            this.tx.from[0].add
+          );
 
           html = ReplyNotificationTemplate(this.app, this.mod, this.tx);
 
@@ -70,9 +88,9 @@ class RedSquareNotification {
           if (txmsg.data.retweet_tx) {
             this.user.notice = "<span class='notification-type'>retweeted your tweet</span>";
 
-          //
-          // or reply
-          //
+            //
+            // or reply
+            //
           } else {
             this.user.notice = "<span class='notification-type'>replied to your tweet</span>";
           }
@@ -81,14 +99,14 @@ class RedSquareNotification {
           return null;
         }
 
-        if (!this.tweet?.noerrors){
+        if (!this.tweet?.noerrors) {
           return null;
         }
-        
+
         //
         //
         //
-        let nqs = ".notification-item-" + this.tx.transaction.sig;
+        let nqs = ".notification-item-" + this.tx.signature;
         if (document.querySelector(nqs)) {
           this.app.browser.replaceElementBySelector(html, nqs);
         } else {
@@ -98,28 +116,26 @@ class RedSquareNotification {
         //
         // and render the user
         //
-        this.user.fourthelem = this.app.browser.returnTime(this.tx.transaction.ts);
+        this.user.fourthelem = this.app.browser.returnTime(this.tx.timestamp);
         this.user.render();
 
         this.tweet.show_controls = 0;
         this.tweet.render();
 
         this.attachEvents();
-
-
-        });
+      });
     }
   }
 
   attachEvents() {
-    let qs = ".notification-item-" + this.tx.transaction.sig;
+    let qs = ".notification-item-" + this.tx.signature;
     let obj = document.querySelector(qs);
 
     if (obj) {
       obj.onclick = (e) => {
         let sig = e.currentTarget.getAttribute("data-id");
-        console.log(sig, this.tx.transaction.sig);
-        let tweet = this.mod.returnTweet(this.tx.transaction.sig);
+        console.log(sig, this.tx.signature);
+        let tweet = this.mod.returnTweet(this.tx.signature);
 
         if (tweet) {
           this.app.connection.emit("redsquare-tweet-render-request", tweet);
@@ -130,8 +146,8 @@ class RedSquareNotification {
           //
           console.log("Notification tweet not found...");
 
-          this.mod.loadTweetWithSig(this.tx.transaction.sig, (txs) => {
-            let tweet = this.mod.returnTweet(this.tx.transaction.sig);
+          this.mod.loadTweetWithSig(this.tx.signature, (txs) => {
+            let tweet = this.mod.returnTweet(this.tx.signature);
             this.app.connection.emit("redsquare-tweet-render-request", tweet);
           });
         }
@@ -140,7 +156,7 @@ class RedSquareNotification {
   }
 
   isRendered() {
-    //if (document.querySelector(`.notification-item-${this.tx.transaction.sig}`)) {
+    //if (document.querySelector(`.notification-item-${this.tx.sig}`)) {
     //  return true;
     //}
     return false;
