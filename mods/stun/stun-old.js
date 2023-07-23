@@ -901,7 +901,7 @@ class Stun extends ModTemplate {
   //     newtx.msg.request = request
   //     newtx.msg.data = _data
 
-  //     newtx = this.app.wallet.signTransaction(newtx);
+  //     await newtx.sign();
 
   //     // offchain data
   //     let data = {
@@ -961,7 +961,7 @@ class Stun extends ModTemplate {
   //     // newtx.msg.module = "Stun";
   //     // newtx.msg.request = request
   //     // newtx.msg.data= _data;
-  //     // newtx = this.app.wallet.signTransaction(newtx);
+  //    await newtx.sign();
 
   //     // offchain
   //     let data = {
@@ -1012,7 +1012,7 @@ class Stun extends ModTemplate {
   //     newtx.msg.module = "Stun";
   //     newtx.msg.request = request
   //     newtx.msg.data = _data;
-  //     newtx = this.app.wallet.signTransaction(newtx);
+  //     await newtx.sign();
 
   //     // offchain
   //     let data = {

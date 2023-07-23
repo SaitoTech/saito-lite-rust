@@ -1,13 +1,12 @@
 //const SaitoUser = require('./../../../lib/saito/ui/templates/saito-user.template');
 
 module.exports = (app, mod, tweet) => {
-
   let optional = tweet.tx.optional;
   let notice = tweet?.notice || "";
   let text = tweet?.text || "";
 
   if (!text && !notice && tweet.retweet_tx) {
-    notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.from[0].publicKey ;
+    notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.from[0].publicKey);
   }
 
   let num_likes = optional.num_likes || 0;
@@ -59,8 +58,4 @@ module.exports = (app, mod, tweet) => {
   `;
 
   return html;
-
 };
-
-
-

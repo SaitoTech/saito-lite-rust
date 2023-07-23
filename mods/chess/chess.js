@@ -33,7 +33,7 @@ class Chessgame extends GameTemplate {
     this.app = app;
   }
 
-  render(app) {
+  async render(app) {
     if (!this.browser_active) {
       return;
     }
@@ -94,7 +94,7 @@ class Chessgame extends GameTemplate {
         callback: async function (app, game_mod) {
           let c = await sconfirm("Do you really want to resign?");
           if (c) {
-            game_mod.resignGame(game_mod.game.id, "resignation");
+            await game_mod.resignGame(game_mod.game.id, "resignation");
             return;
           }
         },
@@ -111,12 +111,12 @@ class Chessgame extends GameTemplate {
       },
     });
 
-    this.menu.addChatMenu();
-    this.menu.render();
+    await this.menu.addChatMenu();
+    await this.menu.render();
 
     this.log.render();
 
-    this.playerbox.render();
+    await this.playerbox.render();
 
     for (let i = 1; i < 2; i++) {
       this.playerbox.updateUserline(this.roles[i], i);
@@ -194,7 +194,7 @@ class Chessgame extends GameTemplate {
   ////////////////
   // handleGame //
   ////////////////
-  handleGameLoop(msg = {}) {
+  async handleGameLoop(msg = {}) {
     msg = {};
     if (this.game.queue.length > 0) {
       msg.extra = JSON.parse(
@@ -228,7 +228,7 @@ class Chessgame extends GameTemplate {
     if (data.draw) {
       if (data.draw === "accept") {
         console.log("Ending game");
-        this.endGame(this.game.players, "draw");
+        await this.endGame(this.game.players, "draw");
         return;
       } else {
         //(data.draw == "offer")
@@ -264,7 +264,7 @@ class Chessgame extends GameTemplate {
 
       //Check for draw according to game engine
       if (this.engine.in_draw() === true) {
-        this.endGame(this.game.players, "draw");
+        await this.endGame(this.game.players, "draw");
         return 0;
       }
 
@@ -273,7 +273,7 @@ class Chessgame extends GameTemplate {
       if (msg.extra.target == this.game.player) {
         //I announce that I am in checkmate to end the game
         if (this.engine.in_checkmate() === true) {
-          this.resignGame(this.game.id, "checkmate");
+          await this.resignGame(this.game.id, "checkmate");
           return 0;
         }
 

@@ -274,222 +274,222 @@ display: block;
 
 @keyframes loader {
 0% {
-  box-shadow: 
+  box-shadow:
     var(--x-1) var(--y-3) var(--c-1-3),
-    var(--x-1) var(--y-2) var(--c-1-2), 
+    var(--x-1) var(--y-2) var(--c-1-2),
     var(--x-2) var(--y-2) var(--c-2-2),
-    var(--x-3) var(--y-2) var(--c-3-2), 
+    var(--x-3) var(--y-2) var(--c-3-2),
     var(--x-4) var(--y-2) var(--c-4-2),
-    var(--x-5) var(--y-2) var(--c-5-2), 
+    var(--x-5) var(--y-2) var(--c-5-2),
     var(--x-6) var(--y-2) var(--c-6-2),
     var(--x-6) var(--y-1) var(--c-6-1);
 }
 5% {
-  box-shadow: 
+  box-shadow:
     var(--x-2) var(--y-3) var(--c-2-3),
-    var(--x-1) var(--y-2) var(--c-1-2), 
+    var(--x-1) var(--y-2) var(--c-1-2),
     var(--x-2) var(--y-2) var(--c-2-2),
-    var(--x-3) var(--y-2) var(--c-3-2), 
+    var(--x-3) var(--y-2) var(--c-3-2),
     var(--x-4) var(--y-2) var(--c-4-2),
-    var(--x-5) var(--y-2) var(--c-5-2), 
+    var(--x-5) var(--y-2) var(--c-5-2),
     var(--x-6) var(--y-2) var(--c-6-2),
     var(--x-5) var(--y-1) var(--c-5-1);
 }
 10% {
-  box-shadow: 
+  box-shadow:
     var(--x-2) var(--y-2) var(--c-2-2),
-    var(--x-1) var(--y-2) var(--c-1-2), 
+    var(--x-1) var(--y-2) var(--c-1-2),
     var(--x-2) var(--y-1) var(--c-2-1),
-    var(--x-3) var(--y-2) var(--c-3-2), 
+    var(--x-3) var(--y-2) var(--c-3-2),
     var(--x-4) var(--y-2) var(--c-4-2),
-    var(--x-5) var(--y-3) var(--c-5-3), 
+    var(--x-5) var(--y-3) var(--c-5-3),
     var(--x-6) var(--y-2) var(--c-6-2),
     var(--x-5) var(--y-2) var(--c-5-2);
 }
 15% {
-  box-shadow: 
+  box-shadow:
     var(--x-2) var(--y-2) var(--c-2-2),
-    var(--x-1) var(--y-2) var(--c-1-2), 
+    var(--x-1) var(--y-2) var(--c-1-2),
     var(--x-3) var(--y-1) var(--c-3-1),
-    var(--x-3) var(--y-2) var(--c-3-2), 
+    var(--x-3) var(--y-2) var(--c-3-2),
     var(--x-4) var(--y-2) var(--c-4-2),
-    var(--x-4) var(--y-3) var(--c-4-3), 
+    var(--x-4) var(--y-3) var(--c-4-3),
     var(--x-6) var(--y-2) var(--c-6-2),
     var(--x-5) var(--y-2) var(--c-5-2);
 }
 20% {
-  box-shadow: 
+  box-shadow:
     var(--x-2) var(--y-2) var(--c-2-2),
-    var(--x-1) var(--y-2) var(--c-1-2), 
+    var(--x-1) var(--y-2) var(--c-1-2),
     var(--x-3) var(--y-2) var(--c-3-2),
-    var(--x-3) var(--y-3) var(--c-3-3), 
+    var(--x-3) var(--y-3) var(--c-3-3),
     var(--x-4) var(--y-1) var(--c-4-1),
-    var(--x-4) var(--y-2) var(--c-4-2), 
+    var(--x-4) var(--y-2) var(--c-4-2),
     var(--x-6) var(--y-2) var(--c-6-2),
     var(--x-5) var(--y-2) var(--c-5-2);
 }
 25% {
   box-shadow:
     var(--x-2) var(--y-2) var(--c-2-2),
-    var(--x-1) var(--y-2) var(--c-1-2), 
+    var(--x-1) var(--y-2) var(--c-1-2),
     var(--x-3) var(--y-2) var(--c-3-2),
-    var(--x-4) var(--y-3) var(--c-4-3), 
+    var(--x-4) var(--y-3) var(--c-4-3),
     var(--x-3) var(--y-1) var(--c-3-1),
-    var(--x-4) var(--y-2) var(--c-4-2), 
+    var(--x-4) var(--y-2) var(--c-4-2),
     var(--x-6) var(--y-2) var(--c-6-2),
     var(--x-5) var(--y-2) var(--c-5-2);
 }
 30% {
-  box-shadow: 
+  box-shadow:
     var(--x-2) var(--y-2) var(--c-2-2),
-    var(--x-1) var(--y-2) var(--c-1-2), 
+    var(--x-1) var(--y-2) var(--c-1-2),
     var(--x-3) var(--y-3) var(--c-3-3),
-    var(--x-4) var(--y-2) var(--c-4-2), 
+    var(--x-4) var(--y-2) var(--c-4-2),
     var(--x-3) var(--y-2) var(--c-3-2),
-    var(--x-4) var(--y-1) var(--c-4-1), 
+    var(--x-4) var(--y-1) var(--c-4-1),
     var(--x-6) var(--y-2) var(--c-6-2),
     var(--x-5) var(--y-2) var(--c-5-2);
 }
 35% {
-  box-shadow: 
+  box-shadow:
     var(--x-2) var(--y-2) var(--c-2-2),
-    var(--x-1) var(--y-2) var(--c-1-2), 
+    var(--x-1) var(--y-2) var(--c-1-2),
     var(--x-2) var(--y-3) var(--c-2-3),
-    var(--x-4) var(--y-2) var(--c-4-2), 
+    var(--x-4) var(--y-2) var(--c-4-2),
     var(--x-3) var(--y-2) var(--c-3-2),
-    var(--x-5) var(--y-1) var(--c-5-1), 
+    var(--x-5) var(--y-1) var(--c-5-1),
     var(--x-6) var(--y-2) var(--c-6-2),
     var(--x-5) var(--y-2) var(--c-5-2);
 }
 40% {
-  box-shadow: 
+  box-shadow:
     var(--x-2) var(--y-1) var(--c-2-1),
-    var(--x-1) var(--y-2) var(--c-1-2), 
+    var(--x-1) var(--y-2) var(--c-1-2),
     var(--x-2) var(--y-2) var(--c-2-2),
-    var(--x-4) var(--y-2) var(--c-4-2), 
+    var(--x-4) var(--y-2) var(--c-4-2),
     var(--x-3) var(--y-2) var(--c-3-2),
-    var(--x-5) var(--y-2) var(--c-5-2), 
+    var(--x-5) var(--y-2) var(--c-5-2),
     var(--x-6) var(--y-2) var(--c-6-2),
     var(--x-5) var(--y-3) var(--c-5-3);
 }
 45% {
-  box-shadow: 
+  box-shadow:
     var(--x-1) var(--y-1) var(--c-1-1),
-    var(--x-1) var(--y-2) var(--c-1-2), 
+    var(--x-1) var(--y-2) var(--c-1-2),
     var(--x-2) var(--y-2) var(--c-2-2),
-    var(--x-4) var(--y-2) var(--c-4-2), 
+    var(--x-4) var(--y-2) var(--c-4-2),
     var(--x-3) var(--y-2) var(--c-3-2),
-    var(--x-5) var(--y-2) var(--c-5-2), 
+    var(--x-5) var(--y-2) var(--c-5-2),
     var(--x-6) var(--y-2) var(--c-6-2),
     var(--x-6) var(--y-3) var(--c-6-3);
 }
 50% {
-  box-shadow: 
+  box-shadow:
     var(--x-1) var(--y-2) var(--c-1-2),
-    var(--x-1) var(--y-3) var(--c-1-3), 
+    var(--x-1) var(--y-3) var(--c-1-3),
     var(--x-2) var(--y-2) var(--c-2-2),
-    var(--x-4) var(--y-2) var(--c-4-2), 
+    var(--x-4) var(--y-2) var(--c-4-2),
     var(--x-3) var(--y-2) var(--c-3-2),
-    var(--x-5) var(--y-2) var(--c-5-2), 
+    var(--x-5) var(--y-2) var(--c-5-2),
     var(--x-6) var(--y-1) var(--c-6-1),
     var(--x-6) var(--y-2) var(--c-6-2);
 }
 55% {
-  box-shadow: 
+  box-shadow:
     var(--x-1) var(--y-2) var(--c-1-2),
-    var(--x-2) var(--y-3) var(--c-2-3), 
+    var(--x-2) var(--y-3) var(--c-2-3),
     var(--x-2) var(--y-2) var(--c-2-2),
-    var(--x-4) var(--y-2) var(--c-4-2), 
+    var(--x-4) var(--y-2) var(--c-4-2),
     var(--x-3) var(--y-2) var(--c-3-2),
-    var(--x-5) var(--y-2) var(--c-5-2), 
+    var(--x-5) var(--y-2) var(--c-5-2),
     var(--x-5) var(--y-1) var(--c-5-1),
     var(--x-6) var(--y-2) var(--c-6-2);
 }
 60% {
-  box-shadow: 
+  box-shadow:
     var(--x-1) var(--y-2) var(--c-1-2),
-    var(--x-2) var(--y-2) var(--c-2-2), 
+    var(--x-2) var(--y-2) var(--c-2-2),
     var(--x-2) var(--y-1) var(--c-2-1),
-    var(--x-4) var(--y-2) var(--c-4-2), 
+    var(--x-4) var(--y-2) var(--c-4-2),
     var(--x-3) var(--y-2) var(--c-3-2),
-    var(--x-5) var(--y-3) var(--c-5-3), 
+    var(--x-5) var(--y-3) var(--c-5-3),
     var(--x-5) var(--y-2) var(--c-5-2),
     var(--x-6) var(--y-2) var(--c-6-2);
 }
 65% {
-  box-shadow: 
+  box-shadow:
     var(--x-1) var(--y-2) var(--c-1-2),
-    var(--x-2) var(--y-2) var(--c-2-2), 
+    var(--x-2) var(--y-2) var(--c-2-2),
     var(--x-3) var(--y-1) var(--c-3-1),
-    var(--x-4) var(--y-2) var(--c-4-2), 
+    var(--x-4) var(--y-2) var(--c-4-2),
     var(--x-3) var(--y-2) var(--c-3-2),
-    var(--x-4) var(--y-3) var(--c-4-3), 
+    var(--x-4) var(--y-3) var(--c-4-3),
     var(--x-5) var(--y-2) var(--c-5-2),
     var(--x-6) var(--y-2) var(--c-6-2);
 }
 70% {
-  box-shadow: 
+  box-shadow:
     var(--x-1) var(--y-2) var(--c-1-2),
-    var(--x-2) var(--y-2) var(--c-2-2), 
+    var(--x-2) var(--y-2) var(--c-2-2),
     var(--x-3) var(--y-2) var(--c-3-2),
-    var(--x-4) var(--y-1) var(--c-4-1), 
+    var(--x-4) var(--y-1) var(--c-4-1),
     var(--x-3) var(--y-3) var(--c-3-3),
-    var(--x-4) var(--y-2) var(--c-4-2), 
+    var(--x-4) var(--y-2) var(--c-4-2),
     var(--x-5) var(--y-2) var(--c-5-2),
     var(--x-6) var(--y-2) var(--c-6-2);
 }
 75% {
-  box-shadow: 
+  box-shadow:
     var(--x-1) var(--y-2) var(--c-1-2),
-    var(--x-2) var(--y-2) var(--c-2-2), 
+    var(--x-2) var(--y-2) var(--c-2-2),
     var(--x-3) var(--y-2) var(--c-3-2),
-    var(--x-3) var(--y-1) var(--c-3-1), 
+    var(--x-3) var(--y-1) var(--c-3-1),
     var(--x-4) var(--y-3) var(--c-4-3),
-    var(--x-4) var(--y-2) var(--c-4-2), 
+    var(--x-4) var(--y-2) var(--c-4-2),
     var(--x-5) var(--y-2) var(--c-5-2),
     var(--x-6) var(--y-2) var(--c-6-2);
 }
 80% {
-  box-shadow: 
+  box-shadow:
     var(--x-1) var(--y-2) var(--c-1-2),
-    var(--x-2) var(--y-2) var(--c-2-2), 
+    var(--x-2) var(--y-2) var(--c-2-2),
     var(--x-3) var(--y-3) var(--c-3-3),
-    var(--x-3) var(--y-2) var(--c-3-2), 
+    var(--x-3) var(--y-2) var(--c-3-2),
     var(--x-4) var(--y-2) var(--c-4-2),
-    var(--x-4) var(--y-1) var(--c-4-1), 
+    var(--x-4) var(--y-1) var(--c-4-1),
     var(--x-5) var(--y-2) var(--c-5-2),
     var(--x-6) var(--y-2) var(--c-6-2);
 }
 85% {
-  box-shadow: 
+  box-shadow:
     var(--x-1) var(--y-2) var(--c-1-2),
-    var(--x-2) var(--y-2) var(--c-2-2), 
+    var(--x-2) var(--y-2) var(--c-2-2),
     var(--x-2) var(--y-3) var(--c-2-3),
-    var(--x-3) var(--y-2) var(--c-3-2), 
+    var(--x-3) var(--y-2) var(--c-3-2),
     var(--x-4) var(--y-2) var(--c-4-2),
-    var(--x-5) var(--y-1) var(--c-5-1), 
+    var(--x-5) var(--y-1) var(--c-5-1),
     var(--x-5) var(--y-2) var(--c-5-2),
     var(--x-6) var(--y-2) var(--c-6-2);
 }
 90% {
-  box-shadow: 
+  box-shadow:
     var(--x-1) var(--y-2) var(--c-1-2),
-    var(--x-2) var(--y-1) var(--c-2-1), 
+    var(--x-2) var(--y-1) var(--c-2-1),
     var(--x-2) var(--y-2) var(--c-2-2),
-    var(--x-3) var(--y-2) var(--c-3-2), 
+    var(--x-3) var(--y-2) var(--c-3-2),
     var(--x-4) var(--y-2) var(--c-4-2),
-    var(--x-5) var(--y-2) var(--c-5-2), 
+    var(--x-5) var(--y-2) var(--c-5-2),
     var(--x-5) var(--y-3) var(--c-5-3),
     var(--x-6) var(--y-2) var(--c-6-2);
 }
 95% {
-  box-shadow: 
+  box-shadow:
     var(--x-1) var(--y-2) var(--c-1-2),
-    var(--x-1) var(--y-1) var(--c-1-1), 
+    var(--x-1) var(--y-1) var(--c-1-1),
     var(--x-2) var(--y-2) var(--c-2-2),
-    var(--x-3) var(--y-2) var(--c-3-2), 
+    var(--x-3) var(--y-2) var(--c-3-2),
     var(--x-4) var(--y-2) var(--c-4-2),
-    var(--x-5) var(--y-2) var(--c-5-2), 
+    var(--x-5) var(--y-2) var(--c-5-2),
     var(--x-6) var(--y-3) var(--c-6-3),
     var(--x-6) var(--y-2) var(--c-6-2);
 }

@@ -61,8 +61,8 @@ class GameScheduler {
       let adds = [];
       for (let i = 0; i < scheduler_self.invite_tx.to.length; i++) {
         let inv = scheduler_self.invite_tx.to[i];
-        if (!adds.includes(inv.publicKey ) {
-          adds.push(inv.publicKey ;
+        if (!adds.includes(inv.publicKey )) {
+          adds.push(inv.publicKey) ;
         }
       }
       let scheduler = new SaitoScheduler(app, mod, {

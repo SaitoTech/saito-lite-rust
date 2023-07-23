@@ -52,7 +52,7 @@ class RedSquareNotification {
             this.app,
             this.mod,
             `.notification-item-${from}-${txmsg.data.sig} > .tweet-header`,
-            this.tx.from[0].add
+            this.tx.from[0].publicKey
           );
 
           let qs = `.tweet-notif-fav.notification-item-${from}-${txmsg.data.sig}`;
@@ -76,8 +76,8 @@ class RedSquareNotification {
           this.user = new SaitoUser(
             this.app,
             this.mod,
-            `.notification-item-${this.tx.sig} > .tweet-header`,
-            this.tx.from[0].add
+            `.notification-item-${this.tx.signature} > .tweet-header`,
+            this.tx.from[0].publicKey
           );
 
           html = ReplyNotificationTemplate(this.app, this.mod, this.tx);

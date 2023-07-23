@@ -2,6 +2,7 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const saito = require("../../lib/saito/saito");
 const JsStore = require("jsstore");
 const JSON = require("json-bigint");
+const Transaction = require("../../lib/saito/transaction");
 
 //
 // HOW THE ARCHIVE SAVES TXS
@@ -103,7 +104,7 @@ class Archive extends ModTemplate {
   //
   // by default we just save everything that is an application
   //
-  onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf, app) {
     //
     // save all on-chain transactions -- but only the service node...
     //
@@ -120,7 +121,7 @@ class Archive extends ModTemplate {
         block_hash = blk.returnHash();
       }
 
-      this.saveTransaction(tx, { block_id, block_hash }, 1);
+      await this.saveTransaction(tx, { block_id, block_hash }, 1);
     }
   }
 
@@ -144,16 +145,16 @@ class Archive extends ModTemplate {
     //
     if (req.request === "archive") {
       if (req.data.request === "delete") {
-        let newtx = new saito.default.transaction(req.data.tx.transaction);
-        this.deleteTransaction(newtx, req.data);
+        let newtx = new Transaction(undefined, req.data.tx.transaction);
+        await this.deleteTransaction(newtx, req.data);
       }
       if (req.data.request === "save") {
-        let newtx = new saito.default.transaction(req.data.tx.transaction);
-        this.saveTransaction(newtx, req.data);
+        let newtx = new Transaction(undefined, req.data.tx.transaction);
+        await this.saveTransaction(newtx, req.data);
       }
       if (req.data.request === "update") {
-        let newtx = new saito.default.transaction(req.data.tx.transaction);
-        this.updateTransaction(newtx, req.data);
+        let newtx = new Transaction(undefined, req.data.tx.transaction);
+        await this.updateTransaction(newtx, req.data);
       }
       if (req.data.request === "load") {
         let txs = await this.loadTransactions(req.data);
@@ -162,7 +163,7 @@ class Archive extends ModTemplate {
       }
     }
 
-    super.handlePeerTransaction(app, tx, peer, mycallback);
+    await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   //////////

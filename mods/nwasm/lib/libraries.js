@@ -2,6 +2,7 @@ const saito = require("./../../../lib/saito/saito");
 const JSON = require("json-bigint");
 const NwasmLibraryTemplate = require("./libraries.template");
 const LoadRom = require("./load-rom");
+const Transaction = require("../../../lib/saito/transaction");
 
 class NwasmLibrary {
   constructor(app, mod = null) {
@@ -102,7 +103,7 @@ class NwasmLibrary {
                   console.log("THEREIS AT LEAST 1 TX");
 
                   try {
-                    let tx = new saito.default.transaction(txs[0].transaction);
+                    let tx = new Transaction(undefined, txs[0]);
                     this.mod.hideLibrary();
                     lib_self.loader.overlay.hide();
                     alert("about to load rom file...");

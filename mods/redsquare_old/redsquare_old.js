@@ -1442,7 +1442,7 @@ class RedSquare extends ModTemplate {
         $parent_id: tweet.tx.optional.parent_id,
         $type: type_of_tweet,
         $thread_id: tweet.tx.optional.thread_id || tx.signature,
-        $publickey: tx.from[0].publicKey
+        $publickey: tx.from[0].publicKey,
         $link: tweet.link,
         $link_properties: JSON.stringify(tweet.tx.optional.link_properties),
         $has_images: has_images,

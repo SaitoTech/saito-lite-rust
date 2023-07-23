@@ -176,8 +176,8 @@ class Post {
     //
     if (post_self?.tweet?.tx?.transaction) {
       for (let i = 0; i < post_self.tweet.tx.to.length; i++) {
-        if (!keys.includes(post_self.tweet.tx.to[i].publicKey ) {
-          keys.push(post_self.tweet.tx.to[i].publicKey ;
+        if (!keys.includes(post_self.tweet.tx.to[i].publicKey)) {
+          keys.push(post_self.tweet.tx.to[i].publicKey);
         }
       }
     }

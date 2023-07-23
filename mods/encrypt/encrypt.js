@@ -25,6 +25,8 @@
 var saito = require("../../lib/saito/saito");
 var ModTemplate = require("../../lib/templates/modtemplate");
 const Big = require("big.js");
+const Transaction = require("../../lib/saito/transaction");
+const Slip = require("../../lib/saito/slip");
 
 class Encrypt extends ModTemplate {
   constructor(app) {
@@ -83,7 +85,7 @@ class Encrypt extends ModTemplate {
     let message = newtx.returnMessage();
 
     if (message.request === "diffie hellman key exchange") {
-      let tx = new saito.default.transaction(message.data.tx);
+      let tx = new Transaction(undefined, message.data.tx);
 
       let sender = tx.from[0].publicKey;
       let receiver = tx.to[0].publicKey;
@@ -94,7 +96,7 @@ class Encrypt extends ModTemplate {
       // key exchange requests
       //
       if (txmsg.request == "key exchange request") {
-        if (receiver == (await this.app.wallet.getPublicKey())) {
+        if (receiver == this.publicKey) {
           console.log("\n\n\nYou have accepted an encrypted channel request from " + receiver);
           this.accept_key_exchange(tx, 1, peer);
         }
@@ -102,7 +104,7 @@ class Encrypt extends ModTemplate {
     }
 
     if (message.request === "diffie hellman key response") {
-      let tx = new saito.default.transaction(message.data.tx);
+      let tx = new Transaction(undefined, message.data.tx);
 
       let sender = tx.from[0].publicKey;
       let receiver = tx.to[0].publicKey;
@@ -184,7 +186,7 @@ class Encrypt extends ModTemplate {
   //
   // recipients can be a string (single address) or an array (multiple addresses)
   //
-  initiate_key_exchange(recipients, offchain = 0, peer = null) {
+  async initiate_key_exchange(recipients, offchain = 0, peer = null) {
     let recipient = "";
     let parties_to_exchange = 2;
 
@@ -222,7 +224,7 @@ class Encrypt extends ModTemplate {
     //
     if (!tx) {
       console.log("zero fee tx creating...");
-      tx = this.app.wallet.createUnsignedTransaction(recipient, 0.0, 0.0);
+      tx = await this.app.wallet.createUnsignedTransaction(recipient, 0.0, 0.0);
     }
 
     tx.msg.module = this.name;
@@ -234,17 +236,19 @@ class Encrypt extends ModTemplate {
     //
     if (parties_to_exchange > 2) {
       for (let i = 1; i < parties_to_exchange; i++) {
-        tx.to.push(new saito.default.slip(recipients[i], 0.0));
+        let slip = new Slip();
+        slip.publicKey = recipients[i];
+        tx.addToSlip(slip);
       }
     }
 
-    tx = this.app.wallet.signTransaction(tx);
+    await tx.sign();
 
     //
     //
     //
     if (offchain == 0) {
-      this.app.network.propagateTransaction(tx);
+      await this.app.network.propagateTransaction(tx);
     } else {
       let data = {};
       data.module = "Encrypt";
@@ -254,7 +258,7 @@ class Encrypt extends ModTemplate {
     this.saveEncrypt();
   }
 
-  accept_key_exchange(tx, offchain = 0, peer = null) {
+  async accept_key_exchange(tx, offchain = 0, peer = null) {
     let txmsg = tx.returnMessage();
 
     let remote_address = tx.from[0].publicKey;
@@ -271,7 +275,7 @@ class Encrypt extends ModTemplate {
       Buffer.from(alice_publickey, "hex")
     );
 
-    var newtx = this.app.wallet.createUnsignedTransaction(remote_address, 0, fee);
+    var newtx = await this.app.wallet.createUnsignedTransaction(remote_address, 0, fee);
     if (newtx == null) {
       return;
     }
@@ -279,10 +283,10 @@ class Encrypt extends ModTemplate {
     newtx.msg.request = "key exchange confirm";
     newtx.msg.tx_id = tx.id; // reference id for parent tx
     newtx.msg.bob = bob_publickey;
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     if (offchain == 0) {
-      this.app.network.propagateTransaction(newtx);
+      await this.app.network.propagateTransaction(newtx);
     } else {
       let data = {};
       data.module = "Encrypt";
@@ -307,7 +311,7 @@ class Encrypt extends ModTemplate {
 
       if (tx.from[0].publicKey == (await this.app.wallet.getPublicKey())) {
         this.sendEvent("encrypt-key-exchange-confirm", {
-          members: [tx.to[0].publicKey  tx.from[0].add],
+          members: [tx.to[0].publicKey, tx.from[0].publicKey],
         });
       }
       if (tx.to[0].publicKey === (await this.app.wallet.getPublicKey())) {

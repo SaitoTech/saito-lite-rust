@@ -5,9 +5,10 @@ const Link = require("./link");
 const Image = require("./image");
 const Post = require("./post");
 const JSON = require("json-bigint");
+const Transaction = require("../../../lib/saito/transaction");
 
 class Tweet {
-  constructor(app, mod, tx, container = ".tweet-manager") {
+  async constructor(app, mod, tx, container = ".tweet-manager") {
     this.app = app;
     this.mod = mod;
     this.container = container;
@@ -99,8 +100,8 @@ class Tweet {
     this.user = new SaitoUser(
       app,
       mod,
-      this.container + `> .tweet-${this.tx.sig} > .tweet-header`,
-      this.tx.from[0].add
+      this.container + `> .tweet-${this.tx.signature} > .tweet-header`,
+      this.tx.from[0].publicKey
     );
 
     //
@@ -142,14 +143,14 @@ class Tweet {
     //
     //This is async and won't necessarily finish before running the following code!
     //
-    this.generateTweetProperties(app, mod, 0);
+    await this.generateTweetProperties(app, mod, 0);
 
     //
     // retweets
     //
     if (this.retweet_tx != null) {
-      let newtx = new saito.default.transaction();
-      newtx.deserialize_from_web(this.app, this.retweet_tx);
+      let newtx = new Transaction(undefined, this.retweet_tx);
+      // newtx.deserialize_from_web(this.app, this.retweet_tx);
       this.retweet = new Tweet(
         this.app,
         this.mod,
@@ -280,7 +281,7 @@ class Tweet {
       //console.log("Retweet without quote");
       this.retweet.notice =
         "retweeted by " +
-        this.app.browser.returnAddressHTML(this.tx.from[0].publicKey  +
+        this.app.browser.returnAddressHTML(this.tx.from[0].publicKey) +
         this.formatDate();
       this.retweet.container = ".tweet-manager";
 
@@ -556,7 +557,7 @@ class Tweet {
           ".tweet-overlay"
         );
 
-        let newtx = new saito.default.transaction(JSON.parse(JSON.stringify(this.tx.transaction)));
+        let newtx = new Transaction(undefined, JSON.parse(JSON.stringify(this.tx)));
 
         newtx.signature = this.app.crypto.hash(newtx.signature);
 
@@ -585,7 +586,7 @@ class Tweet {
         );
 
         //Insert this tweet as a new Tweet in the post window
-        let newtx = new saito.default.transaction(JSON.parse(JSON.stringify(this.tx.transaction)));
+        let newtx = new Transaction(undefined, JSON.parse(JSON.stringify(this.tx)));
 
         newtx.signature = this.app.crypto.hash(newtx.signature);
 
@@ -613,7 +614,7 @@ class Tweet {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        this.mod.sendLikeTransaction(this.app, this.mod, { sig: this.tx.signature }, this.tx);
+        await this.mod.sendLikeTransaction(this.app, this.mod, { sig: this.tx.signature }, this.tx);
 
         //
         // increase num likes
@@ -680,7 +681,7 @@ class Tweet {
     }
   }
 
-  addTweet(tweet, levels_deep = 0) {
+  async addTweet(tweet, levels_deep = 0) {
     //
     // this means we know the comment is supposed to be somewhere in this thread/parent
     // but its own parent doesn't yet exist, so we are simply going to store it here
@@ -707,7 +708,7 @@ class Tweet {
     //
     for (let i = 0; i < this.unknown_children.length; i++) {
       if (this.unknown_children[i].parent_id === tweet.tx.signature) {
-        if (this.isCriticalChild(this.unknown_children[i])) {
+        if (await this.isCriticalChild(this.unknown_children[i])) {
           this.critical_child = this.unknown_children[i];
           //
           // April 14, 2023 - do not show critical children unless 2nd level
@@ -748,7 +749,7 @@ class Tweet {
       // make critical child if needed
       //
       if (
-        this.isCriticalChild(tweet) ||
+        await this.isCriticalChild(tweet) ||
         (tweet.tx.timestamp > this.updated_at && this.critical_child == null)
       ) {
         this.critical_child = tweet;
@@ -768,7 +769,7 @@ class Tweet {
       //
       // prioritize tweet-threads
       //
-      if (tweet.tx.from[0].publicKey === this.tx.from[0].publicKey  {
+      if (tweet.tx.from[0].publicKey === this.tx.from[0].publicKey) {
         this.children.unshift(tweet);
         this.children_sigs_hmap[tweet.tx.sig] == 1;
         this.removeUnknownChild(tweet);
@@ -788,7 +789,7 @@ class Tweet {
       //
       // maybe it is a critical child
       //
-      if (this.isCriticalChild(tweet)) {
+      if (await this.isCriticalChild(tweet)) {
         this.critical_child = tweet;
         //
         // April 14, 2023 - do not show critical children unless 2nd level
@@ -972,7 +973,8 @@ class Tweet {
       if (obj) {
         obj.innerHTML = likes;
       }
-    } catch (err) {}
+    } catch (err) {
+    }
   }
 
   renderRetweets() {
@@ -985,7 +987,8 @@ class Tweet {
       if (obj) {
         obj.innerHTML = retweets;
       }
-    } catch (err) {}
+    } catch (err) {
+    }
   }
 
   renderReplies() {
@@ -998,7 +1001,8 @@ class Tweet {
       if (obj) {
         obj.innerHTML = replies;
       }
-    } catch (err) {}
+    } catch (err) {
+    }
   }
 }
 

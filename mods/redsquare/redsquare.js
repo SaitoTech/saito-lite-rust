@@ -12,6 +12,8 @@ const prettify = require("html-prettify");
 const redsquareHome = require("./index");
 const Post = require("./lib/post");
 const localforage = require("localforage");
+const Slip = require("../../lib/saito/slip");
+const Transaction = require("../../lib/saito/transaction");
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
@@ -223,8 +225,8 @@ class RedSquare extends ModTemplate {
   // so that we have something to show before the network is
   // live.
   //
-  initialize(app) {
-    super.initialize(app);
+  async initialize(app) {
+    await super.initialize(app);
 
     //
     // this prints the last 10 tweets to ./web/tweets.js which is optionally
@@ -232,7 +234,7 @@ class RedSquare extends ModTemplate {
     // prefer at the top of their feed for more rapid page load.
     //
     if (app.BROWSER == 0) {
-      this.updateTweetsCacheForBrowsers();
+      await this.updateTweetsCacheForBrowsers();
     } else {
       //
       // fetch content from options file -- regardless of whether we are accessing redsquare or not!
@@ -246,7 +248,7 @@ class RedSquare extends ModTemplate {
   // onto the page, as we are likely being asked to render the components on
   // the application BEFORE we have any peers capable of feeding us content.
   //
-  render() {
+  async render() {
     if (!this.app.BROWSER) {
       return;
     }
@@ -280,7 +282,7 @@ class RedSquare extends ModTemplate {
       });
     }
 
-    super.render();
+    await super.render();
 
     this.rendered = true;
   }
@@ -470,13 +472,13 @@ class RedSquare extends ModTemplate {
         //console.log("RS onConfirmation: " + txmsg.request);
 
         if (txmsg.request === "create tweet") {
-          this.receiveTweetTransaction(blk, tx, conf, app);
+          await this.receiveTweetTransaction(blk, tx, conf, app);
         }
         if (txmsg.request === "like tweet") {
-          this.receiveLikeTransaction(blk, tx, conf, app);
+          await this.receiveLikeTransaction(blk, tx, conf, app);
         }
         if (txmsg.request === "flag tweet") {
-          this.receiveFlagTransaction(blk, tx, conf, app);
+          await this.receiveFlagTransaction(blk, tx, conf, app);
         }
       }
     } catch (err) {
@@ -627,8 +629,8 @@ class RedSquare extends ModTemplate {
       async (res) => {
         if (res.rows) {
           res.rows.forEach((row) => {
-            let tx = new saito.default.transaction();
-            tx.deserialize_from_web(this.app, row.tx);
+            let tx = new Transaction(undefined, row.tx);
+            // tx.deserialize_from_web(this.app, row.tx);
             if (!tx.optional) {
               tx.optional = {};
             }
@@ -686,7 +688,7 @@ class RedSquare extends ModTemplate {
           limit: this.peers[i].limit,
         },
 
-        (txs) => {
+        async (txs) => {
           if (txs.length > 0) {
             for (let z = 0; z < txs.length; z++) {
               txs[z].decryptMessage(this.app);
@@ -695,7 +697,7 @@ class RedSquare extends ModTemplate {
           }
 
           if (mycallback) {
-            mycallback(txs);
+            await mycallback(txs);
           }
         },
         this.peers[i].peer
@@ -872,7 +874,7 @@ class RedSquare extends ModTemplate {
   /// 3) flag tweet
   ///////////////////////////////////////////////
 
-  sendTweetTransaction(app, mod, data, keys = []) {
+  async sendTweetTransaction(app, mod, data, keys = []) {
     let redsquare_self = this;
 
     let obj = {
@@ -884,14 +886,16 @@ class RedSquare extends ModTemplate {
       obj.data[key] = data[key];
     }
 
-    let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
     for (let i = 0; i < keys.length; i++) {
       if (keys[i] !== this.publicKey) {
-        newtx.to.push(new saito.default.slip(keys[i]));
+        let slip = new Slip();
+        slip.publicKey = keys[i];
+        newtx.addToSlip(slip);
       }
     }
-    newtx = redsquare_self.app.wallet.signTransaction(newtx);
+    await newtx.sign();
     redsquare_self.app.network.propagateTransaction(newtx);
     return newtx;
   }
@@ -957,7 +961,7 @@ class RedSquare extends ModTemplate {
           //
 
           if (txmsg.data?.retweet_tx) {
-            let rtx = new saito.default.transaction();
+            let rtx = new Transaction();
             rtx.deserialize_from_web(this.app, txmsg.data.retweet_tx);
 
             if (this.tweets_sigs_hmap[rtx.sig]) {
@@ -1110,14 +1114,14 @@ class RedSquare extends ModTemplate {
       //
       // update cache
       //
-      this.updateTweetsCacheForBrowsers();
+      await this.updateTweetsCacheForBrowsers();
     } catch (err) {
       console.log("ERROR in receiveTweetsTransaction() in RedSquare: " + err);
     }
   }
 
   // data = sig: tweet_sig
-  sendLikeTransaction(app, mod, data, tx = null) {
+  async sendLikeTransaction(app, mod, data, tx = null) {
     let redsquare_self = this;
 
     let obj = {
@@ -1130,16 +1134,18 @@ class RedSquare extends ModTemplate {
       obj.data[key] = data[key];
     }
 
-    let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
     for (let i = 0; i < tx.to.length; i++) {
       if (tx.to[i].publicKey !== this.publicKey) {
-        newtx.to.push(new saito.default.slip(tx.to[i].publicKey  0.0));
+        let slip = new Slip();
+        slip.publicKey = tx.to[i].publicKey;
+        tx.addToSlip(slip);
       }
     }
 
     newtx.msg = obj;
-    newtx = redsquare_self.app.wallet.signTransaction(newtx);
-    redsquare_self.app.network.propagateTransaction(newtx);
+    await newtx.sign();
+    await redsquare_self.app.network.propagateTransaction(newtx);
     return newtx;
   }
 
@@ -1154,7 +1160,7 @@ class RedSquare extends ModTemplate {
       if (tx.isTo(this.publicKey)) {
         //console.log("Save (like) notification to archive");
 
-        this.app.storage.saveTransaction(tx, {
+        await this.app.storage.saveTransaction(tx, {
           owner: this.publicKey,
           field3: this.publicKey,
         });
@@ -1207,12 +1213,12 @@ class RedSquare extends ModTemplate {
     //
     // update cache
     //
-    this.updateTweetsCacheForBrowsers();
+    await this.updateTweetsCacheForBrowsers();
 
     return;
   }
 
-  sendFlagTransaction(app, mod, data) {
+  async sendFlagTransaction(app, mod, data) {
     let redsquare_self = this;
 
     let obj = {
@@ -1224,10 +1230,10 @@ class RedSquare extends ModTemplate {
       obj.data[key] = data[key];
     }
 
-    let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
-    newtx = redsquare_self.app.wallet.signTransaction(newtx);
-    redsquare_self.app.network.propagateTransaction(newtx);
+    await newtx.sign();
+    await redsquare_self.app.network.propagateTransaction(newtx);
 
     return newtx;
   }
@@ -1282,8 +1288,8 @@ class RedSquare extends ModTemplate {
     localforage.getItem(`tweet_history`, (error, value) => {
       if (value && value.length > 0) {
         for (let tx of value) {
-          let newtx = new saito.default.transaction();
-          newtx.deserialize_from_web(this.app, tx);
+          let newtx = new Transaction(undefined, tx);
+          // newtx.deserialize_from_web(this.app, tx);
           this.addTweet(newtx);
         }
       } else {
@@ -1303,8 +1309,8 @@ class RedSquare extends ModTemplate {
           if (tweets) {
             console.log("Using Server Cached Tweets");
             for (let z = 0; z < tweets.length; z++) {
-              let newtx = new saito.default.transaction();
-              newtx.deserialize_from_web(this.app, tweets[z]);
+              let newtx = new Transaction(undefined, tweets[z]);
+              // newtx.deserialize_from_web(this.app, tweets[z]);
               this.addTweet(newtx);
             }
           }
@@ -1474,8 +1480,8 @@ class RedSquare extends ModTemplate {
       //
       // create the transaction
       //
-      let tx = new saito.default.transaction();
-      tx.deserialize_from_web(this.app, rows[i].tx);
+      let tx = new Transaction(undefined, rows[i].tx);
+      // tx.deserialize_from_web(this.app, rows[i].tx);
       if (rows[i].num_reples) {
         tx.optional.num_replies = rows[i].num_replies;
       }
@@ -1542,8 +1548,8 @@ class RedSquare extends ModTemplate {
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
 
             for (let i = 0; i < rows.length; i++) {
-              let tx = new saito.default.transaction();
-              tx.deserialize_from_web(app, rows[i].tx);
+              let tx = new Transaction(undefined, rows[i].tx);
+              // tx.deserialize_from_web(app, rows[i].tx);
               let txmsg = tx.returnMessage();
               let text = txmsg.data.text;
               let publickey = tx.from[0].publicKey;
@@ -1583,8 +1589,8 @@ class RedSquare extends ModTemplate {
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
             console.info(rows.length);
             for (let i = 0; i < rows.length; i++) {
-              let tx = new saito.default.transaction();
-              tx.deserialize_from_web(redsquare_self.app, rows[i].tx);
+              let tx = new Transaction(undefined, rows[i].tx);
+              // tx.deserialize_from_web(redsquare_self.app, rows[i].tx);
               //console.info(rows[i]);
               txmsg = tx.returnMessage();
               //console.info(txmsg);

@@ -668,15 +668,15 @@ class League extends ModTemplate {
     if (email) {
       newtx.msg.email = email;
     }
-
-    return this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
+    return newtx;
   }
 
   async receiveJoinTransaction(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
 
     let params = {
-      publickey: tx.from[0].publicKey
+      publickey: tx.from[0].publicKey,
       email: txmsg.email || "",
       ts: parseInt(tx.timestamp),
     };
@@ -687,7 +687,7 @@ class League extends ModTemplate {
     //So, when we get our join message returned to us, we will do a query to figure out our rank
     //save the info locally, and emit an event to update as a success
     //
-    if (this.publicKey === tx.from[0].publicKey  {
+    if (this.publicKey === tx.from[0].publicKey) {
       this.fetchLeagueLeaderboard(txmsg.league_id, () => {
         this.app.connection.emit("join-league-success");
       });
@@ -713,8 +713,8 @@ class League extends ModTemplate {
       new_data,
       field,
     };
-
-    return this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
+    return newtx;
   }
 
   async receiveUpdateTransaction(blk, tx, conf, app) {
@@ -748,8 +748,13 @@ class League extends ModTemplate {
   async createUpdatePlayerTransaction(league_id, publickey, new_data, field = "email") {
     let newtx = await this.app.wallet.createUnsignedTransaction();
 
-    newtx.to.push(new saito.default.slip(this.publicKey, 0.0));
-    newtx.to.push(new saito.default.slip(publickey, 0.0));
+    let slip = new Slip();
+    slip.publicKey = this.publicKey;
+    newtx.addToSlip(slip);
+
+    slip = new Slip();
+    slip.publicKey = publickey;
+    newtx.addToSlip(slip);
 
     newtx.msg = {
       module: "League",
@@ -759,8 +764,8 @@ class League extends ModTemplate {
       new_data,
       field,
     };
-
-    return this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
+    return newtx;
   }
 
   async receiveUpdatePlayerTransaction(blk, tx, conf, app) {
@@ -822,7 +827,8 @@ class League extends ModTemplate {
       league_id: league_id,
       publickey,
     };
-    return this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
+    return newtx;
   }
 
   async receiveQuitTransaction(blk, tx, conf, app) {
@@ -847,14 +853,14 @@ class League extends ModTemplate {
 
     await this.app.storage.executeDatabase(sql, params, "league");
 
-    this.removeLeaguePlayer(txmsg.league_id, txmsg.publickey);
+    await this.removeLeaguePlayer(txmsg.league_id, txmsg.publickey);
   }
 
   /////////////////////
   // remove a league //
   /////////////////////
-  createRemoveTransaction(league_id) {
-    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+  async createRemoveTransaction(league_id) {
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     newtx = this.addressToAll(newtx, league_id);
 
     newtx.msg = {
@@ -862,8 +868,8 @@ class League extends ModTemplate {
       request: "league remove",
       league_id: league_id,
     };
-
-    return this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
+    return newtx;
   }
 
   async receiveRemoveTransaction(blk, tx, conf, app) {
@@ -875,7 +881,7 @@ class League extends ModTemplate {
                   AND admin = $admin`;
     let params1 = {
       $id: txmsg.league_id,
-      $admin: tx.from[0].publicKey
+      $admin: tx.from[0].publicKey,
     };
 
     let result = await this.app.storage.executeDatabase(sql1, params1, "league");
@@ -1002,8 +1008,8 @@ class League extends ModTemplate {
     //
     let publickeys = [];
     for (let i = 0; i < tx.to.length; i++) {
-      if (!publickeys.includes(tx.to[i].publicKey ) {
-        publickeys.push(tx.to[i].publicKey ;
+      if (!publickeys.includes(tx.to[i].publicKey)) {
+        publickeys.push(tx.to[i].publicKey);
       }
     }
 

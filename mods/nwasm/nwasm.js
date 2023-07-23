@@ -7,6 +7,7 @@ const NwasmLibrary = require("./lib/libraries");
 const SaveGameOverlay = require("./lib/save-games");
 const JSON = require("json-bigint");
 const xorInplace = require("buffer-xor/inplace");
+const Transaction = require("../../lib/saito/transaction");
 
 //
 // ROMS -- saved as 'Nwams' modules
@@ -46,11 +47,11 @@ class Nwasm extends OnePlayerGameTemplate {
     return this;
   }
 
-  initialize(app) {
+  async initialize(app) {
     if (app.BROWSER == 0) {
       return;
     }
-    super.initialize(app);
+    await super.initialize(app);
 
     //
     // monitor log if browser
@@ -107,10 +108,10 @@ class Nwasm extends OnePlayerGameTemplate {
       return;
     }
 
-    super.handlePeerTransaction(app, tx, peer, mycallback);
+    await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
-  render(app) {
+  async render(app) {
     let game_mod = this;
     if (!this.browser_active) {
       return;
@@ -186,20 +187,20 @@ class Nwasm extends OnePlayerGameTemplate {
       text: "Delete",
       id: "game-rom-delete",
       class: "game-rom-delete",
-      callback: function (app, game_mod) {
+      callback: async function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         let c = confirm("Confirm: delete all your ROMS?");
         if (c) {
-          game_mod.deleteRoms();
+          await game_mod.deleteRoms();
           game_mod.library.render();
         }
       },
     });
 
-    this.menu.addChatMenu();
-    this.menu.render();
+    await this.menu.addChatMenu();
+    await this.menu.render();
 
-    this.library.render();
+    await this.library.render();
   }
 
   initializeGame(game_id) {
@@ -215,9 +216,9 @@ class Nwasm extends OnePlayerGameTemplate {
     //
     // when games are saved in the emulator
     //
-    this.app.connection.on("nwasm-export-game-save", (savegame) => {
+    this.app.connection.on("nwasm-export-game-save", async (savegame) => {
       nwasm_self.active_game = savegame;
-      nwasm_self.saveGameFile(savegame);
+      await nwasm_self.saveGameFile(savegame);
     });
   }
 
@@ -237,14 +238,14 @@ class Nwasm extends OnePlayerGameTemplate {
     this.active_game_load_ts = ts;
   }
 
-  deleteRoms() {
-    let newtx = this.app.wallet.createUnsignedTransaction();
+  async deleteRoms() {
+    let newtx = await this.app.wallet.createUnsignedTransaction();
     newtx.msg = {
       module: this.name,
       request: "archive delete",
     };
 
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     //
     // save off-chain
@@ -318,7 +319,7 @@ class Nwasm extends OnePlayerGameTemplate {
   //
   // for the love of God don't add console.logs within this function
   //
-  processNwasmLog(logline = "", log) {
+  async processNwasmLog(logline = "", log) {
     let x = logline;
     let nwasm_self = this;
 
@@ -368,10 +369,10 @@ class Nwasm extends OnePlayerGameTemplate {
                 "Archive: ROM with this name already archived - is this a separate lawful copy?"
               );
               if (c) {
-                this.saveRomFile(this.active_rom);
+                await this.saveRomFile(this.active_rom);
               }
             } else {
-              this.saveRomFile(this.active_rom);
+              await this.saveRomFile(this.active_rom);
             }
           }
 
@@ -383,7 +384,7 @@ class Nwasm extends OnePlayerGameTemplate {
             function (txs) {
               try {
                 for (let z = 0; z < txs.length; z++) {
-                  let newtx = new saito.default.transaction(txs[z].transaction);
+                  let newtx = new Transaction(undefined, txs[z]);
                   nwasm_self.active_game_saves.push(newtx);
                 }
               } catch (err) {
@@ -488,14 +489,14 @@ class Nwasm extends OnePlayerGameTemplate {
       iobj.innerHTML = "bundling ROM into archive file...";
     }
 
-    let newtx = this.app.wallet.createUnsignedTransaction();
+    let newtx = await this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
 
     document.querySelector(".loader").classList.add("steptwo");
     if (iobj) {
       iobj.innerHTML = "cryptographically signing archive file...";
     }
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
     if (iobj) {
       iobj.innerHTML = "uploading archive file: " + newtx.m.length + " bytes";
     }
@@ -509,7 +510,7 @@ class Nwasm extends OnePlayerGameTemplate {
     // be ideal either to display an advert showing the pace of ROM upload
     // or allow the upload to happen in the background.
     //
-    this.app.storage.saveTransaction(newtx, { owner: this.publicKey });
+    await this.app.storage.saveTransaction(newtx, { owner: this.publicKey });
 
     //
     // and hide our instructions
@@ -544,7 +545,7 @@ class Nwasm extends OnePlayerGameTemplate {
           if (txs.length <= 0) {
             alert("No Saved Games Available");
           }
-          let newtx = new saito.default.transaction(txs[0].transaction);
+          let newtx = new Transaction(undefined, txs[0]);
           let txmsg = newtx.returnMessage();
           let byteArray = nwasm_mod.convertBase64ToByteArray(txmsg.data);
           nwasm_mod.active_game = byteArray;
@@ -562,7 +563,7 @@ class Nwasm extends OnePlayerGameTemplate {
     let base64data = this.convertByteArrayToBase64(data);
     let screenshot = await this.app.browser.resizeImg(this.active_game_img);
 
-    let newtx = this.app.wallet.createUnsignedTransaction();
+    let newtx = await this.app.wallet.createUnsignedTransaction();
 
     this.stopPlaying();
 
@@ -576,8 +577,8 @@ class Nwasm extends OnePlayerGameTemplate {
     };
 
     newtx.msg = obj;
-    newtx = this.app.wallet.signTransaction(newtx);
-    this.app.storage.saveTransaction(newtx, { field1: "Nwasm-" + this.active_rom_sig });
+    await newtx.sign();
+    await this.app.storage.saveTransaction(newtx, { field1: "Nwasm-" + this.active_rom_sig });
     this.active_game_saves.push(newtx);
   }
 
