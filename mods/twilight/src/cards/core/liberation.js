@@ -4,7 +4,8 @@
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeck("unitedfruit", "Liberation Theology Evented");
+      this.removeCardFromDeckNextDeal("unitedfruit", "Liberation Theology Evented");
+      this.cancelEvent("unitedfruit");
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on

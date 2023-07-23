@@ -6,7 +6,7 @@
     if (card == "awacs") {
 
       // SAITO COMMUNITY
-      this.removeCardFromDeck("muslimrevolution", "Muslim Revolution cancelled");
+      this.removeCardFromDeckNextDeal("muslimrevolution", "Muslim Revolution cancelled");
 
       this.game.state.events.awacs = 1; //Prevent Muslim Revolution
       this.cancelEvent("muslimrevolution");

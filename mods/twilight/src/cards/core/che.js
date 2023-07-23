@@ -8,7 +8,7 @@
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeck("unitedfruit", "Che Evented");
+      this.removeCardFromDeckNextDeal("unitedfruit", "Che Evented");
 
      
       let twilight_self = this;

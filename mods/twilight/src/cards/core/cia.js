@@ -8,6 +8,7 @@
       // SAITO COMMUNITY - lone gunman added
       //
       this.addCardToDeck("lonegunman", "Prerequisites Met");
+      this.removeCardFromDeckNextDeal("tsarbomba", "CIA Evented");
 
 
       //USSR needs to share its card information
