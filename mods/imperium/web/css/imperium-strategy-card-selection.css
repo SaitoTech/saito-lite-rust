@@ -1,0 +1,82 @@
+
+.strategy-card-selection-overlay.hide-scrollbar {
+    overflow: visible !important;
+}
+
+.strategy-card-selection-controls {
+    display: flex;
+    flex-direction: row;
+    row-gap: 1rem;
+    overflow: visible;
+    width: 80vw;
+}
+
+.strategy-card-selection-controls .strategy-card {
+    width: 20vw;
+    height: calc(20vw * 1.42);
+    font-size: 0.7vw;
+    line-height: 1vw;
+}
+
+.strategy-card-selection-controls .strategy-card img {
+    width: auto;
+}
+
+.strat_slot_1 {
+    transform: scale(0.90);
+    overflow: visible;
+    top: -10vh;
+    z-index: 8;
+}
+.strat_slot_2 {
+    transform: scale(0.90);
+    overflow: visible;
+    top: 10vh;
+    right: 5vw;
+    z-index: 10;
+}
+.strat_slot_3 {
+    transform: scale(0.90);
+    overflow: visible;
+    top: -10vh;
+    z-index: 8;
+}
+.strat_slot_4 {
+    transform: scale(0.90);
+    overflow: visible;
+    top: 10vh;
+    right: 5vw;
+    z-index: 10;
+}
+.strat_slot_5 {
+    transform: scale(0.90);
+    overflow: visible;
+    top: -10vh;
+    z-index: 8;
+}
+.strat_slot_6 {
+    transform: scale(0.90);
+    overflow: visible;
+    top: 10vh;
+    right: 5vw;
+    z-index: 10;
+}
+.strat_slot_7 {
+    transform: scale(0.90);
+    overflow: visible;
+    top: -10vh;
+    z-index: 8;
+}
+.strat_slot_8 {
+    transform: scale(0.90);
+    overflow: visible;
+    z-index: 8;
+    top: 10vh;
+    right: 5vw;
+}
+
+.strategy-card-popup:hover {
+  transform: scale(1.1) !important;
+  z-index: 20 !important;
+}
+

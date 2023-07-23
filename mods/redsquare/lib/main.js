@@ -1,9 +1,11 @@
 const RedSquareMainTemplate = require("./main.template");
 const TweetManager = require("./manager");
-const SaitoOverlay = require("../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class RedSquareMain {
+
   constructor(app, mod, container = "") {
+
     this.app = app;
     this.mod = mod;
     this.container = container;
@@ -25,35 +27,37 @@ class RedSquareMain {
       //this.overlay.show('<div class="saito-loader"></div>');
     });
 
-    this.app.connection.off("redsquare-navigation-complete", () => {
+    this.app.connection.on("redsquare-navigation-complete", () => {
       //this.overlay.remove();
     });
+
 
     // rendering the main thread
     this.app.connection.on("redsquare-home-render-request", async (user_click = true) => {
       //Update menu that we are on the main feed
       this.app.connection.emit("redsquare-navigation", true);
-      if (user_click) {
-        window.history.pushState(null, "", "/redsquare/#home");
+      if (user_click){
+        window.history.pushState(null, "", "/redsquare/#home");  
       }
-
+      
       if (this.manager.mode == "tweets" && user_click) {
-        this.scroll_depth = 0;
-        this.scrollFeed(0);
+        this.scroll_depth = 0; 
+        this.scrollFeed(0, "smooth");     
         this.mod.loadNewTweets(null, (txs) => {
           if (txs.length > 0) {
             this.app.connection.emit("redsquare-new-tweets-notification-request");
-          } else {
+          }else{
             siteMessage("No new tweets", 1000);
           }
         });
-        return;
+        return;        
       }
-
-      this.manager.mode = "tweets";
-      this.manager.render();
+      
+      this.manager.render("tweets");
       this.scrollFeed(this.scroll_depth);
+            
     });
+
 
     // when someone clicks on a tweet
     this.app.connection.on("redsquare-tweet-render-request", (tweet) => {
@@ -65,18 +69,17 @@ class RedSquareMain {
     });
 
     this.app.connection.on("redsquare-new-tweets-notification-request", async () => {
-      document.getElementById("show-new-tweets").style.display = "flex";
+      document.getElementById("show-new-tweets").style.display="flex";
       document.getElementById("show-new-tweets").onclick = (e) => {
         e.currentTarget.onclick = null;
         e.currentTarget.style.display = "none";
         console.log("Show new tweets");
         this.scoll_depth = 0;
-
-        setTimeout(() => {
-          this.app.connection.emit("redsquare-home-render-request", false);
-        }, 5);
+        
+        this.app.connection.emit("redsquare-home-render-request", false);
+        setTimeout(()=> {this.mod.saveLocalTweets();}, 1500);
       };
-      this.mod.saveLocalTweets();
+      
     });
 
     this.app.connection.on("redsquare-notifications-render-request", () => {
@@ -87,19 +90,19 @@ class RedSquareMain {
 
       this.scrollFeed(0);
       window.history.pushState(null, "", "/redsquare/#notifications");
-      this.manager.mode = "notifications";
-      this.manager.render();
+      this.manager.render("notifications");
     });
 
     this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
       this.scrollFeed(0);
       window.history.pushState(null, "", `/redsquare/?user_id=${publickey}`);
-      this.manager.mode = "profile";
       this.manager.publickey = publickey;
-      this.manager.render();
+      this.manager.render("profile");
     });
 
+
     this.app.connection.on("redsquare-component-render-request", (obj) => {
+
       alert("12");
 
       let hash = obj.hash;
@@ -115,9 +118,7 @@ class RedSquareMain {
             if (mod.returnSlug() === hash) {
               document.querySelector(".saito-main").innerHTML = "";
               mod.renderInto(".saito-main");
-              document
-                .querySelector(".saito-container")
-                .scroll({ top: 0, left: 0, behavior: "smooth" });
+              document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
               if (mod.canRenderInto(".saito-sidebar.right")) {
                 document.querySelector(".saito-sidebar.right").innerHTML = "";
                 mod.renderInto(".saito-sidebar.right");
@@ -127,9 +128,12 @@ class RedSquareMain {
         }
       }
     });
+
   }
 
+
   render() {
+
     if (document.querySelector(".saito-container")) {
       this.app.browser.replaceElementBySelector(RedSquareMainTemplate(), ".saito-container");
     } else {
@@ -139,7 +143,9 @@ class RedSquareMain {
     this.attachEvents();
   }
 
+
   attachEvents() {
+
     var scrollableElement = document.querySelector(".saito-container");
     var sidebar = document.querySelector(".saito-sidebar.right");
     var scrollTop = 0;
@@ -176,17 +182,20 @@ class RedSquareMain {
       }
       scrollTop = scrollableElement.scrollTop;
     });
+
   }
 
-  scrollFeed(newDepth) {
-    if (this.manager.mode == "tweets") {
-      this.scroll_depth = document.querySelector(".saito-container").scrollTop;
+
+  scrollFeed(newDepth, behavior = "auto"){
+    if (this.manager.mode == "tweets"){
+      this.scroll_depth = document.querySelector('.saito-container').scrollTop;
     }
 
-    document
-      .querySelector(".saito-container")
-      .scroll({ top: newDepth, left: 0, behavior: "smooth" });
+    document.querySelector('.saito-container').scroll({ top: newDepth, left: 0, behavior });
+
   }
+
 }
 
 module.exports = RedSquareMain;
+

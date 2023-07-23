@@ -4,6 +4,9 @@
     /////////////////
     if (card == "warsawpact") {
 
+      // SAITO COMMUNITY
+      this.addCardToDeck("nato", "Prerequisites Met");
+
       this.game.state.events.warsawpact = 1;
 
       if (this.game.player == 1) {

@@ -5,6 +5,9 @@
     //
     if (card == "campdavid") {
 
+      // SAITO COMMUNITY
+      this.removeCardFromDeck("arabisraeli", "Camp David evented");
+
       this.game.state.events.campdavid = 1; //Prevents Arab-Isreali War
       this.cancelEvent("arabisraeli");
 

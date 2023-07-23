@@ -1,4 +1,103 @@
 
+  resetBesiegedSpaces() {
+    for (let space in this.game.spaces) {
+      if (space.besieged == 2) { space.besieged = 1; }
+    }
+  }
+  resetLockedTroops() {
+    for (let space in this.game.spaces) {
+      for (let f in this.game.spaces[space].units) {
+        for (let z = 0; z < this.game.spaces[space].units[f].length; z++) {
+          this.game.spaces[space].units[f][z].locked = false;
+        }
+      }
+    }
+  }
+
+  addUnrest(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    space.unrest = 1;
+  }
+
+  removeUnrest(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    space.unrest = 0;
+  }
+
+  hasProtestantReformer(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units["protestant"].length; i++) {
+      let unit = space.units["protestant"][i];
+      if (unit.reformer) { return true; }
+    }
+    for (let i = 0; i < space.units["england"].length; i++) {
+      let unit = space.units["england"][i];
+      if (unit.reformer) { return true; }
+    }
+    for (let i = 0; i < space.units["france"].length; i++) {
+      let unit = space.units["france"][i];
+      if (unit.reformer) { return true; }
+    }
+    return false;
+  }
+
+
+  hasProtestantLandUnits(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    //
+    // only protestant units count
+    //
+    for (let i = 0; i < space.units["protestant"].length; i++) {
+      let unit = space.units["protestant"][i];
+      if (unit.type == "regular" || unit.type == "mercenary") { return true; }
+    }
+
+    //
+    // unless Edward VI or Elizabeth I are on the throne
+    //
+    if (this.game.state.leaders.edward_vi == 1 || this.game.state.leaders.elizabeth_i == 1) {
+
+      //
+      // then british mercenaries and regulars count
+      //
+      for (let i = 0; i < space.units["england"].length; i++) {
+        let unit = space.units["england"][i];
+        if (unit.type == "regular" || unit.type == "mercenary") { return true; }
+      }
+
+      //
+      // or Scottish ones if Scotland is allied to England
+      //
+      if (this.areAllies("england", "scotland")) {
+        for (let i = 0; i < space.units["scotland"].length; i++) {
+          let unit = space.units["scotland"][i];
+          if (unit.type == "regular" || unit.type == "mercenary") { return true; }
+        }
+      }
+
+    }
+
+    return false;
+
+  }
+
+  hasCatholicLandUnits(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let f in space.units) {
+      if (f != "protestant" && f != "ottoman") {
+
+	if (f == "england" && (this.game.state.leaders.edward_vi != 1 || this.game.state.leaders.elizabeth_i != 1)) {
+          if (this.returnFactionLandUnitsInSpace(f, space)) { return true; }
+	} else {
+          if (this.returnFactionLandUnitsInSpace(f, space)) { return true; }
+	}
+      }
+    }
+
+    return false;
+  }
+
   isSpaceFriendly(space, faction) {
     let cf = this.returnFactionControllingSpace(space);
     if (cf === faction) { return true; }
@@ -92,6 +191,40 @@
     return false;
   }
 
+  doesSpaceContainProtestantReformer(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units["protestant"].length; i++) {
+      if (space.units["protestant"][i].reformer == true) { return true; }
+    }
+    return false;
+  }
+
+  doesSpaceContainCatholicReformer(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units["papacy"].length; i++) {
+      if (space.units["papacy"][i].reformer == true) { return true; }
+    }
+    return false;
+  }
+
+  isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let seas = [];
+    for (let i = 0; i < space.ports.length; i++) {
+      if (!seas.includes(space.ports[i])) { seas.push(space.ports[i]); }
+    }
+    for (let s in this.game.spaces) {
+      let sp = this.game.spaces[s];
+      if (sp.religion == "protestant" && sp.ports.length > 0) {
+	for (let z = 0; z < sp.ports.length; z++) {
+	  if (seas.includes(sp.ports[z])) { return true; }
+	}
+      }
+    }  
+    return false;
+  }
+
+
   returnSpacesWithFilter(filter_func) {
     let spaces = [];
     for (let spacekey in this.game.spaces) {
@@ -173,6 +306,8 @@
 
   returnSpaceOfPersonage(faction, personage) {
     for (let key in this.game.spaces) {
+console.log("KEY: " + key);
+console.log("FACTION: " + faction);
       for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
 	if (this.game.spaces[key].units[faction][i].type === personage) {
 	  return key;
@@ -413,7 +548,6 @@
   canFactionRetreatToNavalSpace(faction, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
-console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports AND open sea");
     return 1;
   }
 
@@ -435,12 +569,9 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     // or -- failing that -- whichever faction is recorded as occupying the space.
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let f in space.units) {
-console.log("we have found: " + f);
-      let luis = this.returnFactionLandUnitsInSpace(f, space);
+      let luis = this.returnFactionLandUnitsInSpace(f, space.key);
       if (luis > 0) {
-console.log("this faction has units!");
         if (!this.areAllies(attacker_faction, f) && f !== attacker_faction) {
-console.log("this faction is not an ally to " + attacker_faction + " --- " + this.areAllies(attacker_faction, f));
 	  return f;
 	}
       }
@@ -452,7 +583,6 @@ console.log("this faction is not an ally to " + attacker_faction + " --- " + thi
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.occupier != "" && space.occupier != undefined && space.occupier != "undefined" && space.occupier != 'undefined') { 
       // whoever had units here first
-      console.log("occupier: " + space.occupier);
       if (space.units[space.occupier]) {
         if (space.units[space.occupier].length > 0) {
           return space.occupier; 
@@ -576,25 +706,18 @@ console.log("this faction is not an ally to " + attacker_faction + " --- " + thi
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     let faction_map = {};
 
-console.log("rfm: " + faction1 + " -- " + faction2);
-
     for (let f in space.units) {
-console.log("checking f: " + f);
       if (this.returnFactionLandUnitsInSpace(f, space)) {
-console.log("there are faction land units in space: " + f);
         if (f == faction1) {
           faction_map[f] = faction1;
         } else {
           if (f == faction2) {
             faction_map[f] = faction2;
           } else {
-console.log("about to check allies...");
             if (this.areAllies(f, faction1)) {
-console.log("setting as ally of " + faction1);
               faction_map[f] = faction1;
             }
             if (this.areAllies(f, faction2)) {
-console.log("setting as ally of " + faction2);
               faction_map[f] = faction2;
             }
           }
@@ -696,6 +819,7 @@ console.log("setting as ally of " + faction2);
 
     return neighbours;
   }
+
 
 
 
@@ -2493,7 +2617,7 @@ console.log("setting as ally of " + faction2);
       political: "",
       religion: "catholic",
       neighbours: ["modena","genoa","siena"],
-       language: "italian",
+      language: "italian",
       type: "key"
     }
     spaces['siena'] = {
@@ -2652,8 +2776,10 @@ console.log("setting as ally of " + faction2);
       spaces[key].units['independent'] = [];
       spaces[key].university = 0;
       spaces[key].unrest = 0;
+      if (!spaces[key].ports) { spaces[key].ports = []; }
       if (!spaces[key].pass) { spaces[key].pass = []; }
       if (!spaces[key].name) { spaces[key].name = key.charAt(0).toUpperCase() + key.slice(1); }
+      if (!spaces[key].key) { spaces[key].key = spaces[key].name; }
       if (!spaces[key].besieged) { spaces[key].besieged = 0; }
       if (!spaces[key].besieged_factions) { spaces[key].besieged_factions = []; }
     }

@@ -106,6 +106,13 @@
     padding-bottom: 0.9rem;
 }
 
+.hud-body .status .back-button {
+    top: 1rem;
+    margin-left: 1rem;
+    position: absolute;
+    font-size: 1.7rem;
+}
+
 .status {
     border-radius: unset;
     position: relative;

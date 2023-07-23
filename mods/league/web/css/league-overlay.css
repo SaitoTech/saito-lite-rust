@@ -11,6 +11,7 @@
   display: flex;
   flex-direction: column;
   grid-gap: 2rem;
+  max-height: 95vh;
 }
 
 .league-overlay>div {
@@ -18,10 +19,13 @@
 }
 
 .league-overlay-controls button {
-  line-height: 4.5rem;
-  width: 20rem;
+  height: 7rem;
+  max-width: 20rem;
   font-size: 2.2rem;
   margin: 0;
+  margin-left: 1.5rem;
+  min-width: unset;
+  flex-grow: 1;
 }
 
 .league-overlay-controls {
@@ -51,6 +55,7 @@
   justify-content: flex-start;
   row-gap: 1.5rem;
   flex-wrap: wrap;
+  height: 8rem;
 }
 
 .league-overlay-header-title-box {
@@ -110,7 +115,7 @@
   display: grid;
   grid-template-columns: minmax(40rem, 2fr) minmax(30rem, 1fr);
   gap: 2rem;
-  min-height: min(50rem, 80vh);
+  height: min(45rem, calc(100vh - 160px));
 }
 
 .league-error {
@@ -118,10 +123,6 @@
   line-height: 2rem;
 }
 
-.league-overlay-body>div {
-  max-height: calc(90vh - 22rem);
-  flex-grow: 1;
-}
 
 .league-overlay-content-box {
   padding: 1.5rem;
@@ -135,6 +136,14 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.league-overlay-body.admin-mode .league-overlay-body-content {
+  grid-column: span 2;
+}
+
+.league-overlay-body.admin-mode .league-overlay-controls {
+  display: none;
 }
 
 .league-overlay-header-image {
@@ -161,6 +170,7 @@
 
 #admin_details {
   flex: unset;
+  min-height: 7.5rem;
 }
 
 span.attention {
@@ -276,30 +286,21 @@ span.attention {
   text-align: center;
 }
 
-.email_field {
+.editable_field {
   border: 1px solid;
+  cursor: text;
 }
 
 .contactAdminWarning {
-  /*min-width: 60rem;
-  max-width: 90%;
-  background: var(--saito-background-light); 
-  min-height: 20rem;
-  max-height: 90%;
-  padding: 1rem;
-  */
   font-size: 2rem;
-  min-height: 40rem;
+  /*min-height: 30rem;*/
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  flex: 4;
 }
 
-.error_line {
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
-}
 
 .contactAdminWarning>* {
   margin: 1rem;
@@ -310,30 +311,27 @@ span.attention {
   justify-content: center;
 }
 
-.contactAdminWarning>div {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  align-items: center;
-}
 
 .contactAdminWarning i {
   font-size: 5rem;
   color: var(--saito-secondary);
 }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 900px) {
+  .league-overlay-header {
+    height: unset;
+  }
+  
   .league-overlay-body {
     display: flex;
     flex-direction: column;
     row-gap: 2rem;
-    max-height: calc(95vh - 30rem);
     overflow-y: auto;
     margin: 0 !important;
     padding: 1px 1rem;
+    height: calc(90vh - 12rem);
   }
   .league-overlay-body>div {
-    max-height: unset;
     overflow-y: unset;
   }
   .league-overlay-body .league-overlay-controls {
@@ -343,11 +341,15 @@ span.attention {
 
 @media screen and (max-width: 600px) {
   .league-overlay-container {
-    width: calc(100vw - 2px);
-    max-height: 98vh;
+    width: 100vw;
+    max-height: 95vh;
   }
   .contactAdminWarning {
     min-height: 0;
+  }
+
+  .league-overlay-body {
+    height: calc(90vh - 20rem);
   }
 
   .league-overlay-controls {
@@ -360,12 +362,20 @@ span.attention {
 
   .league-overlay-header {
     flex-direction: column;
+    position: relative;
   }
 
   .league-overlay-header-image {
     margin: 0;
     width: 100%;
     background-position: center center;
-    height: 15rem;
+    height: 10rem;
+  }
+
+  .league-overlay-header-title-box {
+    position: absolute;
+    left: 1rem;
+    top: 1.4rem;
+    text-shadow: 1px 1px 2px var(--saito-background-color), -1px -1px 2px var(--saito-background-color), 1px -1px 2px var(--saito-background-color), -1px 1px 2px var(--saito-background-color);
   }
 }

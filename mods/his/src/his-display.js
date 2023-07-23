@@ -876,6 +876,8 @@
     let t = "."+key;
     document.querySelectorAll(t).forEach((obj) => {
 
+      obj.innerHTML = "";
+
       if (show_tile === 1) {
         obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
         obj.innerHTML += this.returnArmies(space);
@@ -886,6 +888,10 @@
 
       if (this.isSpaceInUnrest(space)) {
         obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
+      }
+      if (this.isSpaceBesieged(space)) {
+alert("SPACE IS BESIEGED: " + space.key);
+        obj.innerHTML += `<img class="siege" src="/his/img/tiles/siege.png" />`;
       }
 
     });
@@ -933,6 +939,9 @@
 
   displaySpaces() {
 
+    let his_self = this;
+
+
     //
     // add tiles
     //
@@ -944,6 +953,28 @@
         }
       }
     }
+
+    let xpos = 0;
+    let ypos = 0;
+
+if (!his_self.bound_gameboard_zoom) {
+
+    $('.gameboard').on('mousedown', function (e) {
+      if (e.currentTarget.classList.contains("space")) { return; }
+      xpos = e.clientX;
+      ypos = e.clientY;
+    });
+    $('.gameboard').on('mouseup', function (e) { 
+      if (e.currentTarget.classList.contains("space")) { return; }
+      if (Math.abs(xpos-e.clientX) > 4) { return; }
+      if (Math.abs(ypos-e.clientY) > 4) { return; }
+      his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
+    });
+
+    his_self.bound_gameboard_zoom = 1;
+
+}
+
 
   }
 
@@ -973,6 +1004,15 @@
     let deckidx = -1;
     let card;
 
+    if (cardname === "pass") {
+      return `<img class="${cardclass}" src="/his/img/cards/PASS.png" />`;
+    }
+
+    //
+    //
+    //
+    if (this.debaters[cardname]) { return this.debaters[cardname].returnCardImage(); }
+
     for (let i = 0; i < this.game.deck.length; i++) {
       var c = this.game.deck[i].cards[cardname];
       if (c == undefined) { c = this.game.deck[i].discards[cardname]; }
@@ -982,6 +1022,7 @@
         card = c;
       }
     }
+
 
     if (deckidx === -1) {
       //
@@ -996,7 +1037,6 @@
     // add cancel button to uneventable cards
     //
     if (deckidx == 0) { 
-console.log("card: " + cardname);
       if (!this.deck[cardname].canEvent(this, "")) {
         html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
       }
@@ -1012,5 +1052,7 @@ console.log("card: " + cardname);
   }
 
 
-
+  displayDebaterPopup(debater) {
+    
+  }
 

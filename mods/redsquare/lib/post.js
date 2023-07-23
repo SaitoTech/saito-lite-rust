@@ -1,7 +1,7 @@
-const SaitoUser = require("../../../lib/saito/ui/saito-user/saito-user");
+const SaitoUser = require("./../../../lib/saito/ui/saito-user/saito-user");
 const PostTemplate = require("./post.template");
-const SaitoOverlay = require("../../../lib/saito/ui/saito-overlay/saito-overlay");
-const SaitoInput = require("../../../lib/saito/ui/saito-input/saito-input");
+const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoInput = require("./../../../lib/saito/ui/saito-input/saito-input");
 const JSON = require("json-bigint");
 
 class Post {
@@ -16,7 +16,7 @@ class Post {
 
     this.render_after_submit = 0;
     this.file_event_added = false;
-    this.publickey = app.wallet.publicKey;
+    this.publickey = app.wallet.returnPublicKey();
     this.source = "Tweet";
 
     this.user = new SaitoUser(
@@ -137,7 +137,7 @@ class Post {
     });
   }
 
-  async postTweet() {
+  postTweet() {
     let post_self = this;
     let text = document.getElementById("post-tweet-textarea").value;
     let parent_id = document.getElementById("parent_id").value;
@@ -174,9 +174,9 @@ class Post {
     // any previous recipients get added to "to"
     //
     if (post_self?.tweet?.tx?.transaction) {
-      for (let i = 0; i < post_self.tweet.tx.to.length; i++) {
-        if (!keys.includes(post_self.tweet.tx.to[i].add)) {
-          keys.push(post_self.tweet.tx.to[i].add);
+      for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
+        if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
+          keys.push(post_self.tweet.tx.transaction.to[i].add);
         }
       }
     }
@@ -199,15 +199,15 @@ class Post {
     }
     //Retweets
     if (source == "Retweet") {
-      data.retweet_tx = post_self.tweet.tx.serialize();
-      data.sig = post_self.tweet.tx.signature;
+      data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);
+      data.sig = post_self.tweet.tx.transaction.sig;
     }
 
     if (post_self.images.length > 0) {
       data["images"] = post_self.images;
     }
 
-    let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
+    let newtx = post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
     //
     // This makes no sense. If you require at the top of the file, it fails with a
@@ -227,13 +227,14 @@ class Post {
       let rparent2 = rparent;
       while (this.mod.returnTweet(rparent2.parent_id)) {
         let x = this.mod.returnTweet(rparent2.parent_id);
-        let qs = ".tweet-" + x.tx.signature;
+        let qs = ".tweet-" + x.tx.transaction.sig;
         if (document.querySelector(qs)) {
           //console.log(qs);
           document.querySelector(qs).remove();
         }
         rparent2 = x;
       }
+
 
       if (posted_tweet.retweet_tx) {
         rparent.tx.optional.num_retweets++;
@@ -246,6 +247,7 @@ class Post {
         rparent.num_replies++;
         rparent.renderWithCriticalChild();
       }
+
     } else {
       this.mod.addTweet(posted_tweet.tx, true);
       posted_tweet.render(true);

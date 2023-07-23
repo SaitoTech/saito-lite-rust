@@ -13,12 +13,14 @@
 }
 
 .production-table {
-    display: grid;
-    grid-template-columns: 26rem 26rem 26rem 26rem;
     column-gap: 3rem;
     row-gap: 2rem;
     margin-left: auto;
     margin-right: auto;
+    display: flex;
+    flex-direction: rows;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
 }
 
 .production-header {

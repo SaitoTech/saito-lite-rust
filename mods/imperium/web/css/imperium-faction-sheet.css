@@ -1,11 +1,35 @@
 .faction-sheet-action-cards {
-  min-height: 26vh;
-  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  grid-gap: 1rem;
+  height: min-content;
+  min-height: min-content;
+  padding-top: 1rem;
 }
 
-.faction-sheet-tech-cards{
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+.faction-sheet-tech-cards {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  grid-gap: 1rem;
+  height: min-content;
+  min-height: min-content;
+  padding-top: 1rem;
+}
+
+.faction-sheet-planets {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  grid-gap: 1rem;
+  height: min-content;
+  min-height: min-content;
+  padding-top: 1rem;
+}
+
+.faction-sheet-action-cards:empty , .faction-sheet-tech-cards:empty , .faction-sheet-planets:empty {
+  padding-top: 0rem;
 }
 
 .faction_sheet_action_card_back {
@@ -44,21 +68,11 @@
 .faction-sheet-title {
   color: white;
   padding-left: 0.75rem;
-  font-family: 'bank-gothic';
   font-size: 3rem
 
 }
 
 .faction-sheet-tokens {
-
-}
-.faction-sheet-action-cards {
-
-}
-.faction-sheet-tech-cards {
-
-}
-.faction-sheet-planets {
 
 }
 .faction-sheet-sidebar {
@@ -105,7 +119,6 @@
   display: grid;
   grid-gap: 0 2em;
   grid-template-columns: auto auto auto;
-  font-family: 'bank-gothic';
   transform: scale(1);
   font-size: 0.4rem;
   margin: 0.5rem;
@@ -152,6 +165,12 @@
   font-size: 1rem;
   line-height: 1.5rem;
 }
+.faction_ability {
+  margin-bottom: 2rem;
+}
+.faction_ability:last-child {
+  margin-bottom: 0rem;
+}
 .faction_ability:nth-child(n+2) {
   margin-top: 1rem;
 }
@@ -162,36 +181,6 @@
 }
 .faction_ability_text {
   font-weight: normal;
-  font-family: 'orbitron-medium', helvetica, sans-serif;
-}
-.faction_flagship_image {
-  background-image: url('/imperium/img/ships/flagship_100x200.png');
-  min-width: 160px;
-  min-height: 80px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-.faction_flagship_text_container {
-}
-.faction_flagship_title {
-  font-weight: bold;
-  border-bottom:1px solid #fff;
-  margin-bottom: 0.5rem;
-}
-.faction_flagship_text {
-  font-weight: normal;
-  font-family: 'orbitron-medium', helvetica, sans-serif;
-}
-.faction_flagship_container {
-  background-color: #0008;
-  color: white;
-  padding: 1rem;
-  max-width: 100%;
-  font-size: 1rem;
-  line-height: 1.5rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
 }
 .faction_tech_container {
   max-width: 100%;
@@ -217,4 +206,33 @@
 .faction_sheet_planet_card_box {
   margin: 1em 1em 17em 1em;
 }
+
+
+.faction_sheet_planet_card {
+  height: 26vh;
+  width: calc(26vh * 0.72110);
+  background-size: cover;
+  text-align: center;
+  font-size: 0.75vw;
+  transition: all 50ms;
+  margin-bottom: -15vw;
+  border: 1px solid;
+  float: left; 
+  z-index: 1;
+} 
+  
+.faction_sheet_objectives {
+  display: grid;
+  grid-template-columns: auto auto;
+  margin-bottom: 17vw;
+} 
+
+.faction_sheet_objective_cards {
+  display: flex; 
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin: 1em 1em 1em 1em;
+}
+
+
 

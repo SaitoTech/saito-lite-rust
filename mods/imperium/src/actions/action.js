@@ -987,7 +987,7 @@ console.log("qe: " + qe);
     this.importActionCard('tactical-bombardment', {
   	name : "Tactical Bombardment" ,
   	type : "action" ,
-  	text : "ACTION: Choose a sector in which you have ships with bombardment. Exhaust all planets in that sector" ,
+  	text : "ACTION: Exhaust all planets in a sector where you have a ship with bombardment." ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
 	  if (imperium_self.game.player == action_card_player) {
@@ -1025,7 +1025,7 @@ console.log("qe: " + qe);
     this.importActionCard('signal-jamming', {
   	name : "Signal Jamming" ,
   	type : "action" ,
-  	text : "ACTION: Choose a player. They must activate a system in or next to a system in which you have a ship" ,
+  	text : "ACTION: Player chosen must activate sector in or next to one where you have a ship" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
 	  if (imperium_self.game.player == action_card_player) {

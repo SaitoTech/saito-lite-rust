@@ -7,11 +7,13 @@
 
     if (!this.browser_active) { return; }
 
+
     let imperium_self = this;
 
     super.render(app);
 
     try {
+
 
     $('.content').css('visibility', 'visible');
     $('.hud_menu_game-status').css('display', 'none');
@@ -227,6 +229,10 @@
         nickname.push(imperium_self.returnFactionNickname((ii+1)));
       }
       this.menu.addChatMenu(nickname, fullname);
+
+      //set player highlight color
+      document.documentElement.style.setProperty('--my-color', `var(--p${this.game.player})`);
+
     } catch (err) {
       console.log("error initing chat: " + err);
     }
@@ -240,7 +246,9 @@
     this.menu.render();
 
     this.hud.auto_sizing = 0;
-    this.hud.render();
+    if (!document.querySelector(".hud")) {
+      this.hud.render();
+    }
 
     this.log.render();
 
@@ -470,8 +478,8 @@
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      //let sys = this.returnSectorAndPlanets("4_4");
-      //sys.p[0].owner = 1;
+      let sys = this.returnSectorAndPlanets("4_4");
+      sys.p[0].owner = 1;
 
 
       //
@@ -705,7 +713,6 @@ console.log("initing sector: " + i);
     try {
       this.addUIEvents();
     } catch (err) {
-     
     }
 
 

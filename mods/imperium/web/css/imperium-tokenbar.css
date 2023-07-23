@@ -3,6 +3,7 @@
   display: block;
   position: relative;
   margin-right: 1rem;
+  min-width: 12rem;
 }
 
 .tokenbar > div {

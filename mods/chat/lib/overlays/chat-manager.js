@@ -1,85 +1,79 @@
-const ChatManagerOverlayTemplate = require("./chat-manager.template");
+const ChatManagerOverlayTemplate = require('./chat-manager.template');
 
 //Floating Chat Manager for mobile
 
 class ChatManagerOverlay {
+
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
-    this.chat_manager = null;
-    this.old_chat_manager_container = null;
-    this.header_first_click = 0;
+
+    app.connection.on("close-chat-manager-overlay", ()=> {
+      if (document.querySelector(".chat-manager-overlay")){
+        document.querySelector(".chat-manager-overlay").style.visibility = "hidden";    
+      }
+    });
   }
 
-  async render() {
-    let app = this.app;
-    let mod = this.mod;
+  render() {
 
-    this.app.browser.addElementToDom(ChatManagerOverlayTemplate(this.app, this.mod));
+    if (!document.querySelector(".chat-manager-overlay")){
+      this.app.browser.addElementToDom(ChatManagerOverlayTemplate(this.app, this.mod));  
+    }
+    
+    document.querySelector(".chat-manager-overlay").style.visibility = "visible";
 
-    this.chat_manager = await this.mod.respondTo("chat-manager");
-
-    //
-    // delete if already exists on page
-    //
-    if (document.querySelector(".chat-manager")) {
-      this.old_chat_manager_container = this.chat_manager.container;
-      document.querySelector(".chat-manager").remove();
+    if (this.mod.chat_manager == null) {
+      this.mod.respondTo("chat-manager");
+      this.mod.chat_manager.render_popups_to_screen = 0;    
     }
 
-    //
-    // now render
-    //
-    this.chat_manager.container = ".chat-manager-overlay";
-    this.header_first_click = 0;
-    await this.chat_manager.render();
+    this.mod.chat_manager.container = ".chat-manager-overlay";
+
+    this.app.connection.emit("chat-manager-render-request");
 
     this.attachEvents();
+
   }
 
   //
   // Note: mod = Arcade
   //
   attachEvents() {
-    document.querySelector(".chat-manager-overlay").onclick = async (e) => {
-      document.querySelector(".chat-manager-overlay").remove();
-      if (this.old_chat_manager_container) {
-        this.chat_manager.container = this.old_chat_manager_container;
-        await this.chat_manager.render();
-      }
-    };
 
+    document.querySelector(".chat-manager-overlay").onclick = (e) => {
+      if (e.currentTarget == e.target) {
+        document.querySelector(".chat-manager-overlay").style.visibility = "hidden";  
+      }
+      
+    }
+
+    /*
     let sh = document.getElementById("saito-header");
     if (sh) {
       sh.addEventListener("click", this.onOffChatClick, false);
     }
+    */
   }
 
-  async onOffChatClick(e) {
+
+  onOffChatClick(e) {
+
     let cl = e.target.classList.toString();
     let should_remove = true;
 
     // if an icon-click in header triggered this, avoid pain
-    if (cl.indexOf("fa-") > -1) {
-      should_remove = false;
-    }
-    if (cl.indexOf("fas ") > -1) {
-      should_remove = false;
-    }
-    if (cl.indexOf("saito-header-chat") > -1) {
-      should_remove = false;
-    }
+    if (cl.indexOf("fa-") > -1) { should_remove = false; }
+    if (cl.indexOf("fas ") > -1) { should_remove = false; }
 
     if (should_remove && document.querySelector(".chat-manager-overlay")) {
       let sh = document.getElementById("saito-header");
       sh.removeEventListener("click", this.onOffChatClick, false);
-      document.querySelector(".chat-manager-overlay").remove();
-      if (this.old_chat_manager_container) {
-        this.chat_manager.container = this.old_chat_manager_container;
-        await this.chat_manager.render();
-      }
+      document.querySelector(".chat-manager-overlay").style.visibility = "hidden";
     }
   }
+
 }
 
 module.exports = ChatManagerOverlay;
+

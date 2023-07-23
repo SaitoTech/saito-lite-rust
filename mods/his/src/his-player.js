@@ -106,6 +106,8 @@
       players[i].tmp_roll_modifiers = [];
       players[i].factions = [];
       players[i].factions.push(rf);
+      players[i].factions_passed = [];
+      players[i].factions_passed.push(false); // faction not passed
       players[i].captured = [];
       players[i].num = i;
 
@@ -124,12 +126,15 @@
       for (let i = 0; i < players.length; i++) {
 	if (players[i].factions[0] === "protestant") {
 	  players[i].factions.push("england");
+	  players[i].factions_passed.push(false);
 	}
 	if (players[i].factions[0] === "papacy") {
 	  players[i].factions.push("hapsburg");
+	  players[i].factions_passed.push(false);
 	}
 	if (players[i].factions[0] === "france") {
 	  players[i].factions.push("ottoman");
+	  players[i].factions_passed.push(false);
 	}
       }
     }
@@ -138,9 +143,11 @@
       for (let i = 0; i < players.length; i++) {
 	if (players[i].factions[0] === "protestant") {
 	  players[i].factions.push("england");
+	  players[i].factions_passed.push(false);
 	}
 	if (players[i].factions[0] === "papacy") {
 	  players[i].factions.push("hapsburg");
+	  players[i].factions_passed.push(false);
 	}
       }
     }
@@ -149,6 +156,7 @@
       for (let i = 0; i < players.length; i++) {
 	if (players[i].factions[0] === "protestant") {
 	  players[i].factions.push("england");
+	  players[i].factions_passed.push(false);
 	}
       }
     }
@@ -167,6 +175,21 @@
     this.game.state.tmp_bonus_protestant_translation_english_zone = 0;
     this.game.state.tmp_bonus_papacy_burn_books = 0;
 
+    for (let i = 0; i < this.game.state.players_info[player_num-1].factions.length; i++) {
+      this.game.state.players_info[player_num-1].factions_passed[i] = false;
+    }
+  }
+
+  returnPlayerInfoFaction(faction) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+	if (this.game.state.players_info[i].factions[z].key == faction) {
+	  return this.game.state.players_info[i].factions[z];
+	}
+      }
+    }
+
+    return null;
   }
 
   //
@@ -765,8 +788,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let his_self = this;
 
-    let html = '<div class="message">' + msg + '</div>';
-
+    let html = '';
     html += '<ul>';
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
@@ -790,7 +812,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     }
     html += '</ul>';
 
-    this.updateStatus(html);
+    this.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', function () {
@@ -829,8 +851,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let his_self = this;
 
-    let html = '<div class="message">' + msg + '</div>';
-
+    let html = '';
     html += '<ul>';
     for (let key in this.game.navalspaces) {
       if (filter_func(this.game.navalspaces[key]) == 1) {
@@ -859,7 +880,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     }
     html += '</ul>';
 
-    this.updateStatus(html);
+    this.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', function () {
@@ -886,7 +907,14 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
-    this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
+    let cards = [];
+    for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length;i++) {
+      cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
+    }
+    cards.push("pass");
+
+
+    this.updateStatusAndListCards("Select a Card: ", cards);
     this.attachCardboxEvents((card) => {
       this.playerPlayCard(card, this.game.player, faction);
     });  
@@ -945,8 +973,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 	  // move in the units
 	  for (let i = 0; i < units_to_move.length; i++) {
 	    let ui = units_to_move[i];
-	    let tf = units_available[ui].faction;
-	    let tu = units_available[ui].unit_idx;
+	    let tf = available_units[ui].faction;
+	    let tu = available_units[ui].unit_idx;
 	    fa[tf].push(tu);
 	  }
 
@@ -986,6 +1014,16 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
   }
 
   playerPlayCard(card, player, faction) {
+
+    //
+    // maybe we are passing
+    //
+    if (card === "pass") {
+      this.addMove("pass\t"+faction);
+      this.endTurn();
+      return;
+    }
+
 
     //
     // mandatory event cards effect first, then 2 OPS
@@ -1458,10 +1496,12 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
-	      if (units_to_move.includes(parseInt(i))) {
-	        html += `<li class="option" style="font-weight:bold" id="${i}">*${space.units[faction][i].name}*</li>`;
-	      } else {
-	        html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+	      if (space.units[faction][i].locked == false) {
+	        if (units_to_move.includes(parseInt(i))) {
+	          html += `<li class="option" style="font-weight:bold" id="${i}">*${space.units[faction][i].name}*</li>`;
+	        } else {
+	          html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+	        }
 	      }
 	    }
 	  }
@@ -1860,10 +1900,12 @@ console.log("units length: " + space.units[defender].length);
 
       for (let i = 0; i < space.units[defender].length; i++) {
         if (space.units[defender][i].land_or_sea === "land" || space.units[defender][i].land_or_sea === "both") {
-          if (units_to_move.includes(parseInt(i))) {
-            html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
-          } else {
-            html += `<li class="option" id="${i}">${space.units[defender][i].name}</li>`;
+	  if (space.units[defender][i].locked == false) {
+            if (units_to_move.includes(parseInt(i))) {
+              html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
+            } else {
+              html += `<li class="option" id="${i}">${space.units[defender][i].name}</li>`;
+            }
           }
         }
       }
@@ -1871,6 +1913,15 @@ console.log("units length: " + space.units[defender].length);
       html += "</ul>";
 
       his_self.updateStatusWithOptions(msg, html);
+
+      let mobj = {
+	space : space ,
+	faction : defender ,
+	source : defender_spacekey ,
+	destination : spacekey ,
+      }
+
+      his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, onFinishSelect); // no destination interface
 
       $('.option').off();
       $('.option').on('click', function () {
@@ -2014,7 +2065,7 @@ console.log("units length: " + space.units[defender].length);
     if (ops < 2) { return 0; }
     let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_with_infantry.length; i++) {
-      if (!his_self.game.spaces[spaces_with_infantry[i]].ports.length > 0) {
+      if (his_self.game.spaces[spaces_with_infantry[i]].ports.length == 0) {
 	spaces_with_infantry.splice(i, 1);
 	i--;
       }
@@ -2115,7 +2166,14 @@ console.log("units length: " + space.units[defender].length);
   canPlayerMoveFormationOverPass(his_self, player, faction) {
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_with_units.length; i++) {
-      if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) { return 1; }
+      if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) {
+        let any_unlocked_units = false;
+        for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
+  	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked == false) {
+	    return 1;
+	  }
+        }
+      }
     }
     return 0;
   }
@@ -2131,6 +2189,11 @@ console.log("units length: " + space.units[defender].length);
       function(space) {
 	for (let z in space.units) {
 	  if (space.units[z].length > 0 && z === faction) {
+	    let any_unlocked_units = false;
+	    for (let i = 0; i < spaces.units[z].length; i++) {
+	      if (space.units[z][i].locked == false) { any_unlocked_units = true; }
+	    }
+	    if (any_unlocked_units) { return 1; }
 	    if (space.pass) { if (space.pass.length > 0) { return 1; } }
           }
 	}
@@ -2401,7 +2464,14 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
     if (spaces_with_units.length > 0) { 
-      return 1;
+      let any_unlocked_units = false;
+      for (let i = 0; i < spaces_with_units.length; i++) {
+       for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
+	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked == false) {
+	    return 1;
+	  }
+	}
+      }
     }
     return 0;
   }
@@ -2494,7 +2564,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
-        if (his_self.game.spaces[conquerable_spaces[i]].besieged > 0) {
+        if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
 	  return 1;
 	}
       }
@@ -2508,8 +2578,14 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Space for Siege/Assault: ",
 
       function(space) {
-        if (!his_self.isSpaceControlled(space, faction)) {
+        if (!his_self.isSpaceControlled(space, faction) && his_self.returnFactionLandUnitsInSpace(faction, space) > 0 && space.besieged == 1) {
           if (his_self.game.spaces[space.key].type === "fortress") {
+  	    return 1;
+	  }
+          if (his_self.game.spaces[space.key].type === "electorate") {
+  	    return 1;
+	  }
+          if (his_self.game.spaces[space.key].type === "key") {
   	    return 1;
 	  }
         }
@@ -2785,6 +2861,7 @@ return;
       $('.option').off();
       $('.option').on('click', function () {
 
+        $('.option').off();
         his_self.language_zone_overlay.hide();
 
         let id = $(this).attr("id");
@@ -2793,21 +2870,35 @@ return;
 
           let msg = "Use Calvin Debater Bonus +1 Attempt:";
           let html = '<ul>';
-          html += '<li class="option" style="" id="yes">Yes, Commit Calvin</li>';
+          html += '<li class="option" style="" id="calvin-debater">Yes, Commit Calvin</li>';
           html += '<li class="option" style="" id="no">No</li>';
           html += '</ul>';
 
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
+          $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.show(action2);
+            }
+          });
+          $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.hide(action2);
+            }
+          });
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    if (id === "yes") {
+	    his_self.addMove("hide_overlay\tpublish_treastise\tfrench");
+	    if (id === "calvin-debater") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
 	    his_self.addMove("protestant_reformation\t"+player+"\tfrench");
+	    his_self.addMove("show_overlay\tpublish_treastise\tfrench");
 	    his_self.endTurn();
 
 	    return 0;
@@ -2821,21 +2912,35 @@ return;
 
           let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
           let html = '<ul>';
-          html += '<li class="option" style="" id="yes">Yes, Commit Carlstadt</li>';
+          html += '<li class="option" style="" id="carlstadt-debater">Yes, Commit Carlstadt</li>';
           html += '<li class="option" style="" id="no">No</li>';
           html += '</ul>';
 
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
+          $('.option').on('mouseover', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.show(action2);
+            }
+          });
+          $('.option').on('mouseout', function() {
+            let action2 = $(this).attr("id");
+            if (his_self.debaters[action2]) {
+              his_self.cardbox.hide(action2);
+            }
+          });
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    if (id === "yes") {
+	    his_self.addMove("hide_overlay\tpublish_treastise\tgerman");
+	    if (id === "carlstadt") {
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
+	    his_self.addMove("show_overlay\tpublish_treastise\tgerman");
 	    his_self.endTurn();
 
 	    return 0;
@@ -2844,8 +2949,10 @@ return;
 	  return 0;
         }
 
+	his_self.addMove("hide_overlay\tpublish_treastise\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+	his_self.addMove("show_overlay\tpublish_treastise\t"+id);
 	his_self.endTurn();
       });
 
@@ -2895,12 +3002,14 @@ return;
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
-    $('.option').on('click', () => {
+    $('.option').on('click', (e) => {
+
+      $('.option').off();
+      let language_zone = e.currentTarget.id;
 
       his_self.language_zone_overlay.hide();
-      let language_zone = $(this).attr("id");
 
-      let msg = "Against Comitted or Uncommited Debater?";
+      let msg = "Against Commited or Uncommited Debater?";
       let html = '<ul>';
       if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
           html += '<li class="option" id="committed">Committed</li>';
@@ -2913,6 +3022,14 @@ return;
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
+      $('.option').on('mouseover', function() {
+        let action2 = $(this).attr("id");
+        his_self.cardbox.show(action2);
+      });
+      $('.option').on('mouseout', function() {
+        let action2 = $(this).attr("id");
+        his_self.cardbox.hide(action2);
+      });
       $('.option').on('click', () => {
 
         let committed = $(this).attr("id");
@@ -2955,7 +3072,7 @@ return;
   }
   async playerBurnBooks(his_self, player, faction) {
 
-    let msg = "Select Language Zone for Counter-Reformation Attempts:";
+    let msg = "Select Language Zone for Counter Reformations";
     let html = '<ul>';
         html += '<li class="option german" style="" id="german">German</li>';
         html += '<li class="option english" style="" id="english">English</li>';
@@ -2974,6 +3091,7 @@ return;
     $('.option').off();
     $('.option').on('click', function () {
 
+      $('.option').off();
       his_self.language_zone_overlay.hide();
       let id = $(this).attr("id");
 
@@ -2982,13 +3100,13 @@ return;
         let msg = "Commit Debater for Burn Books Bonus:";
         let html = '<ul>';
 	if (his_self.canPlayerCommitDebater("papacy", "tetzel-debater")) {
-          html += '<li class="option" style="" id="tetzel">+1 to Saint Peters</li>';
+          html += '<li class="option" style="" id="tetzel-debater">+1 to Saint Peters</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "cajetan-debater")) {
-          html += '<li class="option" style="" id="cajetan">Cajetan +1 Attempt</li>';
+          html += '<li class="option" style="" id="cajetan-debater">Cajetan +1 Attempt</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "caraffa-debater")) {
-          html += '<li class="option" style="" id="caraffa">Caraffa +1 Attempt</li>';
+          html += '<li class="option" style="" id="caraffa-debater">Caraffa +1 Attempt</li>';
         }
         html += '<li class="option" style="" id="no">No</li>';
 	html += '</ul>';
@@ -2996,20 +3114,34 @@ return;
         his_self.updateStatusWithOptions(msg, html);
 
         $('.option').off();
+        $('.option').on('mouseover', function() {
+          let action2 = $(this).attr("id");
+          if (his_self.debaters[action2]) {
+            his_self.cardbox.show(action2);
+          }
+        });
+        $('.option').on('mouseout', function() {
+          let action2 = $(this).attr("id");
+          if (his_self.debaters[action2]) {
+            his_self.cardbox.hide(action2);
+          }
+        });
         $('.option').on('click', function () {
           let id2 = $(this).attr("id");
 
-	  if (id2 === "tetzel") {
+	  if (id2 === "tetzel-debater") {
             his_self.addMove("build_saint_peters");
 	  }
 
-	  if (id2 === "cajetan" || id2 === "caraffa") {
-	    if (id2 === "cajetan") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
-	    if (id2 === "caraffa") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
+	  his_self.addMove("hide_overlay\tburn_books\t"+id);
+	  if (id2 === "cajetan-debater" || id2 === "caraffa-debater") {
+	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
+	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
             his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
 	  }
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
           his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+	  his_self.addMove("show_overlay\tburn_books\t"+id);
 	  his_self.endTurn();
 
 	  return 0;
@@ -3018,8 +3150,10 @@ return;
 	return 0;
       }
 
+      his_self.addMove("hide_overlay\tburn_books\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
       his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+      his_self.addMove("show_overlay\tburn_books\t"+id);
       his_self.endTurn();
     });
 

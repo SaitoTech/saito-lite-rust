@@ -23,8 +23,8 @@ class CallInterfaceVideo {
     this.remote_streams = new Map();
     this.current_speaker = null;
     this.speaker_candidate = null;
-
-    this.app.connection.on("show-call-interface", async (room_code, videoEnabled, audioEnabled) => {
+    this.is_presenting = false;
+    this.app.connection.on("show-call-interface", (room_code, videoEnabled, audioEnabled) => {
       this.room_code = room_code;
 
       console.log("Render Video Call Interface");
@@ -43,7 +43,7 @@ class CallInterfaceVideo {
       }
 
       // create chat group
-      await this.createRoomTextChat();
+      this.createRoomTextChat();
     });
 
     this.app.connection.on("add-local-stream-request", (localStream) => {
@@ -59,7 +59,7 @@ class CallInterfaceVideo {
       if (room_code !== this.room_code) {
         return;
       }
-      let my_pub_key = this.app.wallet.getPublicKey();
+      let my_pub_key = this.app.wallet.returnPublicKey();
       let container;
       if (peer_id === my_pub_key) {
         container = this.local_container;
@@ -78,6 +78,9 @@ class CallInterfaceVideo {
     });
 
     this.app.connection.on("remove-peer-box", (peer_id) => {
+      if (peer_id === "presentation") {
+        this.allowPresentation();
+      }
       if (this.video_boxes[peer_id]?.video_box) {
         if (this.video_boxes[peer_id].video_box?.remove) {
           this.video_boxes[peer_id].video_box.remove(true);
@@ -97,6 +100,11 @@ class CallInterfaceVideo {
         case "focus":
           this.switchDisplayToExpanded();
           break;
+          
+        case "speaker":
+          this.switchDisplayToExpanded();
+          break;
+
         case "presentation":
           this.swicthDisplayToPresentation();
           break;
@@ -117,6 +125,8 @@ class CallInterfaceVideo {
             return;
           }
 
+          console.log("Change speaker");
+          
           if (
             this.display_mode == "speaker" &&
             !item.parentElement.classList.contains("expanded-video")
@@ -139,10 +149,14 @@ class CallInterfaceVideo {
       );
     }
 
+    //We don't want to save the theme!
+    //this.app.browser.switchTheme("stun");
+    document.documentElement.setAttribute("data-theme", "stun");
+
     this.attachEvents();
   }
 
-  async createRoomTextChat() {
+  createRoomTextChat() {
     let chat_mod = this.app.modules.returnModule("Chat");
 
     if (!chat_mod) {
@@ -150,10 +164,10 @@ class CallInterfaceVideo {
     }
 
     let cm = chat_mod.respondTo("chat-manager");
-    let peer = (await this.app.network.getPeers())[0].publicKey;
+
     this.chat_group = {
       id: this.room_code,
-      members: [peer],
+      members: [this.app.network.peers[0].peer.publickey],
       name: `Chat ${this.room_code}`,
       txs: [],
       unread: 0,
@@ -210,7 +224,12 @@ class CallInterfaceVideo {
       };
     });
     document.querySelectorAll(".share-control").forEach((item) => {
+      console.log(this.is_presenting, "is presenting");
+
       item.onclick = () => {
+        if (this.is_presenting === true) {
+          return;
+        }
         this.app.connection.emit("begin-share-screen");
       };
     });
@@ -246,7 +265,7 @@ class CallInterfaceVideo {
     }
 
     document.querySelector(".large-wrapper").addEventListener("click", (e) => {
-      if (this.display_mode == "gallery" || this.display_mode == "presentation") {
+      if (this.display_mode == "gallery" || this.display_mode == "presentation" || this.display_mode == "speaker") {
         return;
       }
       if (e.target.classList.contains("video-box")) {
@@ -321,8 +340,10 @@ class CallInterfaceVideo {
     if (peer.toLowerCase() === "presentation") {
       // switch mode to presentation
       this.app.connection.emit("stun-switch-view", "presentation");
-
       this.flipDisplay("presentation");
+
+      this.disallowPresentation();
+      // console.log(this.is_presenting, "is presenting after being set");
 
       // // maximize presentation
       // console.log(peer, "presentation?");
@@ -348,6 +369,7 @@ class CallInterfaceVideo {
 
   createVideoBox(peer, container = this.remote_container) {
     let isPresentation = false;
+
     if (peer.toLowerCase() == "presentation") {
       isPresentation = true;
     }
@@ -390,7 +412,7 @@ class CallInterfaceVideo {
     for (let i in this.video_boxes) {
       let publickey = i;
       if (i === "local") {
-        publickey = this.mod.publicKey;
+        publickey = this.app.wallet.returnPublicKey();
       }
 
       let imgsrc = this.app.keychain.returnIdenticon(publickey);
@@ -400,6 +422,19 @@ class CallInterfaceVideo {
     document.querySelector(".users-on-call .image-list").innerHTML = images;
     document.querySelector(".users-on-call .users-on-call-count").innerHTML = count;
     this.users_on_call = count;
+  }
+
+  allowPresentation() {
+    this.is_presenting = false;
+    document.querySelector(".share-control").style.backgroundColor = "white";
+    document.querySelector(".share-control.icon_click_area i").style.color = "green";
+  }
+
+  disallowPresentation() {
+    // make present icon greyed out
+    document.querySelector(".share-control").style.backgroundColor = "grey";
+    document.querySelector(".share-control.icon_click_area i").style.color = "black";
+    this.is_presenting = true;
   }
 
   startTimer() {

@@ -13,6 +13,7 @@ This alows for a header with a header with title to be added without extra CSS
   padding: 2rem;
   display: grid;
   grid-template-rows: min-content auto;
+  max-height: 95vh;
 }
 
 
@@ -29,8 +30,12 @@ This alows for a header with a header with title to be added without extra CSS
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
+  gap: 1rem;
 }
 
+.saito-contact.unconfirmed {
+  filter: brightness(0.7) grayscale(1);
+}
 
 .saito-modal-content{
   border-top: 1px solid;
@@ -39,9 +44,9 @@ This alows for a header with a header with title to be added without extra CSS
 
 .saito-modal-content .saito-user {
   height: 5rem;
-
   align-items: center;
   font-size: 20px;
+  overflow: hidden;
 }
 
 .saito-modal-content .saito-user .saito-identicon-box {
@@ -56,6 +61,8 @@ This alows for a header with a header with title to be added without extra CSS
   padding: 0 1.25rem;
   cursor: default;
   align-items: center;
+  width: calc(100% - 2.5rem);
+  white-space: nowrap;
 }
 
 .saito-modal-menu .saito-modal-title .saito-user .saito-identicon-box {
@@ -74,11 +81,16 @@ This alows for a header with a header with title to be added without extra CSS
   align-items: center;
   grid-gap: 1rem;
   grid-template-columns: 4rem 1fr;
+  cursor: pointer;
 }
 
-.saito-modal-menu-option:hover, .saito-contact:hover {
+.saito-modal-menu-option.disabled-option {
+  color: var(--saito-gray-mid);
+  cursor: default;
+}
+
+.saito-modal-menu-option:not(.disabled-option):hover, .saito-contact:hover {
   background-color: var(--saito-hover-background);
-  cursor: pointer;
 }
 
 .saito-modal-menu-option>i {
@@ -312,6 +324,20 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 
+.saito-overlaid-icon {
+  color: var(--saito-red);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(1px 1px 3px var(--saito-black));
+}
+
+/* Identicons aren't clickable in modals menus */
+.saito-modal-menu .saito-identicon-box {
+  cursor: default;
+}
+
 
 
 /* mobile modals */
@@ -322,7 +348,13 @@ This alows for a header with a header with title to be added without extra CSS
     max-width: unset;
     padding: 0.5rem;
     width: 90vw;
+    grid-template-columns: 100%;
   }
+
+  .saito-modal > * {
+    max-width: 100%;
+  }
+
   .welcome-modal-wrapper {
     /*grid-template-columns: 1fr;*/
     width: 90vw;
@@ -347,4 +379,34 @@ This alows for a header with a header with title to be added without extra CSS
   .saito-modal-menu-option>div {
     font-size: 1.5rem;
   }
+}
+
+@media only screen and (max-width: 525px) {
+  .saito-modal-menu .saito-modal-title .saito-user {
+    margin: 0;
+  }
+
+  .saito-modal-menu-option {
+    margin: 0 1rem;
+  }
+
+
+}
+
+/* not sure where this should be */
+
+.saito-modal.contacts {
+  background-color: var(--saito-background-color);
+  background-image: url(/saito/img/tiled-logo.svg);
+  color: var(--saito-font-color);
+  grid-template-rows: min-content 1fr min-content;
+}
+
+.saito-contacts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 0;
+  height: 100%;
+  overflow: auto;
 }

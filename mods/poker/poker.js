@@ -125,7 +125,7 @@ class Poker extends GameTableTemplate {
     }
   }
 
-  async render(app) {
+  render(app) {
     if (!this.browser_active) {
       return;
     }
@@ -186,7 +186,7 @@ class Poker extends GameTableTemplate {
     });
 ****/
 
-    await super.render(app);
+    super.render(app);
 
     this.menu.addChatMenu();
     this.menu.render();
@@ -194,7 +194,7 @@ class Poker extends GameTableTemplate {
     this.log.render();
 
     this.playerbox.mode = 2; // poker/cards
-    await this.playerbox.render();
+    this.playerbox.render();
 
     if (this.game?.options?.crypto) {
       if (this.game.options.crypto == "TRX") {
@@ -256,7 +256,7 @@ class Poker extends GameTableTemplate {
   //
   // initializes chips / pools / pots information
   //
-  async initializeGameStake(crypto, stake) {
+  initializeGameStake(crypto, stake) {
     this.game.crypto = "CHIPS";
     this.game.stake = "100";
     this.game.chips = "100";
@@ -300,13 +300,13 @@ class Poker extends GameTableTemplate {
       this.playerbox.updateGraphics("", i);
     }
 
-    await this.displayBoard();
+    this.displayBoard();
 
     super.initializeGameStake(crypto, stake);
   }
 
-  async initializeGame() {
-    await super.initializeGame(); //Update max players
+  initializeGame() {
+    super.initializeGame(); //Update max players
 
     //
     // CHIPS or CRYPTO ?
@@ -323,7 +323,7 @@ class Poker extends GameTableTemplate {
     //
     if (this.game.deck.length == 0) {
       this.game.state = this.returnState(this.game.players.length);
-      await this.initializeGameStake(this.game.crypto, this.game.stake);
+      this.initializeGameStake(this.game.crypto, this.game.stake);
       this.game.stats = this.returnStats();
       this.startRound(); // DOM update on new round
     }
@@ -332,7 +332,7 @@ class Poker extends GameTableTemplate {
     // browsers display UI
     //
     if (this.browser_active) {
-      await this.displayBoard();
+      this.displayBoard();
     }
 
     //
@@ -400,7 +400,7 @@ class Poker extends GameTableTemplate {
     }
   }
 
-  async settleLastRound() {
+  settleLastRound() {
     /*
     We want these at the end of the queue so they get processed first, but if 
     any players got removed, there will be some issues....
@@ -457,7 +457,7 @@ class Poker extends GameTableTemplate {
     this.game.queue.push(`SIMPLEDEAL\t2\t1\t` + JSON.stringify(this.returnDeck()));
   }
 
-  async handleGameLoop() {
+  handleGameLoop() {
     ///////////
     // QUEUE //
     ///////////
@@ -471,7 +471,7 @@ class Poker extends GameTableTemplate {
       }
 
       if (mv[0] === "winner") {
-        await this.displayPlayers(true); //to update chips before game_over
+        this.displayPlayers(true); //to update chips before game_over
         this.game.queue = [];
         this.game.crypto = null;
         this.settleDebt();
@@ -611,9 +611,9 @@ class Poker extends GameTableTemplate {
           //Save game with fewer players
           this.saveGame(this.game.id);
           //Reload game to rebuild the html
-          setTimeout(async() => {
+          setTimeout(() => {
             this.initialize_game_run = 0;
-            await this.initializeGameQueue(this.game.id);
+            this.initializeGameQueue(this.game.id);
           }, 1000);
           return 0;
         }
@@ -698,8 +698,8 @@ class Poker extends GameTableTemplate {
           }
 
           // if everyone has folded - start a new round
-          await this.settleLastRound();
-          await this.clearTable();
+          this.settleLastRound();
+          this.clearTable();
           this.game.queue.push(
             `ROUNDOVER\t${JSON.stringify([this.game.players[player_left_idx]])}\tfold`
           );
@@ -731,7 +731,7 @@ class Poker extends GameTableTemplate {
               this.addMove(
                 `reveal\t${this.game.player}\t${this.game.deck[0].hand[0]}\t${this.game.deck[0].hand[1]}`
               );
-              await this.endTurn();
+              this.endTurn();
             }
             return 0;
           } else {
@@ -764,7 +764,7 @@ class Poker extends GameTableTemplate {
           this.playerbox.setActive(player_to_go);
 
           if (player_to_go == this.game.player) {
-            await this.playerTurn();
+            this.playerTurn();
           } else {
             this.refreshPlayerLog(`<div class="plog-update">active player</div>`, player_to_go);
             if (this.game.state.passed[this.game.player - 1]) {
@@ -792,7 +792,7 @@ class Poker extends GameTableTemplate {
           return 1;
         }
 
-        await this.animateRiver();
+        this.animateRiver();
 
         if (this.game.state.flipped === 3) {
           this.updateLog(
@@ -865,7 +865,7 @@ class Poker extends GameTableTemplate {
             this.addMove(
               `reveal\t${this.game.player}\t${this.game.deck[0].hand[0]}\t${this.game.deck[0].hand[1]}`
             );
-            await this.endTurn();
+            this.endTurn();
           }
 
           return 0;
@@ -879,11 +879,11 @@ class Poker extends GameTableTemplate {
         let winners = [];
         let winner_keys = [];
 
-        let updateHTML = "";
-        let winlist = [];
+        var updateHTML = "";
+        var winlist = [];
 
         //Sort hands from low to high
-        for (let key in this.game.state.player_cards) {
+        for (var key in this.game.state.player_cards) {
           let deck = this.game.state.player_cards[key];
 
           if (winlist.length == 0) {
@@ -1059,9 +1059,9 @@ class Poker extends GameTableTemplate {
 
         if (this.browser_active) {
           this.overlay.closebox = true;
-          this.overlay.show(`<div class="shim-notice">${winner_html}${updateHTML}</div>`, async () => {
+          this.overlay.show(`<div class="shim-notice">${winner_html}${updateHTML}</div>`, () => {
             this.overlay.closebox = false;
-            await this.clearTable();
+            this.clearTable();
             this.restartQueue();
           });
           this.app.browser.makeDraggable;
@@ -1070,7 +1070,7 @@ class Poker extends GameTableTemplate {
 
           this.game.halted = 1;
         }
-        await this.settleLastRound();
+        this.settleLastRound();
         this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winner_keys)}\tbesthand`);
 
         return 0;
@@ -1080,7 +1080,7 @@ class Poker extends GameTableTemplate {
       if (mv[0] == "ante") {
         this.game.queue.splice(qe, 1);
 
-        await this.displayBoard(); //Clean HTML
+        this.displayBoard(); //Clean HTML
 
         let bbpi = this.game.state.big_blind_player - 1;
         //
@@ -1161,7 +1161,7 @@ class Poker extends GameTableTemplate {
           );
         }
 
-        await this.displayPlayers(true); //Update Chip stacks after betting
+        this.displayPlayers(true); //Update Chip stacks after betting
         this.game.queue.push("round"); //Start
         this.game.queue.push("announce"); //Print Hole cards to Log
       }
@@ -1217,7 +1217,7 @@ class Poker extends GameTableTemplate {
 
         this.game.queue.splice(qe, 1);
 
-        await this.refreshPlayerStack(player, true); //Here we don't want to hide cards
+        this.refreshPlayerStack(player, true); //Here we don't want to hide cards
 
         if (this.browser_active == 1 && this.game.player !== player) {
           this.refreshPlayerLog(`<div class="plog-update">calls</div>`, player);
@@ -1238,7 +1238,7 @@ class Poker extends GameTableTemplate {
           if (this.game.player !== player) {
             this.refreshPlayerLog(`<div class="plog-update">folds</div>`, player);
           } else {
-            await this.displayHand();
+            this.displayHand();
           }
         }
 
@@ -1338,7 +1338,7 @@ class Poker extends GameTableTemplate {
           }
         }
         this.game.queue.splice(qe, 1);
-        await this.refreshPlayerStack(player, true); //Here we don't want to hide cards
+        this.refreshPlayerStack(player, true); //Here we don't want to hide cards
 
         return 1;
       }
@@ -1354,7 +1354,7 @@ class Poker extends GameTableTemplate {
     return 1;
   }
 
-  async playerTurn() {
+  playerTurn() {
     if (this.browser_active == 0) {
       return;
     }
@@ -1382,7 +1382,7 @@ class Poker extends GameTableTemplate {
     );
 
     if (this.stf(match_required) === 0 && this.game.state.all_in) {
-      await poker_self.endTurn();
+      poker_self.endTurn();
       return;
     }
 
@@ -1420,7 +1420,7 @@ class Poker extends GameTableTemplate {
     if (!can_call) {
       this.updateStatus("You can only fold...");
       this.addMove("fold\t" + poker_self.game.player);
-      await this.endTurn();
+      this.endTurn();
       return;
     }
 
@@ -1453,7 +1453,7 @@ class Poker extends GameTableTemplate {
     this.updateStatus(html);
 
     $(".option").off();
-    $(".option").on("click", async function() {
+    $(".option").on("click", function () {
       let choice = $(this).attr("id");
 
       if (choice === "raise") {
@@ -1499,19 +1499,19 @@ class Poker extends GameTableTemplate {
         poker_self.updateStatus(html);
 
         $(".option").off();
-        $(".option").on("click", async function() {
+        $(".option").on("click", function () {
           let raise = $(this).attr("id");
 
           if (raise === "0") {
-            await poker_self.playerTurn();
+            poker_self.playerTurn();
           } else {
             poker_self.addMove(`raise\t${poker_self.game.player}\t${raise}`);
-            await poker_self.endTurn();
+            poker_self.endTurn();
           }
         });
       } else {
         poker_self.addMove(`${choice}\t${poker_self.game.player}`);
-        await poker_self.endTurn();
+        poker_self.endTurn();
       }
     });
   }
@@ -1594,7 +1594,7 @@ class Poker extends GameTableTemplate {
   /* TO-DO rectify poker decks across games!*/
 
   returnDeck() {
-    const deck = {};
+    var deck = {};
 
     deck["1"] = { name: "S1.png" };
     deck["2"] = { name: "S2.png" };
@@ -1658,13 +1658,13 @@ class Poker extends GameTableTemplate {
    *
    ***************/
 
-  async displayBoard() {
+  displayBoard() {
     if (!this.browser_active) {
       return;
     }
     try {
-      await this.displayPlayers(); //Clear player log
-      await this.displayHand();
+      this.displayPlayers(); //Clear player log
+      this.displayHand();
       this.displayTable();
     } catch (err) {
       console.error("err: " + err);
@@ -1684,13 +1684,13 @@ class Poker extends GameTableTemplate {
     return "";
   }
 
-  async displayPlayers(preserveLog = false) {
+  displayPlayers(preserveLog = false) {
     if (!this.browser_active) {
       return;
     }
     try {
       for (let i = 1; i <= this.game.players.length; i++) {
-        await this.refreshPlayerStack(i, true);
+        this.refreshPlayerStack(i, true);
         if (!preserveLog) {
           this.refreshPlayerLog("", i);
         }
@@ -1819,7 +1819,7 @@ class Poker extends GameTableTemplate {
     this.playerbox.updateBody(html, player);
   }
 
-  async refreshPlayerStack(player, includeCards = true) {
+  refreshPlayerStack(player, includeCards = true) {
     if (!this.browser_active) {
       return;
     }
@@ -1884,15 +1884,15 @@ class Poker extends GameTableTemplate {
             </svg>`;
   }
 
-  async processResignation(resigning_player, txmsg) {
-    await super.processResignation(resigning_player, txmsg);
+  processResignation(resigning_player, txmsg) {
+    super.processResignation(resigning_player, txmsg);
 
     if (!txmsg.loser) {
       return;
     }
 
     if (this.browser_active) {
-      if (await this.app.wallet.getPublicKey() !== resigning_player) {
+      if (this.app.wallet.returnPublicKey() !== resigning_player) {
         this.refreshPlayerLog(`<div class="plog-update">leaves the table</div>`, txmsg.loser);
       }
     }
@@ -1905,11 +1905,11 @@ class Poker extends GameTableTemplate {
 
     if (this.game.target == txmsg.loser) {
       this.game.state.plays_since_last_raise--;
-      await this.startQueue();
+      this.startQueue();
     }
   }
 
-  async endTurn(nextTarget = 0) {
+  endTurn(nextTarget = 0) {
     if (this.browser_active) {
       this.updateStatus("waiting for information from peers...");
     }
@@ -1926,7 +1926,7 @@ class Poker extends GameTableTemplate {
     }
     this.game.turn = this.moves;
     this.moves = [];
-    await this.sendMessage("game", extra);
+    this.sendMessage("game", extra);
   }
 
   /* Functions to analyze hands and compare them*/
@@ -2343,13 +2343,13 @@ class Poker extends GameTableTemplate {
     // remove triples and pairs that are four-of-a-kind
     //
     for (let i = 0; i < four_of_a_kind.length; i++) {
-      for (let z = 0; z < three_of_a_kind.length; z++) {
+      for (var z = 0; z < three_of_a_kind.length; z++) {
         if (three_of_a_kind[z] === four_of_a_kind[i]) {
           three_of_a_kind.splice(z, 1);
         }
       }
 
-      for (let z = 0; z < pairs.length; z++) {
+      for (var z = 0; z < pairs.length; z++) {
         if (pairs[z] === four_of_a_kind[i]) {
           pairs.splice(z, 1);
         }
@@ -2360,7 +2360,7 @@ class Poker extends GameTableTemplate {
     // remove pairs that are also threes
     //
     for (let i = 0; i < three_of_a_kind.length; i++) {
-      for (let z = 0; z < pairs.length; z++) {
+      for (var z = 0; z < pairs.length; z++) {
         if (pairs[z] === three_of_a_kind[i]) {
           pairs.splice(z, 1);
         }
@@ -3075,7 +3075,7 @@ class Poker extends GameTableTemplate {
   }
 
   toHuman(hand) {
-    let humanHand = " <span class='htmlhand'>";
+    var humanHand = " <span class='htmlhand'>";
     hand.forEach((h) => {
       h = h.replace("H", "<span style='color:red'><span class='suit'>&hearts;</span>");
       h = h.replace("D", "<span style='color:red'><span class='suit'>&diams;</span>");

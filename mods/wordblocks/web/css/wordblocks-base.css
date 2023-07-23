@@ -1,20 +1,10 @@
 
-body {
-  font-family: arial, helvetica, sans-serif;
-  padding: 0px;
-  margin: 0px;
-  background-color: #024;
+.main {
+  position: absolute;
+  width: 100%;
+  height: 100%;
   background:  url("/wordblocks/img/background.jpg");
   background-size: cover;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-face-color: #868686;
-  scrollbar-base-color: #868686;
-  scrollbar-3dlight-color: #868686;
-  scrollbar-highlight-color: #868686;
-  scrollbar-track-color: #646464;
-  scrollbar-arrow-color: #646464;
-  scrollbar-shadow-color: #868686;
 }
 
 .pboxlog {
@@ -117,10 +107,6 @@ thead,  tfoot{
   border-bottom: 1px dashed;
 }
 
-.wb-main {
- /* max-width: 902px;
-  margin: 0 auto;*/
-}
 
 .gameboard {
   display: grid;
@@ -550,7 +536,7 @@ Resize board on smaller screens
 
 /* End of responsive layout */
 
-.hidden{
+.hidden, .rack-controls > div.hidden {
   display: none;
 }
 

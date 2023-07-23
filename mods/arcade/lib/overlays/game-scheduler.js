@@ -11,67 +11,54 @@ class GameScheduler {
     this.overlay = new SaitoOverlay(app);
     this.mycallback = null;
 
-    this.app.connection.on("arcade-launch-game-scheduler", async (invite_tx = {}) => {
+    this.app.connection.on("arcade-launch-game-scheduler", (invite_tx = {}) => {
       this.invite_tx = invite_tx;
-      await this.render();
+      console.log(invite_tx);
+      this.render();
     });
   }
 
-  async render(mycallback = null) {
+  render(mycallback = null) {
     if (mycallback != null) {
       this.mycallback = mycallback;
     }
-    this.overlay.show(ScheduleInviteTemplate(this.app, this.mod));
+    this.overlay.show(ScheduleInviteTemplate(this.app, this.invite_tx));
     this.attachEvents(mycallback);
   }
 
   attachEvents(mycallback = null) {
     let scheduler_self = this;
-    let app = this.app;
-    let mod = this.mod;
 
     //
     // create invite now
     //
-    document.getElementById("create-invite-now").onclick = async (e) => {
+    document.getElementById("create-invite-now").onclick = (e) => {
       this.overlay.hide();
-      await app.network.propagateTransaction(scheduler_self.invite_tx);
 
-      //
-      // and relay open if exists
-      //
-      let peers = [];
-      let p = await app.network.getPeers();
-      for (let i = 0; i < p.length; i++) {
-        peers.push(p[i].publicKey);
-      }
-      this.app.connection.emit("relay-send-message", {
-        recipient: peers,
-        request: "arcade spv update",
-        data: scheduler_self.invite_tx.toJson(),
-      });
+      this.app.network.propagateTransaction(scheduler_self.invite_tx);
+      this.app.connection.emit("relay-send-message", {recipient: scheduler_self.invite_tx.msg.options.desired_opponent_publickey, request: "arcade spv update", data: scheduler_self.invite_tx.transaction});      
 
-      mod.addGame(scheduler_self.invite_tx, "open");
+      this.mod.addGame(scheduler_self.invite_tx, "open");
 
       //
       // create invite link from the game_sig
       //
-      mod.showShareLink(scheduler_self.invite_tx.signature);
+      //mod.showShareLink(scheduler_self.invite_tx.transaction.sig);
     };
 
     //
     // create future invite
     //
     document.getElementById("create-specific-date").onclick = (e) => {
-      let txmsg = scheduler_self.invite_tx.returnMessage();
+      /*let txmsg = scheduler_self.invite_tx.returnMessage();
 
       let title = "Game: " + txmsg.options.game;
       this.overlay.hide();
       let adds = [];
-      for (let i = 0; i < scheduler_self.invite_tx.to.length; i++) {
-        let inv = scheduler_self.invite_tx.to[i];
-        if (!adds.includes(inv.publicKey)) {
-          adds.push(inv.publicKey);
+      for (let i = 0; i < scheduler_self.invite_tx.transaction.to.length; i++) {
+        let inv = scheduler_self.invite_tx.transaction.to[i];
+        if (!adds.includes(inv.add)) {
+          adds.push(inv.add);
         }
       }
       let scheduler = new SaitoScheduler(app, mod, {
@@ -80,11 +67,12 @@ class GameScheduler {
         title: title,
         adds: adds,
       });
-      scheduler.render(async () => {
+      scheduler.render(() => {
         if (mycallback != null) {
-          await mycallback();
+          mycallback();
         }
       });
+      */
     };
   }
 }

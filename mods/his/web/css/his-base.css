@@ -7,6 +7,19 @@ img {
   width: unset;
 }
 
+.card {
+  position: relative;
+}
+.cardimg , .card img {
+  position: relative;
+}
+.cardimg.cancel_x {
+  position: absolute;
+  width: inherit;
+  top: 20%;
+}
+
+
 .saito-overlay-backdrop {
   opacity: 0.8;
 }
@@ -136,6 +149,16 @@ img {
   top: 100px;
   left: 100px;
   display: none;
+}
+
+.siege {
+  position: absolute;
+  display: block;
+  height: 130px;
+  width: 130px;
+  top: -10px;
+  left: -10px;
+  z-index: 1000;
 }
 
 .unrest {

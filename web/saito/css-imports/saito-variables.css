@@ -32,6 +32,7 @@ font imports
 }
 
 :root {
+  --saito-vh: 1vh;
   --saito-font: "visuelt-light";
   --saito-header-height: 5em;
   --saito-width: 1250px;
@@ -113,6 +114,7 @@ html[data-theme="arcade"] {
   --saito-border-color: #426;
   --saito-background-color: #180c24;
   --saito-background-light: #140a1e;
+  --saito-hover-background: #6395; /* A slightly transparent version of saito-primary, good contrast to normal background */
   --saito-gray-transparent: #88888818;
   --saito-background-shim: #0008;
   --saito-dark-shim: #0009;

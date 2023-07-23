@@ -9,6 +9,7 @@ displayBoard() {
 }
 
 
+
 //
 // flash a sector
 //
@@ -421,34 +422,6 @@ returnUnitPopupEntry(unittype) {
 
 }
 
-returnNewActionCardsOverlay(cards) {
-
-  let title = "Your New Action Cards";
-
-  let html = `
-    <div class="new_action_cards_overlay_container" style="">
-      <div class="new_action_cards_title">${title}</div>
-      <div style="width:100%"><div class="new_objectives_text">click on your faction to see all your action cards anytime...</div></div>
-      <div class="new_action_cards">
-  `;
-
-  for (let i = 0; i < cards.length; i++) {
-    html += `
-      <div class="overlay_action_card bc">
-        <div class="action_card_name">${this.action_cards[cards[i]].name}</div>
-        <div class="action_card_content">${this.action_cards[cards[i]].text}</div>
-      </div>
-    `;
-  }
-  html += `
-      </div>
-      <div id="close-action-cards-btn" class="button" style="">CONTINUE</div>
-    </div>
-  `;
-  return html;
-}
-
-
 
 
 displayFactionDashboard(agenda_phase=0) {
@@ -518,6 +491,8 @@ addUIEvents() {
   //set player highlight color
   document.documentElement.style.setProperty('--my-color', `var(--p${this.game.player})`);
   this.displayFactionDashboard();
+
+  this.factionbar.render(this.game.player);
   this.tokenbar.render(this.game.player);
 
 }
@@ -557,6 +532,7 @@ hideSector(pid) {
 updateTokenDisplay() {
 
   let imperium_self = this;
+  this.factionbar.render(this.game.player);
   this.tokenbar.render(this.game.player);
 
 }

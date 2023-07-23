@@ -1,4 +1,11 @@
 
+.hud-body .controls .game-cardgrid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+
 .controls ul li , .options {
     background-color: whitesmoke;
     height: 7rem;

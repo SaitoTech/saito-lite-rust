@@ -9,10 +9,10 @@ let sanitizeHtml = require("sanitize-html");
 const linkifyHtml = require("markdown-linkify");
 const emoji = require("node-emoji");
 const UserMenu = require("./ui/modals/user-menu/user-menu");
-const MyUserMenu = require("./ui/modals/my-user-menu/my-user-menu");
-const Deposit = require("./ui/saito-crypto/overlays/deposit");
-const Withdraw = require("./ui/saito-crypto/overlays/withdraw");
-const History = require("./ui/saito-crypto/overlays/history");
+const Deposit = require('./ui/saito-crypto/overlays/deposit');
+const Withdraw = require('./ui/saito-crypto/overlays/withdraw');
+const History = require('./ui/saito-crypto/overlays/history');
+const debounce = require("lodash/debounce");
 
 class Browser {
   public app: any;
@@ -220,6 +220,17 @@ class Browser {
       //}
 
       this.browser_active = 1;
+
+      const updateViewHeight = () => {
+          let vh = window.innerHeight * 0.01;
+          document.documentElement.style.setProperty("--saito-vh", `${vh}px`);
+          //console.log("Update view height");
+          //siteMessage(`Update: ${vh}px`);
+      }
+
+      window.addEventListener("resize", debounce(updateViewHeight, 200));
+      updateViewHeight();
+
     } catch (err) {
       if (err == "ReferenceError: document is not defined") {
         console.log("non-browser detected: " + err);
@@ -266,16 +277,9 @@ class Browser {
           e.preventDefault();
           e.stopImmediatePropagation();
 
-          //          if (publickey !== publickey) {
-
           let userMenu = new UserMenu(app, publickey);
           userMenu.render(app);
 
-          //          } else {
-          //
-          //            let myUserMenu = new MyUserMenu(app, publickey);
-          //            myUserMenu.render(app);
-          //          }
         }
       },
       {
@@ -670,6 +674,8 @@ class Browser {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.addElementToElement(html, container);
+      }else{
+        console.info("Container not found: " + selector);
       }
     }
   }
@@ -1455,7 +1461,7 @@ class Browser {
       let urlPattern =
         /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/gi;
       text = text.replace(urlPattern, function (url) {
-        return `<a target="_blank" class="saito-treated-link" href="${url.trim()}">${url.trim()}</a>`;
+        return `<a target="_blank" class="saito-treated-link" href="${url.includes("www") && !url.includes("http") ? `http://${url.trim()}` : url.trim()}">${url.trim()}</a>`;
       });
 
       text = emoji.emojify(text);

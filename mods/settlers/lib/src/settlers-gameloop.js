@@ -651,17 +651,17 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
             this.game.deck[0].hand.length;
 
           //Messaging to User
-          let html = `<div class="tbd"><div class="pcb"></div>YOUR TURN:`;
-          html += `<ul>`;
-          html += `<li class="option flashme" id="rolldice">roll dice</li>`;
+          let statushtml = `<div class="tbd"><div class="pcb"></div>YOUR TURN:</div>`;
+          let controlshtml = `<ul>`;
+          controlshtml += `<li class="option flashme" id="rolldice">roll dice</li>`;
           if (settlers_self.canPlayerPlayCard()) {
-            html += `<li class="option" id="playcard">play card</li>`;
+            controlshtml += `<li class="option" id="playcard">play card</li>`;
           }
-          html += `</ul>`;
-          html += `</div>`;
+          controlshtml += `</ul>`;
 
           console.log("running UPDATE STATUS");
-          this.updateStatus(html);
+          this.updateStatus(statushtml);
+          this.updateControls(controlshtml)
 
           //
           // Flash to be like "hey it's your move"
@@ -695,6 +695,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
           this.updateStatus(
             `<div class="tbd">${this.game.playerNames[player - 1]} rolling dice...</div>`
           );
+          this.updateControls("<div></div>");
         }
         //this.game.queue.splice(qe, 1);
         return 0;

@@ -1,6 +1,7 @@
 
     if (card == "voiceofamerica") {
 
+
       var ops_to_purge = 4;
       var ops_removable = 0;
 
@@ -14,6 +15,8 @@
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
+        this.hud.back_button = false;
+        this.hud.back_button_callback = null;
         this.updateStatus("Remove 4 USSR influence from non-European countries (max 2 per country)");
 
         var twilight_self = this;

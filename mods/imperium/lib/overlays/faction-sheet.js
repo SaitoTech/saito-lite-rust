@@ -18,6 +18,11 @@ class FactionSheetOverlay {
     let factions = imperium_self.returnFactions(player);
     let this_faction = factions[imperium_self.game.state.players_info[player-1].faction];
 
+    let flagship_idx = "";
+    let flagship_name = "";
+    let flagship_text = "";
+
+
     this.overlay.show(ImperiumFactionSheetOverlayTemplate(this.mod, player, faction_name));
 
     this.tokenbar.render(player);
@@ -30,10 +35,7 @@ console.log("ac length: " + ac.length);
     for (let i = 0; i < ac.length; i++) {
       let html = '';
       if (imperium_self.game.player == player) {
-        html = `<div class="faction_sheet_action_card bc">
-                  <div class="action_card_name">${imperium_self.action_cards[ac[i]].name}</div>
-                  <div class="action_card_content">${imperium_self.action_cards[ac[i]].text}</div>
-                </div>`;
+        html += imperium_self.action_cards[ac[i]].returnCardImage();
       } else {
         html = `<div class="faction_sheet_action_card faction_sheet_action_card_back bc"></div>`;
       }
@@ -52,6 +54,24 @@ console.log("ac length: " + ac.length);
         this.app.browser.addElementToSelector(tech.returnCardImage(), ".faction-sheet-tech-cards");
       }
     }
+
+    //
+    // faction-specific tech
+    //
+    for (i in imperium_self.tech) {
+      let tech = imperium_self.tech[i];
+      if (tech.type == "special") {
+        if (!imperium_self.game.state.players_info[player-1].tech.includes(i)) {
+          if (imperium_self.game.state.players_info[player-1].faction == tech.faction) {
+            let unmodded = tech.returnCardImage();
+            let html = unmodded.replace(/nonopaque/g, 'opaque');
+            this.app.browser.addElementToSelector(html, ".faction-sheet-tech-cards");
+          }
+        }
+      }
+    }
+
+
 
 
     //
@@ -81,6 +101,7 @@ console.log("ac length: " + ac.length);
           `;
           imperium_self.app.browser.addElementToSelector(html, ".faction-sheet-faction-abilities");
         } else {
+          flagship_idx = i;
           flagship_name = tech.name;
           flagship_text = tech.text;
         }
@@ -108,32 +129,12 @@ console.log("ac length: " + ac.length);
     // faction tech (flagship)
     //
     let html = `
-        <div id="faction_flagship_container" class="faction_flagship_container">
-             <div class="faction_flagship_image"></div>
-             <div class="faction_flagship_text_container">
-               <div class="faction_flagship_title">${flagship_name}</div>
-               <div class="faction_flagship_text">${flagship_text}</div>
-             </div>
-        </div>
+      <div id="faction_ability_${flagship_idx}" class="faction_ability">
+        <div class="faction_ability_title">${flagship_name}</div>
+        <div class="faction_ability_text">${flagship_text}</div>
+      </div>
     `;
     this.app.browser.addElementToSelector(html, ".faction-sheet-faction-abilities");
-
-
-    //
-    // faction tech (other)
-    //
-    for (i in imperium_self.tech) {
-      let tech = imperium_self.tech[i];
-      if (tech.type == "special") {
-        if (!imperium_self.game.state.players_info[player-1].tech.includes(i)) {
-          if (imperium_self.game.state.players_info[player-1].faction == tech.faction) {
-            let unmodded = tech.returnCardImage();
-            let html = unmodded.replace(/card_nonopaque/g, 'card_opaque');
-            this.app.browser.addElementToSelector(html, ".faction-sheet-faction-tech");
-          }
-        }
-      }
-    }
 
 
   }

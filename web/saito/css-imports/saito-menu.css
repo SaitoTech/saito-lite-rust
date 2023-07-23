@@ -74,7 +74,7 @@
 
 
 
-.saito-menu>ul>li>i+span {
+.saito-menu>ul>li>i+span, .saito-menu>ul>li>i+span+span {
   margin-left: 3.8rem;
 }
 

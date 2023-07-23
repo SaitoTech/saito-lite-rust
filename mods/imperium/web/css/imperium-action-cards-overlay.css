@@ -1,0 +1,50 @@
+
+.action-cards-overlay {
+    width: 100%;
+    height: min-content;
+    width: min-content;
+    max-width: 1000px;
+    max-height: 85vh;
+    padding: 4rem;
+    min-width: 80vw;
+}
+
+.action-cards-overlay-title {
+    color: white;
+    font-family: 'bank-gothic';
+    letter-spacing: 0.75rem;
+    font-size: 5rem;
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: auto;
+    width: min-content;
+}
+
+.action-cards-overlay-content {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: space-evenly;
+    width: 100%;
+    max-width: 80vw;
+    max-height: 85vh;
+    height: min-content;
+    width: 100%;
+    padding: 2rem;
+}
+
+.action-cards_overlay_action-cards_card {
+  position: relative;
+  width: calc(42vh * 0.72110);
+  height: 42vh;
+  margin: 10px;
+  background-size: cover;
+  max-width: 300px;
+  max-height: 450px;
+  float: left;
+  font-size: 0.8em;
+  z-index: 5;
+  border: 1px solid #FFF;
+}
+
+

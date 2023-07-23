@@ -123,7 +123,7 @@ class Keychain {
   decryptMessage(publickey: string, encrypted_msg) {
     // submit JSON parsed object after unencryption
     for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].publickey == publickey) {
+      if (this.keys[x].publickey === publickey) {
         if (this.keys[x].aes_secret) {
           const tmpmsg = this.app.crypto.aesDecrypt(encrypted_msg, this.keys[x].aes_secret);
           if (tmpmsg) {
@@ -183,7 +183,7 @@ class Keychain {
   decryptString(publickey, encrypted_string) {
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey == publickey) {
-        if (this.keys[x].aes_secret != "") {
+        if (this.keys[x].aes_secret) {
           return this.app.crypto.aesDecrypt(encrypted_string, this.keys[x].aes_secret);
         }
       }
@@ -195,7 +195,7 @@ class Keychain {
   encryptMessage(publickey: string, msg) {
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey === publickey) {
-        if (this.keys[x].aes_secret != "") {
+        if (this.keys[x].aes_secret) {
           const jsonmsg = JSON.stringify(msg);
           return this.app.crypto.aesEncrypt(jsonmsg, this.keys[x].aes_secret);
         }
@@ -289,7 +289,7 @@ class Keychain {
     //
     if (data == null) {
       for (let x = 0; x < this.keys.length; x++) {
-        if (this.keys[x].lc && this.keys[x].publickey != (await this.app.wallet.getPublicKey())) {
+        if (/*this.keys[x].lc &&*/ this.keys[x].publickey != (await this.app.wallet.getPublicKey())) {
           kx.push(this.keys[x]);
         }
       }
@@ -440,40 +440,14 @@ class Keychain {
   }
 
   updateCryptoByPublicKey(publickey, aes_publickey = "", aes_privatekey = "", shared_secret = "") {
-    console.log("updating crypto for: " + publickey);
-
-    if (publickey == "") {
-      return;
-    }
-
-    this.addKey(publickey);
-
-    for (let x = 0; x < this.keys.length; x++) {
-      console.log("TESTING: " + this.keys[x].publickey + " -- " + this.keys[x].lc);
-      if (this.keys[x].publickey == publickey && this.keys[x].lc) {
-        console.log("UPDATING: " + shared_secret);
-        this.keys[x].aes_publickey = aes_publickey;
-        this.keys[x].aes_privatekey = aes_privatekey;
-        this.keys[x].aes_secret = shared_secret;
-      }
-    }
-
+    if (publickey == "") { return; }
+    this.addKey(publickey, { aes_publickey : aes_publickey , aes_privatekey : aes_privatekey , aes_secret : shared_secret });
     this.saveKeys();
 
     return true;
   }
 
-  alreadyHaveSharedSecret(publickey: string): boolean {
-    for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].publickey === publickey && this.keys[x].lc) {
-        if (this.keys[x].aes_secret != "") {
-          return true;
-        }
-      }
-    }
 
-    return false;
-  }
 }
 
 export default Keychain;

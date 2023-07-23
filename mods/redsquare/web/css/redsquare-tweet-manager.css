@@ -16,24 +16,7 @@
   font-style: italic;
 }
 
-.rs-back-button {
-  font-size: 32px;
-  margin-left: 1rem;
-  padding: 0.5rem 1.25rem;
-  width: fit-content;
-  cursor: pointer;
-  margin-right: auto;
+.tweet-thread-holder {
   display: none;
-  transition: transform 0.2s;
 }
 
-.rs-back-button:hover{
-  transform: scale(1.1);
-}
-
-@media only screen and (max-width: 1200px) {
-
-  .rs-back-button {
-    display: block;
-  }
-}

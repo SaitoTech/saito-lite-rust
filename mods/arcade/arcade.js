@@ -97,6 +97,7 @@ class Arcade extends ModTemplate {
       // These are three overlays with event listeners that can function outside of the Arcade
       this.wizard = new GameWizard(app, this, null, {});
       this.game_selector = new GameSelector(app, this, {});
+      //We create this here so it can respond to events
       this.game_scheduler = new GameScheduler(app, this, {});
 
       // Necessary?
@@ -253,7 +254,7 @@ class Arcade extends ModTemplate {
             console.log("Load DB Game: " + record.status, game_tx.returnMessage());
           }
           if (record.time_finished) {
-            if (record.status !== "over" && record.status !== "close") {
+            if (record.status !== "over") {
               console.log("Game status mismatch");
               record.status = "close";
             }
@@ -747,6 +748,10 @@ class Arcade extends ModTemplate {
     this.addGame(tx, txmsg.request);
     this.app.connection.emit("arcade-invite-manager-render-request");
 
+    if (txmsg?.options?.desired_opponent_publickey == (await this.app.wallet.getPublicKey())) {
+      siteMessage("You were invited to a game", 5000);
+    }
+
     //
     // Only the arcade service node (non-browser) needs to bother executing SQL
     //
@@ -868,9 +873,15 @@ class Arcade extends ModTemplate {
         }
 
         await this.updatePlayerListSQL(txmsg.game_id, game.msg.players, game.msg.players_sigs);
-        this.app.connection.emit("arcade-invite-manager-render-request");
       }
+    } else if (tx.isFrom(game.msg.options.desired_opponent_publickey)) {
+      if ((await this.app.wallet.getPublicKey()) == game.msg.originator) {
+        siteMessage("Your game invite was declined", 5000);
+      }
+      await this.changeGameStatus(txmsg.game_id, "close");
     }
+
+    this.app.connection.emit("arcade-invite-manager-render-request");
   }
 
   async sendCancelTransaction(game_id) {
@@ -1011,8 +1022,8 @@ class Arcade extends ModTemplate {
     await this.changeGameStatus(txmsg.game_id, "over");
 
     let sql = `UPDATE games
-               SET winner        = $winner,
-                   method        = $method,
+               SET winner = $winner,
+                   method = $method,
                    time_finished = $ts
                WHERE game_id = $game_id`;
     let params = {
@@ -1042,23 +1053,22 @@ class Arcade extends ModTemplate {
       game.msg.ts = txmsg.step.ts;
     }
 
-    let sql = `UPDATE games
-               SET step = $step
-               WHERE game_id = $game_id`;
-    let params = {
-      $step: JSON.stringify(txmsg.step),
-      $game_id: txmsg.game_id,
-    };
-    await this.app.storage.executeDatabase(sql, params, "arcade");
+    if (!this.app.BROWSER) {
+      let sql = `UPDATE games
+                 SET step = $step
+                 WHERE game_id = $game_id`;
+      let params = {
+        $step: JSON.stringify(txmsg.step),
+        $game_id: txmsg.game_id,
+      };
+      await this.app.storage.executeDatabase(sql, params, "arcade");
 
-    //Observer stuff
-    //if (!this.app.BROWSER) {
-
-    //And make sure archive saves all the tx's under the game id
-
-    //this.app.storage.saveTransactionByKey(txmsg.game_id, tx);
-    await this.app.storage.saveTransaction(tx, txmsg.module + "_" + txmsg.game_id);
-    //}
+      this.app.storage.saveTransaction(
+        tx,
+        { field1: txmsg.module + "_" + txmsg.game_id },
+        "localhost"
+      );
+    }
   }
 
   ////////////
@@ -1474,7 +1484,7 @@ class Arcade extends ModTemplate {
   }
 
   ///////////////////////////////
-  // LOADING AND RUNNING GAMES //
+  // "LOAD"ING AND RUNNING GAMES //
   ///////////////////////////////
 
   //
@@ -1565,9 +1575,9 @@ class Arcade extends ModTemplate {
     for (let key in this.games) {
       for (let z = 0; z < this.games[key].length; z++) {
         if (tx.signature === this.games[key][z].signature) {
-          if (this.debug) {
-            console.log("TX is already in Arcade list");
-          }
+          // if (this.debug) {
+          console.log("TX is already in Arcade list");
+          //}
           return;
         }
       }
@@ -1806,6 +1816,7 @@ class Arcade extends ModTemplate {
     if (accepted_game) {
       data.game = accepted_game.msg.game;
       data.game_id = game_sig;
+      data.path = "/arcade/";
     } else {
       return;
     }
@@ -1867,27 +1878,22 @@ class Arcade extends ModTemplate {
         }
       }
 
-      let newtx = await this.createOpenTransaction(gamedata);
-      await this.app.network.propagateTransaction(newtx);
-      this.app.connection.emit("relay-send-message", {
-        recipient: "PEERS",
-        request: "arcade spv update",
-        data: newtx.toJson(),
-      });
-      this.addGame(newtx, gamedata.invitation_type);
-
-      this.app.connection.emit("arcade-invite-manager-render-request");
+      let newtx = this.createOpenTransaction(gamedata);
 
       if (gameType == "direct") {
         this.app.connection.emit("arcade-launch-game-scheduler", newtx);
-
-        this.app.connection.emit("relay-send-message", {
-          recipient: options.desired_opponent_publickey,
-          request: "arcade spv update",
-          data: newtx.transaction,
-        });
         return;
       }
+
+      this.app.network.propagateTransaction(newtx);
+      this.app.connection.emit("relay-send-message", {
+        recipient: "PEERS",
+        request: "arcade spv update",
+        data: newtx.transaction,
+      });
+      this.addGame(newtx, gamedata.invitation_type);
+      //Render game in my game list
+      this.app.connection.emit("arcade-invite-manager-render-request");
 
       if (gameType == "open") {
         if (
@@ -2005,40 +2011,29 @@ class Arcade extends ModTemplate {
     }
 
     console.log(`${game_mod.name}_${game_mod.game.id} from ${game_mod.game.originator}`);
-    //this.app.storage.loadTransactionsByKeys([game_mod.game.id], game_mod.name, 100, callback);
 
-    let sql = `SELECT *
-               FROM txs
-               WHERE type = '${game_mod.name}_${game_mod.game.id}'
-                 AND publickey = '${game_mod.game.originator}'
-               ORDER BY id ASC`;
-    await this.sendPeerDatabaseRequestWithFilter("Archive", sql, async (res) => {
-      if (res.rows) {
-        console.log("sql rows: " + res.rows.length);
-
-        for (let record of res.rows) {
-          let future_tx = Transaction.deserialize(record.tx, new Factory());
-          let game_move = future_tx.returnMessage();
+    this.app.storage.loadTransactions(
+      { field1: game_mod.name + "_" + game_mod.game.id, limit: 100 },
+      (txs) => {
+        for (let tx of txs) {
+          let game_move = tx.returnMessage();
           let loaded_step = game_move.step.game;
-
-          console.log(loaded_step, game_move);
 
           if (
             loaded_step > game_mod.game.step.game ||
-            loaded_step > game_mod.game.step.players[future_tx.from[0].publicKey]
+            loaded_step > game_mod.game.step.players[tx.transaction.from[0].add]
           ) {
             console.log("Add move: " + JSON.stringify(game_move));
-            await game_mod.addFutureMove(future_tx);
+            game_mod.addFutureMove(tx); //This will save future moves (so saveGame below doesn't overwrite them)
           }
         }
-
         game_mod.saveGame(game_mod.game.id);
 
         if (mycallback) {
-          await mycallback(game_mod);
+          mycallback(game_mod);
         }
       }
-    });
+    );
   }
 }
 

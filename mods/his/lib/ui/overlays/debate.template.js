@@ -13,6 +13,7 @@ module.exports = (res) => {
      <div class="theological-debate-overlay" id="theological-debate-overlay">
         <div class="title">${title}</div>
         <div class="status">${res.status}</div>
+        <div class="controls"></div>
         <div class="attacker_debater"></div>
         <div class="defender_debater"></div>
       </div>

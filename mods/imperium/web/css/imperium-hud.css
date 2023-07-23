@@ -1,10 +1,38 @@
 
+
+
+
+.status-header-text {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
 .status-update {
   display: grid;
   grid-template-columns: min-content 1fr;
   align-items: center;
   font-size: 1.8rem;
 }
+
+.hud-body .status {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  overflow-y: auto;
+  overflow-x: auto;
+}
+.hud-body .status::-webkit-scrollbar {
+  display: none;
+} 
+
+
+.hud-header .hud-controls {
+  padding: 1.5rem;
+  padding: 1.5rem;
+  min-width: 12.5rem;
+  margin-top: -0.5rem;
+}
+
+
 
 .hud-body .controls {
   display: none;
@@ -59,7 +87,12 @@
 #menu-container>ul>li:hover {
   background-color: #3334;
 }
-
+.status-overlay>ul>li:hover {
+  background-color: #3334;
+}
+.status-overlay ul li:hover {
+  background: #8888;
+}
 
 .status ul li:hover, .hud-menu ul li a:hover, hud-menu-overlay ul li:hover {
   background: #8888;

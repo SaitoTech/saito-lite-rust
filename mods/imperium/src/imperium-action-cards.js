@@ -26,9 +26,9 @@
     if (obj.returnCardImage == null) {
       obj.returnCardImage = function() {
         return `
-          <div class="action_card" id="${name}" style="background-image: url(${obj.img});background-size:cover;">
-            <div class="action_card_title">${obj.name}</div>
-            <div class="action_card_text">${obj.text}</div>
+          <div class="action-card action-card-${name}" id="${name}">
+            <div class="title">${obj.name}</div>
+            <div class="text">${obj.text}</div>
           </div>
         `;
       }

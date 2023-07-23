@@ -1,7 +1,8 @@
-const SaitoImageOverlay = require("../../../lib/saito/ui/saito-image-overlay/saito-image-overlay");
+const SaitoImageOverlay = require("./../../../lib/saito/ui/saito-image-overlay/saito-image-overlay");
 const RedSquareImageTemplate = require("./image.template");
 
 class RedSquareImage {
+
   constructor(app, mod, container = "", tweet) {
     this.app = app;
     this.mod = mod;
@@ -12,7 +13,8 @@ class RedSquareImage {
   }
 
   render() {
-    let element = this.container + " > .tweet-picture";
+
+    let element = this.container +  " > .tweet-picture";
     let template = RedSquareImageTemplate(this.app, this.mod, this.images);
     let sig = this.tweet.tx.transaction.sig;
 
@@ -23,27 +25,27 @@ class RedSquareImage {
     // avoid length vertical posts
     //
     for (let i = 0; i < this.images.length; i++) {
-      var img = new Image();
+
+      var img = new Image;
       let tweet = this.tweet;
 
       img.onload = function () {
         //console.log("Image load");
-        let available_width_qs =
-          ".tweet-" + tweet.tx.transaction.sig + " > .tweet-body .tweet-main";
+        let available_width_qs = ".tweet-" + tweet.tx.transaction.sig + " > .tweet-body .tweet-main";
         if (document.querySelector(available_width_qs)) {
           let obj = document.querySelector(available_width_qs);
           expected_width = parseInt(obj.getBoundingClientRect().width);
           //console.log("Column Width: " + expected_width);
-        } else {
+        }else{
           //console.log("QS not found");
         }
 
         let aspect_ratio = img.width / img.height;
         //console.log("Aspect: " + aspect_ratio);
 
-        if (img.height >= img.width) {
+        if (img.height >= img.width){
           expected_height = expected_width;
-        } else {
+        }else{
           expected_height = expected_width / aspect_ratio;
         }
 
@@ -51,12 +53,15 @@ class RedSquareImage {
         let obj = document.querySelector(qs);
         if (obj) {
           obj.style.maxHeight = Math.floor(expected_height) + "px";
-          obj.style.maxWidth = expected_width + "px";
+          obj.style.maxWidth = expected_width + "px"; 
           //console.log(obj.style.maxWidth + ", " + obj.style.maxHeight);
         }
       };
       img.src = this.images[0];
-    }
+
+    };
+
+
 
     if (document.querySelector(element)) {
       this.app.browser.replaceElementBySelector(template, element);
@@ -71,21 +76,24 @@ class RedSquareImage {
     this.attachEvents();
   }
 
+
+
   attachEvents() {
-    let sel =
-      ".tweet-" +
-      this.tweet.tx.transaction.sig +
-      " > .tweet-body .tweet-preview .tweet-picture > img";
+
+    let sel = ".tweet-" + this.tweet.tx.transaction.sig + " > .tweet-body .tweet-preview .tweet-picture > img";
 
     if (document.querySelectorAll(sel)) {
-      document.querySelectorAll(sel).forEach((image) => {
+      document.querySelectorAll(sel).forEach(image => {
         image.onclick = (e) => {
           let image_idx = e.currentTarget.getAttribute("data-index");
           this.overlay.render(image_idx);
-        };
+        }
       });
     }
+
   }
+
 }
 
 module.exports = RedSquareImage;
+

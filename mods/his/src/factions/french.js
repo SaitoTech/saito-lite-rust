@@ -5,14 +5,15 @@
       name		: 	"France",
       nickname		: 	"France",
       capitals          :       ["paris"],
+      admin_rating	:	1,
       img		:	"france.png",
       cards_bonus	:	1,
       returnCardsSaved  :       function(game_mod) {
 
         let base = 0;
 
-        if (game_mod.game.state.leaders_francis_i == 1) { base += 1; }
-        if (game_mod.game.state.leaders_henry_ii == 1) { base += 1; }
+        if (game_mod.game.state.leaders.francis_i == 1) { base += 1; }
+        if (game_mod.game.state.leaders.henry_ii == 1) { base += 1; }
 
         return base;
 
@@ -39,8 +40,8 @@
         }
 
         // bonuses based on leaders
-        if (game_mod.game.state.leaders_francis_i == 1) { base += 1; }        
-        if (game_mod.game.state.leaders_henry_ii == 1) { base += 0; }        
+        if (game_mod.game.state.leaders.francis_i == 1) { base += 1; }        
+        if (game_mod.game.state.leaders.henry_ii == 1) { base += 0; }        
 
         // TODO - bonus for home spaces under protestant control
         return base;

@@ -120,6 +120,11 @@
 .tweet-text.full~.tweet-preview {
   margin-top: 1rem;
 }
+
+.tweet-text.preview{
+  position: relative;
+}
+
 .tweet-text.preview::before {
   content: " ";
   position: absolute;
@@ -153,9 +158,9 @@
   transition: all 1s;
 }
 
-.tweet-text.preview~.tweet-controls {
+/*.tweet-text.preview~.tweet-controls {
   display: none;
-}
+}*/
 
 .tweet-text.full~.tweet-controls {
   display: flex;
@@ -220,6 +225,8 @@
 
 .tweet-picture>img {
   width: 100%;
+  max-width: 52rem; /* Often set inline, but maybe a good standard */
+  max-height: max(52rem, 70vh);
   height: auto;
   border-radius: 0.5rem;
   object-fit: cover;
@@ -330,9 +337,12 @@
   .tweet-picture {
     grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
   }
-  .tweet-picture>img {
+
+  /*
+  Height should always follow width, no?
+   .tweet-picture>img {
     max-height: 35rem !important;
-  }
+  }*/
 }
 
 @media screen and (max-width: 768px) {
@@ -356,9 +366,14 @@
   }
 }
 
-@media screen and (max-width: 529px) {
+/*
+  Ditto on why unneccesarily crop photo height???
+  the height should scale proportionally with width, maybe looks bad if people are
+  sharing portrait photos
+ @media screen and (max-width: 529px) {
 
   .tweet-picture>img {
     height: 15rem;
   }
 }
+*/

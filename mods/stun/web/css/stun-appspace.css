@@ -3,8 +3,8 @@
 .stun-appspace {
   width: 100vw;
   height: 100vh;
+  height: calc(100 * var(--saito-vh));
   left: 0;
-  padding: 2rem;
   top: 0;
   display: flex;
   flex-direction: column;
@@ -130,6 +130,7 @@
 
 .stunx-appspace-splash p {
   color: white;
+  height: 2rem; /* for some reason it scrolls if you don't set a height */
 }
 
 .stunx-appspace-join .saito-button-secondary {
@@ -177,30 +178,29 @@
 @media screen and (max-width: 900px) {
   .stun-appspace-content {
     flex-direction: column;
-    width: 95%;
   }
   .stunx-appspace-splash {
     padding: 0 5rem;
   }
 }
 
-@media screen and (max-width: 900px) {
-  .stunx-appspace-splah {
-    width: 80%;
-    margin-left: 2rem;
-  }
-}
 
 @media screen and (max-width: 580px) {
-  .stun-appspace, .chat-settings-wrapper {
-    padding: 1rem;
-    margin: 0;
+  .stun-appspace{
+    padding: 4rem 1rem;
   }
+
   #createRoom {
     width: 100%;
   }
   .stunx-appspace-splash {
     padding: 0;
+  }
+  .stun-appspace-content {
+    flex-direction: column-reverse;
+  }
+  .stun-appspace-navigation {
+    justify-content: center;
   }
 }
 

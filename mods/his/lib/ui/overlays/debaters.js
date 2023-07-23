@@ -22,7 +22,6 @@ class DebatersOverlay {
 
       for (let i = 0; i < this.mod.game.state.debaters.length; i++) {
         let committed = "";
-console.log("debater: " + this.mod.game.state.debaters[i].key + " -- " + this.mod.game.state.debaters[i].committed);
         if (this.mod.game.state.debaters[i].committed == 1) { committed = " debater-commited"; }
         this.app.browser.addElementToSelector(`<div class="debaters-tile debaters-tile${i} ${committed}" data-key="${this.mod.game.state.debaters[i].key}" data-id="${this.mod.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${this.mod.game.state.debaters[i].img}')"></div>`, ".debaters-overlay");
       }
@@ -70,8 +69,11 @@ console.log("debater: " + this.mod.game.state.debaters[i].key + " -- " + this.mo
         let tile_b = tile_f.replace('.svg', '_back.svg');
 
         $(divsq).click(function() {
+
           let key = $(this).attr("data-key");
-          if (his_self.game.state.debaters[i].committed == 0 && his_self.canPlayerCommittDebater(faction, key)) {
+
+          if (his_self.game.state.debaters[i].committed == 0 && his_self.canPlayerCommitDebater(faction, key)) {
+	    alert("Commiting Debater for Bonus");
 	    his_self.commitDebater(faction, key, 1);
             his_self.addMove("commit\t"+faction+"\t"+key);
             his_self.endTurn();

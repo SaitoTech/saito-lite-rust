@@ -386,10 +386,11 @@ class Mods {
     }
   }
 
-  onWalletReset(nuke = false) {
+  async onWalletReset(nuke = false) {
     for (let i = 0; i < this.mods.length; i++) {
-      this.mods[i].onWalletReset(nuke);
+      await this.mods[i].onWalletReset(nuke);
     }
+    return 1;
   }
 
   returnModuleBySlug(modslug) {

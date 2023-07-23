@@ -4,7 +4,13 @@
     // Che
     //
     if (card == "che") {
-      
+    
+      //
+      // SAITO COMMUNITY - united fruit company removed
+      //
+      this.removeCardFromDeck("unitedfruit", "Che Evented");
+
+     
       let twilight_self = this;
       let valid_targets = 0;
       let couppower = 3;

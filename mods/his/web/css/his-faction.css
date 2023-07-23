@@ -103,9 +103,19 @@
 .faction_sheet {
   width: 1240px;
   height: 800px;
+  max-height: 80vh;
+  max-width: calc(80vh * 1.55);
   background-image: url(/his/img/factions/protestant.png);
   background-size: contain;
 }
+
+.faction_sheet_rule3 {
+    top: 3.5%;
+    left: 66.5%;
+    position: relative;
+    width: 30.5%;
+}
+
 
 .faction_sheet_keytile {
   position: absolute;

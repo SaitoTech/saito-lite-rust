@@ -14,31 +14,31 @@
     background-image: url(/imperium/img/tech_card_template.jpg);
     background-size: cover;
     position: relative;
-    width: 20vw;
-    height: 14vw;
-    font-family: 'orbitron-medium', 'arial';
+    width: 16vw;
+    height: 12vw;
     font-size: 1.2vw;
     line-height: 1.7vw;
     color: whitesmoke;
     border: 1px solid #fff6;
     padding: 1vw;
+    cursor: pointer;
 }
 
 .tech-card::before {
-  content: "";
-  width: 0;
-  height: 0;
-  border-bottom: 5vw solid;
-  border-left: 15vw solid transparent !important;
-  position: absolute;
-  bottom: 0;
-  right: 0;
+    content: "";
+    width: 0;
+    height: 0;
+    border-bottom: 4vw solid;
+    border-left: 10vw solid transparent !important;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 .tech-card .name {
   margin: 0 0 0.3rem 0;
   text-align: center;
-  font-size: 1.4em;
+  font-size: 1.3em;
   margin-bottom: 0.5vw;
 }
 
@@ -48,12 +48,12 @@
 }
 
 .tech-card .prereqs {
-    font-size: 3em;
+    font-size: 2rem;
     letter-spacing: 2px;
     position: absolute;
-    bottom: 0.25rem;
+    bottom: 0.5rem;
     right: 0rem;
-    -webkit-text-stroke: 1px #000
+    -webkit-text-stroke: 1px #000;
 }
 
 

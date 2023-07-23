@@ -617,6 +617,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
       if (mv[0] === "play") {
 
+	this.factionbar.render(this.game.player);
 	this.tokenbar.render(this.game.player);
         this.updateLeaderboard();
 
@@ -672,7 +673,8 @@ console.log("WHO: " + this.returnFaction(z+1));
 
         } else {
 
-  	  this.updateStatus("<div class=\"status-update\"><div class=\"player_color_box player_color_"+player+"\"></div>" + this.returnFaction(parseInt(player)) + " is taking their turn.</div>");
+	  this.hideStrategyCard();
+  	  this.updateStatus("<div class=\"status-header-text\">" + this.returnFaction(parseInt(player)) + " is taking their turn.</div>");
 
   	}
 
@@ -1208,12 +1210,19 @@ console.log("WHO: " + this.returnFaction(z+1));
 	//
 	this.displayFactionDashboard(1);
 
-
 	//
 	// voting happens in turns, speaker last
 	//
         let who_is_next = 0;
 	let speaker_order = this.returnSpeakerOrder();
+
+
+        //
+        // show overlay and pull HUD over
+        //
+	let card = this.agenda_cards[agenda];
+        this.agenda_voting_overlay.render(card);
+
 
 	for (let i = 0; i < speaker_order.length; i++) {
 	  if (this.game.state.voted_on_agenda[speaker_order[i]-1][agenda_num] == 0) {
@@ -1223,7 +1232,6 @@ console.log("WHO: " + this.returnFaction(z+1));
 	    i = this.game.state.players_info.length;
 	  }
         }
-
 
         this.setPlayerActiveOnly(who_is_next);
 
@@ -1236,6 +1244,12 @@ console.log("WHO: " + this.returnFaction(z+1));
 	      html += '</div>';
 	      html += '<div class="agenda_status">'+this.returnFaction(who_is_next)+' is now voting.</div>';
 	  this.updateStatus(html);
+
+          //
+          // show overlay and pull HUD over
+          //
+	  let card = this.agenda_cards[agenda];
+          this.agenda_voting_overlay.render(card);
 
 	} else {
 
@@ -1271,6 +1285,12 @@ console.log("WHO: " + this.returnFaction(z+1));
 	  }
               html += '<li class="option" id="abstain">abstain</li></ul></p>';
 	  imperium_self.updateStatus(html);
+
+          //
+          // show overlay and pull HUD over
+          //
+	  let card = imperium_self.agenda_cards[agenda];
+          imperium_self.agenda_voting_overlay.render(card);
 
           $('.option').off();
     	  $('.option').on('mouseenter', function() {
@@ -1312,7 +1332,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
 	    }
 
-            let html = '<p style="margin-bottom:15px">Your voting strength is determined by your influence. Conquer more influence-rich planets to increase it. How many votes do you wish to cast in the Galactic Senate:</p>';
+            let html = '<p style="margin-bottom:15px;text-align:center">How much influence do you wish to spend in the Senate:</p>';
 	    for (let i = 1; i <= imperium_self.game.state.votes_available[imperium_self.game.player-1]; i++) {
               if (i == 1) {
 	        html += '<li class="option textchoice" id="'+i+'">'+i+' vote</li>';
@@ -1360,6 +1380,12 @@ console.log("WHO: " + this.returnFaction(z+1));
 	//
 	this.displayFactionDashboard(1);
 
+        //
+        // show overlay and pull HUD over
+        //
+	let card = this.agenda_cards[agenda];
+        this.agenda_voting_overlay.render(card);
+
 
 	//
 	// voting happens simultaneously
@@ -1385,6 +1411,12 @@ console.log("WHO: " + this.returnFaction(z+1));
 	      html += imperium_self.agenda_cards[agenda].text;
 	      html += '</div>';
 	  this.updateStatus(html);
+
+          //
+          // show overlay and pull HUD over
+          //
+	  let card = this.agenda_cards[agenda];
+          this.agenda_voting_overlay.render(card);
 
 	} else {
 
@@ -1420,6 +1452,13 @@ console.log("WHO: " + this.returnFaction(z+1));
 	  }
               html += '<li class="option" id="abstain">abstain</li></ul></p>';
 	  imperium_self.updateStatus(html);
+
+          //
+          // show overlay and pull HUD over
+          //
+	  let card = imperium_self.agenda_cards[agenda];
+          imperium_self.agenda_voting_overlay.render(card);
+
 
           $('.option').off();
     	  $('.option').on('mouseenter', function() {
@@ -1461,7 +1500,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 
 	    }
 
-            let html = '<p style="margin-bottom:15px">Your voting strength is determined by your influence. Conquer more influence-rich planets to increase it. How many votes do you wish to cast in the Galactic Senate:</p>';
+            let html = '<p style="margin-bottom:15px;text-align:center">How much influence do you wish to spend in the Senate:</p>';
 	    for (let i = 1; i <= imperium_self.game.state.votes_available[imperium_self.game.player-1]; i++) {
               if (i == 1) {
 	        html += '<li class="option textchoice" id="'+i+'">'+i+' vote</li>';
@@ -1470,6 +1509,12 @@ console.log("WHO: " + this.returnFaction(z+1));
 	      }
 	    }
 	    imperium_self.updateStatus(html);
+
+            //
+            // show overlay and pull HUD over
+            //
+	    let card = imperium_self.agenda_cards[agenda];
+            imperium_self.agenda_voting_overlay.render(card);
 
             $('.option').off();
             $('.option').on('click', function() {
@@ -1609,6 +1654,8 @@ console.log("WHO: " + this.returnFaction(z+1));
   	  }
   	}
 
+        this.agenda_voting_overlay.hide();
+
       	this.game.queue.push("resolve\tnewround");
     	this.game.state.round++;
     	this.updateLog("ROUND: " + this.game.state.round);
@@ -1676,7 +1723,7 @@ if (debugging == 0) {
         this.game.queue.push("playerschoosestrategycards_before");
 
         if (this.game.state.round == 1) {
-          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players must select a strategy card. If this is your first game, consider taking Leadership, Politics, or Technology.");
+          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players select a Strategy Card for Round 1.");
 	} else {
           this.game.queue.push(`ACKNOWLEDGE\tNEXT: all players select their strategy card(s) for Round ${this.game.state.round}.`);
 	}
@@ -2182,7 +2229,7 @@ if (debugging == 0) {
   	} else {
 
 	  let html = '';
-	  html += this.returnFaction(player) + " is picking a strategy card: <ul>";
+	  html += '<div class="status-header-text">' + this.returnFaction(player) + " is picking a strategy card:</div><ul>";
 
           let scards = [];
           for (let z in this.strategy_cards) {
@@ -2869,11 +2916,8 @@ if (debugging == 0) {
 	    let bonus_buff = 0;
 	    document.querySelectorAll('.overlay_action_card').forEach(el => { bonus_buff++; });
 
-	    this.overlay.show(this.returnNewActionCardsOverlay(this.game.deck[1].hand.slice(this.game.deck[1].hand.length-(amount+bonus_buff), this.game.deck[1].hand.length)));
-	    document.getElementById("close-action-cards-btn").onclick = (e) => {
-	      this.overlay.hide();
-	      this.game.state.showing_action_cards_amounts = 0;
-            }
+	    this.new_action_cards_overlay.render(this.game.deck[1].hand.slice(this.game.deck[1].hand.length-(amount+bonus_buff), this.game.deck[1].hand.length));
+	    this.game.state.showing_action_cards_amounts = 0;
 	  }
 	  this.game.state.players_info[player-1].action_cards_in_hand += amount;
 
@@ -2973,7 +3017,7 @@ if (debugging == 0) {
 
           if (this.game.state.use_tutorials == 1 && !this.game.state.seen_goods_tutorial) {
             this.game.state.seen_goods_tutorial = 1;
-            this.overlay.show('<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/trade_goods.png" style="width:auto;height:100%" /></div>');
+	    this.how_to_trade_overlay.render();
           }
 
   	}
@@ -2983,9 +3027,7 @@ if (debugging == 0) {
 
 	  if (this.game.state.use_tutorials == 1 && !this.game.state.seen_commodities_tutorial) {
 	    this.game.state.seen_commodities_tutorial = 1;
-            this.overlay.show('<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/commodities.png" style="width:auto;height:100%" /></div>');
-// this likely causes disconnects as is not guaranteed to run on player turn
-//            this.playerAcknowledgeNotice("REMEMBER: when you have commodities, trade them with a neighbouring player. They receive trade goods. Two players can trade commodities to each other and receive trade goods in return!", function() {});
+	    this.how_to_trade_overlay.render();
 	  }
 
   	  this.updateLog(this.returnFactionNickname(player) + " gains " + mv[3] + " commodities");

@@ -197,6 +197,17 @@ export default class Wallet extends SaitoWallet {
             let mixin = this.app.options.mixin;
             let crypto = this.app.options.crypto;
 
+            // save contacts(keys)
+            let keys = this.app.options.keys;
+            let chats = this.app.options.chat;
+            let leagues = this.app.options.leagues;
+
+            // save theme options
+            let theme = this.app.options.theme;
+
+            // keep user's game preferences
+            let gameprefs = this.app.options.gameprefs;
+
             // specify before reset to avoid archives reset problem
             await this.setPrivateKey(tmpprivkey);
             await this.setPublicKey(tmppubkey);
@@ -204,7 +215,7 @@ export default class Wallet extends SaitoWallet {
             // this.instance.privatekey = tmpprivkey;
 
             // let modules purge stuff
-            this.app.modules.onWalletReset();
+            await this.app.modules.onWalletReset();
 
             // reset and save
             await this.app.storage.resetOptions();
@@ -237,6 +248,14 @@ export default class Wallet extends SaitoWallet {
             // keep mixin
             this.app.options.mixin = mixin;
             this.app.options.crypto = crypto;
+
+            // keep contacts (keys)
+            this.app.options.keys = keys;
+            this.app.options.chat = chats;
+            this.app.options.leagues = leagues;
+
+            // keep theme
+            this.app.options.theme = theme;
 
             await this.saveWallet();
 
@@ -286,7 +305,91 @@ export default class Wallet extends SaitoWallet {
     // this.recreate_pending_transactions = 0;
   }
 
+  returnAdequateInputs(amt: bigint) {
+    const utxiset = new Array<Slip>();
+    let value = BigInt(0);
+    const bigamt = BigInt(amt) * BigInt(100_000_000);
+
+    //
+    // this adds a 1 block buffer so that inputs are valid in the future block included
+    //
+    const lowest_block: bigint =
+      BigInt(this.app.blockchain.blockchain.last_block_id) -
+      BigInt(this.app.blockchain.returnGenesisPeriod()) +
+      BigInt(2);
+
+    //
+    // check pending txs to avoid slip reuse if necessary
+    //
+    if (this.wallet.pending.length > 0) {
+      for (let i = 0; i < this.wallet.pending.length; i++) {
+        let pendingtx = new Transaction();
+        pendingtx.deserialize_from_web(this.app, this.wallet.pending[i]);
+        for (let k = 0; k < pendingtx.transaction.from.length; k++) {
+          const slipIndex = pendingtx.transaction.from[k].returnKey();
+          for (let m = 0; m < this.wallet.inputs.length; m++) {
+            const thisSlipIndex = this.wallet.inputs[m].returnKey();
+            // if the input in the wallet is already in a pending tx...
+            // then set spends[m] to 1
+            if (thisSlipIndex === slipIndex) {
+              while (this.wallet.spends.length < m) {
+                this.wallet.spends.push(0);
+              }
+              this.wallet.spends[m] = 1;
+            }
+          }
+        }
+      }
+    }
+    let hasAdequateInputs = false;
+    const slipIndexes = [];
+    for (let i = 0; i < this.wallet.inputs.length; i++) {
+      if (this.wallet.spends[i] == 0 || i >= this.wallet.spends.length) {
+        const slip = this.wallet.inputs[i];
+        if (slip.lc && slip.block_id >= lowest_block) {
+          if (this.app.mempool.transactions_inputs_hmap.get(slip.returnKey()) != 1) {
+            slipIndexes.push(i);
+            utxiset.push(slip);
+            value += slip.returnAmount();
+            if (value >= bigamt) {
+              hasAdequateInputs = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+    if (hasAdequateInputs) {
+      for (let i = 0; i < slipIndexes.length; i++) {
+        this.wallet.spends[slipIndexes[i]] = 1;
+      }
+      return utxiset;
+    } else {
+      return null;
+    }
+  }
+
+  // returnPublicKey(): string {
+  //   return this.wallet.publickey;
+  // }
   //
+  // returnPrivateKey(): string {
+  //   return this.wallet.privatekey;
+  // }
+
+  returnBalance(ticker = "SAITO") {
+    if (ticker === "SAITO") {
+      let b = BigInt(0);
+      this.wallet.inputs.forEach((input, index) => {
+        if (this.isSlipValid(input, index)) {
+          b += input.returnAmount();
+        }
+      });
+      return b;
+    }
+    return "0.0";
+  }
+
   /**
    * Generates a new keypair for the user, resets all stored wallet info, and saves
    * the new wallet to local storage.
@@ -311,10 +414,8 @@ export default class Wallet extends SaitoWallet {
       this.app.options.keys = [];
     }
 
-    // this.instance.inputs = [];
-    // this.instance.outputs = [];
-    // this.instance.spends = [];
-    // this.instance.pending = [];
+    // let modules purge stuff (not implementer)
+    await this.app.modules.onWalletReset(true);
 
     await this.saveWallet();
 

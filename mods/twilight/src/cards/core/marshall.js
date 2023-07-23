@@ -1,6 +1,9 @@
 
     if (card == "marshall") {
 
+      // SAITO COMMUNITY
+      this.addCardToDeck("nato", "Prerequisites Met");
+
       this.game.state.events.marshall = 1;
       var twilight_self = this;
 

@@ -35,6 +35,11 @@
     }
     return 0;
   }
+  isSpaceBesieged(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.besieged == true) { return true; }
+    return false;
+  }
   isBesieged(faction, unittype) {
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].besieged) {
@@ -378,9 +383,12 @@
     state.tmp_reformations_this_turn = [];
     state.tmp_counter_reformations_this_turn = [];
     state.tmp_protestant_reformation_bonus = 0;
-    state.tmp_catholic_reformation_bonus = 0;
-    state.tmp_protestant_counter_reformation_bonus = 0;
     state.tmp_protestant_reformation_bonus_spaces = [];
+    state.tmp_catholic_reformation_bonus = 0;
+    state.tmp_catholic_reformation_bonus_spaces = [];
+
+    state.tmp_protestant_counter_reformation_bonus = 0;
+    state.tmp_protestant_counter_reformation_bonus_spaces = [];
     state.tmp_catholic_counter_reformation_bonus = 0;
     state.tmp_catholic_counter_reformation_bonus_spaces = [];
     state.tmp_papacy_may_specify_debater = 0;
@@ -412,8 +420,8 @@
     state.autowin_france_keys_controlled = 11;
     state.autowin_england_keys_controlled = 9;
 
-
-
+    state.military_leaders_removed_until_next_round = [];
+    state.excommunicated = [];
     state.debaters = [];
     state.explorers = [];
     state.conquistadors = [];
@@ -443,6 +451,106 @@
     state.events.wartburg = 0;
 
     return state;
+
+  }
+
+
+  excommunicateReformer(reformer="") {
+
+    if (reformer == "") { return; }
+
+    //
+    // debater
+    //
+    let debater = reformer.replace("-reformer", "-debater");
+    let faction = "protestant";
+    let s = this.returnSpaceOfPersonage("protestant", reformer);
+    let idx = -1;
+
+    if (s === "") { faction = "england"; s = this.returnSpaceOfPersonage("england", reformer); }
+    if (s === "") { faction = "france"; s = this.returnSpaceOfPersonage("france", reformer); }
+
+    if (s !== "") {
+      idx = this.returnIndexOfPersonageInSpace(faction, reformer, s);
+    }
+
+    let obj = {};
+    obj.space = s;
+    obj.faction = faction;
+    obj.idx = idx;
+    obj.reformer = this.game.state.spaces[s].units[faction][idx];
+
+    //
+    // remove reformer
+    //
+    if (idx != -1) {
+      this.game.state.spaces[s].units[faction].splice(idx, 1);
+    }
+
+    //
+    // remove debater
+    //
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].key === debater) {
+        obj.debater = this.game.state.debaters[i];
+        this.game.state.debaters.splice(i, 1);
+      }
+    }
+
+    //
+    // add to excommunicated list
+    //
+    this.game.state.excommunicated.push(obj);
+
+    return;
+
+  }
+
+  restoreMilitaryLeaders() {
+
+    for (let i = 0; i < this.game.state.military_leaders_removed_until_next_round.length; i++) {
+      if (obj.leader) {
+
+        let leader = obj.leader;
+	let s = obj.space;
+        let faction = obj.faction;
+
+	if (leader) {
+	  if (s) {
+	    if (faction) {
+	      this.game.state.spaces[s].units[faction].push(leader);
+	    }
+	  }
+	}
+      }
+    }
+
+  }
+
+  unexcommunicateReformers() {
+
+    for (let i = 0; i < this.game.state.excommunicated.length; i++) {
+      if (obj.reformer) {
+
+        let reformer = obj.reformer;
+	let debater = obj.debater;
+	let s = obj.space;
+        let faction = obj.faction;
+
+	if (reformer) {
+	  if (s) {
+	    if (faction) {
+	      this.game.state.spaces[s].units[faction].push(reformer);
+	    }
+	  }
+	}
+
+	if (debater) {
+	  this.game.state.debaters.push(debater);
+	}
+
+      }
+    }
 
   }
 

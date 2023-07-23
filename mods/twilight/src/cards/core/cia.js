@@ -4,6 +4,12 @@
     /////////////////
     if (card == "cia") {
 
+      //
+      // SAITO COMMUNITY - lone gunman added
+      //
+      this.addCardToDeck("lonegunman", "Prerequisites Met");
+
+
       //USSR needs to share its card information
       if (this.game.player == 1) {
 

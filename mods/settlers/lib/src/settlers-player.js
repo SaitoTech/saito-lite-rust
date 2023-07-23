@@ -64,7 +64,7 @@
     // Select the target spot
     //
     playerPlayBandit() {
-        //this.updateStatus("Move the bandit...");
+        this.updateStatus("Move the bandit...");
         let settlers_self = this;
         $(".sector-container").addClass("rhover");
         $(".sector-container").off();
@@ -106,10 +106,10 @@
       if (existing_cities < 2) {
         if (existing_cities == 1){
           this.hud.updateStatus(`<div class="flashme tbd"><div class="pcb"></div>YOUR TURN: place ${this.c1.name}...</div>`);
-    this.setHudHeight();
+  	this.setHudHeight();
         }else{
           this.hud.updateStatus(`<div class="flashme tbd"><div class="pcb"></div>YOUR TURN: place ${this.c1.name}...</div>`);
-    this.setHudHeight();
+  	this.setHudHeight();
         }
         $(".flashme").addClass("flash");
 
@@ -123,8 +123,6 @@
         });
         //Create as menu on the game board to input word from a tile in horizontal or vertical direction
         $(".city.empty").on("mouseup", function (e) {
-            console.log("clicked on city empty ////");
-
             if (Math.abs(xpos - e.clientX) > 4) {
               return;
             }
@@ -156,8 +154,9 @@
 
       } else {
         /* During game, must build roads to open up board for new settlements*/
+        this.updateStatus(`<div class="tbd">You may build a ${this.c1.name}...</div>`);
         if (canBackUp){
-          //this.updateStatus(`<div class="tbd">You may build a ${this.c1.name}...</div><ul><li class="undo">cancel</li></ul>`);
+          this.updateControls(`<ul><li class="undo">cancel</li></ul>`);
           $(".undo").on("click",function(){
             //Make sure the confirm popup goes away
             $(".action").off();
@@ -168,8 +167,6 @@
             settlers_self.addMove("undo_build");
             settlers_self.endTurn();
           });
-        }else{
-          //this.updateStatus(`<div class="tbd">You may build a ${this.c1.name}...</div>`);
         }
 
         let building_options = this.returnCitySlotsAdjacentToPlayerRoads(this.game.player);
@@ -249,8 +246,9 @@
           });
         });
       } else {
+        this.updateStatus(`<div class="tbd">You may build a ${this.r.name}...</div>`);
         if (canBackUp){
-          this.updateStatus(`<div class="tbd">You may build a ${this.r.name}...</div><ul><li class="undo">cancel</li></ul>`);
+          this.updateControls(`<ul><li class="undo">cancel</li></ul>`);
           $(".undo").on("click",function(){
             //Make sure the confirm popup goes away
             $(".action").off();
@@ -263,9 +261,6 @@
             settlers_self.addMove(`undo_build`);
             settlers_self.endTurn();
           });
-
-        } else{
-          this.updateStatus(`<div class="tbd">You may build a ${this.r.name}...</div>`);
         }
 
 
@@ -300,9 +295,9 @@
 
 
     playerBuildCity(player, canBackUp = 0) {
-
+      this.updateStatus(`<div class="tbd">Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...</div>`);
       if (canBackUp){
-        this.updateStatus(`<div class="tbd">Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...</div><ul><li class="undo">cancel</li></ul>`);
+        this.updateControls(`<ul><li class="undo">cancel</li></ul>`);
         $(".undo").on("click",function(){
           //Make sure the confirm popup goes away
           $(".action").off();
@@ -314,8 +309,6 @@
           settlers_self.addMove("undo_build");
           settlers_self.endTurn();
         });
-      }else{
-        this.updateStatus(`<div class="tbd">Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...</div>`);
       }
 
       let settlers_self = this;
@@ -400,12 +393,11 @@
         return;
       }
 
-      settlers_self.updateStatus(settlers_self.getLastNotice() + html);
+      settlers_self.updateStatus(settlers_self.getLastNotice());
+      settlers_self.updateControls(html);
 
       $(".option").off();
       $(".option").on("click", function () {
-
-        console.log("clicked on option 2");
         let id = $(this).attr("id");
         if (id === "pass") {
           settlers_self.addMove("end_turn\t" + settlers_self.game.player);
@@ -448,7 +440,6 @@
 
     playerPlayCard() {
       let settlers_self = this;
-      console.log("settlers players cards ////");
       this.displayCardfan("cards");
       let html = "";
       html += '<div class="tbd">Select a card to play: <ul>';
@@ -481,7 +472,6 @@
 
       $(".option").off();
       $(".option").on("click", function () {
-        console.log("clicked on option 3");
         let card = $(this).attr("id"); //this is either "cancel" or the card's deck index (i.e. "11")
         let cardobj = settlers_self.game.deck[0].cards[settlers_self.game.deck[0].hand[card]];
 
@@ -584,7 +574,6 @@
                       
         $(".option").off();
         $(".option").on("click", function () {
-          console.log("clicked on option 4");
           let res = $(this).attr("id");
           if (res == "cancel") {
             settlers_self.endTurn();
@@ -604,7 +593,6 @@
 
           $(".option").off();
           $(".option").on("click", function () {
-            console.log("clicked on option 5");
             let newRes = $(this).attr("id");
             if (newRes == "cancel") {
               settlers_self.endTurn();
@@ -620,7 +608,6 @@
               settlers_self.updateStatus(html, 1);
               $(".option").off();
               $(".option").on("click", function () {
-                console.log("clicked on option 6");
                 let choice = $(this).attr("id");
                 if (choice == "yes") {
                   settlers_self.addMove(
@@ -650,7 +637,6 @@
         settlers_self.updateStatus(ackhtml,1);
         $(".option").off();
         $(".option").on("click",function(){
-          console.log("clicked on option 7");
           settlers_self.playerPlayMove();
           return;
         });

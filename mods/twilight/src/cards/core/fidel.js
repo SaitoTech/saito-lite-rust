@@ -2,6 +2,13 @@
     // Fidel //
     ///////////
     if (card == "fidel") {
+
+      //
+      // SAITO COMMUNITY - united fruit company removed
+      //
+      this.removeCardFromDeck("unitedfruit", "Fidel Evented");
+
+
       let usinf = parseInt(this.countries['cuba'].us);
       let ussrinf = parseInt(this.countries['cuba'].ussr);
       this.removeInfluence("cuba", usinf, "us");

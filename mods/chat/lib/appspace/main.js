@@ -42,3 +42,4 @@ class ChatMain {
 }
 
 module.exports = ChatMain;
+

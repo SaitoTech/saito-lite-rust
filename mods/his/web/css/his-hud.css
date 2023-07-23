@@ -6,8 +6,8 @@
   margin-right: auto;
   max-width: 500px;
 }
-,hud-body {
-  overflow: scroll;
+.hud-body {
+  overflow: auto;
   min-height: 20rem;
 }
 .hud-body .status .message {
@@ -19,6 +19,10 @@
 }
 .status-header {
   background-color: whitesmoke;
+}
+
+.hud-body .status {
+  line-height: 2rem;
 }
 
 .hud-body .status ul {
@@ -34,5 +38,9 @@
 }
 .hud-body .status ul li:hover , .hud-body .status .status-text-menu li:hover {
   background-color: #E7E7E7;
+}
+
+.game-cardgrid {
+  margin-top: 0rem;
 }
 

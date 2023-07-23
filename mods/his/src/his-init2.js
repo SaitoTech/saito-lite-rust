@@ -55,9 +55,14 @@ console.log("\n\n\n\n");
       if (this.game.state.scenario == "1517") {
 
 	// VENICE AND PROTESTANT ALLIANCE
-	this.addRegular("protestant", "venice", 4);
+	this.addMercenary("protestant", "modena", 3);
 	this.addRegular("papacy", "ravenna", 2);
 	this.setAllies("protestant", "venice");
+  	this.addUnrest("graz");
+
+	this.game.state.leaders.leo_x = 0;
+	this.game.state.leaders.paul_iii = 1;
+
 
 
 	// OTTOMAN

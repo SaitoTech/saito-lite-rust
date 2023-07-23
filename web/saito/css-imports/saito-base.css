@@ -25,9 +25,12 @@ body {
   margin: 0;
   font-size: 1.6rem;
   font-weight: 400;
+  position: fixed; /* why relative? */
   height: 100vh;
-  position: relative;
-  max-width: 100vw;
+  height: calc(var(--saito-vh) * 100);
+  width: 100vw;
+  max-height: -webkit-fill-available;
+  max-width: -webkit-fill-available;
   overflow: hidden;
   background-color: var(--saito-background-color);
 }
@@ -190,13 +193,11 @@ Scrollbars
   white-space: nowrap;
   text-overflow: ellipsis;
   display: inline-block !important;
-  width: inherit;
+  width: auto;
   max-width: 99%;
-}
-
-.saito-address.treated {
   cursor: pointer;
 }
+
 
 .tip:hover .tiptext {
   visibility: visible;

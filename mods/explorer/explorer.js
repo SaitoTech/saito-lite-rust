@@ -98,7 +98,7 @@ class ExplorerCore extends ModTemplate {
     <link rel="stylesheet" type="text/css" href="/saito/saito.css" /> \
     <link rel="stylesheet" type="text/css" href="/explorer/style.css" /> \
     <link rel="stylesheet" type="text/css" href="/saito/lib/jsonTree/jsonTree.css" /> \
-    <link rel="stylesheet" href="/saito/lib/font-awesome-5/css/all.css" type="text/css" media="screen"> \
+    <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen"> \
     <script src="/explorer/utils.js"></script> \
     <script src="/saito/lib/jsonTree/jsonTree.js"></script> \
     <link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png"> \
@@ -121,10 +121,10 @@ class ExplorerCore extends ModTemplate {
       '<div class="explorer-main"> \
         <div class="block-table"> \
           <div class="explorer-data"><h4>Server Address:</h4></div> <div class="address">' +
-      this.publicKey +
+      (await this.app.wallet.getPublicKey()) +
       '</div> \
           <div class="explorer-data"><h4>Balance:</h4> </div><div>' +
-      (await this.app.wallet.getBalance()) +
+      this.app.wallet.returnBalance() +
       '</div> \
           <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">' +
       this.app.mempool.mempool.transactions.length +
@@ -229,9 +229,18 @@ class ExplorerCore extends ModTemplate {
         } else {
           html += "<div></div>";
         }
-        html += '<div><a href="/explorer/block?hash=' + block.hash + '">' + block.id + "</a></div>";
         html +=
-          '<div><a href="/explorer/block?hash=' + block.hash + '">' + block.hash + "</a></div>";
+          '<div><a href="/explorer/block?hash=' +
+          block.returnHash() +
+          '">' +
+          block.returnId() +
+          "</a></div>";
+        html +=
+          '<div><a href="/explorer/block?hash=' +
+          block.returnHash() +
+          '">' +
+          block.returnHash() +
+          "</a></div>";
         html += "<div>" + txs_in_block + "</div>";
         html += '<div class="elipsis">' + previous_block_hash + "</div>";
       }

@@ -15,7 +15,10 @@ class ReformationOverlay {
    
     render(res=null) {
 	this.visible = true;
-        this.overlay.show(ReformationTemplate(res.name));
+	let name = "";
+	if (res) { name = res.name; }
+	console.log("RES: " + JSON.stringify(res));
+        this.overlay.show(ReformationTemplate(name, res));
 	this.overlay.setBackgroundColor("#000"); // black background
 
 	if (res == null) { return; } 

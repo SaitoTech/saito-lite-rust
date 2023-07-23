@@ -20,12 +20,36 @@ class ChatPopup {
     this.group = null;
 
     this.overlay = new SaitoOverlay(app, mod);
+
+    app.connection.on("chat-remove-fetch-button-request", (group_id) => {
+
+      if (this.group?.id === group_id){
+        console.log("Button remove request");
+        this.no_older_messages = true;
+        if (document.querySelector("#chat-popup-" + this.group.id + " #load-older-chats")){
+          document.querySelector("#chat-popup-" + this.group.id + " #load-older-chats").remove();
+        }
+      }
+    });
+
+    app.connection.on("chat-popup-scroll-top-request", (group_id) => {
+      if (this.group?.id === group_id){
+        let popup_qs = "#chat-popup-" + this.group.id;
+
+        if (document.querySelector(popup_qs + " .chat-body")) {
+          document.querySelector(popup_qs + " .chat-body").scroll(0, 0);
+        }
+
+      }
+    });
   }
 
   remove() {
 
     let popup_qs = "#chat-popup-" + this.group.id;
-    document.querySelector(popup_qs).remove();
+    if (document.querySelector(popup_qs)){
+      document.querySelector(popup_qs).remove();
+    }
 
   }
 
@@ -78,7 +102,11 @@ class ChatPopup {
     // insert or replace popup on page
     //
     if (am_i_on_page == 1) {
-      this.app.browser.replaceElementBySelector(`<div class="chat-body">${this.mod.returnChatBody(this.group.id)}</div>`, popup_qs + " .chat-body");
+      let html = `<div class="chat-body">
+                    ${this?.no_older_messages ? "" : `<div id="load-older-chats" class="saito-chat-button" data-id="${this.group.id}">fetch earlier messages</div>`}
+                    ${this.mod.returnChatBody(this.group.id)}
+                  </div>`;
+      this.app.browser.replaceElementBySelector(html, popup_qs + " .chat-body");
     } else {
       if (this.container && document.querySelector(".chat-static")){
         this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group, this.container), ".chat-static");
@@ -131,7 +159,7 @@ class ChatPopup {
   }
 
 
-   attachEvents() {
+  attachEvents() {
 
     let app = this.app;
     let mod = this.mod;
@@ -207,6 +235,13 @@ class ChatPopup {
     });
 
 
+    if (document.querySelector(popup_qs + " #load-older-chats")){
+      document.querySelector(popup_qs + " #load-older-chats").onclick = (e) => {
+        this.mod.getOlderTransactions(e.currentTarget.dataset.id); 
+      }
+    }
+
+
     try {
 
       //
@@ -223,12 +258,12 @@ class ChatPopup {
       //
       // submit
       //
-      this.input.callbackOnReturn = async (message) => {
+      this.input.callbackOnReturn = (message) => {
           let new_msg = message.replaceAll("&nbsp;", " ").replaceAll("<br>", " ");
           if (new_msg.trim() == "") { return; }
-          let newtx = await mod.createChatTransaction(group_id, message);
-          await mod.sendChatTransaction(app, newtx);
-          await mod.receiveChatTransaction(app, newtx);
+          let newtx = mod.createChatTransaction(group_id, message);
+          mod.sendChatTransaction(app, newtx);
+          mod.receiveChatTransaction(app, newtx);
           this.input.setInput("");
           if (document.querySelector(popup_qs + " .chat-body")) {
             document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
@@ -262,9 +297,9 @@ class ChatPopup {
         img.src = filesrc;
         let msg = img.outerHTML;
 
-        let newtx = await mod.createChatTransaction(group_id, img.outerHTML); // img into msg
-        await mod.sendChatTransaction(app, newtx);
-        await mod.receiveChatTransaction(app, newtx);
+        let newtx = mod.createChatTransaction(group_id, img.outerHTML); // img into msg
+        mod.sendChatTransaction(app, newtx);
+        mod.receiveChatTransaction(app, newtx);
         this.input.setInput("");
 
       }, false); // false = no drag-and-drop image click
@@ -297,3 +332,4 @@ class ChatPopup {
 }
 
 module.exports = ChatPopup;
+

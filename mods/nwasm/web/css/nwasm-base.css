@@ -3,6 +3,11 @@ body {
   background-color: black !important;
 }
 
+#maindiv.container.text-center {
+  max-width: unset;
+  min-width: unset;
+}
+
 .nwasm-upload-instructions {
   font-size: 3rem;
 }

@@ -100,15 +100,16 @@
 .unit-ship {
   float: left;
   color: black;
-  width: 20rem;
+  height: 8rem;
+  width: 16rem;
   text-align: center;
-  height: 10rem;
   vertical-align: middle;
   padding-top: 4rem;
   font-size: 2rem;
   font-weight: bold;
   text-transform: uppercase;
   font-family: 'bank-gothic', 'orbitron-medium', helvetica;
+  background-size: contain;
 }
 
 .unit-num {

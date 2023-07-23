@@ -42,6 +42,20 @@ class FactionOverlay {
             keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
           }
         }
+
+        if (this.mod.game.state.leaders.henry_viii == 1) {
+	}
+        if (this.mod.game.state.leaders.edward_vi == 1) {
+	  this.app.browser.addElementToSelector(this.mod.returnCardImage("019"), ".faction_sheet_ruler");
+	}
+        if (this.mod.game.state.leaders.mary_i == 1) {
+	  this.app.browser.addElementToSelector(this.mod.returnCardImage("021"), ".faction_sheet_ruler");
+	}
+        if (this.mod.game.state.leaders.elizabeth_i == 1) {
+	  this.app.browser.addElementToSelector(this.mod.returnCardImage("023"), ".faction_sheet_ruler");
+	}
+
+
       }
       // FRANCE
       if (his_self.factions[faction].key === "france") {
@@ -55,6 +69,11 @@ class FactionOverlay {
             keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
           }
         }
+
+        if (this.mod.game.state.leaders.henry_ii == 1) {
+	  this.app.browser.addElementToSelector(this.mod.returnCardImage("020"), ".faction_sheet_ruler");
+	}
+
       }
       // OTTOMAN
       if (his_self.factions[faction].key === "ottoman") {
@@ -85,6 +104,18 @@ class FactionOverlay {
             keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i} papacy_keytile" id="faction_sheet_keytile${i}"></div>`;
           }
         }
+
+
+        if (this.mod.game.state.leaders.clement_vii == 1) {
+	  this.app.browser.addElementToSelector(this.mod.returnCardImage("010"), ".faction_sheet_ruler");
+	}
+        if (this.mod.game.state.leaders.paul_iii == 1) {
+	  this.app.browser.addElementToSelector(this.mod.returnCardImage("014"), ".faction_sheet_ruler");
+	}
+        if (this.mod.game.state.leaders.julius_iii == 1) {
+	  this.app.browser.addElementToSelector(this.mod.returnCardImage("022"), ".faction_sheet_ruler");
+	}
+
       }
       // PROTESTANTS
       if (his_self.factions[faction].key === "protestant") {
@@ -110,6 +141,7 @@ class FactionOverlay {
             keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
           }
         }
+
       }
       // HAPSBURG
       if (his_self.factions[faction].key === "hapsburg") {

@@ -5,6 +5,12 @@
     border: 1px solid #000;
 }
 
+.status .status-update {
+    width: max-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .objectives-toggle {
   font-family: orbitron-medium, sans-serif;
   float: right;
@@ -65,6 +71,10 @@
 
 .chat-body>.saito-user>.saito-userline {
   font-family: sans-serif;
+}
+
+ul li {
+  list-style: none;
 }
 
 .game-menu ul li {
@@ -643,17 +653,15 @@ body {
 }
 
 .game_background {
-  /* background-image: url("/imperium/img/spacebg.png"); */
-  background-image: url("/imperium/img/spaceb2.jpg");
-  background-size: cover;
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  height: 200vh;
-  width: 200vw;
-  filter: blur(1px) grayscale(0.2);
-  /*animation: spin 1440s linear infinite;*/
-  z-index: -999;
+    background-image: url(/imperium/img/starscape_background3.jpg);
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    z-index: -999;
+    /* filter: blur(1px) grayscale(0.2); */
 }
 
 .faction_name {
@@ -692,11 +700,6 @@ body {
   color: #FFF;
   font-family: 'bank-gothic';
   text-shadow: 1px 1px #000;
-}
-
-.overlay_action_card:hover, .faction_sheet_action_card:hover, .faction_sheet_planet_card:hover, .tech_card:hover {
-  transform: scale(1.5) translate(1vw, 1vw);
-  z-index: 100;
 }
 
 .combat_attacker {
@@ -846,39 +849,14 @@ body {
   font-weight: bold;
 }
 
-.faction_sheet_planet_card {
-  height: 26vh;
-  width: calc(26vh * 0.72110);
-  background-size: cover;
-  margin: 1vw;
-  padding: 1vw;
-  text-align: center;
-  font-size: 0.75vw;
-  transition: all 50ms;
-  margin-bottom: -15vw;
-  border: 1px solid;
-  float: left;
-  z-index: 1;
-}
-
-.faction_sheet_objectives {
-  display: grid;
-  grid-template-columns: auto auto;
-  margin-bottom: 17vw;
-}
-
-.faction_sheet_objective_cards {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  margin: 1em 1em 1em 1em;
-}
-
-.card_nonopaque {
+.nonopaque {
   opacity: 1;
 }
-.card_opaque {
-  opacity: 0.55;
+.opaque {
+  opacity: 0.6;
+}
+.opaque:hover {
+  opacity: 0.8;
 }
 
 .unit-display-tile {
@@ -1111,7 +1089,7 @@ body {
 .option {
   cursor: pointer;
   font-family: 'orbitron-medium', helvetica, arial, courier;
-  padding: 15px;
+  padding: 2rem;
   user-select: none;
 }
 
@@ -1127,9 +1105,6 @@ body {
 }
 .cardchoice:hover {
   background: transparent;
-}
-.option {
-  cursor: pointer;
 }
 
 .sector_name {
@@ -1269,10 +1244,6 @@ body {
 }
 
 .objectives {}
-
-.option {
-  cursor: pointer;
-}
 
 #game_board_sizer {
   position: absolute;

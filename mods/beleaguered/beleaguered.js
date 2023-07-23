@@ -89,9 +89,8 @@ class Beleaguered extends OnePlayerGameTemplate {
       }
     });
     */
-    this.menu.addMenuOption("game-info", "Info");
 
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text: "How to Play",
       id: "game-intro",
       class: "game-intro",
@@ -101,7 +100,7 @@ class Beleaguered extends OnePlayerGameTemplate {
       },
     });
 
-    this.menu.addSubMenuOption("game-info", {
+    this.menu.addSubMenuOption("game-game", {
       text: "Stats",
       id: "game-stats",
       class: "game-stats",
