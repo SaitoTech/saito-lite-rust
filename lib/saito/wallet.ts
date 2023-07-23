@@ -113,7 +113,7 @@ export default class Wallet extends SaitoWallet {
           to_address,
           BigInt(amount)
         );
-        newtx.signAndEncrypt();
+        await this.app.wallet.signAndEncryptTransaction(newtx);
         // newtx = this.app.wallet.signAndEncryptTransaction(newtx);
         await this.app.network.propagateTransaction(newtx);
         return newtx.signature;
@@ -900,5 +900,56 @@ export default class Wallet extends SaitoWallet {
         }
       }
     };
+  }
+
+  /**
+   * If the to field of the transaction contains a pubkey which has previously negotiated a diffie-hellman
+   * key exchange, encrypt the message part of message, attach it to the transaction, and resign the transaction
+   * @param {Transaction}
+   * @return {Transaction}
+   */
+  async signAndEncryptTransaction(tx: Transaction, recipient = "") {
+    if (tx == null) {
+      return null;
+    }
+
+    //
+    // convert tx.msg to base64 tx.transaction.ms
+    //
+    // if the transaction is of excessive length, we cut the message and
+    // continue blank. so be careful kids as there are some hardcoded
+    // limits in NodeJS!
+    //
+    try {
+      if (recipient == "") {
+        if (this.app.keychain.hasSharedSecret(tx.to[0].publicKey)) {
+          tx.msg = this.app.keychain.encryptMessage(tx.to[0].publicKey, tx.msg);
+        }
+      } else {
+        if (this.app.keychain.hasSharedSecret(recipient)) {
+          tx.msg = this.app.keychain.encryptMessage(recipient, tx.msg);
+        }
+      }
+
+      //
+      // nov 25 2022 - eliminate base64 formatting for TXS
+      //
+      //tx.transaction.m = Buffer.from(
+      //  this.app.crypto.stringToBase64(JSON.stringify(tx.msg)),
+      //  "base64"
+      //);
+      tx.data = Buffer.from(JSON.stringify(tx.msg), "utf-8");
+    } catch (err) {
+      console.log("####################");
+      console.log("### OVERSIZED TX ###");
+      console.log("###   -revert-   ###");
+      console.log("####################");
+      console.log(err);
+      tx.msg = {};
+    }
+
+    await tx.sign();
+
+    return tx;
   }
 }

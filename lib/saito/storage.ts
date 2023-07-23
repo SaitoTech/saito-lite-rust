@@ -180,7 +180,7 @@ export default class Storage {
     data.sig = sig;
     data.publickey = await this.app.wallet.getPublicKey();
     data.optional_key = optional_key;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+    return this.app.network.sendRequestAsTransaction(message, data, function (res) {});
   }
 
   async updateTransactionOptionalValue(sig, optional_key, optional_value) {
@@ -191,7 +191,7 @@ export default class Storage {
     data.publickey = await this.app.wallet.getPublicKey();
     data.optional_value = optional_value;
     data.optional_key = optional_key;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+    return this.app.network.sendRequestAsTransaction(message, data, function (res) {});
   }
 
   async updateTransactionOptional(sig, optional) {
@@ -201,10 +201,11 @@ export default class Storage {
     data.sig = sig;
     data.publickey = await this.app.wallet.getPublicKey();
     data.optional = optional;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+    return this.app.network.sendRequestAsTransaction(message, data, function (res) {});
   }
 
   async saveTransaction(tx: Transaction, type = null) {
+    console.log("storage.saveTransaction : ", tx);
     let newtx = await this.app.wallet.createUnsignedTransaction(
       await this.app.wallet.getPublicKey()
     );

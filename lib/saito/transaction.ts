@@ -60,88 +60,87 @@ export default class Transaction extends SaitoTransaction {
     }
     // this.path = new Array<Hop>();
 
-    try {
-      if (jsonobj != null) {
-        //
-        // if the jsonobj has been provided, we have JSON.parsed something
-        // and are providing it to the transaction, but should add sanity
-        // checks on import to ensure our transaction is type-safe.
-        //
-        // to: new Array<Slip>(),
-        // from: new Array<Slip>(),
-        // ts: 0,
-        // sig: "",
-        // r: 1, // "replaces" (how many txs this represents in merkle-tree -- spv block)
-        // type: TransactionType.Normal,
-        // m: Buffer.alloc(0),
-        //
-        for (let i = 0; i < jsonobj.from.length; i++) {
-          const fslip = jsonobj.from[i];
+    if (jsonobj != null) {
+      //
+      // if the jsonobj has been provided, we have JSON.parsed something
+      // and are providing it to the transaction, but should add sanity
+      // checks on import to ensure our transaction is type-safe.
+      //
+      // to: new Array<Slip>(),
+      // from: new Array<Slip>(),
+      // ts: 0,
+      // sig: "",
+      // r: 1, // "replaces" (how many txs this represents in merkle-tree -- spv block)
+      // type: TransactionType.Normal,
+      // m: Buffer.alloc(0),
+      //
+      for (let i = 0; i < jsonobj.from.length; i++) {
+        const fslip = jsonobj.from[i];
 
-          let slip = new Slip();
-          slip.publicKey = fslip.publicKey;
-          slip.amount = BigInt(fslip.amount);
-          slip.type = fslip.type as SlipType;
-          slip.index = fslip.index;
-          slip.blockId = BigInt(fslip.blockId);
-          slip.txOrdinal = BigInt(fslip.txOrdinal);
+        let slip = new Slip();
+        slip.publicKey = fslip.publicKey;
+        slip.amount = BigInt(fslip.amount);
+        slip.type = fslip.type as SlipType;
+        slip.index = fslip.index;
+        slip.blockId = BigInt(fslip.blockId);
+        slip.txOrdinal = BigInt(fslip.txOrdinal);
 
-          // this.transaction.from.push(
-          //   new Slip(fslip.add, fslip.amt, fslip.type, fslip.sid, fslip.block_id, fslip.tx_ordinal)
-          // );
-          this.addFromSlip(slip);
-        }
-        if (jsonobj.from.length > 0) {
-          console.log("important tx: " + jsonobj.from[0].publicKey);
-        }
+        // this.transaction.from.push(
+        //   new Slip(fslip.add, fslip.amt, fslip.type, fslip.sid, fslip.block_id, fslip.tx_ordinal)
+        // );
+        this.addFromSlip(slip);
+      }
+      if (jsonobj.from.length > 0) {
+        console.log("important tx: " + jsonobj.from[0].publicKey);
+      }
 
-        for (let i = 0; i < jsonobj.to.length; i++) {
-          const fslip = jsonobj.to[i];
-          let slip = new Slip();
-          slip.publicKey = fslip.publicKey;
-          slip.amount = BigInt(fslip.amount);
-          slip.type = fslip.type as SlipType;
-          slip.index = fslip.index;
-          slip.blockId = BigInt(fslip.blockId);
-          slip.txOrdinal = BigInt(fslip.txOrdinal);
-          // this.transaction.to.push(
-          //   new Slip(fslip.add, fslip.amt, fslip.type, fslip.sid, fslip.block_id, fslip.tx_ordinal)
-          // );
-          this.addToSlip(slip);
-        }
+      for (let i = 0; i < jsonobj.to.length; i++) {
+        const fslip = jsonobj.to[i];
+        let slip = new Slip();
+        slip.publicKey = fslip.publicKey;
+        slip.amount = BigInt(fslip.amount);
+        slip.type = fslip.type as SlipType;
+        slip.index = fslip.index;
+        slip.blockId = BigInt(fslip.blockId);
+        slip.txOrdinal = BigInt(fslip.txOrdinal);
+        // this.transaction.to.push(
+        //   new Slip(fslip.add, fslip.amt, fslip.type, fslip.sid, fslip.block_id, fslip.tx_ordinal)
+        // );
+        this.addToSlip(slip);
+      }
 
-        if (jsonobj.timestamp) {
-          this.timestamp = jsonobj.timestamp;
-        }
-        if (jsonobj.signature) {
-          this.signature = jsonobj.signature;
-        }
-        if (jsonobj.txs_replacements) {
-          this.txs_replacements = jsonobj.txs_replacements;
-        }
-        if (jsonobj.type) {
-          this.type = jsonobj.type;
-        }
-        if (jsonobj.buffer) {
-          this.data = new Uint8Array(Buffer.from(jsonobj.buffer, "base64"));
-          // try {
-          //   const reconstruct2 = Buffer.from(this.data).toString("utf-8");
-          //   this.msg = JSON.parse(reconstruct2);
-          // } catch (err) {
-          //   try {
-          //     const reconstruct3 = this.base64ToString(Buffer.from(this.data).toString());
-          //     this.msg = JSON.parse(reconstruct3);
-          //   } catch (err) {
-          //     console.log("real issues reconstructing...");
-          //   }
-          // }
-        }
+      if (jsonobj.timestamp) {
+        this.timestamp = jsonobj.timestamp;
+      }
+      if (jsonobj.signature) {
+        this.signature = jsonobj.signature;
+      }
+      if (jsonobj.txs_replacements) {
+        this.txs_replacements = jsonobj.txs_replacements;
+      }
+      if (jsonobj.type) {
+        this.type = jsonobj.type;
+      }
+      if (jsonobj.buffer) {
+        this.data = new Uint8Array(Buffer.from(jsonobj.buffer, "base64"));
+        // try {
+        //   const reconstruct2 = Buffer.from(this.data).toString("utf-8");
+        //   this.msg = JSON.parse(reconstruct2);
+        // } catch (err) {
+        //   try {
+        //     const reconstruct3 = this.base64ToString(Buffer.from(this.data).toString());
+        //     this.msg = JSON.parse(reconstruct3);
+        //   } catch (err) {
+        //     console.log("real issues reconstructing...");
+        //   }
+        // }
+      }
 
-        //
-        // FRI FEB 3 -- DEPRECATED -- delete if no problems
-        //
-        /***********
-         if (this.transaction.type === TransactionType.Normal) {
+      //
+      // FRI FEB 3 -- DEPRECATED -- delete if no problems
+      //
+      /***********
+       if (this.transaction.type === TransactionType.Normal) {
         try {
           let buffer = Buffer.from(this.transaction.m);
           if (buffer.byteLength === 0) {
@@ -162,18 +161,15 @@ export default class Transaction extends SaitoTransaction {
           //console.error(err);
         }
       }
-         ***********/
-      }
-    } catch (err) {
-      console.log("POTENTIAL CRASH ERROR: " + err);
+       ***********/
     }
+
     this.unpackData();
 
     return this;
   }
 
-
-  static deserialize(buffer, factory){
+  static deserialize(buffer, factory) {
     return SaitoTransaction.deserialize(buffer, factory);
   }
 

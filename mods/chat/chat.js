@@ -84,7 +84,7 @@ class Chat extends ModTemplate {
 
     this.theme_options = {
       lite: "fa-solid fa-sun",
-      dark: "fa-solid fa-moon",
+      dark: "fa-solid fa-moon"
     };
 
     this.hiddenTab = "hidden";
@@ -228,7 +228,7 @@ class Chat extends ModTemplate {
             {
               field3: group.id,
               limit: 100,
-              created_later_than: group.last_update,
+              created_later_than: group.last_update
             },
             async (txs) => {
               chat_self.loading--;
@@ -287,7 +287,7 @@ class Chat extends ModTemplate {
         newtx.msg = {
           request: "chat history",
           group_id: this.communityGroup.id,
-          ts: this.communityGroup.last_update,
+          ts: this.communityGroup.last_update
         };
 
         await newtx.sign();
@@ -358,21 +358,21 @@ class Chat extends ModTemplate {
             {
               text: "Chat",
               icon: "fas fa-comments",
-              callback: function (app, id) {
+              callback: function(app, id) {
                 console.log("Callback for saito-header chat");
                 chat_self.chat_manager_overlay.render();
-              },
-            },
+              }
+            }
           ];
         } else if (!chat_self.browser_active) {
           return [
             {
               text: "Chat",
               icon: "fas fa-comments",
-              callback: function (app, id) {
+              callback: function(app, id) {
                 window.location = "/chat";
-              },
-            },
+              }
+            }
           ];
         }
         return null;
@@ -385,14 +385,14 @@ class Chat extends ModTemplate {
             return {
               text: "Chat",
               icon: "far fa-comment-dots",
-              callback: function (app, publickey) {
+              callback: function(app, publickey) {
                 if (chat_self.chat_manager == null) {
                   chat_self.chat_manager = new ChatManager(chat_self.app, chat_self);
                 }
 
                 chat_self.chat_manager.render_popups_to_screen = 1;
                 chat_self.app.connection.emit("open-chat-with", { key: publickey });
-              },
+              }
             };
           }
         }
@@ -408,14 +408,14 @@ class Chat extends ModTemplate {
             return {
               text: "Chat",
               icon: "far fa-comment-dots",
-              callback: function (app, publickey) {
+              callback: function(app, publickey) {
                 if (chat_self.chat_manager == null) {
                   chat_self.chat_manager = new ChatManager(chat_self.app, chat_self);
                 }
 
                 chat_self.chat_manager.render_popups_to_screen = 1;
                 chat_self.app.connection.emit("open-chat-with", { key: publickey });
-              },
+              }
             };
           }
         }
@@ -526,7 +526,8 @@ class Chat extends ModTemplate {
           if (app.BROWSER == 0) {
             app.network.peers.forEach((p) => {
               if (p.peer.publicKey === inner_tx.to[0].publicKey) {
-                p.sendTransactionWithCallback(inner_tx, () => {});
+                p.sendTransactionWithCallback(inner_tx, () => {
+                });
               }
               return;
             });
@@ -539,7 +540,8 @@ class Chat extends ModTemplate {
           if (app.BROWSER == 0) {
             app.network.peers.forEach((p) => {
               if (p.peer.publicKey !== peer.peer.publicKey) {
-                p.sendTransactionWithCallback(inner_tx, () => {});
+                p.sendTransactionWithCallback(inner_tx, () => {
+                });
               }
             });
           }
@@ -573,7 +575,7 @@ class Chat extends ModTemplate {
       request: "chat group",
       group_id: group.id,
       group_name: group.name,
-      timestamp: new Date().getTime(),
+      timestamp: new Date().getTime()
     };
 
     await newtx.sign();
@@ -642,7 +644,7 @@ class Chat extends ModTemplate {
       app.connection.emit("relay-send-message", {
         recipient,
         request: "chat message broadcast",
-        data: tx,
+        data: tx
       });
     } else {
       salert("Connection to chat server lost");
@@ -683,7 +685,7 @@ class Chat extends ModTemplate {
       request: "chat message",
       group_id: group_id,
       message: msg,
-      timestamp: new Date().getTime(),
+      timestamp: new Date().getTime()
     };
 
     //
@@ -696,7 +698,7 @@ class Chat extends ModTemplate {
     }
 
     if (members.length == 2) {
-      await newtx.signAndEncrypt();
+      await this.app.wallet.signAndEncryptTransaction(newtx);
     } else {
       await newtx.sign();
     }
@@ -852,7 +854,7 @@ class Chat extends ModTemplate {
             fourthelem:
               `<div class="saito-chat-line-controls"><span class="saito-chat-line-timestamp">` +
               this.app.browser.returnTime(ts) +
-              `</span>${replyButton}</div>`,
+              `</span>${replyButton}</div>`
           })}`;
         }
       }
@@ -934,7 +936,7 @@ class Chat extends ModTemplate {
       sig: tx.signature,
       ts: tx.timestamp,
       from: [],
-      msg: content,
+      msg: content
     };
 
     //Keep the from array just in case....
@@ -1055,7 +1057,7 @@ class Chat extends ModTemplate {
       name: name,
       txs: [],
       unread: 0,
-      last_update: 0,
+      last_update: 0
     };
 
     //Prepend the community chat
@@ -1138,7 +1140,7 @@ class Chat extends ModTemplate {
     //console.log("Reading local DB");
     for (let g_id of this.app.options.chat) {
       //console.log("Fetch", g_id);
-      localforage.getItem(`chat_${g_id}`, function (error, value) {
+      localforage.getItem(`chat_${g_id}`, function(error, value) {
         //Because this is async, the initialize function may have created an
         //empty default group
 
@@ -1168,7 +1170,7 @@ class Chat extends ModTemplate {
 
     let new_group = Object.assign(group, { online: false });
 
-    localforage.setItem(`chat_${group.id}`, new_group).then(function () {
+    localforage.setItem(`chat_${group.id}`, new_group).then(function() {
       if (chat_self.debug) {
         console.log("Saved chat history for " + new_group.id);
         console.log(JSON.parse(JSON.stringify(new_group)));
