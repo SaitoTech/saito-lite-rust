@@ -92,12 +92,10 @@ class RedSquare extends ModTemplate {
   // inter-module communications //
   /////////////////////////////////
   respondTo(type = "", obj) {
-    this_mod = this;
+    let this_mod = this;
     if (type === "user-menu") {
       return {
-        text: `View ${
-          obj?.publickey && obj.publickey === this.app.wallet.returnPublicKey() ? "My " : ""
-        }Profile`,
+        text: `View ${obj?.publickey && obj.publickey === this.publicKey ? "My " : ""}Profile`,
         icon: "fa fa-user",
         callback: function (app, publickey) {
           if (app.modules.returnActiveModule().returnName() == "Red Square") {
@@ -309,7 +307,11 @@ class RedSquare extends ModTemplate {
       //
       let tweet_id = this.app.browser.returnURLParameter("tweet_id");
       if (tweet_id != "") {
-        let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}' ORDER BY created_at DESC`;
+        let sql = `SELECT *
+                   FROM tweets
+                   WHERE sig = '${tweet_id}'
+                      OR parent_id = '${tweet_id}'
+                   ORDER BY created_at DESC`;
         this.loadTweetsFromPeer(peer, sql, (txs) => {
           for (let z = 0; z < txs.length; z++) {
             this.addTweet(txs[z]);
@@ -387,7 +389,7 @@ class RedSquare extends ModTemplate {
     }
 
     for (let i = 0; i < this.peers.length; i++) {
-      if (this.peers[i].publickey == peer.returnPublicKey()) {
+      if (this.peers[i].publickey == peer.publicKey) {
         this.peers[i].peer = peer;
         if (has_tweets) {
           this.peers[i].tweets = true;
@@ -404,7 +406,7 @@ class RedSquare extends ModTemplate {
     //
     this.peers.push({
       peer: peer,
-      publickey: peer.returnPublicKey(),
+      publickey: peer.publicKey,
       tweets_earliest_ts: new Date().getTime(),
       tweets_latest_ts: 0,
       tweets_limit: 20,
@@ -423,7 +425,10 @@ class RedSquare extends ModTemplate {
           this.peers[i][field] = ts;
 
           //Sanity check - so first intersection observer returns something
-          if (this.peers[i].tweets_earliest_ts > this.peers[i].tweets_latest_ts && this.peers[i].tweets_latest_ts > 0){
+          if (
+            this.peers[i].tweets_earliest_ts > this.peers[i].tweets_latest_ts &&
+            this.peers[i].tweets_latest_ts > 0
+          ) {
             this.peers[i].tweets_earliest_ts = this.peers[i].tweets_latest_ts;
           }
         }
@@ -493,7 +498,11 @@ class RedSquare extends ModTemplate {
 
       let time_cutoff = this.peers[i].profile_earliest_ts || new Date().getTime();
 
-      let sql = `SELECT * FROM tweets WHERE publickey = '${publickey}' AND updated_at < ${time_cutoff} ORDER BY created_at DESC LIMIT '${this.peers[i].profile_limit}'`;
+      let sql = `SELECT *
+                 FROM tweets
+                 WHERE publickey = '${publickey}'
+                   AND updated_at < ${time_cutoff}
+                 ORDER BY created_at DESC LIMIT '${this.peers[i].profile_limit}'`;
       this.loadTweetsFromPeer(peer, sql, (txs) => {
         this.updatePeerStat(
           this.returnEarliestTimestampFromTransactionArray(txs),
@@ -514,7 +523,14 @@ class RedSquare extends ModTemplate {
 
       let time_cutoff = this.peers[i].tweets_earliest_ts || new Date().getTime();
 
-      let sql = `SELECT * FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND updated_at < ${time_cutoff} ORDER BY updated_at DESC LIMIT '${this.peers[i].tweets_limit}'`;
+      let sql = `SELECT *
+                 FROM tweets
+                 WHERE parent_id = ""
+                   AND flagged IS NOT 1
+                   AND moderated IS NOT 1
+                   AND tx_size < 10000000
+                   AND updated_at < ${time_cutoff}
+                 ORDER BY updated_at DESC LIMIT '${this.peers[i].tweets_limit}'`;
 
       this.loadTweetsFromPeer(peer, sql, (txs) => {
         this.updatePeerStat(
@@ -538,7 +554,13 @@ class RedSquare extends ModTemplate {
       //
       // 7/7 -- let's try not excluding replies from the data pull -- the renderWithCriticalChild should keep things from looking too crazy on the main feed
       //
-      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND updated_at > ${time_cutoff} ORDER BY updated_at DESC LIMIT '${this.peers[i].tweets_limit}'`;
+      let sql = `SELECT *
+                 FROM tweets
+                 WHERE flagged IS NOT 1
+                   AND moderated IS NOT 1
+                   AND tx_size < 10000000
+                   AND updated_at > ${time_cutoff}
+                 ORDER BY updated_at DESC LIMIT '${this.peers[i].tweets_limit}'`;
 
       this.loadTweetsFromPeer(peer, sql, (txs) => {
         let newTimeStamp = this.returnLatestTimeStamp();
@@ -551,7 +573,10 @@ class RedSquare extends ModTemplate {
   }
 
   loadTweetThread(peer, sig, mycallback = null) {
-    let sql = `SELECT * FROM tweets WHERE thread_id = '${sig}' ORDER BY created_at DESC`;
+    let sql = `SELECT *
+               FROM tweets
+               WHERE thread_id = '${sig}'
+               ORDER BY created_at DESC`;
 
     for (let i = 0; i < this.peers.length; i++) {
       let peer = this.peers[i].peer;
@@ -568,7 +593,10 @@ class RedSquare extends ModTemplate {
       return;
     }
 
-    let sql = `SELECT * FROM tweets WHERE sig = '${sig}' ORDER BY created_at DESC`;
+    let sql = `SELECT *
+               FROM tweets
+               WHERE sig = '${sig}'
+               ORDER BY created_at DESC`;
 
     for (let i = 0; i < this.peers.length; i++) {
       let peer = this.peers[i].peer;
@@ -653,7 +681,7 @@ class RedSquare extends ModTemplate {
     for (let i = 0; i < this.peers.length; i++) {
       this.app.storage.loadTransactions(
         {
-          field3: this.app.wallet.returnPublicKey(),
+          field3: this.publicKey,
           //created_later_than: this.notifications_last_viewed_ts,
           limit: this.peers[i].limit,
         },
@@ -694,14 +722,11 @@ class RedSquare extends ModTemplate {
     //
     // maybe this needs to go into notifications too
     //
-    if (tx.isTo(this.app.wallet.returnPublicKey())) {
+    if (tx.isTo(this.publicKey)) {
       //
       // notify of other people's actions, but not ours
       //
-      if (
-        !tx.isFrom(this.app.wallet.returnPublicKey()) &&
-        !this.notifications_sigs_hmap[tx.transaction.sig]
-      ) {
+      if (!tx.isFrom(this.publicKey) && !this.notifications_sigs_hmap[tx.transaction.sig]) {
         //console.log("Notification!");
 
         let insertion_index = 0;
@@ -862,7 +887,7 @@ class RedSquare extends ModTemplate {
     let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
     for (let i = 0; i < keys.length; i++) {
-      if (keys[i] !== app.wallet.returnPublicKey()) {
+      if (keys[i] !== this.publicKey) {
         newtx.transaction.to.push(new saito.default.slip(keys[i]));
       }
     }
@@ -882,7 +907,7 @@ class RedSquare extends ModTemplate {
         //
         // save tweets addressed to me
         //
-        if (tx.isTo(app.wallet.returnPublicKey())) {
+        if (tx.isTo(this.publicKey)) {
           //console.log("Save notification to archive");
 
           //
@@ -892,8 +917,8 @@ class RedSquare extends ModTemplate {
           // from archives by fetching on field3 will get this.
           //
           this.app.storage.saveTransaction(tx, {
-            owner: app.wallet.returnPublicKey(),
-            field3: app.wallet.returnPublicKey(),
+            owner: this.publicKey,
+            field3: this.publicKey,
           });
 
           //
@@ -914,16 +939,16 @@ class RedSquare extends ModTemplate {
 
               tweet.tx.optional.num_replies++;
 
-              this.app.storage.updateTransaction(
-                tweet.tx,
-                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() }
-              );
+              this.app.storage.updateTransaction(tweet.tx, {
+                owner: this.publicKey,
+                field3: this.publicKey,
+              });
               tweet.renderReplies();
             } else {
-              this.app.storage.updateTransaction(
-                tweet.tx,
-                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() }
-              );
+              this.app.storage.updateTransaction(tweet.tx, {
+                owner: this.publicKey,
+                field3: this.publicKey,
+              });
             }
           }
 
@@ -948,16 +973,16 @@ class RedSquare extends ModTemplate {
                 tweet2.tx.optional.num_retweets = 0;
               }
               tweet2.tx.optional.num_retweets++;
-              this.app.storage.updateTransaction(
-                tweet2.tx,
-                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() }
-              );
+              this.app.storage.updateTransaction(tweet2.tx, {
+                owner: this.publicKey,
+                field3: this.publicKey,
+              });
               tweet2.renderRetweets();
             } else {
-              this.app.storage.updateTransaction(
-                tweet2.tx,
-                { owner: app.wallet.returnPublicKey(), field3: app.wallet.returnPublicKey() }
-              );
+              this.app.storage.updateTransaction(tweet2.tx, {
+                owner: this.publicKey,
+                field3: this.publicKey,
+              });
             }
           }
         }
@@ -997,39 +1022,36 @@ class RedSquare extends ModTemplate {
       //
       // insert the basic information
       //
-      let sql = `INSERT INTO tweets (
-                tx,
-                sig,
-              created_at,
-              updated_at,
-              parent_id,
-              thread_id,
-                type,
-                publickey,
-                link,
-              link_properties,
-              num_replies,
-              num_retweets,
-              num_likes,
-                has_images,
-                tx_size
-              ) VALUES (
-                $txjson,
-                $sig,
-              $created_at,
-              $updated_at,
-              $parent_id,
-              $thread_id,
-              $type,
-                $publickey,
-              $link,
-              $link_properties,
-              0,
-              0,
-              0,
-                $has_images,
-                $tx_size
-              )`;
+      let sql = `INSERT INTO tweets (tx,
+                                     sig,
+                                     created_at,
+                                     updated_at,
+                                     parent_id,
+                                     thread_id,
+                                     type,
+                                     publickey,
+                                     link,
+                                     link_properties,
+                                     num_replies,
+                                     num_retweets,
+                                     num_likes,
+                                     has_images,
+                                     tx_size)
+                 VALUES ($txjson,
+                         $sig,
+                         $created_at,
+                         $updated_at,
+                         $parent_id,
+                         $thread_id,
+                         $type,
+                         $publickey,
+                         $link,
+                         $link_properties,
+                         0,
+                         0,
+                         0,
+                         $has_images,
+                         $tx_size)`;
 
       let has_images = 0;
       if (typeof tweet.images != "undefined") {
@@ -1110,7 +1132,7 @@ class RedSquare extends ModTemplate {
 
     let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
     for (let i = 0; i < tx.transaction.to.length; i++) {
-      if (tx.transaction.to[i].add !== app.wallet.returnPublicKey()) {
+      if (tx.transaction.to[i].add !== this.publicKey) {
         newtx.transaction.to.push(new saito.default.slip(tx.transaction.to[i].add, 0.0));
       }
     }
@@ -1129,12 +1151,12 @@ class RedSquare extends ModTemplate {
       //
       // save my likes
       //
-      if (tx.isTo(app.wallet.returnPublicKey())) {
+      if (tx.isTo(this.publicKey)) {
         //console.log("Save (like) notification to archive");
 
         this.app.storage.saveTransaction(tx, {
-          owner: app.wallet.returnPublicKey(),
-          field3: app.wallet.returnPublicKey(),
+          owner: this.publicKey,
+          field3: this.publicKey,
         });
 
         //
@@ -1154,7 +1176,7 @@ class RedSquare extends ModTemplate {
             liked_tx.optional.num_likes = 0;
           }
           liked_tx.optional.num_likes++;
-          this.app.storage.updateTransaction(liked_tx, { owner: app.wallet.returnPublicKey() });
+          this.app.storage.updateTransaction(liked_tx, { owner: this.publicKey });
           tweet.renderLikes();
         }
       }
@@ -1171,12 +1193,14 @@ class RedSquare extends ModTemplate {
     // servers
     //
     let txmsg = tx.returnMessage();
-    let sql = `UPDATE tweets SET num_likes = num_likes + 1 , updated_at = $timestamp WHERE sig = $sig`;
+    let sql = `UPDATE tweets
+               SET num_likes  = num_likes + 1,
+                   updated_at = $timestamp
+               WHERE sig = $sig`;
     let params = {
       $sig: txmsg.data.sig,
       $timestamp: tx.transaction.ts,
     };
-
 
     await app.storage.executeDatabase(sql, params, "redsquare");
 
@@ -1220,7 +1244,9 @@ class RedSquare extends ModTemplate {
     // servers
     //
     let txmsg = tx.returnMessage();
-    let sql = `UPDATE tweets SET flagged = 1 WHERE sig = $sig`;
+    let sql = `UPDATE tweets
+               SET flagged = 1
+               WHERE sig = $sig`;
     let params = {
       $sig: txmsg.data.sig,
     };
@@ -1255,7 +1281,6 @@ class RedSquare extends ModTemplate {
 
     localforage.getItem(`tweet_history`, (error, value) => {
       if (value && value.length > 0) {
-
         for (let tx of value) {
           let newtx = new saito.default.transaction();
           newtx.deserialize_from_web(this.app, tx);
@@ -1423,20 +1448,24 @@ class RedSquare extends ModTemplate {
       return "";
     }
   }
+
   //
   // writes the latest 10 tweets to tweets.js
   //
   async updateTweetsCacheForBrowsers() {
     let hex_entries = [];
 
-    /*let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 AND moderated IS NOT 1) AND 
-                    (((num_replies > 0 OR num_likes > 0) AND parent_id IS NOT "") OR (parent_id IS "")) AND 
-                    (sig IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10)) OR 
+    /*let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 AND moderated IS NOT 1) AND
+                    (((num_replies > 0 OR num_likes > 0) AND parent_id IS NOT "") OR (parent_id IS "")) AND
+                    (sig IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10)) OR
                     (thread_id IN (SELECT sig FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10)) ORDER BY created_at ASC LIMIT 10`;
     */
 
     //Alternate selection
-    let sql = `SELECT *, (num_likes + num_replies + num_retweets) AS virality FROM tweets WHERE (flagged IS NOT 1 AND moderated IS NOT 1) ORDER BY virality DESC LIMIT 10`;
+    let sql = `SELECT *, (num_likes + num_replies + num_retweets) AS virality
+               FROM tweets
+               WHERE (flagged IS NOT 1 AND moderated IS NOT 1)
+               ORDER BY virality DESC LIMIT 10`;
 
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
@@ -1506,7 +1535,10 @@ class RedSquare extends ModTemplate {
             typeof query_params.thread_id != "undefined"
           ) {
             let sig = query_params.tweet_id || query_params.thread_id;
-            let sql = `SELECT * FROM tweets WHERE sig = '${sig}' ORDER BY created_at DESC`;
+            let sql = `SELECT *
+                       FROM tweets
+                       WHERE sig = '${sig}'
+                       ORDER BY created_at DESC`;
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
 
             for (let i = 0; i < rows.length; i++) {
@@ -1543,7 +1575,10 @@ class RedSquare extends ModTemplate {
             console.info(query_params.og_img_sig);
 
             let sig = query_params.og_img_sig;
-            let sql = `SELECT * FROM tweets WHERE sig = '${sig}' ORDER BY created_at DESC`;
+            let sql = `SELECT *
+                       FROM tweets
+                       WHERE sig = '${sig}'
+                       ORDER BY created_at DESC`;
 
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
             console.info(rows.length);

@@ -191,7 +191,7 @@ class Stun extends ModTemplate {
 
     if (type === "user-menu") {
       if (obj?.publickey) {
-        if (obj.publickey !== this.app.wallet.returnPublicKey()) {
+        if (obj.publickey !== this.publicKey) {
           this.attachStyleSheets();
           super.render(this.app, this);
           return [
@@ -269,7 +269,7 @@ class Stun extends ModTemplate {
 
     // offchain data
     let _data = {
-      public_key: this.app.wallet.returnPublicKey(),
+      public_key: this.publicKey,
       room_code,
     };
 
@@ -390,14 +390,14 @@ class Stun extends ModTemplate {
 
     // send the information to the other peers and ask them to join the call
     recipients = recipients.filter((player) => {
-      return player !== this.app.wallet.returnPublicKey();
+      return player !== this.publicKey;
     });
 
     let data = {
       type: "connection-request",
       room_code,
       ui: ui_type,
-      sender: this.app.wallet.returnPublicKey(),
+      sender: this.publicKey,
     };
 
     this.sendStunCallMessageToPeers(this.app, data, recipients);
@@ -431,7 +431,7 @@ class Stun extends ModTemplate {
           let _data = {
             type: "connection-accepted",
             room_code: data.room_code,
-            sender: app.wallet.returnPublicKey(),
+            sender: this.publicKey,
           };
 
           this.sendStunCallMessageToPeers(app, _data, [data.sender]);
@@ -448,7 +448,7 @@ class Stun extends ModTemplate {
           let _data = {
             type: "connection-rejected",
             room_code: data.room_code,
-            sender: app.wallet.returnPublicKey(),
+            sender: this.publicKey,
           };
           this.sendStunCallMessageToPeers(app, _data, [data.sender]);
         }

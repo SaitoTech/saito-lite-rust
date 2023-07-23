@@ -16,16 +16,17 @@ class Post {
 
     this.render_after_submit = 0;
     this.file_event_added = false;
-    this.publickey = app.wallet.returnPublicKey();
+    app.wallet.getPublicKey().then((key) => {
+      this.publickey = key;
+      this.user = new SaitoUser(
+        this.app,
+        this.mod,
+        `.tweet-overlay-header`,
+        this.publickey,
+        "create a text-tweet or drag-and-drop images..."
+      );
+    });
     this.source = "Tweet";
-
-    this.user = new SaitoUser(
-      this.app,
-      this.mod,
-      `.tweet-overlay-header`,
-      this.publickey,
-      "create a text-tweet or drag-and-drop images..."
-    );
   }
 
   render() {
@@ -235,7 +236,6 @@ class Post {
         rparent2 = x;
       }
 
-
       if (posted_tweet.retweet_tx) {
         rparent.tx.optional.num_retweets++;
         rparent.num_retweets++;
@@ -247,7 +247,6 @@ class Post {
         rparent.num_replies++;
         rparent.renderWithCriticalChild();
       }
-
     } else {
       this.mod.addTweet(posted_tweet.tx, true);
       posted_tweet.render(true);

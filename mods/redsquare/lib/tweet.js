@@ -154,12 +154,13 @@ class Tweet {
         this.app,
         this.mod,
         newtx,
-        this.container + `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`
+        this.container +
+          `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`
       );
       this.retweet.is_retweet = true;
       this.retweet.show_controls = 0;
-    } 
-      
+    }
+
     //
     // image preview -- copied over from txmsg.data.images
     //
@@ -167,13 +168,14 @@ class Tweet {
       this.img_preview = new Image(
         this.app,
         this.mod,
-        this.container + `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
+        this.container +
+          `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
         this
       );
-    } 
-      
-   // We will use this as a flag to know there were no breaking failures in the constructor
-   this.noerrors = true; 
+    }
+
+    // We will use this as a flag to know there were no breaking failures in the constructor
+    this.noerrors = true;
   }
 
   formatDate(ts = 0) {
@@ -199,17 +201,16 @@ class Tweet {
   }
 
   render(prepend = false) {
-
     //Process link stuff here and not on constructor
     if (this.link && !this.link_preview) {
       this.link_preview = new Link(
         this.app,
         this.mod,
-        this.container + `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
+        this.container +
+          `> .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`,
         this
       );
     }
-
 
     // double-rendering is possible with commented retweets
     // but we should just replace, duh.
@@ -262,10 +263,10 @@ class Tweet {
     //  myqs = this.container;
     //  replace_existing_element = true;
     //} else {
-      //
-      // this isn't retweet, but if the original exists, we want to ignore
-      // it unless it is parent-level (top thread).
-      //
+    //
+    // this isn't retweet, but if the original exists, we want to ignore
+    // it unless it is parent-level (top thread).
+    //
     //  if (obj?.parentElement?.classList.contains("tweet-main")) {
     //    console.log("parent is a tweet");
     //    replace_existing_element = false;
@@ -292,8 +293,9 @@ class Tweet {
         t.render(prepend);
       } else {
         //console.log("saved tweet");
-        this.retweet.user.container = this.container + `> .tweet-${this.tx.transaction.sig} > .tweet-header`,
-        this.retweet.render(prepend);
+        (this.retweet.user.container =
+          this.container + `> .tweet-${this.tx.transaction.sig} > .tweet-header`),
+          this.retweet.render(prepend);
       }
       return;
     }
@@ -359,7 +361,7 @@ class Tweet {
         }
       }
     }
-    
+
     this.user.render();
 
     if (this.img_preview != null) {
@@ -404,7 +406,6 @@ class Tweet {
   }
 
   renderWithChildren() {
-
     //console.log("Render thread");
     //
     // first render the tweet
@@ -417,7 +418,6 @@ class Tweet {
     // it's clear we need to figure out tweet threading....
     //
     if (this.children.length > 0) {
-
       let myqs = this.container + ` .tweet-${this.tx.transaction.sig}`;
       let obj = document.querySelector(myqs);
       if (obj) {
@@ -532,11 +532,11 @@ class Tweet {
             //window.location.href = `/redsquare/?tweet_id=${sig}`;
             let t = this.mod.returnTweet(sig);
             if (t) {
-              app.connection.emit("redsquare-tweet-render-request", t);  
-            }else{
+              app.connection.emit("redsquare-tweet-render-request", t);
+            } else {
               console.warn("This is going to screw up the feed");
               this.retweet.container = ".tweet-manager";
-              app.connection.emit("redsquare-tweet-render-request", this.retweet);  
+              app.connection.emit("redsquare-tweet-render-request", this.retweet);
             }
           }
         });
@@ -619,7 +619,7 @@ class Tweet {
       heartIcon.onclick = async (e) => {
         if (!heartIcon.classList.contains("liked")) {
           heartIcon.classList.add("liked");
-        }else{
+        } else {
           setTimeout(() => {
             heartIcon.classList.remove("liked");
             heartIcon.classList.add("liked");
@@ -872,6 +872,7 @@ class Tweet {
     }
     return 0;
   }
+
   returnChildTweet(tweet_sig) {
     if (this.tx.transaction.sig == tweet_sig) {
       return this;
@@ -895,7 +896,7 @@ class Tweet {
     }
   }
 
-  isCriticalChild(tweet) {
+  async isCriticalChild(tweet) {
     //
     // TODO -- changed comparison to !== March 13, right?
     //
@@ -903,7 +904,7 @@ class Tweet {
       return false;
     }
     for (let i = 0; i < tweet.tx.transaction.to.length; i++) {
-      if (tweet.tx.transaction.to[i].add === this.app.wallet.returnPublicKey()) {
+      if (tweet.tx.transaction.to[i].add === (await this.app.wallet.getPublicKey())) {
         if (this.critical_child == null) {
           return true;
         }
@@ -922,25 +923,23 @@ class Tweet {
 
     let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
     let links = this.text.match(expression);
-    
+
     let link, urlParams;
 
-
     if (links != null && links.length > 0) {
-
       //
       // save the first link
       //
       let first_link = links[0];
-      if (first_link.indexOf("http") == -1){
+      if (first_link.indexOf("http") == -1) {
         first_link = "http://" + first_link;
       }
 
-      try{
+      try {
         link = new URL(first_link);
         urlParams = new URLSearchParams(link.search);
         this.link = link.toString();
-      }catch(err){
+      } catch (err) {
         console.error(err);
         this.link = first_link;
       }
@@ -978,10 +977,8 @@ class Tweet {
           this.tx.optional.link_properties = res;
         }
       }
-
     }
 
-    
     return this;
   }
 
@@ -996,6 +993,7 @@ class Tweet {
       }
     } catch (err) {}
   }
+
   renderRetweets() {
     // some edge cases where tweet won't have rendered
     //console.log("RenderRetweets");
@@ -1008,6 +1006,7 @@ class Tweet {
       }
     } catch (err) {}
   }
+
   renderReplies() {
     // some edge cases where tweet won't have rendered
     //console.log("RenderReplies");

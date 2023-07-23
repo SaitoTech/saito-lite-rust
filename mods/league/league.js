@@ -631,17 +631,22 @@ class League extends ModTemplate {
 
   addressToAll(tx, league_id) {
     let slip = new Slip();
-    tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+    slip.publicKey = this.publicKey;
+    tx.addToSlip(slip);
 
     let league = this.returnLeague(league_id);
     if (!league?.admin) {
       return tx;
     }
 
-    tx.transaction.to.push(new saito.default.slip(league.admin, 0.0));
+    slip = new Slip();
+    slip.publicKey = league.admin;
+    tx.addToSlip(slip);
 
     for (let p of league.players) {
-      tx.transaction.to.push(new saito.default.slip(p.publickey, 0.0));
+      slip = new Slip();
+      slip.publicKey = p.publicKey;
+      tx.addToSlip(slip);
     }
 
     return tx;
@@ -650,8 +655,8 @@ class League extends ModTemplate {
   ///////////////////
   // join a league //
   ///////////////////
-  createJoinTransaction(league_id = "", email = "") {
-    let newtx = this.app.wallet.createUnsignedTransaction();
+  async createJoinTransaction(league_id = "", email = "") {
+    let newtx = await this.app.wallet.createUnsignedTransaction();
     newtx = this.addressToAll(newtx, league_id);
 
     newtx.msg = {
@@ -682,7 +687,7 @@ class League extends ModTemplate {
     //So, when we get our join message returned to us, we will do a query to figure out our rank
     //save the info locally, and emit an event to update as a success
     //
-    if (this.app.wallet.returnPublicKey() === tx.transaction.from[0].add) {
+    if (this.publicKey === tx.transaction.from[0].add) {
       this.fetchLeagueLeaderboard(txmsg.league_id, () => {
         this.app.connection.emit("join-league-success");
       });
@@ -690,15 +695,15 @@ class League extends ModTemplate {
     }
 
     let league = this.returnLeague(txmsg.league_id);
-    if (this.app.wallet.returnPublicKey() === league.admin) {
+    if (this.publicKey === league.admin) {
       this.fetchLeagueLeaderboard(txmsg.league_id, () => {
         siteMessage("New league member", 2500);
       });
     }
   }
 
-  createUpdateTransaction(league_id, new_data, field = "description") {
-    let newtx = this.app.wallet.createUnsignedTransaction();
+  async createUpdateTransaction(league_id, new_data, field = "description") {
+    let newtx = await this.app.wallet.createUnsignedTransaction();
     newtx = this.addressToAll(newtx, league_id);
 
     newtx.msg = {
@@ -740,10 +745,10 @@ class League extends ModTemplate {
     await this.app.storage.executeDatabase(sql, params, "league");
   }
 
-  createUpdatePlayerTransaction(league_id, publickey, new_data, field = "email") {
-    let newtx = this.app.wallet.createUnsignedTransaction();
+  async createUpdatePlayerTransaction(league_id, publickey, new_data, field = "email") {
+    let newtx = await this.app.wallet.createUnsignedTransaction();
 
-    newtx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+    newtx.transaction.to.push(new saito.default.slip(this.publicKey, 0.0));
     newtx.transaction.to.push(new saito.default.slip(publickey, 0.0));
 
     newtx.msg = {
@@ -777,7 +782,7 @@ class League extends ModTemplate {
     }
 
     //My data was updated...
-    if (this.app.wallet.returnPublicKey() === publickey) {
+    if (this.publicKey === publickey) {
       setTimeout(() => {
         this.fetchLeagueLeaderboard(league_id, () => {
           if (field == "email" && new_data) {
@@ -805,11 +810,11 @@ class League extends ModTemplate {
   ///////////////////
   // quit a league //
   ///////////////////
-  createQuitTransaction(league_id, publickey = null) {
-    let newtx = this.app.wallet.createUnsignedTransaction();
+  async createQuitTransaction(league_id, publickey = null) {
+    let newtx = await this.app.wallet.createUnsignedTransaction();
     newtx = this.addressToAll(newtx, league_id);
 
-    publickey = publickey || this.app.wallet.returnPublicKey();
+    publickey = publickey || this.publicKey;
 
     newtx.msg = {
       module: "League",
@@ -1411,14 +1416,14 @@ class League extends ModTemplate {
     //Make sure it is a number!
     newPlayer.score = parseInt(newPlayer.score);
 
-    if (newPlayer.publickey === this.app.wallet.returnPublicKey()) {
+    if (newPlayer.publickey === this.publicKey) {
       console.log("Adding myself to league");
       if (league.rank <= 0 || !league?.rank) {
         league.rank = 0;
         league.numPlayers = league.players.length;
       }
 
-      if (league.admin && league.admin !== this.app.wallet.returnPublicKey()) {
+      if (league.admin && league.admin !== this.publicKey) {
         league.unverified = newPlayer.email == "";
       }
     }
@@ -1446,7 +1451,7 @@ class League extends ModTemplate {
   }
 
   async removeLeaguePlayer(league_id, publickey) {
-    if (publickey == this.app.wallet.returnPublicKey()) {
+    if (publickey == this.publicKey) {
       this.removeLeague(league_id);
       return;
     }
@@ -1486,7 +1491,7 @@ class League extends ModTemplate {
     //We do this here to avoid a SQL union statement
     let cond = league.admin
       ? ``
-      : ` AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.app.wallet.returnPublicKey()}')`;
+      : ` AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.publicKey}')`;
 
     this.sendPeerDatabaseRequestWithFilter(
       "League",
@@ -1503,7 +1508,7 @@ class League extends ModTemplate {
             //
             rank++;
 
-            if (p.publickey == this.app.wallet.returnPublicKey()) {
+            if (p.publickey == this.publicKey) {
               if (p.games_finished > 0) {
                 league.rank = rank;
               } else {

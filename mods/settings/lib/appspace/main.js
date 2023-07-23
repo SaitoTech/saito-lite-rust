@@ -141,7 +141,6 @@ class SettingsAppspace {
             "This will clear your browser's DB, proceed cautiously"
           );
           if (confirmation) {
-
             localforage
               .clear()
               .then(function () {
@@ -152,11 +151,9 @@ class SettingsAppspace {
               });
 
             let archive = this.app.modules.returnModule("Archive");
-            if (archive){
+            if (archive) {
               await archive.onWalletReset(true);
             }
-
-
           }
         };
       }
@@ -195,7 +192,7 @@ class SettingsAppspace {
             app.wallet.wallet.spends = [];
             app.wallet.wallet.pending = [];
 
-            app.blockchain.resetBlockchain();
+            await app.blockchain.resetBlockchain();
             await app.wallet.saveWallet();
             window.location = window.location;
           }

@@ -55,11 +55,11 @@ class CallInterfaceVideo {
       this.addRemoteStream(peer, remoteStream);
     });
 
-    this.app.connection.on("stun-update-connection-message", (room_code, peer_id, status) => {
+    this.app.connection.on("stun-update-connection-message", async (room_code, peer_id, status) => {
       if (room_code !== this.room_code) {
         return;
       }
-      let my_pub_key = this.app.wallet.returnPublicKey();
+      let my_pub_key = await this.app.wallet.getPublicKey();
       let container;
       if (peer_id === my_pub_key) {
         container = this.local_container;
@@ -100,7 +100,7 @@ class CallInterfaceVideo {
         case "focus":
           this.switchDisplayToExpanded();
           break;
-          
+
         case "speaker":
           this.switchDisplayToExpanded();
           break;
@@ -126,7 +126,7 @@ class CallInterfaceVideo {
           }
 
           console.log("Change speaker");
-          
+
           if (
             this.display_mode == "speaker" &&
             !item.parentElement.classList.contains("expanded-video")
@@ -265,7 +265,11 @@ class CallInterfaceVideo {
     }
 
     document.querySelector(".large-wrapper").addEventListener("click", (e) => {
-      if (this.display_mode == "gallery" || this.display_mode == "presentation" || this.display_mode == "speaker") {
+      if (
+        this.display_mode == "gallery" ||
+        this.display_mode == "presentation" ||
+        this.display_mode == "speaker"
+      ) {
         return;
       }
       if (e.target.classList.contains("video-box")) {
@@ -406,13 +410,13 @@ class CallInterfaceVideo {
     }
   }
 
-  updateImages() {
+  async updateImages() {
     let images = ``;
     let count = 0;
     for (let i in this.video_boxes) {
       let publickey = i;
       if (i === "local") {
-        publickey = this.app.wallet.returnPublicKey();
+        publickey = await this.app.wallet.getPublicKey();
       }
 
       let imgsrc = this.app.keychain.returnIdenticon(publickey);

@@ -2,10 +2,8 @@ const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-ove
 const JoinLeagueTemplate = require("./join.template");
 const SaitoLoader = require("./../../../../lib/saito/ui/saito-loader/saito-loader");
 
-
 class JoinLeague {
-
-  constructor(app, mod, league_id=""){
+  constructor(app, mod, league_id = "") {
     this.app = app;
     this.mod = mod;
     this.league_id = league_id;
@@ -13,12 +11,12 @@ class JoinLeague {
     this.loader = new SaitoLoader(app, mod, ".league-join-overlay-box");
     this.timer = null;
 
-    this.app.connection.on("join-league-success", ()=>{
+    this.app.connection.on("join-league-success", () => {
       console.log("League Join success!");
-      if (this.timer){
+      if (this.timer) {
         clearTimeout(this.timer);
         this.timer = null;
-      }else{
+      } else {
         //We have already faked success, so just stop here
         return;
       }
@@ -28,7 +26,6 @@ class JoinLeague {
   }
 
   async render() {
-
     let league = this.mod.returnLeague(this.league_id);
 
     if (league == null) {
@@ -38,31 +35,27 @@ class JoinLeague {
     }
     this.overlay.remove();
 
-    if (league.rank >= 0){
+    if (league.rank >= 0) {
       //console.log("Don't join, I am a member");
-      this.app.connection.emit('league-overlay-render-request', this.league_id);
+      this.app.connection.emit("league-overlay-render-request", this.league_id);
       return;
     }
 
     this.game_mod = this.app.modules.returnModuleByName(league.game);
-    this.overlay.show(JoinLeagueTemplate(this.app, this.mod, league), ()=>{
-      this.app.connection.emit('league-overlay-render-request', this.league_id);  
+    this.overlay.show(JoinLeagueTemplate(this.app, this.mod, league), () => {
+      this.app.connection.emit("league-overlay-render-request", this.league_id);
     });
     this.overlay.setBackground(this.game_mod.respondTo("arcade-games").image);
 
     this.attachEvents();
-
   }
 
-
   attachEvents() {
-
     // Phase 1
-    const league_join_btn = document.getElementById('league-join-btn');
+    const league_join_btn = document.getElementById("league-join-btn");
 
-    if (league_join_btn){
-      league_join_btn.onclick = (e) => {
-
+    if (league_join_btn) {
+      league_join_btn.onclick = async (e) => {
         window.history.pushState("", "", window.location.pathname);
         e.preventDefault();
 
@@ -78,57 +71,50 @@ class JoinLeague {
         document.querySelector(".league-join-info").remove();
         this.loader.render();
 
-        let newtx = this.mod.createJoinTransaction(league_id/*, user_email*/);
-        this.app.network.propagateTransaction(newtx);
+        let newtx = this.mod.createJoinTransaction(league_id /*, user_email*/);
+        await this.app.network.propagateTransaction(newtx);
 
-        if (this.mod.debug){
+        if (this.mod.debug) {
           console.log("Join sent! " + league_id);
         }
 
         let params = {
-          publickey: this.app.wallet.returnPublicKey(),
-        }
-        
-        this.mod.addLeaguePlayer(league_id, params);
+          publickey: await this.app.wallet.getPublicKey(),
+        };
 
-        this.timer = setTimeout(()=> {
+        await this.mod.addLeaguePlayer(league_id, params);
+
+        this.timer = setTimeout(() => {
           console.log("Time out");
           this.loader.remove();
           this.render();
           this.timer = null;
-          
         }, 2000);
+      };
 
-      }  
-
-      document.querySelector('.saito-overlay-form-alt-opt').onclick = (e) => {
+      document.querySelector(".saito-overlay-form-alt-opt").onclick = (e) => {
         this.app.connection.emit("recovery-login-overlay-render-request");
         return;
       };
-
-    }else{
-      document.querySelector('#gonow').onclick = (e) => {
-        this.app.connection.emit('league-overlay-render-request', this.league_id);
+    } else {
+      document.querySelector("#gonow").onclick = (e) => {
+        this.app.connection.emit("league-overlay-render-request", this.league_id);
         this.overlay.remove();
-      }
+      };
 
       let countDown = document.getElementById("countdown");
       let timer = 9;
-      let interval = setInterval(()=>{
+      let interval = setInterval(() => {
         timer--;
         countDown.innerHTML = timer;
-        if (timer === 0){
+        if (timer === 0) {
           console.log("Timer expired");
           clearInterval(interval);
-          this.app.connection.emit('league-overlay-render-request', this.league_id);
+          this.app.connection.emit("league-overlay-render-request", this.league_id);
           this.overlay.remove();
-        }        
+        }
       }, 1000);
     }
-
-
-
-
   }
 }
 

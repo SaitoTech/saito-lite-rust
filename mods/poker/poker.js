@@ -25,36 +25,36 @@ class Poker extends GameTableTemplate {
     this.settlement = [];
 
     /********************
-    *********************
-    *********************
-    ***
-    *** prior to any refactor, we will simply store all crypto values in string format and do
-    *** sanity checks to prevent division errors. all conversions should be handled via the 
-    *** functions provided at the top of this file.
-    ***
-    *** addToString
-    *** subtractFromString
-    ***
-    this.game.crypto;       // (STRING) TICKER of crypto or "CHIPS" in standard game
-    this.game.stake;        // (STRING) TOTAL crypto buy-in OR 100 (if chips)
-    this.game.chips;        // (STRING) TOTAL CHIPS per buy-in, 
-    this.game.blind_mode;     // (STRING) "static" or "increase"
+     *********************
+     *********************
+     ***
+     *** prior to any refactor, we will simply store all crypto values in string format and do
+     *** sanity checks to prevent division errors. all conversions should be handled via the
+     *** functions provided at the top of this file.
+     ***
+     *** addToString
+     *** subtractFromString
+     ***
+     this.game.crypto;       // (STRING) TICKER of crypto or "CHIPS" in standard game
+     this.game.stake;        // (STRING) TOTAL crypto buy-in OR 100 (if chips)
+     this.game.chips;        // (STRING) TOTAL CHIPS per buy-in,
+     this.game.blind_mode;     // (STRING) "static" or "increase"
 
 
-    this.game.state.round;    // (INT) round in game
-    this.game.state.big_blind;    // (STRING) value of big-blind
-    this.game.state.small_blind;  // (STRING) value of small-blind
-    this.game.state.last_raise;   // (STRING) value of last raise
-    this.game.state.required_pot; // (STRING) value players need in pot to keep playing
-    this.game.state.pot;    // (STRING) current pot
+     this.game.state.round;    // (INT) round in game
+     this.game.state.big_blind;    // (STRING) value of big-blind
+     this.game.state.small_blind;  // (STRING) value of small-blind
+     this.game.state.last_raise;   // (STRING) value of last raise
+     this.game.state.required_pot; // (STRING) value players need in pot to keep playing
+     this.game.state.pot;    // (STRING) current pot
 
-    this.game.state.passed[i];    // (INT) 1 = has passed
-    this.game.state.player_pot[i];  // (STRING) value contributed to pot
-    this.game.state.debt[i];    // (STRING) amount due
-    this.game.state.player_credit[i]; // (STRING) bankroll
-    *********************
-    *********************
-    ********************/
+     this.game.state.passed[i];    // (INT) 1 = has passed
+     this.game.state.player_pot[i];  // (STRING) value contributed to pot
+     this.game.state.debt[i];    // (STRING) amount due
+     this.game.state.player_credit[i]; // (STRING) bankroll
+     *********************
+     *********************
+     ********************/
 
     this.updateHTML = "";
 
@@ -166,7 +166,7 @@ class Poker extends GameTableTemplate {
     });
 
     /****
-    this.menu.addSubMenuOption("game-game", {
+     this.menu.addSubMenuOption("game-game", {
       text: "Exit",
       id: "game-exit",
       class: "game-exit",
@@ -184,7 +184,7 @@ class Poker extends GameTableTemplate {
         //}
       },
     });
-****/
+     ****/
 
     super.render(app);
 
@@ -402,7 +402,7 @@ class Poker extends GameTableTemplate {
 
   settleLastRound() {
     /*
-    We want these at the end of the queue so they get processed first, but if 
+    We want these at the end of the queue so they get processed first, but if
     any players got removed, there will be some issues....
     */
     let msg = "Clearing the table";
@@ -1892,7 +1892,7 @@ class Poker extends GameTableTemplate {
     }
 
     if (this.browser_active) {
-      if (this.app.wallet.returnPublicKey() !== resigning_player) {
+      if (this.publicKey !== resigning_player) {
         this.refreshPlayerLog(`<div class="plog-update">leaves the table</div>`, txmsg.loser);
       }
     }
@@ -3327,7 +3327,7 @@ class Poker extends GameTableTemplate {
 
     this.preloadImageArray(allImages, 0);
   }
-  
+
   preloadImageArray(imageArray = [], idx = 0) {
     let pre_images = [imageArray.length];
 

@@ -64,7 +64,7 @@ class Twilight extends GameTemplate {
     this.confirm_moves = 0;
 
     this.interface 	 = 1;  //Graphical card display
-    
+
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 2;
 
@@ -84,7 +84,7 @@ class Twilight extends GameTemplate {
       </div>
     `;
 
-    if (cards.length == 0) { 
+    if (cards.length == 0) {
       html = `<div class="transparent-card-overlay" style="text-align:center; margin: auto;">
               There are no cards to display
               </div>`;
@@ -132,7 +132,7 @@ class Twilight extends GameTemplate {
 
   }
 
-  
+
   handleStatsMenu() {
     this.stats_overlay.render(this.game.state.stats);
   }
@@ -180,7 +180,7 @@ class Twilight extends GameTemplate {
     });
   }
 
- 
+
   render(app) {
 
     if (this.browser_active == 0) { return; }
@@ -214,19 +214,19 @@ class Twilight extends GameTemplate {
       if (this.app.options.gameprefs.twilight_expert_mode == 1) {
         this.confirm_moves = 0;
       } else {
-        this.confirm_moves = 1; 
+        this.confirm_moves = 1;
       }
     } catch (err) {}
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");
-   
+
     this.menu.addSubMenuOption("game-game", {
       text : "Difficulty",
       id : "game-confirm",
       class : "game-confirm",
       callback : function(app, game_mod) {
-         game_mod.menu.showSubSubMenu("game-confirm"); 
+         game_mod.menu.showSubSubMenu("game-confirm");
       }
     });
 
@@ -246,7 +246,7 @@ class Twilight extends GameTemplate {
         }
       }
     });
-   
+
     this.menu.addSubMenuOption("game-confirm",{
       text: `Expert ${(this.confirm_moves==1)?"":"✔"}`,
       id:"game-confirm-expert",
@@ -269,7 +269,7 @@ class Twilight extends GameTemplate {
       class : "game-rules",
       callback : function(app, game_mod) {
          game_mod.menu.hideSubMenus();
-         game_mod.overlay.show(game_mod.returnGameRulesHTML()); 
+         game_mod.overlay.show(game_mod.returnGameRulesHTML());
       }
     });
 
@@ -364,7 +364,7 @@ class Twilight extends GameTemplate {
       callback: function(app, game_mod){
         game_mod.displayModal("");
         game_mod.lang = "ru";
-        game_mod.saveGamePreference("lang", "ru"); 
+        game_mod.saveGamePreference("lang", "ru");
         setTimeout(function() { window.location.reload(); }, 1000);
       }
     });
@@ -374,7 +374,7 @@ class Twilight extends GameTemplate {
       callback: function(app, game_mod){
         game_mod.displayModal("");
         game_mod.lang = "es";
-        game_mod.saveGamePreference("lang", "es"); 
+        game_mod.saveGamePreference("lang", "es");
         setTimeout(function() { window.location.reload(); }, 1000);
       }
     });
@@ -401,7 +401,7 @@ class Twilight extends GameTemplate {
     //
     this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
-    
+
     try {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
@@ -419,7 +419,7 @@ class Twilight extends GameTemplate {
     } catch (err) {}
 
     if (this.game.player > 0){
-      this.hud.render();  
+      this.hud.render();
 
       /* Attach classes to hud to visualize player roles */
       //this.game.player == 1 --> ussr, == 2 --> usa
@@ -429,9 +429,9 @@ class Twilight extends GameTemplate {
           case 1: hh.classList.add("soviet"); break;
           case 2: hh.classList.add("american"); break;
           default:
-        }  
+        }
       }
-    
+
     }
 
   }
@@ -446,15 +446,15 @@ initializeGame(game_id) {
   // check user preferences to update interface, if text
   //
   if (this.app?.options?.gameprefs) {
-    this.interface = this.app.options.gameprefs.interface || this.interface;  
-    
+    this.interface = this.app.options.gameprefs.interface || this.interface;
+
     /*if (this.app.options.gameprefs.twilight_expert_mode == 1) {
       this.confirm_moves = 0;
     } else {
       this.confirm_moves = 1;
     }*/
   }
-    
+
   //
   // VP needed
   //
@@ -589,7 +589,7 @@ initializeGame(game_id) {
       let o = Object.assign({}, l, k);
       let p = Object.assign({}, m, o);
       let q = Object.assign({}, n, p);
-      
+
       this.game.queue.push("DECK\t1\t"+JSON.stringify(q));
 
     } else {
@@ -789,7 +789,7 @@ try {
   // update defcon and milops and stuff
   //
   this.displayBoard();
-  
+
 } catch (err) {} // we must be in invite page
 
   //
@@ -812,10 +812,10 @@ try {
 
       //Want to display without triggering shake event
 
-      if (this.countries[i].us > 0 || this.countries[i].ussr > 0) { 
-        this.showInfluence(i); 
+      if (this.countries[i].us > 0 || this.countries[i].ussr > 0) {
+        this.showInfluence(i);
       }
-    
+
     } catch (err) {} // invite page
 
   }
@@ -880,7 +880,7 @@ try {
   handleGameLoop() {
 
     let twilight_self = this;
-    let player = (this.game.player === 1) ? "ussr" : "us"; 
+    let player = (this.game.player === 1) ? "ussr" : "us";
 
     //
     // support observer mode
@@ -974,8 +974,8 @@ console.log("LATEST MOVE: " + mv);
       } else {
         for (let i in this.game.countries) {
           this.game.countries[i].bg = parseInt(this.game.countries[i].bg);
-        }   
-      }   
+        }
+      }
 
     }
 
@@ -983,17 +983,17 @@ console.log("LATEST MOVE: " + mv);
     if (mv[0] == "init") {
 
       this.game.queue.splice(qe, 1);
-  	    
+
       // observer skips
-      if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
+      if (this.game.player === 0 || !this.game.players.includes(this.publicKey)) {
         return 1;
-      } 
+      }
 
       //Game engine automatically randomizes player order, so we are good to go
       if (!this.game.options.player1 || this.game.options.player1 == "random"){
         return 1;
       }
-        
+
       if (this.game.options.player1 === "ussr"){
         if (this.game.players[0] !== this.game.originator){
           let p = this.game.players.shift();
@@ -1007,7 +1007,7 @@ console.log("LATEST MOVE: " + mv);
       }
       //Fix game.player so that it corresponds to the indices of game.players[]
       for (let i = 0; i < this.game.players.length; i++){
-        if (this.game.players[i] === this.app.wallet.returnPublicKey()){
+        if (this.game.players[i] === this.publicKey){
           this.game.player = i+1;
         }
       }
@@ -1045,7 +1045,7 @@ console.log("LATEST MOVE: " + mv);
       return 1;
 
     }
-    
+
     if (mv[0] === "revert") {
       this.revertTurn();
       this.game.queue.splice(qe, 1);
@@ -1183,7 +1183,7 @@ console.log("LATEST MOVE: " + mv);
 
       if (player == mv[1]) {
         this.playerTurn(mv[2]);
-      } 
+      }
 
       shd_continue = 0;
     }
@@ -1301,12 +1301,12 @@ console.log("LATEST MOVE: " + mv);
 
           let valid_targets = 0;
           for (let c in twilight_self.countries) {
-        
+
             if ( twilight_self.game.countries[c].bg == 0 && (twilight_self.countries[c].region === "africa" || twilight_self.countries[c].region === "camerica" || twilight_self.countries[c].region === "samerica") && twilight_self.countries[c].us > 0 ) {
               //Must be a new target for second attempt
               if (c !== target1){
                 valid_targets++;
-                $("#"+c).addClass("easterneurope");  
+                $("#"+c).addClass("easterneurope");
               }
             }
           }
@@ -1317,7 +1317,7 @@ console.log("LATEST MOVE: " + mv);
             if (twilight_self.game.player == 2){
               twilight_self.endTurn();
             }
-         
+
           } else {
 
             if (twilight_self.game.player == 1) {
@@ -1327,7 +1327,7 @@ console.log("LATEST MOVE: " + mv);
 
               let user_message = "Pick second target for coup:";
               let html =  '<ul><li class="option" id="skipche">or skip coup</li></ul>';
-                  
+
               twilight_self.updateStatusWithOptions(user_message, html, function(action2) {
                 if (action2 == "skipche") {
                   twilight_self.endTurn();
@@ -1412,7 +1412,7 @@ console.log("LATEST MOVE: " + mv);
     if (mv[0] === "quagmire") {
       let discard = mv[2];
       let sticker = (mv[1]=="ussr") ? "beartrap": "quagmire";
-      
+
       let roll = this.rollDice(6);
 
       this.updateLog(`${this.cardToText(sticker)}: ${mv[1].toUpperCase()} discards ${this.cardToText(discard)} and rolls a ${roll}`);
@@ -1435,7 +1435,7 @@ console.log("LATEST MOVE: " + mv);
           this.game.state.events.double_quagmire = 1;
         } else {
           this.game.state.events.double_beartrap = 1;
-	} 
+	}
 	this.displayModal(`${mv[1].toUpperCase()} remains stuck in the ${this.cardToText(sticker)}`);
       }
 
@@ -1443,7 +1443,7 @@ console.log("LATEST MOVE: " + mv);
       shd_continue = 1;
 
     }
-    
+
 
     if (mv[0] == "tehran") {
 
@@ -1494,7 +1494,7 @@ console.log("LATEST MOVE: " + mv);
 
             if (action2 == "finished") {
 
-              for (let i = 0; i < pos_to_discard.length; i++) { 
+              for (let i = 0; i < pos_to_discard.length; i++) {
                 twilight_self.addMove(this.game.deck[0].crypt[pos_to_discard[i]]);
               }
               twilight_self.addMove("tehran\tus\t"+cards_discarded);
@@ -1587,16 +1587,16 @@ console.log("LATEST MOVE: " + mv);
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
-        
+
         let potCountries = [];
         for (var i in this.countries) {
           if (this.countries[i].region == "samerica") {
-            if (this.countries[i].ussr > 0) { 
-              potCountries.push(i); 
+            if (this.countries[i].ussr > 0) {
+              potCountries.push(i);
             }
           }
         }
-        
+
         if (potCountries.length == 0) {
           this.addMove("NOTIFY\tUSSR has no countries with influence to double");
           this.endTurn();
@@ -1614,7 +1614,7 @@ console.log("LATEST MOVE: " + mv);
           this.countries[i].place = 1;
           $("#"+i).addClass("easterneurope");
         }
-         
+
         $(".easterneurope").off();
         $(".easterneurope").on('click', function() {
 
@@ -1634,7 +1634,7 @@ console.log("LATEST MOVE: " + mv);
             twilight_self.displayModal("Invalid Target","Already doubled influence");
           }
         });
-        
+
       }else{
         this.updateStatus(`USSR is deciding which country to double their influence`);
       }
@@ -1672,7 +1672,7 @@ console.log("LATEST MOVE: " + mv);
       shd_continue = 0;
     }
 
-        
+
     if (mv[0] == "space") {
       this.playerSpaceCard(mv[2], mv[1]);
       if (mv[2] != "china") {
@@ -1684,11 +1684,11 @@ console.log("LATEST MOVE: " + mv);
 
     if (mv[0] == "unlimit") {
       if (mv[1] == "china") { this.game.state.events_china_card_in_play = 0; }
-      if (mv[1] == "cmc") { 
-	this.game.state.events.cubanmissilecrisis = 0; 
-	this.game.state.events.cubanmissilecrisis_cancelled = 1; 
+      if (mv[1] == "cmc") {
+	this.game.state.events.cubanmissilecrisis = 0;
+	this.game.state.events.cubanmissilecrisis_cancelled = 1;
 	if (mv[2]) {
-	  this.game.state.events.cubanmissilecrisis_removal_country = mv[2]; 
+	  this.game.state.events.cubanmissilecrisis_removal_country = mv[2];
 	}
       }
       if (mv[1] == "coups") { this.game.state.limit_coups = 0; }
@@ -1806,7 +1806,7 @@ console.log("LATEST MOVE: " + mv);
     if (mv[0] == "chernobyl") {
       this.game.state.events.chernobyl = mv[1];
       this.game.queue.splice(qe, 1);
-      
+
       if (this.game.player == 1){
         this.displayModal("Chernobyl",`Influence placements restricted in ${this.region_key[mv[1]]}`);
       }
@@ -1823,7 +1823,7 @@ console.log("LATEST MOVE: " + mv);
           roll = this.rollDice(6);
         }
         if (this.game.player == 0) {
-          roll = this.rollDice(6); 
+          roll = this.rollDice(6);
         }
       }
       this.game.queue.splice(qe, 1);
@@ -1837,8 +1837,8 @@ console.log("LATEST MOVE: " + mv);
 
         let revealed = "", keys = "";
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-          if (i > 0) { 
-            revealed += ", "; 
+          if (i > 0) {
+            revealed += ", ";
             keys += " ";
           }
           revealed += this.game.deck[0].cards[this.game.deck[0].hand[i]].name;
@@ -1873,7 +1873,7 @@ console.log("LATEST MOVE: " + mv);
         for (let i = 0; i < num; i++) {
           uscards.push(this.game.queue.pop());
         }
-        
+
         if (this.game.player == 1) {
           //If the event card has a UI component, run the clock for the player we are waiting on
           this.startClock();
@@ -1919,7 +1919,7 @@ console.log("LATEST MOVE: " + mv);
             }
           }
         }
-        
+
         $(".easterneurope").off();
         $(".easterneurope").on('click',function() {
           let countryname = $(this).attr('id');
@@ -1934,7 +1934,7 @@ console.log("LATEST MOVE: " + mv);
       this.game.queue.splice(qe, 1);
       shd_continue = 0;
     }
-     
+
 
     if (mv[0] === "teardownthiswall") {
 
@@ -1977,7 +1977,7 @@ console.log("LATEST MOVE: " + mv);
 
         });
       }else{
-          this.updateStatus("US playing Tear Down This Wall");     
+          this.updateStatus("US playing Tear Down This Wall");
       }
         shd_continue = 0;
       }
@@ -2018,7 +2018,7 @@ console.log("LATEST MOVE: " + mv);
             ussr_cards--;
           }
         }
-      
+
         if (this.game.player == 2) {
           let x = ussr_cards;
           ussr_cards = us_cards;
@@ -2097,12 +2097,12 @@ console.log("LATEST MOVE: " + mv);
 
     }
 
-    // player | card | op 
+    // player | card | op
     if (mv[0] === "ops") {
 
       if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.cardToText(mv[2]); }
 
-      //Don't want to log the original ops value ***** 
+      //Don't want to log the original ops value *****
       let orig_ops = parseInt(mv[3]);
       let mod_ops = this.modifyOps(orig_ops, mv[2], mv[1], 0);
       if (mod_ops > orig_ops){
@@ -2110,14 +2110,14 @@ console.log("LATEST MOVE: " + mv);
       }else if (mod_ops < orig_ops){
         this.updateLog(mv[1].toUpperCase() + ` plays ${this.game.state.event_name} for ${mv[3]} OPS (-${orig_ops-mod_ops} penalty)`);
       }else{
-        this.updateLog(mv[1].toUpperCase() + ` plays ${this.game.state.event_name} for ${mv[3]} OPS`);  
+        this.updateLog(mv[1].toUpperCase() + ` plays ${this.game.state.event_name} for ${mv[3]} OPS`);
       }
-      
+
 
       // stats
       if (mv[1] === "us") {
 	this.game.state.stats.us_ops += parseInt(mv[3]);
-	this.game.state.stats.us_modified_ops += mod_ops; 
+	this.game.state.stats.us_modified_ops += mod_ops;
       }
       if (mv[1] === "ussr") {
 	this.game.state.stats.ussr_ops += parseInt(mv[3]);
@@ -2159,7 +2159,7 @@ console.log("LATEST MOVE: " + mv);
       this.playOps(mv[1], parseInt(mv[3]), mv[2]);
       shd_continue = 0;
     }
-   
+
 
     if (mv[0] === "milops") {
       this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " milops");
@@ -2233,7 +2233,7 @@ console.log("LATEST MOVE: " + mv);
 
 
     if (mv[0] === "realign") {
-      if (mv[1] != player) { 
+      if (mv[1] != player) {
         this.playRealign(mv[1], mv[2]);
       }
       this.game.queue.splice(qe, 1);
@@ -2251,7 +2251,7 @@ console.log("LATEST MOVE: " + mv);
       this.game.queue.splice(qe, 1);
     }
 
-        
+
     if (mv[0] === "move") {
       if (mv[1] == "ussr") { this.game.state.move = 0; }
       if (mv[1] == "us") { this.game.state.move = 1; }
@@ -2392,7 +2392,7 @@ console.log("LATEST MOVE: " + mv);
       if (player != mv[1]) { this.removeInfluence(mv[3], parseInt(mv[4]), mv[2]); }
       this.game.queue.splice(qe, 1);
     }
-    
+
 
     if (mv[0] === "resolve") {
 
@@ -2446,7 +2446,7 @@ console.log("LATEST MOVE: " + mv);
   	      if (lmv[0] === "OBSERVER_CHECKPOINT" && le >= 1) {
         		let tmp = this.game.queue[le];
 	          this.game.queue[le] = this.game.queue[le-1];
-		        this.game.queue[le-1] = tmp; 		
+		        this.game.queue[le-1] = tmp;
             lmv = this.game.queue[le].split("\t");
 	        }
 
@@ -2591,7 +2591,7 @@ console.log("LATEST MOVE: " + mv);
       //
       // Late-War scenario skips
       //
-      if (this.game.options.deck === "late-war") { 
+      if (this.game.options.deck === "late-war") {
 	this.game.queue.splice(qe, 1);
 	return 1;
       }
@@ -2615,13 +2615,13 @@ console.log("LATEST MOVE: " + mv);
         return 0;
       }
 
-      
+
       if (this.game.player == mv[1]) {
         this.playerPlaceInitialInfluence();
       } else {
         this.updateStatusAndListCards(`${(mv[1] == 1)?"USSR":"US"} is making its initial placement of influence:`);
       }
-      
+
       // do not remove from queue -- handle RESOLVE on endTurn submission
       return 0;
     }
@@ -2700,7 +2700,7 @@ try {
         if (this.isControlled("us", "canada") == 1) {
 
           this.updateLog("NORAD triggers: US places 1 influence in country with US influence");
-          
+
           if (this.game.player == 2) {
 
             for (var i in this.countries) {
@@ -2708,7 +2708,7 @@ try {
                 $("#"+i).addClass("westerneurope");
               }
             }
-        
+
             this.updateStatus("Place your NORAD bonus: (1 OP)");
 
             $(".westerneurope").off();
@@ -2752,7 +2752,7 @@ console.log("ROUND: " + this.game.state.round);
         // prevent North Sea Oil bonus from carrying over to next round
         //
         this.game.state.events.northseaoil_bonus = 0;
-        
+
         if (this.game.player == 2) {
 
           //
@@ -2789,7 +2789,7 @@ try {
         this.game.state.eagle_has_landed_bonus_taken = 1;
 
         let bonus_player = (this.game.state.eagle_has_landed == "us") ? 2 : 1;
-    
+
         if (this.game.player != bonus_player) {
           this.updateStatus(this.game.state.eagle_has_landed.toUpperCase() + " is deciding whether to discard a card");
           return 0;
@@ -2818,14 +2818,14 @@ try {
           }
           html +=    `<li class="option dashed nocard" id="nope">do not discard</li>
                       </ul>`;
-                    
+
           this.updateStatusWithOptions(user_message, html, function(action2) {
 
             if (action2 == "nope") {
               twilight_self.addMove("NOTIFY\t"+twilight_self.game.state.eagle_has_landed.toUpperCase()+" does not discard a card");
               twilight_self.endTurn(1);
             } else {
-              $(`#${action2}.card`).hide(); 
+              $(`#${action2}.card`).hide();
               twilight_self.hideCard();
               twilight_self.updateStatus("Discarding...");
               twilight_self.removeCardFromHand(action2);
@@ -2884,7 +2884,7 @@ try {
       }
 
       //Increment state.round and resets state variables for next round
-      if (!this.endRound()) { return 0; } 
+      if (!this.endRound()) { return 0; }
 
 
       //
@@ -2940,7 +2940,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
       this.game.queue.push("headline");
       //this.game.queue.push("update_observers\t2");
       //this.game.queue.push("update_observers\t1");
-      
+
 
       //
       // dynamic deck management -- SAITO COMMUNITY
@@ -2962,7 +2962,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
         this.updateLog(this.game.deck[0].crypt.length + " cards remaining in deck...");
 
         this.game.queue.push("deal\t2");
-        this.game.queue.push("deal\t1");  
+        this.game.queue.push("deal\t1");
 
         this.game.queue.push("reshuffle");
         this.game.queue.push("sharehandsize\t2");
@@ -2992,7 +2992,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	    }
 	    delete mid_war_cards['summit'];
 	    this.removeCardFromDeck("summit", "Summit removed by default");
-	    
+
 	    this.addCardToDeck("handshake", "New Card");
 	    this.addCardToDeck("berlinagreement", "New Card");
 	    this.game.queue.push("dynamic_deck_management");
@@ -3120,19 +3120,19 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
         if (this.isControlled("us", "canada") == 1) {
 
           let twilight_self = this;
-          
+
           this.updateLog("NORAD triggers: US places 1 influence in country with US influence");
           /*
           This is the block of code that gets called for NORAD
           */
-          if (this.game.player == 2) { 
+          if (this.game.player == 2) {
 
             for (var i in this.countries) {
               if (this.countries[i].us > 0) {
                 $("#"+i).addClass("westerneurope");
               }
             }
-                  
+
             this.updateStatus("US place NORAD bonus: (1 OP)");
 
             $(".westerneurope").off();
@@ -3148,12 +3148,12 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
               });
             });
           }else{
-            this.updateStatus("NORAD triggers: US places 1 influence in country with US influence");  
+            this.updateStatus("NORAD triggers: US places 1 influence in country with US influence");
           }
           return 0;
-        } 
+        }
       }
-      
+
       this.displayBoard();
 
       this.playMove();
@@ -3198,7 +3198,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
         this.addMove("setvar\t"+this.game.player+"\topponent_cards_in_hand\t"+cards_in_hand);
         this.endTurn();
       }
-   
+
       return 0;
     }
 
@@ -3234,7 +3234,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 
   /************** END OF GAME LOOP **************/
 
-  playHeadlinePostModern(stage, hash="", xor="", card="") {  
+  playHeadlinePostModern(stage, hash="", xor="", card="") {
      if (this.game.player === 0) {
       this.updateLog("Processing Headline Cards...");
       return;
@@ -3253,12 +3253,12 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
       } else if (stage == "headline4"){
         //We should have results back from simultaneous pick
         //stored in -- game_self.game.state.sp[player_id - 1] = player_card;
-        
+
         this.game.state.headline_opponent_card = this.game.state.sp[2-this.game.player];
         stage = "headline6";
       }
     }else{ // man in earth orbit = HEADLINE PEEKING
-      
+
       let first_picker = 2;
       let second_picker = 1;
       let playerside = "US";
@@ -3268,7 +3268,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
       // first player sends card
       if (stage == "headline1") {
         this.updateLog(playerside + " selecting headline card first");
-        
+
         if (this.game.player == first_picker) {
           this.addMove("resolve\theadline");
           this.playerPickHeadlineCard();
@@ -3281,7 +3281,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
       // second player receives first card and sends card
       if (stage == "headline2") {
         this.updateLog(this.game.state.man_in_earth_orbit.toUpperCase() + " selecting headline card second");
-        
+
         if (this.game.player == second_picker) {
           this.game.state.headline_opponent_hash = hash;
           this.game.state.headline_opponent_xor = xor;
@@ -3307,7 +3307,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
     }
 
     /*
-     * Process Headline cards 
+     * Process Headline cards
      */
 
 
@@ -3323,12 +3323,12 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
       ussrcard = opponent_card;
       uscard = my_card;
     }
-      
+
 
     if (stage == "headline6") {
 
       this.updateLog("Moving into first headline card event");
-      
+
       //Only calculate once
       this.game.state.player_to_go = 2; //default to us (in ties) and update below
 
@@ -3341,13 +3341,13 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
       //
       // check to see if defectors is in play
       //
-     
+
       if (uscard == "defectors") {
-     
-        this.game.turn = []; 
+
+        this.game.turn = [];
         this.updateLog(`USSR headlines ${this.cardToText(ussrcard)}`);
         this.updateLog(`US headlines ${this.cardToText("defectors")} and cancels USSR headline.`);
-        
+
         //
         // only one player should trigger next round
         if (this.game.player == 1) {
@@ -3361,7 +3361,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
       } else {
         let statusMsg = "";
         if (this.game.state.player_to_go == 1){
-          statusMsg = `USSR headlines ${this.cardToText(ussrcard)}. US headlines ${this.cardToText(uscard)}`; 
+          statusMsg = `USSR headlines ${this.cardToText(ussrcard)}. US headlines ${this.cardToText(uscard)}`;
 
           this.updateLog(`USSR headlines ${this.cardToText(ussrcard)}.`);
           this.updateLog(`US headlines ${this.cardToText(uscard)}`);
@@ -3378,7 +3378,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
           this.removeCardFromHand(my_card);
           this.endTurn();
         }
-        this.updateStatus(statusMsg);  
+        this.updateStatus(statusMsg);
       }
       return 0;
     }
@@ -3458,11 +3458,11 @@ playerTurnHeadlineSelected(card, player) {
 
     // cannot pick china card or UN intervention
     if (card == "china") {
-      this.displayModal("Invalid Headline", "You cannot headline China"); 
+      this.displayModal("Invalid Headline", "You cannot headline China");
       return;
     }
     if (card == "unintervention") {
-      this.displayModal("Invalid Headline", "You cannot headline UN Intervention"); 
+      this.displayModal("Invalid Headline", "You cannot headline UN Intervention");
       return;
     }
 
@@ -3477,13 +3477,13 @@ playerTurnHeadlineSelected(card, player) {
     if (this.game.state.man_in_earth_orbit){
       if (this.game.state.man_in_earth_orbit === player) {
         //Second pick
-        twilight_self.addMove("headline\theadline3\t"+twilight_self.game.state.headline_hash+"\t"+twilight_self.game.state.headline_xor+"\t"+twilight_self.game.state.headline_card);      
-      }else{ 
+        twilight_self.addMove("headline\theadline3\t"+twilight_self.game.state.headline_hash+"\t"+twilight_self.game.state.headline_xor+"\t"+twilight_self.game.state.headline_card);
+      }else{
         //First pick
         twilight_self.addMove("headline\theadline2\t"+twilight_self.game.state.headline_hash+"\t"+twilight_self.game.state.headline_xor+"\t"+twilight_self.game.state.headline_card);
-      } 
+      }
     }else { // NORMAL HEADLINE ORDER
-    
+
       let hash1 = twilight_self.app.crypto.hash(card);    // my card
       let hash2 = twilight_self.app.crypto.hash(Math.random().toString());  // my secret
       let hash3 = twilight_self.app.crypto.hash(hash2 + hash1);             // combined hash
@@ -3495,9 +3495,9 @@ playerTurnHeadlineSelected(card, player) {
       twilight_self.game.spick_card = card;
       twilight_self.game.spick_hash = hash2;
       twilight_self.game.spick_done = 0;
-      
+
       twilight_self.addMove("SIMULTANEOUS_PICK\t"+twilight_self.game.player+"\t"+hash3+"\t"+hash3_sig);
-     
+
     }
 
 
@@ -3539,7 +3539,7 @@ playerTurnHeadlineSelected(card, player) {
     // player 1 (USSR) moves
     //
     if (this.game.state.turn == 1) {
-      
+
       if (this.game.state.turn_in_round == 0) {
           this.game.state.turn_in_round++;
           this.updateActionRound();
@@ -3637,7 +3637,7 @@ playerTurnHeadlineSelected(card, player) {
       }
 
       if (this.game.player == 2) {
-    
+
         if (this.game.state.events.missile_envy == 2) {
           //
           // moves remaining will be 0 last turn
@@ -3693,8 +3693,8 @@ playerTurnHeadlineSelected(card, player) {
     //
     // remove back button from forced gameplay
     //
-    if (selected_card != null) { 
-      this.game.state.back_button_cancelled = 1; 
+    if (selected_card != null) {
+      this.game.state.back_button_cancelled = 1;
     }
 
     //
@@ -3722,7 +3722,7 @@ playerTurnHeadlineSelected(card, player) {
       if (this.game.deck[0].hand.length == 1) {
          if (this.game.deck[0].hand[0] == "china") {
 
-          if (is_player_skipping_playing_china_card){ 
+          if (is_player_skipping_playing_china_card){
             //Keep passing automatically until end of round
             twilight_self.addMove("resolve\tplay");
             twilight_self.endTurn();
@@ -3750,7 +3750,7 @@ playerTurnHeadlineSelected(card, player) {
 
             return;
           }
-          
+
          }
        }
     }
@@ -3773,7 +3773,7 @@ playerTurnHeadlineSelected(card, player) {
 
     if (this.game.player == 2) {
       player = "us";
-      opponent = "ussr"; 
+      opponent = "ussr";
     }
 
     is_this_missile_envy_noneventable = this.game.state.events.missileenvy;
@@ -3803,7 +3803,7 @@ playerTurnHeadlineSelected(card, player) {
       /*Function called with a particular card in mind*/
       if (selected_card === "scoringcard") {
         user_message = 'Scoring card must be played: <ul>';
-        for (i = 0; i < this.game.deck[0].hand.length; i++) {  
+        for (i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) {
             selected_card = this.game.deck[0].hand[i];
             playable_cards.push(this.game.deck[0].hand[i]);
@@ -3851,9 +3851,9 @@ playerTurnHeadlineSelected(card, player) {
           playable_cards.push(this.game.deck[0].hand[i]);
           cards_available++;
         }
-        
-        if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) { 
-          scoring_cards_available++; 
+
+        if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) {
+          scoring_cards_available++;
         }
       }
 
@@ -3875,7 +3875,7 @@ playerTurnHeadlineSelected(card, player) {
       if (scoring_cards_available >= moves_remaining) {
         playable_cards_handled = 0;
       } else {
-        if (cards_available == 0) { 
+        if (cards_available == 0) {
           playable_cards_handled = 0;
         }
       }
@@ -3994,8 +3994,8 @@ playerTurnHeadlineSelected(card, player) {
       let moves_remaining = rounds_in_turn - twilight_self.game.state.turn_in_round;
 
       for (i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
-        if (twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]]?.scoring == 1) { 
-          scoring_cards_available++; 
+        if (twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]]?.scoring == 1) {
+          scoring_cards_available++;
         }
       }
 
@@ -4009,14 +4009,14 @@ playerTurnHeadlineSelected(card, player) {
       twilight_self.hideCard(); //close cardbox in case it is open
 
       //
-      // WWBY 
+      // WWBY
       //
       if (twilight_self.game.state.events.wwby == 1 && twilight_self.game.state.headline == 0) {
         if (player == "us") {
           if (card != "unintervention") {
             if (twilight_self.playerHoldsCard("unintervention")){
               let c = await sconfirm(`If you don't play ${twilight_self.cardToText("unintervention")}, USSR will gain 3 VP. Still play this card?`);
-              if (c) {} else { return; }       
+              if (c) {} else { return; }
             }
             twilight_self.game.state.events.wwby_triggers = 1; //Remember penalty to apply with next endturn
           }
@@ -4122,10 +4122,10 @@ playerTurnHeadlineSelected(card, player) {
 
         announcement += '<li class="option" id="ops">play ops</li>';
         if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
-        announcement += twilight_self.isSpaceRaceAvailable(ops);    
-        let header_msg = `${player.toUpperCase()} playing <span>${twilight_self.game.deck[0].cards[card].name}</span>`; 
+        announcement += twilight_self.isSpaceRaceAvailable(ops);
+        let header_msg = `${player.toUpperCase()} playing <span>${twilight_self.game.deck[0].cards[card].name}</span>`;
 
-        if (twilight_self.game.state.back_button_cancelled != 1) { 
+        if (twilight_self.game.state.back_button_cancelled != 1) {
 	  twilight_self.bindBackButtonFunction(() => { this.playerTurn(); });
 	}
         twilight_self.updateStatusWithOptions(header_msg, announcement);
@@ -4228,7 +4228,7 @@ playerTurnHeadlineSelected(card, player) {
               <li class="option" id="dontshowme">don't confirm (expert mode)...</li>
               </ul>
               `;
-          
+
              twilight_self.bindBackButtonFunction(()=>{ twilight_self.playerTurn(original_selected_card)} );
              twilight_self.updateStatusWithOptions(fr_header, fr_msg, function(action) {
               $('.card').off();
@@ -4303,7 +4303,7 @@ playerTurnHeadlineSelected(card, player) {
 
     let original_ops = ops;
     let twilight_self = this;
-    
+
     //
     // modify ops
     ops = this.modifyOps(ops, card, player);
@@ -4312,7 +4312,7 @@ playerTurnHeadlineSelected(card, player) {
 
     // reset events / DOM
     twilight_self.playerFinishedPlacingInfluence();
- 
+
     if (player === me) {
 
       this.startClock();
@@ -4323,7 +4323,7 @@ playerTurnHeadlineSelected(card, player) {
       if (twilight_self.game.state.headline == 1) { bind_back_button_state = false; }
       if (twilight_self.game.state.back_button_cancelled == 1) {
 	twilight_self.cancelBackButtonFunction();
-	bind_back_button_state = false; 
+	bind_back_button_state = false;
       }
 
       let html = '<ul>';
@@ -4338,7 +4338,7 @@ playerTurnHeadlineSelected(card, player) {
       if (this.game.state.events.unintervention == 1) {html += this.isSpaceRaceAvailable(ops); }
       html += '</ul>';
 
-      
+
       if (bind_back_button_state) {
         twilight_self.bindBackButtonFunction(() => {
           twilight_self.game.state.events.vietnam_revolts_eligible = 1;
@@ -4483,7 +4483,7 @@ playerTurnHeadlineSelected(card, player) {
           if (twilight_self.game.state.events.cubanmissilecrisis == 2 && player =="us" ||
               twilight_self.game.state.events.cubanmissilecrisis == 1 && player =="ussr"
           ) {
-            let c = await sconfirm("Are you sure you wish to coup during the Cuban Missile Crisis?"); 
+            let c = await sconfirm("Are you sure you wish to coup during the Cuban Missile Crisis?");
             if (c) {
             } else {
               twilight_self.playOps(player, ops, card);
@@ -4514,7 +4514,7 @@ playerTurnHeadlineSelected(card, player) {
 
           $(".country").off();
           $(".country").on('click', async function() {
-            
+
             let c = $(this).attr('id');
 
             let coupHeader = `Cannot Realign ${twilight_self.countries[c].name}`;
@@ -4564,12 +4564,12 @@ playerTurnHeadlineSelected(card, player) {
 
             if ((player == "us" && twilight_self.countries[c].ussr <= 0) || (player == "ussr" && twilight_self.countries[c].us <= 0)) {
               failureReason = "No enemy influence";
-            } 
+            }
 
-            if (failureReason.length > 0) { 
-            
+            if (failureReason.length > 0) {
+
               twilight_self.displayModal(coupHeader, failureReason);
-            
+
             } else {
 
               //
@@ -4577,7 +4577,7 @@ playerTurnHeadlineSelected(card, player) {
               //
               if (twilight_self.countries[c].region !== "seasia") { twilight_self.game.state.events.vietnam_revolts_eligible = 0; }
               if (twilight_self.countries[c].region !== "seasia" && twilight_self.countries[c].region !== "asia") { twilight_self.game.state.events.china_card_eligible = 0; }
-             
+
               //Play move / add move to queue
               var result = twilight_self.playRealign(player, c);
               twilight_self.addMove("realign\t"+player+"\t"+c);
@@ -4600,7 +4600,7 @@ playerTurnHeadlineSelected(card, player) {
                   alignment_rolls++;
                 } else {
 
-                  twilight_self.reverseMoves("realign");             
+                  twilight_self.reverseMoves("realign");
                   return;
                 }
               }
@@ -4684,7 +4684,7 @@ playerTurnHeadlineSelected(card, player) {
       }
       html += '</ul>';
       twilight_self.updateStatusWithOptions('Select country from which to remove influence:',html, function(action2) {
-    
+
         twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis\t0");
         twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_cancelled\t1");
         twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_removal_country\t"+action2);
@@ -4704,11 +4704,11 @@ playerTurnHeadlineSelected(card, player) {
     }
   }
 
-  
+
   revertTurn() {
 
     let twilight_self = this;
- 
+
     this.cancelBackButtonFunction();
     this.hud.back_button_clicked = true;
 console.log("REVERTING TURN: ");
@@ -4778,7 +4778,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
 
 
-  
+
 
 
   playerTriggerOps(player, card) {
@@ -4813,18 +4813,18 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
             twilight_self.game.state.event_before_ops = 1;
             twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+twilight_self.game.deck[0].cards[card].ops);
             twilight_self.addMove("event\t"+player+"\t"+card);
-            
+
           }
           else if (action2 === "after_ops") {
             twilight_self.addMove("event\t"+player+"\t"+card);
             twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+twilight_self.game.deck[0].cards[card].ops);
           }
-          
+
           twilight_self.removeCardFromHand(card);
           twilight_self.endTurn();
           return;
         });
-      
+
 
       return;
 
@@ -4925,8 +4925,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     for (var i in this.countries) {
         let bonus_region_applies = 0;
         for (let z = 0; z < bonus_regions.length; z++) {
-          if (this.countries[i].region.indexOf(bonus_regions[z]) > -1) { 
-            bonus_region_applies = 1; 
+          if (this.countries[i].region.indexOf(bonus_regions[z]) > -1) {
+            bonus_region_applies = 1;
           }
         }
 
@@ -5039,7 +5039,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
           this.game.countries[p].place = 1;
           let divname = "#"+p;
           $(divname).addClass("easterneurope");
-        } 
+        }
 
         $(".easterneurope").off();
         $(".easterneurope").on('click', function() {
@@ -5056,7 +5056,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
               twilight_self.game.state.placement = 1;
               twilight_self.endTurn();
             }else{
-              twilight_self.updateStatusAndListCards(`You are the USSR. Place ${ops_to_place} additional influence in Eastern Europe.`);              
+              twilight_self.updateStatusAndListCards(`You are the USSR. Place ${ops_to_place} additional influence in Eastern Europe.`);
             }
           } else { //Should be impossible to hit here
             twilight_self.displayModal("Invalid Influence Placement", `You cannot place there...: ${ops_to_place} influence left`);
@@ -5092,7 +5092,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
               twilight_self.game.state.placement = 1;
               twilight_self.endTurn();
             }else{
-              twilight_self.updateStatusAndListCards(`You are the US. Place ${ops_to_place} additional influence in Western Europe.`)              
+              twilight_self.updateStatusAndListCards(`You are the US. Place ${ops_to_place} additional influence in Western Europe.`)
             }
           } else { //Should be impossible to hit here
             twilight_self.displayModal("Invalid Influence Placement", `You cannot place there...: ${ops_to_place} influence left`);
@@ -5109,11 +5109,11 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     this.startClock();
 
     let twilight_self = this;
-    
+
     twilight_self.addMove("resolve\tplacement_bonus");
 
     if (this.game.player == 1) { //USSR
-      
+
       this.updateStatusAndListCards(`You are the USSR. Place ${bonus} additional influence in countries with existing Soviet influence.`);
 
       for (var i in this.game.countries) {
@@ -5148,7 +5148,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
           let countryname  = i;
           let divname      = '#'+i;
-          $(divname).addClass("westerneurope");          
+          $(divname).addClass("westerneurope");
         }
       }
 
@@ -5165,7 +5165,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
           twilight_self.game.state.placement = 1;
           twilight_self.endTurn();
         }else{
-          twilight_self.updateStatusAndListCards(`You are the US. Place ${bonus} additional influence in countries with existing American influence.`); 
+          twilight_self.updateStatusAndListCards(`You are the US. Place ${bonus} additional influence in countries with existing American influence.`);
         }
       });
 
@@ -5211,7 +5211,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
 
   /*
-   * So, why do we need to specify which "player" (e.g. "us"/"ussr") in this function? 
+   * So, why do we need to specify which "player" (e.g. "us"/"ussr") in this function?
    */
   showInfluence(country, player="", mycallback=null) {
 
@@ -5223,7 +5223,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     let ussr_i = parseInt(this.countries[country].ussr);
 
     let countryMaster = this.whoControls(country);
-    
+
     //Update HTML for USSR and US
 
     if (ussr_i == 0){
@@ -5248,9 +5248,9 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         $(`#${country}`).addClass("shake").delay(1500).queue(function () {
           $(this).removeClass("shake").dequeue();
         });
-      }  
+      }
     }
-    
+
     $('.us_control').css('height', this.scale(100)+"px");
     $('.us_uncontrol').css('height', this.scale(100)+"px");
     $('.ussr_control').css('height', this.scale(100)+"px");
@@ -5285,7 +5285,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
 
 
- 
+
 
   playerPlaceInfluence(player, mycallback=null) {
 
@@ -5307,7 +5307,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       // Chernobyl
       //
       if (this.game.player == 1 && this.game.state.events.chernobyl != "") {
-        if (this.countries[i].region == this.game.state.events.chernobyl) { 
+        if (this.countries[i].region == this.game.state.events.chernobyl) {
 	        restricted_country = 1;
         }
         if (this.game.state.events.chernobyl == "asia" && this.countries[i].region == "seasia") {
@@ -5372,11 +5372,11 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 	              twilight_self.game.state.events.cubanmissilecrisis_cancelled = 1; //for immediate effect
 	              twilight_self.game.state.events.cubanmissilecrisis_removal_country = countryname;
                     }
-                    
+
                   }
                 }
               }
-              
+
               twilight_self.addMove("place\tus\tus\t"+countryname+"\t1");
               twilight_self.placeInfluence(countryname, 1, "us", mycallback);
 
@@ -5453,7 +5453,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
   }
 
   playerFinishedPlacingInfluence(player, mycallback=null) {
-    
+
     /*for (var i in this.countries) {
       let divname      = '#'+i;
       $(divname).off();
@@ -5486,7 +5486,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
           if ((myspacerace < 4 && ops > 1) || (myspacerace < 7 && ops > 2) || ops > 3){
             return '<li class="option" id="space">space race</li>';
           }
-        } 
+        }
         return "";
   }
 
@@ -5510,7 +5510,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
     let successful     = 0;
     let box       = (player == "ussr") ? this.game.state.space_race_ussr : this.game.state.space_race_us;
-    
+
     if (box == 0) { if (roll < 4) { successful = 1; } }
     if (box == 1) { if (roll < 5) { successful = 1; } }
     if (box == 2) { if (roll < 4) { successful = 1; } }
@@ -5542,7 +5542,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
     $(".country").off();
     $(".country").on('click', async function() {
-      
+
       let countryname = $(this).attr('id');
 
       //
@@ -5550,7 +5550,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       //
       if (twilight_self.game.state.defcon == 2 && twilight_self.game.countries[countryname].bg == 1 &&
           !(player == "us" && twilight_self.game.state.events.nuclearsubs == 1)) {
-        let c = await sconfirm("Are you sure you wish to coup a Battleground State? (DEFCON is 2)"); 
+        let c = await sconfirm("Are you sure you wish to coup a Battleground State? (DEFCON is 2)");
         if (c) {
         } else {
           twilight_self.playOps(player, ops, card);
@@ -5567,11 +5567,11 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       if (twilight_self.game.state.limit_ignoredefcon == 0) {
         if (twilight_self.game.state.limit_region.indexOf(twilight_self.countries[countryname].region) > -1) {
           failureReason = "Invalid Region for this Coup";
-          
+
         }
         if (twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.defcon < 5) {
           failureReason = "DEFCON prevents coups in Europe";
-          
+
         }
         if ((twilight_self.countries[countryname].region == "asia" || twilight_self.countries[countryname].region == "seasia") && twilight_self.game.state.defcon < 4) {
           failureReason = "DEFCON prevents coups in Asia";
@@ -5610,10 +5610,10 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
      if ((player == "us" && twilight_self.countries[countryname].ussr <= 0) || (player == "ussr" && twilight_self.countries[countryname].us <= 0)) {
         failureReason = "No enemy influence";
-      } 
+      }
 
 
-      if (failureReason.length > 0) { 
+      if (failureReason.length > 0) {
         twilight_self.displayModal(coupHeader, failureReason);
       } else {
         //
@@ -5626,7 +5626,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         if (player == "ussr" && twilight_self.game.state.events.vietnam_revolts == 1 && twilight_self.game.countries[countryname].region == "seasia") {
     	    if (twilight_self.returnOpsOfCard(card) == 1 && twilight_self.game.state.events.redscare_player1 >= 1) {
             twilight_self.updateLog("Vietnam Revolts bonus OP negated by Red Purge");
-    	    } else { 
+    	    } else {
             twilight_self.updateLog("Vietnam Revolts bonus OP added to Southeast Asia coup...");
             ops++;
           }
@@ -5637,7 +5637,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       }
 
     });
-    
+
   }
 
 
@@ -5751,7 +5751,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
     let winning = roll + ops - (stability * 2);
 
- 
+
     if (winning > 0) {
 
       if (this.browser_active == 1) {
@@ -5776,14 +5776,14 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         }
       }
       this.placeInfluence(countryname, gained, player);
-    
+
     } else {
       if ((player == "us" && this.game.player == 2) || (player == "ussr" && this.game.player == 1) ) {
         this.displayModal(`COUP FAILS!`);
       }else{
         this.displayModal(`COUP in ${this.countries[countryname].name}!`,"Your forces repel the coup and the government remains in power");
       }
-      
+
       this.updateLog(`${player.toUpperCase()}'s coup in ${this.countries[countryname].name} fails, no change in influence`);
     }
 
@@ -5798,7 +5798,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
 
   playRealign(player, country) {
-   
+
       this.updateLog(player.toUpperCase() + " attempts to realign " + this.countries[country].name);
 
       let bonus_us = 0;
@@ -5865,7 +5865,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       }else{
         this.updateLog(`Realignment roll is a draw! US [${roll_us-bonus_us} + ${bonus_us}] = USSR [${roll_ussr-bonus_ussr} + ${bonus_ussr}]`);
       }
-   
+
   }
 
 
@@ -6591,7 +6591,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 console.log("resetting BG countries for: " + i);
         this.game.countries[i].bg = this.countries[i].bg;
       } else {
-        if (this.game.countries[i].region === region) { 
+        if (this.game.countries[i].region === region) {
 console.log("resetting BG countries for: " + i);
 	  this.game.countries[i].bg = this.countries[i].bg;
 	}
@@ -6658,7 +6658,7 @@ console.log("resetting BG countries for: " + i);
       deck['specialrelation'] = { img : "TNRnTS-105" ,name : "Special Relationship", scoring : 0 , player : "us"   , recurring : 1 , ops : 2 };
       deck['norad']           = { img : "TNRnTS-106" ,name : "NORAD", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
     }
-    
+
     //
     // remove or add specified cards
     //
@@ -6681,7 +6681,7 @@ console.log("resetting BG countries for: " + i);
 	// END OF HISTORY
         if (key === "peronism") { deck['peronism']       = { img : "TNRnTS-307png" ,name : "Peronism", scoring : 0 , player : "both"   , recurring : 0 , ops : 1 }; }
 
-	// COLD WAR CRAZIES 
+	// COLD WAR CRAZIES
         if (key === "berlinairlift") { deck['berlinairlift']      	= { img : "TNRnTS-401png" ,name : "Berlin Airlift", scoring : 0 , player : "us"     , recurring : 0 , ops : 1 }; }
         if (key === "communistrevolution") { deck['communistrevolution']       = { img : "TNRnTS-402png" ,name : "Communist Revolution", scoring : 0 , player : "ussr"   , recurring : 1 , ops : 2 }; }
         if (key === "philadelphia") { deck['philadelphia']      	= { img : "TNRnTS-403png" ,name : "Philadelphia Experiment", scoring : 0 , player : "us"     , recurring : 0 , ops : 3 }; }
@@ -6863,7 +6863,7 @@ console.log("resetting BG countries for: " + i);
         if (key === "inftreaty") { deck['inftreaty']         = { img : "TNRnTS-308png" ,name : "INF Treaty", scoring : 0 , player : "both"   , recurring : 0 , ops : 3 }; }
 
         // COLD WAR CRAZIES
-        if (key === "sovietcoup") { deck['sovietcoup']       = { img : "TNRnTS-405png" ,name : "Soviet Coup", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 4 }; }    
+        if (key === "sovietcoup") { deck['sovietcoup']       = { img : "TNRnTS-405png" ,name : "Soviet Coup", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 4 }; }
 
         // TWILIGHT ABSURDUM
         if (key === "brexit") { deck['brexit'] 	     	= { img : "TNRnTS-501png" ,name : "Brexit", scoring : 0 , player : "both"     , recurring : 1 , ops : 4 }; }
@@ -6906,10 +6906,10 @@ console.log("resetting BG countries for: " + i);
 
 
 
-  
+
 
   whoControls(country){
-    let cobj = this.countries[country]; 
+    let cobj = this.countries[country];
     if (!cobj){
       return "";
     }
@@ -7046,7 +7046,7 @@ console.log("resetting BG countries for: " + i);
         $(divname).off();
       } else {
 
-        //Go ahead an remove opponent controlled countries if we don't have both in favor        
+        //Go ahead an remove opponent controlled countries if we don't have both in favor
         if (this.game.state.events.region_bonus == "asia" || this.game.state.events.china_card_in_play == 0) {
           if (this.game.player == 1) {
             // prevent breaking control
@@ -7118,10 +7118,10 @@ console.log("resetting BG countries for: " + i);
       }
       ops -= this.game.state.events.redscare_player2;
     }
-    
+
     if (ops <= 0) { return 1; }
     if (ops >= 4) { return 4; }
-    
+
     return ops;
   }
 
@@ -7165,7 +7165,7 @@ console.log("resetting BG countries for: " + i);
     total_vp = vp_adjustment.us.vp - vp_adjustment.ussr.vp;
     this.game.state.vp += total_vp;
     this.updateLog("Europe: " + total_vp + " VP");
- 
+
     vp_adjustment = this.calculateScoring("asia");
     total_vp = vp_adjustment.us.vp - vp_adjustment.ussr.vp;
     this.game.state.vp += total_vp;
@@ -7242,27 +7242,27 @@ console.log("resetting BG countries for: " + i);
 
   determineRegionVictor(scoring, region_scoring_range, max_bg_num) {
 
-    if (scoring.us.bg == max_bg_num && scoring.us.total > scoring.ussr.total) { 
-      scoring.us.vp = region_scoring_range.control; 
+    if (scoring.us.bg == max_bg_num && scoring.us.total > scoring.ussr.total) {
+      scoring.us.vp = region_scoring_range.control;
       scoring.us.status = "Control";
-    }else if (scoring.us.bg > scoring.ussr.bg  && scoring.us.total > scoring.ussr.total && scoring.us.total > scoring.us.bg) { 
-      scoring.us.vp = region_scoring_range.domination; 
+    }else if (scoring.us.bg > scoring.ussr.bg  && scoring.us.total > scoring.ussr.total && scoring.us.total > scoring.us.bg) {
+      scoring.us.vp = region_scoring_range.domination;
       scoring.us.status = "Domination";
-    }else if (scoring.us.total + scoring.us.bg > 0) { 
-      scoring.us.vp = region_scoring_range.presence; 
+    }else if (scoring.us.total + scoring.us.bg > 0) {
+      scoring.us.vp = region_scoring_range.presence;
       scoring.us.status = "Presence";
     }else{
       scoring.us.status = "None";
     }
 
-    if (scoring.ussr.bg == max_bg_num && scoring.ussr.total > scoring.us.total) { 
+    if (scoring.ussr.bg == max_bg_num && scoring.ussr.total > scoring.us.total) {
       scoring.ussr.vp = region_scoring_range.control;
-      scoring.ussr.status = "Control"; 
-    }else if (scoring.ussr.bg > scoring.us.bg && scoring.ussr.total > scoring.us.total && scoring.ussr.total > scoring.ussr.bg) { 
-      scoring.ussr.vp = region_scoring_range.domination; 
+      scoring.ussr.status = "Control";
+    }else if (scoring.ussr.bg > scoring.us.bg && scoring.ussr.total > scoring.us.total && scoring.ussr.total > scoring.ussr.bg) {
+      scoring.ussr.vp = region_scoring_range.domination;
       scoring.ussr.status = "Domination";
-    }else if (scoring.ussr.total + scoring.ussr.bg > 0) { 
-      scoring.ussr.vp = region_scoring_range.presence; 
+    }else if (scoring.ussr.total + scoring.ussr.bg > 0) {
+      scoring.ussr.vp = region_scoring_range.presence;
       scoring.ussr.status = "Presence";
     }else{
       scoring.ussr.status = "None";
@@ -7319,23 +7319,23 @@ console.log("resetting BG countries for: " + i);
         scoring.us.neigh = [];
         scoring.ussr.neigh = [];
 
-        if (this.isControlled("us", "finland") == 1) { 
-	  scoring.us.vp++; 
+        if (this.isControlled("us", "finland") == 1) {
+	  scoring.us.vp++;
 	  scoring.us.neigh.push("finland");
 	  scoring.bonus.push({ side : "us" , name : "Adjacency" , desc : "US +1 for Finland" , icon : "/twilight/img/adjacency.png" });
 	}
-        if (this.isControlled("us", "romania") == 1) { 
-	  scoring.us.vp++; 
+        if (this.isControlled("us", "romania") == 1) {
+	  scoring.us.vp++;
 	  scoring.us.neigh.push("romania");
 	  scoring.bonus.push({ side : "us" , name : "Adjacency" , desc : "US +1 for Romania" , icon : "/twilight/img/adjacency.png" });
 	}
-        if (this.isControlled("us", "poland") == 1) { 
-	  scoring.us.vp++; 
-	  scoring.us.neigh.push("poland"); 
+        if (this.isControlled("us", "poland") == 1) {
+	  scoring.us.vp++;
+	  scoring.us.neigh.push("poland");
 	  scoring.bonus.push({ side : "us" , name : "Adjacency" , desc : "US +1 for Poland" , icon : "/twilight/img/adjacency.png" });
 	}
-        if (this.isControlled("ussr", "canada") == 1) { 
-	  scoring.ussr.vp++; 
+        if (this.isControlled("ussr", "canada") == 1) {
+	  scoring.ussr.vp++;
 	  scoring.ussr.neigh.push("canada");
 	  scoring.bonus.push({ side : "ussr" , name : "Adjacency" , desc : "USSR +1 for Canada" , icon : "/twilight/img/adjacency.png" });
 	}
@@ -7344,7 +7344,7 @@ console.log("resetting BG countries for: " + i);
         // GOUZENKO AFFAIR -- early war optional
         //
         if (this.game.state.events.optional.gouzenkoaffair == 1) {
-          if (this.isControlled("us", "canada") == 1) { 
+          if (this.isControlled("us", "canada") == 1) {
 	    vp_us++;
 	    scoring.us.neigh.push("canada");
 	    scoring.bonus.push({ side : "us" , name : "Gouzenko Affair" , desc : "US +1 for Canada-USSR adjacency" , icon : "/twilight/img/adjacency.png"});
@@ -7359,9 +7359,9 @@ console.log("resetting BG countries for: " + i);
       // MIDEAST //
       /////////////
       case "mideast":
-        
+
         scoring_range = { presence: 3, domination: 5, control: 7 };
-        
+
         //
         // Shuttle Diplomacy
         //
@@ -7370,7 +7370,7 @@ console.log("resetting BG countries for: " + i);
           if (scoring.ussr.bg > 0) {
             scoring.ussr.bg--;
             scoring.ussr.total--;
-          }         
+          }
           if (mouseover_preview == 0) { //commit score
             scoring.shuttle = 1;
             this.game.state.events.shuttlediplomacy = 0;
@@ -7461,14 +7461,14 @@ console.log("resetting BG countries for: " + i);
       // ASIA //
       //////////
       case "asia":
-        
+
         //move Taiwan to BG if necessay
         if (this.game.state.events.formosan == 1 && this.isControlled("us", "taiwan") == 1) {
           bg_countries.push("taiwan");
           scoring.us.bg++;
 	  scoring.bonus.push({ side : "us" , name : "Formosan Resolution" , desc : "US +1 battleground country" , icon : "/twilight/img/Event35.svg" });
         }
-        
+
         scoring_range = {presence: 3, domination: 7, control: 9};
 
         ///////////////////////
@@ -7487,11 +7487,11 @@ console.log("resetting BG countries for: " + i);
             this.game.state.events.shuttlediplomacy = 0;
       	    this.game.deck[0].discards['shuttle'] = this.game.deck[0].cards['shuttle'];
           }
-           
+
       	}
 
         scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
-	
+
 console.log("PRESC: " + JSON.stringify(scoring));
 
         //
@@ -7510,11 +7510,11 @@ console.log("PRESC: " + JSON.stringify(scoring));
 	  scoring.us.neigh.push("northkorea");
 	  scoring.bonus.push({ side : "us" , name : "Adjacency" , desc : "US +1 for North Korea" , icon : "/twilight/img/adjacency.png" });
 	}
-        if (this.isControlled("ussr", "japan") == 1) { 
+        if (this.isControlled("ussr", "japan") == 1) {
           if (this.game.state.events.shuttlediplomacy == 1) {
             this.updateLog("USSR loses Japan/US-adjacency with Shuttle Diplomacy");
   	  } else {
-  	    scoring.ussr.vp++; 
+  	    scoring.ussr.vp++;
             scoring.ussr.neigh.push("japan");
 	    scoring.bonus.push({ side : "ussr" , name : "Adjacency" , desc : "USSR +1 for Japan" , icon : "/twilight/img/adjacency.png" });
 	  }
@@ -7529,7 +7529,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
 
     return scoring;
-  
+
   }
 
 
@@ -7922,7 +7922,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
 
 
-  
+
   updateRound() {
 
     let dt = 0;
@@ -7933,7 +7933,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
     dt = this.game.state.round_ps[rid].top;
     dl = this.game.state.round_ps[rid].left;
-  
+
     dt = this.scale(dt)+"px";
     dl = this.scale(dl)+"px";
 
@@ -7977,7 +7977,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
         // phasing player in headline loses
         this.endGame(this.game.players[2 - this.game.state.player_to_go], "thermonuclear war");
       }else{
-        this.endGame(this.game.players[2 - this.game.state.turn], "thermonuclear war");  
+        this.endGame(this.game.players[2 - this.game.state.turn], "thermonuclear war");
       }
       return;
     }
@@ -8172,23 +8172,23 @@ console.log("SCORING: " + JSON.stringify(scoring));
     }
 
     if (player == "us"){
-      this.game.state.vp += vp_change;  
+      this.game.state.vp += vp_change;
     } else {
       this.game.state.vp -= vp_change;
     }
-    
+
     this.updateVictoryPoints();
     if (vp_change > 0){
-      this.updateLog(`${player.toUpperCase()} gains ${vp_change} VP for advancing in the space race.`);  
+      this.updateLog(`${player.toUpperCase()} gains ${vp_change} VP for advancing in the space race.`);
     }
-    
+
 
   }
 
 
 
   updateSpaceRace() {
-    
+
     if (!this.browser_active){return;}
 
     let dt_us = this.game.state.space_race_ps[this.game.state.space_race_us].top;
@@ -8589,7 +8589,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
     return html
   }
 
-  
+
    mobileCardSelect(card, player, mycallback, prompttext="play") {
 
     let twilight_self = this;
@@ -8658,8 +8658,8 @@ console.log("SCORING: " + JSON.stringify(scoring));
   }
 
 
-  
-  
+
+
 
   displayChinaCard() {
 
@@ -8687,9 +8687,9 @@ console.log("SCORING: " + JSON.stringify(scoring));
   }
 
 
-  // 
-  // track events which are cancelled / cancellable dynamically 
-  // 
+  //
+  // track events which are cancelled / cancellable dynamically
+  //
   cancelEventsDynamically() {
 
       // NATO
@@ -8710,7 +8710,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
         this.uncancelEvent("wargames");
       }
       // onesmallstep - if we are behind/ahead
-      if (this.game.player == 2) { 
+      if (this.game.player == 2) {
       	if (this.game.state.space_race_us >= this.game.state.space_race_ussr) {
       	  this.cancelEvent("onesmallstep");
               } else {
@@ -8736,7 +8736,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
   // of every round.
   //
   // if the catalyst for adding a card is triggered, the card is added to the deck
-  // and the deck is shuffled. if a card is removed, players will remove it from 
+  // and the deck is shuffled. if a card is removed, players will remove it from
   // their hand and draw a new card to make up for the shortfall.
   //
   dynamicDeckManagement() {
@@ -8776,7 +8776,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
     if (this.game.state.events.redscare_player1_count > 1) {
       this.addCardToDeck("antiapartheid", "Double Red Purge");
       this.addCardToDeck("samotlor", "Double Red Purge");
-    } 
+    }
     if (this.game.state.events.redscare_player2_count > 1) {
       this.addCardToDeck("carterdoctrine", "Double Red Scare");
     }
@@ -8792,11 +8792,11 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
 
     //
-    // add or remove the cardkeys to these two 
-    // arrays to bring them into the game or 
+    // add or remove the cardkeys to these two
+    // arrays to bring them into the game or
     // remove them from it. note that if you are
-    // adding a removed card back into the game 
-    // you should remove it from the removed 
+    // adding a removed card back into the game
+    // you should remove it from the removed
     // array.
     //
     let saito_edition_removed = this.game.saito_cards_removed;
@@ -8983,7 +8983,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
       return 1;
     }
 
-    
+
     let i_played_the_card = (this.roles[this.game.player] == player);
 
 
