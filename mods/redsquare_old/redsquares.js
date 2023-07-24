@@ -1059,7 +1059,7 @@ class RedSquare extends ModTemplate {
         has_images = 1;
       }
       //This is the received TX without included optional data!
-      let txjson = tx.serialize_to_web(this.app);
+      let txjson = tx.serialize();
       let tx_size = txjson.length;
 
       let params = {
@@ -1349,7 +1349,7 @@ class RedSquare extends ModTemplate {
     let maximum = 20;
     for (let tweet of this.tweets) {
       tweet.tx.optional.updated_at = tweet.updated_at;
-      tweet_txs.push(tweet.tx.serialize_to_web(this.app));
+      tweet_txs.push(tweet.tx.serialize());
       if (--maximum <= 0) {
         break;
       }
@@ -1492,7 +1492,7 @@ class RedSquare extends ModTemplate {
       if (rows[i].flagged) {
         tx.optional.flagged = rows[i].flagged;
       }
-      let hexstring = tx.serialize_to_web(this.app);
+      let hexstring = tx.serialize();
       hex_entries.push(hexstring);
     }
 

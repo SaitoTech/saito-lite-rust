@@ -174,7 +174,7 @@ class Post {
     //
     // any previous recipients get added to "to"
     //
-    if (post_self?.tweet?.tx?.transaction) {
+    if (post_self?.tweet?.tx) {
       for (let i = 0; i < post_self.tweet.tx.to.length; i++) {
         if (!keys.includes(post_self.tweet.tx.to[i].publicKey)) {
           keys.push(post_self.tweet.tx.to[i].publicKey);
@@ -200,7 +200,7 @@ class Post {
     }
     //Retweets
     if (source == "Retweet") {
-      data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);
+      data.retweet_tx = post_self.tweet.tx.serialize();
       data.signature = post_self.tweet.tx.signature;
     }
 

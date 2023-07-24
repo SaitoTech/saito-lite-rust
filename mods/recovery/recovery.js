@@ -180,7 +180,7 @@ class Recovery extends ModTemplate {
     let txmsg = tx.returnMessage();
     let publickey = tx.from[0].publicKey;
     let hash = txmsg.hash || "";
-    let txjson = JSON.stringify(tx.transaction);
+    let txjson = JSON.stringify(tx);
 
     let sql =
       "INSERT OR REPLACE INTO recovery (publickey, hash, tx) VALUES ($publickey, $hash, $tx)";

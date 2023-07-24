@@ -1063,7 +1063,7 @@ class Arcade extends ModTemplate {
       };
       await this.app.storage.executeDatabase(sql, params, "arcade");
 
-      this.app.storage.saveTransaction(
+      await this.app.storage.saveTransaction(
         tx,
         { field1: txmsg.module + "_" + txmsg.game_id },
         "localhost"
@@ -1878,18 +1878,18 @@ class Arcade extends ModTemplate {
         }
       }
 
-      let newtx = this.createOpenTransaction(gamedata);
+      let newtx = await this.createOpenTransaction(gamedata);
 
       if (gameType == "direct") {
         this.app.connection.emit("arcade-launch-game-scheduler", newtx);
         return;
       }
 
-      this.app.network.propagateTransaction(newtx);
+      await this.app.network.propagateTransaction(newtx);
       this.app.connection.emit("relay-send-message", {
         recipient: "PEERS",
         request: "arcade spv update",
-        data: newtx.transaction,
+        data: newtx.toJson(),
       });
       this.addGame(newtx, gamedata.invitation_type);
       //Render game in my game list

@@ -115,11 +115,11 @@ class Archive extends ModTemplate {
       let block_id = 0;
       let block_hash = "";
 
-      if (blk.block.id) {
-        block_id = blk.block.id;
+      if (blk.id) {
+        block_id = blk.id;
       }
-      if (blk.returnHash()) {
-        block_hash = blk.returnHash();
+      if (blk.hash) {
+        block_hash = blk.hash;
       }
 
       await this.saveTransaction(tx, { block_id, block_hash }, 1);
@@ -146,15 +146,15 @@ class Archive extends ModTemplate {
     //
     if (req.request === "archive") {
       if (req.data.request === "delete") {
-        let newtx = new Transaction(undefined, req.data.tx.transaction);
+        let newtx = new Transaction(undefined, req.data.tx);
         await this.deleteTransaction(newtx, req.data);
       }
       if (req.data.request === "save") {
-        let newtx = new Transaction(undefined, req.data.tx.transaction);
+        let newtx = new Transaction(undefined, req.data.tx);
         await this.saveTransaction(newtx, req.data);
       }
       if (req.data.request === "update") {
-        let newtx = new Transaction(undefined, req.data.tx.transaction);
+        let newtx = new Transaction(undefined, req.data.tx);
         await this.updateTransaction(newtx, req.data);
       }
       if (req.data.request === "load") {
@@ -194,13 +194,13 @@ class Archive extends ModTemplate {
     OR IGNORE INTO txs (tx) VALUES (
     $tx
     )`;
-    let params = { $tx: tx.serialize_to_web(this.app) };
+    let params = { $tx: tx.toJson() };
     let tx_id = await this.app.storage.insertDatabase(sql, params, "archive");
 
     if (this.app.BROWSER) {
       let inserted_rows = await this.localDB.insert({
         into: "txs",
-        values: [{ tx: tx.serialize_to_web(this.app) }],
+        values: [{ tx: tx.toJson() }],
         return: true,
       });
       tx_id = inserted_rows[0]["id"];
@@ -380,7 +380,7 @@ class Archive extends ModTemplate {
            WHERE id = $tx_id`;
     params = {
       $tx_id: tx_id,
-      $tx: tx.serialize_to_web(this.app),
+      $tx: tx.toJson(),
     };
 
     await this.app.storage.executeDatabase(sql, params, "archive");
@@ -388,7 +388,7 @@ class Archive extends ModTemplate {
     if (this.app.BROWSER) {
       await this.localDB.update({
         in: "txs",
-        set: { tx: tx.serialize_to_web(this.app) },
+        set: { tx: tx.toJson() },
         where: { id: tx_id },
       });
     }
