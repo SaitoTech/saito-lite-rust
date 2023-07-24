@@ -11,7 +11,7 @@ const ChatManagerLarge = require("./lib/components/chat-manager-large");
 //const ChatInvitationLink = require("./lib/overlays/chat-invitation-link");
 const Relay = require("../relay/relay");
 const adapter = require("webrtc-adapter");
-const Slip = require("../../lib/saito/slip").default;
+const Slip = require("../../lib/saito/slip");
 
 class Stun extends ModTemplate {
   constructor(app, mod) {
@@ -896,12 +896,12 @@ class Stun extends ModTemplate {
 
   //     // onchain
   //     let newtx = this.app.wallet.createUnsignedTransaction();
-  //     newtx.to.push(new saito.default.slip(offer.recipient));
+  //     newtx.transaction.to.push(new saito.default.slip(offer.recipient));
   //     newtx.msg.module = "Stun";
   //     newtx.msg.request = request
   //     newtx.msg.data = _data
 
-  //     await newtx.sign();
+  //     newtx = this.app.wallet.signTransaction(newtx);
 
   //     // offchain data
   //     let data = {
@@ -957,11 +957,11 @@ class Stun extends ModTemplate {
 
   //     // onchain
   //     // let newtx = this.app.wallet.createUnsignedTransaction();
-  //     // newtx.to.push(new saito.default.slip(offer_creator));
+  //     // newtx.transaction.to.push(new saito.default.slip(offer_creator));
   //     // newtx.msg.module = "Stun";
   //     // newtx.msg.request = request
   //     // newtx.msg.data= _data;
-  //    await newtx.sign();
+  //     // newtx = this.app.wallet.signTransaction(newtx);
 
   //     // offchain
   //     let data = {
@@ -1008,11 +1008,11 @@ class Stun extends ModTemplate {
 
   //     // onchain
   //     let newtx = this.app.wallet.createUnsignedTransaction();
-  //     newtx.to.push(new saito.default.slip(offer_creator));
+  //     newtx.transaction.to.push(new saito.default.slip(offer_creator));
   //     newtx.msg.module = "Stun";
   //     newtx.msg.request = request
   //     newtx.msg.data = _data;
-  //     await newtx.sign();
+  //     newtx = this.app.wallet.signTransaction(newtx);
 
   //     // offchain
   //     let data = {

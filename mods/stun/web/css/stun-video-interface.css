@@ -13,10 +13,12 @@
   z-index: 100;
   transition: all 0.2s;
   height: 100vh;
-  height: calc(100 * var(--saito-vh));
   width: 100vw;
 }
 
+.stun-chatbox ~ .chat-container {
+  z-index: 100;
+}
 
 .stun-chatbox .minimizer {
   position: absolute;
@@ -145,11 +147,9 @@
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
-  grid-template-rows: repeat(auto-fit, minmax(100px, 1fr));
   grid-gap: 1rem;
-  height: fit-content;
+  height: 100%;
   width: 100%;
-  max-height: 100%;
   background: black;
 }
 
@@ -161,7 +161,6 @@
 
 .expanded-video .video-box-container-large {
   width: 100%;
-  height: 100%;
   opacity: 0;
   opacity: 0;
   animation: fade-in 0.5s ease-in;
@@ -170,9 +169,7 @@
 }
 
 .side-videos .video-box-container-large {
-  height: fit-content;
-  max-height: 100%;
-  overflow: clip;
+  height: 100%;
   border: 2px solid var(--saito-border-color-dark);
 }
 
@@ -307,12 +304,11 @@
 /* So for some reason we think it is better to inline style these through the template file */
 .video-box-container-large video {
   width: 100%;
-  max-height: 100%;
+  height: 100%;
   z-index: 2;
   border-radius: 0.1rem;
   object-fit: cover;
   border: none;
-  overflow: clip;
 }
 
 .video-box-container-large > #connection-message {
@@ -363,7 +359,6 @@
 
 .video-call-info {
   color: var(--saito-white);
-  text-shadow: 0px 1px 2px var(--saito-black-faded), 0px -1px 2px var(--saito-black-faded);
   line-height: 1.5;
   position: absolute;
   display: flex;
@@ -376,6 +371,7 @@
 }
 
 .video-call-info > p {
+  color: #ffffff69;
   font-size: 2rem;
   white-space: nowrap;
   overflow: hidden;
@@ -663,7 +659,10 @@
   color: var(--saito-white);
   display: flex;
   justify-content: center;
+  /* width: 100vw;
+  height: 100vh; */
   margin: 0;
+  /* position: fixed; */
   color: var(--saito-white);
   top: 0;
   z-index: 200;
@@ -673,6 +672,7 @@
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   padding: 1rem;
+  margin-top: 4rem;
 }
 
 .chat-settings {
@@ -684,13 +684,13 @@
 
 .chat-settings-preview-section {
   display: flex;
-  flex-direction: column-reverse;
-  row-gap: 2rem;
+  flex-direction: column;
   align-items: center;
   color: var(--saito-white);
 }
 
 .chat-settings-preview-section p {
+  margin-bottom: 2rem;
   color: var(--saito-white);
 }
 
@@ -739,17 +739,15 @@
   position: relative;
   border: 1px solid #e5e5e59d;
   padding: 1rem;
-  border-radius: var(--saito-border-radius);
+  border-radius: 5px;
+  margin-bottom: 1rem;
   width: 55rem;
-  max-width: 92vw;
-  max-height: 95vw;
-  display: flex;
+  /* background-color: #f9f9f9; */
 }
 
 .chat-settings video {
   width: 100%;
-  border-radius: var(--saito-border-radius);
-  max-height: 100%;
+  border-radius: var(--border-radiius);
 }
 
 .chat-settings-toggle-icons {
@@ -765,7 +763,6 @@
   font-size: 3rem;
   padding: 0.25rem;
   cursor: pointer;
-  text-shadow: 0px 1px 2px var(--saito-black-faded), 0px -1px 2px var(--saito-black-faded);
 }
 
 .chat-settings-toggle-icon:hover {
@@ -823,22 +820,6 @@
   transition: width 0.1s;
 }
 
-@media screen and (max-width: 1024px) {
-  .chat-settings {
-    padding: 1rem;
-  }
-  .chat-settings-preview {
-    width: 40rem;
-  }
-}
-
-@media screen and (max-width: 900px) {
-  .chat-settings-preview {
-    width: 50rem;
-  }
-
-}
-
 @media screen and (max-width: 767px) {
   .video-call-info i {
     font-size: 1rem;
@@ -849,56 +830,86 @@
     padding: 1rem;
     margin-top: 0;
   }
-
+  .chat-settings video {
+    height: 18rem;
+  }
+  .chat-settings-preview-section {
+    margin-right: 0;
+    margin-bottom: 2rem;
+  }
   .chat-settings-preview {
-    margin-bottom: unset;
-    padding: 0.5rem;
-  }
-  
-  .video-container-large {
-    flex-direction: column;
-  }
-  .stun-chatbox .side-videos {
     width: 100%;
-    max-height: 50%;
-    grid-template-columns: repeat(auto-fit, minmax(100px, auto));
-    grid-gap: 0.5rem;
   }
-
-  .side-videos .video-box-container-large {
-    height: unset;
-  }
-
   .video-box-container-large > #connection-message {
     width: 100%;
   }
   .video-box-container-large > #connection-message p {
     font-size: 1rem;
   }
+  .chat-settings select {
+    width: 100%;
+  }
   .gallery {
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    height: 100%;
   }
   .expanded-video {
     width: 100%;
     margin-right: 0;
   }
+  .side-videos {
+    position: absolute;
+    right: 0;
+  }
 }
 
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .chat-settings {
+    padding: 1rem;
+  }
+  .chat-settings-preview {
+    width: 40rem;
+  }
+  .chat-settings select {
+    width: 40rem;
+  }
+}
 
 /* --chat in video calls -- */
-.stun-chatbox .chat-static {
-  border-radius: 2px solid var(--saito-border-color-dark);
-  border-radius: 0.5rem;
-}
 
-.stun-chatbox .chat-header, .stun-chatbox .chat-header .saito-address {
-  cursor: default;
-}
 .stun-chatbox.minimize .chat-static {
   display: none;
 }
 
+.stun-chatbox .chat-static {
+  color: var(--saito-white);
+}
+
+.stun-chatbox .saito-address {
+  color: var(--saito-grey);
+}
+
+.stun-chatbox .saito-user:hover .saito-userline-reply {
+  background-color: var(--saito-black);
+}
+
+.stun-chatbox .saito-user:hover .saito-userline-reply i {
+  border: 1px solid var(--saito-grey);
+}
+
+.stun-chatbox .side-videos .chat-footer {
+  width: 25%;
+  margin: 0 0 0.5rem;
+}
+
+.stun-chatbox .chat-footer {
+  width: -webkit-fill-available;
+  max-width: 50%;
+  margin: 0 0 0.5rem;
+}
+
+.stun-chatbox .chat-input {
+  background: unset;
+}

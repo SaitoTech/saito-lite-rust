@@ -213,7 +213,6 @@ class PeerManager {
 
   handleSignalingMessage(data) {
     const { type, sdp, candidate, targetPeerId, public_key } = data;
-
     if (type === "renegotiate-offer" || type === "offer") {
       //  if (
       //    this.getPeerConnection(public_key).connectionState === "connected" ||
@@ -591,7 +590,7 @@ class PeerManager {
         this.current_speaker = peer;
 
         setTimeout(() => {
-          if (peer === this.current_speaker && !has_mike) {
+          if (peer === this.current_speaker) {
             peer_manager_self.app.connection.emit("stun-new-speaker", peer);
             has_mike = true;
           }
