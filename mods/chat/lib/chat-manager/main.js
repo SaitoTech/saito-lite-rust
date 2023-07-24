@@ -19,7 +19,7 @@ class ChatManager {
         let group = this.mod.returnOrCreateChatGroupFromMembers(person, name);
 
         if (group.txs.length == 0) {
-          this.mod.sendCreateGroupTransaction(group);
+          await this.mod.sendCreateGroupTransaction(group);
         } else {
           this.app.connection.emit("chat-popup-render-request", group);
         }
@@ -47,9 +47,9 @@ class ChatManager {
     //
     // handle requests to re-render chat manager
     //
-    app.connection.on("chat-manager-render-request", () => {
+    app.connection.on("chat-manager-render-request", async () => {
       if (this.render_manager_to_screen) {
-        this.render();
+        await this.render();
       }
     });
 
@@ -60,7 +60,7 @@ class ChatManager {
     //
     // handle requests to re-render chat popups
     //
-    app.connection.on("chat-popup-render-request", (group = null) => {
+    app.connection.on("chat-popup-render-request", async (group = null) => {
       if (!group) {
         group = this.mod.returnCommunityChat();
       }
@@ -80,7 +80,7 @@ class ChatManager {
         }
 
         if (this.render_manager_to_screen) {
-          this.render();
+          await this.render();
         }
       }
     });
@@ -133,7 +133,7 @@ class ChatManager {
           // But if groups have variable memberships, it does push out an update to everyone as long
           // as the admin has an accurate list
           //
-          this.mod.sendCreateGroupTransaction(group);
+          await this.mod.sendCreateGroupTransaction(group);
         }
       }
 
@@ -294,7 +294,7 @@ class ChatManager {
     // clicks on the element itself (background)
     //
     document.querySelectorAll(".chat-manager-list .saito-user").forEach((item) => {
-      item.onclick = (e) => {
+      item.onclick = async (e) => {
         e.stopPropagation();
 
         let gid = e.currentTarget.getAttribute("data-id");
@@ -319,15 +319,15 @@ class ChatManager {
         this.popups[gid].input.focus(true);
 
         if (this.render_manager_to_screen) {
-          this.render();
+          await this.render();
         }
       };
 
-      item.oncontextmenu = (e) => {
+      item.oncontextmenu = async (e) => {
         e.preventDefault();
         let gid = e.currentTarget.getAttribute("data-id");
         let chatMenu = new ChatMenu(this.app, this.mod, this.mod.returnGroup(gid));
-        chatMenu.render();
+        await chatMenu.render();
       };
     });
 
