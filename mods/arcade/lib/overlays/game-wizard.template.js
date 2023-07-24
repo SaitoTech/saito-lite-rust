@@ -9,7 +9,9 @@ module.exports = GameWizardTemplate = async (game_mod, invite_obj = {}) => {
     publickey = invite_obj.publickey;
   }
 
-  let img = await game_mod.respondTo("arcade-games").image;
+  let img = (await game_mod.respondTo("arcade-games")).image;
+
+  console.log(img);
 
   html += `
     <form>
