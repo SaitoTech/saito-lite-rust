@@ -14,18 +14,16 @@ class Post {
     this.images = [];
     this.tweet = tweet; //For reply or Retweet
 
-    this.render_after_submit = 0;
-    this.file_event_added = false;
-    app.wallet.getPublicKey().then((key) => {
-      this.publickey = key;
-      this.user = new SaitoUser(
+    this.user = new SaitoUser(
         this.app,
         this.mod,
         `.tweet-overlay-header`,
-        this.publickey,
+        this.mod.publicKey,
         "create a text-tweet or drag-and-drop images..."
       );
-    });
+
+    this.render_after_submit = 0;
+    this.file_event_added = false;
     this.source = "Tweet";
   }
 
@@ -138,7 +136,7 @@ class Post {
     });
   }
 
-  postTweet() {
+  async postTweet() {
     let post_self = this;
     let text = document.getElementById("post-tweet-textarea").value;
     let parent_id = document.getElementById("parent_id").value;
@@ -208,7 +206,7 @@ class Post {
       data["images"] = post_self.images;
     }
 
-    let newtx = post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
+    let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
     //
     // This makes no sense. If you require at the top of the file, it fails with a

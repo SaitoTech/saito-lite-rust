@@ -6,6 +6,7 @@ const Image = require("./image");
 const Post = require("./post");
 const JSON = require("json-bigint");
 const Transaction = require("../../../lib/saito/transaction").default;
+const Factory = require("../../../lib/saito/factory").default;
 
 class Tweet {
   constructor(app, mod, tx, container = ".tweet-manager") {
@@ -23,7 +24,7 @@ class Tweet {
     // the core
     //
     this.tx = tx;
-
+    
     //
     // ancillary content is stored in the tx.optional array, where it
     // can be saved back to the network of archive nodes / databases and
@@ -149,8 +150,8 @@ class Tweet {
     // retweets
     //
     if (this.retweet_tx != null) {
-      let newtx = new Transaction(undefined, this.retweet_tx);
-      // newtx.deserialize_from_web(this.app, this.retweet_tx);
+      let newtx = Transaction.deserialize(this.retweet_tx, new Factory());
+
       this.retweet = new Tweet(
         this.app,
         this.mod,

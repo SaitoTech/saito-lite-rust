@@ -632,8 +632,8 @@ class RedSquare extends ModTemplate {
       async (res) => {
         if (res.rows) {
           res.rows.forEach((row) => {
-            let tx = new Transaction(undefined, row.tx);
-            // tx.deserialize_from_web(this.app, row.tx);
+            let tx = Transaction.deserialize(row.tx, new Factory());
+
             if (!tx.optional) {
               tx.optional = {};
             }
@@ -964,8 +964,7 @@ class RedSquare extends ModTemplate {
           //
 
           if (txmsg.data?.retweet_tx) {
-            let rtx = new Transaction();
-            rtx.deserialize_from_web(this.app, txmsg.data.retweet_tx);
+            let rtx = Transaction.deserialize(txmsg.data.retweet_tx, new Factory());
 
             if (this.tweets_sigs_hmap[rtx.sig]) {
               let tweet2 = this.returnTweet(rtx.signature);
@@ -1291,8 +1290,7 @@ class RedSquare extends ModTemplate {
     localforage.getItem(`tweet_history`, (error, value) => {
       if (value && value.length > 0) {
         for (let tx of value) {
-          let newtx = new Transaction(undefined, tx);
-          // newtx.deserialize_from_web(this.app, tx);
+          let newtx = Transaction.deserialize(tx, new Factory());
           this.addTweet(newtx);
         }
       } else {
@@ -1312,8 +1310,7 @@ class RedSquare extends ModTemplate {
           if (tweets) {
             console.log("Using Server Cached Tweets");
             for (let z = 0; z < tweets.length; z++) {
-              let newtx = new Transaction(undefined, tweets[z]);
-              // newtx.deserialize_from_web(this.app, tweets[z]);
+              let newtx = Transaction.deserialize(tweets[z], new Factory());
               this.addTweet(newtx);
             }
           }
@@ -1485,7 +1482,7 @@ class RedSquare extends ModTemplate {
       }
       // create the transaction
       let tx = Transaction.deserialize(rows[i].tx, new Factory());
-      // tx.deserialize_from_web(this.app, rows[i].tx);
+
       if (rows[i].num_reples) {
         tx.optional.num_replies = rows[i].num_replies;
       }
@@ -1553,7 +1550,7 @@ class RedSquare extends ModTemplate {
 
             for (let i = 0; i < rows.length; i++) {
               let tx = Transaction.deserialize(rows[i].tx, new Factory());
-              // tx.deserialize_from_web(app, rows[i].tx);
+
               let txmsg = tx.returnMessage();
               let text = txmsg.data.text;
               let publickey = tx.from[0].publicKey;
@@ -1594,7 +1591,7 @@ class RedSquare extends ModTemplate {
             console.info(rows.length);
             for (let i = 0; i < rows.length; i++) {
               let tx = Transaction.deserialize(rows[i].tx, new Factory());
-              // tx.deserialize_from_web(redsquare_self.app, rows[i].tx);
+
               //console.info(rows[i]);
               let txmsg = tx.returnMessage();
               //console.info(txmsg);

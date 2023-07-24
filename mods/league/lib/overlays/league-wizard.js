@@ -18,8 +18,8 @@ class LeagueWizard {
     });
   }
 
-  render() {
-    this.overlay.show(LeagueWizardTemplate(this.app, this.mod, this.game_mod));
+  async render() {
+    this.overlay.show(await LeagueWizardTemplate(this.app, this.mod, this.game_mod));
     this.attachEvents();
   }
 
