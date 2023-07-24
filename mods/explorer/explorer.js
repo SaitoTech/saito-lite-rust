@@ -124,10 +124,10 @@ class ExplorerCore extends ModTemplate {
       (await this.app.wallet.getPublicKey()) +
       '</div> \
           <div class="explorer-data"><h4>Balance:</h4> </div><div>' +
-      this.app.wallet.returnBalance() +
+      (await this.app.wallet.getBalance()) +
       '</div> \
           <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">' +
-      this.app.mempool.mempool.transactions.length +
+      this.app.mempool.transactions.length +
       " txs</a></div> \
         </div>" +
       '\
@@ -163,9 +163,9 @@ class ExplorerCore extends ModTemplate {
     html += '<a class="button" href="/explorer/"><i class="fas fa-cubes"></i> back to blocks</a>';
     html +=
       '<h3>Mempool Transactions:</h3><div data-json="' +
-      encodeURI(JSON.stringify(this.app.mempool.mempool.transactions, null, 4)) +
+      encodeURI(JSON.stringify(this.app.mempool.transactions, null, 4)) +
       '" class="json">' +
-      JSON.stringify(this.app.mempool.mempool.transactions) +
+      JSON.stringify(this.app.mempool.transactions) +
       "</div></div>";
     html += this.returnInvokeJSONTree();
     html += this.returnPageClose();

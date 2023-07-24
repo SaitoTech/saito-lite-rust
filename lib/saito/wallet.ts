@@ -377,19 +377,6 @@ export default class Wallet extends SaitoWallet {
   //   return this.wallet.privatekey;
   // }
 
-  returnBalance(ticker = "SAITO") {
-    if (ticker === "SAITO") {
-      let b = BigInt(0);
-      this.wallet.inputs.forEach((input, index) => {
-        if (this.isSlipValid(input, index)) {
-          b += input.returnAmount();
-        }
-      });
-      return b;
-    }
-    return "0.0";
-  }
-
   /**
    * Generates a new keypair for the user, resets all stored wallet info, and saves
    * the new wallet to local storage.

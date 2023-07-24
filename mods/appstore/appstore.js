@@ -7,7 +7,7 @@ const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const fs = require("fs");
 const path = require("path");
 const JSON = require("json-bigint");
-const Transaction = require("../../lib/saito/transaction");
+const Transaction = require("../../lib/saito/transaction").default;
 
 class AppStore extends ModTemplate {
   constructor(app) {

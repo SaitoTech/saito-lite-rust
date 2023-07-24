@@ -46,11 +46,11 @@ class LeagueOverlay {
       );
     }
 
-    this.overlay.show(LeagueOverlayTemplate(this.app, this.mod, this.league));
+    this.overlay.show(await LeagueOverlayTemplate(this.app, this.mod, this.league));
 
     let game_mod = this.app.modules.returnModuleByName(this.league.game);
     if (game_mod) {
-      this.overlay.setBackground(game_mod.respondTo("arcade-games").image);
+      this.overlay.setBackground(await game_mod.respondTo("arcade-games").image);
     }
 
     //Show Leaderboard

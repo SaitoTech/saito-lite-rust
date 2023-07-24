@@ -2,7 +2,7 @@ const saito = require("./../../../lib/saito/saito");
 const JSON = require("json-bigint");
 const NwasmLibraryTemplate = require("./libraries.template");
 const LoadRom = require("./load-rom");
-const Transaction = require("../../../lib/saito/transaction");
+const Transaction = require("../../../lib/saito/transaction").default;
 
 class NwasmLibrary {
   constructor(app, mod = null) {

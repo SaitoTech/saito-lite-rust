@@ -7,10 +7,11 @@ const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const JoinLeagueOverlay = require("./lib/overlays/join");
 const localforage = require("localforage");
+const PeerService = require("saito-js/lib/peer_service").default;
 
 //Trial -- So that we can display league results in game page
 const LeagueOverlay = require("./lib/overlays/league");
-const Slip = require("saito-js/lib/slip");
+const Slip = require("saito-js/lib/slip").default;
 
 //
 // League uses 3 URL parameters (which will trigger overlays in Arcade/Redsquare/elsewhere)
@@ -66,7 +67,7 @@ class League extends ModTemplate {
     if (this.app.BROWSER) {
       return [];
     }
-    return [{ service: "league", domain: "saito" }];
+    return [new PeerService(null, "league", null, "saito")];
   }
 
   respondTo(type, obj = null) {
@@ -95,8 +96,8 @@ class League extends ModTemplate {
     return super.respondTo(type, obj);
   }
 
-  initialize(app) {
-    super.initialize(app);
+  async initialize(app) {
+    await super.initialize(app);
 
     //Trial -- So that we can display league results in game page
     this.overlay = new LeagueOverlay(app, this);
@@ -104,8 +105,8 @@ class League extends ModTemplate {
     //
     // create initial leagues
     //
-    this.app.modules.getRespondTos("default-league").forEach((modResponse) => {
-      this.addLeague({
+    for (const modResponse of await this.app.modules.getRespondTos("default-league")) {
+      await this.addLeague({
         id: app.crypto.hash(modResponse.modname), // id
         game: modResponse.game, // game - name of game mod
         name: modResponse.name, // name - name of league
@@ -115,9 +116,9 @@ class League extends ModTemplate {
         ranking_algorithm: modResponse.ranking_algorithm, //
         default_score: modResponse.default_score, // default ranking for newbies
       });
-    });
+    }
 
-    this.loadLeagues();
+    await this.loadLeagues();
 
     //this.pruneOldPlayers();
 
@@ -185,16 +186,18 @@ class League extends ModTemplate {
   //////////////////////////
   // Rendering Components //
   //////////////////////////
-  render() {
+  async render() {
     let app = this.app;
     let mod = this.mod;
 
     this.main = new LeagueMain(app, this);
     this.header = new SaitoHeader(app, this);
+    await this.header.initialize(this.app);
+
     this.addComponent(this.main);
     this.addComponent(this.header);
 
-    super.render(app, this);
+    await super.render(app, this);
   }
 
   canRenderInto(qs) {
@@ -513,7 +516,7 @@ class League extends ModTemplate {
         let cnt = this.app.options.leagues.length;
 
         for (let lid of this.app.options.leagues) {
-          localforage.getItem(`league_${lid}`, async function (error, value) {
+          await localforage.getItem(`league_${lid}`, async function (error, value) {
             //Because this is async, the initialize function may have created an
             //empty default group
 
@@ -556,7 +559,7 @@ class League extends ModTemplate {
         "league"
       );
       for (let league of sqlResults) {
-        league_self.updateLeague(league);
+        await league_self.updateLeague(league);
       }
     }
   }
@@ -624,9 +627,7 @@ class League extends ModTemplate {
     let obj = this.validateLeague(txmsg);
     obj.id = tx.signature;
 
-    this.addLeague(obj);
-
-    return;
+    await this.addLeague(obj);
   }
 
   addressToAll(tx, league_id) {
@@ -681,7 +682,7 @@ class League extends ModTemplate {
       ts: parseInt(tx.timestamp),
     };
 
-    this.addLeaguePlayer(txmsg.league_id, params);
+    await this.addLeaguePlayer(txmsg.league_id, params);
 
     //
     //So, when we get our join message returned to us, we will do a query to figure out our rank
@@ -900,7 +901,7 @@ class League extends ModTemplate {
   // roundover transaction //
   ///////////////////////////
   async receiveRoundoverTransaction(app, txmsg) {
-    this.receiveGameoverTransaction(app, txmsg, false);
+    await this.receiveGameoverTransaction(app, txmsg, false);
   }
 
   //////////////////////////
@@ -980,7 +981,7 @@ class League extends ModTemplate {
   // inserts player into public league if one exists
   //
   async receiveLaunchSinglePlayerTransaction(blk, tx, conf, app) {
-    this.receiveAcceptTransaction(blk, tx, conf, app);
+    await this.receiveAcceptTransaction(blk, tx, conf, app);
   }
 
   async receiveAcceptTransaction(blk, tx, conf, app) {
@@ -1302,12 +1303,12 @@ class League extends ModTemplate {
     return null;
   }
 
-  removeLeague(league_id) {
+  async removeLeague(league_id) {
     for (let i = 0; i < this.leagues.length; i++) {
       if (this.leagues[i].id === league_id) {
         this.leagues.splice(i, 1);
         if (this.app.BROWSER) {
-          localforage.removeItem(`league_${league_id}`);
+          await localforage.removeItem(`league_${league_id}`);
         }
         this.saveLeagues();
         return;
@@ -1506,7 +1507,7 @@ class League extends ModTemplate {
        WHERE league_id = '${league_id}'
          AND deleted = 0${cond}
        ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
-      (res) => {
+      async (res) => {
         if (res?.rows) {
           for (let p of res.rows) {
             //
@@ -1527,20 +1528,20 @@ class League extends ModTemplate {
             //
             // Update player-league data in our live data structure
             //
-            this.addLeaguePlayer(league_id, p);
+            await this.addLeaguePlayer(league_id, p);
           }
 
           league.numPlayers = rank;
           //Add me to bottom of list if I haven't played any games
           if (myPlayerStats) {
-            this.addLeaguePlayer(league_id, myPlayerStats);
+            await this.addLeaguePlayer(league_id, myPlayerStats);
           }
         }
 
         league.timestamp = new Date().getTime();
 
         if (mycallback != null) {
-          mycallback(res);
+          await mycallback(res);
         }
 
         if (this.app.BROWSER) {

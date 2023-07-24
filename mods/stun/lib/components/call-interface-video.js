@@ -156,14 +156,14 @@ class CallInterfaceVideo {
     this.attachEvents();
   }
 
-  createRoomTextChat() {
+  async createRoomTextChat() {
     let chat_mod = this.app.modules.returnModule("Chat");
 
     if (!chat_mod) {
       return;
     }
 
-    let cm = chat_mod.respondTo("chat-manager");
+    let cm = await chat_mod.respondTo("chat-manager");
 
     this.chat_group = {
       id: this.room_code,

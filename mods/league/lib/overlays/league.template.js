@@ -4,7 +4,7 @@ module.exports = LeagueOverlayTemplate = async (app, mod, league) => {
     key_words = "",
     game_name = "";
   if (game_mod) {
-    img = game_mod.respondTo("arcade-games").image;
+    img = (await game_mod.respondTo("arcade-games")).image;
     key_words = game_mod.categories.replace("Games ", "").split(" ").reverse().join(" ");
     game_name = game_mod.returnName();
   }
@@ -114,6 +114,3 @@ module.exports = LeagueOverlayTemplate = async (app, mod, league) => {
 
   return html;
 };
-
-
-

@@ -8,7 +8,7 @@ const PeerManager = require("./lib/appspace/PeerManager");
 //Do these do anything???
 var serialize = require("serialize-javascript");
 const adapter = require("webrtc-adapter");
-const Slip = require("../../lib/saito/slip");
+const Slip = require("../../lib/saito/slip").default;
 
 class Stun extends ModTemplate {
   constructor(app) {

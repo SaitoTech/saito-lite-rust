@@ -57,47 +57,46 @@ export default class Storage {
   //   }
   // }
 
-  //
-  // check local archive if exists
-  //
-  async loadTransactionsFromLocal(type = "all", num = 50, mycallback) {
+  loadTransactions(obj = {}, mycallback, peer = null) {
+    let storage_self = this;
+
     const message = "archive";
-    const data: any = {};
+    let data: any = {};
     data.request = "load";
-    data.type = type;
-    data.num = num;
-    data.publickey = await this.app.wallet.getPublicKey();
+    data = Object.assign(data, obj);
 
-    console.log("archive load!");
-
-    let newtx = new Transaction();
-    newtx.timestamp = new Date().getTime();
-    newtx.msg.request = message;
-    newtx.msg.data = data;
-    // newtx.presign(this.app);
-
-    let archive_mod = this.app.modules.returnModule("Archive");
-    if (archive_mod) {
-      let res = await archive_mod.handlePeerTransaction(this.app, newtx, null, async (obj) => {
-        let txs = [];
-        if (obj) {
-          if (obj.txs) {
-            for (let i = 0; i < obj.txs.length; i++) {
-              let tx = new Transaction(undefined, JSON.parse(obj.txs[i].tx));
-              tx.optional = {};
-              if (obj.txs[i].optional) {
-                try {
-                  tx.optional = JSON.parse(obj.txs[i].optional);
-                } catch (err) {
-                  console.log("error loading optional data into tx");
-                }
-              }
-              txs.push(tx);
-            }
-          }
+    let internal_callback = (res) => {
+      let txs = [];
+      if (res) {
+        for (let i = 0; i < res.length; i++) {
+          let tx = new Transaction(undefined, res[i].tx);
+          // tx.deserialize_from_web(this.app, res[i].tx);
+          txs.push(tx);
         }
-        await mycallback(txs);
+      }
+      mycallback(txs);
+    };
+
+    if (peer === "localhost") {
+      let archive_mod = this.app.modules.returnModule("Archive");
+      if (archive_mod) {
+        archive_mod.loadTransactionsWithCallback(obj, (res) => {
+          internal_callback(res);
+        });
+      }
+      return;
+    }
+
+    if (peer != null) {
+      peer.sendRequestWithCallback(message, data, function (res) {
+        internal_callback(res);
       });
+      return;
+    } else {
+      this.app.network.sendRequestAsTransaction(message, data, function (res) {
+        internal_callback(res);
+      });
+      return;
     }
   }
 

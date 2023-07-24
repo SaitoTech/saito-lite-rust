@@ -11,7 +11,7 @@ const ChatManagerLarge = require("./lib/components/chat-manager-large");
 //const ChatInvitationLink = require("./lib/overlays/chat-invitation-link");
 const Relay = require("../relay/relay");
 const adapter = require("webrtc-adapter");
-const Slip = require("../../lib/saito/slip");
+const Slip = require("../../lib/saito/slip").default;
 
 class Stun extends ModTemplate {
   constructor(app, mod) {

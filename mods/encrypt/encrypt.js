@@ -25,8 +25,8 @@
 var saito = require("../../lib/saito/saito");
 var ModTemplate = require("../../lib/templates/modtemplate");
 const Big = require("big.js");
-const Transaction = require("../../lib/saito/transaction");
-const Slip = require("../../lib/saito/slip");
+const Transaction = require("../../lib/saito/transaction").default;
+const Slip = require("../../lib/saito/slip").default;
 
 class Encrypt extends ModTemplate {
   constructor(app) {
@@ -211,9 +211,9 @@ class Encrypt extends ModTemplate {
 
     let tx = null;
     try {
-      tx = this.app.wallet.createUnsignedTransactionWithDefaultFee(
+      tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
         recipient,
-        parties_to_exchange * this.app.wallet.wallet.default_fee
+        parties_to_exchange * this.app.wallet.default_fee
       );
     } catch (err) {
       console.log("error: " + err);

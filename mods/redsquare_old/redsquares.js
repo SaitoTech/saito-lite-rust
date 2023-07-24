@@ -12,8 +12,10 @@ const prettify = require("html-prettify");
 const redsquareHome = require("./index");
 const Post = require("./lib/post");
 const localforage = require("localforage");
-const Transaction = require("../../lib/saito/transaction");
-const Slip = require("../../lib/saito/slip");
+const Factory = require("../../lib/saito/factory").default;
+const Transaction = require("../../lib/saito/transaction").default;
+const Slip = require("../../lib/saito/slip").default;
+const PeerService = require("saito-js/lib/peer_service").default;
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
@@ -86,7 +88,7 @@ class RedSquare extends ModTemplate {
 
   returnServices() {
     let services = [];
-    services.push({ service: "redsquare", name: "RedSquare Tweet Archive" });
+    services.push(new PeerService(null, "redsquare", "RedSquare Tweet Archive"));
     return services;
   }
 
@@ -250,7 +252,7 @@ class RedSquare extends ModTemplate {
   // onto the page, as we are likely being asked to render the components on
   // the application BEFORE we have any peers capable of feeding us content.
   //
-  render() {
+  async render() {
     if (!this.app.BROWSER) {
       return;
     }
@@ -265,6 +267,7 @@ class RedSquare extends ModTemplate {
     if (this.main == null) {
       this.main = new SaitoMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
+      await this.header.initialize(this.app);
       this.menu = new SaitoMenu(this.app, this, ".saito-sidebar.left");
       this.sidebar = new RedSquareSidebar(this.app, this, ".saito-sidebar.right");
 
@@ -276,15 +279,15 @@ class RedSquare extends ModTemplate {
       //
       // chat manager can insert itself into left-sidebar if exists
       //
-      this.app.modules.returnModulesRespondingTo("chat-manager").forEach((mod) => {
-        let cm = mod.respondTo("chat-manager");
+      for (const mod of await this.app.modules.returnModulesRespondingTo("chat-manager")) {
+        let cm = await mod.respondTo("chat-manager");
         cm.container = ".saito-sidebar.left";
         cm.render_manager_to_screen = 1;
         this.addComponent(cm);
-      });
+      }
     }
 
-    super.render();
+    await super.render();
 
     this.rendered = true;
   }
@@ -1475,7 +1478,7 @@ class RedSquare extends ModTemplate {
       //
       // create the transaction
       //
-      let tx = new Transaction(undefined, rows[i].tx);
+      let tx = Transaction.deserialize(rows[i].tx, new Factory());
       // tx.deserialize_from_web(this.app, rows[i].tx);
       if (rows[i].num_reples) {
         tx.optional.num_replies = rows[i].num_replies;
@@ -1543,7 +1546,7 @@ class RedSquare extends ModTemplate {
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
 
             for (let i = 0; i < rows.length; i++) {
-              let tx = new Transaction(undefined, rows[i].tx);
+              let tx = Transaction.deserialize(rows[i].tx, new Factory());
               // tx.deserialize_from_web(app, rows[i].tx);
               let txmsg = tx.returnMessage();
               let text = txmsg.data.text;
@@ -1584,7 +1587,7 @@ class RedSquare extends ModTemplate {
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
             console.info(rows.length);
             for (let i = 0; i < rows.length; i++) {
-              let tx = new Transaction(undefined, rows[i].tx);
+              let tx = Transaction.deserialize(rows[i].tx, new Factory());
               // tx.deserialize_from_web(redsquare_self.app, rows[i].tx);
               //console.info(rows[i]);
               let txmsg = tx.returnMessage();

@@ -263,7 +263,7 @@ class ChatManager {
         }
       }
 
-      let html = ChatTeaser(this.app, group);
+      let html = await ChatTeaser(this.app, group);
       let divid = "saito-user-" + group.id;
 
       let obj = document.getElementById(divid);

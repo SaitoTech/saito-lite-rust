@@ -42,10 +42,10 @@ class JoinLeague {
     }
 
     this.game_mod = this.app.modules.returnModuleByName(league.game);
-    this.overlay.show(JoinLeagueTemplate(this.app, this.mod, league), () => {
+    this.overlay.show(await JoinLeagueTemplate(this.app, this.mod, league), () => {
       this.app.connection.emit("league-overlay-render-request", this.league_id);
     });
-    this.overlay.setBackground(this.game_mod.respondTo("arcade-games").image);
+    this.overlay.setBackground(await this.game_mod.respondTo("arcade-games").image);
 
     this.attachEvents();
   }
@@ -119,4 +119,3 @@ class JoinLeague {
 }
 
 module.exports = JoinLeague;
-

@@ -5,10 +5,10 @@ const Link = require("./link");
 const Image = require("./image");
 const Post = require("./post");
 const JSON = require("json-bigint");
-const Transaction = require("../../../lib/saito/transaction");
+const Transaction = require("../../../lib/saito/transaction").default;
 
 class Tweet {
-  async constructor(app, mod, tx, container = ".tweet-manager") {
+  constructor(app, mod, tx, container = ".tweet-manager") {
     this.app = app;
     this.mod = mod;
     this.container = container;
@@ -143,7 +143,7 @@ class Tweet {
     //
     //This is async and won't necessarily finish before running the following code!
     //
-    await this.generateTweetProperties(app, mod, 0);
+    this.generateTweetProperties(app, mod, 0);
 
     //
     // retweets
@@ -749,7 +749,7 @@ class Tweet {
       // make critical child if needed
       //
       if (
-        await this.isCriticalChild(tweet) ||
+        (await this.isCriticalChild(tweet)) ||
         (tweet.tx.timestamp > this.updated_at && this.critical_child == null)
       ) {
         this.critical_child = tweet;
@@ -973,8 +973,7 @@ class Tweet {
       if (obj) {
         obj.innerHTML = likes;
       }
-    } catch (err) {
-    }
+    } catch (err) {}
   }
 
   renderRetweets() {
@@ -987,8 +986,7 @@ class Tweet {
       if (obj) {
         obj.innerHTML = retweets;
       }
-    } catch (err) {
-    }
+    } catch (err) {}
   }
 
   renderReplies() {
@@ -1001,8 +999,7 @@ class Tweet {
       if (obj) {
         obj.innerHTML = replies;
       }
-    } catch (err) {
-    }
+    } catch (err) {}
   }
 }
 

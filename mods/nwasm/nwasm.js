@@ -7,7 +7,7 @@ const NwasmLibrary = require("./lib/libraries");
 const SaveGameOverlay = require("./lib/save-games");
 const JSON = require("json-bigint");
 const xorInplace = require("buffer-xor/inplace");
-const Transaction = require("../../lib/saito/transaction");
+const Transaction = require("../../lib/saito/transaction").default;
 
 //
 // ROMS -- saved as 'Nwams' modules

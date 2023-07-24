@@ -24,9 +24,9 @@ class SaitoRun extends OnePlayerGameTemplate {
   }
 
   // Create a high score league by default
-  respondTo(type) {
+  async respondTo(type) {
     if (type == "default-league") {
-      let obj = super.respondTo(type);
+      let obj = await super.respondTo(type);
       obj.ranking_algorithm = "HSC";
       return obj;
     }

@@ -2,7 +2,8 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const saito = require("../../lib/saito/saito");
 const JsStore = require("jsstore");
 const JSON = require("json-bigint");
-const Transaction = require("../../lib/saito/transaction");
+const Transaction = require("../../lib/saito/transaction").default;
+const PeerService = require("saito-js/lib/peer_service").default;
 
 //
 // HOW THE ARCHIVE SAVES TXS
@@ -96,7 +97,7 @@ class Archive extends ModTemplate {
   returnServices() {
     let services = [];
     if (this.app.BROWSER == 0) {
-      services.push({ service: "archive" });
+      services.push(new PeerService(null, "archive"));
     }
     return services;
   }

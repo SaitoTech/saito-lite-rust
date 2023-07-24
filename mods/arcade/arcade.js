@@ -16,7 +16,7 @@ const GameInvitationLink = require("./../../lib/saito/ui/modals/saito-link/saito
 const Invite = require("./lib/invite");
 const JoinGameOverlay = require("./lib/overlays/join-game");
 const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
-const Factory = require("../../lib/saito/factory");
+const Factory = require("../../lib/saito/factory").default;
 
 class Arcade extends ModTemplate {
   constructor(app) {

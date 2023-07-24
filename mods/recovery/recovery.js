@@ -2,8 +2,8 @@ const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const SaitoLogin = require("./lib/login");
 const SaitoBackup = require("./lib/backup");
-const Slip = require("../../lib/saito/slip");
-const Transaction = require("../../lib/saito/transaction");
+const Slip = require("../../lib/saito/slip").default;
+const Transaction = require("../../lib/saito/transaction").default;
 const PeerService = require("saito-js/lib/peer_service").default;
 
 class Recovery extends ModTemplate {

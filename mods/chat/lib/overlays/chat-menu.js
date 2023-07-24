@@ -10,13 +10,13 @@ class ChatMenu {
     this.overlay = new SaitoOverlay(app, null, true, true);
   }
 
-  render() {
+  async render() {
     let thisobj = this;
     if (!this.chat_group) {
       return;
     }
     if (!document.querySelector("#saito-chat-menu")) {
-      this.overlay.show(chatMenuTemplate(this.app, this.chat_group));
+      this.overlay.show(await chatMenuTemplate(this.app, this.chat_group));
       this.attachEvents();
     }
 
