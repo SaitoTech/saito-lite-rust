@@ -147,7 +147,7 @@ class Encrypt extends ModTemplate {
     }
   }
 
-  onPeerHandshakeComplete(app, peer) {
+  async onPeerHandshakeComplete(app, peer) {
     if (app.BROWSER == 0) {
       return;
     }
@@ -166,7 +166,7 @@ class Encrypt extends ModTemplate {
       //
       // Try again for partial key exchanges!
       //
-      for (let key of this.app.keychain.returnKeys()) {
+      for (let key of await this.app.keychain.returnKeys()) {
         if ((key.aes_privatekey || key.aes_publickey) && !key.aes_secret) {
           this.initiate_key_exchange(key.publickey);
         }

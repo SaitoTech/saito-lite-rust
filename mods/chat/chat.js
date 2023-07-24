@@ -113,7 +113,7 @@ class Chat extends ModTemplate {
     //Enforce compliance with wallet indexing
     if (!app.options?.chat || !Array.isArray(app.options.chat)) {
       app.options.chat = [];
-      this.createDefaultChatsFromKeys();
+      await this.createDefaultChatsFromKeys();
     }
 
     await this.loadChatGroups();
@@ -1325,11 +1325,11 @@ class Chat extends ModTemplate {
     return this.groups[0];
   }
 
-  createDefaultChatsFromKeys() {
+  async createDefaultChatsFromKeys() {
     //
     // create chatgroups from keychain -- friends only
     //
-    let keys = this.app.keychain.returnKeys();
+    let keys = await this.app.keychain.returnKeys();
     //console.log("Populate chat list");
     for (let i = 0; i < keys.length; i++) {
       if (keys[i].aes_publickey && !keys[i]?.mute) {
