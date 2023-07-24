@@ -12,6 +12,7 @@ const CryptoModule = require("../templates/cryptomodule");
 
 export default class Wallet extends SaitoWallet {
   public app: Saito;
+
   publicKey;
   // public wallet = {
   // balance: "0",
@@ -36,6 +37,7 @@ export default class Wallet extends SaitoWallet {
   // public outputs_hmap_counter_limit: number;
   // public outputs_prune_limit: number;
   // public recreate_pending_transactions: any;
+
   public saitoCrypto: any;
 
   public async createUnsignedTransactionWithDefaultFee(

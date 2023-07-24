@@ -250,11 +250,16 @@ class TweetManager {
     //
     //Mobile back button (when left navigation bar hidden!)
     //
-    if (window.innerWidth < 1200) {
-      this.app.connection.emit("saito-header-replace-logo", (e) => {
-        this.app.connection.emit("redsquare-home-render-request");
-      });
-    }
+
+    try {
+    if (window) {
+      if (window.innerWidth < 1200){
+        this.app.connection.emit("saito-header-replace-logo", (e) => {
+          this.app.connection.emit("redsquare-home-render-request");
+        });
+      }
+    } } catch (err) {}
+
   }
 
   attachEvents() {

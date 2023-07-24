@@ -13,11 +13,11 @@
         this.updateVictoryPoints();
       } else {
 
-      //
-      // Defectors can be PULLED in the headline phase by 5 Year Plan or Grain Sales, in which
-      // case it can only cancel the USSR headline if the USSR headline has not already gone.
-      // what an insanely great but complicated game dynamic at play here....
-      //
+        //
+        // Defectors can be PULLED in the headline phase by 5 Year Plan or Grain Sales, in which
+        // case it can only cancel the USSR headline if the USSR headline has not already gone.
+        // what an insanely great but complicated game dynamic at play here....
+        //
         this.game.state.defectors_pulled_in_headline = 1;
       }
 

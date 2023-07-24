@@ -742,18 +742,20 @@ class Twilight extends GameTemplate {
         } else {
           let early_war_deck = this.returnEarlyWarCards();
 
-          //
-          // SAITO COMMUNITY - edition
-          //
-          if (this.game.options.deck === "saito") {
-            this.removeCardFromDeck("nato", "Prerequisites Not Met");
-            this.addCardToDeck("iranianultimatum", "New Card");
-            this.addCardToDeck("unitedfruit", "New Card");
-            this.addCardToDeck("tsarbomba", "New Card");
-            delete early_war_deck["nato"];
-          }
-          this.game.queue.push("DECK\t1\t" + JSON.stringify(early_war_deck));
-        }
+
+	let early_war_deck = this.returnEarlyWarCards();
+
+        //
+	// SAITO COMMUNITY - edition
+        //
+        if (this.game.options.deck === "saito") {
+	  this.removeCardFromDeck('nato', "Prerequisites Not Met");
+	  this.addCardToDeck('iranianultimatum', "New Card");
+	  this.addCardToDeck('unitedfruit', "New Card");
+	  delete early_war_deck['nato'];
+	}
+        this.game.queue.push("DECK\t1\t"+JSON.stringify(early_war_deck));
+
       }
       this.game.queue.push("init");
     } else {
@@ -1094,6 +1096,15 @@ class Twilight extends GameTemplate {
         }
         this.game.queue.splice(qe, 1);
       }
+
+      this.game.queue.splice(qe, 1);
+    }
+
+    //
+    // remove from discards (will still be in cards)
+    //
+    if (mv[0] === "undiscard") {
+
 
       //
       // remove from discards (will still be in cards)
@@ -1729,16 +1740,13 @@ class Twilight extends GameTemplate {
         this.game.queue.splice(qe, 1);
         this.dynamicDeckManagement();
 
-        //
-        // show overlay and purge
-        //
-        if (this.game.saito_cards_added.length > 0 || this.game.saito_cards_removed.length > 0) {
-          this.deck_overlay.render();
-          this.game.saito_cards_added = [];
-          this.game.saito_cards_added_reason = [];
-          this.game.saito_cards_removed = [];
-          this.game.saito_cards_removed_reason = [];
-        }
+
+      this.game.queue.splice(qe, 1);
+if (this.game.deck[0]) {
+console.log("CARDS IN DECK: " + this.game.deck[0].cards.length);
+}
+      this.dynamicDeckManagement();
+
 
         return 1;
       }
@@ -2966,45 +2974,17 @@ class Twilight extends GameTemplate {
             this.game.state.stats.round.push({});
           }
 
-          console.log("STATS ROUNDS: " + this.game.state.stats.round.length);
 
-          this.game.state.stats.round[this.game.state.stats.round.length - 1].us_scorings =
-            this.game.state.stats.us_scorings;
-          this.game.state.stats.round[this.game.state.stats.round.length - 1].ussr_scorings =
-            this.game.state.stats.ussr_scorings;
-          this.game.state.stats.round[this.game.state.stats.round.length - 1].us_ops =
-            this.game.state.stats.us_ops;
-          this.game.state.stats.round[this.game.state.stats.round.length - 1].ussr_ops =
-            this.game.state.stats.ussr_ops;
-          this.game.state.stats.round[this.game.state.stats.round.length - 1].us_modified_ops =
-            this.game.state.stats.us_modified_ops;
-          this.game.state.stats.round[this.game.state.stats.round.length - 1].ussr_modified_ops =
-            this.game.state.stats.ussr_modified_ops;
-          this.game.state.stats.round[this.game.state.stats.round.length - 1].us_us_ops =
-            this.game.state.stats.us_ops;
-          this.game.state.stats.round[this.game.state.stats.round.length - 1].ussr_us_ops =
-            this.game.state.stats.ussr_ussr_ops;
-          this.game.state.stats.round[this.game.state.stats.round.length - 1].us_ussr_ops =
-            this.game.state.stats.us_ussr_ops;
-          this.game.state.stats.round[this.game.state.stats.round.length - 1].ussr_ussr_ops =
-            this.game.state.stats.ussr_ussr_ops;
-          this.game.state.stats.round[this.game.state.stats.round.length - 1].us_neutral_ops =
-            this.game.state.stats.us_neutral_ops;
-          this.game.state.stats.round[this.game.state.stats.round.length - 1].ussr_neutral_ops =
-            this.game.state.stats.ussr_neutral_ops;
-          this.game.state.stats.round[this.game.state.stats.round.length - 1].vp =
-            this.game.state.vp;
 
-          console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
-        }
 
-        //
-        // END GAME IF WE MAKE IT !
-        //
-        if (this.game.state.round == 11) {
-          this.finalScoring();
-          return 0; //Stop running through the queue
-        }
+      //this.game.queue.push("update_observers\t2");
+      //this.game.queue.push("update_observers\t1");
+      
+
+      //
+      // trigger headline
+      //
+      this.game.queue.push("headline");
 
         this.updateStatus("Preparing for round " + this.game.state.round);
 
@@ -3023,17 +3003,12 @@ class Twilight extends GameTemplate {
         //this.game.queue.push("update_observers\t2");
         //this.game.queue.push("update_observers\t1");
 
-        //
-        // dynamic deck management -- SAITO COMMUNITY
-        //
-        // dynamically adding and removing cards from the deck based on card and game
-        // logic criteria. this is how the Saito Edition manages to squeeze in a bunch
-        // of dynamic balancing behavior.
-        //
-        this.dynamicDeckManagement();
-        if (this.game.state.round == 1) {
-          this.game.queue.push("dynamic_deck_management");
-        }
+
+	if (this.game.state.round == 2) {
+	  this.addCardToDeck('tsarbomba', "New Card");
+	}
+
+        if (this.game.state.round == 4) {
 
         //
         // DEAL MISSING CARDS
@@ -3110,17 +3085,24 @@ class Twilight extends GameTemplate {
                 this.addCardToDeck("revolutionsof1989", "Replacement for KAL007");
               }
 
-              //
-              // Star Wars or Anti-Apartheid
-              //
-              if (
-                this.game.state.space_race_ussr_counter <= this.game.state.space_race_us_counter
-              ) {
-              } else {
-                delete late_war_cards["starwars"];
-                this.removeCardFromDeck("starwars", "US not ahead in Space Race");
-                this.addCardToDeck("antiapartheid", "Replacement for Star Wars");
-              }
+
+
+      //
+      // dynamic deck management -- SAITO COMMUNITY
+      //
+      // dynamically adding and removing cards from the deck based on card and game
+      // logic criteria. this is how the Saito Edition manages to squeeze in a bunch
+      // of dynamic balancing behavior.
+      //
+      if (this.game.state.round >= 1) {
+        this.game.queue.push("dynamic_deck_management");
+      }
+
+
+
+      return 1;
+    }
+
 
               //
               // remove Ortega unless US has influence in Cuba
@@ -3137,11 +3119,13 @@ class Twilight extends GameTemplate {
               this.removeCardFromDeck("rustinredsquare", "Replacement for Cambridge Five");
             }
 
-            this.game.queue.push("DECK\t1\t" + JSON.stringify(late_war_cards));
-            this.game.queue.push("DECKBACKUP\t1");
-            this.updateLog("Adding Late War cards to the deck...");
-          }
-        }
+
+console.log("CARDS IN DECK: " + this.game.deck[0].cards.length);
+
+      //if (this.game.player == 0) {
+      //  this.game.queue.push("OBSERVER_CHECKPOINT");
+      //}
+
 
         return 1;
       }
@@ -3423,8 +3407,11 @@ class Twilight extends GameTemplate {
       // check to see if defectors is in play
       //
 
-      if (uscard == "defectors") {
-        this.game.turn = [];
+     
+      if (uscard == "defectors" || this.game.state.defectors_pulled_in_headline == 1) {
+     
+        this.game.turn = []; 
+
         this.updateLog(`USSR headlines ${this.cardToText(ussrcard)}`);
         this.updateLog(`US headlines ${this.cardToText("defectors")} and cancels USSR headline.`);
 
@@ -3440,6 +3427,7 @@ class Twilight extends GameTemplate {
           `>${this.cardToText("defectors")} cancels USSR headline. Moving into first turn...`
         );
       } else {
+
         let statusMsg = "";
         if (this.game.state.player_to_go == 1) {
           statusMsg = `USSR headlines ${this.cardToText(ussrcard)}. US headlines ${this.cardToText(
@@ -9939,9 +9927,12 @@ class Twilight extends GameTemplate {
 
         console.log("SCORING: " + JSON.stringify(scoring));
 
-        if (mouseover_preview != 1) {
-          this.resetBattlegroundCountries(region);
-        }
+        if (mouseover_preview != 1) { 
+	  // SAITO COMMUNITY
+	  if (region === this.game.state.events.kissinger) { this.game.state.events.kissinger = ""; }
+	  this.resetBattlegroundCountries(region); 
+	}
+
 
         break;
     }
@@ -11088,8 +11079,23 @@ class Twilight extends GameTemplate {
   }
 
   updateEventTiles() {
-    if (!this.browser_active) {
-      return;
+
+
+    if (!this.browser_active){return;}
+
+    try {
+
+    if (this.game.state.events.kissinger == "") {
+      $('#eventtile_kissinger').css('display','none');
+    } else {
+      $('#eventtile_kissinger').css('display','block');
+    }
+
+    if (this.game.state.events.warsawpact == 0) {
+      $('#eventtile_warsaw').css('display','none');
+    } else {
+      $('#eventtile_warsaw').css('display','block');
+
     }
 
     try {
@@ -11619,6 +11625,9 @@ class Twilight extends GameTemplate {
   // their hand and draw a new card to make up for the shortfall.
   //
   dynamicDeckManagement() {
+
+    let shuffle_in_these_cards = {};
+
     //
     // living history / saito edition -- SAITO COMMUNITY
     //
@@ -11718,15 +11727,52 @@ class Twilight extends GameTemplate {
     //
     for (let i = 0; i < saito_edition_added.length; i++) {
       if (!this.game.deck[0].cards[saito_edition_added[i]]) {
-        if (
-          fulldeck[saito_edition_added[i]] &&
-          !saito_edition_removed.includes(saito_edition_added[i])
-        ) {
-          cards_added_to_deck++;
-          this.game.deck[0].cards[saito_edition_added[i]] = fulldeck[saito_edition_added[i]];
-        }
+
+	if (fulldeck[saito_edition_added[i]] && !saito_edition_removed.includes(saito_edition_added[i])) {
+	  cards_added_to_deck++;
+	  //this.game.deck[0].cards[saito_edition_added[i]] = fulldeck[saito_edition_added[i]];
+	  shuffle_in_these_cards[saito_edition_added[i]] = fulldeck[saito_edition_added[i]];
+	}
+
       }
     }
+
+
+    //
+    // discards should be removed from main deck for reshuffle
+    //
+    for (let key2 in this.game.deck[0].discards) {
+      if (this.game.deck[0].cards[key2]) {
+	delete this.game.deck[0].cards[key2];
+      }
+    }
+
+    for (let key3 in this.game.deck[0].cards) {
+      shuffle_in_these_cards[key3] = this.game.deck[0].cards[key3];
+    }
+
+console.log("DECK HAS THESE!");
+for (let key4 in shuffle_in_these_cards) {
+  console.log(key4);
+}
+
+    //
+    // shuffle in new cards
+    //
+    // note - no backup and restore as we are replacing the deck
+    //
+    this.game.queue.push("SHUFFLE\t1");
+    this.game.queue.push("DECKRESTORE");
+    this.game.queue.push("DECKENCRYPT\t1\t2");
+    this.game.queue.push("DECKENCRYPT\t1\t1");
+    this.game.queue.push("DECKXOR\t1\t2");
+    this.game.queue.push("DECKXOR\t1\t1");
+    this.game.queue.push("DECK\t1\t"+JSON.stringify(shuffle_in_these_cards));
+    this.game.queue.push("HANDBACKUP\t1");
+    this.updateLog("Shuffling new cards into deck...");
+    
+
+
 
     this.game.state.player1_card_replacements_needed = 0;
     this.game.state.player2_card_replacements_needed = 0;
@@ -11788,6 +11834,26 @@ class Twilight extends GameTemplate {
     }
   }
 
+  removeCardFromDeckNextDeal(key="", reason="") {
+
+    if (!this.game.saito_cards_added) {
+      //
+      // living history / saito edition -- SAITO COMMUNITY
+      //
+      this.game.saito_cards_added = [];
+      this.game.saito_cards_removed = [];
+      this.game.saito_cards_added_reason = [];
+      this.game.saito_cards_removed_reason = [];
+    }
+
+    if (!this.game.saito_cards_removed.includes(key)) {
+      this.game.saito_cards_removed.push(key);
+      this.game.saito_cards_removed_reason.push(reason);
+    }
+
+  }
+
+
   removeCardFromDeck(key = "", reason = "") {
     if (!this.game.saito_cards_added) {
       //
@@ -11805,6 +11871,9 @@ class Twilight extends GameTemplate {
     if (this.game.deck.length > 0) {
       if (this.game.deck[0].cards[key]) {
         delete this.game.deck[0].cards[key];
+      }
+      if (this.game.deck[0].discards[key]) {
+        delete this.game.deck[0].discards[key];
       }
     }
 
@@ -12250,7 +12319,7 @@ class Twilight extends GameTemplate {
     //
     if (card == "awacs") {
       // SAITO COMMUNITY
-      this.removeCardFromDeck("muslimrevolution", "Muslim Revolution cancelled");
+      this.removeCardFromDeckNextDeal("muslimrevolution", "Muslim Revolution cancelled");
 
       this.game.state.events.awacs = 1; //Prevent Muslim Revolution
       this.cancelEvent("muslimrevolution");
@@ -12589,7 +12658,7 @@ class Twilight extends GameTemplate {
     //
     if (card == "campdavid") {
       // SAITO COMMUNITY
-      this.removeCardFromDeck("arabisraeli", "Camp David evented");
+      this.removeCardFromDeckNextDeal("arabisraeli", "Camp David evented");
 
       this.game.state.events.campdavid = 1; //Prevents Arab-Isreali War
       this.cancelEvent("arabisraeli");
@@ -12644,7 +12713,7 @@ class Twilight extends GameTemplate {
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeck("unitedfruit", "Che Evented");
+      this.removeCardFromDeckNextDeal("unitedfruit", "Che Evented");
 
       let twilight_self = this;
       let valid_targets = 0;
@@ -12759,6 +12828,7 @@ class Twilight extends GameTemplate {
       // SAITO COMMUNITY - lone gunman added
       //
       this.addCardToDeck("lonegunman", "Prerequisites Met");
+      this.removeCardFromDeckNextDeal("tsarbomba", "CIA Evented");
 
       //USSR needs to share its card information
       if (this.game.player == 1) {
@@ -13172,6 +13242,7 @@ class Twilight extends GameTemplate {
         this.updateLog(`US gains 1 VP from ${this.cardToText("defectors")}`);
         this.updateVictoryPoints();
       } else {
+
         //
         // Defectors can be PULLED in the headline phase by 5 Year Plan or Grain Sales, in which
         // case it can only cancel the USSR headline if the USSR headline has not already gone.
@@ -13441,7 +13512,8 @@ class Twilight extends GameTemplate {
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeck("unitedfruit", "Fidel Evented");
+      this.removeCardFromDeckNextDeal("unitedfruit", "Fidel Evented");
+      this.cancelEvent("unitedfruit");
 
       let usinf = parseInt(this.countries["cuba"].us);
       let ussrinf = parseInt(this.countries["cuba"].ussr);
@@ -14035,11 +14107,8 @@ class Twilight extends GameTemplate {
     //
     if (card == "ironlady") {
       // SAITO COMMUNITY
-      this.removeCardFromDeck("socgov", "The Iron Lady evented");
 
-      if (!this.saito_cards_removed.includes("socgov")) {
-        this.saito_cards_removed.push("socgov");
-      }
+      this.removeCardFromDeckNextDeal("socgov", "The Iron Lady evented");
 
       this.updateLog("US gains 1 VP from The Iron Lady");
       this.game.state.vp += 1;
@@ -14458,7 +14527,8 @@ class Twilight extends GameTemplate {
       //
       // SAITO COMMUNITY - united fruit company removed
       //
-      this.removeCardFromDeck("unitedfruit", "Liberation Theology Evented");
+      this.removeCardFromDeckNextDeal("unitedfruit", "Liberation Theology Evented");
+      this.cancelEvent("unitedfruit");
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
@@ -15047,7 +15117,7 @@ class Twilight extends GameTemplate {
     //
     if (card == "northseaoil") {
       // SAITO COMMUNITY
-      this.removeCardFromDeck("opec", "OPEC cancelled");
+      this.removeCardFromDeckNextDeal("opec", "OPEC cancelled");
 
       this.cancelEvent("opec");
       this.game.state.events.northseaoil = 1; //block OPEC
@@ -17180,7 +17250,8 @@ class Twilight extends GameTemplate {
     }
 
     if (card == "berlinagreement") {
-      this.removeCardFromDeck("blockade", "Blockade Cancelled");
+
+      this.removeCardFromDeckNextDeal("blockade", "Blockade Cancelled");
 
       this.cancelEvent("blockade");
 
