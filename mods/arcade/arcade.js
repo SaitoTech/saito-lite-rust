@@ -875,7 +875,7 @@ class Arcade extends ModTemplate {
         await this.updatePlayerListSQL(txmsg.game_id, game.msg.players, game.msg.players_sigs);
       }
     } else if (tx.isFrom(game.msg.options.desired_opponent_publickey)) {
-      if ((await this.app.wallet.getPublicKey()) == game.msg.originator) {
+      if (this.publicKey == game.msg.originator) {
         siteMessage("Your game invite was declined", 5000);
       }
       await this.changeGameStatus(txmsg.game_id, "close");
