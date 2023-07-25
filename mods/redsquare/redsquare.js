@@ -731,7 +731,7 @@ class RedSquare extends ModTemplate {
       //
       // notify of other people's actions, but not ours
       //
-      if (!tx.isFrom(this.publicKey) && !this.notifications_sigs_hmap[tx.sig]) {
+      if (!tx.isFrom(this.publicKey) && !this.notifications_sigs_hmap[tx.signature]) {
         //console.log("Notification!");
 
         let insertion_index = 0;
@@ -745,7 +745,7 @@ class RedSquare extends ModTemplate {
         }
 
         this.notifications.splice(insertion_index, 0, tweet);
-        this.notifications_sigs_hmap[tx.sig] = 1;
+        this.notifications_sigs_hmap[tx.signature] = 1;
 
         //
         // increment notifications in menu unless is our own
@@ -831,7 +831,7 @@ class RedSquare extends ModTemplate {
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.optional.thread_id) {
           if (this.tweets[i].addTweet(tweet) == 1) {
-            this.tweets_sigs_hmap[tweet.tx.sig] = 1;
+            this.tweets_sigs_hmap[tweet.tx.signature] = 1;
             inserted = true;
             break;
           }
@@ -966,7 +966,7 @@ class RedSquare extends ModTemplate {
           if (txmsg.data?.retweet_tx) {
             let rtx = Transaction.deserialize(txmsg.data.retweet_tx, new Factory());
 
-            if (this.tweets_sigs_hmap[rtx.sig]) {
+            if (this.tweets_sigs_hmap[rtx.signature]) {
               let tweet2 = this.returnTweet(rtx.signature);
               if (tweet2 == null) {
                 return;
@@ -1171,7 +1171,7 @@ class RedSquare extends ModTemplate {
         // save optional likes
         //
         let txmsg = tx.returnMessage();
-        if (this.tweets_sigs_hmap[txmsg.data.sig]) {
+        if (this.tweets_sigs_hmap[txmsg.data.signature]) {
           let tweet = this.returnTweet(txmsg.data.signature);
           if (tweet == null) {
             return;

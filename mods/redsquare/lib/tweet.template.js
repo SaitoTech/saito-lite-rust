@@ -33,7 +33,7 @@ module.exports = (app, mod, tweet) => {
               </div>`;
 
   let html = `
-        <div class="tweet tweet-${tweet.tx.sig}" data-id="${tweet.tx.sig}">
+        <div class="tweet tweet-${tweet.tx.signature}" data-id="${tweet.tx.signature}">
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header"></div>
           <div class="tweet-body">
@@ -45,7 +45,7 @@ module.exports = (app, mod, tweet) => {
   if (tweet.youtube_id != null && tweet.youtube_id != "null") {
     html += `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>`;
   } else {
-    html += `<div class="tweet-preview tweet-preview-${tweet.tx.sig}"></div>`;
+    html += `<div class="tweet-preview tweet-preview-${tweet.tx.signature}"></div>`;
   }
 
   if (tweet?.show_controls) {
