@@ -408,9 +408,10 @@ class Registry extends ModTemplate {
     await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
-  notifyPeers(app, tx) {
-    for (let i = 0; i < app.network.peers.length; i++) {
-      if (app.network.peers[i].peer.synctype == "lite") {
+  async notifyPeers(app, tx) {
+    let peers = await app.network.getPeers();
+    for (let i = 0; i < peers.length; i++) {
+      if (peers[i].synctype == "lite") {
         //
         // fwd tx to peer
         //
@@ -418,7 +419,8 @@ class Registry extends ModTemplate {
         message.request = "registry username update";
         message.data = {};
         message.data.tx = tx;
-        app.network.peers[i].sendRequest(message.request, message.data);
+
+        await app.network.sendRequest(message.request, message.data, peers[i]);
       }
     }
   }
@@ -624,7 +626,7 @@ class Registry extends ModTemplate {
 
               // if i am a server, i will notify lite-peers of
               console.log("notifying lite-peers of registration!");
-              this.notifyPeers(this.app, tx);
+              await this.notifyPeers(this.app, tx);
             }
           }
         }

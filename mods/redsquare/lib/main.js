@@ -63,7 +63,7 @@ class RedSquareMain {
     this.app.connection.on("redsquare-tweet-render-request", (tweet) => {
       this.scrollFeed(0);
       this.app.connection.emit("redsquare-navigation");
-      window.history.pushState(null, "", `/redsquare/?tweet_id=${tweet?.tx?.transaction?.sig}`);
+      window.history.pushState(null, "", `/redsquare/?tweet_id=${tweet?.tx?.transaction?.signature}`);
 
       this.manager.renderTweet(tweet);
     });

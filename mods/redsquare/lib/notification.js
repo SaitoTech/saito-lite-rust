@@ -46,16 +46,16 @@ class RedSquareNotification {
             this.app,
             this.mod,
             tweet_tx.tx,
-            `.tweet-notif-fav.notification-item-${from}-${txmsg.data.sig} .tweet-body .tweet-main .tweet-preview`
+            `.tweet-notif-fav.notification-item-${from}-${txmsg.data.signature} .tweet-body .tweet-main .tweet-preview`
           );
           this.user = new SaitoUser(
             this.app,
             this.mod,
-            `.notification-item-${from}-${txmsg.data.sig} > .tweet-header`,
+            `.notification-item-${from}-${txmsg.data.signature} > .tweet-header`,
             this.tx.from[0].publicKey
           );
 
-          let qs = `.tweet-notif-fav.notification-item-${from}-${txmsg.data.sig}`;
+          let qs = `.tweet-notif-fav.notification-item-${from}-${txmsg.data.signature}`;
           let obj = document.querySelector(qs);
           if (obj) {
             obj.innerHTML = obj.innerHTML.replace("liked ", "really liked ");
@@ -71,7 +71,7 @@ class RedSquareNotification {
             this.app,
             this.mod,
             tweet_tx.tx,
-            `.notification-item-${this.tx.sig} .tweet-body .tweet-main .tweet-preview`
+            `.notification-item-${this.tx.signature} .tweet-body .tweet-main .tweet-preview`
           );
           this.user = new SaitoUser(
             this.app,
@@ -156,7 +156,7 @@ class RedSquareNotification {
   }
 
   isRendered() {
-    //if (document.querySelector(`.notification-item-${this.tx.sig}`)) {
+    //if (document.querySelector(`.notification-item-${this.tx.signature}`)) {
     //  return true;
     //}
     return false;

@@ -103,7 +103,8 @@ module.exports = AppstoreAppDetails = {
           if (!app.options.appstore) {
             app.options.appstore = {};
           }
-          app.options.appstore.default = app.network.peers[0].peer.publickey;
+          let peers = await app.network.getPeers();
+          app.options.appstore.default = peers[0].publicKey;
 
           document.getElementById("appstore-end-compile-btn").onclick = (e) => {
             mod.overlay.hide();
@@ -113,10 +114,11 @@ module.exports = AppstoreAppDetails = {
             document.querySelector(".appstore-bundler-install-notice").innerHTML = "Please wait...";
 
             app.options.appstore = {};
-            app.options.appstore.default = app.network.peers[0].peer.publickey;
-            app.storage.saveOptions();
+            let peers = await app.network.getPeers();
+            app.options.appstore.default = peers[0].publicKey;
+            await app.storage.saveOptions();
 
-            var newtx = await app.wallet.createUnsignedTransactionWithDefaultFee(
+            let newtx = await app.wallet.createUnsignedTransactionWithDefaultFee(
               app.options.appstore.default,
               BigInt(0)
             );
@@ -156,7 +158,8 @@ module.exports = AppstoreAppDetails = {
 
         document.getElementById("appstore-compile-btn").onclick = async (e) => {
           app.options.appstore = {};
-          app.options.appstore.default = app.network.peers[0].peer.publickey;
+          let peers = await app.network.getPeers();
+          app.options.appstore.default = peers[0].publicKey;
           app.storage.saveOptions();
 
           var newtx = await app.wallet.createUnsignedTransactionWithDefaultFee(
