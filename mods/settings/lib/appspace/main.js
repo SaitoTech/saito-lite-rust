@@ -18,7 +18,7 @@ class SettingsAppspace {
   }
 
   async render() {
-    this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod));
+    this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod, this.app.wallet));
 
     let settings_appspace = document.querySelector(".settings-appspace");
     if (settings_appspace) {
