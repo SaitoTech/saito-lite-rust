@@ -1090,7 +1090,6 @@ class Chat extends ModTemplate {
     let last_message_ts = 0;
     let last = new Date(0);
 
-    console.log("txs : ", group.txs);
     for (let minimized_tx of group?.txs) {
       //Same Sender -- keep building block
       let next = new Date(minimized_tx.timestamp);
