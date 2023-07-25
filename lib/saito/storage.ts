@@ -136,25 +136,25 @@ export default class Storage {
         console.error(err);
       }
     }
-    this.convertOptionsBigInt(this.app.options);
+    // this.convertOptionsBigInt(this.app.options);
     return this.app.options;
   }
 
-  convertOptionsBigInt(options: any) {
-    console.log("options for conversion : ", options);
-    if (options.blockchain) {
-      // options.blockchain.last_block_id = BigInt(options.blockchain.last_block_id);
-      // options.blockchain.last_timestamp = BigInt(options.blockchain.last_timestamp);
-      // options.blockchain.genesis_block_id = BigInt(options.blockchain.genesis_block_id);
-      // options.blockchain.genesis_timestamp = BigInt(options.blockchain.genesis_timestamp);
-      // options.blockchain.lowest_acceptable_timestamp = BigInt(
-      //   options.blockchain.lowest_acceptable_timestamp
-      // );
-      // options.blockchain.lowest_acceptable_block_id = BigInt(
-      //   options.blockchain.lowest_acceptable_block_id
-      // );
-    }
-  }
+  // convertOptionsBigInt(options: any) {
+  //   console.log("options for conversion : ", options);
+  //   if (options.blockchain) {
+  //     // options.blockchain.last_block_id = BigInt(options.blockchain.last_block_id);
+  //     // options.blockchain.last_timestamp = BigInt(options.blockchain.last_timestamp);
+  //     // options.blockchain.genesis_block_id = BigInt(options.blockchain.genesis_block_id);
+  //     // options.blockchain.genesis_timestamp = BigInt(options.blockchain.genesis_timestamp);
+  //     // options.blockchain.lowest_acceptable_timestamp = BigInt(
+  //     //   options.blockchain.lowest_acceptable_timestamp
+  //     // );
+  //     // options.blockchain.lowest_acceptable_block_id = BigInt(
+  //     //   options.blockchain.lowest_acceptable_block_id
+  //     // );
+  //   }
+  // }
 
   async queryDatabase(sql, params, database) {}
 

@@ -40,6 +40,8 @@ async function initSaito() {
 
   await app.init();
 
+  S.getInstance().start();
+
   const { protocol, host, port } = app.options.server;
 
   const localServer = `${protocol}://${host}:${port}`;

@@ -192,14 +192,12 @@ class Mods {
     }
 
     const onPeerHandshakeComplete = this.onPeerHandshakeComplete.bind(this);
-    //
     // include events here
-    //
     this.app.connection.on("handshake_complete", async (peerIndex: bigint) => {
       // await this.app.network.propagateServices(peerIndex);
       let peer = await this.app.network.getPeer(BigInt(peerIndex));
-      console.log('handhske complete')
-      onPeerHandshakeComplete(peer);
+      console.log("handshake complete");
+      await onPeerHandshakeComplete(peer);
     });
 
     const onConnectionUnstable = this.onConnectionUnstable.bind(this);
@@ -365,7 +363,6 @@ class Mods {
     for (let i = 0; i < peer.services.length; i++) {
       await this.onPeerServiceUp(peer, peer.services[i]);
     }
-
   }
 
   async onPeerServiceUp(peer, service) {

@@ -263,7 +263,7 @@ class StorageCore extends Storage {
         optionsfile = fs.readFileSync(`${this.config_dir}/options`, this.file_encoding_load);
         this.app.options = Object.assign(this.app.options, JSON.parse(optionsfile.toString()));
 
-        this.convertOptionsBigInt(this.app.options);
+        // this.convertOptionsBigInt(this.app.options);
 
         this.app.options.browser_mode = false;
         this.app.options.spv_mode = false;

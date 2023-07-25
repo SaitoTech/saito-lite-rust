@@ -46,6 +46,7 @@ class WebMethods extends WebSharedMethods {
   }
 
   sendInterfaceEvent(event: string, peerIndex: bigint) {
+    console.log("web shared methods . emit : " + event, this.app.connection);
     this.app.connection.emit(event, peerIndex);
   }
 
@@ -87,7 +88,7 @@ async function init() {
   saito.options.browser_mode = true;
   saito.options.spv_mode = true;
 
-  saito.storage.convertOptionsBigInt(saito.options);
+  // saito.storage.convertOptionsBigInt(saito.options);
 
   console.log("saito options : ", saito.options);
   await initSaito(
@@ -103,6 +104,8 @@ async function init() {
   saito.BROWSER = 1;
   saito.SPVMODE = 1;
   await saito.init();
+
+  S.getInstance().start();
 }
 
 // init();
