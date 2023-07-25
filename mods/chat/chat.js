@@ -81,8 +81,6 @@ class Chat extends ModTemplate {
 
     this.hiddenTab = "hidden";
     this.orig_title = "";
-
-    return;
   }
 
   async initialize(app) {
@@ -259,17 +257,17 @@ class Chat extends ModTemplate {
           }
         }
 
-        let newtx = await this.app.wallet.createUnsignedTransaction();
+        // let newtx = await this.app.wallet.createUnsignedTransaction();
 
-        newtx.msg = {
+        let msg = {
           request: "chat history",
           group_id: this.communityGroup.id,
-          ts: this.communityGroup.last_update,
+          timestamp: this.communityGroup.last_update,
         };
 
-        await newtx.sign();
+        // await newtx.sign();
 
-        this.app.network.sendTransactionWithCallback(newtx, (txs) => {
+        this.app.network.sendRequestAsTransaction("chat history", msg, (txs) => {
           this.loading--;
           if (this.debug) {
             console.log("chat history callback: " + txs.length);
@@ -285,6 +283,7 @@ class Chat extends ModTemplate {
               }
             }
           } else {
+            console.log("222 : ", txs);
             this.communityGroup.txs = txs;
           }
 
@@ -479,18 +478,20 @@ class Chat extends ModTemplate {
       //mycallback(group.txs.slice(-50));
 
       if (mycallback) {
-        mycallback(group.txs.filter((t) => t.timestamp > txmsg.timestamp));
+        let txs = group.txs.filter((t) => t.timestamp > txmsg.timestamp);
+        console.log("333 : ", txs);
+        await mycallback(txs);
       }
     }
 
     if (txmsg.request === "chat message") {
-      this.receiveChatTransaction(app, tx);
+      await this.receiveChatTransaction(app, tx);
 
       //
       // notify sender if requested
       //
       if (mycallback) {
-        mycallback({ payload: "success", error: {} });
+        await mycallback({ payload: "success", error: {} });
       }
     } else if (txmsg.request === "chat message broadcast") {
       /*
@@ -500,6 +501,7 @@ class Chat extends ModTemplate {
       let inner_tx = new Transaction(undefined, txmsg.data);
       let inner_txmsg = inner_tx.returnMessage();
 
+      let peers = await app.network.getPeers();
       //
       // if chat message broadcast is received - we are being asked to broadcast this
       // to a peer if the inner_tx is addressed to one of our peers.
@@ -507,11 +509,10 @@ class Chat extends ModTemplate {
       if (inner_tx.to.length > 0) {
         if (inner_tx.to[0].publicKey != this.publicKey) {
           if (app.BROWSER == 0) {
-            app.network.peers.forEach((p) => {
-              if (p.peer.publickey === inner_tx.to[0].publicKey) {
-                p.sendTransactionWithCallback(inner_tx, () => {});
+            peers.forEach((p) => {
+              if (p.publicKey === inner_tx.to[0].publicKey) {
+                app.network.sendTransactionWithCallback(inner_tx, null, p.peerIndex);
               }
-              return;
             });
             return;
           }
@@ -520,9 +521,9 @@ class Chat extends ModTemplate {
           // broadcast to me, so send to all non-this-peers
           //
           if (app.BROWSER == 0) {
-            app.network.peers.forEach((p) => {
-              if (p.publicKey !== peer.publickey) {
-                p.sendTransactionWithCallback(inner_tx, () => {});
+            peers.forEach((p) => {
+              if (p.publicKey !== peer.publicKey) {
+                app.network.sendTransactionWithCallback(inner_tx, null, p.peerIndex);
               }
             });
           }
@@ -533,7 +534,7 @@ class Chat extends ModTemplate {
       // notify sender if requested
       //
       if (mycallback) {
-        mycallback({ payload: "success", error: {} });
+        await mycallback({ payload: "success", error: {} });
       }
     }
   }
@@ -543,7 +544,11 @@ class Chat extends ModTemplate {
   // We have a single admin (who can add additional members or kick people out)
   //
   async sendCreateGroupTransaction(group) {
-    let newtx = await this.app.wallet.createUnsignedTransaction(this.publicKey, 0.0, 0.0);
+    let newtx = await this.app.wallet.createUnsignedTransaction(
+      this.publicKey,
+      BigInt(0),
+      BigInt(0)
+    );
     if (newtx == null) {
       return;
     }
@@ -627,7 +632,11 @@ class Chat extends ModTemplate {
   // But in the future, we may add a confirmation interface
   //
   async sendConfirmGroupTransaction(group) {
-    let newtx = await this.app.wallet.createUnsignedTransaction(this.publicKey, 0.0, 0.0);
+    let newtx = await this.app.wallet.createUnsignedTransaction(
+      this.publicKey,
+      BigInt(0),
+      BigInt(0)
+    );
     if (newtx == null) {
       return;
     }
@@ -681,7 +690,11 @@ class Chat extends ModTemplate {
   // Add a member to an existing chat group
   //
   async sendAddMemberTransaction(group, member) {
-    let newtx = await this.app.wallet.createUnsignedTransaction(this.publicKey, 0.0, 0.0);
+    let newtx = await this.app.wallet.createUnsignedTransaction(
+      this.publicKey,
+      BigInt(0),
+      BigInt(0)
+    );
     if (newtx == null) {
       return;
     }
@@ -758,7 +771,11 @@ class Chat extends ModTemplate {
   }
 
   async sendRemoveMemberTransaction(group, member) {
-    let newtx = await this.app.wallet.createUnsignedTransaction(this.publicKey, 0.0, 0.0);
+    let newtx = await this.app.wallet.createUnsignedTransaction(
+      this.publicKey,
+      BigInt(0),
+      BigInt(0)
+    );
     if (newtx == null) {
       return;
     }
@@ -840,11 +857,13 @@ class Chat extends ModTemplate {
         this.inTransitImageMsgSig = tx.signature;
       }
     }
-    if (app.network.peers.length > 0) {
-      let recipient = app.network.peers[0].publicKey;
-      for (let i = 0; i < app.network.peers.length; i++) {
-        if (app.network.peers[i].hasService("chat")) {
-          recipient = app.network.peers[i].publicKey;
+    let peers = await app.network.getPeers();
+
+    if (peers.length > 0) {
+      let recipient = peers[0].publicKey;
+      for (let i = 0; i < peers.length; i++) {
+        if (peers[i].hasService("chat")) {
+          recipient = peers[i].publicKey;
           break;
         }
       }
@@ -861,7 +880,11 @@ class Chat extends ModTemplate {
   }
 
   async createChatTransaction(group_id, msg = "") {
-    let newtx = await this.app.wallet.createUnsignedTransaction(this.publicKey, 0.0, 0.0);
+    let newtx = await this.app.wallet.createUnsignedTransaction(
+      this.publicKey,
+      BigInt(0),
+      BigInt(0)
+    );
     if (newtx == null) {
       return;
     }
@@ -1014,7 +1037,6 @@ class Chat extends ModTemplate {
     if (!group) {
       return "";
     }
-    console.log("group : ", group);
     let message_blocks = this.createMessageBlocks(group);
 
     for (let block of message_blocks) {
@@ -1068,6 +1090,7 @@ class Chat extends ModTemplate {
     let last_message_ts = 0;
     let last = new Date(0);
 
+    console.log("txs : ", group.txs);
     for (let minimized_tx of group?.txs) {
       //Same Sender -- keep building block
       let next = new Date(minimized_tx.timestamp);
@@ -1443,6 +1466,7 @@ class Chat extends ModTemplate {
     let new_group = JSON.parse(JSON.stringify(group));
     new_group.online = false;
     new_group.txs = group.txs.slice(-50);
+    console.log("111 : ", new_group.txs);
 
     localforage.setItem(`chat_${group.id}`, new_group).then(function () {
       if (chat_self.debug) {

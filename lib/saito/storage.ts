@@ -87,17 +87,15 @@ export default class Storage {
       return;
     }
 
-    if (peer != null) {
-      peer.sendRequestWithCallback(message, data, function (res) {
+    this.app.network.sendRequestAsTransaction(
+      message,
+      data,
+      function (res) {
         internal_callback(res);
-      });
-      return;
-    } else {
-      this.app.network.sendRequestAsTransaction(message, data, function (res) {
-        internal_callback(res);
-      });
-      return;
-    }
+      },
+      peer?.peerIndex
+    );
+    return;
   }
 
   async initialize() {

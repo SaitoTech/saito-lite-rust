@@ -127,13 +127,14 @@ class NwasmLibrary {
             message.data.signature = sig;
 
             let peer = null;
-            for (let i = 0; i < this.app.network.peers.length; i++) {
+            let peers = await this.app.network.getPeers();
+            for (let i = 0; i < peers.length; i++) {
               //
               // libraries organized by publickey
               //
-              if (this.app.network.peers[i].publicKey === publickey) {
-                let peer = this.app.network.peers[i];
-                i = this.app.network.peers.length + 100; // buffer against connect/disconnect
+              if (peers[i].publicKey === publickey) {
+                let peer = peers[i];
+                i = peers.length + 100; // buffer against connect/disconnect
               }
             }
 

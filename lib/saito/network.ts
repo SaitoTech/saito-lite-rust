@@ -96,16 +96,6 @@ export default class Network {
     return S.getInstance().sendTransactionWithCallback(transaction, callback, peerIndex);
   }
 
-  public close() { }
-
-  addStunPeer() {
-    throw new Error("not implemented");
-  }
-
-  initializeStun() {
-    throw new Error("not implemented");
-  }
-
   public async sendRequestAsTransaction(
     message: string,
     data: any = "",
@@ -115,9 +105,19 @@ export default class Network {
     return S.getInstance().sendRequest(message, data, callback, peerIndex);
   }
 
-  returnPeersWithService() { }
+  public close() {}
 
-  updatePeersWithWatchedPublicKeys() { }
+  addStunPeer() {
+    throw new Error("not implemented");
+  }
+
+  initializeStun() {
+    throw new Error("not implemented");
+  }
+
+  returnPeersWithService() {}
+
+  updatePeersWithWatchedPublicKeys() {}
 
   // public async propagateServices(peerIndex: bigint) {
   //   let my_services = [];
