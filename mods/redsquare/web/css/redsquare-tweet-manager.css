@@ -16,3 +16,7 @@
   font-style: italic;
 }
 
+.tweet-thread-holder {
+  display: none;
+}
+

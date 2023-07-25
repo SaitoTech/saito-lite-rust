@@ -37,7 +37,7 @@
 
 .saito-sidebar.left {
   position: sticky;
-  height: calc(100% - var(--saito-header-height));
+  height: calc(100 * var(--saito-vh) - var(--saito-header-height));
   width: 25rem;
   top: 0;
   /*margin: 0 0 0 ;*/

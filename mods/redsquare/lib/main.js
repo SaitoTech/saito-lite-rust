@@ -27,7 +27,7 @@ class RedSquareMain {
       //this.overlay.show('<div class="saito-loader"></div>');
     });
 
-    this.app.connection.off("redsquare-navigation-complete", () => {
+    this.app.connection.on("redsquare-navigation-complete", () => {
       //this.overlay.remove();
     });
 
@@ -42,7 +42,7 @@ class RedSquareMain {
       
       if (this.manager.mode == "tweets" && user_click) {
         this.scroll_depth = 0; 
-        this.scrollFeed(0);     
+        this.scrollFeed(0, "smooth");     
         this.mod.loadNewTweets(null, (txs) => {
           if (txs.length > 0) {
             this.app.connection.emit("redsquare-new-tweets-notification-request");
@@ -53,8 +53,7 @@ class RedSquareMain {
         return;        
       }
       
-      this.manager.mode = "tweets";
-      this.manager.render();
+      this.manager.render("tweets");
       this.scrollFeed(this.scroll_depth);
             
     });
@@ -91,16 +90,14 @@ class RedSquareMain {
 
       this.scrollFeed(0);
       window.history.pushState(null, "", "/redsquare/#notifications");
-      this.manager.mode = "notifications";
-      this.manager.render();
+      this.manager.render("notifications");
     });
 
     this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
       this.scrollFeed(0);
       window.history.pushState(null, "", `/redsquare/?user_id=${publickey}`);
-      this.manager.mode = "profile";
       this.manager.publickey = publickey;
-      this.manager.render();
+      this.manager.render("profile");
     });
 
 
@@ -189,12 +186,12 @@ class RedSquareMain {
   }
 
 
-  scrollFeed(newDepth){
+  scrollFeed(newDepth, behavior = "auto"){
     if (this.manager.mode == "tweets"){
       this.scroll_depth = document.querySelector('.saito-container').scrollTop;
     }
 
-    document.querySelector('.saito-container').scroll({ top: newDepth, left: 0, behavior: 'smooth' });
+    document.querySelector('.saito-container').scroll({ top: newDepth, left: 0, behavior });
 
   }
 

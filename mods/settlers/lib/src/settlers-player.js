@@ -154,8 +154,9 @@
 
       } else {
         /* During game, must build roads to open up board for new settlements*/
+        this.updateStatus(`<div class="tbd">You may build a ${this.c1.name}...</div>`);
         if (canBackUp){
-          this.updateStatus(`<div class="tbd">You may build a ${this.c1.name}...</div><ul><li class="undo">cancel</li></ul>`);
+          this.updateControls(`<ul><li class="undo">cancel</li></ul>`);
           $(".undo").on("click",function(){
             //Make sure the confirm popup goes away
             $(".action").off();
@@ -166,8 +167,6 @@
             settlers_self.addMove("undo_build");
             settlers_self.endTurn();
           });
-        }else{
-          this.updateStatus(`<div class="tbd">You may build a ${this.c1.name}...</div>`);
         }
 
         let building_options = this.returnCitySlotsAdjacentToPlayerRoads(this.game.player);
@@ -247,8 +246,9 @@
           });
         });
       } else {
+        this.updateStatus(`<div class="tbd">You may build a ${this.r.name}...</div>`);
         if (canBackUp){
-          this.updateStatus(`<div class="tbd">You may build a ${this.r.name}...</div><ul><li class="undo">cancel</li></ul>`);
+          this.updateControls(`<ul><li class="undo">cancel</li></ul>`);
           $(".undo").on("click",function(){
             //Make sure the confirm popup goes away
             $(".action").off();
@@ -261,9 +261,6 @@
             settlers_self.addMove(`undo_build`);
             settlers_self.endTurn();
           });
-
-        } else{
-          this.updateStatus(`<div class="tbd">You may build a ${this.r.name}...</div>`);
         }
 
 
@@ -298,9 +295,9 @@
 
 
     playerBuildCity(player, canBackUp = 0) {
-
+      this.updateStatus(`<div class="tbd">Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...</div>`);
       if (canBackUp){
-        this.updateStatus(`<div class="tbd">Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...</div><ul><li class="undo">cancel</li></ul>`);
+        this.updateControls(`<ul><li class="undo">cancel</li></ul>`);
         $(".undo").on("click",function(){
           //Make sure the confirm popup goes away
           $(".action").off();
@@ -312,8 +309,6 @@
           settlers_self.addMove("undo_build");
           settlers_self.endTurn();
         });
-      }else{
-        this.updateStatus(`<div class="tbd">Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...</div>`);
       }
 
       let settlers_self = this;
@@ -398,7 +393,8 @@
         return;
       }
 
-      settlers_self.updateStatus(settlers_self.getLastNotice() + html);
+      settlers_self.updateStatus(settlers_self.getLastNotice());
+      settlers_self.updateControls(html);
 
       $(".option").off();
       $(".option").on("click", function () {
