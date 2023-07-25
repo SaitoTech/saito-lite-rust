@@ -709,7 +709,7 @@ class Mixin extends ModTemplate {
       };
 
       //console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
-      mixin_self.app.network.peers[0].sendRequestAsTransactionWithCallback(
+      mixin_self.app.network.peers[0].sendRequestAsTransaction(
         "mixin create account",
         data,
         function (res) {

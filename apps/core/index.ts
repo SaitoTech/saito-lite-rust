@@ -9,11 +9,10 @@ import Browser from "../../lib/saito/browser";
 import Wallet from "../../lib/saito/wallet";
 import Keychain from "../../lib/saito/keychain";
 import Storage from "../../lib/saito/storage";
-// import NetworkAPI from "../../lib/saito/networkapi";
+
 import Network from "../../lib/saito/network";
 
 import hash_loader from "./hash-loader";
-// import Config from "saito-js/lib/config";
 
 const path = require("path");
 
@@ -40,8 +39,6 @@ class Saito {
     this.BROWSER = 1;
     this.SPVMODE = 0;
     this.options = config;
-    // this.config = new Config();
-
     this.newSaito();
 
     // TODO : where does this mod_paths come from?
@@ -107,6 +104,7 @@ class Saito {
   }
 
   async reset(config) {
+    console.log("resetting saito instance");
     this.options = config;
     this.newSaito();
     await this.init();

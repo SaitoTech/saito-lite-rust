@@ -183,6 +183,7 @@ class Chat extends ModTemplate {
   }
 
   async onPeerServiceUp(app, peer, service = {}) {
+    console.log("chat.onPeerServiceUp : ", service);
     let chat_self = this;
 
     if (service.service === "relay") {
@@ -312,7 +313,7 @@ class Chat extends ModTemplate {
     return services;
   }
 
-  respondTo(type, obj = null) {
+  async respondTo(type, obj = null) {
     let chat_self = this;
 
     switch (type) {
@@ -414,7 +415,7 @@ class Chat extends ModTemplate {
   //
   async onConfirmation(blk, tx, conf, app) {
     if (conf == 0) {
-      tx.decryptMessage(app);
+      await tx.decryptMessage(app);
 
       let txmsg = tx.returnMessage();
 
@@ -423,7 +424,7 @@ class Chat extends ModTemplate {
       }
 
       if (txmsg.request == "chat message") {
-        this.receiveChatTransaction(app, tx, 1);
+        await this.receiveChatTransaction(app, tx, 1);
       }
       if (txmsg.request == "chat group") {
         await this.receiveCreateGroupTransaction(app, tx);
@@ -454,7 +455,7 @@ class Chat extends ModTemplate {
       return;
     }
 
-    tx.decryptMessage(app); //In case forwarding private messages
+    await tx.decryptMessage(app); //In case forwarding private messages
     let txmsg = tx.returnMessage();
 
     if (!txmsg.request) {
@@ -919,7 +920,7 @@ class Chat extends ModTemplate {
    * Everyone receives the chat message (via the Relay)
    * So we make sure here it is actually for us (otherwise will be encrypted gobbledygook)
    */
-  receiveChatTransaction(app, tx, onchain = 0) {
+  async receiveChatTransaction(app, tx, onchain = 0) {
     if (this.inTransitImageMsgSig == tx.signature) {
       this.inTransitImageMsgSig = null;
     }
@@ -927,7 +928,7 @@ class Chat extends ModTemplate {
     let txmsg = "";
 
     try {
-      tx.decryptMessage(app);
+      await tx.decryptMessage(app);
       txmsg = tx.returnMessage();
     } catch (err) {
       console.log("ERROR: " + JSON.stringify(err));
@@ -957,7 +958,7 @@ class Chat extends ModTemplate {
       if (this.app.BROWSER) {
         if (tx.isFrom(this.publicKey)) {
           console.log("Save My Sent Chat TX");
-          this.app.storage.saveTransaction(tx, { field3: txmsg.group_id });
+          await this.app.storage.saveTransaction(tx, { field3: txmsg.group_id });
         }
       }
     }
@@ -1013,7 +1014,7 @@ class Chat extends ModTemplate {
     if (!group) {
       return "";
     }
-
+    console.log("group : ", group);
     let message_blocks = this.createMessageBlocks(group);
 
     for (let block of message_blocks) {

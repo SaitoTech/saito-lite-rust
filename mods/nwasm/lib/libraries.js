@@ -138,11 +138,11 @@ class NwasmLibrary {
             }
 
             alert("fetching...");
-            this.app.network.sendRequestAsTransactionWithCallback(
+            this.app.network.sendRequestAsTransaction(
               message.request,
               message.data,
               function (res) {},
-              peer
+              peer.peerIndex
             );
           }
         };

@@ -1002,20 +1002,16 @@ class Blackjack extends GameTableTemplate {
       return;
     }
     try {
-      console.log("111");
       let cardhtml = "";
       for (let c of this.myCards()) {
         cardhtml += `<img class="card" src="${this.card_img_dir}/${c}.png">`;
       }
-      console.log("222");
 
       this.cardfan.render(cardhtml);
-      console.log("333");
 
       //Add split hands
       if (this.game.state.player[this.game.player - 1].split.length > 0) {
         let newhtml = "";
-        console.log("444");
         for (let z = 0; z < this.game.state.player[this.game.player - 1].split.length; z++) {
           let ts = this.scoreArrayOfCards(this.game.state.player[this.game.player - 1].split[z]);
 
@@ -1025,14 +1021,11 @@ class Blackjack extends GameTableTemplate {
           newhtml += this.handToHTML(this.game.state.player[this.game.player - 1].split[z]);
           newhtml += "</div>";
         }
-        console.log("555");
         await this.playerbox.refreshGraphic(newhtml);
-        console.log("666");
         $("#player-box-graphic-1").removeClass("hidden-playerbox-element");
       } else {
         $("#player-box-graphic-1").addClass("hidden-playerbox-element");
       }
-      console.log("777");
     } catch (err) {
       console.error("Display Hand err: " + err);
     }

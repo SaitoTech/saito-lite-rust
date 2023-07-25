@@ -257,7 +257,7 @@ class Library extends ModTemplate {
         //
         // send the request and fetch the peer collection
         //
-        app.network.sendRequestAsTransactionWithCallback(
+        app.network.sendRequestAsTransaction(
           message.request,
           message.data,
           (res) => {
@@ -265,7 +265,7 @@ class Library extends ModTemplate {
               library_self.library[m.collection].peers[peer.publicKey] = res; // res = collection
             }
           },
-          peer
+          peer.peerIndex
         );
       }
     }
