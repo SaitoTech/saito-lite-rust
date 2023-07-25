@@ -1,9 +1,30 @@
 
     if (card == "fischerspassky") {
 
-      this.game.state.events.fisherspassky = 1;
+      if (this.game.player == 1) {
+        return 0;
+      }
+      this.startClock();
 
-      return 1;
+      let html = `<ul>
+                  <li class="option" id="asia">Asia</li>
+                  <li class="option" id="europe">Europe</li>
+                  <li class="option" id="africa">Africa</li>
+                  <li class="option" id="camerica">Central America</li>
+                  <li class="option" id="samerica">South America</li>
+                  <li class="option" id="mideast">Middle-East</li>
+                  </ul>`;
+      let twilight_self = this;
 
+      this.updateStatusWithOptions("Fischer-Spassky triggered. Designate region to downgrade Control and Dominance:", html, function(action2) {
+        twilight_self.addMove("resolve\tfischerspassky");
+        twilight_self.addMove(`SETVAR\tstate\tevents\tfischerspassky\t${action2}`)
+        twilight_self.addMove("NOTIFY\tFischer-Spassky is evented targetting "+action2);
+        twilight_self.endTurn();
+      });
+
+      return 0;
     }
+
+
 

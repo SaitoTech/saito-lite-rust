@@ -48,7 +48,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     //
     // ui components
@@ -510,6 +510,12 @@ initializeGame(game_id) {
       this.game.options.handshake = 1;
       this.game.options.rustinredsquare = 1;
       this.game.options.berlinagreement = 1;
+      this.game.options.august1968 = 1;
+      this.game.options.sudan = 1;
+      this.game.options.fischerspassky = 1;
+      this.game.options.argo = 1;
+      this.game.options.bayofpigs = 1;
+      this.game.options.fallofsaigon = 1;
       this.game.options.antiapartheid = 1;
       this.game.options.carterdoctrine = 1;
       this.game.options.energycrisis = 1;
@@ -1058,6 +1064,15 @@ console.log("LATEST MOVE: " + mv);
       this.game.state.events.china_card_eligible = 0;
       this.game.queue.splice(qe, 1);
       this.updateActionRound();
+    }
+
+    // SAITO COMMUNITY
+    if (mv[0] === "purge") {
+      let card = mv[1];
+      this.game.queue.splice(qe, 1);
+      this.cancelEvent(card);
+      this.removeCardFromDeckNextDeal(card);
+      return 1;
     }
 
     if (mv[0] === "discard") {
@@ -1706,6 +1721,9 @@ console.log("LATEST MOVE: " + mv);
 
       this.dynamicDeckManagement();
 
+console.log("A: " + JSON.stringify(this.game.saito_cards_added));
+console.log("B: " + JSON.stringify(this.game.saito_cards_removed));
+
       //
       // show overlay and purge
       //
@@ -2055,7 +2073,8 @@ console.log("LATEST MOVE: " + mv);
               this.game.queue.push("DECKXOR\t1\t2");
               this.game.queue.push("DECKXOR\t1\t1");
               this.game.queue.push("DECK\t1\t"+JSON.stringify(discarded_cards));
-              this.game.queue.push("DECKBACKUP\t1");
+              //this.game.queue.push("DECKBACKUP\t1");
+              this.game.queue.push("HANDBACKUP\t1");
               this.updateLog("Shuffling discarded cards back into the deck...");
 
             }
@@ -2575,9 +2594,9 @@ console.log("LATEST MOVE: " + mv);
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["antiapartheid", "carterdoctrine", "handshake", "kissinger", "pinochet", "rustinredsquare", "tsarbomba", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["bayofpigs","fallofsaigon","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["berlinagreement", "energycrisis", "iranianultimatum", "nixonshock", "revolutionsof1989", "samotlor", "unitedfruit", "cia", "china"];
+          this.game.deck[0].hand = ["august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "iranianultimatum", "unitedfruit", "cia", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -2751,8 +2770,6 @@ try {
 
 } catch (err) {
 }
-
-console.log("ROUND: " + this.game.state.round);
 
 
       //
@@ -2982,7 +2999,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
         this.game.queue.push("sharehandsize\t1");
 
 
-	if (this.game.state.round == 2) {
+	if (this.game.state.round == 3) {
 	  this.addCardToDeck('tsarbomba', "New Card");
 	}
 
@@ -3013,12 +3030,12 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	    
 	    this.addCardToDeck("handshake", "New Card");
 	    this.addCardToDeck("berlinagreement", "New Card");
-	    this.game.queue.push("dynamic_deck_management");
 	  }
 
 
           this.game.queue.push("DECK\t1\t"+JSON.stringify(mid_war_cards));
-          this.game.queue.push("DECKBACKUP\t1");
+          this.game.queue.push("HANDBACKUP\t1");
+          //this.game.queue.push("DECKBACKUP\t1");
           this.updateLog("Adding Mid War cards to the deck...");
 
         }
@@ -3037,8 +3054,6 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	  //
 	  let late_war_cards = this.returnLateWarCards();
           if (this.game.options.deck === "saito") {
-
-	    this.game.queue.push("dynamic_deck_management");
 
 	    //
 	    // KAL007 or 1989
@@ -6627,6 +6642,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
 
   returnAllCards() {
+    // SAITO COMMUNITY
+    this.game.options.deck = "saito";
     let x = this.returnEarlyWarCards();
     let y = this.returnMidWarCards();
     let z = this.returnLateWarCards();
@@ -6727,6 +6744,13 @@ console.log("resetting BG countries for: " + i);
 	// SAITO
         if (key === "unitedfruit") { deck['unitedfruit']       = { img : "TNRnTS-207png" ,name : "United Fruit Company", scoring : 0 , player : "us"   , recurring : 1 , ops : 1 }; }
         if (key === "iranianultimatum") { deck['iranianultimatum']       = { img : "TNRnTS-210png" ,name : "Iranian Ultimatum", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 }; }
+        if (key === "august1968") { deck['august1968']       = { img : "TNRnTS-210png" ,name : "August Revolutions", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
+        if (key === "fischerspassky") { deck['fischerspassky']       = { img : "TNRnTS-210png" ,name : "Fischer-Spassky", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
+        if (key === "sudan") { deck['sudan']       = { img : "TNRnTS-210png" ,name : "Sudanese Civil War", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 }; }
+        if (key === "fallofsaigon") { deck['fallofsaigon']       = { img : "TNRnTS-210png" ,name : "Fall of Saigon", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 }; }
+        if (key === "argo") { deck['argo']       = { img : "TNRnTS-210png" ,name : "Argo", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 }; }
+        if (key === "bayofpigs") { deck['bayofpigs']       = { img : "TNRnTS-210png" ,name : "Bay of Pigs", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 }; }
+
 
 	// END OF HISTORY
         if (key === "peronism") { deck['peronism']       = { img : "TNRnTS-307png" ,name : "Peronism", scoring : 0 , player : "both"   , recurring : 0 , ops : 1 }; }
@@ -7290,14 +7314,23 @@ console.log("resetting BG countries for: " + i);
     return scoring;
   }
 
-  determineRegionVictor(scoring, region_scoring_range, max_bg_num) {
+  determineRegionVictor(scoring, region_scoring_range, max_bg_num, region="") {
 
+    // SAITO COMMUNITY
     if (scoring.us.bg == max_bg_num && scoring.us.total > scoring.ussr.total) { 
       scoring.us.vp = region_scoring_range.control; 
       scoring.us.status = "Control";
+      if (this.game.state.events.fischerspassky === region) {
+        scoring.us.vp = region_scoring_range.domination; 
+        scoring.us.status = "Domination";
+      }
     }else if (scoring.us.bg > scoring.ussr.bg  && scoring.us.total > scoring.ussr.total && scoring.us.total > scoring.us.bg) { 
       scoring.us.vp = region_scoring_range.domination; 
       scoring.us.status = "Domination";
+      if (this.game.state.events.fischerspassky === region) {
+        scoring.us.vp = region_scoring_range.presence; 
+        scoring.us.status = "Presence";
+      }
     }else if (scoring.us.total + scoring.us.bg > 0) { 
       scoring.us.vp = region_scoring_range.presence; 
       scoring.us.status = "Presence";
@@ -7308,9 +7341,17 @@ console.log("resetting BG countries for: " + i);
     if (scoring.ussr.bg == max_bg_num && scoring.ussr.total > scoring.us.total) { 
       scoring.ussr.vp = region_scoring_range.control;
       scoring.ussr.status = "Control"; 
+      if (this.game.state.events.fischerspassky === region) {
+        scoring.ussr.vp = region_scoring_range.domination; 
+        scoring.ussr.status = "Domination";
+      }
     }else if (scoring.ussr.bg > scoring.us.bg && scoring.ussr.total > scoring.us.total && scoring.ussr.total > scoring.ussr.bg) { 
       scoring.ussr.vp = region_scoring_range.domination; 
       scoring.ussr.status = "Domination";
+      if (this.game.state.events.fischerspassky === region) {
+        scoring.ussr.vp = region_scoring_range.presence; 
+        scoring.ussr.status = "Presence";
+      }
     }else if (scoring.ussr.total + scoring.ussr.bg > 0) { 
       scoring.ussr.vp = region_scoring_range.presence; 
       scoring.ussr.status = "Presence";
@@ -7361,7 +7402,7 @@ console.log("resetting BG countries for: " + i);
       case "europe":
 
         scoring_range = {presence: 3, domination: 7, control: 10000 };
-        scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
+        scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length, region);
 
         //
         // neighbouring countries
@@ -7428,7 +7469,7 @@ console.log("resetting BG countries for: " + i);
           }
         }
 
-        scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
+        scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length, region);
 
         if (mouseover_preview != 1) { this.resetBattlegroundCountries(region); }
 
@@ -7462,7 +7503,7 @@ console.log("resetting BG countries for: " + i);
 
         scoring_range = {presence: 1, domination: 4, control: 6 };
 
-        scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
+        scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length, region);
 
         if (mouseover_preview != 1) { this.resetBattlegroundCountries(region); }
 
@@ -7474,7 +7515,7 @@ console.log("resetting BG countries for: " + i);
       case "camerica":
         scoring_range = {presence: 1, domination: 3, control: 5};
 
-        scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
+        scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length, region);
 
         // neighbouring countries
         scoring.us.neigh = [];
@@ -7501,7 +7542,7 @@ console.log("resetting BG countries for: " + i);
       case "samerica":
         scoring_range = {presence: 2, domination: 5, control: 6};
 
-        scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
+        scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length, region);
 
         if (mouseover_preview != 1) { this.resetBattlegroundCountries(region); }
 
@@ -7540,9 +7581,7 @@ console.log("resetting BG countries for: " + i);
            
       	}
 
-        scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
-	
-console.log("PRESC: " + JSON.stringify(scoring));
+        scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length, region);	
 
         //
         // neighbouring countries
@@ -7570,11 +7609,13 @@ console.log("PRESC: " + JSON.stringify(scoring));
 	  }
 	}
 
-console.log("SCORING: " + JSON.stringify(scoring));
-
         if (mouseover_preview != 1) { 
 	  // SAITO COMMUNITY
 	  if (region === this.game.state.events.kissinger) { this.game.state.events.kissinger = ""; }
+	  if (region === this.game.state.events.fischerspassky) {
+	    this.updateLog("Region Scoring Adjusted by Fischer-Spassky...");
+	    this.game.state.events.fischerspassky = "";
+	  }
 	  this.resetBattlegroundCountries(region); 
 	}
 
@@ -8566,6 +8607,8 @@ console.log("SCORING: " + JSON.stringify(scoring));
   returnCardImage(cardname) {
     let cardclass = "cardimg";
 
+console.log("cardname: " + cardname);
+
     var c = this.game.deck[0].cards[cardname];
     if (c == undefined) { c = this.game.deck[0].discards[cardname]; }
     if (c == undefined) { c = this.game.deck[0].removed[cardname]; }
@@ -8754,9 +8797,9 @@ console.log("SCORING: " + JSON.stringify(scoring));
 
       // NATO
       if (this.game.state.events.marshall == 1 || this.game.state.events.warsawpact == 1) {
-	       this.uncancelEvent("nato");
+	this.uncancelEvent("nato");
       } else {
-	       this.cancelEvent("nato");
+	this.cancelEvent("nato");
       }
 
       // cambridge-five late war
@@ -8801,11 +8844,6 @@ console.log("SCORING: " + JSON.stringify(scoring));
   //
   dynamicDeckManagement() {
 
-    if (this.game.options.deck === "saito") { return; }
-
-    let shuffle_in_these_cards = {};
-    let already_dealt = {};
-
     //
     // living history / saito edition -- SAITO COMMUNITY
     //
@@ -8817,6 +8855,11 @@ console.log("SCORING: " + JSON.stringify(scoring));
       this.game.saito_cards_removed = [];
       this.game.saito_cards_removed_reason = [];
     }
+
+    if (this.game.options.deck === "saito") { return; }
+
+    let shuffle_in_these_cards = {};
+    let already_dealt = {};
 
     //
     // double quagmire / bear trap
@@ -8941,6 +8984,7 @@ console.log("SCORING: " + JSON.stringify(scoring));
     this.game.queue.push("DECKXOR\t1\t1");
     this.game.queue.push("DECK\t1\t"+JSON.stringify(shuffle_in_these_cards));
     this.game.queue.push("HANDBACKUP\t1");
+    this.game.queue.push("NOTIFY\tShuffling New Cards into Deck");
     this.updateLog("Shuffling new cards into deck...");
     
     this.game.state.player1_card_replacements_needed = 0;

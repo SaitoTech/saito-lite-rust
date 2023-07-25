@@ -43,6 +43,11 @@
     background-position-y: top;
     background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/arabisraeli-bg.jpg);
 }
+.sudan-war {
+    background-size: cover;
+    background-position-y: top;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.40), rgba(0, 0, 0, 0.40)), url(/twilight/img/backgrounds/sudan-bg.jpg);
+}
 .brushwar-war {
     background-size: cover;
     background-position-y: top;
