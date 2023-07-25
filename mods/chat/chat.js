@@ -283,7 +283,6 @@ class Chat extends ModTemplate {
               }
             }
           } else {
-            console.log("222 : ", txs);
             this.communityGroup.txs = txs;
           }
 
@@ -1021,7 +1020,7 @@ class Chat extends ModTemplate {
     }
 
     this.addTransactionToGroup(group, tx);
-    app.connection.emit("chat-popup-render-request", group);
+    this.app.connection.emit("chat-popup-render-request", group);
   }
 
   //////////////////
@@ -1150,8 +1149,8 @@ class Chat extends ModTemplate {
       return;
     }
     let new_message = {
-      sig: tx.signature,
-      ts: tx.timestamp,
+      signature: tx.signature,
+      timestamp: tx.timestamp,
       from: [],
       msg: content,
     };
@@ -1465,7 +1464,6 @@ class Chat extends ModTemplate {
     let new_group = JSON.parse(JSON.stringify(group));
     new_group.online = false;
     new_group.txs = group.txs.slice(-50);
-    console.log("111 : ", new_group.txs);
 
     localforage.setItem(`chat_${group.id}`, new_group).then(function () {
       if (chat_self.debug) {
