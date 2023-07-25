@@ -73,7 +73,7 @@
 		       }
 		     }
 
-		     twilight_self.addMove(`place\t${player}\t${player}\t${c}\t${influence_change}`);
+		     twilight_self.addMove(`place\t${player}\t${player}\t${c}\t${max_influence_to_add}`);
                      twilight_self.placeInfluence(c, max_influence_to_add, me);
 		     twilight_self.endTurn();
 

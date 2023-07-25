@@ -25,7 +25,7 @@
         html += `<li class="option" id="skip">do not discard</li>`;
         html += `</ul>`;
 
-        this.updateStatusWithOptions(`${this.cardToText(card)}:`, html, function(action) {
+        this.updateStatusWithOptions(`${this.cardToText(card)}:`, html, function(action2) {
 
 	  let discarded = false;
 
@@ -65,7 +65,7 @@
 
 	  }
 
-	  twilight_send.endTurn();
+	  twilight_self.endTurn();
 
 	});
 

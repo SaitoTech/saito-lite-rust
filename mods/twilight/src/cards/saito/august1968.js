@@ -25,17 +25,18 @@
 
         for (var i in this.game.deck[0].cards) {
 	  if (!corecards.includes(i)) {
+	    cards.push(i);
+	  }
+	}
 
-            twilight_self.updateStatusAndListCards("Choose Card to Purge:", cards, true);
-            twilight_self.addMove("resolve\taugust1968");
+        twilight_self.updateStatusAndListCards("Choose Card to Purge:", cards, true);
+        twilight_self.addMove("resolve\taugust1968");
 
-            twilight_self.hud.attachControlCallback(function(action2) {
-              twilight_self.addMove("NOTIFY\t"+player.toUpperCase() +" purged "+twilight_self.cardToText(action2));
-              twilight_self.addMove("purge\t"+action2); 
-              twilight_self.endTurn();
-            });
-          }
-        }
+        twilight_self.hud.attachControlCallback(function(action2) {
+          twilight_self.addMove("NOTIFY\t"+player.toUpperCase() +" purged "+twilight_self.cardToText(action2));
+          twilight_self.addMove("purge\t"+action2); 
+          twilight_self.endTurn();
+        });
       }
 
       return 0;

@@ -2596,7 +2596,7 @@ console.log("B: " + JSON.stringify(this.game.saito_cards_removed));
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["bayofpigs","fallofsaigon","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "iranianultimatum", "unitedfruit", "cia", "china"];
+          this.game.deck[0].hand = ["voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -6746,8 +6746,8 @@ console.log("resetting BG countries for: " + i);
         if (key === "iranianultimatum") { deck['iranianultimatum']       = { img : "TNRnTS-210png" ,name : "Iranian Ultimatum", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 }; }
         if (key === "august1968") { deck['august1968']       = { img : "TNRnTS-210png" ,name : "August Revolutions", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
         if (key === "fischerspassky") { deck['fischerspassky']       = { img : "TNRnTS-210png" ,name : "Fischer-Spassky", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
-        if (key === "sudan") { deck['sudan']       = { img : "TNRnTS-210png" ,name : "Sudanese Civil War", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 }; }
-        if (key === "fallofsaigon") { deck['fallofsaigon']       = { img : "TNRnTS-210png" ,name : "Fall of Saigon", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 }; }
+        if (key === "sudan") { deck['sudan']       = { img : "TNRnTS-210png" ,name : "Sudanese Civil War", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
+        if (key === "fallofsaigon") { deck['fallofsaigon']       = { img : "TNRnTS-210png" ,name : "Fall of Saigon", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
         if (key === "argo") { deck['argo']       = { img : "TNRnTS-210png" ,name : "Argo", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 }; }
         if (key === "bayofpigs") { deck['bayofpigs']       = { img : "TNRnTS-210png" ,name : "Bay of Pigs", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 }; }
 

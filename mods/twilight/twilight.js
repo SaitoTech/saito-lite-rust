@@ -2596,7 +2596,7 @@ console.log("B: " + JSON.stringify(this.game.saito_cards_removed));
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["bayofpigs","fallofsaigon","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "iranianultimatum", "unitedfruit", "cia", "china"];
+          this.game.deck[0].hand = ["voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -6746,8 +6746,8 @@ console.log("resetting BG countries for: " + i);
         if (key === "iranianultimatum") { deck['iranianultimatum']       = { img : "TNRnTS-210png" ,name : "Iranian Ultimatum", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 }; }
         if (key === "august1968") { deck['august1968']       = { img : "TNRnTS-210png" ,name : "August Revolutions", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
         if (key === "fischerspassky") { deck['fischerspassky']       = { img : "TNRnTS-210png" ,name : "Fischer-Spassky", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
-        if (key === "sudan") { deck['sudan']       = { img : "TNRnTS-210png" ,name : "Sudanese Civil War", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 }; }
-        if (key === "fallofsaigon") { deck['fallofsaigon']       = { img : "TNRnTS-210png" ,name : "Fall of Saigon", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 }; }
+        if (key === "sudan") { deck['sudan']       = { img : "TNRnTS-210png" ,name : "Sudanese Civil War", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
+        if (key === "fallofsaigon") { deck['fallofsaigon']       = { img : "TNRnTS-210png" ,name : "Fall of Saigon", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
         if (key === "argo") { deck['argo']       = { img : "TNRnTS-210png" ,name : "Argo", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 }; }
         if (key === "bayofpigs") { deck['bayofpigs']       = { img : "TNRnTS-210png" ,name : "Bay of Pigs", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 }; }
 
@@ -14273,7 +14273,7 @@ console.log("cardname: " + cardname);
     }
 
 
-    if (card == "iranianultimatum") {
+    if (card == "argo") {
 
       this.game.state.events.argo = 1;
       return 1;
@@ -14311,17 +14311,18 @@ console.log("cardname: " + cardname);
 
         for (var i in this.game.deck[0].cards) {
 	  if (!corecards.includes(i)) {
+	    cards.push(i);
+	  }
+	}
 
-            twilight_self.updateStatusAndListCards("Choose Card to Purge:", cards, true);
-            twilight_self.addMove("resolve\taugust1968");
+        twilight_self.updateStatusAndListCards("Choose Card to Purge:", cards, true);
+        twilight_self.addMove("resolve\taugust1968");
 
-            twilight_self.hud.attachControlCallback(function(action2) {
-              twilight_self.addMove("NOTIFY\t"+player.toUpperCase() +" purged "+twilight_self.cardToText(action2));
-              twilight_self.addMove("purge\t"+action2); 
-              twilight_self.endTurn();
-            });
-          }
-        }
+        twilight_self.hud.attachControlCallback(function(action2) {
+          twilight_self.addMove("NOTIFY\t"+player.toUpperCase() +" purged "+twilight_self.cardToText(action2));
+          twilight_self.addMove("purge\t"+action2); 
+          twilight_self.endTurn();
+        });
       }
 
       return 0;
@@ -14359,7 +14360,7 @@ console.log("cardname: " + cardname);
         html += `<li class="option" id="skip">do not discard</li>`;
         html += `</ul>`;
 
-        this.updateStatusWithOptions(`${this.cardToText(card)}:`, html, function(action) {
+        this.updateStatusWithOptions(`${this.cardToText(card)}:`, html, function(action2) {
 
 	  let discarded = false;
 
@@ -14399,7 +14400,7 @@ console.log("cardname: " + cardname);
 
 	  }
 
-	  twilight_send.endTurn();
+	  twilight_self.endTurn();
 
 	});
 
@@ -14608,7 +14609,7 @@ console.log("cardname: " + cardname);
 		       }
 		     }
 
-		     twilight_self.addMove(`place\t${player}\t${player}\t${c}\t${influence_change}`);
+		     twilight_self.addMove(`place\t${player}\t${player}\t${c}\t${max_influence_to_add}`);
                      twilight_self.placeInfluence(c, max_influence_to_add, me);
 		     twilight_self.endTurn();
 
@@ -15107,10 +15108,6 @@ console.log("cardname: " + cardname);
     }
 
 
-
-
-
-    let cards = ["asia","europe","mideast","duckandcover","fiveyearplan","socgov","fidel","vietnamrevolts","blockade","koreanwar","romanianab","arabisraeli","comecon","nasser","warsawpact","degualle","naziscientist","truman","olympic","nato","indreds","marshall","indopaki","containment","cia","usjapan","suezcrisis","easteuropean","decolonization","redscare","unintervention","destalinization","nucleartestban","formosan","brushwar","camerica","seasia","armsrace","cubanmissile","nuclearsubs","quagmire","saltnegotiations","beartrap","summit","howilearned","junta","kitchendebates","missileenvy","wwby","brezhnev","portuguese","southafrican","allende","willybrandt","muslimrevolution","abmtreaty","culturalrev","flowerpower","u2","opec","lonegunman","colonial","panamacanal","campdavid","puppet","grainsales","johnpaul","deathsquads","oas","nixon","sadat","shuttle","voiceofamerica","liberation","ussuri","asknot","alliance","africa","onesmallstep","samerica","iranianhostage","ironlady","reagan","starwars","northseaoil","reformer","marine","KAL007","glasnost","ortega","terrorism","irancontra","chernobyl","debtcrisis","evilempire","aldrichames","pershing","wargames","solidarity"];
 
 
     if (card == "tsarbomba") {
