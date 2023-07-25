@@ -31,6 +31,17 @@ class ChatPopup {
         }
       }
     });
+
+    app.connection.on("chat-popup-scroll-top-request", (group_id) => {
+      if (this.group?.id === group_id){
+        let popup_qs = "#chat-popup-" + this.group.id;
+
+        if (document.querySelector(popup_qs + " .chat-body")) {
+          document.querySelector(popup_qs + " .chat-body").scroll(0, 0);
+        }
+
+      }
+    });
   }
 
   remove() {

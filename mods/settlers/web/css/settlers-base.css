@@ -959,19 +959,18 @@ ul.horizontal_list li.iconoption {
   border-radius: 5px;
 }
 
+
 .player-notice {
-  line-height: 1.25em;
   display: flex;
   flex-direction: row;
   align-items: center;
   flex-wrap: wrap;
-  font-weight: 800;
-  padding-bottom: 0.5rem;
   width: max-content;
   margin-right: auto;
   margin-left: auto;
 }
 
+/*
 .player-notice+.tbd {
   border-top: 1px dashed var(--text-color);
   padding-top: 1rem;
@@ -980,6 +979,7 @@ ul.horizontal_list li.iconoption {
 .hud-body .status .player-notice+.tbd {
   padding-top: 1rem;
 }
+*/
 
 .tbd ul {
   margin-top: 0.5em;

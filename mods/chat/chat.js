@@ -85,17 +85,6 @@ class Chat extends ModTemplate {
   initialize(app) {
     super.initialize(app);
 
-    //Enforce compliance with wallet indexing
-    if (!app.options?.chat || !Array.isArray(app.options.chat)) {
-      app.options.chat = [];
-      this.createDefaultChatsFromKeys();
-    }
-
-    if (app.BROWSER) {
-      this.loadChatGroups();
-    }
-
-
     //
     // if I run a chat service, create it
     //
@@ -105,41 +94,58 @@ class Chat extends ModTemplate {
         "Saito Community Chat"
       );
        this.communityGroup.members = [app.wallet.returnPublicKey()];
+
+       //
+       // Chat server hits archive on boot up so it has something to return 
+       // on chat history request
+       this.getOlderTransactions(this.communityGroup.id, "localhost");
+
+       return;
     }
+
+    //
+    // BROWSERS ONLY
+    //
+
+    //Enforce compliance with wallet indexing
+    if (!app.options?.chat || !Array.isArray(app.options.chat)) {
+      app.options.chat = [];
+      this.createDefaultChatsFromKeys();
+    }
+
+    this.loadChatGroups();
 
     //Add script for emoji to work
-    if (app.BROWSER) {
-      this.attachPostScripts();
+    this.attachPostScripts();
 
-      // Set the name of the hidden property and the change event for visibility
-      let visibilityChange;
-      if (typeof document.hidden !== "undefined") {
-        // Opera 12.10 and Firefox 18 and later support
-        this.hiddenTab = "hidden";
-        visibilityChange = "visibilitychange";
-      } else if (typeof document.msHidden !== "undefined") {
-        this.hiddenTab = "msHidden";
-        visibilityChange = "msvisibilitychange";
-      } else if (typeof document.webkitHidden !== "undefined") {
-        this.hiddenTab = "webkitHidden";
-        visibilityChange = "webkitvisibilitychange";
-      }
-
-      document.addEventListener(
-        visibilityChange,
-        () => {
-          if (document[this.hiddenTab]) {
-          } else {
-            if (this.tabInterval) {
-              clearInterval(this.tabInterval);
-              this.tabInterval = null;
-              document.title = this.orig_title;
-            }
-          }
-        },
-        false
-      );
+    // Set the name of the hidden property and the change event for visibility
+    let visibilityChange;
+    if (typeof document.hidden !== "undefined") {
+      // Opera 12.10 and Firefox 18 and later support
+      this.hiddenTab = "hidden";
+      visibilityChange = "visibilitychange";
+    } else if (typeof document.msHidden !== "undefined") {
+      this.hiddenTab = "msHidden";
+      visibilityChange = "msvisibilitychange";
+    } else if (typeof document.webkitHidden !== "undefined") {
+      this.hiddenTab = "webkitHidden";
+      visibilityChange = "webkitvisibilitychange";
     }
+
+    document.addEventListener(
+      visibilityChange,
+      () => {
+        if (document[this.hiddenTab]) {
+        } else {
+          if (this.tabInterval) {
+            clearInterval(this.tabInterval);
+            this.tabInterval = null;
+            document.title = this.orig_title;
+          }
+        }
+      },
+      false
+    );
   }
 
 
@@ -228,6 +234,7 @@ class Chat extends ModTemplate {
       this.communityGroup.members = [peer.returnPublicKey()];
 
       if (this.communityGroup) {
+
         //
         // remove duplicate public chats caused by server update
         //
@@ -454,11 +461,11 @@ class Chat extends ModTemplate {
     }
 
     if (txmsg.request === "chat history") {
-      //console.log(JSON.parse(JSON.stringify(txmsg)));
 
       let group = this.returnGroup(txmsg?.group_id);
 
       if (!group) {
+        console.log("Group doesn't exist?");
         return;
       }
 
@@ -965,20 +972,14 @@ class Chat extends ModTemplate {
 
     //
     // save transactions if getting chat tx over chain
+    // and only trigger if you were the sender
     // (should less the duplication effect)
     //
     if (onchain){
       if (this.app.BROWSER) {
-        if (txmsg.group_id !== this.communityGroup?.id) {
-          if (tx.isFrom(app.wallet.returnPublicKey())) {
-            console.log("Save My Sent Chat TX");
-            this.app.storage.saveTransaction(tx, { field3 : txmsg.group_id });
-          }
-        }
-      }else{
-        if (txmsg.group_id === this.communityGroup?.id) {
-          //console.log("Chat Server archive community chat");
-          this.app.storage.saveTransaction(tx, { field3 : txmsg.group_id }, "localhost");
+        if (tx.isFrom(app.wallet.returnPublicKey())) {
+          console.log("Save My Sent Chat TX");
+          this.app.storage.saveTransaction(tx, { field3 : txmsg.group_id });
         }
       }
     }
@@ -1131,9 +1132,15 @@ class Chat extends ModTemplate {
       console.log("Adding Chat TX to group: ", tx);
     }
 
-    //Limit live memory
-    while (group.txs.length > 200) {
-      group.txs.shift();
+    // Limit live memory 
+    // I may be overly worried about memory leaks
+    // If users can dynamically load older messages, this limit creates a problem 
+    // when scrolling back in time
+    if (!this.app.BROWSER){
+      while (group.txs.length > 200) {
+        group.txs.shift();
+      }
+
     }
 
     let content = tx.returnMessage()?.message;
@@ -1369,7 +1376,7 @@ class Chat extends ModTemplate {
   }
 
 
-  getOlderTransactions(group_id){
+  getOlderTransactions(group_id, peer = null){
 
     let group = this.returnGroup(group_id);
 
@@ -1385,7 +1392,7 @@ class Chat extends ModTemplate {
 
     this.app.storage.loadTransactions({ field3 : group.id, limit: 25, created_earlier_than: ts }, (txs) => {
 
-      console.log("Returned older messages");
+      console.log(`Fetched ${txs?.length} older chat messages from Archive`);
 
       if (!txs || txs.length < 25){
         this.app.connection.emit("chat-remove-fetch-button-request", group_id);
@@ -1398,10 +1405,11 @@ class Chat extends ModTemplate {
           tx.decryptMessage(chat_self.app);
           chat_self.addTransactionToGroup(group, tx);
           chat_self.app.connection.emit("chat-popup-render-request", group);
+          chat_self.app.connection.emit("chat-popup-scroll-top-request", group_id);
         }
       }
 
-    });
+    }, peer);
   }
 
   ///////////////////
@@ -1456,8 +1464,10 @@ class Chat extends ModTemplate {
 
     let online_status = group.online;
 
-    let new_group = Object.assign(group, {online: false});
-    new_group.txs = new_group.txs.slice(-30);
+    //Make deep copy
+    let new_group = JSON.parse(JSON.stringify(group));
+    new_group.online = false;
+    new_group.txs = group.txs.slice(-50);
 
     localforage.setItem(`chat_${group.id}`, new_group).then(function () {
       if (chat_self.debug) {
