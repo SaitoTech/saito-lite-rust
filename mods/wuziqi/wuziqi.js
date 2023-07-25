@@ -30,6 +30,7 @@ class Wuziqi extends GameTemplate {
         this.app   = app;
 
         this.roles = ["observer", "black", "white"];
+        this.acknowledge_text = "next round..."; // not "i understand..."
 
         return this;
     }
@@ -445,7 +446,7 @@ class Wuziqi extends GameTemplate {
 
         let game_self = this;
         this.playerAcknowledgeNotice(notice, async function () {
-            game_self.addMove("clearboard\t"+game_self.game.player);
+            await game_self.addMove("clearboard\t"+game_self.game.player);
             await game_self.endTurn();
         });
 
