@@ -213,7 +213,7 @@ class Stun extends ModTemplate {
     return null;
   }
 
-  onConfirmation(blk, tx, conf, app) {
+  onConfirmation(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     if (conf === 0) {
@@ -222,10 +222,10 @@ class Stun extends ModTemplate {
         // Do we even need/want to send messages on chain?
         // There are problems with double processing events...
         //
-        if (app.BROWSER === 1) {
+        if (this.app.BROWSER === 1) {
           if (txmsg.request === "stun-send-message-to-peers") {
             console.log("onConf: stun-send-message-to-peers");
-            this.receiveStunMessageToPeersTransaction(app, tx);
+            this.receiveStunMessageToPeersTransaction(tx);
           }
         }
       }
@@ -255,7 +255,7 @@ class Stun extends ModTemplate {
     if (app.BROWSER === 1) {
       if (txmsg.request === "stun-send-message-to-peers") {
         console.log("HPT: stun-send-message-to-peers");
-        this.receiveStunMessageToPeersTransaction(app, tx);
+        this.receiveStunMessageToPeersTransaction(tx);
       }
       if (txmsg.request === "stun-send-game-call-message") {
         console.log("HPT: stun-send-game-call-message");
@@ -381,10 +381,10 @@ class Stun extends ModTemplate {
     }, 2000);
   }
 
-  receiveStunMessageToPeersTransaction(app, tx) {
+  receiveStunMessageToPeersTransaction(tx) {
     let txmsg = tx.returnMessage();
     let data = tx.msg.data;
-    app.connection.emit("stun-event-message", data);
+    this.app.connection.emit("stun-event-message", data);
   }
 
   async establishStunCallWithPeers(ui_type, recipients) {

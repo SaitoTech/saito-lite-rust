@@ -468,20 +468,20 @@ class RedSquare extends ModTemplate {
   ///////////////////////
   // network functions //
   ///////////////////////
-  async onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf) {
     let txmsg = tx.returnMessage();
     try {
       if (conf == 0) {
         //console.log("RS onConfirmation: " + txmsg.request);
 
         if (txmsg.request === "create tweet") {
-          await this.receiveTweetTransaction(blk, tx, conf, app);
+          await this.receiveTweetTransaction(blk, tx, conf);
         }
         if (txmsg.request === "like tweet") {
-          await this.receiveLikeTransaction(blk, tx, conf, app);
+          await this.receiveLikeTransaction(blk, tx, conf);
         }
         if (txmsg.request === "flag tweet") {
-          await this.receiveFlagTransaction(blk, tx, conf, app);
+          await this.receiveFlagTransaction(blk, tx, conf);
         }
       }
     } catch (err) {
@@ -903,14 +903,14 @@ class RedSquare extends ModTemplate {
     return newtx;
   }
 
-  async receiveTweetTransaction(blk, tx, conf, app) {
+  async receiveTweetTransaction(blk, tx, conf) {
     try {
       let txmsg = tx.returnMessage();
 
       //
       // browsers
       //
-      if (app.BROWSER == 1) {
+      if (this.app.BROWSER == 1) {
         //
         // save tweets addressed to me
         //
@@ -1000,13 +1000,13 @@ class RedSquare extends ModTemplate {
       //
       // servers
       //
-      let tweet = new Tweet(app, this, tx, "");
+      let tweet = new Tweet(this.app, this, tx, "");
 
       if (!tweet?.noerrors) {
         return;
       }
 
-      tweet = await tweet.generateTweetProperties(app, this, 1);
+      tweet = await tweet.generateTweetProperties(this.app, this, 1);
 
       let type_of_tweet = 0; // unknown
       if (txmsg.data?.parent_id) {
@@ -1082,7 +1082,7 @@ class RedSquare extends ModTemplate {
         $tx_size: tx_size,
       };
 
-      await app.storage.executeDatabase(sql, params, "redsquare");
+      await this.app.storage.executeDatabase(sql, params, "redsquare");
 
       // If you just inserted a record, you don't need to update its updated_at right away
       // but if it is part of a thread, then yes!
@@ -1094,7 +1094,7 @@ class RedSquare extends ModTemplate {
           $timestamp: ts,
           $sig: tweet.thread_id,
         };
-        await app.storage.executeDatabase(sql2, params2, "redsquare");
+        await this.app.storage.executeDatabase(sql2, params2, "redsquare");
       }
 
       if (tweet.retweet_tx != null) {
@@ -1102,7 +1102,7 @@ class RedSquare extends ModTemplate {
         let params3 = {
           $sig: tweet.retweet.tx.signature,
         };
-        await app.storage.executeDatabase(sql3, params3, "redsquare");
+        await this.app.storage.executeDatabase(sql3, params3, "redsquare");
       }
 
       if (tweet.parent_id !== tweet.tx.signature && tweet.parent_id !== "") {
@@ -1110,7 +1110,7 @@ class RedSquare extends ModTemplate {
         let params4 = {
           $sig: tweet.parent_id,
         };
-        await app.storage.executeDatabase(sql4, params4, "redsquare");
+        await this.app.storage.executeDatabase(sql4, params4, "redsquare");
       }
 
       //
@@ -1151,11 +1151,11 @@ class RedSquare extends ModTemplate {
     return newtx;
   }
 
-  async receiveLikeTransaction(blk, tx, conf, app) {
+  async receiveLikeTransaction(blk, tx, conf) {
     //
     // browsers
     //
-    if (app.BROWSER == 1) {
+    if (this.app.BROWSER == 1) {
       //
       // save my likes
       //
@@ -1210,7 +1210,7 @@ class RedSquare extends ModTemplate {
       $timestamp: tx.timestamp,
     };
 
-    await app.storage.executeDatabase(sql, params, "redsquare");
+    await this.app.storage.executeDatabase(sql, params, "redsquare");
 
     //
     // update cache
@@ -1240,11 +1240,11 @@ class RedSquare extends ModTemplate {
     return newtx;
   }
 
-  async receiveFlagTransaction(blk, tx, conf, app) {
+  async receiveFlagTransaction(blk, tx, conf) {
     //
     // browsers
     //
-    if (app.BROWSER == 1) {
+    if (this.app.BROWSER == 1) {
       return;
     }
 
@@ -1258,7 +1258,7 @@ class RedSquare extends ModTemplate {
     let params = {
       $sig: txmsg.data.signature,
     };
-    await app.storage.executeDatabase(sql, params, "redsquare");
+    await this.app.storage.executeDatabase(sql, params, "redsquare");
 
     //
     // update cache

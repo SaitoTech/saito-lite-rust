@@ -436,7 +436,7 @@ class League extends ModTemplate {
     }
   }
 
-  async onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf) {
     if (conf != 0) {
       return;
     }
@@ -449,25 +449,25 @@ class League extends ModTemplate {
       }
 
       if (txmsg.request === "league create") {
-        await this.receiveCreateTransaction(blk, tx, conf, app);
+        await this.receiveCreateTransaction(blk, tx, conf);
       } else if (txmsg.request === "league join") {
-        await this.receiveJoinTransaction(blk, tx, conf, app);
+        await this.receiveJoinTransaction(blk, tx, conf);
       } else if (txmsg.request === "league quit") {
-        await this.receiveQuitTransaction(blk, tx, conf, app);
+        await this.receiveQuitTransaction(blk, tx, conf);
       } else if (txmsg.request === "league remove") {
-        await this.receiveRemoveTransaction(blk, tx, conf, app);
+        await this.receiveRemoveTransaction(blk, tx, conf);
       } else if (txmsg.request === "league update") {
-        await this.receiveUpdateTransaction(blk, tx, conf, app);
+        await this.receiveUpdateTransaction(blk, tx, conf);
       } else if (txmsg.request === "league update player") {
-        await this.receiveUpdatePlayerTransaction(blk, tx, conf, app);
+        await this.receiveUpdatePlayerTransaction(blk, tx, conf);
       } else if (txmsg.request === "gameover") {
-        await this.receiveGameoverTransaction(app, txmsg);
+        await this.receiveGameoverTransaction(txmsg);
       } else if (txmsg.request === "roundover") {
-        await this.receiveRoundoverTransaction(app, txmsg);
+        await this.receiveRoundoverTransaction(txmsg);
       } else if (txmsg.request === "accept") {
-        await this.receiveAcceptTransaction(blk, tx, conf, app);
+        await this.receiveAcceptTransaction(blk, tx, conf);
       } else if (txmsg.request === "launch singleplayer") {
-        await this.receiveLaunchSinglePlayerTransaction(blk, tx, conf, app);
+        await this.receiveLaunchSinglePlayerTransaction(blk, tx, conf);
       } else {
         //Don't save or refresh if just a game move!!!
         return;
@@ -621,7 +621,7 @@ class League extends ModTemplate {
     return newtx;
   }
 
-  async receiveCreateTransaction(blk, tx, conf, app) {
+  async receiveCreateTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     let obj = this.validateLeague(txmsg);
@@ -673,7 +673,7 @@ class League extends ModTemplate {
     return newtx;
   }
 
-  async receiveJoinTransaction(blk, tx, conf, app) {
+  async receiveJoinTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     let params = {
@@ -718,7 +718,7 @@ class League extends ModTemplate {
     return newtx;
   }
 
-  async receiveUpdateTransaction(blk, tx, conf, app) {
+  async receiveUpdateTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     let league_id = txmsg.league_id;
@@ -769,7 +769,7 @@ class League extends ModTemplate {
     return newtx;
   }
 
-  async receiveUpdatePlayerTransaction(blk, tx, conf, app) {
+  async receiveUpdatePlayerTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     let league_id = txmsg.league_id;
@@ -832,7 +832,7 @@ class League extends ModTemplate {
     return newtx;
   }
 
-  async receiveQuitTransaction(blk, tx, conf, app) {
+  async receiveQuitTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     let sql = `UPDATE players
@@ -873,7 +873,7 @@ class League extends ModTemplate {
     return newtx;
   }
 
-  async receiveRemoveTransaction(blk, tx, conf, app) {
+  async receiveRemoveTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     let sql1 = `UPDATE leagues
@@ -900,14 +900,14 @@ class League extends ModTemplate {
   ///////////////////////////
   // roundover transaction //
   ///////////////////////////
-  async receiveRoundoverTransaction(app, txmsg) {
-    await this.receiveGameoverTransaction(app, txmsg, false);
+  async receiveRoundoverTransaction(txmsg) {
+    await this.receiveGameoverTransaction(txmsg, false);
   }
 
   //////////////////////////
   // gameover transaction //
   //////////////////////////
-  async receiveGameoverTransaction(app, txmsg, is_gameover = true) {
+  async receiveGameoverTransaction(txmsg, is_gameover = true) {
     //if (app.BROWSER == 1) { return; }
 
     let game = txmsg.module;
@@ -980,11 +980,11 @@ class League extends ModTemplate {
   //
   // inserts player into public league if one exists
   //
-  async receiveLaunchSinglePlayerTransaction(blk, tx, conf, app) {
-    await this.receiveAcceptTransaction(blk, tx, conf, app);
+  async receiveLaunchSinglePlayerTransaction(blk, tx, conf) {
+    await this.receiveAcceptTransaction(blk, tx, conf);
   }
 
-  async receiveAcceptTransaction(blk, tx, conf, app) {
+  async receiveAcceptTransaction(blk, tx, conf) {
     let txmsg = tx.returnMessage();
 
     if (this.debug) {

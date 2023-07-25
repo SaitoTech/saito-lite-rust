@@ -105,7 +105,7 @@ class Archive extends ModTemplate {
   //
   // by default we just save everything that is an application
   //
-  async onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf) {
     //
     // save all on-chain transactions -- but only the service node...
     //

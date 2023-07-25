@@ -261,7 +261,7 @@ class ChatPopup {
         }
         let newtx = await mod.createChatTransaction(group_id, message);
         await mod.sendChatTransaction(app, newtx);
-        mod.receiveChatTransaction(app, newtx);
+        mod.receiveChatTransaction(newtx);
         this.input.setInput("");
         if (document.querySelector(popup_qs + " .chat-body")) {
           document.querySelector(popup_qs + " .chat-body").scroll(0, 1000000000);
@@ -299,7 +299,7 @@ class ChatPopup {
 
           let newtx = await mod.createChatTransaction(group_id, img.outerHTML); // img into msg
           await mod.sendChatTransaction(app, newtx);
-          mod.receiveChatTransaction(app, newtx);
+          mod.receiveChatTransaction(newtx);
           this.input.setInput("");
         },
         false

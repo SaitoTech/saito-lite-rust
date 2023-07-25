@@ -415,9 +415,9 @@ class Chat extends ModTemplate {
   // so I will process messages I send to community, but not other peoples
   // it is mostly just a legacy safety catch for direct messaging
   //
-  async onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf) {
     if (conf == 0) {
-      await tx.decryptMessage(app);
+      await tx.decryptMessage(this.app);
 
       let txmsg = tx.returnMessage();
 
@@ -426,19 +426,19 @@ class Chat extends ModTemplate {
       }
 
       if (txmsg.request == "chat message") {
-        await this.receiveChatTransaction(app, tx, 1);
+        await this.receiveChatTransaction(tx, 1);
       }
       if (txmsg.request == "chat group") {
-        await this.receiveCreateGroupTransaction(app, tx);
+        await this.receiveCreateGroupTransaction(tx);
       }
       if (txmsg.request == "chat confirm") {
-        await this.receiveConfirmGroupTransaction(app, tx);
+        await this.receiveConfirmGroupTransaction(tx);
       }
       if (txmsg.request == "chat add") {
-        await this.receiveAddMemberTransaction(app, tx);
+        await this.receiveAddMemberTransaction(tx);
       }
       if (txmsg.request == "chat remove") {
-        await this.receiveRemoveMemberTransaction(app, tx);
+        await this.receiveRemoveMemberTransaction(tx);
       }
     }
   }
@@ -469,7 +469,8 @@ class Chat extends ModTemplate {
     }
 
     if (txmsg.request === "chat history") {
-      let group = this.returnGroup(txmsg?.group_id);
+
+      let group = this.returnGroup(txmsg?.data?.group_id);
 
       if (!group) {
         console.log("Group doesn't exist?");
@@ -481,14 +482,13 @@ class Chat extends ModTemplate {
       //mycallback(group.txs.slice(-50));
 
       if (mycallback) {
-        let txs = group.txs.filter((t) => t.timestamp > txmsg.timestamp);
-        console.log("333 : ", txs);
+        let txs = group.txs.filter((t) => t.timestamp > txmsg?.data?.timestamp);
         await mycallback(txs);
       }
     }
 
     if (txmsg.request === "chat message") {
-      await this.receiveChatTransaction(app, tx);
+      await this.receiveChatTransaction(tx);
 
       //
       // notify sender if requested
@@ -504,21 +504,15 @@ class Chat extends ModTemplate {
       let inner_tx = new Transaction(undefined, txmsg.data);
       let inner_txmsg = inner_tx.returnMessage();
 
-      console.log("**********************");
-      console.log(inner_tx);
-
       let peers = await app.network.getPeers();
       //
       // if chat message broadcast is received - we are being asked to broadcast this
       // to a peer if the inner_tx is addressed to one of our peers.
       //
       if (inner_tx.to.length > 0) {
-        console.log("**********************");
-        console.log(inner_tx.to[0].publicKey);
-        console.log(this.publicKey);
 
         if (!inner_tx.isTo(this.publicKey)) {
-          console.log("Private message");
+          
           if (app.BROWSER == 0) {
             peers.forEach((p) => {
               if (p.publicKey === inner_tx.to[0].publicKey) {
@@ -531,7 +525,7 @@ class Chat extends ModTemplate {
           //
           // broadcast to me, so send to all non-this-peers
           //
-          console.log("COmmunity message");
+          
           if (app.BROWSER == 0) {
             peers.forEach((p) => {
               console.log(p);
@@ -588,7 +582,7 @@ class Chat extends ModTemplate {
     await this.app.network.propagateTransaction(newtx);
   }
 
-  async receiveCreateGroupTransaction(app, tx) {
+  async receiveCreateGroupTransaction(tx) {
     if (tx.isTo(this.publicKey)) {
       let txmsg = tx.returnMessage();
 
@@ -675,14 +669,14 @@ class Chat extends ModTemplate {
     await this.app.network.propagateTransaction(newtx);
   }
 
-  async receiveConfirmGroupTransaction(app, tx) {
+  async receiveConfirmGroupTransaction(tx) {
     if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
       let txmsg = tx.returnMessage();
 
       let group = this.returnGroup(txmsg.group_id);
 
       if (!group) {
-        await this.receiveCreateGroupTransaction(app, tx);
+        await this.receiveCreateGroupTransaction(tx);
         group = this.returnGroup(txmsg.group_id);
       }
 
@@ -737,13 +731,13 @@ class Chat extends ModTemplate {
     await this.app.network.propagateTransaction(newtx);
   }
 
-  async receiveAddMemberTransaction(app, tx) {
+  async receiveAddMemberTransaction(tx) {
     if (tx.isTo(this.publicKey)) {
       let txmsg = tx.returnMessage();
 
       //I am receiving message about being added to the group
       if (this.publicKey == txmsg.member_id) {
-        await this.receiveCreateGroupTransaction(app, tx);
+        await this.receiveCreateGroupTransaction(tx);
         let group = this.returnGroup(txmsg.group_id);
 
         tx.msg.message = `<div class="saito-chat-notice">added you to the group</div>`;
@@ -813,7 +807,7 @@ class Chat extends ModTemplate {
     await this.app.network.propagateTransaction(newtx);
   }
 
-  async receiveRemoveMemberTransaction(app, tx) {
+  async receiveRemoveMemberTransaction(tx) {
     if (tx.isTo(this.publicKey)) {
       let txmsg = tx.returnMessage();
 
@@ -943,6 +937,7 @@ class Chat extends ModTemplate {
     //
 
     if (members.length == 2) {
+      console.log("Chat: Encrypting Message");
       newtx = this.app.wallet.signAndEncryptTransaction(newtx, secret_holder);
     } else {
       await newtx.sign();
@@ -954,7 +949,7 @@ class Chat extends ModTemplate {
    * Everyone receives the chat message (via the Relay)
    * So we make sure here it is actually for us (otherwise will be encrypted gobbledygook)
    */
-  async receiveChatTransaction(app, tx, onchain = 0) {
+  async receiveChatTransaction(tx, onchain = 0) {
     if (this.inTransitImageMsgSig == tx.signature) {
       this.inTransitImageMsgSig = null;
     }
@@ -962,7 +957,7 @@ class Chat extends ModTemplate {
     let txmsg = "";
 
     try {
-      await tx.decryptMessage(app);
+      await tx.decryptMessage(this.app);
       txmsg = tx.returnMessage();
     } catch (err) {
       console.log("ERROR: " + JSON.stringify(err));

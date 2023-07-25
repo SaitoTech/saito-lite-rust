@@ -305,7 +305,7 @@ class Encrypt extends ModTemplate {
     this.saveEncrypt();
   }
 
-  async onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf) {
     if (conf == 0) {
       console.log("ENCRYPT ONCONF");
 
@@ -339,18 +339,18 @@ class Encrypt extends ModTemplate {
         if (txmsg.request == "key exchange confirm") {
           let bob_publickey = Buffer.from(txmsg.bob, "hex");
 
-          var senderkeydata = app.keychain.returnKey(sender);
+          var senderkeydata = this.app.keychain.returnKey(sender);
           if (senderkeydata == null) {
-            if (app.BROWSER == 1) {
+            if (this.app.BROWSER == 1) {
               alert("Cannot find original diffie-hellman keys for key-exchange");
               return;
             }
           }
           let alice_publickey = Buffer.from(senderkeydata.aes_publickey, "hex");
           let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
-          let alice = app.crypto.createDiffieHellman(alice_publickey, alice_privatekey);
-          let alice_secret = app.crypto.createDiffieHellmanSecret(alice, bob_publickey);
-          app.keychain.updateCryptoByPublicKey(
+          let alice = this.app.crypto.createDiffieHellman(alice_publickey, alice_privatekey);
+          let alice_secret = this.app.crypto.createDiffieHellmanSecret(alice, bob_publickey);
+          this.app.keychain.updateCryptoByPublicKey(
             sender,
             alice_publickey.toString("hex"),
             alice_privatekey.toString("hex"),
