@@ -48,7 +48,7 @@ class Chat extends ModTemplate {
     this.communityGroup = null;
     this.communityGroupName = "Saito Community Chat";
 
-    this.debug = false;
+    this.debug = true;
 
     this.chat_manager = null;
 
@@ -181,8 +181,12 @@ class Chat extends ModTemplate {
   }
 
   async onPeerServiceUp(app, peer, service = {}) {
-    console.log("chat.onPeerServiceUp : ", service);
     let chat_self = this;
+
+    if (!app.BROWSER){
+      console.log("browser only code ^^^^^^^^^^^^^");
+      return;
+    }
 
     if (service.service === "relay") {
       this.isRelayConnected = true;
@@ -500,13 +504,21 @@ class Chat extends ModTemplate {
       let inner_tx = new Transaction(undefined, txmsg.data);
       let inner_txmsg = inner_tx.returnMessage();
 
+      console.log("**********************");
+      console.log(inner_tx);
+
       let peers = await app.network.getPeers();
       //
       // if chat message broadcast is received - we are being asked to broadcast this
       // to a peer if the inner_tx is addressed to one of our peers.
       //
       if (inner_tx.to.length > 0) {
-        if (inner_tx.to[0].publicKey != this.publicKey) {
+        console.log("**********************");
+        console.log(inner_tx.to[0].publicKey);
+        console.log(this.publicKey);
+
+        if (!inner_tx.isTo(this.publicKey)) {
+          console.log("Private message");
           if (app.BROWSER == 0) {
             peers.forEach((p) => {
               if (p.publicKey === inner_tx.to[0].publicKey) {
@@ -519,8 +531,10 @@ class Chat extends ModTemplate {
           //
           // broadcast to me, so send to all non-this-peers
           //
+          console.log("COmmunity message");
           if (app.BROWSER == 0) {
             peers.forEach((p) => {
+              console.log(p);
               if (p.publicKey !== peer.publicKey) {
                 app.network.sendTransactionWithCallback(inner_tx, null, p.peerIndex);
               }
@@ -888,10 +902,13 @@ class Chat extends ModTemplate {
       return;
     }
 
+    let secret_holder = "";
+
     let members = this.returnMembers(group_id);
 
     for (let i = 0; i < members.length; i++) {
       if (members[i] !== this.publicKey) {
+        secret_holder = members[i];        
         let slip = new Slip();
         slip.publicKey = members[i];
         newtx.addToSlip(slip);
@@ -924,14 +941,9 @@ class Chat extends ModTemplate {
     //
     // swap first two addresses so if private chat we will encrypt with proper shared-secret
     //
-    if (newtx.to.length == 2) {
-      let x = newtx.to[0];
-      newtx.to[0] = newtx.to[1];
-      newtx.to[1] = x;
-    }
 
     if (members.length == 2) {
-      newtx = this.app.wallet.signAndEncryptTransaction(newtx);
+      newtx = this.app.wallet.signAndEncryptTransaction(newtx, secret_holder);
     } else {
       await newtx.sign();
     }
