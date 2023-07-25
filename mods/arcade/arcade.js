@@ -1024,12 +1024,12 @@ class Arcade extends ModTemplate {
     let sql = `UPDATE games
                SET winner        = $winner,
                    method        = $method,
-                   time_finished = $ts
+                   time_finished = $timestamp
                WHERE game_id = $game_id`;
     let params = {
       $winner: JSON.stringify(winner),
       $method: txmsg.reason,
-      $ts: txmsg.timestamp,
+      $timestamp: txmsg.timestamp,
       $game_id: txmsg.game_id,
     };
     await this.app.storage.executeDatabase(sql, params, "arcade");
