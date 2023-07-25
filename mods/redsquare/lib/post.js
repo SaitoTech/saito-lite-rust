@@ -214,7 +214,7 @@ class Post {
     //
     const Tweet = require("./tweet");
     let posted_tweet = new Tweet(post_self.app, post_self.mod, newtx);
-    //console.log("New tweet:" , posted_tweet);
+    console.log("New tweet:" , posted_tweet);
 
     let rparent = this.tweet;
     if (rparent) {
