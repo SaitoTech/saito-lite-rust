@@ -8,6 +8,7 @@ class SettingsAppspace {
     this.app = app;
     this.mod = mod;
     this.container = container;
+    this.privateKey = null;
 
     this.overlay = new SaitoOverlay(app, mod);
 
@@ -18,7 +19,9 @@ class SettingsAppspace {
   }
 
   async render() {
-    this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod, this.app.wallet));
+
+    this.privateKey = await this.app.wallet.getPrivateKey();
+    this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod, this));
 
     let settings_appspace = document.querySelector(".settings-appspace");
     if (settings_appspace) {
@@ -183,14 +186,17 @@ class SettingsAppspace {
         try {
           privatekey = await sprompt("Enter Private Key:");
           if (privatekey != "") {
-            publicKey = app.crypto.returnPublicKey(privatekey);
+            publicKey = (app.crypto.generatePublicKey(privatekey));
 
-            // app.wallet.wallet.privatekey = privatekey;
-            // app.wallet.wallet.publicKey = publicKey;
-            // app.wallet.wallet.inputs = [];
-            // app.wallet.wallet.outputs = [];
-            // app.wallet.wallet.spends = [];
-            // app.wallet.wallet.pending = [];
+            console.log("publickey ///");
+            console.log(publicKey); 
+
+            app.wallet.privatekey = privatekey;
+            app.wallet.publicKey = publicKey;
+            app.wallet.inputs = [];
+            app.wallet.outputs = [];
+            app.wallet.spends = [];
+            app.wallet.pending = [];
 
             await app.blockchain.resetBlockchain();
             await app.wallet.saveWallet();

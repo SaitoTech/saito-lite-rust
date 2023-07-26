@@ -1,8 +1,20 @@
 module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 
+  console.log("main ////////");
+  console.log(main);
+  console.log(mod);
+  console.log(app);
+
   let publicKey = mod.publicKey;
-  let key = app.keychain.returnKey({ publickey : publicKey});
+  console.log("publickey ////////");
+  console.log(publicKey);
+
+  let key = app.keychain.returnKey({ publicKey : publicKey});
   let identifier_registered = key?.identifier || "";
+
+
+  console.log("key ////////");
+  console.log(key);
 
   if (!identifier_registered) {
     if (key.has_registered_username){
