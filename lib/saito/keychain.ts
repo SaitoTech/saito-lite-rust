@@ -39,7 +39,7 @@ class Keychain {
     //
     for (let i = 0; i < this.app.options.keys.length; i++) {
       this.keys.push(this.app.options.keys[i]);
-      this.publickey_keys_hmap[this.app.options.keys[i].publickey] = 1;
+      this.publickey_keys_hmap[this.app.options.keys[i].publicKey] = 1;
     }
 
     //
@@ -135,7 +135,7 @@ class Keychain {
       }
     }
     this.keys.push(newkey);
-    this.publickey_keys_hmap[newkey.publickey] = 1;
+    this.publickey_keys_hmap[newkey.publicKey] = 1;
     this.saveKeys();
 
   }
@@ -162,8 +162,8 @@ class Keychain {
     return encrypted_msg;
   }
 
-  hasPublicKey(publickey="") {
-    if (this.publickey_keys_hmap[publickey]) { return true; }
+  hasPublicKey(publicKey="") {
+    if (this.publickey_keys_hmap[publicKey]) { return true; }
     return false;
   }
 
@@ -244,7 +244,7 @@ class Keychain {
 
   isWatched(publicKey) {
     for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].publicKey == publicKey || this.keys[x]identifier === publicKey) {
+      if (this.keys[x].publicKey == publicKey || this.keys[x].identifier === publicKey) {
         if (this.keys[x].watched == true) {
           return true;
         }
@@ -461,26 +461,28 @@ class Keychain {
     }
   }
 
-  returnUsername(publicKey: string): string {
+ 
+ returnUsername(publicKey: string, max=12): string {
     const name = this.returnIdentifierByPublicKey(publicKey, true);
-    if (name != "" && name != publicKey) {
-      return name;
-    }
-    if (name.length > 12) {
-      return name.substr(0, 12) + "...";
-    }
-    if (name[0]) {
-      if (name[0].length > 12) {
-        return name[0].substr(0, 12) + "...";
+    if (name != publicKey && name != "") { return name; }
+    if (name == publicKey) {
+      if (name.length > max) {
+        return name.substring(0, max) + "...";
       }
     }
-    if (name) {
-      return name;
-    } else {
-      return publicKey;
+    return publicKey;
+  }
+
+  returnWatchedPublicKeys() {
+    const x = [];
+    for (let i = 0; i < this.keys.length; i++) {
+      if (this.keys[i].watched) {
+        x.push(this.keys[i].publicKey);
+      }
     }
     return x;
   }
+
 
   addWatchedPublicKey(publicKey = "") {
     this.addKey(publicKey, { watched: true });
@@ -499,8 +501,8 @@ class Keychain {
     });
     this.saveKeys();
 
-    console.log("SAVED CRYPTO AES: " + publickey);
-    console.log(JSON.stringify(this.returnKey(publickey)));
+    console.log("SAVED CRYPTO AES: " + publicKey);
+    console.log(JSON.stringify(this.returnKey(publicKey)));
 
     return true;
   }
