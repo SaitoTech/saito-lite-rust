@@ -1724,7 +1724,7 @@ console.log("LATEST MOVE: " + mv);
       //
       // show overlay and purge
       //
-      if (this.game.saito_cards_added.length > 0 || this.game.saito_cards_removed.length > 0) {
+      if (this.game.saito_cards_added.length > 0 || this.game.saito_cards_removed.length > 0 && this.game.options.deck === "saito") {
 	this.deck_overlay.render();
 	this.game.saito_cards_added = [];
 	this.game.saito_cards_added_reason = [];
@@ -2070,8 +2070,8 @@ console.log("LATEST MOVE: " + mv);
               this.game.queue.push("DECKXOR\t1\t2");
               this.game.queue.push("DECKXOR\t1\t1");
               this.game.queue.push("DECK\t1\t"+JSON.stringify(discarded_cards));
-              //this.game.queue.push("DECKBACKUP\t1");
-              this.game.queue.push("HANDBACKUP\t1");
+              this.game.queue.push("DECKBACKUP\t1");
+              //this.game.queue.push("HANDBACKUP\t1");
               this.updateLog("Shuffling discarded cards back into the deck...");
 
             }
@@ -3033,8 +3033,8 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	  }
 
           this.game.queue.push("DECK\t1\t"+JSON.stringify(mid_war_cards));
-          this.game.queue.push("HANDBACKUP\t1");
-          //this.game.queue.push("DECKBACKUP\t1");
+          //this.game.queue.push("HANDBACKUP\t1");
+          this.game.queue.push("DECKBACKUP\t1");
           this.updateLog("Adding Mid War cards to the deck...");
 
         }
@@ -3114,8 +3114,8 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	  }
 
           this.game.queue.push("DECK\t1\t"+JSON.stringify(late_war_cards));
-          //this.game.queue.push("DECKBACKUP\t1");
-          this.game.queue.push("HANDBACKUP\t1");
+          this.game.queue.push("DECKBACKUP\t1");
+          //this.game.queue.push("HANDBACKUP\t1");
           this.updateLog("Adding Late War cards to the deck...");
 
         }

@@ -15,6 +15,8 @@ class DeckOverlay {
     
     render() {
 
+	if (this.mod.game.options.deck !== "saito") { return; }
+
         this.overlay.show(DeckTemplate());
 
 	if (this.mod.game.saito_cards_added.length > 0) {
