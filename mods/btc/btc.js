@@ -16,7 +16,7 @@ class BTC extends ModTemplate {
     this.chain_id = "c6d0c728-2624-429b-8e0d-d9d19b6592fa";
   }
 
-  async respondTo(type = "") {
+  respondTo(type = "") {
     if (type == "mixin-crypto") {
       return {
         name: this.name,

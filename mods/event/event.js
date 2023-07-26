@@ -23,9 +23,9 @@ class Event extends InviteTemplate {
     await super.initialize(app);
   }
 
-  async respondTo(type) {
+  respondTo(type) {
     if (type == "invite") {
-      await super.render(this.app, this); // for scripts + styles
+      super.render(this.app, this); // for scripts + styles
       return new EventInvite(this.app, this);
     }
 

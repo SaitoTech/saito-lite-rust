@@ -44,7 +44,7 @@ class GameSlider {
           game_mod.name
         }">
           <span class="game-slider-name">${game_mod.returnName()}</span>
-          <img alt="${game_mod.returnName()}" src="${await game_mod.respondTo("arcade-games")
+          <img alt="${game_mod.returnName()}" src="${game_mod.respondTo("arcade-games")
           .banner}">
           </li>`,
       ]);

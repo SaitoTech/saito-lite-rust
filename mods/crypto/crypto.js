@@ -19,7 +19,7 @@ class Crypto extends ModTemplate {
     this.overlay = new CryptoSelectAmount(app, this);
   }
 
-  async respondTo(type = "") {
+  respondTo(type = "") {
     if (type == "game-menu") {
       //
       // only show if games are winable

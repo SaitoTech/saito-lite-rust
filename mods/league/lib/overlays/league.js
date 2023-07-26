@@ -46,11 +46,11 @@ class LeagueOverlay {
       );
     }
 
-    this.overlay.show(await LeagueOverlayTemplate(this.app, this.mod, this.league));
+    this.overlay.show(LeagueOverlayTemplate(this.app, this.mod, this.league));
 
     let game_mod = this.app.modules.returnModuleByName(this.league.game);
     if (game_mod) {
-      this.overlay.setBackground(await game_mod.respondTo("arcade-games").image);
+      this.overlay.setBackground(game_mod.respondTo("arcade-games").image);
     }
 
     //Show Leaderboard
@@ -61,7 +61,7 @@ class LeagueOverlay {
 
     let obj = { game: this.league.game };
     if (this.league.admin) {
-      obj["league_id"] = this.league.id; ///>>>>>>>>>>>>>>
+      obj["league_id"] = this.league.id; 
     }
     this.app.connection.emit("league-overlay-games-list", obj);
 
@@ -111,7 +111,7 @@ class LeagueOverlay {
     }
 
     if (document.getElementById("league-chat-button")) {
-      document.getElementById("league-chat-button").onclick = async () => {
+      document.getElementById("league-chat-button").onclick = () => {
         let player_keys = this.league.players.map((obj) => obj.publicKey);
         this.overlay.remove();
         let league_group = {
@@ -120,7 +120,7 @@ class LeagueOverlay {
           key: player_keys,
         };
         //This will serve as a flag to create a "permanent" group
-        if (this.league.admin === (await this.app.wallet.getPublicKey())) {
+        if (this.league.admin === this.mod.publicKey) {
           league_group.admin = this.league.admin;
         }
         this.app.connection.emit("open-chat-with", league_group);

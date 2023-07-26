@@ -26,7 +26,7 @@ class Registry extends ModTemplate {
     this.cached_keys = {};
 
     //Set True for testing locally
-    this.local_dev = true;
+    this.local_dev = false;
 
     //
     // event listeners -
@@ -325,7 +325,7 @@ class Registry extends ModTemplate {
     );
   }
 
-  async respondTo(type = "") {
+  respondTo(type = "") {
     if (type == "saito-return-key") {
       return {
         returnKey: (data = null) => {

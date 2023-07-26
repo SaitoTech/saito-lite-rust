@@ -19,7 +19,7 @@ class LeagueWizard {
   }
 
   async render() {
-    this.overlay.show(await LeagueWizardTemplate(this.app, this.mod, this.game_mod));
+    this.overlay.show(LeagueWizardTemplate(this.app, this.mod, this.game_mod));
     this.attachEvents();
   }
 
@@ -53,7 +53,7 @@ class LeagueWizard {
       //let status = document.querySelector(".league-wizard-status-select").value;
 
       //
-      let obj = this.mod.validateLeague(await this.game_mod.respondTo("default-league"));
+      let obj = this.mod.validateLeague(this.game_mod.respondTo("default-league"));
       obj.name = title;
       obj.description = desc;
       obj.admin = await this.app.wallet.getPublicKey();

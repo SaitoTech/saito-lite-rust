@@ -23,8 +23,8 @@ class SettingsAppspace {
     let settings_appspace = document.querySelector(".settings-appspace");
     if (settings_appspace) {
       for (let i = 0; i < this.app.modules.mods.length; i++) {
-        if ((await this.app.modules.mods[i].respondTo("settings-appspace")) != null) {
-          let mod_settings_obj = await this.app.modules.mods[i].respondTo("settings-appspace");
+        if (this.app.modules.mods[i].respondTo("settings-appspace") != null) {
+          let mod_settings_obj = this.app.modules.mods[i].respondTo("settings-appspace");
           mod_settings_obj.render(this.app, this.mod);
         }
       }
@@ -56,8 +56,8 @@ class SettingsAppspace {
       let settings_appspace = document.querySelector(".settings-appspace");
       if (settings_appspace) {
         for (let i = 0; i < app.modules.mods.length; i++) {
-          if ((await app.modules.mods[i].respondTo("settings-appspace")) != null) {
-            let mod_settings_obj = await app.modules.mods[i].respondTo("settings-appspace");
+          if (app.modules.mods[i].respondTo("settings-appspace") != null) {
+            let mod_settings_obj = app.modules.mods[i].respondTo("settings-appspace");
             mod_settings_obj.attachEvents(app, mod);
           }
         }

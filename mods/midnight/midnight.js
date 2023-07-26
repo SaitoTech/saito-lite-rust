@@ -22,7 +22,7 @@ class Midnight extends GameTemplate {
   }
 
   /* Opt out of letting League create a default*/
-  async respondTo(type) {
+  respondTo(type) {
     if (type == "default-league") {
       return null;
     }

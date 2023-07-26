@@ -22,7 +22,7 @@ class ChatManagerOverlay {
     document.querySelector(".chat-manager-overlay").style.visibility = "visible";
 
     if (this.mod.chat_manager == null) {
-      await this.mod.respondTo("chat-manager");
+      this.mod.respondTo("chat-manager");
       this.mod.chat_manager.render_popups_to_screen = 0;
     }
 

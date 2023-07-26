@@ -277,8 +277,8 @@ class RedSquare extends ModTemplate {
       //
       // chat manager can insert itself into left-sidebar if exists
       //
-      for (const mod of await this.app.modules.returnModulesRespondingTo("chat-manager")) {
-        let cm = await mod.respondTo("chat-manager");
+      for (const mod of this.app.modules.returnModulesRespondingTo("chat-manager")) {
+        let cm = mod.respondTo("chat-manager");
         cm.container = ".saito-sidebar.left";
         cm.render_manager_to_screen = 1;
         this.addComponent(cm);

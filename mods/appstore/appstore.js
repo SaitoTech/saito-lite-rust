@@ -43,10 +43,10 @@ class AppStore extends ModTemplate {
   //
   // appstore upload is in email
   //
-  async respondTo(type) {
+  respondTo(type) {
     if (type == "appspace") {
       this.styles = ["/appstore/css/appspace.css"];
-      await super.render(this.app, this);
+      super.render(this.app, this);
       return new AppStoreAppspace(this.app, this);
     }
     return null;

@@ -25,7 +25,7 @@ class GameWizard {
         if (game_mod) {
           this.game_mod = game_mod;
           this.obj = obj;
-          await this.render();
+          this.render();
         } else {
           salert("Module not found: " + obj.game);
         }
@@ -43,12 +43,12 @@ class GameWizard {
       console.log(JSON.parse(JSON.stringify(this.obj)));
     }
 
-    this.overlay.show(await GameWizardTemplate(this.game_mod, this.obj), () => {
+    this.overlay.show(GameWizardTemplate(this.game_mod, this.obj), () => {
       if (this.meta_overlay) {
         this.meta_overlay.remove();
       }
     });
-    this.overlay.setBackground((await this.game_mod.respondTo("arcade-games")).image);
+    this.overlay.setBackground(this.game_mod.respondTo("arcade-games").image);
 
     //Test if we should include Advanced Options
     let advancedOptions = this.game_mod.returnAdvancedOptions();
@@ -131,15 +131,15 @@ class GameWizard {
         this.overlay.remove();
 
         if (gameType == "private") {
-          await this.app.browser.logMatomoEvent("GameWizard", "CreatePrivateInvite", options.game);
+          this.app.browser.logMatomoEvent("GameWizard", "CreatePrivateInvite", options.game);
         } else if (gameType == "single") {
-          await this.app.browser.logMatomoEvent("GameWizard", "PlaySinglePlayerGame", options.game);
+          this.app.browser.logMatomoEvent("GameWizard", "PlaySinglePlayerGame", options.game);
           await this.mod.makeGameInvite(options, "private", this.obj);
           return;
         } else if (gameType == "direct") {
-          await this.app.browser.logMatomoEvent("GameWizard", "CreateDirectInvite", options.game);
+          this.app.browser.logMatomoEvent("GameWizard", "CreateDirectInvite", options.game);
         } else {
-          await this.app.browser.logMatomoEvent("GameWizard", "CreateOpenInvite", options.game);
+          this.app.browser.logMatomoEvent("GameWizard", "CreateOpenInvite", options.game);
         }
 
         await this.mod.makeGameInvite(options, gameType, this.obj);

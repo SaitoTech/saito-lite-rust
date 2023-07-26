@@ -1,11 +1,11 @@
-module.exports = LeagueWizardTemplate = async (app, mod, game_mod) => {
+module.exports = LeagueWizardTemplate = (app, mod, game_mod) => {
   let html = `
 
     <div class="league-wizard-overlay">
       <form>
         <div class="league-wizard-game-container">
           <div class="league-wizard-game-image"><img class="league-wizard-game-thumbnail" src="${
-            (await game_mod.respondTo("arcade-games")).image
+            game_mod.respondTo("arcade-games").image
           }"></div>
           <div class="leaguee-wizard-game-details  rs-create-game-desc-wrapper">
             <div class="league-wizard-game-name">

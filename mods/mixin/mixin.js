@@ -134,7 +134,7 @@ class Mixin extends ModTemplate {
   async loadCryptos() {
     let mixin_self = this;
 
-    let respondTo = await this.app.modules.respondTo("mixin-crypto");
+    let respondTo = this.app.modules.respondTo("mixin-crypto");
 
     for (const module of respondTo) {
       let crypto_module = new MixinModule(this.app, module.ticker, mixin_self, module.asset_id);

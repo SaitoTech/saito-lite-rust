@@ -1020,7 +1020,7 @@ class GameTestSuite extends GameTemplate {
   // when it loads to determine which modules support interactions with users
   // through the Arcade interface.
   //
-  async respondTo(type) {
+  respondTo(type) {
     if (type == "default-league") {
       return null;
     }

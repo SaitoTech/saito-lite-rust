@@ -1,4 +1,4 @@
-module.exports = GameWizardTemplate = async (game_mod, invite_obj = {}) => {
+module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
   let html = `<div class="arcade-wizard-overlay">`;
   let invite = null;
   let publicKey = null;
@@ -9,7 +9,7 @@ module.exports = GameWizardTemplate = async (game_mod, invite_obj = {}) => {
     publicKey = invite_obj.publicKey;
   }
 
-  let img = (await game_mod.respondTo("arcade-games")).image;
+  let img = game_mod.respondTo("arcade-games").image;
 
   console.log(img);
 

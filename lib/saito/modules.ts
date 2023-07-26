@@ -258,30 +258,30 @@ class Mods {
     });
   }
 
-  async returnModulesRespondingTo(request, obj = null) {
+  returnModulesRespondingTo(request, obj = null) {
     let m = [];
     for (let mod of this.mods) {
-      if ((await mod.respondTo(request, obj)) != null) {
+      if ((mod.respondTo(request, obj)) != null) {
         m.push(mod);
       }
     }
     return m;
   }
 
-  async respondTo(request, obj = null) {
+  respondTo(request, obj = null) {
     let m = [];
     for (let mod of this.mods) {
-      if ((await mod.respondTo(request, obj)) != null) {
+      if ((mod.respondTo(request, obj)) != null) {
         m.push(mod);
       }
     }
     return m;
   }
 
-  async getRespondTos(request, obj = null) {
+  getRespondTos(request, obj = null) {
     const compliantInterfaces = [];
     for (const mod of this.mods) {
-      const itnerface = await mod.respondTo(request, obj);
+      const itnerface = mod.respondTo(request, obj);
       if (itnerface != null) {
         if (Object.keys(itnerface)) {
           compliantInterfaces.push({ ...itnerface, modname: mod.returnName() });
@@ -326,9 +326,9 @@ class Mods {
     return null;
   }
 
-  async returnFirstRespondTo(request) {
+  returnFirstRespondTo(request) {
     for (let i = 0; i < this.mods.length; i++) {
-      let result = await this.mods[i].respondTo(request);
+      let result = this.mods[i].respondTo(request);
       if (result) {
         return result;
       }

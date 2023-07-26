@@ -27,7 +27,7 @@ class GameSelector {
   }
 
   async render() {
-    this.overlay.show(await GameSelectorTemplate(this.app, this.mod, this));
+    this.overlay.show(GameSelectorTemplate(this.app, this.mod, this));
     this.attachEvents();
   }
 
@@ -42,7 +42,7 @@ class GameSelector {
         if (this.obj.callback != null) {
           this.obj.callback(this.obj);
         } else {
-          await this.app.browser.logMatomoEvent("GameWizard", "GameSelector", modname);
+          this.app.browser.logMatomoEvent("GameWizard", "GameSelector", modname);
           this.app.connection.emit("arcade-launch-game-wizard", this.obj);
         }
       };

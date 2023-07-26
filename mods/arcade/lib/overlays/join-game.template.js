@@ -1,4 +1,4 @@
-module.exports = JoinGameOverlayTemplate = async (app, mod, invite) => {
+module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
   if (mod.debug) {
     //console.log("INVITATION DETAILS: ", invite);
   }
@@ -20,7 +20,7 @@ module.exports = JoinGameOverlayTemplate = async (app, mod, invite) => {
   <div class="arcade-game-overlay">
   <div class="arcade-game-overlay-header">
 	  <div class="arcade-game-overlay-header-image" style="background-image: url('${
-      (await invite.game_mod.respondTo("arcade-games")).image
+      invite.game_mod.respondTo("arcade-games").image
     }')">
 	  </div>
 	  <div class="arcade-game-overlay-header-title-box">
@@ -65,7 +65,7 @@ module.exports = JoinGameOverlayTemplate = async (app, mod, invite) => {
   for (let i = 0; i < invite.empty_slots; i++) {
     html += `
 	        <div class="arcade-game-playerbox saito-table-row${
-            (await app.wallet.getPublicKey()) === invite.originator ? " available_slot" : ""
+            mod.publicKey === invite.originator ? " available_slot" : ""
           }">  
 	      		<div class="saito-identicon-box empty-slot"></div>
 	    			<div class="saito-address">open player slot</div>	
@@ -124,15 +124,15 @@ module.exports = JoinGameOverlayTemplate = async (app, mod, invite) => {
         html += `<div id="arcade-game-controls-watch-game" class="saito-button saito-button-primary">watch game</div>`;
       }
     } else {
-      if (invite.players.includes(await app.wallet.getPublicKey())) {
-        if ((await app.wallet.getPublicKey()) === invite.originator) {
+      if (invite.players.includes(mod.publicKey)) {
+        if (mod.publicKey === invite.originator) {
           html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">cancel invite</div>`;
         } else {
           html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">leave invite</div>`;
         }
       } else if (invite.empty_slots > 0) {
         html += `<div id="arcade-game-controls-join-game" class="saito-button saito-button-primary">join game</div>`;
-      } else if (invite.desired_opponent_publickeys.includes(await app.wallet.getPublicKey())) {
+      } else if (invite.desired_opponent_publickeys.includes(mod.publicKey)) {
         html += `<div id="arcade-game-controls-join-game" class="saito-button saito-button-primary">join game</div>
 								<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">decline invite</div>`;
       }

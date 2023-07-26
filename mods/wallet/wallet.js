@@ -11,7 +11,7 @@ class Wallet extends ModTemplate {
     this.categories = "Finance Utilities";
   }
 
-  async respondTo(type = "") {
+  respondTo(type = "") {
     let arcade_mod = this;
     if (type == "header-menu") {
       return {

@@ -19,7 +19,7 @@ class DOT extends ModTemplate {
 
   }
 
-  async respondTo(type = "") {
+  respondTo(type = "") {
     if (type == "mixin-crypto") {
       return {
         name: this.name,

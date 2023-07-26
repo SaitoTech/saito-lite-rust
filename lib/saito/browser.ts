@@ -1276,7 +1276,7 @@ class Browser {
 
   async logMatomoEvent(category, action, name, value) {
     try {
-      (await this.app.modules.returnFirstRespondTo("matomo_event_push")).push(
+      this.app.modules.returnFirstRespondTo("matomo_event_push").push(
         category,
         action,
         name,

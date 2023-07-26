@@ -105,7 +105,7 @@ class League extends ModTemplate {
     //
     // create initial leagues
     //
-    for (const modResponse of await this.app.modules.getRespondTos("default-league")) {
+    this.app.modules.getRespondTos("default-league").forEach(async (modResponse) => {
       await this.addLeague({
         id: app.crypto.hash(modResponse.modname), // id
         game: modResponse.game, // game - name of game mod
@@ -116,7 +116,7 @@ class League extends ModTemplate {
         ranking_algorithm: modResponse.ranking_algorithm, //
         default_score: modResponse.default_score, // default ranking for newbies
       });
-    }
+    });
 
     await this.loadLeagues();
 

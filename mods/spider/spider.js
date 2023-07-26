@@ -22,9 +22,9 @@ class Spider extends OnePlayerGameTemplate {
   }
 
   // Create an exp league by default
-  async respondTo(type) {
+  respondTo(type) {
     if (type == "default-league") {
-      let obj = await super.respondTo(type);
+      let obj = super.respondTo(type);
       obj.ranking_algorithm = "HSC";
       return obj;
     }

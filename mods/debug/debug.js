@@ -19,10 +19,10 @@ class Debug extends ModTemplate {
     return this;
   }
 
-  async respondTo(type) {
+  respondTo(type) {
     if (type === "appspace") {
       this.styles = ["/saito/lib/jsonTree/jsonTree.css", "/debug/style.css"];
-      await super.render(this.app, this);
+      super.render(this.app, this);
       return new DebugAppspaceMain(this.app, this);
     }
 

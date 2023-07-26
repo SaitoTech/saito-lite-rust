@@ -1,17 +1,17 @@
-module.exports = LeagueOverlayTemplate = async (app, mod, league) => {
+module.exports = LeagueOverlayTemplate = (app, mod, league) => {
   let game_mod = app.modules.returnModuleByName(league.game);
   let img = "",
     key_words = "",
     game_name = "";
   if (game_mod) {
-    img = (await game_mod.respondTo("arcade-games")).image;
+    img = game_mod.respondTo("arcade-games").image;
     key_words = game_mod.categories.replace("Games ", "").split(" ").reverse().join(" ");
     game_name = game_mod.returnName();
   }
-  let key = app.keychain.returnKey(await app.wallet.getPublicKey());
+  let key = app.keychain.returnKey(mod.publicKey);
 
   let isMember = league.rank >= 0;
-  let newPlayer = league.admin && !key.email && league.admin !== (await app.wallet.getPublicKey());
+  let newPlayer = league.admin && !key.email && league.admin !== mod.publicKey;
 
   let html = `
     <div class="league-overlay-container">
@@ -30,7 +30,7 @@ module.exports = LeagueOverlayTemplate = async (app, mod, league) => {
 
   if (league.admin) {
     html +=
-      league.admin === (await app.wallet.getPublicKey())
+      league.admin === mod.publicKey
         ? `<div id="players" class="menu-icon"><i class="fas fa-users-cog"></i><div class="menu-text">Manage</div></div>`
         : `<div id="contact" class="menu-icon"><i class="fas fa-comment-alt"></i><div class="menu-text">Contact</div></div>`;
   }
@@ -47,7 +47,7 @@ module.exports = LeagueOverlayTemplate = async (app, mod, league) => {
                     </div>`;
 
   if (league.admin) {
-    if (league.admin == (await app.wallet.getPublicKey())) {
+    if (league.admin == mod.publicKey) {
       html += `<div id="admin-widget" class="admin-widget league-overlay-content-box hidden"></div>`;
     } else {
       html += `<div id="admin_details" class="saito-user league-overlay-content-box hidden" id="saito-user-${
@@ -94,7 +94,7 @@ module.exports = LeagueOverlayTemplate = async (app, mod, league) => {
     newPlayer || league.unverified || (league.admin && !isMember) ? " hidden" : ""
   }">`;
 
-  if (league.admin == (await app.wallet.getPublicKey())) {
+  if (league.admin == mod.publicKey) {
     html += `<button id="league-invite-button" class="saito-button saito-button-primary">invite link</button>`;
   }
   if (league.admin) {

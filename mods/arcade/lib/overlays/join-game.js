@@ -22,7 +22,7 @@ class JoinGameOverlay {
     let game_mod = this.app.modules.returnModuleBySlug(this.invite.game_slug);
 
 
-    this.overlay.show(await JoinGameOverlayTemplate(this.app, this.mod, this.invite));
+    this.overlay.show(JoinGameOverlayTemplate(this.app, this.mod, this.invite));
     this.overlay.setBackground(game_mod.returnArcadeImg());
     this.attachEvents();
     this.app.connection.emit("add-league-identifier-to-dom");
@@ -49,14 +49,14 @@ class JoinGameOverlay {
         });
 
         this.overlay.remove();
-        await this.app.browser.logMatomoEvent("GameInvite", "JoinGame", this.invite.game_mod.name);
+        this.app.browser.logMatomoEvent("GameInvite", "JoinGame", this.invite.game_mod.name);
         this.app.connection.emit("arcade-invite-manager-render-request");
       };
     }
 
     if (document.getElementById("arcade-game-controls-continue-game")) {
       document.getElementById("arcade-game-controls-continue-game").onclick = async (e) => {
-        await this.app.browser.logMatomoEvent(
+        this.app.browser.logMatomoEvent(
           "GameInvite",
           "ContinueGame",
           this.invite.game_mod.name
@@ -68,7 +68,7 @@ class JoinGameOverlay {
     if (document.getElementById("arcade-game-controls-close-game")) {
       document.getElementById("arcade-game-controls-close-game").onclick = async (e) => {
         this.overlay.remove();
-        await this.app.browser.logMatomoEvent(
+        this.app.browser.logMatomoEvent(
           "GameInvite",
           "CloseActiveGame",
           this.invite.game_mod.name
@@ -89,7 +89,7 @@ class JoinGameOverlay {
     if (document.getElementById("arcade-game-controls-forfeit-game")) {
       document.getElementById("arcade-game-controls-forfeit-game").onclick = async (e) => {
         this.overlay.remove();
-        await this.app.browser.logMatomoEvent(
+        this.app.browser.logMatomoEvent(
           "GameInvite",
           "ForfeitGame",
           this.invite.game_mod.name
@@ -102,7 +102,7 @@ class JoinGameOverlay {
       document.getElementById("arcade-game-controls-cancel-join").onclick = async (e) => {
         await this.mod.sendCancelTransaction(this.invite.game_id);
         this.overlay.remove();
-        await this.app.browser.logMatomoEvent(
+        this.app.browser.logMatomoEvent(
           "GameInvite",
           "CancelJoin",
           this.invite.game_mod.name
@@ -117,7 +117,7 @@ class JoinGameOverlay {
         await this.mod.observeGame(this.invite.game_id);
         
         this.overlay.remove();
-        await this.app.browser.logMatomoEvent("GameInvite", "WatchGame", this.invite.game_mod.name);
+        this.app.browser.logMatomoEvent("GameInvite", "WatchGame", this.invite.game_mod.name);
       };
     }
 
@@ -126,7 +126,7 @@ class JoinGameOverlay {
         this.app.connection.emit("league-overlay-remove-request");
         await this.mod.observeGame(this.invite.game_id);
         this.overlay.remove();
-        await this.app.browser.logMatomoEvent(
+        this.app.browser.logMatomoEvent(
           "GameInvite",
           "ReviewGame",
           this.invite.game_mod.name
