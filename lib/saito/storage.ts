@@ -1,7 +1,9 @@
-import { Saito } from "../../apps/core";
+import * as JSON from "json-bigint";
 import Transaction from "./transaction";
+import { Saito } from "../../apps/core";
+import Block from "./block";
 
-export default class Storage {
+class Storage {
   public app: Saito;
   public active_tab: any;
 
@@ -10,50 +12,117 @@ export default class Storage {
     this.active_tab = 1; // TODO - only active tab saves, move to Browser class
   }
 
-  async resetOptions() {
-    try {
-      const response = await fetch(`/options`);
-      this.app.options = await response.json();
-      if (typeof window !== "undefined") {
-        this.app.options.spv_mode = true;
-        this.app.options.browser_mode = true;
-      } else {
-        this.app.options.spv_mode = false;
-        this.app.options.browser_mode = false;
-      }
-      this.saveOptions();
-    } catch (err) {
-      console.error(err);
-    }
+  async initialize() {
+    await this.loadOptions();
+    this.saveOptions();
+    return;
   }
 
-  saveOptions() {
-    if (this.app.BROWSER == 1 && this.active_tab == 0) {
+  async loadOptions() {
+    if (typeof Storage !== "undefined") {
+      const data = localStorage.getItem("options");
+      if (data != "null" && data != null) {
+        this.app.options = JSON.parse(data);
+      } else {
+        try {
+          const response = await fetch(`/options`);
+          this.app.options = await response.json();
+          this.saveOptions();
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    }
+  }
+  returnClientOptions(): string {
+    throw new Error("Method not implemented.");
+  }
+
+  //
+  // HOW THE STORAGE CLASS SAVES TXS
+  //
+  // modules call ---> app.storage.saveTransaction(tx, obj, peer))
+  //    ---> saveTransaction() creates TX type="archive" / request="save" transaction
+  //    ---> saveTransaction() directs this transaction to:
+  //                    "localhost"   ==> its own archive module
+  //      peer    ==> this specific peer via offchain handlePeerTransaction() request)
+  //      null    ==> all peers via offchain handlePeerTransaction() request)
+  //    ---> peers receive via Archive module
+  //    ---> peers save to DB
+  //
+  // HOW THE STORAGE CLASS LOADS TXS
+  //
+  // modules call ---> app.storage.loadTransactions()
+  //    ---> loadTransactions() creates TX type="archive" / request="load" transaction
+  //    ---> loadTransactions() directs this transaction to:
+  //                    "localhost"   ==> its own archive module
+  //      peer    ==> this specific peer via offchain handlePeerTransaction() request)
+  //      null    ==> all peers via offchain handlePeerTransaction() request)
+  //    ---> peers receive via Archive module
+  //    ---> peers fetch from DB, return via callback or return TX
+  //
+  async saveTransaction(tx, obj = {}, peer = null) {
+    const txmsg = tx.returnMessage();
+    const message = "archive";
+
+    let data: any = {};
+    data.request = "save";
+    data.tx = tx.toJson();
+
+    data = Object.assign(data, obj);
+
+    if (!data.field1) {
+      data.field1 = txmsg.module;
+    }
+    if (!data.field2) {
+      data.field2 = tx.from[0].publicKey;
+    }
+    if (!data.field3) {
+      data.field3 = tx.to[0].publicKey;
+    }
+
+    if (peer === "localhost") {
+      let archive_mod = this.app.modules.returnModule("Archive");
+      if (archive_mod) {
+        let res = archive_mod.saveTransaction(tx, data);
+      }
+      this.app.connection.emit("saito-save-transaction", tx);
       return;
     }
-
-    // console.log("saving options : ", this.app.options);
-    try {
-      localStorage.setItem("options", JSON.stringify(this.app.options));
-    } catch (err) {
-      console.log(err);
+    if (peer != null) {
+      peer.sendRequestAsTransaction(message, data, function (res) {});
+      this.app.connection.emit("saito-save-transaction", tx);
+      return;
+    } else {
+      this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+      this.app.connection.emit("saito-save-transaction", tx);
+      return;
     }
   }
 
-  // getOptions() {
-  //   if (this.app.BROWSER == 1) {
-  //     if (this.active_tab == 0) {
-  //       return;
-  //     }
-  //   }
-  //   try {
-  //     if (typeof Storage !== "undefined") {
-  //       return localStorage.getItem("options");
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }
+  async updateTransaction(tx, obj = {}, peer = null) {
+    const txmsg = tx.returnMessage();
+    const message = "archive";
+    let data: any = {};
+    data.request = "update";
+    data.tx = tx;
+    data = Object.assign(data, obj);
+
+    if (peer === "localhost") {
+      let archive_mod = this.app.modules.returnModule("Archive");
+      if (archive_mod) {
+        let res = archive_mod.updateTransaction(tx, obj);
+      }
+      return;
+    }
+    if (peer != null) {
+      peer.sendRequestAsTransaction(message, data, function (res) {});
+      return;
+    } else {
+      this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+      return;
+    }
+  }
 
   loadTransactions(obj = {}, mycallback, peer = null) {
     let storage_self = this;
@@ -63,12 +132,15 @@ export default class Storage {
     data.request = "load";
     data = Object.assign(data, obj);
 
+    //
+    // We could have the archive module handle this
+    // idk why we have it return an array of objects that are just {"tx": serialized/stringified transaction}
+    //
     let internal_callback = (res) => {
       let txs = [];
       if (res) {
         for (let i = 0; i < res.length; i++) {
-          let tx = new Transaction(undefined, res[i].tx);
-          // tx.deserialize_from_web(this.app, res[i].tx);
+          let tx = new Transaction(null, JSON.parse(res[i].tx));
           txs.push(tx);
         }
       }
@@ -85,157 +157,139 @@ export default class Storage {
       return;
     }
 
-    this.app.network.sendRequestAsTransaction(
-      message,
-      data,
-      function (res) {
+    if (peer != null) {
+      peer.sendRequestAsTransaction(message, data, function (res) {
         internal_callback(res);
-      },
-      peer?.peerIndex
-    );
-    return;
-  }
-
-  async initialize() {
-    console.log("storage.initialize");
-    await this.loadOptions();
-    this.saveOptions();
-  }
-
-  getClientOptions(): string {
-    throw new Error("Method not implemented.");
-  }
-
-  async loadOptions() {
-    console.log("loading options");
-    const data = localStorage.getItem("options");
-    if (data) {
-      this.app.options = JSON.parse(data);
+      });
+      return;
     } else {
-      try {
-        console.log("fetching options from server...");
-        const response = await fetch(`/options`);
+      this.app.network.sendRequestAsTransaction(message, data, function (res) {
+        internal_callback(res);
+      });
+      return;
+    }
+  }
 
-        this.app.options = await response.json();
-        this.app.options = JSON.parse(JSON.stringify(this.app.options));
-        if (typeof window !== "undefined") {
-          this.app.options.spv_mode = true;
-          this.app.options.browser_mode = true;
-        } else {
-          this.app.options.spv_mode = false;
-          this.app.options.browser_mode = false;
-        }
+  deleteTransactions(obj = {}, mycallback = null, peer = null) {
+    const message = "archive";
+    let data: any = {};
+    data.request = "delete";
+    data = Object.assign(data, obj);
 
-        console.log("options loaded : ", this.app.options);
-        this.saveOptions();
-      } catch (err) {
-        console.error(err);
+    this.app.network.sendRequestAsTransaction(message, data, function (obj) {
+      mycallback();
+    });
+  }
+
+  async resetOptions() {
+    try {
+      const response = await fetch(`/options`);
+      this.app.options = await response.json();
+      this.saveOptions();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  saveOptions() {
+    if (this.app.BROWSER == 1) {
+      if (this.active_tab == 0) {
+        return;
       }
     }
-    // this.convertOptionsBigInt(this.app.options);
-    return this.app.options;
+    try {
+      if (typeof Storage !== "undefined") {
+        localStorage.setItem("options", JSON.stringify(this.app.options));
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
 
-  // convertOptionsBigInt(options: any) {
-  //   console.log("options for conversion : ", options);
-  //   if (options.blockchain) {
-  //     // options.blockchain.last_block_id = BigInt(options.blockchain.last_block_id);
-  //     // options.blockchain.last_timestamp = BigInt(options.blockchain.last_timestamp);
-  //     // options.blockchain.genesis_block_id = BigInt(options.blockchain.genesis_block_id);
-  //     // options.blockchain.genesis_timestamp = BigInt(options.blockchain.genesis_timestamp);
-  //     // options.blockchain.lowest_acceptable_timestamp = BigInt(
-  //     //   options.blockchain.lowest_acceptable_timestamp
-  //     // );
-  //     // options.blockchain.lowest_acceptable_block_id = BigInt(
-  //     //   options.blockchain.lowest_acceptable_block_id
-  //     // );
-  //   }
-  // }
+  getOptions() {
+    if (this.app.BROWSER == 1) {
+      if (this.active_tab == 0) {
+        return;
+      }
+    }
+    try {
+      if (typeof Storage !== "undefined") {
+        return localStorage.getItem("options");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  getModuleOptionsByName(modname) {
+    for (let i = 0; i < this.app.options.modules.length; i++) {
+      if (this.app.options.modules[i].name === modname) {
+        return this.app.options.modules[i];
+      }
+    }
+    return null;
+  }
+
+  /**
+   * DUMMY FUNCTIONS IMPLEMENTED BY STORAGE-CORE IN ./core/storage-core.js
+   **/
+  deleteBlockFromDisk(filename) {}
+
+  async loadBlockById(bid): Promise<Block> {
+    return null;
+  }
+
+  async loadBlockByHash(bsh): Promise<Block> {
+    return null;
+  }
+
+  async loadBlockFromDisk(filename): Promise<Block> {
+    return null;
+  }
+
+  async loadBlockByFilename(filename): Promise<Block> {
+    return null;
+  }
+
+  async loadBlocksFromDisk(maxblocks = 0): Promise<Block> {
+    return null;
+  }
+
+  returnPath() {
+    return null;
+  }
+
+  returnFileSystem() {
+    return null;
+  }
+
+  async saveBlock(block: Block): Promise<string> {
+    return "";
+  }
+
+  saveClientOptions() {}
+
+  async returnDatabaseByName(dbname) {
+    return null;
+  }
+
+  async returnBlockFilenameByHash(block_hash, mycallback) {}
+
+  returnTokenSupplySlipsFromDisk(): any {
+    return [];
+  }
+
+  returnBlockFilenameByHashPromise(block_hash: string) {}
 
   async queryDatabase(sql, params, database) {}
 
+  async insertDatabase(sql, params, database, mycallback = null) {}
+
   async executeDatabase(sql, params, database, mycallback = null) {}
 
-  /**
-   * FUNCTIONS OVERWRITTEN BY STORAGE-CORE WHICH HANDLES ITS OWN DATA STORAGE IN ./core/storage-core.js
-   **/
-  updateTransaction(tx) {
-    const txmsg = tx.returnMessage();
-    const message = "archive";
-    const data: any = {};
-    data.request = "update";
-    data.tx = tx;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
-  }
-
-  async incrementTransactionOptionalValue(sig, optional_key) {
-    const message = "archive";
-    const data: any = {};
-    data.request = "increment_optional_value";
-    data.signature = sig;
-    data.publicKey = await this.app.wallet.getPublicKey();
-    data.optional_key = optional_key;
-    return this.app.network.sendRequestAsTransaction(message, data, function (res) {});
-  }
-
-  async updateTransactionOptionalValue(sig, optional_key, optional_value) {
-    const message = "archive";
-    const data: any = {};
-    data.request = "update_optional_value";
-    data.signature = sig;
-    data.publicKey = await this.app.wallet.getPublicKey();
-    data.optional_value = optional_value;
-    data.optional_key = optional_key;
-    return this.app.network.sendRequestAsTransaction(message, data, function (res) {});
-  }
-
-  async updateTransactionOptional(sig, optional) {
-    const message = "archive";
-    const data: any = {};
-    data.request = "update_optional";
-    data.signature = sig;
-    data.publicKey = await this.app.wallet.getPublicKey();
-    data.optional = optional;
-    return this.app.network.sendRequestAsTransaction(message, data, function (res) {});
-  }
-
-  async saveTransaction(tx: Transaction, type = null) {
-    console.log("storage.saveTransaction : ", tx);
-    let newtx = await this.app.wallet.createUnsignedTransaction(
-      await this.app.wallet.getPublicKey()
-    );
-    newtx.msg = {
-      request: "archive save",
-      data: tx.serialize(),
-    };
-    if (type != null) {
-      newtx.msg.type = type;
-    }
-    await newtx.sign();
-    await this.app.network.sendTransactionWithCallback(newtx, function (res) {});
-
-    //    const txmsg = tx.returnMessage();
-    //    const message = "archive";
-    //    const data: any = {};
-    //    data.request = "save";
-    //    data.tx = tx;
-    //    data.type = txmsg.module;
-    //console.log("=============");
-    //console.log("SAVING THE TX");
-    //console.log("=============");
-    this.app.connection.emit("save-transaction", tx);
-  }
-
-  saveTransactionByKey(key, tx) {
-    const txmsg = tx.returnMessage();
-    const message = "archive";
-    const data: any = {};
-    data.request = "save_key";
-    data.tx = tx;
-    data.key = key;
-    data.type = txmsg.module;
-    this.app.network.sendRequestAsTransaction(message, data, function (res) {});
-
-    this.app.connection.emit("save-transaction", tx);
+  generateBlockFilename(block: Block): string {
+    return ""; // empty
   }
 }
+
+export default Storage;

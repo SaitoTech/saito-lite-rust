@@ -145,6 +145,7 @@ class Archive extends ModTemplate {
     // saves TX containing archive insert instruction
     //
     if (req.request === "archive") {
+      console.log("Archive Peer Request: ", req.data);
       if (req.data.request === "delete") {
         let newtx = new Transaction(undefined, req.data.tx);
         await this.deleteTransaction(newtx, req.data);
@@ -194,13 +195,13 @@ class Archive extends ModTemplate {
     OR IGNORE INTO txs (tx) VALUES (
     $tx
     )`;
-    let params = { $tx: tx.toJson() };
+    let params = { $tx: JSON.stringify(tx.toJson()) };
     let tx_id = await this.app.storage.insertDatabase(sql, params, "archive");
 
     if (this.app.BROWSER) {
       let inserted_rows = await this.localDB.insert({
         into: "txs",
-        values: [{ tx: tx.toJson() }],
+        values: [{ tx: JSON.stringify(tx.toJson()) }],
         return: true
       });
       tx_id = inserted_rows[0]["id"];
@@ -380,7 +381,7 @@ class Archive extends ModTemplate {
            WHERE id = $tx_id`;
     params = {
       $tx_id: tx_id,
-      $tx: tx.toJson()
+      $tx: JSON.stringify(tx.toJson())
     };
 
     await this.app.storage.executeDatabase(sql, params, "archive");

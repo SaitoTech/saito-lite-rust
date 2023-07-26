@@ -464,7 +464,7 @@ class Chat extends ModTemplate {
       return;
     }
 
-    if (this.debug) {
+    if (this.debug && txmsg.request.includes("chat ")) {
       console.log("Chat handlePeerTransaction: " + txmsg.request);
     }
 
