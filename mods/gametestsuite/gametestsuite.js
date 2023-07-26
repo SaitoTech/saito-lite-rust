@@ -67,7 +67,7 @@ class GameTestSuite extends GameTemplate {
       let crypto_key = await this.app.wallet.returnCryptoAddressByTicker(this.game.crypto);
       this.addMove(
         "CRYPTOKEY\t" +
-          (await this.app.wallet.getPublicKey()) +
+          this.publicKey +
           "\t" +
           crypto_key +
           "\t" +

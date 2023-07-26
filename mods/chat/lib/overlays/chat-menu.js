@@ -34,7 +34,7 @@ class ChatMenu {
 
           if (
             thisobj.chat_group?.member_ids &&
-            thisobj.chat_group.member_ids[await thisobj.app.wallet.getPublicKey()] == "admin"
+            thisobj.chat_group.member_ids[thisobj.mod.publicKey] == "admin"
           ) {
             console.log("Send new name as group tx");
             thisobj.mod.sendCreateGroupTransaction(thisobj.chat_group);
@@ -97,7 +97,7 @@ class ChatMenu {
 
           delete thisobj.chat_group.member_ids[user_id];
 
-          if ((await this.app.wallet.getPublicKey()) == user_id) {
+          if (this.mod.publicKey == user_id) {
             this.mod.deleteChatGroup(thisobj.chat_group);
             siteMessage("You left the chat group", 2000);
           } else {

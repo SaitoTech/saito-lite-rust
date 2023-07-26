@@ -109,7 +109,7 @@ class Registry extends ModTemplate {
     // registering domains should report they run the registry module.
     //
     if (this.app.BROWSER == 0) {
-      //if (this.registry_publickey == this.app.wallet.getPublicKey()) {
+      //if (this.registry_publickey == this.publicKey) {
       services.push(new PeerService(null, "registry", "saito"));
     }
     return services;
@@ -460,7 +460,7 @@ class Registry extends ModTemplate {
       console.log(peer);
 
       if (this.app.options.server != undefined) {
-        this.registry_publickey = await this.app.wallet.getPublicKey();
+        this.registry_publickey = this.publicKey;
       } else {
         this.registry_publickey = peer.publicKey;
       }

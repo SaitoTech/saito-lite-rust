@@ -105,7 +105,7 @@ class GameManager {
               target,
               this.type,
               gameList[i],
-              await this.app.wallet.getPublicKey()
+              this.mod.publicKey
             );
             newInvite.render();
           }

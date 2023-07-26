@@ -70,7 +70,7 @@ class Relay extends ModTemplate {
     //
     let tx = new Transaction();
     let slip = new Slip();
-    slip.publicKey = await this.app.wallet.getPublicKey();
+    slip.publicKey = this.publicKey;
     tx.addFromSlip(slip);
     for (let i = 0; i < recipients.length; i++) {
       let slip = new Slip();
@@ -133,7 +133,7 @@ class Relay extends ModTemplate {
         //
         // if interior transaction is intended for me, I process regardless
         //
-        if (inner_tx.isTo(await app.wallet.getPublicKey())) {
+        if (inner_tx.isTo(this.publicKey)) {
           if (inner_txmsg.request === "ping") {
             await this.sendRelayMessage(inner_tx.from[0].publicKey, "echo", {
               status: this.busy,

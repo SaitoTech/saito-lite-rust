@@ -15,7 +15,7 @@ class ChatManager {
       if (Array.isArray(person) && person.length > 1) {
         let name = await sprompt("Choose a name for the group");
         //Make sure I am in the group too!
-        person.push(await this.app.wallet.getPublicKey());
+        person.push(this.mod.publicKey);
         let group = this.mod.returnOrCreateChatGroupFromMembers(person, name);
 
         if (group.txs.length == 0) {
@@ -25,7 +25,7 @@ class ChatManager {
         }
       } else if (Array.isArray(person) && person.length == 1) {
         this.app.keychain.addKey(person[0], { mute: 0 });
-        person.push(await this.app.wallet.getPublicKey());
+        person.push(this.mod.publicKey);
         let group = this.mod.returnOrCreateChatGroupFromMembers(person);
       }
     };
@@ -118,7 +118,7 @@ class ChatManager {
           group = this.mod.returnOrCreateChatGroupFromMembers(data.key, data.name);
         } else {
           group = this.mod.returnOrCreateChatGroupFromMembers(
-            [await app.wallet.getPublicKey(), data.key],
+            [this.mod.publicKey, data.key],
             data.name
           );
         }
@@ -148,7 +148,7 @@ class ChatManager {
     });
 
     app.connection.on("relay-is-online", async (pkey) => {
-      let target_id = this.mod.createGroupIdFromMembers([pkey, await app.wallet.getPublicKey()]);
+      let target_id = this.mod.createGroupIdFromMembers([pkey, this.mod.publicKey]);
       let group = this.mod.returnGroup(target_id);
       console.log("Receive online confirmation from " + pkey);
       if (!group || group.members.length !== 2) {
@@ -234,7 +234,7 @@ class ChatManager {
       // *****************************************************
       if (group.members.length == 2 && this.mod.isRelayConnected) {
         for (let member of group.members) {
-          if (member != (await this.app.wallet.getPublicKey())) {
+          if (member != this.mod.publicKey) {
             if (!this.pinged[group.id] || this.pinged[group.id] < now - 60000) {
               this.app.connection.emit("relay-send-message", {
                 recipient: [member],
@@ -349,7 +349,7 @@ class ChatManager {
           if (group.members.length == 2) {
             //console.log(JSON.parse(JSON.stringify(group.members)));
             for (let member of group.members) {
-              if (member != (await this.app.wallet.getPublicKey())) {
+              if (member != this.mod.publicKey) {
                 //console.log("Send Ping to " + member);
                 this.app.connection.emit("relay-send-message", {
                   recipient: [member],

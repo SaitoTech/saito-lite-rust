@@ -94,7 +94,7 @@ class InviteManager {
             target,
             this.type,
             this.mod.games[list][i],
-            await this.app.wallet.getPublicKey()
+            this.mod.publicKey
           );
 
           if (newInvite.invite_data.league) {

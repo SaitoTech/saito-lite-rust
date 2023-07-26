@@ -428,7 +428,7 @@ class Beleaguered extends OnePlayerGameTemplate {
         this.game.state.session.wins++;
         this.game.queue.push("round");
         this.game.queue.push(
-          `ROUNDOVER\t${JSON.stringify([await this.app.wallet.getPublicKey()])}\t${JSON.stringify(
+          `ROUNDOVER\t${JSON.stringify([this.publicKey])}\t${JSON.stringify(
             []
           )}`
         );
@@ -440,7 +440,7 @@ class Beleaguered extends OnePlayerGameTemplate {
         this.game.queue.push("round");
         this.game.queue.push(
           `ROUNDOVER\t${JSON.stringify([])}\t${JSON.stringify([
-            await this.app.wallet.getPublicKey(),
+            this.publicKey
           ])}`
         );
       }

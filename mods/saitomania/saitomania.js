@@ -134,7 +134,7 @@ class SaitoMania extends OnePlayerGameTemplate {
       this.game.state.lifetime.round++;
       this.game.state.lifetime.high_score = Math.max(score, this.game.state.lifetime.high_score);
       //this.endGame([], score);
-      this.addMove(`ROUNDOVER\t${JSON.stringify([this.app.wallet.getPublicKey()])}\t${score}\t${JSON.stringify([])}`);
+      this.addMove(`ROUNDOVER\t${JSON.stringify([this.publicKey])}\t${score}\t${JSON.stringify([])}`);
       this.endTurn();
       return 1;
     }

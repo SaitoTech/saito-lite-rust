@@ -78,10 +78,10 @@ class RedSquareMenu {
       this.app.connection.emit("redsquare-navigation", false);
     };
 
-    document.querySelector(".redsquare-menu-profile").onclick = async (e) => {
+    document.querySelector(".redsquare-menu-profile").onclick = (e) => {
       this.app.connection.emit(
         "redsquare-profile-render-request",
-        await this.app.wallet.getPublicKey()
+        this.mod.publicKey
       );
       this.app.connection.emit("redsquare-navigation", false);
     };

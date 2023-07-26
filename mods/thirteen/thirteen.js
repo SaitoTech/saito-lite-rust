@@ -346,7 +346,7 @@ class Thirteen extends GameTemplate {
         // observer skips
         if (
           this.game.player === 0 ||
-          !this.game.players.includes(await this.app.wallet.getPublicKey())
+          !this.game.players.includes(this.publicKey)
         ) {
           return 1;
         }
@@ -369,7 +369,7 @@ class Thirteen extends GameTemplate {
         }
         //Fix game.player so that it corresponds to the indices of game.players[]
         for (let i = 0; i < this.game.players.length; i++) {
-          if (this.game.players[i] === this.app.wallet.getPublicKey()) {
+          if (this.game.players[i] === this.publicKey) {
             this.game.player = i + 1;
           }
         }

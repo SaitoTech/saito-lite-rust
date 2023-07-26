@@ -287,7 +287,7 @@ class Arcade extends ModTemplate {
         if (arcade_self.isAvailableGame(game)) {
           console.log("Make it my game");
           //Mark myself as an invited guest
-          game.msg.options.desired_opponent_publickey = await this.app.wallet.getPublicKey();
+          game.msg.options.desired_opponent_publickey = this.publicKey;
           //Then we have to remove and readd the game so it goes under "mine"
           arcade_self.removeGame(game_id);
           arcade_self.addGame(game, "private");
@@ -748,7 +748,7 @@ class Arcade extends ModTemplate {
     this.addGame(tx, txmsg.request);
     this.app.connection.emit("arcade-invite-manager-render-request");
 
-    if (txmsg?.options?.desired_opponent_publickey == (await this.app.wallet.getPublicKey())) {
+    if (txmsg?.options?.desired_opponent_publickey == this.publicKey) {
       siteMessage("You were invited to a game", 5000);
     }
 
@@ -1342,7 +1342,7 @@ class Arcade extends ModTemplate {
   /*
   createChangeTransaction(gametx, direction) {
       let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-      tx.to.push(new saito.default.slip(this.app.wallet.getPublicKey(), 0.0));
+      tx.to.push(new saito.default.slip(this.publicKey, 0.0));
       tx.msg = gametx.returnMessage();
       tx.msg.request = "change_" + direction;
       tx.msg.game_id = gametx.signature;
@@ -1374,7 +1374,7 @@ class Arcade extends ModTemplate {
     //
     // and re-display
     //
-    if (!tx.isFrom(this.app.wallet.getPublicKey())) {
+    if (!tx.isFrom(this.publicKey)) {
       if (this.isMyGame(tx)) {
         this.app.connection.emit('arcade-invite-manager-render-request', invites[i]);
       } else {
@@ -1416,9 +1416,9 @@ class Arcade extends ModTemplate {
       game: gameData.game,
       options: gameData.options,
       players_needed: gameData.players.length,
-      players: [this.app.wallet.getPublicKey()],
+      players: [this.publicKey],
       players_sigs: [accept_sig],
-      originator: this.app.wallet.getPublicKey(),
+      originator: this.publicKey,
       invitees: gameData.players,
     };
 
@@ -1433,7 +1433,7 @@ class Arcade extends ModTemplate {
       return;
     }
 
-    if (!tx.isTo(this.app.wallet.getPublicKey())) {
+    if (!tx.isTo(this.publicKey)) {
       return;
     }
 
@@ -1529,7 +1529,7 @@ class Arcade extends ModTemplate {
           }
 
           let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-          tx.to.push(new saito.default.slip(this.app.wallet.getPublicKey(), 0.0));
+          tx.to.push(new saito.default.slip(this.publicKey, 0.0));
 
           tx.msg = {};
           tx.msg.request = "launch singleplayer";

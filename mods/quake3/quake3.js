@@ -273,7 +273,7 @@ class Quake3 extends GameTemplate {
                 //log("3::: " + logline);
                 let victim = z;
                 let killer = i;
-                //log(this.game.players[victim] + " --- " + this.app.wallet.getPublicKey());
+                //log(this.game.players[victim] + " --- " + this.publicKey);
                 if (this.game.players[victim] === this.publicKey) {
                   console.log("THIS ONE IS ON US");
                   this.addMove(

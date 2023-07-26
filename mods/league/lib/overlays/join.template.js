@@ -1,11 +1,10 @@
 module.exports = JoinLeagueTemplate = async (app, mod, league) => {
   let game = league.game.toLowerCase();
-  let pubKey = await app.wallet.getPublicKey();
-  let key = app.keychain.returnKey({ publickey: pubKey });
+  let key = app.keychain.returnKey({ publickey: mod.publicKey });
   let user_email = key.email || "";
 
-  let name = app.keychain.returnIdentifierByPublicKey(pubKey, true);
-  if (name == pubKey) {
+  let name = app.keychain.returnIdentifierByPublicKey(mod.publicKey, true);
+  if (name == mod.publicKey) {
     name = "Anonymous Player";
   }
 

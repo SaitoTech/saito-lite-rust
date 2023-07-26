@@ -889,7 +889,7 @@ class Tweet {
       return false;
     }
     for (let i = 0; i < tweet.tx.to.length; i++) {
-      if (tweet.tx.to[i].publicKey === (await this.app.wallet.getPublicKey())) {
+      if (tweet.tx.to[i].publicKey === this.mod.publicKey) {
         if (this.critical_child == null) {
           return true;
         }

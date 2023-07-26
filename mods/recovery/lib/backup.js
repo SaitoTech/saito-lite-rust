@@ -15,7 +15,7 @@ class Backup {
   }
 
   render() {
-    let key = this.app.keychain.returnKey(this.app.wallet.getPublicKey());
+    let key = this.app.keychain.returnKey(this.mod.publicKey);
     let identifier = key?.identifier || "";
     let newIdentifier = key?.has_registered_username && identifier === "";
     identifier = this.desired_identifier || identifier;
