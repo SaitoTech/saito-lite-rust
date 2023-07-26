@@ -224,7 +224,7 @@ class Encrypt extends ModTemplate {
     //
     if (!tx) {
       console.log("zero fee tx creating...");
-      tx = await this.app.wallet.createUnsignedTransaction(recipient, 0.0, 0.0);
+      tx = await this.app.wallet.createUnsignedTransaction(recipient, BigInt(0), BigInt(0));
     }
 
     tx.msg.module = this.name;
@@ -265,7 +265,7 @@ class Encrypt extends ModTemplate {
     let our_address = tx.to[0].publicKey;
     let alice_publickey = txmsg.alice_publickey;
 
-    let fee = tx.to[0].amt;
+    let fee = BigInt(tx.to[0].amt);
 
     let bob = this.app.crypto.createDiffieHellman();
     let bob_publickey = bob.getPublicKey(null, "compressed").toString("hex");
@@ -275,7 +275,7 @@ class Encrypt extends ModTemplate {
       Buffer.from(alice_publickey, "hex")
     );
 
-    var newtx = await this.app.wallet.createUnsignedTransaction(remote_address, 0, fee);
+    var newtx = await this.app.wallet.createUnsignedTransaction(remote_address, BigInt(0), fee);
     if (newtx == null) {
       return;
     }
