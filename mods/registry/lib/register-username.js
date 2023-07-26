@@ -76,10 +76,10 @@ class RegisterUsername {
                     //
                     // mark wallet that we have registered username
                     //
-                    this.app.keychain.addKey(this.app.wallet.getPublicKey(), { has_registered_username : true });
+                    this.app.keychain.addKey(this.publicKey, { has_registered_username : true });
 
                     // Change Saito-header / Settings page
-                    this.app.connection.emit("update_identifier", this.app.wallet.getPublicKey());
+                    this.app.connection.emit("update_identifier", this.publicKey);
 
                     //Fake responsiveness
                     setTimeout(()=>{

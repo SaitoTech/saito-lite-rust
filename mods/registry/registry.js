@@ -26,7 +26,7 @@ class Registry extends ModTemplate {
     this.cached_keys = {};
 
     //Set True for testing locally
-    this.local_dev = false;
+    this.local_dev = true;
 
     //
     // event listeners -
@@ -426,17 +426,8 @@ class Registry extends ModTemplate {
   }
 
   async tryRegisterIdentifier(identifier, domain = "@saito") {
-    let registry_self = this.app.modules.returnModule("Registry");
 
-    //console.log("REGISTERING TO WHICH MODULE: " + this.name);
-    //console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
-    //console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
-
-    let newtx = await this.app.wallet.createUnsignedTransaction(
-      registry_self.publickey,
-      0.0,
-      this.app.wallet.instance.default_fee
-    );
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
     if (!newtx) {
       console.log("NULL TX CREATED IN REGISTRY MODULE");
       throw Error("NULL TX CREATED IN REGISTRY MODULE");
@@ -466,10 +457,12 @@ class Registry extends ModTemplate {
   async onPeerHandshakeComplete(app, peer) {
     /***** USE VARIABLE TO TOGGLE LOCAL DEV MODE ******/
     if (this.local_dev) {
+      console.log(peer);
+
       if (this.app.options.server != undefined) {
-        this.publickey = await this.app.wallet.getPublicKey();
+        this.registry_publickey = await this.app.wallet.getPublicKey();
       } else {
-        this.publickey = peer.peer.publickey;
+        this.registry_publickey = peer.publicKey;
       }
       console.log("WE ARE NOW LOCAL SERVER");
     }
@@ -487,7 +480,7 @@ class Registry extends ModTemplate {
         // this is to us, and we are the main registry server
         //
         if (
-          tx.isTo(registry_self.publickey) &&
+          tx.isTo(this.publicKey) &&
           this.publicKey === registry_self.registry_publickey
         ) {
           let request = txmsg.request;
@@ -499,7 +492,7 @@ class Registry extends ModTemplate {
           let lock_block = 0;
           let signed_message = identifier + publickey + bid + bsh;
           let sig = registry_self.app.wallet.signMessage(signed_message);
-          let signer = this.publickey;
+          let signer = this.registry_publickey;
           let lc = 1;
 
           // servers update database
@@ -514,13 +507,13 @@ class Registry extends ModTemplate {
             signer,
             1
           );
-          let fee = tx.returnPaymentTo(registry_self.publickey);
+          let fee = tx.returnPaymentTo(registry_self.publicKey);
 
           // send message
           if (res == 1) {
             let newtx = await registry_self.app.wallet.createUnsignedTransaction(
               tx.from[0].publicKey,
-              0,
+              BigInt(0),
               fee
             );
             newtx.msg.module = "Email";
@@ -539,7 +532,7 @@ class Registry extends ModTemplate {
           } else {
             let newtx = await registry_self.app.wallet.createUnsignedTransaction(
               tx.from[0].publicKey,
-              0.0,
+              BigInt(0),
               fee
             );
             newtx.msg.module = "Email";
@@ -561,7 +554,7 @@ class Registry extends ModTemplate {
       }
 
       if (!!txmsg && txmsg.module == "Email") {
-        if (tx.from[0].publicKey == registry_self.publickey) {
+        if (tx.from[0].publicKey == registry_self.registry_publickey) {
           if (tx.to[0].publicKey == this.publicKey) {
             if (
               tx.msg.identifier != undefined &&
@@ -580,7 +573,7 @@ class Registry extends ModTemplate {
                   registry_self.app.crypto.verifyMessage(
                     signed_message,
                     sig,
-                    registry_self.publickey
+                    registry_self.registry_publickey
                   )
                 ) {
                   registry_self.app.keychain.addKey(tx.to[0].publicKey, {
@@ -604,7 +597,7 @@ class Registry extends ModTemplate {
               }
             }
           } else {
-            if ((await registry_self.app.wallet.getPublicKey()) != registry_self.publickey) {
+            if (registry_self.publicKey != registry_self.registry_publickey) {
               //
               // am email? for us? from the DNS registrar?
               //
@@ -621,7 +614,7 @@ class Registry extends ModTemplate {
                 blk.hash,
                 0,
                 sig,
-                registry_self.publickey
+                registry_self.registry_publickey
               );
 
               // if i am a server, i will notify lite-peers of
