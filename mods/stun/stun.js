@@ -142,17 +142,17 @@ class Stun extends ModTemplate {
     }
   }
 
-  async respondTo(type, obj) {
+  respondTo(type, obj) {
     let stun_self = this;
 
     if (type === "invite") {
       this.attachStyleSheets();
-      await super.render(this.app, this);
+      super.render(this.app, this);
       return new StunxInvite(this.app, this);
     }
     if (type === "saito-header") {
       this.attachStyleSheets();
-      await super.render(this.app, this);
+      super.render(this.app, this);
 
       return [
         {
@@ -170,7 +170,7 @@ class Stun extends ModTemplate {
     //
     if (type == "game-menu") {
       this.attachStyleSheets();
-      await super.render(this.app, this);
+      super.render(this.app, this);
       if (obj?.game?.players?.length > 1) {
         return {
           id: "game-chat",
@@ -194,7 +194,7 @@ class Stun extends ModTemplate {
       if (obj?.publicKey) {
         if (obj.publicKey !== this.app.wallet.publicKey) {
           this.attachStyleSheets();
-          await super.render(this.app, this);
+          super.render(this.app, this);
           return [
             {
               text: "Video/Audio Call",

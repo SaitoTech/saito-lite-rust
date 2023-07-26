@@ -12,7 +12,6 @@ class Wallet extends ModTemplate {
   }
 
   respondTo(type = "") {
-    let arcade_mod = this;
     if (type == "header-menu") {
       return {
         returnMenu: function (app, mod) {
@@ -32,7 +31,7 @@ class Wallet extends ModTemplate {
         },
       };
     }
-    return null;
+    return super.respondTo(type);
   }
 
 
