@@ -4,7 +4,7 @@ module.exports = (app, mod) => {
     
 
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 
 <head>
   <meta charset="utf-8" />

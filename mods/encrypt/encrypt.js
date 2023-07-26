@@ -265,7 +265,7 @@ class Encrypt extends ModTemplate {
     let our_address = tx.to[0].publicKey;
     let alice_publicKey = txmsg.alice_publicKey;
 
-    let fee = BigInt(tx.to[0].amt);
+    let fee = BigInt(tx.to[0].amount);
 
     let bob = this.app.crypto.createDiffieHellman();
     let bob_publicKey = bob.getPublicKey(null, "compressed").toString("hex");
