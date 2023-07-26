@@ -28,10 +28,8 @@ export default class Storage {
   }
 
   saveOptions() {
-    if (this.app.BROWSER == 1) {
-      if (this.active_tab == 0) {
-        return;
-      }
+    if (this.app.BROWSER == 1 && this.active_tab == 0) {
+      return;
     }
 
     // console.log("saving options : ", this.app.options);

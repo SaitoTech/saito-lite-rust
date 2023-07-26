@@ -34,7 +34,7 @@ class Archive extends ModTemplate {
     // settings saved and loaded from app.options
     //
     this.archive = {
-      index_blockchain: 0,
+      index_blockchain: 0
     };
 
     if (this.app.BROWSER == 0) {
@@ -67,21 +67,21 @@ class Archive extends ModTemplate {
           block_hash: { dataType: "string", default: "" },
           created_at: { dataType: "number", default: 0 },
           updated_at: { dataType: "number", default: 0 },
-          preserve: { dataType: "number", default: 0 },
-        },
+          preserve: { dataType: "number", default: 0 }
+        }
       };
 
       let txs = {
         name: "txs",
         columns: {
           id: { primaryKey: true, autoIncrement: true },
-          tx: { dataType: "string", unique: true },
-        },
+          tx: { dataType: "string", unique: true }
+        }
       };
 
       let db = {
         name: "archive_db",
-        tables: [archives, txs],
+        tables: [archives, txs]
       };
 
       var isDbCreated = await this.localDB.initDb(db);
@@ -201,7 +201,7 @@ class Archive extends ModTemplate {
       let inserted_rows = await this.localDB.insert({
         into: "txs",
         values: [{ tx: tx.toJson() }],
-        return: true,
+        return: true
       });
       tx_id = inserted_rows[0]["id"];
     }
@@ -253,7 +253,7 @@ class Archive extends ModTemplate {
       $block_hash: newObj.block_hash,
       $created_at: newObj.created_at,
       $updated_at: newObj.updated_at,
-      $preserve: newObj.preserve,
+      $preserve: newObj.preserve
     };
 
     let archives_id = await this.app.storage.insertDatabase(sql, params, "archive");
@@ -263,7 +263,7 @@ class Archive extends ModTemplate {
 
       let numRows = await this.localDB.insert({
         into: "archives",
-        values: [newObj],
+        values: [newObj]
       });
 
       if (numRows) {
@@ -327,8 +327,8 @@ class Archive extends ModTemplate {
         from: "archives",
         where: {
           owner: newObj.owner,
-          sig: newObj.signature,
-        },
+          sig: newObj.signature
+        }
       });
     }
 
@@ -353,7 +353,7 @@ class Archive extends ModTemplate {
       $owner: newObj.owner,
       $preserve: newObj.preserve,
       $id: id,
-      $sig: newObj.signature,
+      $sig: newObj.signature
     };
     await this.app.storage.executeDatabase(sql, params, "archive");
 
@@ -363,12 +363,12 @@ class Archive extends ModTemplate {
         set: {
           updated_at: newObj.updated_at,
           owner: newObj.owner,
-          preserve: newObj.preserve,
+          preserve: newObj.preserve
         },
         where: {
           id: id,
-          sig: newObj.signature,
-        },
+          sig: newObj.signature
+        }
       });
     }
 
@@ -380,7 +380,7 @@ class Archive extends ModTemplate {
            WHERE id = $tx_id`;
     params = {
       $tx_id: tx_id,
-      $tx: tx.toJson(),
+      $tx: tx.toJson()
     };
 
     await this.app.storage.executeDatabase(sql, params, "archive");
@@ -389,7 +389,7 @@ class Archive extends ModTemplate {
       await this.localDB.update({
         in: "txs",
         set: { tx: tx.toJson() },
-        where: { id: tx_id },
+        where: { id: tx_id }
       });
     }
 
@@ -518,10 +518,10 @@ class Archive extends ModTemplate {
           with: "txs",
           on: "archives.tx_id=txs.id",
           type: "inner",
-          as: { id: "tid" },
+          as: { id: "tid" }
         },
         order: { by: "archives.id", type: "desc" },
-        limit,
+        limit
       });
     }
 
@@ -542,12 +542,14 @@ class Archive extends ModTemplate {
   ////////////
   // delete //
   ////////////
-  async deleteTransaction(tx, obj = {}) {}
+  async deleteTransaction(tx, obj = {}) {
+  }
 
   ////////////
   // delete //
   ////////////
-  async deleteTransactions(obj = {}) {}
+  async deleteTransactions(obj = {}) {
+  }
 
   //////////////////////////
   // listen to everything //
@@ -578,6 +580,7 @@ class Archive extends ModTemplate {
   }
 
   async onWalletReset(nuke) {
+    await super.onWalletReset(nuke);
     if (nuke && this.localDB) {
       await this.localDB.clear("archives");
       await this.localDB.clear("txs");

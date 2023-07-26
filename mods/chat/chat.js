@@ -183,7 +183,7 @@ class Chat extends ModTemplate {
   async onPeerServiceUp(app, peer, service = {}) {
     let chat_self = this;
 
-    if (!app.BROWSER){
+    if (!app.BROWSER) {
       console.log("browser only code ^^^^^^^^^^^^^");
       return;
     }
@@ -469,7 +469,6 @@ class Chat extends ModTemplate {
     }
 
     if (txmsg.request === "chat history") {
-
       let group = this.returnGroup(txmsg?.data?.group_id);
 
       if (!group) {
@@ -510,9 +509,7 @@ class Chat extends ModTemplate {
       // to a peer if the inner_tx is addressed to one of our peers.
       //
       if (inner_tx.to.length > 0) {
-
         if (!inner_tx.isTo(this.publicKey)) {
-          
           if (app.BROWSER == 0) {
             peers.forEach((p) => {
               if (p.publicKey === inner_tx.to[0].publicKey) {
@@ -525,7 +522,7 @@ class Chat extends ModTemplate {
           //
           // broadcast to me, so send to all non-this-peers
           //
-          
+
           if (app.BROWSER == 0) {
             peers.forEach((p) => {
               console.log(p);
@@ -902,7 +899,7 @@ class Chat extends ModTemplate {
 
     for (let i = 0; i < members.length; i++) {
       if (members[i] !== this.publicKey) {
-        secret_holder = members[i];        
+        secret_holder = members[i];
         let slip = new Slip();
         slip.publicKey = members[i];
         newtx.addToSlip(slip);
@@ -1518,6 +1515,7 @@ class Chat extends ModTemplate {
 
   async onWalletReset(nuke) {
     console.log("Wallet reset");
+    await super.onWalletReset(nuke);
 
     if (nuke) {
       for (let i = 0; i < this.groups.length; i++) {

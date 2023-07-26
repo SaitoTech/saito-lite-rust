@@ -384,8 +384,10 @@ export default class Wallet extends SaitoWallet {
    * the new wallet to local storage.
    */
   async resetWallet() {
-    console.log("resetting wallet");
+    console.log("resetting wallet : " + (await this.getPublicKey()));
     // await S.getInstance().resetWallet();
+    await this.app.storage.resetOptions();
+
     await this.reset();
     // let privateKey = S.getInstance().generatePrivateKey();
     // let publicKey = S.getInstance().generatePublicKey(privateKey);
@@ -411,6 +413,8 @@ export default class Wallet extends SaitoWallet {
     this.app.options.invites = [];
     this.app.options.games = [];
     this.app.storage.saveOptions();
+
+    console.log("new wallet : " + (await this.getPublicKey()));
 
     if (this.app.browser.browser_active == 1) {
       window.location.reload();
