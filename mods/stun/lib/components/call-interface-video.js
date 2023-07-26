@@ -59,9 +59,9 @@ class CallInterfaceVideo {
       if (room_code !== this.room_code) {
         return;
       }
-      let my_pub_key = this.app.wallet.getPublicKey();
+
       let container;
-      if (peer_id === my_pub_key) {
+      if (peer_id === this.publicKey) {
         container = this.local_container;
       }
 
