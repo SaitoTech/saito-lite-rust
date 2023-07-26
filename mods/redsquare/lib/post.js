@@ -15,12 +15,12 @@ class Post {
     this.tweet = tweet; //For reply or Retweet
 
     this.user = new SaitoUser(
-        this.app,
-        this.mod,
-        `.tweet-overlay-header`,
-        this.mod.publicKey,
-        "create a text-tweet or drag-and-drop images..."
-      );
+      this.app,
+      this.mod,
+      `.tweet-overlay-header`,
+      this.mod.publicKey,
+      "create a text-tweet or drag-and-drop images..."
+    );
 
     this.render_after_submit = 0;
     this.file_event_added = false;
@@ -198,7 +198,7 @@ class Post {
     }
     //Retweets
     if (source == "Retweet") {
-      data.retweet_tx = post_self.tweet.tx.serialize();
+      data.retweet_tx = JSON.stringify(post_self.tweet.tx.toJson());
       data.signature = post_self.tweet.tx.signature;
     }
 
@@ -214,7 +214,7 @@ class Post {
     //
     const Tweet = require("./tweet");
     let posted_tweet = new Tweet(post_self.app, post_self.mod, newtx);
-    console.log("New tweet:" , posted_tweet);
+    console.log("New tweet:", posted_tweet);
 
     let rparent = this.tweet;
     if (rparent) {

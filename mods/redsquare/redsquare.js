@@ -631,8 +631,10 @@ class RedSquare extends ModTemplate {
       sql,
       async (res) => {
         if (res.rows) {
+          console.log("111 : ", res.rows);
+
           res.rows.forEach((row) => {
-            let tx = Transaction.deserialize(row.tx, new Factory());
+            let tx = new Transaction(undefined, JSON.parse(row.tx));
 
             if (!tx.optional) {
               tx.optional = {};
@@ -899,7 +901,7 @@ class RedSquare extends ModTemplate {
       }
     }
     await newtx.sign();
-    redsquare_self.app.network.propagateTransaction(newtx);
+    await redsquare_self.app.network.propagateTransaction(newtx);
     return newtx;
   }
 
@@ -964,7 +966,9 @@ class RedSquare extends ModTemplate {
           //
 
           if (txmsg.data?.retweet_tx) {
-            let rtx = Transaction.deserialize(txmsg.data.retweet_tx, new Factory());
+            console.log("222 : ", txmsg.data.retweet_tx);
+
+            let rtx = new Transaction(undefined, JSON.parse(txmsg.data.retweet_tx));
 
             if (this.tweets_sigs_hmap[rtx.signature]) {
               let tweet2 = this.returnTweet(rtx.signature);
@@ -1064,7 +1068,7 @@ class RedSquare extends ModTemplate {
         has_images = 1;
       }
       //This is the received TX without included optional data!
-      let txjson = tx.serialize();
+      let txjson = JSON.stringify(tx.toJson());
       let tx_size = txjson.length;
 
       let params = {
@@ -1263,9 +1267,7 @@ class RedSquare extends ModTemplate {
     //
     // update cache
     //
-    this.updateTweetsCacheForBrowsers();
-
-    return;
+    await this.updateTweetsCacheForBrowsers();
   }
 
   /////////////////////////////////////
@@ -1289,8 +1291,9 @@ class RedSquare extends ModTemplate {
 
     localforage.getItem(`tweet_history`, (error, value) => {
       if (value && value.length > 0) {
+        console.log("333 : ", value);
         for (let tx of value) {
-          let newtx = Transaction.deserialize(tx, new Factory());
+          let newtx = new Transaction(undefined, JSON.parse(tx));
           this.addTweet(newtx);
         }
       } else {
@@ -1307,10 +1310,10 @@ class RedSquare extends ModTemplate {
         //
         try {
           //Prefer our locally cached tweets to the webServer ones
-          if (tweets) {
-            console.log("Using Server Cached Tweets");
-            for (let z = 0; z < tweets.length; z++) {
-              let newtx = Transaction.deserialize(tweets[z], new Factory());
+          if (this.tweets) {
+            console.log("Using Server Cached Tweets : ", this.tweets);
+            for (let z = 0; z < this.tweets.length; z++) {
+              let newtx = new Transaction(undefined, JSON.parse(this.tweets[z]));
               this.addTweet(newtx);
             }
           }
@@ -1351,7 +1354,7 @@ class RedSquare extends ModTemplate {
     let maximum = 10;
     for (let tweet of this.tweets) {
       tweet.tx.optional.updated_at = tweet.updated_at;
-      tweet_txs.push(tweet.tx.serialize());
+      tweet_txs.push(JSON.stringify(tweet.tx.toJson()));
       if (--maximum <= 0) {
         break;
       }
@@ -1475,13 +1478,14 @@ class RedSquare extends ModTemplate {
 
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
+    console.log("555 : ", rows);
 
     for (let i = 0; i < rows.length; i++) {
       if (!rows[i].tx) {
         continue;
       }
       // create the transaction
-      let tx = Transaction.deserialize(rows[i].tx, new Factory());
+      let tx = new Transaction(undefined, JSON.parse(rows[i].tx));
 
       if (rows[i].num_reples) {
         tx.optional.num_replies = rows[i].num_replies;
@@ -1495,7 +1499,7 @@ class RedSquare extends ModTemplate {
       if (rows[i].flagged) {
         tx.optional.flagged = rows[i].flagged;
       }
-      let hexstring = tx.serialize().toString("hex");
+      let hexstring = JSON.stringify(tx.toJson());
       hex_entries.push(hexstring);
     }
 
@@ -1548,8 +1552,10 @@ class RedSquare extends ModTemplate {
                        ORDER BY created_at DESC`;
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
 
+            console.log("666 : ", rows);
+
             for (let i = 0; i < rows.length; i++) {
-              let tx = Transaction.deserialize(rows[i].tx, new Factory());
+              let tx = new Transaction(undefined, JSON.parse(rows[i].tx));
 
               let txmsg = tx.returnMessage();
               let text = txmsg.data.text;
@@ -1589,8 +1595,10 @@ class RedSquare extends ModTemplate {
 
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
             console.info(rows.length);
+            console.log("777 : ", rows);
+
             for (let i = 0; i < rows.length; i++) {
-              let tx = Transaction.deserialize(rows[i].tx, new Factory());
+              let tx = new Transaction(undefined, JSON.parse(rows[i].tx));
 
               //console.info(rows[i]);
               let txmsg = tx.returnMessage();

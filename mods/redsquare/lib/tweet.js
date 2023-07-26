@@ -24,7 +24,7 @@ class Tweet {
     // the core
     //
     this.tx = tx;
-    
+
     //
     // ancillary content is stored in the tx.optional array, where it
     // can be saved back to the network of archive nodes / databases and
@@ -152,7 +152,7 @@ class Tweet {
     // retweets
     //
     if (this.retweet_tx != null) {
-      let newtx = Transaction.deserialize(this.retweet_tx, new Factory());
+      let newtx = new Transaction(undefined, JSON.parse(this.retweet_tx));
 
       this.retweet = new Tweet(
         this.app,
@@ -294,7 +294,8 @@ class Tweet {
         t.render(prepend);
       } else {
         //console.log("saved tweet");
-        (this.retweet.user.container = this.container + `> .tweet-${this.tx.signature} > .tweet-header`),
+        (this.retweet.user.container =
+          this.container + `> .tweet-${this.tx.signature} > .tweet-header`),
           this.retweet.render(prepend);
       }
       return;
@@ -459,7 +460,9 @@ class Tweet {
       // to be true before running attachEvents(); this will avoid it getting compressed
       // with full / preview toggle.
       //
-      let el = document.querySelector(`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-text`);
+      let el = document.querySelector(
+        `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-text`
+      );
       if (!el) {
         return;
       }
@@ -564,7 +567,12 @@ class Tweet {
 
         newtx.signature = this.app.crypto.hash(newtx.signature);
 
-        let new_tweet = new Tweet(this.app, this.mod, newtx, `#post-tweet-preview-${this.tx.signature}`);
+        let new_tweet = new Tweet(
+          this.app,
+          this.mod,
+          newtx,
+          `#post-tweet-preview-${this.tx.signature}`
+        );
         new_tweet.show_controls = 0;
         new_tweet.render();
       };
@@ -593,7 +601,12 @@ class Tweet {
 
         newtx.signature = this.app.crypto.hash(newtx.signature);
 
-        let new_tweet = new Tweet(this.app, this.mod, newtx, `#post-tweet-preview-${this.tx.signature}`);
+        let new_tweet = new Tweet(
+          this.app,
+          this.mod,
+          newtx,
+          `#post-tweet-preview-${this.tx.signature}`
+        );
         new_tweet.show_controls = 0;
         new_tweet.render();
       };
