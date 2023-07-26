@@ -18,15 +18,14 @@ class DeckOverlay {
         this.overlay.show(DeckTemplate());
 
 	if (this.mod.game.saito_cards_added.length > 0) {
+	  this.app.browser.addElementToSelector(`<h1>deck updates: round ${this.mod.game.state.round}</h1>`,'.deck-overlay');
 	  this.app.browser.addElementToSelector(`
-		<h1>added</h1>
 		<div class="cardlist-container cards_added">${this.mod.returnCardList(this.mod.game.saito_cards_added)}</div>
 	  `, '.deck-overlay');
 	}
 
 	if (this.mod.game.saito_cards_removed.length > 0) {
 	  this.app.browser.addElementToSelector(`
-		<h1>removed</h1>
 		<div class="cardlist-container cards_removed">${this.mod.returnCardList(this.mod.game.saito_cards_removed)}</div>
 	  `, '.deck-overlay');
 	}
@@ -52,6 +51,13 @@ class DeckOverlay {
     }
 
     attachEvents(){
+
+      document.querySelectorAll(".cardlist-container .card").forEach((el) => {
+console.log("adding noclick");
+	el.classList.add("noclick");
+	el.onclick = (e) => {};
+      });;
+
     }
 
 }

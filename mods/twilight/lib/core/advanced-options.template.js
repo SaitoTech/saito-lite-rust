@@ -6,33 +6,11 @@ module.exports = () => {
 
   <div style="top:0;left:0;">
 
-            <label for="deck">Deck:</label>
-            <select name="deck" id="deckselect" onchange='
-        if ($("#deckselect").val() == "saito") { 
-          $(".saito_edition").prop("checked",true); 
-	  try {
-	    document.querySelector(".usbonus").value = 0;
-	  } catch (err) {
-console.log(err);
-	  }
-          $(".endofhistory_edition").prop("checked", false); 
-        } else { 
-          $(".saito_edition").prop("checked", false); 
-          if ($("#deckselect").val() == "optional") { 
-            $(".optional_edition").prop("checked", false); 
-          } else { 
-            $(".optional").prop("checked", true); 
-            if ($("#deckselect").val() == "endofhistory") { 
-              $(".endofhistory_edition").prop("checked",true); 
-              $(".optional_edition").prop("checked", false);
-            }
-          }
-        } '>
-            <option value="original">original</option>
-              <option class="optional" value="optional" selected>optional</option>
-              <option class="late-war" value="late-war">late war</option>
-              <option class="saito" value="saito">saito edition</option>
-              <option class="endofhistory" value="endofhistory">end of history</option>
+            <label for="player1">Play As: </label>
+            <select name="player1">
+              <option value="random" selected>random sides</option>
+              <option value="ussr">play as USSR</option>
+              <option value="us">play as US</option>
             </select>
 
             <label for="usbonus">US bonus: </label>

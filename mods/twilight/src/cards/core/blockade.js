@@ -5,6 +5,8 @@
     //////////////
     if (card == "blockade") {
 
+      this.game.state.events.blockade = 1;
+
       //
       // COMMUNITY
       //
