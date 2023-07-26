@@ -6856,7 +6856,7 @@ console.log("resetting BG countries for: " + i);
         if (key === "carterdoctrine") { deck['carterdoctrine']  = { img : "TNRnTS-211png" ,name : "Carter Doctrine", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 }; }
         if (key === "energycrisis") { deck['energycrisis']      = { img : "TNRnTS-212png" ,name : "Energy Crisis", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 }; }
         if (key === "nixonshock") { deck['nixonshock']       	= { img : "TNRnTS-213png" ,name : "Nixon Shock", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 }; }
-        if (key === "kissinger") { deck['kissinger'] 	     	= { img : "TNRnTS-502png" ,name : "Kissinger Bombs Cambodia", scoring : 0 , player : "us"     , recurring : 1 , ops : 2 }; }
+        if (key === "kissinger") { deck['kissinger'] 	     	= { img : "TNRnTS-218png" ,name : "Kissinger Bombs Cambodia", scoring : 0 , player : "us"     , recurring : 1 , ops : 2 }; }
         if (key === "handshake") { deck['handshake'] 		= { img : "TNRnTS-201png" , name : "Handshake in Space", scoring : 0 , player : "both" , recurring : 1 , ops : 1 }; }
 
 	// END OF HISTORY
@@ -14560,8 +14560,7 @@ console.log("cardname: " + cardname);
             $(divname).on('click', function() {
 
               let c = $(this).attr('id');
-              let divname2 = "#" + c;
-              $(divname2).off();
+              $('.country').off();
 
 	      let influence_to_remove = 0;
 	      let max_influence_to_add = 0;
@@ -14588,8 +14587,7 @@ console.log("cardname: " + cardname);
         	   $(divname).on('click', function() {
 
               	     let c = $(this).attr('id');
-                     let divname2 = "#" + c;
-                     $(divname2).off();
+              	     $('.country').off();
 
 		     let max_influence_to_add = influence_to_remove;
 	      	     if (me === "us") {

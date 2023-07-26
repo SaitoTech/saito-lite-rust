@@ -29,6 +29,9 @@
   justify-content: center;
   gap: 2rem;
 }
+.deck-overlay .cardlist-container .card::before {
+  color: white;
+}
 
 .deck-overlay .cardlist-container .card {
     max-width: 200px;

@@ -24,8 +24,7 @@
             $(divname).on('click', function() {
 
               let c = $(this).attr('id');
-              let divname2 = "#" + c;
-              $(divname2).off();
+              $('.country').off();
 
 	      let influence_to_remove = 0;
 	      let max_influence_to_add = 0;
@@ -52,8 +51,7 @@
         	   $(divname).on('click', function() {
 
               	     let c = $(this).attr('id');
-                     let divname2 = "#" + c;
-                     $(divname2).off();
+              	     $('.country').off();
 
 		     let max_influence_to_add = influence_to_remove;
 	      	     if (me === "us") {
