@@ -411,12 +411,12 @@ class Arcade extends ModTemplate {
       };
     }
     if (type === "user-menu") {
-      if (obj?.publickey && obj.publickey !== this.publicKey) {
+      if (obj?.publicKey && obj.publicKey !== this.publicKey) {
         return {
           text: "Challenge to Game",
           icon: "fas fa-gamepad",
-          callback: function (app, publickey) {
-            app.connection.emit("arcade-launch-game-selector", { publickey });
+          callback: function (app, publicKey) {
+            app.connection.emit("arcade-launch-game-selector", { publicKey });
           },
         };
       }
@@ -1839,8 +1839,8 @@ class Arcade extends ModTemplate {
       //For convenience sake when making the join overlay
       options.league_name = invite_obj.league.name;
     }
-    if (invite_obj.publickey) {
-      options.desired_opponent_publickey = invite_obj.publickey;
+    if (invite_obj.publicKey) {
+      options.desired_opponent_publickey = invite_obj.publicKey;
       gameType = "direct";
     }
 

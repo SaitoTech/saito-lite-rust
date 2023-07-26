@@ -99,13 +99,13 @@ class RedSquare extends ModTemplate {
     let this_mod = this;
     if (type === "user-menu") {
       return {
-        text: `View ${obj?.publickey && obj.publickey === this.publicKey ? "My " : ""}Profile`,
+        text: `View ${obj?.publicKey && obj.publicKey === this.publicKey ? "My " : ""}Profile`,
         icon: "fa fa-user",
-        callback: function (app, publickey) {
+        callback: function (app, publicKey) {
           if (app.modules.returnActiveModule().returnName() == "Red Square") {
-            app.connection.emit("redsquare-profile-render-request", publickey);
+            app.connection.emit("redsquare-profile-render-request", publicKey);
           } else {
-            window.location = `/redsquare/?user_id=${publickey}`;
+            window.location = `/redsquare/?user_id=${publicKey}`;
           }
         },
       };
@@ -394,7 +394,7 @@ class RedSquare extends ModTemplate {
     }
 
     for (let i = 0; i < this.peers.length; i++) {
-      if (this.peers[i].publickey == peer.publicKey) {
+      if (this.peers[i].publicKey == peer.publicKey) {
         this.peers[i].peer = peer;
         if (has_tweets) {
           this.peers[i].tweets = true;
@@ -411,7 +411,7 @@ class RedSquare extends ModTemplate {
     //
     this.peers.push({
       peer: peer,
-      publickey: peer.publicKey,
+      publicKey: peer.publicKey,
       tweets_earliest_ts: new Date().getTime(),
       tweets_latest_ts: 0,
       tweets_limit: 20,
@@ -497,7 +497,7 @@ class RedSquare extends ModTemplate {
   // but am leaving function name intact in case we want to add a meta-layer
   // that discriminates.
   //
-  loadProfileTweets(peer, publickey = "", mycallback) {
+  loadProfileTweets(peer, publicKey = "", mycallback) {
     for (let i = 0; i < this.peers.length; i++) {
       let peer = this.peers[i].peer;
 
@@ -505,7 +505,7 @@ class RedSquare extends ModTemplate {
 
       let sql = `SELECT *
                  FROM tweets
-                 WHERE publickey = '${publickey}'
+                 WHERE publicKey = '${publicKey}'
                    AND updated_at < ${time_cutoff}
                  ORDER BY created_at DESC LIMIT '${this.peers[i].profile_limit}'`;
       this.loadTweetsFromPeer(peer, sql, (txs) => {
@@ -920,7 +920,7 @@ class RedSquare extends ModTemplate {
           //
           // this transaction is TO me, but I may not be the tx.to[0].publicKey address, and thus the archive
           // module may not index this transaction for me in a way that makes it very easy to fetch (field3 = MY_KEY}
-          // thus we override the defaults by setting field3 explicitly to our publickey so that loading transactions
+          // thus we override the defaults by setting field3 explicitly to our publicKey so that loading transactions
           // from archives by fetching on field3 will get this.
           //
           this.app.storage.saveTransaction(tx, {
@@ -1035,7 +1035,7 @@ class RedSquare extends ModTemplate {
                                      parent_id,
                                      thread_id,
                                      type,
-                                     publickey,
+                                     publicKey,
                                      link,
                                      link_properties,
                                      num_replies,
@@ -1050,7 +1050,7 @@ class RedSquare extends ModTemplate {
                          $parent_id,
                          $thread_id,
                          $type,
-                         $publickey,
+                         $publicKey,
                          $link,
                          $link_properties,
                          0,
@@ -1075,7 +1075,7 @@ class RedSquare extends ModTemplate {
         $parent_id: tweet.tx.optional.parent_id,
         $type: type_of_tweet,
         $thread_id: tweet.tx.optional.thread_id || tx.signature,
-        $publickey: tx.from[0].publicKey,
+        $publicKey: tx.from[0].publicKey,
         $link: tweet.link,
         $link_properties: JSON.stringify(tweet.tx.optional.link_properties),
         $has_images: has_images,
@@ -1553,8 +1553,8 @@ class RedSquare extends ModTemplate {
 
               let txmsg = tx.returnMessage();
               let text = txmsg.data.text;
-              let publickey = tx.from[0].publicKey;
-              let user = app.keychain.returnIdentifierByPublicKey(publickey, true);
+              let publicKey = tx.from[0].publicKey;
+              let user = app.keychain.returnIdentifierByPublicKey(publicKey, true);
 
               redsquare_self.social.twitter_description = text;
               redsquare_self.social.og_description = text;
@@ -1563,8 +1563,8 @@ class RedSquare extends ModTemplate {
               // if (typeof tx.msg.data.images != "undefined") {
               //   let image = tx.msg.data?.images[0];
               // } else {
-              //   let publickey = tx.from[0].publicKey;
-              //   let image = app.keychain.returnIdenticon(publickey);
+              //   let publicKey = tx.from[0].publicKey;
+              //   let image = app.keychain.returnIdenticon(publicKey);
               // }
 
               let image = (redsquare_self.social.og_url =
@@ -1601,8 +1601,8 @@ class RedSquare extends ModTemplate {
                 let base64Data = img_uri.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
                 let img = Buffer.from(base64Data, "base64");
               } else {
-                let publickey = tx.from[0].publicKey;
-                let img_uri = app.keychain.returnIdenticon(publickey, "png");
+                let publicKey = tx.from[0].publicKey;
+                let img_uri = app.keychain.returnIdenticon(publicKey, "png");
                 let base64Data = img_uri.replace(/^data:image\/png;base64,/, "");
                 let img = Buffer.from(base64Data, "base64");
                 let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));

@@ -10,6 +10,7 @@ import Factory from "../../lib/saito/factory";
 import Wallet from "../../lib/saito/wallet";
 import Blockchain from "../../lib/saito/blockchain";
 import PeerServiceList from "saito-js/lib/peer_service_list";
+import { LogLevel } from "saito-js/saito";
 
 // import Config from "saito-js/lib/config";
 
@@ -95,7 +96,8 @@ async function init() {
     saito.options,
     new WebMethods(saito),
     new Factory(),
-    saito.options.wallet?.privateKey || ""
+    saito.options.wallet?.privateKey || "",
+    LogLevel.Trace
   );
   saito.wallet = (await S.getInstance().getWallet()) as Wallet;
   saito.wallet.app = saito;

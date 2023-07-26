@@ -21,22 +21,18 @@ class ExplorerCore extends ModTemplate {
       res.set("Content-type", "text/html");
       res.charset = "UTF-8";
       res.send(explorer_self.returnIndexHTML(app));
-      return;
     });
 
     expressapp.get("/explorer/style.css", function (req, res) {
       res.sendFile(__dirname + "/web/style.css");
-      return;
     });
 
     expressapp.get("/explorer/css/explorer-base.css", function (req, res) {
       res.sendFile(__dirname + "/web/css/explorer-base.css");
-      return;
     });
 
     expressapp.get("/explorer/utils.js", function (req, res) {
       res.sendFile(__dirname + "/web/utils.js");
-      return;
     });
 
     ///////////////////
@@ -49,12 +45,10 @@ class ExplorerCore extends ModTemplate {
         res.setHeader("Content-type", "text/html");
         res.charset = "UTF-8";
         res.send("Please provide a block hash.");
-        return;
       } else {
         res.setHeader("Content-type", "text/html");
         res.charset = "UTF-8";
         res.send(explorer_self.returnBlockHTML(app, hash));
-        return;
       }
     });
 
@@ -62,7 +56,6 @@ class ExplorerCore extends ModTemplate {
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
       res.send(explorer_self.returnMempoolHTML());
-      return;
     });
 
     expressapp.get("/explorer/blocksource", function (req, res) {
@@ -72,7 +65,6 @@ class ExplorerCore extends ModTemplate {
         res.setHeader("Content-type", "text/html");
         res.charset = "UTF-8";
         res.send("NO BLOCK FOUND 1: ");
-        return;
       } else {
         if (hash != null) {
           //let blk = explorer_self.app.storage.loadBlockByHash(hash);
@@ -80,7 +72,6 @@ class ExplorerCore extends ModTemplate {
           res.setHeader("Content-type", "text/html");
           res.charset = "UTF-8";
           res.send(explorer_self.returnBlockSourceHTML(app, hash));
-          return;
         }
       }
     });

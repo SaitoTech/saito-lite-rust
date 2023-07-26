@@ -377,10 +377,10 @@ class StorageCore extends Storage {
   convertIssuanceIntoSlip(line = "") {
     let entries = line.split("\t");
     let amount = BigInt(entries[0]);
-    let publickey = entries[1];
+    let publicKey = entries[1];
     let type = entries[2];
     let slip = new Slip();
-    slip.publicKey = publickey;
+    slip.publicKey = publicKey;
     slip.amount = amount;
     if (type === "VipOutput") {
       slip.type = SlipType.VipOutput;

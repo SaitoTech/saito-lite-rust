@@ -7,6 +7,7 @@ import process from "process";
 import Factory from "./lib/saito/factory";
 import Wallet from "./lib/saito/wallet";
 import Blockchain from "./lib/saito/blockchain";
+import { LogLevel } from "saito-js/saito";
 
 // import Config from "saito-js/lib/config";
 
@@ -28,7 +29,13 @@ async function initSaito() {
   await app.storage.initialize();
 
   let privateKey = app.options.wallet?.privateKey || "";
-  await initS(app.options, new NodeSharedMethods(app), new Factory(), privateKey).then(() => {
+  await initS(
+    app.options,
+    new NodeSharedMethods(app),
+    new Factory(),
+    privateKey,
+    LogLevel.Trace
+  ).then(() => {
     console.log("saito wasm lib initialized");
   });
 

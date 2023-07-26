@@ -272,7 +272,7 @@ class Nwasm extends OnePlayerGameTemplate {
      message.request = "library delete";
      message.data = {};
      message.data.collection = "Nwasm";
-     message.data.publickey = this.publicKey;
+     message.data.publicKey = this.publicKey;
 
      let newtx = this.app.wallet.createUnsignedTransaction(this.publicKey, BigInt(0), BigInt(0));
      newtx.msg = message;

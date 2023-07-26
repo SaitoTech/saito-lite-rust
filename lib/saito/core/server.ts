@@ -204,7 +204,7 @@ class Server {
   public server: any = {
     host: "",
     port: 0,
-    publickey: "",
+    publicKey: "",
     protocol: "",
     name: "",
     block_fetch_url: "",
@@ -219,7 +219,6 @@ class Server {
   public host: string;
   public port: number;
   public protocol: string;
-  public publickey: string;
 
   constructor(app: Saito) {
     this.app = app;
@@ -338,11 +337,11 @@ class Server {
       this.server.endpoint.port = this.app.options.server.endpoint.port;
       this.server.endpoint.host = this.app.options.server.endpoint.host;
       this.server.endpoint.protocol = this.app.options.server.endpoint.protocol;
-      this.server.endpoint.publickey = this.app.options.server.publickey;
+      this.server.endpoint.publicKey = this.app.options.server.publicKey;
     } else {
-      const { host, port, protocol, publickey } = this.server;
-      this.server.endpoint = { host, port, protocol, publickey };
-      this.app.options.server.endpoint = { host, port, protocol, publickey };
+      const { host, port, protocol, publicKey } = this.server;
+      this.server.endpoint = { host, port, protocol, publicKey };
+      this.app.options.server.endpoint = { host, port, protocol, publicKey };
       console.log("SAVE OPTIONS IN SERVER");
       this.app.storage.saveOptions();
     }
