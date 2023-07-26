@@ -25,7 +25,7 @@ class Chat extends ModTemplate {
      Array of:
      {
         id: id,
-        members: members, //Array of publickeys
+        members: members, //Array of publicKeys
         member_ids: {} // Key->value pairs  :admin / :1 / :0 -- group admin, confirmed, unconfirmed member
         name: name,
         unread: 0, //Number of new messages
@@ -360,21 +360,21 @@ class Chat extends ModTemplate {
         }
         return null;
       case "user-menu":
-        if (obj?.publickey) {
+        if (obj?.publicKey) {
           if (
-            chat_self.app.keychain.hasSharedSecret(obj.publickey) &&
-            obj.publickey !== this.publicKey
+            chat_self.app.keychain.hasSharedSecret(obj.publicKey) &&
+            obj.publicKey !== this.publicKey
           ) {
             return {
               text: "Chat",
               icon: "far fa-comment-dots",
-              callback: function (app, publickey) {
+              callback: function (app, publicKey) {
                 if (chat_self.chat_manager == null) {
                   chat_self.chat_manager = new ChatManager(chat_self.app, chat_self);
                 }
 
                 chat_self.chat_manager.render_popups_to_screen = 1;
-                chat_self.app.connection.emit("open-chat-with", { key: publickey });
+                chat_self.app.connection.emit("open-chat-with", { key: publicKey });
               },
             };
           }
@@ -383,21 +383,21 @@ class Chat extends ModTemplate {
         return null;
 
       case "saito-profile-menu":
-        if (obj?.publickey) {
+        if (obj?.publicKey) {
           if (
-            chat_self.app.keychain.hasPublicKey(obj.publickey) &&
-            obj.publickey !== this.publicKey
+            chat_self.app.keychain.hasPublicKey(obj.publicKey) &&
+            obj.publicKey !== this.publicKey
           ) {
             return {
               text: "Chat",
               icon: "far fa-comment-dots",
-              callback: function (app, publickey) {
+              callback: function (app, publicKey) {
                 if (chat_self.chat_manager == null) {
                   chat_self.chat_manager = new ChatManager(chat_self.app, chat_self);
                 }
 
                 chat_self.chat_manager.render_popups_to_screen = 1;
-                chat_self.app.connection.emit("open-chat-with", { key: publickey });
+                chat_self.app.connection.emit("open-chat-with", { key: publicKey });
               },
             };
           }
@@ -1067,7 +1067,7 @@ class Chat extends ModTemplate {
           const replyButton = `<div data-id="${group_id}" class="saito-userline-reply">reply <i class="fas fa-reply"></i></div>`;
           html += `${SaitoUserTemplate({
             app: this.app,
-            publickey: sender,
+            publicKey: sender,
             notice: msg,
             fourthelem:
               `<div class="saito-chat-line-controls"><span class="saito-chat-line-timestamp">` +
@@ -1315,9 +1315,9 @@ class Chat extends ModTemplate {
     return null;
   }
 
-  returnGroupByMemberPublickey(publickey) {
+  returnGroupByMemberPublickey(publicKey) {
     for (let i = 0; i < this.groups.length; i++) {
-      if (this.groups[i].members.includes(publickey)) {
+      if (this.groups[i].members.includes(publicKey)) {
         return this.groups[i];
       }
     }
@@ -1358,8 +1358,8 @@ class Chat extends ModTemplate {
     let keys = await this.app.keychain.returnKeys();
     //console.log("Populate chat list");
     for (let i = 0; i < keys.length; i++) {
-      if (keys[i].aes_publickey && !keys[i]?.mute) {
-        this.returnOrCreateChatGroupFromMembers([keys[i].publickey], keys[i].name, false);
+      if (keys[i].aes_publicKey && !keys[i]?.mute) {
+        this.returnOrCreateChatGroupFromMembers([keys[i].publicKey], keys[i].name, false);
       }
     }
 

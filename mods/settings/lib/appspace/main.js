@@ -178,15 +178,15 @@ class SettingsAppspace {
         await app.storage.resetOptions();
 
         let privatekey = "";
-        let publickey = "";
+        let publicKey = "";
 
         try {
           privatekey = await sprompt("Enter Private Key:");
           if (privatekey != "") {
-            publickey = app.crypto.returnPublicKey(privatekey);
+            publicKey = app.crypto.returnPublicKey(privatekey);
 
             // app.wallet.wallet.privatekey = privatekey;
-            // app.wallet.wallet.publickey = publickey;
+            // app.wallet.wallet.publicKey = publicKey;
             // app.wallet.wallet.inputs = [];
             // app.wallet.wallet.outputs = [];
             // app.wallet.wallet.spends = [];

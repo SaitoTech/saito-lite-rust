@@ -313,7 +313,7 @@ class Library extends ModTemplate {
     this.app.storage.saveOptions();
   }
 
-  returnItem(collection, publickey, sig, mycallback) {
+  returnItem(collection, publicKey, sig, mycallback) {
     //
     // get index of item
     //
@@ -329,7 +329,7 @@ class Library extends ModTemplate {
       //
       // find the item
       //
-      let item = this.library[collection].peers[publickey][idx];
+      let item = this.library[collection].peers[publicKey][idx];
 
       //
       // is it checked out ?
@@ -337,7 +337,7 @@ class Library extends ModTemplate {
       let is_already_borrowed = 0;
       let is_already_borrowed_idx = -1;
       for (let i = 0; i < item.checkout.length; i++) {
-        if (item.checkout[i].publickey === publickey) {
+        if (item.checkout[i].publicKey === publicKey) {
           item.checkout[i].timestamp = new Date().getTime();
           is_already_borrowed_idx = i;
         }
@@ -356,7 +356,7 @@ class Library extends ModTemplate {
       //
       if (is_already_borrowed) {
         for (let i = 0; i < item.checkout.length; i++) {
-          if (item.checkout[i].publickey === publickey) {
+          if (item.checkout[i].publicKey === publicKey) {
             item.checkout.splice(i, 1);
             // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
             // be careful that item.available //
@@ -371,7 +371,7 @@ class Library extends ModTemplate {
     }
   }
 
-  checkoutItem(collection, publickey, sig, mycallback) {
+  checkoutItem(collection, publicKey, sig, mycallback) {
     //
     // if the collection doesn't exist, we cannot lend
     //
@@ -397,7 +397,7 @@ class Library extends ModTemplate {
       //
       // grab the item
       //
-      let item = this.library[collection].peers[publickey][idx];
+      let item = this.library[collection].peers[publicKey][idx];
 
       //
       // is it checked out ?
@@ -405,7 +405,7 @@ class Library extends ModTemplate {
       let is_already_borrowed = 0;
       let is_already_borrowed_idx = -1;
       for (let i = 0; i < item.checkout.length; i++) {
-        if (item.checkout[i].publickey === publickey) {
+        if (item.checkout[i].publicKey === publicKey) {
           item.checkout[i].timestamp = new Date().getTime();
           is_already_borrowed_idx = i;
         }
@@ -424,7 +424,7 @@ class Library extends ModTemplate {
       //
       if (is_already_borrowed) {
         for (let i = 0; i < item.checkout.length; i++) {
-          if (item.checkout[i].publickey === publickey) {
+          if (item.checkout[i].publicKey === publicKey) {
             item.checkout.splice(i, 1);
             // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
             // be careful that item.available //
@@ -450,7 +450,7 @@ class Library extends ModTemplate {
         //
         // record the checkout
         //
-        item.checkout.push({ publickey: publickey, ts: new Date().getTime() });
+        item.checkout.push({ publicKey: publicKey, ts: new Date().getTime() });
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
         // be careful that item.available //
         // is not removed above for legal //

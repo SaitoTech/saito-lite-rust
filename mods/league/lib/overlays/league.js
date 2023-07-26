@@ -112,7 +112,7 @@ class LeagueOverlay {
 
     if (document.getElementById("league-chat-button")) {
       document.getElementById("league-chat-button").onclick = async () => {
-        let player_keys = this.league.players.map((obj) => obj.publickey);
+        let player_keys = this.league.players.map((obj) => obj.publicKey);
         this.overlay.remove();
         let league_group = {
           name: this.league.name,
@@ -214,17 +214,17 @@ class LeagueOverlay {
     for (let player of this.league.players) {
       let datetime = this.app.browser.formatDate(player.timestamp);
       html += `<div class="saito-table-row">
-        <div>${this.app.browser.returnAddressHTML(player.publickey)}</div>
+        <div>${this.app.browser.returnAddressHTML(player.publicKey)}</div>
         <div class="player_score editable_field" data-id="${
-          player.publickey
+          player.publicKey
         }" contenteditable="true">${Math.round(player.score)}</div>
         <div>${Math.round(player.games_finished)}</div>
         <div>${Math.round(player.games_started)}</div>
         <div>${datetime.day} ${datetime.month} ${datetime.year}</div>
         <div class="email_field editable_field" data-id="${
-          player.publickey
+          player.publicKey
         }" contenteditable="true">${player.email}</div>
-        <div class="remove_player" data-id="${player.publickey}"><i class="fas fa-ban"></i></div>
+        <div class="remove_player" data-id="${player.publicKey}"><i class="fas fa-ban"></i></div>
       </div> `;
     }
 
@@ -241,7 +241,7 @@ class LeagueOverlay {
         this.app.network.propagateTransaction(newtx);
 
         for (let i = 0; i < this.league.players.length; i++) {
-          if (this.league.players[i].publickey === e.currentTarget.dataset.id) {
+          if (this.league.players[i].publicKey === e.currentTarget.dataset.id) {
             this.league.players[i].email = sanitize(player_contact.textContent);
           }
         }
@@ -283,7 +283,7 @@ class LeagueOverlay {
           this.app.network.propagateTransaction(newtx);
 
           for (let i = 0; i < this.league.players.length; i++) {
-            if (this.league.players[i].publickey === key) {
+            if (this.league.players[i].publicKey === key) {
               this.league.players[i].score = new_score;
             }
           }

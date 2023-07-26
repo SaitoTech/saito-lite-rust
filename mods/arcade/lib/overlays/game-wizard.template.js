@@ -1,12 +1,12 @@
 module.exports = GameWizardTemplate = async (game_mod, invite_obj = {}) => {
   let html = `<div class="arcade-wizard-overlay">`;
   let invite = null;
-  let publickey = null;
+  let publicKey = null;
   if (invite_obj.invite) {
     invite = invite_obj.invite;
   }
-  if (invite_obj.publickey) {
-    publickey = invite_obj.publickey;
+  if (invite_obj.publicKey) {
+    publicKey = invite_obj.publicKey;
   }
 
   let img = (await game_mod.respondTo("arcade-games")).image;
@@ -74,7 +74,7 @@ module.exports = GameWizardTemplate = async (game_mod, invite_obj = {}) => {
           <div class="saito-multi-select_btn saito-select">
            <div class="saito-multi-select_btn_options saito-slct">
       `;
-    if (publickey) {
+    if (publicKey) {
       html += `<button type="button" class="saito-multi-btn  game-invite-btn" data-type="direct">next...</button>`;
     } else {
       if (invite_obj.league) {

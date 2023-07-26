@@ -57,7 +57,7 @@ class Archive extends ModTemplate {
           id: { primaryKey: true, autoIncrement: true },
           tx_id: { dataType: "number" },
           user_id: { dataType: "number", default: 0 },
-          publickey: { dataType: "string", default: "" },
+          publicKey: { dataType: "string", default: "" },
           owner: { dataType: "string", default: "" },
           sig: { dataType: "string", default: "" },
           field1: { dataType: "string", default: "" },
@@ -174,7 +174,7 @@ class Archive extends ModTemplate {
     let newObj = {};
 
     newObj.user_id = obj?.user_id || 0; //What is this supposed to be
-    newObj.publickey = obj?.publickey || tx.from[0].publicKey;
+    newObj.publicKey = obj?.publicKey || tx.from[0].publicKey;
     newObj.owner = obj?.owner || "";
     newObj.signature = obj?.signature || tx.signature;
     //Field1-3 are set by default in app.storage
@@ -216,7 +216,7 @@ class Archive extends ModTemplate {
     sql = `INSERT
     OR IGNORE INTO archives (
       tx_id, 
-      publickey, 
+      publicKey, 
       owner, 
       sig, 
       field1, 
@@ -229,7 +229,7 @@ class Archive extends ModTemplate {
       preserve
     ) VALUES (
     $tx_id,
-    $publickey,
+    $publicKey,
     $owner,
     $sig,
     $field1,
@@ -243,7 +243,7 @@ class Archive extends ModTemplate {
     )`;
     params = {
       $tx_id: tx_id,
-      $publickey: newObj.publickey,
+      $publicKey: newObj.publicKey,
       $owner: newObj.owner,
       $sig: newObj.signature,
       $field1: newObj.field1,
@@ -300,7 +300,7 @@ class Archive extends ModTemplate {
     let newObj = {};
     newObj.tx_id = obj?.tx_id || 0;
     newObj.user_id = obj?.user_id || 0; //What is this supposed to be
-    newObj.publickey = obj?.publickey || "";
+    newObj.publicKey = obj?.publicKey || "";
     newObj.owner = obj?.owner || "";
     newObj.signature = obj?.signature || "";
     //Field1-3 are set by default in app.storage
@@ -487,16 +487,16 @@ class Archive extends ModTemplate {
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
       where_obj["owner"] = obj.owner;
     }
-    if (obj.publickey) {
+    if (obj.publicKey) {
       sql = `SELECT *
              FROM archives
                       JOIN txs
-             WHERE archives.publickey = $publickey
+             WHERE archives.publicKey = $publicKey
                AND txs.id = archives.tx_id ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
-      params = { $publickey: obj.publickey, $limit: limit };
+      params = { $publicKey: obj.publicKey, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
-      where_obj["publickey"] = obj.publickey;
+      where_obj["publicKey"] = obj.publicKey;
     }
     if (obj.signature) {
       sql = `SELECT *

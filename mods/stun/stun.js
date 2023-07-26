@@ -142,17 +142,17 @@ class Stun extends ModTemplate {
     }
   }
 
-  respondTo(type, obj) {
+  async respondTo(type, obj) {
     let stun_self = this;
 
     if (type === "invite") {
       this.attachStyleSheets();
-      super.render(this.app, this);
+      await super.render(this.app, this);
       return new StunxInvite(this.app, this);
     }
     if (type === "saito-header") {
       this.attachStyleSheets();
-      super.render(this.app, this);
+      await super.render(this.app, this);
 
       return [
         {
@@ -170,7 +170,7 @@ class Stun extends ModTemplate {
     //
     if (type == "game-menu") {
       this.attachStyleSheets();
-      super.render(this.app, this);
+      await super.render(this.app, this);
       if (obj?.game?.players?.length > 1) {
         return {
           id: "game-chat",
@@ -191,10 +191,10 @@ class Stun extends ModTemplate {
     }
 
     if (type === "user-menu") {
-      if (obj?.publickey) {
-        if (obj.publickey !== this.app.wallet.publickey) {
+      if (obj?.publicKey) {
+        if (obj.publicKey !== this.app.wallet.publicKey) {
           this.attachStyleSheets();
-          super.render(this.app, this);
+          await super.render(this.app, this);
           return [
             {
               text: "Video/Audio Call",
@@ -242,10 +242,10 @@ class Stun extends ModTemplate {
       try {
         //Let's not kill the server with bad data
         if (txmsg.request === "stun-create-room-transaction") {
-          this.receiveCreateRoomTransaction(app, tx);
+          await this.receiveCreateRoomTransaction(app, tx);
         }
         if (txmsg.request === "stun-send-message-to-server") {
-          this.receiveStunMessageToServerTransaction(app, tx, peer);
+          await this.receiveStunMessageToServerTransaction(app, tx, peer);
         }
       } catch (err) {
         console.error("Stun Error:", err);
@@ -259,10 +259,10 @@ class Stun extends ModTemplate {
       }
       if (txmsg.request === "stun-send-game-call-message") {
         console.log("HPT: stun-send-game-call-message");
-        this.receiveGameCallMessageToPeers(app, tx);
+        await this.receiveGameCallMessageToPeers(app, tx);
       }
     }
-    super.handlePeerTransaction(app, tx, peer, mycallback);
+    await super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   async sendCreateRoomTransaction() {
@@ -344,7 +344,7 @@ class Stun extends ModTemplate {
     };
 
     //And rebroadcasts to peers
-    this.sendStunMessageToPeersTransaction(data, recipients);
+    await this.sendStunMessageToPeersTransaction(data, recipients);
   }
 
   async sendStunMessageToPeersTransaction(_data, recipients) {

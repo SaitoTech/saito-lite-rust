@@ -41,13 +41,13 @@ export default class Wallet extends SaitoWallet {
   public saitoCrypto: any;
 
   public async createUnsignedTransactionWithDefaultFee(
-    publickey = "",
+    publicKey = "",
     amount = BigInt(0)
   ): Promise<Transaction> {
-    if (publickey == "") {
-      publickey = await this.getPublicKey();
+    if (publicKey == "") {
+      publicKey = await this.getPublicKey();
     }
-    return this.createUnsignedTransaction(publickey, amount, BigInt(0));
+    return this.createUnsignedTransaction(publicKey, amount, BigInt(0));
   }
 
   public async createUnsignedTransaction(

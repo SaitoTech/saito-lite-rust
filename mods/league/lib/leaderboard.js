@@ -66,13 +66,13 @@ class Leaderboard {
     for (let i = 0; i < this.league.players.length; i++) {
       let html = "";
       let player = this.league.players[i];
-      let publickey = player.publickey;
+      let publicKey = player.publicKey;
       html += `
         <div class="saito-table-row${
-          publickey == (await this.app.wallet.getPublicKey()) ? " my-leaderboard-position" : ""
+          publicKey == (await this.app.wallet.getPublicKey()) ? " my-leaderboard-position" : ""
         }">
           <div class="center-align">${i + 1}</div>
-          ${this.app.browser.returnAddressHTML(publickey)}
+          ${this.app.browser.returnAddressHTML(publicKey)}
           <div class="right-align">${Math.round(player.score)}</div>
           <div class="right-align">${Math.round(player.games_finished)}</div>
         </div>

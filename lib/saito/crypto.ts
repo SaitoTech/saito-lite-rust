@@ -252,13 +252,13 @@ export default class Crypto {
   }
 
   /**
- * Checks if a publickey passed into a function
- * fits the criteria for a publickey
- * @param {string} publickey
- * @returns {boolean} does publickey fit the criteria?
- */
-  isPublicKey(publickey: string) {
-    if (publickey.length == 65 || publickey.length == 66) {
+   * Checks if a publickey passed into a function
+   * fits the criteria for a publickey
+   * @param {string} publickey
+   * @returns {boolean} does publickey fit the criteria?
+   */
+  isPublicKey(publicKey: string) {
+    if (publicKey.length == 65 || publicKey.length == 66) {
       return 1;
       // if (publickey.indexOf("@") <= 0) {
       //   if (this.isBase58(publickey)) {
@@ -269,9 +269,7 @@ export default class Crypto {
     return 0;
   }
 
-
   isBase58(t: string) {
     return /^[A-HJ-NP-Za-km-z1-9]*$/.test(t);
   }
-
 }

@@ -110,7 +110,7 @@ class League extends ModTemplate {
         id: app.crypto.hash(modResponse.modname), // id
         game: modResponse.game, // game - name of game mod
         name: modResponse.name, // name - name of league
-        admin: "", // admin - publickey (if exists)
+        admin: "", // admin - publicKey (if exists)
         status: "public", // status - public or private
         description: modResponse.description, //
         ranking_algorithm: modResponse.ranking_algorithm, //
@@ -381,7 +381,7 @@ class League extends ModTemplate {
                 if (
                   p.games_finished == 0 &&
                   p.timestamp < cutoff &&
-                  p.publickey !== this.publicKey &&
+                  p.publicKey !== this.publicKey &&
                   !league.admin
                 ) {
                   continue;
@@ -392,7 +392,7 @@ class League extends ModTemplate {
                 //
                 rank++;
 
-                if (p.publickey == this.publicKey) {
+                if (p.publicKey == this.publicKey) {
                   if (p.games_finished > 0) {
                     league.rank = rank;
                   } else {
@@ -677,7 +677,7 @@ class League extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     let params = {
-      publickey: tx.from[0].publicKey,
+      publicKey: tx.from[0].publicKey,
       email: txmsg.email || "",
       ts: parseInt(tx.timestamp),
     };
@@ -746,7 +746,7 @@ class League extends ModTemplate {
     await this.app.storage.executeDatabase(sql, params, "league");
   }
 
-  async createUpdatePlayerTransaction(league_id, publickey, new_data, field = "email") {
+  async createUpdatePlayerTransaction(league_id, publicKey, new_data, field = "email") {
     let newtx = await this.app.wallet.createUnsignedTransaction();
 
     let slip = new Slip();
@@ -754,14 +754,14 @@ class League extends ModTemplate {
     newtx.addToSlip(slip);
 
     slip = new Slip();
-    slip.publicKey = publickey;
+    slip.publicKey = publicKey;
     newtx.addToSlip(slip);
 
     newtx.msg = {
       module: "League",
       request: "league update player",
       league_id,
-      publickey,
+      publicKey,
       new_data,
       field,
     };
@@ -773,7 +773,7 @@ class League extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     let league_id = txmsg.league_id;
-    let publickey = txmsg.publickey;
+    let publicKey = txmsg.publicKey;
     let new_data = txmsg.new_data;
     let field = txmsg.field;
 
@@ -788,7 +788,7 @@ class League extends ModTemplate {
     }
 
     //My data was updated...
-    if (this.publicKey === publickey) {
+    if (this.publicKey === publicKey) {
       setTimeout(() => {
         this.fetchLeagueLeaderboard(league_id, () => {
           if (field == "email" && new_data) {
@@ -803,11 +803,11 @@ class League extends ModTemplate {
     let sql = `UPDATE OR IGNORE players
                SET ${field} = $data
                WHERE league_id = $league_id
-                 AND publickey = $publickey`;
+                 AND publicKey = $publicKey`;
     let params = {
       $data: new_data,
       $league_id: league_id,
-      $publickey: publickey,
+      $publicKey: publicKey,
     };
 
     await this.app.storage.executeDatabase(sql, params, "league");
@@ -816,17 +816,17 @@ class League extends ModTemplate {
   ///////////////////
   // quit a league //
   ///////////////////
-  async createQuitTransaction(league_id, publickey = null) {
+  async createQuitTransaction(league_id, publicKey = null) {
     let newtx = await this.app.wallet.createUnsignedTransaction();
     newtx = this.addressToAll(newtx, league_id);
 
-    publickey = publickey || this.publicKey;
+    publicKey = publicKey || this.publicKey;
 
     newtx.msg = {
       module: "League",
       request: "league quit",
       league_id: league_id,
-      publickey,
+      publicKey,
     };
     await newtx.sign();
     return newtx;
@@ -838,13 +838,13 @@ class League extends ModTemplate {
     let sql = `UPDATE players
                SET deleted = 1
                WHERE league_id = $league
-                 AND publickey = $publickey`;
+                 AND publicKey = $publicKey`;
     let params = {
       $league: txmsg.league_id,
-      $publickey: txmsg.publickey,
+      $publicKey: txmsg.publicKey,
     };
 
-    //if (tx.from[0].publicKey !== txmsg.publickey){
+    //if (tx.from[0].publicKey !== txmsg.publicKey){
     //  let league = this.returnLeague(txmsg.league_id);
     //  if (!league?.admin || league.admin !== tx.from[0].publicKey {
     //    console.log("Ignore invalid removal request");
@@ -854,7 +854,7 @@ class League extends ModTemplate {
 
     await this.app.storage.executeDatabase(sql, params, "league");
 
-    await this.removeLeaguePlayer(txmsg.league_id, txmsg.publickey);
+    await this.removeLeaguePlayer(txmsg.league_id, txmsg.publicKey);
   }
 
   /////////////////////
@@ -894,7 +894,7 @@ class League extends ModTemplate {
 
     result = await this.app.storage.executeDatabase(sql2, params2, "league");
 
-    this.removeLeague(txmsg.league_id);
+    await this.removeLeague(txmsg.league_id);
   }
 
   ///////////////////////////
@@ -928,14 +928,14 @@ class League extends ModTemplate {
     //
     // fetch players
     //
-    let publickeys = txmsg.players.split("_");
+    let publicKeys = txmsg.players.split("_");
     if (Array.isArray(txmsg.winner) && txmsg.winner.length == 1) {
       txmsg.winner = txmsg.winner[0];
     }
 
     if (this.debug) {
       console.log(`League updating player scores for end of ${is_gameover ? "game" : "round"}`);
-      console.log(publickeys);
+      console.log(publicKeys);
     }
     //
     // fetch leagues
@@ -947,7 +947,7 @@ class League extends ModTemplate {
       return;
     }
 
-    //if (this.debug){console.log(relevantLeagues, publickeys);}
+    //if (this.debug){console.log(relevantLeagues, publicKeys);}
 
     //
     // update database
@@ -957,13 +957,13 @@ class League extends ModTemplate {
       // update rankings (ELO)
       //
       if (leag.ranking_algorithm === "ELO") {
-        await this.updateELORanking(publickeys, leag, txmsg);
+        await this.updateELORanking(publicKeys, leag, txmsg);
       }
       if (leag.ranking_algorithm === "EXP") {
-        await this.updateEXPRanking(publickeys, leag, txmsg);
+        await this.updateEXPRanking(publicKeys, leag, txmsg);
       }
       if (leag.ranking_algorithm === "HSC") {
-        await this.updateHighScore(publickeys, leag, txmsg);
+        await this.updateHighScore(publicKeys, leag, txmsg);
       }
 
       if (this.app.BROWSER) {
@@ -1007,27 +1007,27 @@ class League extends ModTemplate {
     //
     // who are the players ?
     //
-    let publickeys = [];
+    let publicKeys = [];
     for (let i = 0; i < tx.to.length; i++) {
-      if (!publickeys.includes(tx.to[i].publicKey)) {
-        publickeys.push(tx.to[i].publicKey);
+      if (!publicKeys.includes(tx.to[i].publicKey)) {
+        publicKeys.push(tx.to[i].publicKey);
       }
     }
 
-    //if (this.debug){console.log(relevantLeagues, publickeys);}
+    //if (this.debug){console.log(relevantLeagues, publicKeys);}
 
     //
     // and insert if needed
     //
     for (let leag of relevantLeagues) {
       console.log("Process League " + leag.id);
-      for (let publickey of publickeys) {
+      for (let publicKey of publicKeys) {
         //Make sure players are automatically added to the Saito-leaderboards
         if (!leag.admin) {
-          await this.addLeaguePlayer(leag.id, { publickey });
+          await this.addLeaguePlayer(leag.id, { publicKey });
         }
         //Update Player's game started count
-        await this.incrementPlayer(publickey, leag.id, "games_started");
+        await this.incrementPlayer(publicKey, leag.id, "games_started");
       }
     }
   }
@@ -1061,7 +1061,7 @@ class League extends ModTemplate {
     let sql2 = `SELECT *
                 FROM players
                 WHERE league_id = ?
-                  AND publickey IN (`;
+                  AND publicKey IN (`;
     for (let pk of players) {
       sql2 += `'${pk}', `;
     }
@@ -1074,7 +1074,7 @@ class League extends ModTemplate {
     let localStats = null;
 
     if (league?.players) {
-      localStats = league.players.filter((p) => players.includes(p.publickey));
+      localStats = league.players.filter((p) => players.includes(p.publicKey));
     }
 
     //console.log("SQL:", sqlResults);
@@ -1088,8 +1088,8 @@ class League extends ModTemplate {
   /////////////////////
   // update rankings //
   /////////////////////
-  async updateEXPRanking(publickeys, league, txmsg) {
-    let players = [...publickeys]; //Need to refresh this each loop (since we splice below)
+  async updateEXPRanking(publicKeys, league, txmsg) {
+    let players = [...publicKeys]; //Need to refresh this each loop (since we splice below)
 
     //
     // winning += 5 points
@@ -1150,12 +1150,12 @@ class League extends ModTemplate {
         player.k = 40;
       }
 
-      await this.incrementPlayer(player.publickey, league.id, "games_finished");
+      await this.incrementPlayer(player.publicKey, league.id, "games_finished");
 
       //
       //Sort into winners and losers
       //
-      if (player.publickey == txmsg.winner || txmsg.winner.includes(player.publickey)) {
+      if (player.publicKey == txmsg.winner || txmsg.winner.includes(player.publicKey)) {
         winner.push(player);
       } else {
         loser.push(player);
@@ -1164,7 +1164,7 @@ class League extends ModTemplate {
 
     for (let p of winner) {
       let outcome = winner.length == 1 ? "games_won" : "games_tied";
-      await this.incrementPlayer(p.publickey, league.id, outcome);
+      await this.incrementPlayer(p.publicKey, league.id, outcome);
 
       p.score += p.k * (1 / winner.length - p.q / qsum);
       await this.updatePlayerScore(p, league.id);
@@ -1194,12 +1194,12 @@ class League extends ModTemplate {
       let newScore = parseInt(txmsg.reason);
 
       player.score = Math.max(player.score, newScore);
-      await this.incrementPlayer(player.publickey, league.id, "games_finished");
+      await this.incrementPlayer(player.publicKey, league.id, "games_finished");
       await this.updatePlayerScore(player, league.id);
     }
   }
 
-  async incrementPlayer(publickey, league_id, field, amount = 1) {
+  async incrementPlayer(publicKey, league_id, field, amount = 1) {
     if (this.app.BROWSER) {
       return 1;
     }
@@ -1224,7 +1224,7 @@ class League extends ModTemplate {
     let league = this.returnLeague(league_id);
     if (league?.players) {
       for (let i = 0; i < league.players.length; i++) {
-        if (league.players[i].publickey === publickey) {
+        if (league.players[i].publicKey === publicKey) {
           league.players[i][field]++;
           if (this.debug) {
             console.log(`Incremented ${field}: in ${league.id}`);
@@ -1241,11 +1241,11 @@ class League extends ModTemplate {
 
     let sql = `UPDATE OR IGNORE players
                SET ${field} = (${field} + ${amount}), ts = $ts
-               WHERE publickey = $publickey
+               WHERE publicKey = $publicKey
                  AND league_id = $league_id`;
     let params = {
       $ts: new Date().getTime(),
-      $publickey: publickey,
+      $publicKey: publicKey,
       $league_id: league_id,
     };
 
@@ -1261,7 +1261,7 @@ class League extends ModTemplate {
     let league = this.returnLeague(playerObj.league_id);
     if (league?.players) {
       for (let i = 0; i < league.players.length; i++) {
-        if (league.players[i].publickey === playerObj.publickey) {
+        if (league.players[i].publicKey === playerObj.publicKey) {
           league.players[i]["score"] = playerObj.score;
           if (this.debug) {
             console.log("New Score: " + playerObj.score);
@@ -1274,12 +1274,12 @@ class League extends ModTemplate {
     let sql = `UPDATE players
                SET score = $score,
                    ts    = $ts
-               WHERE publickey = $publickey
+               WHERE publicKey = $publicKey
                  AND league_id = $league_id`;
     let params = {
       $score: playerObj.score,
       $ts: new Date().getTime(),
-      $publickey: playerObj.publickey,
+      $publicKey: playerObj.publicKey,
       $league_id: league_id,
     };
 
@@ -1395,7 +1395,7 @@ class League extends ModTemplate {
   validatePlayer(obj) {
     let newObj = {};
 
-    newObj.publickey = obj.publickey || "";
+    newObj.publicKey = obj.publicKey || "";
     newObj.score = obj.score || 0;
     newObj.games_started = obj.games_started || 0;
     newObj.games_finished = obj.games_finished || 0;
@@ -1423,7 +1423,7 @@ class League extends ModTemplate {
     //Make sure it is a number!
     newPlayer.score = parseInt(newPlayer.score);
 
-    if (newPlayer.publickey === this.publicKey) {
+    if (newPlayer.publicKey === this.publicKey) {
       console.log("Adding myself to league");
       if (league.rank <= 0 || !league?.rank) {
         league.rank = 0;
@@ -1437,7 +1437,7 @@ class League extends ModTemplate {
 
     //If we have the player already, just update the stats
     for (let z = 0; z < league.players.length; z++) {
-      if (league.players[z].publickey === newPlayer.publickey) {
+      if (league.players[z].publicKey === newPlayer.publicKey) {
         league.players[z].score = newPlayer.score || league.players[z].score;
         league.players[z].games_started =
           newPlayer.games_started || league.players[z].games_started;
@@ -1457,16 +1457,16 @@ class League extends ModTemplate {
     }
   }
 
-  async removeLeaguePlayer(league_id, publickey) {
-    if (publickey == this.publicKey) {
-      this.removeLeague(league_id);
+  async removeLeaguePlayer(league_id, publicKey) {
+    if (publicKey == this.publicKey) {
+      await this.removeLeague(league_id);
       return;
     }
 
     let league = this.returnLeague(league_id);
 
     for (let i = 0; i < league.players.length; i++) {
-      if (league.players[i].publickey === publickey) {
+      if (league.players[i].publicKey === publicKey) {
         league.players.splice(i, 1);
 
         //Force a new ranking calculation on next leaderboard load
@@ -1498,7 +1498,7 @@ class League extends ModTemplate {
     //We do this here to avoid a SQL union statement
     let cond = league.admin
       ? ``
-      : ` AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.publicKey}')`;
+      : ` AND (ts > ${cutoff} OR games_finished > 0 OR publicKey = '${this.publicKey}')`;
 
     this.sendPeerDatabaseRequestWithFilter(
       "League",
@@ -1515,7 +1515,7 @@ class League extends ModTemplate {
             //
             rank++;
 
-            if (p.publickey == this.publicKey) {
+            if (p.publicKey == this.publicKey) {
               if (p.games_finished > 0) {
                 league.rank = rank;
               } else {
@@ -1595,16 +1595,16 @@ class League extends ModTemplate {
 
   async playerInsert(league_id, obj) {
     let sql = `INSERT
-    OR IGNORE INTO players (league_id, publickey, score, ts) 
+    OR IGNORE INTO players (league_id, publicKey, score, ts) 
                                 VALUES (
     $league_id,
-    $publickey,
+    $publicKey,
     $score,
     $ts
     )`;
     let params = {
       $league_id: league_id,
-      $publickey: obj.publickey,
+      $publicKey: obj.publicKey,
       $score: obj.score,
       $ts: new Date().getTime(),
     };
