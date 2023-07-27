@@ -659,7 +659,7 @@ class RedSquare extends ModTemplate {
         }
       },
       (p) => {
-        if (p == peer) {
+        if (p.publicKey == peer.publicKey) {
           return 1;
         }
         return 0;
@@ -1286,6 +1286,7 @@ class RedSquare extends ModTemplate {
     }
 
     localforage.getItem(`tweet_history`, (error, value) => {
+      console.log(value);
       if (value && value.length > 0) {
         for (let tx of value) {
           let newtx = new Transaction(undefined, JSON.parse(tx));
@@ -1323,6 +1324,8 @@ class RedSquare extends ModTemplate {
         } catch (err) {
           console.log("error in initial redsquare post fetch: " + err);
         }
+
+        this.saveLocalTweets();
       }
       if (this.browser_active && this.rendered) {
         this.app.connection.emit("redsquare-home-render-request", false);
