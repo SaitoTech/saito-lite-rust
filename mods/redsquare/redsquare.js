@@ -1311,10 +1311,18 @@ class RedSquare extends ModTemplate {
         try {
           //Prefer our locally cached tweets to the webServer ones
           if (this.tweets) {
-            console.log("Using Server Cached Tweets : ", this.tweets);
-            for (let z = 0; z < this.tweets.length; z++) {
-              let newtx = new Transaction(undefined, JSON.parse(this.tweets[z]));
-              this.addTweet(newtx);
+            if (this.tweets.length == 0) {
+              console.log("Using Server Cached Tweets : ", window.tweets);
+              for (let z = 0; z < window.tweets.length; z++) {
+                let newtx = new Transaction(undefined, JSON.parse(window.tweets[z]));
+                this.addTweet(newtx);
+              }
+            } else {
+              console.log("Using Server Cached Tweets : ", this.tweets);
+              for (let z = 0; z < this.tweets.length; z++) {
+                let newtx = new Transaction(undefined, JSON.parse(this.tweets[z]));
+                this.addTweet(newtx);
+              }
             }
           }
         } catch (err) {
