@@ -128,7 +128,8 @@ class Encrypt extends ModTemplate {
       let alice_publicKey = Buffer.from(senderkeydata.aes_publicKey, "hex");
       let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
       let alice = app.crypto.createDiffieHellman(alice_publicKey, alice_privatekey);
-      let alice_secret = app.crypto.createDiffieHellmanSecret(alice, bob_publicKey);
+      let alice_secret = alice.computeSecret(bob_publicKey);
+      //app.crypto.createDiffieHellmanSecret(alice, bob_publicKey);
 
       app.keychain.updateCryptoByPublicKey(
         sender,
@@ -213,7 +214,8 @@ class Encrypt extends ModTemplate {
     try {
       tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
         recipient,
-        parties_to_exchange * this.app.wallet.default_fee
+        BigInt(0)
+        //BigInt(parties_to_exchange * this.app.wallet.default_fee)
       );
     } catch (err) {
       console.log("error: " + err);
@@ -270,12 +272,10 @@ class Encrypt extends ModTemplate {
     let bob = this.app.crypto.createDiffieHellman();
     let bob_publicKey = bob.getPublicKey(null, "compressed").toString("hex");
     let bob_privatekey = bob.getPrivateKey(null, "compressed").toString("hex");
-    let bob_secret = this.app.crypto.createDiffieHellmanSecret(
-      bob,
-      Buffer.from(alice_publicKey, "hex")
-    );
+    let bob_secret = bob.computeSecret(Buffer.from(alice_publicKey, "hex"));
+    //this.app.crypto.createDiffieHellmanSecret(bob, Buffer.from(alice_publicKey, "hex"));
 
-    var newtx = await this.app.wallet.createUnsignedTransaction(remote_address, BigInt(0), fee);
+    var newtx = await this.app.wallet.createUnsignedTransaction(remote_address, BigInt(0), BigInt(fee));
     if (newtx == null) {
       return;
     }
@@ -349,7 +349,9 @@ class Encrypt extends ModTemplate {
           let alice_publicKey = Buffer.from(senderkeydata.aes_publicKey, "hex");
           let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
           let alice = this.app.crypto.createDiffieHellman(alice_publicKey, alice_privatekey);
-          let alice_secret = this.app.crypto.createDiffieHellmanSecret(alice, bob_publicKey);
+          let alice_secret = alice.computeSecret(bob_publicKey);
+          //this.app.crypto.createDiffieHellmanSecret(alice, bob_publicKey);
+
           this.app.keychain.updateCryptoByPublicKey(
             sender,
             alice_publicKey.toString("hex"),

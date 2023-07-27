@@ -236,9 +236,10 @@ export default class Wallet extends SaitoWallet {
             this.app.options.wallet.version = this.version;
             this.app.options.wallet.default_fee = this.default_fee;
 
-            // reset games
+            // reset games and restore game settings
             this.app.options.games = [];
-
+            this.app.options.gameprefs = gameprefs;
+            
             // delete inputs and outputs
             // this.app.options.wallet.inputs = [];
             // this.app.options.wallet.outputs = [];
