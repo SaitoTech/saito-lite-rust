@@ -172,18 +172,11 @@ class Registry extends ModTemplate {
       },
 
       (p) => {
-        if (peer == null) {
-          if (peer.peer.services) {
-            for (let z = 0; z < peer.peer.services.length; z++) {
-              if (peer.peer.services[z].service === "registry") {
-                return 1;
-              }
-            }
-          }
-        } else {
-          if (p == peer) {
-            return 1;
-          }
+
+        // To Do: add a peer.service check for registry (to check multiple registries?)
+
+        if (p.publicKey == peer.publicKey) {
+          return 1;
         }
       }
     );
@@ -253,18 +246,8 @@ class Registry extends ModTemplate {
       },
 
       (p) => {
-        if (peer == null) {
-          if (peer.peer.services) {
-            for (let z = 0; z < peer.peer.services.length; z++) {
-              if (peer.peer.services[z].service === "registry") {
-                return 1;
-              }
-            }
-          }
-        } else {
-          if (p == peer) {
-            return 1;
-          }
+        if (p.publicKey == peer.publicKey) {
+          return 1;
         }
       }
     );
@@ -308,18 +291,8 @@ class Registry extends ModTemplate {
       },
 
       (p) => {
-        if (peer == null) {
-          if (peer.peer.services) {
-            for (let z = 0; z < peer.peer.services.length; z++) {
-              if (peer.peer.services[z].service === "registry") {
-                return 1;
-              }
-            }
-          }
-        } else {
-          if (p == peer) {
-            return 1;
-          }
+        if (p == peer) {
+          return 1;
         }
       }
     );

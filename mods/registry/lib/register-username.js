@@ -56,6 +56,9 @@ class RegisterUsername {
    
         this.loader.render();
 
+        //
+        // No filter, check all possible registries
+        //
         this.mod.sendPeerDatabaseRequestWithFilter(
 
           "Registry",

@@ -330,7 +330,7 @@ class League extends ModTemplate {
           }
         },
         (p) => {
-          if (p == peer) {
+          if (p.publicKey == peer.publicKey) {
             return 1;
           }
           return 0;
