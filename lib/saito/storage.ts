@@ -90,7 +90,8 @@ class Storage {
       return;
     }
     if (peer != null) {
-      peer.sendRequestAsTransaction(message, data, function (res) {});
+      //peer.sendRequestAsTransaction(message, data, function (res) {});
+      this.app.network.sendRequestAsTransaction(message, data, function (res) {}, peer.peerIndex);
       this.app.connection.emit("saito-save-transaction", tx);
       return;
     } else {
@@ -116,7 +117,8 @@ class Storage {
       return;
     }
     if (peer != null) {
-      peer.sendRequestAsTransaction(message, data, function (res) {});
+      //peer.sendRequestAsTransaction(message, data, function (res) {}, peer.peerIndex);
+      this.app.network.sendRequestAsTransaction(message, data, function (res) {});
       return;
     } else {
       this.app.network.sendRequestAsTransaction(message, data, function (res) {});
@@ -158,9 +160,10 @@ class Storage {
     }
 
     if (peer != null) {
-      peer.sendRequestAsTransaction(message, data, function (res) {
-        internal_callback(res);
-      });
+      //peer.sendRequestAsTransaction(message, data, function (res) {
+      this.app.network.sendRequestAsTransaction(message, data, function (res) {
+          internal_callback(res);
+      }, peer.peerIndex);
       return;
     } else {
       this.app.network.sendRequestAsTransaction(message, data, function (res) {
