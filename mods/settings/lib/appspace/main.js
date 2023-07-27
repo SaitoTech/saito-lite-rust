@@ -12,14 +12,13 @@ class SettingsAppspace {
 
     this.overlay = new SaitoOverlay(app, mod);
 
-    this.app.connection.on("settings-overlay-render-request", () => {
+    this.app.connection.on("settings-overlay-render-request", async () => {
       this.mod.attachStyleSheets();
-      this.render();
+      await this.render();
     });
   }
 
   async render() {
-
     this.privateKey = await this.app.wallet.getPrivateKey();
     this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod, this));
 
@@ -134,7 +133,7 @@ class SettingsAppspace {
         if (confirmation) {
           app.options.keys = [];
           app.options.groups = [];
-          app.wallet.resetWallet();
+          await app.wallet.resetWallet();
         }
       };
 
@@ -178,29 +177,34 @@ class SettingsAppspace {
       );
 
       document.getElementById("restore-privatekey-btn").onclick = async (e) => {
-        await app.storage.resetOptions();
-
         let privatekey = "";
         let publicKey = "";
 
         try {
           privatekey = await sprompt("Enter Private Key:");
           if (privatekey != "") {
-            publicKey = (app.crypto.generatePublicKey(privatekey));
+            let version = app.wallet.version;
+            // await app.storage.resetOptions();
+
+            publicKey = app.crypto.generatePublicKey(privatekey);
+            console.log("111 : " + (await app.wallet.getPublicKey()));
 
             console.log("publickey ///");
-            console.log(publicKey); 
+            console.log(publicKey);
 
-            app.wallet.privatekey = privatekey;
-            app.wallet.publicKey = publicKey;
+            await app.wallet.setPublicKey(publicKey);
+            await app.wallet.setPrivateKey(privatekey);
+            app.wallet.version = version;
             app.wallet.inputs = [];
             app.wallet.outputs = [];
             app.wallet.spends = [];
             app.wallet.pending = [];
 
-            await app.blockchain.resetBlockchain();
+            // await app.blockchain.resetBlockchain();
             await app.wallet.saveWallet();
-            window.location = window.location;
+
+            console.log("222 : " + (await app.wallet.getPublicKey()));
+            // window.location.reload();
           }
         } catch (e) {
           salert("Restore Private Key ERROR: " + e);

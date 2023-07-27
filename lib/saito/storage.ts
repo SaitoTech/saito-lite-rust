@@ -19,21 +19,22 @@ class Storage {
   }
 
   async loadOptions() {
-    if (typeof Storage !== "undefined") {
-      const data = localStorage.getItem("options");
-      if (data != "null" && data != null) {
-        this.app.options = JSON.parse(data);
-      } else {
-        try {
-          const response = await fetch(`/options`);
-          this.app.options = await response.json();
-          this.saveOptions();
-        } catch (err) {
-          console.error(err);
-        }
+    // if (typeof Storage !== "undefined") {
+    const data = localStorage.getItem("options");
+    if (data != "null" && data != null) {
+      this.app.options = JSON.parse(data);
+    } else {
+      try {
+        const response = await fetch(`/options`);
+        this.app.options = await response.json();
+        this.saveOptions();
+      } catch (err) {
+        console.error(err);
       }
     }
+    // }
   }
+
   returnClientOptions(): string {
     throw new Error("Method not implemented.");
   }
@@ -161,9 +162,14 @@ class Storage {
 
     if (peer != null) {
       //peer.sendRequestAsTransaction(message, data, function (res) {
-      this.app.network.sendRequestAsTransaction(message, data, function (res) {
+      this.app.network.sendRequestAsTransaction(
+        message,
+        data,
+        function (res) {
           internal_callback(res);
-      }, peer.peerIndex);
+        },
+        peer.peerIndex
+      );
       return;
     } else {
       this.app.network.sendRequestAsTransaction(message, data, function (res) {
@@ -200,10 +206,11 @@ class Storage {
         return;
       }
     }
+    console.log("saving options...", this.app.options);
     try {
-      if (typeof Storage !== "undefined") {
-        localStorage.setItem("options", JSON.stringify(this.app.options));
-      }
+      // if (typeof Storage !== "undefined") {
+      localStorage.setItem("options", JSON.stringify(this.app.options));
+      // }
     } catch (err) {
       console.error(err);
     }
@@ -216,9 +223,9 @@ class Storage {
       }
     }
     try {
-      if (typeof Storage !== "undefined") {
-        return localStorage.getItem("options");
-      }
+      // if (typeof Storage !== "undefined") {
+      return localStorage.getItem("options");
+      // }
     } catch (err) {
       console.error(err);
     }

@@ -631,8 +631,6 @@ class RedSquare extends ModTemplate {
       sql,
       async (res) => {
         if (res.rows) {
-          console.log("111 : ", res.rows);
-
           res.rows.forEach((row) => {
             let tx = new Transaction(undefined, JSON.parse(row.tx));
 
@@ -966,8 +964,6 @@ class RedSquare extends ModTemplate {
           //
 
           if (txmsg.data?.retweet_tx) {
-            console.log("222 : ", txmsg.data.retweet_tx);
-
             let rtx = new Transaction(undefined, JSON.parse(txmsg.data.retweet_tx));
 
             if (this.tweets_sigs_hmap[rtx.signature]) {
@@ -1291,7 +1287,6 @@ class RedSquare extends ModTemplate {
 
     localforage.getItem(`tweet_history`, (error, value) => {
       if (value && value.length > 0) {
-        console.log("333 : ", value);
         for (let tx of value) {
           let newtx = new Transaction(undefined, JSON.parse(tx));
           this.addTweet(newtx);
@@ -1478,7 +1473,6 @@ class RedSquare extends ModTemplate {
 
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
-    console.log("555 : ", rows);
 
     for (let i = 0; i < rows.length; i++) {
       if (!rows[i].tx) {
@@ -1552,8 +1546,6 @@ class RedSquare extends ModTemplate {
                        ORDER BY created_at DESC`;
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
 
-            console.log("666 : ", rows);
-
             for (let i = 0; i < rows.length; i++) {
               let tx = new Transaction(undefined, JSON.parse(rows[i].tx));
 
@@ -1595,7 +1587,6 @@ class RedSquare extends ModTemplate {
 
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
             console.info(rows.length);
-            console.log("777 : ", rows);
 
             for (let i = 0; i < rows.length; i++) {
               let tx = new Transaction(undefined, JSON.parse(rows[i].tx));

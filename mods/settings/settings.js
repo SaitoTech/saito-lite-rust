@@ -30,8 +30,8 @@ class Settings extends ModTemplate {
     return this;
   }
 
-  initialize(app) {
-    super.initialize(app);
+  async initialize(app) {
+    await super.initialize(app);
 
     //
     // If you have the settings page open and you trigger a name registration event
@@ -118,11 +118,11 @@ class Settings extends ModTemplate {
               .clear()
               .then(function () {
                 console.log("DB Reset Success");
-                app.wallet.resetWallet();
+                return app.wallet.resetWallet();
               })
               .catch(function (err) {
                 console.error(err);
-                app.wallet.resetWallet();
+                return app.wallet.resetWallet();
               });
           },
         },
@@ -131,6 +131,5 @@ class Settings extends ModTemplate {
     return null;
   }
 }
-
 
 module.exports = Settings;
