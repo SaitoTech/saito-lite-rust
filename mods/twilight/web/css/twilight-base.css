@@ -169,6 +169,118 @@ table caption {
   background-image: url("/twilight/img/Formosan.png");
   background-size: cover;
 }
+.kissinger_colombia {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_guatemala {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_elsalvador {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_nicaragua {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_haiti {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_dominicanrepublic {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_saharanstates {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_sudan {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_ethiopia {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_cameroon {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_seafricanstates {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_zimbabwe {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_lebanon {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_laos {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_vietnam {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
+.kissinger_indonesia {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("/twilight/img/Formosan.png");
+  background-size: cover;
+}
 
 .removecards li {
   float: left;

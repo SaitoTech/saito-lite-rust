@@ -101,7 +101,7 @@ module.exports = () => {
               <li><input class="remove_card" type="checkbox" name="quagmire" /> <span> Quagmire</span></li>
               <li><input class="remove_card" type="checkbox" name="saltnegotiations" /> <span> Salt Negotiations</span></li>
               <li><input class="remove_card" type="checkbox" name="beartrap" /> <span> Bear Trap</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="summit" /> <span> Summit</span></li>
+              <li><input class="remove_card" type="checkbox" name="summit" /> <span> Summit</span></li>
               <li><input class="remove_card" type="checkbox" name="howilearned" /> <span> How I Learned to Stop Worrying</span></li>
               <li><input class="remove_card" type="checkbox" name="junta" /> <span> Junta</span></li>
               <li><input class="remove_card" type="checkbox" name="kitchendebates" /> <span> Kitchen Debates</span></li>
@@ -178,10 +178,16 @@ module.exports = () => {
               <li><input class="remove_card saito_edition" type="checkbox" name="nixonshock" /> <span> Nixon Shock (Mid-War)</span></li>
               <li><input class="remove_card saito_edition" type="checkbox" name="kissinger" /> <span> Kissinger Bombs Cambodia (Mid-War)</span></li>
               <li><input class="remove_card saito_edition" type="checkbox" name="handshake" /> <span> Handshake in Space (Mid-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="bayofpigs" /> <span> Bay of Pigs (Mid-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="fallofsaigon" /> <span> Fall of Saigon (Mid-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="fischerspassky" /> <span> Fischer-Spassky (Mid-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="sudan" /> <span> Sudanese Civil War (Mid-War)</span></li>
               <li><input class="remove_card saito_edition" type="checkbox" name="revolutionsof1989" /> <span> Revolutions of 1989 (Late-War)</span></li>
               <li><input class="remove_card saito_edition" type="checkbox" name="samotlor" /> <span> Samotlor Oil Fields (Late-War)</span></li>
               <li><input class="remove_card saito_edition" type="checkbox" name="antiapartheid" /> <span> Anti-Apartheid Movement (Late-War)</span></li>
               <li><input class="remove_card saito_edition" type="checkbox" name="rustinredsquare" /> <span> Rust Lands in Red Square (Late-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="august1968" /> <span> August Protests (Late-War)</span></li>
+              <li><input class="remove_card saito_edition" type="checkbox" name="argo" /> <span> Argo (Late-War)</span></li>
               <li><input class="remove_card" type="checkbox" name="culturaldiplomacy" /> <span> Cultural Diplomacy (Early-War)</span></li>
               <li><input class="remove_card" type="checkbox" name="gouzenkoaffair" /> <span> Gouzenko Affair (Early-War)</span></li>
               <li><input class="remove_card" type="checkbox" name="poliovaccine" /> <span> Polio Vaccine (Early-War)</span></li>

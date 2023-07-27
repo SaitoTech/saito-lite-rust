@@ -4,6 +4,8 @@
     /////////////////
     if (card == "cia") {
 
+      this.game.state.events.cia = 1;
+
       //
       // SAITO COMMUNITY - lone gunman added
       //

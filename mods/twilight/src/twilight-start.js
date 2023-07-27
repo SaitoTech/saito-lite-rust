@@ -48,7 +48,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     //
     // ui components
@@ -527,6 +527,12 @@ initializeGame(game_id) {
       this.game.options.samotlor = 1;
       this.game.options.tsarbomba = 1;
       this.game.options.unitedfruit = 1;
+      this.game.options.august1968 = 1;
+      this.game.options.argo = 1;
+      this.game.options.sudan = 1;
+      this.game.options.bayofpigs = 1;
+      this.game.options.fallofsaigon = 1;
+      this.game.options.fischerspassky = 1;
 
       this.placeInfluence("mexico", 2, "us");
       this.placeInfluence("cuba", 3, "ussr");
@@ -782,11 +788,90 @@ try {
   $('.us').css('height', this.scale(100)+"px");
   $('.ussr').css('height', this.scale(100)+"px");
 
-  //
   $('.formosan_resolution').css('width', this.scale(202)+"px");
   $('.formosan_resolution').css('height', this.scale(132)+"px");
   $('.formosan_resolution').css('top', this.scale(this.countries['taiwan'].top-32)+"px");
   $('.formosan_resolution').css('left', this.scale(this.countries['taiwan'].left)+"px");
+
+  $('.kissinger_colombia').css('width', this.scale(202)+"px");
+  $('.kissinger_colombia').css('height', this.scale(132)+"px");
+  $('.kissinger_colombia').css('top', this.scale(this.countries['colombia'].top-32)+"px");
+  $('.kissinger_colombia').css('left', this.scale(this.countries['colombia'].left)+"px");
+
+  $('.kissinger_guatemala').css('width', this.scale(202)+"px");
+  $('.kissinger_guatemala').css('height', this.scale(132)+"px");
+  $('.kissinger_guatemala').css('top', this.scale(this.countries['guatemala'].top-32)+"px");
+  $('.kissinger_guatemala').css('left', this.scale(this.countries['guatemala'].left)+"px");
+
+  $('.kissinger_elsalvador').css('width', this.scale(202)+"px");
+  $('.kissinger_elsalvador').css('height', this.scale(132)+"px");
+  $('.kissinger_elsalvador').css('top', this.scale(this.countries['elsalvador'].top-32)+"px");
+  $('.kissinger_elsalvador').css('left', this.scale(this.countries['elsalvador'].left)+"px");
+
+  $('.kissinger_nicaragua').css('width', this.scale(202)+"px");
+  $('.kissinger_nicaragua').css('height', this.scale(132)+"px");
+  $('.kissinger_nicaragua').css('top', this.scale(this.countries['nicaragua'].top-32)+"px");
+  $('.kissinger_nicaragua').css('left', this.scale(this.countries['nicaragua'].left)+"px");
+
+  $('.kissinger_haiti').css('width', this.scale(202)+"px");
+  $('.kissinger_haiti').css('height', this.scale(132)+"px");
+  $('.kissinger_haiti').css('top', this.scale(this.countries['haiti'].top-32)+"px");
+  $('.kissinger_haiti').css('left', this.scale(this.countries['haiti'].left)+"px");
+
+  $('.kissinger_dominicanrepublic').css('width', this.scale(202)+"px");
+  $('.kissinger_dominicanrepublic').css('height', this.scale(132)+"px");
+  $('.kissinger_dominicanrepublic').css('top', this.scale(this.countries['dominicanrepublic'].top-32)+"px");
+  $('.kissinger_dominicanrepublic').css('left', this.scale(this.countries['dominicanrepublic'].left)+"px");
+
+  $('.kissinger_saharanstates').css('width', this.scale(202)+"px");
+  $('.kissinger_saharanstates').css('height', this.scale(132)+"px");
+  $('.kissinger_saharanstates').css('top', this.scale(this.countries['saharanstates'].top-32)+"px");
+  $('.kissinger_saharanstates').css('left', this.scale(this.countries['saharanstates'].left)+"px");
+
+  $('.kissinger_sudan').css('width', this.scale(202)+"px");
+  $('.kissinger_sudan').css('height', this.scale(132)+"px");
+  $('.kissinger_sudan').css('top', this.scale(this.countries['sudan'].top-32)+"px");
+  $('.kissinger_sudan').css('left', this.scale(this.countries['sudan'].left)+"px");
+
+  $('.kissinger_ethiopia').css('width', this.scale(202)+"px");
+  $('.kissinger_ethiopia').css('height', this.scale(132)+"px");
+  $('.kissinger_ethiopia').css('top', this.scale(this.countries['ethiopia'].top-32)+"px");
+  $('.kissinger_ethiopia').css('left', this.scale(this.countries['ethiopia'].left)+"px");
+
+  $('.kissinger_cameroon').css('width', this.scale(202)+"px");
+  $('.kissinger_cameroon').css('height', this.scale(132)+"px");
+  $('.kissinger_cameroon').css('top', this.scale(this.countries['cameroon'].top-32)+"px");
+  $('.kissinger_cameroon').css('left', this.scale(this.countries['cameroon'].left)+"px");
+
+  $('.kissinger_seafricanstates').css('width', this.scale(202)+"px");
+  $('.kissinger_seafricanstates').css('height', this.scale(132)+"px");
+  $('.kissinger_seafricanstates').css('top', this.scale(this.countries['seafricanstates'].top-32)+"px");
+  $('.kissinger_seafricanstates').css('left', this.scale(this.countries['seafricanstates'].left)+"px");
+
+  $('.kissinger_zimbabwe').css('width', this.scale(202)+"px");
+  $('.kissinger_zimbabwe').css('height', this.scale(132)+"px");
+  $('.kissinger_zimbabwe').css('top', this.scale(this.countries['zimbabwe'].top-32)+"px");
+  $('.kissinger_zimbabwe').css('left', this.scale(this.countries['zimbabwe'].left)+"px");
+
+  $('.kissinger_lebanon').css('width', this.scale(202)+"px");
+  $('.kissinger_lebanon').css('height', this.scale(132)+"px");
+  $('.kissinger_lebanon').css('top', this.scale(this.countries['lebanon'].top-32)+"px");
+  $('.kissinger_lebanon').css('left', this.scale(this.countries['lebanon'].left)+"px");
+
+  $('.kissinger_laos').css('width', this.scale(202)+"px");
+  $('.kissinger_laos').css('height', this.scale(132)+"px");
+  $('.kissinger_laos').css('top', this.scale(this.countries['laos'].top-32)+"px");
+  $('.kissinger_laos').css('left', this.scale(this.countries['laos'].left)+"px");
+
+  $('.kissinger_vietnam').css('width', this.scale(202)+"px");
+  $('.kissinger_vietnam').css('height', this.scale(132)+"px");
+  $('.kissinger_vietnam').css('top', this.scale(this.countries['vietnam'].top-32)+"px");
+  $('.kissinger_vietnam').css('left', this.scale(this.countries['vietnam'].left)+"px");
+
+  $('.kissinger_indonesia').css('width', this.scale(202)+"px");
+  $('.kissinger_indonesia').css('height', this.scale(132)+"px");
+  $('.kissinger_indonesia').css('top', this.scale(this.countries['indonesia'].top-32)+"px");
+  $('.kissinger_indonesia').css('left', this.scale(this.countries['indonesia'].left)+"px");
 
   //
   // update defcon and milops and stuff
@@ -2982,7 +3067,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 
 
       //
-      // DEAL MISSING CARDS
+      // ADD CARDS + DYNAMIC
       //
       if (this.game.state.round > 1) {
 
@@ -2998,7 +3083,9 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 
 	if (this.game.state.round == 3) {
           if (this.game.options.deck === "saito") {
-	    this.addCardToDeck('tsarbomba', "New Card");
+            if (this.game.state.events.cia != 1) {
+	      this.addCardToDeck('tsarbomba', "New Card");
+	    }
 	  }
 	}
 
@@ -3041,25 +3128,23 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 
 	if (this.game.state.round == 5) {
           if (this.game.options.deck === "saito") {
-	    if (this.game.state.events.fidel == 1 && this.game.state.events.bayofpigs != 1) {
+	    if (this.game.state.events.fidel == 1 && this.game.state.events.bayofpigs != 1 && this.game.state.events.cubanmissile != 1) {
 	      this.addCardToDeck('bayofpigs', "New Card");
 	    }
 	  }
 	  this.addCardToDeck('fischerspassky', "New Card");
+	  this.addCardToDeck('fallofsaigon', "New Card");
 	}
 
 	if (this.game.state.round == 6) {
           if (this.game.options.deck === "saito") {
-	    this.addCardToDeck('fallofsaigon', "New Card");
+	    this.addCardToDeck('nixonshock', "New Card");
+	    this.addCardToDeck('energycrisis', "New Card");
 	  }
 	}
 
 	if (this.game.state.round == 7) {
           if (this.game.options.deck === "saito") {
-	    this.addCardToDeck('nixonshock', "New Card");
-	    this.addCardToDeck('energycrisis', "New Card");
-	    this.removeCardFromDeckNextDeal("fischerspassky");
-	    this.removeCardFromDeckNextDeal("fallofsaigon");
 	  }
 	}
 
@@ -8391,6 +8476,55 @@ console.log("resetting BG countries for: " + i);
     if (this.game.state.events.kissinger == "") {
       $('#eventtile_kissinger').css('display','none');
     } else {
+
+      if (this.game.state.events.kissinger === "camerica") {
+        $('.kissinger_colombia').css('display','block');
+        $('.kissinger_colombia').show();
+        $('.kissinger_guatemala').css('display','block');
+        $('.kissinger_guatemala').show();
+        $('.kissinger_elsalvador').css('display','block');
+        $('.kissinger_elsalvador').show();
+        $('.kissinger_nicaragua').css('display','block');
+        $('.kissinger_nicaragua').show();
+        $('.kissinger_haiti').css('display','block');
+        $('.kissinger_haiti').show();
+        $('.kissinger_dominicanrepublic').css('display','block');
+        $('.kissinger_dominicanrepublic').show();
+      }
+
+      if (this.game.state.events.kissinger === "samerica") {
+        $('.kissinger_colombia').css('display','block');
+        $('.kissinger_colombia').show();
+      }
+
+      if (this.game.state.events.kissinger === "africa") {
+        $('.kissinger_saharanstates').css('display','block');
+        $('.kissinger_saharanstates').show();
+        $('.kissinger_sudan').css('display','block');
+        $('.kissinger_sudan').show();
+        $('.kissinger_ethiopia').css('display','block');
+        $('.kissinger_ethiopia').show();
+        $('.kissinger_cameroon').css('display','block');
+        $('.kissinger_cameroon').show();
+        $('.kissinger_seafricanstates').css('display','block');
+        $('.kissinger_seafricanstates').show();
+        $('.kissinger_zimbabwe').css('display','block');
+        $('.kissinger_zimbabwe').show();
+      }
+
+      if (this.game.state.events.kissinger === "mideast") {
+        $('.kissinger_lebanon').css('display','block');
+        $('.kissinger_lebanon').show();
+      }
+
+      if (this.game.state.events.kissinger === "asia") {
+        $('.kissinger_laos').css('display','block');
+        $('.kissinger_laos').show();
+        $('.kissinger_vietnam').css('display','block');
+        $('.kissinger_vietnam').show();
+        $('.kissinger_indonesia').css('display','block');
+        $('.kissinger_indonesia').show();
+      }
       $('#eventtile_kissinger').css('display','block');
     }
 
@@ -8435,6 +8569,7 @@ console.log("resetting BG countries for: " + i);
     } else {
       $('#eventtile_quagmire').css('display','block');
     }
+
 
     if (this.game.state.events.formosan == 0) {
       $('#eventtile_formosan').css('display','none');
@@ -8678,8 +8813,6 @@ console.log("resetting BG countries for: " + i);
 
   returnCardImage(cardname) {
     let cardclass = "cardimg";
-
-console.log("cardname: " + cardname);
 
     var c = this.game.deck[0].cards[cardname];
     if (c == undefined) { c = this.game.deck[0].discards[cardname]; }
@@ -9087,6 +9220,11 @@ console.log("cardname: " + cardname);
       this.game.saito_cards_removed_reason = [];
     }
 
+    //
+    // make sure card is set for addition
+    //
+    this.game.options[key] = 1;
+
     this.game.options.deck = "saito";
     let a = this.returnEarlyWarCards();
     let b = this.returnMidWarCards();
@@ -9155,7 +9293,6 @@ console.log("cardname: " + cardname);
       this.game.saito_cards_added_reason = [];
       this.game.saito_cards_removed_reason = [];
     }
-
 
     //
     // remove from deck
