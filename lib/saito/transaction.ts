@@ -177,27 +177,41 @@ export default class Transaction extends SaitoTransaction {
   }
 
   async decryptMessage(app: Saito) {
-    try {
-      if (this.from[0].publicKey !== (await app.wallet.getPublicKey())) {
-        try {
-          if (this.returnMessage() === null) {
-            this.dmsg = "";
-          } else {
-            const parsed_msg = this.returnMessage();
-            this.dmsg = app.keychain.decryptMessage(this.from[0].publicKey, parsed_msg);
-          }
-        } catch (e) {
-          console.error(e);
-        }
-        return;
-      }
-      if (this.returnMessage() === null) {
-        this.dmsg = "";
-        return;
-      }
-      this.dmsg = app.keychain.decryptMessage(this.to[0].publicKey, this.returnMessage());
-    } catch (e) {
+    let myPublicKey = await app.wallet.getPublicKey();
+    const parsed_msg = this.returnMessage();
+
+    if (!app.crypto.isAesEncrypted(parsed_msg)) {
+      return;
+    }
+
+    if (!parsed_msg) {
       this.dmsg = "";
+      return;
+    }
+
+    let counter_party_key = "";
+
+    if (this.from[0].publicKey !== myPublicKey) {
+      counter_party_key = this.from[0].publicKey;
+    } else {
+      for (let i = 0; i < this.to.length; i++) {
+        if (this.to[i].publicKey !== myPublicKey) {
+          counter_party_key = this.to[i].publicKey;    
+          break;
+        }
+      }  
+    }
+
+    try {
+      let dmsg = app.keychain.decryptMessage(counter_party_key, parsed_msg);
+      if (dmsg !== parsed_msg){
+        this.dmsg = dmsg;  
+      }
+    } catch (e) {
+      console.error("Decryption error: " , e);
+      this.dmsg = "";      
+      // there was (pre-wasm) code to automatically try to get the keys, but that seems
+      // like a security risk, no???
     }
     return;
   }
@@ -264,7 +278,7 @@ export default class Transaction extends SaitoTransaction {
     //console.log("TRANSACTION:");
     //console.log(JSON.stringify(this));
 
-    if (this.dmsg !== "") {
+    if (this.dmsg) {
       return this.dmsg;
     }
 

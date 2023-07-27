@@ -48,7 +48,7 @@ class Chat extends ModTemplate {
     this.communityGroup = null;
     this.communityGroupName = "Saito Community Chat";
 
-    this.debug = true;
+    this.debug = false;
 
     this.chat_manager = null;
 
@@ -212,14 +212,14 @@ class Chat extends ModTemplate {
               limit: 100,
               created_later_than: group.last_update,
             },
-            (txs) => {
+            async (txs) => {
               chat_self.loading--;
 
               if (txs) {
                 while (txs.length > 0) {
                   //Process the chat transaction like a new message
                   let tx = txs.pop();
-                  tx.decryptMessage(chat_self.app);
+                  await tx.decryptMessage(chat_self.app);
                   chat_self.addTransactionToGroup(group, tx);
                 }
               }
@@ -457,6 +457,7 @@ class Chat extends ModTemplate {
       return;
     }
 
+    console.log("Decrypting chat message");
     await tx.decryptMessage(app); //In case forwarding private messages
     let txmsg = tx.returnMessage();
 
@@ -496,41 +497,39 @@ class Chat extends ModTemplate {
         await mycallback({ payload: "success", error: {} });
       }
     } else if (txmsg.request === "chat message broadcast") {
-      /*
-       * This whole block is duplicating the functional logic of the Relay module....
-       */
+      //
+      // This whole block is duplicating the functional logic of the Relay module....
+      //
 
       let inner_tx = new Transaction(undefined, txmsg.data);
-      let inner_txmsg = inner_tx.returnMessage();
 
-      let peers = await app.network.getPeers();
+      console.log(inner_tx);
+
       //
       // if chat message broadcast is received - we are being asked to broadcast this
       // to a peer if the inner_tx is addressed to one of our peers.
       //
-      if (inner_tx.to.length > 0) {
-        if (!inner_tx.isTo(this.publicKey)) {
-          if (app.BROWSER == 0) {
-            peers.forEach((p) => {
-              if (p.publicKey === inner_tx.to[0].publicKey) {
-                app.network.sendTransactionWithCallback(inner_tx, null, p.peerIndex);
-              }
-            });
-            return;
-          }
-        } else {
-          //
-          // broadcast to me, so send to all non-this-peers
-          //
+      if (inner_tx.to.length > 0 && app.BROWSER == 0) {
+        let peers = await app.network.getPeers();
 
-          if (app.BROWSER == 0) {
-            peers.forEach((p) => {
-              console.log(p);
-              if (p.publicKey !== peer.publicKey) {
-                app.network.sendTransactionWithCallback(inner_tx, null, p.peerIndex);
-              }
-            });
-          }
+        if (inner_tx.isTo(this.publicKey)) {
+          //
+          // Addressed to chat server, so forward to all
+          //
+          console.log("Community Chat");          
+          peers.forEach((p) => {
+            if (p.publicKey !== peer.publicKey) {
+              app.network.sendTransactionWithCallback(inner_tx, null, p.peerIndex);
+            }
+          });
+        } else {
+          console.log(txmsg.data.to);
+          peers.forEach((p) => {
+            if (inner_tx.isTo(p.publicKey)) {
+              console.log("Forward private chat to " + p.publicKey);
+              app.network.sendTransactionWithCallback(inner_tx, null, p.peerIndex);
+            }
+          });
         }
       }
 
@@ -895,15 +894,20 @@ class Chat extends ModTemplate {
 
     let secret_holder = "";
 
+    let slip = new Slip();
+    slip.publicKey = this.publicKey;
+    newtx.addFromSlip(slip);
+
     let members = this.returnMembers(group_id);
 
     for (let i = 0; i < members.length; i++) {
       if (members[i] !== this.publicKey) {
         secret_holder = members[i];
-        let slip = new Slip();
-        slip.publicKey = members[i];
-        newtx.addToSlip(slip);
       }
+
+      let slip = new Slip();
+      slip.publicKey = members[i];
+      newtx.addToSlip(slip);
     }
 
     if (msg.substring(0, 4) == "<img") {
@@ -934,8 +938,8 @@ class Chat extends ModTemplate {
     //
 
     if (members.length == 2) {
-      console.log("Chat: Encrypting Message");
-      newtx = this.app.wallet.signAndEncryptTransaction(newtx, secret_holder);
+      console.log("Chat: Encrypting Message for " + secret_holder);
+      newtx = await this.app.wallet.signAndEncryptTransaction(newtx, secret_holder);
     } else {
       await newtx.sign();
     }
@@ -1390,7 +1394,7 @@ class Chat extends ModTemplate {
 
     await this.app.storage.loadTransactions(
       { field3: group.id, limit: 25, created_earlier_than: ts },
-      (txs) => {
+      async (txs) => {
         console.log(`Fetched ${txs?.length} older chat messages from Archive`);
 
         if (!txs || txs.length < 25) {
@@ -1401,7 +1405,7 @@ class Chat extends ModTemplate {
           while (txs.length > 0) {
             //Process the chat transaction like a new message
             let tx = txs.pop();
-            tx.decryptMessage(chat_self.app);
+            await tx.decryptMessage(chat_self.app);
             chat_self.addTransactionToGroup(group, tx);
             chat_self.app.connection.emit("chat-popup-render-request", group);
             chat_self.app.connection.emit("chat-popup-scroll-top-request", group_id);

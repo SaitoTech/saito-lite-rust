@@ -75,6 +75,10 @@ class Relay extends ModTemplate {
     // transaction to end-user, containing msg.request / msg.data is
     //
     let tx = new Transaction();
+    let slip = new Slip();
+    slip.publicKey = this.publicKey;
+    tx.addFromSlip(slip);
+
     for (let i = 0; i < recipients.length; i++) {
       let slip = new Slip();
       slip.publicKey = recipients[i];
@@ -116,72 +120,68 @@ class Relay extends ModTemplate {
       return;
     }
     let message = tx.msg;
+
     try {
-      let relay_self = app.modules.returnModule("Relay");
+
+      if (tx.isTo(this.publicKey)) {
+        if (message.request === "ping") {
+          await this.sendRelayMessage(tx.from[0].publicKey, "echo", {
+            status: this.busy,
+          });
+          return;
+        }
+
+        if (message.request === "echo") {
+          if (message.data.status) {
+            app.connection.emit("relay-is-busy", tx.from[0].publicKey);
+          } else {
+            app.connection.emit("relay-is-online", tx.from[0].publicKey);
+          }
+          return;
+        }
+      }
 
       if (message.request === "relay peer message") {
-        //console.log("Relay message: ", message);
+        console.log("Relay message: ", message);
         
         let relayed_tx = new Transaction(null, message.data);
 
         //
         // sanity check on tx
         //
+        console.log("decrypting relay message");
+        await relayed_tx.decryptMessage(app);
         let txjson = relayed_tx.returnMessage();
-        //console.log("txjson : ", txjson);
 
-        let inner_tx = new Transaction(undefined, txjson.data);
-        await inner_tx.sign();
+        console.log("txjson : ", txjson);
 
-        if (inner_tx.to.length === 0) {
+        if (!relayed_tx.to[0]?.publicKey) {
           return;
         }
-        if (inner_tx.to[0].publicKey == undefined) {
-          return;
-        }
-
-        await inner_tx.decryptMessage(this.app);
-        let inner_txmsg = inner_tx.returnMessage();
-
-        //console.log("inner txmsg : ", inner_txmsg);
 
         //
         // if interior transaction is intended for me, I process regardless
         //
-        //console.log("relay tx to me? " + relayed_tx.isTo(this.publicKey));
+        console.log("relay tx to me? " + relayed_tx.isTo(this.publicKey));
 
-        if (relayed_tx.isTo(this.publicKey)) {
-          if (inner_txmsg.request === "ping") {
-            await this.sendRelayMessage(inner_tx.from[0].publicKey, "echo", {
-              status: this.busy,
-            });
-            return;
-          }
+        if (relayed_tx.isTo(this.publicKey)){
 
-          if (inner_txmsg.request === "echo") {
-            if (inner_txmsg.data.status) {
-              app.connection.emit("relay-is-busy", inner_tx.from[0].publicKey);
-            } else {
-              app.connection.emit("relay-is-online", inner_tx.from[0].publicKey);
-            }
-            return;
-          }
+          app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);
 
-          await app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);
+        }else{
 
-          // otherwise relay
-        } else {
           // check to see if original tx is for a peer
           let peer_found = 0;
 
           let peers = await app.network.getPeers();
           for (let i = 0; i < peers.length; i++) {
-            if (inner_tx.isTo(peers[i].publicKey)) {
+            if (relayed_tx.isTo(peers[i].publicKey)) {
               peer_found = 1;
 
               if (this.app.BROWSER == 0) {
+                console.log("Relay tx to peer");
                 app.network.sendTransactionWithCallback(
-                  inner_tx,
+                  relayed_tx,
                   async function () {
                     if (mycallback != null) {
                       await mycallback({ err: "", success: 1 });
