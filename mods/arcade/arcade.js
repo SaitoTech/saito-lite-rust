@@ -546,7 +546,6 @@ class Arcade extends ModTemplate {
   // handles off-chain transactions
   //
   async handlePeerTransaction(app, newtx = null, peer, mycallback = null) {
-    console.log("handing");
     if (newtx == null) {
       return;
     }
@@ -560,11 +559,13 @@ class Arcade extends ModTemplate {
     // this code doubles onConfirmation
     //
     if (message?.request === "arcade spv update") {
+
       let tx = new Transaction(undefined, message.data);
 
       let txmsg = tx.returnMessage();
 
       if (txmsg.module === "Arcade") {
+
         if (this.debug) {
           console.log("Arcade HPT embedded txmsg:", JSON.parse(JSON.stringify(txmsg)));
         }
@@ -637,7 +638,6 @@ class Arcade extends ModTemplate {
       // only servers notify lite-clients
       //
       if (app.BROWSER == 0 && app.SPVMODE == 0) {
-        console.log("notify peers?");
         await this.notifyPeers(tx);
       }
     }
@@ -693,7 +693,6 @@ class Arcade extends ModTemplate {
   // available if asked.
   //
   async createOpenTransaction(gamedata) {
-    // console.log("createOpenTransaction", gamedata);
     let sendto = this.publicKey;
     let moduletype = "Arcade";
 
@@ -741,7 +740,6 @@ class Arcade extends ModTemplate {
   }
 
   async receiveOpenTransaction(tx, blk = null) {
-    // console.log("arcade receiveOpenTransaction : ", tx);
     let txmsg = tx.returnMessage();
 
     // add to games list == open or private
@@ -950,6 +948,7 @@ class Arcade extends ModTemplate {
     let game = this.returnGame(game_id);
 
     if (!game) {
+      console.warn("Game not found");
       return;
     }
 
@@ -969,15 +968,13 @@ class Arcade extends ModTemplate {
   }
 
   async changeGameStatus(game_id, newStatus) {
-    // console.log("changeGameStatus : ", arguments);
+
     let game = this.returnGame(game_id);
 
     if (!game) {
-      console.log("Game not found");
       return;
     }
     if (game.msg.request == "over") {
-      console.log("Game already over, ignore status change request");
       return;
     }
 
@@ -1034,9 +1031,9 @@ class Arcade extends ModTemplate {
     };
     await this.app.storage.executeDatabase(sql, params, "arcade");
 
-    //if (this.debug){
+    if (this.debug){
     console.log("Winner updated in arcade");
-    // }
+    }
   }
 
   async receiveCloseTransaction(tx) {
@@ -1045,7 +1042,6 @@ class Arcade extends ModTemplate {
   }
 
   async receiveGameStepTransaction(tx) {
-    // console.log("receiveGameStepTransaction", tx);
     let txmsg = tx.returnMessage();
     let game = this.returnGame(txmsg.game_id);
     if (game?.msg) {
@@ -1612,7 +1608,7 @@ class Arcade extends ModTemplate {
   removeGame(game_id) {
     for (let key in this.games) {
       this.games[key] = this.games[key].filter((game) => {
-        if (game.transaction) {
+        if (game.signature) {
           return game.signature != game_id;
         } else {
           return true;

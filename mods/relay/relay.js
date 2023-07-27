@@ -21,11 +21,17 @@ class Relay extends ModTemplate {
     this.debug = false;
     this.busy = false;
 
+
+    ////////////////////////////////////////////
+    // obj.data is a toJson wrapped transaction
+    //
+    //
+    //
+
     app.connection.on("relay-send-message", async (obj) => {
       if (obj.recipient === "PEERS") {
         let peers = [];
         let p = await app.network.getPeers();
-        console.log("peers ", p);
         for (let i = 0; i < p.length; i++) {
           peers.push(p[i].publicKey);
         }
@@ -62,16 +68,13 @@ class Relay extends ModTemplate {
     // if (this.debug) {
     console.log("RECIPIENTS: " + JSON.stringify(recipients));
     console.log("MESSAGE_REQUEST: " + JSON.stringify(message_request));
-    console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
+    //console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
     // }
 
     //
     // transaction to end-user, containing msg.request / msg.data is
     //
     let tx = new Transaction();
-    let slip = new Slip();
-    slip.publicKey = this.publicKey;
-    tx.addFromSlip(slip);
     for (let i = 0; i < recipients.length; i++) {
       let slip = new Slip();
       slip.publicKey = recipients[i];
@@ -80,7 +83,7 @@ class Relay extends ModTemplate {
     tx.timestamp = new Date().getTime();
     tx.msg.request = message_request;
     tx.msg.data = message_data;
-    tx.packData();
+
     //
     // ... wrapped in transaction to relaying peer
     //
@@ -92,6 +95,11 @@ class Relay extends ModTemplate {
       // forward to peer
       //
       let peer = peers[i];
+
+      // *** NOTE *** 
+      // tx.msg.data is a json-ready transaction
+      // this network function wraps the whole thing within another transaction
+      // newtx.msg.data.msg.data = original transactionn
       await this.app.network.sendRequestAsTransaction(
         "relay peer message",
         tx.toJson(),
@@ -103,7 +111,7 @@ class Relay extends ModTemplate {
   }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
-    // console.log("relay.handlePeerTransaction : ", tx);
+    //console.log("relay.handlePeerTransaction : ", tx);
     if (tx == null) {
       return;
     }
@@ -112,13 +120,19 @@ class Relay extends ModTemplate {
       let relay_self = app.modules.returnModule("Relay");
 
       if (message.request === "relay peer message") {
+        //console.log("Relay message: ", message);
+        
+        let relayed_tx = new Transaction(null, message.data);
+
         //
         // sanity check on tx
         //
-        let txjson = message.data;
-        // console.log("txjson : ", txjson);
-        let inner_tx = new Transaction(undefined, txjson);
+        let txjson = relayed_tx.returnMessage();
+        //console.log("txjson : ", txjson);
+
+        let inner_tx = new Transaction(undefined, txjson.data);
         await inner_tx.sign();
+
         if (inner_tx.to.length === 0) {
           return;
         }
@@ -129,11 +143,14 @@ class Relay extends ModTemplate {
         await inner_tx.decryptMessage(this.app);
         let inner_txmsg = inner_tx.returnMessage();
 
-        // console.log("inner txmsg : ", inner_txmsg);
+        //console.log("inner txmsg : ", inner_txmsg);
+
         //
         // if interior transaction is intended for me, I process regardless
         //
-        if (inner_tx.isTo(this.publicKey)) {
+        //console.log("relay tx to me? " + relayed_tx.isTo(this.publicKey));
+
+        if (relayed_tx.isTo(this.publicKey)) {
           if (inner_txmsg.request === "ping") {
             await this.sendRelayMessage(inner_tx.from[0].publicKey, "echo", {
               status: this.busy,
@@ -150,7 +167,7 @@ class Relay extends ModTemplate {
             return;
           }
 
-          await app.modules.handlePeerTransaction(inner_tx, peer, mycallback);
+          await app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);
 
           // otherwise relay
         } else {
