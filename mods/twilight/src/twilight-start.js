@@ -3103,6 +3103,10 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	  //
 	  let mid_war_cards = this.returnMidWarCards();
           if (this.game.options.deck === "saito") {
+            if (this.game.state.events.cia == 1) {
+	      this.addCardToDeck("lonegunman", "Prerequisites Met");
+              this.removeCardFromDeckNextDeal("tsarbomba", "CIA Evented");
+	    }
 	    if (this.game.state.events.iranianultimatum != 1) {
 	      this.removeCardFromDeck("iranianultimatum", "Removed");
 	    }
@@ -6766,12 +6770,18 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
   returnAllCards() {
     // SAITO COMMUNITY
     this.game.options.deck = "saito";
+console.log("ABOUT TO SEND EWC");
     let x = this.returnEarlyWarCards();
+console.log("EARLY WAR CARD HAS NATO: " + JSON.stringify(x['nato']));
     let y = this.returnMidWarCards();
     let z = this.returnLateWarCards();
-    x = Object.assign(x, y);
-    x = Object.assign(x, z);
-    return x;
+    let a = Object.assign({}, x, y);
+    let b = Object.assign({}, a, z);
+
+console.log("DOES THIS HAVE NATO? ");
+console.log(b['nato']);
+
+    return b;
   }
 
   resetBattlegroundCountries(region="") {
@@ -6800,7 +6810,9 @@ console.log("resetting BG countries for: " + i);
 
   returnEarlyWarCards() {
 
-    var deck = {};
+console.log("RETURN EARLY WAR CARDS");
+
+    let deck = {};
 
     // EARLY WAR
     deck['asia']            = { img : "TNRnTS-01" , name : "Asia Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
@@ -6822,7 +6834,9 @@ console.log("resetting BG countries for: " + i);
     deck['naziscientist']   = { img : "TNRnTS-18" , name : "Nazi Scientist", scoring : 0 , player : "both" , recurring : 0 , ops : 1 };
     deck['truman']          = { img : "TNRnTS-19" , name : "Truman", scoring : 0 , player : "us"   , recurring : 0 , ops : 1 };
     deck['olympic']         = { img : "TNRnTS-20" , name : "Olympic Games", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
+console.log("adding nato");
     deck['nato']            = { img : "TNRnTS-21" , name : "NATO", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
+console.log("NATO: " + JSON.stringify(deck['nato']));
     deck['indreds']         = { img : "TNRnTS-22" , name : "Independent Reds", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 };
     deck['marshall']        = { img : "TNRnTS-23" , name : "Marshall Plan", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
     deck['indopaki']        = { img : "TNRnTS-24" , name : "Indo-Pakistani War", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
@@ -6848,11 +6862,16 @@ console.log("resetting BG countries for: " + i);
       deck['norad']           = { img : "TNRnTS-106" ,name : "NORAD", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
     }
     
+console.log("NATO2: " + JSON.stringify(deck['nato']));
+
+
     //
     // remove or add specified cards
     //
     if (this.game.options != undefined) {
       for (var key in this.game.options) {
+
+console.log("deleting: " + key);
 
         if (deck[key] != undefined) { delete deck[key]; }
 
@@ -6880,11 +6899,14 @@ console.log("resetting BG countries for: " + i);
       }
     }
 
+console.log("NATO2: " + JSON.stringify(deck['nato']));
 
     //
     // specify early-war period
     //
     for (var key in deck) { deck[key].p = 0; }
+
+console.log("NATO2: " + JSON.stringify(deck['nato']));
 
     return deck;
 
@@ -6894,7 +6916,7 @@ console.log("resetting BG countries for: " + i);
 
   returnMidWarCards() {
 
-    var deck = {};
+    let deck = {};
 
     deck['brushwar']          = { img : "TNRnTS-36" , name : "Brush War", scoring : 0 , player : "both" , recurring : 1 , ops : 3 };
     deck['camerica']          = { img : "TNRnTS-37" , name : "Central America Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
@@ -6989,11 +7011,7 @@ console.log("resetting BG countries for: " + i);
       }
     }
 
-    //
-    // specify early-war period
-    //
     for (var key in deck) { deck[key].p = 1; }
-
 
     return deck;
 
@@ -7002,7 +7020,7 @@ console.log("resetting BG countries for: " + i);
 
   returnLateWarCards() {
 
-    var deck = {};
+    let deck = {};
 
     deck['iranianhostage']    = { img : "TNRnTS-82" , name : "Iranian Hostage Crisis", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
     deck['ironlady']          = { img : "TNRnTS-83" , name : "The Iron Lady", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
@@ -8815,11 +8833,23 @@ console.log("resetting BG countries for: " + i);
     let cardclass = "cardimg";
 
     var c = this.game.deck[0].cards[cardname];
-    if (c == undefined) { c = this.game.deck[0].discards[cardname]; }
-    if (c == undefined) { c = this.game.deck[0].removed[cardname]; }
-    if (c == undefined) { let x = this.returnAllCards(); c = x[cardname]; }
-    if (c == undefined) {
+    if (c == undefined) { 
+console.log("checking discards... " + cardname);
+c = this.game.deck[0].discards[cardname]; }
+    if (c == undefined) { 
+console.log("checking removed...");
+c = this.game.deck[0].removed[cardname]; }
+    if (c == undefined) { 
+console.log("checking all cards...");
+let x = this.returnAllCards(); 
+console.log("ALL: " + JSON.stringify(x));
 
+
+c = x[cardname]; 
+}
+
+    if (c == undefined) {
+console.log("c is undefined!");
       //
       // this is not a card, it is something like "skip turn" or cancel
       //
@@ -9137,10 +9167,23 @@ console.log("resetting BG countries for: " + i);
     //
     for (let i in this.game.deck[0].cards) {
       if (saito_edition_removed.includes(i)) {
+
+	//
+	// from main deck
+	//
 	if (this.game.deck[0].cards[i]) { delete this.game.deck[0].cards[i]; }
 	cards_removed_from_deck++;
+
+	//
+	// from discards
+	//
+	if (this.game.deck[0].discards[i]) { delete this.game.deck[0].discards[i]; }
+
+        //
+        // cut from hand too
+        //
 	if (this.game.deck[0].hand.includes(i)) {
-	  for (let z = 0; z < this.game.deck[0].hand.length; z++) {
+	  for (let z = this.game.deck[0].hand.length-1; z >= 0; z--) {
 	    if (this.game.deck[0].hand[z] === i) {
 	      this.game.deck[0].hand.splice(z, 1);
 	      cards_removed_from_my_hand++;
@@ -9157,12 +9200,10 @@ console.log("resetting BG countries for: " + i);
       if (!this.game.deck[0].cards[saito_edition_added[i]]) {
 	if (fulldeck[saito_edition_added[i]] && !saito_edition_removed.includes(saito_edition_added[i])) {
 	  cards_added_to_deck++;
-	  //this.game.deck[0].cards[saito_edition_added[i]] = fulldeck[saito_edition_added[i]];
 	  shuffle_in_these_cards[saito_edition_added[i]] = fulldeck[saito_edition_added[i]];
 	}
       }
     }
-
 
     //
     // discards should be removed from main deck for reshuffle
@@ -9208,6 +9249,7 @@ console.log("resetting BG countries for: " + i);
     }
 
   }
+
   addCardToDeck(key="", reason="") {
 
     if (!this.game.saito_cards_added) {
@@ -9220,24 +9262,36 @@ console.log("resetting BG countries for: " + i);
       this.game.saito_cards_removed_reason = [];
     }
 
-    //
-    // make sure card is set for addition
-    //
-    this.game.options[key] = 1;
-
     this.game.options.deck = "saito";
     let a = this.returnEarlyWarCards();
     let b = this.returnMidWarCards();
     let c = this.returnLateWarCards();
+    if (!a[key] && !b[key] && !c[key]) {
+      //
+      // make sure card is set for addition
+      //
+      // this way if we re-add a card that is not supposed to be there
+      // we do not trigger it for deletion
+      this.game.options[key] = 1;
+    }
+
+    a = this.returnEarlyWarCards();
+    b = this.returnMidWarCards();
+    c = this.returnLateWarCards();
     let d = Object.assign({}, a, b);
     let fulldeck = Object.assign({}, d, c);
+
+console.log("ADDING TO DECK: " + key);
 
     //
     // add to deck
     //
     if (this.game.deck.length > 0) {
+console.log("deck exists...");
       if (!this.game.deck[0].cards[key]) {
+console.log("key not in deck");
         if (fulldeck[key]) {
+console.log("fulldeck contains key though...");
           this.game.deck[0].cards[key] = fulldeck[key];
         }
       }
@@ -9247,7 +9301,7 @@ console.log("resetting BG countries for: " + i);
     // remove from removed
     //
     if (this.game.saito_cards_removed.includes(key)) {
-      for (let z = 0; z < this.game.saito_cards_removed.length; z++) {
+      for (let z = this.game.saito_cards_removed.length-1; z >= 0; z--) {
         if (this.game.saito_cards_removed[z] === key) {
           this.game.saito_cards_removed.splice(z, 1);
           this.game.saito_cards_removed_reason.splice(z, 1);
@@ -9294,13 +9348,16 @@ console.log("resetting BG countries for: " + i);
       this.game.saito_cards_removed_reason = [];
     }
 
-    //
-    // remove from deck
-    //
     if (this.game.deck.length > 0) {
+      //
+      // remove from deck
+      //
       if (this.game.deck[0].cards[key]) {
         delete this.game.deck[0].cards[key];
       }
+      //
+      // remove from discards
+      //
       if (this.game.deck[0].discards[key]) {
         delete this.game.deck[0].discards[key];
       }
@@ -9311,7 +9368,7 @@ console.log("resetting BG countries for: " + i);
     //
     if (this.game.deck.length > 0) {
       if (this.game.deck[0].hand.includes(key)) {
-        for (let z = 0; z < this.game.deck[0].hand.length; z++) {
+        for (let z = this.game.deck[0].hand.length-1; z >= 0; z--) {
           if (this.game.deck[0].hand[z] === i) {
             this.game.deck[0].hand.splice(z, 1);
   	  }

@@ -1,6 +1,8 @@
 
     if (card == "unitedfruit") {
 
+      if (this.game.state.events.che == 1 || this.game.state.events.fidel == 1 || this.game.state.liberation == 1) { return 1; }
+
       this.game.state.events.unitedfruit = 1;
 
       let ussrtroops = 0;

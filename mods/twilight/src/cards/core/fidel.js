@@ -3,6 +3,8 @@
     ///////////
     if (card == "fidel") {
 
+      this.game.state.events.fidel = 1;
+
       //
       // SAITO COMMUNITY - united fruit company removed
       //
