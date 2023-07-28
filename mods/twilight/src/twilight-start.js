@@ -1214,7 +1214,10 @@ console.log("LATEST MOVE: " + mv);
           if (this.game.deck[0].discards[cardkey] != undefined) {
             // remove from discards
             this.updateLog(`${this.cardToText(cardkey)} removed from discard pile`);
-        		delete this.game.deck[0].discards[cardkey];
+	    if (this.game.deck[0].discards[cardkey]) {
+	      this.game.deck[0].cards = this.game.deck[0].discards[cardkey];
+      	      delete this.game.deck[0].discards[cardkey];
+            }
           }
         }
       }
@@ -4340,15 +4343,16 @@ playerTurnHeadlineSelected(card, player) {
         // cannot event UN Intervention w/o the opponent card in hand
         //
         let can_play_event = 1;
+	let ac = twilight_self.returnAllCards();
         if (card == "unintervention") {
           let opponent_event_in_hand = 0;
           for (let b = 0; b < twilight_self.game.deck[0].hand.length; b++) {
             let tmpc = twilight_self.game.deck[0].hand[b];
             if (tmpc != "china") {
               if (twilight_self.game.player == 1) {
-                if (twilight_self.game.deck[0].cards[tmpc].player === "us") { opponent_event_in_hand = 1; }
+                if (ac[tmpc].player === "us") { opponent_event_in_hand = 1; }
               } else {
-                if (twilight_self.game.deck[0].cards[tmpc].player === "ussr") { opponent_event_in_hand = 1; }
+                if (ac[0].cards[tmpc].player === "ussr") { opponent_event_in_hand = 1; }
               }
             }
           }
@@ -4360,7 +4364,7 @@ playerTurnHeadlineSelected(card, player) {
         //
         // cannot play event of opponent card (usability fix)
         //
-        if (twilight_self.game.deck[0].cards[card].player == opponent) { can_play_event = 0; }
+        if (ac[card].player == opponent) { can_play_event = 0; }
 
         //
         // cancel cuban missile crisis
@@ -4374,7 +4378,7 @@ playerTurnHeadlineSelected(card, player) {
         announcement += '<li class="option" id="ops">play ops</li>';
         if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
         announcement += twilight_self.isSpaceRaceAvailable(ops);    
-        let header_msg = `${player.toUpperCase()} playing <span>${twilight_self.game.deck[0].cards[card].name}</span>`; 
+        let header_msg = `${player.toUpperCase()} playing <span>${ac[card].name}</span>`; 
 
         if (twilight_self.game.state.back_button_cancelled != 1) { 
 	  twilight_self.bindBackButtonFunction(() => { this.playerTurn(); });
@@ -4412,10 +4416,12 @@ playerTurnHeadlineSelected(card, player) {
 
         if (action == "event") {
 
+	  let ac = this.returnAllCards();
+
           //
           // sanity check on opponent event choice
           //
-          if (twilight_self.game.deck[0].cards[card].player != "both" && twilight_self.game.deck[0].cards[card].player != player) {
+          if (ac[card].player != "both" && ac[card].player != player) {
 
             let fr_header =  "This is your opponent's event. Are you sure you wish to play it for the event instead of the OPS?";
             let fr_msg = '<ul><li class="option" id="playevent">play event</li></ul>';
@@ -4507,8 +4513,10 @@ playerTurnHeadlineSelected(card, player) {
 
         if (action == "space") {
 
+	  let ac = this.returnAllCards();
+
           if (twilight_self.confirm_moves == 1) {
-            let fr_header = `Confirm you want to space ${twilight_self.game.deck[0].cards[card].name}`;
+            let fr_header = `Confirm you want to space ${ac[card].name}`;
             let fr_msg =  `<ul><li class="option" id="spaceit">send into orbit</li>
               <li class="option" id="dontshowme">don't confirm (expert mode)...</li>
               </ul>`;
@@ -4627,8 +4635,11 @@ playerTurnHeadlineSelected(card, player) {
         }
 
         if (action2 == "space"){
+
+	  let ac = twilight_self.returnAllCards();
+
           if (twilight_self.confirm_moves == 1) {
-              let fr_header = `Confirm you want to space ${twilight_self.game.deck[0].cards[card].name}`;
+              let fr_header = `Confirm you want to space ${ac[card].name}`;
               let fr_msg =  `<ul><li class="option" id="spaceit">send into orbit</li>
                 <li class="option" id="dontshowme">don't confirm (expert mode)...</li>
               </ul>`;
@@ -5053,7 +5064,9 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
     twilight_self.game.state.event_before_ops = 0;
 
-    if (twilight_self.game.deck[0].cards[card].player == opponent) {
+    let ac = twilight_self.returnAllCards();
+
+    if (ac[card].player == opponent) {
         let html = '<ul><li class="option" id="before_ops">event before ops</li><li class="option" id="after_ops">event after ops</li></ul>';
         twilight_self.bindBackButtonFunction(() => {  twilight_self.playerTurnCardSelected(card, player);  });
         twilight_self.updateStatusWithOptions('Playing opponent card:', html, function(action2) {
@@ -5062,13 +5075,13 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
           if (action2 === "before_ops") {
             twilight_self.game.state.event_before_ops = 1;
-            twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+twilight_self.game.deck[0].cards[card].ops);
+            twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+ac[card].ops);
             twilight_self.addMove("event\t"+player+"\t"+card);
             
           }
           else if (action2 === "after_ops") {
             twilight_self.addMove("event\t"+player+"\t"+card);
-            twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+twilight_self.game.deck[0].cards[card].ops);
+            twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+ac[card].ops);
           }
           
           twilight_self.removeCardFromHand(card);
@@ -5081,7 +5094,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
     } else { //Playing my own or neutral card for ops
 
-      twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+twilight_self.game.deck[0].cards[card].ops);
+      twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+ac[card].ops);
       if (card == "china") { twilight_self.addMove("limit\tchina"); }
       twilight_self.removeCardFromHand(card);
       twilight_self.endTurn();
@@ -5744,7 +5757,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
   playerSpaceCard(card, player) {
 
-    let card_ops = this.game.deck[0].cards[card].ops;
+    let ac = this.returnAllCards();
+    let card_ops = ac[card].ops;
 
     // stats
     if (player == "us") { this.game.state.stats.us_ops_spaced += this.modifyOps(card_ops, card, player); }
