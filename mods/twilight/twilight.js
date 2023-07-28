@@ -980,11 +980,11 @@ try {
     // avoid China bug on reshuffle - sept 27
     //
     try {
-    if (this.game.deck[0]) {
-      if (this.game.deck[0].cards) {
-        this.game.deck[0].cards["china"] = this.returnChinaCard();
+      if (this.game.deck[0]) {
+        if (this.game.deck[0].cards) {
+          this.game.deck[0].cards["china"] = this.returnChinaCard();
+        }
       }
-    }
     } catch (err) {}
 
 
@@ -1813,7 +1813,7 @@ console.log("DECK IS: " + this.game.options.deck);
       //
       // show overlay and purge
       //
-      if (this.game.saito_cards_added.length > 0 || this.game.saito_cards_removed.length > 0 && this.game.options.deck === "saito") {
+      if ((this.game.saito_cards_added.length > 0 || this.game.saito_cards_removed.length > 0) && this.game.options.deck === "saito") {
 	this.deck_overlay.render();
 	this.game.saito_cards_added = [];
 	this.game.saito_cards_added_reason = [];
@@ -2139,6 +2139,14 @@ console.log("CARDS NEEDED PER PLAYER: " + cards_needed_per_player + " - " + my_c
         let ussr_cards_needed = cards_needed_per_player - ussr_cards;
         reshuffle_limit = us_cards_needed + ussr_cards_needed;
 
+console.log("-----------------------");
+console.log("-----------------------");
+console.log("US CARDS NEEDED:   " + us_cards_needed);
+console.log("USSR CARDS NEEDED: " + us_cards_needed);
+console.log("RESHUFFLE LIMIT:   " + reshuffle_limit);
+console.log("-----------------------");
+
+
         if (this.game.deck[0].crypt.length < reshuffle_limit) {
 
           // no need to reshuffle in turn 4 or 8 as we have new cards inbound
@@ -2155,7 +2163,10 @@ console.log("CARDS NEEDED PER PLAYER: " + cards_needed_per_player + " - " + my_c
             // this resets discards = {} so that DECKBACKUP will not retain
             let discarded_cards = this.returnDiscardedCards();
 
-console.log("RESHUFFLING HOW MANY CARDS? " + Object.keys(discarded_cards).length);
+console.log("deck has crypt:    " + this.game.deck[0].crypt.length);
+console.log("deck has discards 1:    " + this.game.deck[0].discards.length);
+console.log("deck has discards 2: " + Object.keys(discarded_cards).length);
+console.log("DESC: " + JSON.stringify(discarded_cards));
 
             if (Object.keys(discarded_cards).length > 0) {
 
@@ -2787,6 +2798,22 @@ console.log("RESHUFFLING HOW MANY CARDS? " + Object.keys(discarded_cards).length
 
     }
 
+    if (mv[0] === "deckaddcards") {
+
+      let cards = JSON.parse(mv[1]);
+      let ac = this.returnAllCards();
+
+      for (let key in cards) {
+console.log("restoring: " + key);
+        if (ac[key]) {
+	  this.game.deck[0].cards[key] = ac[key];
+        }
+      }    
+
+      this.game.queue.splice(qe, 1);
+      return 1;
+
+    }
 
     if (mv[0] === "round") {
 
@@ -3261,10 +3288,20 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 
         }
 
+      } else {
+
+        if ((this.game.saito_cards_added.length > 0 || this.game.saito_cards_removed.length > 0) && this.game.options.deck === "saito") {
+	  this.deck_overlay.render();
+	  this.game.saito_cards_added = [];
+	  this.game.saito_cards_added_reason = [];
+	  this.game.saito_cards_removed = [];
+  	  this.game.saito_cards_removed_reason = [];
+        }
+
       }
 
-
       return 1;
+
     }
 
 
@@ -9336,6 +9373,10 @@ console.log("READDED: " + saito_edition_added[i]);
           if (!already_dealt[key3]) {
 	    already_dealt[key3] = this.game.deck[0].cards[key3];
 	    delete this.game.deck[0].cards[key3];
+	  } else {
+	    if (this.game.deck[0].cards[key3]) {
+	      delete this.game.deck[0].cards[key3];
+	    }
 	  }
 	}
       } else {
@@ -9355,6 +9396,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
     // note - no backup and restore as we are replacing the deck
     //
     this.game.queue.push("SHUFFLE\t1");
+    this.game.queue.push("deckaddcards\t"+JSON.stringify(already_dealt));
     this.game.queue.push("DECKADDCARDS\t"+JSON.stringify(already_dealt));
     this.game.queue.push("DECKRESTORE");
     this.game.queue.push("DECKENCRYPT\t1\t2");
@@ -9520,6 +9562,24 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       this.game.saito_cards_removed.push(key);
       this.game.saito_cards_removed_reason.push(reason);
     }
+
+  }
+
+
+  returnDiscardedCards(deckidx=1) {
+
+    let discarded = {};
+    let all_cards = this.returnAllCards();  
+
+    for (var i in this.game.deck[deckidx - 1].discards) {
+      if (all_cards[i]) {
+        discarded[i] = all_cards[i];
+      }
+    }   
+
+    this.game.deck[deckidx - 1].discards = {};
+          
+    return discarded;
 
   }
 
