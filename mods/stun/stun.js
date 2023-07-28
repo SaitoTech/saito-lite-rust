@@ -8,7 +8,6 @@ const PeerManager = require("./lib/appspace/PeerManager");
 //Do these do anything???
 var serialize = require("serialize-javascript");
 const adapter = require("webrtc-adapter");
-const Slip = require("../../lib/saito/slip").default;
 
 class Stun extends ModTemplate {
   constructor(app) {
@@ -353,10 +352,7 @@ class Stun extends ModTemplate {
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     if (recipients) {
       recipients.forEach((recipient) => {
-        let slip = new Slip();
-        slip.publicKey = recipient;
-        slip.amount = BigInt(0);
-        newtx.addToSlip(slip);
+        newtx.addTo(recipient);
       });
     }
 

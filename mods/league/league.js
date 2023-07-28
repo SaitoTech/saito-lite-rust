@@ -11,7 +11,6 @@ const PeerService = require("saito-js/lib/peer_service").default;
 
 //Trial -- So that we can display league results in game page
 const LeagueOverlay = require("./lib/overlays/league");
-const Slip = require("saito-js/lib/slip").default;
 
 //
 // League uses 3 URL parameters (which will trigger overlays in Arcade/Redsquare/elsewhere)
@@ -612,9 +611,7 @@ class League extends ModTemplate {
     newtx.msg.module = "League";
     newtx.msg.request = "league create";
 
-    let slip = new Slip();
-    slip.publicKey = this.publicKey;
-    newtx.addToSlip(slip);
+    newtx.addTo(this.publicKey);
 
     await newtx.sign();
 
@@ -631,23 +628,17 @@ class League extends ModTemplate {
   }
 
   addressToAll(tx, league_id) {
-    let slip = new Slip();
-    slip.publicKey = this.publicKey;
-    tx.addToSlip(slip);
+    tx.addTo(this.publicKey);
 
     let league = this.returnLeague(league_id);
     if (!league?.admin) {
       return tx;
     }
 
-    slip = new Slip();
-    slip.publicKey = league.admin;
-    tx.addToSlip(slip);
+    tx.addTo(league.admin);
 
     for (let p of league.players) {
-      slip = new Slip();
-      slip.publicKey = p.publicKey;
-      tx.addToSlip(slip);
+      tx.addTo(p.publicKey);
     }
 
     return tx;
@@ -749,13 +740,8 @@ class League extends ModTemplate {
   async createUpdatePlayerTransaction(league_id, publicKey, new_data, field = "email") {
     let newtx = await this.app.wallet.createUnsignedTransaction();
 
-    let slip = new Slip();
-    slip.publicKey = this.publicKey;
-    newtx.addToSlip(slip);
-
-    slip = new Slip();
-    slip.publicKey = publicKey;
-    newtx.addToSlip(slip);
+    newtx.addTo(this.publicKey);
+    newtx.addTo(publicKey);
 
     newtx.msg = {
       module: "League",

@@ -12,8 +12,6 @@ const prettify = require("html-prettify");
 const redsquareHome = require("./index");
 const Post = require("./lib/post");
 const localforage = require("localforage");
-const Factory = require("../../lib/saito/factory").default;
-const Slip = require("../../lib/saito/slip").default;
 const Transaction = require("../../lib/saito/transaction").default;
 const PeerService = require("saito-js/lib/peer_service").default;
 
@@ -893,9 +891,7 @@ class RedSquare extends ModTemplate {
     newtx.msg = obj;
     for (let i = 0; i < keys.length; i++) {
       if (keys[i] !== this.publicKey) {
-        let slip = new Slip();
-        slip.publicKey = keys[i];
-        newtx.addToSlip(slip);
+        newtx.addTo(keys[i]);
       }
     }
     await newtx.sign();
@@ -1139,9 +1135,7 @@ class RedSquare extends ModTemplate {
     let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
     for (let i = 0; i < tx.to.length; i++) {
       if (tx.to[i].publicKey !== this.publicKey) {
-        let slip = new Slip();
-        slip.publicKey = tx.to[i].publicKey;
-        tx.addToSlip(slip);
+        tx.addTo(tx.to[i].publicKey);
       }
     }
 

@@ -311,6 +311,34 @@ export default class Transaction extends SaitoTransaction {
     return this.msg;
   }
 
+  /*  
+  Sanka -- maybe these convenience functions should be moved up a level?
+  */
+  addTo(publicKey: string) {
+    for (let s of this?.to) {
+      if (s.publicKey === publicKey){
+        return;
+      }
+    }
+    let slip = new Slip();
+    slip.publicKey = publicKey;
+    slip.amount = BigInt(0);
+
+    this.addToSlip(slip);
+  }
+
+  addFrom(publicKey: string) {
+    for (let s of this?.from) {
+      if (s.publicKey === publicKey){
+        return;
+      }
+    }
+
+    let slip = new Slip();
+    slip.publicKey = publicKey;
+    this.addFromSlip(slip);
+  }
+
   /* stolen from app crypto to avoid including app */
   stringToBase64(str: string): string {
     return Buffer.from(str, "utf-8").toString("base64");

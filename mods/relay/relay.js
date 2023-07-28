@@ -1,4 +1,3 @@
-const Slip = require("../../lib/saito/slip").default;
 const PeerService = require("saito-js/lib/peer_service").default;
 
 const Transaction = require("../../lib/saito/transaction").default;
@@ -75,14 +74,10 @@ class Relay extends ModTemplate {
     // transaction to end-user, containing msg.request / msg.data is
     //
     let tx = new Transaction();
-    let slip = new Slip();
-    slip.publicKey = this.publicKey;
-    tx.addFromSlip(slip);
+    tx.addFrom(this.publicKey);
 
     for (let i = 0; i < recipients.length; i++) {
-      let slip = new Slip();
-      slip.publicKey = recipients[i];
-      tx.addToSlip(slip);
+      tx.addTo(recipients[i]);
     }
     tx.timestamp = new Date().getTime();
     tx.msg.request = message_request;

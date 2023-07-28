@@ -8,11 +8,7 @@ const PeerService = require("saito-js/lib/peer_service").default;
 //
 // Fees are dropped because transaction no longer has returnPaymentTo() function
 // 
-// Registry doesn't check isTo or request on transactions
-// because there is only one possible request in the mod 
-// and a singular registry module (too much trouble in register-username to add a toSlip)
-//
-// These are both probably bad ideas and should be fixed later
+// This is probably bad idea and should be fixed later
 //
 ///////////////////////////////////////////////////////
 
@@ -430,9 +426,7 @@ class Registry extends ModTemplate {
       //newtx.msg.request	= "register";
       newtx.msg.identifier = identifier + domain;
 
-      //let slip = new Slip();
-      //slip.publicKey = this.registry_publickey;
-      //newtx.addToSlip(slip);
+      newtx.addTo(this.registry_publickey);
 
       await newtx.sign();
       await this.app.network.propagateTransaction(newtx);
@@ -469,7 +463,7 @@ class Registry extends ModTemplate {
         //
         // this is to us, and we are the main registry server
         //
-        if (/*tx.isTo(this.publicKey) &&*/ this.publicKey === this.registry_publickey) {
+        if (tx.isTo(this.publicKey) && this.publicKey === this.registry_publickey) {
           let identifier = txmsg.identifier;
           let publickey = tx.from[0].publicKey;
           let unixtime = new Date().getTime();

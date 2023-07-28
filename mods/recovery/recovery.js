@@ -2,7 +2,6 @@ const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const SaitoLogin = require("./lib/login");
 const SaitoBackup = require("./lib/backup");
-const Slip = require("../../lib/saito/slip").default;
 const Transaction = require("../../lib/saito/transaction").default;
 const PeerService = require("saito-js/lib/peer_service").default;
 
@@ -169,9 +168,7 @@ class Recovery extends ModTemplate {
       wallet: this.app.crypto.aesEncrypt(JSON.stringify(this.app.wallet), decryption_secret),
     };
 
-    let slip = new Slip();
-    slip.publicKey = this.publicKey;
-    newtx.addToSlip(slip);
+    newtx.addTo(this.publicKey);
     await newtx.sign();
     return newtx;
   }
@@ -206,9 +203,7 @@ class Recovery extends ModTemplate {
       request: "recovery recover",
       hash: retrieval_hash,
     };
-    let slip = new Slip();
-    slip.publicKey = this.publicKey;
-    newtx.addToSlip(slip);
+    newtx.addTo(this.publicKey);
 
     await newtx.sign();
     return newtx;

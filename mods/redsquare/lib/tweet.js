@@ -6,7 +6,6 @@ const Image = require("./image");
 const Post = require("./post");
 const JSON = require("json-bigint");
 const Transaction = require("../../../lib/saito/transaction").default;
-const Factory = require("../../../lib/saito/factory").default;
 
 class Tweet {
   constructor(app, mod, tx, container = ".tweet-manager") {
