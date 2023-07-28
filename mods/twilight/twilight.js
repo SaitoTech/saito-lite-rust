@@ -4416,7 +4416,7 @@ playerTurnHeadlineSelected(card, player) {
 
         if (action == "event") {
 
-	  let ac = this.returnAllCards();
+	  let ac = twilight_self.returnAllCards();
 
           //
           // sanity check on opponent event choice
@@ -4513,7 +4513,7 @@ playerTurnHeadlineSelected(card, player) {
 
         if (action == "space") {
 
-	  let ac = this.returnAllCards();
+	  let ac = twilight_self.returnAllCards();
 
           if (twilight_self.confirm_moves == 1) {
             let fr_header = `Confirm you want to space ${ac[card].name}`;
