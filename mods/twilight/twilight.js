@@ -2088,16 +2088,21 @@ console.log("DECK IS: " + this.game.options.deck);
 
 
     if (mv[0] === "deal") {
+
       if (this.game.player == mv[1]) {
+
         let cards_needed_per_player = (this.game.state.round >= 4)? 9: 8;
 
         let my_cards = this.game.deck[0].hand.length;
         for (let z = 0; z < this.game.deck[0].hand.length; z++) {
           if (this.game.deck[0].hand[z] == "china") {
             my_cards--;
+console.log("REDUCING CARDS NEEDED BECAUSE I HOLD CHINA to: " + my_cards);
           }
         }
         let cards_needed = cards_needed_per_player - my_cards;
+
+console.log("CARDS NEEDED PER PLAYER: " + cards_needed_per_player + " - " + my_cards);
 
         this.addMove("resolve\tdeal");
         this.addMove("DEAL\t1\t"+mv[1]+"\t"+cards_needed);
@@ -3084,8 +3089,6 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
         this.game.queue.push("deal\t1");  
 
         this.game.queue.push("reshuffle");
-        this.game.queue.push("sharehandsize\t2");
-        this.game.queue.push("sharehandsize\t1");
 
 
 	if (this.game.state.round == 3) {
@@ -3226,6 +3229,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
           //this.game.queue.push("HANDBACKUP\t1");
           this.updateLog("Adding Late War cards to the deck...");
 
+
         }
 
 	if (this.game.state.round == 9) {
@@ -3241,20 +3245,23 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	}
 
 
+
+        //
+        // dynamic deck management -- SAITO COMMUNITY
+        //
+        // dynamically adding and removing cards from the deck based on card and game
+        // logic criteria. this is how the Saito Edition manages to squeeze in a bunch
+        // of dynamic balancing behavior.
+        //
+        if (this.game.state.round >= 1) {
+          this.game.queue.push("dynamic_deck_management");
+    	  // tournament reveal before reshuffles
+          this.game.queue.push("sharehandsize\t2");
+          this.game.queue.push("sharehandsize\t1");
+
+        }
+
       }
-
-
-      //
-      // dynamic deck management -- SAITO COMMUNITY
-      //
-      // dynamically adding and removing cards from the deck based on card and game
-      // logic criteria. this is how the Saito Edition manages to squeeze in a bunch
-      // of dynamic balancing behavior.
-      //
-      if (this.game.state.round >= 1) {
-        this.game.queue.push("dynamic_deck_management");
-      }
-
 
 
       return 1;
@@ -6822,8 +6829,6 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
   returnEarlyWarCards(inc_optional=false) {
 
-console.log("RETURN EARLY WAR CARDS");
-
     let deck = {};
 
     // EARLY WAR
@@ -6846,9 +6851,7 @@ console.log("RETURN EARLY WAR CARDS");
     deck['naziscientist']   = { img : "TNRnTS-18" , name : "Nazi Scientist", scoring : 0 , player : "both" , recurring : 0 , ops : 1 };
     deck['truman']          = { img : "TNRnTS-19" , name : "Truman", scoring : 0 , player : "us"   , recurring : 0 , ops : 1 };
     deck['olympic']         = { img : "TNRnTS-20" , name : "Olympic Games", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
-console.log("adding nato");
     deck['nato']            = { img : "TNRnTS-21" , name : "NATO", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
-console.log("NATO: " + JSON.stringify(deck['nato']));
     deck['indreds']         = { img : "TNRnTS-22" , name : "Independent Reds", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 };
     deck['marshall']        = { img : "TNRnTS-23" , name : "Marshall Plan", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
     deck['indopaki']        = { img : "TNRnTS-24" , name : "Indo-Pakistani War", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
@@ -6874,9 +6877,6 @@ console.log("NATO: " + JSON.stringify(deck['nato']));
       deck['norad']           = { img : "TNRnTS-106" ,name : "NORAD", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
     }
     
-console.log("NATO2: " + JSON.stringify(deck['nato']));
-
-
 if (inc_optional == true) {
 
         deck['culturaldiplomacy'] = { img : "TNRnTS-202png" , name : "Cultural Diplomacy", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
@@ -6904,8 +6904,6 @@ if (inc_optional == true) {
     //
     if (this.game.options != undefined) {
       for (var key in this.game.options) {
-
-console.log("deleting: " + key);
 
         if (deck[key] != undefined) { delete deck[key]; }
 
@@ -6935,14 +6933,10 @@ console.log("deleting: " + key);
 
 } // inc_optional
 
-console.log("NATO2: " + JSON.stringify(deck['nato']));
-
     //
     // specify early-war period
     //
     for (var key in deck) { deck[key].p = 0; }
-
-console.log("NATO2: " + JSON.stringify(deck['nato']));
 
     return deck;
 
@@ -9341,6 +9335,7 @@ console.log("READDED: " + saito_edition_added[i]);
 	if (key3 != "china") {
           if (!already_dealt[key3]) {
 	    already_dealt[key3] = this.game.deck[0].cards[key3];
+	    delete this.game.deck[0].cards[key3];
 	  }
 	}
       } else {
