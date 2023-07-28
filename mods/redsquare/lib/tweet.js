@@ -19,10 +19,16 @@ class Tweet {
       return null; //Doesn't actually return null
     }
 
+    let txmsg = tx.returnMessage();
+    if (txmsg.module !== mod.name) {
+      console.warn("Attempting to create Tweet from non-Redsquare tx");
+      return null;
+    }
+
     //
     // the core
     //
-    this.tx = tx;
+    this.tx = tx.toJson();
 
     //
     // ancillary content is stored in the tx.optional array, where it
@@ -53,12 +59,6 @@ class Tweet {
     }
     if (!this.tx.optional.thread_id) {
       this.tx.optional.thread_id = "";
-    }
-    let txmsg = tx.returnMessage();
-
-    if (txmsg.module !== mod.name) {
-      console.warn("Attempting to create Tweet from non-Redsquare tx");
-      return null;
     }
 
     //
@@ -96,8 +96,6 @@ class Tweet {
     // the right of the identicon.
     //
     this.notice = "";
-
-    console.log(this.tx.from[0].publicKey);
 
     this.user = new SaitoUser(
       app,
@@ -151,6 +149,8 @@ class Tweet {
     // retweets
     //
     if (this.retweet_tx != null) {
+      console.log(this.retweet_tx);
+
       let newtx = new Transaction(undefined, JSON.parse(this.retweet_tx));
 
       this.retweet = new Tweet(
@@ -166,12 +166,16 @@ class Tweet {
     //
     // image preview -- copied over from txmsg.data.images
     //
+        //tweet.tx.msg.data.images
+
     if (this.images?.length > 0) {
+      console.log("Has Image");
       this.img_preview = new Image(
         this.app,
         this.mod,
         this.container + `> .tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-preview`,
-        this
+        this.images,
+        this.tx.signature
       );
     }
 
@@ -280,7 +284,7 @@ class Tweet {
     // this is if i retweet my own tweet
     //>>>>>>>>>>.
     if (this.retweet_tx && !this.text && !this.img_preview) {
-      //console.log("Retweet without quote");
+      console.log("Retweet without quote");
       this.retweet.notice =
         "retweeted by " +
         this.app.browser.returnAddressHTML(this.tx.from[0].publicKey) +
@@ -292,7 +296,7 @@ class Tweet {
         t.notice = this.retweet.notice;
         t.render(prepend);
       } else {
-        //console.log("saved tweet");
+        console.log("saved tweet");
         (this.retweet.user.container =
           this.container + `> .tweet-${this.tx.signature} > .tweet-header`),
           this.retweet.render(prepend);
@@ -548,6 +552,10 @@ class Tweet {
       document.querySelector(
         `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment`
       ).onclick = (e) => {
+
+        console.log("Click Reply");
+        console.log(this.tx);
+
         e.preventDefault();
         e.stopImmediatePropagation();
 
@@ -562,9 +570,9 @@ class Tweet {
           ".tweet-overlay"
         );
 
-        let newtx = new Transaction(undefined, this.tx.toJson());
 
-        newtx.signature = this.app.crypto.hash(newtx.signature);
+        let newtx = new Transaction(undefined, this.tx);
+        newtx.signature = this.app.crypto.hash(this.tx.signature) + this.app.crypto.hash(this.tx.signature);
 
         let new_tweet = new Tweet(
           this.app,
@@ -596,10 +604,9 @@ class Tweet {
         );
 
         //Insert this tweet as a new Tweet in the post window
-        let newtx = new Transaction(undefined, this.tx.toJson());
-
-        newtx.signature = this.app.crypto.hash(newtx.signature);
-
+        let newtx = new Transaction(undefined, this.tx);
+        newtx.signature = this.app.crypto.hash(this.tx.signature) + this.app.crypto.hash(this.tx.signature);
+        
         let new_tweet = new Tweet(
           this.app,
           this.mod,
@@ -629,7 +636,7 @@ class Tweet {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        await this.mod.sendLikeTransaction(this.app, this.mod, { sig: this.tx.signature }, this.tx);
+        await this.mod.sendLikeTransaction(this.app, this.mod, { signature: this.tx.signature }, this.tx);
 
         //
         // increase num likes

@@ -118,12 +118,13 @@ class Arcade extends ModTemplate {
               game.players.includes(this.publicKey) ||
               game.accepted.includes(this.publicKey))
           ) {
-            let game_tx = new Transaction();
             if (game.over) {
               if (game.last_block > 0) {
                 return;
               }
             }
+            let game_tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
             if (game.players) {
               game.players.forEach((player) => {
                 game_tx.addTo(player);

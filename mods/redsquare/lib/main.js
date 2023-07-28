@@ -61,7 +61,7 @@ class RedSquareMain {
       window.history.pushState(
         null,
         "",
-        `/redsquare/?tweet_id=${tweet?.tx?.transaction?.signature}`
+        `/redsquare/?tweet_id=${tweet?.tx?.signature}`
       );
 
       this.manager.renderTweet(tweet);

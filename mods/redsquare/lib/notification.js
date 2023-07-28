@@ -40,12 +40,14 @@ class RedSquareNotification {
           }
         }
 
+        console.log("Render Notification -- ", tweet_tx);
+
         //Process as normal
         if (txmsg.request == "like tweet") {
           this.tweet = new Tweet(
             this.app,
             this.mod,
-            tweet_tx.tx,
+            tweet_tx,
             `.tweet-notif-fav.notification-item-${from}-${txmsg.data.signature} .tweet-body .tweet-main .tweet-preview`
           );
           this.user = new SaitoUser(
@@ -70,7 +72,7 @@ class RedSquareNotification {
           this.tweet = new Tweet(
             this.app,
             this.mod,
-            tweet_tx.tx,
+            tweet_tx,
             `.notification-item-${this.tx.signature} .tweet-body .tweet-main .tweet-preview`
           );
           this.user = new SaitoUser(
