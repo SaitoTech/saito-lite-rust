@@ -12,8 +12,6 @@ const prettify = require("html-prettify");
 const redsquareHome = require("./index");
 const Post = require("./lib/post");
 const localforage = require("localforage");
-const Factory = require("../../lib/saito/factory").default;
-const Slip = require("../../lib/saito/slip").default;
 const Transaction = require("../../lib/saito/transaction").default;
 const PeerService = require("saito-js/lib/peer_service").default;
 
@@ -895,9 +893,7 @@ class RedSquare extends ModTemplate {
     newtx.msg = obj;
     for (let i = 0; i < keys.length; i++) {
       if (keys[i] !== this.publicKey) {
-        let slip = new Slip();
-        slip.publicKey = keys[i];
-        newtx.addToSlip(slip);
+        newtx.addTo(keys[i]);
       }
     }
     await newtx.sign();
@@ -947,14 +943,14 @@ class RedSquare extends ModTemplate {
               }
 
               tweet.tx.optional.num_replies++;
-
-              this.app.storage.updateTransaction(tweet.tx, {
+//>>>>>>> FIX HERE ????????????????
+              this.app.storage.updateTransaction(new Transaction(undefined, tweet.tx), {
                 owner: this.publicKey,
                 field3: this.publicKey,
               });
               tweet.renderReplies();
             } else {
-              this.app.storage.updateTransaction(tweet.tx, {
+              this.app.storage.updateTransaction(new Transaction(undefined, tweet.tx), {
                 owner: this.publicKey,
                 field3: this.publicKey,
               });
@@ -981,13 +977,13 @@ class RedSquare extends ModTemplate {
                 tweet2.tx.optional.num_retweets = 0;
               }
               tweet2.tx.optional.num_retweets++;
-              this.app.storage.updateTransaction(tweet2.tx, {
+              this.app.storage.updateTransaction(new Transaction(undefined, tweet2.tx), {
                 owner: this.publicKey,
                 field3: this.publicKey,
               });
               tweet2.renderRetweets();
             } else {
-              this.app.storage.updateTransaction(tweet2.tx, {
+              this.app.storage.updateTransaction(new Transaction(undefined, tweet2.tx), {
                 owner: this.publicKey,
                 field3: this.publicKey,
               });
@@ -1124,7 +1120,6 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  // data = sig: tweet_sig
   async sendLikeTransaction(app, mod, data, tx = null) {
     let redsquare_self = this;
 
@@ -1140,11 +1135,7 @@ class RedSquare extends ModTemplate {
 
     let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
     for (let i = 0; i < tx.to.length; i++) {
-      if (tx.to[i].publicKey !== this.publicKey) {
-        let slip = new Slip();
-        slip.publicKey = tx.to[i].publicKey;
-        tx.addToSlip(slip);
-      }
+      newtx.addTo(tx.to[i].publicKey);
     }
 
     newtx.msg = obj;
@@ -1362,7 +1353,7 @@ class RedSquare extends ModTemplate {
     let maximum = 10;
     for (let tweet of this.tweets) {
       tweet.tx.optional.updated_at = tweet.updated_at;
-      tweet_txs.push(JSON.stringify(tweet.tx.toJson()));
+      tweet_txs.push(JSON.stringify(tweet.tx));
       if (--maximum <= 0) {
         break;
       }

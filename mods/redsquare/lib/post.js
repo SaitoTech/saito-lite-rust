@@ -198,13 +198,15 @@ class Post {
     }
     //Retweets
     if (source == "Retweet") {
-      data.retweet_tx = JSON.stringify(post_self.tweet.tx.toJson());
+      data.retweet_tx = JSON.stringify(post_self.tweet.tx);
       data.signature = post_self.tweet.tx.signature;
     }
 
     if (post_self.images.length > 0) {
       data["images"] = post_self.images;
     }
+
+    console.log(data);
 
     let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
@@ -237,7 +239,7 @@ class Post {
       if (posted_tweet.retweet_tx) {
         rparent.tx.optional.num_retweets++;
         rparent.num_retweets++;
-        rparent.render();
+        rparent.render(true);
       } else {
         rparent.addTweet(posted_tweet);
         rparent.critical_child = posted_tweet;

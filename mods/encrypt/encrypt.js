@@ -26,7 +26,6 @@ var saito = require("../../lib/saito/saito");
 var ModTemplate = require("../../lib/templates/modtemplate");
 const Big = require("big.js");
 const Transaction = require("../../lib/saito/transaction").default;
-const Slip = require("../../lib/saito/slip").default;
 
 class Encrypt extends ModTemplate {
   constructor(app) {
@@ -238,9 +237,7 @@ class Encrypt extends ModTemplate {
     //
     if (parties_to_exchange > 2) {
       for (let i = 1; i < parties_to_exchange; i++) {
-        let slip = new Slip();
-        slip.publicKey = recipients[i];
-        tx.addToSlip(slip);
+        tx.addTo(recipients[i]);
       }
     }
 

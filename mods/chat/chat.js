@@ -8,7 +8,6 @@ const ChatManagerOverlay = require("./lib/overlays/chat-manager");
 const JSON = require("json-bigint");
 const localforage = require("localforage");
 const Transaction = require("../../lib/saito/transaction").default;
-const Slip = require("../../lib/saito/slip").default;
 const PeerService = require("saito-js/lib/peer_service").default;
 
 class Chat extends ModTemplate {
@@ -558,9 +557,7 @@ class Chat extends ModTemplate {
 
     for (let i = 0; i < group.members.length; i++) {
       if (group.members[i] !== this.publicKey) {
-        let slip = new Slip();
-        slip.publicKey = group.members[i];
-        newtx.addToSlip(slip);
+        newtx.addTo(group.members[i]);
       }
     }
 
@@ -646,9 +643,7 @@ class Chat extends ModTemplate {
 
     for (let i = 0; i < group.members.length; i++) {
       if (group.members[i] !== this.publicKey) {
-        let slip = new Slip();
-        slip.publicKey = group.members[i];
-        newtx.addToSlip(slip);
+        newtx.addTo(group.members[i]);
       }
     }
 
@@ -708,9 +703,7 @@ class Chat extends ModTemplate {
 
     for (let i = 0; i < group.members.length; i++) {
       if (group.members[i] !== this.publicKey) {
-        let slip = new Slip();
-        slip.publicKey = group.members[i];
-        newtx.addToSlip(slip);
+        newtx.addTo(group.members[i]);
       }
     }
 
@@ -785,9 +778,7 @@ class Chat extends ModTemplate {
 
     for (let i = 0; i < group.members.length; i++) {
       if (group.members[i] !== this.publicKey) {
-        let slip = new Slip();
-        slip.publicKey = group.members[i];
-        newtx.addToSlip(slip);
+        newtx.addTo(group.members[i]);
       }
     }
 
@@ -894,9 +885,10 @@ class Chat extends ModTemplate {
 
     let secret_holder = "";
 
-    let slip = new Slip();
-    slip.publicKey = this.publicKey;
-    newtx.addFromSlip(slip);
+    newtx.addFrom(this.publicKey);
+    newtx.addTo(this.publicKey);
+    newtx.addTo(this.publicKey);
+    newtx.addTo(this.publicKey);
 
     let members = this.returnMembers(group_id);
 
@@ -905,9 +897,7 @@ class Chat extends ModTemplate {
         secret_holder = members[i];
       }
 
-      let slip = new Slip();
-      slip.publicKey = members[i];
-      newtx.addToSlip(slip);
+      newtx.addTo(members[i]);
     }
 
     if (msg.substring(0, 4) == "<img") {

@@ -1,4 +1,3 @@
-const Slip = require("../../lib/saito/slip").default;
 const PeerService = require("saito-js/lib/peer_service").default;
 
 const Transaction = require("../../lib/saito/transaction").default;
@@ -16,7 +15,6 @@ const GameInvitationLink = require("./../../lib/saito/ui/modals/saito-link/saito
 const Invite = require("./lib/invite");
 const JoinGameOverlay = require("./lib/overlays/join-game");
 const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
-const Factory = require("../../lib/saito/factory").default;
 
 class Arcade extends ModTemplate {
   constructor(app) {
@@ -120,31 +118,21 @@ class Arcade extends ModTemplate {
               game.players.includes(this.publicKey) ||
               game.accepted.includes(this.publicKey))
           ) {
-            let game_tx = new Transaction();
             if (game.over) {
               if (game.last_block > 0) {
                 return;
               }
             }
+            let game_tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
             if (game.players) {
               game.players.forEach((player) => {
-                let slip = new Slip();
-                slip.publicKey = player;
-                game_tx.addToSlip(slip);
-                slip = new Slip();
-                slip.publicKey = player;
-                game_tx.addFromSlip(slip);
+                game_tx.addTo(player);
+                game_tx.addFrom(player);
               });
-              // game_tx.from = game.players.map(
-              //   (player) => new saito.default.slip(player)
-              // );
             } else {
-              let slip = new Slip();
-              slip.publicKey = this.publicKey;
-              game_tx.addFromSlip(slip);
-              slip = new Slip();
-              slip.publicKey = this.publicKey;
-              game_tx.addToSlip(slip);
+              game_tx.addFrom(this.publicKey);
+              game_tx.addTo(this.publicKey);
             }
 
             let msg = {
@@ -704,15 +692,9 @@ class Arcade extends ModTemplate {
     );
 
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    let slip = new Slip();
-    slip.publicKey = this.publicKey;
-    slip.amount = 0;
-    newtx.addToSlip(slip);
+    newtx.addTo(this.publicKey);
     if (options?.desired_opponent_publickey) {
-      let slip = new Slip();
-      slip.publicKey = options.desired_opponent_publickey;
-      slip.amount = BigInt(0);
-      newtx.addToSlip(slip);
+      newtx.addTo(options.desired_opponent_publickey);
     }
 
     newtx.msg = {
@@ -816,15 +798,9 @@ class Arcade extends ModTemplate {
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
     for (let player of orig_tx.msg.players) {
-      let slip = new Slip();
-      slip.publicKey = player;
-      slip.amount = BigInt(0);
-      newtx.addToSlip(slip);
+      newtx.addTo(player);
     }
-    let slip = new Slip();
-    slip.publicKey = this.publicKey;
-    slip.amount = BigInt(0);
-    newtx.addToSlip(slip);
+    newtx.addTo(this.publicKey);
 
     let msg = {
       request: "cancel",
@@ -916,15 +892,9 @@ class Arcade extends ModTemplate {
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
     for (let player of orig_tx.msg.players) {
-      let slip = new Slip();
-      slip.publicKey = player;
-      slip.amount = BigInt(0);
-      newtx.addToSlip(slip);
+      newtx.addTo(player);
     }
-    let slip = new Slip();
-    slip.publicKey = this.publicKey;
-    slip.amount = BigInt(0);
-    newtx.addToSlip(slip);
+    newtx.addTo(this.publicKey);
 
     newtx.msg = {
       request: "stopgame",
@@ -1078,15 +1048,8 @@ class Arcade extends ModTemplate {
     let txmsg = orig_tx.returnMessage();
 
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    let slip = new Slip();
-    slip.publicKey = orig_tx.from[0].publicKey;
-    slip.amount = BigInt(0);
-    newtx.addToSlip(slip);
-
-    slip = new Slip();
-    slip.publicKey = this.publicKey;
-    slip.amount = BigInt(0);
-    newtx.addToSlip(slip);
+    newtx.addTo(orig_tx.from[0].publicKey);
+    newtx.addTo(this.publicKey);
 
     newtx.msg.timestamp = new Date().getTime();
     newtx.msg.module = txmsg.game;
@@ -1130,15 +1093,9 @@ class Arcade extends ModTemplate {
 
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     for (let player of txmsg.players) {
-      let slip = new Slip();
-      slip.publicKey = player;
-      slip.amount = BigInt(0);
-      newtx.addToSlip(slip);
+      newtx.addTo(player);
     }
-    let slip = new Slip();
-    slip.publicKey = this.publicKey;
-    slip.amount = BigInt(0);
-    newtx.addToSlip(slip);
+    newtx.addTo(this.publicKey);
 
     newtx.msg = JSON.parse(JSON.stringify(txmsg));
     newtx.msg.module = "Arcade";
@@ -1253,10 +1210,7 @@ class Arcade extends ModTemplate {
 
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     for (let i = 0; i < txmsg.players.length; i++) {
-      let slip = new Slip();
-      slip.publicKey = txmsg.players[i];
-      slip.amount = BigInt(0);
-      newtx.addToSlip(slip);
+      newtx.addTo(txmsg.players[i]);
     }
 
     newtx.msg = JSON.parse(JSON.stringify(txmsg));
@@ -1338,7 +1292,7 @@ class Arcade extends ModTemplate {
   /*
   createChangeTransaction(gametx, direction) {
       let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-      tx.to.push(new saito.default.slip(this.publicKey, 0.0));
+      //tx.to.push(new saito.default.slip(this.publicKey, 0.0));
       tx.msg = gametx.returnMessage();
       tx.msg.request = "change_" + direction;
       tx.msg.game_id = gametx.signature;
@@ -1971,10 +1925,7 @@ class Arcade extends ModTemplate {
     };
 
     for (let p of game.players) {
-      let slip = new Slip();
-      slip.publicKey = p;
-      slip.amount = 0;
-      tx.addToSlip(slip);
+      tx.addTo(p);
     }
     await tx.sign();
 

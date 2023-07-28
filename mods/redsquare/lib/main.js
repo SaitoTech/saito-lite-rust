@@ -61,7 +61,7 @@ class RedSquareMain {
       window.history.pushState(
         null,
         "",
-        `/redsquare/?tweet_id=${tweet?.tx?.transaction?.signature}`
+        `/redsquare/?tweet_id=${tweet?.tx?.signature}`
       );
 
       this.manager.renderTweet(tweet);
@@ -74,8 +74,13 @@ class RedSquareMain {
         e.currentTarget.style.display = "none";
         console.log("Show new tweets");
         this.scoll_depth = 0;
+        this.scrollFeed(0, "smooth");
+        
+        //this.app.connection.emit("redsquare-home-render-request", false);
+        this.app.connection.emit("redsquare-navigation", true);
+        window.history.pushState(null, "", "/redsquare/#home");
+        this.manager.render("newtweets");
 
-        this.app.connection.emit("redsquare-home-render-request", false);
         setTimeout(() => {
           this.mod.saveLocalTweets();
         }, 1500);
