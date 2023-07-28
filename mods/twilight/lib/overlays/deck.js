@@ -55,7 +55,11 @@ class DeckOverlay {
     attachEvents(){
 
       document.querySelectorAll(".cardlist-container .card").forEach((el) => {
-console.log("adding noclick");
+
+	if (el.children.length < 4) {
+	  el.classList.add("custom_card_resize");
+	};
+
 	el.classList.add("noclick");
 	el.onclick = (e) => {};
       });;

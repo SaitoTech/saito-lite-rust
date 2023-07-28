@@ -33,6 +33,11 @@
   gap: 2rem;
 }
 
+.custom_card_resize {
+    scale: 0.95;
+    margin-top: -5;
+}
+
 .deck-overlay .cardlist-container.cards_added .card::before {
     content: "";
     color: white;
