@@ -248,7 +248,7 @@ class Post {
         rparent.renderWithCriticalChild();
       }
     } else {
-      this.mod.addTweet(posted_tweet.tx, true);
+      //this.mod.addTweet(posted_tweet.tx, true);
       posted_tweet.render(true);
     }
 

@@ -19,7 +19,8 @@ class Tweet {
       return null; //Doesn't actually return null
     }
 
-    let txmsg = tx.returnMessage();
+//    let txmsg = tx.returnMessage();
+    let txmsg = tx.msg;
     if (txmsg.module !== mod.name) {
       console.warn("Attempting to create Tweet from non-Redsquare tx");
       return null;
