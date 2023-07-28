@@ -742,7 +742,9 @@ class RedSquare extends ModTemplate {
             }
             insertion_index++;
           }
-        }
+        } /* else {
+          insertion_index = 0;
+        }*/
 
         this.notifications.splice(insertion_index, 0, tweet);
         this.notifications_sigs_hmap[tx.signature] = 1;
