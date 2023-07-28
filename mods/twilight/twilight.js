@@ -4352,7 +4352,7 @@ playerTurnHeadlineSelected(card, player) {
               if (twilight_self.game.player == 1) {
                 if (ac[tmpc].player === "us") { opponent_event_in_hand = 1; }
               } else {
-                if (ac[0].cards[tmpc].player === "ussr") { opponent_event_in_hand = 1; }
+                if (ac[tmpc].player === "ussr") { opponent_event_in_hand = 1; }
               }
             }
           }
