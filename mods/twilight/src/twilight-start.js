@@ -6852,7 +6852,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     let z = this.returnLateWarCards(inc_optional);
     let a = Object.assign({}, x, y);
     let b = Object.assign({}, a, z);
-
+    b['china'] = this.returnChinaCard();
     return b;
   }
 
