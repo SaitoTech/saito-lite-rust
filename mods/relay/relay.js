@@ -73,7 +73,7 @@ class Relay extends ModTemplate {
     //
     // transaction to end-user, containing msg.request / msg.data is
     //
-    let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    let tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     tx.addFrom(this.publicKey);
 
     for (let i = 0; i < recipients.length; i++) {

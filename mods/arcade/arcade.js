@@ -123,7 +123,7 @@ class Arcade extends ModTemplate {
                 return;
               }
             }
-            let game_tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+            let game_tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
             if (game.players) {
               game.players.forEach((player) => {
