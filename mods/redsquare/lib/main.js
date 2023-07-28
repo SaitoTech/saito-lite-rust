@@ -74,9 +74,12 @@ class RedSquareMain {
         e.currentTarget.onclick = null;
         e.currentTarget.style.display = "none";
         console.log("Show new tweets");
-        this.scoll_depth = 0;
-        
-        this.app.connection.emit("redsquare-home-render-request", false);
+  
+        //this.app.connection.emit("redsquare-home-render-request", false);
+        this.app.connection.emit("redsquare-navigation", true);
+        window.history.pushState(null, "", "/redsquare/#home");
+        this.manager.render("newtweets");
+
         setTimeout(()=> {this.mod.saveLocalTweets();}, 1500);
       };
       
