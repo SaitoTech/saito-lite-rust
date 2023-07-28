@@ -563,7 +563,7 @@ class Tweet {
           ".tweet-overlay"
         );
 
-        let newtx = new Transaction(undefined, JSON.parse(JSON.stringify(this.tx)));
+        let newtx = new Transaction(undefined, this.tx.toJson());
 
         newtx.signature = this.app.crypto.hash(newtx.signature);
 
@@ -597,7 +597,7 @@ class Tweet {
         );
 
         //Insert this tweet as a new Tweet in the post window
-        let newtx = new Transaction(undefined, JSON.parse(JSON.stringify(this.tx)));
+        let newtx = new Transaction(undefined, this.tx.toJson());
 
         newtx.signature = this.app.crypto.hash(newtx.signature);
 
