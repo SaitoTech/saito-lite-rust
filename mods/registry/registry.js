@@ -2,6 +2,21 @@ const ModTemplate = require("./../../lib/templates/modtemplate");
 const RegisterUsernameOverlay = require("./lib/register-username");
 const PeerService = require("saito-js/lib/peer_service").default;
 
+////////////////////////////////////////////////////////
+//
+// IMPORTANT CHANGES WASM  -- Daniel 28/07
+//
+// Fees are dropped because transaction no longer has returnPaymentTo() function
+// 
+// Registry doesn't check isTo or request on transactions
+// because there is only one possible request in the mod 
+// and a singular registry module (too much trouble in register-username to add a toSlip)
+//
+// These are both probably bad ideas and should be fixed later
+//
+///////////////////////////////////////////////////////
+
+
 class Registry extends ModTemplate {
   constructor(app) {
     super(app);
@@ -26,7 +41,7 @@ class Registry extends ModTemplate {
     this.cached_keys = {};
 
     //Set True for testing locally
-    this.local_dev = false;
+    this.local_dev = true;
 
     //
     // event listeners -
@@ -345,7 +360,6 @@ class Registry extends ModTemplate {
     //
     if (message.request === "registry username update") {
       let tx = message?.data?.tx;
-      let registry_self = app.modules.returnModule("Registry");
 
       //
       // registration from DNS registrar?
@@ -356,20 +370,20 @@ class Registry extends ModTemplate {
 
       try {
         if (
-          registry_self.app.crypto.verifyMessage(
+          this.app.crypto.verifyMessage(
             signed_message,
             sig,
-            registry_self.registry_publickey
+            this.registry_publickey
           )
         ) {
-          registry_self.app.keychain.addKey(tx.to[0].publicKey, {
+          this.app.keychain.addKey(tx.to[0].publicKey, {
             identifier: identifier,
             watched: true,
-            block_id: registry_self.app.blockchain.returnLatestBlockId(),
-            block_hash: registry_self.app.blockchain.returnLatestBlockHash(),
+            block_id: this.app.blockchain.returnLatestBlockId(),
+            block_hash: this.app.blockchain.returnLatestBlockHash(),
             lc: 1,
           });
-          registry_self.app.browser.updateAddressHTML(tx.to[0].publicKey, identifier);
+          this.app.browser.updateAddressHTML(tx.to[0].publicKey, identifier);
         } else {
           console.debug("failed verifying message for username registration : ", tx);
         }
@@ -406,6 +420,7 @@ class Registry extends ModTemplate {
       throw Error("NULL TX CREATED IN REGISTRY MODULE");
     }
 
+
     if (typeof identifier === "string" || identifier instanceof String) {
       var regex = /^[0-9A-Za-z]+$/;
       if (!regex.test(identifier)) {
@@ -414,6 +429,10 @@ class Registry extends ModTemplate {
       newtx.msg.module = "Registry";
       //newtx.msg.request	= "register";
       newtx.msg.identifier = identifier + domain;
+
+      //let slip = new Slip();
+      //slip.publicKey = this.registry_publickey;
+      //newtx.addToSlip(slip);
 
       await newtx.sign();
       await this.app.network.propagateTransaction(newtx);
@@ -430,33 +449,27 @@ class Registry extends ModTemplate {
   async onPeerHandshakeComplete(app, peer) {
     /***** USE VARIABLE TO TOGGLE LOCAL DEV MODE ******/
     if (this.local_dev) {
-      console.log(peer);
-
       if (this.app.options.server != undefined) {
         this.registry_publickey = this.publicKey;
       } else {
         this.registry_publickey = peer.publicKey;
       }
-      console.log("WE ARE NOW LOCAL SERVER");
+      console.log("WE ARE NOW LOCAL SERVER: " + this.registry_publickey);
     }
   }
 
   async onConfirmation(blk, tx, conf) {
-    let registry_self = this.app.modules.returnModule("Registry");
     let txmsg = tx.returnMessage();
 
     if (conf == 0) {
-      //console.log(JSON.parse(JSON.stringify(txmsg)));
+      
 
       if (!!txmsg && txmsg.module === "Registry") {
+
         //
         // this is to us, and we are the main registry server
         //
-        if (
-          tx.isTo(this.publicKey) &&
-          this.publicKey === registry_self.registry_publickey
-        ) {
-          let request = txmsg.request;
+        if (/*tx.isTo(this.publicKey) &&*/ this.publicKey === this.registry_publickey) {
           let identifier = txmsg.identifier;
           let publickey = tx.from[0].publicKey;
           let unixtime = new Date().getTime();
@@ -464,12 +477,13 @@ class Registry extends ModTemplate {
           let bsh = blk.hash;
           let lock_block = 0;
           let signed_message = identifier + publickey + bid + bsh;
-          let sig = registry_self.app.wallet.signMessage(signed_message);
+          let sig = this.app.crypto.signMessage(signed_message, await this.app.wallet.getPrivateKey());
+          //this.app.wallet.signMessage(signed_message);
           let signer = this.registry_publickey;
           let lc = 1;
 
           // servers update database
-          let res = await registry_self.addRecord(
+          let res = await this.addRecord(
             identifier,
             publickey,
             unixtime,
@@ -480,11 +494,11 @@ class Registry extends ModTemplate {
             signer,
             1
           );
-          let fee = tx.returnPaymentTo(registry_self.publicKey);
+          let fee = BigInt(0); //tx.returnPaymentTo(this.publicKey);
 
           // send message
           if (res == 1) {
-            let newtx = await registry_self.app.wallet.createUnsignedTransaction(
+            let newtx = await this.app.wallet.createUnsignedTransaction(
               tx.from[0].publicKey,
               BigInt(0),
               fee
@@ -501,9 +515,9 @@ class Registry extends ModTemplate {
             newtx.msg.signature = sig;
 
             await newtx.sign();
-            await registry_self.app.network.propagateTransaction(newtx);
+            await this.app.network.propagateTransaction(newtx);
           } else {
-            let newtx = await registry_self.app.wallet.createUnsignedTransaction(
+            let newtx = await this.app.wallet.createUnsignedTransaction(
               tx.from[0].publicKey,
               BigInt(0),
               fee
@@ -519,7 +533,7 @@ class Registry extends ModTemplate {
             newtx.msg.signature = "";
 
             await newtx.sign();
-            await registry_self.app.network.propagateTransaction(newtx);
+            await this.app.network.propagateTransaction(newtx);
           }
 
           return;
@@ -527,7 +541,7 @@ class Registry extends ModTemplate {
       }
 
       if (!!txmsg && txmsg.module == "Email") {
-        if (tx.from[0].publicKey == registry_self.registry_publickey) {
+        if (tx.from[0].publicKey == this.registry_publickey) {
           if (tx.to[0].publicKey == this.publicKey) {
             if (
               tx.msg.identifier != undefined &&
@@ -543,13 +557,13 @@ class Registry extends ModTemplate {
 
               try {
                 if (
-                  registry_self.app.crypto.verifyMessage(
+                  this.app.crypto.verifyMessage(
                     signed_message,
                     sig,
-                    registry_self.registry_publickey
+                    this.registry_publickey
                   )
                 ) {
-                  registry_self.app.keychain.addKey(tx.to[0].publicKey, {
+                  this.app.keychain.addKey(tx.to[0].publicKey, {
                     identifier: identifier,
                     watched: true,
                     block_id: blk.id,
@@ -558,19 +572,19 @@ class Registry extends ModTemplate {
                   });
                   console.info("verification success for : " + identifier);
                 } else {
-                  registry_self.app.keychain.addKey(tx.to[0].publicKey, {
+                  this.app.keychain.addKey(tx.to[0].publicKey, {
                     has_registered_username: false,
                   });
                   console.debug("verification failed for sig : ", tx);
                 }
-                registry_self.app.browser.updateAddressHTML(tx.to[0].publicKey, identifier);
-                registry_self.app.connection.emit("update_identifier", tx.to[0].publicKey);
+                this.app.browser.updateAddressHTML(tx.to[0].publicKey, identifier);
+                this.app.connection.emit("update_identifier", tx.to[0].publicKey);
               } catch (err) {
                 console.error("ERROR verifying username registration message: ", err);
               }
             }
           } else {
-            if (registry_self.publicKey != registry_self.registry_publickey) {
+            if (this.publicKey != this.registry_publickey) {
               //
               // am email? for us? from the DNS registrar?
               //
@@ -579,7 +593,7 @@ class Registry extends ModTemplate {
               let sig = tx.msg.signature;
 
               // if i am server, save copy of record
-              await registry_self.addRecord(
+              await this.addRecord(
                 identifier,
                 tx.to[0].publicKey,
                 tx.timestamp,
@@ -587,11 +601,10 @@ class Registry extends ModTemplate {
                 blk.hash,
                 0,
                 sig,
-                registry_self.registry_publickey
+                this.registry_publickey
               );
 
               // if i am a server, i will notify lite-peers of
-              console.log("notifying lite-peers of registration!");
               await this.notifyPeers(this.app, tx);
             }
           }

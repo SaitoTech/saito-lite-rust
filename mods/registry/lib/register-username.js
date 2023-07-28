@@ -59,23 +59,25 @@ class RegisterUsername {
         //
         // No filter, check all possible registries
         //
+        console.log("REGISTRY: Check if name available");
         this.mod.sendPeerDatabaseRequestWithFilter(
 
           "Registry",
 
           `SELECT * FROM records WHERE identifier = "${identifier}@saito"`,
 
-          (res) => {
+          async (res) => {
             if (res.rows) {
               if (res.rows.length > 0) {
                 salert("Identifier already in use. Please select another");
 		            this.render();
                 return;
               } else {
-
+                console.log("REGISTRY: name available, try to register");
                 try {
-                  let register_success = this.mod.tryRegisterIdentifier(identifier);
+                  let register_success = await this.mod.tryRegisterIdentifier(identifier);
                   if (register_success) {
+                    console.log("REGISTRY: tx to register successfully sent");
                     //
                     // mark wallet that we have registered username
                     //
