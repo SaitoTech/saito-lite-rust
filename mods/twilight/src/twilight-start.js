@@ -2110,6 +2110,7 @@ console.log("DECK IS: " + this.game.options.deck);
 
 
     if (mv[0] === "reshuffle"){
+
         this.game.queue.splice(qe, 1);
         let reshuffle_limit = 14;
         let cards_needed_per_player = (this.game.state.round >= 4)? 9 : 8;
@@ -2148,6 +2149,8 @@ console.log("DECK IS: " + this.game.options.deck);
 
             // this resets discards = {} so that DECKBACKUP will not retain
             let discarded_cards = this.returnDiscardedCards();
+
+console.log("RESHUFFLING HOW MANY CARDS? " + Object.keys(discarded_cards).length);
 
             if (Object.keys(discarded_cards).length > 0) {
 
@@ -9155,8 +9158,6 @@ if (inc_optional == true) {
   //
   dynamicDeckManagement() {
 
-console.log("dynamic deck management engaged!");
-
 console.log("added: " + JSON.stringify(this.game.saito_cards_added));
 console.log("removed: " + JSON.stringify(this.game.saito_cards_removed));
 
@@ -9338,7 +9339,9 @@ console.log("READDED: " + saito_edition_added[i]);
     for (let key3 in this.game.deck[0].cards) {
       if (this.game.state.player1_hold_cards.includes(key3) || this.game.state.player2_hold_cards.includes(key3)) {
 	if (key3 != "china") {
-	  already_dealt[key3] = this.game.deck[0].cards[key3];
+          if (!already_dealt[key3]) {
+	    already_dealt[key3] = this.game.deck[0].cards[key3];
+	  }
 	}
       } else {
 	if (key3 != "china") {
@@ -9368,15 +9371,6 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
     this.game.queue.push("NOTIFY\tShuffling New Cards into Deck");
     this.updateLog("Shuffling new cards into deck...");
     
-    this.game.state.player1_card_replacements_needed = 0;
-    this.game.state.player2_card_replacements_needed = 0;
-
-    if (this.game.player == 1) {
-      this.game.state.player1_card_replacements_needed = cards_removed_from_my_hand;
-    } else {
-      this.game.state.player2_card_replacements_needed = cards_removed_from_my_hand;
-    }
-
   }
 
   addCardToDeck(key="", reason="") {
