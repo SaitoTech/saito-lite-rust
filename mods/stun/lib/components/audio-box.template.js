@@ -1,7 +1,7 @@
-module.exports = async (app, stream_id) => {
+module.exports = (app, stream_id) => {
 
     if (stream_id === "local") {
-        stream_id = await app.wallet.getPublicKey();
+        stream_id = app.wallet.getPublicKey();
     } 
 
     let imgsrc = app.keychain.returnIdenticon(stream_id);

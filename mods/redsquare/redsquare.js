@@ -234,7 +234,7 @@ class RedSquare extends ModTemplate {
     // prefer at the top of their feed for more rapid page load.
     //
     if (app.BROWSER == 0) {
-      await this.updateTweetsCacheForBrowsers();
+      // await this.updateTweetsCacheForBrowsers();
     } else {
       //
       // fetch content from options file -- regardless of whether we are accessing redsquare or not!
@@ -623,7 +623,7 @@ class RedSquare extends ModTemplate {
 
   loadTweetsFromPeerAndReturn(peer, sql, mycallback = null) {
     let txs = [];
-
+    π;
     this.sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
@@ -943,7 +943,7 @@ class RedSquare extends ModTemplate {
               }
 
               tweet.tx.optional.num_replies++;
-//>>>>>>> FIX HERE ????????????????
+              //>>>>>>> FIX HERE ????????????????
               this.app.storage.updateTransaction(new Transaction(undefined, tweet.tx), {
                 owner: this.publicKey,
                 field3: this.publicKey,

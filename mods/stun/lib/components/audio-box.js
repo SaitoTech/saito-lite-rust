@@ -22,9 +22,9 @@ class AudioBox {
         this.stream = null
     }
 
-    async render(stream) {
+    render(stream) {
         if (!document.querySelector(`#audiostream${this.stream_id}`)) {
-            this.app.browser.addElementToSelector(await AudioBoxTemplate(this.app, this.stream_id), this.container);
+            this.app.browser.addElementToSelector(AudioBoxTemplate(this.app, this.stream_id), this.container);
         }
         this.stream = stream;
         console.log(stream, 'stream')

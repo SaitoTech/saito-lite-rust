@@ -8,6 +8,7 @@ const PeerManager = require("./lib/appspace/PeerManager");
 //Do these do anything???
 var serialize = require("serialize-javascript");
 const adapter = require("webrtc-adapter");
+const Slip = require("../../lib/saito/slip").default;
 
 class Stun extends ModTemplate {
   constructor(app) {
@@ -21,6 +22,7 @@ class Stun extends ModTemplate {
     this.icon = "fas fa-video";
     this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
     this.rooms = new Map();
+    this.publicKey = this.app.wallet.getPublicKey();
     this.servers = [
       {
         urls: "stun:stun-sf.saito.io:3478",
@@ -189,8 +191,8 @@ class Stun extends ModTemplate {
     }
 
     if (type === "user-menu") {
-      if (obj?.publicKey) {
-        if (obj.publicKey !== this.app.wallet.publicKey) {
+      if (obj?.publickey) {
+        if (obj.publickey !== this.app.wallet.publickey) {
           this.attachStyleSheets();
           super.render(this.app, this);
           return [
@@ -211,7 +213,7 @@ class Stun extends ModTemplate {
     return null;
   }
 
-  onConfirmation(blk, tx, conf) {
+  onConfirmation(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
 
     if (conf === 0) {
@@ -220,10 +222,10 @@ class Stun extends ModTemplate {
         // Do we even need/want to send messages on chain?
         // There are problems with double processing events...
         //
-        if (this.app.BROWSER === 1) {
+        if (app.BROWSER === 1) {
           if (txmsg.request === "stun-send-message-to-peers") {
             console.log("onConf: stun-send-message-to-peers");
-            this.receiveStunMessageToPeersTransaction(tx);
+            this.receiveStunMessageToPeersTransaction(app, tx);
           }
         }
       }
@@ -240,10 +242,10 @@ class Stun extends ModTemplate {
       try {
         //Let's not kill the server with bad data
         if (txmsg.request === "stun-create-room-transaction") {
-          await this.receiveCreateRoomTransaction(app, tx);
+          this.receiveCreateRoomTransaction(app, tx);
         }
         if (txmsg.request === "stun-send-message-to-server") {
-          await this.receiveStunMessageToServerTransaction(app, tx, peer);
+          this.receiveStunMessageToServerTransaction(app, tx, peer);
         }
       } catch (err) {
         console.error("Stun Error:", err);
@@ -253,14 +255,14 @@ class Stun extends ModTemplate {
     if (app.BROWSER === 1) {
       if (txmsg.request === "stun-send-message-to-peers") {
         console.log("HPT: stun-send-message-to-peers");
-        this.receiveStunMessageToPeersTransaction(tx);
+        this.receiveStunMessageToPeersTransaction(app, tx);
       }
       if (txmsg.request === "stun-send-game-call-message") {
         console.log("HPT: stun-send-game-call-message");
-        await this.receiveGameCallMessageToPeers(app, tx);
+        this.receiveGameCallMessageToPeers(app, tx);
       }
     }
-    await super.handlePeerTransaction(app, tx, peer, mycallback);
+    super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
   async sendCreateRoomTransaction() {
@@ -342,7 +344,7 @@ class Stun extends ModTemplate {
     };
 
     //And rebroadcasts to peers
-    await this.sendStunMessageToPeersTransaction(data, recipients);
+    this.sendStunMessageToPeersTransaction(data, recipients);
   }
 
   async sendStunMessageToPeersTransaction(_data, recipients) {
@@ -352,7 +354,10 @@ class Stun extends ModTemplate {
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     if (recipients) {
       recipients.forEach((recipient) => {
-        newtx.addTo(recipient);
+        let slip = new Slip();
+        slip.publicKey = recipient;
+        slip.amount = BigInt(0);
+        newtx.addToSlip(slip);
       });
     }
 
@@ -376,10 +381,10 @@ class Stun extends ModTemplate {
     }, 2000);
   }
 
-  receiveStunMessageToPeersTransaction(tx) {
+  receiveStunMessageToPeersTransaction(app, tx) {
     let txmsg = tx.returnMessage();
     let data = tx.msg.data;
-    this.app.connection.emit("stun-event-message", data);
+    app.connection.emit("stun-event-message", data);
   }
 
   async establishStunCallWithPeers(ui_type, recipients) {
