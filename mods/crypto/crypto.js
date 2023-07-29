@@ -1,6 +1,7 @@
 const saito = require('./../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const CryptoSelectAmount = require('./lib/overlays/select-amount');
+const CryptoInadequate = require('./lib/overlays/inadequate');
 
 
 class Crypto extends ModTemplate {
@@ -19,7 +20,9 @@ class Crypto extends ModTemplate {
     this.name = "Crypto";
     this.description = "Modifies the Game-Menu to add an option for managing in-game crypto";
     this.categories = "Utility Entertainment";
+    this.min_balance = 0.0;
     this.overlay = new CryptoSelectAmount(app, this);
+    this.overlay_inadequate = new CryptoInadequate(app, this);
 
   }
   
@@ -27,10 +30,11 @@ class Crypto extends ModTemplate {
   
 
   respondTo(type = "") {
+
     if (type == "game-menu") {
 
       //
-      // only show if games are winable
+      // only show if games are winnable
       //
       let gm = this.app.modules.returnActiveModule();
       if (!gm.can_bet) { return null; }
@@ -47,8 +51,34 @@ class Crypto extends ModTemplate {
           id : "game-crypto-"+ac[i].ticker,
           class : "game-crypto-ticker",
           callback : async (app, game_mod) => {
+
 	    this.attachStyleSheets();
 	    this.ticker = ac[i].ticker;
+
+	    this.min_balance = 0.0;
+
+	    //
+	    // check everyone else has crypto installed
+	    //
+console.log("checking if crypto installed...");
+	    for (let key in game_mod.game.cryptos) {
+	      let c = game_mod.game.cryptos[key][this.ticker];
+	      if (!c) {
+console.log("not everyone has installed...");
+		this.overlay_inadequate.render();
+		return;
+	      }
+	      if (parseFloat(c.balance) <= 0) { 
+console.log("not everyone has balance...");
+		this.overlay_inadequate.render();
+		return;
+	      } else {
+		if (parseFloat(c.balance) >= 0 && parseFloat(c.balance) > this.min_balance) {
+		  this.min_balance = parseFloat(c.balance);
+	        }
+	      }
+	    }
+
 	    this.overlay.render(async (amount) => {
               game_mod.menu.hideSubMenus();
 
@@ -61,6 +91,10 @@ class Crypto extends ModTemplate {
 	      //
 	      if (Number(current_balance) < Number(amount)) {
 		alert("You do not have this amount of "+ticker+" available yourself. Please deposit before inviting others to a peer-to-peer crypto game.");
+		return;
+	      }
+	      if (Number(this.min_balance) < Number(amount)) {
+		alert("Some players have at most "+Number(min_balance)+" "+ticker+" in wallet. Please try a lower amount");
 		return;
 	      }
 

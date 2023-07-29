@@ -387,7 +387,7 @@ console.log("done adding new block...");
         " ---- available ---> " +
         this.routing_work_in_mempool.toString() +
         "     (" +
-        this.app.wallet.returnBalance() +
+        parseFloat(this.app.wallet.returnBalance()) +
         " / " +
         this.mempool.transactions.length +
         ")"

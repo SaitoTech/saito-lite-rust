@@ -41,6 +41,18 @@ input[type="checkbox"].ignore_checkbox {
   font-size:1.7em;
 }
 
+.game-crypto-transfer-manager-container .description p {
+  margin-top: 2rem;
+}
+.game-crypto-transfer-manager-container .description {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    line-height: 2.8rem;
+}
+
 .crypto_transfer_btn {
   background-color: var(--saito-button-background);
   color: var(--saito-white);

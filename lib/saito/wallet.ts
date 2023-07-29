@@ -349,12 +349,21 @@ console.log("---------------------");
         super(app, "SAITO");
         this.name = "Saito";
         this.description = "Saito";
+	this.balance = "0.0";
       }
       async returnBalance() {
-        return parseFloat(this.app.wallet.returnBalance());
+        this.balance = this.app.wallet.returnBalance();
+	return this.balance;
+      }
+      returnCachedBalance() {
+        this.balance = this.app.wallet.returnBalance();
+	return this.balance;
       }
       returnHistory(mycallback=null, order="DESC", limit=20) {
 	return [];
+      }
+      returnCachedAddress() {
+        return this.app.wallet.returnPublicKey();
       }
       returnAddress() {
         return this.app.wallet.returnPublicKey();
@@ -789,7 +798,7 @@ console.log("---------------------");
           b += input.returnAmount();
         }
       });
-      return b;
+      return b.toString();
     }
     return "0.0";
   }
@@ -1096,6 +1105,28 @@ console.log("TESTING A");
     return "";
   }
 
+  returnAvailableCryptosAssociativeArray() {
+    let cryptos = {};
+    let mods = this.returnActivatedCryptos();
+    for (let i = 0; i < mods.length; i++) {
+      let ticker = mods[i].ticker;
+      let address = mods[i].returnAddress();
+      let balance = mods[i].balance;
+      if (!cryptos[ticker]) { cryptos[ticker] = { address : "" , balance : "0.0" }; }
+      cryptos[ticker].address = address;
+      cryptos[ticker].balance = balance;
+      if (parseFloat(balance) > 0) { mods[i].save(); }
+    }
+
+console.log("%%%");
+console.log("%%%");
+console.log(JSON.stringify(cryptos));
+console.log("%%%");
+console.log("%%%");
+
+    return cryptos;
+  }
+
   async returnPreferredCryptoBalances(addresses = [], mycallback = null, ticker = "") {
     if (ticker == "") {
       ticker = this.wallet.preferred_crypto;
@@ -1129,6 +1160,7 @@ console.log("TESTING A");
             //
             // cache the results, so i know if payments are new
             //
+	    cryptomods[i].balance  = balance;
 	    this.app.wallet.wallet.cryptos[ticker] = { address : address, balance : balance };	   
         }
       }
