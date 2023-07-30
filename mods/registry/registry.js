@@ -25,7 +25,6 @@ class Registry extends ModTemplate {
 
     //
     // master DNS publickey for this module
-    // TODO : rename to avoid conflict with super.publicKey
     this.registry_publickey = "zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK";
 
     //
@@ -37,7 +36,7 @@ class Registry extends ModTemplate {
     this.cached_keys = {};
 
     //Set True for testing locally
-    this.local_dev = true;
+    this.local_dev = false;
 
     //
     // event listeners -
@@ -69,7 +68,7 @@ class Registry extends ModTemplate {
 
                 // save if locally stored
                 if (this.app.keychain.returnKey(key)) {
-                  this.app.keychain.addKey({ publickey: key, identifier: value });
+                  this.app.keychain.addKey({ publicKey: key, identifier: value });
                 }
 
                 this.app.browser.updateAddressHTML(key, value);

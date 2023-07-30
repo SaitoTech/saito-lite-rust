@@ -623,7 +623,7 @@ class RedSquare extends ModTemplate {
 
   loadTweetsFromPeerAndReturn(peer, sql, mycallback = null) {
     let txs = [];
-    π;
+
     this.sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,

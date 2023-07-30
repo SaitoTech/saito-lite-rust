@@ -79,6 +79,10 @@ class Keychain {
   addKey(pa = null, da = null) {
     let data = { publicKey: "" };
 
+    if (!pa == null) {
+      return;
+    }
+
     //
     // argument-overloading permitted !!
     //
@@ -90,13 +94,6 @@ class Keychain {
         }
       }
     } else {
-      if (pa == null) {
-        return;
-      }
-      if (!pa.publicKey) {
-        console.log("Error: cannot add publicKey to keychain without publicKey...");
-        return;
-      }
       data = pa;
     }
 
@@ -105,6 +102,8 @@ class Keychain {
     //
     //console.log("Add key: ", JSON.stringify(data));
     if (data.publicKey === "") {
+      console.warn("Keychain Error: cannot add key because unknown publicKey");
+      console.log(data);
       return;
     }
 
@@ -324,7 +323,6 @@ class Keychain {
       }
     });
       
-
     return return_key;
 
   }
