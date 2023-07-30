@@ -60,20 +60,17 @@ class Crypto extends ModTemplate {
 	    //
 	    // check everyone else has crypto installed
 	    //
-console.log("checking if crypto installed...");
 	    for (let key in game_mod.game.cryptos) {
 	      let c = game_mod.game.cryptos[key][this.ticker];
 	      if (!c) {
-console.log("not everyone has installed...");
 		this.overlay_inadequate.render();
 		return;
 	      }
 	      if (parseFloat(c.balance) <= 0) { 
-console.log("not everyone has balance...");
 		this.overlay_inadequate.render();
 		return;
 	      } else {
-		if (parseFloat(c.balance) >= 0 && parseFloat(c.balance) > this.min_balance) {
+		if (parseFloat(c.balance) >= 0 && parseFloat(c.balance) < this.min_balance) {
 		  this.min_balance = parseFloat(c.balance);
 	        }
 	      }
@@ -86,15 +83,16 @@ console.log("not everyone has balance...");
 	      let cryptomod = game_mod.app.wallet.returnCryptoModuleByTicker(ticker);
 	      let current_balance = await cryptomod.returnBalance();
 
+
 	      //
 	      // if proposing, you should be ready
 	      //
 	      if (Number(current_balance) < Number(amount)) {
-		alert("You do not have this amount of "+ticker+" available yourself. Please deposit before inviting others to a peer-to-peer crypto game.");
+		alert("You do not have "+ticker+" available yourself. Please deposit more before enabling this game.");
 		return;
 	      }
 	      if (Number(this.min_balance) < Number(amount)) {
-		alert("Some players have at most "+Number(min_balance)+" "+ticker+" in wallet. Please try a lower amount");
+		alert("Some players have only "+Number(this.min_balance)+" "+ticker+" in wallet. Please try a lower amount");
 		return;
 	      }
 

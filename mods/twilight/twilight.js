@@ -15583,9 +15583,9 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
         let influence_change = 0;
         if (player == "us") {
-          influence_change = twilight_self.countries[invaded].ussr;
+          influence_change = twilight_self.countries['sudan'].ussr;
         } else {
-          influence_change = twilight_self.countries[invaded].us;
+          influence_change = twilight_self.countries['sudan'].us;
         }
         if (influence_change > 0){
           twilight_self.placeInfluence("sudan", 2, player);
