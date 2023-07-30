@@ -55,12 +55,17 @@ class Crypto extends ModTemplate {
 	    this.attachStyleSheets();
 	    this.ticker = ac[i].ticker;
 
-	    this.min_balance = 0.0;
+console.log("CRYPTOS");
+console.log(JSON.stringify(game_mod.game.cryptos));
 
+	    this.min_balance = 0.0;
+	
 	    //
 	    // check everyone else has crypto installed
 	    //
+	    let usernum = 0;
 	    for (let key in game_mod.game.cryptos) {
+	      usernum++;
 	      let c = game_mod.game.cryptos[key][this.ticker];
 	      if (!c) {
 		this.overlay_inadequate.render();
@@ -70,8 +75,14 @@ class Crypto extends ModTemplate {
 		this.overlay_inadequate.render();
 		return;
 	      } else {
-		if (parseFloat(c.balance) >= 0 && parseFloat(c.balance) < this.min_balance) {
-		  this.min_balance = parseFloat(c.balance);
+		if (parseFloat(c.balance) >= 0) {
+		  if (usernum == 1) {
+		    this.min_balance = parseFloat(c.balance);
+		  } else {
+		    if (parseFloat(c.balance) < this.min_balance) {
+		      this.min_balance = parseFloat(c.balance);
+	            }
+		  }
 	        }
 	      }
 	    }
