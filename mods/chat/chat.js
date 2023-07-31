@@ -1462,6 +1462,10 @@ class Chat extends ModTemplate {
     let new_group = JSON.parse(JSON.stringify(group));
     new_group.online = false;
     new_group.txs = group.txs.slice(-50);
+    //Don't save the stun-specified target container
+    if (new_group.target_container) {
+      delete new_group.target_container;
+    }
 
     localforage.setItem(`chat_${group.id}`, new_group).then(function () {
       if (chat_self.debug) {

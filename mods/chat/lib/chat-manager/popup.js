@@ -109,6 +109,10 @@ class ChatPopup {
                   </div>`;
       this.app.browser.replaceElementBySelector(html, popup_qs + " .chat-body");
     } else {
+      if (this.container && !document.querySelector(this.container)) {
+        console.warn("Chat popup has non-existent specified container");
+        this.container = "";
+      }
       if (this.container && document.querySelector(".chat-static")) {
         this.app.browser.replaceElementBySelector(
           ChatPopupTemplate(this.app, this.mod, this.group, this.container),
