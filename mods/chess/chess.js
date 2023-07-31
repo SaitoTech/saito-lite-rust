@@ -350,7 +350,13 @@ class Chessgame extends GameTemplate {
     }
   }
 
-  endTurn(data) {
+  endTurn(data="") {
+
+    if (data === "") {
+      for (let i = 0; i < this.moves.length; i++) {
+	if (this.moves[i].indexOf("CRYPTOS") > 0) { super.endTurn(); return; }
+      }
+    }
 
     let extra = {};
 

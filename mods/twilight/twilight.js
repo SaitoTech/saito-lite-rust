@@ -3293,12 +3293,14 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 
       } else {
 
-        if ((this.game.saito_cards_added.length > 0 || this.game.saito_cards_removed.length > 0) && this.game.options.deck === "saito") {
-	  this.deck_overlay.render();
-	  this.game.saito_cards_added = [];
-	  this.game.saito_cards_added_reason = [];
-	  this.game.saito_cards_removed = [];
-  	  this.game.saito_cards_removed_reason = [];
+	if (this.game.options.deck === "saito") {
+          if (this.game.saito_cards_added.length > 0 || this.game.saito_cards_removed.length > 0) {
+	    this.deck_overlay.render();
+	    this.game.saito_cards_added = [];
+	    this.game.saito_cards_added_reason = [];
+	    this.game.saito_cards_removed = [];
+  	    this.game.saito_cards_removed_reason = [];
+          }
         }
 
       }
