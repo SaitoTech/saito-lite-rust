@@ -349,6 +349,7 @@ export default class Transaction extends SaitoTransaction {
       m: m.toString("base64"),
       opt: app.crypto.stringToBase64(opt),
     };
+    console.log("serialize_to_web : ", web_obj);
     return JSON.stringify(web_obj);
   }
 
@@ -359,7 +360,7 @@ export default class Transaction extends SaitoTransaction {
       this.data = Buffer.from(web_obj.m, "base64");
       this.optional = JSON.parse(app.crypto.base64ToString(web_obj.opt));
     } catch (err) {
-      console.error("failed deserlaizing from buffer");
+      console.error("failed deserializing from buffer : ", webstring);
       console.error(err);
     }
   }

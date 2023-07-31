@@ -97,7 +97,7 @@ async function init() {
     new WebMethods(saito),
     new Factory(),
     saito.options.wallet?.privateKey || "",
-    LogLevel.Trace
+    LogLevel.Info
   );
   saito.wallet = (await S.getInstance().getWallet()) as Wallet;
   saito.wallet.app = saito;

@@ -642,7 +642,7 @@ class Tweet {
           this.app,
           this.mod,
           { signature: this.tx.signature },
-          this.tx.toJson()
+          this.tx
         );
 
         //
