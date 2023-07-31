@@ -145,7 +145,8 @@ class Storage {
       let txs = [];
       if (res) {
         for (let i = 0; i < res.length; i++) {
-          let tx = new Transaction(null, JSON.parse(res[i].tx));
+          let tx = new Transaction();
+          tx.deserialize_from_web(this.app, res[i].tx);
           txs.push(tx);
         }
       }

@@ -4,21 +4,13 @@ import { Saito } from "../../apps/core";
 import { TransactionType } from "saito-js/lib/transaction";
 import { SlipType } from "saito-js/lib/slip";
 import SaitoTransaction from "saito-js/lib/transaction";
+import Factory from "./factory";
 
 export const TRANSACTION_SIZE = 93;
 export const SLIP_SIZE = 67;
 export const HOP_SIZE = 130;
 
 export default class Transaction extends SaitoTransaction {
-  // public transaction = {
-  //   to: new Array<Slip>(),
-  //   from: new Array<Slip>(),
-  //   ts: 0,
-  //   sig: "",
-  //   r: 1, // "replaces" (how many txs this represents in merkle-tree -- spv block)
-  //   type: TransactionType.Normal,
-  //   m: Buffer.alloc(0),
-  // };
   public optional: any;
   public work_available_to_me: bigint;
   public work_available_to_creator: bigint;
@@ -141,26 +133,26 @@ export default class Transaction extends SaitoTransaction {
         //
         /***********
          if (this.type === TransactionType.Normal) {
-        try {
-          let buffer = Buffer.from(this.m);
-          if (buffer.byteLength === 0) {
-            this.msg = {};
-          } else {
-            try {
-              const reconstruct = Buffer.from(this.m).toString("utf-8");
-              this.msg = JSON.parse(reconstruct);
-            } catch (error) {
-              //console.log("failed from utf8. trying if base64 still works for old version");
-              //console.error(error);
-              const reconstruct = this.base64ToString(Buffer.from(this.m).toString());
-              this.msg = JSON.parse(reconstruct);
-            }
-          }
-        } catch (err) {
-          //console.log("failed converting buffer in tx : ", this.transaction);
-          //console.error(err);
-        }
-      }
+         try {
+         let buffer = Buffer.from(this.m);
+         if (buffer.byteLength === 0) {
+         this.msg = {};
+         } else {
+         try {
+         const reconstruct = Buffer.from(this.m).toString("utf-8");
+         this.msg = JSON.parse(reconstruct);
+         } catch (error) {
+         //console.log("failed from utf8. trying if base64 still works for old version");
+         //console.error(error);
+         const reconstruct = this.base64ToString(Buffer.from(this.m).toString());
+         this.msg = JSON.parse(reconstruct);
+         }
+         }
+         } catch (err) {
+         //console.log("failed converting buffer in tx : ", this.transaction);
+         //console.error(err);
+         }
+         }
          ***********/
       }
     } catch (error) {
@@ -170,10 +162,6 @@ export default class Transaction extends SaitoTransaction {
     this.unpackData();
 
     return this;
-  }
-
-  static deserialize(buffer, factory) {
-    return SaitoTransaction.deserialize(buffer, factory);
   }
 
   async decryptMessage(app: Saito) {
@@ -196,20 +184,20 @@ export default class Transaction extends SaitoTransaction {
     } else {
       for (let i = 0; i < this.to.length; i++) {
         if (this.to[i].publicKey !== myPublicKey) {
-          counter_party_key = this.to[i].publicKey;    
+          counter_party_key = this.to[i].publicKey;
           break;
         }
-      }  
+      }
     }
 
     try {
       let dmsg = app.keychain.decryptMessage(counter_party_key, parsed_msg);
-      if (dmsg !== parsed_msg){
-        this.dmsg = dmsg;  
+      if (dmsg !== parsed_msg) {
+        this.dmsg = dmsg;
       }
     } catch (e) {
-      console.error("Decryption error: " , e);
-      this.dmsg = "";      
+      console.error("Decryption error: ", e);
+      this.dmsg = "";
       // there was (pre-wasm) code to automatically try to get the keys, but that seems
       // like a security risk, no???
     }
@@ -311,12 +299,13 @@ export default class Transaction extends SaitoTransaction {
     return this.msg;
   }
 
-  /*  
+  /*
   Sanka -- maybe these convenience functions should be moved up a level?
   */
   addTo(publicKey: string) {
-    for (let s of this?.to) {
-      if (s.publicKey === publicKey){
+    console.assert(!!this.to, "to field not found : ", this);
+    for (let s of this.to) {
+      if (s.publicKey === publicKey) {
         return;
       }
     }
@@ -328,8 +317,9 @@ export default class Transaction extends SaitoTransaction {
   }
 
   addFrom(publicKey: string) {
-    for (let s of this?.from) {
-      if (s.publicKey === publicKey){
+    console.assert(!!this.from, "from field not found : ", this);
+    for (let s of this.from) {
+      if (s.publicKey === publicKey) {
         return;
       }
     }
@@ -348,15 +338,39 @@ export default class Transaction extends SaitoTransaction {
     return Buffer.from(str, "base64").toString("utf-8");
   }
 
-  // public get transaction() {
-  //   return {
-  //     to: this.to.map((slip) => slip.toJson()),
-  //     from: this.from.map((slip) => slip.toJson()),
-  //     ts: this.timestamp,
-  //     sig: this.signature,
-  //     r: this.txs_replacements, // "replaces" (how many txs this represents in merkle-tree -- spv block)
-  //     type: this.type,
-  //     m: this.data,
-  //   };
-  // }
+  serialize_to_web(app) {
+    // we clone so that we don't modify the tx itself
+    let newtx = new Transaction(undefined, this.toJson());
+    let m = Buffer.from(newtx.data);
+    let opt = JSON.stringify(this.optional);
+    newtx.data = Buffer.alloc(0);
+    let web_obj = {
+      t: newtx.serialize_to_base64(),
+      m: m.toString("base64"),
+      opt: app.crypto.stringToBase64(opt),
+    };
+    return JSON.stringify(web_obj);
+  }
+
+  deserialize_from_web(app: Saito, webstring: string) {
+    try {
+      let web_obj: { t: string; m: string; opt: string } = JSON.parse(webstring);
+      this.deserialize_from_base64(web_obj.t);
+      this.data = Buffer.from(web_obj.m, "base64");
+      this.optional = JSON.parse(app.crypto.base64ToString(web_obj.opt));
+    } catch (err) {
+      console.error("failed deserlaizing from buffer");
+      console.error(err);
+    }
+  }
+
+  serialize_to_base64(): string {
+    let b = Buffer.from(this.serialize());
+    return b.toString("base64");
+  }
+
+  deserialize_from_base64(base64string: string) {
+    let b = Buffer.from(base64string, "base64");
+    this.deserialize(b);
+  }
 }
