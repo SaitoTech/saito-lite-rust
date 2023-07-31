@@ -1286,7 +1286,11 @@ class RedSquare extends ModTemplate {
       console.log(value);
       if (value && value.length > 0) {
         for (let tx of value) {
-          let newtx = new Transaction(undefined, JSON.parse(tx));
+          let txobj = JSON.parse(tx);
+          let newtx = new Transaction(undefined, txobj);
+          if (txobj.optional){
+            newtx.optional = txobj.optional;
+          }
           this.addTweet(newtx);
         }
       } else {
@@ -1357,7 +1361,9 @@ class RedSquare extends ModTemplate {
     let maximum = 10;
     for (let tweet of this.tweets) {
       tweet.tx.optional.updated_at = tweet.updated_at;
-      tweet_txs.push(JSON.stringify(tweet.tx.toJson()));
+      let tweet_json = tweet.tx.toJson();
+      tweet_json.optional = tweet.tx.optional;
+      tweet_txs.push(JSON.stringify(tweet_json));
       if (--maximum <= 0) {
         break;
       }
