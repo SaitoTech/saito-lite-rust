@@ -1,6 +1,7 @@
 const ModTemplate = require("../../lib/templates/modtemplate");
 const sanitizer = require("sanitizer");
 const JSON = require("json-bigint");
+const S = require("saito-js/saito").default;
 
 class ExplorerCore extends ModTemplate {
   constructor(app) {
@@ -17,10 +18,10 @@ class ExplorerCore extends ModTemplate {
     ///////////////////
     // web resources //
     ///////////////////
-    expressapp.get("/explorer/", function (req, res) {
+    expressapp.get("/explorer/", async function (req, res) {
       res.set("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.send(explorer_self.returnIndexHTML(app));
+      res.send(await explorer_self.returnIndexHTML(app));
     });
 
     expressapp.get("/explorer/style.css", function (req, res) {
@@ -38,7 +39,7 @@ class ExplorerCore extends ModTemplate {
     ///////////////////
     // web requests //
     ///////////////////
-    expressapp.get("/explorer/block", function (req, res) {
+    expressapp.get("/explorer/block", async function (req, res) {
       var hash = sanitizer.sanitize(req.query.hash);
 
       if (hash == null) {
@@ -48,7 +49,7 @@ class ExplorerCore extends ModTemplate {
       } else {
         res.setHeader("Content-type", "text/html");
         res.charset = "UTF-8";
-        res.send(explorer_self.returnBlockHTML(app, hash));
+        res.send(await explorer_self.returnBlockHTML(app, hash));
       }
     });
 
@@ -58,7 +59,7 @@ class ExplorerCore extends ModTemplate {
       res.send(explorer_self.returnMempoolHTML());
     });
 
-    expressapp.get("/explorer/blocksource", function (req, res) {
+    expressapp.get("/explorer/blocksource", async function (req, res) {
       var hash = sanitizer.sanitize(req.query.hash);
 
       if (hash == null) {
@@ -71,7 +72,7 @@ class ExplorerCore extends ModTemplate {
 
           res.setHeader("Content-type", "text/html");
           res.charset = "UTF-8";
-          res.send(explorer_self.returnBlockSourceHTML(app, hash));
+          res.send(await explorer_self.returnBlockSourceHTML(app, hash));
         }
       }
     });
@@ -108,6 +109,8 @@ class ExplorerCore extends ModTemplate {
   }
 
   async returnIndexMain() {
+    let txs = await S.getInstance().getMempoolTxs();
+
     return (
       '<div class="explorer-main"> \
         <div class="block-table"> \
@@ -118,7 +121,7 @@ class ExplorerCore extends ModTemplate {
       (await this.app.wallet.getBalance()) +
       '</div> \
           <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">' +
-      this.app.mempool.transactions.length +
+      txs.length +
       " txs</a></div> \
         </div>" +
       '\
@@ -127,7 +130,7 @@ class ExplorerCore extends ModTemplate {
         <input type="submit" id="explorer-button" class="button" value="search" /></div></form> </div> \
         <div class="explorer-data"><h3>Recent Blocks:</h3></div> \
         <div id="block-list">' +
-      this.listBlocks() +
+      (await this.listBlocks()) +
       "</div> \
       </div> "
     );
@@ -141,29 +144,33 @@ class ExplorerCore extends ModTemplate {
   /////////////////////
   // Main Index Page //
   /////////////////////
-  returnIndexHTML(app) {
+  async returnIndexHTML(app) {
     var html =
-      this.returnHead() + this.returnHeader() + this.returnIndexMain() + this.returnPageClose();
+      this.returnHead() +
+      this.returnHeader() +
+      (await this.returnIndexMain()) +
+      this.returnPageClose();
     return html;
   }
 
-  returnMempoolHTML() {
+  async returnMempoolHTML() {
+    let txs = await S.getInstance().getMempoolTxs();
     var html = this.returnHead();
     html += this.returnHeader();
     html += '<div class="explorer-main">';
     html += '<a class="button" href="/explorer/"><i class="fas fa-cubes"></i> back to blocks</a>';
     html +=
       '<h3>Mempool Transactions:</h3><div data-json="' +
-      encodeURI(JSON.stringify(this.app.mempool.transactions, null, 4)) +
+      encodeURI(JSON.stringify(txs, null, 4)) +
       '" class="json">' +
-      JSON.stringify(this.app.mempool.transactions) +
+      JSON.stringify(txs) +
       "</div></div>";
     html += this.returnInvokeJSONTree();
     html += this.returnPageClose();
     return html;
   }
 
-  returnBlockSourceHTML(app, hash) {
+  async returnBlockSourceHTML(app, hash) {
     var html = this.returnHead();
     html += this.returnHeader();
     html += '<div class="explorer-main">';
@@ -176,7 +183,7 @@ class ExplorerCore extends ModTemplate {
       hash +
       '):</h3><div class="blockJson"><div class="loader"></div></div>';
     html += '<script> \
-        fetchRawBlock("' + hash + '"); \
+        await fetchRawBlock("' + hash + '"); \
       </script>';
     html += this.returnPageClose();
     return html;
@@ -193,27 +200,27 @@ class ExplorerCore extends ModTemplate {
     return jstxt;
   }
 
-  listBlocks() {
+  async listBlocks() {
     var explorer_self = this;
-    let latest_block_id = explorer_self.app.blockring.returnLatestBlockId();
+    let latest_block_id = await explorer_self.app.blockchain.getLatestBlockId();
 
     var html = '<div class="blockchain-table">';
     html +=
       '<div class="table-header"></div><div class="table-header">id</div><div class="table-header">block hash</div><div class="table-header">tx</div><div class="table-header">previous block</div>';
 
     for (var mb = latest_block_id; mb >= BigInt(0) && mb > latest_block_id - BigInt(200); mb--) {
-      let longest_chain_hash = explorer_self.app.blockring.returnLongestChainBlockHashAtBlockId(mb);
-      let hashes_at_block_id = explorer_self.app.blockring.returnBlockHashesAtBlockId(mb);
+      let longest_chain_hash = await explorer_self.app.blockchain.getLongestChainHashAtId(mb);
+      let hashes_at_block_id = await explorer_self.app.blockchain.getHashesAtId(mb);
 
       for (let i = 0; i < hashes_at_block_id.length; i++) {
         let txs_in_block = 0;
         let previous_block_hash = "";
 
-        let block = explorer_self.app.blockchain.blocks.get(hashes_at_block_id[i]);
+        let block = await explorer_self.app.blockchain.getBlock(hashes_at_block_id[i]);
 
         if (block) {
           txs_in_block = block.transactions.length;
-          previous_block_hash = block.returnPreviousBlockHash();
+          previous_block_hash = block.previousBlockHash;
         }
         if (longest_chain_hash === hashes_at_block_id[i]) {
           html += "<div>*</div>";
@@ -234,7 +241,7 @@ class ExplorerCore extends ModTemplate {
   ////////////////////////
   // Single Block Page  //
   ////////////////////////
-  returnBlockHTML(app, hash) {
+  async returnBlockHTML(app, hash) {
     var html = this.returnHead() + this.returnHeader();
 
     html +=
@@ -246,7 +253,7 @@ class ExplorerCore extends ModTemplate {
       <div class="txlist"><div class="loader"></div></div> \
       </div> \
       <script> \
-        fetchBlock("' +
+        await fetchBlock("' +
       hash +
       '"); \
       </script> \

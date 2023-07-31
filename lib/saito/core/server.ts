@@ -411,49 +411,49 @@ class Server {
       }
     });
 
-    // //////////////////////
-    // // full json blocks //
-    // //////////////////////
-    // app.get("/json-blocks/:bhash/:pkey", (req, res) => {
-    //   const bhash = req.params.bhash;
-    //   if (bhash == null) {
-    //     return;
-    //   }
-    //
-    //   try {
-    //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //     // @ts-ignore
-    //     const blk = server_self.app.blockchain.blocks.get(bhash);
-    //     if (!blk) {
-    //       return;
-    //     }
-    //     const blkwtx = new Block(server_self.app);
-    //     blkwtx.block = JSON.parse(JSON.stringify(blk.block));
-    //     blkwtx.transactions = blk.transactions;
-    //     blkwtx.app = null;
-    //
-    //     console.info("### write from line 232 of server.ts.");
-    //     res.writeHead(200, {
-    //       "Content-Type": "text/plain",
-    //       "Content-Transfer-Encoding": "utf8",
-    //     });
-    //     res.end(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
-    //   } catch (err) {
-    //     //
-    //     // file does not exist on disk, check in memory
-    //     //
-    //     //let blk = await this.app.blockchain.returnBlockByHash(bsh);
-    //
-    //     console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
-    //     console.info("### write from line 188 of server.ts.");
-    //     res.status(400);
-    //     res.end({
-    //       error: {
-    //         message: `FAILED SERVER REQUEST: could not find block: ${bhash}`,
-    //       },
-    //     });
-    //   }
-    // });
+    //////////////////////
+    // full json blocks //
+    //////////////////////
+    app.get("/json-blocks/:bhash/:pkey", (req, res) => {
+      const bhash = req.params.bhash;
+      if (bhash == null) {
+        return;
+      }
+
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const blk = server_self.app.blockchain.blocks.get(bhash);
+        if (!blk) {
+          return;
+        }
+        const blkwtx = new Block(server_self.app);
+        blkwtx.block = JSON.parse(JSON.stringify(blk.block));
+        blkwtx.transactions = blk.transactions;
+        blkwtx.app = null;
+
+        console.info("### write from line 232 of server.ts.");
+        res.writeHead(200, {
+          "Content-Type": "text/plain",
+          "Content-Transfer-Encoding": "utf8",
+        });
+        res.end(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
+      } catch (err) {
+        //
+        // file does not exist on disk, check in memory
+        //
+        //let blk = await this.app.blockchain.returnBlockByHash(bsh);
+
+        console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
+        console.info("### write from line 188 of server.ts.");
+        res.status(400);
+        res.end({
+          error: {
+            message: `FAILED SERVER REQUEST: could not find block: ${bhash}`,
+          },
+        });
+      }
+    });
 
     /////////////////
     // lite-blocks //
