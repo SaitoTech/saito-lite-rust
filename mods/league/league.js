@@ -361,6 +361,8 @@ class League extends ModTemplate {
               let league_id = 0;
 
               for (let p of res.rows) {
+                //console.log(p);
+
                 //Next League
                 if (p.league_id !== league_id) {
                   league_id = p.league_id;
@@ -372,7 +374,8 @@ class League extends ModTemplate {
 
                   league = league_self.returnLeague(league_id);
                   league.players = [];
-                  rank = -1;
+                  league.rank = -1;
+                  rank = 0;
                   myPlayerStats = null;
                   //league.timestamp = new Date().getTime();
                 }
@@ -380,7 +383,7 @@ class League extends ModTemplate {
                 if (
                   p.games_finished == 0 &&
                   p.timestamp < cutoff &&
-                  p.publicKey !== this.publicKey &&
+                  p.publickey !== this.publicKey &&
                   !league.admin
                 ) {
                   continue;
@@ -391,7 +394,7 @@ class League extends ModTemplate {
                 //
                 rank++;
 
-                if (p.publicKey == this.publicKey) {
+                if (p.publickey == this.publicKey) {
                   if (p.games_finished > 0) {
                     league.rank = rank;
                   } else {
@@ -734,6 +737,7 @@ class League extends ModTemplate {
       $data: new_data,
     };
 
+    console.log(sql, params);
     await this.app.storage.executeDatabase(sql, params, "league");
   }
 
@@ -789,13 +793,14 @@ class League extends ModTemplate {
     let sql = `UPDATE OR IGNORE players
                SET ${field} = $data
                WHERE league_id = $league_id
-                 AND publicKey = $publicKey`;
+                 AND publickey = $publickey`;
     let params = {
       $data: new_data,
       $league_id: league_id,
-      $publicKey: publicKey,
+      $publickey: publicKey,
     };
 
+    console.log(sql, params);
     await this.app.storage.executeDatabase(sql, params, "league");
   }
 
@@ -824,10 +829,10 @@ class League extends ModTemplate {
     let sql = `UPDATE players
                SET deleted = 1
                WHERE league_id = $league
-                 AND publicKey = $publicKey`;
+                 AND publickey = $publickey`;
     let params = {
       $league: txmsg.league_id,
-      $publicKey: txmsg.publicKey,
+      $publickey: txmsg.publicKey,
     };
 
     //if (tx.from[0].publicKey !== txmsg.publicKey){
@@ -838,6 +843,7 @@ class League extends ModTemplate {
     //  }
     //}
 
+    console.log(sql, params);
     await this.app.storage.executeDatabase(sql, params, "league");
 
     await this.removeLeaguePlayer(txmsg.league_id, txmsg.publicKey);
@@ -1047,7 +1053,7 @@ class League extends ModTemplate {
     let sql2 = `SELECT *
                 FROM players
                 WHERE league_id = ?
-                  AND publicKey IN (`;
+                  AND publickey IN (`;
     for (let pk of players) {
       sql2 += `'${pk}', `;
     }
@@ -1227,14 +1233,15 @@ class League extends ModTemplate {
 
     let sql = `UPDATE OR IGNORE players
                SET ${field} = (${field} + ${amount}), ts = $ts
-               WHERE publicKey = $publicKey
+               WHERE publickey = $publickey
                  AND league_id = $league_id`;
     let params = {
       $ts: new Date().getTime(),
-      $publicKey: publicKey,
+      $publickey: publicKey,
       $league_id: league_id,
     };
 
+    console.log(sql, params);
     await this.app.storage.executeDatabase(sql, params, "league");
     return 1;
   }
@@ -1260,15 +1267,16 @@ class League extends ModTemplate {
     let sql = `UPDATE players
                SET score = $score,
                    ts    = $ts
-               WHERE publicKey = $publicKey
+               WHERE publickey = $publickey
                  AND league_id = $league_id`;
     let params = {
       $score: playerObj.score,
       $ts: new Date().getTime(),
-      $publicKey: playerObj.publicKey,
+      $publickey: playerObj.publicKey,
       $league_id: league_id,
     };
 
+    console.log(sql, params);
     await this.app.storage.executeDatabase(sql, params, "league");
     return 1;
   }
@@ -1381,7 +1389,7 @@ class League extends ModTemplate {
   validatePlayer(obj) {
     let newObj = {};
 
-    newObj.publicKey = obj.publicKey || "";
+    newObj.publicKey = obj.publicKey || obj.publickey || "";
     newObj.score = obj.score || 0;
     newObj.games_started = obj.games_started || 0;
     newObj.games_finished = obj.games_finished || 0;
@@ -1484,7 +1492,7 @@ class League extends ModTemplate {
     //We do this here to avoid a SQL union statement
     let cond = league.admin
       ? ``
-      : ` AND (ts > ${cutoff} OR games_finished > 0 OR publicKey = '${this.publicKey}')`;
+      : ` AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.publicKey}')`;
 
     this.sendPeerDatabaseRequestWithFilter(
       "League",
@@ -1501,7 +1509,7 @@ class League extends ModTemplate {
             //
             rank++;
 
-            if (p.publicKey == this.publicKey) {
+            if (p.publickey == this.publicKey) {
               if (p.games_finished > 0) {
                 league.rank = rank;
               } else {
@@ -1574,6 +1582,7 @@ class League extends ModTemplate {
       $default_score: obj.default_score,
     };
 
+    console.log(sql, params);
     await this.app.storage.executeDatabase(sql, params, "league");
 
     return;
@@ -1581,22 +1590,23 @@ class League extends ModTemplate {
 
   async playerInsert(league_id, obj) {
     let sql = `INSERT
-    OR IGNORE INTO players (league_id, publicKey, score, ts) 
+    OR IGNORE INTO players (league_id, publickey, score, ts) 
                                 VALUES (
     $league_id,
-    $publicKey,
+    $publickey,
     $score,
     $ts
     )`;
     let params = {
       $league_id: league_id,
-      $publicKey: obj.publicKey,
+      $publickey: obj.publicKey,
       $score: obj.score,
       $ts: new Date().getTime(),
     };
 
     //console.log("Insert player:", params);
 
+    console.log(sql, params);
     await this.app.storage.executeDatabase(sql, params, "league");
     return;
   }

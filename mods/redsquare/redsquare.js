@@ -503,7 +503,7 @@ class RedSquare extends ModTemplate {
 
       let sql = `SELECT *
                  FROM tweets
-                 WHERE publicKey = '${publicKey}'
+                 WHERE publickey = '${publicKey}'
                    AND updated_at < ${time_cutoff}
                  ORDER BY created_at DESC LIMIT '${this.peers[i].profile_limit}'`;
       this.loadTweetsFromPeer(peer, sql, (txs) => {
@@ -1036,7 +1036,7 @@ class RedSquare extends ModTemplate {
                                      parent_id,
                                      thread_id,
                                      type,
-                                     publicKey,
+                                     publickey,
                                      link,
                                      link_properties,
                                      num_replies,
@@ -1051,7 +1051,7 @@ class RedSquare extends ModTemplate {
                          $parent_id,
                          $thread_id,
                          $type,
-                         $publicKey,
+                         $publickey,
                          $link,
                          $link_properties,
                          0,
@@ -1076,7 +1076,7 @@ class RedSquare extends ModTemplate {
         $parent_id: tweet.tx.optional.parent_id,
         $type: type_of_tweet,
         $thread_id: tweet.tx.optional.thread_id || tx.signature,
-        $publicKey: tx.from[0].publicKey,
+        $publickey: tx.from[0].publicKey,
         $link: tweet.link,
         $link_properties: JSON.stringify(tweet.tx.optional.link_properties),
         $has_images: has_images,

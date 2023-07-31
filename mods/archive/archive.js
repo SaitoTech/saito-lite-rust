@@ -217,7 +217,7 @@ class Archive extends ModTemplate {
     sql = `INSERT
     OR IGNORE INTO archives (
       tx_id, 
-      publicKey, 
+      publickey, 
       owner, 
       sig, 
       field1, 
@@ -230,7 +230,7 @@ class Archive extends ModTemplate {
       preserve
     ) VALUES (
     $tx_id,
-    $publicKey,
+    $publickey,
     $owner,
     $sig,
     $field1,
@@ -244,7 +244,7 @@ class Archive extends ModTemplate {
     )`;
     params = {
       $tx_id: tx_id,
-      $publicKey: newObj.publicKey,
+      $publickey: newObj.publicKey,
       $owner: newObj.owner,
       $sig: newObj.signature,
       $field1: newObj.field1,
@@ -492,10 +492,10 @@ class Archive extends ModTemplate {
       sql = `SELECT *
              FROM archives
                       JOIN txs
-             WHERE archives.publicKey = $publicKey
+             WHERE archives.publickey = $publickey
                AND txs.id = archives.tx_id ${timestamp_limiting_clause}
              ORDER BY archives.id DESC LIMIT $limit`;
-      params = { $publicKey: obj.publicKey, $limit: limit };
+      params = { $publickey: obj.publicKey, $limit: limit };
       rows = await this.app.storage.queryDatabase(sql, params, "archive");
       where_obj["publicKey"] = obj.publicKey;
     }

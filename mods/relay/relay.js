@@ -140,18 +140,18 @@ class Relay extends ModTemplate {
       }
 
       if (message.request === "relay peer message") {
-        console.log("Relay message: ", message);
+        //console.log("Relay message: ", message);
 
         let relayed_tx = new Transaction(null, message.data);
 
         //
         // sanity check on tx
         //
-        console.log("decrypting relay message");
+        //console.log("decrypting relay message");
         await relayed_tx.decryptMessage(app);
         let txjson = relayed_tx.returnMessage();
 
-        console.log("txjson : ", txjson);
+        //console.log("txjson : ", txjson);
 
         if (!relayed_tx.to[0]?.publicKey) {
           return;
@@ -160,7 +160,7 @@ class Relay extends ModTemplate {
         //
         // if interior transaction is intended for me, I process regardless
         //
-        console.log("relay tx to me? " + relayed_tx.isTo(this.publicKey));
+        //console.log("relay tx to me? " + relayed_tx.isTo(this.publicKey));
 
         if (relayed_tx.isTo(this.publicKey)) {
           app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);
