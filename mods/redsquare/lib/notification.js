@@ -13,14 +13,17 @@ class RedSquareNotification {
   }
 
   render(selector = "") {
+    console.log("RENDER NOTIFICATION");
     if (this.tx == null) {
       document.querySelector(selector).innerHTML =
         '<div class="saito-end-of-redsquare">No notifications</div>';
     } else {
+      console.log(this.tx);
       let html = "";
       let txmsg = this.tx.returnMessage();
       let from = this.tx.from[0].publicKey;
 
+      console.log(txmsg);
       //
       // We put the entire render in a callback so that if we don't have the original tweet being referenced by the
       // notification, we can make a peer DB request to try to find it
@@ -40,7 +43,7 @@ class RedSquareNotification {
           }
         }
 
-        console.log("Render Notification -- ", tweet_tx);
+        //console.log("Render Notification -- ", tweet_tx);
 
         //Process as normal
         if (txmsg.request == "like tweet") {
@@ -136,7 +139,6 @@ class RedSquareNotification {
     if (obj) {
       obj.onclick = (e) => {
         let sig = e.currentTarget.getAttribute("data-id");
-        console.log(sig, this.tx.signature);
         let tweet = this.mod.returnTweet(this.tx.signature);
 
         if (tweet) {

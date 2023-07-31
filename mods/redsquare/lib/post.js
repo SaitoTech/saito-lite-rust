@@ -194,19 +194,17 @@ class Post {
 
     //Replies
     if (parent_id !== "") {
-      data = { text: text, parent_id: parent_id, thread_id: thread_id, sig: parent_id };
+      data = { text: text, parent_id: parent_id, thread_id: thread_id, signature: parent_id };
     }
     //Retweets
     if (source == "Retweet") {
-      data.retweet_tx = JSON.stringify(post_self.tweet.tx);
+      data.retweet_tx = JSON.stringify(post_self.tweet.tx.toJson());
       data.signature = post_self.tweet.tx.signature;
     }
 
     if (post_self.images.length > 0) {
       data["images"] = post_self.images;
     }
-
-    console.log(data);
 
     let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
@@ -216,30 +214,34 @@ class Post {
     //
     const Tweet = require("./tweet");
     let posted_tweet = new Tweet(post_self.app, post_self.mod, newtx);
-    console.log("New tweet:", posted_tweet);
+    //console.log("New tweet:", posted_tweet);
 
     let rparent = this.tweet;
     if (rparent) {
-      //console.log(rparent)
+      //console.log(rparent);
 
       //
       // loop to remove anything we will hide
-      //
+      /*
       let rparent2 = rparent;
       while (this.mod.returnTweet(rparent2.parent_id)) {
         let x = this.mod.returnTweet(rparent2.parent_id);
         let qs = ".tweet-" + x.tx.signature;
         if (document.querySelector(qs)) {
-          //console.log(qs);
+          console.log("Delete: " + qs);
           document.querySelector(qs).remove();
         }
         rparent2 = x;
-      }
+      }*/
 
       if (posted_tweet.retweet_tx) {
         rparent.tx.optional.num_retweets++;
         rparent.num_retweets++;
-        rparent.render(true);
+        //This should update the tweet stats?
+        rparent.render();
+        this.mod.addTweet(newtx, true);
+        posted_tweet.render(true);
+
       } else {
         rparent.addTweet(posted_tweet);
         rparent.critical_child = posted_tweet;
@@ -248,7 +250,7 @@ class Post {
         rparent.renderWithCriticalChild();
       }
     } else {
-      //this.mod.addTweet(posted_tweet.tx, true);
+      this.mod.addTweet(newtx, true);
       posted_tweet.render(true);
     }
 

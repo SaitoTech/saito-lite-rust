@@ -21,6 +21,8 @@ class Tweet {
 
 //    let txmsg = tx.returnMessage();
     let txmsg = tx.msg;
+    console.log("New Tweet constructor", txmsg);
+
     if (txmsg.module !== mod.name) {
       console.warn("Attempting to create Tweet from non-Redsquare tx");
       return null;
@@ -29,7 +31,7 @@ class Tweet {
     //
     // the core
     //
-    this.tx = tx.toJson();
+    this.tx = tx;
 
     //
     // ancillary content is stored in the tx.optional array, where it
@@ -150,7 +152,6 @@ class Tweet {
     // retweets
     //
     if (this.retweet_tx != null) {
-      console.log(this.retweet_tx);
 
       let newtx = new Transaction(undefined, JSON.parse(this.retweet_tx));
 
@@ -554,9 +555,6 @@ class Tweet {
         `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment`
       ).onclick = (e) => {
 
-        console.log("Click Reply");
-        console.log(this.tx);
-
         e.preventDefault();
         e.stopImmediatePropagation();
 
@@ -571,8 +569,10 @@ class Tweet {
           ".tweet-overlay"
         );
 
-
-        let newtx = new Transaction(undefined, this.tx);
+        //
+        //Show quoted tweet in the post
+        //
+        let newtx = new Transaction(undefined, this.tx.toJson());
         newtx.signature = this.app.crypto.hash(this.tx.signature) + this.app.crypto.hash(this.tx.signature);
 
         let new_tweet = new Tweet(
@@ -605,7 +605,7 @@ class Tweet {
         );
 
         //Insert this tweet as a new Tweet in the post window
-        let newtx = new Transaction(undefined, this.tx);
+        let newtx = new Transaction(undefined, this.tx.toJson());
         newtx.signature = this.app.crypto.hash(this.tx.signature) + this.app.crypto.hash(this.tx.signature);
         
         let new_tweet = new Tweet(
@@ -637,7 +637,7 @@ class Tweet {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        await this.mod.sendLikeTransaction(this.app, this.mod, { signature: this.tx.signature }, this.tx);
+        await this.mod.sendLikeTransaction(this.app, this.mod, { signature: this.tx.signature }, this.tx.toJson());
 
         //
         // increase num likes
@@ -675,7 +675,7 @@ class Tweet {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        this.mod.sendFlagTransaction(this.app, this.mod, { sig: this.tx.signature }, this.tx);
+        this.mod.sendFlagTransaction(this.app, this.mod, { sig: this.tx.signature });
         this.flagged = 1;
 
         let obj = document.querySelector(`.tweet-${this.tx.signature}`);
@@ -991,9 +991,8 @@ class Tweet {
     // some edge cases where tweet won't have rendered
     try {
       let qs = `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`;
-      let obj = document.querySelector(qs);
       let likes = this.tx?.optional?.num_likes || 0;
-      if (obj) {
+      for (let obj of Array.from(document.querySelectorAll(qs))) {
         obj.innerHTML = likes;
       }
     } catch (err) {}
@@ -1004,9 +1003,8 @@ class Tweet {
     //console.log("RenderRetweets");
     try {
       let qs = `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-retweet .tweet-tool-retweet-count`;
-      let obj = document.querySelector(qs);
       let retweets = this.tx?.optional?.num_retweets || 0;
-      if (obj) {
+      for (let obj of Array.from(document.querySelectorAll(qs))) {
         obj.innerHTML = retweets;
       }
     } catch (err) {}
@@ -1017,9 +1015,8 @@ class Tweet {
     //console.log("RenderReplies");
     try {
       let qs = `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`;
-      let obj = document.querySelector(qs);
       let replies = this.tx?.optional?.num_replies || 0;
-      if (obj) {
+      for (let obj of Array.from(document.querySelectorAll(qs))) {
         obj.innerHTML = replies;
       }
     } catch (err) {}

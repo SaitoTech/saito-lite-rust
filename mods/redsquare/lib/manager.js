@@ -12,7 +12,7 @@ class TweetManager {
 
     this.mode = "loading";
 
-    this.publickey = "";
+    this.publicKey = "";
 
     this.profile = new SaitoProfile(app, mod, ".saito-main");
 
@@ -93,7 +93,7 @@ class TweetManager {
             // load more profile tweets
             //
             if (this.mode == "profile") {
-              this.mod.loadProfileTweets(null, this.publickey, (txs) => {
+              this.mod.loadProfileTweets(null, this.publicKey, (txs) => {
                 if (this.mode !== "profile") {
                   return;
                 }
@@ -214,7 +214,7 @@ class TweetManager {
     // profile //
     /////////////
     if (new_mode == "profile") {
-      this.profile.publickey = this.publickey;
+      this.profile.publicKey = this.publicKey;
 
       this.profile.render();
 

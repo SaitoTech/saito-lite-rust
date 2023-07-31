@@ -589,9 +589,9 @@ class RedSquare extends ModTemplate {
 
   loadTweetWithSig(sig, mycallback = null) {
     let t = this.returnTweet(sig);
-    if (t) {
+    if (t?.tx) {
       if (mycallback) {
-        mycallback(t);
+        mycallback(t.tx);
       }
       return;
     }
@@ -777,7 +777,8 @@ class RedSquare extends ModTemplate {
           this.tweets[i].tx.optional.num_retweets = tweet.tx.optional.num_retweets;
           this.tweets[i].tx.optional.num_likes = tweet.tx.optional.num_likes;
           this.tweets[i].updated_at = tweet.tx.optional.updated_at;
-          //console.log("Update stats of tweet we already indexed");
+          console.log("Update stats of tweet we already indexed");
+          console.log(this.tweets[i].tx.optional);
           break;
         }
       }
@@ -913,7 +914,7 @@ class RedSquare extends ModTemplate {
         // save tweets addressed to me
         //
         if (tx.isTo(this.publicKey)) {
-          //console.log("Save notification to archive");
+          console.log("Receive tweet --> Save notification to archive");
 
           //
           // this transaction is TO me, but I may not be the tx.to[0].publicKey address, and thus the archive
@@ -942,15 +943,17 @@ class RedSquare extends ModTemplate {
                 tweet.tx.optional.num_replies = 0;
               }
 
-              tweet.tx.optional.num_replies++;
-              //>>>>>>> FIX HERE ????????????????
-              this.app.storage.updateTransaction(new Transaction(undefined, tweet.tx), {
+              if (!tx.isFrom(this.publicKey)){
+                tweet.tx.optional.num_replies++;
+                tweet.renderReplies();
+              }
+
+              this.app.storage.updateTransaction(tweet.tx, {
                 owner: this.publicKey,
                 field3: this.publicKey,
               });
-              tweet.renderReplies();
             } else {
-              this.app.storage.updateTransaction(new Transaction(undefined, tweet.tx), {
+              this.app.storage.updateTransaction(tweet.tx, {
                 owner: this.publicKey,
                 field3: this.publicKey,
               });
@@ -977,13 +980,13 @@ class RedSquare extends ModTemplate {
                 tweet2.tx.optional.num_retweets = 0;
               }
               tweet2.tx.optional.num_retweets++;
-              this.app.storage.updateTransaction(new Transaction(undefined, tweet2.tx), {
+              this.app.storage.updateTransaction(tweet2.tx, {
                 owner: this.publicKey,
                 field3: this.publicKey,
               });
               tweet2.renderRetweets();
             } else {
-              this.app.storage.updateTransaction(new Transaction(undefined, tweet2.tx), {
+              this.app.storage.updateTransaction(tweet2.tx, {
                 owner: this.publicKey,
                 field3: this.publicKey,
               });
@@ -1153,7 +1156,7 @@ class RedSquare extends ModTemplate {
       // save my likes
       //
       if (tx.isTo(this.publicKey)) {
-        //console.log("Save (like) notification to archive");
+        console.log("Save (like) notification to archive");
 
         await this.app.storage.saveTransaction(tx, {
           owner: this.publicKey,
@@ -1177,6 +1180,7 @@ class RedSquare extends ModTemplate {
             liked_tx.optional.num_likes = 0;
           }
           liked_tx.optional.num_likes++;
+          liked_tx.num_likes++;
           this.app.storage.updateTransaction(liked_tx, { owner: this.publicKey });
           tweet.renderLikes();
         }
@@ -1353,7 +1357,7 @@ class RedSquare extends ModTemplate {
     let maximum = 10;
     for (let tweet of this.tweets) {
       tweet.tx.optional.updated_at = tweet.updated_at;
-      tweet_txs.push(JSON.stringify(tweet.tx));
+      tweet_txs.push(JSON.stringify(tweet.tx.toJson()));
       if (--maximum <= 0) {
         break;
       }

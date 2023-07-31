@@ -147,8 +147,8 @@ class Archive extends ModTemplate {
     if (req.request === "archive") {
       console.log("Archive Peer Request: ", req.data);
       if (req.data.request === "delete") {
-        let newtx = new Transaction(undefined, req.data.tx);
-        await this.deleteTransaction(newtx, req.data);
+        //let newtx = new Transaction(undefined, req.data.tx);
+        await this.deleteTransaction(req.data.tx, req.data);
       }
       if (req.data.request === "save") {
         let newtx = new Transaction(undefined, req.data.tx);

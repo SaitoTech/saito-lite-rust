@@ -107,7 +107,9 @@ class Storage {
     const message = "archive";
     let data: any = {};
     data.request = "update";
-    data.tx = tx;
+    data.optional = tx.optional;
+    data.tx = tx.toJson();
+
     data = Object.assign(data, obj);
 
     if (peer === "localhost") {
