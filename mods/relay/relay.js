@@ -1,3 +1,4 @@
+const Slip = require("../../lib/saito/slip").default;
 const PeerService = require("saito-js/lib/peer_service").default;
 
 const Transaction = require("../../lib/saito/transaction").default;
@@ -19,7 +20,6 @@ class Relay extends ModTemplate {
     this.categories = "Utilities Communications";
     this.debug = false;
     this.busy = false;
-
 
     ////////////////////////////////////////////
     // obj.data is a toJson wrapped transaction
@@ -73,11 +73,15 @@ class Relay extends ModTemplate {
     //
     // transaction to end-user, containing msg.request / msg.data is
     //
-    let tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    tx.addFrom(this.publicKey);
+    let tx = new Transaction();
+    let slip = new Slip();
+    slip.publicKey = this.publicKey;
+    tx.addFromSlip(slip);
 
     for (let i = 0; i < recipients.length; i++) {
-      tx.addTo(recipients[i]);
+      let slip = new Slip();
+      slip.publicKey = recipients[i];
+      tx.addToSlip(slip);
     }
     tx.timestamp = new Date().getTime();
     tx.msg.request = message_request;
@@ -95,7 +99,7 @@ class Relay extends ModTemplate {
       //
       let peer = peers[i];
 
-      // *** NOTE *** 
+      // *** NOTE ***
       // tx.msg.data is a json-ready transaction
       // this network function wraps the whole thing within another transaction
       // newtx.msg.data.msg.data = original transactionn
@@ -117,7 +121,6 @@ class Relay extends ModTemplate {
     let message = tx.msg;
 
     try {
-
       if (tx.isTo(this.publicKey)) {
         if (message.request === "ping") {
           await this.sendRelayMessage(tx.from[0].publicKey, "echo", {
@@ -138,7 +141,7 @@ class Relay extends ModTemplate {
 
       if (message.request === "relay peer message") {
         console.log("Relay message: ", message);
-        
+
         let relayed_tx = new Transaction(null, message.data);
 
         //
@@ -159,12 +162,9 @@ class Relay extends ModTemplate {
         //
         console.log("relay tx to me? " + relayed_tx.isTo(this.publicKey));
 
-        if (relayed_tx.isTo(this.publicKey)){
-
+        if (relayed_tx.isTo(this.publicKey)) {
           app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);
-
-        }else{
-
+        } else {
           // check to see if original tx is for a peer
           let peer_found = 0;
 

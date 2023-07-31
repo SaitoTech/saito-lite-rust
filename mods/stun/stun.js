@@ -362,7 +362,7 @@ class Stun extends ModTemplate {
     }
 
     newtx.msg.module = "Stun";
-    newtx.msg.request = "send-message-to-peers";
+    newtx.msg.request = "stun-send-message-to-peers";
     newtx.msg.data = _data;
     await newtx.sign();
 
