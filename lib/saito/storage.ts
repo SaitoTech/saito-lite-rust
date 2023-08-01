@@ -62,7 +62,7 @@ class Storage {
   //    ---> peers receive via Archive module
   //    ---> peers fetch from DB, return via callback or return TX
   //
-  async saveTransaction(tx, obj = {}, peer = null) {
+  async saveTransaction(tx: Transaction, obj = {}, peer = null) {
     const txmsg = tx.returnMessage();
     const message = "archive";
 
@@ -91,18 +91,17 @@ class Storage {
       return;
     }
     if (peer != null) {
-      //peer.sendRequestAsTransaction(message, data, function (res) {});
-      this.app.network.sendRequestAsTransaction(message, data, function (res) {}, peer.peerIndex);
+      await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
       this.app.connection.emit("saito-save-transaction", tx);
       return;
     } else {
-      this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+      await this.app.network.sendRequestAsTransaction(message, data);
       this.app.connection.emit("saito-save-transaction", tx);
       return;
     }
   }
 
-  async updateTransaction(tx, obj = {}, peer = null) {
+  async updateTransaction(tx: Transaction, obj = {}, peer = null) {
     const txmsg = tx.returnMessage();
     const message = "archive";
     let data: any = {};
@@ -120,11 +119,10 @@ class Storage {
       return;
     }
     if (peer != null) {
-      //peer.sendRequestAsTransaction(message, data, function (res) {}, peer.peerIndex);
-      this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+      await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
       return;
     } else {
-      this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+      await this.app.network.sendRequestAsTransaction(message, data);
       return;
     }
   }
@@ -145,7 +143,8 @@ class Storage {
       let txs = [];
       if (res) {
         for (let i = 0; i < res.length; i++) {
-          let tx = new Transaction(null, JSON.parse(res[i].tx));
+          let tx = new Transaction();
+          tx.deserialize_from_web(this.app, res[i].tx);
           txs.push(tx);
         }
       }

@@ -19,8 +19,8 @@ class Tweet {
       return null; //Doesn't actually return null
     }
 
-//    let txmsg = tx.returnMessage();
-    let txmsg = tx.msg;
+    let txmsg = tx.returnMessage();
+    //let txmsg = tx.msg;
     console.log("New Tweet constructor", txmsg);
 
     if (txmsg.module !== mod.name) {
@@ -152,8 +152,8 @@ class Tweet {
     // retweets
     //
     if (this.retweet_tx != null) {
-
-      let newtx = new Transaction(undefined, JSON.parse(this.retweet_tx));
+      let newtx = new Transaction();
+      newtx.deserialize_from_web(this.app, this.retweet_tx);
 
       this.retweet = new Tweet(
         this.app,
@@ -168,7 +168,7 @@ class Tweet {
     //
     // image preview -- copied over from txmsg.data.images
     //
-        //tweet.tx.msg.data.images
+    //tweet.tx.msg.data.images
 
     if (this.images?.length > 0) {
       console.log("Has Image");
@@ -554,7 +554,6 @@ class Tweet {
       document.querySelector(
         `.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment`
       ).onclick = (e) => {
-
         e.preventDefault();
         e.stopImmediatePropagation();
 
@@ -573,7 +572,8 @@ class Tweet {
         //Show quoted tweet in the post
         //
         let newtx = new Transaction(undefined, this.tx.toJson());
-        newtx.signature = this.app.crypto.hash(this.tx.signature) + this.app.crypto.hash(this.tx.signature);
+        newtx.signature =
+          this.app.crypto.hash(this.tx.signature) + this.app.crypto.hash(this.tx.signature);
 
         let new_tweet = new Tweet(
           this.app,
@@ -606,8 +606,9 @@ class Tweet {
 
         //Insert this tweet as a new Tweet in the post window
         let newtx = new Transaction(undefined, this.tx.toJson());
-        newtx.signature = this.app.crypto.hash(this.tx.signature) + this.app.crypto.hash(this.tx.signature);
-        
+        newtx.signature =
+          this.app.crypto.hash(this.tx.signature) + this.app.crypto.hash(this.tx.signature);
+
         let new_tweet = new Tweet(
           this.app,
           this.mod,
@@ -637,7 +638,12 @@ class Tweet {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        await this.mod.sendLikeTransaction(this.app, this.mod, { signature: this.tx.signature }, this.tx.toJson());
+        await this.mod.sendLikeTransaction(
+          this.app,
+          this.mod,
+          { signature: this.tx.signature },
+          this.tx
+        );
 
         //
         // increase num likes

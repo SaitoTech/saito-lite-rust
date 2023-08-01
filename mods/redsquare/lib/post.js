@@ -198,7 +198,7 @@ class Post {
     }
     //Retweets
     if (source == "Retweet") {
-      data.retweet_tx = JSON.stringify(post_self.tweet.tx.toJson());
+      data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);
       data.signature = post_self.tweet.tx.signature;
     }
 
@@ -241,7 +241,6 @@ class Post {
         rparent.render();
         this.mod.addTweet(newtx, true);
         posted_tweet.render(true);
-
       } else {
         rparent.addTweet(posted_tweet);
         rparent.critical_child = posted_tweet;

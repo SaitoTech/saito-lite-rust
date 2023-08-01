@@ -37,7 +37,7 @@ class WebMethods extends WebSharedMethods {
     let newtx = new Transaction();
     try {
       // console.log("buffer length : " + buffer.byteLength, buffer);
-      newtx = Transaction.deserialize(buffer, new Factory()) as Transaction;
+      newtx.deserialize(buffer);
       newtx.unpackData();
     } catch (error) {
       console.error(error);
@@ -97,7 +97,7 @@ async function init() {
     new WebMethods(saito),
     new Factory(),
     saito.options.wallet?.privateKey || "",
-    LogLevel.Trace
+    LogLevel.Info
   );
   saito.wallet = (await S.getInstance().getWallet()) as Wallet;
   saito.wallet.app = saito;

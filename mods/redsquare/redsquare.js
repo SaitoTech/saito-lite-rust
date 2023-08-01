@@ -630,7 +630,8 @@ class RedSquare extends ModTemplate {
       async (res) => {
         if (res.rows) {
           res.rows.forEach((row) => {
-            let tx = new Transaction(undefined, JSON.parse(row.tx));
+            let tx = new Transaction();
+            tx.deserialize_from_web(this.app, row.tx);
 
             if (!tx.optional) {
               tx.optional = {};
@@ -943,7 +944,7 @@ class RedSquare extends ModTemplate {
                 tweet.tx.optional.num_replies = 0;
               }
 
-              if (!tx.isFrom(this.publicKey)){
+              if (!tx.isFrom(this.publicKey)) {
                 tweet.tx.optional.num_replies++;
                 tweet.renderReplies();
               }
@@ -965,7 +966,8 @@ class RedSquare extends ModTemplate {
           //
 
           if (txmsg.data?.retweet_tx) {
-            let rtx = new Transaction(undefined, JSON.parse(txmsg.data.retweet_tx));
+            let rtx = new Transaction();
+            rtx.deserialize_from_web(this.app, txmsg.data.retweet_tx);
 
             if (this.tweets_sigs_hmap[rtx.signature]) {
               let tweet2 = this.returnTweet(rtx.signature);
@@ -1065,7 +1067,7 @@ class RedSquare extends ModTemplate {
         has_images = 1;
       }
       //This is the received TX without included optional data!
-      let txjson = JSON.stringify(tx.toJson());
+      let txjson = tx.serialize_to_web(this.app);
       let tx_size = txjson.length;
 
       let params = {
@@ -1119,7 +1121,7 @@ class RedSquare extends ModTemplate {
       //
       await this.updateTweetsCacheForBrowsers();
     } catch (err) {
-      console.log("ERROR in receiveTweetsTransaction() in RedSquare: " + err);
+      console.error("ERROR in receiveTweetsTransaction() in RedSquare: " + err);
     }
   }
 
@@ -1286,11 +1288,12 @@ class RedSquare extends ModTemplate {
       console.log(value);
       if (value && value.length > 0) {
         for (let tx of value) {
-          let txobj = JSON.parse(tx);
-          let newtx = new Transaction(undefined, txobj);
-          if (txobj.optional){
-            newtx.optional = txobj.optional;
-          }
+          // let txobj = JSON.parse(tx);
+          let newtx = new Transaction();
+          newtx.deserialize_from_web(this.app, tx);
+          // if (txobj.optional) {
+          //   newtx.optional = txobj.optional;
+          // }
           this.addTweet(newtx);
         }
       } else {
@@ -1311,13 +1314,15 @@ class RedSquare extends ModTemplate {
             if (this.tweets.length == 0) {
               console.log("Using Server Cached Tweets : ", window.tweets);
               for (let z = 0; z < window.tweets.length; z++) {
-                let newtx = new Transaction(undefined, JSON.parse(window.tweets[z]));
+                let newtx = new Transaction();
+                newtx.deserialize_from_web(this.app, window.tweets[z]);
                 this.addTweet(newtx);
               }
             } else {
               console.log("Using Server Cached Tweets : ", this.tweets);
               for (let z = 0; z < this.tweets.length; z++) {
-                let newtx = new Transaction(undefined, JSON.parse(this.tweets[z]));
+                let newtx = new Transaction();
+                newtx.deserialize_from_web(this.app, this.tweets[z]);
                 this.addTweet(newtx);
               }
             }
@@ -1361,9 +1366,9 @@ class RedSquare extends ModTemplate {
     let maximum = 10;
     for (let tweet of this.tweets) {
       tweet.tx.optional.updated_at = tweet.updated_at;
-      let tweet_json = tweet.tx.toJson();
-      tweet_json.optional = tweet.tx.optional;
-      tweet_txs.push(JSON.stringify(tweet_json));
+      // let tweet_json = tweet.tx.toJson();
+      // tweet_json.optional = tweet.tx.optional;
+      tweet_txs.push(tweet.tx.serialize_to_web(this.app));
       if (--maximum <= 0) {
         break;
       }
@@ -1493,7 +1498,8 @@ class RedSquare extends ModTemplate {
         continue;
       }
       // create the transaction
-      let tx = new Transaction(undefined, JSON.parse(rows[i].tx));
+      let tx = new Transaction();
+      tx.deserialize_from_web(this.app, rows[i].tx);
 
       if (rows[i].num_reples) {
         tx.optional.num_replies = rows[i].num_replies;
@@ -1507,7 +1513,7 @@ class RedSquare extends ModTemplate {
       if (rows[i].flagged) {
         tx.optional.flagged = rows[i].flagged;
       }
-      let hexstring = JSON.stringify(tx.toJson());
+      let hexstring = tx.serialize_to_web(this.app);
       hex_entries.push(hexstring);
     }
 
@@ -1561,7 +1567,8 @@ class RedSquare extends ModTemplate {
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
 
             for (let i = 0; i < rows.length; i++) {
-              let tx = new Transaction(undefined, JSON.parse(rows[i].tx));
+              let tx = new Transaction();
+              tx.deserialize_from_web(this.app, rows[i].tx);
 
               let txmsg = tx.returnMessage();
               let text = txmsg.data.text;
@@ -1603,7 +1610,8 @@ class RedSquare extends ModTemplate {
             console.info(rows.length);
 
             for (let i = 0; i < rows.length; i++) {
-              let tx = new Transaction(undefined, JSON.parse(rows[i].tx));
+              let tx = new Transaction();
+              tx.deserialize_from_web(this.app, rows[i].tx);
 
               //console.info(rows[i]);
               let txmsg = tx.returnMessage();
