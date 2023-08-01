@@ -21,7 +21,7 @@ module.exports = async (app, mod, league) => {
     html += `<button class="league-button league-sudo-button">Admin</button>`;
   }
 
-  if ((await app.wallet.getPublicKey()) == league.admin) {
+  if (mod.publicKey == league.admin) {
     html += `<button class="league-button league-edit-button">Edit</button>`;
     html += `<button class="league-button league-invite-button">Invite</button>`;
     html += `<button class="league-button league-delete-button">Delete</button>`;

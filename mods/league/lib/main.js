@@ -33,10 +33,9 @@ class LeagueMain {
       console.log(JSON.parse(JSON.stringify(leagues)));
     }
 
-    let publicKey = await this.app.wallet.getPublicKey();
-    let filter1 = leagues.filter((l) => l.admin == publicKey);
-    let filter2 = leagues.filter((l) => l.rank >= 0 && l.admin != publicKey);
-    let filter3 = leagues.filter((l) => l.rank < 0 && l.admin != publicKey);
+    let filter1 = leagues.filter((l) => l.admin == this.mod.publicKey);
+    let filter2 = leagues.filter((l) => l.rank >= 0 && l.admin != this.mod.publicKey);
+    let filter3 = leagues.filter((l) => l.rank < 0 && l.admin != this.mod.publicKey);
 
     if (filter1.length > 0) {
       filter1.forEach((lg) => {

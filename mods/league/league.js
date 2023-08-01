@@ -737,7 +737,6 @@ class League extends ModTemplate {
       $data: new_data,
     };
 
-    console.log(sql, params);
     await this.app.storage.executeDatabase(sql, params, "league");
   }
 
@@ -800,7 +799,6 @@ class League extends ModTemplate {
       $publickey: publicKey,
     };
 
-    console.log(sql, params);
     await this.app.storage.executeDatabase(sql, params, "league");
   }
 
@@ -843,7 +841,6 @@ class League extends ModTemplate {
     //  }
     //}
 
-    console.log(sql, params);
     await this.app.storage.executeDatabase(sql, params, "league");
 
     await this.removeLeaguePlayer(txmsg.league_id, txmsg.publicKey);
@@ -1061,6 +1058,10 @@ class League extends ModTemplate {
 
     let sqlResults = await this.app.storage.queryDatabase(sql2, [league_id], "league");
 
+    if (sqlResults) {
+      sqlResults = sqlResults.map(this.validatePlayer, this);
+    }
+
     let league = this.returnLeague(league_id);
 
     let localStats = null;
@@ -1241,7 +1242,6 @@ class League extends ModTemplate {
       $league_id: league_id,
     };
 
-    console.log(sql, params);
     await this.app.storage.executeDatabase(sql, params, "league");
     return 1;
   }
@@ -1276,7 +1276,6 @@ class League extends ModTemplate {
       $league_id: league_id,
     };
 
-    console.log(sql, params);
     await this.app.storage.executeDatabase(sql, params, "league");
     return 1;
   }
@@ -1582,7 +1581,6 @@ class League extends ModTemplate {
       $default_score: obj.default_score,
     };
 
-    console.log(sql, params);
     await this.app.storage.executeDatabase(sql, params, "league");
 
     return;
@@ -1606,7 +1604,6 @@ class League extends ModTemplate {
 
     //console.log("Insert player:", params);
 
-    console.log(sql, params);
     await this.app.storage.executeDatabase(sql, params, "league");
     return;
   }
