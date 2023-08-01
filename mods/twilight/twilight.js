@@ -2704,7 +2704,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["bayofpigs","fallofsaigon","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
+          this.game.deck[0].hand = ["cia", "voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -3292,6 +3292,13 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
         }
 
       } else {
+
+	if (!this.game.saito_cards_added) {
+	  this.game.saito_cards_added = [];
+	  this.game.saito_cards_added_reason = [];
+	  this.game.saito_cards_removed = [];
+  	  this.game.saito_cards_removed_reason = [];
+	}
 
 	if (this.game.options.deck === "saito") {
           if (this.game.saito_cards_added.length > 0 || this.game.saito_cards_removed.length > 0) {
@@ -7071,7 +7078,7 @@ if (inc_optional == true) {
         deck['energycrisis']      = { img : "TNRnTS-212png" ,name : "Energy Crisis", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 };
         deck['nixonshock']       	= { img : "TNRnTS-213png" ,name : "Nixon Shock", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 };
         deck['kissinger'] 	     	= { img : "TNRnTS-218png" ,name : "Kissinger Bombs Cambodia", scoring : 0 , player : "us"     , recurring : 1 , ops : 2 };
-        deck['handshake'] 		= { img : "TNRnTS-201png" , name : "Handshake in Space", scoring : 0 , player : "both" , recurring : 1 , ops : 1 };
+        deck['handshake'] 		= { img : "TNRnTS-201png" , name : "Handshake in Space", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
         deck['fischerspassky']  = { img : "TNRnTS-221png" ,name : "Fischer-Spassky", scoring : 0 , player : "both"   , recurring : 0 , ops : 3 };
         deck['sudan']       		= { img : "TNRnTS-219png" ,name : "Sudanese Civil War", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 };
         deck['fallofsaigon']      = { img : "TNRnTS-225png" ,name : "Fall of Saigon", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 };
@@ -8593,43 +8600,43 @@ if (inc_optional == true) {
 
     try {
 
-    if (this.game.state.events.nixonshock == "") {
+    if (this.game.state.events.nixonshock != 1) {
       $('#eventtile_nixonshock').css('display','none');
     } else {
       $('#eventtile_nixonshock').css('display','block');
     }
 
-    if (this.game.state.events.argo == "") {
+    if (this.game.state.events.argo != 1) {
       $('#eventtile_argo').css('display','none');
     } else {
       $('#eventtile_argo').css('display','block');
     }
 
-    if (this.game.state.events.sudan == "") {
+    if (this.game.state.events.sudan != 1) {
       $('#eventtile_sudan').css('display','none');
     } else {
       $('#eventtile_sudan').css('display','block');
     }
 
-    if (this.game.state.events.berlinagreement == "") {
+    if (this.game.state.events.berlinagreement != 1) {
       $('#eventtile_berlinagreement').css('display','none');
     } else {
       $('#eventtile_berlinagreement').css('display','block');
     }
 
-    if (this.game.state.events.carterdoctrine == "") {
+    if (this.game.state.events.carterdoctrine != 1) {
       $('#eventtile_carterdoctrine').css('display','none');
     } else {
       $('#eventtile_carterdoctrine').css('display','block');
     }
 
-    if (this.game.state.events.tsarbomba == "") {
+    if (this.game.state.events.tsarbomba != 1) {
       $('#eventtile_tsarbomba').css('display','none');
     } else {
       $('#eventtile_tsarbomba').css('display','block');
     }
 
-    if (this.game.state.events.kissinger == "") {
+    if (!this.game.state.events.kissinger) {
       $('#eventtile_kissinger').css('display','none');
     } else {
 
@@ -10490,7 +10497,6 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
     if (card == "cia") {
 
       this.game.state.events.cia = 1;
-
 
       //
       // SAITO COMMUNITY - lone gunman added
