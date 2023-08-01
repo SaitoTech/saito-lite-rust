@@ -4352,7 +4352,7 @@ playerTurnHeadlineSelected(card, player) {
         // cannot event UN Intervention w/o the opponent card in hand
         //
         let can_play_event = 1;
-	let ac = twilight_self.returnAllCards();
+	let ac = twilight_self.returnAllCards(true);
         if (card == "unintervention") {
           let opponent_event_in_hand = 0;
           for (let b = 0; b < twilight_self.game.deck[0].hand.length; b++) {
@@ -4425,7 +4425,7 @@ playerTurnHeadlineSelected(card, player) {
 
         if (action == "event") {
 
-	  let ac = twilight_self.returnAllCards();
+	  let ac = twilight_self.returnAllCards(true);
 
           //
           // sanity check on opponent event choice
@@ -4522,7 +4522,7 @@ playerTurnHeadlineSelected(card, player) {
 
         if (action == "space") {
 
-	  let ac = twilight_self.returnAllCards();
+	  let ac = twilight_self.returnAllCards(true);
 
           if (twilight_self.confirm_moves == 1) {
             let fr_header = `Confirm you want to space ${ac[card].name}`;
@@ -4645,7 +4645,7 @@ playerTurnHeadlineSelected(card, player) {
 
         if (action2 == "space"){
 
-	  let ac = twilight_self.returnAllCards();
+	  let ac = twilight_self.returnAllCards(true);
 
           if (twilight_self.confirm_moves == 1) {
               let fr_header = `Confirm you want to space ${ac[card].name}`;
@@ -5073,7 +5073,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
     twilight_self.game.state.event_before_ops = 0;
 
-    let ac = twilight_self.returnAllCards();
+    let ac = twilight_self.returnAllCards(true);
 
     if (ac[card].player == opponent) {
         let html = '<ul><li class="option" id="before_ops">event before ops</li><li class="option" id="after_ops">event after ops</li></ul>';
@@ -5766,7 +5766,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
   playerSpaceCard(card, player) {
 
-    let ac = this.returnAllCards();
+    let ac = this.returnAllCards(true);
     let card_ops = ac[card].ops;
 
     // stats
