@@ -258,14 +258,14 @@ export default class Crypto {
    * @returns {boolean} does publickey fit the criteria?
    */
   isPublicKey(publicKey: string) {
-    if (publicKey.length == 65 || publicKey.length == 66) {
-      return 1;
-      // if (publickey.indexOf("@") <= 0) {
-      //   if (this.isBase58(publickey)) {
-      //     return 1;
-      //   }
-      // }
+    // if (publicKey.length == 65 || publicKey.length == 66) {
+    //   return 1;
+    if (publicKey.indexOf("@") <= 0) {
+      if (this.isBase58(publicKey)) {
+        return 1;
+      }
     }
+    // }
     return 0;
   }
 
