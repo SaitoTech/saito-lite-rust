@@ -91,12 +91,11 @@ class Storage {
       return;
     }
     if (peer != null) {
-      //peer.sendRequestAsTransaction(message, data, function (res) {});
-      this.app.network.sendRequestAsTransaction(message, data, function (res) {}, peer.peerIndex);
+      await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
       this.app.connection.emit("saito-save-transaction", tx);
       return;
     } else {
-      this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+      await this.app.network.sendRequestAsTransaction(message, data);
       this.app.connection.emit("saito-save-transaction", tx);
       return;
     }
@@ -120,11 +119,10 @@ class Storage {
       return;
     }
     if (peer != null) {
-      //peer.sendRequestAsTransaction(message, data, function (res) {}, peer.peerIndex);
-      this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+      await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
       return;
     } else {
-      this.app.network.sendRequestAsTransaction(message, data, function (res) {});
+      await this.app.network.sendRequestAsTransaction(message, data);
       return;
     }
   }
