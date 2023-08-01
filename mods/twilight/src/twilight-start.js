@@ -3178,7 +3178,8 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 
 	if (this.game.state.round == 5) {
           if (this.game.options.deck === "saito") {
-	    if (this.game.state.events.fidel == 1 && this.game.state.events.bayofpigs != 1 && this.game.state.events.cubanmissile != 1) {
+	    if (this.game.state.events.bayofpigs_added != 1 && this.game.state.events.fidel == 1 && this.game.state.events.bayofpigs != 1 && this.game.state.events.cubanmissile != 1) {
+	      this.game.state.events.bayofpigs_added = 1;
 	      this.addCardToDeck('bayofpigs', "New Card");
 	    }
 	  }
@@ -3212,6 +3213,12 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	  //
 	  let late_war_cards = this.returnLateWarCards();
           if (this.game.options.deck === "saito") {
+
+	    // SOLIDARITY
+
+	    if (this.game.state.events.johnpaul == 1) {
+	      this.addCardToDeck("solidarity", "Prerequisite Met");
+	    }
 
 	    //
 	    // RUST IN RED SQUARE
@@ -4232,6 +4239,7 @@ playerTurnHeadlineSelected(card, player) {
 
     this.startClock();
 
+    let ac = this.returnAllCards(true);
     let twilight_self = this;
     let opponent = "us";
     if (this.game.player == 2) { opponent = "ussr"; }
@@ -4257,13 +4265,13 @@ playerTurnHeadlineSelected(card, player) {
       let moves_remaining = rounds_in_turn - twilight_self.game.state.turn_in_round;
 
       for (i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
-        if (twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]]?.scoring == 1) { 
+        if (ac[twilight_self.game.deck[0].hand[i]]?.scoring == 1) { 
           scoring_cards_available++; 
         }
       }
 
 
-      if (scoring_cards_available > 0 && scoring_cards_available > moves_remaining && twilight_self.game.deck[0].cards[card]?.scoring == 0) {
+      if (scoring_cards_available > 0 && scoring_cards_available > moves_remaining && ac[card]?.scoring == 0) {
         let c = await sconfirm("Holding a scoring card at the end of the turn will lose you the game. Still play this card?");
         if (c) {} else { return; }
       }
@@ -4293,7 +4301,7 @@ playerTurnHeadlineSelected(card, player) {
       if (twilight_self.game.state.headline == 0 && ((twilight_self.game.state.events.quagmire == 1 && twilight_self.game.player == 2) || (twilight_self.game.state.events.beartrap == 1 && twilight_self.game.player == 1)) ) {
         //
         // scoring cards score, not get discarded
-        if (twilight_self.game.deck[0].cards[card]?.scoring == 0) {
+        if (ac[card]?.scoring == 0) {
           twilight_self.removeCardFromHand(card);
           twilight_self.addMove("resolve\tplay");
           twilight_self.addMove("quagmire\t"+player+"\t"+card);
@@ -4319,7 +4327,7 @@ playerTurnHeadlineSelected(card, player) {
       if (twilight_self.game.state.events.unintervention === 1){
         // resolve added
         //twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+" plays "+card+" with UN Intervention");
-        twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+twilight_self.game.deck[0].cards[card].ops);
+        twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+ac[card].ops);
         twilight_self.removeCardFromHand(card);
         twilight_self.endTurn();
         return;
@@ -4335,13 +4343,13 @@ playerTurnHeadlineSelected(card, player) {
       }
 
 
-      if (twilight_self.game.deck[0].cards[card]?.scoring == 1) {
-        let status_header = `Playing ${twilight_self.game.deck[0].cards[card].name}:`;
+      if (ac[card]?.scoring == 1) {
+        let status_header = `Playing ${ac[card].name}:`;
         let html = `<ul><li class="option" id="event">score region</li></ul>`;
         twilight_self.updateStatusWithOptions(status_header, html);
       } else {
 
-        let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops, card, player, 0);
+        let ops = twilight_self.modifyOps(ac[card].ops, card, player, 0);
 
         let announcement = "";
 
@@ -4352,7 +4360,6 @@ playerTurnHeadlineSelected(card, player) {
         // cannot event UN Intervention w/o the opponent card in hand
         //
         let can_play_event = 1;
-	let ac = twilight_self.returnAllCards(true);
         if (card == "unintervention") {
           let opponent_event_in_hand = 0;
           for (let b = 0; b < twilight_self.game.deck[0].hand.length; b++) {
@@ -8958,7 +8965,8 @@ if (inc_optional == true) {
 
   /////////////////////////
   cardToText(cardname, textonly = false){
-    let card = this.game.deck[0].cards[cardname] || this.game.deck[0].discards[cardname] || this.game.deck[0].removed[cardname];
+    let ac = this.returnAllCards(true);
+    let card = ac[cardname] || this.game.deck[0].discards[cardname] || this.game.deck[0].removed[cardname];
     try{
       if (textonly){
         return card.name;
@@ -8967,7 +8975,7 @@ if (inc_optional == true) {
       }
     }catch(err){
       console.log(err);
-      console.log(cardname,this.game.deck[0].cards[cardname], card);
+      console.log(cardname, ac[cardname], card);
       console.log(this.game.deck[0]);
     }
     //img : "TNRnTS-73" , name : "Shuttle Diplomacy"
