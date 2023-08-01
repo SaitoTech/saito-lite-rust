@@ -19,8 +19,8 @@ class Tweet {
       return null; //Doesn't actually return null
     }
 
-    //    let txmsg = tx.returnMessage();
-    let txmsg = tx.msg;
+    let txmsg = tx.returnMessage();
+    //let txmsg = tx.msg;
     console.log("New Tweet constructor", txmsg);
 
     if (txmsg.module !== mod.name) {

@@ -1067,7 +1067,7 @@ class RedSquare extends ModTemplate {
         has_images = 1;
       }
       //This is the received TX without included optional data!
-      let txjson = tx.serialize_to_web();
+      let txjson = tx.serialize_to_web(this.app);
       let tx_size = txjson.length;
 
       let params = {
@@ -1121,7 +1121,7 @@ class RedSquare extends ModTemplate {
       //
       await this.updateTweetsCacheForBrowsers();
     } catch (err) {
-      console.log("ERROR in receiveTweetsTransaction() in RedSquare: " + err);
+      console.error("ERROR in receiveTweetsTransaction() in RedSquare: " + err);
     }
   }
 
