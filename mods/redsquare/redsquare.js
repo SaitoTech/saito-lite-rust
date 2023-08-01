@@ -1085,7 +1085,9 @@ class RedSquare extends ModTemplate {
         $tx_size: tx_size,
       };
 
-      await this.app.storage.executeDatabase(sql, params, "redsquare");
+      console.log(params);
+      let result = await this.app.storage.executeDatabase(sql, params, "redsquare");
+      console.log(result);
 
       // If you just inserted a record, you don't need to update its updated_at right away
       // but if it is part of a thread, then yes!
@@ -1285,9 +1287,11 @@ class RedSquare extends ModTemplate {
     }
 
     localforage.getItem(`tweet_history`, (error, value) => {
-      console.log(value);
+
       if (value && value.length > 0) {
+        console.log("Using local forage");
         for (let tx of value) {
+          console.log(tx);
           // let txobj = JSON.parse(tx);
           let newtx = new Transaction();
           newtx.deserialize_from_web(this.app, tx);
@@ -1310,22 +1314,15 @@ class RedSquare extends ModTemplate {
         //
         try {
           //Prefer our locally cached tweets to the webServer ones
-          if (this.tweets) {
-            if (this.tweets.length == 0) {
-              console.log("Using Server Cached Tweets : ", window.tweets);
+            if (window?.tweets?.length > 0) {
+              console.log("Using Server Cached Tweets : ");
               for (let z = 0; z < window.tweets.length; z++) {
+                console.log(window.tweets[z]);
                 let newtx = new Transaction();
                 newtx.deserialize_from_web(this.app, window.tweets[z]);
+                console.log(newtx);
                 this.addTweet(newtx);
               }
-            } else {
-              console.log("Using Server Cached Tweets : ", this.tweets);
-              for (let z = 0; z < this.tweets.length; z++) {
-                let newtx = new Transaction();
-                newtx.deserialize_from_web(this.app, this.tweets[z]);
-                this.addTweet(newtx);
-              }
-            }
           }
         } catch (err) {
           console.log("error in initial redsquare post fetch: " + err);
@@ -1485,7 +1482,7 @@ class RedSquare extends ModTemplate {
     */
 
     //Alternate selection
-    let sql = `SELECT *, (num_likes + num_replies + num_retweets) AS virality
+    let sql = `SELECT *, (updated_at + 10 * (num_likes + num_replies + num_retweets)) AS virality
                FROM tweets
                WHERE (flagged IS NOT 1 AND moderated IS NOT 1)
                ORDER BY virality DESC LIMIT 10`;
@@ -1493,10 +1490,12 @@ class RedSquare extends ModTemplate {
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 
+    console.log("Saving viral tweets");
     for (let i = 0; i < rows.length; i++) {
       if (!rows[i].tx) {
         continue;
       }
+      console.log(rows[i].tx);
       // create the transaction
       let tx = new Transaction();
       tx.deserialize_from_web(this.app, rows[i].tx);
@@ -1513,6 +1512,7 @@ class RedSquare extends ModTemplate {
       if (rows[i].flagged) {
         tx.optional.flagged = rows[i].flagged;
       }
+      console.log(tx);
       let hexstring = tx.serialize_to_web(this.app);
       hex_entries.push(hexstring);
     }
