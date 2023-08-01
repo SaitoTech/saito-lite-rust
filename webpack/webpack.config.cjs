@@ -3,7 +3,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 
 const webpack = require("webpack");
 
-let minimize = false;
+let minimize = true;
 let devtool = undefined;
 let entrypoint = "./../bundler/default/apps/lite/index.ts";
 let outputfile = "saito.js";
@@ -25,7 +25,7 @@ webpack(
     optimization: {
       //set the appropriate value for minimisation
       // dev => false, prod => true
-      minimize: false,
+      minimize: minimize,
       minimizer: [
         new TerserPlugin({
           parallel: true,
