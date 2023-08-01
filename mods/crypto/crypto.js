@@ -38,8 +38,10 @@ class Crypto extends ModTemplate {
       //
       let gm = this.app.modules.returnActiveModule();
       if (!gm.can_bet) { return null; }
+      if (gm.name === "Chess") { return null; }
 
       let ac = this.app.wallet.returnActivatedCryptos();
+
       let cm = this;
       let menu = { id: "game-crypto",
                    text: "Crypto",
