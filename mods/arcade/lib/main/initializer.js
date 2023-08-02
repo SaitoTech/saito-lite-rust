@@ -1,66 +1,65 @@
 const InitializerTemplate = require("./initializer.template");
 
 class Initializer {
-	
-  constructor(app, mod, container="") {
+  constructor(app, mod, container = "") {
     this.app = app;
     this.mod = mod;
     this.container = container;
-  
-    app.connection.on("arcade-game-ready-render-request", (game_details) => {
-      this.render(game_details.id);
+
+    app.connection.on("arcade-game-ready-render-request", async (game_details) => {
+      await this.render(game_details.id);
       this.notify(game_details.name);
       this.attachEvents(game_details.slug);
     });
-
   }
 
   render(game_id = null) {
-
     this.mod.is_game_initializing = true;
 
-    let html = InitializerTemplate(game_id); 
-    
+    let html = InitializerTemplate(game_id);
+
     if (document.querySelector(".arcade-initializer")) {
       this.app.browser.replaceElementBySelector(html, ".arcade-initializer");
     } else {
       this.app.browser.addElementToSelector(html, this.container);
     }
-
   }
 
-  notify(game_name){
+  notify(game_name) {
     let hidden = "hidden";
-      if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
-        hiddenTab = "hidden";
-      } else if (typeof document.msHidden !== "undefined") {
-        hiddenTab = "msHidden";
-      } else if (typeof document.webkitHidden !== "undefined") {
-        hiddenTab = "webkitHidden";
-      }
+    if (typeof document.hidden !== "undefined") {
+      // Opera 12.10 and Firefox 18 and later support
+      hidden = "hidden";
+    } else if (typeof document.msHidden !== "undefined") {
+      hidden = "msHidden";
+    } else if (typeof document.webkitHidden !== "undefined") {
+      hidden = "webkitHidden";
+    }
 
-      this.startNotification("Game ready!", game_name);
+    this.startNotification("Game ready!", game_name);
 
-      if (document[hidden]) {
-        this.ringTone();
-      }
+    if (document[hidden]) {
+      this.ringTone();
+    }
   }
 
   attachEvents(slug) {
-  
-    if (document.querySelector(".arcade-game-initializer-success-button")){
-      document.querySelector(".arcade-game-initializer-success-button").onclick = (e) => {
+    if (document.querySelector(".arcade-game-initializer-success-button")) {
+      document.querySelector(".arcade-game-initializer-success-button").onclick = async (e) => {
         //Remember where we enter the game from
         let am = this.app.modules.returnActiveModule().returnName();
         this.app.options.homeModule = am;
         this.app.storage.saveOptions();
 
-        this.app.browser.logMatomoEvent("StartGameClick", am, slug.slice(0,1).toUpperCase() + slug.slice(1));
+        await this.app.browser.logMatomoEvent(
+          "StartGameClick",
+          am,
+          slug.slice(0, 1).toUpperCase() + slug.slice(1)
+        );
         window.location = "/" + slug;
-      }
+      };
     }
   }
-
 
   startNotification(msg, game) {
     //If we haven't already started flashing the tab
@@ -76,14 +75,14 @@ class Initializer {
   }
 
   ringTone() {
-    var context = new AudioContext(),
+    const context = new AudioContext(),
       gainNode = context.createGain(),
-      start = document.querySelector('#start'),
-      stop = document.querySelector("#stop"),
-      oscillator = null,
+      start = document.querySelector("#start"),
+      stop = document.querySelector("#stop");
+    let oscillator = null,
       harmony = null;
 
-    var volume = context.createGain();
+    const volume = context.createGain();
     volume.connect(context.destination);
     gainNode.connect(context.destination);
 
@@ -128,12 +127,7 @@ class Initializer {
       harmony.stop(context.currentTime);
       harmony.disconnect();
     }, 3000);
-
   }
-
-
-
 }
 
 module.exports = Initializer;
-

@@ -1,21 +1,198 @@
-import Block from "./../block";
 import { Saito } from "../../../apps/core";
 import express from "express";
 import { Server as Ser } from "http";
+import S from "saito-js/index.node";
 
-// const io          = require('socket.io')(webserver, {
-//   cors: {
-//     origin: "*.*",
-//     methods: ["GET", "POST"]
-//   }
-// });
 import fs from "fs";
 import path from "path";
 import bodyParser from "body-parser";
+import ws from "ws";
+import process from "process";
+import CustomSharedMethods from "saito-js/lib/custom/custom_shared_methods";
+import { parse } from "url";
+import Peer from "../peer";
+import Transaction from "../transaction";
+import Factory from "../factory";
+import PeerServiceList from "saito-js/lib/peer_service_list";
+import Block from "../block";
+
+import fetch from "node-fetch";
 
 const JSON = require("json-bigint");
-const app = express();
-const webserver = new Ser(app);
+const expressApp = express();
+const webserver = new Ser(expressApp);
+
+export class NodeSharedMethods extends CustomSharedMethods {
+  public app: Saito;
+
+  constructor(app: Saito) {
+    super();
+    this.app = app;
+  }
+
+  sendMessage(peerIndex: bigint, buffer: Uint8Array): void {
+    console.log("send message : " + peerIndex + " with size : " + buffer.byteLength);
+    let socket = S.getInstance().getSocket(peerIndex);
+    socket.send(buffer);
+  }
+
+  sendMessageToAll(buffer: Uint8Array, exceptions: bigint[]): void {
+    console.log("send message to all with length : " + buffer.byteLength);
+    S.getInstance().sockets.forEach((socket, key) => {
+      if (exceptions.includes(key)) {
+        return;
+      }
+      socket.send(buffer);
+    });
+  }
+
+  connectToPeer(peerData: any): void {
+    let protocol = "ws";
+    if (peerData.protocol === "https") {
+      protocol = "wss";
+    }
+    let url = protocol + "://" + peerData.host + ":" + peerData.port + "/wsopen";
+
+    try {
+      console.log("connecting to " + url + "....");
+      let socket = new ws.WebSocket(url);
+      let index = S.getInstance().addNewSocket(socket);
+
+      socket.on("message", (buffer: any) => {
+        S.getLibInstance().process_msg_buffer_from_peer(buffer, index);
+      });
+      socket.on("close", () => {
+        S.getLibInstance().process_peer_disconnection(index);
+      });
+      S.getLibInstance().process_new_peer(index, peerData);
+      console.log("connected to : " + url + " with peer index : " + index);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  writeValue(key: string, value: Uint8Array): void {
+    try {
+      fs.writeFileSync(key, value);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  readValue(key: string): Uint8Array {
+    try {
+      return fs.readFileSync(key);
+    } catch (error) {
+      console.error(error);
+      return new Uint8Array();
+    }
+  }
+
+  loadBlockFileList(): string[] {
+    try {
+      let files = fs.readdirSync("data/blocks/");
+      files = files.filter((file: string) => file.endsWith(".sai"));
+      return files;
+    } catch (e) {
+      console.log("cwd : ", process.cwd());
+      console.error(e);
+      return [];
+    }
+  }
+
+  isExistingFile(key: string): boolean {
+    try {
+      let result = fs.statSync(key);
+      return !!result;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  removeValue(key: string): void {
+    try {
+      fs.rmSync(key);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  disconnectFromPeer(peerIndex: bigint): void {
+    S.getInstance().removeSocket(peerIndex);
+  }
+
+  fetchBlockFromPeer(url: string): Promise<Uint8Array> {
+    console.log("fetching block from peer: " + url);
+    return fetch(url)
+      .then((res: any) => {
+        console.log("block data fetched for " + url);
+        return res.arrayBuffer();
+      })
+      .then((buffer: ArrayBuffer) => {
+        console.log("buffer fetched for block : " + buffer.byteLength);
+        return new Uint8Array(buffer);
+      });
+  }
+
+  async processApiCall(buffer: Uint8Array, msgIndex: number, peerIndex: bigint): Promise<void> {
+    console.log(
+      "NodeMethods.processApiCall : peer= " + peerIndex + " with size : " + buffer.byteLength
+    );
+    const mycallback = async (response_object) => {
+      // console.log("response_object ", response_object);
+      await S.getInstance().sendApiSuccess(
+        msgIndex,
+        Buffer.from(JSON.stringify(response_object), "utf-8"),
+        peerIndex
+      );
+    };
+    let peer = await this.app.network.getPeer(peerIndex);
+    let newtx = new Transaction();
+    try {
+      // console.log("buffer length : " + buffer.byteLength, buffer);
+      newtx.deserialize(buffer);
+      newtx.unpackData();
+    } catch (error) {
+      console.error(error);
+      newtx.msg = buffer;
+    }
+    await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
+  }
+
+  sendInterfaceEvent(event: string, peerIndex: bigint) {
+    this.app.connection.emit(event, peerIndex);
+  }
+
+  sendBlockSuccess(hash: string, blockId: bigint) {
+    this.app.connection.emit("add-block-success", { hash, blockId });
+  }
+
+  async saveWallet(): Promise<void> {
+    this.app.options.wallet.publicKey = await this.app.wallet.getPublicKey();
+    this.app.options.wallet.privateKey = await this.app.wallet.getPrivateKey();
+    this.app.options.wallet.balance = await this.app.wallet.getBalance();
+  }
+
+  loadWallet(): void {
+    throw new Error("Method not implemented.");
+  }
+
+  saveBlockchain(): void {
+    throw new Error("Method not implemented.");
+  }
+
+  loadBlockchain(): void {
+    throw new Error("Method not implemented.");
+  }
+
+  getMyServices() {
+    let list = new PeerServiceList();
+    let result = this.app.network.getServices();
+    result.forEach((s) => list.push(s));
+    return list;
+  }
+}
 
 /**
  * Constructor
@@ -27,7 +204,7 @@ class Server {
   public server: any = {
     host: "",
     port: 0,
-    publickey: "",
+    publicKey: "",
     protocol: "",
     name: "",
     block_fetch_url: "",
@@ -42,7 +219,6 @@ class Server {
   public host: string;
   public port: number;
   public protocol: string;
-  public publickey: string;
 
   constructor(app: Saito) {
     this.app = app;
@@ -55,29 +231,57 @@ class Server {
     this.server_file_encoding = "utf8";
   }
 
-  initializeWebSocketServer(app) {
+  initializeWebSocketServer() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const ws = require("ws");
 
-    const server = new ws.Server({
+    const wss = new ws.Server({
       noServer: true,
       // port:5001, // TODO : setup this correctly
       path: "/wsopen",
     });
-
-    app.on("upgrade", (request, socket, head) => {
-      server.handleUpgrade(request, socket, head, (websocket) => {
-        server.emit("connection", websocket, request);
-      });
+    webserver.on("upgrade", (request: any, socket: any, head: any) => {
+      console.log("connection upgrade ----> " + request.url);
+      const { pathname } = parse(request.url);
+      if (pathname === "/wsopen") {
+        wss.handleUpgrade(request, socket, head, (websocket: any) => {
+          wss.emit("connection", websocket, request);
+        });
+      } else {
+        socket.destroy();
+      }
     });
-
-    server.on("connection", (wsocket, request) => {
-      //console.log("new connection received by server", request);
-      this.app.network.addRemotePeer(wsocket).catch((error) => {
-        console.log("failed adding remote peer");
-        console.error(error);
-      });
+    webserver.on("error", (error) => {
+      console.error("error on express : ", error);
     });
+    wss.on("connection", (socket: any, request: any) => {
+      let index = S.getInstance().addNewSocket(socket);
+      socket.on("message", (buffer: any) => {
+        S.getLibInstance()
+          .process_msg_buffer_from_peer(new Uint8Array(buffer), index)
+          .then(() => {});
+      });
+      socket.on("close", () => {
+        S.getLibInstance().process_peer_disconnection(index);
+      });
+      socket.on("error", (error) => {
+        console.error("error on socket : " + index, error);
+      });
+      S.getLibInstance().process_new_peer(index, null);
+    });
+    // app.on("upgrade", (request, socket, head) => {
+    //   server.handleUpgrade(request, socket, head, (websocket) => {
+    //     server.emit("connection", websocket, request);
+    //   });
+    // });
+    //
+    // server.on("connection", (wsocket, request) => {
+    //   //console.log("new connection received by server", request);
+    //   this.app.network.addRemotePeer(wsocket).catch((error) => {
+    //     console.log("failed adding remote peer");
+    //     console.error(error);
+    //   });
+    // });
   }
 
   initialize() {
@@ -133,11 +337,11 @@ class Server {
       this.server.endpoint.port = this.app.options.server.endpoint.port;
       this.server.endpoint.host = this.app.options.server.endpoint.host;
       this.server.endpoint.protocol = this.app.options.server.endpoint.protocol;
-      this.server.endpoint.publickey = this.app.options.server.publickey;
+      this.server.endpoint.publicKey = this.app.options.server.publicKey;
     } else {
-      const { host, port, protocol, publickey } = this.server;
-      this.server.endpoint = { host, port, protocol, publickey };
-      this.app.options.server.endpoint = { host, port, protocol, publickey };
+      const { host, port, protocol, publicKey } = this.server;
+      this.server.endpoint = { host, port, protocol, publicKey };
+      this.app.options.server.endpoint = { host, port, protocol, publicKey };
       console.log("SAVE OPTIONS IN SERVER");
       this.app.storage.saveOptions();
     }
@@ -147,14 +351,14 @@ class Server {
     url += this.server.endpoint.host;
     url += ":";
     url += this.server.endpoint.port;
-    url += "/block/";
+    // url += "/block/";
 
     this.server.block_fetch_url = url;
 
     //
     // save options
     //
-    this.app.options.server = this.server;
+    this.app.options.server = Object.assign(this.app.options.server, this.server);
     console.log("SAVE OPTIONS IN SERVER 2");
     this.app.storage.saveOptions();
 
@@ -165,27 +369,25 @@ class Server {
     //io.origins('*:*');
 
     // body-parser
-    app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(bodyParser.json());
+    expressApp.use(bodyParser.urlencoded({ extended: true }));
+    expressApp.use(bodyParser.json());
 
     /////////////////
     // full blocks //
     /////////////////
-    app.get("/blocks/:bhash/:pkey", (req, res) => {
+    expressApp.get("/blocks/:bhash/:pkey", async (req, res) => {
       const bhash = req.params.bhash;
       if (bhash == null) {
         return;
       }
 
       try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const blk = this.app.blockchain.blocks.get(bhash);
+        const blk = await this.app.blockchain.getBlock(bhash);
         if (!blk) {
           return;
         }
-        const filename = blk.returnFilename();
-        console.info('### write from line 188 of server.ts.')
+        const filename = "./data/blocks/" + blk.file_name;
+        console.info("### write from line 188 of server.ts.");
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
@@ -199,7 +401,7 @@ class Server {
         //let blk = await this.app.blockchain.returnBlockByHash(bsh);
 
         console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
-        console.info('### write from line 202 of server.ts.')
+        console.info("### write from line 202 of server.ts.");
         res.status(400);
         res.end({
           error: {
@@ -209,79 +411,79 @@ class Server {
       }
     });
 
-    //////////////////////
-    // full json blocks //
-    //////////////////////
-    app.get("/json-blocks/:bhash/:pkey", (req, res) => {
-      const bhash = req.params.bhash;
-      if (bhash == null) {
-        return;
-      }
-
-      try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const blk = server_self.app.blockchain.blocks.get(bhash);
-        if (!blk) {
-          return;
-        }
-        const blkwtx = new Block(server_self.app);
-        blkwtx.block = JSON.parse(JSON.stringify(blk.block));
-        blkwtx.transactions = blk.transactions;
-        blkwtx.app = null;
-
-        console.info('### write from line 232 of server.ts.')
-        res.writeHead(200, {
-          "Content-Type": "text/plain",
-          "Content-Transfer-Encoding": "utf8",
-        });
-        res.end(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
-      } catch (err) {
-        //
-        // file does not exist on disk, check in memory
-        //
-        //let blk = await this.app.blockchain.returnBlockByHash(bsh);
-
-        console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
-        console.info('### write from line 188 of server.ts.')
-        res.status(400);
-        res.end({
-          error: {
-            message: `FAILED SERVER REQUEST: could not find block: ${bhash}`,
-          },
-        });
-      }
-    });
+    // //////////////////////
+    // // full json blocks //
+    // //////////////////////
+    // app.get("/json-blocks/:bhash/:pkey", (req, res) => {
+    //   const bhash = req.params.bhash;
+    //   if (bhash == null) {
+    //     return;
+    //   }
+    //
+    //   try {
+    //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //     // @ts-ignore
+    //     const blk = server_self.app.blockchain.blocks.get(bhash);
+    //     if (!blk) {
+    //       return;
+    //     }
+    //     const blkwtx = new Block(server_self.app);
+    //     blkwtx.block = JSON.parse(JSON.stringify(blk.block));
+    //     blkwtx.transactions = blk.transactions;
+    //     blkwtx.app = null;
+    //
+    //     console.info("### write from line 232 of server.ts.");
+    //     res.writeHead(200, {
+    //       "Content-Type": "text/plain",
+    //       "Content-Transfer-Encoding": "utf8",
+    //     });
+    //     res.end(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
+    //   } catch (err) {
+    //     //
+    //     // file does not exist on disk, check in memory
+    //     //
+    //     //let blk = await this.app.blockchain.returnBlockByHash(bsh);
+    //
+    //     console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
+    //     console.info("### write from line 188 of server.ts.");
+    //     res.status(400);
+    //     res.end({
+    //       error: {
+    //         message: `FAILED SERVER REQUEST: could not find block: ${bhash}`,
+    //       },
+    //     });
+    //   }
+    // });
 
     /////////////////
     // lite-blocks //
     /////////////////
-    app.get("/lite-block/:bhash/:pkey", async (req, res) => {
+    expressApp.get("/lite-block/:bhash/:pkey?", async (req, res) => {
       if (req.params.bhash == null) {
         return;
       }
 
-      let pkey = server_self.app.wallet.returnPublicKey();
+      let pkey = await server_self.app.wallet.getPublicKey();
       if (req.params.pkey != null) {
         pkey = req.params.pkey;
       }
 
       const bsh = req.params.bhash;
       let keylist = [];
-      let peer = null;
-
+      let peer: Peer | null = null;
+      let peers: Peer[] = await this.app.network.getPeers();
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      for (let i = 0; i < this.app.network.peers.length; i++) {
-        if (this.app.network.peers[i].returnPublicKey() === pkey) {
-          peer = this.app.network.peers[i];
+      for (let i = 0; i < peers.length; i++) {
+        if (peers[i].publicKey === pkey) {
+          peer = peers[i];
         }
       }
 
       if (peer == null) {
         keylist.push(pkey);
       } else {
-        keylist = peer.peer.keylist;
+        keylist = peer.keyList;
         if (!keylist.includes(pkey)) {
           keylist.push(pkey);
         }
@@ -298,57 +500,61 @@ class Server {
       //
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const block = this.app.blockchain.blocks.get(bsh);
+      const block = await this.app.blockchain.getBlock(bsh);
 
       if (!block) {
         console.log(`block : ${bsh} doesn't exist...`);
         res.sendStatus(404);
         return;
       }
-      if (!block.hasKeylistTransactions(keylist)) {
-        console.info('### write from line 307 of server.ts.')
+      if (!block.hasKeylistTxs(keylist)) {
+        console.info("### write from line 307 of server.ts.");
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
         });
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const liteblock = block.returnLiteBlock(keylist);
+        const liteblock = block.generateLiteBlock(keylist);
         const buffer = Buffer.from(liteblock.serialize());
-          res.end(buffer, "utf8");
-          return;
-        }
-
-      //
-      // TODO - load from disk to ensure we have txs -- slow.
-      //
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const blk = await this.app.storage.loadBlockByHash(bsh);
-
-        if (blk == null) {
-          res.sendStatus(404);
-          return;
-        } else {
-          const newblk = blk.returnLiteBlock(keylist);
-
-          console.info('### write from line 333 of server.ts.')
-          res.writeHead(200, {
-            "Content-Type": "text/plain",
-            "Content-Transfer-Encoding": "utf8",
-          });
-          const liteblock = block.returnLiteBlock(keylist);
-          const buffer = Buffer.from(liteblock.serialize()); //, "binary").toString("base64");
-          res.end(buffer);
-          return;
-        }
-
-        console.log("hit end...");
+        res.end(buffer, "utf8");
         return;
+      }
 
+      let methods = new NodeSharedMethods(this.app);
+      // TODO - load from disk to ensure we have txs -- slow.
+      let buffer;
+      try {
+        let list = methods.loadBlockFileList();
+        console.log("file list : ", list);
+        for (let filename of list) {
+          if (filename.includes(bsh)) {
+            buffer = methods.readValue("./data/blocks/" + filename);
+            break;
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+      // const blk = await this.app.storage.loadBlockByHash(bsh);
+
+      if (buffer.byteLength == 0) {
+        res.sendStatus(404);
+      } else {
+        let blk = new Block();
+        blk.deserialize(buffer);
+        const newblk = blk.generateLiteBlock(keylist);
+
+        console.info("### write from line 333 of server.ts.");
+        res.writeHead(200, {
+          "Content-Type": "text/plain",
+          "Content-Transfer-Encoding": "utf8",
+        });
+        // const liteblock = block.generateLiteBlock(keylist);
+        const buffer2 = Buffer.from(newblk.serialize()); //, "binary").toString("base64");
+        res.end(buffer2);
+      }
     });
 
-    app.get("/block/:hash", async (req, res) => {
+    expressApp.get("/block/:hash", async (req, res) => {
       try {
         const hash = req.params.hash;
         console.debug("server giving out block : " + hash);
@@ -366,61 +572,55 @@ class Server {
         // let bufferString = Buffer.from(buffer); //.toString("base64");
 
         res.status(200);
-        console.info('### write from line 369 of server.ts.')
+        console.info("### write from line 369 of server.ts.");
         console.log("serving block . : " + hash + " , buffer size : " + buffer.length);
         res.end(buffer);
-
-        // let block1 = new Block(this.app);
-        // block1.deserialize(buffer);
-        // block1.generateMetadata();
-        // if (block1.returnHash() !== hash) {
-        //   console.log("error in buffer");
-        // }
       } catch (err) {
         console.log("ERROR: server cannot feed out block");
+        res.sendStatus(404);
       }
     });
 
-    app.get("/json-block/:hash", async (req, res) => {
-      try {
-        const hash = req.params.hash;
-        console.debug("server giving out block : " + hash);
-
-        if (!hash) {
-          console.warn("hash not provided");
-          return res.sendStatus(400); // Bad request
-        }
-
-        const block = await this.app.blockchain.loadBlockAsync(hash);
-        if (!block) {
-          console.warn("block not found for : " + hash);
-          return res.sendStatus(404); // Not Found
-        }
-
-        let block_to_return = { block: {}, transactions: {} };
-        if (block?.block) {
-          block_to_return.block = JSON.parse(JSON.stringify(block.block));
-        }
-        if (block?.transactions) {
-          block_to_return.transactions = JSON.parse(JSON.stringify(block.transactions));
-        }
-
-        let buffer = JSON.stringify(block_to_return).toString("utf-8");
-        buffer = Buffer.from(buffer, "utf-8");
-
-        res.status(200);
-        console.info('### write from line 412 of server.ts.')
-        console.log("serving block .. : " + hash + " , buffer size : " + buffer.length);
-        res.end(buffer);
-      } catch (err) {
-        console.log("ERROR: server cannot feed out block");
-      }
-    });
+    // app.get("/json-block/:hash", async (req, res) => {
+    //   try {
+    //     const hash = req.params.hash;
+    //     console.debug("server giving out block : " + hash);
+    //
+    //     if (!hash) {
+    //       console.warn("hash not provided");
+    //       return res.sendStatus(400); // Bad request
+    //     }
+    //
+    //     const block = await this.app.blockchain.loadBlockAsync(hash);
+    //     if (!block) {
+    //       console.warn("block not found for : " + hash);
+    //       return res.sendStatus(404); // Not Found
+    //     }
+    //
+    //     let block_to_return = { block: {}, transactions: {} };
+    //     if (block?.block) {
+    //       block_to_return.block = JSON.parse(JSON.stringify(block.block));
+    //     }
+    //     if (block?.transactions) {
+    //       block_to_return.transactions = JSON.parse(JSON.stringify(block.transactions));
+    //     }
+    //
+    //     let buffer = JSON.stringify(block_to_return).toString("utf-8");
+    //     buffer = Buffer.from(buffer, "utf-8");
+    //
+    //     res.status(200);
+    //     console.info("### write from line 412 of server.ts.");
+    //     console.log("serving block .. : " + hash + " , buffer size : " + buffer.length);
+    //     res.end(buffer);
+    //   } catch (err) {
+    //     console.log("ERROR: server cannot feed out block");
+    //   }
+    // });
 
     /////////
     // web //
     /////////
-    app.get("/options", (req, res) => {
+    expressApp.get("/options", (req, res) => {
       //this.app.storage.saveClientOptions();
       // res.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
       // res.setHeader("expires","-1");
@@ -430,20 +630,19 @@ class Server {
         const fd = fs.openSync(client_options_file, "w");
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        fs.writeSync(fd, this.app.storage.returnClientOptions(), this.server_file_encoding);
+        fs.writeSync(fd, this.app.storage.getClientOptions(), this.server_file_encoding);
         fs.closeSync(fd);
       }
       res.sendFile(client_options_file);
       //res.send(this.app.storage.returnClientOptions());
-      return;
     });
 
-    app.get("/r", (req, res) => {
+    expressApp.get("/r", (req, res) => {
       res.sendFile(this.web_dir + "refer.html");
       return;
     });
 
-    app.get("/saito/saito.js", (req, res) => {
+    expressApp.get("/saito/saito.js", (req, res) => {
       //
       // may be useful in the future, if we gzip
       // files before releasing for production
@@ -476,7 +675,7 @@ class Server {
 
     //
     // make root directory recursively servable
-    app.use(express.static(this.web_dir));
+    expressApp.use(express.static(this.web_dir));
     //
 
     /////////////
@@ -486,9 +685,9 @@ class Server {
     // res.write -- have to use res.end()
     // res.send --- is combination of res.write() and res.end()
     //
-    this.app.modules.webServer(app, express);
+    this.app.modules.webServer(expressApp, express);
 
-    app.get("*", (req, res) => {
+    expressApp.get("*", (req, res) => {
       res.status(404).sendFile(`${this.web_dir}404.html`);
       res.status(404).sendFile(`${this.web_dir}tabs.html`);
     });
@@ -497,9 +696,11 @@ class Server {
     // console.log("IO CONNECTION on SERVER: ");
     //       this.app.network.addRemotePeer(socket);
     //     });
-    this.initializeWebSocketServer(webserver);
+    this.initializeWebSocketServer();
 
-    webserver.listen(this.server.port);
+    webserver.listen(this.server.port, () => {
+      console.log("web server is listening");
+    });
     // try webserver.listen(this.server.port, {cookie: false});
     this.webserver = webserver;
   }

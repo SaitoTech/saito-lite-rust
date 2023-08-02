@@ -19,21 +19,22 @@ class Storage {
   }
 
   async loadOptions() {
-    if (typeof Storage !== "undefined") {
-      const data = localStorage.getItem("options");
-      if (data != "null" && data != null) {
-        this.app.options = JSON.parse(data);
-      } else {
-        try {
-          const response = await fetch(`/options`);
-          this.app.options = await response.json();
-          this.saveOptions();
-        } catch (err) {
-          console.error(err);
-        }
+    // if (typeof Storage !== "undefined") {
+    const data = localStorage.getItem("options");
+    if (data != "null" && data != null) {
+      this.app.options = JSON.parse(data);
+    } else {
+      try {
+        const response = await fetch(`/options`);
+        this.app.options = await response.json();
+        this.saveOptions();
+      } catch (err) {
+        console.error(err);
       }
     }
+    // }
   }
+
   returnClientOptions(): string {
     throw new Error("Method not implemented.");
   }
@@ -61,13 +62,13 @@ class Storage {
   //    ---> peers receive via Archive module
   //    ---> peers fetch from DB, return via callback or return TX
   //
-  async saveTransaction(tx, obj = {}, peer = null) {
+  async saveTransaction(tx: Transaction, obj = {}, peer = null) {
     const txmsg = tx.returnMessage();
     const message = "archive";
 
     let data: any = {};
     data.request = "save";
-    data.tx = tx;
+    data.serial_transaction = tx.serialize_to_web(this.app);
 
     data = Object.assign(data, obj);
 
@@ -75,10 +76,10 @@ class Storage {
       data.field1 = txmsg.module;
     }
     if (!data.field2) {
-      data.field2 = tx.transaction.from[0].add;
+      data.field2 = tx.from[0].publicKey;
     }
     if (!data.field3) {
-      data.field3 = tx.transaction.to[0].add;
+      data.field3 = tx.to[0].publicKey;
     }
 
     if (peer === "localhost") {
@@ -90,22 +91,24 @@ class Storage {
       return;
     }
     if (peer != null) {
-      peer.sendRequestWithCallback(message, data, function (res) {});
+      await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
       this.app.connection.emit("saito-save-transaction", tx);
       return;
     } else {
-      this.app.network.sendRequestWithCallback(message, data, function (res) {});
+      await this.app.network.sendRequestAsTransaction(message, data);
       this.app.connection.emit("saito-save-transaction", tx);
       return;
     }
   }
 
-  async updateTransaction(tx, obj = {}, peer = null) {
+  async updateTransaction(tx: Transaction, obj = {}, peer = null) {
     const txmsg = tx.returnMessage();
     const message = "archive";
     let data: any = {};
     data.request = "update";
-    data.tx = tx;
+    data.optional = tx.optional;
+    data.serial_transaction = tx.serialize_to_web(this.app);
+
     data = Object.assign(data, obj);
 
     if (peer === "localhost") {
@@ -116,10 +119,10 @@ class Storage {
       return;
     }
     if (peer != null) {
-      peer.sendRequestWithCallback(message, data, function (res) {});
+      await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
       return;
     } else {
-      this.app.network.sendRequestWithCallback(message, data, function (res) {});
+      await this.app.network.sendRequestAsTransaction(message, data);
       return;
     }
   }
@@ -132,6 +135,10 @@ class Storage {
     data.request = "load";
     data = Object.assign(data, obj);
 
+    //
+    // We could have the archive module handle this
+    // idk why we have it return an array of objects that are just {"tx": serialized/stringified transaction}
+    //
     let internal_callback = (res) => {
       let txs = [];
       if (res) {
@@ -155,12 +162,18 @@ class Storage {
     }
 
     if (peer != null) {
-      peer.sendRequestWithCallback(message, data, function (res) {
-        internal_callback(res);
-      });
+      //peer.sendRequestAsTransaction(message, data, function (res) {
+      this.app.network.sendRequestAsTransaction(
+        message,
+        data,
+        function (res) {
+          internal_callback(res);
+        },
+        peer.peerIndex
+      );
       return;
     } else {
-      this.app.network.sendRequestWithCallback(message, data, function (res) {
+      this.app.network.sendRequestAsTransaction(message, data, function (res) {
         internal_callback(res);
       });
       return;
@@ -173,7 +186,7 @@ class Storage {
     data.request = "delete";
     data = Object.assign(data, obj);
 
-    this.app.network.sendRequestWithCallback(message, data, function (obj) {
+    this.app.network.sendRequestAsTransaction(message, data, function (obj) {
       mycallback();
     });
   }
@@ -194,10 +207,11 @@ class Storage {
         return;
       }
     }
+    console.log("saving options...", this.app.options);
     try {
-      if (typeof Storage !== "undefined") {
-        localStorage.setItem("options", JSON.stringify(this.app.options));
-      }
+      // if (typeof Storage !== "undefined") {
+      localStorage.setItem("options", JSON.stringify(this.app.options));
+      // }
     } catch (err) {
       console.error(err);
     }
@@ -210,9 +224,9 @@ class Storage {
       }
     }
     try {
-      if (typeof Storage !== "undefined") {
-        return localStorage.getItem("options");
-      }
+      // if (typeof Storage !== "undefined") {
+      return localStorage.getItem("options");
+      // }
     } catch (err) {
       console.error(err);
     }

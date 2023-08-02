@@ -1,5 +1,6 @@
 import { Saito } from "../../apps/core";
 import Peer from "./peer";
+import Transaction from "./transaction";
 
 class Mods {
   public app: Saito;
@@ -50,7 +51,7 @@ class Mods {
     //
     // no callbacks on type=9 spv stubs
     //
-    if (tx.transaction.type == 5) {
+    if (tx.type == 5) {
       return;
     }
 
@@ -69,12 +70,16 @@ class Mods {
     }
   }
 
-  async handlePeerTransaction(tx, peer: Peer, mycallback = null) {
+  async handlePeerTransaction(
+    tx: Transaction,
+    peer: Peer,
+    mycallback: (any) => Promise<void> = null
+  ) {
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {
-        this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback);
+        await this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback);
       } catch (err) {
-        console.log("handlePeerTransaction Unknown Error: \n" + err);
+        console.error("handlePeerTransaction Unknown Error: ", err);
       }
     }
     return;
@@ -187,20 +192,25 @@ class Mods {
     }
 
     const onPeerHandshakeComplete = this.onPeerHandshakeComplete.bind(this);
-    //
     // include events here
-    //
-    this.app.connection.on("handshake_complete", (peer: Peer) => {
-      onPeerHandshakeComplete(peer);
+    this.app.connection.on("handshake_complete", async (peerIndex: bigint) => {
+      // await this.app.network.propagateServices(peerIndex);
+      let peer = await this.app.network.getPeer(BigInt(peerIndex));
+      console.log("handshake complete");
+      await onPeerHandshakeComplete(peer);
     });
 
     const onConnectionUnstable = this.onConnectionUnstable.bind(this);
-    this.app.connection.on("connection_dropped", (peer: Peer) => {
-      console.log("connection dropped -- triggering on connection unstable");
-      onConnectionUnstable(peer);
+    this.app.connection.on("peer_disconnect", async (peerIndex: bigint) => {
+      console.log("connection dropped -- triggering on connection unstable : " + peerIndex);
+      // // todo : clone peer before disconnection and send with event
+      // let peer = await this.app.network.getPeer(BigInt(peerIndex));
+      // onConnectionUnstable(peer);
     });
 
-    this.app.connection.on("connection_up", (peer) => {
+    this.app.connection.on("peer_connect", async (peerIndex: bigint) => {
+      console.log("peer_connect received for : " + peerIndex);
+      let peer = await this.app.network.getPeer(peerIndex);
       this.onConnectionStable(peer);
     });
 
@@ -215,28 +225,31 @@ class Mods {
     }
   }
 
-  render() {
+  async render() {
+    console.log("modules.render");
     for (let icb = 0; icb < this.mods.length; icb++) {
       if (this.mods[icb].browser_active == 1) {
-        this.mods[icb].render(this.app, this.mods[icb]);
+        console.log("mod.render : " + this.mods[icb].name);
+
+        await this.mods[icb].render(this.app, this.mods[icb]);
       }
     }
     return null;
   }
 
-  initializeHTML() {
+  async initializeHTML() {
     for (let icb = 0; icb < this.mods.length; icb++) {
       if (this.mods[icb].browser_active == 1) {
-        this.mods[icb].initializeHTML(this.app);
+        await this.mods[icb].initializeHTML(this.app);
       }
     }
     return null;
   }
 
-  renderInto(qs) {
-    this.mods.forEach((mod) => {
-      mod.renderInto(qs);
-    });
+  async renderInto(qs) {
+    for (const mod of this.mods) {
+      await mod.renderInto(qs);
+    }
   }
 
   returnModulesRenderingInto(qs) {
@@ -245,31 +258,36 @@ class Mods {
     });
   }
 
-  //Update 8 May 2023 -- Daniel
-  //User-menu expanding functionality for an optional obj with request to pass parameters
-
   returnModulesRespondingTo(request, obj = null) {
-    return this.mods.filter((mod) => {
-      return mod.respondTo(request, obj) != null;
-    });
+    let m = [];
+    for (let mod of this.mods) {
+      if ((mod.respondTo(request, obj)) != null) {
+        m.push(mod);
+      }
+    }
+    return m;
   }
 
   respondTo(request, obj = null) {
-    return this.mods.filter((mod) => {
-      return mod.respondTo(request, obj) != null;
-    });
+    let m = [];
+    for (let mod of this.mods) {
+      if ((mod.respondTo(request, obj)) != null) {
+        m.push(mod);
+      }
+    }
+    return m;
   }
 
   getRespondTos(request, obj = null) {
     const compliantInterfaces = [];
-    this.mods.forEach((mod) => {
+    for (const mod of this.mods) {
       const itnerface = mod.respondTo(request, obj);
       if (itnerface != null) {
         if (Object.keys(itnerface)) {
           compliantInterfaces.push({ ...itnerface, modname: mod.returnName() });
         }
       }
-    });
+    }
     return compliantInterfaces;
   }
 
@@ -310,8 +328,9 @@ class Mods {
 
   returnFirstRespondTo(request) {
     for (let i = 0; i < this.mods.length; i++) {
-      if (this.mods[i].respondTo(request)) {
-        return this.mods[i].respondTo(request);
+      let result = this.mods[i].respondTo(request);
+      if (result) {
+        return result;
       }
     }
     throw "Module responding to " + request + " not found";
@@ -331,24 +350,24 @@ class Mods {
     return null;
   }
 
-  onPeerHandshakeComplete(peer) {
+  async onPeerHandshakeComplete(peer: Peer) {
     //
     // all modules learn about the peer connecting
     //
     for (let i = 0; i < this.mods.length; i++) {
-      this.mods[i].onPeerHandshakeComplete(this.app, peer);
+      await this.mods[i].onPeerHandshakeComplete(this.app, peer);
     }
     //
     // then they learn about any services now-available
     //
-    for (let i = 0; i < peer.peer.services.length; i++) {
-      this.onPeerServiceUp(peer, peer.peer.services[i]);
+    for (let i = 0; i < peer.services.length; i++) {
+      await this.onPeerServiceUp(peer, peer.services[i]);
     }
   }
 
-  onPeerServiceUp(peer, service) {
+  async onPeerServiceUp(peer, service) {
     for (let i = 0; i < this.mods.length; i++) {
-      this.mods[i].onPeerServiceUp(this.app, peer, service);
+      await this.mods[i].onPeerServiceUp(this.app, peer, service);
     }
   }
 

@@ -11,7 +11,7 @@ class Keychain {
   public groups: any;
   public modtemplate: any;
   public fetched_keys: Map<string, number>;
-  public publickey: string;
+  public publicKey: string;
   public identifier: string;
   public bid: bigint;
   public bsh: string;
@@ -27,17 +27,19 @@ class Keychain {
     this.fetched_keys = new Map<string, number>();
   }
 
-  initialize() {
+  async initialize() {
     if (this.app.options.keys == null) {
       this.app.options.keys = [];
     }
+
+    this.publicKey = await this.app.wallet.getPublicKey();
 
     //
     // saved keys
     //
     for (let i = 0; i < this.app.options.keys.length; i++) {
       this.keys.push(this.app.options.keys[i]);
-      this.publickey_keys_hmap[this.app.options.keys[i].publickey] = 1;
+      this.publickey_keys_hmap[this.app.options.keys[i].publicKey] = 1;
     }
 
     //
@@ -53,7 +55,7 @@ class Keychain {
     // add my key if needed
     //
     if (this.app.options.keys.length == 0) {
-      this.addKey({ publickey: this.app.wallet.returnPublicKey(), watched: true });
+      this.addKey({ publicKey: this.publicKey, watched: true });
     }
 
     //
@@ -71,25 +73,27 @@ class Keychain {
   //
   // adds an individual key, we have two ways of doing this !
   //
-  // (publickey, data)
-  // ({ publickey : x, data : y })
+  // (publicKey, data)
+  // ({ publicKey : x, data : y })
   //
   addKey(pa = null, da = null) {
+    let data = { publicKey: "" };
 
-    let data = { publickey: "" };
+    if (!pa == null) {
+      return;
+    }
 
     //
     // argument-overloading permitted !!
     //
-    if (typeof pa === 'string') {
-      data.publickey = pa;
-      for (let key in da) { if (key !== "publickey") { data[key] = da[key]; } }
-    } else {
-      if (pa == null) { return; }
-      if (!pa.publickey) {
-        console.log("Error: cannot add publickey to keychain without publickey...");
-        return;
+    if (typeof pa === "string") {
+      data.publicKey = pa;
+      for (let key in da) {
+        if (key !== "publicKey") {
+          data[key] = da[key];
+        }
       }
+    } else {
       data = pa;
     }
 
@@ -97,17 +101,21 @@ class Keychain {
     // skip empty keys
     //
     //console.log("Add key: ", JSON.stringify(data));
-    if (data.publickey === "") { return; }
+    if (data.publicKey === "") {
+      console.warn("Keychain Error: cannot add key because unknown publicKey");
+      console.log(data);
+      return;
+    }
 
     //
     // update existing entry
     //
     for (let i = 0; i < this.keys.length; i++) {
-      if (this.keys[i].publickey === data.publickey) {
-        for (let key in data) { 
-          if (key !== "publickey") { 
-            this.keys[i][key] = data[key]; 
-          } 
+      if (this.keys[i].publicKey === data.publicKey) {
+        for (let key in data) {
+          if (key !== "publicKey") {
+            this.keys[i][key] = data[key];
+          }
         }
         console.log(JSON.stringify(this.keys[i]));
         this.saveKeys();
@@ -118,20 +126,23 @@ class Keychain {
     //
     // or add new entry
     //
-    let newkey = { publickey: "" };
-    newkey.publickey = data.publickey;
-    for (let key in data) { if (key !== "publickey") { newkey[key] = data[key]; } }
+    let newkey = { publicKey: "" };
+    newkey.publicKey = data.publicKey;
+    for (let key in data) {
+      if (key !== "publicKey") {
+        newkey[key] = data[key];
+      }
+    }
     this.keys.push(newkey);
-    this.publickey_keys_hmap[newkey.publickey] = 1;
+    this.publickey_keys_hmap[newkey.publicKey] = 1;
     this.saveKeys();
 
   }
 
-
-  decryptMessage(publickey: string, encrypted_msg) {
+  decryptMessage(publicKey: string, encrypted_msg) {
     // submit JSON parsed object after unencryption
     for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].publickey === publickey) {
+      if (this.keys[x].publicKey === publicKey) {
         if (this.keys[x].aes_secret) {
           const tmpmsg = this.app.crypto.aesDecrypt(encrypted_msg, this.keys[x].aes_secret);
           if (tmpmsg != null) {
@@ -140,8 +151,8 @@ class Keychain {
               return tmpx;
             }
           } else {
-	    // we appear to have received a message we cannot decrypto
-	  }
+      // we appear to have received a message we cannot decrypto
+    }
         }
       }
     }
@@ -150,8 +161,8 @@ class Keychain {
     return encrypted_msg;
   }
 
-  hasPublicKey(publickey="") {
-    if (this.publickey_keys_hmap[publickey]) { return true; }
+  hasPublicKey(publicKey="") {
+    if (this.publickey_keys_hmap[publicKey]) { return true; }
     return false;
   }
 
@@ -195,9 +206,9 @@ class Keychain {
     this.saveGroups();
   }
 
-  decryptString(publickey, encrypted_string) {
+  decryptString(publicKey, encrypted_string) {
     for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].publickey == publickey) {
+      if (this.keys[x].publicKey == publicKey) {
         if (this.keys[x].aes_secret) {
           return this.app.crypto.aesDecrypt(encrypted_string, this.keys[x].aes_secret);
         }
@@ -207,9 +218,9 @@ class Keychain {
     return encrypted_string;
   }
 
-  encryptMessage(publickey: string, msg) {
+  encryptMessage(publicKey: string, msg) {
     for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].publickey === publickey) {
+      if (this.keys[x].publicKey === publicKey) {
         if (this.keys[x].aes_secret) {
           const jsonmsg = JSON.stringify(msg);
           return this.app.crypto.aesEncrypt(jsonmsg, this.keys[x].aes_secret);
@@ -219,9 +230,9 @@ class Keychain {
     return msg;
   }
 
-  hasSharedSecret(publickey: string) {
+  hasSharedSecret(publicKey: string) {
     for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].publickey === publickey || this.keys[x].identifier === publickey) {
+      if (this.keys[x].publicKey === publicKey || this.keys[x].identifier === publicKey) {
         if (this.keys[x].aes_secret) {
           return true;
         }
@@ -230,9 +241,9 @@ class Keychain {
     return false;
   }
 
-  isWatched(publickey) {
+  isWatched(publicKey) {
     for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].publickey == publickey || this.keys[x].isIdentifier(publickey)) {
+      if (this.keys[x].publicKey == publicKey || this.keys[x].identifier === publicKey) {
         if (this.keys[x].watched == true) {
           return true;
         }
@@ -245,20 +256,21 @@ class Keychain {
   // used in the encrypt module, provided here for convenience of generating DHKE
   // in other ways.
   //
-  initializeKeyExchange(publickey: string) {
+  initializeKeyExchange(publicKey: string) {
     const alice = this.app.crypto.createDiffieHellman();
-    const alice_publickey = alice.getPublicKey(null, "compressed").toString("hex");
+    const alice_publicKey = alice.getPublicKey(null, "compressed").toString("hex");
     const alice_privatekey = alice.getPrivateKey(null, "compressed").toString("hex");
-    this.updateCryptoByPublicKey(publickey, alice_publickey, alice_privatekey, "");
-    return alice_publickey;
+    this.updateCryptoByPublicKey(publicKey, alice_publicKey, alice_privatekey, "");
+    return alice_publicKey;
   }
 
-
-  removeKey(publickey = null) {
-    if (publickey == null) { return; }
+  removeKey(publicKey = null) {
+    if (publicKey == null) {
+      return;
+    }
     for (let x = this.keys.length - 1; x >= 0; x--) {
       let match = true;
-      if (this.keys[x].publickey == publickey) {
+      if (this.keys[x].publicKey == publicKey) {
         this.keys.splice(x, 1);
       }
     }
@@ -267,13 +279,13 @@ class Keychain {
   returnKey(data = null) {
 
     //
-    // data might be a publickey, permit flexibility
-    // in how this is called by pushing it into a 
+    // data might be a publicKey, permit flexibility
+    // in how this is called by pushing it into a
     // suitable object for searching
     //
-    if (typeof data === 'string') {
-      let d = { publickey: "" };
-      d.publickey = data;
+    if (typeof data === "string") {
+      let d = { publicKey: "" };
+      d.publicKey = data;
       data = d;
     }
 
@@ -286,7 +298,7 @@ class Keychain {
       for (let key in data) {
         if (this.keys[x][key] !== data[key]) {
           match = false;
-	      } 
+        } 
       }
       if (match) {
         key_idx = x;
@@ -300,17 +312,17 @@ class Keychain {
     // no match - maybe we have a module that has cached this information?
     //
     
-    this.app.modules.getRespondTos("saito-return-key").forEach((modResponse) => {
+    this.app.modules.getRespondTos("saito-return-key").forEach(modResponse => {
       let key = modResponse.returnKey(data);
       if (key) { 
-	       if (return_key){
+         if (return_key){
           return_key = Object.assign(return_key, key);
          }else{
           return_key = key;  
          }
       }
     });
-
+      
     return return_key;
 
   }
@@ -323,7 +335,7 @@ class Keychain {
     //
     if (data == null) {
       for (let x = 0; x < this.keys.length; x++) {
-        if (/*this.keys[x].lc &&*/ this.keys[x].publickey != this.app.wallet.returnPublicKey()) {
+        if (/*this.keys[x].lc &&*/ this.keys[x].publicKey != this.publicKey) {
           kx.push(this.keys[x]);
         }
       }
@@ -371,17 +383,11 @@ class Keychain {
     }
   }
 
-
-
-  returnIdenticon(publickey: string, img_format = "svg") {
-
+  returnIdenticon(publicKey: string, img_format = "svg") {
     if (this.keys != undefined) {
       for (let x = 0; x < this.keys.length; x++) {
-        if (this.keys[x].publickey === publickey) {
-          if (
-            this.keys[x].identicon != "" &&
-            typeof this.keys[x].identicon !== "undefined"
-          ) {
+        if (this.keys[x].publicKey === publicKey) {
+          if (this.keys[x].identicon != "" && typeof this.keys[x].identicon !== "undefined") {
             return this.keys[x].identicon;
           }
         }
@@ -389,7 +395,7 @@ class Keychain {
     }
 
     //
-    // if we reach here, generate from publickey
+    // if we reach here, generate from publicKey
     //
     const options = {
       //foreground: [247, 31, 61, 255],           // saito red
@@ -398,13 +404,12 @@ class Keychain {
       size: 420, // 420px square
       format: img_format, // use SVG instead of PNG
     };
-    const data = new Identicon(this.app.crypto.hash(publickey), options).toString();
+    const data = new Identicon(this.app.crypto.hash(publicKey), options).toString();
     return "data:image/" + img_format + "+xml;base64," + data;
   }
 
-
-  returnIdenticonColor(publickey) {
-    const hue = parseInt(this.app.crypto.hash(publickey).substr(-7), 16) / 0xfffffff;
+  returnIdenticonColor(publicKey) {
+    const hue = parseInt(this.app.crypto.hash(publicKey).substr(-7), 16) / 0xfffffff;
     const saturation = 0.7;
     const brightness = 0.5;
     const values = this.hsl2rgb(hue, saturation, brightness).map(Math.round);
@@ -431,12 +436,16 @@ class Keychain {
 
   returnPublicKeyByIdentifier(identifier: string) {
     let key = this.returnKey({ identifier: identifier });
-    if (key) { if (key.publickey) { return key.publickey; } }
+    if (key) {
+      if (key.publicKey) {
+        return key.publicKey;
+      }
+    }
     return null;
   }
 
-  returnIdentifierByPublicKey(publickey: string, returnKey = false): string {
-    let key = this.returnKey({ publickey: publickey });
+  returnIdentifierByPublicKey(publicKey: string, returnKey = false): string {
+    let key = this.returnKey({ publicKey: publicKey });
     if (key) {
       if (key.identifier) {
         return key.identifier;
@@ -444,51 +453,57 @@ class Keychain {
     }
 
     if (returnKey) {
-      return publickey;
+      return publicKey;
     } else {
       return "";
     }
   }
 
-  returnUsername(publickey: string, max=12): string {
-    const name = this.returnIdentifierByPublicKey(publickey, true);
-    if (name != publickey && name != "") { return name; }
-    if (name == publickey) {
+ 
+ returnUsername(publicKey: string, max=12): string {
+    const name = this.returnIdentifierByPublicKey(publicKey, true);
+    if (name != publicKey && name != "") { return name; }
+    if (name == publicKey) {
       if (name.length > max) {
         return name.substring(0, max) + "...";
       }
     }
-    return publickey;
+    return publicKey;
   }
 
   returnWatchedPublicKeys() {
     const x = [];
     for (let i = 0; i < this.keys.length; i++) {
       if (this.keys[i].watched) {
-        x.push(this.keys[i].publickey);
+        x.push(this.keys[i].publicKey);
       }
     }
     return x;
   }
 
-  addWatchedPublicKey(publickey = "") {
-    this.addKey(publickey, { watched: true });
+
+  addWatchedPublicKey(publicKey = "") {
+    this.addKey(publicKey, { watched: true });
     this.saveKeys();
     this.app.network.updatePeersWithWatchedPublicKeys();
   }
 
-  updateCryptoByPublicKey(publickey, aes_publickey = "", aes_privatekey = "", shared_secret = "") {
-    if (publickey == "") { return; }
-    this.addKey(publickey, { aes_publickey : aes_publickey , aes_privatekey : aes_privatekey , aes_secret : shared_secret });
+  updateCryptoByPublicKey(publicKey, aes_publicKey = "", aes_privatekey = "", shared_secret = "") {
+    if (publicKey == "") {
+      return;
+    }
+    this.addKey(publicKey, {
+      aes_publicKey: aes_publicKey,
+      aes_privatekey: aes_privatekey,
+      aes_secret: shared_secret,
+    });
     this.saveKeys();
 
-    console.log("SAVED CRYPTO AES: " + publickey);
-    console.log(JSON.stringify(this.returnKey(publickey)));
+    console.log("SAVED CRYPTO AES: " + publicKey);
+    console.log(JSON.stringify(this.returnKey(publicKey)));
 
     return true;
   }
-
-
 }
 
 export default Keychain;

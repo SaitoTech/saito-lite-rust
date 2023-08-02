@@ -21558,7 +21558,7 @@ console.log("URL IS: " + url);
               throw 'Web Audio API is not available!';
             }
           }
-          SDL.audio.soundSource = new Array(); // Use an array of sound sources as a ring buffer to queue blocks of synthesized audio to Web Audio API.
+          SDL.audio.soundSource = []; // Use an array of sound sources as a ring buffer to queue blocks of synthesized audio to Web Audio API.
           SDL.audio.nextSoundSource = 0; // Index of the next sound buffer in the ring buffer queue to play.
           SDL.audio.nextPlayTime = 0; // Time in seconds when the next audio block is due to start.
           
@@ -30241,7 +30241,7 @@ var i64Math = (function() { // Emscripten wrapper
 
   // Digit conversions
   var BI_RM = "0123456789abcdefghijklmnopqrstuvwxyz";
-  var BI_RC = new Array();
+  var BI_RC = [];
   var rr,vv;
   rr = "0".charCodeAt(0);
   for(vv = 0; vv <= 9; ++vv) BI_RC[rr++] = vv;

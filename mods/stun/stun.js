@@ -8,6 +8,7 @@ const PeerManager = require("./lib/appspace/PeerManager");
 //Do these do anything???
 var serialize = require("serialize-javascript");
 const adapter = require("webrtc-adapter");
+const Slip = require("../../lib/saito/slip").default;
 
 class Stun extends ModTemplate {
   constructor(app) {
@@ -21,7 +22,7 @@ class Stun extends ModTemplate {
     this.icon = "fas fa-video";
     this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
     this.rooms = new Map();
-
+    this.publicKey = this.app.wallet.getPublicKey();
     this.servers = [
       {
         urls: "stun:stun-sf.saito.io:3478",
@@ -191,7 +192,7 @@ class Stun extends ModTemplate {
 
     if (type === "user-menu") {
       if (obj?.publickey) {
-        if (obj.publickey !== this.app.wallet.returnPublicKey()) {
+        if (obj.publickey !== this.app.wallet.publickey) {
           this.attachStyleSheets();
           super.render(this.app, this);
           return [
@@ -269,20 +270,23 @@ class Stun extends ModTemplate {
 
     // offchain data
     let _data = {
-      public_key: this.app.wallet.returnPublicKey(),
+      public_key: this.publicKey,
       room_code,
     };
 
     //Are we sure this will always be the stun server?
     // Shouldn't this be set by onPeerServiceUp
-    let server = this.app.network.peers[0];
+    let server = (await this.app.network.getPeers())[0];
 
     let data = {
-      request: "stun command transmission request",
+      recipient: server.publicKey,
+      request: "stun-create-room-transaction",
       data: _data,
     };
 
-    server.sendRequestAsTransaction("stun-create-room-transaction", data);
+    // server.sendRequestAsTransaction("stun-create-room-transaction", data);
+
+    this.app.connection.emit("relay-send-message", data);
 
     return room_code;
   }
@@ -290,29 +294,33 @@ class Stun extends ModTemplate {
   // server receives this
   async receiveCreateRoomTransaction(app, tx) {
     let txmsg = tx.returnMessage();
-    this.addKeyToRoom(txmsg.data.data.room_code, txmsg.data.data.public_key);
+    console.log(txmsg, "txmsg");
+    this.addKeyToRoom(txmsg.data.room_code, txmsg.data.public_key);
   }
 
   async sendStunMessageToServerTransaction(_data) {
     let request = "stun-send-message-to-server";
-    let server = this.app.network.peers[0];
+    let server = (await this.app.network.getPeers())[0];
 
     // offchain data
+
     let data = {
+      recipient: server.publicKey,
       request,
       data: _data,
     };
 
-    server.sendRequestAsTransaction("stun-send-message-to-server", data);
+    this.app.connection.emit("relay-send-message", data);
   }
 
   // server receives this
   async receiveStunMessageToServerTransaction(app, tx, peer) {
     let txmsg = tx.returnMessage();
 
-    let room_code = txmsg.data.data.room_code;
-    let type = txmsg.data.data.type;
-    let public_key = peer.peer.publickey;
+    let room_code = txmsg.data.room_code;
+    let type = txmsg.data.type;
+    console.log("publick key", peer);
+    let public_key = peer.publicKey;
 
     if (type === "peer-joined") {
       this.addKeyToRoom(room_code, public_key);
@@ -324,14 +332,14 @@ class Stun extends ModTemplate {
 
     // public keys in the room and relay;
     let recipients = [];
-    if (txmsg.data.data.targetPeerId) {
-      recipients.push(txmsg.data.data.targetPeerId);
+    if (txmsg.data.targetPeerId) {
+      recipients.push(txmsg.data.targetPeerId);
     } else {
       recipients = this.rooms.get(room_code)?.filter((p) => p !== public_key);
     }
 
     let data = {
-      ...txmsg.data.data,
+      ...txmsg.data,
       public_key,
     };
 
@@ -339,21 +347,24 @@ class Stun extends ModTemplate {
     this.sendStunMessageToPeersTransaction(data, recipients);
   }
 
-  sendStunMessageToPeersTransaction(_data, recipients) {
+  async sendStunMessageToPeersTransaction(_data, recipients) {
     let request = "stun-send-message-to-peers";
 
     // onchain
-    let newtx = this.app.wallet.createUnsignedTransaction();
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     if (recipients) {
       recipients.forEach((recipient) => {
-        newtx.transaction.to.push(new saito.default.slip(recipient));
+        let slip = new Slip();
+        slip.publicKey = recipient;
+        slip.amount = BigInt(0);
+        newtx.addToSlip(slip);
       });
     }
 
     newtx.msg.module = "Stun";
-    newtx.msg.request = "send-message-to-peers";
+    newtx.msg.request = "stun-send-message-to-peers";
     newtx.msg.data = _data;
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     // offchain data
     let data = {
@@ -364,9 +375,9 @@ class Stun extends ModTemplate {
 
     this.app.connection.emit("relay-send-message", data);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       //This is the only proper onChain TX... ?
-      this.app.network.propagateTransaction(newtx);
+      // await this.app.network.propagateTransaction(newtx);
     }, 2000);
   }
 
@@ -390,14 +401,14 @@ class Stun extends ModTemplate {
 
     // send the information to the other peers and ask them to join the call
     recipients = recipients.filter((player) => {
-      return player !== this.app.wallet.returnPublicKey();
+      return player !== this.publicKey;
     });
 
     let data = {
       type: "connection-request",
       room_code,
       ui: ui_type,
-      sender: this.app.wallet.returnPublicKey(),
+      sender: this.publicKey,
     };
 
     this.sendStunCallMessageToPeers(this.app, data, recipients);
@@ -431,7 +442,7 @@ class Stun extends ModTemplate {
           let _data = {
             type: "connection-accepted",
             room_code: data.room_code,
-            sender: app.wallet.returnPublicKey(),
+            sender: app.wallet.publicKey,
           };
 
           this.sendStunCallMessageToPeers(app, _data, [data.sender]);
@@ -448,7 +459,7 @@ class Stun extends ModTemplate {
           let _data = {
             type: "connection-rejected",
             room_code: data.room_code,
-            sender: app.wallet.returnPublicKey(),
+            sender: app.wallet.publicKey,
           };
           this.sendStunCallMessageToPeers(app, _data, [data.sender]);
         }

@@ -1,3 +1,7 @@
+const PeerService = require("saito-js/lib/peer_service").default;
+
+const Transaction = require("../../lib/saito/transaction").default;
+
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeMain = require("./lib/main/main");
@@ -31,11 +35,11 @@ class Arcade extends ModTemplate {
     // Useful for rendering the sidebar menu, or any list of games for game-selector (prior to game-wizard)
     this.arcade_games = [];
 
-    /*  
+    /*
       We store the original transactions (from createOpenTransaction/joinOpenTransaction) in this.games,
       but because it is an object in memory, we will update the player list as players join.
       When the game kicks off, we update the server side sql so that anyone else joining the network won't get confused
-      the tx.transaction.sig becomes the game_id.  
+      the tx.signature becomes the game_id.
     */
     this.games = {};
 
@@ -43,13 +47,13 @@ class Arcade extends ModTemplate {
 
     this.icon_fa = "fas fa-gamepad";
 
-    this.styles = ["/arcade/style.css"];
+    this.styles = ["/saito/saito.css", "/arcade/style.css"];
 
     this.affix_callbacks_to = [];
-    this.services = [{ service: "arcade", domain: "saito" }];
+    this.services = [new PeerService(null, "arcade", "", "saito")];
 
-    this.invite_cutoff  = 3500000;
-    this.game_cutoff    = 600000000;
+    this.invite_cutoff = 3500000;
+    this.game_cutoff = 600000000;
 
     this.theme_options = {
       lite: "fa-solid fa-sun",
@@ -66,13 +70,13 @@ class Arcade extends ModTemplate {
   // may not be up. use onPeerHandshakeCompete() to make requests over the
   // network and process the results.
   //
-  initialize(app) {
-    super.initialize(app);
+  async initialize(app) {
+    await super.initialize(app);
 
     //
     // compile list of arcade games
     //
-    app.modules.returnModulesRespondingTo("arcade-games").forEach((game_mod) => {
+    (await app.modules.returnModulesRespondingTo("arcade-games")).forEach((game_mod) => {
       this.arcade_games.push(game_mod);
       //
       // and listen to their transactions
@@ -111,27 +115,24 @@ class Arcade extends ModTemplate {
           if (
             game.over == 0 &&
             (game.players_set != 1 ||
-              game.players.includes(this.app.wallet.returnPublicKey()) ||
-              game.accepted.includes(this.app.wallet.returnPublicKey()))
+              game.players.includes(this.publicKey) ||
+              game.accepted.includes(this.publicKey))
           ) {
-            let game_tx = new saito.default.transaction();
             if (game.over) {
               if (game.last_block > 0) {
                 return;
               }
             }
+            let game_tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
             if (game.players) {
-              game_tx.transaction.to = game.players.map((player) => new saito.default.slip(player));
-              game_tx.transaction.from = game.players.map(
-                (player) => new saito.default.slip(player)
-              );
+              game.players.forEach((player) => {
+                game_tx.addTo(player);
+                game_tx.addFrom(player);
+              });
             } else {
-              game_tx.transaction.from.push(
-                new saito.default.slip(this.app.wallet.returnPublicKey())
-              );
-              game_tx.transaction.to.push(
-                new saito.default.slip(this.app.wallet.returnPublicKey())
-              );
+              game_tx.addFrom(this.publicKey);
+              game_tx.addTo(this.publicKey);
             }
 
             let msg = {
@@ -145,12 +146,12 @@ class Arcade extends ModTemplate {
               players_sigs: [], //Only used to verify cryptology when initializing the game
               originator: game.originator,
               //winner: game.winner,
-              step: game?.step?.game, 
-              ts: game?.step?.ts,
+              step: game?.step?.game,
+              ts: game?.step?.timestamp,
             };
 
-            game_tx.transaction.sig = game.id;
-            game_tx.transaction.ts = game.ts;
+            game_tx.signature = game.id;
+            game_tx.timestamp = BigInt(game.timestamp || 0);
             game_tx.msg = msg;
 
             console.log("Processing games from app.options:");
@@ -168,10 +169,9 @@ class Arcade extends ModTemplate {
 
     try {
       this.leagueCallback = this.app.modules.returnFirstRespondTo("league_membership");
-    }catch(err){
+    } catch (err) {
       this.leagueCallback = {};
     }
-    
   }
 
   //
@@ -179,27 +179,33 @@ class Arcade extends ModTemplate {
   // The key thing that happens is we want to query the service node for current state of the arcade
   // Since no open transactions are addressed to us, we can't just read them off the blockchain
   //
-  onPeerHandshakeComplete(app, peer) {
+  async onPeerHandshakeComplete(app, peer) {
     if (!app.BROWSER) {
       return;
     }
     let arcade_self = this;
 
     let cutoff1 = new Date().getTime() - this.invite_cutoff;
-    let cutoff2 = new Date().getTime() - this.game_cutoff; 
+    let cutoff2 = new Date().getTime() - this.game_cutoff;
 
     //
     // load open games from server
     //  ( status = "open" OR status = "private" ) AND
-    let sql = `SELECT * FROM games WHERE created_at > ${cutoff1} OR (created_at > ${cutoff2} AND (status = 'over' OR status = 'active')) ORDER BY created_at ASC`;
-    this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
+
+    let sql = `SELECT *
+               FROM games
+               WHERE created_at > ${cutoff1}
+                  OR (created_at > ${cutoff2} AND (status = 'over' OR status = 'active'))
+               ORDER BY created_at ASC`;
+    this.sendPeerDatabaseRequestWithFilter("Arcade", sql, async (res) => {
       if (res.rows) {
         for (let record of res.rows) {
           //console.log(JSON.parse(JSON.stringify(record)));
           //This is the save openTX
-          let game_tx = new saito.default.transaction(JSON.parse(record.tx));
-          game_tx.transaction.ts = record.created_at;
-          
+
+          let game_tx = new Transaction(undefined, JSON.parse(record.tx));
+          game_tx.timestamp = record.created_at;
+
           //But we update the player list
           let player_info = record.players_array.split("_");
           for (let pi of player_info) {
@@ -215,21 +221,21 @@ class Arcade extends ModTemplate {
           //
           //Game Meta Data stored directly in DB
           //
-          if (record.winner){
+          if (record.winner) {
             game_tx.msg.winner = [record.winner];
             try {
               game_tx.msg.winner = JSON.parse(record.winner);
-            } catch(err) {
-              //console.log("Non-JSON DB entry:", record.winner);              
+            } catch (err) {
+              //console.log("Non-JSON DB entry:", record.winner);
             }
           }
 
           game_tx.msg.method = record.method;
           game_tx.msg.time_finished = record.time_finished;
-          if (record?.step){
+          if (record?.step) {
             let step = JSON.parse(record.step);
             game_tx.msg.step = step?.game;
-            game_tx.msg.ts = step?.ts;          
+            game_tx.msg.timestamp = step?.timestamp;
           }
 
           if (arcade_self.debug) {
@@ -269,19 +275,18 @@ class Arcade extends ModTemplate {
         if (arcade_self.isAvailableGame(game)) {
           console.log("Make it my game");
           //Mark myself as an invited guest
-          game.msg.options.desired_opponent_publickey = this.app.wallet.returnPublicKey();
+          game.msg.options.desired_opponent_publickey = this.publicKey;
           //Then we have to remove and readd the game so it goes under "mine"
           arcade_self.removeGame(game_id);
           arcade_self.addGame(game, "private");
         }
 
-        app.browser.logMatomoEvent("GameInvite", "FollowLink", game.game);
+        await app.browser.logMatomoEvent("GameInvite", "FollowLink", game.game);
 
-        let invite = new Invite(app, this, null, null, game);
+        let invite = new Invite(app, this, null, null, game, this.publicKey);
         let join_overlay = new JoinGameOverlay(app, this, invite.invite_data);
-        join_overlay.render();
+        await join_overlay.render();
         window.history.pushState("", "", `/arcade/`);
-
       }
 
       app.connection.emit("arcade-invite-manager-render-request");
@@ -296,7 +301,7 @@ class Arcade extends ModTemplate {
   // run by browser if the user attempts to visit /arcade in their browser
   // while the application is loaded.
   //
-  render() {
+  async render() {
     if (this.app.BROWSER == 1) {
       if (this.app.options.theme) {
         let theme = this.app.options.theme[this.slug];
@@ -310,18 +315,21 @@ class Arcade extends ModTemplate {
     if (this.main == null) {
       this.main = new ArcadeMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
+      await this.header.initialize(this.app);
       this.addComponent(this.header);
       this.addComponent(this.main);
     }
 
-    this.app.modules.returnModulesRespondingTo("chat-manager").forEach((mod) => {
+    for (const mod of this.app.modules.returnModulesRespondingTo("chat-manager")) {
       let cm = mod.respondTo("chat-manager");
       cm.container = ".saito-sidebar.left";
       cm.render_manager_to_screen = 1;
       this.addComponent(cm);
-    });
+    }
 
-    super.render();
+    console.log("rendering", this.main, this.header);
+
+    await super.render();
   }
 
   //
@@ -331,16 +339,13 @@ class Arcade extends ModTemplate {
     if (qs === ".redsquare-sidebar") {
       return true;
     }
-    if (qs == ".league-overlay-games-list") {
-      return true;
-    }
-    return false;
+    return qs == ".league-overlay-games-list";
   }
 
   //
   // render components into other modules on-request
   //
-  renderInto(qs) {
+  async renderInto(qs) {
     if (qs == ".redsquare-sidebar") {
       if (!this.renderIntos[qs]) {
         this.styles = ["/arcade/style.css"];
@@ -374,15 +379,16 @@ class Arcade extends ModTemplate {
     }
 
     if (this.renderIntos[qs] != null && this.renderIntos[qs].length > 0) {
-      this.renderIntos[qs].forEach((comp) => {
-        comp.render();
-      });
+      for (const comp of this.renderIntos[qs]) {
+        await comp.render();
+      }
     }
   }
 
   //
   // flexible inter-module-communications
   //
+
   respondTo(type = "", obj) {
     if (type == "header-dropdown") {
       return {
@@ -393,12 +399,12 @@ class Arcade extends ModTemplate {
       };
     }
     if (type === "user-menu") {
-      if (obj?.publickey && obj.publickey !== this.app.wallet.returnPublicKey()){
+      if (obj?.publicKey && obj.publicKey !== this.publicKey) {
         return {
           text: "Challenge to Game",
           icon: "fas fa-gamepad",
-          callback: function (app, publickey) {
-            app.connection.emit("arcade-launch-game-selector", { publickey });
+          callback: function (app, publicKey) {
+            app.connection.emit("arcade-launch-game-selector", { publicKey });
           },
         };
       }
@@ -428,7 +434,7 @@ class Arcade extends ModTemplate {
     }
     if (type === "saito-floating-menu") {
       let x = [];
-      
+
       x.push({
         text: "Games",
         icon: this.icon || "fas fa-gamepad",
@@ -443,7 +449,7 @@ class Arcade extends ModTemplate {
       return x;
     }
 
-    return null;
+    return super.respondTo(type, obj);
   }
 
   ////////////////////////////////////////////////////
@@ -454,9 +460,10 @@ class Arcade extends ModTemplate {
   // ON CONFIRMATION === process on-chain transactions
   ////////////////////////////////////////////////////
 
-  async onConfirmation(blk, tx, conf, app) {
+  async onConfirmation(blk, tx, conf) {
+    // console.log("onConfirmation called");
     let txmsg = tx.returnMessage();
-    let arcade_self = app.modules.returnModule("Arcade");
+    let arcade_self = this.app.modules.returnModule("Arcade");
 
     try {
       if (conf == 0) {
@@ -469,7 +476,7 @@ class Arcade extends ModTemplate {
           // public & private invites processed the same way
           //
           if (txmsg.request === "open" || txmsg.request === "private") {
-            arcade_self.receiveOpenTransaction(tx, blk);
+            await arcade_self.receiveOpenTransaction(tx, blk);
           }
 
           //
@@ -485,38 +492,38 @@ class Arcade extends ModTemplate {
           // Add a player to the game invite
           //
           if (txmsg.request == "join") {
-            arcade_self.receiveJoinTransaction(tx);
+            await arcade_self.receiveJoinTransaction(tx);
           }
 
           //
           // cancel a join transaction / Remove a player from the game invite
           //
           if (txmsg.request == "cancel") {
-            arcade_self.receiveCancelTransaction(tx);
+            await arcade_self.receiveCancelTransaction(tx);
           }
 
           //
           // kick off game initialization
           //
           if (txmsg.request === "accept") {
-            arcade_self.receiveAcceptTransaction(tx);
+            await arcade_self.receiveAcceptTransaction(tx);
           }
         } else {
           if (txmsg.request === "stopgame") {
-            arcade_self.receiveCloseTransaction(tx);
+            await arcade_self.receiveCloseTransaction(tx);
           }
 
           if (txmsg.request === "gameover") {
-            arcade_self.receiveGameoverTransaction(tx);
+            await arcade_self.receiveGameoverTransaction(tx);
           }
 
           if (txmsg.request === "game") {
-            arcade_self.receiveGameStepTransaction(tx);
+            await arcade_self.receiveGameStepTransaction(tx);
           }
         }
       }
     } catch (err) {
-      console.log("ERROR in arcade: " + err);
+      console.log("ERROR in arcade: ", err);
     }
   }
 
@@ -540,11 +547,13 @@ class Arcade extends ModTemplate {
     // this code doubles onConfirmation
     //
     if (message?.request === "arcade spv update") {
-      let tx = new saito.default.transaction(message.data);
+
+      let tx = new Transaction(undefined, message.data);
 
       let txmsg = tx.returnMessage();
 
       if (txmsg.module === "Arcade") {
+
         if (this.debug) {
           console.log("Arcade HPT embedded txmsg:", JSON.parse(JSON.stringify(txmsg)));
         }
@@ -553,7 +562,7 @@ class Arcade extends ModTemplate {
         // public & private invites processed the same way
         //
         if (txmsg.request === "open" || txmsg.request === "private") {
-          this.receiveOpenTransaction(tx);
+          await this.receiveOpenTransaction(tx);
         }
 
         //
@@ -569,46 +578,46 @@ class Arcade extends ModTemplate {
         // Add a player to the game invite
         //
         if (txmsg.request == "join") {
-          this.receiveJoinTransaction(tx);
+          await this.receiveJoinTransaction(tx);
         }
 
         //
         // cancel a join transaction / Remove a player from the game invite
         //
         if (txmsg.request == "cancel") {
-          this.receiveCancelTransaction(tx);
+          await this.receiveCancelTransaction(tx);
         }
 
         //
         // kick off game initialization
         //
         if (txmsg.request === "accept") {
-          this.receiveAcceptTransaction(tx);
+          await this.receiveAcceptTransaction(tx);
         }
 
         /*
         //TODO - reimplement / check
         // This was an idea to completely off-chain send a player a direct/play now game invite
         // Which will pop up a yes/no demand for immediate response
-              
+
         if (txmsg.request == "challenge") {
           this.receiveChallengeTransaction(tx);
         }
-        
+
         if (txmsg.request == "sorry"){
           app.connection.emit("arcade-reject-challenge", txmsg.game_id);
         }
         */
       } else {
         if (txmsg.request === "stopgame") {
-          this.receiveCloseTransaction(tx);
+          await this.receiveCloseTransaction(tx);
         }
         if (txmsg.request === "gameover") {
-          this.receiveGameoverTransaction(tx);
+          await this.receiveGameoverTransaction(tx);
         }
-        if (this.app.BROWSER){
+        if (this.app.BROWSER) {
           if (txmsg.request === "game") {
-            this.receiveGameStepTransaction(tx);
+            await this.receiveGameStepTransaction(tx);
           }
         }
       }
@@ -617,33 +626,37 @@ class Arcade extends ModTemplate {
       // only servers notify lite-clients
       //
       if (app.BROWSER == 0 && app.SPVMODE == 0) {
-        console.log("notify peers?" );
-        this.notifyPeers(tx);
+        await this.notifyPeers(tx);
       }
-
-
     }
 
-    super.handlePeerTransaction(app, newtx, peer, mycallback);
+    await super.handlePeerTransaction(app, newtx, peer, mycallback);
   }
 
   //
   // send TX to our SPV peers
   //
-  notifyPeers(tx) {
+  async notifyPeers(tx) {
     if (this.app.BROWSER == 1) {
       return;
     }
-    for (let i = 0; i < this.app.network.peers.length; i++) {
-      if (this.app.network.peers[i].peer.synctype == "lite") {
+    let peers = await this.app.network.getPeers();
+    for (let peer of peers) {
+      console.log("sync type : " + peer.peerIndex + " -> " + peer.synctype);
+      if (peer.synctype == "lite") {
         //
         // fwd tx to peer
         //
         let message = {};
         message.request = "arcade spv update";
-        message.data = tx.transaction;
+        message.data = tx.toJson();
 
-        this.app.network.peers[i].sendRequestAsTransaction(message.request, message.data);
+        console.log("notifying peer : " + peer.peerIndex);
+        this.app.network
+          .sendRequestAsTransaction(message.request, message.data, null, peer.peerIndex)
+          .then(() => {
+            console.log("peer notified : " + peer.peerIndex);
+          });
       }
     }
   }
@@ -667,41 +680,43 @@ class Arcade extends ModTemplate {
   // servers can also index the transaction to notify others that a game is
   // available if asked.
   //
-  createOpenTransaction(gamedata) {
-    let sendto = this.app.wallet.returnPublicKey();
+  async createOpenTransaction(gamedata) {
+    let sendto = this.publicKey;
     let moduletype = "Arcade";
 
-    let { ts, name, options, players_needed, invitation_type } =
-      gamedata;
+    let { timestamp, name, options, players_needed, invitation_type } = gamedata;
 
-    let accept_sig = this.app.crypto.signMessage(
-      `invite_game_${ts}`,
-      this.app.wallet.returnPrivateKey()
+    let accept_sig = await this.app.crypto.signMessage(
+      `invite_game_${timestamp}`,
+      await this.app.wallet.getPrivateKey()
     );
 
-    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    newtx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    newtx.addTo(this.publicKey);
     if (options?.desired_opponent_publickey) {
-      newtx.transaction.to.push(new saito.default.slip(options.desired_opponent_publickey, 0.0));
+      newtx.addTo(options.desired_opponent_publickey);
     }
 
     newtx.msg = {
-      ts: ts,
+      timestamp: timestamp,
       module: moduletype,
       request: invitation_type,
       game: name,
       options: options,
       players_needed: parseInt(players_needed),
-      players: [this.app.wallet.returnPublicKey()],
+      players: [this.publicKey],
       players_sigs: [accept_sig],
-      originator: this.app.wallet.returnPublicKey(),
+      originator: this.publicKey,
     };
 
     if (this.debug) {
-      console.log(`Creating ${invitation_type} Game Invite: `, JSON.parse(JSON.stringify(newtx.msg)));
+      console.log(
+        `Creating ${invitation_type} Game Invite: `,
+        JSON.parse(JSON.stringify(newtx.msg))
+      );
     }
 
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     return newtx;
   }
@@ -713,7 +728,7 @@ class Arcade extends ModTemplate {
     this.addGame(tx, txmsg.request);
     this.app.connection.emit("arcade-invite-manager-render-request");
 
-    if (txmsg?.options?.desired_opponent_publickey == this.app.wallet.returnPublicKey()){
+    if (txmsg?.options?.desired_opponent_publickey == this.publicKey) {
       siteMessage("You were invited to a game", 5000);
     }
 
@@ -724,11 +739,20 @@ class Arcade extends ModTemplate {
     let options = txmsg.options != undefined ? txmsg.options : {};
 
     let players_array = txmsg.players[0] + "/" + txmsg.players_sigs[0];
-    let start_bid = blk != null ? blk.block.id : BigInt(1);
+    let start_bid = blk != null ? blk.id : BigInt(1);
 
-    let created_at = parseInt(tx.transaction.ts);
+    let created_at = tx.timestamp;
+    console.log(
+      "game tx timestamp : " +
+        created_at +
+        " vs now : " +
+        new Date().getTime() +
+        " vs now local : " +
+        Date.now()
+    );
 
-    let sql = `INSERT OR IGNORE INTO games (
+    let sql = `INSERT
+    OR IGNORE INTO games (
                 game_id ,
                 players_needed ,
                 players_array ,
@@ -740,25 +764,25 @@ class Arcade extends ModTemplate {
                 created_at ,
                 winner
               ) VALUES (
-                $game_id ,
-                $players_needed ,
-                $players_array ,
-                $module ,
-                $status ,
-                $options ,
-                $tx,
-                $start_bid ,
-                $created_at ,
-                $winner
-              )`;
+    $game_id ,
+    $players_needed ,
+    $players_array ,
+    $module ,
+    $status ,
+    $options ,
+    $tx,
+    $start_bid ,
+    $created_at ,
+    $winner
+    )`;
     let params = {
-      $game_id: tx.transaction.sig,
+      $game_id: tx.signature,
       $players_needed: parseInt(txmsg.players_needed),
       $players_array: players_array,
       $module: txmsg.game,
       $status: txmsg.request, //open, private
       $options: options,
-      $tx: JSON.stringify(tx.transaction),
+      $tx: JSON.stringify(tx.toJson()),
       $start_bid: start_bid,
       $created_at: created_at,
       $winner: "",
@@ -770,21 +794,21 @@ class Arcade extends ModTemplate {
   // Cancel //
   ////////////
 
-  createCancelTransaction(orig_tx) {
-    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+  async createCancelTransaction(orig_tx) {
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
     for (let player of orig_tx.msg.players) {
-      newtx.transaction.to.push(new saito.default.slip(player, 0.0));
+      newtx.addTo(player);
     }
-    newtx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+    newtx.addTo(this.publicKey);
 
     let msg = {
       request: "cancel",
       module: "Arcade",
-      game_id: orig_tx.transaction.sig,
+      game_id: orig_tx.signature,
     };
     newtx.msg = msg;
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     return newtx;
   }
@@ -797,11 +821,11 @@ class Arcade extends ModTemplate {
       return;
     }
 
-    if (game.msg.players.includes(tx.transaction.from[0].add)) {
-      if (tx.transaction.from[0].add == game.msg.originator) {
+    if (game.msg.players.includes(tx.from[0].publicKey)) {
+      if (tx.from[0].publicKey == game.msg.originator) {
         if (this.debug) {
           console.log(
-            `Player (${tx.transaction.from[0].add}) Canceling Game invite: `,
+            `Player (${tx.from[0].publicKey}) Canceling Game invite: `,
             JSON.parse(JSON.stringify(game.msg))
           );
         }
@@ -810,51 +834,50 @@ class Arcade extends ModTemplate {
       } else {
         if (this.debug) {
           console.log(
-            `Removing Player (${tx.transaction.from[0].add}) from Game: `,
+            `Removing Player (${tx.from[0].publicKey}) from Game: `,
             JSON.parse(JSON.stringify(game.msg))
           );
         }
 
-        let p_index = game.msg.players.indexOf(tx.transaction.from[0].add);
+        let p_index = game.msg.players.indexOf(tx.from[0].publicKey);
         game.msg.players.splice(p_index, 1);
         //Make sure player_sigs array exists and add invite_sig
         if (game.msg.players_sigs && game.msg.players_sigs.length > p_index) {
           game.msg.players_sigs.splice(p_index, 1);
         }
 
-        this.updatePlayerListSQL(txmsg.game_id, game.msg.players, game.msg.players_sigs);
-        
+        await this.updatePlayerListSQL(txmsg.game_id, game.msg.players, game.msg.players_sigs);
       }
-    }else if (tx.isFrom(game.msg.options.desired_opponent_publickey)) {
-      if (this.app.wallet.returnPublicKey() == game.msg.originator){
+    } else if (tx.isFrom(game.msg.options.desired_opponent_publickey)) {
+      if (this.publicKey == game.msg.originator) {
         siteMessage("Your game invite was declined", 5000);
-      } 
-      await this.changeGameStatus(txmsg.game_id, "close");     
+      }
+      await this.changeGameStatus(txmsg.game_id, "close");
     }
 
     this.app.connection.emit("arcade-invite-manager-render-request");
   }
 
-  sendCancelTransaction(game_id) {
+  async sendCancelTransaction(game_id) {
     let game = this.returnGame(game_id);
 
     if (!game || !game.msg) {
       return;
     }
 
-    let close_tx = this.createCancelTransaction(game);
-    this.app.network.propagateTransaction(close_tx);
+    let close_tx = await this.createCancelTransaction(game);
+    await this.app.network.propagateTransaction(close_tx);
 
     this.app.connection.emit("relay-send-message", {
       recipient: game.msg.players,
       request: "arcade spv update",
-      data: close_tx.transaction,
+      data: close_tx.toJson(),
     });
 
     this.app.connection.emit("relay-send-message", {
       recipient: "PEERS",
       request: "arcade spv update",
-      data: close_tx.transaction,
+      data: close_tx.toJson(),
     });
   }
 
@@ -865,23 +888,21 @@ class Arcade extends ModTemplate {
   // and use an internal message to finish the process (because the sequencing matters!)
   /////////////////////////////////////////////////////////////////////
 
-  createQuitTransaction(orig_tx, reason) {
-    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+  async createQuitTransaction(orig_tx, reason) {
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
     for (let player of orig_tx.msg.players) {
-      newtx.transaction.to.push(new saito.default.slip(player, 0.0));
+      newtx.addTo(player);
     }
-    newtx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+    newtx.addTo(this.publicKey);
 
-    let msg = {
+    newtx.msg = {
       request: "stopgame",
       module: orig_tx.msg.game,
-      game_id: orig_tx.transaction.sig,
+      game_id: orig_tx.signature,
       reason: reason,
     };
-
-    newtx.msg = msg;
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     console.info(
       `Send ${reason == "cancellation" ? "close" : "quit"} message from Arcade to ${
@@ -893,37 +914,37 @@ class Arcade extends ModTemplate {
     return newtx;
   }
 
-  sendQuitTransaction(game_id, reason = "cancellation") {
+  async sendQuitTransaction(game_id, reason = "cancellation") {
     let game = this.returnGame(game_id);
 
     if (!game) {
+      console.warn("Game not found");
       return;
     }
 
-    let close_tx = this.createQuitTransaction(game, reason);
-    this.app.network.propagateTransaction(close_tx);
+    let close_tx = await this.createQuitTransaction(game, reason);
+    await this.app.network.propagateTransaction(close_tx);
 
     this.app.connection.emit("relay-send-message", {
       recipient: game.msg.players,
       request: "game relay stopgame",
-      data: close_tx.transaction,
+      data: close_tx.toJson(),
     });
     this.app.connection.emit("relay-send-message", {
       recipient: "PEERS",
       request: "arcade spv update",
-      data: close_tx.transaction,
+      data: close_tx.toJson(),
     });
   }
 
   async changeGameStatus(game_id, newStatus) {
+
     let game = this.returnGame(game_id);
 
     if (!game) {
-      console.log("Game not found");
       return;
     }
-    if (game.msg.request == "over"){
-      console.log("Game already over, ignore status change request");
+    if (game.msg.request == "over") {
       return;
     }
 
@@ -934,7 +955,9 @@ class Arcade extends ModTemplate {
     this.app.connection.emit("arcade-invite-manager-render-request");
 
     //Update top level sql table
-    let sql = `UPDATE games SET status = $status WHERE game_id = $game_id`;
+    let sql = `UPDATE games
+               SET status = $status
+               WHERE game_id = $game_id`;
     let params = { $status: newStatus, $game_id: game_id };
     await this.app.storage.executeDatabase(sql, params, "arcade");
   }
@@ -943,8 +966,7 @@ class Arcade extends ModTemplate {
   // GAMEOVER //
   //////////////
 
-
-/*
+  /*
   Note to self -- need to fix DB storage of winner since we are ambiguous as to whether it is a string or array
 */
   async receiveGameoverTransaction(tx) {
@@ -959,24 +981,29 @@ class Arcade extends ModTemplate {
       //Store the results locally
       game.msg.winner = winner;
       game.msg.method = txmsg.reason;
-      game.msg.time_finished = txmsg.ts;
+      game.msg.time_finished = txmsg.timestamp;
     } else {
       console.warn("Game not found, arcade can't process gameover tx");
     }
 
     await this.changeGameStatus(txmsg.game_id, "over");
 
-    let sql = `UPDATE games SET winner = $winner, method = $method, time_finished = $ts WHERE game_id = $game_id`;
+    let sql = `UPDATE games
+               SET winner        = $winner,
+                   method        = $method,
+                   time_finished = $timestamp
+               WHERE game_id = $game_id`;
     let params = {
       $winner: JSON.stringify(winner),
       $method: txmsg.reason,
-      $ts: txmsg.ts,
+      $timestamp: txmsg.timestamp,
       $game_id: txmsg.game_id,
     };
     await this.app.storage.executeDatabase(sql, params, "arcade");
-    //if (this.debug){
-      console.log("Winner updated in arcade");  
-   // }
+
+    if (this.debug){
+    console.log("Winner updated in arcade");
+    }
   }
 
   async receiveCloseTransaction(tx) {
@@ -989,21 +1016,25 @@ class Arcade extends ModTemplate {
     let game = this.returnGame(txmsg.game_id);
     if (game?.msg) {
       game.msg.step = txmsg.step.game;
-      game.msg.ts = txmsg.step.ts;
+      game.msg.timestamp = txmsg.step.timestamp;
     }
 
-    if (!this.app.BROWSER){
-      let sql = `UPDATE games SET step = $step WHERE game_id = $game_id`;
+    if (!this.app.BROWSER) {
+      let sql = `UPDATE games
+                 SET step = $step
+                 WHERE game_id = $game_id`;
       let params = {
         $step: JSON.stringify(txmsg.step),
         $game_id: txmsg.game_id,
       };
       await this.app.storage.executeDatabase(sql, params, "arcade");
-    
-      this.app.storage.saveTransaction(tx, { field1 : txmsg.module+"_"+txmsg.game_id }, "localhost");  
-    }
-    
 
+      await this.app.storage.saveTransaction(
+        tx,
+        { field1: txmsg.module + "_" + txmsg.game_id },
+        "localhost"
+      );
+    }
   }
 
   ////////////
@@ -1012,30 +1043,32 @@ class Arcade extends ModTemplate {
   //
   // unsure
   //
-  createInviteTransaction(orig_tx) {
+  async createInviteTransaction(orig_tx) {
+    // console.log("createInviteTransaction", orig_tx);
     let txmsg = orig_tx.returnMessage();
 
-    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    newtx.transaction.to.push(new saito.slip(orig_tx.transaction.from[0].add, 0.0));
-    newtx.transaction.to.push(new saito.slip(this.app.wallet.returnPublicKey(), 0.0));
-    newtx.msg.ts = "";
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    newtx.addTo(orig_tx.from[0].publicKey);
+    newtx.addTo(this.publicKey);
+
+    newtx.msg.timestamp = new Date().getTime();
     newtx.msg.module = txmsg.game;
     newtx.msg.request = "invite";
-    newtx.msg.game_id = orig_tx.transaction.sig;
+    newtx.msg.game_id = orig_tx.signature;
     newtx.msg.players_needed = parseInt(txmsg.players_needed);
     newtx.msg.options = txmsg.options;
     newtx.msg.accept_sig = "";
     if (orig_tx.msg.accept_sig != "") {
       newtx.msg.accept_sig = orig_tx.msg.accept_sig;
     }
-    if (orig_tx.msg.ts != "") {
-      newtx.msg.ts = orig_tx.msg.ts;
+    if (orig_tx.msg.timestamp != "") {
+      newtx.msg.timestamp = orig_tx.msg.timestamp;
     }
-    newtx.msg.invite_sig = this.app.crypto.signMessage(
-      "invite_game_" + newtx.msg.ts,
-      this.app.wallet.returnPrivateKey()
+    newtx.msg.invite_sig = await this.app.crypto.signMessage(
+      "invite_game_" + newtx.msg.timestamp,
+      await this.app.wallet.getPrivateKey()
     );
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     return newtx;
   }
@@ -1049,37 +1082,39 @@ class Arcade extends ModTemplate {
   // as part of a valid game, will trigger your browser to start initializing
   // the game.
   //
-  createJoinTransaction(orig_tx) {
-    if (!orig_tx || !orig_tx.transaction || !orig_tx.transaction.sig) {
+  async createJoinTransaction(orig_tx) {
+    console.log("createJoinTransaction", orig_tx);
+    if (!orig_tx || !orig_tx.signature) {
       console.error("Invalid Game Invite TX, cannot Join");
       return;
     }
 
     let txmsg = orig_tx.returnMessage();
 
-    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     for (let player of txmsg.players) {
-      newtx.transaction.to.push(new saito.default.slip(player, 0.0));
+      newtx.addTo(player);
     }
-    newtx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+    newtx.addTo(this.publicKey);
 
     newtx.msg = JSON.parse(JSON.stringify(txmsg));
     newtx.msg.module = "Arcade";
     newtx.msg.request = "join";
-    newtx.msg.game_id = orig_tx.transaction.sig;
+    newtx.msg.game_id = orig_tx.signature;
 
-    newtx.msg.invite_sig = this.app.crypto.signMessage(
-      "invite_game_" + orig_tx.msg.ts,
-      this.app.wallet.returnPrivateKey()
+    newtx.msg.invite_sig = await this.app.crypto.signMessage(
+      "invite_game_" + orig_tx.msg.timestamp,
+      await this.app.wallet.getPrivateKey()
     );
 
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     return newtx;
   }
 
-  receiveJoinTransaction(tx) {
-    if (!tx || !tx.transaction || !tx.transaction.sig) {
+  async receiveJoinTransaction(tx) {
+    // console.log("receiveJoinTransaction", tx);
+    if (!tx || !tx.signature) {
       return;
     }
 
@@ -1104,10 +1139,10 @@ class Arcade extends ModTemplate {
     //
     // Don't add the same player twice!
     //
-    if (!game.msg.players.includes(tx.transaction.from[0].add)) {
+    if (!game.msg.players.includes(tx.from[0].publicKey)) {
       if (this.debug) {
         console.log(
-          `Adding Player (${tx.transaction.from[0].add}) to Game: `,
+          `Adding Player (${tx.from[0].publicKey}) to Game: `,
           JSON.parse(JSON.stringify(game))
         );
       }
@@ -1115,11 +1150,11 @@ class Arcade extends ModTemplate {
       //
       // add player to game
       //
-      game.msg.players.push(tx.transaction.from[0].add);
+      game.msg.players.push(tx.from[0].publicKey);
       game.msg.players_sigs.push(txmsg.invite_sig);
 
       //Update DB
-      this.updatePlayerListSQL(txmsg.game_id, game.msg.players, game.msg.players_sigs);
+      await this.updatePlayerListSQL(txmsg.game_id, game.msg.players, game.msg.players_sigs);
 
       //Update UI
       this.app.connection.emit("arcade-invite-manager-render-request");
@@ -1134,24 +1169,23 @@ class Arcade extends ModTemplate {
         //
         // First player (originator) sends the accept message
         //
-        if (game.msg.originator == this.app.wallet.returnPublicKey()) {
-          let newtx = this.createAcceptTransaction(game);
-          this.app.network.propagateTransaction(newtx);
+        if (game.msg.originator == this.publicKey) {
+          let newtx = await this.createAcceptTransaction(game);
+          await this.app.network.propagateTransaction(newtx);
           this.app.connection.emit("relay-send-message", {
             recipient: "PEERS",
             request: "arcade spv update",
-            data: newtx.transaction,
+            data: newtx.toJson(),
           });
           /*
           this.app.connection.emit("relay-send-message", {
             recipient: game.msg.players,
             request: "arcade spv update",
-            data: newtx.transaction,
+            data: newtx..toJson(),
           });
           */
           //Start Spinner
           this.app.connection.emit("arcade-game-initialize-render-request");
-          return;
         }
       }
     }
@@ -1165,40 +1199,42 @@ class Arcade extends ModTemplate {
   // and is capable of initializing a game. if this TX is valid and has our
   // signature we will auto-accept it, kicking off the game.
   //
-  createAcceptTransaction(orig_tx) {
-    if (!orig_tx || !orig_tx.transaction || !orig_tx.transaction.sig) {
+  async createAcceptTransaction(orig_tx) {
+    // console.log("createAcceptTransaction", orig_tx);
+    if (!orig_tx || !orig_tx.signature) {
       console.error("Invalid Game Invite TX, cannot Accept");
       return;
     }
 
-    let txmsg = orig_tx.returnMessage();
+    let txmsg = orig_tx.msg;
 
-    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     for (let i = 0; i < txmsg.players.length; i++) {
-      newtx.transaction.to.push(new saito.default.slip(txmsg.players[i], 0.0));
+      newtx.addTo(txmsg.players[i]);
     }
 
     newtx.msg = JSON.parse(JSON.stringify(txmsg));
     newtx.msg.module = "Arcade";
-    newtx.msg.game_id = orig_tx.transaction.sig;
+    newtx.msg.game_id = orig_tx.signature;
     newtx.msg.request = "accept";
 
-    newtx = this.app.wallet.signTransaction(newtx);
+    await newtx.sign();
 
     return newtx;
   }
 
   async receiveAcceptTransaction(tx) {
+    // console.log("receiveAcceptTransaction", tx);
     //Must be valid tx
-    if (!tx || !tx.transaction || !tx.transaction.sig) {
+    if (!tx || !tx.signature) {
       return;
     }
-
     let txmsg = tx.returnMessage();
 
     // Must have game module installed
     // We call the game-initialization function directly on gamemod further down
     let gamemod = this.app.modules.returnModule(txmsg.game);
+    console.log("arcade.receiveAcceptTransaction");
 
     // I guess this safety catch should be further up the processing chain, like we shouldn't even display an invite/join a game we don't have installed
     if (!gamemod) {
@@ -1223,12 +1259,12 @@ class Arcade extends ModTemplate {
     //
     // Mark the game as accept, i.e. active
     //
-    this.changeGameStatus(txmsg.game_id, "active");
+    await this.changeGameStatus(txmsg.game_id, "active");
 
     //
     // If I am a player in the game, let's start it initializing
     //
-    if (txmsg.players.includes(this.app.wallet.returnPublicKey())) {
+    if (txmsg.players.includes(this.publicKey)) {
       this.app.connection.emit("arcade-game-initialize-render-request");
 
       if (this.app.BROWSER == 1) {
@@ -1240,6 +1276,9 @@ class Arcade extends ModTemplate {
       */
 
       let game_engine_id = await gamemod.processAcceptRequest(tx);
+
+      console.log("game engine id ///////");
+      console.log(game_engine_id);
 
       if (!game_engine_id || game_engine_id !== txmsg.game_id) {
         await sconfirm("Something went wrong with the game initialization: " + game_engine_id);
@@ -1253,10 +1292,10 @@ class Arcade extends ModTemplate {
   /*
   createChangeTransaction(gametx, direction) {
       let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-      tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+      //tx.to.push(new saito.default.slip(this.publicKey, 0.0));
       tx.msg = gametx.returnMessage();
       tx.msg.request = "change_" + direction;
-      tx.msg.game_id = gametx.transaction.sig;
+      tx.msg.game_id = gametx.signature;
       tx = this.app.wallet.signTransaction(tx);
 
       if (this.debug) {
@@ -1283,9 +1322,9 @@ class Arcade extends ModTemplate {
     if (game) { game.msg.request = new_status; }
 
     //
-    // and re-display 
+    // and re-display
     //
-    if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
+    if (!tx.isFrom(this.publicKey)) {
       if (this.isMyGame(tx)) {
         this.app.connection.emit('arcade-invite-manager-render-request', invites[i]);
       } else {
@@ -1308,7 +1347,7 @@ class Arcade extends ModTemplate {
   //
   /*
   createChallengeTransaction(gameData) {
-    let ts = new Date().getTime();
+    let timestamp = new Date().getTime();
     let accept_sig = this.app.crypto.signMessage(
       `invite_game_${ts}`,
       this.app.wallet.returnPrivateKey()
@@ -1317,19 +1356,19 @@ class Arcade extends ModTemplate {
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
     for (let sendto of gameData.players) {
-      tx.transaction.to.push(new saito.default.slip(sendto, 0.0));
+      tx.to.push(new saito.default.slip(sendto, 0.0));
     }
 
     tx.msg = {
-      ts: ts,
+      timestamp: timestamp,
       module: "Arcade",
       request: "challenge",
       game: gameData.game,
       options: gameData.options,
       players_needed: gameData.players.length,
-      players: [this.app.wallet.returnPublicKey()],
+      players: [this.publicKey],
       players_sigs: [accept_sig],
-      originator: this.app.wallet.returnPublicKey(),
+      originator: this.publicKey,
       invitees: gameData.players,
     };
 
@@ -1340,11 +1379,11 @@ class Arcade extends ModTemplate {
   }
 
   receiveChallengeTransaction(tx) {
-    if (!tx.transaction || !tx.transaction.sig || !tx.msg) {
+    if (!tx.transaction || !tx.signature || !tx.msg) {
       return;
     }
 
-    if (!tx.isTo(this.app.wallet.returnPublicKey())) {
+    if (!tx.isTo(this.publicKey)) {
       return;
     }
 
@@ -1402,22 +1441,22 @@ class Arcade extends ModTemplate {
   // single player game
   //
   async launchSinglePlayerGame(gameobj) {
-    let opentx = this.createOpenTransaction(gameobj, this.app.wallet.returnPublicKey());
+    let opentx = await this.createOpenTransaction(gameobj, this.publicKey);
 
     this.app.connection.emit("relay-send-message", {
       recipient: "PEERS",
       request: "arcade spv update",
-      data: opentx.transaction,
+      data: opentx.toJson(),
     });
     this.addGame(opentx, "private");
 
-    let newtx = this.createAcceptTransaction(opentx);
+    let newtx = await this.createAcceptTransaction(opentx);
 
-    this.app.network.propagateTransaction(newtx);
+    await this.app.network.propagateTransaction(newtx);
     this.app.connection.emit("relay-send-message", {
       recipient: "PEERS",
       request: "arcade spv update",
-      data: newtx.transaction,
+      data: newtx.toJson(),
     });
 
     //Start Spinner
@@ -1426,38 +1465,38 @@ class Arcade extends ModTemplate {
     /*
     try {
 
-      this.app.connection.emit("arcade-game-initialize-render-request");
+          this.app.connection.emit("arcade-game-initialize-render-request");
 
-      console.log(JSON.parse(JSON.stringify(gameobj)));
+          console.log(JSON.parse(JSON.stringify(gameobj)));
 
-      let gameMod = this.app.modules.returnModule(gameobj.name);
+          let gameMod = this.app.modules.returnModule(gameobj.name);
 
-      for (let i = 0; i < this.app.options?.games.length; i++) {
-        if (this.app.options.games[i].module == gameobj.name) {
-          this.app.connection.emit("arcade-game-ready-render-request", { name: gameobj.name, slug: gameMod.returnSlug(), id: this.app.options.games[i].id })
-          return;
-        }
-      }
+          for (let i = 0; i < this.app.options?.games.length; i++) {
+            if (this.app.options.games[i].module == gameobj.name) {
+              this.app.connection.emit("arcade-game-ready-render-request", { name: gameobj.name, slug: gameMod.returnSlug(), id: this.app.options.games[i].id })
+              return;
+            }
+          }
 
-      let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-      tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+          let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+          tx.to.push(new saito.default.slip(this.publicKey, 0.0));
 
-      tx.msg = {};
-      tx.msg.request = "launch singleplayer";
-      tx.msg.module = "Arcade";
-      tx.msg.game = gameobj.name;
-      tx = this.app.wallet.signTransaction(tx);
-      this.app.network.propagateTransaction(tx);
+          tx.msg = {};
+          tx.msg.request = "launch singleplayer";
+          tx.msg.module = "Arcade";
+          tx.msg.game = gameobj.name;
+          tx = this.app.wallet.signTransaction(tx);
+          this.app.network.propagateTransaction(tx);
 
-      let game_id = await gameMod.initializeSinglePlayerGame(gameobj);
+          let game_id = await gameMod.initializeSinglePlayerGame(gameobj);
 
-      for (let i = 0; i < this.app.options?.games.length; i++) {
-        if (this.app.options.games[i].id == "" && this.app.options.games[i].name === gameMod.name) {
-          this.app.options.games[i].id = game_id;
-        }
-      }
+          for (let i = 0; i < this.app.options?.games.length; i++) {
+            if (this.app.options.games[i].id == "" && this.app.options.games[i].name === gameMod.name) {
+              this.app.options.games[i].id = game_id;
+            }
+          }
 
-      this.app.connection.emit("arcade-game-ready-render-request", { name: gameobj.name, slug: gameMod.returnSlug(), id: game_id })
+          this.app.connection.emit("arcade-game-ready-render-request", { name: gameobj.name, slug: gameMod.returnSlug(), id: game_id })
 
     } catch (err) {
       console.log(err);
@@ -1467,8 +1506,8 @@ class Arcade extends ModTemplate {
   }
 
   /************************************************************
-  // functions to manipulate the local games list
-  ************************************************************/
+   // functions to manipulate the local games list
+   ************************************************************/
 
   //
   //Add a game (tx) to a specified list
@@ -1477,7 +1516,7 @@ class Arcade extends ModTemplate {
     //
     // Sanity check the tx and make sure we don't already have it
     //
-    if (!tx || !tx.msg || !tx.transaction || !tx.transaction.sig) {
+    if (!tx || !tx.msg || !tx.signature) {
       console.error("Invalid Game TX, won't add to list", tx);
       return false;
     }
@@ -1485,9 +1524,9 @@ class Arcade extends ModTemplate {
     //Always removeGame before calling addGame to successfully reclassify
     for (let key in this.games) {
       for (let z = 0; z < this.games[key].length; z++) {
-        if (tx.transaction.sig === this.games[key][z].transaction.sig) {
-          //if (this.debug) {
-            console.log("TX is already in Arcade list");
+        if (tx.signature === this.games[key][z].signature) {
+          // if (this.debug) {
+          console.log("TX is already in Arcade list");
           //}
           return;
         }
@@ -1514,7 +1553,7 @@ class Arcade extends ModTemplate {
 
     if (this.debug) {
       console.log(
-        `Added game (${tx.transaction.sig}) to ${list}`,
+        `Added game (${tx.signature}) to ${list}`,
         JSON.parse(JSON.stringify(this.games))
       );
     }
@@ -1523,8 +1562,8 @@ class Arcade extends ModTemplate {
   removeGame(game_id) {
     for (let key in this.games) {
       this.games[key] = this.games[key].filter((game) => {
-        if (game.transaction) {
-          return game.transaction.sig != game_id;
+        if (game.signature) {
+          return game.signature != game_id;
         } else {
           return true;
         }
@@ -1532,20 +1571,19 @@ class Arcade extends ModTemplate {
     }
   }
 
-  purgeOldGames(){
+  purgeOldGames() {
     let now = new Date().getTime();
     for (let key in this.games) {
       let cutoff = now - this.invite_cutoff;
-      if (key == "active" || key == "over"){
+      if (key == "active" || key == "over") {
         cutoff = now - this.game_cutoff;
       }
-      
+
       this.games[key] = this.games[key].filter((game) => {
-        return game.transaction?.ts > cutoff;
+        return game.timestamp > cutoff;
       });
     }
   }
-
 
   purgeBadGamesFromWallet() {
     if (this.app.options.games) {
@@ -1582,14 +1620,14 @@ class Arcade extends ModTemplate {
     /*let is_my_game = false;
 
     for (let i = 0; i < game_tx.msg.players.length; i++) {
-      if (game_tx.msg.players[i] == this.app.wallet.returnPublicKey()) {
+      if (game_tx.msg.players[i] == this.publicKey) {
         is_my_game = true;
       }
     }
 
     if (is_my_game) {
       for (let i = 0; i < this.app.options?.games?.length; i++) {
-        if (this.app.options.games[i].id === game_tx.transaction.sig) {
+        if (this.app.options.games[i].id === game_tx.signature) {
           return true;
         }
       }
@@ -1601,10 +1639,7 @@ class Arcade extends ModTemplate {
   }
 
   isAvailableGame(game_tx, additional_status = "") {
-    if (
-      game_tx.msg.request == "open" ||
-      game_tx.msg.request == "private"
-    ) {
+    if (game_tx.msg.request == "open" || game_tx.msg.request == "private") {
       return true;
     }
     if (additional_status && additional_status === game_tx.msg.request) {
@@ -1621,20 +1656,19 @@ class Arcade extends ModTemplate {
   // Either they sent the invite, they have clicked join, or someone specifically invited them by key
   //
   isMyGame(tx) {
-    for (let i = 0; i < tx.transaction.to.length; i++) {
-      if (tx.transaction.to[i].add == this.app.wallet.returnPublicKey()) {
+    for (let i = 0; i < tx.to.length; i++) {
+      if (tx.to[i].publicKey == this.publicKey) {
         return true;
       }
     }
     for (let i = 0; i < tx.msg.players.length; i++) {
-      if (tx.msg.players[i] == this.app.wallet.returnPublicKey()) {
+      if (tx.msg.players[i] == this.publicKey) {
         return true;
       }
     }
     if (tx.msg.options) {
       if (tx.msg.options.desired_opponent_publickey) {
-        if (tx.msg.options.desired_opponent_publickey == this.app.wallet.returnPublicKey())
-        {
+        if (tx.msg.options.desired_opponent_publickey == this.publicKey) {
           return true;
         }
       }
@@ -1644,7 +1678,7 @@ class Arcade extends ModTemplate {
 
   returnGame(game_id) {
     for (let key in this.games) {
-      let game = this.games[key].find((g) => g.transaction.sig == game_id);
+      let game = this.games[key].find((g) => g.signature == game_id);
       if (game) {
         if (this.debug) {
           console.log(`Game found in ${key} list`);
@@ -1679,20 +1713,16 @@ class Arcade extends ModTemplate {
       for (let key of ["mine", "open"]) {
         for (let game of this.games[key]) {
           if (this.isMyGame(game) && game.msg.players_needed > 1) {
-            let c = await sconfirm(`You already have a ${game.msg.game} game open, are you sure you want to create a new game invite?`);
-            if (!c) {
-              return false;
-            } else {
-              return true;
-            }
+            let c = await sconfirm(
+              `You already have a ${game.msg.game} game open, are you sure you want to create a new game invite?`
+            );
+            return !!c;
           }
           if (game.msg.game === options.game) {
-            let c = await sconfirm(`There is an open invite for ${game.msg.game}, are you sure you want to create a new invite?`);
-            if (!c) {
-              return false;
-            } else {
-              return true;
-            }
+            let c = await sconfirm(
+              `There is an open invite for ${game.msg.game}, are you sure you want to create a new invite?`
+            );
+            return !!c;
           }
         }
       }
@@ -1727,7 +1757,7 @@ class Arcade extends ModTemplate {
 
     //Add more information about the game
     for (let key in this.games) {
-      let x = this.games[key].find((g) => g.transaction.sig === game_sig);
+      let x = this.games[key].find((g) => g.signature === game_sig);
       if (x) {
         accepted_game = x;
       }
@@ -1745,7 +1775,7 @@ class Arcade extends ModTemplate {
     game_invitation_link.render();
   }
 
-  makeGameInvite(options, gameType = "open", invite_obj = {}) {
+  async makeGameInvite(options, gameType = "open", invite_obj = {}) {
     let game = options.game;
     let game_mod = this.app.modules.returnModule(game);
     let players_needed = options["game-wizard-players-select"];
@@ -1759,8 +1789,8 @@ class Arcade extends ModTemplate {
       //For convenience sake when making the join overlay
       options.league_name = invite_obj.league.name;
     }
-    if (invite_obj.publickey) {
-      options.desired_opponent_publickey = invite_obj.publickey;
+    if (invite_obj.publicKey) {
+      options.desired_opponent_publickey = invite_obj.publicKey;
       gameType = "direct";
     }
 
@@ -1788,42 +1818,48 @@ class Arcade extends ModTemplate {
     };
 
     if (players_needed == 1) {
-      this.launchSinglePlayerGame(gamedata); 
+      await this.launchSinglePlayerGame(gamedata);
     } else {
       if (gameType == "direct") {
         if (gamedata.players_needed > 2) {
-          gamedata.invitation_type = "open";  
-        }else{
-          gamedata.invitation_type = "private";  
+          gamedata.invitation_type = "open";
+        } else {
+          gamedata.invitation_type = "private";
         }
       }
 
-      let newtx = this.createOpenTransaction(gamedata);
+      let newtx = await this.createOpenTransaction(gamedata);
 
       if (gameType == "direct") {
         this.app.connection.emit("arcade-launch-game-scheduler", newtx);
         return;
       }
-      
-      this.app.network.propagateTransaction(newtx);
-      this.app.connection.emit("relay-send-message", {recipient: "PEERS", request: "arcade spv update", data: newtx.transaction});
+
+      await this.app.network.propagateTransaction(newtx);
+      this.app.connection.emit("relay-send-message", {
+        recipient: "PEERS",
+        request: "arcade spv update",
+        data: newtx.toJson(),
+      });
       this.addGame(newtx, gamedata.invitation_type);
       //Render game in my game list
       this.app.connection.emit("arcade-invite-manager-render-request");
 
       if (gameType == "open") {
-        if (this.app.browser.isMobileBrowser(navigator.userAgent) && 
-          this.app.modules.returnActiveModule().returnName() == "Red Square"){
-          salert("Game invite created. Redirecting to arcade...")
-          setTimeout(function(){
+        if (
+          this.app.browser.isMobileBrowser(navigator.userAgent) &&
+          this.app.modules.returnActiveModule().returnName() == "Red Square"
+        ) {
+          salert("Game invite created. Redirecting to arcade...");
+          setTimeout(function () {
             window.location.href = "/arcade";
-          }, 2000)
+          }, 2000);
         }
         return;
       }
 
       if (gameType == "private") {
-        this.showShareLink(newtx.transaction.sig);
+        this.showShareLink(newtx.signature);
       }
     }
   }
@@ -1831,7 +1867,8 @@ class Arcade extends ModTemplate {
   ///////////////////////////////////////////////////////////////////////////
   ////////////////////   GAME OBSERVER STUFF  ///////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
-  observeGame(game_id, watch_live = 0) {
+
+  async observeGame(game_id, watch_live = false) {
     let game_tx = this.returnGame(game_id);
 
     if (!game_tx) {
@@ -1844,51 +1881,53 @@ class Arcade extends ModTemplate {
     let game_mod = this.app.modules.returnModule(game_msg.game);
 
     this.app.connection.emit("arcade-game-initialize-render-request");
-    
+
     //We want to send a message to the players to add us to the game.accept list so they route their game moves to us as well
     game_msg.game_id = game_id;
-    this.sendFollowTx(game_msg);
+    await this.sendFollowTx(game_msg);
 
     if (!this.app.options.games) {
       this.app.options.games = [];
     }
 
-    if (!game_mod.doesGameExistLocally(game_id)){
+    if (!game_mod.doesGameExistLocally(game_id)) {
       console.log("Initialize game");
       game_mod.initializeObserverMode(game_tx);
-    }else{
+    } else {
       console.log("Game already exists");
       game_mod.loadGame(game_id);
     }
 
     game_mod.game.halted = 1; // Default to paused
-   
-    this.observerDownloadNextMoves(game_mod, ()=> {
-      if (watch_live > 0) {
+
+    await this.observerDownloadNextMoves(game_mod, () => {
+      if (watch_live) {
         game_mod.game.halted = 0;
         game_mod.game.live = watch_live;
         game_mod.saveGame(game_id);
       }
 
-      this.app.connection.emit("arcade-game-ready-render-request", {id: game_id, name: game_msg.game, slug: game_mod.returnSlug()});
+      this.app.connection.emit("arcade-game-ready-render-request", {
+        id: game_id,
+        name: game_msg.game,
+        slug: game_mod.returnSlug(),
+      });
     });
-    
   }
 
-  sendFollowTx(game) {
-    let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+  async sendFollowTx(game) {
+    let tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
     tx.msg = {
       module: game.game,
       game_id: game.game_id,
       request: "follow game",
-      my_key: this.app.wallet.returnPublicKey(),
+      my_key: this.publicKey,
     };
 
     for (let p of game.players) {
-      tx.transaction.to.push(new saito.default.slip(p, 0.0));
+      tx.addTo(p);
     }
-
-    tx = this.app.wallet.signTransaction(tx);
+    await tx.sign();
 
     //Only looking for this in handlePeerRequest, pure off-chain
     //this.app.network.propagateTransaction(tx);
@@ -1899,21 +1938,19 @@ class Arcade extends ModTemplate {
     this.app.connection.emit("relay-send-message", {
       recipient: game.players,
       request: "game relay update",
-      data: tx.transaction,
+      data: tx.toJson(),
     });
   }
 
-
   async observerDownloadNextMoves(game_mod, mycallback = null) {
-
     // purge old transactions
     for (let i = game_mod.game.future.length - 1; i >= 0; i--) {
-      let queued_tx = new saito.default.transaction(JSON.parse(game_mod.game.future[i]));
+      let queued_tx = new Transaction(undefined, JSON.parse(game_mod.game.future[i]));
       let queued_txmsg = queued_tx.returnMessage();
 
       if (
         queued_txmsg.step.game <= game_mod.game.step.game &&
-        queued_txmsg.step.game <= game_mod.game.step.players[queued_tx.transaction.from[0].add]
+        queued_txmsg.step.game <= game_mod.game.step.players[queued_tx.from[0].publicKey]
       ) {
         console.log("Trimming future move to download new ones:", JSON.stringify(queued_txmsg));
         game_mod.game.future.splice(i, 1);
@@ -1922,29 +1959,29 @@ class Arcade extends ModTemplate {
 
     console.log(`${game_mod.name}_${game_mod.game.id} from ${game_mod.game.originator}`);
 
-    this.app.storage.loadTransactions({ field1 : game_mod.name+"_"+game_mod.game.id, limit: 100 }, (txs) => {
-      for (let tx of txs){
-        let game_move = tx.returnMessage();
-        let loaded_step = game_move.step.game;
+    this.app.storage.loadTransactions(
+      { field1: game_mod.name + "_" + game_mod.game.id, limit: 100 },
+      (txs) => {
+        for (let tx of txs) {
+          let game_move = tx.returnMessage();
+          let loaded_step = game_move.step.game;
 
-        if (loaded_step > game_mod.game.step.game ||
-          loaded_step > game_mod.game.step.players[tx.transaction.from[0].add]) 
-        {
-          console.log("Add move: " + JSON.stringify(game_move));
-          game_mod.addFutureMove(tx); //This will save future moves (so saveGame below doesn't overwrite them)
+          if (
+            loaded_step > game_mod.game.step.game ||
+            loaded_step > game_mod.game.step.players[tx.from[0].publicKey]
+          ) {
+            console.log("Add move: " + JSON.stringify(game_move));
+            game_mod.addFutureMove(tx); //This will save future moves (so saveGame below doesn't overwrite them)
+          }
+        }
+        game_mod.saveGame(game_mod.game.id);
+
+        if (mycallback) {
+          mycallback(game_mod);
         }
       }
-      game_mod.saveGame(game_mod.game.id);
-
-      if (mycallback) {
-        mycallback(game_mod);
-      }
-    });
-
+    );
   }
-
-
-
 }
 
 module.exports = Arcade;

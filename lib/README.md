@@ -49,7 +49,7 @@ To see the list of functions that are available, checkout the [existing document
 ```javascript
 var newtx = saito.wallet.createUnsignedTransaction(address, amount, fee);
 
-newtx.transaction.msg = Object.assign({}, { module: "OurModule" });
+newtx.msg = Object.assign({}, { module: "OurModule" });
 
 newtx = saito.wallet.signTransaction(newtx);
 

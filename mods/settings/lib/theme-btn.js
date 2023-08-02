@@ -29,4 +29,3 @@ class ThemeBtn {
 }
 
 module.exports = ThemeBtn;
-
