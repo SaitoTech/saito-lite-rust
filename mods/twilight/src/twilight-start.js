@@ -3167,14 +3167,6 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	      this.removeCardFromDeck("lonegunman", "CIA not evented");
 	    }
 	    delete mid_war_cards['summit'];
-<<<<<<< HEAD
-	    this.removeCardFromDeck("summit", "Summit removed by default");
-
-	    this.addCardToDeck("handshake", "New Card");
-	    this.addCardToDeck("berlinagreement", "New Card");
-	    this.game.queue.push("dynamic_deck_management");
-=======
->>>>>>> staging
 	  }
 
           this.game.queue.push("DECK\t1\t"+JSON.stringify(mid_war_cards));
@@ -4275,13 +4267,8 @@ playerTurnHeadlineSelected(card, player) {
       let moves_remaining = rounds_in_turn - twilight_self.game.state.turn_in_round;
 
       for (i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
-<<<<<<< HEAD
-        if (twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]]?.scoring == 1) {
-          scoring_cards_available++;
-=======
         if (ac[twilight_self.game.deck[0].hand[i]]?.scoring == 1) { 
           scoring_cards_available++; 
->>>>>>> staging
         }
       }
 
@@ -4408,13 +4395,8 @@ playerTurnHeadlineSelected(card, player) {
 
         announcement += '<li class="option" id="ops">play ops</li>';
         if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
-<<<<<<< HEAD
-        announcement += twilight_self.isSpaceRaceAvailable(ops);
-        let header_msg = `${player.toUpperCase()} playing <span>${twilight_self.game.deck[0].cards[card].name}</span>`;
-=======
         announcement += twilight_self.isSpaceRaceAvailable(ops);    
         let header_msg = `${player.toUpperCase()} playing <span>${ac[card].name}</span>`; 
->>>>>>> staging
 
         if (twilight_self.game.state.back_button_cancelled != 1) {
 	  twilight_self.bindBackButtonFunction(() => { this.playerTurn(); });
@@ -6897,14 +6879,9 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       if (region == "") {
         this.game.countries[i].bg = this.countries[i].bg;
       } else {
-<<<<<<< HEAD
-        if (this.game.countries[i].region === region) {
-console.log("resetting BG countries for: " + i);
-=======
         if (this.game.countries[i].region === region) { 
->>>>>>> staging
-	  this.game.countries[i].bg = this.countries[i].bg;
-	}
+    	  this.game.countries[i].bg = this.countries[i].bg;
+	    }
       }
     }
   }
@@ -6968,10 +6945,8 @@ console.log("resetting BG countries for: " + i);
       deck['specialrelation'] = { img : "TNRnTS-105" ,name : "Special Relationship", scoring : 0 , player : "us"   , recurring : 1 , ops : 2 };
       deck['norad']           = { img : "TNRnTS-106" ,name : "NORAD", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
     }
-<<<<<<< HEAD
-=======
     
-if (inc_optional == true) {
+  if (inc_optional == true) {
 
         deck['culturaldiplomacy'] = { img : "TNRnTS-202png" , name : "Cultural Diplomacy", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
         deck['gouzenkoaffair'] = { img : "TNRnTS-204png" , name : "Gouzenko Affair", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
@@ -6992,7 +6967,6 @@ if (inc_optional == true) {
         deck['titostalin']                = { img : "TNRnTS-405png" ,name : "Tito-Stalin Split", scoring : 0 , player : "us"   , recurring : 1 , ops : 3 };
 
 } else {
->>>>>>> staging
 
     //
     // remove or add specified cards
@@ -7635,16 +7609,6 @@ if (inc_optional == true) {
 
   determineRegionVictor(scoring, region_scoring_range, max_bg_num, region="") {
 
-<<<<<<< HEAD
-    if (scoring.us.bg == max_bg_num && scoring.us.total > scoring.ussr.total) {
-      scoring.us.vp = region_scoring_range.control;
-      scoring.us.status = "Control";
-    }else if (scoring.us.bg > scoring.ussr.bg  && scoring.us.total > scoring.ussr.total && scoring.us.total > scoring.us.bg) {
-      scoring.us.vp = region_scoring_range.domination;
-      scoring.us.status = "Domination";
-    }else if (scoring.us.total + scoring.us.bg > 0) {
-      scoring.us.vp = region_scoring_range.presence;
-=======
     // SAITO COMMUNITY
     if (scoring.us.bg == max_bg_num && scoring.us.total > scoring.ussr.total) { 
       scoring.us.vp = region_scoring_range.control; 
@@ -7662,7 +7626,6 @@ if (inc_optional == true) {
       }
     }else if (scoring.us.total + scoring.us.bg > 0) { 
       scoring.us.vp = region_scoring_range.presence; 
->>>>>>> staging
       scoring.us.status = "Presence";
     }else{
       scoring.us.status = "None";
@@ -7670,14 +7633,6 @@ if (inc_optional == true) {
 
     if (scoring.ussr.bg == max_bg_num && scoring.ussr.total > scoring.us.total) {
       scoring.ussr.vp = region_scoring_range.control;
-<<<<<<< HEAD
-      scoring.ussr.status = "Control";
-    }else if (scoring.ussr.bg > scoring.us.bg && scoring.ussr.total > scoring.us.total && scoring.ussr.total > scoring.ussr.bg) {
-      scoring.ussr.vp = region_scoring_range.domination;
-      scoring.ussr.status = "Domination";
-    }else if (scoring.ussr.total + scoring.ussr.bg > 0) {
-      scoring.ussr.vp = region_scoring_range.presence;
-=======
       scoring.ussr.status = "Control"; 
       if (this.game.state.events.fischerspassky === region) {
         scoring.ussr.vp = region_scoring_range.domination; 
@@ -7692,7 +7647,6 @@ if (inc_optional == true) {
       }
     }else if (scoring.ussr.total + scoring.ussr.bg > 0) { 
       scoring.ussr.vp = region_scoring_range.presence; 
->>>>>>> staging
       scoring.ussr.status = "Presence";
     }else{
       scoring.ussr.status = "None";
@@ -7920,13 +7874,7 @@ if (inc_optional == true) {
 
       	}
 
-<<<<<<< HEAD
-        scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
-
-console.log("PRESC: " + JSON.stringify(scoring));
-=======
         scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length, region);	
->>>>>>> staging
 
         //
         // neighbouring countries
@@ -9323,13 +9271,6 @@ console.log("Saito Dynamic Deck");
     //
     // US routed in Europe, Blockade Outstanding
     //
-<<<<<<< HEAD
-    if (this.game.state.events.redscare_player1_count > 1) {
-      this.addCardToDeck("antiapartheid", "Double Red Purge");
-      this.addCardToDeck("samotlor", "Double Red Purge");
-    }
-    if (this.game.state.events.redscare_player2_count > 1) {
-=======
     if (!this.isControlled("us", "italy") && !this.isControlled("us","france") && !this.isControlled("us","poland") && !this.isControlled("us","eastgermany")) {
       if ((this.game.state.round >= 4 && this.game.state.round <= 7) && this.game.state.events.blockade != 1 && this.game.state.events.berlinagreement_added != 1) {
         this.addCardToDeck("berlinagreement", "US routed in Europe");
@@ -9345,7 +9286,6 @@ console.log("Saito Dynamic Deck");
       this.game.state.events.august1968_added = 1;
     } 
     if (this.game.state.events.redscare_player2_count > 1 && this.game.state.events.carterdoctrine_added != 1) {
->>>>>>> staging
       this.addCardToDeck("carterdoctrine", "Double Red Scare");
       this.game.state.events.carterdoctrine_added = 1;
     }
