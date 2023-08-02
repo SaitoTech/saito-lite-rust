@@ -21,6 +21,24 @@ export default class Wallet extends SaitoWallet {
   default_fee = 2;
   version = 5.1;
 
+<<<<<<< HEAD
+=======
+    inputs: new Array<Slip>(), // slips available
+    outputs: new Array<Slip>(), // slips spenr
+    spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
+    pending: [], // slips pending broadcast
+    default_fee: 2,
+    version: 5.057,
+  };
+  public inputs_hmap: Map<string, boolean>;
+  public inputs_hmap_counter: number;
+  public inputs_hmap_counter_limit: number;
+  public outputs_hmap: Map<string, boolean>;
+  public outputs_hmap_counter: number;
+  public outputs_hmap_counter_limit: number;
+  public outputs_prune_limit: number;
+  public recreate_pending_transactions: any;
+>>>>>>> staging
   public saitoCrypto: any;
 
   public async createUnsignedTransactionWithDefaultFee(
@@ -61,14 +79,33 @@ export default class Wallet extends SaitoWallet {
         super(app, "SAITO");
         this.name = "Saito";
         this.description = "Saito";
+	this.balance = "0.0";
       }
 
       async returnBalance() {
+<<<<<<< HEAD
         return parseFloat(await this.app.wallet.getBalance());
       }
 
       async returnAddress() {
         return await this.app.wallet.getPublicKey();
+=======
+        this.balance = this.app.wallet.returnBalance();
+	return this.balance;
+      }
+      returnCachedBalance() {
+        this.balance = this.app.wallet.returnBalance();
+	return this.balance;
+      }
+      returnHistory(mycallback=null, order="DESC", limit=20) {
+	return [];
+      }
+      returnCachedAddress() {
+        return this.app.wallet.returnPublicKey();
+      }
+      returnAddress() {
+        return this.app.wallet.returnPublicKey();
+>>>>>>> staging
       }
 
       returnPrivateKey() {
@@ -337,6 +374,7 @@ export default class Wallet extends SaitoWallet {
   //   }
   // }
 
+<<<<<<< HEAD
   // returnPublicKey(): string {
   //   return this.wallet.publickey;
   // }
@@ -344,6 +382,271 @@ export default class Wallet extends SaitoWallet {
   // returnPrivateKey(): string {
   //   return this.wallet.privatekey;
   // }
+=======
+    //
+    // flag inputs as on/off-chain
+    //
+    for (let m = this.wallet.inputs.length - 1; m >= 0; m--) {
+      if (
+        this.wallet.inputs[m].block_id == block_id &&
+        this.wallet.inputs[m].block_hash === block_hash
+      ) {
+        this.wallet.inputs[m].lc = lc;
+      } else {
+        if (this.wallet.inputs[m].block_id < block_id) {
+          break;
+        }
+      }
+    }
+
+    if (lc) {
+      //
+      // refresh inputs (allow respending)
+      //
+      if (block_id == BigInt(0)) {
+        for (let i = 0; i < this.wallet.inputs.length; i++) {
+          if (this.isSlipInPendingTransactions(this.wallet.inputs[i]) == false) {
+            this.wallet.spends[i] = 0;
+          }
+        }
+      } else {
+        const target_block_id = this.app.blockchain.returnLatestBlockId() - block_id;
+        for (let i = 0; i < this.wallet.inputs.length; i++) {
+          if (this.wallet.inputs[i].block_id <= target_block_id) {
+            if (this.isSlipInPendingTransactions(this.wallet.inputs[i]) == false) {
+              this.wallet.spends[i] = 0;
+            }
+          }
+        }
+      }
+
+      //
+      // purge now-unspendable inputs
+      //
+      const gid = this.app.blockchain.blockchain.genesis_block_id;
+      for (let m = this.wallet.inputs.length - 1; m >= 0; m--) {
+        if (this.wallet.inputs[m].block_id < gid) {
+          this.wallet.inputs.splice(m, 1);
+          this.wallet.spends.splice(m, 1);
+        }
+      }
+      for (let m = this.wallet.outputs.length - 1; m >= 0; m--) {
+        if (this.wallet.outputs[m].block_id < gid) {
+          this.wallet.outputs.splice(m, 1);
+        }
+      }
+
+      //
+      // if new LC, add transactions to inputs if not exist
+      //
+      for (let i = 0; i < block.transactions.length; i++) {
+        const tx = block.transactions[i];
+        const slips = tx.returnSlipsToAndFrom(this.returnPublicKey());
+        const to_slips = new Array<Slip>();
+        const from_slips = new Array<Slip>();
+        for (let m = 0; m < slips.to.length; m++) {
+          to_slips.push(slips.to[m].clone());
+        }
+        for (let m = 0; m < slips.from.length; m++) {
+          from_slips.push(slips.from[m].clone());
+        }
+
+        //
+        // update slips prior to insert
+        //
+        for (let ii = 0; ii < to_slips.length; ii++) {
+          to_slips[ii].lc = lc; // longest-chain
+          to_slips[ii].timestamp = block.returnTimestamp(); // timestamp
+          to_slips[ii].from = JSON.parse(JSON.stringify(tx.transaction.from)); // from slips
+        }
+
+        for (let ii = 0; ii < from_slips.length; ii++) {
+          from_slips[ii].timestamp = block.returnTimestamp();
+        }
+
+        //
+        // any txs in pending should be checked to see if
+        // we can remove them now that we have received
+        // a transaction that might be it....
+        //
+        let removed_pending_slips = 0;
+
+        if (this.wallet.pending.length > 0) {
+          for (let i = 0; i < this.wallet.pending.length; i++) {
+            let ptx = new Transaction();
+	    ptx.deserialize_from_web(this.app, this.wallet.pending[i]);
+            if (ptx.transaction.sig === tx.transaction.sig) {
+              this.wallet.pending.splice(i, 1);
+              i--;
+              removed_pending_slips = 1;
+            } else {
+              if (ptx.transaction.type == TransactionType.GoldenTicket) {
+                this.wallet.pending.splice(i, 1);
+                this.unspendInputSlips(this.app, ptx);
+                i--;
+                removed_pending_slips = 1;
+              } else {
+                //
+                // 10% chance of deletion, to prevent wallets killing us
+                //
+                if (Math.random() <= 0.1) {
+                  const ptx_ts = ptx.transaction.ts;
+                  const blk_ts = block.block.timestamp;
+
+                  if (ptx_ts + 12000000 < blk_ts) {
+                    this.wallet.pending.splice(i, 1);
+                    this.unspendInputSlips(this.app, ptx);
+                    removed_pending_slips = 1;
+                    i--;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if (removed_pending_slips == 1) {
+          this.saveWallet();
+        }
+
+        //
+        // inbound payments
+        //
+        if (to_slips.length > 0) {
+          for (let m = 0; m < to_slips.length; m++) {
+            if (to_slips[m].isNonZeroAmount()) {
+              if (!this.containsInput(to_slips[m])) {
+                if (!this.containsOutput(to_slips[m])) {
+                  this.addInput(to_slips[m]);
+                }
+              } else {
+                const key = to_slips[m].returnKey();
+                for (let n = this.wallet.inputs.length - 1; n >= 0; n--) {
+                  if (this.wallet.inputs[n].returnKey() === key) {
+                    this.wallet.inputs[n].lc = lc;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        //
+        // outbound payments
+        //
+        if (from_slips.length > 0) {
+          for (let m = 0; m < from_slips.length; m++) {
+            const s = from_slips[m];
+            for (let c = 0; c < this.wallet.inputs.length; c++) {
+              const qs = this.wallet.inputs[c];
+              console.assert(s.returnKey().length > 0 && qs.returnKey().length > 0, "sss");
+              if (s.returnKey() === qs.returnKey()) {
+                if (!this.containsOutput(s)) {
+                  this.addOutput(s);
+                }
+                this.wallet.inputs.splice(c, 1);
+                this.wallet.spends.splice(c, 1);
+                c = this.wallet.inputs.length + 2;
+              }
+            }
+          }
+        }
+      }
+    } // lc = 1
+
+    //
+    // save wallet
+    //
+    this.updateBalance();
+    this.app.options.wallet = this.wallet;
+    this.app.storage.saveOptions();
+  }
+
+  returnAdequateInputs(amt: bigint) {
+    const utxiset = new Array<Slip>();
+    let value = BigInt(0);
+    const bigamt = BigInt(amt) * BigInt(100_000_000);
+
+    //
+    // this adds a 1 block buffer so that inputs are valid in the future block included
+    //
+    const lowest_block: bigint =
+      BigInt(this.app.blockchain.blockchain.last_block_id) -
+      BigInt(this.app.blockchain.returnGenesisPeriod()) +
+      BigInt(2);
+
+    //
+    // check pending txs to avoid slip reuse if necessary
+    //
+    if (this.wallet.pending.length > 0) {
+      for (let i = 0; i < this.wallet.pending.length; i++) {
+        let pendingtx = new Transaction();
+	pendingtx.deserialize_from_web(this.app, this.wallet.pending[i]);
+        for (let k = 0; k < pendingtx.transaction.from.length; k++) {
+          const slipIndex = pendingtx.transaction.from[k].returnKey();
+          for (let m = 0; m < this.wallet.inputs.length; m++) {
+            const thisSlipIndex = this.wallet.inputs[m].returnKey();
+            // if the input in the wallet is already in a pending tx...
+            // then set spends[m] to 1
+            if (thisSlipIndex === slipIndex) {
+              while (this.wallet.spends.length < m) {
+                this.wallet.spends.push(0);
+              }
+              this.wallet.spends[m] = 1;
+            }
+          }
+        }
+      }
+    }
+    let hasAdequateInputs = false;
+    const slipIndexes = [];
+    for (let i = 0; i < this.wallet.inputs.length; i++) {
+      if (this.wallet.spends[i] == 0 || i >= this.wallet.spends.length) {
+        const slip = this.wallet.inputs[i];
+        if (slip.lc && slip.block_id >= lowest_block) {
+          if (this.app.mempool.transactions_inputs_hmap.get(slip.returnKey()) != 1) {
+            slipIndexes.push(i);
+            utxiset.push(slip);
+            value += slip.returnAmount();
+            if (value >= bigamt) {
+              hasAdequateInputs = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+    if (hasAdequateInputs) {
+      for (let i = 0; i < slipIndexes.length; i++) {
+        this.wallet.spends[slipIndexes[i]] = 1;
+      }
+      return utxiset;
+    } else {
+      return null;
+    }
+  }
+
+  returnPublicKey(): string {
+    return this.wallet.publickey;
+  }
+
+  returnPrivateKey(): string {
+    return this.wallet.privatekey;
+  }
+
+  returnBalance(ticker = "SAITO") {
+    if (ticker === "SAITO") {
+      let b = BigInt(0);
+      this.wallet.inputs.forEach((input, index) => {
+        if (this.isSlipValid(input, index)) {
+          b += input.returnAmount();
+        }
+      });
+      return b.toString();
+    }
+    return "0.0";
+  }
+>>>>>>> staging
 
   /**
    * Generates a new keypair for the user, resets all stored wallet info, and saves
@@ -432,12 +735,10 @@ export default class Wallet extends SaitoWallet {
     const activeMods = [];
     console.log("HOW MANY INSTALLED CRYPTOS: " + allMods.length);
     for (let i = 0; i < allMods.length; i++) {
-      console.log("checking if activated: " + allMods[i].name);
       if (allMods[i].returnIsActivated()) {
         activeMods.push(allMods[i]);
       }
     }
-    console.log("returning activated cryptos num: " + activeMods.length);
     return activeMods;
   }
 
@@ -457,7 +758,6 @@ export default class Wallet extends SaitoWallet {
     let cryptomod = null;
     for (let i = 0; i < mods.length; i++) {
       if (mods[i].ticker === ticker) {
-        console.log("setting cryptomod");
         cryptomod = mods[i];
         can_we_do_this = 1;
 
@@ -467,13 +767,12 @@ export default class Wallet extends SaitoWallet {
       }
     }
 
-    console.log("cryptomod.ticker: " + cryptomod.ticker);
-
     if (ticker == "SAITO") {
       can_we_do_this = 1;
     }
 
     if (can_we_do_this == 1) {
+<<<<<<< HEAD
       this.preferred_crypto = ticker;
       console.log("Activating cryptomod: " + cryptomod.ticker);
       cryptomod.activate();
@@ -491,6 +790,21 @@ export default class Wallet extends SaitoWallet {
     }
 
     console.log("done in setPreferredCrypto");
+=======
+      this.wallet.preferred_crypto = ticker;
+      cryptomod.activate();
+      this.saveWallet();
+      this.app.connection.emit("set_preferred_crypto", ticker);
+    }
+
+    //if (cryptomod != null && show_overlay == 1) {
+    //  if (cryptomod.renderModalSelectCrypto(this.app, this.app.modules.returnActiveModule()) != null) {
+    //    const modal_select_crypto = new ModalSelectCrypto(this.app, null, cryptomod);
+    //    modal_select_crypto.render(this.app, null, cryptomod);
+    //    modal_select_crypto.attachEvents(this.app, null, cryptomod);
+    //  }
+    //}
+>>>>>>> staging
 
     return;
   }
@@ -533,6 +847,22 @@ export default class Wallet extends SaitoWallet {
     return "";
   }
 
+  returnAvailableCryptosAssociativeArray() {
+    let cryptos = {};
+    let mods = this.returnActivatedCryptos();
+    for (let i = 0; i < mods.length; i++) {
+      let ticker = mods[i].ticker;
+      let address = mods[i].returnAddress();
+      let balance = mods[i].balance;
+      if (!cryptos[ticker]) { cryptos[ticker] = { address : "" , balance : "0.0" }; }
+      cryptos[ticker].address = address;
+      cryptos[ticker].balance = balance;
+      if (parseFloat(balance) > 0) { mods[i].save(); }
+    }
+
+    return cryptos;
+  }
+
   async returnPreferredCryptoBalances(addresses = [], mycallback = null, ticker = "") {
     if (ticker == "") {
       ticker = this.preferred_crypto;
@@ -553,6 +883,29 @@ export default class Wallet extends SaitoWallet {
     return returnObj;
   }
 
+<<<<<<< HEAD
+=======
+  savePreferredCryptoBalance(ticker, address, balance) {
+
+    //
+    // if this is my address...
+    //
+    let cryptomods = this.returnInstalledCryptos();
+    for (let i = 0; i < cryptomods.length; i++) {
+      if (cryptomods[i].ticker === ticker) {
+        if (cryptomods[i].returnAddress() === address) {
+            //
+            // cache the results, so i know if payments are new
+            //
+	    cryptomods[i].balance  = balance;
+	    this.app.wallet.wallet.cryptos[ticker] = { address : address, balance : balance };	   
+        }
+      }
+    }
+
+  }
+
+>>>>>>> staging
   /*** courtesy function to simplify balance checks for a single address w/ ticker ***/
   async checkBalance(address, ticker) {
     const robj = await this.returnPreferredCryptoBalances([address], null, ticker);
@@ -589,12 +942,10 @@ export default class Wallet extends SaitoWallet {
     mycallback = null,
     ticker
   ) {
-    console.log("IN SEND PAYMENT IN WALLET!");
 
     console.log("wallet sendPayment");
     // validate inputs
     if (senders.length != receivers.length || senders.length != amounts.length) {
-      console.log("Lengths of senders, receivers, and amounts must be the same");
       //mycallback({err: "Lengths of senders, receivers, and amounts must be the same"});
       return;
     }
@@ -609,19 +960,19 @@ export default class Wallet extends SaitoWallet {
       "does preferred crypto transaction exist: " +
         this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
     );
-    console.log("unique hash: " + unique_hash);
-    console.log("uuid: " + getUuid(unique_hash));
 
     if (
       !this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
     ) {
-      console.log("preferred transaction does not exist, so...");
 
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
+<<<<<<< HEAD
         console.log(
           "senders and returnAddress: " + senders[i] + " -- " + (await cryptomod.returnAddress())
         );
+=======
+>>>>>>> staging
 
         //
         // DEBUGGING - sender is address to which we send the crypto
@@ -644,15 +995,7 @@ export default class Wallet extends SaitoWallet {
               unique_hash,
               ticker
             );
-            console.log("wallet -> cryptomod - sendPayment: " + unique_tx_hash);
-            console.log("unique_hash: " + unique_tx_hash);
-            console.log("senders: " + JSON.stringify(senders));
-            console.log("receivers: " + JSON.stringify(receivers));
-            console.log("amounts: " + JSON.stringify(amounts));
-            console.log("timestamp: " + timestamp);
-            console.log("ticker: " + ticker);
             const hash = await cryptomod.sendPayment(amounts[i], receivers[i], unique_tx_hash);
-            console.log("wallet -> cryptomod - sendPayment - done");
             //
             // hash is "" if unsuccessful, trace_id if successful
             //
@@ -669,7 +1012,6 @@ export default class Wallet extends SaitoWallet {
             if (mycallback) {
               mycallback({ hash: hash });
             }
-            console.log("and after the callback");
             return;
           } catch (err) {
             // it failed, delete the transaction
@@ -709,7 +1051,6 @@ export default class Wallet extends SaitoWallet {
     tries = 36,
     pollWaitTime = 5000
   ) {
-    console.log("wallet receivePayment");
     let unique_tx_hash = this.generatePreferredCryptoTransactionHash(
       senders,
       receivers,
@@ -717,13 +1058,6 @@ export default class Wallet extends SaitoWallet {
       unique_hash,
       ticker
     );
-    console.log("wallet -> cryptomod - sendPayment: " + unique_tx_hash);
-    console.log("unique_hash: " + unique_tx_hash);
-    console.log("senders: " + JSON.stringify(senders));
-    console.log("receivers: " + JSON.stringify(receivers));
-    console.log("amounts: " + JSON.stringify(amounts));
-    console.log("timestamp: " + timestamp);
-    console.log("ticker: " + ticker);
 
     if (senders.length != receivers.length || senders.length != amounts.length) {
       console.log(

@@ -4,10 +4,18 @@
       let twilight_self = this;
       let cards_to_discard = 1;
       let target = (player == "ussr")? "us": "ussr";
-      
+     
       if (target == "us" && this.game.state.events.iranianhostage == 1) { 
         cards_to_discard = 2; 
       } 
+
+      // SAITO COMMUNITY
+      if (target == "us" && this.game.state.events.argo == 1 && this.isControlled("us", "canada")) {
+	this.updateLog(this.cardToText("argo") + " cancels Terrorism against United States");
+        return 1;
+      }
+
+
 
       this.addMove("resolve\tterrorism");
 

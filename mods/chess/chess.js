@@ -332,7 +332,18 @@ class Chessgame extends GameTemplate {
     }
   }
 
+<<<<<<< HEAD
   endTurn(data) {
+=======
+  endTurn(data="") {
+
+    if (data === "") {
+      for (let i = 0; i < this.moves.length; i++) {
+	if (this.moves[i].indexOf("CRYPTOS") > 0) { super.endTurn(); return; }
+      }
+    }
+
+>>>>>>> staging
     let extra = {};
 
     extra.target = this.returnNextPlayer(this.game.player);

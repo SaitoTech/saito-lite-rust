@@ -49,7 +49,20 @@ class Mixin extends ModTemplate {
     //this.styles = ['/mixin/css/appspace.css'];
   }
 
+<<<<<<< HEAD
   async initialize(app) {
+=======
+
+  returnServices() {
+    let services = [];
+    if (this.app.BROWSER == 0) {
+      services.push({ service: "mixin" });
+    }
+    return services;
+  }
+
+  initialize(app) {
+>>>>>>> staging
     this.load();
     await this.loadCryptos();
   }
@@ -621,12 +634,44 @@ class Mixin extends ModTemplate {
     //
     let new_pin = new Date().getTime().toString().substr(-6);
     mixin_self.updateUserPin(new_pin, () => {});
+<<<<<<< HEAD
     if (callback != null) {
       callback(res.data);
     }
   }
 
   async createAccount(callback = null) {
+=======
+    if (callback != null) { callback(res.data); }
+
+  };
+
+
+
+  onPeerServiceUp(app, peer, service = {}) {
+    let mixin_self = this;
+    if (service.service === "mixin" && this.app.BROWSER == 0 && this.account_created == 0){
+      this.createAccount();
+    }   
+  }
+
+  createAccount(callback=null) {
+
+    if (this.app.network.peers.length == 0) { return; }
+
+    let mixin_peer = this.app.network.peers[0];
+    for (let i = 0; i < this.app.network.peers.length; i++) {
+      if (this.app.network.peers[i].hasService("mixin")) {
+	mixin_peer = this.app.network.peers[i];
+	i = this.app.network.peers.length+1;
+      }
+    }
+
+    // we cannot create an account if the network is down
+try {
+
+
+>>>>>>> staging
     let mixin_self = this;
 
     if (this.mixin.publickey !== "") {
@@ -692,12 +737,17 @@ class Mixin extends ModTemplate {
     // users handle manually
     //
     if (!m.appId) {
+<<<<<<< HEAD
       m = {
         appId: "9be2f213-ca9d-4573-80ca-3b2711bb2105",
         sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511",
         privateKey:
           "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg",
       };
+=======
+   
+      m = { appId : "9be2f213-ca9d-4573-80ca-3b2711bb2105", sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511", privateKey: "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg"};
+>>>>>>> staging
 
       let appId = m.appId;
       let sessionId = m.sessionId;
@@ -708,7 +758,16 @@ class Mixin extends ModTemplate {
         mixin_publickey: user_public_key,
       };
 
+<<<<<<< HEAD
       //console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
+=======
+console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(data));
+console.log("HOW MANY peers: " + mixin_self.app.network.peers.length);
+      mixin_peer.sendRequestAsTransactionWithCallback("mixin create account", data, function(res) {
+console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
+	mixin_self.createAccountCallback(res, callback);
+      });
+>>>>>>> staging
 
       let peers = await this.app.network.getPeers();
 
@@ -722,6 +781,9 @@ class Mixin extends ModTemplate {
         peers[0].peerIndex
       );
     }
+} catch (err) {
+  console.log(err);
+}
   }
 
   /////////////////////////
@@ -895,9 +957,16 @@ class Mixin extends ModTemplate {
   }
 
   load() {
+<<<<<<< HEAD
     if (this.app?.options?.mixin) {
       this.mixin = this.app.options.mixin;
     }
+=======
+
+console.log("MIXIN DEETS: " + JSON.stringify(this.app.options.mixin));
+
+    if (this.app?.options?.mixin) { this.mixin = this.app.options.mixin; }
+>>>>>>> staging
     if (this.mixin.publickey !== "") {
       this.account_created = 1;
     }

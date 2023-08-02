@@ -4,7 +4,10 @@
     // Che
     //
     if (card == "che") {
-    
+
+      this.game.state.events.che = 1;
+ 
+   
       //
       // SAITO COMMUNITY - united fruit company removed
       //

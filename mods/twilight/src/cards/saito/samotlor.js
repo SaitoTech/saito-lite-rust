@@ -31,6 +31,7 @@
         }
 
         if (cardList.length == 0) {
+          twilight_self.addMove("resolve\tsamotlor");
           twilight_self.addMove("notify\tUSSR has no cards available to discard");
           twilight_self.endTurn();
           return;
