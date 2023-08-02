@@ -14,29 +14,12 @@ export default class Wallet extends SaitoWallet {
   public app: Saito;
 
   publicKey;
-  // public wallet = {
-  // balance: "0",
-  // publickey: "",
-  // privatekey: "",
 
   preferred_crypto = "SAITO";
   preferred_txs = [];
 
-  // inputs: new Array<Slip>(), // slips available
-  // outputs: new Array<Slip>(), // slips spenr
-  // spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
-  // pending: [], // slips pending broadcast
   default_fee = 2;
-  version = 5.0;
-  // };
-  // public inputs_hmap: Map<string, boolean>;
-  // public inputs_hmap_counter: number;
-  // public inputs_hmap_counter_limit: number;
-  // public outputs_hmap: Map<string, boolean>;
-  // public outputs_hmap_counter: number;
-  // public outputs_hmap_counter_limit: number;
-  // public outputs_prune_limit: number;
-  // public recreate_pending_transactions: any;
+  version = 5.1;
 
   public saitoCrypto: any;
 
@@ -61,24 +44,6 @@ export default class Wallet extends SaitoWallet {
     }
     return S.getInstance().createTransaction(publicKey, amount, fee, force_merge);
   }
-
-  // public async signTransaction<T extends Transaction>(tx: T): Promise<T> {
-  //   console.log("signing tx..");
-  //
-  //   return (await S.getInstance().signTransaction(tx)) as T;
-  // }
-
-  // public async getPublicKey(): Promise<string> {
-  //   return S.getInstance().getPublicKey();
-  // }
-
-  // public async returnPrivateKey(): Promise<string> {
-  //   return S.getInstance().getPrivateKey();
-  // }
-  //
-  // public async getPendingTransactions(): Promise<Array<Transaction>> {
-  //   return S.getInstance().getPendingTransactions();
-  // }
 
   public async getBalance(ticker = "SAITO"): Promise<bigint> {
     if (ticker === "SAITO") {
@@ -186,103 +151,103 @@ export default class Wallet extends SaitoWallet {
     console.log("public key = " + publicKey);
     console.log("private key = " + privateKey);
 
-    if (privateKey === "") {
-      if (this.app.options.wallet != null) {
-        /////////////
-        // upgrade //
-        /////////////
-        if (this.app.options.wallet.version < this.version) {
-          if (this.app.BROWSER === 1) {
-            const tmpprivkey = this.app.options.wallet.privateKey;
-            const tmppubkey = this.app.options.wallet.publicKey;
+    // if (privateKey === "") {
+    if (this.app.options.wallet != null) {
+      /////////////
+      // upgrade //
+      /////////////
+      if (this.app.options.wallet.version < this.version) {
+        if (this.app.BROWSER === 1) {
+          const tmpprivkey = this.app.options.wallet.privateKey;
+          const tmppubkey = this.app.options.wallet.publicKey;
 
-            let mixin = this.app.options.mixin;
-            let crypto = this.app.options.crypto;
+          let mixin = this.app.options.mixin;
+          let crypto = this.app.options.crypto;
 
-            // save contacts(keys)
-            let keys = this.app.options.keys;
-            let chats = this.app.options.chat;
-            let leagues = this.app.options.leagues;
+          // save contacts(keys)
+          let keys = this.app.options.keys;
+          let chats = this.app.options.chat;
+          let leagues = this.app.options.leagues;
 
-            // save theme options
-            let theme = this.app.options.theme;
+          // save theme options
+          let theme = this.app.options.theme;
 
-            // keep user's game preferences
-            let gameprefs = this.app.options.gameprefs;
+          // keep user's game preferences
+          let gameprefs = this.app.options.gameprefs;
 
-            // specify before reset to avoid archives reset problem
-            await this.setPrivateKey(tmpprivkey);
-            await this.setPublicKey(tmppubkey);
-            // this.instance.publickey = tmppubkey;
-            // this.instance.privatekey = tmpprivkey;
+          // specify before reset to avoid archives reset problem
+          await this.setPrivateKey(tmpprivkey);
+          await this.setPublicKey(tmppubkey);
+          // this.instance.publickey = tmppubkey;
+          // this.instance.privatekey = tmpprivkey;
 
-            // let modules purge stuff
-            await this.app.modules.onWalletReset();
+          // let modules purge stuff
+          await this.app.modules.onWalletReset();
 
-            // reset and save
-            await this.app.storage.resetOptions();
-            await this.instance.reset();
-            this.app.storage.saveOptions();
+          // reset and save
+          await this.app.storage.resetOptions();
+          await this.instance.reset();
+          this.app.storage.saveOptions();
 
-            // re-specify after reset
-            await this.setPrivateKey(tmpprivkey);
-            await this.setPublicKey(tmppubkey);
-            // this.publickey = tmppubkey;
-            // this.privatekey = tmpprivkey;
+          // re-specify after reset
+          await this.setPrivateKey(tmpprivkey);
+          await this.setPublicKey(tmppubkey);
+          // this.publickey = tmppubkey;
+          // this.privatekey = tmpprivkey;
 
-            // this.app.options.wallet = this.wallet;
-            this.app.options.wallet.preferred_crypto = this.preferred_crypto;
-            this.app.options.wallet.preferred_txs = this.preferred_txs;
-            this.app.options.wallet.version = this.version;
-            this.app.options.wallet.default_fee = this.default_fee;
+          // this.app.options.wallet = this.wallet;
+          this.app.options.wallet.preferred_crypto = this.preferred_crypto;
+          this.app.options.wallet.preferred_txs = this.preferred_txs;
+          this.app.options.wallet.version = this.version;
+          this.app.options.wallet.default_fee = this.default_fee;
 
-            // reset games and restore game settings
-            this.app.options.games = [];
-            this.app.options.gameprefs = gameprefs;
-            
-            // delete inputs and outputs
-            // this.app.options.wallet.inputs = [];
-            // this.app.options.wallet.outputs = [];
-            // this.app.options.wallet.spends = [];
-            // this.app.options.wallet.pending = [];
-            // this.app.options.wallet.balance = "0.0";
-            // this.app.options.wallet.version = this.version;
+          // reset games and restore game settings
+          this.app.options.games = [];
+          this.app.options.gameprefs = gameprefs;
 
-            // keep mixin
-            this.app.options.mixin = mixin;
-            this.app.options.crypto = crypto;
+          // delete inputs and outputs
+          // this.app.options.wallet.inputs = [];
+          // this.app.options.wallet.outputs = [];
+          // this.app.options.wallet.spends = [];
+          // this.app.options.wallet.pending = [];
+          // this.app.options.wallet.balance = "0.0";
+          // this.app.options.wallet.version = this.version;
 
-            // keep contacts (keys)
-            this.app.options.keys = keys;
-            this.app.options.chat = chats;
-            this.app.options.leagues = leagues;
+          // keep mixin
+          this.app.options.mixin = mixin;
+          this.app.options.crypto = crypto;
 
-            // keep theme
-            this.app.options.theme = theme;
+          // keep contacts (keys)
+          this.app.options.keys = keys;
+          this.app.options.chat = chats;
+          this.app.options.leagues = leagues;
 
-            await this.saveWallet();
+          // keep theme
+          this.app.options.theme = theme;
 
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            alert("Saito Upgrade: Wallet Reset");
-          } else {
-            //
-            // purge old slips
-            //
-            this.app.options.wallet.version = this.version;
+          await this.saveWallet();
 
-            // this.app.options.wallet.inputs = [];
-            // this.app.options.wallet.outputs = [];
-            // this.app.options.wallet.pending = [];
-            // this.app.options.wallet.balance = "0.0";
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          alert("Saito Upgrade: Wallet Reset");
+        } else {
+          //
+          // purge old slips
+          //
+          this.app.options.wallet.version = this.version;
 
-            this.app.storage.saveOptions();
-          }
+          // this.app.options.wallet.inputs = [];
+          // this.app.options.wallet.outputs = [];
+          // this.app.options.wallet.pending = [];
+          // this.app.options.wallet.balance = "0.0";
+
+          this.app.storage.saveOptions();
         }
-
-        this.instance = Object.assign(this.instance, this.app.options.wallet);
       }
+
+      this.instance = Object.assign(this.instance, this.app.options.wallet);
     }
+    // }
     ////////////////
     // new wallet //
     ////////////////
