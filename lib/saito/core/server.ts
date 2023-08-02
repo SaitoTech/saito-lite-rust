@@ -59,10 +59,21 @@ export class NodeSharedMethods extends CustomSharedMethods {
       let index = S.getInstance().addNewSocket(socket);
 
       socket.on("message", (buffer: any) => {
-        S.getLibInstance().process_msg_buffer_from_peer(buffer, index);
+        try {
+          S.getLibInstance().process_msg_buffer_from_peer(buffer, index);
+        } catch (e) {
+          console.error(e);
+        }
       });
       socket.on("close", () => {
-        S.getLibInstance().process_peer_disconnection(index);
+        try {
+          S.getLibInstance().process_peer_disconnection(index);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+      socket.on("error", (error) => {
+        console.error(error);
       });
       S.getLibInstance().process_new_peer(index, peerData);
       console.log("connected to : " + url + " with peer index : " + index);
