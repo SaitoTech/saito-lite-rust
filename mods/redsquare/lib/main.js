@@ -73,25 +73,15 @@ class RedSquareMain {
         e.currentTarget.onclick = null;
         e.currentTarget.style.display = "none";
         console.log("Show new tweets");
-<<<<<<< HEAD
-        this.scoll_depth = 0;
-        this.scrollFeed(0, "smooth");
         
-=======
-  
->>>>>>> staging
         //this.app.connection.emit("redsquare-home-render-request", false);
         this.app.connection.emit("redsquare-navigation", true);
         window.history.pushState(null, "", "/redsquare/#home");
         this.manager.render("newtweets");
 
-<<<<<<< HEAD
         setTimeout(() => {
           this.mod.saveLocalTweets();
         }, 1500);
-=======
-        setTimeout(()=> {this.mod.saveLocalTweets();}, 1500);
->>>>>>> staging
       };
     });
 

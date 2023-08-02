@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-const saito = require("./../../lib/saito/saito");
-const ModTemplate = require("../../lib/templates/modtemplate");
-const CryptoSelectAmount = require("./lib/overlays/select-amount");
-=======
 const saito = require('./../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const CryptoSelectAmount = require('./lib/overlays/select-amount');
 const CryptoInadequate = require('./lib/overlays/inadequate');
-
->>>>>>> staging
 
 class Crypto extends ModTemplate {
   constructor(app, mod) {
@@ -26,11 +19,8 @@ class Crypto extends ModTemplate {
     this.categories = "Utility Entertainment";
     this.min_balance = 0.0;
     this.overlay = new CryptoSelectAmount(app, this);
-<<<<<<< HEAD
-=======
     this.overlay_inadequate = new CryptoInadequate(app, this);
 
->>>>>>> staging
   }
 
   respondTo(type = "") {
@@ -40,20 +30,9 @@ class Crypto extends ModTemplate {
       // only show if games are winnable
       //
       let gm = this.app.modules.returnActiveModule();
-<<<<<<< HEAD
-      if (gm.winable == 0) {
-        return null;
-      }
-      if (gm.cooperative == 1) {
-        return null;
-      }
-      if (gm.losable == 0) {
-        return null;
-      }
-=======
+
       if (!gm.can_bet) { return null; }
       if (gm.name === "Chess") { return null; }
->>>>>>> staging
 
       let ac = this.app.wallet.returnActivatedCryptos();
 
@@ -65,20 +44,6 @@ class Crypto extends ModTemplate {
       };
 
       for (let i = 0; i < ac.length; i++) {
-<<<<<<< HEAD
-        menu.submenus.push({
-          text: ac[i].ticker,
-          id: "game-crypto-" + ac[i].ticker,
-          class: "game-crypto-ticker",
-          callback: async (app, game_mod) => {
-            this.attachStyleSheets();
-            this.ticker = ac[i].ticker;
-            await this.overlay.render(async (amount) => {
-              game_mod.menu.hideSubMenus();
-              await cm.enableCrypto(game_mod, game_mod.game.id, ac[i].ticker, amount);
-            });
-          },
-=======
       	menu.submenus.push({
           text : ac[i].ticker,
           id : "game-crypto-"+ac[i].ticker,
@@ -143,7 +108,6 @@ console.log(JSON.stringify(game_mod.game.cryptos));
       	      cm.enableCrypto(game_mod, game_mod.game.id, ac[i].ticker, amount);
 	    });
           }
->>>>>>> staging
         });
       }
       return menu;
