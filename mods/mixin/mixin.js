@@ -49,7 +49,6 @@ class Mixin extends ModTemplate {
     //this.styles = ['/mixin/css/appspace.css'];
   }
 
-
   returnServices() {
     let services = [];
     if (this.app.BROWSER == 0) {
@@ -58,7 +57,7 @@ class Mixin extends ModTemplate {
     return services;
   }
 
-  initialize(app) {
+  async initialize(app) {
     this.load();
     await this.loadCryptos();
   }
@@ -151,7 +150,7 @@ class Mixin extends ModTemplate {
         crypto_module.returnBalance = module.returnBalance;
       }
 
-      crypto_module.installModule(mixin_self.app);
+      await crypto_module.installModule(mixin_self.app);
       this.mods.push(crypto_module);
       this.app.modules.mods.push(crypto_module);
       let pc = await this.app.wallet.returnPreferredCryptoTicker();
@@ -199,13 +198,13 @@ class Mixin extends ModTemplate {
           /********************************************
            "amount":     "-1688168",
            "asset": {
-        "asset_id": "965e5c6e-434c-3fa9-b780-c50f43cd955c",
-        "chain_id": "43d61dcd-e413-450d-80b8-101d5e903357",
-        "icon_url": "https://images.mixin.one/0sQY63dDMkWTURkJVjowWY6Le4ICjAFuu3ANVyZA4uI3UdkbuOT5fjJUT82ArNYmZvVcxDXyNjxoOv0TAYbQTNKS=s128",
-        "name":     "Chui Niu Bi",
-        "symbol":   "CNB",
-        "type":     "asset"
-      },
+           "asset_id": "965e5c6e-434c-3fa9-b780-c50f43cd955c",
+           "chain_id": "43d61dcd-e413-450d-80b8-101d5e903357",
+           "icon_url": "https://images.mixin.one/0sQY63dDMkWTURkJVjowWY6Le4ICjAFuu3ANVyZA4uI3UdkbuOT5fjJUT82ArNYmZvVcxDXyNjxoOv0TAYbQTNKS=s128",
+           "name":     "Chui Niu Bi",
+           "symbol":   "CNB",
+           "type":     "asset"
+           },
            "created_at": "2018-05-29T09:31:04.202186212Z",
            "data":       "",
            "snapshot_id":"529934b0-abfd-43ab-9431-1805773000a4",
@@ -630,134 +629,140 @@ class Mixin extends ModTemplate {
     //
     let new_pin = new Date().getTime().toString().substr(-6);
     mixin_self.updateUserPin(new_pin, () => {});
-    if (callback != null) { callback(res.data); }
-
-  };
-
-
+    if (callback != null) {
+      callback(res.data);
+    }
+  }
 
   onPeerServiceUp(app, peer, service = {}) {
     let mixin_self = this;
-    if (service.service === "mixin" && this.app.BROWSER == 0 && this.account_created == 0){
+    if (service.service === "mixin" && this.app.BROWSER == 0 && this.account_created == 0) {
       this.createAccount();
-    }   
+    }
   }
 
-  createAccount(callback=null) {
-
-    if (this.app.network.peers.length == 0) { return; }
+  async createAccount(callback = null) {
+    if (this.app.network.peers.length == 0) {
+      return;
+    }
 
     let mixin_peer = this.app.network.peers[0];
     for (let i = 0; i < this.app.network.peers.length; i++) {
       if (this.app.network.peers[i].hasService("mixin")) {
-	mixin_peer = this.app.network.peers[i];
-	i = this.app.network.peers.length+1;
+        mixin_peer = this.app.network.peers[i];
+        i = this.app.network.peers.length + 1;
       }
     }
 
     // we cannot create an account if the network is down
-try {
+    try {
+      let mixin_self = this;
 
-
-    let mixin_self = this;
-
-    if (this.mixin.publickey !== "") {
-      console.log("Mixin Account already created. Skipping");
-      return;
-    }
-
-    this.account_created = 1;
-
-    //
-    // CREATE ACCOUNT
-    //
-    // todo - ping us and we do this, so that we don't compromise the
-    // privatekey associated with account creation. for now we will
-    // have the module make the call directly for simplified
-    // development.
-    //
-    let user_keypair = forge.pki.ed25519.generateKeyPair();
-    let original_user_public_key = Buffer.from(user_keypair.publicKey).toString("base64");
-    let original_user_private_key = Buffer.from(user_keypair.privateKey).toString("base64");
-    let user_public_key = this.base64RawURLEncode(original_user_public_key);
-    let user_private_key = this.base64RawURLEncode(original_user_private_key);
-
-    let method = "POST";
-    let uri = "/users";
-    let body = {
-      session_secret: user_public_key,
-      full_name: `Saito Uawait ser ${this.publicKey}`,
-    };
-
-    this.mixin.publickey = original_user_public_key;
-    this.mixin.privatekey = original_user_private_key;
-    this.mixin.user_id = "";
-    this.mixin.session_id = "";
-
-    let m = "";
-
-    //
-    // process directly if ENV variable set
-    //
-    if (process.env.MIXIN) {
-      m = JSON.parse(process.env.MIXIN);
-
-      let appId = m.appId;
-      let sessionId = m.sessionId;
-      let privateKey = m.privateKey;
-
-      //
-      // if you have an application ID, you can create your account directly
-      // using that....
-      //
-      try {
-        this.request(appId, sessionId, privateKey, method, uri, body).then((res) => {
-          mixin_self.createAccountCallback(res, callback);
-          //processRes(res);
-        });
-      } catch (err) {
-        console.log("ERROR: Mixin error sending network request: " + err);
+      if (this.mixin.publickey !== "") {
+        console.log("Mixin Account already created. Skipping");
+        return;
       }
-    }
 
-    //
-    // users handle manually
-    //
-    if (!m.appId) {
-   
-      m = { appId : "9be2f213-ca9d-4573-80ca-3b2711bb2105", sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511", privateKey: "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg"};
+      this.account_created = 1;
 
-      let appId = m.appId;
-      let sessionId = m.sessionId;
-      let privateKey = m.privateKey;
+      //
+      // CREATE ACCOUNT
+      //
+      // todo - ping us and we do this, so that we don't compromise the
+      // privatekey associated with account creation. for now we will
+      // have the module make the call directly for simplified
+      // development.
+      //
+      let user_keypair = forge.pki.ed25519.generateKeyPair();
+      let original_user_public_key = Buffer.from(user_keypair.publicKey).toString("base64");
+      let original_user_private_key = Buffer.from(user_keypair.privateKey).toString("base64");
+      let user_public_key = this.base64RawURLEncode(original_user_public_key);
+      let user_private_key = this.base64RawURLEncode(original_user_private_key);
 
-      let data = {
-        saito_publickey: mixin_self.publicKey,
-        mixin_publickey: user_public_key,
+      let method = "POST";
+      let uri = "/users";
+      let body = {
+        session_secret: user_public_key,
+        full_name: `Saito Uawait ser ${this.publicKey}`,
       };
 
-console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(data));
-console.log("HOW MANY peers: " + mixin_self.app.network.peers.length);
-      mixin_peer.sendRequestAsTransactionWithCallback("mixin create account", data, function(res) {
-console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
-	mixin_self.createAccountCallback(res, callback);
-      });
+      this.mixin.publickey = original_user_public_key;
+      this.mixin.privatekey = original_user_private_key;
+      this.mixin.user_id = "";
+      this.mixin.session_id = "";
 
-      let peers = await this.app.network.getPeers();
+      let m = "";
 
-      this.app.network.sendRequestAsTransaction(
-        "mixin create account",
-        data,
-        function (res) {
-          //console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
-          mixin_self.createAccountCallback(res, callback);
-        },
-        peers[0].peerIndex
-      );
+      //
+      // process directly if ENV variable set
+      //
+      if (process.env.MIXIN) {
+        m = JSON.parse(process.env.MIXIN);
+
+        let appId = m.appId;
+        let sessionId = m.sessionId;
+        let privateKey = m.privateKey;
+
+        //
+        // if you have an application ID, you can create your account directly
+        // using that....
+        //
+        try {
+          this.request(appId, sessionId, privateKey, method, uri, body).then((res) => {
+            mixin_self.createAccountCallback(res, callback);
+            //processRes(res);
+          });
+        } catch (err) {
+          console.log("ERROR: Mixin error sending network request: " + err);
+        }
+      }
+
+      //
+      // users handle manually
+      //
+      if (!m.appId) {
+        m = {
+          appId: "9be2f213-ca9d-4573-80ca-3b2711bb2105",
+          sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511",
+          privateKey:
+            "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg",
+        };
+
+        let appId = m.appId;
+        let sessionId = m.sessionId;
+        let privateKey = m.privateKey;
+
+        let data = {
+          saito_publickey: mixin_self.publicKey,
+          mixin_publickey: user_public_key,
+        };
+
+        console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(data));
+        console.log("HOW MANY peers: " + mixin_self.app.network.peers.length);
+        mixin_peer.sendRequestAsTransactionWithCallback(
+          "mixin create account",
+          data,
+          function (res) {
+            console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
+            mixin_self.createAccountCallback(res, callback);
+          }
+        );
+
+        let peers = await this.app.network.getPeers();
+
+        this.app.network.sendRequestAsTransaction(
+          "mixin create account",
+          data,
+          function (res) {
+            //console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
+            mixin_self.createAccountCallback(res, callback);
+          },
+          peers[0].peerIndex
+        );
+      }
+    } catch (err) {
+      console.log(err);
     }
-} catch (err) {
-  console.log(err);
-}
   }
 
   /////////////////////////
@@ -931,10 +936,11 @@ console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
   }
 
   load() {
+    console.log("MIXIN DEETS: " + JSON.stringify(this.app.options.mixin));
 
-console.log("MIXIN DEETS: " + JSON.stringify(this.app.options.mixin));
-
-    if (this.app?.options?.mixin) { this.mixin = this.app.options.mixin; }
+    if (this.app?.options?.mixin) {
+      this.mixin = this.app.options.mixin;
+    }
     if (this.mixin.publickey !== "") {
       this.account_created = 1;
     }
