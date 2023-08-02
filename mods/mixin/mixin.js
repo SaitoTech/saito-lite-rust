@@ -49,9 +49,6 @@ class Mixin extends ModTemplate {
     //this.styles = ['/mixin/css/appspace.css'];
   }
 
-<<<<<<< HEAD
-  async initialize(app) {
-=======
 
   returnServices() {
     let services = [];
@@ -62,7 +59,6 @@ class Mixin extends ModTemplate {
   }
 
   initialize(app) {
->>>>>>> staging
     this.load();
     await this.loadCryptos();
   }
@@ -634,14 +630,6 @@ class Mixin extends ModTemplate {
     //
     let new_pin = new Date().getTime().toString().substr(-6);
     mixin_self.updateUserPin(new_pin, () => {});
-<<<<<<< HEAD
-    if (callback != null) {
-      callback(res.data);
-    }
-  }
-
-  async createAccount(callback = null) {
-=======
     if (callback != null) { callback(res.data); }
 
   };
@@ -671,7 +659,6 @@ class Mixin extends ModTemplate {
 try {
 
 
->>>>>>> staging
     let mixin_self = this;
 
     if (this.mixin.publickey !== "") {
@@ -737,17 +724,8 @@ try {
     // users handle manually
     //
     if (!m.appId) {
-<<<<<<< HEAD
-      m = {
-        appId: "9be2f213-ca9d-4573-80ca-3b2711bb2105",
-        sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511",
-        privateKey:
-          "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg",
-      };
-=======
    
       m = { appId : "9be2f213-ca9d-4573-80ca-3b2711bb2105", sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511", privateKey: "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg"};
->>>>>>> staging
 
       let appId = m.appId;
       let sessionId = m.sessionId;
@@ -758,16 +736,12 @@ try {
         mixin_publickey: user_public_key,
       };
 
-<<<<<<< HEAD
-      //console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
-=======
 console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(data));
 console.log("HOW MANY peers: " + mixin_self.app.network.peers.length);
       mixin_peer.sendRequestAsTransactionWithCallback("mixin create account", data, function(res) {
 console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
 	mixin_self.createAccountCallback(res, callback);
       });
->>>>>>> staging
 
       let peers = await this.app.network.getPeers();
 
@@ -957,16 +931,10 @@ console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
   }
 
   load() {
-<<<<<<< HEAD
-    if (this.app?.options?.mixin) {
-      this.mixin = this.app.options.mixin;
-    }
-=======
 
 console.log("MIXIN DEETS: " + JSON.stringify(this.app.options.mixin));
 
     if (this.app?.options?.mixin) { this.mixin = this.app.options.mixin; }
->>>>>>> staging
     if (this.mixin.publickey !== "") {
       this.account_created = 1;
     }
