@@ -15,6 +15,9 @@
   margin-bottom: 1rem;
   font-size: 2.4rem;
   padding-right: 8px;
+  background: #0009;
+  padding: 1rem;
+  letter-spacing: 0.2rem;
 }
 
 .deck-overlay .cardlist-container {
@@ -28,6 +31,66 @@
   background: unset;
   justify-content: center;
   gap: 2rem;
+}
+
+.custom_card_resize {
+    scale: 0.95;
+    margin-top: -5;
+}
+
+.deck-overlay .cardlist-container.cards_added .card::before {
+    content: "";
+    color: white;
+    width: 0;
+    height: 0;
+    border-top: 80px solid #088a08;
+    border-left: 80px solid transparent !important;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    margin-right: 6px;
+    border-top-right-radius: 1rem;
+}
+.deck-overlay .cardlist-container.cards_removed .card::before {
+    content: "";
+    color: white;
+    width: 0;
+    height: 0;
+    border-top: 80px solid #9c1010;
+    border-left: 80px solid transparent !important;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    margin-right: 6px;
+    border-top-right-radius: 1rem;
+}
+.deck-overlay .cardlist-container.cards_added .card::after {
+    content: "+";
+    color: white;
+    top: 0;
+    right: 0;
+    z-index: 10000;
+    font-size: 4rem;
+    position: absolute;
+    font-weight: bold;
+    margin-right: 6px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+.deck-overlay .cardlist-container.cards_removed .card::after {
+    content: "-";
+    color: white;
+    top: 0;
+    right: 0;
+    z-index: 10000;
+    font-size: 4rem;
+    position: absolute;
+    font-weight: bold;
+    margin-right: 6px;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .deck-overlay .cardlist-container .card {

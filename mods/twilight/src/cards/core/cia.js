@@ -4,12 +4,15 @@
     /////////////////
     if (card == "cia") {
 
+      this.game.state.events.cia = 1;
+
       //
       // SAITO COMMUNITY - lone gunman added
       //
-      this.addCardToDeck("lonegunman", "Prerequisites Met");
-      this.removeCardFromDeckNextDeal("tsarbomba", "CIA Evented");
-
+      if (this.game.state.round > 4) {
+        this.addCardToDeck("lonegunman", "Prerequisites Met");
+        this.removeCardFromDeckNextDeal("tsarbomba", "CIA Evented");
+      }
 
       //USSR needs to share its card information
       if (this.game.player == 1) {

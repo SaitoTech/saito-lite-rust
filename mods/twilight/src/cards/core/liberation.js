@@ -1,6 +1,9 @@
 
     if (card == "liberation") {
-   
+
+      this.game.state.events.liberation = 1;
+ 
+  
       //
       // SAITO COMMUNITY - united fruit company removed
       //

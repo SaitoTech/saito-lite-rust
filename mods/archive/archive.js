@@ -393,6 +393,7 @@ class Archive extends ModTemplate {
   }
 
   async loadTransactions(obj = {}) {
+
     let limit = 10;
     let txs = [];
     let sql = "";
@@ -498,12 +499,156 @@ class Archive extends ModTemplate {
   ////////////
   // delete //
   ////////////
-  async deleteTransaction(tx, obj = {}) {}
+  //
+  // Our Rules:
+  //
+  // - users can delete any transactions they OWN
+  // - server operator can delete any transactions anytime
+  // - server operator will respectfully not delete transaction with preserve=1
+  //
+  async deleteTransaction(tx) {
+
+    let sql = "";
+    let params = {};
+    let rows = [];
+    let timestamp_limiting_clause = "";
+    let where_obj = {};
+
+    //
+    // SEARCH BASED ON CRITERIA PROVIDED
+    //
+    sql = `SELECT * FROM archives WHERE archives.sig = $sig`;
+    params = { $sig: tx.transaction.sig };
+    rows = await this.app.storage.queryDatabase(sql, params, "archive");
+
+    if (rows.length > 0) {
+
+      let archives_id = rows[0].id;
+      let tx_id = rows[0].tx_id;
+
+      let sql2 = "DELETE FROM archives WHERE id = $id";
+      let params2 = { $id : archives_id };
+      await this.app.storage.executeDatabase(sql2, params2);
+
+      let sql3 = "DELETE FROM txs WHERE id = $id";
+      let params3 = { $id : txs_id };
+      await this.app.storage.executeDatabase(sql3, params3);
+
+    }
+
+    if (this.app.BROWSER) {
+alert("delete request for single transaction in browser - unimplemented");
+    }
+
+    return;
+
+  }
 
   ////////////
   // delete //
   ////////////
-  async deleteTransactions(obj = {}) {}
+  //
+  // Our Rules:
+  //
+  // - users can delete any transactions they OWN
+  // - server operator can delete any transactions anytime
+  // - server operator will respectfully not delete transaction with preserve=1
+  //
+  async deleteTransactions(obj = {}) {
+
+    let txs = [];
+    let sql = "";
+    let params = {};
+    let rows = [];
+    let timestamp_limiting_clause = "";
+    let where_obj = {};
+
+    if (obj.created_later_than) {
+      timestamp_limiting_clause = " AND created_at > " + parseInt(obj.created_later_than);
+      where_obj = {created_at: { '>': parseInt(obj.created_later_than)}};
+    }
+    if (obj.created_earlier_than) {
+      timestamp_limiting_clause = " AND created_at < " + parseInt(obj.created_earlier_than);
+      where_obj = {created_at: { '<': parseInt(obj.created_earlier_than)}};
+    }
+    if (obj.updated_later_than) {
+      timestamp_limiting_clause = " AND updated_at > " + parseInt(obj.updated_later_than);
+      where_obj = {updated_at: { '>': parseInt(obj.updated_later_than)}};
+    }
+    if (obj.updated_earlier_than) {
+      timestamp_limiting_clause = " AND updated_at < " + parseInt(obj.updated_earlier_than);
+      where_obj = {updated_at: { '<': parseInt(obj.updated_earlier_than)}};
+    }
+
+    //
+    // SEARCH BASED ON CRITERIA PROVIDED
+    //
+    if (obj.field1) {
+      sql = `SELECT * FROM archives JOIN txs WHERE archives.field1 = $field1 AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC`;
+      params = { $field1: obj.field1, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["field1"] = obj.field1;
+    }
+    if (obj.field2) {
+      sql = `SELECT * FROM archives JOIN txs WHERE archives.field2 = $field2 AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC`;
+      params = { $field2: obj.field2, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["field2"] = obj.field2;
+    }
+    if (obj.field3) {
+      sql = `SELECT * FROM archives JOIN txs WHERE archives.field3 = $field3 AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC`;
+      params = { $field3: obj.field3, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["field3"] = obj.field3;
+    }
+    if (obj.owner) {
+      sql = `SELECT * FROM archives JOIN txs WHERE archives.owner = $owner AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC`;
+      params = { $owner: obj.owner, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["owner"] = obj.owner;
+    }
+    if (obj.publickey) {
+      sql = `SELECT * FROM archives JOIN txs WHERE archives.publickey = $publickey AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC`;
+      params = { $publickey: obj.publickey, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["publickey"] = obj.publickey;
+    }
+    if (obj.sig) {
+      sql = `SELECT * FROM archives JOIN txs WHERE archives.sig = $sig AND txs.id = archives.tx_id ${timestamp_limiting_clause} ORDER BY archives.id DESC LIMI`;
+      params = { $sig: obj.sig, $limit: limit };
+      rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      where_obj["sig"] = obj.sig;
+    }
+
+    if (this.app.BROWSER){
+alert("delete transactions for localDB not implemented in browser...");
+    }
+
+    //
+    // FILTER FOR TXS
+    //
+    if (rows != undefined) {
+      if (rows.length > 0) {
+        for (let i = 0; i < rows.length; i++) {
+
+          let archives_id = rows[i].id;
+          let tx_id = rows[i].tx_id;
+
+          let sql2 = "DELETE FROM archives WHERE id = $id";
+          let params2 = { $id : archives_id };
+          await this.app.storage.executeDatabase(sql2, params2);
+
+          let sql3 = "DELETE FROM txs WHERE id = $id";
+          let params3 = { $id : txs_id };
+          await this.app.storage.executeDatabase(sql3, params3);
+	
+        }
+      }
+    }
+
+    return;
+
+  }
 
   //////////////////////////
   // listen to everything //
@@ -545,51 +690,3 @@ class Archive extends ModTemplate {
 
 module.exports = Archive;
 
-/*
-       
-    
-
-        let results = await this.db_connection.select({
-            from: "chat_history",
-        });
-
-        results.forEach((item) => {
-
-            let group = this.returnGroup(item.group_id);
-
-            if (group){
-                console.log(item);
-                let newtx = new saito.default.transaction();
-                newtx.deserialize_from_web(this.app, item.transaction);
-                newtx.decryptMessage(this.app);
-                this.addTransactionToGroup(group, newtx);
-            }
-        });
-        //db_connection.terminate();
-        this.groups.forEach((group) => {
-            group.unread = 0;
-        });
-
-        this.app.connection.emit("chat-manager-render-request");
-        */
-/*datas = {
-            group_id,
-            transaction: tx.serialize_to_web(this.app),
-        };
-
-        try{
-
-            let inserted = await this.db_connection.insert({
-                into: "chat_history",
-                values: [datas],
-                ignore: true,
-            });
-
-            if (inserted > 0) {
-                console.log("Insert Successful");
-            }
-
-        }catch(err){
-
-        }
-        */

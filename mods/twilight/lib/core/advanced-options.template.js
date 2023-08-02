@@ -6,33 +6,11 @@ module.exports = () => {
 
   <div style="top:0;left:0;">
 
-            <label for="deck">Deck:</label>
-            <select name="deck" id="deckselect" onchange='
-        if ($("#deckselect").val() == "saito") { 
-          $(".saito_edition").prop("checked",true); 
-	  try {
-	    document.querySelector(".usbonus").value = 0;
-	  } catch (err) {
-console.log(err);
-	  }
-          $(".endofhistory_edition").prop("checked", false); 
-        } else { 
-          $(".saito_edition").prop("checked", false); 
-          if ($("#deckselect").val() == "optional") { 
-            $(".optional_edition").prop("checked", false); 
-          } else { 
-            $(".optional").prop("checked", true); 
-            if ($("#deckselect").val() == "endofhistory") { 
-              $(".endofhistory_edition").prop("checked",true); 
-              $(".optional_edition").prop("checked", false);
-            }
-          }
-        } '>
-            <option value="original">original</option>
-              <option class="optional" value="optional" selected>optional</option>
-              <option class="late-war" value="late-war">late war</option>
-              <option class="saito" value="saito">saito edition</option>
-              <option class="endofhistory" value="endofhistory">end of history</option>
+            <label for="player1">Play As: </label>
+            <select name="player1">
+              <option value="random" selected>random sides</option>
+              <option value="ussr">play as USSR</option>
+              <option value="us">play as US</option>
             </select>
 
             <label for="usbonus">US bonus: </label>
@@ -123,7 +101,7 @@ console.log(err);
               <li><input class="remove_card" type="checkbox" name="quagmire" /> <span> Quagmire</span></li>
               <li><input class="remove_card" type="checkbox" name="saltnegotiations" /> <span> Salt Negotiations</span></li>
               <li><input class="remove_card" type="checkbox" name="beartrap" /> <span> Bear Trap</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="summit" /> <span> Summit</span></li>
+              <li><input class="remove_card" type="checkbox" name="summit" /> <span> Summit</span></li>
               <li><input class="remove_card" type="checkbox" name="howilearned" /> <span> How I Learned to Stop Worrying</span></li>
               <li><input class="remove_card" type="checkbox" name="junta" /> <span> Junta</span></li>
               <li><input class="remove_card" type="checkbox" name="kitchendebates" /> <span> Kitchen Debates</span></li>
@@ -191,19 +169,25 @@ console.log(err);
 
             <div class="list-header">add cards:</div>
             <ul id="removecards" class="removecards">
-              <li><input class="remove_card saito_edition" type="checkbox" name="iranianultimatum" /> <span> Iranian Ultimatum (Early-War)</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="tsarbomba" /> <span> Tsar Bomba (Early-War)</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="unitedfruit" /> <span> United Fruit Company (Early-War)</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="berlinagreement" /> <span> Berlin Agreement (Mid-War)</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="carterdoctrine" /> <span> Carter Doctrine (Mid-War)</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="energycrisis" /> <span> Energy Crisis (Mid-War)</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="nixonshock" /> <span> Nixon Shock (Mid-War)</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="kissinger" /> <span> Kissinger Bombs Cambodia (Mid-War)</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="handshake" /> <span> Handshake in Space (Mid-War)</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="revolutionsof1989" /> <span> Revolutions of 1989 (Late-War)</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="samotlor" /> <span> Samotlor Oil Fields (Late-War)</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="antiapartheid" /> <span> Anti-Apartheid Movement (Late-War)</span></li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="rustinredsquare" /> <span> Rust Lands in Red Square (Late-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="iranianultimatum" /> <span> Iranian Ultimatum (Early-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="tsarbomba" /> <span> Tsar Bomba (Early-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="unitedfruit" /> <span> United Fruit Company (Early-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="berlinagreement" /> <span> Berlin Agreement (Mid-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="carterdoctrine" /> <span> Carter Doctrine (Mid-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="energycrisis" /> <span> Energy Crisis (Mid-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="nixonshock" /> <span> Nixon Shock (Mid-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="kissinger" /> <span> Kissinger Bombs Cambodia (Mid-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="handshake" /> <span> Handshake in Space (Mid-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="bayofpigs" /> <span> Bay of Pigs (Mid-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="fallofsaigon" /> <span> Fall of Saigon (Mid-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="fischerspassky" /> <span> Fischer-Spassky (Mid-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="sudan" /> <span> Sudanese Civil War (Mid-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="revolutionsof1989" /> <span> Revolutions of 1989 (Late-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="samotlor" /> <span> Samotlor Oil Fields (Late-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="antiapartheid" /> <span> Anti-Apartheid Movement (Late-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="rustinredsquare" /> <span> Rust Lands in Red Square (Late-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="august1968" /> <span> August Protests (Late-War)</span></li>
+              <li><input class="remove_card" type="checkbox" name="argo" /> <span> Argo (Late-War)</span></li>
               <li><input class="remove_card" type="checkbox" name="culturaldiplomacy" /> <span> Cultural Diplomacy (Early-War)</span></li>
               <li><input class="remove_card" type="checkbox" name="gouzenkoaffair" /> <span> Gouzenko Affair (Early-War)</span></li>
               <li><input class="remove_card" type="checkbox" name="poliovaccine" /> <span> Polio Vaccine (Early-War)</span></li>

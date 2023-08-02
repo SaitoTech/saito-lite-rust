@@ -52,6 +52,14 @@ class Mixin extends ModTemplate {
   }
 
 
+  returnServices() {
+    let services = [];
+    if (this.app.BROWSER == 0) {
+      services.push({ service: "mixin" });
+    }
+    return services;
+  }
+
   initialize(app) {
     this.load();
     this.loadCryptos();
@@ -632,8 +640,28 @@ class Mixin extends ModTemplate {
 
 
 
+  onPeerServiceUp(app, peer, service = {}) {
+    let mixin_self = this;
+    if (service.service === "mixin" && this.app.BROWSER == 0 && this.account_created == 0){
+      this.createAccount();
+    }   
+  }
 
   createAccount(callback=null) {
+
+    if (this.app.network.peers.length == 0) { return; }
+
+    let mixin_peer = this.app.network.peers[0];
+    for (let i = 0; i < this.app.network.peers.length; i++) {
+      if (this.app.network.peers[i].hasService("mixin")) {
+	mixin_peer = this.app.network.peers[i];
+	i = this.app.network.peers.length+1;
+      }
+    }
+
+    // we cannot create an account if the network is down
+try {
+
 
     let mixin_self = this;
 
@@ -705,7 +733,6 @@ class Mixin extends ModTemplate {
     //
     if (!m.appId) {
    
-
       m = { appId : "9be2f213-ca9d-4573-80ca-3b2711bb2105", sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511", privateKey: "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg"};
 
       let appId = m.appId;
@@ -717,13 +744,17 @@ class Mixin extends ModTemplate {
 	mixin_publickey :	user_public_key 
       };
 
-//console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
-      mixin_self.app.network.peers[0].sendRequestAsTransactionWithCallback("mixin create account", data, function(res) {
-//console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
+console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(data));
+console.log("HOW MANY peers: " + mixin_self.app.network.peers.length);
+      mixin_peer.sendRequestAsTransactionWithCallback("mixin create account", data, function(res) {
+console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
 	mixin_self.createAccountCallback(res, callback);
       });
 
     }
+} catch (err) {
+  console.log(err);
+}
   }
 
 
@@ -910,6 +941,9 @@ class Mixin extends ModTemplate {
 
 
   load() {
+
+console.log("MIXIN DEETS: " + JSON.stringify(this.app.options.mixin));
+
     if (this.app?.options?.mixin) { this.mixin = this.app.options.mixin; }
     if (this.mixin.publickey !== "") {
       this.account_created = 1;

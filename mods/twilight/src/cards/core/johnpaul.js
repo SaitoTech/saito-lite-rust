@@ -5,10 +5,6 @@
     //
     if (card == "johnpaul") {
 
-      // SAITO COMMUNITY
-      this.addCardToDeck("solidarity", "Prerequisites Met");
-
-
       this.game.state.events.johnpaul = 1;
       this.uncancelEvent("solidarity");
 

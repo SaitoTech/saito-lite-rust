@@ -148,6 +148,19 @@ class TweetManager {
     ////////////
     // tweets //
     ////////////
+    if (new_mode == "newtweets") {
+      //Drop everything so that feed gets reordered correctly
+      while (holder?.hasChildNodes()){
+        holder.firstChild.remove();
+      }
+      while (managerElem?.hasChildNodes()) {
+        managerElem.firstChild.remove();
+      }
+
+      new_mode = "tweets";
+    }
+
+
     if (new_mode == "tweets") {
 
       if (holder){

@@ -64,7 +64,10 @@ class MixinModule extends CryptoModule {
 
   }
 
-  installModule() {
+  onPeerServiceUp(app, peer, service = {}) {
+
+    if (!peer.hasService("mixin")) { return; }
+
     if (this.mixin) {
       if (this.app.wallet.wallet.preferred_crypto !== "SAITO" && this.app.wallet.wallet.preferred_crypto !== "") {
         if (this.mixin.account_created == 0) {
@@ -74,6 +77,7 @@ class MixinModule extends CryptoModule {
 	  //
 	  let c = this.app.modules.returnModule(this.app.wallet.wallet.preferred_crypto);
           if (!c.asset_id) { return; }
+console.log("trying to install module -- create account requires network up though...?");
 	  this.mixin.createAccount();
         }
       }

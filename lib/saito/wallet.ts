@@ -30,7 +30,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 5.013,
+    version: 5.057,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -349,12 +349,21 @@ console.log("---------------------");
         super(app, "SAITO");
         this.name = "Saito";
         this.description = "Saito";
+	this.balance = "0.0";
       }
       async returnBalance() {
-        return parseFloat(this.app.wallet.returnBalance());
+        this.balance = this.app.wallet.returnBalance();
+	return this.balance;
+      }
+      returnCachedBalance() {
+        this.balance = this.app.wallet.returnBalance();
+	return this.balance;
       }
       returnHistory(mycallback=null, order="DESC", limit=20) {
 	return [];
+      }
+      returnCachedAddress() {
+        return this.app.wallet.returnPublicKey();
       }
       returnAddress() {
         return this.app.wallet.returnPublicKey();
@@ -789,7 +798,7 @@ console.log("---------------------");
           b += input.returnAmount();
         }
       });
-      return b;
+      return b.toString();
     }
     return "0.0";
   }
@@ -985,12 +994,10 @@ console.log("---------------------");
     const activeMods = [];
     console.log("HOW MANY INSTALLED CRYPTOS: " + allMods.length);
     for (let i = 0; i < allMods.length; i++) {
-      console.log("checking if activated: " + allMods[i].name);
       if (allMods[i].returnIsActivated()) {
         activeMods.push(allMods[i]);
       }
     }
-    console.log("returning activated cryptos num: " + activeMods.length);
     return activeMods;
   }
 
@@ -1010,7 +1017,6 @@ console.log("---------------------");
     let cryptomod = null;
     for (let i = 0; i < mods.length; i++) {
       if (mods[i].ticker === ticker) {
-        console.log("setting cryptomod");
         cryptomod = mods[i];
         can_we_do_this = 1;
 
@@ -1020,31 +1026,24 @@ console.log("---------------------");
       }
     }
 
-    console.log("cryptomod.ticker: " + cryptomod.ticker);
-
     if (ticker == "SAITO") {
       can_we_do_this = 1;
     }
 
     if (can_we_do_this == 1) {
       this.wallet.preferred_crypto = ticker;
-      console.log("Activating cryptomod: " + cryptomod.ticker);
       cryptomod.activate();
       this.saveWallet();
-      console.log("emitting set preferred crypto event");
       this.app.connection.emit("set_preferred_crypto", ticker);
     }
 
-    if (cryptomod != null && show_overlay == 1) {
-console.log("TESTING A");
-      if (cryptomod.renderModalSelectCrypto(this.app, this.app.modules.returnActiveModule()) != null) {
-        const modal_select_crypto = new ModalSelectCrypto(this.app, null, cryptomod);
-        modal_select_crypto.render(this.app, null, cryptomod);
-        modal_select_crypto.attachEvents(this.app, null, cryptomod);
-      }
-    }
-
-    console.log("done in setPreferredCrypto");
+    //if (cryptomod != null && show_overlay == 1) {
+    //  if (cryptomod.renderModalSelectCrypto(this.app, this.app.modules.returnActiveModule()) != null) {
+    //    const modal_select_crypto = new ModalSelectCrypto(this.app, null, cryptomod);
+    //    modal_select_crypto.render(this.app, null, cryptomod);
+    //    modal_select_crypto.attachEvents(this.app, null, cryptomod);
+    //  }
+    //}
 
     return;
   }
@@ -1096,6 +1095,22 @@ console.log("TESTING A");
     return "";
   }
 
+  returnAvailableCryptosAssociativeArray() {
+    let cryptos = {};
+    let mods = this.returnActivatedCryptos();
+    for (let i = 0; i < mods.length; i++) {
+      let ticker = mods[i].ticker;
+      let address = mods[i].returnAddress();
+      let balance = mods[i].balance;
+      if (!cryptos[ticker]) { cryptos[ticker] = { address : "" , balance : "0.0" }; }
+      cryptos[ticker].address = address;
+      cryptos[ticker].balance = balance;
+      if (parseFloat(balance) > 0) { mods[i].save(); }
+    }
+
+    return cryptos;
+  }
+
   async returnPreferredCryptoBalances(addresses = [], mycallback = null, ticker = "") {
     if (ticker == "") {
       ticker = this.wallet.preferred_crypto;
@@ -1129,6 +1144,7 @@ console.log("TESTING A");
             //
             // cache the results, so i know if payments are new
             //
+	    cryptomods[i].balance  = balance;
 	    this.app.wallet.wallet.cryptos[ticker] = { address : address, balance : balance };	   
         }
       }
@@ -1171,11 +1187,9 @@ console.log("TESTING A");
     mycallback = null,
     ticker
   ) {
-    console.log("IN SEND PAYMENT IN WALLET!");
 
     // validate inputs
     if (senders.length != receivers.length || senders.length != amounts.length) {
-      console.log("Lengths of senders, receivers, and amounts must be the same");
       //mycallback({err: "Lengths of senders, receivers, and amounts must be the same"});
       return;
     }
@@ -1190,19 +1204,13 @@ console.log("TESTING A");
       "does preferred crypto transaction exist: " +
         this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
     );
-    console.log("unique hash: " + unique_hash);
-    console.log("uuid: " + getUuid(unique_hash));
 
     if (
       !this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
     ) {
-      console.log("preferred transaction does not exist, so...");
 
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
-        console.log(
-          "senders and returnAddress: " + senders[i] + " -- " + cryptomod.returnAddress()
-        );
 
         //
         // DEBUGGING - sender is address to which we send the crypto
@@ -1219,15 +1227,7 @@ console.log("TESTING A");
               unique_hash,
               ticker
             );
-            console.log("wallet -> cryptomod - sendPayment: " + unique_tx_hash);
-            console.log("unique_hash: " + unique_tx_hash);
-            console.log("senders: " + JSON.stringify(senders));
-            console.log("receivers: " + JSON.stringify(receivers));
-            console.log("amounts: " + JSON.stringify(amounts));
-            console.log("timestamp: " + timestamp);
-            console.log("ticker: " + ticker);
             const hash = await cryptomod.sendPayment(amounts[i], receivers[i], unique_tx_hash);
-            console.log("wallet -> cryptomod - sendPayment - done");
             //
             // hash is "" if unsuccessful, trace_id if successful
             //
@@ -1244,7 +1244,6 @@ console.log("TESTING A");
             if (mycallback) {
               mycallback({ hash: hash });
             }
-            console.log("and after the callback");
             return;
           } catch (err) {
             // it failed, delete the transaction
@@ -1283,7 +1282,6 @@ console.log("TESTING A");
     tries = 36,
     pollWaitTime = 5000
   ) {
-    console.log("wallet receivePayment");
     let unique_tx_hash = this.generatePreferredCryptoTransactionHash(
       senders,
       receivers,
@@ -1291,13 +1289,6 @@ console.log("TESTING A");
       unique_hash,
       ticker
     );
-    console.log("wallet -> cryptomod - sendPayment: " + unique_tx_hash);
-    console.log("unique_hash: " + unique_tx_hash);
-    console.log("senders: " + JSON.stringify(senders));
-    console.log("receivers: " + JSON.stringify(receivers));
-    console.log("amounts: " + JSON.stringify(amounts));
-    console.log("timestamp: " + timestamp);
-    console.log("ticker: " + ticker);
 
     if (senders.length != receivers.length || senders.length != amounts.length) {
       console.log(
