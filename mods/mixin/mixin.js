@@ -14,6 +14,7 @@ const MixinAppspaceSidebar = require("./lib/appspace-sidebar/main");
 //const Deposit = require('./../../lib/saito/ui/saito-crypto/overlays/deposit');
 //const Withdraw = require('./../../lib/saito/ui/saito-crypto/overlays/withdraw.js');
 //const History = require('./../../lib/saito/ui/saito-crypto/overlays/history');
+const PeerService = require("saito-js/lib/peer_service").default;
 
 class Mixin extends ModTemplate {
   constructor(app) {
@@ -52,7 +53,7 @@ class Mixin extends ModTemplate {
   returnServices() {
     let services = [];
     if (this.app.BROWSER == 0) {
-      services.push({ service: "mixin" });
+      services.push(new PeerService(null, "mixin"));
     }
     return services;
   }
