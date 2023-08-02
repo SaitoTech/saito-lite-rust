@@ -72,6 +72,9 @@ export class NodeSharedMethods extends CustomSharedMethods {
           console.error(e);
         }
       });
+      socket.on("error", (error) => {
+        console.error(error);
+      });
       S.getLibInstance().process_new_peer(index, peerData);
       console.log("connected to : " + url + " with peer index : " + index);
     } catch (e) {
