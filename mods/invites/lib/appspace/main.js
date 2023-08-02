@@ -60,7 +60,7 @@ class InvitesAppspace {
           console.log("-------");
 
           for (let z = 0; z < invite.adds.length; z++) {
-            if (invite.adds[z] === this.publicKey) {
+            if (invite.adds[z] === this.mod.publicKey) {
               have_i_accepted = 0;
               try {
                 if (invite.sigs.length >= z + 1) {

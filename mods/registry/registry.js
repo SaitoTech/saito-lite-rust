@@ -36,7 +36,7 @@ class Registry extends ModTemplate {
     this.cached_keys = {};
 
     //Set True for testing locally
-    this.local_dev = false;
+    this.local_dev = true;
 
     //
     // event listeners -
@@ -126,7 +126,8 @@ class Registry extends ModTemplate {
   }
 
   //
-  // fetching identifiers
+  // fetching publicKeys from identifiers
+  // --- not used anywhere, delete???
   //
   fetchManyPublicKeys(identifiers = [], peer = null, mycallback = null) {
     if (mycallback == null) {
@@ -146,7 +147,9 @@ class Registry extends ModTemplate {
     });
 
     if (missing_keys.length == 0) {
-      mycallback(found_keys);
+      if (mycallback){
+        mycallback(found_keys);  
+      }
       return;
     }
 
@@ -162,17 +165,14 @@ class Registry extends ModTemplate {
 
       (res) => {
         try {
-          let rows = [];
-          if (typeof res.rows != "undefined") {
-            if (!res.err) {
-              if (res.rows.length > 0) {
-                rows = res.rows.map((row) => {
-                  const { publickey, identifier, bid, bsh, lc } = row;
-                  if (!found_keys.includes(publickey)) {
-                    found_keys[publickey] = identifier;
-                  }
-                });
-              }
+          if (!res.err) {            
+            if (res?.rows?.length > 0) {
+              res.rows.forEach((row) => {
+                const { publickey, identifier, bid, bsh, lc } = row;
+                if (!found_keys.includes(publickey)) {
+                  found_keys[publickey] = identifier;
+                }
+              });
             }
           }
           mycallback(found_keys);
@@ -182,12 +182,16 @@ class Registry extends ModTemplate {
       },
 
       (p) => {
-
-        // To Do: add a peer.service check for registry (to check multiple registries?)
-
-        if (p.publicKey == peer.publicKey) {
-          return 1;
+        if (peer){
+          if (p.publicKey == peer.publicKey) {
+            return 1;
+          }          
+        }else{
+          if (p.hasService("registry")){
+            return 1;
+          }
         }
+        return 0;
       }
     );
   }
@@ -212,15 +216,10 @@ class Registry extends ModTemplate {
       }
     });
 
-    /*
-    console.info(this.cached_keys);
-    console.info(publickeys);
-    console.info(missing_keys);
-    console.info("%%%%%%%%%%%%%%%%%%%%% PEER REGISTRY REQUEST %%%%%%%%%%%%%%%%%%%%%%%%%");
-    */
-
     if (missing_keys.length == 0) {
-      mycallback(found_keys);
+      if (mycallback){
+        mycallback(found_keys);        
+      }
       return;
     }
 
@@ -234,19 +233,16 @@ class Registry extends ModTemplate {
 
       sql,
 
-      (res) => {
+       (res) => {
         try {
-          let rows = [];
-          if (typeof res.rows != "undefined") {
-            if (!res.err) {
-              if (res.rows.length > 0) {
-                rows = res.rows.map((row) => {
-                  const { publickey, identifier, bid, bsh, lc } = row;
-                  if (!found_keys.includes(publickey)) {
-                    found_keys[publickey] = identifier;
-                  }
-                });
-              }
+          if (!res.err) {            
+            if (res?.rows?.length > 0) {
+              res.rows.forEach((row) => {
+                const { publickey, identifier, bid, bsh, lc } = row;
+                if (!found_keys.includes(publickey)) {
+                  found_keys[publickey] = identifier;
+                }
+              });
             }
           }
           mycallback(found_keys);
@@ -256,11 +252,18 @@ class Registry extends ModTemplate {
       },
 
       (p) => {
-        if (p.publicKey == peer.publicKey) {
-          return 1;
+        if (peer){
+          if (p.publicKey == peer.publicKey) {
+            return 1;
+          }          
+        }else{
+          if (p.hasService("registry")){
+            return 1;
+          }
         }
+        return 0;
       }
-    );
+   );
   }
 
   fetchIdentifier(publickey, peer = null, mycallback = null) {
