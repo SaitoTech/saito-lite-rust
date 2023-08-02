@@ -82,9 +82,9 @@ export default class Transaction extends SaitoTransaction {
           // );
           this.addFromSlip(slip);
         }
-        if (jsonobj.from.length > 0) {
-          console.log("important tx: " + jsonobj.from[0].publicKey);
-        }
+        // if (jsonobj.from.length > 0) {
+        //   console.log("important tx: " + jsonobj.from[0].publicKey);
+        // }
 
         for (let i = 0; i < jsonobj.to.length; i++) {
           const fslip = jsonobj.to[i];
