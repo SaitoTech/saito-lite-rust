@@ -1,0 +1,16 @@
+
+.cartext {
+    position: relative;
+    font-size: 2rem;
+    z-index: 99;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: max-content;
+    margin-top: 40%;
+}
+
+.pass .cardimg {
+    position: absolute;
+}
+

@@ -5,6 +5,8 @@
     //
     if (card == "lonegunman") {
 
+      let ac = this.returnAllCards(true);
+
       if (this.game.player == 2) {
 
         this.addMove("resolve\tlonegunman");
@@ -17,7 +19,7 @@
             revealed += ", "; 
             keys += " ";
           }
-          revealed += this.game.deck[0].cards[this.game.deck[0].hand[i]].name;
+          revealed += ac[this.game.deck[0].hand[i]].name;
           keys += this.game.deck[0].hand[i];
         }
 

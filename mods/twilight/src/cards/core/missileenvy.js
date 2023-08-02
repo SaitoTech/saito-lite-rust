@@ -7,6 +7,7 @@
 
       let twilight_self = this;
 
+      let ac = this.returnAllCards(true);
       let respondant = 2;
       let opponent = "us";
       if (player == "us") { respondant = 1; opponent = "ussr"; }
@@ -46,7 +47,7 @@
 
         for (let i = 0; i < available_cards.length; i++) {
 
-          let card = this.game.deck[0].cards[available_cards[i]];
+          let card = ac[available_cards[i]];
 
           if (this.modifyOps(card.ops, available_cards[i], player) == selected_ops) {
             multiple_cards = 1;
@@ -75,8 +76,8 @@
           //
           let html = "<ul>";
           for (let i = 0; i < available_cards.length; i++) {
-            if (this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops, available_cards[i], player) == selected_ops && available_cards[i] != "china") {
-              html += `<li class="option" id="${available_cards[i]}">${this.game.deck[0].cards[available_cards[i]].name}</li>`;
+            if (this.modifyOps(ac[available_cards[i]].ops, available_cards[i], player) == selected_ops && available_cards[i] != "china") {
+              html += `<li class="option" id="${available_cards[i]}">${ac[available_cards[i]].name}</li>`;
             }
           }
           html += '</ul>';

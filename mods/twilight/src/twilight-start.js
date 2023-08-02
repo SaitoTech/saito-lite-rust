@@ -3144,13 +3144,13 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	  let mid_war_cards = this.returnMidWarCards();
           if (this.game.options.deck === "saito") {
 
-	    this.removeCardFromDeck("summit", "Removed");
+	    this.removeCardFromDeckNextDeal("summit", "Removed");
             if (this.game.state.events.cia == 1) {
 	      this.addCardToDeck("lonegunman", "Prerequisites Met");
               this.removeCardFromDeckNextDeal("tsarbomba", "CIA Evented");
 	    }
 	    if (this.game.state.events.iranianultimatum != 1) {
-	      this.removeCardFromDeck("iranianultimatum", "Removed");
+	      this.removeCardFromDeckNextDeal("iranianultimatum", "Removed");
 	    }
 	    this.addCardToDeck("handshake", "New Card");
 
@@ -3160,11 +3160,11 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	    mid_war_cards = this.returnMidWarCards();
 	    if (this.game.state.events.fidel != 1) {
 	      delete mid_war_cards['cubanmissile'];
-	      this.removeCardFromDeck("cubanmissile", "Fidel not evented");
+	      this.removeCardFromDeckNextDeal("cubanmissile", "Fidel not evented");
 	    }
 	    if (this.game.state.events.tsarbomba == 1 || this.game.state.events.cia_created != 1) {
 	      delete mid_war_cards['lonegunman'];
-	      this.removeCardFromDeck("lonegunman", "CIA not evented");
+	      this.removeCardFromDeckNextDeal("lonegunman", "CIA not evented");
 	    }
 	    delete mid_war_cards['summit'];
 	  }
@@ -3234,7 +3234,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	      this.addCardToDeck("revolutionsof1989", "Replacement for KAL007");
 	      late_war_cards = this.returnLateWarCards();
 	      delete late_war_cards['KAL007'];
-	      this.removeCardFromDeck("KAL007", "Prerequisite Not Met");
+	      this.removeCardFromDeckNextDeal("KAL007", "Prerequisite Not Met");
 	    }
 
 	    //
@@ -3243,21 +3243,21 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	    if (this.game.state.space_race_ussr_counter <= this.game.state.space_race_us_counter) {
 	    } else {
 	      delete late_war_cards['starwars'];
-	      this.removeCardFromDeck("starwars", "US not ahead in Space Race");
+	      this.removeCardFromDeckNextDeal("starwars", "US not ahead in Space Race");
 	    }
 
 	    //
 	    // remove Ortega unless US has influence in Cuba
 	    //
  	    if (this.countries['cuba'].us < 1) {
-	      this.removeCardFromDeck("ortega", "US has no influence in Cuba");
+	      this.removeCardFromDeckNextDeal("ortega", "US has no influence in Cuba");
 	      delete late_war_cards['ortega'];
 	    }
 
 	    //
 	    // replace cambridge 5 with rust in red square
 	    //
-	    this.removeCardFromDeck("cambridge", "Removed from Game");
+	    this.removeCardFromDeckNextDeal("cambridge", "Removed from Game");
 
 	  }
 
