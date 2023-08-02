@@ -890,12 +890,37 @@
 .stun-chatbox .chat-static {
   border-radius: 2px solid var(--saito-border-color-dark);
   border-radius: 0.5rem;
+  color: var(--saito-white);
+}
+
+/* .stun-chatbox .chat-static {
+  color: var(--saito-white);
+} */
+
+.stun-chatbox .saito-user:hover .saito-userline-reply {
+  background-color: var(--saito-black);
+}
+
+.stun-chatbox .saito-user:hover .saito-userline-reply i {
+  border: 1px solid var(--saito-grey);
+}
+
+.stun-chatbox .saito-address {
+  color: var(--saito-grey);
 }
 
 .stun-chatbox .chat-header,
 .stun-chatbox .chat-header .saito-address {
   cursor: default;
 }
+.stun-chatbox.minimize .chat-static {
+  display: none;
+}
+
+.stun-chatbox .chat-header .saito-address {
+  cursor: default;
+}
+
 .stun-chatbox.minimize .chat-static {
   display: none;
 }
