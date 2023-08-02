@@ -349,7 +349,7 @@ export default class Transaction extends SaitoTransaction {
       m: m.toString("base64"),
       opt: app.crypto.stringToBase64(opt),
     };
-    console.log("serialize_to_web : ", web_obj);
+    //console.log("serialize_to_web : ", web_obj);
     return JSON.stringify(web_obj);
   }
 

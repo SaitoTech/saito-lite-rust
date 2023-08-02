@@ -145,23 +145,24 @@ class Archive extends ModTemplate {
     // saves TX containing archive insert instruction
     //
     if (req.request === "archive") {
-      console.log("Archive Peer Request: ", req.data);
-      if (req.data.request === "delete") {
-        //let newtx = new Transaction(undefined, req.data.tx);
-        await this.deleteTransaction(req.data.tx, req.data);
-      }
-      if (req.data.request === "save") {
-        let newtx = new Transaction(undefined, req.data.tx);
-        await this.saveTransaction(newtx, req.data);
-      }
-      if (req.data.request === "update") {
-        let newtx = new Transaction(undefined, req.data.tx);
-        await this.updateTransaction(newtx, req.data);
-      }
       if (req.data.request === "load") {
         let txs = await this.loadTransactions(req.data);
         mycallback(txs);
         return;
+      }
+
+      let newtx = new Transaction();
+      newtx.deserialize_from_web(app, req.data.serial_transaction);
+
+      console.log("Archive Peer Request: ", req.data);
+      if (req.data.request === "delete") {
+        await this.deleteTransaction(newtx, req.data);
+      }
+      if (req.data.request === "save") {
+        await this.saveTransaction(newtx, req.data);
+      }
+      if (req.data.request === "update") {
+        await this.updateTransaction(newtx, req.data);
       }
     }
 

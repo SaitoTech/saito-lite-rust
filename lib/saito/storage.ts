@@ -68,7 +68,7 @@ class Storage {
 
     let data: any = {};
     data.request = "save";
-    data.tx = tx.toJson();
+    data.serial_transaction = tx.serialize_to_web(this.app);
 
     data = Object.assign(data, obj);
 
@@ -107,7 +107,7 @@ class Storage {
     let data: any = {};
     data.request = "update";
     data.optional = tx.optional;
-    data.tx = tx.toJson();
+    data.serial_transaction = tx.serialize_to_web(this.app);
 
     data = Object.assign(data, obj);
 
