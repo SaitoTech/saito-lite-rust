@@ -69,7 +69,6 @@ class MixinModule extends CryptoModule {
       if (this.app.wallet.preferred_crypto !== "SAITO" && this.app.wallet.preferred_crypto !== "") {
         if (this.mixin.account_created == 0) {
 
-<<<<<<< HEAD
           //
           // not every crypto should trigger account creation
           //
@@ -77,16 +76,8 @@ class MixinModule extends CryptoModule {
           if (!c.asset_id) {
             return;
           }
+          console.log("trying to install module -- create account requires network up though...?");
           this.mixin.createAccount();
-=======
-	  //
-	  // not every crypto should trigger account creation
-	  //
-	  let c = this.app.modules.returnModule(this.app.wallet.wallet.preferred_crypto);
-          if (!c.asset_id) { return; }
-console.log("trying to install module -- create account requires network up though...?");
-	  this.mixin.createAccount();
->>>>>>> staging
         }
       }
     }
