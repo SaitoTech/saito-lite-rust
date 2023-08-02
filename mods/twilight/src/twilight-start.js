@@ -6166,10 +6166,9 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
   endTurn(nextTarget=0) {
 
     //
-    // cancel back button on subsequent cards picks
+    // cancel click function on cards
     //
-    //this.game.state.back_button_cancelled = 1;
-
+    this.changeable_callback = function() {};
 
     //
     // show active events
