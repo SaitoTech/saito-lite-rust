@@ -5,6 +5,7 @@
     ////////////////////
     if (card == "fiveyearplan") {
 
+      let ac = this.returnAllCards(true);
       let twilight_self = this;
 
       //
@@ -41,7 +42,7 @@
             let card = available_cards[roll];
 
             twilight_self.removeCardFromHand(card);
-            if (twilight_self.game.deck[0].cards[card].player == "us") {
+            if (ac[card].player == "us") {
               //twilight_self.displayModal("You have rolled: " + card);
               twilight_self.addMove("event\tus\t"+card);
               twilight_self.addMove("modal\tFive Year Plan\tUSSR triggers "+twilight_self.cardToText(card));

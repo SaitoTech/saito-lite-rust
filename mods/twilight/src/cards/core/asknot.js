@@ -3,6 +3,8 @@
     // US may discard any number of cards and replace them with a new draw
     if (card == "asknot") {
 
+      let ac = this.returnAllCards(true);
+
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -15,7 +17,7 @@
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           let card_in_hand = this.game.deck[0].hand[i];
           if (card_in_hand != "china" && card_in_hand != this.game.state.headline_opponent_card && card_in_hand != this.game.state.headline_card) {
-            //html += '<li class="card card_'+this.game.deck[0].hand[i]+'" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+            //html += '<li class="card card_'+this.game.deck[0].hand[i]+'" id="'+this.game.deck[0].hand[i]+'">'+ac[this.game.deck[0].hand[i]].name+'</li>';
             cardList.push(card_in_hand);
           }
         }
