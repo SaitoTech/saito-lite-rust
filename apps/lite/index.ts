@@ -92,20 +92,28 @@ async function init() {
   // saito.storage.convertOptionsBigInt(saito.options);
 
   console.log("saito options : ", saito.options);
-  await initSaito(
-    saito.options,
-    new WebMethods(saito),
-    new Factory(),
-    saito.options.wallet?.privateKey || "",
-    LogLevel.Info
-  );
+  try {
+    await initSaito(
+      saito.options,
+      new WebMethods(saito),
+      new Factory(),
+      saito.options.wallet?.privateKey || "",
+      LogLevel.Info
+    );  
+  } catch(e){
+    console.error(e);
+  }
   saito.wallet = (await S.getInstance().getWallet()) as Wallet;
   saito.wallet.app = saito;
   saito.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
   saito.blockchain.app = saito;
   saito.BROWSER = 1;
   saito.SPVMODE = 1;
-  await saito.init();
+  try {
+    await saito.init();
+  } catch(e) {
+    console.error(e);
+  }
 
   S.getInstance().start();
 }

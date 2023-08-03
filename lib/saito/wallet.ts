@@ -158,8 +158,16 @@ export default class Wallet extends SaitoWallet {
       /////////////
       if (this.app.options.wallet.version < this.version) {
         if (this.app.BROWSER === 1) {
-          const tmpprivkey = this.app.options.wallet.privateKey;
-          const tmppubkey = this.app.options.wallet.publicKey;
+          let tmpprivkey = this.app.options.wallet.privateKey;
+          let tmppubkey = this.app.options.wallet.publicKey;
+
+          if (this.app.options.wallet.privatekey) {
+            tmpprivkey = this.app.options.wallet.privatekey;
+          }
+
+          if (this.app.options.wallet.publickey) {
+            tmppubkey = this.app.options.wallet.publickey;
+          }
 
           let mixin = this.app.options.mixin;
           let crypto = this.app.options.crypto;
