@@ -30,7 +30,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 5.061,
+    version: 5.063,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
