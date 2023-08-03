@@ -1,92 +1,107 @@
 module.exports = LeagueOverlayTemplate = (app, mod, league) => {
+  let game_mod = app.modules.returnModuleByName(league.game);
+  let img = "",
+    key_words = "",
+    game_name = "";
+  if (game_mod) {
+    img = game_mod.respondTo("arcade-games").image;
+    key_words = game_mod.categories.replace("Games ", "").split(" ").reverse().join(" ");
+    game_name = game_mod.returnName();
+  }
+  let key = app.keychain.returnKey(mod.publicKey);
 
-    let game_mod = app.modules.returnModuleByName(league.game);
-    let img = "", key_words = "", game_name = "";
-    if (game_mod) { 
-        img = game_mod.respondTo("arcade-games").image; 
-        key_words = game_mod.categories.replace("Games ", "").split(" ").reverse().join(" ");
-        game_name = game_mod.returnName();
-    }
-    let key = app.keychain.returnKey(app.wallet.returnPublicKey());
+  let isMember = league.rank >= 0;
+  let newPlayer = league.admin && !key.email && league.admin !== mod.publicKey;
 
-    let isMember = league.rank >= 0; 
-    let newPlayer = league.admin && !key.email && league.admin !== app.wallet.returnPublicKey();
-
-    let html = `
+  let html = `
     <div class="league-overlay-container">
         <div class="league-overlay">
             <div class="league-overlay-header">
                 <div class="league-overlay-header-image" style="background-image: url('${img}')"></div>
                 <div class="league-overlay-header-title-box">
                     <div class="league-overlay-header-title-box-title">${league.name}</div>
-                    <div class="league-overlay-header-title-box-desc">${(league.admin) ? `${game_name} league` : key_words }</div>
+                    <div class="league-overlay-header-title-box-desc">${
+                      league.admin ? `${game_name} league` : key_words
+                    }</div>
                 </div>
                 <div class="league-overlay-controls">
                     <div id="home" class="menu-icon active-tab"><i class="fas fa-house"></i><div class="menu-text">Home</div></div>
                     <div id="games" class="menu-icon"><i class="fas fa-history"></i><div class="menu-text">Activity</div></div>`;
-                    
-    if (league.admin){
 
-        html +=  (league.admin === app.wallet.returnPublicKey()) 
-                        ? `<div id="players" class="menu-icon"><i class="fas fa-users-cog"></i><div class="menu-text">Manage</div></div>`
-                        : `<div id="contact" class="menu-icon"><i class="fas fa-comment-alt"></i><div class="menu-text">Contact</div></div>`;
-    }
-    
-    html += `   </div>
+  if (league.admin) {
+    html +=
+      league.admin === mod.publicKey
+        ? `<div id="players" class="menu-icon"><i class="fas fa-users-cog"></i><div class="menu-text">Manage</div></div>`
+        : `<div id="contact" class="menu-icon"><i class="fas fa-comment-alt"></i><div class="menu-text">Contact</div></div>`;
+  }
+
+  html += `   </div>
             </div>
             <div class="league-overlay-body">
                 <div class="league-overlay-body-content">
-                    <div class="league-overlay-description league-overlay-content-box ${((newPlayer || league.unverified) && isMember) ?"hidden":""}">${league.description}</div>
+                    <div class="league-overlay-description league-overlay-content-box ${
+                      (newPlayer || league.unverified) && isMember ? "hidden" : ""
+                    }">${league.description}</div>
                     <div class="league-overlay-league-body-games league-overlay-content-box hidden">
                         <div class="league-overlay-games-list league_recent_games"></div>
                     </div>`;
 
-    if (league.admin){
-        
-        if (league.admin == app.wallet.returnPublicKey()){
-            html += `<div id="admin-widget" class="admin-widget league-overlay-content-box hidden"></div>`;
-        }else{
-            html +=  
-                    `<div id="admin_details" class="saito-user league-overlay-content-box hidden" id="saito-user-${league.admin}" data-id="${league.admin}">
-                        <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(league.admin)}" data-id="${league.admin}"></div>
+  if (league.admin) {
+    if (league.admin == mod.publicKey) {
+      html += `<div id="admin-widget" class="admin-widget league-overlay-content-box hidden"></div>`;
+    } else {
+      html += `<div id="admin_details" class="saito-user league-overlay-content-box hidden" id="saito-user-${
+        league.admin
+      }" data-id="${league.admin}">
+                        <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(
+                          league.admin
+                        )}" data-id="${league.admin}"></div>
                         ${app.browser.returnAddressHTML(league.admin)}
-                        <div id="admin_contact" class="saito-userline" data-id="${league.admin}">${league.contact}</div>
-                        ${(newPlayer || league.unverified || (league.admin && !isMember)) ? `<button id="league-chat-button" class="saito-user-fourth-elem-large">League Chat</button>`:""}
+                        <div id="admin_contact" class="saito-userline" data-id="${league.admin}">${
+        league.contact
+      }</div>
+                        ${
+                          newPlayer || league.unverified || (league.admin && !isMember)
+                            ? `<button id="league-chat-button" class="saito-user-fourth-elem-large">League Chat</button>`
+                            : ""
+                        }
                     </div>`;
 
+      if (newPlayer || league.unverified || !isMember) {
+        html += `<div id="admin_welcome" class="league-overlay-content-box ${
+          !isMember ? "hidden" : ""
+        }">${league.welcome}</div>`;
 
-            if (newPlayer || league.unverified || !isMember){ 
-                html += `<div id="admin_welcome" class="league-overlay-content-box ${(!isMember)?"hidden":""}">${league.welcome}</div>`;
-
-                html += `<div id="admin_note" class="contactAdminWarning league-overlay-content-box">
+        html += `<div id="admin_note" class="contactAdminWarning league-overlay-content-box">
                             <div><i class="fas fa-exclamation-triangle"></i>Warning</div>`;
-                if (!isMember){
-                    html += `<div class="error_line"><span>You aren't a member of the league <span class="join_league attention">Join here</span></span></div>`;
-                }else{
-                    if (newPlayer){
-                        html += `<div class="error_line"><span>Please backup your account. <span class="backup_account attention">Enable login</span></span></div>`;
-                    }
-                    if (league.unverified){
-                        html += `<div class="error_line"><span class="contact_admin attention">Message the admin</span> for full access to the league</div>`;   
-                    }
-                }
-
-                html +=   `</div>`;
-            }
+        if (!isMember) {
+          html += `<div class="error_line"><span>You aren't a member of the league <span class="join_league attention">Join here</span></span></div>`;
+        } else {
+          if (newPlayer) {
+            html += `<div class="error_line"><span>Please backup your account. <span class="backup_account attention">Enable login</span></span></div>`;
+          }
+          if (league.unverified) {
+            html += `<div class="error_line"><span class="contact_admin attention">Message the admin</span> for full access to the league</div>`;
+          }
         }
-                  
-    }     
 
-    html +=  `<div class="league-overlay-controls${(newPlayer || league.unverified || (league.admin && !isMember)) ? " hidden":""}">`;
-    
-    if (league.admin == app.wallet.returnPublicKey()){
-        html += `<button id="league-invite-button" class="saito-button saito-button-primary">invite link</button>`;
+        html += `</div>`;
+      }
     }
-    if (league.admin){
-        html += `<button id="league-chat-button" class="saito-button saito-button-primary">league chat</button>`;
-    }
-              
-    html += `<button id="league-overlay-create-game-button" class="saito-button saito-button-primary">create game</button>
+  }
+
+  html += `<div class="league-overlay-controls${
+    newPlayer || league.unverified || (league.admin && !isMember) ? " hidden" : ""
+  }">`;
+
+  if (league.admin == mod.publicKey) {
+    html += `<button id="league-invite-button" class="saito-button saito-button-primary">invite link</button>`;
+  }
+  if (league.admin) {
+    html += `<button id="league-chat-button" class="saito-button saito-button-primary">league chat</button>`;
+  }
+
+  html += `<button id="league-overlay-create-game-button" class="saito-button saito-button-primary">create game</button>
              </div>
 
             </div>
@@ -97,8 +112,5 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
  
     `;
 
-    return html;
+  return html;
 };
-
-
-

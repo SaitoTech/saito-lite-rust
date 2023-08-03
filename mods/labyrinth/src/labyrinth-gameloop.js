@@ -45,7 +45,7 @@ console.log("MOVE: " + mv[0]);
 	// halt if events return 0
 	//
         for (let i in z) {
-          if (!z[i].handleGameLoop(this, qe, mv)) { return 0; }
+          if (!await z[i].handleGameLoop(this, qe, mv)) { return 0; }
         }
 
 

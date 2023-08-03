@@ -1,0 +1,21 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 12101,
+    "protocol": "http",
+    "endpoint": {
+      "host": "localhost",
+      "port": 12101,
+      "protocol": "http"
+    },
+    "verification_threads": 4,
+    "channel_size": 10000,
+    "stat_timer_in_ms": 5000,
+    "reconnection_wait_time": 10000,
+    "thread_sleep_time_in_ms": 10,
+    "block_fetch_batch_size": 10
+  },
+  "peers": [],
+  "spv_mode": false,
+  "browser_mode": false
+}

@@ -6,7 +6,6 @@ class Connection extends EventEmitter {
 
   constructor() {
     super();
-
     // I set this to 200 because 200 should be sufficient for anything. Default is 10.
     // I'd like to know if we go beyond 200. It is very easy to accidentally
     // create hundreds of listeners here if someone is doing app.connection.on()

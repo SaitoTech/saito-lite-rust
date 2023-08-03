@@ -19,20 +19,18 @@ class SettlersScoreboard {
     }
 
     this.attachEvents();
-
   }
 
   attachEvents() {
-
     document.querySelector(".scoreboard").onclick = (e) => {
       if (document.querySelector(".scoreboard").classList.contains("scoreboard-lock")) {
         document.querySelector(".scoreboard").classList.remove("scoreboard-lock");
       } else {
         document.querySelector(".scoreboard").classList.add("scoreboard-lock");
       }
-    }
-
+    };
   }
+
 
   lock() {
     try {

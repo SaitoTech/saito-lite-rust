@@ -6,7 +6,7 @@ class SettlersGameloop {
    * Core Game Logic
    * Commands: init, generate_map, winner
    */
-  handleGameLoop() {
+  async handleGameLoop() {
 
     let settlers_self = this;
     
@@ -31,11 +31,11 @@ class SettlersGameloop {
         this.game.state.placedCity = null; //We are in game play mode, not initial set up
         this.game.state.lastroll = [0, 0];
         this.game.queue.push("round");
-	//
-	// what does this do and why is it not in an init function?
-	//
-	// initX()
-	//
+  //
+  // what does this do and why is it not in an init function?
+  //
+  // initX()
+  //
         $(".dark").css("background-color", "unset");
         return 1;
       }
@@ -55,12 +55,12 @@ class SettlersGameloop {
         if (this.browser_active && this.game.player == 0) {
           this.displayBoard();
         }
-	//
-	// we should not be running this ahead of READY
-	// because it creates information in generateMap
-	// that disappears, 
-	//
-	this.saveGame(this.game.id);
+  //
+  // we should not be running this ahead of READY
+  // because it creates information in generateMap
+  // that disappears, 
+  //
+  this.saveGame(this.game.id);
         return 1;
       }
 
@@ -479,8 +479,8 @@ console.log("CLEAR ADVERT for player:" + player);
         let stuff_in_return = JSON.parse(mv[4]);
         this.game.queue.splice(qe, 1);
 
-	if (stuff_on_offer == null) { return; } 
-	if (stuff_in_return == null) { return; } 
+  if (stuff_on_offer == null) { return; } 
+  if (stuff_in_return == null) { return; } 
 
 console.log("RECEIVED OFFER: ");
 console.log("RECEIVED OFFER: " + JSON.stringify(stuff_on_offer));
@@ -497,11 +497,11 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
           this.game.state.ads[offering_player - 1].ask = stuff_in_return;
           this.game.state.ads[offering_player - 1].ad = true;
           this.updateLog(`${this.game.playerNames[offering_player - 1]} sent a public trade offer.`);
-	}
+  }
 
-	this.displayPlayers();
+  this.displayPlayers();
 
-	return 1;
+  return 1;
 
       }
 
@@ -565,7 +565,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 
         console.log(JSON.parse(JSON.stringify(this.game.state.ads)));
 
-	return 1;
+  return 1;
 
       }
 
@@ -591,7 +591,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 
         console.log(JSON.parse(JSON.stringify(this.game.state.ads)));
 
-	return 1;
+  return 1;
 
       }
 
@@ -674,9 +674,11 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
 
           //Or, choose menu option
           $(".option").off();
-          $(".option").on("click", function () {
+          $(".option").on("click", async function () {
 
-            settlers_self.updateStatus("sending move...");
+            console.log("clicking on options");
+
+            await settlers_self.updateStatus("sending move...");
             $(this).addClass("disabled");
 
             let choice = $(this).attr("id");
@@ -760,7 +762,7 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
       if (mv[0] == "collect_harvest") {
         let roll = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
-        this.collectHarvest(roll);
+        await this.collectHarvest(roll);
         return 1;
       }
 
@@ -776,15 +778,15 @@ console.log("RECEIVED OFFER: " + JSON.stringify(stuff_in_return));
         let confirmsNeeded = 0;
         let amIPlaying = false;
 
-	let idx = 0;
+  let idx = 0;
         for (let i of playersToGo) {
-	  idx++;
+    idx++;
           if (this.game.confirms_needed[i - 1] == 1) {
             if (idx > 1) { discardString += ", "; }
             discardString += `${this.game.playerNames[i - 1]}`;
             confirmsNeeded++;
             if (this.game.player == parseInt(i)) {
-              this.addMove("RESOLVE\t" + this.app.wallet.returnPublicKey());
+              this.addMove("RESOLVE\t" + this.publicKey);
               this.discard.discardString = discardString;
               this.discard.render();
               amIPlaying = true;

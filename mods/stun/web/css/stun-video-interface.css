@@ -17,7 +17,6 @@
   width: 100vw;
 }
 
-
 .stun-chatbox .minimizer {
   position: absolute;
   right: 2rem;
@@ -283,11 +282,11 @@
 }
 
 /*  video box */
-.presentation, .expanded-video {
+.presentation,
+.expanded-video {
   resize: both;
   overflow: auto;
 }
-
 
 .video-box-container-large {
   background-color: black;
@@ -836,7 +835,6 @@
   .chat-settings-preview {
     width: 50rem;
   }
-
 }
 
 @media screen and (max-width: 767px) {
@@ -854,7 +852,7 @@
     margin-bottom: unset;
     padding: 0.5rem;
   }
-  
+
   .video-container-large {
     flex-direction: column;
   }
@@ -888,17 +886,41 @@
   }
 }
 
-
 /* --chat in video calls -- */
 .stun-chatbox .chat-static {
   border-radius: 2px solid var(--saito-border-color-dark);
   border-radius: 0.5rem;
+  color: var(--saito-white);
 }
 
-.stun-chatbox .chat-header, .stun-chatbox .chat-header .saito-address {
+/* .stun-chatbox .chat-static {
+  color: var(--saito-white);
+} */
+
+.stun-chatbox .saito-user:hover .saito-userline-reply {
+  background-color: var(--saito-black);
+}
+
+.stun-chatbox .saito-user:hover .saito-userline-reply i {
+  border: 1px solid var(--saito-grey);
+}
+
+.stun-chatbox .saito-address {
+  color: var(--saito-grey);
+}
+
+.stun-chatbox .chat-header,
+.stun-chatbox .chat-header .saito-address {
   cursor: default;
 }
 .stun-chatbox.minimize .chat-static {
   display: none;
 }
 
+.stun-chatbox .chat-header .saito-address {
+  cursor: default;
+}
+
+.stun-chatbox.minimize .chat-static {
+  display: none;
+}

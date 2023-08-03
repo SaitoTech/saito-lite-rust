@@ -3,13 +3,12 @@ import StorageCore from "./lib/saito/core/storage-core";
 import { Saito } from "./apps/core";
 import fs from "fs-extra";
 
-
 import mods_config from "./config/modules.config";
 import * as blake3 from "blake3";
 
 async function initCLI() {
   const app = new Saito({
-    mod_paths: mods_config.core,
+    mod_paths: mods_config.core
   });
 
   //app.server = new Server(app);
@@ -92,10 +91,11 @@ async function initCLI() {
   async function addTransactionsToDatabase(blk) {
     try {
       for (let i = 0; i < blk.transactions.length; i++) {
-        if (blk.transactions[i].transaction.type >= -999) {
-          for (let ii = 0; ii < blk.transactions[i].transaction.to.length; ii++) {
-            if (blk.transactions[i].transaction.type >= -999) {
-              let sql = `INSERT OR IGNORE INTO transactions (
+        if (blk.transactions[i].type >= -999) {
+          for (let ii = 0; ii < blk.transactions[i].to.length; ii++) {
+            if (blk.transactions[i].type >= -999) {
+              let sql = `INSERT
+              OR IGNORE INTO transactions (
                                 address, 
                                 amt, 
                                 bid, 
@@ -114,23 +114,23 @@ async function initCLI() {
                                 module
                                 )
                              VALUES (
-                                $address, 
-                                $amt, 
-                                $bid, 
-                                $tid, 
-                                $sid, 
-                                $bhash, 
-                                $lc, 
-                                $rebroadcast,
-                                $sig,
-                                $ts,
-                                $block_ts,
-                                $type,
-                                $tx_from,
-                                $tx_to,
-                                $name,
-                                $module
-                                )`;
+              $address,
+              $amt,
+              $bid,
+              $tid,
+              $sid,
+              $bhash,
+              $lc,
+              $rebroadcast,
+              $sig,
+              $ts,
+              $block_ts,
+              $type,
+              $tx_from,
+              $tx_to,
+              $name,
+              $module
+              )`;
               let ttype = 0;
               let tname = "";
               let tmodule = "";
@@ -143,27 +143,27 @@ async function initCLI() {
               if (blk.transactions[i].msg.module) {
                 tmodule = blk.transactions[i].msg.module;
               }
-	      let tx_from = "";
-	      if (blk.transactions[i].transaction.from.length > 0) {
-		      tx_from = blk.transactions[i].transaction.from[0].add;
-	      }
+              let tx_from = "";
+              if (blk.transactions[i].from.length > 0) {
+                tx_from = blk.transactions[i].from[0].publicKey;
+              }
               let params = {
-                $address: blk.transactions[i].transaction.to[ii].add,
-                $amt: blk.transactions[i].transaction.to[ii].amt,
-                $bid: blk.block.id,
-                $tid: blk.transactions[i].transaction.id,
+                $address: blk.transactions[i].to[ii].publicKey,
+                $amt: blk.transactions[i].to[ii].amount,
+                $bid: blk.id,
+                $tid: blk.transactions[i].id,
                 $sid: ii,
-                $bhash: blk.returnHash(),
+                $bhash: blk.hash,
                 $lc: 1,
                 $rebroadcast: 0,
-                $sig: blk.transactions[i].transaction.sig,
-                $ts: blk.transactions[i].transaction.ts,
-                $block_ts: blk.block.ts,
+                $sig: blk.transactions[i].signature,
+                $ts: blk.transactions[i].timestamp,
+                $block_ts: blk.timestamp,
                 $type: ttype,
                 $tx_from: tx_from,
-                $tx_to: blk.transactions[i].transaction.to[ii].add,
+                $tx_to: blk.transactions[i].to[ii].publicKey,
                 $name: tname,
-                $module: tmodule,
+                $module: tmodule
               };
               await app.storage.executeDatabase(sql, params, "warehouse");
             }
@@ -191,11 +191,11 @@ async function initCLI() {
   /////////////////////
   // Cntl-C to Close //
   /////////////////////
-  process.on("SIGTERM", function () {
+  process.on("SIGTERM", function() {
     console.log("Network Shutdown");
     process.exit(0);
   });
-  process.on("SIGINT", function () {
+  process.on("SIGINT", function() {
     console.log("Network Shutdown");
     process.exit(0);
   });

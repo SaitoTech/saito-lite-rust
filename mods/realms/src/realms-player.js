@@ -1,4 +1,4 @@
-	
+
 	playerTurn() {
 
 		let realms_self = this;
@@ -14,7 +14,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 		//
 		this.updateStatusAndListCards(
 		  	`play card(s) or click board to attack <span id="end-turn" class="end-turn">[ or pass ]</span>`,
-		    	this.game.deck[this.game.player-1].hand, 
+		    	this.game.deck[this.game.player-1].hand,
 			function(cardname) {
 
 				let card = realms_self.deck[cardname];
@@ -48,7 +48,7 @@ console.log("CARDS IS: " + JSON.stringify(this.game.deck[this.game.player-1].han
 		// or end their turn
 		//
 		document.getElementById("end-turn").onclick = (e) => {
-			this.prependMove("RESOLVE\t" + this.app.wallet.returnPublicKey());
+			this.prependMove("RESOLVE\t" + this.publicKey);
 			this.endTurn();
 		};
 

@@ -31,39 +31,45 @@ class SaveGamesOverlay {
 
       let res = app.browser.formatTime(time_played);
 
-      if (res.hours) { hours = res.hours; }
-      if (res.minutes) { minutes = res.minutes; }
-      if (res.seconds) { seconds = res.seconds; }
+      if (res.hours) {
+        hours = res.hours;
+      }
+      if (res.minutes) {
+        minutes = res.minutes;
+      }
+      if (res.seconds) {
+        seconds = res.seconds;
+      }
 
-      let hours_full = "00"; 
-      let minutes_full = "00"; 
-      let seconds_full = "00"; 
+      let hours_full = "00";
+      let minutes_full = "00";
+      let seconds_full = "00";
 
-      if (hours != 0) { 
+      if (hours != 0) {
         if (hours < 10) {
-	  hours_full = "0"+hours.toString()+":";
-	} else {
-	  hours_full = hours.toString()+":";
-	}
+          hours_full = "0" + hours.toString() + ":";
+        } else {
+          hours_full = hours.toString() + ":";
+        }
       } else {
         hours_full = "";
       }
 
-      if (minutes != 0) { 
+      if (minutes != 0) {
         if (minutes < 10) {
-	  minutes_full = "0"+minutes.toString()+":";
-	} else {
-	  minutes_full = minutes.toString()+":";
-	}
+          minutes_full = "0" + minutes.toString() + ":";
+        } else {
+          minutes_full = minutes.toString() + ":";
+        }
       } else {
         minutes_full = "00:";
       }
-      if (seconds != 0) { 
+      if (seconds != 0) {
         if (seconds < 10) {
-	  seconds_full = "0"+seconds.toString();
-	} else {
-	  seconds_full = seconds.toString();
-	}
+          seconds_full = "0" + seconds.toString();
+        } else {
+          seconds_full = seconds.toString();
+        }
       } else {
         seconds_full = "00";
       }
@@ -71,7 +77,7 @@ class SaveGamesOverlay {
       let time_elapsed = hours_full + minutes_full + seconds_full;
 
       let html = `
-        <div id="save_game_${i}" data-id="${s.transaction.sig}" class="nwasm-saved-games-item">
+        <div id="save_game_${i}" data-id="${s.signature}" class="nwasm-saved-games-item">
           <div class="nwasm-saved-games-screenshot"><img src="${stxmsg.screenshot}" /><div class="nwasn_time_elapsed">${time_elapsed}</div></div>
         </div>
       `;
@@ -93,11 +99,11 @@ class SaveGamesOverlay {
       let s = mod.active_game_saves[i];
       let obj = document.getElementById(`save_game_${i}`);
       obj.onclick = (e) => {
-	sgo.overlay.hide();	
-	sgo.overlay.remove();	
-	let sig = e.currentTarget.getAttribute("data-id");
+        sgo.overlay.hide();
+        sgo.overlay.remove();
+        let sig = e.currentTarget.getAttribute("data-id");
         mod.loadSaveGame(sig);
-	sgo.overlay.hide();
+        sgo.overlay.hide();
       };
     }
 

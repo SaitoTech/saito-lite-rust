@@ -8,17 +8,19 @@ class SettingsAppspace {
     this.app = app;
     this.mod = mod;
     this.container = container;
+    this.privateKey = null;
 
     this.overlay = new SaitoOverlay(app, mod);
 
-    this.app.connection.on("settings-overlay-render-request", () => {
+    this.app.connection.on("settings-overlay-render-request", async () => {
       this.mod.attachStyleSheets();
-      this.render();
+      await this.render();
     });
   }
 
-  render() {
-    this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod));
+  async render() {
+    this.privateKey = await this.app.wallet.getPrivateKey();
+    this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod, this));
 
     let settings_appspace = document.querySelector(".settings-appspace");
     if (settings_appspace) {
@@ -45,10 +47,10 @@ class SettingsAppspace {
       console.log("error creating jsonTree: " + err);
     }
 
-    this.attachEvents();
+    await this.attachEvents();
   }
 
-  attachEvents() {
+  async attachEvents() {
     let app = this.app;
     let mod = this.mod;
 
@@ -131,7 +133,7 @@ class SettingsAppspace {
         if (confirmation) {
           app.options.keys = [];
           app.options.groups = [];
-          app.wallet.resetWallet();
+          await app.wallet.resetWallet();
         }
       };
 
@@ -141,7 +143,6 @@ class SettingsAppspace {
             "This will clear your browser's DB, proceed cautiously"
           );
           if (confirmation) {
-
             localforage
               .clear()
               .then(function () {
@@ -152,11 +153,9 @@ class SettingsAppspace {
               });
 
             let archive = this.app.modules.returnModule("Archive");
-            if (archive){
+            if (archive) {
               await archive.onWalletReset(true);
             }
-
-
           }
         };
       }
@@ -178,26 +177,34 @@ class SettingsAppspace {
       );
 
       document.getElementById("restore-privatekey-btn").onclick = async (e) => {
-        await app.storage.resetOptions();
-
         let privatekey = "";
-        let publickey = "";
+        let publicKey = "";
 
         try {
           privatekey = await sprompt("Enter Private Key:");
           if (privatekey != "") {
-            publickey = app.crypto.returnPublicKey(privatekey);
+            let version = app.wallet.version;
+            // await app.storage.resetOptions();
 
-            app.wallet.wallet.privatekey = privatekey;
-            app.wallet.wallet.publickey = publickey;
-            app.wallet.wallet.inputs = [];
-            app.wallet.wallet.outputs = [];
-            app.wallet.wallet.spends = [];
-            app.wallet.wallet.pending = [];
+            publicKey = app.crypto.generatePublicKey(privatekey);
+            console.log("111 : " + (await app.wallet.getPublicKey()));
 
-            app.blockchain.resetBlockchain();
+            console.log("publickey ///");
+            console.log(publicKey);
+
+            await app.wallet.setPublicKey(publicKey);
+            await app.wallet.setPrivateKey(privatekey);
+            app.wallet.version = version;
+            app.wallet.inputs = [];
+            app.wallet.outputs = [];
+            app.wallet.spends = [];
+            app.wallet.pending = [];
+
+            // await app.blockchain.resetBlockchain();
             await app.wallet.saveWallet();
-            window.location = window.location;
+
+            console.log("222 : " + (await app.wallet.getPublicKey()));
+            // window.location.reload();
           }
         } catch (e) {
           salert("Restore Private Key ERROR: " + e);

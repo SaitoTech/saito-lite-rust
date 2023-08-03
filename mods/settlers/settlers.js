@@ -63,15 +63,15 @@ class Settlers extends GameTemplate {
     // basic game info
     //
     this.empty = false;
-    this.c1 = 					{name: "village", svg:`<img src="/settlers/img/icons/village.png"/>`};
-    this.c2 = 					{name: "city", svg:`<img src="/settlers/img/icons/city.png"/>`};
-    this.r = 					{name: "road", svg:`<img src="/settlers/img/icons/road.png"/>`};
-    this.b = 					{name: "bandit", svg:`<img src="/settlers/img/icons/bandit.png"/>`};
-    this.s = 					{name: "knight", img:`<img src="/settlers/img/icons/knight.png"/>`};
-    this.t = 					{name: "bank"};
-    this.vp = 					{name: "VP", img:`<img src="/settlers/img/icons/point_card.png"/>`};
-    this.longest = 				{name: "Longest Road", svg:`<img src="/settlers/img/icons/road.png"/>`};
-    this.largest = 				{name:"Largest Army", img:`<img src="/settlers/img/icons/knight.png"/>`};
+    this.c1 =           {name: "village", svg:`<img src="/settlers/img/icons/village.png"/>`};
+    this.c2 =           {name: "city", svg:`<img src="/settlers/img/icons/city.png"/>`};
+    this.r =          {name: "road", svg:`<img src="/settlers/img/icons/road.png"/>`};
+    this.b =          {name: "bandit", svg:`<img src="/settlers/img/icons/bandit.png"/>`};
+    this.s =          {name: "knight", img:`<img src="/settlers/img/icons/knight.png"/>`};
+    this.t =          {name: "bank"};
+    this.vp =           {name: "VP", img:`<img src="/settlers/img/icons/point_card.png"/>`};
+    this.longest =        {name: "Longest Road", svg:`<img src="/settlers/img/icons/road.png"/>`};
+    this.largest =        {name:"Largest Army", img:`<img src="/settlers/img/icons/knight.png"/>`};
     this.resources = [
                                                 {name: "brick",count:3,ict:3,icon:"/settlers/img/icons/brick-icon.png"},
                                                 {name: "wood",count:4,ict:3,icon:"/settlers/img/icons/wood-icon.png"},
@@ -81,14 +81,14 @@ class Settlers extends GameTemplate {
                                                 {name: "desert",count:1,ict:1}
     ];
     this.priceList = [
-						["brick","wood"],
-						["brick","wood","wheat","wool"],
-						["ore","ore", "ore","wheat","wheat"],
-						["ore","wool","wheat"]
+            ["brick","wood"],
+            ["brick","wood","wheat","wool"],
+            ["ore","ore", "ore","wheat","wheat"],
+            ["ore","wool","wheat"]
     ];
-    this.cardDir = 				"/settlers/img/cards/";
-    this.back = 				"/settlers/img/cards/red_back.png"; //Hidden Resource cards
-    this.card = 				{name: "development", back: "/settlers/img/cards/red_back.png"};
+    this.cardDir =        "/settlers/img/cards/";
+    this.back =         "/settlers/img/cards/red_back.png"; //Hidden Resource cards
+    this.card =         {name: "development", back: "/settlers/img/cards/red_back.png"};
     this.deck = [
                                                 { card : "Knight",count:14, img: "/settlers/img/cards/knight.png", action:1},
                                                 { card : "Unexpected Bounty" ,count:2, img : "/settlers/img/cards/treasure.png" , action : 2 },
@@ -104,11 +104,11 @@ class Settlers extends GameTemplate {
     this.winState = "elected governor";
 
     this.rules = [
- 	                 			`Gain 1 ${this.vp.name}.`,
-                        			`Move the ${this.b.name} to a tile of your choosing`,
-                       			 	`Gain any two resources`,
-                        			`Collect all cards of a resource from the other players`,
-                        			`Build 2 ${this.r.name}s`
+                        `Gain 1 ${this.vp.name}.`,
+                              `Move the ${this.b.name} to a tile of your choosing`,
+                              `Gain any two resources`,
+                              `Collect all cards of a resource from the other players`,
+                              `Build 2 ${this.r.name}s`
     ];
 
 
@@ -127,14 +127,19 @@ class Settlers extends GameTemplate {
 
        
 
-  render(app) {
+  async render(app) {
 
     if (!this.browser_active) { return; }
 
     //Prevent this function from running twice as saito-lite is configured to run it twice
     if (this.initialize_game_run) { return; }
 
-    super.render(app);
+
+    console.log("abovesuper");
+
+    await super.render(app);
+
+    console.log("belowsuper");
     
     this.scoreboard.render();
 
@@ -167,9 +172,10 @@ class Settlers extends GameTemplate {
       },
     });
 
-    this.menu.addChatMenu();
 
-    this.menu.render();
+    await this.menu.addChatMenu();
+
+    await this.menu.render();
     this.log.render();
     this.hexgrid.render(".gameboard");
 
@@ -179,7 +185,7 @@ class Settlers extends GameTemplate {
       this.cardbox.addCardType("handy-help","",null);
       this.cardbox.makeDraggable();
 
-      this.playerbox.render();
+      await this.playerbox.render();
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.hammer.render(this.app, this);
@@ -234,6 +240,9 @@ class Settlers extends GameTemplate {
     //
     this.app.browser.prependElementToSelector('<div class="mobile"><div class="score">score</div><div class="trade">trade</div></div>', '.hud-body');
 
+
+    console.log("inside settlers render //////");
+
     //
     // hook up interactivity
     //
@@ -243,32 +252,33 @@ class Settlers extends GameTemplate {
     document.querySelector(".hud-body .mobile .trade").onclick = (e) => {
       if (this.app.browser.isMobileBrowser()) {
         if (document.querySelector(".game-playerbox-manager").style.display == "flex") {
-	  document.querySelector(".game-playerbox-manager").style.display = "none";
-	  return;
-	};
-        document.querySelector(".game-playerbox-manager").style.display = "flex";
+          document.querySelector(".game-playerbox-manager").style.display = "none";
+          return;
+        };
+
+      document.querySelector(".game-playerbox-manager").style.display = "flex";
         try {
 
-	  //
-	  // load trade overlay on playerbox click
-	  //
-	  for (let i = 0; i < this.game.players.length; i++) {
-  	    this.playerbox.onclick(() => {
-	      this.trade_overlay.render();
-	    }, (i+1));
-	  }
+          //
+          // load trade overlay on playerbox click
+          //
+          for (let i = 0; i < this.game.players.length; i++) {
+              this.playerbox.onclick(() => {
+              this.trade_overlay.render();
+            }, (i+1));
+          }
 
-	  //
-	  // close playerboxen on back-click
-	  //
-	  document.querySelector(".game-playerbox-manager").off();
-	  document.querySelector(".game-playerbox-manager").on("click", () => {
-            document.querySelector(".game-playerbox-manager").style.display = "none";
-	  });
+          //
+          // close playerboxen on back-click
+          //
+          document.querySelector(".game-playerbox-manager").off();
+          document.querySelector(".game-playerbox-manager").on("click", () => {
+                  document.querySelector(".game-playerbox-manager").style.display = "none";
+          });
 
-	} catch (err) {
-	  console.log("ERROR 485023: " + err);
-	}
+        } catch (err) {
+          console.log("ERROR 485023: " + err);
+        }
       } else {
         this.trade_overlay.render();
       }
@@ -280,6 +290,10 @@ class Settlers extends GameTemplate {
 
 
   initializeGame(game_id) {
+
+
+    console.log("inside initializeGame");
+    console.log(this.game.state);
 
     if (this.game.state == undefined) {
 

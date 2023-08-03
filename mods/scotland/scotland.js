@@ -1,52 +1,50 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
 const ScotlandGameRulesTemplate = require("./lib/scotland-game-rules.template");
 
-    const endHover = function(){
-      const lookingGlass = $(".zoom-container img");
-      const glassFrame = lookingGlass.parent();
-      glassFrame.addClass('hidden');
-    }    
+const endHover = function () {
+  const lookingGlass = $(".zoom-container img");
+  const glassFrame = lookingGlass.parent();
+  glassFrame.addClass("hidden");
+};
 
-    const zoomHover = function(e) {
-      let gbheight = Math.round(document.getElementById("gameboard").getBoundingClientRect().height);
-      let gbwidth = Math.round(document.getElementById("gameboard").getBoundingClientRect().width);
-      let gbtop = Math.round(document.getElementById("gameboard").getBoundingClientRect().top);
-      let gbleft = Math.round(document.getElementById("gameboard").getBoundingClientRect().left);
-      // Show original picture          
-      const glassFrame = $(".zoom-container");
-      const lookingGlass = glassFrame.children(":first");
-      glassFrame.removeClass('hidden');
-      // Ratios
-      var ratioX = lookingGlass.width() / gbwidth ;
-      var ratioY = lookingGlass.height() / gbheight;
-      
-      let zoom_area = 400 / ratioX;
-      let zoom_radius = zoom_area/2;
-      
-      var offset = $(".gameboard").offset();
-      var tX = e.clientX - offset.left;
-      var tY = e.clientY - offset.top;
-     
-      // We stay inside the limits of the zoomable area
-      tX = Math.max( zoom_radius, Math.min( gbwidth - zoom_radius, tX ) );
-      tY = Math.max( zoom_radius, Math.min( gbheight - zoom_radius, tY ) );
-      // Margin to be set in the original    
-      var moX = -Math.floor( ( tX  - zoom_radius ) * ratioX ) ;
-      var moY = -Math.floor( ( tY  - zoom_radius ) * ratioY ) ;
-      // Apply zoom efect
-      lookingGlass.css( 'marginLeft', moX );
-      lookingGlass.css( 'marginTop', moY );
+const zoomHover = function (e) {
+  let gbheight = Math.round(document.getElementById("gameboard").getBoundingClientRect().height);
+  let gbwidth = Math.round(document.getElementById("gameboard").getBoundingClientRect().width);
+  let gbtop = Math.round(document.getElementById("gameboard").getBoundingClientRect().top);
+  let gbleft = Math.round(document.getElementById("gameboard").getBoundingClientRect().left);
+  // Show original picture
+  const glassFrame = $(".zoom-container");
+  const lookingGlass = glassFrame.children(":first");
+  glassFrame.removeClass("hidden");
+  // Ratios
+  var ratioX = lookingGlass.width() / gbwidth;
+  var ratioY = lookingGlass.height() / gbheight;
 
-    //Center magnifying glass
-    glassFrame.css({
-              top: e.clientY - zoom_radius*ratioY,
-              left: e.clientX - zoom_radius*ratioX,
-              bottom: "unset",
-              right: "unset",
-            });
-  }
+  let zoom_area = 400 / ratioX;
+  let zoom_radius = zoom_area / 2;
 
+  var offset = $(".gameboard").offset();
+  var tX = e.clientX - offset.left;
+  var tY = e.clientY - offset.top;
 
+  // We stay inside the limits of the zoomable area
+  tX = Math.max(zoom_radius, Math.min(gbwidth - zoom_radius, tX));
+  tY = Math.max(zoom_radius, Math.min(gbheight - zoom_radius, tY));
+  // Margin to be set in the original
+  var moX = -Math.floor((tX - zoom_radius) * ratioX);
+  var moY = -Math.floor((tY - zoom_radius) * ratioY);
+  // Apply zoom efect
+  lookingGlass.css("marginLeft", moX);
+  lookingGlass.css("marginTop", moY);
+
+  //Center magnifying glass
+  glassFrame.css({
+    top: e.clientY - zoom_radius * ratioY,
+    left: e.clientX - zoom_radius * ratioX,
+    bottom: "unset",
+    right: "unset",
+  });
+};
 
 //////////////////
 // constructor  //
@@ -67,41 +65,40 @@ class Scotland extends GameTemplate {
     //
     this.boardWidth = 5135; //by 3829
     this.card_height_ratio = 1.2;
-    
+
     this.minPlayers = 2;
-    this.maxPlayers = 6; 
+    this.maxPlayers = 6;
 
     this.hud.mode = 0;
     this.hud.auto_sizing = 0;
     this.sizer.maxZoom = 100;
   }
 
-
-  returnGameRulesHTML(){
+  returnGameRulesHTML() {
     return ScotlandGameRulesTemplate(this.app, this);
   }
 
-//>>>>>>>>>>
+  //>>>>>>>>>>
   handleCluesMenuItem() {
     let html = `<div id="game-clues" class="clues-overlay">`;
-    if (this.game.state.clues.length > 0){
+    if (this.game.state.clues.length > 0) {
       for (let i = 0; i < this.game.state.clues.length; i++) {
         html += '<div class="game-clues-row">' + this.game.state.clues[i] + "</div>";
       }
-    }else{
-      if (this.game.player == this.game.state.x){
-        html +=   `<div class="my_pawns">${this.returnPawn(this.game.state.numDetectives)}</div>`;
-        html +=  `<div class="overlay_header">You are Mr X</div>`;
+    } else {
+      if (this.game.player == this.game.state.x) {
+        html += `<div class="my_pawns">${this.returnPawn(this.game.state.numDetectives)}</div>`;
+        html += `<div class="overlay_header">You are Mr X</div>`;
         html += `<div>The detectives don't know where you are, but you will be visible after your third move. Try to distance yourself from them and have a ready escape available.</div>`;
-      }else{
+      } else {
         html += `<div class="my_pawns">`;
-        for (let j = 0; j< this.game.state.numDetectives; j++){
-          if (this.game.state.detectives[j] == this.game.player){
+        for (let j = 0; j < this.game.state.numDetectives; j++) {
+          if (this.game.state.detectives[j] == this.game.player) {
             html += this.returnPawn(j);
           }
         }
         html += "</div>";
-        html +=  `<div class="overlay_header">You are a Detective</div>`; 
+        html += `<div class="overlay_header">You are a Detective</div>`;
         html += `<div>Mister X starts the game at one of the highlighted spaces and will be briefly visible after his third move. Start laying a trap now</div>`;
       }
       html += `<div>Click a ticket type to see where you can move, then click on the board to move there.</div>`;
@@ -111,20 +108,22 @@ class Scotland extends GameTemplate {
   }
 
   // Opt out of letting League create a default
-  respondTo(type){
+  respondTo(type) {
     if (type == "default-league") {
       return null;
     }
     return super.respondTo(type);
   }
 
-  render(app) {
+
+  async render(app) {
+
     if (!this.browser_active) {
       return;
     }
 
-    super.render(app);
-    
+    await super.render(app);
+
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");
 
@@ -132,7 +131,7 @@ class Scotland extends GameTemplate {
       text: "How to Play",
       id: "game-rules",
       class: "game-rules",
-      callback: function(app, game_mod){
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(game_mod.returnGameRulesHTML());
       },
@@ -148,8 +147,8 @@ class Scotland extends GameTemplate {
     });
 
     this.menu.addMenuOption("game-clues", "Clues");
-    
-    this.menu.addSubMenuOption("game-clues",{
+
+    this.menu.addSubMenuOption("game-clues", {
       text: "Clues",
       id: "game-clue-list",
       class: "game-clue-list",
@@ -158,7 +157,7 @@ class Scotland extends GameTemplate {
         game_mod.handleCluesMenuItem();
       },
     });
-    this.menu.addSubMenuOption("game-clues",{
+    this.menu.addSubMenuOption("game-clues", {
       text: "Inspect Map",
       id: "game-map",
       class: "game-map",
@@ -167,7 +166,7 @@ class Scotland extends GameTemplate {
         game_mod.magnifyingGlass();
       },
     });
-    this.menu.addSubMenuOption("game-clues",{
+    this.menu.addSubMenuOption("game-clues", {
       text: "Underground Map",
       id: "game-underground",
       class: "game-underground",
@@ -176,7 +175,7 @@ class Scotland extends GameTemplate {
         game_mod.drawUndergroundMap();
       },
     });
-    this.menu.addSubMenuOption("game-clues",{
+    this.menu.addSubMenuOption("game-clues", {
       text: "Bus Routes",
       id: "game-bus",
       class: "game-bus",
@@ -185,14 +184,14 @@ class Scotland extends GameTemplate {
         game_mod.drawBusMap();
       },
     });
-    this.menu.addSubMenuOption("game-clues",{
+    this.menu.addSubMenuOption("game-clues", {
       text: "Clear Map",
       id: "clear-map",
       class: "clear-map",
-      callback: function(app, game_mod){
+      callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.clearMap();
-      }
+      },
     });
 
     this.menu.addChatMenu();
@@ -204,20 +203,35 @@ class Scotland extends GameTemplate {
     this.hud.render();
 
     let hh = document.querySelector(".hud-header");
-    if (!hh.querySelector(".handy-help")){
-      this.app.browser.addElementToElement(`<i id="hud_zoom" class="handy-help hud-controls fas fa-search" aria-hidden="true"" title="Turn mouse into a magnifying glass"></i>`, hh);
-      this.app.browser.addElementToElement(`<i id="hud_clues" class="handy-help hud-controls fas fa-shoe-prints" aria-hidden="true" title="Check logbook of clues"></i>`, hh);  
-      this.app.browser.addElementToElement(`<i id="hud_bus" class="handy-help hud-controls fas fa-bus" aria-hidden="true"" title="Display bus routes"></i>`, hh);
-      this.app.browser.addElementToElement(`<i id="hud_underground" class="handy-help hud-controls fas fa-subway" aria-hidden="true" title="Display Underground routes"></i>`, hh);  
-      this.app.browser.addElementToElement(`<i id="hud_clear" class="handy-help hud-controls far fa-map" aria-hidden="true" title="Clear map"></i>`, hh);  
+    if (!hh.querySelector(".handy-help")) {
+      this.app.browser.addElementToElement(
+        `<i id="hud_zoom" class="handy-help hud-controls fas fa-search" aria-hidden="true"" title="Turn mouse into a magnifying glass"></i>`,
+        hh
+      );
+      this.app.browser.addElementToElement(
+        `<i id="hud_clues" class="handy-help hud-controls fas fa-shoe-prints" aria-hidden="true" title="Check logbook of clues"></i>`,
+        hh
+      );
+      this.app.browser.addElementToElement(
+        `<i id="hud_bus" class="handy-help hud-controls fas fa-bus" aria-hidden="true"" title="Display bus routes"></i>`,
+        hh
+      );
+      this.app.browser.addElementToElement(
+        `<i id="hud_underground" class="handy-help hud-controls fas fa-subway" aria-hidden="true" title="Display Underground routes"></i>`,
+        hh
+      );
+      this.app.browser.addElementToElement(
+        `<i id="hud_clear" class="handy-help hud-controls far fa-map" aria-hidden="true" title="Clear map"></i>`,
+        hh
+      );
     }
-    try{
+    try {
       document.getElementById("hud_zoom").onclick = this.magnifyingGlass.bind(this);
       document.getElementById("hud_clues").onclick = this.handleCluesMenuItem.bind(this);
       document.getElementById("hud_bus").onclick = this.drawBusMap.bind(this);
       document.getElementById("hud_underground").onclick = this.drawUndergroundMap.bind(this);
       document.getElementById("hud_clear").onclick = this.clearMap.bind(this);
-    }catch(err){
+    } catch (err) {
       console.error(err);
     }
 
@@ -238,7 +252,6 @@ class Scotland extends GameTemplate {
   // initialize //
   ////////////////
   initializeGame(game_id) {
-
     //
     // initialize
     //
@@ -271,7 +284,7 @@ class Scotland extends GameTemplate {
     console.log(JSON.parse(JSON.stringify(this.game.state)));
 
     if (!this.browser_active) {
-      this.saveGame(this.game.id)
+      this.saveGame(this.game.id);
       return;
     }
 
@@ -281,8 +294,8 @@ class Scotland extends GameTemplate {
     //
     for (var i in this.game.state.locations) {
       let divname = "#" + i;
-      $(divname).css("top", this.scale(this.game.state.locations[i].top+40) + "px");
-      $(divname).css("left", this.scale(this.game.state.locations[i].left+37) + "px");
+      $(divname).css("top", this.scale(this.game.state.locations[i].top + 40) + "px");
+      $(divname).css("left", this.scale(this.game.state.locations[i].left + 37) + "px");
     }
   }
 
@@ -296,10 +309,10 @@ class Scotland extends GameTemplate {
     // report winner
     // -- need a new default for team victories
     if (this.game.over == 1) {
-      if (this.game.winner == this.game.state.x){
-       this.updateStatus("Mr X wins"); 
-      }else{
-       this.updateStatus("Scotland Yard wins"); 
+      if (this.game.winner == this.game.state.x) {
+        this.updateStatus("Mr X wins");
+      } else {
+        this.updateStatus("Scotland Yard wins");
       }
       return 0;
     }
@@ -323,9 +336,9 @@ class Scotland extends GameTemplate {
 
         //Assign Detective Pawns to all players
         let j = 0;
-        while (j < this.game.state.numDetectives){
-          for (let i = 1; i <= this.game.players.length; i++){
-            if (i != this.game.state.x){
+        while (j < this.game.state.numDetectives) {
+          for (let i = 1; i <= this.game.players.length; i++) {
+            if (i != this.game.state.x) {
               this.game.state.detectives[j] = i;
               j++;
             }
@@ -336,8 +349,8 @@ class Scotland extends GameTemplate {
         for (let i = 0; i < this.game.state.numDetectives; i++) {
           this.game.state.tickets[i] = {};
           this.game.state.tickets[i]["taxi"] = 10;
-          this.game.state.tickets[i]["bus"]=8;
-          this.game.state.tickets[i]["underground"] = 4;            
+          this.game.state.tickets[i]["bus"] = 8;
+          this.game.state.tickets[i]["underground"] = 4;
 
           let start_pos = this.rollDice(this.game.state.starting_positions.length) - 1;
           this.game.state.player_location[i] = this.game.state.starting_positions[start_pos];
@@ -354,7 +367,7 @@ class Scotland extends GameTemplate {
         this.game.state.tickets[x]["x"] = 5;
 
         this.game.state.player_location[x] = -1;
-          
+
         //
         // Mister X now picks his location (secretly)
         //
@@ -363,7 +376,7 @@ class Scotland extends GameTemplate {
         if (this.game.player == this.game.state.x) {
           let start_pos = this.rollDice(this.game.state.starting_positions.length) - 1;
           this.game.state.player_location[x] = this.game.state.starting_positions[start_pos];
-          if (document.getElementById("hud")){
+          if (document.getElementById("hud")) {
             document.getElementById("hud").classList.add("misterx");
           }
         } else {
@@ -373,7 +386,6 @@ class Scotland extends GameTemplate {
         this.game.queue.splice(qe, 1);
       }
 
-
       /*
       Special Move
       */
@@ -381,30 +393,34 @@ class Scotland extends GameTemplate {
         this.game.state.tickets[this.game.state.numDetectives]["double"]--;
         this.game.queue.push("play\t" + this.game.state.x + "\t" + this.game.state.numDetectives);
         this.game.queue.push("play\t" + this.game.state.x + "\t" + this.game.state.numDetectives);
-        this.updateLog(`Mister X uses one of his double tickets, he has ${this.game.state.tickets[this.game.state.numDetectives]["double"]} remaining.`);
+        this.updateLog(
+          `Mister X uses one of his double tickets, he has ${
+            this.game.state.tickets[this.game.state.numDetectives]["double"]
+          } remaining.`
+        );
         this.game.state.double_in_action = 1;
         this.game.queue.splice(qe, 1);
         return 1;
       }
 
-      if (mv[0] === "win"){
+      if (mv[0] === "win") {
         let method = mv[1];
         let winner = parseInt(mv[2]);
         let location = mv[3];
 
         this.game.queue = [];
-        if (method == "escape"){
+        if (method == "escape") {
           this.updateLog("Detectives are out of moves! Mister X escapes");
           this.endGame(this.game.players[this.game.state.x], "escape");
           return 0;
         }
-        if (method == "caught"){
-          this.updateLog(`Detective ${winner+1} landed on Mister X and arrested him`);
+        if (method == "caught") {
+          this.updateLog(`Detective ${winner + 1} landed on Mister X and arrested him`);
         }
-        if (method == "trapped"){
+        if (method == "trapped") {
           this.updateLog(`The detectives encircled Mister X forcing him to surrender`);
         }
-        if (this.game.player == this.game.state.x){
+        if (this.game.player == this.game.state.x) {
           this.resignGame(this.game.id, "arrest");
         }
         return 0;
@@ -418,52 +434,64 @@ class Scotland extends GameTemplate {
         let pawn = parseInt(mv[2]);
         let target_id = mv[3];
         let ticket = mv[4];
-        
+
         this.game.state.tickets[pawn][ticket]--;
 
         //Mr X is moving
         if (pawn == this.game.state.numDetectives) {
-          this.game.state.xmoves ++;
-          console.log("Mr X location -- "+ target_id);
+          this.game.state.xmoves++;
+          console.log("Mr X location -- " + target_id);
           let hint = "";
-          switch(ticket){
-            case "taxi": hint = "Mr. X was spotted in a taxi..."; break;
-            case "bus": hint = "Mr. X was spotted in a bus..."; break;
-            case "underground": hint = "Mr. X was spotted on the underground..."; break;
-            default: hint = `Mr. X evaded detection this turn by playing a mystery ticket, he has ${scotland_self.game.state.tickets[pawn]["x"]} remaining.`;
+          switch (ticket) {
+            case "taxi":
+              hint = "Mr. X was spotted in a taxi...";
+              break;
+            case "bus":
+              hint = "Mr. X was spotted in a bus...";
+              break;
+            case "underground":
+              hint = "Mr. X was spotted on the underground...";
+              break;
+            default:
+              hint = `Mr. X evaded detection this turn by playing a mystery ticket, he has ${scotland_self.game.state.tickets[pawn]["x"]} remaining.`;
           }
-          
-          if (this.game.state.xmoves == 3 || this.game.state.xmoves == 8 || this.game.state.xmoves == 13 || this.game.state.xmoves == 18 || this.game.state.xmoves == 24 ) {
+
+          if (
+            this.game.state.xmoves == 3 ||
+            this.game.state.xmoves == 8 ||
+            this.game.state.xmoves == 13 ||
+            this.game.state.xmoves == 18 ||
+            this.game.state.xmoves == 24
+          ) {
             this.game.state.player_location[pawn] = target_id;
-            hint+= `... at ${target_id}`;
+            hint += `... at ${target_id}`;
           } else {
             this.game.state.player_location[pawn] = -1;
           }
 
           this.updateLog(hint);
           this.game.state.clues.push(this.game.state.xmoves + " - " + hint);
-          
+
           //
           // Mister X needs to get his decrypted move
           //
           if (this.game.player == this.game.state.x) {
-            this.game.state.player_location[pawn] = this.game.deck[0].keys[this.game.deck[0].keys.length - 1].location;
+            this.game.state.player_location[pawn] =
+              this.game.deck[0].keys[this.game.deck[0].keys.length - 1].location;
           }
-
-        }else{
+        } else {
           this.game.state.player_location[pawn] = target_id;
-          this.updateLog(`Detective ${pawn+1} takes the ${ticket} to ${target_id}`);
+          this.updateLog(`Detective ${pawn + 1} takes the ${ticket} to ${target_id}`);
           //Mr. X gets discards....
           this.game.state.tickets[this.game.state.numDetectives][ticket]++;
-  
+
           //If I am Mr X and someone else moved, I have to check if they moved on top of me and announce the end of the game
-          if (this.game.player == this.game.state.x){
-            if (target_id === this.game.state.player_location[this.game.state.numDetectives]){
+          if (this.game.player == this.game.state.x) {
+            if (target_id === this.game.state.player_location[this.game.state.numDetectives]) {
               this.addMove(`win\tcaught\t${pawn}\t${target_id}`);
               this.endTurn();
             }
           }
-
         }
         console.log(`Player ${player} moves to ${this.game.state.player_location[pawn]}`);
 
@@ -497,23 +525,22 @@ class Scotland extends GameTemplate {
         //
         this.showBoard();
 
-        
         let detectivesCanMove = false;
-        for (let j = this.game.state.numDetectives-1; j >= 0 ; j--){
-          if (this.canBobbyMove(j)){
-            this.game.queue.push(`play\t${this.game.state.detectives[j]}\t${j}`);  
+        for (let j = this.game.state.numDetectives - 1; j >= 0; j--) {
+          if (this.canBobbyMove(j)) {
+            this.game.queue.push(`play\t${this.game.state.detectives[j]}\t${j}`);
             detectivesCanMove = true;
           }
         }
 
-        if (!detectivesCanMove){
+        if (!detectivesCanMove) {
           this.game.queue.push(`win\tescape\t${this.game.state.x}\t-1`);
           return 1;
         }
-        
+
         // Mister X goes first...
         this.game.queue.push(`play\t${this.game.state.x}\t${this.game.state.numDetectives}`);
-        
+
         //
         // move into first turn
         //
@@ -526,26 +553,31 @@ class Scotland extends GameTemplate {
 
         if (!this.browser_active) return;
         this.game.queue.splice(qe, 1);
-        
+
         $(".active_player").removeClass("active_player");
-        let selector = (pawn == this.game.state.numDetectives) ? "#pawnX" : `#pawn${pawn+1}`;
+        let selector = pawn == this.game.state.numDetectives ? "#pawnX" : `#pawn${pawn + 1}`;
         $(selector).addClass("active_player");
 
         // refresh board
         this.disableBoardClicks();
 
-        if (this.game.player == player){
-          this.playerTurn(player, pawn); // player is the human, pawn is the token  
-        }else{
-          if (pawn == this.game.state.numDetectives){
+        if (this.game.player == player) {
+          this.playerTurn(player, pawn); // player is the human, pawn is the token
+        } else {
+          if (pawn == this.game.state.numDetectives) {
             this.setHudClass();
-            this.updateStatus(`<div class="status-message">Waiting for Mr X to move (Player ${player})</div>`);
-          }else{
-            let sHeader = `Waiting for Detective ${pawn+1} to move (Player ${player})`;
-            this.updateStatus(`<div class="status-message">${sHeader}</div>${this.ticketsToHTML(this.game.state.numDetectives)}`);
+            this.updateStatus(
+              `<div class="status-message">Waiting for Mr X to move (Player ${player})</div>`
+            );
+          } else {
+            let sHeader = `Waiting for Detective ${pawn + 1} to move (Player ${player})`;
+            this.updateStatus(
+              `<div class="status-message">${sHeader}</div>${this.ticketsToHTML(
+                this.game.state.numDetectives
+              )}`
+            );
           }
-          
-        }  
+        }
         return 0;
       }
     }
@@ -553,7 +585,6 @@ class Scotland extends GameTemplate {
     return 1;
   }
 
- 
   disableBoardClicks() {
     $(".location").off();
     $(".location").css("border-color", "transparent");
@@ -561,55 +592,73 @@ class Scotland extends GameTemplate {
     this.showBoard();
   }
 
-  canBobbyMove(cop){
+  canBobbyMove(cop) {
     let source_id = this.game.state.player_location[cop];
     let mylocation = this.game.state.locations[source_id]; //Obj
 
-    if (this.game.state.tickets[cop]["taxi"] > 0 && mylocation.taxi.length > 0){
+    if (this.game.state.tickets[cop]["taxi"] > 0 && mylocation.taxi.length > 0) {
       return true;
     }
-    if (this.game.state.tickets[cop]["bus"] > 0 && mylocation.bus.length > 0){
+    if (this.game.state.tickets[cop]["bus"] > 0 && mylocation.bus.length > 0) {
       return true;
     }
-    if (this.game.state.tickets[cop]["underground"] > 0 && mylocation.underground.length > 0){
+    if (this.game.state.tickets[cop]["underground"] > 0 && mylocation.underground.length > 0) {
       return true;
     }
     return false;
   }
 
-
-  ticketsToHTML(pawn){
+  ticketsToHTML(pawn) {
     let source_id = this.game.state.player_location[pawn];
     let mylocation = this.game.state.locations[source_id]; //Obj
 
-    let html =  `<div class='status-icon-menu'>
+    let html = `<div class="status-icon-menu">
 
-            <div class="menu_icon ${(mylocation.taxi.length == 0 || this.game.state.tickets[pawn]["taxi"] == 0)? "unavailable":""}" id="taxi">
+            <div class="menu_icon ${
+              mylocation.taxi.length == 0 || this.game.state.tickets[pawn]["taxi"] == 0
+                ? "unavailable"
+                : ""
+            }" id="taxi">
               <i class="menu_icon_icon fas fa-taxi fa-border" style="background-color: gold;"></i>
               <div class="menu-text">
                Taxi: ${this.game.state.tickets[pawn]["taxi"]}
               </div>
             </div>
 
-            <div class="menu_icon ${(mylocation.bus.length == 0 || this.game.state.tickets[pawn]["bus"] == 0)? "unavailable":""}" id="bus">
+            <div class="menu_icon ${
+              mylocation.bus.length == 0 || this.game.state.tickets[pawn]["bus"] == 0
+                ? "unavailable"
+                : ""
+            }" id="bus">
               <i class="menu_icon_icon fas fa-bus fa-border"  style="background-color: #4382b5;"></i>
               <div class="menu-text">Bus: ${this.game.state.tickets[pawn]["bus"]}</div>
             </div>
 
-            <div class="menu_icon ${(mylocation.underground.length == 0 || this.game.state.tickets[pawn]["underground"] == 0)? "unavailable":""}" id="underground">
+            <div class="menu_icon ${
+              mylocation.underground.length == 0 ||
+              this.game.state.tickets[pawn]["underground"] == 0
+                ? "unavailable"
+                : ""
+            }" id="underground">
                <i class="menu_icon_icon fas fa-subway fa-border"  style="background-color: #be5e2f;"></i>
                <div class="menu-text">U.: ${this.game.state.tickets[pawn]["underground"]}</div>
             </div>
             `;
-    if (pawn == this.game.state.numDetectives){
-      html += `<div class="menu_icon ${(this.game.state.tickets[pawn]["x"] == 0)? "unavailable":""}" id="mystery">
+    if (pawn == this.game.state.numDetectives) {
+      html += `<div class="menu_icon ${
+        this.game.state.tickets[pawn]["x"] == 0 ? "unavailable" : ""
+      }" id="mystery">
                 <i class="menu_icon_icon fas fa-mask fa-border"></i>
                 <div class="menu-text">X: ${this.game.state.tickets[pawn]["x"]}</div>
               </div> 
-              <div class="menu_icon ${(this.game.state.tickets[pawn]["double"] == 0 || this.game.state.double_in_action )? "unavailable":""}" id="double">
+              <div class="menu_icon ${
+                this.game.state.tickets[pawn]["double"] == 0 || this.game.state.double_in_action
+                  ? "unavailable"
+                  : ""
+              }" id="double">
                 <i class="menu_icon_icon fas fa-angle-double-right fa-border" style="background-color: #062E03;"></i>
                 <div class="menu-text">Double: ${this.game.state.tickets[pawn]["double"]}</div>
-              </div>`;      
+              </div>`;
     }
     html += `</div>`;
 
@@ -625,134 +674,144 @@ class Scotland extends GameTemplate {
 
     let scotland_self = this;
 
-    this.menu_backup_callback = function(){scotland_self.playerTurn(player, pawn);};    
+    this.menu_backup_callback = function () {
+      scotland_self.playerTurn(player, pawn);
+    };
 
-    
     //
     // generate instructions and print to HUD
     //
-    let sHeader = (player == this.game.state.x)? 'You are Mister X!' : `You are Detective ${pawn + 1}!`;
+    let sHeader =
+      player == this.game.state.x ? "You are Mister X!" : `You are Detective ${pawn + 1}!`;
 
     let source_id = this.game.state.player_location[pawn];
-    
+
     let mylocation = this.game.state.locations[source_id]; //Obj
 
     sHeader += ` (At ${source_id})`;
-    if (this.game.state.xmoves == 2 || this.game.state.xmoves == 7 || this.game.state.xmoves == 12 || this.game.state.xmoves == 17 || this.game.state.xmoves == 23) {
-      if (player === this.game.state.x){
-        sHeader+= " You will be visible to the detectives after you move!";
+    if (
+      this.game.state.xmoves == 2 ||
+      this.game.state.xmoves == 7 ||
+      this.game.state.xmoves == 12 ||
+      this.game.state.xmoves == 17 ||
+      this.game.state.xmoves == 23
+    ) {
+      if (player === this.game.state.x) {
+        sHeader += " You will be visible to the detectives after you move!";
       }
     }
 
-    let html = `<div class="status-message">${sHeader}</div>${this.ticketsToHTML(pawn)}`; 
+    let html = `<div class="status-message">${sHeader}</div>${this.ticketsToHTML(pawn)}`;
 
     this.updateStatus(html);
     if (player !== this.game.state.x) {
       this.setHudClass(pawn);
-    }else{
+    } else {
       this.setHudClass(-1);
     }
 
-    let detectives = scotland_self.game.state.player_location.slice(0,scotland_self.game.state.numDetectives);  
+    let detectives = scotland_self.game.state.player_location.slice(
+      0,
+      scotland_self.game.state.numDetectives
+    );
     console.log(JSON.parse(JSON.stringify(detectives)));
 
     // attach events
     $(".menu_icon").off();
-    $(".menu_icon").on("click", function(){
+    $(".menu_icon").on("click", function () {
       scotland_self.disableBoardClicks();
-      
+
       let action = $(this).attr("id");
-      if (action == "double" && scotland_self.game.state.double_in_action === 0){
+      if (action == "double" && scotland_self.game.state.double_in_action === 0) {
         scotland_self.addMove("double");
         scotland_self.endTurn();
         return;
       }
-      if (action == "taxi"){
+      if (action == "taxi") {
         if (scotland_self.game.state.tickets[pawn]["taxi"] > 0) {
-        for (let z of mylocation.taxi) {
-          if (!detectives.includes(z)){
-            $(`#${z}`).on("click", function () {
-              let target_id = $(this).attr("id");
-              scotland_self.movePlayer(player, pawn, target_id, "taxi");
-            });
-            $(`#${z}`).css("border-color","gold");
+          for (let z of mylocation.taxi) {
+            if (!detectives.includes(z)) {
+              $(`#${z}`).on("click", function () {
+                let target_id = $(this).attr("id");
+                scotland_self.movePlayer(player, pawn, target_id, "taxi");
+              });
+              $(`#${z}`).css("border-color", "gold");
+              $(`#${z}`).addClass("highlight-available-move");
+            }
+          }
+        }
+      }
+      if (action == "bus") {
+        if (scotland_self.game.state.tickets[pawn]["bus"] > 0) {
+          for (let z of mylocation.bus) {
+            if (!detectives.includes(z)) {
+              $(`#${z}`).on("click", function () {
+                let target_id = $(this).attr("id");
+                scotland_self.movePlayer(player, pawn, target_id, "bus");
+              });
+            }
+            $(`#${z}`).css("border-color", "#4382b5"); //cyan
             $(`#${z}`).addClass("highlight-available-move");
           }
         }
-        }
       }
-      if (action == "bus"){
-        if (scotland_self.game.state.tickets[pawn]["bus"] > 0) {
-        for (let z of mylocation.bus) {
-          if (!detectives.includes(z)){
-            $(`#${z}`).on("click", function () {
-              let target_id = $(this).attr("id");
-              scotland_self.movePlayer(player, pawn, target_id, "bus");
-            });
-          }
-          $(`#${z}`).css("border-color","#4382b5"); //cyan
-          $(`#${z}`).addClass("highlight-available-move");
-        }
-        }
-      }
-      if (action == "underground"){
+      if (action == "underground") {
         if (scotland_self.game.state.tickets[pawn]["underground"] > 0) {
           for (let z of mylocation.underground) {
-            if (!detectives.includes(z)){
+            if (!detectives.includes(z)) {
               $(`#${z}`).on("click", function () {
                 let target_id = $(this).attr("id");
                 scotland_self.movePlayer(player, pawn, target_id, "underground");
               });
             }
-            $(`#${z}`).css("border-color","#be5e2f"); //red
+            $(`#${z}`).css("border-color", "#be5e2f"); //red
             $(`#${z}`).addClass("highlight-available-move");
           }
         }
       }
-      if (action == "mystery"){
+      if (action == "mystery") {
         useMysteryTicket = true;
         if (scotland_self.game.state.tickets[pawn]["x"] > 0) {
-        let mot = ["bus", "taxi", "underground", "ferry"];
-        for (let mode of mot){
-          console.log(mode);
-          for (let z of mylocation[mode]) {
-          if (!detectives.includes(z)){
-            $(`#${z}`).on("click", function () {
-              let target_id = $(this).attr("id");
-              scotland_self.movePlayer(player, pawn, target_id, "x");
-            });
+          let mot = ["bus", "taxi", "underground", "ferry"];
+          for (let mode of mot) {
+            console.log(mode);
+            for (let z of mylocation[mode]) {
+              if (!detectives.includes(z)) {
+                $(`#${z}`).on("click", function () {
+                  let target_id = $(this).attr("id");
+                  scotland_self.movePlayer(player, pawn, target_id, "x");
+                });
+              }
+              $(`#${z}`).css("border-color", "black");
+              $(`#${z}`).addClass("highlight-available-move");
+            }
           }
-          $(`#${z}`).css("border-color","black");
-          $(`#${z}`).addClass("highlight-available-move");
-          }  
         }
       }
-      }
     });
-    
 
     if (!this.canPlayerMove(player, pawn)) {
       //Mr. X is boxed in and cannot move --> game over
-      if (player === this.game.state.x){
+      if (player === this.game.state.x) {
         this.addMove(`win\ttrapped\t-1\t${source_id}`);
         this.endTurn();
-      }else{
-        this.addMove(`ACKNOWLEDGE\tDetective ${pawn+1} cannot move... skipping turn`);
-        this.endTurn();  
+      } else {
+        this.addMove(`ACKNOWLEDGE\tDetective ${pawn + 1} cannot move... skipping turn`);
+        this.endTurn();
       }
       $(".location").off();
       return 0;
     }
   }
 
-  canPlayerMove(player, pawn){
+  canPlayerMove(player, pawn) {
     let source_id = this.game.state.player_location[pawn];
     let mylocation = this.game.state.locations[source_id]; //Obj
-    let detectives = this.game.state.player_location.slice(0,this.game.state.numDetectives);
+    let detectives = this.game.state.player_location.slice(0, this.game.state.numDetectives);
 
     if (this.game.state.tickets[pawn]["taxi"] > 0 || this.game.state.tickets[pawn]["x"] > 0) {
       for (let z of mylocation.taxi) {
-        if (!detectives.includes(z)){
+        if (!detectives.includes(z)) {
           return true;
         }
       }
@@ -760,15 +819,18 @@ class Scotland extends GameTemplate {
 
     if (this.game.state.tickets[pawn]["bus"] > 0 || this.game.state.tickets[pawn]["x"] > 0) {
       for (let z of mylocation.bus) {
-        if (!detectives.includes(z)){
+        if (!detectives.includes(z)) {
           return true;
         }
       }
     }
 
-    if (this.game.state.tickets[pawn]["underground"] > 0 || this.game.state.tickets[pawn]["x"] > 0) {
+    if (
+      this.game.state.tickets[pawn]["underground"] > 0 ||
+      this.game.state.tickets[pawn]["x"] > 0
+    ) {
       for (let z of mylocation.underground) {
-        if (!detectives.includes(z)){
+        if (!detectives.includes(z)) {
           return true;
         }
       }
@@ -776,7 +838,7 @@ class Scotland extends GameTemplate {
 
     if (this.game.state.tickets[pawn]["x"] > 0) {
       for (let z of mylocation.ferry) {
-        if (!detectives.includes(z)){
+        if (!detectives.includes(z)) {
           return true;
         }
       }
@@ -786,11 +848,16 @@ class Scotland extends GameTemplate {
   }
 
   movePlayer(player, pawn, target_id, ticket) {
-
     this.removeEventsFromBoard();
     // Mister X disguises his moves
     if (this.game.player == this.game.state.x) {
-      if (this.game.state.xmoves == 2 || this.game.state.xmoves == 7 || this.game.state.xmoves == 12 || this.game.state.xmoves == 17 || this.game.state.xmoves == 23) {
+      if (
+        this.game.state.xmoves == 2 ||
+        this.game.state.xmoves == 7 ||
+        this.game.state.xmoves == 12 ||
+        this.game.state.xmoves == 17 ||
+        this.game.state.xmoves == 23
+      ) {
         let secret_decrypt = this.app.crypto.hash(Math.random() + "MISTERXSECRETHASH");
         this.game.deck[0].keys.push({ location: target_id, hash: secret_decrypt });
       } else {
@@ -821,27 +888,30 @@ class Scotland extends GameTemplate {
     }
   }
 
-  showPlayers(){
+  showPlayers() {
     for (let i = 0; i <= this.game.state.numDetectives; i++) {
-      let pawn = (i < this.game.state.numDetectives)? document.querySelector(`#pawn${i+1}`) : document.querySelector("#pawnX");
-      if (pawn){
-        let position = this.game.state.player_location[i]; 
+      let pawn =
+        i < this.game.state.numDetectives
+          ? document.querySelector(`#pawn${i + 1}`)
+          : document.querySelector("#pawnX");
+      if (pawn) {
+        let position = this.game.state.player_location[i];
         if (position != -1) {
-          pawn.style.top = this.scale(this.game.state.locations[position].top+40) + "px";
-          pawn.style.left = this.scale(this.game.state.locations[position].left+37) + "px";
+          pawn.style.top = this.scale(this.game.state.locations[position].top + 40) + "px";
+          pawn.style.left = this.scale(this.game.state.locations[position].left + 37) + "px";
           pawn.classList.remove("invisible");
           //
-          if (i == this.game.state.numDetectives && this.game.player !== this.game.state.x){
-            pawn.classList.add("dancing");  
+          if (i == this.game.state.numDetectives && this.game.player !== this.game.state.x) {
+            pawn.classList.add("dancing");
           }
-        }else{
+        } else {
           pawn.classList.add("invisible");
           pawn.classList.remove("dancing");
         }
       }
-    }    
+    }
   }
-  
+
   /*showPlayers() {
     $(".location").html("");
 
@@ -855,62 +925,65 @@ class Scotland extends GameTemplate {
   }*/
 
   returnPawn(pawn_id) {
-    if (pawn_id === this.game.state.numDetectives){
+    if (pawn_id === this.game.state.numDetectives) {
       return '<img src="/scotland/img/XPawn.png" class="pawn" />';
     }
-    switch(pawn_id){
-      case 0: return '<img src="/scotland/img/Red%20Pawn.png" class="pawn" />';
-      break;
-      case 1: return '<img src="/scotland/img/Yellow%20Pawn.png" class="pawn" />';
-      break;
-      case 2: return '<img src="/scotland/img/Blue%20Pawn.png" class="pawn" />';
-      break;
-      case 3:  return '<img src="/scotland/img/Cyan%20Pawn.png" class="pawn" />';
-      break;
-      case 4: return '<img src="/scotland/img/Black%20Pawn.png" class="pawn" />';
-      break;
-      default: console.log("undefined pawn type"); 
+    switch (pawn_id) {
+      case 0:
+        return '<img src="/scotland/img/Red%20Pawn.png" class="pawn" />';
+        break;
+      case 1:
+        return '<img src="/scotland/img/Yellow%20Pawn.png" class="pawn" />';
+        break;
+      case 2:
+        return '<img src="/scotland/img/Blue%20Pawn.png" class="pawn" />';
+        break;
+      case 3:
+        return '<img src="/scotland/img/Cyan%20Pawn.png" class="pawn" />';
+        break;
+      case 4:
+        return '<img src="/scotland/img/Black%20Pawn.png" class="pawn" />';
+        break;
+      default:
+        console.log("undefined pawn type");
     }
     return "";
   }
 
-  setHudClass(pawn_id = null){
+  setHudClass(pawn_id = null) {
     let hh = document.querySelector(".hud-header");
     if (!hh) return;
 
     hh.classList.remove("pawn0", "pawn1", "pawn2", "pawn3", "pawn4");
-    if (pawn_id != null){
-      hh.classList.add(`pawn${pawn_id}`);  
+    if (pawn_id != null) {
+      hh.classList.add(`pawn${pawn_id}`);
     }
-
   }
 
-  magnifyingGlass(){
-  let scotland_self = this;
-  $('.gameboard').toggleClass("zoom-window");
-  let glass = document.querySelector(".zoom-container");
-  if ($('.gameboard').hasClass("zoom-window")){
-    console.log("Turn on zoom");
-    let board = document.querySelector(".gameboard");
-    let newBoard = board.cloneNode(true);
-    newBoard.style = "position:relative;";
-    glass.append(newBoard);
+  magnifyingGlass() {
+    let scotland_self = this;
+    $(".gameboard").toggleClass("zoom-window");
+    let glass = document.querySelector(".zoom-container");
+    if ($(".gameboard").hasClass("zoom-window")) {
+      console.log("Turn on zoom");
+      let board = document.querySelector(".gameboard");
+      let newBoard = board.cloneNode(true);
+      newBoard.style = "position:relative;";
+      glass.append(newBoard);
 
-    document.querySelector(".gameboard").addEventListener("mousemove", zoomHover);
-    glass.addEventListener("mousemove", zoomHover);  
-    glass.addEventListener("click",scotland_self.magnifyingGlass);
-    //document.querySelector(".gameboard").addEventListener("mouseout", scotland_self.magnifyingGlass);
-  }else{
-    console.log("Turn off zoom");
-    glass.removeChild(glass.firstChild);
-    document.querySelector(".gameboard").removeEventListener("mousemove", zoomHover);
-    glass.removeEventListener("mousemove", zoomHover);
-    glass.classList.add("hidden");  
-    $(".zoom-container").off();
-    //document.querySelector(".gameboard").removeEventListener("mouseout", endHover);  
-  }
-
-   
+      document.querySelector(".gameboard").addEventListener("mousemove", zoomHover);
+      glass.addEventListener("mousemove", zoomHover);
+      glass.addEventListener("click", scotland_self.magnifyingGlass);
+      //document.querySelector(".gameboard").addEventListener("mouseout", scotland_self.magnifyingGlass);
+    } else {
+      console.log("Turn off zoom");
+      glass.removeChild(glass.firstChild);
+      document.querySelector(".gameboard").removeEventListener("mousemove", zoomHover);
+      glass.removeEventListener("mousemove", zoomHover);
+      glass.classList.add("hidden");
+      $(".zoom-container").off();
+      //document.querySelector(".gameboard").removeEventListener("mouseout", endHover);
+    }
   }
 
   ////////////////////
@@ -920,8 +993,8 @@ class Scotland extends GameTemplate {
     var state = {};
     state.locations = this.returnLocations();
     state.starting_positions = this.returnStartingPositions(); //We store this to give detectives a clue in the first two rounds
-    state.numDetectives = (this.game.players.length < 4) ? 4 : 5; 
-    if (this.game.players.length == 2){
+    state.numDetectives = this.game.players.length < 4 ? 4 : 5;
+    if (this.game.players.length == 2) {
       state.numDetectives = 3;
     }
     //organized by detective #, mr x's location/tickets @ index = numDetectives
@@ -932,19 +1005,22 @@ class Scotland extends GameTemplate {
     state.round = 0;
     state.xmoves = 0;
     state.rounds = []; //Keeping a total log of where everyone went and how
-    state.clues = [];  //Keeping track of public information about Mr X
-    
+    state.clues = []; //Keeping track of public information about Mr X
+
     state.x = 0; // who is Mister X
 
     return state;
   }
+
   returnStartingPositions() {
     return [13, 26, 29, 34, 50, 53, 91, 94, 103, 112, 117, 132, 138, 141, 155, 174, 197, 198];
   }
 
-  drawRouteMap(transport, color){
+  drawRouteMap(transport, color) {
     const c = document.querySelector(".gameboard canvas");
-    if (!c){ return;}
+    if (!c) {
+      return;
+    }
 
     let ctx = c.getContext("2d");
     ctx.clearRect(0, 0, 5135, 3829);
@@ -953,23 +1029,33 @@ class Scotland extends GameTemplate {
     ctx.lineWidth = 30;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    for (let site_id in this.game.state.locations){
+    for (let site_id in this.game.state.locations) {
       let site = this.game.state.locations[site_id];
-      if (site[transport].length > 0){
-        for (let neigh of site[transport]){
-          ctx.moveTo(site.left+37,site.top+40);
-          ctx.lineTo(this.game.state.locations[neigh].left+37,this.game.state.locations[neigh].top+40);
-          ctx.arc(this.game.state.locations[neigh].left+37, this.game.state.locations[neigh].top+40, 30, 0, 2*Math.PI);
+      if (site[transport].length > 0) {
+        for (let neigh of site[transport]) {
+          ctx.moveTo(site.left + 37, site.top + 40);
+          ctx.lineTo(
+            this.game.state.locations[neigh].left + 37,
+            this.game.state.locations[neigh].top + 40
+          );
+          ctx.arc(
+            this.game.state.locations[neigh].left + 37,
+            this.game.state.locations[neigh].top + 40,
+            30,
+            0,
+            2 * Math.PI
+          );
           ctx.stroke();
         }
       }
     }
-
   }
 
-  drawUndergroundMap(){
+  drawUndergroundMap() {
     const c = document.querySelector(".gameboard canvas");
-    if (!c){ return;}
+    if (!c) {
+      return;
+    }
 
     let ctx = c.getContext("2d");
     ctx.clearRect(0, 0, 5135, 3829);
@@ -978,23 +1064,33 @@ class Scotland extends GameTemplate {
     ctx.lineWidth = 30;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    for (let site_id in this.game.state.locations){
+    for (let site_id in this.game.state.locations) {
       let site = this.game.state.locations[site_id];
-      if (site.underground.length > 0){
-        for (let neigh of site.underground){
-          ctx.moveTo(site.left+37,site.top+40);
-          ctx.lineTo(this.game.state.locations[neigh].left+37,this.game.state.locations[neigh].top+40);
-          ctx.arc(this.game.state.locations[neigh].left+37, this.game.state.locations[neigh].top+40, 30, 0, 2*Math.PI);
+      if (site.underground.length > 0) {
+        for (let neigh of site.underground) {
+          ctx.moveTo(site.left + 37, site.top + 40);
+          ctx.lineTo(
+            this.game.state.locations[neigh].left + 37,
+            this.game.state.locations[neigh].top + 40
+          );
+          ctx.arc(
+            this.game.state.locations[neigh].left + 37,
+            this.game.state.locations[neigh].top + 40,
+            30,
+            0,
+            2 * Math.PI
+          );
           ctx.stroke();
         }
       }
     }
   }
 
-
-  drawBusMap(){
+  drawBusMap() {
     const c = document.querySelector(".gameboard canvas");
-    if (!c){ return;}
+    if (!c) {
+      return;
+    }
 
     let ctx = c.getContext("2d");
     ctx.clearRect(0, 0, 5135, 3829);
@@ -1003,22 +1099,33 @@ class Scotland extends GameTemplate {
     ctx.lineWidth = 30;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    for (let site_id in this.game.state.locations){
+    for (let site_id in this.game.state.locations) {
       let site = this.game.state.locations[site_id];
-      if (site.bus.length > 0){
-        for (let neigh of site.bus){
-          ctx.moveTo(site.left+37,site.top+40);
-          ctx.lineTo(this.game.state.locations[neigh].left+37,this.game.state.locations[neigh].top+40);
-          ctx.arc(this.game.state.locations[neigh].left+37, this.game.state.locations[neigh].top+40, 30, 0, 2*Math.PI);
+      if (site.bus.length > 0) {
+        for (let neigh of site.bus) {
+          ctx.moveTo(site.left + 37, site.top + 40);
+          ctx.lineTo(
+            this.game.state.locations[neigh].left + 37,
+            this.game.state.locations[neigh].top + 40
+          );
+          ctx.arc(
+            this.game.state.locations[neigh].left + 37,
+            this.game.state.locations[neigh].top + 40,
+            30,
+            0,
+            2 * Math.PI
+          );
           ctx.stroke();
         }
       }
     }
   }
 
-  clearMap(){
+  clearMap() {
     const c = document.querySelector(".gameboard canvas");
-    if (!c){ return;}
+    if (!c) {
+      return;
+    }
 
     let ctx = c.getContext("2d");
     ctx.clearRect(0, 0, 5135, 3829);
