@@ -98,9 +98,9 @@ async function init() {
       new WebMethods(saito),
       new Factory(),
       saito.options.wallet?.privateKey || "",
-      LogLevel.Info
-    );  
-  } catch(e){
+      LogLevel.Trace
+    );
+  } catch (e) {
     console.error(e);
   }
   saito.wallet = (await S.getInstance().getWallet()) as Wallet;
@@ -111,7 +111,7 @@ async function init() {
   saito.SPVMODE = 1;
   try {
     await saito.init();
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 
