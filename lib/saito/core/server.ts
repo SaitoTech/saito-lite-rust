@@ -31,13 +31,13 @@ export class NodeSharedMethods extends CustomSharedMethods {
   }
 
   sendMessage(peerIndex: bigint, buffer: Uint8Array): void {
-    console.log("send message : " + peerIndex + " with size : " + buffer.byteLength);
+    // console.log("send message : " + peerIndex + " with size : " + buffer.byteLength);
     let socket = S.getInstance().getSocket(peerIndex);
     socket.send(buffer);
   }
 
   sendMessageToAll(buffer: Uint8Array, exceptions: bigint[]): void {
-    console.log("send message to all with length : " + buffer.byteLength);
+    // console.log("send message to all with length : " + buffer.byteLength);
     S.getInstance().sockets.forEach((socket, key) => {
       if (exceptions.includes(key)) {
         return;
