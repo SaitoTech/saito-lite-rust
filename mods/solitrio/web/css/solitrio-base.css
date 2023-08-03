@@ -1,162 +1,171 @@
 
-.rules-overlay ul{
-  margin-left: 25px;
+.rules-overlay ul {
+    margin-left: 25px;
 }
 
-.status-header{
-  height: 120px;
+.status-header {
+    height: 120px;
 }
 
 .gameboard {
-  position: absolute;
-  background-image: url(/saito/img/arcade/greenfelt.jpg);
-  background-size: cover;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: minmax(20%,max-content) 1fr;
+    position: absolute;
+    background-image: url(/saito/img/arcade/greenfelt.jpg);
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(20%, max-content) 1fr;
 }
 
 .logobox {
-  position: relative;
-  margin-top: 50px;
-  font-size: 20px;
-  order: 1;
-  max-width: 200px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 80px;
+    position: relative;
+    margin-top: 50px;
+    font-size: 20px;
+    order: 1;
+    max-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 80px;
 }
 
-.logobox div{
-  border-radius: 5px;
+.logobox div {
+    border-radius: 5px;
 }
 
 .logobox img {
-  width: 100%;
-  margin-bottom: 15px;
+    width: 100%;
+    margin-bottom: 15px;
 }
 
-.status-header{
-  padding: 10px 5px;
-  margin-top: 20px;
+.status-header {
+    padding: 10px 5px;
+    margin-top: 20px;
 }
 
-.logobox .status-header, .logobox .status-text-menu{
-  background-color: #fffe
+.logobox .status-header, .logobox .status-text-menu {
+    background-color: #fffe
 }
 
-.selected .empty:hover{
-  background-color: rgba(240,240,240,0.7);
-  border-radius: 10px;
+.selected .empty:hover {
+    background-color: rgba(240, 240, 240, 0.7);
+    border-radius: 10px;
 }
 
-.selected .valid:hover{
-  background-color: rgba(160,255,160,0.85);
-  border-radius: 10px;
+.selected .valid:hover {
+    background-color: rgba(160, 255, 160, 0.85);
+    border-radius: 10px;
 }
-.selected .invalid:hover{
-  background-color: rgba(255,160,160,0.85);
-  border-radius: 10px;
+
+.selected .invalid:hover {
+    background-color: rgba(255, 160, 160, 0.85);
+    border-radius: 10px;
 }
 
 
 .rowbox {
-  order: 2;
-  margin-top: 25px;
-  padding: 25px;
-  display: grid;
-  grid-template-columns: repeat(10,1fr);
-  grid-template-rows: 1fr 1fr 1fr 1fr;
-  max-width: min(90vw,160vh);
-  grid-gap: min(5px,1vh);
-  height: fit-content;
-  transition: filter 1s;
+    order: 2;
+    margin-top: 25px;
+    padding: 25px;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+    max-width: min(90vw, 160vh);
+    grid-gap: min(5px, 1vh);
+    height: fit-content;
+    transition: filter 1s;
 }
 
-.rowbox.nomoves{
-  filter: brightness(0.5);
+.rowbox.nomoves {
+    filter: brightness(0.5);
 }
 
-.slot, .selected .slot.empty{
- width:100%;
- cursor: pointer;
+.slot, .selected .slot.empty {
+    width: 100%;
+    cursor: pointer;
 }
 
-.slot.empty, .selected .slot, .nomoves .slot{
-  cursor: unset;
+.slot.empty, .selected .slot, .nomoves .slot {
+    cursor: unset;
 }
 
-.slot:hover{
-  filter: brightness(0.85);
+.slot:hover {
+    filter: brightness(0.85);
 }
 
-.selected .slot:hover, .nomoves .slot:hover{
-  filter: unset;
+.selected .slot:hover, .nomoves .slot:hover {
+    filter: unset;
 }
 
 .slot img, .animated_elem img {
- width: 100%;
- transition: transform 1s;
+    width: 100%;
+    transition: transform 1s;
 }
 
-.slot.misclick img{
-  transform: rotate(360deg);
+.slot.misclick img {
+    transform: rotate(360deg);
 }
 
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
-  .logobox{
-    order: 1;
-    margin-top: 40px;
-    max-width: 150px;
-    max-height: 100vh;
-    height: fit-content;
-  }
-  .logobox img{
-    display: none;
-  }
-  .hidable{
-    display: none;
-  }
-  .rowbox{
-    margin-top: 50vh;
-    transform: translateY(-50%);
-    padding: 15px;
-    order: 2;
-  }
+    .logobox {
+        order: 1;
+        margin-top: 40px;
+        max-width: 150px;
+        max-height: 100vh;
+        height: fit-content;
+    }
+
+    .logobox img {
+        display: none;
+    }
+
+    .hidable {
+        display: none;
+    }
+
+    .rowbox {
+        margin-top: 50vh;
+        transform: translateY(-50%);
+        padding: 15px;
+        order: 2;
+    }
 
 }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
-  .gameboard{
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
-    
-  }
-  .logobox{
-    order: 2;
-    max-width: unset;
-    margin: 5px auto;
-    font-size: 18px;
-    align-self: end;
-  }
-  .logobox img{
-    display: none;
-  }
-  .hidable{
-    display: none;
-  }
-  .logobox .status, .logobox .status-header, .logobox .status-text-menu{
-    width: min(500px, 90vw);
-  }
-  .rowbox{
-    max-width: 100vw;
-    order: 1;
-  }
+    .gameboard {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+
+    }
+
+    .logobox {
+        order: 2;
+        max-width: unset;
+        margin: 5px auto;
+        font-size: 18px;
+        align-self: end;
+    }
+
+    .logobox img {
+        display: none;
+    }
+
+    .hidable {
+        display: none;
+    }
+
+    .logobox .status, .logobox .status-header, .logobox .status-text-menu {
+        width: min(500px, 90vw);
+    }
+
+    .rowbox {
+        max-width: 100vw;
+        order: 1;
+    }
 }
 
-/* force landscape when on mobile 
+/* force landscape when on mobile
 This works for display, but it screws up the animations!!!!
 
 @media screen and (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
@@ -183,4 +192,4 @@ This works for display, but it screws up the animations!!!!
   }
 */
 
-}
+/*}*/

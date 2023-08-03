@@ -3,18 +3,15 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const CryptoSelectAmount = require('./lib/overlays/select-amount');
 const CryptoInadequate = require('./lib/overlays/inadequate');
 
-
 class Crypto extends ModTemplate {
-
   constructor(app, mod) {
-
     super(app);
 
     this.app = app;
     this.mod = mod;
     this.ticker = "";
 
-    this.styles = ['/crypto/css/crypto-base.css'];
+    this.styles = ["/crypto/css/crypto-base.css"];
 
     this.appname = "Crypto";
     this.name = "Crypto";
@@ -25,27 +22,26 @@ class Crypto extends ModTemplate {
     this.overlay_inadequate = new CryptoInadequate(app, this);
 
   }
-  
-
-  
 
   respondTo(type = "") {
 
     if (type == "game-menu") {
-
       //
       // only show if games are winnable
       //
       let gm = this.app.modules.returnActiveModule();
+
       if (!gm.can_bet) { return null; }
       if (gm.name === "Chess") { return null; }
 
       let ac = this.app.wallet.returnActivatedCryptos();
 
       let cm = this;
-      let menu = { id: "game-crypto",
-                   text: "Crypto",
-                   submenus: []};
+      let menu = {
+        id: "game-crypto",
+        text: "Crypto",
+        submenus: [],
+      };
 
       for (let i = 0; i < ac.length; i++) {
       	menu.submenus.push({
@@ -121,7 +117,7 @@ console.log(JSON.stringify(game_mod.game.cryptos));
   }
 
 
-  enableCrypto(game_mod, game_id, ticker, amount) {
+  async enableCrypto(game_mod, game_id, ticker, amount) {
 
     if (game_mod.game.crypto != "" && game_mod.game.crypto != "CHIPS") {
       alert("Exiting: crypto already enabled for this game!");
@@ -138,11 +134,8 @@ console.log(JSON.stringify(game_mod.game.cryptos));
     game_mod.game = game_mod.game_state_pre_move;
     game_mod.game.turn = [];
     game_mod.moves = [];
-    game_mod.proposeGameStake(ticker, amount);
-
+    await game_mod.proposeGameStake(ticker, amount);
   }
-
 }
 
 module.exports = Crypto;
-

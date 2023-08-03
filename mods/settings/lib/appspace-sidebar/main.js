@@ -33,4 +33,3 @@ class SettingsAppspaceSidebar {
 }
 
 module.exports = SettingsAppspaceSidebar;
-

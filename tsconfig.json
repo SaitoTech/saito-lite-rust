@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es5",
+    "target": "es2020",
     "moduleResolution": "node",
     "sourceMap": true,
 //    "skipLibCheck": true,
@@ -11,6 +11,7 @@
 //    "declaration": true,
 //    "declarationMap": true,
 //    "inlineSourceMap": true,
+    "resolveJsonModule": true,
     "downlevelIteration": true,
     "lib": [
       "dom",

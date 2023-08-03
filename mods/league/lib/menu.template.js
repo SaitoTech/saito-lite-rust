@@ -1,5 +1,4 @@
-module.exports = (app, mod, league) => {
-
+module.exports = async (app, mod, league) => {
   let html = `
       <div class="league-component-existing-league-box" id="lg${league.id}">
         <div class="league-component-existing-league-details">
@@ -7,28 +6,28 @@ module.exports = (app, mod, league) => {
           <div>Type: ${league.status}</div>
           <div>Algo: ${league.ranking_algorithm}</div>
           <div>Players: ${league.players.length}</div>
-          <div>Admin: ${league.admin ? app.browser.returnAddressHTML(league.admin): "SAITO"}</div>
+          <div>Admin: ${league.admin ? app.browser.returnAddressHTML(league.admin) : "SAITO"}</div>
         </div>
         <div class="league-component-existing-league-controls">`;
 
-    if (league.rank < 0 && league.admin){
-     html +=`<button class="league-button league-join-button">Join</button>`; 
-    }
+  if (league.rank < 0 && league.admin) {
+    html += `<button class="league-button league-join-button">Join</button>`;
+  }
 
-    html +=`<button class="league-button league-view-button">View</button>`;
+  html += `<button class="league-button league-view-button">View</button>`;
 
-    if (!league.admin){
-      html += `<button class="league-button league-edit-button">Edit</button>`;
-      html += `<button class="league-button league-sudo-button">Admin</button>`;
-    }
+  if (!league.admin) {
+    html += `<button class="league-button league-edit-button">Edit</button>`;
+    html += `<button class="league-button league-sudo-button">Admin</button>`;
+  }
 
-    if (app.wallet.returnPublicKey() == league.admin) { 
-      html += `<button class="league-button league-edit-button">Edit</button>`;
-      html += `<button class="league-button league-invite-button">Invite</button>`;
-      html += `<button class="league-button league-delete-button">Delete</button>`;
-    }
+  if (mod.publicKey == league.admin) {
+    html += `<button class="league-button league-edit-button">Edit</button>`;
+    html += `<button class="league-button league-invite-button">Invite</button>`;
+    html += `<button class="league-button league-delete-button">Delete</button>`;
+  }
 
   html += `</div></div>`;
 
   return html;
-}
+};

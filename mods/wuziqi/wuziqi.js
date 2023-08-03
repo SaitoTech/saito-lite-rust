@@ -30,18 +30,19 @@ class Wuziqi extends GameTemplate {
         this.app   = app;
 
         this.roles = ["observer", "black", "white"];
+        this.acknowledge_text = "next round..."; // not "i understand..."
 
         return this;
     }
 
 
-    render(app) {
+    async render(app) {
 
         if (!this.browser_active) { return; }
         if (this.initialize_game_run) { return 0; }
 
         // Don't completly Override the game template render function
-        super.render(app);
+        await super.render(app);
 
         this.menu.addMenuOption("game-game", "Game");
 
@@ -56,10 +57,10 @@ class Wuziqi extends GameTemplate {
         });
 
         // Add Chat Features to Menu
-        this.menu.addChatMenu(this.roles.slice(1));
+        await this.menu.addChatMenu(this.roles.slice(1));
         
         // Render menu and attach events
-        this.menu.render();
+        await this.menu.render();
 
         // Initialize our game
         this.game.score = [0, 0];
@@ -305,12 +306,12 @@ class Wuziqi extends GameTemplate {
     }
     
     // Bundle moves and send them off.
-    endTurn() {
+    async endTurn() {
         let extra = {};
         extra.target = (this.game.player + 1) % 2;
         this.game.turn = this.moves;
         this.moves = [];
-        this.sendMessage("game", extra);
+        await this.sendMessage("game", extra);
     }
 
 
@@ -318,7 +319,7 @@ class Wuziqi extends GameTemplate {
     //
     // Core Game Logic
     //
-    handleGameLoop(msg = null) {
+    async handleGameLoop(msg = null) {
 
         // The Game Loop hands us back moves from the end of the stack (the reverse order they were added)
 
@@ -341,7 +342,7 @@ class Wuziqi extends GameTemplate {
                 //console.log(this.game.options);
                 //console.log(this.game.crypto);
 
-                this.endGame(this.game.players[parseInt(mv[1])-1], `best of ${this.game.options.best_of}`);
+                await this.endGame(this.game.players[parseInt(mv[1])-1], `best of ${this.game.options.best_of}`);
                 return 0; //end queue cycling
             }
 
@@ -444,9 +445,9 @@ class Wuziqi extends GameTemplate {
         if (this.game.player == 0 ) { return; }
 
         let game_self = this;
-        this.playerAcknowledgeNotice(notice, function () {
-            game_self.addMove("clearboard\t"+game_self.game.player);
-            game_self.endTurn();
+        this.playerAcknowledgeNotice(notice, async function () {
+            await game_self.addMove("clearboard\t"+game_self.game.player);
+            await game_self.endTurn();
         });
 
     }
