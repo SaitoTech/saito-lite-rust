@@ -1896,6 +1896,7 @@ class Arcade extends ModTemplate {
     } else {
       console.log("Game already exists");
       game_mod.loadGame(game_id);
+      game_mod.game.player = 0;
     }
 
     game_mod.game.halted = 1; // Default to paused
