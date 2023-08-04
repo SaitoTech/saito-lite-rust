@@ -13,7 +13,7 @@
       var twilight_self = this;
       twilight_self.playerFinishedPlacingInfluence();
 
-      twilight_self.addMove("resolve\tsudan");
+      twilight_self.game.queue.push("resolve\tsudan");
 
       let modifications = 0;
 
@@ -22,7 +22,7 @@
       }
 
       let die = twilight_self.rollDice(6);
-      twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+` rolls: ${die}, adjusted: ${die-modifications}`);
+      twilight_self.game.queue.push("NOTIFY\t"+player.toUpperCase()+` rolls: ${die}, adjusted: ${die-modifications}`);
 
       if (die >= (target + modifications)) {
 
