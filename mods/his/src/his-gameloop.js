@@ -1542,9 +1542,11 @@ console.log("CARDS: " + JSON.stringify(this.game.deck[0].fhand));
             let hash2 = game_self.app.crypto.hash(Math.random().toString());  // my secret
             let hash3 = game_self.app.crypto.hash(hash2 + hash1);             // combined hash
 
-            let card_sig = game_self.app.crypto.signMessage(card, game_self.app.wallet.returnPrivateKey());
-            let hash2_sig = game_self.app.crypto.signMessage(hash2, game_self.app.wallet.returnPrivateKey());
-            let hash3_sig = game_self.app.crypto.signMessage(hash3, game_self.app.wallet.returnPrivateKey());
+	    let privateKey = await game_self.app.wallet.getPrivateKey();
+
+            let card_sig = game_self.app.crypto.signMessage(card, privateKey);
+            let hash2_sig = game_self.app.crypto.signMessage(hash2, privateKey);
+            let hash3_sig = game_self.app.crypto.signMessage(hash3, privateKey);
 
             game_self.game.spick_card = card;
             game_self.game.spick_hash = hash2;

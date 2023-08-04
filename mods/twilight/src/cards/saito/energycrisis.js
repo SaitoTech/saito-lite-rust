@@ -31,6 +31,8 @@
 
         twilight_self.updateStatusWithOptions(`${twilight_self.cardToText(card)}: `,'<ul><li class="option" id="givevp">give USSR 2 VP</li><li class="option" id="discard">discard US OPs</li></ul>', function(action2) {
 
+alert("TESTING: " + action2);
+
   	  if (action2 === "givevp") {
 	    twilight_self.addMove("vp\tussr\t2");
 	    twilight_self.endTurn();

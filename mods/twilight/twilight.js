@@ -48,7 +48,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     //
     // ui components
@@ -2704,7 +2704,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["bayofpigs","fallofsaigon","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["cia", "voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
+          this.game.deck[0].hand = ["asknot", "voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -3155,12 +3155,16 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	      this.removeCardFromDeckNextDeal("iranianultimatum", "Removed");
 	    }
 	    if (this.game.state.events.fidel != 1) {
-	      delete mid_war_cards['cubanmissile'];
 	      this.removeCardFromDeckNextDeal("cubanmissile", "Fidel not evented");
 	    }
 	    if (this.game.state.events.tsarbomba == 1 || this.game.state.events.cia_created != 1) {
 	      this.removeCardFromDeckNextDeal("lonegunman", "CIA not evented");
 	    }
+
+	    //
+	    // dynamic cards removed, so refresh cardlist
+	    //
+	    mid_war_cards = this.returnMidWarCards();
 
 	    //
 	    // then add 
@@ -3177,6 +3181,7 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	    //
 	    // delete removed from existing deck
 	    //
+	    delete mid_war_cards['cubanmissile'];
 	    delete mid_war_cards['lonegunman'];
 	    delete mid_war_cards['summit'];
 
@@ -3256,6 +3261,11 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
 	    //
 	    this.removeCardFromDeckNextDeal("cambridge", "Removed from Game");
 
+
+	    //
+	    // dynamic cards removed, so refresh cardlist
+	    //
+	    late_war_cards = this.returnLateWarCards();
 
 	    //
 	    // add
@@ -3750,15 +3760,16 @@ console.log("UPDATED STATS: " + JSON.stringify(this.game.state.stats.round));
     }
     this.updateStatusAndListCards(x,this.game.deck[0].hand);
     if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 0; }
-    twilight_self.hud.attachControlCallback(function(card) {
+    twilight_self.hud.attachControlCallback(async function(card) {
       if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 1; } //You want to skip confirmations after Headline???
-      twilight_self.playerTurnHeadlineSelected(card, player);
+      await twilight_self.playerTurnHeadlineSelected(card, player);
     });
+
 
   }
 
 
-playerTurnHeadlineSelected(card, player) {
+async playerTurnHeadlineSelected(card, player) {
 
     let twilight_self = this;
 
@@ -3794,9 +3805,14 @@ playerTurnHeadlineSelected(card, player) {
       let hash2 = twilight_self.app.crypto.hash(Math.random().toString());  // my secret
       let hash3 = twilight_self.app.crypto.hash(hash2 + hash1);             // combined hash
 
-      let card_sig = twilight_self.app.crypto.signMessage(card, twilight_self.app.wallet.returnPrivateKey());
-      let hash2_sig = twilight_self.app.crypto.signMessage(hash2, twilight_self.app.wallet.returnPrivateKey());
-      let hash3_sig = twilight_self.app.crypto.signMessage(hash3, twilight_self.app.wallet.returnPrivateKey());
+      let privateKey = await twilight_self.app.wallet.getPrivateKey();
+
+      let card_sig = twilight_self.app.crypto.signMessage(card, privateKey);
+      let hash2_sig = twilight_self.app.crypto.signMessage(hash2, privateKey);
+console.log("CARD_SIG: " + card_sig);
+console.log("HASH2_SIG: " + hash2_sig);
+console.log("getPrivateKey(): " + privateKey);
+      let hash3_sig = twilight_self.app.crypto.signMessage(hash3, privateKey);
 
       twilight_self.game.spick_card = card;
       twilight_self.game.spick_hash = hash2;
@@ -15039,6 +15055,8 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
 
         twilight_self.updateStatusWithOptions(`${twilight_self.cardToText(card)}: `,'<ul><li class="option" id="givevp">give USSR 2 VP</li><li class="option" id="discard">discard US OPs</li></ul>', function(action2) {
+
+alert("TESTING: " + action2);
 
   	  if (action2 === "givevp") {
 	    twilight_self.addMove("vp\tussr\t2");
