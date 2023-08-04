@@ -195,9 +195,6 @@ class Encrypt extends ModTemplate {
         recipients.sort();
         recipient = recipients[0];
         parties_to_exchange = recipients.length;
-      } else {
-        recipient = recipients;
-        parties_to_exchange = 2;
       }
     } else {
       recipient = recipients;
@@ -205,7 +202,7 @@ class Encrypt extends ModTemplate {
     }
 
     console.log("recipient is: " + recipient);
-    if (recipient == "") {
+    if (!recipient) {
       return;
     }
 
