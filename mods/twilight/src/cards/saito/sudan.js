@@ -43,7 +43,7 @@
           twilight_self.placeInfluence("sudan", 2, player);
 	}
         twilight_self.game.queue.push(`milops\t${player}\t2`);
-        twilight_self.game.queue.push(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}\t${success}`);
+        twilight_self.game.queue.push(`war\t${card}\t${player}\t${die}\t${modifications}\t${player}\t${success}`);
             
       }
       return 1;
