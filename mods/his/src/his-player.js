@@ -297,6 +297,7 @@
       $('.option').off();
       $('.option').on('click', function () {
 
+        $('.option').off();
         let id = $(this).attr("id");
 
         if (!units_to_destroy.includes(id)) {
@@ -906,13 +907,29 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     let his_self = this;
 
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
+    let can_pass = true;
 
     let cards = [];
     for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length;i++) {
+      let c = this.game.deck[0].fhand[faction_hand_idx][i];
+      if (c === "001") { can_pass = false; }
+      if (c === "002") { can_pass = false; }
+      if (c === "003") { can_pass = false; }
+      if (c === "004") { can_pass = false; }
+      if (c === "005") { can_pass = false; }
+      if (c === "006") { can_pass = false; }
+      if (c === "007") { can_pass = false; }
+      if (c === "008") { can_pass = false; }
+      if (c === "009") { can_pass = false; }
+      if (c === "010") { can_pass = false; }
       cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
+    } // no home card? can pass
+    if (this.factions[faction].returnAdminRating() > this.game.deck[0].fhand[faction_hand_idx].length) {
+      can_pass = false;
     }
-    cards.push("pass");
-
+    if (can_pass) {
+      cards.push("pass");
+    }
 
     this.updateStatusAndListCards("Select a Card: ", cards);
     this.attachCardboxEvents((card) => {
@@ -2594,6 +2611,8 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
       function(destination_spacekey) {
 	his_self.addMove("assault\t"+faction+"\t"+destination_spacekey);
+        his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" announces seige of "+his_self.game.spaces[destination_spacekey].name + "\tassault");
+        his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	his_self.endTurn();
       },
 

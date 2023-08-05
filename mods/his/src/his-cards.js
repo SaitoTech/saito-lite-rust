@@ -765,8 +765,8 @@ alert("Not Implemented");
       faction : "hapsburg" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-        if (his_self.isBesieged("charles-v")) { return 0; }
-        if (his_self.isCaptured("charles-v")) { return 0; }
+        if (his_self.isBesieged("hapsburg", "charles-v")) { return 0; }
+        if (his_self.isCaptured("hapsburg", "charles-v")) { return 0; }
 	return 1;
       },
       onEvent : function(his_self, faction) {
@@ -1594,10 +1594,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 
 	let papacy = his_self.returnPlayerOfFaction("papacy");
 
-	// deal extra card if player is england
-	let player = his_self.returnPlayerOfFaction("england");
-
-	if (player == his_self.game.player) {
+	if (faction === "england") {
 	  let faction_hand_idx = his_self.returnFactionHandIdx(player, "england");   
  	  his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.state.players_info[player-1].factions[faction_hand_idx]);
 	  his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
@@ -1606,6 +1603,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	his_self.game.queue.push(`counter_reformation_attempt\t${papacy}`);
 	his_self.game.queue.push(`counter_reformation_attempt\t${papacy}`);
 	his_self.game.queue.push(`counter_reformation_attempt\t${papacy}`);
+	his_self.game.queue.push(`STATUS\tPapacy may make 3 counter-reformation attempts`);
 
 	return 1;
       },
@@ -5283,8 +5281,8 @@ alert("NOT IMPLEMENTED");
       faction : "hapsburg" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-        if (his_self.isBesieged("charles-v")) { return 0; }
-        if (his_self.isCaptured("charles-v")) { return 0; }
+        if (his_self.isBesieged("hapsburg", "charles-v")) { return 0; }
+        if (his_self.isCaptured("hapsburg", "charles-v")) { return 0; }
 	return 1;
       },
       onEvent : function(his_self, faction) {

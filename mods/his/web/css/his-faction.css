@@ -109,7 +109,7 @@
   background-size: contain;
 }
 
-.faction_sheet_rule3 {
+.faction_sheet_ruler {
     top: 3.5%;
     left: 66.5%;
     position: relative;
@@ -119,8 +119,8 @@
 
 .faction_sheet_keytile {
   position: absolute;
-  height: 100px;
-  width: 100px;
+  height: 7%;
+  width: 7%;
 }
 .faction_sheet_england_keytile1 {
   top: 568px;
@@ -542,46 +542,46 @@
 }
 
 .protestant_translation_status0 {
-  height: 85px;
-  width: 85px;
-  top: 465px;
-  left: 40px;
+  top: 57%;
+  left: 3%;
+  height: 7%;
+  width: 7%;
 }
 .protestant_translation_status1 {
-  height: 85px;
-  width: 85px;
-  top: 465px;
-  left: 133px;
+  top: 57%;
+  left: 11%;
+  height: 7%;
+  width: 7%;
 }
 .protestant_translation_status2 {
-  height: 85px;
-  width: 85px;
-  top: 465px;
-  left: 226px;
+  top: 57%;
+  left: 18%;
+  height: 7%;
+  width: 7%;
 }
 .protestant_translation_status3 {
-  height: 85px;
-  width: 85px;
-  top: 465px;
-  left: 320px;
+  top: 57%;
+  left: 26%;
+  height: 7%;
+  width: 7%;
 }
 .protestant_translation_status4 {
-  height: 85px;
-  width: 85px;
-  top: 465px;
-  left: 416px;
+  top: 57%;
+  left: 33.5%;
+  height: 7%;
+  width: 7%;
 }
 .protestant_translation_status5 {
-  height: 85px;
-  width: 85px;
-  top: 465px;
-  left: 510px;
+  top: 57%;
+  left: 41%;
+  height: 7%;
+  width: 7%;
 }
 .protestant_translation_status6 {
-  height: 85px;
-  width: 85px;
-  top: 465px;
-  left: 607px;
+  top: 57%;
+  left: 48.5%;
+  height: 7%;
+  width: 7%;
 }
 
 .papacy_construction_status1 {

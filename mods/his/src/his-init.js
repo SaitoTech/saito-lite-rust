@@ -8,6 +8,7 @@ const ReformationOverlay = require('./lib/ui/overlays/reformation');
 const MovementOverlay = require('./lib/ui/overlays/movement');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
 const FieldBattleOverlay = require('./lib/ui/overlays/field-battle');
+const AssaultOverlay = require('./lib/ui/overlays/siege');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const DebatersOverlay = require('./lib/ui/overlays/debaters');
 const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
@@ -48,6 +49,7 @@ class HereIStand extends GameTemplate {
     this.reformation_overlay = new ReformationOverlay(this.app, this);  // reformations and counter-reformations
     this.language_zone_overlay = new LanguageZoneOverlay(this.app, this);  // language zone selection
     this.debaters_overlay = new DebatersOverlay(this.app, this);  // language zone selection
+    this.assault_overlay = new AssaultOverlay(this.app, this);  // siege
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
     this.movement_overlay = new MovementOverlay(this.app, this);  // unit movement
 
