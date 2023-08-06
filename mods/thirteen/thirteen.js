@@ -1264,9 +1264,7 @@ class Thirteen extends GameTemplate {
         thirteen_self.playerPlaceCommandTokens(thirteen_self.game.player, number);
       } else {
         thirteen_self.updateStatus(
-          thirteen_self.formatStatusHeader(
-            `wait for opponent to play ${thirteen_self.cardToText(card)} event`
-          )
+          `wait for opponent to play ${thirteen_self.cardToText(card)} event`
         );
         thirteen_self.addMove(
           `command_influence\t${thirteen_self.game.player}\t${number}\t${thirteen_self.game.state.personal_letter_bonus}`
