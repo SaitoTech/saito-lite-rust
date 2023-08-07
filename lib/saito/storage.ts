@@ -82,6 +82,8 @@ class Storage {
       data.field3 = tx.to[0].publicKey;
     }
 
+console.log("SAVE TRANSACTION IN STORAGE");
+
     if (peer === "localhost") {
       let archive_mod = this.app.modules.returnModule("Archive");
       if (archive_mod) {

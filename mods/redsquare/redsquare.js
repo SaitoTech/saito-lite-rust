@@ -256,10 +256,17 @@ class RedSquare extends ModTemplate {
   // connected and available for a content-fetch request.
   //
   async render() {
+
+    //
+    // browsers only!
+    //
     if (!this.app.BROWSER) {
       return;
     }
 
+    //
+    // default to dark mode
+    //
     if (this.app.options.theme) {
       let theme = this.app.options.theme[this.slug];
       if (theme != null) {
@@ -267,6 +274,9 @@ class RedSquare extends ModTemplate {
       }
     }
 
+    //
+    // create and render components
+    //
     if (this.main == null) {
       this.main = new SaitoMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
@@ -290,8 +300,20 @@ class RedSquare extends ModTemplate {
       }
     }
 
+
     await super.render();
     this.rendered = true;
+
+    //
+    //
+    //
+    for (let z = 0; z < window.tweets.length; z++) {
+      console.log(window.tweets[z]);
+      let newtx = new Transaction();
+      newtx.deserialize_from_web(this.app, window.tweets[z]);
+      console.log(newtx);
+      this.addTweet(newtx);
+    }
 
   }
 
@@ -478,6 +500,8 @@ class RedSquare extends ModTemplate {
   ///////////////////////
   async onConfirmation(blk, tx, conf) {
 
+console.log("NEW BLOCK RECEIVED!");
+
     let txmsg = tx.returnMessage();
     try {
       if (conf == 0) {
@@ -620,6 +644,12 @@ class RedSquare extends ModTemplate {
     }
 
   }
+
+  //
+  // the following functions are all deprecated, but included because it is going to be a challenge
+  // to upgrade them quickly. we prefer to use the Archive module to fetch and load transactions 
+  // rather than falling back to SQL commands....
+  //
   loadTweetChildren(peer, sig, mycallback = null) {
 
     if (this.peers.length == 0) { return; }
@@ -1079,9 +1109,12 @@ console.log("THE TRANSACTION IS: " + JSON.stringify(tx.serialize_to_web(this.app
 
     await newtx.sign();
 
-console.log("this TX is: " + JSON.stringify(newtx));
+console.log("this TX is: " + JSON.stringify(newtx.serialize_to_web(app)));
 
     await redsquare_self.app.network.propagateTransaction(newtx);
+
+console.log("finished propagating it!");
+
     return newtx;
 
   }
@@ -1090,7 +1123,7 @@ console.log("this TX is: " + JSON.stringify(newtx));
 
     try {
 
-      let tweet = new Tweet(app, this, tx, "");
+      let tweet = new Tweet(app, this, tx, ".tweet-manager");
       let txmsg = tx.returnMessage();
 
       //
@@ -1103,8 +1136,12 @@ console.log("this TX is: " + JSON.stringify(newtx));
         //
         if (tx.isTo(this.publicKey)) {
 
+console.log("$");
+console.log("$ transaction is to me!");
+console.log("$");
+
 	  //
-	  // this transaction is TO me, but I may not be the tx.transaction.to[0].add address, and thus the archive
+	  // this transaction is TO me, but I may not be the tx.to[0].publicKey address, and thus the archive
 	  // module may not index this transaction for me in a way that makes it very easy to fetch (field3 = MY_KEY}
 	  // thus we override the defaults by setting field3 explicitly to our publickey so that loading transactions
 	  // from archives by fetching on field3 will get this.
@@ -1345,6 +1382,8 @@ console.log("this TX is: " + JSON.stringify(newtx));
   /////////////////////////////////////////
   async updateTweetsCacheForBrowsers() {
     let hex_entries = [];
+
+console.log("updating cache!");
 
     let sql = `SELECT *, (updated_at + 10 * (num_likes + num_replies + num_retweets)) AS virality
                FROM tweets

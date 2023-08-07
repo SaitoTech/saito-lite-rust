@@ -175,6 +175,8 @@ class Archive extends ModTemplate {
   async saveTransaction(tx, obj = {}, onchain = 0) {
     let newObj = {};
 
+console.log("SAVE TRANSACTION IN ARCHIVE");
+
     newObj.user_id = obj?.user_id || 0; //What is this supposed to be
     newObj.publicKey = obj?.publicKey || tx.from[0].publicKey;
     newObj.owner = obj?.owner || "";
