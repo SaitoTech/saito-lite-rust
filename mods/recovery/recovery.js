@@ -304,11 +304,11 @@ class Recovery extends ModTemplate {
             let encrypted_wallet = txmsg.wallet;
             let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
 
+            //Junk any games...
+            decrypted_wallet.games = [];
             this.app.options = JSON.parse(decrypted_wallet);
+
             this.app.storage.saveOptions();
-            //await this.app.wallet.saveWallet();
-            //this.app.keychain.addKey(this.publicKey, { identifier: identifier });
-            //this.app.keychain.saveKeys();
 
             this.login_overlay.success();
           },
