@@ -4,6 +4,7 @@ import Block from "./block";
 import { Saito as S } from "../../apps/core";
 import { TransactionType } from "saito-js/lib/transaction";
 import Transaction from "./transaction";
+import { BlockType } from "saito-js/lib/block";
 
 export default class Blockchain extends SaitoBlockchain {
   public app: S;
@@ -39,7 +40,16 @@ export default class Blockchain extends SaitoBlockchain {
   }
 
   async loadBlockAsync(hash: string): Promise<Block | null> {
-    return Saito.getInstance().getBlock(hash);
+    let block: Block = await Saito.getInstance().getBlock(hash);
+    if (block.block_type === BlockType.Full) {
+      return block;
+    } else if (block.block_type === BlockType.Pruned) {
+      let block = await this.app.storage.loadBlockByHash(hash);
+      if (!block || block.block_type === BlockType.Full) {
+        return block;
+      }
+    }
+    return null;
   }
 
   async initialize() {

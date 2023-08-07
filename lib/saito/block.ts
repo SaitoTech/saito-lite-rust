@@ -1,14 +1,4 @@
-import { Saito } from "../../apps/core";
 import SaitoBlock from "saito-js/lib/block";
-import { TransactionType } from "saito-js/lib/transaction";
-import Transaction from "./transaction";
-
-export enum BlockType {
-  Ghost = 0,
-  Header = 1,
-  Pruned = 2,
-  Full = 3,
-}
 
 export default class Block extends SaitoBlock {
   public force: boolean;
