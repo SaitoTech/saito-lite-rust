@@ -11,8 +11,8 @@ const HTMLParser = require("node-html-parser");
 const prettify = require("html-prettify");
 const redsquareHome = require("./index");
 const Post = require("./lib/post");
+const Transaction = require("../../lib/saito/transaction").default;
 const PeerService = require("saito-js/lib/peer_service").default;
-const Transaction = require("../../lib/saito/transaction");
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
@@ -190,9 +190,6 @@ class RedSquare extends ModTemplate {
             post.addImg(img);
           });
           camera.render();
-
-          //Id created by app.browser.addDragAndDrop
-          //post.triggerClick("#hidden_file_element_tweet-overlay");
         },
       });
 
@@ -308,12 +305,13 @@ class RedSquare extends ModTemplate {
     //
     //
     for (let z = 0; z < window.tweets.length; z++) {
-      console.log(window.tweets[z]);
+      console.log("ADDING: " + window.tweets[z]);
       let newtx = new Transaction();
       newtx.deserialize_from_web(this.app, window.tweets[z]);
       console.log(newtx);
       this.addTweet(newtx);
     }
+    this.app.connection.emit("redsquare-home-render-request");
 
   }
 
@@ -506,15 +504,15 @@ console.log("NEW BLOCK RECEIVED!");
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
-          await this.receiveTweetTransaction(blk, tx, conf);
+          await this.receiveTweetTransaction(blk, tx, conf, this.app);
 	  this.sqlcache = {};
         }
         if (txmsg.request === "like tweet") {
-          await this.receiveLikeTransaction(blk, tx, conf);
+          await this.receiveLikeTransaction(blk, tx, conf, this.app);
 	  this.sqlcache = {};
         }
         if (txmsg.request === "flag tweet") {
-          await this.receiveFlagTransaction(blk, tx, conf);
+          await this.receiveFlagTransaction(blk, tx, conf, this.app);
 	  this.sqlcache = {};
         }
       }
@@ -1123,8 +1121,13 @@ console.log("finished propagating it!");
 
     try {
 
+console.log("A");
+
       let tweet = new Tweet(app, this, tx, ".tweet-manager");
+console.log("A2");
       let txmsg = tx.returnMessage();
+
+console.log("B");
 
       //
       // browsers
@@ -1195,6 +1198,8 @@ console.log("$");
 
       }
 
+console.log("C");
+
       //
       // servers
       //
@@ -1217,6 +1222,7 @@ console.log("$");
       let created_at = tx.timestamp;
       let updated_at = tx.timestamp;
 
+console.log("D");
 
       //
       // insert the basic information
@@ -1275,6 +1281,8 @@ console.log("$");
         $tx_size: tx_size
       };
 
+console.log("G");
+
       await app.storage.executeDatabase(sql, params, "redsquare");
 
       let ts = new Date().getTime();
@@ -1307,7 +1315,9 @@ console.log("$");
       //
       // update cache
       //
+console.log("H");
       this.updateTweetsCacheForBrowsers();
+console.log("I");
       this.sqlcache = {};
 
       return;
@@ -1381,6 +1391,12 @@ console.log("$");
   // caching top-10 tweets for fast load //
   /////////////////////////////////////////
   async updateTweetsCacheForBrowsers() {
+
+console.log("");
+console.log("");
+console.log("");
+console.log("updating tweets cache for browsers");
+
     let hex_entries = [];
 
 console.log("updating cache!");
@@ -1390,8 +1406,12 @@ console.log("updating cache!");
                WHERE (flagged IS NOT 1 AND moderated IS NOT 1)
                ORDER BY virality DESC LIMIT 10`;
 
+console.log(sql);
+
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
+
+console.log("number of rows: " + rows.length);
 
     for (let i = 0; i < rows.length; i++) {
       if (!rows[i].tx) {
@@ -1416,6 +1436,7 @@ console.log("updating cache!");
       }
       console.log(tx);
       let hexstring = tx.serialize_to_web(this.app);
+console.log("pushing into hex_entries...");
       hex_entries.push(hexstring);
     }
 
@@ -1433,6 +1454,7 @@ console.log("updating cache!");
           let thisfile = filename + i + ".js";
           const fd = fs.openSync(thisfile, "w");
           html += `  tweets.push(\`${hex_entries[i]}\`);   `;
+console.log("writing file!");
           fs.writeSync(fd, html);
           fs.fsyncSync(fd);
           fs.closeSync(fd);

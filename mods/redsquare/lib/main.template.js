@@ -8,8 +8,6 @@ module.exports = () => {
       </div>
       
       <div class="saito-main">
-        <div id="show-new-tweets" class="saito-button-primary new-tweets-notification">New Posts Available</div>
-	<div class="tweet-manager" id="tweet-manager"></div>
       </div>
      
       <div class="saito-sidebar right">

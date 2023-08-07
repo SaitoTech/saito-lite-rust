@@ -8,6 +8,7 @@ const JSON = require("json-bigint");
 const Transaction = require("../../../lib/saito/transaction").default;
 
 class Tweet {
+
   constructor(app, mod, tx, container = ".tweet-manager") {
     this.app = app;
     this.mod = mod;
@@ -32,6 +33,8 @@ class Tweet {
     // the core
     //
     this.tx = tx;
+
+console.log("tc 1");
 
     //
     // ancillary content is stored in the tx.optional array, where it
@@ -63,6 +66,7 @@ class Tweet {
     if (!this.tx.optional.thread_id) {
       this.tx.optional.thread_id = "";
     }
+console.log("tc 2");
 
     //
     // If I am not part of a thread, become my own thread
@@ -81,6 +85,7 @@ class Tweet {
         this.tx.optional.thread_id = txmsg.data.thread_id;
       }
     }
+console.log("tc 3");
 
     //
     // additional variables are created in-memory from the core transaction
@@ -89,7 +94,6 @@ class Tweet {
     this.text = "";
     this.youtube_id = null;
     this.created_at = this.tx.timestamp;
-    // ***will be updated by tx.optional.updated_at if necessary***
     this.updated_at = this.tx.timestamp;
 
     //
@@ -100,17 +104,21 @@ class Tweet {
     //
     this.notice = "";
 
+console.log("tc 4");
     this.user = new SaitoUser(
       app,
       mod,
       this.container + `> .tweet-${this.tx.signature} > .tweet-header`,
       this.tx.from[0].publicKey
     );
+console.log("tc 4 - 1");
 
     //
     // Default is a new tweet
     //
     this.user.notice = "new post on " + this.formatDate(this.created_at);
+
+console.log("tc 4 - 2");
 
     this.children = [];
     this.children_sigs_hmap = {};
@@ -129,6 +137,7 @@ class Tweet {
     this.is_long_tweet = false;
     this.is_retweet = false;
 
+console.log("tc 5");
     //
     // Read data from txmsg.data and tx.optional to populate this class
     //
@@ -146,7 +155,11 @@ class Tweet {
     //
     //This is async and won't necessarily finish before running the following code!
     //
+console.log("tc 6");
+
     this.generateTweetProperties(app, mod, 0);
+
+console.log("tc 7");
 
     //
     // retweets
@@ -170,6 +183,8 @@ class Tweet {
     //
     //tweet.tx.msg.data.images
 
+console.log("tc 8");
+
     if (this.images?.length > 0) {
       console.log("Has Image");
       this.img_preview = new Image(
@@ -186,7 +201,8 @@ class Tweet {
   }
 
   formatDate(ts = 0) {
-    let dt = this.app.browser.formatDate(ts || this.updated_at);
+    let submit_ts = ts || this.updated_at;
+    let dt = this.app.browser.formatDate(submit_ts);
     return `${dt.month} ${dt.day}, ${dt.year} at ${dt.hours}:${dt.minutes}`;
   }
 

@@ -28,13 +28,13 @@ class RedSquareMain {
     //
     // rendering the main thread
     this.app.connection.on("redsquare-home-render-request", () => {
-      this.manager.publickey = this.app.wallet.returnPublicKey();
+      this.manager.publickey = this.mod.publicKey;
       this.manager.mode = "tweets";
       this.manager.render();
     });
     // when someone clicks on a tweet
     this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
-      this.manager.publickey = this.app.wallet.returnPublicKey();
+      this.manager.publickey = this.mod.publicKey;
       this.manager.mode = "tweets";
       this.manager.renderTweet(tweet);
     });
@@ -48,7 +48,7 @@ class RedSquareMain {
       this.mod.notifications_number_unviewed = 0;
       this.mod.save();
       this.mod.menu.incrementNotifications("notifications", 0);
-      this.manager.publickey = this.app.wallet.returnPublicKey();
+      this.manager.publickey = this.mod.publicKey;
       this.manager.mode = "notifications";
       this.manager.render();
     });      
@@ -220,7 +220,7 @@ class RedSquareMain {
     } else {
       this.app.browser.addElementToSelector(RedSquareMainTemplate(), this.container);
     }
-
+    this.manager.render();
     this.attachEvents();
   }
 
