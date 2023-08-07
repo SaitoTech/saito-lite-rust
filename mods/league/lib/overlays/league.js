@@ -231,8 +231,8 @@ class LeagueOverlay {
     this.app.browser.addElementToSelector(html, "#admin-widget .saito-table-body");
 
     Array.from(document.querySelectorAll(".email_field")).forEach((player_contact) => {
-      player_contact.onblur = (e) => {
-        let newtx = this.mod.createUpdatePlayerTransaction(
+      player_contact.onblur = async (e) => {
+        let newtx = await this.mod.createUpdatePlayerTransaction(
           this.league.id,
           e.currentTarget.dataset.id,
           sanitize(player_contact.textContent),
@@ -255,7 +255,7 @@ class LeagueOverlay {
           `Remove ${this.app.keychain.returnIdentifierByPublicKey(key, true)} from the league?`
         );
         if (c) {
-          let tx = this.mod.createQuitTransaction(this.league.id, key);
+          let tx = await this.mod.createQuitTransaction(this.league.id, key);
           this.app.network.propagateTransaction(tx);
           this.mod.removeLeaguePlayer(this.league.id, key);
           this.app.connection.emit("remove-user-from-chat-group", this.league.id, key);
@@ -274,7 +274,7 @@ class LeagueOverlay {
           let new_score = sanitize(player.textContent);
           new_score = parseInt(new_score);
 
-          let newtx = this.mod.createUpdatePlayerTransaction(
+          let newtx = await this.mod.createUpdatePlayerTransaction(
             this.league.id,
             key,
             new_score,

@@ -69,7 +69,7 @@ class JoinLeague {
         document.querySelector(".league-join-info").remove();
         this.loader.render();
 
-        let newtx = this.mod.createJoinTransaction(league_id /*, user_email*/);
+        let newtx = await this.mod.createJoinTransaction(league_id /*, user_email*/);
         await this.app.network.propagateTransaction(newtx);
 
         if (this.mod.debug) {

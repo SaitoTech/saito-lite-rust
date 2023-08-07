@@ -90,7 +90,7 @@ class LeagueMenu {
       document.querySelector(`#lg${this.league.id} .league-delete-button`).onclick = async (e) => {
         let confirm = await sconfirm("Are you sure you want to delete this league?");
         if (confirm) {
-          let newtx = this.mod.createRemoveTransaction(this.league.id);
+          let newtx = await this.mod.createRemoveTransaction(this.league.id);
           await this.app.network.propagateTransaction(newtx);
           this.mod.removeLeague(this.league.id);
           this.app.connection.emit("leagues-render-request");
