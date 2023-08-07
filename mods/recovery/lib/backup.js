@@ -20,7 +20,6 @@ class Backup {
     let newIdentifier = key?.has_registered_username && identifier === "";
     identifier = this.desired_identifier || identifier;
 
-    console.log("Render backup overlay");
     this.modal_overlay.show(BackupTemplate(identifier, newIdentifier));
     this.attachEvents();
   }
@@ -40,6 +39,7 @@ class Backup {
       let password = document.querySelector("#backup-template .saito-overlay-form-password").value;
 
       if (!email || !password){
+        console.warn("No email or password provided!");
         return;
       }
       

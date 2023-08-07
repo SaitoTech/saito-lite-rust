@@ -177,17 +177,17 @@ class Registry extends ModTemplate {
           }
           mycallback(found_keys);
         } catch (err) {
-          console.log(err);
+          console.error(err);
         }
       },
 
       (p) => {
-        if (peer){
+        if (peer) {
           if (p.publicKey == peer.publicKey) {
             return 1;
-          }          
-        }else{
-          if (p.hasService("registry")){
+          }
+        } else {
+          if (p.hasService("registry")) {
             return 1;
           }
         }
@@ -247,7 +247,7 @@ class Registry extends ModTemplate {
           }
           mycallback(found_keys);
         } catch (err) {
-          console.log(err);
+          console.error(err);
         }
       },
 
@@ -256,8 +256,8 @@ class Registry extends ModTemplate {
           if (p.publicKey == peer.publicKey) {
             return 1;
           }          
-        }else{
-          if (p.hasService("registry")){
+        } else {
+          if (p.hasService("registry")) {
             return 1;
           }
         }
@@ -304,9 +304,16 @@ class Registry extends ModTemplate {
       },
 
       (p) => {
-        if (p == peer) {
-          return 1;
+        if (peer){
+          if (p.publicKey == peer.publicKey) {
+            return 1;
+          }          
+        }else{
+          if (p.hasService("registry")){
+            return 1;
+          }
         }
+        return 0;
       }
     );
   }
