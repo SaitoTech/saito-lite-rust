@@ -627,6 +627,7 @@ class Registry extends ModTemplate {
     signer = "",
     lc = 1
   ) {
+
     let sql = `INSERT INTO records (identifier,
                                     publickey,
                                     unixtime,
@@ -656,16 +657,10 @@ class Registry extends ModTemplate {
       $signer: signer,
       $lc: lc,
     };
-    await this.app.storage.executeDatabase(sql, params, "registry");
+      
+    let res = await this.app.storage.executeDatabase(sql, params, "registry");
 
-    sql =
-      "SELECT * FROM records WHERE identifier = $identifier AND publickey = $publickey AND unixtime = $unixtime AND bid = $bid AND bsh = $bsh AND lock_block = $lock_block AND sig = $sig AND signer = $signer AND lc = $lc";
-    let rows = await this.app.storage.queryDatabase(sql, params, "registry");
-    if (rows.length == 0) {
-      return 0;
-    } else {
-      return 1;
-    }
+    return res?.stmt?.changes;
   }
 
   async onChainReorganization(bid, bsh, lc) {

@@ -456,7 +456,6 @@ class Chat extends ModTemplate {
       return;
     }
 
-    console.log("Decrypting chat message");
     await tx.decryptMessage(app); //In case forwarding private messages
     let txmsg = tx.returnMessage();
 
