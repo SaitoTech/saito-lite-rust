@@ -541,7 +541,7 @@ class Server {
       let buffer;
       try {
         let list = methods.loadBlockFileList();
-        console.log("file list : ", list);
+        // console.log("file list : ", list);
         for (let filename of list) {
           if (filename.includes(bsh)) {
             buffer = methods.readValue("./data/blocks/" + filename);

@@ -65,6 +65,7 @@ export default class Blockchain extends SaitoBlockchain {
     let callbackIndices = [];
     let txs: Transaction[] = block.transactions as Transaction[];
     for (let z = 0; z < txs.length; z++) {
+      // console.log("tx type : " + txs[z].type);
       if (txs[z].type === TransactionType.Normal) {
         await txs[z].decryptMessage(this.app);
         const txmsg = txs[z].returnMessage();
@@ -77,7 +78,7 @@ export default class Blockchain extends SaitoBlockchain {
   }
 
   public async onNewBlock(block: Block, lc: boolean) {
-    console.log("onNewBlock : " + block.hash);
+    console.log("onNewBlock : " + block.hash, block);
     await this.saveBlockchain();
     this.app.modules.onNewBlock(block, lc);
   }
