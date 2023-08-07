@@ -229,6 +229,12 @@ img {
   display: block;
   position: absolute;
 }
+.occupying_army_tile {
+  margin-left: -20px;
+  margin-top: -20px;
+  z-index: 999;
+  position: absolute;
+}
 .army_tile {
   z-index: 20;
   position: absolute;

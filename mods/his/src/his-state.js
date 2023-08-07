@@ -1,4 +1,25 @@
 
+  onNewImpulse() {
+    //
+    // remove foul weather
+    //
+    this.game.state.events.foul_weather = 0;
+
+    //
+    // remove gout
+    //
+    if (this.game.state.events.gout != 0) {
+      for (let i in this.game.spaces) {
+        for (let f in space.units) {
+          for (let z = space.units[f].length-1;  z >= 0; z--) {
+	    space.units[f][z].gout = false; 
+  	  }
+        }
+      }
+      this.game.state.events.gout = 0;    
+    }
+  }
+
   returnLoanedUnits() {
     for (let i in this.game.spaces) {
       space = this.game.spaces[i];
@@ -37,7 +58,7 @@
   }
   isSpaceBesieged(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.besieged == true) { return true; }
+    if (space.besieged == 1 || space.besieged == 2 || space.besieged == true) { return true; }
     return false;
   }
   isBesieged(faction, unittype) {

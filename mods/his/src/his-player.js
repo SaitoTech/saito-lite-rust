@@ -212,6 +212,11 @@
       if (this.game.spaces[s].besieged == 2) {
 	this.game.spaces[s].besieged = 1;
       }
+      for (let f in this.game.spaces[s].units) {
+	for (let z = 0; z < this.game.spaces[s].units[f].length; z++) {
+	  this.game.spaces[s].units[f][z].already_moved = 0;
+	}
+      }
     }
 
     let p = this.game.state.players_info[(player_num-1)];
@@ -297,6 +302,7 @@
       $('.option').off();
       $('.option').on('click', function () {
 
+        $('.option').off();
         let id = $(this).attr("id");
 
         if (!units_to_destroy.includes(id)) {
@@ -906,13 +912,29 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     let his_self = this;
 
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
+    let can_pass = true;
 
     let cards = [];
     for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length;i++) {
+      let c = this.game.deck[0].fhand[faction_hand_idx][i];
+      if (c === "001") { can_pass = false; }
+      if (c === "002") { can_pass = false; }
+      if (c === "003") { can_pass = false; }
+      if (c === "004") { can_pass = false; }
+      if (c === "005") { can_pass = false; }
+      if (c === "006") { can_pass = false; }
+      if (c === "007") { can_pass = false; }
+      if (c === "008") { can_pass = false; }
+      if (c === "009") { can_pass = false; }
+      if (c === "010") { can_pass = false; }
       cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
+    } // no home card? can pass
+    if (this.factions[faction].returnAdminRating() > this.game.deck[0].fhand[faction_hand_idx].length) {
+      can_pass = false;
     }
-    cards.push("pass");
-
+    if (can_pass) {
+      cards.push("pass");
+    }
 
     this.updateStatusAndListCards("Select a Card: ", cards);
     this.attachCardboxEvents((card) => {
@@ -1416,24 +1438,11 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
     let units_to_move = [];
     let cancel_func = null;
+    let spacekey = "";
 
-    his_self.playerSelectSpaceWithFilter(
-
-      "Select Town from Which to Move Units:",
-
-      function(space) {
-	for (let z in space.units) {
-	  if (space.units[z].length > 0 && faction === z) {
-	    return 1;
-          }
-	}
-	return 0;
-      },
-
-      function(spacekey) {
-
-        let space = his_self.spaces[spacekey];
-
+	//
+	// first define the functions that will be used internally
+	//
 	let selectDestinationInterface = function(his_self, units_to_move) {  
     	  his_self.playerSelectSpaceWithFilter(
 
@@ -1484,7 +1493,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
 	  let mobj = {
-	    space : space ,
+	    space : his_self.game.spaces[spacekey] ,
 	    faction : faction ,
    	    source : spacekey ,
 	    destination : "" ,
@@ -1496,7 +1505,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
-	      if (space.units[faction][i].locked == false) {
+	      if (space.units[faction][i].locked == false && (this.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
 	        if (units_to_move.includes(parseInt(i))) {
 	          html += `<li class="option" style="font-weight:bold" id="${i}">*${space.units[faction][i].name}*</li>`;
 	        } else {
@@ -1533,7 +1542,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	      }
 	    }
 
-
 	    if (units_to_move.includes(id)) {
 	      let idx = units_to_move.indexOf(id);
 	      if (idx > -1) {
@@ -1555,8 +1563,88 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 	  });
 	}
-	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
-	
+	//
+	// end select units
+	//
+
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Town from Which to Move Units:",
+
+      function(space) {
+	for (let z in space.units) {
+	  if (space.units[z].length > 0 && faction === z) {
+	    return 1;
+          }
+	}
+	return 0;
+      },
+
+      function(skey) {
+
+	spacekey = skey;
+
+        let space = his_self.spaces[spacekey];
+
+	//
+	// is this a rapid move ?
+	//
+	let max_formation_size = his_self.returnMaxFormationSize(space.units[faction]);
+	let units_in_space = his_self.returnFactionLandUnitsInSpace(faction, space);
+	let can_we_quick_move = false;
+	if (max_formation_size >= units_in_space) { can_we_quick_move = true; }
+
+	if (can_we_quick_move == true) {
+
+	  let msg = "Choose Movement Option: ";
+	  let html = "<ul>";
+	  html += `<li class="option" id="auto">move everything (auto)</li>`;
+	  html += `<li class="option" id="manual">select units (manual)</li>`;
+	  html += "</ul>";
+	  his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+
+	    $('.option').off();
+            let id = $(this).attr("id");
+
+	    if (id === "auto") {
+
+	      for (let i = 0; i < space.units[faction].length; i++) {
+		let u = space.units[faction][i];
+		if (u.type === "cavalry" || u.type === "regular" || u.type === "mercenary" || u.admin_rating > 0) {
+		  if (u.locked == false && (his_self.game.state.events.foul_weather != 1 && u.already_moved != 1)) { 
+		    units_to_move.push(i);
+		  } else {
+		    his_self.updateLog("Some units unable to auto-move because of Foul Weather");
+		  }
+		}
+	      }
+	      selectDestinationInterface(his_self, units_to_move);
+	      return;
+	    }
+
+	    if (id === "manual") {
+	      //
+	      // we have to move manually
+	      //
+	      selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	      return;
+	    }
+
+	  });
+
+	} else {
+
+	  //
+	  // we have to move manually
+	  //
+	  selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	  return;
+
+	}
       },
 
       cancel_func,
@@ -2251,10 +2339,12 @@ console.log("units length: " + space.units[defender].length);
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
-	      if (units_to_move.includes(parseInt(i))) {
-	        html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
-	      } else {
-	        html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+              if (space.units[faction][i].locked == false && (this.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
+	        if (units_to_move.includes(parseInt(i))) {
+	          html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	        } else {
+	          html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+	        }
 	      }
 	    }
 	  }
@@ -2297,6 +2387,8 @@ console.log("units length: " + space.units[defender].length);
 
 
   canPlayerNavalMove(his_self, player, faction) {
+
+    if (his_self.game.state.events.foul_weather) { return 0; }
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
@@ -2558,6 +2650,8 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
   canPlayerAssault(his_self, player, faction) {
 
+    if (his_self.game.state.events.foul_weather) { return 0; }
+
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
@@ -2594,6 +2688,8 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
       function(destination_spacekey) {
 	his_self.addMove("assault\t"+faction+"\t"+destination_spacekey);
+        his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" announces seige of "+his_self.game.spaces[destination_spacekey].name + "\tassault");
+        his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	his_self.endTurn();
       },
 
@@ -2708,6 +2804,8 @@ console.log("12");
 return;
   }
   canPlayerInitiatePiracyInASea(his_self, player, faction) {
+
+    if (his_self.game.state.events.foul_weather) { return 0; }
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }

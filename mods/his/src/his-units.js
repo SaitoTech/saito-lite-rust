@@ -19,7 +19,9 @@
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.loaned == null)             { obj.loaned = false; }
     if (obj.key == null)                { obj.key = name; }
+    if (obj.gout == null)               { obj.gout = false; }
     if (obj.locked == null)		{ obj.locked = false; }
+    if (obj.already_moved == null)	{ obj.already_moved = 0; }
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }

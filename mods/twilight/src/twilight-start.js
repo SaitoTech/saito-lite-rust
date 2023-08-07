@@ -48,7 +48,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 1;
+    this.is_testing 	 = 0;
 
     //
     // ui components
@@ -534,6 +534,7 @@ initializeGame(game_id) {
       this.game.options.fallofsaigon = 1;
       this.game.options.fischerspassky = 1;
 
+/***
       this.placeInfluence("mexico", 2, "us");
       this.placeInfluence("cuba", 3, "ussr");
       this.placeInfluence("panama", 4, "ussr");
@@ -576,6 +577,7 @@ initializeGame(game_id) {
       this.placeInfluence("japan", 4, "us");
       this.placeInfluence("southkorea", 3, "us");
       this.placeInfluence("taiwan", 3, "us");
+***/
 
       this.game.options.deck = "endofhistory";
       let a = this.returnEarlyWarCards();
@@ -1209,16 +1211,18 @@ console.log("LATEST MOVE: " + mv);
 
       let cardkey = mv[1];
 
-      for (var i in this.game.deck[0].discards) {
-        if (cardkey == i) {
-          if (this.game.deck[0].discards[cardkey] != undefined) {
-            // remove from discards
-            this.updateLog(`${this.cardToText(cardkey)} removed from discard pile`);
-	    if (this.game.deck[0].discards[cardkey]) {
-	      this.game.deck[0].cards = this.game.deck[0].discards[cardkey];
-      	      delete this.game.deck[0].discards[cardkey];
-            }
-          }
+      if (this.game.deck[0].discards[cardkey]) {
+        // remove from discards
+        this.updateLog(`${this.cardToText(cardkey)} removed from discard pile`);
+        if (this.game.deck[0].discards[cardkey]) {
+          this.game.deck[0].cards[cardkey] = this.game.deck[0].discards[cardkey];
+          delete this.game.deck[0].discards[cardkey];
+        }
+      } else {
+console.log("restoring B");
+        let ac = this.returnAllCards(true);
+        if (ac[cardkey]) {
+          this.game.deck[0].cards[cardkey] = ac[cardkey];
         }
       }
 
@@ -2702,7 +2706,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["bayofpigs","fallofsaigon","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
+          this.game.deck[0].hand = ["cubanmissile","saltnegotiations","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["asknot", "voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
         }

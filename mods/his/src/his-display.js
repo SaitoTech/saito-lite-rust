@@ -486,14 +486,20 @@
   returnArmies(space) {
 
     let html = '<div class="space_army" id="">';
-
     let tile = "";
+    let controlling_faction = "";
+    if (space.political != "") { controlling_faction = space.political; } else {
+      if (space.home != "") { controlling_faction = space.home; }
+    }
 
     for (let z in space.units) {
+
+      new_units = false;
 
       let army = 0;
       for (let zz = 0; zz < space.units[z].length; zz++) {
 	if (space.units[z][zz].type === "regular") {
+	  new_units = true;
 	  army++;
 	}
       }
@@ -668,8 +674,12 @@
         }
       }
 
-      if (tile !== "") {
-        html += `<img class="army_tile" src="${tile}" />`;
+      if (new_units == true) {
+        if (controlling_faction != "" && controlling_faction !== z) {
+          html += `<img class="occupying_army_tile" src="${tile}" />`;
+	} else {
+          html += `<img class="army_tile" src="${tile}" />`;
+	}
       } 
 
     }
@@ -890,7 +900,6 @@
         obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
       }
       if (this.isSpaceBesieged(space)) {
-alert("SPACE IS BESIEGED: " + space.key);
         obj.innerHTML += `<img class="siege" src="/his/img/tiles/siege.png" />`;
       }
 
@@ -1005,7 +1014,7 @@ if (!his_self.bound_gameboard_zoom) {
     let card;
 
     if (cardname === "pass") {
-      return `<img class="${cardclass}" src="/his/img/cards/PASS.png" />`;
+      return `<img class="${cardclass}" src="/his/img/cards/PASS.png" /><div class="cardtext">pass</div>`;
     }
 
     //
