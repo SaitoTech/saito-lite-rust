@@ -35,7 +35,7 @@ export default class Blockchain extends SaitoBlockchain {
       lowest_acceptable_block_hash: await this.instance.get_lowest_acceptable_block_hash(),
       lowest_acceptable_block_id: Number(await this.instance.get_lowest_acceptable_block_id()),
     };
-    console.log("saveBlockchain : ", this.app.options.blockchain);
+    // console.log("saveBlockchain : ", this.app.options.blockchain);
     this.app.storage.saveOptions();
   }
 
