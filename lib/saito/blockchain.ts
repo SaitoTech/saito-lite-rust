@@ -4,6 +4,7 @@ import Block from "./block";
 import { Saito as S } from "../../apps/core";
 import { TransactionType } from "saito-js/lib/transaction";
 import Transaction from "./transaction";
+import { BlockType } from "saito-js/lib/block";
 
 export default class Blockchain extends SaitoBlockchain {
   public app: S;
@@ -34,12 +35,21 @@ export default class Blockchain extends SaitoBlockchain {
       lowest_acceptable_block_hash: await this.instance.get_lowest_acceptable_block_hash(),
       lowest_acceptable_block_id: Number(await this.instance.get_lowest_acceptable_block_id()),
     };
-    console.log("saveBlockchain : ", this.app.options.blockchain);
+    // console.log("saveBlockchain : ", this.app.options.blockchain);
     this.app.storage.saveOptions();
   }
 
   async loadBlockAsync(hash: string): Promise<Block | null> {
-    return Saito.getInstance().getBlock(hash);
+    let block: Block = await Saito.getInstance().getBlock(hash);
+    if (block.block_type === BlockType.Full) {
+      return block;
+    } else if (block.block_type === BlockType.Pruned) {
+      let block = await this.app.storage.loadBlockByHash(hash);
+      if (!block || block.block_type === BlockType.Full) {
+        return block;
+      }
+    }
+    return null;
   }
 
   async initialize() {
@@ -55,6 +65,7 @@ export default class Blockchain extends SaitoBlockchain {
     let callbackIndices = [];
     let txs: Transaction[] = block.transactions as Transaction[];
     for (let z = 0; z < txs.length; z++) {
+      // console.log("tx type : " + txs[z].type);
       if (txs[z].type === TransactionType.Normal) {
         await txs[z].decryptMessage(this.app);
         const txmsg = txs[z].returnMessage();
@@ -67,7 +78,7 @@ export default class Blockchain extends SaitoBlockchain {
   }
 
   public async onNewBlock(block: Block, lc: boolean) {
-    console.log("onNewBlock : " + block.hash);
+    console.log("onNewBlock : " + block.hash, block);
     await this.saveBlockchain();
     this.app.modules.onNewBlock(block, lc);
   }
