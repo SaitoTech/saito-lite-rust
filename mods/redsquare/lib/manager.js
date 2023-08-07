@@ -93,7 +93,7 @@ class TweetManager {
             // load more profile tweets
             //
             if (this.mode == "profile") {
-              this.mod.loadProfileTweets(null, this.publicKey, (txs) => {
+              this.mod.loadProfile(null, this.publicKey, (txs) => {
                 if (this.mode !== "profile") {
                   return;
                 }
@@ -223,7 +223,7 @@ class TweetManager {
       //
       this.mod.updatePeerStat(new Date().getTime(), "profile_earliest_ts");
 
-      /*this.mod.loadProfileTweets(null, this.publickey, (txs) => {
+      /*this.mod.loadProfile(null, this.publickey, (txs) => {
         for (let z = 0; z < txs.length; z++) {
           let tweet = new Tweet(this.app, this.mod, txs[z]);
           tweet.render();
