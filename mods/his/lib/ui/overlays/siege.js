@@ -12,6 +12,7 @@ class AssaultOverlay {
 
     hide() {
         this.visible = false;
+	this.pushHudUnderOverlay();
         this.overlay.hide();
     }
  
@@ -74,7 +75,8 @@ class AssaultOverlay {
       if (this.mod.returnPlayerFactions(this.mod.game.player).includes(res.attacker_faction)) { am_i_attacker = true; }
       if (this.mod.returnPlayerFactions(this.mod.game.player).includes(res.defender_faction)) { am_i_defender = true; }
 
-alert("assign hits manually!");
+      this.pushHudUnderOverlay();
+
       let side = ".attacker";
       if (faction != res.attacker_faction) { side = ".defender"; }
 
@@ -179,6 +181,8 @@ alert("assign hits manually!");
 	    if (hits_assigned == hits_to_assign || hits_assigned >= hits_assignable) {
               document.querySelectorAll(".hits-assignable").forEach((el) => { el.onclick = (e) => {}; });
 	      this.mod.endTurn();
+	      this.pushHudUnderOverlay();
+	      this.overlay.hide();
 	    }
 	  }
 
