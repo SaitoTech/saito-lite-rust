@@ -3,5 +3,5 @@ CREATE TABLE IF NOT EXISTS recovery (
   publickey TEXT,
   hash TEXT,
   tx TEXT,
-  UNIQUE(hash)
+  UNIQUE(publickey)
 );

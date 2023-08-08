@@ -57,6 +57,8 @@ class Chat extends ModTemplate {
 
     this.isRelayConnected = false;
 
+    this.enable_notifications = false;
+
     this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
       this.returnOrCreateChatGroupFromMembers(data?.members);
       this.app.connection.emit("chat-manager-render-request");
@@ -456,7 +458,6 @@ class Chat extends ModTemplate {
       return;
     }
 
-    console.log("Decrypting chat message");
     await tx.decryptMessage(app); //In case forwarding private messages
     let txmsg = tx.returnMessage();
 
@@ -839,10 +840,16 @@ class Chat extends ModTemplate {
    *
    */
   async sendChatTransaction(app, tx) {
+    
+    if (!tx) {
+      console.warn("Chat: Cannot send null transaction");
+      return;
+    }
+
     //
     // won't exist if encrypted
     //
-    if (tx.msg.message) {
+    if (tx?.msg?.message) {
       if (tx.msg.message.substring(0, 4) == "<img") {
         if (this.inTransitImageMsgSig) {
           salert("Image already being sent");
@@ -880,14 +887,13 @@ class Chat extends ModTemplate {
       BigInt(0)
     );
     if (newtx == null) {
-      return;
+      console.error("Null tx created for chat");
+      return null;
     }
 
     let secret_holder = "";
 
     newtx.addFrom(this.publicKey);
-    newtx.addTo(this.publicKey);
-    newtx.addTo(this.publicKey);
     newtx.addTo(this.publicKey);
 
     let members = this.returnMembers(group_id);
@@ -898,14 +904,6 @@ class Chat extends ModTemplate {
       }
 
       newtx.addTo(members[i]);
-    }
-
-    if (msg.substring(0, 4) == "<img") {
-      if (this.inTransitImageMsgSig) {
-        salert("Image already being sent");
-        return;
-      }
-      this.inTransitImageMsgSig = newtx.signature;
     }
 
     newtx.msg = {
@@ -1195,7 +1193,21 @@ class Chat extends ModTemplate {
       console.log(JSON.parse(JSON.stringify(new_message)));
     }
 
-    if (group.name !== this.communityGroupName && !new_message.from.includes(this.publicKey)) {
+    if (/*group.name !== this.communityGroupName &&*/ !new_message.from.includes(this.publicKey)) {
+
+      if (this.enable_notifications) {
+        
+        let sender = this.app.keychain.returnIdentifierByPublicKey(new_message.from[0], true);
+        let new_msg = content.indexOf("<img") == 0 ? "[image]" : this.app.browser.sanitize(content);
+        const regex = /<blockquote>.*<\/blockquote>/is;
+        new_msg = new_msg.replace(regex, "reply: ").replace("<br>", "");
+        const regex2 = /<a[^>]+>/i;
+        new_msg = new_msg.replace(regex2, "").replace("</a>", "");
+
+        this.app.browser.sendNotification(sender, new_msg, "chat-message-notification");
+
+      }
+
       this.startTabNotification();
       this.app.connection.emit("group-is-active", group);
     }

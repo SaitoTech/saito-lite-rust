@@ -117,7 +117,6 @@ class Keychain {
             this.keys[i][key] = data[key];
           }
         }
-        console.log(JSON.stringify(this.keys[i]));
         this.saveKeys();
         return;
       }

@@ -454,20 +454,26 @@ class Browser {
   }
 
   async sendNotification(title, message, event) {
-    /***
+    
      if (this.app.BROWSER == 0) {
             return;
         }
 
      if (!this.isMobileBrowser(navigator.userAgent)) {
             if (Notification.permission === 'default') {
-                Notification.requestPermission();
+                Notification.requestPermission().then(result => {
+                  if (result === "granted"){
+                    this.sendNotification(title, message, event);
+                    return;
+                  }
+                });
             }
             if (Notification.permission === 'granted') {
-                notify = new Notification(title, {
+                const notify = new Notification(title, {
                     body: message,
                     iconURL: "/saito/img/touch/pwa-192x192.png",
-                    icon: "/saito/img/touch/pwa-192x192.png"
+                    icon: "/saito/img/touch/pwa-192x192.png",
+                    tag: event
                 });
             }
         } else {
@@ -485,7 +491,7 @@ class Browser {
                     }
                 });
         }
-     ***/
+     
   }
 
   checkForMultipleWindows() {

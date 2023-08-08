@@ -1702,12 +1702,6 @@ class Arcade extends ModTemplate {
     return 0;
   }
 
-  onResetWallet() {
-    if (this.app.options?.games) {
-      this.app.options.games = [];
-    }
-  }
-
   async verifyOptions(gameType, options) {
     /*if (gameType !== "single") {
       for (let key of ["mine", "open"]) {

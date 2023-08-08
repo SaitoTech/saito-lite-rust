@@ -379,6 +379,39 @@ class ChatManager {
         }
       };
     }
+
+    if (document.querySelector(".toggle-notifications")) {
+      let icon = document.querySelector(".toggle-notifications i");
+      if (Notification?.permission === "granted" && this.mod.enable_notifications) {
+        if (icon) {
+          icon.classList.add("fa-bell");
+          icon.classList.remove("fa-bell-slash");
+        }
+      }
+      
+      document.querySelector(".toggle-notifications").onclick = (e) => {
+        if (this.mod.enable_notifications) {
+          this.mod.enable_notifications = false;
+          if (icon) {
+            icon.classList.remove("fa-bell");
+            icon.classList.add("fa-bell-slash");
+          }
+        } else {
+          Notification.requestPermission().then(result => {
+            console.log(result);
+            if (result === "granted") {
+              this.mod.enable_notifications = true;
+              if (icon) {
+                icon.classList.add("fa-bell");
+                icon.classList.remove("fa-bell-slash");
+              }
+            }
+          });
+        }
+      }
+      
+    }
+    
   }
 }
 

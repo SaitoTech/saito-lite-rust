@@ -848,7 +848,8 @@ class Scotland extends GameTemplate {
   }
 
   movePlayer(player, pawn, target_id, ticket) {
-    this.removeEventsFromBoard();
+    // <<<<<<<<<<Make sure you turn of UI events>>>>>>>>>>
+
     // Mister X disguises his moves
     if (this.game.player == this.game.state.x) {
       if (

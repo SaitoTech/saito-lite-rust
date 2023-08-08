@@ -177,17 +177,17 @@ class Registry extends ModTemplate {
           }
           mycallback(found_keys);
         } catch (err) {
-          console.log(err);
+          console.error(err);
         }
       },
 
       (p) => {
-        if (peer){
+        if (peer) {
           if (p.publicKey == peer.publicKey) {
             return 1;
-          }          
-        }else{
-          if (p.hasService("registry")){
+          }
+        } else {
+          if (p.hasService("registry")) {
             return 1;
           }
         }
@@ -247,7 +247,7 @@ class Registry extends ModTemplate {
           }
           mycallback(found_keys);
         } catch (err) {
-          console.log(err);
+          console.error(err);
         }
       },
 
@@ -256,8 +256,8 @@ class Registry extends ModTemplate {
           if (p.publicKey == peer.publicKey) {
             return 1;
           }          
-        }else{
-          if (p.hasService("registry")){
+        } else {
+          if (p.hasService("registry")) {
             return 1;
           }
         }
@@ -304,9 +304,16 @@ class Registry extends ModTemplate {
       },
 
       (p) => {
-        if (p == peer) {
-          return 1;
+        if (peer){
+          if (p.publicKey == peer.publicKey) {
+            return 1;
+          }          
+        }else{
+          if (p.hasService("registry")){
+            return 1;
+          }
         }
+        return 0;
       }
     );
   }
@@ -620,6 +627,7 @@ class Registry extends ModTemplate {
     signer = "",
     lc = 1
   ) {
+
     let sql = `INSERT INTO records (identifier,
                                     publickey,
                                     unixtime,
@@ -649,16 +657,10 @@ class Registry extends ModTemplate {
       $signer: signer,
       $lc: lc,
     };
-    await this.app.storage.executeDatabase(sql, params, "registry");
+      
+    let res = await this.app.storage.executeDatabase(sql, params, "registry");
 
-    sql =
-      "SELECT * FROM records WHERE identifier = $identifier AND publickey = $publickey AND unixtime = $unixtime AND bid = $bid AND bsh = $bsh AND lock_block = $lock_block AND sig = $sig AND signer = $signer AND lc = $lc";
-    let rows = await this.app.storage.queryDatabase(sql, params, "registry");
-    if (rows.length == 0) {
-      return 0;
-    } else {
-      return 1;
-    }
+    return res?.stmt?.changes;
   }
 
   async onChainReorganization(bid, bsh, lc) {

@@ -38,9 +38,14 @@ class Recovery extends ModTemplate {
       }
     });
 
-    app.connection.on("recovery-backup-overlay-render-request", async (success_callback = null) => {
+    app.connection.on("recovery-backup-overlay-render-request", async (obj) => {
       console.debug("Received recovery-backup-overlay-render-request");
-      this.backup_overlay.success_callback = success_callback;
+      if (obj?.success_callback) {
+        this.backup_overlay.success_callback = obj.success_callback;  
+      }
+      if (obj?.desired_identifier) {
+        this.backup_overlay.desired_identifier = obj.desired_identifier;
+      }
 
       //
       //If we already have the email/password, just send the backup
@@ -125,13 +130,16 @@ class Recovery extends ModTemplate {
 
   async onConfirmation(blk, tx, conf) {
     if (conf == 0) {
+
       let txmsg = tx.returnMessage();
+      
       if (txmsg.request == "recovery backup") {
         await this.receiveBackupTransaction(tx);
       }
-      if (txmsg.request == "recovery recover") {
-        await this.receiveBackupTransaction(tx);
-      }
+      // This request type is not sent on chain
+      //if (txmsg.request == "recovery recover") {
+      //  await this.receiveBackupTransaction(tx);
+      //}
     }
   }
 
@@ -165,7 +173,7 @@ class Recovery extends ModTemplate {
       request: "recovery backup",
       email: "",
       hash: retrieval_hash,
-      wallet: this.app.crypto.aesEncrypt(JSON.stringify(this.app.wallet), decryption_secret),
+      wallet: this.app.crypto.aesEncrypt(JSON.stringify(this.app.options), decryption_secret),
     };
 
     newtx.addTo(this.publicKey);
@@ -177,7 +185,7 @@ class Recovery extends ModTemplate {
     let txmsg = tx.returnMessage();
     let publickey = tx.from[0].publicKey;
     let hash = txmsg.hash || "";
-    let txjson = JSON.stringify(tx);
+    let txjson = tx.serialize_to_web(this.app);
 
     let sql =
       "INSERT OR REPLACE INTO recovery (publickey, hash, tx) VALUES ($publickey, $hash, $tx)";
@@ -186,7 +194,8 @@ class Recovery extends ModTemplate {
       $hash: hash,
       $tx: txjson,
     };
-    await this.app.storage.executeDatabase(sql, params, "recovery");
+
+    let res = await this.app.storage.executeDatabase(sql, params, "recovery");
 
     if (this.publicKey === publickey) {
       this.backup_overlay.success();
@@ -214,9 +223,11 @@ class Recovery extends ModTemplate {
   //
   async receiveRecoverTransaction(tx, mycallback = null) {
     if (mycallback == null) {
+      console.warn("No callback");
       return;
     }
     if (this.app.BROWSER == 1) {
+      console.warn("Browsers don't support backup/recovery")
       return;
     }
 
@@ -228,12 +239,17 @@ class Recovery extends ModTemplate {
     let params = {
       $hash: hash,
     };
-    let res = {};
-    res.rows = await this.app.storage.queryDatabase(sql, params, "recovery");
-    await mycallback(res);
+
+    let results = await this.app.storage.queryDatabase(sql, params, "recovery");
+
+    if (mycallback){
+      await mycallback(results);  
+    }
+    
   }
 
   async backupWallet(email, password) {
+    
     let decryption_secret = this.returnDecryptionSecret(email, password);
     let retrieval_hash = this.returnRetrievalHash(email, password);
 
@@ -259,53 +275,55 @@ class Recovery extends ModTemplate {
     let retrieval_hash = this.returnRetrievalHash(email, password);
 
     let newtx = await this.createRecoverTransaction(retrieval_hash);
-    let peers = this.app.network.returnPeersWithService("recovery");
+    let peers = await this.app.network.getPeers();
 
-    if (peers.length > 0) {
-      this.app.network.sendTransactionWithCallback(
-        newtx,
-        async (res) => {
-          if (!res) {
-            console.log("empty response!");
-            this.login_overlay.failure();
-            return;
-          }
+    for (let peer of peers){
+      if (peer.hasService("recovery")){
+        this.app.network.sendTransactionWithCallback(
+          newtx,
+          async (rows_as_tx) => {
+            //This is so weird that the passed data gets turned into a pseudotransaction
+            let rows = rows_as_tx.msg;
 
-          if (!res.rows) {
-            console.log("no rows returned!");
-            this.login_overlay.failure();
-            return;
-          }
-          if (!res.rows[0].tx) {
-            console.log("no transaction in row returned");
-            this.login_overlay.failure();
-            return;
-          }
+            if (!rows?.length) {
+              console.log("no rows returned!");
+              this.login_overlay.failure();
+              return;
+            }
+            if (!rows[0].tx) {
+              console.log("no transaction in row returned");
+              this.login_overlay.failure();
+              return;
+            }
 
-          let tx = JSON.parse(res.rows[0].tx);
-          let identifier = res.rows[0].identifier;
-          let newtx2 = new Transaction(undefined, tx);
-          let txmsg = newtx2.returnMessage();
+            let newtx = new Transaction();
+            newtx.deserialize_from_web(this.app, rows[0].tx);
 
-          let encrypted_wallet = txmsg.wallet;
-          let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
+            let txmsg = newtx.returnMessage();
+            
+            let encrypted_wallet = txmsg.wallet;
+            let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
 
-          this.app.wallet = JSON.parse(decrypted_wallet);
-          await this.app.wallet.saveWallet();
-          this.app.keychain.addKey(this.publicKey, { identifier: identifier });
-          this.app.keychain.saveKeys();
+            //Junk any games...
+            decrypted_wallet.games = [];
+            this.app.options = JSON.parse(decrypted_wallet);
 
-          this.login_overlay.success();
-        },
-        peers[0]
-      );
-    } else {
-      if (document.querySelector(".saito-overlay-form-text")) {
-        document.querySelector(".saito-overlay-form-text").innerHTML =
-          "<center>Unable to download encrypted wallet from network...</center>";
+            this.app.storage.saveOptions();
+
+            this.login_overlay.success();
+          },
+          peer.peerIndex
+        );
+        return;
       }
-      this.login_overlay.failure();
     }
+
+    if (document.querySelector(".saito-overlay-form-text")) {
+      document.querySelector(".saito-overlay-form-text").innerHTML =
+        "<center>Unable to download encrypted wallet from network...</center>";
+    }
+    this.login_overlay.failure();
+
   }
 }
 
