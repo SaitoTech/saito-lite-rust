@@ -396,6 +396,8 @@ class ChatManager {
             icon.classList.remove("fa-bell");
             icon.classList.add("fa-bell-slash");
           }
+          this.app.options.chat.enable_notifications = false;
+          this.app.storage.saveOptions();
         } else {
           Notification.requestPermission().then(result => {
             console.log(result);
@@ -405,6 +407,9 @@ class ChatManager {
                 icon.classList.add("fa-bell");
                 icon.classList.remove("fa-bell-slash");
               }
+      
+              this.app.options.chat.enable_notifications = true;
+              this.app.storage.saveOptions();
             }
           });
         }

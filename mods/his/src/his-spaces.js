@@ -101,6 +101,7 @@
   isSpaceFriendly(space, faction) {
     let cf = this.returnFactionControllingSpace(space);
     if (cf === faction) { return true; }
+console.log("checking if space is friendly between factions: " + cf + " and " + faction);
     return this.areAllies(cf, faction);
   }
 
@@ -538,7 +539,7 @@ console.log("FACTION: " + faction);
 
   canFactionRetreatToSpace(faction, space, attacker_comes_from_this_space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    try { if (this.game.spaces[attacker_comes_from_this_space]) { attacker_comes_from_this_space = this.game.spaces[invalid_space]; } } catch (err) {}
+    try { if (this.game.spaces[attacker_comes_from_this_space]) { attacker_comes_from_this_space = this.game.spaces[attacker_comes_from_this_space]; } } catch (err) {}
     if (space === attacker_comes_from_this_space) { return 0; }
     if (this.isSpaceInUnrest(space) == 1) { return 0; }
     if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
@@ -2831,6 +2832,15 @@ console.log("FACTION: " + faction);
       obj.returnView = function () {
 
 	let html = '<div class="space_view" id="">';
+
+	let religious = obj.religion;
+	let political = obj.political;
+	if (!political) { political = obj.home; }
+
+	html += `
+	  <div class="religious">${religious}</div>
+	  <div class="political">${political}</div>
+	`;
 
         for (let f in this.units) {
 	  if (this.units[f].length > 0) {
