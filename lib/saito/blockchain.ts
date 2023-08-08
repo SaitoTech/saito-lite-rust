@@ -66,7 +66,7 @@ export default class Blockchain extends SaitoBlockchain {
     let txs: Transaction[] = block.transactions as Transaction[];
     let validTxs = 0;
     for (let z = 0; z < txs.length; z++) {
-      console.log("tx type : " + (txs[z].type as TransactionType));
+      // console.log("tx type : " + (txs[z].type as TransactionType));
       if (txs[z].type === TransactionType.Normal) {
         await txs[z].decryptMessage(this.app);
         const txmsg = txs[z].returnMessage();
