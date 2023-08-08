@@ -114,10 +114,10 @@ class Chat extends ModTemplate {
       app.options.chat = {};
       app.options.chat.groups = [];
       app.options.chat.enable_notifications = this.enable_notifications;
-    } else if (Array.isArray(app.options.chat)){
-      let newObj = { 
+    } else if (Array.isArray(app.options.chat)) {
+      let newObj = {
         groups: app.options.chat,
-        enable_notifications: this.enable_notifications
+        enable_notifications: this.enable_notifications,
       };
       app.options.chat = newObj;
     } else {
@@ -129,7 +129,7 @@ class Chat extends ModTemplate {
     }
 
     this.app.storage.saveOptions();
-    
+
     await this.loadChatGroups();
 
     //Add script for emoji to work
@@ -518,7 +518,7 @@ class Chat extends ModTemplate {
 
       let inner_tx = new Transaction(undefined, txmsg.data);
 
-      console.log(inner_tx);
+      // console.log(inner_tx);
 
       //
       // if chat message broadcast is received - we are being asked to broadcast this
@@ -531,7 +531,7 @@ class Chat extends ModTemplate {
           //
           // Addressed to chat server, so forward to all
           //
-          console.log("Community Chat");          
+          console.log("Community Chat");
           peers.forEach((p) => {
             if (p.publicKey !== peer.publicKey) {
               app.network.sendTransactionWithCallback(inner_tx, null, p.peerIndex);
@@ -855,7 +855,6 @@ class Chat extends ModTemplate {
    *
    */
   async sendChatTransaction(app, tx) {
-    
     if (!tx) {
       console.warn("Chat: Cannot send null transaction");
       return;
@@ -1209,10 +1208,9 @@ class Chat extends ModTemplate {
     }
 
     if (/*group.name !== this.communityGroupName &&*/ !new_message.from.includes(this.publicKey)) {
-
       if (this.enable_notifications) {
         let sender = this.app.keychain.returnIdentifierByPublicKey(new_message.from[0], true);
-        if (group.unread > 1){
+        if (group.unread > 1) {
           sender += ` (${group.unread})`;
         }
         let new_msg = content.indexOf("<img") == 0 ? "[image]" : this.app.browser.sanitize(content);
@@ -1222,7 +1220,6 @@ class Chat extends ModTemplate {
         new_msg = new_msg.replace(regex2, "").replace("</a>", "");
 
         this.app.browser.sendNotification(sender, new_msg, `chat-message-${group.id}`);
-
       }
 
       this.startTabNotification();
