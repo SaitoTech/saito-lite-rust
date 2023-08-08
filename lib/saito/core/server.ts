@@ -496,8 +496,12 @@ class Server {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       for (let i = 0; i < peers.length; i++) {
-        if (peers[i].publicKey === pkey) {
-          peer = peers[i];
+        try {
+          if (peers[i].publicKey === pkey) {
+            peer = peers[i];
+          }
+        } catch (error) {
+          console.error(error);
         }
       }
 
