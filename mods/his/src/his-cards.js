@@ -710,7 +710,7 @@ alert("Not Implemented");
               break;
             }
           }
-          return { faction : f , event : 'janissaries', html : `<li class="option" id="janissaries">janissaries (${f})</li>` };
+          return { faction : f , event : '001', html : `<li class="option" id="001">janissaries (${f})</li>` };
         }
         return {};
       },
@@ -765,8 +765,8 @@ alert("Not Implemented");
       faction : "hapsburg" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-        if (his_self.isBesieged("charles-v")) { return 0; }
-        if (his_self.isCaptured("charles-v")) { return 0; }
+        if (his_self.isBesieged("hapsburg", "charles-v")) { return 0; }
+        if (his_self.isCaptured("hapsburg", "charles-v")) { return 0; }
 	return 1;
       },
       onEvent : function(his_self, faction) {
@@ -1594,10 +1594,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 
 	let papacy = his_self.returnPlayerOfFaction("papacy");
 
-	// deal extra card if player is england
-	let player = his_self.returnPlayerOfFaction("england");
-
-	if (player == his_self.game.player) {
+	if (faction === "england") {
 	  let faction_hand_idx = his_self.returnFactionHandIdx(player, "england");   
  	  his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.state.players_info[player-1].factions[faction_hand_idx]);
 	  his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
@@ -1606,6 +1603,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	his_self.game.queue.push(`counter_reformation_attempt\t${papacy}`);
 	his_self.game.queue.push(`counter_reformation_attempt\t${papacy}`);
 	his_self.game.queue.push(`counter_reformation_attempt\t${papacy}`);
+	his_self.game.queue.push(`STATUS\tPapacy may make 3 counter-reformation attempts`);
 
 	return 1;
       },
@@ -1919,11 +1917,14 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	his_self.game.state.leaders.edward_vi = 0;
 	his_self.game.state.leaders.mary_i = 1;
 
+console.log("leaders mary_i set");
+
 	his_self.removeCardFromGame('019'); // remove edward_vi if still in deck
 
 	let placed = 0;
 	if (his_self.game.state.leaders.henry_viii == 1) {
 
+console.log("henry_viii removed from power");
 	  his_self.game.state.leaders.henry_viii = 0; 
 
           // mary_i replaces edward_vi or henry_viii
@@ -1936,7 +1937,9 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	      placed = 1;
             } 
           }
-        
+
+console.log("and down to here...");
+
 	  if (placed == 0) {
             his_self.addArmyLeader("france", "paris", "henry_ii");
 	  }
@@ -2002,7 +2005,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
             }
           }
 
-          return { faction : f , event : 'arquebusiers', html : `<li class="option" id="arquebusiers">arquebusiers (${f})</li>` };
+          return { faction : f , event : '024', html : `<li class="option" id="024">arquebusiers (${f})</li>` };
         }
         return {};
       },
@@ -2040,7 +2043,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
               break;
             }
           }
-          return { faction : f , event : 'field_artillery', html : `<li class="option" id="field_artillery">field artillery (${f})</li>` };
+          return { faction : f , event : '025', html : `<li class="option" id="025">field artillery (${f})</li>` };
         }
         return {};
       },
@@ -2082,7 +2085,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
             }
           }
 	  if (f === "ottoman") { return {}; }
-          return { faction : f , event : 'mercenaries_bribed', html : `<li class="option" id="mercenaries_bribed">mercenaries bribed (${f})</li>` };
+          return { faction : f , event : '026', html : `<li class="option" id="026">mercenaries bribed (${f})</li>` };
         }
         return {};
       },
@@ -2111,7 +2114,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
-        if (menu == "assault") {
+        if (menu == "pre_assault_hits_roll") {
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('027')) {
@@ -2119,12 +2122,12 @@ console.log(JSON.stringify(his_self.reformers[key]));
               break;
             }
           }
-          return { faction : f , event : 'mercenaries_grow_restless', html : `<li class="option" id="mercenaries_grow_restless">mercenaries grow restless (${f})</li>` };
+          return { faction : f , event : '027', html : `<li class="option" id="027">mercenaries grow restless (${f})</li>` };
         }
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
-        if (menu == "assault") {
+        if (menu == "pre_assault_hits_roll") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('027')) {
               return 1;
@@ -2133,14 +2136,23 @@ console.log(JSON.stringify(his_self.reformers[key]));
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, extra) {
-        if (menu == "assault") {
-	  alet("Mercenaries Grow Restless...");
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "pre_assault_hits_roll") {
 
-          //player = his_self.returnPlayerOfFaction(faction);
-	  //if (faction === "france" || faction === "ottoman") {
-	  //  player.tmp_roll_bonus = 3;
-	  //}
+          player = his_self.returnPlayerOfFaction(faction);
+	  let space = his_self.game.spaces[his_self.game.state.assault.spacekey];
+	  for (let f in his_self.game.state.assault.faction_map) {
+            if (his_self.game.state.assault.faction_map[f] === his_self.game.state.assault.attacker_faction) {
+alert("destroying mercenary units!");		
+	      for (let z = 0; z < space.units[f].length; z++) {
+		if (space.units[f][z].type === "mercenary") {
+		  space.units[f].splice(z, 1);
+		  z--;
+alert("destroying 1 mercenary");
+		}
+	      }
+            }       
+          }             
         }
         return 1;
       },
@@ -2161,11 +2173,11 @@ console.log(JSON.stringify(his_self.reformers[key]));
               break;
             }
           }
-          return { faction : f , event : 'siege_mining', html : `<li class="option" id="siege_mining">siege mining (${f})</li>` };
+          return { faction : f , event : '028', html : `<li class="option" id="028">siege mining (${f})</li>` };
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, extra) {
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
         if (menu == "assault" && his_self.game.player === his_self.game.state.active_player) {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('028')) {
@@ -2175,11 +2187,12 @@ console.log(JSON.stringify(his_self.reformers[key]));
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, extra) {
+      menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "assault") {
           player = his_self.returnPlayerOfFaction(faction);
 	  if (his_self.game.state.active_player === player) {
-	    player.tmp_roll_bonus = 3;
+alert("Play Siege Mining");
+	    his_self.game.state.players_info[player-1].tmp_roll_bonus = 3;
 	  }
         }
         return 1;
@@ -2201,7 +2214,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
               break;
             }
           }
-          return { faction : f , event : 'surprise_attack', html : `<li class="option" id="surprise_attack">surprise attack (${f})</li>` };
+          return { faction : f , event : '029', html : `<li class="option" id="029">surprise attack (${f})</li>` };
         }
         return {};
       },
@@ -2241,7 +2254,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
               break;
             }
           }
-          return { faction : f , event : 'tercois', html : `<li class="option" id="tercois">tercois (${f})</li>` };
+          return { faction : f , event : '030', html : `<li class="option" id="030">tercois (${f})</li>` };
         }
         return {};
       },
@@ -2278,7 +2291,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
               break;
             }
           }
-          return { faction : f , event : 'foulweather', html : `<li class="option" id="foulweather">foul weather (${f})</li>` };
+          return { faction : f , event : '031', html : `<li class="option" id="031">foul weather (${f})</li>` };
         }
         return {};
       },
@@ -2292,12 +2305,39 @@ console.log(JSON.stringify(his_self.reformers[key]));
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, extra) {
+      menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "move" || menu == "assault" || menu == "piracy") {
-	  alert("foul weather is complicated...");
+	  his_self.addMove(`foul_weather\t${player}\t${faction}`);
+	  his_self.endTurn();
         }
         return 1;
       },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "foul_weather") {
+
+          let player = mv[1];
+          let faction = mv[2];
+          his_self.game.queue.splice(qe, 1);
+
+	  his_self.updateLog(faction + " plays Foul Weather");
+
+	  his_self.game.state.events.foul_weather = 1;
+
+	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
+	    if (his_self.game.queue[i].indexOf("continue") == -1) {
+	      his_self.game.queue.splice(i, 1);
+	    } else {
+	      break;
+	    }
+	  }
+
+	  return 1;
+
+        }
+
+	return 1;
+      }
     }
     deck['032'] = { 
       img : "cards/HIS-032.svg" , 
@@ -2307,22 +2347,45 @@ console.log(JSON.stringify(his_self.reformers[key]));
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player, extra) {
-        if (menu == "move") {
-	  let f = "";
+        if (menu == "move" || menu == "assault") {
 
+console.log("ASSAULT GOUT QUEUE: " + JSON.stringify(his_self.game.queue));
+
+	  let f = "";
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('032')) {
 	      f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
+	  let includes_army_leader = false;
 
-          return { faction : f , event : 'gout', html : '<li class="option" id="gout">play gout</li>' };
-        }
+	  if (menu == "move") {
+	    for (let i = his_self.game.queue.length-1; i > 0; i--) {
+	      let lqe = his_self.game.queue[i];
+	      if (lqe.indexOf("move") == 0) {
+		let lmv = lqe.split("\t");
+		if (lmv[0] === "move") {
+		  let faction = lmv[1];
+		  let source = lmv[3];
+		  let unit_idx = parseInt(lmv[5]);
+		  let unit = his_self.game.spaces[source].units[faction][unit_idx];
+		  if (unit.army_leader) {
+		    includes_army_leader = true;
+		  }
+		}
+	      }
+	    }
+	  }
+
+	  if (includes_army_leader) {
+            return { faction : f , event : '032', html : '<li class="option" id="032">play gout</li>' };
+	  } 
+       }
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
-        if (menu == "move") {
+        if (menu == "move" || menu == "assault") {
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('032')) {
 	      return 1;
@@ -2331,13 +2394,52 @@ console.log(JSON.stringify(his_self.reformers[key]));
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, extra) {
+      menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "move") {
+
+	  let faction = null;
+	  let source = null;
+	  let unit_idx = null;
+
+	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
+	    let lqe = his_self.game.queue[i];
+	    if (lqe.indexOf("move") == 0) {
+	      let lmv = lqe.split("\t");
+	      if (lmv[0] === "move") {
+		faction = lmv[1];
+		source = lmv[3];
+		unit_idx = parseInt(lmv[5]);
+		break;
+	      }
+	    }
+	  }
+
+	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
+
+          his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
           his_self.endTurn();
-          his_self.updateLog("looks like someone got gout");
+
         }
         return 0;
       },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "gout") {
+
+	  let faction = mv[1];
+	  let source = mv[2];
+	  let unit_idx = parseInt(mv[3]);
+
+	  his_self.game.spaces[source].units[faction][unit_idx].gout = true;
+	  his_self.updateLog(his_self.game.spaces[source].units[faction][unit_idx].name + " has come down with gout");
+          his_self.game.queue.splice(qe, 1);
+
+	  return 1;
+
+	}
+
+        return 1;
+      }
     }
     deck['033'] = { 
       img : "cards/HIS-033.svg" , 
@@ -2357,7 +2459,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	    }
 	  }
 
-          return { faction : f , event : 'landsknechts', html : `<li class="option" id="landsknechts">landsknechts (${f})</li>` };
+          return { faction : f , event : '033', html : `<li class="option" id="033">landsknechts (${f})</li>` };
         }
         return {};
       },
@@ -2478,7 +2580,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	    }
 	  }
 
-          return { faction : f , event : 'swiss_mercenaries', html : `<li class="option" id="swiss_mercenaries">swiss mercenaries (${f})</li>` };
+          return { faction : f , event : '036', html : `<li class="option" id="036">swiss mercenaries (${f})</li>` };
         }
         return {};
       },
@@ -2572,7 +2674,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	  if (cardobj.type === "mandatory") { return {}; }
 	  if (cardobj.type === "combat") { return {}; }
 	  
-          return { faction : "protestant" , event : 'wartburg', html : `<li class="option" id="wartburg">jwartburg (protestant)</li>` };
+          return { faction : "protestant" , event : '037', html : `<li class="option" id="037">jwartburg (protestant)</li>` };
         }
         return {};
       },
@@ -4778,10 +4880,12 @@ alert("NOT IMPLEMENTED");
 
 	    his_self.displaySpace(s.key);
 
-            return;
+            return 1;
 
 	  }
         }
+
+	return 1;
       }
     }
     deck['104'] = { 
@@ -5283,8 +5387,8 @@ alert("NOT IMPLEMENTED");
       faction : "hapsburg" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-        if (his_self.isBesieged("charles-v")) { return 0; }
-        if (his_self.isCaptured("charles-v")) { return 0; }
+        if (his_self.isBesieged("hapsburg", "charles-v")) { return 0; }
+        if (his_self.isCaptured("hapsburg", "charles-v")) { return 0; }
 	return 1;
       },
       onEvent : function(his_self, faction) {
