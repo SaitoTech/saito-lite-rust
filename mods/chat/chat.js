@@ -110,11 +110,26 @@ class Chat extends ModTemplate {
     //
 
     //Enforce compliance with wallet indexing
-    if (!app.options?.chat || !Array.isArray(app.options.chat)) {
-      app.options.chat = [];
+    if (!app.options?.chat) {
+      app.options.chat = {};
+      app.options.chat.groups = [];
+      app.options.chat.enable_notifications = this.enable_notifications;
+    } else if (Array.isArray(app.options.chat)){
+      let newObj = { 
+        groups: app.options.chat,
+        enable_notifications: this.enable_notifications
+      };
+      app.options.chat = newObj;
+    } else {
+      this.enable_notifications = app.options.chat?.enable_notifications;
+    }
+
+    if (app.options.chat.groups?.length == 0) {
       this.createDefaultChatsFromKeys();
     }
 
+    this.app.storage.saveOptions();
+    
     await this.loadChatGroups();
 
     //Add script for emoji to work
@@ -1196,15 +1211,17 @@ class Chat extends ModTemplate {
     if (/*group.name !== this.communityGroupName &&*/ !new_message.from.includes(this.publicKey)) {
 
       if (this.enable_notifications) {
-        
         let sender = this.app.keychain.returnIdentifierByPublicKey(new_message.from[0], true);
+        if (group.unread > 1){
+          sender += ` (${group.unread})`;
+        }
         let new_msg = content.indexOf("<img") == 0 ? "[image]" : this.app.browser.sanitize(content);
         const regex = /<blockquote>.*<\/blockquote>/is;
         new_msg = new_msg.replace(regex, "reply: ").replace("<br>", "");
         const regex2 = /<a[^>]+>/i;
         new_msg = new_msg.replace(regex2, "").replace("</a>", "");
 
-        this.app.browser.sendNotification(sender, new_msg, "chat-message-notification");
+        this.app.browser.sendNotification(sender, new_msg, `chat-message-${group.id}`);
 
       }
 
@@ -1429,7 +1446,7 @@ class Chat extends ModTemplate {
     let chat_self = this;
     //console.log("Reading local DB");
     let count = 0;
-    for (let g_id of this.app.options.chat) {
+    for (let g_id of this.app.options.chat.groups) {
       //console.log("Fetch", g_id);
       count++;
       await localforage.getItem(`chat_${g_id}`, function (error, value) {
@@ -1463,8 +1480,8 @@ class Chat extends ModTemplate {
     let chat_self = this;
 
     //Save group in app.options
-    if (!this.app.options.chat.includes(group.id)) {
-      this.app.options.chat.push(group.id);
+    if (!this.app.options.chat.groups.includes(group.id)) {
+      this.app.options.chat.groups.push(group.id);
       this.app.storage.saveOptions();
     }
 
@@ -1505,9 +1522,9 @@ class Chat extends ModTemplate {
       }
     }
 
-    for (let i = 0; i < this.app.options.chat.length; i++) {
-      if (this.app.options.chat[i] === group.id) {
-        this.app.options.chat.splice(i, 1);
+    for (let i = 0; i < this.app.options.chat.groups.length; i++) {
+      if (this.app.options.chat.groups[i] === group.id) {
+        this.app.options.chat.groups.splice(i, 1);
         break;
       }
     }
