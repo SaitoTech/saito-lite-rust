@@ -49,7 +49,7 @@ class TweetManager {
 
                 if (txs.length == 0) {
                   this.app.browser.addElementToSelector(
-                    `<div class="saito-end-of-redsquare">No more tweets</div>`,
+                    `<div class="saito-end-of-redsquare">no more tweets</div>`,
                     ".tweet-manager"
                   );
                   this.intersectionObserver.unobserve(
@@ -107,7 +107,7 @@ class TweetManager {
                 this.hideLoader();
                 if (txs.length == 0) {
                   this.app.browser.addElementToSelector(
-                    `<div class="saito-end-of-redsquare">No more tweets</div>`,
+                    `<div class="saito-end-of-redsquare">no more tweets</div>`,
                     ".tweet-manager"
                   );
                   this.intersectionObserver.unobserve(

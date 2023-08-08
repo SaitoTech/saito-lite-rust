@@ -259,8 +259,7 @@ class RedSquare extends ModTemplate {
     //
     if (!this.app.BROWSER) {
       return;
-    }
-
+    }new Date().getTime()
     //
     // default to dark mode
     //
@@ -304,6 +303,7 @@ class RedSquare extends ModTemplate {
     //
     //
     //
+/****
     for (let z = 0; z < window.tweets.length; z++) {
       console.log("ADDING: " + window.tweets[z]);
       let newtx = new Transaction();
@@ -312,6 +312,7 @@ class RedSquare extends ModTemplate {
       this.addTweet(newtx);
     }
     this.app.connection.emit("redsquare-home-render-request");
+****/
 
   }
 
@@ -338,7 +339,7 @@ class RedSquare extends ModTemplate {
       this.peers.push({
 	peer : peer , 
 	publickey : publicKey , 
-	tweets_earliest_ts : 0 ,
+	tweets_earliest_ts : new Date().getTime() ,
 	tweets_latest_ts : 0 ,
 	tweets_limit : 20 ,
 	profile_earliest_ts : 0 ,
@@ -440,59 +441,6 @@ class RedSquare extends ModTemplate {
   }
 
 
-  updatePeerEarliestTweetTimestamp(peer=null, ts) {
-    if (peer == null) {
-      for (let i = 0; i < this.peers.length; i++) {
-        this.peers[i].tweets_earliest_ts = ts;
-      }
-    } else {
-      for (let i = 0; i < this.peers.length; i++) {
-        if (this.peers[i].peer == peer) {
-	  this.peers[i].tweets_earliest_ts = ts;
-        }
-      }
-    }
-  }
-
-  updatePeerEarliestProfileTimestamp(peer=null, ts) {
-    if (peer == null) {
-      for (let i = 0; i < this.peers.length; i++) {
-        this.peers[i].profile_earliest_ts = ts;
-      }
-    } else {
-      for (let i = 0; i < this.peers.length; i++) {
-        if (this.peers[i].peer == peer) {
-	  this.peers[i].profile_earliest_ts = ts;
-        }
-      }
-    }
-  }
-
-  updatePeerEarliestNotificationTimestamp(peer=null, ts) {
-    if (peer == null) {
-      for (let i = 0; i < this.peers.length; i++) {
-        this.peers[i].notification_earliest_ts = ts;
-      }
-    } else {
-      for (let i = 0; i < this.peers.length; i++) {
-        if (this.peers[i].peer == peer) {
-	  this.peers[i].notification_earliest_ts = ts;
-        }
-      }
-    }
-  }
-
-  returnEarliestTimestampFromTransactionArray(txs = []) {
-    let ts = 0;
-    for (let i = 0; i < txs.length; i++) {
-      if (txs[i].timestamp < ts || ts == 0) { ts = txs[i].timestamp; }
-    }
-    return ts;
-  }
-
-
-
-
   ///////////////////////
   // network functions //
   ///////////////////////
@@ -556,8 +504,11 @@ console.log("NEW BLOCK RECEIVED!");
 
       let sql = `SELECT * FROM tweets WHERE publickey = '${publickey}' AND updated_at < ${this.peers[i].profile_earliest_ts} ORDER BY created_at DESC LIMIT '${this.peers[i].profile_limit}'`;
       this.loadTweetsFromPeer(peer, sql, (txs) => {
-        for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
-	this.updatePeerEarliestProfileTimestamp(peer, this.returnEarliestTimestampFromTransactionArray(txs));
+        for (let z = 0; z < txs.length; z++) {
+	 this.addTweet(txs[z]);
+	 if (txs[z].timestamp < this.peers[i].profile_earliest_ts) { this.peers[i].profile_earliest_ts = txs[z].timestamp; }
+	 if (txs[z].timestamp > this.peers[i].profile_latest_ts) { this.peers[i].profile_latest_ts = txs[z].timestamp; }
+	}
         if (mycallback) {
           mycallback(txs)
         }
@@ -570,19 +521,39 @@ console.log("NEW BLOCK RECEIVED!");
     for (let i = 0; i < this.peers.length; i++) {
 
       let peer = this.peers[i].peer;
-      if (this.peers[i].tweets_earliest_ts == 0) { this.peers[i].tweets_earliest_ts = new Date().getTime(); }
+      if (this.peers[i].tweets_earliest_ts != 0) {
 
-      let sql = `SELECT * FROM tweets WHERE parent_id = "" AND flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND updated_at < ${this.peers[i].tweets_earliest_ts} ORDER BY updated_at DESC LIMIT '${this.peers[i].tweets_limit}'`;
+        this.app.storage.loadTransactions(
+          {
+	    field1 : "RedSquare" ,
+	    created_earlier_than : this.peers[i].tweets_earliest_ts ,
+	    limit : this.peers[i].tweets_limit ,
+          },
+          (txs) => { 
 
-      this.loadTweetsFromPeer(peer, sql, (txs) => {
-        for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
-	this.updatePeerEarliestTweetTimestamp(peer, this.returnEarliestTimestampFromTransactionArray(txs));
-        if (mycallback) {
-          mycallback(txs)
-        }
-      });
+            if (txs.length > 0) {
+              for (let z = 0; z < txs.length; z++) { 
+                txs[z].decryptMessage(this.app);
+	        this.addTweet(txs[z]);
+	      }
+            } else {
+	      this.peers[i].tweets_earliest_ts = 0;
+	    }
+
+            for (let z = 0; z < txs.length; z++) {
+	      if (txs[z].timestamp < this.peers[i].tweets_earliest_ts) { this.peers[i].tweets_earliest_ts = txs[z].timestamp; }
+	      if (txs[z].timestamp > this.peers[i].tweets_latest_ts) { this.peers[i].tweets_latest_ts = txs[z].timestamp; }
+            }
+
+            if (mycallback) { mycallback(txs); }
+          },
+          this.peers[i].peer
+        );
+      }
     }
+
   }
+
 
   loadNotifications(peer, mycallback=null) {
 
@@ -599,11 +570,6 @@ console.log("NEW BLOCK RECEIVED!");
       let peer = this.peers[i].peer;
       if (this.peers[i].notifications_earliest_ts != 0) {
 
-        // 
-        //
-        // 
-        if (this.peers[i].notifications_earliest_ts == "") { this.peers[i].notifications_latest_ts = new Date().getTime(); }
-
         this.app.storage.loadTransactions(
           {
 	    field3 : this.publicKey ,
@@ -616,25 +582,17 @@ console.log("NEW BLOCK RECEIVED!");
                 txs[z].decryptMessage(this.app);
 	        this.addTweet(txs[z]);
 	      }
+            } else {
+	      this.peers[i].notifications_earliest_ts = 0;
+	    }
+
+            for (let z = 0; z < txs.length; z++) {
+	      if (txs[z].timestamp < this.peers[i].notifications_earliest_ts) { this.peers[i].notifications_earliest_ts = txs[z].timestamp; }
+	      if (txs[z].timestamp > this.peers[i].notifications_latest_ts)   { this.peers[i].notifications_latest_ts = txs[z].timestamp; }
             }
-	    this.updatePeerEarliestProfileTimestamp(peer, this.returnEarliestTimestampFromTransactionArray(txs));
-            if (mycallback) {
 
-	      //
-	      // can't fetch more? we are at the earliest point
-	      //
-	      if (txs.length == 0) { this.peers[i].notifications_earliest_ts = 0; }
+            if (mycallback) { mycallback(txs); }
 
-	      //
-	      // update our earliest fetched notification
-	      //
-              for (let z = 0; z < txs.length; z++) {
-	        if (txs[z].timestamp < this.peers[i].notifications_earliest_ts) { this.peers[i].notifications_earliest_ts = txs[z].timestamp; }
-	        if (txs[z].timestamp > this.peers[i].notifications_latest_ts) { this.peers[i].notifications_latest_ts = txs[z].timestamp; }
-              }
-
-              mycallback(txs)
-            }
           },
           this.peers[i].peer
         );
@@ -765,7 +723,15 @@ console.log("NEW BLOCK RECEIVED!");
 
   }
 
-
+  returnEarliestTimestampFromTransactionArray(txs = []) {
+    let ts = new Date().getTime();
+    for (let i = 0; i < txs.length; i++) {
+      if (txs[i].timestamp < ts) {
+        ts = txs[i].timestamp;
+      }
+    }
+    return ts;
+  }
 
 
 
@@ -1007,6 +973,13 @@ console.log("THE TRANSACTION IS: " + JSON.stringify(tx.serialize_to_web(this.app
       obj.data[key] = data[key];
     }
 
+console.log("!");
+console.log("!");
+console.log("!");
+console.log("!");
+console.log("!");
+console.log("SENDING LIKE TX WITH: " + JSON.stringify(obj.data));
+
     let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
     for (let i = 0; i < tx.to.length; i++) {
       if (tx.to[i].publicKey !== this.publicKey) {
@@ -1039,8 +1012,8 @@ console.log("THE TRANSACTION IS: " + JSON.stringify(tx.serialize_to_web(this.app
         // save optional likes
         //
         let txmsg = tx.returnMessage();
-        if (this.tweets_sigs_hmap[txmsg.data.sig]) {
-          let tweet = this.returnTweet(txmsg.data.sig);
+        if (this.tweets_sigs_hmap[txmsg.data.signature]) {
+          let tweet = this.returnTweet(txmsg.data.signature);
           if (tweet == null) { return; }
           let tx = tweet.tx;
           if (!tx.optional) { tx.optional = {}; }
@@ -1069,8 +1042,11 @@ console.log("THE TRANSACTION IS: " + JSON.stringify(tx.serialize_to_web(this.app
     let txmsg = tx.returnMessage();
     let sql = `UPDATE tweets SET num_likes = num_likes + 1 WHERE sig = $sig`;
     let params = {
-      $sig: txmsg.data.sig,
+      $sig: txmsg.data.signature,
     };
+console.log("*");
+console.log("* updating: " + sql + " - " + JSON.stringify(params));
+console.log("*");
     await app.storage.executeDatabase(sql, params, "redsquare");
 
 
@@ -1315,9 +1291,7 @@ console.log("G");
       //
       // update cache
       //
-console.log("H");
       this.updateTweetsCacheForBrowsers();
-console.log("I");
       this.sqlcache = {};
 
       return;
@@ -1365,7 +1339,7 @@ console.log("I");
     let txmsg = tx.returnMessage();
     let sql = `UPDATE tweets SET flagged = 1 WHERE sig = $sig`;
     let params = {
-      $sig: txmsg.data.sig,
+      $sig: txmsg.data.signature,
     };
     await app.storage.executeDatabase(sql, params, "redsquare");
 
@@ -1392,26 +1366,15 @@ console.log("I");
   /////////////////////////////////////////
   async updateTweetsCacheForBrowsers() {
 
-console.log("");
-console.log("");
-console.log("");
-console.log("updating tweets cache for browsers");
-
     let hex_entries = [];
-
-console.log("updating cache!");
 
     let sql = `SELECT *, (updated_at + 10 * (num_likes + num_replies + num_retweets)) AS virality
                FROM tweets
                WHERE (flagged IS NOT 1 AND moderated IS NOT 1)
                ORDER BY virality DESC LIMIT 10`;
 
-console.log(sql);
-
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
-
-console.log("number of rows: " + rows.length);
 
     for (let i = 0; i < rows.length; i++) {
       if (!rows[i].tx) {
@@ -1436,7 +1399,6 @@ console.log("number of rows: " + rows.length);
       }
       console.log(tx);
       let hexstring = tx.serialize_to_web(this.app);
-console.log("pushing into hex_entries...");
       hex_entries.push(hexstring);
     }
 
@@ -1454,7 +1416,6 @@ console.log("pushing into hex_entries...");
           let thisfile = filename + i + ".js";
           const fd = fs.openSync(thisfile, "w");
           html += `  tweets.push(\`${hex_entries[i]}\`);   `;
-console.log("writing file!");
           fs.writeSync(fd, html);
           fs.fsyncSync(fd);
           fs.closeSync(fd);

@@ -21,8 +21,6 @@ class Tweet {
     }
 
     let txmsg = tx.returnMessage();
-    //let txmsg = tx.msg;
-    console.log("New Tweet constructor", txmsg);
 
     if (txmsg.module !== mod.name) {
       console.warn("Attempting to create Tweet from non-Redsquare tx");
@@ -33,8 +31,6 @@ class Tweet {
     // the core
     //
     this.tx = tx;
-
-console.log("tc 1");
 
     //
     // ancillary content is stored in the tx.optional array, where it
@@ -66,7 +62,6 @@ console.log("tc 1");
     if (!this.tx.optional.thread_id) {
       this.tx.optional.thread_id = "";
     }
-console.log("tc 2");
 
     //
     // If I am not part of a thread, become my own thread
@@ -85,7 +80,6 @@ console.log("tc 2");
         this.tx.optional.thread_id = txmsg.data.thread_id;
       }
     }
-console.log("tc 3");
 
     //
     // additional variables are created in-memory from the core transaction
@@ -104,21 +98,18 @@ console.log("tc 3");
     //
     this.notice = "";
 
-console.log("tc 4");
     this.user = new SaitoUser(
       app,
       mod,
       this.container + `> .tweet-${this.tx.signature} > .tweet-header`,
       this.tx.from[0].publicKey
     );
-console.log("tc 4 - 1");
 
     //
     // Default is a new tweet
     //
     this.user.notice = "new post on " + this.formatDate(this.created_at);
 
-console.log("tc 4 - 2");
 
     this.children = [];
     this.children_sigs_hmap = {};
@@ -137,7 +128,6 @@ console.log("tc 4 - 2");
     this.is_long_tweet = false;
     this.is_retweet = false;
 
-console.log("tc 5");
     //
     // Read data from txmsg.data and tx.optional to populate this class
     //
@@ -155,11 +145,8 @@ console.log("tc 5");
     //
     //This is async and won't necessarily finish before running the following code!
     //
-console.log("tc 6");
 
     this.generateTweetProperties(app, mod, 0);
-
-console.log("tc 7");
 
     //
     // retweets
@@ -181,10 +168,6 @@ console.log("tc 7");
     //
     // image preview -- copied over from txmsg.data.images
     //
-    //tweet.tx.msg.data.images
-
-console.log("tc 8");
-
     if (this.images?.length > 0) {
       console.log("Has Image");
       this.img_preview = new Image(
@@ -697,7 +680,7 @@ console.log("tc 8");
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        this.mod.sendFlagTransaction(this.app, this.mod, { sig: this.tx.signature });
+        this.mod.sendFlagTransaction(this.app, this.mod, { signature: this.tx.signature });
         this.flagged = 1;
 
         let obj = document.querySelector(`.tweet-${this.tx.signature}`);

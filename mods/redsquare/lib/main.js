@@ -20,12 +20,6 @@ class RedSquareMain {
     //
     // redsquare - component - ui-component - [render-method] - (render-request)
     //
-
-    //
-    // EVENTS
-    //
-    // redsquare - component - ui-component - [render-method] - (render-request)
-    //
     // rendering the main thread
     this.app.connection.on("redsquare-home-render-request", () => {
       this.manager.publickey = this.mod.publicKey;
@@ -53,6 +47,15 @@ class RedSquareMain {
       this.manager.render();
     });      
     this.app.connection.on("redsquare-profile-render-request", (publickey = "") => {
+
+      //
+      // reset peers
+      //
+      for (let i = 0; i < this.mod.peers.length; i++) {
+	this.mod.peers[i].profile_latest_ts = 0;
+	this.mod.peers[i].profile_earliest_ts = new Date().getTime();
+      }
+
       this.manager.mode = "profile";
       this.manager.publickey = publickey;
       this.manager.render();
