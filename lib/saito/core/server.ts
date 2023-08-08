@@ -499,6 +499,7 @@ class Server {
         try {
           if (peers[i].publicKey === pkey) {
             peer = peers[i];
+            break;
           }
         } catch (error) {
           console.error(error);
