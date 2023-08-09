@@ -1635,7 +1635,7 @@ class RedSquare extends ModTemplate {
                 img_type = "image/svg";
               }
 
-              console.info("// ### write from 1651 of redsquare.js (request Open Graph Image)");
+              // console.info("### write from 1651 of redsquare.js (request Open Graph Image)");
               res.writeHead(200, {
                 "Content-Type": img_type,
                 "Content-Length": img.length,
@@ -1649,7 +1649,7 @@ class RedSquare extends ModTemplate {
         console.log("Loading OG data failed with error: " + err);
       }
       //Use index.js
-      console.info("// ### write from line 1242 of server.timestamp.");
+      // console.info("### write from line 1242 of server.timestamp.");
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
       res.send(redsquareHome(app, redsquare_self));
