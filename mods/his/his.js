@@ -2216,6 +2216,7 @@ console.log("\n\n\n\n");
 
 	// TEMPORARY AND TESTING
 	this.addMercenary("papacy", "siena", 4);
+        this.addArmyLeader("papacy", "siena", "renegade");
 	this.addMercenary("papacy", "nuremberg", 4);
 	this.addRegular("papacy", "ravenna", 2);
 	this.setAllies("protestant", "venice");
@@ -5020,6 +5021,26 @@ console.log("ASSAULT GOUT QUEUE: " + JSON.stringify(his_self.game.queue));
 	  }
 	  let includes_army_leader = false;
 
+	  if (menu == "assault") {
+	    for (let i = his_self.game.queue.length-1; i > 0; i--) {
+	      let lqe = his_self.game.queue[i];
+	      if (lqe.indexOf("assault") == 0) {
+		let lmv = lqe.split("\t");
+		if (lmv[0] === "assault") {
+		  let faction = lmv[1];
+		  let source = lmv[2];
+		  let unit_idx = -1;
+		  let space = his_self.game.spaces[source];
+		  for (let i = 0; i < space.units[faction].length; i++) {
+		    if (space.units[faction][i].army_leader) {
+		      includes_army_leader = true;
+		    }
+		  }
+		}
+	      }
+	    }
+	  }
+
 	  if (menu == "move") {
 	    for (let i = his_self.game.queue.length-1; i > 0; i--) {
 	      let lqe = his_self.game.queue[i];
@@ -5055,7 +5076,38 @@ console.log("ASSAULT GOUT QUEUE: " + JSON.stringify(his_self.game.queue));
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu == "move") {
+	if (menu === "assault") {
+
+	  let faction = null;
+	  let source = null;
+	  let unit_idx = null;
+
+	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
+	    let lqe = his_self.game.queue[i];
+	    if (lqe.indexOf("assault") == 0) {
+	      let lmv = lqe.split("\t");
+	      faction = lmv[1];
+	      source = lmv[2];
+	      if (lmv[0] === "assault") {
+	        let space = his_self.game.spaces[source];
+	        for (let i = 0; i < space.units[faction].length; i++) {
+	          if (space.units[faction][i].army_leader) {
+	            unit_idx = i;
+	          }
+	        }
+	      }
+	      break;
+	    }
+	  }
+
+	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
+          his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
+          his_self.endTurn();
+
+	}
+
+
+        if (menu === "move") {
 
 	  let faction = null;
 	  let source = null;
@@ -5075,7 +5127,6 @@ console.log("ASSAULT GOUT QUEUE: " + JSON.stringify(his_self.game.queue));
 	  }
 
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
-
           his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
           his_self.endTurn();
 
@@ -5094,6 +5145,15 @@ console.log("ASSAULT GOUT QUEUE: " + JSON.stringify(his_self.game.queue));
 	  his_self.updateLog(his_self.game.spaces[source].units[faction][unit_idx].name + " has come down with gout");
           his_self.game.queue.splice(qe, 1);
 
+	  //
+	  // "lose 1 CP"
+	  //
+	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
+	    let lqe = his_self.game.queue[i];
+	    if (lqe.indexOf("continue") != 0 || lqe.indexOf("play") != 0) {
+	      his_self.game.queue.splice(i, 1);
+	    }
+	  }
 	  return 1;
 
 	}
@@ -11392,6 +11452,7 @@ console.log(JSON.stringify(this.game.state.activated_powers[key]));
     //
     if (this.game.state.events.gout != 0) {
       for (let i in this.game.spaces) {
+	let space = this.game.spaces[i];
         for (let f in space.units) {
           for (let z = space.units[f].length-1;  z >= 0; z--) {
 	    space.units[f][z].gout = false; 
@@ -20447,7 +20508,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 		  }
 		}
 
-
 	        if (units_to_move.includes(id)) {
 	          let idx = units_to_move.indexOf(id);
 	          if (idx > -1) {
@@ -20516,6 +20576,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
     let units_to_move = [];
     let cancel_func = null;
     let spacekey = "";
+    let space = null;
 
 	//
 	// first define the functions that will be used internally
@@ -20569,8 +20630,10 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
 	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
+          space = his_self.game.spaces[spacekey];
+
 	  let mobj = {
-	    space : his_self.game.spaces[spacekey] ,
+	    space : space ,
 	    faction : faction ,
    	    source : spacekey ,
 	    destination : "" ,
@@ -20582,7 +20645,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
-	      if (space.units[faction][i].locked == false && (this.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
+	      if (space.units[faction][i].locked == false && (his_self.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
 	        if (units_to_move.includes(parseInt(i))) {
 	          html += `<li class="option" style="font-weight:bold" id="${i}">*${space.units[faction][i].name}*</li>`;
 	        } else {
@@ -21416,7 +21479,7 @@ console.log("units length: " + space.units[defender].length);
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
-              if (space.units[faction][i].locked == false && (this.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
+              if (space.units[faction][i].locked == false && (his_self.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
 	        if (units_to_move.includes(parseInt(i))) {
 	          html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
 	        } else {
@@ -23023,8 +23086,6 @@ return;
 	`;
       }
     }
-
-console.log(` importing ${name} with power ${obj.power}`);
 
     this.addEvents(obj);
     this.debaters[name] = obj;

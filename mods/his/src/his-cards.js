@@ -2360,6 +2360,26 @@ console.log("ASSAULT GOUT QUEUE: " + JSON.stringify(his_self.game.queue));
 	  }
 	  let includes_army_leader = false;
 
+	  if (menu == "assault") {
+	    for (let i = his_self.game.queue.length-1; i > 0; i--) {
+	      let lqe = his_self.game.queue[i];
+	      if (lqe.indexOf("assault") == 0) {
+		let lmv = lqe.split("\t");
+		if (lmv[0] === "assault") {
+		  let faction = lmv[1];
+		  let source = lmv[2];
+		  let unit_idx = -1;
+		  let space = his_self.game.spaces[source];
+		  for (let i = 0; i < space.units[faction].length; i++) {
+		    if (space.units[faction][i].army_leader) {
+		      includes_army_leader = true;
+		    }
+		  }
+		}
+	      }
+	    }
+	  }
+
 	  if (menu == "move") {
 	    for (let i = his_self.game.queue.length-1; i > 0; i--) {
 	      let lqe = his_self.game.queue[i];
@@ -2395,7 +2415,38 @@ console.log("ASSAULT GOUT QUEUE: " + JSON.stringify(his_self.game.queue));
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu == "move") {
+	if (menu === "assault") {
+
+	  let faction = null;
+	  let source = null;
+	  let unit_idx = null;
+
+	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
+	    let lqe = his_self.game.queue[i];
+	    if (lqe.indexOf("assault") == 0) {
+	      let lmv = lqe.split("\t");
+	      faction = lmv[1];
+	      source = lmv[2];
+	      if (lmv[0] === "assault") {
+	        let space = his_self.game.spaces[source];
+	        for (let i = 0; i < space.units[faction].length; i++) {
+	          if (space.units[faction][i].army_leader) {
+	            unit_idx = i;
+	          }
+	        }
+	      }
+	      break;
+	    }
+	  }
+
+	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
+          his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
+          his_self.endTurn();
+
+	}
+
+
+        if (menu === "move") {
 
 	  let faction = null;
 	  let source = null;
@@ -2415,7 +2466,6 @@ console.log("ASSAULT GOUT QUEUE: " + JSON.stringify(his_self.game.queue));
 	  }
 
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
-
           his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
           his_self.endTurn();
 
@@ -2434,6 +2484,17 @@ console.log("ASSAULT GOUT QUEUE: " + JSON.stringify(his_self.game.queue));
 	  his_self.updateLog(his_self.game.spaces[source].units[faction][unit_idx].name + " has come down with gout");
           his_self.game.queue.splice(qe, 1);
 
+	  //
+	  // "lose 1 CP"
+	  //
+	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
+	    let lqe = his_self.game.queue[i];
+	    if (lqe.indexOf("continue") != 0 && lqe.indexOf("play") != 0) {
+	      his_self.game.queue.splice(i, 1);
+	    } else {
+	      break;
+	    }
+	  }
 	  return 1;
 
 	}

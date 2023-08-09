@@ -10,6 +10,7 @@
     //
     if (this.game.state.events.gout != 0) {
       for (let i in this.game.spaces) {
+	let space = this.game.spaces[i];
         for (let f in space.units) {
           for (let z = space.units[f].length-1;  z >= 0; z--) {
 	    space.units[f][z].gout = false; 

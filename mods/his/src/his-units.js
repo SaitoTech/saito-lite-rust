@@ -182,8 +182,6 @@
       }
     }
 
-console.log(` importing ${name} with power ${obj.power}`);
-
     this.addEvents(obj);
     this.debaters[name] = obj;
   }

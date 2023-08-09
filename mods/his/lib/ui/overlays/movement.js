@@ -21,7 +21,6 @@ class MovementOverlay {
     let source = mobj.source;
     let destination = mobj.destination;
     let max_formation_size = this.mod.returnMaxFormationSize(units_to_move);
-
     let units = space.units[faction];
     
 
@@ -129,6 +128,7 @@ class MovementOverlay {
       mam_idx : mam ,
       ctm_idx : ctm ,
       cam_idx : cam ,
+      space : space ,
       commanders : commanders ,
       units_to_move : units_to_move ,
       from : from ,

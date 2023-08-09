@@ -56,6 +56,7 @@ console.log("\n\n\n\n");
 
 	// TEMPORARY AND TESTING
 	this.addMercenary("papacy", "siena", 4);
+        this.addArmyLeader("papacy", "siena", "renegade");
 	this.addMercenary("papacy", "nuremberg", 4);
 	this.addRegular("papacy", "ravenna", 2);
 	this.setAllies("protestant", "venice");

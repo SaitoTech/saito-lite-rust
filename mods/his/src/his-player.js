@@ -1370,7 +1370,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 		  }
 		}
 
-
 	        if (units_to_move.includes(id)) {
 	          let idx = units_to_move.indexOf(id);
 	          if (idx > -1) {
@@ -1439,6 +1438,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
     let units_to_move = [];
     let cancel_func = null;
     let spacekey = "";
+    let space = null;
 
 	//
 	// first define the functions that will be used internally
@@ -1492,8 +1492,10 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
 	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
+          space = his_self.game.spaces[spacekey];
+
 	  let mobj = {
-	    space : his_self.game.spaces[spacekey] ,
+	    space : space ,
 	    faction : faction ,
    	    source : spacekey ,
 	    destination : "" ,
@@ -1505,7 +1507,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
-	      if (space.units[faction][i].locked == false && (this.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
+	      if (space.units[faction][i].locked == false && (his_self.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
 	        if (units_to_move.includes(parseInt(i))) {
 	          html += `<li class="option" style="font-weight:bold" id="${i}">*${space.units[faction][i].name}*</li>`;
 	        } else {
@@ -2339,7 +2341,7 @@ console.log("units length: " + space.units[defender].length);
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
-              if (space.units[faction][i].locked == false && (this.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
+              if (space.units[faction][i].locked == false && (his_self.game.state.events.foul_weather != 1 && space.units[faction][i].already_moved != 1)) {
 	        if (units_to_move.includes(parseInt(i))) {
 	          html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
 	        } else {
