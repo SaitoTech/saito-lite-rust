@@ -233,8 +233,8 @@ class RedSquare extends ModTemplate {
     // fetched by browsers. It allows us to rapidly put the last 10 tweets we
     // prefer at the top of their feed for more rapid page load.
     //
-    if (app.BROWSER == 0) {
-      // await this.updateTweetsCacheForBrowsers();
+    if (!app.BROWSER) {
+      await this.updateTweetsCacheForBrowsers();
     } else {
       //
       // fetch content from options file -- regardless of whether we are accessing redsquare or not!
@@ -1271,6 +1271,7 @@ class RedSquare extends ModTemplate {
   // saving and loading wallet state //
   /////////////////////////////////////
   loadLocalTweets() {
+    if (!this.app.BROWSER) { return; }
     if (this.app.options.redsquare) {
       this.notifications_last_viewed_ts = this.app.options.redsquare.notifications_last_viewed_ts;
       this.notifications_number_unviewed = this.app.options.redsquare.notifications_number_unviewed;
@@ -1291,7 +1292,7 @@ class RedSquare extends ModTemplate {
       if (value && value.length > 0) {
         console.log("Using local forage");
         for (let tx of value) {
-          console.log(tx);
+          //console.log(tx);
           // let txobj = JSON.parse(tx);
           let newtx = new Transaction();
           newtx.deserialize_from_web(this.app, tx);
@@ -1315,12 +1316,12 @@ class RedSquare extends ModTemplate {
         try {
           //Prefer our locally cached tweets to the webServer ones
             if (window?.tweets?.length > 0) {
-              console.log("Using Server Cached Tweets : ");
+              console.log("Using Server Cached Tweets");
               for (let z = 0; z < window.tweets.length; z++) {
-                console.log(window.tweets[z]);
+                //console.log(window.tweets[z]);
                 let newtx = new Transaction();
                 newtx.deserialize_from_web(this.app, window.tweets[z]);
-                console.log(newtx);
+                //console.log(newtx);
                 this.addTweet(newtx);
               }
           }
@@ -1495,7 +1496,7 @@ class RedSquare extends ModTemplate {
       if (!rows[i].tx) {
         continue;
       }
-      console.log(rows[i].tx);
+      //console.log(rows[i].tx);
       // create the transaction
       let tx = new Transaction();
       tx.deserialize_from_web(this.app, rows[i].tx);
@@ -1512,7 +1513,7 @@ class RedSquare extends ModTemplate {
       if (rows[i].flagged) {
         tx.optional.flagged = rows[i].flagged;
       }
-      console.log(tx);
+      //console.log(tx);
       let hexstring = tx.serialize_to_web(this.app);
       hex_entries.push(hexstring);
     }
