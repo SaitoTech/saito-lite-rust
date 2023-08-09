@@ -1403,9 +1403,6 @@ console.log("G");
   /////////////////////////////////////////
   async updateTweetsCacheForBrowsers() {
 
-
-return;
-
     let hex_entries = [];
 
     let sql = `SELECT *, (updated_at + 10 * (num_likes + num_replies + num_retweets)) AS virality
@@ -1420,7 +1417,6 @@ return;
       if (!rows[i].tx) {
         continue;
       }
-      //console.log(rows[i].tx);
       // create the transaction
       let tx = new Transaction();
       tx.deserialize_from_web(this.app, rows[i].tx);
@@ -1437,7 +1433,6 @@ return;
       if (rows[i].flagged) {
         tx.optional.flagged = rows[i].flagged;
       }
-      //console.log(tx);
       let hexstring = tx.serialize_to_web(this.app);
       hex_entries.push(hexstring);
     }
