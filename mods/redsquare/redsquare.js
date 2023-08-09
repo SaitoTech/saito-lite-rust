@@ -1271,7 +1271,9 @@ class RedSquare extends ModTemplate {
   // saving and loading wallet state //
   /////////////////////////////////////
   loadLocalTweets() {
-    if (!this.app.BROWSER) { return; }
+    if (!this.app.BROWSER) {
+      return;
+    }
     if (this.app.options.redsquare) {
       this.notifications_last_viewed_ts = this.app.options.redsquare.notifications_last_viewed_ts;
       this.notifications_number_unviewed = this.app.options.redsquare.notifications_number_unviewed;
@@ -1288,7 +1290,6 @@ class RedSquare extends ModTemplate {
     }
 
     localforage.getItem(`tweet_history`, (error, value) => {
-
       if (value && value.length > 0) {
         console.log("Using local forage");
         for (let tx of value) {
@@ -1315,15 +1316,15 @@ class RedSquare extends ModTemplate {
         //
         try {
           //Prefer our locally cached tweets to the webServer ones
-            if (window?.tweets?.length > 0) {
-              console.log("Using Server Cached Tweets");
-              for (let z = 0; z < window.tweets.length; z++) {
-                //console.log(window.tweets[z]);
-                let newtx = new Transaction();
-                newtx.deserialize_from_web(this.app, window.tweets[z]);
-                //console.log(newtx);
-                this.addTweet(newtx);
-              }
+          if (window?.tweets?.length > 0) {
+            console.log("Using Server Cached Tweets");
+            for (let z = 0; z < window.tweets.length; z++) {
+              //console.log(window.tweets[z]);
+              let newtx = new Transaction();
+              newtx.deserialize_from_web(this.app, window.tweets[z]);
+              //console.log(newtx);
+              this.addTweet(newtx);
+            }
           }
         } catch (err) {
           console.log("error in initial redsquare post fetch: " + err);
@@ -1634,7 +1635,7 @@ class RedSquare extends ModTemplate {
                 img_type = "image/svg";
               }
 
-              console.info("### write from 1651 of redsquare.js (request Open Graph Image)");
+              console.info("// ### write from 1651 of redsquare.js (request Open Graph Image)");
               res.writeHead(200, {
                 "Content-Type": img_type,
                 "Content-Length": img.length,
@@ -1648,7 +1649,7 @@ class RedSquare extends ModTemplate {
         console.log("Loading OG data failed with error: " + err);
       }
       //Use index.js
-      console.info("### write from line 1242 of server.timestamp.");
+      console.info("// ### write from line 1242 of server.timestamp.");
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
       res.send(redsquareHome(app, redsquare_self));
