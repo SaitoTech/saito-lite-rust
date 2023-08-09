@@ -796,6 +796,11 @@ try {
   $('.formosan_resolution').css('top', this.scale(this.countries['taiwan'].top-32)+"px");
   $('.formosan_resolution').css('left', this.scale(this.countries['taiwan'].left)+"px");
 
+  $('.civil_war_sudan').css('width', this.scale(202)+"px");
+  $('.civil_war_sudan').css('height', this.scale(132)+"px");
+  $('.civil_war_sudan').css('top', this.scale(this.countries['sudan'].top-32)+"px");
+  $('.civil_war_sudan').css('left', this.scale(this.countries['sudan'].left)+"px");
+
   $('.kissinger_colombia').css('width', this.scale(202)+"px");
   $('.kissinger_colombia').css('height', this.scale(132)+"px");
   $('.kissinger_colombia').css('top', this.scale(this.countries['colombia'].top-32)+"px");
@@ -2706,7 +2711,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["cubanmissile","saltnegotiations","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
+          this.game.deck[0].hand = ["sudan", "cubanmissile","saltnegotiations","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["asknot", "voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
         }
@@ -6891,7 +6896,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     countries['sudan'] = { top : 1690, left : 2556, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'egypt','ethiopia' ], region : "africa" , name : "Sudan"};
     countries['ivorycoast'] = { top : 1886, left : 1838, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'nigeria','westafricanstates' ], region : "africa" , name : "Ivory Coast"};
     countries['nigeria'] = { top : 1862, left : 2114, us : 0 , ussr : 0 , control : 1 , bg : 1 , neighbours : [ 'ivorycoast','cameroon','saharanstates' ], region : "africa" , name : "Nigeria"};
-    countries['ethiopia'] = { top : 1846, left : 2714, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'sudan','somalia' ], region : "africa" , name : "Ethiopia"};
+    countries['ethiopia'] = { top : 1846, left : 2712, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'sudan','somalia' ], region : "africa" , name : "Ethiopia"};
     countries['somalia'] = { top : 1914, left : 2956, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'ethiopia','kenya' ], region : "africa" , name : "Somalia"};
     countries['cameroon'] = { top : 2036, left : 2214, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'zaire','nigeria' ], region : "africa" , name : "Cameroon"};
     countries['zaire'] = { top : 2110, left : 2474, us : 0 , ussr : 0 , control : 1 , bg : 1 , neighbours : [ 'angola','zimbabwe','cameroon' ], region : "africa" , name : "Zaire"};
@@ -8722,11 +8727,18 @@ if (inc_optional == true) {
         $('.kissinger_colombia').show();
       }
 
+      if (this.game.state.events.sudanese_civil_war) {
+        $('.kissinger_sudan').css('display','block');
+        $('.kissinger_sudan').show();
+      }
+
       if (this.game.state.events.kissinger === "africa") {
         $('.kissinger_saharanstates').css('display','block');
         $('.kissinger_saharanstates').show();
-        $('.kissinger_sudan').css('display','block');
-        $('.kissinger_sudan').show();
+	if (!this.game.state.events.sudanese_civil_war) {
+          $('.kissinger_sudan').css('display','block');
+          $('.kissinger_sudan').show();
+	}
         $('.kissinger_ethiopia').css('display','block');
         $('.kissinger_ethiopia').show();
         $('.kissinger_cameroon').css('display','block');
