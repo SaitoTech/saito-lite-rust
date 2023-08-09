@@ -23,9 +23,9 @@ class WebMethods extends WebSharedMethods {
   }
 
   async processApiCall(buffer: Uint8Array, msgIndex: number, peerIndex: bigint): Promise<void> {
-    console.log(
-      "WebMethods.processApiCall : peer= " + peerIndex + " with size : " + buffer.byteLength
-    );
+    // console.log(
+    //   "WebMethods.processApiCall : peer= " + peerIndex + " with size : " + buffer.byteLength
+    // );
     const mycallback = async (response_object) => {
       await S.getInstance().sendApiSuccess(
         msgIndex,
@@ -47,7 +47,7 @@ class WebMethods extends WebSharedMethods {
   }
 
   sendInterfaceEvent(event: string, peerIndex: bigint) {
-    console.log("web shared methods . emit : " + event, this.app.connection);
+    // console.log("web shared methods . emit : " + event, this.app.connection);
     this.app.connection.emit(event, peerIndex);
   }
 
