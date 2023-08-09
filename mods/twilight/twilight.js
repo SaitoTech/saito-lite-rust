@@ -48,7 +48,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     //
     // ui components
@@ -795,6 +795,11 @@ try {
   $('.formosan_resolution').css('height', this.scale(132)+"px");
   $('.formosan_resolution').css('top', this.scale(this.countries['taiwan'].top-32)+"px");
   $('.formosan_resolution').css('left', this.scale(this.countries['taiwan'].left)+"px");
+
+  $('.civil_war_sudan').css('width', this.scale(202)+"px");
+  $('.civil_war_sudan').css('height', this.scale(132)+"px");
+  $('.civil_war_sudan').css('top', this.scale(this.countries['sudan'].top-32)+"px");
+  $('.civil_war_sudan').css('left', this.scale(this.countries['sudan'].left)+"px");
 
   $('.kissinger_colombia').css('width', this.scale(202)+"px");
   $('.kissinger_colombia').css('height', this.scale(132)+"px");
@@ -2706,7 +2711,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["cubanmissile","saltnegotiations","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
+          this.game.deck[0].hand = ["sudan", "cubanmissile","saltnegotiations","argo","antiapartheid", "carterdoctrine", "handshake", "kissinger", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["asknot", "voiceofamerica", "grainsales", "august1968","sudan","fischerspassky","berlinagreement", "energycrisis", "unitedfruit", "china"];
         }
@@ -8722,11 +8727,18 @@ if (inc_optional == true) {
         $('.kissinger_colombia').show();
       }
 
+      if (this.game.state.events.sudanese_civil_war) {
+        $('.kissinger_sudan').css('display','block');
+        $('.kissinger_sudan').show();
+      }
+
       if (this.game.state.events.kissinger === "africa") {
         $('.kissinger_saharanstates').css('display','block');
         $('.kissinger_saharanstates').show();
-        $('.kissinger_sudan').css('display','block');
-        $('.kissinger_sudan').show();
+	if (!this.game.state.events.sudanese_civil_war) {
+          $('.kissinger_sudan').css('display','block');
+          $('.kissinger_sudan').show();
+	}
         $('.kissinger_ethiopia').css('display','block');
         $('.kissinger_ethiopia').show();
         $('.kissinger_cameroon').css('display','block');

@@ -173,112 +173,119 @@ table caption {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/colombia.png");
   background-size: cover;
 }
 .kissinger_guatemala {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/guatemala.png");
   background-size: cover;
 }
 .kissinger_elsalvador {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/elsalvador.png");
   background-size: cover;
 }
 .kissinger_nicaragua {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/nicaragua.png");
   background-size: cover;
 }
 .kissinger_haiti {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/haiti.png");
   background-size: cover;
 }
 .kissinger_dominicanrepublic {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/dominicanrepublic.png");
   background-size: cover;
 }
 .kissinger_saharanstates {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/saharanstates.png");
   background-size: cover;
 }
 .kissinger_sudan {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/sudanyellow.png");
+  background-size: cover;
+}
+.civil_war_sudan {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  background-image: url("/twilight/img/battlegrounds/sudanred.png");
   background-size: cover;
 }
 .kissinger_ethiopia {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/ethiopia.png");
   background-size: cover;
 }
 .kissinger_cameroon {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/cameroon.png");
   background-size: cover;
 }
 .kissinger_seafricanstates {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/seafricanstates.png");
   background-size: cover;
 }
 .kissinger_zimbabwe {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/zimbabwe.png");
   background-size: cover;
 }
 .kissinger_lebanon {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/lebanon.png");
   background-size: cover;
 }
 .kissinger_laos {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/laos.png");
   background-size: cover;
 }
 .kissinger_vietnam {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/vietnam.png");
   background-size: cover;
 }
 .kissinger_indonesia {
   display: none;
   position: absolute;
   z-index: 0;
-  background-image: url("/twilight/img/Formosan.png");
+  background-image: url("/twilight/img/battlegrounds/indonesia.png");
   background-size: cover;
 }
 
