@@ -73,18 +73,11 @@ class Backup {
     }
   }
 
-  //Don't actually care about receiving a transaction
+  //
+  // This is called when we receive the backup wallet tx that we sent
+  //
   success(){
-    /*let div = document.querySelector("#backup-template .saito-overlay-form-submit");
-    if (div){
-      this.loader.remove();
-      div.innerHTML = `Success`;
-      div.onclick = ()=> { this.modal_overlay.remove(); }
-    }
-
-    if (this.success_callback){
-      this.success_callback();
-    }*/
+    siteMessage("Wallet backed up on blockchain", 4000);
   }
 
 }
