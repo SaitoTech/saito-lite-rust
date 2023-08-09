@@ -9,19 +9,7 @@ class RegisterUsername {
     this.mod = mod;
     this.overlay = new SaitoOverlay(this.app, this.mod);
     this.loader = new SaitoLoader(this.app, this.mod, ".saito-overlay-form");
-    this.callback = null;
-
-    /*app.connection.on("update_identifier", (publickey) => {
-      if (document.getElementById("register-username-template")){
-        if (publickey === mod.publicKey) {    
-          if (app.keychain.returnIdentifierByPublicKey(publickey, true) !== publickey){
-            this.loader.remove();
-            document.querySelector(".saito-overlay-form-text").innerHTML = "name registered!";
-          }
-        }
-      }
-    });*/
-    
+    this.callback = null;    
   }
 
   render(msg = "") {

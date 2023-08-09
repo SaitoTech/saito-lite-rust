@@ -200,7 +200,6 @@ class Chat extends ModTemplate {
     let chat_self = this;
 
     if (!app.BROWSER) {
-      console.log("browser only code ^^^^^^^^^^^^^");
       return;
     }
 
@@ -541,7 +540,7 @@ class Chat extends ModTemplate {
           console.log(txmsg.data.to);
           peers.forEach((p) => {
             if (inner_tx.isTo(p.publicKey)) {
-              console.log("Forward private chat to " + p.publicKey);
+              //console.log("Forward private chat to " + p.publicKey);
               app.network.sendTransactionWithCallback(inner_tx, null, p.peerIndex);
             }
           });
@@ -989,7 +988,7 @@ class Chat extends ModTemplate {
     if (onchain) {
       if (this.app.BROWSER) {
         if (tx.isFrom(this.publicKey)) {
-          console.log("Save My Sent Chat TX");
+          //console.log("Save My Sent Chat TX");
           await this.app.storage.saveTransaction(tx, { field3: txmsg.group_id });
         }
       }
