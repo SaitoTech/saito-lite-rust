@@ -402,7 +402,9 @@ class RedSquare extends ModTemplate {
       // or fetch tweets
       //
       await this.addPeer(peer, "tweets");
+alert("PRE LOAD TWEETS");
       this.loadTweets(peer, (txs) => {
+alert("POST LOAD TWEETS: " + txs.length);
 	this.app.connection.emit("redsquare-home-render-request");
 	if (txs.length == 0) {
       	  this.app.connection.emit("redsquare-home-loader-hide-request");
@@ -446,9 +448,10 @@ class RedSquare extends ModTemplate {
   ///////////////////////
   async onConfirmation(blk, tx, conf) {
 
-console.log("NEW BLOCK RECEIVED!");
-
+console.log("NEW TRANSACTION RECEIVED!");
     let txmsg = tx.returnMessage();
+console.log("txmsg: " + JSON.stringify(txmsg));
+
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
@@ -978,7 +981,8 @@ console.log("!");
 console.log("!");
 console.log("!");
 console.log("!");
-console.log("SENDING LIKE TX WITH: " + JSON.stringify(obj.data));
+console.log("SENDING LIKE TX WITH: " + JSON.stringify(obj));
+console.log("!");
 
     let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
     for (let i = 0; i < tx.to.length; i++) {
@@ -995,6 +999,13 @@ console.log("SENDING LIKE TX WITH: " + JSON.stringify(obj.data));
   }
 
   async receiveLikeTransaction(blk, tx, conf, app) {
+
+console.log(":");
+console.log(":");
+console.log(":");
+console.log(": receive like transaction!");
+console.log(":");
+console.log(":");
 
     //
     // browsers
@@ -1051,6 +1062,23 @@ console.log("*");
 
 
     //
+    // fetch original
+    //
+console.log("NOW FETCH ORIGINAL TX");
+    this.app.storage.loadTransactions({ sig : txmsg.data.signature }, (txs) => {
+console.log("LOAD TRANSACTIONS RETURNED IN LIKE: " + txs.length);
+      let tx = txs[0];
+      if (!tx.optional) { tx.optional = {}; }
+      if (!tx.optional.num_likes) { tx.optional.num_likes = 0; }
+      tx.optional.num_likes++;
+console.log("AND RE-SAVE WITH NEW LIKES: " + tx.optiona.num_likes);
+      this.app.storage.updateTransaction(tx, { owner : this.publicKey });
+
+    });
+
+
+
+    //
     // update cache
     //
     this.updateTweetsCacheForBrowsers();
@@ -1095,6 +1123,10 @@ console.log("finished propagating it!");
 
   async receiveTweetTransaction(blk, tx, conf, app) {
 
+console.log("#");
+console.log("# - receive tweet transaction");
+console.log("#");
+
     try {
 
 console.log("A");
@@ -1125,7 +1157,7 @@ console.log("$");
 	  // thus we override the defaults by setting field3 explicitly to our publickey so that loading transactions
 	  // from archives by fetching on field3 will get this.
 	  //
-          await this.app.storage.saveTransaction(tx, { owner : this.publicKey , field3 : this.publicKey });
+          await this.app.storage.saveTransaction(tx, { owner : this.publicKey , field1 : "RedSquare" , field3 : this.publicKey });
 
           //
           // if replies
@@ -1175,6 +1207,12 @@ console.log("$");
       }
 
 console.log("C");
+      //
+      // lets save this transaction in our archives as a redsquare transaction that is owned by ME (the server), so that I 
+      // can deliver it to users who want to fetch RedSquare transactions from the archives instead of just through the 
+      // sql database.
+      //
+      await this.app.storage.saveTransaction(tx, { owner : this.publicKey });
 
       //
       // servers
@@ -1365,6 +1403,9 @@ console.log("G");
   // caching top-10 tweets for fast load //
   /////////////////////////////////////////
   async updateTweetsCacheForBrowsers() {
+
+
+return;
 
     let hex_entries = [];
 
