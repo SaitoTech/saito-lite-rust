@@ -57,6 +57,8 @@ class Chat extends ModTemplate {
 
     this.isRelayConnected = false;
 
+    this.enable_notifications = false;
+
     this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
       this.returnOrCreateChatGroupFromMembers(data?.members);
       this.app.connection.emit("chat-manager-render-request");
@@ -108,10 +110,25 @@ class Chat extends ModTemplate {
     //
 
     //Enforce compliance with wallet indexing
-    if (!app.options?.chat || !Array.isArray(app.options.chat)) {
-      app.options.chat = [];
+    if (!app.options?.chat) {
+      app.options.chat = {};
+      app.options.chat.groups = [];
+      app.options.chat.enable_notifications = this.enable_notifications;
+    } else if (Array.isArray(app.options.chat)) {
+      let newObj = {
+        groups: app.options.chat,
+        enable_notifications: this.enable_notifications,
+      };
+      app.options.chat = newObj;
+    } else {
+      this.enable_notifications = app.options.chat?.enable_notifications;
+    }
+
+    if (app.options.chat.groups?.length == 0) {
       this.createDefaultChatsFromKeys();
     }
+
+    this.app.storage.saveOptions();
 
     await this.loadChatGroups();
 
@@ -456,7 +473,6 @@ class Chat extends ModTemplate {
       return;
     }
 
-    console.log("Decrypting chat message");
     await tx.decryptMessage(app); //In case forwarding private messages
     let txmsg = tx.returnMessage();
 
@@ -502,7 +518,7 @@ class Chat extends ModTemplate {
 
       let inner_tx = new Transaction(undefined, txmsg.data);
 
-      console.log(inner_tx);
+      // console.log(inner_tx);
 
       //
       // if chat message broadcast is received - we are being asked to broadcast this
@@ -515,7 +531,7 @@ class Chat extends ModTemplate {
           //
           // Addressed to chat server, so forward to all
           //
-          console.log("Community Chat");          
+          console.log("Community Chat");
           peers.forEach((p) => {
             if (p.publicKey !== peer.publicKey) {
               app.network.sendTransactionWithCallback(inner_tx, null, p.peerIndex);
@@ -839,10 +855,15 @@ class Chat extends ModTemplate {
    *
    */
   async sendChatTransaction(app, tx) {
+    if (!tx) {
+      console.warn("Chat: Cannot send null transaction");
+      return;
+    }
+
     //
     // won't exist if encrypted
     //
-    if (tx.msg.message) {
+    if (tx?.msg?.message) {
       if (tx.msg.message.substring(0, 4) == "<img") {
         if (this.inTransitImageMsgSig) {
           salert("Image already being sent");
@@ -880,14 +901,13 @@ class Chat extends ModTemplate {
       BigInt(0)
     );
     if (newtx == null) {
-      return;
+      console.error("Null tx created for chat");
+      return null;
     }
 
     let secret_holder = "";
 
     newtx.addFrom(this.publicKey);
-    newtx.addTo(this.publicKey);
-    newtx.addTo(this.publicKey);
     newtx.addTo(this.publicKey);
 
     let members = this.returnMembers(group_id);
@@ -898,14 +918,6 @@ class Chat extends ModTemplate {
       }
 
       newtx.addTo(members[i]);
-    }
-
-    if (msg.substring(0, 4) == "<img") {
-      if (this.inTransitImageMsgSig) {
-        salert("Image already being sent");
-        return;
-      }
-      this.inTransitImageMsgSig = newtx.signature;
     }
 
     newtx.msg = {
@@ -1195,7 +1207,21 @@ class Chat extends ModTemplate {
       console.log(JSON.parse(JSON.stringify(new_message)));
     }
 
-    if (group.name !== this.communityGroupName && !new_message.from.includes(this.publicKey)) {
+    if (/*group.name !== this.communityGroupName &&*/ !new_message.from.includes(this.publicKey)) {
+      if (this.enable_notifications) {
+        let sender = this.app.keychain.returnIdentifierByPublicKey(new_message.from[0], true);
+        if (group.unread > 1) {
+          sender += ` (${group.unread})`;
+        }
+        let new_msg = content.indexOf("<img") == 0 ? "[image]" : this.app.browser.sanitize(content);
+        const regex = /<blockquote>.*<\/blockquote>/is;
+        new_msg = new_msg.replace(regex, "reply: ").replace("<br>", "");
+        const regex2 = /<a[^>]+>/i;
+        new_msg = new_msg.replace(regex2, "").replace("</a>", "");
+
+        this.app.browser.sendNotification(sender, new_msg, `chat-message-${group.id}`);
+      }
+
       this.startTabNotification();
       this.app.connection.emit("group-is-active", group);
     }
@@ -1417,7 +1443,7 @@ class Chat extends ModTemplate {
     let chat_self = this;
     //console.log("Reading local DB");
     let count = 0;
-    for (let g_id of this.app.options.chat) {
+    for (let g_id of this.app.options.chat.groups) {
       //console.log("Fetch", g_id);
       count++;
       await localforage.getItem(`chat_${g_id}`, function (error, value) {
@@ -1451,8 +1477,8 @@ class Chat extends ModTemplate {
     let chat_self = this;
 
     //Save group in app.options
-    if (!this.app.options.chat.includes(group.id)) {
-      this.app.options.chat.push(group.id);
+    if (!this.app.options.chat.groups.includes(group.id)) {
+      this.app.options.chat.groups.push(group.id);
       this.app.storage.saveOptions();
     }
 
@@ -1493,9 +1519,9 @@ class Chat extends ModTemplate {
       }
     }
 
-    for (let i = 0; i < this.app.options.chat.length; i++) {
-      if (this.app.options.chat[i] === group.id) {
-        this.app.options.chat.splice(i, 1);
+    for (let i = 0; i < this.app.options.chat.groups.length; i++) {
+      if (this.app.options.chat.groups[i] === group.id) {
+        this.app.options.chat.groups.splice(i, 1);
         break;
       }
     }

@@ -154,7 +154,7 @@ class Archive extends ModTemplate {
       let newtx = new Transaction();
       newtx.deserialize_from_web(app, req.data.serial_transaction);
 
-      console.log("Archive Peer Request: ", req.data);
+      //console.log("Archive Peer Request: ", req.data);
       if (req.data.request === "delete") {
         await this.deleteTransaction(newtx, req.data);
       }
@@ -293,7 +293,7 @@ console.log("SAVE TRANSACTION IN ARCHIVE");
       // that we have saved rather than the original version of the transaction
       // that is somewhere on chain.
       //
-      console.log("Archive: only owner has the rights to modify records");
+      //console.log("Archive: only owner has the rights to modify records");
       return 0;
     }
 

@@ -1,14 +1,10 @@
 module.exports = JoinLeagueTemplate = async (app, mod, league) => {
   let game = league.game.toLowerCase();
-  let key = app.keychain.returnKey({ publickey: mod.publicKey });
-  let user_email = key.email || "";
 
   let name = app.keychain.returnIdentifierByPublicKey(mod.publicKey, true);
   if (name == mod.publicKey) {
     name = "Anonymous Player";
   }
-
-  console.log(JSON.parse(JSON.stringify(league)));
 
   let html = `
 	   <div class="league-join-overlay-box">

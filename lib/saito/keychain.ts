@@ -38,6 +38,11 @@ class Keychain {
     // saved keys
     //
     for (let i = 0; i < this.app.options.keys.length; i++) {
+      //Rename JSON saved variable
+      if (this.app.options.keys[i].publickey && !this.app.options.keys[i].publicKey){
+        this.app.options.keys[i].publicKey = this.app.options.keys[i].publickey;
+        delete this.app.options.keys[i].publickey;
+      }
       this.keys.push(this.app.options.keys[i]);
       this.publickey_keys_hmap[this.app.options.keys[i].publicKey] = 1;
     }
@@ -101,7 +106,7 @@ class Keychain {
     // skip empty keys
     //
     //console.log("Add key: ", JSON.stringify(data));
-    if (data.publicKey === "") {
+    if (!data?.publicKey) {
       console.warn("Keychain Error: cannot add key because unknown publicKey");
       console.log(data);
       return;
@@ -117,7 +122,6 @@ class Keychain {
             this.keys[i][key] = data[key];
           }
         }
-        console.log(JSON.stringify(this.keys[i]));
         this.saveKeys();
         return;
       }
@@ -488,7 +492,7 @@ class Keychain {
     this.app.network.updatePeersWithWatchedPublicKeys();
   }
 
-  updateCryptoByPublicKey(publicKey, aes_publicKey = "", aes_privatekey = "", shared_secret = "") {
+  updateCryptoByPublicKey(publicKey:string, aes_publicKey = "", aes_privatekey = "", shared_secret = "") {
     if (publicKey == "") {
       return;
     }

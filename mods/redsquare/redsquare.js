@@ -448,9 +448,14 @@ alert("POST LOAD TWEETS: " + txs.length);
   ///////////////////////
   async onConfirmation(blk, tx, conf) {
 
-console.log("NEW TRANSACTION RECEIVED!");
+
     let txmsg = tx.returnMessage();
+if (conf === 0) {
+console.log("%%");
+console.log("%%");
+console.log("NEW TRANSACTION RECEIVED!");
 console.log("txmsg: " + JSON.stringify(txmsg));
+}
 
     try {
       if (conf == 0) {
@@ -1393,12 +1398,6 @@ console.log("G");
   }
 
 
-
-
-
-
-
-
   /////////////////////////////////////////
   // caching top-10 tweets for fast load //
   /////////////////////////////////////////
@@ -1421,7 +1420,7 @@ return;
       if (!rows[i].tx) {
         continue;
       }
-      console.log(rows[i].tx);
+      //console.log(rows[i].tx);
       // create the transaction
       let tx = new Transaction();
       tx.deserialize_from_web(this.app, rows[i].tx);
@@ -1438,7 +1437,7 @@ return;
       if (rows[i].flagged) {
         tx.optional.flagged = rows[i].flagged;
       }
-      console.log(tx);
+      //console.log(tx);
       let hexstring = tx.serialize_to_web(this.app);
       hex_entries.push(hexstring);
     }

@@ -68,14 +68,6 @@
 
 
 
-  formatStatusHeader(status_header, include_back_button = false) {
-    return `
-    <div class="status-header">
-      ${include_back_button ? this.back_button_html : ""}
-      <span id="status-content">${status_header}</span>
-    </div>
-    `;
-  }
 
 
 } // end Twilight class

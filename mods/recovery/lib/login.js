@@ -44,15 +44,16 @@ class Login {
     }
   }
 
-  success(){
+  async success(){
     this.loader.hide();
     if (this.success_callback){
-      this.success_callback();
-    }else{
-      if (this.app.BROWSER){
-        window.location.reload();
-      }
+      await this.success_callback();
     }
+    
+    if (this.app.BROWSER){
+      window.location.reload();
+    }
+    
   }
 
   failure(){

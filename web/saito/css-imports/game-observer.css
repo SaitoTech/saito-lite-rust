@@ -34,6 +34,12 @@
   display: none;
 }
 
+#game-observer-help {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
 
 #obstatus {
   font-size: max(2.5vh, 14px);

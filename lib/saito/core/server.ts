@@ -17,6 +17,7 @@ import PeerServiceList from "saito-js/lib/peer_service_list";
 import Block from "../block";
 
 import fetch from "node-fetch";
+import { toBase58 } from "saito-js/lib/util";
 
 const JSON = require("json-bigint");
 const expressApp = express();
@@ -479,21 +480,27 @@ class Server {
       if (req.params.bhash == null) {
         return;
       }
-
       let pkey = await server_self.app.wallet.getPublicKey();
       if (req.params.pkey != null) {
         pkey = req.params.pkey;
+        if (pkey.length == 66) {
+          pkey = toBase58(pkey);
+        }
       }
+      console.log(`lite block fetch : block  = ${req.params.bhash} key = ${pkey}`);
 
       const bsh = req.params.bhash;
       let keylist = [];
       let peer: Peer | null = null;
       let peers: Peer[] = await this.app.network.getPeers();
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       for (let i = 0; i < peers.length; i++) {
-        if (peers[i].publicKey === pkey) {
-          peer = peers[i];
+        try {
+          if (peers[i].publicKey === pkey) {
+            peer = peers[i];
+            break;
+          }
+        } catch (error) {
+          console.error(error);
         }
       }
 
@@ -541,7 +548,7 @@ class Server {
       let buffer;
       try {
         let list = methods.loadBlockFileList();
-        console.log("file list : ", list);
+        // console.log("file list : ", list);
         for (let filename of list) {
           if (filename.includes(bsh)) {
             buffer = methods.readValue("./data/blocks/" + filename);

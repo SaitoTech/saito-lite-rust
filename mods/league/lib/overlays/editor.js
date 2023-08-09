@@ -46,11 +46,11 @@ class LeagueEditor {
     }
   }
 
-  submitChanges() {
+  async submitChanges() {
     let welcome = document.querySelector(".league-edit-overlay-box .welcome");
     if (welcome) {
       if (welcome.textContent !== this.league.welcome) {
-        let newtx = this.mod.createUpdateTransaction(
+        let newtx = await this.mod.createUpdateTransaction(
           this.league.id,
           welcome.textContent,
           "welcome"
@@ -63,7 +63,7 @@ class LeagueEditor {
     let contact = document.querySelector(".league-edit-overlay-box .contact");
     if (contact) {
       if (contact.textContent !== this.league.contact) {
-        let newtx = this.mod.createUpdateTransaction(
+        let newtx = await this.mod.createUpdateTransaction(
           this.league.id,
           sanitize(contact.textContent),
           "contact"
@@ -76,7 +76,7 @@ class LeagueEditor {
     let description = document.querySelector(".league-edit-overlay-box .description");
     if (description) {
       if (description.textContent !== this.league.description) {
-        let newtx = this.mod.createUpdateTransaction(
+        let newtx = await this.mod.createUpdateTransaction(
           this.league.id,
           description.textContent,
           "description"

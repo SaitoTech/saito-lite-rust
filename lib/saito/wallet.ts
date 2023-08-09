@@ -19,7 +19,7 @@ export default class Wallet extends SaitoWallet {
   preferred_txs = [];
 
   default_fee = 2;
-  version = 5.202;
+  version = 5.211;
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
 
@@ -944,13 +944,11 @@ export default class Wallet extends SaitoWallet {
         wobj.wallet.outputs = [];
         wobj.wallet.spends = [];
         wobj.games = [];
-        wobj.gameprefs = {};
+        //wobj.gameprefs = {}; //Don't delete gameprefs
         this.app.options = wobj;
 
         await this.app.blockchain.resetBlockchain();
-
-        this.app.modules.returnModule("Arcade").onResetWallet();
-        this.app.storage.saveOptions();
+        // this.app.storage.saveOptions(); //Included above, no need to double save
 
         alert("Restoration Complete ... click to reload Saito");
         window.location.reload();

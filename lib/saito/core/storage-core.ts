@@ -217,37 +217,32 @@ class StorageCore extends Storage {
   //   return blk;
   // }
   //
-  // async loadBlockByHash(bsh) {
-  //   if (!this.app.blockchain.blocks.get(bsh)) {
-  //     return null;
-  //   }
-  //   const blk = this.app.blockchain.blocks.get(bsh);
-  //   const filename = blk.returnFilename();
-  //   const block = await this.loadBlockByFilename(filename);
-  //   return block;
-  // }
+  async loadBlockByHash(blockHash: string) {
+    let block = await this.app.blockchain.getBlock(blockHash);
+    if (!block) {
+      return null;
+    }
+    block = await this.loadBlockByFilename(block.file_name);
+    return block;
+  }
 
-  // async loadBlockByFilename(filename) {
-  //   try {
-  //     if (fs.existsSync(filename)) {
-  //       const data = fs.readFileSync(filename);
-  //       const block = new Block(this.app);
-  //       block.deserialize(data);
-  //       block.generateMetadata();
-  //       block.generateHashes();
-  //       return block;
-  //     } else {
-  //       console.error(`cannot open: ${filename} as it does not exist on disk`);
-  //       return null;
-  //     }
-  //   } catch (err) {
-  //     console.log("Error reading block from disk");
-  //     console.error(err);
-  //   }
-  //
-  //   console.log("Block not being returned... returning null");
-  //   return null;
-  // }
+  async loadBlockByFilename(filename: string) {
+    try {
+      const data = await fs.readFile(filename);
+      const block = new Block(this.app);
+      block.deserialize(data);
+
+      // block.generateMetadata();
+      // block.generateHashes();
+      return block;
+    } catch (err) {
+      console.log("Error reading block from disk");
+      console.error(err);
+    }
+
+    console.log("Block not being returned... returning null");
+    return null;
+  }
 
   /**
    * Load the options file
