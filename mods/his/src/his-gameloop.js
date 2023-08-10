@@ -25,9 +25,10 @@ console.log("MOVE: " + mv[0]);
 	//
         if (mv[0] === "round") {
 
-
 	  this.game.state.round++;
 
+	  this.onNewRound();
+	  this.restoreReformers();
 	  this.restoreMilitaryLeaders();
 	  this.unexcommunicateReformers();
 
@@ -379,14 +380,18 @@ this.game.queue.push("is_testing");
 
 	  //this.game.queue.push("retreat_to_winter_spaces");
 
-    	  //
-    	  // IS_TESTING -- TEMPORARY
-    	  //
+          this.addMercenary("papacy", "siena", 4);
+          this.addArmyLeader("papacy", "siena", "renegade");
+          this.addMercenary("papacy", "nuremberg", 4);
+          this.addRegular("papacy", "linz", 4);
+          this.addRegular("papacy", "ravenna", 2);
+          this.setAllies("protestant", "venice");
+          this.addUnrest("graz");
+
     	  this.addDebater("papacy", "bucer-debater");
     	  this.addDebater("protestant", "aleander-debater");
     	  this.addDebater("protestant", "bullinger-debater");
     	  this.addDebater("protestant", "campeggio-debater");
-
 
     	  this.activateMinorPower("papacy", "venice");
 
@@ -403,6 +408,7 @@ this.game.queue.push("is_testing");
     	  this.addCard("protestant", "031");
     	  this.addCard("protestant", "032");
     	  this.addCard("protestant", "035");
+    	  this.addCard("protestant", "037");
 //    	  this.addCard("protestant", "036");
 //    	  this.addCard("protestant", "026");
 //    	  this.addCard("protestant", "027");
@@ -3294,6 +3300,8 @@ console.log("checking if faction " + f + " can retreat to " + space.neighbours[z
 	    this.game.space[spacekey].units[faction].splice(i, 1);
 	  }
 
+	  this.displaySpace(spacekey);
+
           this.game.queue.splice(qe, 1);
 	  return 1;
 
@@ -4324,7 +4332,8 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	      space.unrest = 0;
 	    } else {
 
-alert("FORCE BREAKING OF THE SIEGE -- RETREAT");
+              his_self.game.queue.push("break_siege");
+              his_self.game.queue.push("hide_overlay\tassault");
 
 	    }
 	  }
@@ -4787,6 +4796,12 @@ console.log("purging naval units and capturing leader");
 	    attacker_rolls++;
 	  }
 
+	  //
+	  // augsburg confession
+	  //
+	  if (attacker === "papacy" && this.game.state.events.augsburg_confession == true) {
+	    attacker_rolls--;
+	  }
 
 	  let attacker_hits = 0;
 	  let defender_hits = 0;
@@ -5124,13 +5139,17 @@ console.log("NEW WORLD PHASE!");
 	  //
 	  let factions_in_play = [];
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
-console.log("i: " + i);
 	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
-console.log("z: " + z);
-console.log("passed? " + JSON.stringify(this.game.state.players_info[i].factions[z]));
 	      if (this.game.state.players_info[i].factions_passed[z] == false) {
-console.log("pushing back!");
-		factions_in_play.push(this.factions[this.game.state.players_info[i].factions[z]]);
+		if (this.game.state.skip_next_impulse.includes(this.game.state.players_info[i].factions[z])) {
+		  factions_in_play.push(this.factions[this.game.state.players_info[i].factions[z]]);
+		} else {
+		  for (let ii = 0; ii < this.game.state.skip_next_impulse.length; ii++) {
+		    if (this.game.state.skip_next_impulse[ii] === this.game.state.players_info[i].factions[z]) {
+		      this.game.state.skip_next_impulse.splice(ii, 1);
+		    }
+		  }
+		}
 	      }
 	    }
 	  }
@@ -5566,6 +5585,17 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	}
 
 
+
+
+	// skip next impulse
+	if (mv[0] === "skip_next_impulse") {
+
+	  let target_faction = mv[1];
+
+	  this.game.state.skip_next_impulse.push(target_faction);
+
+          return 1;
+        }
 
 
 	// discards N cards from faction hand
@@ -6310,6 +6340,7 @@ console.log("SPACE: " + space);
 
 	  for (let i = 0; i < p_rolls; i++) {
 	    let x = this.rollDice(6);
+	    if (his_self.game.state.events.augsburg_confession == true) { x--; }
 	    pdice.push(x);
 	    if (x > p_high) { p_high = x; }
 	  }

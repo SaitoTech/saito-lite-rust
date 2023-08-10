@@ -54,14 +54,6 @@ console.log("\n\n\n\n");
       //
       if (this.game.state.scenario == "1517") {
 
-	// TEMPORARY AND TESTING
-	this.addMercenary("papacy", "siena", 4);
-        this.addArmyLeader("papacy", "siena", "renegade");
-	this.addMercenary("papacy", "nuremberg", 4);
-	this.addRegular("papacy", "ravenna", 2);
-	this.setAllies("protestant", "venice");
-  	this.addUnrest("graz");
-
 	// OTTOMAN
         this.addArmyLeader("ottoman", "istanbul", "suleiman");
         this.addArmyLeader("ottoman", "istanbul", "ibrahim-pasha");

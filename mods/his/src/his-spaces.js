@@ -82,6 +82,31 @@
 
   }
 
+  returnCatholicLandUnitsInSpace(space) {
+
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let units = [];
+
+    for (let f in space.units) {
+      if (f != "protestant" && f != "ottoman") {
+	if (f == "england" && (this.game.state.leaders.edward_vi != 1 || this.game.state.leaders.elizabeth_i != 1)) {
+          for (let z = 0; z < space.units[f].length; z++) {
+	    let u = space.units[f][z];
+	    if (u.type === "regular" || u.type === "mercenary" || u.type === "cavalry") { units.push({ faction : f , unit_idx : z }); }
+	  }
+	} else {
+          for (let z = 0; z < space.units[f].length; z++) {
+	    let u = space.units[f][z];
+	    if (u.type === "regular" || u.type === "mercenary" || u.type === "cavalry") { units.push({ faction : f , unit_idx : z }); }
+	  }
+	}
+      }
+    }
+
+    return units;
+
+  }
+
   hasCatholicLandUnits(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let f in space.units) {
@@ -376,8 +401,6 @@
 
   returnSpaceOfPersonage(faction, personage) {
     for (let key in this.game.spaces) {
-console.log("KEY: " + key);
-console.log("FACTION: " + faction);
       for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
 	if (this.game.spaces[key].units[faction][i].type === personage) {
 	  return key;

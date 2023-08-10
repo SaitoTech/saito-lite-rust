@@ -267,6 +267,19 @@
   }
 
 
+  removeReformer(faction, space, reformer) {
+    if (!this.reformers[reformer]) {
+      console.log("REFORMER: " + reformer + " not found");
+      return;
+    }
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units[faction].length; i++) {
+      if (space.units[faction][i].type === reformer) {
+	space.units[faction].splice(i, 1);
+      }
+    }
+  }
+
   addReformer(faction, space, reformer) {
     if (!this.reformers[reformer]) {
       console.log("REFORMER: " + reformer + " not found");
@@ -291,6 +304,20 @@
 
   }
 
+  removeDebater(faction, debater) {
+
+    if (!this.debaters[debater]) {
+      console.log("DEBATER: " + debater + " not found");
+      return;
+    }
+
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].type == debater) { 
+	this.game.state.debaters.splice(i, 1);
+      }
+    }
+
+  }
   addDebater(faction, debater) {
 
     if (!this.debaters[debater]) {

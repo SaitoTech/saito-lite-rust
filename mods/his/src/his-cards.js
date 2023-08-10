@@ -1917,14 +1917,11 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	his_self.game.state.leaders.edward_vi = 0;
 	his_self.game.state.leaders.mary_i = 1;
 
-console.log("leaders mary_i set");
-
 	his_self.removeCardFromGame('019'); // remove edward_vi if still in deck
 
 	let placed = 0;
 	if (his_self.game.state.leaders.henry_viii == 1) {
 
-console.log("henry_viii removed from power");
 	  his_self.game.state.leaders.henry_viii = 0; 
 
           // mary_i replaces edward_vi or henry_viii
@@ -1937,8 +1934,6 @@ console.log("henry_viii removed from power");
 	      placed = 1;
             } 
           }
-
-console.log("and down to here...");
 
 	  if (placed == 0) {
             his_self.addArmyLeader("france", "paris", "henry_ii");
@@ -2126,11 +2121,18 @@ console.log("and down to here...");
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, extra) {
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
         if (menu == "pre_assault_hits_roll") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('027')) {
-              return 1;
+	      let assault_spacekey = "";
+	      if (his_self.game.state.assault) {
+	        if (his_self.game.state.assault.spacekey) {
+	          if (his_self.isSpaceControlled(spacekey, faction)) {
+                    return 1;
+	 	  }
+	 	}
+	      }
             }
           }
         }
@@ -2138,6 +2140,7 @@ console.log("and down to here...");
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "pre_assault_hits_roll") {
+  	  his_self.addMove(`discard\t${faction}\t027`);
 	  his_self.addMove(`mercenaries_grow_restless\t${faction}`);
 	  his_self.endTurn();
         }
@@ -2177,7 +2180,33 @@ console.log("and down to here...");
           }
 
 	  if (defender_land_units_remaining > attacker_land_units_remaining) {
+
+	    //
+	    // remove rest of assault
+	    //
+	    for (let i = his_self.game.queue.length-1; i > 0 ; i--) {
+	      let lmv = his_self.game.queue[i].split("\t");
+	      if (!(lmv[0].indexOf("assault") == 0 || lmv[0].indexOf("counter") == 0 || lmv[0].indexOf("RESETC") == 0 || lmv[0].indexOf("RESOLVE") == 0 || lmv[0].indexOf("discard") == 0)) {
+		break;
+	      } else {
+	        if (lmv[0].indexOf("RESOLVE") == 0 || lmv[0].indexOf("discard") == 0) {
+
+	        } else {
+		  his_self.game.queue.splice(i, 1);
+	        }
+	      }
+	    }
+
 	    his_self.game.queue.push("break_siege");
+	    his_self.game.queue.push("hide_overlay\tassault");
+    	    his_self.game.queue.push(`discard\t${faction}\t032`);
+
+	  } else {
+
+	    his_self.game.queue.push(`assault\t${his_self.game.state.assault.attacker_faction}\t${his_self.game.state.assault.spacekey}`);
+	    his_self.game.queue.push("hide_overlay\tassault");
+    	    his_self.game.queue.push(`discard\t${faction}\t032`);
+
 	  }
 
 	}
@@ -2350,6 +2379,7 @@ console.log("and down to here...");
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "move" || menu == "assault" || menu == "piracy") {
+  	  his_self.addMove("discard\t"+faction+"\t"+"031");
 	  his_self.addMove(`foul_weather\t${player}\t${faction}`);
 	  his_self.endTurn();
         }
@@ -2483,6 +2513,7 @@ console.log("and down to here...");
 	  }
 
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
+  	  his_self.addMove(`discard\t${faction}\t032`);
           his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
           his_self.endTurn();
 
@@ -2509,6 +2540,7 @@ console.log("and down to here...");
 	  }
 
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
+  	  his_self.addMove(`discard\t${faction}\t032`);
           his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
           his_self.endTurn();
 
@@ -2686,18 +2718,11 @@ console.log("and down to here...");
         if (menu == "pre_assault_hits_assignment") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('035')) {
-
-console.log("we have the card Siege Artillery... are we within 4 spaces of fortified home space?");
-
 	      let assault_spacekey = his_self.game.state.assault.spacekey;
-	      let attacker = his_self.game.state.assault.attacker_faction;
+	      let attacker_faction = his_self.game.state.assault.attacker_faction;
 	      if (4 >= this.returnHopsToFortifiedHomeSpace(assault_spacekey, attacker_faction)) {
-console.log("yes");
 		return 1;
 	      }
-
-console.log("not 4 spaces from fortified home space!");
-
               return 0;
             }
           }
@@ -2940,6 +2965,98 @@ console.log("not 4 spaces from fortified home space!");
       turn : 3 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu != "") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('038')) {
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : '001', html : `<li class="option" id="001">halley's comet (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
+        if (menu != "") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('038')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu != "") {
+  	  his_self.game.queue.push("event\t"+faction+"\t038");
+  	  his_self.game.queue.push("discard\t"+faction+"\t038");
+	  his_self.endTurn();
+        }
+        return 0;
+      },
+      onEvent : function(his_self, faction) {
+
+	let player = his_self.returnPlayerOfFaction(faction);
+
+	if (player == his_self.game.player) {
+
+	  let msg = "Target which Power?";
+	  let html = '<ul>';
+
+	  if (faction != "protestant") { html += '<li class="option" id="protestant">Protestant</li>'; }
+	  if (faction != "papacy") { html += '<li class="option" id="papacy">Papacy</li>'; }
+	  if (this.game.players.length > 2) {
+	    if (faction != "england") { html += '<li class="option" id="england">England</li>'; }
+	    if (faction != "france") { html += '<li class="option" id="france">France</li>'; }
+	    if (faction != "hapsburg") { html += '<li class="option" id="hapsburg">Haspburg</li>'; }
+	    if (faction != "ottoman") { html += '<li class="option" id="ottoman">Ottoman</li>'; }
+	  }
+          html += '</ul>';
+
+    	  his_self.updateStatusWithOptions(msg, html);
+
+	  $('.option').off();
+	  $('.option').on('click', function () {
+
+	    $('.option').off();
+	    let target_faction = $(this).attr("id");
+
+  	    let msg = "Force Power to Discard or Skip Turn?";
+	    let html = '<ul>';
+	    html += '<li class="option" id="discard">discard random card</li>';
+	    html += '<li class="option" id="skip">skip next turn</li>';
+	    html += '<ul>';
+
+    	    his_self.updateStatusWithOptions(msg, html);
+
+	    $('.option').off();
+	    $('.option').on('click', function () {
+
+	      $('.option').off();
+	      let action = $(this).attr("id");
+
+	      if (action === "discard") {
+                his_self.addMove("discard_random\t"+target_faction+"\t1");
+		his_self.endTurn();
+	      }
+
+	      if (action === "skip") {
+                his_self.addMove("skip_next_impulse\t"+target_faction);
+		his_self.endTurn();
+	      }
+
+	    });
+	  });
+
+          return 0;
+
+        }
+
+	return 0;
+      },
     }
     deck['039'] = { 
       img : "cards/HIS-039.svg" , 
@@ -2947,7 +3064,21 @@ console.log("not 4 spaces from fortified home space!");
       ops : 4 ,
       turn : 3 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
+      canEvent : function(his_self, faction) {
+	if (his_self.isCommitted("melanchthon-debater")) { return 0; }
+ 	return 1;
+      } ,
+      onEvent : function(his_self, faction) {
+
+	let player = his_self.returnPlayerOfFaction(faction);
+
+	if (his_self.isCommitted("melanchthon-debater")) { return 1; }
+	his_self.game.state.events.augsburg_confession = true;
+	his_self.commitDebater("papacy", "melanchton-debater", 0); // 0 = no bonus
+
+	return 1;
+      },
     }
     deck['040'] = { 
       img : "cards/HIS-040.svg" , 
@@ -2956,6 +3087,7 @@ console.log("not 4 spaces from fortified home space!");
       turn : 3 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	if (player == his_self.game.player) {
@@ -3013,7 +3145,76 @@ console.log("not 4 spaces from fortified home space!");
       ops : 3 ,
       turn : 3 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
+      onEvent : function(his_self, faction) {
+
+	let player = his_self.returnPlayerOfFaction("protestant");
+	let targets = ["zurich","innsbruck","salzberg","linz","graz","regensburg","augsburg","nuremberg","worms","basel","geneva","turin","grenoble","lyon","besancon","dijon","metz","strasburg"];
+
+	//
+	// we all remove the reformer
+	//
+	his_self.removeReformer("protestant", "zurich", "zwingli-reformer");
+	his_self.removeDebater("protestant", "zwingli-debater");
+
+	if (player == his_self.game.player) {
+
+	  let msg = "Remove 1 Catholic Land Unit?";
+	  let viable_targets = 0;
+          let html = '<ul>';
+	  for (let i = 0; i < targets.length; i++) {
+	    if (his_self.hasCatholicLandUnits(targets[i])) {
+	      viable_targets++;
+              html += '<li class="option" id="${targets[i]}">${targets[i]}</li>';
+	    }
+	  }
+	  if (viable_targets == 0) {
+            html += '<li class="option" id="skip">skip</li>';
+	  }
+          html += '</ul>';
+
+    	  his_self.updateStatusWithOptions(msg, html);
+
+	  $('.option').off();
+	  $('.option').on('click', function () {
+
+	    $('.option').off();
+	    let action = $(this).attr("id");
+
+	    if (action != "skip") {
+
+	      his_self.endTurn();
+
+	    } else {
+
+	      let catholic_land_units = his_self.returnCatholicLandUnitsInSpace(action);
+	      let msg = "Remove which Unit?";
+              let html = '<ul>';
+	      for (let i = 0; i < catholic_land_units.length; i++) {
+	        let u = his_self.game.spaces[action].units[catholic_land_units[i].faction][catholic_land_units[i].unit_idx];
+                html += '<li class="option" id="${catholic_land_units[i].faction}_${catholic_land_units[i].unit_idx}">${catholic_land_units[i].faction} - ${u.type}</li>';
+	      }
+
+    	      his_self.updateStatusWithOptions(msg, html);
+
+	      $('.option').off();
+	      $('.option').on('click', function () {
+	        $('.option').off();
+	        let x = $(this).attr("id").split("_");
+		his_self.addMove("destroy_unit\t"+x[0]+"\t"+x[1]);
+		his_self.endTurn();            
+	      });
+
+	    }
+	  });
+
+          return 0;
+
+        }
+
+	return 0;
+      },
     }
     deck['044'] = { 
       img : "cards/HIS-044.svg" , 
@@ -3021,15 +3222,55 @@ console.log("not 4 spaces from fortified home space!");
       ops : 2 ,
       turn : 4 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
+      canEvent : function(his_self, faction) { if (!his_self.isCommitted("cop-debater")) { return 0; } return 1; } ,
+      onEvent : function(his_self, faction) {
+
+	if (his_self.isCommitted("cop-debater")) { return 1; }
+
+	his_self.commitDebater("protestant", "cop-debater", 0); // no bonus
+
+	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
+	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
+	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
+	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
+	his_self.game.queue.push("LOG\tAffair of the Placards");
+
+	return 1;
+      },
     }
     deck['045'] = { 
       img : "cards/HIS-045.svg" , 
-      name : "Clavin Expelled" ,
+      name : "Calvin Expelled" ,
       ops : 1 ,
       turn : 4 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
+      onEvent : function(his_self, faction) {
+
+        let obj = {};
+        obj.faction = "protestant";
+	obj.space = "geneva";
+	obj.reformer = his_self.reformers["calvin-reformer"];
+        let target = his_self.returnSpaceOfPersonage("protestant", "calvin-reformer");
+
+	if (target) {
+  	  for (let i = 0; i < his_self.game.spaces[target].units["protestant"].length; i++) {
+	    if (his_self.game.spaces[target].units["protestant"][i].type == "calvin-reformer") {
+              obj.reformer = his_self.game.state.spaces[target].units["protestant"][idx];
+	      his_self.game.spaces[target].units["protestant"].splice(i, 1);
+	    }
+	  }
+	}
+
+	his_self.removeDebater("protestant", "calvin-debater");
+        his_self.game.state.reformers_removed_until_next_round.push(obj);
+
+	his_self.displaySpace(target);
+
+        return 1;
+      },
     }
     deck['046'] = { 
       img : "cards/HIS-046.svg" , 
@@ -3159,6 +3400,7 @@ console.log("not 4 spaces from fortified home space!");
       turn : 4 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	his_self.updateLog(faction + " gets 1 VP from Michael Servetus");
@@ -3201,7 +3443,7 @@ console.log("not 4 spaces from fortified home space!");
     }
     deck['056'] = { 
       img : "cards/HIS-056.svg" , 
-      name : "Ppal Inquistion" ,
+      name : "Papal Inquistion" ,
       ops : 5 ,
       turn : 5 ,
       type : "normal" ,
@@ -3249,7 +3491,7 @@ console.log("not 4 spaces from fortified home space!");
     }
     deck['062'] = { 
       img : "cards/HIS-062.svg" , 
-      name : "Card" ,
+      name : "Book of Common Prayer" ,
       ops : 2 ,
       turn : 0 ,
       type : "normal" ,
@@ -5252,10 +5494,6 @@ alert("NOT IMPLEMENTED");
         return 1;
       },
     }
-    deck['095'] = { 
-      img : "cards/HIS-095.svg" , 
-      name : "Sack of Rome" ,
-    }
     deck['106'] = { 
       img : "cards/HIS-106.svg" , 
       name : "Unpaid Mercenaries" ,
@@ -5837,9 +6075,66 @@ alert("NOT IMPLEMENTED");
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
 
+
+    //
+    // cards removed from 2P game
+    //
+    delete deck["001"];
+    delete deck["002"];
+    delete deck["003"];
+    delete deck["004"];
+    delete deck["009"];
+    delete deck["018"];
+    delete deck["030"];
+    delete deck["034"];
+    delete deck["040"];
+    delete deck["042"];
+    delete deck["048"];
+    delete deck["049"];
+    delete deck["050"];
+    delete deck["053"];
+    delete deck["054"];
+    delete deck["058"];
+    delete deck["059"];
+    delete deck["066"];
+    delete deck["068"];
+    delete deck["069"];
+    delete deck["072"];
+    delete deck["073"];
+    delete deck["074"];
+    delete deck["077"];
+    delete deck["080"];
+    delete deck["082"];
+    delete deck["083"];
+    delete deck["084"];
+    delete deck["086"];
+    delete deck["087"];
+    delete deck["089"];
+    delete deck["092"];
+    delete deck["093"];
+    delete deck["094"];
+    delete deck["096"];
+    delete deck["097"];
+    delete deck["098"];
+    delete deck["099"];
+    delete deck["100"];
+    delete deck["101"];
+    delete deck["103"];
+    delete deck["108"];
+    delete deck["110"];
+
+
     for (let key in deck) {
       deck[key] = this.addEvents(deck[key]);
     }
+
+
+
+
+
+
+
+
 
     return deck;
 
