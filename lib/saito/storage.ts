@@ -207,7 +207,7 @@ class Storage {
         return;
       }
     }
-    console.log("saving options...", this.app.options);
+    //console.log("saving options...", this.app.options);
     try {
       // if (typeof Storage !== "undefined") {
       localStorage.setItem("options", JSON.stringify(this.app.options));
