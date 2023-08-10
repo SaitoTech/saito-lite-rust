@@ -60,6 +60,7 @@ class Chat extends ModTemplate {
     this.enable_notifications = false;
 
     this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
+      console.log("Chat: Successful encrypt key exchange, make group");
       this.returnOrCreateChatGroupFromMembers(data?.members);
       this.app.connection.emit("chat-manager-render-request");
     });
