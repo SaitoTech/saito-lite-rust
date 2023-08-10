@@ -2138,24 +2138,51 @@ console.log("and down to here...");
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "pre_assault_hits_roll") {
+	  his_self.addMove(`mercenaries_grow_restless\t${faction}`);
+	  his_self.endTurn();
+        }
+        return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "mercenaries_grow_restless") {
 
-          player = his_self.returnPlayerOfFaction(faction);
+          his_self.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+          let player = his_self.returnPlayerOfFaction(faction);
 	  let space = his_self.game.spaces[his_self.game.state.assault.spacekey];
+	  let attacker_land_units_remaining = 0;
+	  let defender_land_units_remaining = 0;
 	  for (let f in his_self.game.state.assault.faction_map) {
             if (his_self.game.state.assault.faction_map[f] === his_self.game.state.assault.attacker_faction) {
-alert("destroying mercenary units!");		
 	      for (let z = 0; z < space.units[f].length; z++) {
 		if (space.units[f][z].type === "mercenary") {
 		  space.units[f].splice(z, 1);
 		  z--;
-alert("destroying 1 mercenary");
+		} else {
+		  if (space.units[f][z].type === "cavalry" || space.units[f][z].type === "regular") {
+		    attacker_land_units_remaining++;
+		  }
 		}
 	      }
             }       
-          }             
-        }
+            if (his_self.game.state.assault.faction_map[f] === his_self.game.state.assault.defender_faction) {
+	      for (let z = 0; z < space.units[f].length; z++) {
+		let u = space.units[f][z];
+	        if (u.type === "mercenary" || u.type === "regular" || u.type === "cavalry") {
+		  defender_land_units_remaining++;
+		}
+	      }
+	    }
+          }
+
+	  if (defender_land_units_remaining > attacker_land_units_remaining) {
+	    his_self.game.queue.push("break_siege");
+	  }
+
+	}
         return 1;
-      },
+      }
     }
     deck['028'] = { 
       img : "cards/HIS-028.svg" , 
@@ -2173,7 +2200,19 @@ alert("destroying 1 mercenary");
               break;
             }
           }
-          return { faction : f , event : '028', html : `<li class="option" id="028">siege mining (${f})</li>` };
+	  let am_i_attacker = false;
+	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
+	    let lqe = his_self.game.queue[i];
+	    if (lqe.indexOf("assault") == 0) {
+	      let lmv = lqe.split("\t");
+	      if (lmv[0] === "assault") {
+		if (f === lmv[1]) { am_i_attacker = true; }
+	      }
+	    }
+	  }
+	  if (am_i_attacker) {
+            return { faction : f , event : '028', html : `<li class="option" id="028">siege mining (${f})</li>` };
+	  }
         }
         return {};
       },
@@ -2189,14 +2228,18 @@ alert("destroying 1 mercenary");
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "assault") {
-          player = his_self.returnPlayerOfFaction(faction);
-	  if (his_self.game.state.active_player === player) {
-alert("Play Siege Mining");
-	    his_self.game.state.players_info[player-1].tmp_roll_bonus = 3;
-	  }
+          his_self.addMove(`siege_mining`);
+          his_self.endTurn();
         }
         return 1;
       },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "siege_mining") {
+          his_self.game.queue.splice(qe, 1);
+	  his_self.game.state.players_info[his_self.game.state.active_player-1].tmp_roll_bonus = 3;
+	}
+        return 1;
+      }
     }
     deck['029'] = { 
       img : "cards/HIS-029.svg" , 
@@ -2348,9 +2391,6 @@ alert("Play Siege Mining");
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player, extra) {
         if (menu == "move" || menu == "assault") {
-
-console.log("ASSAULT GOUT QUEUE: " + JSON.stringify(his_self.game.queue));
-
 	  let f = "";
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('032')) {
@@ -2358,6 +2398,9 @@ console.log("ASSAULT GOUT QUEUE: " + JSON.stringify(his_self.game.queue));
 	      break;
 	    }
 	  }
+
+	  if (f == "") { return {}; }
+
 	  let includes_army_leader = false;
 
 	  if (menu == "assault") {
@@ -2475,6 +2518,8 @@ console.log("ASSAULT GOUT QUEUE: " + JSON.stringify(his_self.game.queue));
       handleGameLoop : function(his_self, qe, mv) {
 
         if (mv[0] == "gout") {
+
+          his_self.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
 	  let source = mv[2];
@@ -2622,6 +2667,112 @@ console.log("ASSAULT GOUT QUEUE: " + JSON.stringify(his_self.game.queue));
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "pre_assault_hits_assignment") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('035')) {
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+              break;
+            }
+          }
+	  if (f != "") {
+            return { faction : f , event : '035', html : `<li class="option" id="028">siege artillery (${f})</li>` };
+          }
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "pre_assault_hits_assignment") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('035')) {
+
+console.log("we have the card Siege Artillery... are we within 4 spaces of fortified home space?");
+
+	      let assault_spacekey = his_self.game.state.assault.spacekey;
+	      let attacker = his_self.game.state.assault.attacker_faction;
+	      if (4 >= this.returnHopsToFortifiedHomeSpace(assault_spacekey, attacker_faction)) {
+console.log("yes");
+		return 1;
+	      }
+
+console.log("not 4 spaces from fortified home space!");
+
+              return 0;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "assault") {
+          his_self.addMove(`siege_artillery`);
+          his_self.endTurn();
+        }
+        return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+        if (mv[0] == "siege_artillery") {
+
+          his_self.game.queue.splice(qe, 1);
+
+	  //
+	  // three extra hits
+	  //
+	  his_self.game.state.assault.attacker_rolls += 2;
+          for (let i = 0; i < 2; i++) {
+            let res = this.rollDice(6);
+            his_self.game.state.assault.attacker_results.push(res);
+            if (res >= 5) { his_self.game.state.assault.attacker_hits++; }
+          }
+
+          his_self.game.queue.push("counter_or_acknowledge\tUpdated Assault Results (post Siege Artillery)");
+          his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+          his_self.game.queue.push("assault_show_hits_render");
+
+	}
+        return 1;
+      }
+    }
+    deck['029'] = { 
+      img : "cards/HIS-029.svg" , 
+      name : "Surprise Attack" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "assault") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('029')) {
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : '029', html : `<li class="option" id="029">surprise attack (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, extra) {
+        if (menu == "assault") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('029')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, extra) {
+        if (menu == "assault") {
+          player = his_self.returnPlayerOfFaction(faction);
+	  if (his_self.game.state.active_player === player) {
+	    player.tmp_roll_first = 1;
+	  }
+        }
+        return 1;
+      },
     }
     deck['036'] = { 
       img : "cards/HIS-036.svg" , 
@@ -2755,6 +2906,16 @@ console.log("ASSAULT GOUT QUEUE: " + JSON.stringify(his_self.game.queue));
       handleGameLoop : function(his_self, qe, mv) {
 
         if (mv[0] == "wartburg") {
+
+	  //
+	  // remove event from execution and end player turn
+	  //
+	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
+	    let lmv = his_self.game.queue[i].split("\t");
+	    if (lmv[0] !== "round" && lmv[0] !== "play") {
+	      his_self.game.queue.splice(i, 1);
+	    }
+	  }
 
 	  //
 	  // 

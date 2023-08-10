@@ -1002,6 +1002,28 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 
 
 
+	if (mv[0] === "break_siege") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction_map      = his_self.game.state.assault.faction_map;
+	  let attacker_faction = his_self.game.state.assault.attacker_faction;
+	  let defender_faction = his_self.game.state.assault.defender_faction;
+	  let spacekey         = his_self.game.state.assault.spacekey;
+	  let space 	       = his_self.game.spaces[spacekey];
+	  let neighbours       = space.neighbours;
+
+	  for (let zz = 0; zz < neighbours.length; zz++) {
+            let fluis = this.canFactionRetreatToSpace(attacker_faction, neighbours[zz]);
+	    if (fluis) {
+              this.game.queue.push("player_evaluate_break_siege_retreat_opportunity\t"+attacker_faction+"\t"+spacekey);
+	      zz = neighbours.length+1;
+	    }
+	  }
+
+	  return 1;
+
+	}
 
 
         if (mv[0] === "retreat_check") {
@@ -1015,7 +1037,6 @@ console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
 	  let space = this.game.spaces[spacekey];
 	  let neighbours = this.returnNeighbours(spacekey, 0); // 0 cannot intercept across passes
 	  let attacking_player = this.returnPlayerOfFaction(attacker);
-
 
 	  let io = this.returnImpulseOrder();
 	  for (let i = io.length-1; i>= 0; i--) {
@@ -1052,10 +1073,30 @@ console.log("possible? " + fluis);
 
 
 
-        if (mv[0] === "player_evaluate_retreat_opportunity") {
 
-console.log("pero");
-console.log(JSON.stringify(mv));
+
+        if (mv[0] === "player_evaluate_break_siege_retreat_opportunity") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let attacker = mv[1];
+	  let spacekey = mv[2];
+
+	  let player_factions = this.returnPlayerFactions(this.game.player)
+
+	  if (player_factions.includes(attacker)) {
+	    this.playerEvaluateBreakSiegeRetreatOpportunity(attacker, spacekey);
+	  } else {
+	    this.updateStatus(attacker + " considering retreat");
+	  }
+
+	  return 0;
+
+	}
+
+
+
+        if (mv[0] === "player_evaluate_retreat_opportunity") {
 
 	  this.game.queue.splice(qe, 1);
 
@@ -3650,8 +3691,10 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	    let highest_battle_ranking = 0;
             for (let i = 0; i < space.units[faction].length; i++) {
 	      if (space.units[faction][i].battle_ranking > 0) {
-	        if (highest_battle_ranking < space.units[faction][i].battle_ranking) {
-		  highest_battle_ranking = space.units[faction][i].battle_ranking;
+	        if (space.units[faction][i].gout != true) {
+	          if (highest_battle_ranking < space.units[faction][i].battle_ranking) {
+		    highest_battle_ranking = space.units[faction][i].battle_ranking;
+		  }
 		}
 	      }
 	    }

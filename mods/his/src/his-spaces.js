@@ -101,7 +101,6 @@
   isSpaceFriendly(space, faction) {
     let cf = this.returnFactionControllingSpace(space);
     if (cf === faction) { return true; }
-console.log("checking if space is friendly between factions: " + cf + " and " + faction);
     return this.areAllies(cf, faction);
   }
 
@@ -136,6 +135,76 @@ console.log("checking if space is friendly between factions: " + cf + " and " + 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.type === "key" || space.type === "fortress") { return false; }
     return false;
+  }
+
+  isSpaceFortified(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.type === "key" || space.type === "fortress") { return false; }
+    return false;
+  }
+
+
+  returnHopsToFortifiedHomeSpace(source, faction) {
+    let his_self = this;
+    try { if (this.game.spaces[source]) { source = this.game.spaces[source]; } } catch (err) {}
+    return this.returnHopsBetweenSpacesWithFilter(source, function(spacekey) {
+      if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
+	if (his_self.isSpaceControlled(spacekey, faction)) {
+	  if (his_self.game.spaces[spacekey].home === faction) {
+	    return 1;
+	  }
+	}
+      }
+      return 0;
+    });
+  }
+  returnHopsToDestination(source, destination) {
+    try { if (this.game.spaces[source]) { destination = this.game.spaces[source]; } } catch (err) {}
+    try { if (this.game.spaces[destination]) { destination = this.game.spaces[destination]; } } catch (err) {}
+    return this.returnHopsBetweenSpacesWithFilter(source, function(spacekey) {
+      if (spacekey === destination.key) { return 1; }
+      return 0;  
+    });
+  }
+
+  returnHopsBetweenSpacesWithFilter(space, filter_func) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let map = {};
+    let sources = [];
+    let hop = 0;
+
+    let addHop = function(sources, hop) {
+
+      hop++;
+      
+      let new_neighbours = [];
+
+      for (let i = 0; i < sources.length; i++) {
+	for (let z = 0; z < this.game.spaces[sources[i]].neighbours.length; z++) {
+	  let sourcekey = this.game.spaces[sources[i]].neighbours[z];
+	  if (!map[sourcekey]) {
+	    map[sourcekey] = 1;
+	    new_neighbours.push(sourcekey);
+
+	    //
+	    // if we have a hit, it's this many hops!
+	    //
+	    if (filter_func(sourcekey)) { return hop; }
+	  }
+	}
+      }
+
+      if (new_neighbours.length > 0) {
+	return addHop(new_neighbours, hop);
+      } else {
+	return 0;
+      }
+
+    }
+
+    return addHop(space.neighbours, 0);   
+
   }
 
   //
@@ -537,7 +606,7 @@ console.log("FACTION: " + faction);
   }
 
 
-  canFactionRetreatToSpace(faction, space, attacker_comes_from_this_space) {
+  canFactionRetreatToSpace(faction, space, attacker_comes_from_this_space="") {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.spaces[attacker_comes_from_this_space]) { attacker_comes_from_this_space = this.game.spaces[attacker_comes_from_this_space]; } } catch (err) {}
     if (space === attacker_comes_from_this_space) { return 0; }
