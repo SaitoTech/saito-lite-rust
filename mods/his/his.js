@@ -5932,6 +5932,23 @@ console.log(JSON.stringify(his_self.reformers[key]));
       turn : 4 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { if (!his_self.isCommitted("calvin-debater")) { return 1; } return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	if (his_self.isCommitted("calvin-debater")) { return 1; }
+
+	his_self.commitDebater("protestant", "calvin-debater", 0); // no bonus
+
+	his_self.addMove("SETVAR\tstate\tevents\tcalvins_institutions\t0");
+	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
+	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
+	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
+	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
+	his_self.addMove("SETVAR\tstate\tevents\tcalvins_institutions\t1");
+	his_self.game.queue.push("LOG\tCalvin's Institutes");
+
+	return 1;
+      },
     }
     deck['047'] = { 
       img : "cards/HIS-047.svg" , 
@@ -19537,6 +19554,7 @@ console.log("SPACE: " + space);
 
 	  for (let i = 0; i < p_rolls; i++) {
 	    let x = this.rollDice(6);
+	    if (this.game.state.events.calvins_institutes && this.game.spaces[space].language === "french") { x++; }
 	    if (x > p_high) { p_high = x; }
 	    pdice.push(x);
 	  }

@@ -3279,6 +3279,23 @@ console.log(JSON.stringify(his_self.reformers[key]));
       turn : 4 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { if (!his_self.isCommitted("calvin-debater")) { return 1; } return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	if (his_self.isCommitted("calvin-debater")) { return 1; }
+
+	his_self.commitDebater("protestant", "calvin-debater", 0); // no bonus
+
+	his_self.addMove("SETVAR\tstate\tevents\tcalvins_institutions\t0");
+	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
+	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
+	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
+	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
+	his_self.addMove("SETVAR\tstate\tevents\tcalvins_institutions\t1");
+	his_self.game.queue.push("LOG\tCalvin's Institutes");
+
+	return 1;
+      },
     }
     deck['047'] = { 
       img : "cards/HIS-047.svg" , 
@@ -3415,7 +3432,21 @@ console.log(JSON.stringify(his_self.reformers[key]));
       ops : 4 ,
       turn : 4 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
+      onEvent : function(his_self, faction) {
+
+	let x = his_self.rollDice(6);
+	let y = his_self.rollDice(6);
+
+	his_self.updateLog("Michelangelo");
+	his_self.updateLog("Papacy rolls "+x+" and "+y);
+
+	his_self.game.queue.push("build_saint_peters_with_cp\t"+(x+y));
+
+        return 1;
+          
+      },
     }
     deck['053'] = { 
       img : "cards/HIS-053.svg" , 

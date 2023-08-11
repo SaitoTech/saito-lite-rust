@@ -6145,6 +6145,7 @@ console.log("SPACE: " + space);
 
 	  for (let i = 0; i < p_rolls; i++) {
 	    let x = this.rollDice(6);
+	    if (this.game.state.events.calvins_institutes && this.game.spaces[space].language === "french") { x++; }
 	    if (x > p_high) { p_high = x; }
 	    pdice.push(x);
 	  }
