@@ -202,7 +202,6 @@
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(his_self, faction) {
-alert("Corsair Raid");
         return 1;
       },
     }
@@ -265,7 +264,6 @@ alert("Corsair Raid");
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(his_self, faction) {
-alert("Diplomatic Pressure");
       },
     }
     deck['206'] = { 
@@ -376,7 +374,6 @@ alert("Diplomatic Pressure");
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(his_self, faction) {
-alert("Not Implemented");
       },
     }
     deck['208'] = { 
@@ -432,7 +429,6 @@ alert("Not Implemented");
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(his_self, faction) {
-alert("Not Implemented");
       },
     }
     deck['210'] = { 
@@ -443,7 +439,6 @@ alert("Not Implemented");
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(his_self, faction) {
-alert("Not Implemented");
       },
     }
     deck['211'] = { 
@@ -454,7 +449,6 @@ alert("Not Implemented");
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(his_self, faction) {
-alert("Not Implemented");
       },
     }
     deck['212'] = { 
@@ -968,8 +962,6 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	    let reformer_exists = 0;
             let html = '<ul>';
 	    for (let key in his_self.reformers) {
-console.log("key is: " + key);
-console.log(JSON.stringify(his_self.reformers[key]));
 	      let s = his_self.returnSpaceOfPersonage("protestant", key);
 	      if (s) {
 		reformer_exists = 1;
@@ -2128,7 +2120,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	      let assault_spacekey = "";
 	      if (his_self.game.state.assault) {
 	        if (his_self.game.state.assault.spacekey) {
-	          if (his_self.isSpaceControlled(spacekey, faction)) {
+	          if (his_self.isSpaceControlled(his_self.game.state.assault.spacekey, faction)) {
                     return 1;
 	 	  }
 	 	}
@@ -2720,7 +2712,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
             if (his_self.game.deck[0].fhand[i].includes('035')) {
 	      let assault_spacekey = his_self.game.state.assault.spacekey;
 	      let attacker_faction = his_self.game.state.assault.attacker_faction;
-	      if (4 >= this.returnHopsToFortifiedHomeSpace(assault_spacekey, attacker_faction)) {
+	      if (4 >= his_self.returnHopsToFortifiedHomeSpace(assault_spacekey, attacker_faction)) {
 		return 1;
 	      }
               return 0;
@@ -3039,7 +3031,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	      let action = $(this).attr("id");
 
 	      if (action === "discard") {
-                his_self.addMove("discard_random\t"+target_faction+"\t1");
+                his_self.addMove("discard_random\t"+target_faction);
 		his_self.endTurn();
 	      }
 
@@ -3234,7 +3226,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tfrench");
-	his_self.game.queue.push("LOG\tAffair of the Placards");
+	his_self.game.queue.push("NOTIFY\tAffair of the Placards");
 
 	return 1;
       },
@@ -3372,7 +3364,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 
 	      } else {
 
-                his_self.addMove("discard_random\tprotestant\t1");
+                his_self.addMove("discard_random\tprotestant");
 		his_self.endTurn();
 
 	      }
@@ -3422,7 +3414,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 
 	his_self.updateLog(faction + " gets 1 VP from Michael Servetus");
 	his_self.game.state.events.michael_servetus = faction;
-	his_self.game.queue.push("discard_random\tprotestant\t1");
+	his_self.game.queue.push("discard_random\tprotestant");
 
       }
     }
@@ -3470,7 +3462,61 @@ console.log(JSON.stringify(his_self.reformers[key]));
       ops : 3 ,
       turn : 5 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
+      canEvent : function(his_self, faction) { if (his_self.game.state.events.society_of_jesus) { return 1; } return 0; } ,
+      onEvent : function(his_self, faction) {
+	if (his_self.game.state.events.society_of_jesus) { his_self.game.queue.push("jesuit_education"); }
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "jesuit_education") {
+
+	  if (!his_self.game.state.events.society_of_jesus) { return 1; }
+
+          his_self.game.queue.splice(qe, 1);
+	  let player = his_self.returnPlayerOfFaction("papacy");
+
+	  if (his_self.game.player == player) {
+
+	    his_self.playerSelectSpaceWithFilter(
+	      "Select Catholic Space for 1st Jesuit University",
+	      function(space) { if (space.religion === "catholic" && space.university != 1) { return 1; } return 0; },
+	      function(spacekey) {
+
+		let s = his_self.game.spaces[spacekey].university = 1;
+		his_self.displaySpace(s);
+		his_self.addMove("jesuit_university\t"+spacekey);
+
+	        his_self.playerSelectSpaceWithFilter(
+	          "Select Catholic Space for 2nd Jesuit University",
+	          function(space) { if (space.religion === "catholic" && space.university != 1) { return 1; } return 0; },
+	          function(spacekey) {
+
+		    let s = his_self.game.spaces[spacekey].university = 1;
+		    his_self.displaySpace(s);
+		    his_self.addMove("jesuit_university\t"+spacekey);
+		    his_self.endTurn();
+		  },
+		  null,
+		  true
+		);
+
+	      },
+	      null ,
+	      true
+	    );
+
+	  } else {
+	    his_self.updateStatus("Papacy building Jesuit Universities");
+	  }
+
+	  return 0;
+
+        }
+        return 1;
+      }
+
+
     }
     deck['056'] = { 
       img : "cards/HIS-056.svg" , 
@@ -3479,6 +3525,222 @@ console.log(JSON.stringify(his_self.reformers[key]));
       turn : 5 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
+      onEvent : function(his_self, faction) {
+
+	if (his_self.isCommitted("caraffe-debater")) { return 1; }
+
+	his_self.commitDebater("papacy", "caraffe-debater", 0); // no bonus
+	his_self.addMove("papal_inquisition_card_draw");
+	his_self.addMove("papal_inquisition_target_player");
+	his_self.addMove("papal_inquisition_convert_spaces");
+	his_self.addMove("NOTIFY\tPapal Inquisition");
+	his_self.endTurn();
+
+	return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "papal_inquisition_convert_spaces") {
+
+	  let player = his_self.returnPlayerOfFaction("papacy");
+          his_self.game.queue.splice(qe, 1);
+
+	  if (his_self.game.player === player) {
+
+	    his_self.playerSelectSpaceWithFilter(
+	      "Select Protestant Space to Convert",
+	      function(space) { if (space.language === "italian" && space.religion === "protestant") { return 1; } return 0; },
+	      function(spacekey) {
+		his_self.addMove("convert\t"+spacekey+"\tcatholic");
+
+	        his_self.playerSelectSpaceWithFilter(
+	          "Select Protestant Space to Convert",
+	          function(space) { if (space.language === "italian" && space.religion === "protestant") { return 1; } return 0; },
+	          function(spacekey) {
+		    his_self.addMove("convert\t"+spacekey+"\tcatholic");
+		    his_self.endTurn();
+		  },
+		  null,
+		  true
+		);
+	      },
+	      null ,
+	      true
+	    );
+
+	  } else {
+	    his_self.updateStatus("Papal Inquisition - Religion Conversion");
+	  }
+
+	  return 0;
+
+	}
+
+        if (mv[0] == "papal_inquisition_target_player") {
+
+          his_self.game.queue.splice(qe, 1);
+	  let player = his_self.returnPlayerOfFaction("papacy");
+
+	  if (his_self.game.player == player) {
+
+ 	    let msg = "Choose Player to Reveal Cards:";
+            let html = '<ul>';
+            html += '<li class="option" id="protestant">Protestant</li>';
+            if (his_self.game.players.length > 2) { html += '<li class="option" id="england">England</li>'; }
+    	    html += '</ul>';
+
+            his_self.updateStatusWithOptions(msg, html);
+
+	    $('.option').off();
+	    $('.option').on('click', function () {
+
+	      $('.option').off();
+	      let action = $(this).attr("id");
+
+              his_self.addMove("papal_inquisition_draw_card\t"+action);
+              his_self.addMove("request_reveal_hand\tpapacy\t"+action);
+              his_self.endTurn();
+
+	    });
+	  } else {
+	    his_self.updateStatus("Papal Inquisition - Selecting Target");
+	  }
+
+	  return 0;
+
+	}
+
+        if (mv[0] == "papal_inquisition_draw_card") {
+
+	  let target = mv[1];
+	  let player = his_self.returnPlayerOfFaction("papacy");
+
+	  if (his_self.game.player === player) {
+
+            his_self.game.queue.splice(qe, 1);
+
+ 	    let msg = "Choose Action:";
+            let html = '<ul>';
+            html += '<li class="option" id="draw">draw ${target} card</li>';
+            html += '<li class="option" id="recover">recover from discard pile</li>';
+            html += '<li class="option" id="debate">initiate debate +2 dice</li>';
+    	    html += '</ul>';
+
+            his_self.updateStatusWithOptions(msg, html);
+
+	    $('.option').off();
+	    $('.option').on('click', function () {
+
+	      $('.option').off();
+	      let action = $(this).attr("id");
+
+	      if (action === "draw") {
+                his_self.addMove("pull_card\tpapacy\t"+target);
+                his_self.endTurn();
+	      }
+	      if (action === "recover") {
+                his_self.addMove("papal_inquisition_recover_discard");
+                his_self.endTurn();
+	      }
+	      if (action === "debate") {
+                his_self.addMove("papal_inquisition_debate");
+                his_self.endTurn();
+	      }
+	    });
+	  } else {
+	    his_self.updateStatus("Papal Inquisition - Follow-Up Action");
+	  }
+
+	  return 0;
+
+	}
+
+        if (mv[0] == "papal_inquisition_recover_discard") {
+
+	  let player = his_self.returnPlayerOfFaction("papacy");
+
+          his_self.game.queue.splice(qe, 1);
+
+	  if (his_self.game.player == player) {
+
+            let msg = "Retrieve Card from Discard Pile: ";
+            let html = '<ul>';
+            for (let key in his_self.game.deck[0].discards) {
+              html += '<li class="option" id="${key}">${his_self.game.deck[0].cards[key].name}</li>';
+            }
+            html += '</ul>';
+
+            his_self.updateStatusWithOptions(msg, html);
+
+            $('.option').off();
+            $('.option').on('click', function () {
+              $('.option').off();
+              let card = $(this).attr("id");
+              his_self.addMove("papal_inquisition_recover_card\t"+card);
+              his_self.endTurn();
+            });
+
+	  } else {
+	    his_self.updateStatus("Papal Inquisition - Recovering Card");
+	  }
+
+	  return 0;
+        }
+
+        if (mv[0] == "papal_inquisition_recover_card") {
+
+          let card = mv[1];
+
+          if (his_self.game.deck[0].discards[card]) {
+
+            let p = his_self.returnPlayerOfFaction("papacy");
+
+            //
+            // player returns to hand
+            //
+            if (his_self.game.player === p) {
+              let fhand_idx = this.returnFactionHandIdx(p, faction);
+              his_self.game.deck[0].fhand[fhand_idx].push(card);
+            }
+
+            //
+            // everyone removes from discards
+            //
+            delete his_self.game.deck[0].discards[card];
+
+          }
+
+	  return 1;
+
+	}
+
+        if (mv[0] == "papal_inquisition_debate") {
+
+          his_self.game.queue.splice(qe, 1);
+	  his_self.game.state.events.papal_inquisition_debate_bonus = 1;
+	  his_self.addMove("SETVAR\tstate\tevents\tpapal_inquisition_debate_bonus\t0");
+	  his_self.game.queue.push("papal_inquisition_call_theological_debate");
+	  return 1;
+
+	}
+        if (mv[0] == "papal_inquisition_call_theological_debate") {
+
+          his_self.game.queue.splice(qe, 1);
+	  let player = his_self.returnPlayerOfFaction("papacy");
+
+	  if (his_self.game.player == player) {
+	    his_self.playerCallTheologicalDebate(his_self, player, "papacy");
+	  } else {
+	    his_self.updateStatus("Papacy calling Theological Debate");
+	  }
+ 
+	  return 0;
+
+        }
+
+
+      }
     }
     deck['057'] = { 
       img : "cards/HIS-057.svg" , 
@@ -3486,7 +3748,67 @@ console.log(JSON.stringify(his_self.reformers[key]));
       ops : 2 ,
       turn : 5 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
+      onEvent : function(his_self, faction) {
+	his_self.game.queue.push("philip_of_hesse_bigamy");
+	return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "remove_philip_of_hesse") {
+
+	  let ph = his_self.returnSpaceOfPersonage("protestant", "philip-hesse");
+	  his_self.removeArmyLeader("protestant", ph, "philip-hesse");
+	  his_self.displaySpace(ph);
+	  his_self.updateLog("Philip of Hesse removed from game");
+          his_self.game.queue.splice(qe, 1);
+
+	  return 1;
+
+	}
+
+
+        if (mv[0] == "philip_of_hesse_bigamy") {
+
+          his_self.game.queue.splice(qe, 1);
+	  let player = his_self.returnPlayerOfFaction("protestant");
+
+	  if (his_self.game.player === player) {
+
+ 	    let msg = "Choose Action: ";
+            let html = '<ul>';
+            html += '<li class="option" id="discard">discard card</li>';
+            html += '<li class="option" id="hesse">remove Philip of Hesse</li>';
+    	    html += '</ul>';
+
+            his_self.updateStatusWithOptions(msg, html);
+
+	    $('.option').off();
+	    $('.option').on('click', function () {
+
+	      $('.option').off();
+	      let action = $(this).attr("id");
+
+	      if (action === "hesse") {
+		his_self.addMove("remove_philip_of_hesse");
+		his_self.endTurn();
+	      }
+
+	      if (action === "discard") {
+		his_self.addMove("discard_random\tprotestant");
+		his_self.endTurn();
+	      }
+
+	    });
+	  } else {
+	    his_self.updateStatus("Protestants - Philip of Hesse's Bigamy");
+	  }
+
+	  return 0;
+
+	}
+      }
     }
     deck['058'] = { 
       img : "cards/HIS-058.svg" , 
@@ -3519,6 +3841,16 @@ console.log(JSON.stringify(his_self.reformers[key]));
       turn : 7 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
+      onEvent : function(his_self, faction) {
+
+	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
+	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
+	his_self.game.queue.push("catholic_counter_reformation\tpapacy\tengland");
+	his_self.game.queue.push("NOTIFY\tMary Defies Council");
+
+	return 1;
+      },
     }
     deck['062'] = { 
       img : "cards/HIS-062.svg" , 
@@ -3534,7 +3866,18 @@ console.log(JSON.stringify(his_self.reformers[key]));
       ops : 4 ,
       turn : 0 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
+      onEvent : function(his_self, faction) {
+	
+	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
+	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
+	his_self.game.queue.push("protestant_reformation\tprotestant\tengland");
+	his_self.game.queue.push("discard_random\tpapacy");
+	his_self.game.queue.push("NOTIFY\tDissolution of the Monasteries");
+
+	return 1;
+      }
     }
     deck['064'] = { 
       img : "cards/HIS-064.svg" , 
@@ -3542,7 +3885,64 @@ console.log(JSON.stringify(his_self.reformers[key]));
       ops : 3 ,
       turn : 0 ,
       type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
+      onEvent : function(his_self, faction) {
+	    his_self.playerSelectSpaceWithFilter(
+	      "Select English Space to throw into Unrest" ,
+	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(spacekey) {
+
+		let s = his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(s);
+		his_self.addMove("unrest\t"+spacekey);
+
+	    his_self.playerSelectSpaceWithFilter(
+	      "Select English Space to throw into Unrest" ,
+	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(spacekey) {
+
+		let s = his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(s);
+		his_self.addMove("unrest\t"+spacekey);
+
+	    his_self.playerSelectSpaceWithFilter(
+	      "Select English Space to throw into Unrest" ,
+	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(spacekey) {
+
+		let s = his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(s);
+		his_self.addMove("unrest\t"+spacekey);
+
+	    his_self.playerSelectSpaceWithFilter(
+	      "Select English Space to throw into Unrest" ,
+	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(spacekey) {
+
+		let s = his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(s);
+		his_self.addMove("unrest\t"+spacekey);
+
+	    his_self.playerSelectSpaceWithFilter(
+	      "Select English Space to throw into Unrest" ,
+	      function(space) { if (space.home === "england"){ return 1;} return 0; } ,
+	      function(spacekey) {
+
+		let s = his_self.game.spaces[spacekey].unrest = 1;
+		his_self.displaySpace(s);
+		his_self.addMove("unrest\t"+spacekey);
+
+		his_seld.endTurn();
+
+	   }, null, true);
+	   }, null, true);
+	   }, null, true);
+	   }, null, true);
+	   }, null, true);
+
+	   return 0;
+      },
     }
     deck['065'] = { 
       img : "cards/HIS-065.svg" , 
@@ -4098,7 +4498,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	  if (f === "") { f = his_self.game.spaces["antwerp"].home; }
 
 	  // f discards a card
-          his_self.addMove("discard_random\t"+f+"\t"+1);
+          his_self.addMove("discard_random\t"+f);
 
 	  //
 	  // add unrest
@@ -4261,9 +4661,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) {
-	return 1;
-      },
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	if (his_self.game.state.round < 3) {
@@ -4295,6 +4693,17 @@ console.log(JSON.stringify(his_self.reformers[key]));
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
+      onEvent : function(his_self, faction) {
+
+	his_self.updateStatus(faction + " playing Foreign Recruits");
+	let player = his_self.returnPlayerOfFaction(faction);
+	if (his_self.game.player == player) {
+  	  his_self.playerPlayOps("", faction, 4);
+	}
+
+	return 0;
+      },
     }
     deck['077'] = { 
       img : "cards/HIS-077.svg" , 
@@ -4311,9 +4720,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) {
-	return 1;
-      },
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction("protestant");

@@ -4782,6 +4782,12 @@ console.log("purging naval units and capturing leader");
 	  let defender_debater_power = this.game.state.debaters[defender_idx].power;
 	  let defender_debater_bonus = 1 + was_defender_uncommitted;
 
+	  //
+	  // papal inquisition
+	  //
+	  if (attacker === "papacy" && this.game.state.events.papal_inquisition_debate_bonus == 1) {
+	    attacker_rolls += 2;
+	  }
 
 	  //
 	  // eck-debator bonus
@@ -4789,6 +4795,7 @@ console.log("purging naval units and capturing leader");
 	  if (attacker === "papacy" && this.game.state.theological_debate.attacker_debater === "eck-debater" && this.game.state.theological_debate.attacker_debater_entered_uncommitted == 1) {
 	    attacker_rolls++;
 	  }
+
 	  //
 	  // gardiner-debater bonus
 	  //
@@ -5138,15 +5145,17 @@ console.log("NEW WORLD PHASE!");
 	  // until all of the players have passed.
 	  //
 	  let factions_in_play = [];
+	  let factions_force_pass = [];
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
 	      if (this.game.state.players_info[i].factions_passed[z] == false) {
-		if (this.game.state.skip_next_impulse.includes(this.game.state.players_info[i].factions[z])) {
+		if (!this.game.state.skip_next_impulse.includes(this.game.state.players_info[i].factions[z])) {
 		  factions_in_play.push(this.factions[this.game.state.players_info[i].factions[z]]);
 		} else {
 		  for (let ii = 0; ii < this.game.state.skip_next_impulse.length; ii++) {
 		    if (this.game.state.skip_next_impulse[ii] === this.game.state.players_info[i].factions[z]) {
 		      this.game.state.skip_next_impulse.splice(ii, 1);
+		      factions_force_pass.push(this.game.state.players_info[i].factions[z]);
 		    }
 		  }
 		}
@@ -5163,6 +5172,11 @@ console.log("NEW WORLD PHASE!");
 	      for (let k = 0; k < factions_in_play.length; k++) {
 	        if (factions_in_play[k].key === io[i]) {
 	          this.game.queue.push("play\t"+io[i]);
+	        }
+	      }
+	      for (let k = 0; i < factions_force_pass.length; k++) {
+	        if (factions_force_pass[k].key === io[i]) {
+	          this.game.queue.push("skipturn\t"+io[i]);
 	        }
 	      }
 	    }
@@ -5475,6 +5489,48 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
         }
 
+	// requestreveal hand
+	if (mv[0] === "request_reveal_hand") {
+
+	  let faction_taking = mv[1];
+	  let faction_giving = mv[2];
+
+	  let p1 = this.returnPlayerOfFaction(faction_taking);
+	  let p2 = this.returnPlayerOfFaction(faction_giving);
+
+	  if (this.game.player == p2) {
+            let fhand_idx = this.returnFactionHandIdx(p2, faction_giving);
+	    this.addMove("reveal_hand\t"+faction_taking+"\t"+faction_giving+"\t"+JSON.stringify(his_self.game.deck[0].fhand[fhand_idx]));
+	    this.endTurn();
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 0;
+
+        }
+
+	// reveal hand
+	if (mv[0] === "reveal_hand") {
+
+	  let faction_taking = mv[1];
+	  let faction_giving = mv[2];
+	  let cards = JSON.parse(mv[3]);
+
+	  let p1 = this.returnPlayerOfFaction(faction_taking);
+	  let p2 = this.returnPlayerOfFaction(faction_giving);
+
+	  if (this.game.player == p1) {
+	    this.updateLog("Cards Revealed: ");
+	    for (let i = 0; i < cards.length; i++) {
+	      this.updateLog(this.game.deck[0].cards[i].name);
+	    }
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+        }
+
 	// give card
 	if (mv[0] === "give_card") {
 
@@ -5516,17 +5572,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	}
 
 
-	// random card discard
-	if (mv[0] === "random_discard") {
-
-	  let faction = mv[1];
-	  let num = mv[2];
-	  let player_of_faction = this.returnPlayerOfFaction(faction);
-
-	  this.game.queue.splice(qe, 1);
-
-	  return 0;
-	}
 
 	if (mv[0] === "discard_diplomacy_card") {
 
@@ -5616,41 +5661,44 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	if (mv[0] === "discard_random") {
 
 	  let faction = mv[1];
-	  let num = mv[2];
+	  let num = 1;
+
 	  let player_of_faction = this.returnPlayerOfFaction(faction);
 
 	  this.game.queue.splice(qe, 1);
 
-	  if (type == "card") {
 	    if (this.game.player === player_of_faction) {
 
               let fhand_idx = this.returnFactionHandIdx(player_of_faction, faction);
 	      let num_cards = this.game.deck[0].fhand[fhand_idx].length;
-	      let discards = [];
-
-	      // cannot discard more than maximum
-	      if (num_cards < num) { num = num_cards; }
-
-	      for (let z = 0; z < num; z++) {
-	        let roll = this.rollDice(num_cards) - 1;
-		while (discards.includes(roll)) {
-	          roll = this.rollDice(num_cards) - 1;
-		}
-		discards.push(roll);
+	      if (num_cards == 0) {
+		this.rollDice(6);
+		this.endTurn();
 	      }
 
-	      discards.sort();
+	      let discards = [];
+	      if (num_cards < num) { num = num_cards; }
 
+	      let roll = this.rollDice(num_cards) - 1;
+	      discards.push(roll);
+	      discards.sort();
 	      for (let zz = 0; zz < discards.length; zz++) {
 	        this.addMove("discard\t"+faction+"\t"+this.game.deck[0].fhand_idx[discards[zz]]);
 	      }
 	      this.endTurn();
 
+	    } else {
+	      this.rollDice(6);
 	    }
-	  }
 
 	  return 0;
 
+	}
+
+	if (mv[0] === "skipturn") {
+
+	    this.game.queue.splice(qe, 1);
+	    return 1;
 	}
 
         if (mv[0] === "play") {

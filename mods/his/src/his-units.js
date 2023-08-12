@@ -238,6 +238,23 @@
     this.conquistadors[name] = obj;
   }
 
+  removeArmyLeader(faction, space, leader) {
+
+    if (!this.army[leader]) {
+      console.log("ARMY LEADER: " + leader + " not found");
+      return;
+    }
+
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units[faction].length; i++) {
+      if (space.units[faction][i].type === leader) {
+	space.units[faction].splice(i, 1);
+      }
+    }
+
+  }
+
+
   addArmyLeader(faction, space, leader) {
 
     if (!this.army[leader]) {

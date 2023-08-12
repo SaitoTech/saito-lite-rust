@@ -23,7 +23,7 @@
     //
     // remove temporary bonuses and modifiers
     //
-    his_self.game.state.events.augsburg_confession = false;
+    this.game.state.events.augsburg_confession = false;
 
   }
 

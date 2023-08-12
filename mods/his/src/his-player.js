@@ -552,9 +552,50 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     return this.game.state.players_info[player-1].factions;
   }
 
-  returnActionMenuOptions(player=null, faction=null) {
+
+  returnActionMenuOptions(player=null, faction=null, limit="") {
 
     let menu = [];
+
+if (limit === "build") {
+
+    menu.push({
+      factions : ['hapsburg','england','france','papacy','protestant'],
+      cost : [1,1,1,1,1],
+      name : "Buy mercenary",
+      check : this.canPlayerBuyMercenary,
+      fnct : this.playerBuyMercenary,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
+      cost : [2,2,2,2,2,2,2,2,2,2],
+      name : "Raise regular",
+      check : this.canPlayerRaiseRegular,
+      fnct : this.playerRaiseRegular,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
+      cost : [2,2,2,2,2,2,2,2],
+      name : "Build naval squadron",
+      check : this.canPlayerBuildNavalSquadron,
+      fnct : this.playerBuildNavalSquadron,
+    });
+    menu.push({
+      factions : ['ottoman'],
+      cost : [1],
+      name : "Raise Cavalry",
+      check : this.canPlayerRaiseCavalry,
+      fnct : this.playerRaiseCavalry,
+    });
+    menu.push({
+      factions : ['ottoman'],
+      cost : [1],
+      name : "Build corsair",
+      check : this.canPlayerBuildCorsair,
+      fnct : this.playerBuildCorsair,
+    });
+
+} else {
 
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
@@ -713,6 +754,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       check : this.canPlayerFoundJesuitUniversity,
       fnct : this.playerFoundJesuitUniversity,
     });
+
+}
 
     if (player == null) { return menu; }
 
@@ -1082,12 +1125,14 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     }
   }
 
-  async playerPlayOps(card, faction, ops=null) {
+  async playerPlayOps(card="", faction, ops=null) {
 
     //
     // discard the card
     //
-    this.addMove("discard\t"+faction+"\t"+card);
+    if (card != "") {
+      this.addMove("discard\t"+faction+"\t"+card);
+    }
 
     let his_self = this;
     let menu = this.returnActionMenuOptions(this.game.player);

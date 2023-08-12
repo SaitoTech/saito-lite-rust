@@ -195,6 +195,7 @@
   returnHopsBetweenSpacesWithFilter(space, filter_func) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
+    let his_self = this;
     let map = {};
     let sources = [];
     let hop = 0;
@@ -206,8 +207,8 @@
       let new_neighbours = [];
 
       for (let i = 0; i < sources.length; i++) {
-	for (let z = 0; z < this.game.spaces[sources[i]].neighbours.length; z++) {
-	  let sourcekey = this.game.spaces[sources[i]].neighbours[z];
+	for (let z = 0; z < his_self.game.spaces[sources[i]].neighbours.length; z++) {
+	  let sourcekey = his_self.game.spaces[sources[i]].neighbours[z];
 	  if (!map[sourcekey]) {
 	    map[sourcekey] = 1;
 	    new_neighbours.push(sourcekey);
