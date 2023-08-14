@@ -313,7 +313,7 @@ class Browser {
 
   extractKeys(text = "") {
     let keys = [];
-
+    let add = "";
     let w = text.split(/(\s+)/);
 
     for (let i = 0; i < w.length; i++) {
@@ -323,7 +323,7 @@ class Browser {
             let cleaner = w[i].substring(1);
             let key = this.app.keychain.returnKey({ identifier: cleaner });
             if (key) {
-              let add = key.publicKey;
+              add = key.publicKey;
             }
             if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) {
               add = cleaner;
