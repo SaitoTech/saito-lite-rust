@@ -908,12 +908,10 @@
 	    let reformer_exists = 0;
             let html = '<ul>';
 	    for (let key in his_self.reformers) {
-console.log("key is: " + key);
-console.log(JSON.stringify(his_self.reformers[key]));
 	      let s = his_self.returnSpaceOfPersonage("protestant", key);
 	      if (s) {
 	        reformer_exists = 1;
-                html += `<li class="option" id="${key}">${his_self.game.reformers[key].name}</li>`;
+                html += `<li class="option" id="${key}">${his_self.reformers[key].name}</li>`;
 	      }
 	    }
 	
@@ -965,7 +963,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	      let s = his_self.returnSpaceOfPersonage("protestant", key);
 	      if (s) {
 		reformer_exists = 1;
-                html += `<li class="option" id="${key}">${his_self.game.reformers[key].name}</li>`;
+                html += `<li class="option" id="${key}">${his_self.reformers[key].name}</li>`;
 	      }
 	    }
 
@@ -1027,6 +1025,12 @@ console.log(JSON.stringify(his_self.reformers[key]));
           }
           html += '</ul>';
 
+	  //
+  	  // show visual language zone selector
+  	  //
+  	  his_self.language_zone_overlay.render();
+
+
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
@@ -1056,20 +1060,32 @@ console.log(JSON.stringify(his_self.reformers[key]));
 		for (let i = 0; i < his_self.game.state.debaters.length; i++) {
 		  let d = his_self.game.state.debaters[i];
 		  if (d.faction === "papacy") {
-            	    html += `<li class="option" id="${i}">${d.name}</li>`;
+            	    html += `<li class="option" id="${d.type}">${d.name}</li>`;
 		  }
 		}
 		html += '</ul>';
                 his_self.updateStatusWithOptions(msg, html);
   
                 $('.option').off();
+                $('.option').on('mouseover', function() {
+                  let action2 = $(this).attr("id");
+                  if (his_self.debaters[action2]) {
+                    his_self.cardbox.show(action2);
+                  }
+                });
+                $('.option').on('mouseout', function() {
+                  let action2 = $(this).attr("id");
+                  if (his_self.debaters[action2]) {
+                    his_self.cardbox.hide(action2);
+                  }
+                });
+                $('.option').off();
                 $('.option').on('click', function () {
                   let selected_papal_debater = $(this).attr("id");
 	          his_self.addMove("theological_debate");
         	  his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
         	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
-	          his_self.addMove("SETVAR\tstate\ttheological_debate\tselected_papal_debater\t"+selected_papal_debater);
-	          his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted");
+	          his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted\t" + selected_papal_debater);
 		  his_self.endTurn();
 		});
 	
@@ -1092,8 +1108,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	          his_self.addMove("theological_debate");
         	  his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
         	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
-	          his_self.addMove("SETVAR\tstate\ttheological_debate\tprohibited_protestant_debater\t"+prohibited_protestant_debater);
-	          his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted");
+	          his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted\t\t"+prohibited_protestant_debater);
 		  his_self.endTurn();
 		});
 	
@@ -1132,7 +1147,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	  let msg = "Retrieve Card from Discard Pile: ";
           let html = '<ul>';
 	  for (let key in his_self.game.deck[0].discards) {
-            html += '<li class="option" id="${key}">${his_self.game.deck[0].cards[key].name}</li>';
+            html += `<li class="option" id="${key}">${his_self.game.deck[0].cards[key].name}</li>`;
 	  }
           html += '</ul>';
 
@@ -1146,8 +1161,8 @@ console.log(JSON.stringify(his_self.reformers[key]));
 
 	    let msg = "Play or Hold Card? ";
             let html = '<ul>';
-            html += '<li class="option" id="play}">play card</li>';
-            html += '<li class="option" id="hold}">hold card</li>';
+            html += '<li class="option" id="play">play card</li>';
+            html += '<li class="option" id="hold">hold card</li>';
             html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
@@ -1160,12 +1175,13 @@ console.log(JSON.stringify(his_self.reformers[key]));
 
 	      if (action == "play") {
 
-		his_self.addMove("card\tprotestant\t"+card);
+		his_self.addMove("discard\tprotestant\t007");
 		his_self.addMove("here_i_stand_event\t"+card);
 		his_self.endTurn();
 
 	      } else {
 
+		his_self.addMove("discard\tprotestant\t007");
 		his_self.addMove("here_i_stand_event\t"+card);
 		his_self.endTurn();
 
@@ -1221,7 +1237,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	    // player returns to hand
 	    //
 	    if (his_self.game.player === p) {
-              let fhand_idx = this.returnFactionHandIdx(p, faction);
+              let fhand_idx = his_self.returnFactionHandIdx(p, faction);
 	      his_self.game.deck[0].fhand[fhand_idx].push(card);
 	    }
 
@@ -1355,6 +1371,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	his_self.game.state.tmp_catholic_reformation_bonus = 0;
 	his_self.game.state.tmp_catholic_reformation_bonus_spaces = [];
 	his_self.game.state.tmp_reformations_this_turn = [];
+	his_self.game.state.wittenberg_electoral_bonus = 1;
 
 	his_self.game.queue.push("hide_overlay\ttheses");
         his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation has begun!");
@@ -1588,7 +1605,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 
 	if (faction === "england") {
 	  let faction_hand_idx = his_self.returnFactionHandIdx(player, "england");   
- 	  his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.state.players_info[player-1].factions[faction_hand_idx]);
+ 	  his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+his_self.game.state.players_info[player-1].factions[faction_hand_idx]);
 	  his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
         }
 	// three counter-reformation attempts
@@ -1622,7 +1639,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	  }
 	  if (f[key] == 2) {
 	    let faction_hand_idx = his_self.returnFactionHandIdx(player, key);
- 	    his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.state.players_info[player-1].factions[faction_hand_idx]);
+ 	    his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+his_self.game.state.players_info[player-1].factions[faction_hand_idx]);
 	    his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
 	  }
 	}
@@ -2738,7 +2755,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	  //
 	  his_self.game.state.assault.attacker_rolls += 2;
           for (let i = 0; i < 2; i++) {
-            let res = this.rollDice(6);
+            let res = his_self.rollDice(6);
             his_self.game.state.assault.attacker_results.push(res);
             if (res >= 5) { his_self.game.state.assault.attacker_hits++; }
           }
@@ -2967,7 +2984,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
               break;
             }
           }
-          return { faction : f , event : '001', html : `<li class="option" id="001">halley's comet (${f})</li>` };
+          return { faction : f , event : '038', html : `<li class="option" id="038">halley's comet (${f})</li>` };
         }
         return {};
       },
@@ -3000,7 +3017,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 
 	  if (faction != "protestant") { html += '<li class="option" id="protestant">Protestant</li>'; }
 	  if (faction != "papacy") { html += '<li class="option" id="papacy">Papacy</li>'; }
-	  if (this.game.players.length > 2) {
+	  if (his_self.game.players.length > 2) {
 	    if (faction != "england") { html += '<li class="option" id="england">England</li>'; }
 	    if (faction != "france") { html += '<li class="option" id="france">France</li>'; }
 	    if (faction != "hapsburg") { html += '<li class="option" id="hapsburg">Haspburg</li>'; }
@@ -3667,7 +3684,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
             let msg = "Retrieve Card from Discard Pile: ";
             let html = '<ul>';
             for (let key in his_self.game.deck[0].discards) {
-              html += '<li class="option" id="${key}">${his_self.game.deck[0].cards[key].name}</li>';
+              html += `<li class="option" id="${key}">${his_self.game.deck[0].cards[key].name}</li>`;
             }
             html += '</ul>';
 
@@ -3700,7 +3717,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
             // player returns to hand
             //
             if (his_self.game.player === p) {
-              let fhand_idx = this.returnFactionHandIdx(p, faction);
+              let fhand_idx = his_self.returnFactionHandIdx(p, faction);
               his_self.game.deck[0].fhand[fhand_idx].push(card);
             }
 
@@ -4277,9 +4294,9 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	    function(spacekey) {
 	      let space = his_self.game.spaces[spacekey];
 	      his_self.addMove("add_army_leader\t"+faction+"\t"+spacekey+"\t"+"renegade");
-              his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+spacekey);
-              his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+spacekey);
-              his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+spacekey);
+              his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+spacekey);
+              his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+spacekey);
 	      his_self.endTurn();
 	    }
 	  );
@@ -4397,7 +4414,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
 	  space.political = who_gets_control;
 
 	  // add 1 regular - to home minor ally if needed
-          this.addRegular(space.home, space.key, 1);
+          his_self.addRegular(space.home, space.key, 1);
 
 	  return 1;
 	}
@@ -4731,7 +4748,7 @@ console.log(JSON.stringify(his_self.reformers[key]));
         if (his_self.game.deck[0].discards["037"]) {
 	  delete his_self.game.deck[0].discards["037"];
 	  if (his_self.game.player == p) {
-            let fhand_idx = this.returnFactionHandIdx(p, faction);
+            let fhand_idx = his_self.returnFactionHandIdx(p, faction);
 	    his_self.game.deck[0].fhand[fhand_idx].push("037");
 	  }
 	}
@@ -4915,10 +4932,10 @@ console.log(JSON.stringify(his_self.reformers[key]));
 
 	  let faction = mv[1];
   
-	  let p = this.returnPlayerOfFaction(faction);
-          let fhand_idx = this.returnFactionHandIdx(p, faction);
-	  let card = this.game.state.last_pulled_card;
-	  let ops = this.game.deck[0].cards[card].ops;
+	  let p = his_self.returnPlayerOfFaction(faction);
+          let fhand_idx = his_self.returnFactionHandIdx(p, faction);
+	  let card = his_self.game.state.last_pulled_card;
+	  let ops = his_self.game.deck[0].cards[card].ops;
 
 	  for (let i = 0; i < card.ops; i++) {
   	    his_self.game.queue.push("build_saint_peters");
@@ -5053,11 +5070,11 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	//
 	let p = his_self.returnPlayerOfFaction("protestant");
 
-	this.game.queue.push("protestant_reformation\t"+p+"\tall");
-	this.game.queue.push("protestant_reformation\t"+p+"\tall");
-	this.game.queue.push("protestant_reformation\t"+p+"\tall");
-	this.game.queue.push("protestant_reformation\t"+p+"\tall");
-	this.game.queue.push("protestant_reformation\t"+p+"\tall");
+	his_self.game.queue.push("protestant_reformation\t"+p+"\tall");
+	his_self.game.queue.push("protestant_reformation\t"+p+"\tall");
+	his_self.game.queue.push("protestant_reformation\t"+p+"\tall");
+	his_self.game.queue.push("protestant_reformation\t"+p+"\tall");
+	his_self.game.queue.push("protestant_reformation\t"+p+"\tall");
 
 	//
 	// and commit luther
@@ -5156,7 +5173,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 		his_self.playerRetainUnitsWithFilter(
 		  target,
 		  function(spacekey, unit_idx) {
-		    if (this.game.spaces[spacekey].units[target][unit_idx].type == "mercenary") { return 1; }
+		    if (his_self.game.spaces[spacekey].units[target][unit_idx].type == "mercenary") { return 1; }
 		    return 0;
 		  },
 		  retained
@@ -5258,16 +5275,16 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	  let captured_leaders = [];
 	  let options = [];
 
-	  for (let i = 0; i < this.game.state.players_info.length; i++) {
-	    for (let ii = 0; ii < this.game.state.players_info[i].captured.length; ii++) {
-	      captured_leaders.push({ leader : this.game.state.players_info[i].captured[ii].type , player : i , idx : ii });
-	      options.push(this.game.state.players_info[i].captured[ii].type);
+	  for (let i = 0; i < his_self.game.state.players_info.length; i++) {
+	    for (let ii = 0; ii < his_self.game.state.players_info[i].captured.length; ii++) {
+	      captured_leaders.push({ leader : his_self.game.state.players_info[i].captured[ii].type , player : i , idx : ii });
+	      options.push(his_self.game.state.players_info[i].captured[ii].type);
 	    } 	
 	  }	
 
 	  his_self.playerSelectOptions(res, options, false, (selected) => {
 	    if (selected.length == 0) {
-	      this.endTurn();
+	      his_self.endTurn();
 	      return;
 	    }
 	    his_self.addMove("random\t"+selected[0]);
@@ -5433,7 +5450,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
 	if (faction === "france" || faction === "hapsburg") {
 	  let p = his_self.returnPlayerOfFaction(faction);
-	  if (this.game.player == p) {
+	  if (his_self.game.player == p) {
 	    his_self.addMove("revolt_in_ireland_placement");
 	    his_self.addMove("revolt_in_ireland_bonus_resistance\t"+faction);
 	    his_self.endTurn();

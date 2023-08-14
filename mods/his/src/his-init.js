@@ -11,6 +11,7 @@ const FieldBattleOverlay = require('./lib/ui/overlays/field-battle');
 const AssaultOverlay = require('./lib/ui/overlays/siege');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const DebatersOverlay = require('./lib/ui/overlays/debaters');
+const WelcomeOverlay = require('./lib/ui/overlays/welcome');
 const LanguageZoneOverlay = require('./lib/ui/overlays/language-zone');
 const JSON = require('json-bigint');
 
@@ -52,6 +53,7 @@ class HereIStand extends GameTemplate {
     this.assault_overlay = new AssaultOverlay(this.app, this);  // siege
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
     this.movement_overlay = new MovementOverlay(this.app, this);  // unit movement
+    this.welcome_overlay = new WelcomeOverlay(this.app, this);  // hello world
 
     //
     // this sets the ratio used for determining

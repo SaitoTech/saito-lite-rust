@@ -234,12 +234,13 @@
   }
 
   displayElectorateDisplay() {
+
     let elecs = this.returnElectorateDisplay();
     for (let key in elecs) {
       let obj = document.getElementById(`ed_${key}`);
       let tile = this.returnSpaceTile(this.game.spaces[key]);
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
-      if (this.returnElectoralBonus(key)) {
+      if (this.returnElectoralBonus(key) != 0) {
         obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-${this.returnElectoralBonus(key)}.svg" />`;
       }
     }

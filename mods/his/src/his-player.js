@@ -1249,7 +1249,7 @@ if (limit === "build") {
   }
   playerPlayEvent(card, faction, ops=null) {
     this.addMove("event\t"+faction+"\t"+card);
-    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " plays " + card + " for the event\tevent\t"+card);
+    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " plays " + this.game.deck[0].cards[card].name + " for the event\tevent\t"+card);
     this.addMove("RESETCONFIRMSNEEDED\tall");
     this.endTurn();
   }
@@ -1286,6 +1286,8 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
     let cancel_func = null;
     let source_spacekey;
 
+console.log("CAPITALS: " + JSON.stringify(capitals));
+
     for (let i = 0; i < capitals.length; i++) {
       let c = capitals[i];
       if (this.game.spaces[c].units[faction].length > 0) {
@@ -1294,6 +1296,8 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       }
     }
 
+console.log("VIABLE CAPITALS: " + JSON.stringify(viable_capitals));
+
     if (can_deploy == 0) {
       this.updateStatus("Spring Deployment not possible");
       this.endTurn();
@@ -1301,11 +1305,12 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
       let msg = "Do you wish to Spring Deploy from: ";
      
-      let opt = "";
+      let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
 	opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
       }
       opt += `<li class="option" id="pass">skip</li>`;
+      opt += '</ul>';
 
       this.updateStatusWithOptions(msg, opt);
 
@@ -3120,6 +3125,7 @@ return;
 
           his_self.updateStatusWithOptions(msg, html);
 
+
           $('.option').off();
           $('.option').on('mouseover', function() {
             let action2 = $(this).attr("id");
@@ -3136,13 +3142,20 @@ return;
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
+	    his_self.cardbox.hide(action2);
+
 	    his_self.addMove("hide_overlay\tpublish_treastise\tgerman");
 	    if (id === "carlstadt") {
+	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t0");
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    his_self.addMove("show_overlay\tpublish_treastise\tgerman");
+	    if (id === "carlstadt") {
+	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t1");
+	    }
+
 	    his_self.endTurn();
 
 	    return 0;
