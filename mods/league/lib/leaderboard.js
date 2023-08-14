@@ -86,6 +86,7 @@ class Leaderboard {
     let myListing = document.querySelector(".my-leaderboard-position");
     if (myListing) {
       myListing.scrollIntoView();
+      myListing.parentElement.parentElement.parentElement.parentElement.scrollBy(0, -42);
     }
   }
 }
