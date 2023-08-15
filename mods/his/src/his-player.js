@@ -3279,8 +3279,6 @@ return;
       $('.option').off();
       let language_zone = e.currentTarget.id;
 
-      his_self.language_zone_overlay.hide();
-
       let msg = "Against Commited or Uncommited Debater?";
       let html = '<ul>';
       if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
@@ -3305,6 +3303,8 @@ return;
       $('.option').on('click', () => {
 
         let committed = $(this).attr("id");
+
+        his_self.language_zone_overlay.hide();
 
         if (committed === "committed") { committed = 1; } else { committed = 0; }
 

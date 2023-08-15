@@ -49,16 +49,16 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  if (this.game.state.round == 1) {
 
-  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-  	    this.game.queue.push("diet_of_worms");
-  	    this.game.queue.push("show_overlay\tdiet_of_worms");
+//  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+//  	    this.game.queue.push("diet_of_worms");
+//  	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    //
 	    // cards dealt before diet of worms
 	    //
-//this.game.queue.push("is_testing");
+this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
-	    this.updateLog("Luther's 95 Theses!");
-	    this.game.queue.push("event\tprotestant\t008");
+//	    this.updateLog("Luther's 95 Theses!");
+//	    this.game.queue.push("event\tprotestant\t008");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -423,7 +423,6 @@ console.log("MOVE: " + mv[0]);
 
           this.addMercenary("papacy", "siena", 4);
           this.addArmyLeader("papacy", "siena", "renegade");
-          this.addMercenary("papacy", "nuremberg", 4);
           this.addRegular("papacy", "linz", 4);
           this.addRegular("papacy", "ravenna", 2);
           this.setAllies("protestant", "venice");
@@ -436,6 +435,7 @@ console.log("MOVE: " + mv[0]);
 
     	  this.activateMinorPower("papacy", "venice");
 
+    	  this.convertSpace("protestant", "nuremberg");
     	  this.convertSpace("protestant", "graz");
     	  this.controlSpace("protestant", "graz");
     	  this.addRegular("protestant", "graz", 3);
@@ -1866,8 +1866,6 @@ console.log("2. insert index: " + index_to_insert_moves);
 
           let z = this.returnEventObjects();
 	  for (let i = 0; i < z.length; i++) {
-console.log(i);
-console.log(i + ". " + z[i].name);
             if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
               let x = z[i].menuOption(this, stage, this.game.player, extra);
               html += x.html;
@@ -1909,11 +1907,6 @@ console.log(i + ". " + z[i].name);
 	    //
 	    his_self.cardbox.hide();
 
-	    //
-	    // this ensures we clear regardless of choice
-	    //
-            his_self.addMove("RESOLVE\t"+his_self.publicKey);
-
             //
             // events in play
             //
@@ -1928,6 +1921,10 @@ console.log(i + ". " + z[i].name);
             }
 
             if (action2 == "ok") {
+	      //
+	      // this ensures we clear regardless of choice
+	      //
+              his_self.prependMove("RESOLVE\t"+his_self.publicKey);
 	      his_self.updateStatus("acknowledged");
               await his_self.endTurn();
               return 0;
@@ -5774,9 +5771,10 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
           this.onNewImpulse();
 
 	  //
-	  // hide overlay
+	  // hide unneeded overlays
 	  //
 	  this.debate_overlay.hide();
+	  this.theses_overlay.hide();
 
 	  this.game.state.active_player = player;
 	  this.game.state.active_faction = faction;
@@ -6212,12 +6210,14 @@ console.log("SPACE: " + space);
 	  //
 	  if (this.game.state.tmp_protestant_reformation_bonus_spaces.length > 0) {
 	    if (!this.game.state.tmp_protestant_reformation_bonus_spaces.includes(space)) {
+	      p_roll_desc.push({ name : "Bonus" , desc : "protestant bonus roll"});
 	      this.game.state.tmp_protestant_reformation_bonus--;
 	      if (this.game.state.tmp_protestant_reformation_bonus < 0) { this.game.state.tmp_protestant_reformation_bonus = 0; }
 	    }
 	  }
 	  if (this.game.state.tmp_catholic_reformation_bonus_spaces.length > 0) {
 	    if (!this.game.state.tmp_catholic_reformation_bonus_spaces.includes(space)) {
+	      c_roll_desc.push({ name : "Bonus" , desc : "catholic bonus roll"});
 	      this.game.state.tmp_catholic_reformation_bonus--;
 	      if (this.game.state.tmp_catholic_reformation_bonus < 0) { this.game.state.tmp_catholic_reformation_bonus = 0; }
 	    }

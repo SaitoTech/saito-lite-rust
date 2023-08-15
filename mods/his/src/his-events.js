@@ -29,7 +29,8 @@
     //
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       let d = this.game.state.debaters[i];
-      let key = d.key;
+      let key = d.type;
+console.log("adding " + key);
       z.push(this.debaters[key]);
     }
 

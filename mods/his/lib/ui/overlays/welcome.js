@@ -47,11 +47,11 @@ class WelcomeOverlay {
       if (faction === "papacy") {
 	document.querySelector('.welcome-title').innerHTML = `You are the Papacy`;
 	document.querySelector('.welcome-text').innerHTML = `
-	  The Rock of Saint Peter is sick.
+	  The Rock of Saint Peter is worn.
 	  <p></p>
 	  Infidels burn the Southern reaches.
 	  <p></p>
-	  And heresy spreads her wings in Europe... 
+	  And heresy spreads her wings in Europe...
 	`;
       }
 
