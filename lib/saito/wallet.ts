@@ -151,7 +151,6 @@ export default class Wallet extends SaitoWallet {
     let publicKey = await this.getPublicKey();
     this.publicKey = publicKey;
     console.log("public key = " + publicKey);
-    console.log("private key = " + privateKey);
 
     // if (privateKey === "") {
     if (this.app.options.wallet != null) {
