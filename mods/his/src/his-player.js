@@ -1147,7 +1147,7 @@ if (limit === "build") {
     //
     // mandatory event cards effect first, then 2 OPS
     //
-    if (this.deck[card].type === "mandatory") {
+    if (this.deck[card].type === "mandatory" && this.deck[card].canEvent()) {
       this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
       this.playerPlayEvent(card, faction);
@@ -3183,7 +3183,6 @@ return;
 
           his_self.updateStatusWithOptions(msg, html);
 
-
           $('.option').off();
           $('.option').on('mouseover', function() {
             let action2 = $(this).attr("id");
@@ -3200,10 +3199,10 @@ return;
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    his_self.cardbox.hide(action2);
+	    his_self.cardbox.hide();
 
-	    his_self.addMove("hide_overlay\tpublish_treastise\tgerman");
-	    if (id === "carlstadt") {
+	    his_self.addMove("hide_overlay\tpublish_treatise\tgerman");
+	    if (id === "carlstadt-debater") {
 	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t0");
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
@@ -3372,8 +3371,9 @@ return;
 
         let msg = "Commit Debater for Burn Books Bonus:";
         let html = '<ul>';
+        html += '<li class="option" style="" id="no">No</li>';
 	if (his_self.canPlayerCommitDebater("papacy", "tetzel-debater")) {
-          html += '<li class="option" style="" id="tetzel-debater">+1 to Saint Peters</li>';
+          html += '<li class="option" style="" id="tetzel-debater">Tetzel +1 to St Peters</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "cajetan-debater")) {
           html += '<li class="option" style="" id="cajetan-debater">Cajetan +1 Attempt</li>';
@@ -3381,7 +3381,6 @@ return;
 	if (his_self.canPlayerCommitDebater("papacy", "caraffa-debater")) {
           html += '<li class="option" style="" id="caraffa-debater">Caraffa +1 Attempt</li>';
         }
-        html += '<li class="option" style="" id="no">No</li>';
 	html += '</ul>';
 
         his_self.updateStatusWithOptions(msg, html);
@@ -3401,6 +3400,8 @@ return;
         });
         $('.option').on('click', function () {
           let id2 = $(this).attr("id");
+
+	  his_self.cardbox.hide();
 
 	  if (id2 === "tetzel-debater") {
             his_self.addMove("build_saint_peters");

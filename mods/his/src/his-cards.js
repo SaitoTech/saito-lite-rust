@@ -5,8 +5,10 @@
     let new_deck = {};
 
     for (let key in deck) {
-      if (deck[key].turn === turn) {
-	new_deck[key] = deck[key];
+      if (key != "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
+        if (deck[key].turn === turn) {
+	  new_deck[key] = deck[key];
+        }
       }
     }
 
@@ -1030,7 +1032,6 @@
   	  //
   	  his_self.language_zone_overlay.render();
 
-
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
@@ -1080,6 +1081,7 @@
                   }
                 });
                 $('.option').on('click', function () {
+                  his_self.language_zone_overlay.hide();
                   let selected_papal_debater = $(this).attr("id");
 	          his_self.addMove("theological_debate");
         	  his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
@@ -1103,6 +1105,7 @@
   
                 $('.option').off();
                 $('.option').on('click', function () {
+                  his_self.language_zone_overlay.hide();
                   let prohibited_protestant_debater = $(this).attr("id");
 	          his_self.addMove("theological_debate");
         	  his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
@@ -1424,6 +1427,12 @@
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
 
+	    if (language_zone != "all" && language_zone != "") {
+	      his_self.theses_overlay.render(language_zone);
+	    } else {
+	      his_self.theses_overlay.render();
+	    }
+
             his_self.playerSelectSpaceWithFilter(
 
 	      "Select Counter-Reformation Attempt",
@@ -1503,6 +1512,12 @@
 
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
+
+	    if (language_zone != "all" && language_zone != "") {
+	      his_self.theses_overlay.render(language_zone);
+	    } else {
+	      his_self.theses_overlay.render();
+	    }
 
             his_self.playerSelectSpaceWithFilter(
 
@@ -1657,6 +1672,12 @@
         ops : 2 ,
         turn : 1 ,
         type : "mandatory" ,
+        canEvent : function(his_self, faction) {
+	  if (his_self.game.state.round >= 2 && his_self.returnNumberOfProtestantSpacesInLanguageZone("all") >= 12) {
+	    return 1; 
+	  }
+	  return 0;
+	},
         removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
         onEvent : function(his_self, faction) {
           his_self.game.state.events.schmalkaldic_league = 1;
@@ -5695,7 +5716,6 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	return 1;
       },
       onEvent : function(his_self, faction) {
-alert("NOT IMPLEMENTED");
 	return 0;
       },
     }
@@ -6293,82 +6313,6 @@ alert("NOT IMPLEMENTED");
 
 	return 1;
 
-      },
-    }
-    deck['002'] = { 
-      img : "cards/HIS-002.svg" , 
-      name : "Holy Roman Emperor" ,
-      ops : 5 ,
-      turn : 1 , 
-      type : "normal" ,
-      faction : "hapsburg" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) {
-        if (his_self.isBesieged("hapsburg", "charles-v")) { return 0; }
-        if (his_self.isCaptured("hapsburg", "charles-v")) { return 0; }
-	return 1;
-      },
-      onEvent : function(his_self, faction) {
-
-	let ck = his_self.returnSpaceOfPersonage("hapsburg", "charles-v");
-	let ak = his_self.returnSpaceOfPersonage("hapsburg", "duke-of-alva");
-	let ck_idx = his_self.returnIndexOfPersonageInSpace("hapsburg", "charles-v", ck);
-	let ak_idx = his_self.returnIndexOfPersonageInSpace("hapsburg", "duke-of-alva", ak);
-	
-        his_self.playerSelectSpaceWithFilter(
-
-	  "Select Destination for Charles V: ",
-
-	  function(space) {
-		if (
-		  space.home === "hapsburg" &&
-		  !his_self.isSpaceControlled(space, "hapsburg")
-	        ) {
-		  return 1;
-	        }
-		return 0;
-	  },
-
-	  function(spacekey) {
-
-		if (ak === ck && ak !== "") {
-
-		  let msg = "Move Duke of Alva with Charles V?";
-    		  let html = '<ul>';
-        	  html += '<li class="option" id="yes">yes</li>';
-        	  html += '<li class="option" id="no">no</li>';
-    		  html += '</ul>';
-
-    		  his_self.updateStatusWithOptions(msg, html);
-
-	          $('.option').off();
-	          $('.option').on('click', function () {
-	            let action = $(this).attr("id");
-		    if (action === "yes") {
-		      his_self.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
-		      his_self.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ak_key + "\t" + ak_idx + "\t" + "land" + spacekey);
-		      his_self.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
-		      his_self.endTurn();
-		    } else {
-		      his_self.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
-		      his_self.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
-		      his_self.endTurn();
-		    }
-		  });
-
-		} else {
-		  his_self.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
-		  his_self.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
-		  his_self.endTurn();
-		}
-
-	  },
-
-	  null
-
-	);
-
-        return 0;
       },
     }
     deck['110'] = { 

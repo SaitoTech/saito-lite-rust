@@ -2195,7 +2195,18 @@ console.log("\n\n\n\n");
       //
       this.game.queue.push("round");
       this.game.queue.push("READY");
-      this.game.queue.push("DECK\t1\t"+JSON.stringify(this.deck));
+
+      let deck2 = JSON.parse(JSON.stringify(this.deck));
+      delete deck2['001'];
+      delete deck2['002'];
+      delete deck2['003'];
+      delete deck2['004'];
+      delete deck2['005'];
+      delete deck2['006'];
+      delete deck2['007'];
+      delete deck2['008'];
+
+      this.game.queue.push("DECK\t1\t"+JSON.stringify(deck2));
       this.game.queue.push("init");
 
     }
@@ -2648,8 +2659,10 @@ console.log("\n\n\n\n");
     let new_deck = {};
 
     for (let key in deck) {
-      if (deck[key].turn === turn) {
-	new_deck[key] = deck[key];
+      if (key != "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
+        if (deck[key].turn === turn) {
+	  new_deck[key] = deck[key];
+        }
       }
     }
 
@@ -3673,7 +3686,6 @@ console.log("\n\n\n\n");
   	  //
   	  his_self.language_zone_overlay.render();
 
-
           his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
@@ -3722,8 +3734,8 @@ console.log("\n\n\n\n");
                     his_self.cardbox.hide(action2);
                   }
                 });
-                $('.option').off();
                 $('.option').on('click', function () {
+                  his_self.language_zone_overlay.hide();
                   let selected_papal_debater = $(this).attr("id");
 	          his_self.addMove("theological_debate");
         	  his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
@@ -3747,6 +3759,7 @@ console.log("\n\n\n\n");
   
                 $('.option').off();
                 $('.option').on('click', function () {
+                  his_self.language_zone_overlay.hide();
                   let prohibited_protestant_debater = $(this).attr("id");
 	          his_self.addMove("theological_debate");
         	  his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
@@ -4068,6 +4081,12 @@ console.log("\n\n\n\n");
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
 
+	    if (language_zone != "all" && language_zone != "") {
+	      his_self.theses_overlay.render(language_zone);
+	    } else {
+	      his_self.theses_overlay.render();
+	    }
+
             his_self.playerSelectSpaceWithFilter(
 
 	      "Select Counter-Reformation Attempt",
@@ -4147,6 +4166,12 @@ console.log("\n\n\n\n");
 
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
+
+	    if (language_zone != "all" && language_zone != "") {
+	      his_self.theses_overlay.render(language_zone);
+	    } else {
+	      his_self.theses_overlay.render();
+	    }
 
             his_self.playerSelectSpaceWithFilter(
 
@@ -4301,6 +4326,12 @@ console.log("\n\n\n\n");
         ops : 2 ,
         turn : 1 ,
         type : "mandatory" ,
+        canEvent : function(his_self, faction) {
+	  if (his_self.game.state.round >= 2 && his_self.returnNumberOfProtestantSpacesInLanguageZone("all") >= 12) {
+	    return 1; 
+	  }
+	  return 0;
+	},
         removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
         onEvent : function(his_self, faction) {
           his_self.game.state.events.schmalkaldic_league = 1;
@@ -8339,7 +8370,6 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	return 1;
       },
       onEvent : function(his_self, faction) {
-alert("NOT IMPLEMENTED");
 	return 0;
       },
     }
@@ -8937,82 +8967,6 @@ alert("NOT IMPLEMENTED");
 
 	return 1;
 
-      },
-    }
-    deck['002'] = { 
-      img : "cards/HIS-002.svg" , 
-      name : "Holy Roman Emperor" ,
-      ops : 5 ,
-      turn : 1 , 
-      type : "normal" ,
-      faction : "hapsburg" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) {
-        if (his_self.isBesieged("hapsburg", "charles-v")) { return 0; }
-        if (his_self.isCaptured("hapsburg", "charles-v")) { return 0; }
-	return 1;
-      },
-      onEvent : function(his_self, faction) {
-
-	let ck = his_self.returnSpaceOfPersonage("hapsburg", "charles-v");
-	let ak = his_self.returnSpaceOfPersonage("hapsburg", "duke-of-alva");
-	let ck_idx = his_self.returnIndexOfPersonageInSpace("hapsburg", "charles-v", ck);
-	let ak_idx = his_self.returnIndexOfPersonageInSpace("hapsburg", "duke-of-alva", ak);
-	
-        his_self.playerSelectSpaceWithFilter(
-
-	  "Select Destination for Charles V: ",
-
-	  function(space) {
-		if (
-		  space.home === "hapsburg" &&
-		  !his_self.isSpaceControlled(space, "hapsburg")
-	        ) {
-		  return 1;
-	        }
-		return 0;
-	  },
-
-	  function(spacekey) {
-
-		if (ak === ck && ak !== "") {
-
-		  let msg = "Move Duke of Alva with Charles V?";
-    		  let html = '<ul>';
-        	  html += '<li class="option" id="yes">yes</li>';
-        	  html += '<li class="option" id="no">no</li>';
-    		  html += '</ul>';
-
-    		  his_self.updateStatusWithOptions(msg, html);
-
-	          $('.option').off();
-	          $('.option').on('click', function () {
-	            let action = $(this).attr("id");
-		    if (action === "yes") {
-		      his_self.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
-		      his_self.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ak_key + "\t" + ak_idx + "\t" + "land" + spacekey);
-		      his_self.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
-		      his_self.endTurn();
-		    } else {
-		      his_self.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
-		      his_self.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
-		      his_self.endTurn();
-		    }
-		  });
-
-		} else {
-		  his_self.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
-		  his_self.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
-		  his_self.endTurn();
-		}
-
-	  },
-
-	  null
-
-	);
-
-        return 0;
       },
     }
     deck['110'] = { 
@@ -10451,7 +10405,7 @@ alert("NOT IMPLEMENTED");
     let protestant_spaces = 0;
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].religion === "protestant") {
-	if (language == "" || this.game.spaces[key].language == language) {
+	if (language == "all" || language == "" || this.game.spaces[key].language == language) {
 	  protestant_spaces++;
 	}
       }
@@ -15283,7 +15237,6 @@ console.log("possible? " + fluis);
 	  this.updateLog("Interception roll #2: " + d2);
 
 	  // IS_TESTING
-// HACK -- always win at 2
 hits_on = 2;
 
 	  if (dsum >= hits_on) {
@@ -15519,7 +15472,6 @@ console.log("2. insert index: " + index_to_insert_moves);
 	  this.diet_of_worms_overlay.addCardToCardfan(this.game.state.sp[papacy-1], "catholic");
 	  this.diet_of_worms_overlay.addCardToCardfan(hapsburg_card, "catholic");
 
-
 	  //
 	  // discard the selected cards
 	  //
@@ -15575,11 +15527,22 @@ console.log("2. insert index: " + index_to_insert_moves);
 	  // yes -- card pulled from top of deck, or 2 if mandatory event pulled
 	  // in which case the event is ignored.
 	  //
-	  for (let i = 0; i < 2; i++) {
-	    let x = this.rollDice(6);
-	    papacy_arolls.push(x);
-	    this.updateLog("Hapsburg rolls: " + x);
-	    if (x >= 5) { papacy_hits++; }
+ 	  if (this.game.deck[0].cards[hapsburg_card].type != "mandatory") {
+	    for (let i = 0; i < this.game.deck[0].cards[hapsburg_card].ops; i++) {
+	      papacy_rolls++;
+	      let x = this.rollDice(6);
+	      papacy_arolls.push(x);
+	      this.updateLog("Hapsburg rolls: " + x);
+	      if (x >= 5) { papacy_hits++; }
+	    }
+	  } else {
+	    for (let i = 0; i < 2; i++) {
+	      papacy_rolls++;
+	      let x = this.rollDice(6);
+	      papacy_arolls.push(x);
+	      this.updateLog("Hapsburg rolls: " + x);
+	      if (x >= 5) { papacy_hits++; }
+	    }
 	  }
 
 	  if (protestant_hits > papacy_hits) {
@@ -15698,6 +15661,8 @@ console.log("2. insert index: " + index_to_insert_moves);
 
           let z = this.returnEventObjects();
 	  for (let i = 0; i < z.length; i++) {
+console.log(i);
+console.log(i + ". " + z[i].name);
             if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
               let x = z[i].menuOption(this, stage, this.game.player, extra);
               html += x.html;
@@ -19326,6 +19291,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
         if (mv[0] === "restore_home_cards_to_deck") {
 
 	  let d = this.returnDeck();
+	  this.deck['008'] = d['008'];
 	  this.game.deck[0].cards['001'] = d['001'];
 	  this.game.deck[0].cards['002'] = d['002'];
 	  this.game.deck[0].cards['003'] = d['003'];
@@ -19691,6 +19657,8 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	  this.game.queue.splice(qe, 1);
 
+	  if (this.theses_overlay.visible) { this.theses_overlay.pushHudUnderOverlay(); }
+
 	  let player = this.returnPlayerOfFaction(faction);
 	  if (this.game.player == player) {
 	    this.playerSelectSpaceWithFilter(
@@ -19737,6 +19705,8 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  if (mv[2]) { zone = mv[2]; }
 
 	  this.game.queue.splice(qe, 1);
+
+	  if (this.theses_overlay.visible) { this.theses_overlay.pushHudUnderOverlay(); }
 
 	  let player = this.returnPlayerOfFaction(faction);
 	  if (this.game.player == player) {
@@ -21508,7 +21478,7 @@ if (limit === "build") {
     //
     // mandatory event cards effect first, then 2 OPS
     //
-    if (this.deck[card].type === "mandatory") {
+    if (this.deck[card].type === "mandatory" && this.deck[card].canEvent()) {
       this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
       this.playerPlayEvent(card, faction);
@@ -23544,7 +23514,6 @@ return;
 
           his_self.updateStatusWithOptions(msg, html);
 
-
           $('.option').off();
           $('.option').on('mouseover', function() {
             let action2 = $(this).attr("id");
@@ -23561,10 +23530,10 @@ return;
           $('.option').on('click', function () {
             let id = $(this).attr("id");
 
-	    his_self.cardbox.hide(action2);
+	    his_self.cardbox.hide();
 
-	    his_self.addMove("hide_overlay\tpublish_treastise\tgerman");
-	    if (id === "carlstadt") {
+	    his_self.addMove("hide_overlay\tpublish_treatise\tgerman");
+	    if (id === "carlstadt-debater") {
 	      his_self.addMove("SETVAR\tstate\tevents\tcarlstadt_debater\t0");
 	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
 	    }
@@ -23733,8 +23702,9 @@ return;
 
         let msg = "Commit Debater for Burn Books Bonus:";
         let html = '<ul>';
+        html += '<li class="option" style="" id="no">No</li>';
 	if (his_self.canPlayerCommitDebater("papacy", "tetzel-debater")) {
-          html += '<li class="option" style="" id="tetzel-debater">+1 to Saint Peters</li>';
+          html += '<li class="option" style="" id="tetzel-debater">Tetzel +1 to St Peters</li>';
 	}
 	if (his_self.canPlayerCommitDebater("papacy", "cajetan-debater")) {
           html += '<li class="option" style="" id="cajetan-debater">Cajetan +1 Attempt</li>';
@@ -23742,7 +23712,6 @@ return;
 	if (his_self.canPlayerCommitDebater("papacy", "caraffa-debater")) {
           html += '<li class="option" style="" id="caraffa-debater">Caraffa +1 Attempt</li>';
         }
-        html += '<li class="option" style="" id="no">No</li>';
 	html += '</ul>';
 
         his_self.updateStatusWithOptions(msg, html);
@@ -23762,6 +23731,8 @@ return;
         });
         $('.option').on('click', function () {
           let id2 = $(this).attr("id");
+
+	  his_self.cardbox.hide();
 
 	  if (id2 === "tetzel-debater") {
             his_self.addMove("build_saint_peters");
