@@ -1,0 +1,24 @@
+
+
+.cardstack {
+	display: flex;
+	position: relative;
+}
+
+.cardstack.left {
+	flex-direction: row-reverse;
+}
+
+
+.cardstack.right {
+	flex-direction: row;
+}
+
+.cardstack.down {
+	flex-direction: column;
+}
+
+.cardstack.up {
+	flex-direction: column-reverse;
+}
+
