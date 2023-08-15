@@ -319,7 +319,7 @@ class Stun extends ModTemplate {
 
     let room_code = txmsg.data.room_code;
     let type = txmsg.data.type;
-    console.log("publick key", peer);
+    console.log("peer public key: ", peer);
     let public_key = peer.publicKey;
 
     if (type === "peer-joined") {
