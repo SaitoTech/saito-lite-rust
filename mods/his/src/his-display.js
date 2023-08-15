@@ -253,7 +253,7 @@
     if (space === "augsburg" && this.game.state.augsburg_electoral_bonus == 0) {
       return 2;
     }
-    if (space === "mainz" && this.game.state.augsburg_electoral_bonus == 0) {
+    if (space === "mainz" && this.game.state.mainz_electoral_bonus == 0) {
       return 1;
     }
     if (space === "trier" && this.game.state.trier_electoral_bonus == 0) {

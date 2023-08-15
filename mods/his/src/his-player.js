@@ -565,6 +565,8 @@ if (limit === "build") {
       name : "Buy mercenary",
       check : this.canPlayerBuyMercenary,
       fnct : this.playerBuyMercenary,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/mercenary.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
@@ -572,6 +574,8 @@ if (limit === "build") {
       name : "Raise regular",
       check : this.canPlayerRaiseRegular,
       fnct : this.playerRaiseRegular,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/regular.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
@@ -579,6 +583,8 @@ if (limit === "build") {
       name : "Build naval squadron",
       check : this.canPlayerBuildNavalSquadron,
       fnct : this.playerBuildNavalSquadron,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/squadron.jpg',
     });
     menu.push({
       factions : ['ottoman'],
@@ -586,6 +592,8 @@ if (limit === "build") {
       name : "Raise Cavalry",
       check : this.canPlayerRaiseCavalry,
       fnct : this.playerRaiseCavalry,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/cavalry.jpg',
     });
     menu.push({
       factions : ['ottoman'],
@@ -593,6 +601,8 @@ if (limit === "build") {
       name : "Build corsair",
       check : this.canPlayerBuildCorsair,
       fnct : this.playerBuildCorsair,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/corsair.jpg',
     });
 
 } else {
@@ -603,6 +613,8 @@ if (limit === "build") {
       name : "Move formation in clear",
       check : this.canPlayerMoveFormationInClear,
       fnct : this.playerMoveFormationInClear,
+      category : "move" ,
+      img : '/his/img/backgrounds/move/move_in_clear.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
@@ -610,6 +622,8 @@ if (limit === "build") {
       name : "Move formation over pass",
       check : this.canPlayerMoveFormationOverPass,
       fnct : this.playerMoveFormationOverPass,
+      category : "move" ,
+      img : '/his/img/backgrounds/move/move_over_pass.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
@@ -617,6 +631,8 @@ if (limit === "build") {
       name : "Naval transport",
       check : this.canPlayerNavalTransport,
       fnct : this.playerNavalTransport,
+      category : "move" ,
+      img : '/his/img/backgrounds/move/move_transport.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
@@ -624,6 +640,8 @@ if (limit === "build") {
       name : "Naval move",
       check : this.canPlayerNavalMove,
       fnct : this.playerNavalMove,
+      category : "move" ,
+      img : '/his/img/backgrounds/move/move_fleet.jpg',
     });
     menu.push({
       factions : ['hapsburg','england','france','papacy','protestant'],
@@ -631,6 +649,8 @@ if (limit === "build") {
       name : "Buy mercenary",
       check : this.canPlayerBuyMercenary,
       fnct : this.playerBuyMercenary,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/mercenary.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
@@ -638,6 +658,8 @@ if (limit === "build") {
       name : "Raise regular",
       check : this.canPlayerRaiseRegular,
       fnct : this.playerRaiseRegular,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/regular.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
@@ -645,6 +667,8 @@ if (limit === "build") {
       name : "Build naval squadron",
       check : this.canPlayerBuildNavalSquadron,
       fnct : this.playerBuildNavalSquadron,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/squadron.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
@@ -652,6 +676,8 @@ if (limit === "build") {
       name : "Assault",
       check : this.canPlayerAssault,
       fnct : this.playerAssault,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/assault.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
@@ -659,6 +685,8 @@ if (limit === "build") {
       name : "Control unfortified space",
       check : this.canPlayerControlUnfortifiedSpace,
       fnct : this.playerControlUnfortifiedSpace,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/control.jpg',
     });
     menu.push({
       factions : ['hapsburg','england','france'],
@@ -666,6 +694,8 @@ if (limit === "build") {
       name : "Explore",
       check : this.canPlayerExplore,
       fnct : this.playerExplore,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/explore.jpg',
     });
     menu.push({
       factions : ['hapsburg','england','france'],
@@ -673,6 +703,8 @@ if (limit === "build") {
       name : "Colonize",
       check : this.canPlayerColonize,
       fnct : this.playerColonize,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/colonize.jpg',
     });
     menu.push({
       factions : ['hapsburg','england','france'],
@@ -680,6 +712,8 @@ if (limit === "build") {
       name : "Conquer",
       check : this.canPlayerConquer,
       fnct : this.playerConquer,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/conquer.jpg',
     });
     menu.push({
       factions : ['ottoman'],
@@ -687,6 +721,8 @@ if (limit === "build") {
       name : "Initiate piracy in a sea",
       check : this.canPlayerInitiatePiracyInASea,
       fnct : this.playerInitiatePiracyInASea,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/piracy.jpg',
     });
     menu.push({
       factions : ['ottoman'],
@@ -694,6 +730,8 @@ if (limit === "build") {
       name : "Raise Cavalry",
       check : this.canPlayerRaiseCavalry,
       fnct : this.playerRaiseCavalry,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/cavalry.jpg',
     });
     menu.push({
       factions : ['ottoman'],
@@ -701,6 +739,8 @@ if (limit === "build") {
       name : "Build corsair",
       check : this.canPlayerBuildCorsair,
       fnct : this.playerBuildCorsair,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/corsair.jpg',
     });
     menu.push({
       factions : ['protestant'],
@@ -708,6 +748,8 @@ if (limit === "build") {
       name : "Translate scripture",
       check : this.canPlayerTranslateScripture,
       fnct : this.playerTranslateScripture,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/translate.jpg',
     });
     menu.push({
       factions : ['england','protestant'],
@@ -715,6 +757,8 @@ if (limit === "build") {
       name : "Publish treatise",
       check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/printing_press.jpg',
     });
     menu.push({
       factions : ['papacy','protestant'],
@@ -722,6 +766,8 @@ if (limit === "build") {
       name : "Call theological debate",
       check : this.canPlayerCallTheologicalDebate,
       fnct : this.playerCallTheologicalDebate,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/theological_debate.jpg',
     });
     menu.push({
       factions : ['papacy'],
@@ -729,6 +775,8 @@ if (limit === "build") {
       name : "Build Saint Peters",
       check : this.canPlayerBuildSaintPeters,
       fnct : this.playerBuildSaintPeters,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/saint_peters.png',
     });
     menu.push({
       factions : ['papacy'],
@@ -736,6 +784,8 @@ if (limit === "build") {
       name : "Burn books",
       check : this.canPlayerBurnBooks,
       fnct : this.playerBurnBooks,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/burn_books.jpg',
     });
     // Loyola reduces Jesuit University Cost
     if (this.canPlayerCommitDebater("papacy", "loyola-debater")) {
@@ -745,6 +795,8 @@ if (limit === "build") {
         name : "Found Jesuit University w/ Loyola",
         check : this.canPlayerFoundJesuitUniversity,
         fnct : this.playerFoundJesuitUniversityWithLoyola,
+        category : "special" ,
+        img : '/his/img/backgrounds/move/university.png',
       });
     }
     menu.push({
@@ -753,6 +805,8 @@ if (limit === "build") {
       name : "Found Jesuit University",
       check : this.canPlayerFoundJesuitUniversity,
       fnct : this.playerFoundJesuitUniversity,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/university.png',
     });
 
 }
@@ -1141,7 +1195,6 @@ if (limit === "build") {
     if (ops == null) { ops = 2; }
     if (ops == 0) { console.log("OPS ARE ZERO!"); }
 
-
     if (this.game.state.activated_powers[faction].length > 0) {
 
       let html = `<ul>`;
@@ -1177,6 +1230,8 @@ if (limit === "build") {
 
         html    += `<li class="card" id="end_turn">end turn</li>`;
         html    += `</ul>`;
+
+	his_self.menu_overlay.render(menu, this.game.player, selected_faction, ops);
 
         his_self.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
         this.attachCardboxEvents(async (user_choice) => {      
@@ -1223,6 +1278,8 @@ if (limit === "build") {
       html    += `<li class="card" id="end_turn">end turn</li>`;
       html    += `</ul>`;
 
+      this.menu_overlay.render(menu, this.game.player, faction, ops);
+
       this.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
       this.attachCardboxEvents(async (user_choice) => {      
 
@@ -1249,6 +1306,7 @@ if (limit === "build") {
   }
   playerPlayEvent(card, faction, ops=null) {
     this.addMove("event\t"+faction+"\t"+card);
+    this.addMove("discard\t"+faction+"\t"+card);
     this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " plays " + this.game.deck[0].cards[card].name + " for the event\tevent\t"+card);
     this.addMove("RESETCONFIRMSNEEDED\tall");
     this.endTurn();

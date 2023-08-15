@@ -1621,7 +1621,6 @@ console.log("2. insert index: " + index_to_insert_moves);
 	  //
 	  let x = [];
 	  for (let i = 0; i < this.game.deck[0].fhand[0].length; i++) {
-console.log("CARDS: " + JSON.stringify(this.game.deck[0].fhand));
 	    if (this.game.deck[0].cards[this.game.deck[0].fhand[0][i]].type === "mandatory") {} else { x.push(this.game.deck[0].fhand[0][i]); }
 	  }
 
@@ -5897,9 +5896,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  if (mv[2]) { zone = mv[2]; }
 
 	  this.game.queue.splice(qe, 1);
-
-console.log("QUEUE IN PC: " + JSON.stringify(this.game.queue));
-
 
 	  let player = this.returnPlayerOfFaction(faction);
 	  if (this.game.player == player) {

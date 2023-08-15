@@ -1079,7 +1079,6 @@
                     his_self.cardbox.hide(action2);
                   }
                 });
-                $('.option').off();
                 $('.option').on('click', function () {
                   let selected_papal_debater = $(this).attr("id");
 	          his_self.addMove("theological_debate");
@@ -1397,6 +1396,7 @@
         if (mv[0] == "catholic_counter_reformation") {
 
           let player = parseInt(mv[1]);
+          if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
           let language_zone = "german";
 	  if (mv[2]) { language_zone = mv[2]; }
           his_self.game.queue.splice(qe, 1);
@@ -1420,7 +1420,6 @@
 	      return 0;
 	    }
 	  );
-
 
 	  if (his_self.game.player == player) {
 	    if (target_spaces > 0) {
@@ -1452,7 +1451,7 @@
 		his_self.addMove("counter_reformation\t"+spacekey+"\t"+language_zone);
 		let name = his_self.game.spaces[spacekey].name;
 		his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt in "+spacekey+"\tcatholic_counter_reformation\t"+name);
-        	his_self.addMove("RESETCONFIRMSNEEDED\tall");
+                his_self.addMove("RESETCONFIRMSNEEDED\tall");
 		his_self.endTurn();
 	      },
 
@@ -1463,6 +1462,7 @@
 	    );
 	    } else {
 	      his_self.addMove("counter_or_acknowledge\tCatholic Counter-Reformation - no valid targets");
+              his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	      his_self.endTurn();
 	    }
 	  } else {
@@ -1476,6 +1476,7 @@
         if (mv[0] == "protestant_reformation") {
 
           let player = parseInt(mv[1]);
+          if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
           let language_zone = "german";
 	  if (mv[2]) { language_zone = mv[2]; }
           his_self.game.queue.splice(qe, 1);
@@ -1540,6 +1541,7 @@
 	    );
 	    } else {
 	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
+              his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	      his_self.endTurn();
 	    }
 	  } else {
