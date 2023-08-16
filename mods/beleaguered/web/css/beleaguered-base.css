@@ -68,7 +68,9 @@
 }
 
 
-
+.animated_elem img {
+  width: 100%;
+}
 
 /* Mark place you can put selected card*/
 .card-slot.cs-selectable{
