@@ -39,7 +39,6 @@
 
 .logobox {
   position: relative;
-  margin-top: 50px;
   font-size: 20px;
   order: 1;
   max-width: 200px;
@@ -115,8 +114,8 @@
   margin: auto;
   position: relative;
   display: grid;
-  grid-template-rows: repeat(4, min(184px, 21vh));
-  grid-template-columns: auto min(14vh, 120px) auto;
+  grid-template-rows: repeat(4, min(184px, 24vh, 30.6vw));
+  grid-template-columns: auto min(15.5vh, 120px, 20vw) auto;
   grid-gap: min(10px,1vh);
 }
 
@@ -126,8 +125,8 @@
 
 .card-slot {
   position: absolute;
-  max-width: min(14vh, 120px);
-  max-height: 21.4vh;
+  max-width: min(15.5vh, 120px, 20vw);
+  max-height: min(184px, 24vh, 30.6vw);
   height: 100%;
   border-radius: 10px;
 }
@@ -140,13 +139,41 @@
 
 
 
-@media screen and (orientation: portrait) {
+@media screen and (orientation: portrait) and (max-width: 550px) {
   .gameboard{
     grid-template-columns: unset;
+    grid-template-rows: 50px auto;
   }
 
-  .logobox, .hidable {
+  .logobox {
+    margin-top: 30px;
+  }
+
+  .hidable {
     display: none;
+  }
+  .controls {
+    margin-top: 0;
+  }
+
+  .controls > .status_option:first-child {
+    border-top: unset;
   }
 
 }
+
+
+  @media screen and (max-height: 500px) {
+    .hidable {
+      display: none;
+    }
+
+    .controls {
+      margin-top: 0;
+    }
+
+    .controls > .status_option:first-child {
+      border-top: unset;
+    }
+
+  }

@@ -68,7 +68,7 @@ class Beleaguered extends OnePlayerGameTemplate {
 
   async render(app) {
     //console.trace("Initialize HTML");
-    if (!this.browser_active) {
+    if (!this.browser_active || !this.app.BROWSER) {
       return;
     }
 
@@ -122,14 +122,19 @@ class Beleaguered extends OnePlayerGameTemplate {
     await this.menu.addChatMenu();
     this.menu.render();
 
+    //Check screen dimensions
+    let dynamic_card_size = Math.min(120, window.innerWidth/5, window.innerHeight * 0.14);
+
     this.cardStacks = { };
     for (let slot of this.stacks){
       this.cardStacks[slot] = new CardStack(app, this, slot);
+      this.cardStacks[slot].card_width = Math.ceil(dynamic_card_size);
     }
 
     this.setUpStacks();
 
   }
+
 
   setUpStacks(){
     for (let i = 1; i <=4 ; i++){
@@ -444,8 +449,8 @@ class Beleaguered extends OnePlayerGameTemplate {
   */
   displayUserInterface() {
     let html =
-      `<div>Place all cards ascending by number on their suit stacks to win the game.</div>
-      <div>Cards can be moved around on higher cards on the side stacks regardless of their suit. 
+      `<div class="hidable">Place all cards ascending by number on their suit stacks to win the game.</div>
+      <div class="hidable">Cards can be moved around on higher cards on the side stacks regardless of their suit. 
       Any card can be placed on the empty side stack.</div>
       <div class="controls">`;
 
