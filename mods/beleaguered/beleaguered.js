@@ -331,6 +331,10 @@ class Beleaguered extends OnePlayerGameTemplate {
   /* Copy hand into board*/
   async handToBoard() {
 
+    for (let i of this.stacks) {
+      this.cardStacks[i].render();
+    }
+
     if (!("board" in this.game) || Object.keys(this.game.board).length != this.stacks.length) {
       this.game.board = {};
       for (let slot of this.stacks) {
@@ -343,32 +347,44 @@ class Beleaguered extends OnePlayerGameTemplate {
       this.game.board["m3"] = ["H1"];
       this.game.board["m4"] = ["S1"];
 
+      this.cardStacks["m1"].push("C1");
+      this.cardStacks["m2"].push("D1");
+      this.cardStacks["m3"].push("H1");
+      this.cardStacks["m4"].push("S1");
+
       for (let j = 0; j < 6; j++) {
         for (let i = 1; i <= 4; i++) {
           let card = this.game.deck[0].cards[this.game.deck[0].hand[indexCt++]];
           this.game.board[`l${i}`].push(card);
+          await this.timeout(75);
+          this.cardStacks[`l${i}`].push(card);
           card = this.game.deck[0].cards[this.game.deck[0].hand[indexCt++]];
           this.game.board[`r${i}`].push(card);
+          await this.timeout(75);
+          this.cardStacks[`r${i}`].push(card);
+        }
+      }
+    }else{
+      for (let slot of this.stacks) {
+        if (!this.cardStacks[slot].initialized){
+          for (let card of this.game.board[slot]){
+            await this.timeout(15);
+            this.cardStacks[slot].push(card);
+          }
+          this.cardStacks[slot].initialized = true;
+        }else {
+          console.log("********************");
+          console.log("Oh no, the cardstack is already initialize");
+          console.log("********************");
         }
       }
     }
 
-    for (let slot of this.stacks) {
-      if (!this.cardStacks[slot].initialized){
-        for (let card of this.game.board[slot]){
-          this.timeout(350);
-          this.cardStacks[slot].push(card);
-        }
-        this.cardStacks[slot].initialized = true;
-      }else {
-        console.log("********************");
-        console.log("Oh no, the cardstack is already initialize");
-        console.log("********************");
-      }
-    }
 
     this.selected = "";
-    this.game.previousMoves = [];
+
+    this.displayBoard();
+
   }
 
   parseIndex(slot) {
@@ -418,9 +434,7 @@ class Beleaguered extends OnePlayerGameTemplate {
         //this.game.queue.splice(qe, 1);
         if (this.browser_active) {
           this.handToBoard();
-          //this.displayBoard();
           this.displayUserInterface();
-          this.attachEventsToBoard();
         }
         return 0;
       }

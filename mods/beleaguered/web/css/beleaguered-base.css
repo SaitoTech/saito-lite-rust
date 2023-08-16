@@ -84,28 +84,30 @@
   cursor: pointer;
 }
 
+/* Color empty slots */
 .cardstack.cs-selectable:hover, .cs-empty.cs-selectable:hover {
   border-color: #00ff00;
   background-color: rgba(160, 255, 160, 0.85);
 }
 
-.selected_state .card-slot.cs-selectable:hover img {
+/*.selected_state .card-slot.cs-selectable:hover img {
   opacity: 0.95;
   border-color: #00ff00;
   background-color: rgba(160, 255, 160, 0.85);
+}*/
+
+.card-slot.cs-selected img {
+  filter: sepia(80%) hue-rotate(20deg) saturate(4);
 }
 
 .selected_state .card-slot.cs-selectable.cs-selected:hover img {
   background-color: unset;
   opacity: unset;
   border-color: black;
-  filter: unset;
+  filter: sepia(100%) hue-rotate(100deg) saturate(10);
   cursor: not-allowed;
 }
 
-.card-slot.cs-selected {
-  filter: sepia(80%) hue-rotate(20deg) saturate(4);
-}
 
 .rowbox {
   order: 2;
