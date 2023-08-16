@@ -49,16 +49,16 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  if (this.game.state.round == 1) {
 
-//  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-//  	    this.game.queue.push("diet_of_worms");
-//  	    this.game.queue.push("show_overlay\tdiet_of_worms");
+  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+  	    this.game.queue.push("diet_of_worms");
+  	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    //
 	    // cards dealt before diet of worms
 	    //
-this.game.queue.push("is_testing");
+//this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
-//	    this.updateLog("Luther's 95 Theses!");
-//	    this.game.queue.push("event\tprotestant\t008");
+	    this.updateLog("Luther's 95 Theses!");
+	    this.game.queue.push("event\tprotestant\t008");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");

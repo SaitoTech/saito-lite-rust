@@ -906,7 +906,7 @@
 
 	  if (papacy == his_self.game.player) {
 
-            let msg = "Select Protestant Reformer:";
+            let msg = "Excommunicate Protestant Reformer:";
 	    let reformer_exists = 0;
             let html = '<ul>';
 	    for (let key in his_self.reformers) {
@@ -918,8 +918,31 @@
 	    }
 	
 	    if (reformer_exists == 0) {
-	      his_self.updateLog("No excommunicable Protestant reformers exist");
-	      his_self.endTurn();
+
+              let msg = "Convene Theological Debate?";
+              let html = '<ul>';
+              html += `<li class="option" id="yes">yes</li>`;
+              html += `<li class="option" id="no">no</li>`;
+	      html += '</ul>';
+              his_self.updateStatusWithOptions(msg, html);
+
+              $('.option').off();
+              $('.option').on('click', function () {
+		
+                let action2 = $(this).attr("id");
+
+		if (action2 === "yes") {
+		  his_self.playerCallTheologicalDebate(his_self, his_self.game.player, "papacy");
+		  return;
+		}
+
+		// no
+	        his_self.updateLog("No excommunicable Protestant reformers exist");
+	        his_self.endTurn();
+		return;
+
+	      });
+
 	      return;
 	    }
 
@@ -930,7 +953,31 @@
             $('.option').on('click', function () {
               let selected_reformer = $(this).attr("id");
 	      his_self.addMove("excommunicate_reformer\t"+selected_reformer);
-	      his_self.endTurn();
+
+              let msg = "Convene Theological Debate?";
+              let html = '<ul>';
+              html += `<li class="option" id="yes">yes</li>`;
+              html += `<li class="option" id="no">no</li>`;
+	      html += '</ul>';
+              his_self.updateStatusWithOptions(msg, html);
+
+              $('.option').off();
+              $('.option').on('click', function () {
+		
+                let action2 = $(this).attr("id");
+
+		if (action2 === "yes") {
+		  his_self.playerCallTheologicalDebate(his_self, his_self.game.player, "papacy");
+		  return;
+		}
+
+		// no
+	        his_self.updateLog("No excommunicable Protestant reformers exist");
+	        his_self.endTurn();
+		return;
+
+	      });
+
 	    });
 
 	    return 0;
