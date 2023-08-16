@@ -23,6 +23,7 @@ class Stun extends ModTemplate {
     this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
     this.rooms = new Map();
     this.publicKey = this.app.wallet.getPublicKey();
+
     this.servers = [
       {
         urls: "stun:stun-sf.saito.io:3478",
@@ -266,7 +267,7 @@ class Stun extends ModTemplate {
   }
 
   async sendCreateRoomTransaction() {
-    let room_code = this.app.crypto.generateRandomNumber().substring(0, 6);
+    let room_code = this.app.crypto.generateRandomNumber().substring(0, 12);
 
     // offchain data
     let _data = {
@@ -277,6 +278,8 @@ class Stun extends ModTemplate {
     //Are we sure this will always be the stun server?
     // Shouldn't this be set by onPeerServiceUp
     let server = (await this.app.network.getPeers())[0];
+
+    console.log("server", this.server);
 
     let data = {
       recipient: server.publicKey,
@@ -296,12 +299,14 @@ class Stun extends ModTemplate {
     let txmsg = tx.returnMessage();
     console.log(txmsg, "txmsg");
     this.addKeyToRoom(txmsg.data.room_code, txmsg.data.public_key);
+    console.log(this.rooms, "rooms created");
   }
 
   async sendStunMessageToServerTransaction(_data) {
     let request = "stun-send-message-to-server";
     let server = (await this.app.network.getPeers())[0];
 
+    // console.log("server", this.server);
     // offchain data
 
     let data = {
@@ -319,11 +324,12 @@ class Stun extends ModTemplate {
 
     let room_code = txmsg.data.room_code;
     let type = txmsg.data.type;
-    console.log("publick key", peer);
+    // console.log("peer public key: ", peer.publicKey);
     let public_key = peer.publicKey;
 
     if (type === "peer-joined") {
       this.addKeyToRoom(room_code, public_key);
+      // console.log(this.rooms, "this.rooms", room_code, "room_code", public_key, "public_key");
     }
 
     if (type === "peer-left") {
@@ -337,6 +343,8 @@ class Stun extends ModTemplate {
     } else {
       recipients = this.rooms.get(room_code)?.filter((p) => p !== public_key);
     }
+
+    // console.log(this.rooms.get(room_code), "this.rooms.get(room_code)");
 
     let data = {
       ...txmsg.data,
@@ -352,6 +360,8 @@ class Stun extends ModTemplate {
 
     // onchain
     let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+    // console.log(recipients, "recipients");
     if (recipients) {
       recipients.forEach((recipient) => {
         let slip = new Slip();
@@ -373,6 +383,7 @@ class Stun extends ModTemplate {
       data: _data,
     };
 
+    console.log("sending relay message to peers");
     this.app.connection.emit("relay-send-message", data);
 
     setTimeout(async () => {
@@ -385,6 +396,7 @@ class Stun extends ModTemplate {
     let txmsg = tx.returnMessage();
     let data = tx.msg.data;
     app.connection.emit("stun-event-message", data);
+    console.log("receiving stun message in peers ", data);
   }
 
   async establishStunCallWithPeers(ui_type, recipients) {
@@ -421,7 +433,7 @@ class Stun extends ModTemplate {
       data: _data,
     };
 
-    console.log("sending to", recipients);
+    // console.log("sending to", recipients);
     this.app.connection.emit("relay-send-message", data);
 
     //Relay only...
