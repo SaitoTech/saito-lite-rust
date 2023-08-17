@@ -195,6 +195,9 @@ class Storage {
 
   async resetOptions() {
     try {
+      //Wipe local storage before resaving options
+      localStorage.clear();
+
       const response = await fetch(`/options`);
       this.app.options = await response.json();
       this.saveOptions();
@@ -223,6 +226,10 @@ class Storage {
         localStorage.setItem("options", JSON.stringify(this.app.options));
       } catch (err) {
         console.error(err);
+        for (let i = 0; i < localStorage.length; i++) {
+          let item = localStorage.getItem(localStorage.key(i));
+          console.log(localStorage.key(i), item.length, item, JSON.parse(item));
+        }
       }
     }
 
