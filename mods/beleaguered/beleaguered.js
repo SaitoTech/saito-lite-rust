@@ -18,7 +18,6 @@ class Beleaguered extends OnePlayerGameTemplate {
     this.publisher_message =
       "developed by Pawel (twitter: @PawelPawlak14). Feel free to pm me with any suggestions/feedback";
 
-    this.animationSpeed = 700;
     this.app = app;
     this.status = "Beta";
     this.stacks = ["l1", "m1", "r1", 
@@ -251,12 +250,12 @@ class Beleaguered extends OnePlayerGameTemplate {
     const activateCards = async () => {
       //Check for victory
       if (this.game.board["m1"].length + this.game.board["m2"].length + this.game.board["m3"].length + this.game.board["m4"].length == 52) {
+        this.updateStatus("Game Over");
         let c = await sconfirm("You win! Start new Game?");
         if (c) {
           this.prependMove("win");
           this.endTurn();
         }
-        this.updateStatus("Game Over");
         return;
       }
 
@@ -264,27 +263,13 @@ class Beleaguered extends OnePlayerGameTemplate {
       // Activate events always starts without a selected card
       // 
       let success = 0;
-      let alt_success = 0;
       $(".gameboard").removeClass("selected_state");
       for (let slot of this.stacks) {
-        let retunValue = this.cardStacks[slot].applyFilter(canMoveCard, selectCard);
-        success += retunValue;
-        if (retunValue) {
-          //Just because we can move a card doesnt mean it will help us
-          //i.e. if it is already on top of a valid place, moving it just creates a loop
-          if (this.game.board[slot].length > 1) {
-            let top2 = this.game.board[slot].slice(-2);
-            if (parseInt(top2[0].slice(1)) == parseInt(top2[1].slice(1)) + 1) {
-              continue;
-            }
-          }
-          alt_success++;
-        }
+        success += this.cardStacks[slot].applyFilter(canMoveCard, selectCard);
       }
 
-      if (!success || !alt_success) {
-
-        let c = await sconfirm(`No more ${(success)? "meaningful ":""}moves. Start new Game?`)
+      if (!success) {
+        let c = await sconfirm(`No more moves. Start new Game?`)
         if (c) {
           this.updateStatus("Game Over");
           this.prependMove("lose");
@@ -294,7 +279,8 @@ class Beleaguered extends OnePlayerGameTemplate {
         return;
       }
 
-      this.displayUserInterface();
+      this.displayUserInterface();  
+
     }
 
 
@@ -307,6 +293,8 @@ class Beleaguered extends OnePlayerGameTemplate {
     //Update Internal Game Logic
     this.game.board[source_stack].pop();
     this.game.board[target_stack].push(card);
+
+    this.animationSpeed = 700;
 
     this.selected = "";
   
@@ -485,8 +473,22 @@ class Beleaguered extends OnePlayerGameTemplate {
         $(".auto_solve").text("No cards can castle");
         $(".auto_solve").off();
       }else{
-        //this.displayBoard();
-        this.attachEventsToBoard();
+        if (!this.animating_autoplay){
+          $(".animated_elem").remove();
+          this.displayBoard();
+        }else{
+          console.log("set interval");
+          let x;
+          x = setInterval(()=>{
+            if (!this.animating_autoplay){
+              console.log("clear interval and continue play");
+              $(".animated_elem").remove();
+              this.displayBoard();
+              clearInterval(x);
+            }
+          }, 500);
+        }
+
       }
     });
   }
@@ -535,10 +537,30 @@ class Beleaguered extends OnePlayerGameTemplate {
     if (source_stack){
 
       this.prependMove(`move\t${target_card}\t${source_stack}\t${target_stack}`);
+      //this.animationSpeed = 500;
 
-      await this.moveCard(target_card, source_stack, target_stack);
-      await this.timeout(750);
+      //Update Internal Game Logic
+      this.game.board[source_stack].pop();
+      this.game.board[target_stack].push(target_card);
+      //Update UI
+      this.cardStacks[target_stack].push(target_card, false);
 
+      this.selected = "";
+      this.animating_autoplay = true;
+
+      this.moveGameElement(
+        this.copyGameElement(this.cardStacks[source_stack].getTopCard().children[0]),
+        `#cardstack_${target_stack}`,
+        { 
+          resize: 1,
+        },
+        () => {
+          this.animating_autoplay = false;
+          console.log("Running callback at end of animation???");
+        });
+      this.cardStacks[source_stack].pop(false);
+
+      await this.timeout(200);
       //Recurse as long as we make a move
       await this.autoPlay();
       return true;

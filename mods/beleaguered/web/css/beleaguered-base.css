@@ -66,6 +66,10 @@
   padding: 5px 0;
 }
 
+.status_option:hover{
+  color: #EEE;
+  background-color: #222;
+}
 
 .animated_elem img {
   width: 100%;
