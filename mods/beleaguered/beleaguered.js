@@ -18,6 +18,8 @@ class Beleaguered extends OnePlayerGameTemplate {
     this.publisher_message =
       "developed by Pawel (twitter: @PawelPawlak14). Feel free to pm me with any suggestions/feedback";
 
+    this.animationSpeed = 700;
+
     this.app = app;
     this.status = "Beta";
     this.stacks = ["l1", "m1", "r1", 
@@ -142,6 +144,12 @@ class Beleaguered extends OnePlayerGameTemplate {
       this.cardStacks["m"+i].orientation = "center";
     }
     
+  }
+
+  removeEvents(){
+    for (let i of this.stacks){
+      this.cardStacks[i].removeFilter();
+    }
   }
 
 
@@ -290,28 +298,28 @@ class Beleaguered extends OnePlayerGameTemplate {
 
   async moveCard(card, source_stack, target_stack) {
 
+    console.log(`Move ${card} from ${source_stack} to ${target_stack}`);
+
     //Update Internal Game Logic
     this.game.board[source_stack].pop();
     this.game.board[target_stack].push(card);
 
-    this.animationSpeed = 700;
-
     this.selected = "";
   
+    this.removeEvents();
+
     this.moveGameElement(
       this.copyGameElement(this.cardStacks[source_stack].getTopCard().children[0]),
       this.cardStacks[target_stack].getTopCard(),
       { 
         resize: 1,
-        callback: () => {
-          //Update UI
-          this.cardStacks[source_stack].pop(false);
-          this.cardStacks[target_stack].push(card, false);
-        }
       },
       () => {
         $(".animated_elem").remove();
-        this.displayBoard();  
+        this.cardStacks[source_stack].pop();
+        this.cardStacks[target_stack].push(card);
+        this.attachEventsToBoard();
+        console.log("Finished animating");
       });
   }
 
@@ -438,6 +446,7 @@ class Beleaguered extends OnePlayerGameTemplate {
     if (this.browser_active == 0) {
       return;
     }
+
     for (let i of this.stacks) {
       this.cardStacks[i].render();
     }
@@ -468,20 +477,20 @@ class Beleaguered extends OnePlayerGameTemplate {
     });
 
     $(".auto_solve").on("click", async () => {
+      this.removeEvents();
       let success = await this.autoPlay();
       if (!success){
         $(".auto_solve").text("No cards can castle");
         $(".auto_solve").off();
+        this.displayBoard();
       }else{
         if (!this.animating_autoplay){
           $(".animated_elem").remove();
           this.displayBoard();
         }else{
-          console.log("set interval");
           let x;
           x = setInterval(()=>{
             if (!this.animating_autoplay){
-              console.log("clear interval and continue play");
               $(".animated_elem").remove();
               this.displayBoard();
               clearInterval(x);
@@ -542,8 +551,6 @@ class Beleaguered extends OnePlayerGameTemplate {
       //Update Internal Game Logic
       this.game.board[source_stack].pop();
       this.game.board[target_stack].push(target_card);
-      //Update UI
-      this.cardStacks[target_stack].push(target_card, false);
 
       this.selected = "";
       this.animating_autoplay = true;
@@ -553,12 +560,15 @@ class Beleaguered extends OnePlayerGameTemplate {
         `#cardstack_${target_stack}`,
         { 
           resize: 1,
+          callback: () => {
+            this.cardStacks[source_stack].pop();
+            this.cardStacks[target_stack].push(target_card, false);
+          }
         },
         () => {
           this.animating_autoplay = false;
           console.log("Running callback at end of animation???");
         });
-      this.cardStacks[source_stack].pop(false);
 
       await this.timeout(200);
       //Recurse as long as we make a move
@@ -589,18 +599,6 @@ class Beleaguered extends OnePlayerGameTemplate {
     return deck;
   }
 
-  returnCardSuite(slot) {
-    let card = this.game.board[slot];
-    return card[0];
-  }
-
-  returnCardNumber(slot) {
-    let card = this.game.board[slot];
-    if (card[0] === "E")
-      //empty slot
-      return 0;
-    return card.substring(1);
-  }
 }
 
 module.exports = Beleaguered;
