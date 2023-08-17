@@ -39,7 +39,6 @@
 
 .logobox {
   position: relative;
-  margin-top: 50px;
   font-size: 20px;
   order: 1;
   max-width: 200px;
@@ -67,6 +66,10 @@
   padding: 5px 0;
 }
 
+.status_option:hover{
+  color: #EEE;
+  background-color: #222;
+}
 
 .animated_elem img {
   width: 100%;
@@ -85,28 +88,30 @@
   cursor: pointer;
 }
 
+/* Color empty slots */
 .cardstack.cs-selectable:hover, .cs-empty.cs-selectable:hover {
   border-color: #00ff00;
   background-color: rgba(160, 255, 160, 0.85);
 }
 
-.selected_state .card-slot.cs-selectable:hover img {
+/*.selected_state .card-slot.cs-selectable:hover img {
   opacity: 0.95;
   border-color: #00ff00;
   background-color: rgba(160, 255, 160, 0.85);
+}*/
+
+.card-slot.cs-selected img {
+  filter: sepia(80%) hue-rotate(20deg) saturate(4);
 }
 
 .selected_state .card-slot.cs-selectable.cs-selected:hover img {
   background-color: unset;
   opacity: unset;
   border-color: black;
-  filter: unset;
+  filter: sepia(100%) hue-rotate(100deg) saturate(10);
   cursor: not-allowed;
 }
 
-.card-slot.cs-selected {
-  filter: sepia(80%) hue-rotate(20deg) saturate(4);
-}
 
 .rowbox {
   order: 2;
@@ -115,8 +120,8 @@
   margin: auto;
   position: relative;
   display: grid;
-  grid-template-rows: repeat(4, min(184px, 21vh));
-  grid-template-columns: auto min(14vh, 120px) auto;
+  grid-template-rows: repeat(4, min(184px, 24vh, 30.6vw));
+  grid-template-columns: auto min(15.5vh, 120px, 20vw) auto;
   grid-gap: min(10px,1vh);
 }
 
@@ -126,8 +131,8 @@
 
 .card-slot {
   position: absolute;
-  max-width: min(14vh, 120px);
-  max-height: 21.4vh;
+  max-width: min(15.5vh, 120px, 20vw);
+  max-height: min(184px, 24vh, 30.6vw);
   height: 100%;
   border-radius: 10px;
 }
@@ -140,13 +145,41 @@
 
 
 
-@media screen and (orientation: portrait) {
+@media screen and (orientation: portrait) and (max-width: 550px) {
   .gameboard{
     grid-template-columns: unset;
+    grid-template-rows: 50px auto;
   }
 
-  .logobox, .hidable {
+  .logobox {
+    margin-top: 30px;
+  }
+
+  .hidable {
     display: none;
+  }
+  .controls {
+    margin-top: 0;
+  }
+
+  .controls > .status_option:first-child {
+    border-top: unset;
   }
 
 }
+
+
+  @media screen and (max-height: 500px) {
+    .hidable {
+      display: none;
+    }
+
+    .controls {
+      margin-top: 0;
+    }
+
+    .controls > .status_option:first-child {
+      border-top: unset;
+    }
+
+  }
