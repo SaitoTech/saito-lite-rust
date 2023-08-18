@@ -56,17 +56,17 @@ class Mods {
     }
 
     for (let i = 0; i < this.mods.length; i++) {
-      if (!!message && message.module != undefined) {
-        if (this.mods[i].shouldAffixCallbackToModule(message.module, tx) == 1) {
-          callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
-          callbackIndexArray.push(txindex);
-        }
-      } else {
-        if (this.mods[i].shouldAffixCallbackToModule("", tx) == 1) {
-          callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
-          callbackIndexArray.push(txindex);
-        }
+      // if (!!message && message.module != undefined) {
+      if (this.mods[i].shouldAffixCallbackToModule(message?.module || "", tx) == 1) {
+        callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
+        callbackIndexArray.push(txindex);
       }
+      // } else {
+      //   if (this.mods[i].shouldAffixCallbackToModule("", tx) == 1) {
+      //     callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
+      //     callbackIndexArray.push(txindex);
+      //   }
+      // }
     }
   }
 
@@ -261,7 +261,7 @@ class Mods {
   returnModulesRespondingTo(request, obj = null) {
     let m = [];
     for (let mod of this.mods) {
-      if ((mod.respondTo(request, obj)) != null) {
+      if (mod.respondTo(request, obj) != null) {
         m.push(mod);
       }
     }
@@ -271,7 +271,7 @@ class Mods {
   respondTo(request, obj = null) {
     let m = [];
     for (let mod of this.mods) {
-      if ((mod.respondTo(request, obj)) != null) {
+      if (mod.respondTo(request, obj) != null) {
         m.push(mod);
       }
     }
