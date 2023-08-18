@@ -448,6 +448,7 @@ class RedSquare extends ModTemplate {
   ///////////////////////
   async onConfirmation(blk, tx, conf) {
     let txmsg = tx.returnMessage();
+
     if (conf === 0) {
       console.log("%%");
       console.log("%%");
