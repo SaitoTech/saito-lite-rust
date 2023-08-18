@@ -950,6 +950,10 @@ if (limit === "build") {
 
   }
 
+  playerSelectSpaceOrNavalSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
+    return this.playerSelectNavalSpaceWithFilter(msg, filter_func, mycallback, cancel_fun, board_clickable);
+  }
+
   playerSelectNavalSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
 
     let his_self = this;
@@ -1344,8 +1348,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
     let cancel_func = null;
     let source_spacekey;
 
-console.log("CAPITALS: " + JSON.stringify(capitals));
-
     for (let i = 0; i < capitals.length; i++) {
       let c = capitals[i];
       if (this.game.spaces[c].units[faction].length > 0) {
@@ -1353,8 +1355,6 @@ console.log("CAPITALS: " + JSON.stringify(capitals));
         viable_capitals.push(capitals[i]);
       }
     }
-
-console.log("VIABLE CAPITALS: " + JSON.stringify(viable_capitals));
 
     if (can_deploy == 0) {
       this.updateStatus("Spring Deployment not possible");
@@ -1438,6 +1438,8 @@ console.log("VIABLE CAPITALS: " + JSON.stringify(viable_capitals));
    	      his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
 
 	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+	      if (faction != his_self.game.state.events.spring_preparations) { if (max_formation_size > 5) { max_formation_size = 5; } }
+
 	      let msg = "Max Formation Size: " + max_formation_size + " units";
 
               let html = "<ul>";

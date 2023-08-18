@@ -237,11 +237,21 @@
   // similar to above, except it can cross a sea-zone
   //
   isSpaceConnectedToCapitalSpringDeployment(space, faction) {
+
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
     let his_self = this;
     let capitals = this.returnCapitals(faction);
     let already_routed_through = {};
+    let transit_passes = 0;
+    let hostile_sea_passes = 0;
+
+    if (this.game.state.spring_deploy_across_seas.includes(faction)) {
+      hostile_sea_passes = 1;
+    }
+    if (this.game.state.spring_deploy_across_passes.includes(faction)) {
+      transit_passes = 1;
+    }
 
     let res = this.returnNearestSpaceWithFilter(
 
@@ -262,7 +272,7 @@
       },
 
       // transit passes? 0
-      0,
+      transit_passes,
 
       // transit seas? 1
       1,
@@ -840,6 +850,7 @@
   // there are no ports in a zone with non-faction ships.
   //
   returnNeighbours(space, transit_passes=1, transit_seas=0, faction="") {
+
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (transit_seas == 0) {
       if (transit_passes == 1) {
@@ -879,11 +890,15 @@
 	    if (navalspace.ports) {
 	      if (faction != "") {
 	        for (let z = 0; z < navalspace.ports.length; z++) {
-	          if (this.doesOtherFactionHaveNavalUnitsInSpace(faction, navalspace.ports[z])) { any_unfriendly_ships = true; }
+	          if (this.doesOtherFactionHaveNavalUnitsInSpace(faction, navalspace.ports[z])) {
+		    if (this.game.state.events.spring_preparations != faction) {
+		      any_unfriendly_ships = true;
+		    }
+		  }
 	        }
 	      }
               for (let z = 0; z < navalspace.ports.length; z++) {
-	        if (!neighbours.includes(navalspace.ports[z])) {
+	        if (!neighbours.includes(navalspace.ports[z]) && any_unfriendly_ships == false) {
 	          neighbours.push(navalspace.ports[z]);
 	        };
 	      }

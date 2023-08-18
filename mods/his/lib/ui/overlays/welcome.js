@@ -42,6 +42,7 @@ class WelcomeOverlay {
       let his_self = this.mod;
 
       this.overlay.show(WelcomeTemplate(faction));
+      this.pushHudUnderOverlay();
 
       // PAPACY
       if (faction === "papacy") {

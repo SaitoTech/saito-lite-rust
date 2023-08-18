@@ -4,6 +4,9 @@
     // remove foul weather
     //
     this.game.state.events.foul_weather = 0;
+    this.game.state.spring_deploy_across_passes = [];
+    this.game.state.spring_deploy_across_seas = [];
+    this.game.state.events.spring_preparations = "";
 
     //
     // remove gout
@@ -24,6 +27,7 @@
     // remove temporary bonuses and modifiers
     //
     this.game.state.events.augsburg_confession = false;
+
 
   }
 
@@ -47,6 +51,11 @@
     this.game.state.tmp_papacy_may_specify_debater = 0;
     this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
         
+    //
+    // allow stuff to move again
+    //
+    this.resetLockedTroops();
+
   }
 
 
@@ -143,6 +152,7 @@
 
   removeUnit(faction, space, type) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = space.units[faction].length - 1; i >= 0; i--) {
       if (space.units[faction].type === type) {
 	space.units[faction].splice(i, 1);
@@ -500,6 +510,8 @@
     state.leaders.julius_iii = 0;
     state.leaders.elizabeth_i = 0;
     state.leaders.calvin = 0;
+
+    state.spring_deploy_across_passes = [];
 
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
