@@ -2696,6 +2696,7 @@ console.log("\n\n\n\n");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	if (faction === "papacy") {
@@ -2761,6 +2762,7 @@ console.log("\n\n\n\n");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	his_self.setEnemies("france", "papacy");
@@ -2857,6 +2859,7 @@ console.log("\n\n\n\n");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction(faction);
@@ -3011,6 +3014,7 @@ console.log("\n\n\n\n");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction(faction);
@@ -3062,7 +3066,144 @@ console.log("\n\n\n\n");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
+
+	if (faction === "papacy") {
+	  his_self.game.queue.push("diplomatic_pressure_reveal\tpapacy\tprotestant");
+	}
+
+	if (faction === "papacy") {
+	  his_self.game.queue.push("diplomatic_pressure_reveal\tprotestant\tpapacy");
+	}
+
+	return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] === "diplomatic_pressure_reveal") {
+
+          let faction_taking = mv[1];
+          let faction_giving = mv[2];
+
+          let p1 = his_self.returnPlayerOfFaction(faction_taking);
+          let p2 = his_self.returnPlayerOfFaction(faction_giving);
+
+          if (his_self.game.player === p2) {
+	    if (faction_taking === "protestant") {
+              his_self.addMove("diplomatic_pressure_results_papacy\t"+JSON.stringify(his_self.game.deck[1].hand));
+	    } else {
+              his_self.addMove("diplomatic_pressure_results_protestant\t"+JSON.stringify(his_self.game.deck[1].hand));
+	    }
+            his_self.endTurn();
+          }
+
+          his_self.game.queue.splice(qe, 1);
+          return 0;
+	}
+
+
+        if (mv[0] === "diplomatic_pressure_results_papacy") {
+
+          let cards = JSON.parse(mv[2]);
+
+          his_self.game.queue.splice(qe, 1);
+	  // also remove protestant card (which is next)
+          his_self.game.queue.splice(qe, 1);
+	  
+
+	  if (his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
+
+   	    let msg = "Choose Protestant Card:";
+            let html = '<ul>';
+	    for (let i = 0; i < cards.length; i++) {
+              html += `<li class="option" id="${i}">${his_self.game.deck[1].cards[cards[i]].name}</li>`;
+	    }
+    	    html += '</ul>';
+
+            his_self.updateStatusWithOptions(msg, html);
+
+  	    $('.option').off();
+	    $('.option').on('click', function () {
+  	      $('.option').off();
+	      let action = $(this).attr("id");
+              his_self.addMove("diplomacy_card_event\tprotestant\t"+action);
+              his_self.addMove("discard_diplomacy_card\tprotestant\t"+action);
+	      his_self.addMove("DEAL\t2\t"+(his_self.returnPlayerOfFaction("protestant"))+"\t1");
+	      his_self.addMove("NOTIFY\tPapacy selects "+his_self.game.deck[1].cards[action].name+" to play");
+	      his_self.endTurn();
+	    });
+
+  	  }
+
+          return 0;
+        }
+
+        if (mv[0] === "diplomatic_pressure_swap_cards") {
+
+	  let papacy_card = mv[1];
+	  let protestant_card = mv[2];
+
+	  if (his_self.returnPlayerOfFaction("papacy") == his_self.game.player) {
+	    for (let i = 0; i < his_self.game.deck[1].hand.length; i++) {
+	      if (his_self.game.deck[1].hand[i] == papacy_card) {
+		his_self.game.deck[1].hand.splice(i, 1);
+	      }
+	    }
+	    his_self.game.deck[1].hand.push(protestant_card);
+	  }
+	  if (his_self.returnPlayerOfFaction("protestant") == his_self.game.player) {
+	    for (let i = 0; i < his_self.game.deck[1].hand.length; i++) {
+	      if (his_self.game.deck[1].hand[i] == protestant_card) {
+		his_self.game.deck[1].hand.splice(i, 1);
+	      }
+	    }
+	    his_self.game.deck[1].hand.push(papacy_card);
+	  }
+
+          his_self.game.queue.splice(qe, 1);
+
+	  return 1;
+
+	}
+
+        if (mv[0] === "diplomatic_pressure_results_protestant") {
+
+          let cards = JSON.parse(mv[2]);
+
+ 	  let msg = "Choose Action:";
+          let html = '<ul>';
+          html += `<li class="option" id="discard">discard ${his_self.game.deck[1].cards[cards[0]].name}</li>`;
+          html += `<li class="option" id="swap">swap ${his_self.game.deck[1].cards[cards[0]].name}</li>`;
+    	  html += '</ul>';
+
+          his_self.updateStatusWithOptions(msg, html);
+
+	  $('.option').off();
+	  $('.option').on('click', function () {
+
+  	    $('.option').off();
+	    let action = $(this).attr("id");
+
+	    if (action === "discard") {
+	      his_self.addMove("DEAL\t2\t"+(his_self.returnPlayerOfFaction("protestant"))+"\t1");
+              his_self.addMove("discard_diplomacy_card\tpapacy\t"+cards[0]);
+	      his_self.addMove("NOTIFY\tProtestants discard "+his_self.game.deck[1].cards[cards[0]].name);
+	    }
+
+	    if (action === "swap") {
+	      his_self.addMove("diplomatic_pressure_swap_cards\t"+cards[0]+"\t"+his_self.game.deck[1].hand[0]);
+	      his_self.addMove("NOTIFY\tProtestants swap Diplomacy Cards");
+	    }
+
+	  });
+
+          his_self.game.queue.splice(qe, 1);
+          return 0;
+	}
+
+        return 1;
+
       },
     }
     deck['206'] = { 
@@ -3072,6 +3213,7 @@ console.log("\n\n\n\n");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	his_self.setEnemies("france", "papacy");
@@ -3172,6 +3314,7 @@ console.log("\n\n\n\n");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction("papacy");
@@ -3292,6 +3435,7 @@ console.log("\n\n\n\n");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction(faction);
@@ -3337,6 +3481,7 @@ console.log("\n\n\n\n");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } , 
       onEvent : function(his_self, faction) {
 
 	his_self.game.queue.push("plague\t"+faction+"\t3");
@@ -3464,10 +3609,7 @@ console.log("\n\n\n\n");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) {
-        if (faction == "protestant") { return 0; }
-        return 1;
-      },          
+      canEvent : function(his_self, faction) { return 1; } , 
       onEvent(his_self, faction) {
         his_self.game.queue("shipbuilding_diplomacy_event\tfaction");
         return 1;
@@ -3600,7 +3742,131 @@ console.log("\n\n\n\n");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
+
+	let controlling_power = "papacy";
+
+	//
+	// prior to League formation
+	//
+	if (his_self.game.state.events.schmalkaldic_league != 1) {
+	  controlling_power = "protestant";
+	  his_self.setEnemies("papacy","hapsburg");
+	}
+
+	let controlling_player = his_self.returnPlayerOfFaction(controlling_power);
+
+	//
+	// remember who controls the invasion
+	//
+	his_self.game.state.events.spanish_invasion = controlling_power;
+
+	//
+	// controlling power gets 1 card
+	//
+        his_self.game.queue.push(`DEAL\t1\t${controlling_player}\t1`);
+	his_self.game.queue.push("spanish_invasion_land\t"+controlling_player);
+
+	return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "spanish_invasion_land") {
+
+          his_self.game.queue.splice(qe, 1);
+
+	  let controlling_player = parseInt(mv[1]);
+	  if (his_self.game.player === controlling_player) {
+
+            his_self.playerSelectSpaceWithFilter(
+
+              "Select Hapsburg-Controlled Space for Invasion Force",
+
+              function(space) {
+	        if (his_self.isSpaceControlled(space, "hapsburg")) { return 1; }
+	        return 0;
+              },
+
+              function(spacekey) {
+
+	        //
+	        // move Duke of Alva, add regulars
+	        //
+                let ak = his_self.returnSpaceOfPersonage("hapsburg", "duke-of-alva");
+                let ak_idx = his_self.returnIndexOfPersonageInSpace("hapsburg", "duke-of-alva", ak);
+          
+                his_self.addMove("spanish_invasion_naval\t"+controlling_player+"\t"+spacekey);
+                his_self.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ak_key + "\t" + ak_idx + "\t" + "land" + spacekey);
+	        his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
+	        his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
+	        his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+	        his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+                his_self.endTurn();
+              },
+
+	      null,
+
+	      true
+
+            );
+	  }
+
+          return 0;
+
+	}
+        if (mv[0] == "spanish_invasion_naval") {
+
+          his_self.game.queue.splice(qe, 1);
+
+	  let controlling_player = parseInt(mv[1]);
+	  let land_spacekey = mv[2];
+
+	  if (his_self.game.player === controlling_player) {
+
+            let msg = "Add Additional Units:";
+            let html = '<ul>';
+            html += '<li class="option" id="squadron">Naval Squadron</li>';
+            html += '<li class="option" id="mercenaries">+2 Mercenaries</li>';
+            html += '</ul>';
+
+            his_self.updateStatusWithOptions(msg, html);
+
+            $('.option').off();
+            $('.option').on('click', function () {
+
+              $('.option').off();
+              let action = $(this).attr("id");
+
+	      if (action === "squadron") {
+
+                his_self.playerSelectSpaceWithFilter(
+
+                  "Select Hapsburg-Controlled Port for Squadron",
+
+                  function(space) {
+	            if (his_self.isSpaceControlled(space, "hapsburg") && space.home == "hapsburg" && space.ports.length > 0) { return 1; }
+	            return 0;
+                  },
+
+                  function(spacekey) {
+                    his_self.addMove("build\tland\thapsburg\t"+"squadron"+"\t"+spacekey);
+                    his_self.endTurn();
+		  },
+
+		  null ,
+
+		  true
+                );
+	      }
+            });
+	  }
+
+	  return 0;
+
+	}
+
+	return 1;
       },
     }
     deck['212'] = { 
@@ -3610,6 +3876,7 @@ console.log("\n\n\n\n");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	let ally = his_self.returnAllyOfMinorPower("venice");
@@ -3663,6 +3930,7 @@ console.log("\n\n\n\n");
       turn : 0 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; }, 
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction("papacy");
@@ -3704,6 +3972,7 @@ console.log("\n\n\n\n");
       turn : 0 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction("papacy");
@@ -3747,6 +4016,70 @@ console.log("\n\n\n\n");
       turn : 0 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
+      onEvent : function(his_self, faction) {
+
+	let vp = his_self.calculateVictoryPoints();
+	let winner = "protestant";
+
+	if (vp["protestant"].vp > vp["papacy"].vp) { winner = "papacy"; }
+	if (vp["protestant"].vp == vp["papacy"].vp) { winner = faction; }
+
+	//
+	// TODO -- cannot pick an invasion card played earlier this turn
+	//
+        let msg = "Select Invasion Card:";
+        let html = '<ul>';
+        html += '<li class="option" id="ottoman">Ottoman Invasion</li>';
+        html += '<li class="option" id="imperial">Imperial Invasion</li>';
+        html += '<li class="option" id="austrian">Austrian Invasion</li>';
+        html += '<li class="option" id="spanish">Spanish Invasion</li>';
+        html += '<li class="option" id="french">French Invasion</li>';
+        html += '<li class="option" id="constable">French Constable Invades</li>';
+        html += '</ul>';
+
+        his_self.updateStatusWithOptions(msg, html);
+
+        $('.option').off();
+        $('.option').on('click', function () {
+
+          let action = $(this).attr("id");
+
+          let card = "";
+
+	  if (action === "ottoman") {
+            card = "216";
+	  }
+
+	  if (action === "imperial") {
+            card = "214";
+	  }
+
+	  if (action === "austrian") {
+            card = "213";
+	  }
+
+	  if (action === "spanish") {
+            card = "211";
+	  }
+
+	  if (action === "french") {
+            card = "206";
+	  }
+
+	  if (action === "constable") {
+            card = "202";
+	  }
+
+	  his_self.addMove("reshuffle_diplomacy_deck");
+	  his_self.addMove("diplomacy_card_event\t"+winner+"\t"+card);
+	  his_self.endTurn();
+
+	});
+
+        return 0;
+      },
     }
     deck['216'] = { 
       img : "cards/HIS-216.svg" , 
@@ -3755,6 +4088,7 @@ console.log("\n\n\n\n");
       turn : 0 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction("protestant");
@@ -3801,6 +4135,7 @@ console.log("\n\n\n\n");
       turn : 0 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction("protestant");
@@ -3852,6 +4187,7 @@ console.log("\n\n\n\n");
       turn : 0 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
 	let lockdown = ["regensburg","salzburg","linz","prague","breslau","brunn","vienna","graz","trieste","agram","pressburg","buda"];
@@ -4037,6 +4373,81 @@ console.log("\n\n\n\n");
       turn : 0 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 1; },
+      onEvent : function(his_self, faction) {
+
+	if (faction === "papacy") {
+	  his_self.game.queue.push("spanish_inquisition_reveal");
+	}
+
+	if (faction === "protestant") {
+	  his_self.game.queue.push("request_reveal_hand\tprotestant\tpapacy");
+	  his_self.game.queue.push("NOTIFY\tProtestants play Spanish Inquisition");
+   	}
+
+        return 1;
+
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] === "spanish_inquisition_reveal") {
+
+          if (his_self.game.player === his_self.returnPlayerOfFaction("protestant")) {
+            his_self.addMove("spanish_inquisition_results\t"+JSON.stringify(his_self.game.deck[1].hand));
+            his_self.endTurn();
+          }
+
+          his_self.game.queue.splice(qe, 1);
+          return 0;
+	}
+
+
+        if (mv[0] === "spanish_inquisition_results") {
+
+          let cards = JSON.parse(mv[2]);
+
+          his_self.game.queue.splice(qe, 1);
+	  // remove protestant play 
+          his_self.game.queue.splice(qe, 1);
+
+	  if (his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
+
+
+   	    let msg = "Choose Protestant Card to Discard:";
+            let html = '<ul>';
+	    for (let i = 0; i < cards.length; i++) {
+              html += `<li class="option" id="${i}">${his_self.game.deck[1].cards[cards[i]].name}</li>`;
+	    }
+    	    html += '</ul>';
+
+            his_self.updateStatusWithOptions(msg, html);
+
+  	    $('.option').off();
+	    $('.option').on('click', function () {
+
+  	      $('.option').off();
+	      let action = $(this).attr("id");
+
+	      let chosen_card = action;
+	      let unchosen_card = "";
+	      for (let i = 0; i < cards.length; i++) { if (cards[i] != action) { unchosen_card = cards[i]; } }
+
+              his_self.addMove("diplomacy_card_event\tprotestant\t"+unchosen_card);
+              his_self.addMove("discard_diplomacy_card\tprotestant\t"+chosen_card);
+	      his_self.addMove("DEAL\t2\t"+(his_self.returnPlayerOfFaction("protestant"))+"\t1");
+	      his_self.addMove("NOTIFY\tPapacy selects "+his_self.game.deck[1].cards[action].name+" to discard");
+	      his_self.endTurn();
+
+	    });
+
+  	  }
+
+          return 0;
+        }
+
+        return 1;
+
+      },
     }
 
     for (let key in deck) {
@@ -5098,6 +5509,12 @@ console.log("\n\n\n\n");
         removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
         onEvent : function(his_self, faction) {
           his_self.game.state.events.schmalkaldic_league = 1;
+	  for (let i = 0; i < his_self.game.state.activated_powers["protestant"].length; i++) {
+	    if (his_self.game.state.activated_powers["protestant"][i] === "hapsburg") {
+	      his_self.game.state.activated_powers["protestant"].splice(i, 1);
+	      his_self.game.state.events.spanish_invasion = "";
+	    }
+	  }
           his_self.game.state.activated_powers["papacy"].push("hapsburg");
 	  return 1;
         }
@@ -14684,23 +15101,24 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-//	  this.game.queue.push("diplomacy_phase");
+	  this.game.queue.push("diplomacy_phase");
+
 
 	  //
 	  // start the game with the Protestant Reformation
 	  //
 	  if (this.game.state.round == 1) {
 
-  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-  	    this.game.queue.push("diet_of_worms");
-  	    this.game.queue.push("show_overlay\tdiet_of_worms");
+//  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+//  	    this.game.queue.push("diet_of_worms");
+//  	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    //
 	    // cards dealt before diet of worms
 	    //
 //this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
-	    this.updateLog("Luther's 95 Theses!");
-	    this.game.queue.push("event\tprotestant\t008");
+//	    this.updateLog("Luther's 95 Theses!");
+//	    this.game.queue.push("event\tprotestant\t008");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -15108,6 +15526,53 @@ console.log("MOVE: " + mv[0]);
 
 	  return 1;
 	}
+
+
+        
+        if (mv[0] === "reshuffle_diplomacy_deck") {
+          
+          this.game.queue.splice(qe, 1);
+          
+          //
+          // DECKRESTORE copies backed-up back into deck
+          //
+          this.game.queue.push("SHUFFLE\t2");
+          this.game.queue.push("DECKRESTORE\t");
+          
+          for (let i = this.game.state.players_info.length; i > 0; i--) {
+            this.game.queue.push("DECKENCRYPT\t2\t"+(i));
+          } 
+          for (let i = this.game.state.players_info.length; i > 0; i--) {
+            this.game.queue.push("DECKXOR\t2\t"+(i));
+          }
+          
+          //
+          // re-add discards
+          //  
+          let discards = {};
+          for (let i in this.game.deck[1].discards) {
+            discards[i] = this.game.deck[1].cards[i];
+            delete this.game.deck[1].cards[i];
+          } 
+          this.game.deck[1].discards = {};
+        
+          //  
+          // our deck for re-shuffling
+          //
+          let reshuffle_cards = {};
+          for (let key in discards) { reshuffle_cards[key] = discards[key]; }
+
+console.log("----------------------------");
+console.log("---SHUFFLING IN DISCARDS ---");
+console.log("----------------------------");
+console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
+
+          this.game.queue.push("DECK\t2\t"+JSON.stringify(reshuffle_cards));
+
+          // backup any existing DECK #2
+          this.game.queue.push("DECKBACKUP\t2");
+
+        }
 
         if (mv[0] === "diplomacy_card_event") {
 
@@ -19958,9 +20423,10 @@ console.log("NEW WORLD PHASE!");
 	  // 2-player game? both players play a diplomacy card
 	  // AFTER they have been dealt on every turn after T1
 	  //
-	  if (this.game.state.round > 1) {
-    	    this.game.queue.push("play_diplomacy_card\tpapacy");
+if (this.game.state.round >= 1) {
+//	  if (this.game.state.round > 1) {
     	    this.game.queue.push("play_diplomacy_card\tprotestant");
+    	    this.game.queue.push("play_diplomacy_card\tpapacy");
 	  }
 
 	  //
@@ -19969,7 +20435,7 @@ console.log("NEW WORLD PHASE!");
 	  if (this.game.players.length == 2) {
 	    for (let i = this.game.state.players_info.length-1; i >= 0; i--) {
 	      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
-    	        this.game.queue.push("DEAL\t2\t"+(i+1)+"\t1");
+    	        this.game.queue.push("DEAL\t2\t"+(i+1)+"\t2");
 	      }
 	    }
             this.game.queue.push("SHUFFLE\t2");
@@ -20022,50 +20488,6 @@ console.log("NEW WORLD PHASE!");
 
 	}
 
-	if (mv[0] === "reshuffle_diplomatic_deck") {
-
-	  this.game.queue.splice(qe, 1);
-
-          //
-          // DECKRESTORE copies backed-up back into deck
-          //
-          this.game.queue.push("SHUFFLE\t2");
-          this.game.queue.push("DECKRESTORE\t");
-
-          for (let i = this.game.state.players_info.length; i > 0; i--) {
-            this.game.queue.push("DECKENCRYPT\t2\t"+(i));
-          }
-          for (let i = this.game.state.players_info.length; i > 0; i--) {
-            this.game.queue.push("DECKXOR\tw\t"+(i));
-          }
-
-          //
-          // re-add discards
-          //
-          let discards = {};
-          for (let i in this.game.deck[1].discards) {
-            discards[i] = this.game.deck[1].cards[i];
-            delete this.game.deck[1].cards[i];
-          }
-          this.game.deck[1].discards = {};
-
-          //
-          // our deck for re-shuffling
-          //
-          let reshuffle_cards = {};
-          for (let key in discards) { reshuffle_cards[key] = discards[key]; }
-
-console.log("----------------------------");
-console.log("---SHUFFLING IN DISCARDS ---");
-console.log("----------------------------");
-console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
-
-    	  this.game.queue.push("DECK\t2\t"+JSON.stringify(reshuffle_cards));
-
-	  // backup any existing DECK #2
-          this.game.queue.push("DECKBACKUP\t2");
-
-        }
 
         if (mv[0] === "card_draw_phase") {
 
@@ -20361,35 +20783,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  return 1;
 
 	}
-
-	if (mv[0] === "diplomatic_discard") {
-
-	  this.game.queue.splice(qe, 1);
-
-	  let faction = mv[1];
-	  let card = mv[2];
-	  let player_of_faction = this.returnPlayerOfFaction(faction);
-
-	  //
-	  // move into discards
-	  //
-	  this.game.deck[1].discards[card] = this.game.deck[1].cards[card];
-
-	  //
-	  // and remove from hand
-	  //
-	  if (this.game.player === player_of_faction) {
-            let fhand_idx = this.returnFactionHandIdx(player_of_faction, faction);
-	    for (let i = 0; i < this.game.deck[1].hand.length; i++) {
-	      if (this.game.deck[0].hand[i] === card) {
-		this.game.deck[0].hand.splice(i, 1);
-	      }
-	    }
-	  }
-
-	  return 1;
-	}
-
 
 	// moves into discard pile
 	if (mv[0] === "discard") {
@@ -20811,6 +21204,12 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 
 	  if (this.game.player == player) {
 	    this.playerPlayDiplomacyCard(faction);
+	  } else {
+	    if (faction == "papacy") {
+  	      this.updateStatusAndListCards("Papacy playing Diplomacy Card", this.game.deck[1].hand);
+	    } else {
+  	      this.updateStatusAndListCards("Protestants playing Diplomacy Card", this.game.deck[1].hand);
+	    }
 	  }
 
 	  return 0;
@@ -22421,7 +22820,7 @@ if (limit === "build") {
     //
     // mandatory event cards effect first, then 2 OPS
     //
-    if (this.deck[card].type === "mandatory" && this.deck[card].canEvent()) {
+    if (this.deck[card].type === "mandatory" && this.deck[card].canEvent(this, faction)) {
       this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
       this.playerPlayEvent(card, faction);
@@ -26730,9 +27129,6 @@ if (!his_self.bound_gameboard_zoom) {
       return `<img class="${cardclass}" src="/his/img/cards/PASS.png" /><div class="cardtext">pass</div>`;
     }
 
-    //
-    //
-    //
     if (this.debaters[cardname]) { return this.debaters[cardname].returnCardImage(); }
 
     for (let i = 0; i < this.game.deck.length; i++) {

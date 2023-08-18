@@ -1018,9 +1018,6 @@ if (!his_self.bound_gameboard_zoom) {
       return `<img class="${cardclass}" src="/his/img/cards/PASS.png" /><div class="cardtext">pass</div>`;
     }
 
-    //
-    //
-    //
     if (this.debaters[cardname]) { return this.debaters[cardname].returnCardImage(); }
 
     for (let i = 0; i < this.game.deck.length; i++) {

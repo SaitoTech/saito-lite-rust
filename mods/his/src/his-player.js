@@ -1151,7 +1151,7 @@ if (limit === "build") {
     //
     // mandatory event cards effect first, then 2 OPS
     //
-    if (this.deck[card].type === "mandatory" && this.deck[card].canEvent()) {
+    if (this.deck[card].type === "mandatory" && this.deck[card].canEvent(this, faction)) {
       this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
       this.playerPlayEvent(card, faction);

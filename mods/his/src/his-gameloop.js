@@ -42,23 +42,24 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-//	  this.game.queue.push("diplomacy_phase");
+	  this.game.queue.push("diplomacy_phase");
+
 
 	  //
 	  // start the game with the Protestant Reformation
 	  //
 	  if (this.game.state.round == 1) {
 
-  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-  	    this.game.queue.push("diet_of_worms");
-  	    this.game.queue.push("show_overlay\tdiet_of_worms");
+//  	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+//  	    this.game.queue.push("diet_of_worms");
+//  	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    //
 	    // cards dealt before diet of worms
 	    //
 //this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
-	    this.updateLog("Luther's 95 Theses!");
-	    this.game.queue.push("event\tprotestant\t008");
+//	    this.updateLog("Luther's 95 Theses!");
+//	    this.game.queue.push("event\tprotestant\t008");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -5363,9 +5364,10 @@ console.log("NEW WORLD PHASE!");
 	  // 2-player game? both players play a diplomacy card
 	  // AFTER they have been dealt on every turn after T1
 	  //
-	  if (this.game.state.round > 1) {
-    	    this.game.queue.push("play_diplomacy_card\tpapacy");
+if (this.game.state.round >= 1) {
+//	  if (this.game.state.round > 1) {
     	    this.game.queue.push("play_diplomacy_card\tprotestant");
+    	    this.game.queue.push("play_diplomacy_card\tpapacy");
 	  }
 
 	  //
@@ -5374,7 +5376,7 @@ console.log("NEW WORLD PHASE!");
 	  if (this.game.players.length == 2) {
 	    for (let i = this.game.state.players_info.length-1; i >= 0; i--) {
 	      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
-    	        this.game.queue.push("DEAL\t2\t"+(i+1)+"\t1");
+    	        this.game.queue.push("DEAL\t2\t"+(i+1)+"\t2");
 	      }
 	    }
             this.game.queue.push("SHUFFLE\t2");
@@ -6143,6 +6145,12 @@ console.log("BRANDENBURG ELEC BONUS: " + this.game.state.brandenburg_electoral_b
 
 	  if (this.game.player == player) {
 	    this.playerPlayDiplomacyCard(faction);
+	  } else {
+	    if (faction == "papacy") {
+  	      this.updateStatusAndListCards("Papacy playing Diplomacy Card", this.game.deck[1].hand);
+	    } else {
+  	      this.updateStatusAndListCards("Protestants playing Diplomacy Card", this.game.deck[1].hand);
+	    }
 	  }
 
 	  return 0;
