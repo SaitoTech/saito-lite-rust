@@ -35,7 +35,7 @@ class Registry extends ModTemplate {
     this.cached_keys = {};
 
     //Set True for testing locally
-    this.local_dev = false;
+    this.local_dev = true;
 
     //
     // event listeners -
@@ -67,7 +67,7 @@ class Registry extends ModTemplate {
                 //
 
                 // save if locally stored
-                if (this.app.keychain.returnKey(key)) {
+                if (this.app.keychain.returnKey(key, true) && key !== value) {
                   this.app.keychain.addKey({ publicKey: key, identifier: value });
                 }
 
