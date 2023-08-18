@@ -467,6 +467,53 @@ console.log("MOVE: " + mv[0]);
 	  return 1;
 	}
 
+
+        
+        if (mv[0] === "reshuffle_diplomacy_deck") {
+          
+          this.game.queue.splice(qe, 1);
+          
+          //
+          // DECKRESTORE copies backed-up back into deck
+          //
+          this.game.queue.push("SHUFFLE\t2");
+          this.game.queue.push("DECKRESTORE\t");
+          
+          for (let i = this.game.state.players_info.length; i > 0; i--) {
+            this.game.queue.push("DECKENCRYPT\t2\t"+(i));
+          } 
+          for (let i = this.game.state.players_info.length; i > 0; i--) {
+            this.game.queue.push("DECKXOR\t2\t"+(i));
+          }
+          
+          //
+          // re-add discards
+          //  
+          let discards = {};
+          for (let i in this.game.deck[1].discards) {
+            discards[i] = this.game.deck[1].cards[i];
+            delete this.game.deck[1].cards[i];
+          } 
+          this.game.deck[1].discards = {};
+        
+          //  
+          // our deck for re-shuffling
+          //
+          let reshuffle_cards = {};
+          for (let key in discards) { reshuffle_cards[key] = discards[key]; }
+
+console.log("----------------------------");
+console.log("---SHUFFLING IN DISCARDS ---");
+console.log("----------------------------");
+console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
+
+          this.game.queue.push("DECK\t2\t"+JSON.stringify(reshuffle_cards));
+
+          // backup any existing DECK #2
+          this.game.queue.push("DECKBACKUP\t2");
+
+        }
+
         if (mv[0] === "diplomacy_card_event") {
 
 	  let faction = mv[1];
@@ -4693,6 +4740,13 @@ console.log("purging naval units and capturing leader");
 	  let x = 0;
 
 	  //
+	  // Henry Petitions for Divorce pre-selects 
+	  //
+	  if (this.game.state.events.henry_petitions_for_divorce_grant == 1) {
+	    selected_papal_debater = "campeggio-debater";
+	  }
+
+	  //
 	  // attacker picks debater at random from uncommitted
 	  //
 	  if (selected_papal_debater != "") {
@@ -4700,9 +4754,11 @@ console.log("purging naval units and capturing leader");
 	    for (let i = 0; i < this.game.state.debaters.length; i++) {
 	      if (selected_papal_debater == this.game.state.debaters[i].type) {
   	        this.game.state.theological_debate.attacker_debater_power = this.game.state.debaters[i].power;
+		if (!this.game.state.debaters[i].committed) {
+	          this.game.state.theological_debate.attacker_debater_entered_uncommitted = 1;
+		}
 	      }
 	    }
-	    this.game.state.theological_debate.attacker_debater_entered_uncommitted = 1;
 	  } else {
             let ad = 0;
 	    for (let i = 0; i < this.game.state.debaters.length; i++) {
@@ -4802,7 +4858,17 @@ console.log("purging naval units and capturing leader");
 
         }
 
-
+	if (mv[0] === "player_call_theological_debate") {
+	  this.game.queue.splice(qe, 1);
+	  let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
+	  if (this.game.player == player) {
+	    this.playerCallTheologicalDebate(this, player, faction);
+	  } else {
+	    this.updateStatus(faction + " calling theological debater");
+	  }
+	  return 0;
+	}
         if (mv[0] === "theological_debate") {
 
 	  let attacker = this.game.state.theological_debate.attacker;

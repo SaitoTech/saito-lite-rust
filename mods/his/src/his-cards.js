@@ -204,8 +204,151 @@
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(his_self, faction) {
+
+	let p = his_self.returnPlayerOfFaction(faction);
+	let opponent_faction = "protestant";
+	if (faction === "protestant") { opponent_faction = "papacy"; }
+
+	let d1 = his_self.rollDice(6);
+	let d2 = his_self.rollDice(6);
+	let d3 = his_self.rollDice(6);
+	let d4 = his_self.rollDice(6);
+
+	let hits = 0;
+
+	if (d1 >= 5) { hits++; }
+	if (d2 >= 5) { hits++; }
+	if (d3 >= 5) { hits++; }
+	if (d4 >= 5) { hits++; }
+
+	this.updateLog("Corsair Raid rolls " + hits + " hits ["+d1+","+d2+","+d3+","+d4+"]");
+
+        if (his_self.game.player == p) {
+	  for (let i = hits-1; i >= 0; i--) {
+	    his_self.game.queue.push("corsair_raid\t"+opponent_faction+"\t"+(hits+1));
+	  }
+	}
+	
         return 1;
       },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "corsair_raid") {
+
+	  // faction is victim
+	  let faction = mv[1];
+	  let player = his_self.game.returnPlayerOfFaction(faction);
+
+          his_self.game.queue.splice(qe, 1);
+
+	  if (his_self.game.player == player) {
+
+ 	    let msg = "Choose Option:";
+            let html = '<ul>';
+            html += '<li class="option" id="discard">discard card</li>';
+            html += '<li class="option" id="eliminate">eliminate squadrom</li>';
+    	    html += '</ul>';
+
+            his_self.updateStatusWithOptions(msg, html);
+
+  	    $('.option').off();
+	    $('.option').on('click', function () {
+
+	      $('.option').off();
+	      let action = $(this).attr("id");
+
+	      if (action === "eliminate") {
+
+                his_self.playerSelectSpaceOrNavalSpaceWithFilter(
+
+                  `Select Space to Remove Naval Squadron` ,
+
+ 	          function(space) {
+		    if (faction === "papacy") {
+		      for (let key in space.units) {
+		        if (key === "papacy" || his_self.isAlliedMinorPower(key, "papacy")) {
+		  	  for (let i = 0; i < space.units[key].length; i++) {
+			    if (space.units[key][i].type === "squadron") { return 1; }
+		          }
+		        }
+		      }
+		    }
+		    if (faction === "protestant") {
+		      for (let key in space.units) {
+		        if (key === "france" || key === "ottoman") {
+		  	  for (let i = 0; i < space.units[key].length; i++) {
+			    if (space.units[key][i].type === "squadron") { return 1; }
+		          }
+		        }
+		      }
+		    }
+	            return 0;
+                  },
+
+                  function(spacekey) {
+
+		    let land_or_sea = "land";
+		    let space = null;
+
+	            if (his_self.game.navalspaces[spacekey]) {
+		      land_or_sea = "sea";
+		      space = his_self.game.navalspaces[spacekey];
+	            } else {
+		      space = his_self.game.spaces[spacekey];
+	            }
+
+		    if (faction === "papacy") {
+		      for (let key in space.units) {
+		        if (key === "papacy" || his_self.isAlliedMinorPower(key, "papacy")) {
+		  	  for (let i = 0; i < space.units[key].length; i++) {
+			    if (space.units[key][i].type === "squadron") {
+          	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+this.game.player);
+          	  	      his_self.endTurn();
+			      return 0;
+			    }
+		          }
+		        }
+		      }
+		    }
+
+		    if (faction === "protestant") {
+		      for (let key in space.units) {
+		        if (key === "france" || key === "ottoman") {
+			  for (let i = 0; i < space.units[key].length; i++) {
+			    if (space.units[key][i].type === "squadron") {
+          	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+this.game.player);
+          	  	      his_self.endTurn();
+			      return 0;
+			    }
+		          }
+		        }
+		      }
+		    }
+
+	            his_self.addMove("NOTIFY\tno squadrons available for removal");
+		    his_self.endTurn();
+		    return 0;
+		  },
+
+		  null,
+
+		  true
+
+                );
+
+	      }
+
+	      if (action === "discard") {
+		his_self.addMove("discard_random\t"+faction);
+		his_self.endTurn();
+	      }
+
+	    });
+	  }
+	  return 0;
+	}
+        return 1;
+      }
     }
     deck['204'] = { 
       img : "cards/HIS-204.svg" , 
@@ -266,6 +409,82 @@
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(his_self, faction) {
+
+	if (faction === "papacy") {
+	  his_self.game.queue.push("diplomatic_pressure_reveal\tpapacy\tprotestant");
+	}
+
+	if (faction === "papacy") {
+	  his_self.game.queue.push("diplomatic_pressure_reveal\tprotestant\tpapacy");
+	}
+
+	return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "diplomatic_pressure_reveal") {
+
+          let faction_taking = mv[1];
+          let faction_giving = mv[2];
+
+          let p1 = his_self.returnPlayerOfFaction(faction_taking);
+          let p2 = his_self.returnPlayerOfFaction(faction_giving);
+
+          if (his_self.game.player == p2) {
+            let fhand_idx = his_self.returnFactionHandIdx(p2, faction_giving);
+	    if (faction_taking == "protestant") {
+              his_self.addMove("diplomatic_pressure_results_papacy\t"+JSON.stringify(his_self.game.deck[1].hand));
+	    } else {
+              his_self.addMove("diplomatic_pressure_results_protestant\t"++JSON.stringify(his_self.game.deck[1].hand));
+	    }
+            his_self.endTurn();
+          }
+
+          his_self.game.queue.splice(qe, 1);
+          return 0;
+	}
+
+
+        if (mv[0] == "diplomatic_pressure_results_papacy") {
+
+          let cards = JSON.parse(mv[2]);
+
+          his_self.game.queue.splice(qe, 1);
+
+	  if (his_self.game.player
+ 	  let msg = "Choose Protestant Card:";
+          let html = '<ul>';
+	  for (let i = 0; i < cards.length; i++) {
+            html += `<li class="option" id="${i}">${his_self.game.deck[1].cards[cards[i]].name}</li>`;
+	  }
+    	  html += '</ul>';
+
+          his_self.updateStatusWithOptions(msg, html);
+
+  	  $('.option').off();
+	  $('.option').on('click', function () {
+alert("Diplomatic Pressure");
+	  });
+
+          return 0;
+	}
+
+        if (mv[0] == "diplomatic_pressure_results_protestant") {
+
+          let cards = JSON.parse(mv[2]);
+
+ 	  let msg = "Choose Action:";
+          let html = '<ul>';
+	  for (let i = 0; i < cards.length; i++) {
+            html += `<li class="option" id="${i}">${his_self.game.deck[1].cards[cards[i]].name}</li>`;
+	  }
+    	  html += '</ul>';
+          his_self.game.queue.splice(qe, 1);
+          return 0;
+	}
+
+        return 1;
+
       },
     }
     deck['206'] = { 
@@ -376,7 +595,117 @@
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(his_self, faction) {
+
+	let p = his_self.returnPlayerOfFaction("papacy");
+	if (his_self.game.player == p) {
+
+          let msg = "Henry Petitions for Divorce: ";
+          let html = '<ul>';
+          html += '<li class="option" id="grant">Grant Divorce</li>';
+          html += '<li class="option" id="refuse">Refuse Divorce</li>';
+          html += '</ul>';
+
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+
+            let action = $(this).attr("id");
+
+	    if (action === "grant") {
+	      his_self.addMove("player_call_theological_debate\tpapacy");
+	      his_self.addMove("henry_petitions_for_divorce_grant");
+	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+"faction");
+              his_self.addMove(`DEAL\t1\t${p}\t1`);
+	      his_self.endTurn();
+	    }
+
+	    if (action === "refuse") {
+	      his_self.addMove("henry_petitions_for_divorce_refuse\t3");
+	      his_self.addMove("henry_petitions_for_divorce_refuse\t2");
+	      his_self.addMove("henry_petitions_for_divorce_refuse\t1");
+	      his_self.endTurn();
+	    }
+
+	  });
+	}
+
+	return 0;
+
       },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] === "henry_petitions_for_divorce_grant") {
+
+	  his_self.game.state.events.henry_petitions_for_divorce_grant = 1;
+
+	  let p = his_self.returnPlayerOfFaction("protestant");
+	  if (his_self.game.player == p) {
+
+            his_self.playerSelectSpaceWithFilter(
+
+              "Select Hapsburg-Controlled Italian Space" ,
+
+              (space) => {
+                if (his_self.isSpaceControlled(space.key, "hapsburg") && space.language === "italian") { return 1; }
+	      },
+
+              (spacekey) => {
+                his_self.addMove("build\tland\tpapacy\t"+"mercenary"+"\t"+spacekey);
+                his_self.addMove("build\tland\tpapacy\t"+"mercenary"+"\t"+spacekey);
+	        his_self.endTurn();
+	      },
+
+    	      null ,
+
+	      true
+    
+	    );
+
+	  } else {
+	    his_self.updateStatus("Protestants selecting Italian space for reinforcements");
+	  }
+
+	  return 0;
+	}
+
+
+        if (mv[0] === "henry_petitions_for_divorce_refuse") {
+
+	  let num = parseInt(mv[1]);
+
+	  if (num == 1) { num = "1st"; }
+	  if (num == 2) { num = "2nd"; }
+	  if (num == 3) { num = "3rd"; }
+
+	  let player = his_self.returnPlayerOfFaction("papacy");
+
+	  if (his_self.game.player == player) {
+            his_self.playerSelectSpaceWithFilter(
+
+              `Select Hapsburg-Controlled Space to add ${num} Regular` ,
+
+              function(space) {
+                if (his_self.isSpaceControlled(space.key, "hapsburg")) { return 1; }
+	        return 0;
+              },
+
+              function(spacekey) {
+                his_self.addMove("build\tland\thapsburg\tregular\t"+spacekey);
+          	his_self.endTurn();
+              },
+
+              null, 
+
+	      true
+
+	    );
+	  }
+
+	  return 0;
+	}
+	return 1;
+      }
     }
     deck['208'] = { 
       img : "cards/HIS-208.svg" , 
@@ -445,14 +774,16 @@
 	  let faction = mv[1];
 	  let num = parseInt(mv[2]);
 	  let player = his_self.returnPlayerOfFaction(faction);
+	  let opponent_faction = "protestant";
+	  if (faction === "protestant") { opponent_faction = "papacy"; }
 
           his_self.game.queue.splice(qe, 1);
 
 	  if (his_self.game.player != player) { return 0; }
 
 	  if (num == 1) { num = "1st"; }
-	  if (num == 2) { num = "2st"; }
-	  if (num == 3) { num = "3st"; }
+	  if (num == 2) { num = "2nd"; }
+	  if (num == 3) { num = "3rd"; }
 
           his_self.playerSelectSpaceOrNavalSpaceWithFilter(
 
@@ -528,6 +859,7 @@
 
           	  his_self.removeUnit(faction_to_destroy, spacekey, unittype);
 		  his_self.displaySpace(spacekey);
+		  if (num == 3) { his_self.addMove("discard_random\t"+opponent_faction); }
           	  his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+this.game.player);
           	  his_self.endTurn();
 		});
@@ -837,6 +1169,69 @@
       turn : 0 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	let vp = his_self.calculateVictoryPoints();
+	let winner = "protestant";
+
+	if (vp["protestant"].vp > vp["papacy"].vp) { winner = "papacy"; }
+	if (vp["protestant"].vp == vp["papacy"].vp) { winner = faction; }
+
+	//
+	// TODO -- cannot pick an invasion card played earlier this turn
+	//
+        let msg = "Select Invasion Card:";
+        let html = '<ul>';
+        html += '<li class="option" id="ottoman">Ottoman Invasion</li>';
+        html += '<li class="option" id="imperial">Imperial Invasion</li>';
+        html += '<li class="option" id="austrian">Austrian Invasion</li>';
+        html += '<li class="option" id="spanish">Spanish Invasion</li>';
+        html += '<li class="option" id="french">French Invasion</li>';
+        html += '<li class="option" id="constable">French Constable Invades</li>';
+        html += '</ul>';
+
+        his_self.updateStatusWithOptions(msg, html);
+
+        $('.option').off();
+        $('.option').on('click', function () {
+
+          let action = $(this).attr("id");
+
+          let card = "";
+
+	  if (action === "ottoman") {
+            card = "216";
+	  }
+
+	  if (action === "imperial") {
+            card = "214";
+	  }
+
+	  if (action === "austrian") {
+            card = "213";
+	  }
+
+	  if (action === "spanish") {
+            card = "211";
+	  }
+
+	  if (action === "french") {
+            card = "206";
+	  }
+
+	  if (action === "constable") {
+            card = "202";
+	  }
+
+	  his_self.addMove("reshuffle_diplomacy_deck");
+	  his_self.addMove("diplomacy_card_event\t"+winner+"\t"+card);
+	  his_self.endTurn();
+
+	});
+
+        return 0;
+      },
     }
     deck['216'] = { 
       img : "cards/HIS-216.svg" , 
