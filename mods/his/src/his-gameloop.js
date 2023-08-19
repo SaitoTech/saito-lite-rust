@@ -5396,28 +5396,66 @@ if (this.game.state.round >= 1) {
 	  // The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase
 	  //
           this.game.queue.push("papacy_diplomacy_phase_special_turn");
+          this.game.queue.push("counter_or_acknowledge\tPapacy papacy_diplomacy_phase_special_turn");
 
 	  this.game.queue.splice(qe, 1);
           return 1;
 
         }
 
-	if (mv[0] === "papacy_diplomacy_phase_special_turn") {
+
+	if (mv[0] === "player_play_papacy_regain_spaces_for_vp") {
 
 	  this.game.queue.splice(qe, 1);
 
 	  if (this.game.player == this.returnPlayerOfFaction("papacy")) {
-	    this.playerPlayPapacyDiplomacyPhaseSpecialTurn();
+	    this.playerPlayPapacyDiplomacyPhaseSpecialTurn(enemies);
 	  } else {
-	    this.updateStatus("Papacy Considering Diplomatic Options");
+	    this.updateStatus("Papacy Considering Regaining Spaces");
+	  }
+
+          return 0;
+
+	}
+
+
+	if (mv[0] === "papacy_diplomacy_phase_special_turn") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let is_papacy_at_war = false;
+          let enemies = [];
+	  let factions = ["genoa","venice","scotland","ottoman","france","england","hungary","hapsburg"];
+	  for (let i = 0; i < factions.length; i++) { if (this.areEnemies(factions[i], "papacy")) { enemies.push(factions[i]); is_papacy_at_war = true; } }
+
+	  if (is_papacy_at_war == false) {
+	    this.updateLog("Papacy is not at War, skipping special pre-diplomacy stage...");
+	    return 1;
+	  }
+
+	  if (this.game.player == this.returnPlayerOfFaction("papacy")) {
+	    this.playerPlayPapacyDiplomacyPhaseSpecialTurn(enemies);
+	  } else {
+	    this.updateStatus("Papacy Considering Diplomatic Options to End War");
 	  }
 
           return 0;
 
         }
 
+	if (mv[0] === "unset_enemies") {
 
-	if (mv[0] === "declare_war") {
+	  let f1 = mv[1];
+	  let f2 = mv[2];
+
+  	  this.unsetEnemies(f1, f2);
+	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+	  
+	}
+
+	if (mv[0] === "declare_war" || mv[0] === "set_enemies") {
 
 	  let f1 = mv[1];
 	  let f2 = mv[2];
@@ -5768,6 +5806,17 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
         }
 
 
+	if (mv[0] === "excommunicate_faction") {
+
+	  let faction = mv[1];
+	  this.excommunicateFaction(faction);
+
+	  this.game.queue.splice(qe, 1);
+
+          return 1;
+
+	}
+
 	// discards N cards from faction hand
 	if (mv[0] === "excommunicate_reformer") {
 
@@ -6045,6 +6094,61 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	}
 
+	if (mv[0] === "withdraw_to_nearest_fortified_space") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let source_spacekey = mv[2];
+
+	  //
+	  // move the units here
+	  //
+	  let units = this.game.spaces[source_spacekey].units[faction];
+	  this.game.spaces[source_spacekey].units[faction] = [];
+
+	  //
+	  // find nearest fortified unit
+	  //
+	  let not_these_spaces = [];
+	  let all_units_repositioned = false;
+
+	  //
+	  // loop moving these units around
+	  //
+	  while (all_units_repositioned == false) {
+
+            let found_space = his_self.returnNearestSpaceWithFilter(
+	      source_spacekey ,
+
+              function(spacekey) {
+                if ( !not_these_spaces.includes(spacekey) && his_self.game.spaces[spacekey].home == faction && (his_self.game.spaces[spacekey].type == "key" || his_self.game.spaces[spacekey].type == "electorate" || his_self.game.spaces[spacekey].type == "fortress")) {
+		  if (his_self.returnFactionLandUnitsInSpace(faction, spacekey) < 4) { return 1; }
+		}
+                return 0;
+              },
+
+              function(propagation_filter) {
+                return 1;
+              },
+
+              0,
+
+              1,
+            );
+
+	    let loop_limit = units.length;
+	    for (let i = 0; i < loop_limit; i++) {
+	      if (his_self.returnFactionLandUnitsInSpace(faction, found_space)) {
+		his_self.units[faction].push(units[i]);
+		units.splice(i, 1);
+		i--;
+	        loop_limit = units.length;
+	      }
+	    }
+	  }
+
+	}
 
 	if (mv[0] === "pacify" || mv[0] === "control") {
 

@@ -1331,10 +1331,306 @@ return;
   }
 
 
-  playerPlayPapacyDiplomacyPhaseSpecialTurn() {
-this.updateLog("Papacy Diplomacy Phase Special Turn");
-    this.endTurn();
-    return;
+  playerPlayPapacyDiplomacyPhaseSpecialTurn(enemies=[]) {
+
+    let his_self = this;
+    let player = this.returnPlayerOfFaction("papacy");
+    if (this.game.player != player) { this.updateStatus("ERROR: you are not the papacy"); return; }
+
+    let msg = `Do you wish to end a war? [${JSON.stringify(enemies)}]`;
+    let opt = "<ul>";
+    opt += `<li class="option" id="yes">yes</li>`;
+    opt += `<li class="option" id="no">no</li>`;
+    opt += '</ul>';
+
+    this.updateStatusWithOptions(msg, opt);
+
+    $(".option").off();
+    $(".option").on('click', function() {
+
+      $(".option").off();
+      let id = $(this).attr('id');
+
+      if (id === "no") {
+	his_self.endTurn();
+	return 0;
+      }
+
+      //
+      // otherwise YES
+      //
+      let msg = `Which Faction?`;
+      let opt = "<ul>";
+      for (let i = 0; i < enemies.length; i++) {
+        opt += `<li class="option" id="${enemies[i]}">${enemies[i]}</li>`;
+      }
+      opt += '</ul>';
+
+      his_self.updateStatusWithOptions(msg, opt);
+
+      $(".option").off();
+      $(".option").on('click', function() {
+
+	let enemy = $(this).attr('id');
+
+        //
+        // otherwise YES
+        //
+        let msg = `How would you like to End the War?`;
+        let opt = "<ul>";
+	if ((enemy == "hapsburg" && his_self.game.state.excommunicated_faction["hapsburg"] != 1) || (enemy == "france" && his_self.game.state.excommunicated_faction["france"] != 1)) {
+          opt += `<li class="option" id="005">Papal Bull</li>`;
+	}
+        opt += `<li class="option" id="sue">sue for peace</li>`;
+        opt += '</ul>';
+
+        his_self.updateStatusWithOptions(msg, opt);
+
+        $(".option").off();
+        $(".option").on('click', function() {
+
+	  let method = $(this).attr('id');
+
+	  if (method === "005") {
+
+	    //
+	    // excommunicate faction 
+	    //
+	    his_self.addMove("excommunicate_faction\t"+enemy);
+
+	    //
+	    // factions no longer At War
+	    //
+	    his_self.addMove("unset_enemies\tpapacy\t"+enemy);
+
+	    //
+	    // regain control of home space, or draw card
+	    //
+    	    let msg = `Regain Home Space or Draw Card?`;
+    	    let opt = "<ul>";
+    	    opt += `<li class="option" id="regain">regain home space</li>`;
+    	    opt += `<li class="option" id="draw">draw card</li>`;
+    	    opt += '</ul>';
+
+	    his_self.updateStatusWithOptions(msg, opt);
+
+	    $(".option").off();
+	    $(".option").on('click', function() {
+
+	      let action2 = $(this).attr('id');
+
+	      if (action2 === "draw") {
+                his_self.addMove("hand_to_fhand\t1\t"+his_self.game.player+"\t"+"papacy");
+                his_self.addMove(`DEAL\t1\t${his_self.game.player}\t1`);
+		his_self.endTurn();
+	      }
+
+	      if (action2 === "regain") {
+
+    	        his_self.playerSelectSpaceWithFilter(
+
+                  "Select Home Space to Recapture" ,
+
+        	  function(space) {
+	            if (space.home === "papacy" && space.political !== "papacy") {
+		      return 1;
+		    }
+		  },
+
+      		  function(spacekey) {
+                    his_self.addMove(`control\tpapacy\t${spacekey}`);
+                    his_self.addMove(`withdraw_to_nearest_fortified_space\t${enemy}\t${spacekey}`);
+	            his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t{his_self.game.state.protestant_war_winner_wp+1)}`);
+		    his_self.endTurn();
+		  },
+
+	    	  cancel_func,
+
+	    	  true 
+
+	  	);
+
+	      }
+
+	    });
+
+	  }
+
+	  if (method === "sue") {
+
+	    //
+	    // protestants get War Winner 1 VP
+	    //
+	    his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t{his_self.game.state.protestant_war_winner_wp+1)}`);
+
+	    //
+	    // papacy removes 2 units
+	    //
+            his_self.playerSelectSpaceOrNavalSpaceWithFilter(
+              `Select Space to Remove 1st Unit` ,
+              function(space) {
+	        if (space.units["papacy"].length > 0) { return 1; }
+		return 0;
+              },
+              function(spacekey) {
+	        let land_or_sea = "land";
+	        let space = null;
+	        if (his_self.game.navalspaces[spacekey]) {
+	  	  land_or_sea = "sea";
+		  space = his_self.game.navalspaces[spacekey];
+	        } else {
+		  space = his_self.game.spaces[spacekey];
+	        }
+	        if (space == null) {
+		  alert("ERROR: not sure where you clicked - reload to continue");
+		  return 1;
+	        }
+	        let faction_to_destroy = "papacy";
+   	        let msg = "Destroy Which Unit: ";
+                let unittypes = [];
+                let html = '<ul>';
+                for (let i = 0; i < space.units[faction_to_destroy].length; i++) {
+                  if (space.units[faction_to_destroy][i].admin_rating == 0) {
+                    if (!unittypes.includes(space.units[faction_to_destroy][i].unittype)) {
+                      html += `<li class="option" id="${space.units[faction_to_destroy][i].unittype}">${space.units[faction_to_destroy][i].unittype}</li>`;
+                      unittypes.push(space.units[faction_to_destroy][i].unittype);
+                    }
+                  }
+                }
+                html += '</ul>';
+                his_self.updateStatusWithOptions(msg, html);
+                $('.option').off();
+                $('.option').on('click', function () {
+                  let unittype = $(this).attr("id");
+                  his_self.removeUnit(faction_to_destroy, spacekey, unittype);
+                  his_self.displaySpace(spacekey);
+                  his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
+	    	  //
+	          // papacy removes 2 units
+	          //
+                  his_self.playerSelectSpaceOrNavalSpaceWithFilter(
+                    `Select Space to Remove 1st Unit` ,
+                    function(space) {
+	              if (space.units["papacy"].length > 0) { return 1; }
+		      return 0;
+                    },
+                    function(spacekey) {
+	              let land_or_sea = "land";
+	              let space = null;
+	              if (his_self.game.navalspaces[spacekey]) {
+	  	        land_or_sea = "sea";
+		        space = his_self.game.navalspaces[spacekey];
+	              } else {
+		        space = his_self.game.spaces[spacekey];
+	              }
+	              if (space == null) {
+		        alert("ERROR: not sure where you clicked - reload to continue");
+		        return 1;
+	              }
+	              let faction_to_destroy = "papacy";
+   	              let msg = "Destroy Which Unit: ";
+                      let unittypes = [];
+                      let html = '<ul>';
+                      for (let i = 0; i < space.units[faction_to_destroy].length; i++) {
+                        if (space.units[faction_to_destroy][i].admin_rating == 0) {
+                          if (!unittypes.includes(space.units[faction_to_destroy][i].unittype)) {
+                            html += `<li class="option" id="${space.units[faction_to_destroy][i].unittype}">${space.units[faction_to_destroy][i].unittype}</li>`;
+                            unittypes.push(space.units[faction_to_destroy][i].unittype);
+                          }
+                        }
+                      }
+                      html += '</ul>';
+                      his_self.updateStatusWithOptions(msg, html);
+                      $('.option').off();
+                      $('.option').on('click', function () {
+                        let unittype = $(this).attr("id");
+                        his_self.removeUnit(faction_to_destroy, spacekey, unittype);
+                        his_self.displaySpace(spacekey);
+                        his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
+			let z = false;
+                        his_self.addMove("player_play_papacy_regain_spaces_for_vp");
+		        his_self.endTurn();
+		      });
+	            },
+	            0 ,
+	            1
+	          );
+		});
+	      },
+	      0 ,
+	      1
+	    );
+	  }	
+	});
+      });
+    });
+
+    return 0;
+
+  }
+
+  playerPlayPapacyRegainSpacesForVP(faction) {
+ 
+    let spaces = his_self.returnSpacesWithFilter(
+      function(spacekey) {
+	if (his_self.game.spaces[spacekey].home == "papacy" && his_self.game.spaces[spacekey].political == faction) { return true; }
+        return false;
+      }
+    ); 
+
+    if (spaces.length == 0) {
+      his_self.endTurn();
+      return;
+    }
+
+    let msg = "Do you wish to Regain Home Space for 1 VP: ";
+    let opt = "<ul>";
+    opt += `<li class="option" id="regain">regain and give VP</li>`;
+    opt += `<li class="option" id="skip">skip</li>`;
+    opt += '</ul>';
+
+    this.updateStatusWithOptions(msg, opt);
+
+    $(".option").off();
+    $(".option").on('click', function() {
+
+      $(".option").off();
+      let id = $(this).attr('id');
+
+      if (id === "skip") {
+	his_self.endTurn();
+	return;
+      }
+
+      if (id === "regain") {
+        his_self.playerSelectSpaceWithFilter(
+
+          "Select Home Space to Recapture" ,
+
+          function(space) {
+	    if (space.home === "papacy" && space.political !== "papacy") {
+	      return 1;
+	    }
+	  },
+
+      	  function(spacekey) {
+            his_self.addMove(`control\tpapacy\t${spacekey}`);
+            his_self.addMove(`withdraw_to_nearest_fortified_space\t${faction}\t${spacekey}`);
+	    his_self.addMove(`SETVAR\tstate\tprotestant_war_winner_vp\t{his_self.game.state.protestant_war_winner_wp+1)}`);
+            his_self.addMove("player_play_papacy_regain_spaces_for_vp");
+	    his_self.endTurn();
+	  },
+
+	  null,
+
+	  true 
+
+        );
+
+      }
+
+    });
+
   }
 
 

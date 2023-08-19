@@ -429,6 +429,8 @@
     state.translations['full']['french'] = 0;
     state.translations['full']['english'] = 0;
 
+    state.protestant_war_winner_vp = 0;
+
     state.saint_peters_cathedral = {};
     state.saint_peters_cathedral['state'] = 0;
     state.saint_peters_cathedral['vp'] = 0;    
@@ -490,6 +492,7 @@
 
     state.reformers_removed_until_next_round = [];
     state.military_leaders_removed_until_next_round = [];
+    state.excommunicated_factions = {};
     state.excommunicated = [];
     state.debaters = [];
     state.explorers = [];
@@ -522,6 +525,16 @@
     state.events.wartburg = 0;
 
     return state;
+
+  }
+
+  excommunicateFaction(faction="") {
+    this.game.state.excommunicated_faction[faction] = 1;
+    return;
+  }
+
+  restoreReformers() {
+
 
   }
 

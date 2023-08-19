@@ -224,7 +224,7 @@
 	if (d3 >= 5) { hits++; }
 	if (d4 >= 5) { hits++; }
 
-	this.updateLog("Corsair Raid rolls " + hits + " hits ["+d1+","+d2+","+d3+","+d4+"]");
+	his_self.updateLog("Corsair Raid rolls " + hits + " hits ["+d1+","+d2+","+d3+","+d4+"]");
 
         if (his_self.game.player == p) {
 	  for (let i = hits-1; i >= 0; i--) {
@@ -305,7 +305,7 @@
 		        if (key === "papacy" || his_self.isAlliedMinorPower(key, "papacy")) {
 		  	  for (let i = 0; i < space.units[key].length; i++) {
 			    if (space.units[key][i].type === "squadron") {
-          	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+this.game.player);
+          	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+his_self.game.player);
           	  	      his_self.endTurn();
 			      return 0;
 			    }
@@ -319,7 +319,7 @@
 		        if (key === "france" || key === "ottoman") {
 			  for (let i = 0; i < space.units[key].length; i++) {
 			    if (space.units[key][i].type === "squadron") {
-          	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+this.game.player);
+          	  	      his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction+"\t"+"squadron"+"\t"+spacekey+"\t"+his_self.game.player);
           	  	      his_self.endTurn();
 			      return 0;
 			    }
@@ -929,7 +929,7 @@
           	  his_self.removeUnit(faction_to_destroy, spacekey, unittype);
 		  his_self.displaySpace(spacekey);
 		  if (num == 3) { his_self.addMove("discard_random\t"+opponent_faction); }
-          	  his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+this.game.player);
+          	  his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	  his_self.endTurn();
 		});
               });
@@ -1630,7 +1630,7 @@
 		      let unittype = $(this).attr("id");
           	      his_self.removeUnit("hapsburg", spacekey, unittype);
 		      his_self.displaySpace(spacekey);
-          	      his_self.addMove("remove_unit\tland\thapsburg\t"+unittype+"\t"+spacekey+"\t"+this.game.player);
+          	      his_self.addMove("remove_unit\tland\thapsburg\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	      his_self.endTurn();
 		    });
                   },
@@ -1689,7 +1689,7 @@
 		      let unittype = $(this).attr("id");
           	      his_self.removeUnit("hungary", spacekey, unittype);
 		      his_self.displaySpace(spacekey);
-          	      his_self.addMove("remove_unit\tland\thungary\t"+unittype+"\t"+spacekey+"\t"+this.game.player);
+          	      his_self.addMove("remove_unit\tland\thungary\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	      his_self.endTurn();
 		    });
                   },
@@ -2855,6 +2855,9 @@
         removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
         onEvent : function(his_self, faction) {
           his_self.game.state.events.schmalkaldic_league = 1;
+          his_self.setEnemies("protestant","papacy");
+          his_self.setEnemies("protestant","hapsburg");
+          his_self.setAllies("papacy","hapsburg");
 	  for (let i = 0; i < his_self.game.state.activated_powers["protestant"].length; i++) {
 	    if (his_self.game.state.activated_powers["protestant"][i] === "hapsburg") {
 	      his_self.game.state.activated_powers["protestant"].splice(i, 1);
@@ -2874,6 +2877,9 @@
         type : "mandatory" ,
         removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
         onEvent : function(his_self, faction) {
+          his_self.setEnemies("protestant","papacy");
+          his_self.setEnemies("protestant","hapsburg");
+          his_self.setAllies("papacy","hapsburg");
           his_self.game.state.events.schmalkaldic_league = 1;
 	  return 1;
         }
@@ -2914,7 +2920,7 @@
     }
     deck['016'] = { 
       img : "cards/HIS-016.svg" , 
-      name : "mandatory" ,
+      name : "Calvin" ,
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
@@ -3863,17 +3869,16 @@
 	    if (faction === "ottoman") {
               his_self.playerRemoveUnitsInSpaceWithFilter("mercenary", 2, faction,
 	        function(space) {
-
-//		  if (!his_self.isSpaceUnderSeige(space.key)) { return 0; }
-//		  if (!his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 0; }
-//		  if (!his_self.isSpaceFriendly(space.key)) { return 1; }
-
+		  for (let key in space.units) {
+		    for (let i = 0; i < space.units[key].length; i++) {
+		      if (space.units[key][i].type === "mercenary") { return 1; }
+		    }
+		  }
 	        } ,
 	        null ,
 	        null ,
 	        true
 	      );
-
 	    } else {
               his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", 4, faction,
 	        function(space) {
@@ -7131,7 +7136,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
           his_self.playerSelectSpaceWithFilter(
 
-            "Select Space Under Seiged" ,
+            "Select Space Under Siege:" ,
 
             function(space) {
               if (space.besieged > 0) { return 1; }
@@ -7696,7 +7701,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     }
     deck['115'] = { 
       img : "cards/HIS-115.svg" , 
-      name : "Thomos Cromwell" ,
+      name : "Thomas Cromwell" ,
       ops : 3 ,
       turn : 4 ,
       type : "response" ,
