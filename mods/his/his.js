@@ -3095,7 +3095,7 @@ console.log("\n\n\n\n");
 	  his_self.game.queue.push("diplomatic_pressure_reveal\tpapacy\tprotestant");
 	}
 
-	if (faction === "papacy") {
+	if (faction === "protestant") {
 	  his_self.game.queue.push("diplomatic_pressure_reveal\tprotestant\tpapacy");
 	}
 
@@ -14043,7 +14043,7 @@ console.log(JSON.stringify(this.game.state.activated_powers[key]));
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = space.units[faction].length - 1; i >= 0; i--) {
       if (space.units[faction][i].type === type) {
-        this.updateLog(this.returnFactionName(faction) + " removes " + unit_type + " in " + space.name);
+        this.updateLog(this.returnFactionName(faction) + " removes " + type + " in " + space.name);
 	space.units[faction].splice(i, 1);
 	return;
       }
@@ -14403,6 +14403,7 @@ console.log(JSON.stringify(this.game.state.activated_powers[key]));
     state.leaders.elizabeth_i = 0;
     state.leaders.calvin = 0;
 
+    state.spring_deploy_across_seas = [];
     state.spring_deploy_across_passes = [];
 
     state.events.maurice_of_saxony = "";
@@ -22969,7 +22970,10 @@ if (limit === "build") {
 	      $('.option').off();
 	      $('.space').off();
 	      $('.hextile').off();
-	      mycallback(key);
+
+alert("CLICKED ON SPACE");
+
+//	      mycallback(key);
 	    }
 	  });
 	}
@@ -27055,7 +27059,6 @@ return;
   }
 
   displayElectorateDisplay() {
-
     let elecs = this.returnElectorateDisplay();
     for (let key in elecs) {
       let obj = document.getElementById(`ed_${key}`);
@@ -27788,23 +27791,28 @@ return;
     let xpos = 0;
     let ypos = 0;
 
-if (!his_self.bound_gameboard_zoom) {
 
-    $('.gameboard').on('mousedown', function (e) {
-      if (e.currentTarget.classList.contains("space")) { return; }
-      xpos = e.clientX;
-      ypos = e.clientY;
-    });
-    $('.gameboard').on('mouseup', function (e) { 
-      if (e.currentTarget.classList.contains("space")) { return; }
-      if (Math.abs(xpos-e.clientX) > 4) { return; }
-      if (Math.abs(ypos-e.clientY) > 4) { return; }
-      his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
-    });
+    if (!his_self.bound_gameboard_zoom) {
 
-    his_self.bound_gameboard_zoom = 1;
+      $('.gameboard').on('mousedown', function (e) {
+        if (e.currentTarget.classList.contains("space")) { return; }
+        xpos = e.clientX;
+        ypos = e.clientY;
+      });
+      $('.gameboard').on('mouseup', function (e) { 
+        if (Math.abs(xpos-e.clientX) > 4) { return; }
+        if (Math.abs(ypos-e.clientY) > 4) { return; }
+        his_self.theses_overlay.renderAtCoordinates(xpos, ypos);
+        if (e.currentTarget.classList.contains("space")) {
+	  e.stopPropagation();
+	  e.preventDefault();	
+	  return false;
+	}
+      });
 
-}
+      his_self.bound_gameboard_zoom = 1;
+
+    }
 
 
   }

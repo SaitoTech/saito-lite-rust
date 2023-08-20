@@ -156,7 +156,7 @@
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = space.units[faction].length - 1; i >= 0; i--) {
       if (space.units[faction][i].type === type) {
-        this.updateLog(this.returnFactionName(faction) + " removes " + unit_type + " in " + space.name);
+        this.updateLog(this.returnFactionName(faction) + " removes " + type + " in " + space.name);
 	space.units[faction].splice(i, 1);
 	return;
       }
@@ -516,6 +516,7 @@
     state.leaders.elizabeth_i = 0;
     state.leaders.calvin = 0;
 
+    state.spring_deploy_across_seas = [];
     state.spring_deploy_across_passes = [];
 
     state.events.maurice_of_saxony = "";

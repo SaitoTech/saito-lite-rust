@@ -904,7 +904,10 @@ if (limit === "build") {
 	      $('.option').off();
 	      $('.space').off();
 	      $('.hextile').off();
-	      mycallback(key);
+
+alert("CLICKED ON SPACE");
+
+//	      mycallback(key);
 	    }
 	  });
 	}

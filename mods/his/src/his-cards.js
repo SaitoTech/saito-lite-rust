@@ -448,7 +448,7 @@
 	  his_self.game.queue.push("diplomatic_pressure_reveal\tpapacy\tprotestant");
 	}
 
-	if (faction === "papacy") {
+	if (faction === "protestant") {
 	  his_self.game.queue.push("diplomatic_pressure_reveal\tprotestant\tpapacy");
 	}
 
