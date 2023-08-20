@@ -19,7 +19,9 @@ export default class Wallet extends SaitoWallet {
   preferred_txs = [];
 
   default_fee = 2;
-  version = 5.212;
+
+  version = 5.254;
+
   cryptos = new Map<string, any>();
   public saitoCrypto: any;
 
@@ -149,7 +151,6 @@ export default class Wallet extends SaitoWallet {
     let publicKey = await this.getPublicKey();
     this.publicKey = publicKey;
     console.log("public key = " + publicKey);
-    console.log("private key = " + privateKey);
 
     // if (privateKey === "") {
     if (this.app.options.wallet != null) {

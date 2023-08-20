@@ -150,7 +150,7 @@ class ChatManager {
     app.connection.on("relay-is-online", async (pkey) => {
       let target_id = this.mod.createGroupIdFromMembers([pkey, this.mod.publicKey]);
       let group = this.mod.returnGroup(target_id);
-      console.log("Receive online confirmation from " + pkey);
+      //console.log("Receive online confirmation from " + pkey);
       if (!group || group.members.length !== 2) {
         return;
       }

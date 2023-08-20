@@ -35,7 +35,7 @@ class Registry extends ModTemplate {
     this.cached_keys = {};
 
     //Set True for testing locally
-    this.local_dev = false;
+    this.local_dev = true;
 
     //
     // event listeners -
@@ -50,6 +50,7 @@ class Registry extends ModTemplate {
           unidentified_keys.push(keys[i]);
         }
       }
+
       let peers = await this.app.network.getPeers();
       for (let i = 0; i < peers.length; i++) {
         let peer = peers[i];
@@ -66,7 +67,7 @@ class Registry extends ModTemplate {
                 //
 
                 // save if locally stored
-                if (this.app.keychain.returnKey(key)) {
+                if (this.app.keychain.returnKey(key, true) && key !== value) {
                   this.app.keychain.addKey({ publicKey: key, identifier: value });
                 }
 
@@ -265,6 +266,9 @@ class Registry extends ModTemplate {
     );
   }
 
+  //
+  // Also unuser, should delete???
+  //
   fetchIdentifier(publickey, peer = null, mycallback = null) {
     if (mycallback == null) {
       return;
@@ -327,8 +331,8 @@ class Registry extends ModTemplate {
           // suitable object for searching
           //
           if (typeof data === "string") {
-            let d = { publickey: "" };
-            d.publickey = data;
+            let d = { publicKey: "" };
+            d.publicKey = data;
             data = d;
           }
 
@@ -336,11 +340,11 @@ class Registry extends ModTemplate {
           // if keys exist
           //
           for (let key in this.cached_keys) {
-            if (key === data.publickey) {
+            if (key === data.publicKey) {
               if (this.cached_keys[key] && key !== this.cached_keys[key]) {
-                return { publickey: key, identifier: this.cached_keys[key] };
+                return { publicKey: key, identifier: this.cached_keys[key] };
               } else {
-                return { publickey: key };
+                return { publicKey: key };
               }
             }
           }
@@ -391,7 +395,7 @@ class Registry extends ModTemplate {
       } else {
         this.registry_publickey = peer.publicKey;
       }
-      console.log("WE ARE NOW LOCAL SERVER: " + this.registry_publickey);
+      console.log("WE ARE USING LOCAL SERVER: " + this.registry_publickey);
     }
   }
 
@@ -400,10 +404,13 @@ class Registry extends ModTemplate {
 
     if (conf == 0) {
       if (!!txmsg && txmsg.module === "Registry") {
+
+        //console.log("Registry TX: ", txmsg);
         //
         // this is to us, and we are the main registry server
         //
         if (tx.isTo(this.publicKey) && this.publicKey === this.registry_publickey) {
+          //console.log("Process Registry TX");
           let identifier = txmsg.identifier;
           let publickey = tx.from[0].publicKey;
           let unixtime = new Date().getTime();
@@ -433,13 +440,14 @@ class Registry extends ModTemplate {
           );
           let fee = BigInt(0); //tx.returnPaymentTo(this.publicKey);
 
+          let newtx = await this.app.wallet.createUnsignedTransaction(
+            tx.from[0].publicKey,
+            BigInt(0),
+            fee
+          );
+
           // send message
           if (res == 1) {
-            let newtx = await this.app.wallet.createUnsignedTransaction(
-              tx.from[0].publicKey,
-              BigInt(0),
-              fee
-            );
             newtx.msg.module = "Email";
             newtx.msg.origin = "Registry";
             newtx.msg.title = "Address Registration Success!";
@@ -450,15 +458,7 @@ class Registry extends ModTemplate {
             newtx.msg.identifier = identifier;
             newtx.msg.signed_message = signed_message;
             newtx.msg.signature = sig;
-
-            await newtx.sign();
-            await this.app.network.propagateTransaction(newtx);
           } else {
-            let newtx = await this.app.wallet.createUnsignedTransaction(
-              tx.from[0].publicKey,
-              BigInt(0),
-              fee
-            );
             newtx.msg.module = "Email";
             newtx.msg.title = "Address Registration Failed!";
             newtx.msg.message =
@@ -468,16 +468,19 @@ class Registry extends ModTemplate {
             newtx.msg.identifier = identifier;
             newtx.msg.signed_message = "";
             newtx.msg.signature = "";
-
-            await newtx.sign();
-            await this.app.network.propagateTransaction(newtx);
           }
+
+          await newtx.sign();
+          await this.app.network.propagateTransaction(newtx);
 
           return;
         }
       }
 
       if (!!txmsg && txmsg.module == "Email") {
+
+        //console.log("Registry Response TX: ", txmsg);
+
         if (tx.from[0].publicKey == this.registry_publickey) {
           if (tx.to[0].publicKey == this.publicKey) {
             if (
@@ -485,6 +488,7 @@ class Registry extends ModTemplate {
               tx.msg.signed_message != undefined &&
               tx.msg.signature != undefined
             ) {
+              //console.log("Process Registry TX");
               //
               // am email? for us? from the DNS registrar?
               //

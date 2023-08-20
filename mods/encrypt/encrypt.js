@@ -83,6 +83,10 @@ class Encrypt extends ModTemplate {
     }
     let message = newtx.returnMessage();
 
+    //if (message.request.includes("diffie hellman")){
+    //  console.log(message);
+    //}
+
     if (message.request === "diffie hellman key exchange") {
       let tx = new Transaction(undefined, message.data.tx);
 
@@ -228,6 +232,7 @@ class Encrypt extends ModTemplate {
     tx.msg.module = this.name;
     tx.msg.request = "key exchange request";
     tx.msg.alice_publicKey = this.app.keychain.initializeKeyExchange(recipient);
+    tx.addTo(this.publicKey);
 
     //
     // does not currently support n > 2
@@ -251,11 +256,14 @@ class Encrypt extends ModTemplate {
       data.tx = tx;
       this.app.network.sendRequestAsTransaction("diffie hellman key exchange", data, peer);
     }
+
     this.saveEncrypt();
   }
 
   async accept_key_exchange(tx, offchain = 0, peer = null) {
     let txmsg = tx.returnMessage();
+
+    console.log("Accepting key exchange");
 
     let remote_address = tx.from[0].publicKey;
     let our_address = tx.to[0].publicKey;
@@ -277,6 +285,7 @@ class Encrypt extends ModTemplate {
     newtx.msg.request = "key exchange confirm";
     newtx.msg.tx_id = tx.id; // reference id for parent tx
     newtx.msg.bob = bob_publicKey;
+    newtx.addTo(our_address);
     await newtx.sign();
 
     if (offchain == 0) {
@@ -302,13 +311,14 @@ class Encrypt extends ModTemplate {
   async onConfirmation(blk, tx, conf) {
     if (conf == 0) {
       console.log("ENCRYPT ONCONF");
+      console.log(tx);
 
-      if (tx.from[0].publicKey == this.publicKey) {
-        this.sendEvent("encrypt-key-exchange-confirm", {
-          members: [tx.to[0].publicKey, tx.from[0].publicKey],
-        });
-      }
-      if (tx.to[0].publicKey === this.publicKey) {
+      //if (tx.from[0].publicKey == this.publicKey) {
+      //  this.sendEvent("encrypt-key-exchange-confirm", {
+      //    members: [tx.to[0].publicKey, tx.from[0].publicKey],
+      //  });
+      //}
+      if (tx.isTo(this.publicKey)) {
         let sender = tx.from[0].publicKey;
         let receiver = tx.to[0].publicKey;
         let txmsg = tx.returnMessage();
